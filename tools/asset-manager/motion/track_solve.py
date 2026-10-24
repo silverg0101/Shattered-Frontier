@@ -1,6 +1,6 @@
 """Track a two-view video's joints and rebuild them in 3D.
 
-    python track_solve.py VIDEO JOINTS_JSON OUT_DIR
+    python track_solve.py VIDEO JOINTS_JSON OUT_DIR [--detector DIR] [--loop]
     python track_solve.py --check          # self-check, no GPU or video needed
 
 The left half of every frame is the front view (world x right, z up), the right half the left side (world y
@@ -19,6 +19,8 @@ COTRACKER = "facebookresearch/co-tracker:82e02e8029753ad4ef13cf06be7f4fc5facdda4
 SMOOTH = 5          # frames in the moving average over solved positions
 GOOD_ERR = 0.05     # height disagreement (fraction of model height) that scores 0
 HOLD = 0.2          # detector confidence below which a joint keeps its last place
+LOOP_MIN = 0.8      # seconds: shortest loop a looping action is cut to (a walk's two steps)
+VEL_WEIGHT = 4      # frames: how much a velocity mismatch at the loop's seam counts against a pose mismatch
 
 
 def read_video(path):
@@ -125,7 +127,27 @@ def median3(pos):
     return np.median(np.stack([pad[:-2], pad[1:-1], pad[2:]]), 0)
 
 
-def run(video, joints, out, detector=None):
+def loop_cut(pos, fps, seen):
+    """The stretch of a looping action that loops best -> (start, end), end excluded. Skips the opening fifth
+    (the video starts on the rest pose, then sets off) and ends where pose and velocity come back to the
+    start's, at least LOOP_MIN seconds later."""
+    T = len(pos)
+    p = pos[:, np.array(seen)]
+    p = p - p.mean(1, keepdims=True)  # the pose about its centre: drift across the floor doesn't count
+    v = np.diff(p, axis=0)
+    cost = lambda a, b: np.abs(p[a] - p[b]).mean() + VEL_WEIGHT * np.abs(v[a] - v[b]).mean()
+    pairs = [(a, b) for a in range(T // 5, T // 2) for b in range(a + int(LOOP_MIN * fps), T - 1)]
+    return min(pairs, key=lambda ab: cost(*ab)) if pairs else (0, T)
+
+
+def close_loop(pos):
+    """Spreads the mismatch between the frame after the clip and its first frame over the clip, so the last
+    frame leads into the first without a hitch. pos holds the clip plus that one frame after it."""
+    d = pos[-1] - pos[0]
+    return pos[:-1] - d * (np.arange(len(pos) - 1) / (len(pos) - 1))[:, None, None]
+
+
+def run(video, joints, out, detector=None, loop=False):
     out.mkdir(parents=True, exist_ok=True)
     j = json.loads(Path(joints).read_text())
     frames, fps = read_video(video)
@@ -142,12 +164,19 @@ def run(video, joints, out, detector=None):
     pos = smooth(median3(pos))
     on = np.array(seen)
     s, err_pct = score(err[:, on], vis_f[:, on], vis_s[:, on], j["calib"]["model_height"])
+    cut = None
+    if loop:
+        a, b = loop_cut(pos, fps, seen)
+        cut = {"start": a, "end": b, "seam_pct": round(float(np.abs(pos[b, on] - pos[a, on]).mean()
+                                                                / j["calib"]["model_height"] * 100), 2)}
+        pos = close_loop(pos[a:b + 1])
     (out / "motion.json").write_text(json.dumps({
         "fps": fps, "frames": len(pos), "score": round(s, 3), "height_error_pct": round(err_pct, 2),
-        "seen": seen, "positions": np.round(pos, 5).tolist()}))
+        "loop": cut, "seen": seen, "positions": np.round(pos, 5).tolist()}))
     full = np.concatenate([front / [2, 1], side / [2, 1] + [0.5, 0]], 1)  # back to whole-frame coordinates
     overlay(frames, full, np.concatenate([err, err], 1), seen + seen, j["calib"]["model_height"], out / "overlay.mp4", fps)
-    print(f"motion: {len(pos)} frames, score {s:.2f}, height error {err_pct:.1f}% of model height")
+    print(f"motion: {len(pos)} frames, score {s:.2f}, height error {err_pct:.1f}% of model height"
+          + (f", loop {cut['start']}-{cut['end']} (seam {cut['seam_pct']}%)" if cut else ""))
 
 
 def check():
@@ -169,6 +198,14 @@ def check():
     assert np.allclose(median3(flip), 0)
     tr, v = np.arange(10, dtype=float).reshape(5, 1, 2), np.array([[1], [0.1], [1], [0.1], [0.1]])
     assert np.allclose(hold(tr, v)[:, 0, 0], [0, 0, 4, 4, 4])
+    # A 24-frame cycle after 20 frames of standing still: the cut is whole cycles, past the standing start.
+    t = np.arange(120.0)
+    walk = np.where(t < 20, 0, np.sin(2 * np.pi * (t - 20) / 24))[:, None, None] * [[[1, 0, 0], [-1, 0, 1]]]
+    a, b = loop_cut(walk, 24, [True, True])
+    assert a >= 24 and (b - a) % 24 == 0, (a, b)
+    clip = close_loop(walk[a:b + 1] + np.linspace(0, 0.1, b - a + 1)[:, None, None])  # plus a slow drift
+    seam = np.abs(clip[0] - clip[-1]).max()  # the last frame leads into the first like any other step
+    assert seam <= np.abs(np.diff(clip, axis=0)).max() + 1e-9, seam
     print("check ok")
 
 
@@ -177,4 +214,5 @@ if __name__ == "__main__":
         check()
     else:
         argv = sys.argv[1:]
-        run(argv[0], argv[1], Path(argv[2]), argv[argv.index("--detector") + 1] if "--detector" in argv else None)
+        run(argv[0], argv[1], Path(argv[2]), argv[argv.index("--detector") + 1] if "--detector" in argv else None,
+            "--loop" in argv)

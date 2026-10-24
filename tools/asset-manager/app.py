@@ -396,6 +396,7 @@ def coerce(key, kind, extra, v):
 MOTION_DIR = Path(__file__).with_name("motion")
 DEFAULT_BLENDER = "~/blender/blender-4.2.3-linux-x64/blender"
 ACTIONS = {"walk": "walks slowly on the spot, as if on a treadmill, in a steady looping walk cycle"}
+LOOPING = {"walk"}  # actions cut to their best loop: the video opens on the rest pose, then sets off
 MOTION_PROMPT = (
     "Split-screen video of the character in <Picture 1> in a plain grey studio, filmed by two fixed orthographic "
     "cameras: the left panel shows it from the front, the right panel shows its left side. Both panels show the "
@@ -1135,6 +1136,7 @@ def run_motion(jid, host):
             d, video = f"take{i}", f"{host['comfy_dir']}/output/{v}"
             device_lines(ssh(host, f"cd {q(work)} && {gpu} {py} track_solve.py {q(video)} joints.json {d}"
                                    f"{' --detector ' + q(det) if det else ''}"
+                                   f"{' --loop' if p['action'] in LOOPING else ''}"
                                    f" && {gpu} {blender} -b -P bake.py -- {model} joints.json {d}/motion.json {d}/anim.glb",
                              timeout=1800), f"take {i} tracking")
             m = json.loads(ssh(host, f"{py} -c \"import json; m=json.load(open('{work}/{d}/motion.json')); m.pop('positions'); print(json.dumps(m))\""))
