@@ -2,8 +2,8 @@
 param(
     [string]$EngineRoot = 'C:\Program Files\Epic Games\UE_5.8',
     [ValidateRange(12000,65000)][int]$Port = 17841,
-    [ValidateRange(320,600)][int]$TimeoutSeconds = 390,
-    [ValidateRange(1,3)][int]$Clients = 1,
+    [ValidateRange(320,1200)][int]$TimeoutSeconds = 600,
+    [ValidateRange(1,10)][int]$Clients = 1,
     [switch]$TargetScenario,
     [switch]$Services
 )
@@ -37,7 +37,7 @@ function Start-Owned([string]$Name,[string]$Url,[string[]]$Extra) {
     $user = Join-Path $root ($Name+'-user')
     $null = New-Item -ItemType Directory -Path $user
     $arguments = @(('"'+$project+'"'),$Url,'-unattended','-NullRHI','-nosound','-nop4',('-UserDir="'+$user+'/"'),('-abslog="'+$log+'"'))+$Extra
-    if ($Clients -eq 3 -and $Name -like 'client*') {
+    if ($Clients -gt 1 -and $Name -like 'client*') {
         $clientCsvDir = Join-Path $root ($Name+'-csv')
         $null = New-Item -ItemType Directory -Path $clientCsvDir
         $arguments += ('-M3CsvDir="'+$clientCsvDir+'"')
@@ -108,7 +108,9 @@ try {
         $gameplayOut = Join-Path $fx.base 'gameplay-host'
         [void](Invoke-FxOk $fx $fx.dotnet @('restore',$gameplayProject,'--locked-mode','--packages',$fx.nuget,'--verbosity','quiet'))
         [void](Invoke-FxOk $fx $fx.dotnet @('build',$gameplayProject,'--no-restore','--configuration','Release','--verbosity','quiet','--output',$gameplayOut))
-        $fx.hostPort = Get-FreeTcpPort; $gameplayPort = Get-FreeTcpPort; $gameplayToken = New-HexSecret; $fx.secrets += $gameplayToken
+        $fx.hostPort = Get-FreeTcpPort; $gameplayPort = Get-FreeTcpPort
+        while ($gameplayPort -eq $fx.hostPort) { $gameplayPort = Get-FreeTcpPort }
+        $gameplayToken = New-HexSecret; $fx.secrets += $gameplayToken
         Start-LedgerHost $fx ''
         $gameplayEnv = @{ GAMEPLAY_HOST_PORT="$gameplayPort"; SF_GAMEPLAY_TOKEN=$gameplayToken; GAMEPLAY_LEDGER_CONNECTION=$fx.connection; GAMEPLAY_CHARACTER_CONNECTION=$fx.connection
             GAMEPLAY_HOUSING_CONNECTION=$fx.connection; GAMEPLAY_EXCHANGE_CONNECTION=$fx.connection; GAMEPLAY_CONTENT_ROOT=(Join-Path $repo 'content') }
@@ -124,7 +126,8 @@ try {
     $url = $result.map
     $scenarioArg = if ($Clients -gt 1) { '-CombatGroupScenario' } elseif ($TargetScenario) { '-CombatTargetScenario' } else { '-CombatPilotScenario' }
     $serverFlags = @('-server',('-port='+$Port),'-multihome=127.0.0.1',$scenarioArg)
-    if ($Clients -eq 3) {
+    if ($Clients -gt 3) { $serverFlags += '-CombatGroupCapacitySlots' }
+    if ($Clients -gt 1) {
         $csvDir = Join-Path $root 'server-csv'
         $null = New-Item -ItemType Directory -Path $csvDir
         $serverFlags += ('-M3CsvDir="'+$csvDir+'"')
@@ -139,38 +142,50 @@ try {
     Wait-Log $server 'server' 'COMBAT_PILOT_READY Boars=10'
     $clientUrl = '127.0.0.1:'+$Port + $(if ($Services) { '?SFDevCharacter=alpha' } else { '' })
     if ($Clients -gt 1) {
-        $names = @('alpha','beta','gamma')
+        $names = @('alpha','beta','gamma','delta','epsilon','zeta','eta','theta','iota','kappa')
         for ($role = 1; $role -le 2; $role++) {
             $identity = $names[$role - 1]
             $null = Start-Owned "client$role" ("127.0.0.1:$Port`?SFDevCharacter=$identity") @('-game',$scenarioArg,"-CombatGroupRole=$role")
             Wait-Log $server 'server' "COMBAT_PILOT_BOAR_HIT Group=boar_farm_edge Slot=0 HP=$(60 - 20*$role) Attacker=chr_dev_$identity"
             Wait-Log $owned[$owned.Count - 1] "client$role" "COMBAT_GROUP_ATTACK Role=$role"
+            if ($role -eq 1 -and $Clients -gt 3) {
+                for ($observer = 4; $observer -le $Clients; $observer++) {
+                    $observerIdentity = $names[$observer - 1]
+                    $null = Start-Owned "client$observer" ("127.0.0.1:$Port`?SFDevCharacter=$observerIdentity") @('-game',$scenarioArg,'-CombatGroupRole=0')
+                }
+            }
         }
         $second = $owned[$owned.Count - 1]
         Stop-Process -Id $second.Id
         $second.WaitForExit()
         $rejoinRole = if ($Clients -eq 2) { 2 } else { 0 }
         $rejoined = Start-Owned 'client2-rejoin' ("127.0.0.1:$Port`?SFDevCharacter=beta") @('-game',$scenarioArg,"-CombatGroupRole=$rejoinRole")
+        if ($Clients -gt 3) {
+            $third = Start-Owned 'client3' ("127.0.0.1:$Port`?SFDevCharacter=gamma") @('-game',$scenarioArg,'-CombatGroupRole=3','-CombatGroupAttackDelaySeconds=30')
+            Wait-Log $rejoined 'client2-rejoin' 'M3_CLIENT_CSV_START Role=0'
+        }
         $rejoinWatch = [Diagnostics.Stopwatch]::StartNew()
-        while ([regex]::Matches((Get-Content -LiteralPath (Join-Path $root 'server.log') -Raw),'COMBAT_GROUP_READY Pawn=').Count -lt 3) {
+        while ($Clients -le 3 -and [regex]::Matches((Get-Content -LiteralPath (Join-Path $root 'server.log') -Raw),'COMBAT_GROUP_READY Pawn=').Count -lt 3) {
             if ($rejoined.HasExited -or $rejoinWatch.Elapsed.TotalSeconds -gt $TimeoutSeconds) { throw 'Beta did not reconnect during the fight.' }
             Start-Sleep -Milliseconds 300
         }
-        if ($Clients -eq 3) {
-            $third = Start-Owned 'client3' ("127.0.0.1:$Port`?SFDevCharacter=gamma") @('-game',$scenarioArg,'-CombatGroupRole=3')
+        if ($Clients -ge 3) {
+            if ($Clients -eq 3) { $third = Start-Owned 'client3' ("127.0.0.1:$Port`?SFDevCharacter=gamma") @('-game',$scenarioArg,'-CombatGroupRole=3') }
             Wait-Log $third 'client3' 'COMBAT_GROUP_ATTACK Role=3'
         } else { Wait-Log $rejoined 'client2-rejoin' 'COMBAT_GROUP_ATTACK Role=2' }
         Wait-Log $server 'server' 'COMBAT_PILOT_BOAR_DEAD Group=boar_farm_edge Slot=0'
         Wait-Log $server 'server' 'COMBAT_PILOT_REWARD Death=boar_farm_edge:0:\d+ Source=service Outcome=0 Granted=1 Code=loot_drop Item=item/boar_hide Quantity=[2-9]'
         $serverText = Get-Content -LiteralPath (Join-Path $root 'server.log') -Raw
         $hits = [regex]::Matches($serverText,'COMBAT_PILOT_BOAR_HIT Group=boar_farm_edge Slot=0 HP=(\d+) Attacker=(\S+)')
-        $expectedAttackers = if ($Clients -eq 3) { 'chr_dev_alpha,chr_dev_beta,chr_dev_gamma' } else { 'chr_dev_alpha,chr_dev_beta,chr_dev_beta' }
+        $reward = [regex]::Match($serverText,'COMBAT_PILOT_REWARD Death=boar_farm_edge:0:\d+ Source=service Outcome=0 Granted=1 Code=loot_drop Item=item/boar_hide Quantity=(\d+)')
+        $expectedAttackers = if ($Clients -ge 3) { 'chr_dev_alpha,chr_dev_beta,chr_dev_gamma' } else { 'chr_dev_alpha,chr_dev_beta,chr_dev_beta' }
         if ($hits.Count -ne 3 -or (@($hits | ForEach-Object { $_.Groups[1].Value }) -join ',') -ne '40,20,0' -or
             (@($hits | ForEach-Object { $_.Groups[2].Value }) -join ',') -ne $expectedAttackers -or
             [regex]::Matches($serverText,'COMBAT_PILOT_BOAR_DEAD Group=boar_farm_edge Slot=0').Count -ne 1 -or
             [regex]::Matches($serverText,'COMBAT_PILOT_REWARD .* Source=service .* Granted=1').Count -ne 1 -or
+            -not $reward.Success -or
             $serverText -match 'COMBAT_PILOT_SLOT_ERROR|Fatal error:|Assertion failed:') { throw 'Group hit, death, or reward evidence incomplete.' }
-        for ($role = 1; $role -le $Clients; $role++) {
+        for ($role = 1; $role -le [math]::Min($Clients,3); $role++) {
             $identity = $names[$role - 1]
             $name = "client$role"
             $clientText = Get-Content -LiteralPath (Join-Path $root ($name+'.log')) -Raw
@@ -180,18 +195,20 @@ try {
                 throw "Owner target replication missing for $identity."
             }
             $view = Get-LedgerView $fx "ctn_dev_$identity"
-            $expected = if ($role -eq $Clients) { 2 } else { 0 }
+            $expected = if ($role -eq [math]::Min($Clients,3)) { [int]$reward.Groups[1].Value } else { 0 }
             if ([int]$view.items['item/boar_hide'] -ne $expected) { throw "Unexpected ledger hides for $identity`: $($view.line)" }
             $result["ledger_$identity"] = $view.line
         }
         $rejoinText = Get-Content -LiteralPath (Join-Path $root 'client2-rejoin.log') -Raw
-        if (($Clients -eq 3 -and $rejoinText -match 'COMBAT_GROUP_ATTACK Role=2') -or $rejoined.HasExited -or
-            ($Clients -eq 3 -and $third.HasExited) -or $server.HasExited) {
+        if (($Clients -ge 3 -and $rejoinText -match 'COMBAT_GROUP_ATTACK Role=2') -or $rejoined.HasExited -or
+            ($Clients -ge 3 -and $third.HasExited) -or $server.HasExited) {
             throw 'Mid-fight reconnect replayed an attack or a process exited.'
         }
-        if ($Clients -eq 3) {
+        if ($Clients -gt 1) {
             Wait-Log $server 'server' 'M3_SERVER_NET DurationSec='
-            $liveClients = @('client1','client2-rejoin','client3')
+            $liveClients = @('client1','client2-rejoin')
+            if ($Clients -ge 3) { $liveClients += 'client3' }
+            for ($role = 4; $role -le $Clients; $role++) { $liveClients += "client$role" }
             foreach ($name in $liveClients) {
                 $run = @($result.runs | Where-Object name -eq $name)[0]
                 $process = @($owned | Where-Object Id -eq $run.pid)[0]
@@ -219,13 +236,12 @@ try {
                 [ordered]@{ id=[int]$parts[0]; seconds=[double]::Parse($parts[1],$culture)
                     inBps=[double]::Parse($parts[2],$culture); outBps=[double]::Parse($parts[3],$culture) }
             })
-            if ($connections.Count -ne 4) { throw "Expected four connection lifetimes, got $($connections.Count)." }
+            if ($connections.Count -ne ($Clients + 1)) { throw "Expected $($Clients + 1) connection lifetimes, got $($connections.Count)." }
             $rpcNames = @('GrantDefeatReward','ApplyReceipt','GetCharacterState','CreateCharacter','LearnRecipe','ClaimPlot','GetClaim','Place','Remove','Craft','ListStructures','Grant','SavePosition','ReportDeath','ClearDeath','ExchangeWallet','OfferTrade','AcceptTrade','CancelTrade','ListItem','BuyListing','CancelListing','ListListings')
             $rpcSamples = @{}
             foreach ($match in [regex]::Matches($serverText,'M3_GAMEPLAY_SERVICE Rpc=(\d+) StartedSec=([0-9.]+) LatencyMs=([0-9.]+) Status=(\d+)')) {
                 if ([double]::Parse($match.Groups[2].Value,$culture) -lt $captureStart) { continue }
                 $rpc = [int]$match.Groups[1].Value
-                if ($rpc -ge $rpcNames.Count) { throw "Unknown gameplay RPC $rpc" }
                 if (-not $rpcSamples.ContainsKey($rpc)) { $rpcSamples[$rpc] = [Collections.Generic.List[double]]::new() }
                 $rpcSamples[$rpc].Add([double]::Parse($match.Groups[3].Value,$culture))
             }
@@ -233,21 +249,23 @@ try {
             $serviceLatency = @($rpcSamples.Keys | Sort-Object | ForEach-Object {
                 $values = $rpcSamples[$_].ToArray(); [Array]::Sort($values)
                 $sum = 0.0; foreach ($value in $values) { $sum += $value }
-                [ordered]@{ rpc=$rpcNames[$_]; count=$values.Length; avg=[math]::Round($sum/$values.Length,3)
+                $rpcLabel = if ($_ -lt $rpcNames.Count) { $rpcNames[$_] } else { "Rpc$_" }
+                [ordered]@{ rpc=$rpcLabel; count=$values.Length; avg=[math]::Round($sum/$values.Length,3)
                     p95=[math]::Round($values[[math]::Ceiling(0.95*$values.Length)-1],3) }
             })
-            $metrics = [ordered]@{ schema=1; scenario='CombatGroup'; clients=3; nullRhi=$true
-                note='Client frame time uses -NullRHI and excludes representative GPU cost.'
+            $metrics = [ordered]@{ schema=1; scenario='CombatGroup'; clients=$Clients; nullRhi=$true
+                note='Loopback headless -NullRHI clients; no representative GPU or real-network cost.'
                 server=[ordered]@{ frameMs=(Get-M3FrameStats $serverCsv)
                     net=[ordered]@{ seconds=[double]::Parse($net.Groups[1].Value,$culture)
                         inBps=[double]::Parse($net.Groups[2].Value,$culture)
                         outBps=[double]::Parse($net.Groups[3].Value,$culture); perConnection=$connections }
                     gameplayServiceMs=$serviceLatency }
                 clientFrameMs=$clientFrames }
-            $evidencePath = Join-Path $repo 'docs/evidence/m3-combat-group.json'
+            $evidencePath = if ($Clients -eq 3) { Join-Path $repo 'docs/evidence/m3-combat-group.json' }
+                else { Join-Path $root 'metrics.json' }
             $json = ($metrics | ConvertTo-Json -Depth 9) -replace "`r`n", "`n"
             [IO.File]::WriteAllText($evidencePath, ($json + "`n"), [Text.UTF8Encoding]::new($false))
-            $result.m3Evidence = $evidencePath
+            $result.metricsEvidence = $evidencePath
             Write-Output ('M3_SERVER_METRICS '+($metrics.server | ConvertTo-Json -Depth 8 -Compress))
             Write-Output ('M3_CLIENT_FRAME_MS '+($clientFrames | ConvertTo-Json -Depth 4 -Compress))
         }

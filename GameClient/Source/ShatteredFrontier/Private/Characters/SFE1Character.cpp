@@ -250,6 +250,9 @@ void ASFE1Character::TickCombatScenario()
             }
         }
         if (ScenarioRole < 1 || ScenarioRole > 3 || CombatScenarioAttackCount > 0 || PilotHealth <= 0) { return; }
+        float AttackDelaySeconds = 0.0f;
+        if (ScenarioRole == 3 && FParse::Value(FCommandLine::Get(), TEXT("CombatGroupAttackDelaySeconds="), AttackDelaySeconds) &&
+            GetGameTimeSinceCreation() < AttackDelaySeconds) { return; }
         if (!Boar || NearestDistance > 300.0) { return; }
         auto* PC = Cast<ASFPlayerController>(Controller);
         if (!PC) { return; }

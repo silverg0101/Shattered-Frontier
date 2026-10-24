@@ -1,0 +1,447 @@
+{
+  "schema": 1,
+  "date": "2026-10-24",
+  "scenario": "CombatGroup",
+  "environment": "UnrealEditor-Cmd dedicated server and headless -NullRHI clients on loopback, Gameplay.Host and InventoryLedger.Host with owned PostgreSQL fixture",
+  "note": "Five and ten client runs delay the final attack by 30 seconds. GPU rendering and real-network behavior are not measured.",
+  "runs": [
+    {
+      "clients": 2,
+      "status": "Passed",
+      "wallSeconds": 85.0,
+      "sourceArtifact": "Artifacts/CombatPilot/network-20261024-085708-430",
+      "rpcLatencyMs": {
+        "samples": 167,
+        "p95": 33.324,
+        "scope": "pooled Gameplay.Host RPCs after capture start"
+      },
+      "netPerNominalClientBps": {
+        "serverIn": 2837.0,
+        "serverOut": 1186.4
+      },
+      "worstClientFrameP95Ms": 1.76,
+      "metrics": {
+        "schema": 1,
+        "scenario": "CombatGroup",
+        "clients": 2,
+        "nullRhi": true,
+        "note": "Loopback headless -NullRHI clients; no representative GPU or real-network cost.",
+        "server": {
+          "frameMs": {
+            "samples": 1153,
+            "avg": 35.476,
+            "p95": 33.644,
+            "max": 354.777
+          },
+          "net": {
+            "seconds": 40.896,
+            "inBps": 5674.1,
+            "outBps": 2372.7,
+            "perConnection": [
+              {
+                "id": 1,
+                "seconds": 40.896,
+                "inBps": 4506.1,
+                "outBps": 1549.3
+              },
+              {
+                "id": 2,
+                "seconds": 4.253,
+                "inBps": 4337.7,
+                "outBps": 3559.9
+              },
+              {
+                "id": 3,
+                "seconds": 6.086,
+                "inBps": 4595.7,
+                "outBps": 2759.6
+              }
+            ]
+          },
+          "gameplayServiceMs": [
+            {
+              "rpc": "GrantDefeatReward",
+              "count": 1,
+              "avg": 180.408,
+              "p95": 180.408
+            },
+            {
+              "rpc": "ApplyReceipt",
+              "count": 1,
+              "avg": 35.754,
+              "p95": 35.754
+            },
+            {
+              "rpc": "GetCharacterState",
+              "count": 3,
+              "avg": 32.674,
+              "p95": 33.168
+            },
+            {
+              "rpc": "SavePosition",
+              "count": 2,
+              "avg": 32.8,
+              "p95": 32.984
+            },
+            {
+              "rpc": "Rpc23",
+              "count": 160,
+              "avg": 32.726,
+              "p95": 33.303
+            }
+          ]
+        },
+        "clientFrameMs": {
+          "client1": {
+            "samples": 36152,
+            "avg": 1.023,
+            "p95": 1.567,
+            "max": 87.531
+          },
+          "client2-rejoin": {
+            "samples": 2488,
+            "avg": 1.207,
+            "p95": 1.76,
+            "max": 86.251
+          }
+        }
+      }
+    },
+    {
+      "clients": 5,
+      "status": "Passed",
+      "wallSeconds": 164.3,
+      "sourceArtifact": "Artifacts/CombatPilot/network-20261024-093445-680",
+      "rpcLatencyMs": {
+        "samples": 366,
+        "p95": 33.832,
+        "scope": "pooled Gameplay.Host RPCs after capture start"
+      },
+      "netPerNominalClientBps": {
+        "serverIn": 3062.4,
+        "serverOut": 1071.1
+      },
+      "worstClientFrameP95Ms": 1.955,
+      "metrics": {
+        "schema": 1,
+        "scenario": "CombatGroup",
+        "clients": 5,
+        "nullRhi": true,
+        "note": "Loopback headless -NullRHI clients; no representative GPU or real-network cost.",
+        "server": {
+          "frameMs": {
+            "samples": 2245,
+            "avg": 35.686,
+            "p95": 33.637,
+            "max": 312.807
+          },
+          "net": {
+            "seconds": 80.107,
+            "inBps": 15311.8,
+            "outBps": 5355.7,
+            "perConnection": [
+              {
+                "id": 1,
+                "seconds": 80.107,
+                "inBps": 4524.9,
+                "outBps": 1453.4
+              },
+              {
+                "id": 2,
+                "seconds": 61.087,
+                "inBps": 4465.0,
+                "outBps": 1479.3
+              },
+              {
+                "id": 3,
+                "seconds": 59.956,
+                "inBps": 4484.4,
+                "outBps": 1494.1
+              },
+              {
+                "id": 4,
+                "seconds": 4.491,
+                "inBps": 4120.0,
+                "outBps": 3471.6
+              },
+              {
+                "id": 5,
+                "seconds": 37.856,
+                "inBps": 4111.5,
+                "outBps": 1477.3
+              },
+              {
+                "id": 6,
+                "seconds": 36.83,
+                "inBps": 3967.5,
+                "outBps": 1532.3
+              }
+            ]
+          },
+          "gameplayServiceMs": [
+            {
+              "rpc": "GrantDefeatReward",
+              "count": 1,
+              "avg": 231.813,
+              "p95": 231.813
+            },
+            {
+              "rpc": "ApplyReceipt",
+              "count": 1,
+              "avg": 70.273,
+              "p95": 70.273
+            },
+            {
+              "rpc": "GetCharacterState",
+              "count": 6,
+              "avg": 31.864,
+              "p95": 32.861
+            },
+            {
+              "rpc": "SavePosition",
+              "count": 6,
+              "avg": 32.75,
+              "p95": 33.114
+            },
+            {
+              "rpc": "Rpc23",
+              "count": 352,
+              "avg": 34.874,
+              "p95": 33.813
+            }
+          ]
+        },
+        "clientFrameMs": {
+          "client1": {
+            "samples": 56551,
+            "avg": 1.36,
+            "p95": 1.927,
+            "max": 66.437
+          },
+          "client2-rejoin": {
+            "samples": 22030,
+            "avg": 1.407,
+            "p95": 1.922,
+            "max": 39.547
+          },
+          "client3": {
+            "samples": 22196,
+            "avg": 1.424,
+            "p95": 1.935,
+            "max": 66.63
+          },
+          "client4": {
+            "samples": 40414,
+            "avg": 1.435,
+            "p95": 1.954,
+            "max": 41.991
+          },
+          "client5": {
+            "samples": 39829,
+            "avg": 1.43,
+            "p95": 1.955,
+            "max": 39.589
+          }
+        }
+      }
+    },
+    {
+      "clients": 10,
+      "status": "Passed",
+      "wallSeconds": 235.6,
+      "sourceArtifact": "Artifacts/CombatPilot/network-20261024-093735-389",
+      "rpcLatencyMs": {
+        "samples": 632,
+        "p95": 34.199,
+        "scope": "pooled Gameplay.Host RPCs after capture start"
+      },
+      "netPerNominalClientBps": {
+        "serverIn": 2978.5,
+        "serverOut": 1003.3
+      },
+      "worstClientFrameP95Ms": 2.508,
+      "metrics": {
+        "schema": 1,
+        "scenario": "CombatGroup",
+        "clients": 10,
+        "nullRhi": true,
+        "note": "Loopback headless -NullRHI clients; no representative GPU or real-network cost.",
+        "server": {
+          "frameMs": {
+            "samples": 2675,
+            "avg": 37.136,
+            "p95": 34.058,
+            "max": 468.468
+          },
+          "net": {
+            "seconds": 99.332,
+            "inBps": 29785.3,
+            "outBps": 10032.7,
+            "perConnection": [
+              {
+                "id": 1,
+                "seconds": 99.332,
+                "inBps": 4457.9,
+                "outBps": 1405.6
+              },
+              {
+                "id": 2,
+                "seconds": 76.755,
+                "inBps": 4389.4,
+                "outBps": 1428.5
+              },
+              {
+                "id": 3,
+                "seconds": 74.305,
+                "inBps": 4435.4,
+                "outBps": 1439.5
+              },
+              {
+                "id": 4,
+                "seconds": 72.154,
+                "inBps": 4422.6,
+                "outBps": 1458.2
+              },
+              {
+                "id": 5,
+                "seconds": 4.179,
+                "inBps": 4036.2,
+                "outBps": 3993.4
+              },
+              {
+                "id": 6,
+                "seconds": 70.217,
+                "inBps": 4405.2,
+                "outBps": 1456.0
+              },
+              {
+                "id": 7,
+                "seconds": 69.354,
+                "inBps": 4392.0,
+                "outBps": 1443.3
+              },
+              {
+                "id": 8,
+                "seconds": 67.912,
+                "inBps": 4384.5,
+                "outBps": 1438.0
+              },
+              {
+                "id": 9,
+                "seconds": 67.148,
+                "inBps": 4407.7,
+                "outBps": 1438.5
+              },
+              {
+                "id": 10,
+                "seconds": 34.158,
+                "inBps": 4470.6,
+                "outBps": 1624.2
+              },
+              {
+                "id": 11,
+                "seconds": 34.155,
+                "inBps": 4335.9,
+                "outBps": 1651.5
+              }
+            ]
+          },
+          "gameplayServiceMs": [
+            {
+              "rpc": "GrantDefeatReward",
+              "count": 1,
+              "avg": 283.44,
+              "p95": 283.44
+            },
+            {
+              "rpc": "ApplyReceipt",
+              "count": 1,
+              "avg": 72.05,
+              "p95": 72.05
+            },
+            {
+              "rpc": "GetCharacterState",
+              "count": 11,
+              "avg": 32.662,
+              "p95": 35.648
+            },
+            {
+              "rpc": "SavePosition",
+              "count": 11,
+              "avg": 27.581,
+              "p95": 33.809
+            },
+            {
+              "rpc": "Rpc23",
+              "count": 608,
+              "avg": 32.224,
+              "p95": 34.066
+            }
+          ]
+        },
+        "clientFrameMs": {
+          "client1": {
+            "samples": 61322,
+            "avg": 1.565,
+            "p95": 2.378,
+            "max": 75.95
+          },
+          "client2-rejoin": {
+            "samples": 17311,
+            "avg": 1.847,
+            "p95": 2.329,
+            "max": 9.265
+          },
+          "client3": {
+            "samples": 16693,
+            "avg": 1.854,
+            "p95": 2.34,
+            "max": 8.769
+          },
+          "client4": {
+            "samples": 38354,
+            "avg": 1.903,
+            "p95": 2.503,
+            "max": 39.734
+          },
+          "client5": {
+            "samples": 36235,
+            "avg": 1.902,
+            "p95": 2.473,
+            "max": 39.988
+          },
+          "client6": {
+            "samples": 33747,
+            "avg": 1.897,
+            "p95": 2.461,
+            "max": 37.755
+          },
+          "client7": {
+            "samples": 34518,
+            "avg": 1.912,
+            "p95": 2.469,
+            "max": 40.506
+          },
+          "client8": {
+            "samples": 37570,
+            "avg": 1.888,
+            "p95": 2.47,
+            "max": 41.581
+          },
+          "client9": {
+            "samples": 34759,
+            "avg": 1.927,
+            "p95": 2.508,
+            "max": 40.457
+          },
+          "client10": {
+            "samples": 33524,
+            "avg": 1.909,
+            "p95": 2.48,
+            "max": 117.766
+          }
+        }
+      }
+    }
+  ]
+}

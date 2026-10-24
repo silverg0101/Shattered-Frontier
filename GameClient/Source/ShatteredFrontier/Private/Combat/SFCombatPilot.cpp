@@ -321,8 +321,10 @@ void ASFGameMode::PostLoginCombat(APlayerController* NewPlayer)
     if (!bPilotActive || !bScenario ||
         (!FParse::Param(FCommandLine::Get(), TEXT("CombatGroupScenario")) && GetNumPlayers() != 1)) { return; }
     const TWeakObjectPtr<APlayerController> Weak(NewPlayer);
+    const bool bCapacitySlots = FParse::Param(FCommandLine::Get(), TEXT("CombatGroupCapacitySlots"));
+    const int32 CapacitySlot = M3NextConnectionId;
     FTimerHandle Timer;
-    GetWorldTimerManager().SetTimer(Timer, FTimerDelegate::CreateWeakLambda(this, [this, Weak]()
+    GetWorldTimerManager().SetTimer(Timer, FTimerDelegate::CreateWeakLambda(this, [this, Weak, bCapacitySlots, CapacitySlot]()
     {
         if (!Weak.IsValid()) { return; }
         auto* Player = Cast<ASFE1Character>(Weak->GetPawn());
@@ -331,8 +333,11 @@ void ASFGameMode::PostLoginCombat(APlayerController* NewPlayer)
         if (FParse::Param(FCommandLine::Get(), TEXT("CombatGroupScenario")))
         {
             const int32 PlayerIndex = GetNumPlayers();
-            const FVector Offset = PlayerIndex == 1 ? FVector(180,0,0) :
-                PlayerIndex == 2 ? FVector(180,180,0) : FVector(180,-180,0);
+            const double Angle = 2.0 * PI * double(CapacitySlot - 1) / 12.0;
+            const FVector Offset = bCapacitySlots
+                ? FVector(180.0 * FMath::Cos(Angle), 180.0 * FMath::Sin(Angle), 0)
+                : (PlayerIndex == 1 ? FVector(180,0,0) :
+                    PlayerIndex == 2 ? FVector(180,180,0) : FVector(180,-180,0));
             const FVector Near = Grounded(GetWorld(), Boar->GetActorLocation()+Offset,
                 Player->GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
             Player->SetActorLocation(Near, false, nullptr, ETeleportType::TeleportPhysics);
