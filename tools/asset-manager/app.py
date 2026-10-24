@@ -1501,7 +1501,14 @@ def codex_review(images, brief):
 # tail that changes direction between views gives two tails (rat v2). Drawing each view separately from the front
 # kept drifting in size, feet line and tail pose, and a reviewer comparing one view at a time passed the worst one
 # (rat v3), so: one sheet, size and feet line fixed in code (split_sheet), and one review of all four together.
-MV_SHEET = ("{prompt}\n\nDraw this as a 3D-model turnaround sheet: one square image divided into a 2x2 grid of four "
+# Multi-view is two steps, like a concept artist's: one hero image settles the design, then the turnaround sheet
+# is drawn from it, so every view copies one finished subject instead of four separate readings of the prompt.
+MV_HERO = ("{prompt}\n\nOne full-body image of this subject alone, in a neutral standing pose, seen from the front "
+           "three-quarters at eye level, every part visible, on a plain pure-white background with soft even studio "
+           "light. No props, text, ground shadow or background scenery.")
+MV_SHEET = ("{prompt}\n\nThe attached image is the finished design of this subject. Copy it exactly - shape, "
+            "proportions, colours, materials and every detail; only the camera changes.\n\n"
+            "Draw it as a 3D-model turnaround sheet: one square image divided into a 2x2 grid of four "
             "equal square cells, with the same subject once in each cell. Top-left: the front view (facing the "
             "viewer). Top-right: the view from its left side (it faces image-left). Bottom-left: the view from "
             "directly behind. Bottom-right: the view from its right side (it faces image-right).\n\n"
@@ -1550,6 +1557,23 @@ def _subject_mask(img):
         mask = img.convert("L").point(lambda v: 255 if v < 235 else 0)
     return mask.filter(ImageFilter.MinFilter(5))  # drops stray specks
 
+def _ground(img):
+    """Feet row of an image cropped to its subject: the lowest row whose widest solid run is at least half the widest
+    run in the bottom quarter. A tail, staff or cape tip hanging below the feet is narrower and is ignored, so it
+    doesn't lift that view off the shared feet line (rat v5: the back view's tail reached the floor)."""
+    m = _subject_mask(img)
+    w, h = m.size
+    px = m.load()
+    def widest(y):
+        best = cur = 0
+        for x in range(w):
+            cur = cur + 1 if px[x, y] else 0
+            best = max(best, cur)
+        return best
+    runs = {y: widest(y) for y in range(h * 3 // 4, h)}
+    need = max(runs.values(), default=0) / 2
+    return max((y for y, r in runs.items() if r and r >= need), default=h - 1) + 1
+
 def _subject_box(img):
     return _subject_mask(img).getbbox()
 
@@ -1572,13 +1596,15 @@ def align_views(subjects):
     side view would not fit), its feet set on one line and centred, on a VIEW_SIZE square."""
     from PIL import Image
     s, clear = VIEW_SIZE, any(v.mode == "RGBA" for v in subjects.values())
-    height = min([0.84 * s] + [0.94 * s * v.height / v.width for v in subjects.values()])
+    ground = {pos: _ground(v) for pos, v in subjects.items()}  # top to feet; anything hanging lower overhangs
+    height = min([0.84 * s] + [0.94 * s * ground[p] / v.width for p, v in subjects.items()])
     feet = round((s + height) / 2)  # vertically centred; every view shares the height, so the feet line too
     out = {}
     for pos, v in subjects.items():
-        w, h = round(v.width * height / v.height), round(height)
+        k = height / ground[pos]
+        w, h = round(v.width * k), round(v.height * k)
         canvas = Image.new("RGBA", (s, s), (0, 0, 0, 0)) if clear else Image.new("RGB", (s, s), "white")
-        canvas.paste(v.resize((w, h), Image.LANCZOS).convert(canvas.mode), ((s - w) // 2, feet - h))
+        canvas.paste(v.resize((w, h), Image.LANCZOS).convert(canvas.mode), ((s - w) // 2, feet - round(ground[pos] * k)))
         buf = io.BytesIO()
         canvas.save(buf, "PNG")
         out[pos] = buf.getvalue()
@@ -1622,7 +1648,7 @@ def guide_strip(views):
     from PIL import Image, ImageDraw
     ims = [Image.open(io.BytesIO(b)).convert("RGB") for b in views.values()]
     boxes = [_subject_box(im) for im in ims]
-    top, feet = min(b[1] for b in boxes), max(b[3] for b in boxes)
+    top, feet = min(b[1] for b in boxes), max(b[1] + _ground(im.crop(b)) for im, b in zip(ims, boxes))
     pad, gap = 24, 16
     crops = [im.crop((max(b[0] - pad, 0), 0, min(b[2] + pad, im.width), im.height)) for im, b in zip(ims, boxes)]
     strip = Image.new("RGB", (sum(c.width for c in crops) + gap * (len(crops) - 1), ims[0].height), "white")
@@ -1654,7 +1680,8 @@ def align_uploads(raw):
         if not box or (box[2] - box[0]) * (box[3] - box[1]) > 0.97 * im.width * im.height:
             return raw, [f"[asset-manager] views: no clear subject outline in the {pos} view (needs a white or "
                          "transparent background); views sent unaligned"]
-        subjects[pos], share[pos] = im.crop(box), (box[3] - box[1]) / im.height
+        subjects[pos] = im.crop(box)
+        share[pos] = _ground(subjects[pos]) / im.height
     for pos in subjects:
         r = share[pos] / share["front"]
         if abs(r - 1) > 0.15:
@@ -1690,13 +1717,15 @@ def run_image(jid):
         if p["mode"] == "single":
             log.append("generating the image (sent as written)")
             save(codex_image(p["prompt"], p["model"]), "")
-        else:  # one sheet, split and aligned in code, reviewed as a set by gpt-6-luna and redrawn on a fail
+        else:  # a hero image, then one sheet drawn from it, split and aligned in code, reviewed as a set
+            log.append("hero: drawing the design image")
+            hero = codex_image(MV_HERO.format(prompt=p["prompt"]), p["model"])
             extra, tries, kept = "", 3, None
             for n in range(1, tries + 1):
                 if job_row(jid)["status"] == "cancelling":
                     raise InterruptedError
                 log.append(f"sheet: drawing (try {n}/{tries})")
-                sheet = codex_image(MV_SHEET.format(prompt=p["prompt"]) + extra, p["model"])
+                sheet = codex_image(MV_SHEET.format(prompt=p["prompt"]) + extra, p["model"], refs=[hero])
                 try:
                     views = split_sheet(sheet)
                 except ValueError as e:
@@ -1722,6 +1751,7 @@ def run_image(jid):
             for pos in SHEET_CELLS:
                 save(views[pos], f"-{pos}")
             save(sheet, "-sheet")
+            save(hero, "-hero")
             save(guide_strip(views), "-guides")  # what the reviewer judged: the views side by side with guide lines
         update_job(jid, status="done", output=saved[0], files=json.dumps(saved), finished=time.time())
     except InterruptedError:
@@ -2083,6 +2113,16 @@ def check():
     busy = Image.effect_noise((300, 300), 60).convert("RGB")  # no clean background: sent unchanged
     raw = {"front": png_of(busy), "left": png_of(busy)}
     assert align_uploads(raw)[0] is raw
+    def creature(tail):  # body and two feet; optionally a thin tail hanging 40 px below the feet
+        im = Image.new("RGB", (200, 300), "white"); d = ImageDraw.Draw(im)
+        for r in [(40, 20, 160, 220), (45, 220, 80, 250), (120, 220, 155, 250)] + [(95, 220, 105, 290)] * tail:
+            d.rectangle(r, fill=(90, 80, 80))
+        return png_of(im)
+    assert abs(_ground(Image.open(io.BytesIO(creature(1))).crop((40, 20, 161, 291))) - 230) <= 3  # feet, not tail tip
+    feet = {pos: _subject_mask(Image.open(io.BytesIO(v)))
+            for pos, v in align_uploads({"front": creature(0), "back": creature(1)})[0].items()}
+    lowest = lambda m: max(y for y in range(m.height) if m.crop((0, y, m.width // 3, y + 1)).getbbox())
+    assert abs(lowest(feet["front"]) - lowest(feet["back"])) <= 2  # the tail hangs below; the feet share the line
     blank = io.BytesIO(); Image.new("RGB", (400, 400), "white").save(blank, "PNG")
     try:
         split_sheet(blank.getvalue()); raise AssertionError("an empty sheet must be refused")
