@@ -127,6 +127,7 @@ struct FSFGatheringPilotNodeState
     UPROPERTY() double RecoveryAtServerSeconds = 0;
     UPROPERTY() FName GrowthStage;  // None = no growth profile; server-owned, replicated with the rest
     UPROPERTY() bool bGrowthBlocking = true;
+    UPROPERTY() bool bPlacementActive = true;
     UPROPERTY() TArray<FSFHarvestVisualCut> Cuts;
     UPROPERTY() TObjectPtr<ASFHarvestFallingTree> FallingTree;
 };
@@ -155,6 +156,7 @@ public:
     ASFGatheringPilotNode();
     virtual void BeginPlay() override;
     virtual void EndPlay(const EEndPlayReason::Type Reason) override;
+    virtual void OnRep_ReplicatedMovement() override;
     virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out) const override;
     FString GetResourceName() const;
     // The prompt verb for this node: "Chop" (logging), "Mine", "Fish", "Gather" otherwise.
@@ -167,6 +169,8 @@ public:
     void SetGrowthProfile(const TArray<FSFGrowthStageDef>& Stages, float InGrowFraction);
     // Zone-spawn identity matches GatheringNodeService's zone/group/active-index key.
     void SetServiceNodeId(const FString& InId) { ServiceNodeId = InId; }
+    const FString& GetServiceNodeId() const { return ServiceNodeId; }
+    void ApplyZoneNode(const FSFGameplayResponse::FZoneNode& Node);
     // Stage reached ElapsedSeconds into a grow window of GrowWindowSeconds: same rule as BackendServices/GatheringNodes.
     static FName StageAt(const TArray<FSFGrowthStageDef>& Stages, double GrowWindowSeconds, double ElapsedSeconds);
     // Dev capture only (no effect in shipping/test builds): force the stage shown.
@@ -194,12 +198,14 @@ private:
     friend class FSFGatheringStageChargesTest;
     friend class FSFGatheringGrowthCollisionTest;
     friend class FSFGatheringPilotServiceTest;
+    friend class FSFGatheringPilotRotationTest;
     UFUNCTION() void OnRep_State();
     void StartGrowth();
     void AdvanceGrowth();
     bool CanAdvanceToStage(FName Stage) const;
     void RetryServiceGrowth();
     void ApplyGrowthVisual();
+    void ClearDressingAtPlacement();
     void Release(USFGatheringPilotComponent* Interactor);
     void BeginRecovery();
     void Recover();
@@ -217,6 +223,8 @@ private:
     FTimerHandle ServiceGrowthTimer;
     FName PendingServiceStage;
     FString ServiceNodeId;
+    FString ServicePointId;
+    TOptional<FVector> ClearedDressingAt;
     TSharedPtr<FSFGameplayServicesClient> ServiceClient;
     uint64 ServiceSnapshotSerial = 0; // Invalidates older GetNode replies after a newer read or harvest receipt.
     bool bServiceStateReady = false;

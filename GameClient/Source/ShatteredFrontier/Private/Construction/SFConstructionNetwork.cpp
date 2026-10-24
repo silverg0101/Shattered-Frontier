@@ -884,8 +884,7 @@ void ASFGameMode::PlaceForZoneScenario(APawn* Pawn, bool bPrimary) const
 
 int32 ASFGameMode::SpawnZoneGatheringNodes()
 {
-    // The zone record's gathering spawn groups: active_count points per group, chosen by a stable seed.
-    // ponytail: session-only pilot nodes with fixed points; World spawn slots (rotation, respawn timing) replace this.
+    // The zone record supplies local-mode positions and host-mode stable slot identities.
     const FString Path=FPaths::Combine(FPaths::ProjectDir(),TEXT("../content/world/zones/greenlands_silverbrook.json"));
     FString Text; TSharedPtr<FJsonObject> Zone;
     if (!FFileHelper::LoadFileToString(Text,*Path) || !FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Zone) || !Zone.IsValid())
@@ -913,7 +912,7 @@ int32 ASFGameMode::SpawnZoneGatheringNodes()
                 Growth.Add({FName(*Stage->AsObject()->GetStringField(TEXT("name"))),float(Stage->AsObject()->GetNumberField(TEXT("duration_fraction"))),float(Stage->AsObject()->GetNumberField(TEXT("yield_fraction"))),bBlocking});
             }
         }
-        // GatheringNodeService uses the first active points in the authored record and zone/group/index IDs.
+        // Host placement replaces these initial positions as soon as its zone snapshot arrives.
         const TArray<TSharedPtr<FJsonValue>> Points=Group->GetArrayField(TEXT("points"));
         const int32 Active=FMath::Min(int32(Group->GetNumberField(TEXT("active_count"))),Points.Num());
         for (int32 I=0; I<Active; ++I)
@@ -948,7 +947,34 @@ int32 ASFGameMode::SpawnZoneGatheringNodes()
             Station->FinishSpawning(Where); ++Spawned;
         }
     }
+    if (GetDefault<USFGameplayServicesSettings>()->bEnabled) { RefreshZoneGatheringNodes(); }
     return Spawned;
+}
+
+void ASFGameMode::RefreshZoneGatheringNodes()
+{
+    if (!IsZoneGatheringWorld() || !GetDefault<USFGameplayServicesSettings>()->bEnabled) { return; }
+    const TSharedPtr<FSFGameplayServicesClient> Client=USFBackpackComponent::Services();
+    if (!Client) { return; }
+    FSFGameplayRequest Request; Request.Rpc=ESFGameplayRpc::ListGatheringZoneNodes;
+    Request.ZoneId=TEXT("zone/greenlands_silverbrook");
+    TWeakObjectPtr<ASFGameMode> Weak(this);
+    Client->Call(Request,[Weak](const FSFGameplayResponse& Response)
+    {
+        ASFGameMode* Self=Weak.Get();
+        if (!Self) { return; }
+        if (Response.Status!=ESFGameplayStatus::Ok)
+        {
+            UE_LOG(LogTemp,Warning,TEXT("GATHERING_ZONE_LIST_FAILED Code=%d"),Response.GrpcCode);
+            return;
+        }
+        TMap<FString,ASFGatheringPilotNode*> ById;
+        for (TActorIterator<ASFGatheringPilotNode> It(Self->GetWorld()); It; ++It)
+        { if (!It->GetServiceNodeId().IsEmpty()) { ById.Add(It->GetServiceNodeId(),*It); } }
+        for (const auto& Node : Response.ZoneNodes)
+        { if (ASFGatheringPilotNode** Actor=ById.Find(Node.Id)) { (*Actor)->ApplyZoneNode(Node); } }
+        UE_LOG(LogTemp,Display,TEXT("GATHERING_ZONE_PLACEMENTS Count=%d"),Response.ZoneNodes.Num());
+    });
 }
 
 int32 ASFGameMode::PrepareClaimPlots()
@@ -1283,6 +1309,7 @@ void ASFGameMode::PostLoginConstruction(APlayerController* NewPlayer)
     Controller->AssignRole(bAssignBuilder);
     if (APawn* Pawn = Controller->GetPawn(); Pawn && !IsZoneGatheringWorld()) { Pawn->SetActorLocation(FVector(bAssignBuilder ? -200 : 200,-400,96)); }
     if (IsZoneGatheringWorld()) { PlaceForZoneScenario(Controller->GetPawn(), bAssignBuilder); }
+    if (IsZoneGatheringWorld()) { RefreshZoneGatheringNodes(); }
     UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_ROLE Builder=%d"),bAssignBuilder);
     USFCharacterSessionComponent::AttachIfEnabled(Controller);
     for (TActorIterator<ASFConstructionNetworkState> It(GetWorld()); It; ++It) { It->AdmitPair(); }

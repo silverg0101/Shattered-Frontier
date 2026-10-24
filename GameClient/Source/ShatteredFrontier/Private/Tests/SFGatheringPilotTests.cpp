@@ -611,6 +611,8 @@ bool FSFGatheringPilotServiceTest::RunTest(const FString& Parameters)
         FSFGameplayResponse Reply; Reply.Status=ESFGameplayStatus::Ok; Reply.GrpcCode=0;
         Reply.bHasNode=true; Reply.NodeId=TEXT("zone/greenlands_silverbrook/eastwood_iron_ore/0");
         Reply.NodeDefinitionId=TEXT("gathering_node/iron_vein"); Reply.NodeGeneration=2; Reply.NodeCapacity=5;
+        Reply.NodePoolId=TEXT("eastwood_iron_ore"); Reply.NodePointId=TEXT("point_a");
+        Reply.NodePositionMetres=FVector(2,0,0.3); Reply.bNodeActive=NodeHost->Charges>0;
         Reply.GrowthStage=NodeHost->Charges>0 ? TEXT("young") : TEXT("");
         if (Request.Rpc==ESFGameplayRpc::HarvestGatheringNode)
         {
@@ -622,6 +624,7 @@ bool FSFGatheringPilotServiceTest::RunTest(const FString& Parameters)
             Reply.GrowthStage=NodeHost->Charges>0 ? TEXT("young") : TEXT("");
         }
         Reply.NodeCharges=NodeHost->Charges;
+        Reply.bNodeActive=Reply.NodeCharges>0;
         if (Request.Rpc==ESFGameplayRpc::GetGatheringNode && NodeHost->bDelayNextRead)
         { NodeHost->bDelayNextRead=false; NodeHost->DelayedReply=Reply; NodeHost->DelayedDone=MoveTemp(Done); return; }
         Done(Reply);
@@ -659,6 +662,8 @@ bool FSFGatheringPilotServiceTest::RunTest(const FString& Parameters)
     TimedSnapshot.NodeId=TEXT("zone/greenlands_silverbrook/eastwood_iron_ore/0");
     TimedSnapshot.NodeDefinitionId=TEXT("gathering_node/iron_vein"); TimedSnapshot.NodeGeneration=2;
     TimedSnapshot.NodeCapacity=5; TimedSnapshot.NodeCharges=2; TimedSnapshot.GrowthStage=TEXT("young");
+    TimedSnapshot.NodePoolId=TEXT("eastwood_iron_ore"); TimedSnapshot.NodePointId=TEXT("point_a");
+    TimedSnapshot.NodePositionMetres=FVector(2,0,0.3); TimedSnapshot.bNodeActive=true;
     TimedSnapshot.NodeNextTransitionUnixMs=(FDateTime::UtcNow()-FDateTime::FromUnixTimestamp(0)).GetTotalMilliseconds()+1000;
     TestTrue(TEXT("Host transition deadline schedules the next server read"),Iron->ApplyServiceSnapshot(TimedSnapshot) &&
         World->GetTimerManager().GetTimerRemaining(Iron->ServiceRefreshTimer)>0.05f &&
@@ -693,6 +698,56 @@ bool FSFGatheringPilotServiceTest::RunTest(const FString& Parameters)
         Harvests[1].ContainerId==Harvests[0].ContainerId && Harvests[1].NodeGeneration==Harvests[0].NodeGeneration &&
         Harvests[1].FollowUpPayload==Harvests[0].FollowUpPayload && Harvests[1].FollowUpDigest==Harvests[0].FollowUpDigest);
     TestNotEqual(TEXT("New harvest uses a fresh operation"),Harvests[2].OperationId,Harvests[0].OperationId);
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFGatheringPilotRotationTest,
+    "ShatteredFrontier.Gathering.Pilot.Rotation",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+
+bool FSFGatheringPilotRotationTest::RunTest(const FString& Parameters)
+{
+    FTestWorldWrapper Fixture;
+    if (!Fixture.CreateTestWorld(EWorldType::GameRPC) || !Fixture.BeginPlayInTestWorld()) { return false; }
+    auto* World=Fixture.GetTestWorld(); World->GetWorldSettings()->NotifyBeginPlay();
+    const FTransform At(FRotator::ZeroRotator,FVector(200,0,100));
+    auto* Node=World->SpawnActorDeferred<ASFGatheringPilotNode>(ASFGatheringPilotNode::StaticClass(),At);
+    if (!Node) { return false; }
+    Node->Kind=ESFGatheringPilotKind::Iron;
+    Node->SetServiceNodeId(TEXT("zone/greenlands_silverbrook/eastwood_iron_ore/0"));
+    Node->FinishSpawning(At);
+    TestTrue(TEXT("Placement actor replicates movement"),Node->GetIsReplicated() && Node->IsReplicatingMovement());
+    Node->bUsesServices=true;
+    FSFGameplayResponse Snapshot; Snapshot.bHasNode=true; Snapshot.NodeId=Node->GetServiceNodeId();
+    Snapshot.NodeDefinitionId=TEXT("gathering_node/iron_vein"); Snapshot.NodePoolId=TEXT("eastwood_iron_ore");
+    Snapshot.NodePointId=TEXT("point_a"); Snapshot.NodeGeneration=1; Snapshot.NodeCharges=1; Snapshot.NodeCapacity=5;
+    Snapshot.NodePositionMetres=FVector(2,0,0.3); Snapshot.bNodeActive=true;
+    TestTrue(TEXT("Initial point applied"),Node->ApplyServiceSnapshot(Snapshot));
+    Snapshot.NodeCharges=0; Snapshot.bNodeActive=false;
+    TestTrue(TEXT("Depletion applied"),Node->ApplyServiceSnapshot(Snapshot));
+    TestTrue(TEXT("Depleted node hidden and nonblocking"),Node->IsHidden() &&
+        Node->Mesh->GetCollisionEnabled()==ECollisionEnabled::NoCollision);
+    Snapshot.NodePointId=TEXT("point_b"); Snapshot.NodePositionMetres=FVector(5,4,0.7);
+    Snapshot.NodeFacingDegrees=90; Snapshot.NodeGeneration=2; Snapshot.NodeCharges=2;
+    Snapshot.GrowthStage=TEXT("mature"); Snapshot.bNodeActive=true;
+    TestTrue(TEXT("Rotated emergence applied"),Node->ApplyServiceSnapshot(Snapshot));
+    TestTrue(TEXT("Stable actor visible at host point"),!Node->IsHidden() &&
+        Node->ServicePointId==TEXT("point_b") && Node->GetActorLocation().Equals(FVector(500,400,140),0.1) &&
+        FMath::IsNearlyEqual(Node->GetActorRotation().Yaw,90.f,0.1f) && Node->State.Generation==2);
+    FVector Contact,Normal;
+    const FVector Eye=Node->GetActorLocation()+FVector(-200,0,30);
+    TestTrue(TEXT("Harvest geometry ready after rotation"),Node->HarvestVisuals->IsReady());
+    const bool bTraced=Node->HarvestVisuals->TraceSurface(Eye,(Node->GetActorLocation()-Eye).GetSafeNormal(),Contact,Normal);
+    TestTrue(TEXT("Harvest geometry follows rotated placement"),bTraced);
+    if (bTraced) { TestTrue(TEXT("Rotated contact is at new point"),FVector::Dist(Contact,Node->GetActorLocation())<200); }
+    FSFGameplayResponse::FZoneNode Older;
+    Older.Id=Node->GetServiceNodeId(); Older.DefinitionId=TEXT("gathering_node/iron_vein");
+    Older.PoolId=TEXT("eastwood_iron_ore"); Older.PointId=TEXT("point_a");
+    Older.Generation=1; Older.Charges=5; Older.Capacity=5; Older.bActive=true;
+    Older.PositionMetres=FVector(2,0,0.3);
+    Node->ApplyZoneNode(Older);
+    TestTrue(TEXT("Delayed zone list cannot rewind rotated actor"),Node->State.Generation==2 &&
+        Node->ServicePointId==TEXT("point_b") && Node->GetActorLocation().Equals(FVector(500,400,140),0.1));
     return true;
 }
 #endif

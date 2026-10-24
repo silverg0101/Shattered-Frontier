@@ -42,13 +42,21 @@ internal sealed class PostgresGatheringStore(string connectionString, ZoneConten
         cmd.Parameters.AddWithValue(JsonSerializer.Serialize(model.ExportState())); cmd.Parameters.AddWithValue(Realm);
         if (cmd.ExecuteNonQuery() != 1) throw new InvalidOperationException("Gathering state disappeared.");
     }
-    internal static Pb.NodeReply Wire(NodeSnapshot n) => new()
+    private Pb.NodeReply Wire(NodeSnapshot n)
     {
-        NodeId = n.Id, DefinitionId = n.DefinitionId, Generation = n.Generation,
-        Charges = n.Charges, MaxCharges = n.MaxCharges,
-        RegrowAtUnixMs = n.RegrowAt?.ToUnixTimeMilliseconds() ?? 0,
-        GrowthStage = n.GrowthStage ?? "", NextTransitionUnixMs = n.NextTransitionAt?.ToUnixTimeMilliseconds() ?? 0
-    };
+        var point = zone.SpawnGroups.Single(g => g.GroupId == n.GroupId).Points.Single(p => p.PointId == n.PointId);
+        return new Pb.NodeReply
+        {
+            NodeId = n.Id, DefinitionId = n.DefinitionId, Generation = n.Generation,
+            Charges = n.Charges, MaxCharges = n.MaxCharges,
+            RegrowAtUnixMs = n.RegrowAt?.ToUnixTimeMilliseconds() ?? 0,
+            GrowthStage = n.GrowthStage ?? "", NextTransitionUnixMs = n.NextTransitionAt?.ToUnixTimeMilliseconds() ?? 0,
+            PoolId = n.GroupId, PointId = n.PointId,
+            PositionXM = point.Position[0], PositionYM = point.Position[1],
+            PositionZM = point.Position[2], FacingDegrees = point.Facing,
+            Active = n.Charges > 0
+        };
+    }
     public Pb.NodeReply Get(string id)
     {
         using var c = new NpgsqlConnection(connectionString); c.Open();
@@ -57,6 +65,16 @@ internal sealed class PostgresGatheringStore(string connectionString, ZoneConten
         var node = model.Snapshot().FirstOrDefault(n => n.Id == id);
         if (node is null) throw new GameplayRejectedException("Unknown gathering node.", StatusCode.NotFound);
         Save(c, t, model); t.Commit(); return Wire(node);
+    }
+    public Pb.ListZoneNodesReply List(string zoneId)
+    {
+        if (zoneId != zone.Id) throw new GameplayRejectedException("Unknown gathering zone.", StatusCode.NotFound);
+        using var c = new NpgsqlConnection(connectionString); c.Open();
+        using var t = c.BeginTransaction(); Check(c, t);
+        var model = Load(c, t);
+        var reply = new Pb.ListZoneNodesReply();
+        reply.Nodes.AddRange(model.Snapshot().Select(Wire));
+        Save(c, t, model); t.Commit(); return reply;
     }
     public Pb.HarvestReply Harvest(Pb.HarvestRequest request)
     {

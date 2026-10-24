@@ -191,6 +191,9 @@ void USFHarvestPresentation::BeginPlay()
 void USFHarvestPresentation::SetGrowthScale(float Scale)
 {
     if (!Runtime) { return; }
+    // Host pool rotation moves the actor. Keep the harvest surface and contact transform with it.
+    Runtime->Transform.SetLocation(GetOwner()->GetActorLocation()-FVector(0,0,70));
+    Runtime->Transform.SetRotation(GetOwner()->GetActorQuat());
     Runtime->Transform.SetScale3D(FVector(Scale));
     if (Surface) { Surface->SetWorldTransform(Runtime->Transform); }
     for (UStaticMeshComponent* Part:CrownParts) { if (Part) { Part->SetWorldTransform(Runtime->Transform); } }

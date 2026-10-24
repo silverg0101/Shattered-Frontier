@@ -31,6 +31,9 @@ internal sealed class GatheringGrpcService(PostgresGatheringStore store) : Pb.Ga
             return store.Get(request.NodeId);
         });
 
+    public override Task<Pb.ListZoneNodesReply> ListZoneNodes(Pb.ListZoneNodesRequest request, ServerCallContext context) =>
+        GrpcRun.Call(context, () => store.List(request.ZoneId));
+
     public override Task<Pb.HarvestReply> Harvest(Pb.HarvestRequest request, ServerCallContext context) =>
         Task.FromException<Pb.HarvestReply>(new RpcException(new Status(StatusCode.FailedPrecondition,
             "Gathering host requires HarvestWithIntent; upgrade the server before harvesting.")));

@@ -91,6 +91,7 @@ private:
     void PostLoginConstruction(APlayerController* NewPlayer);
     void RestartConstruction(AController* NewPlayer);
     int32 SpawnZoneGatheringNodes();
+    void RefreshZoneGatheringNodes();
     struct FClaimPlot
     {
         FString ClaimId;

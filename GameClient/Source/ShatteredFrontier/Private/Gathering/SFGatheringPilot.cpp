@@ -197,6 +197,7 @@ UStaticMesh* StationPropMesh(ESFGatheringPilotKind Kind)
 ASFGatheringPilotNode::ASFGatheringPilotNode()
 {
     bReplicates=true;
+    SetReplicateMovement(true);
     // A zone node replaces the dressing tree or rock on its spot, so it must stay visible as far as that dressing would.
     // ponytail: fixed 500 m; World cell relevancy replaces it.
     SetNetCullDistanceSquared(FMath::Square(50000.0));
@@ -233,29 +234,39 @@ void ASFGatheringPilotNode::BeginPlay()
         bUsesServices=!IsRefinery() && GetDefault<USFGameplayServicesSettings>()->bEnabled;
         if (bUsesServices)
         {
-            State.Charges=0; State.GrowthStage=NAME_None; State.bGrowthBlocking=false;  // unavailable state is never locally harvestable
+            State.Charges=0; State.GrowthStage=NAME_None; State.bGrowthBlocking=false; State.bPlacementActive=false;
             ServiceClient=USFBackpackComponent::Services();
             RefreshServiceState();
         }
     }
-    if (!IsRefinery())
-    {
-        // A zone node stands on a dressing candidate: remove the dressing tree or rock rooted there, so the node's own art
-        // and collision are the only ones in place (the server's line-of-sight check and every client alike).
-        const FVector At=GetActorLocation()-FVector(0,0,70); const FSphere Near(At,400);
-        for (TObjectIterator<UInstancedStaticMeshComponent> It; It; ++It)
-        {
-            if (It->GetWorld()!=GetWorld() || !It->Bounds.GetSphere().Intersects(Near)) { continue; }
-            TArray<int32> Rooted;
-            for (const int32 I : It->GetInstancesOverlappingSphere(At,100,true))
-            {
-                FTransform T; It->GetInstanceTransform(I,T,true);
-                if (FVector::Dist2D(T.GetLocation(),At)<100) { Rooted.Add(I); }
-            }
-            if (!Rooted.IsEmpty()) { It->RemoveInstances(Rooted); }
-        }
-    }
     OnRep_State();
+}
+
+void ASFGatheringPilotNode::OnRep_ReplicatedMovement()
+{
+    Super::OnRep_ReplicatedMovement();
+    ApplyGrowthVisual();
+    if (State.bPlacementActive) { ClearDressingAtPlacement(); }
+}
+
+void ASFGatheringPilotNode::ClearDressingAtPlacement()
+{
+    if (IsRefinery() || !State.bPlacementActive ||
+        (ClearedDressingAt.IsSet() && ClearedDressingAt->Equals(GetActorLocation(),1))) { return; }
+    // Dressing instances are local map data, so each client clears the point it actually receives.
+    ClearedDressingAt=GetActorLocation();
+    const FVector At=GetActorLocation()-FVector(0,0,70); const FSphere Near(At,400);
+    for (TObjectIterator<UInstancedStaticMeshComponent> It; It; ++It)
+    {
+        if (It->GetWorld()!=GetWorld() || !It->Bounds.GetSphere().Intersects(Near)) { continue; }
+        TArray<int32> Rooted;
+        for (const int32 I : It->GetInstancesOverlappingSphere(At,100,true))
+        {
+            FTransform T; It->GetInstanceTransform(I,T,true);
+            if (FVector::Dist2D(T.GetLocation(),At)<100) { Rooted.Add(I); }
+        }
+        if (!Rooted.IsEmpty()) { It->RemoveInstances(Rooted); }
+    }
 }
 
 void ASFGatheringPilotNode::EndPlay(const EEndPlayReason::Type Reason)
@@ -445,13 +456,22 @@ void ASFGatheringPilotNode::Recover()
 bool ASFGatheringPilotNode::ApplyServiceSnapshot(const FSFGameplayResponse& Snapshot)
 {
     if (!HasAuthority() || !bUsesServices || !Snapshot.bHasNode || Snapshot.NodeId!=ServiceNodeId ||
-        Snapshot.NodeGeneration<1 || Snapshot.NodeCharges<0 || Snapshot.NodeCapacity<1 || Snapshot.NodeCharges>Snapshot.NodeCapacity)
+        Snapshot.NodeGeneration<1 || Snapshot.NodeCharges<0 || Snapshot.NodeCapacity<1 || Snapshot.NodeCharges>Snapshot.NodeCapacity ||
+        Snapshot.NodePoolId.IsEmpty() || Snapshot.NodePointId.IsEmpty() || Snapshot.bNodeActive!=(Snapshot.NodeCharges>0) ||
+        Snapshot.NodePositionMetres.ContainsNaN() || !FMath::IsFinite(Snapshot.NodeFacingDegrees))
     { return false; }
     const TCHAR* ExpectedDefinition=Kind==ESFGatheringPilotKind::Oak ? TEXT("gathering_node/oak_tree")
         : Kind==ESFGatheringPilotKind::Iron ? TEXT("gathering_node/iron_vein")
         : Kind==ESFGatheringPilotKind::Stone ? TEXT("gathering_node/stone_outcrop") : TEXT("");
     if (Snapshot.NodeDefinitionId!=ExpectedDefinition) { return false; }
     if (Snapshot.NodeGeneration<int32(State.Generation)) { return true; }  // a replayed receipt cannot rewind a newer host snapshot
+    const bool bMoved=ServicePointId!=Snapshot.NodePointId;
+    if (bMoved)
+    {
+        ServicePointId=Snapshot.NodePointId;
+        SetActorLocationAndRotation(Snapshot.NodePositionMetres*100.0+FVector(0,0,70),
+            FRotator(0,Snapshot.NodeFacingDegrees,0),false,nullptr,ETeleportType::TeleportPhysics);
+    }
     const FName HostStage(*Snapshot.GrowthStage);
     const uint32 PreviousGeneration=State.Generation;
     const int32 PreviousCharges=State.Charges, PreviousCapacity=State.Capacity;
@@ -459,6 +479,8 @@ bool ASFGatheringPilotNode::ApplyServiceSnapshot(const FSFGameplayResponse& Snap
     if (State.Generation!=uint32(Snapshot.NodeGeneration))
     { State.Cuts.Reset(); if (IsValid(State.FallingTree)) { State.FallingTree->Destroy(); } State.FallingTree=nullptr; }
     State.Generation=uint32(Snapshot.NodeGeneration); State.Charges=Snapshot.NodeCharges; State.Capacity=Snapshot.NodeCapacity;
+    const bool bWasActive=State.bPlacementActive;
+    State.bPlacementActive=Snapshot.bNodeActive;
     PendingServiceStage=HostStage;
     if (HostStage.IsNone() || CanAdvanceToStage(HostStage))
     {
@@ -471,7 +493,7 @@ bool ASFGatheringPilotNode::ApplyServiceSnapshot(const FSFGameplayResponse& Snap
     { ServiceGrowthTimer=GetWorldTimerManager().SetTimerForNextTick(this,&ASFGatheringPilotNode::RetryServiceGrowth); }
     bServiceStateReady=true;
     const bool bChanged=PreviousGeneration!=State.Generation || PreviousCharges!=State.Charges ||
-        PreviousCapacity!=State.Capacity || PreviousStage!=State.GrowthStage;
+        PreviousCapacity!=State.Capacity || PreviousStage!=State.GrowthStage || bMoved || bWasActive!=State.bPlacementActive;
     const double NowMs=(FDateTime::UtcNow()-FDateTime::FromUnixTimestamp(0)).GetTotalMilliseconds();
     State.RecoveryAtServerSeconds=Snapshot.NodeRegrowAtUnixMs>0
         ? GetWorld()->GetTimeSeconds()+FMath::Max(0.0,(double(Snapshot.NodeRegrowAtUnixMs)-NowMs)/1000.0) : 0;
@@ -488,11 +510,26 @@ bool ASFGatheringPilotNode::ApplyServiceSnapshot(const FSFGameplayResponse& Snap
     }
     if (bChanged)
     {
-        UE_LOG(LogTemp,Display,TEXT("GATHERING_NODE_HOST_STATE Id=%s Generation=%u Stage=%s Charges=%d NextTransition=%lld"),
-            *ServiceNodeId,State.Generation,*State.GrowthStage.ToString(),State.Charges,Snapshot.NodeNextTransitionUnixMs);
+        UE_LOG(LogTemp,Display,TEXT("GATHERING_NODE_HOST_STATE Id=%s Generation=%u Stage=%s Charges=%d Point=%s Active=%d NextTransition=%lld"),
+            *ServiceNodeId,State.Generation,*State.GrowthStage.ToString(),State.Charges,*ServicePointId,State.bPlacementActive,Snapshot.NodeNextTransitionUnixMs);
         ++State.Revision; OnRep_State(); ForceNetUpdate();
     }
     return true;
+}
+
+void ASFGatheringPilotNode::ApplyZoneNode(const FSFGameplayResponse::FZoneNode& Node)
+{
+    // A list started before a harvest must not rewind a same-generation receipt or later GetNode read.
+    if (bServiceStateReady && Node.Generation<=int32(State.Generation)) { return; }
+    FSFGameplayResponse Snapshot;
+    Snapshot.bHasNode=true; Snapshot.NodeId=Node.Id; Snapshot.NodeDefinitionId=Node.DefinitionId;
+    Snapshot.NodeGeneration=Node.Generation; Snapshot.NodeCharges=Node.Charges; Snapshot.NodeCapacity=Node.Capacity;
+    Snapshot.GrowthStage=Node.GrowthStage; Snapshot.NodeRegrowAtUnixMs=Node.RegrowAtUnixMs;
+    Snapshot.NodeNextTransitionUnixMs=Node.NextTransitionUnixMs; Snapshot.NodePoolId=Node.PoolId;
+    Snapshot.NodePointId=Node.PointId; Snapshot.NodePositionMetres=Node.PositionMetres;
+    Snapshot.NodeFacingDegrees=Node.FacingDegrees; Snapshot.bNodeActive=Node.bActive;
+    ++ServiceSnapshotSerial;
+    ApplyServiceSnapshot(Snapshot);
 }
 
 void ASFGatheringPilotNode::RetryServiceGrowth()
@@ -580,10 +617,12 @@ FString ASFGatheringPilotNode::GetResourceName() const
 
 void ASFGatheringPilotNode::OnRep_State()
 {
+    SetActorHiddenInGame(!State.bPlacementActive);
+    ClearDressingAtPlacement();
     if (!IsRefinery())
     {
         // Sprouts remain traceable for harvest while pawns can walk through them.
-        Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+        Mesh->SetCollisionEnabled(State.bPlacementActive ? ECollisionEnabled::QueryAndPhysics : ECollisionEnabled::NoCollision);
         Mesh->SetCollisionResponseToChannel(ECC_Pawn,State.bGrowthBlocking ? ECR_Block : ECR_Ignore);
     }
     if (HarvestVisuals&&HarvestVisuals->IsReady())

@@ -100,6 +100,12 @@ if (mode == "gathering")
     GatheringPb.NodeReply Node() => client.GetNode(new() { NodeId = id }, headers, deadline: Deadline());
     var initial = Node();
     Check(initial.Generation == 1 && initial.Charges == 5 && initial.GrowthStage == "mature", "Initial iron node state missing.");
+    Code(() => client.ListZoneNodes(new() { ZoneId = "zone/greenlands_silverbrook" }, bad, deadline: Deadline()), StatusCode.Unauthenticated);
+    Code(() => client.ListZoneNodes(new() { ZoneId = "zone/unknown" }, headers, deadline: Deadline()), StatusCode.NotFound);
+    var listed = client.ListZoneNodes(new() { ZoneId = "zone/greenlands_silverbrook" }, headers, deadline: Deadline());
+    Check(listed.Nodes.Count > 0 && listed.Nodes.Single(n => n.NodeId == id).Equals(initial) &&
+        initial.Active && initial.PoolId == "eastwood_iron_ore" && initial.PointId.Length > 0 &&
+        double.IsFinite(initial.PositionXM) && double.IsFinite(initial.PositionYM), "Initial placement list differs from GetNode.");
     Code(() => client.GetNode(new() { NodeId = "zone/unknown/node/0" }, headers, deadline: Deadline()), StatusCode.NotFound);
     GatheringPb.HarvestRequest Request(string operation, int generation)
     {
@@ -124,6 +130,9 @@ if (mode == "gathering")
     }
     var last = Harvest("gathering/mature/4", 1);
     Check(last.Node.RegrowAtUnixMs > DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(), "Backend respawn deadline missing.");
+    Check(!last.Node.Active && !Node().Active &&
+        !client.ListZoneNodes(new() { ZoneId = "zone/greenlands_silverbrook" }, headers, deadline: Deadline())
+            .Nodes.Single(n => n.NodeId == id).Active, "Depleted slot remains active.");
     Check(Harvest("gathering/mature/4", 1).Equals(last), "Idempotent harvest replay differs.");
     var conflict = Request("gathering/mature/4", 1); conflict.CharacterId = "chr_other";
     Code(() => client.HarvestWithIntent(conflict,
@@ -133,6 +142,9 @@ if (mode == "gathering")
     GatheringPb.NodeReply young;
     do { Thread.Sleep(100); young = Node(); } while (young.GrowthStage != "young" && DateTime.UtcNow < until);
     Check(young.Generation == 2 && young.Charges == 2 && young.MaxCharges == 5, "Immature stage did not reduce charges to two.");
+    Check(young.Active && young.PointId != initial.PointId &&
+        client.ListZoneNodes(new() { ZoneId = "zone/greenlands_silverbrook" }, headers, deadline: Deadline())
+            .Nodes.Single(n => n.NodeId == id).PointId == young.PointId, "Rotated point was not listed.");
     Check(Harvest("gathering/mature/4", 1).Equals(last), "Old harvest replay changed after growth.");
     Check(Harvest("gathering/stale", 1).Status == "stale_generation", "Old generation accepted.");
     Check(Harvest("gathering/young/1", 2).Node.Charges == 1, "First immature charge differs.");
@@ -192,6 +204,10 @@ if (mode is "gathering-backup-seed" or "gathering-replay" or "gathering-fault" o
         Check(emerged.Generation == 3 && emerged.Charges == 2 && emerged.GrowthStage == "young" &&
             emerged.NextTransitionUnixMs > before.NextTransitionUnixMs,
             "Restarted host did not advance depleted young iron from its saved deadline.");
+        Check(emerged.Active && emerged.PointId != before.PointId &&
+            client.ListZoneNodes(new() { ZoneId = "zone/greenlands_silverbrook" }, headers, deadline: Deadline())
+                .Nodes.Single(n => n.NodeId == iron).PointId == emerged.PointId,
+            "Restarted host did not retain the rotated placement.");
         Console.WriteLine("PASS depleted young node, saved deadline, receipt and next stage survive PostgreSQL and host restart");
         return;
     }

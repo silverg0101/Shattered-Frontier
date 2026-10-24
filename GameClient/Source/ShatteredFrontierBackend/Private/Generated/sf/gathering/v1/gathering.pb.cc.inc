@@ -31,6 +31,10 @@ PROTOBUF_CONSTINIT ::google::protobuf::internal::ReflectionData
     file_reflection_data[] = {
         // ::sf::gathering::v1::GetNodeRequest
         {&::_pbi::kDescriptorMethods, &::descriptor_table_sf_2fgathering_2fv1_2fgathering_2eproto, /* tracker*/ nullptr,},
+        // ::sf::gathering::v1::ListZoneNodesRequest
+        {&::_pbi::kDescriptorMethods, &::descriptor_table_sf_2fgathering_2fv1_2fgathering_2eproto, /* tracker*/ nullptr,},
+        // ::sf::gathering::v1::ListZoneNodesReply
+        {&::_pbi::kDescriptorMethods, &::descriptor_table_sf_2fgathering_2fv1_2fgathering_2eproto, /* tracker*/ nullptr,},
         // ::sf::gathering::v1::HarvestRequest
         {&::_pbi::kDescriptorMethods, &::descriptor_table_sf_2fgathering_2fv1_2fgathering_2eproto, /* tracker*/ nullptr,},
         // ::sf::gathering::v1::NodeReply
@@ -55,11 +59,11 @@ constexpr NodeReply::ParseTableT_ NodeReply::InternalGenerateParseTable_(const :
     {
       PROTOBUF_FIELD_OFFSET(NodeReply, _impl_._has_bits_),
       0, // no _extensions_
-      8, 56,  // max_field_number, fast_idx_mask
+      15, 120,  // max_field_number, fast_idx_mask
       offsetof(ParseTableT_, field_lookup_table),
-      4294967040,  // skipmap
+      4294934528,  // skipmap
       offsetof(ParseTableT_, field_entries),
-      8,  // num_field_entries
+      15,  // num_field_entries
       0,  // num_aux_entries
       offsetof(ParseTableT_, field_names),  // no aux_entries
       class_data,
@@ -69,10 +73,7 @@ constexpr NodeReply::ParseTableT_ NodeReply::InternalGenerateParseTable_(const :
       ::_pbi::TcParser::GetTable<::sf::gathering::v1::NodeReply>(),  // to_prefetch
       #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
     }, {{
-      // int64 next_transition_unix_ms = 8;
-      {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(NodeReply, _impl_.next_transition_unix_ms_), 6>(),
-       {64, 6, 0,
-        PROTOBUF_FIELD_OFFSET(NodeReply, _impl_.next_transition_unix_ms_)}},
+      {::_pbi::TcParser::MiniParse, {}},
       // string node_id = 1;
       {::_pbi::TcParser::FastUS1,
        {10, 0, 0,
@@ -82,25 +83,57 @@ constexpr NodeReply::ParseTableT_ NodeReply::InternalGenerateParseTable_(const :
        {18, 1, 0,
         PROTOBUF_FIELD_OFFSET(NodeReply, _impl_.definition_id_)}},
       // int32 generation = 3;
-      {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(NodeReply, _impl_.generation_), 3>(),
-       {24, 3, 0,
+      {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(NodeReply, _impl_.generation_), 5>(),
+       {24, 5, 0,
         PROTOBUF_FIELD_OFFSET(NodeReply, _impl_.generation_)}},
       // int32 charges = 4;
-      {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(NodeReply, _impl_.charges_), 4>(),
-       {32, 4, 0,
+      {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(NodeReply, _impl_.charges_), 6>(),
+       {32, 6, 0,
         PROTOBUF_FIELD_OFFSET(NodeReply, _impl_.charges_)}},
       // int32 max_charges = 5;
-      {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(NodeReply, _impl_.max_charges_), 7>(),
-       {40, 7, 0,
+      {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(NodeReply, _impl_.max_charges_), 9>(),
+       {40, 9, 0,
         PROTOBUF_FIELD_OFFSET(NodeReply, _impl_.max_charges_)}},
       // int64 regrow_at_unix_ms = 6;
-      {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(NodeReply, _impl_.regrow_at_unix_ms_), 5>(),
-       {48, 5, 0,
+      {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(NodeReply, _impl_.regrow_at_unix_ms_), 7>(),
+       {48, 7, 0,
         PROTOBUF_FIELD_OFFSET(NodeReply, _impl_.regrow_at_unix_ms_)}},
       // string growth_stage = 7;
       {::_pbi::TcParser::FastUS1,
        {58, 2, 0,
         PROTOBUF_FIELD_OFFSET(NodeReply, _impl_.growth_stage_)}},
+      // int64 next_transition_unix_ms = 8;
+      {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(NodeReply, _impl_.next_transition_unix_ms_), 8>(),
+       {64, 8, 0,
+        PROTOBUF_FIELD_OFFSET(NodeReply, _impl_.next_transition_unix_ms_)}},
+      // string pool_id = 9;
+      {::_pbi::TcParser::FastUS1,
+       {74, 3, 0,
+        PROTOBUF_FIELD_OFFSET(NodeReply, _impl_.pool_id_)}},
+      // string point_id = 10;
+      {::_pbi::TcParser::FastUS1,
+       {82, 4, 0,
+        PROTOBUF_FIELD_OFFSET(NodeReply, _impl_.point_id_)}},
+      // double position_x_m = 11;
+      {::_pbi::TcParser::FastF64S1,
+       {89, 11, 0,
+        PROTOBUF_FIELD_OFFSET(NodeReply, _impl_.position_x_m_)}},
+      // double position_y_m = 12;
+      {::_pbi::TcParser::FastF64S1,
+       {97, 12, 0,
+        PROTOBUF_FIELD_OFFSET(NodeReply, _impl_.position_y_m_)}},
+      // double position_z_m = 13;
+      {::_pbi::TcParser::FastF64S1,
+       {105, 13, 0,
+        PROTOBUF_FIELD_OFFSET(NodeReply, _impl_.position_z_m_)}},
+      // double facing_degrees = 14;
+      {::_pbi::TcParser::FastF64S1,
+       {113, 14, 0,
+        PROTOBUF_FIELD_OFFSET(NodeReply, _impl_.facing_degrees_)}},
+      // bool active = 15;
+      {::_pbi::TcParser::SingularVarintNoZag1<bool, offsetof(NodeReply, _impl_.active_), 10>(),
+       {120, 10, 0,
+        PROTOBUF_FIELD_OFFSET(NodeReply, _impl_.active_)}},
     }}, {{
       65535, 65535
     }}, {{
@@ -109,25 +142,41 @@ constexpr NodeReply::ParseTableT_ NodeReply::InternalGenerateParseTable_(const :
       // string definition_id = 2;
       {PROTOBUF_FIELD_OFFSET(NodeReply, _impl_.definition_id_), _Internal::kHasBitsOffset + 1, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
       // int32 generation = 3;
-      {PROTOBUF_FIELD_OFFSET(NodeReply, _impl_.generation_), _Internal::kHasBitsOffset + 3, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt32)},
+      {PROTOBUF_FIELD_OFFSET(NodeReply, _impl_.generation_), _Internal::kHasBitsOffset + 5, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt32)},
       // int32 charges = 4;
-      {PROTOBUF_FIELD_OFFSET(NodeReply, _impl_.charges_), _Internal::kHasBitsOffset + 4, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt32)},
+      {PROTOBUF_FIELD_OFFSET(NodeReply, _impl_.charges_), _Internal::kHasBitsOffset + 6, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt32)},
       // int32 max_charges = 5;
-      {PROTOBUF_FIELD_OFFSET(NodeReply, _impl_.max_charges_), _Internal::kHasBitsOffset + 7, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt32)},
+      {PROTOBUF_FIELD_OFFSET(NodeReply, _impl_.max_charges_), _Internal::kHasBitsOffset + 9, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt32)},
       // int64 regrow_at_unix_ms = 6;
-      {PROTOBUF_FIELD_OFFSET(NodeReply, _impl_.regrow_at_unix_ms_), _Internal::kHasBitsOffset + 5, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt64)},
+      {PROTOBUF_FIELD_OFFSET(NodeReply, _impl_.regrow_at_unix_ms_), _Internal::kHasBitsOffset + 7, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt64)},
       // string growth_stage = 7;
       {PROTOBUF_FIELD_OFFSET(NodeReply, _impl_.growth_stage_), _Internal::kHasBitsOffset + 2, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
       // int64 next_transition_unix_ms = 8;
-      {PROTOBUF_FIELD_OFFSET(NodeReply, _impl_.next_transition_unix_ms_), _Internal::kHasBitsOffset + 6, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt64)},
+      {PROTOBUF_FIELD_OFFSET(NodeReply, _impl_.next_transition_unix_ms_), _Internal::kHasBitsOffset + 8, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt64)},
+      // string pool_id = 9;
+      {PROTOBUF_FIELD_OFFSET(NodeReply, _impl_.pool_id_), _Internal::kHasBitsOffset + 3, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // string point_id = 10;
+      {PROTOBUF_FIELD_OFFSET(NodeReply, _impl_.point_id_), _Internal::kHasBitsOffset + 4, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // double position_x_m = 11;
+      {PROTOBUF_FIELD_OFFSET(NodeReply, _impl_.position_x_m_), _Internal::kHasBitsOffset + 11, 0, (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+      // double position_y_m = 12;
+      {PROTOBUF_FIELD_OFFSET(NodeReply, _impl_.position_y_m_), _Internal::kHasBitsOffset + 12, 0, (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+      // double position_z_m = 13;
+      {PROTOBUF_FIELD_OFFSET(NodeReply, _impl_.position_z_m_), _Internal::kHasBitsOffset + 13, 0, (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+      // double facing_degrees = 14;
+      {PROTOBUF_FIELD_OFFSET(NodeReply, _impl_.facing_degrees_), _Internal::kHasBitsOffset + 14, 0, (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+      // bool active = 15;
+      {PROTOBUF_FIELD_OFFSET(NodeReply, _impl_.active_), _Internal::kHasBitsOffset + 10, 0, (0 | ::_fl::kFcOptional | ::_fl::kBool)},
     }},
     // no aux_entries
     {{
-      "\31\7\15\0\0\0\0\14\0\0\0\0\0\0\0\0"
+      "\31\7\15\0\0\0\0\14\0\7\10\0\0\0\0\0"
       "sf.gathering.v1.NodeReply"
       "node_id"
       "definition_id"
       "growth_stage"
+      "pool_id"
+      "point_id"
     }},
   };
 }
@@ -146,11 +195,22 @@ inline constexpr NodeReply::Impl_::Impl_(
         growth_stage_(
             &::google::protobuf::internal::fixed_address_empty_string,
             ::_pbi::ConstantInitialized()),
+        pool_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        point_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
         generation_{0},
         charges_{0},
         regrow_at_unix_ms_{::int64_t{0}},
         next_transition_unix_ms_{::int64_t{0}},
-        max_charges_{0} {}
+        max_charges_{0},
+        active_{false},
+        position_x_m_{0},
+        position_y_m_{0},
+        position_z_m_{0},
+        facing_degrees_{0} {}
 
 template <typename>
 constexpr NodeReply::NodeReply(::_pbi::ConstantInitialized,
@@ -193,7 +253,7 @@ constexpr auto NodeReply::InternalGenerateClassData_(
           false,
       },
 #ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[2],
+      &file_reflection_data[4],
 #else   // !PROTOBUF_MESSAGE_GLOBALS
       &::_pbi::kDescriptorMethods,
       &descriptor_table_sf_2fgathering_2fv1_2fgathering_2eproto,
@@ -240,6 +300,152 @@ const ::_pbi::ClassData* NodeReply_get_class_data() {
   return NodeReply_globals_.GetClassData();
 #else
   return NodeReply_class_data_.base();
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+}
+}  // namespace
+#endif  // PROTOBUF_CUSTOM_VTABLE
+class ListZoneNodesRequest::_Internal {
+ public:
+  using HasBits = decltype(::std::declval<ListZoneNodesRequest>()._impl_._has_bits_);
+  static constexpr ::int32_t kHasBitsOffset =
+      8 * PROTOBUF_FIELD_OFFSET(ListZoneNodesRequest, _impl_._has_bits_);
+};
+
+constexpr ListZoneNodesRequest::ParseTableT_ ListZoneNodesRequest::InternalGenerateParseTable_(const ::_pbi::ClassData* class_data) {
+  return ParseTableT_{
+    {
+      PROTOBUF_FIELD_OFFSET(ListZoneNodesRequest, _impl_._has_bits_),
+      0, // no _extensions_
+      1, 0,  // max_field_number, fast_idx_mask
+      offsetof(ParseTableT_, field_lookup_table),
+      4294967294,  // skipmap
+      offsetof(ParseTableT_, field_entries),
+      1,  // num_field_entries
+      0,  // num_aux_entries
+      offsetof(ParseTableT_, field_names),  // no aux_entries
+      class_data,
+      nullptr,  // post_loop_handler
+      ::_pbi::TcParser::GenericFallback,  // fallback
+      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+      ::_pbi::TcParser::GetTable<::sf::gathering::v1::ListZoneNodesRequest>(),  // to_prefetch
+      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+    }, {{
+      // string zone_id = 1;
+      {::_pbi::TcParser::FastUS1,
+       {10, 0, 0,
+        PROTOBUF_FIELD_OFFSET(ListZoneNodesRequest, _impl_.zone_id_)}},
+    }}, {{
+      65535, 65535
+    }}, {{
+      // string zone_id = 1;
+      {PROTOBUF_FIELD_OFFSET(ListZoneNodesRequest, _impl_.zone_id_), _Internal::kHasBitsOffset + 0, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    }},
+    // no aux_entries
+    {{
+      "\44\7\0\0\0\0\0\0"
+      "sf.gathering.v1.ListZoneNodesRequest"
+      "zone_id"
+    }},
+  };
+}
+
+
+inline constexpr ListZoneNodesRequest::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    ::_pbi::ConstantInitialized) noexcept
+      : _cached_size_{0},
+        zone_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()) {}
+
+template <typename>
+constexpr ListZoneNodesRequest::ListZoneNodesRequest(::_pbi::ConstantInitialized,
+                       const ::_pbi::ClassData* PROTOBUF_NONNULL class_data)
+    : ::google::protobuf::Message(
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          class_data
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          ),
+      _impl_(internal_visibility(), ::_pbi::ConstantInitialized()) {
+}
+inline void* PROTOBUF_NONNULL ListZoneNodesRequest::PlacementNew_(
+    const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena) {
+  return ::new (mem) ListZoneNodesRequest(arena);
+}
+constexpr auto ListZoneNodesRequest::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::CopyInit(sizeof(ListZoneNodesRequest), alignof(ListZoneNodesRequest));
+}
+constexpr auto ListZoneNodesRequest::InternalGenerateClassData_(
+    const MessageLite& prototype,
+    const ::google::protobuf::internal::TcParseTableBase* tc_table) {
+  return ::google::protobuf::internal::ClassDataFull{
+      ::google::protobuf::internal::ClassData{
+          &prototype,
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+          &_table_.header,
+#else
+          tc_table,
+#endif
+          nullptr,  // IsInitialized
+          &ListZoneNodesRequest::MergeImpl,
+          ::google::protobuf::Message::GetNewImpl<ListZoneNodesRequest>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          &ListZoneNodesRequest::SharedDtor,
+          ::google::protobuf::Message::GetClearImpl<ListZoneNodesRequest>(), &ListZoneNodesRequest::ByteSizeLong,
+              &ListZoneNodesRequest::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          PROTOBUF_FIELD_OFFSET(ListZoneNodesRequest, _impl_._cached_size_),
+          false,
+      },
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+      &file_reflection_data[1],
+#else   // !PROTOBUF_MESSAGE_GLOBALS
+      &::_pbi::kDescriptorMethods,
+      &descriptor_table_sf_2fgathering_2fv1_2fgathering_2eproto,
+      nullptr,  // tracker
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+  };
+}
+struct ListZoneNodesRequestGlobalsTypeInternal : ::_pbi::MessageGlobalsBase {
+  constexpr ListZoneNodesRequestGlobalsTypeInternal()
+      :
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+        _default(::_pbi::ConstantInitialized{},
+                 ListZoneNodesRequest_class_data_.base())
+#else   // !PROTOBUF_MESSAGE_GLOBALS
+        MessageGlobalsBase(ListZoneNodesRequest::InternalGenerateClassData_(
+            _default, &ListZoneNodesRequest_globals_._table.header)),
+        _default(::_pbi::ConstantInitialized{}, GetClassData()),
+        _table(::_pbi::PrivateAccess::GenerateParseTable<ListZoneNodesRequest>(
+            GetClassData()))
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+  {
+  }
+  ~ListZoneNodesRequestGlobalsTypeInternal() {}
+  union {
+    alignas(::_pbi::kMaxMessageAlignment) ListZoneNodesRequest _default;
+  };
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+  decltype(::_pbi::PrivateAccess::GenerateParseTable<ListZoneNodesRequest>(
+      ::std::declval<const ::_pbi::ClassData*>())) _table;
+#endif
+};
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+static_assert(PROTOBUF_FIELD_OFFSET(ListZoneNodesRequestGlobalsTypeInternal, _default) ==
+              ::_pbi::MessageGlobalsBase::OffsetToDefault());
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 PROTOBUF_MESSAGE_GLOBALS_CONST ListZoneNodesRequestGlobalsTypeInternal ListZoneNodesRequest_globals_
+        PROTOBUF_MESSAGE_GLOBALS_SECTION(.data.rel.ro);
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+namespace {
+const ::_pbi::ClassData* ListZoneNodesRequest_get_class_data() {
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+  return ListZoneNodesRequest_globals_.GetClassData();
+#else
+  return ListZoneNodesRequest_class_data_.base();
 #endif  // PROTOBUF_MESSAGE_GLOBALS
 }
 }  // namespace
@@ -402,7 +608,7 @@ constexpr auto HarvestRequest::InternalGenerateClassData_(
           false,
       },
 #ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[1],
+      &file_reflection_data[3],
 #else   // !PROTOBUF_MESSAGE_GLOBALS
       &::_pbi::kDescriptorMethods,
       &descriptor_table_sf_2fgathering_2fv1_2fgathering_2eproto,
@@ -599,6 +805,157 @@ const ::_pbi::ClassData* GetNodeRequest_get_class_data() {
 }
 }  // namespace
 #endif  // PROTOBUF_CUSTOM_VTABLE
+class ListZoneNodesReply::_Internal {
+ public:
+  using HasBits = decltype(::std::declval<ListZoneNodesReply>()._impl_._has_bits_);
+  static constexpr ::int32_t kHasBitsOffset =
+      8 * PROTOBUF_FIELD_OFFSET(ListZoneNodesReply, _impl_._has_bits_);
+};
+
+constexpr ListZoneNodesReply::ParseTableT_ ListZoneNodesReply::InternalGenerateParseTable_(const ::_pbi::ClassData* class_data) {
+  return ParseTableT_{
+    {
+      PROTOBUF_FIELD_OFFSET(ListZoneNodesReply, _impl_._has_bits_),
+      0, // no _extensions_
+      1, 0,  // max_field_number, fast_idx_mask
+      offsetof(ParseTableT_, field_lookup_table),
+      4294967294,  // skipmap
+      offsetof(ParseTableT_, field_entries),
+      1,  // num_field_entries
+      1,  // num_aux_entries
+      offsetof(ParseTableT_, aux_entries),
+      class_data,
+      nullptr,  // post_loop_handler
+      ::_pbi::TcParser::GenericFallback,  // fallback
+      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+      ::_pbi::TcParser::GetTable<::sf::gathering::v1::ListZoneNodesReply>(),  // to_prefetch
+      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+    }, {{
+      // repeated .sf.gathering.v1.NodeReply nodes = 1;
+      {::_pbi::TcParser::FastMtR1,
+       {10, 0, 0,
+        PROTOBUF_FIELD_OFFSET(ListZoneNodesReply, _impl_.nodes_)}},
+    }}, {{
+      65535, 65535
+    }}, {{
+      // repeated .sf.gathering.v1.NodeReply nodes = 1;
+      {PROTOBUF_FIELD_OFFSET(ListZoneNodesReply, _impl_.nodes_), _Internal::kHasBitsOffset + 0, 0, (0 | ::_fl::kFcRepeated | ::_fl::kMessage | ::_fl::kTvTable)},
+    }},
+    {{
+        #ifndef PROTOBUF_MESSAGE_GLOBALS
+        {::_pbi::TcParser::GetTable<::sf::gathering::v1::NodeReply>()},
+        #else
+        {::_pbi::FieldAuxMessageGlobals(), &::sf::gathering::v1::NodeReply_globals_},
+        #endif
+    }},
+    {{
+    }},
+  };
+}
+
+
+inline constexpr ListZoneNodesReply::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    ::_pbi::ConstantInitialized) noexcept
+      : _cached_size_{0},
+        nodes_ { visibility, ::_pbi::InternalMetadataOffset::Build<
+            ::sf::gathering::v1::ListZoneNodesReply,
+            PROTOBUF_FIELD_OFFSET(::sf::gathering::v1::ListZoneNodesReply, _impl_.nodes_)>()
+         }
+     {}
+
+template <typename>
+constexpr ListZoneNodesReply::ListZoneNodesReply(::_pbi::ConstantInitialized,
+                       const ::_pbi::ClassData* PROTOBUF_NONNULL class_data)
+    : ::google::protobuf::Message(
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          class_data
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          ),
+      _impl_(internal_visibility(), ::_pbi::ConstantInitialized()) {
+}
+inline void* PROTOBUF_NONNULL ListZoneNodesReply::PlacementNew_(
+    const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena) {
+  return ::new (mem) ListZoneNodesReply(arena);
+}
+constexpr auto ListZoneNodesReply::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::CopyInit(sizeof(ListZoneNodesReply), alignof(ListZoneNodesReply));
+}
+constexpr auto ListZoneNodesReply::InternalGenerateClassData_(
+    const MessageLite& prototype,
+    const ::google::protobuf::internal::TcParseTableBase* tc_table) {
+  return ::google::protobuf::internal::ClassDataFull{
+      ::google::protobuf::internal::ClassData{
+          &prototype,
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+          &_table_.header,
+#else
+          tc_table,
+#endif
+          nullptr,  // IsInitialized
+          &ListZoneNodesReply::MergeImpl,
+          ::google::protobuf::Message::GetNewImpl<ListZoneNodesReply>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          &ListZoneNodesReply::SharedDtor,
+          ::google::protobuf::Message::GetClearImpl<ListZoneNodesReply>(), &ListZoneNodesReply::ByteSizeLong,
+              &ListZoneNodesReply::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          PROTOBUF_FIELD_OFFSET(ListZoneNodesReply, _impl_._cached_size_),
+          false,
+      },
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+      &file_reflection_data[2],
+#else   // !PROTOBUF_MESSAGE_GLOBALS
+      &::_pbi::kDescriptorMethods,
+      &descriptor_table_sf_2fgathering_2fv1_2fgathering_2eproto,
+      nullptr,  // tracker
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+  };
+}
+struct ListZoneNodesReplyGlobalsTypeInternal : ::_pbi::MessageGlobalsBase {
+  constexpr ListZoneNodesReplyGlobalsTypeInternal()
+      :
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+        _default(::_pbi::ConstantInitialized{},
+                 ListZoneNodesReply_class_data_.base())
+#else   // !PROTOBUF_MESSAGE_GLOBALS
+        MessageGlobalsBase(ListZoneNodesReply::InternalGenerateClassData_(
+            _default, &ListZoneNodesReply_globals_._table.header)),
+        _default(::_pbi::ConstantInitialized{}, GetClassData()),
+        _table(::_pbi::PrivateAccess::GenerateParseTable<ListZoneNodesReply>(
+            GetClassData()))
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+  {
+  }
+  ~ListZoneNodesReplyGlobalsTypeInternal() {}
+  union {
+    alignas(::_pbi::kMaxMessageAlignment) ListZoneNodesReply _default;
+  };
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+  decltype(::_pbi::PrivateAccess::GenerateParseTable<ListZoneNodesReply>(
+      ::std::declval<const ::_pbi::ClassData*>())) _table;
+#endif
+};
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+static_assert(PROTOBUF_FIELD_OFFSET(ListZoneNodesReplyGlobalsTypeInternal, _default) ==
+              ::_pbi::MessageGlobalsBase::OffsetToDefault());
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 PROTOBUF_MESSAGE_GLOBALS_CONST ListZoneNodesReplyGlobalsTypeInternal ListZoneNodesReply_globals_
+        PROTOBUF_MESSAGE_GLOBALS_SECTION(.data.rel.ro);
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+namespace {
+const ::_pbi::ClassData* ListZoneNodesReply_get_class_data() {
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+  return ListZoneNodesReply_globals_.GetClassData();
+#else
+  return ListZoneNodesReply_class_data_.base();
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+}
+}  // namespace
+#endif  // PROTOBUF_CUSTOM_VTABLE
 class HarvestReply::_Internal {
  public:
   using HasBits = decltype(::std::declval<HarvestReply>()._impl_._has_bits_);
@@ -724,7 +1081,7 @@ constexpr auto HarvestReply::InternalGenerateClassData_(
           false,
       },
 #ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[3],
+      &file_reflection_data[5],
 #else   // !PROTOBUF_MESSAGE_GLOBALS
       &::_pbi::kDescriptorMethods,
       &descriptor_table_sf_2fgathering_2fv1_2fgathering_2eproto,
@@ -791,6 +1148,16 @@ const ::uint32_t
         PROTOBUF_FIELD_OFFSET(::sf::gathering::v1::GetNodeRequest, _impl_.node_id_),
         0,
         0x081, // bitmap
+        PROTOBUF_FIELD_OFFSET(::sf::gathering::v1::ListZoneNodesRequest, _impl_._has_bits_),
+        4, // hasbit index offset
+        PROTOBUF_FIELD_OFFSET(::sf::gathering::v1::ListZoneNodesRequest, _impl_.zone_id_),
+        0,
+        0x081, // bitmap
+        PROTOBUF_FIELD_OFFSET(::sf::gathering::v1::ListZoneNodesReply, _impl_._has_bits_),
+        4, // hasbit index offset
+        PROTOBUF_FIELD_OFFSET(::sf::gathering::v1::ListZoneNodesReply, _impl_.nodes_),
+        0,
+        0x081, // bitmap
         PROTOBUF_FIELD_OFFSET(::sf::gathering::v1::HarvestRequest, _impl_._has_bits_),
         11, // hasbit index offset
         PROTOBUF_FIELD_OFFSET(::sf::gathering::v1::HarvestRequest, _impl_.operation_id_),
@@ -811,7 +1178,7 @@ const ::uint32_t
         7,
         0x081, // bitmap
         PROTOBUF_FIELD_OFFSET(::sf::gathering::v1::NodeReply, _impl_._has_bits_),
-        11, // hasbit index offset
+        18, // hasbit index offset
         PROTOBUF_FIELD_OFFSET(::sf::gathering::v1::NodeReply, _impl_.node_id_),
         PROTOBUF_FIELD_OFFSET(::sf::gathering::v1::NodeReply, _impl_.definition_id_),
         PROTOBUF_FIELD_OFFSET(::sf::gathering::v1::NodeReply, _impl_.generation_),
@@ -820,14 +1187,28 @@ const ::uint32_t
         PROTOBUF_FIELD_OFFSET(::sf::gathering::v1::NodeReply, _impl_.regrow_at_unix_ms_),
         PROTOBUF_FIELD_OFFSET(::sf::gathering::v1::NodeReply, _impl_.growth_stage_),
         PROTOBUF_FIELD_OFFSET(::sf::gathering::v1::NodeReply, _impl_.next_transition_unix_ms_),
+        PROTOBUF_FIELD_OFFSET(::sf::gathering::v1::NodeReply, _impl_.pool_id_),
+        PROTOBUF_FIELD_OFFSET(::sf::gathering::v1::NodeReply, _impl_.point_id_),
+        PROTOBUF_FIELD_OFFSET(::sf::gathering::v1::NodeReply, _impl_.position_x_m_),
+        PROTOBUF_FIELD_OFFSET(::sf::gathering::v1::NodeReply, _impl_.position_y_m_),
+        PROTOBUF_FIELD_OFFSET(::sf::gathering::v1::NodeReply, _impl_.position_z_m_),
+        PROTOBUF_FIELD_OFFSET(::sf::gathering::v1::NodeReply, _impl_.facing_degrees_),
+        PROTOBUF_FIELD_OFFSET(::sf::gathering::v1::NodeReply, _impl_.active_),
         0,
         1,
+        5,
+        6,
+        9,
+        7,
+        2,
+        8,
         3,
         4,
-        7,
-        5,
-        2,
-        6,
+        11,
+        12,
+        13,
+        14,
+        10,
         0x081, // bitmap
         PROTOBUF_FIELD_OFFSET(::sf::gathering::v1::HarvestReply, _impl_._has_bits_),
         7, // hasbit index offset
@@ -844,13 +1225,17 @@ const ::uint32_t
 static const ::_pbi::MigrationSchema
     schemas[] ABSL_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
         {0, sizeof(::sf::gathering::v1::GetNodeRequest)},
-        {5, sizeof(::sf::gathering::v1::HarvestRequest)},
-        {24, sizeof(::sf::gathering::v1::NodeReply)},
-        {43, sizeof(::sf::gathering::v1::HarvestReply)},
+        {5, sizeof(::sf::gathering::v1::ListZoneNodesRequest)},
+        {10, sizeof(::sf::gathering::v1::ListZoneNodesReply)},
+        {15, sizeof(::sf::gathering::v1::HarvestRequest)},
+        {34, sizeof(::sf::gathering::v1::NodeReply)},
+        {67, sizeof(::sf::gathering::v1::HarvestReply)},
 };
 static const ::_pbi::MessageGlobalsBase* PROTOBUF_NONNULL const
     file_message_globals[] = {
         &::sf::gathering::v1::GetNodeRequest_globals_,
+        &::sf::gathering::v1::ListZoneNodesRequest_globals_,
+        &::sf::gathering::v1::ListZoneNodesReply_globals_,
         &::sf::gathering::v1::HarvestRequest_globals_,
         &::sf::gathering::v1::NodeReply_globals_,
         &::sf::gathering::v1::HarvestReply_globals_,
@@ -859,39 +1244,47 @@ const char descriptor_table_protodef_sf_2fgathering_2fv1_2fgathering_2eproto[] A
     protodesc_cold) = {
     "\n\037sf/gathering/v1/gathering.proto\022\017sf.ga"
     "thering.v1\"!\n\016GetNodeRequest\022\017\n\007node_id\030"
-    "\001 \001(\t\"\307\001\n\016HarvestRequest\022\024\n\014operation_id"
-    "\030\001 \001(\t\022\024\n\014character_id\030\002 \001(\t\022\017\n\007node_id\030"
-    "\003 \001(\t\022\022\n\ngeneration\030\004 \001(\005\022\024\n\014container_i"
-    "d\030\005 \001(\t\022\031\n\021follow_up_payload\030\006 \001(\014\022\030\n\020fo"
-    "llow_up_digest\030\007 \001(\t\022\031\n\021follow_up_versio"
-    "n\030\010 \001(\005\"\277\001\n\tNodeReply\022\017\n\007node_id\030\001 \001(\t\022\025"
-    "\n\rdefinition_id\030\002 \001(\t\022\022\n\ngeneration\030\003 \001("
-    "\005\022\017\n\007charges\030\004 \001(\005\022\023\n\013max_charges\030\005 \001(\005\022"
-    "\031\n\021regrow_at_unix_ms\030\006 \001(\003\022\024\n\014growth_sta"
-    "ge\030\007 \001(\t\022\037\n\027next_transition_unix_ms\030\010 \001("
-    "\003\"o\n\014HarvestReply\022\016\n\006status\030\001 \001(\t\022\023\n\013res"
-    "ource_id\030\002 \001(\t\022\020\n\010quantity\030\003 \001(\005\022(\n\004node"
-    "\030\004 \001(\0132\032.sf.gathering.v1.NodeReply2\363\001\n\tG"
-    "athering\022F\n\007GetNode\022\037.sf.gathering.v1.Ge"
-    "tNodeRequest\032\032.sf.gathering.v1.NodeReply"
-    "\022I\n\007Harvest\022\037.sf.gathering.v1.HarvestReq"
-    "uest\032\035.sf.gathering.v1.HarvestReply\022S\n\021H"
-    "arvestWithIntent\022\037.sf.gathering.v1.Harve"
-    "stRequest\032\035.sf.gathering.v1.HarvestReply"
-    "B!\252\002\036ShatteredFrontier.Gathering.V1b\006pro"
-    "to3"
+    "\001 \001(\t\"\'\n\024ListZoneNodesRequest\022\017\n\007zone_id"
+    "\030\001 \001(\t\"\?\n\022ListZoneNodesReply\022)\n\005nodes\030\001 "
+    "\003(\0132\032.sf.gathering.v1.NodeReply\"\307\001\n\016Harv"
+    "estRequest\022\024\n\014operation_id\030\001 \001(\t\022\024\n\014char"
+    "acter_id\030\002 \001(\t\022\017\n\007node_id\030\003 \001(\t\022\022\n\ngener"
+    "ation\030\004 \001(\005\022\024\n\014container_id\030\005 \001(\t\022\031\n\021fol"
+    "low_up_payload\030\006 \001(\014\022\030\n\020follow_up_digest"
+    "\030\007 \001(\t\022\031\n\021follow_up_version\030\010 \001(\005\"\314\002\n\tNo"
+    "deReply\022\017\n\007node_id\030\001 \001(\t\022\025\n\rdefinition_i"
+    "d\030\002 \001(\t\022\022\n\ngeneration\030\003 \001(\005\022\017\n\007charges\030\004"
+    " \001(\005\022\023\n\013max_charges\030\005 \001(\005\022\031\n\021regrow_at_u"
+    "nix_ms\030\006 \001(\003\022\024\n\014growth_stage\030\007 \001(\t\022\037\n\027ne"
+    "xt_transition_unix_ms\030\010 \001(\003\022\017\n\007pool_id\030\t"
+    " \001(\t\022\020\n\010point_id\030\n \001(\t\022\024\n\014position_x_m\030\013"
+    " \001(\001\022\024\n\014position_y_m\030\014 \001(\001\022\024\n\014position_z"
+    "_m\030\r \001(\001\022\026\n\016facing_degrees\030\016 \001(\001\022\016\n\006acti"
+    "ve\030\017 \001(\010\"o\n\014HarvestReply\022\016\n\006status\030\001 \001(\t"
+    "\022\023\n\013resource_id\030\002 \001(\t\022\020\n\010quantity\030\003 \001(\005\022"
+    "(\n\004node\030\004 \001(\0132\032.sf.gathering.v1.NodeRepl"
+    "y2\320\002\n\tGathering\022F\n\007GetNode\022\037.sf.gatherin"
+    "g.v1.GetNodeRequest\032\032.sf.gathering.v1.No"
+    "deReply\022[\n\rListZoneNodes\022%.sf.gathering."
+    "v1.ListZoneNodesRequest\032#.sf.gathering.v"
+    "1.ListZoneNodesReply\022I\n\007Harvest\022\037.sf.gat"
+    "hering.v1.HarvestRequest\032\035.sf.gathering."
+    "v1.HarvestReply\022S\n\021HarvestWithIntent\022\037.s"
+    "f.gathering.v1.HarvestRequest\032\035.sf.gathe"
+    "ring.v1.HarvestReplyB!\252\002\036ShatteredFronti"
+    "er.Gathering.V1b\006proto3"
 };
 static ::absl::once_flag descriptor_table_sf_2fgathering_2fv1_2fgathering_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_sf_2fgathering_2fv1_2fgathering_2eproto = {
     false,
     false,
-    883,
+    1223,
     descriptor_table_protodef_sf_2fgathering_2fv1_2fgathering_2eproto,
     "sf/gathering/v1/gathering.proto",
     &descriptor_table_sf_2fgathering_2fv1_2fgathering_2eproto_once,
     nullptr,
     0,
-    4,
+    6,
     schemas,
     file_message_globals,
     TableStruct_sf_2fgathering_2fv1_2fgathering_2eproto::offsets,
@@ -1113,6 +1506,442 @@ void GetNodeRequest::InternalSwap(GetNodeRequest* PROTOBUF_RESTRICT PROTOBUF_NON
 }
 
 ::google::protobuf::Metadata GetNodeRequest::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
+ListZoneNodesRequest::ListZoneNodesRequest(::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, ListZoneNodesRequest_get_class_data()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:sf.gathering.v1.ListZoneNodesRequest)
+}
+PROTOBUF_NDEBUG_INLINE ListZoneNodesRequest::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+    [[maybe_unused]] const ::sf::gathering::v1::ListZoneNodesRequest& from_msg)
+      : _has_bits_{from._has_bits_},
+        _cached_size_{0},
+        zone_id_(arena, from.zone_id_) {}
+
+ListZoneNodesRequest::ListZoneNodesRequest(
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena,
+    const ListZoneNodesRequest& from)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, ListZoneNodesRequest_get_class_data()) {
+
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  ListZoneNodesRequest* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
+
+  // @@protoc_insertion_point(copy_constructor:sf.gathering.v1.ListZoneNodesRequest)
+}
+PROTOBUF_NDEBUG_INLINE ListZoneNodesRequest::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+      : _cached_size_{0},
+        zone_id_(arena) {}
+
+inline void ListZoneNodesRequest::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+}
+ListZoneNodesRequest::~ListZoneNodesRequest() {
+  // @@protoc_insertion_point(destructor:sf.gathering.v1.ListZoneNodesRequest)
+  SharedDtor(*this);
+}
+inline void ListZoneNodesRequest::SharedDtor(MessageLite& self) {
+  ListZoneNodesRequest& this_ = static_cast<ListZoneNodesRequest&>(self);
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    this_.CheckHasBitConsistency();
+  }
+  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.zone_id_.Destroy();
+  this_._impl_.~Impl_();
+}
+
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
+    ::google::protobuf::internal::ClassDataFull ListZoneNodesRequest_class_data_ =
+        ListZoneNodesRequest::InternalGenerateClassData_(ListZoneNodesRequest_globals_._default);
+
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+ListZoneNodesRequest::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&ListZoneNodesRequest_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(ListZoneNodesRequest_class_data_.tc_table);
+  return ListZoneNodesRequest_class_data_.base();
+}
+#else
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+ListZoneNodesRequest::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&ListZoneNodesRequest_globals_);
+  ::google::protobuf::internal::PrefetchToLocalCache(
+      ::google::protobuf::internal::MessageGlobalsBase::ToParseTableBase(&ListZoneNodesRequest_globals_));
+  return ListZoneNodesRequest_globals_.GetClassData();
+}
+#endif  // !PROTOBUF_MESSAGE_GLOBALS
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_CONSTINIT
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const ListZoneNodesRequest::ParseTableT_
+    ListZoneNodesRequest::_table_ =
+        ListZoneNodesRequest::InternalGenerateParseTable_(ListZoneNodesRequest_class_data_.base());
+#endif  // !PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_NOINLINE void ListZoneNodesRequest::Clear() {
+// @@protoc_insertion_point(message_clear_start:sf.gathering.v1.ListZoneNodesRequest)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+    _impl_.zone_id_.ClearNonDefaultToEmpty();
+  }
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::uint8_t* PROTOBUF_NONNULL ListZoneNodesRequest::_InternalSerialize(
+    const ::google::protobuf::MessageLite& base, ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) {
+  const ListZoneNodesRequest& this_ = static_cast<const ListZoneNodesRequest&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::uint8_t* PROTOBUF_NONNULL ListZoneNodesRequest::_InternalSerialize(
+    ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+  const ListZoneNodesRequest& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    this_.CheckHasBitConsistency();
+  }
+  // @@protoc_insertion_point(serialize_to_array_start:sf.gathering.v1.ListZoneNodesRequest)
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  cached_has_bits = this_._impl_._has_bits_[0];
+  // string zone_id = 1;
+  if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+    if (!this_._internal_zone_id().empty()) {
+      const ::std::string& _s = this_._internal_zone_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.gathering.v1.ListZoneNodesRequest.zone_id");
+      target = stream->WriteStringMaybeAliased(1, _s, target);
+    }
+  }
+
+  if (ABSL_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
+    target =
+        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+            this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:sf.gathering.v1.ListZoneNodesRequest)
+  return target;
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::size_t ListZoneNodesRequest::ByteSizeLong(const MessageLite& base) {
+  const ListZoneNodesRequest& this_ = static_cast<const ListZoneNodesRequest&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::size_t ListZoneNodesRequest::ByteSizeLong() const {
+  const ListZoneNodesRequest& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  // @@protoc_insertion_point(message_byte_size_start:sf.gathering.v1.ListZoneNodesRequest)
+  ::size_t total_size = 0;
+
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void)cached_has_bits;
+
+   {
+    // string zone_id = 1;
+    cached_has_bits = this_._impl_._has_bits_[0];
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      if (!this_._internal_zone_id().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_zone_id());
+      }
+    }
+  }
+  return this_.MaybeComputeUnknownFieldsSize(total_size,
+                                             &this_._impl_._cached_size_);
+}
+
+void ListZoneNodesRequest::MergeImpl(::google::protobuf::MessageLite& to_msg,
+                      const ::google::protobuf::MessageLite& from_msg) {
+   auto* const _this = static_cast<ListZoneNodesRequest*>(&to_msg);
+  auto& from = static_cast<const ListZoneNodesRequest&>(from_msg);
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    from.CheckHasBitConsistency();
+  }
+  // @@protoc_insertion_point(class_specific_merge_from_start:sf.gathering.v1.ListZoneNodesRequest)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  cached_has_bits = from._impl_._has_bits_[0];
+  if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+    if (!from._internal_zone_id().empty()) {
+      _this->_internal_set_zone_id(from._internal_zone_id());
+    } else {
+      if (_this->_impl_.zone_id_.IsDefault()) {
+        _this->_internal_set_zone_id("");
+      }
+    }
+  }
+  _this->_impl_._has_bits_[0] |= cached_has_bits;
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+}
+
+void ListZoneNodesRequest::CopyFrom(const ListZoneNodesRequest& from) {
+  // @@protoc_insertion_point(class_specific_copy_from_start:sf.gathering.v1.ListZoneNodesRequest)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void ListZoneNodesRequest::InternalSwap(ListZoneNodesRequest* PROTOBUF_RESTRICT PROTOBUF_NONNULL other) {
+  using ::std::swap;
+  auto* arena = GetArena();
+  ABSL_DCHECK_EQ(arena, other->GetArena());
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.zone_id_, &other->_impl_.zone_id_, arena);
+}
+
+::google::protobuf::Metadata ListZoneNodesRequest::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
+ListZoneNodesReply::ListZoneNodesReply(::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, ListZoneNodesReply_get_class_data()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:sf.gathering.v1.ListZoneNodesReply)
+}
+PROTOBUF_NDEBUG_INLINE ListZoneNodesReply::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+    [[maybe_unused]] const ::sf::gathering::v1::ListZoneNodesReply& from_msg)
+      : _has_bits_{from._has_bits_},
+        _cached_size_{0},
+        nodes_ {
+          visibility, ::_pbi::InternalMetadataOffset::Build<
+              ::sf::gathering::v1::ListZoneNodesReply,
+              PROTOBUF_FIELD_OFFSET(::sf::gathering::v1::ListZoneNodesReply, _impl_.nodes_)>()
+          , from.nodes_
+        }
+     {}
+
+ListZoneNodesReply::ListZoneNodesReply(
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena,
+    const ListZoneNodesReply& from)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, ListZoneNodesReply_get_class_data()) {
+
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  ListZoneNodesReply* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
+
+  // @@protoc_insertion_point(copy_constructor:sf.gathering.v1.ListZoneNodesReply)
+}
+PROTOBUF_NDEBUG_INLINE ListZoneNodesReply::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+      : _cached_size_{0},
+        nodes_ { visibility, ::_pbi::InternalMetadataOffset::Build<
+            ::sf::gathering::v1::ListZoneNodesReply,
+            PROTOBUF_FIELD_OFFSET(::sf::gathering::v1::ListZoneNodesReply, _impl_.nodes_)>()
+         }
+     {}
+
+inline void ListZoneNodesReply::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+}
+ListZoneNodesReply::~ListZoneNodesReply() {
+  // @@protoc_insertion_point(destructor:sf.gathering.v1.ListZoneNodesReply)
+  SharedDtor(*this);
+}
+inline void ListZoneNodesReply::SharedDtor(MessageLite& self) {
+  ListZoneNodesReply& this_ = static_cast<ListZoneNodesReply&>(self);
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    this_.CheckHasBitConsistency();
+  }
+  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.~Impl_();
+}
+
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
+    ::google::protobuf::internal::ClassDataFull ListZoneNodesReply_class_data_ =
+        ListZoneNodesReply::InternalGenerateClassData_(ListZoneNodesReply_globals_._default);
+
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+ListZoneNodesReply::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&ListZoneNodesReply_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(ListZoneNodesReply_class_data_.tc_table);
+  return ListZoneNodesReply_class_data_.base();
+}
+#else
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+ListZoneNodesReply::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&ListZoneNodesReply_globals_);
+  ::google::protobuf::internal::PrefetchToLocalCache(
+      ::google::protobuf::internal::MessageGlobalsBase::ToParseTableBase(&ListZoneNodesReply_globals_));
+  return ListZoneNodesReply_globals_.GetClassData();
+}
+#endif  // !PROTOBUF_MESSAGE_GLOBALS
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_CONSTINIT
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const ListZoneNodesReply::ParseTableT_
+    ListZoneNodesReply::_table_ =
+        ListZoneNodesReply::InternalGenerateParseTable_(ListZoneNodesReply_class_data_.base());
+#endif  // !PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_NOINLINE void ListZoneNodesReply::Clear() {
+// @@protoc_insertion_point(message_clear_start:sf.gathering.v1.ListZoneNodesReply)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+    _impl_.nodes_.Clear();
+  }
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::uint8_t* PROTOBUF_NONNULL ListZoneNodesReply::_InternalSerialize(
+    const ::google::protobuf::MessageLite& base, ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) {
+  const ListZoneNodesReply& this_ = static_cast<const ListZoneNodesReply&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::uint8_t* PROTOBUF_NONNULL ListZoneNodesReply::_InternalSerialize(
+    ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+  const ListZoneNodesReply& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    this_.CheckHasBitConsistency();
+  }
+  // @@protoc_insertion_point(serialize_to_array_start:sf.gathering.v1.ListZoneNodesReply)
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  cached_has_bits = this_._impl_._has_bits_[0];
+  // repeated .sf.gathering.v1.NodeReply nodes = 1;
+  if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+    for (unsigned i = 0, n = static_cast<unsigned>(
+                             this_._internal_nodes_size());
+         i < n; i++) {
+      const auto& repfield = this_._internal_nodes().Get(i);
+      target =
+          ::google::protobuf::internal::WireFormatLite::InternalWriteMessage(
+              1, repfield, repfield.GetCachedSize(),
+              target, stream);
+    }
+  }
+
+  if (ABSL_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
+    target =
+        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+            this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:sf.gathering.v1.ListZoneNodesReply)
+  return target;
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::size_t ListZoneNodesReply::ByteSizeLong(const MessageLite& base) {
+  const ListZoneNodesReply& this_ = static_cast<const ListZoneNodesReply&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::size_t ListZoneNodesReply::ByteSizeLong() const {
+  const ListZoneNodesReply& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  // @@protoc_insertion_point(message_byte_size_start:sf.gathering.v1.ListZoneNodesReply)
+  ::size_t total_size = 0;
+
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void)cached_has_bits;
+
+  ::_pbi::Prefetch5LinesFrom7Lines(&this_);
+   {
+    // repeated .sf.gathering.v1.NodeReply nodes = 1;
+    cached_has_bits = this_._impl_._has_bits_[0];
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      total_size += 1UL * this_._internal_nodes_size();
+      for (const auto& msg : this_._internal_nodes()) {
+        total_size += ::google::protobuf::internal::WireFormatLite::MessageSize(msg);
+      }
+    }
+  }
+  return this_.MaybeComputeUnknownFieldsSize(total_size,
+                                             &this_._impl_._cached_size_);
+}
+
+void ListZoneNodesReply::MergeImpl(::google::protobuf::MessageLite& to_msg,
+                      const ::google::protobuf::MessageLite& from_msg) {
+   auto* const _this = static_cast<ListZoneNodesReply*>(&to_msg);
+  auto& from = static_cast<const ListZoneNodesReply&>(from_msg);
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    from.CheckHasBitConsistency();
+  }
+  ::google::protobuf::Arena* arena = _this->GetArena();
+  // @@protoc_insertion_point(class_specific_merge_from_start:sf.gathering.v1.ListZoneNodesReply)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  cached_has_bits = from._impl_._has_bits_[0];
+  if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+    _this->_internal_mutable_nodes()->InternalMergeFromWithArena(
+        ::google::protobuf::MessageLite::internal_visibility(), arena,
+        from._internal_nodes());
+  }
+  _this->_impl_._has_bits_[0] |= cached_has_bits;
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+}
+
+void ListZoneNodesReply::CopyFrom(const ListZoneNodesReply& from) {
+  // @@protoc_insertion_point(class_specific_copy_from_start:sf.gathering.v1.ListZoneNodesReply)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void ListZoneNodesReply::InternalSwap(ListZoneNodesReply* PROTOBUF_RESTRICT PROTOBUF_NONNULL other) {
+  using ::std::swap;
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  _impl_.nodes_.InternalSwap(&other->_impl_.nodes_);
+}
+
+::google::protobuf::Metadata ListZoneNodesReply::GetMetadata() const {
   return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
 }
 // ===================================================================
@@ -1582,7 +2411,9 @@ PROTOBUF_NDEBUG_INLINE NodeReply::Impl_::Impl_(
         _cached_size_{0},
         node_id_(arena, from.node_id_),
         definition_id_(arena, from.definition_id_),
-        growth_stage_(arena, from.growth_stage_) {}
+        growth_stage_(arena, from.growth_stage_),
+        pool_id_(arena, from.pool_id_),
+        point_id_(arena, from.point_id_) {}
 
 NodeReply::NodeReply(
     ::google::protobuf::Arena* PROTOBUF_NULLABLE arena,
@@ -1602,9 +2433,9 @@ NodeReply::NodeReply(
                offsetof(Impl_, generation_),
            reinterpret_cast<const char*>(&from._impl_) +
                offsetof(Impl_, generation_),
-           offsetof(Impl_, max_charges_) -
+           offsetof(Impl_, facing_degrees_) -
                offsetof(Impl_, generation_) +
-               sizeof(Impl_::max_charges_));
+               sizeof(Impl_::facing_degrees_));
 
   // @@protoc_insertion_point(copy_constructor:sf.gathering.v1.NodeReply)
 }
@@ -1614,16 +2445,18 @@ PROTOBUF_NDEBUG_INLINE NodeReply::Impl_::Impl_(
       : _cached_size_{0},
         node_id_(arena),
         definition_id_(arena),
-        growth_stage_(arena) {}
+        growth_stage_(arena),
+        pool_id_(arena),
+        point_id_(arena) {}
 
 inline void NodeReply::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
   new (&_impl_) Impl_(internal_visibility(), arena);
   ::memset(reinterpret_cast<char*>(&_impl_) +
                offsetof(Impl_, generation_),
            0,
-           offsetof(Impl_, max_charges_) -
+           offsetof(Impl_, facing_degrees_) -
                offsetof(Impl_, generation_) +
-               sizeof(Impl_::max_charges_));
+               sizeof(Impl_::facing_degrees_));
 }
 NodeReply::~NodeReply() {
   // @@protoc_insertion_point(destructor:sf.gathering.v1.NodeReply)
@@ -1639,6 +2472,8 @@ inline void NodeReply::SharedDtor(MessageLite& self) {
   this_._impl_.node_id_.Destroy();
   this_._impl_.definition_id_.Destroy();
   this_._impl_.growth_stage_.Destroy();
+  this_._impl_.pool_id_.Destroy();
+  this_._impl_.point_id_.Destroy();
   this_._impl_.~Impl_();
 }
 
@@ -1676,7 +2511,7 @@ PROTOBUF_NOINLINE void NodeReply::Clear() {
   (void) cached_has_bits;
 
   cached_has_bits = _impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0x00000007U)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x0000001fU)) {
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
       _impl_.node_id_.ClearNonDefaultToEmpty();
     }
@@ -1686,11 +2521,22 @@ PROTOBUF_NOINLINE void NodeReply::Clear() {
     if (CheckHasBit(cached_has_bits, 0x00000004U)) {
       _impl_.growth_stage_.ClearNonDefaultToEmpty();
     }
+    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+      _impl_.pool_id_.ClearNonDefaultToEmpty();
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+      _impl_.point_id_.ClearNonDefaultToEmpty();
+    }
   }
-  if (BatchCheckHasBit(cached_has_bits, 0x000000f8U)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x000000e0U)) {
     ::memset(&_impl_.generation_, 0, static_cast<::size_t>(
-        reinterpret_cast<char*>(&_impl_.max_charges_) -
-        reinterpret_cast<char*>(&_impl_.generation_)) + sizeof(_impl_.max_charges_));
+        reinterpret_cast<char*>(&_impl_.regrow_at_unix_ms_) -
+        reinterpret_cast<char*>(&_impl_.generation_)) + sizeof(_impl_.regrow_at_unix_ms_));
+  }
+  if (BatchCheckHasBit(cached_has_bits, 0x00007f00U)) {
+    ::memset(&_impl_.next_transition_unix_ms_, 0, static_cast<::size_t>(
+        reinterpret_cast<char*>(&_impl_.facing_degrees_) -
+        reinterpret_cast<char*>(&_impl_.next_transition_unix_ms_)) + sizeof(_impl_.facing_degrees_));
   }
   _impl_._has_bits_.Clear();
   _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
@@ -1736,7 +2582,7 @@ PROTOBUF_NOINLINE void NodeReply::Clear() {
   }
 
   // int32 generation = 3;
-  if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000020U)) {
     if (this_._internal_generation() != 0) {
       target =
           ::google::protobuf::internal::WireFormatLite::WriteInt32ToArrayWithField<3>(
@@ -1745,7 +2591,7 @@ PROTOBUF_NOINLINE void NodeReply::Clear() {
   }
 
   // int32 charges = 4;
-  if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000040U)) {
     if (this_._internal_charges() != 0) {
       target =
           ::google::protobuf::internal::WireFormatLite::WriteInt32ToArrayWithField<4>(
@@ -1754,7 +2600,7 @@ PROTOBUF_NOINLINE void NodeReply::Clear() {
   }
 
   // int32 max_charges = 5;
-  if (CheckHasBit(cached_has_bits, 0x00000080U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000200U)) {
     if (this_._internal_max_charges() != 0) {
       target =
           ::google::protobuf::internal::WireFormatLite::WriteInt32ToArrayWithField<5>(
@@ -1763,7 +2609,7 @@ PROTOBUF_NOINLINE void NodeReply::Clear() {
   }
 
   // int64 regrow_at_unix_ms = 6;
-  if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000080U)) {
     if (this_._internal_regrow_at_unix_ms() != 0) {
       target =
           ::google::protobuf::internal::WireFormatLite::WriteInt64ToArrayWithField<6>(
@@ -1782,11 +2628,76 @@ PROTOBUF_NOINLINE void NodeReply::Clear() {
   }
 
   // int64 next_transition_unix_ms = 8;
-  if (CheckHasBit(cached_has_bits, 0x00000040U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000100U)) {
     if (this_._internal_next_transition_unix_ms() != 0) {
       target =
           ::google::protobuf::internal::WireFormatLite::WriteInt64ToArrayWithField<8>(
               stream, this_._internal_next_transition_unix_ms(), target);
+    }
+  }
+
+  // string pool_id = 9;
+  if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+    if (!this_._internal_pool_id().empty()) {
+      const ::std::string& _s = this_._internal_pool_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.gathering.v1.NodeReply.pool_id");
+      target = stream->WriteStringMaybeAliased(9, _s, target);
+    }
+  }
+
+  // string point_id = 10;
+  if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+    if (!this_._internal_point_id().empty()) {
+      const ::std::string& _s = this_._internal_point_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.gathering.v1.NodeReply.point_id");
+      target = stream->WriteStringMaybeAliased(10, _s, target);
+    }
+  }
+
+  // double position_x_m = 11;
+  if (CheckHasBit(cached_has_bits, 0x00000800U)) {
+    if (::absl::bit_cast<::uint64_t>(this_._internal_position_x_m()) != 0) {
+      target = stream->EnsureSpace(target);
+      target = ::_pbi::WireFormatLite::WriteDoubleToArray(
+          11, this_._internal_position_x_m(), target);
+    }
+  }
+
+  // double position_y_m = 12;
+  if (CheckHasBit(cached_has_bits, 0x00001000U)) {
+    if (::absl::bit_cast<::uint64_t>(this_._internal_position_y_m()) != 0) {
+      target = stream->EnsureSpace(target);
+      target = ::_pbi::WireFormatLite::WriteDoubleToArray(
+          12, this_._internal_position_y_m(), target);
+    }
+  }
+
+  // double position_z_m = 13;
+  if (CheckHasBit(cached_has_bits, 0x00002000U)) {
+    if (::absl::bit_cast<::uint64_t>(this_._internal_position_z_m()) != 0) {
+      target = stream->EnsureSpace(target);
+      target = ::_pbi::WireFormatLite::WriteDoubleToArray(
+          13, this_._internal_position_z_m(), target);
+    }
+  }
+
+  // double facing_degrees = 14;
+  if (CheckHasBit(cached_has_bits, 0x00004000U)) {
+    if (::absl::bit_cast<::uint64_t>(this_._internal_facing_degrees()) != 0) {
+      target = stream->EnsureSpace(target);
+      target = ::_pbi::WireFormatLite::WriteDoubleToArray(
+          14, this_._internal_facing_degrees(), target);
+    }
+  }
+
+  // bool active = 15;
+  if (CheckHasBit(cached_has_bits, 0x00000400U)) {
+    if (this_._internal_active() != 0) {
+      target = stream->EnsureSpace(target);
+      target = ::_pbi::WireFormatLite::WriteBoolToArray(
+          15, this_._internal_active(), target);
     }
   }
 
@@ -1837,39 +2748,85 @@ PROTOBUF_NOINLINE void NodeReply::Clear() {
                                         this_._internal_growth_stage());
       }
     }
-    // int32 generation = 3;
+    // string pool_id = 9;
     if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+      if (!this_._internal_pool_id().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_pool_id());
+      }
+    }
+    // string point_id = 10;
+    if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+      if (!this_._internal_point_id().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_point_id());
+      }
+    }
+    // int32 generation = 3;
+    if (CheckHasBit(cached_has_bits, 0x00000020U)) {
       if (this_._internal_generation() != 0) {
         total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(
             this_._internal_generation());
       }
     }
     // int32 charges = 4;
-    if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000040U)) {
       if (this_._internal_charges() != 0) {
         total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(
             this_._internal_charges());
       }
     }
     // int64 regrow_at_unix_ms = 6;
-    if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000080U)) {
       if (this_._internal_regrow_at_unix_ms() != 0) {
         total_size += ::_pbi::WireFormatLite::Int64SizePlusOne(
             this_._internal_regrow_at_unix_ms());
       }
     }
+  }
+  if (BatchCheckHasBit(cached_has_bits, 0x00007f00U)) {
     // int64 next_transition_unix_ms = 8;
-    if (CheckHasBit(cached_has_bits, 0x00000040U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000100U)) {
       if (this_._internal_next_transition_unix_ms() != 0) {
         total_size += ::_pbi::WireFormatLite::Int64SizePlusOne(
             this_._internal_next_transition_unix_ms());
       }
     }
     // int32 max_charges = 5;
-    if (CheckHasBit(cached_has_bits, 0x00000080U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000200U)) {
       if (this_._internal_max_charges() != 0) {
         total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(
             this_._internal_max_charges());
+      }
+    }
+    // bool active = 15;
+    if (CheckHasBit(cached_has_bits, 0x00000400U)) {
+      if (this_._internal_active() != 0) {
+        total_size += 2;
+      }
+    }
+    // double position_x_m = 11;
+    if (CheckHasBit(cached_has_bits, 0x00000800U)) {
+      if (::absl::bit_cast<::uint64_t>(this_._internal_position_x_m()) != 0) {
+        total_size += 9;
+      }
+    }
+    // double position_y_m = 12;
+    if (CheckHasBit(cached_has_bits, 0x00001000U)) {
+      if (::absl::bit_cast<::uint64_t>(this_._internal_position_y_m()) != 0) {
+        total_size += 9;
+      }
+    }
+    // double position_z_m = 13;
+    if (CheckHasBit(cached_has_bits, 0x00002000U)) {
+      if (::absl::bit_cast<::uint64_t>(this_._internal_position_z_m()) != 0) {
+        total_size += 9;
+      }
+    }
+    // double facing_degrees = 14;
+    if (CheckHasBit(cached_has_bits, 0x00004000U)) {
+      if (::absl::bit_cast<::uint64_t>(this_._internal_facing_degrees()) != 0) {
+        total_size += 9;
       }
     }
   }
@@ -1919,28 +2876,73 @@ void NodeReply::MergeImpl(::google::protobuf::MessageLite& to_msg,
       }
     }
     if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+      if (!from._internal_pool_id().empty()) {
+        _this->_internal_set_pool_id(from._internal_pool_id());
+      } else {
+        if (_this->_impl_.pool_id_.IsDefault()) {
+          _this->_internal_set_pool_id("");
+        }
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+      if (!from._internal_point_id().empty()) {
+        _this->_internal_set_point_id(from._internal_point_id());
+      } else {
+        if (_this->_impl_.point_id_.IsDefault()) {
+          _this->_internal_set_point_id("");
+        }
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000020U)) {
       if (from._internal_generation() != 0) {
         _this->_impl_.generation_ = from._impl_.generation_;
       }
     }
-    if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000040U)) {
       if (from._internal_charges() != 0) {
         _this->_impl_.charges_ = from._impl_.charges_;
       }
     }
-    if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000080U)) {
       if (from._internal_regrow_at_unix_ms() != 0) {
         _this->_impl_.regrow_at_unix_ms_ = from._impl_.regrow_at_unix_ms_;
       }
     }
-    if (CheckHasBit(cached_has_bits, 0x00000040U)) {
+  }
+  if (BatchCheckHasBit(cached_has_bits, 0x00007f00U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000100U)) {
       if (from._internal_next_transition_unix_ms() != 0) {
         _this->_impl_.next_transition_unix_ms_ = from._impl_.next_transition_unix_ms_;
       }
     }
-    if (CheckHasBit(cached_has_bits, 0x00000080U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000200U)) {
       if (from._internal_max_charges() != 0) {
         _this->_impl_.max_charges_ = from._impl_.max_charges_;
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000400U)) {
+      if (from._internal_active() != 0) {
+        _this->_impl_.active_ = from._impl_.active_;
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000800U)) {
+      if (::absl::bit_cast<::uint64_t>(from._internal_position_x_m()) != 0) {
+        _this->_impl_.position_x_m_ = from._impl_.position_x_m_;
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00001000U)) {
+      if (::absl::bit_cast<::uint64_t>(from._internal_position_y_m()) != 0) {
+        _this->_impl_.position_y_m_ = from._impl_.position_y_m_;
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00002000U)) {
+      if (::absl::bit_cast<::uint64_t>(from._internal_position_z_m()) != 0) {
+        _this->_impl_.position_z_m_ = from._impl_.position_z_m_;
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00004000U)) {
+      if (::absl::bit_cast<::uint64_t>(from._internal_facing_degrees()) != 0) {
+        _this->_impl_.facing_degrees_ = from._impl_.facing_degrees_;
       }
     }
   }
@@ -1966,9 +2968,11 @@ void NodeReply::InternalSwap(NodeReply* PROTOBUF_RESTRICT PROTOBUF_NONNULL other
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.node_id_, &other->_impl_.node_id_, arena);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.definition_id_, &other->_impl_.definition_id_, arena);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.growth_stage_, &other->_impl_.growth_stage_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.pool_id_, &other->_impl_.pool_id_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.point_id_, &other->_impl_.point_id_, arena);
   ::google::protobuf::internal::memswap<
-      PROTOBUF_FIELD_OFFSET(NodeReply, _impl_.max_charges_)
-      + sizeof(NodeReply::_impl_.max_charges_)
+      PROTOBUF_FIELD_OFFSET(NodeReply, _impl_.facing_degrees_)
+      + sizeof(NodeReply::_impl_.facing_degrees_)
       - PROTOBUF_FIELD_OFFSET(NodeReply, _impl_.generation_)>(
           reinterpret_cast<char*>(&_impl_.generation_),
           reinterpret_cast<char*>(&other->_impl_.generation_));

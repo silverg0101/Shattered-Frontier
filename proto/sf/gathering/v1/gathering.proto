@@ -4,11 +4,14 @@ option csharp_namespace = "ShatteredFrontier.Gathering.V1";
 
 service Gathering {
   rpc GetNode(GetNodeRequest) returns (NodeReply);
+  rpc ListZoneNodes(ListZoneNodesRequest) returns (ListZoneNodesReply);
   rpc Harvest(HarvestRequest) returns (HarvestReply);
   // Separate method so an older host cannot silently discard the required intent fields.
   rpc HarvestWithIntent(HarvestRequest) returns (HarvestReply);
 }
 message GetNodeRequest { string node_id = 1; }
+message ListZoneNodesRequest { string zone_id = 1; }
+message ListZoneNodesReply { repeated NodeReply nodes = 1; }
 message HarvestRequest {
   string operation_id = 1;
   string character_id = 2;
@@ -29,6 +32,13 @@ message NodeReply {
   int64 regrow_at_unix_ms = 6;
   string growth_stage = 7;
   int64 next_transition_unix_ms = 8;
+  string pool_id = 9;
+  string point_id = 10;
+  double position_x_m = 11;
+  double position_y_m = 12;
+  double position_z_m = 13;
+  double facing_degrees = 14;
+  bool active = 15;
 }
 message HarvestReply {
   // granted | pending | depleted | stale_generation | unknown_node

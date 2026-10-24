@@ -46,7 +46,7 @@ public:
 enum class ESFGameplayRpc : uint8 { GrantDefeatReward, ApplyReceipt, GetCharacterState, CreateCharacter, LearnRecipe, ClaimPlot, GetClaim, Place, Remove, Craft, ListStructures, Grant, SavePosition, ReportDeath, ClearDeath,
     // Exchange (proto/sf/exchange/v1), carried by the Backend transport over the same Gameplay.Host channel.
     ExchangeWallet, OfferTrade, AcceptTrade, CancelTrade, ListItem, BuyListing, CancelListing, ListListings,
-    GetGatheringNode, HarvestGatheringNode, AdvanceWorldSlots };
+    GetGatheringNode, ListGatheringZoneNodes, HarvestGatheringNode, AdvanceWorldSlots };
 
 // Exchange request fields (each RPC reads only its own). Amounts are whole gold, as in the proto.
 struct FSFExchangeDelivery { FString EscrowId, DestinationId, ItemId; int64 Quantity = 0; };
@@ -142,6 +142,12 @@ struct FSFGameplayResponse
     bool bHasNode = false; FString NodeId, NodeDefinitionId, GrowthStage, HarvestStatus, ResourceId;
     int32 NodeGeneration = 0, NodeCharges = 0, NodeCapacity = 0, HarvestQuantity = 0;
     int64 NodeRegrowAtUnixMs = 0, NodeNextTransitionUnixMs = 0;
+    FString NodePoolId, NodePointId; FVector NodePositionMetres = FVector::ZeroVector;
+    double NodeFacingDegrees = 0; bool bNodeActive = false;
+    struct FZoneNode { FString Id, DefinitionId, GrowthStage, PoolId, PointId; int32 Generation = 0, Charges = 0, Capacity = 0;
+        int64 RegrowAtUnixMs = 0, NextTransitionUnixMs = 0; FVector PositionMetres = FVector::ZeroVector;
+        double FacingDegrees = 0; bool bActive = false; };
+    TArray<FZoneNode> ZoneNodes;
     struct FBoarSlot { FString GroupId, PointId; int32 SlotIndex = 0, Cycle = 0; bool bActive = false; double XMetres = 0, YMetres = 0, FacingDegrees = 0; };
     TArray<FBoarSlot> BoarSlots;
 };

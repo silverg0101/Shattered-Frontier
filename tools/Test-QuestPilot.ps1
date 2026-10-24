@@ -9,7 +9,7 @@ param(
     # -Leg Board (QST-02): board accept, 3 oak, server restart keeps 3/6, then abandon and re-accept from Oswin; services required.
     [switch]$Services,
     [switch]$Int06KillAfterGrant,
-    [switch]$Gat01Restart  # Full + Services: deplete iron through the pilot, restart server and hosts during regrowth.
+    [switch]$Gat01Restart  # Full + Services: deplete iron, observe its rotation, then restart server and hosts.
 )
 # The gathering and combat pilots run in different game modes, so each leg proves its own events reach the quest
 # (real server-side harvest/boar outcomes, no synthetic events) and the owning client's tracker view follows.
@@ -274,20 +274,24 @@ try {
             Wait-Log $server 'server' 'GATHERING_NODE_HOST_STATE Id=zone/greenlands_silverbrook/eastwood_iron_ore/\d+ Generation=1 Stage=None Charges=0'
             $depleted = [regex]::Match((Read-Log 'server'), 'GATHERING_NODE_HOST_STATE Id=(zone/greenlands_silverbrook/eastwood_iron_ore/\d+) Generation=1 Stage=None Charges=0')
             $nodeId = $depleted.Groups[1].Value
-            $saved = (Invoke-LedgerSql $fx "SELECT (node->>'Charges')||','||(node->>'RegrowAt')||','||(node->>'ScheduledRespawnSeconds') FROM inventory.gathering_node_state, jsonb_array_elements(state) node WHERE node->>'Id'='$nodeId'" $fx.db).Trim().Split(',')
+            $saved = (Invoke-LedgerSql $fx "SELECT (node->>'Charges')||','||(node->>'RegrowAt')||','||(node->>'ScheduledRespawnSeconds')||','||(node->>'PointId') FROM inventory.gathering_node_state, jsonb_array_elements(state) node WHERE node->>'Id'='$nodeId'" $fx.db).Trim().Split(',')
             $harvests = (Invoke-LedgerSql $fx "SELECT count(*) FROM inventory.gathering_harvest_receipts WHERE node_id='$nodeId' AND resource_id='item/iron_ore'" $fx.db).Trim()
-            if ($saved.Count -ne 3 -or $saved[0] -ne '0' -or $harvests -ne '5') { throw "Pilot did not durably deplete five iron charges: state=$($saved -join ',') receipts=$harvests" }
+            if ($saved.Count -ne 4 -or $saved[0] -ne '0' -or $harvests -ne '5') { throw "Pilot did not durably deplete five iron charges: state=$($saved -join ',') receipts=$harvests" }
             $emergeAt = [DateTimeOffset]::Parse($saved[1]).AddSeconds(-[double]::Parse($saved[2]) * 0.5)
-            if ($emergeAt -le [DateTimeOffset]::UtcNow.AddSeconds(3)) { throw 'Iron emergence deadline passed before restart could begin.' }
+            Wait-Log $server 'server' ("GATHERING_NODE_HOST_STATE Id=" + [regex]::Escape($nodeId) + ' Generation=2 Stage=(young Charges=2|growing Charges=3|mature Charges=5) Point=\S+ Active=1')
+            $rotated = [regex]::Match((Read-Log 'server'), 'GATHERING_NODE_HOST_STATE Id=' + [regex]::Escape($nodeId) + ' Generation=2 Stage=\w+ Charges=\d+ Point=(\S+) Active=1').Groups[1].Value
+            if (-not $rotated -or $rotated -eq $saved[3]) { throw "Pilot did not move from $($saved[3]) to a new point: $rotated" }
+            $beforeRestart = (Invoke-LedgerSql $fx "SELECT node->>'PointId' FROM inventory.gathering_node_state, jsonb_array_elements(state) node WHERE node->>'Id'='$nodeId'" $fx.db).Trim()
+            if ($beforeRestart -ne $rotated) { throw "Pilot point $rotated differs from saved backend point $beforeRestart" }
             foreach ($process in @($client,$server,$script:gameplay)) { if (-not $process.HasExited) { Stop-Process -Id $process.Id -Force; $process.WaitForExit() } }
             Stop-LedgerHost $fx
             Start-QuestHosts
             Invoke-WithEnv $serverEnv { $script:restart = Start-Owned 'restart-server' $url $flags }
             Wait-Log $restart 'restart-server' 'QUEST_PILOT_READY Quests='
-            Wait-Log $restart 'restart-server' ("GATHERING_NODE_HOST_STATE Id=" + [regex]::Escape($nodeId) + ' Generation=2 Stage=(young Charges=2|growing Charges=3|mature Charges=5)')
-            $after = (Invoke-LedgerSql $fx "SELECT (node->>'Generation')||','||(node->>'Charges')||','||(SELECT count(*) FROM inventory.gathering_harvest_receipts WHERE node_id='$nodeId' AND resource_id='item/iron_ore') FROM inventory.gathering_node_state, jsonb_array_elements(state) node WHERE node->>'Id'='$nodeId'" $fx.db).Trim()
-            if ($after -notin '2,2,5','2,3,5','2,5,5') { throw "Restarted node and receipts differ: $after" }
-            $result.growthRestart = [ordered]@{ node=$nodeId; before='generation 1, depleted'; after=$after; emergenceDeadline=$emergeAt.ToString('o') }
+            Wait-Log $restart 'restart-server' ("GATHERING_NODE_HOST_STATE Id=" + [regex]::Escape($nodeId) + ' Generation=2 Stage=(young Charges=2|growing Charges=3|mature Charges=5) Point=' + [regex]::Escape($rotated) + ' Active=1')
+            $after = (Invoke-LedgerSql $fx "SELECT (node->>'Generation')||','||(node->>'Charges')||','||(node->>'PointId')||','||(SELECT count(*) FROM inventory.gathering_harvest_receipts WHERE node_id='$nodeId' AND resource_id='item/iron_ore') FROM inventory.gathering_node_state, jsonb_array_elements(state) node WHERE node->>'Id'='$nodeId'" $fx.db).Trim()
+            if ($after -notin "2,2,$rotated,5","2,3,$rotated,5","2,5,$rotated,5") { throw "Restarted node and receipts differ: $after" }
+            $result.growthRestart = [ordered]@{ node=$nodeId; before=$saved[3]; rotated=$rotated; after=$after; emergenceDeadline=$emergeAt.ToString('o') }
         }
     } else {
         $url = $silverbrook

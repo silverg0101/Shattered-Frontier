@@ -26,6 +26,7 @@ namespace v1 {
 
 static const char* Gathering_method_names[] = {
   "/sf.gathering.v1.Gathering/GetNode",
+  "/sf.gathering.v1.Gathering/ListZoneNodes",
   "/sf.gathering.v1.Gathering/Harvest",
   "/sf.gathering.v1.Gathering/HarvestWithIntent",
 };
@@ -38,8 +39,9 @@ std::unique_ptr< Gathering::Stub> Gathering::NewStub(const std::shared_ptr< ::gr
 
 Gathering::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options)
   : channel_(channel), rpcmethod_GetNode_(Gathering_method_names[0], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_Harvest_(Gathering_method_names[1], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_HarvestWithIntent_(Gathering_method_names[2], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_ListZoneNodes_(Gathering_method_names[1], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_Harvest_(Gathering_method_names[2], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_HarvestWithIntent_(Gathering_method_names[3], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   {}
 
 ::grpc::Status Gathering::Stub::GetNode(::grpc::ClientContext* context, const ::sf::gathering::v1::GetNodeRequest& request, ::sf::gathering::v1::NodeReply* response) {
@@ -61,6 +63,29 @@ void Gathering::Stub::async::GetNode(::grpc::ClientContext* context, const ::sf:
 ::grpc::ClientAsyncResponseReader< ::sf::gathering::v1::NodeReply>* Gathering::Stub::AsyncGetNodeRaw(::grpc::ClientContext* context, const ::sf::gathering::v1::GetNodeRequest& request, ::grpc::CompletionQueue* cq) {
   auto* result =
     this->PrepareAsyncGetNodeRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
+::grpc::Status Gathering::Stub::ListZoneNodes(::grpc::ClientContext* context, const ::sf::gathering::v1::ListZoneNodesRequest& request, ::sf::gathering::v1::ListZoneNodesReply* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::sf::gathering::v1::ListZoneNodesRequest, ::sf::gathering::v1::ListZoneNodesReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_ListZoneNodes_, context, request, response);
+}
+
+void Gathering::Stub::async::ListZoneNodes(::grpc::ClientContext* context, const ::sf::gathering::v1::ListZoneNodesRequest* request, ::sf::gathering::v1::ListZoneNodesReply* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::sf::gathering::v1::ListZoneNodesRequest, ::sf::gathering::v1::ListZoneNodesReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_ListZoneNodes_, context, request, response, std::move(f));
+}
+
+void Gathering::Stub::async::ListZoneNodes(::grpc::ClientContext* context, const ::sf::gathering::v1::ListZoneNodesRequest* request, ::sf::gathering::v1::ListZoneNodesReply* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_ListZoneNodes_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::sf::gathering::v1::ListZoneNodesReply>* Gathering::Stub::PrepareAsyncListZoneNodesRaw(::grpc::ClientContext* context, const ::sf::gathering::v1::ListZoneNodesRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::sf::gathering::v1::ListZoneNodesReply, ::sf::gathering::v1::ListZoneNodesRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_ListZoneNodes_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::sf::gathering::v1::ListZoneNodesReply>* Gathering::Stub::AsyncListZoneNodesRaw(::grpc::ClientContext* context, const ::sf::gathering::v1::ListZoneNodesRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncListZoneNodesRaw(context, request, cq);
   result->StartCall();
   return result;
 }
@@ -125,6 +150,16 @@ Gathering::Service::Service() {
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       Gathering_method_names[1],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< Gathering::Service, ::sf::gathering::v1::ListZoneNodesRequest, ::sf::gathering::v1::ListZoneNodesReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](Gathering::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::sf::gathering::v1::ListZoneNodesRequest* req,
+             ::sf::gathering::v1::ListZoneNodesReply* resp) {
+               return service->ListZoneNodes(ctx, req, resp);
+             }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      Gathering_method_names[2],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
       new ::grpc::internal::RpcMethodHandler< Gathering::Service, ::sf::gathering::v1::HarvestRequest, ::sf::gathering::v1::HarvestReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](Gathering::Service* service,
              ::grpc::ServerContext* ctx,
@@ -133,7 +168,7 @@ Gathering::Service::Service() {
                return service->Harvest(ctx, req, resp);
              }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
-      Gathering_method_names[2],
+      Gathering_method_names[3],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
       new ::grpc::internal::RpcMethodHandler< Gathering::Service, ::sf::gathering::v1::HarvestRequest, ::sf::gathering::v1::HarvestReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](Gathering::Service* service,
@@ -148,6 +183,13 @@ Gathering::Service::~Service() {
 }
 
 ::grpc::Status Gathering::Service::GetNode(::grpc::ServerContext* context, const ::sf::gathering::v1::GetNodeRequest* request, ::sf::gathering::v1::NodeReply* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status Gathering::Service::ListZoneNodes(::grpc::ServerContext* context, const ::sf::gathering::v1::ListZoneNodesRequest* request, ::sf::gathering::v1::ListZoneNodesReply* response) {
   (void) context;
   (void) request;
   (void) response;

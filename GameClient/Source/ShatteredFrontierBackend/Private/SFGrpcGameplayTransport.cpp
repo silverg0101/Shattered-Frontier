@@ -72,6 +72,9 @@ namespace
         Out.NodeGeneration = R.generation(); Out.NodeCharges = R.charges(); Out.NodeCapacity = R.max_charges();
         Out.NodeRegrowAtUnixMs = R.regrow_at_unix_ms(); Out.GrowthStage = FromUtf8(R.growth_stage());
         Out.NodeNextTransitionUnixMs = R.next_transition_unix_ms();
+        Out.NodePoolId = FromUtf8(R.pool_id()); Out.NodePointId = FromUtf8(R.point_id());
+        Out.NodePositionMetres = FVector(R.position_x_m(), R.position_y_m(), R.position_z_m());
+        Out.NodeFacingDegrees = R.facing_degrees(); Out.bNodeActive = R.active();
     }
 }
 
@@ -158,6 +161,27 @@ void FSFGrpcGameplayTransport::Send(const FSFGameplayRequest& Q, float DeadlineS
         auto* Call = new TCall<sf::gathering::v1::NodeReply>();
         Call->Copy = [](const sf::gathering::v1::NodeReply& R, FSFGameplayResponse& Out) { CopyNode(R, Out); };
         Start(Call, [&](grpc::ClientContext* C) { return Channel->Gathering->AsyncGetNode(C, M, &Channel->Queue); });
+        break;
+    }
+    case ESFGameplayRpc::ListGatheringZoneNodes:
+    {
+        sf::gathering::v1::ListZoneNodesRequest M; M.set_zone_id(Utf8(Q.ZoneId));
+        auto* Call = new TCall<sf::gathering::v1::ListZoneNodesReply>();
+        Call->Copy = [](const sf::gathering::v1::ListZoneNodesReply& R, FSFGameplayResponse& Out)
+        {
+            for (const auto& Node : R.nodes())
+            {
+                FSFGameplayResponse Single; CopyNode(Node, Single);
+                auto& Row = Out.ZoneNodes.AddDefaulted_GetRef();
+                Row.Id = Single.NodeId; Row.DefinitionId = Single.NodeDefinitionId; Row.GrowthStage = Single.GrowthStage;
+                Row.PoolId = Single.NodePoolId; Row.PointId = Single.NodePointId;
+                Row.Generation = Single.NodeGeneration; Row.Charges = Single.NodeCharges; Row.Capacity = Single.NodeCapacity;
+                Row.RegrowAtUnixMs = Single.NodeRegrowAtUnixMs; Row.NextTransitionUnixMs = Single.NodeNextTransitionUnixMs;
+                Row.PositionMetres = Single.NodePositionMetres; Row.FacingDegrees = Single.NodeFacingDegrees;
+                Row.bActive = Single.bNodeActive;
+            }
+        };
+        Start(Call, [&](grpc::ClientContext* C) { return Channel->Gathering->AsyncListZoneNodes(C, M, &Channel->Queue); });
         break;
     }
     case ESFGameplayRpc::HarvestGatheringNode:

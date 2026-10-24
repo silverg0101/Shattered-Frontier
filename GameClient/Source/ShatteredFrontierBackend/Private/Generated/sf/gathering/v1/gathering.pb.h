@@ -80,6 +80,22 @@ extern const ::google::protobuf::internal::ClassDataFull HarvestRequest_class_da
 #else
 extern const HarvestRequestGlobalsTypeInternal HarvestRequest_globals_;
 #endif  // PROTOBUF_MESSAGE_GLOBALS
+class ListZoneNodesReply;
+struct ListZoneNodesReplyGlobalsTypeInternal;
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+extern ListZoneNodesReplyGlobalsTypeInternal ListZoneNodesReply_globals_;
+extern const ::google::protobuf::internal::ClassDataFull ListZoneNodesReply_class_data_;
+#else
+extern const ListZoneNodesReplyGlobalsTypeInternal ListZoneNodesReply_globals_;
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+class ListZoneNodesRequest;
+struct ListZoneNodesRequestGlobalsTypeInternal;
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+extern ListZoneNodesRequestGlobalsTypeInternal ListZoneNodesRequest_globals_;
+extern const ::google::protobuf::internal::ClassDataFull ListZoneNodesRequest_class_data_;
+#else
+extern const ListZoneNodesRequestGlobalsTypeInternal ListZoneNodesRequest_globals_;
+#endif  // PROTOBUF_MESSAGE_GLOBALS
 class NodeReply;
 struct NodeReplyGlobalsTypeInternal;
 #ifndef PROTOBUF_MESSAGE_GLOBALS
@@ -161,7 +177,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED NodeReply final : public ::google::
   [[nodiscard]] static const NodeReply& default_instance() {
     return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<NodeReply>(&NodeReply_globals_);
   }
-  static constexpr int kIndexInFileMessages = 2;
+  static constexpr int kIndexInFileMessages = 4;
   friend void swap(NodeReply& a, NodeReply& b) { a.Swap(&b); }
   inline void Swap(NodeReply* PROTOBUF_NONNULL other) {
     if (other == this) return;
@@ -256,11 +272,18 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED NodeReply final : public ::google::
     kNodeIdFieldNumber = 1,
     kDefinitionIdFieldNumber = 2,
     kGrowthStageFieldNumber = 7,
+    kPoolIdFieldNumber = 9,
+    kPointIdFieldNumber = 10,
     kGenerationFieldNumber = 3,
     kChargesFieldNumber = 4,
     kRegrowAtUnixMsFieldNumber = 6,
     kNextTransitionUnixMsFieldNumber = 8,
     kMaxChargesFieldNumber = 5,
+    kActiveFieldNumber = 15,
+    kPositionXMFieldNumber = 11,
+    kPositionYMFieldNumber = 12,
+    kPositionZMFieldNumber = 13,
+    kFacingDegreesFieldNumber = 14,
   };
   // string node_id = 1;
   void clear_node_id() ;
@@ -305,6 +328,36 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED NodeReply final : public ::google::
   const ::std::string& _internal_growth_stage() const;
   PROTOBUF_ALWAYS_INLINE void _internal_set_growth_stage(const ::std::string& value);
   ::std::string* PROTOBUF_NONNULL _internal_mutable_growth_stage();
+
+  public:
+  // string pool_id = 9;
+  void clear_pool_id() ;
+  [[nodiscard]] const ::std::string& pool_id() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_pool_id(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_pool_id();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_pool_id();
+  void set_allocated_pool_id(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_pool_id() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_pool_id(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_pool_id();
+
+  public:
+  // string point_id = 10;
+  void clear_point_id() ;
+  [[nodiscard]] const ::std::string& point_id() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_point_id(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_point_id();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_point_id();
+  void set_allocated_point_id(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_point_id() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_point_id(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_point_id();
 
   public:
   // int32 generation = 3;
@@ -357,12 +410,62 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED NodeReply final : public ::google::
   void _internal_set_max_charges(::int32_t value);
 
   public:
+  // bool active = 15;
+  void clear_active() ;
+  [[nodiscard]] bool active() const;
+  void set_active(bool value);
+
+  private:
+  bool _internal_active() const;
+  void _internal_set_active(bool value);
+
+  public:
+  // double position_x_m = 11;
+  void clear_position_x_m() ;
+  [[nodiscard]] double position_x_m() const;
+  void set_position_x_m(double value);
+
+  private:
+  double _internal_position_x_m() const;
+  void _internal_set_position_x_m(double value);
+
+  public:
+  // double position_y_m = 12;
+  void clear_position_y_m() ;
+  [[nodiscard]] double position_y_m() const;
+  void set_position_y_m(double value);
+
+  private:
+  double _internal_position_y_m() const;
+  void _internal_set_position_y_m(double value);
+
+  public:
+  // double position_z_m = 13;
+  void clear_position_z_m() ;
+  [[nodiscard]] double position_z_m() const;
+  void set_position_z_m(double value);
+
+  private:
+  double _internal_position_z_m() const;
+  void _internal_set_position_z_m(double value);
+
+  public:
+  // double facing_degrees = 14;
+  void clear_facing_degrees() ;
+  [[nodiscard]] double facing_degrees() const;
+  void set_facing_degrees(double value);
+
+  private:
+  double _internal_facing_degrees() const;
+  void _internal_set_facing_degrees(double value);
+
+  public:
   // @@protoc_insertion_point(class_scope:sf.gathering.v1.NodeReply)
  private:
   class _Internal;
   using ParseTableT_ =
-      ::google::protobuf::internal::TcParseTable<3, 8,
-                          0, 74,
+      ::google::protobuf::internal::TcParseTable<4, 15,
+                          0, 89,
                           2>;
   static constexpr ParseTableT_ InternalGenerateParseTable_(
       const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
@@ -393,11 +496,224 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED NodeReply final : public ::google::
     ::google::protobuf::internal::ArenaStringPtr node_id_;
     ::google::protobuf::internal::ArenaStringPtr definition_id_;
     ::google::protobuf::internal::ArenaStringPtr growth_stage_;
+    ::google::protobuf::internal::ArenaStringPtr pool_id_;
+    ::google::protobuf::internal::ArenaStringPtr point_id_;
     ::int32_t generation_;
     ::int32_t charges_;
     ::int64_t regrow_at_unix_ms_;
     ::int64_t next_transition_unix_ms_;
     ::int32_t max_charges_;
+    bool active_;
+    double position_x_m_;
+    double position_y_m_;
+    double position_z_m_;
+    double facing_degrees_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_sf_2fgathering_2fv1_2fgathering_2eproto;
+};
+// -------------------------------------------------------------------
+
+class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ListZoneNodesRequest final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:sf.gathering.v1.ListZoneNodesRequest) */ {
+ public:
+  inline ListZoneNodesRequest() : ListZoneNodesRequest(nullptr) {}
+  ~ListZoneNodesRequest() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(ListZoneNodesRequest* PROTOBUF_NONNULL msg, ::std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(ListZoneNodesRequest));
+  }
+#endif
+
+  template <typename = void>
+  explicit constexpr ListZoneNodesRequest(::google::protobuf::internal::ConstantInitialized,
+                           const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+                               class_data);
+
+  inline ListZoneNodesRequest(const ListZoneNodesRequest& from) : ListZoneNodesRequest(nullptr, from) {}
+  inline ListZoneNodesRequest(ListZoneNodesRequest&& from) noexcept : ListZoneNodesRequest(nullptr, ::std::move(from)) {}
+  inline ListZoneNodesRequest& operator=(const ListZoneNodesRequest& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline ListZoneNodesRequest& operator=(ListZoneNodesRequest&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  [[nodiscard]] inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  [[nodiscard]] inline ::google::protobuf::UnknownFieldSet* PROTOBUF_NONNULL
+  mutable_unknown_fields() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  [[nodiscard]] static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL descriptor() {
+    return GetDescriptor();
+  }
+  [[nodiscard]] static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL
+  GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  [[nodiscard]] static const ::google::protobuf::Reflection* PROTOBUF_NONNULL GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  [[nodiscard]] static const ListZoneNodesRequest& default_instance() {
+    return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<ListZoneNodesRequest>(&ListZoneNodesRequest_globals_);
+  }
+  static constexpr int kIndexInFileMessages = 1;
+  friend void swap(ListZoneNodesRequest& a, ListZoneNodesRequest& b) { a.Swap(&b); }
+  inline void Swap(ListZoneNodesRequest* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(ListZoneNodesRequest* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  [[nodiscard]] ListZoneNodesRequest* PROTOBUF_NONNULL
+  New(::google::protobuf::Arena* PROTOBUF_NULLABLE arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<ListZoneNodesRequest>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const ListZoneNodesRequest& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const ListZoneNodesRequest& from) { ListZoneNodesRequest::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(::google::protobuf::MessageLite& to_msg,
+                        const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  [[nodiscard]] bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  [[nodiscard]] static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+
+  public:
+  [[nodiscard]] ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  [[nodiscard]] ::size_t ByteSizeLong() const final;
+  [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  [[nodiscard]] int GetCachedSize() const {
+    return _impl_._cached_size_.Get();
+  }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(ListZoneNodesRequest* PROTOBUF_NONNULL other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "sf.gathering.v1.ListZoneNodesRequest"; }
+
+  explicit ListZoneNodesRequest(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  ListZoneNodesRequest(::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const ListZoneNodesRequest& from);
+  ListZoneNodesRequest(
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, ListZoneNodesRequest&& from) noexcept
+      : ListZoneNodesRequest(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL GetClassData() const PROTOBUF_FINAL;
+  static void* PROTOBUF_NONNULL PlacementNew_(
+      const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static constexpr auto InternalNewImpl_();
+
+ public:
+  static constexpr auto InternalGenerateClassData_(
+      const MessageLite& prototype,
+      const ::google::protobuf::internal::TcParseTableBase* PROTOBUF_NULLABLE tc_table = nullptr);
+
+  [[nodiscard]] ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kZoneIdFieldNumber = 1,
+  };
+  // string zone_id = 1;
+  void clear_zone_id() ;
+  [[nodiscard]] const ::std::string& zone_id() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_zone_id(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_zone_id();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_zone_id();
+  void set_allocated_zone_id(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_zone_id() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_zone_id(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_zone_id();
+
+  public:
+  // @@protoc_insertion_point(class_scope:sf.gathering.v1.ListZoneNodesRequest)
+ private:
+  class _Internal;
+  using ParseTableT_ =
+      ::google::protobuf::internal::TcParseTable<0, 1,
+                          0, 52,
+                          2>;
+  static constexpr ParseTableT_ InternalGenerateParseTable_(
+      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+  friend class ::google::protobuf::internal::TcParser;
+  #ifndef PROTOBUF_MESSAGE_GLOBALS
+  static const ParseTableT_ _table_;
+  #endif
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  friend ::google::protobuf::internal::PrivateAccess;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                                    ::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+        const ListZoneNodesRequest& from_msg);
+    ::google::protobuf::internal::HasBits<1> _has_bits_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    ::google::protobuf::internal::ArenaStringPtr zone_id_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
   union { Impl_ _impl_; };
@@ -461,7 +777,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED HarvestRequest final : public ::goo
   [[nodiscard]] static const HarvestRequest& default_instance() {
     return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<HarvestRequest>(&HarvestRequest_globals_);
   }
-  static constexpr int kIndexInFileMessages = 1;
+  static constexpr int kIndexInFileMessages = 3;
   friend void swap(HarvestRequest& a, HarvestRequest& b) { a.Swap(&b); }
   inline void Swap(HarvestRequest* PROTOBUF_NONNULL other) {
     if (other == this) return;
@@ -926,6 +1242,218 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED GetNodeRequest final : public ::goo
 };
 // -------------------------------------------------------------------
 
+class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ListZoneNodesReply final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:sf.gathering.v1.ListZoneNodesReply) */ {
+ public:
+  inline ListZoneNodesReply() : ListZoneNodesReply(nullptr) {}
+  ~ListZoneNodesReply() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(ListZoneNodesReply* PROTOBUF_NONNULL msg, ::std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(ListZoneNodesReply));
+  }
+#endif
+
+  template <typename = void>
+  explicit constexpr ListZoneNodesReply(::google::protobuf::internal::ConstantInitialized,
+                           const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+                               class_data);
+
+  inline ListZoneNodesReply(const ListZoneNodesReply& from) : ListZoneNodesReply(nullptr, from) {}
+  inline ListZoneNodesReply(ListZoneNodesReply&& from) noexcept : ListZoneNodesReply(nullptr, ::std::move(from)) {}
+  inline ListZoneNodesReply& operator=(const ListZoneNodesReply& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline ListZoneNodesReply& operator=(ListZoneNodesReply&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  [[nodiscard]] inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  [[nodiscard]] inline ::google::protobuf::UnknownFieldSet* PROTOBUF_NONNULL
+  mutable_unknown_fields() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  [[nodiscard]] static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL descriptor() {
+    return GetDescriptor();
+  }
+  [[nodiscard]] static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL
+  GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  [[nodiscard]] static const ::google::protobuf::Reflection* PROTOBUF_NONNULL GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  [[nodiscard]] static const ListZoneNodesReply& default_instance() {
+    return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<ListZoneNodesReply>(&ListZoneNodesReply_globals_);
+  }
+  static constexpr int kIndexInFileMessages = 2;
+  friend void swap(ListZoneNodesReply& a, ListZoneNodesReply& b) { a.Swap(&b); }
+  inline void Swap(ListZoneNodesReply* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(ListZoneNodesReply* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  [[nodiscard]] ListZoneNodesReply* PROTOBUF_NONNULL
+  New(::google::protobuf::Arena* PROTOBUF_NULLABLE arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<ListZoneNodesReply>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const ListZoneNodesReply& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const ListZoneNodesReply& from) { ListZoneNodesReply::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(::google::protobuf::MessageLite& to_msg,
+                        const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  [[nodiscard]] bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  [[nodiscard]] static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+
+  public:
+  [[nodiscard]] ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  [[nodiscard]] ::size_t ByteSizeLong() const final;
+  [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  [[nodiscard]] int GetCachedSize() const {
+    return _impl_._cached_size_.Get();
+  }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(ListZoneNodesReply* PROTOBUF_NONNULL other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "sf.gathering.v1.ListZoneNodesReply"; }
+
+  explicit ListZoneNodesReply(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  ListZoneNodesReply(::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const ListZoneNodesReply& from);
+  ListZoneNodesReply(
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, ListZoneNodesReply&& from) noexcept
+      : ListZoneNodesReply(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL GetClassData() const PROTOBUF_FINAL;
+  static void* PROTOBUF_NONNULL PlacementNew_(
+      const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static constexpr auto InternalNewImpl_();
+
+ public:
+  static constexpr auto InternalGenerateClassData_(
+      const MessageLite& prototype,
+      const ::google::protobuf::internal::TcParseTableBase* PROTOBUF_NULLABLE tc_table = nullptr);
+
+  [[nodiscard]] ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kNodesFieldNumber = 1,
+  };
+  // repeated .sf.gathering.v1.NodeReply nodes = 1;
+  [[nodiscard]] int nodes_size()
+      const;
+  private:
+  int _internal_nodes_size() const;
+
+  public:
+  void clear_nodes() ;
+  [[nodiscard]] const ::sf::gathering::v1::NodeReply& nodes(int index) const;
+  [[nodiscard]] ::sf::gathering::v1::NodeReply* PROTOBUF_NONNULL mutable_nodes(int index);
+  ::sf::gathering::v1::NodeReply* PROTOBUF_NONNULL add_nodes();
+  [[nodiscard]] const ::google::protobuf::RepeatedPtrField<::sf::gathering::v1::NodeReply>&
+  nodes() const;
+  [[nodiscard]] ::google::protobuf::RepeatedPtrField<::sf::gathering::v1::NodeReply>* PROTOBUF_NONNULL
+  mutable_nodes();
+
+  private:
+  const ::google::protobuf::RepeatedPtrField<::sf::gathering::v1::NodeReply>& _internal_nodes() const;
+  ::google::protobuf::RepeatedPtrField<::sf::gathering::v1::NodeReply>* PROTOBUF_NONNULL _internal_mutable_nodes();
+
+  public:
+  // @@protoc_insertion_point(class_scope:sf.gathering.v1.ListZoneNodesReply)
+ private:
+  class _Internal;
+  using ParseTableT_ =
+      ::google::protobuf::internal::TcParseTable<0, 1,
+                          1, 0,
+                          2>;
+  static constexpr ParseTableT_ InternalGenerateParseTable_(
+      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+  friend class ::google::protobuf::internal::TcParser;
+  #ifndef PROTOBUF_MESSAGE_GLOBALS
+  static const ParseTableT_ _table_;
+  #endif
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  friend ::google::protobuf::internal::PrivateAccess;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                                    ::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+        const ListZoneNodesReply& from_msg);
+    ::google::protobuf::internal::HasBits<1> _has_bits_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    ::google::protobuf::RepeatedPtrField< ::sf::gathering::v1::NodeReply > nodes_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_sf_2fgathering_2fv1_2fgathering_2eproto;
+};
+// -------------------------------------------------------------------
+
 class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED HarvestReply final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:sf.gathering.v1.HarvestReply) */ {
  public:
@@ -982,7 +1510,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED HarvestReply final : public ::googl
   [[nodiscard]] static const HarvestReply& default_instance() {
     return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<HarvestReply>(&HarvestReply_globals_);
   }
-  static constexpr int kIndexInFileMessages = 3;
+  static constexpr int kIndexInFileMessages = 5;
   friend void swap(HarvestReply& a, HarvestReply& b) { a.Swap(&b); }
   inline void Swap(HarvestReply* PROTOBUF_NONNULL other) {
     if (other == this) return;
@@ -1256,6 +1784,133 @@ inline void GetNodeRequest::set_allocated_node_id(::std::string* PROTOBUF_NULLAB
     _impl_.node_id_.Set("", GetArena());
   }
   // @@protoc_insertion_point(field_set_allocated:sf.gathering.v1.GetNodeRequest.node_id)
+}
+
+// -------------------------------------------------------------------
+
+// ListZoneNodesRequest
+
+// string zone_id = 1;
+inline void ListZoneNodesRequest::clear_zone_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.zone_id_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+}
+inline const ::std::string& ListZoneNodesRequest::zone_id() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.gathering.v1.ListZoneNodesRequest.zone_id)
+  return _internal_zone_id();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void ListZoneNodesRequest::set_zone_id(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  _impl_.zone_id_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:sf.gathering.v1.ListZoneNodesRequest.zone_id)
+}
+inline ::std::string* PROTOBUF_NONNULL ListZoneNodesRequest::mutable_zone_id()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  ::std::string* _s = _internal_mutable_zone_id();
+  // @@protoc_insertion_point(field_mutable:sf.gathering.v1.ListZoneNodesRequest.zone_id)
+  return _s;
+}
+inline const ::std::string& ListZoneNodesRequest::_internal_zone_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.zone_id_.Get();
+}
+inline void ListZoneNodesRequest::_internal_set_zone_id(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.zone_id_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL ListZoneNodesRequest::_internal_mutable_zone_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.zone_id_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE ListZoneNodesRequest::release_zone_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:sf.gathering.v1.ListZoneNodesRequest.zone_id)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000001U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+  auto* released = _impl_.zone_id_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.zone_id_.Set("", GetArena());
+  }
+  return released;
+}
+inline void ListZoneNodesRequest::set_allocated_zone_id(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+  }
+  _impl_.zone_id_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.zone_id_.IsDefault()) {
+    _impl_.zone_id_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:sf.gathering.v1.ListZoneNodesRequest.zone_id)
+}
+
+// -------------------------------------------------------------------
+
+// ListZoneNodesReply
+
+// repeated .sf.gathering.v1.NodeReply nodes = 1;
+inline int ListZoneNodesReply::_internal_nodes_size() const {
+  return _internal_nodes().size();
+}
+inline int ListZoneNodesReply::nodes_size() const {
+  return _internal_nodes_size();
+}
+inline void ListZoneNodesReply::clear_nodes() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.nodes_.Clear();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+}
+inline const ::sf::gathering::v1::NodeReply& ListZoneNodesReply::nodes(int index) const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.gathering.v1.ListZoneNodesReply.nodes)
+  return _internal_nodes().Get(index);
+}
+inline ::sf::gathering::v1::NodeReply* PROTOBUF_NONNULL ListZoneNodesReply::mutable_nodes(int index)
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_mutable:sf.gathering.v1.ListZoneNodesReply.nodes)
+  return _internal_mutable_nodes()->Mutable(index);
+}
+inline ::sf::gathering::v1::NodeReply* PROTOBUF_NONNULL ListZoneNodesReply::add_nodes()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::sf::gathering::v1::NodeReply* _add =
+      _internal_mutable_nodes()->InternalAddWithArena(
+          ::google::protobuf::MessageLite::internal_visibility(), GetArena());
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  // @@protoc_insertion_point(field_add:sf.gathering.v1.ListZoneNodesReply.nodes)
+  return _add;
+}
+inline const ::google::protobuf::RepeatedPtrField<::sf::gathering::v1::NodeReply>& ListZoneNodesReply::nodes() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_list:sf.gathering.v1.ListZoneNodesReply.nodes)
+  return _internal_nodes();
+}
+inline ::google::protobuf::RepeatedPtrField<::sf::gathering::v1::NodeReply>* PROTOBUF_NONNULL
+ListZoneNodesReply::mutable_nodes() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  // @@protoc_insertion_point(field_mutable_list:sf.gathering.v1.ListZoneNodesReply.nodes)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _internal_mutable_nodes();
+}
+inline const ::google::protobuf::RepeatedPtrField<::sf::gathering::v1::NodeReply>&
+ListZoneNodesReply::_internal_nodes() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.nodes_;
+}
+inline ::google::protobuf::RepeatedPtrField<::sf::gathering::v1::NodeReply>* PROTOBUF_NONNULL
+ListZoneNodesReply::_internal_mutable_nodes() {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return &_impl_.nodes_;
 }
 
 // -------------------------------------------------------------------
@@ -1830,7 +2485,7 @@ inline void NodeReply::set_allocated_definition_id(::std::string* PROTOBUF_NULLA
 inline void NodeReply::clear_generation() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.generation_ = 0;
-  ClearHasBit(_impl_._has_bits_[0], 0x00000008U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000020U);
 }
 inline ::int32_t NodeReply::generation() const {
   // @@protoc_insertion_point(field_get:sf.gathering.v1.NodeReply.generation)
@@ -1838,7 +2493,7 @@ inline ::int32_t NodeReply::generation() const {
 }
 inline void NodeReply::set_generation(::int32_t value) {
   _internal_set_generation(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000008U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000020U);
   // @@protoc_insertion_point(field_set:sf.gathering.v1.NodeReply.generation)
 }
 inline ::int32_t NodeReply::_internal_generation() const {
@@ -1854,7 +2509,7 @@ inline void NodeReply::_internal_set_generation(::int32_t value) {
 inline void NodeReply::clear_charges() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.charges_ = 0;
-  ClearHasBit(_impl_._has_bits_[0], 0x00000010U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000040U);
 }
 inline ::int32_t NodeReply::charges() const {
   // @@protoc_insertion_point(field_get:sf.gathering.v1.NodeReply.charges)
@@ -1862,7 +2517,7 @@ inline ::int32_t NodeReply::charges() const {
 }
 inline void NodeReply::set_charges(::int32_t value) {
   _internal_set_charges(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000010U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000040U);
   // @@protoc_insertion_point(field_set:sf.gathering.v1.NodeReply.charges)
 }
 inline ::int32_t NodeReply::_internal_charges() const {
@@ -1878,7 +2533,7 @@ inline void NodeReply::_internal_set_charges(::int32_t value) {
 inline void NodeReply::clear_max_charges() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.max_charges_ = 0;
-  ClearHasBit(_impl_._has_bits_[0], 0x00000080U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000200U);
 }
 inline ::int32_t NodeReply::max_charges() const {
   // @@protoc_insertion_point(field_get:sf.gathering.v1.NodeReply.max_charges)
@@ -1886,7 +2541,7 @@ inline ::int32_t NodeReply::max_charges() const {
 }
 inline void NodeReply::set_max_charges(::int32_t value) {
   _internal_set_max_charges(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000080U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000200U);
   // @@protoc_insertion_point(field_set:sf.gathering.v1.NodeReply.max_charges)
 }
 inline ::int32_t NodeReply::_internal_max_charges() const {
@@ -1902,7 +2557,7 @@ inline void NodeReply::_internal_set_max_charges(::int32_t value) {
 inline void NodeReply::clear_regrow_at_unix_ms() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.regrow_at_unix_ms_ = ::int64_t{0};
-  ClearHasBit(_impl_._has_bits_[0], 0x00000020U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000080U);
 }
 inline ::int64_t NodeReply::regrow_at_unix_ms() const {
   // @@protoc_insertion_point(field_get:sf.gathering.v1.NodeReply.regrow_at_unix_ms)
@@ -1910,7 +2565,7 @@ inline ::int64_t NodeReply::regrow_at_unix_ms() const {
 }
 inline void NodeReply::set_regrow_at_unix_ms(::int64_t value) {
   _internal_set_regrow_at_unix_ms(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000020U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000080U);
   // @@protoc_insertion_point(field_set:sf.gathering.v1.NodeReply.regrow_at_unix_ms)
 }
 inline ::int64_t NodeReply::_internal_regrow_at_unix_ms() const {
@@ -1990,7 +2645,7 @@ inline void NodeReply::set_allocated_growth_stage(::std::string* PROTOBUF_NULLAB
 inline void NodeReply::clear_next_transition_unix_ms() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.next_transition_unix_ms_ = ::int64_t{0};
-  ClearHasBit(_impl_._has_bits_[0], 0x00000040U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000100U);
 }
 inline ::int64_t NodeReply::next_transition_unix_ms() const {
   // @@protoc_insertion_point(field_get:sf.gathering.v1.NodeReply.next_transition_unix_ms)
@@ -1998,7 +2653,7 @@ inline ::int64_t NodeReply::next_transition_unix_ms() const {
 }
 inline void NodeReply::set_next_transition_unix_ms(::int64_t value) {
   _internal_set_next_transition_unix_ms(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000040U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000100U);
   // @@protoc_insertion_point(field_set:sf.gathering.v1.NodeReply.next_transition_unix_ms)
 }
 inline ::int64_t NodeReply::_internal_next_transition_unix_ms() const {
@@ -2008,6 +2663,254 @@ inline ::int64_t NodeReply::_internal_next_transition_unix_ms() const {
 inline void NodeReply::_internal_set_next_transition_unix_ms(::int64_t value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.next_transition_unix_ms_ = value;
+}
+
+// string pool_id = 9;
+inline void NodeReply::clear_pool_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.pool_id_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000008U);
+}
+inline const ::std::string& NodeReply::pool_id() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.gathering.v1.NodeReply.pool_id)
+  return _internal_pool_id();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void NodeReply::set_pool_id(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000008U);
+  _impl_.pool_id_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:sf.gathering.v1.NodeReply.pool_id)
+}
+inline ::std::string* PROTOBUF_NONNULL NodeReply::mutable_pool_id()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000008U);
+  ::std::string* _s = _internal_mutable_pool_id();
+  // @@protoc_insertion_point(field_mutable:sf.gathering.v1.NodeReply.pool_id)
+  return _s;
+}
+inline const ::std::string& NodeReply::_internal_pool_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.pool_id_.Get();
+}
+inline void NodeReply::_internal_set_pool_id(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.pool_id_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL NodeReply::_internal_mutable_pool_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.pool_id_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE NodeReply::release_pool_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:sf.gathering.v1.NodeReply.pool_id)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000008U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000008U);
+  auto* released = _impl_.pool_id_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.pool_id_.Set("", GetArena());
+  }
+  return released;
+}
+inline void NodeReply::set_allocated_pool_id(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000008U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000008U);
+  }
+  _impl_.pool_id_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.pool_id_.IsDefault()) {
+    _impl_.pool_id_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:sf.gathering.v1.NodeReply.pool_id)
+}
+
+// string point_id = 10;
+inline void NodeReply::clear_point_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.point_id_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000010U);
+}
+inline const ::std::string& NodeReply::point_id() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.gathering.v1.NodeReply.point_id)
+  return _internal_point_id();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void NodeReply::set_point_id(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000010U);
+  _impl_.point_id_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:sf.gathering.v1.NodeReply.point_id)
+}
+inline ::std::string* PROTOBUF_NONNULL NodeReply::mutable_point_id()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000010U);
+  ::std::string* _s = _internal_mutable_point_id();
+  // @@protoc_insertion_point(field_mutable:sf.gathering.v1.NodeReply.point_id)
+  return _s;
+}
+inline const ::std::string& NodeReply::_internal_point_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.point_id_.Get();
+}
+inline void NodeReply::_internal_set_point_id(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.point_id_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL NodeReply::_internal_mutable_point_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.point_id_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE NodeReply::release_point_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:sf.gathering.v1.NodeReply.point_id)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000010U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000010U);
+  auto* released = _impl_.point_id_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.point_id_.Set("", GetArena());
+  }
+  return released;
+}
+inline void NodeReply::set_allocated_point_id(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000010U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000010U);
+  }
+  _impl_.point_id_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.point_id_.IsDefault()) {
+    _impl_.point_id_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:sf.gathering.v1.NodeReply.point_id)
+}
+
+// double position_x_m = 11;
+inline void NodeReply::clear_position_x_m() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.position_x_m_ = 0;
+  ClearHasBit(_impl_._has_bits_[0], 0x00000800U);
+}
+inline double NodeReply::position_x_m() const {
+  // @@protoc_insertion_point(field_get:sf.gathering.v1.NodeReply.position_x_m)
+  return _internal_position_x_m();
+}
+inline void NodeReply::set_position_x_m(double value) {
+  _internal_set_position_x_m(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000800U);
+  // @@protoc_insertion_point(field_set:sf.gathering.v1.NodeReply.position_x_m)
+}
+inline double NodeReply::_internal_position_x_m() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.position_x_m_;
+}
+inline void NodeReply::_internal_set_position_x_m(double value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.position_x_m_ = value;
+}
+
+// double position_y_m = 12;
+inline void NodeReply::clear_position_y_m() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.position_y_m_ = 0;
+  ClearHasBit(_impl_._has_bits_[0], 0x00001000U);
+}
+inline double NodeReply::position_y_m() const {
+  // @@protoc_insertion_point(field_get:sf.gathering.v1.NodeReply.position_y_m)
+  return _internal_position_y_m();
+}
+inline void NodeReply::set_position_y_m(double value) {
+  _internal_set_position_y_m(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00001000U);
+  // @@protoc_insertion_point(field_set:sf.gathering.v1.NodeReply.position_y_m)
+}
+inline double NodeReply::_internal_position_y_m() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.position_y_m_;
+}
+inline void NodeReply::_internal_set_position_y_m(double value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.position_y_m_ = value;
+}
+
+// double position_z_m = 13;
+inline void NodeReply::clear_position_z_m() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.position_z_m_ = 0;
+  ClearHasBit(_impl_._has_bits_[0], 0x00002000U);
+}
+inline double NodeReply::position_z_m() const {
+  // @@protoc_insertion_point(field_get:sf.gathering.v1.NodeReply.position_z_m)
+  return _internal_position_z_m();
+}
+inline void NodeReply::set_position_z_m(double value) {
+  _internal_set_position_z_m(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00002000U);
+  // @@protoc_insertion_point(field_set:sf.gathering.v1.NodeReply.position_z_m)
+}
+inline double NodeReply::_internal_position_z_m() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.position_z_m_;
+}
+inline void NodeReply::_internal_set_position_z_m(double value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.position_z_m_ = value;
+}
+
+// double facing_degrees = 14;
+inline void NodeReply::clear_facing_degrees() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.facing_degrees_ = 0;
+  ClearHasBit(_impl_._has_bits_[0], 0x00004000U);
+}
+inline double NodeReply::facing_degrees() const {
+  // @@protoc_insertion_point(field_get:sf.gathering.v1.NodeReply.facing_degrees)
+  return _internal_facing_degrees();
+}
+inline void NodeReply::set_facing_degrees(double value) {
+  _internal_set_facing_degrees(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00004000U);
+  // @@protoc_insertion_point(field_set:sf.gathering.v1.NodeReply.facing_degrees)
+}
+inline double NodeReply::_internal_facing_degrees() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.facing_degrees_;
+}
+inline void NodeReply::_internal_set_facing_degrees(double value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.facing_degrees_ = value;
+}
+
+// bool active = 15;
+inline void NodeReply::clear_active() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.active_ = false;
+  ClearHasBit(_impl_._has_bits_[0], 0x00000400U);
+}
+inline bool NodeReply::active() const {
+  // @@protoc_insertion_point(field_get:sf.gathering.v1.NodeReply.active)
+  return _internal_active();
+}
+inline void NodeReply::set_active(bool value) {
+  _internal_set_active(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000400U);
+  // @@protoc_insertion_point(field_set:sf.gathering.v1.NodeReply.active)
+}
+inline bool NodeReply::_internal_active() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.active_;
+}
+inline void NodeReply::_internal_set_active(bool value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.active_ = value;
 }
 
 // -------------------------------------------------------------------
