@@ -812,8 +812,29 @@ const POSITIONS = [['front', 'Front', 'required'], ['left', 'Left side', 'faces 
 const setCreateImage = p => { state.createImage = p; store.set('createImage', p); };
 const createViews = () => store.get('createViews', {});
 const setCreateView = (pos, p) => { const v = createViews(); p ? (v[pos] = p) : delete v[pos]; store.set('createViews', v); };
+// Asset type (Creature: animated; Item: gear, weapons, props) and the Items category, from /api/schema; shared by both forms.
+let typeInfo = null;
+const loadTypes = async () => { if (!typeInfo) { const r = await api('/api/schema'); typeInfo = { types: r.types, categories: r.categories }; } return typeInfo; };
+const typeHtml = () => `<div class="field" style="margin-top:18px"><label>Asset type</label>
+    <div class="seg">${Object.entries(typeInfo.types).map(([k, t]) => `<button data-atype="${k}">${esc(t.label)}</button>`).join('')}</div></div>
+  <div class="field" id="catrow" style="margin-top:14px"><label for="acat">Category (saved under ${esc(typeInfo.types.item.folder)}/)</label>
+    <input type="text" id="acat" list="catlist" value="${esc(store.get('assetCategory', ''))}" placeholder="Armor/Cloth/Head">
+    <datalist id="catlist">${typeInfo.categories.map(c => `<option value="${esc(c)}">`).join('')}</datalist></div>`;
+const typeVals = () => { const type = store.get('assetType', 'creature'); return type === 'item' ? { type, category: $('#acat').value.trim() } : { type }; };
+function wireType(onType) {
+  const set = t => {
+    store.set('assetType', t);
+    document.querySelectorAll('[data-atype]').forEach(b => b.classList.toggle('on', b.dataset.atype === t));
+    $('#catrow').hidden = t !== 'item';
+    onType && onType(t);
+  };
+  document.querySelectorAll('[data-atype]').forEach(b => b.onclick = () => set(b.dataset.atype));
+  $('#acat').addEventListener('input', () => store.set('assetCategory', $('#acat').value));
+  set(store.get('assetType', 'creature'));
+}
 async function renderCreate() {
   crumbs([['Create', '#/create'], ['3D Asset', '#/create']]);
+  await loadTypes().catch(fail);
   if (!schema) { const r = await api('/api/schema').catch(e => (fail(e), {})); schema = (r['3d'] || []).filter(p => !p.hidden); schema.levels = r.presets || []; }
   let preset = store.get('createPreset', 'normal');
   const saved = store.get('createParams', {});
@@ -852,6 +873,7 @@ async function renderCreate() {
           </div>
           <input type="file" id="viewfile" accept="image/*" hidden>
         </div>
+        ${typeHtml()}
         <div class="field" style="margin-top:18px"><label for="jname">Asset name</label><input type="text" id="jname" placeholder="Defaults to the front image name" value="${esc(saved._name || '')}"></div>
         <button class="btn primary" id="submit" style="width:100%;justify-content:center;margin-top:18px;height:44px">Add to queue</button>
       </div>
@@ -884,17 +906,23 @@ async function renderCreate() {
   const setPreset = (l, apply) => {  // with Rig ticked, face count and texture size follow the skinned-mesh budgets
     preset = l; store.set('createPreset', l);
     document.querySelectorAll('[data-preset]').forEach(b => b.classList.toggle('on', b.dataset.preset === l));
-    $('#presetnote').textContent = (rigOn() ? RIG_NOTES : NOTES)[l] || '';
+    const ip = typeInfo.types[store.get('assetType', 'creature')].presets.target_face_num;
+    $('#presetnote').textContent = ip ? `item · ${ip[l] / 1000}k faces` : (rigOn() ? RIG_NOTES : NOTES)[l] || '';
     if (!apply) return;
     for (const p of schema) {
       if (!p.presets) continue;
-      const el = $('#p_' + p.key), v = (rigOn() && p.rig_presets ? p.rig_presets : p.presets)[l];
+      const el = $('#p_' + p.key), ip = typeInfo.types[store.get('assetType', 'creature')].presets[p.key],
+        v = (ip || (rigOn() && p.rig_presets ? p.rig_presets : p.presets))[l];
       p.kind === 'bool' ? (el.checked = v) : (el.value = v);
     }
   };
   document.querySelectorAll('[data-preset]').forEach(b => b.onclick = () => setPreset(b.dataset.preset, true));
   $('#p_rig') && $('#p_rig').addEventListener('change', () => setPreset(preset, true));
   drawSrc(); drawViews(); setMode(mode); setPreset(preset, !Object.keys(saved).length);
+  wireType(t => {  // the type's defaults (an item is never rigged and gets lower face budgets) replace the form's values
+    if (typeInfo.types[t].defaults.rig && $('#p_rig')) $('#p_rig').value = typeInfo.types[t].defaults.rig;
+    setPreset(preset, true);
+  });
   document.querySelectorAll('[data-mode]').forEach(b => b.onclick = () => setMode(b.dataset.mode));
   const settings = await api('/api/settings').catch(() => ({ input_folder: 'Inputs' }));
   const upload = async files => (await uploadFiles(files.slice(0, 1), settings.input_folder))[0];
@@ -918,7 +946,7 @@ async function renderCreate() {
   $('#viewfile').onchange = async e => { const p = await upload([...e.target.files]); if (p && upPos) { setCreateView(upPos, p); drawViews(); } };
   $('#reset').onclick = () => { store.set('createParams', {}); renderCreate(); };  // no saved values: the preset applies
   $('#submit').onclick = async () => {
-    const params = { preset };
+    const params = { preset, ...typeVals() };
     if (mode === 'single') {
       if (!state.createImage) return toast('Pick a source image first', true);
       params.image = state.createImage;
@@ -944,7 +972,7 @@ const imagesType = on => `<button class="type ${on ? 'on' : ''}" onclick="locati
   <div class="muted" style="font-size:12px">Prompt → source image(s) · ChatGPT</div></button>`;
 async function renderImages() {
   crumbs([['Create', '#/create'], ['Images', '#/create/images']]);
-  let cx; try { cx = await api('/api/codex'); } catch (e) { return fail(e); }
+  let cx; try { cx = await api('/api/codex'); await loadTypes(); } catch (e) { return fail(e); }
   let mode = store.get('imageMode', 'single');
   const draft = store.get('imageDraft', {});
   $('#view').innerHTML = `
@@ -963,6 +991,7 @@ async function renderImages() {
         <div class="field"><label for="imodel">Model</label><select id="imodel">${cx.models.map(m => `<option ${m === draft.model ? 'selected' : ''}>${esc(m)}</option>`).join('')}</select></div>
       </div>
       <div class="field" style="margin-top:14px"><label for="iprompt">Prompt</label><textarea id="iprompt" rows="6" style="width:100%;resize:vertical">${esc(draft.prompt || '')}</textarea></div>
+      ${typeHtml()}
       <div class="field" style="margin-top:14px"><label for="iname">Asset name</label><input type="text" id="iname" value="${esc(draft.name || '')}" placeholder="Greenlands - Rat"></div>
       <button class="btn primary" id="isubmit" style="width:100%;justify-content:center;margin-top:18px;height:44px">Add to queue</button>
     </div>`;
@@ -973,7 +1002,7 @@ async function renderImages() {
       : 'Views for a multi-view 3D asset. ChatGPT draws one side-view design image in a rig-ready pose and redraws it from the front; the front, the side and the side mirrored become the views, with their height and feet line matched and the set reviewed; a failed front is redrawn (up to 3 tries).';
   };
   document.querySelectorAll('[data-imode]').forEach(b => b.onclick = () => setMode(b.dataset.imode));
-  setMode(mode);
+  setMode(mode); wireType();
   const keep = () => store.set('imageDraft', { model: $('#imodel').value, prompt: $('#iprompt').value, name: $('#iname').value });
   ['#imodel', '#iprompt', '#iname'].forEach(s => $(s).addEventListener('input', keep));
   $('#isubmit').onclick = async () => {
@@ -981,7 +1010,7 @@ async function renderImages() {
     if (!prompt) return toast('Write a prompt first', true);
     if (!name) return toast('Give it an asset name', true);
     try {
-      await post('/api/jobs', { kind: 'image', name, params: { mode, model: $('#imodel').value, prompt } });
+      await post('/api/jobs', { kind: 'image', name, params: { mode, model: $('#imodel').value, prompt, ...typeVals() } });
       toast('Added to queue'); setQueueOpen(true); pollQueue();
     } catch (e) { fail(e); }
   };

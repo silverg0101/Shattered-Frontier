@@ -281,7 +281,7 @@ PARAMS = (
         ("tex_render_size", "Mesh render size", "choice", {"options": [2048, 4096]}, [("1288", "render_size")]),
     ])
 )
-PARAM_KEYS = {p[0] for p in PARAMS} | {"image", "views", "preset"}
+PARAM_KEYS = {p[0] for p in PARAMS} | {"image", "views", "preset", "type", "category"}
 
 # Quality presets: option key -> value per level. An option a preset doesn't list keeps the workflow default;
 # options sent explicitly always win. UI_HIDDEN options stay in the API but aren't shown in the web app.
@@ -317,6 +317,34 @@ RIG_PRESETS = {
     "texture_size": _levels(1024, 2048, 2048, 2048),
 }
 # Everything else is a pipeline internal, a research knob or has no UE5 benefit; the web app hides it.
+# Asset types: a creature is animated (rigged later), an item is gear, a weapon or a prop. Items are never rigged and
+# use lower face budgets (static meshes in a stack: a helmet or sword needs a fraction of a creature's 300k). Jobs
+# without a type keep the old behaviour and folders; typed jobs save under Creatures/ or Items/<category>/ inside the
+# output (3D) or input (images) folder.
+ITEM_PRESETS = {"target_face_num": _levels(20000, 50000, 100000, 200000)}
+ITEM_CATEGORIES = ([f"Armor/{m}/{s}" for m in ("Cloth", "Leather", "Metal") for s in ("Head", "Chest", "Hands", "Legs", "Feet", "Back")]
+                   + [f"Weapons/{k}" for k in ("Blades", "Blunt", "Ranged", "Shields")] + ["Tools", "Props"])
+ASSET_TYPES = {"creature": {"label": "Creature", "folder": "Creatures", "defaults": {}, "presets": {}},
+               "item": {"label": "Item", "folder": "Items", "defaults": {"rig": "off"}, "presets": ITEM_PRESETS}}
+
+def asset_folder(params):
+    """Subfolder for a typed job ("" for an untyped one). Raises ValueError on a bad type, category or rig mode."""
+    t, c = params.get("type"), params.get("category")
+    if t is None and c is None:
+        return ""
+    if t not in ASSET_TYPES:
+        raise ValueError(f"type must be one of {list(ASSET_TYPES)} (see GET /api/schema)")
+    if t == "creature":
+        if c:
+            raise ValueError("category is for items; creatures save under Creatures/")
+        return ASSET_TYPES[t]["folder"]
+    if rig_mode(params) != "off":
+        raise ValueError("items are not animated: rig must be off")
+    parts = [x.strip() for x in str(c or "").split("/") if x.strip()]
+    if len(parts) > 5 or not all(re.fullmatch(r"\w[\w -]{0,39}", x) for x in parts):
+        raise ValueError("category is up to 5 folder names like Armor/Cloth/Head (letters, digits, space, - and _)")
+    return "/".join(["Items"] + parts)
+
 UI_VISIBLE = {"seed", "target_face_num", "texture_size", "remove_background", "rig", "rig_format", "rig_skeleton"}
 UI_HIDDEN = {p[0] for p in PARAMS} - UI_VISIBLE
 SECTION_MODES = {"Views": ["multi"]}  # others: both
@@ -363,10 +391,12 @@ def build_graph(params, image, prefix, pixal_model, views=None):
     level = params.get("preset", DEFAULT_PRESET)
     if level not in PRESET_LEVELS:
         raise ValueError(f"preset must be one of {PRESET_LEVELS}")
+    asset_folder(params)
     preset = {k: v[level] for k, v in PRESETS.items()}
+    preset.update({k: v[level] for k, v in ASSET_TYPES.get(params.get("type"), {}).get("presets", {}).items()})
     if rig != "off":  # "later" sizes the model for rigging but leaves the rig to a separate job
         preset.update({k: v[level] for k, v in RIG_PRESETS.items()})
-    return apply_params(g, {**preset, **params, "rig": rig})
+    return apply_params(g, {**preset, **{k: v for k, v in params.items() if k not in ("type", "category")}, "rig": rig})
 
 def rig_mode(params):
     """"off", "later" or "now"; the API also takes the older true/false."""
@@ -1410,7 +1440,7 @@ def run_job(jid, host):
     started = time.time()
     try:
         safe_name = re.sub(r"[^\w-]+", "_", job["name"]).strip("_") or f"asset{jid}"
-        out_dir, base, view_notes = safe_path(s["output_folder"]), None, []
+        out_dir, base, view_notes = safe_path(f"{s['output_folder']}/{asset_folder(params)}"), None, []
         if job["kind"] == "rig":  # the rigged file lands beside its model, named after it
             model = safe_path(params["model"])
             put_input(host, f"{jid}_model.glb", model.read_bytes())
@@ -2003,11 +2033,12 @@ def align_uploads(raw):
 IMAGE_VIEWS = ["heroes", "mv-adapter"]  # multi: the heroes and a mirror (default), or MV-Adapter around the front
 
 def image_params(params):
-    unknown = set(params) - {"mode", "model", "prompt", "views"}
+    unknown = set(params) - {"mode", "model", "prompt", "views", "type", "category"}
     if unknown:
-        raise ValueError(f"unknown options: {sorted(unknown)} (image jobs take mode, model, prompt, views)")
+        raise ValueError(f"unknown options: {sorted(unknown)} (image jobs take mode, model, prompt, views, type, category)")
     p = {"mode": params.get("mode", "single"), "model": params.get("model", "auto"), "prompt": str(params.get("prompt", "")).strip(),
-         "views": params.get("views", IMAGE_VIEWS[0])}
+         "views": params.get("views", IMAGE_VIEWS[0]), **{k: params[k] for k in ("type", "category") if k in params}}
+    asset_folder(p)
     if p["mode"] not in ("single", "multi") or p["model"] not in IMAGE_MODELS or not p["prompt"] or p["views"] not in IMAGE_VIEWS:
         raise ValueError(f"mode is single or multi, model one of {IMAGE_MODELS}, views one of {IMAGE_VIEWS}, and a prompt is required")
     return p
@@ -2094,7 +2125,7 @@ def run_image(jid, host=None):
     log = []
     LIVE[jid] = {"metrics": None, "log": log}
     try:
-        out_dir = safe_path(get_settings()["input_folder"])
+        out_dir = safe_path(f"{get_settings()['input_folder']}/{asset_folder(p)}")
         out_dir.mkdir(parents=True, exist_ok=True)
         safe_name = re.sub(r"[^\w-]+", "_", job["name"]).strip("_") or f"image{jid}"
         saved = []
@@ -2211,7 +2242,8 @@ class Handler(BaseHTTPRequestHandler):
             if method == "GET" and p == "/api/animals/match":
                 return self.send({"candidates": creature.match(q.get("q", ""), creature.load_catalogue(DATA / "MotionLibrary"))})
             if method == "GET" and p == "/api/schema":
-                return self.send({"3d": param_schema(), "presets": PRESET_LEVELS, "default_preset": DEFAULT_PRESET, "motion": [
+                return self.send({"3d": param_schema(), "presets": PRESET_LEVELS, "default_preset": DEFAULT_PRESET,
+                    "types": ASSET_TYPES, "categories": ITEM_CATEGORIES, "motion": [
                     {"key": k, "label": lbl, "section": "Motion", "kind": kind, "default": d, **extra}
                     for k, lbl, kind, extra, d in MOTION_PARAMS], "detector": [
                     {"key": k, "label": lbl, "section": "Detector", "kind": kind, "default": d, **extra}
@@ -2308,7 +2340,9 @@ class Handler(BaseHTTPRequestHandler):
                 return self.send({"path": dest.relative_to(ROOT).as_posix()})
             if method == "POST" and p == "/api/jobs":
                 b = self.body()
-                kind, params = b.get("kind"), b.get("params", {})
+                kind, params = b.get("kind"), dict(b.get("params", {}))
+                if kind in ("3d", "image"):  # type and category may sit beside kind or inside params
+                    params.update({k: b[k] for k in ("type", "category") if k in b})
                 if kind == "3d":
                     views = job_views(params)
                     build_graph(params, "x", "x", "x", views if "views" in params else None)  # validate now, not on the host
@@ -2544,6 +2578,16 @@ def check():
     assert rigged["218"]["inputs"]["target_face_num"] == 10000 and rigged["1291"]["inputs"]["texture_size"] == 1024
     assert build_graph({"preset": "normal", "rig": True, "target_face_num": 77000}, "", "", "")["218"]["inputs"]["target_face_num"] == 77000
     assert build_graph({"preset": "normal"}, "", "", "")["218"]["inputs"]["target_face_num"] == 300000  # unrigged unchanged
+    it = build_graph({"type": "item", "category": "Armor/Cloth/Head"}, "", "", "")
+    assert it["218"]["inputs"]["target_face_num"] == 50000 and asset_folder({"type": "item", "category": " Armor/Cloth/Head/ "}) == "Items/Armor/Cloth/Head"
+    assert asset_folder({"type": "creature"}) == "Creatures" and asset_folder({}) == "" and asset_folder({"type": "item"}) == "Items"
+    assert build_graph({"type": "creature"}, "", "", "")["218"]["inputs"]["target_face_num"] == 300000
+    for bad in ({"type": "item", "rig": "later"}, {"type": "item", "category": "../x"}, {"type": "pet"}, {"type": "creature", "category": "Props"}, {"category": "Props"}):
+        try:
+            asset_folder(bad)
+            assert False, bad
+        except ValueError:
+            pass
     assert rigged["1270"]["inputs"]["skeleton_template"] == "Keep model names"  # UE5 names only when asked
     rg = build_graph({"rig": True, "rig_format": "fbx", "rig_skeleton": "Unreal Engine 5"}, "", "sfam/1_x", "")
     assert rg["1270"]["inputs"]["file_format"] == "fbx" and rg["1271"]["inputs"]["source"] == ["1270", 1]

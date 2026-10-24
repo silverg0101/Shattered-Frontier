@@ -51,6 +51,24 @@ Base URL: `http://192.168.50.133:8090`. JSON in and out, no login. Errors return
    ```
    - Unknown keys are rejected with 400. A number outside its range is clamped to it. A choice that isn't listed is rejected with 400.
 
+## Asset type and category
+
+3D and image jobs take two optional fields, `type` and `category`, in the body beside `kind` or inside `params` (the web form sends the same). Without `type` a job behaves as before: no rig default change, outputs in `Generated/` (3D) or `Inputs/` (images). `GET /api/schema` lists the valid values: `types` (each with `label`, `folder`, `defaults` and `presets`) and `categories` (the starter list; any other path of up to 5 folder names, letters, digits, space, `-` and `_`, is accepted for an item). The server validates both paths the same way and answers 400 with the reason.
+
+| `type` | Meaning | Defaults | Saved under |
+|---|---|---|---|
+| `creature` | animated model, rigged later; today's defaults unchanged; no `category` | as listed in the options below | `Generated/Creatures/` (images: `Inputs/Creatures/`) |
+| `item` | gear, weapon or prop: never animated, so `rig` must be `off` | `target_face_num` per preset 20000 / 50000 / 100000 / 200000 (low / normal / high / ultra) instead of 100k / 300k / 500k / 1M; the rest unchanged | `Generated/Items/<category>/` (images: `Inputs/Items/<category>/`) |
+
+Starter categories: `Armor/{Cloth,Leather,Metal}/{Head,Chest,Hands,Legs,Feet,Back}`, `Weapons/{Blades,Blunt,Ranged,Shields}`, `Tools`, `Props`. Folders are made on demand. The model, its hidden thumbnail and image outputs all land in the job's folder. Existing files stay where they are; move one with `POST /api/move` (the Assets page's Move button calls it).
+
+```bash
+curl -X POST http://192.168.50.133:8090/api/jobs -H 'Content-Type: application/json' -d '{
+  "kind": "3d", "name": "Wool Hood", "type": "item", "category": "Armor/Cloth/Head",
+  "params": {"image": "Inputs/hood.png"}
+}'
+```
+
 ## Queue and job status
 
 - **`GET /api/jobs`**: queue status, newest first.
@@ -93,7 +111,7 @@ Poll `status_url` every few seconds until `status` is `done`, `failed` or `cance
 
 ## Image jobs
 
-An image job draws source images with ChatGPT (the owner's subscription, signed in under Settings > ChatGPT subscription; `GET /api/codex` says whether it is signed in). It needs no GPU host and saves into the inputs folder (`Inputs/`). Every image is checked by the drawing model before it is returned (physical and structural coherence against the full request; up to 2 redraws), and the job log gets a `self-check:` line per image.
+An image job draws source images with ChatGPT (the owner's subscription, signed in under Settings > ChatGPT subscription; `GET /api/codex` says whether it is signed in). It needs no GPU host and saves into the inputs folder (`Inputs/`). Every image is checked by the drawing model before it is returned (physical and structural coherence against the full request; up to 2 redraws), and the job log gets a `self-check:` line per image: `self-check: ok`, `self-check: redrew 1x: <reason>` or `self-check: no verdict given`. The final image is the last one drawn.
 
 | Param | Values | Default |
 |---|---|---|
