@@ -49,6 +49,11 @@ def main():
     floor.static_mesh_component.set_collision_profile_name('BlockAll')
     floor.set_actor_scale3d(u.Vector(100, 100, 1))
     actors.spawn_actor_from_class(u.PlayerStart, u.Vector(0, 0, 110)).set_actor_label('PlayerStart')
+    if names[0] == 'Casting':
+        target_class = u.load_class(None, '/Script/ShatteredFrontier.SFCastingTarget')
+        if not target_class:
+            raise RuntimeError('SFCastingTarget class is unavailable; build the Editor module first')
+        actors.spawn_actor_from_class(target_class, u.Vector(350, 0, 100)).set_actor_label('TrainingTarget')
 
     sun = actors.spawn_actor_from_class(u.DirectionalLight, u.Vector(0, 0, 1000), u.Rotator(pitch=-45, yaw=25))
     sun.set_actor_label('Sun')

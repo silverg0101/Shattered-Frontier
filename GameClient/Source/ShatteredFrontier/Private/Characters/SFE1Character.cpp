@@ -24,6 +24,7 @@
 #include "Combat/SFCombatPilot.h"
 #include "Combat/SFTabTargetSelection.h"
 #include "Combat/SFCrowdControlComponent.h"
+#include "Combat/SFCastingComponent.h"
 #include "ProfilingDebugging/CsvProfiler.h"
 #include "Framework/SFPlayerController.h"
 #include "Services/SFBackpackComponent.h"
@@ -62,6 +63,7 @@ ASFE1Character::ASFE1Character()
     GetCharacterMovement()->AirControl = 0.0f;
 
     CrowdControl = CreateDefaultSubobject<USFCrowdControlComponent>(TEXT("CrowdControl"));
+    Casting = CreateDefaultSubobject<USFCastingComponent>(TEXT("Casting"));
     // Rigged body on the UE4 mannequin skeleton the NPC pipeline also fits. Locomotion comes from the AnimBP reading
     // replicated CharacterMovement velocity and falling state, so remote proxies animate with no extra replication.
     GetMesh()->SetRelativeLocationAndRotation(FVector(0, 0, -GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight()), FRotator(0, -90, 0));
@@ -743,7 +745,13 @@ void ASFE1Character::SetDialogueFramingTarget(AActor* Speaker)
 
 void ASFE1Character::CombatSetHealth(int32 Value)
 {
-    if (HasAuthority()) { PilotHealth = Value; if (Value <= 0) { SetCombatTarget(nullptr); } ForceNetUpdate(); }
+    if (HasAuthority())
+    {
+        if (Value < PilotHealth && Casting) { Casting->NotifyDamage(); }
+        PilotHealth = Value;
+        if (Value <= 0) { SetCombatTarget(nullptr); }
+        ForceNetUpdate();
+    }
 }
 
 void ASFE1Character::PilotAttack()

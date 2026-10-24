@@ -9,6 +9,7 @@ class UIKRetargeter;
 class UInputAction;
 class UInputMappingContext;
 class USFCrowdControlComponent;
+class USFCastingComponent;
 class USFQuestPilotComponent;
 class USpringArmComponent;
 
@@ -35,6 +36,8 @@ public:
     void SetDialogueFramingTarget(AActor* Speaker);
     static FVector DialogueHeadPoint(const AActor* Speaker);
     UPROPERTY(VisibleAnywhere) TObjectPtr<USFCrowdControlComponent> CrowdControl;
+    /** Authoritative cast/channel timing and owner-replicated cast bar data. */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Combat") TObjectPtr<USFCastingComponent> Casting;
     // The visible body (not on a dedicated server): the player MetaHuman for FaceId, built by tools/Build-PlayerMetaHumans.py, attached
     // to the mannequin and posed from it through MetaHumanRetargeter (tools/Create-PlayerRetarget.py). The mannequin stays the hidden
     // animation driver; when the MetaHuman is missing (not built on this machine) the mannequin shows as before.
