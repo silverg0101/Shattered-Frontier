@@ -61,12 +61,48 @@ app.MapGet("/v1/guilds/{guildId}/roster", async (string guildId, HttpContext htt
     var actor = await Actor(http, verifier);
     return Results.Ok(store.Roster(guildId, actor.CharacterId));
 });
+app.MapGet("/v1/guild-membership/{characterId}", (string characterId, HttpContext http, PostgresGuildStore store) =>
+{
+    var supplied = Encoding.UTF8.GetBytes(http.Request.Headers.Authorization.ToString());
+    var expected = Encoding.UTF8.GetBytes("Bearer " + serviceToken);
+    if (supplied.Length != expected.Length || !CryptographicOperations.FixedTimeEquals(supplied, expected))
+        throw new GuildAuthException(401, "SERVICE_TOKEN_REQUIRED");
+    var membership = store.Membership(characterId);
+    return membership is null ? Results.NoContent() : Results.Ok(membership);
+});
+app.MapPost("/v1/guilds/{guildId}/ranks/{rank:int}/permissions", async (string guildId, int rank, RankPermissionsRequest request, HttpContext http, GuildActorVerifier verifier, PostgresGuildStore store) =>
+{
+    var actor = await Actor(http, verifier);
+    return Results.Ok(store.SetPermissions(request.IdempotencyKey ?? "", guildId, actor.CharacterId, rank, request.Permissions ?? []));
+});
+app.MapPost("/v1/guilds/{guildId}/members/{characterId}/rank", async (string guildId, string characterId, RankChangeRequest request, HttpContext http, GuildActorVerifier verifier, PostgresGuildStore store) =>
+{
+    var actor = await Actor(http, verifier);
+    return Results.Ok(store.SetRank(request.IdempotencyKey ?? "", guildId, actor.CharacterId, characterId, request.Rank));
+});
+app.MapPost("/v1/guilds/{guildId}/members/{characterId}/kick", async (string guildId, string characterId, AcceptGuildRequest request, HttpContext http, GuildActorVerifier verifier, PostgresGuildStore store) =>
+{
+    var actor = await Actor(http, verifier);
+    return Results.Ok(store.Kick(request.IdempotencyKey ?? "", guildId, actor.CharacterId, characterId));
+});
+app.MapPost("/v1/guilds/{guildId}/leave", async (string guildId, AcceptGuildRequest request, HttpContext http, GuildActorVerifier verifier, PostgresGuildStore store) =>
+{
+    var actor = await Actor(http, verifier);
+    return Results.Ok(store.Leave(request.IdempotencyKey ?? "", guildId, actor.CharacterId));
+});
+app.MapPost("/v1/guilds/{guildId}/disband", async (string guildId, AcceptGuildRequest request, HttpContext http, GuildActorVerifier verifier, PostgresGuildStore store) =>
+{
+    var actor = await Actor(http, verifier);
+    return Results.Ok(new { disbanded = store.Disband(request.IdempotencyKey ?? "", guildId, actor.CharacterId) });
+});
 app.Lifetime.ApplicationStarted.Register(() => Console.WriteLine($"GUILD_HOST_READY port={port}"));
 app.Run();
 
 public sealed record CreateGuildRequest(string? IdempotencyKey, string? Name, string? Tag);
 public sealed record InviteGuildRequest(string? IdempotencyKey, string? RecipientCharacterId);
 public sealed record AcceptGuildRequest(string? IdempotencyKey);
+public sealed record RankChangeRequest(string? IdempotencyKey, int Rank);
+public sealed record RankPermissionsRequest(string? IdempotencyKey, string[]? Permissions);
 public sealed record GuildActor(string CharacterId, string AccountId, string RealmId);
 public sealed class GuildAuthException(int status, string code) : Exception(code)
 {

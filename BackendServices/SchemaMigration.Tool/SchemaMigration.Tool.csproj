@@ -13,5 +13,6 @@
     <EmbeddedResource Include="../Chat.Postgres/Schema.sql" LogicalName="chat.Schema.sql" />
     <EmbeddedResource Include="../Chat.Postgres/Schema.*.sql" LogicalName="chat.%(Filename)%(Extension)" />
     <EmbeddedResource Include="../Guild.Postgres/Schema.sql" LogicalName="guild.Schema.sql" />
+    <EmbeddedResource Include="../Guild.Postgres/Schema.*.sql" LogicalName="guild.%(Filename)%(Extension)" />
   </ItemGroup>
 </Project>

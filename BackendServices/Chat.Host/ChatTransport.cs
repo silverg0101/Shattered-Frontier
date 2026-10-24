@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using System.Net.WebSockets;
+using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -33,6 +34,19 @@ internal sealed class GroupMembershipClient : IDisposable
 }
 
 public sealed record PartyMembers(string PartyId, IReadOnlyList<string> Members);
+public sealed record GuildMembers(string GuildId, IReadOnlyList<string> Members);
+internal sealed class GuildMembershipClient(HttpClient http, string token)
+{
+    public async Task<GuildMembers?> ForCharacter(string character, CancellationToken cancellationToken)
+    {
+        using var request = new HttpRequestMessage(HttpMethod.Get, "v1/guild-membership/" + Uri.EscapeDataString(character));
+        request.Headers.Authorization = new("Bearer", token);
+        using var response = await http.SendAsync(request, cancellationToken);
+        if (response.StatusCode == System.Net.HttpStatusCode.NoContent) return null;
+        response.EnsureSuccessStatusCode();
+        return await response.Content.ReadFromJsonAsync<GuildMembers>(cancellationToken: cancellationToken);
+    }
+}
 public sealed record ChatMessage(string Channel, string From, string Body);
 public readonly record struct ChatRateLimit(int Capacity, double RefillPeriodSeconds)
 {
@@ -45,6 +59,7 @@ public readonly record struct ChatRateLimit(int Capacity, double RefillPeriodSec
 public sealed class ChatDeliveryHub(
     Func<string, CancellationToken, Task<PartyMembers?>> partyFor,
     Func<string, string, bool> canWhisper,
+    Func<string, CancellationToken, Task<GuildMembers?>>? guildFor = null,
     TimeProvider? clock = null)
 {
     private sealed record Receiver(Guid Id, Func<ChatMessage, Task> Send);
@@ -90,7 +105,7 @@ public sealed class ChatDeliveryHub(
 
     public async Task<string> Publish(string actor, string channel, string? target, string body, CancellationToken cancellationToken)
     {
-        if (string.IsNullOrWhiteSpace(body) || channel is not ("party" or "whisper")) return "invalid";
+        if (string.IsNullOrWhiteSpace(body) || channel is not ("party" or "whisper" or "guild")) return "invalid";
         if (!TakeToken(actor)) return "rate_limited";
         if (channel == "whisper")
         {
@@ -99,6 +114,19 @@ public sealed class ChatDeliveryHub(
             if (!canWhisper(actor, target)) return "not_delivered";
             if (online.TryGetValue(target, out var receiver))
                 await Deliver(target, receiver, new ChatMessage(channel, actor, body));
+            return "sent";
+        }
+        if (channel == "guild")
+        {
+            var guild = guildFor is null ? null : await guildFor(actor, cancellationToken);
+            if (guild is null || !guild.Members.Contains(actor, StringComparer.Ordinal)) return "not_in_guild";
+            foreach (var member in guild.Members.Distinct(StringComparer.Ordinal))
+            {
+                var current = await guildFor!(member, cancellationToken);
+                if (current?.GuildId == guild.GuildId && current.Members.Contains(member, StringComparer.Ordinal)
+                    && online.TryGetValue(member, out var receiver))
+                    await Deliver(member, receiver, new ChatMessage(channel, actor, body));
+            }
             return "sent";
         }
         var party = await partyFor(actor, cancellationToken);
@@ -122,8 +150,8 @@ public sealed class ChatTransport
     private readonly ChatDeliveryHub hub;
     private static readonly JsonSerializerOptions Json = new(JsonSerializerDefaults.Web);
 
-    internal ChatTransport(ChatActorVerifier actors, GroupMembershipClient groups, PostgresContactsStore contacts)
-        : this(actors.VerifyTicket, new ChatDeliveryHub(groups.ForCharacter, contacts.CanDeliverWhisper)) { }
+    internal ChatTransport(ChatActorVerifier actors, GroupMembershipClient groups, GuildMembershipClient guilds, PostgresContactsStore contacts)
+        : this(actors.VerifyTicket, new ChatDeliveryHub(groups.ForCharacter, contacts.CanDeliverWhisper, guilds.ForCharacter)) { }
 
     // The transport fixture supplies actor verification and membership without product credentials.
     public ChatTransport(Func<string?, CancellationToken, Task<string>> verifyTicket, ChatDeliveryHub hub)
@@ -159,7 +187,7 @@ public sealed class ChatTransport
                 if (packet.Type != "send") { await SendStatus("invalid"); continue; }
                 string status;
                 try { status = await hub.Publish(actor, packet.Channel ?? "", packet.Target, packet.Body ?? "", context.RequestAborted); }
-                catch (Exception ex) when (ex is RpcException or Npgsql.NpgsqlException or ContactRejectedException)
+                catch (Exception ex) when (ex is RpcException or Npgsql.NpgsqlException or ContactRejectedException or HttpRequestException)
                 { status = "unavailable"; }
                 await SendStatus(status);
             }

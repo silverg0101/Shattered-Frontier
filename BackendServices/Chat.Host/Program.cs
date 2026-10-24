@@ -30,6 +30,8 @@ builder.Services.AddSingleton(new ChatActorVerifier(new HttpClient { BaseAddress
 if (wsPort is not null)
 {
     builder.Services.AddSingleton(new GroupMembershipClient(Required("CHAT_GROUP_URL"), Required("SF_GAMEPLAY_TOKEN")));
+    builder.Services.AddSingleton(new GuildMembershipClient(new HttpClient {
+        BaseAddress = new Uri(Required("CHAT_GUILD_URL").TrimEnd('/') + "/"), Timeout = TimeSpan.FromSeconds(3) }, Required("SF_GUILD_TOKEN")));
     builder.Services.AddSingleton<ChatTransport>();
 }
 var app = builder.Build();

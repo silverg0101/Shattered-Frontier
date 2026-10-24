@@ -110,7 +110,7 @@ try {
     $migration = "Host=127.0.0.1;Port=$port;Database=guild_$run;Username=fixture_admin;Password=$adminPassword;Pooling=false"
     & (Join-Path $repo 'tools/Invoke-SchemaMigrations.ps1') -Connection $migration -Schemas guild -Role guild_owner -Dotnet $dotnet -Nuget $nuget | Out-Null
     & (Join-Path $repo 'tools/Invoke-SchemaMigrations.ps1') -Connection $migration -Schemas identity -Role identity_owner -Dotnet $dotnet -Nuget $nuget | Out-Null
-    Sql 'GRANT USAGE ON SCHEMA guild TO guild_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA guild TO guild_svc;' "guild_$run"
+    Sql 'GRANT USAGE ON SCHEMA guild TO guild_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA guild TO guild_svc; GRANT USAGE ON ALL SEQUENCES IN SCHEMA guild TO guild_svc;' "guild_$run"
     Sql 'GRANT USAGE ON SCHEMA identity TO identity_svc; GRANT SELECT ON identity.schema_version TO identity_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON identity.accounts,identity.sessions,identity.characters,identity.ticket_uses TO identity_svc;' "guild_$run"
     $env:GUILD_CONNECTION = "Host=127.0.0.1;Port=$port;Database=guild_$run;Username=guild_svc;Password=$servicePassword;Pooling=true;Maximum Pool Size=8;Timeout=2;Command Timeout=5"
     $env:Identity__Connection = "Host=127.0.0.1;Port=$port;Database=guild_$run;Username=identity_svc;Password=$servicePassword;Pooling=true;Maximum Pool Size=8;Timeout=2;Command Timeout=5"
@@ -163,7 +163,30 @@ try {
     StartGuild
     $restart = GuildRequest 'GET' "v1/guilds/$guildId/roster" $null $serviceToken (Ticket $aToken $a)
     Check ($restart.status -eq 200 -and $restart.json.members.Count -eq 2 -and $restart.json.version -eq 2) 'roster survives restart'
-    Write-Output "GUILD_ROSTER_PASS $checks/20"
+    Check ((GuildRequest 'GET' "v1/guild-membership/$a" $null '' '').status -eq 401) 'membership lookup requires service token'
+    $lookup = GuildRequest 'GET' "v1/guild-membership/$b" $null $serviceToken ''
+    Check ($lookup.status -eq 200 -and $lookup.json.guildId -eq $guildId -and $lookup.json.members.Count -eq 2) 'service membership lookup'
+    Check ((GuildRequest 'POST' "v1/guilds/$guildId/ranks/1/permissions" @{idempotencyKey='guild/deny-edit';permissions=@('invite')} $serviceToken (Ticket $bToken $b)).status -eq 403) 'member cannot edit rank permissions'
+    Check ((GuildRequest 'POST' "v1/guilds/$guildId/members/$a/kick" @{idempotencyKey='guild/deny-kick'} $serviceToken (Ticket $bToken $b)).status -eq 403) 'member cannot kick leader'
+    Check ((GuildRequest 'POST' "v1/guilds/$guildId/disband" @{idempotencyKey='guild/deny-disband'} $serviceToken (Ticket $bToken $b)).status -eq 403) 'member cannot disband'
+    Check ((GuildRequest 'POST' "v1/guilds/$guildId/invitations" @{idempotencyKey='guild/deny-invite';recipientCharacterId=$d} $serviceToken (Ticket $bToken $b)).status -eq 403) 'member cannot invite without permission'
+    $edit = GuildRequest 'POST' "v1/guilds/$guildId/ranks/1/permissions" @{idempotencyKey='guild/rank1';permissions=@('invite','kick_lower','promote_lower')} $serviceToken (Ticket $aToken $a)
+    Check ($edit.status -eq 200) 'leader grants rank permissions'
+    Check ((GuildRequest 'POST' "v1/guilds/$guildId/invitations" @{idempotencyKey='guild/invite-d';recipientCharacterId=$d} $serviceToken (Ticket $bToken $b)).status -eq 200) 'officer invites'
+    Check ((GuildRequest 'POST' "v1/guilds/$guildId/accept" @{idempotencyKey='guild/accept-d'} $serviceToken (Ticket $dToken $d)).status -eq 200) 'third member joins'
+    Check ((GuildRequest 'POST' "v1/guilds/$guildId/members/$d/rank" @{idempotencyKey='guild/deny-demote';rank=9} $serviceToken (Ticket $bToken $b)).status -eq 403) 'officer cannot demote peer'
+    Check ((GuildRequest 'POST' "v1/guilds/$guildId/members/$d/rank" @{idempotencyKey='guild/demote-d';rank=9} $serviceToken (Ticket $aToken $a)).status -eq 200) 'leader assigns lower rank'
+    Check ((GuildRequest 'POST' "v1/guilds/$guildId/members/$d/rank" @{idempotencyKey='guild/promote-d';rank=2} $serviceToken (Ticket $bToken $b)).status -eq 200) 'officer promotes lower member'
+    Check ((GuildRequest 'POST' "v1/guilds/$guildId/members/$d/kick" @{idempotencyKey='guild/kick-d'} $serviceToken (Ticket $bToken $b)).status -eq 200) 'officer kicks lower member'
+    Check ((GuildRequest 'GET' "v1/guilds/$guildId/roster" $null $serviceToken (Ticket $dToken $d)).status -eq 403) 'kicked member loses roster access'
+    $left = GuildRequest 'POST' "v1/guilds/$guildId/leave" @{idempotencyKey='guild/leader-leave'} $serviceToken (Ticket $aToken $a)
+    Check ($left.status -eq 200 -and $left.json.members.Count -eq 1 -and $left.json.members[0].characterId -eq $b -and $left.json.members[0].rank -eq 0) 'leader leave transfers leadership'
+    Check ((GuildRequest 'POST' "v1/guilds/$guildId/disband" @{idempotencyKey='guild/disband'} $serviceToken (Ticket $bToken $b)).status -eq 200) 'new leader disbands'
+    Check ((GuildRequest 'GET' "v1/guild-membership/$b" $null $serviceToken '').json -eq $null) 'disband clears membership lookup'
+    Check ((GuildRequest 'POST' "v1/guilds/$($second.json.guildId)/leave" @{idempotencyKey='guild/last-leave'} $serviceToken (Ticket $cToken $c)).status -eq 200) 'last member leave dissolves guild'
+    $events = & (Join-Path $pg 'psql.exe') -X -t -A -h 127.0.0.1 -p $port -U fixture_admin -d "guild_$run" -c "SELECT count(*) FROM guild.outbox WHERE topic='domain.guild' AND partition_key='$guildId' AND envelope->>'event_name'='guild.leader.changed'"
+    Check ($LASTEXITCODE -eq 0 -and $events.Trim() -eq '1') 'leader event persisted once'
+    Write-Output "GUILD_ROSTER_PASS $checks/$checks"
 }
 finally {
     if ($guildProcess -and -not $guildProcess.HasExited) { Stop-Process -Id $guildProcess.Id -Force; $guildProcess.WaitForExit() }

@@ -60,6 +60,30 @@ internal static class TransportChecks
             if (await hub.Publish("chr_a", "party", null, "private", CancellationToken.None) != "not_in_party"
                 || delivered.Count != 0) throw new Exception("Non-member party send status or delivery was wrong.");
         });
+        await Check("guild send rechecks membership before delivery", async () =>
+        {
+            var members = new HashSet<string> { "chr_a", "chr_b" };
+            Task<GuildMembers?> Lookup(string actor, CancellationToken _) => Task.FromResult<GuildMembers?>(
+                members.Contains(actor) ? new GuildMembers("gld_one", [.. members]) : null);
+            var hub = new ChatDeliveryHub((_, _) => Task.FromResult<PartyMembers?>(null), (_, _) => true, Lookup);
+            var a = 0; var b = 0;
+            hub.Connect("chr_a", _ => { a++; return Task.CompletedTask; });
+            hub.Connect("chr_b", _ => { b++; return Task.CompletedTask; });
+            if (await hub.Publish("chr_a", "guild", null, "first", CancellationToken.None) != "sent" || a != 1 || b != 1)
+                throw new Exception("Guild member delivery failed.");
+            members.Remove("chr_b");
+            if (await hub.Publish("chr_a", "guild", null, "second", CancellationToken.None) != "sent" || a != 2 || b != 1)
+                throw new Exception("Removed guild member received a message.");
+        });
+        await Check("non-member guild send rejected", async () =>
+        {
+            var count = 0;
+            var hub = new ChatDeliveryHub((_, _) => Task.FromResult<PartyMembers?>(null), (_, _) => true,
+                (_, _) => Task.FromResult<GuildMembers?>(null));
+            hub.Connect("chr_b", _ => { count++; return Task.CompletedTask; });
+            if (await hub.Publish("chr_a", "guild", null, "private", CancellationToken.None) != "not_in_guild" || count != 0)
+                throw new Exception("Outsider guild send delivered.");
+        });
 
         await Check("party fan-out to members only", async () =>
         {
@@ -89,7 +113,7 @@ internal static class TransportChecks
             await hub.Publish("chr_a", "whisper", "chr_b", "again", CancellationToken.None);
             if (oldCount != 0 || newCount != 1) throw new Exception("Reconnected receiver lost or duplicated.");
         });
-        Console.WriteLine($"CHAT_TRANSPORT_PASS {passed}/6");
+        Console.WriteLine($"CHAT_TRANSPORT_PASS {passed}/8");
     }
 
     private sealed class StubHandler : HttpMessageHandler
