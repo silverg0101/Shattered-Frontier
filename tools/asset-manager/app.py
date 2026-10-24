@@ -1514,14 +1514,30 @@ MV_SHEET_REVIEW = (
 SHEET_CELLS = {"front": (0, 0), "left": (1, 0), "back": (0, 1), "right": (1, 1)}  # (column, row) on the sheet
 VIEW_SIZE = 1024  # each split view is enlarged onto a square of this size
 
-def _subject_box(img):
-    """Bounding box of the subject: its alpha where the image has transparency, else whatever isn't near-white."""
+def _subject_mask(img):
+    """255 where the subject is: its alpha where the image has transparency, else whatever isn't near-white."""
     from PIL import ImageFilter  # pillow is in the Dockerfile
     if img.mode == "RGBA" and img.getchannel("A").getextrema()[0] < 250:
         mask = img.getchannel("A").point(lambda v: 255 if v > 16 else 0)
     else:
         mask = img.convert("L").point(lambda v: 255 if v < 235 else 0)
-    return mask.filter(ImageFilter.MinFilter(5)).getbbox()  # MinFilter drops stray specks
+    return mask.filter(ImageFilter.MinFilter(5))  # drops stray specks
+
+def _subject_box(img):
+    return _subject_mask(img).getbbox()
+
+def _widest_gap(occupied):
+    """Middle of the longest empty run strictly inside the occupied span of a row/column profile, or None."""
+    filled = [i for i, v in enumerate(occupied) if v]
+    best, start = None, None
+    for i in range(filled[0], filled[-1] + 1) if filled else ():
+        if not occupied[i] and start is None:
+            start = i
+        elif occupied[i] and start is not None:
+            if not best or i - start > best[1] - best[0]:
+                best = (start, i)
+            start = None
+    return (best[0] + best[1]) // 2 if best else None
 
 def align_views(subjects):
     """{position: image cropped to its subject} -> {position: PNG bytes}. An orthographic camera orbiting a standing
@@ -1530,7 +1546,7 @@ def align_views(subjects):
     from PIL import Image
     s, clear = VIEW_SIZE, any(v.mode == "RGBA" for v in subjects.values())
     height = min([0.84 * s] + [0.94 * s * v.height / v.width for v in subjects.values()])
-    feet = round(0.93 * s)
+    feet = round((s + height) / 2)  # vertically centred; every view shares the height, so the feet line too
     out = {}
     for pos, v in subjects.items():
         w, h = round(v.width * height / v.height), round(height)
@@ -1542,18 +1558,34 @@ def align_views(subjects):
     return out
 
 def split_sheet(png):
-    """Cut a 2x2 turnaround sheet into its four views at one scale (align_views). ValueError when a cell is empty."""
+    """Cut a 2x2 turnaround sheet into its four views at one scale (align_views). The image model doesn't keep to
+    equal quarters (a long side view runs past the middle), so the rows are split at the widest empty band and each
+    row at its widest empty column gap. Transparent sheets (the image tool often returns them) go onto white.
+    ValueError when the four subjects can't be told apart."""
     from PIL import Image
-    im = Image.open(io.BytesIO(png)).convert("RGB")
-    cw, ch = im.width // 2, im.height // 2
-    pad = round(min(cw, ch) * 0.015)  # drop the cell edges, where a stray grid line or a neighbour can bleed in
+    im = Image.open(io.BytesIO(png))
+    im = im.convert("RGBA" if im.mode in ("RGBA", "LA", "P") else "RGB")
+    mask = _subject_mask(im)
+    if im.mode == "RGBA":
+        flat = Image.new("RGB", im.size, "white")
+        flat.paste(im, mask=im.getchannel("A"))
+        im = flat
+    profile = lambda m, axis: [v > 0 for v in m.resize((1, m.height) if axis else (m.width, 1), Image.BOX).getdata()]
+    mid = _widest_gap(profile(mask, 1))
+    if mid is None:
+        raise ValueError("the sheet doesn't have two rows of views")
     subjects = {}
-    for pos, (c, r) in SHEET_CELLS.items():
-        cell = im.crop((c * cw + pad, r * ch + pad, (c + 1) * cw - pad, (r + 1) * ch - pad))
-        box = _subject_box(cell)
-        if not box:
-            raise ValueError(f"the {pos} cell of the sheet is empty")
-        subjects[pos] = cell.crop(box)
+    for r, (top, bottom) in enumerate(((0, mid), (mid, im.height))):
+        band = mask.crop((0, top, im.width, bottom))
+        cut = _widest_gap(profile(band, 0))
+        if cut is None:
+            raise ValueError(f"the {'top' if r == 0 else 'bottom'} row of the sheet doesn't hold two views")
+        for c, (left, right) in enumerate(((0, cut), (cut, im.width))):
+            pos = next(p for p, cell in SHEET_CELLS.items() if cell == (c, r))
+            box = mask.crop((left, top, right, bottom)).getbbox()
+            if not box:
+                raise ValueError(f"the {pos} view of the sheet is empty")
+            subjects[pos] = im.crop((left + box[0], top + box[1], left + box[2], top + box[3]))
     return align_views(subjects)
 
 def align_uploads(raw):
@@ -1969,6 +2001,16 @@ def check():
     assert max(b[3] - b[1] for b in boxes.values()) - min(b[3] - b[1] for b in boxes.values()) <= 2  # one height
     def png_of(img):
         b = io.BytesIO(); img.save(b, "PNG"); return b.getvalue()
+    clear = Image.new("RGBA", (1200, 1200), (0, 0, 0, 0))  # transparent, side views running past the middle (rat v4)
+    d = ImageDraw.Draw(clear)
+    for box in ((100, 100, 300, 500), (430, 150, 1150, 480), (100, 700, 300, 1100), (380, 760, 1150, 1080)):
+        d.rectangle(box, fill="grey")
+    views = {pos: Image.open(io.BytesIO(png)) for pos, png in split_sheet(png_of(clear)).items()}
+    boxes = {pos: v.convert("L").point(lambda v: 255 if v < 235 else 0).getbbox() for pos, v in views.items()}
+    assert all(v.mode == "RGB" and v.getpixel((5, 5)) == (255, 255, 255) for v in views.values())  # white, not black
+    fw = boxes["front"][2] - boxes["front"][0]; fh = boxes["front"][3] - boxes["front"][1]
+    assert abs(fw / fh - 0.5) < 0.05, boxes["front"]  # just the front subject, no neighbour cut in
+    assert len({b[3] for b in boxes.values()}) == 1 and len({b[3] - b[1] for b in boxes.values()}) <= 2, boxes
     front, left = Image.new("RGBA", (500, 500), (0, 0, 0, 0)), Image.new("RGBA", (500, 500), (0, 0, 0, 0))
     ImageDraw.Draw(front).rectangle((200, 50, 300, 450), fill="grey")  # 80% of the frame
     ImageDraw.Draw(left).rectangle((100, 200, 400, 400), fill="grey")  # 40%: flagged, then matched
