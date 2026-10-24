@@ -1,6 +1,7 @@
 using ShatteredFrontier.GatheringNodes;
 using ShatteredFrontier.WorldContent;
 
+var passed = 0;
 var path = args.Length == 1 ? args[0] : "content/world/zones/greenlands_silverbrook.json";
 var zone = ZoneLoader.Load(path);
 var clock = new ManualClock();
@@ -47,11 +48,67 @@ partialClock.Set(partialClock.GetUtcNow().AddSeconds(30));
 Check(partial.Snapshot().Single(n => n.Id == partialWood.Id) is { Charges: 2, Generation: 3, RegrowAt: null }, "partial regrowth reaches cap");
 try { new NodeSettings(10, .1, RegrowthMode.FullRespawn).Validate(); throw new Exception("invalid settings accepted"); }
 catch (ArgumentOutOfRangeException) { }
-Console.WriteLine("GatheringNodes: all focused checks passed");
 
-static void Check(bool condition, string label)
+var ironProfile = zone.SpawnGroups.Single(g => g.GroupId == "eastwood_iron_ore").Definitions.Single().GrowthProfile!;
+Check(WorldContentValidator.ValidGrowthProfile(ironProfile), "shipped growth profile valid");
+var invalidProfiles = new[]
+{
+    new GrowthProfile(),
+    new GrowthProfile { Stages = [new() { Name = "only", DurationFraction = 0, YieldFraction = 1 }] },
+    new GrowthProfile { Stages = [new() { Name = "a", DurationFraction = 1, YieldFraction = .4 }, new() { Name = "b", YieldFraction = .4 }] },
+    new GrowthProfile { Stages = [new() { Name = "a", DurationFraction = 1, YieldFraction = 0 }, new() { Name = "b", YieldFraction = 1 }] },
+    new GrowthProfile { Stages = [new() { Name = "a", DurationFraction = 1, YieldFraction = .4 }, new() { Name = "b", YieldFraction = .9 }] },
+    new GrowthProfile { Stages = [new() { Name = "a", DurationFraction = 1, YieldFraction = .6 }, new() { Name = "b", YieldFraction = 1 }] }
+};
+foreach (var invalid in invalidProfiles)
+{
+    Check(!WorldContentValidator.ValidGrowthProfile(invalid), "invalid growth profile rejected");
+    var original = zone.SpawnGroups.Single(g => g.GroupId == "eastwood_iron_ore").Definitions.Single().GrowthProfile;
+    zone.SpawnGroups.Single(g => g.GroupId == "eastwood_iron_ore").Definitions.Single().GrowthProfile = invalid;
+    Check(WorldContentValidator.Validate(zone).Any(i => i.Contains("invalid growth_profile")), "zone validator rejects growth profile");
+    zone.SpawnGroups.Single(g => g.GroupId == "eastwood_iron_ore").Definitions.Single().GrowthProfile = original;
+}
+
+var growthClock = new ManualClock();
+var ironDefinition = new NodeDefinition("gathering_node/iron_vein", ResourceKind.Ore, "resource/iron", 5, 1);
+var growth = new GatheringNodeService(zone, [ironDefinition], growthClock, "growth-test", new(30, 0, RegrowthMode.FullRespawn));
+var iron = growth.Snapshot().First();
+Check(iron.GrowthStage == "mature", "initial profiled node is mature");
+for (var i = 0; i < 5; i++)
+    Check(growth.Harvest(new($"iron-{i}", "p1", iron.Id, 1)).Status == HarvestStatus.Granted, "initial mature charge");
+var maturity = growth.Snapshot().Single(n => n.Id == iron.Id).RegrowAt!.Value;
+growthClock.Set(maturity.AddSeconds(-15.001));
+Check(growth.Snapshot().Single(n => n.Id == iron.Id) is { Charges: 0, GrowthStage: null }, "not emerged before growth window");
+growthClock.Set(maturity.AddSeconds(-15));
+var young = growth.Snapshot().Single(n => n.Id == iron.Id);
+Check(young is { Generation: 2, Charges: 2, GrowthStage: "young" }, "young stage and rounded charges");
+Check(young.StageStartedAt == growthClock.GetUtcNow(), "stage start exposed");
+Check(growth.Harvest(new("iron-young", "p1", iron.Id, 2)).RemainingCharges == 1, "young charge consumed");
+growthClock.Set(maturity.AddSeconds(-7.5));
+Check(growth.Snapshot().Single(n => n.Id == iron.Id) is { Charges: 2, GrowthStage: "growing" }, "half rounding and prior harvest retained");
+growthClock.Set(maturity);
+Check(growth.Snapshot().Single(n => n.Id == iron.Id) is { Charges: 4, GrowthStage: "mature" }, "maturity reaches full cap less prior harvest");
+var floorClock = new ManualClock();
+try { _ = new GatheringNodeService(zone, [ironDefinition with { Charges = 1 }], floorClock, "bad-floor", new(30, 0, RegrowthMode.FullRespawn)); throw new Exception("rounded early advantage accepted"); }
+catch (ArgumentException) { }
+var ironSpawn = zone.SpawnGroups.Single(g => g.GroupId == "eastwood_iron_ore").Definitions.Single();
+ironSpawn.GrowthProfile = new GrowthProfile { Stages =
+    [new() { Name = "young", DurationFraction = .5, YieldFraction = .1 },
+     new() { Name = "growing", DurationFraction = .5, YieldFraction = .5 },
+     new() { Name = "mature", YieldFraction = 1 }] };
+var floorGrowth = new GatheringNodeService(zone, [ironDefinition with { Charges = 2 }], floorClock, "floor-test", new(30, 0, RegrowthMode.FullRespawn));
+ironSpawn.GrowthProfile = ironProfile;
+var floorNode = floorGrowth.Snapshot().First();
+floorGrowth.Harvest(new("floor-initial-1", "p1", floorNode.Id, 1));
+var floorDue = floorGrowth.Harvest(new("floor-initial-2", "p1", floorNode.Id, 1)).RegrowAt!.Value;
+floorClock.Set(floorDue.AddSeconds(-15));
+Check(floorGrowth.Snapshot().Single(n => n.Id == floorNode.Id) is { Charges: 1, GrowthStage: "young" }, "minimum one charge floor");
+Console.WriteLine($"GatheringNodes: {passed} passed, 0 failed");
+
+void Check(bool condition, string label)
 {
     if (!condition) throw new Exception(label);
+    passed++;
 }
 
 sealed class ManualClock : TimeProvider

@@ -27,6 +27,20 @@ public sealed class SpawnDefinition
 {
     public string DefinitionId { get; set; } = "";
     public int Weight { get; set; }
+    public GrowthProfile? GrowthProfile { get; set; }
+}
+
+public sealed class GrowthProfile
+{
+    public double GrowFraction { get; set; } = .5;
+    public List<GrowthStage> Stages { get; set; } = [];
+}
+
+public sealed class GrowthStage
+{
+    public string Name { get; set; } = "";
+    public double DurationFraction { get; set; }
+    public double YieldFraction { get; set; }
 }
 
 public sealed class SpawnGroup

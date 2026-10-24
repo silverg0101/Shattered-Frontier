@@ -61,6 +61,14 @@ public static class WorldContentValidator
             if (group.Definitions.Count == 0 || group.Definitions.Any(d => d.Weight <= 0 || !d.DefinitionId.StartsWith(group.SpawnKind + "/", StringComparison.Ordinal)))
                 issues.Add($"{label} invalid definitions or weights");
             Unique(group.Definitions.Select(d => d.DefinitionId), $"{label} definition", issues);
+            foreach (var definition in group.Definitions)
+            {
+                if (definition.GrowthProfile is { } profile)
+                {
+                    if (group.SpawnKind != "gathering_node" || !ValidGrowthProfile(profile))
+                        issues.Add($"{label} definition {definition.DefinitionId} invalid growth_profile");
+                }
+            }
             Unique(group.Points.Select(p => p.PointId), $"{label} point", issues);
             if (!ValidPolygon(group.Area)) issues.Add($"{label} invalid population area");
             if (group.RespawnSOverride is <= 0) issues.Add($"{label} invalid respawn_s_override");
@@ -99,6 +107,27 @@ public static class WorldContentValidator
     }
 
     private static bool ValidPoint(double[] p) => p.Length >= 2 && p.Take(2).All(double.IsFinite);
+    public static bool ValidGrowthProfile(GrowthProfile profile)
+    {
+        if (!double.IsFinite(profile.GrowFraction) || profile.GrowFraction is <= 0 or >= 1 ||
+            profile.Stages is null || profile.Stages.Count is < 2 or > 4) return false;
+        var start = 0.0;
+        var previousYield = 0.0;
+        for (var i = 0; i < profile.Stages.Count; i++)
+        {
+            var stage = profile.Stages[i];
+            if (stage is null || string.IsNullOrWhiteSpace(stage.Name) ||
+                !double.IsFinite(stage.DurationFraction) || !double.IsFinite(stage.YieldFraction) ||
+                stage.DurationFraction < 0 || (i < profile.Stages.Count - 1 && stage.DurationFraction <= 0) ||
+                (i == profile.Stages.Count - 1 && stage.DurationFraction != 0) ||
+                stage.YieldFraction <= previousYield || stage.YieldFraction > 1 ||
+                stage.YieldFraction > 1 - profile.GrowFraction + start * profile.GrowFraction + 1e-9)
+                return false;
+            previousYield = stage.YieldFraction;
+            start += stage.DurationFraction;
+        }
+        return Math.Abs(start - 1) <= 1e-9 && previousYield == 1;
+    }
     private static bool ValidPolygon(double[][] p) => p.Length >= 3 && p.All(ValidPoint);
     private static bool InExtent(double[] p, double[][] e) => ValidPoint(p) && e.Length == 2 && e.All(ValidPoint) &&
         p[0] >= e[0][0] && p[0] <= e[1][0] && p[1] >= e[0][1] && p[1] <= e[1][1];

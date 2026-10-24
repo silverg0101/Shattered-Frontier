@@ -2904,7 +2904,15 @@
    "definitions": [
     {
      "definition_id": "gathering_node/iron_vein",
-     "weight": 8
+     "weight": 8,
+     "growth_profile": {
+      "grow_fraction": 0.5,
+      "stages": [
+       { "name": "young", "duration_fraction": 0.5, "yield_fraction": 0.3 },
+       { "name": "growing", "duration_fraction": 0.5, "yield_fraction": 0.5 },
+       { "name": "mature", "duration_fraction": 0.0, "yield_fraction": 1.0 }
+      ]
+     }
     }
    ],
    "points": [
