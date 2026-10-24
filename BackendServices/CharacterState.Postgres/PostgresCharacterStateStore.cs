@@ -189,7 +189,7 @@ public sealed class PostgresCharacterStateStore(string connectionString)
             {
                 using var marker = Command(c, t, "SELECT version,migration_id,compatible_build_min,compatible_build_max FROM character_state.schema_version WHERE singleton=true FOR SHARE");
                 using var row = marker.ExecuteReader();
-                if (!row.Read() || row.GetInt32(0) != 5 || row.GetString(1) != "character-state-005" || row.GetInt32(2) > 5 || row.GetInt32(3) < 5)
+                if (!row.Read() || row.GetInt32(0) != 6 || row.GetString(1) != "character-state-006" || row.GetInt32(2) > 6 || row.GetInt32(3) < 6)
                     throw new CharacterSchemaCompatibilityException("Unsupported character state schema version.");
             }
             catch (PostgresException ex) when (ex.SqlState is "42P01" or "3F000" or "42501")

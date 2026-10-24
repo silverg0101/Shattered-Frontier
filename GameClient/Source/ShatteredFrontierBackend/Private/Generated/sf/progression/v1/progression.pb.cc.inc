@@ -61,6 +61,8 @@ PROTOBUF_CONSTINIT ::google::protobuf::internal::ReflectionData
         {&::_pbi::kDescriptorMethods, &::descriptor_table_sf_2fprogression_2fv1_2fprogression_2eproto, /* tracker*/ nullptr,},
         // ::sf::progression::v1::CharacterStateReply_ObjectiveCountsEntry_DoNotUse
         {&::_pbi::kDescriptorMethods, &::descriptor_table_sf_2fprogression_2fv1_2fprogression_2eproto, /* tracker*/ nullptr,},
+        // ::sf::progression::v1::CharacterStateReply_GatheringSkillsEntry_DoNotUse
+        {&::_pbi::kDescriptorMethods, &::descriptor_table_sf_2fprogression_2fv1_2fprogression_2eproto, /* tracker*/ nullptr,},
         // ::sf::progression::v1::CharacterStateReply
         {&::_pbi::kDescriptorMethods, &::descriptor_table_sf_2fprogression_2fv1_2fprogression_2eproto, /* tracker*/ nullptr,},
         // ::sf::progression::v1::QuestState_CountsEntry_DoNotUse
@@ -299,7 +301,7 @@ constexpr auto QuestState_CountsEntry_DoNotUse::InternalGenerateClassData_(
           false,
       },
 #ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[17],
+      &file_reflection_data[18],
 #else   // !PROTOBUF_MESSAGE_GLOBALS
       &::_pbi::kDescriptorMethods,
       &descriptor_table_sf_2fprogression_2fv1_2fprogression_2eproto,
@@ -1947,6 +1949,142 @@ const ::_pbi::ClassData* CharacterStateReply_ObjectiveCountsEntry_DoNotUse_get_c
 }
 }  // namespace
 #endif  // PROTOBUF_CUSTOM_VTABLE
+constexpr CharacterStateReply_GatheringSkillsEntry_DoNotUse::ParseTableT_ CharacterStateReply_GatheringSkillsEntry_DoNotUse::InternalGenerateParseTable_(const ::_pbi::ClassData* class_data) {
+  return ParseTableT_{
+    {
+      PROTOBUF_FIELD_OFFSET(CharacterStateReply_GatheringSkillsEntry_DoNotUse, _impl_._has_bits_),
+      0, // no _extensions_
+      2, 8,  // max_field_number, fast_idx_mask
+      offsetof(ParseTableT_, field_lookup_table),
+      4294967292,  // skipmap
+      offsetof(ParseTableT_, field_entries),
+      2,  // num_field_entries
+      0,  // num_aux_entries
+      offsetof(ParseTableT_, field_names),  // no aux_entries
+      class_data,
+      nullptr,  // post_loop_handler
+      ::_pbi::TcParser::DiscardEverythingFallback,  // fallback
+      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+      ::_pbi::TcParser::GetTable<::sf::progression::v1::CharacterStateReply_GatheringSkillsEntry_DoNotUse>(),  // to_prefetch
+      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+    }, {{
+      // int32 value = 2;
+      {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(CharacterStateReply_GatheringSkillsEntry_DoNotUse, _impl_.value_), 1>(),
+       {16, 1, 0,
+        PROTOBUF_FIELD_OFFSET(CharacterStateReply_GatheringSkillsEntry_DoNotUse, _impl_.value_)}},
+      // string key = 1;
+      {::_pbi::TcParser::FastUS1,
+       {10, 0, 0,
+        PROTOBUF_FIELD_OFFSET(CharacterStateReply_GatheringSkillsEntry_DoNotUse, _impl_.key_)}},
+    }}, {{
+      65535, 65535
+    }}, {{
+      // string key = 1;
+      {PROTOBUF_FIELD_OFFSET(CharacterStateReply_GatheringSkillsEntry_DoNotUse, _impl_.key_), _Internal::kHasBitsOffset + 0, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // int32 value = 2;
+      {PROTOBUF_FIELD_OFFSET(CharacterStateReply_GatheringSkillsEntry_DoNotUse, _impl_.value_), _Internal::kHasBitsOffset + 1, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt32)},
+    }},
+    // no aux_entries
+    {{
+      "\72\3\0\0\0\0\0\0"
+      "sf.progression.v1.CharacterStateReply.GatheringSkillsEntry"
+      "key"
+    }},
+  };
+}
+
+template <typename>
+constexpr CharacterStateReply_GatheringSkillsEntry_DoNotUse::CharacterStateReply_GatheringSkillsEntry_DoNotUse(::_pbi::ConstantInitialized,
+                       const ::_pbi::ClassData* PROTOBUF_NONNULL class_data)
+    : CharacterStateReply_GatheringSkillsEntry_DoNotUse::MapEntry(
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          class_data
+#endif  // PROTOBUF_CUSTOM_VTABLE
+      ) {
+}
+inline void* PROTOBUF_NONNULL CharacterStateReply_GatheringSkillsEntry_DoNotUse::PlacementNew_(
+    const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena) {
+  return ::new (mem) CharacterStateReply_GatheringSkillsEntry_DoNotUse(arena);
+}
+constexpr auto CharacterStateReply_GatheringSkillsEntry_DoNotUse::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::CopyInit(sizeof(CharacterStateReply_GatheringSkillsEntry_DoNotUse), alignof(CharacterStateReply_GatheringSkillsEntry_DoNotUse));
+}
+constexpr auto CharacterStateReply_GatheringSkillsEntry_DoNotUse::InternalGenerateClassData_(
+    const MessageLite& prototype,
+    const ::google::protobuf::internal::TcParseTableBase* tc_table) {
+  return ::google::protobuf::internal::ClassDataFull{
+      ::google::protobuf::internal::ClassData{
+          &prototype,
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+          &_table_.header,
+#else
+          tc_table,
+#endif
+          nullptr,  // IsInitialized
+          &CharacterStateReply_GatheringSkillsEntry_DoNotUse::MergeImpl,
+          ::google::protobuf::Message::GetNewImpl<CharacterStateReply_GatheringSkillsEntry_DoNotUse>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          &CharacterStateReply_GatheringSkillsEntry_DoNotUse::SharedDtor,
+          static_cast<void (::google::protobuf::MessageLite::*)()>(&CharacterStateReply_GatheringSkillsEntry_DoNotUse::ClearImpl),
+              ::google::protobuf::Message::ByteSizeLongImpl, ::google::protobuf::Message::_InternalSerializeImpl
+              ,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          PROTOBUF_FIELD_OFFSET(CharacterStateReply_GatheringSkillsEntry_DoNotUse, _impl_._cached_size_),
+          false,
+      },
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+      &file_reflection_data[16],
+#else   // !PROTOBUF_MESSAGE_GLOBALS
+      &::_pbi::kDescriptorMethods,
+      &descriptor_table_sf_2fprogression_2fv1_2fprogression_2eproto,
+      nullptr,  // tracker
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+  };
+}
+struct CharacterStateReply_GatheringSkillsEntry_DoNotUseGlobalsTypeInternal : ::_pbi::MessageGlobalsBase {
+  constexpr CharacterStateReply_GatheringSkillsEntry_DoNotUseGlobalsTypeInternal()
+      :
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+        _default(::_pbi::ConstantInitialized{},
+                 CharacterStateReply_GatheringSkillsEntry_DoNotUse_class_data_.base())
+#else   // !PROTOBUF_MESSAGE_GLOBALS
+        MessageGlobalsBase(CharacterStateReply_GatheringSkillsEntry_DoNotUse::InternalGenerateClassData_(
+            _default, &CharacterStateReply_GatheringSkillsEntry_DoNotUse_globals_._table.header)),
+        _default(::_pbi::ConstantInitialized{}, GetClassData()),
+        _table(::_pbi::PrivateAccess::GenerateParseTable<CharacterStateReply_GatheringSkillsEntry_DoNotUse>(
+            GetClassData()))
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+  {
+  }
+  ~CharacterStateReply_GatheringSkillsEntry_DoNotUseGlobalsTypeInternal() {}
+  union {
+    alignas(::_pbi::kMaxMessageAlignment) CharacterStateReply_GatheringSkillsEntry_DoNotUse _default;
+  };
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+  decltype(::_pbi::PrivateAccess::GenerateParseTable<CharacterStateReply_GatheringSkillsEntry_DoNotUse>(
+      ::std::declval<const ::_pbi::ClassData*>())) _table;
+#endif
+};
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+static_assert(PROTOBUF_FIELD_OFFSET(CharacterStateReply_GatheringSkillsEntry_DoNotUseGlobalsTypeInternal, _default) ==
+              ::_pbi::MessageGlobalsBase::OffsetToDefault());
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 PROTOBUF_MESSAGE_GLOBALS_CONST CharacterStateReply_GatheringSkillsEntry_DoNotUseGlobalsTypeInternal CharacterStateReply_GatheringSkillsEntry_DoNotUse_globals_
+        PROTOBUF_MESSAGE_GLOBALS_SECTION(.data.rel.ro);
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+namespace {
+const ::_pbi::ClassData* CharacterStateReply_GatheringSkillsEntry_DoNotUse_get_class_data() {
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+  return CharacterStateReply_GatheringSkillsEntry_DoNotUse_globals_.GetClassData();
+#else
+  return CharacterStateReply_GatheringSkillsEntry_DoNotUse_class_data_.base();
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+}
+}  // namespace
+#endif  // PROTOBUF_CUSTOM_VTABLE
 class CharacterPosition::_Internal {
  public:
   using HasBits = decltype(::std::declval<CharacterPosition>()._impl_._has_bits_);
@@ -2635,7 +2773,7 @@ constexpr auto QuestState::InternalGenerateClassData_(
           false,
       },
 #ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[18],
+      &file_reflection_data[19],
 #else   // !PROTOBUF_MESSAGE_GLOBALS
       &::_pbi::kDescriptorMethods,
       &descriptor_table_sf_2fprogression_2fv1_2fprogression_2eproto,
@@ -3149,12 +3287,12 @@ constexpr CharacterStateReply::ParseTableT_ CharacterStateReply::InternalGenerat
     {
       PROTOBUF_FIELD_OFFSET(CharacterStateReply, _impl_._has_bits_),
       0, // no _extensions_
-      14, 120,  // max_field_number, fast_idx_mask
+      15, 120,  // max_field_number, fast_idx_mask
       offsetof(ParseTableT_, field_lookup_table),
-      4294950912,  // skipmap
+      4294934528,  // skipmap
       offsetof(ParseTableT_, field_entries),
-      14,  // num_field_entries
-      5,  // num_aux_entries
+      15,  // num_field_entries
+      6,  // num_aux_entries
       offsetof(ParseTableT_, aux_entries),
       class_data,
       nullptr,  // post_loop_handler
@@ -3246,6 +3384,8 @@ constexpr CharacterStateReply::ParseTableT_ CharacterStateReply::InternalGenerat
       {PROTOBUF_FIELD_OFFSET(CharacterStateReply, _impl_.appearance_packet_), _Internal::kHasBitsOffset + 3, 0, (0 | ::_fl::kFcOptional | ::_fl::kBytes | ::_fl::kRepAString)},
       // optional string face_id = 14;
       {PROTOBUF_FIELD_OFFSET(CharacterStateReply, _impl_.face_id_), _Internal::kHasBitsOffset + 4, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // map<string, int32> gathering_skills = 15;
+      {PROTOBUF_FIELD_OFFSET(CharacterStateReply, _impl_.gathering_skills_), _Internal::kHasBitsOffset + 14, 5, (0 | ::_fl::kFcRepeated | ::_fl::kMap)},
     }},
     {{
         #ifndef PROTOBUF_MESSAGE_GLOBALS
@@ -3267,14 +3407,17 @@ constexpr CharacterStateReply::ParseTableT_ CharacterStateReply::InternalGenerat
             1, 0, 9, 5, 0)},
         {::_pbi::TcParser::GetMapAuxInfo(
             1, 0, 9, 5, 0)},
+        {::_pbi::TcParser::GetMapAuxInfo(
+            1, 0, 9, 5, 0)},
     }},
     {{
-      "\45\0\0\0\6\0\16\0\20\0\0\0\0\0\7\0"
+      "\45\0\0\0\6\0\16\0\20\0\0\0\0\0\7\20"
       "sf.progression.v1.CharacterStateReply"
       "skills"
       "active_step_id"
       "objective_counts"
       "face_id"
+      "gathering_skills"
     }},
   };
 }
@@ -3319,6 +3462,11 @@ inline constexpr CharacterStateReply::Impl_::Impl_(
             ::sf::progression::v1::CharacterStateReply,
             PROTOBUF_FIELD_OFFSET(::sf::progression::v1::CharacterStateReply, _impl_.objective_counts_)>()
          }
+        ,
+        gathering_skills_ { visibility, ::_pbi::InternalMetadataOffset::Build<
+            ::sf::progression::v1::CharacterStateReply,
+            PROTOBUF_FIELD_OFFSET(::sf::progression::v1::CharacterStateReply, _impl_.gathering_skills_)>()
+         }
      {}
 
 template <typename>
@@ -3362,7 +3510,7 @@ constexpr auto CharacterStateReply::InternalGenerateClassData_(
           false,
       },
 #ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[16],
+      &file_reflection_data[17],
 #else   // !PROTOBUF_MESSAGE_GLOBALS
       &::_pbi::kDescriptorMethods,
       &descriptor_table_sf_2fprogression_2fv1_2fprogression_2eproto,
@@ -3604,8 +3752,15 @@ const ::uint32_t
         0,
         1,
         0x081, // bitmap
+        PROTOBUF_FIELD_OFFSET(::sf::progression::v1::CharacterStateReply_GatheringSkillsEntry_DoNotUse, _impl_._has_bits_),
+        5, // hasbit index offset
+        PROTOBUF_FIELD_OFFSET(::sf::progression::v1::CharacterStateReply_GatheringSkillsEntry_DoNotUse, _impl_.key_),
+        PROTOBUF_FIELD_OFFSET(::sf::progression::v1::CharacterStateReply_GatheringSkillsEntry_DoNotUse, _impl_.value_),
+        0,
+        1,
+        0x081, // bitmap
         PROTOBUF_FIELD_OFFSET(::sf::progression::v1::CharacterStateReply, _impl_._has_bits_),
-        17, // hasbit index offset
+        18, // hasbit index offset
         PROTOBUF_FIELD_OFFSET(::sf::progression::v1::CharacterStateReply, _impl_.progression_revision_),
         PROTOBUF_FIELD_OFFSET(::sf::progression::v1::CharacterStateReply, _impl_.lifetime_xp_),
         PROTOBUF_FIELD_OFFSET(::sf::progression::v1::CharacterStateReply, _impl_.level_),
@@ -3620,6 +3775,7 @@ const ::uint32_t
         PROTOBUF_FIELD_OFFSET(::sf::progression::v1::CharacterStateReply, _impl_.known_recipes_),
         PROTOBUF_FIELD_OFFSET(::sf::progression::v1::CharacterStateReply, _impl_.appearance_packet_),
         PROTOBUF_FIELD_OFFSET(::sf::progression::v1::CharacterStateReply, _impl_.face_id_),
+        PROTOBUF_FIELD_OFFSET(::sf::progression::v1::CharacterStateReply, _impl_.gathering_skills_),
         6,
         7,
         9,
@@ -3634,6 +3790,7 @@ const ::uint32_t
         1,
         3,
         4,
+        14,
         0x081, // bitmap
         PROTOBUF_FIELD_OFFSET(::sf::progression::v1::QuestState_CountsEntry_DoNotUse, _impl_._has_bits_),
         5, // hasbit index offset
@@ -3678,9 +3835,10 @@ static const ::_pbi::MigrationSchema
         {161, sizeof(::sf::progression::v1::SavePositionReply)},
         {166, sizeof(::sf::progression::v1::CharacterStateReply_SkillsEntry_DoNotUse)},
         {173, sizeof(::sf::progression::v1::CharacterStateReply_ObjectiveCountsEntry_DoNotUse)},
-        {180, sizeof(::sf::progression::v1::CharacterStateReply)},
-        {211, sizeof(::sf::progression::v1::QuestState_CountsEntry_DoNotUse)},
-        {218, sizeof(::sf::progression::v1::QuestState)},
+        {180, sizeof(::sf::progression::v1::CharacterStateReply_GatheringSkillsEntry_DoNotUse)},
+        {187, sizeof(::sf::progression::v1::CharacterStateReply)},
+        {220, sizeof(::sf::progression::v1::QuestState_CountsEntry_DoNotUse)},
+        {227, sizeof(::sf::progression::v1::QuestState)},
 };
 static const ::_pbi::MessageGlobalsBase* PROTOBUF_NONNULL const
     file_message_globals[] = {
@@ -3700,6 +3858,7 @@ static const ::_pbi::MessageGlobalsBase* PROTOBUF_NONNULL const
         &::sf::progression::v1::SavePositionReply_globals_,
         &::sf::progression::v1::CharacterStateReply_SkillsEntry_DoNotUse_globals_,
         &::sf::progression::v1::CharacterStateReply_ObjectiveCountsEntry_DoNotUse_globals_,
+        &::sf::progression::v1::CharacterStateReply_GatheringSkillsEntry_DoNotUse_globals_,
         &::sf::progression::v1::CharacterStateReply_globals_,
         &::sf::progression::v1::QuestState_CountsEntry_DoNotUse_globals_,
         &::sf::progression::v1::QuestState_globals_,
@@ -3753,7 +3912,7 @@ const char descriptor_table_protodef_sf_2fprogression_2fv1_2fprogression_2eproto
     "ition_revision\030\002 \001(\003\0226\n\010position\030\003 \001(\0132$"
     ".sf.progression.v1.CharacterPosition\".\n\021"
     "SavePositionReply\022\031\n\021position_revision\030\001"
-    " \001(\003\"\263\005\n\023CharacterStateReply\022\034\n\024progress"
+    " \001(\003\"\302\006\n\023CharacterStateReply\022\034\n\024progress"
     "ion_revision\030\001 \001(\003\022\023\n\013lifetime_xp\030\002 \001(\003\022"
     "\r\n\005level\030\003 \001(\005\022B\n\006skills\030\004 \003(\01322.sf.prog"
     "ression.v1.CharacterStateReply.SkillsEnt"
@@ -3767,42 +3926,45 @@ const char descriptor_table_protodef_sf_2fprogression_2fv1_2fprogression_2eproto
     "1.QuestState\0225\n\rknown_recipes\030\014 \003(\0132\036.sf"
     ".progression.v1.KnownRecipe\022\036\n\021appearanc"
     "e_packet\030\r \001(\014H\000\210\001\001\022\024\n\007face_id\030\016 \001(\tH\001\210\001"
-    "\001\032-\n\013SkillsEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002"
-    " \001(\005:\0028\001\0326\n\024ObjectiveCountsEntry\022\013\n\003key\030"
-    "\001 \001(\t\022\r\n\005value\030\002 \001(\005:\0028\001B\024\n\022_appearance_"
-    "packetB\n\n\010_face_id\"\363\001\n\nQuestState\022\020\n\010que"
-    "st_id\030\001 \001(\t\022\r\n\005state\030\002 \001(\t\022\026\n\016active_ste"
-    "p_id\030\003 \001(\t\0229\n\006counts\030\004 \003(\0132).sf.progress"
-    "ion.v1.QuestState.CountsEntry\022\030\n\020content"
-    "_revision\030\005 \001(\005\022\020\n\010revision\030\006 \001(\003\022\026\n\016rew"
-    "ard_pending\030\007 \001(\010\032-\n\013CountsEntry\022\013\n\003key\030"
-    "\001 \001(\t\022\r\n\005value\030\002 \001(\005:\0028\0012\365\003\n\013Progression"
-    "\022e\n\017CreateCharacter\022).sf.progression.v1."
-    "CreateCharacterRequest\032\'.sf.progression."
-    "v1.CreateCharacterReply\022\\\n\014ApplyReceipt\022"
-    "&.sf.progression.v1.ApplyReceiptRequest\032"
-    "$.sf.progression.v1.ApplyReceiptReply\022h\n"
-    "\021GetCharacterState\022+.sf.progression.v1.G"
-    "etCharacterStateRequest\032&.sf.progression"
-    ".v1.CharacterStateReply\022\\\n\014SavePosition\022"
-    "&.sf.progression.v1.SavePositionRequest\032"
-    "$.sf.progression.v1.SavePositionReply\022Y\n"
-    "\013LearnRecipe\022%.sf.progression.v1.LearnRe"
-    "cipeRequest\032#.sf.progression.v1.LearnRec"
-    "ipeReplyB#\252\002 ShatteredFrontier.Progressi"
-    "on.V1b\006proto3"
+    "\001\022U\n\020gathering_skills\030\017 \003(\0132;.sf.progres"
+    "sion.v1.CharacterStateReply.GatheringSki"
+    "llsEntry\032-\n\013SkillsEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005"
+    "value\030\002 \001(\005:\0028\001\0326\n\024ObjectiveCountsEntry\022"
+    "\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\005:\0028\001\0326\n\024Gathe"
+    "ringSkillsEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 "
+    "\001(\005:\0028\001B\024\n\022_appearance_packetB\n\n\010_face_i"
+    "d\"\363\001\n\nQuestState\022\020\n\010quest_id\030\001 \001(\t\022\r\n\005st"
+    "ate\030\002 \001(\t\022\026\n\016active_step_id\030\003 \001(\t\0229\n\006cou"
+    "nts\030\004 \003(\0132).sf.progression.v1.QuestState"
+    ".CountsEntry\022\030\n\020content_revision\030\005 \001(\005\022\020"
+    "\n\010revision\030\006 \001(\003\022\026\n\016reward_pending\030\007 \001(\010"
+    "\032-\n\013CountsEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 "
+    "\001(\005:\0028\0012\365\003\n\013Progression\022e\n\017CreateCharact"
+    "er\022).sf.progression.v1.CreateCharacterRe"
+    "quest\032\'.sf.progression.v1.CreateCharacte"
+    "rReply\022\\\n\014ApplyReceipt\022&.sf.progression."
+    "v1.ApplyReceiptRequest\032$.sf.progression."
+    "v1.ApplyReceiptReply\022h\n\021GetCharacterStat"
+    "e\022+.sf.progression.v1.GetCharacterStateR"
+    "equest\032&.sf.progression.v1.CharacterStat"
+    "eReply\022\\\n\014SavePosition\022&.sf.progression."
+    "v1.SavePositionRequest\032$.sf.progression."
+    "v1.SavePositionReply\022Y\n\013LearnRecipe\022%.sf"
+    ".progression.v1.LearnRecipeRequest\032#.sf."
+    "progression.v1.LearnRecipeReplyB#\252\002 Shat"
+    "teredFrontier.Progression.V1b\006proto3"
 };
 static ::absl::once_flag descriptor_table_sf_2fprogression_2fv1_2fprogression_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_sf_2fprogression_2fv1_2fprogression_2eproto = {
     false,
     false,
-    3373,
+    3516,
     descriptor_table_protodef_sf_2fprogression_2fv1_2fprogression_2eproto,
     "sf/progression/v1/progression.proto",
     &descriptor_table_sf_2fprogression_2fv1_2fprogression_2eproto_once,
     nullptr,
     0,
-    19,
+    20,
     schemas,
     file_message_globals,
     TableStruct_sf_2fprogression_2fv1_2fprogression_2eproto::offsets,
@@ -8281,6 +8443,44 @@ PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const CharacterStateReply_ObjectiveCountsEntry
 #endif  // !PROTOBUF_MESSAGE_GLOBALS
 // ===================================================================
 
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+CharacterStateReply_GatheringSkillsEntry_DoNotUse::CharacterStateReply_GatheringSkillsEntry_DoNotUse() : SuperType(CharacterStateReply_GatheringSkillsEntry_DoNotUse_get_class_data()) {}
+CharacterStateReply_GatheringSkillsEntry_DoNotUse::CharacterStateReply_GatheringSkillsEntry_DoNotUse(::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+    : SuperType(arena, CharacterStateReply_GatheringSkillsEntry_DoNotUse_get_class_data()) {}
+#else   // PROTOBUF_CUSTOM_VTABLE
+CharacterStateReply_GatheringSkillsEntry_DoNotUse::CharacterStateReply_GatheringSkillsEntry_DoNotUse() : SuperType() {}
+CharacterStateReply_GatheringSkillsEntry_DoNotUse::CharacterStateReply_GatheringSkillsEntry_DoNotUse(::google::protobuf::Arena* PROTOBUF_NULLABLE arena) : SuperType(arena) {}
+#endif  // PROTOBUF_CUSTOM_VTABLE
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
+    ::google::protobuf::internal::ClassDataFull CharacterStateReply_GatheringSkillsEntry_DoNotUse_class_data_ =
+        CharacterStateReply_GatheringSkillsEntry_DoNotUse::InternalGenerateClassData_(CharacterStateReply_GatheringSkillsEntry_DoNotUse_globals_._default);
+
+// including ~ all the vtables and everything they use become part
+// of the same ~ SCC.
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+CharacterStateReply_GatheringSkillsEntry_DoNotUse::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&CharacterStateReply_GatheringSkillsEntry_DoNotUse_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(CharacterStateReply_GatheringSkillsEntry_DoNotUse_class_data_.tc_table);
+  return CharacterStateReply_GatheringSkillsEntry_DoNotUse_class_data_.base();
+}
+#else
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+CharacterStateReply_GatheringSkillsEntry_DoNotUse::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&CharacterStateReply_GatheringSkillsEntry_DoNotUse_globals_);
+  ::google::protobuf::internal::PrefetchToLocalCache(
+      ::google::protobuf::internal::MessageGlobalsBase::ToParseTableBase(&CharacterStateReply_GatheringSkillsEntry_DoNotUse_globals_));
+  return CharacterStateReply_GatheringSkillsEntry_DoNotUse_globals_.GetClassData();
+}
+#endif  // !PROTOBUF_MESSAGE_GLOBALS
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_CONSTINIT
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const CharacterStateReply_GatheringSkillsEntry_DoNotUse::ParseTableT_
+    CharacterStateReply_GatheringSkillsEntry_DoNotUse::_table_ =
+        CharacterStateReply_GatheringSkillsEntry_DoNotUse::InternalGenerateParseTable_(CharacterStateReply_GatheringSkillsEntry_DoNotUse_class_data_.base());
+#endif  // !PROTOBUF_MESSAGE_GLOBALS
+// ===================================================================
+
 CharacterStateReply::CharacterStateReply(::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
 #if defined(PROTOBUF_CUSTOM_VTABLE)
     : ::google::protobuf::Message(arena, CharacterStateReply_get_class_data()) {
@@ -8325,6 +8525,13 @@ PROTOBUF_NDEBUG_INLINE CharacterStateReply::Impl_::Impl_(
               ::sf::progression::v1::CharacterStateReply,
               PROTOBUF_FIELD_OFFSET(::sf::progression::v1::CharacterStateReply, _impl_.objective_counts_)>()
           , from.objective_counts_
+        }
+        ,
+        gathering_skills_ {
+          visibility, ::_pbi::InternalMetadataOffset::Build<
+              ::sf::progression::v1::CharacterStateReply,
+              PROTOBUF_FIELD_OFFSET(::sf::progression::v1::CharacterStateReply, _impl_.gathering_skills_)>()
+          , from.gathering_skills_
         }
      {}
 
@@ -8381,6 +8588,11 @@ PROTOBUF_NDEBUG_INLINE CharacterStateReply::Impl_::Impl_(
         objective_counts_ { visibility, ::_pbi::InternalMetadataOffset::Build<
             ::sf::progression::v1::CharacterStateReply,
             PROTOBUF_FIELD_OFFSET(::sf::progression::v1::CharacterStateReply, _impl_.objective_counts_)>()
+         }
+        ,
+        gathering_skills_ { visibility, ::_pbi::InternalMetadataOffset::Build<
+            ::sf::progression::v1::CharacterStateReply,
+            PROTOBUF_FIELD_OFFSET(::sf::progression::v1::CharacterStateReply, _impl_.gathering_skills_)>()
          }
      {}
 
@@ -8471,7 +8683,7 @@ PROTOBUF_NOINLINE void CharacterStateReply::Clear() {
         reinterpret_cast<char*>(&_impl_.lifetime_xp_) -
         reinterpret_cast<char*>(&_impl_.progression_revision_)) + sizeof(_impl_.lifetime_xp_));
   }
-  if (BatchCheckHasBit(cached_has_bits, 0x00003f00U)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x00007f00U)) {
     ::memset(&_impl_.quest_revision_, 0, static_cast<::size_t>(
         reinterpret_cast<char*>(&_impl_.position_revision_) -
         reinterpret_cast<char*>(&_impl_.quest_revision_)) + sizeof(_impl_.position_revision_));
@@ -8480,6 +8692,9 @@ PROTOBUF_NOINLINE void CharacterStateReply::Clear() {
     }
     if (CheckHasBit(cached_has_bits, 0x00002000U)) {
       _impl_.objective_counts_.Clear();
+    }
+    if (CheckHasBit(cached_has_bits, 0x00004000U)) {
+      _impl_.gathering_skills_.Clear();
     }
   }
   _impl_._has_bits_.Clear();
@@ -8674,6 +8889,35 @@ PROTOBUF_NOINLINE void CharacterStateReply::Clear() {
     target = stream->WriteStringMaybeAliased(14, _s, target);
   }
 
+  // map<string, int32> gathering_skills = 15;
+  if (CheckHasBit(cached_has_bits, 0x00004000U)) {
+    if (!this_._internal_gathering_skills().empty()) {
+      using MapType = ::google::protobuf::Map<::std::string, ::int32_t>;
+      using WireHelper = _pbi::MapEntryFuncs<::std::string, ::int32_t,
+                                     _pbi::WireFormatLite::TYPE_STRING,
+                                     _pbi::WireFormatLite::TYPE_INT32>;
+      const auto& field = this_._internal_gathering_skills();
+
+      if (stream->IsSerializationDeterministic() && field.size() > 1) {
+        for (const auto& entry : ::google::protobuf::internal::MapSorterPtr<MapType>(field)) {
+          target = WireHelper::InternalSerialize(
+              15, entry.first, entry.second, target, stream);
+          ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+              entry.first.data(), static_cast<int>(entry.first.length()),
+ ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.progression.v1.CharacterStateReply.gathering_skills");
+        }
+      } else {
+        for (const auto& entry : field) {
+          target = WireHelper::InternalSerialize(
+              15, entry.first, entry.second, target, stream);
+          ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+              entry.first.data(), static_cast<int>(entry.first.length()),
+ ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.progression.v1.CharacterStateReply.gathering_skills");
+        }
+      }
+    }
+  }
+
   if (ABSL_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
     target =
         ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
@@ -8751,7 +8995,7 @@ PROTOBUF_NOINLINE void CharacterStateReply::Clear() {
       }
     }
   }
-  if (BatchCheckHasBit(cached_has_bits, 0x00003f00U)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x00007f00U)) {
     // int64 quest_revision = 5;
     if (CheckHasBit(cached_has_bits, 0x00000100U)) {
       if (this_._internal_quest_revision() != 0) {
@@ -8794,6 +9038,16 @@ PROTOBUF_NOINLINE void CharacterStateReply::Clear() {
       total_size +=
           1 * ::google::protobuf::internal::FromIntSize(this_._internal_objective_counts_size());
       for (const auto& entry : this_._internal_objective_counts()) {
+        total_size += _pbi::MapEntryFuncs<::std::string, ::int32_t,
+                                       _pbi::WireFormatLite::TYPE_STRING,
+                                       _pbi::WireFormatLite::TYPE_INT32>::ByteSizeLong(entry.first, entry.second);
+      }
+    }
+    // map<string, int32> gathering_skills = 15;
+    if (CheckHasBit(cached_has_bits, 0x00004000U)) {
+      total_size +=
+          1 * ::google::protobuf::internal::FromIntSize(this_._internal_gathering_skills_size());
+      for (const auto& entry : this_._internal_gathering_skills()) {
         total_size += _pbi::MapEntryFuncs<::std::string, ::int32_t,
                                        _pbi::WireFormatLite::TYPE_STRING,
                                        _pbi::WireFormatLite::TYPE_INT32>::ByteSizeLong(entry.first, entry.second);
@@ -8863,7 +9117,7 @@ void CharacterStateReply::MergeImpl(::google::protobuf::MessageLite& to_msg,
       }
     }
   }
-  if (BatchCheckHasBit(cached_has_bits, 0x00003f00U)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x00007f00U)) {
     if (CheckHasBit(cached_has_bits, 0x00000100U)) {
       if (from._internal_quest_revision() != 0) {
         _this->_impl_.quest_revision_ = from._impl_.quest_revision_;
@@ -8889,6 +9143,9 @@ void CharacterStateReply::MergeImpl(::google::protobuf::MessageLite& to_msg,
     }
     if (CheckHasBit(cached_has_bits, 0x00002000U)) {
       _this->_impl_.objective_counts_.MergeFrom(from._impl_.objective_counts_);
+    }
+    if (CheckHasBit(cached_has_bits, 0x00004000U)) {
+      _this->_impl_.gathering_skills_.MergeFrom(from._impl_.gathering_skills_);
     }
   }
   _this->_impl_._has_bits_[0] |= cached_has_bits;
@@ -8923,6 +9180,7 @@ void CharacterStateReply::InternalSwap(CharacterStateReply* PROTOBUF_RESTRICT PR
           reinterpret_cast<char*>(&other->_impl_.position_));
   _impl_.skills_.InternalSwap(&other->_impl_.skills_);
   _impl_.objective_counts_.InternalSwap(&other->_impl_.objective_counts_);
+  _impl_.gathering_skills_.InternalSwap(&other->_impl_.gathering_skills_);
 }
 
 ::google::protobuf::Metadata CharacterStateReply::GetMetadata() const {

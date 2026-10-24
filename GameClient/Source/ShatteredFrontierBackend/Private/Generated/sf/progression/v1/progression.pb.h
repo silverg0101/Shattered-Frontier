@@ -100,6 +100,14 @@ extern const ::google::protobuf::internal::ClassDataFull CharacterStateReply_cla
 #else
 extern const CharacterStateReplyGlobalsTypeInternal CharacterStateReply_globals_;
 #endif  // PROTOBUF_MESSAGE_GLOBALS
+class CharacterStateReply_GatheringSkillsEntry_DoNotUse;
+struct CharacterStateReply_GatheringSkillsEntry_DoNotUseGlobalsTypeInternal;
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+extern CharacterStateReply_GatheringSkillsEntry_DoNotUseGlobalsTypeInternal CharacterStateReply_GatheringSkillsEntry_DoNotUse_globals_;
+extern const ::google::protobuf::internal::ClassDataFull CharacterStateReply_GatheringSkillsEntry_DoNotUse_class_data_;
+#else
+extern const CharacterStateReply_GatheringSkillsEntry_DoNotUseGlobalsTypeInternal CharacterStateReply_GatheringSkillsEntry_DoNotUse_globals_;
+#endif  // PROTOBUF_MESSAGE_GLOBALS
 class CharacterStateReply_ObjectiveCountsEntry_DoNotUse;
 struct CharacterStateReply_ObjectiveCountsEntry_DoNotUseGlobalsTypeInternal;
 #ifndef PROTOBUF_MESSAGE_GLOBALS
@@ -2493,6 +2501,55 @@ class PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED CharacterStateReply_ObjectiveCountsE
 };
 // -------------------------------------------------------------------
 
+class PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED CharacterStateReply_GatheringSkillsEntry_DoNotUse final
+    : public ::google::protobuf::internal::MapEntry<::std::string, ::int32_t,
+                             ::google::protobuf::internal::WireFormatLite::TYPE_STRING,
+                             ::google::protobuf::internal::WireFormatLite::TYPE_INT32> {
+ public:
+  using SuperType =
+      ::google::protobuf::internal::MapEntry<::std::string, ::int32_t,
+                      ::google::protobuf::internal::WireFormatLite::TYPE_STRING,
+                      ::google::protobuf::internal::WireFormatLite::TYPE_INT32>;
+  CharacterStateReply_GatheringSkillsEntry_DoNotUse();
+  template <typename = void>
+  explicit constexpr CharacterStateReply_GatheringSkillsEntry_DoNotUse(::google::protobuf::internal::ConstantInitialized,
+                           const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+                               class_data);
+  explicit CharacterStateReply_GatheringSkillsEntry_DoNotUse(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static constexpr const void* PROTOBUF_NONNULL internal_message_globals() {
+    return &CharacterStateReply_GatheringSkillsEntry_DoNotUse_globals_;
+  }
+
+
+  static constexpr auto InternalGenerateClassData_(
+      const ::google::protobuf::MessageLite& prototype,
+      const ::google::protobuf::internal::TcParseTableBase* PROTOBUF_NULLABLE tc_table = nullptr);
+
+ private:
+  friend class ::google::protobuf::MessageLite;
+  friend struct ::TableStruct_sf_2fprogression_2fv1_2fprogression_2eproto;
+  friend ::google::protobuf::internal::PrivateAccess;
+  friend CharacterStateReply_GatheringSkillsEntry_DoNotUseGlobalsTypeInternal;
+
+  using ParseTableT_ =
+      ::google::protobuf::internal::TcParseTable<1, 2,
+                          0, 70,
+                          2>;
+  static constexpr ParseTableT_ InternalGenerateParseTable_(
+      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+  friend class ::google::protobuf::internal::TcParser;
+  #ifndef PROTOBUF_MESSAGE_GLOBALS
+  static const ParseTableT_ _table_;
+  #endif
+
+  const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL GetClassData() const PROTOBUF_FINAL;
+  static void* PROTOBUF_NONNULL PlacementNew_(
+      const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static constexpr auto InternalNewImpl_();
+};
+// -------------------------------------------------------------------
+
 class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED CharacterPosition final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:sf.progression.v1.CharacterPosition) */ {
  public:
@@ -3329,7 +3386,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED QuestState final : public ::google:
   [[nodiscard]] static const QuestState& default_instance() {
     return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<QuestState>(&QuestState_globals_);
   }
-  static constexpr int kIndexInFileMessages = 18;
+  static constexpr int kIndexInFileMessages = 19;
   friend void swap(QuestState& a, QuestState& b) { a.Swap(&b); }
   inline void Swap(QuestState* PROTOBUF_NONNULL other) {
     if (other == this) return;
@@ -4294,7 +4351,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED CharacterStateReply final : public 
   [[nodiscard]] static const CharacterStateReply& default_instance() {
     return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<CharacterStateReply>(&CharacterStateReply_globals_);
   }
-  static constexpr int kIndexInFileMessages = 16;
+  static constexpr int kIndexInFileMessages = 17;
   friend void swap(CharacterStateReply& a, CharacterStateReply& b) { a.Swap(&b); }
   inline void Swap(CharacterStateReply* PROTOBUF_NONNULL other) {
     if (other == this) return;
@@ -4400,6 +4457,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED CharacterStateReply final : public 
     kPositionRevisionFieldNumber = 10,
     kSkillsFieldNumber = 4,
     kObjectiveCountsFieldNumber = 8,
+    kGatheringSkillsFieldNumber = 15,
   };
   // repeated .sf.progression.v1.QuestState quests = 11;
   [[nodiscard]] int quests_size()
@@ -4600,12 +4658,28 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED CharacterStateReply final : public 
   ::google::protobuf::Map<::std::string, ::int32_t>* PROTOBUF_NONNULL _internal_mutable_objective_counts();
 
   public:
+  // map<string, int32> gathering_skills = 15;
+  [[nodiscard]] int gathering_skills_size()
+      const;
+  private:
+  int _internal_gathering_skills_size() const;
+
+  public:
+  void clear_gathering_skills() ;
+  [[nodiscard]] const ::google::protobuf::Map<::std::string, ::int32_t>& gathering_skills() const;
+  [[nodiscard]] ::google::protobuf::Map<::std::string, ::int32_t>* PROTOBUF_NONNULL mutable_gathering_skills();
+
+  private:
+  const ::google::protobuf::Map<::std::string, ::int32_t>& _internal_gathering_skills() const;
+  ::google::protobuf::Map<::std::string, ::int32_t>* PROTOBUF_NONNULL _internal_mutable_gathering_skills();
+
+  public:
   // @@protoc_insertion_point(class_scope:sf.progression.v1.CharacterStateReply)
  private:
   class _Internal;
   using ParseTableT_ =
-      ::google::protobuf::internal::TcParseTable<4, 14,
-                          5, 97,
+      ::google::protobuf::internal::TcParseTable<4, 15,
+                          6, 113,
                           2>;
   static constexpr ParseTableT_ InternalGenerateParseTable_(
       const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
@@ -4647,6 +4721,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED CharacterStateReply final : public 
     ::int64_t position_revision_;
     ::google::protobuf::internal::MapField<CharacterStateReply_SkillsEntry_DoNotUse, ::std::string, ::int32_t> skills_;
     ::google::protobuf::internal::MapField<CharacterStateReply_ObjectiveCountsEntry_DoNotUse, ::std::string, ::int32_t> objective_counts_;
+    ::google::protobuf::internal::MapField<CharacterStateReply_GatheringSkillsEntry_DoNotUse, ::std::string, ::int32_t> gathering_skills_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
   union { Impl_ _impl_; };
@@ -7560,6 +7635,8 @@ inline void SavePositionReply::_internal_set_position_revision(::int64_t value) 
 
 // -------------------------------------------------------------------
 
+// -------------------------------------------------------------------
+
 // CharacterStateReply
 
 // int64 progression_revision = 1;
@@ -8174,6 +8251,37 @@ inline void CharacterStateReply::set_allocated_face_id(::std::string* PROTOBUF_N
     _impl_.face_id_.Set("", GetArena());
   }
   // @@protoc_insertion_point(field_set_allocated:sf.progression.v1.CharacterStateReply.face_id)
+}
+
+// map<string, int32> gathering_skills = 15;
+inline int CharacterStateReply::_internal_gathering_skills_size() const {
+  return _internal_gathering_skills().size();
+}
+inline int CharacterStateReply::gathering_skills_size() const {
+  return _internal_gathering_skills_size();
+}
+inline void CharacterStateReply::clear_gathering_skills() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.gathering_skills_.Clear();
+  ClearHasBit(_impl_._has_bits_[0], 0x00004000U);
+}
+inline const ::google::protobuf::Map<::std::string, ::int32_t>& CharacterStateReply::_internal_gathering_skills() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.gathering_skills_.GetMap();
+}
+inline const ::google::protobuf::Map<::std::string, ::int32_t>& CharacterStateReply::gathering_skills() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_map:sf.progression.v1.CharacterStateReply.gathering_skills)
+  return _internal_gathering_skills();
+}
+inline ::google::protobuf::Map<::std::string, ::int32_t>* PROTOBUF_NONNULL CharacterStateReply::_internal_mutable_gathering_skills() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.gathering_skills_.MutableMap();
+}
+inline ::google::protobuf::Map<::std::string, ::int32_t>* PROTOBUF_NONNULL CharacterStateReply::mutable_gathering_skills()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00004000U);
+  // @@protoc_insertion_point(field_mutable_map:sf.progression.v1.CharacterStateReply.gathering_skills)
+  return _internal_mutable_gathering_skills();
 }
 
 // -------------------------------------------------------------------

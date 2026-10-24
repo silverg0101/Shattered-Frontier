@@ -10,7 +10,8 @@ using Pb = ShatteredFrontier.Progression.V1;
 internal sealed class ProgressionGrpcService(PostgresCharacterStateStore store, IReadOnlyDictionary<string, QuestDefinition> quests, QuestRewardPayout payout,
     ShatteredFrontier.InventoryLedger.Postgres.PostgresInventoryLedgerStore ledgerStore,
     ShatteredFrontier.Exchange.Postgres.PostgresExchangeStore exchange, StarterKitOptions starterKit,
-    RecipeLearning learning, AppearanceAllowlist appearanceAllowlist, AppearanceValidator appearanceValidator) : Pb.Progression.ProgressionBase
+    RecipeLearning learning, AppearanceAllowlist appearanceAllowlist, AppearanceValidator appearanceValidator,
+    Func<double> skillRoll, ProgressionSettings progressionSettings) : Pb.Progression.ProgressionBase
 {
     private static readonly IReadOnlySet<ushort> NoCosmetics = new HashSet<ushort>();
 
@@ -73,7 +74,7 @@ internal sealed class ProgressionGrpcService(PostgresCharacterStateStore store, 
                     p.SkillId, p.Difficulty, p.ActionSeconds, p.ContextHash, p.Success,
                     p.EnemyLevel, p.EnemyTierMultiplier, p.EligiblePartySize);
                 var progression = store.ApplyProgression(action, request.ExpectedProgressionRevision,
-                    TimeProvider.System, () => Random.Shared.NextDouble());
+                    TimeProvider.System, skillRoll, progressionSettings);
                 reply.ProgressionApplied = progression.Result.Applied;
                 reply.SkillGain = progression.Result.SkillGain;
                 reply.XpGain = progression.Result.XpGain;
@@ -159,7 +160,11 @@ internal sealed class ProgressionGrpcService(PostgresCharacterStateStore store, 
                 TimeProvider.System, () => .5, snapshot: progression.Result).Level;
             if (progression is not null)
             {
-                foreach (var (id, value) in progression.Result.Skills) state.Skills.Add(id, value);
+                foreach (var (id, value) in progression.Result.Skills)
+                {
+                    state.Skills.Add(id, value);
+                    if (id is "skill/logging" or "skill/mining") state.GatheringSkills.Add(id, value);
+                }
                 state.KnownRecipes.AddRange((progression.Result.KnownRecipes ?? []).Select(k => new Pb.KnownRecipe
                 {
                     RecipeId = k.RecipeId, Source = k.Source, LearnedAtUnixMs = k.LearnedAt.ToUnixTimeMilliseconds()

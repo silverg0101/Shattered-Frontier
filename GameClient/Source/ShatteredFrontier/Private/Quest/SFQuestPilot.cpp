@@ -642,7 +642,11 @@ void USFQuestPilotComponent::Refresh()
         if (!Self) { return; }
         Self->bRefreshBusy = false;
         // Evidence still in flight would be undone by an older read; its reply corrects the mirror itself.
-        if (State.Status == ESFGameplayStatus::Ok && !Self->HasPendingServiceWork()) { Self->Restore(State.Quests, State.ProgressionRevision); }
+        if (State.Status == ESFGameplayStatus::Ok && !Self->HasPendingServiceWork())
+        {
+            Self->Restore(State.Quests, State.ProgressionRevision);
+            if (auto* Gathering = Self->GetOwner()->FindComponentByClass<USFGatheringPilotComponent>()) Gathering->RestoreSkills(State.Skills);
+        }
     });
 }
 
@@ -764,9 +768,9 @@ bool USFQuestPilotComponent::CaptureGatherReceipt(FSFGameplayRequest& Q, const F
         Q.bHasQuest = true; Q.QuestId = Entry->Quest->Id; Q.StepId = Entry->Quest->Steps[Entry->Progress.StepIndex].Id;
         Q.QuestKind = TEXT("gather"); Q.TargetId = TargetId; Q.NodeId = NodeId;
         Q.Quantity = 1; Q.OccurredAtUnixMs = LastOccurredMs;
-        // The ledger outbox relays the receipt after the grant commits; read the result back twice.
-        RequestRefresh(3.f); RefreshesDue = 2;
     }
+    // The ledger outbox relays progression even when no quest wants this harvest.
+    RequestRefresh(3.f); RefreshesDue = 3;
     return true;
 }
 

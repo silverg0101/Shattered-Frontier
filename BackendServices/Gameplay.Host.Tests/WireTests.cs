@@ -68,6 +68,17 @@ if (mode == "appearance")
     var loaded = client.GetCharacterState(new ProgressPb.GetCharacterStateRequest { CharacterId = create.CharacterId }, headers, deadline: Deadline());
     Check(loaded.HasAppearancePacket && loaded.AppearancePacket.ToByteArray().SequenceEqual(packet) && loaded.FaceId == "Aelfwyn",
         "Stored face and packet missing on load.");
+    var gather = new ProgressPb.ApplyReceiptRequest { SourceReceiptId = "appearance/gather/oak", Kind = "gather",
+        CharacterId = create.CharacterId, Payload = new ProgressPb.ActionPayload { SkillId = "skill/logging",
+            Difficulty = 25, ActionSeconds = 6, Success = true } };
+    var firstGather = client.ApplyReceipt(gather, headers, deadline: Deadline());
+    Check(firstGather.ProgressionApplied && firstGather.SkillGain is >= 0 and <= 1 &&
+        client.ApplyReceipt(gather, headers, deadline: Deadline()).Equals(firstGather),
+        "Gather receipt did not replay its original server roll.");
+    var afterGather = client.GetCharacterState(new ProgressPb.GetCharacterStateRequest { CharacterId = create.CharacterId }, headers, deadline: Deadline());
+    Check(afterGather.GatheringSkills["skill/logging"] == firstGather.SkillGain &&
+        afterGather.Skills["skill/logging"] == firstGather.SkillGain,
+        "Gather skill did not round trip through character state.");
     var invalid = (byte[])packet.Clone(); invalid[^1] = 0; // Orlando is not a female-body face.
     try
     {
@@ -83,7 +94,7 @@ if (mode == "appearance")
     var legacy = client.GetCharacterState(new ProgressPb.GetCharacterStateRequest { CharacterId = "chr_appearance_legacy" }, headers, deadline: Deadline());
     Check(!legacy.HasAppearancePacket && legacy.FaceId == "Orlando" && legacy.Position?.ZoneId == "silverbrook",
         "Legacy character face default missing.");
-    Console.WriteLine("PASS appearance valid create/store/load, invalid rejection, legacy Orlando (3 cases)");
+    Console.WriteLine("PASS appearance and gathering receipt/store/replay (5 cases)");
     return;
 }
 if (mode.EndsWith("-replay", StringComparison.Ordinal))
@@ -110,6 +121,9 @@ if (mode.EndsWith("-replay", StringComparison.Ordinal))
         Check(result.QuestAccepted && result.QuestRevision == 1, "Progression restart replay failed.");
         var state = new ProgressPb.Progression.ProgressionClient(channel).GetCharacterState(
             new ProgressPb.GetCharacterStateRequest { CharacterId = "chr_progression" }, headers, deadline: Deadline());
+        Check(state.GatheringSkills.TryGetValue("skill/logging", out var logging) &&
+            state.Skills["skill/logging"] == logging && logging is >= 0 and <= 1,
+            "Gathering skill missing from durable character state.");
         Check(state.PositionRevision == 2 && state.Position?.ZoneId == "silverbrook" && state.Position.X == 11.5 &&
             state.Position.Y == -9.25 && state.Position.Z == 42 && state.Position.Yaw == 90,
             "Position missing after host and PostgreSQL restart.");

@@ -105,6 +105,8 @@ message CharacterStateReply {
   repeated KnownRecipe known_recipes = 12;
   optional bytes appearance_packet = 13;
   optional string face_id = 14;
+  // Authoritative gathering values after committed harvest receipts.
+  map<string, int32> gathering_skills = 15;
 }
 message QuestState {
   string quest_id = 1;

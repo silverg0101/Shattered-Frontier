@@ -84,7 +84,7 @@ try {
     [void](Sql ("SET ROLE state_owner;`n" + (Get-Content (Join-Path $repo 'BackendServices/CharacterState.Postgres/Schema.Position.sql') -Raw)) "state_$run")
     [void](Sql ("SET ROLE state_owner;`n" + (Get-Content (Join-Path $repo 'BackendServices/CharacterState.Postgres/Schema.Recipes.sql') -Raw)) "state_$run")
     [void](Sql ("SET ROLE state_owner;`n" + (Get-Content (Join-Path $repo 'BackendServices/CharacterState.Postgres/Schema.Appearance.sql') -Raw)) "state_$run")
-    [void](Sql ("SET ROLE state_owner;`n" + (Get-Content (Join-Path $repo 'BackendServices/CharacterState.Postgres/Schema.Appearance.sql') -Raw)) "state_$run")
+    [void](Sql ("SET ROLE state_owner;`n" + (Get-Content (Join-Path $repo 'BackendServices/CharacterState.Postgres/Schema.GatheringSkills.sql') -Raw)) "state_$run")
     [void](Sql 'GRANT USAGE ON SCHEMA character_state TO state_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA character_state TO state_svc;' "state_$run")
     $connection = "Host=127.0.0.1;Port=$port;Database=state_$run;Username=state_svc;Password=$servicePassword;Pooling=true;Maximum Pool Size=64;Minimum Pool Size=8;Timeout=2;Command Timeout=5;Include Error Detail=false"
     $results = [Collections.Generic.List[string]]::new()
@@ -117,7 +117,7 @@ try {
     $restoredPosition = (Invoke-Checked (Join-Path $pg 'psql.exe') @('-X','-A','-t','-h','127.0.0.1','-p',"$($restored.port)",'-U',$restored.username,'-d',$restored.database,'-c',"SELECT revision,x,zone_id FROM character_state.positions WHERE character_id='character-1'") @{ PGPASSWORD=$restored.password }).Trim()
     if ($restoredPosition -ne '1|12.5|silverbrook') { throw 'Restored position differs from backup point.' }
     $results.Add('PASS restored character state equals backup point')
-    [void](Sql 'UPDATE character_state.schema_version SET version=6' "state_$run")
+    [void](Sql 'UPDATE character_state.schema_version SET version=7' "state_$run")
     $results.Add((Invoke-Checked $dotnet @($dll,'newer') @{ CHARACTER_STATE_CONNECTION=$connection }))
     try { [void](Invoke-Checked 'powershell.exe' @('-NoProfile','-File',$backupTool,'-Store','CharacterState','-OutputDirectory',(Join-Path $EvidenceRoot 'newer-backup'),'-HostName','127.0.0.1','-Port',"$port",'-Database',"state_$run",'-Username','state_svc') @{ PGPASSWORD=$servicePassword }); throw 'Newer schema backup accepted.' }
     catch { if ($_.Exception.Message -notmatch 'Unsupported source schema') { throw }; $results.Add('PASS newer schema backup refused') }

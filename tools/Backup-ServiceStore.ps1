@@ -49,7 +49,7 @@ function Snapshot {
 }
 foreach ($schema in $schemas) {
     $version = (Query "SELECT version FROM $schema.schema_version WHERE singleton=true").Trim()
-    $expectedVersion = if ($schema -eq 'housing') { '6' } elseif ($schema -eq 'character_state') { '5' } elseif ($schema -eq 'exchange') { '3' } elseif ($schema -eq 'inventory') { '2' } else { '1' }
+    $expectedVersion = if ($schema -eq 'housing') { '6' } elseif ($schema -eq 'character_state') { '6' } elseif ($schema -eq 'exchange') { '3' } elseif ($schema -eq 'inventory') { '2' } else { '1' }
     if ($version -ne $expectedVersion) { throw "Unsupported source schema version: $schema=$version" }
 }
 if ($Store -eq 'Housing') {
@@ -70,7 +70,7 @@ try {
     $after = Snapshot
     if (($before | ConvertTo-Json -Depth 5 -Compress) -cne ($after | ConvertTo-Json -Depth 5 -Compress)) { throw 'Source changed during backup; quiesce writes and retry.' }
     $dumpHash = FileSha256 $dump
-    @{ format=2; store=$Store; schemaVersion=$(if ($Store -eq 'Housing') { 5 } elseif ($Store -eq 'CharacterState') { 5 } elseif ($Store -eq 'Exchange') { 3 } else { 2 }); dumpSha256=$dumpHash; tables=$before } |
+    @{ format=2; store=$Store; schemaVersion=$(if ($Store -eq 'Housing') { 5 } elseif ($Store -eq 'CharacterState') { 6 } elseif ($Store -eq 'Exchange') { 3 } else { 2 }); dumpSha256=$dumpHash; tables=$before } |
         ConvertTo-Json -Depth 6 | Set-Content (Join-Path $OutputDirectory 'manifest.json')
     Write-Output "$Store backup complete: $OutputDirectory"
 } catch {

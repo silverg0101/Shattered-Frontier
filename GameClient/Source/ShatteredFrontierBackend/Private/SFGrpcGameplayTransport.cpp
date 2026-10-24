@@ -178,6 +178,7 @@ void FSFGrpcGameplayTransport::Send(const FSFGameplayRequest& Q, float DeadlineS
             Out.ProgressionRevision = R.progression_revision(); Out.Level = R.level(); Out.QuestRevision = R.quest_revision();
             Out.ActiveStepId = FromUtf8(R.active_step_id()); Out.bQuestCompleted = R.quest_completed();
             for (const auto& Skill : R.skills()) { Out.Skills.Add(FromUtf8(Skill.first), Skill.second); }
+            for (const auto& Skill : R.gathering_skills()) { Out.Skills.Add(FromUtf8(Skill.first), Skill.second); }
             for (const auto& Known : R.known_recipes()) { Out.KnownRecipes.Add(FromUtf8(Known.recipe_id())); }
             for (const auto& Count : R.objective_counts()) { Out.ObjectiveCounts.Add(FromUtf8(Count.first), Count.second); }
             for (const auto& Quest : R.quests())

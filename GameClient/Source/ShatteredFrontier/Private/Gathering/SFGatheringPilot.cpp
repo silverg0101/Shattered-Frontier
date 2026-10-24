@@ -968,8 +968,17 @@ void USFGatheringPilotComponent::BeginLedgerCommit()
     const FString NodeId=ActiveKind==ESFGatheringPilotKind::Oak ? TEXT("gathering_node/oak_tree") : TEXT("gathering_node/iron_vein");
     USFQuestPilotComponent* Quest=Cast<APlayerController>(GetOwner())->FindComponentByClass<USFQuestPilotComponent>();
     TArray<uint8> IntentBytes; FString IntentDigest;
-    if (!Quest || !Quest->CaptureGatherReceipt(FollowUp,Item,NodeId)
-        || !FSFInventoryLedgerClient::SerializeFollowUp(FollowUp,IntentBytes,IntentDigest))
+    if (!Quest || !Quest->CaptureGatherReceipt(FollowUp,Item,NodeId))
+    {
+        UE_LOG(LogTemp,Error,TEXT("GATHERING_FOLLOW_UP_CAPTURE_FAILED Op=%s"),*Operation);
+        OnLedgerGrant(FSFLedgerResponse()); return;
+    }
+    // Capture the accepted harvest, not the quest adapter's placeholder difficulty.
+    FollowUp.SkillId=TEXT("skill/")+FString(FSFGatheringProgressionSession::SkillName(ActiveResourceProfile.Skill)).ToLower();
+    FollowUp.Difficulty=FSFGatheringProgressionSession::Difficulty(ActiveResourceProfile.Tier);
+    FollowUp.ActionSeconds=ActivePracticeDurationSeconds;
+    FollowUp.ContextHash=ActivePracticeContext;
+    if (!FSFInventoryLedgerClient::SerializeFollowUp(FollowUp,IntentBytes,IntentDigest))
     {
         UE_LOG(LogTemp,Error,TEXT("GATHERING_FOLLOW_UP_CAPTURE_FAILED Op=%s"),*Operation);
         OnLedgerGrant(FSFLedgerResponse()); return;
