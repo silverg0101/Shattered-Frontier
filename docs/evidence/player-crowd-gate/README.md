@@ -16,3 +16,20 @@ Gate (Fable): at most 0.25 ms GPU per body at 10 m, and 30 bodies at most 8 ms i
 - **CPU:** about 0.14-0.15 ms per body on the game thread and similar on the render thread, under Fable's 0.3 ms line. The runtime retarget from the hidden mannequin stays.
 - **Watch:** at 60 bodies the frame is CPU-bound (game thread 12.9 ms). For larger towns, add animation update-rate / visibility LOD for distant players before then.
 - **Not covered:** all bodies share one face, so per-face texture memory is untested. Re-run once the face list is built.
+
+## Mixed faces (2026-10-24)
+
+Same run (`tools/Measure-PlayerCrowd.ps1`, editor binaries rebuilt with `FaceId`). `SFCrowdTest` now cycles bodies through all nine faces in `PlayerFaceIds` (log: each face spawned 9-12 times across the player, 30 and 60 bodies). Picture: `crowd-mixed-30.jpg` (bearded, clean-shaven, female and darker-skinned faces side by side; every body has hair and the tunic outfit). Deltas are over each run's own base, since the base itself was lower this time.
+
+| Phase | Frame ms | Game ms | GPU ms | GPU delta (old) | Game delta (old) |
+|---|---|---|---|---|---|
+| base (0 bodies) | 5.93 | 3.23 | 4.33 | - | - |
+| 30, strand hair | 8.54 | 6.53 | 5.48 | +1.15 (+1.25) | +3.30 (+4.15) |
+| 30, cards | 8.46 | 6.51 | 5.49 | +1.16 (+1.18) | +3.28 (+4.20) |
+| 60, cards | 11.72 | 10.45 | 6.43 | +2.10 (+2.81) | +7.22 (+9.24) |
+| 60, strand hair | 11.65 | 10.49 | 6.44 | +2.11 (+2.52) | +7.26 (+9.04) |
+
+- **GPU: pass.** About 0.04 ms per body with nine different faces, no worse than the one-face run. No texture-pool or streaming warnings.
+- **CPU:** about 0.11 ms per body on the game thread, under the 0.3 ms line.
+- **Hair:** every body in the crowd and each face swapped in at runtime (`SFFace`) rendered with its groom; the earlier "only the first MetaHuman per launch gets hair" issue did not show.
+- Face switch in game: `docs/evidence/player-faces/face-switch-{orlando,godric,hilda}.jpg`; `SFFace NotAFace` logged `PLAYER_FACE_REJECTED ... keeping Hilda`.
