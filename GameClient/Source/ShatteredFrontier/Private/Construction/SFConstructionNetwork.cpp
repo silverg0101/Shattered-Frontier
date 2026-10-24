@@ -913,9 +913,8 @@ int32 ASFGameMode::SpawnZoneGatheringNodes()
             for (const TSharedPtr<FJsonValue>& Stage : (*Profile)->GetArrayField(TEXT("stages")))
             { Growth.Add({FName(*Stage->AsObject()->GetStringField(TEXT("name"))),float(Stage->AsObject()->GetNumberField(TEXT("duration_fraction")))}); }
         }
-        TArray<TSharedPtr<FJsonValue>> Points=Group->GetArrayField(TEXT("points"));
-        FRandomStream Stream(GetTypeHash(Id));
-        for (int32 I=Points.Num()-1; I>0; --I) { Points.Swap(I,Stream.RandRange(0,I)); }
+        // GatheringNodeService uses the first active points in the authored record and zone/group/index IDs.
+        const TArray<TSharedPtr<FJsonValue>> Points=Group->GetArrayField(TEXT("points"));
         const int32 Active=FMath::Min(int32(Group->GetNumberField(TEXT("active_count"))),Points.Num());
         for (int32 I=0; I<Active; ++I)
         {
@@ -927,6 +926,7 @@ int32 ASFGameMode::SpawnZoneGatheringNodes()
             auto* Node=GetWorld()->SpawnActorDeferred<ASFGatheringPilotNode>(ASFGatheringPilotNode::StaticClass(),Where);
             if (!Node) { continue; }
             Node->Kind=Kind;
+            Node->SetServiceNodeId(FString::Printf(TEXT("%s/%s/%d"),*Zone->GetStringField(TEXT("id")),*Id,I));
             if (Growth.Num()>0) { Node->SetGrowthProfile(Growth,GrowFraction); }
             Node->FinishSpawning(Where); ++Spawned;
         }

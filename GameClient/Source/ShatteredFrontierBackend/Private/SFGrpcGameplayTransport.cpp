@@ -66,6 +66,13 @@ namespace
         Out.Exchange.SubjectId = FromUtf8(R.subject_id()); Out.Exchange.State = FromUtf8(R.state()); Out.Exchange.bCommitted = R.committed();
         Out.Exchange.Amount = R.amount(); Out.Exchange.Fee = R.fee();
     }
+    void CopyNode(const sf::gathering::v1::NodeReply& R, FSFGameplayResponse& Out)
+    {
+        Out.bHasNode = true; Out.NodeId = FromUtf8(R.node_id()); Out.NodeDefinitionId = FromUtf8(R.definition_id());
+        Out.NodeGeneration = R.generation(); Out.NodeCharges = R.charges(); Out.NodeCapacity = R.max_charges();
+        Out.NodeRegrowAtUnixMs = R.regrow_at_unix_ms(); Out.GrowthStage = FromUtf8(R.growth_stage());
+        Out.NodeNextTransitionUnixMs = R.next_transition_unix_ms();
+    }
 }
 
 struct FSFGrpcGameplayChannel
@@ -75,6 +82,7 @@ struct FSFGrpcGameplayChannel
     std::unique_ptr<sf::housing::v1::Housing::Stub> Housing;
     std::unique_ptr<sf::crafting::v1::Crafting::Stub> Crafting;
     std::unique_ptr<sf::exchange::v1::Exchange::Stub> Exchange;
+    std::unique_ptr<sf::gathering::v1::Gathering::Stub> Gathering;
     grpc::CompletionQueue Queue;
     std::string Token;
     FCriticalSection PendingLock;
@@ -90,6 +98,7 @@ FSFGrpcGameplayTransport::FSFGrpcGameplayTransport(const FString& Endpoint) : Ch
     Channel->Housing = sf::housing::v1::Housing::NewStub(Wire);
     Channel->Crafting = sf::crafting::v1::Crafting::NewStub(Wire);
     Channel->Exchange = sf::exchange::v1::Exchange::NewStub(Wire);
+    Channel->Gathering = sf::gathering::v1::Gathering::NewStub(Wire);
     Channel->Token = Utf8(FPlatformMisc::GetEnvironmentVariable(TEXT("SF_GAMEPLAY_TOKEN")));
     if (Channel->Token.empty()) { UE_LOG(LogTemp, Warning, TEXT("GAMEPLAY_SERVICES_TOKEN_MISSING SF_GAMEPLAY_TOKEN is empty; the host will reject calls.")); }
     Thread = FRunnableThread::Create(this, TEXT("SFGameplayServicesGrpc"));
@@ -122,6 +131,27 @@ void FSFGrpcGameplayTransport::Send(const FSFGameplayRequest& Q, float DeadlineS
     };
     switch (Q.Rpc)
     {
+    case ESFGameplayRpc::GetGatheringNode:
+    {
+        sf::gathering::v1::GetNodeRequest M; M.set_node_id(Utf8(Q.NodeId));
+        auto* Call = new TCall<sf::gathering::v1::NodeReply>();
+        Call->Copy = [](const sf::gathering::v1::NodeReply& R, FSFGameplayResponse& Out) { CopyNode(R, Out); };
+        Start(Call, [&](grpc::ClientContext* C) { return Channel->Gathering->AsyncGetNode(C, M, &Channel->Queue); });
+        break;
+    }
+    case ESFGameplayRpc::HarvestGatheringNode:
+    {
+        sf::gathering::v1::HarvestRequest M; M.set_operation_id(Utf8(Q.OperationId)); M.set_character_id(Utf8(Q.CharacterId));
+        M.set_node_id(Utf8(Q.NodeId)); M.set_generation(Q.NodeGeneration);
+        auto* Call = new TCall<sf::gathering::v1::HarvestReply>();
+        Call->Copy = [](const sf::gathering::v1::HarvestReply& R, FSFGameplayResponse& Out)
+        {
+            Out.HarvestStatus = FromUtf8(R.status()); Out.ResourceId = FromUtf8(R.resource_id()); Out.HarvestQuantity = R.quantity();
+            if (R.has_node()) { CopyNode(R.node(), Out); }
+        };
+        Start(Call, [&](grpc::ClientContext* C) { return Channel->Gathering->AsyncHarvest(C, M, &Channel->Queue); });
+        break;
+    }
     case ESFGameplayRpc::GrantDefeatReward:
     {
         sf::rewards::v1::GrantDefeatRewardRequest M;

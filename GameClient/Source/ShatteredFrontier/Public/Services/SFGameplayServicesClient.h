@@ -20,6 +20,8 @@ public:
     float TimeoutSeconds = 3;
     UPROPERTY(Config, EditAnywhere, Category="Services", meta=(ClampMin="1", ClampMax="5", ToolTip="Attempts per operation, all with the same operation id."))
     int32 MaxAttempts = 3;
+    UPROPERTY(Config, EditAnywhere, Category="Gathering", meta=(ClampMin="1", ClampMax="30", Units="s", ToolTip="Refresh a gathering node when no stage transition is pending, or retry an unavailable snapshot. Release authors; next world start."))
+    float GatheringNodeRetrySeconds = 5;
     UPROPERTY(Config, EditAnywhere, Category="Reconnect", meta=(ToolTip="INT-05: restore a dev character's backpack, skills, quest step and position on connect, and drain a disconnected controller's in-flight commits. Combat death recovery also attaches when the combat pilot and Gameplay Services are active. Needs the guarded dev identity. Release authors; next world start."))
     bool bRestoreOnConnect = false;
     UPROPERTY(Config, EditAnywhere, Category="Exchange", meta=(ToolTip="Route the trading UI (direct trades, market listings, wallet) through Gameplay.Host Exchange. Off keeps the fake demo service. Release authors; next world start."))
@@ -43,7 +45,8 @@ public:
 
 enum class ESFGameplayRpc : uint8 { GrantDefeatReward, ApplyReceipt, GetCharacterState, CreateCharacter, LearnRecipe, ClaimPlot, GetClaim, Place, Remove, Craft, ListStructures, Grant, SavePosition, ReportDeath, ClearDeath,
     // Exchange (proto/sf/exchange/v1), carried by the Backend transport over the same Gameplay.Host channel.
-    ExchangeWallet, OfferTrade, AcceptTrade, CancelTrade, ListItem, BuyListing, CancelListing, ListListings };
+    ExchangeWallet, OfferTrade, AcceptTrade, CancelTrade, ListItem, BuyListing, CancelListing, ListListings,
+    GetGatheringNode, HarvestGatheringNode };
 
 // Exchange request fields (each RPC reads only its own). Amounts are whole gold, as in the proto.
 struct FSFExchangeDelivery { FString EscrowId, DestinationId, ItemId; int64 Quantity = 0; };
@@ -96,6 +99,7 @@ struct FSFGameplayRequest
     TMap<FString, FString> InputGrades;  // base definition -> selected grade definition
     FString LearnSource, TrainerNpc, ScrollContainer;
     FSFExchangeRequest Exchange;
+    int32 NodeGeneration = 0;  // HarvestGatheringNode: server-observed generation
 };
 
 struct FSFGameplayResponse
@@ -132,6 +136,10 @@ struct FSFGameplayResponse
     int32 QualityScore = 0; FString Grade, DiscoveredRecipeId;
     FSFExchangeResponse Exchange;
     TArray<FSFMarketListingResponse> MarketListings;
+    // Gathering node snapshot; the dedicated server projects this into the replicated node state.
+    bool bHasNode = false; FString NodeId, NodeDefinitionId, GrowthStage, HarvestStatus, ResourceId;
+    int32 NodeGeneration = 0, NodeCharges = 0, NodeCapacity = 0, HarvestQuantity = 0;
+    int64 NodeRegrowAtUnixMs = 0, NodeNextTransitionUnixMs = 0;
 };
 
 using FSFGameplaySend = TFunction<void(const FSFGameplayRequest&, float DeadlineSeconds, TFunction<void(const FSFGameplayResponse&)>)>;

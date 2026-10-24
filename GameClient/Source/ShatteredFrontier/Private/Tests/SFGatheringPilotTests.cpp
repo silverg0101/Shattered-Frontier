@@ -6,6 +6,7 @@
 #include "Inventory/SFInventoryLedgerClient.h"
 #include "Quest/SFQuestPilot.h"
 #include "Services/SFBackpackComponent.h"
+#include "Services/SFGameplayServicesClient.h"
 #include "Containers/Ticker.h"
 #include "Construction/SFConstructionNetwork.h"
 #include "Characters/SFE1Character.h"
@@ -518,6 +519,77 @@ bool FSFGatheringGrowthVisualTest::RunTest(const FString& Parameters)
     TestTrue(TEXT("and shows the declared young scale"),Node->Mesh->GetRelativeScale3D().Equals(Base*Visuals->ScaleFor(ESFGatheringPilotKind::Iron,TEXT("young"))));
     Node->State.GrowthStage=TEXT("growing"); Node->OnRep_State();  // what a client does when the stage replicates
     TestTrue(TEXT("A replicated stage change updates the scale"),Node->Mesh->GetRelativeScale3D().Equals(Base*Visuals->ScaleFor(ESFGatheringPilotKind::Iron,TEXT("growing"))));
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFGatheringPilotServiceTest,
+    "ShatteredFrontier.Gathering.Pilot.Services",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+
+bool FSFGatheringPilotServiceTest::RunTest(const FString& Parameters)
+{
+    struct FFakeNode { int32 Charges=2, Harvests=0; TArray<FSFGameplayRequest> Requests; };
+    TSharedRef<FFakeNode> NodeHost=MakeShared<FFakeNode>();
+    USFGameplayServicesSettings* ServiceSettings=NewObject<USFGameplayServicesSettings>();
+    ServiceSettings->bEnabled=true;
+    FSFGameplayServicesClient::SetSendOverrideForTests([NodeHost](const FSFGameplayRequest& Request,float,TFunction<void(const FSFGameplayResponse&)> Done)
+    {
+        NodeHost->Requests.Add(Request);
+        FSFGameplayResponse Reply; Reply.Status=ESFGameplayStatus::Ok; Reply.GrpcCode=0;
+        Reply.bHasNode=true; Reply.NodeId=TEXT("zone/greenlands_silverbrook/eastwood_iron_ore/0");
+        Reply.NodeDefinitionId=TEXT("gathering_node/iron_vein"); Reply.NodeGeneration=2; Reply.NodeCapacity=5;
+        Reply.GrowthStage=NodeHost->Charges>0 ? TEXT("young") : TEXT("");
+        if (Request.Rpc==ESFGameplayRpc::HarvestGatheringNode)
+        {
+            Reply.HarvestStatus=NodeHost->Charges>0 ? TEXT("granted") : TEXT("depleted");
+            if (NodeHost->Charges>0) { --NodeHost->Charges; ++NodeHost->Harvests; Reply.ResourceId=TEXT("item/iron_ore"); Reply.HarvestQuantity=1; }
+            Reply.GrowthStage=NodeHost->Charges>0 ? TEXT("young") : TEXT("");
+        }
+        Reply.NodeCharges=NodeHost->Charges; Done(Reply);
+    });
+    TSharedPtr<FSFGameplayServicesClient> Service=FSFGameplayServicesClient::Create(*ServiceSettings);
+    FSFGameplayServicesClient::SetSendOverrideForTests(nullptr);
+    if (!TestTrue(TEXT("Fake host transport created"),Service.IsValid())) { return false; }
+    int32 LedgerGrants=0;
+    FSFInventoryLedgerClient::SetSendOverrideForTests([&LedgerGrants](const FSFLedgerRequest& Request,float,TFunction<void(const FSFLedgerResponse&)> Done)
+    {
+        FSFLedgerResponse Reply; Reply.Status=ESFLedgerStatus::Ok; Reply.GrpcCode=0;
+        if (Request.Rpc==ESFLedgerRpc::Grant) { ++LedgerGrants; Reply.GrantedDelta=Request.Quantity; }
+        Reply.Revision=LedgerGrants; Done(Reply);
+    });
+    USFInventoryLedgerSettings* LedgerSettings=NewObject<USFInventoryLedgerSettings>(); LedgerSettings->bEnabled=true;
+    TSharedPtr<FSFInventoryLedgerClient> Ledger=FSFInventoryLedgerClient::Create(*LedgerSettings);
+    FSFInventoryLedgerClient::SetSendOverrideForTests(nullptr);
+    if (!TestTrue(TEXT("Fake ledger transport created"),Ledger.IsValid())) { return false; }
+    FTestWorldWrapper Fixture;
+    if (!Fixture.CreateTestWorld(EWorldType::GameRPC) || !Fixture.BeginPlayInTestWorld()) { return false; }
+    auto* World=Fixture.GetTestWorld(); World->GetWorldSettings()->NotifyBeginPlay();
+    auto* PC=World->SpawnActor<ASFPlayerController>();
+    FActorSpawnParameters Spawn; Spawn.SpawnCollisionHandlingOverride=ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+    auto* Pawn=World->SpawnActor<ASFE1Character>(FVector(0,0,100),FRotator::ZeroRotator,Spawn);
+    const FTransform At(FRotator::ZeroRotator,FVector(200,0,100));
+    auto* Iron=World->SpawnActorDeferred<ASFGatheringPilotNode>(ASFGatheringPilotNode::StaticClass(),At);
+    if (!PC || !Pawn || !Iron) { return false; }
+    Iron->Kind=ESFGatheringPilotKind::Iron;
+    Iron->SetServiceNodeId(TEXT("zone/greenlands_silverbrook/eastwood_iron_ore/0")); Iron->FinishSpawning(At);
+    Iron->bUsesServices=true; Iron->ServiceClient=Service; Iron->RefreshServiceState();
+    TestTrue(TEXT("Immature snapshot projects two of five charges"),Iron->State.Charges==2 && Iron->State.Capacity==5 && Iron->State.GrowthStage==TEXT("young"));
+    PC->Possess(Pawn); Pawn->GetCharacterMovement()->SetMovementMode(MOVE_None);
+    auto* Gather=PC->FindComponentByClass<USFGatheringPilotComponent>();
+    if (!Gather) { return false; }
+    Gather->CapturedSettings=DuplicateObject<USFGatheringPilotSettings>(GetDefault<USFGatheringPilotSettings>(),Gather);
+    Gather->CapturedSettings->HarvestSeconds=0.5f; Gather->bTestWorldAdmission=true; Gather->bEnabled=true;
+    if (!TestTrue(TEXT("Pickaxe equipped"),Gather->InitializeStarterTools() && Gather->TryEquipTool(false))) { return false; }
+    Gather->Backpack=USFBackpackComponent::CreateForTests(PC,Ledger);
+    auto* Quest=NewObject<USFQuestPilotComponent>(PC); Quest->RegisterComponent();
+    const auto Tick=[&Fixture]() { for (int32 I=0; I<12; ++I) { Fixture.TickTestWorld(0.05f); FTSTicker::GetCoreTicker().Tick(0.3f); } };
+    Gather->ServerGatheringAction_Implementation(Iron,Iron->State.Revision,1); Tick();
+    TestTrue(TEXT("First host harvest reduces immature charge"),Iron->State.Charges==1 && NodeHost->Harvests==1 && Gather->Feedback.Result==ESFGatheringPilotResult::Granted);
+    Gather->ServerGatheringAction_Implementation(Iron,Iron->State.Revision,2); Tick();
+    TestTrue(TEXT("Second host harvest depletes and replicates stage"),Iron->State.Charges==0 && Iron->State.GrowthStage.IsNone() && NodeHost->Harvests==2);
+    Gather->ServerGatheringAction_Implementation(Iron,Iron->State.Revision,3); Tick();
+    TestEqual(TEXT("Stage cap rejects third harvest before a grant"),LedgerGrants,2);
+    TestEqual(TEXT("Host received exactly two harvest operations"),NodeHost->Requests.FilterByPredicate([](const FSFGameplayRequest& R) { return R.Rpc==ESFGameplayRpc::HarvestGatheringNode; }).Num(),2);
     return true;
 }
 #endif

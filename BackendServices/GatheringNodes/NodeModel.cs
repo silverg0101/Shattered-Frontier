@@ -22,7 +22,7 @@ public sealed record NodeSettings(int RespawnSeconds, double JitterFraction, Reg
 }
 public sealed record NodeSnapshot(string Id, string GroupId, string PointId, string DefinitionId,
     ResourceKind Kind, int Generation, int Charges, int MaxCharges, DateTimeOffset? RegrowAt,
-    string? GrowthStage = null, DateTimeOffset? StageStartedAt = null);
+    string? GrowthStage = null, DateTimeOffset? StageStartedAt = null, DateTimeOffset? NextTransitionAt = null);
 public sealed record HarvestCommand(string OperationId, string PlayerId, string NodeId, int Generation);
 public sealed record HarvestResult(HarvestStatus Status, string NodeId, int Generation, string? ResourceId,
     int Quantity, int RemainingCharges, DateTimeOffset? RegrowAt);
@@ -142,10 +142,20 @@ public sealed class GatheringNodeService
         }
     }
 
-    private NodeSnapshot View(Node n) => new(n.Id, n.GroupId, n.PointId, n.Definition.Id,
-        n.Definition.Kind, n.Generation, n.Charges, n.Definition.Charges, n.RegrowAt,
-        n.GrowthProfile is null || n.Charges == 0 ? null : n.GrowthStartedAt is null
-            ? n.GrowthProfile.Stages[^1].Name : n.GrowthProfile.Stages[n.StageIndex].Name, n.StageStartedAt);
+    private NodeSnapshot View(Node n)
+    {
+        DateTimeOffset? next = n.RegrowAt;
+        if (n.RegrowAt is { } due && n.GrowthProfile is { } growth)
+            next = due - TimeSpan.FromSeconds(n.ScheduledRespawnSeconds * growth.GrowFraction);
+        else if (n.GrowthStartedAt is { } started && n.GrowthProfile is { } profile && n.StageIndex < profile.Stages.Count - 1)
+            next = started.AddSeconds(n.ScheduledRespawnSeconds * profile.GrowFraction *
+                profile.Stages.Take(n.StageIndex + 1).Sum(s => s.DurationFraction));
+        return new(n.Id, n.GroupId, n.PointId, n.Definition.Id, n.Definition.Kind, n.Generation, n.Charges,
+            n.Definition.Charges, n.RegrowAt,
+            n.GrowthProfile is null || n.Charges == 0 ? null : n.GrowthStartedAt is null
+                ? n.GrowthProfile.Stages[^1].Name : n.GrowthProfile.Stages[n.StageIndex].Name,
+            n.StageStartedAt, next);
+    }
 
     private void Schedule(Node node)
     {

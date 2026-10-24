@@ -207,6 +207,7 @@
           "CharacterState.Postgres": "[1.0.0, )",
           "ClaimTerritory": "[1.0.0, )",
           "Exchange.Postgres": "[1.0.0, )",
+          "GatheringNodes": "[1.0.0, )",
           "Grpc.AspNetCore": "[2.84.0, 2.84.0]",
           "Grpc.Net.Client": "[2.84.0, 2.84.0]",
           "Housing.Postgres": "[1.0.0, )",
@@ -215,6 +216,12 @@
           "Progression": "[1.0.0, )",
           "QuestContent": "[1.0.0, )",
           "Rewards": "[1.0.0, )"
+        }
+      },
+      "gatheringnodes": {
+        "type": "Project",
+        "dependencies": {
+          "WorldContent": "[1.0.0, )"
         }
       },
       "housing.postgres": {
@@ -254,6 +261,9 @@
         "dependencies": {
           "InventoryLedger": "[1.0.0, )"
         }
+      },
+      "worldcontent": {
+        "type": "Project"
       },
       "Google.Protobuf": {
         "type": "CentralTransitive",

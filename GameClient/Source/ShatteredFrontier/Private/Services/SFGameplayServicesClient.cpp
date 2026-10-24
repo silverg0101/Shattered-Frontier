@@ -14,6 +14,8 @@ bool USFGameplayServicesSettings::Validate(FString& Error) const
     { Error = TEXT("Endpoint must be 127.0.0.1:<port> in the development topology."); return false; }
     if (!FMath::IsFinite(TimeoutSeconds) || TimeoutSeconds < 1 || TimeoutSeconds > 30) { Error = TEXT("TimeoutSeconds must be 1-30."); return false; }
     if (MaxAttempts < 1 || MaxAttempts > 5) { Error = TEXT("MaxAttempts must be 1-5."); return false; }
+    if (!FMath::IsFinite(GatheringNodeRetrySeconds) || GatheringNodeRetrySeconds < 1 || GatheringNodeRetrySeconds > 30)
+    { Error = TEXT("GatheringNodeRetrySeconds must be 1-30."); return false; }
     if (ExchangeFeeBasisPoints < 0 || ExchangeFeeBasisPoints > 2000 || ExchangeListingFeeBasisPoints < 0 || ExchangeListingFeeBasisPoints > 1000)
     { Error = TEXT("Exchange fee previews are outside their bounds."); return false; }
     if (!FMath::IsFinite(MarketReachM) || MarketReachM < 1 || MarketReachM > 10 || MarketPageSize < 10 || MarketPageSize > 200 ||

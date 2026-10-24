@@ -20,6 +20,8 @@ class FSFInventoryLedgerClient;
 class USFBackpackComponent;
 struct FSFStationRecipe;
 struct FSFLedgerResponse;
+struct FSFGameplayResponse;
+class FSFGameplayServicesClient;
 
 // Development values: reviewed release authors, next world start, no live/console overrides.
 UCLASS(Config=Game, DefaultConfig, meta=(DisplayName="Gathering Pilot (Release Only)"))
@@ -149,6 +151,8 @@ public:
     const FSFGatheringPilotNodeState& GetState() const { return State; }
     // Server, before FinishSpawning: after it recovers the node regrows through these stages over GrowFraction of the respawn interval.
     void SetGrowthProfile(const TArray<FSFGrowthStageDef>& Stages, float InGrowFraction);
+    // Zone-spawn identity matches GatheringNodeService's zone/group/active-index key.
+    void SetServiceNodeId(const FString& InId) { ServiceNodeId = InId; }
     // Stage reached ElapsedSeconds into a grow window of GrowWindowSeconds: same rule as BackendServices/GatheringNodes.
     static FName StageAt(const TArray<FSFGrowthStageDef>& Stages, double GrowWindowSeconds, double ElapsedSeconds);
     // Dev capture only (no effect in shipping/test builds): force the stage shown.
@@ -173,6 +177,7 @@ private:
     friend class FSFGatheringPilotProgressionTest;
     friend class FSFGatheringPilotLedgerTest;
     friend class FSFGatheringGrowthVisualTest;
+    friend class FSFGatheringPilotServiceTest;
     UFUNCTION() void OnRep_State();
     void StartGrowth();
     void AdvanceGrowth();
@@ -180,6 +185,8 @@ private:
     void Release(USFGatheringPilotComponent* Interactor);
     void BeginRecovery();
     void Recover();
+    void RefreshServiceState();
+    bool ApplyServiceSnapshot(const FSFGameplayResponse& Snapshot);
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess="true")) TObjectPtr<UStaticMeshComponent> Mesh;
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess="true")) TObjectPtr<UTextRenderComponent> Label;
     UPROPERTY() TObjectPtr<UStaticMesh> StationMesh;
@@ -188,6 +195,11 @@ private:
     TWeakObjectPtr<USFGatheringPilotComponent> LockedBy;
     FTimerHandle RecoveryTimer;
     FTimerHandle GrowthTimer;
+    FTimerHandle ServiceRefreshTimer;
+    FString ServiceNodeId;
+    TSharedPtr<FSFGameplayServicesClient> ServiceClient;
+    bool bServiceStateReady = false;
+    bool bUsesServices = false;
     TArray<FSFGrowthStageDef> GrowthStages;
     float GrowFraction = 0.5f;
     double GrowthStartedAt = 0;
@@ -321,6 +333,7 @@ private:
     friend class FSFGatheringPilotLedgerTest;
     friend class FSFEquipmentValidationTest;
     friend class FSFEquipmentLedgerTest;
+    friend class FSFGatheringPilotServiceTest;
     UFUNCTION(Server, Reliable) void ServerGatheringAction(ASFGatheringPilotNode* Node, uint32 Revision, uint32 Operation);
     UFUNCTION(Server, Reliable) void ServerGatheringActionAtSurface(ASFGatheringPilotNode* Node, uint32 Revision, uint32 Operation,FVector_NetQuantize10 RequestedPoint);
     void ProcessGatheringAction(ASFGatheringPilotNode* Node,uint32 Revision,uint32 Operation,bool bSurface,const FVector& RequestedPoint);
@@ -351,6 +364,8 @@ private:
     void CompleteHarvest(bool bRefining);
     void BeginLedgerCommit();
     void OnLedgerGrant(const FSFLedgerResponse& Response);
+    void BeginNodeHarvest();
+    void OnNodeHarvest(const FSFGameplayResponse& Response);
 
     // INT-04: the controller backpack is the single ledger writer; set only when USFInventoryLedgerSettings::bEnabled.
     TWeakObjectPtr<USFBackpackComponent> Backpack;
@@ -361,6 +376,8 @@ private:
     UPROPERTY(Replicated) TArray<FString> KnownRecipes;  // restored owner-only from CharacterState
 
     FString PendingLedgerOperation;  // "gather/<guid>", reused on every retry until a terminal outcome
+    bool bServiceHarvestApplied = false;
+    int32 PendingNodeGeneration = 0;
 
 #if WITH_DEV_AUTOMATION_TESTS && WITH_EDITOR
     bool bTestWorldAdmission = false;

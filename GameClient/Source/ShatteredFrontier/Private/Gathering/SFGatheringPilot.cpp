@@ -19,6 +19,8 @@
 #include "GameFramework/PlayerController.h"
 #include "Misc/CommandLine.h"
 #include "Misc/Parse.h"
+#include "Misc/DateTime.h"
+#include "Containers/Ticker.h"
 #include "Net/UnrealNetwork.h"
 #include "Quest/SFQuestPilotEvents.h"
 #include "Quest/SFQuestPilot.h"
@@ -199,6 +201,13 @@ void ASFGatheringPilotNode::BeginPlay()
         State.Capacity=IsRefinery() ? 0 : Settings->ChargesPerNode;
         State.Charges=State.Capacity; CapturedRespawnSeconds=Settings->RespawnSeconds;
         if (!GrowthStages.IsEmpty()) { State.GrowthStage=GrowthStages.Last().Name; }  // a fresh node starts mature
+        bUsesServices=!IsRefinery() && GetDefault<USFGameplayServicesSettings>()->bEnabled;
+        if (bUsesServices)
+        {
+            State.Charges=0; State.GrowthStage=NAME_None;  // unavailable state is never locally harvestable
+            ServiceClient=USFBackpackComponent::Services();
+            RefreshServiceState();
+        }
     }
     if (!IsRefinery())
     {
@@ -223,6 +232,7 @@ void ASFGatheringPilotNode::BeginPlay()
 void ASFGatheringPilotNode::EndPlay(const EEndPlayReason::Type Reason)
 {
     GetWorldTimerManager().ClearTimer(RecoveryTimer); GetWorldTimerManager().ClearTimer(GrowthTimer);
+    GetWorldTimerManager().ClearTimer(ServiceRefreshTimer);
     if (HasAuthority()&&IsValid(State.FallingTree)) { State.FallingTree->Destroy(); State.FallingTree=nullptr; }
     Super::EndPlay(Reason);
 }
@@ -240,6 +250,7 @@ FSFGatheringPilotPresentation ASFGatheringPilotNode::GetPresentationState() cons
 
 void ASFGatheringPilotNode::BeginRecovery()
 {
+    if (bUsesServices) { return; }
     if (!HasAuthority() || IsRefinery() || State.Charges!=0 || State.RecoveryAtServerSeconds>0) { return; }
     RecoveryKind=Kind; State.RecoveryAtServerSeconds=GetWorld()->GetTimeSeconds()+CapturedRespawnSeconds;
     GetWorldTimerManager().SetTimer(RecoveryTimer,this,&ASFGatheringPilotNode::Recover,CapturedRespawnSeconds,false);
@@ -263,6 +274,7 @@ FName ASFGatheringPilotNode::StageAt(const TArray<FSFGrowthStageDef>& Stages, do
 
 void ASFGatheringPilotNode::StartGrowth()
 {
+    if (bUsesServices) { return; }
     if (!HasAuthority() || GrowthStages.IsEmpty()) { return; }
     GrowthStartedAt=GetWorld()->GetTimeSeconds(); AdvanceGrowth();
 }
@@ -299,6 +311,7 @@ void ASFGatheringPilotNode::ApplyGrowthVisual()
 
 void ASFGatheringPilotNode::Recover()
 {
+    if (bUsesServices) { return; }
     if (!HasAuthority() || IsRefinery() || Kind!=RecoveryKind || State.Charges!=0 || State.Capacity<=0
         || State.bBusy || LockedBy.IsValid() || State.RecoveryAtServerSeconds<=0 || State.Revision==MAX_uint32 || State.Generation==MAX_uint32) { return; }
     const double Remaining=State.RecoveryAtServerSeconds-GetWorld()->GetTimeSeconds();
@@ -312,6 +325,68 @@ void ASFGatheringPilotNode::Recover()
     State.Charges=State.Capacity; State.RecoveryAtServerSeconds=0; State.Cuts.Reset(); ++State.Revision; ++State.Generation;
     StartGrowth();  // no profile: no-op
     OnRep_State(); ForceNetUpdate();
+}
+
+bool ASFGatheringPilotNode::ApplyServiceSnapshot(const FSFGameplayResponse& Snapshot)
+{
+    if (!HasAuthority() || !bUsesServices || !Snapshot.bHasNode || Snapshot.NodeId!=ServiceNodeId ||
+        Snapshot.NodeGeneration<1 || Snapshot.NodeCharges<0 || Snapshot.NodeCapacity<1 || Snapshot.NodeCharges>Snapshot.NodeCapacity)
+    { return false; }
+    const TCHAR* ExpectedDefinition=Kind==ESFGatheringPilotKind::Oak ? TEXT("gathering_node/oak_tree")
+        : Kind==ESFGatheringPilotKind::Iron ? TEXT("gathering_node/iron_vein")
+        : Kind==ESFGatheringPilotKind::Stone ? TEXT("gathering_node/stone_outcrop") : TEXT("");
+    if (Snapshot.NodeDefinitionId!=ExpectedDefinition) { return false; }
+    if (Snapshot.NodeGeneration<int32(State.Generation)) { return true; }  // a replayed receipt cannot rewind a newer host snapshot
+    const bool bChanged=State.Generation!=uint32(Snapshot.NodeGeneration) || State.Charges!=Snapshot.NodeCharges ||
+        State.Capacity!=Snapshot.NodeCapacity || State.GrowthStage!=FName(*Snapshot.GrowthStage);
+    if (State.Generation!=uint32(Snapshot.NodeGeneration))
+    { State.Cuts.Reset(); if (IsValid(State.FallingTree)) { State.FallingTree->Destroy(); } State.FallingTree=nullptr; }
+    State.Generation=uint32(Snapshot.NodeGeneration); State.Charges=Snapshot.NodeCharges; State.Capacity=Snapshot.NodeCapacity;
+    State.GrowthStage=FName(*Snapshot.GrowthStage); bServiceStateReady=true;
+    const double NowMs=(FDateTime::UtcNow()-FDateTime::FromUnixTimestamp(0)).GetTotalMilliseconds();
+    State.RecoveryAtServerSeconds=Snapshot.NodeRegrowAtUnixMs>0
+        ? GetWorld()->GetTimeSeconds()+FMath::Max(0.0,(double(Snapshot.NodeRegrowAtUnixMs)-NowMs)/1000.0) : 0;
+    GetWorldTimerManager().ClearTimer(ServiceRefreshTimer);
+    if (Snapshot.NodeNextTransitionUnixMs>0)
+    {
+        const float Delay=float(FMath::Max(0.05,(double(Snapshot.NodeNextTransitionUnixMs)-NowMs)/1000.0+0.05));
+        GetWorldTimerManager().SetTimer(ServiceRefreshTimer,this,&ASFGatheringPilotNode::RefreshServiceState,Delay,false);
+    }
+    else
+    {
+        GetWorldTimerManager().SetTimer(ServiceRefreshTimer,this,&ASFGatheringPilotNode::RefreshServiceState,
+            GetDefault<USFGameplayServicesSettings>()->GatheringNodeRetrySeconds,false);
+    }
+    if (bChanged) { ++State.Revision; OnRep_State(); ForceNetUpdate(); }
+    return true;
+}
+
+void ASFGatheringPilotNode::RefreshServiceState()
+{
+    if (!HasAuthority() || !bUsesServices) { return; }
+    if (!ServiceClient.IsValid() || ServiceNodeId.IsEmpty())
+    {
+        UE_LOG(LogTemp,Error,TEXT("GATHERING_NODE_SERVICE_UNAVAILABLE Id=%s"),*ServiceNodeId);
+    }
+    else
+    {
+        FSFGameplayRequest Request; Request.Rpc=ESFGameplayRpc::GetGatheringNode; Request.NodeId=ServiceNodeId;
+        TWeakObjectPtr<ASFGatheringPilotNode> Weak(this);
+        ServiceClient->Call(Request,[Weak](const FSFGameplayResponse& Response)
+        {
+            if (ASFGatheringPilotNode* Self=Weak.Get())
+            {
+                if (Response.Status==ESFGameplayStatus::Ok && Self->ApplyServiceSnapshot(Response)) { return; }
+                UE_LOG(LogTemp,Warning,TEXT("GATHERING_NODE_SNAPSHOT_FAILED Id=%s Code=%d"),*Self->ServiceNodeId,Response.GrpcCode);
+                Self->State.Charges=0; Self->bServiceStateReady=false; ++Self->State.Revision; Self->OnRep_State(); Self->ForceNetUpdate();
+                Self->GetWorldTimerManager().SetTimer(Self->ServiceRefreshTimer,Self,&ASFGatheringPilotNode::RefreshServiceState,
+                    GetDefault<USFGameplayServicesSettings>()->GatheringNodeRetrySeconds,false);
+            }
+        });
+        return;
+    }
+    GetWorldTimerManager().SetTimer(ServiceRefreshTimer,this,&ASFGatheringPilotNode::RefreshServiceState,
+        GetDefault<USFGameplayServicesSettings>()->GatheringNodeRetrySeconds,false);
 }
 
 void ASFGatheringPilotNode::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -879,6 +954,10 @@ void USFGatheringPilotComponent::ProcessGatheringAction(ASFGatheringPilotNode* N
     bLastHadSurface=bSurface; LastRequestedSurface=Point; bActiveVisualCut=false;
     ESFGatheringPilotResult Result=bValidPoint ? ValidateTarget(Node) : ESFGatheringPilotResult::InvalidTarget;
     if (Result==ESFGatheringPilotResult::None && Node->State.Revision!=Revision) { Result=ESFGatheringPilotResult::Stale; }
+    if (Result==ESFGatheringPilotResult::None && Node->bUsesServices && !Node->bServiceStateReady)
+    { Result=ESFGatheringPilotResult::Unavailable; }
+    if (Result==ESFGatheringPilotResult::None && Node->bUsesServices && !Backpack.IsValid())
+    { Result=ESFGatheringPilotResult::Unavailable; }
     if (Result==ESFGatheringPilotResult::None && !Node->IsRefinery() && Node->State.Charges<=0) { Result=ESFGatheringPilotResult::Depleted; }
     if (Result==ESFGatheringPilotResult::None && Node->State.bBusy) { Result=ESFGatheringPilotResult::Busy; }
     if (Result==ESFGatheringPilotResult::None && !MeetsSkillRequirement(Node)) { Result=ESFGatheringPilotResult::SkillRequired; }
@@ -1006,11 +1085,12 @@ void USFGatheringPilotComponent::CompleteHarvest(bool bRefining)
             Feedback.bSkillGained=Skills.GainCount>GainsBefore; Feedback.CurrentSkill=Skills.Get(ActiveResourceProfile.Skill);
         }
         if (bActiveVisualCut) { Feedback.Node->State.Cuts.Add(ActiveVisualCut); }
-        --Feedback.Node->State.Charges; Feedback.Node->BeginRecovery();
+        if (!bServiceHarvestApplied) { --Feedback.Node->State.Charges; Feedback.Node->BeginRecovery(); }
         if (Feedback.Node->State.Charges==0&&ActiveKind==ESFGatheringPilotKind::Oak&&bActiveVisualCut&&Feedback.Node->HarvestVisuals)
         { Feedback.Node->State.FallingTree=Feedback.Node->HarvestVisuals->BeginTreeFall(Feedback.Node->State.Generation,ActiveVisualCut); }
     }
     ++Feedback.Node->State.Revision;
+    bServiceHarvestApplied=false;
     const FSFStationRecipe* Recipe=bRefining ? ActiveStationRecipe(ActiveKind) : nullptr;
     if (bRefining || !Backpack.IsValid())
     {
@@ -1110,14 +1190,14 @@ void USFGatheringPilotComponent::BeginLedgerCommit()
 void USFGatheringPilotComponent::OnLedgerGrant(const FSFLedgerResponse& Response)
 {
     const FString Operation=PendingLedgerOperation;
-    PendingLedgerOperation.Reset();
     const FString Container=Backpack.IsValid() ? Backpack->GetContainerId() : FString();
     // Node state is logged before any charge is consumed: a failed commit must show it unchanged.
     UE_LOG(LogTemp,Display,TEXT("GATHERING_LEDGER_OUTCOME Op=%s Container=%s Code=%d Revision=%lld Delta=%lld NodeRevision=%d Charges=%d"),*Operation,*Container,
         Response.GrpcCode,Response.Revision,Response.GrantedDelta,IsValid(Feedback.Node) ? int32(Feedback.Node->State.Revision) : -1,IsValid(Feedback.Node) ? Feedback.Node->State.Charges : -1);
-    if (Response.Status==ESFLedgerStatus::Stale) { Finish(ESFGatheringPilotPhase::Rejected,ESFGatheringPilotResult::Stale); return; }
+    if (Response.Status==ESFLedgerStatus::Stale) { PendingLedgerOperation.Reset(); Finish(ESFGatheringPilotPhase::Rejected,ESFGatheringPilotResult::Stale); return; }
     if (Response.Status!=ESFLedgerStatus::Ok)
     {
+        PendingLedgerOperation.Reset();
         // ponytail: an exhausted retry may still have committed; the backpack re-reads before its next mutation.
         // Reconciling that quantity into the session inventory belongs with the GatheringNodes integration slice.
         Finish(ESFGatheringPilotPhase::Rejected,ESFGatheringPilotResult::Unavailable);
@@ -1131,14 +1211,63 @@ void USFGatheringPilotComponent::OnLedgerGrant(const FSFLedgerResponse& Response
         return;
     }
 #endif
+    if (IsValid(Feedback.Node) && Feedback.Node->bUsesServices)
+    {
+        PendingNodeGeneration=int32(Feedback.Node->State.Generation);
+        BeginNodeHarvest();
+        return;
+    }
     if (ApplyInventory(ActiveKind,true)!=ESFGatheringPilotResult::None)
     { UE_LOG(LogTemp,Error,TEXT("GATHERING_LEDGER_PROJECTION_MISMATCH Op=%s Container=%s"),*Operation,*Container); }
     CommittedOperation=Operation;
+    PendingLedgerOperation.Reset();
     if (!IsValid(Feedback.Node))
     {
         Finish(ESFGatheringPilotPhase::Committed,ESFGatheringPilotResult::Granted); return;
     }
     CompleteHarvest(false);
+}
+
+void USFGatheringPilotComponent::BeginNodeHarvest()
+{
+    ASFGatheringPilotNode* Node=Feedback.Node;
+    USFBackpackComponent* Pack=Backpack.Get();
+    if (!IsValid(Node) || !Node->ServiceClient.IsValid() || !Pack || PendingLedgerOperation.IsEmpty())
+    { Finish(ESFGatheringPilotPhase::Rejected,ESFGatheringPilotResult::Unavailable); return; }
+    FSFGameplayRequest Request; Request.Rpc=ESFGameplayRpc::HarvestGatheringNode;
+    Request.OperationId=PendingLedgerOperation; Request.CharacterId=Pack->GetCharacterId();
+    Request.NodeId=Node->ServiceNodeId; Request.NodeGeneration=PendingNodeGeneration;
+    TWeakObjectPtr<USFGatheringPilotComponent> Weak(this);
+    Node->ServiceClient->Call(Request,[Weak](const FSFGameplayResponse& Reply)
+    { if (USFGatheringPilotComponent* Self=Weak.Get()) { Self->OnNodeHarvest(Reply); } });
+}
+
+void USFGatheringPilotComponent::OnNodeHarvest(const FSFGameplayResponse& Response)
+{
+    if (Feedback.Phase!=ESFGatheringPilotPhase::Committing || !IsValid(Feedback.Node)) { return; }
+    if (Response.Status==ESFGameplayStatus::Unavailable)
+    {
+        // The ledger grant is already committed. Keep the node locked and replay this operation until its host receipt resolves.
+        TWeakObjectPtr<USFGatheringPilotComponent> Weak(this);
+        FTSTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateLambda([Weak](float)
+        { if (USFGatheringPilotComponent* Self=Weak.Get()) { Self->BeginNodeHarvest(); } return false; }),
+            GetDefault<USFGameplayServicesSettings>()->GatheringNodeRetrySeconds);
+        return;
+    }
+    ASFGatheringPilotNode* Node=Feedback.Node;
+    if (Response.Status!=ESFGameplayStatus::Ok || !Node->ApplyServiceSnapshot(Response) ||
+        Response.HarvestStatus!=TEXT("granted") || Response.ResourceId!=LedgerItemId(ActiveKind) ||
+        Response.HarvestQuantity!=CapturedSettings->UnitsPerCharge)
+    {
+        UE_LOG(LogTemp,Error,TEXT("GATHERING_NODE_COMMIT_MISMATCH Op=%s Status=%s Code=%d"),*PendingLedgerOperation,*Response.HarvestStatus,Response.GrpcCode);
+        PendingLedgerOperation.Reset(); Finish(ESFGatheringPilotPhase::Rejected,ESFGatheringPilotResult::Unavailable); return;
+    }
+    const FString Operation=PendingLedgerOperation; PendingLedgerOperation.Reset(); PendingNodeGeneration=0;
+    if (ApplyInventory(ActiveKind,true)!=ESFGatheringPilotResult::None)
+    { UE_LOG(LogTemp,Error,TEXT("GATHERING_LEDGER_PROJECTION_MISMATCH Op=%s"),*Operation); }
+    bServiceHarvestApplied=true; CommittedOperation=Operation;
+    CompleteHarvest(false);
+    Node->RefreshServiceState();
 }
 
 void USFGatheringPilotComponent::BeginCraftCommit()

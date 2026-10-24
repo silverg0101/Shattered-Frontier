@@ -1,5 +1,5 @@
 [CmdletBinding()]
-param([Parameter(Mandatory)][string]$EvidenceRoot, [switch]$RecipesOnly, [switch]$AppearanceOnly)
+param([Parameter(Mandatory)][string]$EvidenceRoot, [switch]$RecipesOnly, [switch]$AppearanceOnly, [switch]$GatheringOnly)
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 $repo = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
@@ -72,7 +72,7 @@ try {
     [void](Invoke-Checked 'icacls.exe' @($private,'/inheritance:r','/grant:r',"${account}:(OI)(CI)F"))
     $listener = [Net.Sockets.TcpListener]::new([Net.IPAddress]::Loopback,0); $listener.Start(); $port = $listener.LocalEndpoint.Port; $listener.Stop()
     @{run=$run;data=$data;port=$port} | ConvertTo-Json | Set-Content (Join-Path $private 'owner.json')
-    $projects = $(if ($RecipesOnly -or $AppearanceOnly) { @('Progression') } else { @('Rewards','Progression','Housing') }) |
+    $projects = $(if ($RecipesOnly -or $AppearanceOnly -or $GatheringOnly) { @('Progression') } else { @('Rewards','Progression','Housing') }) |
         ForEach-Object { Join-Path $repo "BackendServices/Gameplay.Host.Tests/$_/$_.Host.Tests.csproj" }
     $buildOutput = (Join-Path $private 'build') + [IO.Path]::DirectorySeparatorChar
     foreach ($project in $projects) {
@@ -114,6 +114,8 @@ try {
     Copy-Item -LiteralPath (Join-Path $repo 'content') -Destination $fixtureContent -Recurse
     $env:GAMEPLAY_CONTENT_ROOT = $fixtureContent
     $env:SF_GAMEPLAY_TOKEN = $token
+    $env:GAMEPLAY_FIXTURE_MODE = 'gathering'
+    $env:GAMEPLAY_FIXTURE_GATHERING_RESPAWN_SECONDS = '30'
     $env:SF_GAMEPLAY_FAULT_AFTER_SCROLL_CONSUME = 'recipe/scroll-crash'
     $hostDll = Join-Path $buildOutput 'Gameplay.Host.dll'
     $hostProcess = Start-Process -FilePath $dotnet -ArgumentList @($hostDll) -PassThru -WindowStyle Hidden -RedirectStandardOutput (Join-Path $private 'host.out') -RedirectStandardError (Join-Path $private 'host.err')
@@ -126,7 +128,15 @@ try {
     if (-not $ready) { throw 'Gameplay host readiness timeout.' }
     $results = [Collections.Generic.List[string]]::new()
     $journeyDll = Join-Path $buildOutput 'Progression.Host.Tests.dll'
-    if ($AppearanceOnly) {
+    if (-not ($RecipesOnly -or $AppearanceOnly)) {
+        $currentStep = 'gathering growth wire'
+        $results.Add((Invoke-Checked $dotnet @($journeyDll,'gathering') @{
+            GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$connection; SF_GAMEPLAY_TOKEN=$token
+        }))
+    }
+    if ($GatheringOnly) {
+        # The growth wire leg above is the whole targeted fixture.
+    } elseif ($AppearanceOnly) {
         $currentStep = 'appearance wire'
         $results.Add((Invoke-Checked $dotnet @($journeyDll,'appearance') @{
             GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$connection;
@@ -411,7 +421,7 @@ catch {
     }
 }
 finally {
-    foreach ($key in @('SF_GAMEPLAY_TOKEN','SF_GAMEPLAY_FAULT_AFTER_SCROLL_CONSUME','SF_GAMEPLAY_FAULT_AFTER_REMOVE_GRANT','SF_GAMEPLAY_FAULT_AFTER_PLACE_INTENT','SF_GAMEPLAY_FAULT_AFTER_PLACE_DECISION','SF_GAMEPLAY_FAULT_AFTER_QUEST_GRANT','SF_GAMEPLAY_FAULT_AFTER_LISTING_ESCROW','SF_GAMEPLAY_FAULT_BEFORE_OUTBOX_SEND','GAMEPLAY_LEDGER_CONNECTION','GAMEPLAY_LEDGER_PORT','INVENTORY_LEDGER_PORT','INVENTORY_LEDGER_CONNECTION','SF_INVENTORY_LEDGER_TOKEN','GAMEPLAY_CHARACTER_CONNECTION','GAMEPLAY_HOUSING_CONNECTION')) {
+    foreach ($key in @('SF_GAMEPLAY_TOKEN','SF_GAMEPLAY_FAULT_AFTER_SCROLL_CONSUME','SF_GAMEPLAY_FAULT_AFTER_REMOVE_GRANT','SF_GAMEPLAY_FAULT_AFTER_PLACE_INTENT','SF_GAMEPLAY_FAULT_AFTER_PLACE_DECISION','SF_GAMEPLAY_FAULT_AFTER_QUEST_GRANT','SF_GAMEPLAY_FAULT_AFTER_LISTING_ESCROW','SF_GAMEPLAY_FAULT_BEFORE_OUTBOX_SEND','GAMEPLAY_LEDGER_CONNECTION','GAMEPLAY_LEDGER_PORT','GAMEPLAY_FIXTURE_MODE','GAMEPLAY_FIXTURE_GATHERING_RESPAWN_SECONDS','INVENTORY_LEDGER_PORT','INVENTORY_LEDGER_CONNECTION','SF_INVENTORY_LEDGER_TOKEN','GAMEPLAY_CHARACTER_CONNECTION','GAMEPLAY_HOUSING_CONNECTION')) {
         Remove-Item "Env:$key" -ErrorAction SilentlyContinue
     }
     try {

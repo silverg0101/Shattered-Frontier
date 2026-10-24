@@ -10,6 +10,8 @@ using ShatteredFrontier.InventoryLedger.Postgres;
 using ShatteredFrontier.QuestContent;
 using ShatteredFrontier.Rewards;
 using ShatteredFrontier.Progression;
+using ShatteredFrontier.GatheringNodes;
+using ShatteredFrontier.WorldContent;
 using ShatteredFrontier.CraftingContent;
 using ShatteredFrontier.Exchange.Postgres;
 using CharacterAppearance;
@@ -61,6 +63,12 @@ var questIssues = QuestValidator.ValidateAll(questFiles);
 if (questIssues.Count != 0) throw new InvalidOperationException("Quest content invalid: " + string.Join("; ", questIssues));
 IReadOnlyDictionary<string, QuestDefinition> quests = questFiles.ToDictionary(f => f.Quest.Id, f => f.Quest, StringComparer.Ordinal);
 var zone = ProtectedZone.Load(Path.Combine(contentRoot, "world", "zones", "greenlands_silverbrook.json"));
+var gatheringZone = ZoneLoader.Load(Path.Combine(contentRoot, "world", "zones", "greenlands_silverbrook.json"));
+var gatheringTuning = GatheringHostTuning.Shipped; gatheringTuning.Validate();
+var fixtureGatheringRespawn = Environment.GetEnvironmentVariable("GAMEPLAY_FIXTURE_GATHERING_RESPAWN_SECONDS");
+if (fixtureGatheringRespawn is not null && (Environment.GetEnvironmentVariable("GAMEPLAY_FIXTURE_MODE") != "gathering" ||
+    !int.TryParse(fixtureGatheringRespawn, out var seconds) || seconds != 30))
+    throw new InvalidOperationException("Gathering fixture respawn requires gathering fixture mode and 30 seconds.");
 var recipes = RecipeCatalog.LoadFiles([Path.Combine(contentRoot, "crafting", "recipes_greenlands_starter.json")]);
 var markets = MarketCatalog.Load(Path.Combine(contentRoot, "markets"));
 var ledgerStore = new PostgresInventoryLedgerStore(ledgerConnection);
@@ -103,6 +111,9 @@ builder.Services.AddSingleton(new PostgresHousingStore(housingConnection));
 builder.Services.AddSingleton(new PostgresExchangeStore(exchangeConnection));
 builder.Services.AddSingleton(quests);
 builder.Services.AddSingleton(zone);
+builder.Services.AddSingleton(new GatheringNodeService(gatheringZone, gatheringTuning.Definitions(),
+    TimeProvider.System, "silverbrook-gathering", fixtureGatheringRespawn is null ? gatheringTuning.Lifecycle : new NodeSettings(30, 0, RegrowthMode.FullRespawn)));
+builder.Services.AddSingleton<GatheringReplyStore>();
 builder.Services.AddSingleton(new ClaimSettings());
 builder.Services.AddSingleton(recipes);
 builder.Services.AddSingleton(markets);
@@ -114,6 +125,7 @@ builder.Services.AddSingleton(new CraftAttemptService(recipes, new DomLedger(led
 builder.Services.AddGrpc(o => o.Interceptors.Add<AuthInterceptor>());
 var app = builder.Build();
 app.MapGrpcService<RewardGrpcService>();
+app.MapGrpcService<GatheringGrpcService>();
 app.MapGrpcService<ProgressionGrpcService>();
 app.MapGrpcService<HousingGrpcService>();
 app.MapGrpcService<CraftingGrpcService>();

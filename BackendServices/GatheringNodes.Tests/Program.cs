@@ -83,11 +83,13 @@ growthClock.Set(maturity.AddSeconds(-15));
 var young = growth.Snapshot().Single(n => n.Id == iron.Id);
 Check(young is { Generation: 2, Charges: 2, GrowthStage: "young" }, "young stage and rounded charges");
 Check(young.StageStartedAt == growthClock.GetUtcNow(), "stage start exposed");
+Check(young.NextTransitionAt == growthClock.GetUtcNow().AddSeconds(7.5), "young stage transition deadline exposed");
 Check(growth.Harvest(new("iron-young", "p1", iron.Id, 2)).RemainingCharges == 1, "young charge consumed");
 growthClock.Set(maturity.AddSeconds(-7.5));
 Check(growth.Snapshot().Single(n => n.Id == iron.Id) is { Charges: 2, GrowthStage: "growing" }, "half rounding and prior harvest retained");
 growthClock.Set(maturity);
 Check(growth.Snapshot().Single(n => n.Id == iron.Id) is { Charges: 4, GrowthStage: "mature" }, "maturity reaches full cap less prior harvest");
+Check(growth.Snapshot().Single(n => n.Id == iron.Id).NextTransitionAt is null, "mature stage has no pending transition");
 var floorClock = new ManualClock();
 try { _ = new GatheringNodeService(zone, [ironDefinition with { Charges = 1 }], floorClock, "bad-floor", new(30, 0, RegrowthMode.FullRespawn)); throw new Exception("rounded early advantage accepted"); }
 catch (ArgumentException) { }

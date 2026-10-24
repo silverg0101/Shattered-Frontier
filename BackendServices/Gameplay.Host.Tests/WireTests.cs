@@ -12,6 +12,7 @@ using System.Text.Json;
 using RewardPb = ShatteredFrontier.Rewards.V1;
 using ProgressPb = ShatteredFrontier.Progression.V1;
 using HousingPb = ShatteredFrontier.Housing.V1;
+using GatheringPb = ShatteredFrontier.Gathering.V1;
 
 static void Check(bool condition, string message)
 {
@@ -30,6 +31,42 @@ using var channel = GrpcChannel.ForAddress($"http://127.0.0.1:{port}");
 var headers = new Metadata { { "authorization", "Bearer " + token } };
 var bad = new Metadata { { "authorization", "Bearer wrong" } };
 DateTime Deadline() => DateTime.UtcNow.AddSeconds(5);
+
+if (mode == "gathering")
+{
+    var client = new GatheringPb.Gathering.GatheringClient(channel);
+    const string id = "zone/greenlands_silverbrook/eastwood_iron_ore/0";
+    GatheringPb.NodeReply Node() => client.GetNode(new() { NodeId = id }, headers, deadline: Deadline());
+    var initial = Node();
+    Check(initial.Generation == 1 && initial.Charges == 5 && initial.GrowthStage == "mature", "Initial iron node state missing.");
+    Code(() => client.GetNode(new() { NodeId = "zone/unknown/node/0" }, headers, deadline: Deadline()), StatusCode.NotFound);
+    GatheringPb.HarvestReply Harvest(string operation, int generation) => client.Harvest(new()
+        { OperationId = operation, CharacterId = "chr_gathering", NodeId = id, Generation = generation }, headers, deadline: Deadline());
+    for (var i = 0; i < 5; i++)
+    {
+        var result = Harvest($"gathering/mature/{i}", 1);
+        Check(result.Status == "granted" && result.Quantity == 1 && result.ResourceId == "item/iron_ore" &&
+            result.Node.Charges == 4 - i, "Mature harvest or charge count differs.");
+    }
+    var last = Harvest("gathering/mature/4", 1);
+    Check(last.Node.RegrowAtUnixMs > DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(), "Backend respawn deadline missing.");
+    Check(Harvest("gathering/mature/4", 1).Equals(last), "Idempotent harvest replay differs.");
+    Code(() => client.Harvest(new() { OperationId = "gathering/mature/4", CharacterId = "chr_other", NodeId = id, Generation = 1 },
+        headers, deadline: Deadline()), StatusCode.FailedPrecondition);
+    Check(Harvest("gathering/depleted", 1).Status == "depleted", "Depleted node accepted another harvest.");
+    var until = DateTime.UtcNow.AddSeconds(20);
+    GatheringPb.NodeReply young;
+    do { Thread.Sleep(100); young = Node(); } while (young.GrowthStage != "young" && DateTime.UtcNow < until);
+    Check(young.Generation == 2 && young.Charges == 2 && young.MaxCharges == 5, "Immature stage did not reduce charges to two.");
+    Check(Harvest("gathering/mature/4", 1).Equals(last), "Old harvest replay changed after growth.");
+    Check(Harvest("gathering/stale", 1).Status == "stale_generation", "Old generation accepted.");
+    Check(Harvest("gathering/young/1", 2).Node.Charges == 1, "First immature charge differs.");
+    var youngLast = Harvest("gathering/young/2", 2);
+    Check(youngLast.Status == "granted" && youngLast.Node.Charges == 0 &&
+        youngLast.Node.RegrowAtUnixMs > DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(), "Immature node exceeded stage charges.");
+    Console.WriteLine("PASS gathering RPC immature stage has 2/5 charges, depletion, backend respawn and replay");
+    return;
+}
 
 if (mode.EndsWith("-outage", StringComparison.Ordinal))
 {

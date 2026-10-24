@@ -95,6 +95,12 @@
           "Npgsql": "[10.0.3, 10.0.3]"
         }
       },
+      "gatheringnodes": {
+        "type": "Project",
+        "dependencies": {
+          "WorldContent": "[1.0.0, )"
+        }
+      },
       "housing.postgres": {
         "type": "Project",
         "dependencies": {
@@ -132,6 +138,9 @@
         "dependencies": {
           "InventoryLedger": "[1.0.0, )"
         }
+      },
+      "worldcontent": {
+        "type": "Project"
       },
       "Google.Protobuf": {
         "type": "CentralTransitive",
