@@ -1,12 +1,20 @@
 #include "Exchange/SFExchangeWidgets.h"
+#include "Exchange/SFExchangeComponent.h"
+#include "Exchange/SFMarketBoardActor.h"
+#include "Framework/SFPlayerController.h"
+#include "Gathering/SFStationRecipes.h"
+#include "Services/SFGameplayServicesClient.h"
+#include "UI/SFWindowStack.h"
 
 #include "Components/Image.h"
 #include "Components/PanelWidget.h"
+#include "Components/ScrollBox.h"
 #include "Components/TextBlock.h"
 #include "Components/UniformGridPanel.h"
 #include "Engine/Texture2D.h"
 #include "Framework/Application/SlateApplication.h"
 #include "GameFramework/GameStateBase.h"
+#include "GameFramework/Pawn.h"
 
 namespace
 {
@@ -153,6 +161,21 @@ void USFTradeWindow::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 
 // ---- Market board ----
 
+void USFMarketBoard::StartLiveRefresh(USFExchangeComponent* Component, ASFMarketBoardActor* Board)
+{
+    StopLiveRefresh();
+    LiveExchange = Component; LiveBoard = Board;
+    if (Component && Board && GetWorld())
+    { RefreshScheduler.Open(GetWorld()->GetTimeSeconds(), GetDefault<USFGameplayServicesSettings>()->MarketRefreshSeconds); }
+}
+
+void USFMarketBoard::StopLiveRefresh()
+{
+    ++RefreshGeneration;
+    RefreshScheduler.Close();
+    LiveExchange.Reset(); LiveBoard.Reset();
+}
+
 namespace
 {
 // Tab -> inventory tab filter: All, Materials, Gear, Consumables.
@@ -248,6 +271,7 @@ void USFMarketBoard::Rebuild()
 {
     if (!Model.IsValid() || !ListingRows || !RowClass) { return; }
     const TArray<FSFListing> Visible = Model->Visible();
+    const bool bKeepSelection = Selected(Visible) != nullptr;
     if (!Selected(Visible) && !Visible.IsEmpty()) { SelectedListingId = Visible[0].ListingId; }
     if (FeeText) { FeeText->SetText(FText::FromString(FString::Printf(TEXT("Fee %s g"), *SFGold::Format(Model->ListingFee())))); }
     if (Gold) { Gold->SetAmount(Model->GetWallet().Available); }
@@ -257,9 +281,14 @@ void USFMarketBoard::Rebuild()
         if (ListButton->IsButtonEnabled() != bCanList) { ListButton->SetButtonEnabled(bCanList); }
     }
     FString Signature = FString::Printf(TEXT("%d|%d|%lld|%s"), static_cast<int32>(Model->Filter().Sort), Visible.Num(), Model->GetWallet().Available, *SelectedListingId);
-    for (const FSFListing& L : Visible) { Signature += L.ListingId + FString::FromInt(L.Quantity); }
+    for (const FSFListing& L : Visible)
+    { Signature += FString::Printf(TEXT("|%s:%s:%s:%d:%lld"), *L.ListingId, *L.ItemName, *L.SellerName, L.Quantity, L.UnitPrice); }
     if (Signature == RowSignature) { return; }
     RowSignature = Signature;
+    UScrollBox* Scroll = nullptr;
+    for (UWidget* Parent = ListingRows; Parent; Parent = Parent->GetParent())
+    { if (UScrollBox* Found = Cast<UScrollBox>(Parent)) { Scroll = Found; break; } }
+    const float ScrollOffset = Scroll && bKeepSelection ? Scroll->GetScrollOffset() : 0.0f;
     ListingRows->ClearChildren(); Rows.Reset(); RowListings.Reset();
     for (const FSFListing& L : Visible)
     {
@@ -285,6 +314,7 @@ void USFMarketBoard::Rebuild()
         Rows.Add(Row); RowListings.Add(L);
     }
     if (EmptyText) { EmptyText->SetVisibility(Rows.IsEmpty() ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Collapsed); }
+    if (Scroll && bKeepSelection) { Scroll->SetScrollOffset(ScrollOffset); }
 }
 
 void USFMarketBoard::UpdateTooltip()
@@ -305,6 +335,42 @@ void USFMarketBoard::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
     Super::NativeTick(MyGeometry, InDeltaTime);
     if (GetVisibility() == ESlateVisibility::Collapsed) { return; }
+    if (RefreshScheduler.IsOpen())
+    {
+        APlayerController* Controller = GetOwningPlayer();
+        const APawn* Pawn = Controller ? Controller->GetPawn() : nullptr;
+        ASFMarketBoardActor* Board = LiveBoard.Get();
+        USFExchangeComponent* Exchange = LiveExchange.Get();
+        const float ReachCm = GetDefault<USFGameplayServicesSettings>()->MarketReachM * 100.0f;
+        const bool bInRange = Pawn && Board && Exchange &&
+            FVector::DistSquared(Pawn->GetActorLocation(), Board->GetActorLocation()) <= FMath::Square(ReachCm);
+        if (!bInRange)
+        {
+            StopLiveRefresh();
+            if (ASFPlayerController* SFController = Cast<ASFPlayerController>(Controller)) { SFController->GetWindowStack()->Close(this); }
+            return;
+        }
+        if (RefreshScheduler.Tick(GetWorld()->GetTimeSeconds(), true))
+        {
+            const uint32 Generation = RefreshGeneration;
+            TWeakObjectPtr<USFMarketBoard> Weak(this);
+            Exchange->RequestListings(Board->MarketId, [Weak, Generation](bool bSuccess, TArray<FSFListing> Listings)
+            {
+                USFMarketBoard* Self = Weak.Get();
+                if (!Self || Self->RefreshGeneration != Generation || Self->GetVisibility() == ESlateVisibility::Collapsed) { return; }
+                Self->RefreshScheduler.Complete();
+                if (bSuccess && Self->Model.IsValid())
+                {
+                    for (FSFListing& Listing : Listings)
+                    {
+                        Listing.ItemName = SFStationRecipes::ItemDisplayName(Listing.ItemId);
+                        Listing.Category = SFItemTooltip::EntryFor(Listing.ItemId, Listing.ItemName, Listing.Quantity).Category;
+                    }
+                    Self->Model->SetListings(MoveTemp(Listings));
+                }
+            });
+        }
+    }
     Rebuild();
     UpdateTooltip();
 }

@@ -43,7 +43,7 @@ public:
 
 enum class ESFGameplayRpc : uint8 { GrantDefeatReward, ApplyReceipt, GetCharacterState, CreateCharacter, LearnRecipe, ClaimPlot, GetClaim, Place, Remove, Craft, ListStructures, Grant, SavePosition,
     // Exchange (proto/sf/exchange/v1), carried by the Backend transport over the same Gameplay.Host channel.
-    ExchangeWallet, OfferTrade, AcceptTrade, CancelTrade, ListItem, BuyListing, CancelListing };
+    ExchangeWallet, OfferTrade, AcceptTrade, CancelTrade, ListItem, BuyListing, CancelListing, ListListings };
 
 // Exchange request fields (each RPC reads only its own). Amounts are whole gold, as in the proto.
 struct FSFExchangeDelivery { FString EscrowId, DestinationId, ItemId; int64 Quantity = 0; };
@@ -58,6 +58,7 @@ struct FSFExchangeRequest
     int64 ExpectedRevision = 0, ExpectedUnitPrice = 0;
 };
 struct FSFExchangeResponse { int64 Balance = 0, Reserved = 0, Available = 0, WalletRevision = 0, Amount = 0, Fee = 0; FString SubjectId, State; bool bCommitted = false; };
+struct FSFMarketListingResponse { FString Id, SellerId, ItemId; int64 Quantity = 0, UnitPrice = 0; };
 // Ok; Rejected = a typed gameplay refusal (FAILED_PRECONDITION, PERMISSION_DENIED, ALREADY_EXISTS, INVALID_ARGUMENT, ...);
 // Unavailable = UNAVAILABLE / DEADLINE_EXCEEDED / CANCELLED, retried with the same operation id.
 enum class ESFGameplayStatus : uint8 { Ok, Rejected, Unavailable };
@@ -127,6 +128,7 @@ struct FSFGameplayResponse
     TMap<FString, int64> Changes;
     int32 QualityScore = 0; FString Grade, DiscoveredRecipeId;
     FSFExchangeResponse Exchange;
+    TArray<FSFMarketListingResponse> MarketListings;
 };
 
 using FSFGameplaySend = TFunction<void(const FSFGameplayRequest&, float DeadlineSeconds, TFunction<void(const FSFGameplayResponse&)>)>;

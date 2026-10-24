@@ -140,6 +140,28 @@ bool FSFExchangeMarketTest::RunTest(const FString& Parameters)
     return true;
 }
 
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFExchangeMarketRefreshTest,
+    "ShatteredFrontier.Exchange.ViewModel.MarketRefresh", EAutomationTestFlags::EditorContext|EAutomationTestFlags::EngineFilter)
+
+bool FSFExchangeMarketRefreshTest::RunTest(const FString& Parameters)
+{
+    FSFMarketRefreshScheduler Refresh;
+    Refresh.Open(10.0, 5.0f);
+    TestTrue(TEXT("Open requests the first page"), Refresh.Tick(10.0, true));
+    TestFalse(TEXT("In-flight request skips the next interval"), Refresh.Tick(15.0, true));
+    Refresh.Complete();
+    TestTrue(TEXT("Completed request allows the next interval"), Refresh.Tick(15.0, true));
+    Refresh.Close();
+    TestFalse(TEXT("Closed board stops requests"), Refresh.Tick(20.0, true));
+    Refresh.Open(30.0, 0.0f);
+    TestTrue(TEXT("Reopen requests immediately"), Refresh.Tick(30.0, true));
+    Refresh.Complete();
+    TestFalse(TEXT("Interval respects the one-second minimum"), Refresh.Tick(30.5, true));
+    TestFalse(TEXT("Leaving range stops requests"), Refresh.Tick(31.0, false));
+    TestFalse(TEXT("Range return does not reopen"), Refresh.Tick(32.0, true));
+    return true;
+}
+
 namespace
 {
 // Completes only when told to, like the server round trip.

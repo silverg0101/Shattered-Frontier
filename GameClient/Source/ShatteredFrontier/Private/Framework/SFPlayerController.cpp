@@ -479,7 +479,32 @@ void ASFPlayerController::ToggleMarketDemo()
         MarketBoard->AddToViewport(30);
         MarketBoard->SetVisibility(ESlateVisibility::Collapsed);
     }
-    if (GetWindowStack()->IsOpen(MarketBoard)) { GetWindowStack()->Close(MarketBoard); } else { GetWindowStack()->Open(MarketBoard); }
+    if (GetWindowStack()->IsOpen(MarketBoard))
+    {
+        MarketBoard->StopLiveRefresh();
+        GetWindowStack()->Close(MarketBoard);
+    }
+    else
+    {
+        if (!FParse::Param(FCommandLine::Get(), TEXT("ExchangeFake")))
+        {
+            ASFMarketBoardActor* Nearby = nullptr;
+            const APawn* LocalPawn = GetPawn();
+            const float ReachCm = GetDefault<USFGameplayServicesSettings>()->MarketReachM * 100.0f;
+            if (LocalPawn && GetWorld())
+            {
+                for (TActorIterator<ASFMarketBoardActor> It(GetWorld()); It; ++It)
+                {
+                    if (FVector::DistSquared(LocalPawn->GetActorLocation(), It->GetActorLocation()) <= FMath::Square(ReachCm))
+                    { Nearby = *It; break; }
+                }
+            }
+            USFExchangeComponent* Exchange = FindComponentByClass<USFExchangeComponent>();
+            if (!Nearby || !Exchange) { return; }
+            MarketBoard->StartLiveRefresh(Exchange, Nearby);
+        }
+        GetWindowStack()->Open(MarketBoard);
+    }
     if (GatheringHud) { GatheringHud->SetStationModal(MarketBoard); }
 }
 

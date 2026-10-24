@@ -51,6 +51,17 @@ struct FSFExchangeResultWire
     UPROPERTY() int64 Available = 0;
 };
 
+USTRUCT()
+struct FSFMarketListingWire
+{
+    GENERATED_BODY()
+    UPROPERTY() FString Id;
+    UPROPERTY() FString SellerId;
+    UPROPERTY() FString ItemId;
+    UPROPERTY() int32 Quantity = 0;
+    UPROPERTY() int64 UnitPrice = 0;
+};
+
 DECLARE_MULTICAST_DELEGATE_TwoParams(FSFExchangeServerResultDelegate, uint32 /*Nonce*/, bool /*bCommitted*/);
 DECLARE_MULTICAST_DELEGATE_ThreeParams(FSFExchangeTradeEventDelegate, ESFExchangeTradeEvent, const FString& /*TradeId*/, const FSFExchangeIntent& /*the offer, from this player's view*/);
 
@@ -66,6 +77,7 @@ public:
 
     // Client: queue an intent; Done(bCommitted) runs when the server's result returns (false on a dropped link or timeout).
     void Send(FSFExchangeIntent Intent, ISFExchangeService::FDone Done);
+    void RequestListings(const FString& MarketId, TFunction<void(bool, TArray<FSFListing>)> Done);
     FSFWalletView GetWallet() const { return Wallet; }
     FSFExchangeTradeEventDelegate OnTradeEvent;  // partner-side pushes for the trade window
     FSFExchangeServerResultDelegate OnServerResult;  // server: every intent outcome, for server-side callers and the scenario
@@ -92,6 +104,8 @@ private:
     UFUNCTION(Server, Reliable) void ServerIntent(const FSFExchangeIntent& Intent);
     UFUNCTION(Client, Reliable) void ClientResult(const FSFExchangeResultWire& Result);
     UFUNCTION(Client, Reliable) void ClientTradeEvent(ESFExchangeTradeEvent Event, const FString& TradeId, const FSFExchangeIntent& Offer);
+    UFUNCTION(Server, Reliable) void ServerRequestListings(uint32 RequestId, const FString& MarketId);
+    UFUNCTION(Client, Reliable) void ClientListings(uint32 RequestId, bool bSuccess, const TArray<FSFMarketListingWire>& Listings);
     void ExecuteIntent(const FSFExchangeIntent& Intent);
     void Reply(uint32 Nonce, bool bCommitted, const FString& Message, const FSFWalletView& InWallet);
     USFExchangeComponent* FindPartner(const FString& CharacterId) const;
@@ -99,6 +113,8 @@ private:
 
     uint32 NextNonce = 1;
     TMap<uint32, ISFExchangeService::FDone> Pending;
+    TMap<uint32, TFunction<void(bool, TArray<FSFListing>)>> PendingListings;
+    bool bListingsInFlight = false;
     FSFWalletView Wallet;
 };
 

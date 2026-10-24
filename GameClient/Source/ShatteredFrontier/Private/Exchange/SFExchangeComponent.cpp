@@ -122,6 +122,74 @@ void USFExchangeComponent::Send(FSFExchangeIntent Intent, ISFExchangeService::FD
     ServerIntent(Intent);
 }
 
+void USFExchangeComponent::RequestListings(const FString& MarketId, TFunction<void(bool, TArray<FSFListing>)> Done)
+{
+    if (bListingsInFlight) { if (Done) { Done(false, TArray<FSFListing>()); } return; }
+    bListingsInFlight = true;
+    const uint32 RequestId = NextNonce++;
+    PendingListings.Add(RequestId, MoveTemp(Done));
+    ServerRequestListings(RequestId, MarketId);
+}
+
+void USFExchangeComponent::ServerRequestListings_Implementation(uint32 RequestId, const FString& MarketId)
+{
+    const USFGameplayServicesSettings* Settings = GetDefault<USFGameplayServicesSettings>();
+    APlayerController* Controller = Cast<APlayerController>(GetOwner());
+    const APawn* Pawn = Controller ? Controller->GetPawn() : nullptr;
+    TSharedPtr<FSFGameplayServicesClient> Services = USFBackpackComponent::Services();
+    bool bAtBoard = false;
+    if (Settings->bExchangeEnabled && Services && Pawn && GetWorld() && !MarketId.IsEmpty())
+    {
+        for (TActorIterator<ASFMarketBoardActor> It(GetWorld()); It; ++It)
+        {
+            if (It->MarketId == MarketId && FVector::DistSquared(Pawn->GetActorLocation(), It->GetActorLocation()) <= FMath::Square(Settings->MarketReachM * 100.0f))
+            { bAtBoard = true; break; }
+        }
+    }
+    if (!bAtBoard) { ClientListings(RequestId, false, TArray<FSFMarketListingWire>()); return; }
+
+    FSFGameplayRequest Request; Request.Rpc = ESFGameplayRpc::ListListings;
+    Request.Exchange.MarketId = MarketId; Request.Count = FMath::Clamp(Settings->MarketPageSize, 10, 200);
+    TWeakObjectPtr<USFExchangeComponent> Weak(this);
+    Services->Call(Request, [Weak, RequestId](const FSFGameplayResponse& Response)
+    {
+        USFExchangeComponent* Self = Weak.Get();
+        if (!Self) { return; }
+        TArray<FSFMarketListingWire> Rows;
+        if (Response.Status == ESFGameplayStatus::Ok)
+        {
+            for (const FSFMarketListingResponse& Listing : Response.MarketListings)
+            {
+                if (Listing.Id.IsEmpty() || Listing.Quantity <= 0 || Listing.Quantity > MAX_int32 || Listing.UnitPrice <= 0) { continue; }
+                FSFMarketListingWire& Row = Rows.AddDefaulted_GetRef();
+                Row.Id = Listing.Id; Row.SellerId = Listing.SellerId; Row.ItemId = Listing.ItemId;
+                Row.Quantity = static_cast<int32>(Listing.Quantity); Row.UnitPrice = Listing.UnitPrice;
+            }
+        }
+        Self->ClientListings(RequestId, Response.Status == ESFGameplayStatus::Ok, Rows);
+    });
+}
+
+void USFExchangeComponent::ClientListings_Implementation(uint32 RequestId, bool bSuccess, const TArray<FSFMarketListingWire>& Listings)
+{
+    TFunction<void(bool, TArray<FSFListing>)>* Found = PendingListings.Find(RequestId);
+    if (!Found) { return; }
+    TFunction<void(bool, TArray<FSFListing>)> Done = MoveTemp(*Found);
+    PendingListings.Remove(RequestId);
+    bListingsInFlight = false;
+    TArray<FSFListing> Rows;
+    if (bSuccess)
+    {
+        for (const FSFMarketListingWire& Listing : Listings)
+        {
+            FSFListing& Row = Rows.AddDefaulted_GetRef();
+            Row.ListingId = Listing.Id; Row.ItemId = Listing.ItemId; Row.ItemName = Listing.ItemId;
+            Row.SellerName = Listing.SellerId; Row.Quantity = Listing.Quantity; Row.UnitPrice = Listing.UnitPrice;
+        }
+    }
+    if (Done) { Done(bSuccess, MoveTemp(Rows)); }
+}
+
 void USFExchangeComponent::ServerIntent_Implementation(const FSFExchangeIntent& Intent)
 {
     ExecuteIntent(Intent);

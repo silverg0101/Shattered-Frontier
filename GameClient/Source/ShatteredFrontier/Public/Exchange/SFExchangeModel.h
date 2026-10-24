@@ -52,6 +52,31 @@ struct FSFListing
     int32 TimeLeftSeconds = 0;  // remaining listing time when the row was built; 0 = unknown
 };
 
+// Driven by the open board's tick. A missed interval never starts a second request.
+class FSFMarketRefreshScheduler
+{
+public:
+    void Open(double Now, float IntervalSeconds)
+    {
+        Interval = FMath::IsFinite(IntervalSeconds) ? FMath::Clamp(IntervalSeconds, 1.0f, 60.0f) : 5.0f;
+        NextDue = Now; bOpen = true; bInFlight = false;
+    }
+    void Close() { bOpen = false; bInFlight = false; }
+    bool Tick(double Now, bool bInRange)
+    {
+        if (!bInRange) { Close(); return false; }
+        if (!bOpen || bInFlight || Now < NextDue) { return false; }
+        bInFlight = true; NextDue = Now + Interval;
+        return true;
+    }
+    void Complete() { bInFlight = false; }
+    bool IsOpen() const { return bOpen; }
+private:
+    double NextDue = 0.0;
+    float Interval = 5.0f;
+    bool bOpen = false, bInFlight = false;
+};
+
 enum class ESFMarketSort : uint8 { PriceAscending, PriceDescending, Name };
 
 struct FSFMarketFilter

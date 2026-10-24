@@ -310,6 +310,23 @@ void FSFGrpcGameplayTransport::Send(const FSFGameplayRequest& Q, float DeadlineS
         Start(Call, [&](grpc::ClientContext* C) { return Channel->Exchange->AsyncWallet(C, M, &Channel->Queue); });
         break;
     }
+    case ESFGameplayRpc::ListListings:
+    {
+        sf::exchange::v1::ListListingsRequest M;
+        M.set_market_id(Utf8(Q.Exchange.MarketId)); M.set_page_size(Q.Count);
+        auto* Call = new TCall<sf::exchange::v1::ListListingsReply>();
+        Call->Copy = [](const sf::exchange::v1::ListListingsReply& R, FSFGameplayResponse& Out)
+        {
+            for (const auto& Listing : R.listings())
+            {
+                FSFMarketListingResponse& Row = Out.MarketListings.AddDefaulted_GetRef();
+                Row.Id = FromUtf8(Listing.id()); Row.SellerId = FromUtf8(Listing.seller_id()); Row.ItemId = FromUtf8(Listing.item_id());
+                Row.Quantity = Listing.quantity(); Row.UnitPrice = Listing.unit_price();
+            }
+        };
+        Start(Call, [&](grpc::ClientContext* C) { return Channel->Exchange->AsyncListListings(C, M, &Channel->Queue); });
+        break;
+    }
     case ESFGameplayRpc::OfferTrade:
     {
         const FSFExchangeRequest& E = Q.Exchange;

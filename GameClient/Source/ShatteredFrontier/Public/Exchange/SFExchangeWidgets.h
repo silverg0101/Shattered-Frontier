@@ -97,6 +97,8 @@ public:
     static constexpr const TCHAR* AssetPath = TEXT("/Game/Frontier/UI/Widgets/Exchange/WBP_MarketBoard.WBP_MarketBoard_C");
 
     void Bind(TSharedPtr<FSFMarketViewModel> InModel) { Model = InModel; Rebuild(); }
+    void StartLiveRefresh(class USFExchangeComponent* Component, class ASFMarketBoardActor* Board);
+    void StopLiveRefresh();
     // The item the sell form offers; the real wiring passes the selected backpack stack.
     void SetSellItem(const FString& ItemId, const FString& Name, int32 MaxQuantity);
     int32 RowCount() const { return Rows.Num(); }
@@ -145,6 +147,10 @@ private:
     const FSFListing* Selected(const TArray<FSFListing>& Visible) const;
 
     TSharedPtr<FSFMarketViewModel> Model;
+    TWeakObjectPtr<USFExchangeComponent> LiveExchange;
+    TWeakObjectPtr<ASFMarketBoardActor> LiveBoard;
+    FSFMarketRefreshScheduler RefreshScheduler;
+    uint32 RefreshGeneration = 0;
     TSubclassOf<USFKitRowWidget> RowClass;
     FString SellItemId, SellItemName;
     int32 SellMaxQuantity = 0;
