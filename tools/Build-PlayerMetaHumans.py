@@ -7,8 +7,12 @@ It starts on the editor's first tick, builds, then quits the editor.
 
 Reads GameClient/ArtSource/Characters/Player/faces.json ({"faces": [{"id", "preset", "gender", "hair", "beard", "mustache", "skin", "hair_color"}]}).
 Optional "skin": [u, v] sets the skin tone (the Creator's tone picker position); every build logs the face's tone as PLAYER_METAHUMAN_SKIN.
-Optional "freckles": 1-3 picks a freckle mask. Optional "hair_color": [melanin, redness] (0-1) dyes every groom (logs PLAYER_METAHUMAN_HAIR).
-Optional "makeup": "none" clears the preset's foundation, eye shadow/liner, blush and lipstick (logs PLAYER_METAHUMAN_MAKEUP).
+Optional "freckles": 1-3 picks a freckle mask; "freckle_strength" (0-1, Creator default 0.2) sets its strength and density.
+Optional "hair_color": [melanin, redness] (0-1) dyes every groom (logs PLAYER_METAHUMAN_HAIR); "groom_colors":
+{"Eyebrows"|"Beards"|"Mustaches"|"Eyelashes"|"Hair": [melanin, redness]} overrides it for the grooms in that wardrobe folder.
+Optional "makeup": "none" clears the preset's foundation, eye shadow/liner, blush and lipstick, and sets the lip, under-eye
+and cheek skin accents back to neutral 0.5 (logs PLAYER_METAHUMAN_MAKEUP). Optional "accents": {"<region>": [lightness, redness,
+saturation]} (regions: cheeks, chin, ears, forehead, lips, nose, scalp, under_eye; 0.5 neutral) sets a region after that.
 Each face's preset is copied to /Game/Frontier/Characters/Player/Faces/MHC_<id> and given its grooms (WI_* wardrobe
 items). MetaHuman's cloud auto-rig and texture download run only when the copy cannot build yet (they use the editor's
 signed-in Epic account). The optimized, medium-quality assembly goes to /Game/Frontier/Characters/Player/Built/MHC_<id>,
@@ -57,26 +61,42 @@ def build_face(face, subsystem, library):
             skin.skin.u, skin.skin.v = face['skin']
         if face.get('freckles'):
             skin.freckles.mask = getattr(unreal.MetaHumanCharacterFrecklesMask, f"TYPE{face['freckles']}")
-        if face.get('skin') or face.get('freckles'):
+        if face.get('freckle_strength') is not None:
+            skin.freckles.strength = skin.freckles.density = face['freckle_strength']
+        if face.get('makeup') == 'none':
+            # The preset's lip, under-eye and cheek accents read as lipstick, liner and blush; 0.5 is neutral.
+            for region in ('lips', 'under_eye', 'cheeks'):
+                accent = getattr(skin.accents, region)
+                accent.lightness = accent.redness = accent.saturation = 0.5
+                setattr(skin.accents, region, accent)
+        for region, (lightness, redness, saturation) in face.get('accents', {}).items():
+            accent = getattr(skin.accents, region)
+            accent.lightness, accent.redness, accent.saturation = lightness, redness, saturation
+            setattr(skin.accents, region, accent)
+        if face.get('skin') or face.get('freckles') or face.get('makeup') == 'none' or face.get('accents'):
             subsystem.commit_skin_settings(character, skin)
         unreal.log(f"PLAYER_METAHUMAN_SKIN id={face['id']} u={skin.skin.u:.3f} v={skin.skin.v:.3f} freckles={skin.freckles.mask}")
         if face.get('hair_color'):
             # Groom colour lives in instance parameters, which exist only on the editor's built preview collection;
             # on_edit_preview_collection copies them into the character for the build. Every groom with Melanin
-            # (hair, eyebrows, beard, mustache, eyelashes, peach fuzz) gets the same colour.
+            # (hair, eyebrows, beard, mustache, eyelashes, peach fuzz) gets the same colour unless "groom_colors"
+            # names its wardrobe folder (the item path text holds .../Grooms/Bindings/<Folder>/WI_...).
             subsystem.assemble_for_preview(character=character)
             preview = subsystem.get_preview_collection(character).default_instance
-            melanin, redness = face['hair_color']
-            grooms = 0
+            overrides = face.get('groom_colors', {})
+            grooms = []
             for item in preview.get_instance_parameter_item_paths():
                 params = {str(p.name): p for p in preview.get_instance_parameters(item_path=item)}
                 if 'Melanin' in params:
+                    text = item.export_text()
+                    folder = next((k for k in overrides if f"/{k}/" in text), None)
+                    melanin, redness = overrides[folder] if folder else face['hair_color']
                     params['Melanin'].set_float(value=melanin)
                     params['Redness'].set_float(value=redness)
                     params['Whiteness'].set_float(value=0.0)
-                    grooms += 1
+                    grooms.append(f"{folder or 'all'}={melanin:.2f}/{redness:.2f}")
             subsystem.on_edit_preview_collection(character)
-            unreal.log(f"PLAYER_METAHUMAN_HAIR {face['id']} melanin={melanin:.2f} redness={redness:.2f} grooms={grooms}")
+            unreal.log(f"PLAYER_METAHUMAN_HAIR {face['id']} grooms={len(grooms)} {' '.join(grooms)}")
         if face.get('makeup') == 'none':
             makeup = character.get_editor_property('makeup_settings')
             makeup.foundation.apply_foundation = False
