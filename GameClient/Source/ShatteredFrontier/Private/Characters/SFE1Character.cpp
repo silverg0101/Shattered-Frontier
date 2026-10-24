@@ -401,6 +401,53 @@ void ASFE1Character::TickAssistScenario()
 #endif
 }
 
+void ASFE1Character::TickRespawnScenario()
+{
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    FString ScenarioRole;
+    FParse::Value(FCommandLine::Get(), TEXT("CombatRespawnRole="), ScenarioRole);
+    if ((ScenarioRole != TEXT("Driver") && ScenarioRole != TEXT("Observer")) || !Controller || PilotHealth <= 0) { return; }
+    ASFPilotBoar* Boar = nullptr;
+    for (TActorIterator<ASFPilotBoar> It(GetWorld()); It; ++It)
+    { if (It->GroupId() == TEXT("respawn_sandbox")) { Boar = *It; break; } }
+    const double Now = GetWorld()->GetTimeSeconds();
+    if (RespawnScenarioStage == 0)
+    {
+        if (!Boar || Boar->Health() != GetDefault<USFCombatPilotSettings>()->BoarHealth) { return; }
+        int32 Pawns = 0;
+        for (TActorIterator<ASFE1Character> It(GetWorld()); It; ++It) { ++Pawns; }
+        if (Pawns < 2) { return; }
+        if (RespawnScenarioReadyAt < 0) { RespawnScenarioReadyAt = Now + 3.0; }
+        if (Now < RespawnScenarioReadyAt) { return; }
+        RespawnScenarioStage = 1;
+        UE_LOG(LogTemp, Display, TEXT("BOAR_RESPAWN_INITIAL Role=%s HP=%d X=%.0f"),
+            *ScenarioRole, Boar->Health(), Boar->GetActorLocation().X);
+    }
+    if (RespawnScenarioStage == 1 && ScenarioRole == TEXT("Driver") && Boar)
+    {
+        const FVector Toward = (Boar->GetActorLocation() - GetActorLocation()).GetSafeNormal2D();
+        if (FVector::Dist2D(GetActorLocation(), Boar->GetActorLocation()) > 220.0)
+        { AddMovementInput(Toward, 1.0f); return; }
+        Controller->SetControlRotation(Toward.Rotation());
+        if (Now >= CombatScenarioNextAttackAt)
+        { PilotAttack(); CombatScenarioNextAttackAt = Now + 0.9; }
+    }
+    if (RespawnScenarioStage == 1 && !Boar)
+    {
+        RespawnScenarioStage = 2;
+        RespawnScenarioDeathAt = Now;
+        UE_LOG(LogTemp, Display, TEXT("BOAR_RESPAWN_ABSENT Role=%s T=%.3f"), *ScenarioRole, Now);
+    }
+    if (RespawnScenarioStage == 2 && Boar)
+    {
+        RespawnScenarioStage = 3;
+        UE_LOG(LogTemp, Display, TEXT("BOAR_RESPAWN_RETURNED Role=%s T=%.3f Elapsed=%.3f HP=%d X=%.0f Y=%.0f"),
+            *ScenarioRole, Now, Now - RespawnScenarioDeathAt, Boar->Health(),
+            Boar->GetActorLocation().X, Boar->GetActorLocation().Y);
+    }
+#endif
+}
+
 void ASFE1Character::TickAggroScenario()
 {
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
@@ -883,6 +930,8 @@ void ASFE1Character::Tick(float DeltaSeconds)
         FParse::Param(FCommandLine::Get(), TEXT("CombatMemoryScenario"))) { TickMemoryScenario(); }
     if (GetNetMode() == NM_Client && IsLocallyControlled() &&
         FParse::Param(FCommandLine::Get(), TEXT("CombatAssistScenario"))) { TickAssistScenario(); }
+    if (GetNetMode() == NM_Client && IsLocallyControlled() &&
+        FParse::Param(FCommandLine::Get(), TEXT("CombatRespawnScenario"))) { TickRespawnScenario(); }
     if (GetNetMode() == NM_Client && IsLocallyControlled() &&
         FParse::Param(FCommandLine::Get(), TEXT("CombatRegenScenario"))) { TickRegenScenario(); }
 #endif

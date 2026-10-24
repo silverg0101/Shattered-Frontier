@@ -166,6 +166,10 @@ private:
     const USFCombatPilotSettings* CapturedSettings = nullptr;
     bool bPilotActive = false;
     bool bCompanionSandbox = false;
+    bool bRespawnSandbox = false;
+    TArray<FTransform> RespawnSandboxPoints;
+    double RespawnSandboxDueAt = -1.0;
+    int32 RespawnSandboxCycle = 0;
     bool bSlotBridgeHealthy = false;
     bool bSlotServiceMode = false;
     bool bSlotRequestInFlight = false;

@@ -1,4 +1,5 @@
 #include "Combat/SFCombatPilot.h"
+#include "Combat/SFCommonRespawn.h"
 #include "Inventory/SFGear.h"
 #include "Framework/SFGameMode.h"
 #include "Combat/SFCombatPilotRewards.h"
@@ -10,6 +11,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "Components/TextRenderComponent.h"
 #include "Engine/World.h"
+#include "Engine/StaticMeshActor.h"
 #include "EngineUtils.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PlayerController.h"
@@ -214,6 +216,10 @@ bool USFCombatPilotSettings::Validate(FString& Error) const
         !FMath::IsWithinInclusive(ThreatDecisionSeconds, 0.05f, 1.0f) ||
         !FMath::IsWithinInclusive(BoarAssistDelaySeconds, 0.5f, 5.0f) ||
         !FMath::IsWithinInclusive(BoarAssistRadiusMetres, 2.0f, 15.0f) ||
+        !FMath::IsNearlyEqual(CommonRespawnSeconds, 300.0f) ||
+        !FMath::IsNearlyEqual(RespawnPlayerSlope, 0.15f) ||
+        !FMath::IsNearlyEqual(RespawnPlayerFloor, 0.35f) ||
+        !FMath::IsNearlyEqual(RespawnJitter, 0.10f) ||
         !FMath::IsWithinInclusive(BoarLeashRadiusMetres, 20.0f, 100.0f) ||
         !FMath::IsWithinInclusive(BoarFieldOfViewDegrees, 60.0f, 360.0f) ||
         !FMath::IsWithinInclusive(BoarWanderRadiusMetres, 2.0f, 40.0f) ||
@@ -525,7 +531,7 @@ void ASFPilotBoar::Tick(float DeltaSeconds)
         }
     }
     if ((SpawnGroup == TEXT("aggro_sandbox") || SpawnGroup == TEXT("memory_sandbox") ||
-        SpawnGroup == TEXT("assist_sandbox")) && !Victim && !bReturning) { return; }
+        SpawnGroup == TEXT("assist_sandbox") || SpawnGroup == TEXT("respawn_sandbox")) && !Victim && !bReturning) { return; }
     FVector Destination = WanderDestination;
     float Speed = Mode->CombatSettings()->BoarWanderSpeedMetresPerSecond*100;
     if (Victim)
@@ -639,15 +645,16 @@ void ASFGameMode::StartCombat()
     const bool bMemorySandbox = MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_AttackerMemory");
     const bool bRegenSandbox = MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_Regeneration");
     const bool bAssistSandbox = MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_Assist");
+    bRespawnSandbox = MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_Respawn");
     bCompanionSandbox = GetNetMode() != NM_Client &&
-        (MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_Companions") || bEvadeSandbox || bThreatSandbox || bAggroSandbox || bMemorySandbox || bRegenSandbox || bAssistSandbox);
+        (MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_Companions") || bEvadeSandbox || bThreatSandbox || bAggroSandbox || bMemorySandbox || bRegenSandbox || bAssistSandbox || bRespawnSandbox);
     if (bCompanionSandbox)
     {
         CapturedSettings = GetDefault<USFCombatPilotSettings>();
         FString Error;
         if (!CapturedSettings->Validate(Error))
         { UE_LOG(LogTemp, Error, TEXT("COMPANION_SANDBOX_DISABLED Invalid combat settings: %s"), *Error); return; }
-        const double Extent = (bEvadeSandbox || bThreatSandbox || bAggroSandbox || bMemorySandbox || bRegenSandbox || bAssistSandbox) ? 85.0 : 45.0;
+        const double Extent = (bEvadeSandbox || bThreatSandbox || bAggroSandbox || bMemorySandbox || bRegenSandbox || bAssistSandbox || bRespawnSandbox) ? 85.0 : 45.0;
         const TArray<FVector2D> SandboxArea = { FVector2D(-Extent, -Extent), FVector2D(Extent, -Extent),
             FVector2D(Extent, Extent), FVector2D(-Extent, Extent) };
         int32 Slot = 0;
@@ -658,16 +665,26 @@ void ASFGameMode::StartCombat()
                 bAggroSandbox ? TEXT("SF_AggroSandboxWildlife") :
                 bMemorySandbox ? TEXT("SF_AttackerMemorySandboxWildlife") :
                 bRegenSandbox ? TEXT("SF_RegenerationSandboxWildlife") :
-                bAssistSandbox ? TEXT("SF_AssistSandboxWildlife") : TEXT("SF_CompanionSandboxWildlife");
+                bAssistSandbox ? TEXT("SF_AssistSandboxWildlife") :
+                bRespawnSandbox ? TEXT("SF_RespawnSandboxWildlife") : TEXT("SF_CompanionSandboxWildlife");
             if (!It->ActorHasTag(Tag)) { continue; }
+            if (bRespawnSandbox) { RespawnSandboxPoints.Add(It->GetActorTransform()); }
             It->Initialize(this, bEvadeSandbox ? TEXT("evade_sandbox") :
                 bThreatSandbox ? TEXT("threat_sandbox") :
                 bAggroSandbox ? TEXT("aggro_sandbox") :
                 bMemorySandbox ? TEXT("memory_sandbox") :
                 bRegenSandbox ? TEXT("regeneration_sandbox") :
-                bAssistSandbox ? TEXT("assist_sandbox") : TEXT("companions_sandbox"), Slot++, SandboxArea,
+                bAssistSandbox ? TEXT("assist_sandbox") :
+                bRespawnSandbox ? TEXT("respawn_sandbox") : TEXT("companions_sandbox"), Slot++, SandboxArea,
                 CapturedSettings->BoarHealth, ++NextBoarSerial,
-                bMemorySandbox || (bAssistSandbox && It->ActorHasTag(TEXT("SF_AssistDefensive"))));
+                bMemorySandbox || bRespawnSandbox || (bAssistSandbox && It->ActorHasTag(TEXT("SF_AssistDefensive"))));
+        }
+        if (bRespawnSandbox)
+        {
+            for (TActorIterator<AStaticMeshActor> It(GetWorld()); It; ++It)
+            { if (It->ActorHasTag(TEXT("SF_RespawnPoint"))) { RespawnSandboxPoints.Add(It->GetActorTransform()); } }
+            if (Slot != 1 || RespawnSandboxPoints.Num() != 2)
+            { UE_LOG(LogTemp, Error, TEXT("BOAR_RESPAWN_INVALID_POINTS Boars=%d Points=%d"), Slot, RespawnSandboxPoints.Num()); return; }
         }
         bPilotActive = Slot > 0;
         RespawnPoints.Add(FVector(0, 0, 110));
@@ -801,6 +818,35 @@ void ASFGameMode::RestartCombat(AController* NewPlayer)
 
 void ASFGameMode::TickCombat()
 {
+    if (bPilotActive && bRespawnSandbox && FSFCommonRespawn::IsDue(GetWorld()->GetTimeSeconds(), RespawnSandboxDueAt))
+    {
+        const int32 Preferred = RespawnSandboxCycle % RespawnSandboxPoints.Num();
+        int32 NextPoint = INDEX_NONE;
+        for (int32 Offset = 0; Offset < RespawnSandboxPoints.Num(); ++Offset)
+        {
+            const int32 Candidate = (Preferred + Offset) % RespawnSandboxPoints.Num();
+            if (!GetWorld()->OverlapAnyTestByChannel(RespawnSandboxPoints[Candidate].GetLocation(), FQuat::Identity,
+                ECC_Pawn, FCollisionShape::MakeSphere(110.0))) { NextPoint = Candidate; break; }
+        }
+        if (NextPoint != INDEX_NONE)
+        {
+            const FTransform& Point = RespawnSandboxPoints[NextPoint];
+            FActorSpawnParameters Params;
+            Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+            ASFPilotBoar* Boar = GetWorld()->SpawnActor<ASFPilotBoar>(ASFPilotBoar::StaticClass(), Point, Params);
+            if (Boar)
+            {
+                const TArray<FVector2D> Area = { FVector2D(-85, -85), FVector2D(85, -85),
+                    FVector2D(85, 85), FVector2D(-85, 85) };
+                Boar->Initialize(this, TEXT("respawn_sandbox"), 0, Area,
+                    CapturedSettings->BoarHealth, ++NextBoarSerial, true);
+                RespawnSandboxDueAt = -1.0;
+                UE_LOG(LogTemp, Display, TEXT("BOAR_RESPAWN_ACTIVE Cycle=%d Point=%d T=%.3f HP=%d X=%.0f Y=%.0f"),
+                    RespawnSandboxCycle, NextPoint, GetWorld()->GetTimeSeconds(), Boar->Health(),
+                    Point.GetLocation().X, Point.GetLocation().Y);
+            }
+        }
+    }
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     if (bPilotActive && !bReconnectDeathTriggered && FParse::Param(FCommandLine::Get(), TEXT("ReconnectDeathScenario")))
     {
@@ -1241,6 +1287,23 @@ void ASFGameMode::BoarDied(ASFPilotBoar* Boar, ASFE1Character* Killer)
     if (!bPilotActive || !IsValid(Boar)) { return; }
     if (bCompanionSandbox)
     {
+        if (bRespawnSandbox)
+        {
+            int32 PlayersInArea = 0;
+            const TArray<FVector2D> Area = { FVector2D(-85, -85), FVector2D(85, -85),
+                FVector2D(85, 85), FVector2D(-85, 85) };
+            for (auto It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+            { if (const APawn* Pawn = It->Get()->GetPawn())
+              { if (IsInsideTerritory(Pawn->GetActorLocation(), Area)) { ++PlayersInArea; } } }
+            const double Now = GetWorld()->GetTimeSeconds();
+            const double Delay = FSFCommonRespawn::DelaySeconds(CapturedSettings->CommonRespawnSeconds,
+                PlayersInArea, CapturedSettings->RespawnPlayerSlope, CapturedSettings->RespawnPlayerFloor,
+                CapturedSettings->RespawnJitter, FMath::FRand());
+            ++RespawnSandboxCycle;
+            RespawnSandboxDueAt = Now + Delay;
+            UE_LOG(LogTemp, Display, TEXT("BOAR_RESPAWN_DEAD Cycle=%d Players=%d Delay=%.3f Due=%.3f"),
+                RespawnSandboxCycle, PlayersInArea, Delay, RespawnSandboxDueAt);
+        }
         UE_LOG(LogTemp, Display, TEXT("COMPANION_SANDBOX_BOAR_DEAD Slot=%d"), Boar->SlotIndex());
         Boar->Destroy();
         return;

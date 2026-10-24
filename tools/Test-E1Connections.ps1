@@ -10,7 +10,8 @@ param(
     [switch]$AggroScenario,
     [switch]$MemoryScenario,
     [switch]$RegenScenario,
-    [switch]$AssistScenario
+    [switch]$AssistScenario,
+    [switch]$RespawnScenario
 )
 $ErrorActionPreference = 'Stop'
 $repoRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
@@ -26,7 +27,7 @@ function Launch([string[]]$LaunchArguments) {
     Write-Output "Started PID $($process.Id)"
 }
 function Wait-Log([string]$Path, [string]$Pattern, [int]$Count = 1) {
-    $deadline = (Get-Date).AddSeconds($(if ($EvadeScenario -or $ThreatScenario -or $AggroScenario -or $MemoryScenario -or $RegenScenario -or $AssistScenario) { 240 } else { 120 }))
+    $deadline = (Get-Date).AddSeconds($(if ($RespawnScenario) { 420 } elseif ($EvadeScenario -or $ThreatScenario -or $AggroScenario -or $MemoryScenario -or $RegenScenario -or $AssistScenario) { 240 } else { 120 }))
     while ((Get-Date) -lt $deadline) {
         foreach ($process in $ownedProcesses) { if ($process.HasExited) { throw "Network process $($process.Id) exited before $Pattern" } }
         if (Test-Path -LiteralPath $Path) {
@@ -88,6 +89,10 @@ try {
         $CastingScenario -or $EvadeScenario -or $ThreatScenario -or $AggroScenario -or $MemoryScenario -or $RegenScenario)) {
         throw 'AssistScenario requires SB_Assist, two clients, and no other scenario'
     }
+    if ($RespawnScenario -and ($Map -ne '/Game/Frontier/Maps/Sandbox/SB_Respawn' -or $Clients -ne 2 -or
+        $CastingScenario -or $EvadeScenario -or $ThreatScenario -or $AggroScenario -or $MemoryScenario -or $RegenScenario -or $AssistScenario)) {
+        throw 'RespawnScenario requires SB_Respawn, two clients, and no other scenario'
+    }
     if (Get-NetUDPEndpoint -LocalPort $Port -ErrorAction SilentlyContinue) { throw "UDP $Port is already in use" }
     $serverLog = Join-Path $logs 'Server.log'
     $serverArgs = @($Map, '-server', '-NullRHI', '-unattended', '-nosound', '-nop4', "-port=$Port", '-MULTIHOME=127.0.0.1', ('-abslog="' + $serverLog + '"'))
@@ -97,6 +102,7 @@ try {
     if ($MemoryScenario) { $serverArgs += '-CombatMemoryScenario' }
     if ($RegenScenario) { $serverArgs += '-CombatRegenScenario' }
     if ($AssistScenario) { $serverArgs += '-CombatAssistScenario' }
+    if ($RespawnScenario) { $serverArgs += '-CombatRespawnScenario' }
     Launch $serverArgs
     Wait-Log $serverLog 'E1_WORLD_READY.*NetMode=1'
     foreach ($index in 1..$Clients) {
@@ -109,6 +115,7 @@ try {
         if ($MemoryScenario) { $clientArgs += @('-CombatMemoryScenario', ('-CombatMemoryRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         if ($RegenScenario) { $clientArgs += @('-CombatRegenScenario', ('-CombatRegenRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         if ($AssistScenario) { $clientArgs += @('-CombatAssistScenario', ('-CombatAssistRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
+        if ($RespawnScenario) { $clientArgs += @('-CombatRespawnScenario', ('-CombatRespawnRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         Launch $clientArgs
         Wait-Log $clientLog 'Welcomed by server'
     }
@@ -267,8 +274,39 @@ try {
         }
         Write-Output "PASS: server linked idle defensive packmate after $elapsed s within $distance cm; both clients observed lead then shared-target engagement. Logs: $logs"
     }
+    if ($RespawnScenario) {
+        Wait-Log $serverLog 'BOAR_RESPAWN_ACTIVE Cycle=1 Point=1'
+        $dead = Select-String -LiteralPath $serverLog -Pattern 'BOAR_RESPAWN_DEAD Cycle=1 Players=(\d+) Delay=([\d.]+) Due=([\d.]+)' | Select-Object -First 1
+        $active = Select-String -LiteralPath $serverLog -Pattern 'BOAR_RESPAWN_ACTIVE Cycle=1 Point=1 T=([\d.]+) HP=60 X=2600 Y=0' | Select-Object -First 1
+        $hit = Select-String -LiteralPath $serverLog -Pattern 'COMBAT_PILOT_BOAR_HIT Group=respawn_sandbox Slot=0 HP=0 Attacker=\S+' | Select-Object -First 1
+        if (-not $dead -or -not $active -or -not $hit -or $hit.LineNumber -ge $dead.LineNumber -or $dead.LineNumber -ge $active.LineNumber) {
+            throw 'Server missed ordered client kill, timed slot and fresh spawn'
+        }
+        $number = [Globalization.CultureInfo]::InvariantCulture
+        $delay = [double]::Parse($dead.Matches[0].Groups[2].Value,$number)
+        $due = [double]::Parse($dead.Matches[0].Groups[3].Value,$number)
+        $at = [double]::Parse($active.Matches[0].Groups[1].Value,$number)
+        if ([int]$dead.Matches[0].Groups[1].Value -ne 2 -or $delay -lt (300/1.15*0.9) - 0.01 -or
+            $delay -gt (300/1.15*1.1) + 0.01 -or $at -lt $due - 0.01 -or $at -gt $due + 5) {
+            throw "Server timer violated authored 2-player range or due time: players=$($dead.Matches[0].Groups[1].Value) delay=$delay due=$due active=$at"
+        }
+        foreach ($role in @('Driver','Observer')) {
+            $path = Join-Path $logs ('Client' + $(if ($role -eq 'Driver') { '1' } else { '2' }) + '.log')
+            Wait-Log $path "BOAR_RESPAWN_RETURNED Role=$role"
+            $initial = Select-String -LiteralPath $path -Pattern "BOAR_RESPAWN_INITIAL Role=$role HP=60 X=1800" | Select-Object -First 1
+            $absent = Select-String -LiteralPath $path -Pattern "BOAR_RESPAWN_ABSENT Role=$role T=([\d.]+)" | Select-Object -First 1
+            $returned = Select-String -LiteralPath $path -Pattern "BOAR_RESPAWN_RETURNED Role=$role T=([\d.]+) Elapsed=([\d.]+) HP=60 X=2600 Y=0" | Select-Object -First 1
+            if (-not $initial -or -not $absent -or -not $returned -or
+                $initial.LineNumber -ge $absent.LineNumber -or $absent.LineNumber -ge $returned.LineNumber) {
+                throw "$role missed ordered initial, death absence and fresh alternate-point creature"
+            }
+            $elapsed = [double]::Parse($returned.Matches[0].Groups[2].Value,$number)
+            if ($elapsed -lt $delay - 2 -or $elapsed -gt $delay + 10) { throw "$role observed return outside timer: $elapsed s vs $delay s" }
+        }
+        Write-Output "PASS: two clients observed client-caused boar death, $([math]::Round($delay,1)) s authoritative timer and fresh full-health boar at alternate point. Logs: $logs"
+    }
     Write-Output "PASS: separate editor server and $Clients client(s) connected; $Clients server-authoritative possession(s). Logs: $logs"
-    if (-not $CastingScenario -and -not $EvadeScenario -and -not $ThreatScenario -and -not $AggroScenario -and -not $MemoryScenario -and -not $RegenScenario -and -not $AssistScenario) { Write-Output 'Headless connection check only: movement, rendering, lifecycle cleanup, authentication and Linux runtime are not certified.' }
+    if (-not $CastingScenario -and -not $EvadeScenario -and -not $ThreatScenario -and -not $AggroScenario -and -not $MemoryScenario -and -not $RegenScenario -and -not $AssistScenario -and -not $RespawnScenario) { Write-Output 'Headless connection check only: movement, rendering, lifecycle cleanup, authentication and Linux runtime are not certified.' }
 } finally {
     foreach ($process in $ownedProcesses) {
         if (-not $process.HasExited) { Stop-Process -Id $process.Id -ErrorAction SilentlyContinue }

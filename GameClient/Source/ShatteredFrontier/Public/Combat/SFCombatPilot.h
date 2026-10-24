@@ -125,6 +125,14 @@ public:
     float BoarAssistDelaySeconds = 2.0f;
     UPROPERTY(Config, EditAnywhere, Category="Pilot Boar AI", meta=(ClampMin="2.0", ClampMax="15.0", Units="m", ToolTip="Common pack assist radius; adopted at next zone start."))
     float BoarAssistRadiusMetres = 8.0f;
+    UPROPERTY(Config, EditAnywhere, Category="Pilot Creature Respawn", meta=(ClampMin="300.0", ClampMax="300.0", Units="s", ToolTip="Common NPC base respawn; adopted at zone start."))
+    float CommonRespawnSeconds = 300.0f;
+    UPROPERTY(Config, EditAnywhere, Category="Pilot Creature Respawn", meta=(ClampMin="0.15", ClampMax="0.15", ToolTip="Player-count respawn slope; adopted at zone start."))
+    float RespawnPlayerSlope = 0.15f;
+    UPROPERTY(Config, EditAnywhere, Category="Pilot Creature Respawn", meta=(ClampMin="0.35", ClampMax="0.35", ToolTip="Shortest player-count factor; adopted at zone start."))
+    float RespawnPlayerFloor = 0.35f;
+    UPROPERTY(Config, EditAnywhere, Category="Pilot Creature Respawn", meta=(ClampMin="0.10", ClampMax="0.10", ToolTip="Uniform timer jitter fraction; adopted at zone start."))
+    float RespawnJitter = 0.10f;
     UPROPERTY(Config, EditAnywhere, Category="Pilot Boar AI", meta=(ClampMin="20.0", ClampMax="100.0", Units="m"))
     float BoarLeashRadiusMetres = 60.0f;
     UPROPERTY(Config, EditAnywhere, Category="Pilot Boar AI", meta=(ClampMin="60.0", ClampMax="360.0", Units="deg"))
