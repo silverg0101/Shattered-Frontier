@@ -1505,7 +1505,7 @@ def worker():
                     threading.Thread(target=run_image, args=(jid,), daemon=True).start()
                     continue
                 # Motion and detector jobs run Blender and the tracker over SSH; they need no Trellis2 nodes.
-                over_ssh = kind in ("motion", "detector")
+                over_ssh = kind in ("motion", "detector", "curate")
                 fits = ((lambda h, st: h.get("kind") == "ssh") if over_ssh else (lambda h, st: st["mvadapter"]) if multi
                         else (lambda h, st: st["trellis"]))
                 host = next((h for h in free if (st := host_status(h))["ok"] and not st["busy"] and fits(h, st)), None)
@@ -1514,7 +1514,8 @@ def worker():
                     break
                 free.remove(host)
                 update_job(jid, status="running", host=host["name"], started=time.time(), note="")
-                run = {"motion": run_motion, "detector": run_detector, "image": run_image}.get(kind, run_job)
+                run = {"motion": run_motion, "detector": run_detector, "image": run_image,
+                       "curate": creature.run_curate}.get(kind, run_job)
                 threading.Thread(target=run, args=(jid, host), daemon=True).start()
         except Exception:
             traceback.print_exc()
@@ -2328,6 +2329,12 @@ class Handler(BaseHTTPRequestHandler):
                         raise ValueError("pick an unrigged .glb model")
                     rig_graph(params, "x", "x")
                     src = m
+                elif kind == "curate":  # fill the motion library for one Zoo-300K animal
+                    ids = {a["id"] for a in creature.load_catalogue(DATA / "MotionLibrary")}
+                    if params.get("animal") not in ids:
+                        raise ValueError("pick an animal from /api/animals")
+                    params = {"animal": params["animal"]}
+                    src = f"{params['animal']} curation"
                 else:
                     raise ValueError("unknown job type")
                 name = (b.get("name") or Path(src).stem + (" detector" if kind == "detector" else "")).strip()[:80]
@@ -2675,6 +2682,37 @@ def check():
     assert top[0]["id"] == "Rat" and top[0]["score"] >= 0.5 and len(top) <= 5
     assert creature.match("teapot", cat)[0]["score"] < 0.5
     assert creature.match("Rat", cat)[0]["score"] == 1.0
+    # curation: a variant with a 10-frame freeze is rejected, the moving one kept; the loop cut closes on frame 0
+    import importlib.util, zipfile
+    assert creature.ensure_curated and creature.run_curate
+    if not importlib.util.find_spec("numpy"):  # zoo_curate runs on the GPU host; the server image has no numpy
+        print("check ok (zoo_curate skipped: no numpy)")
+        return
+    spec = importlib.util.spec_from_file_location("zoo_curate", MOTION_DIR / "zoo_curate.py")
+    zc = importlib.util.module_from_spec(spec); spec.loader.exec_module(zc)
+    head = ("HIERARCHY\nROOT Hips\n{\nOFFSET 0 5 0\nCHANNELS 6 Xposition Yposition Zposition Zrotation Yrotation Xrotation\n"
+            "JOINT Spine\n{\nOFFSET 0 0 4\nCHANNELS 3 Zrotation Yrotation Xrotation\nJOINT Leg\n{\nOFFSET 0 -5 0\n"
+            "CHANNELS 3 Zrotation Yrotation Xrotation\nEnd Site\n{\nOFFSET 0 -1 0\n}\n}\n}\n}\n")
+    def bvh(frozen):  # 40 frames at 30 fps on a 20-frame sine: joints 0.4 deg (0.08 deg/frame), the root pitching 10 deg so
+        # the paw lifts; 0.5 cm/frame travel
+        w = [math.sin(2 * math.pi * (10 if frozen and 10 <= f < 20 else f) / 20) for f in range(40)]
+        rows = [[0.5 * f, 5, 0, 0, 0, 10 * w[f]] + [0.4 * w[f]] * 6 for f in range(40)]
+        return head + "MOTION\nFrames: 40\nFrame Time: 0.033333\n" + "\n".join(" ".join(map(str, r)) for r in rows) + "\n"
+    joints, frames, _, _ = zc.parse(bvh(True))
+    assert [j["name"] for j in joints] == ["Hips", "Spine", "Leg", "Leg_end"] and frames.shape == (40, 12)
+    assert zc.score(joints, frames, True) is None and zc.score(*zc.parse(bvh(False))[:2], True)
+    assert zc.motion_of("Rat/bvh/Scamper_in_betweening_edit_Scamper_Eat_0001_seed10_Rat-Eat_3.bvh") == "Scamper"
+    with tempfile.TemporaryDirectory() as td:
+        with zipfile.ZipFile(f"{td}/Test.zip", "w") as z:
+            z.writestr("Test/bvh/Walk_expansion_edit_Walk_Eat_seed10_0.bvh", bvh(True))
+            z.writestr("Test/bvh/Walk_in_betweening_edit_Walk_Eat_seed10_1.bvh", bvh(False))
+            z.writestr("Test/bvh/Walk_expansion_edit_Walk_Eat_seed10_0.npy", b"broken")
+        a = zc.curate(f"{td}/Test.zip", f"{td}/out")
+        (clip,) = a["clips"]
+        assert clip["name"] == "Walk" and clip["loop"] and clip["source"].endswith("_1.bvh") and clip["frames"] >= 15
+        assert abs(clip["travel_cm_s"] - 15) < 0.1 and a["fps"] == 30 and a["rest"]["Leg_end"] == [0, -1, 4]
+        f = zc.parse(Path(f"{td}/out/clips/Walk.bvh").read_text())[1]
+        assert max(abs(f[0] - f[-1])) < 1e-6 and len(f) == clip["frames"]
     print("check ok")
 
 if __name__ == "__main__":
