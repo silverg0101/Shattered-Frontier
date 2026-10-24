@@ -909,6 +909,17 @@ async function renderSettings() {
     <td>${direct ? '<span class="muted">ComfyUI log</span>' : inp('unit', h.unit)}</td>
     <td><button class="btn icon sm danger" data-rm title="Remove">×</button></td></tr>`;
   };
+  const brow = (b, active) => {
+    const mcp = b.mode === 'mcp', inp = (f, v, ph = '') => `<input type="text" data-b="${f}" value="${esc(v ?? '')}" placeholder="${ph}">`;
+    return `<tr><td><input type="radio" name="bactive" data-bactive ${active ? 'checked' : ''}></td>
+      <td>${inp('name', b.name)}</td>
+      <td><select data-b="mode"><option value="python" ${mcp ? '' : 'selected'}>Python-Direct</option><option value="mcp" ${mcp ? 'selected' : ''}>MCP</option></select></td>
+      <td>${mcp ? inp('url', b.url, 'http://192.168.x.x:8000/') : inp('ssh', b.ssh, 'user@host')}</td>
+      <td>${mcp ? '<span class="muted">the GUI Blender</span>' : inp('blender', b.blender)}</td>
+      <td style="width:70px">${mcp ? '<span class="muted">—</span>' : inp('gpu', b.gpu, 'job')}</td>
+      <td><button class="btn sm" data-btest>Test</button><div data-bres class="muted" style="font-size:12px;margin-top:4px;max-width:260px"></div></td>
+      <td><button class="btn icon sm danger" data-brm title="Remove">×</button></td></tr>`;
+  };
   $('#view').innerHTML = `
     <div class="eyebrow fade">Configuration</div><h2 class="fade" style="--i:1">Settings</h2>
     <div class="card fade" style="--i:2;margin-top:22px">
@@ -937,6 +948,13 @@ async function renderSettings() {
         <tbody id="hrows">${s.hosts.map(row).join('')}</tbody></table>
       <div id="hstat" class="muted" style="font-size:12px;margin-top:10px"></div>
     </div>
+    <div class="card fade" style="--i:3;margin-top:18px;overflow-x:auto">
+      <div style="display:flex;align-items:center;gap:10px"><h3>Blender host</h3><span class="muted" style="font-size:12px">Where jobs run Blender (motion renders and bakes, detector renders). Python-Direct runs it headless over SSH; MCP drives a visible Blender through its MCP server so you can watch, one job at a time.</span>
+        <button class="btn sm" id="badd" style="margin-left:auto">+ Add host</button></div>
+      <table class="hosts"><thead><tr><th>Active</th><th>Name</th><th>Mode</th><th>SSH target / MCP URL</th><th>Blender path</th><th>GPU</th><th></th><th></th></tr></thead>
+        <tbody id="brows">${s.blender_hosts.map(b => brow(b, b.name === s.blender_active)).join('')}</tbody></table>
+      <div class="muted" style="font-size:12px;margin-top:8px">MCP runs any Python in that Blender: only a LAN or tailnet IP is accepted, e.g. <code>http://192.168.50.92:8000/</code> from <code>blender-mcp --transport http --host &lt;that IP&gt; --port 8000</code>. A blank GPU uses the job's GPU. Save settings to make a change take effect; jobs read the active host when they start.</div>
+    </div>
     <div style="margin-top:18px;display:flex;justify-content:flex-end"><button class="btn primary" id="save">Save settings</button></div>
     <div class="card fade" style="--i:4;margin-top:18px" id="codex"></div>
     <div class="card fade" style="--i:5;margin-top:18px" id="anthropic"></div>`;
@@ -948,7 +966,27 @@ async function renderSettings() {
     detector_auto_train: $('#s_dauto').checked,
     detector_limits: Object.fromEntries([...document.querySelectorAll('[data-lim]')].map(el => [el.dataset.lim, +el.value])),
     hosts: [...document.querySelectorAll('#hrows tr')].map(rowData),
+    blender_hosts: [...document.querySelectorAll('#brows tr')].map(browData),
+    blender_active: browData(document.querySelector('#brows tr:has([data-bactive]:checked)') || document.querySelector('#brows tr') || document.body).name,
   });
+  const browData = tr => {
+    const v = f => tr.querySelector(`[data-b="${f}"]`)?.value.trim() ?? '';
+    return v('mode') === 'mcp' ? { name: v('name'), mode: 'mcp', url: v('url') }
+      : { name: v('name'), mode: 'python', ssh: v('ssh'), blender: v('blender'), gpu: v('gpu') === '' ? null : +v('gpu') };
+  };
+  const bwire = () => {
+    document.querySelectorAll('[data-brm]').forEach(b => b.onclick = () => b.closest('tr').remove());
+    document.querySelectorAll('[data-b="mode"]').forEach(sel => sel.onchange = () => {
+      const tr = sel.closest('tr'); tr.outerHTML = brow(browData(tr), tr.querySelector('[data-bactive]').checked); bwire();
+    });
+    document.querySelectorAll('[data-btest]').forEach(b => b.onclick = async () => {
+      const out = b.closest('tr').querySelector('[data-bres]'); out.textContent = 'Testing…';
+      try { const r = await post('/api/blender/test', browData(b.closest('tr'))); out.innerHTML = `<span class="pill ${r.ok ? 'done' : 'failed'}">${r.ok ? 'ok' : 'failed'}</span> ${esc(r.detail)}`; }
+      catch (e) { out.textContent = ''; fail(e); }
+    });
+  };
+  bwire();
+  $('#badd').onclick = () => { $('#brows').insertAdjacentHTML('beforeend', brow({ name: 'Owner PC', mode: 'mcp', url: 'http://192.168.50.92:8000/' }, false)); bwire(); };
   const rowData = tr => Object.fromEntries([...tr.querySelectorAll('[data-f]')].map(el =>
       [el.dataset.f, el.type === 'checkbox' ? el.checked : el.type === 'number' ? +el.value : el.value.trim()]));
   const wire = () => {

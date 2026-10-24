@@ -4,7 +4,7 @@ Stdlib plus Pillow (for turnaround sheets). Assets live under ASSET_ROOT, the qu
 GPU hosts are reached over SSH (their ComfyUI listens on 127.0.0.1 only).
 Run `python app.py --check` for the self-check.
 """
-import array, base64, glob, hashlib, io, json, math, mimetypes, os, random, re, shlex, shutil, sqlite3, struct, subprocess, sys, threading, time, traceback, uuid, urllib.error, urllib.parse, urllib.request
+import array, base64, glob, hashlib, io, ipaddress, json, math, mimetypes, os, random, re, shlex, shutil, sqlite3, struct, subprocess, sys, threading, time, traceback, uuid, urllib.error, urllib.parse, urllib.request
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
@@ -16,6 +16,7 @@ STATIC = Path(__file__).with_name("static")
 IMAGE_EXT = {".png", ".jpg", ".jpeg", ".webp", ".gif", ".bmp"}
 MODEL_EXT = {".glb", ".gltf", ".obj", ".fbx", ".stl", ".ply", ".usdz", ".3mf"}
 VIDEO_EXT = {".mp4", ".webm", ".mov"}
+DEFAULT_BLENDER = "~/blender/blender-4.2.3-linux-x64/blender"
 
 DEFAULT_SETTINGS = {
     "output_folder": "Generated",
@@ -35,6 +36,12 @@ DEFAULT_SETTINGS = {
     "detector_limits": {"median": 2.0, "p95": 5.0, "worst_joint": 6.0, "pair_spacing": 3.0},
     "detector_usable_x": 2.0,
     "detector_auto_train": True,
+    # Where jobs run Blender (Settings > Blender host). Python-Direct runs `blender -b -P` over ssh, on the job's GPU
+    # host in place when it is the same machine (gpu None: the job's GPU); MCP sends the same scripts to a visible
+    # Blender through its MCP server, so the owner can watch. A job reads the active host when it starts.
+    "blender_hosts": [{"name": "RA-SIEMS", "mode": "python", "ssh": "raadmin@192.168.0.107", "blender": DEFAULT_BLENDER,
+                       "gpu": None}],
+    "blender_active": "RA-SIEMS",
 }
 # key: (unit, type, min, max). detector_limits are the exam's "good" bar in % of the model's height, each 0.5-20;
 # "usable" is within detector_usable_x times them; auto-train trains a detector when a model is rigged.
@@ -404,7 +411,6 @@ def coerce(key, kind, extra, v):
 # front and side combine into 3D (both measure height, so their agreement scores the take), and Blender
 # bakes the result onto the skeleton.
 MOTION_DIR = Path(__file__).with_name("motion")
-DEFAULT_BLENDER = "~/blender/blender-4.2.3-linux-x64/blender"
 ACTIONS = {"walk": "walks slowly on the spot, as if on a treadmill, in a steady looping walk cycle"}
 LOOPING = {"walk"}  # actions cut to their best loop: the video opens on the rest pose, then sets off
 MOTION_PROMPT = (
@@ -526,6 +532,13 @@ def save_settings(s):
                                 for k, v in DEFAULT_SETTINGS["detector_limits"].items()}
     if "detector_auto_train" in s:
         s["detector_auto_train"] = bool(s["detector_auto_train"])
+    if "blender_hosts" in s or "blender_active" in s:
+        old = get_settings()
+        s["blender_hosts"] = [blender_row(b) for b in s.get("blender_hosts", old["blender_hosts"])]
+        names = [b["name"] for b in s["blender_hosts"]]
+        s["blender_active"] = s.get("blender_active", old["blender_active"])
+        if len(set(names)) != len(names) or s["blender_active"] not in names:
+            raise ValueError("Blender hosts need unique names, and the active one must be among them")
     with db() as c:
         c.execute("INSERT OR REPLACE INTO settings VALUES ('all', ?)", (json.dumps(s),))
 
@@ -978,6 +991,196 @@ def host_tools(jid, host):
             if ln.startswith(("render device:", "track device:", "train device:", "detect device:")))
     return work, gpu, py, blender, step, device_lines
 
+# ---------------------------------------------------------------- Blender host
+BLENDER_MODES = {"python": "Python-Direct", "mcp": "MCP"}
+JOB_BLENDER = {}
+BLENDER_MCP_LOCK = threading.Lock()  # one GUI Blender: MCP steps run one at a time, other jobs wait here
+# ponytail: one lock for every MCP host; per URL if two GUI Blenders are ever used
+
+def blender_row(b):
+    """A Blender host from Settings, checked. MCP runs any Python in the owner's Blender, so its URL must be a LAN or
+    tailnet IP: never a public address or a name that could resolve to one."""
+    name, mode = str(b.get("name", "")).strip(), b.get("mode")
+    if not name or mode not in BLENDER_MODES:
+        raise ValueError(f"a Blender host needs a name and a mode ({', '.join(BLENDER_MODES)})")
+    if mode == "mcp":
+        url = str(b.get("url", "")).strip()
+        u = urllib.parse.urlparse(url)
+        try:
+            ip = ipaddress.ip_address(u.hostname or "")
+        except ValueError:
+            ip = None
+        if u.scheme != "http" or not ip or ip.is_global or ip.is_loopback or ip.is_unspecified or not u.port:
+            raise ValueError(f"{name}: the MCP URL must be http://<LAN or tailnet IP>:<port>/, not {url!r}")
+        return {"name": name, "mode": mode, "url": url}
+    gpu = b.get("gpu")
+    gpu = None if gpu in (None, "") else int(gpu)
+    if not re.fullmatch(r"[\w.-]+@[\w.-]+", str(b.get("ssh", ""))) or not re.fullmatch(r"[\w~./-]+", str(b.get("blender", ""))) \
+            or gpu is not None and not 0 <= gpu <= 15:
+        raise ValueError(f"{name}: Python-Direct needs an ssh target (user@host), a Blender path and a GPU index 0-15 or blank")
+    return {"name": name, "mode": mode, "ssh": b["ssh"], "blender": b["blender"], "gpu": gpu}
+
+def blender_host():
+    s = get_settings()
+    return next(b for b in s["blender_hosts"] if b["name"] == s["blender_active"])
+
+def job_blender(jid):
+    """The Blender host a job uses: the active one when the job first asks, logged once."""
+    if jid not in JOB_BLENDER:
+        b = JOB_BLENDER[jid] = blender_host()
+        GPU_NOTES.setdefault(jid, []).append(f"[asset-manager] Blender: {b['name']} ({BLENDER_MODES[b['mode']]})")
+    return JOB_BLENDER[jid]
+
+def mcp(url, calls, timeout=60):
+    """[(method, params)] in one MCP session over streamable HTTP -> their results."""
+    head = {"Content-Type": "application/json", "Accept": "application/json, text/event-stream"}
+    def post(msg):
+        req = urllib.request.Request(url, json.dumps(msg).encode(), head)
+        try:
+            with urllib.request.urlopen(req, timeout=timeout) as r:
+                if r.headers.get("Mcp-Session-Id"):  # stateless servers send none
+                    head.setdefault("Mcp-Session-Id", r.headers["Mcp-Session-Id"])
+                body = r.read().decode(errors="replace")
+        except urllib.error.HTTPError as e:
+            raise RuntimeError(f"MCP {e.code}: {e.read().decode(errors='replace')[:300]}")
+        except OSError as e:
+            raise RuntimeError(f"could not reach the MCP server at {url} ({e})")
+        if "id" not in msg:
+            return None
+        for chunk in [body] + [ln[5:] for ln in body.splitlines() if ln.startswith("data:")]:  # JSON or SSE
+            try:
+                m = json.loads(chunk)
+            except ValueError:
+                continue
+            if isinstance(m, dict) and m.get("id") == msg["id"]:
+                if "error" in m:
+                    raise RuntimeError(f"MCP: {m['error'].get('message')}")
+                return m["result"]
+        raise RuntimeError("MCP: no reply")
+    post({"jsonrpc": "2.0", "id": 0, "method": "initialize", "params": {
+        "protocolVersion": "2025-06-18", "capabilities": {}, "clientInfo": {"name": "asset-forge", "version": "1"}}})
+    post({"jsonrpc": "2.0", "method": "notifications/initialized"})
+    return [post({"jsonrpc": "2.0", "id": i, "method": m, "params": p}) for i, (m, p) in enumerate(calls, 1)]
+
+def blender_code(url, code, timeout=60):
+    """Run Python in an MCP host's Blender (execute_blender_code) -> the dict it assigned to `result`."""
+    r = mcp(url, [("tools/call", {"name": "execute_blender_code", "arguments": {"code": code}})], timeout)[0]
+    text = "".join(c.get("text", "") for c in r.get("content", []) if c.get("type") == "text")
+    data = r.get("structuredContent")
+    if data is None:
+        try:
+            data = json.loads(text)
+        except ValueError:
+            data = None
+    if r.get("isError") or not isinstance(data, dict) or data.get("status") == "error":
+        raise RuntimeError(f"Blender: {(data or {}).get('message') or text[-1500:] or 'no result'}")
+    while isinstance(data, dict) and "status" not in data and list(data) == ["result"]:  # a wrapped tool result
+        data = data["result"]
+    return data.get("result", data) if "status" in data else data
+
+def blender_test(b):
+    """Python-Direct: `blender --version` over ssh. MCP: the server's tools and a trivial bpy call."""
+    try:
+        b = blender_row(b)
+        if b["mode"] == "python":
+            out = ssh(b, f"{b['blender']} --version", timeout=60).decode(errors="replace")
+            return {"ok": True, "detail": out.strip().splitlines()[0]}
+        tools = mcp(b["url"], [("tools/list", {})], 30)[0].get("tools", [])
+        if "execute_blender_code" not in {t.get("name") for t in tools}:
+            raise RuntimeError(f"the server has {len(tools)} tools but no execute_blender_code")
+        r = blender_code(b["url"], "import bpy\nresult = {'version': bpy.app.version_string, 'background': bpy.app.background}", 60)
+        return {"ok": True, "detail": f"Blender {r.get('version')}{' (background)' if r.get('background') else ''}, {len(tools)} tools"}
+    except Exception as e:
+        return {"ok": False, "detail": str(e)[-300:]}
+
+# Runs a motion script in a GUI Blender through MCP. The server waits at most 5 minutes for one call and a long
+# script holds Blender's main thread, so the call only unpacks the files and schedules the script on a timer; polls
+# collect the result from bpy.app.driver_namespace (a poll that times out while the script runs just tries again).
+MCP_START = """
+import base64, contextlib, io, os, shutil, sys, tarfile, tempfile, traceback, runpy, bpy
+d = tempfile.mkdtemp(prefix="forge-")
+tarfile.open(fileobj=io.BytesIO(base64.b64decode(PACK))).extractall(d, filter="data")
+def go():
+    out, cwd, argv, err = io.StringIO(), os.getcwd(), sys.argv, None
+    sys.argv = [bpy.app.binary_path, "-b", "-P", SCRIPT, "--", *ARGS]
+    os.chdir(d); sys.path.insert(0, d)
+    try:
+        with contextlib.redirect_stdout(out):
+            runpy.run_path(SCRIPT, run_name="__main__")
+    except SystemExit as e:
+        err = None if e.code in (None, 0) else f"exit {e.code}"
+    except Exception:
+        err = traceback.format_exc()[-1500:]
+    finally:
+        os.chdir(cwd); sys.argv = argv; sys.path.remove(d)
+        for k, m in list(sys.modules.items()):
+            if (getattr(m, "__file__", "") or "").startswith(d):
+                del sys.modules[k]
+    buf = io.BytesIO()
+    with tarfile.open(fileobj=buf, mode="w") as t:
+        for o in OUT:
+            if os.path.exists(os.path.join(d, o)):
+                t.add(os.path.join(d, o), o)
+    shutil.rmtree(d, ignore_errors=True)
+    bpy.app.driver_namespace.setdefault("forge", {})[TOKEN] = {
+        "stdout": out.getvalue()[-20000:], "error": err, "pack": base64.b64encode(buf.getvalue()).decode()}
+bpy.app.timers.register(go, first_interval=0.2)
+result = {"started": TOKEN}
+"""
+MCP_POLL = "import bpy\nresult = bpy.app.driver_namespace.get('forge', {}).pop(TOKEN, None) or {'running': True}"
+
+def run_blender(jid, host, script, args, inputs, outputs, timeout):
+    """Run motion/<script> in Blender for a job whose files sit in its folder on its GPU `host` -> Blender's output.
+    Python-Direct on the job's own host runs in place, as before; another host gets the scripts and `inputs` (paths
+    in the job folder) copied over, and `outputs` (files or folders) copied back."""
+    bh, q, work = job_blender(jid), shlex.quote, f"{host['comfy_dir']}/input/sfam/{jid}"
+    names = [f.name for f in MOTION_DIR.glob("*.py")] + list(inputs)
+    gpu = bh.get("gpu")
+    env = f"CUDA_DEVICE_ORDER=PCI_BUS_ID CUDA_VISIBLE_DEVICES={int(host['gpu'] if gpu is None else gpu)}"
+    log = q(f"{script}.log")
+    run = (f"{env} {bh.get('blender')} -b -P {q(script)} -- {' '.join(map(q, args))} > {log} 2>&1"
+           f" || {{ tail -20 {log} >&2; exit 1; }}; cat {log}")
+    if bh["mode"] == "python" and bh["ssh"] == host.get("ssh"):
+        return ssh_step(host, jid, work, f"cd {q(work)} && {run}", timeout)
+    pack = ssh(host, f"tar -C {q(work)} -cf - {' '.join(map(q, names))}", timeout=900)
+    if bh["mode"] == "python":
+        d = ssh(bh, "mktemp -d").decode().strip()
+        try:
+            ssh(bh, f"tar -C {q(d)} -xf -", data=pack, timeout=900)
+            out = ssh_step(bh, jid, d, f"cd {q(d)} && {run}", timeout)
+            back = ssh(bh, f"cd {q(d)} && tar -cf - {' '.join(map(q, outputs))}", timeout=900)
+        finally:
+            ssh(bh, f"rm -rf {q(d)}")
+    else:
+        token = f"{jid}-{uuid.uuid4().hex[:8]}"
+        consts = {"PACK": base64.b64encode(pack).decode(), "SCRIPT": script, "ARGS": list(args), "OUT": list(outputs), "TOKEN": token}
+        head = "".join(f"{k} = {json.dumps(v)}\n" for k, v in consts.items())
+        if not BLENDER_MCP_LOCK.acquire(blocking=False):
+            update_job(jid, note=f"waiting for Blender on {bh['name']} (MCP runs one job at a time)")
+            BLENDER_MCP_LOCK.acquire()
+        try:
+            update_job(jid, note=f"{script} in Blender on {bh['name']} (MCP)")
+            blender_code(bh["url"], head + MCP_START, 330)
+            end, r = time.time() + timeout, {"running": True}
+            while r.get("running"):
+                if job_row(jid)["status"] == "cancelling":
+                    raise InterruptedError  # ponytail: Blender finishes the script anyway; its result is dropped
+                if time.time() > end:
+                    raise RuntimeError(f"{script} in Blender on {bh['name']} took over {timeout // 60} minutes")
+                time.sleep(3)
+                try:
+                    r = blender_code(bh["url"], f"TOKEN = {json.dumps(token)}\n" + MCP_POLL, 330)
+                except RuntimeError as e:
+                    if "timed out" not in str(e):
+                        raise
+        finally:
+            BLENDER_MCP_LOCK.release()
+        if r.get("error"):
+            raise RuntimeError(f"{script} in Blender on {bh['name']}: {r['error']}")
+        out, back = r["stdout"].encode(), base64.b64decode(r["pack"])
+    ssh(host, f"tar -C {q(work)} -xf -", data=back, timeout=900)
+    return out
+
 def ssh_step(host, jid, work, cmd, timeout):
     """ssh() for a long step (detector training, its exam) that a cancel stops at once: the command runs in its
     own process group on the host, and a cancel kills the group rather than waiting hours for it to end."""
@@ -1031,9 +1234,8 @@ def train_detector(host, jid, src, model, turn, opts):
     s, q, lib = get_settings(), shlex.quote, detector_dir(src, turn)
     seed = opts["seed"] if opts["seed"] >= 0 else random.randint(0, 99999)
     step(f"rendering {opts['images']} training images for this model's joint detector")
-    device_lines(ssh_step(host, jid, work, f"cd {q(work)} && {gpu} {blender} -b -P synth_render.py -- {model} synth"
-                          f" {opts['images']} --turn {turn} --seed {seed} > synth.log 2>&1 || {{ tail -5 synth.log >&2;"
-                          f" exit 1; }}", 3 * 3600), "detector renders")
+    device_lines(run_blender(jid, host, "synth_render.py", [model, "synth", str(opts["images"]), "--turn", str(turn),
+                                                         "--seed", str(seed)], [model], ["synth"], 3 * 3600), "detector renders")
     cat = json.loads(ssh(host, f"cat {q(work + '/synth/keypoints.json')}")).get("category")
     warm = warm_source(lib.parent, s, cat, opts["backbone"], lib.name)
     if warm:
@@ -1092,6 +1294,7 @@ def run_detector(jid, host):
     try:
         src = safe_path(params["model"])
         opts = detector_params({k: v for k, v in params.items() if k != "model"}, src)
+        job_blender(jid)
         step("uploading the model")
         model = upload_motion(host, jid, src)
         train_detector(host, jid, src, model, opts["turn"], opts)
@@ -1104,6 +1307,7 @@ def run_detector(jid, host):
         update_job(jid, status="failed", error=str(e)[-1000:], note="", finished=time.time())
     finally:
         update_job(jid, log="\n".join(GPU_NOTES.pop(jid, []) + LIVE.pop(jid, {}).get("log", [])[-100:]))
+        JOB_BLENDER.pop(jid, None)
         try:
             cleanup(host, [str(jid)], [])
         except Exception:
@@ -1125,11 +1329,12 @@ def run_motion(jid, host):
     log = []
     try:
         src = safe_path(p["model"])
+        job_blender(jid)
         step("uploading the model")
         model = upload_motion(host, jid, src)
         step("rendering the front and side views")
-        device_lines(ssh(host, f"cd {q(work)} && {gpu} {blender} -b -P render_views.py -- {model} . --turn {p['turn']}",
-                         timeout=900), "render")
+        device_lines(run_blender(jid, host, "render_views.py", [model, ".", "--turn", str(p["turn"])], [model],
+                                 ["views.png", "joints.json"], 900), "render")
         ok, line = gpu_check(host)  # the video runs in the host's ComfyUI: make sure it sits on this host's GPU
         GPU_NOTES[jid].append(line)
         if not ok:
@@ -1151,9 +1356,10 @@ def run_motion(jid, host):
             d, video = f"take{i}", f"{host['comfy_dir']}/output/{v}"
             device_lines(ssh(host, f"cd {q(work)} && {gpu} {py} track_solve.py {q(video)} joints.json {d}"
                                    f"{' --detector ' + q(det) if det else ''}"
-                                   f"{' --loop' if p['action'] in LOOPING else ''}"
-                                   f" && {gpu} {blender} -b -P bake.py -- {model} joints.json {d}/motion.json {d}/anim.glb",
+                                   f"{' --loop' if p['action'] in LOOPING else ''}",
                              timeout=1800), f"take {i} tracking")
+            device_lines(run_blender(jid, host, "bake.py", [model, "joints.json", f"{d}/motion.json", f"{d}/anim.glb"],
+                                     [model, "joints.json", f"{d}/motion.json"], [f"{d}/anim.glb"], 900), f"take {i} bake")
             m = json.loads(ssh(host, f"{py} -c \"import json; m=json.load(open('{work}/{d}/motion.json')); m.pop('positions'); print(json.dumps(m))\""))
             takes.append((m["score"], m["height_error_pct"], i, video))
         step("saving")
@@ -1186,6 +1392,7 @@ def run_motion(jid, host):
         update_job(jid, status="failed", error=str(e)[-1000:], note="", finished=time.time())
     finally:
         update_job(jid, log="\n".join(GPU_NOTES.pop(jid, []) + log + LIVE.pop(jid, {}).get("log", [])[-100:]))
+        JOB_BLENDER.pop(jid, None)
         try:
             cleanup(host, [str(jid)], [str(jid)])
         except Exception:
@@ -2022,6 +2229,8 @@ class Handler(BaseHTTPRequestHandler):
             if method == "PUT" and p == "/api/settings":
                 save_settings(self.body())
                 return self.send(get_settings())
+            if method == "POST" and p == "/api/blender/test":  # a Blender host row, saved or not
+                return self.send(blender_test(self.body()))
             if method == "GET" and p == "/api/hosts":
                 return self.send([{**h, **host_status(h)} for h in get_settings()["hosts"]])
             if method == "POST" and p == "/api/mkdir":
@@ -2157,7 +2366,80 @@ def _test_glb(path):
     body = struct.pack("<I4s", len(js), b"JSON") + js + struct.pack("<I4s", len(binary), b"BIN\0") + binary
     path.write_bytes(struct.pack("<4sII", b"glTF", 2, 12 + len(body)) + body)
 
+def check_blender_mcp():
+    """A fake MCP server that runs execute_blender_code against a stub bpy, driving MCP_START and MCP_POLL the way
+    run_blender does: files in, the script run with its argv, its print and output file back."""
+    import tarfile, tempfile, types
+    from http.server import ThreadingHTTPServer
+    stub = types.ModuleType("bpy")
+    stub.app = types.SimpleNamespace(binary_path="blender", driver_namespace={}, version_string="5.1.0", background=False,
+                                     timers=types.SimpleNamespace(register=lambda fn, first_interval=0: fn()))
+    class Fake(BaseHTTPRequestHandler):
+        def log_message(self, *a):
+            pass
+        def do_POST(self):
+            m = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
+            if "id" not in m:
+                self.send_response(202); self.end_headers(); return
+            res = {"protocolVersion": "2025-06-18", "capabilities": {}, "serverInfo": {"name": "fake", "version": "1"}}
+            if m["method"] == "tools/list":
+                res = {"tools": [{"name": "execute_blender_code"}]}
+            elif m["method"] == "tools/call":
+                assert self.headers["Mcp-Session-Id"] == "s1"
+                g, saved = {}, sys.modules.get("bpy")
+                sys.modules["bpy"] = stub
+                try:
+                    exec(m["params"]["arguments"]["code"], g)
+                    out = {"status": "ok", "result": g["result"]}
+                except Exception as e:
+                    out = {"status": "error", "message": str(e)}
+                finally:
+                    sys.modules.pop("bpy") if saved is None else sys.modules.__setitem__("bpy", saved)
+                res = {"content": [{"type": "text", "text": json.dumps(out)}], "structuredContent": out, "isError": False}
+            b = f"event: message\ndata: {json.dumps({'jsonrpc': '2.0', 'id': m['id'], 'result': res})}\n\n".encode()
+            self.send_response(200)
+            self.send_header("Content-Type", "text/event-stream"); self.send_header("Mcp-Session-Id", "s1")
+            self.send_header("Content-Length", str(len(b))); self.end_headers(); self.wfile.write(b)
+    srv = ThreadingHTTPServer(("127.0.0.1", 0), Fake)
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
+    url = f"http://127.0.0.1:{srv.server_port}/mcp"
+    try:
+        assert blender_code(url, "result = {'v': 2}") == {"v": 2}
+        try:
+            blender_code(url, "raise ValueError('boom')"); raise AssertionError("error passed")
+        except RuntimeError as e:
+            assert "boom" in str(e)
+        buf = io.BytesIO()
+        with tarfile.open(fileobj=buf, mode="w") as t:
+            data = b"import sys, pathlib\nprint('render device: fake')\npathlib.Path(sys.argv[-1]).write_text(sys.argv[-2])\n"
+            info = tarfile.TarInfo("s.py"); info.size = len(data); t.addfile(info, io.BytesIO(data))
+        consts = {"PACK": base64.b64encode(buf.getvalue()).decode(), "SCRIPT": "s.py", "ARGS": ["hi", "o.txt"],
+                  "OUT": ["o.txt"], "TOKEN": "t1"}
+        assert blender_code(url, "".join(f"{k} = {json.dumps(v)}\n" for k, v in consts.items()) + MCP_START) == {"started": "t1"}
+        r = blender_code(url, 'TOKEN = "t1"\n' + MCP_POLL)
+        assert r["error"] is None and "render device: fake" in r["stdout"], r
+        back = tarfile.open(fileobj=io.BytesIO(base64.b64decode(r["pack"])))
+        assert back.extractfile("o.txt").read() == b"hi"
+        assert blender_code(url, 'TOKEN = "t1"\n' + MCP_POLL) == {"running": True}
+    finally:
+        srv.shutdown()
+
 def check():
+    check_blender_mcp()
+    assert blender_row({"name": "PC", "mode": "mcp", "url": "http://192.168.50.92:8000/", "ssh": "x"}) == \
+        {"name": "PC", "mode": "mcp", "url": "http://192.168.50.92:8000/"}
+    assert blender_row({"name": "T", "mode": "mcp", "url": "http://100.101.2.3:8000/"})["url"]  # tailnet
+    for bad in ("http://8.8.8.8:8000/mcp", "http://example.com:8000/mcp", "http://127.0.0.1:8000/mcp", "https://10.0.0.2:8000/mcp",
+                "http://10.0.0.2/mcp"):
+        try:
+            blender_row({"name": "x", "mode": "mcp", "url": bad}); raise AssertionError(bad)
+        except ValueError:
+            pass
+    assert blender_row(DEFAULT_SETTINGS["blender_hosts"][0]) == DEFAULT_SETTINGS["blender_hosts"][0]
+    try:
+        blender_row({"name": "x", "mode": "python", "ssh": "a@b", "blender": "blender; rm -rf ~"}); raise AssertionError("path")
+    except ValueError:
+        pass
     global ANTHROPIC_KEY
     import tempfile
     real, ANTHROPIC_KEY = ANTHROPIC_KEY, Path(tempfile.mkdtemp()) / "anthropic_key"

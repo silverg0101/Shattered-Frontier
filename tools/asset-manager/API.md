@@ -205,6 +205,13 @@ The library keeps whichever of the new and the earlier detector has the lower ex
 | `backbone` | DINOv2 size: `vitb14` is larger and slower | choice | `vits14`, `vitb14` | `vits14` |
 | `turn` | The `turn` the model's motion jobs use: a detector learns one facing | choice | `0`, `90`, `180`, `-90` | `0` |
 
+**Blender host** (Settings > Blender host; `blender_hosts` and `blender_active` in `/api/settings`): where jobs run Blender, for motion renders and bakes and detector training renders. Each host has a `name` and a `mode`:
+
+- `python` (Python-Direct): `ssh` (`user@host`, the app's SSH key), `blender` (path) and `gpu` (index, or `null` for the job's GPU). It runs `blender -b -P script.py -- args`. When `ssh` is the job's GPU host it runs in place in the job folder, as before; another host gets the scripts and inputs copied over and the outputs copied back.
+- `mcp`: `url`, an MCP server (`blender-mcp --transport http --host <ip> --port 8000`) with the add-on in a visible Blender. The job sends the same scripts and files through `execute_blender_code`, so the owner watches it in the GUI. It runs one step at a time; other jobs wait. Only `http://<LAN or tailnet IP>:<port>/...` is accepted, since the server runs any Python in that Blender.
+
+The default is `RA-SIEMS` in `python` mode. A job reads the active host when it starts and logs `Blender: <name> (<mode>)`. `POST /api/blender/test` with a host row tests it, saved or not: Python-Direct runs `blender --version`; MCP lists the tools and runs a trivial bpy call. It returns `{ok, detail}`. The detector exam still runs Blender on the job's GPU host.
+
 **Anthropic API key** (Settings > Anthropic API key), for Claude API steps on a worker such as rig joint labelling. `POST /api/anthropic` with `{"key": "sk-ant-..."}` stores it; `POST /api/anthropic/clear` removes it; `POST /api/anthropic/test` lists models with it (no tokens used) and adds `ok` and, on a failure, `error`; `GET /api/anthropic` returns only `{"set": true, "last4": "1234"}`. The key is never returned, logged or included in `/api/settings`. It lives in `DATA_DIR/anthropic_key` (mode 600), outside git and the served asset folder. A worker step that needs it runs through `ssh_anthropic(host, cmd)` in `app.py`, which passes the key on ssh's stdin and exports it as `ANTHROPIC_API_KEY` for that command only, so it is never in a command line, job dir or output file.
 
 **Settings** (`GET` / `PUT /api/settings`; `GET /api/schema` lists their bounds under `detector_settings`). Values outside the bounds are clamped:
