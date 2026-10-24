@@ -337,6 +337,8 @@ if (mode.EndsWith("-replay", StringComparison.Ordinal))
         Check(result.QuestAccepted && result.QuestRevision == 1, "Progression restart replay failed.");
         var state = new ProgressPb.Progression.ProgressionClient(channel).GetCharacterState(
             new ProgressPb.GetCharacterStateRequest { CharacterId = "chr_progression" }, headers, deadline: Deadline());
+        Check(state.RestedMinutes >= 118 && state.RestedMinutes <= 121,
+            "Rested pool missing after host restart.");
         Check(state.GatheringSkills.TryGetValue("skill/logging", out var logging) &&
             state.Skills["skill/logging"] == logging && logging is >= 0 and <= 1,
             "Gathering skill missing from durable character state.");
@@ -699,6 +701,45 @@ else if (mode == "progression")
     Code(() => client.ApplyReceipt(request, headers, deadline: Deadline()), StatusCode.FailedPrecondition);
     request.SourceReceiptId = "bad/kind"; request.Kind = "unknown";
     Code(() => client.ApplyReceipt(request, headers, deadline: Deadline()), StatusCode.InvalidArgument);
+    var finalBatch = new ProgressPb.ApplyReceiptRequest { SourceReceiptId = "rest/final/1", Kind = "gather", CharacterId = "chr_progression",
+        ExpectedProgressionRevision = state.ProgressionRevision,
+        Payload = new ProgressPb.ActionPayload { SkillId = "skill/logging", Difficulty = 25, ActionSeconds = 6,
+            Success = true, SessionEnd = true, InRestArea = true } };
+    var ended = client.ApplyReceipt(finalBatch, headers, deadline: Deadline());
+    Check(ended.ProgressionRevision == state.ProgressionRevision + 1 &&
+        client.ApplyReceipt(finalBatch, headers, deadline: Deadline()).Equals(ended),
+        "Final practice closes session and replays atomically.");
+    Code(() => client.EndSession(new ProgressPb.EndSessionRequest { OperationId = "rest/double-end", CharacterId = "chr_progression",
+        ExpectedProgressionRevision = ended.ProgressionRevision, InRestArea = true }, headers, deadline: Deadline()), StatusCode.FailedPrecondition);
+    using (var db = new NpgsqlConnection(connection))
+    {
+        db.Open();
+        using var cmd = new NpgsqlCommand("UPDATE character_state.progression SET state=jsonb_set(jsonb_set(state,'{LastSessionEndAt}',to_jsonb($1::text)),'{LastRestedActiveMinute}',to_jsonb($2::bigint)) WHERE character_id='chr_progression'", db);
+        cmd.Parameters.AddWithValue(DateTimeOffset.UtcNow.AddHours(-4).ToString("O"));
+        cmd.Parameters.AddWithValue(DateTimeOffset.UtcNow.AddHours(-4).ToUnixTimeSeconds() / 60);
+        Check(cmd.ExecuteNonQuery() == 1, "Offline fixture timestamp missing.");
+    }
+    var resumed = client.GetCharacterState(new ProgressPb.GetCharacterStateRequest { CharacterId = "chr_progression" }, headers, deadline: Deadline());
+    Check(resumed.RestedMinutes >= 119 && resumed.RestedMinutes <= 121 && resumed.ProgressionRevision == ended.ProgressionRevision + 1,
+        "Rest pool accrued and exposed on wire.");
+    var reread = client.GetCharacterState(new ProgressPb.GetCharacterStateRequest { CharacterId = "chr_progression" }, headers, deadline: Deadline());
+    Check(reread.ProgressionRevision == resumed.ProgressionRevision && reread.RestedMinutes == resumed.RestedMinutes,
+        "Repeated state read does not accrue twice.");
+    var kill = new ProgressPb.ApplyReceiptRequest { SourceReceiptId = "rest/kill/1", Kind = "defeat", CharacterId = "chr_progression",
+        ExpectedProgressionRevision = resumed.ProgressionRevision,
+        Payload = new ProgressPb.ActionPayload { EnemyLevel = 1, EnemyTierMultiplier = 1, EligiblePartySize = 1 } };
+    var restedReply = client.ApplyReceipt(kill, headers, deadline: Deadline());
+    Check(restedReply.XpGain == 10 && Math.Abs(restedReply.RestedMinutes - (resumed.RestedMinutes - 1)) < 1e-9 &&
+        client.ApplyReceipt(kill, headers, deadline: Deadline()).Equals(restedReply),
+        "Rested XP receipt persists and replays on wire.");
+    var spent = client.GetCharacterState(new ProgressPb.GetCharacterStateRequest { CharacterId = "chr_progression" }, headers, deadline: Deadline());
+    Check(Math.Abs(spent.RestedMinutes - (resumed.RestedMinutes - 1)) < 1e-9,
+        "Rested active minute debit persists on wire.");
+    var end = new ProgressPb.EndSessionRequest { OperationId = "rest/end/empty", CharacterId = "chr_progression",
+        ExpectedProgressionRevision = restedReply.ProgressionRevision };
+    var emptyEnd = client.EndSession(end, headers, deadline: Deadline());
+    Check(emptyEnd.ProgressionRevision == restedReply.ProgressionRevision + 1 &&
+        client.EndSession(end, headers, deadline: Deadline()).Equals(emptyEnd), "Empty final batch closes session and replays.");
 }
 else if (mode == "death")
 {

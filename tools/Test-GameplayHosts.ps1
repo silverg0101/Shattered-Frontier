@@ -1,5 +1,5 @@
 [CmdletBinding()]
-param([Parameter(Mandatory)][string]$EvidenceRoot, [switch]$RecipesOnly, [switch]$AppearanceOnly, [switch]$GatheringOnly)
+param([Parameter(Mandatory)][string]$EvidenceRoot, [switch]$RecipesOnly, [switch]$AppearanceOnly, [switch]$GatheringOnly, [switch]$ProgressionOnly)
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 $repo = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
@@ -72,7 +72,7 @@ try {
     [void](Invoke-Checked 'icacls.exe' @($private,'/inheritance:r','/grant:r',"${account}:(OI)(CI)F"))
     $listener = [Net.Sockets.TcpListener]::new([Net.IPAddress]::Loopback,0); $listener.Start(); $port = $listener.LocalEndpoint.Port; $listener.Stop()
     @{run=$run;data=$data;port=$port} | ConvertTo-Json | Set-Content (Join-Path $private 'owner.json')
-    $projects = $(if ($RecipesOnly -or $AppearanceOnly -or $GatheringOnly) { @('Progression') } else { @('Rewards','Progression','Housing') }) |
+    $projects = $(if ($RecipesOnly -or $AppearanceOnly -or $GatheringOnly -or $ProgressionOnly) { @('Progression') } else { @('Rewards','Progression','Housing') }) |
         ForEach-Object { Join-Path $repo "BackendServices/Gameplay.Host.Tests/$_/$_.Host.Tests.csproj" }
     $buildOutput = (Join-Path $private 'build') + [IO.Path]::DirectorySeparatorChar
     foreach ($project in $projects) {
@@ -101,6 +101,7 @@ try {
     $schemas += Get-Content (Join-Path $repo 'BackendServices/CharacterState.Postgres/Schema.Appearance.sql') -Raw
     $schemas += Get-Content (Join-Path $repo 'BackendServices/CharacterState.Postgres/Schema.GatheringSkills.sql') -Raw
     $schemas += Get-Content (Join-Path $repo 'BackendServices/CharacterState.Postgres/Schema.Death.sql') -Raw
+    $schemas += Get-Content (Join-Path $repo 'BackendServices/CharacterState.Postgres/Schema.Rested.sql') -Raw
     [void](Sql ("SET ROLE gameplay_owner;`n" + ($schemas -join "`n")) "gameplay_$run")
     $migrationConnection = "Host=127.0.0.1;Port=$port;Database=gameplay_$run;Username=fixture_admin;Password=$adminPassword;Pooling=false"
     & (Join-Path $repo 'tools/Invoke-SchemaMigrations.ps1') -Connection $migrationConnection -Schemas inventory,character_state,housing,exchange -Role gameplay_owner -Dotnet $dotnet -Nuget $nuget | Out-Null
@@ -131,6 +132,25 @@ try {
     if (-not $ready) { throw 'Gameplay host readiness timeout.' }
     $results = [Collections.Generic.List[string]]::new()
     $journeyDll = Join-Path $buildOutput 'Progression.Host.Tests.dll'
+    if ($ProgressionOnly) {
+        $currentStep = 'progression wire'
+        $results.Add((Invoke-Checked $dotnet @($journeyDll,'progression') @{
+            GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$connection; SF_GAMEPLAY_TOKEN=$token
+        }))
+        Stop-Process -Id $hostProcess.Id -Force; $hostProcess.WaitForExit(10000) | Out-Null
+        $currentStep = 'progression restart'
+        $hostProcess = Start-Process -FilePath $dotnet -ArgumentList @($hostDll) -PassThru -WindowStyle Hidden -RedirectStandardOutput (Join-Path $private 'host-restart.out') -RedirectStandardError (Join-Path $private 'host-restart.err')
+        $ready = $false
+        for ($i=0; $i -lt 100; $i++) {
+            if ($hostProcess.HasExited) { throw 'Gameplay host exited after progression restart.' }
+            if ((Test-Path (Join-Path $private 'host-restart.out')) -and (Get-Content (Join-Path $private 'host-restart.out') -Raw) -match 'GAMEPLAY_HOST_READY') { $ready = $true; break }
+            Start-Sleep -Milliseconds 100
+        }
+        if (-not $ready) { throw 'Gameplay host progression restart timeout.' }
+        $results.Add((Invoke-Checked $dotnet @($journeyDll,'progression-replay') @{
+            GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$connection; SF_GAMEPLAY_TOKEN=$token
+        }))
+    } else {
     if (-not ($RecipesOnly -or $AppearanceOnly)) {
         $currentStep = 'world slots wire'
         $results.Add((Invoke-Checked $dotnet @($journeyDll,'world-slots') @{
@@ -477,6 +497,7 @@ try {
     }
     }
     }
+    }
     $results | Set-Content (Join-Path $EvidenceRoot 'results.txt')
 }
 catch {
@@ -487,6 +508,11 @@ catch {
         $tail = ((Get-Content $hostError -Tail 12) -join ' ').Replace($adminPassword,'[REDACTED]').Replace($servicePassword,'[REDACTED]')
         if ($token.Length -gt 0) { $tail = $tail.Replace($token,'[REDACTED]') }
         $failure += " Host: $tail"
+    }
+    if ($ProgressionOnly -and (Test-Path (Join-Path $private 'host.out'))) {
+        $tail = ((Get-Content (Join-Path $private 'host.out') -Tail 14) -join ' ').Replace($adminPassword,'[REDACTED]').Replace($servicePassword,'[REDACTED]')
+        if ($token.Length -gt 0) { $tail = $tail.Replace($token,'[REDACTED]') }
+        $failure += " Host log: $tail"
     }
 }
 finally {

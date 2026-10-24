@@ -10,7 +10,15 @@ service Progression {
   rpc ReportDeath(ReportDeathRequest) returns (DeathState);
   rpc ClearDeath(ClearDeathRequest) returns (DeathState);
   rpc LearnRecipe(LearnRecipeRequest) returns (LearnRecipeReply);
+  rpc EndSession(EndSessionRequest) returns (EndSessionReply);
 }
+message EndSessionRequest {
+  string operation_id = 1;
+  string character_id = 2;
+  int64 expected_progression_revision = 3;
+  bool in_rest_area = 4;
+}
+message EndSessionReply { int64 progression_revision = 1; double rested_minutes = 2; }
 message CreateCharacterRequest {
   string character_id = 1;
   optional bytes appearance_packet = 2;
@@ -46,6 +54,9 @@ message ActionPayload {
   int32 enemy_level = 6;
   double enemy_tier_multiplier = 7;
   int32 eligible_party_size = 8;
+  // Final accepted practice receipt may close the session atomically.
+  bool session_end = 9;
+  bool in_rest_area = 10;
 }
 // kind: gather | craft | build | defeat | talk_resident | talk_npc (progress evidence for step_id),
 // or accept | abandon (QST-02; step_id and target_id empty, quantity 0).
@@ -72,6 +83,7 @@ message ApplyReceiptReply {
   repeated GrantedItem granted_items = 11;
   // Why quest evidence was not accepted (duplicate, completed, prerequisite_missing, not_active, ...); empty when accepted.
   string quest_reason = 12;
+  double rested_minutes = 13;
 }
 message GrantedItem {
   string definition_id = 1;
@@ -127,6 +139,7 @@ message CharacterStateReply {
   // Authoritative gathering values after committed harvest receipts.
   map<string, int32> gathering_skills = 15;
   DeathState death = 16;
+  double rested_minutes = 17;
 }
 message QuestState {
   string quest_id = 1;

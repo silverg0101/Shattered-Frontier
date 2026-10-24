@@ -21,7 +21,8 @@ public static class SchemaMigration
                 ("Schema.Recipes.sql", "SELECT version>=4 FROM character_state.schema_version WHERE singleton=true"),
                 ("Schema.Appearance.sql", "SELECT version>=5 FROM character_state.schema_version WHERE singleton=true"),
                 ("Schema.GatheringSkills.sql", "SELECT version>=6 FROM character_state.schema_version WHERE singleton=true"),
-                ("Schema.Death.sql", "SELECT version>=7 FROM character_state.schema_version WHERE singleton=true") },
+                ("Schema.Death.sql", "SELECT version>=7 FROM character_state.schema_version WHERE singleton=true"),
+                ("Schema.Rested.sql", "SELECT version>=8 FROM character_state.schema_version WHERE singleton=true") },
             "housing" => new (string File, string Installed)[] {
                 ("Schema.Gameplay.sql", "SELECT version>=4 FROM housing.schema_version WHERE singleton=true"),
                 ("Schema.Geometry.sql", "SELECT version>=5 FROM housing.schema_version WHERE singleton=true"),

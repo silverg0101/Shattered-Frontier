@@ -28,14 +28,19 @@ public sealed record ProgressionSettings(
     double BaseGainRate = .15, double MaximumGainChance = .9, double AttemptWeightSeconds = 6,
     int FatigueWindowMinutes = 240, int FatigueFreeMinutes = 90, double FatigueFloor = .25,
     int RepetitionWindowMinutes = 60, int GatheringRepeatThreshold = 80, int CraftingRepeatThreshold = 60,
-    int GainWindowMinutes = 60, int ReferenceAttemptsPerHour = 600)
+    int GainWindowMinutes = 60, int ReferenceAttemptsPerHour = 600,
+    int RestedNormalMinutesPerMinute = 4, int RestedAreaMinutesPerMinute = 2,
+    int RestedCapMinutes = 600, double RestedXpMultiplier = 1.5, double RestedGainMultiplier = 1.75)
 {
     public void Validate()
     {
         if (BaseGainRate is < .01 or > .5 || MaximumGainChance is < .1 or > .9 || AttemptWeightSeconds is < 1 or > 60 ||
             FatigueWindowMinutes is < 60 or > 480 || FatigueFreeMinutes < 1 || FatigueFreeMinutes >= FatigueWindowMinutes ||
             FatigueFloor is < .1 or > 1 || RepetitionWindowMinutes is < 10 or > 240 || GatheringRepeatThreshold is < 1 or > 1000 ||
-            CraftingRepeatThreshold is < 1 or > 1000 || GainWindowMinutes is < 10 or > 240 || ReferenceAttemptsPerHour is < 1 or > 2000)
+            CraftingRepeatThreshold is < 1 or > 1000 || GainWindowMinutes is < 10 or > 240 || ReferenceAttemptsPerHour is < 1 or > 2000 ||
+            RestedNormalMinutesPerMinute is < 1 or > 60 || RestedAreaMinutesPerMinute is < 1 or > 60 ||
+            RestedCapMinutes is < 1 or > 1440 || !double.IsFinite(RestedXpMultiplier) || RestedXpMultiplier is < 1 or > 3 ||
+            !double.IsFinite(RestedGainMultiplier) || RestedGainMultiplier is < 1 or > 3)
             throw new ArgumentOutOfRangeException(nameof(ProgressionSettings));
     }
 }
@@ -43,11 +48,13 @@ public sealed record ProgressionSettings(
 public enum ReceiptKind { GatheringHarvest, CraftConvert, EnemyDefeat }
 public sealed record ActionReceipt(string ReceiptId, string CharacterId, ReceiptKind Kind, bool Accepted,
     string? SkillId = null, int Difficulty = 0, double ActionSeconds = 6, ulong ContextHash = 0,
-    bool Success = true, int EnemyLevel = 1, double EnemyTierMultiplier = 1, int EligiblePartySize = 1);
-public sealed record ProgressionResult(bool Applied, int SkillGain, int XpGain, int Level, double GainChance);
+    bool Success = true, int EnemyLevel = 1, double EnemyTierMultiplier = 1, int EligiblePartySize = 1,
+    bool SessionEnd = false, bool InRestArea = false);
+public sealed record ProgressionResult(bool Applied, int SkillGain, int XpGain, int Level, double GainChance, double RestedMinutes = 0);
 public sealed record ProgressionSnapshot(long LifetimeXp, Dictionary<string, int> Skills, ProgressionSettings Settings, string[] Receipts,
     Dictionary<string, long[]> ActiveMinutes, PracticeSnapshot[] Practices, GainSnapshot[] Gains,
-    KnownRecipe[]? KnownRecipes = null);
+    KnownRecipe[]? KnownRecipes = null, double RestedMinutes = 0,
+    DateTimeOffset? LastSessionEndAt = null, bool EndedInRestArea = false, long? LastRestedActiveMinute = null);
 public sealed record KnownRecipe(string RecipeId, string Source, DateTimeOffset LearnedAt);
 public sealed record PracticeSnapshot(DateTimeOffset At, string Skill, ulong Context);
 public sealed record GainSnapshot(DateTimeOffset At, string Skill);
@@ -68,6 +75,10 @@ public sealed class CharacterProgression
     public string CharacterId { get; }
     public long LifetimeXp { get; private set; }
     public int Level { get; private set; } = 1;
+    public double RestedMinutes { get; private set; }
+    public DateTimeOffset? LastSessionEndAt { get; private set; }
+    public bool EndedInRestArea { get; private set; }
+    public long? LastRestedActiveMinute { get; private set; }
     public IReadOnlyDictionary<string, int> Skills => skills;
 
     public CharacterProgression(string characterId, TimeProvider clock, Func<double> roll, ProgressionSettings? settings = null,
@@ -85,6 +96,12 @@ public sealed class CharacterProgression
         while (Level < ProgressionRules.LevelCap && LifetimeXp >= TotalFor(Level + 1)) Level++;
         if (snapshot is not null)
         {
+            if (!double.IsFinite(snapshot.RestedMinutes) || snapshot.RestedMinutes < 0 || snapshot.RestedMinutes > this.settings.RestedCapMinutes)
+                throw new ArgumentException("Invalid rested snapshot.");
+            RestedMinutes = snapshot.RestedMinutes;
+            LastSessionEndAt = snapshot.LastSessionEndAt;
+            EndedInRestArea = snapshot.EndedInRestArea;
+            LastRestedActiveMinute = snapshot.LastRestedActiveMinute;
             knownRecipes.AddRange(snapshot.KnownRecipes ?? []);
             foreach (var id in snapshot.Receipts) receipts.Add(id);
             foreach (var (id, minutes) in snapshot.ActiveMinutes) activeMinutes.Add(id, new HashSet<long>(minutes));
@@ -96,7 +113,26 @@ public sealed class CharacterProgression
     public ProgressionSnapshot Snapshot() => new(LifetimeXp, new(skills, StringComparer.Ordinal), settings, [.. receipts],
         activeMinutes.ToDictionary(p => p.Key, p => p.Value.ToArray(), StringComparer.Ordinal),
         practices.Select(p => new PracticeSnapshot(p.At, p.Skill, p.Context)).ToArray(),
-        gains.Select(g => new GainSnapshot(g.At, g.Skill)).ToArray(), knownRecipes.ToArray());
+        gains.Select(g => new GainSnapshot(g.At, g.Skill)).ToArray(), knownRecipes.ToArray(),
+        RestedMinutes, LastSessionEndAt, EndedInRestArea, LastRestedActiveMinute);
+
+    public bool BeginSession()
+    {
+        if (LastSessionEndAt is not { } ended) return false;
+        var elapsed = Math.Max(0, (clock.GetUtcNow() - ended).TotalMinutes);
+        RestedMinutes = Math.Min(settings.RestedCapMinutes, RestedMinutes + elapsed /
+            (EndedInRestArea ? settings.RestedAreaMinutesPerMinute : settings.RestedNormalMinutesPerMinute));
+        LastSessionEndAt = null;
+        EndedInRestArea = false;
+        return true;
+    }
+
+    public void EndSession(bool inRestArea)
+    {
+        if (LastSessionEndAt is not null) throw new InvalidOperationException("Session already ended.");
+        LastSessionEndAt = clock.GetUtcNow();
+        EndedInRestArea = inRestArea;
+    }
 
     public static long TotalFor(int level)
     {
@@ -107,8 +143,10 @@ public sealed class CharacterProgression
     public ProgressionResult Apply(ActionReceipt receipt)
     {
         if (receipt.CharacterId != CharacterId || string.IsNullOrWhiteSpace(receipt.ReceiptId)) throw new ArgumentException("Invalid receipt owner or id");
-        if (!receipt.Accepted) return new(false, 0, 0, Level, 0);
-        if (receipts.Contains(receipt.ReceiptId)) return new(false, 0, 0, Level, 0);
+        if (!receipt.Accepted) return new(false, 0, 0, Level, 0, RestedMinutes);
+        if (receipts.Contains(receipt.ReceiptId)) return new(false, 0, 0, Level, 0, RestedMinutes);
+        if (!receipt.SessionEnd && receipt.InRestArea) throw new ArgumentException("Rest area requires session end.");
+        BeginSession();
         if (receipt.Kind is ReceiptKind.GatheringHarvest or ReceiptKind.CraftConvert)
         {
             string skill = receipt.SkillId ?? "";
@@ -125,6 +163,8 @@ public sealed class CharacterProgression
         else throw new ArgumentOutOfRangeException(nameof(receipt));
         receipts.Add(receipt.ReceiptId);
         var now = clock.GetUtcNow();
+        var activeMinute = now.ToUnixTimeSeconds() / 60;
+        bool rested = RestedMinutes > 0;
         int xp = 0, gain = 0; double chance = 0;
         if (receipt.Kind is ReceiptKind.GatheringHarvest or ReceiptKind.CraftConvert)
         {
@@ -142,7 +182,8 @@ public sealed class CharacterProgression
             int value = skills[id];
             if (value < ProgressionRules.UnspecializedCap)
             {
-                chance = ProgressionRules.GainChance(value, receipt.Difficulty, receipt.ActionSeconds, receipt.Success, 1, fatigue, anti, settings);
+                chance = ProgressionRules.GainChance(value, receipt.Difficulty, receipt.ActionSeconds, receipt.Success,
+                    rested ? settings.RestedGainMultiplier : 1, fatigue, anti, settings);
                 int hourGains = gains.Count(g => g.Skill == id);
                 double sample = roll();
                 if (!double.IsFinite(sample) || sample < 0 || sample >= 1) throw new InvalidOperationException("Roll must be in [0, 1)");
@@ -153,17 +194,25 @@ public sealed class CharacterProgression
             }
             double weight = Math.Clamp(receipt.ActionSeconds / settings.AttemptWeightSeconds, .2, 3);
             xp = (int)Math.Round(Math.Round(ProgressionRules.XpToNext(Level) / 12d, MidpointRounding.AwayFromZero) * .012 * weight *
-                ProgressionRules.DifficultyFactor(receipt.Difficulty - value) * fatigue * anti, MidpointRounding.AwayFromZero);
+                ProgressionRules.DifficultyFactor(receipt.Difficulty - value) * fatigue * anti *
+                (rested ? settings.RestedXpMultiplier : 1), MidpointRounding.AwayFromZero);
         }
         else if (receipt.Kind == ReceiptKind.EnemyDefeat)
         {
             int delta = receipt.EnemyLevel - Level;
             double levelDiff = delta >= 5 ? 1.2 : delta >= -5 ? 1 + .04 * delta : Math.Max(0, .8 - .15 * (-delta - 5));
             double group = (1 + .2 * (receipt.EligiblePartySize - 1)) / receipt.EligiblePartySize;
-            xp = (int)Math.Round(ProgressionRules.XpToNext(Level) / 150d * receipt.EnemyTierMultiplier * levelDiff * group, MidpointRounding.AwayFromZero);
+            xp = (int)Math.Round(ProgressionRules.XpToNext(Level) / 150d * receipt.EnemyTierMultiplier * levelDiff * group *
+                (rested ? settings.RestedXpMultiplier : 1), MidpointRounding.AwayFromZero);
+        }
+        if (LastRestedActiveMinute != activeMinute)
+        {
+            RestedMinutes = Math.Max(0, RestedMinutes - 1);
+            LastRestedActiveMinute = activeMinute;
         }
         LifetimeXp += xp;
         while (Level < ProgressionRules.LevelCap && LifetimeXp >= TotalFor(Level + 1)) Level++;
-        return new(true, gain, xp, Level, chance);
+        if (receipt.SessionEnd) EndSession(receipt.InRestArea);
+        return new(true, gain, xp, Level, chance, RestedMinutes);
     }
 }

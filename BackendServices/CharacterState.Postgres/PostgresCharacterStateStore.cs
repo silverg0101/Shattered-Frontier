@@ -122,6 +122,53 @@ public sealed class PostgresCharacterStateStore(string connectionString)
         return r.Read() ? new(r.GetInt64(0), JsonSerializer.Deserialize<ProgressionSnapshot>(r.GetString(1)) ?? throw new CharacterStoreRejectedException("Invalid stored progression state.")) : null;
     });
 
+    public VersionedResult<ProgressionSnapshot>? StartProgressionSession(string characterId, TimeProvider clock, ProgressionSettings settings) => Transaction<VersionedResult<ProgressionSnapshot>?>((c, t) =>
+    {
+        LockCharacter(c, t, characterId);
+        using var read = Command(c, t, "SELECT revision,state::text FROM character_state.progression WHERE character_id=$1", characterId);
+        using var row = read.ExecuteReader();
+        if (!row.Read()) return null;
+        long revision = row.GetInt64(0);
+        var snapshot = JsonSerializer.Deserialize<ProgressionSnapshot>(row.GetString(1)) ?? throw new CharacterStoreRejectedException("Invalid stored progression state.");
+        row.Close();
+        var model = new CharacterProgression(characterId, clock, () => .5, settings, snapshot: snapshot);
+        if (!model.BeginSession()) return new(revision, snapshot);
+        snapshot = model.Snapshot();
+        using var update = Command(c, t, "UPDATE character_state.progression SET revision=revision+1,state=$2::jsonb WHERE character_id=$1 RETURNING revision", characterId, JsonSerializer.Serialize(snapshot));
+        return new((long)(update.ExecuteScalar() ?? throw new CharacterStoreRejectedException("Progression update lost.")), snapshot);
+    });
+
+    public VersionedResult<ProgressionSnapshot> EndProgressionSession(string characterId, string operationId, long expectedRevision,
+        bool inRestArea, TimeProvider clock, ProgressionSettings settings) => Transaction((c, t) =>
+    {
+        if (string.IsNullOrWhiteSpace(characterId) || string.IsNullOrWhiteSpace(operationId)) throw new ArgumentException("Session identity required.");
+        LockCharacter(c, t, characterId);
+        var hash = Fingerprint(new { characterId, inRestArea });
+        var replay = Replay<ProgressionSnapshot>(c, t, "progression_session_end", characterId, operationId, hash);
+        if (replay is not null) return replay;
+        long revision = 0; ProgressionSnapshot? snapshot = null;
+        using (var read = Command(c, t, "SELECT revision,state::text FROM character_state.progression WHERE character_id=$1", characterId))
+        using (var row = read.ExecuteReader()) if (row.Read()) { revision = row.GetInt64(0); snapshot = JsonSerializer.Deserialize<ProgressionSnapshot>(row.GetString(1)); }
+        if (revision != expectedRevision) throw new CharacterStoreRejectedException("Stale progression revision.");
+        var model = new CharacterProgression(characterId, clock, () => .5, settings, snapshot: snapshot);
+        if (model.LastSessionEndAt is not null) throw new CharacterStoreRejectedException("Session already ended.");
+        model.EndSession(inRestArea);
+        snapshot = model.Snapshot();
+        if (revision == 0)
+        {
+            using var insert = Command(c, t, "INSERT INTO character_state.progression VALUES ($1,1,$2::jsonb)", characterId, JsonSerializer.Serialize(snapshot));
+            insert.ExecuteNonQuery();
+        }
+        else
+        {
+            using var update = Command(c, t, "UPDATE character_state.progression SET revision=revision+1,state=$2::jsonb WHERE character_id=$1", characterId, JsonSerializer.Serialize(snapshot));
+            update.ExecuteNonQuery();
+        }
+        var result = new VersionedResult<ProgressionSnapshot>(revision + 1, snapshot);
+        Receipt(c, t, "progression_session_end", characterId, operationId, hash, result);
+        return result;
+    });
+
     public RecipeLearnIntent BeginRecipeLearn(string operationId, string characterId, string recipeId, string source,
         string sourceId, string containerId, long expectedContainerRevision, long costCopper, string skillId, int minimumSkill, int maxKnown)
         => Transaction((c, t) =>
@@ -240,7 +287,7 @@ public sealed class PostgresCharacterStateStore(string connectionString)
             {
                 using var marker = Command(c, t, "SELECT version,migration_id,compatible_build_min,compatible_build_max FROM character_state.schema_version WHERE singleton=true FOR SHARE");
                 using var row = marker.ExecuteReader();
-                if (!row.Read() || row.GetInt32(0) != 7 || row.GetString(1) != "character-state-007" || row.GetInt32(2) > 7 || row.GetInt32(3) < 7)
+                if (!row.Read() || row.GetInt32(0) != 8 || row.GetString(1) != "character-state-008" || row.GetInt32(2) > 8 || row.GetInt32(3) < 8)
                     throw new CharacterSchemaCompatibilityException("Unsupported character state schema version.");
             }
             catch (PostgresException ex) when (ex.SqlState is "42P01" or "3F000" or "42501")

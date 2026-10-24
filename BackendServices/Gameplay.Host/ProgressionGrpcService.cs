@@ -15,6 +15,14 @@ internal sealed class ProgressionGrpcService(PostgresCharacterStateStore store, 
 {
     private static readonly IReadOnlySet<ushort> NoCosmetics = new HashSet<ushort>();
 
+    public override Task<Pb.EndSessionReply> EndSession(Pb.EndSessionRequest request, ServerCallContext context) =>
+        GrpcRun.Call(context, () =>
+        {
+            var result = store.EndProgressionSession(request.CharacterId, request.OperationId,
+                request.ExpectedProgressionRevision, request.InRestArea, TimeProvider.System, progressionSettings);
+            return new Pb.EndSessionReply { ProgressionRevision = result.Revision, RestedMinutes = result.Result.RestedMinutes };
+        });
+
     public override Task<Pb.CreateCharacterReply> CreateCharacter(Pb.CreateCharacterRequest request, ServerCallContext context) =>
         GrpcRun.Call(context, () =>
         {
@@ -103,12 +111,13 @@ internal sealed class ProgressionGrpcService(PostgresCharacterStateStore store, 
                 var p = request.Payload;
                 var action = new ActionReceipt(request.SourceReceiptId, request.CharacterId, kind.Value, true,
                     p.SkillId, p.Difficulty, p.ActionSeconds, p.ContextHash, p.Success,
-                    p.EnemyLevel, p.EnemyTierMultiplier, p.EligiblePartySize);
+                    p.EnemyLevel, p.EnemyTierMultiplier, p.EligiblePartySize, p.SessionEnd, p.InRestArea);
                 var progression = store.ApplyProgression(action, request.ExpectedProgressionRevision,
                     TimeProvider.System, skillRoll, progressionSettings);
                 reply.ProgressionApplied = progression.Result.Applied;
                 reply.SkillGain = progression.Result.SkillGain;
                 reply.XpGain = progression.Result.XpGain;
+                reply.RestedMinutes = progression.Result.RestedMinutes;
                 reply.Level = progression.Result.Level;
                 reply.ProgressionRevision = progression.Revision;
             }
@@ -118,6 +127,7 @@ internal sealed class ProgressionGrpcService(PostgresCharacterStateStore store, 
                 reply.ProgressionRevision = progression?.Revision ?? 0;
                 reply.Level = progression is null ? 1 : new CharacterProgression(request.CharacterId,
                     TimeProvider.System, () => .5, snapshot: progression.Result).Level;
+                reply.RestedMinutes = progression?.Result.RestedMinutes ?? 0;
             }
             if (request.Quest is not null)
             {
@@ -169,11 +179,12 @@ internal sealed class ProgressionGrpcService(PostgresCharacterStateStore store, 
             // The character restore on connect is first spawn: the kit purse is credited once (idempotent operation ID).
             if (starterKit.Kit is { PurseCopper: > 0 } kit && request.CharacterId.StartsWith("chr_", StringComparison.Ordinal))
                 exchange.Credit(kit.PurseOperationId(request.CharacterId), request.CharacterId, kit.PurseCopper, "starter_kit");
-            var progression = store.ReadProgression(request.CharacterId);
+            var progression = store.StartProgressionSession(request.CharacterId, TimeProvider.System, progressionSettings);
             var state = new Pb.CharacterStateReply
             {
                 ProgressionRevision = progression?.Revision ?? 0,
                 LifetimeXp = progression?.Result.LifetimeXp ?? 0,
+                RestedMinutes = progression?.Result.RestedMinutes ?? 0,
                 QuestRevision = 0,
                 FaceId = "Orlando"
             };

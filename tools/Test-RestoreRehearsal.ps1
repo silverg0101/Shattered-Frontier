@@ -151,6 +151,7 @@ try {
     $schemas += Get-Content (Join-Path $repo 'BackendServices/CharacterState.Postgres/Schema.Appearance.sql') -Raw
     $schemas += Get-Content (Join-Path $repo 'BackendServices/CharacterState.Postgres/Schema.GatheringSkills.sql') -Raw
     $schemas += Get-Content (Join-Path $repo 'BackendServices/CharacterState.Postgres/Schema.Death.sql') -Raw
+    $schemas += Get-Content (Join-Path $repo 'BackendServices/CharacterState.Postgres/Schema.Rested.sql') -Raw
     [void](Sql ("SET ROLE gameplay_owner;`n" + ($schemas -join "`n")) "gameplay_$run")
     $migrationConnection = "Host=127.0.0.1;Port=$port;Database=gameplay_$run;Username=fixture_admin;Password=$adminPassword;Pooling=false"
     & (Join-Path $repo 'tools/Invoke-SchemaMigrations.ps1') -Connection $migrationConnection -Schemas inventory,character_state,housing,exchange -Role gameplay_owner -Dotnet $dotnet -Nuget (Join-Path $repo 'Artifacts/Persistence/Toolchains/nuget') | Out-Null
@@ -374,7 +375,7 @@ try {
     Stop-Process -Id $hostProcess.Id -Force; $hostProcess.WaitForExit(30000) | Out-Null; $hostProcess.Refresh()
     $hostProcess = $null
     $currentStep = 'consistent five-store backup'
-    $versions = @{inventory=2;character_state=7;housing=6;exchange=3;terrain_delta=1}
+    $versions = @{inventory=2;character_state=8;housing=6;exchange=3;terrain_delta=1}
     foreach ($schema in $versions.Keys) {
         if ((Sql "SELECT version FROM $schema.schema_version WHERE singleton=true" $db).Trim() -ne [string]$versions[$schema]) { throw "Unsupported source schema: $schema" }
     }

@@ -45,6 +45,44 @@ Check(rate.Apply(new("g3", "chr_rate", ReceiptKind.GatheringHarvest, true, Progr
 try { new ProgressionSettings(FatigueFreeMinutes: 240).Validate(); throw new Exception("invalid setting accepted"); }
 catch (ArgumentOutOfRangeException) { Console.WriteLine("PASS bounded settings"); }
 
+var restClock = new ManualClock();
+var rested = new CharacterProgression("chr_rested", restClock, () => 0);
+rested.EndSession(false);
+restClock.Advance(TimeSpan.FromMinutes(40));
+Check(rested.BeginSession() && Math.Abs(rested.RestedMinutes - 10) < 1e-9, "normal logout accrues at 1:4");
+Check(!rested.BeginSession() && Math.Abs(rested.RestedMinutes - 10) < 1e-9, "session start accrues once");
+var restSnapshot = rested.Snapshot();
+rested = new CharacterProgression("chr_rested", restClock, () => 0, snapshot: restSnapshot);
+var restedKill = rested.Apply(new("rest-kill", "chr_rested", ReceiptKind.EnemyDefeat, true, EnemyLevel: 1));
+Check(restedKill.XpGain == 10 && Math.Abs(rested.RestedMinutes - 9) < 1e-9, "rested kill XP and first active minute debit");
+Check(!rested.Apply(new("rest-kill", "chr_rested", ReceiptKind.EnemyDefeat, true)).Applied &&
+    Math.Abs(rested.RestedMinutes - 9) < 1e-9, "replay does not debit rest");
+var secondKill = rested.Apply(new("rest-kill-2", "chr_rested", ReceiptKind.EnemyDefeat, true, EnemyLevel: 1));
+Check(secondKill.XpGain == 10 && Math.Abs(rested.RestedMinutes - 9) < 1e-9, "same wall minute debits once");
+restClock.Advance(TimeSpan.FromMinutes(1));
+var unRested = new CharacterProgression("chr_rested", restClock, () => 0,
+    snapshot: rested.Snapshot() with { RestedMinutes = 0 });
+var practiceReceipt = new ActionReceipt("rest-practice", "chr_rested", ReceiptKind.GatheringHarvest, true,
+    ProgressionRules.Logging, 25, 18, 77);
+var ordinaryPractice = unRested.Apply(practiceReceipt);
+var restedPractice = rested.Apply(practiceReceipt);
+Check(restedPractice.XpGain > ordinaryPractice.XpGain &&
+    Math.Abs(restedPractice.GainChance / ordinaryPractice.GainChance - 1.75) < 1e-9,
+    "rested practice boosts XP and skill chance");
+Check(Math.Abs(rested.RestedMinutes - 8) < 1e-9, "practice minute debits rest");
+var finalPractice = rested.Apply(practiceReceipt with { ReceiptId = "rest-final", SessionEnd = true, InRestArea = true });
+Check(finalPractice.Applied && rested.LastSessionEndAt == restClock.GetUtcNow() && rested.EndedInRestArea,
+    "final practice atomically closes session in rest area");
+Check(!rested.Apply(practiceReceipt with { ReceiptId = "rest-final", SessionEnd = true, InRestArea = true }).Applied,
+    "final practice replay does not restart session");
+restClock.Advance(TimeSpan.FromMinutes(2000));
+rested = new CharacterProgression("chr_rested", restClock, () => 0, snapshot: rested.Snapshot());
+Check(rested.BeginSession() && rested.RestedMinutes == 600, "rest area accrues at 1:2 and caps at 600");
+try { new ProgressionSettings(RestedCapMinutes: 0).Validate(); throw new Exception("invalid rested cap accepted"); }
+catch (ArgumentOutOfRangeException) { Console.WriteLine("PASS rested cap bound"); }
+try { new ProgressionSettings(RestedXpMultiplier: double.NaN).Validate(); throw new Exception("invalid rested multiplier accepted"); }
+catch (ArgumentOutOfRangeException) { Console.WriteLine("PASS rested multiplier bound"); }
+
 sealed class ManualClock : TimeProvider
 {
     private DateTimeOffset now = DateTimeOffset.Parse("2026-01-01T00:00:00Z");
