@@ -111,9 +111,9 @@ builder.Services.AddSingleton(new PostgresHousingStore(housingConnection));
 builder.Services.AddSingleton(new PostgresExchangeStore(exchangeConnection));
 builder.Services.AddSingleton(quests);
 builder.Services.AddSingleton(zone);
-builder.Services.AddSingleton(new GatheringNodeService(gatheringZone, gatheringTuning.Definitions(),
-    TimeProvider.System, "silverbrook-gathering", fixtureGatheringRespawn is null ? gatheringTuning.Lifecycle : new NodeSettings(30, 0, RegrowthMode.FullRespawn)));
-builder.Services.AddSingleton<GatheringReplyStore>();
+builder.Services.AddSingleton(new PostgresGatheringStore(ledgerConnection, gatheringZone, gatheringTuning,
+    fixtureGatheringRespawn is null ? gatheringTuning.Lifecycle : new NodeSettings(30, 0, RegrowthMode.FullRespawn), ledgerStore));
+builder.Services.AddHostedService<GatheringGrantRecovery>();
 builder.Services.AddSingleton(new ClaimSettings());
 builder.Services.AddSingleton(recipes);
 builder.Services.AddSingleton(markets);

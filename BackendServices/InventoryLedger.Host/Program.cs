@@ -151,6 +151,9 @@ sealed class LedgerService(Dom.InventoryLedger ledger, PostgresInventoryLedgerSt
         {
             return Run(context, () =>
             {
+                if (r.Source == "gathering" && store.HasGatheringMigration())
+                    throw new RpcException(new Status(StatusCode.FailedPrecondition,
+                        "Gathering grants are owned by Gameplay.Host Harvest."));
                 if (requireIntent && r.FollowUpIntent is null)
                     throw new RpcException(new Status(StatusCode.InvalidArgument, "Follow-up intent is required."));
                 PostgresInventoryLedgerStore.FollowUpIntent? intent = null;

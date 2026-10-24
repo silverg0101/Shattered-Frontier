@@ -12,6 +12,11 @@ message HarvestRequest {
   string character_id = 2;
   string node_id = 3;
   int32 generation = 4;
+  // Required for durable harvests. The host owns the ledger grant and its INT-06 follow-up.
+  string container_id = 5;
+  bytes follow_up_payload = 6;
+  string follow_up_digest = 7;
+  int32 follow_up_version = 8;
 }
 message NodeReply {
   string node_id = 1;
@@ -24,7 +29,7 @@ message NodeReply {
   int64 next_transition_unix_ms = 8;
 }
 message HarvestReply {
-  // granted | depleted | stale_generation | unknown_node
+  // granted | pending | depleted | stale_generation | unknown_node
   string status = 1;
   string resource_id = 2;
   int32 quantity = 3;

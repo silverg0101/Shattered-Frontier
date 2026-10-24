@@ -115,6 +115,10 @@ internal static class GameplayFixtureClient
                 if (mode == "fixture-outbox-omit") grant.FollowUpIntent = null;
                 if (mode == "fixture-outbox-seed")
                 {
+                    var legacy = grant.Clone(); legacy.Source = "gathering"; legacy.OperationId = "gather/legacy/refused";
+                    try { inventory.GrantWithIntent(legacy, headers, deadline: DateTime.UtcNow.AddSeconds(10));
+                        throw new Exception("Legacy gathering Grant committed before Harvest."); }
+                    catch (RpcException ex) when (ex.StatusCode == StatusCode.FailedPrecondition) { }
                     var missing = grant.Clone(); missing.FollowUpIntent = null;
                     try { inventory.GrantWithIntent(missing, headers, deadline: DateTime.UtcNow.AddSeconds(10));
                         throw new Exception("Intent-required RPC accepted a missing intent."); }

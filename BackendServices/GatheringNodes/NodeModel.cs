@@ -26,6 +26,9 @@ public sealed record NodeSnapshot(string Id, string GroupId, string PointId, str
 public sealed record HarvestCommand(string OperationId, string PlayerId, string NodeId, int Generation);
 public sealed record HarvestResult(HarvestStatus Status, string NodeId, int Generation, string? ResourceId,
     int Quantity, int RemainingCharges, DateTimeOffset? RegrowAt);
+public sealed record DurableNodeState(string Id, string DefinitionId, int MaxCharges, int Generation, int Charges, int Harvested,
+    DateTimeOffset? RegrowAt, DateTimeOffset? GrowthStartedAt, DateTimeOffset? StageStartedAt,
+    int StageIndex, double ScheduledRespawnSeconds);
 
 public sealed class GatheringNodeService
 {
@@ -107,6 +110,36 @@ public sealed class GatheringNodeService
     public IReadOnlyList<NodeSnapshot> Snapshot()
     {
         lock (gate) { Advance(); return nodes.Values.OrderBy(n => n.Id, StringComparer.Ordinal).Select(View).ToArray(); }
+    }
+
+    // The store holds a database lock while importing, advancing, and exporting this complete state.
+    public IReadOnlyList<DurableNodeState> ExportState()
+    {
+        lock (gate) return nodes.Values.OrderBy(n => n.Id, StringComparer.Ordinal)
+            .Select(n => new DurableNodeState(n.Id, n.Definition.Id, n.Definition.Charges, n.Generation, n.Charges, n.Harvested, n.RegrowAt,
+                n.GrowthStartedAt, n.StageStartedAt, n.StageIndex, n.ScheduledRespawnSeconds)).ToArray();
+    }
+
+    public void ImportState(IReadOnlyList<DurableNodeState> saved)
+    {
+        lock (gate)
+        {
+            if (saved.Count != nodes.Count || saved.Select(n => n.Id).Distinct(StringComparer.Ordinal).Count() != nodes.Count)
+                throw new InvalidOperationException("Gathering node topology differs from saved state.");
+            foreach (var state in saved)
+            {
+                if (!nodes.TryGetValue(state.Id, out var node) || state.DefinitionId != node.Definition.Id ||
+                    state.MaxCharges != node.Definition.Charges || state.Generation < 1 ||
+                    state.Charges < 0 || state.Charges > node.Definition.Charges || state.Harvested < 0 ||
+                    state.StageIndex < 0 || state.StageIndex >= (node.GrowthProfile?.Stages.Count ?? 1) ||
+                    !double.IsFinite(state.ScheduledRespawnSeconds) || state.ScheduledRespawnSeconds < 0)
+                    throw new InvalidOperationException("Invalid saved gathering node state.");
+                node.Generation = state.Generation; node.Charges = state.Charges; node.Harvested = state.Harvested;
+                node.RegrowAt = state.RegrowAt; node.GrowthStartedAt = state.GrowthStartedAt;
+                node.StageStartedAt = state.StageStartedAt; node.StageIndex = state.StageIndex;
+                node.ScheduledRespawnSeconds = state.ScheduledRespawnSeconds;
+            }
+        }
     }
 
     public HarvestResult Harvest(HarvestCommand command)

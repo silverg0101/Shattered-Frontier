@@ -38,6 +38,11 @@ function Query([string]$sql) {
     if ($LASTEXITCODE -ne 0) { throw "Backup query failed: $value" }
     return [string]$value
 }
+if ($schemas -contains 'inventory' -and (Query "SELECT to_regclass('inventory.gathering_schema_version') IS NOT NULL").Trim() -eq 't') {
+    $gatheringVersion = (Query "SELECT version || ':' || migration_id FROM inventory.gathering_schema_version WHERE singleton=true").Trim()
+    if ($gatheringVersion -ne '1:gathering-nodes-001') { throw 'Unsupported gathering migration marker.' }
+    $tables += @('inventory.gathering_schema_version','inventory.gathering_node_state','inventory.gathering_harvest_receipts')
+}
 function Snapshot {
     $result = [ordered]@{}
     foreach ($table in $tables) {

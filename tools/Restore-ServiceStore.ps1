@@ -73,6 +73,10 @@ $tables = switch ($Store) {
     Exchange { @('exchange.schema_version','exchange.wallets','exchange.wallet_entries','exchange.operations','exchange.listings','exchange.settlements') }
     TerrainDelta { @('terrain_delta.schema_version','terrain_delta.regions','terrain_delta.operations') }
 }
+if ($manifest.tables.PSObject.Properties['inventory.gathering_schema_version']) {
+    if ($Store -notin @('InventoryLedger','Housing')) { throw 'Gathering tables belong to the inventory recovery point.' }
+    $tables += @('inventory.gathering_schema_version','inventory.gathering_node_state','inventory.gathering_harvest_receipts')
+}
 $schemas = if ($Store -eq 'Housing') { @('housing','inventory') } elseif ($Store -eq 'CharacterState') { @('character_state') } elseif ($Store -eq 'Exchange') { @('exchange') } elseif ($Store -eq 'TerrainDelta') { @('terrain_delta') } else { @('inventory') }
 $serviceRole = switch ($Store) { InventoryLedger { 'ledger_svc' } CharacterState { 'state_svc' } Housing { 'housing_svc' } Exchange { 'exchange_svc' } TerrainDelta { 'terrain_delta_svc' } }
 if (@($manifest.tables.PSObject.Properties).Count -ne $tables.Count) { throw 'Invalid manifest table set.' }

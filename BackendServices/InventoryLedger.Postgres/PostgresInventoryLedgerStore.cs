@@ -11,6 +11,19 @@ public sealed class LedgerSchemaCompatibilityException(string message) : Excepti
 // Schema.sql is installed by the migration identity. Runtime needs DML only.
 public sealed class PostgresInventoryLedgerStore(string connectionString) : IInventoryLedgerStore
 {
+    // Once the host-owned harvest migration is installed, the former client-first gathering
+    // Grant path must fail before writing an item. Gameplay.Host grants saved harvest intents directly.
+    public bool HasGatheringMigration()
+    {
+        try
+        {
+            using var connection = new NpgsqlConnection(connectionString); connection.Open();
+            using var cmd = new NpgsqlCommand("SELECT to_regclass('inventory.gathering_schema_version') IS NOT NULL", connection);
+            return cmd.ExecuteScalar() is true;
+        }
+        catch (Exception ex) when (ex is NpgsqlException or TimeoutException or System.IO.IOException)
+        { throw new LedgerStoreUnavailableException("Inventory store unavailable; retry the operation ID.", ex); }
+    }
     private sealed record GrantContext(string OperationId, FollowUpIntent? Intent);
     private static readonly AsyncLocal<GrantContext?> CurrentGrant = new();
     public sealed record FollowUpIntent(string OperationId, string CharacterId, int Version, byte[] Payload, string Digest);

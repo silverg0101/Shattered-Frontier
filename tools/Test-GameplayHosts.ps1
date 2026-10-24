@@ -91,6 +91,7 @@ try {
     [void](Sql "REVOKE ALL ON DATABASE gameplay_$run FROM PUBLIC; GRANT CONNECT ON DATABASE gameplay_$run TO gameplay_svc; GRANT CREATE ON DATABASE gameplay_$run TO gameplay_owner; REVOKE ALL ON SCHEMA public FROM PUBLIC;" "gameplay_$run")
     $schemas = @('InventoryLedger.Postgres','CharacterState.Postgres','Housing.Postgres','Exchange.Postgres') | ForEach-Object { Get-Content (Join-Path $repo "BackendServices/$_/Schema.sql") -Raw }
     $schemas += Get-Content (Join-Path $repo 'BackendServices/InventoryLedger.Postgres/Schema.Outbox.sql') -Raw
+    $schemas += Get-Content (Join-Path $repo 'BackendServices/InventoryLedger.Postgres/Schema.GatheringNodes.sql') -Raw
     $schemas += Get-Content (Join-Path $repo 'BackendServices/InventoryLedger.Postgres/Schema.DefeatRewards.sql') -Raw
     $schemas += Get-Content (Join-Path $repo 'BackendServices/Housing.Postgres/Schema.Gameplay.sql') -Raw
     $schemas += Get-Content (Join-Path $repo 'BackendServices/Housing.Postgres/Schema.Geometry.sql') -Raw
@@ -135,7 +136,65 @@ try {
         }))
     }
     if ($GatheringOnly) {
-        # The growth wire leg above is the whole targeted fixture.
+        $currentStep = 'gathering Postgres round trip'
+        $stateCount = Sql "SELECT count(*) FROM inventory.gathering_node_state" "gameplay_$run"
+        $receiptCount = Sql "SELECT count(*) FROM inventory.gathering_harvest_receipts" "gameplay_$run"
+        $grantCount = Sql "SELECT count(*) FROM inventory.operation_receipts WHERE operation_id LIKE 'gathering/%'" "gameplay_$run"
+        $quantity = Sql "SELECT quantity FROM inventory.entries WHERE container_id='ctn_gathering' AND definition_id='item/iron_ore'" "gameplay_$run"
+        if ($stateCount -ne '1' -or $receiptCount -ne '9' -or $grantCount -ne '7' -or $quantity -ne '7') { throw "Gathering state/receipt/grant round trip failed: $stateCount/$receiptCount/$grantCount/$quantity" }
+        $results.Add('PASS gathering Postgres node state, nine receipts, seven one-time grants')
+        Stop-Process -Id $hostProcess.Id -Force; $hostProcess.WaitForExit(10000) | Out-Null
+        Cluster stop; Cluster start
+        $hostProcess = Start-Process -FilePath $dotnet -ArgumentList @($hostDll) -PassThru -WindowStyle Hidden -RedirectStandardOutput (Join-Path $private 'gather-restart.out') -RedirectStandardError (Join-Path $private 'gather-restart.err')
+        for ($i=0; $i -lt 100; $i++) { if ($hostProcess.HasExited) { throw 'Gathering restart host exited.' }; if ((Test-Path (Join-Path $private 'gather-restart.out')) -and (Get-Content (Join-Path $private 'gather-restart.out') -Raw) -match 'GAMEPLAY_HOST_READY') { break }; Start-Sleep -Milliseconds 100 }
+        $currentStep = 'gathering restart replay'
+        $results.Add((Invoke-Checked $dotnet @($journeyDll,'gathering-replay') @{ GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$connection; SF_GAMEPLAY_TOKEN=$token }))
+        Stop-Process -Id $hostProcess.Id -Force; $hostProcess.WaitForExit(10000) | Out-Null
+        $env:SF_GAMEPLAY_FAULT_AFTER_GATHER_INTENT = 'gathering/fault/1'
+        $hostProcess = Start-Process -FilePath $dotnet -ArgumentList @($hostDll) -PassThru -WindowStyle Hidden -RedirectStandardOutput (Join-Path $private 'gather-fault.out') -RedirectStandardError (Join-Path $private 'gather-fault.err')
+        for ($i=0; $i -lt 100; $i++) { if ($hostProcess.HasExited) { throw 'Gathering fault host exited before ready.' }; if ((Test-Path (Join-Path $private 'gather-fault.out')) -and (Get-Content (Join-Path $private 'gather-fault.out') -Raw) -match 'GAMEPLAY_HOST_READY') { break }; Start-Sleep -Milliseconds 100 }
+        $currentStep = 'gathering crash after intent'
+        $results.Add((Invoke-Checked $dotnet @($journeyDll,'gathering-fault') @{ GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$connection; SF_GAMEPLAY_TOKEN=$token }))
+        if (-not $hostProcess.WaitForExit(10000)) { throw 'Gathering injected fault did not stop host.' }
+        $pending = Sql "SELECT count(*) FROM inventory.gathering_harvest_receipts WHERE operation_id='gathering/fault/1' AND delivered_at IS NULL" "gameplay_$run"
+        $premature = Sql "SELECT count(*) FROM inventory.operation_receipts WHERE operation_id='gathering/fault/1'" "gameplay_$run"
+        if ($pending -ne '1' -or $premature -ne '0') { throw "Gathering crash boundary differs: $pending/$premature" }
+        Remove-Item Env:SF_GAMEPLAY_FAULT_AFTER_GATHER_INTENT
+        Cluster stop; Cluster start
+        $hostProcess = Start-Process -FilePath $dotnet -ArgumentList @($hostDll) -PassThru -WindowStyle Hidden -RedirectStandardOutput (Join-Path $private 'gather-recover.out') -RedirectStandardError (Join-Path $private 'gather-recover.err')
+        for ($i=0; $i -lt 100; $i++) { if ($hostProcess.HasExited) { throw 'Gathering recovery host exited.' }; if ((Test-Path (Join-Path $private 'gather-recover.out')) -and (Get-Content (Join-Path $private 'gather-recover.out') -Raw) -match 'GAMEPLAY_HOST_READY') { break }; Start-Sleep -Milliseconds 100 }
+        $currentStep = 'gathering crash replay'
+        $results.Add((Invoke-Checked $dotnet @($journeyDll,'gathering-fault-replay') @{ GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$connection; SF_GAMEPLAY_TOKEN=$token }))
+        $delivered = Sql "SELECT count(*) FROM inventory.gathering_harvest_receipts WHERE operation_id='gathering/fault/1' AND delivered_at IS NOT NULL" "gameplay_$run"
+        $outbox = Sql "SELECT count(*) FROM inventory.receipt_outbox WHERE source_operation_id='gathering/fault/1'" "gameplay_$run"
+        if ($delivered -ne '1' -or $outbox -ne '1') { throw "Gathering relay/outbox differs: $delivered/$outbox" }
+        $results.Add('PASS gathering intent replay entered INT-06 outbox exactly once')
+        for ($i=0; $i -lt 300; $i++) { if ((Sql "SELECT count(*) FROM inventory.receipt_outbox WHERE source_operation_id LIKE 'gathering/%' AND delivered_at IS NOT NULL" "gameplay_$run") -eq '8') { break }; Start-Sleep -Milliseconds 100 }
+        $followups = Sql "SELECT count(*) FROM character_state.source_receipts WHERE operation_id LIKE 'gathering/%'" "gameplay_$run"
+        $parked = Sql "SELECT count(*) FROM inventory.receipt_outbox WHERE source_operation_id LIKE 'gathering/%' AND parked_at IS NOT NULL" "gameplay_$run"
+        if ($followups -ne '8' -or $parked -ne '0') {
+            $missing = Sql "SELECT string_agg(source_operation_id || ':' || coalesce(last_error_code,'none') || ':' || attempts, ',') FROM inventory.receipt_outbox WHERE source_operation_id LIKE 'gathering/%' AND delivered_at IS NULL" "gameplay_$run"
+            throw "Gathering INT-06 follow-up replay differs: $followups/$parked pending=$missing"
+        }
+        $results.Add('PASS gathering INT-06 progression follow-ups delivered once after replay')
+        Stop-Process -Id $hostProcess.Id -Force; $hostProcess.WaitForExit(10000) | Out-Null
+        $env:SF_GAMEPLAY_FAULT_AFTER_GATHER_GRANT = 'gathering/fault/2'
+        $hostProcess = Start-Process -FilePath $dotnet -ArgumentList @($hostDll) -PassThru -WindowStyle Hidden -RedirectStandardOutput (Join-Path $private 'gather-post-grant-fault.out') -RedirectStandardError (Join-Path $private 'gather-post-grant-fault.err')
+        for ($i=0; $i -lt 100; $i++) { if ($hostProcess.HasExited) { throw 'Post-grant fault host exited before ready.' }; if ((Test-Path (Join-Path $private 'gather-post-grant-fault.out')) -and (Get-Content (Join-Path $private 'gather-post-grant-fault.out') -Raw) -match 'GAMEPLAY_HOST_READY') { break }; Start-Sleep -Milliseconds 100 }
+        $currentStep = 'gathering crash after ledger grant'
+        $results.Add((Invoke-Checked $dotnet @($journeyDll,'gathering-grant-fault') @{ GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$connection; SF_GAMEPLAY_TOKEN=$token }))
+        if (-not $hostProcess.WaitForExit(10000)) { throw 'Post-grant injected fault did not stop host.' }
+        $pending = Sql "SELECT count(*) FROM inventory.gathering_harvest_receipts WHERE operation_id='gathering/fault/2' AND delivered_at IS NULL" "gameplay_$run"
+        $committed = Sql "SELECT count(*) FROM inventory.operation_receipts WHERE operation_id='gathering/fault/2'" "gameplay_$run"
+        if ($pending -ne '1' -or $committed -ne '1') { throw "Post-grant crash boundary differs: $pending/$committed" }
+        Remove-Item Env:SF_GAMEPLAY_FAULT_AFTER_GATHER_GRANT
+        Cluster stop; Cluster start
+        $hostProcess = Start-Process -FilePath $dotnet -ArgumentList @($hostDll) -PassThru -WindowStyle Hidden -RedirectStandardOutput (Join-Path $private 'gather-post-grant-recover.out') -RedirectStandardError (Join-Path $private 'gather-post-grant-recover.err')
+        for ($i=0; $i -lt 100; $i++) { if ($hostProcess.HasExited) { throw 'Post-grant recovery host exited.' }; if ((Test-Path (Join-Path $private 'gather-post-grant-recover.out')) -and (Get-Content (Join-Path $private 'gather-post-grant-recover.out') -Raw) -match 'GAMEPLAY_HOST_READY') { break }; Start-Sleep -Milliseconds 100 }
+        $currentStep = 'gathering post-grant replay'
+        $results.Add((Invoke-Checked $dotnet @($journeyDll,'gathering-grant-replay') @{ GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$connection; SF_GAMEPLAY_TOKEN=$token }))
+        $done = Sql "SELECT count(*) FROM inventory.gathering_harvest_receipts WHERE operation_id='gathering/fault/2' AND delivered_at IS NOT NULL" "gameplay_$run"
+        if ($done -ne '1') { throw 'Post-grant replay did not mark intent delivered.' }
     } elseif ($AppearanceOnly) {
         $currentStep = 'appearance wire'
         $results.Add((Invoke-Checked $dotnet @($journeyDll,'appearance') @{
@@ -421,7 +480,7 @@ catch {
     }
 }
 finally {
-    foreach ($key in @('SF_GAMEPLAY_TOKEN','SF_GAMEPLAY_FAULT_AFTER_SCROLL_CONSUME','SF_GAMEPLAY_FAULT_AFTER_REMOVE_GRANT','SF_GAMEPLAY_FAULT_AFTER_PLACE_INTENT','SF_GAMEPLAY_FAULT_AFTER_PLACE_DECISION','SF_GAMEPLAY_FAULT_AFTER_QUEST_GRANT','SF_GAMEPLAY_FAULT_AFTER_LISTING_ESCROW','SF_GAMEPLAY_FAULT_BEFORE_OUTBOX_SEND','GAMEPLAY_LEDGER_CONNECTION','GAMEPLAY_LEDGER_PORT','GAMEPLAY_FIXTURE_MODE','GAMEPLAY_FIXTURE_GATHERING_RESPAWN_SECONDS','INVENTORY_LEDGER_PORT','INVENTORY_LEDGER_CONNECTION','SF_INVENTORY_LEDGER_TOKEN','GAMEPLAY_CHARACTER_CONNECTION','GAMEPLAY_HOUSING_CONNECTION')) {
+    foreach ($key in @('SF_GAMEPLAY_TOKEN','SF_GAMEPLAY_FAULT_AFTER_GATHER_INTENT','SF_GAMEPLAY_FAULT_AFTER_GATHER_GRANT','SF_GAMEPLAY_FAULT_AFTER_SCROLL_CONSUME','SF_GAMEPLAY_FAULT_AFTER_REMOVE_GRANT','SF_GAMEPLAY_FAULT_AFTER_PLACE_INTENT','SF_GAMEPLAY_FAULT_AFTER_PLACE_DECISION','SF_GAMEPLAY_FAULT_AFTER_QUEST_GRANT','SF_GAMEPLAY_FAULT_AFTER_LISTING_ESCROW','SF_GAMEPLAY_FAULT_BEFORE_OUTBOX_SEND','GAMEPLAY_LEDGER_CONNECTION','GAMEPLAY_LEDGER_PORT','GAMEPLAY_FIXTURE_MODE','GAMEPLAY_FIXTURE_GATHERING_RESPAWN_SECONDS','INVENTORY_LEDGER_PORT','INVENTORY_LEDGER_CONNECTION','SF_INVENTORY_LEDGER_TOKEN','GAMEPLAY_CHARACTER_CONNECTION','GAMEPLAY_HOUSING_CONNECTION')) {
         Remove-Item "Env:$key" -ErrorAction SilentlyContinue
     }
     try {

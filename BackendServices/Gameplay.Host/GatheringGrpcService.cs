@@ -22,59 +22,15 @@ internal sealed record GatheringHostTuning(int OakCharges, int IronCharges, int 
     ];
 }
 
-internal sealed class GatheringReplyStore
+internal sealed class GatheringGrpcService(PostgresGatheringStore store) : Pb.Gathering.GatheringBase
 {
-    public object Gate { get; } = new();
-    public Dictionary<string, (Pb.HarvestRequest Request, Pb.HarvestReply Reply)> Receipts { get; } = new(StringComparer.Ordinal);
-}
-
-internal sealed class GatheringGrpcService(GatheringNodeService nodes, GatheringReplyStore replies) : Pb.Gathering.GatheringBase
-{
-    private static Pb.NodeReply Wire(NodeSnapshot n) => new()
-    {
-        NodeId = n.Id, DefinitionId = n.DefinitionId, Generation = n.Generation,
-        Charges = n.Charges, MaxCharges = n.MaxCharges,
-        RegrowAtUnixMs = n.RegrowAt?.ToUnixTimeMilliseconds() ?? 0,
-        GrowthStage = n.GrowthStage ?? "",
-        NextTransitionUnixMs = n.NextTransitionAt?.ToUnixTimeMilliseconds() ?? 0
-    };
-
     public override Task<Pb.NodeReply> GetNode(Pb.GetNodeRequest request, ServerCallContext context) =>
         GrpcRun.Call(context, () =>
         {
             if (string.IsNullOrWhiteSpace(request.NodeId)) throw new ArgumentException("Node ID required.");
-            var node = nodes.Snapshot().FirstOrDefault(n => n.Id == request.NodeId);
-            if (node is null) throw new GameplayRejectedException("Unknown gathering node.", StatusCode.NotFound);
-            return Wire(node);
+            return store.Get(request.NodeId);
         });
 
     public override Task<Pb.HarvestReply> Harvest(Pb.HarvestRequest request, ServerCallContext context) =>
-        GrpcRun.Call(context, () =>
-        {
-            if (string.IsNullOrWhiteSpace(request.OperationId) || string.IsNullOrWhiteSpace(request.CharacterId) ||
-                string.IsNullOrWhiteSpace(request.NodeId) || request.Generation < 1)
-                throw new ArgumentException("Harvest identity and generation required.");
-            lock (replies.Gate)
-            {
-                if (replies.Receipts.TryGetValue(request.OperationId, out var prior))
-                {
-                    if (!prior.Request.Equals(request)) throw new InvalidOperationException("Operation ID reused with different harvest.");
-                    return prior.Reply;
-                }
-                var result = nodes.Harvest(new(request.OperationId, request.CharacterId, request.NodeId, request.Generation));
-                var node = nodes.Snapshot().FirstOrDefault(n => n.Id == request.NodeId);
-                var reply = new Pb.HarvestReply
-                {
-                    Status = result.Status switch
-                    {
-                        HarvestStatus.Granted => "granted", HarvestStatus.Depleted => "depleted",
-                        HarvestStatus.StaleGeneration => "stale_generation", _ => "unknown_node"
-                    },
-                    ResourceId = result.ResourceId ?? "", Quantity = result.Quantity,
-                    Node = node is null ? null : Wire(node)
-                };
-                replies.Receipts.Add(request.OperationId, (request.Clone(), reply));
-                return reply;
-            }
-        });
+        GrpcRun.Call(context, () => store.Harvest(request));
 }

@@ -35,13 +35,28 @@ DateTime Deadline() => DateTime.UtcNow.AddSeconds(5);
 if (mode == "gathering")
 {
     var client = new GatheringPb.Gathering.GatheringClient(channel);
+    new InventoryLedger(new PostgresInventoryLedgerStore(connection)).CreateContainer(
+        new ContainerSpec("ctn_gathering", OwnerKind.Character, "chr_gathering", ContainerKind.Backpack, 100));
     const string id = "zone/greenlands_silverbrook/eastwood_iron_ore/0";
     GatheringPb.NodeReply Node() => client.GetNode(new() { NodeId = id }, headers, deadline: Deadline());
     var initial = Node();
     Check(initial.Generation == 1 && initial.Charges == 5 && initial.GrowthStage == "mature", "Initial iron node state missing.");
     Code(() => client.GetNode(new() { NodeId = "zone/unknown/node/0" }, headers, deadline: Deadline()), StatusCode.NotFound);
-    GatheringPb.HarvestReply Harvest(string operation, int generation) => client.Harvest(new()
-        { OperationId = operation, CharacterId = "chr_gathering", NodeId = id, Generation = generation }, headers, deadline: Deadline());
+    GatheringPb.HarvestRequest Request(string operation, int generation)
+    {
+        var number = operation.StartsWith("gathering/mature/", StringComparison.Ordinal) ? int.Parse(operation[17..]) :
+            operation == "gathering/young/1" ? 5 : operation == "gathering/young/2" ? 6 : 0;
+        var follow = new ProgressPb.ApplyReceiptRequest { SourceReceiptId = operation, CharacterId = "chr_gathering", Kind = "gather",
+            ExpectedProgressionRevision = number,
+            Payload = new ProgressPb.ActionPayload { SkillId = "skill/mining", Difficulty = 1, ActionSeconds = 1, Success = true } };
+        var bytes = follow.ToByteArray();
+        return new GatheringPb.HarvestRequest { OperationId = operation, CharacterId = "chr_gathering", NodeId = id,
+            Generation = generation, ContainerId = "ctn_gathering", FollowUpVersion = 1,
+            FollowUpPayload = ByteString.CopyFrom(bytes), FollowUpDigest = Convert.ToHexStringLower(System.Security.Cryptography.SHA256.HashData(bytes)) };
+    }
+    GatheringPb.HarvestReply Harvest(string operation, int generation) => client.Harvest(Request(operation, generation), headers, deadline: Deadline());
+    Code(() => client.Harvest(new() { OperationId = "legacy", CharacterId = "chr_gathering", NodeId = id, Generation = 1 },
+        headers, deadline: Deadline()), StatusCode.InvalidArgument);
     for (var i = 0; i < 5; i++)
     {
         var result = Harvest($"gathering/mature/{i}", 1);
@@ -51,8 +66,9 @@ if (mode == "gathering")
     var last = Harvest("gathering/mature/4", 1);
     Check(last.Node.RegrowAtUnixMs > DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(), "Backend respawn deadline missing.");
     Check(Harvest("gathering/mature/4", 1).Equals(last), "Idempotent harvest replay differs.");
-    Code(() => client.Harvest(new() { OperationId = "gathering/mature/4", CharacterId = "chr_other", NodeId = id, Generation = 1 },
-        headers, deadline: Deadline()), StatusCode.FailedPrecondition);
+    var conflict = Request("gathering/mature/4", 1); conflict.CharacterId = "chr_other";
+    Code(() => client.Harvest(conflict,
+        headers, deadline: Deadline()), StatusCode.InvalidArgument);
     Check(Harvest("gathering/depleted", 1).Status == "depleted", "Depleted node accepted another harvest.");
     var until = DateTime.UtcNow.AddSeconds(20);
     GatheringPb.NodeReply young;
@@ -65,6 +81,73 @@ if (mode == "gathering")
     Check(youngLast.Status == "granted" && youngLast.Node.Charges == 0 &&
         youngLast.Node.RegrowAtUnixMs > DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(), "Immature node exceeded stage charges.");
     Console.WriteLine("PASS gathering RPC immature stage has 2/5 charges, depletion, backend respawn and replay");
+    return;
+}
+
+if (mode is "gathering-backup-seed" or "gathering-replay" or "gathering-fault" or "gathering-fault-replay" or
+    "gathering-grant-fault" or "gathering-grant-replay")
+{
+    var client = new GatheringPb.Gathering.GatheringClient(channel);
+    const string iron = "zone/greenlands_silverbrook/eastwood_iron_ore/0";
+    const string oak = "zone/greenlands_silverbrook/westfields_wood/0";
+    GatheringPb.HarvestRequest Request(string operation, string character, string node, string container, string skill)
+    {
+        var follow = new ProgressPb.ApplyReceiptRequest { SourceReceiptId = operation, CharacterId = character, Kind = "gather",
+            ExpectedProgressionRevision = operation == "gathering/fault/2" ? 1 : 0,
+            Payload = new ProgressPb.ActionPayload { SkillId = skill, Difficulty = 1, ActionSeconds = 1, Success = true } };
+        var bytes = follow.ToByteArray();
+        return new GatheringPb.HarvestRequest { OperationId = operation, CharacterId = character, NodeId = node,
+            Generation = 1, ContainerId = container, FollowUpVersion = 1, FollowUpPayload = ByteString.CopyFrom(bytes),
+            FollowUpDigest = Convert.ToHexStringLower(System.Security.Cryptography.SHA256.HashData(bytes)) };
+    }
+    if (mode == "gathering-replay")
+    {
+        var before = client.GetNode(new() { NodeId = iron }, headers, deadline: Deadline());
+        Check(before.Generation >= 2, "Restart lost iron generation.");
+        var prior = Request("gathering/mature/4", "chr_gathering", iron, "ctn_gathering", "skill/mining");
+        prior.FollowUpPayload = ByteString.CopyFrom(new ProgressPb.ApplyReceiptRequest { SourceReceiptId = prior.OperationId,
+            CharacterId = prior.CharacterId, Kind = "gather", ExpectedProgressionRevision = 4,
+            Payload = new ProgressPb.ActionPayload { SkillId = "skill/mining", Difficulty = 1, ActionSeconds = 1, Success = true } }.ToByteArray());
+        prior.FollowUpDigest = Convert.ToHexStringLower(System.Security.Cryptography.SHA256.HashData(prior.FollowUpPayload.Span));
+        var replay = client.Harvest(prior, headers, deadline: Deadline());
+        Check(replay.Status == "granted" && replay.Node.Generation == 1 && replay.Node.Charges == 0,
+            "Restart changed the saved harvest receipt.");
+        Console.WriteLine("PASS gathering node state and receipt survive host restart");
+        return;
+    }
+    if (mode == "gathering-backup-seed")
+    {
+        new InventoryLedger(new PostgresInventoryLedgerStore(connection)).CreateContainer(
+            new ContainerSpec("ctn_gathering_backup", OwnerKind.Character, "chr_gathering_backup", ContainerKind.Backpack, 100));
+        var seed = Request("gathering/backup/1", "chr_gathering_backup", oak, "ctn_gathering_backup", "skill/logging");
+        var saved = client.Harvest(seed, headers, deadline: Deadline());
+        Check(saved.Status == "granted" && saved.Node.Charges == 2, "Gathering backup seed did not persist one harvest.");
+        Console.WriteLine("PASS gathering backup point has populated node state and harvest receipt");
+        return;
+    }
+    var ledger = new InventoryLedger(new PostgresInventoryLedgerStore(connection));
+    if (mode == "gathering-fault")
+        ledger.CreateContainer(new ContainerSpec("ctn_gathering_fault", OwnerKind.Character, "chr_gathering_fault", ContainerKind.Backpack, 100));
+    var request = Request(mode is "gathering-grant-fault" or "gathering-grant-replay" ? "gathering/fault/2" : "gathering/fault/1",
+        "chr_gathering_fault", oak, "ctn_gathering_fault", "skill/logging");
+    if (mode is "gathering-fault" or "gathering-grant-fault")
+    {
+        try { client.Harvest(request, headers, deadline: Deadline()); throw new Exception("Fault host returned normally."); }
+        catch (RpcException ex) when (ex.StatusCode is StatusCode.Unavailable or StatusCode.DeadlineExceeded) { }
+        Console.WriteLine(mode == "gathering-fault" ? "PASS injected host death after gathering intent commit" :
+            "PASS injected host death after gathering ledger grant");
+        return;
+    }
+    var until = DateTime.UtcNow.AddSeconds(20);
+    while (ledger.Receipt(request.OperationId) is null && DateTime.UtcNow < until) Thread.Sleep(100);
+    var result = client.Harvest(request, headers, deadline: Deadline());
+    var expected = mode == "gathering-grant-replay" ? 2 : 1;
+    Check(result.Status == "granted" && result.Node.Charges == 3 - expected &&
+        ledger.Read(request.ContainerId).Quantities.GetValueOrDefault("item/oak_log") == expected,
+        "Crash replay duplicated or lost grant/charge.");
+    Check(client.Harvest(request, headers, deadline: Deadline()).Equals(result), "Crash replay not idempotent.");
+    Console.WriteLine(mode == "gathering-fault-replay" ? "PASS gathering crash replay granted once and consumed one charge" :
+        "PASS post-grant crash replay kept one grant per charge");
     return;
 }
 

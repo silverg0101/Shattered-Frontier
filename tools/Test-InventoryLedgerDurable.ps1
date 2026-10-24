@@ -78,7 +78,7 @@ try {
     Cluster start
     [void](Sql "CREATE ROLE ledger_owner NOLOGIN; CREATE ROLE ledger_svc LOGIN PASSWORD '$servicePassword'; CREATE DATABASE ledger_$run;")
     [void](Sql "REVOKE ALL ON DATABASE ledger_$run FROM PUBLIC; GRANT CONNECT ON DATABASE ledger_$run TO ledger_svc; GRANT CREATE ON DATABASE ledger_$run TO ledger_owner; REVOKE ALL ON SCHEMA public FROM PUBLIC; CREATE SCHEMA inventory AUTHORIZATION ledger_owner;" "ledger_$run")
-    [void](Sql ("SET ROLE ledger_owner;`n" + (Get-Content $schema -Raw) + "`n" + (Get-Content (Join-Path $repo 'BackendServices/InventoryLedger.Postgres/Schema.Outbox.sql') -Raw)) "ledger_$run")
+    [void](Sql ("SET ROLE ledger_owner;`n" + (Get-Content $schema -Raw) + "`n" + (Get-Content (Join-Path $repo 'BackendServices/InventoryLedger.Postgres/Schema.Outbox.sql') -Raw) + "`n" + (Get-Content (Join-Path $repo 'BackendServices/InventoryLedger.Postgres/Schema.GatheringNodes.sql') -Raw)) "ledger_$run")
     [void](Sql 'GRANT USAGE ON SCHEMA inventory TO ledger_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA inventory TO ledger_svc;' "ledger_$run")
     $connection = "Host=127.0.0.1;Port=$port;Database=ledger_$run;Username=ledger_svc;Password=$servicePassword;Pooling=true;Maximum Pool Size=64;Minimum Pool Size=8;Timeout=2;Command Timeout=5;Include Error Detail=false"
     $results = [Collections.Generic.List[string]]::new()
