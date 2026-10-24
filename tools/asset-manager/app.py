@@ -1719,25 +1719,38 @@ def codex_events(payload):
 def _image_parts(images):
     return [{"type": "input_image", "image_url": f"data:image/png;base64,{base64.b64encode(b).decode()}"} for b in images]
 
-def codex_image(prompt, model="auto", refs=(), size="1024x1024"):
-    """One PNG from the Codex backend's image_generation tool. `refs` are PNG/JPEG bytes the tool draws from."""
+IMAGE_CHECK = (
+    "Draw the image with the image_generation tool. Then look at it against the full request and judge whether it is "
+    "physically coherent and buildable as one real object: parts that should be solid or hidden are, edges and surfaces "
+    "are continuous, what is in front and what is behind reads correctly, and nothing would be misread by an "
+    "image-to-3D model that rebuilds a model from it. If anything is wrong, call the tool again with a corrected "
+    "prompt, at most 2 redraws. The last image you draw is the one returned. Finish with one short text line: "
+    "'self-check: ok' or 'self-check: redrew Nx: <reason>'.")
+
+def codex_image(prompt, model="auto", refs=(), size="1024x1024", log=None):
+    """One PNG from the Codex backend's image_generation tool, which the driver checks and may redraw (the last image counts).
+    `refs` are PNG/JPEG bytes the tool draws from; the driver's self-check line goes to `log`."""
     tool = {"type": "image_generation", "output_format": "png", "size": size}
     if model != "auto":
         tool["model"] = model
-    text = ("Use the image_generation tool to render the following. Do not include explanatory text - produce only "
-            f"the image.\n\n{prompt}")
-    result = None
+    text = f"Render the following.\n\n{prompt}"
+    result, said = None, ""
     for evt in codex_events({
-            "model": CODEX_DRIVER, "instructions": "You are an image generation assistant.",
+            "model": CODEX_DRIVER, "instructions": f"You are an image generation assistant. {IMAGE_CHECK}",
             "input": [{"type": "message", "role": "user", "content": _image_parts(refs) + [{"type": "input_text", "text": text}]}],
             "tools": [tool], "tool_choice": "auto", "parallel_tool_calls": False,
-            "reasoning": {"effort": "low"}, "text": {"verbosity": "low"}}):
+            "reasoning": {"effort": "medium"}, "text": {"verbosity": "low"}}):
         item = evt.get("item") or {}
         if evt.get("type") == "response.output_item.done" and item.get("type") == "image_generation_call":
             result = item.get("result")
+        elif evt.get("type") == "response.output_text.delta":
+            said += evt.get("delta", "")
     png = base64.b64decode(result or "")
     if not png.startswith(b"\x89PNG"):
         raise RuntimeError("ChatGPT returned no image")
+    if log is not None:
+        log.append(next((l.strip() for l in reversed(said.splitlines()) if l.strip().lower().startswith("self-check")),
+                        "self-check: no verdict given"))
     return png
 
 REVIEW_INSTRUCTIONS = (
@@ -2091,12 +2104,12 @@ def run_image(jid, host=None):
             log.append(f"saved {saved[-1]}")
         if p["mode"] == "single":
             log.append("generating the image (sent as written)")
-            save(codex_image(p["prompt"], p["model"]), "")
+            save(codex_image(p["prompt"], p["model"], log=log), "")
         else:  # a side-view hero and its front from ChatGPT; views from those two, or MV-Adapter around the front
             extra = ""
             for n in range(1, 4):  # a hero whose far legs show is redrawn; it would put a second paw on every leg
                 log.append(f"hero: drawing the side-view design image (try {n}/3)")
-                hero = codex_image(MV_HERO.format(prompt=p["prompt"]) + extra, p["model"])
+                hero = codex_image(MV_HERO.format(prompt=p["prompt"]) + extra, p["model"], log=log)
                 contacts = hero_ground_contacts(hero)
                 if contacts <= 2:
                     break
@@ -2106,7 +2119,7 @@ def run_image(jid, host=None):
                 log.append("hero: kept the last try although the far legs still show")
             if p["views"] == "mv-adapter":
                 log.append("hero: drawing it from the front")
-                front = codex_image(MV_FRONT.format(prompt=p["prompt"]), p["model"], refs=[hero])
+                front = codex_image(MV_FRONT.format(prompt=p["prompt"]), p["model"], refs=[hero], log=log)
                 views = mvadapter_views(jid, host, p, hero, front, log)
             else:  # a failed set redraws the front with the reviewer's fix; the hero stays the design
                 extra, tries = "", 3
@@ -2114,7 +2127,7 @@ def run_image(jid, host=None):
                     if job_row(jid)["status"] == "cancelling":
                         raise InterruptedError
                     log.append(f"hero: drawing it from the front (try {n}/{tries})")
-                    front = codex_image(MV_FRONT.format(prompt=p["prompt"]) + extra, p["model"], refs=[hero])
+                    front = codex_image(MV_FRONT.format(prompt=p["prompt"]) + extra, p["model"], refs=[hero], log=log)
                     views, notes = align_uploads({"front": front, "left": hero, "right": mirrored(hero)})
                     log.extend(n for n in notes if "of the front's height" not in n)  # each image has its own framing
                     passed, extra = review_views(views, p["prompt"], log)

@@ -93,7 +93,7 @@ Poll `status_url` every few seconds until `status` is `done`, `failed` or `cance
 
 ## Image jobs
 
-An image job draws source images with ChatGPT (the owner's subscription, signed in under Settings > ChatGPT subscription; `GET /api/codex` says whether it is signed in). It needs no GPU host and saves into the inputs folder (`Inputs/`).
+An image job draws source images with ChatGPT (the owner's subscription, signed in under Settings > ChatGPT subscription; `GET /api/codex` says whether it is signed in). It needs no GPU host and saves into the inputs folder (`Inputs/`). Every image is checked by the drawing model before it is returned (physical and structural coherence against the full request; up to 2 redraws), and the job log gets a `self-check:` line per image.
 
 | Param | Values | Default |
 |---|---|---|
