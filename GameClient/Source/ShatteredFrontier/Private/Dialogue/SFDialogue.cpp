@@ -30,11 +30,12 @@ bool FSFDialogueTree::Parse(const FString& Json, FSFDialogueTree& Out, FString& 
     Tree.Start = Root->GetStringField(TEXT("start"));
     const TSharedPtr<FJsonObject>* NodeObjects = nullptr;
     if (Tree.Speaker.IsEmpty() || !Root->TryGetObjectField(TEXT("nodes"), NodeObjects)) { Error = TEXT("speaker and nodes are required"); return false; }
-    for (const TPair<FString, TSharedPtr<FJsonValue>>& Entry : (*NodeObjects)->Values)
+    for (const auto& Entry : (*NodeObjects)->Values)
     {
+        const FString Id(*Entry.Key);
         const TSharedPtr<FJsonObject> Object = Entry.Value->AsObject();
         if (!Object.IsValid()) { Error = FString::Printf(TEXT("node %s is not an object"), *Entry.Key); return false; }
-        FSFDialogueNode Node; Node.Id = Entry.Key; Node.Line = Object->GetStringField(TEXT("line"));
+        FSFDialogueNode Node; Node.Id = Id; Node.Line = Object->GetStringField(TEXT("line"));
         if (Node.Line.Len() > MaxLineChars) { Error = FString::Printf(TEXT("node %s line is %d characters; the board shows %d (three lines)"), *Entry.Key, Node.Line.Len(), MaxLineChars); return false; }
         const TArray<TSharedPtr<FJsonValue>>* Choices = nullptr;
         if (!Object->TryGetArrayField(TEXT("choices"), Choices) || Choices->Num() < 1 || Choices->Num() > MaxChoices)
@@ -47,7 +48,7 @@ bool FSFDialogueTree::Parse(const FString& Json, FSFDialogueTree& Out, FString& 
             ChoiceObject->TryGetStringField(TEXT("next"), Choice.Next); ChoiceObject->TryGetStringField(TEXT("action"), Choice.Action);
             Node.Choices.Add(Choice);
         }
-        Tree.Nodes.Add(Entry.Key, Node);
+        Tree.Nodes.Add(Id, Node);
     }
     const TSharedPtr<FJsonObject>* OfferObject = nullptr;
     if (Root->TryGetObjectField(TEXT("offer"), OfferObject))

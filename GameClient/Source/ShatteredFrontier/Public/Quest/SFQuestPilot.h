@@ -49,7 +49,7 @@ struct SHATTEREDFRONTIER_API FSFQuestProgress
 
 enum class ESFQuestOfferState : uint8 { Available, Active, Completed, Locked };
 
-/** content/quests/*.json, loaded once per process on server and client (the client renders offers from the same records). */
+/** Quest JSON files under content/quests, loaded once per process on server and client. */
 struct SHATTEREDFRONTIER_API FSFQuestCatalog
 {
     TArray<TSharedPtr<const FSFQuestDefinition>> Quests;  // file name order

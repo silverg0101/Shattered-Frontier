@@ -1254,7 +1254,7 @@ void USFQuestPilotSubsystem::PlaceFromLayout(UWorld& World)
 {
     // QST-02: the town layout data places the quest boards and quest givers (silverbrook-town-layout.json quest_boards,
     // quest_givers), on the server and on each client alike, so map rebuilds keep them and no binary map edit is needed.
-    // ponytail: read from ArtSource, which a packaged build does not stage; move the rows into content/world when one ships.
+    // Development layout rows are staged beside packaged Win64 builds until they move into content/world.
     const FString Path = FPaths::ConvertRelativePathToFull(FPaths::Combine(FPaths::ProjectDir(), TEXT("ArtSource/Greenlands/silverbrook-town-layout.json")));
     FString Json; TSharedPtr<FJsonObject> Root;
     if (!FFileHelper::LoadFileToString(Json, *Path) || !FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Json), Root) || !Root)

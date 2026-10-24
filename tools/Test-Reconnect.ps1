@@ -1,6 +1,9 @@
 [CmdletBinding()]
 param(
     [string]$EngineRoot = 'C:\Program Files\Epic Games\UE_5.8',
+    [string]$ServerExe,
+    [string]$ClientExe,
+    [switch]$ConnectServicesOnly,
     [ValidateRange(12000,65000)][int]$Port = 17993,
     [ValidateRange(60,900)][int]$TimeoutSeconds = 300,
     [ValidateSet('FullQuest','VitalRestore')][string]$Mode = 'FullQuest'
@@ -15,20 +18,25 @@ $ErrorActionPreference = 'Stop'
 $repo = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 $editor = Join-Path $EngineRoot 'Engine\Binaries\Win64\UnrealEditor-Cmd.exe'
 $project = Join-Path $repo 'GameClient\ShatteredFrontier.uproject'
-foreach ($required in @($editor,$project)) { if (-not (Test-Path -LiteralPath $required -PathType Leaf)) { throw "Required input missing: $required" } }
+foreach ($required in @($project, $(if (-not $ServerExe -or -not $ClientExe) { $editor }), $ServerExe, $ClientExe)) {
+    if ($required -and -not (Test-Path -LiteralPath $required -PathType Leaf)) { throw "Required input missing: $required" }
+}
 if (@([Net.NetworkInformation.IPGlobalProperties]::GetIPGlobalProperties().GetActiveUdpListeners() | Where-Object Port -eq $Port).Count) { throw 'Test port is already in use.' }
 $root = Join-Path $repo ('Artifacts\Reconnect\run-' + (Get-Date -Format 'yyyyMMdd-HHmmss-fff'))
 $null = New-Item -ItemType Directory -Path $root
 . (Join-Path $PSScriptRoot 'InventoryLedgerHostFixture.ps1')
 $owned = [Collections.Generic.List[Diagnostics.Process]]::new()
-$result = [ordered]@{ status='Running'; scope='Development loopback fixture: Win64 editor -server + editor clients, owned PostgreSQL, InventoryLedger.Host + Gameplay.Host, guarded dev identities'; runs=@() }
+$result = [ordered]@{ status='Running'; scope='Development loopback fixture: Win64 server + clients, owned PostgreSQL, InventoryLedger.Host + Gameplay.Host, guarded dev identities'; runs=@() }
+if ($ConnectServicesOnly) { $result.scope += '; connect, drop, restore and one service-backed craft only' }
 $fx = @{}
 $silverbrook = '/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook'
 function Start-Owned([string]$Name,[string]$Url,[string[]]$Extra) {
     $log = Join-Path $root ($Name+'.log'); $user = Join-Path $root ($Name+'-user')
     $null = New-Item -ItemType Directory -Path $user
-    $arguments = @(('"'+$project+'"'),('"'+$Url+'"'),'-unattended','-NullRHI','-nosound','-nop4',('-UserDir="'+$user+'/"'),('-abslog="'+$log+'"'))+$Extra
-    $process = Start-Process -FilePath $editor -ArgumentList $arguments -WindowStyle Hidden -PassThru `
+    $executable = if ($Name.StartsWith('server') -and $ServerExe) { $ServerExe } elseif (-not $Name.StartsWith('server') -and $ClientExe) { $ClientExe } else { $editor }
+    $projectArg = if ($executable -eq $editor) { @(('"'+$project+'"')) } else { @() }
+    $arguments = @($projectArg)+@(('"'+$Url+'"'),'-unattended','-NullRHI','-nosound','-nop4',('-UserDir="'+$user+'/"'),('-abslog="'+$log+'"'))+$Extra
+    $process = Start-Process -FilePath $executable -ArgumentList $arguments -WindowStyle Hidden -PassThru `
         -RedirectStandardOutput (Join-Path $root ($Name+'.stdout.txt')) -RedirectStandardError (Join-Path $root ($Name+'.stderr.txt'))
     $null = $process.Handle; $owned.Add($process)
     $result.runs += [ordered]@{ name=$Name; pid=$process.Id; log=$log; arguments=$arguments }
@@ -123,6 +131,18 @@ try {
     Stop-Owned $alpha1
     $alpha2 = Start-Owned 'alpha2' $alphaUrl $alphaFlags
     Wait-Log $server1 'server1' 'CHARACTER_RESTORED Character=chr_dev_alpha' 2
+    if ($ConnectServicesOnly) {
+        Wait-Log $server1 'server1' 'QUEST_PILOT_EVENT Kind=craft Target=item/rough_timber .* Result=0'
+        $first = Read-Log 'server1'
+        if ([regex]::Matches($first,'LogNet: Join succeeded:').Count -lt 3 -or
+            $first -notmatch 'CHARACTER_RESTORED Character=chr_dev_bravo' -or
+            $first -match 'Fatal error:|Assertion failed:') { throw 'Packaged connection or restore evidence incomplete.' }
+        $receiptCount = [int](Invoke-LedgerSql $fx "SELECT count(*) FROM character_state.source_receipts WHERE domain='progression' AND character_id='chr_dev_alpha'" $fx.db).Trim()
+        if ($receiptCount -lt 1) { throw 'Service-backed progression receipt missing.' }
+        $result.progressionReceipts = $receiptCount
+        $result.status = 'Passed'
+        return
+    }
     # Stop right after a receipt: the next action is still walking or refining (3 s), so nothing is mid-commit.
     # A server killed mid-commit can lose that action's progression receipt (INT-05 known gap: no durable outbox).
     Wait-Log $server1 'server1' 'QUEST_PILOT_EVENT Kind=craft Target=item/iron_ingot .* Result=0'
