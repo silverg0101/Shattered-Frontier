@@ -36,7 +36,7 @@ a { color: var(--primary); text-decoration: none; }
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; border: 2px solid var(--background); }
 
-.app { display: grid; grid-template-columns: 224px 1fr auto; height: 100vh; }
+.app { display: grid; grid-template-columns: 224px 1fr auto; grid-template-rows: minmax(0, 1fr); height: 100vh; }  /* one row capped at the window, so .view scrolls instead of growing */
 
 /* ---- left menu */
 nav.side { background: var(--deep); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 22px 14px; gap: 4px; }
@@ -51,14 +51,14 @@ nav.side a.on svg { color: var(--primary); }
 nav.side .foot { margin-top: auto; padding: 10px 12px; font-size: 11px; color: var(--muted-foreground); }
 
 /* ---- main */
-main { display: flex; flex-direction: column; min-width: 0; }
+main { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
 header.top { height: 64px; flex: none; display: flex; align-items: center; gap: 12px; padding: 0 28px; border-bottom: 1px solid var(--border); background: hsla(220, 14%, 8%, .92); backdrop-filter: blur(10px); }
 .crumbs { display: flex; align-items: center; gap: 6px; font: 600 13px var(--display); min-width: 0; overflow: hidden; white-space: nowrap; }
 .crumbs a { color: var(--muted-foreground); padding: 4px 6px; border-radius: 6px; transition: color .2s, background .2s; }
 .crumbs a:hover { color: var(--foreground); background: var(--card); }
 .crumbs a:last-child { color: var(--foreground); }
 .crumbs i { color: var(--border); font-style: normal; }
-.view { flex: 1; overflow: auto; padding: 28px; }
+.view { flex: 1; min-height: 0; overflow: auto; padding: 28px; }
 .eyebrow { font: 600 11px/1 var(--sans); letter-spacing: .18em; text-transform: uppercase; color: var(--primary); }
 h2 { font: 700 32px/1.1 var(--display); letter-spacing: -.025em; margin: 10px 0 0; }
 h3 { font: 600 18px/1.2 var(--display); margin: 0; }

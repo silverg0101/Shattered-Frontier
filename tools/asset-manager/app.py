@@ -1222,15 +1222,19 @@ def codex_image(prompt, model="auto", refs=(), size="1024x1024"):
 
 # Multi-view: the front first, then each other view drawn from it, so all four share one design and one scale.
 # Pixal3D stitches views by camera angle and assumes one orthographic camera distance: a view at another scale or
-# with perspective makes it invent extra limbs (Greenlands rat, 2026-10-23: back view 1.4x the side views).
+# with perspective makes it invent extra limbs (Greenlands rat, 2026-10-23: back view 1.4x the side views). A tail
+# swept to image-right in both front and back is on opposite sides of the body, and it builds two tails (rat v2).
 MV_FRONT = ("{prompt}\n\nThis is the front view of a 3D-model reference sheet. Show the whole subject, standing in a "
             "neutral pose, seen straight from the front at eye level through an orthographic camera (no perspective), "
             "centred with a small margin all round, on a plain pure-white background with soft even studio light. "
-            "No ground shadow, no props, no text.")
+            "Loose parts (tail, cloth, hair, straps) hang straight down or trail straight back along the body's centre "
+            "line, never swept off to one side. No ground shadow, no props, no text.")
 MV_SIDE = ("The attached image is the front view of a 3D-model reference sheet. Draw the exact same subject - same "
            "design, proportions, colours, materials and pose - seen {view}. Use the same orthographic eye-level camera "
            "at the same distance: the subject is exactly as tall in pixels as in the front view, its feet on the same "
-           "line, centred, on the same pure-white background and light. No ground shadow, no props, no text.\n\n"
+           "line, centred, on the same pure-white background and light. Loose parts (tail, cloth, hair, straps) sit "
+           "where they are in the front view: hanging down or trailing straight back along the centre line, not swept "
+           "to one side. No ground shadow, no props, no text.\n\n"
            "Subject: {prompt}")
 MV_VIEWS = {"left": "from its left side (the camera at the subject's left, so it faces image-left)",
             "back": "from directly behind",
