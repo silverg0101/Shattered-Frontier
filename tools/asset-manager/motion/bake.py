@@ -16,13 +16,14 @@ from pathlib import Path
 
 import bpy
 import numpy as np
-from mathutils import Matrix, Vector
+from mathutils import Matrix, Quaternion, Vector
 
 sys.path.insert(0, str(Path(__file__).parent))
 from render_views import load  # same import and turn, so world positions line up
 from track_solve import fabrik, feet
 
 MIN_OFFSET = 0.1  # an off-axis child counts for twist when it sits this far (x bone length) from the axis
+FLAT_LIFT = 0.15  # a paw is level (its rest turn) on the floor and follows the video from this lift (x model height)
 
 
 def frame_of(a, b):
@@ -67,6 +68,11 @@ def main():
             twist[pb.name] = best[1]
 
     legs = feet(j) if m.get("loop") else []  # a looping action (walk, run, idle) stands on the floor
+    # Paws on the floor lie flat: tracked toes are the noisiest points (small, often behind a leg), and a toe
+    # aimed at a bad point curls the paw back. The paw takes its rest turn there, the tracked one when lifted.
+    flat = {c["name"]: chain[-1]["name"] for chain, sub in legs for c in sub}
+    up_v = to_arm.to_3x3() @ Vector((0, 0, 1))  # a world metre up, in armature space
+    lift_h = FLAT_LIFT * j["calib"]["model_height"] * up_v.length
     for chain, _ in legs:  # a leg aims joint to joint, so its joints land exactly where planting puts them
         for c, nxt in zip(chain, chain[1:]):
             aim[c["name"]] = nxt["head"]
@@ -101,6 +107,11 @@ def main():
                 rot = frame_of(a, pts[c] - head) @ frame_of(a0, pts0[c] - h0).transposed()
             else:
                 rot = (spin @ a0).rotation_difference(a).to_matrix() @ spin
+            if pb.name in flat:  # level by how high its ankle is
+                ankle = bones[flat[pb.name]]["head"]
+                lift = (want[flat[pb.name]].to_translation() if pb.name != flat[pb.name] else head) - pts0[ankle]
+                w = min(max(1 - lift.dot(up_v.normalized()) / lift_h, 0), 1)
+                rot = rot.to_quaternion().slerp(Quaternion(), w).to_matrix()
             want[pb.name] = Matrix.Translation(head) @ rot.to_4x4() @ Matrix.Translation(-h0) @ rest[pb.name]
         return want
 
@@ -109,7 +120,7 @@ def main():
     # Feet on the floor: a foot that never comes down (a height error) is lowered by its lowest tenth of heights,
     # one that sinks through the floor is lifted onto it, and its leg bends to follow, hip or shoulder fixed.
     # ponytail: the lowest tenth counts as standing; a motion mostly in mid-air (a leap) would be pulled down
-    up = np.array(to_arm.to_3x3() @ Vector((0, 0, 1)))  # a world metre up, in armature space
+    up = np.array(up_v)
     for chain, sub in legs:
         lengths = [(pts0[n["head"]] - pts0[c["head"]]).length for c, n in zip(chain, chain[1:])]
         foot = [(c["name"], i) for c in sub for i in (c["head"], c["tail"])]

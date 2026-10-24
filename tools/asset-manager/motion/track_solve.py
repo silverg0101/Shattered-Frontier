@@ -20,8 +20,7 @@ SMOOTH = 5          # frames in the moving average over solved positions
 GOOD_ERR = 0.05     # height disagreement (fraction of model height) that scores 0
 HOLD = 0.2          # detector confidence below which a joint keeps its last place
 LOOP_MIN = 0.8      # seconds: shortest loop a looping action is cut to (a walk's two steps)
-FILL_TOL = 0.15     # a one-view joint is rebuilt from its bone when its guess is this far (x length) off it
-VEL_WEIGHT = 4     # frames: how much a velocity mismatch at the loop's seam counts against a pose mismatch
+VEL_WEIGHT = 4      # frames: how much a velocity mismatch at the loop's seam counts against a pose mismatch
 
 
 def read_video(path):
@@ -75,31 +74,6 @@ def solve(front, side, vis_f, vis_s, calib):
     wf, ws = vis_f + 1e-3, vis_s + 1e-3   # a point hidden in one view leans on the other
     z = (wf * zf + ws * zs) / (wf + ws)
     return np.stack([x, y, z], -1), np.abs(zf - zs)
-
-
-def fill_depth(pos, vis_f, vis_s, j):
-    """A joint one view can't see has one axis only that view gives: y (depth) from the side, x from the front.
-    Rebuilt from its bone instead: the parent joint, the axes the other view does give, and the rest length
-    fix it up to a sign, taken from the guess. Parents first, so a filled knee anchors its ankle."""
-    P = np.array(j["points"])
-    by = {b["name"]: b for b in j["bones"]}
-    depth = lambda b: 0 if not b["parent"] else 1 + depth(by[b["parent"]])
-    segs = []  # (anchor point, point), parents first
-    for b in sorted(j["bones"], key=depth):
-        if b["parent"] and by[b["parent"]]["head"] != b["head"]:
-            segs.append((by[b["parent"]]["head"], b["head"]))
-        if not any(c["parent"] == b["name"] for c in j["bones"]) and b["tail"] != b["head"]:
-            segs.append((b["head"], b["tail"]))
-    pos = pos.copy()
-    for a, c in segs:
-        L = np.linalg.norm(P[c] - P[a])
-        off = np.abs(np.linalg.norm(pos[:, c] - pos[:, a], axis=-1) - L) > FILL_TOL * L  # a guess that fits stays
-        for axis, missing in ((1, (vis_s[:, c] < 0.5) & (vis_f[:, c] >= 0.5) & off),
-                              (0, (vis_f[:, c] < 0.5) & (vis_s[:, c] >= 0.5) & off)):
-            d = pos[missing, c] - pos[missing, a]
-            rest = np.sqrt(np.maximum(L ** 2 - (d ** 2).sum(-1) + d[:, axis] ** 2, 0))
-            pos[missing, c, axis] = pos[missing, a, axis] + np.where(d[:, axis] < 0, -rest, rest)
-    return pos
 
 
 def smooth(pos, k=SMOOTH):
@@ -227,8 +201,6 @@ def run(video, joints, out, detector=None, loop=False):
     else:
         (front, vis_f), (side, vis_s) = track_views(frames, j)
     pos, err = solve(front, side, vis_f, vis_s, j["calib"])
-    if detector:  # its peaks say which view sees a joint
-        pos = fill_depth(pos, vis_f, vis_s, j)
     pos = smooth(median3(pos))
     on = np.array(seen)
     s, err_pct = score(err[:, on], vis_f[:, on], vis_s[:, on], j["calib"]["model_height"])
@@ -287,12 +259,6 @@ def check():
     p = fabrik(chain, lengths, rest[3] + [0, 0, 0.05])
     assert np.allclose(p[0], chain[0]) and np.allclose(p[-1], rest[3] + [0, 0, 0.05], atol=1e-3), p
     assert np.allclose(np.linalg.norm(np.diff(p, axis=0), axis=-1), lengths)
-    # A 0.5 bone from (0, 0, 1) to (0.3, 0.4, 1): frame 0 the side view can't see its end (depth guessed 0.1),
-    # frame 1 the front can't (x guessed 0.05); both rebuilt from the bone's length.
-    bone = {"points": [[0, 0, 1], [0.3, 0.4, 1]], "bones": [{"name": "b", "head": 0, "tail": 1, "parent": None}]}
-    got = fill_depth(np.array([[[0, 0, 1], [0.3, 0.1, 1]], [[0, 0, 1], [0.05, 0.4, 1]]]),
-                     np.array([[1, 1], [1, 0.3]]), np.array([[1, 0.3], [1, 1]]), bone)
-    assert np.allclose(got[:, 1], [0.3, 0.4, 1]), got
     print("check ok")
 
 

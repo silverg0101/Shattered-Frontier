@@ -146,7 +146,7 @@ Per take, `files` holds `<name>_<action>_take<n>.glb` (the model with the baked 
 
 `log` also records which GPU did each step (the host's ComfyUI, with the same placement check as 3D jobs, the render, the detector's training and detection) and the detector's exam result. Motion jobs run on SSH hosts only, prepared with `host-setup/install-motion.sh`; the H3 model files are the ones named in `H3` in `app.py`.
 
-The model must face -Y in Blender (glTF +Z, how the 3D jobs export); otherwise set `turn`. A looping action (walk) is cut to the stretch that loops best: the rest pose and first step at the start are dropped, and the seam is blended so the last frame leads into the first. Its feet are planted: a foot that never comes down (a height error) is lowered by its lowest tenth of heights, one that sinks through the floor is lifted onto it, and the leg bends to follow with the hip or shoulder fixed. There is no root motion yet (the walk stays on the spot), and the animation is GLB only.
+The model must face -Y in Blender (glTF +Z, how the 3D jobs export); otherwise set `turn`. A looping action (walk) is cut to the stretch that loops best: the rest pose and first step at the start are dropped, and the seam is blended so the last frame leads into the first. Its feet are planted: a foot that never comes down (a height error) is lowered by its lowest tenth of heights, one that sinks through the floor is lifted onto it, and the leg bends to follow with the hip or shoulder fixed. Paws lie level on the floor (tracked toes are too noisy to steer them) and follow the video as they lift. There is no root motion yet (the walk stays on the spot), and the animation is GLB only.
 
 | Key | What it sets | Type | Range / options | Default |
 |---|---|---|---|---|
