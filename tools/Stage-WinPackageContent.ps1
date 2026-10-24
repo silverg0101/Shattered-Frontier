@@ -14,18 +14,21 @@ $exe = Join-Path $archive "ShatteredFrontier/Binaries/Win64/ShatteredFrontier$Ta
 if (-not (Test-Path -LiteralPath $exe -PathType Leaf)) { throw "Packaged executable missing: $exe" }
 $source = Join-Path $repo 'content'
 $destination = Join-Path $archive 'content'
-if (Test-Path -LiteralPath $destination) { throw "Content was already staged: $destination" }
-# The runtime's FPaths::ProjectDir()/../content resolves beside the packaged ShatteredFrontier directory.
-Copy-Item -LiteralPath $source -Destination $destination -Recurse
-$zone = Join-Path $destination 'world/zones/greenlands_silverbrook.json'
-if (-not (Test-Path -LiteralPath $zone -PathType Leaf)) { throw "Staged zone record missing: $zone" }
-$files = @(Get-ChildItem -LiteralPath $destination -File -Recurse)
-$bytes = ($files | Measure-Object Length -Sum).Sum
-$greenlands = Join-Path $archive 'ShatteredFrontier/ArtSource/Greenlands'
-$null = New-Item -ItemType Directory -Path $greenlands -Force
-foreach ($name in @('silverbrook-town-layout.json','silverbrook-census.json','silverbrook-smartobjects.json')) {
-    $inputFile = Join-Path $repo "GameClient/ArtSource/Greenlands/$name"
-    if (-not (Test-Path -LiteralPath $inputFile -PathType Leaf)) { throw "Runtime Silverbrook input missing: $inputFile" }
-    Copy-Item -LiteralPath $inputFile -Destination (Join-Path $greenlands $name)
+if (-not (Test-Path -LiteralPath $destination -PathType Container)) { throw "Packaged content missing: $destination" }
+# DefaultGame.ini stages these NonUFS files for both server platforms.
+foreach ($file in @(Get-ChildItem -LiteralPath $source -File -Recurse)) {
+    $relative = [IO.Path]::GetRelativePath($source, $file.FullName)
+    $staged = Join-Path $destination $relative
+    if (-not (Test-Path -LiteralPath $staged -PathType Leaf) -or (Get-FileHash -LiteralPath $staged -Algorithm SHA256).Hash -ne (Get-FileHash -LiteralPath $file.FullName -Algorithm SHA256).Hash) {
+        throw "Packaged content missing or changed: $staged"
+    }
 }
-Write-Output "Staged $($files.Count) content files ($bytes bytes) beside packaged $Target."
+$greenlands = Join-Path $archive 'ShatteredFrontier/Content/RuntimeData/Greenlands'
+foreach ($name in @('silverbrook-town-layout.json','silverbrook-census.json','silverbrook-smartobjects.json')) {
+    $inputFile = Join-Path $repo "GameClient/Content/RuntimeData/Greenlands/$name"
+    $staged = Join-Path $greenlands $name
+    if (-not (Test-Path -LiteralPath $staged -PathType Leaf) -or (Get-FileHash -LiteralPath $staged -Algorithm SHA256).Hash -ne (Get-FileHash -LiteralPath $inputFile -Algorithm SHA256).Hash) {
+        throw "Packaged Silverbrook input missing or changed: $staged"
+    }
+}
+Write-Output "Verified packaged content and Silverbrook runtime JSON for $Target."

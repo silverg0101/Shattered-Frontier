@@ -455,7 +455,7 @@ ESFTownsfolkGoal USFTownsfolkSubsystem::GoalFor(int32 Resident, float Hour, int3
 bool USFTownsfolkSubsystem::LoadCensus(FString& OutError)
 {
     const USFTownsfolkSettings* Settings=GetDefault<USFTownsfolkSettings>();
-    const FString Path=FPaths::Combine(FPaths::ProjectDir(),TEXT("ArtSource/Greenlands/silverbrook-census.json"));
+    const FString Path=FPaths::Combine(FPaths::ProjectContentDir(),TEXT("RuntimeData/Greenlands/silverbrook-census.json"));
     FString Text; TSharedPtr<FJsonObject> Census;
     if (!FFileHelper::LoadFileToString(Text,*Path) || !FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Census) || !Census.IsValid())
     { OutError=FString::Printf(TEXT("Census missing or unreadable: %s"),*Path); return false; }
@@ -671,7 +671,7 @@ void USFTownsfolkSubsystem::EnsureSpots()
     if (!SO) { return; }
     bSpotsTried=true;
     FString Text; TSharedPtr<FJsonObject> Root;
-    const FString Path=FPaths::Combine(FPaths::ProjectDir(),TEXT("ArtSource/Greenlands/silverbrook-smartobjects.json"));
+    const FString Path=FPaths::Combine(FPaths::ProjectContentDir(),TEXT("RuntimeData/Greenlands/silverbrook-smartobjects.json"));
     if (!FFileHelper::LoadFileToString(Text,*Path) || !FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Root) || !Root.IsValid())
     { UE_LOG(LogTemp,Warning,TEXT("TOWNSFOLK_SPOTS none: %s missing or unreadable"),*Path); return; }
     // Slot offsets are in the object's frame, X along the way it faces (cm). Door and stall slots look back at the object; a bench's look out.

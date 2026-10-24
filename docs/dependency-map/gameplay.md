@@ -1,5 +1,7 @@
 # Gameplay
 
+Packaged runtime JSON: `GameClient/Content/RuntimeData/Greenlands/` holds the three Silverbrook census, town-layout and smart-object files read by townsfolk and quests; keep them byte-identical to `GameClient/ArtSource/Greenlands/`. The other runtime records remain under repository `content/` and are staged beside the packaged project through `DefaultGame.ini`.
+
 
 
 H2 Stage S durable experiment: [AuthorityDurable](../BackendServices/fixtures/AuthorityDurable/README.md) adds one isolated Npgsql project using the existing pinned dependency versions. `tools/Test-H2AuthorityDurable.ps1 -EvidenceRoot <new Artifacts/Persistence/AuthorityDurable child>` performs only its locked restore/build and fresh three-database loopback fixture, role/fault/restart checks and owned cleanup. It uses trusted lookup/proof stubs; it creates no CA, real authentication or gameplay participants. See the [scope authorization](decisions/B-03-B-04-stage-s-approval.md); Stage T/R and production closure remain separate.
