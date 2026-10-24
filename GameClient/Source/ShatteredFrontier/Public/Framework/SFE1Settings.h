@@ -128,5 +128,11 @@ public:
     UPROPERTY(Config, EditAnywhere, Category="Interaction (Release Only)", meta=(ClampMin="0.1", ClampMax="10.0", Units="s", ToolTip="Minimum server time between accepted non-economic probes. Default 0.5 s; release review required; next startup only."))
     float InteractionAcceptedCooldownSeconds = 0.5f;
 
+    // Player MetaHuman faces a character may wear (ASFE1Character::FaceId). Each id names a face built by
+    // tools/Build-PlayerMetaHumans.py at /Game/Frontier/Characters/Player/Built/MHC_<id>/BP_MHC_<id>; the server rejects any other id.
+    // Shipped list in DefaultGame.ini; must include Orlando (the default face), never OrlandoBare (an authoring body). Next startup.
+    UPROPERTY(Config, EditAnywhere, Category="Appearance (Release Only)")
+    TArray<FName> PlayerFaceIds = { TEXT("Orlando") };
+
     bool Validate(FString& OutError) const;
 };

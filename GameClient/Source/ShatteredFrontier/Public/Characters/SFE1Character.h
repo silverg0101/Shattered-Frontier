@@ -35,10 +35,16 @@ public:
     void SetDialogueFramingTarget(AActor* Speaker);
     static FVector DialogueHeadPoint(const AActor* Speaker);
     UPROPERTY(VisibleAnywhere) TObjectPtr<USFCrowdControlComponent> CrowdControl;
-    // The visible body (not on a dedicated server): a player MetaHuman built by tools/Build-PlayerMetaHumans.py, attached to the
-    // mannequin and posed from it through MetaHumanRetargeter (tools/Create-PlayerRetarget.py). The mannequin stays the hidden
+    // The visible body (not on a dedicated server): the player MetaHuman for FaceId, built by tools/Build-PlayerMetaHumans.py, attached
+    // to the mannequin and posed from it through MetaHumanRetargeter (tools/Create-PlayerRetarget.py). The mannequin stays the hidden
     // animation driver; when the MetaHuman is missing (not built on this machine) the mannequin shows as before.
-    UPROPERTY(EditDefaultsOnly, Category="Appearance") TSoftClassPtr<AActor> MetaHumanClass;
+    // FaceId is an id from USFE1Settings::PlayerFaceIds, mapped to the fixed path FaceClassPath gives (clients never pick a class).
+    // Server-set: the character creator will call SetFaceId from the player's saved appearance (persistence and the creator packet
+    // are a later step); today only the SFFace dev command and SFCrowdTest do.
+    FName GetFaceId() const { return FaceId; }
+    void SetFaceId(FName NewFaceId);  // authority only; an id not in PlayerFaceIds is logged and the old face kept
+    static bool IsAllowedFaceId(FName Id);
+    static FSoftClassPath FaceClassPath(FName Id);  // empty when Id is not allowed
     UPROPERTY(EditDefaultsOnly, Category="Appearance") TSoftObjectPtr<UIKRetargeter> MetaHumanRetargeter;
     // The player's Mutable Customizable Object (tools/Create-PlayerOutfit.py): the bare body wearing the starter tunic and leggings, with
     // the skin under them removed. Its mesh replaces the MetaHuman's Body mesh and default outfit. UObject so the Server target, which has
@@ -52,6 +58,8 @@ public:
 private:
     friend class USFQuestPilotComponent;  // dev scenario driver swings through the same PilotAttack as the key
     void SpawnMetaHuman();
+    UPROPERTY(ReplicatedUsing=OnRep_FaceId) FName FaceId = TEXT("Orlando");
+    UFUNCTION() void OnRep_FaceId();  // swaps the MetaHuman body for the new face (client side only)
     UPROPERTY(Transient) TObjectPtr<AActor> MetaHuman;
     UPROPERTY(Replicated) int32 PilotHealth = 0;  // shown by the vitals HUD (SFE1VitalsHud), not in the world
     UPROPERTY(Replicated) TObjectPtr<AActor> CombatTarget;

@@ -11,6 +11,11 @@ bool USFE1Settings::Validate(FString& OutError) const
         }
         return true;
     };
+    if (!PlayerFaceIds.Contains(TEXT("Orlando")) || PlayerFaceIds.Contains(TEXT("OrlandoBare")))
+    {
+        OutError = TEXT("PlayerFaceIds must include Orlando (the default face) and never OrlandoBare");
+        return false;
+    }
     return Check(TEXT("RunSpeedMetresPerSecond"), RunSpeedMetresPerSecond, 0.5f, 12.0f)
         && Check(TEXT("JumpHeightMetres"), JumpHeightMetres, 0.1f, 3.0f)
         && Check(TEXT("GravityMetresPerSecondSquared"), GravityMetresPerSecondSquared, 1.0f, 20.0f)

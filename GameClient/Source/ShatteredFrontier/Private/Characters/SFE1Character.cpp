@@ -71,7 +71,6 @@ ASFE1Character::ASFE1Character()
         static ConstructorHelpers::FClassFinder<UAnimInstance> Locomotion(TEXT("/Game/Mannequin/Animations/ThirdPerson_AnimBP"));
         GetMesh()->SetSkeletalMeshAsset(Body.Object);
         GetMesh()->SetAnimInstanceClass(Locomotion.Class);
-        MetaHumanClass = TSoftClassPtr<AActor>(FSoftObjectPath(TEXT("/Game/Frontier/Characters/Player/Built/MHC_Orlando/BP_MHC_Orlando.BP_MHC_Orlando_C")));
         MetaHumanRetargeter = TSoftObjectPtr<UIKRetargeter>(FSoftObjectPath(TEXT("/Game/Frontier/Characters/Player/Retarget/RTG_SF_MannequinToMetaHuman.RTG_SF_MannequinToMetaHuman")));
         Outfit = TSoftObjectPtr<UObject>(FSoftObjectPath(TEXT("/Game/Frontier/Characters/Player/Outfit/CO_PlayerOutfit.CO_PlayerOutfit")));
     }
@@ -103,11 +102,44 @@ void ASFE1Character::BeginPlay()
 #endif
 }
 
+bool ASFE1Character::IsAllowedFaceId(FName Id)
+{
+    return !Id.IsNone() && GetDefault<USFE1Settings>()->PlayerFaceIds.Contains(Id);
+}
+
+FSoftClassPath ASFE1Character::FaceClassPath(FName Id)
+{
+    if (!IsAllowedFaceId(Id)) { return FSoftClassPath(); }
+    const FString Name = Id.ToString();
+    return FSoftClassPath(FString::Printf(TEXT("/Game/Frontier/Characters/Player/Built/MHC_%s/BP_MHC_%s.BP_MHC_%s_C"), *Name, *Name, *Name));
+}
+
+void ASFE1Character::SetFaceId(FName NewFaceId)
+{
+    if (!HasAuthority() || NewFaceId == FaceId) { return; }
+    if (!IsAllowedFaceId(NewFaceId))
+    {
+        UE_LOG(LogTemp, Warning, TEXT("PLAYER_FACE_REJECTED %s (not in USFE1Settings::PlayerFaceIds); keeping %s"), *NewFaceId.ToString(), *FaceId.ToString());
+        return;
+    }
+    FaceId = NewFaceId;
+    OnRep_FaceId();  // listen server / standalone: show it here too
+}
+
+void ASFE1Character::OnRep_FaceId()
+{
+    if (GetNetMode() == NM_DedicatedServer || !HasActorBegunPlay()) { return; }  // BeginPlay spawns the current face
+    if (MetaHuman) { MetaHuman->Destroy(); MetaHuman = nullptr; }
+    GetMesh()->SetHiddenInGame(false);  // the mannequin again, should the new face not be built here
+    SpawnMetaHuman();
+}
+
 AActor* ASFE1Character::SpawnPosedMetaHuman(USceneComponent* Parent, const FTransform& Relative) const
 {
-    UClass* Class = MetaHumanClass.IsNull() ? nullptr : MetaHumanClass.LoadSynchronous();
+    const FSoftClassPath ClassPath = FaceClassPath(FaceId);
+    UClass* Class = ClassPath.IsNull() ? nullptr : ClassPath.TryLoadClass<AActor>();
     UIKRetargeter* Retargeter = MetaHumanRetargeter.IsNull() ? nullptr : MetaHumanRetargeter.LoadSynchronous();
-    if (!Class || !Retargeter || !Parent) { UE_LOG(LogTemp, Warning, TEXT("PLAYER_METAHUMAN_MISSING %s (run tools/Build-PlayerMetaHumans.py); showing the mannequin"), *MetaHumanClass.ToString()); return nullptr; }
+    if (!Class || !Retargeter || !Parent) { UE_LOG(LogTemp, Warning, TEXT("PLAYER_METAHUMAN_MISSING face %s %s (run tools/Build-PlayerMetaHumans.py); showing the mannequin"), *FaceId.ToString(), *ClassPath.ToString()); return nullptr; }
     FActorSpawnParameters Spawn; Spawn.Owner = const_cast<ASFE1Character*>(this); Spawn.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
     AActor* Body = GetWorld()->SpawnActor<AActor>(Class, Parent->GetComponentTransform(), Spawn);
     if (!Body) { return nullptr; }
@@ -157,6 +189,8 @@ void ASFE1Character::SpawnMetaHuman()
     // The mannequin keeps animating unseen: it is the pose source.
     GetMesh()->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
     GetMesh()->SetHiddenInGame(true);
+    // Keep the first-person / dialogue hiding (TickCameraControls) when the body is swapped for a new face.
+    for (UPrimitiveComponent* Part : TInlineComponentArray<UPrimitiveComponent*>(MetaHuman)) { Part->SetOwnerNoSee(GetMesh()->bOwnerNoSee); }
     UE_LOG(LogTemp, Display, TEXT("PLAYER_METAHUMAN_SPAWNED %s"), *GetNameSafe(MetaHuman->GetClass()));
 }
 
@@ -506,6 +540,7 @@ void ASFE1Character::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
     DOREPLIFETIME(ASFE1Character, PilotHealth);
+    DOREPLIFETIME(ASFE1Character, FaceId);
     DOREPLIFETIME_CONDITION(ASFE1Character, CombatTarget, COND_OwnerOnly);
 }
 

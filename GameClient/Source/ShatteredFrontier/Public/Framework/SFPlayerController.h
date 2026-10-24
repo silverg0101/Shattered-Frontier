@@ -102,6 +102,9 @@ public:
     // and GPU milliseconds over Seconds (editor builds only, where RenderCore/RHI are linked).
     UFUNCTION(Exec) void SFCrowdTest(int32 Count);
     UFUNCTION(Exec) void SFFrameSample(float Seconds, const FString& Label);
+    // Development: SFFace <id> asks the server to put face <id> (USFE1Settings::PlayerFaceIds) on this player's character.
+    UFUNCTION(Exec) void SFFace(const FString& FaceId);
+    UFUNCTION(Server, Reliable) void ServerSFFace(FName FaceId);
     bool IsStationPanelOpen() const;  // the crafting-station panel is on screen
     void ToggleBuildMode();
 protected:
