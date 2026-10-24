@@ -213,7 +213,7 @@ PARAMS = (
         ("keep_models_loaded", "Keep models loaded", "bool", {}, [("39", "keep_models_loaded")]),
     ])
     + section("Image", [
-        ("remove_background", "Remove background", "bool", {}, [("194", "remove_background")]),
+        ("remove_background", "Remove background", "bool", {}, [("194", "remove_background"), ("317", "remove_background")]),
         ("padding", "Padding (px)", "int", {"min": 0, "max": 1024}, [("194", "padding")]),
         ("max_size", "Max image size (px)", "int", {"min": 512, "max": 8192, "step": 128}, [("194", "max_size")]),
     ])
@@ -261,7 +261,6 @@ PARAMS = (
         ("rig_beams", "Beam count", "int", {"min": 1, "max": 20}, [("1270", "num_beams")]),
     ])
     + section("Views", [
-        ("mv_remove_background", "Remove view backgrounds", "bool", {}, [("317", "remove_background")]),
         ("mv_framing", "Camera framing", "choice", {"options": ["auto", "pixal3d_rig", "fill_frame", "camera_config"]}, [("317", "framing")]),
         ("mv_camera_fov", "Camera FOV (radians, 0.1 is near orthographic)", "float", {"min": 0.001, "max": 3.14, "step": 0.001}, [("303", "fov")]),
         ("mv_mesh_scale", "Mesh scale", "float", {"min": 0.1, "max": 9.9, "step": 0.1}, [("303", "mesh_scale")]),
@@ -310,8 +309,7 @@ RIG_PRESETS = {
     "texture_size": _levels(1024, 2048, 2048, 2048),
 }
 # Everything else is a pipeline internal, a research knob or has no UE5 benefit; the web app hides it.
-UI_VISIBLE = {"seed", "target_face_num", "texture_size", "remove_background", "mv_remove_background",
-              "rig", "rig_format", "rig_skeleton"}
+UI_VISIBLE = {"seed", "target_face_num", "texture_size", "remove_background", "rig", "rig_format", "rig_skeleton"}
 UI_HIDDEN = {p[0] for p in PARAMS} - UI_VISIBLE
 SECTION_MODES = {"Views": ["multi"]}  # others: both
 

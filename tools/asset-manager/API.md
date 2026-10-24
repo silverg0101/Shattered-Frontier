@@ -274,7 +274,7 @@ The web app shows only the preset and the options marked **(web app)**. Every ot
 
 | Key | What it sets | Type | Range / options | Default (Normal) | Low / High / Ultra |
 |---|---|---|---|---|---|
-| `remove_background` | Remove background **(web app)** | bool | `true` / `false` | `true` |  |
+| `remove_background` | Remove background, of the image or every view **(web app)** | bool | `true` / `false` | `true` |  |
 | `padding` | Padding (px) | int | 0 to 1024 | `5` |  |
 | `max_size` | Max image size (px) | int | 512 to 8192 (step 128) | `1024` |  |
 
@@ -366,7 +366,6 @@ The web app shows only the preset and the options marked **(web app)**. Every ot
 
 | Key | What it sets | Type | Range / options | Default (Normal) | Low / High / Ultra |
 |---|---|---|---|---|---|
-| `mv_remove_background` | Remove view backgrounds **(web app)** | bool | `true` / `false` | `true` |  |
 | `mv_framing` | Camera framing | choice | `auto`, `pixal3d_rig`, `fill_frame`, `camera_config` | `auto` |  |
 | `mv_camera_fov` | Camera FOV (radians, 0.1 is near orthographic) | float | 0.001 to 3.14 (step 0.001) | `0.1` |  |
 | `mv_mesh_scale` | Mesh scale | float | 0.1 to 9.9 (step 0.1) | `1.0` |  |
