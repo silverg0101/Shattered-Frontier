@@ -960,6 +960,27 @@ def host_tools(jid, host):
             if ln.startswith(("render device:", "track device:", "train device:", "detect device:")))
     return work, gpu, py, blender, step, device_lines
 
+def ssh_step(host, jid, work, cmd, timeout):
+    """ssh() for a long step (detector training, its exam) that a cancel stops at once: the command runs in its
+    own process group on the host, and a cancel kills the group rather than waiting hours for it to end."""
+    pid, out = shlex.quote(f"{work}/.step.pid"), {}
+    def go():
+        try:
+            out["ok"] = ssh(host, f"setsid bash -c {shlex.quote(cmd)} & echo $! > {pid}; wait $!", timeout=timeout)
+        except Exception as e:
+            out["err"] = e
+    t = threading.Thread(target=go, daemon=True)
+    t.start()
+    while t.is_alive():
+        t.join(5)
+        if t.is_alive() and job_row(jid)["status"] == "cancelling":
+            ssh(host, f"kill -TERM -- -$(cat {pid}) 2>/dev/null || true")
+            t.join(30)
+            raise InterruptedError
+    if "err" in out:
+        raise out["err"]
+    return out["ok"]
+
 def upload_motion(host, jid, src):
     """The motion scripts and the model into the job's folder on the host; returns the model's name there."""
     model = f"model{src.suffix.lower()}"
@@ -976,14 +997,14 @@ def train_detector(host, jid, src, model, turn, opts):
     s, q, lib = get_settings(), shlex.quote, detector_dir(src, turn)
     seed = opts["seed"] if opts["seed"] >= 0 else random.randint(0, 99999)
     step(f"training this model's joint detector: {opts['images']} renders, {opts['epochs']} epochs ({opts['backbone']})")
-    device_lines(ssh(host, f"cd {q(work)} && {gpu} {blender} -b -P synth_render.py -- {model} synth {opts['images']}"
-                           f" --turn {turn} --seed {seed} > synth.log 2>&1 || {{ tail -5 synth.log >&2; exit 1; }}"
-                           f" && {gpu} {py} detector.py train synth det {opts['epochs']} --backbone {opts['backbone']}"
-                           f" --seed {seed} && cp synth/keypoints.json det/", timeout=4 * 3600), "detector training")
+    device_lines(ssh_step(host, jid, work, f"cd {q(work)} && {gpu} {blender} -b -P synth_render.py -- {model} synth"
+                          f" {opts['images']} --turn {turn} --seed {seed} > synth.log 2>&1 || {{ tail -5 synth.log >&2;"
+                          f" exit 1; }} && {gpu} {py} detector.py train synth det {opts['epochs']} --backbone"
+                          f" {opts['backbone']} --seed {seed} && cp synth/keypoints.json det/", 4 * 3600), "detector training")
     step("examining the detector on a motion it hasn't seen")
-    ssh(host, f"cd {q(work)} && {gpu} {py} exam.py {model} det exam --turn {turn} --blender {blender}"
-              f" --limits {q(json.dumps(s['detector_limits']))} --usable {s['detector_usable_x']} > exam.log 2>&1;"
-              f" test -f exam/exam.json || {{ tail -5 exam.log >&2; exit 1; }}", timeout=3600)
+    ssh_step(host, jid, work, f"cd {q(work)} && {gpu} {py} exam.py {model} det exam --turn {turn} --blender {blender}"
+             f" --limits {q(json.dumps(s['detector_limits']))} --usable {s['detector_usable_x']} > exam.log 2>&1;"
+             f" test -f exam/exam.json || {{ tail -5 exam.log >&2; exit 1; }}", 3600)
     exam = json.loads(ssh(host, f"cat {q(work + '/exam/exam.json')}"))
     exam.update(trained=time.time(), version=DETECTOR_VERSION, settings={**opts, "seed": seed})
     old = json.loads((lib / "exam.json").read_text()) if (lib / "exam.json").exists() else None
