@@ -38,6 +38,13 @@ class Progression final {
   class StubInterface {
    public:
     virtual ~StubInterface() {}
+    virtual ::grpc::Status CreateCharacter(::grpc::ClientContext* context, const ::sf::progression::v1::CreateCharacterRequest& request, ::sf::progression::v1::CreateCharacterReply* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::progression::v1::CreateCharacterReply>> AsyncCreateCharacter(::grpc::ClientContext* context, const ::sf::progression::v1::CreateCharacterRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::progression::v1::CreateCharacterReply>>(AsyncCreateCharacterRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::progression::v1::CreateCharacterReply>> PrepareAsyncCreateCharacter(::grpc::ClientContext* context, const ::sf::progression::v1::CreateCharacterRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::progression::v1::CreateCharacterReply>>(PrepareAsyncCreateCharacterRaw(context, request, cq));
+    }
     virtual ::grpc::Status ApplyReceipt(::grpc::ClientContext* context, const ::sf::progression::v1::ApplyReceiptRequest& request, ::sf::progression::v1::ApplyReceiptReply* response) = 0;
     std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::progression::v1::ApplyReceiptReply>> AsyncApplyReceipt(::grpc::ClientContext* context, const ::sf::progression::v1::ApplyReceiptRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::progression::v1::ApplyReceiptReply>>(AsyncApplyReceiptRaw(context, request, cq));
@@ -69,6 +76,8 @@ class Progression final {
     class async_interface {
      public:
       virtual ~async_interface() {}
+      virtual void CreateCharacter(::grpc::ClientContext* context, const ::sf::progression::v1::CreateCharacterRequest* request, ::sf::progression::v1::CreateCharacterReply* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void CreateCharacter(::grpc::ClientContext* context, const ::sf::progression::v1::CreateCharacterRequest* request, ::sf::progression::v1::CreateCharacterReply* response, ::grpc::ClientUnaryReactor* reactor) = 0;
       virtual void ApplyReceipt(::grpc::ClientContext* context, const ::sf::progression::v1::ApplyReceiptRequest* request, ::sf::progression::v1::ApplyReceiptReply* response, std::function<void(::grpc::Status)>) = 0;
       virtual void ApplyReceipt(::grpc::ClientContext* context, const ::sf::progression::v1::ApplyReceiptRequest* request, ::sf::progression::v1::ApplyReceiptReply* response, ::grpc::ClientUnaryReactor* reactor) = 0;
       virtual void GetCharacterState(::grpc::ClientContext* context, const ::sf::progression::v1::GetCharacterStateRequest* request, ::sf::progression::v1::CharacterStateReply* response, std::function<void(::grpc::Status)>) = 0;
@@ -82,6 +91,8 @@ class Progression final {
     virtual class async_interface* async() { return nullptr; }
     class async_interface* experimental_async() { return async(); }
    private:
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::progression::v1::CreateCharacterReply>* AsyncCreateCharacterRaw(::grpc::ClientContext* context, const ::sf::progression::v1::CreateCharacterRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::progression::v1::CreateCharacterReply>* PrepareAsyncCreateCharacterRaw(::grpc::ClientContext* context, const ::sf::progression::v1::CreateCharacterRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::progression::v1::ApplyReceiptReply>* AsyncApplyReceiptRaw(::grpc::ClientContext* context, const ::sf::progression::v1::ApplyReceiptRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::progression::v1::ApplyReceiptReply>* PrepareAsyncApplyReceiptRaw(::grpc::ClientContext* context, const ::sf::progression::v1::ApplyReceiptRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::progression::v1::CharacterStateReply>* AsyncGetCharacterStateRaw(::grpc::ClientContext* context, const ::sf::progression::v1::GetCharacterStateRequest& request, ::grpc::CompletionQueue* cq) = 0;
@@ -94,6 +105,13 @@ class Progression final {
   class Stub final : public StubInterface {
    public:
     Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
+    ::grpc::Status CreateCharacter(::grpc::ClientContext* context, const ::sf::progression::v1::CreateCharacterRequest& request, ::sf::progression::v1::CreateCharacterReply* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::progression::v1::CreateCharacterReply>> AsyncCreateCharacter(::grpc::ClientContext* context, const ::sf::progression::v1::CreateCharacterRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::progression::v1::CreateCharacterReply>>(AsyncCreateCharacterRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::progression::v1::CreateCharacterReply>> PrepareAsyncCreateCharacter(::grpc::ClientContext* context, const ::sf::progression::v1::CreateCharacterRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::progression::v1::CreateCharacterReply>>(PrepareAsyncCreateCharacterRaw(context, request, cq));
+    }
     ::grpc::Status ApplyReceipt(::grpc::ClientContext* context, const ::sf::progression::v1::ApplyReceiptRequest& request, ::sf::progression::v1::ApplyReceiptReply* response) override;
     std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::progression::v1::ApplyReceiptReply>> AsyncApplyReceipt(::grpc::ClientContext* context, const ::sf::progression::v1::ApplyReceiptRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::progression::v1::ApplyReceiptReply>>(AsyncApplyReceiptRaw(context, request, cq));
@@ -125,6 +143,8 @@ class Progression final {
     class async final :
       public StubInterface::async_interface {
      public:
+      void CreateCharacter(::grpc::ClientContext* context, const ::sf::progression::v1::CreateCharacterRequest* request, ::sf::progression::v1::CreateCharacterReply* response, std::function<void(::grpc::Status)>) override;
+      void CreateCharacter(::grpc::ClientContext* context, const ::sf::progression::v1::CreateCharacterRequest* request, ::sf::progression::v1::CreateCharacterReply* response, ::grpc::ClientUnaryReactor* reactor) override;
       void ApplyReceipt(::grpc::ClientContext* context, const ::sf::progression::v1::ApplyReceiptRequest* request, ::sf::progression::v1::ApplyReceiptReply* response, std::function<void(::grpc::Status)>) override;
       void ApplyReceipt(::grpc::ClientContext* context, const ::sf::progression::v1::ApplyReceiptRequest* request, ::sf::progression::v1::ApplyReceiptReply* response, ::grpc::ClientUnaryReactor* reactor) override;
       void GetCharacterState(::grpc::ClientContext* context, const ::sf::progression::v1::GetCharacterStateRequest* request, ::sf::progression::v1::CharacterStateReply* response, std::function<void(::grpc::Status)>) override;
@@ -144,6 +164,8 @@ class Progression final {
    private:
     std::shared_ptr< ::grpc::ChannelInterface> channel_;
     class async async_stub_{this};
+    ::grpc::ClientAsyncResponseReader< ::sf::progression::v1::CreateCharacterReply>* AsyncCreateCharacterRaw(::grpc::ClientContext* context, const ::sf::progression::v1::CreateCharacterRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::sf::progression::v1::CreateCharacterReply>* PrepareAsyncCreateCharacterRaw(::grpc::ClientContext* context, const ::sf::progression::v1::CreateCharacterRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::sf::progression::v1::ApplyReceiptReply>* AsyncApplyReceiptRaw(::grpc::ClientContext* context, const ::sf::progression::v1::ApplyReceiptRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::sf::progression::v1::ApplyReceiptReply>* PrepareAsyncApplyReceiptRaw(::grpc::ClientContext* context, const ::sf::progression::v1::ApplyReceiptRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::sf::progression::v1::CharacterStateReply>* AsyncGetCharacterStateRaw(::grpc::ClientContext* context, const ::sf::progression::v1::GetCharacterStateRequest& request, ::grpc::CompletionQueue* cq) override;
@@ -152,6 +174,7 @@ class Progression final {
     ::grpc::ClientAsyncResponseReader< ::sf::progression::v1::SavePositionReply>* PrepareAsyncSavePositionRaw(::grpc::ClientContext* context, const ::sf::progression::v1::SavePositionRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::sf::progression::v1::LearnRecipeReply>* AsyncLearnRecipeRaw(::grpc::ClientContext* context, const ::sf::progression::v1::LearnRecipeRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::sf::progression::v1::LearnRecipeReply>* PrepareAsyncLearnRecipeRaw(::grpc::ClientContext* context, const ::sf::progression::v1::LearnRecipeRequest& request, ::grpc::CompletionQueue* cq) override;
+    const ::grpc::internal::RpcMethod rpcmethod_CreateCharacter_;
     const ::grpc::internal::RpcMethod rpcmethod_ApplyReceipt_;
     const ::grpc::internal::RpcMethod rpcmethod_GetCharacterState_;
     const ::grpc::internal::RpcMethod rpcmethod_SavePosition_;
@@ -163,10 +186,31 @@ class Progression final {
    public:
     Service();
     virtual ~Service();
+    virtual ::grpc::Status CreateCharacter(::grpc::ServerContext* context, const ::sf::progression::v1::CreateCharacterRequest* request, ::sf::progression::v1::CreateCharacterReply* response);
     virtual ::grpc::Status ApplyReceipt(::grpc::ServerContext* context, const ::sf::progression::v1::ApplyReceiptRequest* request, ::sf::progression::v1::ApplyReceiptReply* response);
     virtual ::grpc::Status GetCharacterState(::grpc::ServerContext* context, const ::sf::progression::v1::GetCharacterStateRequest* request, ::sf::progression::v1::CharacterStateReply* response);
     virtual ::grpc::Status SavePosition(::grpc::ServerContext* context, const ::sf::progression::v1::SavePositionRequest* request, ::sf::progression::v1::SavePositionReply* response);
     virtual ::grpc::Status LearnRecipe(::grpc::ServerContext* context, const ::sf::progression::v1::LearnRecipeRequest* request, ::sf::progression::v1::LearnRecipeReply* response);
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_CreateCharacter : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_CreateCharacter() {
+      ::grpc::Service::MarkMethodAsync(0);
+    }
+    ~WithAsyncMethod_CreateCharacter() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status CreateCharacter(::grpc::ServerContext* /*context*/, const ::sf::progression::v1::CreateCharacterRequest* /*request*/, ::sf::progression::v1::CreateCharacterReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestCreateCharacter(::grpc::ServerContext* context, ::sf::progression::v1::CreateCharacterRequest* request, ::grpc::ServerAsyncResponseWriter< ::sf::progression::v1::CreateCharacterReply>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(0, context, request, response, new_call_cq, notification_cq, tag);
+    }
   };
   template <class BaseClass>
   class WithAsyncMethod_ApplyReceipt : public BaseClass {
@@ -174,7 +218,7 @@ class Progression final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_ApplyReceipt() {
-      ::grpc::Service::MarkMethodAsync(0);
+      ::grpc::Service::MarkMethodAsync(1);
     }
     ~WithAsyncMethod_ApplyReceipt() override {
       BaseClassMustBeDerivedFromService(this);
@@ -185,7 +229,7 @@ class Progression final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestApplyReceipt(::grpc::ServerContext* context, ::sf::progression::v1::ApplyReceiptRequest* request, ::grpc::ServerAsyncResponseWriter< ::sf::progression::v1::ApplyReceiptReply>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(0, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(1, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -194,7 +238,7 @@ class Progression final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_GetCharacterState() {
-      ::grpc::Service::MarkMethodAsync(1);
+      ::grpc::Service::MarkMethodAsync(2);
     }
     ~WithAsyncMethod_GetCharacterState() override {
       BaseClassMustBeDerivedFromService(this);
@@ -205,7 +249,7 @@ class Progression final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestGetCharacterState(::grpc::ServerContext* context, ::sf::progression::v1::GetCharacterStateRequest* request, ::grpc::ServerAsyncResponseWriter< ::sf::progression::v1::CharacterStateReply>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(1, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(2, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -214,7 +258,7 @@ class Progression final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_SavePosition() {
-      ::grpc::Service::MarkMethodAsync(2);
+      ::grpc::Service::MarkMethodAsync(3);
     }
     ~WithAsyncMethod_SavePosition() override {
       BaseClassMustBeDerivedFromService(this);
@@ -225,7 +269,7 @@ class Progression final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestSavePosition(::grpc::ServerContext* context, ::sf::progression::v1::SavePositionRequest* request, ::grpc::ServerAsyncResponseWriter< ::sf::progression::v1::SavePositionReply>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(2, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(3, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -234,7 +278,7 @@ class Progression final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_LearnRecipe() {
-      ::grpc::Service::MarkMethodAsync(3);
+      ::grpc::Service::MarkMethodAsync(4);
     }
     ~WithAsyncMethod_LearnRecipe() override {
       BaseClassMustBeDerivedFromService(this);
@@ -245,23 +289,50 @@ class Progression final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestLearnRecipe(::grpc::ServerContext* context, ::sf::progression::v1::LearnRecipeRequest* request, ::grpc::ServerAsyncResponseWriter< ::sf::progression::v1::LearnRecipeReply>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(3, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(4, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
-  typedef WithAsyncMethod_ApplyReceipt<WithAsyncMethod_GetCharacterState<WithAsyncMethod_SavePosition<WithAsyncMethod_LearnRecipe<Service > > > > AsyncService;
+  typedef WithAsyncMethod_CreateCharacter<WithAsyncMethod_ApplyReceipt<WithAsyncMethod_GetCharacterState<WithAsyncMethod_SavePosition<WithAsyncMethod_LearnRecipe<Service > > > > > AsyncService;
+  template <class BaseClass>
+  class WithCallbackMethod_CreateCharacter : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_CreateCharacter() {
+      ::grpc::Service::MarkMethodCallback(0,
+          new ::grpc::internal::CallbackUnaryHandler< ::sf::progression::v1::CreateCharacterRequest, ::sf::progression::v1::CreateCharacterReply>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::sf::progression::v1::CreateCharacterRequest* request, ::sf::progression::v1::CreateCharacterReply* response) { return this->CreateCharacter(context, request, response); }));}
+    void SetMessageAllocatorFor_CreateCharacter(
+        ::grpc::MessageAllocator< ::sf::progression::v1::CreateCharacterRequest, ::sf::progression::v1::CreateCharacterReply>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(0);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::sf::progression::v1::CreateCharacterRequest, ::sf::progression::v1::CreateCharacterReply>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_CreateCharacter() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status CreateCharacter(::grpc::ServerContext* /*context*/, const ::sf::progression::v1::CreateCharacterRequest* /*request*/, ::sf::progression::v1::CreateCharacterReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* CreateCharacter(
+      ::grpc::CallbackServerContext* /*context*/, const ::sf::progression::v1::CreateCharacterRequest* /*request*/, ::sf::progression::v1::CreateCharacterReply* /*response*/)  { return nullptr; }
+  };
   template <class BaseClass>
   class WithCallbackMethod_ApplyReceipt : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithCallbackMethod_ApplyReceipt() {
-      ::grpc::Service::MarkMethodCallback(0,
+      ::grpc::Service::MarkMethodCallback(1,
           new ::grpc::internal::CallbackUnaryHandler< ::sf::progression::v1::ApplyReceiptRequest, ::sf::progression::v1::ApplyReceiptReply>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::sf::progression::v1::ApplyReceiptRequest* request, ::sf::progression::v1::ApplyReceiptReply* response) { return this->ApplyReceipt(context, request, response); }));}
     void SetMessageAllocatorFor_ApplyReceipt(
         ::grpc::MessageAllocator< ::sf::progression::v1::ApplyReceiptRequest, ::sf::progression::v1::ApplyReceiptReply>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(0);
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(1);
       static_cast<::grpc::internal::CallbackUnaryHandler< ::sf::progression::v1::ApplyReceiptRequest, ::sf::progression::v1::ApplyReceiptReply>*>(handler)
               ->SetMessageAllocator(allocator);
     }
@@ -282,13 +353,13 @@ class Progression final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithCallbackMethod_GetCharacterState() {
-      ::grpc::Service::MarkMethodCallback(1,
+      ::grpc::Service::MarkMethodCallback(2,
           new ::grpc::internal::CallbackUnaryHandler< ::sf::progression::v1::GetCharacterStateRequest, ::sf::progression::v1::CharacterStateReply>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::sf::progression::v1::GetCharacterStateRequest* request, ::sf::progression::v1::CharacterStateReply* response) { return this->GetCharacterState(context, request, response); }));}
     void SetMessageAllocatorFor_GetCharacterState(
         ::grpc::MessageAllocator< ::sf::progression::v1::GetCharacterStateRequest, ::sf::progression::v1::CharacterStateReply>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(1);
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(2);
       static_cast<::grpc::internal::CallbackUnaryHandler< ::sf::progression::v1::GetCharacterStateRequest, ::sf::progression::v1::CharacterStateReply>*>(handler)
               ->SetMessageAllocator(allocator);
     }
@@ -309,13 +380,13 @@ class Progression final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithCallbackMethod_SavePosition() {
-      ::grpc::Service::MarkMethodCallback(2,
+      ::grpc::Service::MarkMethodCallback(3,
           new ::grpc::internal::CallbackUnaryHandler< ::sf::progression::v1::SavePositionRequest, ::sf::progression::v1::SavePositionReply>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::sf::progression::v1::SavePositionRequest* request, ::sf::progression::v1::SavePositionReply* response) { return this->SavePosition(context, request, response); }));}
     void SetMessageAllocatorFor_SavePosition(
         ::grpc::MessageAllocator< ::sf::progression::v1::SavePositionRequest, ::sf::progression::v1::SavePositionReply>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(2);
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(3);
       static_cast<::grpc::internal::CallbackUnaryHandler< ::sf::progression::v1::SavePositionRequest, ::sf::progression::v1::SavePositionReply>*>(handler)
               ->SetMessageAllocator(allocator);
     }
@@ -336,13 +407,13 @@ class Progression final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithCallbackMethod_LearnRecipe() {
-      ::grpc::Service::MarkMethodCallback(3,
+      ::grpc::Service::MarkMethodCallback(4,
           new ::grpc::internal::CallbackUnaryHandler< ::sf::progression::v1::LearnRecipeRequest, ::sf::progression::v1::LearnRecipeReply>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::sf::progression::v1::LearnRecipeRequest* request, ::sf::progression::v1::LearnRecipeReply* response) { return this->LearnRecipe(context, request, response); }));}
     void SetMessageAllocatorFor_LearnRecipe(
         ::grpc::MessageAllocator< ::sf::progression::v1::LearnRecipeRequest, ::sf::progression::v1::LearnRecipeReply>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(3);
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(4);
       static_cast<::grpc::internal::CallbackUnaryHandler< ::sf::progression::v1::LearnRecipeRequest, ::sf::progression::v1::LearnRecipeReply>*>(handler)
               ->SetMessageAllocator(allocator);
     }
@@ -357,15 +428,32 @@ class Progression final {
     virtual ::grpc::ServerUnaryReactor* LearnRecipe(
       ::grpc::CallbackServerContext* /*context*/, const ::sf::progression::v1::LearnRecipeRequest* /*request*/, ::sf::progression::v1::LearnRecipeReply* /*response*/)  { return nullptr; }
   };
-  typedef WithCallbackMethod_ApplyReceipt<WithCallbackMethod_GetCharacterState<WithCallbackMethod_SavePosition<WithCallbackMethod_LearnRecipe<Service > > > > CallbackService;
+  typedef WithCallbackMethod_CreateCharacter<WithCallbackMethod_ApplyReceipt<WithCallbackMethod_GetCharacterState<WithCallbackMethod_SavePosition<WithCallbackMethod_LearnRecipe<Service > > > > > CallbackService;
   typedef CallbackService ExperimentalCallbackService;
+  template <class BaseClass>
+  class WithGenericMethod_CreateCharacter : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_CreateCharacter() {
+      ::grpc::Service::MarkMethodGeneric(0);
+    }
+    ~WithGenericMethod_CreateCharacter() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status CreateCharacter(::grpc::ServerContext* /*context*/, const ::sf::progression::v1::CreateCharacterRequest* /*request*/, ::sf::progression::v1::CreateCharacterReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
   template <class BaseClass>
   class WithGenericMethod_ApplyReceipt : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_ApplyReceipt() {
-      ::grpc::Service::MarkMethodGeneric(0);
+      ::grpc::Service::MarkMethodGeneric(1);
     }
     ~WithGenericMethod_ApplyReceipt() override {
       BaseClassMustBeDerivedFromService(this);
@@ -382,7 +470,7 @@ class Progression final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_GetCharacterState() {
-      ::grpc::Service::MarkMethodGeneric(1);
+      ::grpc::Service::MarkMethodGeneric(2);
     }
     ~WithGenericMethod_GetCharacterState() override {
       BaseClassMustBeDerivedFromService(this);
@@ -399,7 +487,7 @@ class Progression final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_SavePosition() {
-      ::grpc::Service::MarkMethodGeneric(2);
+      ::grpc::Service::MarkMethodGeneric(3);
     }
     ~WithGenericMethod_SavePosition() override {
       BaseClassMustBeDerivedFromService(this);
@@ -416,7 +504,7 @@ class Progression final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_LearnRecipe() {
-      ::grpc::Service::MarkMethodGeneric(3);
+      ::grpc::Service::MarkMethodGeneric(4);
     }
     ~WithGenericMethod_LearnRecipe() override {
       BaseClassMustBeDerivedFromService(this);
@@ -428,12 +516,32 @@ class Progression final {
     }
   };
   template <class BaseClass>
+  class WithRawMethod_CreateCharacter : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_CreateCharacter() {
+      ::grpc::Service::MarkMethodRaw(0);
+    }
+    ~WithRawMethod_CreateCharacter() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status CreateCharacter(::grpc::ServerContext* /*context*/, const ::sf::progression::v1::CreateCharacterRequest* /*request*/, ::sf::progression::v1::CreateCharacterReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestCreateCharacter(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(0, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
   class WithRawMethod_ApplyReceipt : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_ApplyReceipt() {
-      ::grpc::Service::MarkMethodRaw(0);
+      ::grpc::Service::MarkMethodRaw(1);
     }
     ~WithRawMethod_ApplyReceipt() override {
       BaseClassMustBeDerivedFromService(this);
@@ -444,7 +552,7 @@ class Progression final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestApplyReceipt(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(0, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(1, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -453,7 +561,7 @@ class Progression final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_GetCharacterState() {
-      ::grpc::Service::MarkMethodRaw(1);
+      ::grpc::Service::MarkMethodRaw(2);
     }
     ~WithRawMethod_GetCharacterState() override {
       BaseClassMustBeDerivedFromService(this);
@@ -464,7 +572,7 @@ class Progression final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestGetCharacterState(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(1, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(2, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -473,7 +581,7 @@ class Progression final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_SavePosition() {
-      ::grpc::Service::MarkMethodRaw(2);
+      ::grpc::Service::MarkMethodRaw(3);
     }
     ~WithRawMethod_SavePosition() override {
       BaseClassMustBeDerivedFromService(this);
@@ -484,7 +592,7 @@ class Progression final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestSavePosition(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(2, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(3, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -493,7 +601,7 @@ class Progression final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_LearnRecipe() {
-      ::grpc::Service::MarkMethodRaw(3);
+      ::grpc::Service::MarkMethodRaw(4);
     }
     ~WithRawMethod_LearnRecipe() override {
       BaseClassMustBeDerivedFromService(this);
@@ -504,8 +612,30 @@ class Progression final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestLearnRecipe(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(3, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(4, context, request, response, new_call_cq, notification_cq, tag);
     }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_CreateCharacter : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_CreateCharacter() {
+      ::grpc::Service::MarkMethodRawCallback(0,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->CreateCharacter(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_CreateCharacter() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status CreateCharacter(::grpc::ServerContext* /*context*/, const ::sf::progression::v1::CreateCharacterRequest* /*request*/, ::sf::progression::v1::CreateCharacterReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* CreateCharacter(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
   class WithRawCallbackMethod_ApplyReceipt : public BaseClass {
@@ -513,7 +643,7 @@ class Progression final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawCallbackMethod_ApplyReceipt() {
-      ::grpc::Service::MarkMethodRawCallback(0,
+      ::grpc::Service::MarkMethodRawCallback(1,
           new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->ApplyReceipt(context, request, response); }));
@@ -535,7 +665,7 @@ class Progression final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawCallbackMethod_GetCharacterState() {
-      ::grpc::Service::MarkMethodRawCallback(1,
+      ::grpc::Service::MarkMethodRawCallback(2,
           new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->GetCharacterState(context, request, response); }));
@@ -557,7 +687,7 @@ class Progression final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawCallbackMethod_SavePosition() {
-      ::grpc::Service::MarkMethodRawCallback(2,
+      ::grpc::Service::MarkMethodRawCallback(3,
           new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->SavePosition(context, request, response); }));
@@ -579,7 +709,7 @@ class Progression final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawCallbackMethod_LearnRecipe() {
-      ::grpc::Service::MarkMethodRawCallback(3,
+      ::grpc::Service::MarkMethodRawCallback(4,
           new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->LearnRecipe(context, request, response); }));
@@ -596,12 +726,39 @@ class Progression final {
       ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
+  class WithStreamedUnaryMethod_CreateCharacter : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_CreateCharacter() {
+      ::grpc::Service::MarkMethodStreamed(0,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::sf::progression::v1::CreateCharacterRequest, ::sf::progression::v1::CreateCharacterReply>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::sf::progression::v1::CreateCharacterRequest, ::sf::progression::v1::CreateCharacterReply>* streamer) {
+                       return this->StreamedCreateCharacter(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_CreateCharacter() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status CreateCharacter(::grpc::ServerContext* /*context*/, const ::sf::progression::v1::CreateCharacterRequest* /*request*/, ::sf::progression::v1::CreateCharacterReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status StreamedCreateCharacter(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::sf::progression::v1::CreateCharacterRequest,::sf::progression::v1::CreateCharacterReply>* server_unary_streamer) = 0;
+  };
+  template <class BaseClass>
   class WithStreamedUnaryMethod_ApplyReceipt : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_ApplyReceipt() {
-      ::grpc::Service::MarkMethodStreamed(0,
+      ::grpc::Service::MarkMethodStreamed(1,
         new ::grpc::internal::StreamedUnaryHandler<
           ::sf::progression::v1::ApplyReceiptRequest, ::sf::progression::v1::ApplyReceiptReply>(
             [this](::grpc::ServerContext* context,
@@ -628,7 +785,7 @@ class Progression final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_GetCharacterState() {
-      ::grpc::Service::MarkMethodStreamed(1,
+      ::grpc::Service::MarkMethodStreamed(2,
         new ::grpc::internal::StreamedUnaryHandler<
           ::sf::progression::v1::GetCharacterStateRequest, ::sf::progression::v1::CharacterStateReply>(
             [this](::grpc::ServerContext* context,
@@ -655,7 +812,7 @@ class Progression final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_SavePosition() {
-      ::grpc::Service::MarkMethodStreamed(2,
+      ::grpc::Service::MarkMethodStreamed(3,
         new ::grpc::internal::StreamedUnaryHandler<
           ::sf::progression::v1::SavePositionRequest, ::sf::progression::v1::SavePositionReply>(
             [this](::grpc::ServerContext* context,
@@ -682,7 +839,7 @@ class Progression final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_LearnRecipe() {
-      ::grpc::Service::MarkMethodStreamed(3,
+      ::grpc::Service::MarkMethodStreamed(4,
         new ::grpc::internal::StreamedUnaryHandler<
           ::sf::progression::v1::LearnRecipeRequest, ::sf::progression::v1::LearnRecipeReply>(
             [this](::grpc::ServerContext* context,
@@ -703,9 +860,9 @@ class Progression final {
     // replace default version of method with streamed unary
     virtual ::grpc::Status StreamedLearnRecipe(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::sf::progression::v1::LearnRecipeRequest,::sf::progression::v1::LearnRecipeReply>* server_unary_streamer) = 0;
   };
-  typedef WithStreamedUnaryMethod_ApplyReceipt<WithStreamedUnaryMethod_GetCharacterState<WithStreamedUnaryMethod_SavePosition<WithStreamedUnaryMethod_LearnRecipe<Service > > > > StreamedUnaryService;
+  typedef WithStreamedUnaryMethod_CreateCharacter<WithStreamedUnaryMethod_ApplyReceipt<WithStreamedUnaryMethod_GetCharacterState<WithStreamedUnaryMethod_SavePosition<WithStreamedUnaryMethod_LearnRecipe<Service > > > > > StreamedUnaryService;
   typedef Service SplitStreamedService;
-  typedef WithStreamedUnaryMethod_ApplyReceipt<WithStreamedUnaryMethod_GetCharacterState<WithStreamedUnaryMethod_SavePosition<WithStreamedUnaryMethod_LearnRecipe<Service > > > > StreamedService;
+  typedef WithStreamedUnaryMethod_CreateCharacter<WithStreamedUnaryMethod_ApplyReceipt<WithStreamedUnaryMethod_GetCharacterState<WithStreamedUnaryMethod_SavePosition<WithStreamedUnaryMethod_LearnRecipe<Service > > > > > StreamedService;
 };
 
 }  // namespace v1

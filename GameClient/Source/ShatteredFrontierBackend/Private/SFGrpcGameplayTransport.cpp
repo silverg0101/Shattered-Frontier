@@ -175,6 +175,7 @@ void FSFGrpcGameplayTransport::Send(const FSFGameplayRequest& Q, float DeadlineS
                 Row.QuestId = FromUtf8(Quest.quest_id()); Row.State = FromUtf8(Quest.state()); Row.ActiveStepId = FromUtf8(Quest.active_step_id()); Row.Revision = Quest.revision(); Row.bRewardPending = Quest.reward_pending();
                 for (const auto& Count : Quest.counts()) { Row.Counts.Add(FromUtf8(Count.first), Count.second); }
             }
+            if (R.has_face_id()) { Out.FaceId = FromUtf8(R.face_id()); }
             Out.PositionRevision = R.position_revision(); Out.bHasPosition = R.has_position();
             if (Out.bHasPosition)
             { Out.ZoneId = FromUtf8(R.position().zone_id()); Out.Position = FVector(R.position().x(), R.position().y(), R.position().z()); Out.Yaw = R.position().yaw(); }

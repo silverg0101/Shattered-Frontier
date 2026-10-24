@@ -114,6 +114,7 @@ struct FSFGameplayResponse
     struct FQuestState { FString QuestId, State, ActiveStepId; TMap<FString, int32> Counts; int64 Revision = 0; bool bRewardPending = false; };
     TArray<FQuestState> Quests;  // GetCharacterState: every quest row (QST-02)
     TArray<FString> KnownRecipes;
+    FString FaceId;  // GetCharacterState: the stored player face; empty keeps the default
     bool bHasPosition = false; FString ZoneId; FVector Position = FVector::ZeroVector; float Yaw = 0; int64 PositionRevision = 0;
     // Housing
     FString State, StructureId, OwnerId; int64 StructureRevision = 0, Revision = 0, PermissionRevision = 0;

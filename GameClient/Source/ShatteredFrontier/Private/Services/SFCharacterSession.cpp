@@ -3,6 +3,7 @@
 #include "Engine/World.h"
 #include "GameFramework/Pawn.h"
 #include "GameFramework/PlayerController.h"
+#include "Characters/SFE1Character.h"
 #include "Gathering/SFGatheringPilot.h"
 #include "Misc/PackageName.h"
 #include "Quest/SFQuestPilot.h"
@@ -83,7 +84,7 @@ void USFCharacterSessionComponent::TickComponent(float Delta, ELevelTick Type, F
         return;
     }
     // The pawn leaves before the controller's EndPlay, so the final save uses the last pose seen here.
-    if (const APawn* Pawn = Cast<APlayerController>(GetOwner())->GetPawn()) { LastKnownLocation = Pawn->GetActorLocation(); LastKnownYaw = Pawn->GetActorRotation().Yaw; bHasKnownPose = true; }
+    if (APawn* Pawn = Cast<APlayerController>(GetOwner())->GetPawn()) { if (auto* Hero = Cast<ASFE1Character>(Pawn); Hero && !PendingFaceId.IsNone()) { Hero->SetFaceId(PendingFaceId); PendingFaceId = NAME_None; } LastKnownLocation = Pawn->GetActorLocation(); LastKnownYaw = Pawn->GetActorRotation().Yaw; bHasKnownPose = true; }
     if (Now >= NextSaveAt) { SavePosition(false); }
 }
 
@@ -139,6 +140,7 @@ void USFCharacterSessionComponent::BeginRestore()
         if (auto* Quest = Owner->FindComponentByClass<USFQuestPilotComponent>())
         { Quest->Restore(State.Quests, State.ProgressionRevision); }
         Self->PositionRevision = State.PositionRevision;
+        Self->PendingFaceId = State.FaceId.IsEmpty() ? NAME_None : FName(*State.FaceId);  // applied once the pawn exists (Tick)
         // A position saved in another zone, or not finite, falls back to the spawn the game mode chose.
         APawn* Pawn = Cast<APlayerController>(Owner)->GetPawn();
         Self->bHasRestoredLocation = State.bHasPosition && State.ZoneId == ZoneKey(Self->GetWorld()) && !State.Position.ContainsNaN();

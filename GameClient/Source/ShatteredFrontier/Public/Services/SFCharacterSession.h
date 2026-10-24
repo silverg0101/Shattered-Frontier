@@ -37,4 +37,5 @@ private:
     int64 PositionRevision = 0;
     FVector LastSavedLocation = FVector(TNumericLimits<double>::Max());
     FVector LastKnownLocation = FVector::ZeroVector; float LastKnownYaw = 0; bool bHasKnownPose = false, bHasRestoredLocation = false;
+    FName PendingFaceId;  // the stored face, applied to the pawn once it exists
 };

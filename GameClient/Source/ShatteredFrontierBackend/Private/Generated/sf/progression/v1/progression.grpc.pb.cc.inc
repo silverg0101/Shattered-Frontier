@@ -25,6 +25,7 @@ namespace progression {
 namespace v1 {
 
 static const char* Progression_method_names[] = {
+  "/sf.progression.v1.Progression/CreateCharacter",
   "/sf.progression.v1.Progression/ApplyReceipt",
   "/sf.progression.v1.Progression/GetCharacterState",
   "/sf.progression.v1.Progression/SavePosition",
@@ -38,11 +39,35 @@ std::unique_ptr< Progression::Stub> Progression::NewStub(const std::shared_ptr< 
 }
 
 Progression::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options)
-  : channel_(channel), rpcmethod_ApplyReceipt_(Progression_method_names[0], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_GetCharacterState_(Progression_method_names[1], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_SavePosition_(Progression_method_names[2], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_LearnRecipe_(Progression_method_names[3], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  : channel_(channel), rpcmethod_CreateCharacter_(Progression_method_names[0], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_ApplyReceipt_(Progression_method_names[1], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_GetCharacterState_(Progression_method_names[2], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_SavePosition_(Progression_method_names[3], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_LearnRecipe_(Progression_method_names[4], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   {}
+
+::grpc::Status Progression::Stub::CreateCharacter(::grpc::ClientContext* context, const ::sf::progression::v1::CreateCharacterRequest& request, ::sf::progression::v1::CreateCharacterReply* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::sf::progression::v1::CreateCharacterRequest, ::sf::progression::v1::CreateCharacterReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_CreateCharacter_, context, request, response);
+}
+
+void Progression::Stub::async::CreateCharacter(::grpc::ClientContext* context, const ::sf::progression::v1::CreateCharacterRequest* request, ::sf::progression::v1::CreateCharacterReply* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::sf::progression::v1::CreateCharacterRequest, ::sf::progression::v1::CreateCharacterReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_CreateCharacter_, context, request, response, std::move(f));
+}
+
+void Progression::Stub::async::CreateCharacter(::grpc::ClientContext* context, const ::sf::progression::v1::CreateCharacterRequest* request, ::sf::progression::v1::CreateCharacterReply* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_CreateCharacter_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::sf::progression::v1::CreateCharacterReply>* Progression::Stub::PrepareAsyncCreateCharacterRaw(::grpc::ClientContext* context, const ::sf::progression::v1::CreateCharacterRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::sf::progression::v1::CreateCharacterReply, ::sf::progression::v1::CreateCharacterRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_CreateCharacter_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::sf::progression::v1::CreateCharacterReply>* Progression::Stub::AsyncCreateCharacterRaw(::grpc::ClientContext* context, const ::sf::progression::v1::CreateCharacterRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncCreateCharacterRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
 
 ::grpc::Status Progression::Stub::ApplyReceipt(::grpc::ClientContext* context, const ::sf::progression::v1::ApplyReceiptRequest& request, ::sf::progression::v1::ApplyReceiptReply* response) {
   return ::grpc::internal::BlockingUnaryCall< ::sf::progression::v1::ApplyReceiptRequest, ::sf::progression::v1::ApplyReceiptReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_ApplyReceipt_, context, request, response);
@@ -140,6 +165,16 @@ Progression::Service::Service() {
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       Progression_method_names[0],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< Progression::Service, ::sf::progression::v1::CreateCharacterRequest, ::sf::progression::v1::CreateCharacterReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](Progression::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::sf::progression::v1::CreateCharacterRequest* req,
+             ::sf::progression::v1::CreateCharacterReply* resp) {
+               return service->CreateCharacter(ctx, req, resp);
+             }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      Progression_method_names[1],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
       new ::grpc::internal::RpcMethodHandler< Progression::Service, ::sf::progression::v1::ApplyReceiptRequest, ::sf::progression::v1::ApplyReceiptReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](Progression::Service* service,
              ::grpc::ServerContext* ctx,
@@ -148,7 +183,7 @@ Progression::Service::Service() {
                return service->ApplyReceipt(ctx, req, resp);
              }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
-      Progression_method_names[1],
+      Progression_method_names[2],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
       new ::grpc::internal::RpcMethodHandler< Progression::Service, ::sf::progression::v1::GetCharacterStateRequest, ::sf::progression::v1::CharacterStateReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](Progression::Service* service,
@@ -158,7 +193,7 @@ Progression::Service::Service() {
                return service->GetCharacterState(ctx, req, resp);
              }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
-      Progression_method_names[2],
+      Progression_method_names[3],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
       new ::grpc::internal::RpcMethodHandler< Progression::Service, ::sf::progression::v1::SavePositionRequest, ::sf::progression::v1::SavePositionReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](Progression::Service* service,
@@ -168,7 +203,7 @@ Progression::Service::Service() {
                return service->SavePosition(ctx, req, resp);
              }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
-      Progression_method_names[3],
+      Progression_method_names[4],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
       new ::grpc::internal::RpcMethodHandler< Progression::Service, ::sf::progression::v1::LearnRecipeRequest, ::sf::progression::v1::LearnRecipeReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](Progression::Service* service,
@@ -180,6 +215,13 @@ Progression::Service::Service() {
 }
 
 Progression::Service::~Service() {
+}
+
+::grpc::Status Progression::Service::CreateCharacter(::grpc::ServerContext* context, const ::sf::progression::v1::CreateCharacterRequest* request, ::sf::progression::v1::CreateCharacterReply* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
 }
 
 ::grpc::Status Progression::Service::ApplyReceipt(::grpc::ServerContext* context, const ::sf::progression::v1::ApplyReceiptRequest* request, ::sf::progression::v1::ApplyReceiptReply* response) {
