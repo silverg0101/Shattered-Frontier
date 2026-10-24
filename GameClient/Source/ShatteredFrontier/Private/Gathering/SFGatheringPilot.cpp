@@ -1122,7 +1122,6 @@ void USFGatheringPilotComponent::BeginLedgerCommit()
     USFBackpackComponent* Pack=Backpack.Get();
     if (!Pack) { OnLedgerGrant(FSFLedgerResponse()); return; }
     LastLedgerResponse.Reset();
-    // The backpack serialises this Grant behind any other writer and retries a Stale once as "<op>:r1" (INT-04).
     const FString Operation=PendingLedgerOperation, Item=LedgerItemId(ActiveKind);
     const int64 Quantity=CapturedSettings->UnitsPerCharge;
     const FString Causation=FString::Printf(TEXT("%s:%u"),*Pack->GetContainerId(),Feedback.Operation);
@@ -1146,6 +1145,21 @@ void USFGatheringPilotComponent::BeginLedgerCommit()
         UE_LOG(LogTemp,Error,TEXT("GATHERING_FOLLOW_UP_CAPTURE_FAILED Op=%s"),*Operation);
         OnLedgerGrant(FSFLedgerResponse()); return;
     }
+    if (IsValid(Feedback.Node) && Feedback.Node->bUsesServices)
+    {
+        PendingHarvestRequest=FSFGameplayRequest();
+        PendingHarvestRequest.Rpc=ESFGameplayRpc::HarvestGatheringNode;
+        PendingHarvestRequest.OperationId=Operation; PendingHarvestRequest.CharacterId=Pack->GetCharacterId();
+        PendingHarvestRequest.NodeId=Feedback.Node->ServiceNodeId;
+        PendingHarvestRequest.NodeGeneration=int32(Feedback.Node->State.Generation);
+        PendingHarvestRequest.ContainerId=Pack->GetContainerId();
+        PendingHarvestRequest.FollowUpPayload=MoveTemp(IntentBytes);
+        PendingHarvestRequest.FollowUpDigest=MoveTemp(IntentDigest);
+        PendingHarvestRequest.FollowUpVersion=1;
+        BeginNodeHarvest();
+        return;
+    }
+    // The backpack serialises the local-mode Grant behind any other writer (INT-04).
     TWeakObjectPtr<USFGatheringPilotComponent> Weak(this);
     FSFBackpackMutation Mutation; Mutation.Label=TEXT("gather"); Mutation.OperationId=Operation; Mutation.bRetryStale=false;
     Mutation.Run=[Weak,Item,Quantity,Causation,IntentBytes,IntentDigest](const FString& Op,int64 Expected,TFunction<void(ESFBackpackOutcome,int64)> Report)
@@ -1178,7 +1192,8 @@ void USFGatheringPilotComponent::BeginLedgerCommit()
     // INT-05 reconnect runner: drop this player's connection once, with the ledger grant in flight (Committing).
     static bool bDropped=false;
     auto* Controller=Cast<APlayerController>(GetOwner());
-    if (!bDropped && FParse::Param(FCommandLine::Get(),TEXT("SFDropDuringCommit")) && Controller && Controller->GetNetConnection())
+    if (!bDropped && (!IsValid(Feedback.Node) || !Feedback.Node->bUsesServices) &&
+        FParse::Param(FCommandLine::Get(),TEXT("SFDropDuringCommit")) && Controller && Controller->GetNetConnection())
     {
         bDropped=true;
         UE_LOG(LogTemp,Display,TEXT("RECONNECT_DROP_DURING_COMMIT Op=%s Container=%s"),*Operation,*Pack->GetContainerId());
@@ -1211,12 +1226,6 @@ void USFGatheringPilotComponent::OnLedgerGrant(const FSFLedgerResponse& Response
         return;
     }
 #endif
-    if (IsValid(Feedback.Node) && Feedback.Node->bUsesServices)
-    {
-        PendingNodeGeneration=int32(Feedback.Node->State.Generation);
-        BeginNodeHarvest();
-        return;
-    }
     if (ApplyInventory(ActiveKind,true)!=ESFGatheringPilotResult::None)
     { UE_LOG(LogTemp,Error,TEXT("GATHERING_LEDGER_PROJECTION_MISMATCH Op=%s Container=%s"),*Operation,*Container); }
     CommittedOperation=Operation;
@@ -1231,23 +1240,30 @@ void USFGatheringPilotComponent::OnLedgerGrant(const FSFLedgerResponse& Response
 void USFGatheringPilotComponent::BeginNodeHarvest()
 {
     ASFGatheringPilotNode* Node=Feedback.Node;
-    USFBackpackComponent* Pack=Backpack.Get();
-    if (!IsValid(Node) || !Node->ServiceClient.IsValid() || !Pack || PendingLedgerOperation.IsEmpty())
+    if (!IsValid(Node) || !Node->ServiceClient.IsValid() || PendingHarvestRequest.OperationId.IsEmpty())
     { Finish(ESFGatheringPilotPhase::Rejected,ESFGatheringPilotResult::Unavailable); return; }
-    FSFGameplayRequest Request; Request.Rpc=ESFGameplayRpc::HarvestGatheringNode;
-    Request.OperationId=PendingLedgerOperation; Request.CharacterId=Pack->GetCharacterId();
-    Request.NodeId=Node->ServiceNodeId; Request.NodeGeneration=PendingNodeGeneration;
     TWeakObjectPtr<USFGatheringPilotComponent> Weak(this);
-    Node->ServiceClient->Call(Request,[Weak](const FSFGameplayResponse& Reply)
+    Node->ServiceClient->Call(PendingHarvestRequest,[Weak](const FSFGameplayResponse& Reply)
     { if (USFGatheringPilotComponent* Self=Weak.Get()) { Self->OnNodeHarvest(Reply); } });
+#if !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    static bool bDropped=false;
+    auto* Controller=Cast<APlayerController>(GetOwner());
+    if (!bDropped && FParse::Param(FCommandLine::Get(),TEXT("SFDropDuringCommit")) && Controller && Controller->GetNetConnection())
+    {
+        bDropped=true;
+        UE_LOG(LogTemp,Display,TEXT("RECONNECT_DROP_DURING_COMMIT Op=%s Container=%s"),*PendingHarvestRequest.OperationId,*PendingHarvestRequest.ContainerId);
+        Controller->GetNetConnection()->Close();
+    }
+#endif
 }
 
 void USFGatheringPilotComponent::OnNodeHarvest(const FSFGameplayResponse& Response)
 {
     if (Feedback.Phase!=ESFGatheringPilotPhase::Committing || !IsValid(Feedback.Node)) { return; }
-    if (Response.Status==ESFGameplayStatus::Unavailable)
+    if (Response.Status==ESFGameplayStatus::Unavailable ||
+        (Response.Status==ESFGameplayStatus::Ok && Response.HarvestStatus==TEXT("pending")))
     {
-        // The ledger grant is already committed. Keep the node locked and replay this operation until its host receipt resolves.
+        // The host owns the durable intent; replay its exact request until the grant resolves.
         TWeakObjectPtr<USFGatheringPilotComponent> Weak(this);
         FTSTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateLambda([Weak](float)
         { if (USFGatheringPilotComponent* Self=Weak.Get()) { Self->BeginNodeHarvest(); } return false; }),
@@ -1260,11 +1276,14 @@ void USFGatheringPilotComponent::OnNodeHarvest(const FSFGameplayResponse& Respon
         Response.HarvestQuantity!=CapturedSettings->UnitsPerCharge)
     {
         UE_LOG(LogTemp,Error,TEXT("GATHERING_NODE_COMMIT_MISMATCH Op=%s Status=%s Code=%d"),*PendingLedgerOperation,*Response.HarvestStatus,Response.GrpcCode);
-        PendingLedgerOperation.Reset(); Finish(ESFGatheringPilotPhase::Rejected,ESFGatheringPilotResult::Unavailable); return;
+        PendingLedgerOperation.Reset(); PendingHarvestRequest=FSFGameplayRequest();
+        Finish(ESFGatheringPilotPhase::Rejected,ESFGatheringPilotResult::Unavailable); return;
     }
-    const FString Operation=PendingLedgerOperation; PendingLedgerOperation.Reset(); PendingNodeGeneration=0;
+    const FString Operation=PendingLedgerOperation; PendingLedgerOperation.Reset(); PendingHarvestRequest=FSFGameplayRequest();
     if (ApplyInventory(ActiveKind,true)!=ESFGatheringPilotResult::None)
     { UE_LOG(LogTemp,Error,TEXT("GATHERING_LEDGER_PROJECTION_MISMATCH Op=%s"),*Operation); }
+    // Harvest granted through the host, so refresh the backpack writer's revision before its next queued mutation.
+    if (USFBackpackComponent* Pack=Backpack.Get()) { Pack->Reconcile(); }
     bServiceHarvestApplied=true; CommittedOperation=Operation;
     CompleteHarvest(false);
     Node->RefreshServiceState();

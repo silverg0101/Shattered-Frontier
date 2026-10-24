@@ -528,7 +528,7 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFGatheringPilotServiceTest,
 
 bool FSFGatheringPilotServiceTest::RunTest(const FString& Parameters)
 {
-    struct FFakeNode { int32 Charges=2, Harvests=0; TArray<FSFGameplayRequest> Requests; };
+    struct FFakeNode { int32 Charges=2, Harvests=0; bool bPendingFirst=true; TArray<FSFGameplayRequest> Requests; TSet<FString> Receipts; };
     TSharedRef<FFakeNode> NodeHost=MakeShared<FFakeNode>();
     USFGameplayServicesSettings* ServiceSettings=NewObject<USFGameplayServicesSettings>();
     ServiceSettings->bEnabled=true;
@@ -541,8 +541,11 @@ bool FSFGatheringPilotServiceTest::RunTest(const FString& Parameters)
         Reply.GrowthStage=NodeHost->Charges>0 ? TEXT("young") : TEXT("");
         if (Request.Rpc==ESFGameplayRpc::HarvestGatheringNode)
         {
-            Reply.HarvestStatus=NodeHost->Charges>0 ? TEXT("granted") : TEXT("depleted");
-            if (NodeHost->Charges>0) { --NodeHost->Charges; ++NodeHost->Harvests; Reply.ResourceId=TEXT("item/iron_ore"); Reply.HarvestQuantity=1; }
+            if (!NodeHost->Receipts.Contains(Request.OperationId) && NodeHost->Charges>0)
+            { NodeHost->Receipts.Add(Request.OperationId); --NodeHost->Charges; ++NodeHost->Harvests; }
+            Reply.HarvestStatus=NodeHost->Receipts.Contains(Request.OperationId) ? TEXT("granted") : TEXT("depleted");
+            if (Reply.HarvestStatus==TEXT("granted")) { Reply.ResourceId=TEXT("item/iron_ore"); Reply.HarvestQuantity=1; }
+            if (NodeHost->bPendingFirst) { NodeHost->bPendingFirst=false; Reply.HarvestStatus=TEXT("pending"); }
             Reply.GrowthStage=NodeHost->Charges>0 ? TEXT("young") : TEXT("");
         }
         Reply.NodeCharges=NodeHost->Charges; Done(Reply);
@@ -551,11 +554,13 @@ bool FSFGatheringPilotServiceTest::RunTest(const FString& Parameters)
     FSFGameplayServicesClient::SetSendOverrideForTests(nullptr);
     if (!TestTrue(TEXT("Fake host transport created"),Service.IsValid())) { return false; }
     int32 LedgerGrants=0;
-    FSFInventoryLedgerClient::SetSendOverrideForTests([&LedgerGrants](const FSFLedgerRequest& Request,float,TFunction<void(const FSFLedgerResponse&)> Done)
+    FSFInventoryLedgerClient::SetSendOverrideForTests([&LedgerGrants,NodeHost](const FSFLedgerRequest& Request,float,TFunction<void(const FSFLedgerResponse&)> Done)
     {
         FSFLedgerResponse Reply; Reply.Status=ESFLedgerStatus::Ok; Reply.GrpcCode=0;
         if (Request.Rpc==ESFLedgerRpc::Grant) { ++LedgerGrants; Reply.GrantedDelta=Request.Quantity; }
-        Reply.Revision=LedgerGrants; Done(Reply);
+        Reply.Revision=NodeHost->Harvests;
+        if (Request.Rpc==ESFLedgerRpc::GetContainer) { Reply.Quantities.Add(TEXT("item/iron_ore"),NodeHost->Harvests); }
+        Done(Reply);
     });
     USFInventoryLedgerSettings* LedgerSettings=NewObject<USFInventoryLedgerSettings>(); LedgerSettings->bEnabled=true;
     TSharedPtr<FSFInventoryLedgerClient> Ledger=FSFInventoryLedgerClient::Create(*LedgerSettings);
@@ -582,14 +587,23 @@ bool FSFGatheringPilotServiceTest::RunTest(const FString& Parameters)
     if (!TestTrue(TEXT("Pickaxe equipped"),Gather->InitializeStarterTools() && Gather->TryEquipTool(false))) { return false; }
     Gather->Backpack=USFBackpackComponent::CreateForTests(PC,Ledger);
     auto* Quest=NewObject<USFQuestPilotComponent>(PC); Quest->RegisterComponent();
-    const auto Tick=[&Fixture]() { for (int32 I=0; I<12; ++I) { Fixture.TickTestWorld(0.05f); FTSTicker::GetCoreTicker().Tick(0.3f); } };
-    Gather->ServerGatheringAction_Implementation(Iron,Iron->State.Revision,1); Tick();
+    const auto Tick=[&Fixture](int32 Count=12) { for (int32 I=0; I<Count; ++I) { Fixture.TickTestWorld(0.05f); FTSTicker::GetCoreTicker().Tick(0.3f); } };
+    Gather->ServerGatheringAction_Implementation(Iron,Iron->State.Revision,1); Tick(32);
     TestTrue(TEXT("First host harvest reduces immature charge"),Iron->State.Charges==1 && NodeHost->Harvests==1 && Gather->Feedback.Result==ESFGatheringPilotResult::Granted);
     Gather->ServerGatheringAction_Implementation(Iron,Iron->State.Revision,2); Tick();
     TestTrue(TEXT("Second host harvest depletes and replicates stage"),Iron->State.Charges==0 && Iron->State.GrowthStage.IsNone() && NodeHost->Harvests==2);
     Gather->ServerGatheringAction_Implementation(Iron,Iron->State.Revision,3); Tick();
-    TestEqual(TEXT("Stage cap rejects third harvest before a grant"),LedgerGrants,2);
-    TestEqual(TEXT("Host received exactly two harvest operations"),NodeHost->Requests.FilterByPredicate([](const FSFGameplayRequest& R) { return R.Rpc==ESFGameplayRpc::HarvestGatheringNode; }).Num(),2);
+    TestEqual(TEXT("Host-owned harvest never issues a separate ledger grant"),LedgerGrants,0);
+    const auto Harvests=NodeHost->Requests.FilterByPredicate([](const FSFGameplayRequest& R) { return R.Rpc==ESFGameplayRpc::HarvestGatheringNode; });
+    if (!TestEqual(TEXT("Pending reply retries once, then second harvest"),Harvests.Num(),3)) { return false; }
+    TestTrue(TEXT("Harvest carries host grant and INT-06 intent"),Harvests[0].OperationId.StartsWith(TEXT("gather/")) &&
+        Harvests[0].ContainerId==TEXT("ctn_dev_local") && Harvests[0].CharacterId==TEXT("chr_dev_local") &&
+        Harvests[0].NodeGeneration==2 && Harvests[0].FollowUpVersion==1 &&
+        !Harvests[0].FollowUpPayload.IsEmpty() && Harvests[0].FollowUpDigest.Len()==64);
+    TestTrue(TEXT("Pending retry keeps the whole harvest request immutable"),Harvests[1].OperationId==Harvests[0].OperationId &&
+        Harvests[1].ContainerId==Harvests[0].ContainerId && Harvests[1].NodeGeneration==Harvests[0].NodeGeneration &&
+        Harvests[1].FollowUpPayload==Harvests[0].FollowUpPayload && Harvests[1].FollowUpDigest==Harvests[0].FollowUpDigest);
+    TestNotEqual(TEXT("New harvest uses a fresh operation"),Harvests[2].OperationId,Harvests[0].OperationId);
     return true;
 }
 #endif

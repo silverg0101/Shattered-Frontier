@@ -256,11 +256,11 @@ constexpr HarvestRequest::ParseTableT_ HarvestRequest::InternalGenerateParseTabl
     {
       PROTOBUF_FIELD_OFFSET(HarvestRequest, _impl_._has_bits_),
       0, // no _extensions_
-      4, 24,  // max_field_number, fast_idx_mask
+      8, 56,  // max_field_number, fast_idx_mask
       offsetof(ParseTableT_, field_lookup_table),
-      4294967280,  // skipmap
+      4294967040,  // skipmap
       offsetof(ParseTableT_, field_entries),
-      4,  // num_field_entries
+      8,  // num_field_entries
       0,  // num_aux_entries
       offsetof(ParseTableT_, field_names),  // no aux_entries
       class_data,
@@ -270,10 +270,10 @@ constexpr HarvestRequest::ParseTableT_ HarvestRequest::InternalGenerateParseTabl
       ::_pbi::TcParser::GetTable<::sf::gathering::v1::HarvestRequest>(),  // to_prefetch
       #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
     }, {{
-      // int32 generation = 4;
-      {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(HarvestRequest, _impl_.generation_), 3>(),
-       {32, 3, 0,
-        PROTOBUF_FIELD_OFFSET(HarvestRequest, _impl_.generation_)}},
+      // int32 follow_up_version = 8;
+      {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(HarvestRequest, _impl_.follow_up_version_), 7>(),
+       {64, 7, 0,
+        PROTOBUF_FIELD_OFFSET(HarvestRequest, _impl_.follow_up_version_)}},
       // string operation_id = 1;
       {::_pbi::TcParser::FastUS1,
        {10, 0, 0,
@@ -286,6 +286,22 @@ constexpr HarvestRequest::ParseTableT_ HarvestRequest::InternalGenerateParseTabl
       {::_pbi::TcParser::FastUS1,
        {26, 2, 0,
         PROTOBUF_FIELD_OFFSET(HarvestRequest, _impl_.node_id_)}},
+      // int32 generation = 4;
+      {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(HarvestRequest, _impl_.generation_), 6>(),
+       {32, 6, 0,
+        PROTOBUF_FIELD_OFFSET(HarvestRequest, _impl_.generation_)}},
+      // string container_id = 5;
+      {::_pbi::TcParser::FastUS1,
+       {42, 3, 0,
+        PROTOBUF_FIELD_OFFSET(HarvestRequest, _impl_.container_id_)}},
+      // bytes follow_up_payload = 6;
+      {::_pbi::TcParser::FastBS1,
+       {50, 4, 0,
+        PROTOBUF_FIELD_OFFSET(HarvestRequest, _impl_.follow_up_payload_)}},
+      // string follow_up_digest = 7;
+      {::_pbi::TcParser::FastUS1,
+       {58, 5, 0,
+        PROTOBUF_FIELD_OFFSET(HarvestRequest, _impl_.follow_up_digest_)}},
     }}, {{
       65535, 65535
     }}, {{
@@ -296,15 +312,25 @@ constexpr HarvestRequest::ParseTableT_ HarvestRequest::InternalGenerateParseTabl
       // string node_id = 3;
       {PROTOBUF_FIELD_OFFSET(HarvestRequest, _impl_.node_id_), _Internal::kHasBitsOffset + 2, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
       // int32 generation = 4;
-      {PROTOBUF_FIELD_OFFSET(HarvestRequest, _impl_.generation_), _Internal::kHasBitsOffset + 3, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt32)},
+      {PROTOBUF_FIELD_OFFSET(HarvestRequest, _impl_.generation_), _Internal::kHasBitsOffset + 6, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt32)},
+      // string container_id = 5;
+      {PROTOBUF_FIELD_OFFSET(HarvestRequest, _impl_.container_id_), _Internal::kHasBitsOffset + 3, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // bytes follow_up_payload = 6;
+      {PROTOBUF_FIELD_OFFSET(HarvestRequest, _impl_.follow_up_payload_), _Internal::kHasBitsOffset + 4, 0, (0 | ::_fl::kFcOptional | ::_fl::kBytes | ::_fl::kRepAString)},
+      // string follow_up_digest = 7;
+      {PROTOBUF_FIELD_OFFSET(HarvestRequest, _impl_.follow_up_digest_), _Internal::kHasBitsOffset + 5, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // int32 follow_up_version = 8;
+      {PROTOBUF_FIELD_OFFSET(HarvestRequest, _impl_.follow_up_version_), _Internal::kHasBitsOffset + 7, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt32)},
     }},
     // no aux_entries
     {{
-      "\36\14\14\7\0\0\0\0"
+      "\36\14\14\7\0\14\0\20\0\0\0\0\0\0\0\0"
       "sf.gathering.v1.HarvestRequest"
       "operation_id"
       "character_id"
       "node_id"
+      "container_id"
+      "follow_up_digest"
     }},
   };
 }
@@ -323,7 +349,17 @@ inline constexpr HarvestRequest::Impl_::Impl_(
         node_id_(
             &::google::protobuf::internal::fixed_address_empty_string,
             ::_pbi::ConstantInitialized()),
-        generation_{0} {}
+        container_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        follow_up_payload_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        follow_up_digest_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        generation_{0},
+        follow_up_version_{0} {}
 
 template <typename>
 constexpr HarvestRequest::HarvestRequest(::_pbi::ConstantInitialized,
@@ -756,15 +792,23 @@ const ::uint32_t
         0,
         0x081, // bitmap
         PROTOBUF_FIELD_OFFSET(::sf::gathering::v1::HarvestRequest, _impl_._has_bits_),
-        7, // hasbit index offset
+        11, // hasbit index offset
         PROTOBUF_FIELD_OFFSET(::sf::gathering::v1::HarvestRequest, _impl_.operation_id_),
         PROTOBUF_FIELD_OFFSET(::sf::gathering::v1::HarvestRequest, _impl_.character_id_),
         PROTOBUF_FIELD_OFFSET(::sf::gathering::v1::HarvestRequest, _impl_.node_id_),
         PROTOBUF_FIELD_OFFSET(::sf::gathering::v1::HarvestRequest, _impl_.generation_),
+        PROTOBUF_FIELD_OFFSET(::sf::gathering::v1::HarvestRequest, _impl_.container_id_),
+        PROTOBUF_FIELD_OFFSET(::sf::gathering::v1::HarvestRequest, _impl_.follow_up_payload_),
+        PROTOBUF_FIELD_OFFSET(::sf::gathering::v1::HarvestRequest, _impl_.follow_up_digest_),
+        PROTOBUF_FIELD_OFFSET(::sf::gathering::v1::HarvestRequest, _impl_.follow_up_version_),
         0,
         1,
         2,
+        6,
         3,
+        4,
+        5,
+        7,
         0x081, // bitmap
         PROTOBUF_FIELD_OFFSET(::sf::gathering::v1::NodeReply, _impl_._has_bits_),
         11, // hasbit index offset
@@ -801,8 +845,8 @@ static const ::_pbi::MigrationSchema
     schemas[] ABSL_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
         {0, sizeof(::sf::gathering::v1::GetNodeRequest)},
         {5, sizeof(::sf::gathering::v1::HarvestRequest)},
-        {16, sizeof(::sf::gathering::v1::NodeReply)},
-        {35, sizeof(::sf::gathering::v1::HarvestReply)},
+        {24, sizeof(::sf::gathering::v1::NodeReply)},
+        {43, sizeof(::sf::gathering::v1::HarvestReply)},
 };
 static const ::_pbi::MessageGlobalsBase* PROTOBUF_NONNULL const
     file_message_globals[] = {
@@ -815,28 +859,30 @@ const char descriptor_table_protodef_sf_2fgathering_2fv1_2fgathering_2eproto[] A
     protodesc_cold) = {
     "\n\037sf/gathering/v1/gathering.proto\022\017sf.ga"
     "thering.v1\"!\n\016GetNodeRequest\022\017\n\007node_id\030"
-    "\001 \001(\t\"a\n\016HarvestRequest\022\024\n\014operation_id\030"
-    "\001 \001(\t\022\024\n\014character_id\030\002 \001(\t\022\017\n\007node_id\030\003"
-    " \001(\t\022\022\n\ngeneration\030\004 \001(\005\"\277\001\n\tNodeReply\022\017"
-    "\n\007node_id\030\001 \001(\t\022\025\n\rdefinition_id\030\002 \001(\t\022\022"
-    "\n\ngeneration\030\003 \001(\005\022\017\n\007charges\030\004 \001(\005\022\023\n\013m"
-    "ax_charges\030\005 \001(\005\022\031\n\021regrow_at_unix_ms\030\006 "
-    "\001(\003\022\024\n\014growth_stage\030\007 \001(\t\022\037\n\027next_transi"
-    "tion_unix_ms\030\010 \001(\003\"o\n\014HarvestReply\022\016\n\006st"
-    "atus\030\001 \001(\t\022\023\n\013resource_id\030\002 \001(\t\022\020\n\010quant"
-    "ity\030\003 \001(\005\022(\n\004node\030\004 \001(\0132\032.sf.gathering.v"
-    "1.NodeReply2\236\001\n\tGathering\022F\n\007GetNode\022\037.s"
-    "f.gathering.v1.GetNodeRequest\032\032.sf.gathe"
-    "ring.v1.NodeReply\022I\n\007Harvest\022\037.sf.gather"
-    "ing.v1.HarvestRequest\032\035.sf.gathering.v1."
-    "HarvestReplyB!\252\002\036ShatteredFrontier.Gathe"
-    "ring.V1b\006proto3"
+    "\001 \001(\t\"\307\001\n\016HarvestRequest\022\024\n\014operation_id"
+    "\030\001 \001(\t\022\024\n\014character_id\030\002 \001(\t\022\017\n\007node_id\030"
+    "\003 \001(\t\022\022\n\ngeneration\030\004 \001(\005\022\024\n\014container_i"
+    "d\030\005 \001(\t\022\031\n\021follow_up_payload\030\006 \001(\014\022\030\n\020fo"
+    "llow_up_digest\030\007 \001(\t\022\031\n\021follow_up_versio"
+    "n\030\010 \001(\005\"\277\001\n\tNodeReply\022\017\n\007node_id\030\001 \001(\t\022\025"
+    "\n\rdefinition_id\030\002 \001(\t\022\022\n\ngeneration\030\003 \001("
+    "\005\022\017\n\007charges\030\004 \001(\005\022\023\n\013max_charges\030\005 \001(\005\022"
+    "\031\n\021regrow_at_unix_ms\030\006 \001(\003\022\024\n\014growth_sta"
+    "ge\030\007 \001(\t\022\037\n\027next_transition_unix_ms\030\010 \001("
+    "\003\"o\n\014HarvestReply\022\016\n\006status\030\001 \001(\t\022\023\n\013res"
+    "ource_id\030\002 \001(\t\022\020\n\010quantity\030\003 \001(\005\022(\n\004node"
+    "\030\004 \001(\0132\032.sf.gathering.v1.NodeReply2\236\001\n\tG"
+    "athering\022F\n\007GetNode\022\037.sf.gathering.v1.Ge"
+    "tNodeRequest\032\032.sf.gathering.v1.NodeReply"
+    "\022I\n\007Harvest\022\037.sf.gathering.v1.HarvestReq"
+    "uest\032\035.sf.gathering.v1.HarvestReplyB!\252\002\036"
+    "ShatteredFrontier.Gathering.V1b\006proto3"
 };
 static ::absl::once_flag descriptor_table_sf_2fgathering_2fv1_2fgathering_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_sf_2fgathering_2fv1_2fgathering_2eproto = {
     false,
     false,
-    695,
+    798,
     descriptor_table_protodef_sf_2fgathering_2fv1_2fgathering_2eproto,
     "sf/gathering/v1/gathering.proto",
     &descriptor_table_sf_2fgathering_2fv1_2fgathering_2eproto_once,
@@ -1085,7 +1131,10 @@ PROTOBUF_NDEBUG_INLINE HarvestRequest::Impl_::Impl_(
         _cached_size_{0},
         operation_id_(arena, from.operation_id_),
         character_id_(arena, from.character_id_),
-        node_id_(arena, from.node_id_) {}
+        node_id_(arena, from.node_id_),
+        container_id_(arena, from.container_id_),
+        follow_up_payload_(arena, from.follow_up_payload_),
+        follow_up_digest_(arena, from.follow_up_digest_) {}
 
 HarvestRequest::HarvestRequest(
     ::google::protobuf::Arena* PROTOBUF_NULLABLE arena,
@@ -1101,7 +1150,13 @@ HarvestRequest::HarvestRequest(
   _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
       from._internal_metadata_);
   new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
-  _impl_.generation_ = from._impl_.generation_;
+  ::memcpy(reinterpret_cast<char*>(&_impl_) +
+               offsetof(Impl_, generation_),
+           reinterpret_cast<const char*>(&from._impl_) +
+               offsetof(Impl_, generation_),
+           offsetof(Impl_, follow_up_version_) -
+               offsetof(Impl_, generation_) +
+               sizeof(Impl_::follow_up_version_));
 
   // @@protoc_insertion_point(copy_constructor:sf.gathering.v1.HarvestRequest)
 }
@@ -1111,11 +1166,19 @@ PROTOBUF_NDEBUG_INLINE HarvestRequest::Impl_::Impl_(
       : _cached_size_{0},
         operation_id_(arena),
         character_id_(arena),
-        node_id_(arena) {}
+        node_id_(arena),
+        container_id_(arena),
+        follow_up_payload_(arena),
+        follow_up_digest_(arena) {}
 
 inline void HarvestRequest::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
   new (&_impl_) Impl_(internal_visibility(), arena);
-  _impl_.generation_ = {};
+  ::memset(reinterpret_cast<char*>(&_impl_) +
+               offsetof(Impl_, generation_),
+           0,
+           offsetof(Impl_, follow_up_version_) -
+               offsetof(Impl_, generation_) +
+               sizeof(Impl_::follow_up_version_));
 }
 HarvestRequest::~HarvestRequest() {
   // @@protoc_insertion_point(destructor:sf.gathering.v1.HarvestRequest)
@@ -1131,6 +1194,9 @@ inline void HarvestRequest::SharedDtor(MessageLite& self) {
   this_._impl_.operation_id_.Destroy();
   this_._impl_.character_id_.Destroy();
   this_._impl_.node_id_.Destroy();
+  this_._impl_.container_id_.Destroy();
+  this_._impl_.follow_up_payload_.Destroy();
+  this_._impl_.follow_up_digest_.Destroy();
   this_._impl_.~Impl_();
 }
 
@@ -1168,7 +1234,7 @@ PROTOBUF_NOINLINE void HarvestRequest::Clear() {
   (void) cached_has_bits;
 
   cached_has_bits = _impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0x00000007U)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x0000003fU)) {
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
       _impl_.operation_id_.ClearNonDefaultToEmpty();
     }
@@ -1178,8 +1244,21 @@ PROTOBUF_NOINLINE void HarvestRequest::Clear() {
     if (CheckHasBit(cached_has_bits, 0x00000004U)) {
       _impl_.node_id_.ClearNonDefaultToEmpty();
     }
+    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+      _impl_.container_id_.ClearNonDefaultToEmpty();
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+      _impl_.follow_up_payload_.ClearNonDefaultToEmpty();
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+      _impl_.follow_up_digest_.ClearNonDefaultToEmpty();
+    }
   }
-  _impl_.generation_ = 0;
+  if (BatchCheckHasBit(cached_has_bits, 0x000000c0U)) {
+    ::memset(&_impl_.generation_, 0, static_cast<::size_t>(
+        reinterpret_cast<char*>(&_impl_.follow_up_version_) -
+        reinterpret_cast<char*>(&_impl_.generation_)) + sizeof(_impl_.follow_up_version_));
+  }
   _impl_._has_bits_.Clear();
   _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
@@ -1234,11 +1313,48 @@ PROTOBUF_NOINLINE void HarvestRequest::Clear() {
   }
 
   // int32 generation = 4;
-  if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000040U)) {
     if (this_._internal_generation() != 0) {
       target =
           ::google::protobuf::internal::WireFormatLite::WriteInt32ToArrayWithField<4>(
               stream, this_._internal_generation(), target);
+    }
+  }
+
+  // string container_id = 5;
+  if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+    if (!this_._internal_container_id().empty()) {
+      const ::std::string& _s = this_._internal_container_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.gathering.v1.HarvestRequest.container_id");
+      target = stream->WriteStringMaybeAliased(5, _s, target);
+    }
+  }
+
+  // bytes follow_up_payload = 6;
+  if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+    if (!this_._internal_follow_up_payload().empty()) {
+      const ::std::string& _s = this_._internal_follow_up_payload();
+      target = stream->WriteBytesMaybeAliased(6, _s, target);
+    }
+  }
+
+  // string follow_up_digest = 7;
+  if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+    if (!this_._internal_follow_up_digest().empty()) {
+      const ::std::string& _s = this_._internal_follow_up_digest();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.gathering.v1.HarvestRequest.follow_up_digest");
+      target = stream->WriteStringMaybeAliased(7, _s, target);
+    }
+  }
+
+  // int32 follow_up_version = 8;
+  if (CheckHasBit(cached_has_bits, 0x00000080U)) {
+    if (this_._internal_follow_up_version() != 0) {
+      target =
+          ::google::protobuf::internal::WireFormatLite::WriteInt32ToArrayWithField<8>(
+              stream, this_._internal_follow_up_version(), target);
     }
   }
 
@@ -1267,7 +1383,7 @@ PROTOBUF_NOINLINE void HarvestRequest::Clear() {
 
   ::_pbi::Prefetch5LinesFrom7Lines(&this_);
   cached_has_bits = this_._impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0x0000000fU)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x000000ffU)) {
     // string operation_id = 1;
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
       if (!this_._internal_operation_id().empty()) {
@@ -1289,11 +1405,39 @@ PROTOBUF_NOINLINE void HarvestRequest::Clear() {
                                         this_._internal_node_id());
       }
     }
-    // int32 generation = 4;
+    // string container_id = 5;
     if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+      if (!this_._internal_container_id().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_container_id());
+      }
+    }
+    // bytes follow_up_payload = 6;
+    if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+      if (!this_._internal_follow_up_payload().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::BytesSize(
+                                        this_._internal_follow_up_payload());
+      }
+    }
+    // string follow_up_digest = 7;
+    if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+      if (!this_._internal_follow_up_digest().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_follow_up_digest());
+      }
+    }
+    // int32 generation = 4;
+    if (CheckHasBit(cached_has_bits, 0x00000040U)) {
       if (this_._internal_generation() != 0) {
         total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(
             this_._internal_generation());
+      }
+    }
+    // int32 follow_up_version = 8;
+    if (CheckHasBit(cached_has_bits, 0x00000080U)) {
+      if (this_._internal_follow_up_version() != 0) {
+        total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(
+            this_._internal_follow_up_version());
       }
     }
   }
@@ -1314,7 +1458,7 @@ void HarvestRequest::MergeImpl(::google::protobuf::MessageLite& to_msg,
   (void)cached_has_bits;
 
   cached_has_bits = from._impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0x0000000fU)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x000000ffU)) {
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
       if (!from._internal_operation_id().empty()) {
         _this->_internal_set_operation_id(from._internal_operation_id());
@@ -1343,8 +1487,40 @@ void HarvestRequest::MergeImpl(::google::protobuf::MessageLite& to_msg,
       }
     }
     if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+      if (!from._internal_container_id().empty()) {
+        _this->_internal_set_container_id(from._internal_container_id());
+      } else {
+        if (_this->_impl_.container_id_.IsDefault()) {
+          _this->_internal_set_container_id("");
+        }
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+      if (!from._internal_follow_up_payload().empty()) {
+        _this->_internal_set_follow_up_payload(from._internal_follow_up_payload());
+      } else {
+        if (_this->_impl_.follow_up_payload_.IsDefault()) {
+          _this->_internal_set_follow_up_payload("");
+        }
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+      if (!from._internal_follow_up_digest().empty()) {
+        _this->_internal_set_follow_up_digest(from._internal_follow_up_digest());
+      } else {
+        if (_this->_impl_.follow_up_digest_.IsDefault()) {
+          _this->_internal_set_follow_up_digest("");
+        }
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000040U)) {
       if (from._internal_generation() != 0) {
         _this->_impl_.generation_ = from._impl_.generation_;
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000080U)) {
+      if (from._internal_follow_up_version() != 0) {
+        _this->_impl_.follow_up_version_ = from._impl_.follow_up_version_;
       }
     }
   }
@@ -1370,7 +1546,15 @@ void HarvestRequest::InternalSwap(HarvestRequest* PROTOBUF_RESTRICT PROTOBUF_NON
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.operation_id_, &other->_impl_.operation_id_, arena);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.character_id_, &other->_impl_.character_id_, arena);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.node_id_, &other->_impl_.node_id_, arena);
-  swap(_impl_.generation_, other->_impl_.generation_);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.container_id_, &other->_impl_.container_id_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.follow_up_payload_, &other->_impl_.follow_up_payload_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.follow_up_digest_, &other->_impl_.follow_up_digest_, arena);
+  ::google::protobuf::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(HarvestRequest, _impl_.follow_up_version_)
+      + sizeof(HarvestRequest::_impl_.follow_up_version_)
+      - PROTOBUF_FIELD_OFFSET(HarvestRequest, _impl_.generation_)>(
+          reinterpret_cast<char*>(&_impl_.generation_),
+          reinterpret_cast<char*>(&other->_impl_.generation_));
 }
 
 ::google::protobuf::Metadata HarvestRequest::GetMetadata() const {

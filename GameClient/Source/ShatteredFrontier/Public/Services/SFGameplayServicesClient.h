@@ -100,6 +100,7 @@ struct FSFGameplayRequest
     FString LearnSource, TrainerNpc, ScrollContainer;
     FSFExchangeRequest Exchange;
     int32 NodeGeneration = 0;  // HarvestGatheringNode: server-observed generation
+    TArray<uint8> FollowUpPayload; FString FollowUpDigest; int32 FollowUpVersion = 0;
 };
 
 struct FSFGameplayResponse

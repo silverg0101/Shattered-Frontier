@@ -143,6 +143,8 @@ void FSFGrpcGameplayTransport::Send(const FSFGameplayRequest& Q, float DeadlineS
     {
         sf::gathering::v1::HarvestRequest M; M.set_operation_id(Utf8(Q.OperationId)); M.set_character_id(Utf8(Q.CharacterId));
         M.set_node_id(Utf8(Q.NodeId)); M.set_generation(Q.NodeGeneration);
+        M.set_container_id(Utf8(Q.ContainerId)); M.set_follow_up_payload(Q.FollowUpPayload.GetData(), Q.FollowUpPayload.Num());
+        M.set_follow_up_digest(Utf8(Q.FollowUpDigest)); M.set_follow_up_version(Q.FollowUpVersion);
         auto* Call = new TCall<sf::gathering::v1::HarvestReply>();
         Call->Copy = [](const sf::gathering::v1::HarvestReply& R, FSFGameplayResponse& Out)
         {

@@ -556,7 +556,11 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED HarvestRequest final : public ::goo
     kOperationIdFieldNumber = 1,
     kCharacterIdFieldNumber = 2,
     kNodeIdFieldNumber = 3,
+    kContainerIdFieldNumber = 5,
+    kFollowUpPayloadFieldNumber = 6,
+    kFollowUpDigestFieldNumber = 7,
     kGenerationFieldNumber = 4,
+    kFollowUpVersionFieldNumber = 8,
   };
   // string operation_id = 1;
   void clear_operation_id() ;
@@ -603,6 +607,51 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED HarvestRequest final : public ::goo
   ::std::string* PROTOBUF_NONNULL _internal_mutable_node_id();
 
   public:
+  // string container_id = 5;
+  void clear_container_id() ;
+  [[nodiscard]] const ::std::string& container_id() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_container_id(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_container_id();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_container_id();
+  void set_allocated_container_id(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_container_id() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_container_id(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_container_id();
+
+  public:
+  // bytes follow_up_payload = 6;
+  void clear_follow_up_payload() ;
+  [[nodiscard]] const ::std::string& follow_up_payload() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_follow_up_payload(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_follow_up_payload();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_follow_up_payload();
+  void set_allocated_follow_up_payload(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_follow_up_payload() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_follow_up_payload(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_follow_up_payload();
+
+  public:
+  // string follow_up_digest = 7;
+  void clear_follow_up_digest() ;
+  [[nodiscard]] const ::std::string& follow_up_digest() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_follow_up_digest(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_follow_up_digest();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_follow_up_digest();
+  void set_allocated_follow_up_digest(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_follow_up_digest() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_follow_up_digest(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_follow_up_digest();
+
+  public:
   // int32 generation = 4;
   void clear_generation() ;
   [[nodiscard]] ::int32_t generation() const;
@@ -613,12 +662,22 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED HarvestRequest final : public ::goo
   void _internal_set_generation(::int32_t value);
 
   public:
+  // int32 follow_up_version = 8;
+  void clear_follow_up_version() ;
+  [[nodiscard]] ::int32_t follow_up_version() const;
+  void set_follow_up_version(::int32_t value);
+
+  private:
+  ::int32_t _internal_follow_up_version() const;
+  void _internal_set_follow_up_version(::int32_t value);
+
+  public:
   // @@protoc_insertion_point(class_scope:sf.gathering.v1.HarvestRequest)
  private:
   class _Internal;
   using ParseTableT_ =
-      ::google::protobuf::internal::TcParseTable<2, 4,
-                          0, 70,
+      ::google::protobuf::internal::TcParseTable<3, 8,
+                          0, 106,
                           2>;
   static constexpr ParseTableT_ InternalGenerateParseTable_(
       const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
@@ -649,7 +708,11 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED HarvestRequest final : public ::goo
     ::google::protobuf::internal::ArenaStringPtr operation_id_;
     ::google::protobuf::internal::ArenaStringPtr character_id_;
     ::google::protobuf::internal::ArenaStringPtr node_id_;
+    ::google::protobuf::internal::ArenaStringPtr container_id_;
+    ::google::protobuf::internal::ArenaStringPtr follow_up_payload_;
+    ::google::protobuf::internal::ArenaStringPtr follow_up_digest_;
     ::int32_t generation_;
+    ::int32_t follow_up_version_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
   union { Impl_ _impl_; };
@@ -1395,7 +1458,7 @@ inline void HarvestRequest::set_allocated_node_id(::std::string* PROTOBUF_NULLAB
 inline void HarvestRequest::clear_generation() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.generation_ = 0;
-  ClearHasBit(_impl_._has_bits_[0], 0x00000008U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000040U);
 }
 inline ::int32_t HarvestRequest::generation() const {
   // @@protoc_insertion_point(field_get:sf.gathering.v1.HarvestRequest.generation)
@@ -1403,7 +1466,7 @@ inline ::int32_t HarvestRequest::generation() const {
 }
 inline void HarvestRequest::set_generation(::int32_t value) {
   _internal_set_generation(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000008U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000040U);
   // @@protoc_insertion_point(field_set:sf.gathering.v1.HarvestRequest.generation)
 }
 inline ::int32_t HarvestRequest::_internal_generation() const {
@@ -1413,6 +1476,222 @@ inline ::int32_t HarvestRequest::_internal_generation() const {
 inline void HarvestRequest::_internal_set_generation(::int32_t value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.generation_ = value;
+}
+
+// string container_id = 5;
+inline void HarvestRequest::clear_container_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.container_id_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000008U);
+}
+inline const ::std::string& HarvestRequest::container_id() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.gathering.v1.HarvestRequest.container_id)
+  return _internal_container_id();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void HarvestRequest::set_container_id(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000008U);
+  _impl_.container_id_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:sf.gathering.v1.HarvestRequest.container_id)
+}
+inline ::std::string* PROTOBUF_NONNULL HarvestRequest::mutable_container_id()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000008U);
+  ::std::string* _s = _internal_mutable_container_id();
+  // @@protoc_insertion_point(field_mutable:sf.gathering.v1.HarvestRequest.container_id)
+  return _s;
+}
+inline const ::std::string& HarvestRequest::_internal_container_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.container_id_.Get();
+}
+inline void HarvestRequest::_internal_set_container_id(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.container_id_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL HarvestRequest::_internal_mutable_container_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.container_id_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE HarvestRequest::release_container_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:sf.gathering.v1.HarvestRequest.container_id)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000008U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000008U);
+  auto* released = _impl_.container_id_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.container_id_.Set("", GetArena());
+  }
+  return released;
+}
+inline void HarvestRequest::set_allocated_container_id(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000008U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000008U);
+  }
+  _impl_.container_id_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.container_id_.IsDefault()) {
+    _impl_.container_id_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:sf.gathering.v1.HarvestRequest.container_id)
+}
+
+// bytes follow_up_payload = 6;
+inline void HarvestRequest::clear_follow_up_payload() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.follow_up_payload_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000010U);
+}
+inline const ::std::string& HarvestRequest::follow_up_payload() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.gathering.v1.HarvestRequest.follow_up_payload)
+  return _internal_follow_up_payload();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void HarvestRequest::set_follow_up_payload(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000010U);
+  _impl_.follow_up_payload_.SetBytes(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:sf.gathering.v1.HarvestRequest.follow_up_payload)
+}
+inline ::std::string* PROTOBUF_NONNULL HarvestRequest::mutable_follow_up_payload()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000010U);
+  ::std::string* _s = _internal_mutable_follow_up_payload();
+  // @@protoc_insertion_point(field_mutable:sf.gathering.v1.HarvestRequest.follow_up_payload)
+  return _s;
+}
+inline const ::std::string& HarvestRequest::_internal_follow_up_payload() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.follow_up_payload_.Get();
+}
+inline void HarvestRequest::_internal_set_follow_up_payload(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.follow_up_payload_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL HarvestRequest::_internal_mutable_follow_up_payload() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.follow_up_payload_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE HarvestRequest::release_follow_up_payload() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:sf.gathering.v1.HarvestRequest.follow_up_payload)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000010U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000010U);
+  auto* released = _impl_.follow_up_payload_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.follow_up_payload_.Set("", GetArena());
+  }
+  return released;
+}
+inline void HarvestRequest::set_allocated_follow_up_payload(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000010U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000010U);
+  }
+  _impl_.follow_up_payload_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.follow_up_payload_.IsDefault()) {
+    _impl_.follow_up_payload_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:sf.gathering.v1.HarvestRequest.follow_up_payload)
+}
+
+// string follow_up_digest = 7;
+inline void HarvestRequest::clear_follow_up_digest() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.follow_up_digest_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000020U);
+}
+inline const ::std::string& HarvestRequest::follow_up_digest() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.gathering.v1.HarvestRequest.follow_up_digest)
+  return _internal_follow_up_digest();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void HarvestRequest::set_follow_up_digest(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000020U);
+  _impl_.follow_up_digest_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:sf.gathering.v1.HarvestRequest.follow_up_digest)
+}
+inline ::std::string* PROTOBUF_NONNULL HarvestRequest::mutable_follow_up_digest()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000020U);
+  ::std::string* _s = _internal_mutable_follow_up_digest();
+  // @@protoc_insertion_point(field_mutable:sf.gathering.v1.HarvestRequest.follow_up_digest)
+  return _s;
+}
+inline const ::std::string& HarvestRequest::_internal_follow_up_digest() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.follow_up_digest_.Get();
+}
+inline void HarvestRequest::_internal_set_follow_up_digest(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.follow_up_digest_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL HarvestRequest::_internal_mutable_follow_up_digest() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.follow_up_digest_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE HarvestRequest::release_follow_up_digest() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:sf.gathering.v1.HarvestRequest.follow_up_digest)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000020U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000020U);
+  auto* released = _impl_.follow_up_digest_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.follow_up_digest_.Set("", GetArena());
+  }
+  return released;
+}
+inline void HarvestRequest::set_allocated_follow_up_digest(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000020U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000020U);
+  }
+  _impl_.follow_up_digest_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.follow_up_digest_.IsDefault()) {
+    _impl_.follow_up_digest_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:sf.gathering.v1.HarvestRequest.follow_up_digest)
+}
+
+// int32 follow_up_version = 8;
+inline void HarvestRequest::clear_follow_up_version() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.follow_up_version_ = 0;
+  ClearHasBit(_impl_._has_bits_[0], 0x00000080U);
+}
+inline ::int32_t HarvestRequest::follow_up_version() const {
+  // @@protoc_insertion_point(field_get:sf.gathering.v1.HarvestRequest.follow_up_version)
+  return _internal_follow_up_version();
+}
+inline void HarvestRequest::set_follow_up_version(::int32_t value) {
+  _internal_set_follow_up_version(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000080U);
+  // @@protoc_insertion_point(field_set:sf.gathering.v1.HarvestRequest.follow_up_version)
+}
+inline ::int32_t HarvestRequest::_internal_follow_up_version() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.follow_up_version_;
+}
+inline void HarvestRequest::_internal_set_follow_up_version(::int32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.follow_up_version_ = value;
 }
 
 // -------------------------------------------------------------------

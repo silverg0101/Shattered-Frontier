@@ -6,6 +6,7 @@
 #include "TimerManager.h"
 #include "Gathering/SFHarvestPresentation.h"
 #include "Gathering/SFGatheringProgression.h"
+#include "Services/SFGameplayServicesClient.h"
 #include "SFGatheringPilot.generated.h"
 
 struct FSFHarvestArtReviewState;
@@ -376,8 +377,8 @@ private:
     UPROPERTY(Replicated) TArray<FString> KnownRecipes;  // restored owner-only from CharacterState
 
     FString PendingLedgerOperation;  // "gather/<guid>", reused on every retry until a terminal outcome
+    FSFGameplayRequest PendingHarvestRequest;  // immutable host-owned Harvest intent across retries
     bool bServiceHarvestApplied = false;
-    int32 PendingNodeGeneration = 0;
 
 #if WITH_DEV_AUTOMATION_TESTS && WITH_EDITOR
     bool bTestWorldAdmission = false;
