@@ -3,8 +3,11 @@
 UnrealEditor.exe <uproject> -RenderOffscreen -unattended -nosplash -ExecCmds="py <abs path of this file>, QUIT_EDITOR"
 Reads Artifacts/Characters/PlayerBase/garment_tunic_leggings.fbx (env SF_GARMENT_FBX overrides; env SF_OUTFIT_SUFFIX, e.g. _F for the
 female fit, is appended to the mesh names). Writes under /Game/Frontier/Characters/Player/Garments:
-SKM_Tunic_Leggings (slots M_Tunic, M_Leggings), M_PlayerCloth (tiling fabric: base colour, normal, roughness, tint, tiling),
-MI_PlayerLinen and MI_PlayerLeggings. Fabric: the project's Silverbrook textures (referenced, not copied), desaturated and tinted: T_SB_rough_linen_* for the tunic, T_SB_denim_fabric_04_* for the leggings.
+SKM_Tunic_Leggings (slots M_Tunic, M_Leggings), M_PlayerCloth (two-sided tiling fabric: base colour x tint, normal x strength, roughness, tiling),
+MI_PlayerLinen and MI_PlayerLeggings, and the cloth textures from GameClient/ArtSource/Characters/Player/garments/:
+T_linen_oatmeal (grey-beige linen) and T_wool_brown_knit, each with a _N normal made from its albedo's luminance (high-passed central difference).
+Garment UVs are 1 unit per 40 cm; the linen image holds ~200 threads, so Tiling 3 gives ~15 threads/cm.
+T_linen_stitch_trim is imported but unused: the garment has no separate trim slot or UV island yet.
 Re-runnable. The skeleton is the built body's, so it needs a build from tools/Build-PlayerMetaHumans.py.
 """
 import os
@@ -14,91 +17,92 @@ import unreal
 
 ROOT = '/Game/Frontier/Characters/Player/Garments'
 BODY = '/Game/Frontier/Characters/Player/Built/MHC_Orlando/Body/SKM_MHC_Orlando_BodyMesh'
-TEX = '/Game/Frontier/Environment/Greenlands/Silverbrook/Textures'
+ART = Path(unreal.Paths.convert_relative_path_to_full(unreal.Paths.project_dir())) / 'ArtSource/Characters/Player/garments'
 lib = unreal.EditorAssetLibrary
 tools = unreal.AssetToolsHelpers.get_asset_tools()
 mel = unreal.MaterialEditingLibrary
 
 
 def tex(name):
-    t = lib.load_asset(f'{TEX}/{name}')
+    task = unreal.AssetImportTask()
+    task.set_editor_property('filename', str(ART / f'{name}.png'))
+    task.set_editor_property('destination_path', ROOT)
+    task.set_editor_property('replace_existing', True)
+    task.set_editor_property('automated', True)
+    task.set_editor_property('save', False)
+    tools.import_asset_tasks([task])
+    t = lib.load_asset(f'{ROOT}/{name}')
     if t is None:
         raise RuntimeError(f'Missing texture {name}')
+    if name.endswith('_N'):
+        t.set_editor_property('compression_settings', unreal.TextureCompressionSettings.TC_NORMALMAP)
+        t.set_editor_property('srgb', False)
+    t.set_editor_property('mip_gen_settings', unreal.TextureMipGenSettings.TMGS_FROM_TEXTURE_GROUP)  # full mip chain: no shimmer at distance
+    lib.save_loaded_asset(t)
     return t
 
 
-def make_master():
+def make_master(base_default, normal_default):
     path = f'{ROOT}/M_PlayerCloth'
     if lib.does_asset_exist(path):
         lib.delete_asset(path)
     m = tools.create_asset('M_PlayerCloth', ROOT, unreal.Material, unreal.MaterialFactoryNew())
-    m.set_editor_property('two_sided', True)
-    coord = mel.create_material_expression(m, unreal.MaterialExpressionTextureCoordinate, -900, 0)
-    tiling = mel.create_material_expression(m, unreal.MaterialExpressionScalarParameter, -900, 150)
-    tiling.set_editor_property('parameter_name', 'Tiling')
-    tiling.set_editor_property('default_value', 2.5)
-    mul = mel.create_material_expression(m, unreal.MaterialExpressionMultiply, -700, 50)
-    mel.connect_material_expressions(coord, '', mul, 'A')
-    mel.connect_material_expressions(tiling, '', mul, 'B')
-
-    def sampler(name, y, sampler_type, default):
-        s = mel.create_material_expression(m, unreal.MaterialExpressionTextureSampleParameter2D, -450, y)
-        s.set_editor_property('parameter_name', name)
-        s.set_editor_property('sampler_type', sampler_type)
-        s.set_editor_property('texture', tex(default))
-        mel.connect_material_expressions(mul, '', s, 'UVs')
-        return s
-    base = sampler('BaseTex', -200, unreal.MaterialSamplerType.SAMPLERTYPE_COLOR, 'T_SB_denim_fabric_04_Diffuse')
-    nrm = sampler('NormalTex', 150, unreal.MaterialSamplerType.SAMPLERTYPE_NORMAL, 'T_SB_denim_fabric_04_nor_gl')
-    rough = sampler('RoughTex', 450, unreal.MaterialSamplerType.SAMPLERTYPE_LINEAR_COLOR, 'T_SB_denim_fabric_04_Rough')
-    tint = mel.create_material_expression(m, unreal.MaterialExpressionVectorParameter, -450, -420)
-    tint.set_editor_property('parameter_name', 'Tint')
-    tint.set_editor_property('default_value', unreal.LinearColor(1, 1, 1, 1))
-    # Colour = Tint x lerp(1, desaturated texture x 2.2, TexAmount). (A procedural sine weave used to sit here: unmipped, it shimmered in motion.)
-    def const(v, x, y):
-        c = mel.create_material_expression(m, unreal.MaterialExpressionConstant, x, y)
-        c.set_editor_property('r', v)
-        return c
-
-    def param(name, v, x, y):
-        p = mel.create_material_expression(m, unreal.MaterialExpressionScalarParameter, x, y)
-        p.set_editor_property('parameter_name', name)
-        p.set_editor_property('default_value', v)
-        return p
+    m.set_editor_property('two_sided', True)  # slit, neck and cuff insides show cloth, not a grey backface
 
     def node(cls, x, y, **pins):
         n = mel.create_material_expression(m, cls, x, y)
         for pin, src in pins.items():
             mel.connect_material_expressions(src, '', n, pin)
         return n
+
+    def param(name, v, x, y):
+        p = mel.create_material_expression(m, unreal.MaterialExpressionScalarParameter, x, y)
+        p.set_editor_property('parameter_name', name)
+        p.set_editor_property('default_value', v)
+        return p
     M = unreal.MaterialExpressionMultiply
-    desat = mel.create_material_expression(m, unreal.MaterialExpressionDesaturation, -250, -200)
-    mel.connect_material_expressions(base, 'RGB', desat, '')
-    bright = node(M, -100, -200, A=desat, B=const(2.2, -250, -100))
-    lerp = mel.create_material_expression(m, unreal.MaterialExpressionLinearInterpolate, 50, -250)
-    mel.connect_material_expressions(const(1.0, -250, -300), '', lerp, 'A')
-    mel.connect_material_expressions(bright, '', lerp, 'B')
-    mel.connect_material_expressions(param('TexAmount', 1.0, -250, -350), '', lerp, 'Alpha')
-    tm = node(M, 350, -250, A=lerp, B=tint)
-    mel.connect_material_property(tm, '', unreal.MaterialProperty.MP_BASE_COLOR)
-    mel.connect_material_property(nrm, 'RGB', unreal.MaterialProperty.MP_NORMAL)
-    mel.connect_material_property(rough, 'R', unreal.MaterialProperty.MP_ROUGHNESS)
+    uv = node(M, -700, 50, A=node(unreal.MaterialExpressionTextureCoordinate, -900, 0), B=param('Tiling', 3.0, -900, 150))
+
+    def sampler(name, y, sampler_type, default):
+        s = mel.create_material_expression(m, unreal.MaterialExpressionTextureSampleParameter2D, -450, y)
+        s.set_editor_property('parameter_name', name)
+        s.set_editor_property('sampler_type', sampler_type)
+        s.set_editor_property('texture', default)
+        mel.connect_material_expressions(uv, '', s, 'UVs')
+        return s
+    base = sampler('BaseTex', -200, unreal.MaterialSamplerType.SAMPLERTYPE_COLOR, base_default)
+    nrm = sampler('NormalTex', 150, unreal.MaterialSamplerType.SAMPLERTYPE_NORMAL, normal_default)
+    tint = mel.create_material_expression(m, unreal.MaterialExpressionVectorParameter, -450, -420)
+    tint.set_editor_property('parameter_name', 'Tint')
+    tint.set_editor_property('default_value', unreal.LinearColor(1, 1, 1, 1))
+    colour = mel.create_material_expression(m, M, 0, -250)
+    mel.connect_material_expressions(base, 'RGB', colour, 'A')
+    mel.connect_material_expressions(tint, '', colour, 'B')
+    mel.connect_material_property(colour, '', unreal.MaterialProperty.MP_BASE_COLOR)
+    flat = mel.create_material_expression(m, unreal.MaterialExpressionConstant3Vector, -250, 300)
+    flat.set_editor_property('constant', unreal.LinearColor(0, 0, 1, 1))
+    bend = mel.create_material_expression(m, unreal.MaterialExpressionLinearInterpolate, 0, 150)
+    mel.connect_material_expressions(flat, '', bend, 'A')
+    mel.connect_material_expressions(nrm, 'RGB', bend, 'B')
+    mel.connect_material_expressions(param('NormalStrength', 0.6, -250, 400), '', bend, 'Alpha')
+    mel.connect_material_property(bend, '', unreal.MaterialProperty.MP_NORMAL)
+    mel.connect_material_property(param('Roughness', 0.85, 0, 450), '', unreal.MaterialProperty.MP_ROUGHNESS)
     mel.set_material_usage(m, unreal.MaterialUsage.MATUSAGE_SKELETAL_MESH)
     mel.recompile_material(m)
     lib.save_loaded_asset(m)
     return m
 
 
-def make_instance(name, master, base, normal, rough, tint, tiling, tex_amount):
+def make_instance(name, master, base, normal, tint, tiling, normal_strength, roughness):
     path = f'{ROOT}/{name}'
     mi = lib.load_asset(path) if lib.does_asset_exist(path) else tools.create_asset(name, ROOT, unreal.MaterialInstanceConstant, unreal.MaterialInstanceConstantFactoryNew())
     mi.set_editor_property('parent', master)
-    mel.set_material_instance_texture_parameter_value(mi, 'BaseTex', tex(base))
-    mel.set_material_instance_texture_parameter_value(mi, 'NormalTex', tex(normal))
-    mel.set_material_instance_texture_parameter_value(mi, 'RoughTex', tex(rough))
+    mel.set_material_instance_texture_parameter_value(mi, 'BaseTex', base)
+    mel.set_material_instance_texture_parameter_value(mi, 'NormalTex', normal)
     mel.set_material_instance_vector_parameter_value(mi, 'Tint', unreal.LinearColor(*tint))
     mel.set_material_instance_scalar_parameter_value(mi, 'Tiling', tiling)
-    mel.set_material_instance_scalar_parameter_value(mi, 'TexAmount', tex_amount)
+    mel.set_material_instance_scalar_parameter_value(mi, 'NormalStrength', normal_strength)
+    mel.set_material_instance_scalar_parameter_value(mi, 'Roughness', roughness)
     lib.save_loaded_asset(mi)
     return mi
 
@@ -136,10 +140,12 @@ def run():
     if body is None:
         raise RuntimeError('No built body: run tools/Build-PlayerMetaHumans.py')
     skeleton = body.get_editor_property('skeleton')
-    master = make_master()
-    linen = make_instance('MI_PlayerLinen', master, 'T_SB_rough_linen_Diffuse', 'T_SB_rough_linen_nor_gl', 'T_SB_rough_linen_Rough', (0.23, 0.18, 0.115, 1), 2.0, 0.6)
-    legs = make_instance('MI_PlayerLeggings', master, 'T_SB_denim_fabric_04_Diffuse', 'T_SB_denim_fabric_04_nor_gl', 'T_SB_denim_fabric_04_Rough', (0.27, 0.19, 0.12, 1), 3.0, 1.0)
-
+    linen_tex, linen_n = tex('T_linen_oatmeal'), tex('T_linen_oatmeal_N')
+    wool_tex, wool_n = tex('T_wool_brown_knit'), tex('T_wool_brown_knit_N')
+    tex('T_linen_stitch_trim')
+    master = make_master(linen_tex, linen_n)
+    linen = make_instance('MI_PlayerLinen', master, linen_tex, linen_n, (1, 1, 1, 1), 3.0, 0.6, 0.85)
+    legs = make_instance('MI_PlayerLeggings', master, wool_tex, wool_n, (1, 1, 1, 1), 4.0, 0.35, 0.9)
     name = 'SKM_Tunic_Leggings' + os.environ.get('SF_OUTFIT_SUFFIX', '')
     mesh = import_skeletal(fbx, name, skeleton)
     # The body patch the garment covers (tools/Build-GarmentBodyClip.py), removed from the body by Mutable (tools/Create-PlayerOutfit.py).
