@@ -22,7 +22,7 @@ namespace SFItemTooltip
 {
     // Item art for "item/oak_log": the kit's icon_<stem> piece, else the item icon T_Icon_<stem>; null when neither exists.
     SHATTEREDFRONTIER_API UTexture2D* ItemTexture(const FString& ItemId);
-    // Tooltip entry for an item id: the plugin item definition when it exists (description, weight, category), else the name and count only.
+    // Tooltip entry for an item id: the item definition when it exists (description, weight, category), else the name and count only.
     SHATTEREDFRONTIER_API FSFInventoryEntry EntryFor(const FString& ItemId, const FString& Name, int32 Count);
     // Shows Entry beside CursorPos (screen space); null hides the tooltip.
     SHATTEREDFRONTIER_API void Present(const FSFItemTooltipParts& Parts, const FSFInventoryEntry* Entry, const FVector2D& CursorPos);

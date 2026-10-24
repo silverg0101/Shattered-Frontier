@@ -21,10 +21,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/PlayerState.h"
 #include "Gathering/SFStationRecipes.h"
-#if SF_WITH_MINIMAL_INVENTORY
-#include "InventoryComponent.h"
-#include "InventoryItemDefinition.h"
-#endif
+#include "Inventory/SFInventory.h"
 
 using namespace SFHudStyle;
 
@@ -149,20 +146,18 @@ FSFHotbarStock USFHudHotbarWidget::StockOf(const APlayerController* Controller)
 {
     FSFHotbarStock Stock;
     if (const ASFPlayerController* Player = Cast<ASFPlayerController>(Controller)) { Stock.BuildPiece = Player->GetBuildPiece(); }
-#if SF_WITH_MINIMAL_INVENTORY
-    const UInventoryComponent* Inventory = Controller ? Controller->FindComponentByClass<UInventoryComponent>() : nullptr;
+    const USFInventoryComponent* Inventory = Controller ? Controller->FindComponentByClass<USFInventoryComponent>() : nullptr;
     for (int32 Index = 0; Inventory && Index < FMath::Clamp(Inventory->NumSlots, 0, 256); ++Index)
     {
-        TSoftObjectPtr<UInventoryItemDefinition> Item; int32 Quantity = 0;
-        const UInventoryItemDefinition* Definition = Inventory->GetSlot(Index, Item, Quantity) && Quantity > 0 ? Item.LoadSynchronous() : nullptr;
+        TSoftObjectPtr<USFItemDefinition> Item; int32 Quantity = 0;
+        const USFItemDefinition* Definition = Inventory->GetSlot(Index, Item, Quantity) && Quantity > 0 ? Item.LoadSynchronous() : nullptr;
         if (Definition) { Stock.Counts.FindOrAdd(Definition->UniqueId) += Quantity; }
     }
-    for (const FInventoryEquippedSlotRep& Worn : Inventory ? Inventory->EquippedItems : TArray<FInventoryEquippedSlotRep>())
+    for (const FSFEquippedSlot& Worn : Inventory ? Inventory->EquippedItems : TArray<FSFEquippedSlot>())
     {
-        if (const UInventoryItemDefinition* Definition = Worn.Item.LoadSynchronous())
+        if (const USFItemDefinition* Definition = Worn.Item.LoadSynchronous())
         { Stock.Counts.FindOrAdd(Definition->UniqueId) += FMath::Max(1, Worn.Quantity); Stock.Worn.Add(Definition->UniqueId); }
     }
-#endif
     return Stock;
 }
 
@@ -219,10 +214,8 @@ bool USFHudHotbarWidget::NativeOnDrop(const FGeometry& InGeometry, const FDragDr
     const int32 Index = Cells.IndexOfByPredicate([&At](const USFSlotWidget* Cell) { return Cell->IsVisible() && Cell->GetCachedGeometry().IsUnderLocation(At); });
     if (!Drag || Index == INDEX_NONE) { return Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation); }
     if (Drag->FromHotbar != INDEX_NONE) { SwapSlots(Drag->FromHotbar, Index); return true; }
-#if SF_WITH_MINIMAL_INVENTORY
-    if (const UInventoryItemDefinition* Definition = TSoftObjectPtr<UInventoryItemDefinition>(Drag->Item).LoadSynchronous())
+    if (const USFItemDefinition* Definition = TSoftObjectPtr<USFItemDefinition>(Drag->Item).LoadSynchronous())
     { Assign(Index, Definition->UniqueId); return true; }
-#endif
     return Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation);
 }
 
@@ -251,13 +244,11 @@ void USFHudHotbarWidget::Present(const FSFHotbarStock& Stock)
                 const FString Stem = Id.Replace(TEXT("/"), TEXT("_"));  // build/wall -> T_Icon_build_wall
                 Art = LoadObject<UTexture2D>(nullptr, *FString::Printf(TEXT("/Game/Frontier/UI/Icons/T_Icon_%s.T_Icon_%s"), *Stem, *Stem), nullptr, LOAD_NoWarn | LOAD_Quiet);
             }
-#if SF_WITH_MINIMAL_INVENTORY
             else if (!Id.IsEmpty())
             {
-                const UInventoryItemDefinition* Definition = TSoftObjectPtr<UInventoryItemDefinition>(FSoftObjectPath(SFStationRecipes::ItemAssetPath(Id))).LoadSynchronous();
+                const USFItemDefinition* Definition = TSoftObjectPtr<USFItemDefinition>(FSoftObjectPath(SFStationRecipes::ItemAssetPath(Id))).LoadSynchronous();
                 Art = Definition ? Definition->Icon.LoadSynchronous() : nullptr;
             }
-#endif
             Cell->SetIcon(Art);
             Cell->SetHotbarDrag(Id.IsEmpty() ? INDEX_NONE : Index);
         }

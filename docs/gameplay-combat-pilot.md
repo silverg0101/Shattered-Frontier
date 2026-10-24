@@ -17,7 +17,7 @@ The server reads `boar_farm_edge` and `boar_forest_edge` from the generated Silv
 A boar killed outside the protected town gives its killer `HidesPerBoar` boar hides (bounded 1–5, shipped 2, `Config=Game`, adopted at zone start). The item is `item/boar_hide` (`/Game/Frontier/Gameplay/Pilot/DA_BoarHide`, made by `tools/Create-CombatPilotItems.py`). The server grants them once per death:
 - Each spawned boar has a death id: group, slot and a spawn serial.
 - `Combat/SFCombatPilotRewards` records every death id it sees. A repeated death event, or one credited inside the protected town (boar or killer), grants nothing and stays spent.
-- The grant is one MinimalInventoryRuntime transaction into a private pilot bag, which the game mode adds to each player controller at login (the gathering pilot's bag settings; Win64 development builds only). A full bag grants nothing and logs `Granted=0`.
+- The grant is one `SFInventoryTransactions` transaction into a private pilot bag, which the game mode adds to each player controller at login (the gathering pilot's bag settings). A full bag grants nothing and logs `Granted=0`.
 
 The server logs `COMBAT_PILOT_REWARD Death=… Hides=… Granted=… Total=…`. The owning client logs `COMBAT_PILOT_CLIENT_HIDES Count=…` whenever its replicated bag's hide count changes. There's no inventory UI in this pilot.
 

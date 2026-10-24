@@ -1,6 +1,6 @@
 """Create the combat pilot's boar-hide item definition in the UE editor.
 
-Run after MinimalInventoryRuntime and the gathering pilot settings are compiled:
+Run after the ShatteredFrontier editor (SFItemDefinition, gathering pilot settings) is built:
     python tools/Run-InEditor.py tools/Create-CombatPilotItems.py
 An existing asset is a hard error, so this script never overwrites.
 """
@@ -10,7 +10,7 @@ import unreal
 
 
 OUTPUT_PATH = '/Game/Frontier/Gameplay/Pilot'
-ITEM_CLASS_PATH = '/Script/MinimalInventoryRuntime.InventoryItemDefinition'
+ITEM_CLASS_PATH = '/Script/ShatteredFrontier.SFItemDefinition'
 ITEMS = (
     ('DA_BoarHide', 'item/boar_hide', 'Boar Hide'),
 )
@@ -33,7 +33,7 @@ if existing:
 
 item_class = unreal.load_class(None, ITEM_CLASS_PATH)
 if item_class is None:
-    raise RuntimeError('Could not load ' + ITEM_CLASS_PATH + '; enable and compile MinimalInventoryRuntime first.')
+    raise RuntimeError('Could not load ' + ITEM_CLASS_PATH + '; build the ShatteredFrontier editor first.')
 
 factory = unreal.DataAssetFactory()
 factory.set_editor_property('data_asset_class', item_class)

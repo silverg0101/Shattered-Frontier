@@ -44,7 +44,7 @@ lib.save_loaded_asset(m, False)
 moved = []
 for path in lib.list_assets('/Game/Frontier', recursive=True, include_folder=False):
     data = unreal.EditorAssetLibrary.find_asset_data(path)
-    if str(data.asset_class_path.asset_name) != 'InventoryItemDefinition':
+    if str(data.asset_class_path.asset_name) != 'SFItemDefinition':
         continue
     item = lib.load_asset(path)
     if str(item.get_editor_property('EquipmentSlot')) == 'tool':

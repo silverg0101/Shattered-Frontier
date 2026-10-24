@@ -1,4 +1,4 @@
-#if WITH_DEV_AUTOMATION_TESTS && WITH_EDITOR && SF_WITH_MINIMAL_INVENTORY
+#if WITH_DEV_AUTOMATION_TESTS && WITH_EDITOR
 #include "Misc/AutomationTest.h"
 #include "Framework/SFPlayerController.h"
 #include "Tests/AutomationCommon.h"
@@ -16,9 +16,7 @@
 #include "Engine/StaticMesh.h"
 #include "PhysicsEngine/PhysicsConstraintComponent.h"
 #include "TimerManager.h"
-#include "InventoryComponent.h"
-#include "InventoryItemDefinition.h"
-#include "InventoryTransactionLibrary.h"
+#include "Inventory/SFInventory.h"
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFHarvestFellingAuthorityTest,
     "ShatteredFrontier.Gathering.FellingAuthority",EAutomationTestFlags::EditorContext|EAutomationTestFlags::EngineFilter)
@@ -45,13 +43,13 @@ bool FSFHarvestFellingAuthorityTest::RunTest(const FString& Parameters)
     PC->Possess(Pawn); Pawn->GetCharacterMovement()->SetMovementMode(MOVE_None);
     Pawn->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     auto* Gather=PC->FindComponentByClass<USFGatheringPilotComponent>();
-    auto* Bag=PC->FindComponentByClass<UInventoryComponent>();
+    auto* Bag=PC->FindComponentByClass<USFInventoryComponent>();
     if (!Gather||!Bag||!Node->HarvestVisuals||!TestTrue(TEXT("Prepared oak and collision source available"),ASFHarvestFallingTree::HasPreparedSource()&&Node->HarvestVisuals->IsReady())) { return false; }
     Gather->CapturedSettings=DuplicateObject<USFGatheringPilotSettings>(GetDefault<USFGatheringPilotSettings>(),Gather);
     Gather->CapturedSettings->HarvestSeconds=0.5f; Gather->bTestWorldAdmission=true; Gather->bEnabled=true;
     Node->CapturedRespawnSeconds=120;
     if (!TestTrue(TEXT("Owned axe equipped"),Gather->InitializeStarterTools()&&Gather->TryEquipTool(true))) { return false; }
-    const TSoftObjectPtr<UInventoryItemDefinition> Logs(FSoftObjectPath(TEXT("/Game/Frontier/Gameplay/Pilot/DA_OakLog.DA_OakLog")));
+    const TSoftObjectPtr<USFItemDefinition> Logs(FSoftObjectPath(TEXT("/Game/Frontier/Gameplay/Pilot/DA_OakLog.DA_OakLog")));
     const auto Tick=[&Fixture](int32 Count){for(int32 I=0;I<Count;++I){Fixture.TickTestWorld(0.05f);}};
     const auto Falls=[World](){int32 Count=0;for(TActorIterator<ASFHarvestFallingTree> It(World);It;++It){if(!It->IsActorBeingDestroyed()){++Count;}}return Count;};
     FVector Eye,Point,Normal; FRotator Rotation; Pawn->GetActorEyesViewPoint(Eye,Rotation);
@@ -77,7 +75,7 @@ bool FSFHarvestFellingAuthorityTest::RunTest(const FString& Parameters)
     auto* Tree=Node->State.FallingTree.Get();
     if (!TestNotNull(TEXT("Final extraction owns a detached tree"),Tree)) { return false; }
     TestEqual(TEXT("Exactly one fall actor"),Falls(),1);
-    TestEqual(TEXT("Exactly three logs claimed"),UInventoryTransactionLibrary::GetItemQuantity(Bag,Logs),int64(3));
+    TestEqual(TEXT("Exactly three logs claimed"),SFInventoryTransactions::GetItemQuantity(Bag,Logs),int64(3));
     TestEqual(TEXT("Exactly three practices"),Gather->Skills.PracticeCount,int64(3));
     TestTrue(TEXT("Matching generation binds the stump/collar handoff"),Node->HarvestVisuals->IsTreeDetachedTo(Tree)&&Tree->MatchesResource(Node,Node->State.Generation));
     TestEqual(TEXT("Cosmetic fall ignores player collision"),Tree->GetFallBody()->GetCollisionResponseToChannel(ECC_Pawn),ECR_Ignore);
@@ -85,7 +83,7 @@ bool FSFHarvestFellingAuthorityTest::RunTest(const FString& Parameters)
     TestFalse(TEXT("Cosmetic fall affects no navigation"),Tree->GetFallBody()->CanEverAffectNavigation());
     Gather->ServerGatheringActionAtSurface_Implementation(Node,2,5,FinalRequest); Tick(12);
     TestEqual(TEXT("Replay starts no additional fall"),Falls(),1);
-    TestEqual(TEXT("Replay gives no extra logs"),UInventoryTransactionLibrary::GetItemQuantity(Bag,Logs),int64(3));
+    TestEqual(TEXT("Replay gives no extra logs"),SFInventoryTransactions::GetItemQuantity(Bag,Logs),int64(3));
     for (int32 I=0;I<800&&!Tree->RestPose.bResting;++I) { Tick(1); }
     if (!TestTrue(TEXT("Server observes supported quiet rest"),Tree->RestPose.bResting))
     {

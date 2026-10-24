@@ -1,13 +1,13 @@
 """Create the raw-material gathering pilot item definitions in the UE editor.
 
-Run only after MinimalInventoryRuntime is installed and compiled. Existing assets
+Run after the ShatteredFrontier editor is built. Existing assets
 are skipped and never overwritten; only missing definitions are created.
 """
 import unreal
 
 
 OUTPUT_PATH = '/Game/Frontier/Gameplay/Pilot'
-ITEM_CLASS_PATH = '/Script/MinimalInventoryRuntime.InventoryItemDefinition'
+ITEM_CLASS_PATH = '/Script/ShatteredFrontier.SFItemDefinition'
 ITEMS = (
     ('DA_OakLog', 'item/oak_log', 'Oak Log'),
     ('DA_IronOre', 'item/iron_ore', 'Iron Ore'),
@@ -29,7 +29,7 @@ missing = [item for item, path in zip(ITEMS, asset_paths) if path not in existin
 
 item_class = unreal.load_class(None, ITEM_CLASS_PATH)
 if item_class is None:
-    raise RuntimeError('Could not load ' + ITEM_CLASS_PATH + '; enable and compile MinimalInventoryRuntime first.')
+    raise RuntimeError('Could not load ' + ITEM_CLASS_PATH + '; build the ShatteredFrontier editor first.')
 
 factory = unreal.DataAssetFactory()
 factory.set_editor_property('data_asset_class', item_class)

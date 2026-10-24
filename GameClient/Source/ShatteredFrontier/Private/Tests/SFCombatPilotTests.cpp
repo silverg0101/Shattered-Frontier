@@ -94,7 +94,6 @@ bool FSFCombatPilotRewardTest::RunTest(const FString& Parameters)
         First.OperationId == Retry.OperationId && Retry.ExpectedContainerRevision == 5 &&
         !First.bKillerProtected && !First.bBoarProtected);
 
-#if SF_WITH_MINIMAL_INVENTORY
     FTestWorldWrapper Fixture;
     if (!Fixture.CreateTestWorld(EWorldType::GameRPC) || !Fixture.BeginPlayInTestWorld()) return false;
     auto* Controller = Fixture.GetTestWorld()->SpawnActor<APlayerController>();
@@ -108,7 +107,6 @@ bool FSFCombatPilotRewardTest::RunTest(const FString& Parameters)
     }
     TestEqual(TEXT("Bag holds one death's hides"), SFCombatPilotRewards::CountHides(Controller), PerBoar);
     TestFalse(TEXT("No bag, no grant"), SFCombatPilotRewards::GrantHides(nullptr, PerBoar));
-#endif
     return true;
 }
 #endif

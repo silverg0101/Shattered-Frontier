@@ -109,14 +109,11 @@ bool FSFInventoryWidgetTest::RunTest(const FString& Parameters)
     return true;
 }
 
-#if SF_WITH_MINIMAL_INVENTORY
 #include "Tests/AutomationCommon.h"
 #include "Construction/SFConstructionNetwork.h"
 #include "Gathering/SFGatheringPilot.h"
 #include "GameFramework/WorldSettings.h"
-#include "InventoryComponent.h"
-#include "InventoryItemDefinition.h"
-#include "InventoryTransactionLibrary.h"
+#include "Inventory/SFInventory.h"
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFInventoryPanelAccessorTest,
     "ShatteredFrontier.Inventory.Panel.Accessor",EAutomationTestFlags::EditorContext|EAutomationTestFlags::EngineFilter)
@@ -128,16 +125,16 @@ bool FSFInventoryPanelAccessorTest::RunTest(const FString& Parameters)
     UWorld* World=Fixture.GetTestWorld(); World->GetWorldSettings()->NotifyBeginPlay();
     auto* PC=World->SpawnActor<ASFPlayerController>();
     auto* Gather=PC ? PC->FindComponentByClass<USFGatheringPilotComponent>() : nullptr;
-    auto* Bag=PC ? PC->FindComponentByClass<UInventoryComponent>() : nullptr;
+    auto* Bag=PC ? PC->FindComponentByClass<USFInventoryComponent>() : nullptr;
     if (!TestNotNull(TEXT("Pilot"),Gather) || !TestNotNull(TEXT("Inventory"),Bag)) { return false; }
     auto Item=[](const TCHAR* Path,int32 Quantity)
-    { FInventoryItemQuantity Q; Q.Item=TSoftObjectPtr<UInventoryItemDefinition>(FSoftObjectPath(Path)); Q.Quantity=Quantity; return Q; };
-    const FInventoryItemQuantity Axe=Item(TEXT("/Game/Frontier/Gameplay/Pilot/DA_IronAxe.DA_IronAxe"),1);
-    const FInventoryItemQuantity Oak=Item(TEXT("/Game/Frontier/Gameplay/Pilot/DA_OakLog.DA_OakLog"),3);
-    if (!TestEqual(TEXT("Grant axe and logs"),UInventoryTransactionLibrary::ExchangeInventoryItems(Bag,{}, {Axe,Oak}),EInventoryTransactionResult::Success)) { return false; }
+    { FSFItemQuantity Q; Q.Item=TSoftObjectPtr<USFItemDefinition>(FSoftObjectPath(Path)); Q.Quantity=Quantity; return Q; };
+    const FSFItemQuantity Axe=Item(TEXT("/Game/Frontier/Gameplay/Pilot/DA_IronAxe.DA_IronAxe"),1);
+    const FSFItemQuantity Oak=Item(TEXT("/Game/Frontier/Gameplay/Pilot/DA_OakLog.DA_OakLog"),3);
+    if (!TestEqual(TEXT("Grant axe and logs"),SFInventoryTransactions::ExchangeInventoryItems(Bag,{}, {Axe,Oak}),ESFInventoryResult::Success)) { return false; }
     for (int32 I=0; I<Bag->NumSlots; ++I)
     {
-        TSoftObjectPtr<UInventoryItemDefinition> Slot; int32 Quantity=0;
+        TSoftObjectPtr<USFItemDefinition> Slot; int32 Quantity=0;
         if (Bag->GetSlot(I,Slot,Quantity) && Slot==Axe.Item) { TestTrue(TEXT("Equip axe"),Bag->EquipFromSlot(I)); break; }
     }
     const FText OakText=Oak.Item.LoadSynchronous()->DisplayName;
@@ -154,15 +151,15 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFInventoryPanelDefinitionTest,
 
 bool FSFInventoryPanelDefinitionTest::RunTest(const FString& Parameters)
 {
-    UInventoryItemDefinition* Tool=NewObject<UInventoryItemDefinition>(GetTransientPackage());
-    Tool->DisplayName=FText::FromString(TEXT("Test axe")); Tool->UseType=EInventoryItemUseType::Equip; Tool->Weight=2.f;
+    USFItemDefinition* Tool=NewObject<USFItemDefinition>(GetTransientPackage());
+    Tool->DisplayName=FText::FromString(TEXT("Test axe")); Tool->UseType=ESFItemUseType::Equip; Tool->Weight=2.f;
     Tool->Description=FText::FromString(TEXT("Chops."));
-    UInventoryItemDefinition* Food=NewObject<UInventoryItemDefinition>(GetTransientPackage()); Food->UseType=EInventoryItemUseType::Eat;
-    UInventoryItemDefinition* Ore=NewObject<UInventoryItemDefinition>(GetTransientPackage());
+    USFItemDefinition* Food=NewObject<USFItemDefinition>(GetTransientPackage()); Food->UseType=ESFItemUseType::Eat;
+    USFItemDefinition* Ore=NewObject<USFItemDefinition>(GetTransientPackage());
     TestEqual(TEXT("Equip is Gear"),USFInventoryWidget::CategoryOf(*Tool),ESFInventoryTab::Gear);
     TestEqual(TEXT("Eat is Consumables"),USFInventoryWidget::CategoryOf(*Food),ESFInventoryTab::Consumables);
     TestEqual(TEXT("No use type is Materials"),USFInventoryWidget::CategoryOf(*Ore),ESFInventoryTab::Materials);
-    UInventoryItemDefinition* Bundle=NewObject<UInventoryItemDefinition>(GetTransientPackage()); Bundle->UniqueId=TEXT("item/wall_material_bundle");
+    USFItemDefinition* Bundle=NewObject<USFItemDefinition>(GetTransientPackage()); Bundle->UniqueId=TEXT("item/wall_material_bundle");
     TestEqual(TEXT("Building bundle is Misc"),USFInventoryWidget::CategoryOf(*Bundle),ESFInventoryTab::Misc);
     const FSFInventoryEntry Entry=USFInventoryWidget::MakeEntry(*Tool,TEXT("Fallback"),1,false);
     TestEqual(TEXT("Name from definition"),Entry.Name.ToString(),FString(TEXT("Test axe")));
@@ -170,5 +167,4 @@ bool FSFInventoryPanelDefinitionTest::RunTest(const FString& Parameters)
     TestEqual(TEXT("Fallback name when unnamed"),USFInventoryWidget::MakeEntry(*Ore,TEXT("Fallback"),1,false).Name.ToString(),FString(TEXT("Fallback")));
     return true;
 }
-#endif
 #endif

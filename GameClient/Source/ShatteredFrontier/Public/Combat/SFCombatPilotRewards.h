@@ -7,7 +7,7 @@ class APlayerController;
 struct FSFGameplayRequest;
 
 // Boar defeat rewards for the Silverbrook combat pilot (MVP journey step 6: eligible rewards, once).
-// Without Gameplay Services, the local development path uses MinimalInventoryRuntime as in the gathering pilot.
+// Without Gameplay Services, the local development path uses the project inventory (Inventory/SFInventory) as in the gathering pilot.
 namespace SFCombatPilotRewards
 {
     SHATTEREDFRONTIER_API const TCHAR* HidePath();

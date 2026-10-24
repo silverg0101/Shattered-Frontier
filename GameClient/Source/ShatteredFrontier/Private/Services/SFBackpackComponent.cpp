@@ -6,11 +6,7 @@
 #include "Gathering/SFStationRecipes.h"
 #include "Inventory/SFInventoryLedgerClient.h"
 #include "Services/SFGameplayServicesClient.h"
-#if SF_WITH_MINIMAL_INVENTORY
-#include "InventoryComponent.h"
-#include "InventoryItemDefinition.h"
-#include "InventoryTransactionLibrary.h"
-#endif
+#include "Inventory/SFInventory.h"
 
 USFBackpackComponent* USFBackpackComponent::FindOrCreate(APlayerController* Controller)
 {
@@ -156,23 +152,21 @@ void USFBackpackComponent::Reconcile(TFunction<void(bool)> Done)
         {
             USFBackpackComponent* Again = Weak.Get();
             if (!Again || View.Status != ESFLedgerStatus::Ok) { Report(ESFBackpackOutcome::Unavailable, -1); return; }
-#if SF_WITH_MINIMAL_INVENTORY
             // Every economy item the pilot knows, plus whatever the ledger holds; tools are not ledger items.
             TSet<FString> Items; View.Quantities.GetKeys(Items);
             for (const FSFStationRecipe& Recipe : SFStationRecipes::Shipped())
             { for (const FSFItemStack& Stack : Recipe.Inputs) { Items.Add(Stack.DefinitionId); } for (const FSFItemStack& Stack : Recipe.Outputs) { Items.Add(Stack.DefinitionId); } }
             Items.Append({TEXT("item/oak_log"), TEXT("item/iron_ore"), TEXT("item/rough_stone"), TEXT("item/boar_hide")});
-            const auto* Inventory = Again->GetOwner() ? Again->GetOwner()->FindComponentByClass<UInventoryComponent>() : nullptr;
+            const auto* Inventory = Again->GetOwner() ? Again->GetOwner()->FindComponentByClass<USFInventoryComponent>() : nullptr;
             TMap<FString, int64> Deltas;
             for (const FString& Item : Items)
             {
-                const int64 Bag = Inventory ? UInventoryTransactionLibrary::GetItemQuantity(const_cast<UInventoryComponent*>(Inventory),
-                    TSoftObjectPtr<UInventoryItemDefinition>(FSoftObjectPath(SFStationRecipes::ItemAssetPath(Item)))) : 0;
+                const int64 Bag = Inventory ? SFInventoryTransactions::GetItemQuantity(const_cast<USFInventoryComponent*>(Inventory),
+                    TSoftObjectPtr<USFItemDefinition>(FSoftObjectPath(SFStationRecipes::ItemAssetPath(Item)))) : 0;
                 if (View.Quantities.FindRef(Item) != Bag) { Deltas.Add(Item, View.Quantities.FindRef(Item) - Bag); }
             }
             UE_LOG(LogTemp, Display, TEXT("BACKPACK_RECONCILED Container=%s Revision=%lld Corrections=%d"), *Again->ContainerId, View.Revision, Deltas.Num());
             Again->ApplyToBag(Deltas);
-#endif
             // Then the equipped slots from the equipment container (created here on a character's first read).
             const int64 PackRevision = View.Revision;
             Again->EnsureEquipment([Weak, Report, PackRevision](const FSFLedgerResponse& Equipment)
@@ -228,22 +222,20 @@ void USFBackpackComponent::TransferEquipment(const FString& DefinitionId, bool b
 
 void USFBackpackComponent::ApplyToBag(const TMap<FString, int64>& Deltas) const
 {
-#if SF_WITH_MINIMAL_INVENTORY
-    auto* Inventory = GetOwner() ? GetOwner()->FindComponentByClass<UInventoryComponent>() : nullptr;
+    auto* Inventory = GetOwner() ? GetOwner()->FindComponentByClass<USFInventoryComponent>() : nullptr;
     if (!Inventory) { return; }
-    FInventoryTransactionChange Change; Change.Inventory = Inventory;
+    FSFInventoryChange Change; Change.Inventory = Inventory;
     for (const TPair<FString, int64>& Delta : Deltas)
     {
         const FString Path = SFStationRecipes::ItemAssetPath(Delta.Key);
         if (Delta.Value == 0) { continue; }
-        if (!LoadObject<UInventoryItemDefinition>(nullptr, *Path))
+        if (!LoadObject<USFItemDefinition>(nullptr, *Path))
         { UE_LOG(LogTemp, Warning, TEXT("BACKPACK_PROJECTION_UNKNOWN_ITEM Item=%s Delta=%lld"), *Delta.Key, Delta.Value); continue; }
-        FInventoryItemQuantity Item; Item.Item = TSoftObjectPtr<UInventoryItemDefinition>(FSoftObjectPath(Path)); Item.Quantity = int32(FMath::Abs(Delta.Value));
+        FSFItemQuantity Item; Item.Item = TSoftObjectPtr<USFItemDefinition>(FSoftObjectPath(Path)); Item.Quantity = int32(FMath::Abs(Delta.Value));
         (Delta.Value > 0 ? Change.AddItems : Change.RemoveItems).Add(Item);
     }
-    if ((Change.AddItems.Num() || Change.RemoveItems.Num()) && UInventoryTransactionLibrary::ExecuteInventoryTransaction({Change}) != EInventoryTransactionResult::Success)
+    if ((Change.AddItems.Num() || Change.RemoveItems.Num()) && SFInventoryTransactions::ExecuteInventoryTransaction({Change}) != ESFInventoryResult::Success)
     { UE_LOG(LogTemp, Error, TEXT("BACKPACK_PROJECTION_MISMATCH Container=%s"), *ContainerId); }
-#endif
 }
 
 #if WITH_DEV_AUTOMATION_TESTS

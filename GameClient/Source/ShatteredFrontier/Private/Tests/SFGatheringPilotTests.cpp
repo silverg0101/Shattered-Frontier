@@ -1,4 +1,4 @@
-#if WITH_DEV_AUTOMATION_TESTS && WITH_EDITOR && SF_WITH_MINIMAL_INVENTORY
+#if WITH_DEV_AUTOMATION_TESTS && WITH_EDITOR
 #include "Misc/AutomationTest.h"
 #include "Framework/SFPlayerController.h"
 #include "Tests/AutomationCommon.h"
@@ -14,9 +14,7 @@
 #include "GameFramework/WorldSettings.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/BoxComponent.h"
-#include "InventoryComponent.h"
-#include "InventoryItemDefinition.h"
-#include "InventoryTransactionLibrary.h"
+#include "Inventory/SFInventory.h"
 #include <limits>
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFGatheringPilotAuthorityTest,
@@ -41,25 +39,25 @@ bool FSFGatheringPilotAuthorityTest::RunTest(const FString& Parameters)
     OtherPawn->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     auto* Gather=PC->FindComponentByClass<USFGatheringPilotComponent>();
     auto* OtherGather=Other->FindComponentByClass<USFGatheringPilotComponent>();
-    auto* Inventory=PC->FindComponentByClass<UInventoryComponent>();
-    auto* OtherInventory=Other->FindComponentByClass<UInventoryComponent>();
+    auto* Inventory=PC->FindComponentByClass<USFInventoryComponent>();
+    auto* OtherInventory=Other->FindComponentByClass<USFInventoryComponent>();
     if (!Gather || !OtherGather || !Inventory || !OtherInventory) { return false; }
     for (auto* Component : {Gather,OtherGather})
     {
         Component->CapturedSettings=DuplicateObject<USFGatheringPilotSettings>(GetDefault<USFGatheringPilotSettings>(),Component);
         Component->CapturedSettings->HarvestSeconds=0.5f; Component->CapturedSettings->RefineSeconds=0.5f; Component->bEnabled=true; Component->bTestWorldAdmission=true;
     }
-    const auto GiveAndEquip=[this](UInventoryComponent* Bag, bool bAxe)
+    const auto GiveAndEquip=[this](USFInventoryComponent* Bag, bool bAxe)
     {
-        FInventoryItemQuantity Tool;
-        Tool.Item=TSoftObjectPtr<UInventoryItemDefinition>(FSoftObjectPath(bAxe
+        FSFItemQuantity Tool;
+        Tool.Item=TSoftObjectPtr<USFItemDefinition>(FSoftObjectPath(bAxe
             ? TEXT("/Game/Frontier/Gameplay/Pilot/DA_IronAxe.DA_IronAxe")
             : TEXT("/Game/Frontier/Gameplay/Pilot/DA_IronPickaxe.DA_IronPickaxe")));
         Tool.Quantity=1;
-        if (UInventoryTransactionLibrary::ExchangeInventoryItems(Bag,{}, {Tool})!=EInventoryTransactionResult::Success) { return false; }
+        if (SFInventoryTransactions::ExchangeInventoryItems(Bag,{}, {Tool})!=ESFInventoryResult::Success) { return false; }
         for (int32 I=0; I<Bag->NumSlots; ++I)
         {
-            TSoftObjectPtr<UInventoryItemDefinition> Item; int32 Quantity=0;
+            TSoftObjectPtr<USFItemDefinition> Item; int32 Quantity=0;
             if (Bag->GetSlot(I,Item,Quantity) && Item==Tool.Item) { return Bag->EquipFromSlot(I); }
         }
         return false;
@@ -71,21 +69,21 @@ bool FSFGatheringPilotAuthorityTest::RunTest(const FString& Parameters)
     if (!Wood || !Ore) { return false; }
     Wood->State.Charges=1; Ore->State.Charges=1; Ore->Kind=ESFGatheringPilotKind::Iron;
     if (!TestTrue(TEXT("Generated catalog and real plugin available"),Gather->InventoryReady())) { return false; }
-    const TSoftObjectPtr<UInventoryItemDefinition> WoodItem(FSoftObjectPath(TEXT("/Game/Frontier/Gameplay/Pilot/DA_OakLog.DA_OakLog")));
-    const TSoftObjectPtr<UInventoryItemDefinition> OreItem(FSoftObjectPath(TEXT("/Game/Frontier/Gameplay/Pilot/DA_IronOre.DA_IronOre")));
+    const TSoftObjectPtr<USFItemDefinition> WoodItem(FSoftObjectPath(TEXT("/Game/Frontier/Gameplay/Pilot/DA_OakLog.DA_OakLog")));
+    const TSoftObjectPtr<USFItemDefinition> OreItem(FSoftObjectPath(TEXT("/Game/Frontier/Gameplay/Pilot/DA_IronOre.DA_IronOre")));
     const auto Tick=[&Fixture](int32 Count) { for (int32 I=0; I<Count; ++I) { Fixture.TickTestWorld(0.05f); } };
     Gather->ServerGatheringAction_Implementation(Wood,0,1);
     TestTrue(TEXT("One player acquires channel without consuming charge"),Wood->State.bBusy && Wood->State.Charges==1);
     OtherGather->ServerGatheringAction_Implementation(Wood,0,1);
     TestEqual(TEXT("Competing final charge is busy"),OtherGather->Feedback.Result,ESFGatheringPilotResult::Busy);
     Tick(4);
-    TestEqual(TEXT("No early reward"),UInventoryTransactionLibrary::GetItemQuantity(Inventory,WoodItem),int64(0));
+    TestEqual(TEXT("No early reward"),SFInventoryTransactions::GetItemQuantity(Inventory,WoodItem),int64(0));
     Tick(8);
-    TestEqual(TEXT("Timed harvest grants exactly one unit"),UInventoryTransactionLibrary::GetItemQuantity(Inventory,WoodItem),int64(1));
+    TestEqual(TEXT("Timed harvest grants exactly one unit"),SFInventoryTransactions::GetItemQuantity(Inventory,WoodItem),int64(1));
     TestTrue(TEXT("Final charge depletes once and releases lock"),Wood->State.Charges==0 && Wood->State.Revision==1 && !Wood->State.bBusy);
-    TestEqual(TEXT("Other player receives no grant"),UInventoryTransactionLibrary::GetItemQuantity(OtherInventory,WoodItem),int64(0));
+    TestEqual(TEXT("Other player receives no grant"),SFInventoryTransactions::GetItemQuantity(OtherInventory,WoodItem),int64(0));
     Gather->ServerGatheringAction_Implementation(Wood,0,1);
-    TestEqual(TEXT("Completed request replay does not duplicate grant"),UInventoryTransactionLibrary::GetItemQuantity(Inventory,WoodItem),int64(1));
+    TestEqual(TEXT("Completed request replay does not duplicate grant"),SFInventoryTransactions::GetItemQuantity(Inventory,WoodItem),int64(1));
     Gather->ServerGatheringAction_Implementation(Ore,0,1);
     TestEqual(TEXT("Changed-payload replay cannot reserve another node"),Ore->State.bBusy,false);
     OtherGather->ServerGatheringAction_Implementation(Wood,1,2);
@@ -96,13 +94,13 @@ bool FSFGatheringPilotAuthorityTest::RunTest(const FString& Parameters)
     TestEqual(TEXT("Moving cancels channel"),OtherGather->Feedback.Result,ESFGatheringPilotResult::Moved);
     TestTrue(TEXT("Movement preserves charge and lock becomes available"),Ore->State.Charges==1 && !Ore->State.bBusy);
     if (!TestTrue(TEXT("Ore test switches to pickaxe"),GiveAndEquip(Inventory,false))) { return false; }
-    FInventoryItemQuantity ReturnedAxe; ReturnedAxe.Item=TSoftObjectPtr<UInventoryItemDefinition>(FSoftObjectPath(TEXT("/Game/Frontier/Gameplay/Pilot/DA_IronAxe.DA_IronAxe"))); ReturnedAxe.Quantity=1;
-    TestEqual(TEXT("Fixture removes returned axe to isolate raw-material capacity"),UInventoryTransactionLibrary::ExchangeInventoryItems(Inventory,{ReturnedAxe},{}),EInventoryTransactionResult::Success);
+    FSFItemQuantity ReturnedAxe; ReturnedAxe.Item=TSoftObjectPtr<USFItemDefinition>(FSoftObjectPath(TEXT("/Game/Frontier/Gameplay/Pilot/DA_IronAxe.DA_IronAxe"))); ReturnedAxe.Quantity=1;
+    TestEqual(TEXT("Fixture removes returned axe to isolate raw-material capacity"),SFInventoryTransactions::ExchangeInventoryItems(Inventory,{ReturnedAxe},{}),ESFInventoryResult::Success);
     Inventory->MaxWeight=1; // Already contains one 1 kg wood unit.
     Gather->ServerGatheringAction_Implementation(Ore,0,2); Tick(12);
     TestEqual(TEXT("Full bag rejects entire grant"),Gather->Feedback.Result,ESFGatheringPilotResult::InventoryFull);
     TestTrue(TEXT("Rejected grant preserves charge and revision"),Ore->State.Charges==1 && Ore->State.Revision==0 && !Ore->State.bBusy);
-    TestEqual(TEXT("No partial ore grant"),UInventoryTransactionLibrary::GetItemQuantity(Inventory,OreItem),int64(0));
+    TestEqual(TEXT("No partial ore grant"),SFInventoryTransactions::GetItemQuantity(Inventory,OreItem),int64(0));
 
     auto* Wall=World->SpawnActor<AActor>(); auto* Box=NewObject<UBoxComponent>(Wall);
     Wall->SetRootComponent(Box); Box->SetBoxExtent(FVector(20,200,200));
@@ -129,41 +127,41 @@ bool FSFGatheringPilotAuthorityTest::RunTest(const FString& Parameters)
     if (!Sawmill || !Forge) { return false; }
     Sawmill->Kind=ESFGatheringPilotKind::Sawmill; Sawmill->State.Charges=0;
     Forge->Kind=ESFGatheringPilotKind::Forge; Forge->State.Charges=0;
-    const TSoftObjectPtr<UInventoryItemDefinition> TimberItem(FSoftObjectPath(TEXT("/Game/Frontier/Gameplay/Pilot/DA_RoughTimber.DA_RoughTimber")));
-    const TSoftObjectPtr<UInventoryItemDefinition> IngotItem(FSoftObjectPath(TEXT("/Game/Frontier/Gameplay/Pilot/DA_IronIngot.DA_IronIngot")));
+    const TSoftObjectPtr<USFItemDefinition> TimberItem(FSoftObjectPath(TEXT("/Game/Frontier/Gameplay/Pilot/DA_RoughTimber.DA_RoughTimber")));
+    const TSoftObjectPtr<USFItemDefinition> IngotItem(FSoftObjectPath(TEXT("/Game/Frontier/Gameplay/Pilot/DA_IronIngot.DA_IronIngot")));
     Gather->ServerGatheringAction_Implementation(Sawmill,0,6); Tick(4);
-    TestEqual(TEXT("Recipe does not consume inputs before its server channel completes"),UInventoryTransactionLibrary::GetItemQuantity(Inventory,WoodItem),int64(1));
+    TestEqual(TEXT("Recipe does not consume inputs before its server channel completes"),SFInventoryTransactions::GetItemQuantity(Inventory,WoodItem),int64(1));
     Tick(8);
-    TestEqual(TEXT("Recipe consumes exactly one log"),UInventoryTransactionLibrary::GetItemQuantity(Inventory,WoodItem),int64(0));
-    TestEqual(TEXT("Recipe creates design-authored four rough timber"),UInventoryTransactionLibrary::GetItemQuantity(Inventory,TimberItem),int64(4));
+    TestEqual(TEXT("Recipe consumes exactly one log"),SFInventoryTransactions::GetItemQuantity(Inventory,WoodItem),int64(0));
+    TestEqual(TEXT("Recipe creates design-authored four rough timber"),SFInventoryTransactions::GetItemQuantity(Inventory,TimberItem),int64(4));
     TestTrue(TEXT("Station increments revision without depleting"),Sawmill->State.Revision==1 && Sawmill->State.Charges==0 && !Sawmill->State.bBusy);
     Gather->ServerGatheringAction_Implementation(Sawmill,0,6);
-    TestEqual(TEXT("Recipe replay does not multiply output"),UInventoryTransactionLibrary::GetItemQuantity(Inventory,TimberItem),int64(4));
+    TestEqual(TEXT("Recipe replay does not multiply output"),SFInventoryTransactions::GetItemQuantity(Inventory,TimberItem),int64(4));
     Gather->ServerGatheringAction_Implementation(Sawmill,1,7);
     TestEqual(TEXT("Missing materials rejected before channel"),Gather->Feedback.Result,ESFGatheringPilotResult::MissingMaterials);
-    FInventoryItemQuantity TimberCost; TimberCost.Item=TimberItem; TimberCost.Quantity=4;
-    FInventoryItemQuantity OneLog; OneLog.Item=WoodItem; OneLog.Quantity=1;
-    TestEqual(TEXT("Prepare one-slot bag through real transaction"),UInventoryTransactionLibrary::ExchangeInventoryItems(Inventory,{TimberCost},{OneLog}),EInventoryTransactionResult::Success);
+    FSFItemQuantity TimberCost; TimberCost.Item=TimberItem; TimberCost.Quantity=4;
+    FSFItemQuantity OneLog; OneLog.Item=WoodItem; OneLog.Quantity=1;
+    TestEqual(TEXT("Prepare one-slot bag through real transaction"),SFInventoryTransactions::ExchangeInventoryItems(Inventory,{TimberCost},{OneLog}),ESFInventoryResult::Success);
     Inventory->NumSlots=1; Inventory->MaxWeight=1;
     Gather->ServerGatheringAction_Implementation(Sawmill,1,8);
     TestEqual(TEXT("Overweight recipe rejected entirely"),Gather->Feedback.Result,ESFGatheringPilotResult::InventoryFull);
-    TestEqual(TEXT("Capacity denial preserves ingredient"),UInventoryTransactionLibrary::GetItemQuantity(Inventory,WoodItem),int64(1));
-    TestEqual(TEXT("Capacity denial creates no output"),UInventoryTransactionLibrary::GetItemQuantity(Inventory,TimberItem),int64(0));
+    TestEqual(TEXT("Capacity denial preserves ingredient"),SFInventoryTransactions::GetItemQuantity(Inventory,WoodItem),int64(1));
+    TestEqual(TEXT("Capacity denial creates no output"),SFInventoryTransactions::GetItemQuantity(Inventory,TimberItem),int64(0));
     Inventory->MaxWeight=24;
     Gather->ServerGatheringAction_Implementation(Sawmill,1,9); Sawmill->Kind=ESFGatheringPilotKind::Forge; Tick(12);
     TestEqual(TEXT("Changing recipe during channel rejects as stale"),Gather->Feedback.Result,ESFGatheringPilotResult::Stale);
-    TestEqual(TEXT("Changed recipe consumes no log"),UInventoryTransactionLibrary::GetItemQuantity(Inventory,WoodItem),int64(1));
+    TestEqual(TEXT("Changed recipe consumes no log"),SFInventoryTransactions::GetItemQuantity(Inventory,WoodItem),int64(1));
     TestTrue(TEXT("Changed recipe preserves revision and releases lock"),Sawmill->State.Revision==1 && !Sawmill->State.bBusy);
     Sawmill->Kind=ESFGatheringPilotKind::Sawmill;
     Gather->ServerGatheringAction_Implementation(Sawmill,1,9);
     TestEqual(TEXT("Same key retains original canceled outcome after content restored"),Gather->Feedback.Result,ESFGatheringPilotResult::Stale);
     Gather->ServerGatheringAction_Implementation(Sawmill,1,10); Tick(12);
-    TestEqual(TEXT("Removing last ingredient frees the slot for the result"),UInventoryTransactionLibrary::GetItemQuantity(Inventory,TimberItem),int64(4));
-    FInventoryItemQuantity OneOre; OneOre.Item=OreItem; OneOre.Quantity=1;
-    TestEqual(TEXT("Prepare ore through inventory transaction"),UInventoryTransactionLibrary::ExchangeInventoryItems(Inventory,{TimberCost},{OneOre}),EInventoryTransactionResult::Success);
+    TestEqual(TEXT("Removing last ingredient frees the slot for the result"),SFInventoryTransactions::GetItemQuantity(Inventory,TimberItem),int64(4));
+    FSFItemQuantity OneOre; OneOre.Item=OreItem; OneOre.Quantity=1;
+    TestEqual(TEXT("Prepare ore through inventory transaction"),SFInventoryTransactions::ExchangeInventoryItems(Inventory,{TimberCost},{OneOre}),ESFInventoryResult::Success);
     Gather->ServerGatheringAction_Implementation(Forge,0,11); Tick(12);
-    TestEqual(TEXT("Forge consumes one ore"),UInventoryTransactionLibrary::GetItemQuantity(Inventory,OreItem),int64(0));
-    TestEqual(TEXT("Forge creates exactly one design-authored ingot"),UInventoryTransactionLibrary::GetItemQuantity(Inventory,IngotItem),int64(1));
+    TestEqual(TEXT("Forge consumes one ore"),SFInventoryTransactions::GetItemQuantity(Inventory,OreItem),int64(0));
+    TestEqual(TEXT("Forge creates exactly one design-authored ingot"),SFInventoryTransactions::GetItemQuantity(Inventory,IngotItem),int64(1));
     Gather->ServerGatheringAction_Implementation(Forge,1,12);
     TestEqual(TEXT("Forge cannot craft from nothing"),Gather->Feedback.Result,ESFGatheringPilotResult::MissingMaterials);
     return true;
@@ -185,7 +183,7 @@ bool FSFGatheringPilotToolTest::RunTest(const FString& Parameters)
     if (!PC || !Pawn || !Wood) { return false; }
     PC->Possess(Pawn); Pawn->GetCharacterMovement()->SetMovementMode(MOVE_None);
     auto* Gather=PC->FindComponentByClass<USFGatheringPilotComponent>();
-    auto* Bag=PC->FindComponentByClass<UInventoryComponent>(); if (!Gather || !Bag) { return false; }
+    auto* Bag=PC->FindComponentByClass<USFInventoryComponent>(); if (!Gather || !Bag) { return false; }
     Gather->CapturedSettings=DuplicateObject<USFGatheringPilotSettings>(GetDefault<USFGatheringPilotSettings>(),Gather);
     Gather->CapturedSettings->HarvestSeconds=0.5f; Gather->bTestWorldAdmission=true; Gather->bEnabled=true;
     Wood->State.Charges=1;
@@ -206,7 +204,7 @@ bool FSFGatheringPilotToolTest::RunTest(const FString& Parameters)
     // normal key path's explicit cancel is bypassed.
     for (int32 I=0; I<Bag->NumSlots; ++I)
     {
-        TSoftObjectPtr<UInventoryItemDefinition> Item; int32 Quantity=0;
+        TSoftObjectPtr<USFItemDefinition> Item; int32 Quantity=0;
         if (Bag->GetSlot(I,Item,Quantity) && Item.ToSoftObjectPath()==FSoftObjectPath(TEXT("/Game/Frontier/Gameplay/Pilot/DA_IronPickaxe.DA_IronPickaxe")))
         { TestTrue(TEXT("Mid-channel raw equipment RPC can swap tool"),Bag->EquipFromSlot(I)); break; }
     }
@@ -223,7 +221,7 @@ bool FSFGatheringPilotToolTest::RunTest(const FString& Parameters)
 
     auto* SmallPC=World->SpawnActor<ASFPlayerController>(); if (!SmallPC) { return false; }
     auto* SmallGather=SmallPC->FindComponentByClass<USFGatheringPilotComponent>();
-    auto* SmallBag=SmallPC->FindComponentByClass<UInventoryComponent>(); if (!SmallGather || !SmallBag) { return false; }
+    auto* SmallBag=SmallPC->FindComponentByClass<USFInventoryComponent>(); if (!SmallGather || !SmallBag) { return false; }
     SmallGather->CapturedSettings=DuplicateObject<USFGatheringPilotSettings>(GetDefault<USFGatheringPilotSettings>(),SmallGather);
     SmallGather->bTestWorldAdmission=true; SmallGather->bEnabled=true; SmallBag->NumSlots=1;
     TestFalse(TEXT("Starter loadout fails atomically when only one slot fits"),SmallGather->InitializeStarterTools());
@@ -256,7 +254,7 @@ bool FSFGatheringPilotLifecycleTest::RunTest(const FString& Parameters)
     PC->Possess(Pawn); Pawn->GetCharacterMovement()->SetMovementMode(MOVE_None);
     Pawn->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     auto* Gather=PC->FindComponentByClass<USFGatheringPilotComponent>();
-    auto* Bag=PC->FindComponentByClass<UInventoryComponent>(); if (!Gather || !Bag) { return false; }
+    auto* Bag=PC->FindComponentByClass<USFInventoryComponent>(); if (!Gather || !Bag) { return false; }
     Gather->CapturedSettings=DuplicateObject<USFGatheringPilotSettings>(GetDefault<USFGatheringPilotSettings>(),Gather);
     Gather->CapturedSettings->HarvestSeconds=0.5f; Gather->bEnabled=true; Gather->bTestWorldAdmission=true;
     if (!TestTrue(TEXT("Real starter loadout"),Gather->InitializeStarterTools())
@@ -266,12 +264,12 @@ bool FSFGatheringPilotLifecycleTest::RunTest(const FString& Parameters)
     // Fixture shortens one released node and its timer; no console/runtime override is introduced.
     Wood->State.Capacity=1; Wood->State.Charges=1; Wood->CapturedRespawnSeconds=1;
     const auto Tick=[&Fixture](int32 Count) { for (int32 I=0; I<Count; ++I) { Fixture.TickTestWorld(0.05f); } };
-    const TSoftObjectPtr<UInventoryItemDefinition> Item(FSoftObjectPath(TEXT("/Game/Frontier/Gameplay/Pilot/DA_OakLog.DA_OakLog")));
+    const TSoftObjectPtr<USFItemDefinition> Item(FSoftObjectPath(TEXT("/Game/Frontier/Gameplay/Pilot/DA_OakLog.DA_OakLog")));
     Gather->ServerGatheringAction_Implementation(Wood,0,1);
     TestTrue(TEXT("Observers can reconstruct busy state without bag contents"),Wood->GetPresentationState().bBusy);
     TestEqual(TEXT("Preview channel has no persistent damage"),Wood->GetPresentationState().ExtractedFraction,0.0f);
     Tick(12);
-    TestEqual(TEXT("Final harvest grants one log"),UInventoryTransactionLibrary::GetItemQuantity(Bag,Item),int64(1));
+    TestEqual(TEXT("Final harvest grants one log"),SFInventoryTransactions::GetItemQuantity(Bag,Item),int64(1));
     TestEqual(TEXT("Depleted appearance is fully extracted"),Wood->GetPresentationState().ExtractedFraction,1.0f);
     TestTrue(TEXT("Recovery deadline is server-owned and in the future"),Wood->State.RecoveryAtServerSeconds>World->GetTimeSeconds());
     const double Deadline=Wood->State.RecoveryAtServerSeconds;
@@ -285,17 +283,17 @@ bool FSFGatheringPilotLifecycleTest::RunTest(const FString& Parameters)
     TestEqual(TEXT("Recovery advances revision beyond depletion"),Wood->State.Revision,uint32(2));
     TestEqual(TEXT("New generation has no extraction damage"),Wood->GetPresentationState().ExtractedFraction,0.0f);
     TestEqual(TEXT("Recovery clears its deadline"),Wood->State.RecoveryAtServerSeconds,0.0);
-    TestEqual(TEXT("Recovery never creates inventory items"),UInventoryTransactionLibrary::GetItemQuantity(Bag,Item),int64(1));
+    TestEqual(TEXT("Recovery never creates inventory items"),SFInventoryTransactions::GetItemQuantity(Bag,Item),int64(1));
     Gather->ServerGatheringAction_Implementation(Wood,0,1);
     TestEqual(TEXT("Old successful replay does not harvest renewed resource"),Wood->State.Charges,1);
-    TestEqual(TEXT("Old replay never duplicates material"),UInventoryTransactionLibrary::GetItemQuantity(Bag,Item),int64(1));
+    TestEqual(TEXT("Old replay never duplicates material"),SFInventoryTransactions::GetItemQuantity(Bag,Item),int64(1));
     Gather->ServerGatheringAction_Implementation(Wood,0,2);
     TestEqual(TEXT("Old-generation new request is stale"),Gather->Feedback.Result,ESFGatheringPilotResult::Stale);
     Gather->ServerGatheringAction_Implementation(Wood,2,3); Gather->ServerCancelHarvest_Implementation(3);
     TestEqual(TEXT("Cancellation preserves renewed resource appearance"),Wood->GetPresentationState().ExtractedFraction,0.0f);
     TestEqual(TEXT("Cancellation does not schedule recovery"),Wood->State.RecoveryAtServerSeconds,0.0);
     Gather->ServerGatheringAction_Implementation(Wood,2,4); Tick(12);
-    TestEqual(TEXT("New generation can be harvested once"),UInventoryTransactionLibrary::GetItemQuantity(Bag,Item),int64(2));
+    TestEqual(TEXT("New generation can be harvested once"),SFInventoryTransactions::GetItemQuantity(Bag,Item),int64(2));
     TestEqual(TEXT("Second depletion has its own revision"),Wood->State.Revision,uint32(3));
     TestEqual(TEXT("Renewal advances a separate visual generation"),Wood->State.Generation,uint32(1));
     FTimerHandle Timer=Wood->RecoveryTimer;
@@ -383,7 +381,7 @@ bool FSFGatheringPilotLedgerTest::RunTest(const FString& Parameters)
     if (!PC || !Pawn || !Wood) { return false; }
     PC->Possess(Pawn); Pawn->GetCharacterMovement()->SetMovementMode(MOVE_None);
     auto* Gather=PC->FindComponentByClass<USFGatheringPilotComponent>();
-    auto* Bag=PC->FindComponentByClass<UInventoryComponent>(); if (!Gather || !Bag) { return false; }
+    auto* Bag=PC->FindComponentByClass<USFInventoryComponent>(); if (!Gather || !Bag) { return false; }
     Gather->CapturedSettings=DuplicateObject<USFGatheringPilotSettings>(GetDefault<USFGatheringPilotSettings>(),Gather);
     Gather->CapturedSettings->HarvestSeconds=0.5f; Gather->bTestWorldAdmission=true; Gather->bEnabled=true;
     if (!TestTrue(TEXT("Starter tools and axe"),Gather->InitializeStarterTools() && Gather->TryEquipTool(true))) { return false; }
@@ -411,13 +409,13 @@ bool FSFGatheringPilotLedgerTest::RunTest(const FString& Parameters)
     USFQuestPilotComponent* Quest=NewObject<USFQuestPilotComponent>(PC);
     Quest->RegisterComponent();
 
-    const TSoftObjectPtr<UInventoryItemDefinition> WoodItem(FSoftObjectPath(TEXT("/Game/Frontier/Gameplay/Pilot/DA_OakLog.DA_OakLog")));
+    const TSoftObjectPtr<USFItemDefinition> WoodItem(FSoftObjectPath(TEXT("/Game/Frontier/Gameplay/Pilot/DA_OakLog.DA_OakLog")));
     const auto Tick=[&Fixture](int32 Count) { for (int32 I=0; I<Count; ++I) { Fixture.TickTestWorld(0.05f); FTSTicker::GetCoreTicker().Tick(0.3f); } };
     const auto Grants=[Fake](const FString& Op) { int32 N=0; for (const auto& R : Fake->Requests) { N+=R.Rpc==ESFLedgerRpc::Grant && R.OperationId==Op; } return N; };
 
     Gather->ServerGatheringAction_Implementation(Wood,0,1); Tick(12);
     TestEqual(TEXT("Receipt grants"),Gather->Feedback.Result,ESFGatheringPilotResult::Granted);
-    TestEqual(TEXT("Projection shows the committed unit"),UInventoryTransactionLibrary::GetItemQuantity(Bag,WoodItem),int64(1));
+    TestEqual(TEXT("Projection shows the committed unit"),SFInventoryTransactions::GetItemQuantity(Bag,WoodItem),int64(1));
     TestTrue(TEXT("Charge consumed once after the receipt"),Wood->State.Charges==2 && Wood->State.Revision==1 && !Wood->State.bBusy);
     if (!TestTrue(TEXT("EnsureContainer then Grant"),Fake->Requests.Num()==2 && Fake->Requests[0].Rpc==ESFLedgerRpc::EnsureContainer)) { return false; }
     const FSFLedgerRequest First=Fake->Requests[1];
@@ -433,7 +431,7 @@ bool FSFGatheringPilotLedgerTest::RunTest(const FString& Parameters)
     const FString Second=Fake->Requests.Last().OperationId;
     TestEqual(TEXT("Lost reply is retried with the same operation id"),Grants(Second),2);
     TestEqual(TEXT("Exactly one ledger commit per harvest"),Fake->Commits,2);
-    TestEqual(TEXT("Retry projects one unit"),UInventoryTransactionLibrary::GetItemQuantity(Bag,WoodItem),int64(2));
+    TestEqual(TEXT("Retry projects one unit"),SFInventoryTransactions::GetItemQuantity(Bag,WoodItem),int64(2));
     TestNotEqual(TEXT("Each harvest has its own operation id"),Second,First.OperationId);
 
     Fake->bHold=true;
@@ -449,7 +447,7 @@ bool FSFGatheringPilotLedgerTest::RunTest(const FString& Parameters)
     TestEqual(TEXT("Exhausted retries reject as unavailable"),Gather->Feedback.Result,ESFGatheringPilotResult::Unavailable);
     TestEqual(TEXT("MaxAttempts bounds retries"),Grants(Third),3);
     TestTrue(TEXT("Unavailable keeps charge and revision and releases lock"),Wood->State.Charges==1 && Wood->State.Revision==2 && !Wood->State.bBusy);
-    TestEqual(TEXT("Nothing projected"),UInventoryTransactionLibrary::GetItemQuantity(Bag,WoodItem),int64(2));
+    TestEqual(TEXT("Nothing projected"),SFInventoryTransactions::GetItemQuantity(Bag,WoodItem),int64(2));
 
     Fake->bAllUnavailable=false; Pack->Revision=Fake->Revision; Fake->Revision+=5;  // another writer moved the container
     const int32 CommitsBefore=Fake->Commits;

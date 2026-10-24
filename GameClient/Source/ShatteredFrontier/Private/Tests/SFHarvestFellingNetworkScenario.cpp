@@ -10,11 +10,7 @@
 #include "HAL/PlatformMisc.h"
 #include "Misc/CommandLine.h"
 #include "Misc/Parse.h"
-#if SF_WITH_MINIMAL_INVENTORY
-#include "InventoryComponent.h"
-#include "InventoryItemDefinition.h"
-#include "InventoryTransactionLibrary.h"
-#endif
+#include "Inventory/SFInventory.h"
 
 struct FSFHarvestTreeFallNetworkState
 {
@@ -27,7 +23,6 @@ struct FSFHarvestTreeFallNetworkState
 
 void USFGatheringPilotComponent::TickFellingNetworkScenario()
 {
-#if SF_WITH_MINIMAL_INVENTORY
     const bool bLateJoin=FParse::Param(FCommandLine::Get(),TEXT("HarvestTreeFellingLateJoin"));
     auto* PC=Cast<APlayerController>(GetOwner());
     if (!FParse::Param(FCommandLine::Get(),TEXT("HarvestTreeFellingNetworkScenario")) || GetNetMode()!=NM_Client
@@ -47,10 +42,10 @@ void USFGatheringPilotComponent::TickFellingNetworkScenario()
     ASFGatheringPilotNode* Wood=nullptr;
     for (TActorIterator<ASFGatheringPilotNode> It(GetWorld());It;++It)
     { if (It->Kind==ESFGatheringPilotKind::Oak) { Wood=*It; break; } }
-    auto* Inventory=PC->FindComponentByClass<UInventoryComponent>();
+    auto* Inventory=PC->FindComponentByClass<USFInventoryComponent>();
     if (!Wood || Wood->GetState().Capacity==0 || !Inventory) { return; }
-    const auto Quantity=[&]() { return UInventoryTransactionLibrary::GetItemQuantity(Inventory,
-        TSoftObjectPtr<UInventoryItemDefinition>(FSoftObjectPath(TEXT("/Game/Frontier/Gameplay/Pilot/DA_OakLog.DA_OakLog")))); };
+    const auto Quantity=[&]() { return SFInventoryTransactions::GetItemQuantity(Inventory,
+        TSoftObjectPtr<USFItemDefinition>(FSoftObjectPath(TEXT("/Game/Frontier/Gameplay/Pilot/DA_OakLog.DA_OakLog")))); };
     const auto& State=Wood->GetState();
     if (!Test.bInitialized)
     {
@@ -66,7 +61,7 @@ void USFGatheringPilotComponent::TickFellingNetworkScenario()
     int32 InventoryCount=0;
     for (TActorIterator<AActor> It(GetWorld());It;++It)
     {
-        TArray<UInventoryComponent*> Bags; It->GetComponents(Bags); InventoryCount+=Bags.Num();
+        TArray<USFInventoryComponent*> Bags; It->GetComponents(Bags); InventoryCount+=Bags.Num();
         TArray<USFGatheringPilotComponent*> Endpoints; It->GetComponents(Endpoints);
         for (const auto* Endpoint:Endpoints)
         {
@@ -146,6 +141,5 @@ void USFGatheringPilotComponent::TickFellingNetworkScenario()
     UE_LOG(LogTemp,Display,TEXT("HARVEST_TREE_FALL_CLIENT_DONE Primary=%d LateJoin=%d Wood=%lld Practice=%lld Cuts=3 Charges=0 Revision=3 Generation=%u MatchingFalls=1 Resting=1 Physics=0 PositionErrorCm=%.4f AngleErrorDeg=%.4f Private=1 ReplayUnchanged=%d HistoricalFragments=%d"),
         bHarvester,bLateJoin,Quantity(),Skills.PracticeCount,State.Generation,PositionError,AngleError,bHarvester,HistoricalFragments);
     FPlatformMisc::RequestExitWithStatus(false,0);
-#endif
 }
 #endif

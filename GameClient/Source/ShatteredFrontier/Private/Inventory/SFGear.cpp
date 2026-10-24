@@ -6,10 +6,7 @@
 #include "Misc/Paths.h"
 #include "Serialization/JsonReader.h"
 #include "Serialization/JsonSerializer.h"
-#if SF_WITH_MINIMAL_INVENTORY
-#include "InventoryComponent.h"
-#include "InventoryItemDefinition.h"
-#endif
+#include "Inventory/SFInventory.h"
 
 bool SFGear::Parse(const FString& Json, TMap<FString, FSFGearStats>& Out, FString& Error)
 {
@@ -54,14 +51,12 @@ const FSFGearStats* SFGear::Find(const FString& DefinitionId)
 FSFGearStats SFGear::Equipped(const AActor* Owner)
 {
     FSFGearStats Total;
-#if SF_WITH_MINIMAL_INVENTORY
-    const auto* Inventory = Owner ? Owner->FindComponentByClass<UInventoryComponent>() : nullptr;
-    for (const FInventoryEquippedSlotRep& Slot : Inventory ? Inventory->EquippedItems : TArray<FInventoryEquippedSlotRep>())
+    const auto* Inventory = Owner ? Owner->FindComponentByClass<USFInventoryComponent>() : nullptr;
+    for (const FSFEquippedSlot& Slot : Inventory ? Inventory->EquippedItems : TArray<FSFEquippedSlot>())
     {
-        const UInventoryItemDefinition* Definition = Slot.Item.LoadSynchronous();
+        const USFItemDefinition* Definition = Slot.Item.LoadSynchronous();
         if (const FSFGearStats* Stats = Definition ? Find(Definition->UniqueId) : nullptr) { Total.Armor += Stats->Armor; Total.Damage += Stats->Damage; }
     }
-#endif
     return Total;
 }
 

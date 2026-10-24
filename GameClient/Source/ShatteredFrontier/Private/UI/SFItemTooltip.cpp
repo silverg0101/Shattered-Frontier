@@ -5,9 +5,7 @@
 #include "Engine/Texture2D.h"
 #include "Framework/SFHudStyle.h"
 #include "Gathering/SFStationRecipes.h"
-#if SF_WITH_MINIMAL_INVENTORY
-#include "InventoryItemDefinition.h"
-#endif
+#include "Inventory/SFInventory.h"
 
 namespace SFItemTooltip
 {
@@ -22,10 +20,8 @@ UTexture2D* ItemTexture(const FString& ItemId)
 FSFInventoryEntry EntryFor(const FString& ItemId, const FString& Name, int32 Count)
 {
     FSFInventoryEntry Entry;
-#if SF_WITH_MINIMAL_INVENTORY
-    if (const UInventoryItemDefinition* Definition = LoadObject<UInventoryItemDefinition>(nullptr, *SFStationRecipes::ItemAssetPath(ItemId), nullptr, LOAD_NoWarn | LOAD_Quiet))
+    if (const USFItemDefinition* Definition = LoadObject<USFItemDefinition>(nullptr, *SFStationRecipes::ItemAssetPath(ItemId), nullptr, LOAD_NoWarn | LOAD_Quiet))
     { Entry = USFInventoryWidget::MakeEntry(*Definition, Name, Count, false); }
-#endif
     if (Entry.Name.IsEmpty()) { Entry.Name = FText::FromString(Name); Entry.Count = Count; }
     if (Entry.Icon.IsNull()) { if (UTexture2D* Art = ItemTexture(ItemId)) { Entry.Icon = Art; } }
     return Entry;

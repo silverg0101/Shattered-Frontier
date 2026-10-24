@@ -14,10 +14,7 @@
 #include "Framework/SFPlayerController.h"
 #include "Gathering/SFGatheringPilot.h"
 #include "GameFramework/PlayerController.h"
-#if SF_WITH_MINIMAL_INVENTORY
-#include "InventoryComponent.h"
-#include "InventoryItemDefinition.h"
-#endif
+#include "Inventory/SFInventory.h"
 
 void USFInventoryWidget::NativeOnInitialized()
 {
@@ -234,7 +231,7 @@ FSFInventoryTooltip USFInventoryWidget::BuildTooltip(const FSFInventoryEntry& En
     if (Entry.Count <= 0) { return Tip; }
     Tip.Title = Entry.Name.ToString();
     Tip.Description = Entry.Description.ToString();
-    // ponytail: the plugin item definition has no rarity field, so every item reads Common until a game-side definition adds one.
+    // ponytail: the item definition has no rarity field, so every item reads Common until a game-side definition adds one.
     Tip.RarityLine = TEXT("Common");
     Tip.TypeLine = FString::Printf(TEXT("%s%s"), *TypeName(Entry.Category), Entry.bEquipped ? TEXT("  -  Equipped") : TEXT(""));
     Tip.WeightLine = FString::Printf(TEXT("Weight  %.1f kg (per 1)"), Entry.UnitWeight);
@@ -258,20 +255,19 @@ FReply USFInventoryWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, 
     return Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
 }
 
-#if SF_WITH_MINIMAL_INVENTORY
-ESFInventoryTab USFInventoryWidget::CategoryOf(const UInventoryItemDefinition& Definition)
+ESFInventoryTab USFInventoryWidget::CategoryOf(const USFItemDefinition& Definition)
 {
     switch (Definition.UseType)
     {
-    case EInventoryItemUseType::Equip: return ESFInventoryTab::Gear;
-    case EInventoryItemUseType::Usable: case EInventoryItemUseType::Eat: case EInventoryItemUseType::Consume: return ESFInventoryTab::Consumables;
+    case ESFItemUseType::Equip: return ESFInventoryTab::Gear;
+    case ESFItemUseType::Usable: case ESFItemUseType::Eat: case ESFItemUseType::Consume: return ESFInventoryTab::Consumables;
     default:
         // ponytail: the definition has no category field, so building bundles and recipe scrolls are told apart by their unique id.
         return Definition.UniqueId.Contains(TEXT("bundle")) || Definition.UniqueId.Contains(TEXT("scroll")) ? ESFInventoryTab::Misc : ESFInventoryTab::Materials;
     }
 }
 
-FSFInventoryEntry USFInventoryWidget::MakeEntry(const UInventoryItemDefinition& Definition, const FString& FallbackName, int32 Count, bool bEquipped)
+FSFInventoryEntry USFInventoryWidget::MakeEntry(const USFItemDefinition& Definition, const FString& FallbackName, int32 Count, bool bEquipped)
 {
     FSFInventoryEntry Entry;
     Entry.Name = Definition.DisplayName.IsEmpty() ? FText::FromString(FallbackName) : Definition.DisplayName;
@@ -282,23 +278,21 @@ FSFInventoryEntry USFInventoryWidget::MakeEntry(const UInventoryItemDefinition& 
     Entry.UnitWeight = Definition.Weight;
     Entry.Icon = Definition.Icon;
     Entry.ItemPath = FSoftObjectPath(&Definition);
-    Entry.EquipSlot = Definition.UseType == EInventoryItemUseType::Equip ? Definition.EquipmentSlot : NAME_None;
+    Entry.EquipSlot = Definition.UseType == ESFItemUseType::Equip ? Definition.EquipmentSlot : NAME_None;
     return Entry;
 }
-#endif
 
 TArray<FSFInventoryEntry> USFInventoryWidget::CollectEntries(int32& OutSlots) const
 {
     TArray<FSFInventoryEntry> Items;
     OutSlots = 0;
-#if SF_WITH_MINIMAL_INVENTORY
-    const auto* Inventory = Pilot && Pilot->GetOwner() ? Pilot->GetOwner()->FindComponentByClass<UInventoryComponent>() : nullptr;
+    const auto* Inventory = Pilot && Pilot->GetOwner() ? Pilot->GetOwner()->FindComponentByClass<USFInventoryComponent>() : nullptr;
     if (!Inventory) { return Items; }
     OutSlots = Inventory->NumSlots;
-    auto Add = [&Items](const TSoftObjectPtr<UInventoryItemDefinition>& Item, int32 Quantity, bool bEquipped)
+    auto Add = [&Items](const TSoftObjectPtr<USFItemDefinition>& Item, int32 Quantity, bool bEquipped)
     {
         if (Quantity <= 0 || Item.IsNull()) { return; }
-        if (const UInventoryItemDefinition* Definition = Item.LoadSynchronous())
+        if (const USFItemDefinition* Definition = Item.LoadSynchronous())
         {
             FSFInventoryEntry Entry = MakeEntry(*Definition, Item.GetAssetName(), Quantity, bEquipped);
             if (Item.GetAssetName() == TEXT("DA_RecipeScrollIronBrackets"))
@@ -308,12 +302,11 @@ TArray<FSFInventoryEntry> USFInventoryWidget::CollectEntries(int32& OutSlots) co
     };
     for (int32 I = 0; I < FMath::Clamp(Inventory->NumSlots, 0, MaxSlots); ++I)
     {
-        TSoftObjectPtr<UInventoryItemDefinition> Item; int32 Quantity = 0;
+        TSoftObjectPtr<USFItemDefinition> Item; int32 Quantity = 0;
         if (Inventory->GetSlot(I, Item, Quantity)) { Add(Item, Quantity, false); }
     }
-    TSoftObjectPtr<UInventoryItemDefinition> Equipped; int32 Quantity = 0;
+    TSoftObjectPtr<USFItemDefinition> Equipped; int32 Quantity = 0;
     if (Inventory->GetEquippedItem(USFGatheringPilotComponent::MainHandSlot(), Equipped, Quantity)) { Add(Equipped, Quantity, true); }  // the main hand, as before the Equipment window
-#endif
     return BuildEntries(Items);
 }
 

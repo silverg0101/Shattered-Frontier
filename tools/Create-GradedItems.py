@@ -15,9 +15,9 @@ scrolls = {'item/recipe_scroll_' + recipe['id'].split('/')[1]
            for recipe in recipes if 'scroll' in recipe['learn']['sources']}
 library = unreal.EditorAssetLibrary
 folder = '/Game/Frontier/Gameplay/Pilot'
-klass = unreal.load_class(None, '/Script/MinimalInventoryRuntime.InventoryItemDefinition')
+klass = unreal.load_class(None, '/Script/ShatteredFrontier.SFItemDefinition')
 if klass is None:
-    raise RuntimeError('MinimalInventoryRuntime item class unavailable')
+    raise RuntimeError('SFItemDefinition class unavailable; build the editor first')
 factory = unreal.DataAssetFactory()
 factory.set_editor_property('data_asset_class', klass)
 tools = unreal.AssetToolsHelpers.get_asset_tools()
@@ -61,12 +61,12 @@ for item_id in sorted(outputs | scrolls):
         if piece:  # one per stack, equips into its content slot
             asset.set_editor_property('MaxStackSize', 1)
             asset.set_editor_property('Weight', piece['weight_kg'])
-            asset.set_editor_property('UseType', unreal.InventoryItemUseType.EQUIP)
+            asset.set_editor_property('UseType', unreal.SFItemUseType.EQUIP)
             asset.set_editor_property('EquipmentSlot', piece['slot'])
             stats = [f"+{piece[k]} {k.title()}" for k in ('armor', 'damage') if piece[k]]
             asset.set_editor_property('Description', unreal.Text(', '.join(stats) + '.'))
         if identity in scrolls:
-            asset.set_editor_property('UseType', unreal.InventoryItemUseType.CONSUME)
+            asset.set_editor_property('UseType', unreal.SFItemUseType.CONSUME)
             asset.set_editor_property('Description', unreal.Text('Use to learn a crafting recipe.'))
         if not library.save_loaded_asset(asset):
             raise RuntimeError(f'Could not save {path}')

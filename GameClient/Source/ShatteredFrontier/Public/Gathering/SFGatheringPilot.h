@@ -256,7 +256,7 @@ public:
     bool CancelLocalHarvest();
     void EquipAxe();
     void EquipPickaxe();
-    // Equipment (Equipment window, gathering tools). The state is the plugin inventory's replicated EquippedItems; an item's slot is its
+    // Equipment (Equipment window, gathering tools). The state is the pilot inventory's replicated EquippedItems; an item's slot is its
     // definition's EquipmentSlot (data). Requests come from the owning client and are validated here on the server: the slot exists, the
     // item is in this player's bag, it is equippable into exactly that slot, and a swap / unequip fits the bag (space and weight).
     static const TArray<FName>& EquipmentSlots();  // Head, Chest, Hands, Legs, Feet, MainHand, OffHand, Neck, Ring, Back

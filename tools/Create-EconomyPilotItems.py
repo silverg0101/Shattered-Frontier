@@ -1,6 +1,6 @@
 """Create the INT-04 economy pilot item definitions (nails, wall bundle) in the UE editor.
 
-Run after the gathering settings and MinimalInventoryRuntime are compiled.
+Run after the ShatteredFrontier editor (gathering settings, SFItemDefinition) is built.
 Creates only missing assets and never overwrites; ids and names follow content/crafting.
 """
 import math
@@ -9,7 +9,7 @@ import unreal
 
 
 OUTPUT_PATH = '/Game/Frontier/Gameplay/Pilot'
-ITEM_CLASS_PATH = '/Script/MinimalInventoryRuntime.InventoryItemDefinition'
+ITEM_CLASS_PATH = '/Script/ShatteredFrontier.SFItemDefinition'
 ITEMS = (
     ('DA_IronNails', 'item/iron_nails', 'Iron Nails'),
     ('DA_WallMaterialBundle', 'item/wall_material_bundle', 'Wall Material Bundle'),
@@ -30,7 +30,7 @@ missing = [item for item, path in zip(ITEMS, asset_paths) if not asset_library.d
 
 item_class = unreal.load_class(None, ITEM_CLASS_PATH)
 if item_class is None:
-    raise RuntimeError('Could not load ' + ITEM_CLASS_PATH + '; enable and compile MinimalInventoryRuntime first.')
+    raise RuntimeError('Could not load ' + ITEM_CLASS_PATH + '; build the ShatteredFrontier editor first.')
 
 factory = unreal.DataAssetFactory()
 factory.set_editor_property('data_asset_class', item_class)

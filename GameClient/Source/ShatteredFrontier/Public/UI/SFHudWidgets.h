@@ -104,7 +104,7 @@ public:
     static TArray<FString> DefaultLayout();
     // The number under a slot: the item's count, or a build piece's material bundles.
     static int32 CountFor(const FString& Assignment, const FSFHotbarStock& Stock);
-    // The owning controller's plugin inventory (bag + worn) and build selection.
+    // The owning controller's pilot inventory (bag + worn) and build selection.
     static FSFHotbarStock StockOf(const APlayerController* Controller);
     // Layout edits (drag and drop); each saves the character's layout.
     void Assign(int32 Index, const FString& Id);

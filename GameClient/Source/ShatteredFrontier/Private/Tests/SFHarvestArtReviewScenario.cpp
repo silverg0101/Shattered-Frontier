@@ -32,11 +32,7 @@
 #include "RenderingThread.h"
 #include "RHI.h"
 #endif
-#if SF_WITH_MINIMAL_INVENTORY
-#include "InventoryComponent.h"
-#include "InventoryItemDefinition.h"
-#include "InventoryTransactionLibrary.h"
-#endif
+#include "Inventory/SFInventory.h"
 
 #if WITH_EDITOR
 // Finishes shaders and streams every texture used by gathering nodes and their falling trees, so a review frame never
@@ -96,7 +92,6 @@ struct FSFHarvestArtReviewState
 
 void USFGatheringPilotComponent::TickArtReviewScenario()
 {
-#if SF_WITH_MINIMAL_INVENTORY
     auto* PC=Cast<APlayerController>(GetOwner());
     if (GetNetMode()!=NM_Client || !PC || !PC->IsLocalController() || !bEnabled || !bRoleAssigned
         || !PC->GetPawn() || !FParse::Param(FCommandLine::Get(),TEXT("HarvestArtReview"))) { return; }
@@ -120,10 +115,10 @@ void USFGatheringPilotComponent::TickArtReviewScenario()
     if (!Ore || Ore->GetState().Capacity==0) { return; }
     if (!Ore->HarvestVisuals || !Ore->HarvestVisuals->IsReady()) { Fail(TEXT("ImportedRockUnavailable")); return; }
     auto* Mesh=Ore->FindComponentByClass<UProceduralMeshComponent>();
-    auto* Inventory=PC->FindComponentByClass<UInventoryComponent>();
+    auto* Inventory=PC->FindComponentByClass<USFInventoryComponent>();
     if (!Mesh || !Inventory) { return; }
-    const auto Quantity=[&]() { return UInventoryTransactionLibrary::GetItemQuantity(Inventory,
-        TSoftObjectPtr<UInventoryItemDefinition>(FSoftObjectPath(TEXT("/Game/Frontier/Gameplay/Pilot/DA_IronOre.DA_IronOre")))); };
+    const auto Quantity=[&]() { return SFInventoryTransactions::GetItemQuantity(Inventory,
+        TSoftObjectPtr<USFItemDefinition>(FSoftObjectPath(TEXT("/Game/Frontier/Gameplay/Pilot/DA_IronOre.DA_IronOre")))); };
     FVector Eye; FRotator EyeRotation; PC->GetPawn()->GetActorEyesViewPoint(Eye,EyeRotation);
     const FVector Aim=Ore->GetActorLocation()+FVector((Review.Completed-1)*18,0,0);
     PC->SetControlRotation((Aim-Eye).Rotation());
@@ -230,7 +225,6 @@ void USFGatheringPilotComponent::TickArtReviewScenario()
     { Fail(TEXT("FinalOrReplayInvariant")); return; }
     Review.bDone=true; UE_LOG(LogTemp,Display,TEXT("HARVEST_ART_DONE Ore=3 Cuts=3 Revision=3 Charges=0 Captures=4 ReplayUnchanged=1"));
     FPlatformMisc::RequestExitWithStatus(false,0);
-#endif
 }
 
 struct FSFHarvestFellingReviewState
@@ -248,7 +242,7 @@ struct FSFHarvestFellingReviewState
 // map's oak, then timed 1920x1080 frames by lean angle, the supported rest, and stump/log close-ups. Collection only.
 void USFGatheringPilotComponent::TickFellingReviewScenario()
 {
-#if SF_WITH_MINIMAL_INVENTORY && WITH_EDITOR
+#if WITH_EDITOR
     auto* PC=Cast<APlayerController>(GetOwner());
     if (GetNetMode()!=NM_Client || !PC || !PC->IsLocalController() || !bEnabled || !bRoleAssigned
         || !PC->GetPawn() || !FParse::Param(FCommandLine::Get(),TEXT("HarvestFellingReview"))) { return; }

@@ -44,11 +44,7 @@
 #include "Serialization/JsonReader.h"
 #include "Serialization/JsonSerializer.h"
 #include "Townsfolk/SFTownsfolk.h"
-#if SF_WITH_MINIMAL_INVENTORY
-#include "InventoryComponent.h"
-#include "InventoryItemDefinition.h"
-#include "InventoryTransactionLibrary.h"
-#endif
+#include "Inventory/SFInventory.h"
 
 SFQuestPilotEvents::FGathered& SFQuestPilotEvents::OnGathered() { static FGathered D; return D; }
 SFQuestPilotEvents::FStructurePlaced& SFQuestPilotEvents::OnStructurePlaced() { static FStructurePlaced D; return D; }
@@ -722,17 +718,16 @@ void USFQuestPilotComponent::TryDeliverRewards()
 {
     // Without gameplay services the server pays the quest record's items straight into the bag. An item that does not fit
     // stays pending (the tracker says so) and is retried every RewardRetrySeconds, so nothing repeats or is lost.
-#if SF_WITH_MINIMAL_INVENTORY
-    auto* Inventory = GetOwner() ? GetOwner()->FindComponentByClass<UInventoryComponent>() : nullptr;
+    auto* Inventory = GetOwner() ? GetOwner()->FindComponentByClass<USFInventoryComponent>() : nullptr;
     bool bChanged = false;
     while (Inventory && !PendingRewards.IsEmpty())
     {
         const TPair<FString, FSFQuestRewardItem> Due = PendingRewards[0];
         FEntry* Entry = Find(Due.Key);
-        FInventoryItemQuantity Pay;
-        Pay.Item = TSoftObjectPtr<UInventoryItemDefinition>(FSoftObjectPath(SFStationRecipes::ItemAssetPath(Due.Value.DefinitionId)));
+        FSFItemQuantity Pay;
+        Pay.Item = TSoftObjectPtr<USFItemDefinition>(FSoftObjectPath(SFStationRecipes::ItemAssetPath(Due.Value.DefinitionId)));
         Pay.Quantity = int32(Due.Value.Quantity);
-        if (UInventoryTransactionLibrary::ExchangeInventoryItems(Inventory, {}, {Pay}) != EInventoryTransactionResult::Success)
+        if (SFInventoryTransactions::ExchangeInventoryItems(Inventory, {}, {Pay}) != ESFInventoryResult::Success)
         {
             if (Entry && !Entry->bRewardWaiting) { Entry->bRewardWaiting = true; bChanged = true; }
             break;
@@ -747,7 +742,6 @@ void USFQuestPilotComponent::TryDeliverRewards()
         }
     }
     if (bChanged) { RebuildView(); }
-#endif
 }
 
 bool USFQuestPilotComponent::CaptureGatherReceipt(FSFGameplayRequest& Q, const FString& TargetId, const FString& NodeId)
@@ -896,23 +890,19 @@ namespace
 
     int64 BagQuantity(const AActor* Owner, const TCHAR* Item, bool bOneGrade = false)
     {
-#if SF_WITH_MINIMAL_INVENTORY
-        auto* Bag = Owner ? Owner->FindComponentByClass<UInventoryComponent>() : nullptr;
+        auto* Bag = Owner ? Owner->FindComponentByClass<USFInventoryComponent>() : nullptr;
         if (!Bag) { return 0; }
-        int64 Quantity = UInventoryTransactionLibrary::GetItemQuantity(Bag,
-            TSoftObjectPtr<UInventoryItemDefinition>(FSoftObjectPath(SFStationRecipes::ItemAssetPath(Item))));
+        int64 Quantity = SFInventoryTransactions::GetItemQuantity(Bag,
+            TSoftObjectPtr<USFItemDefinition>(FSoftObjectPath(SFStationRecipes::ItemAssetPath(Item))));
         int64 Maximum = Quantity;
         for (const TCHAR* Grade : {TEXT("crude"), TEXT("fine"), TEXT("superior"), TEXT("masterwork")})
         {
             const FString GradedId = FString(Item) + TEXT("/") + Grade;
-            const int64 Count = UInventoryTransactionLibrary::GetItemQuantity(Bag,
-                TSoftObjectPtr<UInventoryItemDefinition>(FSoftObjectPath(SFStationRecipes::ItemAssetPath(GradedId))));
+            const int64 Count = SFInventoryTransactions::GetItemQuantity(Bag,
+                TSoftObjectPtr<USFItemDefinition>(FSoftObjectPath(SFStationRecipes::ItemAssetPath(GradedId))));
             Quantity += Count; Maximum = FMath::Max(Maximum, Count);
         }
         return bOneGrade ? Maximum : Quantity;
-#else
-        return 0;
-#endif
     }
 
     // Economy mode (gameplay services on): a wall costs a wall bundle, so walk back from the bundle recipe to what the bag lacks.

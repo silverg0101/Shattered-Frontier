@@ -59,18 +59,15 @@ bool FSFEquipmentWidgetTest::RunTest(const FString& Parameters)
     return true;
 }
 
-#if SF_WITH_MINIMAL_INVENTORY
 #include "Tests/AutomationCommon.h"
 #include "Characters/SFE1Character.h"
 #include "Framework/SFPlayerController.h"
 #include "Gathering/SFGatheringPilot.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/WorldSettings.h"
-#include "InventoryComponent.h"
-#include "InventoryItemDefinition.h"
-#include "InventoryTransactionLibrary.h"
+#include "Inventory/SFInventory.h"
 
-// Server-side equip validation on the real plugin inventory: slot match, ownership (only this player's bag), swap back to the bag, unequip to the
+// Server-side equip validation on the real pilot inventory: slot match, ownership (only this player's bag), swap back to the bag, unequip to the
 // bag and its space rule, and the gathering tools on the main hand.
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFEquipmentValidationTest, "ShatteredFrontier.Equipment.Validation", EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
 bool FSFEquipmentValidationTest::RunTest(const FString& Parameters)
@@ -86,8 +83,8 @@ bool FSFEquipmentValidationTest::RunTest(const FString& Parameters)
     PC->Possess(Pawn); Pawn->GetCharacterMovement()->SetMovementMode(MOVE_None);
     auto* Gear = PC->FindComponentByClass<USFGatheringPilotComponent>();
     auto* OtherGear = Other->FindComponentByClass<USFGatheringPilotComponent>();
-    auto* Bag = PC->FindComponentByClass<UInventoryComponent>();
-    auto* OtherBag = Other->FindComponentByClass<UInventoryComponent>();
+    auto* Bag = PC->FindComponentByClass<USFInventoryComponent>();
+    auto* OtherBag = Other->FindComponentByClass<USFInventoryComponent>();
     if (!Gear || !OtherGear || !Bag || !OtherBag) { return false; }
     for (USFGatheringPilotComponent* Component : {Gear, OtherGear})
     {
@@ -97,20 +94,20 @@ bool FSFEquipmentValidationTest::RunTest(const FString& Parameters)
     // Test-only definitions (never assets): the slot is data on the definition.
     auto Define = [](const TCHAR* Name, FName Slot)
     {
-        UInventoryItemDefinition* Item = NewObject<UInventoryItemDefinition>(GetTransientPackage(), MakeUniqueObjectName(GetTransientPackage(), UInventoryItemDefinition::StaticClass(), Name), RF_Transient);
-        Item->UseType = Slot.IsNone() ? EInventoryItemUseType::None : EInventoryItemUseType::Equip;
+        USFItemDefinition* Item = NewObject<USFItemDefinition>(GetTransientPackage(), MakeUniqueObjectName(GetTransientPackage(), USFItemDefinition::StaticClass(), Name), RF_Transient);
+        Item->UseType = Slot.IsNone() ? ESFItemUseType::None : ESFItemUseType::Equip;
         Item->EquipmentSlot = Slot; Item->MaxStackSize = 1; Item->Weight = 1.f; Item->DisplayName = FText::FromString(Name);
         return Item;
     };
-    UInventoryItemDefinition* Helm = Define(TEXT("SFTestHelm"), TEXT("Head"));
-    UInventoryItemDefinition* Cap = Define(TEXT("SFTestCap"), TEXT("Head"));
-    UInventoryItemDefinition* Ring = Define(TEXT("SFTestRing"), TEXT("Ring"));
-    UInventoryItemDefinition* Stone = Define(TEXT("SFTestStone"), NAME_None);
-    auto Grant = [](UInventoryComponent* Into, std::initializer_list<UInventoryItemDefinition*> Items)
+    USFItemDefinition* Helm = Define(TEXT("SFTestHelm"), TEXT("Head"));
+    USFItemDefinition* Cap = Define(TEXT("SFTestCap"), TEXT("Head"));
+    USFItemDefinition* Ring = Define(TEXT("SFTestRing"), TEXT("Ring"));
+    USFItemDefinition* Stone = Define(TEXT("SFTestStone"), NAME_None);
+    auto Grant = [](USFInventoryComponent* Into, std::initializer_list<USFItemDefinition*> Items)
     {
-        TArray<FInventoryItemQuantity> Adds;
-        for (UInventoryItemDefinition* Item : Items) { FInventoryItemQuantity Q; Q.Item = TSoftObjectPtr<UInventoryItemDefinition>(Item); Q.Quantity = 1; Adds.Add(Q); }
-        return UInventoryTransactionLibrary::ExchangeInventoryItems(Into, {}, Adds) == EInventoryTransactionResult::Success;
+        TArray<FSFItemQuantity> Adds;
+        for (USFItemDefinition* Item : Items) { FSFItemQuantity Q; Q.Item = TSoftObjectPtr<USFItemDefinition>(Item); Q.Quantity = 1; Adds.Add(Q); }
+        return SFInventoryTransactions::ExchangeInventoryItems(Into, {}, Adds) == ESFInventoryResult::Success;
     };
     if (!TestTrue(TEXT("Grant the test gear"), Grant(Bag, {Helm, Cap, Stone}) && Grant(OtherBag, {Ring}))) { return false; }
     const FSoftObjectPath HelmPath(Helm), CapPath(Cap), RingPath(Ring), StonePath(Stone);
@@ -150,9 +147,8 @@ bool FSFEquipmentValidationTest::RunTest(const FString& Parameters)
     return true;
 }
 #endif
-#endif
 
-#if WITH_DEV_AUTOMATION_TESTS && WITH_EDITOR && SF_WITH_MINIMAL_INVENTORY
+#if WITH_DEV_AUTOMATION_TESTS && WITH_EDITOR
 #include "Containers/Ticker.h"
 #include "Inventory/SFGear.h"
 #include "Inventory/SFInventoryLedgerClient.h"
@@ -188,7 +184,7 @@ bool FSFEquipmentLedgerTest::RunTest(const FString& Parameters)
     UWorld* World = Fixture.GetTestWorld(); World->GetWorldSettings()->NotifyBeginPlay();
     auto* PC = World->SpawnActor<ASFPlayerController>();
     auto* Gear = PC ? PC->FindComponentByClass<USFGatheringPilotComponent>() : nullptr;
-    auto* Bag = PC ? PC->FindComponentByClass<UInventoryComponent>() : nullptr;
+    auto* Bag = PC ? PC->FindComponentByClass<USFInventoryComponent>() : nullptr;
     if (!Gear || !Bag) { return false; }
     Gear->CapturedSettings = DuplicateObject<USFGatheringPilotSettings>(GetDefault<USFGatheringPilotSettings>(), Gear);
     Gear->bEnabled = true; Gear->bTestWorldAdmission = true;
@@ -196,8 +192,8 @@ bool FSFEquipmentLedgerTest::RunTest(const FString& Parameters)
     const auto Tick = [&Fixture](int32 Count) { for (int32 I = 0; I < Count; ++I) { Fixture.TickTestWorld(0.05f); FTSTicker::GetCoreTicker().Tick(0.3f); } };
 
     const FSoftObjectPath CapPath(TEXT("/Game/Frontier/Gameplay/Pilot/DA_HideCap.DA_HideCap"));
-    FInventoryItemQuantity Cap; Cap.Item = TSoftObjectPtr<UInventoryItemDefinition>(CapPath); Cap.Quantity = 1;
-    if (!TestTrue(TEXT("The cap asset is in the bag"), UInventoryTransactionLibrary::ExchangeInventoryItems(Bag, {}, {Cap}) == EInventoryTransactionResult::Success)) { return false; }
+    FSFItemQuantity Cap; Cap.Item = TSoftObjectPtr<USFItemDefinition>(CapPath); Cap.Quantity = 1;
+    if (!TestTrue(TEXT("The cap asset is in the bag"), SFInventoryTransactions::ExchangeInventoryItems(Bag, {}, {Cap}) == ESFInventoryResult::Success)) { return false; }
     Ledger->FindOrAdd(Pack->GetContainerId()).Items.Add(TEXT("item/hide_cap"), 1);
     const FString EquipmentId = Pack->GetEquipmentContainerId();
     const FName Head(TEXT("Head"));

@@ -18,10 +18,7 @@
 #include "Gathering/SFGatheringPilot.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/PlayerController.h"
-#if SF_WITH_MINIMAL_INVENTORY
-#include "InventoryComponent.h"
-#include "InventoryItemDefinition.h"
-#endif
+#include "Inventory/SFInventory.h"
 
 // ---- preview studio
 
@@ -291,25 +288,23 @@ void USFEquipmentWidget::CloseStudio()
 void USFEquipmentWidget::Collect(TArray<FSFInventoryEntry>& OutBag, TMap<FName, FSFInventoryEntry>& OutEquipped, int32& OutSlots) const
 {
     OutSlots = 0;
-#if SF_WITH_MINIMAL_INVENTORY
-    const auto* Inventory = Pilot && Pilot->GetOwner() ? Pilot->GetOwner()->FindComponentByClass<UInventoryComponent>() : nullptr;
+    const auto* Inventory = Pilot && Pilot->GetOwner() ? Pilot->GetOwner()->FindComponentByClass<USFInventoryComponent>() : nullptr;
     if (!Inventory) { return; }
     OutSlots = Inventory->NumSlots;
     TArray<FSFInventoryEntry> Items;
     for (int32 I = 0; I < FMath::Clamp(Inventory->NumSlots, 0, USFInventoryWidget::MaxSlots); ++I)
     {
-        TSoftObjectPtr<UInventoryItemDefinition> Item; int32 Quantity = 0;
-        const UInventoryItemDefinition* Definition = Inventory->GetSlot(I, Item, Quantity) && Quantity > 0 ? Item.LoadSynchronous() : nullptr;
+        TSoftObjectPtr<USFItemDefinition> Item; int32 Quantity = 0;
+        const USFItemDefinition* Definition = Inventory->GetSlot(I, Item, Quantity) && Quantity > 0 ? Item.LoadSynchronous() : nullptr;
         if (Definition) { Items.Add(USFInventoryWidget::MakeEntry(*Definition, Item.GetAssetName(), Quantity, false)); }
     }
     OutBag = USFInventoryWidget::BuildEntries(Items);
     for (const FName SlotName : USFGatheringPilotComponent::EquipmentSlots())
     {
-        TSoftObjectPtr<UInventoryItemDefinition> Item; int32 Quantity = 0;
-        const UInventoryItemDefinition* Definition = Inventory->GetEquippedItem(SlotName, Item, Quantity) ? Item.LoadSynchronous() : nullptr;
+        TSoftObjectPtr<USFItemDefinition> Item; int32 Quantity = 0;
+        const USFItemDefinition* Definition = Inventory->GetEquippedItem(SlotName, Item, Quantity) ? Item.LoadSynchronous() : nullptr;
         if (Definition) { OutEquipped.Add(SlotName, USFInventoryWidget::MakeEntry(*Definition, Item.GetAssetName(), Quantity, true)); }
     }
-#endif
 }
 
 void USFEquipmentWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)

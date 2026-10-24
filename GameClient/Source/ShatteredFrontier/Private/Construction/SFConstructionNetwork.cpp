@@ -15,11 +15,7 @@
 #include "Gathering/SFGatheringHud.h"
 #include "Gathering/SFGatheringPilot.h"
 #include "Gathering/SFGatheringSkillsPanel.h"
-#if SF_WITH_MINIMAL_INVENTORY
-#include "InventoryComponent.h"
-#include "InventoryItemDefinition.h"
-#include "InventoryTransactionLibrary.h"
-#endif
+#include "Inventory/SFInventory.h"
 #include "SFConstructionNetworkProjection.h"
 #include "ProceduralMeshComponent.h"
 #include "Construction/SFConstructionAnchor.h"
@@ -1139,20 +1135,18 @@ void ASFGameMode::CommitHousing(ASFPlayerController* Controller, const FString& 
         const FString Operation=(bRemove ? TEXT("remove/") : TEXT("place/"))+FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphensLower);
         const FString Structure=bRemove ? *Existing : FString::Printf(TEXT("str_%s_x%d_y%d_z%d"),*ClaimId.RightChop(4),Cell.X,Cell.Y,Cell.Z);
         FSFItemStack Material=Cost->Outputs[0];
-#if SF_WITH_MINIMAL_INVENTORY
         if (!bRemove)
         {
             static const TCHAR* Grades[] = {TEXT("crude"), TEXT(""), TEXT("fine"), TEXT("superior"), TEXT("masterwork")};
-            auto* Bag=Pack->GetOwner()->FindComponentByClass<UInventoryComponent>();
+            auto* Bag=Pack->GetOwner()->FindComponentByClass<USFInventoryComponent>();
             for (const TCHAR* Grade : Grades)
             {
                 const FString Id=*Grade ? Material.DefinitionId+TEXT("/")+Grade : Material.DefinitionId;
-                const auto Asset=TSoftObjectPtr<UInventoryItemDefinition>(FSoftObjectPath(SFStationRecipes::ItemAssetPath(Id)));
-                if (Bag && UInventoryTransactionLibrary::GetItemQuantity(Bag,Asset)>=Material.Quantity)
+                const auto Asset=TSoftObjectPtr<USFItemDefinition>(FSoftObjectPath(SFStationRecipes::ItemAssetPath(Id)));
+                if (Bag && SFInventoryTransactions::GetItemQuantity(Bag,Asset)>=Material.Quantity)
                 { Material.DefinitionId=Id; break; }
             }
         }
-#endif
         TSharedRef<FSFGameplayResponse> Receipt=MakeShared<FSFGameplayResponse>();
         FSFBackpackMutation Mutation; Mutation.Label=bRemove ? TEXT("housing_remove") : TEXT("housing_place"); Mutation.OperationId=Operation;
         Mutation.Run=[Weak,Receipt,ClaimId,Cell,bRemove,Shape,Rotation,Structure,Material,WeakPack=TWeakObjectPtr<USFBackpackComponent>(Pack)](const FString& Op,int64 Expected,TFunction<void(ESFBackpackOutcome,int64)> Report)
@@ -1271,7 +1265,7 @@ void ASFGameMode::StartConstruction()
             Node->Kind=static_cast<ESFGatheringPilotKind>(I);
             Node->FinishSpawning(FTransform(Positions[I]));
         }
-        UE_LOG(LogTemp,Display,TEXT("GATHERING_PILOT_READY Resources=2 Stations=2 Inventory=MinimalInventoryRuntime SessionOnly=1"));
+        UE_LOG(LogTemp,Display,TEXT("GATHERING_PILOT_READY Resources=2 Stations=2 Inventory=SFInventory SessionOnly=1"));
     }
 }
 
@@ -1316,18 +1310,11 @@ ASFPlayerController::ASFPlayerController()
     PrimaryActorTick.bCanEverTick=true;
     SelectedRotation=uint8(SFConstructionGeometry::IdentityRotation());
     GatheringPilot=CreateDefaultSubobject<USFGatheringPilotComponent>(TEXT("GatheringPilot"));
-#if SF_WITH_MINIMAL_INVENTORY
-    auto* Inventory=CreateDefaultSubobject<UInventoryComponent>(TEXT("GatheringPilotInventory"));
+    auto* Inventory=CreateDefaultSubobject<USFInventoryComponent>(TEXT("GatheringPilotInventory"));
     PilotInventory=Inventory;
-    Inventory->bUseBuiltInInteraction=false; Inventory->bEnableLookPrompt=false;
-    Inventory->bUseExternalInventoryUI=true; Inventory->bEnableEquipment=true;
     Inventory->AllowedEquipmentSlots=USFGatheringPilotComponent::EquipmentSlots();
-    Inventory->bGrantStartupItems=false; Inventory->bAutoLoadOnBeginPlay=false;
-    Inventory->bAutoSaveOnInventoryChanged=false; Inventory->bAutoSaveLoadInNetworkedGames=false;
-    Inventory->bAutoCreateHotbarOnOwningClient=false; Inventory->bAutoShowUIOnOwningClient=false;
     Inventory->NumSlots=GetDefault<USFGatheringPilotSettings>()->InventorySlots;
     Inventory->MaxWeight=GetDefault<USFGatheringPilotSettings>()->InventoryWeightKg;
-#endif
 }
 
 void ASFPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -1659,18 +1646,16 @@ void ASFPlayerController::UseHotbarSlot(int32 Index)
         if (Piece==3) { SelectDoor(); } else { SelectShape(uint8(Piece)); }
         return;
     }
-#if SF_WITH_MINIMAL_INVENTORY
     if (Id.IsEmpty() || !GatheringPilot) { return; }
     const FSoftObjectPath Path(SFStationRecipes::ItemAssetPath(Id));
-    const UInventoryItemDefinition* Definition=TSoftObjectPtr<UInventoryItemDefinition>(Path).LoadSynchronous();
-    if (Definition && Definition->UseType==EInventoryItemUseType::Equip)
+    const USFItemDefinition* Definition=TSoftObjectPtr<USFItemDefinition>(Path).LoadSynchronous();
+    if (Definition && Definition->UseType==ESFItemUseType::Equip)
     {
         // Already worn: nothing to do. The server validates ownership and the slot.
         if (GatheringPilot->GetEquipped(Definition->EquipmentSlot)!=Path) { GatheringPilot->RequestEquip(Path,Definition->EquipmentSlot); }
         return;
     }
     if (HudWidget) { HudWidget->PushToast(FString::Printf(TEXT("%s can't be used yet."),Definition ? *Definition->DisplayName.ToString() : *Id)); }
-#endif
 }
 void ASFPlayerController::CycleGatheringRecipe()
 {

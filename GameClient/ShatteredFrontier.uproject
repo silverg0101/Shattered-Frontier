@@ -6,7 +6,6 @@
   "Modules": [{ "Name": "ShatteredFrontier", "Type": "Runtime", "LoadingPhase": "Default" }, { "Name": "ShatteredFrontierBackend", "Type": "ServerOnly", "LoadingPhase": "Default" }],
   "Plugins": [
     { "Name": "ProceduralMeshComponent", "Enabled": true },
-    { "Name": "MinimalInventoryRuntime", "Enabled": true, "PlatformAllowList": ["Win64"] },
     { "Name": "AndroidFileServer", "Enabled": false },
     { "Name": "EnhancedInput", "Enabled": true },
     { "Name": "GameFeatures", "Enabled": true },

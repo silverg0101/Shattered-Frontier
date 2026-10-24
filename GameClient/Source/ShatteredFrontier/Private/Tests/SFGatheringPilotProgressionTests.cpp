@@ -1,7 +1,7 @@
 #include "Gathering/SFGatheringPilot.h"
 #include "Framework/SFPlayerController.h"
 
-#if WITH_DEV_AUTOMATION_TESTS && WITH_EDITOR && SF_WITH_MINIMAL_INVENTORY
+#if WITH_DEV_AUTOMATION_TESTS && WITH_EDITOR
 #include "Misc/AutomationTest.h"
 #include "Tests/AutomationCommon.h"
 #include "GameFramework/WorldSettings.h"
@@ -9,9 +9,7 @@
 #include "Characters/SFE1Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "InventoryComponent.h"
-#include "InventoryItemDefinition.h"
-#include "InventoryTransactionLibrary.h"
+#include "Inventory/SFInventory.h"
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFGatheringPilotProgressionTest,
     "ShatteredFrontier.Gathering.Pilot.Progression",EAutomationTestFlags::EditorContext|EAutomationTestFlags::EngineFilter)
@@ -26,16 +24,16 @@ bool FSFGatheringPilotProgressionTest::RunTest(const FString& Parameters)
     auto* Pawn=World->SpawnActor<ASFE1Character>(FVector(0,0,100),FRotator::ZeroRotator,Spawn);
     if (!PC||!Pawn) { return false; }
     PC->Possess(Pawn); Pawn->GetCharacterMovement()->SetMovementMode(MOVE_None); Pawn->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-    auto* Gather=PC->FindComponentByClass<USFGatheringPilotComponent>(); auto* Bag=PC->FindComponentByClass<UInventoryComponent>();
+    auto* Gather=PC->FindComponentByClass<USFGatheringPilotComponent>(); auto* Bag=PC->FindComponentByClass<USFInventoryComponent>();
     if (!Gather||!Bag) { return false; }
     Gather->bEnabled=true; Gather->bTestWorldAdmission=true;
     Gather->CapturedSettings=DuplicateObject<USFGatheringPilotSettings>(GetDefault<USFGatheringPilotSettings>(),Gather);
     Gather->CapturedSettings->HarvestSeconds=0.5f;
     Gather->ProgressionSession.TestRoll=0;
-    FInventoryItemQuantity Axe; Axe.Item=TSoftObjectPtr<UInventoryItemDefinition>(FSoftObjectPath(TEXT("/Game/Frontier/Gameplay/Pilot/DA_IronAxe.DA_IronAxe"))); Axe.Quantity=1;
-    if (UInventoryTransactionLibrary::ExchangeInventoryItems(Bag,{}, {Axe})!=EInventoryTransactionResult::Success) { return false; }
+    FSFItemQuantity Axe; Axe.Item=TSoftObjectPtr<USFItemDefinition>(FSoftObjectPath(TEXT("/Game/Frontier/Gameplay/Pilot/DA_IronAxe.DA_IronAxe"))); Axe.Quantity=1;
+    if (SFInventoryTransactions::ExchangeInventoryItems(Bag,{}, {Axe})!=ESFInventoryResult::Success) { return false; }
     bool bEquipped=false;
-    for (int32 I=0;I<Bag->NumSlots;++I) { TSoftObjectPtr<UInventoryItemDefinition> Item; int32 Count=0; if (Bag->GetSlot(I,Item,Count)&&Item==Axe.Item) { bEquipped=Bag->EquipFromSlot(I); break; } }
+    for (int32 I=0;I<Bag->NumSlots;++I) { TSoftObjectPtr<USFItemDefinition> Item; int32 Count=0; if (Bag->GetSlot(I,Item,Count)&&Item==Axe.Item) { bEquipped=Bag->EquipFromSlot(I); break; } }
     if (!TestTrue(TEXT("Own actual tier-one axe equipped"),bEquipped)) { return false; }
     auto* Wood=World->SpawnActor<ASFGatheringPilotNode>(FVector(200,0,100),FRotator::ZeroRotator,Spawn);
     if (!Wood) { return false; } Wood->State.Charges=3;

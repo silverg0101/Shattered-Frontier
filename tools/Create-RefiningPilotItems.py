@@ -1,6 +1,6 @@
 """Create opt-in refining output item definitions in the UE editor.
 
-Run after the gathering settings and MinimalInventoryRuntime are compiled.
+Run after the ShatteredFrontier editor (gathering settings, SFItemDefinition) is built.
 Existing assets are treated as a hard error so this script never overwrites.
 """
 import math
@@ -9,7 +9,7 @@ import unreal
 
 
 OUTPUT_PATH = '/Game/Frontier/Gameplay/Pilot'
-ITEM_CLASS_PATH = '/Script/MinimalInventoryRuntime.InventoryItemDefinition'
+ITEM_CLASS_PATH = '/Script/ShatteredFrontier.SFItemDefinition'
 ITEMS = (
     ('DA_RoughTimber', 'item/rough_timber', 'Rough Timber'),
     ('DA_IronIngot', 'item/iron_ingot', 'Iron Ingot'),
@@ -32,7 +32,7 @@ if existing:
 
 item_class = unreal.load_class(None, ITEM_CLASS_PATH)
 if item_class is None:
-    raise RuntimeError('Could not load ' + ITEM_CLASS_PATH + '; enable and compile MinimalInventoryRuntime first.')
+    raise RuntimeError('Could not load ' + ITEM_CLASS_PATH + '; build the ShatteredFrontier editor first.')
 
 factory = unreal.DataAssetFactory()
 factory.set_editor_property('data_asset_class', item_class)

@@ -30,33 +30,27 @@
 #include "Services/SFCharacterSession.h"
 #include "Services/SFGameplayServicesClient.h"
 #include "UObject/ConstructorHelpers.h"
-#if SF_WITH_MINIMAL_INVENTORY
-#include "InventoryComponent.h"
-#include "InventoryItemDefinition.h"
-#include "InventoryTransactionLibrary.h"
-#endif
+#include "Inventory/SFInventory.h"
 
 namespace
 {
-#if SF_WITH_MINIMAL_INVENTORY
-    FString ChooseInputGrade(UInventoryComponent* Inventory, const FSFItemStack& Input)
+    FString ChooseInputGrade(USFInventoryComponent* Inventory, const FSFItemStack& Input)
     {
         static const TCHAR* Grades[] = {TEXT("crude"), TEXT(""), TEXT("fine"), TEXT("superior"), TEXT("masterwork")};
         for (const TCHAR* Grade : Grades)
         {
             const FString Id = *Grade ? Input.DefinitionId + TEXT("/") + Grade : Input.DefinitionId;
-            const auto Asset = TSoftObjectPtr<UInventoryItemDefinition>(FSoftObjectPath(SFStationRecipes::ItemAssetPath(Id)));
-            if (Inventory && UInventoryTransactionLibrary::GetItemQuantity(Inventory, Asset) >= Input.Quantity) { return Id; }
+            const auto Asset = TSoftObjectPtr<USFItemDefinition>(FSoftObjectPath(SFStationRecipes::ItemAssetPath(Id)));
+            if (Inventory && SFInventoryTransactions::GetItemQuantity(Inventory, Asset) >= Input.Quantity) { return Id; }
         }
         return Input.DefinitionId;
     }
     // The ledger id of a gear item (content/items), or "" for tools, other items and an empty path.
     FString GearId(const FSoftObjectPath& Item)
     {
-        const UInventoryItemDefinition* Definition = Item.IsNull() ? nullptr : TSoftObjectPtr<UInventoryItemDefinition>(Item).LoadSynchronous();
+        const USFItemDefinition* Definition = Item.IsNull() ? nullptr : TSoftObjectPtr<USFItemDefinition>(Item).LoadSynchronous();
         return Definition && SFGear::Find(Definition->UniqueId) ? Definition->UniqueId : FString();
     }
-#endif
     const TCHAR* ItemPath(ESFGatheringPilotKind Kind)
     {
         switch (Kind)
@@ -504,10 +498,6 @@ void USFGatheringPilotComponent::BeginPlay()
             if (!Backpack.IsValid()) { bEnabled=false; }  // fail closed: an enabled ledger never falls back to session-only grants
         }
     }
-#if SF_WITH_MINIMAL_INVENTORY
-    if (auto* Inventory=GetOwner()->FindComponentByClass<UInventoryComponent>())
-    { Inventory->SetBuiltInInteractionEnabled(false); Inventory->SetComponentTickEnabled(false); }
-#endif
 }
 
 void USFGatheringPilotComponent::EndPlay(const EEndPlayReason::Type Reason)
@@ -621,42 +611,30 @@ ESFGatheringPilotResult USFGatheringPilotComponent::ValidateTarget(const ASFGath
 
 bool USFGatheringPilotComponent::InventoryReady() const
 {
-#if SF_WITH_MINIMAL_INVENTORY
-    return GetOwner()->FindComponentByClass<UInventoryComponent>()
-        && LoadObject<UInventoryItemDefinition>(nullptr,ItemPath(ESFGatheringPilotKind::Oak))
-        && LoadObject<UInventoryItemDefinition>(nullptr,ItemPath(ESFGatheringPilotKind::Iron));
-#else
-    return false;
-#endif
+    return GetOwner()->FindComponentByClass<USFInventoryComponent>()
+        && LoadObject<USFItemDefinition>(nullptr,ItemPath(ESFGatheringPilotKind::Oak))
+        && LoadObject<USFItemDefinition>(nullptr,ItemPath(ESFGatheringPilotKind::Iron));
 }
 
 bool USFGatheringPilotComponent::InitializeStarterTools()
 {
     if (!IsAuthoritativePilotWorld() || !CapturedSettings) { return false; }
     if (bStarterToolsGranted || !CapturedSettings->bGrantStarterTools) { return true; }
-#if SF_WITH_MINIMAL_INVENTORY
-    auto* Inventory=GetOwner()->FindComponentByClass<UInventoryComponent>();
-    FInventoryItemQuantity Axe; Axe.Item=TSoftObjectPtr<UInventoryItemDefinition>(FSoftObjectPath(ToolPath(true))); Axe.Quantity=1;
-    FInventoryItemQuantity Pick; Pick.Item=TSoftObjectPtr<UInventoryItemDefinition>(FSoftObjectPath(ToolPath(false))); Pick.Quantity=1;
-    if (UInventoryTransactionLibrary::ExchangeInventoryItems(Inventory,{}, {Axe,Pick})!=EInventoryTransactionResult::Success) { return false; }
+    auto* Inventory=GetOwner()->FindComponentByClass<USFInventoryComponent>();
+    FSFItemQuantity Axe; Axe.Item=TSoftObjectPtr<USFItemDefinition>(FSoftObjectPath(ToolPath(true))); Axe.Quantity=1;
+    FSFItemQuantity Pick; Pick.Item=TSoftObjectPtr<USFItemDefinition>(FSoftObjectPath(ToolPath(false))); Pick.Quantity=1;
+    if (SFInventoryTransactions::ExchangeInventoryItems(Inventory,{}, {Axe,Pick})!=ESFInventoryResult::Success) { return false; }
     bStarterToolsGranted=true; GetOwner()->ForceNetUpdate(); return true;
-#else
-    return false;
-#endif
 }
 
 bool USFGatheringPilotComponent::HasRequiredTool(ESFGatheringPilotKind Kind) const
 {
     if (Kind==ESFGatheringPilotKind::Sawmill || Kind==ESFGatheringPilotKind::Forge || Kind==ESFGatheringPilotKind::Workbench) { return true; }
-#if SF_WITH_MINIMAL_INVENTORY
-    const auto* Inventory=GetOwner()->FindComponentByClass<UInventoryComponent>();
-    TSoftObjectPtr<UInventoryItemDefinition> Equipped; int32 Quantity=0;
+    const auto* Inventory=GetOwner()->FindComponentByClass<USFInventoryComponent>();
+    TSoftObjectPtr<USFItemDefinition> Equipped; int32 Quantity=0;
     // These two released definitions are the pilot's tier-one axe/pickaxe catalogue.
     return Inventory && Inventory->GetEquippedItem(MainHandSlot(),Equipped,Quantity) && Quantity==1
         && Equipped.ToSoftObjectPath()==FSoftObjectPath(ToolPath(Kind==ESFGatheringPilotKind::Oak));
-#else
-    return false;
-#endif
 }
 
 bool USFGatheringPilotComponent::TryEquipTool(bool bAxe)
@@ -675,24 +653,20 @@ const TArray<FName>& USFGatheringPilotComponent::EquipmentSlots()
 
 int32 USFGatheringPilotComponent::FindBagSlot(const FSoftObjectPath& Item) const
 {
-#if SF_WITH_MINIMAL_INVENTORY
-    const auto* Inventory=GetOwner() ? GetOwner()->FindComponentByClass<UInventoryComponent>() : nullptr;
+    const auto* Inventory=GetOwner() ? GetOwner()->FindComponentByClass<USFInventoryComponent>() : nullptr;
     for (int32 I=0; Inventory && !Item.IsNull() && I<FMath::Clamp(Inventory->NumSlots,0,64); ++I)
     {
-        TSoftObjectPtr<UInventoryItemDefinition> Held; int32 Quantity=0;
+        TSoftObjectPtr<USFItemDefinition> Held; int32 Quantity=0;
         if (Inventory->GetSlot(I,Held,Quantity) && Quantity>0 && Held.ToSoftObjectPath()==Item) { return I; }
     }
-#endif
     return INDEX_NONE;
 }
 
 FSoftObjectPath USFGatheringPilotComponent::GetEquipped(FName Slot) const
 {
-#if SF_WITH_MINIMAL_INVENTORY
-    const auto* Inventory=GetOwner() ? GetOwner()->FindComponentByClass<UInventoryComponent>() : nullptr;
-    TSoftObjectPtr<UInventoryItemDefinition> Equipped; int32 Quantity=0;
+    const auto* Inventory=GetOwner() ? GetOwner()->FindComponentByClass<USFInventoryComponent>() : nullptr;
+    TSoftObjectPtr<USFItemDefinition> Equipped; int32 Quantity=0;
     if (Inventory && Inventory->GetEquippedItem(Slot,Equipped,Quantity)) { return Equipped.ToSoftObjectPath(); }
-#endif
     return FSoftObjectPath();
 }
 
@@ -724,14 +698,13 @@ void USFGatheringPilotComponent::ServerUnequip_Implementation(FName Slot) { Appl
 ESFEquipResult USFGatheringPilotComponent::ApplyEquip(const FSoftObjectPath& Item, FName Slot)
 {
     ESFEquipResult Result=ESFEquipResult::Disabled;
-#if SF_WITH_MINIMAL_INVENTORY
-    auto* Inventory=GetOwner() ? GetOwner()->FindComponentByClass<UInventoryComponent>() : nullptr;
+    auto* Inventory=GetOwner() ? GetOwner()->FindComponentByClass<USFInventoryComponent>() : nullptr;
     const int32 BagSlot=FindBagSlot(Item);  // ownership: the item must be in this player's own bag
-    const UInventoryItemDefinition* Definition=BagSlot!=INDEX_NONE ? TSoftObjectPtr<UInventoryItemDefinition>(Item).LoadSynchronous() : nullptr;
+    const USFItemDefinition* Definition=BagSlot!=INDEX_NONE ? TSoftObjectPtr<USFItemDefinition>(Item).LoadSynchronous() : nullptr;
     if (!bEnabled || !Inventory || !IsAuthoritativePilotWorld()) { Result=ESFEquipResult::Disabled; }
     else if (!EquipmentSlots().Contains(Slot)) { Result=ESFEquipResult::InvalidSlot; }
     else if (BagSlot==INDEX_NONE) { Result=ESFEquipResult::NotOwned; }
-    else if (!Definition || Definition->UseType!=EInventoryItemUseType::Equip) { Result=ESFEquipResult::NotEquippable; }
+    else if (!Definition || Definition->UseType!=ESFItemUseType::Equip) { Result=ESFEquipResult::NotEquippable; }
     else if (Definition->EquipmentSlot!=Slot) { Result=ESFEquipResult::WrongSlot; }
     else if (USFBackpackComponent* Pack=(GearId(Item).IsEmpty() && GearId(GetEquipped(Slot)).IsEmpty()) ? nullptr : USFBackpackComponent::FindOrCreate(Cast<APlayerController>(GetOwner())))
     {
@@ -742,7 +715,7 @@ ESFEquipResult USFGatheringPilotComponent::ApplyEquip(const FSoftObjectPath& Ite
         const auto Apply=[Weak,Item,Resync](ESFBackpackOutcome Outcome)
         {
             USFGatheringPilotComponent* Self=Weak.Get();
-            auto* Inv=Self ? Self->GetOwner()->FindComponentByClass<UInventoryComponent>() : nullptr;
+            auto* Inv=Self ? Self->GetOwner()->FindComponentByClass<USFInventoryComponent>() : nullptr;
             const int32 Bag=Inv && Outcome==ESFBackpackOutcome::Committed ? Self->FindBagSlot(Item) : INDEX_NONE;
             if (Bag!=INDEX_NONE && Inv->EquipFromSlot(Bag)) { Self->GetOwner()->ForceNetUpdate(); UE_LOG(LogTemp,Display,TEXT("EQUIP_COMMITTED Item=%s"),*Item.GetAssetName()); return; }
             Resync();
@@ -757,10 +730,9 @@ ESFEquipResult USFGatheringPilotComponent::ApplyEquip(const FSoftObjectPath& Ite
         else { Pack->TransferEquipment(OldGear,false,[EquipNew,Resync](ESFBackpackOutcome Outcome) { if (Outcome==ESFBackpackOutcome::Committed) { EquipNew(); } else { Resync(); } }); }
         Result=ESFEquipResult::Pending;
     }
-    // The plugin moves it atomically: the old item returns to the bag, refused when that does not fit (space or weight).
+    // The inventory moves it atomically: the old item returns to the bag, refused when that does not fit (space or weight).
     else { Result=Inventory->EquipFromSlot(BagSlot) ? ESFEquipResult::Ok : ESFEquipResult::NoSpace; }
     if (Result==ESFEquipResult::Ok) { GetOwner()->ForceNetUpdate(); }
-#endif
     UE_LOG(LogTemp,Display,TEXT("EQUIP_APPLIED Slot=%s Item=%s Result=%d"),*Slot.ToString(),*Item.GetAssetName(),int32(Result));
     return Result;
 }
@@ -768,8 +740,7 @@ ESFEquipResult USFGatheringPilotComponent::ApplyEquip(const FSoftObjectPath& Ite
 ESFEquipResult USFGatheringPilotComponent::ApplyUnequip(FName Slot)
 {
     ESFEquipResult Result=ESFEquipResult::Disabled;
-#if SF_WITH_MINIMAL_INVENTORY
-    auto* Inventory=GetOwner() ? GetOwner()->FindComponentByClass<UInventoryComponent>() : nullptr;
+    auto* Inventory=GetOwner() ? GetOwner()->FindComponentByClass<USFInventoryComponent>() : nullptr;
     if (!bEnabled || !Inventory || !IsAuthoritativePilotWorld()) { Result=ESFEquipResult::Disabled; }
     else if (!EquipmentSlots().Contains(Slot)) { Result=ESFEquipResult::InvalidSlot; }
     else if (GetEquipped(Slot).IsNull()) { Result=ESFEquipResult::NotEquipped; }
@@ -779,7 +750,7 @@ ESFEquipResult USFGatheringPilotComponent::ApplyUnequip(FName Slot)
         Pack->TransferEquipment(GearId(GetEquipped(Slot)),false,[Weak=TWeakObjectPtr<USFGatheringPilotComponent>(this),Slot](ESFBackpackOutcome Outcome)
         {
             USFGatheringPilotComponent* Self=Weak.Get();
-            auto* Inv=Self ? Self->GetOwner()->FindComponentByClass<UInventoryComponent>() : nullptr;
+            auto* Inv=Self ? Self->GetOwner()->FindComponentByClass<USFInventoryComponent>() : nullptr;
             if (Inv && Outcome==ESFBackpackOutcome::Committed && Inv->UnequipSlot(Slot)) { Self->GetOwner()->ForceNetUpdate(); return; }
             if (auto* P=Self ? USFBackpackComponent::FindOrCreate(Cast<APlayerController>(Self->GetOwner())) : nullptr) { P->Reconcile(); }
         });
@@ -787,23 +758,21 @@ ESFEquipResult USFGatheringPilotComponent::ApplyUnequip(FName Slot)
     }
     else { Result=Inventory->UnequipSlot(Slot) ? ESFEquipResult::Ok : ESFEquipResult::NoSpace; }
     if (Result==ESFEquipResult::Ok) { GetOwner()->ForceNetUpdate(); }
-#endif
     UE_LOG(LogTemp,Display,TEXT("UNEQUIP_APPLIED Slot=%s Result=%d"),*Slot.ToString(),int32(Result));
     return Result;
 }
 
 void USFGatheringPilotComponent::ProjectEquipment(const TMap<FString,int64>& Equipment)
 {
-#if SF_WITH_MINIMAL_INVENTORY
-    auto* Inventory=GetOwner() ? GetOwner()->FindComponentByClass<UInventoryComponent>() : nullptr;
+    auto* Inventory=GetOwner() ? GetOwner()->FindComponentByClass<USFInventoryComponent>() : nullptr;
     if (!Inventory) { return; }
     // The backpack projection already counts unequipped gear in the bag, so gear moves in and out of the slots here.
     const auto Change=[Inventory](const FString& Id, bool bAdd)
     {
-        FInventoryTransactionChange Delta; Delta.Inventory=Inventory;
-        FInventoryItemQuantity One; One.Item=TSoftObjectPtr<UInventoryItemDefinition>(FSoftObjectPath(SFStationRecipes::ItemAssetPath(Id))); One.Quantity=1;
+        FSFInventoryChange Delta; Delta.Inventory=Inventory;
+        FSFItemQuantity One; One.Item=TSoftObjectPtr<USFItemDefinition>(FSoftObjectPath(SFStationRecipes::ItemAssetPath(Id))); One.Quantity=1;
         (bAdd ? Delta.AddItems : Delta.RemoveItems).Add(One);
-        return UInventoryTransactionLibrary::ExecuteInventoryTransaction({Delta})==EInventoryTransactionResult::Success;
+        return SFInventoryTransactions::ExecuteInventoryTransaction({Delta})==ESFInventoryResult::Success;
     };
     int32 Mismatches=0;
     for (const FName& Slot : EquipmentSlots())
@@ -820,42 +789,37 @@ void USFGatheringPilotComponent::ProjectEquipment(const TMap<FString,int64>& Equ
     }
     GetOwner()->ForceNetUpdate();
     UE_LOG(LogTemp,Display,TEXT("EQUIPMENT_PROJECTED Items=%d Mismatches=%d"),Equipment.Num(),Mismatches);
-#endif
 }
 
 bool USFGatheringPilotComponent::GetInventoryWeight(float& TotalKg, float& MaxKg) const
 {
-#if SF_WITH_MINIMAL_INVENTORY
-    const auto* Inventory=GetOwner() ? GetOwner()->FindComponentByClass<UInventoryComponent>() : nullptr;
+    const auto* Inventory=GetOwner() ? GetOwner()->FindComponentByClass<USFInventoryComponent>() : nullptr;
     if (Inventory) { TotalKg=Inventory->GetTotalWeight(); MaxKg=Inventory->MaxWeight; return true; }
-#endif
     return false;
 }
 
 TArray<TPair<FText,int32>> USFGatheringPilotComponent::GetInventoryItems() const
 {
     TArray<TPair<FText,int32>> Items;
-#if SF_WITH_MINIMAL_INVENTORY
-    const auto* Inventory=GetOwner() ? GetOwner()->FindComponentByClass<UInventoryComponent>() : nullptr;
+    const auto* Inventory=GetOwner() ? GetOwner()->FindComponentByClass<USFInventoryComponent>() : nullptr;
     if (!Inventory) { return Items; }
-    auto Add=[&Items](const TSoftObjectPtr<UInventoryItemDefinition>& Item,int32 Quantity,const TCHAR* Suffix)
+    auto Add=[&Items](const TSoftObjectPtr<USFItemDefinition>& Item,int32 Quantity,const TCHAR* Suffix)
     {
         if (Quantity<=0 || Item.IsNull()) { return; }
-        const UInventoryItemDefinition* Definition=Item.LoadSynchronous();
+        const USFItemDefinition* Definition=Item.LoadSynchronous();
         const FString Name=Definition && !Definition->DisplayName.IsEmpty() ? Definition->DisplayName.ToString() : Item.GetAssetName();
         Items.Emplace(FText::FromString(Name+Suffix),Quantity);
     };
     for (int32 I=0; I<FMath::Clamp(Inventory->NumSlots,0,64); ++I)
     {
-        TSoftObjectPtr<UInventoryItemDefinition> Item; int32 Quantity=0;
+        TSoftObjectPtr<USFItemDefinition> Item; int32 Quantity=0;
         if (Inventory->GetSlot(I,Item,Quantity)) { Add(Item,Quantity,TEXT("")); }
     }
     for (const FName Slot : EquipmentSlots())
     {
-        TSoftObjectPtr<UInventoryItemDefinition> Equipped; int32 Quantity=0;
+        TSoftObjectPtr<USFItemDefinition> Equipped; int32 Quantity=0;
         if (Inventory->GetEquippedItem(Slot,Equipped,Quantity)) { Add(Equipped,Quantity,TEXT(" (equipped)")); }
     }
-#endif
     return Items;
 }
 
@@ -870,10 +834,9 @@ FString USFGatheringPilotComponent::GetToolName() const
 
 ESFGatheringPilotResult USFGatheringPilotComponent::ApplyInventory(ESFGatheringPilotKind Kind, bool bCommit)
 {
-#if SF_WITH_MINIMAL_INVENTORY
-    auto* Inventory=GetOwner()->FindComponentByClass<UInventoryComponent>();
-    FInventoryTransactionChange Change; Change.Inventory=Inventory;
-    FInventoryItemQuantity Reward; Reward.Item=TSoftObjectPtr<UInventoryItemDefinition>(FSoftObjectPath(ItemPath(Kind)));
+    auto* Inventory=GetOwner()->FindComponentByClass<USFInventoryComponent>();
+    FSFInventoryChange Change; Change.Inventory=Inventory;
+    FSFItemQuantity Reward; Reward.Item=TSoftObjectPtr<USFItemDefinition>(FSoftObjectPath(ItemPath(Kind)));
     Reward.Quantity=CapturedSettings->UnitsPerCharge;
     if (Kind==ESFGatheringPilotKind::Sawmill || Kind==ESFGatheringPilotKind::Forge || Kind==ESFGatheringPilotKind::Workbench)
     {
@@ -882,26 +845,23 @@ ESFGatheringPilotResult USFGatheringPilotComponent::ApplyInventory(ESFGatheringP
         if (!Recipe) { return ESFGatheringPilotResult::Unavailable; }
         const auto Stack=[Inventory](const FSFItemStack& Item, bool bInput)
         {
-            FInventoryItemQuantity Out; Out.Item=TSoftObjectPtr<UInventoryItemDefinition>(FSoftObjectPath(SFStationRecipes::ItemAssetPath(bInput ? ChooseInputGrade(Inventory, Item) : Item.DefinitionId)));
+            FSFItemQuantity Out; Out.Item=TSoftObjectPtr<USFItemDefinition>(FSoftObjectPath(SFStationRecipes::ItemAssetPath(bInput ? ChooseInputGrade(Inventory, Item) : Item.DefinitionId)));
             Out.Quantity=int32(Item.Quantity); return Out;
         };
         for (const FSFItemStack& Input : Recipe->Inputs) { Change.RemoveItems.Add(Stack(Input, true)); }
         for (const FSFItemStack& Output : Recipe->Outputs) { Change.AddItems.Add(Stack(Output, false)); }
     }
     else { Change.AddItems.Add(Reward); }
-    const auto Result=bCommit ? UInventoryTransactionLibrary::ExecuteInventoryTransaction({Change})
-        : UInventoryTransactionLibrary::CanExecuteInventoryTransaction({Change});
+    const auto Result=bCommit ? SFInventoryTransactions::ExecuteInventoryTransaction({Change})
+        : SFInventoryTransactions::CanExecuteInventoryTransaction({Change});
     switch (Result)
     {
-    case EInventoryTransactionResult::Success: return ESFGatheringPilotResult::None;
-    case EInventoryTransactionResult::InsufficientSpace:
-    case EInventoryTransactionResult::WeightLimitExceeded: return ESFGatheringPilotResult::InventoryFull;
-    case EInventoryTransactionResult::InsufficientItems: return ESFGatheringPilotResult::MissingMaterials;
+    case ESFInventoryResult::Success: return ESFGatheringPilotResult::None;
+    case ESFInventoryResult::InsufficientSpace:
+    case ESFInventoryResult::WeightLimitExceeded: return ESFGatheringPilotResult::InventoryFull;
+    case ESFInventoryResult::InsufficientItems: return ESFGatheringPilotResult::MissingMaterials;
     default: return ESFGatheringPilotResult::Unavailable;
     }
-#else
-    return ESFGatheringPilotResult::Unavailable;
-#endif
 }
 
 void USFGatheringPilotComponent::ServerGatheringActionAtSurface_Implementation(ASFGatheringPilotNode* Node,uint32 Revision,uint32 Operation,FVector_NetQuantize10 RequestedPoint)
@@ -1317,11 +1277,9 @@ void USFGatheringPilotComponent::BeginCraftCommit()
     { PendingCraftOperation.Reset(); Finish(ESFGatheringPilotPhase::Rejected,ESFGatheringPilotResult::InvalidContext); return; }
     const FString Operation=PendingCraftOperation, RecipeId=Recipe->Id;
     TMap<FString,FString> InputGrades;
-#if SF_WITH_MINIMAL_INVENTORY
-    auto* Bag = GetOwner()->FindComponentByClass<UInventoryComponent>();
+    auto* Bag = GetOwner()->FindComponentByClass<USFInventoryComponent>();
     for (const FSFItemStack& Input : Recipe->Inputs)
     { InputGrades.Add(Input.DefinitionId, ChooseInputGrade(Bag, Input)); }
-#endif
     TSharedRef<TMap<FString,int64>> Changes=MakeShared<TMap<FString,int64>>();
     TSharedRef<FString> Discovered=MakeShared<FString>();
     TWeakObjectPtr<USFGatheringPilotComponent> Weak(this);
@@ -1508,16 +1466,14 @@ FString USFGatheringPilotComponent::GetStatusText(const FVector& Start, const FV
 {
     if (!bEnabled) { return FString(); }
     FString InventoryText=TEXT("Inventory adapter unavailable on this platform.");
-#if SF_WITH_MINIMAL_INVENTORY
-    if (auto* Inventory=GetOwner()->FindComponentByClass<UInventoryComponent>())
+    if (auto* Inventory=GetOwner()->FindComponentByClass<USFInventoryComponent>())
     {
-        const int64 Wood=UInventoryTransactionLibrary::GetItemQuantity(Inventory,TSoftObjectPtr<UInventoryItemDefinition>(FSoftObjectPath(ItemPath(ESFGatheringPilotKind::Oak))));
-        const int64 Ore=UInventoryTransactionLibrary::GetItemQuantity(Inventory,TSoftObjectPtr<UInventoryItemDefinition>(FSoftObjectPath(ItemPath(ESFGatheringPilotKind::Iron))));
-        const int64 Timber=UInventoryTransactionLibrary::GetItemQuantity(Inventory,TSoftObjectPtr<UInventoryItemDefinition>(FSoftObjectPath(ItemPath(ESFGatheringPilotKind::Sawmill))));
-        const int64 Ingots=UInventoryTransactionLibrary::GetItemQuantity(Inventory,TSoftObjectPtr<UInventoryItemDefinition>(FSoftObjectPath(ItemPath(ESFGatheringPilotKind::Forge))));
+        const int64 Wood=SFInventoryTransactions::GetItemQuantity(Inventory,TSoftObjectPtr<USFItemDefinition>(FSoftObjectPath(ItemPath(ESFGatheringPilotKind::Oak))));
+        const int64 Ore=SFInventoryTransactions::GetItemQuantity(Inventory,TSoftObjectPtr<USFItemDefinition>(FSoftObjectPath(ItemPath(ESFGatheringPilotKind::Iron))));
+        const int64 Timber=SFInventoryTransactions::GetItemQuantity(Inventory,TSoftObjectPtr<USFItemDefinition>(FSoftObjectPath(ItemPath(ESFGatheringPilotKind::Sawmill))));
+        const int64 Ingots=SFInventoryTransactions::GetItemQuantity(Inventory,TSoftObjectPtr<USFItemDefinition>(FSoftObjectPath(ItemPath(ESFGatheringPilotKind::Forge))));
         InventoryText=FString::Printf(TEXT("Your bag: Logs %lld | Ore %lld | Timber %lld | Ingots %lld | %.1f / %.1f kg"),Wood,Ore,Timber,Ingots,Inventory->GetTotalWeight(),Inventory->MaxWeight);
     }
-#endif
     FString Action=ResultText(bKeyConflict ? ESFGatheringPilotResult::KeyConflict : Feedback.Result);
     if (Feedback.bSkillGained&&!bKeyConflict) { Action+=FString::Printf(TEXT(" %s +1 (%d)."),FSFGatheringProgressionSession::SkillName(Feedback.Skill),Feedback.CurrentSkill); }
     if (WaitingOperation!=0) { Action=TEXT("Pending: waiting for server. E retries the same request."); }
@@ -1558,7 +1514,6 @@ void USFGatheringPilotComponent::AssignPilotRole(bool bPrimary)
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
 void USFGatheringPilotComponent::TickFiniteNetworkScenario()
 {
-#if SF_WITH_MINIMAL_INVENTORY
     const auto* PC=Cast<APlayerController>(GetOwner());
     const bool bRefiningScenario=FParse::Param(FCommandLine::Get(),TEXT("GatheringRefiningScenario"));
     if (GetNetMode()!=NM_Client || !PC || !PC->IsLocalController() || !bEnabled || !bRoleAssigned || !PC->GetPawn()
@@ -1589,10 +1544,10 @@ void USFGatheringPilotComponent::TickFiniteNetworkScenario()
     if (Now-ScenarioStarted>40)
     { UE_LOG(LogTemp,Error,TEXT("GATHERING_PILOT_SCENARIO_FAILED Timeout=1 Step=%d Phase=%d Result=%d Primary=%d Pawn=%s Wood=%s Ore=%s"),ScenarioStep,int32(Feedback.Phase),int32(Feedback.Result),
         bPrimaryRole,*PC->GetPawn()->GetActorLocation().ToCompactString(),*Wood->GetActorLocation().ToCompactString(),*Ore->GetActorLocation().ToCompactString()); FPlatformMisc::RequestExitWithStatus(false,1); return; }
-    auto* Inventory=GetOwner()->FindComponentByClass<UInventoryComponent>();
+    auto* Inventory=GetOwner()->FindComponentByClass<USFInventoryComponent>();
     if (!Inventory) { return; }
     const auto Quantity=[&](ESFGatheringPilotKind Kind)
-    { return UInventoryTransactionLibrary::GetItemQuantity(Inventory,TSoftObjectPtr<UInventoryItemDefinition>(FSoftObjectPath(ItemPath(Kind)))); };
+    { return SFInventoryTransactions::GetItemQuantity(Inventory,TSoftObjectPtr<USFItemDefinition>(FSoftObjectPath(ItemPath(Kind)))); };
     const auto Interact=[&](ASFGatheringPilotNode* Node)
     {
         const FVector Start=PC->GetPawn()->GetPawnViewLocation();
@@ -1647,7 +1602,7 @@ void USFGatheringPilotComponent::TickFiniteNetworkScenario()
         int32 VisibleInventories=0;
         for (TActorIterator<AActor> It(GetWorld()); It; ++It)
         {
-            TArray<UInventoryComponent*> Components; It->GetComponents(Components); VisibleInventories+=Components.Num();
+            TArray<USFInventoryComponent*> Components; It->GetComponents(Components); VisibleInventories+=Components.Num();
             TArray<USFGatheringPilotComponent*> Endpoints; It->GetComponents(Endpoints);
             for (const auto* Endpoint:Endpoints)
             {
@@ -1683,7 +1638,6 @@ void USFGatheringPilotComponent::TickFiniteNetworkScenario()
         UE_LOG(LogTemp,Display,TEXT("REFINING_PILOT_CLIENT_DONE Primary=%d Wood=0 Ore=0 Timber=%lld Ingots=%lld SawmillRevision=1 ForgeRevision=1"),bPrimaryRole,Timber,Ingots);
         ScenarioStep=5; FPlatformMisc::RequestExitWithStatus(false,0);
     }
-#endif
 }
 #endif
 

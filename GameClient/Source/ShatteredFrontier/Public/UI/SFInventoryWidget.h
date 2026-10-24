@@ -4,7 +4,7 @@
 #include "SFInventoryWidget.generated.h"
 
 class UImage;
-class UInventoryItemDefinition;
+class USFItemDefinition;
 class UPanelWidget;
 class UProgressBar;
 class UTextBlock;
@@ -67,8 +67,8 @@ public:
     static FString TabLabel(ESFInventoryTab Tab);
     // Gear = equippable (tools, weapons, armour), Consumables = usable/eat/consume, Misc = bundles and scrolls (by definition id),
     // otherwise Materials. Read from the definition, never from display names.
-    static ESFInventoryTab CategoryOf(const UInventoryItemDefinition& Definition);
-    static FSFInventoryEntry MakeEntry(const UInventoryItemDefinition& Definition, const FString& FallbackName, int32 Count, bool bEquipped);
+    static ESFInventoryTab CategoryOf(const USFItemDefinition& Definition);
+    static FSFInventoryEntry MakeEntry(const USFItemDefinition& Definition, const FString& FallbackName, int32 Count, bool bEquipped);
     // Merges stacks that share a name and equipped state, drops empty entries and sorts by name.
     static TArray<FSFInventoryEntry> BuildEntries(const TArray<FSFInventoryEntry>& Items);
     static TArray<FSFInventoryEntry> FilterByTab(const TArray<FSFInventoryEntry>& Items, ESFInventoryTab Tab);

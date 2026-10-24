@@ -5,7 +5,7 @@ import unreal
 
 
 OUTPUT_PATH = '/Game/Frontier/Gameplay/Pilot'
-ITEM_CLASS_PATH = '/Script/MinimalInventoryRuntime.InventoryItemDefinition'
+ITEM_CLASS_PATH = '/Script/ShatteredFrontier.SFItemDefinition'
 ITEMS = (
     ('DA_IronAxe', 'item/iron_axe', 'Iron Axe (pilot)'),
     ('DA_IronPickaxe', 'item/iron_pickaxe', 'Iron Pickaxe (pilot)'),
@@ -26,7 +26,7 @@ if not math.isfinite(weight) or not 0.01 <= weight <= 50:
 
 item_class = unreal.load_class(None, ITEM_CLASS_PATH)
 if item_class is None:
-    raise RuntimeError('Could not load ' + ITEM_CLASS_PATH + '; enable and compile MinimalInventoryRuntime first.')
+    raise RuntimeError('Could not load ' + ITEM_CLASS_PATH + '; build the ShatteredFrontier editor first.')
 
 factory = unreal.DataAssetFactory()
 factory.set_editor_property('data_asset_class', item_class)
@@ -43,7 +43,7 @@ for asset_name, unique_id, display_name in ITEMS:
     ))
     asset.set_editor_property('MaxStackSize', 1)
     asset.set_editor_property('Weight', weight)
-    asset.set_editor_property('UseType', unreal.InventoryItemUseType.EQUIP)
+    asset.set_editor_property('UseType', unreal.SFItemUseType.EQUIP)
     asset.set_editor_property('EquipmentSlot', 'MainHand')  # tools are main-hand items (Equipment window)
     if not asset_library.save_loaded_asset(asset):
         raise RuntimeError('Could not save ' + OUTPUT_PATH + '/' + asset_name)
