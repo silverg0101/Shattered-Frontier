@@ -5,6 +5,9 @@
 #include "Construction/SFConstructionSandboxController.h"
 #include "Construction/SFConstructionSandboxDoorProjection.h"
 #include "Construction/SFConstructionSandboxSettings.h"
+#include "Construction/SFConstructionNetwork.h"
+#include "Construction/SFConstructionAnchor.h"
+#include "Framework/SFPlayerController.h"
 #include "Construction/SFConstructionGeometry.h"
 #include "Construction/SFConstructionClearance.h"
 #include "Components/BoxComponent.h"
@@ -15,6 +18,7 @@
 #include "GameFramework/DefaultPawn.h"
 #include "GameFramework/WorldSettings.h"
 #include "Framework/SFGameMode.h"
+#include "UObject/Package.h"
 
 namespace
 {
@@ -414,6 +418,57 @@ bool FSFConstructionDoorLifecycleTest::RunTest(const FString& Parameters)
         Door->Destroy();
         TestFalse(TEXT("Missing owned door projection fences structural edits"),F.Place({8,-4,0}));
     }
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFConstructionAnchoredDoorAuthorityTest,
+    "ShatteredFrontier.Construction.DoorAuthority.AnchoredPlacement",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSFConstructionAnchoredDoorAuthorityTest::RunTest(const FString& Parameters)
+{
+    FTestWorldWrapper Fixture;
+    if (!Fixture.CreateTestWorld(EWorldType::Game)) { return false; }
+    UWorld* World=Fixture.GetTestWorld();
+    // The game mode admits construction on dev maps. Give this isolated test world that map identity.
+    UPackage* Package=CreatePackage(TEXT("/Game/Frontier/Maps/Dev/BLD02AnchoredDoorTest"));
+    if (!TestTrue(TEXT("Test world uses a construction dev map"),World->Rename(TEXT("BLD02AnchoredDoorTest"),Package,REN_DontCreateRedirectors))) { return false; }
+    World->GetWorldSettings()->DefaultGameMode=ASFGameMode::StaticClass();
+    if (!World->SetGameMode(FURL())) { return false; }
+
+    const FIntVector Anchor(40,20,2), Origin(4,4,0);
+    const FVector Offset=SFConstructionAnchor::OffsetCm(Anchor);
+    auto* Foundation=World->SpawnActor<AStaticMeshActor>();
+    if (!TestNotNull(TEXT("Anchored foundation"),Foundation)) { return false; }
+    Foundation->GetStaticMeshComponent()->SetMobility(EComponentMobility::Movable);
+    Foundation->GetStaticMeshComponent()->SetStaticMesh(LoadObject<UStaticMesh>(nullptr,TEXT("/Engine/BasicShapes/Cube.Cube")));
+    Foundation->GetStaticMeshComponent()->SetCollisionProfileName(TEXT("BlockAll"));
+    Foundation->SetActorLocation(Offset+FVector(0,0,-50));
+    Foundation->SetActorScale3D(FVector(20,20,1));
+    Foundation->Tags.Add(TEXT("SFConstructionSandboxFoundationV1"));
+    auto* State=World->SpawnActorDeferred<ASFConstructionNetworkState>(ASFConstructionNetworkState::StaticClass(),FTransform(Offset));
+    if (!TestNotNull(TEXT("Anchored claim state"),State) || !TestTrue(TEXT("Anchor configured"),State->ConfigureAnchor(Anchor))) { return false; }
+    State->SetClaimId(TEXT("BLD02TestClaim"));
+    State->FinishSpawning(FTransform(Offset));
+    if (!Fixture.BeginPlayInTestWorld()) { return false; }
+    World->GetWorldSettings()->NotifyBeginPlay();
+
+    auto* Controller=World->SpawnActorDeferred<ASFPlayerController>(ASFPlayerController::StaticClass(),FTransform::Identity);
+    if (!TestNotNull(TEXT("Builder controller"),Controller)) { return false; }
+    Controller->SetAsLocalPlayerController();
+    Controller->FinishSpawning(FTransform::Identity);
+    auto* Pawn=World->SpawnActor<ADefaultPawn>();
+    if (!TestNotNull(TEXT("Builder pawn"),Pawn)) { return false; }
+    Controller->Possess(Pawn);
+    TGuardValue<bool> UnclaimedFixtureAccess(GetMutableDefault<USFConstructionSandboxSettings>()->bAllowUnclaimedBuilding,true);
+    FSFConstructionDoorProjectionProfile Profile;
+    if (!TestTrue(TEXT("Quarter-turn door profile"),ASFConstructionSandboxDoorProjection::BuildProfile(Origin,1,false,Profile))) { return false; }
+    const FVector LocalPawn=Profile.Transform.TransformPosition(FVector(-125,25,100));
+    Pawn->SetActorLocation(LocalPawn);
+    TestEqual(TEXT("Untranslated approach is out of reach"),State->PlaceDoor(Controller,Origin,0,1),ESFConstructionNetworkResult::OutOfReach);
+    Pawn->SetActorLocation(LocalPawn+Offset);
+    TestEqual(TEXT("Translated approach accepts anchored door"),State->PlaceDoor(Controller,Origin,0,1),ESFConstructionNetworkResult::Accepted);
+    TestEqual(TEXT("Anchored door publishes one revision"),State->GetSnapshot().Revision,uint64(1));
+    TestEqual(TEXT("Anchored door is projected"),State->GetSnapshot().Doors.Num(),1);
     return true;
 }
 #endif

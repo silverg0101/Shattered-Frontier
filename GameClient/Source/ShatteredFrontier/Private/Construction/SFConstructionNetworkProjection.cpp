@@ -146,16 +146,17 @@ bool SFConstructionNetworkProjection::MatchesDoor(const ASFConstructionNetworkSt
         auto* Mesh=Projection.Boxes[I].Get();
         const auto& B=Profile.Boxes[I];
         const FTransform Expected=FTransform(B.Rotation,B.Centre,B.Extent*0.02)*Profile.Transform;
+        const FVector WorldCentre=Expected.GetLocation()+Owner->GetAnchorOffsetCm();
         if (!IsValid(Mesh) || Mesh->GetOwner()!=Owner || Mesh->GetAttachParent()!=Owner->GetRootComponent()
             || !CanonicalBoxAsset(Mesh->GetStaticMesh()) || !Mesh->IsRegistered() || !Mesh->IsPhysicsStateCreated()
             || Mesh->GetGenerateOverlapEvents() || Mesh->GetCollisionEnabled()!=ECollisionEnabled::QueryAndPhysics
             || Mesh->GetCollisionObjectType()!=ECC_WorldStatic || Mesh->GetCollisionResponseToChannels()!=FCollisionResponseContainer(ECR_Block)
-            || !Mesh->GetComponentLocation().Equals(Expected.GetLocation(),1.e-9)
+            || !Mesh->GetComponentLocation().Equals(WorldCentre,1.e-9)
             || !Mesh->GetComponentQuat().Equals(Expected.GetRotation(),1.e-12) || !Mesh->GetComponentScale().Equals(Expected.GetScale3D(),1.e-12)) { return false; }
         FHitResult Hit;
         FCollisionQueryParams Query(SCENE_QUERY_STAT(ConstructionNetworkDoorProjection),false);
-        const FVector Centre=Expected.GetLocation(),Direction=Expected.GetRotation().RotateVector(FVector::ForwardVector);
-        if (!Mesh->LineTraceComponent(Hit,Centre+Direction*(B.Extent.X+10.0),Centre,Query) || Hit.GetComponent()!=Mesh) { return false; }
+        const FVector Direction=Expected.GetRotation().RotateVector(FVector::ForwardVector);
+        if (!Mesh->LineTraceComponent(Hit,WorldCentre+Direction*(B.Extent.X+10.0),WorldCentre,Query) || Hit.GetComponent()!=Mesh) { return false; }
     }
     return true;
 }
@@ -165,7 +166,7 @@ bool SFConstructionNetworkProjection::IsDoorMotionClear(const ASFConstructionNet
     FSFConstructionDoorProjectionProfile Profile;
     if (!IsInGameThread() || !IsValid(Owner) || !Owner->GetWorld() || !Owner->OwnsDoorProjection(Door,Projection)
         || !ASFConstructionSandboxDoorProjection::BuildProfile(Door.Origin,Door.Yaw,Door.bOpen,Profile)) { return false; }
-    const FBox& Bounds=Profile.Motion;
+    const FBox Bounds=Profile.Motion.ShiftBy(Owner->GetAnchorOffsetCm());
     const auto Shape=FCollisionShape::MakeBox(Bounds.GetExtent());
     TArray<FOverlapResult> Candidates;
     FCollisionQueryParams Query(SCENE_QUERY_STAT(ConstructionNetworkDoorMotion),false);

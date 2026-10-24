@@ -670,13 +670,11 @@ ESFConstructionNetworkResult ASFConstructionNetworkState::PlaceDoor(ASFPlayerCon
     const APawn* Pawn=nullptr; const AActor* Foundation=nullptr;
     const auto Admission=ValidateEditContext(Controller,ExpectedRevision,Pawn,Foundation);
     if (Admission!=ESFConstructionNetworkResult::Accepted) { return Admission; }
-    // ponytail: door envelopes, motion and approach volumes are claim-local; anchored claims need them translated first.
-    if (AnchorCell!=FIntVector::ZeroValue) { return ESFConstructionNetworkResult::InvalidContext; }
     if (Snapshot.FindDoor(Origin)!=INDEX_NONE) { return ESFConstructionNetworkResult::Occupied; }
     if (Snapshot.Doors.Num()>=MaximumDoors) { return ESFConstructionNetworkResult::LimitReached; }
     FSFConstructionDoorProjectionProfile Profile;
     if (!ASFConstructionSandboxDoorProjection::BuildProfile(Origin,Yaw,false,Profile)) { return ESFConstructionNetworkResult::InvalidCell; }
-    const FVector Centre=Profile.Envelope.GetCenter();
+    const FVector Centre=Profile.Envelope.GetCenter()+GetAnchorOffsetCm();
     if (Pawn->GetActorLocation().ContainsNaN() || FVector::DistSquared(Pawn->GetActorLocation(),Centre)>FMath::Square(ReachCentimetres)) { return ESFConstructionNetworkResult::OutOfReach; }
     FVector Eyes; FRotator Rotation; Pawn->GetActorEyesViewPoint(Eyes,Rotation);
     FHitResult Hit; FCollisionQueryParams Query(SCENE_QUERY_STAT(ConstructionNetworkDoorPlacement),false,Pawn);
@@ -700,7 +698,7 @@ ESFConstructionNetworkResult ASFConstructionNetworkState::PlaceDoor(ASFPlayerCon
                     && FMath::Min(B.Max.Z,Bounds.Max.Z)>FMath::Max(B.Min.Z,Bounds.Min.Z)) { return ESFConstructionNetworkResult::Occupied; }
             }
         }
-        if (SFConstructionClearance::EvaluateBox(GetWorld(),Bounds)!=SFConstructionClearance::EResult::Clear) { return ESFConstructionNetworkResult::Occupied; }
+        if (SFConstructionClearance::EvaluateBox(GetWorld(),Bounds.ShiftBy(GetAnchorOffsetCm()))!=SFConstructionClearance::EResult::Clear) { return ESFConstructionNetworkResult::Occupied; }
     }
     auto Candidate=Snapshot;
     FSFConstructionNetworkDoor Door; Door.Origin=Origin; Door.Yaw=Yaw;
@@ -726,8 +724,8 @@ bool ASFConstructionNetworkState::FindDoorAlongRay(const APawn* Pawn, const FVec
     {
         FSFConstructionDoorProjectionProfile Profile; double T;
         if (!ASFConstructionSandboxDoorProjection::BuildProfile(Door.Origin,Door.Yaw,Door.bOpen,Profile)
-            || FVector::DistSquared(Pawn->GetActorLocation(),Profile.Envelope.GetCenter())>FMath::Square(ReachCentimetres)
-            || !RayEnvelopeEntry(Start,End,Profile.Envelope,T)) { continue; }
+            || FVector::DistSquared(Pawn->GetActorLocation(),Profile.Envelope.GetCenter()+GetAnchorOffsetCm())>FMath::Square(ReachCentimetres)
+            || !RayEnvelopeEntry(Start,End,Profile.Envelope.ShiftBy(GetAnchorOffsetCm()),T)) { continue; }
         FCollisionQueryParams Query(SCENE_QUERY_STAT(ConstructionNetworkDoorTarget),false,Pawn);
         FHitResult Hit; FIntVector HitOrigin;
         const FVector Probe=Start+(End-Start)*FMath::Min(1.0,T+1.e-5);
@@ -753,13 +751,13 @@ ESFConstructionNetworkResult ASFConstructionNetworkState::ValidateDoorTarget(ASF
     const auto& Door=Snapshot.Doors[Index];
     FSFConstructionDoorProjectionProfile Profile;
     if (!ASFConstructionSandboxDoorProjection::BuildProfile(Origin,Door.Yaw,Door.bOpen,Profile)) { return ESFConstructionNetworkResult::InvalidContext; }
-    if (Pawn->GetActorLocation().ContainsNaN() || FVector::DistSquared(Pawn->GetActorLocation(),Profile.Envelope.GetCenter())>FMath::Square(ReachCentimetres)) { return ESFConstructionNetworkResult::OutOfReach; }
+    if (Pawn->GetActorLocation().ContainsNaN() || FVector::DistSquared(Pawn->GetActorLocation(),Profile.Envelope.GetCenter()+GetAnchorOffsetCm())>FMath::Square(ReachCentimetres)) { return ESFConstructionNetworkResult::OutOfReach; }
     FVector Eyes; FRotator Rotation; Pawn->GetActorEyesViewPoint(Eyes,Rotation);
     if (Eyes.ContainsNaN()) { return ESFConstructionNetworkResult::Occluded; }
     FCollisionQueryParams Query(SCENE_QUERY_STAT(ConstructionNetworkDoorUse),false,Pawn);
     FHitResult CentreHit; FIntVector CentreOrigin;
     // Clear sight into the aperture is sufficient, even without a leaf/frame hit.
-    bool bVisible=!GetWorld()->LineTraceSingleByChannel(CentreHit,Eyes,Profile.Envelope.GetCenter(),ECC_Visibility,Query)
+    bool bVisible=!GetWorld()->LineTraceSingleByChannel(CentreHit,Eyes,Profile.Envelope.GetCenter()+GetAnchorOffsetCm(),ECC_Visibility,Query)
         || (CentreHit.GetActor()==this && GetDoorForComponent(CentreHit.GetComponent(),CentreOrigin) && CentreOrigin==Origin);
     for (const auto& Box : Projection->Boxes)
     {
@@ -1786,7 +1784,7 @@ void ASFPlayerController::RefreshPlacementPreview(bool bDrawOutline)
         const int32 Index=State->GetSnapshot().FindDoor(TargetDoorOrigin);
         FSFConstructionDoorProjectionProfile Profile;
         if (bDrawOutline && Index!=INDEX_NONE && ASFConstructionSandboxDoorProjection::BuildProfile(TargetDoorOrigin,State->GetSnapshot().Doors[Index].Yaw,State->GetSnapshot().Doors[Index].bOpen,Profile))
-        { DrawDebugBox(GetWorld(),Profile.Envelope.GetCenter(),Profile.Envelope.GetExtent(),bDemolitionMode ? FColor::Orange : FColor::Cyan,false,-1.f,0,2.f); }
+        { DrawDebugBox(GetWorld(),Profile.Envelope.GetCenter()+Off,Profile.Envelope.GetExtent(),bDemolitionMode ? FColor::Orange : FColor::Cyan,false,-1.f,0,2.f); }
         return;
     }
     FVector Point;
@@ -1819,13 +1817,13 @@ void ASFPlayerController::RefreshPlacementPreview(bool bDrawOutline)
         FSFConstructionDoorProjectionProfile Profile;
         if (!ASFConstructionSandboxDoorProjection::BuildProfile(PreviewCell,SelectedYaw,false,Profile))
         { bHasPlacementPreview=false; PreviewStatus=TEXT("Door footprint is outside the construction area."); return; }
-        const bool bReach=FVector::DistSquared(GetPawn()->GetActorLocation(),Profile.Envelope.GetCenter())<=FMath::Square(State->GetReachCentimetres());
+        const bool bReach=FVector::DistSquared(GetPawn()->GetActorLocation(),Profile.Envelope.GetCenter()+Off)<=FMath::Square(State->GetReachCentimetres());
         PreviewStatus=FString::Printf(TEXT("Door %d, %d, %d | %s"),PreviewCell.X,PreviewCell.Y,PreviewCell.Z,bReach ? TEXT("Click or B to request placement.") : TEXT("Out of reach."));
         RemovalStatus=bHasDoorTarget ? TEXT("E: open / close | Demolish + click: remove.") : TEXT("Door frame, swing space and both approaches must be clear.");
         if (bDrawOutline)
         {
             for (const auto& B : Profile.Boxes)
-            { DrawDebugBox(GetWorld(),Profile.Transform.TransformPosition(B.Centre),B.Extent,Profile.Transform.GetRotation()*B.Rotation,bReach ? FColor(255,190,60) : FColor::Red,false,-1.f,0,2.f); }
+            { DrawDebugBox(GetWorld(),Profile.Transform.TransformPosition(B.Centre)+Off,B.Extent,Profile.Transform.GetRotation()*B.Rotation,bReach ? FColor(255,190,60) : FColor::Red,false,-1.f,0,2.f); }
         }
         return;
     }
