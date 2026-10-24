@@ -550,6 +550,49 @@ bool FSFGatheringStageChargesTest::RunTest(const FString& Parameters)
     return true;
 }
 
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFGatheringGrowthCollisionTest,
+    "ShatteredFrontier.Gathering.Growth.Collision",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+
+bool FSFGatheringGrowthCollisionTest::RunTest(const FString& Parameters)
+{
+    FTestWorldWrapper Fixture;
+    if (!Fixture.CreateTestWorld(EWorldType::GameRPC) || !Fixture.BeginPlayInTestWorld()) { return false; }
+    auto* World=Fixture.GetTestWorld(); World->GetWorldSettings()->NotifyBeginPlay();
+    const FTransform At(FRotator::ZeroRotator,FVector(0,0,70));
+    auto* Node=World->SpawnActorDeferred<ASFGatheringPilotNode>(ASFGatheringPilotNode::StaticClass(),At);
+    if (!Node) { return false; }
+    Node->Kind=ESFGatheringPilotKind::Iron;
+    Node->SetGrowthProfile({{TEXT("young"),0.5f,0.3f,false},{TEXT("growing"),0.5f,0.5f},{TEXT("mature"),0.f,1.f}},0.5f);
+    Node->FinishSpawning(At);
+    Node->CapturedRespawnSeconds=2; Node->StartGrowth();
+    TestEqual(TEXT("Growth begins young"),Node->State.GrowthStage,FName(TEXT("young")));
+    TestTrue(TEXT("Nonblocking young node remains traceable"),
+        Node->Mesh->GetCollisionResponseToChannel(ECC_Pawn)==ECR_Ignore &&
+        Node->Mesh->GetCollisionResponseToChannel(ECC_Visibility)==ECR_Block);
+    FActorSpawnParameters Spawn; Spawn.SpawnCollisionHandlingOverride=ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+    auto* Pawn=World->SpawnActor<ASFE1Character>(FVector(0,0,70),FRotator::ZeroRotator,Spawn);
+    if (!Pawn) { return false; }
+    Pawn->GetCharacterMovement()->SetMovementMode(MOVE_None);
+    Pawn->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+    TestTrue(TEXT("Declared nonblocking stage never waits"),Node->CanAdvanceToStage(TEXT("young")));
+    Node->GrowthStartedAt=World->GetTimeSeconds()-2;
+    Node->AdvanceGrowth();
+    TestEqual(TEXT("Overlapped mature footprint waits"),Node->State.GrowthStage,FName(TEXT("young")));
+    Pawn->SetActorLocation(FVector(500,0,70));
+    auto* OtherNode=World->SpawnActorDeferred<ASFGatheringPilotNode>(ASFGatheringPilotNode::StaticClass(),At);
+    if (!OtherNode) { return false; }
+    OtherNode->FinishSpawning(At);
+    OtherNode->Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    Node->AdvanceGrowth();
+    TestEqual(TEXT("Another node blocks even with collision disabled"),Node->State.GrowthStage,FName(TEXT("young")));
+    OtherNode->Destroy();
+    Fixture.TickTestWorld(0.05f);
+    TestEqual(TEXT("Clear mature footprint advances on retry"),Node->State.GrowthStage,FName(TEXT("mature")));
+    TestEqual(TEXT("Mature stage blocks pawns"),Node->Mesh->GetCollisionResponseToChannel(ECC_Pawn),ECR_Block);
+    return true;
+}
+
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFGatheringPilotServiceTest,
     "ShatteredFrontier.Gathering.Pilot.Services",
     EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)

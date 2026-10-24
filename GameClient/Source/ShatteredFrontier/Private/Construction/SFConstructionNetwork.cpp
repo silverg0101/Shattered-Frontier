@@ -907,7 +907,11 @@ int32 ASFGameMode::SpawnZoneGatheringNodes()
         {
             (*Profile)->TryGetNumberField(TEXT("grow_fraction"),GrowFraction);
             for (const TSharedPtr<FJsonValue>& Stage : (*Profile)->GetArrayField(TEXT("stages")))
-            { Growth.Add({FName(*Stage->AsObject()->GetStringField(TEXT("name"))),float(Stage->AsObject()->GetNumberField(TEXT("duration_fraction"))),float(Stage->AsObject()->GetNumberField(TEXT("yield_fraction")))}); }
+            {
+                bool bBlocking=true;
+                Stage->AsObject()->TryGetBoolField(TEXT("blocking"),bBlocking);
+                Growth.Add({FName(*Stage->AsObject()->GetStringField(TEXT("name"))),float(Stage->AsObject()->GetNumberField(TEXT("duration_fraction"))),float(Stage->AsObject()->GetNumberField(TEXT("yield_fraction"))),bBlocking});
+            }
         }
         // GatheringNodeService uses the first active points in the authored record and zone/group/index IDs.
         const TArray<TSharedPtr<FJsonValue>> Points=Group->GetArrayField(TEXT("points"));

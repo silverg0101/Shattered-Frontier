@@ -4,11 +4,15 @@
 #include "Engine/NetConnection.h"
 #include "Misc/Guid.h"
 #include "Construction/SFConstructionNetwork.h"
+#include "Construction/SFConstructionSandboxState.h"
+#include "Construction/SFConstructionSandboxDoorProjection.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/InstancedStaticMeshComponent.h"
 #include "UObject/UObjectIterator.h"
 #include "Components/TextRenderComponent.h"
 #include "Engine/StaticMesh.h"
+#include "Engine/StaticMeshActor.h"
+#include "Engine/OverlapResult.h"
 #include "Engine/World.h"
 #include "EngineUtils.h"
 #include "HAL/PlatformMisc.h"
@@ -132,7 +136,7 @@ USFGatheringGrowthSettings::USFGatheringGrowthSettings()
     {
         StageVisuals.Add({Kind,TEXT("young"),0.45f}); StageVisuals.Add({Kind,TEXT("growing"),0.7f}); StageVisuals.Add({Kind,TEXT("mature"),1.0f});
     }
-    StageRules.Add({TEXT("young"),0.5f,0.3f});
+    StageRules.Add({TEXT("young"),0.5f,0.3f,false});
     StageRules.Add({TEXT("growing"),0.5f,0.5f});
     StageRules.Add({TEXT("mature"),0.f,1.f});
 }
@@ -220,16 +224,16 @@ void ASFGatheringPilotNode::BeginPlay()
             if (Growth->Validate(Error))
             {
                 GrowFraction=Growth->GrowFraction;
-                for (const auto& Rule : Growth->StageRules) { GrowthStages.Add({Rule.Name,Rule.DurationFraction,Rule.YieldFraction}); }
+                for (const auto& Rule : Growth->StageRules) { GrowthStages.Add({Rule.Name,Rule.DurationFraction,Rule.YieldFraction,Rule.bBlocking}); }
             }
         }
         State.Capacity=IsRefinery() ? 0 : Settings->ChargesPerNode;
         State.Charges=State.Capacity; CapturedRespawnSeconds=Settings->RespawnSeconds;
-        if (!GrowthStages.IsEmpty()) { State.GrowthStage=GrowthStages.Last().Name; }  // a fresh node starts mature
+        if (!GrowthStages.IsEmpty()) { State.GrowthStage=GrowthStages.Last().Name; State.bGrowthBlocking=GrowthStages.Last().bBlocking; }  // a fresh node starts mature
         bUsesServices=!IsRefinery() && GetDefault<USFGameplayServicesSettings>()->bEnabled;
         if (bUsesServices)
         {
-            State.Charges=0; State.GrowthStage=NAME_None;  // unavailable state is never locally harvestable
+            State.Charges=0; State.GrowthStage=NAME_None; State.bGrowthBlocking=false;  // unavailable state is never locally harvestable
             ServiceClient=USFBackpackComponent::Services();
             RefreshServiceState();
         }
@@ -257,7 +261,7 @@ void ASFGatheringPilotNode::BeginPlay()
 void ASFGatheringPilotNode::EndPlay(const EEndPlayReason::Type Reason)
 {
     GetWorldTimerManager().ClearTimer(RecoveryTimer); GetWorldTimerManager().ClearTimer(GrowthTimer);
-    GetWorldTimerManager().ClearTimer(ServiceRefreshTimer);
+    GetWorldTimerManager().ClearTimer(ServiceRefreshTimer); GetWorldTimerManager().ClearTimer(ServiceGrowthTimer);
     if (HasAuthority()&&IsValid(State.FallingTree)) { State.FallingTree->Destroy(); State.FallingTree=nullptr; }
     Super::EndPlay(Reason);
 }
@@ -277,7 +281,8 @@ void ASFGatheringPilotNode::BeginRecovery()
 {
     if (bUsesServices) { return; }
     if (!HasAuthority() || IsRefinery() || State.Charges!=0 || State.RecoveryAtServerSeconds>0) { return; }
-    RecoveryKind=Kind; State.GrowthStage=NAME_None;
+    GetWorldTimerManager().ClearTimer(GrowthTimer);
+    RecoveryKind=Kind; State.GrowthStage=NAME_None; State.bGrowthBlocking=false;
     State.RecoveryAtServerSeconds=GetWorld()->GetTimeSeconds()+CapturedRespawnSeconds;
     const float Delay=GrowthStages.IsEmpty() ? CapturedRespawnSeconds : CapturedRespawnSeconds*(1.f-GrowFraction);
     GetWorldTimerManager().SetTimer(RecoveryTimer,this,&ASFGatheringPilotNode::Recover,Delay,false);
@@ -326,9 +331,47 @@ void ASFGatheringPilotNode::StartGrowth()
     GrowthStartedAt=GetWorld()->GetTimeSeconds(); AdvanceGrowth();
 }
 
+bool ASFGatheringPilotNode::CanAdvanceToStage(FName Stage) const
+{
+    for (const FSFGrowthStageDef& Rule : GrowthStages)
+    { if (Rule.Name==Stage && !Rule.bBlocking) { return true; } }
+    const auto* Settings=GetDefault<USFGatheringGrowthSettings>();
+    const float CurrentScale=State.GrowthStage.IsNone() ? 0.f : Settings->ScaleFor(Kind,State.GrowthStage);
+    const float NextScale=Settings->ScaleFor(Kind,Stage);
+    if ((NextScale<=CurrentScale && State.bGrowthBlocking) || !Mesh || !Mesh->GetStaticMesh()) { return true; }
+    FTransform NextTransform=Mesh->GetComponentTransform();
+    NextTransform.SetScale3D(FVector(0.7,0.7,1.4)*NextScale);
+    const FBoxSphereBounds Bounds=Mesh->CalcBounds(NextTransform);
+    for (TActorIterator<ASFGatheringPilotNode> It(GetWorld()); It; ++It)
+    {
+        if (*It!=this && It->State.Charges>0 && It->Mesh &&
+            Bounds.GetBox().Intersect(It->Mesh->Bounds.GetBox())) { return false; }
+    }
+    TArray<FOverlapResult> Overlaps;
+    FCollisionObjectQueryParams Objects;
+    Objects.AddObjectTypesToQuery(ECC_Pawn);
+    Objects.AddObjectTypesToQuery(ECC_WorldDynamic);
+    Objects.AddObjectTypesToQuery(ECC_WorldStatic);
+    FCollisionQueryParams Query(SCENE_QUERY_STAT(GatheringGrowthClearance),false,this);
+    GetWorld()->OverlapMultiByObjectType(Overlaps,Bounds.Origin,FQuat::Identity,Objects,
+        FCollisionShape::MakeBox(Bounds.BoxExtent),Query);
+    for (const FOverlapResult& Hit : Overlaps)
+    {
+        const AActor* Other=Hit.GetActor();
+        const UPrimitiveComponent* Component=Hit.GetComponent();
+        if (!Other || Other==this || !Component || Component->GetCollisionResponseToChannel(ECC_Pawn)!=ECR_Block) { continue; }
+        if (Other->IsA<ASFGatheringPilotNode>()) { continue; } // handled above, including nonblocking nodes
+        if (Other->IsA<APawn>() || Other->IsA<ASFConstructionNetworkState>() ||
+            Other->IsA<ASFConstructionSandboxState>() || Other->IsA<ASFConstructionSandboxDoorProjection>() ||
+            Other->IsA<AStaticMeshActor>() || Component->GetCollisionObjectType()==ECC_WorldDynamic)
+        { return false; }
+    }
+    return true;
+}
+
 void ASFGatheringPilotNode::AdvanceGrowth()
 {
-    if (!HasAuthority() || bUsesServices || GrowthStages.IsEmpty()) { return; }
+    if (!HasAuthority() || bUsesServices || GrowthStages.IsEmpty() || State.RecoveryAtServerSeconds>0) { return; }
     const double Window=CapturedRespawnSeconds*GrowFraction, Elapsed=GetWorld()->GetTimeSeconds()-GrowthStartedAt;
     int32 StageIndex=0; double StageStart=0;
     for (int32 I=1; I<GrowthStages.Num(); ++I)
@@ -340,7 +383,13 @@ void ASFGatheringPilotNode::AdvanceGrowth()
     const FName NextStage=GrowthStages[StageIndex].Name;
     if (State.GrowthStage!=NextStage)
     {
+        if (!CanAdvanceToStage(NextStage))
+        {
+            GrowthTimer=GetWorldTimerManager().SetTimerForNextTick(this,&ASFGatheringPilotNode::AdvanceGrowth);
+            return;
+        }
         State.GrowthStage=NextStage;
+        State.bGrowthBlocking=GrowthStages[StageIndex].bBlocking;
         const int32 Limit=FMath::Max(1,FMath::RoundToInt(State.Capacity*GrowthStages[StageIndex].YieldFraction));
         State.Charges=FMath::Max(0,Limit-HarvestedThisGrowth);
         ++State.Revision;
@@ -386,7 +435,7 @@ void ASFGatheringPilotNode::Recover()
     }
     if (IsValid(State.FallingTree)) { State.FallingTree->Destroy(); } State.FallingTree=nullptr;
     State.Charges=GrowthStages.IsEmpty() ? State.Capacity : 0;
-    HarvestedThisGrowth=0; State.GrowthStage=NAME_None;
+    HarvestedThisGrowth=0; State.GrowthStage=NAME_None; State.bGrowthBlocking=false;
     State.RecoveryAtServerSeconds=0; State.Cuts.Reset(); ++State.Generation;
     if (GrowthStages.IsEmpty()) { ++State.Revision; }
     StartGrowth();  // no profile: no-op
@@ -403,12 +452,26 @@ bool ASFGatheringPilotNode::ApplyServiceSnapshot(const FSFGameplayResponse& Snap
         : Kind==ESFGatheringPilotKind::Stone ? TEXT("gathering_node/stone_outcrop") : TEXT("");
     if (Snapshot.NodeDefinitionId!=ExpectedDefinition) { return false; }
     if (Snapshot.NodeGeneration<int32(State.Generation)) { return true; }  // a replayed receipt cannot rewind a newer host snapshot
-    const bool bChanged=State.Generation!=uint32(Snapshot.NodeGeneration) || State.Charges!=Snapshot.NodeCharges ||
-        State.Capacity!=Snapshot.NodeCapacity || State.GrowthStage!=FName(*Snapshot.GrowthStage);
+    const FName HostStage(*Snapshot.GrowthStage);
+    const uint32 PreviousGeneration=State.Generation;
+    const int32 PreviousCharges=State.Charges, PreviousCapacity=State.Capacity;
+    const FName PreviousStage=State.GrowthStage;
     if (State.Generation!=uint32(Snapshot.NodeGeneration))
     { State.Cuts.Reset(); if (IsValid(State.FallingTree)) { State.FallingTree->Destroy(); } State.FallingTree=nullptr; }
     State.Generation=uint32(Snapshot.NodeGeneration); State.Charges=Snapshot.NodeCharges; State.Capacity=Snapshot.NodeCapacity;
-    State.GrowthStage=FName(*Snapshot.GrowthStage); bServiceStateReady=true;
+    PendingServiceStage=HostStage;
+    if (HostStage.IsNone() || CanAdvanceToStage(HostStage))
+    {
+        State.GrowthStage=HostStage; State.bGrowthBlocking=!HostStage.IsNone();
+        for (const FSFGrowthStageDef& Rule : GrowthStages)
+        { if (Rule.Name==HostStage) { State.bGrowthBlocking=Rule.bBlocking; break; } }
+        PendingServiceStage=NAME_None; GetWorldTimerManager().ClearTimer(ServiceGrowthTimer);
+    }
+    else if (!GetWorldTimerManager().IsTimerActive(ServiceGrowthTimer))
+    { ServiceGrowthTimer=GetWorldTimerManager().SetTimerForNextTick(this,&ASFGatheringPilotNode::RetryServiceGrowth); }
+    bServiceStateReady=true;
+    const bool bChanged=PreviousGeneration!=State.Generation || PreviousCharges!=State.Charges ||
+        PreviousCapacity!=State.Capacity || PreviousStage!=State.GrowthStage;
     const double NowMs=(FDateTime::UtcNow()-FDateTime::FromUnixTimestamp(0)).GetTotalMilliseconds();
     State.RecoveryAtServerSeconds=Snapshot.NodeRegrowAtUnixMs>0
         ? GetWorld()->GetTimeSeconds()+FMath::Max(0.0,(double(Snapshot.NodeRegrowAtUnixMs)-NowMs)/1000.0) : 0;
@@ -430,6 +493,18 @@ bool ASFGatheringPilotNode::ApplyServiceSnapshot(const FSFGameplayResponse& Snap
         ++State.Revision; OnRep_State(); ForceNetUpdate();
     }
     return true;
+}
+
+void ASFGatheringPilotNode::RetryServiceGrowth()
+{
+    if (!HasAuthority() || !bUsesServices || PendingServiceStage.IsNone()) { return; }
+    if (!CanAdvanceToStage(PendingServiceStage))
+    { ServiceGrowthTimer=GetWorldTimerManager().SetTimerForNextTick(this,&ASFGatheringPilotNode::RetryServiceGrowth); return; }
+    State.GrowthStage=PendingServiceStage; PendingServiceStage=NAME_None;
+    State.bGrowthBlocking=true;
+    for (const FSFGrowthStageDef& Rule : GrowthStages)
+    { if (Rule.Name==State.GrowthStage) { State.bGrowthBlocking=Rule.bBlocking; break; } }
+    ++State.Revision; OnRep_State(); ForceNetUpdate();
 }
 
 void ASFGatheringPilotNode::RefreshServiceState()
@@ -505,6 +580,12 @@ FString ASFGatheringPilotNode::GetResourceName() const
 
 void ASFGatheringPilotNode::OnRep_State()
 {
+    if (!IsRefinery())
+    {
+        // Sprouts remain traceable for harvest while pawns can walk through them.
+        Mesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+        Mesh->SetCollisionResponseToChannel(ECC_Pawn,State.bGrowthBlocking ? ECR_Block : ECR_Ignore);
+    }
     if (HarvestVisuals&&HarvestVisuals->IsReady())
     {
         HarvestVisuals->ApplyState(State.Cuts,State.Charges==0,State.Generation,State.FallingTree);

@@ -94,6 +94,7 @@ struct FSFGrowthStageRule
     UPROPERTY(EditAnywhere, Config) FName Name;
     UPROPERTY(EditAnywhere, Config, meta=(ClampMin="0", ClampMax="1")) float DurationFraction = 0;
     UPROPERTY(EditAnywhere, Config, meta=(ClampMin="0", ClampMax="1")) float YieldFraction = 1;
+    UPROPERTY(EditAnywhere, Config, meta=(ToolTip="Whether this growth stage blocks movement; release authors, next world start.")) bool bBlocking = true;
 };
 
 UCLASS(Config=Game, DefaultConfig, meta=(DisplayName="Gathering Growth Appearance (Release Only)"))
@@ -110,7 +111,7 @@ public:
 };
 
 // Server-only growth profile (content: growth_profile in the zone record). DurationFraction is of the grow window.
-struct FSFGrowthStageDef { FName Name; float DurationFraction = 0; float YieldFraction = 1; };
+struct FSFGrowthStageDef { FName Name; float DurationFraction = 0; float YieldFraction = 1; bool bBlocking = true; };
 
 class ASFHarvestFallingTree;
 
@@ -125,6 +126,7 @@ struct FSFGatheringPilotNodeState
     UPROPERTY() int32 Capacity = 0;
     UPROPERTY() double RecoveryAtServerSeconds = 0;
     UPROPERTY() FName GrowthStage;  // None = no growth profile; server-owned, replicated with the rest
+    UPROPERTY() bool bGrowthBlocking = true;
     UPROPERTY() TArray<FSFHarvestVisualCut> Cuts;
     UPROPERTY() TObjectPtr<ASFHarvestFallingTree> FallingTree;
 };
@@ -190,10 +192,13 @@ private:
     friend class FSFGatheringPilotLedgerTest;
     friend class FSFGatheringGrowthVisualTest;
     friend class FSFGatheringStageChargesTest;
+    friend class FSFGatheringGrowthCollisionTest;
     friend class FSFGatheringPilotServiceTest;
     UFUNCTION() void OnRep_State();
     void StartGrowth();
     void AdvanceGrowth();
+    bool CanAdvanceToStage(FName Stage) const;
+    void RetryServiceGrowth();
     void ApplyGrowthVisual();
     void Release(USFGatheringPilotComponent* Interactor);
     void BeginRecovery();
@@ -209,6 +214,8 @@ private:
     FTimerHandle RecoveryTimer;
     FTimerHandle GrowthTimer;
     FTimerHandle ServiceRefreshTimer;
+    FTimerHandle ServiceGrowthTimer;
+    FName PendingServiceStage;
     FString ServiceNodeId;
     TSharedPtr<FSFGameplayServicesClient> ServiceClient;
     uint64 ServiceSnapshotSerial = 0; // Invalidates older GetNode replies after a newer read or harvest receipt.
