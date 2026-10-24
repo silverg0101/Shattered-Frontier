@@ -1,8 +1,19 @@
 {
-  "version": 1,
+  "version": 2,
   "race": 0,
   "bodies": 2,
   "heritages": [0, 1, 2, 3],
+  "faces": [
+    { "id": "Orlando", "body": 0 },
+    { "id": "Godric", "body": 0 },
+    { "id": "Edwin", "body": 0 },
+    { "id": "Wulfric", "body": 0 },
+    { "id": "Osric", "body": 0 },
+    { "id": "Hilda", "body": 1 },
+    { "id": "Aelfwyn", "body": 1 },
+    { "id": "Eadgyth", "body": 1 },
+    { "id": "Ebba", "body": 1 }
+  ],
   "parts": { "head": 8, "hair": 10, "beard": 6, "brows": 4 },
   "palettes": { "skin": 16, "hair": 16, "beard": 16, "eyes": 8 },
   "morph_slots": ["face_width", "face_length", "brow_height", "eye_spacing", "nose_width", "nose_length", "jaw_width", "chin_length"],

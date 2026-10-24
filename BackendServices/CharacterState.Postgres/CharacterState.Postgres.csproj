@@ -1,1 +1,1 @@
-<Project Sdk="Microsoft.NET.Sdk"><ItemGroup><ProjectReference Include="../Progression/Progression.csproj" /><ProjectReference Include="../QuestContent/QuestContent.csproj" /><PackageReference Include="Npgsql" /></ItemGroup></Project>
+<Project Sdk="Microsoft.NET.Sdk"><ItemGroup><ProjectReference Include="../Progression/Progression.csproj" /><ProjectReference Include="../QuestContent/QuestContent.csproj" /><ProjectReference Include="../CharacterAppearance/CharacterAppearance.csproj" /><PackageReference Include="Npgsql" /></ItemGroup></Project>

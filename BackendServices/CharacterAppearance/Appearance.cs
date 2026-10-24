@@ -5,10 +5,12 @@ namespace CharacterAppearance;
 
 public readonly record struct CosmeticOverride(byte Slot, ushort Id);
 
-// The wire order is fixed by v1. No client-supplied catalogue or ownership claim is trusted.
+// The wire order is fixed by version. No client-supplied catalogue or ownership claim is trusted.
 public sealed record Appearance(
     byte Version, byte Race, byte Body, byte Heritage, byte Height, byte Build,
-    byte[] Morphs, ushort[] Parts, byte[] Colors, CosmeticOverride[] Cosmetics);
+    byte[] Morphs, ushort[] Parts, byte[] Colors, CosmeticOverride[] Cosmetics, byte? FaceIndex = null);
+
+public sealed record FaceDefinition(string Id, byte Body);
 
 public sealed class AppearanceAllowlist
 {
@@ -16,6 +18,7 @@ public sealed class AppearanceAllowlist
     public required byte Race { get; init; }
     public required int Bodies { get; init; }
     public required int[] Heritages { get; init; }
+    public required FaceDefinition[] Faces { get; init; }
     public required PartCounts Parts { get; init; }
     public required PaletteCounts Palettes { get; init; }
     public required string[] MorphSlots { get; init; }
@@ -27,7 +30,10 @@ public sealed class AppearanceAllowlist
         var definition = JsonSerializer.Deserialize<AppearanceAllowlist>(File.ReadAllText(path),
             new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower })
             ?? throw new InvalidDataException("Empty appearance allowlist");
-        if (definition.Version != 1 || definition.Bodies is < 1 or > 256 ||
+        if (definition.Version != 2 || definition.Bodies is < 1 or > 256 ||
+            definition.Faces is null || definition.Faces.Length is < 1 or > 256 ||
+            definition.Faces.Any(f => f is null || string.IsNullOrWhiteSpace(f.Id) || f.Body >= definition.Bodies) ||
+            definition.Faces.Select(f => f.Id).Distinct(StringComparer.Ordinal).Count() != definition.Faces.Length ||
             definition.MorphSlots is null || definition.MorphSlots.Length > 16 ||
             definition.Parts is null || definition.Palettes is null ||
             definition.Heritages is null || definition.CosmeticSlots is null ||
@@ -70,9 +76,10 @@ public static class AppearanceCodec
         if (appearance.Morphs is null || appearance.Parts is null || appearance.Colors is null || appearance.Cosmetics is null ||
             appearance.Morphs.Length > 16 || appearance.Parts.Length != 4 || appearance.Colors.Length != 4 ||
             appearance.Cosmetics.Length > MaxCosmetics ||
-            FixedBytes + appearance.Morphs.Length + 3 * appearance.Cosmetics.Length > MaxBytes)
-            throw new ArgumentException("Appearance cannot be packed in v1", nameof(appearance));
-        byte[] bytes = new byte[FixedBytes + appearance.Morphs.Length + 3 * appearance.Cosmetics.Length];
+            appearance.Version is not (1 or 2) || (appearance.Version == 1) != (appearance.FaceIndex is null) ||
+            FixedBytes + appearance.Morphs.Length + 3 * appearance.Cosmetics.Length + (appearance.Version == 2 ? 1 : 0) > MaxBytes)
+            throw new ArgumentException("Appearance cannot be packed", nameof(appearance));
+        byte[] bytes = new byte[FixedBytes + appearance.Morphs.Length + 3 * appearance.Cosmetics.Length + (appearance.Version == 2 ? 1 : 0)];
         bytes[0] = appearance.Version; bytes[1] = appearance.Race; bytes[2] = appearance.Body;
         bytes[3] = appearance.Heritage; bytes[4] = appearance.Height; bytes[5] = appearance.Build;
         bytes[6] = checked((byte)appearance.Morphs.Length);
@@ -87,13 +94,14 @@ public static class AppearanceCodec
             BinaryPrimitives.WriteUInt16LittleEndian(bytes.AsSpan(offset), cosmetic.Id);
             offset += 2;
         }
+        if (appearance.Version == 2) bytes[offset] = appearance.FaceIndex!.Value;
         return bytes;
     }
 
     public static bool TryUnpack(ReadOnlySpan<byte> bytes, out Appearance? appearance)
     {
         appearance = null;
-        if (bytes.Length < FixedBytes || bytes.Length > MaxBytes || bytes[6] > 16) return false;
+        if (bytes.Length < FixedBytes || bytes.Length > MaxBytes || bytes[0] is not (1 or 2) || bytes[6] > 16) return false;
         int morphCount = bytes[6];
         int offset = 7 + morphCount;
         if (bytes.Length < offset + 13) return false;
@@ -102,7 +110,7 @@ public static class AppearanceCodec
         for (int i = 0; i < 4; i++) { parts[i] = BinaryPrimitives.ReadUInt16LittleEndian(bytes.Slice(offset)); offset += 2; }
         byte[] colors = bytes.Slice(offset, 4).ToArray(); offset += 4;
         int cosmeticCount = bytes[offset++];
-        if (cosmeticCount > MaxCosmetics || bytes.Length != offset + cosmeticCount * 3) return false;
+        if (cosmeticCount > MaxCosmetics || bytes.Length != offset + cosmeticCount * 3 + (bytes[0] == 2 ? 1 : 0)) return false;
         CosmeticOverride[] cosmetics = new CosmeticOverride[cosmeticCount];
         for (int i = 0; i < cosmeticCount; i++)
         {
@@ -110,7 +118,8 @@ public static class AppearanceCodec
             ushort id = BinaryPrimitives.ReadUInt16LittleEndian(bytes.Slice(offset)); offset += 2;
             cosmetics[i] = new CosmeticOverride(slot, id);
         }
-        appearance = new Appearance(bytes[0], bytes[1], bytes[2], bytes[3], bytes[4], bytes[5], morphs, parts, colors, cosmetics);
+        appearance = new Appearance(bytes[0], bytes[1], bytes[2], bytes[3], bytes[4], bytes[5], morphs, parts, colors, cosmetics,
+            bytes[0] == 2 ? bytes[offset] : null);
         return true;
     }
 }
@@ -127,9 +136,13 @@ public sealed class AppearanceValidator(AppearanceAllowlist allowlist)
         IReadOnlySet<ushort> knownCosmetics, IReadOnlySet<ushort> ownedCosmetics)
     {
         if (appearance is null || knownCosmetics is null || ownedCosmetics is null ||
-            appearance.Version != allowlist.Version || appearance.Race != allowlist.Race ||
+            appearance.Version is not (1 or 2) || appearance.Race != allowlist.Race ||
             appearance.Body >= allowlist.Bodies || !allowlist.Heritages.Contains(appearance.Heritage))
             return AppearanceValidationResult.Reject("version, race, body or heritage");
+        if (appearance.Version == 2 && (appearance.FaceIndex is null || appearance.FaceIndex.Value >= allowlist.Faces.Length ||
+            allowlist.Faces[appearance.FaceIndex.Value].Body != appearance.Body) ||
+            appearance.Version == 1 && appearance.FaceIndex is not null)
+            return AppearanceValidationResult.Reject("face out of range or wrong body");
         if (appearance.Morphs is null || appearance.Morphs.Length != allowlist.MorphSlots.Length ||
             appearance.Parts is null || appearance.Parts.Length != 4 ||
             appearance.Colors is null || appearance.Colors.Length != 4 ||

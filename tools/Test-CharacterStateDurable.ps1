@@ -9,6 +9,10 @@ if (-not $EvidenceRoot.StartsWith($allowed + [IO.Path]::DirectorySeparatorChar,[
 $pins = Get-Content (Join-Path $repo 'BackendServices/toolchain-lock.json') -Raw | ConvertFrom-Json
 $dotnet = Join-Path $repo 'Artifacts/Persistence/Toolchains/dotnet-10.0.402/dotnet.exe'
 $pg = Join-Path $repo 'Artifacts/Persistence/Toolchains/postgresql-18.6/pgsql/bin'
+$nuget = Join-Path $repo 'Artifacts/Persistence/Toolchains/nuget'
+if (-not (Test-Path -LiteralPath $dotnet)) { $dotnet = 'C:/Projects/Shattered-Frontier/Artifacts/Persistence/Toolchains/dotnet-10.0.402/dotnet.exe' }
+if (-not (Test-Path -LiteralPath (Join-Path $pg 'postgres.exe'))) { $pg = 'C:/Projects/Shattered-Frontier/Artifacts/Persistence/Toolchains/postgresql-18.6/pgsql/bin' }
+if (-not (Test-Path -LiteralPath $nuget)) { $nuget = 'C:/Projects/Shattered-Frontier/Artifacts/Persistence/Toolchains/nuget' }
 $project = Join-Path $repo 'BackendServices/CharacterState.Postgres.Tests/CharacterState.Postgres.Tests.csproj'
 $schema = Join-Path $repo 'BackendServices/CharacterState.Postgres/Schema.sql'
 $dll = Join-Path $repo 'BackendServices/CharacterState.Postgres.Tests/bin/Release/net10.0/CharacterState.Postgres.Tests.dll'
@@ -66,7 +70,7 @@ try {
     [void](Invoke-Checked 'icacls.exe' @($private,'/inheritance:r','/grant:r',"${account}:(OI)(CI)F"))
     $listener = [Net.Sockets.TcpListener]::new([Net.IPAddress]::Loopback,0); $listener.Start(); $port = $listener.LocalEndpoint.Port; $listener.Stop()
     @{run=$run;data=$data;port=$port} | ConvertTo-Json | Set-Content (Join-Path $private 'owner.json')
-    [void](Invoke-Checked $dotnet @('restore',$project,'--locked-mode','--packages',(Join-Path $repo 'Artifacts/Persistence/Toolchains/nuget'),'--verbosity','quiet'))
+    [void](Invoke-Checked $dotnet @('restore',$project,'--locked-mode','--packages',$nuget,'--verbosity','quiet'))
     [void](Invoke-Checked $dotnet @('build',$project,'--no-restore','--configuration','Release','--verbosity','quiet'))
     $pwfile = Join-Path $private 'admin-password'; [IO.File]::WriteAllText($pwfile,$adminPassword)
     [void](Invoke-Checked (Join-Path $pg 'initdb.exe') @('-D',$data,'-U','fixture_admin','--pwfile',$pwfile,'--auth','scram-sha-256','--encoding','UTF8','--no-locale'))
@@ -79,6 +83,8 @@ try {
     [void](Sql ("SET ROLE state_owner;`n" + (Get-Content $schema -Raw)) "state_$run")
     [void](Sql ("SET ROLE state_owner;`n" + (Get-Content (Join-Path $repo 'BackendServices/CharacterState.Postgres/Schema.Position.sql') -Raw)) "state_$run")
     [void](Sql ("SET ROLE state_owner;`n" + (Get-Content (Join-Path $repo 'BackendServices/CharacterState.Postgres/Schema.Recipes.sql') -Raw)) "state_$run")
+    [void](Sql ("SET ROLE state_owner;`n" + (Get-Content (Join-Path $repo 'BackendServices/CharacterState.Postgres/Schema.Appearance.sql') -Raw)) "state_$run")
+    [void](Sql ("SET ROLE state_owner;`n" + (Get-Content (Join-Path $repo 'BackendServices/CharacterState.Postgres/Schema.Appearance.sql') -Raw)) "state_$run")
     [void](Sql 'GRANT USAGE ON SCHEMA character_state TO state_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA character_state TO state_svc;' "state_$run")
     $connection = "Host=127.0.0.1;Port=$port;Database=state_$run;Username=state_svc;Password=$servicePassword;Pooling=true;Maximum Pool Size=64;Minimum Pool Size=8;Timeout=2;Command Timeout=5;Include Error Detail=false"
     $results = [Collections.Generic.List[string]]::new()
@@ -111,7 +117,7 @@ try {
     $restoredPosition = (Invoke-Checked (Join-Path $pg 'psql.exe') @('-X','-A','-t','-h','127.0.0.1','-p',"$($restored.port)",'-U',$restored.username,'-d',$restored.database,'-c',"SELECT revision,x,zone_id FROM character_state.positions WHERE character_id='character-1'") @{ PGPASSWORD=$restored.password }).Trim()
     if ($restoredPosition -ne '1|12.5|silverbrook') { throw 'Restored position differs from backup point.' }
     $results.Add('PASS restored character state equals backup point')
-    [void](Sql 'UPDATE character_state.schema_version SET version=5' "state_$run")
+    [void](Sql 'UPDATE character_state.schema_version SET version=6' "state_$run")
     $results.Add((Invoke-Checked $dotnet @($dll,'newer') @{ CHARACTER_STATE_CONNECTION=$connection }))
     try { [void](Invoke-Checked 'powershell.exe' @('-NoProfile','-File',$backupTool,'-Store','CharacterState','-OutputDirectory',(Join-Path $EvidenceRoot 'newer-backup'),'-HostName','127.0.0.1','-Port',"$port",'-Database',"state_$run",'-Username','state_svc') @{ PGPASSWORD=$servicePassword }); throw 'Newer schema backup accepted.' }
     catch { if ($_.Exception.Message -notmatch 'Unsupported source schema') { throw }; $results.Add('PASS newer schema backup refused') }

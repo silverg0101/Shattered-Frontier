@@ -2,6 +2,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using Npgsql;
+using CharacterAppearance;
 using ShatteredFrontier.Progression;
 using ShatteredFrontier.QuestContent;
 
@@ -18,6 +19,33 @@ public sealed record RecipeLearnIntent(string OperationId, string CharacterId, s
 // Migration identity installs Schema.sql. Runtime uses DML and marker SELECT only.
 public sealed class PostgresCharacterStateStore(string connectionString)
 {
+    public VersionedResult<byte[]>? ReadAppearance(string characterId) => Transaction<VersionedResult<byte[]>?>((c, t) =>
+    {
+        using var cmd = Command(c, t, "SELECT revision,packet FROM character_state.appearance WHERE character_id=$1", characterId);
+        using var r = cmd.ExecuteReader();
+        return r.Read() ? new(r.GetInt64(0), r.GetFieldValue<byte[]>(1)) : null;
+    });
+
+    public long SaveAppearance(string characterId, long expectedRevision, byte[] packet, AppearanceValidator validator,
+        IReadOnlySet<ushort> knownCosmetics, IReadOnlySet<ushort> ownedCosmetics)
+    {
+        ArgumentNullException.ThrowIfNull(packet);
+        ArgumentNullException.ThrowIfNull(validator);
+        var validation = validator.ValidatePacked(packet, knownCosmetics, ownedCosmetics);
+        if (!validation.Valid) throw new CharacterStoreRejectedException(validation.Code!);
+        byte[] stored = (byte[])packet.Clone();
+        return Transaction((c, t) =>
+        {
+            LockCharacter(c, t, characterId);
+            using var cmd = Command(c, t, "INSERT INTO character_state.appearance(character_id,revision,packet) VALUES ($1,1,$3) ON CONFLICT (character_id) DO UPDATE SET revision=character_state.appearance.revision+1,packet=EXCLUDED.packet,updated_at=now() WHERE character_state.appearance.revision=$2 RETURNING revision",
+                characterId, expectedRevision, stored);
+            var result = cmd.ExecuteScalar();
+            if (result is null || expectedRevision != 0 && (long)result == 1)
+                throw new CharacterStoreRejectedException("Stale appearance revision.");
+            return (long)result;
+        });
+    }
+
     public VersionedResult<CharacterPositionSnapshot>? ReadPosition(string characterId) => Transaction<VersionedResult<CharacterPositionSnapshot>?>((c, t) =>
     {
         using var cmd = Command(c, t, "SELECT revision,zone_id,x,y,z,yaw FROM character_state.positions WHERE character_id=$1", characterId);
@@ -161,7 +189,7 @@ public sealed class PostgresCharacterStateStore(string connectionString)
             {
                 using var marker = Command(c, t, "SELECT version,migration_id,compatible_build_min,compatible_build_max FROM character_state.schema_version WHERE singleton=true FOR SHARE");
                 using var row = marker.ExecuteReader();
-                if (!row.Read() || row.GetInt32(0) != 4 || row.GetString(1) != "character-state-004" || row.GetInt32(2) > 4 || row.GetInt32(3) < 4)
+                if (!row.Read() || row.GetInt32(0) != 5 || row.GetString(1) != "character-state-005" || row.GetInt32(2) > 5 || row.GetInt32(3) < 5)
                     throw new CharacterSchemaCompatibilityException("Unsupported character state schema version.");
             }
             catch (PostgresException ex) when (ex.SqlState is "42P01" or "3F000" or "42501")

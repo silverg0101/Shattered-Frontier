@@ -1,10 +1,12 @@
 using ShatteredFrontier.CharacterState.Postgres;
 using ShatteredFrontier.Progression;
 using ShatteredFrontier.QuestContent;
+using CharacterAppearance;
 using Npgsql;
 
 static void Check(bool value, string label) { if (!value) throw new Exception(label); Console.WriteLine("PASS " + label); }
-var connection = Environment.GetEnvironmentVariable("CHARACTER_STATE_CONNECTION") ?? throw new Exception("Missing fixture connection.");
+var connection = Environment.GetEnvironmentVariable("CHARACTER_STATE_CONNECTION");
+if (string.IsNullOrWhiteSpace(connection)) { Console.WriteLine("SKIP live PostgreSQL fixture unavailable (CHARACTER_STATE_CONNECTION unset)"); return; }
 var store = new PostgresCharacterStateStore(connection);
 var quest = new QuestDefinition { Id = "quest/durable", Revision = 1, ZoneId = "zone/test", Steps = [new QuestStep { Id = "first", Objectives = [new QuestObjective { Key = "ore", Kind = "gather", TargetId = "item/ore", Count = 1 }], Rewards = [new QuestReward { BundleId = "reward/first" }] }] };
 var event1 = new ObjectiveEvent("source-quest-1", "character-1", quest.Id, "first", "gather", "item/ore", null, 1, DateTimeOffset.Parse("2026-01-01T00:01:00Z"));
@@ -13,6 +15,25 @@ var practice = new ActionReceipt("source-skill-1", "character-skill", ReceiptKin
 switch (args[0])
 {
     case "seed":
+        var appearanceValidator = new AppearanceValidator(AppearanceAllowlist.Load("content/appearance/human.json"));
+        var appearancePacket = AppearanceCodec.Pack(new Appearance(2, 0, 1, 1, 128, 128,
+            new byte[8], [0, 0, 0, 0], [0, 0, 0, 0], [], 5));
+        Check(store.ReadAppearance("character-appearance") is null, "appearance initially absent");
+        Check(store.SaveAppearance("character-appearance", 0, appearancePacket, appearanceValidator, new HashSet<ushort>(), new HashSet<ushort>()) == 1,
+            "validated appearance saved");
+        Check(store.ReadAppearance("character-appearance") is { Revision: 1, Result: var packet } && packet.SequenceEqual(appearancePacket),
+            "appearance bytes loaded");
+        try { store.SaveAppearance("character-appearance", 1, AppearanceCodec.Pack(new Appearance(2, 0, 1, 1, 128, 128,
+            new byte[8], [0, 0, 0, 0], [0, 0, 0, 0], [], 0)), appearanceValidator, new HashSet<ushort>(), new HashSet<ushort>());
+            throw new Exception("invalid appearance accepted"); }
+        catch (CharacterStoreRejectedException ex) { Check(ex.Message == "APPEARANCE_INVALID", "invalid appearance rejected"); }
+        try { store.SaveAppearance("character-appearance", 0, appearancePacket, appearanceValidator, new HashSet<ushort>(), new HashSet<ushort>());
+            throw new Exception("stale appearance accepted"); }
+        catch (CharacterStoreRejectedException) { Console.WriteLine("PASS stale appearance rejected"); }
+        var changedFace = (byte[])appearancePacket.Clone(); changedFace[^1] = 8;
+        Check(store.SaveAppearance("character-appearance", 1, changedFace, appearanceValidator, new HashSet<ushort>(), new HashSet<ushort>()) == 2 &&
+            store.ReadAppearance("character-appearance") is { Revision: 2, Result: var updatedPacket } && updatedPacket.SequenceEqual(changedFace),
+            "face change saved with revision");
         Check(store.ApplyProgression(Kill("source-xp-1"), 0, TimeProvider.System, () => .5).Revision == 1, "XP acknowledged");
         Check(store.ApplyProgression(practice, 0, TimeProvider.System, () => 0).Result.SkillGain == 1, "skill gain acknowledged");
         var t0 = DateTimeOffset.Parse("2026-01-01T00:00:00Z");
@@ -56,6 +77,8 @@ switch (args[0])
         Check(store.PendingRewardQuests("character-3").Contains("quest/two") && !store.PendingRewardQuests("character-2").Contains("quest/two"), "pending reward quests listed");
         break;
     case "restart":
+        Check(store.ReadAppearance("character-appearance") is { Revision: 2, Result: var restoredPacket } &&
+            restoredPacket[0] == 2 && restoredPacket[^1] == 8, "appearance survives restart");
         var xp = store.ApplyProgression(Kill("source-xp-1"), 0, TimeProvider.System, () => .5);
         Check(xp.Revision == 1 && xp.Result.XpGain > 0, "XP survives immediate stop and replays original result");
         Check(store.ReadProgression("character-1")?.Result.LifetimeXp == xp.Result.XpGain, "committed XP state survives restart");

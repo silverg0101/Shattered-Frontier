@@ -15,9 +15,13 @@
           "Microsoft.Extensions.DependencyInjection.Abstractions": "10.0.0"
         }
       },
+      "characterappearance": {
+        "type": "Project"
+      },
       "characterstate.postgres": {
         "type": "Project",
         "dependencies": {
+          "CharacterAppearance": "[1.0.0, )",
           "Npgsql": "[10.0.3, 10.0.3]",
           "Progression": "[1.0.0, )",
           "QuestContent": "[1.0.0, )"
