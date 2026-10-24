@@ -1016,10 +1016,17 @@ async function drawAnthropic() {
     <dl><dt>Key</dt><dd>${s.set ? `<code>••••${esc(s.last4)}</code>` : 'not set'}</dd></dl>
     <div class="field" style="margin-top:12px"><label for="an_key">${s.set ? 'Replace key' : 'Key'}</label><input type="password" id="an_key" autocomplete="off" placeholder="sk-ant-..."></div>
     <button class="btn primary" id="an_save" style="margin-top:10px">Save</button>
-    ${s.set ? '<button class="btn sm danger" id="an_clear" style="margin-top:10px;margin-left:8px">Clear</button>' : ''}`;
+    ${s.set ? `<button class="btn sm" id="an_test" style="margin-top:10px;margin-left:8px">Test</button>
+      <button class="btn sm danger" id="an_clear" style="margin-top:10px;margin-left:8px">Clear</button>` : ''}
+    <div id="an_res" class="muted" style="font-size:12px;margin-top:8px"></div>`;
   const act = (path, body) => post(path, body).then(() => { toast('Anthropic API key updated'); drawAnthropic(); }, fail);
   $('#an_save').onclick = () => { const v = $('#an_key').value.trim(); $('#an_key').value = ''; act('/api/anthropic', { key: v }); };
   $('#an_clear') && ($('#an_clear').onclick = () => act('/api/anthropic/clear'));
+  $('#an_test') && ($('#an_test').onclick = async () => {
+    const r = $('#an_res'); r.textContent = 'Testing…';
+    try { const t = await post('/api/anthropic/test'); r.innerHTML = t.ok ? '<span class="pill done">works</span>' : `<span class="pill failed">failed</span> ${esc(t.error)}`; }
+    catch (e) { r.textContent = ''; fail(e); }
+  });
 }
 
 /* ---------------- queue flyout */

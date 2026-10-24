@@ -1449,6 +1449,26 @@ def anthropic_save(key):
         f.write(key)
     ANTHROPIC_KEY.chmod(0o600)  # os.open keeps an existing file's mode
 
+def anthropic_test():
+    """Ask the API for its model list with the stored key: proves the key works and costs no tokens. Errors quote
+    only the API's own message, never the request."""
+    key = anthropic_key()
+    if not key:
+        return {"ok": False, "error": "no key is set"}
+    req = urllib.request.Request("https://api.anthropic.com/v1/models?limit=1",
+                                 headers={"x-api-key": key, "anthropic-version": "2023-06-01"})
+    try:
+        with urllib.request.urlopen(req, timeout=20):
+            return {"ok": True}
+    except urllib.error.HTTPError as e:
+        try:
+            msg = json.loads(e.read())["error"]["message"]
+        except Exception:
+            msg = e.reason
+        return {"ok": False, "error": f"{e.code}: {msg}"}
+    except OSError as e:
+        return {"ok": False, "error": f"could not reach api.anthropic.com ({type(e).__name__})"}
+
 def ssh_anthropic(host, cmd, timeout=60):
     """ssh() for a step that calls the Claude API, with the key exported as ANTHROPIC_API_KEY from stdin."""
     key = anthropic_key()
@@ -1992,6 +2012,8 @@ class Handler(BaseHTTPRequestHandler):
             if p.startswith("/api/anthropic"):  # write-only key: responses carry only its last 4 characters
                 if method == "POST" and p == "/api/anthropic":
                     anthropic_save(self.body().get("key"))
+                elif method == "POST" and p == "/api/anthropic/test":
+                    return self.send({**anthropic_status(), **anthropic_test()})
                 elif method == "POST" and p == "/api/anthropic/clear":
                     ANTHROPIC_KEY.unlink(missing_ok=True)
                 elif not (method == "GET" and p == "/api/anthropic"):
@@ -2142,7 +2164,7 @@ def check():
     import tempfile
     real, ANTHROPIC_KEY = ANTHROPIC_KEY, Path(tempfile.mkdtemp()) / "anthropic_key"
     try:
-        assert anthropic_status() == {"set": False, "last4": ""}
+        assert anthropic_status() == {"set": False, "last4": ""} and anthropic_test() == {"ok": False, "error": "no key is set"}
         try:
             anthropic_save("not a key"); raise AssertionError("bad key accepted")
         except ValueError:
