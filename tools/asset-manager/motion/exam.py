@@ -35,6 +35,22 @@ def stitch(frame_dir, path):
             c.mux(p)
 
 
+def mirror_pairs(names, rest, h):
+    """(left point, right point, name) per left/right pair: by _l/_r names, or, for a generated rig's bone_N names,
+    the joint nearest each +x joint's mirror image across x = 0 at rest (within 2 % of the model's height)."""
+    out = [(i, k, n[:-2]) for i, n in names.items() if n.endswith("_l")
+           for k, v in names.items() if v == n[:-2] + "_r"]
+    if out:
+        return out
+    for i, n in names.items():
+        if rest[i, 0] > 0.01 * h:
+            d = {k: np.linalg.norm(rest[k] - rest[i] * [-1, 1, 1]) for k in names if k != i}
+            k = min(d, key=d.get) if d else None
+            if k is not None and d[k] < 0.02 * h:
+                out.append((i, k, n))
+    return out
+
+
 def grade(joints, truth, motion, limits=LIMITS, usable=2.0, hidden=None):
     """Errors on the points the detector steers (seen in motion.json), in % of model height, and the band.
     A joint hidden from both cameras in a frame (hidden, per frame and point) is only a guess from its
@@ -49,13 +65,11 @@ def grade(joints, truth, motion, limits=LIMITS, usable=2.0, hidden=None):
     err = full[vis]
     names = {b["head"]: b["name"] for b in j["bones"]}
     pairs = []
-    for i, n in names.items():
-        if on[i] and n.endswith("_l"):
-            r = next((k for k, v in names.items() if v == n[:-2] + "_r" and on[k]), None)
-            both = vis[:, i] & vis[:, r] if r is not None else None
-            if r is not None and both.any():  # left/right kept apart: their spacing over time matches the truth
-                d = np.linalg.norm(pos[:, i] - pos[:, r], axis=-1) - np.linalg.norm(true[:, i] - true[:, r], axis=-1)
-                pairs.append((n[:-2], float(np.abs(d[both]).mean() / h * 100)))
+    for i, r, n in mirror_pairs(names, np.array(j["points"]), h):
+        both = vis[:, i] & vis[:, r]
+        if on[i] and on[r] and both.any():  # left/right kept apart: their spacing over time matches the truth
+            d = np.linalg.norm(pos[:, i] - pos[:, r], axis=-1) - np.linalg.norm(true[:, i] - true[:, r], axis=-1)
+            pairs.append((n, float(np.abs(d[both]).mean() / h * 100)))
     # Per joint over the frames it is seen, the error along x (seen by the front view only), y (the side view
     # only: depth) and z (both).
     n_vis = np.maximum(vis.sum(0), 1)
@@ -113,7 +127,8 @@ def main():
 
 def check():
     # foot_l and foot_r, 10 frames, model height 2: 1 cm off when seen, 40 cm off in the 3 frames foot_r is hidden
-    j = {"calib": {"model_height": 2.0}, "bones": [{"head": 0, "name": "foot_l"}, {"head": 1, "name": "foot_r"}]}
+    j = {"calib": {"model_height": 2.0}, "points": [[0, 0, 0], [0.3, 0, 0]],
+         "bones": [{"head": 0, "name": "foot_l"}, {"head": 1, "name": "foot_r"}]}
     true = np.zeros((10, 2, 3))
     true[:, 1, 0] = 0.3
     pos = true + [0.02, 0, 0]
@@ -125,6 +140,14 @@ def check():
     assert res["pair_spacing"] < 1e-9 and abs(res["hidden"]["share"] - 15) < 1e-9
     assert abs(res["hidden"]["median"] - np.hypot(0.02, 0.8) / 2 * 100) < 1e-9
     assert grade(j, true.tolist(), {"positions": pos.tolist(), "seen": [True, True]})["state"] == "failed"
+    # a generated rig's bone_N names: the pair is found by mirror symmetry at rest, and a spacing error shows
+    g = {"calib": {"model_height": 2.0}, "points": [[0.15, 0, 0], [-0.15, 0, 0], [0, 0, 1]],
+         "bones": [{"head": 0, "name": "bone_7"}, {"head": 1, "name": "bone_9"}, {"head": 2, "name": "bone_0"}]}
+    assert [p[:2] for p in mirror_pairs({b["head"]: b["name"] for b in g["bones"]}, np.array(g["points"]), 2.0)] == [(0, 1)]
+    t = np.tile([[0.15, 0, 0], [-0.15, 0, 0], [0, 0, 1]], (10, 1, 1))
+    p = t + [[0.1, 0, 0], [0, 0, 0], [0, 0, 0]]  # the left one drifts 10 cm out: spacing 5 % of height
+    res = grade(g, t.tolist(), {"positions": p.tolist(), "seen": [True] * 3})
+    assert abs(res["pair_spacing"] - 5) < 1e-9 and res["worst_pair"] == "bone_7", res
     print("check ok")
 
 
