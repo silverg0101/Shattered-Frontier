@@ -130,3 +130,47 @@ def run_curate(jid, host):
         a.update_job(jid, status="failed", error=str(e)[-1000:], note="", finished=time.time())
     finally:
         a.JOB_BLENDER.pop(jid, None)
+
+
+def chain_resample(names, n, lengths=None):
+    """A chain of bones onto n standard bones -> n groups of names. Longer chains collapse into contiguous groups of
+    about equal length; shorter ones pad by splitting the longest pieces: "x+1" is a new bone inserted after x, taking
+    the far part of its span (no weights). An empty chain gives n empty groups (stub bones)."""
+    lengths = list(lengths or [1.0] * len(names))
+    if not names:
+        return [[] for _ in range(n)]
+    if len(names) <= n:
+        k = [1] * len(names)
+        for _ in range(n - len(names)):
+            i = max(range(len(names)), key=lambda i: lengths[i] / k[i])  # first of equals
+            k[i] += 1
+        return [[f"{x}+{j}" if j else x] for x, kx in zip(names, k) for j in range(kx)]
+    cum = [sum(lengths[:i + 1]) for i in range(len(names))]
+    cuts, prev = [], 0
+    for g in range(1, n):  # ponytail: greedy cut nearest each k/n of the length; a DP if chains ever get uneven enough
+        lo, hi = prev + 1, len(names) - (n - g)
+        prev = min(range(lo, hi + 1), key=lambda c: abs(cum[c - 1] - cum[-1] * g / n))
+        cuts.append(prev)
+    return [names[a:b] for a, b in zip([0, *cuts], [*cuts, len(names)])]
+
+
+def standardise_rig(jid, host, model_glb):
+    """Put a SkinTokens-rigged GLB (in job `jid`'s folder on `host`) on the shared quadruped skeleton: label the bones,
+    Claude checks the labelled sheet (FAIL fails the job), then rename, collapse/pad, clean weights and export
+    <stem>_std.glb next to it. -> {"labels", "dropped", "warnings", "glb", "sheet", "review"}."""
+    a = _app()
+    work, _, py, _, step, _ = a.host_tools(jid, host)
+    q, stem = shlex.quote, Path(model_glb).stem
+    lab, sheet, out = f"{stem}_labels.json", f"{stem}_labels.png", f"{stem}_std.glb"
+    for f in [*a.MOTION_DIR.glob("*.py"), Path(__file__)]:  # rig_standard.py imports chain_resample from here
+        a.put_input(host, f"{jid}/{f.name}", f.read_bytes())
+    a.job_blender(jid)
+    step("labelling the bones")
+    a.run_blender(jid, host, "rig_standard.py", ["--label", model_glb, lab, sheet], [model_glb, "creature.py"], [lab, sheet], 900)
+    step("checking the bone labels with Claude")
+    review = a.ssh_anthropic(host, f"cd {q(work)} && {py} rig_standard.py --review {q(lab)} {q(sheet)}", timeout=1800)
+    step("moving the rig onto the shared quadruped skeleton")
+    a.run_blender(jid, host, "rig_standard.py", [model_glb, lab, out], [model_glb, lab, "creature.py"], [out], 1800)
+    labels = json.loads(a.ssh(host, f"cat {q(work + '/' + lab)}"))
+    verdict = next((ln for ln in review.decode(errors="replace").splitlines() if ln.startswith("REVIEW")), "REVIEW ?")
+    return {k: labels[k] for k in ("labels", "dropped", "warnings")} | {"glb": out, "sheet": sheet, "review": verdict[7:]}

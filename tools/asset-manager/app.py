@@ -2729,6 +2729,14 @@ def check():
     # curation: a variant with a 10-frame freeze is rejected, the moving one kept; the loop cut closes on frame 0
     import importlib.util, zipfile
     assert creature.ensure_curated and creature.run_curate
+    # rig standardisation: collapse into contiguous groups balanced by length, pad by splitting the longest bones
+    assert creature.chain_resample(["a", "b", "c", "d", "e"], 3) == [["a", "b"], ["c"], ["d", "e"]]
+    assert creature.chain_resample(["a", "b", "c"], 2, [1, 1, 4]) == [["a", "b"], ["c"]]
+    pad = creature.chain_resample(["a", "b"], 4)
+    assert pad == [["a"], ["a+1"], ["b"], ["b+1"]], pad  # the 2 sources plus 2 inserted names
+    assert creature.chain_resample(["a", "b"], 3, [1, 3]) == [["a"], ["b"], ["b+1"]]
+    assert creature.chain_resample(["a"], 1) == [["a"]] and creature.chain_resample([], 2) == [[], []]
+    assert creature.standardise_rig
     if not importlib.util.find_spec("numpy"):  # zoo_curate runs on the GPU host; the server image has no numpy
         print("check ok (zoo_curate skipped: no numpy)")
         return
@@ -2763,6 +2771,33 @@ def check():
         assert abs(clip["travel_cm_s"] - 15) < 0.1 and a["fps"] == 30 and a["rest"]["Leg_end"] == [0, -1, 4]
         f = zc.parse(Path(f"{td}/out/clips/Walk.bvh").read_text())[1]
         assert max(abs(f[0] - f[-1])) < 1e-6 and len(f) == clip["frames"]
+    # rig_standard.plan: a quadruped facing +X (left = +Y), 1 cm off centre, 2 spine bones, a 2-bone tail, ears and a
+    # jaw on the head, legs of hip/thigh/shin/paw with 2 toes
+    spec = importlib.util.spec_from_file_location("rig_standard", MOTION_DIR / "rig_standard.py")
+    rs = importlib.util.module_from_spec(spec); spec.loader.exec_module(rs)
+    c = -0.01
+    bones = [("b0", None, (-0.3, c, 0.6), (-0.2, c, 0.6)), ("b1", "b0", (-0.1, c, 0.6), (0.0, c, 0.6)),
+             ("b2", "b1", (0.1, c, 0.6), (0.2, c, 0.6)), ("b3", "b2", (0.3, c, 0.65), (0.35, c, 0.7)),
+             ("b4", "b3", (0.36, c, 0.72), (0.45, c, 0.72)), ("b5", "b4", (0.38, 0.04, 0.78), (0.38, 0.05, 0.82)),
+             ("b6", "b4", (0.38, -0.06, 0.78), (0.38, -0.07, 0.82)), ("b7", "b4", (0.4, c, 0.68), (0.47, c, 0.66)),
+             ("b8", "b0", (-0.35, c, 0.6), (-0.5, c, 0.5)), ("b9", "b8", (-0.5, c, 0.5), (-0.6, c, 0.3))]
+    for leg, x, y, at in (("fl", 0.15, 0.1, "b2"), ("fr", 0.15, -0.1, "b2"), ("hl", -0.3, 0.1, "b0"), ("hr", -0.3, -0.1, "b0")):
+        y += c
+        bones += [(f"{leg}_hip", at, (x, y, 0.55), (x, y, 0.4)), (f"{leg}_thigh", f"{leg}_hip", (x, y, 0.4), (x, y, 0.2)),
+                  (f"{leg}_shin", f"{leg}_thigh", (x, y, 0.2), (x, y, 0.05)),
+                  (f"{leg}_paw", f"{leg}_shin", (x, y, 0.05), (x + 0.03, y, 0.02))]
+        bones += [(f"{leg}_toe{k}", f"{leg}_paw", (x + 0.03, y + d, 0.02), (x + 0.06, y + d, 0.0)) for k, d in ((0, 0.01), (1, -0.01))]
+    p = rs.plan([{"name": n, "parent": pa, "head": h, "tail": t} for n, pa, h, t in bones], 0.82)
+    L = p["labels"]
+    assert p["turn"] == -90 and list(p["bones"]) == rs.BONES, (p["turn"], list(p["bones"]))
+    assert (L["b0"], L["b1"], L["b2"], L["b3"], L["b4"], L["b7"], L["b8"], L["b9"]) == \
+        ("pelvis", "spine_01", "spine_03", "neck", "head", "head", "tail_01", "tail_04"), L
+    assert (L["fl_hip"], L["fl_paw"], L["fl_toe1"], L["fr_thigh"], L["hl_shin"], L["hr_paw"]) == \
+        ("FL_01", "FL_04", "FL_04", "FR_02", "HL_03", "HR_04"), L
+    assert {"b5", "b6", "b7", "fl_toe0"} <= set(p["dropped"]) and "b4" not in p["dropped"]
+    assert p["bones"]["spine_02"]["sources"] == [] and p["bones"]["FL_01"]["parent"] == "spine_03"
+    assert max(abs(a - b) for a, b in zip(p["bones"]["pelvis"]["head"], [c, 0.3, 0.6])) < 1e-9 and p["bones"]["root"]["head"] == [0, 0, 0]
+    assert any("tail" in w for w in p["warnings"]), p["warnings"]
     print("check ok")
 
 if __name__ == "__main__":
