@@ -131,3 +131,14 @@ Concept `14b-settings-graphics.png` (menu) and `14c-settings-keep-revert.png` (1
 12. Never grade your own capture; always a fresh Fable agent.
 13. Never claim a state was shown unless the live frame shows it (loading, defeated, station, gathering need their scenarios).
 14. Never stop Unreal by name; always the PID you started.
+15. Never pass a design px size to Slate as points; always `Text`/`Heading`/`Num`/`DisplayHeading` (they convert, x0.75). Raw `FSlateFontInfo` sizes in a screen are a bug.
+16. Never set a heading bold or numerals in a sans face; the concepts are EB Garamond regular throughout. Set title size from the concept's cap height (cap = about 0.65 x px size).
+17. Never show a frame before its first content (an empty plate flashes); collapse it at construction and show it in `Present`.
+18. Never overlay an icon on a key numeral; icon 60 at bottom-right with padding 8, numeral top-left.
+19. Never make an ordinary primary button 72 tall; 72 is the hold-to-confirm plate only (primary = 56, dialogue Accept 54).
+20. Never ship a translucent panel fill; kit frames are opaque #17232A and screens use `Slate(1.f)`.
+21. Never tint rail/glyph icons by hand; ivory #E8E1CE `KitImage` tint or the `icon_rail_*` pieces.
+22. Never judge geometry by eye alone; run `py -3 tools/ui_pixel_diff.py --all` (live rects come from `SFUi rects`, written beside each capture as `<name>-live.json`) and fix the FAIL rows first.
+23. Never regenerate a kit PNG by hand if `build_structures.py` makes it; fix the generator, or the next run overwrites the edit.
+24. Never merge `.uasset` kit files between branches; take either side, then rerun `tools/Process-KitV5.py` and `tools/Import-HudKit.py --save`.
+25. Never fit long data text with an ellipsis in a menu; wrap or `FitWidth` (18 px floor).
