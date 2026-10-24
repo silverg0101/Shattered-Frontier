@@ -1,7 +1,8 @@
 [CmdletBinding()]
 param(
     [string]$EngineRoot = 'C:\Program Files\Epic Games\UE_5.8',
-    [ValidateRange(1024, 65535)][int]$Port = 17777
+    [ValidateRange(1024, 65535)][int]$Port = 17777,
+    [ValidatePattern('^/Game/Frontier/[A-Za-z0-9_/]+$')][string]$Map = '/Game/Frontier/Maps/Greenlands_E1'
 )
 $ErrorActionPreference = 'Stop'
 $repoRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
@@ -30,7 +31,7 @@ function Wait-Log([string]$Path, [string]$Pattern, [int]$Count = 1) {
 try {
     if (Get-NetUDPEndpoint -LocalPort $Port -ErrorAction SilentlyContinue) { throw "UDP $Port is already in use" }
     $serverLog = Join-Path $logs 'Server.log'
-    Launch @('/Game/Frontier/Maps/Greenlands_E1', '-server', '-NullRHI', '-unattended', '-nosound', '-nop4', "-port=$Port", '-MULTIHOME=127.0.0.1', ('-abslog="' + $serverLog + '"'))
+    Launch @($Map, '-server', '-NullRHI', '-unattended', '-nosound', '-nop4', "-port=$Port", '-MULTIHOME=127.0.0.1', ('-abslog="' + $serverLog + '"'))
     Wait-Log $serverLog 'E1_WORLD_READY.*NetMode=1'
     foreach ($index in 1..2) {
         $clientLog = Join-Path $logs "Client$index.log"

@@ -1,0 +1,72 @@
+"""Create one small, empty mechanic test map in the Unreal Editor.
+
+    python tools/Run-InEditor.py tools/Create-SandboxMap.py <Name> [--force]
+    UnrealEditor-Cmd.exe <uproject> -run=pythonscript -script="tools/Create-SandboxMap.py <Name> [--force]"
+
+Only /Game/Frontier/Maps/Sandbox/SB_<Name> is written. --force replaces that map.
+"""
+
+import re
+import sys
+
+import unreal as u
+
+
+def main():
+    args = sys.argv[1:]
+    force = '--force' in args
+    names = [arg for arg in args if arg != '--force']
+    if len(names) != 1 or not re.fullmatch(r'[A-Za-z][A-Za-z0-9_]*', names[0]):
+        raise ValueError('Usage: Create-SandboxMap.py <Name> [--force]; Name must be letters, digits or underscores')
+
+    path = '/Game/Frontier/Maps/Sandbox/SB_' + names[0]
+    assets = u.EditorAssetLibrary
+    levels = u.get_editor_subsystem(u.LevelEditorSubsystem)
+    actors = u.get_editor_subsystem(u.EditorActorSubsystem)
+    game_mode = u.load_class(None, '/Script/ShatteredFrontier.SFGameMode')
+    cube = u.load_asset('/Engine/BasicShapes/Cube')
+    if not game_mode or not cube:
+        raise RuntimeError('Required SFGameMode or Engine cube asset is unavailable')
+    replacing = assets.does_asset_exist(path)
+    if replacing:
+        if not force:
+            raise RuntimeError('Map already exists; pass --force to replace only ' + path)
+        # Build a fresh transient level; NewLevel rejects an existing destination even
+        # just after DeleteAsset because its asset registry entry remains until reload.
+        u.EditorLoadingAndSavingUtils.new_blank_map(False)
+    elif not levels.new_level(path):
+        raise RuntimeError('Could not create ' + path)
+
+    world = u.get_editor_subsystem(u.UnrealEditorSubsystem).get_editor_world()
+    settings = world.get_world_settings()
+    settings.set_editor_property('default_game_mode', game_mode)
+    settings.set_editor_property('force_no_precomputed_lighting', True)
+
+    # The Engine cube is 100 cm across: 100 * 100 cm = a 100 m square.
+    floor = actors.spawn_actor_from_class(u.StaticMeshActor, u.Vector(0, 0, -50))
+    floor.set_actor_label('Ground')
+    floor.static_mesh_component.set_static_mesh(cube)
+    floor.static_mesh_component.set_collision_profile_name('BlockAll')
+    floor.set_actor_scale3d(u.Vector(100, 100, 1))
+    actors.spawn_actor_from_class(u.PlayerStart, u.Vector(0, 0, 110)).set_actor_label('PlayerStart')
+
+    sun = actors.spawn_actor_from_class(u.DirectionalLight, u.Vector(0, 0, 1000), u.Rotator(pitch=-45, yaw=25))
+    sun.set_actor_label('Sun')
+    sun.light_component.set_editor_property('atmosphere_sun_light', True)
+    actors.spawn_actor_from_class(u.SkyAtmosphere, u.Vector(0, 0, 0)).set_actor_label('SkyAtmosphere')
+    sky = actors.spawn_actor_from_class(u.SkyLight, u.Vector(0, 0, 800))
+    sky.set_actor_label('SkyLight')
+    sky.root_component.set_mobility(u.ComponentMobility.MOVABLE)
+    sky.light_component.set_editor_property('real_time_capture', True)
+    actors.spawn_actor_from_class(u.ExponentialHeightFog, u.Vector(0, 0, 0)).set_actor_label('HeightFog')
+
+    nav = actors.spawn_actor_from_class(u.NavMeshBoundsVolume, u.Vector(0, 0, 500))
+    nav.set_actor_label('NavMeshBounds')
+    nav.set_actor_scale3d(u.Vector(50, 50, 6))  # default 200 cm brush -> 100 m square
+    saved = u.EditorLoadingAndSavingUtils.save_map(world, path) if replacing else levels.save_current_level()
+    if not saved:
+        raise RuntimeError('Could not save ' + path)
+    u.log('SANDBOX_MAP_READY ' + path)
+
+
+main()

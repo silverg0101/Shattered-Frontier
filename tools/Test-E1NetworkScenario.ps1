@@ -3,6 +3,7 @@ param(
     [string]$EngineRoot = 'C:\Program Files\Epic Games\UE_5.8',
     [ValidateRange(1024, 65535)][int]$Port = 17781,
     [ValidateSet('Normal', 'Adverse100')][string]$NetworkProfile = 'Normal',
+    [ValidatePattern('^/Game/Frontier/[A-Za-z0-9_/]+$')][string]$Map = '/Game/Frontier/Maps/Greenlands_E1',
     [switch]$CaptureFrames,
     [switch]$CaptureProfile,
     [switch]$RenderOffscreen,
@@ -270,7 +271,7 @@ try {
     $server = Join-Path $logs 'Server.log'
     $driver = Join-Path $logs 'Driver.log'
     $observer = Join-Path $logs 'Observer.log'
-    Launch @('/Game/Frontier/Maps/Greenlands_E1', '-server', '-NullRHI', '-unattended', '-nosound', '-nop4', '-E1ProbeRole=Server', "-port=$Port", '-MULTIHOME=127.0.0.1', ('-abslog="' + $server + '"'))
+    Launch @($Map, '-server', '-NullRHI', '-unattended', '-nosound', '-nop4', '-E1ProbeRole=Server', "-port=$Port", '-MULTIHOME=127.0.0.1', ('-abslog="' + $server + '"'))
     Wait-Log $server 'E1_WORLD_READY.*NetMode=1'
     # Start both clients together to preserve the finite server sampling window.
     $pawnCacheArguments = if ($ProbePawnCache) { @('-E1ProbePawnCache') } else { @() }
@@ -328,7 +329,7 @@ try {
     }
     $build = Get-Content -LiteralPath (Join-Path $EngineRoot 'Engine\Build\Build.version') -Raw | ConvertFrom-Json
     $summary = [ordered]@{
-        SchemaVersion=1; Result='PASS'; Map='/Game/Frontier/Maps/Greenlands_E1'; NetworkProfile=$NetworkProfile
+        SchemaVersion=1; Result='PASS'; Map=$Map; NetworkProfile=$NetworkProfile
         EmulationRevision=1; NominalConfiguredRttMs=(2*$lagMs); MeasuredRttMs=$null; ActualEmulation=$actualEmulation
         ProcessIds=[ordered]@{ Server=$owned[0].Id; Driver=$owned[1].Id; Observer=$owned[2].Id }
         LocalMetadata=[ordered]@{ EngineVersion="$($build.MajorVersion).$($build.MinorVersion).$($build.PatchVersion)"; EngineChangelist=$build.Changelist; OSVersion=[Environment]::OSVersion.VersionString; LogicalProcessors=[Environment]::ProcessorCount }
