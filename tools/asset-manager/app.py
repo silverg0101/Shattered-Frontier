@@ -1503,13 +1503,15 @@ def codex_review(images, brief):
     except (AttributeError, ValueError):
         raise RuntimeError(f"the review answer was not JSON: {text[:200]!r}")
 
-# Multi-view is two steps. ChatGPT draws one hero image that settles the design, seen exactly from its left side: a
-# side view shows both the length and the height, so every other view fits MV-Adapter's square frame (from the
-# front, a rat came out squashed and tailless). MV-Adapter (local SDXL, orthographic cameras) then draws the back,
-# right side and front around that one image, consistent by construction. Views drawn by an image model never
-# agreed (rats v1-v6: tail paths, leg order, widths), and Pixal3D builds every disagreement as extra geometry
-# (rat v6: two tails, doubled hind feet). The pose rules are the motion session's, for a model that rigs and walks;
-# thin hairs and whiskers in the outline become slivers on the mesh, so they are left to the texture.
+# Multi-view: ChatGPT draws one hero image that settles the design, seen exactly from its left side, then redraws it
+# from the front; MV-Adapter (local SDXL, orthographic cameras) draws the left, back and right around that front,
+# consistent by construction. Views drawn by an image model never agreed (rats v1-v6: tail paths, leg order,
+# widths), and Pixal3D builds every disagreement as extra geometry (rat v6: two tails, doubled hind feet).
+# MV-Adapter was trained with the front as its reference: given a side view it drew side views where the back
+# should be (rat v8: a cross of two rats). Its square frame holds the subject's longest side, so the front is shrunk
+# by the side hero's height/length before it goes in, or a long rat is squashed into a short one. The pose rules
+# are the motion session's, for a model that rigs and walks; thin hairs and whiskers in the outline become slivers
+# on the mesh, so they are left to the texture.
 MV_HERO = ("{prompt}\n\nDraw one full-body picture of the subject described above, on its own, seen exactly from its "
            "left side at eye level - an orthographic side view, so it faces image-left - with the whole body, head to "
            "tail tip, inside the frame. Plain pure-white background, soft even studio light. No props, text, ground "
@@ -1524,6 +1526,11 @@ MV_HERO = ("{prompt}\n\nDraw one full-body picture of the subject described abov
            "over the arms.\n\n"
            "Nothing thin sticks out of the outline: no long whiskers, bristles, loose fur or hair strands. Fur, scars "
            "and markings are painted on the skin.")
+MV_FRONT = ("{prompt}\n\nThe attached image shows this subject exactly from its left side. Draw the same subject in the "
+            "same pose, seen exactly from the front at eye level - an orthographic front view, facing the viewer, with "
+            "nothing turned - so every part keeps its height from the attached image. A tail trailing straight back is "
+            "hidden behind the body. Plain pure-white background, soft even studio light. No props, text, ground shadow "
+            "or background scenery.")
 MV_REVIEW = (
     "The image shows four views generated around one design image of: {prompt}\nLeft to right: front, left side (the "
     "subject faces image-left), back, right side (it faces image-right), as if a camera orbited a rigid statue. Code "
@@ -1539,7 +1546,7 @@ MV_REVIEW = (
     "from the guide lines, with no shadow, props, text or part of a neighbouring view. In each problem, name the "
     "landmark, the views and which is higher.")
 GUIDE_LINES = 16  # horizontal guide lines across the review strip, spread over the subject's height
-MV_ADAPTER_VIEWS = {0: "left", 90: "back", 180: "right", 270: "front"}  # azimuth from the side-view hero -> position
+MV_ADAPTER_VIEWS = {0: "front", 90: "left", 180: "back", 270: "right"}  # MV-Adapter azimuth -> position
 MV_SIZE = 768  # MV-Adapter SDXL's view size
 VIEW_SIZE = 1024  # each view is enlarged onto a square of this size
 
@@ -1592,16 +1599,19 @@ def align_views(subjects):
         out[pos] = buf.getvalue()
     return out
 
-def mv_reference(png):
-    """The hero as MV-Adapter's reference, prepared like its own preprocess_image: cut out (ultratex_reference), the
-    longer side 90% of MV_SIZE, centred on 50% grey."""
+def mv_reference(front, side):
+    """The front view as MV-Adapter's reference, prepared like its own preprocess_image (cut out by
+    ultratex_reference, centred on 50% grey) but scaled so the side view's length would fit the frame too: the
+    front's height is 90% of the frame times the side hero's height/length."""
     from PIL import Image
-    img = Image.open(io.BytesIO(ultratex_reference(png))).convert("RGBA")
-    img = img.crop(img.getchannel("A").getbbox())
-    k = MV_SIZE * 0.9 / max(img.size)
-    img = img.resize((max(1, round(img.width * k)), max(1, round(img.height * k))), Image.LANCZOS)
+    def cutout(png):
+        img = Image.open(io.BytesIO(ultratex_reference(png))).convert("RGBA")
+        return img.crop(img.getchannel("A").getbbox())
+    front, side = cutout(front), cutout(side)
+    k = min(MV_SIZE * 0.9 * side.height / max(side.size) / front.height, MV_SIZE * 0.9 / front.width)
+    front = front.resize((max(1, round(front.width * k)), max(1, round(front.height * k))), Image.LANCZOS)
     out = Image.new("RGB", (MV_SIZE, MV_SIZE), (127, 127, 127))
-    out.paste(img, ((MV_SIZE - img.width) // 2, (MV_SIZE - img.height) // 2), img)
+    out.paste(front, ((MV_SIZE - front.width) // 2, (MV_SIZE - front.height) // 2), front)
     buf = io.BytesIO()
     out.save(buf, "PNG")
     return buf.getvalue()
@@ -1624,6 +1634,7 @@ def mv_views(pngs):
         Image.composite(img, white, mask).save(buf, "PNG")
         out[pos] = buf.getvalue()
     views, notes = align_uploads(out)
+    views = {pos: views[pos] for pos in VIEW_AZIMUTHS}  # the review strip reads front, left, back, right
     return views, [n for n in notes if "of the front's height" not in n]  # rembg crops each view to itself
 
 def mvadapter_graph(reference, prompt, seed, prefix):
@@ -1639,7 +1650,7 @@ def mvadapter_graph(reference, prompt, seed, prefix):
             "pipeline": ["1", 0], "scheduler": ["3", 0], "autoencoder": ["2", 0], "load_mvadapter": True,
             "adapter_path": "huanngzh/mv-adapter", "adapter_name": "mvadapter_i2mv_sdxl.safetensors",
             "num_views": len(MV_ADAPTER_VIEWS)}},
-        "5": {"class_type": "ViewSelector", "inputs": {  # 0, 90, 180, 270 in that order
+        "5": {"class_type": "ViewSelector", "inputs": {  # 0, 90, 180, 270 in that order (MV_ADAPTER_VIEWS)
             "front_view": True, "front_right_view": False, "right_view": True, "back_view": True, "left_view": True,
             "front_left_view": False}},
         "6": {"class_type": "LoadImage", "inputs": {"image": reference}},
@@ -1734,15 +1745,17 @@ def run_image(jid, host=None):
         if p["mode"] == "single":
             log.append("generating the image (sent as written)")
             save(codex_image(p["prompt"], p["model"]), "")
-        else:  # a side-view hero from ChatGPT, then MV-Adapter's views around it on the job's GPU host
+        else:  # a side-view hero and its front from ChatGPT, then MV-Adapter's views on the job's GPU host
             log.append("hero: drawing the side-view design image")
             hero = codex_image(MV_HERO.format(prompt=p["prompt"]), p["model"])
+            log.append("hero: drawing it from the front")
+            front = codex_image(MV_FRONT.format(prompt=p["prompt"]), p["model"], refs=[hero])
             ok, line = gpu_check(host)
             log.append(line)
             if not ok:
                 raise RuntimeError(line)
             ref = f"{jid}_hero.png"
-            put_input(host, ref, mv_reference(hero))
+            put_input(host, ref, mv_reference(front, hero))
             tries, views = 3, None
             try:
                 for n in range(1, tries + 1):
@@ -1770,6 +1783,7 @@ def run_image(jid, host=None):
             for pos in VIEW_AZIMUTHS:
                 save(views[pos], f"-{pos}")
             save(hero, "-hero")
+            save(front, "-hero-front")
             save(guide_strip(views), "-guides")  # what the reviewer judged: the views side by side with guide lines
         update_job(jid, status="done", output=saved[0], files=json.dumps(saved), finished=time.time())
     except InterruptedError:
@@ -2112,9 +2126,12 @@ def check():
     strip = Image.open(io.BytesIO(guide_strip(views))).convert("L")
     lines = sum(1 for y in range(strip.height) if strip.getpixel((1, y)) < 200)  # left margin: only guide lines there
     assert GUIDE_LINES <= lines <= 3 * (GUIDE_LINES + 1) and strip.width <= 2400, (lines, strip.size)
-    hero = Image.new("RGB", (1536, 1024), "white"); ImageDraw.Draw(hero).rectangle((200, 400, 1300, 800), fill=(90, 80, 80))
-    ref = Image.open(io.BytesIO(mv_reference(png_of(hero))))
-    assert ref.size == (MV_SIZE, MV_SIZE) and ref.getpixel((2, 2)) == (127, 127, 127) and ref.getpixel((384, 384)) == (90, 80, 80)
+    side = Image.new("RGB", (1536, 1024), "white"); ImageDraw.Draw(side).rectangle((200, 600, 1399, 899), fill=(90, 80, 80))
+    front = Image.new("RGB", (1024, 1024), "white"); ImageDraw.Draw(front).rectangle((400, 200, 599, 799), fill=(90, 80, 80))
+    ref = Image.open(io.BytesIO(mv_reference(png_of(front), png_of(side)))).convert("RGB")
+    box = Image.eval(ref, lambda v: 255 if v < 110 else 0).convert("L").getbbox()  # the subject; grey is 127
+    assert ref.size == (MV_SIZE, MV_SIZE) and ref.getpixel((2, 2)) == (127, 127, 127)
+    assert abs((box[3] - box[1]) - MV_SIZE * 0.9 * 300 / 1200) <= 3, box  # front height = 90% x side height/length
     g = mvadapter_graph("sfam/1_hero.png", "rat", 7, "sfam/1_mv/view")
     assert g["7"]["inputs"]["seed"] == 7 and g["6"]["inputs"]["image"] == "sfam/1_hero.png"
     for nid, n in g.items():
