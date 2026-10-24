@@ -6,9 +6,9 @@
     {"id": "Edwin", "preset": "Victor", "gender": "male", "hair": "WI_Hair_S_Messy", "beard": "WI_Beard_S_Full", "mustache": "WI_Mustache_S_Full", "skin": [0.24, 0.45]},
     {"id": "Wulfric", "preset": "Lorenzo", "gender": "male", "hair": "WI_Hair_L_Straight", "beard": "WI_Goatee_L_Wavy", "mustache": "WI_Mustache_L_Handlebar", "skin": [0.26, 0.45]},
     {"id": "Osric", "preset": "Trey", "gender": "male", "hair": "WI_Hair_S_Coil", "beard": "WI_Beard_S_Full", "mustache": "WI_Mustache_S_Full", "skin": [0.50, 0.55]},
-    {"id": "Hilda", "preset": "Jelena", "gender": "female", "hair": "WI_Hair_S_LowPonytail"},
-    {"id": "Aelfwyn", "preset": "Celeste", "gender": "female", "hair": "WI_Hair_L_Straight"},
-    {"id": "Eadgyth", "preset": "Vivian", "gender": "female", "hair": "WI_Hair_S_UpdoBraids"},
-    {"id": "Ebba", "preset": "Etta", "gender": "female", "hair": "WI_Hair_M_TwistedBraids", "skin": [0.48, 0.55]}
+    {"id": "Hilda", "preset": "Jelena", "gender": "female", "hair": "WI_Hair_S_LowPonytail", "makeup": "none"},
+    {"id": "Aelfwyn", "preset": "Celeste", "gender": "female", "hair": "WI_Hair_L_Straight", "makeup": "none"},
+    {"id": "Eadgyth", "preset": "Vivian", "gender": "female", "hair": "WI_Hair_S_UpdoBraids", "makeup": "none"},
+    {"id": "Ebba", "preset": "Etta", "gender": "female", "hair": "WI_Hair_M_TwistedBraids", "skin": [0.48, 0.55], "makeup": "none"}
   ]
 }
