@@ -11,10 +11,14 @@ bool USFE1Settings::Validate(FString& OutError) const
         }
         return true;
     };
-    if (!PlayerFaceIds.Contains(TEXT("Orlando")) || PlayerFaceIds.Contains(TEXT("OrlandoBare")))
+    if (!PlayerFaceIds.Contains(TEXT("Orlando")) || PlayerFaceIds.ContainsByPredicate([](FName Id) { return Id.ToString().EndsWith(TEXT("Bare")); }))
     {
-        OutError = TEXT("PlayerFaceIds must include Orlando (the default face) and never OrlandoBare");
+        OutError = TEXT("PlayerFaceIds must include Orlando (the default face) and never a *Bare authoring body");
         return false;
+    }
+    for (const FName Id : FemaleFaceIds)
+    {
+        if (!PlayerFaceIds.Contains(Id)) { OutError = FString::Printf(TEXT("FemaleFaceIds entry %s is not in PlayerFaceIds"), *Id.ToString()); return false; }
     }
     return Check(TEXT("RunSpeedMetresPerSecond"), RunSpeedMetresPerSecond, 0.5f, 12.0f)
         && Check(TEXT("JumpHeightMetres"), JumpHeightMetres, 0.1f, 3.0f)

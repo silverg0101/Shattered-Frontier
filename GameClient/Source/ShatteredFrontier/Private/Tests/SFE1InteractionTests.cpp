@@ -121,6 +121,9 @@ bool FSFE1InteractionConfigurationTest::RunTest(const FString& Parameters)
     TestFalse(TEXT("Non-finite cooldown rejected"), Settings->Validate(Error));
     Settings->InteractionAcceptedCooldownSeconds = std::numeric_limits<float>::quiet_NaN();
     TestFalse(TEXT("NaN cooldown rejected"), Settings->Validate(Error));
+    Settings->InteractionAcceptedCooldownSeconds = 0.5f;
+    Settings->FemaleFaceIds = { TEXT("NotAFace") };
+    TestFalse(TEXT("Female face outside PlayerFaceIds rejected"), Settings->Validate(Error));
     return true;
 }
 

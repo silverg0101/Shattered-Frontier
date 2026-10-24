@@ -3,11 +3,17 @@
 UnrealEditor.exe <uproject> /Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook -game -windowed -ResX=1920 -ResY=1080 -ForceRes
     -RenderOffscreen -unattended -nosound "-ExecCmds=py tools/Capture-PlayerOutfit.py"
 Writes outfit_<view>.png (3840x2160, for close crops) under Saved/Screenshots/; pair them with the concept for docs/visual-review.md.
+Env SF_FACE=<id> first switches the face (dev command SFFace), waits 15 s more for its outfit to compile, and writes outfit_<id>_<view>.png.
 """
+import os
+
 import unreal
 
+FACE = os.environ.get('SF_FACE', '')
 PLAN = [(10.0, 'walk', 14.0), (14.0, 'shot', 'walk_back'), (16.0, 'view', 0.0), (18.0, 'shot', 'front'),
         (18.5, 'view', 40.0), (20.5, 'shot', 'three_quarter'), (21.0, 'view', 90.0), (23.0, 'shot', 'side'), (25.0, 'quit', 0)]
+if FACE:
+    PLAN = [(3.0, 'face', FACE)] + [(s + 15.0, k, a + 15.0 if k == 'walk' else a) for s, k, a in PLAN]
 state = {'t': 0.0, 'done': set()}
 
 
@@ -34,8 +40,10 @@ def tick(dt):
             cam_yaw = pc.player_camera_manager.get_camera_rotation().yaw
             pawn.set_actor_rotation(unreal.Rotator(roll=0, pitch=0, yaw=cam_yaw + 180.0 - arg), False)
         elif kind == 'shot':
-            unreal.SystemLibrary.execute_console_command(w, f'HighResShot 2 filename=outfit_{arg}')
+            unreal.SystemLibrary.execute_console_command(w, f'HighResShot 2 filename=outfit_{FACE + "_" if FACE else ""}{arg}')
             unreal.log(f'OUTFIT_SHOT {arg} t={t:.1f}')
+        elif kind == 'face':
+            unreal.SystemLibrary.execute_console_command(w, f'SFFace {arg}', pc)
         elif kind == 'quit':
             unreal.unregister_slate_post_tick_callback(handle)
             unreal.SystemLibrary.quit_editor()

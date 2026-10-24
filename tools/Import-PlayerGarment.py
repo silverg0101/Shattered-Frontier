@@ -1,7 +1,8 @@
 """Import the starter garment (tools/Build-PlayerGarment.py output) as a skeletal mesh on the player's MetaHuman skeleton, with cloth materials.
 
 UnrealEditor.exe <uproject> -RenderOffscreen -unattended -nosplash -ExecCmds="py <abs path of this file>, QUIT_EDITOR"
-Reads Artifacts/Characters/PlayerBase/garment_tunic_leggings.fbx (env SF_GARMENT_FBX overrides). Writes under /Game/Frontier/Characters/Player/Garments:
+Reads Artifacts/Characters/PlayerBase/garment_tunic_leggings.fbx (env SF_GARMENT_FBX overrides; env SF_OUTFIT_SUFFIX, e.g. _F for the
+female fit, is appended to the mesh names). Writes under /Game/Frontier/Characters/Player/Garments:
 SKM_Tunic_Leggings (slots M_Tunic, M_Leggings), M_PlayerCloth (tiling fabric: base colour, normal, roughness, tint, tiling),
 MI_PlayerLinen and MI_PlayerLeggings. Fabric: the project's Silverbrook textures (referenced, not copied), desaturated and tinted: T_SB_rough_linen_* for the tunic, T_SB_denim_fabric_04_* for the leggings.
 Re-runnable. The skeleton is the built body's, so it needs a build from tools/Build-PlayerMetaHumans.py.
@@ -139,9 +140,10 @@ def run():
     linen = make_instance('MI_PlayerLinen', master, 'T_SB_rough_linen_Diffuse', 'T_SB_rough_linen_nor_gl', 'T_SB_rough_linen_Rough', (0.23, 0.18, 0.115, 1), 2.0, 0.6)
     legs = make_instance('MI_PlayerLeggings', master, 'T_SB_denim_fabric_04_Diffuse', 'T_SB_denim_fabric_04_nor_gl', 'T_SB_denim_fabric_04_Rough', (0.27, 0.19, 0.12, 1), 3.0, 1.0)
 
-    mesh = import_skeletal(fbx, 'SKM_Tunic_Leggings', skeleton)
+    name = 'SKM_Tunic_Leggings' + os.environ.get('SF_OUTFIT_SUFFIX', '')
+    mesh = import_skeletal(fbx, name, skeleton)
     # The body patch the garment covers (tools/Build-GarmentBodyClip.py), removed from the body by Mutable (tools/Create-PlayerOutfit.py).
-    import_skeletal(fbx.with_name(fbx.stem + '_bodyclip.fbx'), 'SKM_Tunic_Leggings_BodyClip', skeleton)
+    import_skeletal(fbx.with_name(fbx.stem + '_bodyclip.fbx'), name + '_BodyClip', skeleton)
     mats = []
     for slot in mesh.get_editor_property('materials'):
         name = str(slot.get_editor_property('material_slot_name'))

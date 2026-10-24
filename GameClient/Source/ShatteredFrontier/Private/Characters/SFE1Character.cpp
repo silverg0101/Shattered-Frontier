@@ -73,6 +73,7 @@ ASFE1Character::ASFE1Character()
         GetMesh()->SetAnimInstanceClass(Locomotion.Class);
         MetaHumanRetargeter = TSoftObjectPtr<UIKRetargeter>(FSoftObjectPath(TEXT("/Game/Frontier/Characters/Player/Retarget/RTG_SF_MannequinToMetaHuman.RTG_SF_MannequinToMetaHuman")));
         Outfit = TSoftObjectPtr<UObject>(FSoftObjectPath(TEXT("/Game/Frontier/Characters/Player/Outfit/CO_PlayerOutfit.CO_PlayerOutfit")));
+        OutfitFemale = TSoftObjectPtr<UObject>(FSoftObjectPath(TEXT("/Game/Frontier/Characters/Player/Outfit/CO_PlayerOutfit_F.CO_PlayerOutfit_F")));
     }
 
     CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
@@ -153,7 +154,8 @@ AActor* ASFE1Character::SpawnPosedMetaHuman(USceneComponent* Parent, const FTran
     if (auto* Pose = Cast<USFMetaHumanRetargetAnimInstance>(Skin->GetAnimInstance())) { Pose->SetSource(GetMesh(), Retargeter); }
     Skin->AddTickPrerequisiteComponent(GetMesh());
 #if SF_WITH_MUTABLE
-    if (UCustomizableObject* Object = Cast<UCustomizableObject>(Outfit.IsNull() ? nullptr : Outfit.LoadSynchronous()))
+    const TSoftObjectPtr<UObject>& Wear = GetDefault<USFE1Settings>()->FemaleFaceIds.Contains(FaceId) ? OutfitFemale : Outfit;
+    if (UCustomizableObject* Object = Cast<UCustomizableObject>(Wear.IsNull() ? nullptr : Wear.LoadSynchronous()))
     {
         // Mutable generates the outfit mesh onto the Body component (keeping its retarget pose); the preset's own clothes give way to it.
         for (USkeletalMeshComponent* Part : TInlineComponentArray<USkeletalMeshComponent*>(Body))

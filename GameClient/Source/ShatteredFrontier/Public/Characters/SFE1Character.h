@@ -50,6 +50,8 @@ public:
     // the skin under them removed. Its mesh replaces the MetaHuman's Body mesh and default outfit. UObject so the Server target, which has
     // no Mutable, still builds; client-only.
     UPROPERTY(EditDefaultsOnly, Category="Appearance") TSoftObjectPtr<UObject> Outfit;
+    // The same outfit built on the female bare body (faces in USFE1Settings::FemaleFaceIds).
+    UPROPERTY(EditDefaultsOnly, Category="Appearance") TSoftObjectPtr<UObject> OutfitFemale;
     AActor* GetMetaHuman() const { return MetaHuman; }
     DECLARE_MULTICAST_DELEGATE(FOnFaceChanged);
     mutable FOnFaceChanged OnFaceChanged;  // after the MetaHuman was respawned for a new face (client side; the Equipment preview rebuilds its copy)

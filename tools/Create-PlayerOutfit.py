@@ -4,6 +4,7 @@ UnrealEditor-Cmd.exe <uproject> -run=pythonscript -nullrhi -unattended -script="
 Needs the bare body build (tools/Build-PlayerMetaHumans.py, faces.json "OrlandoBare") and the garment imports (tools/Import-PlayerGarment.py:
 SKM_Tunic_Leggings and its body patch SKM_Tunic_Leggings_BodyClip from tools/Build-GarmentBodyClip.py). Writes and compiles
 /Game/Frontier/Characters/Player/Outfit/CO_PlayerOutfit; ASFE1Character puts an instance of it on the MetaHuman's Body component.
+Female fit: env SF_BARE_FACE=HildaBare SF_OUTFIT_SUFFIX=_F builds CO_PlayerOutfit_F from SKM_Tunic_Leggings_F (+ _BodyClip).
 
 Graph (Mutable 5.8 nodes, wired through USFGraphAuthoring because Python cannot link pins):
   Object.Components <- Component Skeletal Mesh "Body" <- Skeletal Mesh Object Make <- Make Skeletal Mesh (LOD 0) <- mesh sections:
@@ -11,15 +12,19 @@ Graph (Mutable 5.8 nodes, wired through USFGraphAuthoring because Python cannot 
     garment: Section(garment section 0), Section(garment section 1)
 ponytail: one fixed outfit and LOD 0 only; gear options become child objects with Merge/Remove modifiers once there is a second piece.
 """
+import os
+
 import unreal
 
 G = unreal.SFGraphAuthoring
 lib = unreal.EditorAssetLibrary
 ROOT = '/Game/Frontier/Characters/Player/Outfit'
-NAME = 'CO_PlayerOutfit'
-BODY = '/Game/Frontier/Characters/Player/Built/MHC_OrlandoBare/Body/SKM_MHC_OrlandoBare_BodyMesh'
-GARMENT = '/Game/Frontier/Characters/Player/Garments/SKM_Tunic_Leggings'
-CLIP = '/Game/Frontier/Characters/Player/Garments/SKM_Tunic_Leggings_BodyClip'
+SUFFIX = os.environ.get('SF_OUTFIT_SUFFIX', '')
+BARE = os.environ.get('SF_BARE_FACE', 'OrlandoBare')
+NAME = 'CO_PlayerOutfit' + SUFFIX
+BODY = f'/Game/Frontier/Characters/Player/Built/MHC_{BARE}/Body/SKM_MHC_{BARE}_BodyMesh'
+GARMENT = f'/Game/Frontier/Characters/Player/Garments/SKM_Tunic_Leggings{SUFFIX}'
+CLIP = f'{GARMENT}_BodyClip'
 
 
 def load(path):

@@ -57,6 +57,7 @@ def parse():
     p.add_argument('--v-half-angle', type=float, default=18.0)
     p.add_argument('--ankle-above-foot', type=float, default=2.5)
     p.add_argument('--uv-cm', type=float, default=40.0)
+    p.add_argument('--drape', type=float, default=0.0, help='0..1: the torso hangs straight down from the chest instead of following the waist (1 for the female fit)')
     return p.parse_args(sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else [])
 
 
@@ -293,10 +294,40 @@ def loft_skirt(bm, src, args, z_hem):
     return [v for row in ring[1:] for v in row]
 
 
+def drape(bm, src, z_bottom, z_top, amount, bins=72):
+    """Cloth falls from the widest point above: below z_top each torso vertex is pushed out to the largest radius (around the torso axis,
+    per angular bin) of any vertex above it down from z_top, so the tunic hangs off the chest instead of hugging the waist."""
+    bm.verts.index_update()
+    armv = vert_arm(src, bm)
+    band = [v for v in bm.verts if z_bottom <= v.co.z <= z_top and armv[v.index] < 0.2]
+    if not band:
+        return
+    cx = sum(v.co.x for v in band) / len(band)
+    cy = sum(v.co.y for v in band) / len(band)
+    radius = lambda v: math.hypot(v.co.x - cx, v.co.y - cy)
+    floor = {v: radius(v) for v in band}  # the shell is already clear of the skin: never pull cloth inside it
+    best = [0.0] * bins
+    for v in sorted(band, key=lambda v: -v.co.z):
+        dx, dy = v.co.x - cx, v.co.y - cy
+        r = math.hypot(dx, dy)
+        b = int((math.atan2(dy, dx) + math.pi) / (2 * math.pi) * bins) % bins
+        target = max(r, best[b])
+        best[b] = target
+        if r > 1e-6:
+            s = (r + amount * (target - r)) / r
+            v.co.x, v.co.y = cx + dx * s, cy + dy * s
+    for _ in range(8):  # neighbouring bins pick different maxima: smooth the band so it reads as one fall of cloth, not lumps
+        bmesh.ops.smooth_vert(bm, verts=band, factor=0.5, use_axis_x=True, use_axis_y=True, use_axis_z=False)
+    for v in band:
+        r = radius(v)
+        if 1e-6 < r < floor[v]:
+            v.co.x, v.co.y = cx + (v.co.x - cx) * floor[v] / r, cy + (v.co.y - cy) * floor[v] / r
+
+
 def raise_collar(bm, args):
     """A neckband rising from the neck opening and closing in round the neck: the body mesh stops at the collarbones (the head mesh
     carries the neck), so its seam alone leaves a wide scoop."""
-    border = {v for v in bm.verts if v.is_boundary and v.co.z > 140}
+    border = {v for v in bm.verts if v.is_boundary and v.co.z > args.zneck}
     cx = sum(v.co.x for v in border) / len(border)
     cy = sum(v.co.y for v in border) / len(border)
     r = max(abs(v.co.y - cy) for v in border) or 1.0
@@ -315,7 +346,7 @@ def raise_collar(bm, args):
 
 
 def add_v_split(bm, args):
-    border = [v for v in bm.verts if v.is_boundary and v.co.z > 140]
+    border = [v for v in bm.verts if v.is_boundary and v.co.z > args.zneck]
     cx = sum(v.co.x for v in border) / len(border)
     cy = sum(v.co.y for v in border) / len(border)
     front = [v for v in border if abs(v.co.x - cx) < 4 and v.co.y < cy]
@@ -359,6 +390,8 @@ def build(args, src, arm):
     z_ankle = head('foot_l').z + args.ankle_above_foot
     z_join = head('pelvis').z - 3.0
     args.zjoin = z_join
+    # Neck opening search height: 140 cm on the male body, a little under spine_05 (scales to shorter bodies).
+    args.zneck = head('spine_05').z - 0.2 * (head('neck_01').z - head('spine_05').z)
     z_hem = head('thigh_l').z - args.hem * (head('thigh_l').z - head('calf_l').z)
 
     # --- leggings: ankle to hip, no arms ---
@@ -373,6 +406,8 @@ def build(args, src, arm):
     # --- tunic: hip to neck and upper arms ---
     tun = shell(src, args.tunic_offset, extra_arm=args.sleeve_extra, smooth=4, clearance=args.clearance)
     cut(tun, Vector((0, 0, z_join)), Vector((0, 0, 1)), keep_negative=False)
+    if args.drape:
+        drape(tun, src, z_join, head('spine_05').z, args.drape)
     cuff = []
     for side in ('l', 'r'):
         a, e = head(f'upperarm_{side}'), head(f'lowerarm_{side}')

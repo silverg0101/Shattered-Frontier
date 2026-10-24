@@ -130,9 +130,14 @@ public:
 
     // Player MetaHuman faces a character may wear (ASFE1Character::FaceId). Each id names a face built by
     // tools/Build-PlayerMetaHumans.py at /Game/Frontier/Characters/Player/Built/MHC_<id>/BP_MHC_<id>; the server rejects any other id.
-    // Shipped list in DefaultGame.ini; must include Orlando (the default face), never OrlandoBare (an authoring body). Next startup.
+    // Shipped list in DefaultGame.ini; must include Orlando (the default face), never a *Bare authoring body (OrlandoBare, HildaBare). Next startup.
     UPROPERTY(Config, EditAnywhere, Category="Appearance (Release Only)")
     TArray<FName> PlayerFaceIds = { TEXT("Orlando") };
+
+    // Faces in PlayerFaceIds with a female body: they wear the outfit built on the female bare body (ASFE1Character::OutfitFemale).
+    // Every id must be in PlayerFaceIds. Shipped list in DefaultGame.ini. Next startup.
+    UPROPERTY(Config, EditAnywhere, Category="Appearance (Release Only)")
+    TArray<FName> FemaleFaceIds;
 
     bool Validate(FString& OutError) const;
 };
