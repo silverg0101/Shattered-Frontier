@@ -33,6 +33,8 @@ Base URL: `http://192.168.50.133:8090`. JSON in and out, no login. Errors return
        - `left` is the character's left side facing the camera (the figure faces image-left). `right` is the reverse.
        - Pixal3D's multi-view weights build both the geometry and the texture from every view, so the back and sides are painted from their own images instead of guessed.
        - Make the views of one identical figure, as if a camera orbits a statue: same pose, scale and feet height, white background, flat light. See `docs/art-templates/character-view-prompt.md`.
+       - Pixal3D is pixel-aligned: it projects each view's outline along straight, parallel camera rays and builds the shape that matches all of them, without interpreting the drawing. Views that disagree (a perspective shot, a leg or tail in another place, another scale) become extra geometry rather than being averaged out.
+       - Before the job runs, the server aligns the views: each subject is scaled to the front's height with its feet on one line (needs a white or transparent background). A view more than 15% off the front's height is flagged in `log`, since views that disagree that much rarely show one subject from one camera. An image job with `mode: "multi"` produces views that already fit.
    - `name` (optional, max 80 chars): the output file name. It defaults to the (front) image's name, or a motion job's model name.
    - Every other `params` key is optional. A missing key uses the workflow default.
    - Each option applies to single mode, multi mode or both, as listed in `modes` in `GET /api/schema`. An option for the other mode is accepted and ignored.

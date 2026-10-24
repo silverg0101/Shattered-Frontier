@@ -1183,7 +1183,7 @@ def run_job(jid, host):
     started = time.time()
     try:
         safe_name = re.sub(r"[^\w-]+", "_", job["name"]).strip("_") or f"asset{jid}"
-        out_dir, base = safe_path(s["output_folder"]), None
+        out_dir, base, view_notes = safe_path(s["output_folder"]), None, []
         if job["kind"] == "rig":  # the rigged file lands beside its model, named after it
             model = safe_path(params["model"])
             put_input(host, f"{jid}_model.glb", model.read_bytes())
@@ -1192,17 +1192,20 @@ def run_job(jid, host):
             out_dir, base = model.parent, model.stem
         else:
             views = job_views(params)
+            data = {pos: safe_path(rel).read_bytes() for pos, rel in views.items()}
+            if "views" in params:  # one height and feet line, as Pixal3D's orthographic projection assumes
+                data, view_notes = align_uploads(data)
             names = {}
             for pos, rel in views.items():
-                name = f"{jid}_{pos}{safe_path(rel).suffix.lower()}"
-                put_input(host, name, safe_path(rel).read_bytes())
+                name = f"{jid}_{pos}{'.png' if 'views' in params else safe_path(rel).suffix.lower()}"
+                put_input(host, name, data[pos])
                 remote_in.append(name)
                 names[pos] = f"sfam/{name}"
             src = safe_path(views["front"])
             graph = build_graph(params, names["front"], f"sfam/{jid}_{safe_name}", pixal_model(host),
                                 names if "views" in params else None)
         ok, line = gpu_check(host)
-        GPU_NOTES[jid] = [line]
+        GPU_NOTES[jid] = [line] + view_notes
         if not ok:
             raise RuntimeError(line)
         h = run_prompt(host, jid, graph, started, s["job_timeout_min"])
@@ -1453,9 +1456,11 @@ def codex_image(prompt, model="auto", refs=(), size="1024x1024"):
     return png
 
 REVIEW_INSTRUCTIONS = (
-    "You review generated reference images for an image-to-3D pipeline (Pixal3D), which rebuilds one 3D model from "
-    "several views taken by a camera orbiting a statue. Any part that moves, changes direction, appears or disappears "
-    "between views produces broken geometry (a tail swept to opposite sides gives two tails). Be strict about geometry "
+    "You review generated reference images for a pixel-aligned image-to-3D pipeline (Pixal3D). It rebuilds one 3D "
+    "model from several views taken by an orthographic camera orbiting a statue, by projecting each view's outline "
+    "along straight, parallel camera rays and building the shape that matches all of them; it does not interpret the "
+    "drawing. Any part that moves, changes direction, appears or disappears between views, and any perspective, "
+    "becomes extra geometry (a tail swept to opposite sides gives two tails). Be strict about geometry "
     "and viewpoint, lenient about small texture details. Answer with one JSON object only, no other text: "
     '{"pass": true|false, "problems": ["..."], "fix": "instructions for the image model that would correct every problem"}')
 
@@ -1484,6 +1489,11 @@ MV_SHEET = ("{prompt}\n\nDraw this as a 3D-model turnaround sheet: one square im
             "equal square cells, with the same subject once in each cell. Top-left: the front view (facing the "
             "viewer). Top-right: the view from its left side (it faces image-left). Bottom-left: the view from "
             "directly behind. Bottom-right: the view from its right side (it faces image-right).\n\n"
+            "These views feed a pixel-aligned 3D reconstruction (Pixal3D). It does not interpret the drawing: it "
+            "projects every pixel of each cell's outline along straight, parallel camera rays and builds the one shape "
+            "that matches all four outlines at once. So anything that differs between cells - a leg in another place, a "
+            "tail at another angle, another scale, any perspective - becomes extra geometry. Draw each cell as an exact "
+            "orthographic projection of the same 3D object.\n\n"
             "The subject is a rigid statue and only the camera moves around it: the pose, proportions, colours, "
             "materials and every part (head, ears, limbs, tail, clothing, anything held) stay exactly the same in all "
             "four cells. Use a neutral, symmetrical standing pose. Loose parts never sweep to one side: a tail trails "
@@ -1504,35 +1514,70 @@ MV_SHEET_REVIEW = (
 SHEET_CELLS = {"front": (0, 0), "left": (1, 0), "back": (0, 1), "right": (1, 1)}  # (column, row) on the sheet
 VIEW_SIZE = 1024  # each split view is enlarged onto a square of this size
 
+def _subject_box(img):
+    """Bounding box of the subject: its alpha where the image has transparency, else whatever isn't near-white."""
+    from PIL import ImageFilter  # pillow is in the Dockerfile
+    if img.mode == "RGBA" and img.getchannel("A").getextrema()[0] < 250:
+        mask = img.getchannel("A").point(lambda v: 255 if v > 16 else 0)
+    else:
+        mask = img.convert("L").point(lambda v: 255 if v < 235 else 0)
+    return mask.filter(ImageFilter.MinFilter(5)).getbbox()  # MinFilter drops stray specks
+
+def align_views(subjects):
+    """{position: image cropped to its subject} -> {position: PNG bytes}. An orthographic camera orbiting a standing
+    subject sees the same height from every side, so every view is scaled to one height (shrunk together if a long
+    side view would not fit), its feet set on one line and centred, on a VIEW_SIZE square."""
+    from PIL import Image
+    s, clear = VIEW_SIZE, any(v.mode == "RGBA" for v in subjects.values())
+    height = min([0.84 * s] + [0.94 * s * v.height / v.width for v in subjects.values()])
+    feet = round(0.93 * s)
+    out = {}
+    for pos, v in subjects.items():
+        w, h = round(v.width * height / v.height), round(height)
+        canvas = Image.new("RGBA", (s, s), (0, 0, 0, 0)) if clear else Image.new("RGB", (s, s), "white")
+        canvas.paste(v.resize((w, h), Image.LANCZOS).convert(canvas.mode), ((s - w) // 2, feet - h))
+        buf = io.BytesIO()
+        canvas.save(buf, "PNG")
+        out[pos] = buf.getvalue()
+    return out
+
 def split_sheet(png):
-    """Cut a 2x2 turnaround sheet into its four views and give them one scale: an orthographic camera orbiting a
-    standing subject sees the same height from every side, so each view's silhouette is scaled to the same height
-    (shrunk together if a long side view would not fit) and its feet set on the same line, centred. Returns
-    {position: PNG bytes}; ValueError when a cell is empty."""
-    from PIL import Image, ImageFilter  # pillow is in the Dockerfile
+    """Cut a 2x2 turnaround sheet into its four views at one scale (align_views). ValueError when a cell is empty."""
+    from PIL import Image
     im = Image.open(io.BytesIO(png)).convert("RGB")
     cw, ch = im.width // 2, im.height // 2
     pad = round(min(cw, ch) * 0.015)  # drop the cell edges, where a stray grid line or a neighbour can bleed in
     subjects = {}
     for pos, (c, r) in SHEET_CELLS.items():
         cell = im.crop((c * cw + pad, r * ch + pad, (c + 1) * cw - pad, (r + 1) * ch - pad))
-        mask = cell.convert("L").point(lambda v: 255 if v < 235 else 0).filter(ImageFilter.MinFilter(5))  # no specks
-        box = mask.getbbox()
+        box = _subject_box(cell)
         if not box:
             raise ValueError(f"the {pos} cell of the sheet is empty")
         subjects[pos] = cell.crop(box)
-    s = VIEW_SIZE
-    height = min([0.84 * s] + [0.94 * s * v.height / v.width for v in subjects.values()])
-    feet = round(0.93 * s)
-    out = {}
-    for pos, v in subjects.items():
-        w, h = round(v.width * height / v.height), round(height)
-        canvas = Image.new("RGB", (s, s), "white")
-        canvas.paste(v.resize((w, h), Image.LANCZOS), ((s - w) // 2, feet - h))
-        buf = io.BytesIO()
-        canvas.save(buf, "PNG")
-        out[pos] = buf.getvalue()
-    return out
+    return align_views(subjects)
+
+def align_uploads(raw):
+    """Multi-view 3D job inputs ({position: image bytes}) aligned like a sheet before Pixal3D sees them, with notes
+    for its log. A view whose subject is more than 15% off the front's height (as a share of its frame) is scaled to
+    match but flagged: views that disagree that much rarely show one subject from one camera. Views whose outline
+    can't be found (not on white or transparent) are sent unchanged."""
+    from PIL import Image
+    subjects, share, notes = {}, {}, []
+    for pos, b in raw.items():
+        im = Image.open(io.BytesIO(b))
+        im = im.convert("RGBA" if im.mode in ("RGBA", "LA", "P") else "RGB")
+        box = _subject_box(im)
+        if not box or (box[2] - box[0]) * (box[3] - box[1]) > 0.97 * im.width * im.height:
+            return raw, [f"[asset-manager] views: no clear subject outline in the {pos} view (needs a white or "
+                         "transparent background); views sent unaligned"]
+        subjects[pos], share[pos] = im.crop(box), (box[3] - box[1]) / im.height
+    for pos in subjects:
+        r = share[pos] / share["front"]
+        if abs(r - 1) > 0.15:
+            notes.append(f"[asset-manager] views: the {pos} view's subject is {r:.0%} of the front's height; scaled to "
+                         "match, but check the views show one subject from one orthographic camera")
+    notes.append("[asset-manager] views: aligned to one height and feet line")
+    return align_views(subjects), notes
 
 def image_params(params):
     unknown = set(params) - {"mode", "model", "prompt"}
@@ -1922,6 +1967,18 @@ def check():
     assert set(boxes) == set(SHEET_CELLS)
     assert max(b[3] for b in boxes.values()) - min(b[3] for b in boxes.values()) <= 2  # one feet line
     assert max(b[3] - b[1] for b in boxes.values()) - min(b[3] - b[1] for b in boxes.values()) <= 2  # one height
+    def png_of(img):
+        b = io.BytesIO(); img.save(b, "PNG"); return b.getvalue()
+    front, left = Image.new("RGBA", (500, 500), (0, 0, 0, 0)), Image.new("RGBA", (500, 500), (0, 0, 0, 0))
+    ImageDraw.Draw(front).rectangle((200, 50, 300, 450), fill="grey")  # 80% of the frame
+    ImageDraw.Draw(left).rectangle((100, 200, 400, 400), fill="grey")  # 40%: flagged, then matched
+    aligned, notes = align_uploads({"front": png_of(front), "left": png_of(left)})
+    boxes = [Image.open(io.BytesIO(b)).getchannel("A").getbbox() for b in aligned.values()]
+    assert boxes[0][1] == boxes[1][1] and boxes[0][3] == boxes[1][3], boxes  # same top and feet line
+    assert any("left view's subject is 50%" in n for n in notes), notes
+    busy = Image.effect_noise((300, 300), 60).convert("RGB")  # no clean background: sent unchanged
+    raw = {"front": png_of(busy), "left": png_of(busy)}
+    assert align_uploads(raw)[0] is raw
     blank = io.BytesIO(); Image.new("RGB", (400, 400), "white").save(blank, "PNG")
     try:
         split_sheet(blank.getvalue()); raise AssertionError("an empty sheet must be refused")
