@@ -69,6 +69,9 @@ private:
     UPROPERTY(Replicated) TObjectPtr<AActor> CombatTarget;
     FTimerHandle CombatScenarioTimer;
     int32 CombatScenarioAttackCount = 0;
+    bool bM3ClientCaptureStarted = false;
+    bool bM3ClientStopQueued = false;
+    TWeakObjectPtr<class ASFPilotBoar> M3ClientTarget;
     int32 TargetScenarioStage = 0;
     TWeakObjectPtr<AActor> TargetScenarioFirst;
     TWeakObjectPtr<AActor> TargetScenarioSecond;

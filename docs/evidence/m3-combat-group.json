@@ -1,0 +1,92 @@
+{
+  "schema": 1,
+  "scenario": "CombatGroup",
+  "clients": 3,
+  "nullRhi": true,
+  "note": "Client frame time uses -NullRHI and excludes representative GPU cost.",
+  "server": {
+    "frameMs": {
+      "samples": 1519,
+      "avg": 35.539,
+      "p95": 34.077,
+      "max": 423.873
+    },
+    "net": {
+      "seconds": 53.973,
+      "inBps": 7007.1,
+      "outBps": 2921.7,
+      "perConnection": [
+        {
+          "id": 1,
+          "seconds": 53.973,
+          "inBps": 4367.2,
+          "outBps": 1506.5
+        },
+        {
+          "id": 2,
+          "seconds": 4.403,
+          "inBps": 4113.5,
+          "outBps": 3491.6
+        },
+        {
+          "id": 3,
+          "seconds": 22.576,
+          "inBps": 4055.5,
+          "outBps": 1704.5
+        },
+        {
+          "id": 4,
+          "seconds": 7.427,
+          "inBps": 4274.6,
+          "outBps": 2670.0
+        }
+      ]
+    },
+    "gameplayServiceMs": [
+      {
+        "rpc": "GrantDefeatReward",
+        "count": 1,
+        "avg": 190.346,
+        "p95": 190.346
+      },
+      {
+        "rpc": "ApplyReceipt",
+        "count": 1,
+        "avg": 68.726,
+        "p95": 68.726
+      },
+      {
+        "rpc": "GetCharacterState",
+        "count": 4,
+        "avg": 33.418,
+        "p95": 35.225
+      },
+      {
+        "rpc": "SavePosition",
+        "count": 2,
+        "avg": 43.386,
+        "p95": 53.907
+      }
+    ]
+  },
+  "clientFrameMs": {
+    "client1": {
+      "samples": 40309,
+      "avg": 1.24,
+      "p95": 1.745,
+      "max": 40.88
+    },
+    "client2-rejoin": {
+      "samples": 13860,
+      "avg": 1.371,
+      "p95": 1.891,
+      "max": 34.785
+    },
+    "client3": {
+      "samples": 2670,
+      "avg": 1.496,
+      "p95": 1.932,
+      "max": 35.473
+    }
+  }
+}

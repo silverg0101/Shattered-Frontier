@@ -5,9 +5,12 @@
 #include "Interaction/SFE1InteractionTarget.h"
 #include "Exchange/SFMarketBoardActor.h"
 #include "Engine/World.h"
+#include "Engine/NetConnection.h"
+#include "Engine/NetDriver.h"
 #include "EngineUtils.h"
 #include "GameFramework/PlayerController.h"
 #include "TimerManager.h"
+#include "ProfilingDebugging/CsvProfiler.h"
 #include "Tests/SFE1NetworkScenario.h"
 
 ASFGameMode::ASFGameMode()
@@ -68,6 +71,8 @@ void ASFGameMode::StartPlay()
 void ASFGameMode::PostLogin(APlayerController* NewPlayer)
 {
     Super::PostLogin(NewPlayer);
+    if (FParse::Param(FCommandLine::Get(), TEXT("CombatGroupScenario")))
+    { RecordM3Connection(NewPlayer ? NewPlayer->NetConnection : nullptr); }
     UE_LOG(LogTemp, Display, TEXT("E1_PLAYER_JOIN Controller=%s Players=%d Authority=%d"), *GetNameSafe(NewPlayer), GetNumPlayers(), HasAuthority());
     ScheduleLifecycleAudit(NewPlayer, false);
     PostLoginConstruction(NewPlayer);
@@ -76,6 +81,8 @@ void ASFGameMode::PostLogin(APlayerController* NewPlayer)
 
 void ASFGameMode::Logout(AController* Exiting)
 {
+    if (FParse::Param(FCommandLine::Get(), TEXT("CombatGroupScenario")))
+    { FinishM3Connection(Cast<APlayerController>(Exiting) ? Cast<APlayerController>(Exiting)->NetConnection : nullptr); }
     UE_LOG(LogTemp, Display, TEXT("E1_PLAYER_LEAVE Controller=%s"), *GetNameSafe(Exiting));
     // Capture before Logout/Destroyed finishes; inspect the world on the next tick.
     ScheduleLifecycleAudit(Exiting, true);
@@ -153,5 +160,79 @@ void ASFGameMode::RestartPlayer(AController* NewPlayer)
 void ASFGameMode::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
+    if (M3StartedAt > 0 && !bM3CaptureFinished)
+    {
+        for (auto& Pair : M3Connections)
+        {
+            if (UNetConnection* Connection = Pair.Key.Get())
+            {
+                Pair.Value.LastInBytes = Connection->InTotalBytes;
+                Pair.Value.LastOutBytes = Connection->OutTotalBytes;
+                Pair.Value.LastAt = FPlatformTime::Seconds();
+            }
+        }
+    }
     TickCombat();
+}
+
+void ASFGameMode::RecordM3Connection(UNetConnection* Connection)
+{
+    if (!Connection || !GetWorld() || !GetWorld()->GetNetDriver()) { return; }
+    if (M3StartedAt == 0)
+    {
+        M3StartedAt = FPlatformTime::Seconds();
+        UE_LOG(LogTemp, Display, TEXT("M3_CAPTURE_START TimeSec=%.6f"), M3StartedAt);
+        M3DriverInBytes = GetWorld()->GetNetDriver()->InTotalBytes;
+        M3DriverOutBytes = GetWorld()->GetNetDriver()->OutTotalBytes;
+        FString CsvDir;
+        if (FParse::Value(FCommandLine::Get(), TEXT("M3CsvDir="), CsvDir))
+        { FCsvProfiler::Get()->BeginCapture(-1, CsvDir, TEXT("server-m3.csv")); }
+    }
+    FM3ConnectionSample Sample;
+    Sample.Id = ++M3NextConnectionId;
+    Sample.InBytes = Connection->InTotalBytes;
+    Sample.OutBytes = Connection->OutTotalBytes;
+    Sample.JoinedAt = FPlatformTime::Seconds();
+    Sample.LastInBytes = Sample.InBytes;
+    Sample.LastOutBytes = Sample.OutBytes;
+    Sample.LastAt = Sample.JoinedAt;
+    M3Connections.Add(Connection, Sample);
+}
+
+void ASFGameMode::FinishM3Connection(UNetConnection* Connection)
+{
+    if (!Connection) { return; }
+    const FM3ConnectionSample* Sample = M3Connections.Find(Connection);
+    if (!Sample) { return; }
+    const double Seconds = FMath::Max(0.001, FPlatformTime::Seconds() - Sample->JoinedAt);
+    M3FinishedConnections.Add(FString::Printf(TEXT("%d:%0.3f:%0.1f:%0.1f"), Sample->Id, Seconds,
+        double(Connection->InTotalBytes - Sample->InBytes) / Seconds,
+        double(Connection->OutTotalBytes - Sample->OutBytes) / Seconds));
+    M3Connections.Remove(Connection);
+}
+
+void ASFGameMode::FinishM3Capture()
+{
+    if (bM3CaptureFinished || M3StartedAt == 0 || !GetWorld() || !GetWorld()->GetNetDriver()) { return; }
+    bM3CaptureFinished = true;
+    for (const auto& Pair : M3Connections)
+    {
+        const FM3ConnectionSample& Sample = Pair.Value;
+        const UNetConnection* Connection = Pair.Key.Get();
+        const double EndAt = Connection ? FPlatformTime::Seconds() : Sample.LastAt;
+        const double Duration = FMath::Max(0.001, EndAt - Sample.JoinedAt);
+        const int32 InBytes = Connection ? Connection->InTotalBytes : Sample.LastInBytes;
+        const int32 OutBytes = Connection ? Connection->OutTotalBytes : Sample.LastOutBytes;
+        M3FinishedConnections.Add(FString::Printf(TEXT("%d:%0.3f:%0.1f:%0.1f"), Sample.Id, Duration,
+            double(InBytes - Sample.InBytes) / Duration, double(OutBytes - Sample.OutBytes) / Duration));
+    }
+    M3Connections.Empty();
+    const double Seconds = FMath::Max(0.001, FPlatformTime::Seconds() - M3StartedAt);
+    UNetDriver* Driver = GetWorld()->GetNetDriver();
+    UE_LOG(LogTemp, Display, TEXT("M3_SERVER_NET DurationSec=%.3f InBps=%.1f OutBps=%.1f Connections=%s"), Seconds,
+        double(Driver->InTotalBytes - M3DriverInBytes) / Seconds,
+        double(Driver->OutTotalBytes - M3DriverOutBytes) / Seconds,
+        *FString::Join(M3FinishedConnections, TEXT(";")));
+    FString CsvDir;
+    if (FParse::Value(FCommandLine::Get(), TEXT("M3CsvDir="), CsvDir)) { FCsvProfiler::Get()->EndCapture(); }
 }

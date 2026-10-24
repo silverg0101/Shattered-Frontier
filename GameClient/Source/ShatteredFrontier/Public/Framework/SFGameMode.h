@@ -61,6 +61,25 @@ public:
     const USFCombatPilotSettings* CombatSettings() const { return CapturedSettings; }
 
 private:
+    // Opt-in M3 group capture; Unreal CSV supplies frame times, while net totals come from the driver's built-in counters.
+    struct FM3ConnectionSample
+    {
+        int32 Id = 0;
+        int32 InBytes = 0, OutBytes = 0;
+        int32 LastInBytes = 0, LastOutBytes = 0;
+        double JoinedAt = 0;
+        double LastAt = 0;
+    };
+    TMap<TWeakObjectPtr<class UNetConnection>, FM3ConnectionSample> M3Connections;
+    TArray<FString> M3FinishedConnections;
+    double M3StartedAt = 0;
+    uint32 M3DriverInBytes = 0, M3DriverOutBytes = 0;
+    int32 M3NextConnectionId = 0;
+    bool bM3CaptureFinished = false;
+    void RecordM3Connection(class UNetConnection* Connection);
+    void FinishM3Connection(class UNetConnection* Connection);
+    void FinishM3Capture();
+
     // Spawn and lifecycle (SFGameMode.cpp)
     uint64 LifecycleAuditSequence = 0;
     TMap<TWeakObjectPtr<AController>, TWeakObjectPtr<APawn>> LifecyclePawns;

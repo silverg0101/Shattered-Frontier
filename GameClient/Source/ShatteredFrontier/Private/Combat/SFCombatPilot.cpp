@@ -718,6 +718,12 @@ void ASFGameMode::RetryDefeatReward(const FString& DeathId, const FString& Servi
         const bool bGranted = Outcome == ESFBackpackOutcome::Committed && Receipt->bGranted;
         UE_LOG(LogTemp, Display, TEXT("COMBAT_PILOT_REWARD Death=%s Source=service Outcome=%d Granted=%d Code=%s Item=%s Quantity=%lld"),
             *DeathId, int32(Outcome), bGranted, *Receipt->SourceCode, *Receipt->DefinitionId, Receipt->Quantity);
+        if (bGranted && FParse::Param(FCommandLine::Get(), TEXT("CombatGroupScenario")))
+        {
+            FTimerHandle MetricsTimer;
+            Mode->GetWorldTimerManager().SetTimer(MetricsTimer, FTimerDelegate::CreateWeakLambda(Mode,
+                [WeakMode]() { if (ASFGameMode* M = WeakMode.Get()) { M->FinishM3Capture(); } }), 3.0f, false);
+        }
         if (bGranted)
         {
             if (USFBackpackComponent* Owner = Weak.Get()) { Owner->ApplyToBag({{Receipt->DefinitionId, Receipt->Quantity}}); }

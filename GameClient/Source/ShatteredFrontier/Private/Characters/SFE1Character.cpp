@@ -24,6 +24,7 @@
 #include "Combat/SFCombatPilot.h"
 #include "Combat/SFTabTargetSelection.h"
 #include "Combat/SFCrowdControlComponent.h"
+#include "ProfilingDebugging/CsvProfiler.h"
 #include "Framework/SFPlayerController.h"
 #include "Services/SFBackpackComponent.h"
 #include "Engine/World.h"
@@ -216,10 +217,9 @@ void ASFE1Character::TickCombatScenario()
 {
     if (FParse::Param(FCommandLine::Get(), TEXT("CombatGroupScenario")))
     {
-        if (!IsLocallyControlled() || CombatScenarioAttackCount > 0 || PilotHealth <= 0) { return; }
+        if (!IsLocallyControlled()) { return; }
         int32 ScenarioRole = 0;
         FParse::Value(FCommandLine::Get(), TEXT("CombatGroupRole="), ScenarioRole);
-        if (ScenarioRole < 1 || ScenarioRole > 3) { return; }
         ASFPilotBoar* Boar = nullptr;
         double NearestDistance = TNumericLimits<double>::Max();
         for (TActorIterator<ASFPilotBoar> It(GetWorld()); It; ++It)
@@ -227,6 +227,29 @@ void ASFE1Character::TickCombatScenario()
             const double Distance = FVector::Dist2D(GetActorLocation(), It->GetActorLocation());
             if (It->Health() > 0 && Distance < NearestDistance) { Boar = *It; NearestDistance = Distance; }
         }
+        FString CsvDir;
+        if (FParse::Value(FCommandLine::Get(), TEXT("M3CsvDir="), CsvDir))
+        {
+            if (!bM3ClientCaptureStarted && Boar && NearestDistance <= 300.0)
+            {
+                bM3ClientCaptureStarted = true;
+                M3ClientTarget = Boar;
+                FCsvProfiler::Get()->BeginCapture(-1, CsvDir, TEXT("client-m3.csv"));
+                UE_LOG(LogTemp, Display, TEXT("M3_CLIENT_CSV_START Role=%d"), ScenarioRole);
+            }
+            if (bM3ClientCaptureStarted && !bM3ClientStopQueued &&
+                (!M3ClientTarget.IsValid() || M3ClientTarget->Health() <= 0))
+            {
+                bM3ClientStopQueued = true;
+                FTimerHandle Timer;
+                GetWorldTimerManager().SetTimer(Timer, FTimerDelegate::CreateWeakLambda(this, [this, ScenarioRole]()
+                {
+                    FCsvProfiler::Get()->EndCapture();
+                    UE_LOG(LogTemp, Display, TEXT("M3_CLIENT_CSV_STOP Role=%d"), ScenarioRole);
+                }), 1.0f, false);
+            }
+        }
+        if (ScenarioRole < 1 || ScenarioRole > 3 || CombatScenarioAttackCount > 0 || PilotHealth <= 0) { return; }
         if (!Boar || NearestDistance > 300.0) { return; }
         auto* PC = Cast<ASFPlayerController>(Controller);
         if (!PC) { return; }

@@ -39,7 +39,17 @@ TSharedPtr<FSFGameplayServicesClient> FSFGameplayServicesClient::Create(const US
 
 void FSFGameplayServicesClient::Call(const FSFGameplayRequest& Request, TFunction<void(const FSFGameplayResponse&)> Done)
 {
-    Attempt(Request, 1, MoveTemp(Done));
+    const double StartedAt = FPlatformTime::Seconds();
+    const ESFGameplayRpc Rpc = Request.Rpc;
+    Attempt(Request, 1, [StartedAt, Rpc, Done = MoveTemp(Done)](const FSFGameplayResponse& Response) mutable
+    {
+        if (FParse::Param(FCommandLine::Get(), TEXT("CombatGroupScenario")))
+        {
+            UE_LOG(LogTemp, Display, TEXT("M3_GAMEPLAY_SERVICE Rpc=%d StartedSec=%.6f LatencyMs=%.3f Status=%d"),
+                int32(Rpc), StartedAt, (FPlatformTime::Seconds() - StartedAt) * 1000.0, int32(Response.Status));
+        }
+        Done(Response);
+    });
 }
 
 void FSFGameplayServicesClient::Attempt(const FSFGameplayRequest& Request, int32 Number, TFunction<void(const FSFGameplayResponse&)> Done)

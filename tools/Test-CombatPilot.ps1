@@ -37,6 +37,11 @@ function Start-Owned([string]$Name,[string]$Url,[string[]]$Extra) {
     $user = Join-Path $root ($Name+'-user')
     $null = New-Item -ItemType Directory -Path $user
     $arguments = @(('"'+$project+'"'),$Url,'-unattended','-NullRHI','-nosound','-nop4',('-UserDir="'+$user+'/"'),('-abslog="'+$log+'"'))+$Extra
+    if ($Clients -eq 3 -and $Name -like 'client*') {
+        $clientCsvDir = Join-Path $root ($Name+'-csv')
+        $null = New-Item -ItemType Directory -Path $clientCsvDir
+        $arguments += ('-M3CsvDir="'+$clientCsvDir+'"')
+    }
     $process = Start-Process -FilePath $editor -ArgumentList $arguments -WindowStyle Hidden -PassThru `
         -RedirectStandardOutput (Join-Path $root ($Name+'.stdout.txt')) -RedirectStandardError (Join-Path $root ($Name+'.stderr.txt'))
     $null = $process.Handle
@@ -53,6 +58,45 @@ function Wait-Log([Diagnostics.Process]$Process,[string]$Name,[string]$Pattern) 
         Start-Sleep -Milliseconds 300
     }
     throw "Timed out waiting for $Name ($Pattern)."
+}
+function Wait-M3Csv([Diagnostics.Process]$Process,[string]$Path) {
+    $watch = [Diagnostics.Stopwatch]::StartNew()
+    while ($watch.Elapsed.TotalSeconds -lt $TimeoutSeconds) {
+        if (Test-Path -LiteralPath $Path -PathType Leaf) {
+            try { $last = Get-Content -LiteralPath $Path -Tail 1 -ErrorAction Stop }
+            catch { $last = '' } # Unreal may hold an exclusive lock while the CSV writer finalizes.
+            if ($last -match '^\[HasHeaderRowAtEnd\],1,') { return }
+        }
+        if ($Process.HasExited) { throw "Process exited before CSV finalized: $Path" }
+        Start-Sleep -Milliseconds 300
+    }
+    throw "Timed out waiting for CSV: $Path"
+}
+function Get-M3FrameStats([string]$Path) {
+    $parser = [Microsoft.VisualBasic.FileIO.TextFieldParser]::new($Path)
+    $parser.SetDelimiters(',')
+    $parser.HasFieldsEnclosedInQuotes = $true
+    $rows = [Collections.Generic.List[object]]::new()
+    try { while (-not $parser.EndOfData) { $rows.Add($parser.ReadFields()) } }
+    finally { $parser.Close() }
+    if ($rows.Count -lt 12 -or $rows[$rows.Count - 1][0] -ne '[HasHeaderRowAtEnd]') { throw "Incomplete frame CSV: $Path" }
+    $frameIndex = [Array]::IndexOf([string[]]$rows[$rows.Count - 2], 'FrameTime')
+    if ($frameIndex -lt 0) { throw "FrameTime missing from CSV: $Path" }
+    $values = [Collections.Generic.List[double]]::new()
+    for ($i = 1; $i -lt $rows.Count - 2; $i++) {
+        $fields = [string[]]$rows[$i]
+        if ($fields.Length -le $frameIndex) { continue }
+        $ms = 0.0
+        if ([double]::TryParse($fields[$frameIndex], [Globalization.NumberStyles]::Float,
+            [Globalization.CultureInfo]::InvariantCulture, [ref]$ms) -and [double]::IsFinite($ms) -and $ms -gt 0) {
+            $values.Add($ms)
+        }
+    }
+    if ($values.Count -lt 10) { throw "Too few positive frame samples in $Path" }
+    $sorted = $values.ToArray(); [Array]::Sort($sorted)
+    $sum = 0.0; foreach ($value in $values) { $sum += $value }
+    return [ordered]@{ samples=$values.Count; avg=[math]::Round($sum/$values.Count,3)
+        p95=[math]::Round($sorted[[math]::Ceiling(0.95*$sorted.Length)-1],3); max=[math]::Round($sorted[-1],3) }
 }
 try {
     if ($Services) {
@@ -80,6 +124,11 @@ try {
     $url = $result.map
     $scenarioArg = if ($Clients -gt 1) { '-CombatGroupScenario' } elseif ($TargetScenario) { '-CombatTargetScenario' } else { '-CombatPilotScenario' }
     $serverFlags = @('-server',('-port='+$Port),'-multihome=127.0.0.1',$scenarioArg)
+    if ($Clients -eq 3) {
+        $csvDir = Join-Path $root 'server-csv'
+        $null = New-Item -ItemType Directory -Path $csvDir
+        $serverFlags += ('-M3CsvDir="'+$csvDir+'"')
+    }
     if ($Services) {
         $ledgerIni = '-ini:Game:[/Script/ShatteredFrontier.SFInventoryLedgerSettings]'; $servicesIni = '-ini:Game:[/Script/ShatteredFrontier.SFGameplayServicesSettings]'
         $serverFlags += @('-SFDevIdentity',($ledgerIni+':bEnabled=True'),($ledgerIni+':Endpoint=127.0.0.1:'+$fx.hostPort),
@@ -139,6 +188,68 @@ try {
         if (($Clients -eq 3 -and $rejoinText -match 'COMBAT_GROUP_ATTACK Role=2') -or $rejoined.HasExited -or
             ($Clients -eq 3 -and $third.HasExited) -or $server.HasExited) {
             throw 'Mid-fight reconnect replayed an attack or a process exited.'
+        }
+        if ($Clients -eq 3) {
+            Wait-Log $server 'server' 'M3_SERVER_NET DurationSec='
+            $liveClients = @('client1','client2-rejoin','client3')
+            foreach ($name in $liveClients) {
+                $run = @($result.runs | Where-Object name -eq $name)[0]
+                $process = @($owned | Where-Object Id -eq $run.pid)[0]
+                Wait-Log $process $name 'M3_CLIENT_CSV_STOP Role='
+            }
+            $serverCsv = Join-Path $csvDir 'server-m3.csv'
+            Wait-M3Csv $server $serverCsv
+            $clientFrames = [ordered]@{}
+            foreach ($name in $liveClients) {
+                $run = @($result.runs | Where-Object name -eq $name)[0]
+                $process = @($owned | Where-Object Id -eq $run.pid)[0]
+                $path = Join-Path $root ($name+'-csv/client-m3.csv')
+                Wait-M3Csv $process $path
+                $clientFrames[$name] = Get-M3FrameStats $path
+            }
+            $serverText = Get-Content -LiteralPath (Join-Path $root 'server.log') -Raw
+            $start = [regex]::Match($serverText,'M3_CAPTURE_START TimeSec=([0-9.]+)')
+            $net = [regex]::Match($serverText,'M3_SERVER_NET DurationSec=([0-9.]+) InBps=([0-9.]+) OutBps=([0-9.]+) Connections=([^\r\n]+)')
+            if (-not $start.Success -or -not $net.Success) { throw 'Server M3 capture markers missing.' }
+            $culture = [Globalization.CultureInfo]::InvariantCulture
+            $captureStart = [double]::Parse($start.Groups[1].Value,$culture)
+            $connections = @($net.Groups[4].Value -split ';' | ForEach-Object {
+                $parts = $_ -split ':'
+                if ($parts.Count -ne 4) { throw "Malformed M3 connection sample: $_" }
+                [ordered]@{ id=[int]$parts[0]; seconds=[double]::Parse($parts[1],$culture)
+                    inBps=[double]::Parse($parts[2],$culture); outBps=[double]::Parse($parts[3],$culture) }
+            })
+            if ($connections.Count -ne 4) { throw "Expected four connection lifetimes, got $($connections.Count)." }
+            $rpcNames = @('GrantDefeatReward','ApplyReceipt','GetCharacterState','CreateCharacter','LearnRecipe','ClaimPlot','GetClaim','Place','Remove','Craft','ListStructures','Grant','SavePosition','ReportDeath','ClearDeath','ExchangeWallet','OfferTrade','AcceptTrade','CancelTrade','ListItem','BuyListing','CancelListing','ListListings')
+            $rpcSamples = @{}
+            foreach ($match in [regex]::Matches($serverText,'M3_GAMEPLAY_SERVICE Rpc=(\d+) StartedSec=([0-9.]+) LatencyMs=([0-9.]+) Status=(\d+)')) {
+                if ([double]::Parse($match.Groups[2].Value,$culture) -lt $captureStart) { continue }
+                $rpc = [int]$match.Groups[1].Value
+                if ($rpc -ge $rpcNames.Count) { throw "Unknown gameplay RPC $rpc" }
+                if (-not $rpcSamples.ContainsKey($rpc)) { $rpcSamples[$rpc] = [Collections.Generic.List[double]]::new() }
+                $rpcSamples[$rpc].Add([double]::Parse($match.Groups[3].Value,$culture))
+            }
+            if ($rpcSamples.Count -eq 0) { throw 'No gameplay service latency samples in the capture window.' }
+            $serviceLatency = @($rpcSamples.Keys | Sort-Object | ForEach-Object {
+                $values = $rpcSamples[$_].ToArray(); [Array]::Sort($values)
+                $sum = 0.0; foreach ($value in $values) { $sum += $value }
+                [ordered]@{ rpc=$rpcNames[$_]; count=$values.Length; avg=[math]::Round($sum/$values.Length,3)
+                    p95=[math]::Round($values[[math]::Ceiling(0.95*$values.Length)-1],3) }
+            })
+            $metrics = [ordered]@{ schema=1; scenario='CombatGroup'; clients=3; nullRhi=$true
+                note='Client frame time uses -NullRHI and excludes representative GPU cost.'
+                server=[ordered]@{ frameMs=(Get-M3FrameStats $serverCsv)
+                    net=[ordered]@{ seconds=[double]::Parse($net.Groups[1].Value,$culture)
+                        inBps=[double]::Parse($net.Groups[2].Value,$culture)
+                        outBps=[double]::Parse($net.Groups[3].Value,$culture); perConnection=$connections }
+                    gameplayServiceMs=$serviceLatency }
+                clientFrameMs=$clientFrames }
+            $evidencePath = Join-Path $repo 'docs/evidence/m3-combat-group.json'
+            $json = ($metrics | ConvertTo-Json -Depth 9) -replace "`r`n", "`n"
+            [IO.File]::WriteAllText($evidencePath, ($json + "`n"), [Text.UTF8Encoding]::new($false))
+            $result.m3Evidence = $evidencePath
+            Write-Output ('M3_SERVER_METRICS '+($metrics.server | ConvertTo-Json -Depth 8 -Compress))
+            Write-Output ('M3_CLIENT_FRAME_MS '+($clientFrames | ConvertTo-Json -Depth 4 -Compress))
         }
     } else {
     $client = Start-Owned 'client' $clientUrl @('-game',$scenarioArg)
