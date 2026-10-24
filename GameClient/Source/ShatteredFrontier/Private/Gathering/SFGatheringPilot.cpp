@@ -129,6 +129,34 @@ bool USFGatheringPilotSettings::Validate(FString& Error) const
     return bValid;
 }
 
+USFGatheringGrowthSettings::USFGatheringGrowthSettings()
+{
+    // Shipped defaults: sapling-sized when young, 70 percent when growing. Oak and the rocks share the table shape.
+    for (const ESFGatheringPilotKind Kind : {ESFGatheringPilotKind::Oak, ESFGatheringPilotKind::Iron, ESFGatheringPilotKind::Stone})
+    {
+        StageVisuals.Add({Kind,TEXT("young"),0.45f}); StageVisuals.Add({Kind,TEXT("growing"),0.7f}); StageVisuals.Add({Kind,TEXT("mature"),1.0f});
+    }
+}
+
+float USFGatheringGrowthSettings::ScaleFor(ESFGatheringPilotKind Kind, FName Stage) const
+{
+    for (const FSFGrowthStageVisual& V : StageVisuals) { if (V.Kind==Kind && V.Stage==Stage) { return V.Scale; } }
+    return 1;
+}
+
+bool USFGatheringGrowthSettings::Validate(FString& Error) const
+{
+    bool bValid=true;
+    for (int32 I=0; I<StageVisuals.Num(); ++I)
+    {
+        const FSFGrowthStageVisual& V=StageVisuals[I];
+        bValid&=!V.Stage.IsNone() && FMath::IsFinite(V.Scale) && V.Scale>=0.1f && V.Scale<=1.5f;
+        for (int32 J=0; J<I; ++J) { bValid&=!(StageVisuals[J].Kind==V.Kind && StageVisuals[J].Stage==V.Stage); }
+    }
+    Error=bValid ? TEXT("") : TEXT("Gathering growth appearance: stage names must be set and unique per kind, scale 0.1 to 1.5.");
+    return bValid;
+}
+
 namespace
 {
 // Debug text labels only in dev scenarios (-UiEvidence*, *Scenario); players see the prop and the HUD prompt instead.
@@ -170,6 +198,7 @@ void ASFGatheringPilotNode::BeginPlay()
     {
         State.Capacity=IsRefinery() ? 0 : Settings->ChargesPerNode;
         State.Charges=State.Capacity; CapturedRespawnSeconds=Settings->RespawnSeconds;
+        if (!GrowthStages.IsEmpty()) { State.GrowthStage=GrowthStages.Last().Name; }  // a fresh node starts mature
     }
     if (!IsRefinery())
     {
@@ -193,7 +222,7 @@ void ASFGatheringPilotNode::BeginPlay()
 
 void ASFGatheringPilotNode::EndPlay(const EEndPlayReason::Type Reason)
 {
-    GetWorldTimerManager().ClearTimer(RecoveryTimer);
+    GetWorldTimerManager().ClearTimer(RecoveryTimer); GetWorldTimerManager().ClearTimer(GrowthTimer);
     if (HasAuthority()&&IsValid(State.FallingTree)) { State.FallingTree->Destroy(); State.FallingTree=nullptr; }
     Super::EndPlay(Reason);
 }
@@ -216,6 +245,58 @@ void ASFGatheringPilotNode::BeginRecovery()
     GetWorldTimerManager().SetTimer(RecoveryTimer,this,&ASFGatheringPilotNode::Recover,CapturedRespawnSeconds,false);
 }
 
+void ASFGatheringPilotNode::SetGrowthProfile(const TArray<FSFGrowthStageDef>& Stages, float InGrowFraction)
+{
+    GrowthStages=Stages; GrowFraction=InGrowFraction;
+}
+
+FName ASFGatheringPilotNode::StageAt(const TArray<FSFGrowthStageDef>& Stages, double GrowWindowSeconds, double ElapsedSeconds)
+{
+    double Start=0; FName Out;
+    for (int32 I=0; I<Stages.Num(); ++I)
+    {
+        if (I>0 && ElapsedSeconds<Start*GrowWindowSeconds) { break; }
+        Out=Stages[I].Name; Start+=Stages[I].DurationFraction;
+    }
+    return Out;
+}
+
+void ASFGatheringPilotNode::StartGrowth()
+{
+    if (!HasAuthority() || GrowthStages.IsEmpty()) { return; }
+    GrowthStartedAt=GetWorld()->GetTimeSeconds(); AdvanceGrowth();
+}
+
+void ASFGatheringPilotNode::AdvanceGrowth()
+{
+    const double Window=CapturedRespawnSeconds*GrowFraction, Elapsed=GetWorld()->GetTimeSeconds()-GrowthStartedAt;
+    State.GrowthStage=StageAt(GrowthStages,Window,Elapsed);
+    double Boundary=0; bool bFound=false;  // next stage start after Elapsed, if any
+    for (int32 I=0; I<GrowthStages.Num()-1; ++I)
+    {
+        Boundary+=GrowthStages[I].DurationFraction;
+        if (Elapsed<Boundary*Window) { bFound=true; break; }
+    }
+    if (bFound) { GetWorldTimerManager().SetTimer(GrowthTimer,this,&ASFGatheringPilotNode::AdvanceGrowth,FMath::Max(float(Boundary*Window-Elapsed),0.01f),false); }
+    OnRep_State(); ForceNetUpdate();
+}
+
+void ASFGatheringPilotNode::DevPreviewGrowthStage(FName Stage)
+{
+#if !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    if (!HasAuthority()) { return; }
+    GetWorldTimerManager().ClearTimer(GrowthTimer); State.GrowthStage=Stage; OnRep_State(); ForceNetUpdate();
+#endif
+}
+
+void ASFGatheringPilotNode::ApplyGrowthVisual()
+{
+    if (IsRefinery()) { return; }
+    const float Scale=GetDefault<USFGatheringGrowthSettings>()->ScaleFor(Kind,State.GrowthStage);
+    Mesh->SetRelativeScale3D(FVector(0.7,0.7,1.4)*Scale);
+    if (HarvestVisuals) { HarvestVisuals->SetGrowthScale(Scale); }
+}
+
 void ASFGatheringPilotNode::Recover()
 {
     if (!HasAuthority() || IsRefinery() || Kind!=RecoveryKind || State.Charges!=0 || State.Capacity<=0
@@ -229,6 +310,7 @@ void ASFGatheringPilotNode::Recover()
     }
     if (IsValid(State.FallingTree)) { State.FallingTree->Destroy(); } State.FallingTree=nullptr;
     State.Charges=State.Capacity; State.RecoveryAtServerSeconds=0; State.Cuts.Reset(); ++State.Revision; ++State.Generation;
+    StartGrowth();  // no profile: no-op
     OnRep_State(); ForceNetUpdate();
 }
 
@@ -280,6 +362,7 @@ void ASFGatheringPilotNode::OnRep_State()
         HarvestVisuals->ApplyState(State.Cuts,State.Charges==0,State.Generation,State.FallingTree);
         Mesh->SetVisibility(false); if (Label) { Label->SetVisibility(false); }
     }
+    ApplyGrowthVisual();
     if (IsRefinery())
     {
         if (UStaticMesh* Prop=StationPropMesh(Kind)) { Mesh->SetStaticMesh(Prop); Mesh->SetRelativeScale3D(FVector(1.0)); }

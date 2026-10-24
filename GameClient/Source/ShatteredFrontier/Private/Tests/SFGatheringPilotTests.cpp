@@ -464,4 +464,50 @@ bool FSFGatheringPilotLedgerTest::RunTest(const FString& Parameters)
     TestEqual(TEXT("Ledger resolved the outcome after the owner left"),Fake->Commits,CommitsBefore+2);
     return true;
 }
+
+// GAT-01: stage -> appearance. Pure rule, declared scales, and a server node regrowing young -> mature.
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFGatheringGrowthVisualTest,
+    "ShatteredFrontier.Gathering.Growth.Visual",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+
+bool FSFGatheringGrowthVisualTest::RunTest(const FString& Parameters)
+{
+    const TArray<FSFGrowthStageDef> Stages={{TEXT("young"),0.5f},{TEXT("growing"),0.5f},{TEXT("mature"),0.f}};
+    const double Window=150;  // respawn 300 s * grow_fraction 0.5, as the Silverbrook iron profile
+    TestEqual(TEXT("t=0 is young"),ASFGatheringPilotNode::StageAt(Stages,Window,0),FName(TEXT("young")));
+    TestEqual(TEXT("just before the boundary is young"),ASFGatheringPilotNode::StageAt(Stages,Window,74),FName(TEXT("young")));
+    TestEqual(TEXT("the boundary is growing"),ASFGatheringPilotNode::StageAt(Stages,Window,75),FName(TEXT("growing")));
+    TestEqual(TEXT("the end of the window is mature"),ASFGatheringPilotNode::StageAt(Stages,Window,150),FName(TEXT("mature")));
+    TestEqual(TEXT("after the window stays mature"),ASFGatheringPilotNode::StageAt(Stages,Window,9999),FName(TEXT("mature")));
+    TestTrue(TEXT("no profile gives no stage"),ASFGatheringPilotNode::StageAt({},Window,10).IsNone());
+
+    const auto* Visuals=GetDefault<USFGatheringGrowthSettings>(); FString Error;
+    TestTrue(TEXT("Shipped appearance table is valid"),Visuals->Validate(Error));
+    for (const auto Kind : {ESFGatheringPilotKind::Oak,ESFGatheringPilotKind::Iron,ESFGatheringPilotKind::Stone})
+    {
+        const float Young=Visuals->ScaleFor(Kind,TEXT("young")),Growing=Visuals->ScaleFor(Kind,TEXT("growing")),Mature=Visuals->ScaleFor(Kind,TEXT("mature"));
+        TestTrue(TEXT("Scales grow with the stage and mature is full size"),Young<Growing && Growing<Mature && FMath::IsNearlyEqual(Mature,1.f));
+        TestEqual(TEXT("An undeclared stage is full size"),Visuals->ScaleFor(Kind,TEXT("ancient")),1.f);
+    }
+    USFGatheringGrowthSettings* Bad=NewObject<USFGatheringGrowthSettings>();
+    Bad->StageVisuals.Add({ESFGatheringPilotKind::Oak,TEXT("young"),3.f});
+    TestFalse(TEXT("Out-of-bounds scale is rejected"),Bad->Validate(Error));
+
+    FTestWorldWrapper Fixture;
+    if (!Fixture.CreateTestWorld(EWorldType::GameRPC) || !Fixture.BeginPlayInTestWorld()) { return false; }
+    auto* World=Fixture.GetTestWorld(); World->GetWorldSettings()->NotifyBeginPlay();
+    const FTransform At(FRotator::ZeroRotator,FVector(0,0,70));
+    auto* Node=World->SpawnActorDeferred<ASFGatheringPilotNode>(ASFGatheringPilotNode::StaticClass(),At);
+    if (!Node) { return false; }
+    Node->Kind=ESFGatheringPilotKind::Iron; Node->SetGrowthProfile(Stages,0.5f); Node->FinishSpawning(At);
+    const FVector Base(0.7,0.7,1.4);
+    TestEqual(TEXT("A fresh node is mature"),Node->State.GrowthStage,FName(TEXT("mature")));
+    TestTrue(TEXT("and full size"),Node->Mesh->GetRelativeScale3D().Equals(Base));
+    Node->CapturedRespawnSeconds=300; Node->StartGrowth();
+    TestEqual(TEXT("Regrowth starts young"),Node->State.GrowthStage,FName(TEXT("young")));
+    TestTrue(TEXT("and shows the declared young scale"),Node->Mesh->GetRelativeScale3D().Equals(Base*Visuals->ScaleFor(ESFGatheringPilotKind::Iron,TEXT("young"))));
+    Node->State.GrowthStage=TEXT("growing"); Node->OnRep_State();  // what a client does when the stage replicates
+    TestTrue(TEXT("A replicated stage change updates the scale"),Node->Mesh->GetRelativeScale3D().Equals(Base*Visuals->ScaleFor(ESFGatheringPilotKind::Iron,TEXT("growing"))));
+    return true;
+}
 #endif

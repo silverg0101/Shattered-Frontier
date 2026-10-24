@@ -69,6 +69,8 @@ public:
     void ApplyState(const TArray<FSFHarvestVisualCut>& Cuts,bool bDepleted,uint32 Generation,ASFHarvestFallingTree* FallingTree=nullptr);
     ASFHarvestFallingTree* BeginTreeFall(uint32 Generation,const FSFHarvestVisualCut& FinalCut);
     bool IsTreeDetachedTo(const ASFHarvestFallingTree* Tree) const;
+    // GAT-01: uniform scale of the whole node about its base (1 = mature). Cuts are stored resource-local, so they scale with it.
+    void SetGrowthScale(float Scale);
 private:
     bool bWood=false;
     bool bSupportsTreeFelling=false;

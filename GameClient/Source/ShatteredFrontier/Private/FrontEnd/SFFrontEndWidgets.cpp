@@ -11,7 +11,7 @@ using namespace SFHudStyle;
 
 namespace
 {
-template <class T> TSubclassOf<T> CommonClass(const TCHAR* Name)
+template <class T> TSubclassOf<T> FrontEndCommonClass(const TCHAR* Name)
 {
     return LoadClass<T>(nullptr, *FString::Printf(TEXT("/Game/Frontier/UI/Widgets/Common/%s.%s_C"), Name, Name));
 }
@@ -130,7 +130,7 @@ void USFFrontEndAccount::Show(const FString& Account, const FSFRealmStatus& Real
 void USFFrontEndSelect::NativeOnInitialized()
 {
     Super::NativeOnInitialized();
-    RowClass = CommonClass<USFKitRowWidget>(TEXT("WBP_KitRow"));
+    RowClass = FrontEndCommonClass<USFKitRowWidget>(TEXT("WBP_KitRow"));
     for (USFButtonWidget* Button : {CreateButton.Get(), DeleteButton.Get(), EnterButton.Get(), AccountButton.Get()}) { if (Button) { Button->OnActivated.AddUniqueDynamic(this, &USFFrontEndSelect::HandleButton); } }
     if (DeleteButton) { DeleteButton->SetHoldMode(true, DeleteHoldSeconds); }  // hold to confirm
     if (StatusText) { StatusText->SetText(FText::GetEmpty()); }
@@ -232,10 +232,10 @@ const TCHAR* const Heritages[3] = {TEXT("Valefolk"), TEXT("Northkin"), TEXT("Sea
 void USFFrontEndCreator::NativeOnInitialized()
 {
     Super::NativeOnInitialized();
-    RowClass = CommonClass<USFKitRowWidget>(TEXT("WBP_KitRow"));
-    TileClass = CommonClass<USFSlotWidget>(TEXT("WBP_ItemTile"));
-    SettingRowClass = CommonClass<USFSettingRowWidget>(TEXT("WBP_SettingRow"));
-    StepperClass = CommonClass<USFStepperWidget>(TEXT("WBP_Stepper"));
+    RowClass = FrontEndCommonClass<USFKitRowWidget>(TEXT("WBP_KitRow"));
+    TileClass = FrontEndCommonClass<USFSlotWidget>(TEXT("WBP_ItemTile"));
+    SettingRowClass = FrontEndCommonClass<USFSettingRowWidget>(TEXT("WBP_SettingRow"));
+    StepperClass = FrontEndCommonClass<USFStepperWidget>(TEXT("WBP_Stepper"));
     for (USFButtonWidget* Button : {RandomizeButton.Get(), BackButton.Get(), NextButton.Get()}) { if (Button) { Button->OnActivated.AddUniqueDynamic(this, &USFFrontEndCreator::HandleButton); } }
     if (NameField) { NameField->OnTextChanged.AddUniqueDynamic(this, &USFFrontEndCreator::HandleName); }
     Random.GenerateNewSeed();

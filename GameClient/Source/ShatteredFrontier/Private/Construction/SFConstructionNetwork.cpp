@@ -903,6 +903,16 @@ int32 ASFGameMode::SpawnZoneGatheringNodes()
         // Wood groups are oak nodes, iron ore groups are iron veins, stone groups are rock nodes yielding rough stone.
         const ESFGatheringPilotKind Kind=Id.EndsWith(TEXT("_wood")) ? ESFGatheringPilotKind::Oak
             : Id.EndsWith(TEXT("_iron_ore")) ? ESFGatheringPilotKind::Iron : ESFGatheringPilotKind::Stone;
+        // GAT-01: the group's first definition may declare a growth_profile (stages regrow young to mature).
+        TArray<FSFGrowthStageDef> Growth; double GrowFraction=0.5;
+        const TArray<TSharedPtr<FJsonValue>>* Definitions=nullptr; const TSharedPtr<FJsonObject>* Profile=nullptr;
+        if (Group->TryGetArrayField(TEXT("definitions"),Definitions) && Definitions->Num()>0 && (*Definitions)[0]->AsObject()
+            && (*Definitions)[0]->AsObject()->TryGetObjectField(TEXT("growth_profile"),Profile))
+        {
+            (*Profile)->TryGetNumberField(TEXT("grow_fraction"),GrowFraction);
+            for (const TSharedPtr<FJsonValue>& Stage : (*Profile)->GetArrayField(TEXT("stages")))
+            { Growth.Add({FName(*Stage->AsObject()->GetStringField(TEXT("name"))),float(Stage->AsObject()->GetNumberField(TEXT("duration_fraction")))}); }
+        }
         TArray<TSharedPtr<FJsonValue>> Points=Group->GetArrayField(TEXT("points"));
         FRandomStream Stream(GetTypeHash(Id));
         for (int32 I=Points.Num()-1; I>0; --I) { Points.Swap(I,Stream.RandRange(0,I)); }
@@ -916,7 +926,9 @@ int32 ASFGameMode::SpawnZoneGatheringNodes()
                 FVector(At[0]->AsNumber()*100,At[1]->AsNumber()*100,At[2]->AsNumber()*100+70));
             auto* Node=GetWorld()->SpawnActorDeferred<ASFGatheringPilotNode>(ASFGatheringPilotNode::StaticClass(),Where);
             if (!Node) { continue; }
-            Node->Kind=Kind; Node->FinishSpawning(Where); ++Spawned;
+            Node->Kind=Kind;
+            if (Growth.Num()>0) { Node->SetGrowthProfile(Growth,GrowFraction); }
+            Node->FinishSpawning(Where); ++Spawned;
         }
     }
     // ponytail: the zone record has no station content yet; a sawmill, forge and workbench stand east of the arrival point.

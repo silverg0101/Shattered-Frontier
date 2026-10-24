@@ -73,6 +73,31 @@ public:
 UENUM(BlueprintType)
 enum class ESFGatheringPilotKind : uint8 { Oak, Iron, Sawmill, Forge, Stone, Workbench };  // the sandbox spawns kinds 0-3 by index; append new kinds
 
+// GAT-01 declared appearance per node kind and growth stage (stage names come from the zone record's growth_profile).
+// Scale multiplies the mature node (1 = full size, unlisted stage = 1). Release authors; next world start.
+USTRUCT()
+struct FSFGrowthStageVisual
+{
+    GENERATED_BODY()
+    UPROPERTY(EditAnywhere, Config) ESFGatheringPilotKind Kind = ESFGatheringPilotKind::Oak;
+    UPROPERTY(EditAnywhere, Config) FName Stage;
+    UPROPERTY(EditAnywhere, Config, meta=(ClampMin="0.1", ClampMax="1.5")) float Scale = 1;
+};
+
+UCLASS(Config=Game, DefaultConfig, meta=(DisplayName="Gathering Growth Appearance (Release Only)"))
+class SHATTEREDFRONTIER_API USFGatheringGrowthSettings : public UDeveloperSettings
+{
+    GENERATED_BODY()
+public:
+    USFGatheringGrowthSettings();
+    UPROPERTY(Config, EditAnywhere, Category="Growth") TArray<FSFGrowthStageVisual> StageVisuals;
+    float ScaleFor(ESFGatheringPilotKind Kind, FName Stage) const;
+    bool Validate(FString& Error) const;
+};
+
+// Server-only growth profile (content: growth_profile in the zone record). DurationFraction is of the grow window.
+struct FSFGrowthStageDef { FName Name; float DurationFraction = 0; };
+
 class ASFHarvestFallingTree;
 
 USTRUCT()
@@ -85,6 +110,7 @@ struct FSFGatheringPilotNodeState
     UPROPERTY() bool bBusy = false;
     UPROPERTY() int32 Capacity = 0;
     UPROPERTY() double RecoveryAtServerSeconds = 0;
+    UPROPERTY() FName GrowthStage;  // None = no growth profile; server-owned, replicated with the rest
     UPROPERTY() TArray<FSFHarvestVisualCut> Cuts;
     UPROPERTY() TObjectPtr<ASFHarvestFallingTree> FallingTree;
 };
@@ -121,6 +147,13 @@ public:
     FSFGatheringResourceProfile GetAuthoredResourceProfile() const;
     bool IsRefinery() const { return Kind==ESFGatheringPilotKind::Sawmill || Kind==ESFGatheringPilotKind::Forge || Kind==ESFGatheringPilotKind::Workbench; }
     const FSFGatheringPilotNodeState& GetState() const { return State; }
+    // Server, before FinishSpawning: after it recovers the node regrows through these stages over GrowFraction of the respawn interval.
+    void SetGrowthProfile(const TArray<FSFGrowthStageDef>& Stages, float InGrowFraction);
+    // Stage reached ElapsedSeconds into a grow window of GrowWindowSeconds: same rule as BackendServices/GatheringNodes.
+    static FName StageAt(const TArray<FSFGrowthStageDef>& Stages, double GrowWindowSeconds, double ElapsedSeconds);
+    // Dev capture only (no effect in shipping/test builds): force the stage shown.
+    UFUNCTION(BlueprintCallable, Category="Gathering Presentation")
+    void DevPreviewGrowthStage(FName Stage);
     UFUNCTION(BlueprintPure, Category="Gathering Presentation")
     FSFGatheringPilotPresentation GetPresentationState() const;
     // Apply current appearance, including late join. May repeat; do not play reward effects here.
@@ -139,7 +172,11 @@ private:
     friend class FSFGatheringPilotSurfaceProtocolTest;
     friend class FSFGatheringPilotProgressionTest;
     friend class FSFGatheringPilotLedgerTest;
+    friend class FSFGatheringGrowthVisualTest;
     UFUNCTION() void OnRep_State();
+    void StartGrowth();
+    void AdvanceGrowth();
+    void ApplyGrowthVisual();
     void Release(USFGatheringPilotComponent* Interactor);
     void BeginRecovery();
     void Recover();
@@ -150,6 +187,10 @@ private:
     UPROPERTY() TObjectPtr<USFHarvestPresentation> HarvestVisuals;
     TWeakObjectPtr<USFGatheringPilotComponent> LockedBy;
     FTimerHandle RecoveryTimer;
+    FTimerHandle GrowthTimer;
+    TArray<FSFGrowthStageDef> GrowthStages;
+    float GrowFraction = 0.5f;
+    double GrowthStartedAt = 0;
     float CapturedRespawnSeconds = 300;
     ESFGatheringPilotKind RecoveryKind = ESFGatheringPilotKind::Oak;
 #if WITH_DEV_AUTOMATION_TESTS && WITH_EDITOR

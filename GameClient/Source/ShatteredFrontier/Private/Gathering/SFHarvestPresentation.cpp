@@ -188,6 +188,14 @@ void USFHarvestPresentation::BeginPlay()
     UE_LOG(LogTemp,Display,TEXT("HARVEST_PRESENTATION_READY Material=%s Triangles=%d"),bWood?TEXT("Wood"):TEXT("Rock"),Runtime->Base.TriangleCount());
 }
 
+void USFHarvestPresentation::SetGrowthScale(float Scale)
+{
+    if (!Runtime) { return; }
+    Runtime->Transform.SetScale3D(FVector(Scale));
+    if (Surface) { Surface->SetWorldTransform(Runtime->Transform); }
+    for (UStaticMeshComponent* Part:CrownParts) { if (Part) { Part->SetWorldTransform(Runtime->Transform); } }
+}
+
 void USFHarvestPresentation::EndPlay(const EEndPlayReason::Type Reason)
 {
     for (UStaticMeshComponent* Fragment:Fragments) { if (Fragment) { Fragment->DestroyComponent(); } }
