@@ -99,7 +99,8 @@ void ASFE1Character::BeginPlay()
     GetCharacterMovement()->GravityScale = GetDefault<USFE1Settings>()->GravityMetresPerSecondSquared * 100.0f / -WorldGravity;
     if (GetNetMode() != NM_DedicatedServer) { SpawnMetaHuman(); }
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
-    if (GetNetMode() == NM_Client && FParse::Param(FCommandLine::Get(), TEXT("CombatPilotScenario")))
+    if (GetNetMode() == NM_Client && (FParse::Param(FCommandLine::Get(), TEXT("CombatPilotScenario")) ||
+        FParse::Param(FCommandLine::Get(), TEXT("CombatTargetScenario"))))
     { GetWorldTimerManager().SetTimer(CombatScenarioTimer, this, &ASFE1Character::TickCombatScenario, 1.0f, true); }
 #endif
 }
@@ -211,6 +212,7 @@ void ASFE1Character::EndPlay(const EEndPlayReason::Type Reason)
 
 void ASFE1Character::TickCombatScenario()
 {
+    if (FParse::Param(FCommandLine::Get(), TEXT("CombatTargetScenario"))) { TickTargetScenario(); return; }
     if (!IsLocallyControlled() || CombatScenarioAttackCount >= 3) { return; }
     ASFPilotBoar* Nearest = nullptr; double Distance = 300;
     for (TActorIterator<ASFPilotBoar> It(GetWorld()); It; ++It)
@@ -226,6 +228,75 @@ void ASFE1Character::TickCombatScenario()
     PilotAttack();
     ++CombatScenarioAttackCount;
     UE_LOG(LogTemp, Display, TEXT("COMBAT_PILOT_CLIENT_ATTACK Index=%d"), CombatScenarioAttackCount);
+}
+
+void ASFE1Character::TickTargetScenario()
+{
+    if (!IsLocallyControlled()) { return; }
+    auto* PC = Cast<ASFPlayerController>(Controller);
+    if (!PC) { return; }
+    if (TargetScenarioStage == 0)
+    {
+        TArray<ASFPilotBoar*> Nearby;
+        for (TActorIterator<ASFPilotBoar> It(GetWorld()); It; ++It)
+        { if (It->Health() > 0 && FVector::Dist2D(GetActorLocation(), It->GetActorLocation()) < 2900.0) { Nearby.Add(*It); } }
+        if (Nearby.Num() < 2) { return; }
+        Nearby.Sort([this](const ASFPilotBoar& A, const ASFPilotBoar& B)
+        { return FVector::DistSquared2D(GetActorLocation(), A.GetActorLocation()) < FVector::DistSquared2D(GetActorLocation(), B.GetActorLocation()); });
+        const FVector Aim = (Nearby[0]->GetActorLocation() + Nearby[1]->GetActorLocation()) * 0.5 - GetActorLocation();
+        PC->SetControlRotation(Aim.Rotation());
+        TargetScenarioStage = 1;
+        return;
+    }
+    if (TargetScenarioStage == 1) { PC->SelectNextCombatTarget(); TargetScenarioStage = 2; return; }
+    if (TargetScenarioStage == 2 && CombatTarget)
+    {
+        TargetScenarioFirst = CombatTarget;
+        UE_LOG(LogTemp, Display, TEXT("TARGET_PILOT_CLIENT_SELECT Step=1 Target=%s"), *GetNameSafe(CombatTarget));
+        PC->SelectNextCombatTarget(); TargetScenarioStage = 3; return;
+    }
+    if (TargetScenarioStage == 3 && CombatTarget && CombatTarget != TargetScenarioFirst.Get())
+    {
+        TargetScenarioSecond = CombatTarget;
+        UE_LOG(LogTemp, Display, TEXT("TARGET_PILOT_CLIENT_SELECT Step=2 Target=%s"), *GetNameSafe(CombatTarget));
+        ServerTargetScenarioStep(1); TargetScenarioStage = 4; return;
+    }
+    if (TargetScenarioStage == 4 && !CombatTarget && PilotHealth == 0)
+    {
+        UE_LOG(LogTemp, Display, TEXT("TARGET_PILOT_CLIENT_DROP Cause=Death"));
+        ServerTargetScenarioStep(2); TargetScenarioStage = 5; return;
+    }
+    if (TargetScenarioStage == 5 && PilotHealth > 0)
+    { PC->SelectNextCombatTarget(); TargetScenarioStage = 6; return; }
+    if (TargetScenarioStage == 6 && CombatTarget)
+    {
+        TargetScenarioSecond = CombatTarget;
+        UE_LOG(LogTemp, Display, TEXT("TARGET_PILOT_CLIENT_RESELECT Target=%s"), *GetNameSafe(CombatTarget));
+        ServerTargetScenarioStep(3); TargetScenarioStage = 7; return;
+    }
+    if (TargetScenarioStage == 7 && !CombatTarget && TargetScenarioSecond.IsValid() &&
+        FVector::Dist2D(GetActorLocation(), TargetScenarioSecond->GetActorLocation()) > 4500.0)
+    { UE_LOG(LogTemp, Display, TEXT("TARGET_PILOT_CLIENT_DROP Cause=Range")); TargetScenarioStage = 8; }
+}
+
+void ASFE1Character::ServerTargetScenarioStep_Implementation(int32 Step)
+{
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    if (!FParse::Param(FCommandLine::Get(), TEXT("CombatTargetScenario"))) { return; }
+    if (Step == 1 && CombatTarget && PilotHealth > 0)
+    {
+        CombatSetHealth(0);
+        UE_LOG(LogTemp, Display, TEXT("TARGET_PILOT_SERVER_DROP Cause=Death Target=None"));
+    }
+    else if (Step == 2 && PilotHealth == 0)
+    { CombatSetHealth(GetDefault<USFCombatPilotSettings>()->PlayerHealth); }
+    else if (Step == 3 && CombatTarget && PilotHealth > 0)
+    {
+        const FVector Away = (GetActorLocation() - CombatTarget->GetActorLocation()).GetSafeNormal2D();
+        SetActorLocation(CombatTarget->GetActorLocation() + Away * 6000.0, false, nullptr, ETeleportType::TeleportPhysics);
+        UE_LOG(LogTemp, Display, TEXT("TARGET_PILOT_SERVER_MOVE DistanceCm=%.0f"), FVector::Dist2D(GetActorLocation(), CombatTarget->GetActorLocation()));
+    }
+#endif
 }
 
 namespace SFE1CameraControls
@@ -323,7 +394,13 @@ void ASFE1Character::Tick(float DeltaSeconds)
             || (Npc && Npc->Health() <= 0)
             || FSFTabTargetSelection::ShouldDrop(FVector::Dist2D(GetActorLocation(), CombatTarget->GetActorLocation()),
                 GetDefault<USFCombatPilotSettings>()->TabTargetDropRangeMetres * 100.0))
-        { SetCombatTarget(nullptr); }
+        {
+            if (FParse::Param(FCommandLine::Get(), TEXT("CombatTargetScenario")) && IsValid(CombatTarget) &&
+                FVector::Dist2D(GetActorLocation(), CombatTarget->GetActorLocation()) >
+                    GetDefault<USFCombatPilotSettings>()->TabTargetDropRangeMetres * 100.0)
+            { UE_LOG(LogTemp, Display, TEXT("TARGET_PILOT_SERVER_DROP Cause=Range Target=None")); }
+            SetCombatTarget(nullptr);
+        }
     }
     if (IsLocallyControlled() && PlayerMapping && UsesCameraControls()) { TickCameraControls(DeltaSeconds); }
 }
@@ -555,7 +632,13 @@ void ASFE1Character::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 
 void ASFE1Character::SetCombatTarget(AActor* Target)
 {
-    if (HasAuthority() && CombatTarget != Target) { CombatTarget = Target; ForceNetUpdate(); }
+    if (HasAuthority() && CombatTarget != Target)
+    {
+        CombatTarget = Target;
+        ForceNetUpdate();
+        if (Target && FParse::Param(FCommandLine::Get(), TEXT("CombatTargetScenario")))
+        { UE_LOG(LogTemp, Display, TEXT("TARGET_PILOT_SERVER_SELECT Target=%s"), *GetNameSafe(Target)); }
+    }
 }
 
 // The top of the speaker's bounds, a little down: its head, whatever the body's pose or origin.

@@ -69,7 +69,12 @@ private:
     UPROPERTY(Replicated) TObjectPtr<AActor> CombatTarget;
     FTimerHandle CombatScenarioTimer;
     int32 CombatScenarioAttackCount = 0;
+    int32 TargetScenarioStage = 0;
+    TWeakObjectPtr<AActor> TargetScenarioFirst;
+    TWeakObjectPtr<AActor> TargetScenarioSecond;
     void TickCombatScenario();
+    void TickTargetScenario();
+    UFUNCTION(Server, Reliable) void ServerTargetScenarioStep(int32 Step);
     UFUNCTION(Server, Reliable) void ServerPilotAttack(AActor* SelectedCombatTarget);
     void PilotAttack();
     UPROPERTY(VisibleAnywhere) TObjectPtr<USpringArmComponent> CameraBoom;

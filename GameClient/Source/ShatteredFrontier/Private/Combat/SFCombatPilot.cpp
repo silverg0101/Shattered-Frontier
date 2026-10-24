@@ -283,7 +283,8 @@ void ASFGameMode::StartCombat()
     bPilotActive = GetNetMode() != NM_Client &&
         GetWorld()->GetOutermost()->GetName() == TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook");
 #if !UE_BUILD_SHIPPING && !UE_BUILD_TEST
-    bScenario = bPilotActive && FParse::Param(FCommandLine::Get(), TEXT("CombatPilotScenario"));
+    bScenario = bPilotActive && (FParse::Param(FCommandLine::Get(), TEXT("CombatPilotScenario")) ||
+        FParse::Param(FCommandLine::Get(), TEXT("CombatTargetScenario")));
 #endif
     if (!bPilotActive) { return; }
     CapturedSettings = GetDefault<USFCombatPilotSettings>();
@@ -309,6 +310,29 @@ void ASFGameMode::PostLoginCombat(APlayerController* NewPlayer)
         auto* Player = Cast<ASFE1Character>(Weak->GetPawn());
         auto* Boar = ActiveBoars.FindRef(TEXT("boar_farm_edge:0")).Get();
         if (!Player || !Boar) { return; }
+        if (FParse::Param(FCommandLine::Get(), TEXT("CombatTargetScenario")))
+        {
+            ASFPilotBoar* Second = nullptr;
+            double Nearest = TNumericLimits<double>::Max();
+            for (const auto& Pair : ActiveBoars)
+            {
+                if (!Pair.Key.StartsWith(TEXT("boar_farm_edge:"))) { continue; }
+                ASFPilotBoar* Candidate = Pair.Value.Get();
+                if (!Candidate || Candidate == Boar) { continue; }
+                const double Distance = FVector::DistSquared2D(Boar->GetActorLocation(), Candidate->GetActorLocation());
+                if (Distance < Nearest) { Nearest = Distance; Second = Candidate; }
+            }
+            if (!Second) { return; }
+            const FVector Mid = (Boar->GetActorLocation() + Second->GetActorLocation()) * 0.5;
+            const FVector Side = FVector::CrossProduct(FVector::UpVector,
+                (Second->GetActorLocation() - Boar->GetActorLocation()).GetSafeNormal2D()) * 1500.0;
+            FVector Where = Mid + Side;
+            if (!IsInsideTerritory(Where, Groups[TEXT("boar_farm_edge")].Polygon) || IsSafe(Where)) { Where = Mid - Side; }
+            Where = Grounded(GetWorld(), Where, Player->GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
+            Player->SetActorLocation(Where, false, nullptr, ETeleportType::TeleportPhysics);
+            UE_LOG(LogTemp, Display, TEXT("TARGET_PILOT_READY First=%s Second=%s"), *Boar->GetName(), *Second->GetName());
+            return;
+        }
         const bool bUiEvidence = FParse::Param(FCommandLine::Get(), TEXT("UiEvidenceHud")) || FParse::Param(FCommandLine::Get(), TEXT("UiEvidenceDefeat"));
         const FVector Near = Grounded(GetWorld(), Boar->GetActorLocation()+FVector(bUiEvidence ? 600 : 180,0,0), Player->GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
         Player->SetActorLocation(Near, false, nullptr, ETeleportType::TeleportPhysics);
