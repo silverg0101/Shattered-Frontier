@@ -463,6 +463,8 @@ async function drawDetector(path) {
       <dl style="margin-top:8px">
         ${d.last_take ? `<dt>Last take</dt><dd>score ${(+d.last_take.score).toFixed(2)} · height error ${pct(d.last_take.height_error_pct)} · job #${d.last_take.job}</dd>` : ''}
         <dt>Trained</dt><dd>${d.trained ? fmtTime(d.trained) : '—'}</dd>
+        ${'category' in d ? `<dt>Body plan</dt><dd>${esc(d.category || '—')}</dd>` : ''}
+        ${'warm_start' in d ? `<dt>Started from</dt><dd>${d.warm_start ? `a good ${esc(d.category || '')} detector (p95 ${pct(d.warm_start.p95)})` : 'plain DINOv2'}</dd>` : ''}
         ${d.settings ? `<dt>Settings</dt><dd>${d.settings.images} renders · ${d.settings.epochs} epochs · ${esc(d.settings.backbone)}${d.settings.turn ? ` · turned ${d.settings.turn}°` : ''}</dd>` : ''}
       </dl>`
     : `<div class="muted" style="font-size:12px;margin-top:6px">${busy ? 'Training a detector for this model: about 20 minutes.' : 'No detector yet. A motion job trains one first; training it now saves that time.'}</div>`}
