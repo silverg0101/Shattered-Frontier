@@ -847,6 +847,37 @@ def release_vram(host, need_gb=10, wait_s=60):
             return f"{free:.1f} of {total:.1f} GB free for tracking after unloading ComfyUI's models"
         time.sleep(3)
 
+DETECTOR_IMAGES = 1500  # training renders per model: ~0.4 s each on a 3090, then ~7 min of training
+
+def ensure_detector(host, jid, src, model, turn, step, device_lines, gpu, py, blender):
+    """This model's joint detector on the host, trained on its first motion job and kept in the library
+    (Generated/.detectors/<model hash>) for every later one. Returns its folder on the host, or None when its
+    exam failed: the job then tracks with CoTracker, which can't tell left from right in the side view."""
+    key = hashlib.sha256(src.read_bytes()).hexdigest()[:16]
+    lib = safe_path(f"{get_settings()['output_folder']}/.detectors/{key}")
+    det, q = f"{host['comfy_dir']}/input/sfam/detectors/{key}", shlex.quote
+    files = ("weights.pt", "keypoints.json", "exam.json")
+    if not (lib / "exam.json").exists():
+        work = f"{host['comfy_dir']}/input/sfam/{jid}"
+        step(f"training this model's joint detector: {DETECTOR_IMAGES} renders, then training and an exam (first job only)")
+        device_lines(ssh(host, f"cd {q(work)} && {gpu} {blender} -b -P synth_render.py -- {model} synth {DETECTOR_IMAGES}"
+                               f" --turn {turn} > synth.log 2>&1 || {{ tail -5 synth.log >&2; exit 1; }}"
+                               f" && {gpu} {py} detector.py train synth {q(det)}", timeout=7200), "detector training")
+        ssh(host, f"cp {q(work + '/synth/keypoints.json')} {q(det)}/")
+        exam = ssh(host, f"cd {q(work)} && {gpu} {py} exam.py {model} {q(det)} exam --turn {turn} --blender {blender}"
+                         f" | tail -1; cp exam/exam.json {q(det)}/", timeout=1800).decode(errors="replace").strip()
+        GPU_NOTES[jid].append(f"[asset-manager] {host['name']}: detector {exam}")
+        lib.mkdir(parents=True, exist_ok=True)
+        for f in files:
+            (lib / f).write_bytes(ssh(host, f"cat {q(det + '/' + f)}", timeout=900))
+    elif ssh(host, f"test -f {q(det + '/weights.pt')} && echo yes || true").strip() != b"yes":
+        for f in files:  # trained on another host, or this one was cleaned: copy it back from the library
+            put_input(host, f"detectors/{key}/{f}", (lib / f).read_bytes())
+    passed = json.loads((lib / "exam.json").read_text()).get("passed")
+    if not passed:
+        GPU_NOTES[jid].append(f"[asset-manager] {host['name']}: this model's detector failed its exam; tracking with CoTracker")
+    return det if passed else None
+
 def run_motion(jid, host):
     job = job_row(jid)
     p = motion_params(json.loads(job["params"]))
@@ -863,7 +894,8 @@ def run_motion(jid, host):
     def device_lines(out, label):  # the scripts print the GPU they ran on; keep that as proof in the job log
         GPU_NOTES.setdefault(jid, []).extend(
             f"[asset-manager] {host['name']}: {label} on {ln.split(':', 1)[1].strip()}"
-            for ln in out.decode(errors="replace").splitlines() if ln.startswith(("render device:", "track device:")))
+            for ln in out.decode(errors="replace").splitlines()
+            if ln.startswith(("render device:", "track device:", "train device:", "detect device:")))
     log = []
     try:
         src = safe_path(p["model"])
@@ -888,11 +920,13 @@ def run_motion(jid, host):
             raise RuntimeError("the video model returned no videos")
         step("unloading MiniMax H3")
         GPU_NOTES[jid].append(f"[asset-manager] {host['name']}: {release_vram(host)}")
+        det = ensure_detector(host, jid, src, model, p["turn"], step, device_lines, gpu, py, blender)
         takes = []
         for i, v in enumerate(videos, 1):
             step(f"tracking and baking take {i} of {len(videos)}")
             d, video = f"take{i}", f"{host['comfy_dir']}/output/{v}"
             device_lines(ssh(host, f"cd {q(work)} && {gpu} {py} track_solve.py {q(video)} joints.json {d}"
+                                   f"{' --detector ' + q(det) if det else ''}"
                                    f" && {gpu} {blender} -b -P bake.py -- {model} joints.json {d}/motion.json {d}/anim.glb",
                              timeout=1800), f"take {i} tracking")
             m = json.loads(ssh(host, f"{py} -c \"import json; m=json.load(open('{work}/{d}/motion.json')); m.pop('positions'); print(json.dumps(m))\""))

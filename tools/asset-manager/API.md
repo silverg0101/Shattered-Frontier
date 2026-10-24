@@ -125,7 +125,10 @@ A motion job animates a rigged model (`.glb` or `.fbx`, such as a 3D job's `<nam
 
 1. renders the model's rest pose in Blender, front view on the left and left-side view on the right, on grey;
 2. films it with the host's local MiniMax H3 (quantized, in its ComfyUI) from that image as the first frame, with a prompt to perform the action on the spot, once per take;
-3. unloads H3, then tracks every bone point through both halves of each video with CoTracker3, combines front (x, height) and side (y, height) into 3D, and bakes it onto the skeleton in Blender.
+3. unloads H3 and makes sure the model has a joint detector: on the model's first motion job it renders 500 random poses of the model from the same two cameras, fine-tunes DINOv2 on them to find each main joint (left and right apart) in both views, and examines it on a known motion filmed and compressed like a real video. The detector is kept in `Generated/.detectors/<model hash>/` and reused by every later job for that model;
+4. finds every main joint in both halves of each video with the detector, combines front (x, height) and side (y, height) into 3D, and bakes it onto the skeleton in Blender. Bones the detector doesn't cover (fingers, twist bones) follow their parent.
+
+A single side view can't tell the left leg from the right one: they land on the same pixels. A point tracker therefore follows one leg with both. The detector learns which is which from the model itself. If a detector fails its exam (median error over 2 % of model height, p95 over 5 %, any joint over 6 %, or a left/right pair's spacing off by over 3 %), the job falls back to CoTracker3 point tracking and says so in `log`.
 
 ```bash
 curl -X POST http://192.168.50.133:8090/api/jobs -H 'Content-Type: application/json' -d '{
@@ -134,11 +137,11 @@ curl -X POST http://192.168.50.133:8090/api/jobs -H 'Content-Type: application/j
 }'
 ```
 
-On an RTX 3090 a 5-second turbo take takes about 9 minutes including loading H3 (later takes in the same job reuse the loaded model), then about 40 seconds to track and bake. Without turbo (20 steps) expect several times longer.
+On an RTX 3090 a 5-second turbo take takes about 9 minutes including loading H3 (later takes in the same job reuse the loaded model), then under a minute to detect and bake. A model's first motion job adds about 25 minutes for its detector (17 for the renders, 5 to train, 3 for the exam). Without turbo (20 steps) the video takes several times longer.
 
 Per take, `files` holds `<name>_<action>_take<n>.glb` (the model with the baked animation), `.png` (its thumbnail, the first frame), `.mp4` (the generated video) and `_overlay.mp4` (the video with the tracked points: cyan where front and side agree on height, red where they disagree by more than 5% of the model's height). Takes are listed best first. `log` gives each take's score (1 = perfect agreement, 0 = 5% of model height or worse) and its height disagreement; a low score usually means the video model moved the cameras or changed the character's size.
 
-`log` also records which GPU did each step: the host's ComfyUI (the same placement check as 3D jobs), the render and the tracking. Motion jobs run on SSH hosts only, prepared with `host-setup/install-motion.sh`; the H3 model files are the ones named in `H3` in `app.py`.
+`log` also records which GPU did each step (the host's ComfyUI, with the same placement check as 3D jobs, the render, the detector's training and detection) and the detector's exam result. Motion jobs run on SSH hosts only, prepared with `host-setup/install-motion.sh`; the H3 model files are the ones named in `H3` in `app.py`.
 
 The model must face -Y in Blender (glTF +Z, how the 3D jobs export); otherwise set `turn`. This first version bakes the skeleton only: no foot locking, loop matching or root motion yet, and the animation is GLB only.
 

@@ -54,6 +54,17 @@ def bounds(arm):
     return lo, hi
 
 
+def weighted_bones(arm):
+    """Names of the bones some vertex carries weight for: the ones that deform the model. glTF has no deform
+    flag, so IK helpers arrive looking like any other bone; their missing weights give them away."""
+    weighted = set()
+    for o in bpy.context.scene.objects:
+        if o.type == "MESH" and any(m.type == "ARMATURE" and m.object == arm for m in o.modifiers):
+            names = {g.index: g.name for g in o.vertex_groups}
+            weighted |= {names[g.group] for v in o.data.vertices for g in v.groups if g.weight > 0.01}
+    return weighted
+
+
 def points(arm):
     """Bone heads and tails in world space, deduplicated (a connected child's head is its parent's tail).
     Taken from the current pose, not the rest pose: an imported rig is often posed (an A-pose over a T-pose
@@ -65,8 +76,10 @@ def points(arm):
                 return i
         pts.append(co.copy())
         return len(pts) - 1
+    weighted = weighted_bones(arm)
     for b in arm.pose.bones:
         bones.append({"name": b.name, "parent": b.parent.name if b.parent else None,
+                      "deform": b.name in weighted if weighted else b.bone.use_deform,
                       "head": pid(arm.matrix_world @ b.head), "tail": pid(arm.matrix_world @ b.tail)})
     return pts, bones
 
@@ -140,13 +153,14 @@ def render(cams, path):
         scene.render.filepath = str(path.with_name(f"_{name}.png"))
         bpy.ops.render.render(write_still=True)
         img = bpy.data.images.load(scene.render.filepath)
-        px = np.empty(W * H * 4, np.float32)
+        w, h = img.size  # the panel size times resolution_percentage
+        px = np.empty(w * h * 4, np.float32)
         img.pixels.foreach_get(px)  # pixels[:] goes value by value: seconds per frame
-        panels.append(px.reshape(H, W, 4))
+        panels.append(px.reshape(h, w, 4))
         bpy.data.images.remove(img)
         Path(scene.render.filepath).unlink()
     both = np.concatenate(panels, axis=1)
-    img = bpy.data.images.new("views", 2 * W, H)
+    img = bpy.data.images.new("views", both.shape[1], both.shape[0])
     img.pixels.foreach_set(both.ravel())
     img.filepath_raw, img.file_format = str(path), "PNG"
     img.save()

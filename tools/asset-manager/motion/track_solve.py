@@ -18,6 +18,7 @@ import numpy as np
 COTRACKER = "facebookresearch/co-tracker:82e02e8029753ad4ef13cf06be7f4fc5facdda4d"
 SMOOTH = 5          # frames in the moving average over solved positions
 GOOD_ERR = 0.05     # height disagreement (fraction of model height) that scores 0
+HOLD = 0.2          # detector confidence below which a joint keeps its last place
 
 
 def read_video(path):
@@ -106,20 +107,44 @@ def overlay(frames, tracks, err, seen, model_height, path, fps):
             c.mux(p)
 
 
-def run(video, joints, out):
+def hold(tracks, vis, floor=HOLD):
+    """A joint the detector is unsure of keeps its last confident place (its low confidence stays, so solve()
+    leans on the other view)."""
+    tracks = tracks.copy()
+    for t in range(1, len(tracks)):
+        weak = vis[t] < floor
+        tracks[t, weak] = tracks[t - 1, weak]
+    return tracks
+
+
+def median3(pos):
+    """3-frame median: removes one-frame flips (left and right foot swapped for a frame) before smoothing."""
+    if len(pos) < 3:
+        return pos
+    pad = np.concatenate([pos[:1], pos, pos[-1:]])
+    return np.median(np.stack([pad[:-2], pad[1:-1], pad[2:]]), 0)
+
+
+def run(video, joints, out, detector=None):
     out.mkdir(parents=True, exist_ok=True)
     j = json.loads(Path(joints).read_text())
     frames, fps = read_video(video)
-    (front, vis_f), (side, vis_s) = track_views(frames, j)
     n = len(j["points"])
-    pos, err = solve(front, side, vis_f, vis_s, j["calib"])
-    pos = smooth(pos)
     seen = j.get("seen") or [True] * n  # points on empty background steer nothing: don't score or draw them
+    if detector:  # a detector trained on this model: finds each joint by what it looks like, left and right apart
+        import detector as det
+        ((front, vis_f), (side, vis_s)), found = det.detect(detector, frames, n)
+        front, side = hold(front, vis_f), hold(side, vis_s)
+        seen = [bool(a and b) for a, b in zip(seen, found)]  # undetected points (fingers) follow their parent
+    else:
+        (front, vis_f), (side, vis_s) = track_views(frames, j)
+    pos, err = solve(front, side, vis_f, vis_s, j["calib"])
+    pos = smooth(median3(pos))
     on = np.array(seen)
     s, err_pct = score(err[:, on], vis_f[:, on], vis_s[:, on], j["calib"]["model_height"])
     (out / "motion.json").write_text(json.dumps({
         "fps": fps, "frames": len(pos), "score": round(s, 3), "height_error_pct": round(err_pct, 2),
-        "positions": np.round(pos, 5).tolist()}))
+        "seen": seen, "positions": np.round(pos, 5).tolist()}))
     full = np.concatenate([front / [2, 1], side / [2, 1] + [0.5, 0]], 1)  # back to whole-frame coordinates
     overlay(frames, full, np.concatenate([err, err], 1), seen + seen, j["calib"]["model_height"], out / "overlay.mp4", fps)
     print(f"motion: {len(pos)} frames, score {s:.2f}, height error {err_pct:.1f}% of model height")
@@ -140,6 +165,10 @@ def check():
     s, pct = score(err, ones, ones, calib["model_height"])
     assert abs(pct - 100 * 0.06 / 1.8) < 1e-6 and 0 < s < 1, (s, pct)
     assert np.allclose(smooth(np.ones((9, 2, 3))), 1) and smooth(pos).shape == pos.shape
+    flip = np.zeros((7, 1, 3)); flip[3] = 1   # one frame out of place
+    assert np.allclose(median3(flip), 0)
+    tr, v = np.arange(10, dtype=float).reshape(5, 1, 2), np.array([[1], [0.1], [1], [0.1], [0.1]])
+    assert np.allclose(hold(tr, v)[:, 0, 0], [0, 0, 4, 4, 4])
     print("check ok")
 
 
@@ -147,4 +176,5 @@ if __name__ == "__main__":
     if sys.argv[1:] == ["--check"]:
         check()
     else:
-        run(sys.argv[1], sys.argv[2], Path(sys.argv[3]))
+        argv = sys.argv[1:]
+        run(argv[0], argv[1], Path(argv[2]), argv[argv.index("--detector") + 1] if "--detector" in argv else None)
