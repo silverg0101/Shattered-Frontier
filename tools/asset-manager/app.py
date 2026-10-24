@@ -1503,9 +1503,9 @@ def codex_review(images, brief):
 # (rat v3), so: one sheet, size and feet line fixed in code (split_sheet), and one review of all four together.
 # Multi-view is two steps, like a concept artist's: one hero image settles the design, then the turnaround sheet
 # is drawn from it, so every view copies one finished subject instead of four separate readings of the prompt.
-MV_HERO = ("{prompt}\n\nOne full-body image of this subject alone, in a neutral standing pose, seen from the front "
-           "three-quarters at eye level, every part visible, on a plain pure-white background with soft even studio "
-           "light. No props, text, ground shadow or background scenery.")
+MV_HERO = ("{prompt}\n\nDraw one full-body picture of the subject described above, on its own, in a neutral standing "
+           "pose, seen from the front three-quarters at eye level with every part visible. Plain pure-white background, "
+           "soft even studio light. No props, text, ground shadow or background scenery.")
 MV_SHEET = ("{prompt}\n\nThe attached image is the finished design of this subject. Copy it exactly - shape, "
             "proportions, colours, materials and every detail; only the camera changes.\n\n"
             "Draw it as a 3D-model turnaround sheet: one square image divided into a 2x2 grid of four "
