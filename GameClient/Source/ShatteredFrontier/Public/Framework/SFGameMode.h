@@ -50,6 +50,8 @@ public:
     /** Authority: an NPC's landed melee hit on a player (boar, townsfolk, guard); the caller checks reach and cooldown.
       * A downed player respawns when this world's game mode runs the combat pilot. */
     static void HitPlayer(AActor* Source, ASFE1Character* Victim, int32 Damage);
+    void RestoreDeadPlayer(ASFE1Character* Player, const struct FSFGameplayResponse& State);
+    bool HasPendingDeathReport(const FString& CharacterId) const;
     void BoarDied(ASFPilotBoar* Boar, ASFE1Character* Killer);
     /** Grants the killer's hides for this death, at most once; returns the number granted. */
     int32 RewardKill(const FString& DeathId, const FVector& BoarAt, ASFE1Character* Killer);
@@ -104,12 +106,18 @@ private:
     void SpawnSlot(const FString& Group, int32 Slot, int32 Cycle, const FString& PointId,
         double X, double Y, double Facing);
     void RespawnPlayer(TWeakObjectPtr<ASFE1Character> Player);
+    FVector ChooseRespawnPoint(const FVector& DeathLocation) const;
+    void ReportPlayerDeath(TWeakObjectPtr<ASFE1Character> Player, const struct FSFGameplayRequest& Request);
     struct FBoarGroup { TArray<FVector2D> Polygon; };
     TMap<FString, FBoarGroup> Groups;
     TArray<TArray<FVector2D>> ProtectedAreas;
     TArray<FVector> RespawnPoints;
     TMap<FString, TWeakObjectPtr<ASFPilotBoar>> ActiveBoars;
     TMap<TWeakObjectPtr<ASFE1Character>, double> PlayerNextSwing;
+    TMap<TWeakObjectPtr<ASFE1Character>, FString> PlayerDeathEvents;
+    TMap<TWeakObjectPtr<ASFE1Character>, FVector> PlayerDeathRespawnPoints;
+    TSet<TWeakObjectPtr<ASFE1Character>> PlayerRespawnInFlight;
+    TSet<FString> PendingDeathReports;
     TSet<FString> RewardedDeaths;
     int32 NextBoarSerial = 0;
     FString SlotStatePath;

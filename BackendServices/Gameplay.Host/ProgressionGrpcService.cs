@@ -51,6 +51,37 @@ internal sealed class ProgressionGrpcService(PostgresCharacterStateStore store, 
 
     private static bool ValidCoordinate(double value) => double.IsFinite(value) && Math.Abs(value) <= 1e7;
 
+    private static bool ValidPosition(Pb.CharacterPosition? p) => p is not null &&
+        Regex.IsMatch(p.ZoneId, "^[a-z0-9_]{1,64}$", RegexOptions.CultureInvariant) &&
+        ValidCoordinate(p.X) && ValidCoordinate(p.Y) && ValidCoordinate(p.Z);
+
+    private static Pb.CharacterPosition WirePosition(CharacterPositionSnapshot p) => new()
+    { ZoneId = p.ZoneId, X = p.X, Y = p.Y, Z = p.Z, Yaw = p.Yaw };
+    private static Pb.DeathState WireDeath(CharacterDeathSnapshot s) => new()
+    { IsDead = s.IsDead, DeathEventId = s.DeathEventId, OccurredAtUnixMs = s.OccurredAtUnixMs,
+      RespawnAtUnixMs = s.RespawnAtUnixMs, DeathPosition = WirePosition(s.DeathPosition), RespawnPosition = WirePosition(s.RespawnPosition) };
+
+    public override Task<Pb.DeathState> ReportDeath(Pb.ReportDeathRequest request, ServerCallContext context) =>
+        GrpcRun.Call(context, () =>
+        {
+            if (string.IsNullOrWhiteSpace(request.CharacterId) || !Guid.TryParse(request.DeathEventId, out _) ||
+                !ValidPosition(request.DeathPosition) || !ValidPosition(request.RespawnPosition) ||
+                request.DeathPosition.ZoneId != request.RespawnPosition.ZoneId ||
+                request.RespawnDelayMs is < 1000 or > 15000 || request.OccurredAtUnixMs < 0)
+                throw new ArgumentException("Invalid death event.");
+            var d = request.DeathPosition; var p = request.RespawnPosition;
+            return WireDeath(store.ReportDeath(request.DeathEventId, request.CharacterId, request.OccurredAtUnixMs,
+                new(d.ZoneId, d.X, d.Y, d.Z, 0), new(p.ZoneId, p.X, p.Y, p.Z, 0), request.RespawnDelayMs));
+        });
+
+    public override Task<Pb.DeathState> ClearDeath(Pb.ClearDeathRequest request, ServerCallContext context) =>
+        GrpcRun.Call(context, () =>
+        {
+            if (string.IsNullOrWhiteSpace(request.CharacterId) || !Guid.TryParse(request.DeathEventId, out _))
+                throw new ArgumentException("Invalid death identity.");
+            return WireDeath(store.ClearDeath(request.CharacterId, request.DeathEventId));
+        });
+
     public override Task<Pb.ApplyReceiptReply> ApplyReceipt(Pb.ApplyReceiptRequest request, ServerCallContext context) =>
         GrpcRun.Call(context, () =>
         {
@@ -192,6 +223,8 @@ internal sealed class ProgressionGrpcService(PostgresCharacterStateStore store, 
                 state.Position = new Pb.CharacterPosition { ZoneId = position.Result.ZoneId,
                     X = position.Result.X, Y = position.Result.Y, Z = position.Result.Z, Yaw = position.Result.Yaw };
             }
+            var death = store.ReadDeath(request.CharacterId);
+            if (death is not null) state.Death = WireDeath(death);
             return state;
         });
 }

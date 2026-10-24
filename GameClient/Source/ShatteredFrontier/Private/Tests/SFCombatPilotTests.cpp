@@ -1,6 +1,7 @@
 #if WITH_DEV_AUTOMATION_TESTS && WITH_EDITOR
 #include "Combat/SFCombatPilot.h"
 #include "Combat/SFCombatPilotRewards.h"
+#include "Services/SFGameplayServicesClient.h"
 #include "GameFramework/PlayerController.h"
 #include "Misc/AutomationTest.h"
 #include "Tests/AutomationCommon.h"
@@ -30,6 +31,42 @@ bool FSFCombatPilotRulesTest::RunTest(const FString& Parameters)
     TestTrue(TEXT("Town polygon contains its centre"), Mode->IsInsideTerritory(FVector::ZeroVector, Town));
     TestTrue(TEXT("Town boundary is protected"), Mode->IsInsideTerritory(FVector(400,0,0), Town));
     TestFalse(TEXT("Town boundary excludes countryside"), Mode->IsInsideTerritory(FVector(500,0,0), Town));
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFCombatDeathServicesTest,
+    "ShatteredFrontier.Combat.Death.ServicesClient",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+
+bool FSFCombatDeathServicesTest::RunTest(const FString& Parameters)
+{
+    USFGameplayServicesSettings* Settings = NewObject<USFGameplayServicesSettings>();
+    Settings->bEnabled = true;
+    int32 Sent = 0;
+    FSFGameplayServicesClient::SetSendOverrideForTests([&Sent](const FSFGameplayRequest& Request, float, TFunction<void(const FSFGameplayResponse&)> Done)
+    {
+        ++Sent;
+        FSFGameplayResponse Reply; Reply.Status = ESFGameplayStatus::Ok; Reply.GrpcCode = 0;
+        Reply.bHasDeath = true; Reply.bIsDead = Request.Rpc == ESFGameplayRpc::ReportDeath;
+        Reply.DeathEventId = Request.DeathEventId; Reply.RespawnAtUnixMs = Request.DeathAtUnixMs + Request.RespawnDelayMs;
+        Done(Reply);
+    });
+    auto Client = FSFGameplayServicesClient::Create(*Settings);
+    TestTrue(TEXT("Services client created"), Client.IsValid());
+    if (Client)
+    {
+        FSFGameplayRequest Report; Report.Rpc = ESFGameplayRpc::ReportDeath;
+        Report.CharacterId = TEXT("chr_test"); Report.DeathEventId = TEXT("00000000-0000-0000-0000-000000000001");
+        Report.DeathAtUnixMs = 100000; Report.RespawnDelayMs = 4000; Report.ZoneId = TEXT("silverbrook");
+        Report.Position = FVector(12, 20, 30); Report.RespawnPosition = FVector(100, 200, 30);
+        Client->Call(Report, [this](const FSFGameplayResponse& Reply)
+        { TestTrue(TEXT("Death acknowledgement carries deadline and event"), Reply.bIsDead && Reply.RespawnAtUnixMs == 104000 && !Reply.DeathEventId.IsEmpty()); });
+        FSFGameplayRequest Clear; Clear.Rpc = ESFGameplayRpc::ClearDeath; Clear.CharacterId = Report.CharacterId; Clear.DeathEventId = Report.DeathEventId;
+        Client->Call(Clear, [this](const FSFGameplayResponse& Reply)
+        { TestTrue(TEXT("Respawn acknowledgement is alive for same event"), !Reply.bIsDead && !Reply.DeathEventId.IsEmpty()); });
+    }
+    TestEqual(TEXT("Both death calls sent"), Sent, 2);
+    FSFGameplayServicesClient::SetSendOverrideForTests({});
     return true;
 }
 

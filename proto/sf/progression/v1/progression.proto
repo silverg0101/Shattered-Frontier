@@ -7,6 +7,8 @@ service Progression {
   rpc ApplyReceipt(ApplyReceiptRequest) returns (ApplyReceiptReply);
   rpc GetCharacterState(GetCharacterStateRequest) returns (CharacterStateReply);
   rpc SavePosition(SavePositionRequest) returns (SavePositionReply);
+  rpc ReportDeath(ReportDeathRequest) returns (DeathState);
+  rpc ClearDeath(ClearDeathRequest) returns (DeathState);
   rpc LearnRecipe(LearnRecipeRequest) returns (LearnRecipeReply);
 }
 message CreateCharacterRequest {
@@ -89,6 +91,23 @@ message SavePositionRequest {
   CharacterPosition position = 3;
 }
 message SavePositionReply { int64 position_revision = 1; }
+message ReportDeathRequest {
+  string death_event_id = 1;
+  string character_id = 2;
+  int64 occurred_at_unix_ms = 3;
+  CharacterPosition death_position = 4;
+  CharacterPosition respawn_position = 5;
+  int32 respawn_delay_ms = 6;
+}
+message ClearDeathRequest { string character_id = 1; string death_event_id = 2; }
+message DeathState {
+  bool is_dead = 1;
+  string death_event_id = 2;
+  int64 occurred_at_unix_ms = 3;
+  int64 respawn_at_unix_ms = 4;
+  CharacterPosition death_position = 5;
+  CharacterPosition respawn_position = 6;
+}
 message CharacterStateReply {
   int64 progression_revision = 1;
   int64 lifetime_xp = 2;
@@ -107,6 +126,7 @@ message CharacterStateReply {
   optional string face_id = 14;
   // Authoritative gathering values after committed harvest receipts.
   map<string, int32> gathering_skills = 15;
+  DeathState death = 16;
 }
 message QuestState {
   string quest_id = 1;

@@ -15,6 +15,14 @@ var practice = new ActionReceipt("source-skill-1", "character-skill", ReceiptKin
 switch (args[0])
 {
     case "seed":
+        var deathPoint = new CharacterPositionSnapshot("silverbrook", 12, 20, 30, 0);
+        var respawnPoint = new CharacterPositionSnapshot("silverbrook", 100, 200, 30, 0);
+        var deathId = "00000000-0000-0000-0000-000000000001";
+        var death = store.ReportDeath(deathId, "character-death", 100000, deathPoint, respawnPoint, 4000);
+        Check(death.IsDead && death.RespawnAtUnixMs == 104000, "death persisted with deadline");
+        Check(store.ReportDeath(deathId, "character-death", 100000, deathPoint, respawnPoint, 4000) == death, "death replay stable");
+        try { store.ReportDeath(deathId, "character-death", 100000, deathPoint, respawnPoint, 5000); throw new Exception("death payload replay accepted"); }
+        catch (CharacterStoreRejectedException) { Check(true, "death event payload conflict rejected"); }
         var appearanceValidator = new AppearanceValidator(AppearanceAllowlist.Load("content/appearance/human.json"));
         var appearancePacket = AppearanceCodec.Pack(new Appearance(2, 0, 1, 1, 128, 128,
             new byte[8], [0, 0, 0, 0], [0, 0, 0, 0], [], 5));
@@ -77,6 +85,12 @@ switch (args[0])
         Check(store.PendingRewardQuests("character-3").Contains("quest/two") && !store.PendingRewardQuests("character-2").Contains("quest/two"), "pending reward quests listed");
         break;
     case "restart":
+        Check(store.ReadDeath("character-death") is { IsDead: true, RespawnAtUnixMs: 104000 }, "dead state survives restart");
+        Check(!store.ClearDeath("character-death", "00000000-0000-0000-0000-000000000001").IsDead, "respawn clears dead state");
+        Check(!store.ClearDeath("character-death", "00000000-0000-0000-0000-000000000001").IsDead, "respawn clear replays");
+        Check(store.ReadPosition("character-death")?.Result.X == 100, "respawn point committed with clear");
+        Check(!store.ReportDeath("00000000-0000-0000-0000-000000000001", "character-death", 100000,
+            new("silverbrook", 12, 20, 30, 0), new("silverbrook", 100, 200, 30, 0), 4000).IsDead, "death replay after clear stays alive");
         Check(store.ReadAppearance("character-appearance") is { Revision: 2, Result: var restoredPacket } &&
             restoredPacket[0] == 2 && restoredPacket[^1] == 8, "appearance survives restart");
         var xp = store.ApplyProgression(Kill("source-xp-1"), 0, TimeProvider.System, () => .5);

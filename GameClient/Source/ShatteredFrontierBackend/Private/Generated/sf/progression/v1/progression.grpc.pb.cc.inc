@@ -29,6 +29,8 @@ static const char* Progression_method_names[] = {
   "/sf.progression.v1.Progression/ApplyReceipt",
   "/sf.progression.v1.Progression/GetCharacterState",
   "/sf.progression.v1.Progression/SavePosition",
+  "/sf.progression.v1.Progression/ReportDeath",
+  "/sf.progression.v1.Progression/ClearDeath",
   "/sf.progression.v1.Progression/LearnRecipe",
 };
 
@@ -43,7 +45,9 @@ Progression::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channe
   , rpcmethod_ApplyReceipt_(Progression_method_names[1], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_GetCharacterState_(Progression_method_names[2], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_SavePosition_(Progression_method_names[3], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_LearnRecipe_(Progression_method_names[4], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_ReportDeath_(Progression_method_names[4], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_ClearDeath_(Progression_method_names[5], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_LearnRecipe_(Progression_method_names[6], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   {}
 
 ::grpc::Status Progression::Stub::CreateCharacter(::grpc::ClientContext* context, const ::sf::progression::v1::CreateCharacterRequest& request, ::sf::progression::v1::CreateCharacterReply* response) {
@@ -138,6 +142,52 @@ void Progression::Stub::async::SavePosition(::grpc::ClientContext* context, cons
   return result;
 }
 
+::grpc::Status Progression::Stub::ReportDeath(::grpc::ClientContext* context, const ::sf::progression::v1::ReportDeathRequest& request, ::sf::progression::v1::DeathState* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::sf::progression::v1::ReportDeathRequest, ::sf::progression::v1::DeathState, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_ReportDeath_, context, request, response);
+}
+
+void Progression::Stub::async::ReportDeath(::grpc::ClientContext* context, const ::sf::progression::v1::ReportDeathRequest* request, ::sf::progression::v1::DeathState* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::sf::progression::v1::ReportDeathRequest, ::sf::progression::v1::DeathState, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_ReportDeath_, context, request, response, std::move(f));
+}
+
+void Progression::Stub::async::ReportDeath(::grpc::ClientContext* context, const ::sf::progression::v1::ReportDeathRequest* request, ::sf::progression::v1::DeathState* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_ReportDeath_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::sf::progression::v1::DeathState>* Progression::Stub::PrepareAsyncReportDeathRaw(::grpc::ClientContext* context, const ::sf::progression::v1::ReportDeathRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::sf::progression::v1::DeathState, ::sf::progression::v1::ReportDeathRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_ReportDeath_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::sf::progression::v1::DeathState>* Progression::Stub::AsyncReportDeathRaw(::grpc::ClientContext* context, const ::sf::progression::v1::ReportDeathRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncReportDeathRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
+::grpc::Status Progression::Stub::ClearDeath(::grpc::ClientContext* context, const ::sf::progression::v1::ClearDeathRequest& request, ::sf::progression::v1::DeathState* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::sf::progression::v1::ClearDeathRequest, ::sf::progression::v1::DeathState, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_ClearDeath_, context, request, response);
+}
+
+void Progression::Stub::async::ClearDeath(::grpc::ClientContext* context, const ::sf::progression::v1::ClearDeathRequest* request, ::sf::progression::v1::DeathState* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::sf::progression::v1::ClearDeathRequest, ::sf::progression::v1::DeathState, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_ClearDeath_, context, request, response, std::move(f));
+}
+
+void Progression::Stub::async::ClearDeath(::grpc::ClientContext* context, const ::sf::progression::v1::ClearDeathRequest* request, ::sf::progression::v1::DeathState* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_ClearDeath_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::sf::progression::v1::DeathState>* Progression::Stub::PrepareAsyncClearDeathRaw(::grpc::ClientContext* context, const ::sf::progression::v1::ClearDeathRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::sf::progression::v1::DeathState, ::sf::progression::v1::ClearDeathRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_ClearDeath_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::sf::progression::v1::DeathState>* Progression::Stub::AsyncClearDeathRaw(::grpc::ClientContext* context, const ::sf::progression::v1::ClearDeathRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncClearDeathRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
 ::grpc::Status Progression::Stub::LearnRecipe(::grpc::ClientContext* context, const ::sf::progression::v1::LearnRecipeRequest& request, ::sf::progression::v1::LearnRecipeReply* response) {
   return ::grpc::internal::BlockingUnaryCall< ::sf::progression::v1::LearnRecipeRequest, ::sf::progression::v1::LearnRecipeReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_LearnRecipe_, context, request, response);
 }
@@ -205,6 +255,26 @@ Progression::Service::Service() {
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       Progression_method_names[4],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< Progression::Service, ::sf::progression::v1::ReportDeathRequest, ::sf::progression::v1::DeathState, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](Progression::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::sf::progression::v1::ReportDeathRequest* req,
+             ::sf::progression::v1::DeathState* resp) {
+               return service->ReportDeath(ctx, req, resp);
+             }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      Progression_method_names[5],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< Progression::Service, ::sf::progression::v1::ClearDeathRequest, ::sf::progression::v1::DeathState, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](Progression::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::sf::progression::v1::ClearDeathRequest* req,
+             ::sf::progression::v1::DeathState* resp) {
+               return service->ClearDeath(ctx, req, resp);
+             }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      Progression_method_names[6],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
       new ::grpc::internal::RpcMethodHandler< Progression::Service, ::sf::progression::v1::LearnRecipeRequest, ::sf::progression::v1::LearnRecipeReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](Progression::Service* service,
              ::grpc::ServerContext* ctx,
@@ -239,6 +309,20 @@ Progression::Service::~Service() {
 }
 
 ::grpc::Status Progression::Service::SavePosition(::grpc::ServerContext* context, const ::sf::progression::v1::SavePositionRequest* request, ::sf::progression::v1::SavePositionReply* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status Progression::Service::ReportDeath(::grpc::ServerContext* context, const ::sf::progression::v1::ReportDeathRequest* request, ::sf::progression::v1::DeathState* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status Progression::Service::ClearDeath(::grpc::ServerContext* context, const ::sf::progression::v1::ClearDeathRequest* request, ::sf::progression::v1::DeathState* response) {
   (void) context;
   (void) request;
   (void) response;

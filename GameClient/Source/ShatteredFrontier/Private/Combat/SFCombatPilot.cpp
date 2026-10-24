@@ -16,6 +16,8 @@
 #include "Misc/CommandLine.h"
 #include "Misc/FileHelper.h"
 #include "Misc/Paths.h"
+#include "Misc/Guid.h"
+#include "Misc/PackageName.h"
 #include "Misc/Parse.h"
 #include "Net/UnrealNetwork.h"
 #include "Serialization/JsonReader.h"
@@ -29,6 +31,11 @@
 
 namespace
 {
+int64 UnixNowMs()
+{
+    const FDateTime Now = FDateTime::UtcNow();
+    return Now.ToUnixTimestamp() * 1000 + Now.GetMillisecond();
+}
 TArray<FVector2D> ReadPolygon(const TArray<TSharedPtr<FJsonValue>>& Values)
 {
     TArray<FVector2D> Result;
@@ -82,6 +89,7 @@ bool USFCombatPilotSettings::Validate(FString& Error) const
         !FMath::IsWithinInclusive(TabTargetConeDegrees, 60.0f, 360.0f) ||
         !FMath::IsWithinInclusive(TabTargetCycleResetSeconds, 0.5f, 5.0f) ||
         !FMath::IsWithinInclusive(PlayerRespawnDelaySeconds, 1.0f, 15.0f) ||
+        (PlayerRespawnPointRule != ESFPlayerRespawnPointRule::NearestToDeath && PlayerRespawnPointRule != ESFPlayerRespawnPointRule::FirstAuthored) ||
         !FMath::IsWithinInclusive(BoarAggroRadiusMetres, 4.0f, 18.0f) ||
         !FMath::IsWithinInclusive(BoarNearNoticeRadiusMetres, 1.0f, 10.0f) ||
         BoarNearNoticeRadiusMetres > BoarAggroRadiusMetres ||
@@ -174,6 +182,7 @@ void ASFPilotBoar::Tick(float DeltaSeconds)
             const double Distance = Toward.Size2D();
             // A linkdead (draining) character stays visible but is never chosen as prey (INT-05).
             if (IsValid(Candidate) && Candidate->CombatHealth() > 0 && !USFCharacterSessionComponent::IsLinkdead(It->Get()) &&
+                !USFCharacterSessionComponent::IsRestoring(It->Get()) &&
                 !Mode->IsSafe(Candidate->GetActorLocation()) &&
                 Mode->IsInsideTerritory(Candidate->GetActorLocation(), Territory) &&
                 Distance <= Mode->CombatSettings()->BoarAggroRadiusMetres*100 &&
@@ -396,7 +405,8 @@ void ASFGameMode::SpawnSlot(const FString& Group, int32 Slot, int32 Cycle, const
 
 void ASFGameMode::TryPlayerAttack(ASFE1Character* Attacker, AActor* SelectedTarget)
 {
-    if (!bPilotActive || !CapturedSettings->bCombatAvailable || !IsValid(Attacker) || Attacker->CombatHealth() <= 0 || IsSafe(Attacker->GetActorLocation())) { return; }
+    if (!bPilotActive || !CapturedSettings->bCombatAvailable || !IsValid(Attacker) || Attacker->CombatHealth() <= 0 ||
+        USFCharacterSessionComponent::IsRestoring(Attacker->GetController()) || IsSafe(Attacker->GetActorLocation())) { return; }
     SelectedTarget = Attacker->GetCombatTarget();
     if (SelectedTarget && FVector::Dist2D(Attacker->GetActorLocation(), SelectedTarget->GetActorLocation()) > CapturedSettings->MeleeRangeMetres * 100.0)
     {
@@ -436,7 +446,8 @@ void ASFGameMode::TryBoarAttack(ASFPilotBoar* Boar, ASFE1Character* Victim)
 
 void ASFGameMode::HitPlayer(AActor* Source, ASFE1Character* Victim, int32 Damage)
 {
-    if (!IsValid(Victim) || !Victim->HasAuthority() || Victim->CombatHealth() <= 0) return;
+    if (!IsValid(Victim) || !Victim->HasAuthority() || Victim->CombatHealth() <= 0 ||
+        USFCharacterSessionComponent::IsRestoring(Victim->GetController())) return;
     Damage = SFGear::MitigatedDamage(Damage, SFGear::Equipped(Victim->GetController()).Armor);
     Victim->CombatSetHealth(SFCombatPilotRules::RemainingHealth(Victim->CombatHealth(), Damage));
     if (ASFPlayerController* PC = Cast<ASFPlayerController>(Victim->GetController())) { PC->ClientPilotHit(TEXT("Hit")); }
@@ -448,23 +459,130 @@ void ASFGameMode::HitPlayer(AActor* Source, ASFE1Character* Victim, int32 Damage
         UE_LOG(LogTemp, Display, TEXT("COMBAT_PILOT_PLAYER_DEAD Pawn=%s"), *Victim->GetName());
         ASFGameMode* Mode = Victim->GetWorld()->GetAuthGameMode<ASFGameMode>();
         if (!Mode || !Mode->bPilotActive) { return; }
+        const auto Weak = TWeakObjectPtr<ASFE1Character>(Victim);
+        ASFPlayerController* Controller = Cast<ASFPlayerController>(Victim->GetController());
+        USFBackpackComponent* Pack = Controller ? USFBackpackComponent::FindOrCreate(Controller) : nullptr;
+        if (USFBackpackComponent::Services() && Pack && Pack->HasDevIdentity())
+        {
+            FSFGameplayRequest Request; Request.Rpc = ESFGameplayRpc::ReportDeath;
+            Request.DeathEventId = FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens);
+            Request.CharacterId = Pack->GetCharacterId(); Request.DeathAtUnixMs = UnixNowMs();
+            Request.ZoneId = FPackageName::GetShortName(Victim->GetWorld()->GetOutermost()->GetName()).ToLower();
+            Request.Position = Victim->GetActorLocation(); Request.RespawnPosition = Mode->ChooseRespawnPoint(Request.Position);
+            Request.RespawnDelayMs = FMath::RoundToInt(Mode->CapturedSettings->PlayerRespawnDelaySeconds * 1000);
+            Mode->PlayerDeathEvents.Add(Weak, Request.DeathEventId);
+            Mode->PlayerDeathRespawnPoints.Add(Weak, Request.RespawnPosition);
+            Mode->PendingDeathReports.Add(Request.CharacterId);
+            Mode->ReportPlayerDeath(Weak, Request);
+        }
+        else
+        {
+            FTimerHandle Timer;
+            Mode->GetWorldTimerManager().SetTimer(Timer, FTimerDelegate::CreateWeakLambda(Mode,
+                [Mode, Weak]() { Mode->RespawnPlayer(Weak); }), Mode->CapturedSettings->PlayerRespawnDelaySeconds, false);
+        }
+    }
+}
+
+FVector ASFGameMode::ChooseRespawnPoint(const FVector& DeathLocation) const
+{
+    if (RespawnPoints.IsEmpty()) return DeathLocation;
+    FVector Nearest = RespawnPoints[0];
+    if (CapturedSettings->PlayerRespawnPointRule == ESFPlayerRespawnPointRule::NearestToDeath)
+    {
+        double Distance = FVector::DistSquared2D(DeathLocation, Nearest);
+        for (const FVector& Point : RespawnPoints)
+        { const double D = FVector::DistSquared2D(DeathLocation, Point); if (D < Distance) { Nearest = Point; Distance = D; } }
+    }
+    return Nearest;
+}
+
+void ASFGameMode::ReportPlayerDeath(TWeakObjectPtr<ASFE1Character> Player, const FSFGameplayRequest& Request)
+{
+    if (!USFBackpackComponent::Services()) return;
+    USFBackpackComponent::Services()->Call(Request, [WeakMode = TWeakObjectPtr<ASFGameMode>(this), Player, Request](const FSFGameplayResponse& Reply)
+    {
+        ASFGameMode* Mode = WeakMode.Get();
+        if (!Mode || !Mode->PendingDeathReports.Contains(Request.CharacterId)) return;
+        if (Reply.Status != ESFGameplayStatus::Ok)
+        {
+            UE_LOG(LogTemp, Warning, TEXT("COMBAT_DEATH_REPORT_RETRY Character=%s Code=%d"), *Request.CharacterId, Reply.GrpcCode);
+            FTimerHandle Retry;
+            Mode->GetWorldTimerManager().SetTimer(Retry, FTimerDelegate::CreateWeakLambda(Mode,
+                [WeakMode, Player, Request]() { if (ASFGameMode* M = WeakMode.Get()) M->ReportPlayerDeath(Player, Request); }), 3.0f, false);
+            return;
+        }
+        Mode->PendingDeathReports.Remove(Request.CharacterId);
+        if (!Player.IsValid())
+        { Mode->PlayerDeathEvents.Remove(Player); Mode->PlayerDeathRespawnPoints.Remove(Player); return; }
+        if (Mode->PlayerDeathEvents.FindRef(Player) != Request.DeathEventId) return;
+        const int64 RemainingMs = FMath::Max<int64>(0, Reply.RespawnAtUnixMs - UnixNowMs());
+        UE_LOG(LogTemp, Display, TEXT("COMBAT_DEATH_RECORDED Character=%s Event=%s RemainingMs=%lld"), *Request.CharacterId, *Request.DeathEventId, RemainingMs);
         FTimerHandle Timer;
         Mode->GetWorldTimerManager().SetTimer(Timer, FTimerDelegate::CreateWeakLambda(Mode,
-            [Mode, Weak = TWeakObjectPtr<ASFE1Character>(Victim)]() { Mode->RespawnPlayer(Weak); }),
-            Mode->CapturedSettings->PlayerRespawnDelaySeconds, false);
-    }
+            [WeakMode, Player]() { if (ASFGameMode* M = WeakMode.Get()) M->RespawnPlayer(Player); }), FMath::Max(0.01, RemainingMs / 1000.0), false);
+    });
+}
+
+bool ASFGameMode::HasPendingDeathReport(const FString& CharacterId) const
+{
+    return PendingDeathReports.Contains(CharacterId);
+}
+
+void ASFGameMode::RestoreDeadPlayer(ASFE1Character* Player, const FSFGameplayResponse& State)
+{
+    if (!bPilotActive || !IsValid(Player) || !State.bHasDeath || !State.bIsDead ||
+        State.DeathZoneId != FPackageName::GetShortName(GetWorld()->GetOutermost()->GetName()).ToLower() ||
+        State.DeathPosition.ContainsNaN() || State.RespawnPosition.ContainsNaN()) return;
+    const auto Weak = TWeakObjectPtr<ASFE1Character>(Player);
+    Player->SetActorLocation(State.DeathPosition, false, nullptr, ETeleportType::TeleportPhysics);
+    Player->CombatSetHealth(0); Player->GetCharacterMovement()->DisableMovement();
+    PlayerDeathEvents.Add(Weak, State.DeathEventId); PlayerDeathRespawnPoints.Add(Weak, State.RespawnPosition);
+    const int64 RemainingMs = FMath::Max<int64>(0, State.RespawnAtUnixMs - UnixNowMs());
+    FTimerHandle Timer;
+    GetWorldTimerManager().SetTimer(Timer, FTimerDelegate::CreateWeakLambda(this,
+        [WeakMode = TWeakObjectPtr<ASFGameMode>(this), Weak]() { if (ASFGameMode* M = WeakMode.Get()) M->RespawnPlayer(Weak); }), FMath::Max(0.01, RemainingMs / 1000.0), false);
+    UE_LOG(LogTemp, Display, TEXT("COMBAT_DEATH_RESTORED Event=%s RemainingMs=%lld"), *State.DeathEventId, RemainingMs);
 }
 
 void ASFGameMode::RespawnPlayer(TWeakObjectPtr<ASFE1Character> Player)
 {
-    if (!bPilotActive || !Player.IsValid() || Player->CombatHealth() != 0 || RespawnPoints.IsEmpty()) { return; }
-    FVector Nearest = RespawnPoints[0]; double Distance = FVector::DistSquared2D(Player->GetActorLocation(), Nearest);
-    for (const FVector& Point : RespawnPoints)
-    { const double D = FVector::DistSquared2D(Player->GetActorLocation(),Point); if (D < Distance) { Nearest = Point; Distance = D; } }
+    if (!Player.IsValid())
+    { PlayerDeathEvents.Remove(Player); PlayerDeathRespawnPoints.Remove(Player); PlayerRespawnInFlight.Remove(Player); return; }
+    if (!bPilotActive || Player->CombatHealth() != 0 || RespawnPoints.IsEmpty()) { return; }
+    const FVector Nearest = PlayerDeathRespawnPoints.Contains(Player) ? PlayerDeathRespawnPoints.FindRef(Player) : ChooseRespawnPoint(Player->GetActorLocation());
+    if (const FString* EventId = PlayerDeathEvents.Find(Player))
+    {
+        if (PlayerRespawnInFlight.Contains(Player)) return;
+        ASFPlayerController* Controller = Cast<ASFPlayerController>(Player->GetController());
+        USFBackpackComponent* Pack = Controller ? USFBackpackComponent::FindOrCreate(Controller) : nullptr;
+        if (!Pack || !USFBackpackComponent::Services()) return;
+        FSFGameplayRequest Clear; Clear.Rpc = ESFGameplayRpc::ClearDeath; Clear.CharacterId = Pack->GetCharacterId(); Clear.DeathEventId = *EventId;
+        PlayerRespawnInFlight.Add(Player);
+        USFBackpackComponent::Services()->Call(Clear, [WeakMode = TWeakObjectPtr<ASFGameMode>(this), Player, Clear](const FSFGameplayResponse& Reply)
+        {
+            ASFGameMode* Mode = WeakMode.Get(); if (!Mode) return;
+            Mode->PlayerRespawnInFlight.Remove(Player);
+            if (!Player.IsValid() || Mode->PlayerDeathEvents.FindRef(Player) != Clear.DeathEventId) return;
+            if (Reply.Status == ESFGameplayStatus::Ok && !Reply.bIsDead)
+            {
+                Mode->PlayerDeathEvents.Remove(Player);
+                Mode->RespawnPlayer(Player);
+            }
+            else
+            {
+                UE_LOG(LogTemp, Warning, TEXT("COMBAT_DEATH_CLEAR_RETRY Character=%s Code=%d"), *Clear.CharacterId, Reply.GrpcCode);
+                FTimerHandle Retry; Mode->GetWorldTimerManager().SetTimer(Retry, FTimerDelegate::CreateWeakLambda(Mode,
+                    [WeakMode, Player]() { if (ASFGameMode* M = WeakMode.Get()) M->RespawnPlayer(Player); }), 3.0f, false);
+            }
+        });
+        return;
+    }
     const FVector At = Grounded(GetWorld(), Nearest, Player->GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
     Player->SetActorLocation(At, false, nullptr, ETeleportType::TeleportPhysics);
     Player->GetCharacterMovement()->SetMovementMode(MOVE_Walking);
     Player->CombatSetHealth(CapturedSettings->PlayerHealth);
+    PlayerDeathRespawnPoints.Remove(Player);
     UE_LOG(LogTemp, Display, TEXT("COMBAT_PILOT_PLAYER_RESPAWN X=%.0f Y=%.0f HP=%d"), At.X,At.Y,Player->CombatHealth());
     if (bScenario)
     {

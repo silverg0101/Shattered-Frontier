@@ -8,7 +8,7 @@ class APlayerController;
 // INT-05: a dev character's server session on its controller. It restores the character from the services on connect
 // (ledger backpack, Progression skills and quest step, saved position), refuses actions until that restore succeeds, saves
 // the position on an interval and at logout, and keeps a disconnected controller alive until its in-flight commits resolve.
-// Exists only with Gameplay services, USFGameplayServicesSettings::bRestoreOnConnect and a bound dev identity.
+// Exists with Gameplay services, a bound dev identity and either restore-on-connect or an active combat pilot.
 UCLASS(NotBlueprintable)
 class SHATTEREDFRONTIER_API USFCharacterSessionComponent : public UActorComponent
 {

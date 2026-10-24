@@ -27,7 +27,7 @@ $OutputDirectory = [IO.Path]::GetFullPath($OutputDirectory)
 if (Test-Path -LiteralPath $OutputDirectory) { throw 'Backup destination must be new.' }
 $tables = switch ($Store) {
     InventoryLedger { @('inventory.schema_version','inventory.containers','inventory.entries','inventory.operation_receipts','inventory.receipt_outbox') }
-    CharacterState { @('character_state.schema_version','character_state.progression','character_state.quests','character_state.source_receipts','character_state.reward_receipts','character_state.positions','character_state.recipe_intents','character_state.appearance') }
+    CharacterState { @('character_state.schema_version','character_state.progression','character_state.quests','character_state.source_receipts','character_state.reward_receipts','character_state.positions','character_state.recipe_intents','character_state.appearance','character_state.deaths','character_state.death_events') }
     Housing { @('housing.schema_version','housing.claims','housing.claim_operations','housing.claim_structure_revisions','housing.placements','housing.claim_geometry','housing.removals','inventory.schema_version','inventory.containers','inventory.entries','inventory.operation_receipts','inventory.receipt_outbox') }
     Exchange { @('exchange.schema_version','exchange.wallets','exchange.wallet_entries','exchange.operations','exchange.listings','exchange.settlements') }
     TerrainDelta { @('terrain_delta.schema_version','terrain_delta.regions','terrain_delta.operations') }
@@ -49,7 +49,7 @@ function Snapshot {
 }
 foreach ($schema in $schemas) {
     $version = (Query "SELECT version FROM $schema.schema_version WHERE singleton=true").Trim()
-    $expectedVersion = if ($schema -eq 'housing') { '6' } elseif ($schema -eq 'character_state') { '6' } elseif ($schema -eq 'exchange') { '3' } elseif ($schema -eq 'inventory') { '2' } else { '1' }
+    $expectedVersion = if ($schema -eq 'housing') { '6' } elseif ($schema -eq 'character_state') { '7' } elseif ($schema -eq 'exchange') { '3' } elseif ($schema -eq 'inventory') { '2' } else { '1' }
     if ($version -ne $expectedVersion) { throw "Unsupported source schema version: $schema=$version" }
 }
 if ($Store -eq 'Housing') {
@@ -70,7 +70,7 @@ try {
     $after = Snapshot
     if (($before | ConvertTo-Json -Depth 5 -Compress) -cne ($after | ConvertTo-Json -Depth 5 -Compress)) { throw 'Source changed during backup; quiesce writes and retry.' }
     $dumpHash = FileSha256 $dump
-    @{ format=2; store=$Store; schemaVersion=$(if ($Store -eq 'Housing') { 5 } elseif ($Store -eq 'CharacterState') { 6 } elseif ($Store -eq 'Exchange') { 3 } else { 2 }); dumpSha256=$dumpHash; tables=$before } |
+    @{ format=2; store=$Store; schemaVersion=$(if ($Store -eq 'Housing') { 5 } elseif ($Store -eq 'CharacterState') { 7 } elseif ($Store -eq 'Exchange') { 3 } else { 2 }); dumpSha256=$dumpHash; tables=$before } |
         ConvertTo-Json -Depth 6 | Set-Content (Join-Path $OutputDirectory 'manifest.json')
     Write-Output "$Store backup complete: $OutputDirectory"
 } catch {

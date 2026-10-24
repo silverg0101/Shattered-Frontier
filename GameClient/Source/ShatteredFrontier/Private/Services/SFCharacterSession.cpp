@@ -4,6 +4,7 @@
 #include "GameFramework/Pawn.h"
 #include "GameFramework/PlayerController.h"
 #include "Characters/SFE1Character.h"
+#include "Framework/SFGameMode.h"
 #include "Gathering/SFGatheringPilot.h"
 #include "Misc/PackageName.h"
 #include "Quest/SFQuestPilot.h"
@@ -25,7 +26,8 @@ void USFCharacterSessionComponent::AttachIfEnabled(APlayerController* Controller
 {
     const auto* Settings = GetDefault<USFGameplayServicesSettings>();
     USFBackpackComponent* Pack = USFBackpackComponent::FindOrCreate(Controller);
-    if (!Settings->bRestoreOnConnect || !USFBackpackComponent::Services() || !Pack || !Pack->HasDevIdentity()
+    const auto* Mode = Controller->GetWorld()->GetAuthGameMode<ASFGameMode>();
+    if ((!Settings->bRestoreOnConnect && !(Mode && Mode->IsCombatActive())) || !USFBackpackComponent::Services() || !Pack || !Pack->HasDevIdentity()
         || Controller->FindComponentByClass<USFCharacterSessionComponent>()) { return; }
     auto* Session = NewObject<USFCharacterSessionComponent>(Controller, TEXT("CharacterSession"));
     Session->CharacterId = Pack->GetCharacterId();
@@ -51,8 +53,10 @@ bool USFCharacterSessionComponent::HasPendingWork() const
     const auto* Pack = Owner->FindComponentByClass<USFBackpackComponent>();
     const auto* Gathering = Owner->FindComponentByClass<USFGatheringPilotComponent>();
     const auto* Quest = Owner->FindComponentByClass<USFQuestPilotComponent>();
+    const auto* Mode = GetWorld()->GetAuthGameMode<ASFGameMode>();
     return (Pack && !Pack->IsIdle()) || (Quest && Quest->HasPendingServiceWork())
-        || (Gathering && Gathering->GetFeedback().Phase == ESFGatheringPilotPhase::Committing);
+        || (Gathering && Gathering->GetFeedback().Phase == ESFGatheringPilotPhase::Committing)
+        || (Mode && Mode->HasPendingDeathReport(CharacterId));
 }
 
 bool USFCharacterSessionComponent::BeginDrain()
@@ -146,6 +150,8 @@ void USFCharacterSessionComponent::BeginRestore()
         Self->bHasRestoredLocation = State.bHasPosition && State.ZoneId == ZoneKey(Self->GetWorld()) && !State.Position.ContainsNaN();
         if (Self->bHasRestoredLocation && Pawn)
         { Pawn->TeleportTo(State.Position, FRotator(0, State.Yaw, 0)); Cast<APlayerController>(Owner)->ClientSetRotation(FRotator(0, State.Yaw, 0)); }
+        if (State.bHasDeath && State.bIsDead && Pawn)
+        { if (auto* Mode = Self->GetWorld()->GetAuthGameMode<ASFGameMode>()) Mode->RestoreDeadPlayer(Cast<ASFE1Character>(Pawn), State); }
         Part(2, true);
     });
 }

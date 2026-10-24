@@ -16,6 +16,9 @@ namespace SFCombatPilotRules
     SHATTEREDFRONTIER_API int32 RemainingHealth(int32 Current, int32 Damage);
 }
 
+UENUM()
+enum class ESFPlayerRespawnPointRule : uint8 { NearestToDeath, FirstAuthored };
+
 // Release-authored defaults. Both switches are adopted at the next zone start.
 // The command-line flag admits this development pilot; it is not a tuning override.
 UCLASS(Config=Game, DefaultConfig, meta=(DisplayName="Silverbrook Combat Pilot"))
@@ -54,8 +57,10 @@ public:
     bool bTabTargetRequireLineOfSight = true;
     UPROPERTY(Config, EditAnywhere, Category="Pilot Targeting", meta=(ClampMin="0.5", ClampMax="5", Units="s"))
     float TabTargetCycleResetSeconds = 1.5f;
-    UPROPERTY(Config, EditAnywhere, Category="Pilot Balance", meta=(ClampMin="1.0", ClampMax="15.0", Units="s"))
+    UPROPERTY(Config, EditAnywhere, Category="Pilot Balance", meta=(ClampMin="1.0", ClampMax="15.0", Units="s", ToolTip="Server respawn delay; adopted at next zone start."))
     float PlayerRespawnDelaySeconds = 4.0f;
+    UPROPERTY(Config, EditAnywhere, Category="Pilot Balance", meta=(ToolTip="Choose the nearest authored respawn point to the death, or the first authored point; adopted at next zone start."))
+    ESFPlayerRespawnPointRule PlayerRespawnPointRule = ESFPlayerRespawnPointRule::NearestToDeath;
     UPROPERTY(Config, EditAnywhere, Category="Pilot Boar AI", meta=(ClampMin="4.0", ClampMax="18.0", Units="m"))
     float BoarAggroRadiusMetres = 12.0f;
     UPROPERTY(Config, EditAnywhere, Category="Pilot Boar AI", meta=(ClampMin="1.0", ClampMax="10.0", Units="m"))

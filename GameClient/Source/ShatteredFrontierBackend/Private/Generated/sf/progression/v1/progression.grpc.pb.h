@@ -66,6 +66,20 @@ class Progression final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::progression::v1::SavePositionReply>> PrepareAsyncSavePosition(::grpc::ClientContext* context, const ::sf::progression::v1::SavePositionRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::progression::v1::SavePositionReply>>(PrepareAsyncSavePositionRaw(context, request, cq));
     }
+    virtual ::grpc::Status ReportDeath(::grpc::ClientContext* context, const ::sf::progression::v1::ReportDeathRequest& request, ::sf::progression::v1::DeathState* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::progression::v1::DeathState>> AsyncReportDeath(::grpc::ClientContext* context, const ::sf::progression::v1::ReportDeathRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::progression::v1::DeathState>>(AsyncReportDeathRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::progression::v1::DeathState>> PrepareAsyncReportDeath(::grpc::ClientContext* context, const ::sf::progression::v1::ReportDeathRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::progression::v1::DeathState>>(PrepareAsyncReportDeathRaw(context, request, cq));
+    }
+    virtual ::grpc::Status ClearDeath(::grpc::ClientContext* context, const ::sf::progression::v1::ClearDeathRequest& request, ::sf::progression::v1::DeathState* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::progression::v1::DeathState>> AsyncClearDeath(::grpc::ClientContext* context, const ::sf::progression::v1::ClearDeathRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::progression::v1::DeathState>>(AsyncClearDeathRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::progression::v1::DeathState>> PrepareAsyncClearDeath(::grpc::ClientContext* context, const ::sf::progression::v1::ClearDeathRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::progression::v1::DeathState>>(PrepareAsyncClearDeathRaw(context, request, cq));
+    }
     virtual ::grpc::Status LearnRecipe(::grpc::ClientContext* context, const ::sf::progression::v1::LearnRecipeRequest& request, ::sf::progression::v1::LearnRecipeReply* response) = 0;
     std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::progression::v1::LearnRecipeReply>> AsyncLearnRecipe(::grpc::ClientContext* context, const ::sf::progression::v1::LearnRecipeRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::progression::v1::LearnRecipeReply>>(AsyncLearnRecipeRaw(context, request, cq));
@@ -84,6 +98,10 @@ class Progression final {
       virtual void GetCharacterState(::grpc::ClientContext* context, const ::sf::progression::v1::GetCharacterStateRequest* request, ::sf::progression::v1::CharacterStateReply* response, ::grpc::ClientUnaryReactor* reactor) = 0;
       virtual void SavePosition(::grpc::ClientContext* context, const ::sf::progression::v1::SavePositionRequest* request, ::sf::progression::v1::SavePositionReply* response, std::function<void(::grpc::Status)>) = 0;
       virtual void SavePosition(::grpc::ClientContext* context, const ::sf::progression::v1::SavePositionRequest* request, ::sf::progression::v1::SavePositionReply* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void ReportDeath(::grpc::ClientContext* context, const ::sf::progression::v1::ReportDeathRequest* request, ::sf::progression::v1::DeathState* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void ReportDeath(::grpc::ClientContext* context, const ::sf::progression::v1::ReportDeathRequest* request, ::sf::progression::v1::DeathState* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void ClearDeath(::grpc::ClientContext* context, const ::sf::progression::v1::ClearDeathRequest* request, ::sf::progression::v1::DeathState* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void ClearDeath(::grpc::ClientContext* context, const ::sf::progression::v1::ClearDeathRequest* request, ::sf::progression::v1::DeathState* response, ::grpc::ClientUnaryReactor* reactor) = 0;
       virtual void LearnRecipe(::grpc::ClientContext* context, const ::sf::progression::v1::LearnRecipeRequest* request, ::sf::progression::v1::LearnRecipeReply* response, std::function<void(::grpc::Status)>) = 0;
       virtual void LearnRecipe(::grpc::ClientContext* context, const ::sf::progression::v1::LearnRecipeRequest* request, ::sf::progression::v1::LearnRecipeReply* response, ::grpc::ClientUnaryReactor* reactor) = 0;
     };
@@ -99,6 +117,10 @@ class Progression final {
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::progression::v1::CharacterStateReply>* PrepareAsyncGetCharacterStateRaw(::grpc::ClientContext* context, const ::sf::progression::v1::GetCharacterStateRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::progression::v1::SavePositionReply>* AsyncSavePositionRaw(::grpc::ClientContext* context, const ::sf::progression::v1::SavePositionRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::progression::v1::SavePositionReply>* PrepareAsyncSavePositionRaw(::grpc::ClientContext* context, const ::sf::progression::v1::SavePositionRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::progression::v1::DeathState>* AsyncReportDeathRaw(::grpc::ClientContext* context, const ::sf::progression::v1::ReportDeathRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::progression::v1::DeathState>* PrepareAsyncReportDeathRaw(::grpc::ClientContext* context, const ::sf::progression::v1::ReportDeathRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::progression::v1::DeathState>* AsyncClearDeathRaw(::grpc::ClientContext* context, const ::sf::progression::v1::ClearDeathRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::progression::v1::DeathState>* PrepareAsyncClearDeathRaw(::grpc::ClientContext* context, const ::sf::progression::v1::ClearDeathRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::progression::v1::LearnRecipeReply>* AsyncLearnRecipeRaw(::grpc::ClientContext* context, const ::sf::progression::v1::LearnRecipeRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::progression::v1::LearnRecipeReply>* PrepareAsyncLearnRecipeRaw(::grpc::ClientContext* context, const ::sf::progression::v1::LearnRecipeRequest& request, ::grpc::CompletionQueue* cq) = 0;
   };
@@ -133,6 +155,20 @@ class Progression final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::progression::v1::SavePositionReply>> PrepareAsyncSavePosition(::grpc::ClientContext* context, const ::sf::progression::v1::SavePositionRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::progression::v1::SavePositionReply>>(PrepareAsyncSavePositionRaw(context, request, cq));
     }
+    ::grpc::Status ReportDeath(::grpc::ClientContext* context, const ::sf::progression::v1::ReportDeathRequest& request, ::sf::progression::v1::DeathState* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::progression::v1::DeathState>> AsyncReportDeath(::grpc::ClientContext* context, const ::sf::progression::v1::ReportDeathRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::progression::v1::DeathState>>(AsyncReportDeathRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::progression::v1::DeathState>> PrepareAsyncReportDeath(::grpc::ClientContext* context, const ::sf::progression::v1::ReportDeathRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::progression::v1::DeathState>>(PrepareAsyncReportDeathRaw(context, request, cq));
+    }
+    ::grpc::Status ClearDeath(::grpc::ClientContext* context, const ::sf::progression::v1::ClearDeathRequest& request, ::sf::progression::v1::DeathState* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::progression::v1::DeathState>> AsyncClearDeath(::grpc::ClientContext* context, const ::sf::progression::v1::ClearDeathRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::progression::v1::DeathState>>(AsyncClearDeathRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::progression::v1::DeathState>> PrepareAsyncClearDeath(::grpc::ClientContext* context, const ::sf::progression::v1::ClearDeathRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::progression::v1::DeathState>>(PrepareAsyncClearDeathRaw(context, request, cq));
+    }
     ::grpc::Status LearnRecipe(::grpc::ClientContext* context, const ::sf::progression::v1::LearnRecipeRequest& request, ::sf::progression::v1::LearnRecipeReply* response) override;
     std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::progression::v1::LearnRecipeReply>> AsyncLearnRecipe(::grpc::ClientContext* context, const ::sf::progression::v1::LearnRecipeRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::progression::v1::LearnRecipeReply>>(AsyncLearnRecipeRaw(context, request, cq));
@@ -151,6 +187,10 @@ class Progression final {
       void GetCharacterState(::grpc::ClientContext* context, const ::sf::progression::v1::GetCharacterStateRequest* request, ::sf::progression::v1::CharacterStateReply* response, ::grpc::ClientUnaryReactor* reactor) override;
       void SavePosition(::grpc::ClientContext* context, const ::sf::progression::v1::SavePositionRequest* request, ::sf::progression::v1::SavePositionReply* response, std::function<void(::grpc::Status)>) override;
       void SavePosition(::grpc::ClientContext* context, const ::sf::progression::v1::SavePositionRequest* request, ::sf::progression::v1::SavePositionReply* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void ReportDeath(::grpc::ClientContext* context, const ::sf::progression::v1::ReportDeathRequest* request, ::sf::progression::v1::DeathState* response, std::function<void(::grpc::Status)>) override;
+      void ReportDeath(::grpc::ClientContext* context, const ::sf::progression::v1::ReportDeathRequest* request, ::sf::progression::v1::DeathState* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void ClearDeath(::grpc::ClientContext* context, const ::sf::progression::v1::ClearDeathRequest* request, ::sf::progression::v1::DeathState* response, std::function<void(::grpc::Status)>) override;
+      void ClearDeath(::grpc::ClientContext* context, const ::sf::progression::v1::ClearDeathRequest* request, ::sf::progression::v1::DeathState* response, ::grpc::ClientUnaryReactor* reactor) override;
       void LearnRecipe(::grpc::ClientContext* context, const ::sf::progression::v1::LearnRecipeRequest* request, ::sf::progression::v1::LearnRecipeReply* response, std::function<void(::grpc::Status)>) override;
       void LearnRecipe(::grpc::ClientContext* context, const ::sf::progression::v1::LearnRecipeRequest* request, ::sf::progression::v1::LearnRecipeReply* response, ::grpc::ClientUnaryReactor* reactor) override;
      private:
@@ -172,12 +212,18 @@ class Progression final {
     ::grpc::ClientAsyncResponseReader< ::sf::progression::v1::CharacterStateReply>* PrepareAsyncGetCharacterStateRaw(::grpc::ClientContext* context, const ::sf::progression::v1::GetCharacterStateRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::sf::progression::v1::SavePositionReply>* AsyncSavePositionRaw(::grpc::ClientContext* context, const ::sf::progression::v1::SavePositionRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::sf::progression::v1::SavePositionReply>* PrepareAsyncSavePositionRaw(::grpc::ClientContext* context, const ::sf::progression::v1::SavePositionRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::sf::progression::v1::DeathState>* AsyncReportDeathRaw(::grpc::ClientContext* context, const ::sf::progression::v1::ReportDeathRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::sf::progression::v1::DeathState>* PrepareAsyncReportDeathRaw(::grpc::ClientContext* context, const ::sf::progression::v1::ReportDeathRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::sf::progression::v1::DeathState>* AsyncClearDeathRaw(::grpc::ClientContext* context, const ::sf::progression::v1::ClearDeathRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::sf::progression::v1::DeathState>* PrepareAsyncClearDeathRaw(::grpc::ClientContext* context, const ::sf::progression::v1::ClearDeathRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::sf::progression::v1::LearnRecipeReply>* AsyncLearnRecipeRaw(::grpc::ClientContext* context, const ::sf::progression::v1::LearnRecipeRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::sf::progression::v1::LearnRecipeReply>* PrepareAsyncLearnRecipeRaw(::grpc::ClientContext* context, const ::sf::progression::v1::LearnRecipeRequest& request, ::grpc::CompletionQueue* cq) override;
     const ::grpc::internal::RpcMethod rpcmethod_CreateCharacter_;
     const ::grpc::internal::RpcMethod rpcmethod_ApplyReceipt_;
     const ::grpc::internal::RpcMethod rpcmethod_GetCharacterState_;
     const ::grpc::internal::RpcMethod rpcmethod_SavePosition_;
+    const ::grpc::internal::RpcMethod rpcmethod_ReportDeath_;
+    const ::grpc::internal::RpcMethod rpcmethod_ClearDeath_;
     const ::grpc::internal::RpcMethod rpcmethod_LearnRecipe_;
   };
   static std::unique_ptr<Stub> NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
@@ -190,6 +236,8 @@ class Progression final {
     virtual ::grpc::Status ApplyReceipt(::grpc::ServerContext* context, const ::sf::progression::v1::ApplyReceiptRequest* request, ::sf::progression::v1::ApplyReceiptReply* response);
     virtual ::grpc::Status GetCharacterState(::grpc::ServerContext* context, const ::sf::progression::v1::GetCharacterStateRequest* request, ::sf::progression::v1::CharacterStateReply* response);
     virtual ::grpc::Status SavePosition(::grpc::ServerContext* context, const ::sf::progression::v1::SavePositionRequest* request, ::sf::progression::v1::SavePositionReply* response);
+    virtual ::grpc::Status ReportDeath(::grpc::ServerContext* context, const ::sf::progression::v1::ReportDeathRequest* request, ::sf::progression::v1::DeathState* response);
+    virtual ::grpc::Status ClearDeath(::grpc::ServerContext* context, const ::sf::progression::v1::ClearDeathRequest* request, ::sf::progression::v1::DeathState* response);
     virtual ::grpc::Status LearnRecipe(::grpc::ServerContext* context, const ::sf::progression::v1::LearnRecipeRequest* request, ::sf::progression::v1::LearnRecipeReply* response);
   };
   template <class BaseClass>
@@ -273,12 +321,52 @@ class Progression final {
     }
   };
   template <class BaseClass>
+  class WithAsyncMethod_ReportDeath : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_ReportDeath() {
+      ::grpc::Service::MarkMethodAsync(4);
+    }
+    ~WithAsyncMethod_ReportDeath() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ReportDeath(::grpc::ServerContext* /*context*/, const ::sf::progression::v1::ReportDeathRequest* /*request*/, ::sf::progression::v1::DeathState* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestReportDeath(::grpc::ServerContext* context, ::sf::progression::v1::ReportDeathRequest* request, ::grpc::ServerAsyncResponseWriter< ::sf::progression::v1::DeathState>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(4, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_ClearDeath : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_ClearDeath() {
+      ::grpc::Service::MarkMethodAsync(5);
+    }
+    ~WithAsyncMethod_ClearDeath() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ClearDeath(::grpc::ServerContext* /*context*/, const ::sf::progression::v1::ClearDeathRequest* /*request*/, ::sf::progression::v1::DeathState* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestClearDeath(::grpc::ServerContext* context, ::sf::progression::v1::ClearDeathRequest* request, ::grpc::ServerAsyncResponseWriter< ::sf::progression::v1::DeathState>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(5, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
   class WithAsyncMethod_LearnRecipe : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_LearnRecipe() {
-      ::grpc::Service::MarkMethodAsync(4);
+      ::grpc::Service::MarkMethodAsync(6);
     }
     ~WithAsyncMethod_LearnRecipe() override {
       BaseClassMustBeDerivedFromService(this);
@@ -289,10 +377,10 @@ class Progression final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestLearnRecipe(::grpc::ServerContext* context, ::sf::progression::v1::LearnRecipeRequest* request, ::grpc::ServerAsyncResponseWriter< ::sf::progression::v1::LearnRecipeReply>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(4, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(6, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
-  typedef WithAsyncMethod_CreateCharacter<WithAsyncMethod_ApplyReceipt<WithAsyncMethod_GetCharacterState<WithAsyncMethod_SavePosition<WithAsyncMethod_LearnRecipe<Service > > > > > AsyncService;
+  typedef WithAsyncMethod_CreateCharacter<WithAsyncMethod_ApplyReceipt<WithAsyncMethod_GetCharacterState<WithAsyncMethod_SavePosition<WithAsyncMethod_ReportDeath<WithAsyncMethod_ClearDeath<WithAsyncMethod_LearnRecipe<Service > > > > > > > AsyncService;
   template <class BaseClass>
   class WithCallbackMethod_CreateCharacter : public BaseClass {
    private:
@@ -402,18 +490,72 @@ class Progression final {
       ::grpc::CallbackServerContext* /*context*/, const ::sf::progression::v1::SavePositionRequest* /*request*/, ::sf::progression::v1::SavePositionReply* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
+  class WithCallbackMethod_ReportDeath : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_ReportDeath() {
+      ::grpc::Service::MarkMethodCallback(4,
+          new ::grpc::internal::CallbackUnaryHandler< ::sf::progression::v1::ReportDeathRequest, ::sf::progression::v1::DeathState>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::sf::progression::v1::ReportDeathRequest* request, ::sf::progression::v1::DeathState* response) { return this->ReportDeath(context, request, response); }));}
+    void SetMessageAllocatorFor_ReportDeath(
+        ::grpc::MessageAllocator< ::sf::progression::v1::ReportDeathRequest, ::sf::progression::v1::DeathState>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(4);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::sf::progression::v1::ReportDeathRequest, ::sf::progression::v1::DeathState>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_ReportDeath() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ReportDeath(::grpc::ServerContext* /*context*/, const ::sf::progression::v1::ReportDeathRequest* /*request*/, ::sf::progression::v1::DeathState* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* ReportDeath(
+      ::grpc::CallbackServerContext* /*context*/, const ::sf::progression::v1::ReportDeathRequest* /*request*/, ::sf::progression::v1::DeathState* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithCallbackMethod_ClearDeath : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_ClearDeath() {
+      ::grpc::Service::MarkMethodCallback(5,
+          new ::grpc::internal::CallbackUnaryHandler< ::sf::progression::v1::ClearDeathRequest, ::sf::progression::v1::DeathState>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::sf::progression::v1::ClearDeathRequest* request, ::sf::progression::v1::DeathState* response) { return this->ClearDeath(context, request, response); }));}
+    void SetMessageAllocatorFor_ClearDeath(
+        ::grpc::MessageAllocator< ::sf::progression::v1::ClearDeathRequest, ::sf::progression::v1::DeathState>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(5);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::sf::progression::v1::ClearDeathRequest, ::sf::progression::v1::DeathState>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_ClearDeath() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ClearDeath(::grpc::ServerContext* /*context*/, const ::sf::progression::v1::ClearDeathRequest* /*request*/, ::sf::progression::v1::DeathState* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* ClearDeath(
+      ::grpc::CallbackServerContext* /*context*/, const ::sf::progression::v1::ClearDeathRequest* /*request*/, ::sf::progression::v1::DeathState* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
   class WithCallbackMethod_LearnRecipe : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithCallbackMethod_LearnRecipe() {
-      ::grpc::Service::MarkMethodCallback(4,
+      ::grpc::Service::MarkMethodCallback(6,
           new ::grpc::internal::CallbackUnaryHandler< ::sf::progression::v1::LearnRecipeRequest, ::sf::progression::v1::LearnRecipeReply>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::sf::progression::v1::LearnRecipeRequest* request, ::sf::progression::v1::LearnRecipeReply* response) { return this->LearnRecipe(context, request, response); }));}
     void SetMessageAllocatorFor_LearnRecipe(
         ::grpc::MessageAllocator< ::sf::progression::v1::LearnRecipeRequest, ::sf::progression::v1::LearnRecipeReply>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(4);
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(6);
       static_cast<::grpc::internal::CallbackUnaryHandler< ::sf::progression::v1::LearnRecipeRequest, ::sf::progression::v1::LearnRecipeReply>*>(handler)
               ->SetMessageAllocator(allocator);
     }
@@ -428,7 +570,7 @@ class Progression final {
     virtual ::grpc::ServerUnaryReactor* LearnRecipe(
       ::grpc::CallbackServerContext* /*context*/, const ::sf::progression::v1::LearnRecipeRequest* /*request*/, ::sf::progression::v1::LearnRecipeReply* /*response*/)  { return nullptr; }
   };
-  typedef WithCallbackMethod_CreateCharacter<WithCallbackMethod_ApplyReceipt<WithCallbackMethod_GetCharacterState<WithCallbackMethod_SavePosition<WithCallbackMethod_LearnRecipe<Service > > > > > CallbackService;
+  typedef WithCallbackMethod_CreateCharacter<WithCallbackMethod_ApplyReceipt<WithCallbackMethod_GetCharacterState<WithCallbackMethod_SavePosition<WithCallbackMethod_ReportDeath<WithCallbackMethod_ClearDeath<WithCallbackMethod_LearnRecipe<Service > > > > > > > CallbackService;
   typedef CallbackService ExperimentalCallbackService;
   template <class BaseClass>
   class WithGenericMethod_CreateCharacter : public BaseClass {
@@ -499,12 +641,46 @@ class Progression final {
     }
   };
   template <class BaseClass>
+  class WithGenericMethod_ReportDeath : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_ReportDeath() {
+      ::grpc::Service::MarkMethodGeneric(4);
+    }
+    ~WithGenericMethod_ReportDeath() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ReportDeath(::grpc::ServerContext* /*context*/, const ::sf::progression::v1::ReportDeathRequest* /*request*/, ::sf::progression::v1::DeathState* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_ClearDeath : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_ClearDeath() {
+      ::grpc::Service::MarkMethodGeneric(5);
+    }
+    ~WithGenericMethod_ClearDeath() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ClearDeath(::grpc::ServerContext* /*context*/, const ::sf::progression::v1::ClearDeathRequest* /*request*/, ::sf::progression::v1::DeathState* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
   class WithGenericMethod_LearnRecipe : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_LearnRecipe() {
-      ::grpc::Service::MarkMethodGeneric(4);
+      ::grpc::Service::MarkMethodGeneric(6);
     }
     ~WithGenericMethod_LearnRecipe() override {
       BaseClassMustBeDerivedFromService(this);
@@ -596,12 +772,52 @@ class Progression final {
     }
   };
   template <class BaseClass>
+  class WithRawMethod_ReportDeath : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_ReportDeath() {
+      ::grpc::Service::MarkMethodRaw(4);
+    }
+    ~WithRawMethod_ReportDeath() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ReportDeath(::grpc::ServerContext* /*context*/, const ::sf::progression::v1::ReportDeathRequest* /*request*/, ::sf::progression::v1::DeathState* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestReportDeath(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(4, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_ClearDeath : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_ClearDeath() {
+      ::grpc::Service::MarkMethodRaw(5);
+    }
+    ~WithRawMethod_ClearDeath() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ClearDeath(::grpc::ServerContext* /*context*/, const ::sf::progression::v1::ClearDeathRequest* /*request*/, ::sf::progression::v1::DeathState* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestClearDeath(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(5, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
   class WithRawMethod_LearnRecipe : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_LearnRecipe() {
-      ::grpc::Service::MarkMethodRaw(4);
+      ::grpc::Service::MarkMethodRaw(6);
     }
     ~WithRawMethod_LearnRecipe() override {
       BaseClassMustBeDerivedFromService(this);
@@ -612,7 +828,7 @@ class Progression final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestLearnRecipe(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(4, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(6, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -704,12 +920,56 @@ class Progression final {
       ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
+  class WithRawCallbackMethod_ReportDeath : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_ReportDeath() {
+      ::grpc::Service::MarkMethodRawCallback(4,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->ReportDeath(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_ReportDeath() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ReportDeath(::grpc::ServerContext* /*context*/, const ::sf::progression::v1::ReportDeathRequest* /*request*/, ::sf::progression::v1::DeathState* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* ReportDeath(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_ClearDeath : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_ClearDeath() {
+      ::grpc::Service::MarkMethodRawCallback(5,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->ClearDeath(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_ClearDeath() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ClearDeath(::grpc::ServerContext* /*context*/, const ::sf::progression::v1::ClearDeathRequest* /*request*/, ::sf::progression::v1::DeathState* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* ClearDeath(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
   class WithRawCallbackMethod_LearnRecipe : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawCallbackMethod_LearnRecipe() {
-      ::grpc::Service::MarkMethodRawCallback(4,
+      ::grpc::Service::MarkMethodRawCallback(6,
           new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->LearnRecipe(context, request, response); }));
@@ -834,12 +1094,66 @@ class Progression final {
     virtual ::grpc::Status StreamedSavePosition(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::sf::progression::v1::SavePositionRequest,::sf::progression::v1::SavePositionReply>* server_unary_streamer) = 0;
   };
   template <class BaseClass>
+  class WithStreamedUnaryMethod_ReportDeath : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_ReportDeath() {
+      ::grpc::Service::MarkMethodStreamed(4,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::sf::progression::v1::ReportDeathRequest, ::sf::progression::v1::DeathState>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::sf::progression::v1::ReportDeathRequest, ::sf::progression::v1::DeathState>* streamer) {
+                       return this->StreamedReportDeath(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_ReportDeath() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status ReportDeath(::grpc::ServerContext* /*context*/, const ::sf::progression::v1::ReportDeathRequest* /*request*/, ::sf::progression::v1::DeathState* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status StreamedReportDeath(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::sf::progression::v1::ReportDeathRequest,::sf::progression::v1::DeathState>* server_unary_streamer) = 0;
+  };
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_ClearDeath : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_ClearDeath() {
+      ::grpc::Service::MarkMethodStreamed(5,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::sf::progression::v1::ClearDeathRequest, ::sf::progression::v1::DeathState>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::sf::progression::v1::ClearDeathRequest, ::sf::progression::v1::DeathState>* streamer) {
+                       return this->StreamedClearDeath(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_ClearDeath() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status ClearDeath(::grpc::ServerContext* /*context*/, const ::sf::progression::v1::ClearDeathRequest* /*request*/, ::sf::progression::v1::DeathState* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status StreamedClearDeath(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::sf::progression::v1::ClearDeathRequest,::sf::progression::v1::DeathState>* server_unary_streamer) = 0;
+  };
+  template <class BaseClass>
   class WithStreamedUnaryMethod_LearnRecipe : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_LearnRecipe() {
-      ::grpc::Service::MarkMethodStreamed(4,
+      ::grpc::Service::MarkMethodStreamed(6,
         new ::grpc::internal::StreamedUnaryHandler<
           ::sf::progression::v1::LearnRecipeRequest, ::sf::progression::v1::LearnRecipeReply>(
             [this](::grpc::ServerContext* context,
@@ -860,9 +1174,9 @@ class Progression final {
     // replace default version of method with streamed unary
     virtual ::grpc::Status StreamedLearnRecipe(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::sf::progression::v1::LearnRecipeRequest,::sf::progression::v1::LearnRecipeReply>* server_unary_streamer) = 0;
   };
-  typedef WithStreamedUnaryMethod_CreateCharacter<WithStreamedUnaryMethod_ApplyReceipt<WithStreamedUnaryMethod_GetCharacterState<WithStreamedUnaryMethod_SavePosition<WithStreamedUnaryMethod_LearnRecipe<Service > > > > > StreamedUnaryService;
+  typedef WithStreamedUnaryMethod_CreateCharacter<WithStreamedUnaryMethod_ApplyReceipt<WithStreamedUnaryMethod_GetCharacterState<WithStreamedUnaryMethod_SavePosition<WithStreamedUnaryMethod_ReportDeath<WithStreamedUnaryMethod_ClearDeath<WithStreamedUnaryMethod_LearnRecipe<Service > > > > > > > StreamedUnaryService;
   typedef Service SplitStreamedService;
-  typedef WithStreamedUnaryMethod_CreateCharacter<WithStreamedUnaryMethod_ApplyReceipt<WithStreamedUnaryMethod_GetCharacterState<WithStreamedUnaryMethod_SavePosition<WithStreamedUnaryMethod_LearnRecipe<Service > > > > > StreamedService;
+  typedef WithStreamedUnaryMethod_CreateCharacter<WithStreamedUnaryMethod_ApplyReceipt<WithStreamedUnaryMethod_GetCharacterState<WithStreamedUnaryMethod_SavePosition<WithStreamedUnaryMethod_ReportDeath<WithStreamedUnaryMethod_ClearDeath<WithStreamedUnaryMethod_LearnRecipe<Service > > > > > > > StreamedService;
 };
 
 }  // namespace v1

@@ -52,6 +52,15 @@ namespace
     void CopyPlacement(const sf::housing::v1::PlacementReply& R, FSFGameplayResponse& Out)
     { Out.State = FromUtf8(R.state()); Out.StructureId = FromUtf8(R.structure_id()); Out.StructureRevision = R.structure_revision(); }
 
+    void CopyDeath(const sf::progression::v1::DeathState& R, FSFGameplayResponse& Out)
+    {
+        Out.bHasDeath = true; Out.bIsDead = R.is_dead(); Out.DeathEventId = FromUtf8(R.death_event_id());
+        Out.DeathAtUnixMs = R.occurred_at_unix_ms(); Out.RespawnAtUnixMs = R.respawn_at_unix_ms();
+        if (R.has_death_position()) { Out.DeathZoneId = FromUtf8(R.death_position().zone_id());
+            Out.DeathPosition = FVector(R.death_position().x(), R.death_position().y(), R.death_position().z()); }
+        if (R.has_respawn_position()) { Out.RespawnPosition = FVector(R.respawn_position().x(), R.respawn_position().y(), R.respawn_position().z()); }
+    }
+
     void CopyExchange(const sf::exchange::v1::ExchangeReply& R, FSFGameplayResponse& Out)
     {
         Out.Exchange.SubjectId = FromUtf8(R.subject_id()); Out.Exchange.State = FromUtf8(R.state()); Out.Exchange.bCommitted = R.committed();
@@ -191,6 +200,7 @@ void FSFGrpcGameplayTransport::Send(const FSFGameplayRequest& Q, float DeadlineS
             Out.PositionRevision = R.position_revision(); Out.bHasPosition = R.has_position();
             if (Out.bHasPosition)
             { Out.ZoneId = FromUtf8(R.position().zone_id()); Out.Position = FVector(R.position().x(), R.position().y(), R.position().z()); Out.Yaw = R.position().yaw(); }
+            if (R.has_death()) { CopyDeath(R.death(), Out); }
         };
         Start(Call, [&](grpc::ClientContext* C) { return Channel->Progression->AsyncGetCharacterState(C, M, &Channel->Queue); });
         break;
@@ -216,6 +226,27 @@ void FSFGrpcGameplayTransport::Send(const FSFGameplayRequest& Q, float DeadlineS
         auto* Call = new TCall<sf::progression::v1::SavePositionReply>();
         Call->Copy = [](const sf::progression::v1::SavePositionReply& R, FSFGameplayResponse& Out) { Out.PositionRevision = R.position_revision(); };
         Start(Call, [&](grpc::ClientContext* C) { return Channel->Progression->AsyncSavePosition(C, M, &Channel->Queue); });
+        break;
+    }
+    case ESFGameplayRpc::ReportDeath:
+    {
+        sf::progression::v1::ReportDeathRequest M;
+        M.set_death_event_id(Utf8(Q.DeathEventId)); M.set_character_id(Utf8(Q.CharacterId));
+        M.set_occurred_at_unix_ms(Q.DeathAtUnixMs); M.set_respawn_delay_ms(Q.RespawnDelayMs);
+        auto* D = M.mutable_death_position(); D->set_zone_id(Utf8(Q.ZoneId));
+        D->set_x(Q.Position.X); D->set_y(Q.Position.Y); D->set_z(Q.Position.Z);
+        auto* P = M.mutable_respawn_position(); P->set_zone_id(Utf8(Q.ZoneId));
+        P->set_x(Q.RespawnPosition.X); P->set_y(Q.RespawnPosition.Y); P->set_z(Q.RespawnPosition.Z);
+        auto* Call = new TCall<sf::progression::v1::DeathState>(); Call->Copy = CopyDeath;
+        Start(Call, [&](grpc::ClientContext* C) { return Channel->Progression->AsyncReportDeath(C, M, &Channel->Queue); });
+        break;
+    }
+    case ESFGameplayRpc::ClearDeath:
+    {
+        sf::progression::v1::ClearDeathRequest M;
+        M.set_character_id(Utf8(Q.CharacterId)); M.set_death_event_id(Utf8(Q.DeathEventId));
+        auto* Call = new TCall<sf::progression::v1::DeathState>(); Call->Copy = CopyDeath;
+        Start(Call, [&](grpc::ClientContext* C) { return Channel->Progression->AsyncClearDeath(C, M, &Channel->Queue); });
         break;
     }
     case ESFGameplayRpc::ClaimPlot:

@@ -20,7 +20,7 @@ public:
     float TimeoutSeconds = 3;
     UPROPERTY(Config, EditAnywhere, Category="Services", meta=(ClampMin="1", ClampMax="5", ToolTip="Attempts per operation, all with the same operation id."))
     int32 MaxAttempts = 3;
-    UPROPERTY(Config, EditAnywhere, Category="Reconnect", meta=(ToolTip="INT-05: restore a dev character's backpack, skills, quest step and position on connect, and drain a disconnected controller's in-flight commits. Needs Enabled and the guarded dev identity. Release authors; next world start."))
+    UPROPERTY(Config, EditAnywhere, Category="Reconnect", meta=(ToolTip="INT-05: restore a dev character's backpack, skills, quest step and position on connect, and drain a disconnected controller's in-flight commits. Combat death recovery also attaches when the combat pilot and Gameplay Services are active. Needs the guarded dev identity. Release authors; next world start."))
     bool bRestoreOnConnect = false;
     UPROPERTY(Config, EditAnywhere, Category="Exchange", meta=(ToolTip="Route the trading UI (direct trades, market listings, wallet) through Gameplay.Host Exchange. Off keeps the fake demo service. Release authors; next world start."))
     bool bExchangeEnabled = true;
@@ -41,7 +41,7 @@ public:
     bool Validate(FString& Error) const;
 };
 
-enum class ESFGameplayRpc : uint8 { GrantDefeatReward, ApplyReceipt, GetCharacterState, CreateCharacter, LearnRecipe, ClaimPlot, GetClaim, Place, Remove, Craft, ListStructures, Grant, SavePosition,
+enum class ESFGameplayRpc : uint8 { GrantDefeatReward, ApplyReceipt, GetCharacterState, CreateCharacter, LearnRecipe, ClaimPlot, GetClaim, Place, Remove, Craft, ListStructures, Grant, SavePosition, ReportDeath, ClearDeath,
     // Exchange (proto/sf/exchange/v1), carried by the Backend transport over the same Gameplay.Host channel.
     ExchangeWallet, OfferTrade, AcceptTrade, CancelTrade, ListItem, BuyListing, CancelListing, ListListings };
 
@@ -90,6 +90,7 @@ struct FSFGameplayRequest
     FString GranteeId; int32 Rights = 0;  // Grant: the grantee and its ClaimRight bits (1 = build)
     FString ShapeKey; int32 OrientationIndex = 0;  // Place: BLD-01 geometry identity
     FString ZoneId; FVector Position = FVector::ZeroVector; float Yaw = 0; int64 ExpectedPositionRevision = 0;  // SavePosition
+    FString DeathEventId; int64 DeathAtUnixMs = 0; FVector RespawnPosition = FVector::ZeroVector; int32 RespawnDelayMs = 0;
     // Crafting
     FString RecipeId; int32 Count = 1;
     TMap<FString, FString> InputGrades;  // base definition -> selected grade definition
@@ -119,6 +120,8 @@ struct FSFGameplayResponse
     TArray<FString> KnownRecipes;
     FString FaceId;  // GetCharacterState: the stored player face; empty keeps the default
     bool bHasPosition = false; FString ZoneId; FVector Position = FVector::ZeroVector; float Yaw = 0; int64 PositionRevision = 0;
+    bool bHasDeath = false, bIsDead = false; FString DeathEventId; int64 DeathAtUnixMs = 0, RespawnAtUnixMs = 0;
+    FString DeathZoneId; FVector DeathPosition = FVector::ZeroVector, RespawnPosition = FVector::ZeroVector;
     // Housing
     FString State, StructureId, OwnerId; int64 StructureRevision = 0, Revision = 0, PermissionRevision = 0;
     struct FStructure { FString StructureId, ContentId; FIntVector Cell = FIntVector::ZeroValue; int64 Revision = 0; FString ShapeKey; int32 OrientationIndex = 0; };

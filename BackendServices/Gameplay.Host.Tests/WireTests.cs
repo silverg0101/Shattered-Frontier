@@ -457,6 +457,31 @@ else if (mode == "progression")
     request.SourceReceiptId = "bad/kind"; request.Kind = "unknown";
     Code(() => client.ApplyReceipt(request, headers, deadline: Deadline()), StatusCode.InvalidArgument);
 }
+else if (mode == "death")
+{
+    var client = new ProgressPb.Progression.ProgressionClient(channel);
+    var id = Guid.NewGuid().ToString();
+    var p = new ProgressPb.CharacterPosition { ZoneId = "silverbrook", X = 120, Y = -40, Z = 100 };
+    var respawn = new ProgressPb.CharacterPosition { ZoneId = "silverbrook", X = -35970, Y = -14180, Z = 100 };
+    var request = new ProgressPb.ReportDeathRequest { CharacterId = "chr_death", DeathEventId = id,
+        OccurredAtUnixMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(), RespawnDelayMs = 4000,
+        DeathPosition = p, RespawnPosition = respawn };
+    Code(() => client.ReportDeath(request, bad, deadline: Deadline()), StatusCode.Unauthenticated);
+    Code(() => client.ReportDeath(request, headers, deadline: DateTime.UtcNow.AddMilliseconds(-1)), StatusCode.DeadlineExceeded);
+    var first = client.ReportDeath(request, headers, deadline: Deadline());
+    Check(first.IsDead && first.RespawnAtUnixMs == request.OccurredAtUnixMs + 4000, "death recorded with deadline");
+    Check(client.ReportDeath(request, headers, deadline: Deadline()).Equals(first), "death event replay stable");
+    var state = client.GetCharacterState(new ProgressPb.GetCharacterStateRequest { CharacterId = request.CharacterId }, headers, deadline: Deadline());
+    Check(state.Death.IsDead && state.Death.RespawnPosition.Equals(respawn) && state.Death.DeathPosition.Equals(p), "death round trip through character state");
+    request.RespawnDelayMs = 5000;
+    Code(() => client.ReportDeath(request, headers, deadline: Deadline()), StatusCode.FailedPrecondition);
+    request.RespawnDelayMs = 4000;
+    var clear = new ProgressPb.ClearDeathRequest { CharacterId = request.CharacterId, DeathEventId = id };
+    Check(!client.ClearDeath(clear, headers, deadline: Deadline()).IsDead && !client.ClearDeath(clear, headers, deadline: Deadline()).IsDead, "respawn clear replay stable");
+    Check(!client.GetCharacterState(new ProgressPb.GetCharacterStateRequest { CharacterId = request.CharacterId }, headers, deadline: Deadline()).Death.IsDead, "alive state survives read");
+    Check(!client.ReportDeath(request, headers, deadline: Deadline()).IsDead, "old death replay cannot kill again");
+    Code(() => client.ClearDeath(new ProgressPb.ClearDeathRequest { CharacterId = request.CharacterId, DeathEventId = Guid.NewGuid().ToString() }, headers, deadline: Deadline()), StatusCode.FailedPrecondition);
+}
 else if (mode == "housing")
 {
     var client = new HousingPb.Housing.HousingClient(channel);

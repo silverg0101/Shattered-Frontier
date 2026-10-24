@@ -13,12 +13,63 @@ public sealed class CharacterSchemaCompatibilityException(string message) : Exce
 public sealed class CharacterStoreRejectedException(string message) : Exception(message);
 public sealed record VersionedResult<T>(long Revision, T Result);
 public sealed record CharacterPositionSnapshot(string ZoneId, double X, double Y, double Z, float Yaw);
+public sealed record CharacterDeathSnapshot(bool IsDead, string DeathEventId, long OccurredAtUnixMs, long RespawnAtUnixMs,
+    CharacterPositionSnapshot DeathPosition, CharacterPositionSnapshot RespawnPosition);
 public sealed record RecipeLearnIntent(string OperationId, string CharacterId, string RecipeId, string Source,
     string SourceId, string ContainerId, long ExpectedContainerRevision, long CostCopper, string Fingerprint, string State);
 
 // Migration identity installs Schema.sql. Runtime uses DML and marker SELECT only.
 public sealed class PostgresCharacterStateStore(string connectionString)
 {
+    public CharacterDeathSnapshot? ReadDeath(string characterId) => Transaction((c, t) => ReadDeath(c, t, characterId));
+
+    private static CharacterDeathSnapshot? ReadDeath(NpgsqlConnection c, NpgsqlTransaction t, string characterId)
+    {
+        using var cmd = Command(c, t, "SELECT is_dead,death_event_id,occurred_at_unix_ms,respawn_at_unix_ms,death_zone_id,death_x,death_y,death_z,respawn_zone_id,respawn_x,respawn_y,respawn_z FROM character_state.deaths WHERE character_id=$1", characterId);
+        using var r = cmd.ExecuteReader();
+        return r.Read() ? new(r.GetBoolean(0), r.GetString(1), r.GetInt64(2), r.GetInt64(3),
+            new(r.GetString(4), r.GetDouble(5), r.GetDouble(6), r.GetDouble(7), 0),
+            new(r.GetString(8), r.GetDouble(9), r.GetDouble(10), r.GetDouble(11), 0)) : null;
+    }
+
+    public CharacterDeathSnapshot ReportDeath(string eventId, string characterId, long occurredAtUnixMs,
+        CharacterPositionSnapshot death, CharacterPositionSnapshot respawn, int delayMs) => Transaction((c, t) =>
+    {
+        LockCharacter(c, t, characterId);
+        var fingerprint = Fingerprint(new { characterId, occurredAtUnixMs, death, respawn, delayMs });
+        bool replay = false;
+        using (var existing = Command(c, t, "SELECT character_id,fingerprint FROM character_state.death_events WHERE death_event_id=$1", eventId))
+        using (var r = existing.ExecuteReader())
+            if (r.Read())
+            {
+                if (r.GetString(0) != characterId || r.GetString(1) != fingerprint)
+                    throw new CharacterStoreRejectedException("Death event ID reused with different payload.");
+                replay = true;
+            }
+        if (replay) return ReadDeath(c, t, characterId) ?? throw new CharacterStoreRejectedException("Missing death state.");
+        var prior = ReadDeath(c, t, characterId);
+        if (prior?.IsDead == true) throw new CharacterStoreRejectedException("Character is already dead.");
+        long due = checked(occurredAtUnixMs + delayMs);
+        using (var cmd = Command(c, t, "INSERT INTO character_state.death_events(death_event_id,character_id,fingerprint) VALUES ($1,$2,$3)", eventId, characterId, fingerprint)) cmd.ExecuteNonQuery();
+        using (var cmd = Command(c, t, "INSERT INTO character_state.deaths(character_id,death_event_id,is_dead,occurred_at_unix_ms,respawn_at_unix_ms,death_zone_id,death_x,death_y,death_z,respawn_zone_id,respawn_x,respawn_y,respawn_z) VALUES ($1,$2,true,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) ON CONFLICT (character_id) DO UPDATE SET death_event_id=EXCLUDED.death_event_id,is_dead=true,occurred_at_unix_ms=EXCLUDED.occurred_at_unix_ms,respawn_at_unix_ms=EXCLUDED.respawn_at_unix_ms,death_zone_id=EXCLUDED.death_zone_id,death_x=EXCLUDED.death_x,death_y=EXCLUDED.death_y,death_z=EXCLUDED.death_z,respawn_zone_id=EXCLUDED.respawn_zone_id,respawn_x=EXCLUDED.respawn_x,respawn_y=EXCLUDED.respawn_y,respawn_z=EXCLUDED.respawn_z,updated_at=now()",
+            characterId, eventId, occurredAtUnixMs, due, death.ZoneId, death.X, death.Y, death.Z, respawn.ZoneId, respawn.X, respawn.Y, respawn.Z)) cmd.ExecuteNonQuery();
+        return ReadDeath(c, t, characterId)!;
+    });
+
+    public CharacterDeathSnapshot ClearDeath(string characterId, string eventId) => Transaction((c, t) =>
+    {
+        LockCharacter(c, t, characterId);
+        var prior = ReadDeath(c, t, characterId);
+        if (prior is null || prior.DeathEventId != eventId) throw new CharacterStoreRejectedException("Death event does not match.");
+        if (!prior.IsDead) return prior;
+        using var cmd = Command(c, t, "UPDATE character_state.deaths SET is_dead=false,updated_at=now() WHERE character_id=$1 AND death_event_id=$2", characterId, eventId);
+        cmd.ExecuteNonQuery();
+        var point = prior.RespawnPosition;
+        using var save = Command(c, t, "INSERT INTO character_state.positions(character_id,revision,zone_id,x,y,z,yaw) VALUES ($1,1,$2,$3,$4,$5,0) ON CONFLICT (character_id) DO UPDATE SET revision=character_state.positions.revision+1,zone_id=EXCLUDED.zone_id,x=EXCLUDED.x,y=EXCLUDED.y,z=EXCLUDED.z,yaw=0,updated_at=now()",
+            characterId, point.ZoneId, point.X, point.Y, point.Z);
+        save.ExecuteNonQuery();
+        return prior with { IsDead = false };
+    });
     public VersionedResult<byte[]>? ReadAppearance(string characterId) => Transaction<VersionedResult<byte[]>?>((c, t) =>
     {
         using var cmd = Command(c, t, "SELECT revision,packet FROM character_state.appearance WHERE character_id=$1", characterId);
@@ -189,7 +240,7 @@ public sealed class PostgresCharacterStateStore(string connectionString)
             {
                 using var marker = Command(c, t, "SELECT version,migration_id,compatible_build_min,compatible_build_max FROM character_state.schema_version WHERE singleton=true FOR SHARE");
                 using var row = marker.ExecuteReader();
-                if (!row.Read() || row.GetInt32(0) != 6 || row.GetString(1) != "character-state-006" || row.GetInt32(2) > 6 || row.GetInt32(3) < 6)
+                if (!row.Read() || row.GetInt32(0) != 7 || row.GetString(1) != "character-state-007" || row.GetInt32(2) > 7 || row.GetInt32(3) < 7)
                     throw new CharacterSchemaCompatibilityException("Unsupported character state schema version.");
             }
             catch (PostgresException ex) when (ex.SqlState is "42P01" or "3F000" or "42501")
