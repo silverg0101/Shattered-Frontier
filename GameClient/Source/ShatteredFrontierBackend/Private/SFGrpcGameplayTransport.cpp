@@ -151,7 +151,7 @@ void FSFGrpcGameplayTransport::Send(const FSFGameplayRequest& Q, float DeadlineS
             Out.HarvestStatus = FromUtf8(R.status()); Out.ResourceId = FromUtf8(R.resource_id()); Out.HarvestQuantity = R.quantity();
             if (R.has_node()) { CopyNode(R.node(), Out); }
         };
-        Start(Call, [&](grpc::ClientContext* C) { return Channel->Gathering->AsyncHarvest(C, M, &Channel->Queue); });
+        Start(Call, [&](grpc::ClientContext* C) { return Channel->Gathering->AsyncHarvestWithIntent(C, M, &Channel->Queue); });
         break;
     }
     case ESFGameplayRpc::GrantDefeatReward:

@@ -871,18 +871,21 @@ const char descriptor_table_protodef_sf_2fgathering_2fv1_2fgathering_2eproto[] A
     "ge\030\007 \001(\t\022\037\n\027next_transition_unix_ms\030\010 \001("
     "\003\"o\n\014HarvestReply\022\016\n\006status\030\001 \001(\t\022\023\n\013res"
     "ource_id\030\002 \001(\t\022\020\n\010quantity\030\003 \001(\005\022(\n\004node"
-    "\030\004 \001(\0132\032.sf.gathering.v1.NodeReply2\236\001\n\tG"
+    "\030\004 \001(\0132\032.sf.gathering.v1.NodeReply2\363\001\n\tG"
     "athering\022F\n\007GetNode\022\037.sf.gathering.v1.Ge"
     "tNodeRequest\032\032.sf.gathering.v1.NodeReply"
     "\022I\n\007Harvest\022\037.sf.gathering.v1.HarvestReq"
-    "uest\032\035.sf.gathering.v1.HarvestReplyB!\252\002\036"
-    "ShatteredFrontier.Gathering.V1b\006proto3"
+    "uest\032\035.sf.gathering.v1.HarvestReply\022S\n\021H"
+    "arvestWithIntent\022\037.sf.gathering.v1.Harve"
+    "stRequest\032\035.sf.gathering.v1.HarvestReply"
+    "B!\252\002\036ShatteredFrontier.Gathering.V1b\006pro"
+    "to3"
 };
 static ::absl::once_flag descriptor_table_sf_2fgathering_2fv1_2fgathering_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_sf_2fgathering_2fv1_2fgathering_2eproto = {
     false,
     false,
-    798,
+    883,
     descriptor_table_protodef_sf_2fgathering_2fv1_2fgathering_2eproto,
     "sf/gathering/v1/gathering.proto",
     &descriptor_table_sf_2fgathering_2fv1_2fgathering_2eproto_once,

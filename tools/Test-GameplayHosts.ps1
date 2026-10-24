@@ -130,6 +130,10 @@ try {
     $results = [Collections.Generic.List[string]]::new()
     $journeyDll = Join-Path $buildOutput 'Progression.Host.Tests.dll'
     if (-not ($RecipesOnly -or $AppearanceOnly)) {
+        $currentStep = 'gathering old-host capability'
+        $results.Add((Invoke-Checked $dotnet @($journeyDll,'gathering-old-host') @{
+            GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$connection; SF_GAMEPLAY_TOKEN=$token
+        }))
         $currentStep = 'gathering growth wire'
         $results.Add((Invoke-Checked $dotnet @($journeyDll,'gathering') @{
             GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$connection; SF_GAMEPLAY_TOKEN=$token

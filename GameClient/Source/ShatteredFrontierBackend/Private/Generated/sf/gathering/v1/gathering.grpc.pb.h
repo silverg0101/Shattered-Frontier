@@ -52,6 +52,14 @@ class Gathering final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::gathering::v1::HarvestReply>> PrepareAsyncHarvest(::grpc::ClientContext* context, const ::sf::gathering::v1::HarvestRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::gathering::v1::HarvestReply>>(PrepareAsyncHarvestRaw(context, request, cq));
     }
+    // Separate method so an older host cannot silently discard the required intent fields.
+    virtual ::grpc::Status HarvestWithIntent(::grpc::ClientContext* context, const ::sf::gathering::v1::HarvestRequest& request, ::sf::gathering::v1::HarvestReply* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::gathering::v1::HarvestReply>> AsyncHarvestWithIntent(::grpc::ClientContext* context, const ::sf::gathering::v1::HarvestRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::gathering::v1::HarvestReply>>(AsyncHarvestWithIntentRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::gathering::v1::HarvestReply>> PrepareAsyncHarvestWithIntent(::grpc::ClientContext* context, const ::sf::gathering::v1::HarvestRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::gathering::v1::HarvestReply>>(PrepareAsyncHarvestWithIntentRaw(context, request, cq));
+    }
     class async_interface {
      public:
       virtual ~async_interface() {}
@@ -59,6 +67,9 @@ class Gathering final {
       virtual void GetNode(::grpc::ClientContext* context, const ::sf::gathering::v1::GetNodeRequest* request, ::sf::gathering::v1::NodeReply* response, ::grpc::ClientUnaryReactor* reactor) = 0;
       virtual void Harvest(::grpc::ClientContext* context, const ::sf::gathering::v1::HarvestRequest* request, ::sf::gathering::v1::HarvestReply* response, std::function<void(::grpc::Status)>) = 0;
       virtual void Harvest(::grpc::ClientContext* context, const ::sf::gathering::v1::HarvestRequest* request, ::sf::gathering::v1::HarvestReply* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      // Separate method so an older host cannot silently discard the required intent fields.
+      virtual void HarvestWithIntent(::grpc::ClientContext* context, const ::sf::gathering::v1::HarvestRequest* request, ::sf::gathering::v1::HarvestReply* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void HarvestWithIntent(::grpc::ClientContext* context, const ::sf::gathering::v1::HarvestRequest* request, ::sf::gathering::v1::HarvestReply* response, ::grpc::ClientUnaryReactor* reactor) = 0;
     };
     typedef class async_interface experimental_async_interface;
     virtual class async_interface* async() { return nullptr; }
@@ -68,6 +79,8 @@ class Gathering final {
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::gathering::v1::NodeReply>* PrepareAsyncGetNodeRaw(::grpc::ClientContext* context, const ::sf::gathering::v1::GetNodeRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::gathering::v1::HarvestReply>* AsyncHarvestRaw(::grpc::ClientContext* context, const ::sf::gathering::v1::HarvestRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::gathering::v1::HarvestReply>* PrepareAsyncHarvestRaw(::grpc::ClientContext* context, const ::sf::gathering::v1::HarvestRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::gathering::v1::HarvestReply>* AsyncHarvestWithIntentRaw(::grpc::ClientContext* context, const ::sf::gathering::v1::HarvestRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::gathering::v1::HarvestReply>* PrepareAsyncHarvestWithIntentRaw(::grpc::ClientContext* context, const ::sf::gathering::v1::HarvestRequest& request, ::grpc::CompletionQueue* cq) = 0;
   };
   class Stub final : public StubInterface {
    public:
@@ -86,6 +99,13 @@ class Gathering final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::gathering::v1::HarvestReply>> PrepareAsyncHarvest(::grpc::ClientContext* context, const ::sf::gathering::v1::HarvestRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::gathering::v1::HarvestReply>>(PrepareAsyncHarvestRaw(context, request, cq));
     }
+    ::grpc::Status HarvestWithIntent(::grpc::ClientContext* context, const ::sf::gathering::v1::HarvestRequest& request, ::sf::gathering::v1::HarvestReply* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::gathering::v1::HarvestReply>> AsyncHarvestWithIntent(::grpc::ClientContext* context, const ::sf::gathering::v1::HarvestRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::gathering::v1::HarvestReply>>(AsyncHarvestWithIntentRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::gathering::v1::HarvestReply>> PrepareAsyncHarvestWithIntent(::grpc::ClientContext* context, const ::sf::gathering::v1::HarvestRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::gathering::v1::HarvestReply>>(PrepareAsyncHarvestWithIntentRaw(context, request, cq));
+    }
     class async final :
       public StubInterface::async_interface {
      public:
@@ -93,6 +113,8 @@ class Gathering final {
       void GetNode(::grpc::ClientContext* context, const ::sf::gathering::v1::GetNodeRequest* request, ::sf::gathering::v1::NodeReply* response, ::grpc::ClientUnaryReactor* reactor) override;
       void Harvest(::grpc::ClientContext* context, const ::sf::gathering::v1::HarvestRequest* request, ::sf::gathering::v1::HarvestReply* response, std::function<void(::grpc::Status)>) override;
       void Harvest(::grpc::ClientContext* context, const ::sf::gathering::v1::HarvestRequest* request, ::sf::gathering::v1::HarvestReply* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void HarvestWithIntent(::grpc::ClientContext* context, const ::sf::gathering::v1::HarvestRequest* request, ::sf::gathering::v1::HarvestReply* response, std::function<void(::grpc::Status)>) override;
+      void HarvestWithIntent(::grpc::ClientContext* context, const ::sf::gathering::v1::HarvestRequest* request, ::sf::gathering::v1::HarvestReply* response, ::grpc::ClientUnaryReactor* reactor) override;
      private:
       friend class Stub;
       explicit async(Stub* stub): stub_(stub) { }
@@ -108,8 +130,11 @@ class Gathering final {
     ::grpc::ClientAsyncResponseReader< ::sf::gathering::v1::NodeReply>* PrepareAsyncGetNodeRaw(::grpc::ClientContext* context, const ::sf::gathering::v1::GetNodeRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::sf::gathering::v1::HarvestReply>* AsyncHarvestRaw(::grpc::ClientContext* context, const ::sf::gathering::v1::HarvestRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::sf::gathering::v1::HarvestReply>* PrepareAsyncHarvestRaw(::grpc::ClientContext* context, const ::sf::gathering::v1::HarvestRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::sf::gathering::v1::HarvestReply>* AsyncHarvestWithIntentRaw(::grpc::ClientContext* context, const ::sf::gathering::v1::HarvestRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::sf::gathering::v1::HarvestReply>* PrepareAsyncHarvestWithIntentRaw(::grpc::ClientContext* context, const ::sf::gathering::v1::HarvestRequest& request, ::grpc::CompletionQueue* cq) override;
     const ::grpc::internal::RpcMethod rpcmethod_GetNode_;
     const ::grpc::internal::RpcMethod rpcmethod_Harvest_;
+    const ::grpc::internal::RpcMethod rpcmethod_HarvestWithIntent_;
   };
   static std::unique_ptr<Stub> NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
 
@@ -119,6 +144,8 @@ class Gathering final {
     virtual ~Service();
     virtual ::grpc::Status GetNode(::grpc::ServerContext* context, const ::sf::gathering::v1::GetNodeRequest* request, ::sf::gathering::v1::NodeReply* response);
     virtual ::grpc::Status Harvest(::grpc::ServerContext* context, const ::sf::gathering::v1::HarvestRequest* request, ::sf::gathering::v1::HarvestReply* response);
+    // Separate method so an older host cannot silently discard the required intent fields.
+    virtual ::grpc::Status HarvestWithIntent(::grpc::ServerContext* context, const ::sf::gathering::v1::HarvestRequest* request, ::sf::gathering::v1::HarvestReply* response);
   };
   template <class BaseClass>
   class WithAsyncMethod_GetNode : public BaseClass {
@@ -160,7 +187,27 @@ class Gathering final {
       ::grpc::Service::RequestAsyncUnary(1, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
-  typedef WithAsyncMethod_GetNode<WithAsyncMethod_Harvest<Service > > AsyncService;
+  template <class BaseClass>
+  class WithAsyncMethod_HarvestWithIntent : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_HarvestWithIntent() {
+      ::grpc::Service::MarkMethodAsync(2);
+    }
+    ~WithAsyncMethod_HarvestWithIntent() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status HarvestWithIntent(::grpc::ServerContext* /*context*/, const ::sf::gathering::v1::HarvestRequest* /*request*/, ::sf::gathering::v1::HarvestReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestHarvestWithIntent(::grpc::ServerContext* context, ::sf::gathering::v1::HarvestRequest* request, ::grpc::ServerAsyncResponseWriter< ::sf::gathering::v1::HarvestReply>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(2, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  typedef WithAsyncMethod_GetNode<WithAsyncMethod_Harvest<WithAsyncMethod_HarvestWithIntent<Service > > > AsyncService;
   template <class BaseClass>
   class WithCallbackMethod_GetNode : public BaseClass {
    private:
@@ -215,7 +262,34 @@ class Gathering final {
     virtual ::grpc::ServerUnaryReactor* Harvest(
       ::grpc::CallbackServerContext* /*context*/, const ::sf::gathering::v1::HarvestRequest* /*request*/, ::sf::gathering::v1::HarvestReply* /*response*/)  { return nullptr; }
   };
-  typedef WithCallbackMethod_GetNode<WithCallbackMethod_Harvest<Service > > CallbackService;
+  template <class BaseClass>
+  class WithCallbackMethod_HarvestWithIntent : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_HarvestWithIntent() {
+      ::grpc::Service::MarkMethodCallback(2,
+          new ::grpc::internal::CallbackUnaryHandler< ::sf::gathering::v1::HarvestRequest, ::sf::gathering::v1::HarvestReply>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::sf::gathering::v1::HarvestRequest* request, ::sf::gathering::v1::HarvestReply* response) { return this->HarvestWithIntent(context, request, response); }));}
+    void SetMessageAllocatorFor_HarvestWithIntent(
+        ::grpc::MessageAllocator< ::sf::gathering::v1::HarvestRequest, ::sf::gathering::v1::HarvestReply>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(2);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::sf::gathering::v1::HarvestRequest, ::sf::gathering::v1::HarvestReply>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_HarvestWithIntent() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status HarvestWithIntent(::grpc::ServerContext* /*context*/, const ::sf::gathering::v1::HarvestRequest* /*request*/, ::sf::gathering::v1::HarvestReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* HarvestWithIntent(
+      ::grpc::CallbackServerContext* /*context*/, const ::sf::gathering::v1::HarvestRequest* /*request*/, ::sf::gathering::v1::HarvestReply* /*response*/)  { return nullptr; }
+  };
+  typedef WithCallbackMethod_GetNode<WithCallbackMethod_Harvest<WithCallbackMethod_HarvestWithIntent<Service > > > CallbackService;
   typedef CallbackService ExperimentalCallbackService;
   template <class BaseClass>
   class WithGenericMethod_GetNode : public BaseClass {
@@ -247,6 +321,23 @@ class Gathering final {
     }
     // disable synchronous version of this method
     ::grpc::Status Harvest(::grpc::ServerContext* /*context*/, const ::sf::gathering::v1::HarvestRequest* /*request*/, ::sf::gathering::v1::HarvestReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_HarvestWithIntent : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_HarvestWithIntent() {
+      ::grpc::Service::MarkMethodGeneric(2);
+    }
+    ~WithGenericMethod_HarvestWithIntent() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status HarvestWithIntent(::grpc::ServerContext* /*context*/, const ::sf::gathering::v1::HarvestRequest* /*request*/, ::sf::gathering::v1::HarvestReply* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -292,6 +383,26 @@ class Gathering final {
     }
   };
   template <class BaseClass>
+  class WithRawMethod_HarvestWithIntent : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_HarvestWithIntent() {
+      ::grpc::Service::MarkMethodRaw(2);
+    }
+    ~WithRawMethod_HarvestWithIntent() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status HarvestWithIntent(::grpc::ServerContext* /*context*/, const ::sf::gathering::v1::HarvestRequest* /*request*/, ::sf::gathering::v1::HarvestReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestHarvestWithIntent(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(2, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
   class WithRawCallbackMethod_GetNode : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
@@ -333,6 +444,28 @@ class Gathering final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     virtual ::grpc::ServerUnaryReactor* Harvest(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_HarvestWithIntent : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_HarvestWithIntent() {
+      ::grpc::Service::MarkMethodRawCallback(2,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->HarvestWithIntent(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_HarvestWithIntent() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status HarvestWithIntent(::grpc::ServerContext* /*context*/, const ::sf::gathering::v1::HarvestRequest* /*request*/, ::sf::gathering::v1::HarvestReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* HarvestWithIntent(
       ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
@@ -389,9 +522,36 @@ class Gathering final {
     // replace default version of method with streamed unary
     virtual ::grpc::Status StreamedHarvest(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::sf::gathering::v1::HarvestRequest,::sf::gathering::v1::HarvestReply>* server_unary_streamer) = 0;
   };
-  typedef WithStreamedUnaryMethod_GetNode<WithStreamedUnaryMethod_Harvest<Service > > StreamedUnaryService;
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_HarvestWithIntent : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_HarvestWithIntent() {
+      ::grpc::Service::MarkMethodStreamed(2,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::sf::gathering::v1::HarvestRequest, ::sf::gathering::v1::HarvestReply>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::sf::gathering::v1::HarvestRequest, ::sf::gathering::v1::HarvestReply>* streamer) {
+                       return this->StreamedHarvestWithIntent(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_HarvestWithIntent() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status HarvestWithIntent(::grpc::ServerContext* /*context*/, const ::sf::gathering::v1::HarvestRequest* /*request*/, ::sf::gathering::v1::HarvestReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status StreamedHarvestWithIntent(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::sf::gathering::v1::HarvestRequest,::sf::gathering::v1::HarvestReply>* server_unary_streamer) = 0;
+  };
+  typedef WithStreamedUnaryMethod_GetNode<WithStreamedUnaryMethod_Harvest<WithStreamedUnaryMethod_HarvestWithIntent<Service > > > StreamedUnaryService;
   typedef Service SplitStreamedService;
-  typedef WithStreamedUnaryMethod_GetNode<WithStreamedUnaryMethod_Harvest<Service > > StreamedService;
+  typedef WithStreamedUnaryMethod_GetNode<WithStreamedUnaryMethod_Harvest<WithStreamedUnaryMethod_HarvestWithIntent<Service > > > StreamedService;
 };
 
 }  // namespace v1

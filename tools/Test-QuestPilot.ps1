@@ -51,7 +51,7 @@ function Read-Log([string]$Name) { Get-Content -LiteralPath (Join-Path $root ($N
 function Initialize-QuestServices {
     # Owned PostgreSQL with every schema the hosts need, a private Gameplay.Host build, ports, synthetic per-run tokens.
     New-LedgerFixture $fx $repo $root
-    $schemas = @('CharacterState.Postgres/Schema.sql','Housing.Postgres/Schema.sql','Exchange.Postgres/Schema.sql','Housing.Postgres/Schema.Gameplay.sql','Housing.Postgres/Schema.Geometry.sql','Housing.Postgres/Schema.Construction.sql','CharacterState.Postgres/Schema.Position.sql','CharacterState.Postgres/Schema.Recipes.sql') | ForEach-Object { Get-Content (Join-Path $repo "BackendServices/$_") -Raw }
+    $schemas = @('CharacterState.Postgres/Schema.sql','Housing.Postgres/Schema.sql','Exchange.Postgres/Schema.sql','Housing.Postgres/Schema.Gameplay.sql','Housing.Postgres/Schema.Geometry.sql','Housing.Postgres/Schema.Construction.sql','CharacterState.Postgres/Schema.Position.sql','CharacterState.Postgres/Schema.Recipes.sql','CharacterState.Postgres/Schema.Appearance.sql','CharacterState.Postgres/Schema.GatheringSkills.sql','CharacterState.Postgres/Schema.Death.sql') | ForEach-Object { Get-Content (Join-Path $repo "BackendServices/$_") -Raw }
     [void](Invoke-LedgerSql $fx ("SET ROLE ledger_owner;`n" + ($schemas -join "`n")) $fx.db)
     [void](Invoke-LedgerSql $fx ('GRANT USAGE ON SCHEMA character_state,housing,exchange TO ledger_svc; ' + (@('character_state','housing','exchange') | ForEach-Object { "GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA $_ TO ledger_svc;" }) -join ' ') $fx.db)
     $gameplayProject = Join-Path $repo 'BackendServices/Gameplay.Host/Gameplay.Host.csproj'
@@ -163,32 +163,39 @@ try {
         $clientUrl = if ($Int06KillAfterGrant) { '127.0.0.1:'+$Port+'?SFDevCharacter=alpha' } else { '127.0.0.1:'+$Port }
         $client = Start-Owned 'client' $clientUrl $clientFlags
         if ($Services) {
-            # Host-down phase: the first oak harvest is refused as Unavailable before any charge is consumed.
-            Wait-Log $server 'server' 'GATHERING_LEDGER_OUTCOME .* Code=14 .* NodeRevision=0 Charges=3'
-            $result.hostDown = 'first harvest refused; node revision 0, charges 3'
+            # Without Gameplay.Host the durable node snapshot is unavailable, so no harvest can start.
+            Wait-Log $server 'server' 'GATHERING_NODE_SNAPSHOT_FAILED Id=zone/greenlands_silverbrook/westfields_wood/0 Code=14'
+            $beforeHost = (Invoke-LedgerSql $fx "SELECT count(*) FROM inventory.operation_receipts WHERE operation_id LIKE 'gather/%'" $fx.db).Trim()
+            if ($beforeHost -ne '0') { throw 'Host-down gather unexpectedly granted an item.' }
+            $result.hostDown = 'node snapshot unavailable; no gather grant'
             Start-QuestHosts
             if ($Int06KillAfterGrant) {
                 Wait-Log $server 'server' 'GATHERING_LEDGER_EXIT_AFTER_COMMIT Op=gather/'
                 $server.WaitForExit(10000) | Out-Null
                 if (-not $server.HasExited) { throw 'Gather server did not exit after the committed grant.' }
                 $serverText = Read-Log 'server'
-                if ($serverText -notmatch 'GATHERING_LEDGER_EXIT_AFTER_COMMIT Op=(gather/[a-zA-Z0-9-]+)' -or
-                    $serverText -notmatch 'GATHERING_LEDGER_OUTCOME Op=\S+ Container=(ctn_dev_\w+) Code=0') {
-                    throw 'No matching committed gather receipt preceded server exit.'
+                if ($serverText -notmatch 'GATHERING_LEDGER_EXIT_AFTER_COMMIT Op=(gather/[a-zA-Z0-9-]+) Node=(\S+) Charges=2') {
+                    throw 'No committed service harvest with one consumed charge preceded server exit.'
                 }
                 $operation = [regex]::Match($serverText, 'GATHERING_LEDGER_EXIT_AFTER_COMMIT Op=(gather/[a-zA-Z0-9-]+)').Groups[1].Value
-                $container = [regex]::Match($serverText, 'GATHERING_LEDGER_OUTCOME Op=' + [regex]::Escape($operation) + ' Container=(ctn_dev_\w+) Code=0').Groups[1].Value
-                if (-not $container) { throw 'Committed operation and container did not match.' }
+                $node = [regex]::Match($serverText, 'GATHERING_LEDGER_EXIT_AFTER_COMMIT Op=' + [regex]::Escape($operation) + ' Node=(\S+) Charges=2').Groups[1].Value
+                $container = (Invoke-LedgerSql $fx "SELECT container_id FROM inventory.gathering_harvest_receipts WHERE operation_id='$operation' AND node_id='$node'" $fx.db).Trim()
+                if ($container -notmatch '^ctn_dev_\w+$') { throw 'Committed harvest receipt, node and container did not match.' }
                 $character = 'chr_dev_' + $container.Substring(8)
                 $counts = ''
                 for ($i=0; $i -lt 100; $i++) {
-                    $counts = (Invoke-LedgerSql $fx ("SELECT (SELECT count(*) FROM inventory.operation_receipts WHERE operation_id='$operation')||','||" +
+                    $counts = (Invoke-LedgerSql $fx ("SELECT (SELECT count(*) FROM inventory.gathering_harvest_receipts WHERE operation_id='$operation' AND delivered_at IS NOT NULL)||','||" +
+                        "(SELECT count(*) FROM inventory.operation_receipts WHERE operation_id='$operation')||','||" +
                         "(SELECT count(*) FROM inventory.receipt_outbox WHERE source_operation_id='$operation' AND delivered_at IS NOT NULL)||','||" +
-                        "(SELECT count(*) FROM character_state.source_receipts WHERE operation_id='$operation' AND character_id='$character')") $fx.db).Trim()
-                    if ($counts -eq '1,1,2') { break }
+                        "(SELECT count(*) FROM character_state.source_receipts WHERE operation_id='$operation' AND character_id='$character')||','||" +
+                        "(SELECT count(*) FROM inventory.gathering_node_state, jsonb_array_elements(state) node WHERE node->>'Id'='$node' AND node->>'Charges'='2')") $fx.db).Trim()
+                    if ($counts -eq '1,1,1,2,1') { break }
                     Start-Sleep -Milliseconds 300
                 }
-                if ($counts -ne '1,1,2') { throw "Grant/outbox/progression/quest counts were $counts, expected 1,1,2." }
+                if ($counts -ne '1,1,1,2,1') { throw "Harvest/grant/outbox/progression and quest/node counts were $counts, expected 1,1,1,2,1." }
+                $receiptDomains = (Invoke-LedgerSql $fx ("SELECT (SELECT count(*) FROM character_state.source_receipts WHERE operation_id='$operation' AND character_id='$character' AND domain='progression')||','||" +
+                    "(SELECT count(*) FROM character_state.source_receipts WHERE operation_id='$operation' AND character_id='$character' AND domain='quest')") $fx.db).Trim()
+                if ($receiptDomains -ne '1,1') { throw "Expected one progression and one quest receipt, found $receiptDomains." }
                 $view = Get-LedgerView $fx $container
                 if ([int64]$view.Items['item/oak_log'] -ne 1) { throw 'Committed oak grant did not survive server exit.' }
                 if (-not $client.HasExited) { Stop-Process -Id $client.Id; $client.WaitForExit() }
@@ -197,6 +204,15 @@ try {
                 Wait-Log $restart 'restart-server' 'QUEST_PILOT_READY Quests='
                 $restored = Start-Owned 'restored-client' $clientUrl @('-game')
                 Wait-Log $restored 'restored-client' 'QUEST_PILOT_CLIENT_VIEW Step=2 Complete=0'
+                $after = (Invoke-LedgerSql $fx ("SELECT (SELECT count(*) FROM inventory.gathering_harvest_receipts WHERE operation_id='$operation')||','||" +
+                    "(SELECT count(*) FROM inventory.operation_receipts WHERE operation_id='$operation')||','||" +
+                    "(SELECT count(*) FROM inventory.receipt_outbox WHERE source_operation_id='$operation')||','||" +
+                    "(SELECT count(*) FROM character_state.source_receipts WHERE operation_id='$operation' AND character_id='$character')||','||" +
+                    "(SELECT count(*) FROM inventory.gathering_node_state, jsonb_array_elements(state) node WHERE node->>'Id'='$node' AND node->>'Charges'='2')") $fx.db).Trim()
+                if ($after -ne '1,1,1,2,1') { throw "Restart duplicated or lost harvest state: $after." }
+                $afterDomains = (Invoke-LedgerSql $fx ("SELECT (SELECT count(*) FROM character_state.source_receipts WHERE operation_id='$operation' AND character_id='$character' AND domain='progression')||','||" +
+                    "(SELECT count(*) FROM character_state.source_receipts WHERE operation_id='$operation' AND character_id='$character' AND domain='quest')") $fx.db).Trim()
+                if ($afterDomains -ne '1,1') { throw "Restart duplicated or lost follow-up domains: $afterDomains." }
                 $result.operation = $operation; $result.counts = $counts; $result.ledger = $view.Line
                 $result.status = 'Passed'
                 return

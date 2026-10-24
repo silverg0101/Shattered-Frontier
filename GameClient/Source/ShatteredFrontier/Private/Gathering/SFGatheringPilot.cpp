@@ -1270,6 +1270,13 @@ void USFGatheringPilotComponent::OnNodeHarvest(const FSFGameplayResponse& Respon
             GetDefault<USFGameplayServicesSettings>()->GatheringNodeRetrySeconds);
         return;
     }
+    if (Response.GrpcCode==12)
+    {
+        UE_LOG(LogTemp,Error,TEXT("GATHERING_HOST_CAPABILITY_REQUIRED Op=%s RPC=HarvestWithIntent Code=12; upgrade Gameplay.Host"),
+            *PendingLedgerOperation);
+        PendingLedgerOperation.Reset(); PendingHarvestRequest=FSFGameplayRequest();
+        Finish(ESFGatheringPilotPhase::Rejected,ESFGatheringPilotResult::Unavailable); return;
+    }
     ASFGatheringPilotNode* Node=Feedback.Node;
     if (Response.Status!=ESFGameplayStatus::Ok || !Node->ApplyServiceSnapshot(Response) ||
         Response.HarvestStatus!=TEXT("granted") || Response.ResourceId!=LedgerItemId(ActiveKind) ||
@@ -1279,6 +1286,15 @@ void USFGatheringPilotComponent::OnNodeHarvest(const FSFGameplayResponse& Respon
         PendingLedgerOperation.Reset(); PendingHarvestRequest=FSFGameplayRequest();
         Finish(ESFGatheringPilotPhase::Rejected,ESFGatheringPilotResult::Unavailable); return;
     }
+#if !UE_BUILD_SHIPPING
+    if (FParse::Param(FCommandLine::Get(),TEXT("GatheringLedgerExitAfterCommit")))
+    {
+        UE_LOG(LogTemp,Display,TEXT("GATHERING_LEDGER_EXIT_AFTER_COMMIT Op=%s Node=%s Charges=%d"),
+            *PendingLedgerOperation,*Node->ServiceNodeId,Node->State.Charges);
+        GLog->Flush(); FPlatformMisc::RequestExitWithStatus(true,0);
+        return;
+    }
+#endif
     const FString Operation=PendingLedgerOperation; PendingLedgerOperation.Reset(); PendingHarvestRequest=FSFGameplayRequest();
     if (ApplyInventory(ActiveKind,true)!=ESFGatheringPilotResult::None)
     { UE_LOG(LogTemp,Error,TEXT("GATHERING_LEDGER_PROJECTION_MISMATCH Op=%s"),*Operation); }

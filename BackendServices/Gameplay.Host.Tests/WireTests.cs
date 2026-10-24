@@ -9,6 +9,12 @@ using ShatteredFrontier.CraftingContent;
 using ShatteredFrontier.Progression;
 using Npgsql;
 using System.Text.Json;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.Server;
+using Microsoft.AspNetCore.Hosting.Server.Features;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Microsoft.Extensions.DependencyInjection;
 using RewardPb = ShatteredFrontier.Rewards.V1;
 using ProgressPb = ShatteredFrontier.Progression.V1;
 using HousingPb = ShatteredFrontier.Housing.V1;
@@ -32,6 +38,35 @@ var headers = new Metadata { { "authorization", "Bearer " + token } };
 var bad = new Metadata { { "authorization", "Bearer wrong" } };
 DateTime Deadline() => DateTime.UtcNow.AddSeconds(5);
 
+if (mode == "gathering-old-host")
+{
+    // A host built before HarvestWithIntent still implements Harvest, but its base service returns UNIMPLEMENTED
+    // for the new method. Verify the new client method cannot reach that legacy mutation.
+    var builder = WebApplication.CreateBuilder();
+    builder.WebHost.ConfigureKestrel(options => options.Listen(System.Net.IPAddress.Loopback, 0,
+        listen => listen.Protocols = HttpProtocols.Http2));
+    builder.Services.AddGrpc();
+    await using var app = builder.Build();
+    app.MapGrpcService<LegacyGatheringService>();
+    await app.StartAsync();
+    try
+    {
+        var address = app.Services.GetRequiredService<IServer>().Features.Get<IServerAddressesFeature>()!.Addresses.Single();
+        using var oldChannel = GrpcChannel.ForAddress(address);
+        var oldClient = new GatheringPb.Gathering.GatheringClient(oldChannel);
+        var request = new GatheringPb.HarvestRequest { OperationId = "old-host/1", CharacterId = "chr_old_host",
+            NodeId = "gathering_node/oak_tree", Generation = 1, ContainerId = "ctn_old_host", FollowUpVersion = 1,
+            FollowUpPayload = ByteString.CopyFromUtf8("immutable intent"), FollowUpDigest = new string('a', 64) };
+        Code(() => oldClient.HarvestWithIntent(request, deadline: Deadline()), StatusCode.Unimplemented);
+        Check(LegacyGatheringService.HarvestCalls == 0, "Old host mutated a node through the new method.");
+        Check(oldClient.Harvest(request, deadline: Deadline()).Status == "granted" &&
+            LegacyGatheringService.HarvestCalls == 1, "Legacy host fixture does not expose the dangerous old method.");
+        Console.WriteLine("PASS new gather client fails closed on old host UNIMPLEMENTED; legacy Harvest was not invoked");
+    }
+    finally { await app.StopAsync(); }
+    return;
+}
+
 if (mode == "gathering")
 {
     var client = new GatheringPb.Gathering.GatheringClient(channel);
@@ -54,9 +89,9 @@ if (mode == "gathering")
             Generation = generation, ContainerId = "ctn_gathering", FollowUpVersion = 1,
             FollowUpPayload = ByteString.CopyFrom(bytes), FollowUpDigest = Convert.ToHexStringLower(System.Security.Cryptography.SHA256.HashData(bytes)) };
     }
-    GatheringPb.HarvestReply Harvest(string operation, int generation) => client.Harvest(Request(operation, generation), headers, deadline: Deadline());
+    GatheringPb.HarvestReply Harvest(string operation, int generation) => client.HarvestWithIntent(Request(operation, generation), headers, deadline: Deadline());
     Code(() => client.Harvest(new() { OperationId = "legacy", CharacterId = "chr_gathering", NodeId = id, Generation = 1 },
-        headers, deadline: Deadline()), StatusCode.InvalidArgument);
+        headers, deadline: Deadline()), StatusCode.FailedPrecondition);
     for (var i = 0; i < 5; i++)
     {
         var result = Harvest($"gathering/mature/{i}", 1);
@@ -67,7 +102,7 @@ if (mode == "gathering")
     Check(last.Node.RegrowAtUnixMs > DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(), "Backend respawn deadline missing.");
     Check(Harvest("gathering/mature/4", 1).Equals(last), "Idempotent harvest replay differs.");
     var conflict = Request("gathering/mature/4", 1); conflict.CharacterId = "chr_other";
-    Code(() => client.Harvest(conflict,
+    Code(() => client.HarvestWithIntent(conflict,
         headers, deadline: Deadline()), StatusCode.InvalidArgument);
     Check(Harvest("gathering/depleted", 1).Status == "depleted", "Depleted node accepted another harvest.");
     var until = DateTime.UtcNow.AddSeconds(20);
@@ -109,7 +144,7 @@ if (mode is "gathering-backup-seed" or "gathering-replay" or "gathering-fault" o
             CharacterId = prior.CharacterId, Kind = "gather", ExpectedProgressionRevision = 4,
             Payload = new ProgressPb.ActionPayload { SkillId = "skill/mining", Difficulty = 1, ActionSeconds = 1, Success = true } }.ToByteArray());
         prior.FollowUpDigest = Convert.ToHexStringLower(System.Security.Cryptography.SHA256.HashData(prior.FollowUpPayload.Span));
-        var replay = client.Harvest(prior, headers, deadline: Deadline());
+        var replay = client.HarvestWithIntent(prior, headers, deadline: Deadline());
         Check(replay.Status == "granted" && replay.Node.Generation == 1 && replay.Node.Charges == 0,
             "Restart changed the saved harvest receipt.");
         Console.WriteLine("PASS gathering node state and receipt survive host restart");
@@ -120,7 +155,7 @@ if (mode is "gathering-backup-seed" or "gathering-replay" or "gathering-fault" o
         new InventoryLedger(new PostgresInventoryLedgerStore(connection)).CreateContainer(
             new ContainerSpec("ctn_gathering_backup", OwnerKind.Character, "chr_gathering_backup", ContainerKind.Backpack, 100));
         var seed = Request("gathering/backup/1", "chr_gathering_backup", oak, "ctn_gathering_backup", "skill/logging");
-        var saved = client.Harvest(seed, headers, deadline: Deadline());
+        var saved = client.HarvestWithIntent(seed, headers, deadline: Deadline());
         Check(saved.Status == "granted" && saved.Node.Charges == 2, "Gathering backup seed did not persist one harvest.");
         Console.WriteLine("PASS gathering backup point has populated node state and harvest receipt");
         return;
@@ -132,7 +167,7 @@ if (mode is "gathering-backup-seed" or "gathering-replay" or "gathering-fault" o
         "chr_gathering_fault", oak, "ctn_gathering_fault", "skill/logging");
     if (mode is "gathering-fault" or "gathering-grant-fault")
     {
-        try { client.Harvest(request, headers, deadline: Deadline()); throw new Exception("Fault host returned normally."); }
+        try { client.HarvestWithIntent(request, headers, deadline: Deadline()); throw new Exception("Fault host returned normally."); }
         catch (RpcException ex) when (ex.StatusCode is StatusCode.Unavailable or StatusCode.DeadlineExceeded) { }
         Console.WriteLine(mode == "gathering-fault" ? "PASS injected host death after gathering intent commit" :
             "PASS injected host death after gathering ledger grant");
@@ -140,12 +175,12 @@ if (mode is "gathering-backup-seed" or "gathering-replay" or "gathering-fault" o
     }
     var until = DateTime.UtcNow.AddSeconds(20);
     while (ledger.Receipt(request.OperationId) is null && DateTime.UtcNow < until) Thread.Sleep(100);
-    var result = client.Harvest(request, headers, deadline: Deadline());
+    var result = client.HarvestWithIntent(request, headers, deadline: Deadline());
     var expected = mode == "gathering-grant-replay" ? 2 : 1;
     Check(result.Status == "granted" && result.Node.Charges == 3 - expected &&
         ledger.Read(request.ContainerId).Quantities.GetValueOrDefault("item/oak_log") == expected,
         "Crash replay duplicated or lost grant/charge.");
-    Check(client.Harvest(request, headers, deadline: Deadline()).Equals(result), "Crash replay not idempotent.");
+    Check(client.HarvestWithIntent(request, headers, deadline: Deadline()).Equals(result), "Crash replay not idempotent.");
     Console.WriteLine(mode == "gathering-fault-replay" ? "PASS gathering crash replay granted once and consumed one charge" :
         "PASS post-grant crash replay kept one grant per charge");
     return;
@@ -700,3 +735,13 @@ else if (mode == "housing")
 }
 else throw new Exception("Unknown test mode.");
 Console.WriteLine($"PASS {mode} wire auth, deadline, status, replay");
+
+public sealed class LegacyGatheringService : GatheringPb.Gathering.GatheringBase
+{
+    public static int HarvestCalls;
+    public override Task<GatheringPb.HarvestReply> Harvest(GatheringPb.HarvestRequest request, ServerCallContext context)
+    {
+        HarvestCalls++;
+        return Task.FromResult(new GatheringPb.HarvestReply { Status = "granted" });
+    }
+}

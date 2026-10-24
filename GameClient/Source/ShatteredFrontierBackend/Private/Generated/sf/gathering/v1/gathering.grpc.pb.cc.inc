@@ -27,6 +27,7 @@ namespace v1 {
 static const char* Gathering_method_names[] = {
   "/sf.gathering.v1.Gathering/GetNode",
   "/sf.gathering.v1.Gathering/Harvest",
+  "/sf.gathering.v1.Gathering/HarvestWithIntent",
 };
 
 std::unique_ptr< Gathering::Stub> Gathering::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
@@ -38,6 +39,7 @@ std::unique_ptr< Gathering::Stub> Gathering::NewStub(const std::shared_ptr< ::gr
 Gathering::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options)
   : channel_(channel), rpcmethod_GetNode_(Gathering_method_names[0], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_Harvest_(Gathering_method_names[1], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_HarvestWithIntent_(Gathering_method_names[2], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   {}
 
 ::grpc::Status Gathering::Stub::GetNode(::grpc::ClientContext* context, const ::sf::gathering::v1::GetNodeRequest& request, ::sf::gathering::v1::NodeReply* response) {
@@ -86,6 +88,29 @@ void Gathering::Stub::async::Harvest(::grpc::ClientContext* context, const ::sf:
   return result;
 }
 
+::grpc::Status Gathering::Stub::HarvestWithIntent(::grpc::ClientContext* context, const ::sf::gathering::v1::HarvestRequest& request, ::sf::gathering::v1::HarvestReply* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::sf::gathering::v1::HarvestRequest, ::sf::gathering::v1::HarvestReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_HarvestWithIntent_, context, request, response);
+}
+
+void Gathering::Stub::async::HarvestWithIntent(::grpc::ClientContext* context, const ::sf::gathering::v1::HarvestRequest* request, ::sf::gathering::v1::HarvestReply* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::sf::gathering::v1::HarvestRequest, ::sf::gathering::v1::HarvestReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_HarvestWithIntent_, context, request, response, std::move(f));
+}
+
+void Gathering::Stub::async::HarvestWithIntent(::grpc::ClientContext* context, const ::sf::gathering::v1::HarvestRequest* request, ::sf::gathering::v1::HarvestReply* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_HarvestWithIntent_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::sf::gathering::v1::HarvestReply>* Gathering::Stub::PrepareAsyncHarvestWithIntentRaw(::grpc::ClientContext* context, const ::sf::gathering::v1::HarvestRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::sf::gathering::v1::HarvestReply, ::sf::gathering::v1::HarvestRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_HarvestWithIntent_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::sf::gathering::v1::HarvestReply>* Gathering::Stub::AsyncHarvestWithIntentRaw(::grpc::ClientContext* context, const ::sf::gathering::v1::HarvestRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncHarvestWithIntentRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
 Gathering::Service::Service() {
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       Gathering_method_names[0],
@@ -107,6 +132,16 @@ Gathering::Service::Service() {
              ::sf::gathering::v1::HarvestReply* resp) {
                return service->Harvest(ctx, req, resp);
              }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      Gathering_method_names[2],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< Gathering::Service, ::sf::gathering::v1::HarvestRequest, ::sf::gathering::v1::HarvestReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](Gathering::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::sf::gathering::v1::HarvestRequest* req,
+             ::sf::gathering::v1::HarvestReply* resp) {
+               return service->HarvestWithIntent(ctx, req, resp);
+             }, this)));
 }
 
 Gathering::Service::~Service() {
@@ -120,6 +155,13 @@ Gathering::Service::~Service() {
 }
 
 ::grpc::Status Gathering::Service::Harvest(::grpc::ServerContext* context, const ::sf::gathering::v1::HarvestRequest* request, ::sf::gathering::v1::HarvestReply* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status Gathering::Service::HarvestWithIntent(::grpc::ServerContext* context, const ::sf::gathering::v1::HarvestRequest* request, ::sf::gathering::v1::HarvestReply* response) {
   (void) context;
   (void) request;
   (void) response;

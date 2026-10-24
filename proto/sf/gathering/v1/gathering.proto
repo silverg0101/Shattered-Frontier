@@ -5,6 +5,8 @@ option csharp_namespace = "ShatteredFrontier.Gathering.V1";
 service Gathering {
   rpc GetNode(GetNodeRequest) returns (NodeReply);
   rpc Harvest(HarvestRequest) returns (HarvestReply);
+  // Separate method so an older host cannot silently discard the required intent fields.
+  rpc HarvestWithIntent(HarvestRequest) returns (HarvestReply);
 }
 message GetNodeRequest { string node_id = 1; }
 message HarvestRequest {
