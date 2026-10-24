@@ -23,6 +23,7 @@
 #include "Misc/CommandLine.h"
 #include "Misc/Parse.h"
 #include "Components/InputComponent.h"
+#include "InputCoreTypes.h"
 #include "Engine/Engine.h"
 #include "Engine/World.h"
 #include "EngineUtils.h"
@@ -156,6 +157,7 @@ void ASFPlayerController::ClientInteractionResult_Implementation(ESFE1Interactio
 void ASFPlayerController::TickInteraction()
 {
     TickDialogue();
+    if (IsLocalController() && WasInputKeyJustPressed(EKeys::Tab)) { SelectNextCombatTarget(); }
     const bool bHasPlayer = GetLocalPlayer() != nullptr;  // CreateWidget needs an attached player (a controller made local without one, as the cursor tests do, has no HUD)
     if (bHasPlayer && IsLocalController() && !GatheringHud)
     {
