@@ -33,6 +33,10 @@ function Invoke-LedgerSql([hashtable]$Fx,[string]$Query,[string]$Database = 'pos
     try { return Invoke-FxOk $Fx (Join-Path $Fx.pg 'psql.exe') @('-X','-q','-A','-t','-h','127.0.0.1','-p',"$($Fx.pgPort)",'-U','fixture_admin','-d',$Database,'-v','ON_ERROR_STOP=1','-f',$file) @{ PGPASSWORD=$Fx.adminPassword; PGCONNECT_TIMEOUT='5' } }
     finally { Remove-Item -LiteralPath $file -Force -ErrorAction SilentlyContinue }
 }
+function Invoke-LedgerSchemaMigrations([hashtable]$Fx,[string[]]$Schemas) {
+    $connection = "Host=127.0.0.1;Port=$($Fx.pgPort);Database=$($Fx.db);Username=fixture_admin;Password=$($Fx.adminPassword);Pooling=false"
+    & (Join-Path $Fx.repo 'tools/Invoke-SchemaMigrations.ps1') -Connection $connection -Schemas $Schemas -Role ledger_owner -Dotnet $Fx.dotnet -Nuget $Fx.nuget | Out-Null
+}
 
 # Provisions PostgreSQL and builds the host, filling the caller-owned $Fx hashtable so cleanup works after a partial failure.
 function New-LedgerFixture([hashtable]$Fx,[string]$RepoRoot,[string]$EvidenceRoot) {
@@ -74,6 +78,7 @@ function New-LedgerFixture([hashtable]$Fx,[string]$RepoRoot,[string]$EvidenceRoo
     [void](Invoke-LedgerSql $Fx "CREATE ROLE ledger_owner NOLOGIN; CREATE ROLE ledger_svc LOGIN PASSWORD '$($Fx.servicePassword)'; CREATE DATABASE $($Fx.db);")
     [void](Invoke-LedgerSql $Fx "REVOKE ALL ON DATABASE $($Fx.db) FROM PUBLIC; GRANT CONNECT ON DATABASE $($Fx.db) TO ledger_svc; GRANT CREATE ON DATABASE $($Fx.db) TO ledger_owner; REVOKE ALL ON SCHEMA public FROM PUBLIC; CREATE SCHEMA inventory AUTHORIZATION ledger_owner;" $Fx.db)
     [void](Invoke-LedgerSql $Fx ("SET ROLE ledger_owner;`n" + (Get-Content $schema -Raw) + "`n" + (Get-Content (Join-Path $RepoRoot 'BackendServices/InventoryLedger.Postgres/Schema.Outbox.sql') -Raw) + "`n" + (Get-Content (Join-Path $RepoRoot 'BackendServices/InventoryLedger.Postgres/Schema.GatheringNodes.sql') -Raw) + "`n" + (Get-Content (Join-Path $RepoRoot 'BackendServices/InventoryLedger.Postgres/Schema.DefeatRewards.sql') -Raw)) $Fx.db)
+    Invoke-LedgerSchemaMigrations $Fx @('inventory')
     [void](Invoke-LedgerSql $Fx 'GRANT USAGE ON SCHEMA inventory TO ledger_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA inventory TO ledger_svc;' $Fx.db)
     $Fx.connection = "Host=127.0.0.1;Port=$($Fx.pgPort);Database=$($Fx.db);Username=ledger_svc;Password=$($Fx.servicePassword);Pooling=false;Timeout=2;Command Timeout=5;Include Error Detail=false"
     return

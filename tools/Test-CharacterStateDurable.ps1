@@ -86,6 +86,8 @@ try {
     [void](Sql ("SET ROLE state_owner;`n" + (Get-Content (Join-Path $repo 'BackendServices/CharacterState.Postgres/Schema.Appearance.sql') -Raw)) "state_$run")
     [void](Sql ("SET ROLE state_owner;`n" + (Get-Content (Join-Path $repo 'BackendServices/CharacterState.Postgres/Schema.GatheringSkills.sql') -Raw)) "state_$run")
     [void](Sql ("SET ROLE state_owner;`n" + (Get-Content (Join-Path $repo 'BackendServices/CharacterState.Postgres/Schema.Death.sql') -Raw)) "state_$run")
+    $migrationConnection = "Host=127.0.0.1;Port=$port;Database=state_$run;Username=fixture_admin;Password=$adminPassword;Pooling=false"
+    & (Join-Path $repo 'tools/Invoke-SchemaMigrations.ps1') -Connection $migrationConnection -Schemas character_state -Role state_owner -Dotnet $dotnet -Nuget $nuget | Out-Null
     [void](Sql 'GRANT USAGE ON SCHEMA character_state TO state_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA character_state TO state_svc;' "state_$run")
     $connection = "Host=127.0.0.1;Port=$port;Database=state_$run;Username=state_svc;Password=$servicePassword;Pooling=true;Maximum Pool Size=64;Minimum Pool Size=8;Timeout=2;Command Timeout=5;Include Error Detail=false"
     $results = [Collections.Generic.List[string]]::new()

@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType></PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Npgsql" />
+    <Compile Include="../SchemaMigration.cs" Link="SchemaMigration.cs" />
+    <EmbeddedResource Include="../InventoryLedger.Postgres/Schema.*.sql" LogicalName="inventory.%(Filename)%(Extension)" />
+    <EmbeddedResource Include="../CharacterState.Postgres/Schema.*.sql" LogicalName="character_state.%(Filename)%(Extension)" />
+    <EmbeddedResource Include="../Housing.Postgres/Schema.*.sql" LogicalName="housing.%(Filename)%(Extension)" />
+    <EmbeddedResource Include="../Exchange.Postgres/Schema.*.sql" LogicalName="exchange.%(Filename)%(Extension)" />
+  </ItemGroup>
+</Project>
