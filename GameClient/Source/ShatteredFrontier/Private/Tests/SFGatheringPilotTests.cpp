@@ -261,8 +261,8 @@ bool FSFGatheringPilotLifecycleTest::RunTest(const FString& Parameters)
         || !TestTrue(TEXT("Real equipped axe"),Gather->TryEquipTool(true))) { return false; }
     TestEqual(TEXT("Initial presentation captures node capacity"),Wood->GetPresentationState().Capacity,3);
     TestEqual(TEXT("Fresh resource has no extraction damage"),Wood->GetPresentationState().ExtractedFraction,0.0f);
-    // Fixture shortens one released node and its timer; no console/runtime override is introduced.
-    Wood->State.Capacity=1; Wood->State.Charges=1; Wood->CapturedRespawnSeconds=1;
+    // This one-charge fixture covers the legacy no-profile timer; growth with staged charges has its own focused test.
+    Wood->GrowthStages.Reset(); Wood->State.Capacity=1; Wood->State.Charges=1; Wood->CapturedRespawnSeconds=1;
     const auto Tick=[&Fixture](int32 Count) { for (int32 I=0; I<Count; ++I) { Fixture.TickTestWorld(0.05f); } };
     const TSoftObjectPtr<USFItemDefinition> Item(FSoftObjectPath(TEXT("/Game/Frontier/Gameplay/Pilot/DA_OakLog.DA_OakLog")));
     Gather->ServerGatheringAction_Implementation(Wood,0,1);
@@ -481,7 +481,7 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFGatheringGrowthVisualTest,
 
 bool FSFGatheringGrowthVisualTest::RunTest(const FString& Parameters)
 {
-    const TArray<FSFGrowthStageDef> Stages={{TEXT("young"),0.5f},{TEXT("growing"),0.5f},{TEXT("mature"),0.f}};
+    const TArray<FSFGrowthStageDef> Stages={{TEXT("young"),0.5f,0.3f},{TEXT("growing"),0.5f,0.5f},{TEXT("mature"),0.f,1.f}};
     const double Window=150;  // respawn 300 s * grow_fraction 0.5, as the Silverbrook iron profile
     TestEqual(TEXT("t=0 is young"),ASFGatheringPilotNode::StageAt(Stages,Window,0),FName(TEXT("young")));
     TestEqual(TEXT("just before the boundary is young"),ASFGatheringPilotNode::StageAt(Stages,Window,74),FName(TEXT("young")));
@@ -517,6 +517,36 @@ bool FSFGatheringGrowthVisualTest::RunTest(const FString& Parameters)
     TestTrue(TEXT("and shows the declared young scale"),Node->Mesh->GetRelativeScale3D().Equals(Base*Visuals->ScaleFor(ESFGatheringPilotKind::Iron,TEXT("young"))));
     Node->State.GrowthStage=TEXT("growing"); Node->OnRep_State();  // what a client does when the stage replicates
     TestTrue(TEXT("A replicated stage change updates the scale"),Node->Mesh->GetRelativeScale3D().Equals(Base*Visuals->ScaleFor(ESFGatheringPilotKind::Iron,TEXT("growing"))));
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFGatheringStageChargesTest,
+    "ShatteredFrontier.Gathering.Growth.StageCharges",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+
+bool FSFGatheringStageChargesTest::RunTest(const FString& Parameters)
+{
+    FTestWorldWrapper Fixture;
+    if (!Fixture.CreateTestWorld(EWorldType::GameRPC) || !Fixture.BeginPlayInTestWorld()) { return false; }
+    auto* World=Fixture.GetTestWorld(); World->GetWorldSettings()->NotifyBeginPlay();
+    const FTransform At(FRotator::ZeroRotator,FVector(0,0,70));
+    auto* Node=World->SpawnActorDeferred<ASFGatheringPilotNode>(ASFGatheringPilotNode::StaticClass(),At);
+    if (!Node) { return false; }
+    Node->Kind=ESFGatheringPilotKind::Iron;
+    Node->SetGrowthProfile({{TEXT("young"),0.5f,0.3f},{TEXT("growing"),0.5f,0.5f},{TEXT("mature"),0.f,1.f}},0.5f);
+    Node->FinishSpawning(At);
+    Node->State.Capacity=5; Node->State.Charges=0; Node->CapturedRespawnSeconds=2; Node->RecoveryKind=Node->Kind;
+    Node->State.RecoveryAtServerSeconds=World->GetTimeSeconds()+2;
+    Node->Recover();
+    TestEqual(TEXT("Before emergence there are no charges"),Node->State.Charges,0);
+    Node->State.RecoveryAtServerSeconds=World->GetTimeSeconds()+0.9;
+    Node->Recover();
+    TestTrue(TEXT("Emergence replicates young with two of five charges"),Node->State.GrowthStage==TEXT("young") && Node->State.Charges==2);
+    Node->HarvestedThisGrowth=1; Node->State.Charges=1;
+    for (int32 I=0; I<11; ++I) { Fixture.TickTestWorld(0.05f); }
+    TestTrue(TEXT("Growing stage adds only its new allowance"),Node->State.GrowthStage==TEXT("growing") && Node->State.Charges==2);
+    for (int32 I=0; I<11; ++I) { Fixture.TickTestWorld(0.05f); }
+    TestTrue(TEXT("Maturity exposes full capacity minus harvested charges"),Node->State.GrowthStage==TEXT("mature") && Node->State.Charges==4);
     return true;
 }
 

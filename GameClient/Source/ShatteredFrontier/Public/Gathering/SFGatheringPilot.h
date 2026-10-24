@@ -87,6 +87,15 @@ struct FSFGrowthStageVisual
     UPROPERTY(EditAnywhere, Config, meta=(ClampMin="0.1", ClampMax="1.5")) float Scale = 1;
 };
 
+USTRUCT()
+struct FSFGrowthStageRule
+{
+    GENERATED_BODY()
+    UPROPERTY(EditAnywhere, Config) FName Name;
+    UPROPERTY(EditAnywhere, Config, meta=(ClampMin="0", ClampMax="1")) float DurationFraction = 0;
+    UPROPERTY(EditAnywhere, Config, meta=(ClampMin="0", ClampMax="1")) float YieldFraction = 1;
+};
+
 UCLASS(Config=Game, DefaultConfig, meta=(DisplayName="Gathering Growth Appearance (Release Only)"))
 class SHATTEREDFRONTIER_API USFGatheringGrowthSettings : public UDeveloperSettings
 {
@@ -94,12 +103,14 @@ class SHATTEREDFRONTIER_API USFGatheringGrowthSettings : public UDeveloperSettin
 public:
     USFGatheringGrowthSettings();
     UPROPERTY(Config, EditAnywhere, Category="Growth") TArray<FSFGrowthStageVisual> StageVisuals;
+    UPROPERTY(Config, EditAnywhere, Category="Growth", meta=(ClampMin="0.01", ClampMax="0.99", ToolTip="Fraction of respawn time spent growing; release authors, next world start.")) float GrowFraction = 0.5f;
+    UPROPERTY(Config, EditAnywhere, Category="Growth") TArray<FSFGrowthStageRule> StageRules;
     float ScaleFor(ESFGatheringPilotKind Kind, FName Stage) const;
     bool Validate(FString& Error) const;
 };
 
 // Server-only growth profile (content: growth_profile in the zone record). DurationFraction is of the grow window.
-struct FSFGrowthStageDef { FName Name; float DurationFraction = 0; };
+struct FSFGrowthStageDef { FName Name; float DurationFraction = 0; float YieldFraction = 1; };
 
 class ASFHarvestFallingTree;
 
@@ -178,6 +189,7 @@ private:
     friend class FSFGatheringPilotProgressionTest;
     friend class FSFGatheringPilotLedgerTest;
     friend class FSFGatheringGrowthVisualTest;
+    friend class FSFGatheringStageChargesTest;
     friend class FSFGatheringPilotServiceTest;
     UFUNCTION() void OnRep_State();
     void StartGrowth();
@@ -205,6 +217,7 @@ private:
     float GrowFraction = 0.5f;
     double GrowthStartedAt = 0;
     float CapturedRespawnSeconds = 300;
+    int32 HarvestedThisGrowth = 0;
     ESFGatheringPilotKind RecoveryKind = ESFGatheringPilotKind::Oak;
 #if WITH_DEV_AUTOMATION_TESTS && WITH_EDITOR
     TOptional<ESFGatheringMaterialTier> TestProfileTier;

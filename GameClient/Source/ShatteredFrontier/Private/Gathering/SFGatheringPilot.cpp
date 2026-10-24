@@ -132,6 +132,9 @@ USFGatheringGrowthSettings::USFGatheringGrowthSettings()
     {
         StageVisuals.Add({Kind,TEXT("young"),0.45f}); StageVisuals.Add({Kind,TEXT("growing"),0.7f}); StageVisuals.Add({Kind,TEXT("mature"),1.0f});
     }
+    StageRules.Add({TEXT("young"),0.5f,0.3f});
+    StageRules.Add({TEXT("growing"),0.5f,0.5f});
+    StageRules.Add({TEXT("mature"),0.f,1.f});
 }
 
 float USFGatheringGrowthSettings::ScaleFor(ESFGatheringPilotKind Kind, FName Stage) const
@@ -142,14 +145,33 @@ float USFGatheringGrowthSettings::ScaleFor(ESFGatheringPilotKind Kind, FName Sta
 
 bool USFGatheringGrowthSettings::Validate(FString& Error) const
 {
-    bool bValid=true;
+    bool bValid=FMath::IsFinite(GrowFraction) && GrowFraction>=0.01f && GrowFraction<=0.99f
+        && StageRules.Num()>=2 && StageRules.Num()<=4;
+    double Sum=0; float PreviousYield=0;
+    const int32 Charges=GetDefault<USFGatheringPilotSettings>()->ChargesPerNode;
+    for (int32 I=0; I<StageRules.Num(); ++I)
+    {
+        const auto& Rule=StageRules[I];
+        const double EarliestAllowed=1.f-GrowFraction+Sum*GrowFraction;
+        const int32 StageCharges=FMath::IsFinite(Rule.YieldFraction)
+            ? FMath::Max(1,FMath::RoundToInt(Charges*FMath::Clamp(Rule.YieldFraction,0.f,1.f))) : 0;
+        bValid&=!Rule.Name.IsNone() && FMath::IsFinite(Rule.DurationFraction) && FMath::IsFinite(Rule.YieldFraction)
+            && Rule.DurationFraction>=(I==StageRules.Num()-1 ? 0.f : 0.0001f)
+            && Rule.DurationFraction<=(I==StageRules.Num()-1 ? 0.f : 1.f)
+            && Rule.YieldFraction>PreviousYield && Rule.YieldFraction<=1.f
+            && Rule.YieldFraction<=EarliestAllowed+0.0001f
+            && Charges>=1 && double(StageCharges)/Charges<=EarliestAllowed+0.0001;
+        PreviousYield=Rule.YieldFraction; Sum+=Rule.DurationFraction;
+        for (int32 J=0; J<I; ++J) { bValid&=Rule.Name!=StageRules[J].Name; }
+    }
+    bValid&=FMath::IsNearlyEqual(Sum,1.0,0.0001) && FMath::IsNearlyEqual(PreviousYield,1.f);
     for (int32 I=0; I<StageVisuals.Num(); ++I)
     {
         const FSFGrowthStageVisual& V=StageVisuals[I];
         bValid&=!V.Stage.IsNone() && FMath::IsFinite(V.Scale) && V.Scale>=0.1f && V.Scale<=1.5f;
         for (int32 J=0; J<I; ++J) { bValid&=!(StageVisuals[J].Kind==V.Kind && StageVisuals[J].Stage==V.Stage); }
     }
-    Error=bValid ? TEXT("") : TEXT("Gathering growth appearance: stage names must be set and unique per kind, scale 0.1 to 1.5.");
+    Error=bValid ? TEXT("") : TEXT("Gathering growth settings outside declared stage, timing, yield or appearance bounds.");
     return bValid;
 }
 
@@ -192,6 +214,15 @@ void ASFGatheringPilotNode::BeginPlay()
     FString Error; const auto* Settings=GetDefault<USFGatheringPilotSettings>();
     if (HasAuthority() && Settings->Validate(Error))
     {
+        if (GrowthStages.IsEmpty())
+        {
+            const auto* Growth=GetDefault<USFGatheringGrowthSettings>();
+            if (Growth->Validate(Error))
+            {
+                GrowFraction=Growth->GrowFraction;
+                for (const auto& Rule : Growth->StageRules) { GrowthStages.Add({Rule.Name,Rule.DurationFraction,Rule.YieldFraction}); }
+            }
+        }
         State.Capacity=IsRefinery() ? 0 : Settings->ChargesPerNode;
         State.Charges=State.Capacity; CapturedRespawnSeconds=Settings->RespawnSeconds;
         if (!GrowthStages.IsEmpty()) { State.GrowthStage=GrowthStages.Last().Name; }  // a fresh node starts mature
@@ -246,12 +277,34 @@ void ASFGatheringPilotNode::BeginRecovery()
 {
     if (bUsesServices) { return; }
     if (!HasAuthority() || IsRefinery() || State.Charges!=0 || State.RecoveryAtServerSeconds>0) { return; }
-    RecoveryKind=Kind; State.RecoveryAtServerSeconds=GetWorld()->GetTimeSeconds()+CapturedRespawnSeconds;
-    GetWorldTimerManager().SetTimer(RecoveryTimer,this,&ASFGatheringPilotNode::Recover,CapturedRespawnSeconds,false);
+    RecoveryKind=Kind; State.GrowthStage=NAME_None;
+    State.RecoveryAtServerSeconds=GetWorld()->GetTimeSeconds()+CapturedRespawnSeconds;
+    const float Delay=GrowthStages.IsEmpty() ? CapturedRespawnSeconds : CapturedRespawnSeconds*(1.f-GrowFraction);
+    GetWorldTimerManager().SetTimer(RecoveryTimer,this,&ASFGatheringPilotNode::Recover,Delay,false);
 }
 
 void ASFGatheringPilotNode::SetGrowthProfile(const TArray<FSFGrowthStageDef>& Stages, float InGrowFraction)
 {
+    const int32 Capacity=GetDefault<USFGatheringPilotSettings>()->ChargesPerNode;
+    bool bValid=Stages.Num()>=2 && Stages.Num()<=4 && FMath::IsFinite(InGrowFraction)
+        && InGrowFraction>=0.01f && InGrowFraction<=0.99f && Capacity>=1;
+    double Start=0; float PreviousYield=0;
+    for (int32 I=0; I<Stages.Num(); ++I)
+    {
+        const auto& Stage=Stages[I];
+        const double AvailableFraction=1.0-InGrowFraction+Start*InGrowFraction;
+        const int32 Limit=FMath::IsFinite(Stage.YieldFraction)
+            ? FMath::Max(1,FMath::RoundToInt(Capacity*FMath::Clamp(Stage.YieldFraction,0.f,1.f))) : 0;
+        bValid&=!Stage.Name.IsNone() && FMath::IsFinite(Stage.DurationFraction) && FMath::IsFinite(Stage.YieldFraction)
+            && Stage.DurationFraction>=(I==Stages.Num()-1 ? 0.f : 0.0001f)
+            && Stage.DurationFraction<=(I==Stages.Num()-1 ? 0.f : 1.f)
+            && Stage.YieldFraction>PreviousYield && Stage.YieldFraction<=1.f
+            && Capacity>0 && double(Limit)/Capacity<=AvailableFraction+0.0001;
+        for (int32 J=0; J<I; ++J) { bValid&=Stage.Name!=Stages[J].Name; }
+        PreviousYield=Stage.YieldFraction; Start+=Stage.DurationFraction;
+    }
+    bValid&=FMath::IsNearlyEqual(Start,1.0,0.0001) && FMath::IsNearlyEqual(PreviousYield,1.f);
+    if (!bValid) { UE_LOG(LogTemp,Error,TEXT("GATHERING_GROWTH_PROFILE_INVALID Kind=%d"),int32(Kind)); return; }
     GrowthStages=Stages; GrowFraction=InGrowFraction;
 }
 
@@ -275,8 +328,23 @@ void ASFGatheringPilotNode::StartGrowth()
 
 void ASFGatheringPilotNode::AdvanceGrowth()
 {
+    if (!HasAuthority() || bUsesServices || GrowthStages.IsEmpty()) { return; }
     const double Window=CapturedRespawnSeconds*GrowFraction, Elapsed=GetWorld()->GetTimeSeconds()-GrowthStartedAt;
-    State.GrowthStage=StageAt(GrowthStages,Window,Elapsed);
+    int32 StageIndex=0; double StageStart=0;
+    for (int32 I=1; I<GrowthStages.Num(); ++I)
+    {
+        StageStart+=GrowthStages[I-1].DurationFraction;
+        if (Elapsed<StageStart*Window) { break; }
+        StageIndex=I;
+    }
+    const FName NextStage=GrowthStages[StageIndex].Name;
+    if (State.GrowthStage!=NextStage)
+    {
+        State.GrowthStage=NextStage;
+        const int32 Limit=FMath::Max(1,FMath::RoundToInt(State.Capacity*GrowthStages[StageIndex].YieldFraction));
+        State.Charges=FMath::Max(0,Limit-HarvestedThisGrowth);
+        ++State.Revision;
+    }
     double Boundary=0; bool bFound=false;  // next stage start after Elapsed, if any
     for (int32 I=0; I<GrowthStages.Num()-1; ++I)
     {
@@ -308,7 +376,8 @@ void ASFGatheringPilotNode::Recover()
     if (bUsesServices) { return; }
     if (!HasAuthority() || IsRefinery() || Kind!=RecoveryKind || State.Charges!=0 || State.Capacity<=0
         || State.bBusy || LockedBy.IsValid() || State.RecoveryAtServerSeconds<=0 || State.Revision==MAX_uint32 || State.Generation==MAX_uint32) { return; }
-    const double Remaining=State.RecoveryAtServerSeconds-GetWorld()->GetTimeSeconds();
+    const double Remaining=State.RecoveryAtServerSeconds-GetWorld()->GetTimeSeconds()
+        -(GrowthStages.IsEmpty() ? 0.0 : CapturedRespawnSeconds*GrowFraction);
     if (Remaining>0)
     {
         GetWorldTimerManager().SetTimer(RecoveryTimer,this,&ASFGatheringPilotNode::Recover,
@@ -316,7 +385,10 @@ void ASFGatheringPilotNode::Recover()
         return;
     }
     if (IsValid(State.FallingTree)) { State.FallingTree->Destroy(); } State.FallingTree=nullptr;
-    State.Charges=State.Capacity; State.RecoveryAtServerSeconds=0; State.Cuts.Reset(); ++State.Revision; ++State.Generation;
+    State.Charges=GrowthStages.IsEmpty() ? State.Capacity : 0;
+    HarvestedThisGrowth=0; State.GrowthStage=NAME_None;
+    State.RecoveryAtServerSeconds=0; State.Cuts.Reset(); ++State.Generation;
+    if (GrowthStages.IsEmpty()) { ++State.Revision; }
     StartGrowth();  // no profile: no-op
     OnRep_State(); ForceNetUpdate();
 }
@@ -1045,7 +1117,7 @@ void USFGatheringPilotComponent::CompleteHarvest(bool bRefining)
             Feedback.bSkillGained=Skills.GainCount>GainsBefore; Feedback.CurrentSkill=Skills.Get(ActiveResourceProfile.Skill);
         }
         if (bActiveVisualCut) { Feedback.Node->State.Cuts.Add(ActiveVisualCut); }
-        if (!bServiceHarvestApplied) { --Feedback.Node->State.Charges; Feedback.Node->BeginRecovery(); }
+        if (!bServiceHarvestApplied) { --Feedback.Node->State.Charges; ++Feedback.Node->HarvestedThisGrowth; Feedback.Node->BeginRecovery(); }
         if (Feedback.Node->State.Charges==0&&ActiveKind==ESFGatheringPilotKind::Oak&&bActiveVisualCut&&Feedback.Node->HarvestVisuals)
         { Feedback.Node->State.FallingTree=Feedback.Node->HarvestVisuals->BeginTreeFall(Feedback.Node->State.Generation,ActiveVisualCut); }
     }
