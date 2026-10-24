@@ -1,6 +1,6 @@
 """Blender: training images for one model's joint detector, filmed exactly like a job's first frame.
 
-    blender -b -P synth_render.py -- MODEL OUT_DIR [N] [--turn DEG] [--seed S]
+    blender -b -P synth_render.py -- MODEL OUT_DIR [N] [--turn DEG] [--seed S] [--limbs]
 
 Picks the keypoints worth detecting (keypoints.json), then renders N random poses of the model from the same two
 cameras, grey and light as render_views.py, at half size: OUT_DIR/img/NNNN.png plus labels.json with each
@@ -194,6 +194,9 @@ def main():
     rng = random.Random(int(argv[argv.index("--seed") + 1]) if "--seed" in argv else 1)
     (out / "img").mkdir(parents=True, exist_ok=True)
     arm = rv.load(model, turn)
+    if "--limbs" in argv:  # filmed limb-coloured (limbs.py): the detector learns the look of a limb-coloured take
+        import limbs
+        limbs.paint(arm, rv)
     lo, hi = rv.bounds(arm)
     for o in bpy.context.scene.objects:  # widgets hidden from the render must not block the visibility rays either
         if o.type == "MESH" and o.hide_render:

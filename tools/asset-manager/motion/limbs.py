@@ -163,6 +163,53 @@ def pieces(n, edges, members, co=None):
     return sorted(np.unique(roots, return_counts=True)[1].tolist(), reverse=True) if roots else []
 
 
+def skinned(arm):
+    import bpy
+    return [o for o in bpy.context.scene.objects
+            if o.type == "MESH" and any(m.type == "ARMATURE" and m.object == arm for m in o.modifiers)]
+
+
+def owners(o, limb, names):
+    """Per vertex: index of the limb with the most weight on it, and whether no limb bone moves it at all."""
+    group_limb = {g.index: names.index(limb[g.name]) for g in o.vertex_groups if g.name in limb}
+    score = np.zeros((len(o.data.vertices), len(names)))
+    for v in o.data.vertices:
+        for g in v.groups:
+            if g.group in group_limb:
+                score[v.index, group_limb[g.group]] += g.weight
+    return score.argmax(1), score.max(1) <= 0
+
+
+def colour(o, best, none, colours, names):
+    """Paint the mesh flat by limb: a "limb" colour attribute feeding one shared rough material."""
+    import bpy
+    mat = bpy.data.materials.get("limbs")
+    if mat is None:
+        mat = bpy.data.materials.new("limbs")
+        mat.use_nodes = True
+        attr = mat.node_tree.nodes.new("ShaderNodeAttribute")
+        attr.attribute_name = "limb"
+        bsdf = mat.node_tree.nodes["Principled BSDF"]
+        bsdf.inputs["Roughness"].default_value = 0.8
+        mat.node_tree.links.new(attr.outputs["Color"], bsdf.inputs["Base Color"])
+    rgb = np.array([linear(colours[n]) for n in names])[best]
+    rgb[none] = UNWEIGHTED
+    col = o.data.color_attributes.new("limb", "FLOAT_COLOR", "POINT")
+    col.data.foreach_set("color", np.hstack([rgb, np.ones((len(rgb), 1))]).ravel())
+    o.data.materials.clear()
+    o.data.materials.append(mat)
+
+
+def paint(arm, rv):
+    """Paint a loaded model by limb, as main() does, without the checks (synth_render.py --limbs)."""
+    lo, hi = rv.bounds(arm)
+    pts, bones = rv.points(arm)
+    limb, colours = group({"points": [list(p) for p in pts], "bones": bones, "calib": {"model_height": hi.z - lo.z}})
+    names = list(colours)
+    for o in skinned(arm):
+        colour(o, *owners(o, limb, names), colours, names)
+
+
 def main():
     import bpy
     sys.path.insert(0, str(Path(__file__).parent))
@@ -177,37 +224,21 @@ def main():
     pts, bones = rv.points(arm)
     limb, colours = group({"points": [list(p) for p in pts], "bones": bones, "calib": {"model_height": h}})
     names = list(colours)
-    mat = bpy.data.materials.new("limbs")
-    mat.use_nodes = True
-    nodes = mat.node_tree.nodes
-    attr = nodes.new("ShaderNodeAttribute")
-    attr.attribute_name = "limb"
-    bsdf = nodes["Principled BSDF"]
-    bsdf.inputs["Roughness"].default_value = 0.8
-    mat.node_tree.links.new(attr.outputs["Color"], bsdf.inputs["Base Color"])
     P = np.array([list(p) for p in pts])
     deform = [b for b in bones if b["deform"]]
     seg_a, seg_b = P[[b["head"] for b in deform]], P[[b["tail"] for b in deform]]
     seg_limb = np.array([names.index(limb[b["name"]]) for b in deform])
     seg_index = {b["name"]: i for i, b in enumerate(deform)}
     counts, bleed, split, reach, unweighted = {n: 0 for n in names}, {n: 0 for n in names}, {}, {}, 0
-    skinned = [o for o in bpy.context.scene.objects
-               if o.type == "MESH" and any(m.type == "ARMATURE" and m.object == arm for m in o.modifiers)]
+    meshes = skinned(arm)
     if "--fix" in argv:  # repair the weights first, save that model, then check and paint the repaired one
-        moved = fix_strays(skinned, deform, seg_a, seg_b, h)
+        moved = fix_strays(meshes, deform, seg_a, seg_b, h)
         print("fixed: " + (", ".join(f"{b} gave {c} far vertices to their nearest bones" for b, c in moved.items()) or "nothing"))
         bpy.ops.export_scene.gltf(filepath=argv[argv.index("--fix") + 1], export_format="GLB", use_active_scene=True)
         rv.show()
-    for o in skinned:
-        group_limb = {g.index: names.index(limb[g.name]) for g in o.vertex_groups if g.name in limb}
+    for o in meshes:
         me = o.data
-        score = np.zeros((len(me.vertices), len(names)))
-        for v in me.vertices:
-            for g in v.groups:
-                if g.group in group_limb:
-                    score[v.index, group_limb[g.group]] += g.weight
-        best = score.argmax(1)
-        none = score.max(1) <= 0
+        best, none = owners(o, limb, names)
         unweighted += int(none.sum())
         co = np.array([o.matrix_world @ v.co for v in me.vertices])
         d = seg_dist(co, seg_a, seg_b)
@@ -216,12 +247,7 @@ def main():
             for g in v.groups:
                 if g.weight > 0.05 and g.group in seg_of:
                     reach.setdefault(deform[seg_of[g.group]]["name"], []).append(d[v.index, seg_of[g.group]])
-        rgb = np.array([linear(colours[n]) for n in names])[best]
-        rgb[none] = UNWEIGHTED
-        col = me.color_attributes.new("limb", "FLOAT_COLOR", "POINT")
-        col.data.foreach_set("color", np.hstack([rgb, np.ones((len(rgb), 1))]).ravel())
-        me.materials.clear()
-        me.materials.append(mat)
+        colour(o, best, none, colours, names)
         edges = [tuple(e.vertices) for e in me.edges]
         for k, n in enumerate(names):
             mine = (best == k) & ~none
