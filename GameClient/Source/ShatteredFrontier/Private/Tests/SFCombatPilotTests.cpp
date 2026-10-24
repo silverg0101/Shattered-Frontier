@@ -194,4 +194,27 @@ bool FSFCombatThreatTest::RunTest(const FString& Parameters)
     TestTrue(TEXT("Invalid negative threat ignored"), Capped.Contains(TEXT("chr_new")));
     return true;
 }
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFCombatAggroTest,
+    "ShatteredFrontier.Combat.Pilot.Aggro",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+
+bool FSFCombatAggroTest::RunTest(const FString& Parameters)
+{
+    const auto* Settings = GetDefault<USFCombatPilotSettings>();
+    TestEqual(TEXT("Common base radius"), Settings->BoarAggroRadiusMetres, 12.0f);
+    TestEqual(TEXT("Proximity exception"), Settings->BoarNearNoticeRadiusMetres, 1.5f);
+    TestEqual(TEXT("Minimum radius"), Settings->BoarAggroMinimumMetres, 4.0f);
+    TestEqual(TEXT("Maximum bonus"), Settings->BoarAggroMaximumBonusMetres, 6.0f);
+    TestEqual(TEXT("Beast field of view"), Settings->BoarFieldOfViewDegrees, 160.0f);
+    TestEqual(TEXT("Higher level character"), SFCombatPilotRules::AggroRadiusMetres(12, 20, 23, 4, 6), 9.0);
+    TestEqual(TEXT("Lower level character"), SFCombatPilotRules::AggroRadiusMetres(12, 20, 14, 4, 6), 18.0);
+    TestEqual(TEXT("Minimum clamps"), SFCombatPilotRules::AggroRadiusMetres(12, 20, 40, 4, 6), 4.0);
+    TestEqual(TEXT("Maximum clamps"), SFCombatPilotRules::AggroRadiusMetres(12, 20, 1, 4, 6), 18.0);
+    TestFalse(TEXT("Outside level-adjusted radius"), SFCombatPilotRules::DetectBySight(9.01, 1, true, 9, 1.5, 160));
+    TestTrue(TEXT("Inside radius and facing"), SFCombatPilotRules::DetectBySight(9, 1, true, 9, 1.5, 160));
+    TestFalse(TEXT("Wall blocks within radius"), SFCombatPilotRules::DetectBySight(5, 1, false, 9, 1.5, 160));
+    TestFalse(TEXT("Behind outside proximity"), SFCombatPilotRules::DetectBySight(1.51, -1, true, 9, 1.5, 160));
+    TestTrue(TEXT("Behind inside proximity"), SFCombatPilotRules::DetectBySight(1.5, -1, true, 9, 1.5, 160));
+    return true;
+}
 #endif

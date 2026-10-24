@@ -345,6 +345,55 @@ void ASFE1Character::TickThreatScenario()
 #endif
 }
 
+void ASFE1Character::TickAggroScenario()
+{
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    FString ScenarioRole;
+    FParse::Value(FCommandLine::Get(), TEXT("CombatAggroRole="), ScenarioRole);
+    if (ScenarioRole != TEXT("Driver") && ScenarioRole != TEXT("Observer")) { return; }
+    ASFPilotBoar* Boar = nullptr;
+    for (TActorIterator<ASFPilotBoar> It(GetWorld()); It; ++It)
+    { if (It->GroupId() == TEXT("aggro_sandbox")) { Boar = *It; break; } }
+    if (!Boar || !Controller || PilotHealth <= 0) { return; }
+    const double Now = GetWorld()->GetTimeSeconds();
+    const ASFE1Character* Target = Boar->ThreatTarget();
+    if (Now >= NextEvadeSampleAt)
+    {
+        NextEvadeSampleAt = Now + 0.2;
+        UE_LOG(LogTemp, Display, TEXT("BOAR_AGGRO_SAMPLE Role=%s X=%.0f Y=%.0f DistanceCm=%.0f Target=%s"),
+            *ScenarioRole, GetActorLocation().X, GetActorLocation().Y,
+            FVector::Dist2D(GetActorLocation(), Boar->GetActorLocation()),
+            Target == this ? TEXT("Self") : Target ? TEXT("Other") : TEXT("None"));
+    }
+    if (ScenarioRole == TEXT("Driver"))
+    {
+        if (AggroScenarioStage == 0 && FMath::Abs(GetActorLocation().X - 650.0) < 100.0)
+        { AggroScenarioStartedAt = Now; AggroScenarioStage = 1; }
+        else if (AggroScenarioStage == 1 && Now - AggroScenarioStartedAt >= 2.0)
+        {
+            if (Target) { UE_LOG(LogTemp, Error, TEXT("BOAR_AGGRO_OCCLUSION_FAILED")); return; }
+            UE_LOG(LogTemp, Display, TEXT("BOAR_AGGRO_OCCLUDED DistanceCm=%.0f"),
+                FVector::Dist2D(GetActorLocation(), Boar->GetActorLocation()));
+            AggroScenarioStage = 2;
+        }
+        else if (AggroScenarioStage == 2)
+        {
+            if (Target == this)
+            { AggroScenarioStage = 3; UE_LOG(LogTemp, Display, TEXT("BOAR_AGGRO_ACQUIRED DistanceCm=%.0f"),
+                FVector::Dist2D(GetActorLocation(), Boar->GetActorLocation())); }
+            else if (GetActorLocation().Y < 700.0)
+            { AddMovementInput(FVector::RightVector, 1.0f); }
+            else if (GetActorLocation().X < 1450.0)
+            { AddMovementInput(FVector::ForwardVector, 1.0f); }
+        }
+    }
+    else if (AggroScenarioStage == 0 && FMath::Abs(GetActorLocation().Y + 1200.0) < 100.0)
+    { AggroScenarioStage = 1; UE_LOG(LogTemp, Display, TEXT("BOAR_AGGRO_OBSERVER_CLEAR")); }
+    else if (AggroScenarioStage == 1 && Target && Target != this)
+    { AggroScenarioStage = 2; UE_LOG(LogTemp, Display, TEXT("BOAR_AGGRO_OBSERVER_ACQUIRED")); }
+#endif
+}
+
 void ASFE1Character::TickCombatScenario()
 {
     if (FParse::Param(FCommandLine::Get(), TEXT("CombatGroupScenario")))
@@ -616,6 +665,8 @@ void ASFE1Character::Tick(float DeltaSeconds)
         FParse::Param(FCommandLine::Get(), TEXT("CombatEvadeScenario"))) { TickEvadeScenario(); }
     if (GetNetMode() == NM_Client && IsLocallyControlled() &&
         FParse::Param(FCommandLine::Get(), TEXT("CombatThreatScenario"))) { TickThreatScenario(); }
+    if (GetNetMode() == NM_Client && IsLocallyControlled() &&
+        FParse::Param(FCommandLine::Get(), TEXT("CombatAggroScenario"))) { TickAggroScenario(); }
 #endif
 }
 

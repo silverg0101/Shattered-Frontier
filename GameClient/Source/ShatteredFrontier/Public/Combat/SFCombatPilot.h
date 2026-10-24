@@ -20,6 +20,10 @@ namespace SFCombatPilotRules
     constexpr bool UnreachableEvade(double UnreachableSeconds, double LastDamageSeconds)
     { return UnreachableSeconds >= 10.0 && LastDamageSeconds >= 10.0; }
     SHATTEREDFRONTIER_API bool LeashAbuseSignal(const TArray<double>& EvadeTimes, double Now);
+    SHATTEREDFRONTIER_API double AggroRadiusMetres(double BaseRadius, int32 NpcLevel,
+        int32 CharacterLevel, double MinimumRadius, double MaximumBonus);
+    SHATTEREDFRONTIER_API bool DetectBySight(double DistanceMetres, double FacingDot,
+        bool bHasLineOfSight, double AggroRadius, double ProximityRadius, double FieldOfViewDegrees);
 }
 
 /** Server-owned, per-creature threat. IDs are stable character IDs, never client-supplied damage. */
@@ -84,8 +88,12 @@ public:
     ESFPlayerRespawnPointRule PlayerRespawnPointRule = ESFPlayerRespawnPointRule::NearestToDeath;
     UPROPERTY(Config, EditAnywhere, Category="Pilot Boar AI", meta=(ClampMin="4.0", ClampMax="18.0", Units="m"))
     float BoarAggroRadiusMetres = 12.0f;
-    UPROPERTY(Config, EditAnywhere, Category="Pilot Boar AI", meta=(ClampMin="1.0", ClampMax="10.0", Units="m"))
-    float BoarNearNoticeRadiusMetres = 4.0f;
+    UPROPERTY(Config, EditAnywhere, Category="Pilot Boar AI", meta=(ClampMin="1.0", ClampMax="4.0", Units="m"))
+    float BoarNearNoticeRadiusMetres = 1.5f;
+    UPROPERTY(Config, EditAnywhere, Category="Pilot Boar AI", meta=(ClampMin="1.0", ClampMax="4.0", Units="m"))
+    float BoarAggroMinimumMetres = 4.0f;
+    UPROPERTY(Config, EditAnywhere, Category="Pilot Boar AI", meta=(ClampMin="0.0", ClampMax="6.0", Units="m"))
+    float BoarAggroMaximumBonusMetres = 6.0f;
     UPROPERTY(Config, EditAnywhere, Category="Pilot Boar Threat", meta=(ClampMin="1.01", ClampMax="3.0", ToolTip="Challenger threat divided by current threat within five metres; adopted at next zone start."))
     float ThreatSwitchMelee = 1.10f;
     UPROPERTY(Config, EditAnywhere, Category="Pilot Boar Threat", meta=(ClampMin="1.01", ClampMax="3.0", ToolTip="Challenger threat divided by current threat beyond five metres; adopted at next zone start."))
@@ -143,9 +151,11 @@ private:
     UPROPERTY(Replicated) TObjectPtr<ASFE1Character> ReplicatedTarget;
     FSFBoarThreatTable Threat;
     TMap<FString, TWeakObjectPtr<ASFE1Character>> ThreatActors;
+    TMap<TWeakObjectPtr<ASFE1Character>, TPair<double, bool>> SightCache;
     TMap<FString, double> OutsideLeashSince;
     FString TargetCharacterId;
     double NextThreatDecisionAt = 0;
+    double NextAggroFixtureTraceAt = 0;
     UPROPERTY(Replicated) FString SpawnGroup;
     UPROPERTY(Replicated) int32 Slot = INDEX_NONE;
     int32 SpawnSerial = 0;

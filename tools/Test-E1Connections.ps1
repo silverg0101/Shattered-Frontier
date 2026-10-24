@@ -6,7 +6,8 @@ param(
     [ValidateRange(1, 2)][int]$Clients = 2,
     [switch]$CastingScenario,
     [switch]$EvadeScenario,
-    [switch]$ThreatScenario
+    [switch]$ThreatScenario,
+    [switch]$AggroScenario
 )
 $ErrorActionPreference = 'Stop'
 $repoRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
@@ -22,7 +23,7 @@ function Launch([string[]]$LaunchArguments) {
     Write-Output "Started PID $($process.Id)"
 }
 function Wait-Log([string]$Path, [string]$Pattern, [int]$Count = 1) {
-    $deadline = (Get-Date).AddSeconds($(if ($EvadeScenario -or $ThreatScenario) { 240 } else { 120 }))
+    $deadline = (Get-Date).AddSeconds($(if ($EvadeScenario -or $ThreatScenario -or $AggroScenario) { 240 } else { 120 }))
     while ((Get-Date) -lt $deadline) {
         foreach ($process in $ownedProcesses) { if ($process.HasExited) { throw "Network process $($process.Id) exited before $Pattern" } }
         if (Test-Path -LiteralPath $Path) {
@@ -69,11 +70,15 @@ try {
     if ($ThreatScenario -and ($Map -ne '/Game/Frontier/Maps/Sandbox/SB_Threat' -or $Clients -ne 2 -or $CastingScenario -or $EvadeScenario)) {
         throw 'ThreatScenario requires SB_Threat, two clients, and no other scenario'
     }
+    if ($AggroScenario -and ($Map -ne '/Game/Frontier/Maps/Sandbox/SB_Aggro' -or $Clients -ne 2 -or $CastingScenario -or $EvadeScenario -or $ThreatScenario)) {
+        throw 'AggroScenario requires SB_Aggro, two clients, and no other scenario'
+    }
     if (Get-NetUDPEndpoint -LocalPort $Port -ErrorAction SilentlyContinue) { throw "UDP $Port is already in use" }
     $serverLog = Join-Path $logs 'Server.log'
     $serverArgs = @($Map, '-server', '-NullRHI', '-unattended', '-nosound', '-nop4', "-port=$Port", '-MULTIHOME=127.0.0.1', ('-abslog="' + $serverLog + '"'))
     if ($EvadeScenario) { $serverArgs += '-CombatEvadeScenario' }
     if ($ThreatScenario) { $serverArgs += '-CombatThreatScenario' }
+    if ($AggroScenario) { $serverArgs += '-CombatAggroScenario' }
     Launch $serverArgs
     Wait-Log $serverLog 'E1_WORLD_READY.*NetMode=1'
     foreach ($index in 1..$Clients) {
@@ -82,6 +87,7 @@ try {
         if ($CastingScenario -and $index -eq 1) { $clientArgs += '-CastingScenario' }
         if ($EvadeScenario) { $clientArgs += @('-CombatEvadeScenario', ('-CombatEvadeRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         if ($ThreatScenario) { $clientArgs += @('-CombatThreatScenario', ('-CombatThreatRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
+        if ($AggroScenario) { $clientArgs += @('-CombatAggroScenario', ('-CombatAggroRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         Launch $clientArgs
         Wait-Log $clientLog 'Welcomed by server'
     }
@@ -134,8 +140,33 @@ try {
         }
         Write-Output "PASS: two clients pulled, landed distinct server-accepted hits, observed threat switch and retained target. Logs: $logs"
     }
+    if ($AggroScenario) {
+        $driverLog = Join-Path $logs 'Client1.log'
+        $observerLog = Join-Path $logs 'Client2.log'
+        Wait-Log $driverLog 'BOAR_AGGRO_ACQUIRED DistanceCm='
+        Wait-Log $observerLog 'BOAR_AGGRO_OBSERVER_ACQUIRED'
+        Wait-Log $serverLog 'BOAR_AGGRO_DETECTED Group=aggro_sandbox'
+        $blocked = Select-String -LiteralPath $driverLog -Pattern 'BOAR_AGGRO_OCCLUDED DistanceCm=([\d.]+)' | Select-Object -First 1
+        $acquired = Select-String -LiteralPath $driverLog -Pattern 'BOAR_AGGRO_ACQUIRED DistanceCm=([\d.]+)' | Select-Object -First 1
+        $clear = Select-String -LiteralPath $observerLog -Pattern 'BOAR_AGGRO_OBSERVER_CLEAR' | Select-Object -First 1
+        $observed = Select-String -LiteralPath $observerLog -Pattern 'BOAR_AGGRO_OBSERVER_ACQUIRED' | Select-Object -First 1
+        $serverDetect = Select-String -LiteralPath $serverLog -Pattern 'BOAR_AGGRO_DETECTED Group=aggro_sandbox Character=\S+ Level=(\d+) DistanceCm=([\d.]+) RadiusCm=([\d.]+)' | Select-Object -First 1
+        if (-not $blocked -or -not $acquired -or $blocked.LineNumber -ge $acquired.LineNumber -or
+            -not $clear -or -not $observed -or $clear.LineNumber -ge $observed.LineNumber -or -not $serverDetect) {
+            throw 'Two clients did not observe the ordered occluded, clear-sight, and replicated target sequence'
+        }
+        $number = [Globalization.CultureInfo]::InvariantCulture
+        $blockedDistance = [double]::Parse($blocked.Matches[0].Groups[1].Value, $number)
+        $detectedDistance = [double]::Parse($serverDetect.Matches[0].Groups[2].Value, $number)
+        $radius = [double]::Parse($serverDetect.Matches[0].Groups[3].Value, $number)
+        if ($blockedDistance -ge $radius -or $detectedDistance -gt $radius -or $detectedDistance -lt 150) {
+            throw "Aggro range or obstruction was not exercised: blocked=$blockedDistance detected=$detectedDistance radius=$radius"
+        }
+        if (@(Select-String -LiteralPath $driverLog -Pattern 'BOAR_AGGRO_OCCLUSION_FAILED').Count -gt 0) { throw 'Sight wall did not block detection' }
+        Write-Output "PASS: client 1 stayed undetected behind a wall inside $radius cm, then cleared sight and was acquired at $detectedDistance cm; client 2 observed target replication. Logs: $logs"
+    }
     Write-Output "PASS: separate editor server and $Clients client(s) connected; $Clients server-authoritative possession(s). Logs: $logs"
-    if (-not $CastingScenario -and -not $EvadeScenario -and -not $ThreatScenario) { Write-Output 'Headless connection check only: movement, rendering, lifecycle cleanup, authentication and Linux runtime are not certified.' }
+    if (-not $CastingScenario -and -not $EvadeScenario -and -not $ThreatScenario -and -not $AggroScenario) { Write-Output 'Headless connection check only: movement, rendering, lifecycle cleanup, authentication and Linux runtime are not certified.' }
 } finally {
     foreach ($process in $ownedProcesses) {
         if (-not $process.HasExited) { Stop-Process -Id $process.Id -ErrorAction SilentlyContinue }

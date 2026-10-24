@@ -96,6 +96,21 @@ bool SFCombatPilotRules::LeashAbuseSignal(const TArray<double>& EvadeTimes, doub
     return Recent == 3;
 }
 
+double SFCombatPilotRules::AggroRadiusMetres(double BaseRadius, int32 NpcLevel,
+    int32 CharacterLevel, double MinimumRadius, double MaximumBonus)
+{
+    return FMath::Clamp(BaseRadius - (CharacterLevel - NpcLevel), MinimumRadius,
+        BaseRadius + MaximumBonus);
+}
+
+bool SFCombatPilotRules::DetectBySight(double DistanceMetres, double FacingDot,
+    bool bHasLineOfSight, double AggroRadius, double ProximityRadius, double FieldOfViewDegrees)
+{
+    return bHasLineOfSight && DistanceMetres <= AggroRadius &&
+        (DistanceMetres <= ProximityRadius || FacingDot >=
+            FMath::Cos(FMath::DegreesToRadians(FieldOfViewDegrees * 0.5)));
+}
+
 void FSFBoarThreatTable::Add(const FString& CharacterId, double Amount, int32 MaxEntries)
 {
     if (CharacterId.IsEmpty() || !FMath::IsFinite(Amount) || Amount <= 0 || MaxEntries < 1) { return; }
@@ -177,8 +192,10 @@ bool USFCombatPilotSettings::Validate(FString& Error) const
         !FMath::IsWithinInclusive(PlayerRespawnDelaySeconds, 1.0f, 60.0f) ||
         (PlayerRespawnPointRule != ESFPlayerRespawnPointRule::NearestToDeath && PlayerRespawnPointRule != ESFPlayerRespawnPointRule::FirstAuthored) ||
         !FMath::IsWithinInclusive(BoarAggroRadiusMetres, 4.0f, 18.0f) ||
-        !FMath::IsWithinInclusive(BoarNearNoticeRadiusMetres, 1.0f, 10.0f) ||
-        BoarNearNoticeRadiusMetres > BoarAggroRadiusMetres ||
+        !FMath::IsWithinInclusive(BoarNearNoticeRadiusMetres, 1.0f, 4.0f) ||
+        !FMath::IsWithinInclusive(BoarAggroMinimumMetres, 1.0f, 4.0f) ||
+        !FMath::IsWithinInclusive(BoarAggroMaximumBonusMetres, 0.0f, 6.0f) ||
+        BoarNearNoticeRadiusMetres > BoarAggroMinimumMetres ||
         !FMath::IsWithinInclusive(ThreatSwitchMelee, 1.01f, 3.0f) ||
         !FMath::IsWithinInclusive(ThreatSwitchRanged, ThreatSwitchMelee, 3.0f) ||
         ThreatTableMax < 1 || ThreatTableMax > 40 ||
@@ -286,7 +303,7 @@ void ASFPilotBoar::ReceivePilotDamage(ASFE1Character* Attacker, int32 Damage)
     UE_LOG(LogTemp, Display, TEXT("COMBAT_PILOT_BOAR_HIT Group=%s Slot=%d HP=%d Attacker=%s"),
         *SpawnGroup, Slot, CurrentHealth, AttackerId.IsEmpty() ? TEXT("none") : *AttackerId);
     if (CurrentHealth == 0 && PilotMode.IsValid())
-    { Threat.Clear(); ThreatActors.Empty(); OutsideLeashSince.Empty(); ReplicatedTarget = nullptr; Target.Reset(); PilotMode->BoarDied(this, Attacker); }
+    { Threat.Clear(); ThreatActors.Empty(); SightCache.Empty(); OutsideLeashSince.Empty(); ReplicatedTarget = nullptr; Target.Reset(); PilotMode->BoarDied(this, Attacker); }
 }
 
 void ASFPilotBoar::Tick(float DeltaSeconds)
@@ -326,17 +343,51 @@ void ASFPilotBoar::Tick(float DeltaSeconds)
             if (IsValid(Candidate) && Candidate->CombatHealth() > 0 && !USFCharacterSessionComponent::IsLinkdead(It->Get()) &&
                 !USFCharacterSessionComponent::IsRestoring(It->Get()) &&
                 !Mode->IsSafe(Candidate->GetActorLocation()) &&
-                Mode->IsInsideTerritory(Candidate->GetActorLocation(), Territory) &&
-                Distance <= Mode->CombatSettings()->BoarAggroRadiusMetres*100 &&
-                (Distance <= Mode->CombatSettings()->BoarNearNoticeRadiusMetres*100 ||
-                    FVector::DotProduct(GetActorForwardVector(), Toward.GetSafeNormal2D()) >=
-                    FMath::Cos(FMath::DegreesToRadians(Mode->CombatSettings()->BoarFieldOfViewDegrees*0.5f))))
+                Mode->IsInsideTerritory(Candidate->GetActorLocation(), Territory))
             {
                 const FString Id = ThreatIdentity(Cast<APlayerController>(It->Get()));
-                if (!Id.IsEmpty())
+                if (!Id.IsEmpty() && !Threat.Contains(Id))
                 {
-                    if (!Threat.Contains(Id)) { Threat.Add(Id, 1.0, Mode->CombatSettings()->ThreatTableMax); }
-                    ThreatActors.Add(Id, Candidate);
+                    const USFGatheringPilotComponent* Progression = It->Get()->FindComponentByClass<USFGatheringPilotComponent>();
+                    const int32 CharacterLevel = Progression ? Progression->GetCharacterLevel() : 1;
+                    const USFCombatPilotSettings* Settings = Mode->CombatSettings();
+                    const double Radius = SFCombatPilotRules::AggroRadiusMetres(Settings->BoarAggroRadiusMetres,
+                        2, CharacterLevel, Settings->BoarAggroMinimumMetres, Settings->BoarAggroMaximumBonusMetres);
+                    const double Facing = FVector::DotProduct(GetActorForwardVector(), Toward.GetSafeNormal2D());
+                    if (SpawnGroup == TEXT("aggro_sandbox") && Distance < 1500 && Now >= NextAggroFixtureTraceAt)
+                    {
+                        NextAggroFixtureTraceAt = Now + 1.0;
+                        UE_LOG(LogTemp, Display, TEXT("BOAR_AGGRO_EVAL Level=%d DistanceCm=%.0f RadiusCm=%.0f Facing=%.2f Yaw=%.0f"),
+                            CharacterLevel, Distance, Radius * 100.0, Facing, GetActorRotation().Yaw);
+                    }
+                    if (Distance <= Radius * 100.0 && (Distance <= Settings->BoarNearNoticeRadiusMetres * 100.0 ||
+                        Facing >= FMath::Cos(FMath::DegreesToRadians(Settings->BoarFieldOfViewDegrees * 0.5))))
+                    {
+                        const TWeakObjectPtr<ASFE1Character> Key(Candidate);
+                        TPair<double, bool>* Cached = SightCache.Find(Key);
+                        bool bVisible = false;
+                        if (Cached && Now - Cached->Key < 0.2) { bVisible = Cached->Value; }
+                        else
+                        {
+                            FCollisionQueryParams Query(SCENE_QUERY_STAT(BoarSight), true);
+                            Query.AddIgnoredActor(this);
+                            Query.AddIgnoredActor(Candidate);
+                            const FVector Eye = GetActorLocation() + FVector(0, 0, 80);
+                            const FVector Head = Candidate->GetActorLocation() + FVector(0, 0, 80);
+                            const FVector Chest = Candidate->GetActorLocation() + FVector(0, 0, 40);
+                            bVisible = !GetWorld()->LineTraceTestByChannel(Eye, Head, ECC_Visibility, Query) ||
+                                !GetWorld()->LineTraceTestByChannel(Eye, Chest, ECC_Visibility, Query);
+                            SightCache.Add(Key, TPair<double, bool>(Now, bVisible));
+                        }
+                        if (SFCombatPilotRules::DetectBySight(Distance / 100.0, Facing, bVisible, Radius,
+                            Settings->BoarNearNoticeRadiusMetres, Settings->BoarFieldOfViewDegrees))
+                        {
+                            Threat.Add(Id, 1.0, Settings->ThreatTableMax);
+                            ThreatActors.Add(Id, Candidate);
+                            UE_LOG(LogTemp, Display, TEXT("BOAR_AGGRO_DETECTED Group=%s Character=%s Level=%d DistanceCm=%.0f RadiusCm=%.0f"),
+                                *SpawnGroup, *Id, CharacterLevel, Distance, Radius * 100.0);
+                        }
+                    }
                 }
             }
         }
@@ -387,6 +438,7 @@ void ASFPilotBoar::Tick(float DeltaSeconds)
             if (!Victim && !NextId.IsEmpty()) { TargetCharacterId.Empty(); }
         }
     }
+    if (SpawnGroup == TEXT("aggro_sandbox") && !Victim) { return; }
     FVector Destination = WanderDestination;
     float Speed = Mode->CombatSettings()->BoarWanderSpeedMetresPerSecond*100;
     if (Victim)
@@ -496,25 +548,28 @@ void ASFGameMode::StartCombat()
     const FString MapName = GetWorld()->GetOutermost()->GetName();
     const bool bEvadeSandbox = MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_Evade");
     const bool bThreatSandbox = MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_Threat");
+    const bool bAggroSandbox = MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_Aggro");
     bCompanionSandbox = GetNetMode() != NM_Client &&
-        (MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_Companions") || bEvadeSandbox || bThreatSandbox);
+        (MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_Companions") || bEvadeSandbox || bThreatSandbox || bAggroSandbox);
     if (bCompanionSandbox)
     {
         CapturedSettings = GetDefault<USFCombatPilotSettings>();
         FString Error;
         if (!CapturedSettings->Validate(Error))
         { UE_LOG(LogTemp, Error, TEXT("COMPANION_SANDBOX_DISABLED Invalid combat settings: %s"), *Error); return; }
-        const double Extent = (bEvadeSandbox || bThreatSandbox) ? 85.0 : 45.0;
+        const double Extent = (bEvadeSandbox || bThreatSandbox || bAggroSandbox) ? 85.0 : 45.0;
         const TArray<FVector2D> SandboxArea = { FVector2D(-Extent, -Extent), FVector2D(Extent, -Extent),
             FVector2D(Extent, Extent), FVector2D(-Extent, Extent) };
         int32 Slot = 0;
         for (TActorIterator<ASFPilotBoar> It(GetWorld()); It; ++It)
         {
             const FName Tag = bEvadeSandbox ? TEXT("SF_EvadeSandboxWildlife") :
-                bThreatSandbox ? TEXT("SF_ThreatSandboxWildlife") : TEXT("SF_CompanionSandboxWildlife");
+                bThreatSandbox ? TEXT("SF_ThreatSandboxWildlife") :
+                bAggroSandbox ? TEXT("SF_AggroSandboxWildlife") : TEXT("SF_CompanionSandboxWildlife");
             if (!It->ActorHasTag(Tag)) { continue; }
             It->Initialize(this, bEvadeSandbox ? TEXT("evade_sandbox") :
-                bThreatSandbox ? TEXT("threat_sandbox") : TEXT("companions_sandbox"), Slot++, SandboxArea,
+                bThreatSandbox ? TEXT("threat_sandbox") :
+                bAggroSandbox ? TEXT("aggro_sandbox") : TEXT("companions_sandbox"), Slot++, SandboxArea,
                 CapturedSettings->BoarHealth, ++NextBoarSerial);
         }
         bPilotActive = Slot > 0;
@@ -553,6 +608,25 @@ void ASFGameMode::StartCombat()
 void ASFGameMode::PostLoginCombat(APlayerController* NewPlayer)
 {
     if (bPilotActive && !USFBackpackComponent::Services()) { SFCombatPilotRewards::AddPilotBag(NewPlayer); }
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    if (GetWorld()->GetOutermost()->GetName() == TEXT("/Game/Frontier/Maps/Sandbox/SB_Aggro") &&
+        FParse::Param(FCommandLine::Get(), TEXT("CombatAggroScenario")))
+    {
+        const int32 Participant = GetNumPlayers();
+        const TWeakObjectPtr<APlayerController> Weak(NewPlayer);
+        FTimerHandle AggroFixtureTimer;
+        GetWorldTimerManager().SetTimer(AggroFixtureTimer, FTimerDelegate::CreateWeakLambda(this, [this, Weak, Participant]()
+        {
+            if (!Weak.IsValid()) { return; }
+            ASFE1Character* Player = Cast<ASFE1Character>(Weak->GetPawn());
+            if (!Player) { return; }
+            const FVector XY = Participant == 1 ? FVector(650, 0, 0) : FVector(0, -1200, 0);
+            const FVector Place = Grounded(GetWorld(), XY, Player->GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
+            Player->SetActorLocation(Place, false, nullptr, ETeleportType::TeleportPhysics);
+            UE_LOG(LogTemp, Display, TEXT("BOAR_AGGRO_FIXTURE Participant=%d X=%.0f Y=%.0f"), Participant, Place.X, Place.Y);
+        }), 1.0, false);
+    }
+#endif
     if (!bPilotActive || !bScenario ||
         (!FParse::Param(FCommandLine::Get(), TEXT("CombatGroupScenario")) && GetNumPlayers() != 1)) { return; }
     const TWeakObjectPtr<APlayerController> Weak(NewPlayer);
