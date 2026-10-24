@@ -52,7 +52,7 @@ def parse():
     p.add_argument('--slit-height', type=float, default=12.0)
     p.add_argument('--collar-front', type=float, default=4.5, help='cm the neckband rises above the body neck seam at the front')
     p.add_argument('--collar-back', type=float, default=4.0)
-    p.add_argument('--neck-radius', type=float, default=7.5, help='cm: the neckband closes in to this radius (the head mesh carries the neck)')
+    p.add_argument('--neck-radius', type=float, default=6.5, help='cm: the neckband closes in to this radius (the head mesh carries the neck)')
     p.add_argument('--v-depth', type=float, default=10.0)
     p.add_argument('--v-half-angle', type=float, default=18.0)
     p.add_argument('--ankle-above-foot', type=float, default=2.5)
@@ -258,7 +258,11 @@ def loft_skirt(bm, src, args, z_hem):
         margin = args.skirt_ease + args.skirt_flare * t
         targets.append([ray_hull(poly, (cx, cy), a) + margin for a in th])
     radii = [r0] + targets
-    radii[1] = [0.3 * a + 0.7 * b for a, b in zip(r0, targets[0])]
+    ramp = max(2.0, rows * 0.4)  # ease from the shell's waist into the hull over the top rows: a step there reads as a skirt seam
+    for k in range(1, rows + 1):
+        f = min(1.0, k / ramp)
+        f = f * f * (3 - 2 * f)
+        radii[k] = [(1 - f) * a + f * b for a, b in zip(r0, targets[k - 1])]
     for _ in range(24):  # smooth around the ring (the hull steps read as pleats), then down the rows
         for row in radii[1:]:
             row[:] = [(row[i - 1] + 2 * row[i] + row[(i + 1) % n]) / 4 for i in range(n)]

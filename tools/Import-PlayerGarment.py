@@ -3,7 +3,7 @@
 UnrealEditor.exe <uproject> -RenderOffscreen -unattended -nosplash -ExecCmds="py <abs path of this file>, QUIT_EDITOR"
 Reads Artifacts/Characters/PlayerBase/garment_tunic_leggings.fbx (env SF_GARMENT_FBX overrides). Writes under /Game/Frontier/Characters/Player/Garments:
 SKM_Tunic_Leggings (slots M_Tunic, M_Leggings), M_PlayerCloth (tiling fabric: base colour, normal, roughness, tint, tiling),
-MI_PlayerLinen and MI_PlayerLeggings. Fabric: the project's Silverbrook denim weave (T_SB_denim_fabric_04_*, referenced not copied) desaturated and tinted, plus a procedural woven grid (the Silverbrook linen textures are 32 px stubs here).
+MI_PlayerLinen and MI_PlayerLeggings. Fabric: the project's Silverbrook textures (referenced, not copied), desaturated and tinted: T_SB_rough_linen_* for the tunic, T_SB_denim_fabric_04_* for the leggings.
 Re-runnable. The skeleton is the built body's, so it needs a build from tools/Build-PlayerMetaHumans.py.
 """
 import os
@@ -53,7 +53,7 @@ def make_master():
     tint = mel.create_material_expression(m, unreal.MaterialExpressionVectorParameter, -450, -420)
     tint.set_editor_property('parameter_name', 'Tint')
     tint.set_editor_property('default_value', unreal.LinearColor(1, 1, 1, 1))
-    # Colour = Tint x lerp(1, desaturated texture x 2.2, TexAmount) x a procedural woven grid (the linen texture here is a 32 px stub).
+    # Colour = Tint x lerp(1, desaturated texture x 2.2, TexAmount). (A procedural sine weave used to sit here: unmipped, it shimmered in motion.)
     def const(v, x, y):
         c = mel.create_material_expression(m, unreal.MaterialExpressionConstant, x, y)
         c.set_editor_property('r', v)
@@ -78,22 +78,7 @@ def make_master():
     mel.connect_material_expressions(const(1.0, -250, -300), '', lerp, 'A')
     mel.connect_material_expressions(bright, '', lerp, 'B')
     mel.connect_material_expressions(param('TexAmount', 1.0, -250, -350), '', lerp, 'Alpha')
-    grid_uv = node(M, -700, 700, A=coord, B=param('WeaveFreq', 40.0, -900, 750))
-    masks = []
-    for ch in ('r', 'g'):
-        mk = mel.create_material_expression(m, unreal.MaterialExpressionComponentMask, -550, 700)
-        for c in ('r', 'g', 'b', 'a'):
-            mk.set_editor_property(c, c == ch)
-        mel.connect_material_expressions(grid_uv, '', mk, '')
-        s = mel.create_material_expression(m, unreal.MaterialExpressionSine, -400, 700)
-        s.set_editor_property('period', 1.0)
-        mel.connect_material_expressions(mk, '', s, '')
-        masks.append(s)
-    cross = node(M, -250, 700, A=masks[0], B=masks[1])
-    soft = node(M, -100, 700, A=cross, B=const(0.18, -250, 800))
-    weave = node(unreal.MaterialExpressionAdd, 50, 700, A=soft, B=const(0.82, -100, 800))
-    cloth = node(M, 200, -250, A=lerp, B=weave)
-    tm = node(M, 350, -250, A=cloth, B=tint)
+    tm = node(M, 350, -250, A=lerp, B=tint)
     mel.connect_material_property(tm, '', unreal.MaterialProperty.MP_BASE_COLOR)
     mel.connect_material_property(nrm, 'RGB', unreal.MaterialProperty.MP_NORMAL)
     mel.connect_material_property(rough, 'R', unreal.MaterialProperty.MP_ROUGHNESS)
@@ -151,7 +136,7 @@ def run():
         raise RuntimeError('No built body: run tools/Build-PlayerMetaHumans.py')
     skeleton = body.get_editor_property('skeleton')
     master = make_master()
-    linen = make_instance('MI_PlayerLinen', master, 'T_SB_denim_fabric_04_Diffuse', 'T_SB_denim_fabric_04_nor_gl', 'T_SB_denim_fabric_04_Rough', (0.46, 0.37, 0.25, 1), 2.0, 0.5)
+    linen = make_instance('MI_PlayerLinen', master, 'T_SB_rough_linen_Diffuse', 'T_SB_rough_linen_nor_gl', 'T_SB_rough_linen_Rough', (0.23, 0.18, 0.115, 1), 2.0, 0.6)
     legs = make_instance('MI_PlayerLeggings', master, 'T_SB_denim_fabric_04_Diffuse', 'T_SB_denim_fabric_04_nor_gl', 'T_SB_denim_fabric_04_Rough', (0.27, 0.19, 0.12, 1), 3.0, 1.0)
 
     mesh = import_skeletal(fbx, 'SKM_Tunic_Leggings', skeleton)
