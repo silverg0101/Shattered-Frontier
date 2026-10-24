@@ -1,6 +1,7 @@
 """One model's joint detector: DINOv2 (ViT-S/14, or ViT-B/14) fine-tuned on synth_render.py's images of that model.
 
-    python detector.py train DATA_DIR OUT_DIR [EPOCHS] [--backbone vits14|vitb14] [--seed S]   # writes weights.pt
+    python detector.py train DATA_DIR OUT_DIR [EPOCHS] [--backbone vits14|vitb14] [--seed S] [--init WEIGHTS]
+                                                            # writes weights.pt; --init warm-starts from a detector
     python detector.py --check                              # heatmap and augmentation self-check, CPU only
 
 Input is one image, the front panel left of the side panel (as in the video), so a joint's place in one view
@@ -139,7 +140,7 @@ def load(data):
     return imgs, uv, vis
 
 
-def train(data, out, epochs=30, backbone="vits14", seed=0):
+def train(data, out, epochs=30, backbone="vits14", seed=0, init=None):
     import torch
     import torch.nn.functional as F
     data, out = Path(data), Path(out)
@@ -152,7 +153,17 @@ def train(data, out, epochs=30, backbone="vits14", seed=0):
     nval = max(len(idx) // 15, 4)
     val, tr = idx[:nval].cuda(), idx[nval:].cuda()
     torch.manual_seed(seed)  # the head's initial weights
-    net = build(k, backbone).cuda()
+    net = build(k, backbone)
+    if init:  # another model's detector of the same body plan: its backbone and the head's first layer carry
+        # over; the last layer (one heatmap per keypoint, this model's own set) starts fresh
+        ck = torch.load(init, map_location="cpu", weights_only=False)
+        if ck.get("backbone", "vits14") == backbone:
+            r = net.load_state_dict({n: v for n, v in ck["state"].items() if not n.startswith("head.3.")}, strict=False)
+            assert not r.unexpected_keys and all(n.startswith("head.3.") for n in r.missing_keys), r
+            print(f"warm start: {init} ({len(ck['state']) - len(r.missing_keys)} tensors)", flush=True)
+        else:
+            print(f"warm start skipped: {init} is {ck.get('backbone')}, not {backbone}", flush=True)
+    net = net.cuda()
     print(f"train device: {torch.cuda.get_device_name()}, {len(tr)} images, {k} keypoints", flush=True)
     opt = torch.optim.AdamW([{"params": net.backbone.parameters(), "lr": 5e-5},
                              {"params": net.head.parameters(), "lr": 1e-3}], weight_decay=0.01)
@@ -265,4 +276,5 @@ if __name__ == "__main__":
         backbone = opt("--backbone", "vits14")
         if backbone not in BACKBONES:
             sys.exit(f"--backbone must be one of {BACKBONES}")
-        train(a[0], a[1], int(a[2]) if len(a) > 2 and not a[2].startswith("--") else 30, backbone, int(opt("--seed", 0)))
+        train(a[0], a[1], int(a[2]) if len(a) > 2 and not a[2].startswith("--") else 30, backbone, int(opt("--seed", 0)),
+              opt("--init", None))

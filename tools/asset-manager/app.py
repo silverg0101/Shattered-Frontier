@@ -919,7 +919,8 @@ def detector_state(src, turn=0):
     if (lib / "exam.json").exists():
         ex = json.loads((lib / "exam.json").read_text())
         out.update(state=detector_band(ex, get_settings()), exam={k: ex.get(k) for k in EXAM_KEYS},
-                   worst_joints=ex.get("joints", [])[:3], trained=ex.get("trained"), settings=ex.get("settings"))
+                   worst_joints=ex.get("joints", [])[:3], trained=ex.get("trained"), settings=ex.get("settings"),
+                   category=ex.get("category"), warm_start=ex.get("warm_start"))
         if (lib / "last_take.json").exists():
             out["last_take"] = json.loads((lib / "last_take.json").read_text())
     rel = src.relative_to(ROOT).as_posix()
@@ -989,6 +990,22 @@ def upload_motion(host, jid, src):
     put_input(host, f"{jid}/{model}", src.read_bytes())
     return model
 
+def warm_source(lib, s, cat, backbone, exclude):
+    """The detector a new one of this body plan starts from: the lowest exam p95 among the library's "good"
+    detectors of the same category, backbone and tools version (not the model's own). None: start from DINOv2.
+    ponytail: same renders and epochs as a cold start; cut them once warm starts are measured to hold the exam."""
+    best = None
+    for f in lib.glob(f"*-v{DETECTOR_VERSION}/exam.json"):
+        try:
+            ex = json.loads(f.read_text())
+        except ValueError:
+            continue
+        if (cat and ex.get("category") == cat and f.parent.name != exclude and (f.parent / "weights.pt").exists()
+                and (ex.get("settings") or {}).get("backbone", "vits14") == backbone and detector_band(ex, s) == "good"
+                and (best is None or ex["p95"] < best["p95"])):
+            best = {"from": f.parent.name, "p95": ex["p95"]}
+    return best
+
 def train_detector(host, jid, src, model, turn, opts):
     """Render, train and examine a detector for the model in the job's folder on the host. The library keeps
     whichever of the new and any earlier detector has the lower exam p95, so a retrain never makes a model worse.
@@ -996,17 +1013,26 @@ def train_detector(host, jid, src, model, turn, opts):
     work, gpu, py, blender, step, device_lines = host_tools(jid, host)
     s, q, lib = get_settings(), shlex.quote, detector_dir(src, turn)
     seed = opts["seed"] if opts["seed"] >= 0 else random.randint(0, 99999)
-    step(f"training this model's joint detector: {opts['images']} renders, {opts['epochs']} epochs ({opts['backbone']})")
+    step(f"rendering {opts['images']} training images for this model's joint detector")
     device_lines(ssh_step(host, jid, work, f"cd {q(work)} && {gpu} {blender} -b -P synth_render.py -- {model} synth"
                           f" {opts['images']} --turn {turn} --seed {seed} > synth.log 2>&1 || {{ tail -5 synth.log >&2;"
-                          f" exit 1; }} && {gpu} {py} detector.py train synth det {opts['epochs']} --backbone"
-                          f" {opts['backbone']} --seed {seed} && cp synth/keypoints.json det/", 4 * 3600), "detector training")
+                          f" exit 1; }}", 3 * 3600), "detector renders")
+    cat = json.loads(ssh(host, f"cat {q(work + '/synth/keypoints.json')}")).get("category")
+    warm = warm_source(lib.parent, s, cat, opts["backbone"], lib.name)
+    if warm:
+        put_input(host, f"{jid}/init.pt", (lib.parent / warm["from"] / "weights.pt").read_bytes())
+    step(f"training this model's joint detector: {opts['epochs']} epochs ({opts['backbone']}"
+         + (f", warm-started from a {cat} detector)" if warm else ")"))
+    device_lines(ssh_step(host, jid, work, f"cd {q(work)} && {gpu} {py} detector.py train synth det {opts['epochs']}"
+                          f" --backbone {opts['backbone']} --seed {seed}{' --init init.pt' if warm else ''}"
+                          f" && cp synth/keypoints.json det/", 3 * 3600), "detector training")
     step("examining the detector on a motion it hasn't seen")
     ssh_step(host, jid, work, f"cd {q(work)} && {gpu} {py} exam.py {model} det exam --turn {turn} --blender {blender}"
              f" --limits {q(json.dumps(s['detector_limits']))} --usable {s['detector_usable_x']} > exam.log 2>&1;"
              f" test -f exam/exam.json || {{ tail -5 exam.log >&2; exit 1; }}", 3600)
     exam = json.loads(ssh(host, f"cat {q(work + '/exam/exam.json')}"))
-    exam.update(trained=time.time(), version=DETECTOR_VERSION, settings={**opts, "seed": seed})
+    exam.update(trained=time.time(), version=DETECTOR_VERSION, settings={**opts, "seed": seed}, category=cat,
+                warm_start=warm)
     old = json.loads((lib / "exam.json").read_text()) if (lib / "exam.json").exists() else None
     keep = old is None or exam["p95"] < old.get("p95", float("inf"))
     band = detector_band(exam, s)
@@ -1926,6 +1952,24 @@ def check():
     assert detector_band(ex, DEFAULT_SETTINGS) == "usable"
     assert detector_band({**ex, "pair_spacing": 14.1}, DEFAULT_SETTINGS) == "failed" and detector_band({}, DEFAULT_SETTINGS) == "failed"
     assert [coerce(k, kind, extra, v) for (k, _, kind, extra, _), v in zip(DETECTOR_PARAMS, (99999, 1, 5, "vitb14"))][:4] == [5000, 10, 5, "vitb14"]
+    # a warm start comes from the best good detector of the same body plan and backbone, never the model's own
+    import tempfile
+    lib, made = Path(tempfile.mkdtemp()), []
+    for name, cat, p95, bb in (("a", "2-legged upright", 4.0, "vits14"), ("b", "2-legged upright", 3.0, "vits14"),
+                               ("c", "2-legged upright", 2.0, "vitb14"), ("d", "4-legged long", 1.0, "vits14"),
+                               ("e", "2-legged upright", 2.5, "vits14"), ("f", "2-legged upright", 9.0, "vits14")):
+        f = lib / f"chk{name}-v{DETECTOR_VERSION}"
+        f.mkdir(parents=True, exist_ok=True); made.append(f)
+        (f / "weights.pt").write_bytes(b"x")
+        (f / "exam.json").write_text(json.dumps({**ex, "p95": p95, "category": cat, "settings": {"backbone": bb}}))
+    try:
+        assert warm_source(lib, DEFAULT_SETTINGS, "2-legged upright", "vits14", f"chke-v{DETECTOR_VERSION}")["from"] == f"chkb-v{DETECTOR_VERSION}"
+        assert warm_source(lib, DEFAULT_SETTINGS, "2-legged upright", "vits14", "x")["from"] == f"chke-v{DETECTOR_VERSION}"
+        assert warm_source(lib, DEFAULT_SETTINGS, "3-legged long", "vits14", "x") is None and warm_source(lib, DEFAULT_SETTINGS, None, "vits14", "x") is None
+    finally:
+        for f in made:
+            shutil.rmtree(f)
+        lib.rmdir()
     print("check ok")
 
 if __name__ == "__main__":

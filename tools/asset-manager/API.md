@@ -177,10 +177,11 @@ Each detector takes an exam: a motion it hasn't seen, every bone swinging throug
  "exam": {"median": 0.8, "p95": 6.22, "worst_joint": 5.14, "pair_spacing": 1.74},
  "worst_joints": [{"joint": "upperarm_r", "mean": 5.1, "x": 0.8, "y": 4.2, "z": 2.1}],
  "trained": 1792800000.0, "settings": {"images": 1500, "epochs": 30, "seed": 4711, "backbone": "vits14", "turn": 0},
+ "category": "2-legged upright", "warm_start": {"from": "3f2a9c01d4e6b7a8-v1", "p95": 4.1},
  "last_take": {"score": 0.91, "height_error_pct": 0.4, "job": 12, "when": 1792800500.0}}
 ```
 
-`state` is `none`, `queued`, `training`, `good`, `usable` or `failed`. `worst_joints` splits each joint's error along x (seen by the front view only), y (the side view only: depth) and z (both). `last_take` is the best take of the model's latest motion job, so the real-video quality sits beside the exam's. `GET /api/ls` gives the same block as `detector` on every `_rigged` model.
+`state` is `none`, `queued`, `training`, `good`, `usable` or `failed`. `worst_joints` splits each joint's error along x (seen by the front view only), y (the side view only: depth) and z (both). `last_take` is the best take of the model's latest motion job, so the real-video quality sits beside the exam's. `category` is the rig's body plan, read from its skeleton: its number of legs (bone chains that come down to the ground) and `upright` or `long` (taller than long, or a quadruped), such as `2-legged upright` or `4-legged long`. A new detector starts from the best `good` detector of the same category and backbone instead of plain DINOv2: `warm_start` names it (its library folder and exam p95), or is `null` when the category had none yet. Only the backbone and the head's first layer carry over; the per-joint layer is the model's own. Detectors trained before categories existed have neither field. `GET /api/ls` gives the same block as `detector` on every `_rigged` model.
 
 **Retrain** with a `detector` job:
 

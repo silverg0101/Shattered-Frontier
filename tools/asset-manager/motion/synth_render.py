@@ -83,6 +83,22 @@ def pick_keypoints(pts, bones, seen, height):
     return keep
 
 
+def category(pts, bones, height, lo, hi):
+    """A rig's body plan, which detectors of the same plan share what they learned from (app.py warm-starts from
+    the best of them): its number of legs, each a chain of deforming bones that comes down to the ground, and
+    whether the body stands upright (taller than it is long, facing the front camera) or is long (a quadruped)."""
+    by_name = {b["name"]: b for b in bones}
+    low = lambda b: pts[b["head"]][2] - lo[2] < 0.12 * height
+    legs = set()
+    for b in bones:
+        if b.get("deform", True) and low(b):
+            while b["parent"] in by_name and low(by_name[b["parent"]]):  # up the foot to the bone above the ground
+                b = by_name[b["parent"]]
+            legs.add(b["parent"])  # the shin: where the leg comes down
+    legs.discard(None)
+    return f"{len(legs)}-legged {'upright' if hi[2] - lo[2] >= hi[1] - lo[1] else 'long'}"
+
+
 def bone_lengths(arm, height):
     """Bone length as head to farthest child head: glTF stores no tails, so an imported end bone's tail is a
     guess (capped at 10 % of the model's height)."""
@@ -190,7 +206,8 @@ def main():
     seen = rv.seen(image, uv0)
     keys = pick_keypoints(pts, bones, seen, height)
     (out / "keypoints.json").write_text(json.dumps({"points": keys, "names": [
-        next(f"{b['name']}.{e}" for b in bones for e in ("head", "tail") if b[e] == i) for i in keys]}))
+        next(f"{b['name']}.{e}" for b in bones for e in ("head", "tail") if b[e] == i) for i in keys],
+        "category": category(pts, bones, height, lo, hi)}))
 
     scene = bpy.context.scene
     scene.render.resolution_percentage = 50
