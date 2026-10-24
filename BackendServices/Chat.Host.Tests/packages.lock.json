@@ -178,7 +178,8 @@
         "type": "Project",
         "dependencies": {
           "Chat.Postgres": "[1.0.0, )",
-          "Grpc.AspNetCore": "[2.84.0, 2.84.0]"
+          "Grpc.AspNetCore": "[2.84.0, 2.84.0]",
+          "Grpc.Net.Client": "[2.84.0, 2.84.0]"
         }
       },
       "chat.postgres": {

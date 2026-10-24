@@ -7,6 +7,7 @@ using Npgsql;
 using Pb = ShatteredFrontier.Chat.V1;
 
 var mode = args.Single();
+if (mode == "transport") { await TransportChecks.Run(); return; }
 var port = Environment.GetEnvironmentVariable("CHAT_HOST_PORT") ?? throw new Exception("CHAT_HOST_PORT required");
 var token = Environment.GetEnvironmentVariable("SF_CHAT_TOKEN") ?? throw new Exception("SF_CHAT_TOKEN required");
 var privacy = Environment.GetEnvironmentVariable("SF_CHAT_PRIVACY_TOKEN") ?? throw new Exception("SF_CHAT_PRIVACY_TOKEN required");

@@ -2,6 +2,8 @@
   <ItemGroup>
     <ProjectReference Include="../Chat.Postgres/Chat.Postgres.csproj" />
     <PackageReference Include="Grpc.AspNetCore" />
+    <PackageReference Include="Grpc.Net.Client" />
     <Protobuf Include="../../proto/sf/chat/v1/contacts.proto" ProtoRoot="../../proto" GrpcServices="Both" />
+    <Protobuf Include="../../proto/sf/group/v1/group.proto" ProtoRoot="../../proto" GrpcServices="Client" />
   </ItemGroup>
 </Project>
