@@ -19,6 +19,8 @@ var verifierKey = builder.Configuration["Identity:WorldVerifierKey"] ?? throw ne
 if (verifierKey.Length < 32) throw new InvalidOperationException("World verifier key must be at least 32 characters.");
 var chatVerifierKey = builder.Configuration["Identity:ChatVerifierKey"];
 if (chatVerifierKey is not null && chatVerifierKey.Length < 32) throw new InvalidOperationException("Chat verifier key must be at least 32 characters.");
+var guildVerifierKey = builder.Configuration["Identity:GuildVerifierKey"];
+if (guildVerifierKey is not null && guildVerifierKey.Length < 32) throw new InvalidOperationException("Guild verifier key must be at least 32 characters.");
 var repoAllowlist = Path.Combine(builder.Environment.ContentRootPath, "content/appearance/human.json");
 var allowlistPath = builder.Configuration["Identity:AppearanceAllowlist"] ??
     (File.Exists(repoAllowlist) ? repoAllowlist : Path.GetFullPath(Path.Combine(builder.Environment.ContentRootPath, "../../content/appearance/human.json")));
@@ -119,6 +121,26 @@ if (chatVerifierKey is not null)
         if (string.IsNullOrWhiteSpace(request.Ticket) || request.ServerId != options.ChatServerId)
             return Results.Json(new ErrorBody("UNAUTHENTICATED", "TICKET_INVALID"), statusCode: 401);
         var claims = verifier.VerifyAndConsume(request.Ticket, options.ChatServerId);
+        return claims is null ? Results.Json(new ErrorBody("UNAUTHENTICATED", "TICKET_INVALID"), statusCode: 401)
+            : Results.Ok(new { character_id = claims.CharacterId, account_id = claims.AccountId, realm_id = claims.RealmId });
+    });
+}
+if (guildVerifierKey is not null)
+{
+    app.MapPost("/v1/characters/{characterId}/guild-ticket", (string characterId, HttpContext http, IdentityService service) =>
+    {
+        var (ticket, expires) = service.IssueGuildTicket(service.RequireSession(http.Request.Headers.Authorization), characterId);
+        return Results.Ok(new { ticket, expires_at_unix_s = expires });
+    });
+    app.MapPost("/v1/guild/verify-ticket", (VerifyTicketRequest request, HttpContext http, TicketVerifier verifier) =>
+    {
+        var supplied = System.Text.Encoding.UTF8.GetBytes(http.Request.Headers["X-Guild-Verifier-Key"].ToString());
+        var expected = System.Text.Encoding.UTF8.GetBytes(guildVerifierKey);
+        if (supplied.Length != expected.Length || !System.Security.Cryptography.CryptographicOperations.FixedTimeEquals(supplied, expected))
+            return Results.Json(new ErrorBody("UNAUTHENTICATED", "GUILD_VERIFIER_UNAUTHORIZED"), statusCode: 401);
+        if (string.IsNullOrWhiteSpace(request.Ticket) || request.ServerId != options.GuildServerId)
+            return Results.Json(new ErrorBody("UNAUTHENTICATED", "TICKET_INVALID"), statusCode: 401);
+        var claims = verifier.VerifyAndConsume(request.Ticket, options.GuildServerId);
         return claims is null ? Results.Json(new ErrorBody("UNAUTHENTICATED", "TICKET_INVALID"), statusCode: 401)
             : Results.Ok(new { character_id = claims.CharacterId, account_id = claims.AccountId, realm_id = claims.RealmId });
     });

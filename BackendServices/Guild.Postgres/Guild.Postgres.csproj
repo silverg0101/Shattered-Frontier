@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <PackageReference Include="Npgsql" />
+    <EmbeddedResource Include="../IdentityGateway/confusables.txt" LogicalName="Guild.confusables.txt" />
+  </ItemGroup>
+</Project>

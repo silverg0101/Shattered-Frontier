@@ -20,6 +20,7 @@ public sealed class IdentityOptions
     public int NameReuseQuarantineDays { get; set; } = 90;
     public string WorldServerId { get; set; } = "srvi_dev_local";
     public string ChatServerId { get; set; } = "srvi_chat_local";
+    public string GuildServerId { get; set; } = "srvi_guild_local";
     public string WorldAddress { get; set; } = "127.0.0.1:7777";
     public string[] ReservedNames { get; set; } = [];
 
@@ -31,6 +32,7 @@ public sealed class IdentityOptions
             CharacterSlotsPerAccount is < 1 or > 32 || CharacterRestoreDays is < 1 or > 90 ||
             NameReuseQuarantineDays is < 1 or > 365 || string.IsNullOrWhiteSpace(WorldServerId) ||
             string.IsNullOrWhiteSpace(ChatServerId) || ChatServerId == WorldServerId ||
+            string.IsNullOrWhiteSpace(GuildServerId) || GuildServerId == WorldServerId || GuildServerId == ChatServerId ||
             string.IsNullOrWhiteSpace(WorldAddress))
             throw new InvalidOperationException("Identity configuration is outside its safe bounds.");
     }
@@ -302,6 +304,8 @@ public sealed class IdentityService(IIdentityStore store, IdentityOptions option
 
     public (string Ticket, long ExpiresAtUnixSeconds) IssueContactTicket(SessionRecord session, string id) =>
         IssueCharacterTicket(session, id, options.ChatServerId);
+    public (string Ticket, long ExpiresAtUnixSeconds) IssueGuildTicket(SessionRecord session, string id) =>
+        IssueCharacterTicket(session, id, options.GuildServerId);
 
     private (string Ticket, long ExpiresAtUnixSeconds) IssueCharacterTicket(SessionRecord session, string id, string serverId)
     {
