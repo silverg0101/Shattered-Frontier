@@ -5,7 +5,8 @@ fails with "Couldn't find baked texture"). Run it from PowerShell:
   UnrealEditor.exe <uproject> -RenderOffscreen -unattended -nosplash -ExecCmds="py <abs path of this file>"
 It starts on the editor's first tick, builds, then quits the editor.
 
-Reads GameClient/ArtSource/Characters/Player/faces.json ({"faces": [{"id", "preset", "gender", "hair", "beard", "mustache"}]}).
+Reads GameClient/ArtSource/Characters/Player/faces.json ({"faces": [{"id", "preset", "gender", "hair", "beard", "mustache", "skin"}]}).
+Optional "skin": [u, v] sets the skin tone (the Creator's tone picker position); every build logs the face's tone as PLAYER_METAHUMAN_SKIN.
 Each face's preset is copied to /Game/Frontier/Characters/Player/Faces/MHC_<id> and given its grooms (WI_* wardrobe
 items). MetaHuman's cloud auto-rig and texture download run only when the copy cannot build yet (they use the editor's
 signed-in Epic account). The optimized, medium-quality assembly goes to /Game/Frontier/Characters/Player/Built/MHC_<id>,
@@ -49,6 +50,11 @@ def build_face(face, subsystem, library):
     if not subsystem.try_add_object_to_edit(character=character):
         raise RuntimeError(f'{path} is open for edit elsewhere')
     try:
+        skin = character.get_editor_property('skin_settings')
+        if face.get('skin'):
+            skin.skin.u, skin.skin.v = face['skin']
+            subsystem.commit_skin_settings(character, skin)
+        unreal.log(f"PLAYER_METAHUMAN_SKIN id={face['id']} u={skin.skin.u:.3f} v={skin.skin.v:.3f}")
         if not subsystem.can_build_meta_human(character=character):
             rig = unreal.MetaHumanCharacterAutoRiggingRequestParams()
             rig.blocking = True; rig.report_progress = False

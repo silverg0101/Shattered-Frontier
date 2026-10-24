@@ -1,7 +1,7 @@
 """Render MetaHuman preset faces / hair swaps to PNG via the full editor (needs RHI, not -nullrhi).
 
 Run:  UnrealEditor.exe <uproject> -RenderOffscreen -unattended -ExecutePythonScript="<this file>"
-Env:  MH_MODE=faces|hair   MH_OUT=<dir>   MH_ONLY=name1,name2 (faces)   MH_BASE=<preset name for hair mode>
+Env:  MH_MODE=faces|hair   MH_OUT=<dir>   MH_ONLY=name1,name2 (faces)   MH_BASE=<preset name for hair mode>   MH_PRESETS=<asset folder>
 Quits the editor when done. Nothing is saved; hair mode edits a scratch duplicate under /Game/Frontier/.
 """
 import os, time, traceback
@@ -12,7 +12,7 @@ OUT = os.environ.get("MH_OUT", r"C:\Projects\SF-wt-ui\GameClient\ArtSource\Chara
 ONLY = [s for s in os.environ.get("MH_ONLY", "").split(",") if s]
 BASE = os.environ.get("MH_BASE", "Bruce")
 SETTLE = int(os.environ.get("MH_SETTLE", "150"))  # ticks to let meshes/textures/grooms stream in
-PRESETS = "/MetaHumanCharacter/Optional/Presets/"
+PRESETS = os.environ.get("MH_PRESETS", "/MetaHumanCharacter/Optional/Presets/")  # /Game/Frontier/Characters/Player/Faces/ + MH_ONLY=MHC_<id>,... renders built faces
 HAIR = ["Hair_S_Messy", "Hair_M_Layered", "Hair_S_Casual", "Hair_S_SideSweptFringe", "Hair_S_RecedeMessy", "Hair_M_BobMessy"]
 ALL = ["Ada", "Aera", "Aoi", "Asha", "Bo", "Bruce", "Cameron", "Celeste", "Dominic", "Etta", "Grace", "Isaiah", "Jelena",
        "Jorge", "Kelvin", "Lani", "Lorenzo", "Mateo", "Mikel", "Omari", "Orlando", "Sook-ja", "Sunita", "Trey", "Tuya",

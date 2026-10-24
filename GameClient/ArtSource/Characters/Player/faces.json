@@ -1,6 +1,10 @@
 {
   "faces": [
     {"id": "Orlando", "preset": "Orlando", "gender": "male", "hair": "WI_Hair_M_Layered", "beard": "WI_Beard_L_Full", "mustache": "WI_Mustache_L_Full"},
-    {"id": "OrlandoBare", "preset": "Orlando", "gender": "male", "bare": true}
+    {"id": "OrlandoBare", "preset": "Orlando", "gender": "male", "bare": true},
+    {"id": "Godric", "preset": "Bruce", "gender": "male", "hair": "WI_Hair_L_Straight", "beard": "WI_Beard_L_Messy", "mustache": "WI_Mustache_L_Messy"},
+    {"id": "Edwin", "preset": "Victor", "gender": "male", "hair": "WI_Hair_S_Messy", "beard": "WI_Beard_S_Full", "mustache": "WI_Mustache_S_Full"},
+    {"id": "Wulfric", "preset": "Lorenzo", "gender": "male", "hair": "WI_Hair_L_Straight", "beard": "WI_Goatee_L_Wavy", "mustache": "WI_Mustache_L_Handlebar"},
+    {"id": "Osric", "preset": "Trey", "gender": "male", "hair": "WI_Hair_S_Coil", "beard": "WI_Beard_S_Full", "mustache": "WI_Mustache_S_Full"}
   ]
 }
