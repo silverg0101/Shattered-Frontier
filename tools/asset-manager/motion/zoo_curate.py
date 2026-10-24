@@ -5,8 +5,8 @@
                                       a second call reviews the map against OUT_DIR/skeleton.png; writes role_map.json,
                                       or prints "FAIL: <reason>" and exits 1.
 
-Scoring is ported from proof/pick.py: a clip must keep moving (every 20-frame block averages >= MIN_BLOCK deg/frame of
-rotation change) and close well (start vs end pose rotation + paw distance, paws relative to the root). Cyclic motions
+Scoring is ported from proof/pick.py: a clip must keep moving (every 5 consecutive frames average >= MIN_BLOCK deg/frame
+of rotation change) and close well (start vs end pose rotation + paw distance, paws relative to the root). Cyclic motions
 get the best loop window (>= MIN_LOOP frames, every paw must lift), cut, residual spread so the last frame equals frame 0,
 and are written in place; travel_cm_s keeps their speed. BVH units are taken as cm, Y up.
 """
@@ -15,8 +15,8 @@ from pathlib import Path
 
 import numpy as np
 
-MIN_BLOCK = 0.05  # deg/frame: a 20-frame block below this is a stall
-BLOCK = 20
+MIN_BLOCK = 0.05  # deg/frame: a block below this is a stall
+BLOCK = 5  # frames, sliding, as proof/pick.py
 MIN_LOOP = 15  # frames
 MAX_LOOP_DEG = 4.0  # a cyclic clip whose best loop still differs by more than this mean rotation (deg) is dropped
 MIN_SWING = 0.1  # every paw lifts at least this share of its leg (root to paw tip) in a loop: sitting and grooming are no cycle
@@ -114,12 +114,12 @@ def _wrap(d):
 
 # ---------------------------------------------------------------- scoring
 def blocks(R):
-    """Mean rotation change (deg/frame) of each 20-frame block, the last one anchored at the end so all frames count."""
+    """Mean rotation change (deg/frame) of every BLOCK-frame sliding window."""
     d = _wrap(np.diff(R, axis=0)).mean(1)
     if len(d) <= BLOCK:
         return [float(d.mean())] if len(d) else [0.0]
-    starts = sorted(set(range(0, len(d) - BLOCK + 1, BLOCK)) | {len(d) - BLOCK})
-    return [float(d[s:s + BLOCK].mean()) for s in starts]
+    c = np.concatenate([[0], np.cumsum(d)])
+    return list((c[BLOCK:] - c[:-BLOCK]) / BLOCK)
 
 
 def score(joints, frames, cyclic):
@@ -146,9 +146,9 @@ def score(joints, frames, cyclic):
     xz = P[:, 0][:, [0, 2]]
     min_swing = MIN_SWING * np.mean([chain(joints, p) for p in paws(joints, fk(joints, None)[0])] or [0])
     path = np.concatenate([[0], np.cumsum(np.linalg.norm(np.diff(xz, axis=0), axis=1))])
-    d = _wrap(np.diff(R, axis=0)).mean(1)  # the window must keep moving too, by the same 20-frame block rule
+    d = _wrap(np.diff(R, axis=0)).mean(1)  # the window must keep moving too, by the same block rule
     cd = np.concatenate([[0], np.cumsum(d)])
-    m20 = (cd[BLOCK:] - cd[:-BLOCK]) / BLOCK  # m20[k]: mean of d[k:k+20]
+    m20 = (cd[BLOCK:] - cd[:-BLOCK]) / BLOCK  # m20[k]: mean of d[k:k+BLOCK]
     best = None
     for i in range(len(R) - MIN_LOOP):
         js = np.arange(i + MIN_LOOP, len(R))
@@ -163,7 +163,7 @@ def score(joints, frames, cyclic):
         turn = (np.maximum.accumulate(yaw[i:]) - np.minimum.accumulate(yaw[i:]))[MIN_LOOP:]
         detour = path[js] - path[i] - np.linalg.norm(xz[js] - xz[i], axis=1)
         s = dr + dp - 0.3 * swing + TURN_W * turn + DETOUR_W * detour
-        moving = (cd[js] - cd[i]) / (js - i)  # windows up to 20 frames: their mean
+        moving = (cd[js] - cd[i]) / (js - i)  # windows up to BLOCK frames: their mean
         if len(m20) > i:
             lo = np.minimum.accumulate(m20[i:])
             long = js - i >= BLOCK

@@ -93,16 +93,19 @@ def ensure_curated(animal_id, host, jid) -> Path:
         step("saving to the motion library")
         tmp = lib.with_name(f".{animal_id}.{jid}")
         shutil.rmtree(tmp, ignore_errors=True)
-        with tarfile.open(fileobj=io.BytesIO(a.ssh(host, f"tar -C {q(out)} -cf - .", timeout=900))) as t:
-            t.extractall(tmp, filter="data")
-        rm = json.loads((tmp / "role_map.json").read_text())
-        animal = {"id": animal_id, "body_plan": entry["body_plan"], **json.loads((tmp / "animal.json").read_text()),
-                  "role_map": rm["role_map"], "unmapped": rm["unmapped"]}
-        animal["id"] = animal_id
-        (tmp / "animal.json").write_text(json.dumps(animal, indent=1))
-        (tmp / "role_map.json").unlink()
-        shutil.rmtree(lib, ignore_errors=True)
-        tmp.rename(lib)
+        try:
+            with tarfile.open(fileobj=io.BytesIO(a.ssh(host, f"tar -C {q(out)} -cf - .", timeout=900))) as t:
+                t.extractall(tmp, filter="data")
+            rm = json.loads((tmp / "role_map.json").read_text())
+            animal = {"id": animal_id, "body_plan": entry["body_plan"], **json.loads((tmp / "animal.json").read_text()),
+                      "role_map": rm["role_map"], "unmapped": rm["unmapped"]}
+            animal["id"] = animal_id
+            (tmp / "animal.json").write_text(json.dumps(animal, indent=1))
+            (tmp / "role_map.json").unlink()
+            shutil.rmtree(lib, ignore_errors=True)
+            tmp.rename(lib)
+        finally:
+            shutil.rmtree(tmp, ignore_errors=True)  # gone after the rename; left over only when a step above failed
         return lib
     finally:
         try:

@@ -2737,14 +2737,19 @@ def check():
     head = ("HIERARCHY\nROOT Hips\n{\nOFFSET 0 5 0\nCHANNELS 6 Xposition Yposition Zposition Zrotation Yrotation Xrotation\n"
             "JOINT Spine\n{\nOFFSET 0 0 4\nCHANNELS 3 Zrotation Yrotation Xrotation\nJOINT Leg\n{\nOFFSET 0 -5 0\n"
             "CHANNELS 3 Zrotation Yrotation Xrotation\nEnd Site\n{\nOFFSET 0 -1 0\n}\n}\n}\n}\n")
-    def bvh(frozen):  # 40 frames at 30 fps on a 20-frame sine: joints 0.4 deg (0.08 deg/frame), the root pitching 10 deg so
+    def bvh(frozen):  # 40 frames at 30 fps on a 20-frame sine: joints 1.5 deg (0.3 deg/frame), the root pitching 10 deg so
         # the paw lifts; 0.5 cm/frame travel
         w = [math.sin(2 * math.pi * (10 if frozen and 10 <= f < 20 else f) / 20) for f in range(40)]
-        rows = [[0.5 * f, 5, 0, 0, 0, 10 * w[f]] + [0.4 * w[f]] * 6 for f in range(40)]
+        rows = [[0.5 * f, 5, 0, 0, 0, 10 * w[f]] + [1.5 * w[f]] * 6 for f in range(40)]
         return head + "MOTION\nFrames: 40\nFrame Time: 0.033333\n" + "\n".join(" ".join(map(str, r)) for r in rows) + "\n"
     joints, frames, _, _ = zc.parse(bvh(True))
     assert [j["name"] for j in joints] == ["Hips", "Spine", "Leg", "Leg_end"] and frames.shape == (40, 12)
     assert zc.score(joints, frames, True) is None and zc.score(*zc.parse(bvh(False))[:2], True)
+    # non-cyclic: no loop rule, so only the stall check can reject the 10-frame freeze (a 20-frame block half frozen
+    # would still average ~0.15 deg/frame and pass; the 5-frame blocks catch it)
+    rcols = [c for jt in joints[1:] for c, k in jt["channels"] if k.endswith("rotation")]
+    assert min(zc.blocks(frames[:, rcols])) < zc.MIN_BLOCK and zc.score(joints, frames, False) is None
+    assert zc.score(*zc.parse(bvh(False))[:2], False)
     assert zc.motion_of("Rat/bvh/Scamper_in_betweening_edit_Scamper_Eat_0001_seed10_Rat-Eat_3.bvh") == "Scamper"
     with tempfile.TemporaryDirectory() as td:
         with zipfile.ZipFile(f"{td}/Test.zip", "w") as z:
