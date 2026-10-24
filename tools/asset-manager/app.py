@@ -1073,7 +1073,7 @@ CODEX_REDIRECT = "http://localhost:1455/auth/callback"
 CODEX_AUTHORIZE = "https://auth.openai.com/oauth/authorize"
 CODEX_TOKEN = "https://auth.openai.com/oauth/token"
 CODEX_RESPONSES = "https://chatgpt.com/backend-api/codex/responses"
-CODEX_DRIVER = "gpt-5.6-luna"  # the text model that calls the image tool; any tool-calling Codex model works
+CODEX_DRIVER = "gpt-6-luna"  # calls the image tool and reviews the results (owner's pick, 2026-10-23; takes images)
 IMAGE_MODELS = ["auto", "gpt-image-2.5-sunburst", "gpt-image-2.5-flare"]  # auto = the server's default
 CODEX_LOCK = threading.Lock()
 CODEX_PENDING = {}  # state -> (verifier, created): one sign-in in flight, 15 minutes to finish it
@@ -1173,29 +1173,19 @@ def codex_auth():
                                            "client_id": CODEX_CLIENT_ID, "scope": "openid profile email offline_access"}), a)
         return a["access_token"], a["account_id"]
 
-def codex_image(prompt, model="auto", refs=(), size="1024x1024"):
-    """One PNG from the Codex backend's image_generation tool. `refs` are PNG/JPEG bytes the tool draws from."""
+def codex_events(payload):
+    """POST a streaming request to the Codex responses endpoint and yield its decoded server-sent events."""
     token, account = codex_auth()
-    tool = {"type": "image_generation", "output_format": "png", "size": size}
-    if model != "auto":
-        tool["model"] = model
-    text = ("Use the image_generation tool to render the following. Do not include explanatory text - produce only "
-            f"the image.\n\n{prompt}")
-    content = [{"type": "input_image", "image_url": f"data:image/png;base64,{base64.b64encode(b).decode()}"} for b in refs]
-    payload = {"model": CODEX_DRIVER, "stream": True, "store": False, "instructions": "You are an image generation assistant.",
-               "input": [{"type": "message", "role": "user", "content": content + [{"type": "input_text", "text": text}]}],
-               "tools": [tool], "tool_choice": "auto", "parallel_tool_calls": False,
-               "reasoning": {"effort": "low"}, "text": {"verbosity": "low"}}
-    req = urllib.request.Request(CODEX_RESPONSES, json.dumps(payload).encode(), {
+    req = urllib.request.Request(CODEX_RESPONSES, json.dumps({**payload, "stream": True, "store": False}).encode(), {
         "Authorization": f"Bearer {token}", "chatgpt-account-id": account, "Content-Type": "application/json",
         "Accept": "text/event-stream", "OpenAI-Beta": "responses=experimental", "originator": "codex_cli_rs"})
     try:
         r = urllib.request.urlopen(req, timeout=300)
     except urllib.error.HTTPError as e:
         raise RuntimeError(f"ChatGPT answered {e.code}: {e.read()[:300].decode('utf-8', 'replace')}")
-    result, data = None, []
+    data = []
     with r:
-        for raw in r:  # server-sent events: data: lines, a blank line ends each event
+        for raw in r:  # data: lines, a blank line ends each event
             line = raw.decode("utf-8", "replace").rstrip("\r\n")
             if line.startswith("data:"):
                 data.append(line[5:].lstrip())
@@ -1204,20 +1194,81 @@ def codex_image(prompt, model="auto", refs=(), size="1024x1024"):
                 continue
             body, data = "\n".join(data), []
             if body.strip() == "[DONE]":
-                break
+                return
             try:
                 evt = json.loads(body)
             except ValueError:
                 continue
-            item = evt.get("item") or {}
-            if evt.get("type") == "response.output_item.done" and item.get("type") == "image_generation_call":
-                result = item.get("result")
-            elif evt.get("type") in ("error", "response.failed"):
+            if evt.get("type") in ("error", "response.failed"):
                 err = (evt.get("response") or {}).get("error") or evt.get("error") or {}
                 raise RuntimeError(f"ChatGPT failed: {err.get('message') or err.get('code') or evt['type']}")
+            yield evt
+
+def _image_parts(images):
+    return [{"type": "input_image", "image_url": f"data:image/png;base64,{base64.b64encode(b).decode()}"} for b in images]
+
+def codex_image(prompt, model="auto", refs=(), size="1024x1024"):
+    """One PNG from the Codex backend's image_generation tool. `refs` are PNG/JPEG bytes the tool draws from."""
+    tool = {"type": "image_generation", "output_format": "png", "size": size}
+    if model != "auto":
+        tool["model"] = model
+    text = ("Use the image_generation tool to render the following. Do not include explanatory text - produce only "
+            f"the image.\n\n{prompt}")
+    result = None
+    for evt in codex_events({
+            "model": CODEX_DRIVER, "instructions": "You are an image generation assistant.",
+            "input": [{"type": "message", "role": "user", "content": _image_parts(refs) + [{"type": "input_text", "text": text}]}],
+            "tools": [tool], "tool_choice": "auto", "parallel_tool_calls": False,
+            "reasoning": {"effort": "low"}, "text": {"verbosity": "low"}}):
+        item = evt.get("item") or {}
+        if evt.get("type") == "response.output_item.done" and item.get("type") == "image_generation_call":
+            result = item.get("result")
     png = base64.b64decode(result or "")
     if not png.startswith(b"\x89PNG"):
         raise RuntimeError("ChatGPT returned no image")
+    return png
+
+REVIEW_INSTRUCTIONS = (
+    "You review generated reference images for an image-to-3D pipeline (Pixal3D), which rebuilds one 3D model from "
+    "several views taken by a camera orbiting a statue. Any part that moves, changes direction, appears or disappears "
+    "between views produces broken geometry (a tail swept to opposite sides gives two tails). Be strict about geometry "
+    "and viewpoint, lenient about small texture details. Answer with one JSON object only, no other text: "
+    '{"pass": true|false, "problems": ["..."], "fix": "instructions for the image model that would correct every problem"}')
+
+def codex_review(images, brief):
+    """gpt-6-luna looks at `images` (bytes) and judges them against `brief`. Returns {"pass", "problems", "fix"}."""
+    text = ""
+    for evt in codex_events({
+            "model": CODEX_DRIVER, "instructions": REVIEW_INSTRUCTIONS, "reasoning": {"effort": "medium"},
+            "input": [{"type": "message", "role": "user", "content": _image_parts(images) + [{"type": "input_text", "text": brief}]}]}):
+        if evt.get("type") == "response.output_text.delta":
+            text += evt.get("delta", "")
+    m = re.search(r"\{.*\}", text, re.S)
+    try:
+        r = json.loads(m.group(0))
+        return {"pass": bool(r.get("pass")), "problems": [str(x) for x in r.get("problems") or []], "fix": str(r.get("fix") or "")}
+    except (AttributeError, ValueError):
+        raise RuntimeError(f"the review answer was not JSON: {text[:200]!r}")
+
+def checked_image(prompt, model, refs, brief, label, log, tries=3):
+    """Generate, have gpt-6-luna review it (`brief` describes what the images show and what must hold), and on a fail
+    regenerate with the reviewer's fix added, up to `tries` times. The last attempt is kept even if it still fails,
+    with the problems logged, so one stubborn view doesn't throw away the others."""
+    extra = ""
+    for n in range(1, tries + 1):
+        log.append(f"{label}: drawing (try {n}/{tries})")
+        png = codex_image(prompt + extra, model, refs)
+        try:
+            r = codex_review(list(refs) + [png], brief)
+        except RuntimeError as e:
+            log.append(f"{label}: review unavailable ({e}); keeping this image")
+            return png
+        if r["pass"]:
+            log.append(f"{label}: review passed")
+            return png
+        log.append(f"{label}: review failed: {'; '.join(r['problems']) or 'no reason given'}")
+        extra = f"\n\nA previous attempt was rejected for: {'; '.join(r['problems'])}. Correct it: {r['fix']}"
+    log.append(f"{label}: kept try {tries} although the review still failed")
     return png
 
 # Multi-view: the front first, then each other view drawn from it, so all four share one design and one scale.
@@ -1225,20 +1276,37 @@ def codex_image(prompt, model="auto", refs=(), size="1024x1024"):
 # with perspective makes it invent extra limbs (Greenlands rat, 2026-10-23: back view 1.4x the side views). A tail
 # swept to image-right in both front and back is on opposite sides of the body, and it builds two tails (rat v2).
 MV_FRONT = ("{prompt}\n\nThis is the front view of a 3D-model reference sheet. Show the whole subject, standing in a "
-            "neutral pose, seen straight from the front at eye level through an orthographic camera (no perspective), "
-            "centred with a small margin all round, on a plain pure-white background with soft even studio light. "
-            "Loose parts (tail, cloth, hair, straps) hang straight down or trail straight back along the body's centre "
-            "line, never swept off to one side. No ground shadow, no props, no text.")
-MV_SIDE = ("The attached image is the front view of a 3D-model reference sheet. Draw the exact same subject - same "
-           "design, proportions, colours, materials and pose - seen {view}. Use the same orthographic eye-level camera "
-           "at the same distance: the subject is exactly as tall in pixels as in the front view, its feet on the same "
-           "line, centred, on the same pure-white background and light. Loose parts (tail, cloth, hair, straps) sit "
-           "where they are in the front view: hanging down or trailing straight back along the centre line, not swept "
-           "to one side. No ground shadow, no props, no text.\n\n"
-           "Subject: {prompt}")
+            "neutral, symmetrical pose, seen straight from the front at eye level through an orthographic camera (no "
+            "perspective), centred with a small margin all round, on a plain pure-white background with soft even "
+            "studio light. Loose parts (tail, cloth, hair, straps) hang straight down or trail straight back along the "
+            "body's centre line, never swept off to one side. No ground shadow, no props, no text.")
+MV_SIDE = ("The attached image is the front view of a 3D-model reference sheet. Draw the same subject seen {view}.\n\n"
+           "The subject is a rigid statue and only the camera moves around it: its pose, proportions, colours, "
+           "materials and every part - head, ears, limbs, tail, clothing, anything held - keep exactly the same 3D "
+           "position and direction relative to the body as in the front view. Nothing is re-posed, added, removed or "
+           "flipped. Work out where each part must appear from this angle: something on the subject's left side "
+           "(image-right in the front view) is image-left from behind, nearest the camera from its left, and hidden "
+           "behind the body from its right; a tail trailing straight back is hidden behind the body from the front, "
+           "points straight at the camera from behind, and trails horizontally away from the head from either side.\n\n"
+           "Same orthographic eye-level camera at the same distance: the subject is exactly as tall in pixels as in "
+           "the front view, its feet on the same line, centred, on the same pure-white background and light. No "
+           "ground shadow, no props, no text.\n\nSubject: {prompt}")
 MV_VIEWS = {"left": "from its left side (the camera at the subject's left, so it faces image-left)",
             "back": "from directly behind",
             "right": "from its right side (the camera at the subject's right, so it faces image-right)"}
+MV_FRONT_REVIEW = ("The image is meant to be the front view of a 3D-model reference sheet for: {prompt}\n\nPass it only "
+                   "if: the whole subject is in frame, seen straight from the front at eye level with no visible "
+                   "perspective; it is centred on a plain white background with no ground shadow, props or text; the "
+                   "pose is neutral and symmetrical; loose parts (tail, cloth, hair, straps) hang straight down or "
+                   "trail straight back along the centre line rather than sweeping to one side; and it matches the "
+                   "subject description (count the limbs).")
+MV_SIDE_REVIEW = ("Image 1 is the front view of a 3D-model reference sheet. Image 2 should show the same subject {view}, "
+                  "as if the camera orbited a rigid statue. Subject: {prompt}\n\nPass image 2 only if: it is that "
+                  "viewpoint (orthographic, eye level); it is the same subject with the same design, proportions and "
+                  "pose; every part (head, ears, limbs, tail, clothing, anything held) is where that rotation would put "
+                  "it, with nothing re-posed, mirrored, added or missing (count the limbs; check which side the tail "
+                  "and any asymmetric details are on); the subject is about the same height in pixels as in image 1 "
+                  "with its feet on the same line; and the background is plain white with no shadow, props or text.")
 
 def image_params(params):
     unknown = set(params) - {"mode", "model", "prompt"}
@@ -1267,15 +1335,15 @@ def run_image(jid):
         if p["mode"] == "single":
             log.append("generating the image (sent as written)")
             save(codex_image(p["prompt"], p["model"]), "")
-        else:
-            log.append("generating the front view")
-            front = codex_image(MV_FRONT.format(prompt=p["prompt"]), p["model"])
+        else:  # every view is reviewed by gpt-6-luna and redrawn with its fix when it fails
+            front = checked_image(MV_FRONT.format(prompt=p["prompt"]), p["model"], (),
+                                  MV_FRONT_REVIEW.format(prompt=p["prompt"]), "front", log)
             save(front, "-front")
             for pos, view in MV_VIEWS.items():
                 if job_row(jid)["status"] == "cancelling":
                     raise InterruptedError
-                log.append(f"generating the {pos} view from the front")
-                save(codex_image(MV_SIDE.format(prompt=p["prompt"], view=view), p["model"], refs=(front,)), f"-{pos}")
+                save(checked_image(MV_SIDE.format(prompt=p["prompt"], view=view), p["model"], (front,),
+                                   MV_SIDE_REVIEW.format(prompt=p["prompt"], view=view), pos, log), f"-{pos}")
         update_job(jid, status="done", output=saved[0], files=json.dumps(saved), finished=time.time())
     except InterruptedError:
         update_job(jid, status="cancelled", finished=time.time())
@@ -1583,6 +1651,17 @@ def check():
         except ValueError:
             pass
     assert "faces image-left" in MV_SIDE.format(prompt="rat", view=MV_VIEWS["left"]) and "{" not in MV_FRONT.format(prompt="rat")
+    assert "{" not in MV_SIDE_REVIEW.format(prompt="rat", view=MV_VIEWS["back"]) + MV_FRONT_REVIEW.format(prompt="rat")
+    g, real, calls = globals(), (codex_image, codex_review), []  # review loop: a fail redraws with the reviewer's fix
+    verdicts = iter([{"pass": False, "problems": ["two tails"], "fix": "draw one tail"}, {"pass": True, "problems": [], "fix": ""}])
+    g["codex_image"] = lambda pr, m, refs: (calls.append(pr), b"\x89PNG" + bytes([len(calls)]))[1]
+    g["codex_review"] = lambda imgs, brief: next(verdicts)
+    try:
+        log = []
+        assert checked_image("p", "auto", (), "b", "left", log) == b"\x89PNG\x02"
+        assert "two tails" in calls[1] and "draw one tail" in calls[1] and "review passed" in log[-1]
+    finally:
+        g["codex_image"], g["codex_review"] = real
     q = urllib.parse.parse_qs(urllib.parse.urlparse(codex_start()).query)
     assert q["client_id"] == [CODEX_CLIENT_ID] and q["code_challenge_method"] == ["S256"] and q["state"][0] in CODEX_PENDING
     try:
