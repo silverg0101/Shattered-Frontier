@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup><OutputType>Exe</OutputType></PropertyGroup>
   <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <ProjectReference Include="../Chat.Host/Chat.Host.csproj" />
     <PackageReference Include="Grpc.Net.Client" />
     <PackageReference Include="Npgsql" />

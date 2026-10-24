@@ -40,6 +40,12 @@ public:
     UFUNCTION(BlueprintCallable, Category="Chat") void Stop();
     UFUNCTION(BlueprintPure, Category="Chat") bool IsReady() const { return bAuthenticated; }
 
+#if WITH_DEV_AUTOMATION_TESTS
+    void StartFixtureForTest(const FString& InCharacterId, const FString& InEndpoint, const FString& Ticket);
+    bool HasFixtureMessage(const FString& Channel, const FString& Sender, const FString& Body) const;
+    bool HasFixtureRejection(const FString& Reason) const { return FixtureRejections.Contains(Reason); }
+#endif
+
     virtual void Deinitialize() override;
     virtual void Tick(float DeltaTime) override;
     virtual TStatId GetStatId() const override { RETURN_QUICK_DECLARE_CYCLE_STAT(USFChatSubsystem, STATGROUP_Tickables); }
@@ -63,4 +69,8 @@ private:
     float RetrySeconds = 1.f;
     bool bConnecting = false;
     bool bAuthenticated = false;
+#if WITH_DEV_AUTOMATION_TESTS
+    TArray<FString> FixtureMessages;
+    TArray<FString> FixtureRejections;
+#endif
 };

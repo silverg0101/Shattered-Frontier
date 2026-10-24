@@ -6,6 +6,7 @@ using Grpc.Net.Client;
 using Npgsql;
 using Pb = ShatteredFrontier.Chat.V1;
 
+if (args.Length == 2 && args[0] == "unreal-relay") { await UnrealRelayFixture.Run(int.Parse(args[1])); return; }
 var mode = args.Single();
 if (mode == "transport") { await TransportChecks.Run(); return; }
 var port = Environment.GetEnvironmentVariable("CHAT_HOST_PORT") ?? throw new Exception("CHAT_HOST_PORT required");

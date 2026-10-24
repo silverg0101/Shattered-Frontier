@@ -1,5 +1,7 @@
 # Tools and tests
 
+Chat relay: `tools/Test-ChatUnrealRelay.ps1` starts the package-free `Chat.Host.Tests -- unreal-relay` fixture using production WebSocket transport with fixed development actors and membership, then two separate Unreal automation clients (`ShatteredFrontier.Chat.TwoClientRelay`). It checks a bidirectional party message and a generic blocked-whisper rejection and stops owned processes. `Chat.Host.Tests -- transport` covers both rejection statuses at the hub.
+
 ## Runtime and data flow
 
 `tools/Test-E1Remote.ps1` checks two concurrent client welcomes (Launcher editor or direct packaged -ClientExecutable), fails on explicit network errors, monitors a typed3-120s hold (default3), and cleans only its clients; it does not start/stop that server. Linux hosting setup: `tools/Provision-SteamServer.sh` allocates/mounts the new dedicated LV only on the authorized host. `ops/steam-server/` owns the non-root Docker image, bounded profile validator and Compose runtime; see [runtime instructions](../ops/steam-server/README.md). `tests/test_steam_server_profile.py` checks deployment identity, exposure and resource bounds with `python tests/test_steam_server_profile.py`. Source-engine/cross-SDK setup is tracked in [the Linux build route](e1-linux-server-build.md). `.gitattributes` preserves LF for Linux deployment files; generated IDE configuration and cook file-order logs are ignored.

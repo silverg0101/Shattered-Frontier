@@ -43,13 +43,22 @@ internal static class TransportChecks
                 throw new Exception("Authenticated party round trip failed.");
         });
 
-        await Check("whisper to blocker dropped", async () =>
+        await Check("whisper to blocker reports generic non-delivery", async () =>
         {
             var delivered = new List<ChatMessage>();
             var hub = new ChatDeliveryHub((_, _) => Task.FromResult<PartyMembers?>(null), (_, _) => false);
             hub.Connect("chr_b", message => { delivered.Add(message); return Task.CompletedTask; });
             var status = await hub.Publish("chr_a", "whisper", "chr_b", "private", CancellationToken.None);
-            if (status != "dropped" || delivered.Count != 0) throw new Exception("Blocked whisper delivered.");
+            if (status != "not_delivered" || delivered.Count != 0) throw new Exception("Blocked whisper status or delivery was wrong.");
+        });
+
+        await Check("non-member party send rejected", async () =>
+        {
+            var delivered = new List<ChatMessage>();
+            var hub = new ChatDeliveryHub((_, _) => Task.FromResult<PartyMembers?>(null), (_, _) => true);
+            hub.Connect("chr_b", message => { delivered.Add(message); return Task.CompletedTask; });
+            if (await hub.Publish("chr_a", "party", null, "private", CancellationToken.None) != "not_in_party"
+                || delivered.Count != 0) throw new Exception("Non-member party send status or delivery was wrong.");
         });
 
         await Check("party fan-out to members only", async () =>
@@ -80,7 +89,7 @@ internal static class TransportChecks
             await hub.Publish("chr_a", "whisper", "chr_b", "again", CancellationToken.None);
             if (oldCount != 0 || newCount != 1) throw new Exception("Reconnected receiver lost or duplicated.");
         });
-        Console.WriteLine($"CHAT_TRANSPORT_PASS {passed}/5");
+        Console.WriteLine($"CHAT_TRANSPORT_PASS {passed}/6");
     }
 
     private sealed class StubHandler : HttpMessageHandler

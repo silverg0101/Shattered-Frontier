@@ -61,7 +61,28 @@ void USFChatSubsystem::Stop()
     bAuthenticated = false;
     if (Socket.IsValid()) { Socket->Close(); Socket.Reset(); }
     if (Widget.IsValid()) { Widget->RemoveFromParent(); Widget.Reset(); }
+#if WITH_DEV_AUTOMATION_TESTS
+    FixtureMessages.Reset();
+    FixtureRejections.Reset();
+#endif
 }
+
+#if WITH_DEV_AUTOMATION_TESTS
+void USFChatSubsystem::StartFixtureForTest(const FString& InCharacterId, const FString& InEndpoint, const FString& Ticket)
+{
+    Stop();
+    CharacterId = InCharacterId;
+    Endpoint = InEndpoint;
+    SessionToken = TEXT("fixture");
+    bConnecting = true;
+    Connect(Ticket, ++Generation);
+}
+
+bool USFChatSubsystem::HasFixtureMessage(const FString& Channel, const FString& Sender, const FString& Body) const
+{
+    return FixtureMessages.Contains(Channel + TEXT("|") + Sender + TEXT("|") + Body);
+}
+#endif
 
 void USFChatSubsystem::Deinitialize()
 {
@@ -151,8 +172,13 @@ void USFChatSubsystem::HandlePacket(const FString& Packet)
         if (!Json->TryGetStringField(TEXT("status"), Status)) { return; }
         if (Status == TEXT("authenticated")) { bConnecting = false; bAuthenticated = true; RetrySeconds = 1.f; }
         else if (Status == TEXT("invalid") || Status == TEXT("rate_limited") || Status == TEXT("unavailable")
-            || Status == TEXT("blocked") || Status == TEXT("not_in_party") || Status == TEXT("dropped"))
-        { OnRejected.Broadcast(Status); }
+            || Status == TEXT("not_delivered") || Status == TEXT("not_in_party"))
+        {
+#if WITH_DEV_AUTOMATION_TESTS
+            FixtureRejections.Add(Status);
+#endif
+            OnRejected.Broadcast(Status);
+        }
         OnStatus.Broadcast(Status);
     }
     else if (Type == TEXT("message") && bAuthenticated)
@@ -160,7 +186,12 @@ void USFChatSubsystem::HandlePacket(const FString& Packet)
         FString Channel, Sender, Body;
         if (Json->TryGetStringField(TEXT("channel"), Channel) && (Channel == TEXT("party") || Channel == TEXT("whisper"))
             && Json->TryGetStringField(TEXT("from"), Sender) && Json->TryGetStringField(TEXT("body"), Body))
-        { OnMessage.Broadcast(Channel, Sender, Body); }
+        {
+#if WITH_DEV_AUTOMATION_TESTS
+            FixtureMessages.Add(Channel + TEXT("|") + Sender + TEXT("|") + Body);
+#endif
+            OnMessage.Broadcast(Channel, Sender, Body);
+        }
     }
 }
 

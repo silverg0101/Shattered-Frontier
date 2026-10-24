@@ -96,13 +96,13 @@ public sealed class ChatDeliveryHub(
         {
             if (string.IsNullOrWhiteSpace(target) || target == actor) return "invalid";
             // Recheck immediately before every attempted delivery, including after reconnect.
-            if (!canWhisper(actor, target)) return "dropped";
+            if (!canWhisper(actor, target)) return "not_delivered";
             if (online.TryGetValue(target, out var receiver))
                 await Deliver(target, receiver, new ChatMessage(channel, actor, body));
             return "sent";
         }
         var party = await partyFor(actor, cancellationToken);
-        if (party is null || !party.Members.Contains(actor, StringComparer.Ordinal)) return "dropped";
+        if (party is null || !party.Members.Contains(actor, StringComparer.Ordinal)) return "not_in_party";
         foreach (var member in party.Members.Distinct(StringComparer.Ordinal))
         {
             var current = await partyFor(member, cancellationToken);
@@ -114,12 +114,20 @@ public sealed class ChatDeliveryHub(
     }
 }
 
-internal sealed class ChatTransport(ChatActorVerifier actors, GroupMembershipClient groups, PostgresContactsStore contacts)
+public sealed class ChatTransport
 {
     // A framing safety ceiling, not an owner-defined chat body size control.
     private const int MaxFrameBytes = 65536;
-    private readonly ChatDeliveryHub hub = new(groups.ForCharacter, contacts.CanDeliverWhisper);
+    private readonly Func<string?, CancellationToken, Task<string>> verifyTicket;
+    private readonly ChatDeliveryHub hub;
     private static readonly JsonSerializerOptions Json = new(JsonSerializerDefaults.Web);
+
+    internal ChatTransport(ChatActorVerifier actors, GroupMembershipClient groups, PostgresContactsStore contacts)
+        : this(actors.VerifyTicket, new ChatDeliveryHub(groups.ForCharacter, contacts.CanDeliverWhisper)) { }
+
+    // The transport fixture supplies actor verification and membership without product credentials.
+    public ChatTransport(Func<string?, CancellationToken, Task<string>> verifyTicket, ChatDeliveryHub hub)
+    { this.verifyTicket = verifyTicket; this.hub = hub; }
 
     private sealed record ClientPacket(string? Type, string? Ticket, string? Channel, string? Target, string? Body);
 
@@ -134,7 +142,7 @@ internal sealed class ChatTransport(ChatActorVerifier actors, GroupMembershipCli
         {
             var first = await Read(socket, context.RequestAborted);
             if (first?.Type != "auth") { await Close(socket, WebSocketCloseStatus.PolicyViolation, "auth_required"); return; }
-            try { actor = await actors.VerifyTicket(first.Ticket, context.RequestAborted); }
+            try { actor = await verifyTicket(first.Ticket, context.RequestAborted); }
             catch (RpcException) { await Close(socket, WebSocketCloseStatus.PolicyViolation, "auth_rejected"); return; }
             connection = hub.Connect(actor, async message =>
             {
@@ -153,7 +161,7 @@ internal sealed class ChatTransport(ChatActorVerifier actors, GroupMembershipCli
                 try { status = await hub.Publish(actor, packet.Channel ?? "", packet.Target, packet.Body ?? "", context.RequestAborted); }
                 catch (Exception ex) when (ex is RpcException or Npgsql.NpgsqlException or ContactRejectedException)
                 { status = "unavailable"; }
-                if (status != "dropped") await SendStatus(status);
+                await SendStatus(status);
             }
         }
         catch (Exception ex) when (ex is WebSocketException or OperationCanceledException or JsonException or InvalidDataException) { }
