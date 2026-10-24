@@ -80,6 +80,9 @@ private:
     int32 EvadeScenarioStage = 0;
     int32 ThreatScenarioStage = 0;
     int32 AggroScenarioStage = 0;
+    int32 MemoryScenarioStage = 0;
+    bool bMemorySawCombat = false;
+    double MemoryScenarioStartedAt = -1;
     double AggroScenarioStartedAt = -1;
     double NextEvadeSampleAt = 0;
     TWeakObjectPtr<AActor> TargetScenarioFirst;
@@ -89,6 +92,7 @@ private:
     void TickEvadeScenario();
     void TickThreatScenario();
     void TickAggroScenario();
+    void TickMemoryScenario();
     UFUNCTION(Server, Reliable) void ServerTargetScenarioStep(int32 Step);
     UFUNCTION(Server, Reliable) void ServerPilotAttack(AActor* SelectedCombatTarget);
     void PilotAttack();

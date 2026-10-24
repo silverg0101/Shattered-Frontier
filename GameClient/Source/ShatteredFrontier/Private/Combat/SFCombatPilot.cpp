@@ -135,6 +135,18 @@ void FSFBoarThreatTable::Remove(const FString& CharacterId)
 bool FSFBoarThreatTable::Contains(const FString& CharacterId) const
 { return Entries.ContainsByPredicate([&](const FEntry& Entry) { return Entry.Id == CharacterId; }); }
 
+void FSFRecentAttackerMemory::RecordReset(const TSet<FString>& Attackers, double Now)
+{
+    for (const FString& Id : Attackers)
+    { if (!Id.IsEmpty()) { ExpiresAt.Add(Id, Now + RetentionSeconds); } }
+}
+
+bool FSFRecentAttackerMemory::Contains(const FString& CharacterId, double Now) const
+{
+    const double* Deadline = ExpiresAt.Find(CharacterId);
+    return Deadline && Now < *Deadline;
+}
+
 FString FSFBoarThreatTable::Select(const FString& CurrentId, const TMap<FString, double>& ReachableDistancesCm,
     double MeleeThreshold, double RangedThreshold) const
 {
@@ -246,13 +258,15 @@ void ASFPilotBoar::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 }
 
 void ASFPilotBoar::Initialize(ASFGameMode* OwnerMode, const FString& Group, int32 InSlot,
-    const TArray<FVector2D>& Area, int32 Health, int32 Serial)
+    const TArray<FVector2D>& Area, int32 Health, int32 Serial, bool bInDefensive)
 {
     check(HasAuthority());
     PilotMode = OwnerMode; SpawnGroup = Group; Slot = InSlot; Territory = Area; SpawnSerial = Serial;
+    bDefensive = bInDefensive;
     Anchor = GetActorLocation(); AnchorFacing = GetActorRotation(); CurrentHealth = Health; OnRep_Health();
     LastDamageAt = GetWorld()->GetTimeSeconds();
     Threat.Clear(); ThreatActors.Empty(); OutsideLeashSince.Empty(); TargetCharacterId.Empty();
+    RecentAttackers = FSFRecentAttackerMemory(); DamageAttackers.Empty(); PendingResetAttackers.Empty();
     ReplicatedTarget = nullptr; NextThreatDecisionAt = 0;
 }
 
@@ -266,6 +280,8 @@ void ASFPilotBoar::EnterEvade()
         { TopCharacterId = Bag->GetCharacterId(); }
     }
     if (PilotMode.IsValid()) { PilotMode->RecordBoarEvade(SpawnGroup, TopCharacterId); }
+    PendingResetAttackers = MoveTemp(DamageAttackers);
+    DamageAttackers.Empty();
     Target.Reset(); ReplicatedTarget = nullptr; TargetCharacterId.Empty();
     Threat.Clear(); ThreatActors.Empty(); OutsideLeashSince.Empty();
     WanderDestination = Anchor; bReturning = true; UnreachableSince = -1;
@@ -295,6 +311,7 @@ void ASFPilotBoar::ReceivePilotDamage(ASFE1Character* Attacker, int32 Damage)
     {
         Threat.Add(AttackerId, EffectiveDamage, PilotMode->CombatSettings()->ThreatTableMax);
         ThreatActors.Add(AttackerId, Attacker);
+        DamageAttackers.Add(AttackerId);
     }
     CurrentHealth = SFCombatPilotRules::RemainingHealth(CurrentHealth, Damage);
     LastDamageAt = GetWorld()->GetTimeSeconds(); UnreachableSince = -1;
@@ -303,7 +320,8 @@ void ASFPilotBoar::ReceivePilotDamage(ASFE1Character* Attacker, int32 Damage)
     UE_LOG(LogTemp, Display, TEXT("COMBAT_PILOT_BOAR_HIT Group=%s Slot=%d HP=%d Attacker=%s"),
         *SpawnGroup, Slot, CurrentHealth, AttackerId.IsEmpty() ? TEXT("none") : *AttackerId);
     if (CurrentHealth == 0 && PilotMode.IsValid())
-    { Threat.Clear(); ThreatActors.Empty(); SightCache.Empty(); OutsideLeashSince.Empty(); ReplicatedTarget = nullptr; Target.Reset(); PilotMode->BoarDied(this, Attacker); }
+    { Threat.Clear(); ThreatActors.Empty(); DamageAttackers.Empty(); PendingResetAttackers.Empty();
+      SightCache.Empty(); OutsideLeashSince.Empty(); ReplicatedTarget = nullptr; Target.Reset(); PilotMode->BoarDied(this, Attacker); }
 }
 
 void ASFPilotBoar::Tick(float DeltaSeconds)
@@ -327,9 +345,15 @@ void ASFPilotBoar::Tick(float DeltaSeconds)
         SetActorLocation(Anchor, false);
         SetActorRotation(AnchorFacing);
         CurrentHealth = Mode->CombatSettings()->BoarHealth;
+        RecentAttackers.RecordReset(PendingResetAttackers, Now);
+        const int32 RememberedCount = PendingResetAttackers.Num();
+        PendingResetAttackers.Empty();
         bReturning = false; OnRep_Health(); ForceNetUpdate();
         UE_LOG(LogTemp, Display, TEXT("BOAR_EVADE_RESET Group=%s Slot=%d X=%.1f Y=%.1f HP=%d"),
             *SpawnGroup, Slot, GetActorLocation().X, GetActorLocation().Y, CurrentHealth);
+        if (bDefensive)
+        { UE_LOG(LogTemp, Display, TEXT("BOAR_MEMORY_RESET Group=%s Attackers=%d RetentionSeconds=60"),
+            *SpawnGroup, RememberedCount); }
     }
     if (!bReturning && Mode->CombatSettings()->bCombatAvailable)
     {
@@ -346,7 +370,8 @@ void ASFPilotBoar::Tick(float DeltaSeconds)
                 Mode->IsInsideTerritory(Candidate->GetActorLocation(), Territory))
             {
                 const FString Id = ThreatIdentity(Cast<APlayerController>(It->Get()));
-                if (!Id.IsEmpty() && !Threat.Contains(Id))
+                if (!Id.IsEmpty() && !Threat.Contains(Id) &&
+                    (!bDefensive || RecentAttackers.Contains(Id, Now)))
                 {
                     const USFGatheringPilotComponent* Progression = It->Get()->FindComponentByClass<USFGatheringPilotComponent>();
                     const int32 CharacterLevel = Progression ? Progression->GetCharacterLevel() : 1;
@@ -384,6 +409,9 @@ void ASFPilotBoar::Tick(float DeltaSeconds)
                         {
                             Threat.Add(Id, 1.0, Settings->ThreatTableMax);
                             ThreatActors.Add(Id, Candidate);
+                            if (bDefensive)
+                            { UE_LOG(LogTemp, Display, TEXT("BOAR_MEMORY_REACQUIRED Group=%s Character=%s Threat=1"),
+                                *SpawnGroup, *Id); }
                             UE_LOG(LogTemp, Display, TEXT("BOAR_AGGRO_DETECTED Group=%s Character=%s Level=%d DistanceCm=%.0f RadiusCm=%.0f"),
                                 *SpawnGroup, *Id, CharacterLevel, Distance, Radius * 100.0);
                         }
@@ -438,7 +466,7 @@ void ASFPilotBoar::Tick(float DeltaSeconds)
             if (!Victim && !NextId.IsEmpty()) { TargetCharacterId.Empty(); }
         }
     }
-    if (SpawnGroup == TEXT("aggro_sandbox") && !Victim) { return; }
+    if ((SpawnGroup == TEXT("aggro_sandbox") || SpawnGroup == TEXT("memory_sandbox")) && !Victim && !bReturning) { return; }
     FVector Destination = WanderDestination;
     float Speed = Mode->CombatSettings()->BoarWanderSpeedMetresPerSecond*100;
     if (Victim)
@@ -549,15 +577,16 @@ void ASFGameMode::StartCombat()
     const bool bEvadeSandbox = MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_Evade");
     const bool bThreatSandbox = MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_Threat");
     const bool bAggroSandbox = MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_Aggro");
+    const bool bMemorySandbox = MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_AttackerMemory");
     bCompanionSandbox = GetNetMode() != NM_Client &&
-        (MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_Companions") || bEvadeSandbox || bThreatSandbox || bAggroSandbox);
+        (MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_Companions") || bEvadeSandbox || bThreatSandbox || bAggroSandbox || bMemorySandbox);
     if (bCompanionSandbox)
     {
         CapturedSettings = GetDefault<USFCombatPilotSettings>();
         FString Error;
         if (!CapturedSettings->Validate(Error))
         { UE_LOG(LogTemp, Error, TEXT("COMPANION_SANDBOX_DISABLED Invalid combat settings: %s"), *Error); return; }
-        const double Extent = (bEvadeSandbox || bThreatSandbox || bAggroSandbox) ? 85.0 : 45.0;
+        const double Extent = (bEvadeSandbox || bThreatSandbox || bAggroSandbox || bMemorySandbox) ? 85.0 : 45.0;
         const TArray<FVector2D> SandboxArea = { FVector2D(-Extent, -Extent), FVector2D(Extent, -Extent),
             FVector2D(Extent, Extent), FVector2D(-Extent, Extent) };
         int32 Slot = 0;
@@ -565,12 +594,14 @@ void ASFGameMode::StartCombat()
         {
             const FName Tag = bEvadeSandbox ? TEXT("SF_EvadeSandboxWildlife") :
                 bThreatSandbox ? TEXT("SF_ThreatSandboxWildlife") :
-                bAggroSandbox ? TEXT("SF_AggroSandboxWildlife") : TEXT("SF_CompanionSandboxWildlife");
+                bAggroSandbox ? TEXT("SF_AggroSandboxWildlife") :
+                bMemorySandbox ? TEXT("SF_AttackerMemorySandboxWildlife") : TEXT("SF_CompanionSandboxWildlife");
             if (!It->ActorHasTag(Tag)) { continue; }
             It->Initialize(this, bEvadeSandbox ? TEXT("evade_sandbox") :
                 bThreatSandbox ? TEXT("threat_sandbox") :
-                bAggroSandbox ? TEXT("aggro_sandbox") : TEXT("companions_sandbox"), Slot++, SandboxArea,
-                CapturedSettings->BoarHealth, ++NextBoarSerial);
+                bAggroSandbox ? TEXT("aggro_sandbox") :
+                bMemorySandbox ? TEXT("memory_sandbox") : TEXT("companions_sandbox"), Slot++, SandboxArea,
+                CapturedSettings->BoarHealth, ++NextBoarSerial, bMemorySandbox);
         }
         bPilotActive = Slot > 0;
         RespawnPoints.Add(FVector(0, 0, 110));

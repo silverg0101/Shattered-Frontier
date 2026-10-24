@@ -144,6 +144,25 @@ bool FSFCombatEvadeTest::RunTest(const FString& Parameters)
     return true;
 }
 
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFCombatRecentAttackersTest,
+    "ShatteredFrontier.Combat.Pilot.RecentAttackers",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+
+bool FSFCombatRecentAttackersTest::RunTest(const FString& Parameters)
+{
+    FSFRecentAttackerMemory Memory;
+    TestEqual(TEXT("Authored memory lasts 60 seconds"), FSFRecentAttackerMemory::RetentionSeconds, 60.0);
+    TestFalse(TEXT("No memory before reset"), Memory.Contains(TEXT("chr_attacker"), 100.0));
+    Memory.RecordReset({TEXT("chr_attacker")}, 100.0);
+    TestTrue(TEXT("Actual attacker remembered"), Memory.Contains(TEXT("chr_attacker"), 159.999));
+    TestFalse(TEXT("Bystander has no memory"), Memory.Contains(TEXT("chr_bystander"), 101.0));
+    TestFalse(TEXT("Memory expires at exact deadline"), Memory.Contains(TEXT("chr_attacker"), 160.0));
+    Memory.RecordReset({TEXT("chr_attacker")}, 200.0);
+    TestTrue(TEXT("New reset renews only its attacker"), Memory.Contains(TEXT("chr_attacker"), 259.0));
+    TestFalse(TEXT("Renewed memory expires"), Memory.Contains(TEXT("chr_attacker"), 260.0));
+    return true;
+}
+
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFCombatThreatTest,
     "ShatteredFrontier.Combat.Pilot.Threat",
     EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)

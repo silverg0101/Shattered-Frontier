@@ -7,7 +7,8 @@ param(
     [switch]$CastingScenario,
     [switch]$EvadeScenario,
     [switch]$ThreatScenario,
-    [switch]$AggroScenario
+    [switch]$AggroScenario,
+    [switch]$MemoryScenario
 )
 $ErrorActionPreference = 'Stop'
 $repoRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
@@ -23,7 +24,7 @@ function Launch([string[]]$LaunchArguments) {
     Write-Output "Started PID $($process.Id)"
 }
 function Wait-Log([string]$Path, [string]$Pattern, [int]$Count = 1) {
-    $deadline = (Get-Date).AddSeconds($(if ($EvadeScenario -or $ThreatScenario -or $AggroScenario) { 240 } else { 120 }))
+    $deadline = (Get-Date).AddSeconds($(if ($EvadeScenario -or $ThreatScenario -or $AggroScenario -or $MemoryScenario) { 240 } else { 120 }))
     while ((Get-Date) -lt $deadline) {
         foreach ($process in $ownedProcesses) { if ($process.HasExited) { throw "Network process $($process.Id) exited before $Pattern" } }
         if (Test-Path -LiteralPath $Path) {
@@ -73,12 +74,17 @@ try {
     if ($AggroScenario -and ($Map -ne '/Game/Frontier/Maps/Sandbox/SB_Aggro' -or $Clients -ne 2 -or $CastingScenario -or $EvadeScenario -or $ThreatScenario)) {
         throw 'AggroScenario requires SB_Aggro, two clients, and no other scenario'
     }
+    if ($MemoryScenario -and ($Map -ne '/Game/Frontier/Maps/Sandbox/SB_AttackerMemory' -or $Clients -ne 2 -or
+        $CastingScenario -or $EvadeScenario -or $ThreatScenario -or $AggroScenario)) {
+        throw 'MemoryScenario requires SB_AttackerMemory, two clients, and no other scenario'
+    }
     if (Get-NetUDPEndpoint -LocalPort $Port -ErrorAction SilentlyContinue) { throw "UDP $Port is already in use" }
     $serverLog = Join-Path $logs 'Server.log'
     $serverArgs = @($Map, '-server', '-NullRHI', '-unattended', '-nosound', '-nop4', "-port=$Port", '-MULTIHOME=127.0.0.1', ('-abslog="' + $serverLog + '"'))
     if ($EvadeScenario) { $serverArgs += '-CombatEvadeScenario' }
     if ($ThreatScenario) { $serverArgs += '-CombatThreatScenario' }
     if ($AggroScenario) { $serverArgs += '-CombatAggroScenario' }
+    if ($MemoryScenario) { $serverArgs += '-CombatMemoryScenario' }
     Launch $serverArgs
     Wait-Log $serverLog 'E1_WORLD_READY.*NetMode=1'
     foreach ($index in 1..$Clients) {
@@ -88,6 +94,7 @@ try {
         if ($EvadeScenario) { $clientArgs += @('-CombatEvadeScenario', ('-CombatEvadeRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         if ($ThreatScenario) { $clientArgs += @('-CombatThreatScenario', ('-CombatThreatRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         if ($AggroScenario) { $clientArgs += @('-CombatAggroScenario', ('-CombatAggroRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
+        if ($MemoryScenario) { $clientArgs += @('-CombatMemoryScenario', ('-CombatMemoryRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         Launch $clientArgs
         Wait-Log $clientLog 'Welcomed by server'
     }
@@ -165,8 +172,41 @@ try {
         if (@(Select-String -LiteralPath $driverLog -Pattern 'BOAR_AGGRO_OCCLUSION_FAILED').Count -gt 0) { throw 'Sight wall did not block detection' }
         Write-Output "PASS: client 1 stayed undetected behind a wall inside $radius cm, then cleared sight and was acquired at $detectedDistance cm; client 2 observed target replication. Logs: $logs"
     }
+    if ($MemoryScenario) {
+        $driverLog = Join-Path $logs 'Client1.log'
+        $observerLog = Join-Path $logs 'Client2.log'
+        Wait-Log $driverLog 'BOAR_MEMORY_REENGAGED HP=60'
+        Wait-Log $observerLog 'BOAR_MEMORY_OBSERVED_REENGAGE'
+        Wait-Log $serverLog 'BOAR_MEMORY_REACQUIRED Group=memory_sandbox'
+        $driverSteps = @('BOAR_MEMORY_INITIAL_NEUTRAL', 'BOAR_MEMORY_DAMAGED HP=40',
+            'BOAR_MEMORY_LEASH_CROSSED', 'BOAR_MEMORY_FULL_RESET', 'BOAR_MEMORY_REENGAGED HP=60')
+        $lines = @($driverSteps | ForEach-Object {
+            $match = Select-String -LiteralPath $driverLog -Pattern $_ | Select-Object -First 1
+            if (-not $match) { throw "Driver missed $_" }
+            $match.LineNumber
+        })
+        for ($index = 1; $index -lt $lines.Count; $index++) {
+            if ($lines[$index] -le $lines[$index-1]) { throw 'Driver sequence is out of order' }
+        }
+        $neutral = Select-String -LiteralPath $observerLog -Pattern 'BOAR_MEMORY_NEUTRAL DistanceCm=([\d.]+)' | Select-Object -First 1
+        $observed = Select-String -LiteralPath $observerLog -Pattern 'BOAR_MEMORY_OBSERVED_REENGAGE' | Select-Object -First 1
+        if (-not $neutral -or $neutral.LineNumber -ge $observed.LineNumber) { throw 'Observer missed neutral-control then reacquisition sequence' }
+        $distance = [double]::Parse($neutral.Matches[0].Groups[1].Value,[Globalization.CultureInfo]::InvariantCulture)
+        if ($distance -ge 1200 -or $distance -le 150) { throw "Neutral control was outside sight range: $distance cm" }
+        if (@(Select-String -LiteralPath $driverLog,$observerLog -Pattern 'BOAR_MEMORY_(PREATTACK_TARGET|NEUTRAL_FAILED)').Count -gt 0) {
+            throw 'Defensive boar targeted a character before the remembered attack'
+        }
+        $hit = Select-String -LiteralPath $serverLog -Pattern 'COMBAT_PILOT_BOAR_HIT Group=memory_sandbox Slot=0 HP=40 Attacker=(\S+)' | Select-Object -First 1
+        $reset = Select-String -LiteralPath $serverLog -Pattern 'BOAR_MEMORY_RESET Group=memory_sandbox Attackers=1 RetentionSeconds=60' | Select-Object -First 1
+        $reacquired = Select-String -LiteralPath $serverLog -Pattern 'BOAR_MEMORY_REACQUIRED Group=memory_sandbox Character=(\S+) Threat=1' | Select-Object -First 1
+        if (-not $hit -or -not $reset -or -not $reacquired -or $hit.LineNumber -ge $reset.LineNumber -or
+            $reset.LineNumber -ge $reacquired.LineNumber -or $hit.Matches[0].Groups[1].Value -ne $reacquired.Matches[0].Groups[1].Value) {
+            throw 'Server did not preserve the actual attacker across evade reset'
+        }
+        Write-Output "PASS: server accepted damage, leashed and reset, ignored visible bystander at $distance cm, then gave the original attacker threat 1; both clients observed the sequence. Logs: $logs"
+    }
     Write-Output "PASS: separate editor server and $Clients client(s) connected; $Clients server-authoritative possession(s). Logs: $logs"
-    if (-not $CastingScenario -and -not $EvadeScenario -and -not $ThreatScenario -and -not $AggroScenario) { Write-Output 'Headless connection check only: movement, rendering, lifecycle cleanup, authentication and Linux runtime are not certified.' }
+    if (-not $CastingScenario -and -not $EvadeScenario -and -not $ThreatScenario -and -not $AggroScenario -and -not $MemoryScenario) { Write-Output 'Headless connection check only: movement, rendering, lifecycle cleanup, authentication and Linux runtime are not certified.' }
 } finally {
     foreach ($process in $ownedProcesses) {
         if (-not $process.HasExited) { Stop-Process -Id $process.Id -ErrorAction SilentlyContinue }

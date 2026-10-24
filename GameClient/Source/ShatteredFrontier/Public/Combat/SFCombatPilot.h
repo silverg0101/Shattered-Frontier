@@ -41,6 +41,17 @@ private:
     TArray<FEntry> Entries;
 };
 
+/** AI NPC Behavior §9.1: damage attackers stay in one brain for 60 s after reset. */
+class SHATTEREDFRONTIER_API FSFRecentAttackerMemory
+{
+public:
+    static constexpr double RetentionSeconds = 60.0;
+    void RecordReset(const TSet<FString>& Attackers, double Now);
+    bool Contains(const FString& CharacterId, double Now) const;
+private:
+    TMap<FString, double> ExpiresAt;
+};
+
 UENUM()
 enum class ESFPlayerRespawnPointRule : uint8 { NearestToDeath, FirstAuthored };
 
@@ -130,7 +141,7 @@ public:
     virtual void Tick(float DeltaSeconds) override;
     virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
     void Initialize(class ASFGameMode* OwnerMode, const FString& Group, int32 Slot,
-        const TArray<FVector2D>& Area, int32 Health, int32 Serial);
+        const TArray<FVector2D>& Area, int32 Health, int32 Serial, bool bInDefensive = false);
     void ReceivePilotDamage(ASFE1Character* Attacker, int32 Damage);
     /** Authority-only transition when the open-world leash or safe-zone rule fires. */
     void EnterEvade();
@@ -150,6 +161,10 @@ private:
     TWeakObjectPtr<ASFE1Character> Target;
     UPROPERTY(Replicated) TObjectPtr<ASFE1Character> ReplicatedTarget;
     FSFBoarThreatTable Threat;
+    FSFRecentAttackerMemory RecentAttackers;
+    TSet<FString> DamageAttackers;
+    TSet<FString> PendingResetAttackers;
+    bool bDefensive = false;
     TMap<FString, TWeakObjectPtr<ASFE1Character>> ThreatActors;
     TMap<TWeakObjectPtr<ASFE1Character>, TPair<double, bool>> SightCache;
     TMap<FString, double> OutsideLeashSince;

@@ -394,6 +394,95 @@ void ASFE1Character::TickAggroScenario()
 #endif
 }
 
+void ASFE1Character::TickMemoryScenario()
+{
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    FString ScenarioRoleName;
+    FParse::Value(FCommandLine::Get(), TEXT("CombatMemoryRole="), ScenarioRoleName);
+    if (ScenarioRoleName != TEXT("Driver") && ScenarioRoleName != TEXT("Observer")) { return; }
+    ASFPilotBoar* Boar = nullptr;
+    for (TActorIterator<ASFPilotBoar> It(GetWorld()); It; ++It)
+    { if (It->GroupId() == TEXT("memory_sandbox")) { Boar = *It; break; } }
+    if (!Boar || !Controller || PilotHealth <= 0) { return; }
+    const double Now = GetWorld()->GetTimeSeconds();
+    const ASFE1Character* Victim = Boar->ThreatTarget();
+    const FVector Toward = (Boar->GetActorLocation() - GetActorLocation()).GetSafeNormal2D();
+    if (Now >= NextEvadeSampleAt)
+    {
+        NextEvadeSampleAt = Now + 1.0;
+        UE_LOG(LogTemp, Display, TEXT("BOAR_MEMORY_SAMPLE Role=%s Stage=%d X=%.0f Y=%.0f HP=%d Returning=%d Target=%s"),
+            *ScenarioRoleName, MemoryScenarioStage, GetActorLocation().X, GetActorLocation().Y,
+            Boar->Health(), Boar->IsLeashing() ? 1 : 0,
+            Victim == this ? TEXT("Self") : Victim ? TEXT("Other") : TEXT("None"));
+    }
+    if (ScenarioRoleName == TEXT("Driver"))
+    {
+        if (MemoryScenarioStage == 0)
+        {
+            int32 VisiblePlayers = 0;
+            for (TActorIterator<ASFE1Character> It(GetWorld()); It; ++It) { ++VisiblePlayers; }
+            if (VisiblePlayers < 2) { return; }
+            if (FVector::Dist2D(GetActorLocation(), Boar->GetActorLocation()) > 230)
+            { AddMovementInput(Toward, 1.0f); return; }
+            if (Victim) { UE_LOG(LogTemp, Error, TEXT("BOAR_MEMORY_PREATTACK_TARGET")); return; }
+            Controller->SetControlRotation(Toward.Rotation());
+            if (Now >= CombatScenarioNextAttackAt)
+            {
+                UE_LOG(LogTemp, Display, TEXT("BOAR_MEMORY_INITIAL_NEUTRAL"));
+                PilotAttack(); CombatScenarioNextAttackAt = Now + 0.9;
+            }
+            if (Boar->Health() < GetDefault<USFCombatPilotSettings>()->BoarHealth)
+            { MemoryScenarioStage = 1; UE_LOG(LogTemp, Display, TEXT("BOAR_MEMORY_DAMAGED HP=%d"), Boar->Health()); }
+        }
+        else if (MemoryScenarioStage == 1)
+        {
+            if (GetActorLocation().X < 8400) { AddMovementInput(FVector::ForwardVector, 1.0f); }
+            else { MemoryScenarioStage = 2; UE_LOG(LogTemp, Display, TEXT("BOAR_MEMORY_LEASH_CROSSED X=%.0f"), GetActorLocation().X); }
+        }
+        else if (MemoryScenarioStage == 2 && !Boar->IsLeashing() &&
+            Boar->Health() == GetDefault<USFCombatPilotSettings>()->BoarHealth)
+        { MemoryScenarioStage = 3; MemoryScenarioStartedAt = Now;
+          UE_LOG(LogTemp, Display, TEXT("BOAR_MEMORY_FULL_RESET")); }
+        else if (MemoryScenarioStage == 3 && Now - MemoryScenarioStartedAt >= 5.0)
+        { MemoryScenarioStage = 4; }
+        else if (MemoryScenarioStage == 4)
+        {
+            if (Victim == this)
+            { MemoryScenarioStage = 5; UE_LOG(LogTemp, Display, TEXT("BOAR_MEMORY_REENGAGED HP=%d"), Boar->Health()); }
+            else { AddMovementInput(FVector::BackwardVector, 1.0f); }
+        }
+    }
+    else
+    {
+        if (MemoryScenarioStage == 0)
+        {
+            // Stand in the boar's unobstructed forward sight cone, inside its normal aggro radius.
+            const FVector HoldPoint(2900, 500, GetActorLocation().Z);
+            if (FVector::Dist2D(GetActorLocation(), HoldPoint) > 80)
+            { AddMovementInput((HoldPoint - GetActorLocation()).GetSafeNormal2D(), 1.0f); return; }
+            MemoryScenarioStage = 1;
+        }
+        if (MemoryScenarioStage == 1)
+        {
+            if (Boar->Health() < GetDefault<USFCombatPilotSettings>()->BoarHealth || Boar->IsLeashing())
+            { bMemorySawCombat = true; }
+            if (bMemorySawCombat && !Boar->IsLeashing() &&
+                Boar->Health() == GetDefault<USFCombatPilotSettings>()->BoarHealth)
+            { MemoryScenarioStage = 2; MemoryScenarioStartedAt = Now; }
+        }
+        else if (MemoryScenarioStage == 2 && Now - MemoryScenarioStartedAt >= 2.0)
+        {
+            if (Victim) { UE_LOG(LogTemp, Error, TEXT("BOAR_MEMORY_NEUTRAL_FAILED")); return; }
+            MemoryScenarioStage = 3;
+            UE_LOG(LogTemp, Display, TEXT("BOAR_MEMORY_NEUTRAL DistanceCm=%.0f"),
+                FVector::Dist2D(GetActorLocation(), Boar->GetActorLocation()));
+        }
+        else if (MemoryScenarioStage == 3 && Victim && Victim != this)
+        { MemoryScenarioStage = 4; UE_LOG(LogTemp, Display, TEXT("BOAR_MEMORY_OBSERVED_REENGAGE")); }
+    }
+#endif
+}
+
 void ASFE1Character::TickCombatScenario()
 {
     if (FParse::Param(FCommandLine::Get(), TEXT("CombatGroupScenario")))
@@ -667,6 +756,8 @@ void ASFE1Character::Tick(float DeltaSeconds)
         FParse::Param(FCommandLine::Get(), TEXT("CombatThreatScenario"))) { TickThreatScenario(); }
     if (GetNetMode() == NM_Client && IsLocallyControlled() &&
         FParse::Param(FCommandLine::Get(), TEXT("CombatAggroScenario"))) { TickAggroScenario(); }
+    if (GetNetMode() == NM_Client && IsLocallyControlled() &&
+        FParse::Param(FCommandLine::Get(), TEXT("CombatMemoryScenario"))) { TickMemoryScenario(); }
 #endif
 }
 
