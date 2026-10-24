@@ -12,7 +12,7 @@ namespace SFQuestPilotEvents
     // operation id behind it, empty in session-only mode.
     DECLARE_MULTICAST_DELEGATE_FourParams(FGathered, APlayerController*, ESFGatheringPilotKind, const FString& /*output*/, const FString& /*operation*/);
     DECLARE_MULTICAST_DELEGATE_ThreeParams(FStructurePlaced, APlayerController*, uint64 /*construction revision*/, const FString& /*housing operation, empty when session-only*/);
-    DECLARE_MULTICAST_DELEGATE_TwoParams(FBoarDefeated, APlayerController*, const FString& /*boar death id*/);
+    DECLARE_MULTICAST_DELEGATE_FourParams(FBoarDefeated, APlayerController*, const FString& /*boar death id*/, int32 /*eligible party size*/, int32 /*highest eligible level*/);
 
     /** Harvest or refine committed to the owner's bag. */
     SHATTEREDFRONTIER_API FGathered& OnGathered();

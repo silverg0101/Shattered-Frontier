@@ -224,6 +224,7 @@ void FSFGrpcGameplayTransport::Send(const FSFGameplayRequest& Q, float DeadlineS
             auto* P = M.mutable_payload();
             P->set_skill_id(Utf8(Q.SkillId)); P->set_difficulty(Q.Difficulty); P->set_action_seconds(Q.ActionSeconds); P->set_context_hash(Q.ContextHash);
             P->set_success(Q.bSuccess); P->set_enemy_level(Q.EnemyLevel); P->set_enemy_tier_multiplier(Q.EnemyTierMultiplier); P->set_eligible_party_size(Q.PartySize);
+            P->set_reference_party_level(Q.ReferencePartyLevel);
         }
         if (Q.bHasQuest)
         {

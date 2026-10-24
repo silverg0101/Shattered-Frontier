@@ -464,7 +464,8 @@ void USFQuestPilotComponent::ServerTalkedTo_Implementation(const FString& NpcId)
     Observe(TEXT("talk_npc"), NpcId, FString(), FString::Printf(TEXT("talk_npc:%s:%s"), *Stem(NpcId), *FGuid::NewGuid().ToString(EGuidFormats::Short)));
 }
 
-bool USFQuestPilotComponent::Observe(const FString& Kind, const FString& TargetId, const FString& NodeId, const FString& OperationId)
+bool USFQuestPilotComponent::Observe(const FString& Kind, const FString& TargetId, const FString& NodeId, const FString& OperationId,
+    int32 EligiblePartySize, int32 ReferencePartyLevel)
 {
     if (!GetOwner() || !GetOwner()->HasAuthority()) { return false; }
     TArray<FEntry*> Matches;
@@ -474,12 +475,19 @@ bool USFQuestPilotComponent::Observe(const FString& Kind, const FString& TargetI
         // INT-04: the Progression service decides; the local model only mirrors accepted replies (decision 5). The first quest
         // carries the action's progression receipt; any other quest the outcome counts for gets its own quest-only receipt.
         const bool bProgression = IsProgressionKind(Kind);
-        if (Matches.IsEmpty() && bProgression) { ServiceQueue.Add({Kind, FString(), FString(), TargetId, NodeId, OperationId}); }
+        if (Matches.IsEmpty() && bProgression)
+        {
+            FServiceEvent& Event = ServiceQueue.AddDefaulted_GetRef();
+            Event.ReceiptKind = Kind; Event.TargetId = TargetId; Event.NodeId = NodeId; Event.OperationId = OperationId;
+            Event.EligiblePartySize = EligiblePartySize; Event.ReferencePartyLevel = ReferencePartyLevel;
+        }
         for (int32 Index = 0; Index < Matches.Num(); ++Index)
         {
             const FString& QuestId = Matches[Index]->Quest->Id;
             ServiceQueue.Add({Index == 0 && bProgression ? Kind : FString(TEXT("quest")), Kind, QuestId, TargetId, NodeId,
                 Index == 0 ? OperationId : OperationId + TEXT("#") + QuestId});
+            if (Index == 0 && bProgression)
+            { ServiceQueue.Last().EligiblePartySize = EligiblePartySize; ServiceQueue.Last().ReferencePartyLevel = ReferencePartyLevel; }
         }
         PumpServices();
         return !Matches.IsEmpty();
@@ -524,7 +532,8 @@ void USFQuestPilotComponent::PumpServices()
     }
     else if (Event.ReceiptKind == TEXT("craft"))
     { Q.SkillId = TEXT("skill/smithing"); Q.Difficulty = 1; Q.ActionSeconds = GetDefault<USFGatheringPilotSettings>()->RefineSeconds; Q.ContextHash = GetTypeHash(Event.TargetId); }
-    else if (Event.ReceiptKind == TEXT("defeat")) { Q.EnemyLevel = 2; Q.EnemyTierMultiplier = 1; Q.PartySize = 1; }
+    else if (Event.ReceiptKind == TEXT("defeat"))
+    { Q.EnemyLevel = 2; Q.EnemyTierMultiplier = 1; Q.PartySize = Event.EligiblePartySize; Q.ReferencePartyLevel = Event.ReferencePartyLevel; }
     if (!Event.QuestId.IsEmpty() && (bLifecycle || (Entry && !Entry->Progress.IsComplete(*Entry->Quest))))
     {
         LastOccurredMs = FMath::Max(LastOccurredMs + 1, FDateTime::UtcNow().ToUnixTimestamp() * 1000 + FDateTime::UtcNow().GetMillisecond());
@@ -542,6 +551,8 @@ void USFQuestPilotComponent::PumpServices()
         if (R.Status == ESFGameplayStatus::Ok)
         {
             if (R.ProgressionRevision > 0) { Self->ProgressionRevision = R.ProgressionRevision; }
+            if (R.Level > 0)
+            { if (auto* Pilot = Self->GetOwner()->FindComponentByClass<USFGatheringPilotComponent>()) { Pilot->RestoreLevel(R.Level); } }
             if (Event.QuestKind == TEXT("accept") || Event.QuestKind == TEXT("abandon"))
             {
                 const bool bAccept = Event.QuestKind == TEXT("accept");
@@ -1261,8 +1272,9 @@ void USFQuestPilotSubsystem::Initialize(FSubsystemCollectionBase& Collection)
     });
     PlacedHandle = SFQuestPilotEvents::OnStructurePlaced().AddWeakLambda(this, [this](APlayerController* PC, uint64 Revision, const FString& Operation)
     { Route(PC, TEXT("build"), TEXT("structure_tag/wall"), FString(), Operation.IsEmpty() ? FString::Printf(TEXT("build:%llu"), Revision) : Operation); });
-    BoarHandle = SFQuestPilotEvents::OnBoarDefeated().AddWeakLambda(this, [this](APlayerController* PC, const FString& DeathId)
-    { Route(PC, TEXT("defeat"), TEXT("npc/boar"), FString(), TEXT("boar:") + DeathId); });
+    BoarHandle = SFQuestPilotEvents::OnBoarDefeated().AddWeakLambda(this, [this](APlayerController* PC, const FString& DeathId,
+        int32 EligiblePartySize, int32 ReferencePartyLevel)
+    { Route(PC, TEXT("defeat"), TEXT("npc/boar"), FString(), TEXT("boar:") + DeathId, EligiblePartySize, ReferencePartyLevel); });
 }
 
 void USFQuestPilotSubsystem::OnWorldBeginPlay(UWorld& InWorld)
@@ -1335,13 +1347,15 @@ void USFQuestPilotSubsystem::Deinitialize()
     Super::Deinitialize();
 }
 
-void USFQuestPilotSubsystem::Route(APlayerController* PC, const FString& Kind, const FString& Target, const FString& Node, const FString& Operation)
+void USFQuestPilotSubsystem::Route(APlayerController* PC, const FString& Kind, const FString& Target, const FString& Node,
+    const FString& Operation, int32 EligiblePartySize, int32 ReferencePartyLevel)
 {
     auto* Component = IsValid(PC) && PC->GetWorld() == GetWorld() ? PC->FindComponentByClass<USFQuestPilotComponent>() : nullptr;
     if (!Component) { return; }
     // Gather/craft broadcasts carry no id of their own; a GUID keeps each accepted grant distinct.
     const bool bHasOwnId = Operation.Contains(TEXT(":")) || Operation.Contains(TEXT("/"));  // "boar:<death>", "gather/<guid>"
-    Component->Observe(Kind, Target, Node, bHasOwnId ? Operation : FString::Printf(TEXT("%s:%s"), *Operation, *FGuid::NewGuid().ToString(EGuidFormats::Short)));
+    Component->Observe(Kind, Target, Node, bHasOwnId ? Operation : FString::Printf(TEXT("%s:%s"), *Operation, *FGuid::NewGuid().ToString(EGuidFormats::Short)),
+        EligiblePartySize, ReferencePartyLevel);
 }
 
 void USFQuestPilotSubsystem::Tick(float DeltaTime)

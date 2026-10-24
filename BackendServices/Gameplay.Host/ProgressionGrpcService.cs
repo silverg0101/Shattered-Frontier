@@ -111,7 +111,8 @@ internal sealed class ProgressionGrpcService(PostgresCharacterStateStore store, 
                 var p = request.Payload;
                 var action = new ActionReceipt(request.SourceReceiptId, request.CharacterId, kind.Value, true,
                     p.SkillId, p.Difficulty, p.ActionSeconds, p.ContextHash, p.Success,
-                    p.EnemyLevel, p.EnemyTierMultiplier, p.EligiblePartySize, p.SessionEnd, p.InRestArea);
+                    p.EnemyLevel, p.EnemyTierMultiplier, p.EligiblePartySize, p.SessionEnd, p.InRestArea,
+                    p.ReferencePartyLevel);
                 var progression = store.ApplyProgression(action, request.ExpectedProgressionRevision,
                     TimeProvider.System, skillRoll, progressionSettings);
                 reply.ProgressionApplied = progression.Result.Applied;

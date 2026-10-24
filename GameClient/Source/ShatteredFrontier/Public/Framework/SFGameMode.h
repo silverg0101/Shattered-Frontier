@@ -149,6 +149,7 @@ private:
     TSet<TWeakObjectPtr<ASFE1Character>> PlayerRespawnInFlight;
     TSet<FString> PendingDeathReports;
     TSet<FString> RewardedDeaths;
+    TSet<FString> CreditedXpDeaths;
     void RetryDefeatReward(const FString& DeathId, const FString& ServiceEventId, const FString& CharacterId,
         const FString& ContainerId, bool bKillerSafe, bool bBoarSafe, TWeakObjectPtr<APlayerController> Controller);
     int32 NextBoarSerial = 0;

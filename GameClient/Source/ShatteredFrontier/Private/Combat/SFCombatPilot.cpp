@@ -4,6 +4,7 @@
 #include "Combat/SFCombatPilotRewards.h"
 #include "Characters/SFE1Character.h"
 #include "Framework/SFPlayerController.h"
+#include "Party/SFPartySettings.h"
 #include "Gathering/SFGatheringPilot.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/StaticMeshComponent.h"
@@ -737,6 +738,31 @@ int32 ASFGameMode::RewardKill(const FString& DeathId, const FVector& BoarAt, ASF
     if (!CapturedSettings || !HasAuthority()) { return 0; }
     const bool bProtected = IsSafe(BoarAt) || !IsValid(Killer) || IsSafe(Killer->GetActorLocation());
     auto* KillerController = IsValid(Killer) ? Cast<APlayerController>(Killer->GetController()) : nullptr;
+    if (!bProtected && KillerController && !CreditedXpDeaths.Contains(DeathId))
+    {
+        TArray<APlayerController*> Eligible;
+        const FSFPartyModel::FParty* Party = PartyModel.FindParty(KillerController->GetUniqueID());
+        const float RadiusCm = FMath::Clamp(GetDefault<USFPartySettings>()->KillXpRadiusMeters, 1.0f, 200.0f) * 100.0f;
+        for (auto It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+        {
+            APlayerController* Player = Cast<APlayerController>(It->Get());
+            const ASFE1Character* Character = IsValid(Player) ? Cast<ASFE1Character>(Player->GetPawn()) : nullptr;
+            if (!Character) { continue; }
+            if (Player == KillerController || (Party && Party->Members.Contains(Player->GetUniqueID()) &&
+                Character->CombatHealth() > 0 && FVector::Dist(Character->GetActorLocation(), BoarAt) <= RadiusCm))
+            { Eligible.Add(Player); }
+        }
+        if (!Eligible.IsEmpty())
+        {
+            int32 ReferenceLevel = 1;
+            for (APlayerController* Player : Eligible)
+            { if (const USFGatheringPilotComponent* Pilot = Player->FindComponentByClass<USFGatheringPilotComponent>())
+                { ReferenceLevel = FMath::Max(ReferenceLevel, Pilot->GetCharacterLevel()); } }
+            CreditedXpDeaths.Add(DeathId);
+            for (APlayerController* Player : Eligible)
+            { SFQuestPilotEvents::OnBoarDefeated().Broadcast(Player, DeathId, Eligible.Num(), ReferenceLevel); }
+        }
+    }
     if (USFBackpackComponent::Services())
     {
         bool bSeen = false; RewardedDeaths.Add(DeathId, &bSeen);
@@ -752,7 +778,6 @@ int32 ASFGameMode::RewardKill(const FString& DeathId, const FVector& BoarAt, ASF
     const int32 Hides = SFCombatPilotRewards::HidesFor(RewardedDeaths, DeathId, bProtected, CapturedSettings->HidesPerBoar);
     AActor* Bag = IsValid(Killer) ? Killer->GetController() : nullptr;
     const bool bGranted = Hides > 0 && SFCombatPilotRewards::GrantHides(Bag, Hides);
-    if (Hides > 0) { SFQuestPilotEvents::OnBoarDefeated().Broadcast(Cast<APlayerController>(Bag), DeathId); }  // credited once per death
     UE_LOG(LogTemp, Display, TEXT("COMBAT_PILOT_REWARD Death=%s Hides=%d Granted=%d Total=%d"),
         *DeathId, Hides, bGranted, SFCombatPilotRewards::CountHides(Bag));
     return bGranted ? Hides : 0;
@@ -811,7 +836,6 @@ void ASFGameMode::RetryDefeatReward(const FString& DeathId, const FString& Servi
         if (bGranted)
         {
             if (USFBackpackComponent* Owner = Weak.Get()) { Owner->ApplyToBag({{Receipt->DefinitionId, Receipt->Quantity}}); }
-            SFQuestPilotEvents::OnBoarDefeated().Broadcast(Controller.Get(), DeathId);
         }
         else if (Outcome == ESFBackpackOutcome::Unavailable || Outcome == ESFBackpackOutcome::Stale)
         {

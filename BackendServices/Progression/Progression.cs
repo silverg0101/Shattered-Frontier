@@ -30,7 +30,8 @@ public sealed record ProgressionSettings(
     int RepetitionWindowMinutes = 60, int GatheringRepeatThreshold = 80, int CraftingRepeatThreshold = 60,
     int GainWindowMinutes = 60, int ReferenceAttemptsPerHour = 600,
     int RestedNormalMinutesPerMinute = 4, int RestedAreaMinutesPerMinute = 2,
-    int RestedCapMinutes = 600, double RestedXpMultiplier = 1.5, double RestedGainMultiplier = 1.75)
+    int RestedCapMinutes = 600, double RestedXpMultiplier = 1.5, double RestedGainMultiplier = 1.75,
+    int KillsPerLevel = 150, double AdditionalPartyShare = .2)
 {
     public void Validate()
     {
@@ -40,7 +41,8 @@ public sealed record ProgressionSettings(
             CraftingRepeatThreshold is < 1 or > 1000 || GainWindowMinutes is < 10 or > 240 || ReferenceAttemptsPerHour is < 1 or > 2000 ||
             RestedNormalMinutesPerMinute is < 1 or > 60 || RestedAreaMinutesPerMinute is < 1 or > 60 ||
             RestedCapMinutes is < 1 or > 1440 || !double.IsFinite(RestedXpMultiplier) || RestedXpMultiplier is < 1 or > 3 ||
-            !double.IsFinite(RestedGainMultiplier) || RestedGainMultiplier is < 1 or > 3)
+            !double.IsFinite(RestedGainMultiplier) || RestedGainMultiplier is < 1 or > 3 ||
+            KillsPerLevel is < 1 or > 1000 || !double.IsFinite(AdditionalPartyShare) || AdditionalPartyShare is < 0 or > 1)
             throw new ArgumentOutOfRangeException(nameof(ProgressionSettings));
     }
 }
@@ -49,7 +51,7 @@ public enum ReceiptKind { GatheringHarvest, CraftConvert, EnemyDefeat }
 public sealed record ActionReceipt(string ReceiptId, string CharacterId, ReceiptKind Kind, bool Accepted,
     string? SkillId = null, int Difficulty = 0, double ActionSeconds = 6, ulong ContextHash = 0,
     bool Success = true, int EnemyLevel = 1, double EnemyTierMultiplier = 1, int EligiblePartySize = 1,
-    bool SessionEnd = false, bool InRestArea = false);
+    bool SessionEnd = false, bool InRestArea = false, int ReferencePartyLevel = 0);
 public sealed record ProgressionResult(bool Applied, int SkillGain, int XpGain, int Level, double GainChance, double RestedMinutes = 0);
 public sealed record ProgressionSnapshot(long LifetimeXp, Dictionary<string, int> Skills, ProgressionSettings Settings, string[] Receipts,
     Dictionary<string, long[]> ActiveMinutes, PracticeSnapshot[] Practices, GainSnapshot[] Gains,
@@ -157,7 +159,8 @@ public sealed class CharacterProgression
         }
         else if (receipt.Kind == ReceiptKind.EnemyDefeat)
         {
-            if (receipt.EnemyLevel is < 1 or > 200 || receipt.EnemyTierMultiplier is not (1 or 2.5 or 5 or 20) || receipt.EligiblePartySize is < 1 or > 5)
+            if (receipt.EnemyLevel is < 1 or > 200 || receipt.EnemyTierMultiplier is not (1 or 2.5 or 5 or 20) || receipt.EligiblePartySize is < 1 or > 5 ||
+                receipt.ReferencePartyLevel is < 0 or > ProgressionRules.LevelCap)
                 throw new ArgumentOutOfRangeException(nameof(receipt));
         }
         else throw new ArgumentOutOfRangeException(nameof(receipt));
@@ -199,10 +202,11 @@ public sealed class CharacterProgression
         }
         else if (receipt.Kind == ReceiptKind.EnemyDefeat)
         {
-            int delta = receipt.EnemyLevel - Level;
+            int referenceLevel = receipt.ReferencePartyLevel == 0 ? Level : receipt.ReferencePartyLevel;
+            int delta = receipt.EnemyLevel - referenceLevel;
             double levelDiff = delta >= 5 ? 1.2 : delta >= -5 ? 1 + .04 * delta : Math.Max(0, .8 - .15 * (-delta - 5));
-            double group = (1 + .2 * (receipt.EligiblePartySize - 1)) / receipt.EligiblePartySize;
-            xp = (int)Math.Round(ProgressionRules.XpToNext(Level) / 150d * receipt.EnemyTierMultiplier * levelDiff * group *
+            double group = (1 + settings.AdditionalPartyShare * (receipt.EligiblePartySize - 1)) / receipt.EligiblePartySize;
+            xp = (int)Math.Round(ProgressionRules.XpToNext(referenceLevel) / (double)settings.KillsPerLevel * receipt.EnemyTierMultiplier * levelDiff * group *
                 (rested ? settings.RestedXpMultiplier : 1), MidpointRounding.AwayFromZero);
         }
         if (LastRestedActiveMinute != activeMinute)

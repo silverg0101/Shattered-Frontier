@@ -124,7 +124,8 @@ public:
     virtual void TickComponent(float Delta, ELevelTick Type, FActorComponentTickFunction* Function) override;
     virtual void EndPlay(const EEndPlayReason::Type Reason) override;
     /** Server only: a committed outcome; counts for every active quest whose current step wants it. */
-    bool Observe(const FString& Kind, const FString& TargetId, const FString& NodeId, const FString& OperationId);
+    bool Observe(const FString& Kind, const FString& TargetId, const FString& NodeId, const FString& OperationId,
+        int32 EligiblePartySize = 1, int32 ReferencePartyLevel = 0);
     // INT-06: fill the gather grant's follow-up receipt (progression always; quest evidence for the first quest that wants it).
     bool CaptureGatherReceipt(struct FSFGameplayRequest& Receipt, const FString& TargetId, const FString& NodeId);
     // Kind of the first unfinished objective of the first active quest ("gather", "craft", ...), or empty when none.
@@ -180,7 +181,8 @@ private:
     UPROPERTY(Replicated) TArray<FSFQuestView> Views;
     UPROPERTY(Replicated) TArray<FString> Completed;
     // INT-04: with gameplay services on, progress is Progression.ApplyReceipt replies only, one call at a time.
-    struct FServiceEvent { FString ReceiptKind, QuestKind, QuestId, TargetId, NodeId, OperationId; bool bRetried = false; };
+    struct FServiceEvent { FString ReceiptKind, QuestKind, QuestId, TargetId, NodeId, OperationId; bool bRetried = false;
+        int32 EligiblePartySize = 1; int32 ReferencePartyLevel = 0; };
     void PumpServices();
     TArray<FServiceEvent> ServiceQueue;
     bool bServiceBusy = false, bRefreshBusy = false, bRestored = false;
@@ -228,7 +230,8 @@ protected:
     virtual bool DoesSupportWorldType(const EWorldType::Type WorldType) const override
     { return WorldType == EWorldType::Game || WorldType == EWorldType::PIE; }
 private:
-    void Route(APlayerController* PC, const FString& Kind, const FString& Target, const FString& Node, const FString& Operation);
+    void Route(APlayerController* PC, const FString& Kind, const FString& Target, const FString& Node, const FString& Operation,
+        int32 EligiblePartySize = 1, int32 ReferencePartyLevel = 0);
     void PlaceFromLayout(UWorld& World);
     bool bActive = false;
     FDelegateHandle GatheredHandle, PlacedHandle, BoarHandle;

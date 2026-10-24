@@ -29,6 +29,20 @@ var level = new CharacterProgression("chr_level", clock, () => 0, initialXp: Cha
 Check(level.Level == 1, "level lower boundary");
 Check(level.Apply(new("kill", "chr_level", ReceiptKind.EnemyDefeat, true, EnemyLevel: 1)).Level == 2, "enemy defeat levels up");
 Check(!level.Apply(new("kill", "chr_level", ReceiptKind.EnemyDefeat, true)).Applied, "kill replay idempotent");
+var partyA = new CharacterProgression("chr_party_a", clock, () => 0);
+var partyB = new CharacterProgression("chr_party_b", clock, () => 0);
+var sharedA = partyA.Apply(new("party/kill", "chr_party_a", ReceiptKind.EnemyDefeat, true,
+    EnemyLevel: 1, EligiblePartySize: 2, ReferencePartyLevel: 1));
+var sharedB = partyB.Apply(new("party/kill", "chr_party_b", ReceiptKind.EnemyDefeat, true,
+    EnemyLevel: 1, EligiblePartySize: 2, ReferencePartyLevel: 1));
+Check(sharedA.XpGain == 4 && sharedB.XpGain == 4 && !partyA.Apply(new("party/kill", "chr_party_a", ReceiptKind.EnemyDefeat, true)).Applied,
+    "eligible party members receive scaled kill XP once each");
+Check(partyA.Apply(new("party/grey", "chr_party_a", ReceiptKind.EnemyDefeat, true,
+    EnemyLevel: 2, EligiblePartySize: 2, ReferencePartyLevel: 20)).XpGain == 0,
+    "highest eligible party level makes grey kills grant zero");
+try { partyB.Apply(new("party/bad", "chr_party_b", ReceiptKind.EnemyDefeat, true,
+    EnemyLevel: 1, EligiblePartySize: 2, ReferencePartyLevel: 101)); throw new Exception("invalid party level accepted"); }
+catch (ArgumentOutOfRangeException) { Console.WriteLine("PASS party reference level bound"); }
 var repeatSettings = new ProgressionSettings(GatheringRepeatThreshold: 1, RepetitionWindowMinutes: 60);
 var repeated = new CharacterProgression("chr_repeat", clock, () => .999, repeatSettings);
 double p1 = repeated.Apply(new("r1", "chr_repeat", ReceiptKind.GatheringHarvest, true, ProgressionRules.Logging, 25, 6, 42)).GainChance;

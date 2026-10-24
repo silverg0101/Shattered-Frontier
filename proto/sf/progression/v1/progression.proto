@@ -56,7 +56,9 @@ message ActionPayload {
   int32 eligible_party_size = 8;
   // Final accepted practice receipt may close the session atomically.
   bool session_end = 9;
-  bool in_rest_area = 10;
+    bool in_rest_area = 10;
+    // Highest level among eligible party members on a trusted zone-server kill; 0 for legacy solo receipts.
+    int32 reference_party_level = 11;
 }
 // kind: gather | craft | build | defeat | talk_resident | talk_npc (progress evidence for step_id),
 // or accept | abandon (QST-02; step_id and target_id empty, quantity 0).

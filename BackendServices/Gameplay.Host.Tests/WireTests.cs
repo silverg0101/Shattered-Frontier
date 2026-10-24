@@ -735,6 +735,23 @@ else if (mode == "progression")
     var spent = client.GetCharacterState(new ProgressPb.GetCharacterStateRequest { CharacterId = "chr_progression" }, headers, deadline: Deadline());
     Check(Math.Abs(spent.RestedMinutes - (resumed.RestedMinutes - 1)) < 1e-9,
         "Rested active minute debit persists on wire.");
+    ProgressPb.ApplyReceiptRequest PartyKill(string recipient, string eventId, int referenceLevel) => new()
+    {
+        SourceReceiptId = eventId, Kind = "defeat", CharacterId = recipient,
+        Payload = new ProgressPb.ActionPayload { EnemyLevel = 1, EnemyTierMultiplier = 1,
+            EligiblePartySize = 2, ReferencePartyLevel = referenceLevel }
+    };
+    var partyOne = PartyKill("chr_party_one", "party/boar/1", 1);
+    var partyTwo = PartyKill("chr_party_two", "party/boar/1", 1);
+    var partyFirst = client.ApplyReceipt(partyOne, headers, deadline: Deadline());
+    Check(partyFirst.XpGain == 4 &&
+        client.ApplyReceipt(partyTwo, headers, deadline: Deadline()).XpGain == 4 &&
+        client.ApplyReceipt(partyOne, headers, deadline: Deadline()).Equals(partyFirst),
+        "Party kill XP reaches each eligible character once on the host wire.");
+    Check(client.ApplyReceipt(PartyKill("chr_party_grey", "party/boar/grey", 20), headers, deadline: Deadline()).XpGain == 0,
+        "Host wire uses highest party level for grey kills.");
+    Code(() => client.ApplyReceipt(PartyKill("chr_party_bad", "party/boar/bad", 101), headers, deadline: Deadline()),
+        StatusCode.InvalidArgument);
     var end = new ProgressPb.EndSessionRequest { OperationId = "rest/end/empty", CharacterId = "chr_progression",
         ExpectedProgressionRevision = restedReply.ProgressionRevision };
     var emptyEnd = client.EndSession(end, headers, deadline: Deadline());
