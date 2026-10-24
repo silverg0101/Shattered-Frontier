@@ -19,7 +19,7 @@ import numpy as np
 from mathutils import Matrix, Quaternion, Vector
 
 sys.path.insert(0, str(Path(__file__).parent))
-from render_views import load  # same import and turn, so world positions line up
+from render_views import load, show  # same import and turn, so world positions line up
 from track_solve import fabrik, feet
 
 MIN_OFFSET = 0.1  # an off-axis child counts for twist when it sits this far (x bone length) from the axis
@@ -37,6 +37,7 @@ def main():
     model, joints, motion, out = sys.argv[sys.argv.index("--") + 1:][:4]
     j = json.loads(Path(joints).read_text())
     m = json.loads(Path(motion).read_text())
+    mine = set(bpy.data.actions)  # a watched Blender's own actions are the owner's; only the model's go
     arm = load(model, j["turn"])
     scene = bpy.context.scene
     scene.render.fps = round(m["fps"])
@@ -148,9 +149,12 @@ def main():
             pb.keyframe_insert("rotation_quaternion", frame=f)
             if not pb.bone.use_connect:  # the root, and posed offsets such as an imported pelvis drop
                 pb.keyframe_insert("location", frame=f)
+        if f % 8 == 0:
+            bpy.context.scene.frame_set(f)
+            show()
     baked = arm.animation_data.action
     baked.name = Path(out).stem
-    for a in [a for a in bpy.data.actions if a != baked]:  # a model's own clips (idle, walk) would be exported instead
+    for a in [a for a in bpy.data.actions if a != baked and a not in mine]:  # a model's own clips (idle, walk) would be exported instead
         bpy.data.actions.remove(a)
     argv = sys.argv[sys.argv.index("--") + 1:]
     if "--positions" in argv:  # the baked joints, for exam.py to grade what a job actually delivers
@@ -165,7 +169,7 @@ def main():
     if j["turn"]:  # undo the render turn; the keys are relative to the armature, so they turn with it
         for o in [o for o in scene.objects if o.parent is None]:
             o.rotation_euler.z -= math.radians(j["turn"])
-    bpy.ops.export_scene.gltf(filepath=out, export_format="GLB", export_animations=True,
+    bpy.ops.export_scene.gltf(filepath=out, export_format="GLB", export_animations=True, use_active_scene=True,
                               export_animation_mode="ACTIVE_ACTIONS", export_force_sampling=True,
                               export_frame_range=True)
     print(f"baked {m['frames']} frames to {out}")

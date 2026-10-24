@@ -21,7 +21,15 @@ GREY = 0.5
 
 
 def load(model, turn=0.0):
-    bpy.ops.wm.read_factory_settings(use_empty=True)
+    if bpy.app.background:
+        bpy.ops.wm.read_factory_settings(use_empty=True)
+    else:  # a watched Blender (an MCP host): leave the owner's scenes alone, work in a fresh one
+        old = bpy.data.scenes.get("Forge job")
+        if old:
+            for o in list(old.objects):
+                bpy.data.objects.remove(o)
+            bpy.data.scenes.remove(old)
+        bpy.context.window_manager.windows[0].scene = bpy.data.scenes.new("Forge job")
     ext = Path(model).suffix.lower()
     if ext in (".glb", ".gltf"):
         bpy.ops.import_scene.gltf(filepath=model)
@@ -37,7 +45,14 @@ def load(model, turn=0.0):
         for o in root:
             o.rotation_euler.z += math.radians(turn)
     bpy.context.view_layer.update()
+    show()
     return arm
+
+
+def show():
+    """Redraw a watched Blender mid-script, so the owner sees each step; nothing in the background."""
+    if not bpy.app.background:
+        bpy.ops.wm.redraw_timer(type="DRAW_WIN_SWAP", iterations=1)
 
 
 def bounds(arm):
