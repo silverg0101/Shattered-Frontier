@@ -1,7 +1,7 @@
 """Colour-coded views: the model rendered with each limb painted its own flat colour, for the video model's first
 frame. Left and right can't be confused in the video, and each limb is found by its colour.
 
-    blender -b -P limbs.py -- MODEL OUT_DIR [--turn DEG]    # OUT_DIR/views.png, joints.json, limbs.json
+    blender -b -P limbs.py -- MODEL OUT_DIR [--turn DEG] [--fix FIXED.glb]   # OUT_DIR/views.png, joints.json, limbs.json
     python limbs.py --check                                  # self-check of the grouping, no Blender
 
 Bones are grouped from the skeleton alone (any creature, any bone names): a limb is a chain branching off the centre
@@ -100,12 +100,47 @@ def seg_dist(v, a, b):
     return np.linalg.norm(v[:, None] - (a + t[..., None] * ab), axis=-1)
 
 
-def strays(dist, h):
-    """Vertices a bone moves from much farther away than its own skin: a toe pulling the hip. Measured against the
-    bone's usual reach, so a spine bone that broadly covers the torso is fine."""
+def far(dist, h, usual=None):
+    """Which vertices a bone moves from much farther away than its own skin: a toe pulling the hip. Measured against
+    the bone's usual reach (median distance of its weighted vertices), so a spine bone covering the torso is fine."""
     dist = np.asarray(dist)
-    usual = np.median(dist)
-    return int((dist > max(3 * usual, usual + 0.05 * h)).sum())
+    usual = np.median(dist) if usual is None else usual
+    return dist > max(3 * usual, usual + 0.05 * h)
+
+
+def strays(dist, h):
+    return int(far(dist, h).sum())
+
+
+def fix_strays(meshes, deform, seg_a, seg_b, h):
+    """Hand each flagged bone's far-off weight to the bone nearest that vertex (a toe's weight on the hip goes to the
+    thigh). Totals per vertex are kept. Returns {bone: vertices moved}."""
+    names, moved = [b["name"] for b in deform], {}
+    for o in meshes:
+        co = np.array([o.matrix_world @ v.co for v in o.data.vertices])
+        d = seg_dist(co, seg_a, seg_b)
+        by = {}  # bone index -> [(vertex, weight)]
+        gname = {g.index: g.name for g in o.vertex_groups}
+        for v in o.data.vertices:
+            for x in v.groups:
+                if gname.get(x.group) in names:
+                    by.setdefault(names.index(gname[x.group]), []).append((v.index, x.weight))
+        for k, rows in by.items():
+            idx = np.array([i for i, _ in rows])
+            heavy = np.array([w for _, w in rows]) > 0.05
+            if not heavy.any():
+                continue
+            out = far(d[idx, k], h, np.median(d[idx[heavy], k]))
+            if (out & heavy).sum() < LIMITS["stray_vertices"]:
+                continue
+            g = o.vertex_groups[names[k]]
+            for (i, w), go in zip(rows, out):
+                if go:
+                    g.remove([i])
+                    to = names[int(d[i].argmin())]
+                    (o.vertex_groups.get(to) or o.vertex_groups.new(name=to)).add([i], w, "ADD")
+            moved[names[k]] = moved.get(names[k], 0) + int(out.sum())
+    return moved
 
 
 def pieces(n, edges, members, co=None):
@@ -156,9 +191,14 @@ def main():
     seg_limb = np.array([names.index(limb[b["name"]]) for b in deform])
     seg_index = {b["name"]: i for i, b in enumerate(deform)}
     counts, bleed, split, reach, unweighted = {n: 0 for n in names}, {n: 0 for n in names}, {}, {}, 0
-    for o in bpy.context.scene.objects:
-        if o.type != "MESH" or not any(m.type == "ARMATURE" and m.object == arm for m in o.modifiers):
-            continue
+    skinned = [o for o in bpy.context.scene.objects
+               if o.type == "MESH" and any(m.type == "ARMATURE" and m.object == arm for m in o.modifiers)]
+    if "--fix" in argv:  # repair the weights first, save that model, then check and paint the repaired one
+        moved = fix_strays(skinned, deform, seg_a, seg_b, h)
+        print("fixed: " + (", ".join(f"{b} gave {c} far vertices to their nearest bones" for b, c in moved.items()) or "nothing"))
+        bpy.ops.export_scene.gltf(filepath=argv[argv.index("--fix") + 1], export_format="GLB", use_active_scene=True)
+        rv.show()
+    for o in skinned:
         group_limb = {g.index: names.index(limb[g.name]) for g in o.vertex_groups if g.name in limb}
         me = o.data
         score = np.zeros((len(me.vertices), len(names)))
