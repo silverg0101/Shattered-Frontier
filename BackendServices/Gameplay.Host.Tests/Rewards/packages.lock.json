@@ -215,7 +215,8 @@
           "Placement": "[1.0.0, )",
           "Progression": "[1.0.0, )",
           "QuestContent": "[1.0.0, )",
-          "Rewards": "[1.0.0, )"
+          "Rewards": "[1.0.0, )",
+          "WorldContent": "[1.0.0, )"
         }
       },
       "gatheringnodes": {

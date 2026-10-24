@@ -308,11 +308,19 @@ void ASFGameMode::StartCombat()
     FString Error;
     if (!CapturedSettings->Validate(Error) || !LoadZoneRecord())
     { UE_LOG(LogTemp, Error, TEXT("COMBAT_PILOT_DISABLED Invalid settings or zone record: %s"), *Error); bPilotActive = false; return; }
-    SlotStatePath = FPaths::Combine(FPaths::ProjectSavedDir(), TEXT("CombatPilot/boar-slots.json"));
-    IFileManager::Get().Delete(*SlotStatePath);
+    bSlotServiceMode = GetDefault<USFGameplayServicesSettings>()->bEnabled;
+    if (!bSlotServiceMode)
+    {
+        SlotStatePath = FPaths::Combine(FPaths::ProjectSavedDir(), TEXT("CombatPilot/boar-slots.json"));
+        IFileManager::Get().Delete(*SlotStatePath);
+    }
     bSlotBridgeHealthy = RunWorldSlots(TEXT("tick"));
-    if (!bSlotBridgeHealthy) { bPilotActive = false; UE_LOG(LogTemp, Error, TEXT("COMBAT_PILOT_DISABLED WorldContent bridge failed")); return; }
-    UE_LOG(LogTemp, Display, TEXT("COMBAT_PILOT_READY Boars=%d Combat=%d HostileSpawning=%d"), ActiveBoars.Num(), CapturedSettings->bCombatAvailable, CapturedSettings->bSilverbrookHostileSpawning);
+    if (!bSlotBridgeHealthy && !bSlotServiceMode) { bPilotActive = false; UE_LOG(LogTemp, Error, TEXT("COMBAT_PILOT_DISABLED WorldContent bridge failed")); return; }
+    if (!bSlotServiceMode)
+    {
+        bSlotReadyLogged = true;
+        UE_LOG(LogTemp, Display, TEXT("COMBAT_PILOT_READY Boars=%d Combat=%d HostileSpawning=%d"), ActiveBoars.Num(), CapturedSettings->bCombatAvailable, CapturedSettings->bSilverbrookHostileSpawning);
+    }
 }
 
 void ASFGameMode::PostLoginCombat(APlayerController* NewPlayer)
@@ -402,13 +410,61 @@ void ASFGameMode::TickCombat()
         }
     }
 #endif
-    if (!bPilotActive || !CapturedSettings->bSilverbrookHostileSpawning || !bSlotBridgeHealthy) { return; }
+    if (!bPilotActive || !CapturedSettings->bSilverbrookHostileSpawning || (!bSlotServiceMode && !bSlotBridgeHealthy)) { return; }
     if (GetWorld()->GetTimeSeconds() >= NextSlotTick)
     { NextSlotTick = GetWorld()->GetTimeSeconds() + 2.0; bSlotBridgeHealthy = RunWorldSlots(TEXT("tick")); }
 }
 
 bool ASFGameMode::RunWorldSlots(const FString& Command, const FString& Group, int32 Slot)
 {
+    if (bSlotServiceMode)
+    {
+        if (Command == TEXT("defeat")) { PendingSlotDefeats.Emplace(Group, Slot); }
+        if (bSlotRequestInFlight) { return true; }
+        const auto Client = USFBackpackComponent::Services();
+        if (!Client) { UE_LOG(LogTemp, Error, TEXT("COMBAT_PILOT_SLOT_ERROR Gameplay Services client missing")); return false; }
+        FSFGameplayRequest Request; Request.Rpc = ESFGameplayRpc::AdvanceWorldSlots;
+        Request.bHostileSpawning = CapturedSettings->bSilverbrookHostileSpawning;
+        if (PendingSlotDefeats.Num())
+        {
+            Request.SlotCommand = TEXT("defeat"); Request.SlotGroupId = PendingSlotDefeats[0].Key;
+            Request.SlotIndex = PendingSlotDefeats[0].Value; Request.PlayersInArea = GetNumPlayers();
+        }
+        else { Request.SlotCommand = TEXT("tick"); }
+        bSlotRequestInFlight = true;
+        Client->Call(Request, [WeakMode = TWeakObjectPtr<ASFGameMode>(this), Request](const FSFGameplayResponse& Reply)
+        {
+            ASFGameMode* Mode = WeakMode.Get();
+            if (!Mode) { return; }
+            Mode->bSlotRequestInFlight = false;
+            if (Reply.Status != ESFGameplayStatus::Ok || Reply.BoarSlots.Num() != 10)
+            {
+                Mode->bSlotBridgeHealthy = false;
+                UE_LOG(LogTemp, Error, TEXT("COMBAT_PILOT_SLOT_ERROR Gameplay.Host Code=%d Slots=%d"), Reply.GrpcCode, Reply.BoarSlots.Num());
+                return;
+            }
+            Mode->bSlotBridgeHealthy = true;
+            if (Request.SlotCommand == TEXT("defeat") && Mode->PendingSlotDefeats.Num())
+            { Mode->PendingSlotDefeats.RemoveAt(0); }
+            for (const auto& Row : Reply.BoarSlots)
+            {
+                // An older poll must not recreate a boar while its defeat is queued.
+                const bool bDefeatPending = Mode->PendingSlotDefeats.ContainsByPredicate([&Row](const TPair<FString, int32>& Pending)
+                { return Pending.Key == Row.GroupId && Pending.Value == Row.SlotIndex; });
+                if (Row.bActive && !bDefeatPending && Mode->CapturedSettings->bSilverbrookHostileSpawning && Mode->Groups.Contains(Row.GroupId))
+                { Mode->SpawnSlot(Row.GroupId, Row.SlotIndex, Row.Cycle, Row.PointId,
+                    Row.XMetres, Row.YMetres, Row.FacingDegrees); }
+            }
+            if (!Mode->bSlotReadyLogged)
+            {
+                Mode->bSlotReadyLogged = true;
+                UE_LOG(LogTemp, Display, TEXT("COMBAT_PILOT_READY Boars=%d Combat=%d HostileSpawning=%d"),
+                    Mode->ActiveBoars.Num(), Mode->CapturedSettings->bCombatAvailable, Mode->CapturedSettings->bSilverbrookHostileSpawning);
+            }
+            if (Mode->PendingSlotDefeats.Num()) { Mode->RunWorldSlots(TEXT("tick")); }
+        });
+        return true;
+    }
     const FString Root = FPaths::ConvertRelativePathToFull(FPaths::ProjectDir(), TEXT(".."));
     const FString Dotnet = FPaths::Combine(Root, TEXT("Artifacts/Persistence/Toolchains/dotnet-10.0.402/dotnet.exe"));
     const FString Dll = FPaths::Combine(Root, TEXT("BackendServices/WorldContent.Tool/bin/Debug/net10.0/WorldContent.Tool.dll"));

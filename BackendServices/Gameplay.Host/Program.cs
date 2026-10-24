@@ -111,6 +111,8 @@ builder.Services.AddSingleton(new PostgresHousingStore(housingConnection));
 builder.Services.AddSingleton(new PostgresExchangeStore(exchangeConnection));
 builder.Services.AddSingleton(quests);
 builder.Services.AddSingleton(zone);
+builder.Services.AddSingleton(gatheringZone);
+builder.Services.AddSingleton<WorldSlotsGrpcService>();
 builder.Services.AddSingleton(new PostgresGatheringStore(ledgerConnection, gatheringZone, gatheringTuning,
     fixtureGatheringRespawn is null ? gatheringTuning.Lifecycle : new NodeSettings(30, 0, RegrowthMode.FullRespawn), ledgerStore));
 builder.Services.AddHostedService<GatheringGrantRecovery>();
@@ -126,6 +128,7 @@ builder.Services.AddGrpc(o => o.Interceptors.Add<AuthInterceptor>());
 var app = builder.Build();
 app.MapGrpcService<RewardGrpcService>();
 app.MapGrpcService<GatheringGrpcService>();
+app.MapGrpcService<WorldSlotsGrpcService>();
 app.MapGrpcService<ProgressionGrpcService>();
 app.MapGrpcService<HousingGrpcService>();
 app.MapGrpcService<CraftingGrpcService>();

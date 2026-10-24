@@ -18,7 +18,7 @@ ASFGameMode::ASFGameMode()
     DefaultPawnClass = ASFE1Character::StaticClass();
     PlayerControllerClass = ASFPlayerController::StaticClass();
     HUDClass = ASFConstructionNetworkHUD::StaticClass();
-    // The combat slot bridge is the only per-tick work; 1 Hz is enough for it.
+    // Combat slot refresh is the only per-tick work; 1 Hz is enough for it.
     PrimaryActorTick.bCanEverTick = true;
     PrimaryActorTick.TickInterval = 1.0f;
 }

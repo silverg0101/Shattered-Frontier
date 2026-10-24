@@ -46,7 +46,7 @@ public:
 enum class ESFGameplayRpc : uint8 { GrantDefeatReward, ApplyReceipt, GetCharacterState, CreateCharacter, LearnRecipe, ClaimPlot, GetClaim, Place, Remove, Craft, ListStructures, Grant, SavePosition, ReportDeath, ClearDeath,
     // Exchange (proto/sf/exchange/v1), carried by the Backend transport over the same Gameplay.Host channel.
     ExchangeWallet, OfferTrade, AcceptTrade, CancelTrade, ListItem, BuyListing, CancelListing, ListListings,
-    GetGatheringNode, HarvestGatheringNode };
+    GetGatheringNode, HarvestGatheringNode, AdvanceWorldSlots };
 
 // Exchange request fields (each RPC reads only its own). Amounts are whole gold, as in the proto.
 struct FSFExchangeDelivery { FString EscrowId, DestinationId, ItemId; int64 Quantity = 0; };
@@ -100,6 +100,7 @@ struct FSFGameplayRequest
     FString LearnSource, TrainerNpc, ScrollContainer;
     FSFExchangeRequest Exchange;
     int32 NodeGeneration = 0;  // HarvestGatheringNode: server-observed generation
+    FString SlotCommand, SlotGroupId; int32 SlotIndex = 0, PlayersInArea = 0; bool bHostileSpawning = true;
     TArray<uint8> FollowUpPayload; FString FollowUpDigest; int32 FollowUpVersion = 0;
 };
 
@@ -141,6 +142,8 @@ struct FSFGameplayResponse
     bool bHasNode = false; FString NodeId, NodeDefinitionId, GrowthStage, HarvestStatus, ResourceId;
     int32 NodeGeneration = 0, NodeCharges = 0, NodeCapacity = 0, HarvestQuantity = 0;
     int64 NodeRegrowAtUnixMs = 0, NodeNextTransitionUnixMs = 0;
+    struct FBoarSlot { FString GroupId, PointId; int32 SlotIndex = 0, Cycle = 0; bool bActive = false; double XMetres = 0, YMetres = 0, FacingDegrees = 0; };
+    TArray<FBoarSlot> BoarSlots;
 };
 
 using FSFGameplaySend = TFunction<void(const FSFGameplayRequest&, float DeadlineSeconds, TFunction<void(const FSFGameplayResponse&)>)>;

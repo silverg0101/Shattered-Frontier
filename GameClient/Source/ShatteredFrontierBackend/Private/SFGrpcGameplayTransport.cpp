@@ -83,6 +83,7 @@ struct FSFGrpcGameplayChannel
     std::unique_ptr<sf::crafting::v1::Crafting::Stub> Crafting;
     std::unique_ptr<sf::exchange::v1::Exchange::Stub> Exchange;
     std::unique_ptr<sf::gathering::v1::Gathering::Stub> Gathering;
+    std::unique_ptr<sf::world::v1::WorldSlots::Stub> WorldSlots;
     grpc::CompletionQueue Queue;
     std::string Token;
     FCriticalSection PendingLock;
@@ -99,6 +100,7 @@ FSFGrpcGameplayTransport::FSFGrpcGameplayTransport(const FString& Endpoint) : Ch
     Channel->Crafting = sf::crafting::v1::Crafting::NewStub(Wire);
     Channel->Exchange = sf::exchange::v1::Exchange::NewStub(Wire);
     Channel->Gathering = sf::gathering::v1::Gathering::NewStub(Wire);
+    Channel->WorldSlots = sf::world::v1::WorldSlots::NewStub(Wire);
     Channel->Token = Utf8(FPlatformMisc::GetEnvironmentVariable(TEXT("SF_GAMEPLAY_TOKEN")));
     if (Channel->Token.empty()) { UE_LOG(LogTemp, Warning, TEXT("GAMEPLAY_SERVICES_TOKEN_MISSING SF_GAMEPLAY_TOKEN is empty; the host will reject calls.")); }
     Thread = FRunnableThread::Create(this, TEXT("SFGameplayServicesGrpc"));
@@ -131,6 +133,25 @@ void FSFGrpcGameplayTransport::Send(const FSFGameplayRequest& Q, float DeadlineS
     };
     switch (Q.Rpc)
     {
+    case ESFGameplayRpc::AdvanceWorldSlots:
+    {
+        sf::world::v1::AdvanceSlotsRequest M;
+        M.set_command(Utf8(Q.SlotCommand)); M.set_group_id(Utf8(Q.SlotGroupId)); M.set_slot_index(Q.SlotIndex);
+        M.set_players_in_area(Q.PlayersInArea); M.set_hostile_spawning(Q.bHostileSpawning);
+        auto* Call = new TCall<sf::world::v1::AdvanceSlotsReply>();
+        Call->Copy = [](const sf::world::v1::AdvanceSlotsReply& R, FSFGameplayResponse& Out)
+        {
+            for (const auto& Slot : R.slots())
+            {
+                auto& Row = Out.BoarSlots.AddDefaulted_GetRef();
+                Row.GroupId = FromUtf8(Slot.group_id()); Row.PointId = FromUtf8(Slot.point_id());
+                Row.SlotIndex = Slot.slot_index(); Row.Cycle = Slot.cycle(); Row.bActive = Slot.active();
+                Row.XMetres = Slot.x_metres(); Row.YMetres = Slot.y_metres(); Row.FacingDegrees = Slot.facing_degrees();
+            }
+        };
+        Start(Call, [&](grpc::ClientContext* C) { return Channel->WorldSlots->AsyncAdvance(C, M, &Channel->Queue); });
+        break;
+    }
     case ESFGameplayRpc::GetGatheringNode:
     {
         sf::gathering::v1::GetNodeRequest M; M.set_node_id(Utf8(Q.NodeId));

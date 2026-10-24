@@ -19,6 +19,7 @@ using RewardPb = ShatteredFrontier.Rewards.V1;
 using ProgressPb = ShatteredFrontier.Progression.V1;
 using HousingPb = ShatteredFrontier.Housing.V1;
 using GatheringPb = ShatteredFrontier.Gathering.V1;
+using WorldPb = ShatteredFrontier.World.V1;
 
 static void Check(bool condition, string message)
 {
@@ -64,6 +65,29 @@ if (mode == "gathering-old-host")
         Console.WriteLine("PASS new gather client fails closed on old host UNIMPLEMENTED; legacy Harvest was not invoked");
     }
     finally { await app.StopAsync(); }
+    return;
+}
+
+if (mode == "world-slots")
+{
+    var client = new WorldPb.WorldSlots.WorldSlotsClient(channel);
+    var tick = new WorldPb.AdvanceSlotsRequest { Command = "tick", HostileSpawning = true };
+    Code(() => client.Advance(tick, bad, deadline: Deadline()), StatusCode.Unauthenticated);
+    Code(() => client.Advance(new() { Command = "defeat", GroupId = "other", HostileSpawning = true },
+        headers, deadline: Deadline()), StatusCode.InvalidArgument);
+    var initial = client.Advance(tick, headers, deadline: Deadline());
+    Check(initial.Slots.Count == 10 && initial.Slots.All(s => s.Active && s.PointId.Length > 0 && s.Cycle == 0),
+        "Initial boar slots missing.");
+    var first = initial.Slots[0];
+    var defeated = client.Advance(new() { Command = "defeat", GroupId = first.GroupId,
+        SlotIndex = first.SlotIndex, PlayersInArea = 1, HostileSpawning = true }, headers, deadline: Deadline());
+    Check(defeated.Slots.Single(s => s.GroupId == first.GroupId && s.SlotIndex == first.SlotIndex).Cycle == 1,
+        "Defeat did not advance the slot cycle.");
+    Check(!defeated.Slots.Single(s => s.GroupId == first.GroupId && s.SlotIndex == first.SlotIndex).Active,
+        "Defeated slot respawned before its deadline.");
+    var disabled = client.Advance(new() { Command = "tick", HostileSpawning = false }, headers, deadline: Deadline());
+    Check(disabled.Slots.All(s => !s.Active), "Hostile spawn switch did not disable slots.");
+    Console.WriteLine("PASS world-slots wire auth, initial groups, defeat cycle, hostile switch");
     return;
 }
 

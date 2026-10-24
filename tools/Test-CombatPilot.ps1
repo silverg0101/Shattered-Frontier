@@ -5,7 +5,9 @@ param(
     [ValidateRange(320,1200)][int]$TimeoutSeconds = 600,
     [ValidateRange(1,10)][int]$Clients = 1,
     [switch]$TargetScenario,
-    [switch]$Services
+    [switch]$Services,
+    [string]$ServerExe,
+    [switch]$SpawnOnly
 )
 $ErrorActionPreference = 'Stop'
 $repo = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
@@ -14,8 +16,11 @@ $project = Join-Path $repo 'GameClient\ShatteredFrontier.uproject'
 $bridge = Join-Path $repo 'BackendServices\WorldContent.Tool\bin\Debug\net10.0\WorldContent.Tool.dll'
 $sdk = Join-Path $repo 'Artifacts\Persistence\Toolchains\dotnet-10.0.402\dotnet.exe'
 if ($Services -and $TargetScenario) { throw 'Services ledger assertion requires the combat reward scenario.' }
+if ($SpawnOnly -and (-not $Services -or -not $ServerExe)) { throw '-SpawnOnly requires -Services and -ServerExe.' }
 if ($Clients -gt 1 -and (-not $Services -or $TargetScenario)) { throw 'Group combat requires -Services and does not combine with -TargetScenario.' }
-foreach ($required in @($editor,$project,$bridge,$sdk)) {
+$requiredInputs = @($editor,$project,$ServerExe) | Where-Object { $_ }
+if (-not $Services) { $requiredInputs += @($bridge,$sdk) }
+foreach ($required in $requiredInputs) {
     if (-not (Test-Path -LiteralPath $required -PathType Leaf)) { throw "Required pilot input missing: $required" }
 }
 if (@([Net.NetworkInformation.IPGlobalProperties]::GetIPGlobalProperties().GetActiveUdpListeners() | Where-Object Port -eq $Port).Count) {
@@ -26,7 +31,8 @@ $null = New-Item -ItemType Directory -Path $root
 if ($Services) { . (Join-Path $PSScriptRoot 'InventoryLedgerHostFixture.ps1') }
 $fx = @{}
 $owned = [Collections.Generic.List[Diagnostics.Process]]::new()
-$scope = if ($Clients -gt 1) { "$Clients clients, one boar, one mid-fight reconnect, owner targeting and durable killer reward" }
+$scope = if ($SpawnOnly) { 'Packaged dedicated server, Gameplay.Host, five boars in each authored group' }
+    elseif ($Clients -gt 1) { "$Clients clients, one boar, one mid-fight reconnect, owner targeting and durable killer reward" }
     elseif ($TargetScenario) { 'One dedicated server, one client; Tab selection, owner replication, death and range drops' }
     elseif ($Services) { 'One dedicated server, one client, durable boar hides in InventoryLedger and WorldContent slot respawn' }
     else { 'One dedicated server, one client; local attack RPC and server-authored WorldContent slots' }
@@ -36,13 +42,15 @@ function Start-Owned([string]$Name,[string]$Url,[string[]]$Extra) {
     $log = Join-Path $root ($Name+'.log')
     $user = Join-Path $root ($Name+'-user')
     $null = New-Item -ItemType Directory -Path $user
-    $arguments = @(('"'+$project+'"'),$Url,'-unattended','-NullRHI','-nosound','-nop4',('-UserDir="'+$user+'/"'),('-abslog="'+$log+'"'))+$Extra
+    $executable = if ($Name -eq 'server' -and $ServerExe) { $ServerExe } else { $editor }
+    $projectArg = if ($executable -eq $editor) { @(('"'+$project+'"')) } else { @() }
+    $arguments = @($projectArg)+@($Url,'-unattended','-NullRHI','-nosound','-nop4',('-UserDir="'+$user+'/"'),('-abslog="'+$log+'"'))+$Extra
     if ($Clients -gt 1 -and $Name -like 'client*') {
         $clientCsvDir = Join-Path $root ($Name+'-csv')
         $null = New-Item -ItemType Directory -Path $clientCsvDir
         $arguments += ('-M3CsvDir="'+$clientCsvDir+'"')
     }
-    $process = Start-Process -FilePath $editor -ArgumentList $arguments -WindowStyle Hidden -PassThru `
+    $process = Start-Process -FilePath $executable -ArgumentList $arguments -WindowStyle Hidden -PassThru `
         -RedirectStandardOutput (Join-Path $root ($Name+'.stdout.txt')) -RedirectStandardError (Join-Path $root ($Name+'.stderr.txt'))
     $null = $process.Handle
     $owned.Add($process)
@@ -141,6 +149,17 @@ try {
         Invoke-WithEnv $serverEnv { $script:server = Start-Owned 'server' $url $serverFlags }
     } else { $server = Start-Owned 'server' $url $serverFlags }
     Wait-Log $server 'server' 'COMBAT_PILOT_READY Boars=10'
+    if ($SpawnOnly) {
+        $serverText = Get-Content -LiteralPath (Join-Path $root 'server.log') -Raw
+        foreach ($group in @('boar_farm_edge','boar_forest_edge')) {
+            if ([regex]::Matches($serverText,"COMBAT_PILOT_BOAR_SPAWN Group=$group Slot=").Count -ne 5) {
+                throw "Packaged $group did not spawn all five boars."
+            }
+        }
+        if ($serverText -match 'COMBAT_PILOT_SLOT_ERROR|Fatal error:|Assertion failed:') { throw 'Packaged combat logged a slot or fatal error.' }
+        $result.status='Passed'
+        return
+    }
     $clientUrl = '127.0.0.1:'+$Port + $(if ($Services) { '?SFDevCharacter=alpha' } else { '' })
     if ($Clients -gt 1) {
         $names = @('alpha','beta','gamma','delta','epsilon','zeta','eta','theta','iota','kappa')

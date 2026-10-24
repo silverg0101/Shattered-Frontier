@@ -25,6 +25,7 @@ THIRD_PARTY_INCLUDES_START
 #include "sf/crafting/v1/crafting.grpc.pb.h"
 #include "sf/exchange/v1/exchange.grpc.pb.h"
 #include "sf/gathering/v1/gathering.grpc.pb.h"
+#include "sf/world/v1/world_slots.grpc.pb.h"
 #pragma pop_macro("verify")
 #pragma pop_macro("check")
 THIRD_PARTY_INCLUDES_END

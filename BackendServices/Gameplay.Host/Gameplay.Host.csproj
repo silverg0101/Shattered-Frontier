@@ -11,10 +11,12 @@
     <ProjectReference Include="../Housing.Postgres/Housing.Postgres.csproj" />
     <ProjectReference Include="../InventoryLedger.Postgres/InventoryLedger.Postgres.csproj" />
     <ProjectReference Include="../Exchange.Postgres/Exchange.Postgres.csproj" />
+    <ProjectReference Include="../WorldContent/WorldContent.csproj" />
     <PackageReference Include="Grpc.AspNetCore" />
     <PackageReference Include="Grpc.Net.Client" />
     <Protobuf Include="../../proto/sf/rewards/v1/rewards.proto" ProtoRoot="../../proto" GrpcServices="Both" />
     <Protobuf Include="../../proto/sf/gathering/v1/gathering.proto" ProtoRoot="../../proto" GrpcServices="Both" />
+    <Protobuf Include="../../proto/sf/world/v1/world_slots.proto" ProtoRoot="../../proto" GrpcServices="Both" />
     <Protobuf Include="../../proto/sf/progression/v1/progression.proto" ProtoRoot="../../proto" GrpcServices="Both" />
     <Protobuf Include="../../proto/sf/housing/v1/housing.proto" ProtoRoot="../../proto" GrpcServices="Both" />
     <Protobuf Include="../../proto/sf/crafting/v1/crafting.proto" ProtoRoot="../../proto" GrpcServices="Both" />

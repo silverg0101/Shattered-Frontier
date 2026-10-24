@@ -145,6 +145,10 @@ private:
     const USFCombatPilotSettings* CapturedSettings = nullptr;
     bool bPilotActive = false;
     bool bSlotBridgeHealthy = false;
+    bool bSlotServiceMode = false;
+    bool bSlotRequestInFlight = false;
+    bool bSlotReadyLogged = false;
+    TArray<TPair<FString, int32>> PendingSlotDefeats;
     double NextSlotTick = 0;
     bool bScenario = false;
     bool bScenarioFirstBoarDied = false;
