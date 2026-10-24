@@ -410,13 +410,20 @@ function drawPreview(e) {
       <div class="acts">
         ${e.kind === 'dir' ? `<a class="btn primary" href="${assetHref(e.path)}">Open folder</a>` : `<a class="btn" href="${url}" download>Download</a>`}
         ${e.kind === 'image' ? `<button class="btn primary" id="use">Use in Create</button>` : ''}
-        ${e.kind === 'model' && /_rigged\.(glb|fbx)$/i.test(e.name) ? `<button class="btn primary" id="animate">Animate: walk</button>` : ''}
+        ${e.kind === 'model' && /_rigged\.(glb|fbx)$/i.test(e.name) ? `<button class="btn primary" id="animate">Animate…</button>` : ''}
+        ${e.kind === 'model' && ext === 'glb' && !/_rigged$/i.test(e.name.slice(0, -4)) ? `<button class="btn primary" id="rig">Rig…</button>` : ''}
       </div></div></div>`;
   $('#zoom') && ($('#zoom').onclick = () => lightbox(url));
   $('#viewer') && mountViewer($('#viewer'), `${url}?v=${e.mtime}`, e).catch(err => { $('#viewer').textContent = 'Viewer failed: ' + err.message; });
-  $('#animate') && ($('#animate').onclick = async () => {
-    try { await post('/api/jobs', { kind: 'motion', params: { model: e.path } }); toast('Added to queue'); setQueueOpen(true); pollQueue(); } catch (err) { fail(err); }
-  });
+  const queueJob = async (kind, title, keys, from) => {
+    try {
+      const r = await api('/api/schema'), params = await optionsModal(title, (r[from] || []).filter(p => keys.includes(p.key)));
+      if (!params) return;
+      await post('/api/jobs', { kind, params: { ...params, model: e.path } }); toast('Added to queue'); setQueueOpen(true); pollQueue();
+    } catch (err) { fail(err); }
+  };
+  $('#animate') && ($('#animate').onclick = () => queueJob('motion', 'Animate ' + e.name, ['action', 'takes'], 'motion'));
+  $('#rig') && ($('#rig').onclick = () => queueJob('rig', 'Rig ' + e.name, ['rig_format', 'rig_skeleton'], '3d'));
   $('#use') && ($('#use').onclick = () => { setCreateImage(e.path); location.hash = '#/create'; });
 }
 /* ---------------- 3D viewer (three.js): textured / clay / wireframe / UV checker / UV layout / normals / skeleton */
@@ -619,6 +626,25 @@ function picker(title, wantImage) {
   });
 }
 const pickFolder = t => picker(t, false);
+// A popup of schema options (choices and numbers); resolves to {key: value} or null when cancelled.
+function optionsModal(title, fields) {
+  return new Promise(resolve => {
+    const o = Object.assign(document.createElement('div'), { className: 'overlay' });
+    const done = v => { o.remove(); resolve(v); };
+    o.onclick = ev => ev.target === o && done(null);
+    o.innerHTML = `<div class="modal"><h3>${esc(title)}</h3><div style="display:grid;gap:14px;margin:16px 0">
+      ${fields.map(p => `<div class="field"><label for="m_${p.key}">${esc(p.label)}</label>${p.kind === 'choice'
+        ? `<select id="m_${p.key}">${p.options.map(v => `<option ${String(v) === String(p.default) ? 'selected' : ''}>${esc(v)}</option>`).join('')}</select>`
+        : `<input type="number" id="m_${p.key}" value="${p.default}" min="${p.min}" max="${p.max}">`}</div>`).join('')}</div>
+      <div class="foot"><button class="btn" data-x>Cancel</button><button class="btn primary" data-ok>Add to queue</button></div></div>`;
+    document.body.append(o);
+    $('[data-x]', o).onclick = () => done(null);
+    $('[data-ok]', o).onclick = () => done(Object.fromEntries(fields.map(p => {
+      const v = $('#m_' + p.key, o).value;
+      return [p.key, p.kind === 'choice' && typeof p.default !== 'number' ? v : +v];
+    })));
+  });
+}
 
 /* ---------------- create */
 let schema = null;
@@ -693,7 +719,7 @@ async function renderCreate() {
   };
   const NOTES = { low: 'quick drafts · 100k faces', normal: 'game-ready · 300k faces', high: 'detailed · 500k faces', ultra: 'Nanite statics only · 1M faces, slow' };
   const RIG_NOTES = { low: 'rigged critter · 10k faces', normal: 'rigged NPC · 30k faces', high: 'rigged, detailed · 50k faces', ultra: 'rigged hero · 100k faces' };
-  const rigOn = () => !!$('#p_rig')?.checked;
+  const rigOn = () => ($('#p_rig')?.value || 'off') !== 'off';  // "later" and "now" both use the rig budgets
   const setPreset = (l, apply) => {  // with Rig ticked, face count and texture size follow the skinned-mesh budgets
     preset = l; store.set('createPreset', l);
     document.querySelectorAll('[data-preset]').forEach(b => b.classList.toggle('on', b.dataset.preset === l));
@@ -846,7 +872,7 @@ function drawQueue(jobs) {
     const time = j.started ? dur((j.finished || now) - j.started) : 'queued ' + fmtTime(j.created);
     return `<div class="job ${live ? 'running' : ''}" style="animation:none">
       <div class="row"><span class="title" title="${esc(j.name)}">${esc(j.name)}</span><span class="pill ${j.status}">${j.status}</span></div>
-      <div class="sub">${j.kind === 'motion' ? 'Motion' : '3D Asset'} · #${j.id}${j.host ? ' · ' + esc(j.host) : ''} · ${time}${j.note && (j.status === 'queued' || live) ? ' · ' + esc(j.note) : ''}</div>
+      <div class="sub">${{ motion: 'Motion', rig: 'Rig' }[j.kind] || '3D Asset'} · #${j.id}${j.host ? ' · ' + esc(j.host) : ''} · ${time}${j.note && (j.status === 'queued' || live) ? ' · ' + esc(j.note) : ''}</div>
       ${j.error ? `<div class="err">${esc(j.error)}</div>` : ''}
       ${live && m ? `<div class="metrics">${metric('CPU', m.cpu)}${metric('RAM', m.ram, m.ram_gb.join(' / ') + ' GB')}${metric('GPU', m.gpu)}${metric('VRAM', m.vram, m.vram_gb.join(' / ') + ' GB')}</div>` : ''}
       ${j.log.length || live ? `<div class="log ${open ? 'open' : ''}"><pre data-id="${j.id}">${esc(open ? j.log.join('\n') : j.log.at(-1) || 'waiting for output…')}</pre>

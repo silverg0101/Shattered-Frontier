@@ -69,7 +69,7 @@ Job object:
 | `log` | Host log lines: live while running, saved when finished (up to 200) |
 | `error` | Failure reason when `failed` |
 | `output` | Asset path of the generated model when `done` |
-| `files` | When `done`: `[{"path", "kind", "url"}, ...]`, the model (`kind: "model"`), the rigged model when `rig` was on (`<name>_rigged.<ext>`), plus a copy of the source image saved next to it as its thumbnail (`kind: "image"`). `url` downloads the file |
+| `files` | When `done`: `[{"path", "kind", "url"}, ...]`, the model (`kind: "model"`), the rigged model when `rig` was on (`<name>_rigged.<ext>`), plus a copy of the source image kept as its thumbnail in the folder's hidden `.thumbs/` (`kind: "image"`). `url` downloads the file |
 
 Poll `status_url` every few seconds until `status` is `done`, `failed` or `cancelled`. A finished model is already on the steam-server; the copy on the GPU host is deleted (SSH hosts only).
 
@@ -88,6 +88,17 @@ Poll `status_url` every few seconds until `status` is `done`, `failed` or `cance
 - **`POST /api/move`** with `{"paths": [...], "dest"}`: move items into a folder.
 - **`POST /api/rename`** with `{"path", "name"}`: rename an item.
 - **`POST /api/delete`** with `{"paths": [...]}`: delete permanently. Folders are deleted with everything in them.
+
+## Rig jobs
+
+A rig job rigs a model that already exists, such as a 3D job's model made with `rig: "later"`. Its `params` are `model` (an unrigged `.glb` in the library) plus any `rig_*` option from the Rig table. The rigged file is saved next to the model as `<model>_rigged.glb` or `.fbx`; `files` lists it. A 30k-face model takes about 2 minutes.
+
+```bash
+curl -X POST http://192.168.50.133:8090/api/jobs -H "Content-Type: application/json" -d '{
+  "kind": "rig",
+  "params": {"model": "Generated/Greenlands_-_Rat.glb", "rig_format": "fbx", "rig_skeleton": "Keep model names"}
+}'
+```
 
 ## Motion jobs
 
@@ -135,7 +146,7 @@ The options cover every selectable input in the Trellis2 + Pixal3D workflow. A f
 
 Some keys set two nodes at once: `seed` (sparse structure and texture), `texture_size` (whichever texturing node the mode uses), `target_face_num` and `simplify_method` (both simplify passes), and `low_vram` and `keep_models_loaded` (both model loaders).
 
-Rigging (`rig: true`) runs SkinTokens (ComfyUI-SkinToken) on the textured mesh and saves a second file, `<name>_rigged.glb` or `.fbx`, next to the unrigged model. Every `rig_*` option is ignored while `rig` is false. `Unreal Engine 5` names the bones for the UE5 mannequin skeleton.
+`rig` is `off`, `later` or `now` (`false`/`true` still mean `off`/`now`). `now` runs SkinTokens (ComfyUI-SkinToken) on the textured mesh and saves a second file, `<name>_rigged.glb` or `.fbx`, next to the unrigged model. `later` sizes the model with the rigged budgets below but doesn't rig it: check the model first, then send a rig job for it. Every `rig_*` option is ignored unless `rig` is `now`. `Unreal Engine 5` names the bones for the UE5 mannequin skeleton.
 
 ### Quality presets
 
@@ -146,7 +157,7 @@ Rigging (`rig: true`) runs SkinTokens (ComfyUI-SkinToken) on the textured mesh a
 - **High:** more detail, about 15 to 18 min.
 - **Ultra:** Nanite static meshes only, about 25 to 35 min. It can run out of VRAM, and with multi-view plus rigging it can hit the 60-minute timeout.
 
-With `rig: true` the preset uses skinned-mesh budgets for `target_face_num` and `texture_size` instead. Rigged meshes are skinned per vertex every frame, and Nanite doesn't make that cheap:
+With `rig` set to `later` or `now` the preset uses skinned-mesh budgets for `target_face_num` and `texture_size` instead. Rigged meshes are skinned per vertex every frame, and Nanite doesn't make that cheap:
 
 | Preset | Rigged faces | Rigged texture | Typical use |
 |---|---|---|---|
@@ -255,7 +266,7 @@ The web app shows only the preset and the options marked **(web app)**. Every ot
 
 | Key | What it sets | Type | Range / options | Default (Normal) | Low / High / Ultra |
 |---|---|---|---|---|---|
-| `rig` | Rig the model (SkinTokens) **(web app)** | bool | `true` / `false` | `false` |  |
+| `rig` | Rig (later: rig budgets now, rig from Assets after review) **(web app)** | choice | `off`, `later`, `now` | `off` |  |
 | `rig_format` | Rigged file format **(web app)** | choice | `glb`, `fbx` | `glb` |  |
 | `rig_skeleton` | Skeleton naming (UE5/Mixamo: humanoids only) **(web app)** | choice | `Keep model names`, `Mixamo`, `Unreal Engine 5` | `Keep model names` |  |
 | `rig_weights_per_vertex` | Bone weights per vertex | int | 1 to 32 | `4` |  |

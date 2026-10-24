@@ -206,7 +206,7 @@ PARAMS = (
         ("reorient", "Reorient", "choice", {"options": ["None", "90 degrees", "-90 degrees"]}, [("202", "reorient_vertices")]),
     ])
     + section("Rig", [
-        ("rig", "Rig the model (SkinTokens)", "bool", {}, []),
+        ("rig", "Rig (later: rig budgets now, rig from Assets after review)", "choice", {"options": ["off", "later", "now"]}, []),
         ("rig_format", "Rigged file format", "choice", {"options": ["glb", "fbx"]}, [("1270", "file_format")]),
         ("rig_skeleton", "Skeleton naming (UE5/Mixamo: humanoids only)", "choice", {"options": ["Keep model names", "Mixamo", "Unreal Engine 5"]}, [("1270", "skeleton_template")]),
         ("rig_weights_per_vertex", "Bone weights per vertex", "int", {"min": 1, "max": 32}, [("1270", "group_per_vertex")]),
@@ -300,6 +300,8 @@ def param_schema():
         g = single if "single" in modes else multi
         default = next((g[n]["inputs"][i] for n, i in t if n in g), False) if t else False
         default = PRESETS[k][DEFAULT_PRESET] if k in PRESETS else default
+        if kind == "choice" and default not in extra["options"]:  # options with no graph input, such as rig
+            default = extra["options"][0]
         out.append({"key": k, "label": lbl, "section": sec, "kind": kind, "modes": modes, "default": default,
                     "presets": PRESETS.get(k), "rig_presets": RIG_PRESETS.get(k), "hidden": k in UI_HIDDEN, **extra})
     return out
@@ -325,15 +327,35 @@ def build_graph(params, image, prefix, pixal_model, views=None):
     if unknown:
         raise ValueError(f"unknown options: {sorted(unknown)} (see GET /api/schema)")
     g = mv_graph(views, prefix, pixal_model) if views else base_graph(image, prefix, pixal_model)
-    if params.get("rig"):
+    rig = rig_mode(params)
+    if rig == "now":
         g.update(rig_nodes(prefix, textured_node(g)))
     level = params.get("preset", DEFAULT_PRESET)
     if level not in PRESET_LEVELS:
         raise ValueError(f"preset must be one of {PRESET_LEVELS}")
     preset = {k: v[level] for k, v in PRESETS.items()}
-    if params.get("rig"):
+    if rig != "off":  # "later" sizes the model for rigging but leaves the rig to a separate job
         preset.update({k: v[level] for k, v in RIG_PRESETS.items()})
-    params = {**preset, **params}
+    return apply_params(g, {**preset, **params, "rig": rig})
+
+def rig_mode(params):
+    """"off", "later" or "now"; the API also takes the older true/false."""
+    v = params.get("rig", "off")
+    return "now" if v is True else "off" if v is False else v
+
+RIG_KEYS = {p[0] for p in PARAMS if p[0].startswith("rig_")}
+
+def rig_graph(params, glb, prefix):
+    """Rig an existing textured GLB (a ComfyUI input name): load it, then the same SkinTokens nodes as a 3D job."""
+    unknown = set(params) - RIG_KEYS - {"model"}
+    if unknown:
+        raise ValueError(f"unknown options: {sorted(unknown)} (rig jobs take model plus {sorted(RIG_KEYS)})")
+    g = {"1": {"class_type": "Trellis2LoadMesh", "inputs": {"glb_path": glb, "only_vertices_and_faces": False}},
+         **rig_nodes(prefix, "1")}
+    preset = {k: v[DEFAULT_PRESET] for k, v in PRESETS.items() if k in RIG_KEYS}
+    return apply_params(g, {**preset, **params})
+
+def apply_params(g, params):
     for key, _, _, kind, extra, targets in PARAMS:
         if key not in params:
             continue
@@ -909,17 +931,25 @@ def run_job(jid, host):
     remote_in, remote_out = [], []
     started = time.time()
     try:
-        views = job_views(params)
-        names = {}
-        for pos, rel in views.items():
-            name = f"{jid}_{pos}{safe_path(rel).suffix.lower()}"
-            put_input(host, name, safe_path(rel).read_bytes())
-            remote_in.append(name)
-            names[pos] = f"sfam/{name}"
-        src = safe_path(views["front"])
         safe_name = re.sub(r"[^\w-]+", "_", job["name"]).strip("_") or f"asset{jid}"
-        graph = build_graph(params, names["front"], f"sfam/{jid}_{safe_name}", pixal_model(host),
-                            names if "views" in params else None)
+        out_dir, base = safe_path(s["output_folder"]), None
+        if job["kind"] == "rig":  # the rigged file lands beside its model, named after it
+            model = safe_path(params["model"])
+            put_input(host, f"{jid}_model.glb", model.read_bytes())
+            remote_in.append(f"{jid}_model.glb")
+            graph = rig_graph(params, f"sfam/{jid}_model.glb", f"sfam/{jid}_{safe_name}")
+            out_dir, base = model.parent, model.stem
+        else:
+            views = job_views(params)
+            names = {}
+            for pos, rel in views.items():
+                name = f"{jid}_{pos}{safe_path(rel).suffix.lower()}"
+                put_input(host, name, safe_path(rel).read_bytes())
+                remote_in.append(name)
+                names[pos] = f"sfam/{name}"
+            src = safe_path(views["front"])
+            graph = build_graph(params, names["front"], f"sfam/{jid}_{safe_name}", pixal_model(host),
+                                names if "views" in params else None)
         ok, line = gpu_check(host)
         GPU_NOTES[jid] = [line]
         if not ok:
@@ -931,9 +961,8 @@ def run_job(jid, host):
             files.append({"subfolder": rel.rsplit("/", 1)[0], "filename": rel.rsplit("/", 1)[-1]})
         if not files:
             raise RuntimeError("job finished without a 3D output")
-        out_dir = safe_path(s["output_folder"])
         out_dir.mkdir(parents=True, exist_ok=True)
-        saved, base = [], None
+        saved = []
         for f in files:  # the unrigged model comes first; the rigged one is named after it
             rp = f"{f.get('subfolder', '')}/{f['filename']}".strip("/")
             if not rp.startswith("sfam/"):
@@ -1123,6 +1152,12 @@ class Handler(BaseHTTPRequestHandler):
                         raise ValueError("pick a rigged .glb or .fbx model")
                     motion_params(params)
                     src = params["model"]
+                elif kind == "rig":
+                    m = params.get("model", "")
+                    if Path(m).suffix.lower() != ".glb" or "_rigged" in Path(m).stem or not safe_path(m).is_file():
+                        raise ValueError("pick an unrigged .glb model")
+                    rig_graph(params, "x", "x")
+                    src = m
                 else:
                     raise ValueError("unknown job type")
                 name = (b.get("name") or Path(src).stem).strip()[:80]
@@ -1222,6 +1257,15 @@ def check():
         assert abs(math.hypot(*nrm[0:3]) - 1) < 1e-6 and nrm[2] > 0.9  # unit length, facing +Z on the flat part
     assert build_graph({}, "", "", "")["257"]["inputs"]["method"] == "Meshlib"  # Cumesh there produces spikes
     assert "1270" not in build_graph({"rig_format": "fbx"}, "", "", "")
+    later = build_graph({"preset": "low", "rig": "later"}, "", "", "")  # rig budgets, no rig nodes
+    assert "1270" not in later and later["218"]["inputs"]["target_face_num"] == 10000
+    rj = rig_graph({"model": "m.glb", "rig_format": "fbx"}, "sfam/1_model.glb", "sfam/1_m")
+    assert rj["1270"]["inputs"]["trimesh"] == ["1", 0] and rj["1270"]["inputs"]["file_format"] == "fbx"
+    assert rj["1"]["inputs"]["glb_path"] == "sfam/1_model.glb" and rj["1270"]["inputs"]["bottom_center_origin"] is True
+    try:
+        rig_graph({"seed": 1}, "", ""); raise AssertionError("rig jobs must reject 3D options")
+    except ValueError:
+        pass
     lo = build_graph({"preset": "low", "target_face_num": 50000}, "", "", "")
     assert lo["218"]["inputs"]["target_face_num"] == 50000 and lo["1261"]["inputs"]["texture_size"] == 1024  # explicit wins
     assert build_graph({}, "", "", "")["274"]["inputs"]["shape_steps"] == 12  # Normal by default
