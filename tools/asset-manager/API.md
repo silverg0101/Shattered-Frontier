@@ -27,11 +27,11 @@ Base URL: `http://192.168.50.133:8090`. JSON in and out, no login. Errors return
    ```
 
    - `kind`: `"3d"` (3D Asset, below), `"motion"` (animate a rigged model, see [Motion jobs](#motion-jobs)) or `"detector"` (train or retrain a rigged model's joint detector, see [Joint detectors](#joint-detectors)). A 3D job runs in one of two modes, chosen by which source field you send:
-     - **Single view**: send `params.image`, an image path in the asset library. Pixal3D builds the geometry and TRELLIS.2-4B paints the texture from that one image.
+     - **Single view**: send `params.image`, an image path in the asset library. Pixal3D builds the geometry and UltraTex paints the texture from that one image.
      - **Multi-view**: send `params.views` instead, mapping positions to image paths: `{"front": ..., "left": ..., "back": ..., "right": ...}`.
        - `front` is required, plus at least one more. The other positions are optional.
        - `left` is the character's left side facing the camera (the figure faces image-left). `right` is the reverse.
-       - Pixal3D's multi-view weights build both the geometry and the texture from every view, so the back and sides are painted from their own images instead of guessed.
+       - Pixal3D's multi-view weights build the geometry from every view. UltraTex then paints the texture from the front view alone; it paints the back and sides itself, matched to the mesh.
        - Make the views of one identical figure, as if a camera orbits a statue: same pose, scale and feet height, white background, flat light. See `docs/art-templates/character-view-prompt.md`.
        - Pixal3D is pixel-aligned: it projects each view's outline along straight, parallel camera rays and builds the shape that matches all of them, without interpreting the drawing. Views that disagree (a perspective shot, a leg or tail in another place, another scale) become extra geometry rather than being averaged out.
        - Before the job runs, the server aligns the views: each subject is scaled to the front's height with its feet on one line (needs a white or transparent background). A view more than 15% off the front's height is flagged in `log`, since views that disagree that much rarely show one subject from one camera. An image job with `mode: "multi"` produces views that already fit.
@@ -217,13 +217,13 @@ The library keeps whichever of the new and the earlier detector has the lower ex
 ## 3D Asset options (`params`)
 
 The options cover every selectable input in the Trellis2 + Pixal3D workflow. A few inputs are fixed and not exposed:
-- the model names (Pixal3D for geometry; texture by TRELLIS.2-4B in single mode, Pixal3D multi-view in multi mode) and the device (`cuda`);
+- the model names (Pixal3D for geometry; UltraTex, FLUX.2 Klein 9B with the UltraTex LoRAs, for the texture in both modes) and the device (`cuda`);
 - the view cameras in multi mode: azimuths come from the positions (front 0, left 90, back 180, right 270), at elevation 0;
 - the attention and convolution backends, which depend on what each host has installed;
 - `verbose`, and in single mode the image-conditioning `max_views` (one source image; multi mode exposes it as `mv_cond_views`);
 - the links between nodes.
 
-Some keys set two nodes at once: `seed` (sparse structure and texture), `texture_size` (whichever texturing node the mode uses), `target_face_num` and `simplify_method` (both simplify passes), and `low_vram` and `keep_models_loaded` (both model loaders).
+Some keys set two nodes at once: `seed` (sparse structure and both texture passes), `texture_size` (the UV atlas and the baked texture), `target_face_num` and `simplify_method` (both simplify passes), and every `tex_*` key (the albedo and the metallic-roughness pass).
 
 `rig` is `off`, `later` or `now` (`false`/`true` still mean `off`/`now`). `now` runs SkinTokens (ComfyUI-SkinToken) on the textured mesh and saves a second file, `<name>_rigged.glb` or `.fbx`, next to the unrigged model. `later` sizes the model with the rigged budgets below but doesn't rig it: check the model first, then send a rig job for it. Every `rig_*` option is ignored unless `rig` is `now`. `Unreal Engine 5` names the bones for the UE5 mannequin skeleton.
 
@@ -369,48 +369,15 @@ The web app shows only the preset and the options marked **(web app)**. Every ot
 | `mv_mesh_scale` | Mesh scale | float | 0.1 to 9.9 (step 0.1) | `1.0` |  |
 | `mv_cond_views` | Conditioning views | int | 1 to 999 | `16` |  |
 
-### Texture (multi-view only)
+### Texture
+
+UltraTex textures the finished mesh in both modes. It renders the mesh from six views, paints each one from the front image (an albedo pass and a metallic-roughness pass), and bakes them into the UV atlas. It replaced TRELLIS.2-4B and Pixal3D multi-view texturing after a side-by-side on the same mesh (2026-10-23).
+
+FLUX.2 Klein 9B is under Black Forest Labs' non-commercial licence: every model textured this way needs a BFL licence or a retexture before a commercial release.
 
 | Key | What it sets | Type | Range / options | Default (Normal) | Low / High / Ultra |
 |---|---|---|---|---|---|
-| `mv_tex_resolution` | Resolution | choice | `1024`, `1536` | `1024` |  |
-| `mv_tex_orientation` | Mesh orientation | choice | `auto`, `none`, `90 degrees`, `-90 degrees` | `auto` |  |
-| `mv_tex_alpha` | Alpha mode | choice | `OPAQUE`, `MASK`, `BLEND` | `OPAQUE` |  |
-| `mv_tex_double` | Double-sided material | bool | `true` / `false` | `false` |  |
-| `mv_tex_bake_vertices` | Bake on vertices | bool | `true` / `false` | `false` |  |
-| `mv_tex_custom_normals` | Use custom normals | bool | `true` / `false` | `false` |  |
-| `mv_tex_cone_angle` | Cluster cone half-angle | float | 0 to 359.9 (step 0.1) | `60.0` |  |
-| `mv_tex_inpainting` | Inpainting | choice | `telea`, `ns` | `telea` |  |
-| `mv_tex_steps` | Steps | int | 1 to 100 | `12` |  |
-| `mv_tex_guidance` | Guidance strength | float | 0 to 99.99 (step 0.01) | `1.0` |  |
-| `mv_tex_guidance_rescale` | Guidance rescale | float | 0 to 1 (step 0.01) | `0.5` |  |
-| `mv_tex_rescale_t` | Rescale t | float | 0 to 9.99 (step 0.01) | `3.0` |  |
-| `mv_tex_sampler` | Sampler | choice | `euler`, `heun`, `rk4`, `rk5` | `euler` |  |
-| `mv_tex_interval_start` | Guidance interval start | float | 0 to 1 (step 0.01) | `0.6` |  |
-| `mv_tex_interval_end` | Guidance interval end | float | 0 to 1 (step 0.01) | `0.9` |  |
-| `mv_tex_dino_lock` | DINO lock | float | 0 to 1 (step 0.01) | `0.0` |  |
-| `mv_tex_dino_substeps` | DINO substeps | int | 1 to 99 | `5` |  |
-| `mv_tex_dino_cap` | DINO foundation cap | float | 0.01 to 1 (step 0.01) | `1.0` |  |
-
-### Texture (single view only)
-
-| Key | What it sets | Type | Range / options | Default (Normal) | Low / High / Ultra |
-|---|---|---|---|---|---|
-| `tex_resolution` | Resolution | choice | `512`, `1024`, `1536`, `2048` | `1024` | `1024` / `1024` / `1536` |
-| `tex_alpha` | Alpha mode | choice | `OPAQUE`, `MASK`, `BLEND` | `OPAQUE` |  |
-| `tex_double` | Double-sided material | bool | `true` / `false` | `false` |  |
-| `tex_views` | Max views | int | 1 to 16 | `1` |  |
-| `tex_bake_vertices` | Bake on vertices | bool | `true` / `false` | `false` |  |
-| `tex_custom_normals` | Use custom normals | bool | `true` / `false` | `false` |  |
-| `tex_cone_angle` | Cluster cone half-angle | float | 0 to 359.9 (step 0.1) | `60` |  |
-| `tex_inpainting` | Inpainting | choice | `telea`, `ns` | `telea` |  |
-| `tex_steps` | Steps | int | 1 to 100 | `12` | `12` / `25` / `25` |
-| `tex_guidance` | Guidance strength | float | 0 to 99.99 (step 0.01) | `7.5` |  |
-| `tex_guidance_rescale` | Guidance rescale | float | 0 to 1 (step 0.01) | `0.01` |  |
-| `tex_rescale_t` | Rescale t | float | 0 to 9.99 (step 0.01) | `3` |  |
-| `tex_sampler` | Sampler | choice | `euler`, `heun`, `rk4`, `rk5` | `heun` | `euler` / `heun` / `heun` |
-| `tex_interval_start` | Guidance interval start | float | 0 to 1 (step 0.01) | `0` |  |
-| `tex_interval_end` | Guidance interval end | float | 0 to 1 (step 0.01) | `0.9` |  |
-| `tex_dino_lock` | DINO lock | float | 0 to 1 (step 0.01) | `0.35` | `0` / `0.35` / `0.35` |
-| `tex_dino_substeps` | DINO substeps | int | 1 to 99 | `2` |  |
-| `tex_dino_cap` | DINO foundation cap | float | 0.01 to 1 (step 0.01) | `0.92` |  |
+| `tex_resolution` | Resolution per view | choice | `1024`, `1536`, `2048` | `1024` | `1024` / `1024` / `1536` |
+| `tex_steps` | Steps | int | 1 to 200 | `25` | `12` / `25` / `25` |
+| `tex_guidance` | Guidance (1 closest to the image, 4 sharper) | float | 0 to 30 (step 0.1) | `2.0` |  |
+| `tex_render_size` | Mesh render size | choice | `2048`, `4096` | `4096` |  |

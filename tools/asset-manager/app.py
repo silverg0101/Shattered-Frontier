@@ -44,7 +44,7 @@ DETECTOR_SETTINGS = {"detector_images": ("training renders", int, 300, 5000),
 LIMIT_RANGE = (0.5, 20.0)
 
 # ---------------------------------------------------------------- 3D Asset workflow
-# API-format version of "Trellis2 + Pixal3d.json": Pixal3D geometry, Trellis2 4B texturing.
+# API-format version of "Trellis2 + Pixal3d.json": Pixal3D geometry, UltraTex texturing.
 def base_graph(image, prefix, pixal_model):
     def model(name):
         return {"class_type": "Trellis2LoadModel", "inputs": {
@@ -58,7 +58,6 @@ def base_graph(image, prefix, pixal_model):
         "verbose": False, "dino_lock": lock, "dino_substeps": sub, "dino_foundation_cap": cap}
     return {
         "39": model(pixal_model),
-        "1039": model("microsoft/TRELLIS.2-4B"),
         "6": {"class_type": "Trellis2LoadImageWithTransparency", "inputs": {"image": image}},
         "194": {"class_type": "Trellis2PreProcessImage", "inputs": {
             "image": ["6", 2], "padding": 5, "remove_background": True, "max_size": 1024}},
@@ -89,15 +88,57 @@ def base_graph(image, prefix, pixal_model):
         # spikes (bisect 2026-10-23: area 1.88 -> 0.019; Meshlib keeps 1.88).
         "257": {"class_type": "Trellis2SimplifyMesh", "inputs": {"mesh": ["250", 0], "target_face_num": 1000000, "method": "Meshlib"}},
         "202": {"class_type": "Trellis2MeshWithVoxelToTrimesh", "inputs": {"mesh": ["257", 0], "reorient_vertices": "None"}},
-        "1261": {"class_type": "Trellis2MeshTexturing", "inputs": {
-            "pipeline": ["1039", 0], "image": ["6", 2], "trimesh": ["202", 0], "seed": 12345,
-            "texture_steps": 25, "texture_guidance_strength": 7.5, "texture_guidance_rescale": 0.01, "texture_rescale_t": 3,
-            "resolution": 1024, "texture_size": 2048, "texture_alpha_mode": "OPAQUE", "double_side_material": False,
-            "texture_guidance_interval_start": 0, "texture_guidance_interval_end": 0.9, "max_views": 1,
-            "bake_on_vertices": False, "use_custom_normals": False, "mesh_cluster_threshold_cone_half_angle_rad": 60,
-            "sampler": "heun", "inpainting": "telea", "verbose": False,
-            "dino_lock": 0.35, "dino_substeps": 2, "dino_foundation_cap": 0.92}},
-        "1262": {"class_type": "Trellis2ExportMesh", "inputs": {"trimesh": ["1261", 0], "filename_prefix": prefix, "file_format": "glb"}},
+        **ultratex_nodes(prefix, image),
+        "1262": {"class_type": "Trellis2ExportMesh", "inputs": {"trimesh": ["1291", 0], "filename_prefix": prefix, "file_format": "glb"}},
+    }
+
+# UltraTex (FLUX.2 Klein 9B + UltraTex LoRAs) paints six views of the finished mesh from the front image and bakes
+# them, albedo plus metallic-roughness. It replaced both earlier texturers after a side-by-side on the same mesh
+# (2026-10-23): TRELLIS.2-4B came out dark red, Pixal3D multi-view blended mismatched views into blotches.
+# It reads only the front view. FLUX.2 Klein is non-commercial: every model it textures needs a BFL licence or a
+# retexture before a commercial release. The hosts' UltraTex needs the EGL patch in host-setup/install-ultratex.sh.
+def reference_name(image):
+    return image.rsplit(".", 1)[0] + "_ref.png"
+
+def ultratex_reference(data):
+    """The front image as PNG with the background transparent: its own alpha, or everything that isn't near-white."""
+    from PIL import Image
+    img = Image.open(io.BytesIO(data)).convert("RGBA")
+    if img.getchannel("A").getextrema()[0] >= 250:
+        img.putalpha(_subject_mask(img))
+    out = io.BytesIO(); img.save(out, "PNG")
+    return out.getvalue()
+
+def ultratex_nodes(prefix, image):
+    def sampler(model):
+        return {"class_type": "UltraTexSampler", "inputs": {
+            "model": model, "vae": ["1286", 0], "positive": ["1281", 0], "negative": ["1281", 0], "prep": ["1288", 0],
+            "resolution": 1024, "steps": 25, "seed": 12345, "guidance": 2.0, "drop_background_tokens": True,
+            "memory_factor": 0.0, "attention": "ultratex_sparse", "sparse_topk": 0.2, "token_chunk": 8192, "denoise": 1.0}}
+    lora = lambda name: {"class_type": "UltraTexLoraLoader", "inputs": {"model": ["1282", 0], "lora_name": name, "strength": 1.0}}
+    return {
+        "1280": {"class_type": "CLIPLoader", "inputs": {"clip_name": "qwen_3_8b_fp8mixed.safetensors", "type": "flux2", "device": "default"}},
+        "1281": {"class_type": "CLIPTextEncode", "inputs": {"clip": ["1280", 0], "text": ""}},  # UltraTex is image-guided
+        "1282": {"class_type": "UNETLoader", "inputs": {"unet_name": "flux-2-klein-base-9b-fp8.safetensors", "weight_dtype": "default"}},
+        "1283": lora("ultratex_flux2.safetensors"),
+        "1284": lora("ultratex_flux2_mr.safetensors"),
+        "1285": {"class_type": "VAELoader", "inputs": {"vae_name": "flux2-vae.safetensors"}},
+        "1286": {"class_type": "UltraTexForegroundDecoder", "inputs": {"vae": ["1285", 0], "decoder_name": "ultratex_flux2_decoder.pt"}},
+        # Its own transparent copy of the front (run_job uploads it): Pixal3D's cut-out on black made UltraTex
+        # paint the unseen back black (rat test 2026-10-23).
+        "1287": {"class_type": "LoadImage", "inputs": {"image": reference_name(image)}},
+        "1288": {"class_type": "UltraTexPrep", "inputs": {
+            "reference_image": ["1287", 0], "reference_mask": ["1287", 1], "trimesh": ["202", 0], "mesh_path": "",
+            "render_size": 4096, "atlas_size": 2048, "uv_mode": "comfy_gpu", "reference_alignment": "fit_front_silhouette",
+            "mask_meaning": "background (LoadImage)"}},
+        "1289": sampler(["1283", 0]),
+        "1290": sampler(["1284", 0]),
+        # The bake saves its own GLB and PNGs into a per-job folder (removed after the job); the export node's
+        # file is the one collected, so file_format and rigging work as before.
+        "1291": {"class_type": "UltraTexBake", "inputs": {
+            "prep": ["1288", 0], "albedo_views": ["1289", 0], "metallic_roughness_views": ["1290", 0], "texture_size": 2048,
+            "filename_prefix": f"{prefix}_tex/ultratex", "view_weight_power": 4.0, "best_view_mix": 0.5,
+            "edge_feather_px": 6.0, "views_2_use": "all"}},
     }
 
 VIEW_AZIMUTHS = {"front": 0, "left": 90, "back": 180, "right": 270}  # Pixal3D convention; front must come first
@@ -105,7 +146,6 @@ VIEW_AZIMUTHS = {"front": 0, "left": 90, "back": 180, "right": 270}  # Pixal3D c
 def mv_graph(views, prefix, pixal_model):
     """Multi-view version of base_graph. `views` maps position -> ComfyUI input image name; front is required."""
     g = base_graph(views["front"], prefix, pixal_model)
-    del g["1039"], g["1261"]  # TRELLIS.2-4B front-only texturing is replaced by Pixal3D multi-view texturing
     g["39"]["inputs"]["pixal3d_multiview"] = True
     order = [p for p in VIEW_AZIMUTHS if p in views]
     batch = ["6", 2]
@@ -121,21 +161,9 @@ def mv_graph(views, prefix, pixal_model):
     g["213"]["inputs"]["max_views"] = 16
     for n in ("272", "215", "274"):
         g[n]["inputs"].update(moge_camera_config=["317", 1], pixal3d_mv_views=["317", 0])
-    g["1264"] = {"class_type": "Trellis2MeshTexturingPixal3DMultiView", "inputs": {
-        "pipeline": ["274", 2], "trimesh": ["202", 0], "pixal3d_mv_views": ["317", 0], "image": ["194", 0],
-        "moge_camera_config": ["317", 1], "seed": 12345, "texture_steps": 12, "texture_guidance_strength": 1.0,
-        "texture_guidance_rescale": 0.5, "texture_rescale_t": 3.0, "resolution": 1024, "texture_size": 2048,
-        "texture_alpha_mode": "OPAQUE", "double_side_material": False, "texture_guidance_interval_start": 0.6,
-        "texture_guidance_interval_end": 0.9, "bake_on_vertices": False, "use_custom_normals": False,
-        "mesh_cluster_threshold_cone_half_angle_rad": 60.0, "mesh_orientation": "auto", "sampler": "euler",
-        "inpainting": "telea", "verbose": False, "dino_lock": 0.0, "dino_substeps": 5, "dino_foundation_cap": 1.0}}
-    g["1262"]["inputs"]["trimesh"] = ["1264", 0]
     return g
 
-def textured_node(g):
-    return "1264" if "1264" in g else "1261"
-
-def rig_nodes(prefix, textured="1261"):
+def rig_nodes(prefix, textured="1291"):
     return {
         "1270": {"class_type": "SkinTokenRigTrimesh", "inputs": {
             "trimesh": [textured, 0], "ckpt_name": "experiments/articulation_xl_quantization_256_token_4/grpo_1400.ckpt",
@@ -175,14 +203,14 @@ def section(name, rows):
 # (one source image) and links between nodes.
 PARAMS = (
     section("Basics", [
-        ("seed", "Seed (-1 = random)", "int", {"min": -1, "max": 0x7fffffff}, [("272", "seed"), ("1261", "seed"), ("1264", "seed")]),
+        ("seed", "Seed (-1 = random)", "int", {"min": -1, "max": 0x7fffffff}, [("272", "seed"), ("1289", "seed"), ("1290", "seed")]),
         ("target_face_num", "Target faces", "int", {"min": 1, "max": 30000000, "step": 1000}, [("218", "target_face_num"), ("257", "target_face_num")]),
-        ("texture_size", "Texture size (px)", "int", {"min": 512, "max": 16384, "step": 512}, [("1261", "texture_size"), ("1264", "texture_size")]),
+        ("texture_size", "Texture size (px)", "int", {"min": 512, "max": 16384, "step": 512}, [("1288", "atlas_size"), ("1291", "texture_size")]),
         ("file_format", "File format", "choice", {"options": ["glb", "obj", "ply", "stl", "3mf", "dae"]}, [("1262", "file_format")]),
     ])
     + section("Models", [
-        ("low_vram", "Low VRAM mode", "bool", {}, [("39", "low_vram"), ("1039", "low_vram")]),
-        ("keep_models_loaded", "Keep models loaded", "bool", {}, [("39", "keep_models_loaded"), ("1039", "keep_models_loaded")]),
+        ("low_vram", "Low VRAM mode", "bool", {}, [("39", "low_vram")]),
+        ("keep_models_loaded", "Keep models loaded", "bool", {}, [("39", "keep_models_loaded")]),
     ])
     + section("Image", [
         ("remove_background", "Remove background", "bool", {}, [("194", "remove_background")]),
@@ -239,27 +267,11 @@ PARAMS = (
         ("mv_mesh_scale", "Mesh scale", "float", {"min": 0.1, "max": 9.9, "step": 0.1}, [("303", "mesh_scale")]),
         ("mv_cond_views", "Conditioning views", "int", {"min": 1, "max": 999}, [("213", "max_views")]),
     ])
-    + section("Texture (multi-view)", [
-        ("mv_tex_resolution", "Resolution", "choice", {"options": [1024, 1536]}, [("1264", "resolution")]),
-        ("mv_tex_orientation", "Mesh orientation", "choice", {"options": ["auto", "none", "90 degrees", "-90 degrees"]}, [("1264", "mesh_orientation")]),
-        ("mv_tex_alpha", "Alpha mode", "choice", {"options": ["OPAQUE", "MASK", "BLEND"]}, [("1264", "texture_alpha_mode")]),
-        ("mv_tex_double", "Double-sided material", "bool", {}, [("1264", "double_side_material")]),
-        ("mv_tex_bake_vertices", "Bake on vertices", "bool", {}, [("1264", "bake_on_vertices")]),
-        ("mv_tex_custom_normals", "Use custom normals", "bool", {}, [("1264", "use_custom_normals")]),
-        ("mv_tex_cone_angle", "Cluster cone half-angle", "float", {"min": 0, "max": 359.9, "step": 0.1}, [("1264", "mesh_cluster_threshold_cone_half_angle_rad")]),
-        ("mv_tex_inpainting", "Inpainting", "choice", {"options": ["telea", "ns"]}, [("1264", "inpainting")]),
-        *sampling("texture_", "mv_tex", "1264"),
-    ])
     + section("Texture", [
-        ("tex_resolution", "Resolution", "choice", {"options": [512, 1024, 1536, 2048]}, [("1261", "resolution")]),
-        ("tex_alpha", "Alpha mode", "choice", {"options": ["OPAQUE", "MASK", "BLEND"]}, [("1261", "texture_alpha_mode")]),
-        ("tex_double", "Double-sided material", "bool", {}, [("1261", "double_side_material")]),
-        ("tex_views", "Max views", "int", {"min": 1, "max": 16}, [("1261", "max_views")]),
-        ("tex_bake_vertices", "Bake on vertices", "bool", {}, [("1261", "bake_on_vertices")]),
-        ("tex_custom_normals", "Use custom normals", "bool", {}, [("1261", "use_custom_normals")]),
-        ("tex_cone_angle", "Cluster cone half-angle", "float", {"min": 0, "max": 359.9, "step": 0.1}, [("1261", "mesh_cluster_threshold_cone_half_angle_rad")]),
-        ("tex_inpainting", "Inpainting", "choice", {"options": ["telea", "ns"]}, [("1261", "inpainting")]),
-        *sampling("texture_", "tex", "1261"),
+        ("tex_resolution", "Resolution per view", "choice", {"options": [1024, 1536, 2048]}, [("1289", "resolution"), ("1290", "resolution")]),
+        ("tex_steps", "Steps", "int", {"min": 1, "max": 200}, [("1289", "steps"), ("1290", "steps")]),
+        ("tex_guidance", "Guidance (1 closest to the image, 4 sharper)", "float", {"min": 0, "max": 30, "step": 0.1}, [("1289", "guidance"), ("1290", "guidance")]),
+        ("tex_render_size", "Mesh render size", "choice", {"options": [2048, 4096]}, [("1288", "render_size")]),
     ])
 )
 PARAM_KEYS = {p[0] for p in PARAMS} | {"image", "views", "preset"}
@@ -282,11 +294,11 @@ PRESETS = {
     "cascade_max_tokens": _levels(999999, 999999, 49152, 999999),  # only bites at 1536: High falls back instead of OOM
     "quad_resolution": _levels(512, 1024, 1024, 2048),
     "ss_steps": _levels(12, 25, 25, 25),
-    **{k: _levels(12, 12, 25, 25) for k in ("shape_steps", "cascade_steps", "tex_steps")},
-    **{k: _levels("euler", "heun", "heun", "heun") for k in ("ss_sampler", "cascade_sampler", "tex_sampler")},
+    **{k: _levels(12, 12, 25, 25) for k in ("shape_steps", "cascade_steps")},
+    **{k: _levels("euler", "heun", "heun", "heun") for k in ("ss_sampler", "cascade_sampler")},
     "shape_sampler": _levels("euler", "euler", "heun", "heun"),
     **{k: _levels(0, 0.65, 0.65, 0.65) for k in ("ss_dino_lock", "shape_dino_lock", "cascade_dino_lock")},
-    "tex_dino_lock": _levels(0, 0.35, 0.35, 0.35),
+    "tex_steps": _levels(12, 25, 25, 25),
     "tex_resolution": _levels(1024, 1024, 1024, 1536),
     "rig_origin_bottom": _levels(True, True, True, True),  # props and characters stand on their origin in UE5
 }
@@ -301,11 +313,11 @@ RIG_PRESETS = {
 UI_VISIBLE = {"seed", "target_face_num", "texture_size", "remove_background", "mv_remove_background",
               "rig", "rig_format", "rig_skeleton"}
 UI_HIDDEN = {p[0] for p in PARAMS} - UI_VISIBLE
-SECTION_MODES = {"Views": ["multi"], "Texture (multi-view)": ["multi"], "Texture": ["single"]}  # others: both
+SECTION_MODES = {"Views": ["multi"]}  # others: both
 
 def param_schema():
     single = {**base_graph("", "", ""), **rig_nodes("")}
-    multi = {**mv_graph({"front": "", "back": ""}, "", ""), **rig_nodes("", "1264")}
+    multi = {**mv_graph({"front": "", "back": ""}, "", ""), **rig_nodes("")}
     out = []
     for k, lbl, sec, kind, extra, t in PARAMS:
         modes = SECTION_MODES.get(sec, ["single", "multi"])
@@ -341,7 +353,7 @@ def build_graph(params, image, prefix, pixal_model, views=None):
     g = mv_graph(views, prefix, pixal_model) if views else base_graph(image, prefix, pixal_model)
     rig = rig_mode(params)
     if rig == "now":
-        g.update(rig_nodes(prefix, textured_node(g)))
+        g.update(rig_nodes(prefix))
     level = params.get("preset", DEFAULT_PRESET)
     if level not in PRESET_LEVELS:
         raise ValueError(f"preset must be one of {PRESET_LEVELS}")
@@ -1201,15 +1213,19 @@ def run_job(jid, host):
                 put_input(host, name, data[pos])
                 remote_in.append(name)
                 names[pos] = f"sfam/{name}"
+            ref = reference_name(f"{jid}_front.png")
+            put_input(host, ref, ultratex_reference(data["front"]))
+            remote_in.append(ref)
             src = safe_path(views["front"])
             graph = build_graph(params, names["front"], f"sfam/{jid}_{safe_name}", pixal_model(host),
                                 names if "views" in params else None)
+            remote_out.append(f"{jid}_{safe_name}_tex")  # UltraTex's own bake files
         ok, line = gpu_check(host)
         GPU_NOTES[jid] = [line] + view_notes
         if not ok:
             raise RuntimeError(line)
         h = run_prompt(host, jid, graph, started, s["job_timeout_min"])
-        files = [f for out in h.get("outputs", {}).values() for f in out.get("3d", [])]
+        files = list(h.get("outputs", {}).get("1262", {}).get("3d", []))
         for text in h.get("outputs", {}).get("1271", {}).get("text", []):
             rel = text.replace("\\", "/").split("/output/", 1)[-1]
             files.append({"subfolder": rel.rsplit("/", 1)[0], "filename": rel.rsplit("/", 1)[-1]})
@@ -1937,10 +1953,16 @@ def _test_glb(path):
     path.write_bytes(struct.pack("<4sII", b"glTF", 2, 12 + len(body)) + body)
 
 def check():
-    g = build_graph({"seed": -1, "target_face_num": 0, "texture_size": 4096, "tex_double": 1}, "in.png", "sfam/1_x", "TencentARC/Pixal3D")
-    assert 0 <= g["272"]["inputs"]["seed"] == g["1261"]["inputs"]["seed"]
+    g = build_graph({"seed": -1, "target_face_num": 0, "texture_size": 4096, "tex_guidance": 99}, "in.png", "sfam/1_x", "TencentARC/Pixal3D")
+    assert 0 <= g["272"]["inputs"]["seed"] == g["1289"]["inputs"]["seed"] == g["1290"]["inputs"]["seed"]
     assert g["218"]["inputs"]["target_face_num"] == g["257"]["inputs"]["target_face_num"] == 1  # clamped
-    assert g["1261"]["inputs"]["texture_size"] == 4096 and g["1261"]["inputs"]["double_side_material"] is True
+    assert g["1291"]["inputs"]["texture_size"] == g["1288"]["inputs"]["atlas_size"] == 4096 and g["1289"]["inputs"]["guidance"] == 30
+    assert g["1262"]["inputs"]["trimesh"] == ["1291", 0] and g["1291"]["inputs"]["filename_prefix"] == "sfam/1_x_tex/ultratex"
+    assert g["1287"]["inputs"]["image"] == "in_ref.png" and g["1288"]["inputs"]["reference_mask"] == ["1287", 1]
+    from PIL import Image, ImageDraw
+    img = Image.new("RGB", (64, 64), "white"); ImageDraw.Draw(img).rectangle((16, 16, 47, 47), fill=(90, 60, 50))
+    buf = io.BytesIO(); img.save(buf, "JPEG"); ref = Image.open(io.BytesIO(ultratex_reference(buf.getvalue())))
+    assert ref.mode == "RGBA" and ref.getpixel((2, 2))[3] == 0 and ref.getpixel((32, 32))[3] == 255  # white bg cut out
     for nid, n in g.items():  # every link points at an existing node
         assert all(v[0] in g for v in n["inputs"].values() if isinstance(v, list)), nid
     try:
@@ -1949,7 +1971,7 @@ def check():
     except ValueError:
         pass
     try:
-        build_graph({"tex_sampler": "bogus"}, "", "", "")
+        build_graph({"tex_resolution": 999}, "", "", "")
         raise AssertionError("bad choice accepted")
     except ValueError:
         pass
@@ -1958,11 +1980,11 @@ def check():
         raise AssertionError("escape accepted")
     except ValueError:
         pass
-    mv = build_graph({"seed": 7, "mv_tex_resolution": 1536, "rig": True}, "", "sfam/1_x", "P",
+    mv = build_graph({"seed": 7, "tex_resolution": 1536, "rig": True}, "", "sfam/1_x", "P",
                      {"front": "f.png", "back": "b.png", "left": "l.png"})
     assert mv["317"]["inputs"]["azimuths"] == "0,90,180" and mv["39"]["inputs"]["pixal3d_multiview"] is True
-    assert "1261" not in mv and mv["1264"]["inputs"]["seed"] == 7 and mv["1264"]["inputs"]["resolution"] == 1536
-    assert mv["1262"]["inputs"]["trimesh"] == ["1264", 0] and mv["1270"]["inputs"]["trimesh"] == ["1264", 0]
+    assert mv["1290"]["inputs"]["seed"] == 7 and mv["1289"]["inputs"]["resolution"] == 1536
+    assert mv["1288"]["inputs"]["trimesh"] == ["202", 0] and mv["1270"]["inputs"]["trimesh"] == ["1291", 0]
     assert mv["317"]["inputs"]["images"] == ["652", 0] and mv["602"]["inputs"]["image"] == "b.png"
     for nid, n in mv.items():
         assert all(v[0] in mv for v in n["inputs"].values() if isinstance(v, list)), nid
@@ -1986,11 +2008,11 @@ def check():
     except ValueError:
         pass
     lo = build_graph({"preset": "low", "target_face_num": 50000}, "", "", "")
-    assert lo["218"]["inputs"]["target_face_num"] == 50000 and lo["1261"]["inputs"]["texture_size"] == 1024  # explicit wins
+    assert lo["218"]["inputs"]["target_face_num"] == 50000 and lo["1291"]["inputs"]["texture_size"] == 1024  # explicit wins
     assert build_graph({}, "", "", "")["274"]["inputs"]["shape_steps"] == 12  # Normal by default
     assert all(set(v) == set(PRESET_LEVELS) and k in PARAM_KEYS for k, v in {**PRESETS, **RIG_PRESETS}.items())
     rigged = build_graph({"preset": "low", "rig": True}, "", "sfam/1_x", "")
-    assert rigged["218"]["inputs"]["target_face_num"] == 10000 and rigged["1261"]["inputs"]["texture_size"] == 1024
+    assert rigged["218"]["inputs"]["target_face_num"] == 10000 and rigged["1291"]["inputs"]["texture_size"] == 1024
     assert build_graph({"preset": "normal", "rig": True, "target_face_num": 77000}, "", "", "")["218"]["inputs"]["target_face_num"] == 77000
     assert build_graph({"preset": "normal"}, "", "", "")["218"]["inputs"]["target_face_num"] == 300000  # unrigged unchanged
     assert rigged["1270"]["inputs"]["skeleton_template"] == "Keep model names"  # UE5 names only when asked

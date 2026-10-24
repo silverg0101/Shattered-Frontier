@@ -250,7 +250,7 @@ aside.queue.closed .vtab { display: block; }
     <a href="#/assets" data-nav="assets"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>Assets</a>
     <a href="#/create" data-nav="create"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M12 12l8-4.5M12 12v9M12 12L4 7.5"/></svg>Create</a>
     <a href="#/settings" data-nav="settings"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg>Settings</a>
-    <div class="foot">ComfyUI · Trellis2 + Pixal3D</div>
+    <div class="foot">ComfyUI · Pixal3D + UltraTex</div>
   </nav>
   <main>
     <header class="top"><div class="crumbs" id="crumbs"></div></header>
@@ -770,8 +770,8 @@ async function renderCreate() {
     document.querySelectorAll('[data-mode]').forEach(b => b.classList.toggle('on', b.dataset.mode === m));
     $('#single').hidden = m !== 'single'; $('#multi').hidden = m !== 'multi';
     sections.forEach(s => { document.querySelector(`[data-sec="${CSS.escape(s)}"]`).hidden = !modesOf(s).includes(m); });
-    $('#typedesc').textContent = m === 'single' ? 'One image → textured GLB · Pixal3D geometry, Trellis2 4B texture'
-      : 'Front + side/back views → textured GLB · Pixal3D multi-view geometry and texture';
+    $('#typedesc').textContent = m === 'single' ? 'One image → textured GLB · Pixal3D geometry, UltraTex texture'
+      : 'Front + side/back views → textured GLB · Pixal3D multi-view geometry, UltraTex texture from the front';
   };
   const NOTES = { low: 'quick drafts · 100k faces', normal: 'game-ready · 300k faces', high: 'detailed · 500k faces', ultra: 'Nanite statics only · 1M faces, slow' };
   const RIG_NOTES = { low: 'rigged critter · 10k faces', normal: 'rigged NPC · 30k faces', high: 'rigged, detailed · 50k faces', ultra: 'rigged hero · 100k faces' };
