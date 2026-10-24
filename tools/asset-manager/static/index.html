@@ -938,8 +938,10 @@ async function renderSettings() {
       <div id="hstat" class="muted" style="font-size:12px;margin-top:10px"></div>
     </div>
     <div style="margin-top:18px;display:flex;justify-content:flex-end"><button class="btn primary" id="save">Save settings</button></div>
-    <div class="card fade" style="--i:4;margin-top:18px" id="codex"></div>`;
+    <div class="card fade" style="--i:4;margin-top:18px" id="codex"></div>
+    <div class="card fade" style="--i:5;margin-top:18px" id="anthropic"></div>`;
   drawCodex();
+  drawAnthropic();
   const read = () => ({
     output_folder: $('#s_out').value.trim(), input_folder: $('#s_in').value.trim(), job_timeout_min: +$('#s_to').value,
     detector_images: +$('#s_dimg').value, detector_epochs: +$('#s_dep').value, detector_usable_x: +$('#s_dux').value,
@@ -1003,6 +1005,21 @@ async function drawCodex() {
   };
   $('#cx_finish').onclick = () => { const v = $('#cx_url').value.trim(); $('#cx_url').value = ''; act('/api/codex/finish', { url: v }); };
   $('#cx_import').onclick = () => { const v = $('#cx_json').value; $('#cx_json').value = ''; act('/api/codex/import', { auth_json: v }); };
+}
+
+// Anthropic API key for Claude API steps on the workers. Write-only: the server returns only its last 4 characters.
+async function drawAnthropic() {
+  const box = $('#anthropic'); if (!box) return;
+  let s; try { s = await api('/api/anthropic'); } catch (e) { return fail(e); }
+  box.innerHTML = `<h3>Anthropic API key</h3>
+    <div class="muted" style="font-size:12px;margin:4px 0 14px">For Claude API steps such as rig joint labelling. Kept on the server only; jobs get it as <code>ANTHROPIC_API_KEY</code>.</div>
+    <dl><dt>Key</dt><dd>${s.set ? `<code>••••${esc(s.last4)}</code>` : 'not set'}</dd></dl>
+    <div class="field" style="margin-top:12px"><label for="an_key">${s.set ? 'Replace key' : 'Key'}</label><input type="password" id="an_key" autocomplete="off" placeholder="sk-ant-..."></div>
+    <button class="btn primary" id="an_save" style="margin-top:10px">Save</button>
+    ${s.set ? '<button class="btn sm danger" id="an_clear" style="margin-top:10px;margin-left:8px">Clear</button>' : ''}`;
+  const act = (path, body) => post(path, body).then(() => { toast('Anthropic API key updated'); drawAnthropic(); }, fail);
+  $('#an_save').onclick = () => { const v = $('#an_key').value.trim(); $('#an_key').value = ''; act('/api/anthropic', { key: v }); };
+  $('#an_clear') && ($('#an_clear').onclick = () => act('/api/anthropic/clear'));
 }
 
 /* ---------------- queue flyout */

@@ -205,6 +205,8 @@ The library keeps whichever of the new and the earlier detector has the lower ex
 | `backbone` | DINOv2 size: `vitb14` is larger and slower | choice | `vits14`, `vitb14` | `vits14` |
 | `turn` | The `turn` the model's motion jobs use: a detector learns one facing | choice | `0`, `90`, `180`, `-90` | `0` |
 
+**Anthropic API key** (Settings > Anthropic API key), for Claude API steps on a worker such as rig joint labelling. `POST /api/anthropic` with `{"key": "sk-ant-..."}` stores it; `POST /api/anthropic/clear` removes it; `GET /api/anthropic` returns only `{"set": true, "last4": "1234"}`. The key is never returned, logged or included in `/api/settings`. It lives in `DATA_DIR/anthropic_key` (mode 600), outside git and the served asset folder. A worker step that needs it runs through `ssh_anthropic(host, cmd)` in `app.py`, which passes the key on ssh's stdin and exports it as `ANTHROPIC_API_KEY` for that command only, so it is never in a command line, job dir or output file.
+
 **Settings** (`GET` / `PUT /api/settings`; `GET /api/schema` lists their bounds under `detector_settings`). Values outside the bounds are clamped:
 
 | Key | What it sets | Range | Default |

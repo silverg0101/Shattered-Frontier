@@ -1425,6 +1425,37 @@ def codex_auth():
                                            "client_id": CODEX_CLIENT_ID, "scope": "openid profile email offline_access"}), a)
         return a["access_token"], a["account_id"]
 
+# ---------------------------------------------------------------- Anthropic API key
+# For Claude API steps on a worker (UniMate joint labelling). Stored in DATA/anthropic_key, mode 600, outside git and
+# the served paths; the API and page only ever see its last 4 characters. A step gets it as ANTHROPIC_API_KEY on
+# ssh's stdin, so it is never in a command line, job dir or log.
+ANTHROPIC_KEY = DATA / "anthropic_key"
+
+def anthropic_key():
+    try:
+        return ANTHROPIC_KEY.read_text().strip()
+    except OSError:
+        return ""
+
+def anthropic_status():
+    k = anthropic_key()
+    return {"set": bool(k), "last4": k[-4:]}
+
+def anthropic_save(key):
+    key = str(key or "").strip()
+    if not re.fullmatch(r"sk-ant-\S{20,}", key):
+        raise ValueError("that is not an Anthropic API key (sk-ant-...)")
+    with os.fdopen(os.open(ANTHROPIC_KEY, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600), "w") as f:
+        f.write(key)
+    ANTHROPIC_KEY.chmod(0o600)  # os.open keeps an existing file's mode
+
+def ssh_anthropic(host, cmd, timeout=60):
+    """ssh() for a step that calls the Claude API, with the key exported as ANTHROPIC_API_KEY from stdin."""
+    key = anthropic_key()
+    if not key:
+        raise RuntimeError("no Anthropic API key (Settings > Anthropic API key)")
+    return ssh(host, f"IFS= read -r ANTHROPIC_API_KEY; export ANTHROPIC_API_KEY; {cmd}", data=key.encode() + b"\n", timeout=timeout)
+
 def codex_events(payload):
     """POST a streaming request to the Codex responses endpoint and yield its decoded server-sent events."""
     token, account = codex_auth()
@@ -1958,6 +1989,14 @@ class Handler(BaseHTTPRequestHandler):
                 elif not (method == "GET" and p == "/api/codex"):
                     return self.send({"error": "not found"}, 404)
                 return self.send({**codex_status(), "models": IMAGE_MODELS})
+            if p.startswith("/api/anthropic"):  # write-only key: responses carry only its last 4 characters
+                if method == "POST" and p == "/api/anthropic":
+                    anthropic_save(self.body().get("key"))
+                elif method == "POST" and p == "/api/anthropic/clear":
+                    ANTHROPIC_KEY.unlink(missing_ok=True)
+                elif not (method == "GET" and p == "/api/anthropic"):
+                    return self.send({"error": "not found"}, 404)
+                return self.send(anthropic_status())
             if method == "GET" and p == "/api/settings":
                 return self.send(get_settings())
             if method == "PUT" and p == "/api/settings":
@@ -2099,6 +2138,20 @@ def _test_glb(path):
     path.write_bytes(struct.pack("<4sII", b"glTF", 2, 12 + len(body)) + body)
 
 def check():
+    global ANTHROPIC_KEY
+    import tempfile
+    real, ANTHROPIC_KEY = ANTHROPIC_KEY, Path(tempfile.mkdtemp()) / "anthropic_key"
+    try:
+        assert anthropic_status() == {"set": False, "last4": ""}
+        try:
+            anthropic_save("not a key"); raise AssertionError("bad key accepted")
+        except ValueError:
+            pass
+        anthropic_save(" sk-ant-api03-" + "x" * 30 + "1234\n")
+        assert anthropic_status() == {"set": True, "last4": "1234"} and "sk-ant" not in json.dumps(get_settings())
+        assert os.name == "nt" or ANTHROPIC_KEY.stat().st_mode & 0o777 == 0o600
+    finally:
+        ANTHROPIC_KEY = real
     g = build_graph({"seed": -1, "target_face_num": 0, "texture_size": 4096, "tex_guidance": 99}, "in.png", "sfam/1_x", "TencentARC/Pixal3D")
     assert 0 <= g["272"]["inputs"]["seed"] == g["1289"]["inputs"]["seed"] == g["1290"]["inputs"]["seed"]
     assert g["218"]["inputs"]["target_face_num"] == g["257"]["inputs"]["target_face_num"] == 1  # clamped
