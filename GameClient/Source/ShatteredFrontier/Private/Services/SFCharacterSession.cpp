@@ -4,6 +4,7 @@
 #include "GameFramework/Pawn.h"
 #include "GameFramework/PlayerController.h"
 #include "Characters/SFE1Character.h"
+#include "Creatures/SFRestAreaVolume.h"
 #include "Framework/SFGameMode.h"
 #include "Gathering/SFGatheringPilot.h"
 #include "Misc/PackageName.h"
@@ -183,8 +184,10 @@ void USFCharacterSessionComponent::BeginRestore()
         bPredecessorDraining |= Other && Other != this && Other->CharacterId == CharacterId && Other->IsDraining();
     }
     const bool bPilots = Controller->FindComponentByClass<USFGatheringPilotComponent>()
-        && (!USFQuestPilotSubsystem::IsRequested() || Controller->FindComponentByClass<USFQuestPilotComponent>());
-    if (!Pack || !Controller->GetPawn() || !bPilots || bPredecessorDraining) { NextRestoreAt = GetWorld()->GetTimeSeconds() + 1; return; }
+        && (!USFQuestPilotSubsystem::IsRequested() || !USFQuestPilotSubsystem::IsQuestMap(GetWorld())
+            || Controller->FindComponentByClass<USFQuestPilotComponent>());
+    if (!Pack || !Controller->GetPawn() || !bPilots || bPredecessorDraining)
+    { NextRestoreAt = GetWorld()->GetTimeSeconds() + 1; return; }
     bRestoreInFlight = true; RestoreParts = 0;
     TWeakObjectPtr<USFCharacterSessionComponent> Weak(this);
     const auto Part = [Weak](int32 Bit, bool bOk)
@@ -269,8 +272,27 @@ void USFCharacterSessionComponent::EndPlay(const EEndPlayReason::Type Reason)
         if (const TSharedPtr<FSFGameplayServicesClient> Services = USFBackpackComponent::Services())
         {
             ClosingCharacters.Add(CharacterId);
-            CloseProgressionSession(Services, CharacterId, FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens),
-                bHasKnownPose && InRestArea(GetWorld()->GetOutermost()->GetName(), LastKnownLocation));
+            const FString OperationId = FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens);
+            const bool bPublicRest = bHasKnownPose && (InRestArea(GetWorld()->GetOutermost()->GetName(), LastKnownLocation) ||
+                ASFRestAreaVolume::IsInsideInn(GetWorld(), LastKnownLocation));
+            const auto* Mode = GetWorld()->GetAuthGameMode<ASFGameMode>();
+            const FString HouseClaim = bHasKnownPose && Mode ? Mode->RestHouseClaimAt(LastKnownLocation) : FString();
+            if (bPublicRest || HouseClaim.IsEmpty())
+            {
+                UE_LOG(LogTemp, Display, TEXT("CHARACTER_REST_AREA Character=%s Mode=%s"), *CharacterId, bPublicRest ? TEXT("Rest") : TEXT("Normal"));
+                CloseProgressionSession(Services, CharacterId, OperationId, bPublicRest);
+            }
+            else
+            {
+                FSFGameplayRequest Claim; Claim.Rpc = ESFGameplayRpc::GetClaim; Claim.ClaimId = HouseClaim; Claim.CharacterId = CharacterId;
+                Services->Call(Claim, [Services, Character = CharacterId, OperationId, HouseClaim](const FSFGameplayResponse& Reply)
+                {
+                    const bool bRest = Reply.Status == ESFGameplayStatus::Ok && Reply.bActorPermitted;
+                    UE_LOG(LogTemp, Display, TEXT("CHARACTER_REST_AREA Character=%s Mode=%s House=%s HousingCode=%d"),
+                        *Character, bRest ? TEXT("Rest") : TEXT("Normal"), *HouseClaim, Reply.GrpcCode);
+                    CloseProgressionSession(Services, Character, OperationId, bRest);
+                });
+            }
         }
     }
     Super::EndPlay(Reason);
@@ -278,6 +300,7 @@ void USFCharacterSessionComponent::EndPlay(const EEndPlayReason::Type Reason)
 
 #if WITH_DEV_AUTOMATION_TESTS && WITH_EDITOR
 #include "Misc/AutomationTest.h"
+#include "Tests/AutomationCommon.h"
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFRestAreaSessionTest, "ShatteredFrontier.Services.Rested.RestArea",
     EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
 bool FSFRestAreaSessionTest::RunTest(const FString& Parameters)
@@ -286,6 +309,15 @@ bool FSFRestAreaSessionTest::RunTest(const FString& Parameters)
     TestTrue(TEXT("Silverbrook settlement grants the rest-area rate"), InRestArea(Map, FVector(0, -3000, 0)));
     TestFalse(TEXT("Silverbrook wilderness uses the normal rate"), InRestArea(Map, FVector(90000, 90000, 0)));
     TestFalse(TEXT("Other maps are not inferred as rest areas"), InRestArea(TEXT("/Game/Frontier/Maps/Sandbox/SB_Casting"), FVector::ZeroVector));
+    FTestWorldWrapper Fixture;
+    if (!Fixture.CreateTestWorld(EWorldType::Game) || !Fixture.BeginPlayInTestWorld()) { Fixture.ForwardErrorMessages(this); return false; }
+    UWorld* World = Fixture.GetTestWorld();
+    ASFRestAreaVolume* Rest = World->SpawnActor<ASFRestAreaVolume>(FVector(10000, 0, 100), FRotator::ZeroRotator);
+    if (!TestNotNull(TEXT("rest volume spawns"), Rest)) return false;
+    TestFalse(TEXT("ordinary companion rest volume is not an XP inn"), ASFRestAreaVolume::IsInsideInn(World, Rest->GetActorLocation()));
+    Rest->Kind = ESFRestAreaKind::Inn;
+    TestTrue(TEXT("placed inn grants rested XP"), ASFRestAreaVolume::IsInsideInn(World, Rest->GetActorLocation()));
+    TestFalse(TEXT("outside inn uses normal rate"), ASFRestAreaVolume::IsInsideInn(World, FVector::ZeroVector));
     return true;
 }
 #endif

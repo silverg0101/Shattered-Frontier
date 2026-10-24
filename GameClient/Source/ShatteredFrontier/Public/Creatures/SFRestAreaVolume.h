@@ -6,8 +6,8 @@
 
 class UBoxComponent;
 
-UENUM()
-enum class ESFRestAreaKind : uint8 { Ordinary, Stablekeeper };
+UENUM(BlueprintType)
+enum class ESFRestAreaKind : uint8 { Ordinary, Stablekeeper, Inn };
 
 /**
  * Placeable rest area (Companion Gameplay Details §3): the server treats a pawn whose location is inside the box as
@@ -37,6 +37,8 @@ public:
     bool Contains(const FVector& Point) const { return Contains(GetActorTransform(), HalfExtentMetres, Point); }
     /** True when any rest area in World contains Point. */
     static bool IsAtRestArea(const UWorld* World, const FVector& Point);
+    /** Server-only rested-XP classification. Ordinary and stablekeeper volumes do not grant inn rest. */
+    static bool IsInsideInn(const UWorld* World, const FVector& Point);
 
 private:
     UPROPERTY(VisibleAnywhere, Category = "Rest Area") TObjectPtr<UBoxComponent> Box;

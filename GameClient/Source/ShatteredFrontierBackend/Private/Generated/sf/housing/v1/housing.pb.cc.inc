@@ -1243,11 +1243,11 @@ constexpr GetClaimRequest::ParseTableT_ GetClaimRequest::InternalGenerateParseTa
     {
       PROTOBUF_FIELD_OFFSET(GetClaimRequest, _impl_._has_bits_),
       0, // no _extensions_
-      1, 0,  // max_field_number, fast_idx_mask
+      2, 8,  // max_field_number, fast_idx_mask
       offsetof(ParseTableT_, field_lookup_table),
-      4294967294,  // skipmap
+      4294967292,  // skipmap
       offsetof(ParseTableT_, field_entries),
-      1,  // num_field_entries
+      2,  // num_field_entries
       0,  // num_aux_entries
       offsetof(ParseTableT_, field_names),  // no aux_entries
       class_data,
@@ -1257,6 +1257,10 @@ constexpr GetClaimRequest::ParseTableT_ GetClaimRequest::InternalGenerateParseTa
       ::_pbi::TcParser::GetTable<::sf::housing::v1::GetClaimRequest>(),  // to_prefetch
       #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
     }, {{
+      // string actor_id = 2;
+      {::_pbi::TcParser::FastUS1,
+       {18, 1, 0,
+        PROTOBUF_FIELD_OFFSET(GetClaimRequest, _impl_.actor_id_)}},
       // string claim_id = 1;
       {::_pbi::TcParser::FastUS1,
        {10, 0, 0,
@@ -1266,12 +1270,15 @@ constexpr GetClaimRequest::ParseTableT_ GetClaimRequest::InternalGenerateParseTa
     }}, {{
       // string claim_id = 1;
       {PROTOBUF_FIELD_OFFSET(GetClaimRequest, _impl_.claim_id_), _Internal::kHasBitsOffset + 0, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // string actor_id = 2;
+      {PROTOBUF_FIELD_OFFSET(GetClaimRequest, _impl_.actor_id_), _Internal::kHasBitsOffset + 1, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
     }},
     // no aux_entries
     {{
-      "\35\10\0\0\0\0\0\0"
+      "\35\10\10\0\0\0\0\0"
       "sf.housing.v1.GetClaimRequest"
       "claim_id"
+      "actor_id"
     }},
   };
 }
@@ -1282,6 +1289,9 @@ inline constexpr GetClaimRequest::Impl_::Impl_(
     ::_pbi::ConstantInitialized) noexcept
       : _cached_size_{0},
         claim_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        actor_id_(
             &::google::protobuf::internal::fixed_address_empty_string,
             ::_pbi::ConstantInitialized()) {}
 
@@ -1389,11 +1399,11 @@ constexpr ClaimReply::ParseTableT_ ClaimReply::InternalGenerateParseTable_(const
     {
       PROTOBUF_FIELD_OFFSET(ClaimReply, _impl_._has_bits_),
       0, // no _extensions_
-      6, 56,  // max_field_number, fast_idx_mask
+      7, 56,  // max_field_number, fast_idx_mask
       offsetof(ParseTableT_, field_lookup_table),
-      4294967232,  // skipmap
+      4294967168,  // skipmap
       offsetof(ParseTableT_, field_entries),
-      6,  // num_field_entries
+      7,  // num_field_entries
       0,  // num_aux_entries
       offsetof(ParseTableT_, field_names),  // no aux_entries
       class_data,
@@ -1428,7 +1438,10 @@ constexpr ClaimReply::ParseTableT_ ClaimReply::InternalGenerateParseTable_(const
       {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(ClaimReply, _impl_.funded_until_unix_ms_), 5>(),
        {48, 5, 0,
         PROTOBUF_FIELD_OFFSET(ClaimReply, _impl_.funded_until_unix_ms_)}},
-      {::_pbi::TcParser::MiniParse, {}},
+      // bool actor_permitted = 7;
+      {::_pbi::TcParser::SingularVarintNoZag1<bool, offsetof(ClaimReply, _impl_.actor_permitted_), 6>(),
+       {56, 6, 0,
+        PROTOBUF_FIELD_OFFSET(ClaimReply, _impl_.actor_permitted_)}},
     }}, {{
       65535, 65535
     }}, {{
@@ -1444,6 +1457,8 @@ constexpr ClaimReply::ParseTableT_ ClaimReply::InternalGenerateParseTable_(const
       {PROTOBUF_FIELD_OFFSET(ClaimReply, _impl_.permission_revision_), _Internal::kHasBitsOffset + 4, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt64)},
       // int64 funded_until_unix_ms = 6;
       {PROTOBUF_FIELD_OFFSET(ClaimReply, _impl_.funded_until_unix_ms_), _Internal::kHasBitsOffset + 5, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt64)},
+      // bool actor_permitted = 7;
+      {PROTOBUF_FIELD_OFFSET(ClaimReply, _impl_.actor_permitted_), _Internal::kHasBitsOffset + 6, 0, (0 | ::_fl::kFcOptional | ::_fl::kBool)},
     }},
     // no aux_entries
     {{
@@ -1472,7 +1487,8 @@ inline constexpr ClaimReply::Impl_::Impl_(
             ::_pbi::ConstantInitialized()),
         revision_{::int64_t{0}},
         permission_revision_{::int64_t{0}},
-        funded_until_unix_ms_{::int64_t{0}} {}
+        funded_until_unix_ms_{::int64_t{0}},
+        actor_permitted_{false} {}
 
 template <typename>
 constexpr ClaimReply::ClaimReply(::_pbi::ConstantInitialized,
@@ -2250,24 +2266,28 @@ const ::uint32_t
         7,
         0x081, // bitmap
         PROTOBUF_FIELD_OFFSET(::sf::housing::v1::GetClaimRequest, _impl_._has_bits_),
-        4, // hasbit index offset
+        5, // hasbit index offset
         PROTOBUF_FIELD_OFFSET(::sf::housing::v1::GetClaimRequest, _impl_.claim_id_),
+        PROTOBUF_FIELD_OFFSET(::sf::housing::v1::GetClaimRequest, _impl_.actor_id_),
         0,
+        1,
         0x081, // bitmap
         PROTOBUF_FIELD_OFFSET(::sf::housing::v1::ClaimReply, _impl_._has_bits_),
-        9, // hasbit index offset
+        10, // hasbit index offset
         PROTOBUF_FIELD_OFFSET(::sf::housing::v1::ClaimReply, _impl_.claim_id_),
         PROTOBUF_FIELD_OFFSET(::sf::housing::v1::ClaimReply, _impl_.owner_id_),
         PROTOBUF_FIELD_OFFSET(::sf::housing::v1::ClaimReply, _impl_.state_),
         PROTOBUF_FIELD_OFFSET(::sf::housing::v1::ClaimReply, _impl_.revision_),
         PROTOBUF_FIELD_OFFSET(::sf::housing::v1::ClaimReply, _impl_.permission_revision_),
         PROTOBUF_FIELD_OFFSET(::sf::housing::v1::ClaimReply, _impl_.funded_until_unix_ms_),
+        PROTOBUF_FIELD_OFFSET(::sf::housing::v1::ClaimReply, _impl_.actor_permitted_),
         0,
         1,
         2,
         3,
         4,
         5,
+        6,
         0x081, // bitmap
         PROTOBUF_FIELD_OFFSET(::sf::housing::v1::PlaceRequest, _impl_._has_bits_),
         19, // hasbit index offset
@@ -2350,10 +2370,10 @@ static const ::_pbi::MigrationSchema
         {46, sizeof(::sf::housing::v1::GrantRequest)},
         {61, sizeof(::sf::housing::v1::ClaimPlotRequest)},
         {80, sizeof(::sf::housing::v1::GetClaimRequest)},
-        {85, sizeof(::sf::housing::v1::ClaimReply)},
-        {100, sizeof(::sf::housing::v1::PlaceRequest)},
-        {135, sizeof(::sf::housing::v1::RemoveRequest)},
-        {154, sizeof(::sf::housing::v1::PlacementReply)},
+        {87, sizeof(::sf::housing::v1::ClaimReply)},
+        {104, sizeof(::sf::housing::v1::PlaceRequest)},
+        {139, sizeof(::sf::housing::v1::RemoveRequest)},
+        {158, sizeof(::sf::housing::v1::PlacementReply)},
 };
 static const ::_pbi::MessageGlobalsBase* PROTOBUF_NONNULL const
     file_message_globals[] = {
@@ -2392,50 +2412,51 @@ const char descriptor_table_protodef_sf_2fhousing_2fv1_2fhousing_2eproto[] ABSL_
     "wner_id\030\003 \001(\t\022\020\n\010center_x\030\004 \001(\001\022\020\n\010cente"
     "r_y\030\005 \001(\001\022\023\n\013side_metres\030\006 \001(\005\022\024\n\014prepai"
     "d_days\030\007 \001(\005\022\037\n\027expected_world_revision\030"
-    "\010 \001(\003\"#\n\017GetClaimRequest\022\020\n\010claim_id\030\001 \001"
-    "(\t\"\214\001\n\nClaimReply\022\020\n\010claim_id\030\001 \001(\t\022\020\n\010o"
-    "wner_id\030\002 \001(\t\022\r\n\005state\030\003 \001(\t\022\020\n\010revision"
-    "\030\004 \001(\003\022\033\n\023permission_revision\030\005 \001(\003\022\034\n\024f"
-    "unded_until_unix_ms\030\006 \001(\003\"\231\003\n\014PlaceReque"
-    "st\022\024\n\014operation_id\030\001 \001(\t\022\020\n\010claim_id\030\002 \001"
-    "(\t\022\020\n\010actor_id\030\003 \001(\t\022$\n\034expected_permiss"
-    "ion_revision\030\004 \001(\003\022#\n\033expected_structure"
-    "_revision\030\005 \001(\003\022\024\n\014structure_id\030\006 \001(\t\022\016\n"
-    "\006cell_x\030\007 \001(\005\022\016\n\006cell_y\030\010 \001(\005\022\016\n\006cell_z\030"
-    "\t \001(\005\022\022\n\ncontent_id\030\n \001(\t\022\023\n\013material_id"
-    "\030\013 \001(\t\022\031\n\021material_quantity\030\014 \001(\003\022\024\n\014con"
-    "tainer_id\030\r \001(\t\022#\n\033expected_container_re"
-    "vision\030\016 \001(\003\022\026\n\tshape_key\030\017 \001(\tH\000\210\001\001\022\031\n\021"
-    "orientation_index\030\020 \001(\005B\014\n\n_shape_key\"\345\001"
-    "\n\rRemoveRequest\022\024\n\014operation_id\030\001 \001(\t\022\020\n"
-    "\010claim_id\030\002 \001(\t\022\020\n\010actor_id\030\003 \001(\t\022\024\n\014str"
-    "ucture_id\030\004 \001(\t\022$\n\034expected_permission_r"
-    "evision\030\005 \001(\003\022#\n\033expected_structure_revi"
-    "sion\030\006 \001(\003\022#\n\033expected_container_revisio"
-    "n\030\007 \001(\003\022\024\n\014removal_kind\030\010 \001(\t\"\263\001\n\016Placem"
-    "entReply\022\024\n\014operation_id\030\001 \001(\t\022\r\n\005state\030"
-    "\002 \001(\t\022\024\n\014structure_id\030\003 \001(\t\022\032\n\022structure"
-    "_revision\030\004 \001(\003\022\034\n\024consume_operation_id\030"
-    "\005 \001(\t\022\021\n\tshape_key\030\006 \001(\t\022\031\n\021orientation_"
-    "index\030\007 \001(\0052\302\003\n\007Housing\022G\n\tClaimPlot\022\037.s"
-    "f.housing.v1.ClaimPlotRequest\032\031.sf.housi"
-    "ng.v1.ClaimReply\022C\n\005Place\022\033.sf.housing.v"
-    "1.PlaceRequest\032\035.sf.housing.v1.Placement"
-    "Reply\022E\n\006Remove\022\034.sf.housing.v1.RemoveRe"
-    "quest\032\035.sf.housing.v1.PlacementReply\022E\n\010"
-    "GetClaim\022\036.sf.housing.v1.GetClaimRequest"
-    "\032\031.sf.housing.v1.ClaimReply\022Z\n\016ListStruc"
-    "tures\022$.sf.housing.v1.ListStructuresRequ"
-    "est\032\".sf.housing.v1.ListStructuresReply\022"
-    "\?\n\005Grant\022\033.sf.housing.v1.GrantRequest\032\031."
-    "sf.housing.v1.ClaimReplyB\037\252\002\034ShatteredFr"
-    "ontier.Housing.V1b\006proto3"
+    "\010 \001(\003\"5\n\017GetClaimRequest\022\020\n\010claim_id\030\001 \001"
+    "(\t\022\020\n\010actor_id\030\002 \001(\t\"\245\001\n\nClaimReply\022\020\n\010c"
+    "laim_id\030\001 \001(\t\022\020\n\010owner_id\030\002 \001(\t\022\r\n\005state"
+    "\030\003 \001(\t\022\020\n\010revision\030\004 \001(\003\022\033\n\023permission_r"
+    "evision\030\005 \001(\003\022\034\n\024funded_until_unix_ms\030\006 "
+    "\001(\003\022\027\n\017actor_permitted\030\007 \001(\010\"\231\003\n\014PlaceRe"
+    "quest\022\024\n\014operation_id\030\001 \001(\t\022\020\n\010claim_id\030"
+    "\002 \001(\t\022\020\n\010actor_id\030\003 \001(\t\022$\n\034expected_perm"
+    "ission_revision\030\004 \001(\003\022#\n\033expected_struct"
+    "ure_revision\030\005 \001(\003\022\024\n\014structure_id\030\006 \001(\t"
+    "\022\016\n\006cell_x\030\007 \001(\005\022\016\n\006cell_y\030\010 \001(\005\022\016\n\006cell"
+    "_z\030\t \001(\005\022\022\n\ncontent_id\030\n \001(\t\022\023\n\013material"
+    "_id\030\013 \001(\t\022\031\n\021material_quantity\030\014 \001(\003\022\024\n\014"
+    "container_id\030\r \001(\t\022#\n\033expected_container"
+    "_revision\030\016 \001(\003\022\026\n\tshape_key\030\017 \001(\tH\000\210\001\001\022"
+    "\031\n\021orientation_index\030\020 \001(\005B\014\n\n_shape_key"
+    "\"\345\001\n\rRemoveRequest\022\024\n\014operation_id\030\001 \001(\t"
+    "\022\020\n\010claim_id\030\002 \001(\t\022\020\n\010actor_id\030\003 \001(\t\022\024\n\014"
+    "structure_id\030\004 \001(\t\022$\n\034expected_permissio"
+    "n_revision\030\005 \001(\003\022#\n\033expected_structure_r"
+    "evision\030\006 \001(\003\022#\n\033expected_container_revi"
+    "sion\030\007 \001(\003\022\024\n\014removal_kind\030\010 \001(\t\"\263\001\n\016Pla"
+    "cementReply\022\024\n\014operation_id\030\001 \001(\t\022\r\n\005sta"
+    "te\030\002 \001(\t\022\024\n\014structure_id\030\003 \001(\t\022\032\n\022struct"
+    "ure_revision\030\004 \001(\003\022\034\n\024consume_operation_"
+    "id\030\005 \001(\t\022\021\n\tshape_key\030\006 \001(\t\022\031\n\021orientati"
+    "on_index\030\007 \001(\0052\302\003\n\007Housing\022G\n\tClaimPlot\022"
+    "\037.sf.housing.v1.ClaimPlotRequest\032\031.sf.ho"
+    "using.v1.ClaimReply\022C\n\005Place\022\033.sf.housin"
+    "g.v1.PlaceRequest\032\035.sf.housing.v1.Placem"
+    "entReply\022E\n\006Remove\022\034.sf.housing.v1.Remov"
+    "eRequest\032\035.sf.housing.v1.PlacementReply\022"
+    "E\n\010GetClaim\022\036.sf.housing.v1.GetClaimRequ"
+    "est\032\031.sf.housing.v1.ClaimReply\022Z\n\016ListSt"
+    "ructures\022$.sf.housing.v1.ListStructuresR"
+    "equest\032\".sf.housing.v1.ListStructuresRep"
+    "ly\022\?\n\005Grant\022\033.sf.housing.v1.GrantRequest"
+    "\032\031.sf.housing.v1.ClaimReplyB\037\252\002\034Shattere"
+    "dFrontier.Housing.V1b\006proto3"
 };
 static ::absl::once_flag descriptor_table_sf_2fhousing_2fv1_2fhousing_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_sf_2fhousing_2fv1_2fhousing_2eproto = {
     false,
     false,
-    2345,
+    2388,
     descriptor_table_protodef_sf_2fhousing_2fv1_2fhousing_2eproto,
     "sf/housing/v1/housing.proto",
     &descriptor_table_sf_2fhousing_2fv1_2fhousing_2eproto_once,
@@ -4496,7 +4517,8 @@ PROTOBUF_NDEBUG_INLINE GetClaimRequest::Impl_::Impl_(
     [[maybe_unused]] const ::sf::housing::v1::GetClaimRequest& from_msg)
       : _has_bits_{from._has_bits_},
         _cached_size_{0},
-        claim_id_(arena, from.claim_id_) {}
+        claim_id_(arena, from.claim_id_),
+        actor_id_(arena, from.actor_id_) {}
 
 GetClaimRequest::GetClaimRequest(
     ::google::protobuf::Arena* PROTOBUF_NULLABLE arena,
@@ -4519,7 +4541,8 @@ PROTOBUF_NDEBUG_INLINE GetClaimRequest::Impl_::Impl_(
     [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
     [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
       : _cached_size_{0},
-        claim_id_(arena) {}
+        claim_id_(arena),
+        actor_id_(arena) {}
 
 inline void GetClaimRequest::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
   new (&_impl_) Impl_(internal_visibility(), arena);
@@ -4536,6 +4559,7 @@ inline void GetClaimRequest::SharedDtor(MessageLite& self) {
   this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
   ABSL_DCHECK(this_.GetArena() == nullptr);
   this_._impl_.claim_id_.Destroy();
+  this_._impl_.actor_id_.Destroy();
   this_._impl_.~Impl_();
 }
 
@@ -4573,8 +4597,13 @@ PROTOBUF_NOINLINE void GetClaimRequest::Clear() {
   (void) cached_has_bits;
 
   cached_has_bits = _impl_._has_bits_[0];
-  if (CheckHasBit(cached_has_bits, 0x00000001U)) {
-    _impl_.claim_id_.ClearNonDefaultToEmpty();
+  if (BatchCheckHasBit(cached_has_bits, 0x00000003U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      _impl_.claim_id_.ClearNonDefaultToEmpty();
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      _impl_.actor_id_.ClearNonDefaultToEmpty();
+    }
   }
   _impl_._has_bits_.Clear();
   _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
@@ -4609,6 +4638,16 @@ PROTOBUF_NOINLINE void GetClaimRequest::Clear() {
     }
   }
 
+  // string actor_id = 2;
+  if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+    if (!this_._internal_actor_id().empty()) {
+      const ::std::string& _s = this_._internal_actor_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.housing.v1.GetClaimRequest.actor_id");
+      target = stream->WriteStringMaybeAliased(2, _s, target);
+    }
+  }
+
   if (ABSL_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
     target =
         ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
@@ -4632,13 +4671,21 @@ PROTOBUF_NOINLINE void GetClaimRequest::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void)cached_has_bits;
 
-   {
+  ::_pbi::Prefetch5LinesFrom7Lines(&this_);
+  cached_has_bits = this_._impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x00000003U)) {
     // string claim_id = 1;
-    cached_has_bits = this_._impl_._has_bits_[0];
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
       if (!this_._internal_claim_id().empty()) {
         total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
                                         this_._internal_claim_id());
+      }
+    }
+    // string actor_id = 2;
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      if (!this_._internal_actor_id().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_actor_id());
       }
     }
   }
@@ -4659,12 +4706,23 @@ void GetClaimRequest::MergeImpl(::google::protobuf::MessageLite& to_msg,
   (void)cached_has_bits;
 
   cached_has_bits = from._impl_._has_bits_[0];
-  if (CheckHasBit(cached_has_bits, 0x00000001U)) {
-    if (!from._internal_claim_id().empty()) {
-      _this->_internal_set_claim_id(from._internal_claim_id());
-    } else {
-      if (_this->_impl_.claim_id_.IsDefault()) {
-        _this->_internal_set_claim_id("");
+  if (BatchCheckHasBit(cached_has_bits, 0x00000003U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      if (!from._internal_claim_id().empty()) {
+        _this->_internal_set_claim_id(from._internal_claim_id());
+      } else {
+        if (_this->_impl_.claim_id_.IsDefault()) {
+          _this->_internal_set_claim_id("");
+        }
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      if (!from._internal_actor_id().empty()) {
+        _this->_internal_set_actor_id(from._internal_actor_id());
+      } else {
+        if (_this->_impl_.actor_id_.IsDefault()) {
+          _this->_internal_set_actor_id("");
+        }
       }
     }
   }
@@ -4688,6 +4746,7 @@ void GetClaimRequest::InternalSwap(GetClaimRequest* PROTOBUF_RESTRICT PROTOBUF_N
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
   swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.claim_id_, &other->_impl_.claim_id_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.actor_id_, &other->_impl_.actor_id_, arena);
 }
 
 ::google::protobuf::Metadata GetClaimRequest::GetMetadata() const {
@@ -4732,9 +4791,9 @@ ClaimReply::ClaimReply(
                offsetof(Impl_, revision_),
            reinterpret_cast<const char*>(&from._impl_) +
                offsetof(Impl_, revision_),
-           offsetof(Impl_, funded_until_unix_ms_) -
+           offsetof(Impl_, actor_permitted_) -
                offsetof(Impl_, revision_) +
-               sizeof(Impl_::funded_until_unix_ms_));
+               sizeof(Impl_::actor_permitted_));
 
   // @@protoc_insertion_point(copy_constructor:sf.housing.v1.ClaimReply)
 }
@@ -4751,9 +4810,9 @@ inline void ClaimReply::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
   ::memset(reinterpret_cast<char*>(&_impl_) +
                offsetof(Impl_, revision_),
            0,
-           offsetof(Impl_, funded_until_unix_ms_) -
+           offsetof(Impl_, actor_permitted_) -
                offsetof(Impl_, revision_) +
-               sizeof(Impl_::funded_until_unix_ms_));
+               sizeof(Impl_::actor_permitted_));
 }
 ClaimReply::~ClaimReply() {
   // @@protoc_insertion_point(destructor:sf.housing.v1.ClaimReply)
@@ -4817,10 +4876,10 @@ PROTOBUF_NOINLINE void ClaimReply::Clear() {
       _impl_.state_.ClearNonDefaultToEmpty();
     }
   }
-  if (BatchCheckHasBit(cached_has_bits, 0x00000038U)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x00000078U)) {
     ::memset(&_impl_.revision_, 0, static_cast<::size_t>(
-        reinterpret_cast<char*>(&_impl_.funded_until_unix_ms_) -
-        reinterpret_cast<char*>(&_impl_.revision_)) + sizeof(_impl_.funded_until_unix_ms_));
+        reinterpret_cast<char*>(&_impl_.actor_permitted_) -
+        reinterpret_cast<char*>(&_impl_.revision_)) + sizeof(_impl_.actor_permitted_));
   }
   _impl_._has_bits_.Clear();
   _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
@@ -4902,6 +4961,15 @@ PROTOBUF_NOINLINE void ClaimReply::Clear() {
     }
   }
 
+  // bool actor_permitted = 7;
+  if (CheckHasBit(cached_has_bits, 0x00000040U)) {
+    if (this_._internal_actor_permitted() != 0) {
+      target = stream->EnsureSpace(target);
+      target = ::_pbi::WireFormatLite::WriteBoolToArray(
+          7, this_._internal_actor_permitted(), target);
+    }
+  }
+
   if (ABSL_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
     target =
         ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
@@ -4927,7 +4995,7 @@ PROTOBUF_NOINLINE void ClaimReply::Clear() {
 
   ::_pbi::Prefetch5LinesFrom7Lines(&this_);
   cached_has_bits = this_._impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0x0000003fU)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x0000007fU)) {
     // string claim_id = 1;
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
       if (!this_._internal_claim_id().empty()) {
@@ -4970,6 +5038,12 @@ PROTOBUF_NOINLINE void ClaimReply::Clear() {
             this_._internal_funded_until_unix_ms());
       }
     }
+    // bool actor_permitted = 7;
+    if (CheckHasBit(cached_has_bits, 0x00000040U)) {
+      if (this_._internal_actor_permitted() != 0) {
+        total_size += 2;
+      }
+    }
   }
   return this_.MaybeComputeUnknownFieldsSize(total_size,
                                              &this_._impl_._cached_size_);
@@ -4988,7 +5062,7 @@ void ClaimReply::MergeImpl(::google::protobuf::MessageLite& to_msg,
   (void)cached_has_bits;
 
   cached_has_bits = from._impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0x0000003fU)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x0000007fU)) {
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
       if (!from._internal_claim_id().empty()) {
         _this->_internal_set_claim_id(from._internal_claim_id());
@@ -5031,6 +5105,11 @@ void ClaimReply::MergeImpl(::google::protobuf::MessageLite& to_msg,
         _this->_impl_.funded_until_unix_ms_ = from._impl_.funded_until_unix_ms_;
       }
     }
+    if (CheckHasBit(cached_has_bits, 0x00000040U)) {
+      if (from._internal_actor_permitted() != 0) {
+        _this->_impl_.actor_permitted_ = from._impl_.actor_permitted_;
+      }
+    }
   }
   _this->_impl_._has_bits_[0] |= cached_has_bits;
   _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
@@ -5055,8 +5134,8 @@ void ClaimReply::InternalSwap(ClaimReply* PROTOBUF_RESTRICT PROTOBUF_NONNULL oth
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.owner_id_, &other->_impl_.owner_id_, arena);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.state_, &other->_impl_.state_, arena);
   ::google::protobuf::internal::memswap<
-      PROTOBUF_FIELD_OFFSET(ClaimReply, _impl_.funded_until_unix_ms_)
-      + sizeof(ClaimReply::_impl_.funded_until_unix_ms_)
+      PROTOBUF_FIELD_OFFSET(ClaimReply, _impl_.actor_permitted_)
+      + sizeof(ClaimReply::_impl_.actor_permitted_)
       - PROTOBUF_FIELD_OFFSET(ClaimReply, _impl_.revision_)>(
           reinterpret_cast<char*>(&_impl_.revision_),
           reinterpret_cast<char*>(&other->_impl_.revision_));

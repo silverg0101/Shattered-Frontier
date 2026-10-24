@@ -2053,6 +2053,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED GetClaimRequest final : public ::go
   // accessors -------------------------------------------------------
   enum : int {
     kClaimIdFieldNumber = 1,
+    kActorIdFieldNumber = 2,
   };
   // string claim_id = 1;
   void clear_claim_id() ;
@@ -2069,12 +2070,27 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED GetClaimRequest final : public ::go
   ::std::string* PROTOBUF_NONNULL _internal_mutable_claim_id();
 
   public:
+  // string actor_id = 2;
+  void clear_actor_id() ;
+  [[nodiscard]] const ::std::string& actor_id() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_actor_id(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_actor_id();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_actor_id();
+  void set_allocated_actor_id(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_actor_id() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_actor_id(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_actor_id();
+
+  public:
   // @@protoc_insertion_point(class_scope:sf.housing.v1.GetClaimRequest)
  private:
   class _Internal;
   using ParseTableT_ =
-      ::google::protobuf::internal::TcParseTable<0, 1,
-                          0, 46,
+      ::google::protobuf::internal::TcParseTable<1, 2,
+                          0, 54,
                           2>;
   static constexpr ParseTableT_ InternalGenerateParseTable_(
       const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
@@ -2103,6 +2119,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED GetClaimRequest final : public ::go
     ::google::protobuf::internal::HasBits<1> _has_bits_;
     ::google::protobuf::internal::CachedSize _cached_size_;
     ::google::protobuf::internal::ArenaStringPtr claim_id_;
+    ::google::protobuf::internal::ArenaStringPtr actor_id_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
   union { Impl_ _impl_; };
@@ -2264,6 +2281,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ClaimReply final : public ::google:
     kRevisionFieldNumber = 4,
     kPermissionRevisionFieldNumber = 5,
     kFundedUntilUnixMsFieldNumber = 6,
+    kActorPermittedFieldNumber = 7,
   };
   // string claim_id = 1;
   void clear_claim_id() ;
@@ -2340,11 +2358,21 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ClaimReply final : public ::google:
   void _internal_set_funded_until_unix_ms(::int64_t value);
 
   public:
+  // bool actor_permitted = 7;
+  void clear_actor_permitted() ;
+  [[nodiscard]] bool actor_permitted() const;
+  void set_actor_permitted(bool value);
+
+  private:
+  bool _internal_actor_permitted() const;
+  void _internal_set_actor_permitted(bool value);
+
+  public:
   // @@protoc_insertion_point(class_scope:sf.housing.v1.ClaimReply)
  private:
   class _Internal;
   using ParseTableT_ =
-      ::google::protobuf::internal::TcParseTable<3, 6,
+      ::google::protobuf::internal::TcParseTable<3, 7,
                           0, 54,
                           2>;
   static constexpr ParseTableT_ InternalGenerateParseTable_(
@@ -2379,6 +2407,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ClaimReply final : public ::google:
     ::int64_t revision_;
     ::int64_t permission_revision_;
     ::int64_t funded_until_unix_ms_;
+    bool actor_permitted_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
   union { Impl_ _impl_; };
@@ -4689,6 +4718,70 @@ inline void GetClaimRequest::set_allocated_claim_id(::std::string* PROTOBUF_NULL
   // @@protoc_insertion_point(field_set_allocated:sf.housing.v1.GetClaimRequest.claim_id)
 }
 
+// string actor_id = 2;
+inline void GetClaimRequest::clear_actor_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.actor_id_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+}
+inline const ::std::string& GetClaimRequest::actor_id() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.housing.v1.GetClaimRequest.actor_id)
+  return _internal_actor_id();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void GetClaimRequest::set_actor_id(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  _impl_.actor_id_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:sf.housing.v1.GetClaimRequest.actor_id)
+}
+inline ::std::string* PROTOBUF_NONNULL GetClaimRequest::mutable_actor_id()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  ::std::string* _s = _internal_mutable_actor_id();
+  // @@protoc_insertion_point(field_mutable:sf.housing.v1.GetClaimRequest.actor_id)
+  return _s;
+}
+inline const ::std::string& GetClaimRequest::_internal_actor_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.actor_id_.Get();
+}
+inline void GetClaimRequest::_internal_set_actor_id(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.actor_id_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL GetClaimRequest::_internal_mutable_actor_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.actor_id_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE GetClaimRequest::release_actor_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:sf.housing.v1.GetClaimRequest.actor_id)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000002U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+  auto* released = _impl_.actor_id_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.actor_id_.Set("", GetArena());
+  }
+  return released;
+}
+inline void GetClaimRequest::set_allocated_actor_id(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+  }
+  _impl_.actor_id_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.actor_id_.IsDefault()) {
+    _impl_.actor_id_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:sf.housing.v1.GetClaimRequest.actor_id)
+}
+
 // -------------------------------------------------------------------
 
 // ClaimReply
@@ -4955,6 +5048,30 @@ inline ::int64_t ClaimReply::_internal_funded_until_unix_ms() const {
 inline void ClaimReply::_internal_set_funded_until_unix_ms(::int64_t value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.funded_until_unix_ms_ = value;
+}
+
+// bool actor_permitted = 7;
+inline void ClaimReply::clear_actor_permitted() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.actor_permitted_ = false;
+  ClearHasBit(_impl_._has_bits_[0], 0x00000040U);
+}
+inline bool ClaimReply::actor_permitted() const {
+  // @@protoc_insertion_point(field_get:sf.housing.v1.ClaimReply.actor_permitted)
+  return _internal_actor_permitted();
+}
+inline void ClaimReply::set_actor_permitted(bool value) {
+  _internal_set_actor_permitted(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000040U);
+  // @@protoc_insertion_point(field_set:sf.housing.v1.ClaimReply.actor_permitted)
+}
+inline bool ClaimReply::_internal_actor_permitted() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.actor_permitted_;
+}
+inline void ClaimReply::_internal_set_actor_permitted(bool value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.actor_permitted_ = value;
 }
 
 // -------------------------------------------------------------------

@@ -54,6 +54,20 @@ def main():
         if not target_class:
             raise RuntimeError('SFCastingTarget class is unavailable; build the Editor module first')
         actors.spawn_actor_from_class(target_class, u.Vector(350, 0, 100)).set_actor_label('TrainingTarget')
+    if names[0] == 'RestAreas':
+        rest_class = u.load_class(None, '/Script/ShatteredFrontier.SFRestAreaVolume')
+        if not rest_class:
+            raise RuntimeError('SFRestAreaVolume is unavailable; build the Editor module first')
+        inn = actors.spawn_actor_from_class(rest_class, u.Vector(-1200, 0, 150))
+        inn.set_actor_label('InnRestArea')
+        inn.set_editor_property('kind', u.SFRestAreaKind.INN)
+        # The first authored Housing plot is centred at (430, 215) m. The game mode
+        # loads its claim and structures through the same services as Silverbrook.
+        plot = actors.spawn_actor_from_class(u.StaticMeshActor, u.Vector(43000, 21500, -50))
+        plot.set_actor_label('HousingClaimPlotGround')
+        plot.static_mesh_component.set_static_mesh(cube)
+        plot.static_mesh_component.set_collision_profile_name('BlockAll')
+        plot.set_actor_scale3d(u.Vector(20, 20, 1))
 
     sun = actors.spawn_actor_from_class(u.DirectionalLight, u.Vector(0, 0, 1000), u.Rotator(pitch=-45, yaw=25))
     sun.set_actor_label('Sun')

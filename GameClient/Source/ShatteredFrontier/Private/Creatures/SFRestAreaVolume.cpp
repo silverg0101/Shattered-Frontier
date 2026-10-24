@@ -39,3 +39,13 @@ bool ASFRestAreaVolume::IsAtRestArea(const UWorld* World, const FVector& Point)
     }
     return false;
 }
+
+bool ASFRestAreaVolume::IsInsideInn(const UWorld* World, const FVector& Point)
+{
+    if (!World || World->GetNetMode() == NM_Client) return false;
+    for (TActorIterator<ASFRestAreaVolume> It(const_cast<UWorld*>(World)); It; ++It)
+    {
+        if (It->Kind == ESFRestAreaKind::Inn && It->Contains(Point)) return true;
+    }
+    return false;
+}

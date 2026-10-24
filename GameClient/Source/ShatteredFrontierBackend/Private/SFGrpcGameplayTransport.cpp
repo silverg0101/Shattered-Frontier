@@ -47,7 +47,7 @@ namespace
     }
 
     void CopyClaim(const sf::housing::v1::ClaimReply& R, FSFGameplayResponse& Out)
-    { Out.State = FromUtf8(R.state()); Out.OwnerId = FromUtf8(R.owner_id()); Out.Revision = R.revision(); Out.PermissionRevision = R.permission_revision(); }
+    { Out.State = FromUtf8(R.state()); Out.OwnerId = FromUtf8(R.owner_id()); Out.Revision = R.revision(); Out.PermissionRevision = R.permission_revision(); Out.bActorPermitted = R.actor_permitted(); }
 
     void CopyPlacement(const sf::housing::v1::PlacementReply& R, FSFGameplayResponse& Out)
     { Out.State = FromUtf8(R.state()); Out.StructureId = FromUtf8(R.structure_id()); Out.StructureRevision = R.structure_revision(); }
@@ -353,7 +353,7 @@ void FSFGrpcGameplayTransport::Send(const FSFGameplayRequest& Q, float DeadlineS
     case ESFGameplayRpc::GetClaim:
     {
         sf::housing::v1::GetClaimRequest M;
-        M.set_claim_id(Utf8(Q.ClaimId));
+        M.set_claim_id(Utf8(Q.ClaimId)); M.set_actor_id(Utf8(Q.CharacterId));
         auto* Call = new TCall<sf::housing::v1::ClaimReply>(); Call->Copy = &CopyClaim;
         Start(Call, [&](grpc::ClientContext* C) { return Channel->Housing->AsyncGetClaim(C, M, &Channel->Queue); });
         break;

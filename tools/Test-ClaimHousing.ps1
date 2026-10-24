@@ -6,7 +6,8 @@ param(
     [string]$EvidenceRoot,
     # DEC-02 leg: no seeding; every character spawns with the Alpha Starter Kit, placement reserves and debits it, and
     # the restart hard-kills the UE server and both hosts. Alpha's backpack and hold must be unchanged afterwards.
-    [switch]$StarterKit
+    [switch]$StarterKit,
+    [switch]$RestAreas
 )
 # BLD-02 A2 + A7 on the network path: real claims and housing persistence through Gameplay.Host (owned PostgreSQL).
 # Phase 1: alpha claims the first Silverbrook build plot, places two pieces and removes one. The UE server then restarts
@@ -26,7 +27,7 @@ $null = New-Item -ItemType Directory -Path $root -Force
 $owned = [Collections.Generic.List[Diagnostics.Process]]::new()
 $result = [ordered]@{ status='Running'; scope='Development loopback fixture: Win64 editor -server + editor clients, owned PostgreSQL, InventoryLedger.Host + Gameplay.Host, guarded dev identities'; runs=@() }
 $fx = @{}
-$silverbrook = '/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook'
+$silverbrook = if ($RestAreas) { '/Game/Frontier/Maps/Sandbox/SB_RestAreas' } else { '/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook' }
 $claim = 'clm_greenlands_silverbrook_1'
 function Start-Owned([string]$Name,[string]$Url,[string[]]$Extra) {
     $log = Join-Path $root ($Name+'.log'); $user = Join-Path $root ($Name+'-user')
@@ -51,7 +52,7 @@ function Read-Log([string]$Name) { Get-Content -LiteralPath (Join-Path $root ($N
 function Stop-Owned([Diagnostics.Process]$Process) { if (-not $Process.HasExited) { Stop-Process -Id $Process.Id; $Process.WaitForExit() } }
 try {
     New-LedgerFixture $fx $repo $root
-    $schemas = @('CharacterState.Postgres/Schema.sql','Housing.Postgres/Schema.sql','Exchange.Postgres/Schema.sql','Housing.Postgres/Schema.Gameplay.sql','Housing.Postgres/Schema.Geometry.sql','Housing.Postgres/Schema.Construction.sql','CharacterState.Postgres/Schema.Position.sql','CharacterState.Postgres/Schema.Recipes.sql') | ForEach-Object { Get-Content (Join-Path $repo "BackendServices/$_") -Raw }
+    $schemas = @('CharacterState.Postgres/Schema.sql','Housing.Postgres/Schema.sql','Exchange.Postgres/Schema.sql','Housing.Postgres/Schema.Gameplay.sql','Housing.Postgres/Schema.Geometry.sql','Housing.Postgres/Schema.Construction.sql','CharacterState.Postgres/Schema.Position.sql','CharacterState.Postgres/Schema.Recipes.sql','CharacterState.Postgres/Schema.Appearance.sql','CharacterState.Postgres/Schema.GatheringSkills.sql','CharacterState.Postgres/Schema.Death.sql','CharacterState.Postgres/Schema.Rested.sql') | ForEach-Object { Get-Content (Join-Path $repo "BackendServices/$_") -Raw }
     [void](Invoke-LedgerSql $fx ("SET ROLE ledger_owner;`n" + ($schemas -join "`n")) $fx.db)
     Invoke-LedgerSchemaMigrations $fx @('character_state','housing','exchange')
     [void](Invoke-LedgerSql $fx ('GRANT USAGE ON SCHEMA character_state,housing,exchange TO ledger_svc; ' + ((@('character_state','housing','exchange') | ForEach-Object { "GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA $_ TO ledger_svc;" }) -join ' ')) $fx.db)
@@ -77,9 +78,9 @@ try {
     }
     Start-Gameplay 'gameplay'
     # Fixture seed: each piece costs one wall bundle; alpha places two, bravo one. Capacity matches the backpack's typed default.
-    foreach ($seed in @(if (-not $StarterKit) { @('alpha',2); @('bravo',1) })) {
-        $r = Invoke-FxChecked $fx $fx.dotnet @($fx.dll,'seed',"ctn_dev_$($seed[0])","chr_dev_$($seed[0])",'160','item/wall_material_bundle',"$($seed[1])","seed/$($seed[0])") @{ INVENTORY_LEDGER_PORT="$($fx.hostPort)"; SF_INVENTORY_LEDGER_TOKEN=$fx.token }
-        if ($r.ExitCode -ne 0 -or $r.Stdout -notmatch 'INVENTORY_LEDGER_SEEDED') { throw "Seeding $($seed[0]) failed: $($r.Stdout)" }
+    foreach ($seed in $(if (-not $StarterKit) { @{ Name='alpha'; Count=2 }; @{ Name='bravo'; Count=1 } })) {
+        $r = Invoke-FxChecked $fx $fx.dotnet @($fx.dll,'seed',"ctn_dev_$($seed.Name)","chr_dev_$($seed.Name)",'160','item/wall_material_bundle',"$($seed.Count)","seed/$($seed.Name)") @{ INVENTORY_LEDGER_PORT="$($fx.hostPort)"; SF_INVENTORY_LEDGER_TOKEN=$fx.token }
+        if ($r.ExitCode -ne 0 -or $r.Stdout -notmatch 'INVENTORY_LEDGER_SEEDED') { throw "Seeding $($seed.Name) failed: $($r.Stdout)" }
     }
     $ledgerIni = '-ini:Game:[/Script/ShatteredFrontier.SFInventoryLedgerSettings]'; $servicesIni = '-ini:Game:[/Script/ShatteredFrontier.SFGameplayServicesSettings]'
     $serverFlags = @('-server',('-port='+$Port),'-multihome=127.0.0.1','-SFDevIdentity','-ClaimScenario',
@@ -94,6 +95,33 @@ try {
     $alpha1 = Start-Owned 'alpha1' ("127.0.0.1:$Port"+'?SFDevCharacter=alpha') @('-game','-ClaimScenario=owner')
     Wait-Log $alpha1 'alpha1' "CLAIM_SCENARIO_OWNER_DONE Claim=$claim Members=1"
     Wait-Log $server1 'server1' 'DEV_IDENTITY_BOUND Character=chr_dev_alpha'
+    if ($RestAreas) {
+        Stop-Owned $alpha1
+        Stop-Owned $server1
+        $cases = @(
+            @{ name='house_owner'; place='House'; person='alpha'; expected='true' },
+            @{ name='inn'; place='Inn'; person='bravo'; expected='true' },
+            @{ name='outside'; place='Outside'; person='charlie'; expected='false' },
+            @{ name='house_stranger'; place='House'; person='delta'; expected='false' }
+        )
+        foreach ($case in $cases) {
+            $flags = @($serverFlags | Where-Object { $_ -ne '-ClaimScenario' }) + @(($servicesIni+':bRestoreOnConnect=True'),('-RestAreaScenario='+$case.place))
+            Invoke-WithEnv $serverEnv { $script:restServer = Start-Owned ('server_'+$case.name) $silverbrook $flags }
+            Wait-Log $restServer ('server_'+$case.name) "HOUSING_CLAIM_LOADED Claim=$claim Claimed=1"
+            $clientName = 'client_'+$case.name
+            $restClient = Start-Owned $clientName ("127.0.0.1:$Port"+'?SFDevCharacter='+$case.person) @('-game')
+            Wait-Log $restServer ('server_'+$case.name) ('CHARACTER_RESTORED Character=chr_dev_'+$case.person)
+            Start-Sleep -Seconds 2
+            Stop-Owned $restClient
+            Wait-Log $restServer ('server_'+$case.name) ('CHARACTER_SESSION_ENDED Character=chr_dev_'+$case.person+' Ok=1')
+            $stored = (Invoke-LedgerSql $fx "SELECT state->>'EndedInRestArea' FROM character_state.progression WHERE character_id='chr_dev_$($case.person)'" $fx.db).Trim().ToLowerInvariant()
+            if ($stored -ne $case.expected) { throw "$($case.name): stored rest mode $stored; expected $($case.expected)." }
+            $result.runs += @{ name=$case.name; storedRestArea=$stored }
+            Stop-Owned $restServer
+        }
+        $result.status = 'Passed'
+        return
+    }
     $before = [regex]::Match((Read-Log 'alpha1'),'CLAIM_SCENARIO_OWNER_DONE Claim=\S+ Members=1 Content=(\S+)').Groups[1].Value
     $alphaBag = "SELECT coalesce(string_agg(container_id||':'||definition_id||':'||quantity, ',' ORDER BY container_id,definition_id),'') FROM inventory.entries WHERE container_id IN ('ctn_dev_alpha','ctn_hold_chr_dev_alpha')"
     $bagBefore = (Invoke-LedgerSql $fx $alphaBag $fx.db).Trim()

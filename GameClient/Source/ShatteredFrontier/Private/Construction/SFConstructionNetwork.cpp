@@ -1046,6 +1046,21 @@ int32 ASFGameMode::PrepareClaimPlots()
     return ClaimPlots.Num();
 }
 
+FString ASFGameMode::RestHouseClaimAt(const FVector& WorldPosition) const
+{
+    if (!HasAuthority() || !IsHousingActive()) return FString();
+    const FVector2D Metres(WorldPosition.X / 100.0, WorldPosition.Y / 100.0);
+    for (const FClaimPlot& Plot : ClaimPlots)
+    {
+        if (!Plot.bLoaded || !Plot.bClaimed || Plot.Structures.IsEmpty() || !Plot.State.IsValid()) continue;
+        const FVector2D Delta = Metres - Plot.CentreMetres;
+        if (FMath::Abs(Delta.X) > Plot.SideMetres * 0.5 || FMath::Abs(Delta.Y) > Plot.SideMetres * 0.5) continue;
+        const double Floor = Plot.State->GetAnchorOffsetCm().Z;
+        if (WorldPosition.Z >= Floor - 200 && WorldPosition.Z <= Floor + 500) return Plot.ClaimId;
+    }
+    return FString();
+}
+
 bool ASFGameMode::IsHousingActive() const
 {
     return IsAdmitted() && !ClaimPlots.IsEmpty() && USFBackpackComponent::Services().IsValid();
@@ -1238,7 +1253,8 @@ void ASFGameMode::CommitHousing(ASFPlayerController* Controller, const FString& 
 static bool IsConstructionFixtureMap(const UWorld* World)
 {
     const FString Name = World->GetOutermost()->GetName();
-    return Name == TEXT("/Game/Frontier/Maps/Greenlands_ConstructionSandbox") || Name.StartsWith(TEXT("/Game/Frontier/Maps/Dev/"));
+    return Name == TEXT("/Game/Frontier/Maps/Greenlands_ConstructionSandbox") ||
+        Name == TEXT("/Game/Frontier/Maps/Sandbox/SB_RestAreas") || Name.StartsWith(TEXT("/Game/Frontier/Maps/Dev/"));
 }
 
 bool ASFGameMode::IsAdmitted() const
@@ -1261,7 +1277,8 @@ void ASFGameMode::StartConstruction()
     }
     // The sandbox keeps one identity-anchored state and its map-placed foundation; a zone gets one claim state per
     // build plot (BLD-02 A2), rebuilt from Housing when the services are on.
-    if (!(IsZoneGatheringWorld() && PrepareClaimPlots()>0))
+    const bool bHousingPlotMap = IsZoneGatheringWorld() || GetWorld()->GetOutermost()->GetName() == TEXT("/Game/Frontier/Maps/Sandbox/SB_RestAreas");
+    if (!(bHousingPlotMap && PrepareClaimPlots()>0))
     {
         auto* State = GetWorld()->SpawnActor<ASFConstructionNetworkState>();
         if (!State) { UE_LOG(LogTemp,Fatal,TEXT("Construction network fixture state could not spawn")); }
@@ -1311,6 +1328,16 @@ void ASFGameMode::PostLoginConstruction(APlayerController* NewPlayer)
     if (APawn* Pawn = Controller->GetPawn(); Pawn && !IsZoneGatheringWorld()) { Pawn->SetActorLocation(FVector(bAssignBuilder ? -200 : 200,-400,96)); }
     if (IsZoneGatheringWorld()) { PlaceForZoneScenario(Controller->GetPawn(), bAssignBuilder); }
     if (IsZoneGatheringWorld()) { RefreshZoneGatheringNodes(); }
+    FString RestScenario;
+    if (GetWorld()->GetOutermost()->GetName() == TEXT("/Game/Frontier/Maps/Sandbox/SB_RestAreas") && Controller->GetPawn() &&
+        (FParse::Value(FCommandLine::Get(), TEXT("RestAreaScenario="), RestScenario) ||
+            FParse::Param(FCommandLine::Get(), TEXT("ClaimScenario"))))
+    {
+        FVector At = RestScenario == TEXT("Inn") ? FVector(-1200, 0, 150) : FVector(2000, 0, 150);
+        if ((RestScenario == TEXT("House") || RestScenario.IsEmpty()) && !ClaimPlots.IsEmpty() && ClaimPlots[0].State.IsValid())
+        { At = ClaimPlots[0].State->GetAnchorOffsetCm() + FVector(RestScenario.IsEmpty() ? -175 : 0, -125, 120); }
+        Controller->GetPawn()->SetActorLocation(At, false, nullptr, ETeleportType::TeleportPhysics);
+    }
     UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_ROLE Builder=%d"),bAssignBuilder);
     USFCharacterSessionComponent::AttachIfEnabled(Controller);
     for (TActorIterator<ASFConstructionNetworkState> It(GetWorld()); It; ++It) { It->AdmitPair(); }

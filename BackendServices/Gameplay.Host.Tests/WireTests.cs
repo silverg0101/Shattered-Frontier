@@ -722,6 +722,23 @@ else if (mode == "progression")
     var resumed = client.GetCharacterState(new ProgressPb.GetCharacterStateRequest { CharacterId = "chr_progression" }, headers, deadline: Deadline());
     Check(resumed.RestedMinutes >= 119 && resumed.RestedMinutes <= 121 && resumed.ProgressionRevision == ended.ProgressionRevision + 1,
         "Rest pool accrued and exposed on wire.");
+    var ordinary = client.ApplyReceipt(new ProgressPb.ApplyReceiptRequest { SourceReceiptId = "rest/ordinary/start",
+        Kind = "defeat", CharacterId = "chr_rest_ordinary",
+        Payload = new ProgressPb.ActionPayload { EnemyLevel = 1, EnemyTierMultiplier = 1, EligiblePartySize = 1 } },
+        headers, deadline: Deadline());
+    client.EndSession(new ProgressPb.EndSessionRequest { OperationId = "rest/ordinary/end", CharacterId = "chr_rest_ordinary",
+        ExpectedProgressionRevision = ordinary.ProgressionRevision, InRestArea = false }, headers, deadline: Deadline());
+    using (var db = new NpgsqlConnection(connection))
+    {
+        db.Open();
+        using var cmd = new NpgsqlCommand("UPDATE character_state.progression SET state=jsonb_set(state,'{LastSessionEndAt}',to_jsonb($1::text)) WHERE character_id='chr_rest_ordinary'", db);
+        cmd.Parameters.AddWithValue(DateTimeOffset.UtcNow.AddHours(-4).ToString("O"));
+        Check(cmd.ExecuteNonQuery() == 1, "Ordinary offline fixture missing.");
+    }
+    var ordinaryResumed = client.GetCharacterState(new ProgressPb.GetCharacterStateRequest { CharacterId = "chr_rest_ordinary" }, headers, deadline: Deadline());
+    Check(ordinaryResumed.RestedMinutes >= 59 && ordinaryResumed.RestedMinutes <= 61 &&
+        resumed.RestedMinutes >= ordinaryResumed.RestedMinutes * 1.9,
+        "Host applies the 1:2 rest-area rate versus 1:4 elsewhere.");
     var reread = client.GetCharacterState(new ProgressPb.GetCharacterStateRequest { CharacterId = "chr_progression" }, headers, deadline: Deadline());
     Check(reread.ProgressionRevision == resumed.ProgressionRevision && reread.RestedMinutes == resumed.RestedMinutes,
         "Repeated state read does not accrue twice.");
@@ -795,6 +812,10 @@ else if (mode == "housing")
     Check(first.Equals(replay) && first.State == "Active", "Claim replay differs.");
     var read = client.GetClaim(new HousingPb.GetClaimRequest { ClaimId = "clm_test" }, headers, deadline: Deadline());
     Check(read.Equals(first), "Claim read differs.");
+    Check(client.GetClaim(new HousingPb.GetClaimRequest { ClaimId = "clm_test", ActorId = "chr_housing" }, headers,
+        deadline: Deadline()).ActorPermitted, "Claim owner rest permission missing.");
+    Check(!client.GetClaim(new HousingPb.GetClaimRequest { ClaimId = "clm_test", ActorId = "chr_intruder" }, headers,
+        deadline: Deadline()).ActorPermitted, "Unpermitted character gained house rest.");
     var ledger = new InventoryLedger(new PostgresInventoryLedgerStore(connection));
     ledger.CreateContainer(new ContainerSpec("ctn_housing", OwnerKind.Character, "chr_housing", ContainerKind.Backpack, 100));
     ledger.Grant("craft/wall-bundle", "ctn_housing", 0, "item/wall_material_bundle", 1, "craft", "craft/wall-bundle");
@@ -837,6 +858,8 @@ else if (mode == "housing")
     var grantReply = client.Grant(grantRequest, headers, deadline: Deadline());
     Check(grantReply.PermissionRevision == 1 && grantReply.Revision == 1 &&
         client.Grant(grantRequest, headers, deadline: Deadline()).Equals(grantReply), "Grant replay differs.");
+    Check(client.GetClaim(new HousingPb.GetClaimRequest { ClaimId = "clm_grants", ActorId = "chr_target" }, headers,
+        deadline: Deadline()).ActorPermitted, "Housing grantee rest permission missing.");
     var staleGrant = grantRequest.Clone(); staleGrant.OperationId = "grant/stale";
     Code(() => client.Grant(staleGrant, headers, deadline: Deadline()), StatusCode.FailedPrecondition);
     var targetPlace = new HousingPb.PlaceRequest { OperationId = "place/target", ClaimId = "clm_grants",

@@ -38,6 +38,8 @@ public:
     // BLD-02 A2: one claim state per zone build plot (area purpose "claims"), owned through Housing; none in the sandbox.
     bool IsHousingActive() const;
     ASFConstructionNetworkState* FindClaimState(const FString& ClaimId) const;
+    /** Server-observed location inside a loaded Housing claim containing built structure cells. Rights are checked by Housing. */
+    FString RestHouseClaimAt(const FVector& WorldPosition) const;
     // Housing.ClaimPlot for the controller's character; Claimed when it already owns the plot.
     void ClaimPlot(ASFPlayerController* Controller, const FString& ClaimId, TFunction<void(ESFConstructionNetworkResult)> Done);
     // Housing.Grant of build rights on the controller's claim to another character.

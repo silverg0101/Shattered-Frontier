@@ -32,8 +32,16 @@ internal sealed class HousingGrpcService(PostgresHousingStore store, ProtectedZo
         });
 
     public override Task<Pb.ClaimReply> GetClaim(Pb.GetClaimRequest request, ServerCallContext context) =>
-        GrpcRun.Call(context, () => ToPb(store.Claim(request.ClaimId) ??
-            throw new InvalidOperationException("Claim missing.")));
+        GrpcRun.Call(context, () =>
+        {
+            var claim = store.Claim(request.ClaimId) ?? throw new InvalidOperationException("Claim missing.");
+            var reply = ToPb(claim);
+            reply.ActorPermitted = !string.IsNullOrEmpty(request.ActorId) &&
+                (claim.State == "Grace" || (claim.State == "Active" && DateTimeOffset.UtcNow < claim.FundedUntil)) &&
+                (claim.OwnerId == request.ActorId ||
+                    (claim.Grants.TryGetValue(request.ActorId, out var rights) && (rights & (int)ClaimRight.Build) != 0));
+            return reply;
+        });
 
     public override Task<Pb.ListStructuresReply> ListStructures(Pb.ListStructuresRequest request, ServerCallContext context) =>
         GrpcRun.Call(context, () =>
