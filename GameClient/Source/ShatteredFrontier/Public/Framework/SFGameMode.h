@@ -151,6 +151,7 @@ private:
     FString SlotStatePath;
     const USFCombatPilotSettings* CapturedSettings = nullptr;
     bool bPilotActive = false;
+    bool bCompanionSandbox = false;
     bool bSlotBridgeHealthy = false;
     bool bSlotServiceMode = false;
     bool bSlotRequestInFlight = false;

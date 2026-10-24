@@ -63,6 +63,25 @@ def main():
     nav = actors.spawn_actor_from_class(u.NavMeshBoundsVolume, u.Vector(0, 0, 500))
     nav.set_actor_label('NavMeshBounds')
     nav.set_actor_scale3d(u.Vector(50, 50, 6))  # default 200 cm brush -> 100 m square
+    if names[0] == 'Companions':
+        boar = u.load_class(None, '/Script/ShatteredFrontier.SFPilotBoar')
+        rest_area = u.load_class(None, '/Script/ShatteredFrontier.SFRestAreaVolume')
+        interaction = u.load_class(None, '/Script/ShatteredFrontier.SFE1InteractionTarget')
+        if not boar or not rest_area or not interaction:
+            raise RuntimeError('Companion sandbox requires boar, rest area and interaction classes')
+        actors.spawn_actor_from_class(interaction, u.Vector(-300, -750, 60)).set_actor_label('NetworkProbe')
+        actors.spawn_actor_from_class(rest_area, u.Vector(-1200, 0, 100)).set_actor_label('TrainingRestArea')
+        for index, xy in enumerate(((2500, 0), (2800, 350), (2800, -350))):
+            creature = actors.spawn_actor_from_class(boar, u.Vector(xy[0], xy[1], 115))
+            creature.set_actor_label('SandboxBoar_' + str(index + 1))
+            creature.set_editor_property('tags', [u.Name('SF_CompanionSandboxWildlife')])
+        for label, x, y in (('TrainingRouteStart', -1400, -400),
+                            ('TrainingRouteEnd', -700, -400), ('TrainingHoldStation', -700, 400)):
+            marker = actors.spawn_actor_from_class(u.StaticMeshActor, u.Vector(x, y, 50))
+            marker.set_actor_label(label)
+            marker.static_mesh_component.set_static_mesh(cube)
+            marker.static_mesh_component.set_collision_profile_name('NoCollision')
+            marker.set_actor_scale3d(u.Vector(0.5, 0.5, 1))
     saved = u.EditorLoadingAndSavingUtils.save_map(world, path) if replacing else levels.save_current_level()
     if not saved:
         raise RuntimeError('Could not save ' + path)

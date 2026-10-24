@@ -145,6 +145,7 @@ void ASFPilotBoar::Initialize(ASFGameMode* OwnerMode, const FString& Group, int3
 
 void ASFPilotBoar::OnRep_Health()
 {
+    if (!Label) { return; }
     Label->SetText(FText::FromString(FString::Printf(TEXT("Boar L2  %d HP"), CurrentHealth)));
     Label->SetTextRenderColor(CurrentHealth > 0 ? FColor::Yellow : FColor::Red);
 }
@@ -295,6 +296,28 @@ bool ASFGameMode::LoadZoneRecord()
 
 void ASFGameMode::StartCombat()
 {
+    bCompanionSandbox = GetNetMode() != NM_Client &&
+        GetWorld()->GetOutermost()->GetName() == TEXT("/Game/Frontier/Maps/Sandbox/SB_Companions");
+    if (bCompanionSandbox)
+    {
+        CapturedSettings = GetDefault<USFCombatPilotSettings>();
+        FString Error;
+        if (!CapturedSettings->Validate(Error))
+        { UE_LOG(LogTemp, Error, TEXT("COMPANION_SANDBOX_DISABLED Invalid combat settings: %s"), *Error); return; }
+        const TArray<FVector2D> SandboxArea = { FVector2D(-45, -45), FVector2D(45, -45),
+            FVector2D(45, 45), FVector2D(-45, 45) };
+        int32 Slot = 0;
+        for (TActorIterator<ASFPilotBoar> It(GetWorld()); It; ++It)
+        {
+            if (!It->ActorHasTag(TEXT("SF_CompanionSandboxWildlife"))) { continue; }
+            It->Initialize(this, TEXT("companions_sandbox"), Slot++, SandboxArea,
+                CapturedSettings->BoarHealth, ++NextBoarSerial);
+        }
+        bPilotActive = Slot > 0;
+        RespawnPoints.Add(FVector(0, 0, 110));
+        UE_LOG(LogTemp, Display, TEXT("COMPANION_SANDBOX_READY Boars=%d"), Slot);
+        return;
+    }
     // GM-01: on wherever the zone record has boar groups (Silverbrook), on any authority (dedicated, listen, standalone).
     bPilotActive = GetNetMode() != NM_Client &&
         GetWorld()->GetOutermost()->GetName() == TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook");
@@ -805,6 +828,12 @@ void ASFGameMode::RetryDefeatReward(const FString& DeathId, const FString& Servi
 void ASFGameMode::BoarDied(ASFPilotBoar* Boar, ASFE1Character* Killer)
 {
     if (!bPilotActive || !IsValid(Boar)) { return; }
+    if (bCompanionSandbox)
+    {
+        UE_LOG(LogTemp, Display, TEXT("COMPANION_SANDBOX_BOAR_DEAD Slot=%d"), Boar->SlotIndex());
+        Boar->Destroy();
+        return;
+    }
     const FString Key = FString::Printf(TEXT("%s:%d"), *Boar->GroupId(), Boar->SlotIndex());
     UE_LOG(LogTemp, Display, TEXT("COMBAT_PILOT_BOAR_DEAD Group=%s Slot=%d"), *Boar->GroupId(), Boar->SlotIndex());
     RewardKill(Boar->DeathId(), Boar->GetActorLocation(), Killer);
