@@ -20,6 +20,7 @@ PANEL = (392, 448)        # w, h per view: 28 x 32 patches of 14 px; the video's
 GRID = (56, 64)           # heatmap cells per view (stride 7)
 SIGMA = 1.5               # target Gaussian, in cells
 HIDDEN_AMP = 0.3
+VIDEO = (1344, 768)       # w, h of the video model's frame: training renders are compressed at this size
 MEAN, STD = (0.485, 0.456, 0.406), (0.229, 0.224, 0.225)
 
 
@@ -101,7 +102,8 @@ def decode(maps, k):
 def augment(p, uv, g):
     """The look of a generated video, per panel: drift in scale and position, light, colour, gamma, blur and
     noise. p (B, 2, H, W, 3) float 0..1, uv (B, 2, k, 2); g a torch.Generator. Returns both changed.
-    ponytail: no JPEG or directional motion blur on the GPU; add them if the exam fails on blurry frames."""
+    Compression is applied once at load (compress). ponytail: no directional motion blur; add it if real takes
+    smear limbs the detector loses."""
     import torch
     import torch.nn.functional as F
     b, _, h, w, _ = p.shape
@@ -129,12 +131,24 @@ def augment(p, uv, g):
     return x.clamp(0, 1).permute(0, 2, 3, 1).reshape(b, 2, h, w, 3), uv
 
 
+def compress(img, rng):
+    """A render as a take arrives: stretched to the video frame and lossy-compressed (a third stay clean).
+    ponytail: JPEG once per render at load, standing in for h264; per-epoch re-encoding if the exam asks."""
+    import cv2
+    if rng.random() < 1 / 3:
+        return img
+    img = cv2.resize(img, VIDEO, interpolation=cv2.INTER_AREA)
+    return cv2.imdecode(cv2.imencode(".jpg", img, [cv2.IMWRITE_JPEG_QUALITY, int(rng.integers(30, 80))])[1],
+                        cv2.IMREAD_COLOR)
+
+
 def load(data):
     """Every render at panel size, uv (N, 2, k, 2) and visibility (N, 2, k)."""
     import cv2
     labels = json.loads((data / "labels.json").read_text())
-    imgs = np.stack([panels(cv2.cvtColor(cv2.imread(str(data / "img" / f"{i:05d}.png")), cv2.COLOR_BGR2RGB))
-                     for i in range(len(labels))])
+    rng = np.random.default_rng(0)
+    imgs = np.stack([panels(cv2.cvtColor(compress(cv2.imread(str(data / "img" / f"{i:05d}.png")), rng),
+                                         cv2.COLOR_BGR2RGB)) for i in range(len(labels))])
     uv = np.array([[l["front"], l["side"]] for l in labels], np.float32)
     vis = np.array([[l["vis_front"], l["vis_side"]] for l in labels], np.float32)
     return imgs, uv, vis
@@ -264,6 +278,11 @@ def check():
     p = torch.rand(2, 2, 64, 56, 3)
     q, uv2 = augment(p, uv.repeat(2, 1, 1, 1), g)
     assert q.shape == p.shape and uv2.shape == (2, 2, k, 2) and (uv2 - uv).abs().max() < 0.06  # drift is small
+    img = np.zeros((480, 1080, 3), np.uint8)
+    img[100:300, 200:400] = 200
+    outs = [compress(img, np.random.default_rng(s)) for s in range(6)]  # some compressed at video size, some clean
+    assert any(o is img for o in outs) and any(o.shape == (VIDEO[1], VIDEO[0], 3) for o in outs)
+    assert all(panels(o).shape == (2, PANEL[1], PANEL[0], 3) for o in outs)
     print("check ok")
 
 

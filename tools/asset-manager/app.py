@@ -876,9 +876,9 @@ def release_vram(host, need_gb=10, wait_s=60):
 # ---------------------------------------------------------------- Joint detectors
 # Each rigged model gets a joint detector (motion/synth_render.py, detector.py, exam.py), trained once and kept in
 # the library at <output>/.detectors/<model hash>-v<DETECTOR_VERSION>. Its exam gives it a band: "good" within
-# the Settings limits, "usable" within detector_usable_x times them (still far better than a point tracker, which
-# moves both legs together), "failed" beyond (motion jobs then use CoTracker and say so).
-DETECTOR_VERSION = 1  # bump when synth_render, detector, track_solve, bake or exam change: every model retrains
+# the Settings limits, "usable" within detector_usable_x times them, "failed" beyond. The band is a label, not a
+# gate: motion jobs use the detector whatever its band (a point tracker such as CoTracker moves both legs together).
+DETECTOR_VERSION = 2  # bump when synth_render, detector, track_solve, bake or exam change: every model retrains
 EXAM_KEYS = ("median", "p95", "worst_joint", "pair_spacing")
 HASHES = {}  # (path, size, mtime) -> sha256 prefix, so listing a folder doesn't rehash unchanged models
 
@@ -921,7 +921,7 @@ def detector_state(src, turn=0):
         ex = json.loads((lib / "exam.json").read_text())
         out.update(state=detector_band(ex, get_settings()), exam={k: ex.get(k) for k in EXAM_KEYS},
                    worst_joints=ex.get("joints", [])[:3], trained=ex.get("trained"), settings=ex.get("settings"),
-                   category=ex.get("category"), warm_start=ex.get("warm_start"))
+                   category=ex.get("category"), warm_start=ex.get("warm_start"), hidden=ex.get("hidden"))
         if (lib / "last_take.json").exists():
             out["last_take"] = json.loads((lib / "last_take.json").read_text())
     rel = src.relative_to(ROOT).as_posix()
@@ -1054,15 +1054,14 @@ def train_detector(host, jid, src, model, turn, opts):
 
 def ensure_detector(host, jid, src, model, turn, retrain=False):
     """This model's detector on the host for a motion job, trained first when it has none (or retrain is asked).
-    Returns (its folder on the host or None when it failed its exam, its state)."""
+    Returns (its folder on the host, its state)."""
     lib, q = detector_dir(src, turn), shlex.quote
     if retrain or not (lib / "exam.json").exists():  # a retrain gets the retrain defaults (more renders, longer)
         train_detector(host, jid, src, model, turn, detector_params({"turn": turn}, src))
     state = detector_state(src, turn)
     if state["state"] == "failed":
         GPU_NOTES[jid].append(f"[asset-manager] {host['name']}: this model's detector failed its exam (p95 "
-                              f"{state['exam']['p95']:.1f}%); tracking with CoTracker, so the legs may move together")
-        return None, state
+                              f"{state['exam']['p95']:.1f}%); using it anyway, as a point tracker moves the legs together")
     det = f"{host['comfy_dir']}/input/sfam/detectors/{lib.name}"
     if ssh(host, f"test -f {q(det + '/weights.pt')} && echo yes || true").strip() != b"yes":
         for f in ("weights.pt", "keypoints.json"):  # trained on another host, or replaced: copy it from the library
@@ -1157,11 +1156,10 @@ def run_motion(jid, host):
             (out_dir / ".thumbs" / f"{Path(saved[-3]).stem}.png").write_bytes(views)  # thumbnail for the animated model
             log.append(f"take {i}: score {score:.2f}, front/side height disagreement {err:.1f}% of model height")
         lib = detector_dir(src, p["turn"])
-        if det:  # the model card shows real-video quality beside the exam
-            best = max(takes)
-            (lib / "last_take.json").write_text(json.dumps({"score": best[0], "height_error_pct": best[1], "job": jid,
-                                                             "when": time.time()}))
-        elif (lib / "exam_overlay.mp4").exists():  # failed exam: show why without opening the host
+        best = max(takes)  # the model card shows real-video quality beside the exam
+        (lib / "last_take.json").write_text(json.dumps({"score": best[0], "height_error_pct": best[1], "job": jid,
+                                                         "when": time.time()}))
+        if state["state"] == "failed" and (lib / "exam_overlay.mp4").exists():  # show why without opening the host
             dest = unique(out_dir / f"{safe_name}_detector_exam_overlay.mp4")
             shutil.copyfile(lib / "exam_overlay.mp4", dest)
             saved.append(dest.relative_to(ROOT).as_posix())

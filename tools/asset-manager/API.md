@@ -130,7 +130,7 @@ A motion job animates a rigged model (`.glb` or `.fbx`, such as a 3D job's `<nam
 3. unloads H3 and uses the model's joint detector (see [Joint detectors](#joint-detectors)), training one first if the model has none or `retrain` is set;
 4. finds every main joint in both halves of each video with the detector, combines front (x, height) and side (y, height) into 3D, and bakes it onto the skeleton in Blender. Bones the detector doesn't cover (fingers, twist bones) follow their parent.
 
-A single side view can't tell the left leg from the right one: they land on the same pixels, so a point tracker follows one leg with both. The detector learns which is which from the model itself. Only a detector whose exam band is `failed` makes the job fall back to CoTracker3 point tracking; the job's `detector` field and `log` then say so ("the legs may move together"), and `files` gets the exam's overlay video, `<name>_detector_exam_overlay.mp4`, so you can see why.
+A single side view can't tell the left leg from the right one: they land on the same pixels, so a point tracker follows one leg with both. The detector learns which is which from the model itself. The job uses the detector whatever its exam band, since a point tracker would move both legs together. When the band is `failed`, the job's `log` says so and `files` gets the exam's overlay video, `<name>_detector_exam_overlay.mp4`, so you can see why.
 
 ```bash
 curl -X POST http://192.168.50.133:8090/api/jobs -H 'Content-Type: application/json' -d '{
@@ -164,13 +164,13 @@ The finished job's `detector` field holds the detector it used (the same block a
 
 ## Joint detectors
 
-Every rigged model gets a joint detector: 1500 renders of the model in random poses within joint ranges read from its skeleton, from the motion job's two cameras, used to fine-tune DINOv2 into finding each main joint in both views. It is trained once and kept in the library at `<output folder>/.detectors/<model hash>-v<version>/`. The version changes when the tools change, so old detectors then retrain. Rigging a model (a 3D job with `rig`, or a rig job) queues its detector straight away while Settings `detector_auto_train` is on, so it is usually ready before the first motion job.
+Every rigged model gets a joint detector: 1500 renders of the model in random poses within joint ranges read from its skeleton, from the motion job's two cameras, two thirds of them stretched to the video frame and JPEG-compressed like a real take, used to fine-tune DINOv2 into finding each main joint in both views. It is trained once and kept in the library at `<output folder>/.detectors/<model hash>-v<version>/`. The version changes when the tools change, so old detectors then retrain. Rigging a model (a 3D job with `rig`, or a rig job) queues its detector straight away while Settings `detector_auto_train` is on, so it is usually ready before the first motion job.
 
-Each detector takes an exam: a motion it hasn't seen, every bone swinging through its joint range, filmed and compressed like a real video, tracked, baked and compared with the truth. Four numbers, in % of the model's height: `median` and `p95` error over every joint and frame, `worst_joint` (the joint with the largest mean error) and `pair_spacing` (how far a left/right pair's spacing strays from the truth: legs moving together shows here). They give a band, from the Settings limits:
+Each detector takes an exam: a motion it hasn't seen, every bone swinging through a random 32–80 % of its joint range (no real motion bends every joint to its limit at once), filmed and compressed like a real video, tracked, baked and compared with the truth. Four numbers, in % of the model's height: `median` and `p95` error over every joint and frame, `worst_joint` (the joint with the largest mean error) and `pair_spacing` (how far a left/right pair's spacing strays from the truth: legs moving together shows here). They cover the joints at least one camera sees: a joint hidden from both (a foot behind the body) is only a guess from its neighbours, so its error is reported apart in `hidden` (`share` of joint frames hidden, their `median` and `p95` error) and doesn't count. The numbers give a band, from the Settings limits:
 
 - `good`: every number within `detector_limits` (2 / 5 / 6 / 3 % by default).
 - `usable`: every number within `detector_usable_x` (default 2) times them. Motion jobs use it.
-- `failed`: anything worse. Motion jobs use CoTracker3 instead and say so.
+- `failed`: anything worse. Motion jobs still use it (the band is a label, not a gate) and say so.
 
 **`GET /api/detector?model=<path>[&turn=<deg>]`** returns a model's detector:
 

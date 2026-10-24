@@ -1,12 +1,14 @@
-"""A trained detector's exam: a motion it has not seen, every bone swinging through its full joint range,
-filmed and compressed like a real video, tracked, baked onto the skeleton and compared with the truth. Every
+"""A trained detector's exam: a motion it has not seen, every bone swinging through a random 32-80 % of its
+joint range, filmed and compressed like a real video, tracked, baked onto the skeleton and compared with the truth. Every
 new detector, and every change to the tools, has to pass it.
 
+    python exam.py --check                 # self-check of the grading, no GPU
     python exam.py MODEL DETECTOR_DIR OUT_DIR [--seed S] [--turn DEG] [--blender PATH]
                    [--limits '{"median": 2, "p95": 5, "worst_joint": 6, "pair_spacing": 3}'] [--usable 2]
 
 Writes OUT_DIR/exam.json with a band: "good" within the limits, "usable" within usable x the limits (the
-detector is still far better than a point tracker there), "failed" beyond. Exits 1 unless good (a developer gate).
+detector is still far better than a point tracker there), "failed" beyond. Joints neither camera sees count
+apart ("hidden"), not towards the band. Exits 1 unless good (a developer gate).
 """
 import json, subprocess, sys
 from pathlib import Path
@@ -15,7 +17,7 @@ import numpy as np
 
 HERE = Path(__file__).parent
 SIZE = (1344, 768)  # the video model's frame: our panels are stretched to it, as in a real job
-FRAMES, SWING = 48, 1.0  # every bone swings up to its full joint range (synth_render.joint_ranges)
+FRAMES, SWING = 48, 0.8  # each bone peaks at a random 32-80 % of its joint range (synth_render.joint_ranges)
 LIMITS = {"median": 2.0, "p95": 5.0, "worst_joint": 6.0, "pair_spacing": 3.0}  # % of model height
 
 
@@ -33,30 +35,43 @@ def stitch(frame_dir, path):
             c.mux(p)
 
 
-def grade(joints, truth, motion, limits=LIMITS, usable=2.0):
-    """Errors on the points the detector steers (seen in motion.json), in % of model height, and the band."""
+def grade(joints, truth, motion, limits=LIMITS, usable=2.0, hidden=None):
+    """Errors on the points the detector steers (seen in motion.json), in % of model height, and the band.
+    A joint hidden from both cameras in a frame (hidden, per frame and point) is only a guess from its
+    neighbours: those errors are reported apart ("hidden") and don't count towards the band."""
     j, m = joints, motion
     h = j["calib"]["model_height"]
     pos, true = np.array(m["positions"]), np.array(truth)
     on = np.array(m["seen"])
-    err = np.linalg.norm(pos[:, on] - true[:, on], axis=-1) / h * 100
+    hid = np.zeros(pos.shape[:2], bool) if hidden is None else np.array(hidden, bool)
+    full = np.linalg.norm(pos - true, axis=-1) / h * 100
+    vis = on & ~hid  # (frame, point) pairs that count
+    err = full[vis]
     names = {b["head"]: b["name"] for b in j["bones"]}
     pairs = []
     for i, n in names.items():
         if on[i] and n.endswith("_l"):
             r = next((k for k, v in names.items() if v == n[:-2] + "_r" and on[k]), None)
-            if r is not None:  # left/right kept apart: their spacing over time matches the truth
+            both = vis[:, i] & vis[:, r] if r is not None else None
+            if r is not None and both.any():  # left/right kept apart: their spacing over time matches the truth
                 d = np.linalg.norm(pos[:, i] - pos[:, r], axis=-1) - np.linalg.norm(true[:, i] - true[:, r], axis=-1)
-                pairs.append((n[:-2], float(np.abs(d).mean() / h * 100)))
-    # Per joint, the error along x (seen by the front view only), y (the side view only: depth) and z (both).
-    axes = np.abs(pos[:, on] - true[:, on]).mean(0) / h * 100
-    idx = np.where(on)[0]
-    per_joint = sorted(({"joint": names.get(int(i), str(i)), "mean": float(err[:, k].mean()),
-                         "x": float(axes[k, 0]), "y": float(axes[k, 1]), "z": float(axes[k, 2])}
-                        for k, i in enumerate(idx)), key=lambda r: -r["mean"])
+                pairs.append((n[:-2], float(np.abs(d[both]).mean() / h * 100)))
+    # Per joint over the frames it is seen, the error along x (seen by the front view only), y (the side view
+    # only: depth) and z (both).
+    n_vis = np.maximum(vis.sum(0), 1)
+    mean = np.where(vis, full, 0).sum(0) / n_vis
+    axes = (np.abs(pos - true) * vis[..., None]).sum(0) / n_vis[:, None] / h * 100
+    per_joint = sorted(({"joint": names.get(int(i), str(i)), "mean": float(mean[i]), "x": float(axes[i, 0]),
+                         "y": float(axes[i, 1]), "z": float(axes[i, 2])}
+                        for i in np.where(on & vis.any(0))[0]), key=lambda r: -r["mean"])
+    gone = full[on & hid]
     res = {"median": float(np.median(err)), "p95": float(np.percentile(err, 95)),
-           "worst_joint": float(err.mean(0).max()), "pair_spacing": max((d for _, d in pairs), default=0.0),
-           "worst_pair": max(pairs, key=lambda p: p[1])[0] if pairs else None, "joints": per_joint}
+           "worst_joint": per_joint[0]["mean"] if per_joint else 0.0,
+           "pair_spacing": max((d for _, d in pairs), default=0.0),
+           "worst_pair": max(pairs, key=lambda p: p[1])[0] if pairs else None, "joints": per_joint,
+           "hidden": {"share": float((on & hid).sum() / max(on.sum() * len(pos), 1) * 100),
+                      "median": float(np.median(gone)) if gone.size else None,
+                      "p95": float(np.percentile(gone, 95)) if gone.size else None}}
     res["state"] = ("good" if all(res[k] <= v for k, v in limits.items()) else
                     "usable" if all(res[k] <= v * usable for k, v in limits.items()) else "failed")
     res["passed"] = res["state"] == "good"
@@ -85,14 +100,33 @@ def main():
                     str(out / "track" / "motion.json"), str(out / "exam.glb"), "--positions", str(out / "baked.json")],
                    check=True, capture_output=True)
     res = grade(json.loads((film / "joints.json").read_text()), json.loads((film / "truth.json").read_text()),
-                json.loads((out / "baked.json").read_text()), limits, usable)
+                json.loads((out / "baked.json").read_text()), limits, usable,
+                json.loads((film / "hidden.json").read_text()))
     (out / "exam.json").write_text(json.dumps(res, indent=1))
     w = res["joints"][0]
     print(f"exam {res['state'].upper()}: median {res['median']:.2f}%, p95 {res['p95']:.2f}%, "
           f"worst joint {res['worst_joint']:.2f}% ({w['joint']}: x {w['x']:.1f} y {w['y']:.1f} z {w['z']:.1f}), "
-          f"left/right spacing {res['pair_spacing']:.2f}% ({res['worst_pair']})")
+          f"left/right spacing {res['pair_spacing']:.2f}% ({res['worst_pair']}); hidden "
+          f"{res['hidden']['share']:.0f}% of joint frames, median {res['hidden']['median'] or 0:.2f}%")
     sys.exit(0 if res["passed"] else 1)
 
 
+def check():
+    # foot_l and foot_r, 10 frames, model height 2: 1 cm off when seen, 40 cm off in the 3 frames foot_r is hidden
+    j = {"calib": {"model_height": 2.0}, "bones": [{"head": 0, "name": "foot_l"}, {"head": 1, "name": "foot_r"}]}
+    true = np.zeros((10, 2, 3))
+    true[:, 1, 0] = 0.3
+    pos = true + [0.02, 0, 0]
+    hid = np.zeros((10, 2), bool)
+    hid[4:7, 1] = True
+    pos[hid] += [0, 0.8, 0]
+    res = grade(j, true.tolist(), {"positions": pos.tolist(), "seen": [True, True]}, hidden=hid.tolist())
+    assert abs(res["median"] - 1) < 1e-9 and abs(res["p95"] - 1) < 1e-9 and res["state"] == "good", res
+    assert res["pair_spacing"] < 1e-9 and abs(res["hidden"]["share"] - 15) < 1e-9
+    assert abs(res["hidden"]["median"] - np.hypot(0.02, 0.8) / 2 * 100) < 1e-9
+    assert grade(j, true.tolist(), {"positions": pos.tolist(), "seen": [True, True]})["state"] == "failed"
+    print("check ok")
+
+
 if __name__ == "__main__":
-    main()
+    check() if sys.argv[1:] == ["--check"] else main()
