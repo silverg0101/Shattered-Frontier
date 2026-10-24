@@ -1760,6 +1760,10 @@ def run_image(jid, host=None):
             try:
                 for n in range(1, tries + 1):
                     log.append(f"views: MV-Adapter (try {n}/{tries})")
+                    # MV-Adapter's SDXL pipeline is a diffusers object ComfyUI doesn't manage; it stayed on the GPU
+                    # and the next 3D job ran out of memory (rat v9). ComfyUI applies /free after the prompt it runs
+                    # next, so asking first unloads everything once the views are drawn.
+                    comfy(host, "/free", {"unload_models": True, "free_memory": True})
                     h = run_prompt(host, jid, mvadapter_graph(f"sfam/{ref}", p["prompt"], random.randint(0, 0x7fffffff),
                                                               f"sfam/{jid}_mv/view"), time.time(), get_settings()["job_timeout_min"])
                     files = [f for nid in MV_SAVE_NODES for f in h.get("outputs", {}).get(nid, {}).get("images", [])]
