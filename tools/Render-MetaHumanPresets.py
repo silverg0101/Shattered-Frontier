@@ -1,7 +1,8 @@
 """Render MetaHuman preset faces / hair swaps to PNG via the full editor (needs RHI, not -nullrhi).
 
-Run:  UnrealEditor.exe <uproject> -RenderOffscreen -unattended -ExecutePythonScript="<this file>"
-Env:  MH_MODE=faces|hair   MH_OUT=<dir>   MH_ONLY=name1,name2 (faces)   MH_BASE=<preset name for hair mode>   MH_PRESETS=<asset folder>
+Run:  UnrealEditor.exe <uproject> -RenderOffscreen -unattended -ExecCmds="py <this file>"
+Env:  MH_MODE=faces|hair|built   MH_OUT=<dir>   MH_ONLY=name1,name2 (faces; ids like Orlando for built: spawns Built/MHC_<id>/BP_MHC_<id>; only the first spawn per launch gets grooms, so one id per launch)   MH_BASE=<preset name for hair mode>   MH_PRESETS=<asset folder>
+Do not use -ExecutePythonScript: it quits the editor while the tick callback is live and crashes Python.
 Quits the editor when done. Nothing is saved; hair mode edits a scratch duplicate under /Game/Frontier/.
 """
 import os, time, traceback
@@ -141,6 +142,18 @@ if MODE == "faces":
             return ch, sub.spawn_meta_human_actor(character=ch)
         return build
     for n in names:
+        jobs.append(Job(n, mk(n), [(n + "_front", 0)]))
+elif MODE == "built":
+    # the assembled blueprint the game spawns; skips the Creator preview (spawn_meta_human_actor on built faces crashed)
+    def mk(n):
+        def build():
+            cls = unreal.load_class(None, f"/Game/Frontier/Characters/Player/Built/MHC_{n}/BP_MHC_{n}.BP_MHC_{n}_C")
+            actor = A(cls, unreal.Vector(0, 0, 0), unreal.Rotator())
+            for c in actor.get_components_by_class(unreal.SkeletalMeshComponent):
+                c.set_forced_lod(1)  # 1 = LOD 0
+            return None, actor
+        return build
+    for n in ONLY:
         jobs.append(Job(n, mk(n), [(n + "_front", 0)]))
 else:
     # one fresh scratch copy of BASE per hair (re-selecting on an already-assembled character does not rebuild it)
