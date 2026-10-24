@@ -1289,7 +1289,8 @@ def worker():
                 taken = {r[0] for r in c.execute("SELECT host FROM jobs WHERE status IN ('running','cancelling')")}
             free = [h for h in s["hosts"] if h.get("enabled") and h["name"] not in taken]
             for jid, kind, params in queued:
-                multi = kind == "image" and json.loads(params or "{}").get("mode") == "multi"  # MV-Adapter: a GPU host
+                jp = json.loads(params or "{}")
+                multi = kind == "image" and jp.get("mode") == "multi" and jp.get("views") == "mv-adapter"  # a GPU host
                 if kind == "image" and not multi:  # ChatGPT draws these; no GPU host, so they never wait behind 3D jobs
                     update_job(jid, status="running", host="ChatGPT", started=time.time(), note="")
                     threading.Thread(target=run_image, args=(jid,), daemon=True).start()
@@ -1503,15 +1504,17 @@ def codex_review(images, brief):
     except (AttributeError, ValueError):
         raise RuntimeError(f"the review answer was not JSON: {text[:200]!r}")
 
-# Multi-view: ChatGPT draws one hero image that settles the design, seen exactly from its left side, then redraws it
-# from the front; MV-Adapter (local SDXL, orthographic cameras) draws the left, back and right around that front,
-# consistent by construction. Views drawn by an image model never agreed (rats v1-v6: tail paths, leg order,
-# widths), and Pixal3D builds every disagreement as extra geometry (rat v6: two tails, doubled hind feet).
-# MV-Adapter was trained with the front as its reference: given a side view it drew side views where the back
-# should be (rat v8: a cross of two rats). Its square frame holds the subject's longest side, so the front is shrunk
-# by the side hero's height/length before it goes in, or a long rat is squashed into a short one. The pose rules
-# are the motion session's, for a model that rigs and walks; thin hairs and whiskers in the outline become slivers
-# on the mesh, so they are left to the texture.
+# Multi-view: ChatGPT draws one hero image that settles the design, seen exactly from its left side, then redraws
+# it from the front. The views are those two plus the side mirrored for the right: opposite orthographic views have
+# mirrored outlines, so the right can't disagree with the left, and one redraw from a reference stays faithful
+# where whole turnarounds never agreed (rats v1-v6: tail paths, leg order, widths; Pixal3D builds every
+# disagreement, rat v6: two tails, doubled hind feet). No back view: it was where the conflicts came from, and
+# UltraTex paints from the front anyway. Rat v9 from these three views: four separate legs, one tail, no slivers.
+# The other option draws the views with MV-Adapter (local SDXL, orthographic cameras) around the front, consistent
+# by construction but trained on objects whose front shows their size: given a side view it drew side views where
+# the back should be (rat v8), and from a rat's front it guessed a short, tailless body (v9), so the front goes in
+# shrunk by the hero's height/length. The pose rules are the motion session's, for a model that rigs and walks;
+# thin hairs and whiskers in the outline become slivers on the mesh, so they are left to the texture.
 MV_HERO = ("{prompt}\n\nDraw one full-body picture of the subject described above, on its own, seen exactly from its "
            "left side at eye level - an orthographic side view, so it faces image-left - with the whole body, head to "
            "tail tip, inside the frame. Plain pure-white background, soft even studio light. No props, text, ground "
@@ -1532,19 +1535,21 @@ MV_FRONT = ("{prompt}\n\nThe attached image shows this subject exactly from its 
             "hidden behind the body. Plain pure-white background, soft even studio light. No props, text, ground shadow "
             "or background scenery.")
 MV_REVIEW = (
-    "The image shows four views generated around one design image of: {prompt}\nLeft to right: front, left side (the "
-    "subject faces image-left), back, right side (it faces image-right), as if a camera orbited a rigid statue. Code "
+    "The image shows views of one design of: {prompt}\nLeft to right: {order}, as if a camera orbited a rigid "
+    "statue. Code "
     "has already scaled every view to the same overall height with the feet on one line, and drawn thin grey "
-    "horizontal guide lines across all four. So any landmark sitting at a different height in one view is a drawing "
+    "horizontal guide lines across every view. So any landmark sitting at a different height in one view is a drawing "
     "error: follow each guide line across and compare where ear tips, top of the head, eyes, nose and mouth, chin, top "
     "of the back, belly line, tail base, knees and feet fall in each view.\n\nPass only if: every landmark sits at the "
-    "same height in all four views, within about half a guide-line spacing; each view is its stated viewpoint, "
-    "orthographic and at eye level; it is the same subject in the same pose in all four, with every part (head, ears, "
+    "same height in every view views, within about half a guide-line spacing; each view is its stated viewpoint, "
+    "orthographic and at eye level; it is the same subject in the same pose in every view, with every part (head, ears, "
     "limbs, tail, clothing, anything held) where that rotation would put it - nothing re-posed, mirrored, added or "
     "missing; the tail has the same shape and direction in both side views (mirror images of each other) and agrees "
     "with the front and back; every view has the right number of limbs; and each background is plain white apart "
     "from the guide lines, with no shadow, props, text or part of a neighbouring view. In each problem, name the "
     "landmark, the views and which is higher.")
+VIEW_NAMES = {"front": "front", "left": "left side (the subject faces image-left)", "back": "back",
+              "right": "right side (it faces image-right)"}
 GUIDE_LINES = 16  # horizontal guide lines across the review strip, spread over the subject's height
 MV_ADAPTER_VIEWS = {0: "front", 90: "left", 180: "back", 270: "right"}  # MV-Adapter azimuth -> position
 MV_SIZE = 768  # MV-Adapter SDXL's view size
@@ -1718,14 +1723,67 @@ def align_uploads(raw):
     notes.append("[asset-manager] views: aligned to one height and feet line")
     return align_views(subjects), notes
 
+IMAGE_VIEWS = ["heroes", "mv-adapter"]  # multi: the heroes and a mirror (default), or MV-Adapter around the front
+
 def image_params(params):
-    unknown = set(params) - {"mode", "model", "prompt"}
+    unknown = set(params) - {"mode", "model", "prompt", "views"}
     if unknown:
-        raise ValueError(f"unknown options: {sorted(unknown)} (image jobs take mode, model, prompt)")
-    p = {"mode": params.get("mode", "single"), "model": params.get("model", "auto"), "prompt": str(params.get("prompt", "")).strip()}
-    if p["mode"] not in ("single", "multi") or p["model"] not in IMAGE_MODELS or not p["prompt"]:
-        raise ValueError(f"mode is single or multi, model one of {IMAGE_MODELS}, and a prompt is required")
+        raise ValueError(f"unknown options: {sorted(unknown)} (image jobs take mode, model, prompt, views)")
+    p = {"mode": params.get("mode", "single"), "model": params.get("model", "auto"), "prompt": str(params.get("prompt", "")).strip(),
+         "views": params.get("views", IMAGE_VIEWS[0])}
+    if p["mode"] not in ("single", "multi") or p["model"] not in IMAGE_MODELS or not p["prompt"] or p["views"] not in IMAGE_VIEWS:
+        raise ValueError(f"mode is single or multi, model one of {IMAGE_MODELS}, views one of {IMAGE_VIEWS}, and a prompt is required")
     return p
+
+def mirrored(png):
+    from PIL import Image, ImageOps
+    buf = io.BytesIO()
+    ImageOps.mirror(Image.open(io.BytesIO(png))).save(buf, "PNG")
+    return buf.getvalue()
+
+def review_views(views, prompt, log):
+    """gpt-6-luna's verdict on the guide strip: (passed, fix to ask for); an unavailable review counts as passed."""
+    try:
+        r = codex_review([guide_strip(views)], MV_REVIEW.format(prompt=prompt, order=", ".join(VIEW_NAMES[v] for v in views)))
+    except RuntimeError as e:
+        log.append(f"views: review unavailable ({e}); keeping these views")
+        return True, ""
+    if r["pass"]:
+        log.append("views: review passed")
+        return True, ""
+    log.append(f"views: review failed: {'; '.join(r['problems']) or 'no reason given'}")
+    return False, f"\n\nA previous attempt was rejected for: {'; '.join(r['problems'])}. Correct it: {r['fix']}"
+
+def mvadapter_views(jid, host, p, hero, front, log):
+    """The four views MV-Adapter draws around the front on `host`, reviewed; a failed set is redrawn with a new seed."""
+    ok, line = gpu_check(host)
+    log.append(line)
+    if not ok:
+        raise RuntimeError(line)
+    ref = f"{jid}_hero.png"
+    put_input(host, ref, mv_reference(front, hero))
+    tries, views = 3, None
+    try:
+        for n in range(1, tries + 1):
+            log.append(f"views: MV-Adapter (try {n}/{tries})")
+            # MV-Adapter's SDXL pipeline is a diffusers object ComfyUI doesn't manage; it stayed on the GPU and the
+            # next 3D job ran out of memory (rat v9). ComfyUI applies /free after the prompt it runs next, so asking
+            # first unloads everything once the views are drawn.
+            comfy(host, "/free", {"unload_models": True, "free_memory": True})
+            h = run_prompt(host, jid, mvadapter_graph(f"sfam/{ref}", p["prompt"], random.randint(0, 0x7fffffff),
+                                                      f"sfam/{jid}_mv/view"), time.time(), get_settings()["job_timeout_min"])
+            files = [f for nid in MV_SAVE_NODES for f in h.get("outputs", {}).get(nid, {}).get("images", [])]
+            if len(files) != len(MV_ADAPTER_VIEWS):
+                raise RuntimeError(f"MV-Adapter returned {len(files)} views, not {len(MV_ADAPTER_VIEWS)}")
+            views, notes = mv_views([get_output(host, f"{f['subfolder']}/{f['filename']}"[len("sfam/"):]) for f in files])
+            log.extend(notes)
+            if review_views(views, p["prompt"], log)[0]:
+                break
+        else:
+            log.append("views: kept the last try although the review still failed")
+    finally:
+        cleanup(host, [ref], [f"{jid}_mv"])
+    return views
 
 def run_image(jid, host=None):
     job = job_row(jid)
@@ -1745,47 +1803,30 @@ def run_image(jid, host=None):
         if p["mode"] == "single":
             log.append("generating the image (sent as written)")
             save(codex_image(p["prompt"], p["model"]), "")
-        else:  # a side-view hero and its front from ChatGPT, then MV-Adapter's views on the job's GPU host
+        else:  # a side-view hero and its front from ChatGPT; views from those two, or MV-Adapter around the front
             log.append("hero: drawing the side-view design image")
             hero = codex_image(MV_HERO.format(prompt=p["prompt"]), p["model"])
-            log.append("hero: drawing it from the front")
-            front = codex_image(MV_FRONT.format(prompt=p["prompt"]), p["model"], refs=[hero])
-            ok, line = gpu_check(host)
-            log.append(line)
-            if not ok:
-                raise RuntimeError(line)
-            ref = f"{jid}_hero.png"
-            put_input(host, ref, mv_reference(front, hero))
-            tries, views = 3, None
-            try:
+            if p["views"] == "mv-adapter":
+                log.append("hero: drawing it from the front")
+                front = codex_image(MV_FRONT.format(prompt=p["prompt"]), p["model"], refs=[hero])
+                views = mvadapter_views(jid, host, p, hero, front, log)
+            else:  # a failed set redraws the front with the reviewer's fix; the hero stays the design
+                extra, tries = "", 3
                 for n in range(1, tries + 1):
-                    log.append(f"views: MV-Adapter (try {n}/{tries})")
-                    # MV-Adapter's SDXL pipeline is a diffusers object ComfyUI doesn't manage; it stayed on the GPU
-                    # and the next 3D job ran out of memory (rat v9). ComfyUI applies /free after the prompt it runs
-                    # next, so asking first unloads everything once the views are drawn.
-                    comfy(host, "/free", {"unload_models": True, "free_memory": True})
-                    h = run_prompt(host, jid, mvadapter_graph(f"sfam/{ref}", p["prompt"], random.randint(0, 0x7fffffff),
-                                                              f"sfam/{jid}_mv/view"), time.time(), get_settings()["job_timeout_min"])
-                    files = [f for nid in MV_SAVE_NODES for f in h.get("outputs", {}).get(nid, {}).get("images", [])]
-                    if len(files) != len(MV_ADAPTER_VIEWS):
-                        raise RuntimeError(f"MV-Adapter returned {len(files)} views, not {len(MV_ADAPTER_VIEWS)}")
-                    views, notes = mv_views([get_output(host, f"{f['subfolder']}/{f['filename']}"[len("sfam/"):]) for f in files])
-                    log.extend(notes)
-                    try:
-                        r = codex_review([guide_strip(views)], MV_REVIEW.format(prompt=p["prompt"]))
-                    except RuntimeError as e:
-                        log.append(f"views: review unavailable ({e}); keeping these views")
+                    if job_row(jid)["status"] == "cancelling":
+                        raise InterruptedError
+                    log.append(f"hero: drawing it from the front (try {n}/{tries})")
+                    front = codex_image(MV_FRONT.format(prompt=p["prompt"]) + extra, p["model"], refs=[hero])
+                    views, notes = align_uploads({"front": front, "left": hero, "right": mirrored(hero)})
+                    log.extend(n for n in notes if "of the front's height" not in n)  # each image has its own framing
+                    passed, extra = review_views(views, p["prompt"], log)
+                    if passed:
                         break
-                    if r["pass"]:
-                        log.append("views: review passed")
-                        break
-                    log.append(f"views: review failed: {'; '.join(r['problems']) or 'no reason given'}")
                 else:
                     log.append("views: kept the last try although the review still failed")
-            finally:
-                cleanup(host, [ref], [f"{jid}_mv"])
             for pos in VIEW_AZIMUTHS:
-                save(views[pos], f"-{pos}")
+                if pos in views:
+                    save(views[pos], f"-{pos}")
             save(hero, "-hero")
             save(front, "-hero-front")
             save(guide_strip(views), "-guides")  # what the reviewer judged: the views side by side with guide lines
@@ -2106,13 +2147,14 @@ def check():
         except ValueError:
             pass
     assert {f.name for f in MOTION_DIR.glob("*.py")} >= {"bake.py", "render_views.py", "track_solve.py"}
-    assert image_params({"prompt": " a rat "}) == {"mode": "single", "model": "auto", "prompt": "a rat"}
-    for bad in ({"prompt": ""}, {"prompt": "x", "mode": "quad"}, {"prompt": "x", "size": 1}):
+    assert image_params({"prompt": " a rat "}) == {"mode": "single", "model": "auto", "prompt": "a rat", "views": "heroes"}
+    for bad in ({"prompt": ""}, {"prompt": "x", "mode": "quad"}, {"prompt": "x", "size": 1}, {"prompt": "x", "views": "sheet"}):
         try:
             image_params(bad); raise AssertionError(f"image_params accepted {bad}")
         except ValueError:
             pass
-    assert "{" not in MV_HERO.format(prompt="rat") + MV_REVIEW.format(prompt="rat")
+    assert "{" not in MV_HERO.format(prompt="rat") + MV_FRONT.format(prompt="rat") + MV_REVIEW.format(prompt="rat", order="front")
+    assert image_params({"prompt": "rat", "mode": "multi"})["views"] == "heroes"
     assert all(n in mvadapter_graph("r.png", "rat", 1, "sfam/1_mv/view") for n in MV_SAVE_NODES)
     from PIL import Image, ImageDraw
     def png_of(img):

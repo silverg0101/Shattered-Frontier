@@ -865,7 +865,7 @@ async function renderImages() {
     mode = m; store.set('imageMode', m);
     document.querySelectorAll('[data-imode]').forEach(b => b.classList.toggle('on', b.dataset.imode === m));
     $('#inote').textContent = m === 'single' ? 'One image. The prompt is sent exactly as written.'
-      : 'Four views for a multi-view 3D asset. ChatGPT draws one side-view design image in a rig-ready pose and redraws it from the front; MV-Adapter draws the other views around that front on a GPU host, so they show one subject. The app matches their height and feet line and has the set reviewed; a failed set is redrawn (up to 3 tries).';
+      : 'Views for a multi-view 3D asset. ChatGPT draws one side-view design image in a rig-ready pose and redraws it from the front; the front, the side and the side mirrored become the views, with their height and feet line matched and the set reviewed; a failed front is redrawn (up to 3 tries).';
   };
   document.querySelectorAll('[data-imode]').forEach(b => b.onclick = () => setMode(b.dataset.imode));
   setMode(mode);
