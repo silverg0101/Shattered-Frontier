@@ -9,6 +9,7 @@
 #include "Engine/World.h"
 #include "Framework/SFGraphicsMenu.h"
 #include "FrontEnd/SFFrontEndWidgets.h"
+#include "Chat/SFChatSubsystem.h"
 #include "GameFramework/GameUserSettings.h"
 #include "GameFramework/PlayerInput.h"
 #include "Kismet/KismetSystemLibrary.h"
@@ -48,6 +49,7 @@ void ASFFrontEndController::BeginPlay()
 {
     Super::BeginPlay();
     if (!IsLocalController()) { return; }
+    if (USFChatSubsystem* Chat = GetGameInstance()->GetSubsystem<USFChatSubsystem>()) { Chat->Stop(); }
     Identity = SFMakeFrontEndIdentity().ToSharedPtr();
     UE_LOG(LogTemp, Display, TEXT("FRONTEND_START Identity=%s"), *Identity->Label());
     FInputModeGameAndUI Mode;
@@ -368,12 +370,14 @@ void ASFFrontEndController::DoDelete(int32 Index)
 void ASFFrontEndController::DoEnter(int32 Index)
 {
     if (!Characters.IsValidIndex(Index)) { return; }
-    Identity->EnterWorld(Characters[Index], [this](bool bOk, const FString& Url, const FString& Error)
+    Identity->EnterWorld(Characters[Index], [this, CharacterId = Characters[Index].Id](bool bOk, const FString& Url, const FString& Error)
     {
         if (!bOk) { if (Select) { Select->SetStatus(FText::FromString(Error), true); } return; }
         if (!Flow.Enter()) { return; }
+        if (USFChatSubsystem* Chat = GetGameInstance()->GetSubsystem<USFChatSubsystem>())
+        { Chat->Start(CharacterId, Identity->ChatSessionToken()); }
         ShowPages();
-        UE_LOG(LogTemp, Display, TEXT("FRONTEND_ENTER_WORLD Character=%s"), *Characters[SelectedIndex].Id);
+        UE_LOG(LogTemp, Display, TEXT("FRONTEND_ENTER_WORLD Character=%s"), *CharacterId);
         ClientTravel(Url, TRAVEL_Absolute);
     });
 }

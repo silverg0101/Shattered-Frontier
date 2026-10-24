@@ -47,6 +47,8 @@
 #include "Quest/SFQuestBoard.h"
 #include "UI/SFGameMenu.h"
 #include "FrontEnd/SFFrontEndWidgets.h"
+#include "Chat/SFChatWidget.h"
+#include "Components/EditableTextBox.h"
 #include "UI/SFUiWidgets.h"
 #include "UObject/SavePackage.h"
 #include "WidgetBlueprint.h"
@@ -2073,6 +2075,17 @@ void FrontEndCreatorLayout(UWidgetTree* T)
     T->RootWidget = Root;
 }
 
+void ChatLayout(UWidgetTree* T)
+{
+    UVerticalBox* Root = A<UVerticalBox>(T);
+    UScrollBox* Log = N<UScrollBox>(T, TEXT("ChatLog"));
+    UEditableTextBox* Input = N<UEditableTextBox>(T, TEXT("MessageInput"));
+    Input->SetHintText(FText::FromString(TEXT("Party message")));
+    Root->AddChildToVerticalBox(Log);
+    Root->AddChildToVerticalBox(Input);
+    T->RootWidget = Root;
+}
+
 struct FSpec
 {
     const TCHAR* Dir;
@@ -2138,6 +2151,7 @@ TArray<FSpec> Specs()
         {HudDir, TEXT("WBP_HudQuestTracker"), USFHudQuestTrackerWidget::StaticClass(), QuestTrackerLayout, nullptr},
         {HudDir, TEXT("WBP_HudToasts"), USFHudToastsWidget::StaticClass(), ToastsLayout, nullptr},
         {HudDir, TEXT("WBP_Hud"), USFHudWidget::StaticClass(), HudLayout, nullptr},
+        {HudDir, TEXT("WBP_Chat"), USFChatWidget::StaticClass(), ChatLayout, nullptr},
         {InventoryDir, TEXT("WBP_Inventory"), USFInventoryWidget::StaticClass(), InventoryLayout, nullptr},
         {EquipmentDir, TEXT("WBP_EquipSlot"), USFSlotWidget::StaticClass(), EquipSlotLayout, ItemSlotDefaults},
         {EquipmentDir, TEXT("WBP_Equipment"), USFEquipmentWidget::StaticClass(), EquipmentLayout, nullptr},

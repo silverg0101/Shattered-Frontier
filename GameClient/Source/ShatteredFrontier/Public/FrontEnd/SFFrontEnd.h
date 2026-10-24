@@ -195,6 +195,8 @@ public:
     virtual void DeleteCharacter(const FString& Id, TFunction<void(bool bOk, const FString& Error)> Done) = 0;
     // The travel URL that enters the world with this character.
     virtual void EnterWorld(const FSFCharacterSummary& Character, TFunction<void(bool bOk, const FString& TravelUrl, const FString& Error)> Done) = 0;
+    // Kept in memory across travel so the chat subsystem can request a fresh one-time contact ticket on every reconnect.
+    virtual FString ChatSessionToken() const { return {}; }
 };
 
 // The identity of this build: the local dev store in development builds, an "unavailable" service in shipping builds (no auth bypass ships).

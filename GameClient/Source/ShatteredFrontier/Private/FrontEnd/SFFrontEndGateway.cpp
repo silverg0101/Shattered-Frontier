@@ -93,6 +93,7 @@ class FGatewayIdentity final : public ISFFrontEndIdentity, public TSharedFromThi
 public:
     explicit FGatewayIdentity(TSharedRef<ISFIdentityHttp> InHttp) : Http(MoveTemp(InHttp)) {}
     FString Label() const override { return TEXT("gateway"); }
+    FString ChatSessionToken() const override { return SessionToken; }
     FSFRealmStatus Realm() const override { return {GetDefault<USFFrontEndSettings>()->SafeRealmName(), true, TEXT("Online")}; }
     void SignIn(const FString& Account, const FString& Password, TFunction<void(bool, const FString&, const FString&)> Done) override
     {
