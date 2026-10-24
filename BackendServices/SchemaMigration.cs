@@ -28,6 +28,8 @@ public static class SchemaMigration
                 ("Schema.Construction.sql", "SELECT version>=6 FROM housing.schema_version WHERE singleton=true") },
             "exchange" => new (string File, string Installed)[] {
                 ("Schema.Reads.sql", "SELECT to_regclass('exchange.exchange_active_market_page') IS NOT NULL AND to_regclass('exchange.exchange_pending_trade_a_page') IS NOT NULL") },
+            "identity" => new (string File, string Installed)[] {
+                ("Schema.sql", "SELECT to_regclass('identity.schema_version') IS NOT NULL") },
             _ => throw new ArgumentException($"Unknown schema: {schema}")
         };
         if (role is not null && !System.Text.RegularExpressions.Regex.IsMatch(role, "^[a-z_][a-z0-9_]*$"))
@@ -51,11 +53,16 @@ public static class SchemaMigration
                 lockCommand.Parameters.AddWithValue(schema);
                 lockCommand.ExecuteNonQuery();
             }
-            // Base schemas remain owned by their existing installer. Refuse an uninitialized database.
+            // The identity slice bootstraps its own base schema under the owner role.
+            if (schema == "identity" && file == "Schema.sql")
+            {
+                using var bootstrap = new NpgsqlCommand("CREATE SCHEMA IF NOT EXISTS identity", connection, transaction);
+                bootstrap.ExecuteNonQuery();
+            }
             using (var check = new NpgsqlCommand("SELECT to_regclass($1) IS NOT NULL", connection, transaction))
             {
                 check.Parameters.AddWithValue(schema + ".schema_version");
-                if (check.ExecuteScalar() is not true)
+                if (check.ExecuteScalar() is not true && !(schema == "identity" && file == "Schema.sql"))
                     throw new InvalidOperationException($"{schema} base schema is not installed.");
             }
             using (var create = new NpgsqlCommand($"CREATE TABLE IF NOT EXISTS {schema}.applied_schema_files (file_name text PRIMARY KEY, sha256 text NOT NULL, applied_at timestamptz NOT NULL DEFAULT now())", connection, transaction))

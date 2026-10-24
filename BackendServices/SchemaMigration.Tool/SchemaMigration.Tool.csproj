@@ -7,5 +7,7 @@
     <EmbeddedResource Include="../CharacterState.Postgres/Schema.*.sql" LogicalName="character_state.%(Filename)%(Extension)" />
     <EmbeddedResource Include="../Housing.Postgres/Schema.*.sql" LogicalName="housing.%(Filename)%(Extension)" />
     <EmbeddedResource Include="../Exchange.Postgres/Schema.*.sql" LogicalName="exchange.%(Filename)%(Extension)" />
+    <EmbeddedResource Include="../IdentityGateway/Schema.*.sql" LogicalName="identity.%(Filename)%(Extension)" />
+    <EmbeddedResource Include="../IdentityGateway/Schema.sql" LogicalName="identity.Schema.sql" />
   </ItemGroup>
 </Project>
