@@ -130,6 +130,10 @@ input[type=checkbox] { accent-color: var(--primary); width: 16px; height: 16px; 
 .vmodes button:disabled { opacity: .35; cursor: default; }
 .preview .info { padding: 18px 20px; overflow: auto; min-height: 0; }  /* min-height lets it shrink and scroll */
 .preview .stage, .preview .vmodes { flex-shrink: 0; }
+.wbar { align-items: center; }
+.wbar select { font: 600 11px var(--sans); padding: 2px 6px; max-width: 200px; border-radius: 6px; }
+.wbar label { display: flex; align-items: center; gap: 4px; font: 600 11px var(--sans); color: var(--muted-foreground); cursor: pointer; }
+.wbar .wstat { font-size: 11px; color: var(--muted-foreground); flex-basis: 100%; }
 .preview dl { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; margin: 14px 0; font-size: 12px; }
 .preview dt { color: var(--muted-foreground); }
 .preview dd { margin: 0; font-variant-numeric: tabular-nums; word-break: break-all; }
@@ -480,9 +484,9 @@ async function drawDetector(path) {
   };
 }
 
-/* ---------------- 3D viewer (three.js): textured / clay / wireframe / UV checker / UV layout / normals / skeleton */
+/* ---------------- 3D viewer (three.js): textured / clay / wireframe / UV checker / UV layout / normals / skeleton / weights */
 let viewer = null;
-const VIEW_MODES = [['textured', 'Textured'], ['clay', 'Clay'], ['wire', 'Wireframe'], ['uvcheck', 'UV checker'], ['uvlayout', 'UV layout'], ['normals', 'Normals'], ['skeleton', 'Skeleton']];
+const VIEW_MODES = [['textured', 'Textured'], ['clay', 'Clay'], ['wire', 'Wireframe'], ['uvcheck', 'UV checker'], ['uvlayout', 'UV layout'], ['normals', 'Normals'], ['skeleton', 'Skeleton'], ['weights', 'Weights']];
 function checkerTexture(THREE) {
   const c = document.createElement('canvas'); c.width = c.height = 1024;
   const g = c.getContext('2d'), n = 16, s = 1024 / n;
@@ -572,6 +576,90 @@ async function mountViewer(el, url, entry) {
   const ghost = new THREE.MeshStandardMaterial({ color: 0xb8b8b8, roughness: 0.85, transparent: true, opacity: 0.28, depthWrite: false });
   const wires = meshes.map(m => { const w = new THREE.LineSegments(new THREE.WireframeGeometry(m.geometry), new THREE.LineBasicMaterial({ color: 0x0a90ff, transparent: true, opacity: 0.55 })); w.visible = false; m.add(w); return w; });
   const skel = new THREE.SkeletonHelper(root); skel.material.depthTest = false; skel.material.transparent = true; skel.visible = false; scene.add(skel);
+  // Weights: vertex colours computed from skinIndex/skinWeight on an unlit material. The mesh stays skinned, so the
+  // colours deform with the animation. All bones: each bone's colour blended by weight (bleed shows as mixed colour);
+  // one bone: its weight as a heatmap, dark blue 0 to red 1. Unweighted vertices are magenta in both.
+  const skinned = meshes.filter(m => m.isSkinnedMesh && m.geometry.attributes.skinIndex && m.geometry.attributes.skinWeight);
+  const wbones = skel.bones, bix = new Map(wbones.map((b, i) => [b, i]));
+  const wmat = new THREE.MeshBasicMaterial({ vertexColors: true });
+  const origColor = new Map(skinned.map(m => [m, m.geometry.attributes.color]));
+  const wcol = new Map(skinned.map(m => [m, new THREE.BufferAttribute(new Float32Array(m.geometry.attributes.position.count * 3), 3)]));
+  const srgb = (r, g, b) => new THREE.Color().setRGB(r, g, b, THREE.SRGBColorSpace);
+  const boneCol = wbones.map((_, i) => new THREE.Color().setHSL((i * 0.618034) % 1, 0.8, 0.5 + 0.12 * (i % 3 - 1), THREE.SRGBColorSpace));
+  const HEAT = [[0, 0, 0.3], [0, 0.55, 1], [0, 0.85, 0.35], [1, 0.9, 0], [1, 0, 0]].map(c => srgb(...c)), MAGENTA = srgb(1, 0, 1);
+  const vertWeights = (m, v, fn) => {  // fn(bone index in wbones, normalised weight) for each influence; returns the raw sum
+    const si = m.geometry.attributes.skinIndex, sw = m.geometry.attributes.skinWeight, sb = m.skeleton.bones;
+    const ws = [sw.getX(v), sw.getY(v), sw.getZ(v), sw.getW(v)], is = [si.getX(v), si.getY(v), si.getZ(v), si.getW(v)];
+    const sum = ws[0] + ws[1] + ws[2] + ws[3];
+    if (sum > 1e-4) for (let k = 0; k < 4; k++) if (ws[k] > 0) fn(bix.get(sb[is[k]]), ws[k] / sum);
+    return sum;
+  };
+  const boneVerts = wbones.map(() => 0);
+  skinned.forEach(m => { for (let v = 0; v < m.geometry.attributes.position.count; v++) vertWeights(m, v, (g, w) => { if (g !== undefined && w > 0.05) boneVerts[g]++; }); });
+  let wsub = store.get('weightsSub', 'all'), wshow = store.get('weightsBones', true), whl = store.get('weightsHighlight', true), curMode = '';
+  let wbone = boneVerts.indexOf(Math.max(...boneVerts, 0));
+  const skelCol = skel.geometry.attributes.color, skelOrig = skelCol.array.slice(), segBones = wbones.filter(b => b.parent?.isBone);
+  const wbar = Object.assign(document.createElement('div'), { className: 'vmodes wbar', hidden: true });
+  el.closest('.preview')?.querySelector('.wbar')?.remove();
+  el.closest('.preview')?.querySelector('.vmodes')?.after(wbar);
+  const paintWeights = () => {
+    let none = 0, over = 0, max = 0;
+    for (const m of skinned) {
+      const out = wcol.get(m).array, n = m.geometry.attributes.position.count;
+      for (let v = 0; v < n; v++) {
+        let r = 0, g = 0, b = 0, mine = 0;
+        const sum = vertWeights(m, v, (i, w) => {
+          if (i === wbone) mine += w;
+          const c = boneCol[i]; if (c) { r += c.r * w; g += c.g * w; b += c.b * w; }
+        });
+        let c = null;
+        if (sum <= 1e-4) { none++; c = MAGENTA; }
+        else if (wsub === 'one') {
+          if (mine > 0.05) over++; max = Math.max(max, mine);
+          const x = mine * (HEAT.length - 1), k = Math.min(Math.floor(x), HEAT.length - 2), lo = HEAT[k], hi = HEAT[k + 1], f = x - k;
+          r = lo.r + (hi.r - lo.r) * f; g = lo.g + (hi.g - lo.g) * f; b = lo.b + (hi.b - lo.b) * f;
+        }
+        if (c) { r = c.r; g = c.g; b = c.b; }
+        out[v * 3] = r; out[v * 3 + 1] = g; out[v * 3 + 2] = b;
+      }
+      wcol.get(m).needsUpdate = true;
+    }
+    const a = skelCol.array; a.set(skelOrig);  // highlight the picked bone: the segments into and out of its joint
+    const pick = wsub === 'one' && whl && wbones[wbone];
+    if (pick) segBones.forEach((sb, k) => { const c = sb === pick || sb.parent === pick ? [1, 0.85, 0.1] : [0.3, 0.32, 0.38]; a.set(c, k * 6); a.set(c, k * 6 + 3); });
+    skelCol.needsUpdate = true;
+    const st = $('.wstat', wbar), name = esc(wbones[wbone]?.name || 'bone');
+    if (st) st.innerHTML = (wsub === 'one' ? `<b>${name}</b>: ${over.toLocaleString()} vertices over 0.05, max ${max.toFixed(2)} · ` : '')
+      + `<span style="color:#f0f">■</span> ${none.toLocaleString()} unweighted vert${none === 1 ? 'ex' : 'ices'}`;
+  };
+  const drawBar = () => {
+    wbar.innerHTML = `<button data-wsub="all" class="${wsub === 'all' ? 'on' : ''}">All bones</button><button data-wsub="one" class="${wsub === 'one' ? 'on' : ''}">One bone</button>
+      <select data-wbone ${wsub === 'one' ? '' : 'disabled'}>${wbones.map((b, i) => `<option value="${i}" ${i === wbone ? 'selected' : ''}>${esc(b.name || 'bone ' + i)}${boneVerts[i] ? '' : ' (no weights)'}</option>`).join('')}</select>
+      <label><input type="checkbox" data-wskel ${wshow ? 'checked' : ''}>Bones</label>
+      <label title="Colour the picked bone in the skeleton overlay"><input type="checkbox" data-whl ${whl ? 'checked' : ''}>Highlight bone</label>
+      <span class="wstat"></span>`;
+    paintWeights();
+  };
+  wbar.onclick = e => { const b = e.target.closest('[data-wsub]'); if (b) { wsub = b.dataset.wsub; store.set('weightsSub', wsub); drawBar(); } };
+  wbar.onchange = e => {
+    const t = e.target;
+    if (t.matches('[data-wbone]')) wbone = +t.value;
+    if (t.matches('[data-wskel]')) { wshow = t.checked; store.set('weightsBones', wshow); skel.visible = wshow; }
+    if (t.matches('[data-whl]')) { whl = t.checked; store.set('weightsHighlight', whl); }
+    paintWeights();
+  };
+  let down = null;  // click a joint in the skeleton overlay to pick its bone (a drag orbits instead)
+  canvas.addEventListener('pointerdown', e => { down = [e.clientX, e.clientY]; });
+  canvas.addEventListener('pointerup', e => {
+    if (curMode !== 'weights' || !skel.visible || !down || Math.hypot(e.clientX - down[0], e.clientY - down[1]) > 4) return;
+    const r = canvas.getBoundingClientRect(), p = new THREE.Vector3(); let best = -1, bd = 14;
+    wbones.forEach((b, i) => {
+      p.setFromMatrixPosition(b.matrixWorld).project(camera);
+      const d = Math.hypot((p.x + 1) / 2 * r.width - (e.clientX - r.left), (1 - p.y) / 2 * r.height - (e.clientY - r.top));
+      if (p.z < 1 && d < bd) { bd = d; best = i; }
+    });
+    if (best >= 0) { wsub = 'one'; wbone = best; store.set('weightsSub', wsub); drawBar(); }
+  });
   // stats
   let tris = 0, verts = 0, islands = 0, uv = true;
   for (const m of meshes) {
@@ -609,16 +697,24 @@ async function mountViewer(el, url, entry) {
     g.stroke(); g.strokeStyle = '#555'; g.strokeRect(ox, oy, s, s);
   };
   const setMode = mode => {
-    meshes.forEach(m => { m.material = mode === 'textured' ? orig.get(m) : mode === 'uvcheck' ? check : mode === 'normals' ? normals : mode === 'skeleton' ? ghost : clay; });
+    curMode = mode;
+    meshes.forEach(m => { m.material = mode === 'textured' ? orig.get(m) : mode === 'uvcheck' ? check : mode === 'normals' ? normals : mode === 'skeleton' ? ghost : mode === 'weights' && wcol.has(m) ? wmat : clay; });
+    skinned.forEach(m => {
+      if (mode === 'weights') m.geometry.setAttribute('color', wcol.get(m));
+      else if (origColor.get(m)) m.geometry.setAttribute('color', origColor.get(m));
+      else m.geometry.deleteAttribute('color');
+    });
     wires.forEach(w => { w.visible = mode === 'wire'; });
-    skel.visible = mode === 'skeleton';
+    skel.visible = mode === 'skeleton' || mode === 'weights' && wshow;
+    wbar.hidden = mode !== 'weights';
+    if (mode === 'weights') drawBar(); else { skelCol.array.set(skelOrig); skelCol.needsUpdate = true; }
     uvCanvas.hidden = mode !== 'uvlayout'; canvas.hidden = mode === 'uvlayout';
     if (mode === 'uvlayout') drawUV();
     document.querySelectorAll('[data-vmode]').forEach(b => b.classList.toggle('on', b.dataset.vmode === mode));
     store.set('viewMode', mode);
   };
   document.querySelectorAll('[data-vmode]').forEach(b => {
-    b.disabled = (b.dataset.vmode === 'skeleton' && !bones.size) || (['uvcheck', 'uvlayout'].includes(b.dataset.vmode) && !uv);
+    b.disabled = (b.dataset.vmode === 'skeleton' && !bones.size) || (b.dataset.vmode === 'weights' && !skinned.length) || (['uvcheck', 'uvlayout'].includes(b.dataset.vmode) && !uv);
     b.onclick = () => setMode(b.dataset.vmode);
   });
   const want = store.get('viewMode', 'textured'), btn = document.querySelector(`[data-vmode="${want}"]`);
