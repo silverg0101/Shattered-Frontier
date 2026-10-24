@@ -61,3 +61,19 @@ blender --factory-startup -b --python tools/Render-ClaySheet.py -- <mesh> <out.p
 ## Evidence
 
 `docs/evidence/player-outfit-hood/`: `edwin_{front,three_quarter,side,walk_back}.jpg`, `hood_generated_clay.png` (the Forge mesh, 2048 px: front, left, back / right, top, bottom), `hood_cleaned_clay.png`, `hood_cleaned_section.png`, `input_views.png` (front, left, right with guide lines).
+
+## Round 2 (fix round after an independent FAIL of round 1)
+
+Evidence: `docs/evidence/player-outfit-hood/round2/` (`edwin_{front,three_quarter,side,walk_back}.jpg`, `hood_cleaned_clay.png`, `hood_cleaned_section.png`). Not self-judged; goes to a fresh reviewer.
+
+| Reviewer item | Cause and fix |
+|---|---|
+| 1 Torso and hips invisible | Not the tunic mask: `WI_Hood` is a duplicate of Epic's `WI_DefaultGarment`, whose pipeline carries the shirt-and-shorts `BodyHiddenFaceMapTexture` (`DG_BodyShapeA_BodyMask`). `Create-PlayerOutfitAsset.py` now clears it for the hood (and fails loudly if it is still set). Nothing is hidden. |
+| 2 Holes, slit tears | The Forge mesh is a closed solid of two layers 2 to 19 mm apart; decimating it to ~5k faces merged the layers, and the cleanup also deleted faces near the skin. `Clean-GeneratedGarment.py` no longer deletes or solidifies: it welds (0.8 mm), pushes cloth out of the skin with a smooth spatial displacement field (both layers move together), then decimates the closed solid to 19k triangles (collapse, triangulated). Result: one closed continuous cape, 4 boundary edges, back-ray check 0 of 648 missed. |
+| 3 Faceting | 19k triangles (was 12k from a 5k-face sheet), smooth shading, cape hem and flutes calmed (`--calm`) before decimation. |
+| 4 Hem | `--bottom 128` (mid upper arm), `--flare 1.15` clears the arms, `calm_hem` smooths flutes and the scalloped edge toward an even flare. |
+| 5 Hood fit | No more cutting of the face and neck zone (round 1's blocky opening); the hood is uniformly scaled to the cape height (hood 12% smaller, still 0 mm wall inside the head), cape clearance 2.5 cm below the neck (`--body-offset`), hood 0.8 cm. |
+| 6 Texture | Smart-project unwrap (constant texel density), bake of the Forge colour, graded to mean sRGB (0.34, 0.24, 0.155) dark brown wool, dark island rims removed, 10 px weave and slub noise added. |
+| 7 Walking | Skin weights are averaged over the cloth six times, so the cape moves as one piece. |
+
+Findings: the cleanup is now about 40 s; clay and section sheets use `Render-ClaySheet.py`. The cape still hangs on the shoulders and upper arms only (hem about mid upper arm), so the lower back shows skin below it when running: that is the designed length, not a tear.

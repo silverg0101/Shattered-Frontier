@@ -126,13 +126,17 @@ def wardrobe_item(oa, mask):
     if mask is not None:
       set_props(pipeline.get_editor_property('editor_pipeline'), {'BodyHiddenFaceMapTexture': {
         'texture': {'refPath': mask.get_path_name()}, 'settings': {'maxCullValue': 0.1, 'minKeepValue': 0.9, 'maxShrinkDistance': 0}}})
+    else:  # WI_DefaultGarment carries Epic's shirt-and-shorts body mask: left in, the torso and hips of every wearer are culled (GEAR-02 round 1: the ground showed through Edwin)
+      set_props(pipeline.get_editor_property('editor_pipeline'), {'BodyHiddenFaceMapTexture': {'texture': {'refPath': ''}}})
+      if 'DG_BodyShape' in T.get_object_properties(pipeline.get_editor_property('editor_pipeline'), ['BodyHiddenFaceMapTexture']):
+          raise RuntimeError('the default garment body mask is still set on WI_' + ITEM)
     unreal.log(T.get_object_properties(wi, ['PrincipalAsset']))
     return wi
 
 
 def author():
     garment = L.load_asset(f'{ROOT}/Garments/SKM_Tunic_Leggings' if ITEM == 'Tunic' else f'{ITEM_DIR}/SKM_{ITEM}')
-    mask = import_mask() if ITEM == 'Tunic' else None  # a hood hides no skin worth culling
+    mask = import_mask() if ITEM == 'Tunic' else None  # a hood hides no skin: wardrobe_item clears the default garment mask
     body = full_body('OrlandoBare')
     df, ca = cloth_asset(garment)
     oa = outfit_asset(ca, body)

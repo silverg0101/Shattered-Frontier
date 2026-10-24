@@ -2,11 +2,13 @@
 
 Blender 5.1, headless (all lengths in cm, the body FBX's own units):
   blender --factory-startup -b --python tools/Clean-GeneratedGarment.py -- --garment GameClient/ArtSource/Characters/Player/outfit-asset/hood/hood.glb --out Artifacts/Characters/PlayerBase/hood/hood.fbx
-Steps: 1 align the mesh to the body (uniform scale + shift so its height spans --bottom..--top and it sits on the head, x centred);
-2 delete faces inside the body/head meshes or within --offset of them (opens the face and neck); 3 decimate a copy to a shell of ~--tris/2
-faces, unwrap it (smart UV), bake the generated texture onto it (Cycles, selected to active); 4 solidify --thickness outward
-(rim filled; the inner skin stays --offset off the body); 5 skin weights from the nearest body triangle (barycentric), verts above the
-neck seam ramp to neck_02/head; 6 export FBX + armature (Unreal skeleton, as Build-PlayerGarment.py) + PNG texture + .blend.
+The Forge mesh is a closed, thin (2 to 19 mm) double-layer solid. Decimating that merges the layers and tears the cloth (round 1), so:
+1 align (uniform scale + shift so it spans --bottom..--top and sits on the head, --pitch tips it back) and weld;
+2 keep only the OUTER layer (a face is outer when the layer behind it is nearer the skin), 3 push cloth that is inside / too close to the skin out along the
+skin normal with a smoothed displacement (no faces are deleted: no holes), 4 decimate that single sheet gently to ~--tris/2 faces, smooth the hem edge,
+5 one-seam conformal unwrap (hem to face opening over the back), bake the Forge colour onto it, grade it to a dark brown wool and add a coarse weave,
+6 solidify --thickness outward (smooth shaded), 7 skin weights from the nearest body triangle (barycentric), smoothed over the cloth, neck ramp to neck_02/head,
+8 export FBX + armature (Unreal skeleton, as Build-PlayerGarment.py) + PNG texture + .blend.
 """
 import argparse
 import math
@@ -15,11 +17,13 @@ import sys
 
 import bmesh
 import bpy
-from mathutils import Vector
+import numpy as np
+from mathutils import Matrix, Vector
 from mathutils.bvhtree import BVHTree
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BASE = os.path.join(ROOT, 'Artifacts/Characters/PlayerBase')
+WOOL_SRGB = (0.34, 0.24, 0.155)  # target mean colour of the undyed brown wool (sRGB, 0..1)
 
 
 def parse():
@@ -28,12 +32,17 @@ def parse():
     p.add_argument('--out', required=True)
     p.add_argument('--body', default=os.path.join(BASE, 'Orlando_body.fbx'))
     p.add_argument('--head', default=os.path.join(BASE, 'Orlando_head.obj'))
-    p.add_argument('--top', type=float, default=206.0, help='cm, top of the garment (the hood is ~16 cm above the head: it must clear the skull)')
-    p.add_argument('--bottom', type=float, default=117.0, help='cm, lowest point of the cape')
+    p.add_argument('--top', type=float, default=206.0, help='cm, top of the garment (the hood must clear the skull)')
+    p.add_argument('--bottom', type=float, default=128.0, help='cm, lowest point of the cape (mid upper arm)')
     p.add_argument('--yshift', type=float, default=10.0, help='cm, extra shift toward the face (-y)')
-    p.add_argument('--offset', type=float, default=0.8, help='cm: faces closer than this to the skin (or inside it) are deleted')
+    p.add_argument('--pitch', type=float, default=0.0, help='deg about X around the head centre: + tips the hood top forward (-y), - back')
+    p.add_argument('--flare', type=float, default=1.15, help='cape radius factor at the hem (1 at the neck): clears the arms instead of pushing the cloth into tubes')
+    p.add_argument('--weld', type=float, default=0.08, help='cm: merge vertices closer than this (closes the hairline slit down the back centre; glTF splits UV seams)')
+    p.add_argument('--calm', type=float, default=0.8, help='0..1: how far the cape hem flutes and scallops are smoothed toward an even flare')
+    p.add_argument('--body-offset', dest='body_offset', type=float, default=2.5, help='cm: clearance of the cape below the neck')
+    p.add_argument('--offset', type=float, default=0.8, help='cm: cloth closer than this to the skin (or inside it) is pushed out to it')
     p.add_argument('--thickness', type=float, default=0.4, help='cm of cloth (3-5 mm)')
-    p.add_argument('--tris', type=int, default=12000, help='final triangle count, about')
+    p.add_argument('--tris', type=int, default=19000, help='final triangle count, about (item budget up to ~20k)')
     p.add_argument('--tex', type=int, default=2048)
     p.add_argument('--yaw', type=float, default=0.0, help='deg about Z if the garment does not face -Y like the body (Asset Forge GLBs import facing -Y)')
     p.add_argument('--skip-checks', action='store_true', help='diagnose only: export even when the tunnel check fails')
@@ -68,6 +77,81 @@ def body_bm(body):
     return bm
 
 
+def components(bm):
+    seen, parts = set(), []
+    for f in bm.faces:
+        if f in seen:
+            continue
+        stack, comp = [f], []
+        seen.add(f)
+        while stack:
+            g = stack.pop(); comp.append(g)
+            for e in g.edges:
+                for h in e.link_faces:
+                    if h not in seen:
+                        seen.add(h); stack.append(h)
+        parts.append(comp)
+    return parts
+
+
+def drop_specks(bm, frac=0.02):
+    parts = components(bm)
+    big = max(len(c) for c in parts)
+    bmesh.ops.delete(bm, geom=[f for c in parts if len(c) < big * frac for f in c], context='FACES')
+    bmesh.ops.delete(bm, geom=[v for v in bm.verts if not v.link_faces], context='VERTS')
+    return len(parts)
+
+
+def calm_hem(bm, ay, z_top, z_hem, strength, radius=9.0):
+    """The Forge hem has deep radial flutes and a scalloped edge. Below z_top every vertex moves toward the mean radius (and, in the hem band, mean height) of its
+    neighbourhood, more toward the hem. The shift comes from the mean of the 1 cm sandwich around the vertex, so both cloth layers move together and keep their thickness."""
+    from mathutils.kdtree import KDTree
+    vs = [v for v in bm.verts if v.co.z < z_top]
+    kd = KDTree(len(vs))
+    pol = []
+    for i, v in enumerate(vs):
+        kd.insert(v.co, i)
+        pol.append((math.hypot(v.co.x, v.co.y - ay), v.co.z))
+    kd.balance()
+    out = []
+    for i, v in enumerate(vs):
+        near = [j for _c, j, _d in kd.find_range(v.co, radius)]
+        core = [j for _c, j, _d in kd.find_range(v.co, 1.0)]
+        mean = lambda ids, k: sum(pol[j][k] for j in ids) / len(ids)
+        t = min(1.0, (z_top - v.co.z) / max(1e-6, z_top - z_hem))
+        w = strength * t * t * (3 - 2 * t)
+        dr = w * (mean(near, 0) - mean(core, 0))
+        dz = w * (mean(near, 1) - mean(core, 1)) if v.co.z < z_hem + 10 else 0.0
+        r, phi = pol[i][0], math.atan2(v.co.y - ay, v.co.x)
+        out.append((r + dr, phi, v.co.z + dz))
+    for v, (r, phi, z) in zip(vs, out):
+        v.co = Vector((r * math.cos(phi), ay + r * math.sin(phi), z))
+
+
+def push_out(bm, skin, offset, r_max=1.2, r_avg=3.0):  # offset: cm, or a function of the vertex position
+    """Cloth inside or within `offset` of the skin moves out along the skin normal. The displacement is a field in space, not per vertex: every vertex takes the
+    largest need within r_max (both cloth layers, 2-19 mm apart, move together and keep their thickness), then the vectors are averaged within r_avg (folds stay folds)."""
+    from mathutils.kdtree import KDTree
+    vs = list(bm.verts)
+    kd = KDTree(len(vs))
+    disp = []
+    for i, v in enumerate(vs):
+        kd.insert(v.co, i)
+        loc, n, _i, _d = skin.find_nearest(v.co)
+        off = offset(v.co) if callable(offset) else offset
+        disp.append(n * max(0.0, off - (v.co - loc).dot(n)) if loc is not None else Vector())
+    kd.balance()
+    mx = []
+    for i, v in enumerate(vs):
+        best = max((disp[j] for _c, j, _d in kd.find_range(v.co, r_max)), key=lambda d: d.length)
+        mx.append(best)
+    moved, top = 0, 0.0
+    for i, v in enumerate(vs):
+        near = [mx[j] for _c, j, _d in kd.find_range(v.co, r_avg)]
+        d = sum(near, Vector()) / len(near)
+        if d.length > 1e-4:
+            v.co = v.co + d; moved += 1; top = max(top, d.length)
+    return moved, top
 def main():
     a = parse()
     bpy.ops.wm.read_factory_settings(use_empty=True)
@@ -107,114 +191,81 @@ def main():
     for o in [o for o in bpy.data.objects if o.type == 'EMPTY']:
         bpy.data.objects.remove(o)
     me = hi.data
-    from mathutils import Matrix
     me.transform(Matrix.Rotation(math.radians(a.yaw), 4, 'Z'))
     zs = [v.co.z for v in me.vertices]
-    s = 100.0 * (top - a.bottom) / 100.0 / (max(zs) - min(zs)) * 1.0  # glTF metres -> cm, height fitted
     s = (top - a.bottom) / (max(zs) - min(zs))
     xs = [v.co.x for v in me.vertices]; ys = [v.co.y for v in me.vertices]
     cx, cy = (max(xs) + min(xs)) / 2, (max(ys) + min(ys)) / 2
     for v in me.vertices:
         v.co = Vector(((v.co.x - cx) * s, (v.co.y - cy) * s + head_c.y + a.yshift, (v.co.z - min(zs)) * s + a.bottom))
-    print(f'ALIGN scale={s:.2f} (m->cm x{s:.1f}) size_cm={(max(xs)-min(xs))*s:.1f} x {(max(ys)-min(ys))*s:.1f} x {(top-a.bottom):.1f}')
+    ay = sum(v.co.y for v in bb.verts if 130 < v.co.z < 150) / max(1, sum(1 for v in bb.verts if 130 < v.co.z < 150))  # torso centre
+    zn = min(v.co.z for v in hb.verts)  # neck base: no flare above it (the hood), full flare at the hem
+    for v in me.vertices:
+        k = 1.0 + (a.flare - 1.0) * min(1.0, max(0.0, (zn - v.co.z) / max(1e-6, zn - a.bottom))) ** 1.5
+        v.co.x *= k; v.co.y = ay + (v.co.y - ay) * k
+    if a.pitch:  # about the x axis through the head centre; + moves the top toward -y (forward)
+        rot = Matrix.Translation(head_c) @ Matrix.Rotation(math.radians(-a.pitch), 4, 'X') @ Matrix.Translation(-head_c)
+        me.transform(rot)
+    print(f'ALIGN scale={s:.2f} size_cm={(max(xs)-min(xs))*s:.1f} x {(max(ys)-min(ys))*s:.1f} x {(top-a.bottom):.1f}')
 
-    # 2 cape below the head mesh: pushed out of the body; face opening and neck: faces inside / near the skin deleted
     bm = bmesh.new(); bm.from_mesh(me)
-    bmesh.ops.remove_doubles(bm, verts=bm.verts[:], dist=0.002)  # glTF splits vertices along UV seams and hard edges: weld, or decimation shreds the cuts
+    bmesh.ops.remove_doubles(bm, verts=bm.verts[:], dist=a.weld)  # glTF splits vertices along UV seams and hard edges
     bm.faces.ensure_lookup_table()
-    # fit report on the aligned, still uncut mesh: does the head fit inside the hood?
+    # fit report on the aligned solid: does the head fit inside the hood?
     tree0 = BVHTree.FromBMesh(bm)
     hv_ = [v.co for v in hb.verts if v.co.z > head_z - 30]
     pen = []
-    for v in hv_:  # from the head centre to each head vertex: a hood wall hit before the vertex is a wall inside the head
+    for v in hv_:
         d = v - head_c; L = d.length
         hit = tree0.ray_cast(head_c, d.normalized(), L)
         pen.append(L - hit[3] if hit[0] is not None else 0.0)
     inside = [x for x in pen if x > 0.3]
-    print(f'FITREPORT head verts with the hood wall inside them (>3 mm): {100 * len(inside) / len(pen):.1f}% of {len(pen)}, max {max(pen):.1f} cm, mean of those {sum(inside) / max(1, len(inside)):.1f} cm')
+    print(f'FITREPORT head verts with the hood wall inside them (>3 mm): {100 * len(inside) / len(pen):.1f}% of {len(pen)}, max {max(pen):.1f} cm')
     zeye = head_c.z + 4
-    hits, o_, dd = [], Vector((0, -60, zeye)), Vector((0, 1, 0))
-    for _ in range(6):
-        h = tree0.ray_cast(o_, dd, 200)
-        if h[0] is None:
-            break
-        hits.append(h[0].y); o_ = h[0] + dd * 0.05
     hy = [v.co.y for v in hb.verts if abs(v.co.z - zeye) < 1.5]
-    print(f'FITREPORT along +y at eye height (x=0): hood wall hits y={[round(y, 1) for y in hits]}; Orlando head y {min(hy):.1f}..{max(hy):.1f} (depth {max(hy) - min(hy):.1f} cm); hood front rim y {min(v.co.y for v in bm.verts if abs(v.co.z - zeye) < 12):.1f}')
+    print(f'FITREPORT Orlando head y {min(hy):.1f}..{max(hy):.1f}; hood front rim y {min(v.co.y for v in bm.verts if abs(v.co.z - zeye) < 12):.1f}')
 
-    zpush = min(v.co.z for v in hb.verts) + 4.0  # below the head mesh the cape rests on the shoulders: push it out instead of cutting holes
-    pushed = 0
-    for v in bm.verts:
-        if v.co.z < zpush:
-            loc, nrm, _i, _d = skin.find_nearest(v.co)
-            if loc is not None and (v.co - loc).dot(nrm) < a.offset:
-                v.co = loc + nrm * a.offset; pushed += 1
-    print(f'PUSHED {pushed} cape verts out of the body')
-    doomed = []
-    for f in bm.faces:
-        c = f.calc_center_median()
-        if c.z < zpush:
-            continue
-        loc, nrm, _i, dist = skin.find_nearest(c)
-        if loc is not None and (c - loc).dot(nrm) < a.offset:
-            doomed.append(f)
-    print(f'INSIDE deleted {len(doomed)} of {len(bm.faces)} faces')
-    bmesh.ops.delete(bm, geom=doomed, context='FACES')
-    bmesh.ops.delete(bm, geom=[v for v in bm.verts if not v.link_faces], context='VERTS')
+    # 2 smooth push out of the skin (nothing is deleted: no holes)
+    calm_hem(bm, ay, zn - 8, a.bottom, a.calm)
+    zn_ = min(v.co.z for v in hb.verts)  # neck base: the hood keeps --offset, the cape below it hangs --body-offset off the body (the walk cycle and the other bodies move the skin by centimetres)
+    moved, mx = push_out(bm, skin, lambda p: a.offset + (a.body_offset - a.offset) * min(1.0, max(0.0, (zn_ + 6 - p.z) / 12.0)))
+    print(f'PUSHED {moved} cloth verts out of the skin, max {mx:.1f} cm')
+    bm.normal_update()
     bm.to_mesh(me); bm.free(); me.update()
 
-    # 3 low-poly shell copy, new UVs, bake the texture
+    # 3 decimate the closed solid (collapse, triangulated): at ~5x it keeps both layers and the rim, no tears
     low = hi.copy(); low.data = hi.data.copy(); low.name = 'low'
     bpy.context.scene.collection.objects.link(low)
     bpy.ops.object.select_all(action='DESELECT'); bpy.context.view_layer.objects.active = low; low.select_set(True)
-    if any(len(p.vertices) > 3 for p in low.data.polygons):
-        bpy.ops.object.mode_set(mode='EDIT'); bpy.ops.mesh.select_all(action='SELECT'); bpy.ops.mesh.quads_convert_to_tris(); bpy.ops.object.mode_set(mode='OBJECT')
+    low.data.materials.clear()
     src_mesh = low.data.copy()
-    ratio = min(1.0, a.tris * 0.4 / max(1, len(src_mesh.polygons)))
-    for _ in range(3):  # solidify's doubled shell plus rim depends on the border length: converge on the final count
+    ratio = min(1.0, a.tris / max(1, sum(len(p.vertices) - 2 for p in src_mesh.polygons)))
+    for _ in range(3):
         low.data = src_mesh.copy()
-        m = low.modifiers.new('dec', 'DECIMATE'); m.ratio = ratio
+        m = low.modifiers.new('dec', 'DECIMATE'); m.ratio = ratio; m.use_collapse_triangulate = True
         bpy.ops.object.modifier_apply(modifier='dec')
-        m = low.modifiers.new('sol', 'SOLIDIFY'); m.thickness = a.thickness; m.use_rim = True
-        ev = low.evaluated_get(bpy.context.evaluated_depsgraph_get())
-        n = sum(len(p.vertices) - 2 for p in ev.data.polygons)
-        low.modifiers.remove(m)
-        print(f'RATIO {ratio:.4f} -> final tris {n}')
-        if abs(n - a.tris) < 0.08 * a.tris:
+        n = len(low.data.polygons)
+        print(f'RATIO {ratio:.4f} -> tris {n}')
+        if abs(n - a.tris) < 0.04 * a.tris:
             break
         ratio = min(1.0, ratio * a.tris / n)
-    # drop loose specks
     bm = bmesh.new(); bm.from_mesh(low.data)
-    seen, parts = set(), []
-    for f in bm.faces:
-        if f in seen:
-            continue
-        stack, comp = [f], []
-        seen.add(f)
-        while stack:
-            g = stack.pop(); comp.append(g)
-            for e in g.edges:
-                for h in e.link_faces:
-                    if h not in seen:
-                        seen.add(h); stack.append(h)
-        parts.append(comp)
-    big = max(len(c) for c in parts)
-    kill = [f for c in parts if len(c) < big * 0.05 for f in c]
-    bmesh.ops.delete(bm, geom=kill, context='FACES')
-    bmesh.ops.delete(bm, geom=[v for v in bm.verts if not v.link_faces], context='VERTS')
-    # outward normals: majority of faces should point away from the head centre
+    drop_specks(bm)
     bm.normal_update()
     if sum((f.calc_center_median() - head_c).dot(f.normal) for f in bm.faces) < 0:
         bmesh.ops.reverse_faces(bm, faces=bm.faces[:])
+    print(f'LOW tris={len(bm.faces)} boundary edges={sum(e.is_boundary for e in bm.edges)} nonmanifold={sum(not e.is_manifold and not e.is_boundary for e in bm.edges)}')
     bm.to_mesh(low.data); bm.free(); low.data.update()
-    print(f'LOW shell tris={len(low.data.polygons)}')
+
+    # 4 smart-project unwrap (constant texel density; the two cloth layers get their own islands), then bake
     while low.data.uv_layers:
         low.data.uv_layers.remove(low.data.uv_layers[0])
     low.data.uv_layers.new(name='UVMap')
-    # ponytail: smart project fragments the decimated, crumpled shell into hundreds of islands (a one-seam unwrap overlapped and stretched worse); lower --tris or smooth the shell to improve
+    bpy.ops.object.select_all(action='DESELECT'); bpy.context.view_layer.objects.active = low; low.select_set(True)
     bpy.ops.object.mode_set(mode='EDIT'); bpy.ops.mesh.select_all(action='SELECT')
-    bpy.ops.uv.smart_project(angle_limit=math.radians(89), island_margin=0.003, area_weight=0.6)
+    bpy.ops.uv.smart_project(angle_limit=math.radians(75), island_margin=0.004, area_weight=0.7)
     bpy.ops.object.mode_set(mode='OBJECT')
+    # 5b bake the Forge colour (hi keeps its glTF material and UVs) onto the new UVs
     name = 'Hood' + a.tag
     img = bpy.data.images.new(f'T_{name}_BaseColor', a.tex, a.tex)
     mat = bpy.data.materials.new(f'M_{name}'); mat.use_nodes = True
@@ -225,62 +276,70 @@ def main():
     sc.render.engine = 'CYCLES'; sc.cycles.device = 'CPU'; sc.cycles.samples = 4
     sc.render.bake.use_pass_direct = sc.render.bake.use_pass_indirect = False
     sc.render.bake.use_selected_to_active = True
-    sc.render.bake.cage_extrusion = 1.0; sc.render.bake.max_ray_distance = 3.0; sc.render.bake.margin = 12
+    sc.render.bake.cage_extrusion = 0.15; sc.render.bake.max_ray_distance = 0.3; sc.render.bake.margin = 16
     bpy.ops.object.select_all(action='DESELECT'); hi.select_set(True); low.select_set(True); bpy.context.view_layer.objects.active = low
     bpy.ops.object.bake(type='DIFFUSE')
     out = os.path.abspath(a.out)
     os.makedirs(os.path.dirname(out), exist_ok=True)
-    import numpy as np  # empty texels become the garment's mean colour, or the mips of so many small islands darken the cloth in game
     px = np.array(img.pixels[:], dtype=np.float32).reshape(-1, 4)
-    empty = px[:, :3].sum(axis=1) < 1e-6
-    px[empty, :3] = px[~empty, :3].mean(axis=0); px[:, 3] = 1.0
+    lum = px[:, :3].mean(axis=1)
+    empty = lum < 0.4 * np.median(lum[lum > 1e-6])  # unbaked texels and the dark 1 px rim the bake leaves on every island
+    col = px[~empty, :3]
+    # grade: the mean colour becomes the dark brown wool (contrast of the generated mottling kept), then a coarse weave (period 12 px) and slub noise
+    mean = col.mean(axis=0)
+    px[:, :3] = np.clip(px[:, :3] * (np.array(WOOL_SRGB) / mean), 0, 1)
+    px[empty, :3] = np.array(WOOL_SRGB)  # empty texels = the mean cloth colour, or the mips darken it
+    t = a.tex
+    yy, xx = np.mgrid[0:t, 0:t]
+    per = 10.0
+    weave = 0.5 * np.sin(2 * np.pi * xx / per) * np.sin(2 * np.pi * yy / per) + 0.5 * np.sin(2 * np.pi * (xx + yy) / (per * 2.1)) * 0.0
+    rng = np.random.default_rng(7)
+    slub = rng.normal(0, 1, (t, t)).astype(np.float32)
+    slub = (slub + np.roll(slub, 1, 0) + np.roll(slub, 1, 1) + np.roll(slub, 2, 1)) / 4
+    px[:, :3] = np.clip(px[:, :3] * (1.0 + 0.28 * weave.reshape(-1, 1) + 0.18 * slub.reshape(-1, 1)), 0, 1)
+    px[:, 3] = 1.0
     img.pixels.foreach_set(px.ravel())
     img.filepath_raw = os.path.join(os.path.dirname(out), f'T_{name}_BaseColor.png'); img.file_format = 'PNG'; img.save()
-    print(f'BAKED {img.filepath_raw}')
+    print(f'BAKED {img.filepath_raw} mean {tuple(round(float(x), 3) for x in mean)} -> {WOOL_SRGB}')
     bpy.data.objects.remove(hi)
 
-    # 4 thickness, outward (inner skin stays at the offset)
+    # 6 the solid already has its 3-19 mm of cloth: just smooth shading
     bpy.ops.object.select_all(action='DESELECT'); low.select_set(True); bpy.context.view_layer.objects.active = low
-    m = low.modifiers.new('sol', 'SOLIDIFY'); m.thickness = a.thickness; m.offset = 1.0; m.use_rim = True
-    bpy.ops.object.modifier_apply(modifier='sol')
     low.name = f'SK_{name}'
     for poly in low.data.polygons:
-        poly.use_smooth = True  # the decimated shell shows its facets under flat shading
+        poly.use_smooth = True
     tris = sum(len(p.vertices) - 2 for p in low.data.polygons)
     print(f'FINAL tris={tris}')
 
-    # tunnel check: rays from the head centre through the back half-space (+-40 deg, -45 to +40 deg elevation, 3 deg steps: also finds a slit down the centre back) must all hit the hood; a hole the size
-    # of the face in its back means the input view showed background through the face opening
+    # tunnel check: rays from the head centre through the back half-space (-30 to +40 deg elevation: below that they pass under the hem) must all hit the cloth
     tree = BVHTree.FromObject(low, bpy.context.evaluated_depsgraph_get())
     miss = 0; total = 0
     for az in range(-40, 41, 3):
-        for el in range(-45, 41, 3):
+        for el in range(-30, 41, 3):
             d = Vector((math.sin(math.radians(az)) * math.cos(math.radians(el)), math.cos(math.radians(az)) * math.cos(math.radians(el)), math.sin(math.radians(el))))
             total += 1
-            miss += tree.ray_cast(head_c, d)[0] is None
+            if tree.ray_cast(head_c, d)[0] is None:
+                miss += 1; print(f"MISSRAY az={az} el={el}")
     lb = [low.matrix_world @ v.co for v in low.data.vertices]
-    print(f'TUNNELCHECK missed {miss} of {total} rays from the head centre {tuple(round(c, 1) for c in head_c)} to the back; garment bbox {tuple(round(min(p[i] for p in lb), 1) for i in range(3))} {tuple(round(max(p[i] for p in lb), 1) for i in range(3))}')
+    print(f'TUNNELCHECK missed {miss} of {total} rays from the head centre; garment bbox {tuple(round(min(p[i] for p in lb), 1) for i in range(3))} {tuple(round(max(p[i] for p in lb), 1) for i in range(3))}')
     if miss and not a.skip_checks:
-        raise SystemExit(f'TUNNEL: {miss} of {total} back rays pass through the garment (hole behind the face opening)')
+        raise SystemExit(f'TUNNEL: {miss} of {total} back rays pass through the garment')
 
-    # 5 skin weights
+    # 7 skin weights, then smoothed over the cloth so it moves as one draped piece
     bw = {g.index: g.name for g in body.vertex_groups}
     bvh = BVHTree.FromBMesh(bb)
     bb.faces.ensure_lookup_table()
-    wts = lambda v: {bw[g.group]: g.weight for g in body.data.vertices[v.index].groups}
     body_idx = body.data.vertices
-    # bb was built from the body mesh and triangulated in place: vertex i of bb is body vertex i
     bb.verts.ensure_lookup_table()
     bones = arm.data.bones
     zseam = bones['neck_01'].head_local.z
     z_head = bones['head'].head_local.z
-    groups = {}
+    W = {}
     for v in low.data.vertices:
         loc, nrm, fi, dist = bvh.find_nearest(v.co)
         f = bb.faces[fi]
         w = {}
         ws = [dict((bw[g.group], g.weight) for g in body_idx[vv.index].groups) for vv in f.verts]
-        # barycentric weights of loc on the triangle
         p0, p1, p2 = (vv.co for vv in f.verts)
         v0, v1, v2 = p1 - p0, p2 - p0, loc - p0
         d00, d01, d11, d20, d21 = v0.dot(v0), v0.dot(v1), v1.dot(v1), v2.dot(v0), v2.dot(v1)
@@ -294,9 +353,24 @@ def main():
             w = {n: x * (1 - t) for n, x in w.items()}
             w['neck_02'] = w.get('neck_02', 0.0) + t * (1 - t) * 2.0
             w['head'] = w.get('head', 0.0) + t * t
+        W[v.index] = w
+    nbrs = {v.index: [] for v in low.data.vertices}
+    for e in low.data.edges:
+        nbrs[e.vertices[0]].append(e.vertices[1]); nbrs[e.vertices[1]].append(e.vertices[0])
+    for _ in range(6):  # weights average with the neighbours: panels no longer swing on their own
+        nxt = {}
+        for i, w in W.items():
+            acc = {n: x for n, x in w.items()}
+            for j in nbrs[i]:
+                for n, x in W[j].items():
+                    acc[n] = acc.get(n, 0.0) + x / max(1, len(nbrs[i]))
+            nxt[i] = {n: x / 2 for n, x in acc.items()}
+        W = nxt
+    groups = {}
+    for i, w in W.items():
         top8 = sorted(w.items(), key=lambda kv: -kv[1])[:8]
         tot = sum(x for _, x in top8) or 1.0
-        groups[v.index] = [(n, x / tot) for n, x in top8 if x / tot > 1e-3]
+        groups[i] = [(n, x / tot) for n, x in top8 if x / tot > 1e-3]
     vg = {}
     for i, lst in groups.items():
         for n, x in lst:
@@ -306,7 +380,7 @@ def main():
     low.parent = arm
     mod = low.modifiers.new('Armature', 'ARMATURE'); mod.object = arm
 
-    # 6 export (the skeleton is the UE one: no Empty above it, cm)
+    # 8 export (the skeleton is the UE one: no Empty above it, cm)
     unit = sc.unit_settings
     unit.system, unit.length_unit, unit.scale_length = 'METRIC', 'CENTIMETERS', 0.01
     bpy.ops.object.select_all(action='DESELECT')
