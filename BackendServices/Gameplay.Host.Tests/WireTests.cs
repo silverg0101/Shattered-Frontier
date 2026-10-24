@@ -1,5 +1,8 @@
 using Grpc.Core;
 using Grpc.Net.Client;
+using Google.Protobuf;
+using CharacterAppearance;
+using ShatteredFrontier.CharacterState.Postgres;
 using ShatteredFrontier.InventoryLedger;
 using ShatteredFrontier.InventoryLedger.Postgres;
 using ShatteredFrontier.CraftingContent;
@@ -50,6 +53,37 @@ if (mode.EndsWith("-outage", StringComparison.Ordinal))
             new HousingPb.GetClaimRequest { ClaimId = "clm_test" }, headers,
             deadline: Deadline()), StatusCode.Unavailable);
     Console.WriteLine($"PASS {mode} UNAVAILABLE mapping");
+    return;
+}
+if (mode == "appearance")
+{
+    var client = new ProgressPb.Progression.ProgressionClient(channel);
+    var appearance = new Appearance(2, 0, 1, 1, 128, 128, new byte[8], new ushort[4], new byte[4], [], 6);
+    byte[] packet = AppearanceCodec.Pack(appearance);
+    var create = new ProgressPb.CreateCharacterRequest { CharacterId = "chr_appearance", AppearancePacket = ByteString.CopyFrom(packet) };
+    Check(client.CreateCharacter(create, headers, deadline: Deadline()).AppearanceRevision == 1,
+        "Appearance create revision missing.");
+    var stored = new PostgresCharacterStateStore(Environment.GetEnvironmentVariable("GAMEPLAY_CHARACTER_CONNECTION")!).ReadAppearance(create.CharacterId);
+    Check(stored is { Revision: 1 } && stored.Result.SequenceEqual(packet), "Appearance bytes were not stored.");
+    var loaded = client.GetCharacterState(new ProgressPb.GetCharacterStateRequest { CharacterId = create.CharacterId }, headers, deadline: Deadline());
+    Check(loaded.HasAppearancePacket && loaded.AppearancePacket.ToByteArray().SequenceEqual(packet) && loaded.FaceId == "Aelfwyn",
+        "Stored face and packet missing on load.");
+    var invalid = (byte[])packet.Clone(); invalid[^1] = 0; // Orlando is not a female-body face.
+    try
+    {
+        client.CreateCharacter(new ProgressPb.CreateCharacterRequest { CharacterId = "chr_appearance_invalid",
+            AppearancePacket = ByteString.CopyFrom(invalid) }, headers, deadline: Deadline());
+        throw new Exception("Invalid appearance was accepted.");
+    }
+    catch (RpcException ex) when (ex.StatusCode == StatusCode.InvalidArgument && ex.Status.Detail == "APPEARANCE_INVALID") { }
+    Check(new PostgresCharacterStateStore(Environment.GetEnvironmentVariable("GAMEPLAY_CHARACTER_CONNECTION")!).ReadAppearance("chr_appearance_invalid") is null,
+        "Invalid appearance was stored.");
+    client.SavePosition(new ProgressPb.SavePositionRequest { CharacterId = "chr_appearance_legacy",
+        Position = new ProgressPb.CharacterPosition { ZoneId = "silverbrook" } }, headers, deadline: Deadline());
+    var legacy = client.GetCharacterState(new ProgressPb.GetCharacterStateRequest { CharacterId = "chr_appearance_legacy" }, headers, deadline: Deadline());
+    Check(!legacy.HasAppearancePacket && legacy.FaceId == "Orlando" && legacy.Position?.ZoneId == "silverbrook",
+        "Legacy character face default missing.");
+    Console.WriteLine("PASS appearance valid create/store/load, invalid rejection, legacy Orlando (3 cases)");
     return;
 }
 if (mode.EndsWith("-replay", StringComparison.Ordinal))

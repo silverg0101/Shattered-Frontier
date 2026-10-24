@@ -3,11 +3,17 @@ package sf.progression.v1;
 option csharp_namespace = "ShatteredFrontier.Progression.V1";
 
 service Progression {
+  rpc CreateCharacter(CreateCharacterRequest) returns (CreateCharacterReply);
   rpc ApplyReceipt(ApplyReceiptRequest) returns (ApplyReceiptReply);
   rpc GetCharacterState(GetCharacterStateRequest) returns (CharacterStateReply);
   rpc SavePosition(SavePositionRequest) returns (SavePositionReply);
   rpc LearnRecipe(LearnRecipeRequest) returns (LearnRecipeReply);
 }
+message CreateCharacterRequest {
+  string character_id = 1;
+  optional bytes appearance_packet = 2;
+}
+message CreateCharacterReply { int64 appearance_revision = 1; }
 message LearnRecipeRequest {
   string operation_id = 1;
   string character_id = 2;
@@ -97,6 +103,8 @@ message CharacterStateReply {
   // QST-02: every quest row of the character (fields 5-8 describe quest/frontier_founder only).
   repeated QuestState quests = 11;
   repeated KnownRecipe known_recipes = 12;
+  optional bytes appearance_packet = 13;
+  optional string face_id = 14;
 }
 message QuestState {
   string quest_id = 1;

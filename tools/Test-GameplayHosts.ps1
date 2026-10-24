@@ -1,5 +1,5 @@
 [CmdletBinding()]
-param([Parameter(Mandatory)][string]$EvidenceRoot, [switch]$RecipesOnly)
+param([Parameter(Mandatory)][string]$EvidenceRoot, [switch]$RecipesOnly, [switch]$AppearanceOnly)
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 $repo = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
@@ -10,6 +10,10 @@ if (-not $EvidenceRoot.StartsWith($allowed + [IO.Path]::DirectorySeparatorChar,[
 $pins = Get-Content (Join-Path $repo 'BackendServices/toolchain-lock.json') -Raw | ConvertFrom-Json
 $dotnet = Join-Path $repo 'Artifacts/Persistence/Toolchains/dotnet-10.0.402/dotnet.exe'
 $pg = Join-Path $repo 'Artifacts/Persistence/Toolchains/postgresql-18.6/pgsql/bin'
+if (-not (Test-Path -LiteralPath $dotnet)) { $dotnet = 'C:/Projects/Shattered-Frontier/Artifacts/Persistence/Toolchains/dotnet-10.0.402/dotnet.exe' }
+if (-not (Test-Path -LiteralPath (Join-Path $pg 'postgres.exe'))) { $pg = 'C:/Projects/Shattered-Frontier/Artifacts/Persistence/Toolchains/postgresql-18.6/pgsql/bin' }
+$nuget = Join-Path $repo 'Artifacts/Persistence/Toolchains/nuget'
+if (-not (Test-Path -LiteralPath $nuget)) { $nuget = 'C:/Projects/Shattered-Frontier/Artifacts/Persistence/Toolchains/nuget' }
 foreach ($path in @( $dotnet,(Join-Path $pg 'postgres.exe'),(Join-Path $pg 'initdb.exe'),(Join-Path $pg 'pg_ctl.exe'),(Join-Path $pg 'psql.exe'))) { if (-not (Test-Path -LiteralPath $path -PathType Leaf)) { throw "Required file missing: $path" } }
 if ((Get-FileHash $dotnet -Algorithm SHA256).Hash.ToLowerInvariant() -ne $pins.sdk.executableSha256 -or (Get-FileHash (Join-Path $pg 'postgres.exe') -Algorithm SHA256).Hash.ToLowerInvariant() -ne $pins.postgres.executableSha256) { throw 'Pinned toolchain mismatch.' }
 $run = [guid]::NewGuid().ToString('N'); $private = Join-Path $EvidenceRoot 'private'; $data = Join-Path $private 'data'
@@ -68,12 +72,12 @@ try {
     [void](Invoke-Checked 'icacls.exe' @($private,'/inheritance:r','/grant:r',"${account}:(OI)(CI)F"))
     $listener = [Net.Sockets.TcpListener]::new([Net.IPAddress]::Loopback,0); $listener.Start(); $port = $listener.LocalEndpoint.Port; $listener.Stop()
     @{run=$run;data=$data;port=$port} | ConvertTo-Json | Set-Content (Join-Path $private 'owner.json')
-    $projects = $(if ($RecipesOnly) { @('Progression') } else { @('Rewards','Progression','Housing') }) |
+    $projects = $(if ($RecipesOnly -or $AppearanceOnly) { @('Progression') } else { @('Rewards','Progression','Housing') }) |
         ForEach-Object { Join-Path $repo "BackendServices/Gameplay.Host.Tests/$_/$_.Host.Tests.csproj" }
     $buildOutput = (Join-Path $private 'build') + [IO.Path]::DirectorySeparatorChar
     foreach ($project in $projects) {
         $currentStep = "restore $project"
-        [void](Invoke-Checked $dotnet @('restore',$project,'--locked-mode','--packages',(Join-Path $repo 'Artifacts/Persistence/Toolchains/nuget'),'--verbosity','quiet'))
+        [void](Invoke-Checked $dotnet @('restore',$project,'--locked-mode','--packages',$nuget,'--verbosity','quiet'))
         $currentStep = "build $project"
         [void](Invoke-Checked $dotnet @('build',$project,'--no-restore','--configuration','Release','--verbosity','quiet',"-p:OutDir=$buildOutput"))
     }
@@ -92,6 +96,7 @@ try {
     $schemas += Get-Content (Join-Path $repo 'BackendServices/Housing.Postgres/Schema.Construction.sql') -Raw
     $schemas += Get-Content (Join-Path $repo 'BackendServices/CharacterState.Postgres/Schema.Position.sql') -Raw
     $schemas += Get-Content (Join-Path $repo 'BackendServices/CharacterState.Postgres/Schema.Recipes.sql') -Raw
+    $schemas += Get-Content (Join-Path $repo 'BackendServices/CharacterState.Postgres/Schema.Appearance.sql') -Raw
     [void](Sql ("SET ROLE gameplay_owner;`n" + ($schemas -join "`n")) "gameplay_$run")
     [void](Sql 'GRANT USAGE ON SCHEMA inventory,character_state,housing,exchange TO gameplay_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA inventory TO gameplay_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA character_state TO gameplay_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA housing TO gameplay_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA exchange TO gameplay_svc;' "gameplay_$run")
     $connection = "Host=127.0.0.1;Port=$port;Database=gameplay_$run;Username=gameplay_svc;Password=$servicePassword;Pooling=true;Maximum Pool Size=64;Minimum Pool Size=8;Timeout=2;Command Timeout=5;Include Error Detail=false"
@@ -118,6 +123,13 @@ try {
     if (-not $ready) { throw 'Gameplay host readiness timeout.' }
     $results = [Collections.Generic.List[string]]::new()
     $journeyDll = Join-Path $buildOutput 'Progression.Host.Tests.dll'
+    if ($AppearanceOnly) {
+        $currentStep = 'appearance wire'
+        $results.Add((Invoke-Checked $dotnet @($journeyDll,'appearance') @{
+            GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$connection;
+            GAMEPLAY_CHARACTER_CONNECTION=$connection; SF_GAMEPLAY_TOKEN=$token
+        }))
+    } else {
     if (-not $RecipesOnly) {
     foreach ($name in @('Rewards','Progression','Housing')) {
         $currentStep = "wire $name"
@@ -375,6 +387,7 @@ try {
         $results.Add((Invoke-Checked $dotnet @($dll,($name.ToLowerInvariant() + '-outage')) @{
             GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$connection; SF_GAMEPLAY_TOKEN=$token
         }))
+    }
     }
     }
     $results | Set-Content (Join-Path $EvidenceRoot 'results.txt')

@@ -12,6 +12,7 @@ using ShatteredFrontier.Rewards;
 using ShatteredFrontier.Progression;
 using ShatteredFrontier.CraftingContent;
 using ShatteredFrontier.Exchange.Postgres;
+using CharacterAppearance;
 using ClaimTerritory;
 using DomLedger = ShatteredFrontier.InventoryLedger.InventoryLedger;
 
@@ -53,6 +54,7 @@ var housingConnection = pools.For("Housing", Required("GAMEPLAY_HOUSING_CONNECTI
 var exchangeConnection = pools.For("Exchange", Required("GAMEPLAY_EXCHANGE_CONNECTION"));
 var token = Required("SF_GAMEPLAY_TOKEN");
 var contentRoot = Required("GAMEPLAY_CONTENT_ROOT");
+var appearanceAllowlist = AppearanceAllowlist.Load(Path.Combine(contentRoot, "appearance", "human.json"));
 var boar = LootCatalog.LoadFiles([Path.Combine(contentRoot, "loot", "greenlands_starter.json")])["loot/greenlands_silverbrook_boar"];
 var questFiles = QuestLoader.LoadDirectory(Path.Combine(contentRoot, "quests"));
 var questIssues = QuestValidator.ValidateAll(questFiles);
@@ -79,6 +81,8 @@ builder.Services.AddSingleton(ledgerStore);
 builder.Services.AddSingleton(new DomLedger(ledgerStore));
 builder.Services.AddSingleton(new BoarRewardService(new DomLedger(ledgerStore), boar));
 builder.Services.AddSingleton(new PostgresCharacterStateStore(characterConnection));
+builder.Services.AddSingleton(appearanceAllowlist);
+builder.Services.AddSingleton(new AppearanceValidator(appearanceAllowlist));
 builder.Services.AddSingleton<QuestRewardPayout>();
 builder.Services.AddSingleton(new GameplayRecoverySettings());
 builder.Services.AddHostedService<GameplayRecoveryService>();

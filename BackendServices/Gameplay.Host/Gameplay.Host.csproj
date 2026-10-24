@@ -4,6 +4,7 @@
     <ProjectReference Include="../Progression/Progression.csproj" />
     <ProjectReference Include="../QuestContent/QuestContent.csproj" />
     <ProjectReference Include="../CharacterState.Postgres/CharacterState.Postgres.csproj" />
+    <ProjectReference Include="../CharacterAppearance/CharacterAppearance.csproj" />
     <ProjectReference Include="../ClaimTerritory/ClaimTerritory.csproj" />
     <ProjectReference Include="../Placement/Placement.csproj" />
     <ProjectReference Include="../Housing.Postgres/Housing.Postgres.csproj" />

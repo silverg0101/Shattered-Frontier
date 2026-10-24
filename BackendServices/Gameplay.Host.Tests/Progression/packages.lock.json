@@ -165,9 +165,13 @@
         "resolved": "8.0.0",
         "contentHash": "bXJEZrW9ny8vjMF1JV253WeLhpEVzFo1lyaZu1vQ4ZxWUlVvknZ/+ftFgVheLubb4eZPSwwxBeqS1JkCOjxd8g=="
       },
+      "characterappearance": {
+        "type": "Project"
+      },
       "characterstate.postgres": {
         "type": "Project",
         "dependencies": {
+          "CharacterAppearance": "[1.0.0, )",
           "Npgsql": "[10.0.3, 10.0.3]",
           "Progression": "[1.0.0, )",
           "QuestContent": "[1.0.0, )"
@@ -199,6 +203,7 @@
       "gameplay.host": {
         "type": "Project",
         "dependencies": {
+          "CharacterAppearance": "[1.0.0, )",
           "CharacterState.Postgres": "[1.0.0, )",
           "ClaimTerritory": "[1.0.0, )",
           "Exchange.Postgres": "[1.0.0, )",

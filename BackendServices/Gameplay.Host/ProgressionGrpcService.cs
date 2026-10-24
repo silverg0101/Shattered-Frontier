@@ -1,4 +1,6 @@
 using Grpc.Core;
+using Google.Protobuf;
+using CharacterAppearance;
 using System.Text.RegularExpressions;
 using ShatteredFrontier.CharacterState.Postgres;
 using ShatteredFrontier.Progression;
@@ -8,8 +10,22 @@ using Pb = ShatteredFrontier.Progression.V1;
 internal sealed class ProgressionGrpcService(PostgresCharacterStateStore store, IReadOnlyDictionary<string, QuestDefinition> quests, QuestRewardPayout payout,
     ShatteredFrontier.InventoryLedger.Postgres.PostgresInventoryLedgerStore ledgerStore,
     ShatteredFrontier.Exchange.Postgres.PostgresExchangeStore exchange, StarterKitOptions starterKit,
-    RecipeLearning learning) : Pb.Progression.ProgressionBase
+    RecipeLearning learning, AppearanceAllowlist appearanceAllowlist, AppearanceValidator appearanceValidator) : Pb.Progression.ProgressionBase
 {
+    private static readonly IReadOnlySet<ushort> NoCosmetics = new HashSet<ushort>();
+
+    public override Task<Pb.CreateCharacterReply> CreateCharacter(Pb.CreateCharacterRequest request, ServerCallContext context) =>
+        GrpcRun.Call(context, () =>
+        {
+            if (string.IsNullOrWhiteSpace(request.CharacterId)) throw new ArgumentException("Character ID required.");
+            byte[] packet = request.AppearancePacket.ToByteArray();
+            var validation = appearanceValidator.ValidatePacked(packet, NoCosmetics, NoCosmetics);
+            if (!validation.Valid || !AppearanceCodec.TryUnpack(packet, out var appearance) || appearance!.FaceIndex is null)
+                throw new GameplayRejectedException("APPEARANCE_INVALID", StatusCode.InvalidArgument);
+            return new Pb.CreateCharacterReply { AppearanceRevision = store.SaveAppearance(request.CharacterId, 0,
+                packet, appearanceValidator, NoCosmetics, NoCosmetics) };
+        });
+
     public override Task<Pb.LearnRecipeReply> LearnRecipe(Pb.LearnRecipeRequest request, ServerCallContext context) =>
         GrpcRun.Call(context, () =>
         {
@@ -126,8 +142,19 @@ internal sealed class ProgressionGrpcService(PostgresCharacterStateStore store, 
             {
                 ProgressionRevision = progression?.Revision ?? 0,
                 LifetimeXp = progression?.Result.LifetimeXp ?? 0,
-                QuestRevision = 0
+                QuestRevision = 0,
+                FaceId = "Orlando"
             };
+            var storedAppearance = store.ReadAppearance(request.CharacterId);
+            if (storedAppearance is not null)
+            {
+                var packet = storedAppearance.Result;
+                if (!appearanceValidator.ValidatePacked(packet, NoCosmetics, NoCosmetics).Valid ||
+                    !AppearanceCodec.TryUnpack(packet, out var appearance))
+                    throw new CharacterStoreRejectedException("Stored appearance is invalid.");
+                state.AppearancePacket = ByteString.CopyFrom(packet);
+                if (appearance!.FaceIndex is byte faceIndex) state.FaceId = appearanceAllowlist.Faces[faceIndex].Id;
+            }
             state.Level = progression is null ? 1 : new CharacterProgression(request.CharacterId,
                 TimeProvider.System, () => .5, snapshot: progression.Result).Level;
             if (progression is not null)
