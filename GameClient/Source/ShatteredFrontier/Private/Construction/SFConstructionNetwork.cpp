@@ -1,6 +1,7 @@
 #include "Construction/SFConstructionNetwork.h"
 #include "Exchange/SFExchangeWidgets.h"
 #include "Framework/SFPlayerController.h"
+#include "GameFramework/PlayerState.h"
 #include "Characters/SFE1VitalsHud.h"
 #include "Framework/SFHudLayout.h"
 #include "UI/SFInventoryWidget.h"
@@ -1353,6 +1354,9 @@ void ASFPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
     DOREPLIFETIME_CONDITION(ASFPlayerController,bRoleAssigned,COND_OwnerOnly);
     DOREPLIFETIME_CONDITION(ASFPlayerController,bBuilderRole,COND_OwnerOnly);
+    DOREPLIFETIME_CONDITION(ASFPlayerController,PartyView,COND_OwnerOnly);
+    DOREPLIFETIME_CONDITION(ASFPlayerController,PartyInvites,COND_OwnerOnly);
+    DOREPLIFETIME_CONDITION(ASFPlayerController,PartyLeaderName,COND_OwnerOnly);
 }
 
 void ASFPlayerController::BeginPlay()
@@ -2575,7 +2579,12 @@ FString ASFGameMode::InitNewPlayer(APlayerController* NewPlayerController, const
     // development build, in the admitted pilot world, with the server's -SFDevIdentity flag; never an identity path elsewhere.
 #if !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     if (IsAdmitted() && FParse::Param(FCommandLine::Get(),TEXT("SFDevIdentity")) && USFBackpackComponent::IsValidDevName(Name))
-    { USFBackpackComponent::AssignDevIdentity(NewPlayerController,Name); return Result; }
+    {
+        USFBackpackComponent::AssignDevIdentity(NewPlayerController,Name);
+        if (APlayerState* State = NewPlayerController ? NewPlayerController->GetPlayerState<APlayerState>() : nullptr)
+        { State->SetPlayerName(Name); }
+        return Result;
+    }
 #endif
     UE_LOG(LogTemp,Warning,TEXT("DEV_IDENTITY_IGNORED Requested=%s"),*Name.Left(32));
     return Result;

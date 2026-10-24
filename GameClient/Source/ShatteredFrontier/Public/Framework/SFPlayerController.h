@@ -5,6 +5,18 @@
 #include "Construction/SFConstructionNetwork.h"
 #include "SFPlayerController.generated.h"
 
+USTRUCT()
+struct FSFPartyMemberView
+{
+    GENERATED_BODY()
+    UPROPERTY() FString Name;
+    UPROPERTY() int32 Level = 0;
+    UPROPERTY() int32 Health = 0;
+    UPROPERTY() int32 MaxHealth = 0;
+    bool operator==(const FSFPartyMemberView& Other) const
+    { return Name == Other.Name && Level == Other.Level && Health == Other.Health && MaxHealth == Other.MaxHealth; }
+};
+
 class ASFE1InteractionTarget;
 class ISFExchangeService;
 class FSFMarketViewModel;
@@ -60,6 +72,16 @@ public:
     AActor* GetSelectedCombatTarget() const;
     // The in-game HUD (WBP_Hud), created on the local controller; null elsewhere or before it exists.
     USFHudWidget* GetHudWidget() const { return HudWidget; }
+    UFUNCTION(Server, Reliable) void ServerPartyAction(uint8 Action, const FString& TargetName);
+#if !UE_BUILD_SHIPPING
+    void SFPartyInvite(const FString& Name);
+    void SFPartyAccept(const FString& Name);
+    void SFPartyDecline(const FString& Name);
+    void SFPartyLeave();
+    void SFPartyKick(const FString& Name);
+    void SFPartyLeader(const FString& Name);
+    void SFPartyAssistant(const FString& Name);
+#endif
     UFUNCTION(Server, Reliable) void ServerSelectCombatTarget(AActor* Target);
     UFUNCTION(Client, Unreliable) void ClientPilotHit(const FString& Message);
     FString GetPilotMessage() const;
@@ -111,6 +133,21 @@ protected:
     // The standalone construction sandbox subclass owns its own build input, palette and cursor; it returns false.
     virtual bool HostsBuildMode() const { return true; }
 private:
+    friend class ASFGameMode;
+    UPROPERTY(ReplicatedUsing=OnRep_PartyView) TArray<FSFPartyMemberView> PartyView;
+    UPROPERTY(ReplicatedUsing=OnRep_PartyInvites) TArray<FString> PartyInvites;
+    UPROPERTY(Replicated) FString PartyLeaderName;
+    UFUNCTION() void OnRep_PartyView();
+    UFUNCTION() void OnRep_PartyInvites();
+    bool bPartyHudDirty = true;
+    TWeakObjectPtr<USFHudWidget> PartyPresentedHud;
+    void RefreshPartyHud();
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    void TickPartyScenario();
+    int32 PartyScenarioStep = 0;
+    double PartyScenarioNextAt = 0;
+    bool bPartyScenarioJoined = false;
+#endif
     UPROPERTY(Transient) TArray<TObjectPtr<AActor>> CrowdTestBodies;
     friend class USFQuestPilotComponent;  // dev scenario driver sends the same placement RPC the cursor does
     UPROPERTY(VisibleAnywhere) TObjectPtr<USFGatheringPilotComponent> GatheringPilot;

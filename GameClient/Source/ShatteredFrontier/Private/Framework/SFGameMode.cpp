@@ -81,6 +81,11 @@ void ASFGameMode::PostLogin(APlayerController* NewPlayer)
 
 void ASFGameMode::Logout(AController* Exiting)
 {
+    if (ASFPlayerController* PartyPlayer = Cast<ASFPlayerController>(Exiting))
+    {
+        PartyModel.RemoveConnection(PartyPlayer->GetUniqueID());
+        RefreshPartyViews();
+    }
     if (FParse::Param(FCommandLine::Get(), TEXT("CombatGroupScenario")))
     { FinishM3Connection(Cast<APlayerController>(Exiting) ? Cast<APlayerController>(Exiting)->NetConnection : nullptr); }
     UE_LOG(LogTemp, Display, TEXT("E1_PLAYER_LEAVE Controller=%s"), *GetNameSafe(Exiting));
@@ -160,6 +165,7 @@ void ASFGameMode::RestartPlayer(AController* NewPlayer)
 void ASFGameMode::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
+    RefreshPartyViews();
     if (M3StartedAt > 0 && !bM3CaptureFinished)
     {
         for (auto& Pair : M3Connections)

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "GameFramework/GameModeBase.h"
+#include "Party/SFPartyModel.h"
 #include "SFGameMode.generated.h"
 
 class ASFPlayerController;
@@ -25,6 +26,8 @@ public:
     virtual void RestartPlayer(AController* NewPlayer) override;
     virtual void Logout(AController* Exiting) override;
     virtual void Tick(float DeltaSeconds) override;
+    // Premade session parties. The controller supplies an intent; identity and target resolution stay on this server.
+    void PartyAction(class ASFPlayerController* Actor, uint8 Action, const FString& TargetName);
 
     // Construction (SFConstructionNetwork.cpp)
     bool IsAdmitted() const;
@@ -61,6 +64,9 @@ public:
     const USFCombatPilotSettings* CombatSettings() const { return CapturedSettings; }
 
 private:
+    FSFPartyModel PartyModel;
+    void RefreshPartyViews();
+    class ASFPlayerController* FindPartyPlayer(const FString& Name) const;
     // Opt-in M3 group capture; Unreal CSV supplies frame times, while net totals come from the driver's built-in counters.
     struct FM3ConnectionSample
     {

@@ -5,6 +5,7 @@ param(
     [ValidateRange(320,1200)][int]$TimeoutSeconds = 600,
     [ValidateRange(1,10)][int]$Clients = 1,
     [switch]$TargetScenario,
+    [switch]$PartyScenario,
     [switch]$Services,
     [string]$ServerExe,
     [switch]$SpawnOnly
@@ -17,7 +18,8 @@ $bridge = Join-Path $repo 'BackendServices\WorldContent.Tool\bin\Debug\net10.0\W
 $sdk = Join-Path $repo 'Artifacts\Persistence\Toolchains\dotnet-10.0.402\dotnet.exe'
 if ($Services -and $TargetScenario) { throw 'Services ledger assertion requires the combat reward scenario.' }
 if ($SpawnOnly -and (-not $Services -or -not $ServerExe)) { throw '-SpawnOnly requires -Services and -ServerExe.' }
-if ($Clients -gt 1 -and (-not $Services -or $TargetScenario)) { throw 'Group combat requires -Services and does not combine with -TargetScenario.' }
+if ($PartyScenario -and ($Clients -ne 3 -or $Services -or $TargetScenario -or $SpawnOnly)) { throw '-PartyScenario requires -Clients 3 without services or other scenarios.' }
+if ($Clients -gt 1 -and -not $PartyScenario -and (-not $Services -or $TargetScenario)) { throw 'Group combat requires -Services and does not combine with -TargetScenario.' }
 $requiredInputs = @($editor,$project,$ServerExe) | Where-Object { $_ }
 if (-not $Services) { $requiredInputs += @($bridge,$sdk) }
 foreach ($required in $requiredInputs) {
@@ -31,7 +33,8 @@ $null = New-Item -ItemType Directory -Path $root
 if ($Services) { . (Join-Path $PSScriptRoot 'InventoryLedgerHostFixture.ps1') }
 $fx = @{}
 $owned = [Collections.Generic.List[Diagnostics.Process]]::new()
-$scope = if ($SpawnOnly) { 'Packaged dedicated server, Gameplay.Host, five boars in each authored group' }
+$scope = if ($PartyScenario) { 'Three clients: invite, decline, accept, leader handoff, kick, leave and party HUD' }
+    elseif ($SpawnOnly) { 'Packaged dedicated server, Gameplay.Host, five boars in each authored group' }
     elseif ($Clients -gt 1) { "$Clients clients, one boar, one mid-fight reconnect, owner targeting and durable killer reward" }
     elseif ($TargetScenario) { 'One dedicated server, one client; Tab selection, owner replication, death and range drops' }
     elseif ($Services) { 'One dedicated server, one client, durable boar hides in InventoryLedger and WorldContent slot respawn' }
@@ -45,7 +48,7 @@ function Start-Owned([string]$Name,[string]$Url,[string[]]$Extra) {
     $executable = if ($Name -eq 'server' -and $ServerExe) { $ServerExe } else { $editor }
     $projectArg = if ($executable -eq $editor) { @(('"'+$project+'"')) } else { @() }
     $arguments = @($projectArg)+@($Url,'-unattended','-NullRHI','-nosound','-nop4',('-UserDir="'+$user+'/"'),('-abslog="'+$log+'"'))+$Extra
-    if ($Clients -gt 1 -and $Name -like 'client*') {
+    if ($Clients -gt 1 -and -not $PartyScenario -and $Name -like 'client*') {
         $clientCsvDir = Join-Path $root ($Name+'-csv')
         $null = New-Item -ItemType Directory -Path $clientCsvDir
         $arguments += ('-M3CsvDir="'+$clientCsvDir+'"')
@@ -133,10 +136,11 @@ try {
         }
     }
     $url = $result.map
-    $scenarioArg = if ($Clients -gt 1) { '-CombatGroupScenario' } elseif ($TargetScenario) { '-CombatTargetScenario' } else { '-CombatPilotScenario' }
+    $scenarioArg = if ($PartyScenario) { '-PartyScenario' } elseif ($Clients -gt 1) { '-CombatGroupScenario' } elseif ($TargetScenario) { '-CombatTargetScenario' } else { '-CombatPilotScenario' }
     $serverFlags = @('-server',('-port='+$Port),'-multihome=127.0.0.1',$scenarioArg)
+    if ($PartyScenario) { $serverFlags += '-SFDevIdentity' }
     if ($Clients -gt 3) { $serverFlags += '-CombatGroupCapacitySlots' }
-    if ($Clients -gt 1) {
+    if ($Clients -gt 1 -and -not $PartyScenario) {
         $csvDir = Join-Path $root 'server-csv'
         $null = New-Item -ItemType Directory -Path $csvDir
         $serverFlags += ('-M3CsvDir="'+$csvDir+'"')
@@ -149,6 +153,29 @@ try {
         Invoke-WithEnv $serverEnv { $script:server = Start-Owned 'server' $url $serverFlags }
     } else { $server = Start-Owned 'server' $url $serverFlags }
     Wait-Log $server 'server' 'COMBAT_PILOT_READY Boars=10'
+    if ($PartyScenario) {
+        $names = @('alpha','beta','gamma')
+        for ($role = 1; $role -le 3; $role++) {
+            $identity = $names[$role - 1]
+            $null = Start-Owned "client$role" ("127.0.0.1:$Port`?SFDevCharacter=$identity") @('-game',"-PartyScenarioRole=$role")
+        }
+        for ($role = 1; $role -le 3; $role++) {
+            $run = @($result.runs | Where-Object name -eq "client$role")[0]
+            $clientProcess = @($owned | Where-Object Id -eq $run.pid)[0]
+            Wait-Log $clientProcess "client$role" "PARTY_SCENARIO_DONE Role=$role"
+        }
+        $serverText = Get-Content -LiteralPath (Join-Path $root 'server.log') -Raw
+        foreach ($action in @(1,2,3,4,5,6)) {
+            if ($serverText -notmatch "PARTY_ACTION Actor=\w+ Action=$action Target=\w* Accepted=1") { throw "Party action $action missing." }
+        }
+        if ($serverText -match 'Fatal error:|Assertion failed:') { throw 'Party server failed.' }
+        for ($role = 1; $role -le 3; $role++) {
+            $clientText = Get-Content -LiteralPath (Join-Path $root "client$role.log") -Raw
+            if ($clientText -notmatch 'PARTY_HUD Members=3 Visible=3') { throw "Client $role did not show all three party frames." }
+        }
+        $result.status='Passed'
+        return
+    }
     if ($SpawnOnly) {
         $serverText = Get-Content -LiteralPath (Join-Path $root 'server.log') -Raw
         foreach ($group in @('boar_farm_edge','boar_forest_edge')) {

@@ -114,3 +114,5 @@ Quest pilot: `Quest/SFQuestPilot` (+ `SFQuestPilotEvents.h`, `Tests/SFQuestPilot
 
 
 For durable services and RPC hosts, see [backend](backend.md); for HUD presentation, see [UI](ui.md).
+
+Premade session parties: `Party/SFPartyModel.h` owns the UObject-free five-member limit, 60 s invite expiry, one-party membership, leader-only invite/kick/handoff, optional assistant, and assistant-then-oldest leader succession; `Party/SFParty.cpp` validates controller identity and name targets on `ASFGameMode`, sends owner-only replicated views through `ASFPlayerController`, and removes membership on logout. `USFPartySettings` exposes bounded invite TTL in `DefaultGame.ini`. This does not yet implement durable `group-service`, LFG, extended parties, or the designed group XP/loot service flow; the combat pilot retains killer-only rewards. Focused tests: `ShatteredFrontier.Party.` and `tools/Test-CombatPilot.ps1 -PartyScenario -Clients 3`.

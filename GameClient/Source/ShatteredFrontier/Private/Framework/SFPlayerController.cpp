@@ -233,6 +233,10 @@ void ASFPlayerController::TickInteraction()
     {
         NextLocalRefreshSeconds = GetWorld()->GetTimeSeconds() + 0.1;
         RefreshLocalFeedback();
+        RefreshPartyHud();
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+        TickPartyScenario();
+#endif
     }
 }
 
