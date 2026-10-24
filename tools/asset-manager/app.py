@@ -1,10 +1,10 @@
 """Frontier Asset Manager: browse generated assets, queue ComfyUI jobs on GPU hosts.
 
-Stdlib only. Assets live under ASSET_ROOT, the queue in DATA_DIR/queue.db.
+Stdlib plus Pillow (for turnaround sheets). Assets live under ASSET_ROOT, the queue in DATA_DIR/queue.db.
 GPU hosts are reached over SSH (their ComfyUI listens on 127.0.0.1 only).
 Run `python app.py --check` for the self-check.
 """
-import array, base64, glob, hashlib, json, math, mimetypes, os, random, re, shlex, shutil, sqlite3, struct, subprocess, sys, threading, time, traceback, uuid, urllib.error, urllib.parse, urllib.request
+import array, base64, glob, hashlib, io, json, math, mimetypes, os, random, re, shlex, shutil, sqlite3, struct, subprocess, sys, threading, time, traceback, uuid, urllib.error, urllib.parse, urllib.request
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
@@ -1448,63 +1448,65 @@ def codex_review(images, brief):
     except (AttributeError, ValueError):
         raise RuntimeError(f"the review answer was not JSON: {text[:200]!r}")
 
-def checked_image(prompt, model, refs, brief, label, log, tries=3):
-    """Generate, have gpt-6-luna review it (`brief` describes what the images show and what must hold), and on a fail
-    regenerate with the reviewer's fix added, up to `tries` times. The last attempt is kept even if it still fails,
-    with the problems logged, so one stubborn view doesn't throw away the others."""
-    extra = ""
-    for n in range(1, tries + 1):
-        log.append(f"{label}: drawing (try {n}/{tries})")
-        png = codex_image(prompt + extra, model, refs)
-        try:
-            r = codex_review(list(refs) + [png], brief)
-        except RuntimeError as e:
-            log.append(f"{label}: review unavailable ({e}); keeping this image")
-            return png
-        if r["pass"]:
-            log.append(f"{label}: review passed")
-            return png
-        log.append(f"{label}: review failed: {'; '.join(r['problems']) or 'no reason given'}")
-        extra = f"\n\nA previous attempt was rejected for: {'; '.join(r['problems'])}. Correct it: {r['fix']}"
-    log.append(f"{label}: kept try {tries} although the review still failed")
-    return png
-
-# Multi-view: the front first, then each other view drawn from it, so all four share one design and one scale.
+# Multi-view: all four views drawn together on one 2x2 turnaround sheet, so they share one design, pose and scale.
 # Pixal3D stitches views by camera angle and assumes one orthographic camera distance: a view at another scale or
-# with perspective makes it invent extra limbs (Greenlands rat, 2026-10-23: back view 1.4x the side views). A tail
-# swept to image-right in both front and back is on opposite sides of the body, and it builds two tails (rat v2).
-MV_FRONT = ("{prompt}\n\nThis is the front view of a 3D-model reference sheet. Show the whole subject, standing in a "
-            "neutral, symmetrical pose, seen straight from the front at eye level through an orthographic camera (no "
-            "perspective), centred with a small margin all round, on a plain pure-white background with soft even "
-            "studio light. Loose parts (tail, cloth, hair, straps) hang straight down or trail straight back along the "
-            "body's centre line, never swept off to one side. No ground shadow, no props, no text.")
-MV_SIDE = ("The attached image is the front view of a 3D-model reference sheet. Draw the same subject seen {view}.\n\n"
-           "The subject is a rigid statue and only the camera moves around it: its pose, proportions, colours, "
-           "materials and every part - head, ears, limbs, tail, clothing, anything held - keep exactly the same 3D "
-           "position and direction relative to the body as in the front view. Nothing is re-posed, added, removed or "
-           "flipped. Work out where each part must appear from this angle: something on the subject's left side "
-           "(image-right in the front view) is image-left from behind, nearest the camera from its left, and hidden "
-           "behind the body from its right; a tail trailing straight back is hidden behind the body from the front, "
-           "points straight at the camera from behind, and trails horizontally away from the head from either side.\n\n"
-           "Same orthographic eye-level camera at the same distance: the subject is exactly as tall in pixels as in "
-           "the front view, its feet on the same line, centred, on the same pure-white background and light. No "
-           "ground shadow, no props, no text.\n\nSubject: {prompt}")
-MV_VIEWS = {"left": "from its left side (the camera at the subject's left, so it faces image-left)",
-            "back": "from directly behind",
-            "right": "from its right side (the camera at the subject's right, so it faces image-right)"}
-MV_FRONT_REVIEW = ("The image is meant to be the front view of a 3D-model reference sheet for: {prompt}\n\nPass it only "
-                   "if: the whole subject is in frame, seen straight from the front at eye level with no visible "
-                   "perspective; it is centred on a plain white background with no ground shadow, props or text; the "
-                   "pose is neutral and symmetrical; loose parts (tail, cloth, hair, straps) hang straight down or "
-                   "trail straight back along the centre line rather than sweeping to one side; and it matches the "
-                   "subject description (count the limbs).")
-MV_SIDE_REVIEW = ("Image 1 is the front view of a 3D-model reference sheet. Image 2 should show the same subject {view}, "
-                  "as if the camera orbited a rigid statue. Subject: {prompt}\n\nPass image 2 only if: it is that "
-                  "viewpoint (orthographic, eye level); it is the same subject with the same design, proportions and "
-                  "pose; every part (head, ears, limbs, tail, clothing, anything held) is where that rotation would put "
-                  "it, with nothing re-posed, mirrored, added or missing (count the limbs; check which side the tail "
-                  "and any asymmetric details are on); the subject is about the same height in pixels as in image 1 "
-                  "with its feet on the same line; and the background is plain white with no shadow, props or text.")
+# with perspective makes it invent extra limbs (Greenlands rat, 2026-10-23: back view 1.4x the side views), and a
+# tail that changes direction between views gives two tails (rat v2). Drawing each view separately from the front
+# kept drifting in size, feet line and tail pose, and a reviewer comparing one view at a time passed the worst one
+# (rat v3), so: one sheet, size and feet line fixed in code (split_sheet), and one review of all four together.
+MV_SHEET = ("{prompt}\n\nDraw this as a 3D-model turnaround sheet: one square image divided into a 2x2 grid of four "
+            "equal square cells, with the same subject once in each cell. Top-left: the front view (facing the "
+            "viewer). Top-right: the view from its left side (it faces image-left). Bottom-left: the view from "
+            "directly behind. Bottom-right: the view from its right side (it faces image-right).\n\n"
+            "The subject is a rigid statue and only the camera moves around it: the pose, proportions, colours, "
+            "materials and every part (head, ears, limbs, tail, clothing, anything held) stay exactly the same in all "
+            "four cells. Use a neutral, symmetrical standing pose. Loose parts never sweep to one side: a tail trails "
+            "straight back from the body and rests on the ground behind it, so it is hidden behind the body from the "
+            "front, points at the camera from behind, and trails horizontally away from the head in both side views.\n\n"
+            "Every cell uses the same orthographic, eye-level camera at the same distance: the subject is equally tall "
+            "in every cell with its feet on the same line, centred with a clear margin, on a plain pure-white "
+            "background with soft even studio light. No grid lines, borders, labels, ground shadows, props or text.")
+MV_SHEET_REVIEW = (
+    "These four images were cut from one turnaround sheet of: {prompt}\nImage 1 should be the front view, image 2 the "
+    "left side (the subject faces image-left), image 3 the back, image 4 the right side (it faces image-right), as if "
+    "a camera orbited a rigid statue. Size and feet line were already matched by code, so ignore scale and position."
+    "\n\nPass only if: each image is its stated viewpoint, orthographic and at eye level; it is the same subject in the "
+    "same pose in all four, with every part (head, ears, limbs, tail, clothing, anything held) where that rotation "
+    "would put it - nothing re-posed, mirrored, added or missing; the tail has the same shape and direction in both "
+    "side views (mirror images of each other) and agrees with the front and back; every view has the right number of "
+    "limbs; and each background is plain white with no shadow, props, text or part of a neighbouring cell.")
+SHEET_CELLS = {"front": (0, 0), "left": (1, 0), "back": (0, 1), "right": (1, 1)}  # (column, row) on the sheet
+VIEW_SIZE = 1024  # each split view is enlarged onto a square of this size
+
+def split_sheet(png):
+    """Cut a 2x2 turnaround sheet into its four views and give them one scale: an orthographic camera orbiting a
+    standing subject sees the same height from every side, so each view's silhouette is scaled to the same height
+    (shrunk together if a long side view would not fit) and its feet set on the same line, centred. Returns
+    {position: PNG bytes}; ValueError when a cell is empty."""
+    from PIL import Image, ImageFilter  # pillow is in the Dockerfile
+    im = Image.open(io.BytesIO(png)).convert("RGB")
+    cw, ch = im.width // 2, im.height // 2
+    pad = round(min(cw, ch) * 0.015)  # drop the cell edges, where a stray grid line or a neighbour can bleed in
+    subjects = {}
+    for pos, (c, r) in SHEET_CELLS.items():
+        cell = im.crop((c * cw + pad, r * ch + pad, (c + 1) * cw - pad, (r + 1) * ch - pad))
+        mask = cell.convert("L").point(lambda v: 255 if v < 235 else 0).filter(ImageFilter.MinFilter(5))  # no specks
+        box = mask.getbbox()
+        if not box:
+            raise ValueError(f"the {pos} cell of the sheet is empty")
+        subjects[pos] = cell.crop(box)
+    s = VIEW_SIZE
+    height = min([0.84 * s] + [0.94 * s * v.height / v.width for v in subjects.values()])
+    feet = round(0.93 * s)
+    out = {}
+    for pos, v in subjects.items():
+        w, h = round(v.width * height / v.height), round(height)
+        canvas = Image.new("RGB", (s, s), "white")
+        canvas.paste(v.resize((w, h), Image.LANCZOS), ((s - w) // 2, feet - h))
+        buf = io.BytesIO()
+        canvas.save(buf, "PNG")
+        out[pos] = buf.getvalue()
+    return out
 
 def image_params(params):
     unknown = set(params) - {"mode", "model", "prompt"}
@@ -1533,15 +1535,38 @@ def run_image(jid):
         if p["mode"] == "single":
             log.append("generating the image (sent as written)")
             save(codex_image(p["prompt"], p["model"]), "")
-        else:  # every view is reviewed by gpt-6-luna and redrawn with its fix when it fails
-            front = checked_image(MV_FRONT.format(prompt=p["prompt"]), p["model"], (),
-                                  MV_FRONT_REVIEW.format(prompt=p["prompt"]), "front", log)
-            save(front, "-front")
-            for pos, view in MV_VIEWS.items():
+        else:  # one sheet, split and aligned in code, reviewed as a set by gpt-6-luna and redrawn on a fail
+            extra, tries, kept = "", 3, None
+            for n in range(1, tries + 1):
                 if job_row(jid)["status"] == "cancelling":
                     raise InterruptedError
-                save(checked_image(MV_SIDE.format(prompt=p["prompt"], view=view), p["model"], (front,),
-                                   MV_SIDE_REVIEW.format(prompt=p["prompt"], view=view), pos, log), f"-{pos}")
+                log.append(f"sheet: drawing (try {n}/{tries})")
+                sheet = codex_image(MV_SHEET.format(prompt=p["prompt"]) + extra, p["model"])
+                try:
+                    views = split_sheet(sheet)
+                except ValueError as e:
+                    log.append(f"sheet: {e}")
+                    extra = "\n\nA previous attempt was rejected: one of the four cells was empty. Draw the subject in every cell."
+                    continue
+                kept = sheet, views
+                try:
+                    r = codex_review([views[pos] for pos in SHEET_CELLS], MV_SHEET_REVIEW.format(prompt=p["prompt"]))
+                except RuntimeError as e:
+                    log.append(f"sheet: review unavailable ({e}); keeping this sheet")
+                    break
+                if r["pass"]:
+                    log.append("sheet: review passed")
+                    break
+                log.append(f"sheet: review failed: {'; '.join(r['problems']) or 'no reason given'}")
+                extra = f"\n\nA previous attempt was rejected for: {'; '.join(r['problems'])}. Correct it: {r['fix']}"
+            else:
+                log.append("sheet: kept the last usable try although the review still failed")
+            if not kept:
+                raise RuntimeError("no usable sheet: every try had an empty cell")
+            sheet, views = kept
+            for pos in SHEET_CELLS:
+                save(views[pos], f"-{pos}")
+            save(sheet, "-sheet")
         update_job(jid, status="done", output=saved[0], files=json.dumps(saved), finished=time.time())
     except InterruptedError:
         update_job(jid, status="cancelled", finished=time.time())
@@ -1858,18 +1883,24 @@ def check():
             image_params(bad); raise AssertionError(f"image_params accepted {bad}")
         except ValueError:
             pass
-    assert "faces image-left" in MV_SIDE.format(prompt="rat", view=MV_VIEWS["left"]) and "{" not in MV_FRONT.format(prompt="rat")
-    assert "{" not in MV_SIDE_REVIEW.format(prompt="rat", view=MV_VIEWS["back"]) + MV_FRONT_REVIEW.format(prompt="rat")
-    g, real, calls = globals(), (codex_image, codex_review), []  # review loop: a fail redraws with the reviewer's fix
-    verdicts = iter([{"pass": False, "problems": ["two tails"], "fix": "draw one tail"}, {"pass": True, "problems": [], "fix": ""}])
-    g["codex_image"] = lambda pr, m, refs: (calls.append(pr), b"\x89PNG" + bytes([len(calls)]))[1]
-    g["codex_review"] = lambda imgs, brief: next(verdicts)
+    assert "{" not in MV_SHEET.format(prompt="rat") + MV_SHEET_REVIEW.format(prompt="rat")
+    from PIL import Image, ImageDraw  # split_sheet: views drawn at different sizes and feet lines come out matched
+    sheet = Image.new("RGB", (1200, 1200), "white")
+    d = ImageDraw.Draw(sheet)
+    for (x, y), (w, h, drop) in zip([(0, 0), (600, 0), (0, 600), (600, 600)],
+                                    [(200, 400, 0), (420, 360, 40), (190, 380, 10), (400, 330, 60)]):
+        d.rectangle((x + 150, y + 520 - drop - h, x + 150 + w, y + 520 - drop), fill="grey")
+    buf = io.BytesIO(); sheet.save(buf, "PNG")
+    boxes = {pos: Image.open(io.BytesIO(png)).convert("L").point(lambda v: 255 if v < 235 else 0).getbbox()
+             for pos, png in split_sheet(buf.getvalue()).items()}
+    assert set(boxes) == set(SHEET_CELLS)
+    assert max(b[3] for b in boxes.values()) - min(b[3] for b in boxes.values()) <= 2  # one feet line
+    assert max(b[3] - b[1] for b in boxes.values()) - min(b[3] - b[1] for b in boxes.values()) <= 2  # one height
+    blank = io.BytesIO(); Image.new("RGB", (400, 400), "white").save(blank, "PNG")
     try:
-        log = []
-        assert checked_image("p", "auto", (), "b", "left", log) == b"\x89PNG\x02"
-        assert "two tails" in calls[1] and "draw one tail" in calls[1] and "review passed" in log[-1]
-    finally:
-        g["codex_image"], g["codex_review"] = real
+        split_sheet(blank.getvalue()); raise AssertionError("an empty sheet must be refused")
+    except ValueError:
+        pass
     q = urllib.parse.parse_qs(urllib.parse.urlparse(codex_start()).query)
     assert q["client_id"] == [CODEX_CLIENT_ID] and q["code_challenge_method"] == ["S256"] and q["state"][0] in CODEX_PENDING
     try:

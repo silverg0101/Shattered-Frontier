@@ -99,7 +99,7 @@ An image job draws source images with ChatGPT (the owner's subscription, signed 
 | `model` | `auto` (ChatGPT's default image model), `gpt-image-2.5-sunburst`, `gpt-image-2.5-flare` | `auto` |
 | `prompt` | Text, required | |
 
-`name` (top level) is required and names the files. Single saves `Inputs/<name>.png`. Multi draws the front first as an orthographic, eye-level, white-background reference, then draws left, back and right from that front at the same scale, saving `Inputs/<name>-front.png`, `-left`, `-back` and `-right`, which is the `views` shape a 3D job takes. In the web app, the finished job's **Make 3D asset** button fills the 3D Asset form with them.
+`name` (top level) is required and names the files. Single saves `Inputs/<name>.png`. Multi draws one 2×2 turnaround sheet (front, left, back, right) so the views share one pose and scale, cuts it into four views, scales each to the same silhouette height with the feet on one line (an orthographic camera orbiting a standing subject sees the same height from every side), and has `gpt-6-luna` review the four together for viewpoint, pose, tail and parts; a failed sheet is redrawn with the reviewer's fix, up to 3 tries, and the log gives every verdict. It saves `Inputs/<name>-front.png`, `-left`, `-back` and `-right` (1024 px squares, the `views` shape a 3D job takes) plus the raw `-sheet.png`. In the web app, the finished job's **Make 3D asset** button fills the 3D Asset form with them.
 
 ```bash
 curl -X POST http://192.168.50.133:8090/api/jobs -H "Content-Type: application/json" -d '{

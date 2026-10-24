@@ -863,7 +863,7 @@ async function renderImages() {
     mode = m; store.set('imageMode', m);
     document.querySelectorAll('[data-imode]').forEach(b => b.classList.toggle('on', b.dataset.imode === m));
     $('#inote').textContent = m === 'single' ? 'One image. The prompt is sent exactly as written.'
-      : 'Four views for a multi-view 3D asset. The front is drawn first from your prompt as an orthographic, eye-level, white-background reference; left, back and right are then drawn from that front at the same scale, so Pixal3D gets one consistent subject.';
+      : 'Four views for a multi-view 3D asset, drawn together on one turnaround sheet so they share one pose and scale. The app cuts the sheet into views, matches their height and feet line, and has the set reviewed; a failed sheet is redrawn (up to 3 tries).';
   };
   document.querySelectorAll('[data-imode]').forEach(b => b.onclick = () => setMode(b.dataset.imode));
   setMode(mode);
