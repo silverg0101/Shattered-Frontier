@@ -80,6 +80,8 @@ builder.Services.AddSingleton(starterKit);
 builder.Services.AddSingleton(ledgerStore);
 builder.Services.AddSingleton(new DomLedger(ledgerStore));
 builder.Services.AddSingleton(new BoarRewardService(new DomLedger(ledgerStore), boar));
+builder.Services.AddSingleton(new DefeatRewardPayout(ledgerStore, boar, ledgerConnection));
+builder.Services.AddHostedService<DefeatRewardRecovery>();
 builder.Services.AddSingleton(new PostgresCharacterStateStore(characterConnection));
 // Owned reconnect fixtures can seed skill rolls without changing the production roll source.
 var fixtureSkillSeed = Environment.GetEnvironmentVariable("GAMEPLAY_FIXTURE_SKILL_SEED");

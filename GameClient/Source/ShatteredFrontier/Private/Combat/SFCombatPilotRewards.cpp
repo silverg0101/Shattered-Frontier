@@ -1,6 +1,7 @@
 #include "Combat/SFCombatPilotRewards.h"
 #include "Gathering/SFGatheringPilot.h"
 #include "GameFramework/PlayerController.h"
+#include "Services/SFGameplayServicesClient.h"
 #if SF_WITH_MINIMAL_INVENTORY
 #include "InventoryComponent.h"
 #include "InventoryItemDefinition.h"
@@ -17,6 +18,17 @@ int32 SFCombatPilotRewards::HidesFor(TSet<FString>& Granted, const FString& Deat
     bool bSeen = false;
     Granted.Add(DeathId, &bSeen);
     return bSeen || bProtected || DeathId.IsEmpty() ? 0 : FMath::Max(0, HidesPerBoar);
+}
+
+FSFGameplayRequest SFCombatPilotRewards::BuildDefeatRequest(const FString& EventId, const FString& CharacterId,
+    const FString& ContainerId, int64 ExpectedRevision, bool bKillerProtected, bool bBoarProtected)
+{
+    FSFGameplayRequest Request; Request.Rpc = ESFGameplayRpc::GrantDefeatReward;
+    Request.OperationId = EventId; Request.CharacterId = CharacterId; Request.ContainerId = ContainerId;
+    Request.ExpectedContainerRevision = ExpectedRevision;
+    Request.bKillerProtected = bKillerProtected; Request.bBoarProtected = bBoarProtected;
+    Request.TableId = TEXT("loot/greenlands_silverbrook_boar");
+    return Request;
 }
 
 bool SFCombatPilotRewards::GrantHides(AActor* Owner, int32 Count)

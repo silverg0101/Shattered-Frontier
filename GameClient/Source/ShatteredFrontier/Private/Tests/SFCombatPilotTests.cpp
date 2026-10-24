@@ -84,6 +84,16 @@ bool FSFCombatPilotRewardTest::RunTest(const FString& Parameters)
     TestEqual(TEXT("Protected-town kill rewards nothing"), SFCombatPilotRewards::HidesFor(Granted, TEXT("boar_farm_edge:1:3"), true, PerBoar), 0);
     TestEqual(TEXT("...and stays spent once the boar leaves town"), SFCombatPilotRewards::HidesFor(Granted, TEXT("boar_farm_edge:1:3"), false, PerBoar), 0);
 
+    const FSFGameplayRequest First = SFCombatPilotRewards::BuildDefeatRequest(TEXT("epoch:boar_farm_edge:0:1"),
+        TEXT("chr_dev_alpha"), TEXT("ctn_dev_alpha"), 4, false, false);
+    const FSFGameplayRequest Retry = SFCombatPilotRewards::BuildDefeatRequest(First.OperationId,
+        First.CharacterId, First.ContainerId, 5, false, false);
+    TestTrue(TEXT("Service reward targets the durable backpack with stable event identity"),
+        First.Rpc == ESFGameplayRpc::GrantDefeatReward && First.CharacterId == TEXT("chr_dev_alpha") &&
+        First.ContainerId == TEXT("ctn_dev_alpha") && First.TableId == TEXT("loot/greenlands_silverbrook_boar") &&
+        First.OperationId == Retry.OperationId && Retry.ExpectedContainerRevision == 5 &&
+        !First.bKillerProtected && !First.bBoarProtected);
+
 #if SF_WITH_MINIMAL_INVENTORY
     FTestWorldWrapper Fixture;
     if (!Fixture.CreateTestWorld(EWorldType::GameRPC) || !Fixture.BeginPlayInTestWorld()) return false;

@@ -73,7 +73,7 @@ function New-LedgerFixture([hashtable]$Fx,[string]$RepoRoot,[string]$EvidenceRoo
     $Fx.started = $true
     [void](Invoke-LedgerSql $Fx "CREATE ROLE ledger_owner NOLOGIN; CREATE ROLE ledger_svc LOGIN PASSWORD '$($Fx.servicePassword)'; CREATE DATABASE $($Fx.db);")
     [void](Invoke-LedgerSql $Fx "REVOKE ALL ON DATABASE $($Fx.db) FROM PUBLIC; GRANT CONNECT ON DATABASE $($Fx.db) TO ledger_svc; GRANT CREATE ON DATABASE $($Fx.db) TO ledger_owner; REVOKE ALL ON SCHEMA public FROM PUBLIC; CREATE SCHEMA inventory AUTHORIZATION ledger_owner;" $Fx.db)
-    [void](Invoke-LedgerSql $Fx ("SET ROLE ledger_owner;`n" + (Get-Content $schema -Raw) + "`n" + (Get-Content (Join-Path $RepoRoot 'BackendServices/InventoryLedger.Postgres/Schema.Outbox.sql') -Raw)) $Fx.db)
+    [void](Invoke-LedgerSql $Fx ("SET ROLE ledger_owner;`n" + (Get-Content $schema -Raw) + "`n" + (Get-Content (Join-Path $RepoRoot 'BackendServices/InventoryLedger.Postgres/Schema.Outbox.sql') -Raw) + "`n" + (Get-Content (Join-Path $RepoRoot 'BackendServices/InventoryLedger.Postgres/Schema.DefeatRewards.sql') -Raw)) $Fx.db)
     [void](Invoke-LedgerSql $Fx 'GRANT USAGE ON SCHEMA inventory TO ledger_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA inventory TO ledger_svc;' $Fx.db)
     $Fx.connection = "Host=127.0.0.1;Port=$($Fx.pgPort);Database=$($Fx.db);Username=ledger_svc;Password=$($Fx.servicePassword);Pooling=false;Timeout=2;Command Timeout=5;Include Error Detail=false"
     return

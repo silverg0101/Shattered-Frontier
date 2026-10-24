@@ -106,7 +106,7 @@ if (mode.EndsWith("-replay", StringComparison.Ordinal))
             DefeatEventId = "defeat/test-boar", KillerCharacterId = "chr_rewards", RecipientCharacterId = "chr_rewards",
             ContainerId = "ctn_rewards", TableId = "loot/greenlands_silverbrook_boar"
         }, headers, deadline: Deadline());
-        Check(result.Granted && result.LedgerOperationId == "defeat/test-boar", "Reward restart replay failed.");
+        Check(result.Granted && result.LedgerOperationId == "defeat:16:defeat/test-boar:chr_rewards", "Reward restart replay failed.");
     }
     else if (mode == "progression-replay")
     {
@@ -380,6 +380,33 @@ if (mode == "rewards")
     var replay = client.GrantDefeatReward(request, headers, deadline: Deadline());
     Check(first.Equals(replay) && first.Granted && first.Quantity >= 2, "Reward replay differs.");
     Check(ledger.Read("ctn_rewards").Quantities["item/boar_hide"] == first.Quantity, "Reward duplicated.");
+    ledger.CreateContainer(new ContainerSpec("ctn_rewards_full", OwnerKind.Character, "chr_rewards", ContainerKind.Backpack, 4));
+    ledger.Grant("reward/full/seed", "ctn_rewards_full", 0, "item/oak_log", 4, "fixture", "reward/full/seed");
+    var full = new RewardPb.GrantDefeatRewardRequest
+    {
+        DefeatEventId = "defeat/full-boar", KillerCharacterId = "chr_rewards", RecipientCharacterId = "chr_rewards",
+        ContainerId = "ctn_rewards_full", ExpectedContainerRevision = 1, TableId = "loot/greenlands_silverbrook_boar"
+    };
+    Code(() => client.GrantDefeatReward(full, headers, deadline: Deadline()), StatusCode.FailedPrecondition);
+    using (var db = new Npgsql.NpgsqlConnection(connection))
+    {
+        db.Open();
+        using var pending = new Npgsql.NpgsqlCommand("SELECT state FROM inventory.defeat_reward_intents WHERE defeat_event_id='defeat/full-boar'", db);
+        Check((string?)pending.ExecuteScalar() == "Pending", "Full backpack lost defeat intent.");
+    }
+    ledger.Consume("reward/full/free", "ctn_rewards_full", 1, "item/oak_log", 4, "fixture");
+    var resumed = client.GrantDefeatReward(full, headers, deadline: Deadline());
+    var resumedReplay = client.GrantDefeatReward(full, headers, deadline: Deadline());
+    Check(resumed.Equals(resumedReplay) && resumed.Granted &&
+        ledger.Read("ctn_rewards_full").Quantities["item/boar_hide"] == resumed.Quantity,
+        "Full backpack reward did not resume exactly once.");
+    ledger.CreateContainer(new ContainerSpec("ctn_rewards_second", OwnerKind.Character, "chr_rewards_second", ContainerKind.Backpack, 100));
+    var second = client.GrantDefeatReward(new RewardPb.GrantDefeatRewardRequest
+    {
+        DefeatEventId = request.DefeatEventId, KillerCharacterId = "chr_rewards_second", RecipientCharacterId = "chr_rewards_second",
+        ContainerId = "ctn_rewards_second", ExpectedContainerRevision = 0, TableId = request.TableId
+    }, headers, deadline: Deadline());
+    Check(second.Granted && second.LedgerOperationId != first.LedgerOperationId, "Recipient replay key is not distinct.");
     request.KillerInProtectedTown = true;
     Code(() => client.GrantDefeatReward(request, headers, deadline: Deadline()), StatusCode.AlreadyExists);
     request.DefeatEventId = "defeat/bad-table"; request.TableId = "loot/unknown";

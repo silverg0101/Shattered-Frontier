@@ -3,7 +3,8 @@ param(
     [string]$EngineRoot = 'C:\Program Files\Epic Games\UE_5.8',
     [ValidateRange(12000,65000)][int]$Port = 17841,
     [ValidateRange(320,600)][int]$TimeoutSeconds = 390,
-    [switch]$TargetScenario
+    [switch]$TargetScenario,
+    [switch]$Services
 )
 $ErrorActionPreference = 'Stop'
 $repo = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
@@ -11,6 +12,7 @@ $editor = Join-Path $EngineRoot 'Engine\Binaries\Win64\UnrealEditor-Cmd.exe'
 $project = Join-Path $repo 'GameClient\ShatteredFrontier.uproject'
 $bridge = Join-Path $repo 'BackendServices\WorldContent.Tool\bin\Debug\net10.0\WorldContent.Tool.dll'
 $sdk = Join-Path $repo 'Artifacts\Persistence\Toolchains\dotnet-10.0.402\dotnet.exe'
+if ($Services -and $TargetScenario) { throw 'Services ledger assertion requires the combat reward scenario.' }
 foreach ($required in @($editor,$project,$bridge,$sdk)) {
     if (-not (Test-Path -LiteralPath $required -PathType Leaf)) { throw "Required pilot input missing: $required" }
 }
@@ -19,8 +21,12 @@ if (@([Net.NetworkInformation.IPGlobalProperties]::GetIPGlobalProperties().GetAc
 }
 $root = Join-Path $repo ('Artifacts\CombatPilot\network-' + (Get-Date -Format 'yyyyMMdd-HHmmss-fff'))
 $null = New-Item -ItemType Directory -Path $root
+if ($Services) { . (Join-Path $PSScriptRoot 'InventoryLedgerHostFixture.ps1') }
+$fx = @{}
 $owned = [Collections.Generic.List[Diagnostics.Process]]::new()
-$scope = if ($TargetScenario) { 'One dedicated server, one client; Tab selection, owner replication, death and range drops' } else { 'One dedicated server, one client; local attack RPC and server-authored WorldContent slots' }
+$scope = if ($TargetScenario) { 'One dedicated server, one client; Tab selection, owner replication, death and range drops' }
+    elseif ($Services) { 'One dedicated server, one client, durable boar hides in InventoryLedger and WorldContent slot respawn' }
+    else { 'One dedicated server, one client; local attack RPC and server-authored WorldContent slots' }
 $result = [ordered]@{ status='Running'; map='/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook'; scope=$scope; runs=@() }
 function Start-Owned([string]$Name,[string]$Url,[string[]]$Extra) {
     $log = Join-Path $root ($Name+'.log')
@@ -45,11 +51,41 @@ function Wait-Log([Diagnostics.Process]$Process,[string]$Name,[string]$Pattern) 
     throw "Timed out waiting for $Name ($Pattern)."
 }
 try {
+    if ($Services) {
+        New-LedgerFixture $fx $repo $root
+        $schemas = @('CharacterState.Postgres/Schema.sql','CharacterState.Postgres/Schema.Position.sql','CharacterState.Postgres/Schema.Recipes.sql','CharacterState.Postgres/Schema.Appearance.sql','CharacterState.Postgres/Schema.GatheringSkills.sql','CharacterState.Postgres/Schema.Death.sql','Housing.Postgres/Schema.sql','Exchange.Postgres/Schema.sql','Housing.Postgres/Schema.Gameplay.sql','Housing.Postgres/Schema.Geometry.sql','Housing.Postgres/Schema.Construction.sql') | ForEach-Object { Get-Content (Join-Path $repo "BackendServices/$_") -Raw }
+        [void](Invoke-LedgerSql $fx ("SET ROLE ledger_owner;`n" + ($schemas -join "`n")) $fx.db)
+        [void](Invoke-LedgerSql $fx ('GRANT USAGE ON SCHEMA character_state,housing,exchange TO ledger_svc; ' + ((@('character_state','housing','exchange') | ForEach-Object { "GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA $_ TO ledger_svc;" }) -join ' ')) $fx.db)
+        $gameplayProject = Join-Path $repo 'BackendServices/Gameplay.Host/Gameplay.Host.csproj'
+        $gameplayOut = Join-Path $fx.base 'gameplay-host'
+        [void](Invoke-FxOk $fx $fx.dotnet @('restore',$gameplayProject,'--locked-mode','--packages',$fx.nuget,'--verbosity','quiet'))
+        [void](Invoke-FxOk $fx $fx.dotnet @('build',$gameplayProject,'--no-restore','--configuration','Release','--verbosity','quiet','--output',$gameplayOut))
+        $fx.hostPort = Get-FreeTcpPort; $gameplayPort = Get-FreeTcpPort; $gameplayToken = New-HexSecret; $fx.secrets += $gameplayToken
+        Start-LedgerHost $fx ''
+        $gameplayEnv = @{ GAMEPLAY_HOST_PORT="$gameplayPort"; SF_GAMEPLAY_TOKEN=$gameplayToken; GAMEPLAY_LEDGER_CONNECTION=$fx.connection; GAMEPLAY_CHARACTER_CONNECTION=$fx.connection
+            GAMEPLAY_HOUSING_CONNECTION=$fx.connection; GAMEPLAY_EXCHANGE_CONNECTION=$fx.connection; GAMEPLAY_CONTENT_ROOT=(Join-Path $repo 'content') }
+        Invoke-WithEnv $gameplayEnv { $script:gameplay = Start-Process -FilePath $fx.dotnet -ArgumentList @(('"'+(Join-Path $gameplayOut 'Gameplay.Host.dll')+'"')) -WindowStyle Hidden -PassThru `
+            -RedirectStandardOutput (Join-Path $root 'gameplay.stdout.txt') -RedirectStandardError (Join-Path $root 'gameplay.stderr.txt') }
+        $null = $gameplay.Handle; $owned.Add($gameplay)
+        $watch = [Diagnostics.Stopwatch]::StartNew()
+        while (-not ((Test-Path (Join-Path $root 'gameplay.stdout.txt')) -and (Get-Content (Join-Path $root 'gameplay.stdout.txt') -Raw) -match 'GAMEPLAY_HOST_READY')) {
+            if ($gameplay.HasExited -or $watch.Elapsed.TotalSeconds -gt 60) { throw 'Gameplay host did not become ready.' }
+            Start-Sleep -Milliseconds 200
+        }
+    }
     $url = $result.map
     $scenarioArg = if ($TargetScenario) { '-CombatTargetScenario' } else { '-CombatPilotScenario' }
-    $server = Start-Owned 'server' $url @('-server',('-port='+$Port),'-multihome=127.0.0.1',$scenarioArg)
+    $serverFlags = @('-server',('-port='+$Port),'-multihome=127.0.0.1',$scenarioArg)
+    if ($Services) {
+        $ledgerIni = '-ini:Game:[/Script/ShatteredFrontier.SFInventoryLedgerSettings]'; $servicesIni = '-ini:Game:[/Script/ShatteredFrontier.SFGameplayServicesSettings]'
+        $serverFlags += @('-SFDevIdentity',($ledgerIni+':bEnabled=True'),($ledgerIni+':Endpoint=127.0.0.1:'+$fx.hostPort),
+            ($servicesIni+':bEnabled=True'),($servicesIni+':Endpoint=127.0.0.1:'+$gameplayPort))
+        $serverEnv = @{ SF_INVENTORY_LEDGER_TOKEN=$fx.token; SF_GAMEPLAY_TOKEN=$gameplayToken }
+        Invoke-WithEnv $serverEnv { $script:server = Start-Owned 'server' $url $serverFlags }
+    } else { $server = Start-Owned 'server' $url $serverFlags }
     Wait-Log $server 'server' 'COMBAT_PILOT_READY Boars=10'
-    $client = Start-Owned 'client' ('127.0.0.1:'+$Port) @('-game',$scenarioArg)
+    $clientUrl = '127.0.0.1:'+$Port + $(if ($Services) { '?SFDevCharacter=alpha' } else { '' })
+    $client = Start-Owned 'client' $clientUrl @('-game',$scenarioArg)
     if ($TargetScenario) {
         Wait-Log $server 'server' 'TARGET_PILOT_READY First='
         Wait-Log $client 'client' 'TARGET_PILOT_CLIENT_SELECT Step=2'
@@ -69,9 +105,15 @@ try {
     } else {
         Wait-Log $client 'client' 'COMBAT_PILOT_CLIENT_ATTACK Index=3'
         Wait-Log $server 'server' 'COMBAT_PILOT_BOAR_DEAD Group=boar_farm_edge Slot=0'
-        # Shipped HidesPerBoar is 2: the killer's bag gets them once, and the owning client sees them.
-        Wait-Log $server 'server' 'COMBAT_PILOT_REWARD Death=boar_farm_edge:0:\d+ Hides=2 Granted=1 Total=2'
-        Wait-Log $client 'client' 'COMBAT_PILOT_CLIENT_HIDES Count=2'
+        if ($Services) {
+            Wait-Log $server 'server' 'COMBAT_PILOT_REWARD Death=boar_farm_edge:0:\d+ Source=service Outcome=0 Granted=1 Code=loot_drop Item=item/boar_hide Quantity=[2-9]'
+            $view = Get-LedgerView $fx 'ctn_dev_alpha'
+            if ($view.items['item/boar_hide'] -lt 2) { throw "Boar hides missing from durable ledger: $($view.line)" }
+            $result.ledger = $view.line
+        } else {
+            Wait-Log $server 'server' 'COMBAT_PILOT_REWARD Death=boar_farm_edge:0:\d+ Hides=2 Granted=1 Total=2'
+            Wait-Log $client 'client' 'COMBAT_PILOT_CLIENT_HIDES Count=2'
+        }
         Wait-Log $server 'server' 'COMBAT_PILOT_PLAYER_DEAD'
         Wait-Log $server 'server' 'COMBAT_PILOT_PLAYER_RESPAWN X=-35970 Y=-14180 HP=80'
         Wait-Log $server 'server' 'COMBAT_PILOT_SAFE_CHECK Protected=1 PlayerHP=80 BoarHP=60 Reward=0 Passed=1'
@@ -81,7 +123,7 @@ try {
         if ([regex]::Matches($serverText,'COMBAT_PILOT_BOAR_HIT Group=boar_farm_edge Slot=0').Count -ne 3 -or
             [regex]::Matches($clientText,'COMBAT_PILOT_CLIENT_ATTACK Index=').Count -ne 3 -or
             [regex]::Matches($serverText,'COMBAT_PILOT_REWARD .* Granted=1').Count -ne 1 -or
-            [regex]::Matches($clientText,'COMBAT_PILOT_CLIENT_HIDES Count=[1-9]').Count -ne 1 -or
+            (-not $Services -and [regex]::Matches($clientText,'COMBAT_PILOT_CLIENT_HIDES Count=[1-9]').Count -ne 1) -or
             $serverText -match 'COMBAT_PILOT_SLOT_ERROR|Fatal error:|Assertion failed:') { throw 'Combat evidence incomplete or server failed.' }
         if ($server.HasExited -or $client.HasExited) { throw 'A network process exited before the final respawn barrier.' }
     }
@@ -92,6 +134,7 @@ finally {
         if (-not $process.HasExited) { Stop-Process -Id $process.Id; $process.WaitForExit() }
         foreach ($run in $result.runs) { if ($run.pid -eq $process.Id) { $run.exitCode=$process.ExitCode } }
     }
+    if ($Services) { Remove-LedgerFixture $fx }
     $result | ConvertTo-Json -Depth 8 | Set-Content -LiteralPath (Join-Path $root 'results.json') -Encoding utf8
     Write-Output "Evidence: $root | $($result.status)"
 }

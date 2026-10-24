@@ -143,6 +143,19 @@ try {
     Wait-Log $server2 'server2' 'QUEST_PILOT_COMPLETE Quest=quest/frontier_founder'
     Wait-Log $alpha3 'alpha3' 'QUEST_FULL_DONE'
     Start-Sleep -Seconds 3
+    $boarGrants = [regex]::Matches((Read-Log 'server2'), 'COMBAT_PILOT_REWARD Death=\S+ Source=service Outcome=0 Granted=1 Code=loot_drop Item=item/boar_hide Quantity=(\d+)')
+    if ($boarGrants.Count -ne 1) { throw "Expected one committed boar reward, saw $($boarGrants.Count)." }
+    $boarQuantity = [int64]$boarGrants[0].Groups[1].Value
+    $beforeCombatReconnect = Get-LedgerView $fx 'ctn_dev_alpha'
+    if ($boarQuantity -lt 2 -or [int64]$beforeCombatReconnect.Items['item/boar_hide'] -ne $boarQuantity) { throw "Boar hides missing before reconnect: $($beforeCombatReconnect.Line)" }
+    Stop-Owned $alpha3; Stop-Owned $bravo2; Stop-Owned $server2
+    Invoke-WithEnv $serverEnv { $script:server3 = Start-Owned 'server3' $silverbrook $serverFlags }
+    Wait-Log $server3 'server3' 'QUEST_PILOT_READY Quests='
+    $alpha4 = Start-Owned 'alpha4' $alphaUrl @('-game')
+    Wait-Log $server3 'server3' 'CHARACTER_RESTORED Character=chr_dev_alpha'
+    $afterCombatReconnect = Get-LedgerView $fx 'ctn_dev_alpha'
+    if ([int64]$afterCombatReconnect.Items['item/boar_hide'] -ne $boarQuantity) { throw "Boar hides did not survive reconnect: $($afterCombatReconnect.Line)" }
+    $result.boarHidesAfterReconnect = [int64]$afterCombatReconnect.Items['item/boar_hide']
 
     $text = (Read-Log 'server1') + (Read-Log 'server2')
     if ($text -match 'DEV_IDENTITY_IGNORED|GATHERING_LEDGER_PROJECTION_MISMATCH|HOUSING_PROJECTION_MISMATCH|Fatal error:|Assertion failed:') { throw 'Server reported an identity, projection or engine failure.' }
@@ -155,7 +168,7 @@ try {
 
     # Exactly once in the durable stores: the Full chain's ledger result and one of each receipt.
     $view = Get-LedgerView $fx 'ctn_dev_alpha'
-    $expected = [ordered]@{ 'item/oak_log'=0; 'item/rough_timber'=2; 'item/iron_ore'=0; 'item/iron_ingot'=0; 'item/iron_nails'=4; 'item/wall_material_bundle'=0; 'item/boar_hide'=2 }
+    $expected = [ordered]@{ 'item/oak_log'=0; 'item/rough_timber'=2; 'item/iron_ore'=0; 'item/iron_ingot'=0; 'item/iron_nails'=4; 'item/wall_material_bundle'=0; 'item/boar_hide'=$boarQuantity }
     foreach ($line in [regex]::Matches($text,'QUEST_PILOT_PAYOUT Item=(\S+) Quantity=(\d+)')) { $expected[$line.Groups[1].Value] = [int64]$expected[$line.Groups[1].Value] + [int64]$line.Groups[2].Value }
     foreach ($item in $expected.Keys) {
         [int64]$actual = 0

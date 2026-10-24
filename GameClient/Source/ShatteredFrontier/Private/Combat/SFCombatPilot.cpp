@@ -310,7 +310,7 @@ void ASFGameMode::StartCombat()
 
 void ASFGameMode::PostLoginCombat(APlayerController* NewPlayer)
 {
-    if (bPilotActive) { SFCombatPilotRewards::AddPilotBag(NewPlayer); }
+    if (bPilotActive && !USFBackpackComponent::Services()) { SFCombatPilotRewards::AddPilotBag(NewPlayer); }
     if (!bPilotActive || !bScenario || GetNumPlayers() != 1) { return; }
     const TWeakObjectPtr<APlayerController> Weak(NewPlayer);
     FTimerHandle Timer;
@@ -634,42 +634,16 @@ int32 ASFGameMode::RewardKill(const FString& DeathId, const FVector& BoarAt, ASF
     if (!CapturedSettings || !HasAuthority()) { return 0; }
     const bool bProtected = IsSafe(BoarAt) || !IsValid(Killer) || IsSafe(Killer->GetActorLocation());
     auto* KillerController = IsValid(Killer) ? Cast<APlayerController>(Killer->GetController()) : nullptr;
-    USFBackpackComponent* Backpack = USFBackpackComponent::Services() ? USFBackpackComponent::FindOrCreate(KillerController) : nullptr;
-    if (Backpack)
+    if (USFBackpackComponent::Services())
     {
-        // INT-04: the Rewards service decides from the trusted facts (it refuses protected-town kills) and grants into
-        // the backpack, keyed by the death id; the bag shows only the committed receipt. Each death is sent once.
         bool bSeen = false; RewardedDeaths.Add(DeathId, &bSeen);
         if (bSeen) { return 0; }
+        USFBackpackComponent* Backpack = USFBackpackComponent::FindOrCreate(KillerController);
         const bool bKillerSafe = !IsValid(Killer) || IsSafe(Killer->GetActorLocation()), bBoarSafe = IsSafe(BoarAt);
-        TSharedRef<FSFGameplayResponse> Receipt = MakeShared<FSFGameplayResponse>();
-        TWeakObjectPtr<APlayerController> WeakController(KillerController);
-        FSFBackpackMutation Mutation; Mutation.Label = TEXT("defeat_reward"); Mutation.OperationId = DeathId;
-        // The defeat event id is the reward key itself, so a stale retry keeps it (the ledger stored nothing for the stale try).
-        Mutation.Run = [Receipt, bKillerSafe, bBoarSafe, DeathId, Weak = TWeakObjectPtr<USFBackpackComponent>(Backpack)](const FString&, int64 Expected, TFunction<void(ESFBackpackOutcome, int64)> Report)
-        {
-            USFBackpackComponent* Owner = Weak.Get();
-            if (!Owner) { Report(ESFBackpackOutcome::Unavailable, -1); return; }
-            FSFGameplayRequest Q; Q.Rpc = ESFGameplayRpc::GrantDefeatReward; Q.OperationId = DeathId; Q.CharacterId = Owner->GetCharacterId();
-            Q.ContainerId = Owner->GetContainerId(); Q.ExpectedContainerRevision = Expected; Q.bKillerProtected = bKillerSafe; Q.bBoarProtected = bBoarSafe;
-            Q.TableId = TEXT("loot/greenlands_silverbrook_boar");
-            USFBackpackComponent::Services()->Call(Q, [Receipt, Report](const FSFGameplayResponse& R)
-            {
-                *Receipt = R;
-                Report(R.Status == ESFGameplayStatus::Ok ? ESFBackpackOutcome::Committed : R.Status == ESFGameplayStatus::Unavailable ? ESFBackpackOutcome::Unavailable
-                    : R.GrpcCode == 9 ? ESFBackpackOutcome::Stale : ESFBackpackOutcome::Rejected, R.Status == ESFGameplayStatus::Ok && R.bGranted ? R.ContainerRevision : -1);
-            });
-        };
-        Mutation.Finished = [Receipt, DeathId, WeakController, Weak = TWeakObjectPtr<USFBackpackComponent>(Backpack)](ESFBackpackOutcome Outcome)
-        {
-            const bool bGranted = Outcome == ESFBackpackOutcome::Committed && Receipt->bGranted;
-            UE_LOG(LogTemp, Display, TEXT("COMBAT_PILOT_REWARD Death=%s Source=service Outcome=%d Granted=%d Code=%s Item=%s Quantity=%lld"),
-                *DeathId, int32(Outcome), bGranted, *Receipt->SourceCode, *Receipt->DefinitionId, Receipt->Quantity);
-            if (!bGranted) { return; }
-            if (USFBackpackComponent* Owner = Weak.Get()) { Owner->ApplyToBag({{Receipt->DefinitionId, Receipt->Quantity}}); }
-            SFQuestPilotEvents::OnBoarDefeated().Broadcast(WeakController.Get(), DeathId);  // credited by the service, once
-        };
-        Backpack->Enqueue(MoveTemp(Mutation));
+        // The process nonce prevents a restarted server's slot serials from reusing a durable defeat ID.
+        static const FString Epoch = FGuid::NewGuid().ToString(EGuidFormats::Digits);
+        RetryDefeatReward(DeathId, Epoch + TEXT(":") + DeathId, Backpack ? Backpack->GetCharacterId() : FString(),
+            Backpack ? Backpack->GetContainerId() : FString(), bKillerSafe, bBoarSafe, KillerController);
         return 0;
     }
     const int32 Hides = SFCombatPilotRewards::HidesFor(RewardedDeaths, DeathId, bProtected, CapturedSettings->HidesPerBoar);
@@ -679,6 +653,67 @@ int32 ASFGameMode::RewardKill(const FString& DeathId, const FVector& BoarAt, ASF
     UE_LOG(LogTemp, Display, TEXT("COMBAT_PILOT_REWARD Death=%s Hides=%d Granted=%d Total=%d"),
         *DeathId, Hides, bGranted, SFCombatPilotRewards::CountHides(Bag));
     return bGranted ? Hides : 0;
+}
+
+void ASFGameMode::RetryDefeatReward(const FString& DeathId, const FString& ServiceEventId, const FString& CharacterId,
+    const FString& ContainerId, bool bKillerSafe, bool bBoarSafe, TWeakObjectPtr<APlayerController> Controller)
+{
+    USFBackpackComponent* Backpack = Controller.IsValid() ? USFBackpackComponent::FindOrCreate(Controller.Get()) : nullptr;
+    if (!Backpack)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("COMBAT_PILOT_REWARD_HELD Death=%s Reason=BackpackUnavailable"), *DeathId);
+        if (Controller.IsValid())
+        {
+            FTimerHandle Retry;
+            GetWorldTimerManager().SetTimer(Retry, FTimerDelegate::CreateWeakLambda(this,
+                [WeakMode = TWeakObjectPtr<ASFGameMode>(this), DeathId, ServiceEventId, CharacterId, ContainerId,
+                 bKillerSafe, bBoarSafe, Controller]()
+                { if (ASFGameMode* Mode = WeakMode.Get()) Mode->RetryDefeatReward(DeathId, ServiceEventId, CharacterId, ContainerId, bKillerSafe, bBoarSafe, Controller); }), 3.0f, false);
+        }
+        return;
+    }
+    if ((!CharacterId.IsEmpty() && Backpack->GetCharacterId() != CharacterId) ||
+        (!ContainerId.IsEmpty() && Backpack->GetContainerId() != ContainerId)) return;
+    const FString RecipientId = Backpack->GetCharacterId(), RecipientContainer = Backpack->GetContainerId();
+    auto Receipt = MakeShared<FSFGameplayResponse>();
+    FSFBackpackMutation Mutation; Mutation.Label = TEXT("defeat_reward"); Mutation.OperationId = ServiceEventId;
+    Mutation.bRetryStale = false;
+    Mutation.Run = [Receipt, ServiceEventId, RecipientId, RecipientContainer, bKillerSafe, bBoarSafe](const FString&, int64 Expected,
+        TFunction<void(ESFBackpackOutcome, int64)> Report)
+    {
+        FSFGameplayRequest Q = SFCombatPilotRewards::BuildDefeatRequest(ServiceEventId, RecipientId,
+            RecipientContainer, Expected, bKillerSafe, bBoarSafe);
+        USFBackpackComponent::Services()->Call(Q, [Receipt, Report](const FSFGameplayResponse& R)
+        {
+            *Receipt = R;
+            Report(R.Status == ESFGameplayStatus::Ok ? ESFBackpackOutcome::Committed :
+                R.Status == ESFGameplayStatus::Unavailable ? ESFBackpackOutcome::Unavailable :
+                R.GrpcCode == 9 ? ESFBackpackOutcome::Stale : ESFBackpackOutcome::Rejected,
+                R.Status == ESFGameplayStatus::Ok && R.bGranted ? R.ContainerRevision : -1);
+        });
+    };
+    Mutation.Finished = [WeakMode = TWeakObjectPtr<ASFGameMode>(this), Receipt, DeathId, ServiceEventId,
+        RecipientId, RecipientContainer, bKillerSafe, bBoarSafe, Controller, Weak = TWeakObjectPtr<USFBackpackComponent>(Backpack)](ESFBackpackOutcome Outcome)
+    {
+        ASFGameMode* Mode = WeakMode.Get(); if (!Mode) return;
+        const bool bGranted = Outcome == ESFBackpackOutcome::Committed && Receipt->bGranted;
+        UE_LOG(LogTemp, Display, TEXT("COMBAT_PILOT_REWARD Death=%s Source=service Outcome=%d Granted=%d Code=%s Item=%s Quantity=%lld"),
+            *DeathId, int32(Outcome), bGranted, *Receipt->SourceCode, *Receipt->DefinitionId, Receipt->Quantity);
+        if (bGranted)
+        {
+            if (USFBackpackComponent* Owner = Weak.Get()) { Owner->ApplyToBag({{Receipt->DefinitionId, Receipt->Quantity}}); }
+            SFQuestPilotEvents::OnBoarDefeated().Broadcast(Controller.Get(), DeathId);
+        }
+        else if (Outcome == ESFBackpackOutcome::Unavailable || Outcome == ESFBackpackOutcome::Stale)
+        {
+            UE_LOG(LogTemp, Warning, TEXT("COMBAT_PILOT_REWARD_HELD Death=%s Code=%d"), *DeathId, Receipt->GrpcCode);
+            FTimerHandle Retry;
+            Mode->GetWorldTimerManager().SetTimer(Retry, FTimerDelegate::CreateWeakLambda(Mode,
+                [WeakMode, DeathId, ServiceEventId, RecipientId, RecipientContainer, bKillerSafe, bBoarSafe, Controller]()
+                { if (ASFGameMode* M = WeakMode.Get()) M->RetryDefeatReward(DeathId, ServiceEventId, RecipientId, RecipientContainer, bKillerSafe, bBoarSafe, Controller); }), 3.0f, false);
+        }
+    };
+    Backpack->Enqueue(MoveTemp(Mutation));
 }
 
 void ASFGameMode::BoarDied(ASFPilotBoar* Boar, ASFE1Character* Killer)
