@@ -102,7 +102,7 @@ def main():
             marker.static_mesh_component.set_static_mesh(cube)
             marker.static_mesh_component.set_collision_profile_name('NoCollision')
             marker.set_actor_scale3d(u.Vector(0.5, 0.5, 1))
-    if names[0] in ('Evade', 'Threat', 'Aggro', 'AttackerMemory', 'Regeneration'):
+    if names[0] in ('Evade', 'Threat', 'Aggro', 'AttackerMemory', 'Regeneration', 'Assist'):
         boar = u.load_class(None, '/Script/ShatteredFrontier.SFPilotBoar')
         interaction = u.load_class(None, '/Script/ShatteredFrontier.SFE1InteractionTarget')
         if not boar or not interaction:
@@ -112,6 +112,10 @@ def main():
                                                  u.Rotator(yaw=180) if names[0] == 'Aggro' else u.Rotator())
         creature.set_actor_label(names[0] + 'Boar')
         creature.set_editor_property('tags', [u.Name('SF_' + names[0] + 'SandboxWildlife')])
+        if names[0] == 'Assist':
+            companion = actors.spawn_actor_from_class(boar, u.Vector(1600, 250, 115))
+            companion.set_actor_label('AssistDefensiveBoar')
+            companion.set_editor_property('tags', [u.Name('SF_AssistSandboxWildlife'), u.Name('SF_AssistDefensive')])
         if names[0] == 'Aggro':
             wall = actors.spawn_actor_from_class(u.StaticMeshActor, u.Vector(900, 0, 150))
             wall.set_actor_label('SightWall')

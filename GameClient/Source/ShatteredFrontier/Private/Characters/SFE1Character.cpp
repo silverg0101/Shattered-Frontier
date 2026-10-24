@@ -345,6 +345,62 @@ void ASFE1Character::TickThreatScenario()
 #endif
 }
 
+void ASFE1Character::TickAssistScenario()
+{
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    FString ScenarioRole;
+    FParse::Value(FCommandLine::Get(), TEXT("CombatAssistRole="), ScenarioRole);
+    if ((ScenarioRole != TEXT("Driver") && ScenarioRole != TEXT("Observer")) || !Controller || PilotHealth <= 0) { return; }
+    ASFPilotBoar* Lead = nullptr;
+    ASFPilotBoar* Mate = nullptr;
+    for (TActorIterator<ASFPilotBoar> It(GetWorld()); It; ++It)
+    {
+        if (It->GroupId() != TEXT("assist_sandbox")) { continue; }
+        if (It->ActorHasTag(TEXT("SF_AssistDefensive"))) { Mate = *It; }
+        else { Lead = *It; }
+    }
+    if (!Lead || !Mate) { return; }
+    const double Now = GetWorld()->GetTimeSeconds();
+    if (Now >= NextEvadeSampleAt)
+    {
+        NextEvadeSampleAt = Now + 0.1;
+        UE_LOG(LogTemp, Display, TEXT("BOAR_ASSIST_SAMPLE Role=%s T=%.3f Lead=%d Mate=%d LeadHP=%d MateHP=%d SelfHP=%d"),
+            *ScenarioRole, Now, Lead->ThreatTarget() ? 1 : 0, Mate->ThreatTarget() ? 1 : 0,
+            Lead->Health(), Mate->Health(), PilotHealth);
+    }
+    if (ScenarioRole == TEXT("Driver"))
+    {
+        if (AssistScenarioStage == 0)
+        {
+            if (AssistScenarioReadyAt < 0)
+            {
+                int32 PresentPawns = 0;
+                for (TActorIterator<ASFE1Character> It(GetWorld()); It; ++It) { ++PresentPawns; }
+                if (PresentPawns < 2) { return; }
+                AssistScenarioReadyAt = Now + 3.0;
+                UE_LOG(LogTemp, Display, TEXT("BOAR_ASSIST_TWO_CLIENTS_READY"));
+            }
+            if (Now < AssistScenarioReadyAt) { return; }
+            if (Mate->ThreatTarget()) { UE_LOG(LogTemp, Error, TEXT("BOAR_ASSIST_EARLY_TARGET")); return; }
+            if (Lead->ThreatTarget() != this)
+            { AddMovementInput((Lead->GetActorLocation() - GetActorLocation()).GetSafeNormal2D(), 1.0f); return; }
+            AssistScenarioStage = 1;
+            UE_LOG(LogTemp, Display, TEXT("BOAR_ASSIST_LEAD_ENGAGED Role=Driver"));
+        }
+        else if (AssistScenarioStage == 1 && Mate->ThreatTarget() == this)
+        { AssistScenarioStage = 2; UE_LOG(LogTemp, Display, TEXT("BOAR_ASSIST_PACK_JOINED Role=Driver")); }
+    }
+    else
+    {
+        if (AssistScenarioStage == 0 && Lead->ThreatTarget() && !Mate->ThreatTarget())
+        { AssistScenarioStage = 1; UE_LOG(LogTemp, Display, TEXT("BOAR_ASSIST_LEAD_ENGAGED Role=Observer")); }
+        else if (AssistScenarioStage == 1 && Mate->ThreatTarget() &&
+            Mate->ThreatTarget() == Lead->ThreatTarget() && Mate->ThreatTarget() != this)
+        { AssistScenarioStage = 2; UE_LOG(LogTemp, Display, TEXT("BOAR_ASSIST_PACK_JOINED Role=Observer")); }
+    }
+#endif
+}
+
 void ASFE1Character::TickAggroScenario()
 {
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
@@ -825,6 +881,8 @@ void ASFE1Character::Tick(float DeltaSeconds)
         FParse::Param(FCommandLine::Get(), TEXT("CombatAggroScenario"))) { TickAggroScenario(); }
     if (GetNetMode() == NM_Client && IsLocallyControlled() &&
         FParse::Param(FCommandLine::Get(), TEXT("CombatMemoryScenario"))) { TickMemoryScenario(); }
+    if (GetNetMode() == NM_Client && IsLocallyControlled() &&
+        FParse::Param(FCommandLine::Get(), TEXT("CombatAssistScenario"))) { TickAssistScenario(); }
     if (GetNetMode() == NM_Client && IsLocallyControlled() &&
         FParse::Param(FCommandLine::Get(), TEXT("CombatRegenScenario"))) { TickRegenScenario(); }
 #endif

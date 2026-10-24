@@ -86,6 +86,8 @@ private:
     int32 ThreatScenarioStage = 0;
     int32 AggroScenarioStage = 0;
     int32 MemoryScenarioStage = 0;
+    int32 AssistScenarioStage = 0;
+    double AssistScenarioReadyAt = -1;
     int32 RegenScenarioStage = 0;
     double NextRegenSampleAt = 0;
     bool bMemorySawCombat = false;
@@ -100,6 +102,7 @@ private:
     void TickThreatScenario();
     void TickAggroScenario();
     void TickMemoryScenario();
+    void TickAssistScenario();
     void TickRegenScenario();
     UFUNCTION(Server, Reliable) void ServerTargetScenarioStep(int32 Step);
     UFUNCTION(Server, Reliable) void ServerPilotAttack(AActor* SelectedCombatTarget);

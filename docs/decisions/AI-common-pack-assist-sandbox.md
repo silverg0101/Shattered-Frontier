@@ -1,0 +1,5 @@
+# Common boar pack assist sandbox
+
+AI NPC Behavior and Memory v1.0 §6.1 specifies that an engaged common NPC surviving at least **2 s** pulls idle, non-passive NPCs of the same faction within **8 m** (`tune.ai.assist_radius_common`). Combat Damage, Mitigation and NPCs v1.0, Threat & Aggro System, Entry, specifies that pack-linked NPCs share engagement but keep separate threat tables. This slice uses the boar's existing server-owned initial threat of **1** for the assisted target; the recipient keeps its own table, territory and leash.
+
+`SB_Assist` contains an aggressive boar and a defensive boar in one authored pack. The defensive boar cannot acquire the player by ordinary sight. The two-client check must observe one client entering combat, no early assist, the delayed pack join on the server and both replicated boar targets on both clients. Assist delay and radius are typed zone-start settings with shipped design defaults and bounded values. The production boar remains subject to the same common-pack rule. No owner decision is needed for this slice.

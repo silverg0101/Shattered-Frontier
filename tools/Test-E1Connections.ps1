@@ -9,7 +9,8 @@ param(
     [switch]$ThreatScenario,
     [switch]$AggroScenario,
     [switch]$MemoryScenario,
-    [switch]$RegenScenario
+    [switch]$RegenScenario,
+    [switch]$AssistScenario
 )
 $ErrorActionPreference = 'Stop'
 $repoRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
@@ -25,7 +26,7 @@ function Launch([string[]]$LaunchArguments) {
     Write-Output "Started PID $($process.Id)"
 }
 function Wait-Log([string]$Path, [string]$Pattern, [int]$Count = 1) {
-    $deadline = (Get-Date).AddSeconds($(if ($EvadeScenario -or $ThreatScenario -or $AggroScenario -or $MemoryScenario -or $RegenScenario) { 240 } else { 120 }))
+    $deadline = (Get-Date).AddSeconds($(if ($EvadeScenario -or $ThreatScenario -or $AggroScenario -or $MemoryScenario -or $RegenScenario -or $AssistScenario) { 240 } else { 120 }))
     while ((Get-Date) -lt $deadline) {
         foreach ($process in $ownedProcesses) { if ($process.HasExited) { throw "Network process $($process.Id) exited before $Pattern" } }
         if (Test-Path -LiteralPath $Path) {
@@ -83,6 +84,10 @@ try {
         $CastingScenario -or $EvadeScenario -or $ThreatScenario -or $AggroScenario -or $MemoryScenario)) {
         throw 'RegenScenario requires SB_Regeneration, two clients, and no other scenario'
     }
+    if ($AssistScenario -and ($Map -ne '/Game/Frontier/Maps/Sandbox/SB_Assist' -or $Clients -ne 2 -or
+        $CastingScenario -or $EvadeScenario -or $ThreatScenario -or $AggroScenario -or $MemoryScenario -or $RegenScenario)) {
+        throw 'AssistScenario requires SB_Assist, two clients, and no other scenario'
+    }
     if (Get-NetUDPEndpoint -LocalPort $Port -ErrorAction SilentlyContinue) { throw "UDP $Port is already in use" }
     $serverLog = Join-Path $logs 'Server.log'
     $serverArgs = @($Map, '-server', '-NullRHI', '-unattended', '-nosound', '-nop4', "-port=$Port", '-MULTIHOME=127.0.0.1', ('-abslog="' + $serverLog + '"'))
@@ -91,6 +96,7 @@ try {
     if ($AggroScenario) { $serverArgs += '-CombatAggroScenario' }
     if ($MemoryScenario) { $serverArgs += '-CombatMemoryScenario' }
     if ($RegenScenario) { $serverArgs += '-CombatRegenScenario' }
+    if ($AssistScenario) { $serverArgs += '-CombatAssistScenario' }
     Launch $serverArgs
     Wait-Log $serverLog 'E1_WORLD_READY.*NetMode=1'
     foreach ($index in 1..$Clients) {
@@ -102,6 +108,7 @@ try {
         if ($AggroScenario) { $clientArgs += @('-CombatAggroScenario', ('-CombatAggroRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         if ($MemoryScenario) { $clientArgs += @('-CombatMemoryScenario', ('-CombatMemoryRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         if ($RegenScenario) { $clientArgs += @('-CombatRegenScenario', ('-CombatRegenRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
+        if ($AssistScenario) { $clientArgs += @('-CombatAssistScenario', ('-CombatAssistRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         Launch $clientArgs
         Wait-Log $clientLog 'Welcomed by server'
     }
@@ -238,8 +245,30 @@ try {
         }
         Write-Output "PASS: boar damaged client 1; threat cleared on evade, then both clients observed five-second combat exit, five-second regeneration delay, and one-second health ticks to full. Logs: $logs"
     }
+    if ($AssistScenario) {
+        $driverLog = Join-Path $logs 'Client1.log'
+        $observerLog = Join-Path $logs 'Client2.log'
+        Wait-Log $serverLog 'BOAR_PACK_ASSIST_TIMING Group=assist_sandbox'
+        Wait-Log $driverLog 'BOAR_ASSIST_PACK_JOINED Role=Driver'
+        Wait-Log $observerLog 'BOAR_ASSIST_PACK_JOINED Role=Observer'
+        $timing = Select-String -LiteralPath $serverLog -Pattern 'BOAR_PACK_ASSIST_TIMING Group=assist_sandbox Elapsed=([\d.]+) DistanceCm=([\d.]+)' | Select-Object -First 1
+        $elapsed = [double]::Parse($timing.Matches[0].Groups[1].Value,[Globalization.CultureInfo]::InvariantCulture)
+        $distance = [double]::Parse($timing.Matches[0].Groups[2].Value,[Globalization.CultureInfo]::InvariantCulture)
+        if ($elapsed -lt 2.0 -or $distance -gt 800) { throw "Assist timing or distance violated: $elapsed seconds, $distance cm" }
+        if (@(Select-String -LiteralPath $driverLog,$observerLog -Pattern 'BOAR_ASSIST_EARLY_TARGET').Count) { throw 'Defensive boar engaged before lead' }
+        foreach ($role in @('Driver','Observer')) {
+            $path = $(if ($role -eq 'Driver') { $driverLog } else { $observerLog })
+            $lead = Select-String -LiteralPath $path -Pattern "BOAR_ASSIST_LEAD_ENGAGED Role=$role" | Select-Object -First 1
+            $joined = Select-String -LiteralPath $path -Pattern "BOAR_ASSIST_PACK_JOINED Role=$role" | Select-Object -First 1
+            if (-not $lead -or -not $joined -or $lead.LineNumber -ge $joined.LineNumber) { throw "$role missed ordered lead and pack engagement" }
+            if (@(Select-String -LiteralPath $path -Pattern "BOAR_ASSIST_SAMPLE Role=$role .*Lead=0 Mate=1").Count) {
+                throw "$role saw the defensive packmate engage before the lead"
+            }
+        }
+        Write-Output "PASS: server linked idle defensive packmate after $elapsed s within $distance cm; both clients observed lead then shared-target engagement. Logs: $logs"
+    }
     Write-Output "PASS: separate editor server and $Clients client(s) connected; $Clients server-authoritative possession(s). Logs: $logs"
-    if (-not $CastingScenario -and -not $EvadeScenario -and -not $ThreatScenario -and -not $AggroScenario -and -not $MemoryScenario -and -not $RegenScenario) { Write-Output 'Headless connection check only: movement, rendering, lifecycle cleanup, authentication and Linux runtime are not certified.' }
+    if (-not $CastingScenario -and -not $EvadeScenario -and -not $ThreatScenario -and -not $AggroScenario -and -not $MemoryScenario -and -not $RegenScenario -and -not $AssistScenario) { Write-Output 'Headless connection check only: movement, rendering, lifecycle cleanup, authentication and Linux runtime are not certified.' }
 } finally {
     foreach ($process in $ownedProcesses) {
         if (-not $process.HasExited) { Stop-Process -Id $process.Id -ErrorAction SilentlyContinue }

@@ -24,6 +24,8 @@ namespace SFCombatPilotRules
         int32 CharacterLevel, double MinimumRadius, double MaximumBonus);
     SHATTEREDFRONTIER_API bool DetectBySight(double DistanceMetres, double FacingDot,
         bool bHasLineOfSight, double AggroRadius, double ProximityRadius, double FieldOfViewDegrees);
+    constexpr bool CanAssist(double EngagedSeconds, double DistanceMetres, double DelaySeconds, double RadiusMetres)
+    { return EngagedSeconds >= DelaySeconds && DistanceMetres <= RadiusMetres; }
 }
 
 /** Server-owned, per-creature threat. IDs are stable character IDs, never client-supplied damage. */
@@ -119,6 +121,10 @@ public:
     int32 ThreatTableMax = 40;
     UPROPERTY(Config, EditAnywhere, Category="Pilot Boar Threat", meta=(ClampMin="0.05", ClampMax="1.0", Units="s", ToolTip="Server target-decision interval; adopted at next zone start."))
     float ThreatDecisionSeconds = 0.1f;
+    UPROPERTY(Config, EditAnywhere, Category="Pilot Boar AI", meta=(ClampMin="0.5", ClampMax="5.0", Units="s", ToolTip="Common pack assist delay; adopted at next zone start."))
+    float BoarAssistDelaySeconds = 2.0f;
+    UPROPERTY(Config, EditAnywhere, Category="Pilot Boar AI", meta=(ClampMin="2.0", ClampMax="15.0", Units="m", ToolTip="Common pack assist radius; adopted at next zone start."))
+    float BoarAssistRadiusMetres = 8.0f;
     UPROPERTY(Config, EditAnywhere, Category="Pilot Boar AI", meta=(ClampMin="20.0", ClampMax="100.0", Units="m"))
     float BoarLeashRadiusMetres = 60.0f;
     UPROPERTY(Config, EditAnywhere, Category="Pilot Boar AI", meta=(ClampMin="60.0", ClampMax="360.0", Units="deg"))
@@ -159,6 +165,7 @@ public:
     bool IsLeashing() const { return bReturning; }
     ASFE1Character* ThreatTarget() const { return ReplicatedTarget; }
     bool HasThreatFor(const ASFE1Character* Character) const;
+    bool ReceivePackAssist(ASFE1Character* Character, const FString& CharacterId);
 private:
     UFUNCTION() void OnRep_Health();
     UPROPERTY(ReplicatedUsing=OnRep_Health) int32 CurrentHealth = 0;
@@ -177,6 +184,7 @@ private:
     TMap<FString, double> OutsideLeashSince;
     FString TargetCharacterId;
     double NextThreatDecisionAt = 0;
+    double EngagedSince = -1;
     double NextAggroFixtureTraceAt = 0;
     UPROPERTY(Replicated) FString SpawnGroup;
     UPROPERTY(Replicated) int32 Slot = INDEX_NONE;

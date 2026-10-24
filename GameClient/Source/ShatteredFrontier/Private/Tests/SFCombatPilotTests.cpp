@@ -163,6 +163,21 @@ bool FSFCombatRecentAttackersTest::RunTest(const FString& Parameters)
     return true;
 }
 
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFCombatPackAssistTest,
+    "ShatteredFrontier.Combat.Pilot.PackAssist",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+
+bool FSFCombatPackAssistTest::RunTest(const FString& Parameters)
+{
+    const USFCombatPilotSettings* Settings = GetDefault<USFCombatPilotSettings>();
+    TestEqual(TEXT("Common assist waits two seconds"), Settings->BoarAssistDelaySeconds, 2.0f);
+    TestEqual(TEXT("Common assist reaches eight metres"), Settings->BoarAssistRadiusMetres, 8.0f);
+    TestFalse(TEXT("Early pack call rejected"), SFCombatPilotRules::CanAssist(1.999, 1.0, 2.0, 8.0));
+    TestTrue(TEXT("Exact delay and radius accepted"), SFCombatPilotRules::CanAssist(2.0, 8.0, 2.0, 8.0));
+    TestFalse(TEXT("Out-of-range packmate rejected"), SFCombatPilotRules::CanAssist(3.0, 8.001, 2.0, 8.0));
+    return true;
+}
+
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFCombatThreatTest,
     "ShatteredFrontier.Combat.Pilot.Threat",
     EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
