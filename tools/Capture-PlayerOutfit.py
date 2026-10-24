@@ -3,17 +3,24 @@
 UnrealEditor.exe <uproject> /Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook -game -windowed -ResX=1920 -ResY=1080 -ForceRes
     -RenderOffscreen -unattended -nosound "-ExecCmds=py tools/Capture-PlayerOutfit.py"
 Writes outfit_<view>.png (3840x2160, for close crops) under Saved/Screenshots/; pair them with the concept for docs/visual-review.md.
-Env SF_FACE=<id> first switches the face (dev command SFFace), waits 15 s more for its outfit to compile, and writes outfit_<id>_<view>.png.
+Env SF_FACES=<id,id,...> (or SF_FACE=<id>) walks the faces in one launch: per face it switches (dev command SFFace), waits 15 s for its
+outfit to compile, and writes outfit_<id>_<view>.png. Without either it shoots the current face as outfit_<view>.png.
 """
 import os
 
 import unreal
 
-FACE = os.environ.get('SF_FACE', '')
-PLAN = [(10.0, 'walk', 14.0), (14.0, 'shot', 'walk_back'), (16.0, 'view', 0.0), (18.0, 'shot', 'front'),
-        (18.5, 'view', 40.0), (20.5, 'shot', 'three_quarter'), (21.0, 'view', 90.0), (23.0, 'shot', 'side'), (25.0, 'quit', 0)]
-if FACE:
-    PLAN = [(3.0, 'face', FACE)] + [(s + 15.0, k, a + 15.0 if k == 'walk' else a) for s, k, a in PLAN]
+FACES = [f for f in (os.environ.get('SF_FACES') or os.environ.get('SF_FACE', '')).split(',') if f]
+SHOTS = [(10.0, 'walk', 14.0), (14.0, 'shot', 'walk_back'), (16.0, 'view', 0.0), (18.0, 'shot', 'front'),
+         (18.5, 'view', 40.0), (20.5, 'shot', 'three_quarter'), (21.0, 'view', 90.0), (23.0, 'shot', 'side')]
+SEGMENT = 25.0 + 15.0  # one face: switch at +3 s, 15 s outfit compile, then the shots above
+PLAN = []  # (start, kind, arg, face)
+for n, face in enumerate(FACES or ['']):
+    off = n * SEGMENT + (15.0 if face else 0.0)
+    if face:
+        PLAN.append((n * SEGMENT + 3.0, 'face', face, face))
+    PLAN += [(s + off, k, a + off if k == 'walk' else a, face) for s, k, a in SHOTS]
+PLAN.append((PLAN[-1][0] + 2.0, 'quit', 0, ''))
 state = {'t': 0.0, 'done': set()}
 
 
@@ -28,7 +35,7 @@ def tick(dt):
     t = state['t']
     pc = unreal.GameplayStatics.get_player_controller(w, 0)
     pawn = pc.get_controlled_pawn()
-    for i, (start, kind, arg) in enumerate(PLAN):
+    for i, (start, kind, arg, face) in enumerate(PLAN):
         if kind == 'walk' and start <= t < arg:
             yaw = unreal.Rotator(roll=0, pitch=0, yaw=pc.get_control_rotation().yaw)
             pawn.add_movement_input(yaw.get_forward_vector(), 1.0, True)
@@ -40,9 +47,10 @@ def tick(dt):
             cam_yaw = pc.player_camera_manager.get_camera_rotation().yaw
             pawn.set_actor_rotation(unreal.Rotator(roll=0, pitch=0, yaw=cam_yaw + 180.0 - arg), False)
         elif kind == 'shot':
-            unreal.SystemLibrary.execute_console_command(w, f'HighResShot 2 filename=outfit_{FACE + "_" if FACE else ""}{arg}')
-            unreal.log(f'OUTFIT_SHOT {arg} t={t:.1f}')
-        elif kind == 'face':
+            unreal.SystemLibrary.execute_console_command(w, f'HighResShot 2 filename=outfit_{face + "_" if face else ""}{arg}')
+            unreal.log(f'OUTFIT_SHOT {face} {arg} t={t:.1f}')
+        elif kind == 'face':  # re-hook the character to the camera so this face's walk heads away from the lens
+            pawn.set_editor_property('use_controller_rotation_yaw', True)
             unreal.SystemLibrary.execute_console_command(w, f'SFFace {arg}', pc)
         elif kind == 'quit':
             unreal.unregister_slate_post_tick_callback(handle)
