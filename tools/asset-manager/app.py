@@ -1553,9 +1553,10 @@ def _subject_mask(img):
     return mask.filter(ImageFilter.MinFilter(5))  # drops stray specks
 
 def _ground(img):
-    """Feet row of an image cropped to its subject: the lowest row with a solid run at least a tenth of the subject's
-    width. A tail, staff or cape tip hanging below the feet is thinner and is ignored, so it doesn't lift that view
-    off the shared feet line (rat v5: its back view's tail reached the floor; tail tip ~5% of the width, feet ~19%)."""
+    """Feet row of an image cropped to its subject: the lowest row with a solid run at least a twelfth of the subject's
+    height. A tail, staff or cape tip hanging below the feet is thinner and is ignored, so it doesn't lift that view
+    off the shared feet line (rat v5: its back view's tail tip ~4% of the height, feet 11-20%). Not the width: a side
+    view's tail makes it wide enough that one foot falls short and the belly passes for the feet (rat v7)."""
     m = _subject_mask(img)
     w, h = m.size
     px = m.load()
@@ -1565,7 +1566,7 @@ def _ground(img):
             cur = cur + 1 if px[x, y] else 0
             best = max(best, cur)
         return best
-    need = max(2, w / 10)
+    need = max(2, h / 12)
     return next((y + 1 for y in range(h - 1, -1, -1) if widest(y) >= need), h)
 
 def _subject_box(img):
@@ -1606,23 +1607,24 @@ def mv_reference(png):
     return buf.getvalue()
 
 def mv_views(pngs):
-    """MV-Adapter's views, in MV_ADAPTER_VIEWS order -> ({position: PNG}, notes): the grey background made white, then
-    aligned like uploaded views (align_uploads). Flood fill from the corners follows its soft gradient; pockets the
-    legs and tail close off (between the legs, under the belly) are keyed out by colour, tightly."""
-    from PIL import Image, ImageChops, ImageDraw
+    """MV-Adapter's views, cut out on black (rembg in mvadapter_graph), in MV_ADAPTER_VIEWS order -> ({position: PNG},
+    notes): put on white, then aligned like uploaded views (align_uploads)."""
+    from PIL import Image, ImageChops, ImageFilter
     out = {}
     for pos, png in zip(MV_ADAPTER_VIEWS.values(), pngs):
         img = Image.open(io.BytesIO(png)).convert("RGB")
-        bg = img.getpixel((0, 0))
-        r, g, b = ImageChops.difference(img, Image.new("RGB", img.size, bg)).split()
-        pockets = ImageChops.lighter(ImageChops.lighter(r, g), b).point(lambda v: 255 if v <= 12 else 0)
-        for xy in ((0, 0), (img.width - 1, 0), (0, img.height - 1), (img.width - 1, img.height - 1)):
-            ImageDraw.floodfill(img, xy, (255, 255, 255), thresh=40)
-        img.paste((255, 255, 255), mask=pockets)
+        r, g, b = img.split()
+        mask = ImageChops.lighter(ImageChops.lighter(r, g), b).point(lambda v: 255 if v > 8 else 0)
+        mask = mask.filter(ImageFilter.MinFilter(3))  # drops the dark premultiplied edge
+        # Close specks up to ~11 px (a black pupil reads as background) but not the gaps between the legs, which are
+        # enclosed too and must stay open, or Pixal3D welds the legs together.
+        mask = mask.filter(ImageFilter.MaxFilter(11)).filter(ImageFilter.MinFilter(11))
+        white = Image.new("RGB", img.size, "white")
         buf = io.BytesIO()
-        img.save(buf, "PNG")
+        Image.composite(img, white, mask).save(buf, "PNG")
         out[pos] = buf.getvalue()
-    return align_uploads(out)
+    views, notes = align_uploads(out)
+    return views, [n for n in notes if "of the front's height" not in n]  # rembg crops each view to itself
 
 def mvadapter_graph(reference, prompt, seed, prefix):
     """MV-Adapter image-to-multiview (ComfyUI-MVAdapter, its i2mv_sdxl_diffusers example settings) at the four
@@ -1645,8 +1647,16 @@ def mvadapter_graph(reference, prompt, seed, prefix):
             "pipeline": ["4", 0], "num_views": len(MV_ADAPTER_VIEWS), "prompt": prompt[:500],
             "negative_prompt": "watermark, ugly, deformed, noisy, blurry, low contrast", "width": MV_SIZE,
             "height": MV_SIZE, "steps": 50, "cfg": 3.0, "seed": seed, "reference_image": ["6", 0], "azimuth_degrees": ["5", 0]}},
-        "8": {"class_type": "SaveImage", "inputs": {"images": ["7", 0], "filename_prefix": prefix}},
+        # A grey creature on MV-Adapter's grey background can't be colour-keyed (rat v7 lost skin to the key), so each
+        # view goes through rembg the way Pixal3D's input does: the subject cut out, cropped, on pure black.
+        **{f"{n}{i}": node for i in range(len(MV_ADAPTER_VIEWS)) for n, node in (
+            ("1", {"class_type": "ImageFromBatch", "inputs": {"image": ["7", 0], "batch_index": i, "length": 1}}),
+            ("2", {"class_type": "Trellis2PreProcessImage", "inputs": {
+                "image": [f"1{i}", 0], "padding": 8, "remove_background": True, "max_size": 1024}}),
+            ("3", {"class_type": "SaveImage", "inputs": {"images": [f"2{i}", 0], "filename_prefix": f"{prefix}{i}"}}))},
     }
+
+MV_SAVE_NODES = [f"3{i}" for i in range(len(MV_ADAPTER_VIEWS))]  # one per view, in MV_ADAPTER_VIEWS order
 
 def guide_strip(views):
     """The aligned views (align_views output, same height and feet line) side by side, each cropped to its own width,
@@ -1739,7 +1749,7 @@ def run_image(jid, host=None):
                     log.append(f"views: MV-Adapter (try {n}/{tries})")
                     h = run_prompt(host, jid, mvadapter_graph(f"sfam/{ref}", p["prompt"], random.randint(0, 0x7fffffff),
                                                               f"sfam/{jid}_mv/view"), time.time(), get_settings()["job_timeout_min"])
-                    files = h.get("outputs", {}).get("8", {}).get("images", [])
+                    files = [f for nid in MV_SAVE_NODES for f in h.get("outputs", {}).get(nid, {}).get("images", [])]
                     if len(files) != len(MV_ADAPTER_VIEWS):
                         raise RuntimeError(f"MV-Adapter returned {len(files)} views, not {len(MV_ADAPTER_VIEWS)}")
                     views, notes = mv_views([get_output(host, f"{f['subfolder']}/{f['filename']}"[len("sfam/"):]) for f in files])
@@ -1767,7 +1777,8 @@ def run_image(jid, host=None):
     except Exception as e:
         update_job(jid, status="failed", error=str(e)[-1000:], finished=time.time())
     finally:
-        update_job(jid, log="\n".join(LIVE.pop(jid, {}).get("log", log)))
+        live = LIVE.pop(jid, {}).get("log") or []  # run_prompt's polling replaces it with the host log
+        update_job(jid, log="\n".join(log + ([] if live is log else live[-100:])))
 
 def jobs_view(where="", args=(), limit=100, base=""):
     with db() as c:
@@ -2084,18 +2095,16 @@ def check():
         except ValueError:
             pass
     assert "{" not in MV_HERO.format(prompt="rat") + MV_REVIEW.format(prompt="rat")
+    assert all(n in mvadapter_graph("r.png", "rat", 1, "sfam/1_mv/view") for n in MV_SAVE_NODES)
     from PIL import Image, ImageDraw
     def png_of(img):
         b = io.BytesIO(); img.save(b, "PNG"); return b.getvalue()
-    grey = []  # MV-Adapter views at their own sizes on grey: back on white, one height and feet line
-    for box in ((100, 300, 700, 560), (300, 280, 470, 600), (68, 320, 668, 560), (290, 300, 480, 620)):
-        im = Image.new("RGB", (MV_SIZE, MV_SIZE), (127, 127, 127))
-        ImageDraw.Draw(im).rectangle(box, fill=(200, 140, 140))
-        grey.append(png_of(im))
-    ImageDraw.Draw(im := Image.open(io.BytesIO(grey[0])).convert("RGB")).rectangle((300, 400, 500, 500), fill=(127, 127, 127))
-    grey[0] = png_of(im)  # a grey pocket closed off inside the left view (between the legs)
-    views = mv_views(grey)[0]
-    assert (255, 255, 255) in [c for _, c in Image.open(io.BytesIO(views["left"])).convert("RGB").getcolors(1 << 20)]
+    black = []  # rembg'd MV-Adapter views, cropped to their own sizes on black: back on white, one height and feet line
+    for size, box in ((800, (40, 300, 760, 560)), (400, (60, 40, 340, 360)), (780, (30, 320, 750, 560)), (420, (70, 30, 350, 390))):
+        im = Image.new("RGB", (size, size), (0, 0, 0))
+        ImageDraw.Draw(im).rectangle(box, fill=(128, 126, 127))  # a grey subject, as grey as MV-Adapter's background
+        black.append(png_of(im))
+    views = mv_views(black)[0]
     imgs = {pos: Image.open(io.BytesIO(v)).convert("RGB") for pos, v in views.items()}
     boxes = {pos: _subject_box(im) for pos, im in imgs.items()}
     assert set(views) == set(VIEW_AZIMUTHS) and all(im.getpixel((5, 5)) == (255, 255, 255) for im in imgs.values())
