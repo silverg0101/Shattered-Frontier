@@ -1520,12 +1520,15 @@ MV_HERO = ("{prompt}\n\nDraw one full-body picture of the subject described abov
            "tail tip, inside the frame. Plain pure-white background, soft even studio light. No props, text, ground "
            "shadow or background scenery.\n\n"
            "Pose it ready for rigging. If it walks on four legs: a square, even stance with no stride, each left and "
-           "right leg pair at the same front-back position; legs near-vertical columns with a slight natural bend; "
+           "right leg pair at the same front-back position, so in this exact side view the far legs are completely "
+           "hidden behind the near legs - only two feet touch the ground and no far paw, toe or claw shows; legs "
+           "near-vertical columns with a slight natural bend; "
            "clear white space between the front and hind legs and under the belly; toes flat and spread, short claws; "
            "head level and looking straight ahead, mouth closed; the tail straight back, horizontal and raised clear of "
            "the ground and the legs. If it walks on two legs: an A-pose, arms about 45 degrees out from the torso with "
            "a clear gap, elbows slightly bent, palms down, five separate straight fingers; legs straight, feet "
-           "shoulder-width apart, toes forward; head forward, mouth closed; no props, capes, long loose cloth or hair "
+           "shoulder-width apart, toes forward, the far leg hidden behind the near one; head forward, mouth closed; no "
+           "props, capes, long loose cloth or hair "
            "over the arms.\n\n"
            "Nothing thin sticks out of the outline: no long whiskers, bristles, loose fur or hair strands. Fur, scars "
            "and markings are painted on the skin.")
@@ -1735,6 +1738,32 @@ def image_params(params):
         raise ValueError(f"mode is single or multi, model one of {IMAGE_MODELS}, views one of {IMAGE_VIEWS}, and a prompt is required")
     return p
 
+def hero_ground_contacts(png):
+    """Separate solid runs across the side hero just above its feet (3% of its height up). A far leg that shows beside
+    the near one adds a run, and the mirrored right view then puts it on the near leg: Pixal3D built a second paw on
+    every leg of rat v9, whose hero showed 4. Quadrupeds should show 2, bipeds 1."""
+    from PIL import Image
+    img = Image.open(io.BytesIO(ultratex_reference(png))).convert("RGBA")
+    box = img.getchannel("A").getbbox()
+    if not box:
+        return 0
+    img = img.crop(box)
+    mask, (w, h) = _subject_mask(img), img.size
+    px, y = mask.load(), max(0, _ground(img) - 1 - round(h * 0.03))
+    runs, cur = [], 0
+    for x in range(w):
+        if px[x, y]:
+            cur += 1
+        elif cur:
+            runs.append(cur)
+            cur = 0
+    runs.append(cur)
+    return sum(1 for r in runs if r >= w * 0.01)
+
+HERO_LEGS_FIX = ("\n\nA previous attempt was rejected: {n} feet touch the ground in the side view, so the far legs show. "
+                 "Stand each left and right leg pair at exactly the same front-back position so the far legs are "
+                 "completely hidden behind the near legs: two feet on the ground for four legs, one for two.")
+
 def mirrored(png):
     from PIL import Image, ImageOps
     buf = io.BytesIO()
@@ -1804,8 +1833,17 @@ def run_image(jid, host=None):
             log.append("generating the image (sent as written)")
             save(codex_image(p["prompt"], p["model"]), "")
         else:  # a side-view hero and its front from ChatGPT; views from those two, or MV-Adapter around the front
-            log.append("hero: drawing the side-view design image")
-            hero = codex_image(MV_HERO.format(prompt=p["prompt"]), p["model"])
+            extra = ""
+            for n in range(1, 4):  # a hero whose far legs show is redrawn; it would put a second paw on every leg
+                log.append(f"hero: drawing the side-view design image (try {n}/3)")
+                hero = codex_image(MV_HERO.format(prompt=p["prompt"]) + extra, p["model"])
+                contacts = hero_ground_contacts(hero)
+                if contacts <= 2:
+                    break
+                log.append(f"hero: {contacts} feet on the ground, so the far legs show")
+                extra = HERO_LEGS_FIX.format(n=contacts)
+            else:
+                log.append("hero: kept the last try although the far legs still show")
             if p["views"] == "mv-adapter":
                 log.append("hero: drawing it from the front")
                 front = codex_image(MV_FRONT.format(prompt=p["prompt"]), p["model"], refs=[hero])
@@ -2178,6 +2216,13 @@ def check():
     box = Image.eval(ref, lambda v: 255 if v < 110 else 0).convert("L").getbbox()  # the subject; grey is 127
     assert ref.size == (MV_SIZE, MV_SIZE) and ref.getpixel((2, 2)) == (127, 127, 127)
     assert abs((box[3] - box[1]) - MV_SIZE * 0.9 * 300 / 1200) <= 3, box  # front height = 90% x side height/length
+    def quad(paws):  # a side view: body, legs down to paws on the ground
+        im = Image.new("RGB", (1200, 600), "white"); d = ImageDraw.Draw(im)
+        d.rectangle((200, 150, 1000, 380), fill=(90, 80, 80))
+        for x in paws:
+            d.rectangle((x, 380, x + 50, 500), fill=(90, 80, 80))
+        return png_of(im)
+    assert hero_ground_contacts(quad([250, 850])) == 2 and hero_ground_contacts(quad([250, 330, 780, 850])) == 4
     g = mvadapter_graph("sfam/1_hero.png", "rat", 7, "sfam/1_mv/view")
     assert g["7"]["inputs"]["seed"] == 7 and g["6"]["inputs"]["image"] == "sfam/1_hero.png"
     for nid, n in g.items():
