@@ -19,13 +19,16 @@ import unreal
 
 ROOT = '/Game/Frontier/Characters/Player'
 DIR = f'{ROOT}/OutfitAsset'
+ITEM = 'Hood' if 'item=Hood' in sys.argv else 'Tunic'  # GEAR-02: item=Hood authors the generated hood (OutfitAsset/Hood, no body hide map) instead of the tunic
+ITEM_DIR = DIR if ITEM == 'Tunic' else f'{DIR}/{ITEM}'
 PROJECT = Path(unreal.Paths.project_dir()).resolve().parent
 L = unreal.EditorAssetLibrary
 T = unreal.ToolsetLibrary
 TOOLS = unreal.AssetToolsHelpers.get_asset_tools()
 
 
-def create(name, cls, factory, folder=DIR):
+def create(name, cls, factory, folder=None):
+    folder = folder or ITEM_DIR
     path = f'{folder}/{name}'
     if L.does_asset_exist(path):
         return L.load_asset(path)  # reuse: a referenced asset can't be deleted in a live editor
@@ -70,9 +73,9 @@ def full_body(face_id):
 
 
 def cloth_asset(garment):
-    if L.does_asset_exist(f'{DIR}/CA_Tunic'):  # loaded assets don't delete cleanly in a live editor; delete both by hand to rebuild
-        return L.load_asset(f'{DIR}/DF_Tunic'), L.load_asset(f'{DIR}/CA_Tunic')
-    df = create('DF_Tunic', unreal.Dataflow, unreal.DataflowAssetFactory())
+    if L.does_asset_exist(f'{ITEM_DIR}/CA_{ITEM}'):  # loaded assets don't delete cleanly in a live editor; delete both by hand to rebuild
+        return L.load_asset(f'{ITEM_DIR}/DF_{ITEM}'), L.load_asset(f'{ITEM_DIR}/CA_{ITEM}')
+    df = create(f'DF_{ITEM}', unreal.Dataflow, unreal.DataflowAssetFactory())
     E = unreal.DataflowEditorBlueprintLibrary
     imp = E.add_dataflow_node(df, 'FChaosClothAssetSkeletalMeshImportNode_v2', 'SkeletalMeshImport', unreal.Vector2D(0, 0))
     term = E.add_dataflow_node(df, 'FChaosClothAssetTerminalNode_v2', 'ClothAssetTerminal', unreal.Vector2D(400, 0))
@@ -82,15 +85,15 @@ def cloth_asset(garment):
         E.set_dataflow_node_property(df, imp, prop, value)  # render only: the starter tunic is skinned, not simulated
     if not E.connect_dataflow_nodes(df, imp, 'Collection', term, 'CollectionLods[0]'):
         raise RuntimeError('could not connect SkeletalMeshImport -> ClothAssetTerminal')
-    ca = create('CA_Tunic', unreal.ChaosClothAsset, unreal.ChaosClothAssetFactory())
+    ca = create(f'CA_{ITEM}', unreal.ChaosClothAsset, unreal.ChaosClothAssetFactory())
     set_props(ca, {'DataflowInstance': {'dataflowAsset': {'refPath': df.get_path_name()}, 'dataflowTerminal': str(term)}})
     if not unreal.DataflowBlueprintLibrary.regenerate_asset_from_dataflow(ca):
-        raise RuntimeError('CA_Tunic did not regenerate')
+        raise RuntimeError(f'CA_{ITEM} did not regenerate')
     return df, ca
 
 
 def outfit_asset(ca, body):
-    oa = create('OA_Tunic', unreal.ChaosOutfitAsset, unreal.ChaosOutfitAssetFactory())
+    oa = create(f'OA_{ITEM}', unreal.ChaosOutfitAsset, unreal.ChaosOutfitAssetFactory())
     # Set the template first so the instance's variable bag takes the template's layout, then write the override as struct text
     # with the variable's GUID in OverriddenVariableGuids (a JSON write fills the bag but leaves it un-overridden: an empty outfit).
     set_props(oa, {'DataflowInstance': {'dataflowAsset': {'refPath': TEMPLATE}, 'dataflowTerminal': 'OutfitAssetTerminal'}})
@@ -103,10 +106,10 @@ def outfit_asset(ca, body):
                      f'(SizedOutfitSource={source})),OverriddenVariableGuids=({SIZED_SOURCE_GUID})))')
     oa.set_editor_property('dataflow_instance', inst)
     text = oa.get_editor_property('dataflow_instance').export_text()
-    if SIZED_SOURCE_GUID not in text or 'CA_Tunic' not in text:
+    if SIZED_SOURCE_GUID not in text or f'CA_{ITEM}' not in text:
         raise RuntimeError(f'SizedOutfitSource override not set: {text[:600]}')
     if not unreal.DataflowBlueprintLibrary.regenerate_asset_from_dataflow(oa):
-        raise RuntimeError('OA_Tunic did not regenerate')
+        raise RuntimeError(f'OA_{ITEM} did not regenerate')
     return oa
 
 
@@ -115,25 +118,28 @@ SIZED_SOURCE_GUID = 'B6F7523245E3FB8AF56026AA6FE683B9'  # the template's SizedOu
 
 
 def wardrobe_item(oa, mask):
-    path = f'{DIR}/WI_Tunic'
+    path = f'{ITEM_DIR}/WI_{ITEM}'
     wi = L.load_asset(path) if L.does_asset_exist(path) else L.duplicate_asset('/MetaHumanCharacter/Optional/Clothing/WI_DefaultGarment', path)  # carries Epic's outfit pipeline setup
     set_props(wi, {'PrincipalAsset': {'asset': {'refPath': oa.get_path_name()}, 'assetIdentifier': oa.get_path_name()}})
     pipeline = wi.get_editor_property('pipeline')
     set_props(pipeline, {'RuntimeMaterialParameters': []})  # the default garment's shirt/short colour slots don't exist here
-    set_props(pipeline.get_editor_property('editor_pipeline'), {'BodyHiddenFaceMapTexture': {
+    if mask is not None:
+      set_props(pipeline.get_editor_property('editor_pipeline'), {'BodyHiddenFaceMapTexture': {
         'texture': {'refPath': mask.get_path_name()}, 'settings': {'maxCullValue': 0.1, 'minKeepValue': 0.9, 'maxShrinkDistance': 0}}})
     unreal.log(T.get_object_properties(wi, ['PrincipalAsset']))
     return wi
 
 
 def author():
-    garment = L.load_asset(f'{ROOT}/Garments/SKM_Tunic_Leggings')
-    mask = import_mask()
+    garment = L.load_asset(f'{ROOT}/Garments/SKM_Tunic_Leggings' if ITEM == 'Tunic' else f'{ITEM_DIR}/SKM_{ITEM}')
+    mask = import_mask() if ITEM == 'Tunic' else None  # a hood hides no skin worth culling
     body = full_body('OrlandoBare')
     df, ca = cloth_asset(garment)
     oa = outfit_asset(ca, body)
     wi = wardrobe_item(oa, mask)
     for a in (mask, body, df, ca, oa, wi):
+        if a is None:
+            continue
         L.save_loaded_asset(a, only_if_is_dirty=False)
     unreal.log(f'OUTFIT_ASSET_AUTHORED {wi.get_path_name()}')
 
@@ -141,7 +147,7 @@ def author():
 def build(only):
     faces = json.loads((PROJECT / 'GameClient/ArtSource/Characters/Player/faces.json').read_text())['faces']
     sub = unreal.get_editor_subsystem(unreal.MetaHumanCharacterEditorSubsystem)
-    wi = L.load_asset(f'{DIR}/WI_Tunic')
+    wi = L.load_asset(f'{ITEM_DIR}/WI_{ITEM}')
     for face in faces:
         if face.get('bare') or (only and face['id'] not in only):
             continue
