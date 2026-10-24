@@ -1501,16 +1501,27 @@ MV_SHEET = ("{prompt}\n\nDraw this as a 3D-model turnaround sheet: one square im
             "front, points at the camera from behind, and trails horizontally away from the head in both side views.\n\n"
             "Every cell uses the same orthographic, eye-level camera at the same distance: the subject is equally tall "
             "in every cell with its feet on the same line, centred with a clear margin, on a plain pure-white "
-            "background with soft even studio light. No grid lines, borders, labels, ground shadows, props or text.")
+            "background with soft even studio light. No grid lines, borders, labels, ground shadows, props or text.\n\n"
+            "Line the views up like a classic turnaround drawn against horizontal guide lines: because the camera "
+            "only turns around the statue, every landmark sits at exactly the same height in all four views - ear "
+            "tips, top of the head, eyes, nose and mouth, chin, top of the back, belly line, tail base, knees, feet. "
+            "Draw the side views first in your mind and keep the front and back to the same heights; a head that "
+            "faces the camera must not grow, rise or drop.")
 MV_SHEET_REVIEW = (
-    "These four images were cut from one turnaround sheet of: {prompt}\nImage 1 should be the front view, image 2 the "
-    "left side (the subject faces image-left), image 3 the back, image 4 the right side (it faces image-right), as if "
-    "a camera orbited a rigid statue. Size and feet line were already matched by code, so ignore scale and position."
-    "\n\nPass only if: each image is its stated viewpoint, orthographic and at eye level; it is the same subject in the "
-    "same pose in all four, with every part (head, ears, limbs, tail, clothing, anything held) where that rotation "
-    "would put it - nothing re-posed, mirrored, added or missing; the tail has the same shape and direction in both "
-    "side views (mirror images of each other) and agrees with the front and back; every view has the right number of "
-    "limbs; and each background is plain white with no shadow, props, text or part of a neighbouring cell.")
+    "The image shows four views cut from one turnaround sheet of: {prompt}\nLeft to right: front, left side (the "
+    "subject faces image-left), back, right side (it faces image-right), as if a camera orbited a rigid statue. Code "
+    "has already scaled every view to the same overall height with the feet on one line, and drawn thin grey "
+    "horizontal guide lines across all four. So any landmark sitting at a different height in one view is a drawing "
+    "error: follow each guide line across and compare where ear tips, top of the head, eyes, nose and mouth, chin, top "
+    "of the back, belly line, tail base, knees and feet fall in each view.\n\nPass only if: every landmark sits at the "
+    "same height in all four views, within about half a guide-line spacing; each view is its stated viewpoint, "
+    "orthographic and at eye level; it is the same subject in the same pose in all four, with every part (head, ears, "
+    "limbs, tail, clothing, anything held) where that rotation would put it - nothing re-posed, mirrored, added or "
+    "missing; the tail has the same shape and direction in both side views (mirror images of each other) and agrees "
+    "with the front and back; every view has the right number of limbs; and each background is plain white apart "
+    "from the guide lines, with no shadow, props, text or part of a neighbouring view. In each problem, name the "
+    "landmark, the views and which is higher.")
+GUIDE_LINES = 16  # horizontal guide lines across the review strip, spread over the subject's height
 SHEET_CELLS = {"front": (0, 0), "left": (1, 0), "back": (0, 1), "right": (1, 1)}  # (column, row) on the sheet
 VIEW_SIZE = 1024  # each split view is enlarged onto a square of this size
 
@@ -1588,6 +1599,31 @@ def split_sheet(png):
             subjects[pos] = im.crop((left + box[0], top + box[1], left + box[2], top + box[3]))
     return align_views(subjects)
 
+def guide_strip(views):
+    """The aligned views (align_views output, same height and feet line) side by side, each cropped to its own width,
+    with GUIDE_LINES thin horizontal lines from the top of the subjects to their feet: the classic turnaround check,
+    so a reviewer sees at once a landmark that sits higher in one view than another. Returns PNG bytes."""
+    from PIL import Image, ImageDraw
+    ims = [Image.open(io.BytesIO(b)).convert("RGB") for b in views.values()]
+    boxes = [_subject_box(im) for im in ims]
+    top, feet = min(b[1] for b in boxes), max(b[3] for b in boxes)
+    pad, gap = 24, 16
+    crops = [im.crop((max(b[0] - pad, 0), 0, min(b[2] + pad, im.width), im.height)) for im, b in zip(ims, boxes)]
+    strip = Image.new("RGB", (sum(c.width for c in crops) + gap * (len(crops) - 1), ims[0].height), "white")
+    x = 0
+    for c in crops:
+        strip.paste(c, (x, 0))
+        x += c.width + gap
+    d = ImageDraw.Draw(strip)
+    for i in range(GUIDE_LINES + 1):
+        y = round(top + (feet - top) * i / GUIDE_LINES)
+        d.line((0, y, strip.width, y), fill=(150, 150, 150), width=1)
+    if strip.width > 2400:  # keep it inside what the reviewer reads at full detail
+        strip = strip.resize((2400, round(strip.height * 2400 / strip.width)), Image.LANCZOS)
+    buf = io.BytesIO()
+    strip.save(buf, "PNG")
+    return buf.getvalue()
+
 def align_uploads(raw):
     """Multi-view 3D job inputs ({position: image bytes}) aligned like a sheet before Pixal3D sees them, with notes
     for its log. A view whose subject is more than 15% off the front's height (as a share of its frame) is scaled to
@@ -1653,7 +1689,7 @@ def run_image(jid):
                     continue
                 kept = sheet, views
                 try:
-                    r = codex_review([views[pos] for pos in SHEET_CELLS], MV_SHEET_REVIEW.format(prompt=p["prompt"]))
+                    r = codex_review([guide_strip(views)], MV_SHEET_REVIEW.format(prompt=p["prompt"]))
                 except RuntimeError as e:
                     log.append(f"sheet: review unavailable ({e}); keeping this sheet")
                     break
@@ -1670,6 +1706,7 @@ def run_image(jid):
             for pos in SHEET_CELLS:
                 save(views[pos], f"-{pos}")
             save(sheet, "-sheet")
+            save(guide_strip(views), "-guides")  # what the reviewer judged: the views side by side with guide lines
         update_job(jid, status="done", output=saved[0], files=json.dumps(saved), finished=time.time())
     except InterruptedError:
         update_job(jid, status="cancelled", finished=time.time())
@@ -2011,6 +2048,9 @@ def check():
     fw = boxes["front"][2] - boxes["front"][0]; fh = boxes["front"][3] - boxes["front"][1]
     assert abs(fw / fh - 0.5) < 0.05, boxes["front"]  # just the front subject, no neighbour cut in
     assert len({b[3] for b in boxes.values()}) == 1 and len({b[3] - b[1] for b in boxes.values()}) <= 2, boxes
+    strip = Image.open(io.BytesIO(guide_strip(split_sheet(png_of(clear))))).convert("L")
+    lines = sum(1 for y in range(strip.height) if strip.getpixel((1, y)) < 200)  # left margin: only guide lines there
+    assert GUIDE_LINES <= lines <= 3 * (GUIDE_LINES + 1) and strip.width <= 2400, (lines, strip.size)
     front, left = Image.new("RGBA", (500, 500), (0, 0, 0, 0)), Image.new("RGBA", (500, 500), (0, 0, 0, 0))
     ImageDraw.Draw(front).rectangle((200, 50, 300, 450), fill="grey")  # 80% of the frame
     ImageDraw.Draw(left).rectangle((100, 200, 400, 400), fill="grey")  # 40%: flagged, then matched
