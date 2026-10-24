@@ -643,15 +643,21 @@ def pixal_model(host):
         NODE_CACHE[key] = (time.time(), next((n for n in names if "Pixal3D" in n), None))
     return NODE_CACHE[key][1]
 
+def has_mvadapter(host):
+    key = (host["name"], "mvadapter")
+    if key not in NODE_CACHE or time.time() - NODE_CACHE[key][0] > 300:
+        NODE_CACHE[key] = (time.time(), bool(comfy(host, "/object_info/DiffusersMVSampler").get("DiffusersMVSampler")))
+    return NODE_CACHE[key][1]
+
 def host_status(host):
     try:
         q = comfy(host, "/queue", timeout=10)
         busy = bool(q.get("queue_running") or q.get("queue_pending"))
         model = pixal_model(host)
-        return {"ok": True, "busy": busy, "trellis": bool(model),
+        return {"ok": True, "busy": busy, "trellis": bool(model), "mvadapter": has_mvadapter(host),
                 "detail": "missing Trellis2 nodes / Pixal3D model" if not model else "busy (another client)" if busy else "ready"}
     except Exception as e:
-        return {"ok": False, "busy": True, "trellis": False, "detail": str(e)[-200:]}
+        return {"ok": False, "busy": True, "trellis": False, "mvadapter": False, "detail": str(e)[-200:]}
 
 # Job files live in ComfyUI's input/sfam and output/sfam; `name` is relative to those folders.
 def put_input(host, name, data):
@@ -1279,24 +1285,26 @@ def worker():
         try:
             s = get_settings()
             with db() as c:
-                queued = c.execute("SELECT id, kind FROM jobs WHERE status='queued' ORDER BY id").fetchall()
+                queued = c.execute("SELECT id, kind, params FROM jobs WHERE status='queued' ORDER BY id").fetchall()
                 taken = {r[0] for r in c.execute("SELECT host FROM jobs WHERE status IN ('running','cancelling')")}
             free = [h for h in s["hosts"] if h.get("enabled") and h["name"] not in taken]
-            for jid, kind in queued:
-                if kind == "image":  # ChatGPT draws these; no GPU host, so they never wait behind 3D jobs
+            for jid, kind, params in queued:
+                multi = kind == "image" and json.loads(params or "{}").get("mode") == "multi"  # MV-Adapter: a GPU host
+                if kind == "image" and not multi:  # ChatGPT draws these; no GPU host, so they never wait behind 3D jobs
                     update_job(jid, status="running", host="ChatGPT", started=time.time(), note="")
                     threading.Thread(target=run_image, args=(jid,), daemon=True).start()
                     continue
                 # Motion and detector jobs run Blender and the tracker over SSH; they need no Trellis2 nodes.
                 over_ssh = kind in ("motion", "detector")
-                fits = (lambda h, st: h.get("kind") == "ssh") if over_ssh else (lambda h, st: st["trellis"])
+                fits = ((lambda h, st: h.get("kind") == "ssh") if over_ssh else (lambda h, st: st["mvadapter"]) if multi
+                        else (lambda h, st: st["trellis"]))
                 host = next((h for h in free if (st := host_status(h))["ok"] and not st["busy"] and fits(h, st)), None)
                 if not host:
                     update_job(jid, note="waiting for a free GPU host")
                     break
                 free.remove(host)
                 update_job(jid, status="running", host=host["name"], started=time.time(), note="")
-                run = {"motion": run_motion, "detector": run_detector}.get(kind, run_job)
+                run = {"motion": run_motion, "detector": run_detector, "image": run_image}.get(kind, run_job)
                 threading.Thread(target=run, args=(jid, host), daemon=True).start()
         except Exception:
             traceback.print_exc()
@@ -1495,43 +1503,29 @@ def codex_review(images, brief):
     except (AttributeError, ValueError):
         raise RuntimeError(f"the review answer was not JSON: {text[:200]!r}")
 
-# Multi-view: all four views drawn together on one 2x2 turnaround sheet, so they share one design, pose and scale.
-# Pixal3D stitches views by camera angle and assumes one orthographic camera distance: a view at another scale or
-# with perspective makes it invent extra limbs (Greenlands rat, 2026-10-23: back view 1.4x the side views), and a
-# tail that changes direction between views gives two tails (rat v2). Drawing each view separately from the front
-# kept drifting in size, feet line and tail pose, and a reviewer comparing one view at a time passed the worst one
-# (rat v3), so: one sheet, size and feet line fixed in code (split_sheet), and one review of all four together.
-# Multi-view is two steps, like a concept artist's: one hero image settles the design, then the turnaround sheet
-# is drawn from it, so every view copies one finished subject instead of four separate readings of the prompt.
-MV_HERO = ("{prompt}\n\nDraw one full-body picture of the subject described above, on its own, in a neutral standing "
-           "pose, seen from the front three-quarters at eye level with every part visible. Plain pure-white background, "
-           "soft even studio light. No props, text, ground shadow or background scenery.")
-MV_SHEET = ("{prompt}\n\nThe attached image is the finished design of this subject. Copy it exactly - shape, "
-            "proportions, colours, materials and every detail; only the camera changes.\n\n"
-            "Draw it as a 3D-model turnaround sheet: one square image divided into a 2x2 grid of four "
-            "equal square cells, with the same subject once in each cell. Top-left: the front view (facing the "
-            "viewer). Top-right: the view from its left side (it faces image-left). Bottom-left: the view from "
-            "directly behind. Bottom-right: the view from its right side (it faces image-right).\n\n"
-            "These views feed a pixel-aligned 3D reconstruction (Pixal3D). It does not interpret the drawing: it "
-            "projects every pixel of each cell's outline along straight, parallel camera rays and builds the one shape "
-            "that matches all four outlines at once. So anything that differs between cells - a leg in another place, a "
-            "tail at another angle, another scale, any perspective - becomes extra geometry. Draw each cell as an exact "
-            "orthographic projection of the same 3D object.\n\n"
-            "The subject is a rigid statue and only the camera moves around it: the pose, proportions, colours, "
-            "materials and every part (head, ears, limbs, tail, clothing, anything held) stay exactly the same in all "
-            "four cells. Use a neutral, symmetrical standing pose. Loose parts never sweep to one side: a tail trails "
-            "straight back from the body and rests on the ground behind it, so it is hidden behind the body from the "
-            "front, points at the camera from behind, and trails horizontally away from the head in both side views.\n\n"
-            "Every cell uses the same orthographic, eye-level camera at the same distance: the subject is equally tall "
-            "in every cell with its feet on the same line, centred with a clear margin, on a plain pure-white "
-            "background with soft even studio light. No grid lines, borders, labels, ground shadows, props or text.\n\n"
-            "Line the views up like a classic turnaround drawn against horizontal guide lines: because the camera "
-            "only turns around the statue, every landmark sits at exactly the same height in all four views - ear "
-            "tips, top of the head, eyes, nose and mouth, chin, top of the back, belly line, tail base, knees, feet. "
-            "Draw the side views first in your mind and keep the front and back to the same heights; a head that "
-            "faces the camera must not grow, rise or drop.")
-MV_SHEET_REVIEW = (
-    "The image shows four views cut from one turnaround sheet of: {prompt}\nLeft to right: front, left side (the "
+# Multi-view is two steps. ChatGPT draws one hero image that settles the design, seen exactly from its left side: a
+# side view shows both the length and the height, so every other view fits MV-Adapter's square frame (from the
+# front, a rat came out squashed and tailless). MV-Adapter (local SDXL, orthographic cameras) then draws the back,
+# right side and front around that one image, consistent by construction. Views drawn by an image model never
+# agreed (rats v1-v6: tail paths, leg order, widths), and Pixal3D builds every disagreement as extra geometry
+# (rat v6: two tails, doubled hind feet). The pose rules are the motion session's, for a model that rigs and walks;
+# thin hairs and whiskers in the outline become slivers on the mesh, so they are left to the texture.
+MV_HERO = ("{prompt}\n\nDraw one full-body picture of the subject described above, on its own, seen exactly from its "
+           "left side at eye level - an orthographic side view, so it faces image-left - with the whole body, head to "
+           "tail tip, inside the frame. Plain pure-white background, soft even studio light. No props, text, ground "
+           "shadow or background scenery.\n\n"
+           "Pose it ready for rigging. If it walks on four legs: a square, even stance with no stride, each left and "
+           "right leg pair at the same front-back position; legs near-vertical columns with a slight natural bend; "
+           "clear white space between the front and hind legs and under the belly; toes flat and spread, short claws; "
+           "head level and looking straight ahead, mouth closed; the tail straight back, horizontal and raised clear of "
+           "the ground and the legs. If it walks on two legs: an A-pose, arms about 45 degrees out from the torso with "
+           "a clear gap, elbows slightly bent, palms down, five separate straight fingers; legs straight, feet "
+           "shoulder-width apart, toes forward; head forward, mouth closed; no props, capes, long loose cloth or hair "
+           "over the arms.\n\n"
+           "Nothing thin sticks out of the outline: no long whiskers, bristles, loose fur or hair strands. Fur, scars "
+           "and markings are painted on the skin.")
+MV_REVIEW = (
+    "The image shows four views generated around one design image of: {prompt}\nLeft to right: front, left side (the "
     "subject faces image-left), back, right side (it faces image-right), as if a camera orbited a rigid statue. Code "
     "has already scaled every view to the same overall height with the feet on one line, and drawn thin grey "
     "horizontal guide lines across all four. So any landmark sitting at a different height in one view is a drawing "
@@ -1545,8 +1539,9 @@ MV_SHEET_REVIEW = (
     "from the guide lines, with no shadow, props, text or part of a neighbouring view. In each problem, name the "
     "landmark, the views and which is higher.")
 GUIDE_LINES = 16  # horizontal guide lines across the review strip, spread over the subject's height
-SHEET_CELLS = {"front": (0, 0), "left": (1, 0), "back": (0, 1), "right": (1, 1)}  # (column, row) on the sheet
-VIEW_SIZE = 1024  # each split view is enlarged onto a square of this size
+MV_ADAPTER_VIEWS = {0: "left", 90: "back", 180: "right", 270: "front"}  # azimuth from the side-view hero -> position
+MV_SIZE = 768  # MV-Adapter SDXL's view size
+VIEW_SIZE = 1024  # each view is enlarged onto a square of this size
 
 def _subject_mask(img):
     """255 where the subject is: its alpha where the image has transparency, else whatever isn't near-white."""
@@ -1576,19 +1571,6 @@ def _ground(img):
 def _subject_box(img):
     return _subject_mask(img).getbbox()
 
-def _widest_gap(occupied):
-    """Middle of the longest empty run strictly inside the occupied span of a row/column profile, or None."""
-    filled = [i for i, v in enumerate(occupied) if v]
-    best, start = None, None
-    for i in range(filled[0], filled[-1] + 1) if filled else ():
-        if not occupied[i] and start is None:
-            start = i
-        elif occupied[i] and start is not None:
-            if not best or i - start > best[1] - best[0]:
-                best = (start, i)
-            start = None
-    return (best[0] + best[1]) // 2 if best else None
-
 def align_views(subjects):
     """{position: image cropped to its subject} -> {position: PNG bytes}. An orthographic camera orbiting a standing
     subject sees the same height from every side, so every view is scaled to one height (shrunk together if a long
@@ -1609,36 +1591,62 @@ def align_views(subjects):
         out[pos] = buf.getvalue()
     return out
 
-def split_sheet(png):
-    """Cut a 2x2 turnaround sheet into its four views at one scale (align_views). The image model doesn't keep to
-    equal quarters (a long side view runs past the middle), so the rows are split at the widest empty band and each
-    row at its widest empty column gap. Transparent sheets (the image tool often returns them) go onto white.
-    ValueError when the four subjects can't be told apart."""
+def mv_reference(png):
+    """The hero as MV-Adapter's reference, prepared like its own preprocess_image: cut out (ultratex_reference), the
+    longer side 90% of MV_SIZE, centred on 50% grey."""
     from PIL import Image
-    im = Image.open(io.BytesIO(png))
-    im = im.convert("RGBA" if im.mode in ("RGBA", "LA", "P") else "RGB")
-    mask = _subject_mask(im)
-    if im.mode == "RGBA":
-        flat = Image.new("RGB", im.size, "white")
-        flat.paste(im, mask=im.getchannel("A"))
-        im = flat
-    profile = lambda m, axis: [v > 0 for v in m.resize((1, m.height) if axis else (m.width, 1), Image.BOX).getdata()]
-    mid = _widest_gap(profile(mask, 1))
-    if mid is None:
-        raise ValueError("the sheet doesn't have two rows of views")
-    subjects = {}
-    for r, (top, bottom) in enumerate(((0, mid), (mid, im.height))):
-        band = mask.crop((0, top, im.width, bottom))
-        cut = _widest_gap(profile(band, 0))
-        if cut is None:
-            raise ValueError(f"the {'top' if r == 0 else 'bottom'} row of the sheet doesn't hold two views")
-        for c, (left, right) in enumerate(((0, cut), (cut, im.width))):
-            pos = next(p for p, cell in SHEET_CELLS.items() if cell == (c, r))
-            box = mask.crop((left, top, right, bottom)).getbbox()
-            if not box:
-                raise ValueError(f"the {pos} view of the sheet is empty")
-            subjects[pos] = im.crop((left + box[0], top + box[1], left + box[2], top + box[3]))
-    return align_views(subjects)
+    img = Image.open(io.BytesIO(ultratex_reference(png))).convert("RGBA")
+    img = img.crop(img.getchannel("A").getbbox())
+    k = MV_SIZE * 0.9 / max(img.size)
+    img = img.resize((max(1, round(img.width * k)), max(1, round(img.height * k))), Image.LANCZOS)
+    out = Image.new("RGB", (MV_SIZE, MV_SIZE), (127, 127, 127))
+    out.paste(img, ((MV_SIZE - img.width) // 2, (MV_SIZE - img.height) // 2), img)
+    buf = io.BytesIO()
+    out.save(buf, "PNG")
+    return buf.getvalue()
+
+def mv_views(pngs):
+    """MV-Adapter's views, in MV_ADAPTER_VIEWS order -> ({position: PNG}, notes): the grey background made white, then
+    aligned like uploaded views (align_uploads). Flood fill from the corners follows its soft gradient; pockets the
+    legs and tail close off (between the legs, under the belly) are keyed out by colour, tightly."""
+    from PIL import Image, ImageChops, ImageDraw
+    out = {}
+    for pos, png in zip(MV_ADAPTER_VIEWS.values(), pngs):
+        img = Image.open(io.BytesIO(png)).convert("RGB")
+        bg = img.getpixel((0, 0))
+        r, g, b = ImageChops.difference(img, Image.new("RGB", img.size, bg)).split()
+        pockets = ImageChops.lighter(ImageChops.lighter(r, g), b).point(lambda v: 255 if v <= 12 else 0)
+        for xy in ((0, 0), (img.width - 1, 0), (0, img.height - 1), (img.width - 1, img.height - 1)):
+            ImageDraw.floodfill(img, xy, (255, 255, 255), thresh=40)
+        img.paste((255, 255, 255), mask=pockets)
+        buf = io.BytesIO()
+        img.save(buf, "PNG")
+        out[pos] = buf.getvalue()
+    return align_uploads(out)
+
+def mvadapter_graph(reference, prompt, seed, prefix):
+    """MV-Adapter image-to-multiview (ComfyUI-MVAdapter, its i2mv_sdxl_diffusers example settings) at the four
+    MV_ADAPTER_VIEWS azimuths around `reference` (a ComfyUI input name)."""
+    return {
+        "1": {"class_type": "DiffusersMVPipelineLoader", "inputs": {
+            "ckpt_name": "stabilityai/stable-diffusion-xl-base-1.0", "pipeline_name": "MVAdapterI2MVSDXLPipeline"}},
+        "2": {"class_type": "DiffusersMVVaeLoader", "inputs": {"vae_name": "madebyollin/sdxl-vae-fp16-fix"}},
+        "3": {"class_type": "DiffusersMVSchedulerLoader", "inputs": {
+            "pipeline": ["1", 0], "scheduler_name": "DDPM", "shift_snr": True, "shift_mode": "interpolated", "shift_scale": 8.0}},
+        "4": {"class_type": "DiffusersMVModelMakeup", "inputs": {
+            "pipeline": ["1", 0], "scheduler": ["3", 0], "autoencoder": ["2", 0], "load_mvadapter": True,
+            "adapter_path": "huanngzh/mv-adapter", "adapter_name": "mvadapter_i2mv_sdxl.safetensors",
+            "num_views": len(MV_ADAPTER_VIEWS)}},
+        "5": {"class_type": "ViewSelector", "inputs": {  # 0, 90, 180, 270 in that order
+            "front_view": True, "front_right_view": False, "right_view": True, "back_view": True, "left_view": True,
+            "front_left_view": False}},
+        "6": {"class_type": "LoadImage", "inputs": {"image": reference}},
+        "7": {"class_type": "DiffusersMVSampler", "inputs": {
+            "pipeline": ["4", 0], "num_views": len(MV_ADAPTER_VIEWS), "prompt": prompt[:500],
+            "negative_prompt": "watermark, ugly, deformed, noisy, blurry, low contrast", "width": MV_SIZE,
+            "height": MV_SIZE, "steps": 50, "cfg": 3.0, "seed": seed, "reference_image": ["6", 0], "azimuth_degrees": ["5", 0]}},
+        "8": {"class_type": "SaveImage", "inputs": {"images": ["7", 0], "filename_prefix": prefix}},
+    }
 
 def guide_strip(views):
     """The aligned views (align_views output, same height and feet line) side by side, each cropped to its own width,
@@ -1698,7 +1706,7 @@ def image_params(params):
         raise ValueError(f"mode is single or multi, model one of {IMAGE_MODELS}, and a prompt is required")
     return p
 
-def run_image(jid):
+def run_image(jid, host=None):
     job = job_row(jid)
     p = image_params(json.loads(job["params"]))
     log = []
@@ -1716,40 +1724,41 @@ def run_image(jid):
         if p["mode"] == "single":
             log.append("generating the image (sent as written)")
             save(codex_image(p["prompt"], p["model"]), "")
-        else:  # a hero image, then one sheet drawn from it, split and aligned in code, reviewed as a set
-            log.append("hero: drawing the design image")
+        else:  # a side-view hero from ChatGPT, then MV-Adapter's views around it on the job's GPU host
+            log.append("hero: drawing the side-view design image")
             hero = codex_image(MV_HERO.format(prompt=p["prompt"]), p["model"])
-            extra, tries, kept = "", 3, None
-            for n in range(1, tries + 1):
-                if job_row(jid)["status"] == "cancelling":
-                    raise InterruptedError
-                log.append(f"sheet: drawing (try {n}/{tries})")
-                sheet = codex_image(MV_SHEET.format(prompt=p["prompt"]) + extra, p["model"], refs=[hero])
-                try:
-                    views = split_sheet(sheet)
-                except ValueError as e:
-                    log.append(f"sheet: {e}")
-                    extra = "\n\nA previous attempt was rejected: one of the four cells was empty. Draw the subject in every cell."
-                    continue
-                kept = sheet, views
-                try:
-                    r = codex_review([guide_strip(views)], MV_SHEET_REVIEW.format(prompt=p["prompt"]))
-                except RuntimeError as e:
-                    log.append(f"sheet: review unavailable ({e}); keeping this sheet")
-                    break
-                if r["pass"]:
-                    log.append("sheet: review passed")
-                    break
-                log.append(f"sheet: review failed: {'; '.join(r['problems']) or 'no reason given'}")
-                extra = f"\n\nA previous attempt was rejected for: {'; '.join(r['problems'])}. Correct it: {r['fix']}"
-            else:
-                log.append("sheet: kept the last usable try although the review still failed")
-            if not kept:
-                raise RuntimeError("no usable sheet: every try had an empty cell")
-            sheet, views = kept
-            for pos in SHEET_CELLS:
+            ok, line = gpu_check(host)
+            log.append(line)
+            if not ok:
+                raise RuntimeError(line)
+            ref = f"{jid}_hero.png"
+            put_input(host, ref, mv_reference(hero))
+            tries, views = 3, None
+            try:
+                for n in range(1, tries + 1):
+                    log.append(f"views: MV-Adapter (try {n}/{tries})")
+                    h = run_prompt(host, jid, mvadapter_graph(f"sfam/{ref}", p["prompt"], random.randint(0, 0x7fffffff),
+                                                              f"sfam/{jid}_mv/view"), time.time(), get_settings()["job_timeout_min"])
+                    files = h.get("outputs", {}).get("8", {}).get("images", [])
+                    if len(files) != len(MV_ADAPTER_VIEWS):
+                        raise RuntimeError(f"MV-Adapter returned {len(files)} views, not {len(MV_ADAPTER_VIEWS)}")
+                    views, notes = mv_views([get_output(host, f"{f['subfolder']}/{f['filename']}"[len("sfam/"):]) for f in files])
+                    log.extend(notes)
+                    try:
+                        r = codex_review([guide_strip(views)], MV_REVIEW.format(prompt=p["prompt"]))
+                    except RuntimeError as e:
+                        log.append(f"views: review unavailable ({e}); keeping these views")
+                        break
+                    if r["pass"]:
+                        log.append("views: review passed")
+                        break
+                    log.append(f"views: review failed: {'; '.join(r['problems']) or 'no reason given'}")
+                else:
+                    log.append("views: kept the last try although the review still failed")
+            finally:
+                cleanup(host, [ref], [f"{jid}_mv"])
+            for pos in VIEW_AZIMUTHS:
                 save(views[pos], f"-{pos}")
-            save(sheet, "-sheet")
             save(hero, "-hero")
             save(guide_strip(views), "-guides")  # what the reviewer judged: the views side by side with guide lines
         update_job(jid, status="done", output=saved[0], files=json.dumps(saved), finished=time.time())
@@ -2074,34 +2083,33 @@ def check():
             image_params(bad); raise AssertionError(f"image_params accepted {bad}")
         except ValueError:
             pass
-    assert "{" not in MV_SHEET.format(prompt="rat") + MV_SHEET_REVIEW.format(prompt="rat")
-    from PIL import Image, ImageDraw  # split_sheet: views drawn at different sizes and feet lines come out matched
-    sheet = Image.new("RGB", (1200, 1200), "white")
-    d = ImageDraw.Draw(sheet)
-    for (x, y), (w, h, drop) in zip([(0, 0), (600, 0), (0, 600), (600, 600)],
-                                    [(200, 400, 0), (420, 360, 40), (190, 380, 10), (400, 330, 60)]):
-        d.rectangle((x + 150, y + 520 - drop - h, x + 150 + w, y + 520 - drop), fill="grey")
-    buf = io.BytesIO(); sheet.save(buf, "PNG")
-    boxes = {pos: Image.open(io.BytesIO(png)).convert("L").point(lambda v: 255 if v < 235 else 0).getbbox()
-             for pos, png in split_sheet(buf.getvalue()).items()}
-    assert set(boxes) == set(SHEET_CELLS)
-    assert max(b[3] for b in boxes.values()) - min(b[3] for b in boxes.values()) <= 2  # one feet line
-    assert max(b[3] - b[1] for b in boxes.values()) - min(b[3] - b[1] for b in boxes.values()) <= 2  # one height
+    assert "{" not in MV_HERO.format(prompt="rat") + MV_REVIEW.format(prompt="rat")
+    from PIL import Image, ImageDraw
     def png_of(img):
         b = io.BytesIO(); img.save(b, "PNG"); return b.getvalue()
-    clear = Image.new("RGBA", (1200, 1200), (0, 0, 0, 0))  # transparent, side views running past the middle (rat v4)
-    d = ImageDraw.Draw(clear)
-    for box in ((100, 100, 300, 500), (430, 150, 1150, 480), (100, 700, 300, 1100), (380, 760, 1150, 1080)):
-        d.rectangle(box, fill="grey")
-    views = {pos: Image.open(io.BytesIO(png)) for pos, png in split_sheet(png_of(clear)).items()}
-    boxes = {pos: v.convert("L").point(lambda v: 255 if v < 235 else 0).getbbox() for pos, v in views.items()}
-    assert all(v.mode == "RGB" and v.getpixel((5, 5)) == (255, 255, 255) for v in views.values())  # white, not black
-    fw = boxes["front"][2] - boxes["front"][0]; fh = boxes["front"][3] - boxes["front"][1]
-    assert abs(fw / fh - 0.5) < 0.05, boxes["front"]  # just the front subject, no neighbour cut in
-    assert len({b[3] for b in boxes.values()}) == 1 and len({b[3] - b[1] for b in boxes.values()}) <= 2, boxes
-    strip = Image.open(io.BytesIO(guide_strip(split_sheet(png_of(clear))))).convert("L")
+    grey = []  # MV-Adapter views at their own sizes on grey: back on white, one height and feet line
+    for box in ((100, 300, 700, 560), (300, 280, 470, 600), (68, 320, 668, 560), (290, 300, 480, 620)):
+        im = Image.new("RGB", (MV_SIZE, MV_SIZE), (127, 127, 127))
+        ImageDraw.Draw(im).rectangle(box, fill=(200, 140, 140))
+        grey.append(png_of(im))
+    ImageDraw.Draw(im := Image.open(io.BytesIO(grey[0])).convert("RGB")).rectangle((300, 400, 500, 500), fill=(127, 127, 127))
+    grey[0] = png_of(im)  # a grey pocket closed off inside the left view (between the legs)
+    views = mv_views(grey)[0]
+    assert (255, 255, 255) in [c for _, c in Image.open(io.BytesIO(views["left"])).convert("RGB").getcolors(1 << 20)]
+    imgs = {pos: Image.open(io.BytesIO(v)).convert("RGB") for pos, v in views.items()}
+    boxes = {pos: _subject_box(im) for pos, im in imgs.items()}
+    assert set(views) == set(VIEW_AZIMUTHS) and all(im.getpixel((5, 5)) == (255, 255, 255) for im in imgs.values())
+    assert len({b[1] for b in boxes.values()}) <= 2 and max(b[3] for b in boxes.values()) - min(b[3] for b in boxes.values()) <= 2, boxes
+    strip = Image.open(io.BytesIO(guide_strip(views))).convert("L")
     lines = sum(1 for y in range(strip.height) if strip.getpixel((1, y)) < 200)  # left margin: only guide lines there
     assert GUIDE_LINES <= lines <= 3 * (GUIDE_LINES + 1) and strip.width <= 2400, (lines, strip.size)
+    hero = Image.new("RGB", (1536, 1024), "white"); ImageDraw.Draw(hero).rectangle((200, 400, 1300, 800), fill=(90, 80, 80))
+    ref = Image.open(io.BytesIO(mv_reference(png_of(hero))))
+    assert ref.size == (MV_SIZE, MV_SIZE) and ref.getpixel((2, 2)) == (127, 127, 127) and ref.getpixel((384, 384)) == (90, 80, 80)
+    g = mvadapter_graph("sfam/1_hero.png", "rat", 7, "sfam/1_mv/view")
+    assert g["7"]["inputs"]["seed"] == 7 and g["6"]["inputs"]["image"] == "sfam/1_hero.png"
+    for nid, n in g.items():
+        assert all(v[0] in g for v in n["inputs"].values() if isinstance(v, list)), nid
     front, left = Image.new("RGBA", (500, 500), (0, 0, 0, 0)), Image.new("RGBA", (500, 500), (0, 0, 0, 0))
     ImageDraw.Draw(front).rectangle((200, 50, 300, 450), fill="grey")  # 80% of the frame
     ImageDraw.Draw(left).rectangle((100, 200, 400, 400), fill="grey")  # 40%: flagged, then matched
@@ -2124,11 +2132,6 @@ def check():
     # The feet share the line (the mask's 2 px edge erosion, x3.7 at this test's scale, allows 12 px); the tail
     # overhangs. Measured to the tail tip instead, the back view's feet would sit ~150 px high.
     assert abs(lowest(feet["front"]) - lowest(feet["back"])) <= 12
-    blank = io.BytesIO(); Image.new("RGB", (400, 400), "white").save(blank, "PNG")
-    try:
-        split_sheet(blank.getvalue()); raise AssertionError("an empty sheet must be refused")
-    except ValueError:
-        pass
     q = urllib.parse.parse_qs(urllib.parse.urlparse(codex_start()).query)
     assert q["client_id"] == [CODEX_CLIENT_ID] and q["code_challenge_method"] == ["S256"] and q["state"][0] in CODEX_PENDING
     try:
