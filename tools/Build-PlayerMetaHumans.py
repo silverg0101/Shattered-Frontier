@@ -10,6 +10,8 @@ Optional "skin": [u, v] sets the skin tone (the Creator's tone picker position);
 Optional "freckles": 1-3 picks a freckle mask; "freckle_strength" (0-1, Creator default 0.2) sets its strength and density.
 Optional "hair_color": [melanin, redness] (0-1) dyes every groom (logs PLAYER_METAHUMAN_HAIR); "groom_colors":
 {"Eyebrows"|"Beards"|"Mustaches"|"Eyelashes"|"Hair": [melanin, redness]} overrides it for the grooms in that wardrobe folder.
+Judge hair colour in game (tools/Capture-PlayerOutfit.py): Silverbrook's warm sun shows a value much lighter and more orange
+than Render-MetaHumanPresets.py's dim neutral studio (about +0.2 melanin for the same read).
 Optional "makeup": "none" clears the preset's foundation, eye shadow/liner, blush and lipstick, and sets the lip, under-eye
 and cheek skin accents back to neutral 0.5 (logs PLAYER_METAHUMAN_MAKEUP). Optional "accents": {"<region>": [lightness, redness,
 saturation]} (regions: cheeks, chin, ears, forehead, lips, nose, scalp, under_eye; 0.5 neutral) sets a region after that.
