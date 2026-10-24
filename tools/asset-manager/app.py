@@ -1012,6 +1012,9 @@ def blender_row(b):
             ip = None
         if u.scheme != "http" or not ip or ip.is_global or ip.is_loopback or ip.is_unspecified or not u.port:
             raise ValueError(f"{name}: the MCP URL must be http://<LAN or tailnet IP>:<port>/, not {url!r}")
+        if u.port == 9876:  # the add-on's own socket, which listens on localhost and doesn't speak MCP
+            raise ValueError(f"{name}: 9876 is the Blender add-on's socket, not MCP; run `blender-mcp --transport http "
+                             f"--host {u.hostname} --port 8000` on that PC and use http://{u.hostname}:8000/")
         return {"name": name, "mode": mode, "url": url}
     gpu = b.get("gpu")
     gpu = None if gpu in (None, "") else int(gpu)
