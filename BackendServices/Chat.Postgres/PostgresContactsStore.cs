@@ -27,6 +27,11 @@ public sealed class PostgresContactsStore(string connectionString)
         foreach (var value in values) command.Parameters.AddWithValue(value);
         return command;
     }
+    private static void LockCharacters(NpgsqlConnection db, NpgsqlTransaction tx, IEnumerable<string> characters)
+    {
+        foreach (var character in characters.Distinct(StringComparer.Ordinal).Order(StringComparer.Ordinal))
+            using (var mutex = Command(db, tx, "SELECT pg_advisory_xact_lock(hashtext($1), 7442)", character)) mutex.ExecuteNonQuery();
+    }
 
     public bool Mutate(string key, string actor, string other, string kind, bool add)
     {
@@ -38,6 +43,9 @@ public sealed class PostgresContactsStore(string connectionString)
         using var db = new NpgsqlConnection(connectionString); db.Open();
         using var tx = db.BeginTransaction();
         using (var mutex = Command(db, tx, "SELECT pg_advisory_xact_lock(hashtext($1), 7441)", key)) mutex.ExecuteNonQuery();
+        LockCharacters(db, tx, [actor, other]);
+        using (var erased = Command(db, tx, "SELECT EXISTS (SELECT 1 FROM chat.erased_characters WHERE character_id IN ($1,$2))", actor, other))
+            if ((bool)erased.ExecuteScalar()!) throw new ContactRejectedException("Erased character cannot have contacts.");
         using (var prior = Command(db, tx, "SELECT request_hash,applied FROM chat.idempotency_keys WHERE idempotency_key=$1", key))
         using (var reader = prior.ExecuteReader())
         {
@@ -73,5 +81,30 @@ public sealed class PostgresContactsStore(string connectionString)
         using var db = new NpgsqlConnection(connectionString); db.Open();
         using var command = Command(db, null, "SELECT EXISTS (SELECT 1 FROM chat.contacts WHERE kind='block' AND ((character_id=$1 AND other_character_id=$2) OR (character_id=$2 AND other_character_id=$1)))", actor, other);
         return (bool)command.ExecuteScalar()!;
+    }
+
+    public bool CanDeliverWhisper(string actor, string other)
+    {
+        Character(actor); Character(other);
+        if (actor == other) throw new ContactRejectedException("A character cannot whisper itself.");
+        using var db = new NpgsqlConnection(connectionString); db.Open();
+        using var command = Command(db, null, "SELECT NOT EXISTS (SELECT 1 FROM chat.erased_characters WHERE character_id IN ($1,$2)) AND NOT EXISTS (SELECT 1 FROM chat.contacts WHERE kind='block' AND ((character_id=$1 AND other_character_id=$2) OR (character_id=$2 AND other_character_id=$1)))", actor, other);
+        return (bool)command.ExecuteScalar()!;
+    }
+
+    public int EraseContacts(IReadOnlyList<string> characters)
+    {
+        if (characters.Count == 0) throw new ContactRejectedException("At least one character is required.");
+        foreach (var character in characters) Character(character);
+        var ids = characters.Distinct(StringComparer.Ordinal).Order(StringComparer.Ordinal).ToArray();
+        using var db = new NpgsqlConnection(connectionString); db.Open();
+        using var tx = db.BeginTransaction();
+        LockCharacters(db, tx, ids);
+        foreach (var id in ids)
+            using (var mark = Command(db, tx, "INSERT INTO chat.erased_characters(character_id) VALUES ($1) ON CONFLICT DO NOTHING", id)) mark.ExecuteNonQuery();
+        using var delete = Command(db, tx, "DELETE FROM chat.contacts WHERE character_id=ANY($1) OR other_character_id=ANY($1)", (object)ids);
+        var count = delete.ExecuteNonQuery();
+        tx.Commit();
+        return count;
     }
 }

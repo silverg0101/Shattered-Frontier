@@ -19,6 +19,7 @@ public sealed class IdentityOptions
     public int CharacterRestoreDays { get; set; } = 30;
     public int NameReuseQuarantineDays { get; set; } = 90;
     public string WorldServerId { get; set; } = "srvi_dev_local";
+    public string ChatServerId { get; set; } = "srvi_chat_local";
     public string WorldAddress { get; set; } = "127.0.0.1:7777";
     public string[] ReservedNames { get; set; } = [];
 
@@ -29,6 +30,7 @@ public sealed class IdentityOptions
             LoginWindowSeconds is < 10 or > 3600 || CharacterSlotsPerRealm is < 1 or > 16 ||
             CharacterSlotsPerAccount is < 1 or > 32 || CharacterRestoreDays is < 1 or > 90 ||
             NameReuseQuarantineDays is < 1 or > 365 || string.IsNullOrWhiteSpace(WorldServerId) ||
+            string.IsNullOrWhiteSpace(ChatServerId) || ChatServerId == WorldServerId ||
             string.IsNullOrWhiteSpace(WorldAddress))
             throw new InvalidOperationException("Identity configuration is outside its safe bounds.");
     }
@@ -294,12 +296,21 @@ public sealed class IdentityService(IIdentityStore store, IdentityOptions option
 
     public (string Address, string Ticket, long ExpiresAtUnixSeconds) EnterWorld(SessionRecord session, string id)
     {
+        var (ticket, expires) = IssueCharacterTicket(session, id, options.WorldServerId);
+        return (options.WorldAddress, ticket, expires);
+    }
+
+    public (string Ticket, long ExpiresAtUnixSeconds) IssueContactTicket(SessionRecord session, string id) =>
+        IssueCharacterTicket(session, id, options.ChatServerId);
+
+    private (string Ticket, long ExpiresAtUnixSeconds) IssueCharacterTicket(SessionRecord session, string id, string serverId)
+    {
         var character = store.FindCharacter(id);
         if (character is null || character.AccountId != session.AccountId || character.State != "active")
             throw new ApiError(404, "NOT_FOUND", "CHARACTER_NOT_FOUND");
         var expires = clock.GetUtcNow().AddSeconds(options.TicketLifetimeSeconds).ToUnixTimeSeconds();
         var claims = new TicketClaims(session.SessionId, session.AccountId, id, character.RealmId,
-            options.WorldServerId, expires, Convert.ToBase64String(RandomNumberGenerator.GetBytes(24)));
-        return (options.WorldAddress, tickets.Issue(claims), expires);
+            serverId, expires, Convert.ToBase64String(RandomNumberGenerator.GetBytes(24)));
+        return (tickets.Issue(claims), expires);
     }
 }

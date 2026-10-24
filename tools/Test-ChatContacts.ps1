@@ -18,12 +18,12 @@ $bytes = [byte[]]::new(32)
 [Security.Cryptography.RandomNumberGenerator]::Fill($bytes); $adminPassword = [Convert]::ToHexString($bytes)
 [Security.Cryptography.RandomNumberGenerator]::Fill($bytes); $servicePassword = [Convert]::ToHexString($bytes)
 [Security.Cryptography.RandomNumberGenerator]::Fill($bytes); $token = [Convert]::ToHexString($bytes)
-$started = $false; $hostProcess = $null
+$started = $false; $hostProcess = $null; $identityProcess = $null
 function FreePort {
     $listener = [Net.Sockets.TcpListener]::new([Net.IPAddress]::Loopback,0)
     $listener.Start(); $value = $listener.LocalEndpoint.Port; $listener.Stop(); return $value
 }
-$port = FreePort; $hostPort = FreePort
+$port = FreePort; $hostPort = FreePort; $identityPort = FreePort
 function Run([string]$file,[string[]]$arguments) {
     & $file @arguments
     if ($LASTEXITCODE -ne 0) { throw "$file exited $LASTEXITCODE" }
@@ -50,6 +50,16 @@ function StartHost {
     }
     if (-not $ready) { throw 'Chat host startup timeout.' }
 }
+function StartIdentity {
+    $script:identityProcess = Start-Process -FilePath $dotnet -ArgumentList @((Join-Path $repo 'BackendServices/IdentityGateway/bin/Release/net10.0/IdentityGateway.dll')) -WorkingDirectory $repo -PassThru -WindowStyle Hidden -RedirectStandardOutput (Join-Path $private 'identity.out') -RedirectStandardError (Join-Path $private 'identity.err')
+    $ready = $false
+    for ($i=0; $i -lt 100; $i++) {
+        if ($script:identityProcess.HasExited) { throw 'Identity gateway exited during startup.' }
+        try { if ((Invoke-WebRequest "http://127.0.0.1:$identityPort/v1/characters" -SkipHttpErrorCheck -TimeoutSec 1).StatusCode -eq 401) { $ready = $true; break } } catch { }
+        Start-Sleep -Milliseconds 100
+    }
+    if (-not $ready) { throw 'Identity gateway startup timeout.' }
+}
 try {
     [void](New-Item -ItemType Directory -Path $private -Force)
     $account = [Security.Principal.WindowsIdentity]::GetCurrent().Name
@@ -57,32 +67,49 @@ try {
     @{run=$run;data=$data;port=$port} | ConvertTo-Json | Set-Content (Join-Path $private 'owner.json')
     Run $dotnet @('restore',(Join-Path $repo 'BackendServices/Chat.Host.Tests/Chat.Host.Tests.csproj'),'--locked-mode','--packages',$nuget,'--verbosity','quiet')
     Run $dotnet @('build',(Join-Path $repo 'BackendServices/Chat.Host.Tests/Chat.Host.Tests.csproj'),'--no-restore','--configuration','Release','--verbosity','quiet')
+    Run $dotnet @('restore',(Join-Path $repo 'BackendServices/IdentityGateway/IdentityGateway.csproj'),'--locked-mode','--packages',$nuget,'--verbosity','quiet')
+    Run $dotnet @('build',(Join-Path $repo 'BackendServices/IdentityGateway/IdentityGateway.csproj'),'--no-restore','--configuration','Release','--verbosity','quiet')
     $passwordFile = Join-Path $private 'admin-password'; [IO.File]::WriteAllText($passwordFile,$adminPassword)
     Run (Join-Path $pg 'initdb.exe') @('-D',$data,'-U','fixture_admin','--pwfile',$passwordFile,'--auth','scram-sha-256','--encoding','UTF8','--no-locale')
     Remove-Item -LiteralPath $passwordFile -Force
     [IO.File]::AppendAllText((Join-Path $data 'postgresql.conf'),"`nlisten_addresses='127.0.0.1'`nport=$port`nfsync=on`nsynchronous_commit=on`nfull_page_writes=on`n")
-    [IO.File]::WriteAllLines((Join-Path $data 'pg_hba.conf'),@('host all fixture_admin 127.0.0.1/32 scram-sha-256',"host chat_$run chat_svc 127.0.0.1/32 scram-sha-256",'host all all 127.0.0.1/32 reject','host all all ::1/128 reject'))
+    [IO.File]::WriteAllLines((Join-Path $data 'pg_hba.conf'),@('host all fixture_admin 127.0.0.1/32 scram-sha-256',"host chat_$run chat_svc 127.0.0.1/32 scram-sha-256","host chat_$run identity_svc 127.0.0.1/32 scram-sha-256",'host all all 127.0.0.1/32 reject','host all all ::1/128 reject'))
     CheckOwned
     Run (Join-Path $pg 'pg_ctl.exe') @('-D',$data,'-l',(Join-Path $private 'postgres.log'),'-w','-t','30','start'); $started = $true
     $env:PGPASSWORD = $adminPassword
-    Sql "CREATE ROLE chat_owner NOLOGIN; CREATE ROLE chat_svc LOGIN PASSWORD '$servicePassword'; CREATE DATABASE chat_$run;"
-    Sql "REVOKE ALL ON DATABASE chat_$run FROM PUBLIC; GRANT CONNECT ON DATABASE chat_$run TO chat_svc; GRANT CREATE ON DATABASE chat_$run TO chat_owner; REVOKE ALL ON SCHEMA public FROM PUBLIC;" "chat_$run"
+    Sql "CREATE ROLE chat_owner NOLOGIN; CREATE ROLE identity_owner NOLOGIN; CREATE ROLE chat_svc LOGIN PASSWORD '$servicePassword'; CREATE ROLE identity_svc LOGIN PASSWORD '$servicePassword'; CREATE DATABASE chat_$run;"
+    Sql "REVOKE ALL ON DATABASE chat_$run FROM PUBLIC; GRANT CONNECT ON DATABASE chat_$run TO chat_svc,identity_svc; GRANT CREATE ON DATABASE chat_$run TO chat_owner,identity_owner; REVOKE ALL ON SCHEMA public FROM PUBLIC;" "chat_$run"
     $migration = "Host=127.0.0.1;Port=$port;Database=chat_$run;Username=fixture_admin;Password=$adminPassword;Pooling=false"
     & (Join-Path $repo 'tools/Invoke-SchemaMigrations.ps1') -Connection $migration -Schemas chat -Role chat_owner -Dotnet $dotnet -Nuget $nuget | Out-Null
+    & (Join-Path $repo 'tools/Invoke-SchemaMigrations.ps1') -Connection $migration -Schemas identity -Role identity_owner -Dotnet $dotnet -Nuget $nuget | Out-Null
     Sql 'GRANT USAGE ON SCHEMA chat TO chat_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA chat TO chat_svc;' "chat_$run"
+    Sql 'GRANT USAGE ON SCHEMA identity TO identity_svc; GRANT SELECT ON identity.schema_version TO identity_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON identity.accounts,identity.sessions,identity.characters,identity.ticket_uses TO identity_svc;' "chat_$run"
     $env:CHAT_CONNECTION = "Host=127.0.0.1;Port=$port;Database=chat_$run;Username=chat_svc;Password=$servicePassword;Pooling=true;Maximum Pool Size=8;Timeout=2;Command Timeout=5"
+    $env:Identity__Connection = "Host=127.0.0.1;Port=$port;Database=chat_$run;Username=identity_svc;Password=$servicePassword;Pooling=true;Maximum Pool Size=8;Timeout=2;Command Timeout=5"
+    $env:Identity__TicketSigningKey = [Convert]::ToBase64String([Security.Cryptography.RandomNumberGenerator]::GetBytes(32))
+    $env:Identity__WorldVerifierKey = [Convert]::ToHexString([Security.Cryptography.RandomNumberGenerator]::GetBytes(32))
+    $env:Identity__ChatVerifierKey = [Convert]::ToHexString([Security.Cryptography.RandomNumberGenerator]::GetBytes(32))
+    $env:Identity__ListenUrl = "http://127.0.0.1:$identityPort"
+    $env:Identity__TicketLifetimeSeconds = '5'
+    $env:CHAT_IDENTITY_URL = $env:Identity__ListenUrl
+    $env:CHAT_IDENTITY_SERVER_ID = 'srvi_chat_local'
+    $env:SF_IDENTITY_CHAT_VERIFIER_KEY = $env:Identity__ChatVerifierKey
+    $env:CHAT_TEST_STATE = Join-Path $private 'contacts-state.json'
     $env:CHAT_HOST_PORT = "$hostPort"; $env:SF_CHAT_TOKEN = $token
+    $env:SF_CHAT_PRIVACY_TOKEN = [Convert]::ToHexString([Security.Cryptography.RandomNumberGenerator]::GetBytes(32))
+    StartIdentity
     StartHost
     Run $dotnet @((Join-Path $repo 'BackendServices/Chat.Host.Tests/bin/Release/net10.0/Chat.Host.Tests.dll'),'first')
     Stop-Process -Id $hostProcess.Id -Force; $hostProcess.WaitForExit(); $hostProcess = $null
     Remove-Item -LiteralPath (Join-Path $private 'chat-host.out'),(Join-Path $private 'chat-host.err') -Force
     StartHost
     Run $dotnet @((Join-Path $repo 'BackendServices/Chat.Host.Tests/bin/Release/net10.0/Chat.Host.Tests.dll'),'restart')
-    Write-Output 'PASS ChatContacts fixture (21 checks)'
+    Write-Output 'PASS ChatContacts fixture (38 checks)'
 }
 finally {
     if ($hostProcess -and -not $hostProcess.HasExited) { Stop-Process -Id $hostProcess.Id -Force; $hostProcess.WaitForExit() }
+    if ($identityProcess -and -not $identityProcess.HasExited) { Stop-Process -Id $identityProcess.Id -Force; $identityProcess.WaitForExit() }
     if ($started) { CheckOwned; Run (Join-Path $pg 'pg_ctl.exe') @('-D',$data,'-m','immediate','-w','-t','30','stop') }
-    foreach ($name in @('PGPASSWORD','CHAT_CONNECTION','CHAT_HOST_PORT','SF_CHAT_TOKEN')) { Remove-Item "Env:$name" -ErrorAction SilentlyContinue }
+    foreach ($name in @('PGPASSWORD','CHAT_CONNECTION','CHAT_HOST_PORT','SF_CHAT_TOKEN','SF_CHAT_PRIVACY_TOKEN','CHAT_IDENTITY_URL','CHAT_IDENTITY_SERVER_ID','SF_IDENTITY_CHAT_VERIFIER_KEY','CHAT_TEST_STATE','Identity__Connection','Identity__TicketSigningKey','Identity__WorldVerifierKey','Identity__ChatVerifierKey','Identity__ListenUrl','Identity__TicketLifetimeSeconds')) { Remove-Item "Env:$name" -ErrorAction SilentlyContinue }
     & $dotnet build-server shutdown | Out-Null
 }

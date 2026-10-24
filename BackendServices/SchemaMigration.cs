@@ -34,7 +34,8 @@ public static class SchemaMigration
             "group" => new (string File, string Installed)[] {
                 ("Schema.sql", "SELECT to_regclass('\"group\".schema_version') IS NOT NULL") },
             "chat" => new (string File, string Installed)[] {
-                ("Schema.sql", "SELECT to_regclass('chat.schema_version') IS NOT NULL") },
+                ("Schema.sql", "SELECT to_regclass('chat.schema_version') IS NOT NULL"),
+                ("Schema.Erasure.sql", "SELECT version>=2 FROM chat.schema_version WHERE singleton=true") },
             _ => throw new ArgumentException($"Unknown schema: {schema}")
         };
         if (role is not null && !System.Text.RegularExpressions.Regex.IsMatch(role, "^[a-z_][a-z0-9_]*$"))

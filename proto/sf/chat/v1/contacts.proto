@@ -2,12 +2,14 @@ syntax = "proto3";
 package sf.chat.v1;
 option csharp_namespace = "ShatteredFrontier.Chat.V1";
 
-// Trusted gateway/server calls only. The gateway authenticates the actor.
+// Trusted gateway/server calls only. Actor calls require a scoped IdentityGateway contact ticket.
 service ContactsService {
   rpc AddContact(ContactMutation) returns (ContactAck);
   rpc RemoveContact(ContactMutation) returns (ContactAck);
   rpc ListContacts(CharacterRef) returns (ContactList);
   rpc IsBlocked(BlockQuery) returns (BlockStatus);
+  rpc CheckWhisperDelivery(BlockQuery) returns (WhisperDeliveryStatus);
+  rpc EraseContacts(EraseContactsRequest) returns (EraseContactsReply);
 }
 message ContactMutation {
   string idempotency_key = 1;
@@ -25,3 +27,6 @@ message Contact {
 message ContactList { repeated Contact contacts = 1; }
 message BlockQuery { string character_id = 1; string other_character_id = 2; }
 message BlockStatus { bool blocked = 1; }
+message WhisperDeliveryStatus { bool allowed = 1; }
+message EraseContactsRequest { repeated string character_ids = 1; }
+message EraseContactsReply { int32 removed_edges = 1; }

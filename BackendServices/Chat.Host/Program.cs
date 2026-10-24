@@ -12,6 +12,9 @@ builder.WebHost.ConfigureKestrel(options => options.Listen(IPAddress.Loopback, p
 builder.Services.AddGrpc();
 builder.Services.AddSingleton(new PostgresContactsStore(Required("CHAT_CONNECTION")));
 builder.Services.AddSingleton(new ChatServiceToken(Required("SF_CHAT_TOKEN")));
+builder.Services.AddSingleton(new ChatPrivacyToken(Required("SF_CHAT_PRIVACY_TOKEN")));
+builder.Services.AddSingleton(new ChatActorVerifier(new HttpClient { BaseAddress = new Uri(Required("CHAT_IDENTITY_URL").TrimEnd('/') + "/"), Timeout = TimeSpan.FromSeconds(3) },
+    Required("CHAT_IDENTITY_SERVER_ID"), Required("SF_IDENTITY_CHAT_VERIFIER_KEY")));
 var app = builder.Build();
 app.MapGrpcService<ContactsGrpcService>();
 app.Lifetime.ApplicationStarted.Register(() => Console.WriteLine($"CHAT_HOST_READY port={port}"));

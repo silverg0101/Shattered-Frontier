@@ -17,6 +17,8 @@ var signingKey = Convert.FromBase64String(encodedKey);
 if (signingKey.Length < 32) throw new InvalidOperationException("Ticket signing key must be at least 32 bytes.");
 var verifierKey = builder.Configuration["Identity:WorldVerifierKey"] ?? throw new InvalidOperationException("Identity:WorldVerifierKey is required.");
 if (verifierKey.Length < 32) throw new InvalidOperationException("World verifier key must be at least 32 characters.");
+var chatVerifierKey = builder.Configuration["Identity:ChatVerifierKey"];
+if (chatVerifierKey is not null && chatVerifierKey.Length < 32) throw new InvalidOperationException("Chat verifier key must be at least 32 characters.");
 var repoAllowlist = Path.Combine(builder.Environment.ContentRootPath, "content/appearance/human.json");
 var allowlistPath = builder.Configuration["Identity:AppearanceAllowlist"] ??
     (File.Exists(repoAllowlist) ? repoAllowlist : Path.GetFullPath(Path.Combine(builder.Environment.ContentRootPath, "../../content/appearance/human.json")));
@@ -101,6 +103,26 @@ app.MapPost("/v1/world/verify-ticket", (VerifyTicketRequest request, HttpContext
     var claims = verifier.VerifyAndConsume(request.Ticket, options.WorldServerId);
     return claims is null ? Results.Json(new ErrorBody("UNAUTHENTICATED", "TICKET_INVALID"), statusCode: 401) : Results.Ok(new { character_id = claims.CharacterId, account_id = claims.AccountId, realm_id = claims.RealmId });
 });
+if (chatVerifierKey is not null)
+{
+    app.MapPost("/v1/characters/{characterId}/contacts-ticket", (string characterId, HttpContext http, IdentityService service) =>
+    {
+        var (ticket, expires) = service.IssueContactTicket(service.RequireSession(http.Request.Headers.Authorization), characterId);
+        return Results.Ok(new { ticket, expires_at_unix_s = expires });
+    });
+    app.MapPost("/v1/chat/verify-ticket", (VerifyTicketRequest request, HttpContext http, TicketVerifier verifier) =>
+    {
+        var supplied = System.Text.Encoding.UTF8.GetBytes(http.Request.Headers["X-Chat-Verifier-Key"].ToString());
+        var expected = System.Text.Encoding.UTF8.GetBytes(chatVerifierKey);
+        if (supplied.Length != expected.Length || !System.Security.Cryptography.CryptographicOperations.FixedTimeEquals(supplied, expected))
+            return Results.Json(new ErrorBody("UNAUTHENTICATED", "CHAT_VERIFIER_UNAUTHORIZED"), statusCode: 401);
+        if (string.IsNullOrWhiteSpace(request.Ticket) || request.ServerId != options.ChatServerId)
+            return Results.Json(new ErrorBody("UNAUTHENTICATED", "TICKET_INVALID"), statusCode: 401);
+        var claims = verifier.VerifyAndConsume(request.Ticket, options.ChatServerId);
+        return claims is null ? Results.Json(new ErrorBody("UNAUTHENTICATED", "TICKET_INVALID"), statusCode: 401)
+            : Results.Ok(new { character_id = claims.CharacterId, account_id = claims.AccountId, realm_id = claims.RealmId });
+    });
+}
 app.Run();
 
 static void RequireKey(HttpContext context)
