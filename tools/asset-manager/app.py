@@ -29,7 +29,19 @@ DEFAULT_SETTINGS = {
         {"name": "Desktop RTX 3060", "kind": "http", "url": "http://192.168.50.92:18190", "gpu": 0, "port": 0,
          "comfy_dir": "", "unit": "", "enabled": False},  # its ComfyUI must listen on the LAN (--listen 0.0.0.0)
     ],
+    # Each rigged model's joint detector (motion jobs). Bounds and units in DETECTOR_SETTINGS.
+    "detector_images": 1500,
+    "detector_epochs": 30,
+    "detector_limits": {"median": 2.0, "p95": 5.0, "worst_joint": 6.0, "pair_spacing": 3.0},
+    "detector_usable_x": 2.0,
+    "detector_auto_train": True,
 }
+# key: (unit, type, min, max). detector_limits are the exam's "good" bar in % of the model's height, each 0.5-20;
+# "usable" is within detector_usable_x times them; auto-train trains a detector when a model is rigged.
+DETECTOR_SETTINGS = {"detector_images": ("training renders", int, 300, 5000),
+                     "detector_epochs": ("training epochs", int, 10, 120),
+                     "detector_usable_x": ("x the limits", float, 1.0, 4.0)}
+LIMIT_RANGE = (0.5, 20.0)
 
 # ---------------------------------------------------------------- 3D Asset workflow
 # API-format version of "Trellis2 + Pixal3d.json": Pixal3D geometry, Trellis2 4B texturing.
@@ -408,6 +420,7 @@ MOTION_PARAMS = (
     ("takes", "Takes", "int", {"min": 1, "max": 4}, 2),
     ("seed", "Seed (-1 = random)", "int", {"min": -1, "max": 0x7fffffff}, -1),
     ("turn", "Turn the model before filming (degrees)", "choice", {"options": [0, 90, 180, -90]}, 0),
+    ("retrain", "Retrain this model's joint detector first (more renders, longer training)", "bool", {}, False),
 )
 
 def motion_params(params):
@@ -468,8 +481,10 @@ def init_db():
             status TEXT, host TEXT, prompt_id TEXT, output TEXT, error TEXT, log TEXT, note TEXT,
             created REAL, started REAL, finished REAL)""")
         c.execute("CREATE TABLE IF NOT EXISTS settings (key TEXT PRIMARY KEY, value TEXT)")
-        if "files" not in {r[1] for r in c.execute("PRAGMA table_info(jobs)")}:
-            c.execute("ALTER TABLE jobs ADD COLUMN files TEXT")
+        cols = {r[1] for r in c.execute("PRAGMA table_info(jobs)")}
+        for col in ("files", "detector"):  # detector: the joint detector a motion or detector job used or made
+            if col not in cols:
+                c.execute(f"ALTER TABLE jobs ADD COLUMN {col} TEXT")
         # ponytail: a restart orphans running jobs (and their files on the host); resume by prompt_id if it matters.
         c.execute("UPDATE jobs SET status='failed', error='asset manager restarted mid-job', finished=? "
                   "WHERE status IN ('running','cancelling')", (time.time(),))
@@ -492,6 +507,14 @@ def save_settings(s):
     for k in ("output_folder", "input_folder"):
         if k in s:
             safe_path(s[k])
+    for k, (_, typ, lo, hi) in DETECTOR_SETTINGS.items():  # clamped to their bounds, like job options
+        if k in s:
+            s[k] = min(max(typ(s[k]), lo), hi)
+    if "detector_limits" in s:
+        s["detector_limits"] = {k: min(max(float(s["detector_limits"].get(k, v)), LIMIT_RANGE[0]), LIMIT_RANGE[1])
+                                for k, v in DEFAULT_SETTINGS["detector_limits"].items()}
+    if "detector_auto_train" in s:
+        s["detector_auto_train"] = bool(s["detector_auto_train"])
     with db() as c:
         c.execute("INSERT OR REPLACE INTO settings VALUES ('all', ?)", (json.dumps(s),))
 
@@ -558,6 +581,8 @@ def list_dir(rel):
         elif k == "model":
             sib = next(iter(thumbs_of(p)), None)
             e["thumb"] = sib.relative_to(ROOT).as_posix() if sib else None
+            if "_rigged" in p.stem and p.suffix.lower() in (".glb", ".fbx"):  # what the Forge's detector badge shows
+                e["detector"] = detector_state(p)
         entries.append(e)
     return {"path": d.relative_to(ROOT).as_posix() if d != ROOT else "", "entries": entries}
 
@@ -847,43 +872,80 @@ def release_vram(host, need_gb=10, wait_s=60):
             return f"{free:.1f} of {total:.1f} GB free for tracking after unloading ComfyUI's models"
         time.sleep(3)
 
-DETECTOR_IMAGES = 1500  # training renders per model: ~0.4 s each on a 3090, then ~7 min of training
+# ---------------------------------------------------------------- Joint detectors
+# Each rigged model gets a joint detector (motion/synth_render.py, detector.py, exam.py), trained once and kept in
+# the library at <output>/.detectors/<model hash>-v<DETECTOR_VERSION>. Its exam gives it a band: "good" within
+# the Settings limits, "usable" within detector_usable_x times them (still far better than a point tracker, which
+# moves both legs together), "failed" beyond (motion jobs then use CoTracker and say so).
+DETECTOR_VERSION = 1  # bump when synth_render, detector, track_solve, bake or exam change: every model retrains
+EXAM_KEYS = ("median", "p95", "worst_joint", "pair_spacing")
+HASHES = {}  # (path, size, mtime) -> sha256 prefix, so listing a folder doesn't rehash unchanged models
 
-def ensure_detector(host, jid, src, model, turn, step, device_lines, gpu, py, blender):
-    """This model's joint detector on the host, trained on its first motion job and kept in the library
-    (Generated/.detectors/<model hash>) for every later one. Returns its folder on the host, or None when its
-    exam failed: the job then tracks with CoTracker, which can't tell left from right in the side view."""
-    key = hashlib.sha256(src.read_bytes()).hexdigest()[:16]
-    lib = safe_path(f"{get_settings()['output_folder']}/.detectors/{key}")
-    det, q = f"{host['comfy_dir']}/input/sfam/detectors/{key}", shlex.quote
-    files = ("weights.pt", "keypoints.json", "exam.json")
-    if not (lib / "exam.json").exists():
-        work = f"{host['comfy_dir']}/input/sfam/{jid}"
-        step(f"training this model's joint detector: {DETECTOR_IMAGES} renders, then training and an exam (first job only)")
-        device_lines(ssh(host, f"cd {q(work)} && {gpu} {blender} -b -P synth_render.py -- {model} synth {DETECTOR_IMAGES}"
-                               f" --turn {turn} > synth.log 2>&1 || {{ tail -5 synth.log >&2; exit 1; }}"
-                               f" && {gpu} {py} detector.py train synth {q(det)}", timeout=7200), "detector training")
-        ssh(host, f"cp {q(work + '/synth/keypoints.json')} {q(det)}/")
-        exam = ssh(host, f"cd {q(work)} && {gpu} {py} exam.py {model} {q(det)} exam --turn {turn} --blender {blender}"
-                         f" | tail -1; cp exam/exam.json {q(det)}/", timeout=1800).decode(errors="replace").strip()
-        GPU_NOTES[jid].append(f"[asset-manager] {host['name']}: detector {exam}")
-        lib.mkdir(parents=True, exist_ok=True)
-        for f in files:
-            (lib / f).write_bytes(ssh(host, f"cat {q(det + '/' + f)}", timeout=900))
-    elif ssh(host, f"test -f {q(det + '/weights.pt')} && echo yes || true").strip() != b"yes":
-        for f in files:  # trained on another host, or this one was cleaned: copy it back from the library
-            put_input(host, f"detectors/{key}/{f}", (lib / f).read_bytes())
-    passed = json.loads((lib / "exam.json").read_text()).get("passed")
-    if not passed:
-        GPU_NOTES[jid].append(f"[asset-manager] {host['name']}: this model's detector failed its exam; tracking with CoTracker")
-    return det if passed else None
+# A "detector" job's options: (key, label, kind, extra, default). None defaults come from Settings; a retrain of a
+# model that already has a detector defaults to twice the renders and 60 epochs, since more poses is the lever.
+DETECTOR_PARAMS = (
+    ("images", "Training renders", "int", {"min": 300, "max": 5000}, None),
+    ("epochs", "Training epochs", "int", {"min": 10, "max": 120}, None),
+    ("seed", "Seed (-1 = random)", "int", {"min": -1, "max": 99999}, -1),
+    ("backbone", "Backbone (vitb14 is larger and slower)", "choice", {"options": ["vits14", "vitb14"]}, "vits14"),
+    ("turn", "Model turned before filming (degrees), as in its motion jobs", "choice", {"options": [0, 90, 180, -90]}, 0),
+)
 
-def run_motion(jid, host):
-    job = job_row(jid)
-    p = motion_params(json.loads(job["params"]))
+def detector_key(src, turn=0):
+    """A detector learns the model facing one way, and the tools that made it: both are part of its key."""
+    st = src.stat()
+    k = (str(src), st.st_size, st.st_mtime)
+    if k not in HASHES:
+        HASHES[k] = hashlib.sha256(src.read_bytes()).hexdigest()[:16]
+    return f"{HASHES[k]}{f'-t{turn}' if turn else ''}-v{DETECTOR_VERSION}"
+
+def detector_dir(src, turn=0):
+    return safe_path(f"{get_settings()['output_folder']}/.detectors/{detector_key(src, turn)}")
+
+def detector_band(exam, s):
+    lim, x = s["detector_limits"], s["detector_usable_x"]
+    if any(exam.get(k) is None for k in EXAM_KEYS):
+        return "failed"
+    if all(exam[k] <= lim[k] for k in EXAM_KEYS):
+        return "good"
+    return "usable" if all(exam[k] <= lim[k] * x for k in EXAM_KEYS) else "failed"
+
+def detector_state(src, turn=0):
+    """A model's detector as the Forge and the API show it: state none | queued | training | good | usable |
+    failed (the band from today's Settings limits), the exam's numbers and worst joints, how it was trained, and
+    the last motion take's score."""
+    out = {"state": "none", "version": DETECTOR_VERSION}
+    lib = detector_dir(src, turn)
+    if (lib / "exam.json").exists():
+        ex = json.loads((lib / "exam.json").read_text())
+        out.update(state=detector_band(ex, get_settings()), exam={k: ex.get(k) for k in EXAM_KEYS},
+                   worst_joints=ex.get("joints", [])[:3], trained=ex.get("trained"), settings=ex.get("settings"))
+        if (lib / "last_take.json").exists():
+            out["last_take"] = json.loads((lib / "last_take.json").read_text())
+    rel = src.relative_to(ROOT).as_posix()
+    with db() as c:
+        rows = c.execute("SELECT status, params FROM jobs WHERE kind='detector' AND status IN ('queued','running')").fetchall()
+    for status, params in rows:
+        p = json.loads(params)
+        if p.get("model") == rel and int(p.get("turn", 0)) == turn:
+            out["state"] = "training" if status == "running" else "queued"
+    return out
+
+def detector_params(params, src=None):
+    """Checked detector-job options with defaults from Settings (doubled renders and 60 epochs for a retrain)."""
+    unknown = set(params) - {p[0] for p in DETECTOR_PARAMS} - {"model"}
+    if unknown:
+        raise ValueError(f"unknown options: {sorted(unknown)} (see GET /api/schema)")
     s = get_settings()
-    started = time.time()
-    work, q = f"{host['comfy_dir']}/input/sfam/{jid}", shlex.quote
+    again = src is not None and (detector_dir(src, int(params.get("turn", 0))) / "exam.json").exists()
+    defaults = {"images": min(s["detector_images"] * (2 if again else 1), 5000),
+                "epochs": 60 if again else s["detector_epochs"]}
+    return {k: coerce(k, kind, extra, params.get(k, defaults.get(k, d))) for k, _, kind, extra, d in DETECTOR_PARAMS}
+
+def host_tools(jid, host):
+    """What motion and detector jobs need on a host: their work folder, the GPU environment, Python, Blender, a
+    step reporter that honours cancel, and a collector for the GPU lines the scripts print."""
+    work = f"{host['comfy_dir']}/input/sfam/{jid}"
     py, blender = f"{host['comfy_dir']}/.venv/bin/python", host.get("blender") or DEFAULT_BLENDER
     # PCI order, as the ComfyUI units use: CUDA's default order can differ and land on GPU 0, which isn't ours.
     gpu = f"CUDA_DEVICE_ORDER=PCI_BUS_ID CUDA_VISIBLE_DEVICES={int(host['gpu'])} PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True"
@@ -896,14 +958,112 @@ def run_motion(jid, host):
             f"[asset-manager] {host['name']}: {label} on {ln.split(':', 1)[1].strip()}"
             for ln in out.decode(errors="replace").splitlines()
             if ln.startswith(("render device:", "track device:", "train device:", "detect device:")))
+    return work, gpu, py, blender, step, device_lines
+
+def upload_motion(host, jid, src):
+    """The motion scripts and the model into the job's folder on the host; returns the model's name there."""
+    model = f"model{src.suffix.lower()}"
+    for f in MOTION_DIR.glob("*.py"):
+        put_input(host, f"{jid}/{f.name}", f.read_bytes())
+    put_input(host, f"{jid}/{model}", src.read_bytes())
+    return model
+
+def train_detector(host, jid, src, model, turn, opts):
+    """Render, train and examine a detector for the model in the job's folder on the host. The library keeps
+    whichever of the new and any earlier detector has the lower exam p95, so a retrain never makes a model worse.
+    Returns the exam that is now kept."""
+    work, gpu, py, blender, step, device_lines = host_tools(jid, host)
+    s, q, lib = get_settings(), shlex.quote, detector_dir(src, turn)
+    seed = opts["seed"] if opts["seed"] >= 0 else random.randint(0, 99999)
+    step(f"training this model's joint detector: {opts['images']} renders, {opts['epochs']} epochs ({opts['backbone']})")
+    device_lines(ssh(host, f"cd {q(work)} && {gpu} {blender} -b -P synth_render.py -- {model} synth {opts['images']}"
+                           f" --turn {turn} --seed {seed} > synth.log 2>&1 || {{ tail -5 synth.log >&2; exit 1; }}"
+                           f" && {gpu} {py} detector.py train synth det {opts['epochs']} --backbone {opts['backbone']}"
+                           f" --seed {seed} && cp synth/keypoints.json det/", timeout=4 * 3600), "detector training")
+    step("examining the detector on a motion it hasn't seen")
+    ssh(host, f"cd {q(work)} && {gpu} {py} exam.py {model} det exam --turn {turn} --blender {blender}"
+              f" --limits {q(json.dumps(s['detector_limits']))} --usable {s['detector_usable_x']} > exam.log 2>&1;"
+              f" test -f exam/exam.json || {{ tail -5 exam.log >&2; exit 1; }}", timeout=3600)
+    exam = json.loads(ssh(host, f"cat {q(work + '/exam/exam.json')}"))
+    exam.update(trained=time.time(), version=DETECTOR_VERSION, settings={**opts, "seed": seed})
+    old = json.loads((lib / "exam.json").read_text()) if (lib / "exam.json").exists() else None
+    keep = old is None or exam["p95"] < old.get("p95", float("inf"))
+    band = detector_band(exam, s)
+    GPU_NOTES.setdefault(jid, []).append(
+        f"[asset-manager] {host['name']}: detector exam {band}: median {exam['median']:.2f}%, p95 {exam['p95']:.2f}%, "
+        f"worst joint {exam['worst_joint']:.2f}% ({exam['joints'][0]['joint']}), left/right {exam['pair_spacing']:.2f}%"
+        + ("" if keep else f"; the earlier detector scored better (p95 {old['p95']:.2f}%) and stays"))
+    if keep:
+        lib.mkdir(parents=True, exist_ok=True)
+        for f in ("weights.pt", "keypoints.json"):
+            (lib / f).write_bytes(ssh(host, f"cat {q(work + '/det/' + f)}", timeout=900))
+        overlay = ssh(host, f"cat {q(work + '/exam/track/overlay.mp4')} 2>/dev/null || true", timeout=900)
+        if overlay:
+            (lib / "exam_overlay.mp4").write_bytes(overlay)
+        (lib / "exam.json").write_text(json.dumps(exam, indent=1))
+        ssh(host, f"rm -rf {q(host['comfy_dir'] + '/input/sfam/detectors/' + lib.name)}")  # the host copy is stale
+    return exam if keep else old
+
+def ensure_detector(host, jid, src, model, turn, retrain=False):
+    """This model's detector on the host for a motion job, trained first when it has none (or retrain is asked).
+    Returns (its folder on the host or None when it failed its exam, its state)."""
+    lib, q = detector_dir(src, turn), shlex.quote
+    if retrain or not (lib / "exam.json").exists():  # a retrain gets the retrain defaults (more renders, longer)
+        train_detector(host, jid, src, model, turn, detector_params({"turn": turn}, src))
+    state = detector_state(src, turn)
+    if state["state"] == "failed":
+        GPU_NOTES[jid].append(f"[asset-manager] {host['name']}: this model's detector failed its exam (p95 "
+                              f"{state['exam']['p95']:.1f}%); tracking with CoTracker, so the legs may move together")
+        return None, state
+    det = f"{host['comfy_dir']}/input/sfam/detectors/{lib.name}"
+    if ssh(host, f"test -f {q(det + '/weights.pt')} && echo yes || true").strip() != b"yes":
+        for f in ("weights.pt", "keypoints.json"):  # trained on another host, or replaced: copy it from the library
+            put_input(host, f"detectors/{lib.name}/{f}", (lib / f).read_bytes())
+    return det, state
+
+def run_detector(jid, host):
+    """A "detector" job: train (or retrain) a rigged model's joint detector and examine it."""
+    job = job_row(jid)
+    params = json.loads(job["params"])
+    work, gpu, py, blender, step, device_lines = host_tools(jid, host)
+    try:
+        src = safe_path(params["model"])
+        opts = detector_params({k: v for k, v in params.items() if k != "model"}, src)
+        step("uploading the model")
+        model = upload_motion(host, jid, src)
+        train_detector(host, jid, src, model, opts["turn"], opts)
+        state = detector_state(src, opts["turn"])
+        update_job(jid, status="done", output=params["model"], files="[]", detector=json.dumps(state), note="",
+                   finished=time.time())
+    except InterruptedError:
+        update_job(jid, status="cancelled", note="", finished=time.time())
+    except Exception as e:
+        update_job(jid, status="failed", error=str(e)[-1000:], note="", finished=time.time())
+    finally:
+        update_job(jid, log="\n".join(GPU_NOTES.pop(jid, []) + LIVE.pop(jid, {}).get("log", [])[-100:]))
+        try:
+            cleanup(host, [str(jid)], [])
+        except Exception:
+            pass
+
+def queue_detector(model_rel, name):
+    """Queue a detector job for a freshly rigged model (Settings: detector_auto_train)."""
+    with DB_LOCK, db() as c:
+        c.execute("INSERT INTO jobs (kind, name, params, status, created) VALUES ('detector', ?, ?, 'queued', ?)",
+                  (name[:80], json.dumps({"model": model_rel}), time.time()))
+
+def run_motion(jid, host):
+    job = job_row(jid)
+    p = motion_params(json.loads(job["params"]))
+    s = get_settings()
+    started = time.time()
+    work, gpu, py, blender, step, device_lines = host_tools(jid, host)
+    q = shlex.quote
     log = []
     try:
         src = safe_path(p["model"])
-        model = f"model{src.suffix.lower()}"
         step("uploading the model")
-        for f in MOTION_DIR.glob("*.py"):
-            put_input(host, f"{jid}/{f.name}", f.read_bytes())
-        put_input(host, f"{jid}/{model}", src.read_bytes())
+        model = upload_motion(host, jid, src)
         step("rendering the front and side views")
         device_lines(ssh(host, f"cd {q(work)} && {gpu} {blender} -b -P render_views.py -- {model} . --turn {p['turn']}",
                          timeout=900), "render")
@@ -920,7 +1080,8 @@ def run_motion(jid, host):
             raise RuntimeError("the video model returned no videos")
         step("unloading MiniMax H3")
         GPU_NOTES[jid].append(f"[asset-manager] {host['name']}: {release_vram(host)}")
-        det = ensure_detector(host, jid, src, model, p["turn"], step, device_lines, gpu, py, blender)
+        det, state = ensure_detector(host, jid, src, model, p["turn"], p["retrain"])
+        update_job(jid, detector=json.dumps(state))
         takes = []
         for i, v in enumerate(videos, 1):
             step(f"tracking and baking take {i} of {len(videos)}")
@@ -946,6 +1107,15 @@ def run_motion(jid, host):
             (out_dir / ".thumbs").mkdir(exist_ok=True)
             (out_dir / ".thumbs" / f"{Path(saved[-3]).stem}.png").write_bytes(views)  # thumbnail for the animated model
             log.append(f"take {i}: score {score:.2f}, front/side height disagreement {err:.1f}% of model height")
+        lib = detector_dir(src, p["turn"])
+        if det:  # the model card shows real-video quality beside the exam
+            best = max(takes)
+            (lib / "last_take.json").write_text(json.dumps({"score": best[0], "height_error_pct": best[1], "job": jid,
+                                                             "when": time.time()}))
+        elif (lib / "exam_overlay.mp4").exists():  # failed exam: show why without opening the host
+            dest = unique(out_dir / f"{safe_name}_detector_exam_overlay.mp4")
+            shutil.copyfile(lib / "exam_overlay.mp4", dest)
+            saved.append(dest.relative_to(ROOT).as_posix())
         update_job(jid, status="done", output=saved[0], files=json.dumps(saved), note="", finished=time.time())
     except InterruptedError:
         update_job(jid, status="cancelled", note="", finished=time.time())
@@ -1018,6 +1188,11 @@ def run_job(jid, host):
                 shutil.copyfile(src, thumb)
                 saved.append(thumb.relative_to(ROOT).as_posix())
         update_job(jid, status="done", output=saved[0], files=json.dumps(saved), finished=time.time())
+        if s["detector_auto_train"]:  # a newly rigged model gets its joint detector before anyone asks for a motion
+            for rel in saved:
+                p = ROOT / rel
+                if "_rigged" in p.stem and p.suffix.lower() in (".glb", ".fbx") and detector_state(p)["state"] == "none":
+                    queue_detector(rel, f"{p.stem} detector")
     except InterruptedError:
         update_job(jid, status="cancelled", finished=time.time())
     except Exception as e:
@@ -1046,15 +1221,17 @@ def worker():
                     update_job(jid, status="running", host="ChatGPT", started=time.time(), note="")
                     threading.Thread(target=run_image, args=(jid,), daemon=True).start()
                     continue
-                # Motion runs Blender and the tracker over SSH; it needs no Trellis2 nodes.
-                fits = (lambda h, st: h.get("kind") == "ssh") if kind == "motion" else (lambda h, st: st["trellis"])
+                # Motion and detector jobs run Blender and the tracker over SSH; they need no Trellis2 nodes.
+                over_ssh = kind in ("motion", "detector")
+                fits = (lambda h, st: h.get("kind") == "ssh") if over_ssh else (lambda h, st: st["trellis"])
                 host = next((h for h in free if (st := host_status(h))["ok"] and not st["busy"] and fits(h, st)), None)
                 if not host:
                     update_job(jid, note="waiting for a free GPU host")
                     break
                 free.remove(host)
                 update_job(jid, status="running", host=host["name"], started=time.time(), note="")
-                threading.Thread(target=run_motion if kind == "motion" else run_job, args=(jid, host), daemon=True).start()
+                run = {"motion": run_motion, "detector": run_detector}.get(kind, run_job)
+                threading.Thread(target=run, args=(jid, host), daemon=True).start()
         except Exception:
             traceback.print_exc()
         time.sleep(3)
@@ -1362,6 +1539,7 @@ def jobs_view(where="", args=(), limit=100, base=""):
         r["log"] = GPU_NOTES.get(r["id"], []) + live["log"] if live else GPU_NOTES.get(r["id"], []) or (r["log"] or "").splitlines()
         r["files"] = [{"path": p, "kind": kind_of(ROOT / p), "url": base + "/files/" + urllib.parse.quote(p)}
                       for p in json.loads(r["files"] or "[]")]
+        r["detector"] = json.loads(r.get("detector") or "null")
     return rows
 
 def queue_status(status=None, limit=100, base=""):
@@ -1409,7 +1587,16 @@ class Handler(BaseHTTPRequestHandler):
             if method == "GET" and p == "/api/schema":
                 return self.send({"3d": param_schema(), "presets": PRESET_LEVELS, "default_preset": DEFAULT_PRESET, "motion": [
                     {"key": k, "label": lbl, "section": "Motion", "kind": kind, "default": d, **extra}
-                    for k, lbl, kind, extra, d in MOTION_PARAMS]})
+                    for k, lbl, kind, extra, d in MOTION_PARAMS], "detector": [
+                    {"key": k, "label": lbl, "section": "Detector", "kind": kind, "default": d, **extra}
+                    for k, lbl, kind, extra, d in DETECTOR_PARAMS],
+                    "detector_settings": {k: {"unit": u, "min": lo, "max": hi} for k, (u, _, lo, hi) in DETECTOR_SETTINGS.items()}
+                    | {"detector_limits": {"unit": "% of model height", "min": LIMIT_RANGE[0], "max": LIMIT_RANGE[1]}}})
+            if method == "GET" and p == "/api/detector":  # one model's joint detector, for the Forge and agents
+                src = safe_path(q.get("model", ""))
+                if not src.is_file():
+                    raise FileNotFoundError(q.get("model", ""))
+                return self.send(detector_state(src, int(q.get("turn", 0))))
             if p.startswith("/api/codex"):  # ChatGPT sign-in for image jobs; tokens never leave the server
                 b = self.body() if method == "POST" else {}
                 if method == "POST" and p == "/api/codex/start":
@@ -1488,10 +1675,10 @@ class Handler(BaseHTTPRequestHandler):
                     views = job_views(params)
                     build_graph(params, "x", "x", "x", views if "views" in params else None)  # validate now, not on the host
                     src = views["front"]
-                elif kind == "motion":
+                elif kind in ("motion", "detector"):
                     if Path(params.get("model", "")).suffix.lower() not in (".glb", ".fbx") or not safe_path(params["model"]).is_file():
                         raise ValueError("pick a rigged .glb or .fbx model")
-                    motion_params(params)
+                    motion_params(params) if kind == "motion" else detector_params(params)
                     src = params["model"]
                 elif kind == "image":
                     image_params(params)
@@ -1506,7 +1693,7 @@ class Handler(BaseHTTPRequestHandler):
                     src = m
                 else:
                     raise ValueError("unknown job type")
-                name = (b.get("name") or Path(src).stem).strip()[:80]
+                name = (b.get("name") or Path(src).stem + (" detector" if kind == "detector" else "")).strip()[:80]
                 with DB_LOCK, db() as c:
                     jid = c.execute("INSERT INTO jobs (kind, name, params, status, created) VALUES (?, ?, ?, 'queued', ?)",
                                     (kind, name, json.dumps(params), time.time())).lastrowid
@@ -1678,6 +1865,15 @@ def check():
         assert (d / ".thumbs/Mouse.png").exists() and (d / ".thumbs/Rat.png").exists()  # Rat.glb still uses it
         (d / "Rat.glb").unlink(); drop_thumb(d / "Rat.glb")
         assert not (d / ".thumbs/Rat.png").exists() and thumbs_of(d / "Mouse.fbx") == [d / ".thumbs/Mouse.png"]
+        # a detector's key follows the model's bytes, its facing and the tools' version
+        k0, k90 = detector_key(d / "Mouse.fbx"), detector_key(d / "Mouse.fbx", 90)
+        assert k0.endswith(f"-v{DETECTOR_VERSION}") and "-t90-" in k90 and k0[:16] == k90[:16]
+    # exam bands from the Settings limits: within them good, within 2x usable (the Adventurer's 6.22 % p95), else failed
+    ex = {"median": 0.8, "p95": 6.22, "worst_joint": 5.14, "pair_spacing": 1.74}
+    assert detector_band({**ex, "p95": 4.0}, DEFAULT_SETTINGS) == "good"
+    assert detector_band(ex, DEFAULT_SETTINGS) == "usable"
+    assert detector_band({**ex, "pair_spacing": 14.1}, DEFAULT_SETTINGS) == "failed" and detector_band({}, DEFAULT_SETTINGS) == "failed"
+    assert [coerce(k, kind, extra, v) for (k, _, kind, extra, _), v in zip(DETECTOR_PARAMS, (99999, 1, 5, "vitb14"))][:4] == [5000, 10, 5, "vitb14"]
     print("check ok")
 
 if __name__ == "__main__":

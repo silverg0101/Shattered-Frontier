@@ -3,8 +3,10 @@ filmed and compressed like a real video, tracked, baked onto the skeleton and co
 new detector, and every change to the tools, has to pass it.
 
     python exam.py MODEL DETECTOR_DIR OUT_DIR [--seed S] [--turn DEG] [--blender PATH]
+                   [--limits '{"median": 2, "p95": 5, "worst_joint": 6, "pair_spacing": 3}'] [--usable 2]
 
-Writes OUT_DIR/exam.json and exits 1 when it fails.
+Writes OUT_DIR/exam.json with a band: "good" within the limits, "usable" within usable x the limits (the
+detector is still far better than a point tracker there), "failed" beyond. Exits 1 unless good (a developer gate).
 """
 import json, subprocess, sys
 from pathlib import Path
@@ -31,8 +33,8 @@ def stitch(frame_dir, path):
             c.mux(p)
 
 
-def grade(joints, truth, motion):
-    """Errors on the points the detector steers (seen in motion.json), in % of model height."""
+def grade(joints, truth, motion, limits=LIMITS, usable=2.0):
+    """Errors on the points the detector steers (seen in motion.json), in % of model height, and the band."""
     j, m = joints, motion
     h = j["calib"]["model_height"]
     pos, true = np.array(m["positions"]), np.array(truth)
@@ -55,7 +57,10 @@ def grade(joints, truth, motion):
     res = {"median": float(np.median(err)), "p95": float(np.percentile(err, 95)),
            "worst_joint": float(err.mean(0).max()), "pair_spacing": max((d for _, d in pairs), default=0.0),
            "worst_pair": max(pairs, key=lambda p: p[1])[0] if pairs else None, "joints": per_joint}
-    res["passed"] = all(res[k] <= v for k, v in LIMITS.items())
+    res["state"] = ("good" if all(res[k] <= v for k, v in limits.items()) else
+                    "usable" if all(res[k] <= v * usable for k, v in limits.items()) else "failed")
+    res["passed"] = res["state"] == "good"
+    res["limits"], res["usable_x"] = dict(limits), usable
     return res
 
 
@@ -65,6 +70,8 @@ def main():
     seed = argv[argv.index("--seed") + 1] if "--seed" in argv else "7"
     turn = argv[argv.index("--turn") + 1] if "--turn" in argv else "0"
     blender = argv[argv.index("--blender") + 1] if "--blender" in argv else str(Path.home() / "blender/blender-4.2.3-linux-x64/blender")
+    limits = {**LIMITS, **json.loads(argv[argv.index("--limits") + 1])} if "--limits" in argv else LIMITS
+    usable = float(argv[argv.index("--usable") + 1]) if "--usable" in argv else 2.0
     film = out / "film"
     subprocess.run([blender, "-b", "-P", str(HERE / "selftest_render.py"), "--", model, str(film), str(FRAMES), str(SWING),
                     "--seed", seed, "--turn", turn], check=True, capture_output=True)
@@ -78,10 +85,10 @@ def main():
                     str(out / "track" / "motion.json"), str(out / "exam.glb"), "--positions", str(out / "baked.json")],
                    check=True, capture_output=True)
     res = grade(json.loads((film / "joints.json").read_text()), json.loads((film / "truth.json").read_text()),
-                json.loads((out / "baked.json").read_text()))
+                json.loads((out / "baked.json").read_text()), limits, usable)
     (out / "exam.json").write_text(json.dumps(res, indent=1))
     w = res["joints"][0]
-    print(f"exam {'PASSED' if res['passed'] else 'FAILED'}: median {res['median']:.2f}%, p95 {res['p95']:.2f}%, "
+    print(f"exam {res['state'].upper()}: median {res['median']:.2f}%, p95 {res['p95']:.2f}%, "
           f"worst joint {res['worst_joint']:.2f}% ({w['joint']}: x {w['x']:.1f} y {w['y']:.1f} z {w['z']:.1f}), "
           f"left/right spacing {res['pair_spacing']:.2f}% ({res['worst_pair']})")
     sys.exit(0 if res["passed"] else 1)

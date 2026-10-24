@@ -1,6 +1,6 @@
-"""One model's joint detector: DINOv2 ViT-S/14 fine-tuned on synth_render.py's images of that model.
+"""One model's joint detector: DINOv2 (ViT-S/14, or ViT-B/14) fine-tuned on synth_render.py's images of that model.
 
-    python detector.py train DATA_DIR OUT_DIR [EPOCHS]     # DATA_DIR from synth_render.py; writes weights.pt
+    python detector.py train DATA_DIR OUT_DIR [EPOCHS] [--backbone vits14|vitb14] [--seed S]   # writes weights.pt
     python detector.py --check                              # heatmap and augmentation self-check, CPU only
 
 Input is one image, the front panel left of the side panel (as in the video), so a joint's place in one view
@@ -22,15 +22,18 @@ HIDDEN_AMP = 0.3
 MEAN, STD = (0.485, 0.456, 0.406), (0.229, 0.224, 0.225)
 
 
-def build(k):
+BACKBONES = ("vits14", "vitb14")
+
+
+def build(k, backbone="vits14"):
     import torch
     from torch import nn
     class Net(nn.Module):
         def __init__(self):
             super().__init__()
-            self.backbone = torch.hub.load(DINO, "dinov2_vits14", trust_repo=True)
-            self.head = nn.Sequential(nn.Conv2d(384, 256, 1), nn.GELU(), nn.Upsample(scale_factor=2, mode="bilinear"),
-                                      nn.Conv2d(256, 2 * k, 3, padding=1))
+            self.backbone = torch.hub.load(DINO, f"dinov2_{backbone}", trust_repo=True)
+            self.head = nn.Sequential(nn.Conv2d(self.backbone.embed_dim, 256, 1), nn.GELU(),
+                                      nn.Upsample(scale_factor=2, mode="bilinear"), nn.Conv2d(256, 2 * k, 3, padding=1))
         def forward(self, x):  # x: (B, 3, 448, 784) -> (B, 2k, 64, 112)
             t = self.backbone.forward_features(x)["x_norm_patchtokens"]
             b, n, c = t.shape
@@ -136,7 +139,7 @@ def load(data):
     return imgs, uv, vis
 
 
-def train(data, out, epochs=30):
+def train(data, out, epochs=30, backbone="vits14", seed=0):
     import torch
     import torch.nn.functional as F
     data, out = Path(data), Path(out)
@@ -145,17 +148,18 @@ def train(data, out, epochs=30):
     k = len(keys["points"])
     imgs, uv, vis = load(data)
     imgs, uv, vis = (torch.from_numpy(a).cuda() for a in (imgs, uv, vis))  # ~0.5 GB per 1000 renders
-    idx = torch.randperm(len(imgs), generator=torch.Generator().manual_seed(0))
+    idx = torch.randperm(len(imgs), generator=torch.Generator().manual_seed(0))  # same split for every seed
     nval = max(len(idx) // 15, 4)
     val, tr = idx[:nval].cuda(), idx[nval:].cuda()
-    net = build(k).cuda()
+    torch.manual_seed(seed)  # the head's initial weights
+    net = build(k, backbone).cuda()
     print(f"train device: {torch.cuda.get_device_name()}, {len(tr)} images, {k} keypoints", flush=True)
     opt = torch.optim.AdamW([{"params": net.backbone.parameters(), "lr": 5e-5},
                              {"params": net.head.parameters(), "lr": 1e-3}], weight_decay=0.01)
     batch = 16
     steps = epochs * math.ceil(len(tr) / batch)
     sched = torch.optim.lr_scheduler.OneCycleLR(opt, max_lr=[5e-5, 1e-3], total_steps=steps, pct_start=0.05)
-    g = torch.Generator(device="cuda").manual_seed(0)
+    g = torch.Generator(device="cuda").manual_seed(seed)
     for ep in range(epochs):
         net.train()
         order = tr[torch.randperm(len(tr), generator=g, device="cuda")]
@@ -185,7 +189,7 @@ def train(data, out, epochs=30):
         if (ep + 1) % 5 == 0 or ep == epochs - 1:
             err = evaluate(net, imgs[val], uv[val], vis[val], k)
             print(f"epoch {ep + 1}/{epochs}: loss {total / len(tr):.4f}, val px error median {err[0]:.1f} p95 {err[1]:.1f}", flush=True)
-    torch.save({"state": net.state_dict(), "k": k, "keypoints": keys}, out / "weights.pt")
+    torch.save({"state": net.state_dict(), "k": k, "keypoints": keys, "backbone": backbone}, out / "weights.pt")
     (out / "val.json").write_text(json.dumps({"median_px": err[0], "p95_px": err[1], "images": len(imgs)}))
     print(f"train peak GPU memory: {torch.cuda.max_memory_allocated() / 2**30:.1f} GB")
 
@@ -214,7 +218,7 @@ def detect(weights_dir, frames, n_points):
     import torch
     ck = torch.load(Path(weights_dir) / "weights.pt", map_location="cpu", weights_only=False)
     k, keys = ck["k"], ck["keypoints"]["points"]
-    net = build(k)
+    net = build(k, ck.get("backbone", "vits14"))
     net.load_state_dict(ck["state"])
     net = net.cuda().eval()
     print(f"detect device: {torch.cuda.get_device_name()}")
@@ -256,4 +260,9 @@ if __name__ == "__main__":
     if sys.argv[1:] == ["--check"]:
         check()
     elif sys.argv[1] == "train":
-        train(sys.argv[2], sys.argv[3], int(sys.argv[4]) if len(sys.argv) > 4 else 30)
+        a = sys.argv[2:]
+        opt = lambda name, default: a[a.index(name) + 1] if name in a else default
+        backbone = opt("--backbone", "vits14")
+        if backbone not in BACKBONES:
+            sys.exit(f"--backbone must be one of {BACKBONES}")
+        train(a[0], a[1], int(a[2]) if len(a) > 2 and not a[2].startswith("--") else 30, backbone, int(opt("--seed", 0)))

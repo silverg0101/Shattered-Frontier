@@ -26,7 +26,7 @@ Base URL: `http://192.168.50.133:8090`. JSON in and out, no login. Errors return
    # {"id": 7, "status": "queued", "status_url": "http://192.168.50.133:8090/api/jobs/7"}
    ```
 
-   - `kind`: `"3d"` (3D Asset, below) or `"motion"` (animate a rigged model, see [Motion jobs](#motion-jobs)). A 3D job runs in one of two modes, chosen by which source field you send:
+   - `kind`: `"3d"` (3D Asset, below), `"motion"` (animate a rigged model, see [Motion jobs](#motion-jobs)) or `"detector"` (train or retrain a rigged model's joint detector, see [Joint detectors](#joint-detectors)). A 3D job runs in one of two modes, chosen by which source field you send:
      - **Single view**: send `params.image`, an image path in the asset library. Pixal3D builds the geometry and TRELLIS.2-4B paints the texture from that one image.
      - **Multi-view**: send `params.views` instead, mapping positions to image paths: `{"front": ..., "left": ..., "back": ..., "right": ...}`.
        - `front` is required, plus at least one more. The other positions are optional.
@@ -125,10 +125,10 @@ A motion job animates a rigged model (`.glb` or `.fbx`, such as a 3D job's `<nam
 
 1. renders the model's rest pose in Blender, front view on the left and left-side view on the right, on grey;
 2. films it with the host's local MiniMax H3 (quantized, in its ComfyUI) from that image as the first frame, with a prompt to perform the action on the spot, once per take;
-3. unloads H3 and makes sure the model has a joint detector: on the model's first motion job it renders 500 random poses of the model from the same two cameras, fine-tunes DINOv2 on them to find each main joint (left and right apart) in both views, and examines it on a known motion filmed and compressed like a real video. The detector is kept in `Generated/.detectors/<model hash>/` and reused by every later job for that model;
+3. unloads H3 and uses the model's joint detector (see [Joint detectors](#joint-detectors)), training one first if the model has none or `retrain` is set;
 4. finds every main joint in both halves of each video with the detector, combines front (x, height) and side (y, height) into 3D, and bakes it onto the skeleton in Blender. Bones the detector doesn't cover (fingers, twist bones) follow their parent.
 
-A single side view can't tell the left leg from the right one: they land on the same pixels. A point tracker therefore follows one leg with both. The detector learns which is which from the model itself. If a detector fails its exam (median error over 2 % of model height, p95 over 5 %, any joint over 6 %, or a left/right pair's spacing off by over 3 %), the job falls back to CoTracker3 point tracking and says so in `log`.
+A single side view can't tell the left leg from the right one: they land on the same pixels, so a point tracker follows one leg with both. The detector learns which is which from the model itself. Only a detector whose exam band is `failed` makes the job fall back to CoTracker3 point tracking; the job's `detector` field and `log` then say so ("the legs may move together"), and `files` gets the exam's overlay video, `<name>_detector_exam_overlay.mp4`, so you can see why.
 
 ```bash
 curl -X POST http://192.168.50.133:8090/api/jobs -H 'Content-Type: application/json' -d '{
@@ -137,7 +137,7 @@ curl -X POST http://192.168.50.133:8090/api/jobs -H 'Content-Type: application/j
 }'
 ```
 
-On an RTX 3090 a 5-second turbo take takes about 9 minutes including loading H3 (later takes in the same job reuse the loaded model), then under a minute to detect and bake. A model's first motion job adds about 25 minutes for its detector (17 for the renders, 5 to train, 3 for the exam). Without turbo (20 steps) the video takes several times longer.
+On an RTX 3090 a 5-second turbo take takes about 9 minutes including loading H3 (later takes in the same job reuse the loaded model), then under a minute to detect and bake. A model without a detector adds its training, about 20 minutes with the default Settings (10 for the renders, 7 to train, 3 for the exam); rigged models usually have one already, because rigging queues it.
 
 Per take, `files` holds `<name>_<action>_take<n>.glb` (the model with the baked animation), `.png` (its thumbnail, the first frame), `.mp4` (the generated video) and `_overlay.mp4` (the video with the tracked points: cyan where front and side agree on height, red where they disagree by more than 5% of the model's height). Takes are listed best first. `log` gives each take's score (1 = perfect agreement, 0 = 5% of model height or worse) and its height disagreement; a low score usually means the video model moved the cameras or changed the character's size.
 
@@ -155,7 +155,61 @@ The model must face -Y in Blender (glTF +Z, how the 3D jobs export); otherwise s
 | `takes` | Videos to generate | int | 1 to 4 | `2` |
 | `seed` | Seed of the first take, later takes count up (-1 = random) | int | -1 to 2147483647 | `-1` |
 | `turn` | Turn the model about its vertical axis before filming (degrees) | choice | `0`, `90`, `180`, `-90` | `0` |
+| `retrain` | Retrain the model's joint detector first, with the retrain defaults below | bool | `true` / `false` | `false` |
 | `prompt` | Replaces the built-in prompt (max 2000 chars) | string | | the action's prompt |
+
+The finished job's `detector` field holds the detector it used (the same block as `GET /api/detector`).
+
+## Joint detectors
+
+Every rigged model gets a joint detector: 1500 renders of the model in random poses within joint ranges read from its skeleton, from the motion job's two cameras, used to fine-tune DINOv2 into finding each main joint in both views. It is trained once and kept in the library at `<output folder>/.detectors/<model hash>-v<version>/`. The version changes when the tools change, so old detectors then retrain. Rigging a model (a 3D job with `rig`, or a rig job) queues its detector straight away while Settings `detector_auto_train` is on, so it is usually ready before the first motion job.
+
+Each detector takes an exam: a motion it hasn't seen, every bone swinging through its joint range, filmed and compressed like a real video, tracked, baked and compared with the truth. Four numbers, in % of the model's height: `median` and `p95` error over every joint and frame, `worst_joint` (the joint with the largest mean error) and `pair_spacing` (how far a left/right pair's spacing strays from the truth: legs moving together shows here). They give a band, from the Settings limits:
+
+- `good`: every number within `detector_limits` (2 / 5 / 6 / 3 % by default).
+- `usable`: every number within `detector_usable_x` (default 2) times them. Motion jobs use it.
+- `failed`: anything worse. Motion jobs use CoTracker3 instead and say so.
+
+**`GET /api/detector?model=<path>[&turn=<deg>]`** returns a model's detector:
+
+```json
+{"state": "usable", "version": 1,
+ "exam": {"median": 0.8, "p95": 6.22, "worst_joint": 5.14, "pair_spacing": 1.74},
+ "worst_joints": [{"joint": "upperarm_r", "mean": 5.1, "x": 0.8, "y": 4.2, "z": 2.1}],
+ "trained": 1792800000.0, "settings": {"images": 1500, "epochs": 30, "seed": 4711, "backbone": "vits14", "turn": 0},
+ "last_take": {"score": 0.91, "height_error_pct": 0.4, "job": 12, "when": 1792800500.0}}
+```
+
+`state` is `none`, `queued`, `training`, `good`, `usable` or `failed`. `worst_joints` splits each joint's error along x (seen by the front view only), y (the side view only: depth) and z (both). `last_take` is the best take of the model's latest motion job, so the real-video quality sits beside the exam's. `GET /api/ls` gives the same block as `detector` on every `_rigged` model.
+
+**Retrain** with a `detector` job:
+
+```bash
+curl -X POST http://192.168.50.133:8090/api/jobs -H 'Content-Type: application/json' -d '{
+  "kind": "detector", "params": {"model": "Generated/Rat_rigged.glb"}
+}'
+```
+
+The library keeps whichever of the new and the earlier detector has the lower exam p95, so a retrain never makes a model worse. With a detector already there, a retrain defaults to twice the Settings renders and 60 epochs (about 35 minutes), since more poses is what helps most.
+
+| Key | What it sets | Type | Range / options | Default |
+|---|---|---|---|---|
+| `model` (required) | Rigged model in the asset library | path | `.glb`, `.fbx` | |
+| `images` | Training renders | int | 300 to 5000 | Settings `detector_images` (doubled for a retrain) |
+| `epochs` | Training epochs | int | 10 to 120 | Settings `detector_epochs` (60 for a retrain) |
+| `seed` | Seed for poses and training (-1 = random) | int | -1 to 99999 | `-1` |
+| `backbone` | DINOv2 size: `vitb14` is larger and slower | choice | `vits14`, `vitb14` | `vits14` |
+| `turn` | The `turn` the model's motion jobs use: a detector learns one facing | choice | `0`, `90`, `180`, `-90` | `0` |
+
+**Settings** (`GET` / `PUT /api/settings`; `GET /api/schema` lists their bounds under `detector_settings`). Values outside the bounds are clamped:
+
+| Key | What it sets | Range | Default |
+|---|---|---|---|
+| `detector_images` | Training renders for a first detector | 300 to 5000 | `1500` |
+| `detector_epochs` | Training epochs for a first detector | 10 to 120 | `30` |
+| `detector_limits` | The `good` bar: `median`, `p95`, `worst_joint`, `pair_spacing` in % of model height | each 0.5 to 20 | `2`, `5`, `6`, `3` |
+| `detector_usable_x` | The `usable` band reaches this many times the limits | 1 to 4 | `2` |
+| `detector_auto_train` | Queue a detector when a model is rigged | bool | `true` |
 
 ## 3D Asset options (`params`)
 
