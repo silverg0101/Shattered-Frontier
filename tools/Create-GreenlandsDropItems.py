@@ -3,8 +3,8 @@
 Run with tools/Run-InEditor.py or UnrealEditor-Cmd -run=pythonscript.
 UniqueId is the link to content/items/gear_greenlands_starter.json stats in SFGear.
 Existing definitions are validated and preserved, except generated fallback names
-which are updated to handoff display names. No mesh or size field exists on
-USFItemDefinition, so forge-handoff.json size_cm remains a model handoff only.
+which are updated to handoff display names. WorldMesh is populated separately
+for approved models; forge-handoff.json size_cm remains a model handoff value.
 """
 import json
 from pathlib import Path

@@ -6,6 +6,7 @@
 #include "SFInventory.generated.h"
 
 class UTexture2D;
+class UStaticMesh;
 class USFInventoryComponent;
 
 // The pilot bag: item definitions (DA_* under /Game/Frontier/Gameplay/Pilot), a slot inventory on the player controller and an
@@ -40,6 +41,8 @@ public:
     // Kilograms per unit.
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item", meta = (ClampMin = "0.0", Units = "Kilograms")) float Weight = 0.f;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item") TSoftObjectPtr<UTexture2D> Icon;
+    // Static world/item preview mesh; wearable attachment remains a separate consumer.
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item") TSoftObjectPtr<UStaticMesh> WorldMesh;
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item") ESFItemUseType UseType = ESFItemUseType::None;
     // Equipment slot name (Head, MainHand, ...) for Equip items.
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item") FName EquipmentSlot = NAME_None;
