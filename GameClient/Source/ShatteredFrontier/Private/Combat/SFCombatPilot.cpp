@@ -1,6 +1,7 @@
 #include "Combat/SFCombatPilot.h"
 #include "Combat/SFCommonRespawn.h"
 #include "Combat/SFSpiritReleaseRules.h"
+#include "Combat/SFResurrectionAcceptRules.h"
 #include "Combat/SFFallDamage.h"
 #include "Inventory/SFGear.h"
 #include "Framework/SFGameMode.h"
@@ -778,7 +779,8 @@ void ASFGameMode::PostLoginCombat(APlayerController* NewPlayer)
         }), 1.0f, false);
     }
     if (GetWorld()->GetOutermost()->GetName() == TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook") &&
-        FParse::Param(FCommandLine::Get(), TEXT("GreenlandsBoarNetcheck")))
+        (FParse::Param(FCommandLine::Get(), TEXT("GreenlandsBoarNetcheck")) ||
+         FParse::Param(FCommandLine::Get(), TEXT("GreenlandsDeathNetcheck"))))
     {
         if (GetNumPlayers() == 1) { GreenlandsDriverController = NewPlayer; }
         else if (GetNumPlayers() == 2) { GreenlandsObserverController = NewPlayer; }
@@ -932,10 +934,59 @@ void ASFGameMode::TickCombat()
     { NextSlotTick = GetWorld()->GetTimeSeconds() + 2.0; bSlotBridgeHealthy = RunWorldSlots(TEXT("tick")); }
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     if (FParse::Param(FCommandLine::Get(), TEXT("GreenlandsBoarNetcheck"))) { TickGreenlandsNetcheck(); }
+    if (FParse::Param(FCommandLine::Get(), TEXT("GreenlandsDeathNetcheck"))) { TickGreenlandsDeathNetcheck(); }
 #endif
 }
 
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+void ASFGameMode::TickGreenlandsDeathNetcheck()
+{
+    auto* Driver = Cast<ASFE1Character>(GreenlandsDriverController.IsValid() ? GreenlandsDriverController->GetPawn() : nullptr);
+    auto* Observer = Cast<ASFE1Character>(GreenlandsObserverController.IsValid() ? GreenlandsObserverController->GetPawn() : nullptr);
+    if (!Driver || !Observer || USFCharacterSessionComponent::IsRestoring(Driver->GetController()) ||
+        USFCharacterSessionComponent::IsRestoring(Observer->GetController())) return;
+    const double Now = GetWorld()->GetTimeSeconds();
+    if (GreenlandsDeathStage == 0 && Driver->CombatHealth() == 0)
+    {
+        Observer->SetActorLocation(Grounded(GetWorld(), Driver->GetActorLocation() + FVector(0, 1600, 0),
+            Observer->GetCapsuleComponent()->GetScaledCapsuleHalfHeight()), false, nullptr, ETeleportType::TeleportPhysics);
+        Observer->CombatSetHealth(1000); // Keep the observing fixture in replication range after reconnect.
+        GreenlandsDeathStage = 2;
+        UE_LOG(LogTemp, Display, TEXT("GREENLANDS_DEATH_RESTORED Event=%s"),
+            *PlayerDeathEvents.FindRef(TWeakObjectPtr<ASFE1Character>(Driver)));
+    }
+    if (GreenlandsDeathStage == 0)
+    {
+        for (const auto& Slot : ActiveBoars)
+        {
+            ASFPilotBoar* Boar = Slot.Value.Get();
+            if (!Slot.Key.StartsWith(TEXT("boar_farm_edge:")) || !Boar || !Boar->IsDefensive()) continue;
+            GreenlandsDeathBoar = Boar;
+            const FVector Near = Grounded(GetWorld(), Boar->GetActorLocation() + FVector(100, 0, 0),
+                Driver->GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
+            Driver->SetActorLocation(Near, false, nullptr, ETeleportType::TeleportPhysics);
+            Observer->SetActorLocation(Grounded(GetWorld(), Near + FVector(0, 1600, 0),
+                Observer->GetCapsuleComponent()->GetScaledCapsuleHalfHeight()), false, nullptr, ETeleportType::TeleportPhysics);
+            Driver->CombatSetHealth(35);
+            GreenlandsDeathStage = 1; GreenlandsDeathNextHitAt = Now + 2.0;
+            UE_LOG(LogTemp, Display, TEXT("GREENLANDS_DEATH_BEGIN Group=%s Slot=%d HP=35"),
+                *Boar->GroupId(), Boar->SlotIndex());
+            break;
+        }
+    }
+    else if (GreenlandsDeathStage == 1 && Driver->CombatHealth() > 0 && Now >= GreenlandsDeathNextHitAt)
+    {
+        if (ASFPilotBoar* Boar = GreenlandsDeathBoar.Get())
+        { TryBoarAttack(Boar, Driver); GreenlandsDeathNextHitAt = Now + 1.5; }
+    }
+    else if (GreenlandsDeathStage == 1 && Driver->CombatHealth() == 0)
+    {
+        GreenlandsDeathStage = 2;
+        UE_LOG(LogTemp, Display, TEXT("GREENLANDS_DEATH_BOAR_KILL HP=0 Event=%s"),
+            *PlayerDeathEvents.FindRef(TWeakObjectPtr<ASFE1Character>(Driver)));
+    }
+}
+
 void ASFGameMode::TickGreenlandsNetcheck()
 {
     auto* Driver = Cast<ASFE1Character>(GreenlandsDriverController.IsValid() ? GreenlandsDriverController->GetPawn() : nullptr);
@@ -1316,14 +1367,18 @@ void ASFGameMode::HitPlayer(AActor* Source, ASFE1Character* Victim, int32 Damage
                     }
                 }), Mode->CapturedSettings->ResAcceptSeconds, false);
         }
-        else if (USFBackpackComponent::Services() && Pack && Pack->HasDevIdentity())
+        else if (USFBackpackComponent::Services() && Pack &&
+            (Pack->HasVerifiedIdentity() || Pack->HasDevIdentity()))
         {
             FSFGameplayRequest Request; Request.Rpc = ESFGameplayRpc::ReportDeath;
             Request.DeathEventId = FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphens);
             Request.CharacterId = Pack->GetCharacterId(); Request.DeathAtUnixMs = UnixNowMs();
             Request.ZoneId = FPackageName::GetShortName(Victim->GetWorld()->GetOutermost()->GetName()).ToLower();
             Request.Position = Victim->GetActorLocation(); Request.RespawnPosition = Mode->ChooseRespawnPoint(Request.Position);
-            Request.RespawnDelayMs = FMath::RoundToInt(Mode->CapturedSettings->PlayerRespawnDelaySeconds * 1000);
+            const bool bGreenlands = Victim->GetWorld()->GetOutermost()->GetName() ==
+                TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook");
+            Request.RespawnDelayMs = FMath::RoundToInt((bGreenlands ? Mode->CapturedSettings->ResAcceptSeconds :
+                Mode->CapturedSettings->PlayerRespawnDelaySeconds) * 1000);
             Mode->PlayerDeathEvents.Add(Weak, Request.DeathEventId);
             Mode->PlayerDeathRespawnPoints.Add(Weak, Request.RespawnPosition);
             Mode->PendingDeathReports.Add(Request.CharacterId);
@@ -1338,18 +1393,36 @@ void ASFGameMode::HitPlayer(AActor* Source, ASFE1Character* Victim, int32 Damage
     }
 }
 
-bool ASFGameMode::AcceptResurrection(ASFE1Character* Player, uint32 OfferId)
+bool ASFGameMode::AcceptResurrection(ASFE1Character* Player, uint32 OfferId, const FString& DeathEventId)
 {
-    const bool bSandbox = GetWorld() && GetWorld()->GetOutermost()->GetName() ==
-        TEXT("/Game/Frontier/Maps/Sandbox/SB_ResurrectionAccept");
-    if (!bSandbox || !HasAuthority() || !bPilotActive || !CapturedSettings ||
-        USFBackpackComponent::Services() || !IsValid(Player) || Player->GetController() == nullptr ||
-        !Player->AcceptResurrectionOffer(OfferId, GetWorld()->GetTimeSeconds(),
-            CapturedSettings->PlayerHealth, CapturedSettings->PlayerResFraction))
+    const FString Map = GetWorld() ? GetWorld()->GetOutermost()->GetName() : FString();
+    const bool bSandbox = Map == TEXT("/Game/Frontier/Maps/Sandbox/SB_ResurrectionAccept");
+    const bool bGreenlands = Map == TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook");
+    if ((!bSandbox && !bGreenlands) || (bSandbox && USFBackpackComponent::Services()) ||
+        !HasAuthority() || !bPilotActive || !CapturedSettings ||
+        !IsValid(Player) || !Player->CanAcceptResurrectionOffer(OfferId, GetWorld()->GetTimeSeconds()))
     {
         UE_LOG(LogTemp, Display, TEXT("RES_ACCEPT_SERVER_DENIED Pawn=%s Offer=%u"), *GetNameSafe(Player), OfferId);
         return false;
     }
+    if (bGreenlands)
+    {
+        const auto Weak = TWeakObjectPtr<ASFE1Character>(Player);
+        if (!USFBackpackComponent::Services() || DeathEventId.IsEmpty() ||
+            PlayerDeathEvents.FindRef(Weak) != DeathEventId ||
+            Player->GetResurrectionOfferDeathEventId() != DeathEventId ||
+            PlayerRespawnInFlight.Contains(Weak))
+        {
+            UE_LOG(LogTemp, Display, TEXT("RES_ACCEPT_SERVER_DENIED Pawn=%s Offer=%u Reason=DeathEvent"),
+                *Player->GetName(), OfferId);
+            return false;
+        }
+        RespawnPlayer(Weak, FSFResurrectionAcceptRules::RestoredHealth(CapturedSettings->PlayerHealth,
+            CapturedSettings->PlayerResFraction), true);
+        return true;
+    }
+    if (!Player->AcceptResurrectionOffer(OfferId, GetWorld()->GetTimeSeconds(),
+        CapturedSettings->PlayerHealth, CapturedSettings->PlayerResFraction)) return false;
     UE_LOG(LogTemp, Display, TEXT("RES_ACCEPT_SERVER_ACCEPTED Pawn=%s Offer=%u HP=%d"),
         *Player->GetName(), OfferId, Player->CombatHealth());
     return true;
@@ -1357,14 +1430,24 @@ bool ASFGameMode::AcceptResurrection(ASFE1Character* Player, uint32 OfferId)
 
 bool ASFGameMode::ReleaseSpirit(ASFE1Character* Player)
 {
-    const bool bSandbox = GetWorld() && GetWorld()->GetOutermost()->GetName() ==
-        TEXT("/Game/Frontier/Maps/Sandbox/SB_SpiritRelease");
-    if (!FSFSpiritReleaseRules::CanRelease(bSandbox, HasAuthority(), IsValid(Player) &&
+    const FString Map = GetWorld() ? GetWorld()->GetOutermost()->GetName() : FString();
+    const bool bSandbox = Map == TEXT("/Game/Frontier/Maps/Sandbox/SB_SpiritRelease");
+    const bool bGreenlands = Map == TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook");
+    if (!FSFSpiritReleaseRules::CanRelease(bSandbox || bGreenlands, HasAuthority(), IsValid(Player) &&
         Player->GetController() != nullptr, IsValid(Player) ? Player->CombatHealth() : -1, !RespawnPoints.IsEmpty()) ||
-        !bPilotActive || !CapturedSettings || USFBackpackComponent::Services())
+        !bPilotActive || !CapturedSettings || (bSandbox && USFBackpackComponent::Services()))
     {
         UE_LOG(LogTemp, Display, TEXT("SPIRIT_RELEASE_SERVER_DENIED Pawn=%s"), *GetNameSafe(Player));
         return false;
+    }
+    if (bGreenlands)
+    {
+        const auto Weak = TWeakObjectPtr<ASFE1Character>(Player);
+        if (!USFBackpackComponent::Services() || !PlayerDeathEvents.Contains(Weak) ||
+            PlayerRespawnInFlight.Contains(Weak)) return false;
+        RespawnPlayer(Weak, FSFSpiritReleaseRules::RestoredHealth(CapturedSettings->PlayerHealth,
+            CapturedSettings->SpiritResFraction));
+        return true;
     }
     const FVector At = Grounded(GetWorld(), ChooseRespawnPoint(Player->GetActorLocation()),
         Player->GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
@@ -1415,6 +1498,15 @@ void ASFGameMode::ReportPlayerDeath(TWeakObjectPtr<ASFE1Character> Player, const
         if (Mode->PlayerDeathEvents.FindRef(Player) != Request.DeathEventId) return;
         const int64 RemainingMs = FMath::Max<int64>(0, Reply.RespawnAtUnixMs - UnixNowMs());
         UE_LOG(LogTemp, Display, TEXT("COMBAT_DEATH_RECORDED Character=%s Event=%s RemainingMs=%lld"), *Request.CharacterId, *Request.DeathEventId, RemainingMs);
+        FString Resolution;
+        FParse::Value(FCommandLine::Get(), TEXT("DeathResolution="), Resolution);
+        if (FParse::Param(FCommandLine::Get(), TEXT("GreenlandsDeathNetcheck")) &&
+            Resolution == TEXT("Resurrection") && RemainingMs > 0)
+        {
+            Player->BeginResurrectionOffer(Mode->GetWorld()->GetTimeSeconds() + RemainingMs / 1000.0, Request.DeathEventId);
+            UE_LOG(LogTemp, Display, TEXT("COMBAT_DEATH_FIXTURE_OFFER Event=%s Offer=%u"),
+                *Request.DeathEventId, Player->GetResurrectionOfferId());
+        }
         FTimerHandle Timer;
         Mode->GetWorldTimerManager().SetTimer(Timer, FTimerDelegate::CreateWeakLambda(Mode,
             [WeakMode, Player]() { if (ASFGameMode* M = WeakMode.Get()) M->RespawnPlayer(Player); }), FMath::Max(0.01, RemainingMs / 1000.0), false);
@@ -1436,13 +1528,18 @@ void ASFGameMode::RestoreDeadPlayer(ASFE1Character* Player, const FSFGameplayRes
     Player->CombatSetHealth(0); Player->GetCharacterMovement()->DisableMovement();
     PlayerDeathEvents.Add(Weak, State.DeathEventId); PlayerDeathRespawnPoints.Add(Weak, State.RespawnPosition);
     const int64 RemainingMs = FMath::Max<int64>(0, State.RespawnAtUnixMs - UnixNowMs());
+    FString Resolution;
+    FParse::Value(FCommandLine::Get(), TEXT("DeathResolution="), Resolution);
+    if (FParse::Param(FCommandLine::Get(), TEXT("GreenlandsDeathNetcheck")) &&
+        Resolution == TEXT("Resurrection") && RemainingMs > 0)
+    { Player->BeginResurrectionOffer(GetWorld()->GetTimeSeconds() + RemainingMs / 1000.0, State.DeathEventId); }
     FTimerHandle Timer;
     GetWorldTimerManager().SetTimer(Timer, FTimerDelegate::CreateWeakLambda(this,
         [WeakMode = TWeakObjectPtr<ASFGameMode>(this), Weak]() { if (ASFGameMode* M = WeakMode.Get()) M->RespawnPlayer(Weak); }), FMath::Max(0.01, RemainingMs / 1000.0), false);
     UE_LOG(LogTemp, Display, TEXT("COMBAT_DEATH_RESTORED Event=%s RemainingMs=%lld"), *State.DeathEventId, RemainingMs);
 }
 
-void ASFGameMode::RespawnPlayer(TWeakObjectPtr<ASFE1Character> Player)
+void ASFGameMode::RespawnPlayer(TWeakObjectPtr<ASFE1Character> Player, int32 RestoredHealth, bool bAtDeathPosition)
 {
     if (!Player.IsValid())
     { PlayerDeathEvents.Remove(Player); PlayerDeathRespawnPoints.Remove(Player); PlayerRespawnInFlight.Remove(Player); return; }
@@ -1455,8 +1552,9 @@ void ASFGameMode::RespawnPlayer(TWeakObjectPtr<ASFE1Character> Player)
         USFBackpackComponent* Pack = Controller ? USFBackpackComponent::FindOrCreate(Controller) : nullptr;
         if (!Pack || !USFBackpackComponent::Services()) return;
         FSFGameplayRequest Clear; Clear.Rpc = ESFGameplayRpc::ClearDeath; Clear.CharacterId = Pack->GetCharacterId(); Clear.DeathEventId = *EventId;
+        Clear.bResurrectAtDeathPosition = bAtDeathPosition;
         PlayerRespawnInFlight.Add(Player);
-        USFBackpackComponent::Services()->Call(Clear, [WeakMode = TWeakObjectPtr<ASFGameMode>(this), Player, Clear](const FSFGameplayResponse& Reply)
+        USFBackpackComponent::Services()->Call(Clear, [WeakMode = TWeakObjectPtr<ASFGameMode>(this), Player, Clear, RestoredHealth, bAtDeathPosition](const FSFGameplayResponse& Reply)
         {
             ASFGameMode* Mode = WeakMode.Get(); if (!Mode) return;
             Mode->PlayerRespawnInFlight.Remove(Player);
@@ -1464,21 +1562,26 @@ void ASFGameMode::RespawnPlayer(TWeakObjectPtr<ASFE1Character> Player)
             if (Reply.Status == ESFGameplayStatus::Ok && !Reply.bIsDead)
             {
                 Mode->PlayerDeathEvents.Remove(Player);
-                Mode->RespawnPlayer(Player);
+                Mode->RespawnPlayer(Player, RestoredHealth, bAtDeathPosition);
+                UE_LOG(LogTemp, Display, TEXT("COMBAT_DEATH_RESOLVED Event=%s HP=%d Mode=%s X=%.0f Y=%.0f"),
+                    *Clear.DeathEventId, Player->CombatHealth(),
+                    RestoredHealth < 0 ? TEXT("Automatic") : bAtDeathPosition ? TEXT("Resurrection") : TEXT("Release"),
+                    Player->GetActorLocation().X, Player->GetActorLocation().Y);
             }
             else
             {
                 UE_LOG(LogTemp, Warning, TEXT("COMBAT_DEATH_CLEAR_RETRY Character=%s Code=%d"), *Clear.CharacterId, Reply.GrpcCode);
                 FTimerHandle Retry; Mode->GetWorldTimerManager().SetTimer(Retry, FTimerDelegate::CreateWeakLambda(Mode,
-                    [WeakMode, Player]() { if (ASFGameMode* M = WeakMode.Get()) M->RespawnPlayer(Player); }), 3.0f, false);
+                    [WeakMode, Player, RestoredHealth, bAtDeathPosition]() { if (ASFGameMode* M = WeakMode.Get()) M->RespawnPlayer(Player, RestoredHealth, bAtDeathPosition); }), 3.0f, false);
             }
         });
         return;
     }
-    const FVector At = Grounded(GetWorld(), Nearest, Player->GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
+    const FVector At = Grounded(GetWorld(), bAtDeathPosition ? Player->GetActorLocation() : Nearest,
+        Player->GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
     Player->SetActorLocation(At, false, nullptr, ETeleportType::TeleportPhysics);
     Player->GetCharacterMovement()->SetMovementMode(MOVE_Walking);
-    Player->CombatSetHealth(CapturedSettings->PlayerHealth);
+    Player->CombatSetHealth(RestoredHealth > 0 ? RestoredHealth : CapturedSettings->PlayerHealth);
     PlayerDeathRespawnPoints.Remove(Player);
     UE_LOG(LogTemp, Display, TEXT("COMBAT_PILOT_PLAYER_RESPAWN X=%.0f Y=%.0f HP=%d"), At.X,At.Y,Player->CombatHealth());
     if (bScenario)

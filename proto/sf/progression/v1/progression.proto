@@ -113,7 +113,7 @@ message ReportDeathRequest {
   CharacterPosition respawn_position = 5;
   int32 respawn_delay_ms = 6;
 }
-message ClearDeathRequest { string character_id = 1; string death_event_id = 2; }
+message ClearDeathRequest { string character_id = 1; string death_event_id = 2; bool resurrect_at_death_position = 3; }
 message DeathState {
   bool is_dead = 1;
   string death_event_id = 2;

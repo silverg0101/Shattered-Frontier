@@ -1632,7 +1632,82 @@ void ASFE1Character::Tick(float DeltaSeconds)
         FParse::Param(FCommandLine::Get(), TEXT("GreenlandsEnvironmentNetcheck"))) { TickGreenlandsEnvironmentScenario(); }
     if (GetNetMode() == NM_Client && IsLocallyControlled() &&
         FParse::Param(FCommandLine::Get(), TEXT("GreenlandsMovementNetcheck"))) { TickGreenlandsMovementScenario(); }
+    if (GetNetMode() == NM_Client && IsLocallyControlled() &&
+        FParse::Param(FCommandLine::Get(), TEXT("GreenlandsDeathNetcheck")))
+    {
+        FString DeathRole, Resolution;
+        FParse::Value(FCommandLine::Get(), TEXT("GreenlandsDeathRole="), DeathRole);
+        FParse::Value(FCommandLine::Get(), TEXT("DeathResolution="), Resolution);
+        ASFE1Character* Subject = this;
+        if (DeathRole == TEXT("Observer"))
+        {
+            for (TActorIterator<ASFE1Character> It(GetWorld()); It; ++It)
+            { if (*It != this) { Subject = *It; break; } }
+        }
+        const double Now = GetWorld()->GetTimeSeconds();
+        if (GreenlandsDeathClientStage == 0 && FParse::Param(FCommandLine::Get(), TEXT("DeathRestoreOnly")) &&
+            Subject->CombatHealth() == 0)
+        { GreenlandsDeathClientStage = 1; }
+        if (GreenlandsDeathClientStage == 0 && Subject->CombatHealth() == 35)
+        {
+            GreenlandsDeathClientStage = 1;
+            UE_LOG(LogTemp, Display, TEXT("GREENLANDS_DEATH_CLIENT_INITIAL Role=%s HP=35"), *DeathRole);
+        }
+        if (GreenlandsDeathClientStage == 1 && Subject->CombatHealth() == 0)
+        {
+            GreenlandsDeathClientStage = 2; GreenlandsDeathClientAt = Now;
+            UE_LOG(LogTemp, Display, TEXT("GREENLANDS_DEATH_CLIENT_DEAD Role=%s HP=0"), *DeathRole);
+        }
+        if (GreenlandsDeathClientStage == 2 && DeathRole == TEXT("Driver") && Now - GreenlandsDeathClientAt >= 12.0)
+        {
+            if (ASFPlayerController* PC = Cast<ASFPlayerController>(Controller))
+            {
+                if (Resolution == TEXT("Resurrection"))
+                {
+                    if (ResurrectionOfferId == 0) return;
+                    GreenlandsDeathAcceptedOffer = ResurrectionOfferId;
+                    PC->ServerAcceptResurrection(ResurrectionOfferId, FString()); // Wrong event must not consume the offer.
+                    PC->SFAcceptResurrection();
+                }
+                else { PC->SFReleaseSpirit(); }
+                GreenlandsDeathClientStage = 3;
+                UE_LOG(LogTemp, Display, TEXT("GREENLANDS_DEATH_CLIENT_REQUEST Role=Driver Mode=%s Offer=%u"),
+                    *Resolution, GreenlandsDeathAcceptedOffer);
+            }
+        }
+        if (GreenlandsDeathClientStage == 2 && DeathRole == TEXT("Observer")) { GreenlandsDeathClientStage = 3; }
+        const int32 Expected = Resolution == TEXT("Resurrection") ? 28 : 40;
+        if (GreenlandsDeathClientStage == 3 && Subject->CombatHealth() == Expected)
+        {
+            GreenlandsDeathClientStage = 4; GreenlandsDeathClientAt = Now;
+            UE_LOG(LogTemp, Display, TEXT("GREENLANDS_DEATH_CLIENT_RESTORED Role=%s Mode=%s HP=%d X=%.0f Y=%.0f"),
+                *DeathRole, *Resolution, Subject->CombatHealth(), Subject->GetActorLocation().X, Subject->GetActorLocation().Y);
+            if (DeathRole == TEXT("Driver"))
+            {
+                if (ASFPlayerController* PC = Cast<ASFPlayerController>(Controller))
+                {
+                    if (Resolution == TEXT("Resurrection")) { PC->ServerAcceptResurrection(GreenlandsDeathAcceptedOffer, FString()); }
+                    else { PC->SFReleaseSpirit(); }
+                }
+            }
+        }
+        if (GreenlandsDeathClientStage == 4 && Now - GreenlandsDeathClientAt >= 2.0)
+        {
+            GreenlandsDeathClientStage = 5;
+            UE_LOG(LogTemp, Display, TEXT("GREENLANDS_DEATH_CLIENT_REPLAY_SAFE Role=%s HP=%d X=%.0f Y=%.0f"),
+                *DeathRole, Subject->CombatHealth(), Subject->GetActorLocation().X, Subject->GetActorLocation().Y);
+        }
+    }
 #endif
+    if (CombatMap == TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook") &&
+        IsLocallyControlled() && PilotHealth == 0)
+    {
+        if (ASFPlayerController* PC = Cast<ASFPlayerController>(Controller))
+        {
+            if (PC->WasInputKeyJustPressed(EKeys::R)) { PC->SFReleaseSpirit(); }
+            else if (ResurrectionOfferId != 0 && PC->WasInputKeyJustPressed(EKeys::Y)) { PC->SFAcceptResurrection(); }
+        }
+    }
     if (CombatMap == TEXT("/Game/Frontier/Maps/Sandbox/SB_TravelMount") && IsLocallyControlled())
     { if (APlayerController* PC = Cast<APlayerController>(Controller); PC && PC->WasInputKeyJustPressed(EKeys::M)) { RequestTravelMountToggle(); } }
 }
@@ -1860,6 +1935,7 @@ void ASFE1Character::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
     DOREPLIFETIME(ASFE1Character, PilotHealth);
     DOREPLIFETIME_CONDITION(ASFE1Character, ResurrectionOfferId, COND_OwnerOnly);
+    DOREPLIFETIME_CONDITION(ASFE1Character, ResurrectionOfferDeathEventId, COND_OwnerOnly);
     DOREPLIFETIME(ASFE1Character, bPilotInCombat);
     DOREPLIFETIME(ASFE1Character, bAutoAttacking);
     DOREPLIFETIME(ASFE1Character, bTravelMounted);
@@ -1927,12 +2003,13 @@ void ASFE1Character::CombatSetHealth(int32 Value)
     }
 }
 
-void ASFE1Character::BeginResurrectionOffer(double ExpiresAt)
+void ASFE1Character::BeginResurrectionOffer(double ExpiresAt, const FString& DeathEventId)
 {
     if (!HasAuthority()) return;
     ++NextResurrectionOfferId;
     if (NextResurrectionOfferId == 0) ++NextResurrectionOfferId;
     ResurrectionOfferId = NextResurrectionOfferId;
+    ResurrectionOfferDeathEventId = DeathEventId;
     ResurrectionOfferExpiresAt = ExpiresAt;
     ForceNetUpdate();
 }
@@ -1941,22 +2018,29 @@ void ASFE1Character::ClearResurrectionOffer()
 {
     if (!HasAuthority()) return;
     ResurrectionOfferId = 0;
+    ResurrectionOfferDeathEventId.Empty();
     ResurrectionOfferExpiresAt = 0.0;
     ForceNetUpdate();
 }
 
 bool ASFE1Character::AcceptResurrectionOffer(uint32 RequestedOffer, double Now, int32 MaximumHealth, float Fraction)
 {
-    const bool bSandbox = GetWorld() && GetWorld()->GetOutermost()->GetName() ==
-        TEXT("/Game/Frontier/Maps/Sandbox/SB_ResurrectionAccept");
-    if (!FSFResurrectionAcceptRules::CanAccept(bSandbox, HasAuthority(), GetController() != nullptr,
-        PilotHealth, ResurrectionOfferId, RequestedOffer, Now, ResurrectionOfferExpiresAt)) return false;
+    if (!CanAcceptResurrectionOffer(RequestedOffer, Now)) return false;
     ClearResurrectionOffer();
     GetCharacterMovement()->SetMovementMode(MOVE_Walking);
     CombatSetHealth(FSFResurrectionAcceptRules::RestoredHealth(MaximumHealth, Fraction));
     bPilotInCombat = false;
     ForceNetUpdate();
     return true;
+}
+
+bool ASFE1Character::CanAcceptResurrectionOffer(uint32 RequestedOffer, double Now) const
+{
+    const FString Map = GetWorld() ? GetWorld()->GetOutermost()->GetName() : FString();
+    const bool bSupported = Map == TEXT("/Game/Frontier/Maps/Sandbox/SB_ResurrectionAccept") ||
+        Map == TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook");
+    return FSFResurrectionAcceptRules::CanAccept(bSupported, HasAuthority(), GetController() != nullptr,
+        PilotHealth, ResurrectionOfferId, RequestedOffer, Now, ResurrectionOfferExpiresAt);
 }
 
 void ASFE1Character::CombatMarkHostile()
@@ -2156,7 +2240,7 @@ void ASFE1Character::TickResurrectionAcceptScenario()
     {
         ResurrectionAcceptScenarioStage = 5;
         UE_LOG(LogTemp, Display, TEXT("RES_ACCEPT_CLIENT_RESTORED Role=%s HP=28"), *ScenarioRole);
-        if (ScenarioRole == TEXT("Driver")) { PC->ServerAcceptResurrection(1); } // Replayed offer must fail.
+        if (ScenarioRole == TEXT("Driver")) { PC->ServerAcceptResurrection(1, FString()); } // Replayed offer must fail.
     }
 #endif
 }

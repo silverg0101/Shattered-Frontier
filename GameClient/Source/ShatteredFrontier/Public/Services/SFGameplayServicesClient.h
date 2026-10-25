@@ -98,6 +98,7 @@ struct FSFGameplayRequest
     FString ShapeKey; int32 OrientationIndex = 0;  // Place: BLD-01 geometry identity
     FString ZoneId; FVector Position = FVector::ZeroVector; float Yaw = 0; int64 ExpectedPositionRevision = 0;  // SavePosition
     FString DeathEventId; int64 DeathAtUnixMs = 0; FVector RespawnPosition = FVector::ZeroVector; int32 RespawnDelayMs = 0;
+    bool bResurrectAtDeathPosition = false;
     // Crafting
     FString RecipeId; int32 Count = 1;
     TMap<FString, FString> InputGrades;  // base definition -> selected grade definition

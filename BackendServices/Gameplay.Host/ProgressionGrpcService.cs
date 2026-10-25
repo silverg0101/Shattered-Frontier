@@ -87,7 +87,7 @@ internal sealed class ProgressionGrpcService(PostgresCharacterStateStore store, 
         {
             if (string.IsNullOrWhiteSpace(request.CharacterId) || !Guid.TryParse(request.DeathEventId, out _))
                 throw new ArgumentException("Invalid death identity.");
-            return WireDeath(store.ClearDeath(request.CharacterId, request.DeathEventId));
+            return WireDeath(store.ClearDeath(request.CharacterId, request.DeathEventId, request.ResurrectAtDeathPosition));
         });
 
     public override Task<Pb.ApplyReceiptReply> ApplyReceipt(Pb.ApplyReceiptRequest request, ServerCallContext context) =>

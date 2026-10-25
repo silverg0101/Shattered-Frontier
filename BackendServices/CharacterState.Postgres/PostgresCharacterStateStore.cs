@@ -56,7 +56,7 @@ public sealed class PostgresCharacterStateStore(string connectionString)
         return ReadDeath(c, t, characterId)!;
     });
 
-    public CharacterDeathSnapshot ClearDeath(string characterId, string eventId) => Transaction((c, t) =>
+    public CharacterDeathSnapshot ClearDeath(string characterId, string eventId, bool resurrectAtDeathPosition = false) => Transaction((c, t) =>
     {
         LockCharacter(c, t, characterId);
         var prior = ReadDeath(c, t, characterId);
@@ -64,7 +64,7 @@ public sealed class PostgresCharacterStateStore(string connectionString)
         if (!prior.IsDead) return prior;
         using var cmd = Command(c, t, "UPDATE character_state.deaths SET is_dead=false,updated_at=now() WHERE character_id=$1 AND death_event_id=$2", characterId, eventId);
         cmd.ExecuteNonQuery();
-        var point = prior.RespawnPosition;
+        var point = resurrectAtDeathPosition ? prior.DeathPosition : prior.RespawnPosition;
         using var save = Command(c, t, "INSERT INTO character_state.positions(character_id,revision,zone_id,x,y,z,yaw) VALUES ($1,1,$2,$3,$4,$5,0) ON CONFLICT (character_id) DO UPDATE SET revision=character_state.positions.revision+1,zone_id=EXCLUDED.zone_id,x=EXCLUDED.x,y=EXCLUDED.y,z=EXCLUDED.z,yaw=0,updated_at=now()",
             characterId, point.ZoneId, point.X, point.Y, point.Z);
         save.ExecuteNonQuery();

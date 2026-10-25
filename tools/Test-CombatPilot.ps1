@@ -4,6 +4,10 @@ param(
     [ValidateRange(12000,65000)][int]$Port = 17841,
     [ValidateRange(320,1200)][int]$TimeoutSeconds = 600,
     [ValidateRange(1,10)][int]$Clients = 1,
+    [ValidatePattern('^/Game/Frontier/[A-Za-z0-9_/]+$')][string]$Map = '/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook',
+    [switch]$GreenlandsDeathNetcheck,
+    [ValidateSet('Release','Resurrection')][string]$DeathResolution = 'Release',
+    [switch]$RestartMidDeath,
     [switch]$TargetScenario,
     [switch]$PartyScenario,
     [switch]$PartyXpScenario,
@@ -18,6 +22,9 @@ $project = Join-Path $repo 'GameClient\ShatteredFrontier.uproject'
 $bridge = Join-Path $repo 'BackendServices\WorldContent.Tool\bin\Debug\net10.0\WorldContent.Tool.dll'
 $sdk = Join-Path $repo 'Artifacts\Persistence\Toolchains\dotnet-10.0.402\dotnet.exe'
 if ($Services -and $TargetScenario) { throw 'Services ledger assertion requires the combat reward scenario.' }
+if ($GreenlandsDeathNetcheck -and (-not $Services -or $Clients -ne 2 -or $Map -ne '/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook' -or
+    $TargetScenario -or $PartyScenario -or $PartyXpScenario -or $SpawnOnly)) { throw 'GreenlandsDeathNetcheck requires Silverbrook, two clients and Gameplay Services.' }
+if ($RestartMidDeath -and -not $GreenlandsDeathNetcheck) { throw 'RestartMidDeath requires GreenlandsDeathNetcheck.' }
 if ($SpawnOnly -and (-not $Services -or -not $ServerExe)) { throw '-SpawnOnly requires -Services and -ServerExe.' }
 if ($PartyScenario -and ($Clients -ne 3 -or $Services -or $TargetScenario -or $SpawnOnly)) { throw '-PartyScenario requires -Clients 3 without services or other scenarios.' }
 if ($PartyXpScenario -and ($Clients -ne 3 -or -not $Services -or $PartyScenario -or $TargetScenario -or $SpawnOnly)) { throw '-PartyXpScenario requires -Clients 3 -Services.' }
@@ -35,14 +42,15 @@ $null = New-Item -ItemType Directory -Path $root
 if ($Services) { . (Join-Path $PSScriptRoot 'InventoryLedgerHostFixture.ps1') }
 $fx = @{}
 $owned = [Collections.Generic.List[Diagnostics.Process]]::new()
-$scope = if ($PartyXpScenario) { 'Three-client party: server restart, two in-range kill XP recipients, out-of-range exclusion and killer-only loot' }
+$scope = if ($GreenlandsDeathNetcheck) { "Greenlands two-client durable boar death and $DeathResolution" }
+    elseif ($PartyXpScenario) { 'Three-client party: server restart, two in-range kill XP recipients, out-of-range exclusion and killer-only loot' }
     elseif ($PartyScenario) { 'Three clients: invite, decline, accept, leader handoff, kick, leave and party HUD' }
     elseif ($SpawnOnly) { 'Packaged dedicated server, Gameplay.Host, five boars in each authored group' }
     elseif ($Clients -gt 1) { "$Clients clients, one boar, one mid-fight reconnect, owner targeting and durable killer reward" }
     elseif ($TargetScenario) { 'One dedicated server, one client; Tab selection, owner replication, death and range drops' }
     elseif ($Services) { 'One dedicated server, one client, durable boar hides in InventoryLedger and WorldContent slot respawn' }
     else { 'One dedicated server, one client; local attack RPC and server-authored WorldContent slots' }
-$result = [ordered]@{ status='Running'; map='/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook'; scope=$scope; runs=@() }
+$result = [ordered]@{ status='Running'; map=$Map; scope=$scope; runs=@() }
 $wall = [Diagnostics.Stopwatch]::StartNew()
 function Start-Owned([string]$Name,[string]$Url,[string[]]$Extra) {
     $log = Join-Path $root ($Name+'.log')
@@ -147,8 +155,9 @@ try {
         }
     }
     $url = $result.map
-    $scenarioArg = if ($PartyScenario) { '-PartyScenario' } elseif ($Clients -gt 1) { '-CombatGroupScenario' } elseif ($TargetScenario) { '-CombatTargetScenario' } else { '-CombatPilotScenario' }
+    $scenarioArg = if ($GreenlandsDeathNetcheck) { '-GreenlandsDeathNetcheck' } elseif ($PartyScenario) { '-PartyScenario' } elseif ($Clients -gt 1) { '-CombatGroupScenario' } elseif ($TargetScenario) { '-CombatTargetScenario' } else { '-CombatPilotScenario' }
     $serverFlags = @('-server',('-port='+$Port),'-multihome=127.0.0.1',$scenarioArg)
+    if ($GreenlandsDeathNetcheck) { $serverFlags += "-DeathResolution=$DeathResolution" }
     if ($PartyScenario) { $serverFlags += '-SFDevIdentity' }
     if ($PartyXpScenario) { $serverFlags += '-PartyXpScenario' }
     if ($Clients -gt 3) { $serverFlags += '-CombatGroupCapacitySlots' }
@@ -248,6 +257,82 @@ try {
             }
         }
         if ($serverText -match 'COMBAT_PILOT_SLOT_ERROR|Fatal error:|Assertion failed:') { throw 'Packaged combat logged a slot or fatal error.' }
+        $result.status='Passed'
+        return
+    }
+    if ($GreenlandsDeathNetcheck) {
+        $expected = if ($DeathResolution -eq 'Release') { 40 } else { 28 }
+        $names = @('alpha','beta')
+        for ($role = 1; $role -le 2; $role++) {
+            $identity = $names[$role - 1]
+            $label = if ($role -eq 1) { 'Driver' } else { 'Observer' }
+            $null = Start-Owned "client$role" ("127.0.0.1:$Port`?SFDevCharacter=$identity") @('-game','-GreenlandsDeathNetcheck',"-GreenlandsDeathRole=$label","-DeathResolution=$DeathResolution")
+            if ($role -eq 1) { Wait-Log $server 'server' 'CHARACTER_RESTORED Character=chr_dev_alpha' }
+        }
+        Wait-Log $server 'server' 'COMBAT_DEATH_RECORDED Character=chr_dev_alpha'
+        $deadRow = Invoke-LedgerSql $fx "SELECT is_dead,death_event_id FROM character_state.deaths WHERE character_id='chr_dev_alpha'" $fx.db
+        if ($deadRow -notmatch 't\|[0-9a-f-]{36}') { throw "Durable boar death missing: $deadRow" }
+        if ($RestartMidDeath) {
+            foreach ($p in @($owned | Where-Object { $_.Id -in @($server.Id,(@($result.runs | Where-Object name -eq 'client1')[0].pid),(@($result.runs | Where-Object name -eq 'client2')[0].pid)) })) {
+                if (-not $p.HasExited) { Stop-Process -Id $p.Id -Force; $p.WaitForExit() }
+            }
+            Invoke-WithEnv $serverEnv { $script:server = Start-Owned 'server2' $url $serverFlags }
+            Wait-Log $server 'server2' 'COMBAT_PILOT_READY Boars=10'
+            for ($role = 1; $role -le 2; $role++) {
+                $identity = $names[$role - 1]
+                $label = if ($role -eq 1) { 'Driver' } else { 'Observer' }
+                $null = Start-Owned "client$role-rejoin" ("127.0.0.1:$Port`?SFDevCharacter=$identity") @('-game','-GreenlandsDeathNetcheck','-DeathRestoreOnly',"-GreenlandsDeathRole=$label","-DeathResolution=$DeathResolution")
+                if ($role -eq 1) { Wait-Log $server 'server2' 'COMBAT_DEATH_RESTORED Event=' }
+            }
+        }
+        $serverName = if ($RestartMidDeath) { 'server2' } else { 'server' }
+        $clientSuffix = if ($RestartMidDeath) { '-rejoin' } else { '' }
+        Wait-Log $server $serverName "COMBAT_DEATH_RESOLVED Event=.* HP=$expected Mode=$DeathResolution"
+        $serverText = Get-Content -LiteralPath (Join-Path $root "$serverName.log") -Raw
+        $serverPosition = [regex]::Match($serverText,"COMBAT_DEATH_RESOLVED Event=.* HP=$expected Mode=$DeathResolution X=(-?\d+) Y=(-?\d+)")
+        if (-not $serverPosition.Success) { throw 'Authoritative resolution position missing' }
+        for ($role = 1; $role -le 2; $role++) {
+            $label = if ($role -eq 1) { 'Driver' } else { 'Observer' }
+            $name = "client$role$clientSuffix"
+            $process = @($owned | Where-Object { $_.Id -eq (@($result.runs | Where-Object name -eq $name)[0].pid) })[0]
+            Wait-Log $process $name "GREENLANDS_DEATH_CLIENT_REPLAY_SAFE Role=$label HP=$expected"
+            $lines = Get-Content -LiteralPath (Join-Path $root "$name.log") -Raw
+            if ($lines -notmatch "GREENLANDS_DEATH_CLIENT_DEAD Role=$label HP=0" -or
+                $lines -notmatch "GREENLANDS_DEATH_CLIENT_RESTORED Role=$label Mode=$DeathResolution HP=$expected") {
+                throw "$label did not observe boar death and $DeathResolution health"
+            }
+            $clientPosition = [regex]::Match($lines,"GREENLANDS_DEATH_CLIENT_REPLAY_SAFE Role=$label HP=$expected X=(-?\d+) Y=(-?\d+)")
+            if (-not $clientPosition.Success -or
+                [math]::Abs([int]$clientPosition.Groups[1].Value - [int]$serverPosition.Groups[1].Value) -gt 200 -or
+                [math]::Abs([int]$clientPosition.Groups[2].Value - [int]$serverPosition.Groups[2].Value) -gt 200) {
+                throw "$label missed the authoritative $DeathResolution position"
+            }
+        }
+        $killText = Get-Content -LiteralPath (Join-Path $root 'server.log') -Raw
+        if ($killText -notmatch 'COMBAT_PILOT_PLAYER_HIT HP=0 By=SFPilotBoar' -or
+            $killText -notmatch 'COMBAT_DEATH_RECORDED Character=chr_dev_alpha' -or
+            $serverText -notmatch "COMBAT_DEATH_RESOLVED Event=.* HP=$expected Mode=$DeathResolution" -or
+            $serverText -notmatch $(if ($DeathResolution -eq 'Release') { 'SPIRIT_RELEASE_SERVER_DENIED' } else { 'RES_ACCEPT_SERVER_DENIED' })) {
+            throw 'Death, durable clear, or replay denial evidence missing'
+        }
+        if ($DeathResolution -eq 'Resurrection') {
+            $badEvent = $serverText.IndexOf('Reason=DeathEvent')
+            $resolvedAt = $serverText.IndexOf('Mode=Resurrection')
+            $replayAt = if ($resolvedAt -ge 0) { $serverText.IndexOf('RES_ACCEPT_SERVER_DENIED Pawn=', $resolvedAt) } else { -1 }
+            if ($badEvent -lt 0 -or $resolvedAt -le $badEvent -or $replayAt -le $resolvedAt) {
+                throw 'Mismatched death event or accepted-offer replay was not denied in order'
+            }
+        }
+        $aliveRow = Invoke-LedgerSql $fx "SELECT is_dead FROM character_state.deaths WHERE character_id='chr_dev_alpha'" $fx.db
+        if ($aliveRow -ne 'f') { throw "Death was not durably cleared: $aliveRow" }
+        $positionRow = Invoke-LedgerSql $fx "SELECT round(p.x)::int||'|'||round(p.y)::int||'|'||round(d.$(if ($DeathResolution -eq 'Release') { 'respawn_x' } else { 'death_x' }))::int||'|'||round(d.$(if ($DeathResolution -eq 'Release') { 'respawn_y' } else { 'death_y' }))::int FROM character_state.positions p JOIN character_state.deaths d USING (character_id) WHERE p.character_id='chr_dev_alpha'" $fx.db
+        $positionValues = $positionRow -split '\|'
+        if ($positionValues.Count -ne 4 -or $positionValues[0] -ne $positionValues[2] -or
+            $positionValues[1] -ne $positionValues[3] -or
+            [math]::Abs([int]$positionValues[0] - [int]$serverPosition.Groups[1].Value) -gt 200 -or
+            [math]::Abs([int]$positionValues[1] - [int]$serverPosition.Groups[2].Value) -gt 200) {
+            throw "Durable $DeathResolution position did not match the authored death record: $positionRow"
+        }
         $result.status='Passed'
         return
     }

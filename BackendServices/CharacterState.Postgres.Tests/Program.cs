@@ -91,6 +91,14 @@ switch (args[0])
         Check(store.ReadPosition("character-death")?.Result.X == 100, "respawn point committed with clear");
         Check(!store.ReportDeath("00000000-0000-0000-0000-000000000001", "character-death", 100000,
             new("silverbrook", 12, 20, 30, 0), new("silverbrook", 100, 200, 30, 0), 4000).IsDead, "death replay after clear stays alive");
+        const string resurrectionEvent = "00000000-0000-0000-0000-000000000002";
+        Check(store.ReportDeath(resurrectionEvent, "character-death", 110000,
+            new("silverbrook", 25, 30, 40, 0), new("silverbrook", 200, 300, 40, 0), 60000).IsDead,
+            "second death recorded");
+        Check(!store.ClearDeath("character-death", resurrectionEvent, true).IsDead &&
+            store.ReadPosition("character-death")?.Result.X == 25, "resurrection commits death position");
+        Check(!store.ClearDeath("character-death", resurrectionEvent, true).IsDead &&
+            store.ReadPosition("character-death")?.Result.X == 25, "resurrection clear replay keeps position");
         Check(store.ReadAppearance("character-appearance") is { Revision: 2, Result: var restoredPacket } &&
             restoredPacket[0] == 2 && restoredPacket[^1] == 8, "appearance survives restart");
         var xp = store.ApplyProgression(Kill("source-xp-1"), 0, TimeProvider.System, () => .5);

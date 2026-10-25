@@ -2017,11 +2017,11 @@ constexpr ClearDeathRequest::ParseTableT_ ClearDeathRequest::InternalGeneratePar
     {
       PROTOBUF_FIELD_OFFSET(ClearDeathRequest, _impl_._has_bits_),
       0, // no _extensions_
-      2, 8,  // max_field_number, fast_idx_mask
+      3, 24,  // max_field_number, fast_idx_mask
       offsetof(ParseTableT_, field_lookup_table),
-      4294967292,  // skipmap
+      4294967288,  // skipmap
       offsetof(ParseTableT_, field_entries),
-      2,  // num_field_entries
+      3,  // num_field_entries
       0,  // num_aux_entries
       offsetof(ParseTableT_, field_names),  // no aux_entries
       class_data,
@@ -2031,14 +2031,19 @@ constexpr ClearDeathRequest::ParseTableT_ ClearDeathRequest::InternalGeneratePar
       ::_pbi::TcParser::GetTable<::sf::progression::v1::ClearDeathRequest>(),  // to_prefetch
       #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
     }, {{
-      // string death_event_id = 2;
-      {::_pbi::TcParser::FastUS1,
-       {18, 1, 0,
-        PROTOBUF_FIELD_OFFSET(ClearDeathRequest, _impl_.death_event_id_)}},
+      {::_pbi::TcParser::MiniParse, {}},
       // string character_id = 1;
       {::_pbi::TcParser::FastUS1,
        {10, 0, 0,
         PROTOBUF_FIELD_OFFSET(ClearDeathRequest, _impl_.character_id_)}},
+      // string death_event_id = 2;
+      {::_pbi::TcParser::FastUS1,
+       {18, 1, 0,
+        PROTOBUF_FIELD_OFFSET(ClearDeathRequest, _impl_.death_event_id_)}},
+      // bool resurrect_at_death_position = 3;
+      {::_pbi::TcParser::SingularVarintNoZag1<bool, offsetof(ClearDeathRequest, _impl_.resurrect_at_death_position_), 2>(),
+       {24, 2, 0,
+        PROTOBUF_FIELD_OFFSET(ClearDeathRequest, _impl_.resurrect_at_death_position_)}},
     }}, {{
       65535, 65535
     }}, {{
@@ -2046,6 +2051,8 @@ constexpr ClearDeathRequest::ParseTableT_ ClearDeathRequest::InternalGeneratePar
       {PROTOBUF_FIELD_OFFSET(ClearDeathRequest, _impl_.character_id_), _Internal::kHasBitsOffset + 0, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
       // string death_event_id = 2;
       {PROTOBUF_FIELD_OFFSET(ClearDeathRequest, _impl_.death_event_id_), _Internal::kHasBitsOffset + 1, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // bool resurrect_at_death_position = 3;
+      {PROTOBUF_FIELD_OFFSET(ClearDeathRequest, _impl_.resurrect_at_death_position_), _Internal::kHasBitsOffset + 2, 0, (0 | ::_fl::kFcOptional | ::_fl::kBool)},
     }},
     // no aux_entries
     {{
@@ -2067,7 +2074,8 @@ inline constexpr ClearDeathRequest::Impl_::Impl_(
             ::_pbi::ConstantInitialized()),
         death_event_id_(
             &::google::protobuf::internal::fixed_address_empty_string,
-            ::_pbi::ConstantInitialized()) {}
+            ::_pbi::ConstantInitialized()),
+        resurrect_at_death_position_{false} {}
 
 template <typename>
 constexpr ClearDeathRequest::ClearDeathRequest(::_pbi::ConstantInitialized,
@@ -4720,11 +4728,13 @@ const ::uint32_t
         5,
         0x081, // bitmap
         PROTOBUF_FIELD_OFFSET(::sf::progression::v1::ClearDeathRequest, _impl_._has_bits_),
-        5, // hasbit index offset
+        6, // hasbit index offset
         PROTOBUF_FIELD_OFFSET(::sf::progression::v1::ClearDeathRequest, _impl_.character_id_),
         PROTOBUF_FIELD_OFFSET(::sf::progression::v1::ClearDeathRequest, _impl_.death_event_id_),
+        PROTOBUF_FIELD_OFFSET(::sf::progression::v1::ClearDeathRequest, _impl_.resurrect_at_death_position_),
         0,
         1,
+        2,
         0x081, // bitmap
         PROTOBUF_FIELD_OFFSET(::sf::progression::v1::DeathState, _impl_._has_bits_),
         9, // hasbit index offset
@@ -4844,13 +4854,13 @@ static const ::_pbi::MigrationSchema
         {187, sizeof(::sf::progression::v1::SavePositionReply)},
         {192, sizeof(::sf::progression::v1::ReportDeathRequest)},
         {207, sizeof(::sf::progression::v1::ClearDeathRequest)},
-        {214, sizeof(::sf::progression::v1::DeathState)},
-        {229, sizeof(::sf::progression::v1::CharacterStateReply_SkillsEntry_DoNotUse)},
-        {236, sizeof(::sf::progression::v1::CharacterStateReply_ObjectiveCountsEntry_DoNotUse)},
-        {243, sizeof(::sf::progression::v1::CharacterStateReply_GatheringSkillsEntry_DoNotUse)},
-        {250, sizeof(::sf::progression::v1::CharacterStateReply)},
-        {287, sizeof(::sf::progression::v1::QuestState_CountsEntry_DoNotUse)},
-        {294, sizeof(::sf::progression::v1::QuestState)},
+        {216, sizeof(::sf::progression::v1::DeathState)},
+        {231, sizeof(::sf::progression::v1::CharacterStateReply_SkillsEntry_DoNotUse)},
+        {238, sizeof(::sf::progression::v1::CharacterStateReply_ObjectiveCountsEntry_DoNotUse)},
+        {245, sizeof(::sf::progression::v1::CharacterStateReply_GatheringSkillsEntry_DoNotUse)},
+        {252, sizeof(::sf::progression::v1::CharacterStateReply)},
+        {289, sizeof(::sf::progression::v1::QuestState_CountsEntry_DoNotUse)},
+        {296, sizeof(::sf::progression::v1::QuestState)},
 };
 static const ::_pbi::MessageGlobalsBase* PROTOBUF_NONNULL const
     file_message_globals[] = {
@@ -4942,70 +4952,71 @@ const char descriptor_table_protodef_sf_2fprogression_2fv1_2fprogression_2eproto
     "<\n\016death_position\030\004 \001(\0132$.sf.progression"
     ".v1.CharacterPosition\022>\n\020respawn_positio"
     "n\030\005 \001(\0132$.sf.progression.v1.CharacterPos"
-    "ition\022\030\n\020respawn_delay_ms\030\006 \001(\005\"A\n\021Clear"
+    "ition\022\030\n\020respawn_delay_ms\030\006 \001(\005\"f\n\021Clear"
     "DeathRequest\022\024\n\014character_id\030\001 \001(\t\022\026\n\016de"
-    "ath_event_id\030\002 \001(\t\"\354\001\n\nDeathState\022\017\n\007is_"
-    "dead\030\001 \001(\010\022\026\n\016death_event_id\030\002 \001(\t\022\033\n\023oc"
-    "curred_at_unix_ms\030\003 \001(\003\022\032\n\022respawn_at_un"
-    "ix_ms\030\004 \001(\003\022<\n\016death_position\030\005 \001(\0132$.sf"
-    ".progression.v1.CharacterPosition\022>\n\020res"
-    "pawn_position\030\006 \001(\0132$.sf.progression.v1."
-    "CharacterPosition\"\210\007\n\023CharacterStateRepl"
-    "y\022\034\n\024progression_revision\030\001 \001(\003\022\023\n\013lifet"
-    "ime_xp\030\002 \001(\003\022\r\n\005level\030\003 \001(\005\022B\n\006skills\030\004 "
-    "\003(\01322.sf.progression.v1.CharacterStateRe"
-    "ply.SkillsEntry\022\026\n\016quest_revision\030\005 \001(\003\022"
-    "\026\n\016active_step_id\030\006 \001(\t\022\027\n\017quest_complet"
-    "ed\030\007 \001(\010\022U\n\020objective_counts\030\010 \003(\0132;.sf."
-    "progression.v1.CharacterStateReply.Objec"
-    "tiveCountsEntry\0226\n\010position\030\t \001(\0132$.sf.p"
-    "rogression.v1.CharacterPosition\022\031\n\021posit"
-    "ion_revision\030\n \001(\003\022-\n\006quests\030\013 \003(\0132\035.sf."
-    "progression.v1.QuestState\0225\n\rknown_recip"
-    "es\030\014 \003(\0132\036.sf.progression.v1.KnownRecipe"
-    "\022\036\n\021appearance_packet\030\r \001(\014H\000\210\001\001\022\024\n\007face"
-    "_id\030\016 \001(\tH\001\210\001\001\022U\n\020gathering_skills\030\017 \003(\013"
-    "2;.sf.progression.v1.CharacterStateReply"
-    ".GatheringSkillsEntry\022,\n\005death\030\020 \001(\0132\035.s"
-    "f.progression.v1.DeathState\022\026\n\016rested_mi"
-    "nutes\030\021 \001(\001\032-\n\013SkillsEntry\022\013\n\003key\030\001 \001(\t\022"
-    "\r\n\005value\030\002 \001(\005:\0028\001\0326\n\024ObjectiveCountsEnt"
-    "ry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\005:\0028\001\0326\n\024Ga"
-    "theringSkillsEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value"
-    "\030\002 \001(\005:\0028\001B\024\n\022_appearance_packetB\n\n\010_fac"
-    "e_id\"\363\001\n\nQuestState\022\020\n\010quest_id\030\001 \001(\t\022\r\n"
-    "\005state\030\002 \001(\t\022\026\n\016active_step_id\030\003 \001(\t\0229\n\006"
-    "counts\030\004 \003(\0132).sf.progression.v1.QuestSt"
-    "ate.CountsEntry\022\030\n\020content_revision\030\005 \001("
-    "\005\022\020\n\010revision\030\006 \001(\003\022\026\n\016reward_pending\030\007 "
-    "\001(\010\032-\n\013CountsEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value"
-    "\030\002 \001(\005:\0028\0012\365\005\n\013Progression\022e\n\017CreateChar"
-    "acter\022).sf.progression.v1.CreateCharacte"
-    "rRequest\032\'.sf.progression.v1.CreateChara"
-    "cterReply\022\\\n\014ApplyReceipt\022&.sf.progressi"
-    "on.v1.ApplyReceiptRequest\032$.sf.progressi"
-    "on.v1.ApplyReceiptReply\022h\n\021GetCharacterS"
-    "tate\022+.sf.progression.v1.GetCharacterSta"
-    "teRequest\032&.sf.progression.v1.CharacterS"
-    "tateReply\022\\\n\014SavePosition\022&.sf.progressi"
-    "on.v1.SavePositionRequest\032$.sf.progressi"
-    "on.v1.SavePositionReply\022S\n\013ReportDeath\022%"
-    ".sf.progression.v1.ReportDeathRequest\032\035."
-    "sf.progression.v1.DeathState\022Q\n\nClearDea"
-    "th\022$.sf.progression.v1.ClearDeathRequest"
-    "\032\035.sf.progression.v1.DeathState\022Y\n\013Learn"
-    "Recipe\022%.sf.progression.v1.LearnRecipeRe"
-    "quest\032#.sf.progression.v1.LearnRecipeRep"
-    "ly\022V\n\nEndSession\022$.sf.progression.v1.End"
-    "SessionRequest\032\".sf.progression.v1.EndSe"
-    "ssionReplyB#\252\002 ShatteredFrontier.Progres"
-    "sion.V1b\006proto3"
+    "ath_event_id\030\002 \001(\t\022#\n\033resurrect_at_death"
+    "_position\030\003 \001(\010\"\354\001\n\nDeathState\022\017\n\007is_dea"
+    "d\030\001 \001(\010\022\026\n\016death_event_id\030\002 \001(\t\022\033\n\023occur"
+    "red_at_unix_ms\030\003 \001(\003\022\032\n\022respawn_at_unix_"
+    "ms\030\004 \001(\003\022<\n\016death_position\030\005 \001(\0132$.sf.pr"
+    "ogression.v1.CharacterPosition\022>\n\020respaw"
+    "n_position\030\006 \001(\0132$.sf.progression.v1.Cha"
+    "racterPosition\"\210\007\n\023CharacterStateReply\022\034"
+    "\n\024progression_revision\030\001 \001(\003\022\023\n\013lifetime"
+    "_xp\030\002 \001(\003\022\r\n\005level\030\003 \001(\005\022B\n\006skills\030\004 \003(\013"
+    "22.sf.progression.v1.CharacterStateReply"
+    ".SkillsEntry\022\026\n\016quest_revision\030\005 \001(\003\022\026\n\016"
+    "active_step_id\030\006 \001(\t\022\027\n\017quest_completed\030"
+    "\007 \001(\010\022U\n\020objective_counts\030\010 \003(\0132;.sf.pro"
+    "gression.v1.CharacterStateReply.Objectiv"
+    "eCountsEntry\0226\n\010position\030\t \001(\0132$.sf.prog"
+    "ression.v1.CharacterPosition\022\031\n\021position"
+    "_revision\030\n \001(\003\022-\n\006quests\030\013 \003(\0132\035.sf.pro"
+    "gression.v1.QuestState\0225\n\rknown_recipes\030"
+    "\014 \003(\0132\036.sf.progression.v1.KnownRecipe\022\036\n"
+    "\021appearance_packet\030\r \001(\014H\000\210\001\001\022\024\n\007face_id"
+    "\030\016 \001(\tH\001\210\001\001\022U\n\020gathering_skills\030\017 \003(\0132;."
+    "sf.progression.v1.CharacterStateReply.Ga"
+    "theringSkillsEntry\022,\n\005death\030\020 \001(\0132\035.sf.p"
+    "rogression.v1.DeathState\022\026\n\016rested_minut"
+    "es\030\021 \001(\001\032-\n\013SkillsEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005"
+    "value\030\002 \001(\005:\0028\001\0326\n\024ObjectiveCountsEntry\022"
+    "\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\005:\0028\001\0326\n\024Gathe"
+    "ringSkillsEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 "
+    "\001(\005:\0028\001B\024\n\022_appearance_packetB\n\n\010_face_i"
+    "d\"\363\001\n\nQuestState\022\020\n\010quest_id\030\001 \001(\t\022\r\n\005st"
+    "ate\030\002 \001(\t\022\026\n\016active_step_id\030\003 \001(\t\0229\n\006cou"
+    "nts\030\004 \003(\0132).sf.progression.v1.QuestState"
+    ".CountsEntry\022\030\n\020content_revision\030\005 \001(\005\022\020"
+    "\n\010revision\030\006 \001(\003\022\026\n\016reward_pending\030\007 \001(\010"
+    "\032-\n\013CountsEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 "
+    "\001(\005:\0028\0012\365\005\n\013Progression\022e\n\017CreateCharact"
+    "er\022).sf.progression.v1.CreateCharacterRe"
+    "quest\032\'.sf.progression.v1.CreateCharacte"
+    "rReply\022\\\n\014ApplyReceipt\022&.sf.progression."
+    "v1.ApplyReceiptRequest\032$.sf.progression."
+    "v1.ApplyReceiptReply\022h\n\021GetCharacterStat"
+    "e\022+.sf.progression.v1.GetCharacterStateR"
+    "equest\032&.sf.progression.v1.CharacterStat"
+    "eReply\022\\\n\014SavePosition\022&.sf.progression."
+    "v1.SavePositionRequest\032$.sf.progression."
+    "v1.SavePositionReply\022S\n\013ReportDeath\022%.sf"
+    ".progression.v1.ReportDeathRequest\032\035.sf."
+    "progression.v1.DeathState\022Q\n\nClearDeath\022"
+    "$.sf.progression.v1.ClearDeathRequest\032\035."
+    "sf.progression.v1.DeathState\022Y\n\013LearnRec"
+    "ipe\022%.sf.progression.v1.LearnRecipeReque"
+    "st\032#.sf.progression.v1.LearnRecipeReply\022"
+    "V\n\nEndSession\022$.sf.progression.v1.EndSes"
+    "sionRequest\032\".sf.progression.v1.EndSessi"
+    "onReplyB#\252\002 ShatteredFrontier.Progressio"
+    "n.V1b\006proto3"
 };
 static ::absl::once_flag descriptor_table_sf_2fprogression_2fv1_2fprogression_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_sf_2fprogression_2fv1_2fprogression_2eproto = {
     false,
     false,
-    4695,
+    4732,
     descriptor_table_protodef_sf_2fprogression_2fv1_2fprogression_2eproto,
     "sf/progression/v1/progression.proto",
     &descriptor_table_sf_2fprogression_2fv1_2fprogression_2eproto_once,
@@ -10456,6 +10467,7 @@ ClearDeathRequest::ClearDeathRequest(
   _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
       from._internal_metadata_);
   new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
+  _impl_.resurrect_at_death_position_ = from._impl_.resurrect_at_death_position_;
 
   // @@protoc_insertion_point(copy_constructor:sf.progression.v1.ClearDeathRequest)
 }
@@ -10468,6 +10480,7 @@ PROTOBUF_NDEBUG_INLINE ClearDeathRequest::Impl_::Impl_(
 
 inline void ClearDeathRequest::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
   new (&_impl_) Impl_(internal_visibility(), arena);
+  _impl_.resurrect_at_death_position_ = {};
 }
 ClearDeathRequest::~ClearDeathRequest() {
   // @@protoc_insertion_point(destructor:sf.progression.v1.ClearDeathRequest)
@@ -10527,6 +10540,7 @@ PROTOBUF_NOINLINE void ClearDeathRequest::Clear() {
       _impl_.death_event_id_.ClearNonDefaultToEmpty();
     }
   }
+  _impl_.resurrect_at_death_position_ = false;
   _impl_._has_bits_.Clear();
   _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
@@ -10570,6 +10584,15 @@ PROTOBUF_NOINLINE void ClearDeathRequest::Clear() {
     }
   }
 
+  // bool resurrect_at_death_position = 3;
+  if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+    if (this_._internal_resurrect_at_death_position() != 0) {
+      target = stream->EnsureSpace(target);
+      target = ::_pbi::WireFormatLite::WriteBoolToArray(
+          3, this_._internal_resurrect_at_death_position(), target);
+    }
+  }
+
   if (ABSL_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
     target =
         ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
@@ -10595,7 +10618,7 @@ PROTOBUF_NOINLINE void ClearDeathRequest::Clear() {
 
   ::_pbi::Prefetch5LinesFrom7Lines(&this_);
   cached_has_bits = this_._impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0x00000003U)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x00000007U)) {
     // string character_id = 1;
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
       if (!this_._internal_character_id().empty()) {
@@ -10608,6 +10631,12 @@ PROTOBUF_NOINLINE void ClearDeathRequest::Clear() {
       if (!this_._internal_death_event_id().empty()) {
         total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
                                         this_._internal_death_event_id());
+      }
+    }
+    // bool resurrect_at_death_position = 3;
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      if (this_._internal_resurrect_at_death_position() != 0) {
+        total_size += 2;
       }
     }
   }
@@ -10628,7 +10657,7 @@ void ClearDeathRequest::MergeImpl(::google::protobuf::MessageLite& to_msg,
   (void)cached_has_bits;
 
   cached_has_bits = from._impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0x00000003U)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x00000007U)) {
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
       if (!from._internal_character_id().empty()) {
         _this->_internal_set_character_id(from._internal_character_id());
@@ -10645,6 +10674,11 @@ void ClearDeathRequest::MergeImpl(::google::protobuf::MessageLite& to_msg,
         if (_this->_impl_.death_event_id_.IsDefault()) {
           _this->_internal_set_death_event_id("");
         }
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      if (from._internal_resurrect_at_death_position() != 0) {
+        _this->_impl_.resurrect_at_death_position_ = from._impl_.resurrect_at_death_position_;
       }
     }
   }
@@ -10669,6 +10703,7 @@ void ClearDeathRequest::InternalSwap(ClearDeathRequest* PROTOBUF_RESTRICT PROTOB
   swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.character_id_, &other->_impl_.character_id_, arena);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.death_event_id_, &other->_impl_.death_event_id_, arena);
+  swap(_impl_.resurrect_at_death_position_, other->_impl_.resurrect_at_death_position_);
 }
 
 ::google::protobuf::Metadata ClearDeathRequest::GetMetadata() const {

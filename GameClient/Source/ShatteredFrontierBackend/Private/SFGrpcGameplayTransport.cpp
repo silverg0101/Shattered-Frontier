@@ -386,6 +386,7 @@ void FSFGrpcGameplayTransport::Send(const FSFGameplayRequest& Q, float DeadlineS
     {
         sf::progression::v1::ClearDeathRequest M;
         M.set_character_id(Utf8(Q.CharacterId)); M.set_death_event_id(Utf8(Q.DeathEventId));
+        M.set_resurrect_at_death_position(Q.bResurrectAtDeathPosition);
         auto* Call = new TCall<sf::progression::v1::DeathState>(); Call->Copy = CopyDeath;
         Start(Call, [&](grpc::ClientContext* C) { return Channel->Progression->AsyncClearDeath(C, M, &Channel->Queue); });
         break;

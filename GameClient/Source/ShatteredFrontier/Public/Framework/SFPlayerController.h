@@ -72,7 +72,7 @@ public:
     UFUNCTION(Exec) void SFReleaseSpirit();
     UFUNCTION(Server, Reliable) void ServerRequestSpiritRelease();
     UFUNCTION(Exec) void SFAcceptResurrection();
-    UFUNCTION(Server, Reliable) void ServerAcceptResurrection(uint32 OfferId);
+    UFUNCTION(Server, Reliable) void ServerAcceptResurrection(uint32 OfferId, const FString& DeathEventId);
     // Console (development, UI evidence captures): stage named panels and pilot views.
     UFUNCTION(Exec) void SFUi(const FString& Screen);
     void InteractWithSelectedTarget();

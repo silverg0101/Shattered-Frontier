@@ -49,6 +49,7 @@ public:
     bool IsBusy() const { return bBusy; }
     bool IsIdle() const { return !bBusy && Queue.IsEmpty(); }
     bool HasDevIdentity() const { return !DevName.IsEmpty(); }
+    bool HasVerifiedIdentity() const { return !VerifiedCharacterId.IsEmpty(); }
     // Queued read: rebuilds the bag projection from the ledger view (after a payout or refund whose items the reply omits,
     // and on an INT-05 restore). Done, when given, reports whether the read succeeded.
     void Reconcile(TFunction<void(bool)> Done = nullptr);

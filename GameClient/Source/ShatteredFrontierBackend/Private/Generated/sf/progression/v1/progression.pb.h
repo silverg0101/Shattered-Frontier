@@ -3053,6 +3053,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ClearDeathRequest final : public ::
   enum : int {
     kCharacterIdFieldNumber = 1,
     kDeathEventIdFieldNumber = 2,
+    kResurrectAtDeathPositionFieldNumber = 3,
   };
   // string character_id = 1;
   void clear_character_id() ;
@@ -3084,11 +3085,21 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ClearDeathRequest final : public ::
   ::std::string* PROTOBUF_NONNULL _internal_mutable_death_event_id();
 
   public:
+  // bool resurrect_at_death_position = 3;
+  void clear_resurrect_at_death_position() ;
+  [[nodiscard]] bool resurrect_at_death_position() const;
+  void set_resurrect_at_death_position(bool value);
+
+  private:
+  bool _internal_resurrect_at_death_position() const;
+  void _internal_set_resurrect_at_death_position(bool value);
+
+  public:
   // @@protoc_insertion_point(class_scope:sf.progression.v1.ClearDeathRequest)
  private:
   class _Internal;
   using ParseTableT_ =
-      ::google::protobuf::internal::TcParseTable<1, 2,
+      ::google::protobuf::internal::TcParseTable<2, 3,
                           0, 70,
                           2>;
   static constexpr ParseTableT_ InternalGenerateParseTable_(
@@ -3119,6 +3130,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ClearDeathRequest final : public ::
     ::google::protobuf::internal::CachedSize _cached_size_;
     ::google::protobuf::internal::ArenaStringPtr character_id_;
     ::google::protobuf::internal::ArenaStringPtr death_event_id_;
+    bool resurrect_at_death_position_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
   union { Impl_ _impl_; };
@@ -9825,6 +9837,30 @@ inline void ClearDeathRequest::set_allocated_death_event_id(::std::string* PROTO
     _impl_.death_event_id_.Set("", GetArena());
   }
   // @@protoc_insertion_point(field_set_allocated:sf.progression.v1.ClearDeathRequest.death_event_id)
+}
+
+// bool resurrect_at_death_position = 3;
+inline void ClearDeathRequest::clear_resurrect_at_death_position() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.resurrect_at_death_position_ = false;
+  ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+}
+inline bool ClearDeathRequest::resurrect_at_death_position() const {
+  // @@protoc_insertion_point(field_get:sf.progression.v1.ClearDeathRequest.resurrect_at_death_position)
+  return _internal_resurrect_at_death_position();
+}
+inline void ClearDeathRequest::set_resurrect_at_death_position(bool value) {
+  _internal_set_resurrect_at_death_position(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  // @@protoc_insertion_point(field_set:sf.progression.v1.ClearDeathRequest.resurrect_at_death_position)
+}
+inline bool ClearDeathRequest::_internal_resurrect_at_death_position() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.resurrect_at_death_position_;
+}
+inline void ClearDeathRequest::_internal_set_resurrect_at_death_position(bool value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.resurrect_at_death_position_ = value;
 }
 
 // -------------------------------------------------------------------

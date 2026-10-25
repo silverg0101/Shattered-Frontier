@@ -860,6 +860,14 @@ else if (mode == "death")
     Check(!client.GetCharacterState(new ProgressPb.GetCharacterStateRequest { CharacterId = request.CharacterId }, headers, deadline: Deadline()).Death.IsDead, "alive state survives read");
     Check(!client.ReportDeath(request, headers, deadline: Deadline()).IsDead, "old death replay cannot kill again");
     Code(() => client.ClearDeath(new ProgressPb.ClearDeathRequest { CharacterId = request.CharacterId, DeathEventId = Guid.NewGuid().ToString() }, headers, deadline: Deadline()), StatusCode.FailedPrecondition);
+    request.DeathEventId = Guid.NewGuid().ToString();
+    request.OccurredAtUnixMs += 10000;
+    Check(client.ReportDeath(request, headers, deadline: Deadline()).IsDead, "second death accepted");
+    var resurrect = new ProgressPb.ClearDeathRequest { CharacterId = request.CharacterId,
+        DeathEventId = request.DeathEventId, ResurrectAtDeathPosition = true };
+    Check(!client.ClearDeath(resurrect, headers, deadline: Deadline()).IsDead &&
+        client.GetCharacterState(new ProgressPb.GetCharacterStateRequest { CharacterId = request.CharacterId }, headers, deadline: Deadline()).Position.X == p.X,
+        "resurrection clears durably at the death position");
 }
 else if (mode == "housing")
 {

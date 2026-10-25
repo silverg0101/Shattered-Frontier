@@ -60,7 +60,7 @@ public:
     void ApplyFallDamage(ASFE1Character* Victim, float ImpactSpeedMps);
     void RestoreDeadPlayer(ASFE1Character* Player, const struct FSFGameplayResponse& State);
     bool ReleaseSpirit(ASFE1Character* Player);
-    bool AcceptResurrection(ASFE1Character* Player, uint32 OfferId);
+    bool AcceptResurrection(ASFE1Character* Player, uint32 OfferId, const FString& DeathEventId);
     bool HasPendingDeathReport(const FString& CharacterId) const;
     void BoarDied(ASFPilotBoar* Boar, ASFE1Character* Killer);
     /** Grants the killer's hides for this death, at most once; returns the number granted. */
@@ -150,7 +150,7 @@ private:
     bool RunWorldSlots(const FString& Command, const FString& Group = FString(), int32 Slot = INDEX_NONE);
     void SpawnSlot(const FString& Group, int32 Slot, int32 Cycle, const FString& PointId,
         double X, double Y, double Facing);
-    void RespawnPlayer(TWeakObjectPtr<ASFE1Character> Player);
+    void RespawnPlayer(TWeakObjectPtr<ASFE1Character> Player, int32 RestoredHealth = -1, bool bAtDeathPosition = false);
     FVector ChooseRespawnPoint(const FVector& DeathLocation) const;
     void ReportPlayerDeath(TWeakObjectPtr<ASFE1Character> Player, const struct FSFGameplayRequest& Request);
     struct FBoarGroup { TArray<FVector2D> Polygon; };
@@ -187,6 +187,10 @@ private:
     bool bScenarioFirstBoarDied = false;
     bool bReconnectDeathTriggered = false;
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    void TickGreenlandsDeathNetcheck();
+    int32 GreenlandsDeathStage = 0;
+    double GreenlandsDeathNextHitAt = 0;
+    TWeakObjectPtr<ASFPilotBoar> GreenlandsDeathBoar;
     TWeakObjectPtr<APlayerController> GreenlandsDriverController;
     TWeakObjectPtr<APlayerController> GreenlandsObserverController;
     TWeakObjectPtr<ASFPilotBoar> GreenlandsLead;

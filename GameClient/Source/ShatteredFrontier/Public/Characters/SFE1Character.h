@@ -35,9 +35,11 @@ public:
 #endif
     int32 CombatHealth() const { return PilotHealth; }
     uint32 GetResurrectionOfferId() const { return ResurrectionOfferId; }
-    void BeginResurrectionOffer(double ExpiresAt);
+    const FString& GetResurrectionOfferDeathEventId() const { return ResurrectionOfferDeathEventId; }
+    void BeginResurrectionOffer(double ExpiresAt, const FString& DeathEventId = FString());
     void ClearResurrectionOffer();
     bool AcceptResurrectionOffer(uint32 RequestedOffer, double Now, int32 MaximumHealth, float Fraction);
+    bool CanAcceptResurrectionOffer(uint32 RequestedOffer, double Now) const;
     bool IsPilotInCombat() const { return bPilotInCombat; }
     bool IsAutoAttacking() const { return bAutoAttacking; }
     bool IsTravelMounted() const { return bTravelMounted; }
@@ -85,6 +87,7 @@ private:
     UPROPERTY(Transient) TObjectPtr<AActor> MetaHuman;
     UPROPERTY(Replicated) int32 PilotHealth = 0;  // shown by the vitals HUD (SFE1VitalsHud), not in the world
     UPROPERTY(Replicated) uint32 ResurrectionOfferId = 0; // owning client only
+    UPROPERTY(Replicated) FString ResurrectionOfferDeathEventId;
     uint32 NextResurrectionOfferId = 0;
     double ResurrectionOfferExpiresAt = 0.0;
     UPROPERTY(Replicated) bool bPilotInCombat = false;
@@ -101,6 +104,9 @@ private:
     UPROPERTY(Replicated) int32 GreenlandsMateSlot = -1;
     UPROPERTY(Replicated) bool bGreenlandsKill = false;
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    int32 GreenlandsDeathClientStage = 0;
+    double GreenlandsDeathClientAt = 0;
+    uint32 GreenlandsDeathAcceptedOffer = 0;
     double GreenlandsNextSampleAt = 0;
     double GreenlandsNextAttackAt = 0;
 #endif
