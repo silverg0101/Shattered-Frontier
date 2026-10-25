@@ -29,6 +29,13 @@ enum class ESFLedgerRpc : uint8 { EnsureContainer, GetContainer, Grant, Transfer
 // Unavailable = UNAVAILABLE or DEADLINE_EXCEEDED (retryable with the same operation id).
 enum class ESFLedgerStatus : uint8 { Ok, Stale, Rejected, Unavailable };
 
+struct FSFLedgerInstance
+{
+    FString InstanceId;
+    FString DefinitionId;
+    int32 DurabilityPercent = 100;
+};
+
 struct FSFLedgerRequest
 {
     ESFLedgerRpc Rpc = ESFLedgerRpc::GetContainer;
@@ -41,6 +48,7 @@ struct FSFLedgerRequest
     FString OperationId;
     int64 ExpectedRevision = 0;
     FString DefinitionId;
+    FString InstanceId;
     int64 Quantity = 0;
     FString Source;
     FString CausationId;
@@ -61,6 +69,8 @@ struct FSFLedgerResponse
     int64 Revision = 0;
     TMap<FString, int64> Quantities;
     TMap<FString, int32> DurabilityPercent;
+    TArray<FSFLedgerInstance> Instances;
+    TArray<FString> InstanceIds;
     FString OperationId;
     int64 GrantedDelta = 0;
     int64 ToRevision = 0;  // Transfer: the destination revision after

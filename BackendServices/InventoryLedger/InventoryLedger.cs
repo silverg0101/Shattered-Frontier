@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Text;
 using System.Text.Json;
+using System.Security.Cryptography;
 
 namespace ShatteredFrontier.InventoryLedger;
 
@@ -10,11 +11,13 @@ public enum OwnerKind { Character, Account, Guild, System }
 public enum LedgerAction { Grant, Consume, Transfer, Convert, Exchange }
 
 public sealed record ContainerSpec(string Id, OwnerKind OwnerKind, string OwnerId, ContainerKind Kind, int Capacity);
-public sealed record ContainerView(ContainerSpec Spec, long Revision, IReadOnlyDictionary<string, long> Quantities);
+public sealed record ItemInstance(string Id, string DefinitionId, int DurabilityPercent);
+public sealed record ContainerView(ContainerSpec Spec, long Revision, IReadOnlyDictionary<string, long> Quantities,
+    IReadOnlyList<ItemInstance>? Instances = null);
 public sealed record RevisionChange(string ContainerId, long Before, long After);
 public sealed record QuantityChange(string ContainerId, string DefinitionId, long Delta);
 public sealed record LedgerReceipt(string OperationId, LedgerAction Action, IReadOnlyList<RevisionChange> Revisions,
-    IReadOnlyList<QuantityChange> Changes);
+    IReadOnlyList<QuantityChange> Changes, IReadOnlyList<string>? InstanceIds = null);
 public sealed record ItemQuantity(string DefinitionId, long Quantity);
 public sealed record EscrowDelivery(string FromId, long FromRevision, string ToId, long ToRevision, string DefinitionId, long Quantity);
 
@@ -116,10 +119,12 @@ public sealed class ContainerRecord(ContainerSpec spec)
     public ContainerSpec Spec { get; } = spec;
     public long Revision { get; set; }
     public Dictionary<string, long> Quantities { get; } = new(StringComparer.Ordinal);
+    public Dictionary<string, ItemInstance> Instances { get; } = new(StringComparer.Ordinal);
     public ContainerRecord Copy()
     {
         var copy = new ContainerRecord(Spec) { Revision = Revision };
         foreach (var (id, quantity) in Quantities) copy.Quantities.Add(id, quantity);
+        foreach (var (id, instance) in Instances) copy.Instances.Add(id, instance);
         return copy;
     }
 }
@@ -175,6 +180,7 @@ public sealed class InventoryLedger(IInventoryLedgerStore store)
             foreach (var (id, revision) in expected)
                 if (records[id].Revision != revision) throw new LedgerRejectedException("Stale container revision.");
             var changes = new List<QuantityChange>();
+            var instanceIds = new List<string>();
             foreach (var move in deliveries)
             {
                 var src = records[move.FromId]; var dst = records[move.ToId];
@@ -186,6 +192,7 @@ public sealed class InventoryLedger(IInventoryLedgerStore store)
                 try { next = checked(dst.Quantities.GetValueOrDefault(move.DefinitionId) + move.Quantity); }
                 catch (OverflowException) { throw new LedgerRejectedException("Quantity overflow."); }
                 dst.Quantities[move.DefinitionId] = next;
+                MoveInstances(src, dst, new(move.DefinitionId, move.Quantity), "", instanceIds);
                 changes.Add(new(move.FromId, move.DefinitionId, -move.Quantity));
                 changes.Add(new(move.ToId, move.DefinitionId, move.Quantity));
             }
@@ -198,7 +205,7 @@ public sealed class InventoryLedger(IInventoryLedgerStore store)
             }
             var revisions = records.Select(p => new RevisionChange(p.Key, p.Value.Revision, checked(p.Value.Revision + 1))).ToArray();
             foreach (var record in records.Values) record.Revision++;
-            var receipt = new LedgerReceipt(operationId, LedgerAction.Exchange, Array.AsReadOnly(revisions), changes.AsReadOnly());
+            var receipt = new LedgerReceipt(operationId, LedgerAction.Exchange, Array.AsReadOnly(revisions), changes.AsReadOnly(), instanceIds.AsReadOnly());
             state.Operations.Add(operationId, new StoredOperation(fingerprint, receipt));
             return receipt;
         });
@@ -235,15 +242,15 @@ public sealed class InventoryLedger(IInventoryLedgerStore store)
     public LedgerReceipt Consume(string operationId, string containerId, long expectedRevision, string definitionId, long quantity, string sink) =>
         Apply(operationId, LedgerAction.Consume, [containerId], [expectedRevision], [new ItemQuantity(definitionId, quantity)], [], sink, "");
 
-    public LedgerReceipt Transfer(string operationId, string fromId, long fromRevision, string toId, long toRevision, string definitionId, long quantity) =>
-        Apply(operationId, LedgerAction.Transfer, [fromId, toId], [fromRevision, toRevision], [new ItemQuantity(definitionId, quantity)], [], "", "");
+    public LedgerReceipt Transfer(string operationId, string fromId, long fromRevision, string toId, long toRevision, string definitionId, long quantity, string instanceId = "") =>
+        Apply(operationId, LedgerAction.Transfer, [fromId, toId], [fromRevision, toRevision], [new ItemQuantity(definitionId, quantity)], [], "", "", instanceId);
 
     public LedgerReceipt Convert(string operationId, string containerId, long expectedRevision, string recipeId,
         IReadOnlyList<ItemQuantity> inputs, IReadOnlyList<ItemQuantity> outputs) =>
         Apply(operationId, LedgerAction.Convert, [containerId], [expectedRevision], inputs, outputs, recipeId, "");
 
     private LedgerReceipt Apply(string operationId, LedgerAction action, string[] ids, long[] revisions,
-        IReadOnlyList<ItemQuantity> inputs, IReadOnlyList<ItemQuantity> outputs, string context, string causationId)
+        IReadOnlyList<ItemQuantity> inputs, IReadOnlyList<ItemQuantity> outputs, string context, string causationId, string instanceId = "")
     {
         Require(operationId); Require(context, action is LedgerAction.Grant or LedgerAction.Consume or LedgerAction.Convert);
         Require(causationId, action == LedgerAction.Grant);
@@ -272,6 +279,7 @@ public sealed class InventoryLedger(IInventoryLedgerStore store)
         Items(outputs);
         Field(context);
         Field(causationId);
+        if (instanceId.Length > 0) Field(instanceId); // preserve existing fingerprints for legacy requests
         var fingerprint = canonical.ToString();
         return store.Execute(state =>
         {
@@ -316,9 +324,19 @@ public sealed class InventoryLedger(IInventoryLedgerStore store)
                 catch (OverflowException) { throw new LedgerRejectedException("Capacity overflow."); }
                 if (total > record.Spec.Capacity) throw new LedgerRejectedException("Container capacity exceeded.");
             }
+            var instanceIds = new List<string>();
+            if (action == LedgerAction.Consume || action == LedgerAction.Convert)
+                foreach (var item in inputs)
+                    RemoveInstances(records[0], item, instanceIds);
+            if (action == LedgerAction.Grant || action == LedgerAction.Convert)
+                foreach (var item in action == LedgerAction.Grant ? inputs : outputs)
+                    CreateInstances(records[0], item, operationId, instanceIds);
+            if (action == LedgerAction.Transfer)
+                foreach (var item in inputs)
+                    MoveInstances(records[0], records[1], item, instanceId, instanceIds);
             var revisionChanges = records.Select((record, i) => new RevisionChange(ids[i], record.Revision, checked(record.Revision + 1))).ToArray();
             foreach (var record in records) record.Revision++;
-            var receipt = new LedgerReceipt(operationId, action, Array.AsReadOnly(revisionChanges), changes.AsReadOnly());
+            var receipt = new LedgerReceipt(operationId, action, Array.AsReadOnly(revisionChanges), changes.AsReadOnly(), instanceIds.AsReadOnly());
             state.Operations.Add(operationId, new StoredOperation(fingerprint, receipt));
             return receipt;
         });
@@ -327,7 +345,48 @@ public sealed class InventoryLedger(IInventoryLedgerStore store)
     private static ContainerRecord Get(LedgerState state, string id) =>
         state.Containers.TryGetValue(id, out var record) ? record : throw new LedgerRejectedException("Unknown container.");
     private static ContainerView View(ContainerRecord record) => new(record.Spec, record.Revision,
-        new ReadOnlyDictionary<string, long>(new Dictionary<string, long>(record.Quantities, StringComparer.Ordinal)));
+        new ReadOnlyDictionary<string, long>(new Dictionary<string, long>(record.Quantities, StringComparer.Ordinal)),
+        record.Instances.Values.OrderBy(x => x.Id, StringComparer.Ordinal).ToArray());
+    private static void CreateInstances(ContainerRecord target, ItemQuantity item, string operationId, List<string> ids)
+    {
+        if (!GearDefinitions.IsGear(item.DefinitionId)) return;
+        if (item.Quantity > target.Spec.Capacity) throw new LedgerRejectedException("Container capacity exceeded.");
+        for (long n = 0; n < item.Quantity; n++)
+        {
+            var id = "itm_" + System.Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes($"{operationId}|{item.DefinitionId}|{n}")))[..32];
+            if (!target.Instances.TryAdd(id, new(id, item.DefinitionId, 100))) throw new LedgerRejectedException("Duplicate gear instance.");
+            ids.Add(id);
+        }
+    }
+    private static void MoveInstances(ContainerRecord source, ContainerRecord target, ItemQuantity item, string requestedId, List<string> ids)
+    {
+        if (!GearDefinitions.IsGear(item.DefinitionId))
+        {
+            if (requestedId.Length > 0) throw new LedgerRejectedException("Instance ID requires gear.");
+            return;
+        }
+        if (item.Quantity > source.Spec.Capacity) throw new LedgerRejectedException("Container capacity exceeded.");
+        if (requestedId.Length > 0 && item.Quantity != 1) throw new LedgerRejectedException("Select one gear instance at a time.");
+        var selected = source.Instances.Values.Where(x => x.DefinitionId == item.DefinitionId &&
+            (requestedId.Length == 0 || x.Id == requestedId)).OrderBy(x => x.Id, StringComparer.Ordinal)
+            .Take(checked((int)item.Quantity)).ToArray();
+        if (selected.Length != item.Quantity) throw new LedgerRejectedException("Gear instance is missing.");
+        foreach (var instance in selected)
+        {
+            source.Instances.Remove(instance.Id);
+            if (!target.Instances.TryAdd(instance.Id, instance)) throw new LedgerRejectedException("Duplicate gear instance.");
+            ids.Add(instance.Id);
+        }
+    }
+    private static void RemoveInstances(ContainerRecord source, ItemQuantity item, List<string> ids)
+    {
+        if (!GearDefinitions.IsGear(item.DefinitionId)) return;
+        if (item.Quantity > source.Spec.Capacity) throw new LedgerRejectedException("Container capacity exceeded.");
+        var selected = source.Instances.Values.Where(x => x.DefinitionId == item.DefinitionId)
+            .OrderBy(x => x.Id, StringComparer.Ordinal).Take(checked((int)item.Quantity)).ToArray();
+        if (selected.Length != item.Quantity) throw new LedgerRejectedException("Gear instance is missing.");
+        foreach (var instance in selected) { source.Instances.Remove(instance.Id); ids.Add(instance.Id); }
+    }
     private static void Require(string value, bool required = true)
     {
         if (required && string.IsNullOrWhiteSpace(value)) throw new LedgerRejectedException("Required identifier or context is missing.");

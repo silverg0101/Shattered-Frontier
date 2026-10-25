@@ -163,7 +163,7 @@ bool FSFEquipmentValidationTest::RunTest(const FString& Parameters)
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFEquipmentLedgerTest, "ShatteredFrontier.Equipment.Ledger", EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
 bool FSFEquipmentLedgerTest::RunTest(const FString& Parameters)
 {
-    struct FContainer { int64 Revision = 0; TMap<FString, int64> Items; };
+    struct FContainer { int64 Revision = 0; TMap<FString, int64> Items; TArray<FSFLedgerInstance> Instances; };
     TSharedRef<TMap<FString, FContainer>> Ledger = MakeShared<TMap<FString, FContainer>>();
     FSFInventoryLedgerClient::SetSendOverrideForTests([Ledger](const FSFLedgerRequest& R, float, TFunction<void(const FSFLedgerResponse&)> Done)
     {
@@ -173,9 +173,20 @@ bool FSFEquipmentLedgerTest::RunTest(const FString& Parameters)
             FContainer& From = Ledger->FindOrAdd(R.ContainerId); FContainer& To = Ledger->FindOrAdd(R.ToContainerId);
             if (From.Revision != R.ExpectedRevision || To.Revision != R.ToExpectedRevision) { Out.Status = ESFLedgerStatus::Stale; Out.GrpcCode = 10; }
             else if (From.Items.FindRef(R.DefinitionId) < R.Quantity) { Out.Status = ESFLedgerStatus::Rejected; Out.GrpcCode = 9; }
-            else { From.Items[R.DefinitionId] -= R.Quantity; To.Items.FindOrAdd(R.DefinitionId) += R.Quantity; Out.Revision = ++From.Revision; Out.ToRevision = ++To.Revision; }
+            else
+            {
+                const int32 CopyIndex = From.Instances.IndexOfByPredicate([&R](const FSFLedgerInstance& Copy)
+                    { return Copy.DefinitionId == R.DefinitionId && (R.InstanceId.IsEmpty() || Copy.InstanceId == R.InstanceId); });
+                if (!R.InstanceId.IsEmpty() && CopyIndex == INDEX_NONE) { Out.Status = ESFLedgerStatus::Rejected; Out.GrpcCode = 9; }
+                else
+                {
+                    From.Items[R.DefinitionId] -= R.Quantity; To.Items.FindOrAdd(R.DefinitionId) += R.Quantity;
+                    if (CopyIndex != INDEX_NONE) { To.Instances.Add(From.Instances[CopyIndex]); From.Instances.RemoveAt(CopyIndex); }
+                    Out.Revision = ++From.Revision; Out.ToRevision = ++To.Revision;
+                }
+            }
         }
-        else { const FContainer& View = Ledger->FindOrAdd(R.ContainerId); Out.Revision = View.Revision; Out.Quantities = View.Items; }
+        else { const FContainer& View = Ledger->FindOrAdd(R.ContainerId); Out.Revision = View.Revision; Out.Quantities = View.Items; Out.Instances = View.Instances; }
         Done(Out);
     });
     auto* Settings = DuplicateObject<USFInventoryLedgerSettings>(GetDefault<USFInventoryLedgerSettings>(), GetTransientPackage());
@@ -225,6 +236,24 @@ bool FSFEquipmentLedgerTest::RunTest(const FString& Parameters)
     Pack->Reconcile(); Tick(6);
     TestEqual(TEXT("Reconcile wears the saved cap"), Gear->GetEquipped(Head), CapPath);
     TestEqual(TEXT("And the bag does not keep a copy"), Gear->FindBagSlot(CapPath), int32(INDEX_NONE));
+    // Two copies of the same definition carry independent condition through restore.
+    Ledger->FindOrAdd(Pack->GetContainerId()).Items.Add(TEXT("item/hide_cap"), 1);
+    Ledger->FindOrAdd(Pack->GetContainerId()).Instances.Add({TEXT("itm_pristine"), TEXT("item/hide_cap"), 100});
+    Ledger->FindOrAdd(EquipmentId).Instances.Add({TEXT("itm_broken"), TEXT("item/hide_cap"), 0});
+    Pack->Reconcile(); Tick(6);
+    TestEqual(TEXT("Broken copy has its own ID"), Bag->EquippedItems[0].InstanceId, FString(TEXT("itm_broken")));
+    TestEqual(TEXT("Broken copy contributes no armour"), SFGear::Equipped(PC).Armor, 0);
+    Ledger->FindOrAdd(Pack->GetContainerId()).Instances = {{TEXT("itm_broken"), TEXT("item/hide_cap"), 0}};
+    Ledger->FindOrAdd(EquipmentId).Instances = {{TEXT("itm_pristine"), TEXT("item/hide_cap"), 100}};
+    Pack->Reconcile(); Tick(6);
+    TestEqual(TEXT("Second copy projects its own ID"), Bag->EquippedItems[0].InstanceId, FString(TEXT("itm_pristine")));
+    TestEqual(TEXT("Second copy restores armour"), SFGear::Equipped(PC).Armor, 1);
+    TestEqual(TEXT("Unequip selected copy waits for ledger"), Gear->ApplyUnequip(Head), ESFEquipResult::Pending);
+    Tick(6);
+    TestEqual(TEXT("Explicitly equip broken copy"), Gear->ApplyEquip(CapPath, Head, TEXT("itm_broken")), ESFEquipResult::Pending);
+    Tick(6);
+    TestEqual(TEXT("Selected copy is worn"), Bag->EquippedItems[0].InstanceId, FString(TEXT("itm_broken")));
+    TestEqual(TEXT("Selected broken copy still gives zero armour"), SFGear::Equipped(PC).Armor, 0);
     return true;
 }
 #endif

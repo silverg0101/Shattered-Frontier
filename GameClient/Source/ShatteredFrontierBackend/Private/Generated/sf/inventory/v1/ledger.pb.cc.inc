@@ -37,6 +37,8 @@ PROTOBUF_CONSTINIT ::google::protobuf::internal::ReflectionData
         {&::_pbi::kDescriptorMethods, &::descriptor_table_sf_2finventory_2fv1_2fledger_2eproto, /* tracker*/ nullptr,},
         // ::sf::inventory::v1::ContainerView
         {&::_pbi::kDescriptorMethods, &::descriptor_table_sf_2finventory_2fv1_2fledger_2eproto, /* tracker*/ nullptr,},
+        // ::sf::inventory::v1::ItemInstance
+        {&::_pbi::kDescriptorMethods, &::descriptor_table_sf_2finventory_2fv1_2fledger_2eproto, /* tracker*/ nullptr,},
         // ::sf::inventory::v1::RevisionChange
         {&::_pbi::kDescriptorMethods, &::descriptor_table_sf_2finventory_2fv1_2fledger_2eproto, /* tracker*/ nullptr,},
         // ::sf::inventory::v1::QuantityChange
@@ -71,11 +73,11 @@ constexpr TransferRequest::ParseTableT_ TransferRequest::InternalGenerateParseTa
     {
       PROTOBUF_FIELD_OFFSET(TransferRequest, _impl_._has_bits_),
       0, // no _extensions_
-      7, 56,  // max_field_number, fast_idx_mask
+      8, 56,  // max_field_number, fast_idx_mask
       offsetof(ParseTableT_, field_lookup_table),
-      4294967168,  // skipmap
+      4294967040,  // skipmap
       offsetof(ParseTableT_, field_entries),
-      7,  // num_field_entries
+      8,  // num_field_entries
       0,  // num_aux_entries
       offsetof(ParseTableT_, field_names),  // no aux_entries
       class_data,
@@ -85,7 +87,10 @@ constexpr TransferRequest::ParseTableT_ TransferRequest::InternalGenerateParseTa
       ::_pbi::TcParser::GetTable<::sf::inventory::v1::TransferRequest>(),  // to_prefetch
       #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
     }, {{
-      {::_pbi::TcParser::MiniParse, {}},
+      // string instance_id = 8;
+      {::_pbi::TcParser::FastUS1,
+       {66, 4, 0,
+        PROTOBUF_FIELD_OFFSET(TransferRequest, _impl_.instance_id_)}},
       // string operation_id = 1;
       {::_pbi::TcParser::FastUS1,
        {10, 0, 0,
@@ -95,24 +100,24 @@ constexpr TransferRequest::ParseTableT_ TransferRequest::InternalGenerateParseTa
        {18, 1, 0,
         PROTOBUF_FIELD_OFFSET(TransferRequest, _impl_.from_container_id_)}},
       // int64 from_expected_revision = 3;
-      {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(TransferRequest, _impl_.from_expected_revision_), 4>(),
-       {24, 4, 0,
+      {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(TransferRequest, _impl_.from_expected_revision_), 5>(),
+       {24, 5, 0,
         PROTOBUF_FIELD_OFFSET(TransferRequest, _impl_.from_expected_revision_)}},
       // string to_container_id = 4;
       {::_pbi::TcParser::FastUS1,
        {34, 2, 0,
         PROTOBUF_FIELD_OFFSET(TransferRequest, _impl_.to_container_id_)}},
       // int64 to_expected_revision = 5;
-      {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(TransferRequest, _impl_.to_expected_revision_), 5>(),
-       {40, 5, 0,
+      {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(TransferRequest, _impl_.to_expected_revision_), 6>(),
+       {40, 6, 0,
         PROTOBUF_FIELD_OFFSET(TransferRequest, _impl_.to_expected_revision_)}},
       // string definition_id = 6;
       {::_pbi::TcParser::FastUS1,
        {50, 3, 0,
         PROTOBUF_FIELD_OFFSET(TransferRequest, _impl_.definition_id_)}},
       // int64 quantity = 7;
-      {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(TransferRequest, _impl_.quantity_), 6>(),
-       {56, 6, 0,
+      {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(TransferRequest, _impl_.quantity_), 7>(),
+       {56, 7, 0,
         PROTOBUF_FIELD_OFFSET(TransferRequest, _impl_.quantity_)}},
     }}, {{
       65535, 65535
@@ -122,24 +127,27 @@ constexpr TransferRequest::ParseTableT_ TransferRequest::InternalGenerateParseTa
       // string from_container_id = 2;
       {PROTOBUF_FIELD_OFFSET(TransferRequest, _impl_.from_container_id_), _Internal::kHasBitsOffset + 1, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
       // int64 from_expected_revision = 3;
-      {PROTOBUF_FIELD_OFFSET(TransferRequest, _impl_.from_expected_revision_), _Internal::kHasBitsOffset + 4, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt64)},
+      {PROTOBUF_FIELD_OFFSET(TransferRequest, _impl_.from_expected_revision_), _Internal::kHasBitsOffset + 5, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt64)},
       // string to_container_id = 4;
       {PROTOBUF_FIELD_OFFSET(TransferRequest, _impl_.to_container_id_), _Internal::kHasBitsOffset + 2, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
       // int64 to_expected_revision = 5;
-      {PROTOBUF_FIELD_OFFSET(TransferRequest, _impl_.to_expected_revision_), _Internal::kHasBitsOffset + 5, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt64)},
+      {PROTOBUF_FIELD_OFFSET(TransferRequest, _impl_.to_expected_revision_), _Internal::kHasBitsOffset + 6, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt64)},
       // string definition_id = 6;
       {PROTOBUF_FIELD_OFFSET(TransferRequest, _impl_.definition_id_), _Internal::kHasBitsOffset + 3, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
       // int64 quantity = 7;
-      {PROTOBUF_FIELD_OFFSET(TransferRequest, _impl_.quantity_), _Internal::kHasBitsOffset + 6, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt64)},
+      {PROTOBUF_FIELD_OFFSET(TransferRequest, _impl_.quantity_), _Internal::kHasBitsOffset + 7, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt64)},
+      // string instance_id = 8;
+      {PROTOBUF_FIELD_OFFSET(TransferRequest, _impl_.instance_id_), _Internal::kHasBitsOffset + 4, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
     }},
     // no aux_entries
     {{
-      "\37\14\21\0\17\0\15\0"
+      "\37\14\21\0\17\0\15\0\13\0\0\0\0\0\0\0"
       "sf.inventory.v1.TransferRequest"
       "operation_id"
       "from_container_id"
       "to_container_id"
       "definition_id"
+      "instance_id"
     }},
   };
 }
@@ -159,6 +167,9 @@ inline constexpr TransferRequest::Impl_::Impl_(
             &::google::protobuf::internal::fixed_address_empty_string,
             ::_pbi::ConstantInitialized()),
         definition_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        instance_id_(
             &::google::protobuf::internal::fixed_address_empty_string,
             ::_pbi::ConstantInitialized()),
         from_expected_revision_{::int64_t{0}},
@@ -206,7 +217,7 @@ constexpr auto TransferRequest::InternalGenerateClassData_(
           false,
       },
 #ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[10],
+      &file_reflection_data[11],
 #else   // !PROTOBUF_MESSAGE_GLOBALS
       &::_pbi::kDescriptorMethods,
       &descriptor_table_sf_2finventory_2fv1_2fledger_2eproto,
@@ -367,7 +378,7 @@ constexpr auto RevisionChange::InternalGenerateClassData_(
           false,
       },
 #ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[4],
+      &file_reflection_data[5],
 #else   // !PROTOBUF_MESSAGE_GLOBALS
       &::_pbi::kDescriptorMethods,
       &descriptor_table_sf_2finventory_2fv1_2fledger_2eproto,
@@ -531,7 +542,7 @@ constexpr auto QuantityChange::InternalGenerateClassData_(
           false,
       },
 #ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[5],
+      &file_reflection_data[6],
 #else   // !PROTOBUF_MESSAGE_GLOBALS
       &::_pbi::kDescriptorMethods,
       &descriptor_table_sf_2finventory_2fv1_2fledger_2eproto,
@@ -578,6 +589,170 @@ const ::_pbi::ClassData* QuantityChange_get_class_data() {
   return QuantityChange_globals_.GetClassData();
 #else
   return QuantityChange_class_data_.base();
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+}
+}  // namespace
+#endif  // PROTOBUF_CUSTOM_VTABLE
+class ItemInstance::_Internal {
+ public:
+  using HasBits = decltype(::std::declval<ItemInstance>()._impl_._has_bits_);
+  static constexpr ::int32_t kHasBitsOffset =
+      8 * PROTOBUF_FIELD_OFFSET(ItemInstance, _impl_._has_bits_);
+};
+
+constexpr ItemInstance::ParseTableT_ ItemInstance::InternalGenerateParseTable_(const ::_pbi::ClassData* class_data) {
+  return ParseTableT_{
+    {
+      PROTOBUF_FIELD_OFFSET(ItemInstance, _impl_._has_bits_),
+      0, // no _extensions_
+      3, 24,  // max_field_number, fast_idx_mask
+      offsetof(ParseTableT_, field_lookup_table),
+      4294967288,  // skipmap
+      offsetof(ParseTableT_, field_entries),
+      3,  // num_field_entries
+      0,  // num_aux_entries
+      offsetof(ParseTableT_, field_names),  // no aux_entries
+      class_data,
+      nullptr,  // post_loop_handler
+      ::_pbi::TcParser::GenericFallback,  // fallback
+      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+      ::_pbi::TcParser::GetTable<::sf::inventory::v1::ItemInstance>(),  // to_prefetch
+      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+    }, {{
+      {::_pbi::TcParser::MiniParse, {}},
+      // string instance_id = 1;
+      {::_pbi::TcParser::FastUS1,
+       {10, 0, 0,
+        PROTOBUF_FIELD_OFFSET(ItemInstance, _impl_.instance_id_)}},
+      // string definition_id = 2;
+      {::_pbi::TcParser::FastUS1,
+       {18, 1, 0,
+        PROTOBUF_FIELD_OFFSET(ItemInstance, _impl_.definition_id_)}},
+      // int32 durability_percent = 3;
+      {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(ItemInstance, _impl_.durability_percent_), 2>(),
+       {24, 2, 0,
+        PROTOBUF_FIELD_OFFSET(ItemInstance, _impl_.durability_percent_)}},
+    }}, {{
+      65535, 65535
+    }}, {{
+      // string instance_id = 1;
+      {PROTOBUF_FIELD_OFFSET(ItemInstance, _impl_.instance_id_), _Internal::kHasBitsOffset + 0, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // string definition_id = 2;
+      {PROTOBUF_FIELD_OFFSET(ItemInstance, _impl_.definition_id_), _Internal::kHasBitsOffset + 1, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // int32 durability_percent = 3;
+      {PROTOBUF_FIELD_OFFSET(ItemInstance, _impl_.durability_percent_), _Internal::kHasBitsOffset + 2, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt32)},
+    }},
+    // no aux_entries
+    {{
+      "\34\13\15\0\0\0\0\0"
+      "sf.inventory.v1.ItemInstance"
+      "instance_id"
+      "definition_id"
+    }},
+  };
+}
+
+
+inline constexpr ItemInstance::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    ::_pbi::ConstantInitialized) noexcept
+      : _cached_size_{0},
+        instance_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        definition_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        durability_percent_{0} {}
+
+template <typename>
+constexpr ItemInstance::ItemInstance(::_pbi::ConstantInitialized,
+                       const ::_pbi::ClassData* PROTOBUF_NONNULL class_data)
+    : ::google::protobuf::Message(
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          class_data
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          ),
+      _impl_(internal_visibility(), ::_pbi::ConstantInitialized()) {
+}
+inline void* PROTOBUF_NONNULL ItemInstance::PlacementNew_(
+    const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena) {
+  return ::new (mem) ItemInstance(arena);
+}
+constexpr auto ItemInstance::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::CopyInit(sizeof(ItemInstance), alignof(ItemInstance));
+}
+constexpr auto ItemInstance::InternalGenerateClassData_(
+    const MessageLite& prototype,
+    const ::google::protobuf::internal::TcParseTableBase* tc_table) {
+  return ::google::protobuf::internal::ClassDataFull{
+      ::google::protobuf::internal::ClassData{
+          &prototype,
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+          &_table_.header,
+#else
+          tc_table,
+#endif
+          nullptr,  // IsInitialized
+          &ItemInstance::MergeImpl,
+          ::google::protobuf::Message::GetNewImpl<ItemInstance>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          &ItemInstance::SharedDtor,
+          ::google::protobuf::Message::GetClearImpl<ItemInstance>(), &ItemInstance::ByteSizeLong,
+              &ItemInstance::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          PROTOBUF_FIELD_OFFSET(ItemInstance, _impl_._cached_size_),
+          false,
+      },
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+      &file_reflection_data[4],
+#else   // !PROTOBUF_MESSAGE_GLOBALS
+      &::_pbi::kDescriptorMethods,
+      &descriptor_table_sf_2finventory_2fv1_2fledger_2eproto,
+      nullptr,  // tracker
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+  };
+}
+struct ItemInstanceGlobalsTypeInternal : ::_pbi::MessageGlobalsBase {
+  constexpr ItemInstanceGlobalsTypeInternal()
+      :
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+        _default(::_pbi::ConstantInitialized{},
+                 ItemInstance_class_data_.base())
+#else   // !PROTOBUF_MESSAGE_GLOBALS
+        MessageGlobalsBase(ItemInstance::InternalGenerateClassData_(
+            _default, &ItemInstance_globals_._table.header)),
+        _default(::_pbi::ConstantInitialized{}, GetClassData()),
+        _table(::_pbi::PrivateAccess::GenerateParseTable<ItemInstance>(
+            GetClassData()))
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+  {
+  }
+  ~ItemInstanceGlobalsTypeInternal() {}
+  union {
+    alignas(::_pbi::kMaxMessageAlignment) ItemInstance _default;
+  };
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+  decltype(::_pbi::PrivateAccess::GenerateParseTable<ItemInstance>(
+      ::std::declval<const ::_pbi::ClassData*>())) _table;
+#endif
+};
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+static_assert(PROTOBUF_FIELD_OFFSET(ItemInstanceGlobalsTypeInternal, _default) ==
+              ::_pbi::MessageGlobalsBase::OffsetToDefault());
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 PROTOBUF_MESSAGE_GLOBALS_CONST ItemInstanceGlobalsTypeInternal ItemInstance_globals_
+        PROTOBUF_MESSAGE_GLOBALS_SECTION(.data.rel.ro);
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+namespace {
+const ::_pbi::ClassData* ItemInstance_get_class_data() {
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+  return ItemInstance_globals_.GetClassData();
+#else
+  return ItemInstance_class_data_.base();
 #endif  // PROTOBUF_MESSAGE_GLOBALS
 }
 }  // namespace
@@ -677,7 +852,7 @@ constexpr auto GetContainerRequest::InternalGenerateClassData_(
           false,
       },
 #ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[8],
+      &file_reflection_data[9],
 #else   // !PROTOBUF_MESSAGE_GLOBALS
       &::_pbi::kDescriptorMethods,
       &descriptor_table_sf_2finventory_2fv1_2fledger_2eproto,
@@ -840,7 +1015,7 @@ constexpr auto FollowUpIntent::InternalGenerateClassData_(
           false,
       },
 #ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[11],
+      &file_reflection_data[12],
 #else   // !PROTOBUF_MESSAGE_GLOBALS
       &::_pbi::kDescriptorMethods,
       &descriptor_table_sf_2finventory_2fv1_2fledger_2eproto,
@@ -1355,11 +1530,11 @@ constexpr LedgerReceipt::ParseTableT_ LedgerReceipt::InternalGenerateParseTable_
     {
       PROTOBUF_FIELD_OFFSET(LedgerReceipt, _impl_._has_bits_),
       0, // no _extensions_
-      4, 24,  // max_field_number, fast_idx_mask
+      5, 56,  // max_field_number, fast_idx_mask
       offsetof(ParseTableT_, field_lookup_table),
-      4294967280,  // skipmap
+      4294967264,  // skipmap
       offsetof(ParseTableT_, field_entries),
-      4,  // num_field_entries
+      5,  // num_field_entries
       2,  // num_aux_entries
       offsetof(ParseTableT_, aux_entries),
       class_data,
@@ -1369,33 +1544,42 @@ constexpr LedgerReceipt::ParseTableT_ LedgerReceipt::InternalGenerateParseTable_
       ::_pbi::TcParser::GetTable<::sf::inventory::v1::LedgerReceipt>(),  // to_prefetch
       #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
     }, {{
-      // repeated .sf.inventory.v1.QuantityChange changes = 4;
-      {::_pbi::TcParser::FastMtR1,
-       {34, 1, 1,
-        PROTOBUF_FIELD_OFFSET(LedgerReceipt, _impl_.changes_)}},
+      {::_pbi::TcParser::MiniParse, {}},
       // string operation_id = 1;
       {::_pbi::TcParser::FastUS1,
-       {10, 2, 0,
+       {10, 3, 0,
         PROTOBUF_FIELD_OFFSET(LedgerReceipt, _impl_.operation_id_)}},
       // .sf.inventory.v1.LedgerAction action = 2;
-      {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(LedgerReceipt, _impl_.action_), 3>(),
-       {16, 3, 0,
+      {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(LedgerReceipt, _impl_.action_), 4>(),
+       {16, 4, 0,
         PROTOBUF_FIELD_OFFSET(LedgerReceipt, _impl_.action_)}},
       // repeated .sf.inventory.v1.RevisionChange revisions = 3;
       {::_pbi::TcParser::FastMtR1,
        {26, 0, 0,
         PROTOBUF_FIELD_OFFSET(LedgerReceipt, _impl_.revisions_)}},
+      // repeated .sf.inventory.v1.QuantityChange changes = 4;
+      {::_pbi::TcParser::FastMtR1,
+       {34, 1, 1,
+        PROTOBUF_FIELD_OFFSET(LedgerReceipt, _impl_.changes_)}},
+      // repeated string instance_ids = 5;
+      {::_pbi::TcParser::FastUR1,
+       {42, 2, 0,
+        PROTOBUF_FIELD_OFFSET(LedgerReceipt, _impl_.instance_ids_)}},
+      {::_pbi::TcParser::MiniParse, {}},
+      {::_pbi::TcParser::MiniParse, {}},
     }}, {{
       65535, 65535
     }}, {{
       // string operation_id = 1;
-      {PROTOBUF_FIELD_OFFSET(LedgerReceipt, _impl_.operation_id_), _Internal::kHasBitsOffset + 2, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      {PROTOBUF_FIELD_OFFSET(LedgerReceipt, _impl_.operation_id_), _Internal::kHasBitsOffset + 3, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
       // .sf.inventory.v1.LedgerAction action = 2;
-      {PROTOBUF_FIELD_OFFSET(LedgerReceipt, _impl_.action_), _Internal::kHasBitsOffset + 3, 0, (0 | ::_fl::kFcOptional | ::_fl::kOpenEnum)},
+      {PROTOBUF_FIELD_OFFSET(LedgerReceipt, _impl_.action_), _Internal::kHasBitsOffset + 4, 0, (0 | ::_fl::kFcOptional | ::_fl::kOpenEnum)},
       // repeated .sf.inventory.v1.RevisionChange revisions = 3;
       {PROTOBUF_FIELD_OFFSET(LedgerReceipt, _impl_.revisions_), _Internal::kHasBitsOffset + 0, 0, (0 | ::_fl::kFcRepeated | ::_fl::kMessage | ::_fl::kTvTable)},
       // repeated .sf.inventory.v1.QuantityChange changes = 4;
       {PROTOBUF_FIELD_OFFSET(LedgerReceipt, _impl_.changes_), _Internal::kHasBitsOffset + 1, 1, (0 | ::_fl::kFcRepeated | ::_fl::kMessage | ::_fl::kTvTable)},
+      // repeated string instance_ids = 5;
+      {PROTOBUF_FIELD_OFFSET(LedgerReceipt, _impl_.instance_ids_), _Internal::kHasBitsOffset + 2, 0, (0 | ::_fl::kFcRepeated | ::_fl::kUtf8String | ::_fl::kRepSString)},
     }},
     {{
         #ifndef PROTOBUF_MESSAGE_GLOBALS
@@ -1410,9 +1594,10 @@ constexpr LedgerReceipt::ParseTableT_ LedgerReceipt::InternalGenerateParseTable_
         #endif
     }},
     {{
-      "\35\14\0\0\0\0\0\0"
+      "\35\14\0\0\0\14\0\0"
       "sf.inventory.v1.LedgerReceipt"
       "operation_id"
+      "instance_ids"
     }},
   };
 }
@@ -1430,6 +1615,11 @@ inline constexpr LedgerReceipt::Impl_::Impl_(
         changes_ { visibility, ::_pbi::InternalMetadataOffset::Build<
             ::sf::inventory::v1::LedgerReceipt,
             PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::LedgerReceipt, _impl_.changes_)>()
+         }
+        ,
+        instance_ids_ { visibility, ::_pbi::InternalMetadataOffset::Build<
+            ::sf::inventory::v1::LedgerReceipt,
+            PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::LedgerReceipt, _impl_.instance_ids_)>()
          }
         ,
         operation_id_(
@@ -1478,7 +1668,7 @@ constexpr auto LedgerReceipt::InternalGenerateClassData_(
           false,
       },
 #ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[6],
+      &file_reflection_data[7],
 #else   // !PROTOBUF_MESSAGE_GLOBALS
       &::_pbi::kDescriptorMethods,
       &descriptor_table_sf_2finventory_2fv1_2fledger_2eproto,
@@ -1691,7 +1881,7 @@ constexpr auto GrantRequest::InternalGenerateClassData_(
           false,
       },
 #ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[9],
+      &file_reflection_data[10],
 #else   // !PROTOBUF_MESSAGE_GLOBALS
       &::_pbi::kDescriptorMethods,
       &descriptor_table_sf_2finventory_2fv1_2fledger_2eproto,
@@ -1838,7 +2028,7 @@ constexpr auto EnsureContainerRequest::InternalGenerateClassData_(
           false,
       },
 #ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[7],
+      &file_reflection_data[8],
 #else   // !PROTOBUF_MESSAGE_GLOBALS
       &::_pbi::kDescriptorMethods,
       &descriptor_table_sf_2finventory_2fv1_2fledger_2eproto,
@@ -1901,12 +2091,12 @@ constexpr ContainerView::ParseTableT_ ContainerView::InternalGenerateParseTable_
     {
       PROTOBUF_FIELD_OFFSET(ContainerView, _impl_._has_bits_),
       0, // no _extensions_
-      4, 8,  // max_field_number, fast_idx_mask
+      5, 56,  // max_field_number, fast_idx_mask
       offsetof(ParseTableT_, field_lookup_table),
-      4294967280,  // skipmap
+      4294967264,  // skipmap
       offsetof(ParseTableT_, field_entries),
-      4,  // num_field_entries
-      3,  // num_aux_entries
+      5,  // num_field_entries
+      4,  // num_aux_entries
       offsetof(ParseTableT_, aux_entries),
       class_data,
       nullptr,  // post_loop_handler
@@ -1915,31 +2105,47 @@ constexpr ContainerView::ParseTableT_ ContainerView::InternalGenerateParseTable_
       ::_pbi::TcParser::GetTable<::sf::inventory::v1::ContainerView>(),  // to_prefetch
       #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
     }, {{
-      // int64 revision = 2;
-      {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(ContainerView, _impl_.revision_), 1>(),
-       {16, 1, 0,
-        PROTOBUF_FIELD_OFFSET(ContainerView, _impl_.revision_)}},
+      {::_pbi::TcParser::MiniParse, {}},
       // .sf.inventory.v1.ContainerSpec spec = 1;
       {::_pbi::TcParser::FastMtS1,
-       {10, 0, 0,
+       {10, 1, 0,
         PROTOBUF_FIELD_OFFSET(ContainerView, _impl_.spec_)}},
+      // int64 revision = 2;
+      {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(ContainerView, _impl_.revision_), 2>(),
+       {16, 2, 0,
+        PROTOBUF_FIELD_OFFSET(ContainerView, _impl_.revision_)}},
+      {::_pbi::TcParser::MiniParse, {}},
+      {::_pbi::TcParser::MiniParse, {}},
+      // repeated .sf.inventory.v1.ItemInstance instances = 5;
+      {::_pbi::TcParser::FastMtR1,
+       {42, 0, 1,
+        PROTOBUF_FIELD_OFFSET(ContainerView, _impl_.instances_)}},
+      {::_pbi::TcParser::MiniParse, {}},
+      {::_pbi::TcParser::MiniParse, {}},
     }}, {{
       65535, 65535
     }}, {{
       // .sf.inventory.v1.ContainerSpec spec = 1;
-      {PROTOBUF_FIELD_OFFSET(ContainerView, _impl_.spec_), _Internal::kHasBitsOffset + 0, 0, (0 | ::_fl::kFcOptional | ::_fl::kMessage | ::_fl::kTvTable)},
+      {PROTOBUF_FIELD_OFFSET(ContainerView, _impl_.spec_), _Internal::kHasBitsOffset + 1, 0, (0 | ::_fl::kFcOptional | ::_fl::kMessage | ::_fl::kTvTable)},
       // int64 revision = 2;
-      {PROTOBUF_FIELD_OFFSET(ContainerView, _impl_.revision_), _Internal::kHasBitsOffset + 1, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt64)},
+      {PROTOBUF_FIELD_OFFSET(ContainerView, _impl_.revision_), _Internal::kHasBitsOffset + 2, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt64)},
       // map<string, int64> quantities = 3;
-      {PROTOBUF_FIELD_OFFSET(ContainerView, _impl_.quantities_), _Internal::kHasBitsOffset + 2, 1, (0 | ::_fl::kFcRepeated | ::_fl::kMap)},
+      {PROTOBUF_FIELD_OFFSET(ContainerView, _impl_.quantities_), _Internal::kHasBitsOffset + 3, 2, (0 | ::_fl::kFcRepeated | ::_fl::kMap)},
       // map<string, int32> durability_percent = 4;
-      {PROTOBUF_FIELD_OFFSET(ContainerView, _impl_.durability_percent_), _Internal::kHasBitsOffset + 3, 2, (0 | ::_fl::kFcRepeated | ::_fl::kMap)},
+      {PROTOBUF_FIELD_OFFSET(ContainerView, _impl_.durability_percent_), _Internal::kHasBitsOffset + 4, 3, (0 | ::_fl::kFcRepeated | ::_fl::kMap)},
+      // repeated .sf.inventory.v1.ItemInstance instances = 5;
+      {PROTOBUF_FIELD_OFFSET(ContainerView, _impl_.instances_), _Internal::kHasBitsOffset + 0, 1, (0 | ::_fl::kFcRepeated | ::_fl::kMessage | ::_fl::kTvTable)},
     }},
     {{
         #ifndef PROTOBUF_MESSAGE_GLOBALS
         {::_pbi::TcParser::GetTable<::sf::inventory::v1::ContainerSpec>()},
         #else
         {::_pbi::FieldAuxMessageGlobals(), &::sf::inventory::v1::ContainerSpec_globals_},
+        #endif
+        #ifndef PROTOBUF_MESSAGE_GLOBALS
+        {::_pbi::TcParser::GetTable<::sf::inventory::v1::ItemInstance>()},
+        #else
+        {::_pbi::FieldAuxMessageGlobals(), &::sf::inventory::v1::ItemInstance_globals_},
         #endif
         {::_pbi::TcParser::GetMapAuxInfo(
             1, 0, 9, 3, 0)},
@@ -1960,6 +2166,11 @@ inline constexpr ContainerView::Impl_::Impl_(
     [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
     ::_pbi::ConstantInitialized) noexcept
       : _cached_size_{0},
+        instances_ { visibility, ::_pbi::InternalMetadataOffset::Build<
+            ::sf::inventory::v1::ContainerView,
+            PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::ContainerView, _impl_.instances_)>()
+         }
+        ,
         spec_{nullptr},
         revision_{::int64_t{0}},
         quantities_ { visibility, ::_pbi::InternalMetadataOffset::Build<
@@ -2104,15 +2315,26 @@ const ::uint32_t
         1,
         0x081, // bitmap
         PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::ContainerView, _impl_._has_bits_),
-        7, // hasbit index offset
+        8, // hasbit index offset
         PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::ContainerView, _impl_.spec_),
         PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::ContainerView, _impl_.revision_),
         PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::ContainerView, _impl_.quantities_),
         PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::ContainerView, _impl_.durability_percent_),
-        0,
+        PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::ContainerView, _impl_.instances_),
         1,
         2,
         3,
+        4,
+        0,
+        0x081, // bitmap
+        PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::ItemInstance, _impl_._has_bits_),
+        6, // hasbit index offset
+        PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::ItemInstance, _impl_.instance_id_),
+        PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::ItemInstance, _impl_.definition_id_),
+        PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::ItemInstance, _impl_.durability_percent_),
+        0,
+        1,
+        2,
         0x081, // bitmap
         PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::RevisionChange, _impl_._has_bits_),
         6, // hasbit index offset
@@ -2133,15 +2355,17 @@ const ::uint32_t
         2,
         0x081, // bitmap
         PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::LedgerReceipt, _impl_._has_bits_),
-        7, // hasbit index offset
+        8, // hasbit index offset
         PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::LedgerReceipt, _impl_.operation_id_),
         PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::LedgerReceipt, _impl_.action_),
         PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::LedgerReceipt, _impl_.revisions_),
         PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::LedgerReceipt, _impl_.changes_),
-        2,
+        PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::LedgerReceipt, _impl_.instance_ids_),
         3,
+        4,
         0,
         1,
+        2,
         0x081, // bitmap
         PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::EnsureContainerRequest, _impl_._has_bits_),
         4, // hasbit index offset
@@ -2173,7 +2397,7 @@ const ::uint32_t
         5,
         0x081, // bitmap
         PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::TransferRequest, _impl_._has_bits_),
-        10, // hasbit index offset
+        11, // hasbit index offset
         PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::TransferRequest, _impl_.operation_id_),
         PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::TransferRequest, _impl_.from_container_id_),
         PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::TransferRequest, _impl_.from_expected_revision_),
@@ -2181,13 +2405,15 @@ const ::uint32_t
         PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::TransferRequest, _impl_.to_expected_revision_),
         PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::TransferRequest, _impl_.definition_id_),
         PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::TransferRequest, _impl_.quantity_),
+        PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::TransferRequest, _impl_.instance_id_),
         0,
         1,
-        4,
-        2,
         5,
-        3,
+        2,
         6,
+        3,
+        7,
+        4,
         0x081, // bitmap
         PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::FollowUpIntent, _impl_._has_bits_),
         6, // hasbit index offset
@@ -2205,14 +2431,15 @@ static const ::_pbi::MigrationSchema
         {13, sizeof(::sf::inventory::v1::ContainerView_QuantitiesEntry_DoNotUse)},
         {20, sizeof(::sf::inventory::v1::ContainerView_DurabilityPercentEntry_DoNotUse)},
         {27, sizeof(::sf::inventory::v1::ContainerView)},
-        {38, sizeof(::sf::inventory::v1::RevisionChange)},
-        {47, sizeof(::sf::inventory::v1::QuantityChange)},
-        {56, sizeof(::sf::inventory::v1::LedgerReceipt)},
-        {67, sizeof(::sf::inventory::v1::EnsureContainerRequest)},
-        {72, sizeof(::sf::inventory::v1::GetContainerRequest)},
-        {77, sizeof(::sf::inventory::v1::GrantRequest)},
-        {96, sizeof(::sf::inventory::v1::TransferRequest)},
-        {113, sizeof(::sf::inventory::v1::FollowUpIntent)},
+        {40, sizeof(::sf::inventory::v1::ItemInstance)},
+        {49, sizeof(::sf::inventory::v1::RevisionChange)},
+        {58, sizeof(::sf::inventory::v1::QuantityChange)},
+        {67, sizeof(::sf::inventory::v1::LedgerReceipt)},
+        {80, sizeof(::sf::inventory::v1::EnsureContainerRequest)},
+        {85, sizeof(::sf::inventory::v1::GetContainerRequest)},
+        {90, sizeof(::sf::inventory::v1::GrantRequest)},
+        {109, sizeof(::sf::inventory::v1::TransferRequest)},
+        {128, sizeof(::sf::inventory::v1::FollowUpIntent)},
 };
 static const ::_pbi::MessageGlobalsBase* PROTOBUF_NONNULL const
     file_message_globals[] = {
@@ -2220,6 +2447,7 @@ static const ::_pbi::MessageGlobalsBase* PROTOBUF_NONNULL const
         &::sf::inventory::v1::ContainerView_QuantitiesEntry_DoNotUse_globals_,
         &::sf::inventory::v1::ContainerView_DurabilityPercentEntry_DoNotUse_globals_,
         &::sf::inventory::v1::ContainerView_globals_,
+        &::sf::inventory::v1::ItemInstance_globals_,
         &::sf::inventory::v1::RevisionChange_globals_,
         &::sf::inventory::v1::QuantityChange_globals_,
         &::sf::inventory::v1::LedgerReceipt_globals_,
@@ -2236,24 +2464,28 @@ const char descriptor_table_protodef_sf_2finventory_2fv1_2fledger_2eproto[] ABSL
     "\nowner_kind\030\002 \001(\0162\032.sf.inventory.v1.Owne"
     "rKind\022\020\n\010owner_id\030\003 \001(\t\022,\n\004kind\030\004 \001(\0162\036."
     "sf.inventory.v1.ContainerKind\022\020\n\010capacit"
-    "y\030\005 \001(\005\"\323\002\n\rContainerView\022,\n\004spec\030\001 \001(\0132"
+    "y\030\005 \001(\005\"\205\003\n\rContainerView\022,\n\004spec\030\001 \001(\0132"
     "\036.sf.inventory.v1.ContainerSpec\022\020\n\010revis"
     "ion\030\002 \001(\003\022B\n\nquantities\030\003 \003(\0132..sf.inven"
     "tory.v1.ContainerView.QuantitiesEntry\022Q\n"
     "\022durability_percent\030\004 \003(\01325.sf.inventory"
     ".v1.ContainerView.DurabilityPercentEntry"
-    "\0321\n\017QuantitiesEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005valu"
-    "e\030\002 \001(\003:\0028\001\0328\n\026DurabilityPercentEntry\022\013\n"
-    "\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\005:\0028\001\"E\n\016Revisio"
-    "nChange\022\024\n\014container_id\030\001 \001(\t\022\016\n\006before\030"
-    "\002 \001(\003\022\r\n\005after\030\003 \001(\003\"L\n\016QuantityChange\022\024"
-    "\n\014container_id\030\001 \001(\t\022\025\n\rdefinition_id\030\002 "
-    "\001(\t\022\r\n\005delta\030\003 \001(\003\"\272\001\n\rLedgerReceipt\022\024\n\014"
-    "operation_id\030\001 \001(\t\022-\n\006action\030\002 \001(\0162\035.sf."
-    "inventory.v1.LedgerAction\0222\n\trevisions\030\003"
-    " \003(\0132\037.sf.inventory.v1.RevisionChange\0220\n"
-    "\007changes\030\004 \003(\0132\037.sf.inventory.v1.Quantit"
-    "yChange\"F\n\026EnsureContainerRequest\022,\n\004spe"
+    "\0220\n\tinstances\030\005 \003(\0132\035.sf.inventory.v1.It"
+    "emInstance\0321\n\017QuantitiesEntry\022\013\n\003key\030\001 \001"
+    "(\t\022\r\n\005value\030\002 \001(\003:\0028\001\0328\n\026DurabilityPerce"
+    "ntEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\005:\0028\001\""
+    "V\n\014ItemInstance\022\023\n\013instance_id\030\001 \001(\t\022\025\n\r"
+    "definition_id\030\002 \001(\t\022\032\n\022durability_percen"
+    "t\030\003 \001(\005\"E\n\016RevisionChange\022\024\n\014container_i"
+    "d\030\001 \001(\t\022\016\n\006before\030\002 \001(\003\022\r\n\005after\030\003 \001(\003\"L"
+    "\n\016QuantityChange\022\024\n\014container_id\030\001 \001(\t\022\025"
+    "\n\rdefinition_id\030\002 \001(\t\022\r\n\005delta\030\003 \001(\003\"\320\001\n"
+    "\rLedgerReceipt\022\024\n\014operation_id\030\001 \001(\t\022-\n\006"
+    "action\030\002 \001(\0162\035.sf.inventory.v1.LedgerAct"
+    "ion\0222\n\trevisions\030\003 \003(\0132\037.sf.inventory.v1"
+    ".RevisionChange\0220\n\007changes\030\004 \003(\0132\037.sf.in"
+    "ventory.v1.QuantityChange\022\024\n\014instance_id"
+    "s\030\005 \003(\t\"F\n\026EnsureContainerRequest\022,\n\004spe"
     "c\030\001 \001(\0132\036.sf.inventory.v1.ContainerSpec\""
     "+\n\023GetContainerRequest\022\024\n\014container_id\030\001"
     " \001(\t\"\337\001\n\014GrantRequest\022\024\n\014operation_id\030\001 "
@@ -2261,56 +2493,56 @@ const char descriptor_table_protodef_sf_2finventory_2fv1_2fledger_2eproto[] ABSL
     "vision\030\003 \001(\003\022\025\n\rdefinition_id\030\004 \001(\t\022\020\n\010q"
     "uantity\030\005 \001(\003\022\016\n\006source\030\006 \001(\t\022\024\n\014causati"
     "on_id\030\007 \001(\t\0229\n\020follow_up_intent\030\010 \001(\0132\037."
-    "sf.inventory.v1.FollowUpIntent\"\302\001\n\017Trans"
+    "sf.inventory.v1.FollowUpIntent\"\327\001\n\017Trans"
     "ferRequest\022\024\n\014operation_id\030\001 \001(\t\022\031\n\021from"
     "_container_id\030\002 \001(\t\022\036\n\026from_expected_rev"
     "ision\030\003 \001(\003\022\027\n\017to_container_id\030\004 \001(\t\022\034\n\024"
     "to_expected_revision\030\005 \001(\003\022\025\n\rdefinition"
-    "_id\030\006 \001(\t\022\020\n\010quantity\030\007 \001(\003\"R\n\016FollowUpI"
-    "ntent\022\027\n\017payload_version\030\001 \001(\r\022\017\n\007payloa"
-    "d\030\002 \001(\014\022\026\n\016payload_digest\030\003 \001(\t*\206\001\n\tOwne"
-    "rKind\022\032\n\026OWNER_KIND_UNSPECIFIED\020\000\022\030\n\024OWN"
-    "ER_KIND_CHARACTER\020\001\022\026\n\022OWNER_KIND_ACCOUN"
-    "T\020\002\022\024\n\020OWNER_KIND_GUILD\020\003\022\025\n\021OWNER_KIND_"
-    "SYSTEM\020\004*\377\002\n\rContainerKind\022\036\n\032CONTAINER_"
-    "KIND_UNSPECIFIED\020\000\022\034\n\030CONTAINER_KIND_EQU"
-    "IPMENT\020\001\022\033\n\027CONTAINER_KIND_BACKPACK\020\002\022\026\n"
-    "\022CONTAINER_KIND_BAG\020\003\022\027\n\023CONTAINER_KIND_"
-    "BANK\020\004\022\037\n\033CONTAINER_KIND_ACCOUNT_BANK\020\005\022"
-    "\035\n\031CONTAINER_KIND_GUILD_BANK\020\006\022\032\n\026CONTAI"
-    "NER_KIND_MAILBOX\020\007\022\031\n\025CONTAINER_KIND_ESC"
-    "ROW\020\010\022\032\n\026CONTAINER_KIND_BUYBACK\020\t\022%\n!CON"
-    "TAINER_KIND_CONSTRUCTION_CACHE\020\n\022(\n$CONT"
-    "AINER_KIND_CONSTRUCTION_RECOVERY\020\013*\264\001\n\014L"
-    "edgerAction\022\035\n\031LEDGER_ACTION_UNSPECIFIED"
-    "\020\000\022\027\n\023LEDGER_ACTION_GRANT\020\001\022\031\n\025LEDGER_AC"
-    "TION_CONSUME\020\002\022\032\n\026LEDGER_ACTION_TRANSFER"
-    "\020\003\022\031\n\025LEDGER_ACTION_CONVERT\020\004\022\032\n\026LEDGER_"
-    "ACTION_EXCHANGE\020\0052\253\003\n\017InventoryLedger\022Z\n"
-    "\017EnsureContainer\022\'.sf.inventory.v1.Ensur"
-    "eContainerRequest\032\036.sf.inventory.v1.Cont"
-    "ainerView\022T\n\014GetContainer\022$.sf.inventory"
-    ".v1.GetContainerRequest\032\036.sf.inventory.v"
-    "1.ContainerView\022F\n\005Grant\022\035.sf.inventory."
-    "v1.GrantRequest\032\036.sf.inventory.v1.Ledger"
-    "Receipt\022P\n\017GrantWithIntent\022\035.sf.inventor"
-    "y.v1.GrantRequest\032\036.sf.inventory.v1.Ledg"
-    "erReceipt\022L\n\010Transfer\022 .sf.inventory.v1."
-    "TransferRequest\032\036.sf.inventory.v1.Ledger"
-    "ReceiptB\'\252\002$ShatteredFrontier.InventoryL"
-    "edger.V1b\006proto3"
+    "_id\030\006 \001(\t\022\020\n\010quantity\030\007 \001(\003\022\023\n\013instance_"
+    "id\030\010 \001(\t\"R\n\016FollowUpIntent\022\027\n\017payload_ve"
+    "rsion\030\001 \001(\r\022\017\n\007payload\030\002 \001(\014\022\026\n\016payload_"
+    "digest\030\003 \001(\t*\206\001\n\tOwnerKind\022\032\n\026OWNER_KIND"
+    "_UNSPECIFIED\020\000\022\030\n\024OWNER_KIND_CHARACTER\020\001"
+    "\022\026\n\022OWNER_KIND_ACCOUNT\020\002\022\024\n\020OWNER_KIND_G"
+    "UILD\020\003\022\025\n\021OWNER_KIND_SYSTEM\020\004*\377\002\n\rContai"
+    "nerKind\022\036\n\032CONTAINER_KIND_UNSPECIFIED\020\000\022"
+    "\034\n\030CONTAINER_KIND_EQUIPMENT\020\001\022\033\n\027CONTAIN"
+    "ER_KIND_BACKPACK\020\002\022\026\n\022CONTAINER_KIND_BAG"
+    "\020\003\022\027\n\023CONTAINER_KIND_BANK\020\004\022\037\n\033CONTAINER"
+    "_KIND_ACCOUNT_BANK\020\005\022\035\n\031CONTAINER_KIND_G"
+    "UILD_BANK\020\006\022\032\n\026CONTAINER_KIND_MAILBOX\020\007\022"
+    "\031\n\025CONTAINER_KIND_ESCROW\020\010\022\032\n\026CONTAINER_"
+    "KIND_BUYBACK\020\t\022%\n!CONTAINER_KIND_CONSTRU"
+    "CTION_CACHE\020\n\022(\n$CONTAINER_KIND_CONSTRUC"
+    "TION_RECOVERY\020\013*\264\001\n\014LedgerAction\022\035\n\031LEDG"
+    "ER_ACTION_UNSPECIFIED\020\000\022\027\n\023LEDGER_ACTION"
+    "_GRANT\020\001\022\031\n\025LEDGER_ACTION_CONSUME\020\002\022\032\n\026L"
+    "EDGER_ACTION_TRANSFER\020\003\022\031\n\025LEDGER_ACTION"
+    "_CONVERT\020\004\022\032\n\026LEDGER_ACTION_EXCHANGE\020\0052\253"
+    "\003\n\017InventoryLedger\022Z\n\017EnsureContainer\022\'."
+    "sf.inventory.v1.EnsureContainerRequest\032\036"
+    ".sf.inventory.v1.ContainerView\022T\n\014GetCon"
+    "tainer\022$.sf.inventory.v1.GetContainerReq"
+    "uest\032\036.sf.inventory.v1.ContainerView\022F\n\005"
+    "Grant\022\035.sf.inventory.v1.GrantRequest\032\036.s"
+    "f.inventory.v1.LedgerReceipt\022P\n\017GrantWit"
+    "hIntent\022\035.sf.inventory.v1.GrantRequest\032\036"
+    ".sf.inventory.v1.LedgerReceipt\022L\n\010Transf"
+    "er\022 .sf.inventory.v1.TransferRequest\032\036.s"
+    "f.inventory.v1.LedgerReceiptB\'\252\002$Shatter"
+    "edFrontier.InventoryLedger.V1b\006proto3"
 };
 static ::absl::once_flag descriptor_table_sf_2finventory_2fv1_2fledger_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_sf_2finventory_2fv1_2fledger_2eproto = {
     false,
     false,
-    2696,
+    2877,
     descriptor_table_protodef_sf_2finventory_2fv1_2fledger_2eproto,
     "sf/inventory/v1/ledger.proto",
     &descriptor_table_sf_2finventory_2fv1_2fledger_2eproto_once,
     nullptr,
     0,
-    12,
+    13,
     schemas,
     file_message_globals,
     TableStruct_sf_2finventory_2fv1_2fledger_2eproto::offsets,
@@ -2773,6 +3005,13 @@ PROTOBUF_NDEBUG_INLINE ContainerView::Impl_::Impl_(
     [[maybe_unused]] const ::sf::inventory::v1::ContainerView& from_msg)
       : _has_bits_{from._has_bits_},
         _cached_size_{0},
+        instances_ {
+          visibility, ::_pbi::InternalMetadataOffset::Build<
+              ::sf::inventory::v1::ContainerView,
+              PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::ContainerView, _impl_.instances_)>()
+          , from.instances_
+        }
+        ,
         quantities_ {
           visibility, ::_pbi::InternalMetadataOffset::Build<
               ::sf::inventory::v1::ContainerView,
@@ -2803,7 +3042,7 @@ ContainerView::ContainerView(
       from._internal_metadata_);
   new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
   ::uint32_t cached_has_bits = _impl_._has_bits_[0];
-  _impl_.spec_ = (CheckHasBit(cached_has_bits, 0x00000001U))
+  _impl_.spec_ = (CheckHasBit(cached_has_bits, 0x00000002U))
                 ? ::google::protobuf::Message::CopyConstruct(arena, *from._impl_.spec_)
                 : nullptr;
   _impl_.revision_ = from._impl_.revision_;
@@ -2814,6 +3053,11 @@ PROTOBUF_NDEBUG_INLINE ContainerView::Impl_::Impl_(
     [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
     [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
       : _cached_size_{0},
+        instances_ { visibility, ::_pbi::InternalMetadataOffset::Build<
+            ::sf::inventory::v1::ContainerView,
+            PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::ContainerView, _impl_.instances_)>()
+         }
+        ,
         quantities_ { visibility, ::_pbi::InternalMetadataOffset::Build<
             ::sf::inventory::v1::ContainerView,
             PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::ContainerView, _impl_.quantities_)>()
@@ -2883,16 +3127,21 @@ PROTOBUF_NOINLINE void ContainerView::Clear() {
   (void) cached_has_bits;
 
   cached_has_bits = _impl_._has_bits_[0];
-  if (CheckHasBit(cached_has_bits, 0x00000001U)) {
-    ABSL_DCHECK(_impl_.spec_ != nullptr);
-    _impl_.spec_->Clear();
+  if (BatchCheckHasBit(cached_has_bits, 0x00000003U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      _impl_.instances_.Clear();
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      ABSL_DCHECK(_impl_.spec_ != nullptr);
+      _impl_.spec_->Clear();
+    }
   }
-  if (BatchCheckHasBit(cached_has_bits, 0x0000000eU)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x0000001cU)) {
     _impl_.revision_ = ::int64_t{0};
-    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
       _impl_.quantities_.Clear();
     }
-    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000010U)) {
       _impl_.durability_percent_.Clear();
     }
   }
@@ -2920,14 +3169,14 @@ PROTOBUF_NOINLINE void ContainerView::Clear() {
 
   cached_has_bits = this_._impl_._has_bits_[0];
   // .sf.inventory.v1.ContainerSpec spec = 1;
-  if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000002U)) {
     target = ::google::protobuf::internal::WireFormatLite::InternalWriteMessage(
         1, *this_._impl_.spec_, this_._impl_.spec_->GetCachedSize(), target,
         stream);
   }
 
   // int64 revision = 2;
-  if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000004U)) {
     if (this_._internal_revision() != 0) {
       target =
           ::google::protobuf::internal::WireFormatLite::WriteInt64ToArrayWithField<2>(
@@ -2936,7 +3185,7 @@ PROTOBUF_NOINLINE void ContainerView::Clear() {
   }
 
   // map<string, int64> quantities = 3;
-  if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000008U)) {
     if (!this_._internal_quantities().empty()) {
       using MapType = ::google::protobuf::Map<::std::string, ::int64_t>;
       using WireHelper = _pbi::MapEntryFuncs<::std::string, ::int64_t,
@@ -2965,7 +3214,7 @@ PROTOBUF_NOINLINE void ContainerView::Clear() {
   }
 
   // map<string, int32> durability_percent = 4;
-  if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000010U)) {
     if (!this_._internal_durability_percent().empty()) {
       using MapType = ::google::protobuf::Map<::std::string, ::int32_t>;
       using WireHelper = _pbi::MapEntryFuncs<::std::string, ::int32_t,
@@ -2990,6 +3239,19 @@ PROTOBUF_NOINLINE void ContainerView::Clear() {
  ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.inventory.v1.ContainerView.durability_percent");
         }
       }
+    }
+  }
+
+  // repeated .sf.inventory.v1.ItemInstance instances = 5;
+  if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+    for (unsigned i = 0, n = static_cast<unsigned>(
+                             this_._internal_instances_size());
+         i < n; i++) {
+      const auto& repfield = this_._internal_instances().Get(i);
+      target =
+          ::google::protobuf::internal::WireFormatLite::InternalWriteMessage(
+              5, repfield, repfield.GetCachedSize(),
+              target, stream);
     }
   }
 
@@ -3018,21 +3280,28 @@ PROTOBUF_NOINLINE void ContainerView::Clear() {
 
   ::_pbi::Prefetch5LinesFrom7Lines(&this_);
   cached_has_bits = this_._impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0x0000000fU)) {
-    // .sf.inventory.v1.ContainerSpec spec = 1;
+  if (BatchCheckHasBit(cached_has_bits, 0x0000001fU)) {
+    // repeated .sf.inventory.v1.ItemInstance instances = 5;
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      total_size += 1UL * this_._internal_instances_size();
+      for (const auto& msg : this_._internal_instances()) {
+        total_size += ::google::protobuf::internal::WireFormatLite::MessageSize(msg);
+      }
+    }
+    // .sf.inventory.v1.ContainerSpec spec = 1;
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
       total_size += 1 +
                     ::google::protobuf::internal::WireFormatLite::MessageSize(*this_._impl_.spec_);
     }
     // int64 revision = 2;
-    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
       if (this_._internal_revision() != 0) {
         total_size += ::_pbi::WireFormatLite::Int64SizePlusOne(
             this_._internal_revision());
       }
     }
     // map<string, int64> quantities = 3;
-    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
       total_size +=
           1 * ::google::protobuf::internal::FromIntSize(this_._internal_quantities_size());
       for (const auto& entry : this_._internal_quantities()) {
@@ -3042,7 +3311,7 @@ PROTOBUF_NOINLINE void ContainerView::Clear() {
       }
     }
     // map<string, int32> durability_percent = 4;
-    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000010U)) {
       total_size +=
           1 * ::google::protobuf::internal::FromIntSize(this_._internal_durability_percent_size());
       for (const auto& entry : this_._internal_durability_percent()) {
@@ -3070,8 +3339,13 @@ void ContainerView::MergeImpl(::google::protobuf::MessageLite& to_msg,
   (void)cached_has_bits;
 
   cached_has_bits = from._impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0x0000000fU)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x0000001fU)) {
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      _this->_internal_mutable_instances()->InternalMergeFromWithArena(
+          ::google::protobuf::MessageLite::internal_visibility(), arena,
+          from._internal_instances());
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
       ABSL_DCHECK(from._impl_.spec_ != nullptr);
       if (_this->_impl_.spec_ == nullptr) {
         _this->_impl_.spec_ = ::google::protobuf::Message::CopyConstruct(arena, *from._impl_.spec_);
@@ -3079,15 +3353,15 @@ void ContainerView::MergeImpl(::google::protobuf::MessageLite& to_msg,
         _this->_impl_.spec_->MergeFrom(*from._impl_.spec_);
       }
     }
-    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
       if (from._internal_revision() != 0) {
         _this->_impl_.revision_ = from._impl_.revision_;
       }
     }
-    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
       _this->_impl_.quantities_.MergeFrom(from._impl_.quantities_);
     }
-    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000010U)) {
       _this->_impl_.durability_percent_.MergeFrom(from._impl_.durability_percent_);
     }
   }
@@ -3108,6 +3382,7 @@ void ContainerView::InternalSwap(ContainerView* PROTOBUF_RESTRICT PROTOBUF_NONNU
   using ::std::swap;
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
   swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  _impl_.instances_.InternalSwap(&other->_impl_.instances_);
   ::google::protobuf::internal::memswap<
       PROTOBUF_FIELD_OFFSET(ContainerView, _impl_.revision_)
       + sizeof(ContainerView::_impl_.revision_)
@@ -3119,6 +3394,283 @@ void ContainerView::InternalSwap(ContainerView* PROTOBUF_RESTRICT PROTOBUF_NONNU
 }
 
 ::google::protobuf::Metadata ContainerView::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
+ItemInstance::ItemInstance(::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, ItemInstance_get_class_data()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:sf.inventory.v1.ItemInstance)
+}
+PROTOBUF_NDEBUG_INLINE ItemInstance::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+    [[maybe_unused]] const ::sf::inventory::v1::ItemInstance& from_msg)
+      : _has_bits_{from._has_bits_},
+        _cached_size_{0},
+        instance_id_(arena, from.instance_id_),
+        definition_id_(arena, from.definition_id_) {}
+
+ItemInstance::ItemInstance(
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena,
+    const ItemInstance& from)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, ItemInstance_get_class_data()) {
+
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  ItemInstance* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
+  _impl_.durability_percent_ = from._impl_.durability_percent_;
+
+  // @@protoc_insertion_point(copy_constructor:sf.inventory.v1.ItemInstance)
+}
+PROTOBUF_NDEBUG_INLINE ItemInstance::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+      : _cached_size_{0},
+        instance_id_(arena),
+        definition_id_(arena) {}
+
+inline void ItemInstance::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  _impl_.durability_percent_ = {};
+}
+ItemInstance::~ItemInstance() {
+  // @@protoc_insertion_point(destructor:sf.inventory.v1.ItemInstance)
+  SharedDtor(*this);
+}
+inline void ItemInstance::SharedDtor(MessageLite& self) {
+  ItemInstance& this_ = static_cast<ItemInstance&>(self);
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    this_.CheckHasBitConsistency();
+  }
+  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.instance_id_.Destroy();
+  this_._impl_.definition_id_.Destroy();
+  this_._impl_.~Impl_();
+}
+
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
+    ::google::protobuf::internal::ClassDataFull ItemInstance_class_data_ =
+        ItemInstance::InternalGenerateClassData_(ItemInstance_globals_._default);
+
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+ItemInstance::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&ItemInstance_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(ItemInstance_class_data_.tc_table);
+  return ItemInstance_class_data_.base();
+}
+#else
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+ItemInstance::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&ItemInstance_globals_);
+  ::google::protobuf::internal::PrefetchToLocalCache(
+      ::google::protobuf::internal::MessageGlobalsBase::ToParseTableBase(&ItemInstance_globals_));
+  return ItemInstance_globals_.GetClassData();
+}
+#endif  // !PROTOBUF_MESSAGE_GLOBALS
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_CONSTINIT
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const ItemInstance::ParseTableT_
+    ItemInstance::_table_ =
+        ItemInstance::InternalGenerateParseTable_(ItemInstance_class_data_.base());
+#endif  // !PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_NOINLINE void ItemInstance::Clear() {
+// @@protoc_insertion_point(message_clear_start:sf.inventory.v1.ItemInstance)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x00000003U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      _impl_.instance_id_.ClearNonDefaultToEmpty();
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      _impl_.definition_id_.ClearNonDefaultToEmpty();
+    }
+  }
+  _impl_.durability_percent_ = 0;
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::uint8_t* PROTOBUF_NONNULL ItemInstance::_InternalSerialize(
+    const ::google::protobuf::MessageLite& base, ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) {
+  const ItemInstance& this_ = static_cast<const ItemInstance&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::uint8_t* PROTOBUF_NONNULL ItemInstance::_InternalSerialize(
+    ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+  const ItemInstance& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    this_.CheckHasBitConsistency();
+  }
+  // @@protoc_insertion_point(serialize_to_array_start:sf.inventory.v1.ItemInstance)
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  cached_has_bits = this_._impl_._has_bits_[0];
+  // string instance_id = 1;
+  if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+    if (!this_._internal_instance_id().empty()) {
+      const ::std::string& _s = this_._internal_instance_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.inventory.v1.ItemInstance.instance_id");
+      target = stream->WriteStringMaybeAliased(1, _s, target);
+    }
+  }
+
+  // string definition_id = 2;
+  if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+    if (!this_._internal_definition_id().empty()) {
+      const ::std::string& _s = this_._internal_definition_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.inventory.v1.ItemInstance.definition_id");
+      target = stream->WriteStringMaybeAliased(2, _s, target);
+    }
+  }
+
+  // int32 durability_percent = 3;
+  if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+    if (this_._internal_durability_percent() != 0) {
+      target =
+          ::google::protobuf::internal::WireFormatLite::WriteInt32ToArrayWithField<3>(
+              stream, this_._internal_durability_percent(), target);
+    }
+  }
+
+  if (ABSL_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
+    target =
+        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+            this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:sf.inventory.v1.ItemInstance)
+  return target;
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::size_t ItemInstance::ByteSizeLong(const MessageLite& base) {
+  const ItemInstance& this_ = static_cast<const ItemInstance&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::size_t ItemInstance::ByteSizeLong() const {
+  const ItemInstance& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  // @@protoc_insertion_point(message_byte_size_start:sf.inventory.v1.ItemInstance)
+  ::size_t total_size = 0;
+
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void)cached_has_bits;
+
+  ::_pbi::Prefetch5LinesFrom7Lines(&this_);
+  cached_has_bits = this_._impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x00000007U)) {
+    // string instance_id = 1;
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      if (!this_._internal_instance_id().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_instance_id());
+      }
+    }
+    // string definition_id = 2;
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      if (!this_._internal_definition_id().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_definition_id());
+      }
+    }
+    // int32 durability_percent = 3;
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      if (this_._internal_durability_percent() != 0) {
+        total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(
+            this_._internal_durability_percent());
+      }
+    }
+  }
+  return this_.MaybeComputeUnknownFieldsSize(total_size,
+                                             &this_._impl_._cached_size_);
+}
+
+void ItemInstance::MergeImpl(::google::protobuf::MessageLite& to_msg,
+                      const ::google::protobuf::MessageLite& from_msg) {
+   auto* const _this = static_cast<ItemInstance*>(&to_msg);
+  auto& from = static_cast<const ItemInstance&>(from_msg);
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    from.CheckHasBitConsistency();
+  }
+  // @@protoc_insertion_point(class_specific_merge_from_start:sf.inventory.v1.ItemInstance)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  cached_has_bits = from._impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x00000007U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      if (!from._internal_instance_id().empty()) {
+        _this->_internal_set_instance_id(from._internal_instance_id());
+      } else {
+        if (_this->_impl_.instance_id_.IsDefault()) {
+          _this->_internal_set_instance_id("");
+        }
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      if (!from._internal_definition_id().empty()) {
+        _this->_internal_set_definition_id(from._internal_definition_id());
+      } else {
+        if (_this->_impl_.definition_id_.IsDefault()) {
+          _this->_internal_set_definition_id("");
+        }
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      if (from._internal_durability_percent() != 0) {
+        _this->_impl_.durability_percent_ = from._impl_.durability_percent_;
+      }
+    }
+  }
+  _this->_impl_._has_bits_[0] |= cached_has_bits;
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+}
+
+void ItemInstance::CopyFrom(const ItemInstance& from) {
+  // @@protoc_insertion_point(class_specific_copy_from_start:sf.inventory.v1.ItemInstance)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void ItemInstance::InternalSwap(ItemInstance* PROTOBUF_RESTRICT PROTOBUF_NONNULL other) {
+  using ::std::swap;
+  auto* arena = GetArena();
+  ABSL_DCHECK_EQ(arena, other->GetArena());
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.instance_id_, &other->_impl_.instance_id_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.definition_id_, &other->_impl_.definition_id_, arena);
+  swap(_impl_.durability_percent_, other->_impl_.durability_percent_);
+}
+
+::google::protobuf::Metadata ItemInstance::GetMetadata() const {
   return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
 }
 // ===================================================================
@@ -3712,6 +4264,13 @@ PROTOBUF_NDEBUG_INLINE LedgerReceipt::Impl_::Impl_(
           , from.changes_
         }
         ,
+        instance_ids_ {
+          visibility, ::_pbi::InternalMetadataOffset::Build<
+              ::sf::inventory::v1::LedgerReceipt,
+              PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::LedgerReceipt, _impl_.instance_ids_)>()
+          , from.instance_ids_
+        }
+        ,
         operation_id_(arena, from.operation_id_) {}
 
 LedgerReceipt::LedgerReceipt(
@@ -3744,6 +4303,11 @@ PROTOBUF_NDEBUG_INLINE LedgerReceipt::Impl_::Impl_(
         changes_ { visibility, ::_pbi::InternalMetadataOffset::Build<
             ::sf::inventory::v1::LedgerReceipt,
             PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::LedgerReceipt, _impl_.changes_)>()
+         }
+        ,
+        instance_ids_ { visibility, ::_pbi::InternalMetadataOffset::Build<
+            ::sf::inventory::v1::LedgerReceipt,
+            PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::LedgerReceipt, _impl_.instance_ids_)>()
          }
         ,
         operation_id_(arena) {}
@@ -3801,7 +4365,7 @@ PROTOBUF_NOINLINE void LedgerReceipt::Clear() {
   (void) cached_has_bits;
 
   cached_has_bits = _impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0x00000007U)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x0000000fU)) {
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
       _impl_.revisions_.Clear();
     }
@@ -3809,6 +4373,9 @@ PROTOBUF_NOINLINE void LedgerReceipt::Clear() {
       _impl_.changes_.Clear();
     }
     if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      _impl_.instance_ids_.Clear();
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
       _impl_.operation_id_.ClearNonDefaultToEmpty();
     }
   }
@@ -3837,7 +4404,7 @@ PROTOBUF_NOINLINE void LedgerReceipt::Clear() {
 
   cached_has_bits = this_._impl_._has_bits_[0];
   // string operation_id = 1;
-  if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000008U)) {
     if (!this_._internal_operation_id().empty()) {
       const ::std::string& _s = this_._internal_operation_id();
       ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
@@ -3847,7 +4414,7 @@ PROTOBUF_NOINLINE void LedgerReceipt::Clear() {
   }
 
   // .sf.inventory.v1.LedgerAction action = 2;
-  if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000010U)) {
     if (this_._internal_action() != 0) {
       target = stream->EnsureSpace(target);
       target = ::_pbi::WireFormatLite::WriteEnumToArray(
@@ -3881,6 +4448,16 @@ PROTOBUF_NOINLINE void LedgerReceipt::Clear() {
     }
   }
 
+  // repeated string instance_ids = 5;
+  if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+    for (int i = 0, n = this_._internal_instance_ids_size(); i < n; ++i) {
+      const auto& s = this_._internal_instance_ids().Get(i);
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          s.data(), static_cast<int>(s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.inventory.v1.LedgerReceipt.instance_ids");
+      target = stream->WriteString(5, s, target);
+    }
+  }
+
   if (ABSL_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
     target =
         ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
@@ -3906,7 +4483,7 @@ PROTOBUF_NOINLINE void LedgerReceipt::Clear() {
 
   ::_pbi::Prefetch5LinesFrom7Lines(&this_);
   cached_has_bits = this_._impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0x0000000fU)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x0000001fU)) {
     // repeated .sf.inventory.v1.RevisionChange revisions = 3;
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
       total_size += 1UL * this_._internal_revisions_size();
@@ -3921,15 +4498,24 @@ PROTOBUF_NOINLINE void LedgerReceipt::Clear() {
         total_size += ::google::protobuf::internal::WireFormatLite::MessageSize(msg);
       }
     }
-    // string operation_id = 1;
+    // repeated string instance_ids = 5;
     if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      total_size +=
+          1 * ::google::protobuf::internal::FromIntSize(this_._internal_instance_ids().size());
+      for (int i = 0, n = this_._internal_instance_ids().size(); i < n; ++i) {
+        total_size += ::google::protobuf::internal::WireFormatLite::StringSize(
+            this_._internal_instance_ids().Get(i));
+      }
+    }
+    // string operation_id = 1;
+    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
       if (!this_._internal_operation_id().empty()) {
         total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
                                         this_._internal_operation_id());
       }
     }
     // .sf.inventory.v1.LedgerAction action = 2;
-    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000010U)) {
       if (this_._internal_action() != 0) {
         total_size += 1 +
                       ::_pbi::WireFormatLite::EnumSize(this_._internal_action());
@@ -3954,7 +4540,7 @@ void LedgerReceipt::MergeImpl(::google::protobuf::MessageLite& to_msg,
   (void)cached_has_bits;
 
   cached_has_bits = from._impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0x0000000fU)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x0000001fU)) {
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
       _this->_internal_mutable_revisions()->InternalMergeFromWithArena(
           ::google::protobuf::MessageLite::internal_visibility(), arena,
@@ -3966,6 +4552,11 @@ void LedgerReceipt::MergeImpl(::google::protobuf::MessageLite& to_msg,
           from._internal_changes());
     }
     if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      _this->_internal_mutable_instance_ids()->InternalMergeFromWithArena(
+          ::google::protobuf::MessageLite::internal_visibility(), arena,
+          from._internal_instance_ids());
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
       if (!from._internal_operation_id().empty()) {
         _this->_internal_set_operation_id(from._internal_operation_id());
       } else {
@@ -3974,7 +4565,7 @@ void LedgerReceipt::MergeImpl(::google::protobuf::MessageLite& to_msg,
         }
       }
     }
-    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000010U)) {
       if (from._internal_action() != 0) {
         _this->_impl_.action_ = from._impl_.action_;
       }
@@ -4001,6 +4592,7 @@ void LedgerReceipt::InternalSwap(LedgerReceipt* PROTOBUF_RESTRICT PROTOBUF_NONNU
   swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
   _impl_.revisions_.InternalSwap(&other->_impl_.revisions_);
   _impl_.changes_.InternalSwap(&other->_impl_.changes_);
+  _impl_.instance_ids_.InternalSwap(&other->_impl_.instance_ids_);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.operation_id_, &other->_impl_.operation_id_, arena);
   swap(_impl_.action_, other->_impl_.action_);
 }
@@ -4900,7 +5492,8 @@ PROTOBUF_NDEBUG_INLINE TransferRequest::Impl_::Impl_(
         operation_id_(arena, from.operation_id_),
         from_container_id_(arena, from.from_container_id_),
         to_container_id_(arena, from.to_container_id_),
-        definition_id_(arena, from.definition_id_) {}
+        definition_id_(arena, from.definition_id_),
+        instance_id_(arena, from.instance_id_) {}
 
 TransferRequest::TransferRequest(
     ::google::protobuf::Arena* PROTOBUF_NULLABLE arena,
@@ -4933,7 +5526,8 @@ PROTOBUF_NDEBUG_INLINE TransferRequest::Impl_::Impl_(
         operation_id_(arena),
         from_container_id_(arena),
         to_container_id_(arena),
-        definition_id_(arena) {}
+        definition_id_(arena),
+        instance_id_(arena) {}
 
 inline void TransferRequest::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
   new (&_impl_) Impl_(internal_visibility(), arena);
@@ -4959,6 +5553,7 @@ inline void TransferRequest::SharedDtor(MessageLite& self) {
   this_._impl_.from_container_id_.Destroy();
   this_._impl_.to_container_id_.Destroy();
   this_._impl_.definition_id_.Destroy();
+  this_._impl_.instance_id_.Destroy();
   this_._impl_.~Impl_();
 }
 
@@ -4996,7 +5591,7 @@ PROTOBUF_NOINLINE void TransferRequest::Clear() {
   (void) cached_has_bits;
 
   cached_has_bits = _impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0x0000000fU)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x0000001fU)) {
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
       _impl_.operation_id_.ClearNonDefaultToEmpty();
     }
@@ -5009,8 +5604,11 @@ PROTOBUF_NOINLINE void TransferRequest::Clear() {
     if (CheckHasBit(cached_has_bits, 0x00000008U)) {
       _impl_.definition_id_.ClearNonDefaultToEmpty();
     }
+    if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+      _impl_.instance_id_.ClearNonDefaultToEmpty();
+    }
   }
-  if (BatchCheckHasBit(cached_has_bits, 0x00000070U)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x000000e0U)) {
     ::memset(&_impl_.from_expected_revision_, 0, static_cast<::size_t>(
         reinterpret_cast<char*>(&_impl_.quantity_) -
         reinterpret_cast<char*>(&_impl_.from_expected_revision_)) + sizeof(_impl_.quantity_));
@@ -5059,7 +5657,7 @@ PROTOBUF_NOINLINE void TransferRequest::Clear() {
   }
 
   // int64 from_expected_revision = 3;
-  if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000020U)) {
     if (this_._internal_from_expected_revision() != 0) {
       target =
           ::google::protobuf::internal::WireFormatLite::WriteInt64ToArrayWithField<3>(
@@ -5078,7 +5676,7 @@ PROTOBUF_NOINLINE void TransferRequest::Clear() {
   }
 
   // int64 to_expected_revision = 5;
-  if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000040U)) {
     if (this_._internal_to_expected_revision() != 0) {
       target =
           ::google::protobuf::internal::WireFormatLite::WriteInt64ToArrayWithField<5>(
@@ -5097,11 +5695,21 @@ PROTOBUF_NOINLINE void TransferRequest::Clear() {
   }
 
   // int64 quantity = 7;
-  if (CheckHasBit(cached_has_bits, 0x00000040U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000080U)) {
     if (this_._internal_quantity() != 0) {
       target =
           ::google::protobuf::internal::WireFormatLite::WriteInt64ToArrayWithField<7>(
               stream, this_._internal_quantity(), target);
+    }
+  }
+
+  // string instance_id = 8;
+  if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+    if (!this_._internal_instance_id().empty()) {
+      const ::std::string& _s = this_._internal_instance_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.inventory.v1.TransferRequest.instance_id");
+      target = stream->WriteStringMaybeAliased(8, _s, target);
     }
   }
 
@@ -5130,7 +5738,7 @@ PROTOBUF_NOINLINE void TransferRequest::Clear() {
 
   ::_pbi::Prefetch5LinesFrom7Lines(&this_);
   cached_has_bits = this_._impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0x0000007fU)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x000000ffU)) {
     // string operation_id = 1;
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
       if (!this_._internal_operation_id().empty()) {
@@ -5159,22 +5767,29 @@ PROTOBUF_NOINLINE void TransferRequest::Clear() {
                                         this_._internal_definition_id());
       }
     }
-    // int64 from_expected_revision = 3;
+    // string instance_id = 8;
     if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+      if (!this_._internal_instance_id().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_instance_id());
+      }
+    }
+    // int64 from_expected_revision = 3;
+    if (CheckHasBit(cached_has_bits, 0x00000020U)) {
       if (this_._internal_from_expected_revision() != 0) {
         total_size += ::_pbi::WireFormatLite::Int64SizePlusOne(
             this_._internal_from_expected_revision());
       }
     }
     // int64 to_expected_revision = 5;
-    if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000040U)) {
       if (this_._internal_to_expected_revision() != 0) {
         total_size += ::_pbi::WireFormatLite::Int64SizePlusOne(
             this_._internal_to_expected_revision());
       }
     }
     // int64 quantity = 7;
-    if (CheckHasBit(cached_has_bits, 0x00000040U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000080U)) {
       if (this_._internal_quantity() != 0) {
         total_size += ::_pbi::WireFormatLite::Int64SizePlusOne(
             this_._internal_quantity());
@@ -5198,7 +5813,7 @@ void TransferRequest::MergeImpl(::google::protobuf::MessageLite& to_msg,
   (void)cached_has_bits;
 
   cached_has_bits = from._impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0x0000007fU)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x000000ffU)) {
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
       if (!from._internal_operation_id().empty()) {
         _this->_internal_set_operation_id(from._internal_operation_id());
@@ -5236,16 +5851,25 @@ void TransferRequest::MergeImpl(::google::protobuf::MessageLite& to_msg,
       }
     }
     if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+      if (!from._internal_instance_id().empty()) {
+        _this->_internal_set_instance_id(from._internal_instance_id());
+      } else {
+        if (_this->_impl_.instance_id_.IsDefault()) {
+          _this->_internal_set_instance_id("");
+        }
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000020U)) {
       if (from._internal_from_expected_revision() != 0) {
         _this->_impl_.from_expected_revision_ = from._impl_.from_expected_revision_;
       }
     }
-    if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000040U)) {
       if (from._internal_to_expected_revision() != 0) {
         _this->_impl_.to_expected_revision_ = from._impl_.to_expected_revision_;
       }
     }
-    if (CheckHasBit(cached_has_bits, 0x00000040U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000080U)) {
       if (from._internal_quantity() != 0) {
         _this->_impl_.quantity_ = from._impl_.quantity_;
       }
@@ -5274,6 +5898,7 @@ void TransferRequest::InternalSwap(TransferRequest* PROTOBUF_RESTRICT PROTOBUF_N
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.from_container_id_, &other->_impl_.from_container_id_, arena);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.to_container_id_, &other->_impl_.to_container_id_, arena);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.definition_id_, &other->_impl_.definition_id_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.instance_id_, &other->_impl_.instance_id_, arena);
   ::google::protobuf::internal::memswap<
       PROTOBUF_FIELD_OFFSET(TransferRequest, _impl_.quantity_)
       + sizeof(TransferRequest::_impl_.quantity_)

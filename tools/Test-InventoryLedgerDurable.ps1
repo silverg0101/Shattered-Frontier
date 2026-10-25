@@ -86,7 +86,9 @@ try {
     if ((Sql "SELECT to_regclass('inventory.defeat_reward_intents') IS NOT NULL AND to_regclass('inventory.applied_schema_files') IS NOT NULL" "ledger_$run").Trim() -ne 't' -or @($first | Where-Object { $_ -eq 'APPLY inventory/Schema.DefeatRewards.sql' }).Count -ne 1) { throw 'Defeat rewards migration did not apply.' }
     $appliedBefore = (Sql 'SELECT count(*) FROM inventory.applied_schema_files' "ledger_$run").Trim()
     $second = @(& $migration -Connection $migrationConnection -Schemas inventory -Role ledger_owner -Dotnet $dotnet -Nuget (Join-Path $repo 'Artifacts/Persistence/Toolchains/nuget'))
-    if ($appliedBefore -ne '4' -or (Sql 'SELECT count(*) FROM inventory.applied_schema_files' "ledger_$run").Trim() -ne $appliedBefore -or @($second | Where-Object { $_ -match '^(APPLY|RECORD) ' }).Count) { throw 'Second migration run was not a no-op.' }
+    if ($appliedBefore -ne '5' -or (Sql 'SELECT to_regclass(''inventory.item_instances'') IS NOT NULL' "ledger_$run").Trim() -ne 't' -or
+        (Sql 'SELECT count(*) FROM inventory.applied_schema_files' "ledger_$run").Trim() -ne $appliedBefore -or
+        @($second | Where-Object { $_ -match '^(APPLY|RECORD) ' }).Count) { throw 'Second migration run was not a no-op.' }
     [void](Sql 'GRANT USAGE ON SCHEMA inventory TO ledger_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA inventory TO ledger_svc;' "ledger_$run")
     try { [void](Sql 'CREATE TABLE inventory.service_ddl_probe(id integer)' "ledger_$run" 'ledger_svc' $servicePassword); throw 'Service role could create a table.' }
     catch { if ($_.Exception.Message -notmatch 'permission denied') { throw } }
@@ -113,10 +115,10 @@ try {
     $restored = Get-Content (Join-Path $restoredInstance 'connection.json') -Raw | ConvertFrom-Json
     $restoredConnection = "Host=127.0.0.1;Port=$($restored.port);Database=$($restored.database);Username=ledger_svc;Password=$($restored.password);Pooling=true;Maximum Pool Size=64;Minimum Pool Size=8;Timeout=2;Command Timeout=5;Include Error Detail=false"
     $results.Add((Invoke-Checked $dotnet @($dll,'restored') @{ INVENTORY_LEDGER_CONNECTION=$restoredConnection }))
-    [void](Sql 'UPDATE inventory.schema_version SET version=3' "ledger_$run")
+    [void](Sql 'UPDATE inventory.schema_version SET version=4' "ledger_$run")
     $results.Add((Invoke-Checked $dotnet @($dll,'newer-schema') @{ INVENTORY_LEDGER_CONNECTION=$connection }))
     $markerVersion = Sql 'SELECT version FROM inventory.schema_version WHERE singleton=true' "ledger_$run"
-    if ($markerVersion.Trim() -ne '3') { throw 'Newer schema marker changed unexpectedly.' }
+    if ($markerVersion.Trim() -ne '4') { throw 'Newer schema marker changed unexpectedly.' }
     $results | Set-Content (Join-Path $EvidenceRoot 'results.txt')
 }
 catch { $failure = $_.Exception.Message.Replace($adminPassword,'[REDACTED]').Replace($servicePassword,'[REDACTED]') }

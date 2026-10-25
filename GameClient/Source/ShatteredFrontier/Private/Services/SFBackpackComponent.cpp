@@ -195,7 +195,7 @@ void USFBackpackComponent::Reconcile(TFunction<void(bool)> Done)
             {
                 USFBackpackComponent* Last = Weak.Get();
                 if (!Last || Equipment.Status != ESFLedgerStatus::Ok) { Report(ESFBackpackOutcome::Unavailable, -1); return; }
-                if (auto* Gathering = Last->GetOwner()->FindComponentByClass<USFGatheringPilotComponent>()) { Gathering->ProjectEquipment(Equipment.Quantities, Equipment.DurabilityPercent); }
+                if (auto* Gathering = Last->GetOwner()->FindComponentByClass<USFGatheringPilotComponent>()) { Gathering->ProjectEquipment(Equipment.Quantities, Equipment.Instances); }
                 Report(ESFBackpackOutcome::Committed, PackRevision);
             });
         });
@@ -210,22 +210,23 @@ void USFBackpackComponent::EnsureEquipment(TFunction<void(const FSFLedgerRespons
     Ledger->Call(Ensure, MoveTemp(Done));
 }
 
-void USFBackpackComponent::TransferEquipment(const FString& DefinitionId, bool bEquip, TFunction<void(ESFBackpackOutcome)> Finished)
+void USFBackpackComponent::TransferEquipment(const FString& DefinitionId, bool bEquip, TFunction<void(ESFBackpackOutcome)> Finished,
+    const FString& InstanceId)
 {
     FSFBackpackMutation Move;
     Move.Label = bEquip ? TEXT("equip") : TEXT("unequip");
     Move.OperationId = TEXT("equip/") + FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphensLower);
     Move.Finished = MoveTemp(Finished);
-    Move.Run = [Weak = TWeakObjectPtr<USFBackpackComponent>(this), DefinitionId, bEquip](const FString& Op, int64 PackRevision, TFunction<void(ESFBackpackOutcome, int64)> Report)
+    Move.Run = [Weak = TWeakObjectPtr<USFBackpackComponent>(this), DefinitionId, InstanceId, bEquip](const FString& Op, int64 PackRevision, TFunction<void(ESFBackpackOutcome, int64)> Report)
     {
         USFBackpackComponent* Self = Weak.Get();
         if (!Self) { Report(ESFBackpackOutcome::Unavailable, -1); return; }
-        Self->EnsureEquipment([Weak, Op, PackRevision, DefinitionId, bEquip, Report](const FSFLedgerResponse& Equipment)
+        Self->EnsureEquipment([Weak, Op, PackRevision, DefinitionId, InstanceId, bEquip, Report](const FSFLedgerResponse& Equipment)
         {
             USFBackpackComponent* Again = Weak.Get();
             if (!Again || Equipment.Status != ESFLedgerStatus::Ok) { Report(ESFBackpackOutcome::Unavailable, -1); return; }
             FSFLedgerRequest Transfer; Transfer.Rpc = ESFLedgerRpc::Transfer; Transfer.OperationId = Op;
-            Transfer.DefinitionId = DefinitionId; Transfer.Quantity = 1;
+            Transfer.DefinitionId = DefinitionId; Transfer.InstanceId = InstanceId; Transfer.Quantity = 1;
             Transfer.ContainerId = bEquip ? Again->ContainerId : Again->GetEquipmentContainerId();
             Transfer.ExpectedRevision = bEquip ? PackRevision : Equipment.Revision;
             Transfer.ToContainerId = bEquip ? Again->GetEquipmentContainerId() : Again->ContainerId;

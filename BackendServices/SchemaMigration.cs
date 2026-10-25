@@ -14,7 +14,8 @@ public static class SchemaMigration
                 ("Schema.Outbox.sql", "SELECT version>=2 FROM inventory.schema_version WHERE singleton=true"),
                 ("Schema.GatheringNodes.sql", "SELECT to_regclass('inventory.gathering_schema_version') IS NOT NULL"),
                 ("Schema.DefeatRewards.sql", "SELECT to_regclass('inventory.defeat_reward_intents') IS NOT NULL"),
-                ("Schema.DeathWear.sql", "SELECT to_regclass('inventory.death_wear_events') IS NOT NULL") },
+                ("Schema.DeathWear.sql", "SELECT to_regclass('inventory.death_wear_events') IS NOT NULL"),
+                ("Schema.ItemInstances.sql", "SELECT to_regclass('inventory.item_instances') IS NOT NULL") },
             "character_state" => new (string File, string Installed)[] {
                 ("Schema.RewardSnapshot.sql", "SELECT version>=2 FROM character_state.schema_version WHERE singleton=true"),
                 ("Schema.Reward.sql", "SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='character_state' AND table_name='reward_receipts' AND column_name='state')"),

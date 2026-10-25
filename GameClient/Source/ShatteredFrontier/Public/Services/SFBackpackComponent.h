@@ -55,7 +55,8 @@ public:
     void Reconcile(TFunction<void(bool)> Done = nullptr);
     // Server: moves one ledger item between the backpack and this character's equipment container (equip / unequip), queued
     // like every mutation. The equipment container is created on first use; Reconcile projects it onto the equipped slots.
-    void TransferEquipment(const FString& DefinitionId, bool bEquip, TFunction<void(ESFBackpackOutcome)> Finished);
+    void TransferEquipment(const FString& DefinitionId, bool bEquip, TFunction<void(ESFBackpackOutcome)> Finished,
+        const FString& InstanceId = FString());
     FString GetEquipmentContainerId() { BindIdentity(); return ContainerId + TEXT("_equipment"); }
 #if WITH_DEV_AUTOMATION_TESTS
     // Test hook: a backpack over a stubbed ledger client, without the settings lookup.

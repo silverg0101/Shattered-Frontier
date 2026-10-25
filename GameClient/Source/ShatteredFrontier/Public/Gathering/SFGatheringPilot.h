@@ -21,6 +21,7 @@ class FSFInventoryLedgerClient;
 class USFBackpackComponent;
 struct FSFStationRecipe;
 struct FSFLedgerResponse;
+struct FSFLedgerInstance;
 struct FSFGameplayResponse;
 class FSFGameplayServicesClient;
 
@@ -291,16 +292,16 @@ public:
     static const TArray<FName>& EquipmentSlots();  // Head, Chest, Hands, Legs, Feet, MainHand, OffHand, Neck, Ring, Back
     static FName MainHandSlot() { return FName(TEXT("MainHand")); }
     // Owner (client or server): ask to equip one owned bag item into Slot / return Slot to the bag. False when refused before sending.
-    bool RequestEquip(const FSoftObjectPath& Item, FName Slot);
+    bool RequestEquip(const FSoftObjectPath& Item, FName Slot, const FString& InstanceId = FString());
     bool RequestUnequip(FName Slot);
     // Server: validate and apply. Ok or the reason; nothing changes unless Ok. With the ledger on, gear (content/items) first moves
     // between the backpack and equipment containers (Pending), so equipped gear survives a restart.
-    ESFEquipResult ApplyEquip(const FSoftObjectPath& Item, FName Slot);
+    ESFEquipResult ApplyEquip(const FSoftObjectPath& Item, FName Slot, const FString& InstanceId = FString());
     ESFEquipResult ApplyUnequip(FName Slot);
     // The item in Slot (owner view), empty when the slot is empty.
     FSoftObjectPath GetEquipped(FName Slot) const;
     // Server: makes the equipped gear match the ledger equipment container (definition id -> quantity); tools are left alone.
-    void ProjectEquipment(const TMap<FString, int64>& Equipment, const TMap<FString, int32>& DurabilityPercent = {});
+    void ProjectEquipment(const TMap<FString, int64>& Equipment, const TArray<FSFLedgerInstance>& Instances);
     // Station recipes come from content/crafting; the first is the default. The choice is per player and server-held.
     void SelectStationRecipe(ESFGatheringPilotKind Station, const FString& RecipeId);
     void CycleStationRecipe(ESFGatheringPilotKind Station);
@@ -372,7 +373,7 @@ private:
     bool MatchesRequestBinding(ASFGatheringPilotNode* Node,uint32 Revision,bool bSurface,const FVector& Point) const;
     bool TryBeginGeometryAttempt(double Now);
     UFUNCTION(Server, Reliable) void ServerCancelHarvest(uint32 Operation);
-    UFUNCTION(Server, Reliable) void ServerEquip(const FSoftObjectPath& Item, FName Slot);
+    UFUNCTION(Server, Reliable) void ServerEquip(const FSoftObjectPath& Item, FName Slot, const FString& InstanceId);
     UFUNCTION(Server, Reliable) void ServerUnequip(FName Slot);
     int32 FindBagSlot(const FSoftObjectPath& Item) const;
     UFUNCTION(Server, Reliable) void ServerSelectRecipe(ESFGatheringPilotKind Station, const FString& RecipeId);

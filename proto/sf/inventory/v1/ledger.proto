@@ -66,8 +66,15 @@ message ContainerView {
   ContainerSpec spec = 1;
   int64 revision = 2;
   map<string, int64> quantities = 3;
-  // Current condition percent for equipped definitions. Missing means pristine (100%).
+  // Compatibility projection for definition-only consumers; use instances for exact condition.
   map<string, int32> durability_percent = 4;
+  repeated ItemInstance instances = 5;
+}
+
+message ItemInstance {
+  string instance_id = 1;
+  string definition_id = 2;
+  int32 durability_percent = 3;
 }
 
 message RevisionChange {
@@ -87,6 +94,7 @@ message LedgerReceipt {
   LedgerAction action = 2;
   repeated RevisionChange revisions = 3;
   repeated QuantityChange changes = 4;
+  repeated string instance_ids = 5;
 }
 
 message EnsureContainerRequest {
@@ -117,6 +125,8 @@ message TransferRequest {
   int64 to_expected_revision = 5;
   string definition_id = 6;
   int64 quantity = 7;
+  // Required for selecting a particular copy of equippable gear; empty selects the oldest ID.
+  string instance_id = 8;
 }
 
 message FollowUpIntent {

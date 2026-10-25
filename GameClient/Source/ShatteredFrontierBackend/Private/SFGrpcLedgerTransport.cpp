@@ -57,11 +57,14 @@ namespace
                 Out.GrantedDelta += Change.delta();
                 Out.Quantities.Add(FromUtf8(Change.definition_id()), Change.delta());
             }
+            for (const auto& Id : Call.Receipt.instance_ids()) { Out.InstanceIds.Add(FromUtf8(Id)); }
             return Out;
         }
         Out.Revision = Call.View.revision();
         for (const auto& Entry : Call.View.quantities()) { Out.Quantities.Add(FromUtf8(Entry.first), Entry.second); }
         for (const auto& Entry : Call.View.durability_percent()) { Out.DurabilityPercent.Add(FromUtf8(Entry.first), Entry.second); }
+        for (const auto& Instance : Call.View.instances())
+        { Out.Instances.Add({FromUtf8(Instance.instance_id()), FromUtf8(Instance.definition_id()), Instance.durability_percent()}); }
         return Out;
     }
 }
@@ -151,6 +154,7 @@ void FSFGrpcLedgerTransport::Send(const FSFLedgerRequest& Request, float Deadlin
         Message.set_from_container_id(Utf8(Request.ContainerId)); Message.set_from_expected_revision(Request.ExpectedRevision);
         Message.set_to_container_id(Utf8(Request.ToContainerId)); Message.set_to_expected_revision(Request.ToExpectedRevision);
         Message.set_definition_id(Utf8(Request.DefinitionId)); Message.set_quantity(Request.Quantity);
+        Message.set_instance_id(Utf8(Request.InstanceId));
         Call->ReceiptReader = Channel->Stub->AsyncTransfer(&Call->Context, Message, &Channel->Queue);
         Call->ReceiptReader->Finish(&Call->Receipt, &Call->Status, Call);
         break;

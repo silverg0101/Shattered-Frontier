@@ -12,7 +12,7 @@ public sealed class LedgerSchemaCompatibilityException(string message) : Excepti
 public sealed class PostgresInventoryLedgerStore(string connectionString) : IInventoryLedgerStore
 {
     // Only Gameplay.Host calls this after CharacterState has durably recorded the event.
-    // The event receipt and every equipped definition's condition commit together.
+    // The event receipt and every equipped copy's condition commit together.
     public int ApplyDeathWear(string eventId, string characterId, int level, int minimumLevel, int wearPercent)
     {
         if (!Guid.TryParse(eventId, out _) || string.IsNullOrWhiteSpace(characterId) ||
@@ -43,59 +43,52 @@ public sealed class PostgresInventoryLedgerStore(string connectionString) : IInv
                 using var rows = containers.ExecuteReader();
                 while (rows.Read()) { }
             }
-            var definitions = new List<string>();
+            int equippedCount;
             using (var equipped = Command(c, t, """
-                SELECT DISTINCT e.definition_id FROM inventory.entries e
-                JOIN inventory.containers c ON c.id=e.container_id
-                WHERE c.owner_kind=0 AND c.owner_id=$1 AND c.kind=0 AND e.quantity>0
-                ORDER BY e.definition_id
+                SELECT count(*) FROM inventory.item_instances i
+                JOIN inventory.containers c ON c.id=i.container_id
+                WHERE c.owner_kind=0 AND c.owner_id=$1 AND c.kind=0
                 """))
-            {
-                equipped.Parameters.AddWithValue(characterId);
-                using var rows = equipped.ExecuteReader();
-                while (rows.Read()) definitions.Add(rows.GetString(0));
-            }
+            { equipped.Parameters.AddWithValue(characterId); equippedCount = Convert.ToInt32(equipped.ExecuteScalar()); }
             if (level >= minimumLevel && wearPercent > 0)
-                foreach (string definition in definitions)
-                {
-                    using var wear = Command(c, t, """
-                        INSERT INTO inventory.gear_condition(character_id,definition_id,durability,max_durability)
-                        VALUES ($1,$2,100-$3,100)
-                        ON CONFLICT (character_id,definition_id) DO UPDATE
-                        SET durability=greatest(0,inventory.gear_condition.durability-$3)
-                        """);
-                    wear.Parameters.AddWithValue(characterId); wear.Parameters.AddWithValue(definition);
-                    wear.Parameters.AddWithValue(wearPercent); wear.ExecuteNonQuery();
-                }
+            {
+                using var wear = Command(c, t, """
+                    UPDATE inventory.item_instances i SET durability_percent=greatest(0,i.durability_percent-$2)
+                    FROM inventory.containers c WHERE c.id=i.container_id AND c.owner_kind=0 AND c.owner_id=$1 AND c.kind=0
+                    """);
+                wear.Parameters.AddWithValue(characterId); wear.Parameters.AddWithValue(wearPercent); wear.ExecuteNonQuery();
+            }
             using (var receipt = Command(c, t, "INSERT INTO inventory.death_wear_events(death_event_id,character_id,level_at_death,min_level,wear_percent) VALUES ($1,$2,$3,$4,$5)"))
             {
                 receipt.Parameters.AddWithValue(eventId); receipt.Parameters.AddWithValue(characterId);
                 receipt.Parameters.AddWithValue(level); receipt.Parameters.AddWithValue(minimumLevel);
                 receipt.Parameters.AddWithValue(wearPercent); receipt.ExecuteNonQuery();
             }
-            t.Commit(); return level >= minimumLevel ? definitions.Count : 0;
+            t.Commit(); return level >= minimumLevel ? equippedCount : 0;
         }
         catch (LedgerRejectedException) { throw; }
         catch (Exception ex) when (ex is NpgsqlException or TimeoutException or System.IO.IOException)
         { throw new LedgerStoreUnavailableException("Death wear unavailable; retry the death event ID.", ex); }
     }
 
-    public IReadOnlyDictionary<string, int> ReadGearCondition(string containerId)
+    public IReadOnlyList<ItemInstance> ReadGearInstances(string containerId)
     {
         using var c = new NpgsqlConnection(connectionString); c.Open();
         using var t = c.BeginTransaction(); CheckSchema(c, t);
         using var cmd = Command(c, t, """
-            SELECT e.definition_id,coalesce(g.durability,100) FROM inventory.containers c
-            JOIN inventory.entries e ON e.container_id=c.id
-            LEFT JOIN inventory.gear_condition g ON g.character_id=c.owner_id AND g.definition_id=e.definition_id
-            WHERE c.id=$1 AND c.owner_kind=0 AND c.kind=0 AND e.quantity>0
+            SELECT i.instance_id,i.definition_id,i.durability_percent FROM inventory.item_instances i
+            WHERE i.container_id=$1 ORDER BY i.instance_id
             """);
         cmd.Parameters.AddWithValue(containerId);
-        var result = new Dictionary<string, int>();
+        var result = new List<ItemInstance>();
         using var rows = cmd.ExecuteReader();
-        while (rows.Read()) result.Add(rows.GetString(0), rows.GetInt32(1));
+        while (rows.Read()) result.Add(new(rows.GetString(0), rows.GetString(1), rows.GetInt32(2)));
         return result;
     }
+    // Compatibility for existing definition-only diagnostics. Gameplay uses ReadGearInstances.
+    public IReadOnlyDictionary<string, int> ReadGearCondition(string containerId) =>
+        ReadGearInstances(containerId).GroupBy(x => x.DefinitionId, StringComparer.Ordinal)
+            .ToDictionary(x => x.Key, x => x.First().DurabilityPercent, StringComparer.Ordinal);
     // Once the host-owned harvest migration is installed, the former client-first gathering
     // Grant path must fail before writing an item. Gameplay.Host grants saved harvest intents directly.
     public bool HasGatheringMigration()
@@ -250,12 +243,15 @@ public sealed class PostgresInventoryLedgerStore(string connectionString) : IInv
         {
             using var cmd = Command(connection, db, "SELECT version,migration_checksum FROM inventory.schema_version WHERE singleton = true FOR SHARE");
             using var row = cmd.ExecuteReader();
-            if (!row.Read() || row.GetInt32(0) != 2 || row.GetString(1) != "66ae3e7c362f9062575bc97da4fa5e50d48548e10928b2f74b13f1f12c7bd8fb")
+            if (!row.Read() || row.GetInt32(0) != 3 || row.GetString(1) != "66ae3e7c362f9062575bc97da4fa5e50d48548e10928b2f74b13f1f12c7bd8fb")
                 throw new LedgerSchemaCompatibilityException("Unsupported inventory schema marker.");
             row.Close();
             using var table = Command(connection, db, "SELECT to_regclass('inventory.receipt_outbox') IS NOT NULL");
             if (table.ExecuteScalar() is not true)
                 throw new LedgerSchemaCompatibilityException("Inventory receipt outbox is missing.");
+            using var instances = Command(connection, db, "SELECT to_regclass('inventory.item_instances') IS NOT NULL");
+            if (instances.ExecuteScalar() is not true)
+                throw new LedgerSchemaCompatibilityException("Inventory gear instance migration is missing.");
         }
         catch (PostgresException ex) when (ex.SqlState is "42P01" or "3F000" or "42501" or "42703")
         {
@@ -282,6 +278,18 @@ public sealed class PostgresInventoryLedgerStore(string connectionString) : IInv
             entries.Parameters.AddWithValue(id);
             using var rows = entries.ExecuteReader();
             while (rows.Read()) record.Quantities.Add(rows.GetString(0), rows.GetInt64(1));
+            rows.Close();
+            using var instances = Command(connection, db, "SELECT instance_id,definition_id,durability_percent FROM inventory.item_instances WHERE container_id=$1");
+            instances.Parameters.AddWithValue(id);
+            using var copies = instances.ExecuteReader();
+            while (copies.Read())
+            {
+                var instance = new ItemInstance(copies.GetString(0), copies.GetString(1), copies.GetInt32(2));
+                record.Instances.Add(instance.Id, instance);
+            }
+            foreach (var (definition, quantity) in record.Quantities)
+                if (GearDefinitions.IsGear(definition) && record.Instances.Values.LongCount(x => x.DefinitionId == definition) != quantity)
+                    throw new LedgerRejectedException("Gear instance count does not match the ledger quantity.");
             return record;
         }
         IEnumerable<string> AllIds()
@@ -335,6 +343,12 @@ public sealed class PostgresInventoryLedgerStore(string connectionString) : IInv
                 throw new LedgerRejectedException("Conflicting follow-up intent.");
             row.Close();
         }
+        var changed = after.Containers.Loaded.Where(p => !after.Containers.TryGetOriginal(p.Key, out var old) || p.Value.Revision != old.Revision).ToArray();
+        foreach (var (id, _) in changed)
+        {
+            using var clear = Command(connection, db, "DELETE FROM inventory.item_instances WHERE container_id=$1");
+            clear.Parameters.AddWithValue(id); clear.ExecuteNonQuery();
+        }
         foreach (var (id, record) in after.Containers.Loaded)
         {
             if (!after.Containers.TryGetOriginal(id, out var old))
@@ -362,6 +376,13 @@ public sealed class PostgresInventoryLedgerStore(string connectionString) : IInv
                 }
             }
         }
+        foreach (var (id, record) in changed)
+            foreach (var instance in record.Instances.Values)
+            {
+                using var insert = Command(connection, db, "INSERT INTO inventory.item_instances(instance_id,container_id,definition_id,durability_percent) VALUES ($1,$2,$3,$4)");
+                insert.Parameters.AddWithValue(instance.Id); insert.Parameters.AddWithValue(id);
+                insert.Parameters.AddWithValue(instance.DefinitionId); insert.Parameters.AddWithValue(instance.DurabilityPercent); insert.ExecuteNonQuery();
+            }
         foreach (var (id, operation) in after.Operations.Added)
             {
                 using var receipt = Command(connection, db, "INSERT INTO inventory.operation_receipts(operation_id,fingerprint,receipt) VALUES ($1,$2,$3::jsonb)");

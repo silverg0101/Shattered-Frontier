@@ -73,6 +73,14 @@ $tables = switch ($Store) {
     Exchange { @('exchange.schema_version','exchange.wallets','exchange.wallet_entries','exchange.operations','exchange.listings','exchange.settlements') }
     TerrainDelta { @('terrain_delta.schema_version','terrain_delta.regions','terrain_delta.operations') }
 }
+if ($manifest.tables.PSObject.Properties['inventory.gear_condition']) {
+    if ($Store -notin @('InventoryLedger','Housing')) { throw 'Gear condition belongs to inventory.' }
+    $tables += @('inventory.gear_condition','inventory.death_wear_events')
+}
+if ($manifest.tables.PSObject.Properties['inventory.item_instances']) {
+    if ($Store -notin @('InventoryLedger','Housing')) { throw 'Gear instances belong to inventory.' }
+    $tables += @('inventory.gear_definitions','inventory.item_instances')
+}
 if ($manifest.tables.PSObject.Properties['inventory.gathering_schema_version']) {
     if ($Store -notin @('InventoryLedger','Housing')) { throw 'Gathering tables belong to the inventory recovery point.' }
     $tables += @('inventory.gathering_schema_version','inventory.gathering_node_state','inventory.gathering_harvest_receipts')
@@ -121,7 +129,7 @@ try {
         $grant = if ($Store -eq 'Exchange') { "GRANT SELECT ON $schema.schema_version TO $serviceRole; GRANT SELECT,INSERT,UPDATE ON exchange.wallets,exchange.wallet_entries,exchange.operations,exchange.listings,exchange.settlements TO $serviceRole" } else { "GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA $schema TO $serviceRole" }
         [void](Sql "GRANT USAGE ON SCHEMA $schema TO $serviceRole; $grant" $database)
         $version = (Sql "SELECT version FROM $schema.schema_version WHERE singleton=true" $database).Trim()
-        $expectedVersion = if ($schema -eq 'housing') { '6' } elseif ($schema -eq 'character_state') { '10' } elseif ($schema -eq 'exchange') { '3' } elseif ($schema -eq 'inventory') { '2' } else { '1' }
+        $expectedVersion = if ($schema -eq 'housing') { '6' } elseif ($schema -eq 'character_state') { '10' } elseif ($schema -eq 'exchange') { '3' } elseif ($schema -eq 'inventory' -and $tables -contains 'inventory.item_instances') { '3' } elseif ($schema -eq 'inventory') { '2' } else { '1' }
         if ($version -ne $expectedVersion) { throw 'Restored schema version mismatch.' }
     }
     foreach ($table in $tables) {

@@ -160,7 +160,7 @@ bool USFInventoryComponent::EquipFromSlot(int32 SlotIndex)
     {
         Worn = &EquippedItems.AddDefaulted_GetRef(); Worn->SlotName = Definition->EquipmentSlot;
     }
-    Worn->Item = Item; Worn->Quantity = 1;
+    Worn->Item = Item; Worn->Quantity = 1; Worn->InstanceId.Reset(); Worn->DurabilityPercent = 100;
     Stacks = MoveTemp(Copy);
     return true;
 }

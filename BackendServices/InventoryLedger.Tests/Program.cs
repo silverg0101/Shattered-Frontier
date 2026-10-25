@@ -65,6 +65,26 @@ Check(kit.GrantOnce(ledger, ledger.Read("ctn_b")).Revision == ledger.Read("ctn_b
 ledger.CreateContainer(new("ctn_kit_race", OwnerKind.Character, "chr_kit_race", ContainerKind.Backpack, 160));
 Parallel.For(0, 16, _ => kit.GrantOnce(ledger, ledger.Read("ctn_kit_race")));
 Check(ledger.Read("ctn_kit_race").Revision == 1 && ledger.Read("ctn_kit_race").Quantities["item/rough_timber"] == 12, "concurrent first spawns grant one kit");
+ledger.CreateContainer(new("ctn_gear_bag", OwnerKind.Character, owner, ContainerKind.Backpack, 8));
+ledger.CreateContainer(new("ctn_gear_equipment", OwnerKind.Character, owner, ContainerKind.Equipment, 8));
+var gearGrant = ledger.Grant("gear-grant", "ctn_gear_bag", 0, "item/hide_jerkin", 2, "loot", "defeat-1");
+Check(gearGrant.InstanceIds?.Count == 2 && gearGrant.InstanceIds.Distinct().Count() == 2, "grant creates two gear identities");
+Check(gearGrant.InstanceIds!.SequenceEqual(ledger.Grant("gear-grant", "ctn_gear_bag", 0, "item/hide_jerkin", 2, "loot", "defeat-1").InstanceIds!), "grant replay retains gear identities");
+var firstGear = gearGrant.InstanceIds![0]; var secondGear = gearGrant.InstanceIds[1];
+var gearMove = ledger.Transfer("gear-equip", "ctn_gear_bag", 1, "ctn_gear_equipment", 0, "item/hide_jerkin", 1, secondGear);
+Check(gearMove.InstanceIds!.SequenceEqual([secondGear]) && ledger.Read("ctn_gear_equipment").Instances!.Single().Id == secondGear,
+    "equip selects the requested copy");
+Check(ledger.Read("ctn_gear_bag").Instances!.Single().Id == firstGear, "other copy remains in the bag");
+Reject(() => ledger.Transfer("gear-equip", "ctn_gear_bag", 1, "ctn_gear_equipment", 0, "item/hide_jerkin", 1, firstGear), "selected-copy replay mismatch");
+ledger.CreateContainer(new("ctn_gear_outputs", OwnerKind.Character, owner, ContainerKind.Backpack, 8));
+var bundle = ledger.GrantBundle("gear-kit", "ctn_gear_outputs", 0,
+    [new("item/hide_cap", 1), new("item/ore", 1)], "starter_kit", "gear-kit");
+Check(bundle.InstanceIds?.Count == 1 && ledger.Read("ctn_gear_outputs").Instances!.Single().DefinitionId == "item/hide_cap",
+    "starter bundle creates an instance only for gear");
+var crafted = ledger.Convert("gear-craft", "ctn_gear_outputs", 1, "recipe/jerkin",
+    [new("item/ore", 1)], [new("item/hide_jerkin/fine", 1)]);
+Check(crafted.InstanceIds?.Count == 1 && ledger.Read("ctn_gear_outputs").Instances!.Any(x => x.DefinitionId == "item/hide_jerkin/fine"),
+    "graded craft output creates a gear instance");
 Console.WriteLine("InventoryLedger checks passed");
 
 static void Check(bool condition, string name)

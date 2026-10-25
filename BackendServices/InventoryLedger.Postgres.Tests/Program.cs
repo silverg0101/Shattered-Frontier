@@ -8,6 +8,12 @@ static void Check(bool ok, string name)
     if (!ok) throw new Exception(name);
     Console.WriteLine("PASS " + name);
 }
+static void Reject(Action action, string name)
+{
+    try { action(); }
+    catch (LedgerRejectedException) { Console.WriteLine("PASS " + name); return; }
+    throw new Exception(name);
+}
 var connection = Environment.GetEnvironmentVariable("INVENTORY_LEDGER_CONNECTION") ?? throw new InvalidOperationException("Missing fixture connection.");
 var ledger = new InventoryLedger(new PostgresInventoryLedgerStore(connection));
 const string id = "ctn_durable";
@@ -22,26 +28,68 @@ switch (args[0])
         const string gear = "item/hide_jerkin";
         const string secondGear = "item/iron_shortsword";
         var conditionStore = new PostgresInventoryLedgerStore(connection);
+        var legacy = conditionStore.ReadGearInstances("ctn_legacy_gear");
+        Check(legacy.Count == 2 && legacy.Select(x => x.Id).Distinct().Count() == 2 &&
+            legacy.All(x => x.DefinitionId == gear && x.DurabilityPercent == 65),
+            "migration expands each legacy stack copy at stored durability");
+        var legacyIds = legacy.Select(x => x.Id).Order().ToArray();
+        Check(legacyIds.SequenceEqual(conditionStore.ReadGearInstances("ctn_legacy_gear").Select(x => x.Id).Order()),
+            "migration replay retains instance IDs");
+        const string outputs = "ctn_death_wear_outputs";
+        ledger.CreateContainer(new(outputs, OwnerKind.Character, character, ContainerKind.Backpack, 16));
+        var bundle = ledger.GrantBundle("death-quest-bundle", outputs, 0,
+            [new("item/hide_cap", 1), new("item/ore", 1)], "quest_reward", "quest-reward");
+        var craft = ledger.Convert("death-graded-craft", outputs, 1, "recipe/gloves",
+            [new("item/ore", 1)], [new("item/hide_gloves/fine", 1)]);
+        Check(bundle.InstanceIds?.Count == 1 && craft.InstanceIds?.Count == 1 &&
+            conditionStore.ReadGearInstances(outputs).Count == 2,
+            "bundle and graded craft output commit separate gear instances");
+        const string backpack = "ctn_death_wear_pack";
+        ledger.CreateContainer(new(backpack, OwnerKind.Character, character, ContainerKind.Backpack, 16));
+        var twoCopies = ledger.Grant("death-two-copy-grant", backpack, 0, gear, 2, "fixture", "death-two-copy");
+        Check(twoCopies.InstanceIds?.Count == 2 && twoCopies.InstanceIds.Distinct().Count() == 2 &&
+            twoCopies.InstanceIds.SequenceEqual(ledger.Grant("death-two-copy-grant", backpack, 0, gear, 2, "fixture", "death-two-copy").InstanceIds!),
+            "two gear copies and grant replay retain distinct identities");
         ledger.CreateContainer(new(equipment, OwnerKind.Character, character, ContainerKind.Equipment, 16));
-        ledger.Grant("death-gear-grant", equipment, 0, gear, 1, "fixture", "death-gear");
+        var firstId = twoCopies.InstanceIds![0]; var secondId = twoCopies.InstanceIds[1];
+        var equip = ledger.Transfer("death-equip-first", backpack, 1, equipment, 0, gear, 1, firstId);
+        Check(equip.InstanceIds!.SequenceEqual([firstId]) &&
+            ledger.Transfer("death-equip-first", backpack, 1, equipment, 0, gear, 1, firstId).InstanceIds!.SequenceEqual([firstId]),
+            "selected gear instance survives transfer replay");
+        Reject(() => ledger.Transfer("death-equip-first", backpack, 1, equipment, 0, gear, 1, secondId),
+            "replay cannot select another copy");
         ledger.Grant("death-second-gear-grant", equipment, 1, secondGear, 1, "fixture", "death-second-gear");
         string Event(int n) => $"00000000-0000-0000-0000-{n:000000000000}";
         Check(conditionStore.ApplyDeathWear(Event(1), character, 9, 10, 5) == 0 &&
             conditionStore.ReadGearCondition(equipment)[gear] == 100, "level below 10 has no death wear");
         Check(conditionStore.ApplyDeathWear(Event(2), character, 10, 10, 5) == 2 &&
             conditionStore.ReadGearCondition(equipment)[gear] == 95 &&
-            conditionStore.ReadGearCondition(equipment)[secondGear] == 95, "level 10 death removes 5 percent from every equipped item");
+            conditionStore.ReadGearCondition(equipment)[secondGear] == 95 &&
+            conditionStore.ReadGearInstances(backpack).Single(x => x.Id == secondId).DurabilityPercent == 100,
+            "level 10 death wears equipped copies but leaves the bag copy pristine");
         Check(conditionStore.ApplyDeathWear(Event(2), character, 10, 10, 5) == 0 &&
             conditionStore.ReadGearCondition(equipment)[gear] == 95, "death event replay applies no additional wear");
         Check(conditionStore.ApplyDeathWear(Event(2), character, 10, 20, 7) == 0 &&
             conditionStore.ReadGearCondition(equipment)[gear] == 95,
             "replay retains the original event tuning after a later tuning change");
-        for (int n = 3; n <= 21; ++n) conditionStore.ApplyDeathWear(Event(n), character, 10, 10, 5);
+        ledger.Transfer("death-unequip-first", equipment, 2, backpack, 2, gear, 1, firstId);
+        ledger.Transfer("death-equip-second", backpack, 3, equipment, 3, gear, 1, secondId);
+        conditionStore.ApplyDeathWear(Event(3), character, 10, 10, 5);
+        Check(conditionStore.ReadGearInstances(equipment).Single(x => x.Id == secondId).DurabilityPercent == 95 &&
+            conditionStore.ReadGearInstances(backpack).Single(x => x.Id == firstId).DurabilityPercent == 95,
+            "two copies wear independently across equip swaps");
+        ledger.Transfer("death-unequip-second", equipment, 4, backpack, 4, gear, 1, secondId);
+        ledger.Transfer("death-reequip-first", backpack, 5, equipment, 5, gear, 1, firstId);
+        conditionStore.ApplyDeathWear(Event(4), character, 10, 10, 5);
+        Check(conditionStore.ReadGearInstances(equipment).Single(x => x.Id == firstId).DurabilityPercent == 90 &&
+            conditionStore.ReadGearInstances(backpack).Single(x => x.Id == secondId).DurabilityPercent == 95,
+            "wear follows the selected instance, not the definition");
+        for (int n = 5; n <= 22; ++n) conditionStore.ApplyDeathWear(Event(n), character, 10, 10, 5);
         Check(conditionStore.ReadGearCondition(equipment)[gear] == 0 &&
             conditionStore.ReadGearCondition(equipment)[secondGear] == 0 &&
             ledger.Read(equipment).Quantities[gear] == 1 && ledger.Read(equipment).Quantities[secondGear] == 1,
             "twenty deaths floor at zero without dropping or unequipping gear");
-        conditionStore.ApplyDeathWear(Event(22), character, 10, 10, 5);
+        conditionStore.ApplyDeathWear(Event(23), character, 10, 10, 5);
         Check(conditionStore.ReadGearCondition(equipment)[gear] == 0, "further death cannot make durability negative");
         break;
     }
@@ -51,6 +99,12 @@ switch (args[0])
         const string equipment = "ctn_death_wear_equipment";
         const string gear = "item/hide_jerkin";
         var conditionStore = new PostgresInventoryLedgerStore(connection);
+        Check(conditionStore.ReadGearInstances("ctn_legacy_gear").Count == 2 &&
+            conditionStore.ReadGearInstances("ctn_legacy_gear").All(x => x.DurabilityPercent == 65),
+            "migrated copies survive database restart");
+        Check(conditionStore.ReadGearInstances("ctn_death_wear_outputs").Count == 2 &&
+            ledger.Receipt("death-graded-craft")?.InstanceIds?.Count == 1,
+            "bundle and graded craft identities survive restart");
         Check(conditionStore.ReadGearCondition(equipment)[gear] == 0 && ledger.Read(equipment).Quantities[gear] == 1,
             "zero condition and equipment ownership survive database restart");
         Check(conditionStore.ApplyDeathWear("00000000-0000-0000-0000-000000000002", character, 10, 10, 5) == 0 &&

@@ -38,6 +38,12 @@ function Query([string]$sql) {
     if ($LASTEXITCODE -ne 0) { throw "Backup query failed: $value" }
     return [string]$value
 }
+if ($schemas -contains 'inventory' -and (Query "SELECT to_regclass('inventory.gear_condition') IS NOT NULL").Trim() -eq 't') {
+    $tables += @('inventory.gear_condition','inventory.death_wear_events')
+}
+if ($schemas -contains 'inventory' -and (Query "SELECT to_regclass('inventory.item_instances') IS NOT NULL").Trim() -eq 't') {
+    $tables += @('inventory.gear_definitions','inventory.item_instances')
+}
 if ($schemas -contains 'inventory' -and (Query "SELECT to_regclass('inventory.gathering_schema_version') IS NOT NULL").Trim() -eq 't') {
     $gatheringVersion = (Query "SELECT version || ':' || migration_id FROM inventory.gathering_schema_version WHERE singleton=true").Trim()
     if ($gatheringVersion -ne '1:gathering-nodes-001') { throw 'Unsupported gathering migration marker.' }
@@ -54,7 +60,7 @@ function Snapshot {
 }
 foreach ($schema in $schemas) {
     $version = (Query "SELECT version FROM $schema.schema_version WHERE singleton=true").Trim()
-    $expectedVersion = if ($schema -eq 'housing') { '6' } elseif ($schema -eq 'character_state') { '10' } elseif ($schema -eq 'exchange') { '3' } elseif ($schema -eq 'inventory') { '2' } else { '1' }
+    $expectedVersion = if ($schema -eq 'housing') { '6' } elseif ($schema -eq 'character_state') { '10' } elseif ($schema -eq 'exchange') { '3' } elseif ($schema -eq 'inventory' -and $tables -contains 'inventory.item_instances') { '3' } elseif ($schema -eq 'inventory') { '2' } else { '1' }
     if ($version -ne $expectedVersion) { throw "Unsupported source schema version: $schema=$version" }
 }
 if ($Store -eq 'Housing') {

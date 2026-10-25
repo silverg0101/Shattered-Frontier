@@ -1,1 +1,5 @@
-<Project Sdk="Microsoft.NET.Sdk" />
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <EmbeddedResource Include="../../content/items/gear_greenlands_starter.json" LogicalName="GearDefinitions.json" />
+  </ItemGroup>
+</Project>

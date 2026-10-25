@@ -198,7 +198,7 @@ sealed class LedgerService(Dom.InventoryLedger ledger, PostgresInventoryLedgerSt
                 if (from.OwnerKind != to.OwnerKind || from.OwnerId != to.OwnerId)
                     throw new RpcException(new Status(StatusCode.FailedPrecondition, "Transfer containers must share one owner."));
                 return ToPb(ledger.Transfer(r.OperationId, r.FromContainerId, r.FromExpectedRevision, r.ToContainerId,
-                    r.ToExpectedRevision, r.DefinitionId, r.Quantity));
+                    r.ToExpectedRevision, r.DefinitionId, r.Quantity, r.InstanceId));
             });
         }
         catch (RpcException ex) { code = ex.StatusCode; throw; }
@@ -296,6 +296,8 @@ sealed class LedgerService(Dom.InventoryLedger ledger, PostgresInventoryLedgerSt
             Revision = v.Revision,
         };
         foreach (var (id, quantity) in v.Quantities) view.Quantities.Add(id, quantity);
+        foreach (var instance in v.Instances ?? []) view.Instances.Add(new Pb.ItemInstance
+            { InstanceId = instance.Id, DefinitionId = instance.DefinitionId, DurabilityPercent = instance.DurabilityPercent });
         return view;
     }
 
@@ -303,8 +305,9 @@ sealed class LedgerService(Dom.InventoryLedger ledger, PostgresInventoryLedgerSt
     {
         var result = ToPb(v);
         if (v.Spec.Kind == Dom.ContainerKind.Equipment && v.Spec.OwnerKind == Dom.OwnerKind.Character)
-            foreach (var (definition, percent) in store.ReadGearCondition(v.Spec.Id))
-                result.DurabilityPercent.Add(definition, percent);
+            foreach (var instance in v.Instances ?? [])
+                if (!result.DurabilityPercent.ContainsKey(instance.DefinitionId))
+                    result.DurabilityPercent.Add(instance.DefinitionId, instance.DurabilityPercent);
         return result;
     }
 
@@ -324,6 +327,7 @@ sealed class LedgerService(Dom.InventoryLedger ledger, PostgresInventoryLedgerSt
         };
         foreach (var c in r.Revisions) receipt.Revisions.Add(new Pb.RevisionChange { ContainerId = c.ContainerId, Before = c.Before, After = c.After });
         foreach (var c in r.Changes) receipt.Changes.Add(new Pb.QuantityChange { ContainerId = c.ContainerId, DefinitionId = c.DefinitionId, Delta = c.Delta });
+        foreach (var id in r.InstanceIds ?? []) receipt.InstanceIds.Add(id);
         return receipt;
     }
 }
