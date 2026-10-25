@@ -56,9 +56,14 @@ def plan(bones, h, floor=None):
             errors.append(f"turned {turn}: {e}")
     if not found:
         raise SystemExit("FAIL: no head, body and four legs found: " + "; ".join(errors))
-    weighed = all("weight" in b for b in bones)  # should a tail pass for a head: the head is heavier, else higher
+    # should a tail pass for a head: the head is heavier, else (no weights, or the choices of head nearly tied) higher
+    first = {}
+    for r in found:
+        first.setdefault(r["_heads"], r)
+    ws = sorted((r["_head_w"] for r in first.values()), reverse=True)
+    weighed = all("weight" in b for b in bones) and ws[0] > 0 and (len(ws) < 2 or ws[0] >= 1.5 * ws[1])
     best = max(found, key=lambda r: r["_head_w"] if weighed else r["_head_z"])
-    del best["_head_z"], best["_head_w"]
+    del best["_head_z"], best["_head_w"], best["_heads"]
     return best
 
 
@@ -230,7 +235,8 @@ def plan_turned(bones, h, turn, floor=None):
         raise ValueError("the head is not in front of the pelvis")
     return {"turn": turn, "labels": labels, "dropped": [n for n in names if n not in kept], "warnings": warnings, "bones": out,
             "_head_z": float(np.mean([head[n][2] for n in names if limb[n] == "head"])),
-            "_head_w": sum(b.get("weight", 0) for b in bones if limb[b["name"]] == "head")}
+            "_head_w": sum(b.get("weight", 0) for b in bones if limb[b["name"]] == "head"),
+            "_heads": frozenset(n for n in names if limb[n] == "head")}
 
 
 def arc(pts):
@@ -522,22 +528,26 @@ def floaters(co, edges, h, gap=0.05):
     return out
 
 
-def floor_sheet(co, faces, h, band=0.03, margin=0.05):
+def floor_sheet(co, faces, h, band=0.03, margin=0.05, floor=None, weight=None, area=0.01):
     """Face indices of a thin horizontal sheet at paw level spanning wider than the body: a drawn ground shadow that
     image-to-3D made into a slab joined to the feet. Faces facing up or down wholly within the bottom `band` of the
-    height, in a piece (faces sharing a vertex) reaching more than margin*h past the footprint of the mesh above it."""
+    height above `floor` (the whole model's lowest z; default this mesh's), in a piece (faces sharing a vertex)
+    reaching more than margin*h past the footprint of the mesh above it, that is a real slab (faces facing both up
+    and down, together at least area*h^2) or carries next to no skin (weight: each vertex's summed skin weight;
+    mean under 0.05). A tail lying on the floor or flat splayed toes face only up, and are skinned."""
     co = np.asarray(co, float)
-    z0 = co[:, 2].min()
+    z0 = co[:, 2].min() if floor is None else floor
     above = co[co[:, 2] > z0 + band * h]
     if not len(above):
         return []
     lo, hi = above[:, :2].min(0) - margin * h, above[:, :2].max(0) + margin * h
-    cand = []
+    cand, nz = [], {}
     for i, f in enumerate(faces):
         p = co[list(f)]
-        n = np.cross(p[1] - p[0], p[2] - p[0])
+        n = sum(np.cross(p[k] - p[0], p[k + 1] - p[0]) for k in range(1, len(p) - 1))  # 2 x area, polygons too
         if p[:, 2].max() <= z0 + band * h and abs(n[2]) > 0.9 * np.linalg.norm(n) > 0:
             cand.append(i)
+            nz[i] = n[2] / 2
     _, weld = np.unique(np.round(co, 5), axis=0, return_inverse=True)  # glTF splits the mesh along UV seams
     weld, parent = weld.ravel(), {}
     def find(x):
@@ -553,14 +563,20 @@ def floor_sheet(co, faces, h, band=0.03, margin=0.05):
         pieces.setdefault(find(("f", i)), []).append(i)
     out = []
     for g in pieces.values():
-        pts = co[[v for i in g for v in faces[i]]][:, :2]
-        if (pts.min(0) < lo).any() or (pts.max(0) > hi).any():
+        vs = [v for i in g for v in faces[i]]
+        pts = co[vs][:, :2]
+        if not ((pts.min(0) < lo).any() or (pts.max(0) > hi).any()):
+            continue
+        slab = min(nz[i] for i in g) < 0 < max(nz[i] for i in g) and sum(abs(nz[i]) for i in g) >= area * h * h
+        bare = weight is not None and float(np.mean(np.asarray(weight, float)[vs])) < 0.05
+        if slab or bare:
             out += g
     return sorted(out)
 
 
 def build_main(model, labels_path, out):
     import bpy
+    import render_views as rv
     from mathutils import Matrix
     p = json.loads(Path(labels_path).read_text())
     arm, _, h = load(model)
@@ -569,10 +585,12 @@ def build_main(model, labels_path, out):
         print("BUILD removed", o.name, "(not skinned to the rig)")
         bpy.data.objects.remove(o)
     R = Matrix.Rotation(math.radians(p["turn"]), 4, "Z")
+    floor = rv.bounds(arm)[0].z  # the whole model's floor: a mesh of its own (an eye, a tusk) has a higher lowest point
     for o in meshes:  # bake the turn and every object transform into the mesh: the export stands at the origin
         o.data.transform(R @ o.matrix_world, shape_keys=True)
         # the ground sheet first: its upright shreds are then loose islands for floaters
-        sheet_faces = floor_sheet([v.co for v in o.data.vertices], [tuple(f.vertices) for f in o.data.polygons], h)
+        sheet_faces = floor_sheet([v.co for v in o.data.vertices], [tuple(f.vertices) for f in o.data.polygons], h,
+                                  floor=floor, weight=[sum(g.weight for g in v.groups) for v in o.data.vertices])
         if sheet_faces:
             import bmesh
             bm = bmesh.new()

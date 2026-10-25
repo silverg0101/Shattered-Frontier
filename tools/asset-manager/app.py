@@ -3023,6 +3023,7 @@ def check():
     assert p["turn"] == -90 and (L["b0"], L["b2"], L["b4"], L["b8"], L["hl_hip"], L["fr_paw"]) ==         ("pelvis", "spine_03", "head", "tail_01", "HL_01", "FR_04"), (p["turn"], L)
     assert (L["hr_hip"], L["hr_paw"], L["b3"], L["b9"], L["fr_clav"], L["fr_hip"]) ==         ("HR_01", "HR_04", "neck", "tail_04", "spine_03", "FR_01"), L
     assert rs.plan([{k: v for k, v in b.items() if k != "weight"} for b in rb], 1.0)["turn"] == 90  # unweighed: the higher end
+    assert rs.plan([b | {"weight": 0.0} for b in rb], 1.0)["turn"] == 90  # all weights 0: the higher end too
     # a sparse trunk (SkinTokens on the boar: a root at the hips carrying the whole back, one chest bone): the pelvis
     # sits at the hind legs, spine_01..03 evenly up to the front legs, the neck from there; the gaps have no rig bone
     sp = [("r", None, (0, 0.15, 0.33), (0, 0.15, 0.43), 50), ("c", "r", (0, -0.27, 0.33), (0, -0.35, 0.33), 5),
@@ -3053,8 +3054,13 @@ def check():
     # floor_sheet: two upright legs; a small sole under one stays, a wide flat sheet joined to the other paw goes
     co = [(0, 0, 0), (0.1, 0, 0), (0, 0, 1), (0.1, 0, 1), (2, 0, 0), (2.1, 0, 0), (2, 0, 1), (2.1, 0, 1),
           (0.05, 0.04, 0), (3, 0, 0), (2, 1, 0)]
-    faces = [(0, 1, 2), (1, 3, 2), (4, 5, 6), (5, 7, 6), (0, 1, 8), (4, 9, 10)]
-    assert rs.floor_sheet(co, faces, 1.0) == [5], rs.floor_sheet(co, faces, 1.0)
+    faces = [(0, 1, 2), (1, 3, 2), (4, 5, 6), (5, 7, 6), (0, 1, 8), (4, 9, 10), (4, 10, 9)]  # the sheet: top and bottom
+    assert rs.floor_sheet(co, faces, 1.0) == [5, 6], rs.floor_sheet(co, faces, 1.0)
+    # a tail lying on the floor (faces up only, skinned) stays; unskinned it goes; a mesh floating 0.1 above the
+    # model's floor (floor given) has no paw-level faces at all
+    assert rs.floor_sheet(co, faces[:6], 1.0) == [] and rs.floor_sheet(co, faces[:6], 1.0, weight=[1] * 9 + [0, 0]) == []
+    assert rs.floor_sheet(co, faces[:6], 1.0, weight=[0] * 11) == [5]
+    assert rs.floor_sheet([(x, y, z + 0.1) for x, y, z in co], faces, 1.0, floor=0.0) == []
     # creature jobs: folder names, combine and its refusals, a cancel leaves no folder behind
     assert creature.safe_name("Swamp Rat #2") == "Swamp_Rat_2"
     td = Path(tempfile.mkdtemp())
