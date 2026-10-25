@@ -64,6 +64,13 @@ def main():
         water.set_actor_label('DeepWater')
         water.set_actor_scale3d(u.Vector(10, 5, 1.5))
         water.set_editor_property('water_volume', True)
+    if names[0] == 'RoadSpeed':
+        road_class = u.load_class(None, '/Script/ShatteredFrontier.SFRoadSpeedVolume')
+        if not road_class:
+            raise RuntimeError('SFRoadSpeedVolume is unavailable; build the Editor module first')
+        road = actors.spawn_actor_from_class(road_class, u.Vector(2000, 0, 150))
+        road.set_actor_label('RoadTravelVolume')
+        road.set_actor_scale3d(u.Vector(10, 15, 3))
     if names[0] == 'Casting':
         target_class = u.load_class(None, '/Script/ShatteredFrontier.SFCastingTarget')
         if not target_class:

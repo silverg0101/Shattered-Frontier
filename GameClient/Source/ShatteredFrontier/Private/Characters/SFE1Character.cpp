@@ -790,6 +790,39 @@ void ASFE1Character::TickBackpedalScenario()
 #endif
 }
 
+void ASFE1Character::TickRoadScenario()
+{
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    if (GetWorld()->GetOutermost()->GetName() != TEXT("/Game/Frontier/Maps/Sandbox/SB_RoadSpeed")) { return; }
+    FString RoadRole;
+    FParse::Value(FCommandLine::Get(), TEXT("RoadRole="), RoadRole);
+    if ((RoadRole != TEXT("Driver") && RoadRole != TEXT("Observer")) || !Controller) { return; }
+    ASFE1Character* Watched = this;
+    int32 Players = 0;
+    for (TActorIterator<ASFE1Character> It(GetWorld()); It; ++It)
+    {
+        ++Players;
+        if (RoadRole == TEXT("Observer") && *It != this) { Watched = *It; }
+    }
+    if (Players < 2 || (RoadRole == TEXT("Observer") && Watched == this)) { return; }
+    const double Now = GetWorld()->GetTimeSeconds();
+    if (RoadScenarioStartAt < 0) { RoadScenarioStartAt = Now; }
+    const double Elapsed = Now - RoadScenarioStartAt;
+    if (RoadRole == TEXT("Driver"))
+    {
+        if (Elapsed < 10.0) { AddMovementInput(FVector::ForwardVector, 1.0f); }
+        else if (!bRoadScenarioComplete)
+        { bRoadScenarioComplete = true; UE_LOG(LogTemp, Display, TEXT("ROAD_DRIVER_COMPLETE")); }
+    }
+    if (Now >= NextRoadSampleAt)
+    {
+        NextRoadSampleAt = Now + 0.2;
+        UE_LOG(LogTemp, Display, TEXT("ROAD_CLIENT_SAMPLE Role=%s X=%.0f Speed=%.0f"),
+            *RoadRole, Watched->GetActorLocation().X, Watched->GetVelocity().Size2D());
+    }
+#endif
+}
+
 void ASFE1Character::TickGreenlandsMovementScenario()
 {
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
@@ -1166,6 +1199,14 @@ void ASFE1Character::Tick(float DeltaSeconds)
             FVector::DotProduct(GetActorForwardVector(), GetVelocity().GetSafeNormal2D()),
             GetCharacterMovement()->GetMaxSpeed());
     }
+    if (HasAuthority() && CombatMap == TEXT("/Game/Frontier/Maps/Sandbox/SB_RoadSpeed") &&
+        FParse::Param(FCommandLine::Get(), TEXT("RoadScenario")) &&
+        GetWorld()->GetTimeSeconds() >= NextRoadSampleAt)
+    {
+        NextRoadSampleAt = GetWorld()->GetTimeSeconds() + 0.2;
+        UE_LOG(LogTemp, Display, TEXT("ROAD_SERVER_SAMPLE Pawn=%s X=%.0f Speed=%.0f Cap=%.0f"),
+            *GetName(), GetActorLocation().X, GetVelocity().Size2D(), GetCharacterMovement()->GetMaxSpeed());
+    }
     if (HasAuthority() && CombatMap == TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook") &&
         FParse::Param(FCommandLine::Get(), TEXT("GreenlandsMovementNetcheck")) &&
         GetWorld()->GetTimeSeconds() >= NextCrouchSampleAt)
@@ -1284,6 +1325,8 @@ void ASFE1Character::Tick(float DeltaSeconds)
         FParse::Param(FCommandLine::Get(), TEXT("CrouchScenario"))) { TickCrouchScenario(); }
     if (GetNetMode() == NM_Client && IsLocallyControlled() &&
         FParse::Param(FCommandLine::Get(), TEXT("BackpedalScenario"))) { TickBackpedalScenario(); }
+    if (GetNetMode() == NM_Client && IsLocallyControlled() &&
+        FParse::Param(FCommandLine::Get(), TEXT("RoadScenario"))) { TickRoadScenario(); }
     if (GetNetMode() == NM_Client && IsLocallyControlled() &&
         FParse::Param(FCommandLine::Get(), TEXT("GreenlandsEnvironmentNetcheck"))) { TickGreenlandsEnvironmentScenario(); }
     if (GetNetMode() == NM_Client && IsLocallyControlled() &&

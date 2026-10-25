@@ -4,6 +4,7 @@
 #include "Tests/AutomationCommon.h"
 #include "Characters/SFE1Character.h"
 #include "Characters/SFBackpedalMovement.h"
+#include "Characters/SFRoadSpeedVolume.h"
 #include "Framework/SFE1Settings.h"
 #include "Components/BoxComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -141,6 +142,33 @@ bool FSFE1BackpedalTest::RunTest(const FString& Parameters)
     TestFalse(TEXT("Input inside front 240-degree sector keeps run cap"), USFBackpedalMovement::IsBackpedalling(FVector::ForwardVector, FVector(-0.49f, 0.87f, 0)));
     TestFalse(TEXT("Stopped character does not backpedal"), USFBackpedalMovement::IsBackpedalling(FVector::ForwardVector, FVector::ZeroVector));
     TestFalse(TEXT("Strafe keeps run cap"), USFBackpedalMovement::IsBackpedalling(FVector::ForwardVector, FVector::RightVector));
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFE1RoadSpeedTest, "ShatteredFrontier.E1.Movement.RoadSpeed",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+
+bool FSFE1RoadSpeedTest::RunTest(const FString& Parameters)
+{
+    FMovementFixture Fixture;
+    if (!Fixture.Create(*this)) { return false; }
+    UCharacterMovementComponent* Move = Fixture.Pawn->GetCharacterMovement();
+    UWorld* World = Fixture.Simulation.GetTestWorld();
+    ASFRoadSpeedVolume* Road = World->SpawnActor<ASFRoadSpeedVolume>();
+    if (!TestNotNull(TEXT("Road volume spawned"), Road)) { return false; }
+    TestEqual(TEXT("Authored road modifier"), Road->SpeedMultiplier, 1.10f);
+    Fixture.Pawn->GetCapsuleComponent()->SetShouldUpdatePhysicsVolume(false);
+    float PlainPeak = 0;
+    TestTrue(TEXT("Normal ground movement ticks"), Fixture.Tick(120, FVector::ForwardVector, &PlainPeak));
+    Fixture.Pawn->GetCapsuleComponent()->SetPhysicsVolume(Road, true);
+    float RoadPeak = 0;
+    TestTrue(TEXT("Road movement ticks"), Fixture.Tick(120, FVector::ForwardVector, &RoadPeak));
+    TestTrue(TEXT("Road raises actual movement speed to 7.7 m/s"), RoadPeak >= 760.0f && RoadPeak <= 771.0f);
+    Fixture.Pawn->GetCapsuleComponent()->SetPhysicsVolume(World->GetDefaultPhysicsVolume(), true);
+    float ReturnPeak = 0;
+    TestTrue(TEXT("Return movement ticks"), Fixture.Tick(120, FVector::ForwardVector, &ReturnPeak));
+    TestTrue(TEXT("Normal ground speed is 7.0 m/s"), PlainPeak >= 690.0f && PlainPeak <= 701.0f);
+    TestTrue(TEXT("Leaving road restores 7.0 m/s"), ReturnPeak >= 690.0f && ReturnPeak <= 701.0f && Move->GetMaxSpeed() == 700.0f);
     return true;
 }
 

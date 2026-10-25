@@ -1,6 +1,7 @@
 #include "Characters/SFBackpedalMovement.h"
 
 #include "Framework/SFE1Settings.h"
+#include "Characters/SFRoadSpeedVolume.h"
 #include "GameFramework/Character.h"
 
 bool USFBackpedalMovement::IsBackpedalling(const FVector& Facing, const FVector& Intent)
@@ -12,9 +13,13 @@ bool USFBackpedalMovement::IsBackpedalling(const FVector& Facing, const FVector&
 
 float USFBackpedalMovement::GetMaxSpeed() const
 {
-    const float Base = Super::GetMaxSpeed();
-    if (!CharacterOwner || !GetWorld() || !IsMovingOnGround() ||
-        !IsBackpedalling(CharacterOwner->GetActorForwardVector(), Acceleration))
+    float Base = Super::GetMaxSpeed();
+    if (!CharacterOwner || !GetWorld() || !IsMovingOnGround()) { return Base; }
+    if (const ASFRoadSpeedVolume* Road = Cast<ASFRoadSpeedVolume>(CharacterOwner->GetPhysicsVolume()))
+    {
+        Base = FMath::Min(Base * FMath::Clamp(Road->SpeedMultiplier, 0.5f, 1.2f), 1200.0f);
+    }
+    if (!IsBackpedalling(CharacterOwner->GetActorForwardVector(), Acceleration))
     {
         return Base;
     }

@@ -114,6 +114,9 @@ private:
     double BackpedalScenarioStartAt = -1;
     double NextBackpedalSampleAt = 0;
     bool bBackpedalScenarioComplete = false;
+    double RoadScenarioStartAt = -1;
+    double NextRoadSampleAt = 0;
+    bool bRoadScenarioComplete = false;
     bool bLastServerDeepWater = false;
     bool bMemorySawCombat = false;
     double MemoryScenarioStartedAt = -1;
@@ -134,6 +137,7 @@ private:
     void TickSwimScenario();
     void TickCrouchScenario();
     void TickBackpedalScenario();
+    void TickRoadScenario();
     void TickGreenlandsMovementScenario();
     void TickGreenlandsEnvironmentScenario();
     UFUNCTION(Server, Reliable) void ServerTargetScenarioStep(int32 Step);
