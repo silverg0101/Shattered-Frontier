@@ -391,7 +391,7 @@ void ASFPlayerController::RefreshLocalFeedback()
 void ASFPlayerController::ToggleInventoryPanel()
 {
     USFGatheringPilotComponent* Pilot = FindComponentByClass<USFGatheringPilotComponent>();
-    if (!IsLocalController() || !Pilot || !Pilot->IsEnabled()) { return; }
+    if (!IsLocalController() || !Pilot) { return; }
     if (!InventoryWidget)
     {
         const TSubclassOf<USFInventoryWidget> InventoryClass = LoadClass<USFInventoryWidget>(nullptr, USFInventoryWidget::AssetPath);
@@ -410,6 +410,13 @@ void ASFPlayerController::ToggleInventoryPanel()
 void ASFPlayerController::OpenInventoryPanel()
 {
     if (!InventoryWidget || !GetWindowStack()->IsOpen(InventoryWidget)) { ToggleInventoryPanel(); }
+}
+
+void ASFPlayerController::OpenExternalInventoryPanel(UUserWidget* TargetWindow)
+{
+    if (!IsLocalController() || !TargetWindow) { return; }
+    OpenInventoryPanel();
+    GetWindowStack()->Open(TargetWindow);
 }
 
 void ASFPlayerController::ToggleEquipmentPanel()
@@ -642,7 +649,7 @@ void ASFPlayerController::ToggleTradeDemo()
         TradeWindow->AddToViewport(30);
         TradeWindow->SetVisibility(ESlateVisibility::Collapsed);
     }
-    if (GetWindowStack()->IsOpen(TradeWindow)) { GetWindowStack()->Close(TradeWindow); } else { OpenInventoryPanel(); GetWindowStack()->Open(TradeWindow); }
+    if (GetWindowStack()->IsOpen(TradeWindow)) { GetWindowStack()->Close(TradeWindow); } else { OpenExternalInventoryPanel(TradeWindow); }
     if (GatheringHud) { GatheringHud->SetStationModal(TradeWindow); }
 }
 
@@ -693,7 +700,7 @@ void ASFPlayerController::ToggleMarketForTarget(ASFMarketBoardActor* ExactTarget
             if (!Nearby || !Exchange) { return; }
             MarketBoard->StartLiveRefresh(Exchange, Nearby);
         }
-        OpenInventoryPanel(); GetWindowStack()->Open(MarketBoard);
+        OpenExternalInventoryPanel(MarketBoard);
     }
     if (GatheringHud) { GatheringHud->SetStationModal(MarketBoard); }
 }

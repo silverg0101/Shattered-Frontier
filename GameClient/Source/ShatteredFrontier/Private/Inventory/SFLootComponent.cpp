@@ -200,7 +200,6 @@ void USFLootComponent::ClientSnapshot_Implementation(ASFLootSourceActor* Source,
     auto* Player = Cast<ASFPlayerController>(GetOwner()); if (!Player) { return; }
     if (bOpen)
     {
-        Player->OpenInventoryPanel();
         if (!ExternalWidget)
         {
             const auto Class = LoadClass<USFInventoryWidget>(nullptr, USFInventoryWidget::AssetPath);
@@ -208,7 +207,7 @@ void USFLootComponent::ClientSnapshot_Implementation(ASFLootSourceActor* Source,
             ExternalWidget = CreateWidget<USFInventoryWidget>(Player, Class);
             ExternalWidget->ConfigureExternal(this); ExternalWidget->AddToViewport(20);
         }
-        Player->GetWindowStack()->Open(ExternalWidget);
+        Player->OpenExternalInventoryPanel(ExternalWidget);
     }
 }
 

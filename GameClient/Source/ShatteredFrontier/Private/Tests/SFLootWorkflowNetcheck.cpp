@@ -21,6 +21,7 @@
 #include "Misc/Paths.h"
 #include "Misc/FileHelper.h"
 #include "UObject/StrongObjectPtr.h"
+#include "InputKeyEventArgs.h"
 
 namespace
 {
@@ -35,6 +36,8 @@ struct FWorkflowState
     bool bGroundSeen = false, bObserverReported = false, bGroundBarrierWritten = false;
     double BarrierAt = -1;
     double NextDiagnosticAt = 0;
+    double ClickDeadline = 0;
+    bool bCapturedCorpse = false, bCapturedGround = false;
     TStrongObjectPtr<USFItemDragOperation> PendingDrag;
 };
 TMap<TWeakObjectPtr<USFLootComponent>, FWorkflowState> States;
@@ -54,6 +57,19 @@ FPointerEvent Pointer(bool bShift, const FVector2D& Position = FVector2D(1, 1), 
 {
     return FPointerEvent(0, Position, Position, bDown ? TSet<FKey>{EKeys::LeftMouseButton} : TSet<FKey>{},
         EKeys::LeftMouseButton, 0, FModifierKeysState(bShift, false, false, false, false, false, false, false, false));
+}
+void Capture(ASFPlayerController* Player, const TCHAR* Name)
+{
+    FString Root; FParse::Value(FCommandLine::Get(), TEXT("LootWorkflowEvidence="), Root);
+    if (Root.IsEmpty()) return;
+    const FString Path = FPaths::Combine(Root, FString(Name) + TEXT(".png"));
+    Player->ConsoleCommand(FString::Printf(TEXT("Shot showui filename=\"%s\" nosuffix"), *Path));
+    UE_LOG(LogTemp, Display, TEXT("LOOT_WORKFLOW_CAPTURE Requested=%s"), *Path);
+}
+void MouseLeft(ASFPlayerController* Player, EInputEvent Event)
+{
+    Player->InputKey(FInputKeyEventArgs(nullptr, FInputDeviceId::CreateFromInternalId(0), EKeys::LeftMouseButton,
+        Event, Event == IE_Pressed ? 1.f : 0.f, false, FPlatformTime::Cycles64()));
 }
 }
 
@@ -199,8 +215,13 @@ void FSFLootWorkflowNetcheck::Tick(USFLootComponent& Loot)
                 continue;
             }
             State.Source = *It;
-            Player->DispatchSelectedAction(Target->GetSelection());
             UE_LOG(LogTemp, Display, TEXT("LOOT_WORKFLOW_TARGET Corpse=1 ExactTarget=1 Rim=1 ClientBounds=1"));
+            if (State.Stage == 0)
+            {
+                const float Yaw = (It->GetActorLocation() - Pawn->GetActorLocation()).Rotation().Yaw;
+                Player->SetControlRotation(FRotator(-15,Yaw,0)); State.Stage = 16; return;
+            }
+            Player->DispatchSelectedAction(Target->GetSelection());
             ++State.Stage; return;
         }
     }
@@ -212,6 +233,7 @@ void FSFLootWorkflowNetcheck::Tick(USFLootComponent& Loot)
         auto* Window = Loot.ExternalWidget.Get();
         // A real NativeTick populates cells from the RPC result, as in normal play.
         if (Window->ShownItems.IsEmpty()) return;
+        if (State.Stage == 1 && !State.bCapturedCorpse) { Capture(Player, TEXT("corpse-and-bag")); State.bCapturedCorpse = true; }
         int32 Index = FindAuthorizedRow(Window->ShownItems, Loot.ExternalItems);
         if (State.Stage == 3)
         {
@@ -237,6 +259,33 @@ void FSFLootWorkflowNetcheck::Tick(USFLootComponent& Loot)
             UE_LOG(LogTemp, Display, TEXT("LOOT_WORKFLOW_DRAG Windows=2 Item=%s Quantity=%d Instance=%s"), *State.Item, State.Quantity, *State.Instance);
             State.Stage = 11;
         }
+    }
+    else if (State.Stage == 16 && State.Source.IsValid())
+    {
+        FVector2D Screen; int32 Width = 0, Height = 0; Player->GetViewportSize(Width, Height);
+        if (!Player->ProjectWorldLocationToScreen(State.Source->InteractionBounds->GetComponentLocation(), Screen) ||
+            Screen.X < 0 || Screen.Y < 0 || Screen.X >= Width || Screen.Y >= Height)
+        { if (bDiagnosticNow) UE_LOG(LogTemp, Display, TEXT("LOOT_WORKFLOW_GATE Reason=ClickProjection Point=%s Viewport=%dx%d"), *Screen.ToString(), Width, Height); return; }
+        Player->SetMouseLocation(FMath::RoundToInt(Screen.X), FMath::RoundToInt(Screen.Y)); State.Stage = 17;
+    }
+    else if (State.Stage == 17 && State.Source.IsValid())
+    {
+        Target->Refresh();
+        if (Target->GetTarget() != State.Source.Get())
+        { if (bDiagnosticNow) UE_LOG(LogTemp, Display, TEXT("LOOT_WORKFLOW_GATE Reason=CursorTarget Selected=%s Expected=%s"), *GetNameSafe(Target->GetTarget()), *GetNameSafe(State.Source.Get())); return; }
+        MouseLeft(Player, IE_Pressed); State.Stage = 18; State.NextAt = Now + .04;
+    }
+    else if (State.Stage == 18)
+    { MouseLeft(Player, IE_Released); State.Stage = 19; State.ClickDeadline = Now + 5; State.NextAt = Now + .04; }
+    else if (State.Stage == 19)
+    {
+        if (Loot.ExternalSource == State.Source.Get() && Loot.ExternalWidget && Player->InventoryWidget &&
+            Stack->IsOpen(Loot.ExternalWidget) && Stack->IsOpen(Player->InventoryWidget))
+        {
+            UE_LOG(LogTemp, Display, TEXT("LOOT_WORKFLOW_CLICK Input=NativeMouseLeft PressRelease=1 CursorTarget=1 Windows=2")); State.Stage = 1;
+        }
+        else if (Now > State.ClickDeadline)
+        { UE_LOG(LogTemp, Error, TEXT("LOOT_WORKFLOW_FAIL NativeMouseClickDidNotOpen")); State.Stage = 99; Player->ConsoleCommand(TEXT("quit")); }
     }
     else if (State.Stage == 10 || State.Stage == 11)
     {
@@ -286,6 +335,7 @@ void FSFLootWorkflowNetcheck::Tick(USFLootComponent& Loot)
             Target->RefreshFromRay(Start, (It->InteractionBounds->GetComponentLocation() - Start).GetSafeNormal());
             if (Target->GetTarget() != *It || !It->Mesh->GetOverlayMaterial()) continue;
             State.Source = *It;
+            if (!State.bCapturedGround) { Capture(Player, TEXT("ground-before-pickup")); State.bCapturedGround = true; State.NextAt = Now + .2; return; }
             Player->DispatchSelectedAction(Target->GetSelection()); State.Stage = 13;
             UE_LOG(LogTemp, Display, TEXT("LOOT_WORKFLOW_GROUND Mesh=1 ClientBounds=1 Rim=1 DirectAction=1")); return;
         }
@@ -295,6 +345,7 @@ void FSFLootWorkflowNetcheck::Tick(USFLootComponent& Loot)
         if (Stack->IsOpen(Loot.ExternalWidget)) { UE_LOG(LogTemp, Error, TEXT("LOOT_WORKFLOW_FAIL PickupOpenedWidget")); State.Stage = 99; return; }
         Target->RefreshFromRay(Pawn->GetActorLocation(), FVector::UpVector);
         if (Target->GetTarget()) return;
+        Capture(Player, TEXT("final-own-bag"));
         UE_LOG(LogTemp, Display, TEXT("LOOT_WORKFLOW_DONE NativeShift=1 NativeDrag=1 GroundModel=1 PickupWidget=0 TargetCleared=1")); State.Stage = 99;
     }
 }

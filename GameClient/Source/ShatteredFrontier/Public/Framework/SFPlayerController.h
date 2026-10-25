@@ -30,6 +30,7 @@ class USFHudWidget;
 class USFMarketBoard;
 class USFTradeWindow;
 class USFInventoryWidget;
+class UUserWidget;
 class USFEquipmentWidget;
 class USFWindowStack;
 class USFDialoguePanel;
@@ -113,6 +114,9 @@ public:
     FString GetPilotMessage() const;
     void ToggleInventoryPanel();
     void OpenInventoryPanel();
+    // Call after the feature has admitted its external view; UI coupling grants
+    // no container/transfer permission and never substitutes target validation.
+    void OpenExternalInventoryPanel(UUserWidget* TargetWindow);
     // C (and SFUi equipment): the Equipment window (paper doll, character preview, equippable bag items), a window of the stack.
     void ToggleEquipmentPanel();
     // Open menu windows (inventory now; market, recipes, equipment later). Esc closes the newest; created on first use.
