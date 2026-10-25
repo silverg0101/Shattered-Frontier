@@ -1,4 +1,4 @@
-"""Player outfit review shots in game: walking from behind, then idle from the front, three-quarter and side (idle, so the frames are still).
+"""Player outfit review shots in game: walking from behind, then idle from the front, three-quarter, side and back (idle, so the frames are still).
 
 UnrealEditor.exe <uproject> /Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook -game -windowed -ResX=1920 -ResY=1080 -ForceRes
     -RenderOffscreen -unattended -nosound "-ExecCmds=py tools/Capture-PlayerOutfit.py"
@@ -12,8 +12,9 @@ import unreal
 
 FACES = [f for f in (os.environ.get('SF_FACES') or os.environ.get('SF_FACE', '')).split(',') if f]
 SHOTS = [(10.0, 'walk', 14.0), (14.0, 'shot', 'walk_back'), (16.0, 'view', 0.0), (18.0, 'shot', 'front'),
-         (18.5, 'view', 40.0), (20.5, 'shot', 'three_quarter'), (21.0, 'view', 90.0), (23.0, 'shot', 'side')]
-SEGMENT = 25.0 + 15.0  # one face: switch at +3 s, 15 s outfit compile, then the shots above
+         (18.5, 'view', 40.0), (20.5, 'shot', 'three_quarter'), (21.0, 'view', 90.0), (23.0, 'shot', 'side'),
+         (23.5, 'view', 180.0), (25.5, 'shot', 'back')]
+SEGMENT = 27.0 + 15.0  # one face: switch at +3 s, 15 s outfit compile, then the shots above
 PLAN = []  # (start, kind, arg, face)
 for n, face in enumerate(FACES or ['']):
     off = n * SEGMENT + (15.0 if face else 0.0)

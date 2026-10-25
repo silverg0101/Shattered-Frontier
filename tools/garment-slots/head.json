@@ -5,6 +5,7 @@
   "axis": "z",
   "arms_not_collision": true,
   "arm_caps_above_cm": 146,
+  "arm_weight_keep": 0.3,
   "anchors": [
     {"name": "crown", "kind": "point", "body": [0, -1.0, 189.7], "dir": [0, 0, 1], "garment": "top", "match": ["z"], "region": "head"},
     {"name": "back", "kind": "point", "body": [0, 9.4, 181.0], "dir": [0, 1, 0], "garment": "+y", "match": ["y"], "region": "head"},
@@ -16,12 +17,14 @@
     {"name": "head", "kind": "tight", "offset_mm": 4, "from": 164, "skip_face": true}
   ],
   "hull_above_cm": 166,
+  "level_hem_below_cm": 160,
+  "inner_albedo_lift": 1.5,
   "region_blend_cm": 12,
   "opening_fade_cm": 6,
   "push_margin_mm": 2,
-  "push_radii_cm": [6, 5, 4, 3, 2, 1, 1],
+  "push_radii_cm": [6, 5, 4, 3, 2, 1, 1, 1, 1, 1],
   "loops": 5,
   "tris": 19000,
   "poses": ["a_pose", "arms_down", "crouch"],
-  "limits": {"ring_residual_mm": 8, "min_clearance_factor": 0.8, "median_move_mm": 15, "drift_mean_mm": 1.5, "drift_max_mm": 5}
+  "limits": {"ring_residual_mm": 8, "min_clearance_factor": 0.8, "median_move_mm": 60, "drift_mean_mm": 1.5, "drift_max_mm": 5}
 }

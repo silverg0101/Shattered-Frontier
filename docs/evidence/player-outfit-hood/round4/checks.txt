@@ -1,0 +1,17 @@
+INNER 59233 of 99779 faces; openings (boundary loops, verts) [374, 173, 121, 90, 85, 39]
+HEM level: lowest point per azimuth 134.5..140.9 cm -> 133.8..137.4 cm
+DRAPE moved 37676 verts radially, median 57.9 mm, max 114.2 mm
+PUSH inner verts inside the skin before the push 458; moved 43883 of 49867 verts, median move 53.0 mm, max 116.6 mm at (32, -9, 140); fit 15.1 s
+LOW tris 18999 (raw 99995); boundary edges 5, non-manifold 22
+DRIFT unmoved region (1038 final verts): mean 0.26 max 1.12 mm; whole garment vs the pushed raw mesh: mean 0.13 max 1.79 mm
+INNER LIFT x1.5 on 10599 faces, 32% of texels
+BAKED Artifacts\Characters\PlayerBase\hood\T_Hood_BaseColor.png mean (0.243, 0.206, 0.168) -> (0.3, 0.225, 0.185)
+SEETHROUGH 0 of 378 back rays from the head centre pass through the garment
+FACE visible from the front: 100% of brow-to-chin verts
+CLEARANCE a_pose cape: min 10.4 mm, median 35.1 mm, 0 skin verts closer than 0.8 x offset, 0 inside the cloth -> ok
+CLEARANCE a_pose head: min 3.5 mm, median 41.3 mm, 0 skin verts closer than 0.8 x offset, 0 inside the cloth -> ok
+CLEARANCE arms_down cape: min 11.0 mm, median 39.1 mm, 0 skin verts closer than zero, 0 inside the cloth -> ok
+CLEARANCE arms_down head: min 3.5 mm, median 41.5 mm, 0 skin verts closer than zero, 0 inside the cloth -> ok
+CLEARANCE crouch cape: min 9.0 mm, median 34.1 mm, 0 skin verts closer than zero, 0 inside the cloth -> ok
+CLEARANCE crouch head: min 3.5 mm, median 40.8 mm, 0 skin verts closer than zero, 0 inside the cloth -> ok
+FINAL tris 18999; fit 15.1 s; checks: all ok

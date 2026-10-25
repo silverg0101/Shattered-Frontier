@@ -117,3 +117,40 @@ Slot JSON: `item`, `axis`, `anchors` (name, `ring` centre+radius or `point`+dir,
 Round-2 items on v4: 1 cape shape, 2 hem height (z 134.5 cm) and 5 neck band come from v4's own shape, not sculpted. 3 head clearance min 3.7 mm, median 42.5 mm, no skin inside. 4 faceting: 19k tris. 6 colour: bake mean (0.243, 0.207, 0.169) graded to sRGB (0.30, 0.225, 0.185), a cooler mid-brown; 24 px twill + slub on the 2048 map (round 2: 10 px, lost at play distance). 7 slits/specks/pinches: specks dropped, 5 boundary edges left (pinholes holes_fill cannot close), drift max 1.6 mm.
 
 Reproduce: `blender --factory-startup -b --python tools/Clean-GeneratedGarment.py -- --garment GameClient/ArtSource/Characters/Player/outfit-asset/hood_v4/hood.glb --out Artifacts/Characters/PlayerBase/hood/hood.fbx`, then the import/author/build/capture steps above (delete `OutfitAsset/Hood/` first).
+
+## Round 4: the round-3 fix list
+
+Evidence: `docs/evidence/player-outfit-hood/round4/`. This holds:
+- captures `edwin_{front,back,side,three_quarter,walk_back}.jpg`, each with an `*-compare.png` (concept left)
+- `stages/raw-vs-stages_<view>.jpg`, with tiles fit (raw, uniform scale), 1b level, 2a drape, 2 push, final
+- `hood_raw_clay.png`, `hood_cleaned_clay.png` and `hood_cleaned_section.png`
+- `checks.txt`
+
+Not self-judged.
+
+Stages that added the defects:
+- **Shoulder lobes:** the push stage. The cape was pushed point by point.
+- **Lumpy, dark clay:** the decimation and normals stage. The glTF's custom split normals rode along stale, and the centre-sum flip cancelled out over the double wall, which turned 18996 of 18999 faces inside out.
+- **Fit stage:** clean, uniform scale.
+
+Fixes:
+1. **Hair through the crown.** `Create-PlayerOutfitAsset.py build` clears the `Hair` slot for `item=Hood`. Faces stay unsaved, so the hair returns on a normal build.
+2. **Weave stripes.** The 24 px twill at ±28% is replaced by a 4 px tabby at ±3% plus slub noise stretched along the weft at ±6%.
+3. **Lobes.** A new drape stage runs before the push and fills each (3°, 0.5 cm) bin to the needed radius:
+   - the need is carried down with the raw bell's flare
+   - each slice is replaced by its convex hull, then blurred
+   - the result is applied to both layers
+   - the push then has median 53 mm, max 117 mm
+4. **Hem.**
+   - `level_hem_below_cm` evens the lowest hem point per azimuth, from 134.5..140.9 to 133.8..137.4 cm.
+   - `arm_weight_keep` 0.3 keeps 30% of the arm pull and moves the rest to the clavicle, so walking opens the sides less.
+5. **Boxy front.** Comes from the same drape: the raw flare below the contact, with no vertical drop.
+6. **Neck band and interior.** `inner_albedo_lift` 1.5 lightens the inner-layer texels, found with an emission-mask bake. In game the band under the chin still sits in the central fold's shadow.
+7. **Lumpy clay.** Split normals are cleared, and `recalc_face_normals` now runs, leaving 1 flip of 18999 faces.
+
+Checks:
+- drift 0.26 / 1.12 mm (unmoved region) and 0.13 / 1.79 mm (whole garment)
+- 0 of 378 see-through rays, face 100% visible
+- clearance: A-pose cape min 10.4 mm, head min 3.5 mm; arms down 11.0 / 3.5 mm; crouch 9.0 / 3.5 mm; 0 inside in every pose
+
+`Capture-PlayerOutfit.py` adds an idle `back` shot. Run it as `-ExecCmds=py <absolute path>`: a relative path resolves against the engine's Binaries folder.

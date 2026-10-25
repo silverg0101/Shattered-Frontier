@@ -160,7 +160,8 @@ def build(only):
         key = col.try_add_item_from_wardrobe_item('Outfits', wi)
         inst = col.default_instance
         inst.set_single_slot_selection('Outfits', key)
-        for slot in ('Top Garment', 'Bottom Garment'):
+        # head-slot gear hides the hair groom (round 3: strands poked through the hood crown); faces stay unsaved, so the hair returns on the next normal build
+        for slot in ('Top Garment', 'Bottom Garment') + (('Hair',) if ITEM == 'Hood' else ()):
             inst.set_single_slot_selection(slot, unreal.MetaHumanPaletteItemKey())
         if not sub.try_add_object_to_edit(character=ch):
             raise RuntimeError(f"MHC_{face['id']} is open for edit elsewhere")
