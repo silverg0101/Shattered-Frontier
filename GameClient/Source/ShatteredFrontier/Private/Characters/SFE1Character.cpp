@@ -1492,6 +1492,15 @@ void ASFE1Character::Tick(float DeltaSeconds)
     if (GetNetMode() == NM_Client && IsLocallyControlled() &&
         FParse::Param(FCommandLine::Get(), TEXT("SnowScenario"))) { TickRoadScenario(); }
     if (IsLocallyControlled() && FParse::Param(FCommandLine::Get(), TEXT("UnstuckScenario"))) { TickUnstuckScenario(); }
+    if (CombatMap == TEXT("/Game/Frontier/Maps/Sandbox/SB_SpiritRelease") && IsLocallyControlled())
+    {
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+        if (FParse::Param(FCommandLine::Get(), TEXT("SpiritReleaseScenario"))) { TickSpiritReleaseScenario(); }
+        else
+#endif
+        if (PilotHealth == 0)
+        { if (ASFPlayerController* PC = Cast<ASFPlayerController>(Controller); PC && PC->WasInputKeyJustPressed(EKeys::R)) { PC->SFReleaseSpirit(); } }
+    }
     if (GetNetMode() == NM_Client && IsLocallyControlled() &&
         FParse::Param(FCommandLine::Get(), TEXT("GreenlandsEnvironmentNetcheck"))) { TickGreenlandsEnvironmentScenario(); }
     if (GetNetMode() == NM_Client && IsLocallyControlled() &&
@@ -1824,6 +1833,93 @@ void ASFE1Character::SetAutoAttack(bool bEnabled)
         Map != TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook")) { return; }
     if (HasAuthority()) { ServerSetAutoAttack_Implementation(bEnabled); }
     else { ServerSetAutoAttack(bEnabled); }
+}
+
+void ASFE1Character::TickSpiritReleaseScenario()
+{
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    FString ScenarioRole;
+    FParse::Value(FCommandLine::Get(), TEXT("SpiritReleaseRole="), ScenarioRole);
+    if (ScenarioRole != TEXT("Driver") && ScenarioRole != TEXT("Observer")) return;
+    ASFPlayerController* PC = Cast<ASFPlayerController>(Controller);
+    if (!PC) return;
+    ASFE1Character* Subject = this;
+    if (ScenarioRole == TEXT("Observer"))
+    {
+        Subject = nullptr;
+        for (TActorIterator<ASFE1Character> It(GetWorld()); It; ++It)
+        { if (*It != this) { Subject = *It; break; } }
+    }
+    if (!Subject) return;
+    ASFPilotBoar* Boar = nullptr;
+    for (TActorIterator<ASFPilotBoar> It(GetWorld()); It; ++It)
+    { if (It->GroupId() == TEXT("spirit_release_sandbox")) { Boar = *It; break; } }
+    if (!Boar) return;
+    const double Now = GetWorld()->GetTimeSeconds();
+    if (SpiritReleaseScenarioStage == 0)
+    {
+        int32 Pawns = 0;
+        for (TActorIterator<ASFE1Character> It(GetWorld()); It; ++It) { ++Pawns; }
+        if (Pawns < 2 || Subject->CombatHealth() <= 0) return;
+        UE_LOG(LogTemp, Display, TEXT("SPIRIT_RELEASE_CLIENT_INITIAL Role=%s HP=%d X=%.0f"),
+            *ScenarioRole, Subject->CombatHealth(), Subject->GetActorLocation().X);
+        if (ScenarioRole == TEXT("Driver")) { PC->SFReleaseSpirit(); }
+        SpiritReleaseScenarioStage = 1;
+    }
+    if (ScenarioRole == TEXT("Driver") && SpiritReleaseScenarioStage == 1)
+    {
+        const FVector Toward = (Boar->GetActorLocation() - GetActorLocation()).GetSafeNormal2D();
+        if (FVector::Dist2D(GetActorLocation(), Boar->GetActorLocation()) > 220.0)
+        { AddMovementInput(Toward, 1.0f); return; }
+        Controller->SetControlRotation(Toward.Rotation());
+        if (SpiritReleaseScenarioAt == 0.0) { SpiritReleaseScenarioAt = Now + 0.5; return; }
+        if (Now < SpiritReleaseScenarioAt) return;
+        PilotAttack();
+        UE_LOG(LogTemp, Display, TEXT("SPIRIT_RELEASE_CLIENT_ATTACK Role=Driver"));
+        SpiritReleaseScenarioStage = 2;
+        SpiritReleaseScenarioAt = Now + 1.0;
+    }
+    if (ScenarioRole == TEXT("Observer") && SpiritReleaseScenarioStage == 1)
+    { SpiritReleaseScenarioStage = 2; }
+    if (ScenarioRole == TEXT("Driver") && SpiritReleaseScenarioStage == 2 &&
+        Boar->Health() == GetDefault<USFCombatPilotSettings>()->BoarHealth && Now >= SpiritReleaseScenarioAt)
+    {
+        PilotAttack();
+        SpiritReleaseScenarioAt = Now + 1.0;
+    }
+    if (ScenarioRole == TEXT("Driver") && SpiritReleaseScenarioStage == 2 && Now >= NextSpiritReleaseSampleAt)
+    {
+        NextSpiritReleaseSampleAt = Now + 2.0;
+        UE_LOG(LogTemp, Display, TEXT("SPIRIT_RELEASE_CLIENT_SAMPLE HP=%d X=%.0f Y=%.0f BoarX=%.0f BoarY=%.0f BoarHP=%d"),
+            Subject->CombatHealth(), Subject->GetActorLocation().X, Subject->GetActorLocation().Y,
+            Boar->GetActorLocation().X, Boar->GetActorLocation().Y, Boar->Health());
+    }
+    if (SpiritReleaseScenarioStage == 2 && Subject->CombatHealth() == 0)
+    {
+        SpiritReleaseScenarioStage = 3;
+        SpiritReleaseScenarioAt = Now;
+        UE_LOG(LogTemp, Display, TEXT("SPIRIT_RELEASE_CLIENT_DEAD Role=%s HP=0 X=%.0f"),
+            *ScenarioRole, Subject->GetActorLocation().X);
+    }
+    if (SpiritReleaseScenarioStage == 3 && ScenarioRole == TEXT("Driver") && Now - SpiritReleaseScenarioAt >= 5.0)
+    {
+        if (Subject->CombatHealth() != 0)
+        { UE_LOG(LogTemp, Error, TEXT("SPIRIT_RELEASE_CLIENT_FAILED PrematureHealth=%d"), Subject->CombatHealth()); return; }
+        PC->SFReleaseSpirit();
+        UE_LOG(LogTemp, Display, TEXT("SPIRIT_RELEASE_CLIENT_REQUEST Role=Driver"));
+        SpiritReleaseScenarioStage = 4;
+    }
+    if (SpiritReleaseScenarioStage == 3 && ScenarioRole == TEXT("Observer"))
+    { SpiritReleaseScenarioStage = 4; }
+    if (SpiritReleaseScenarioStage == 4 && Subject->CombatHealth() == 40 &&
+        FMath::Abs(Subject->GetActorLocation().X - 3500.0) < 100.0)
+    {
+        SpiritReleaseScenarioStage = 5;
+        UE_LOG(LogTemp, Display, TEXT("SPIRIT_RELEASE_CLIENT_RESTORED Role=%s HP=%d X=%.0f"),
+            *ScenarioRole, Subject->CombatHealth(), Subject->GetActorLocation().X);
+        if (ScenarioRole == TEXT("Driver")) { PC->SFReleaseSpirit(); }
+    }
+#endif
 }
 
 void ASFE1Character::TickUnstuckScenario()

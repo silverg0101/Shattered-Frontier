@@ -99,6 +99,9 @@ public:
     float TabTargetCycleResetSeconds = 1.5f;
     UPROPERTY(Config, EditAnywhere, Category="Pilot Balance", meta=(ClampMin="1.0", ClampMax="60.0", Units="s", ToolTip="Server respawn delay; adopted at next zone start."))
     float PlayerRespawnDelaySeconds = 4.0f;
+
+    UPROPERTY(Config, EditAnywhere, Category="Pilot Balance", meta=(ClampMin="0.5", ClampMax="0.5", ToolTip="Fraction of maximum health restored by spirit release; adopted at zone start."))
+    float SpiritResFraction = 0.5f;
     UPROPERTY(Config, EditAnywhere, Category="Pilot Regeneration", meta=(ClampMin="5.0", ClampMax="5.0", Units="s", ToolTip="Combat exit after no hostile action and no threat; adopted at zone start."))
     float CombatExitSeconds = 5.0f;
     UPROPERTY(Config, EditAnywhere, Category="Pilot Regeneration", meta=(ClampMin="5.0", ClampMax="5.0", Units="s", ToolTip="Delay after leaving combat before health regeneration; adopted at zone start."))

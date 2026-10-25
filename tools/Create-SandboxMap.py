@@ -137,7 +137,7 @@ def main():
             marker.static_mesh_component.set_static_mesh(cube)
             marker.static_mesh_component.set_collision_profile_name('NoCollision')
             marker.set_actor_scale3d(u.Vector(0.5, 0.5, 1))
-    if names[0] in ('Evade', 'Threat', 'Aggro', 'AttackerMemory', 'Regeneration', 'RestRegen', 'Assist', 'Respawn', 'AutoAttack'):
+    if names[0] in ('Evade', 'Threat', 'Aggro', 'AttackerMemory', 'Regeneration', 'RestRegen', 'Assist', 'Respawn', 'AutoAttack', 'SpiritRelease'):
         boar = u.load_class(None, '/Script/ShatteredFrontier.SFPilotBoar')
         interaction = u.load_class(None, '/Script/ShatteredFrontier.SFE1InteractionTarget')
         if not boar or not interaction:
@@ -147,6 +147,13 @@ def main():
                                                  u.Rotator(yaw=180) if names[0] == 'Aggro' else u.Rotator())
         creature.set_actor_label(names[0] + 'Boar')
         creature.set_editor_property('tags', [u.Name('SF_' + names[0] + 'SandboxWildlife')])
+        if names[0] == 'SpiritRelease':
+            point = actors.spawn_actor_from_class(u.StaticMeshActor, u.Vector(3500, 0, 115))
+            point.set_actor_label('SpiritHealerRespawnPoint')
+            point.static_mesh_component.set_static_mesh(cube)
+            point.static_mesh_component.set_collision_profile_name('NoCollision')
+            point.set_actor_scale3d(u.Vector(0.2, 0.2, 0.2))
+            point.set_editor_property('tags', [u.Name('SF_RespawnPoint')])
         if names[0] == 'RestRegen':
             rest_class = u.load_class(None, '/Script/ShatteredFrontier.SFRestAreaVolume')
             if not rest_class:

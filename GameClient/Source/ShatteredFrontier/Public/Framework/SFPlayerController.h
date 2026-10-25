@@ -69,6 +69,8 @@ public:
     // Player command in the Unstuck sandbox; the server chooses and validates the destination.
     UFUNCTION(Exec) void SFUnstuck();
     UFUNCTION(Server, Reliable) void ServerRequestUnstuck();
+    UFUNCTION(Exec) void SFReleaseSpirit();
+    UFUNCTION(Server, Reliable) void ServerRequestSpiritRelease();
     // Console (development, UI evidence captures): stage named panels and pilot views.
     UFUNCTION(Exec) void SFUi(const FString& Screen);
     void InteractWithSelectedTarget();

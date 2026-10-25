@@ -23,6 +23,7 @@ param(
     [switch]$RespawnScenario,
     [switch]$AutoAttackScenario,
     [switch]$UnstuckScenario,
+    [switch]$SpiritReleaseScenario,
     [switch]$GreenlandsBoarNetcheck
 )
 $ErrorActionPreference = 'Stop'
@@ -79,6 +80,14 @@ function Assert-EvadeClient([string]$Path, [string]$Role) {
     return [math]::Round($speed,1)
 }
 try {
+    if ($SpiritReleaseScenario) {
+        $otherScenarios = @($PSBoundParameters.Keys | Where-Object {
+            $_ -notin @('EngineRoot', 'Port', 'Map', 'Clients', 'SpiritReleaseScenario')
+        })
+        if ($Map -ne '/Game/Frontier/Maps/Sandbox/SB_SpiritRelease' -or $Clients -ne 2 -or $otherScenarios.Count) {
+            throw 'SpiritReleaseScenario requires SB_SpiritRelease, two clients, and no other scenario'
+        }
+    }
     if ($UnstuckScenario -and ($Map -ne '/Game/Frontier/Maps/Sandbox/SB_Unstuck' -or $Clients -ne 2 -or
         $CastingScenario -or $EvadeScenario -or $ThreatScenario -or $AggroScenario -or $MemoryScenario -or
         $RegenScenario -or $RestRegenScenario -or $FallScenario -or $SwimScenario -or $CrouchScenario -or
@@ -200,6 +209,7 @@ try {
     if ($RespawnScenario) { $serverArgs += '-CombatRespawnScenario' }
     if ($AutoAttackScenario) { $serverArgs += '-AutoAttackScenario' }
     if ($UnstuckScenario) { $serverArgs += '-UnstuckScenario' }
+    if ($SpiritReleaseScenario) { $serverArgs += '-SpiritReleaseScenario' }
     if ($GreenlandsBoarNetcheck) { $serverArgs += '-GreenlandsBoarNetcheck' }
     if ($GreenlandsEnvironmentNetcheck) { $serverArgs += '-GreenlandsEnvironmentNetcheck' }
     if ($GreenlandsMovementNetcheck) { $serverArgs += '-GreenlandsMovementNetcheck' }
@@ -229,6 +239,7 @@ try {
         if ($RespawnScenario) { $clientArgs += @('-CombatRespawnScenario', ('-CombatRespawnRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         if ($AutoAttackScenario) { $clientArgs += @('-AutoAttackScenario', ('-AutoAttackRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         if ($UnstuckScenario) { $clientArgs += @('-UnstuckScenario', ('-UnstuckRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
+        if ($SpiritReleaseScenario) { $clientArgs += @('-SpiritReleaseScenario', ('-SpiritReleaseRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         if ($GreenlandsBoarNetcheck) { $clientArgs += @('-GreenlandsBoarNetcheck', ('-GreenlandsBoarRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         if ($GreenlandsEnvironmentNetcheck) { $clientArgs += @('-GreenlandsEnvironmentNetcheck', ('-GreenlandsEnvironmentRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         if ($GreenlandsMovementNetcheck) { $clientArgs += @('-GreenlandsMovementNetcheck', ('-GreenlandsMovementRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
@@ -260,6 +271,33 @@ try {
             throw 'Unstuck server did not accept one move then deny the cooldown replay'
         }
         Write-Output "PASS: client requested unstuck, authority moved it, both clients observed the move, and replay was denied. Logs: $logs"
+    }
+    if ($SpiritReleaseScenario) {
+        $driverLog = Join-Path $logs 'Client1.log'
+        $observerLog = Join-Path $logs 'Client2.log'
+        Wait-Log $driverLog 'SPIRIT_RELEASE_CLIENT_RESTORED Role=Driver HP=40 X=3500'
+        Wait-Log $observerLog 'SPIRIT_RELEASE_CLIENT_RESTORED Role=Observer HP=40 X=3500'
+        Wait-Log $serverLog 'SPIRIT_RELEASE_SERVER_ACCEPTED .*HP=40 X=3500'
+        Wait-Log $serverLog 'SPIRIT_RELEASE_SERVER_DENIED' 2
+        $dead = Select-String -LiteralPath $serverLog -Pattern 'SPIRIT_RELEASE_SERVER_DEAD Pawn=' | Select-Object -First 1
+        $accepted = Select-String -LiteralPath $serverLog -Pattern 'SPIRIT_RELEASE_SERVER_ACCEPTED .*HP=40 X=3500' | Select-Object -First 1
+        $denied = @(Select-String -LiteralPath $serverLog -Pattern 'SPIRIT_RELEASE_SERVER_DENIED Pawn=')
+        if (-not $dead -or -not $accepted -or $denied.Count -ne 2 -or
+            $denied[0].LineNumber -ge $dead.LineNumber -or $dead.LineNumber -ge $accepted.LineNumber -or
+            $accepted.LineNumber -ge $denied[1].LineNumber) {
+            throw 'Server missed ordered alive denial, boar-caused death, release and repeated denial'
+        }
+        foreach ($role in @('Driver', 'Observer')) {
+            $path = if ($role -eq 'Driver') { $driverLog } else { $observerLog }
+            $initial = Select-String -LiteralPath $path -Pattern "SPIRIT_RELEASE_CLIENT_INITIAL Role=$role HP=35" | Select-Object -First 1
+            $fallen = Select-String -LiteralPath $path -Pattern "SPIRIT_RELEASE_CLIENT_DEAD Role=$role HP=0" | Select-Object -First 1
+            $restored = Select-String -LiteralPath $path -Pattern "SPIRIT_RELEASE_CLIENT_RESTORED Role=$role HP=40 X=3500" | Select-Object -First 1
+            if (-not $initial -or -not $fallen -or -not $restored -or
+                $initial.LineNumber -ge $fallen.LineNumber -or $fallen.LineNumber -ge $restored.LineNumber) {
+                throw "$role missed the replicated 35 to 0 to 40 death/release sequence"
+            }
+        }
+        Write-Output "PASS: boar killed the driver; owning client released at the authored point with 50% max health; both clients saw 35 to 0 to 40, and authority denied alive/repeated requests. Logs: $logs"
     }
     if ($EvadeScenario) {
         $driverLog = Join-Path $logs 'Client1.log'
@@ -896,7 +934,7 @@ try {
         Write-Output "PASS: Greenlands 2.0 s unarmed auto attack ($swingGap s observed), client stop, boar threat, ordinary healing ($ordinaryGain HP/tick), Golden Stag rest healing ($restedGain HP/tick), client kill and rotated slot respawn on both clients. Logs: $logs"
     }
     Write-Output "PASS: separate editor server and $Clients client(s) connected; $Clients server-authoritative possession(s). Logs: $logs"
-    if (-not $CastingScenario -and -not $EvadeScenario -and -not $ThreatScenario -and -not $AggroScenario -and -not $MemoryScenario -and -not $RegenScenario -and -not $RestRegenScenario -and -not $FallScenario -and -not $SwimScenario -and -not $CrouchScenario -and -not $BackpedalScenario -and -not $RoadScenario -and -not $SnowScenario -and -not $AssistScenario -and -not $RespawnScenario -and -not $AutoAttackScenario -and -not $UnstuckScenario -and -not $GreenlandsBoarNetcheck -and -not $GreenlandsEnvironmentNetcheck -and -not $GreenlandsMovementNetcheck) { Write-Output 'Headless connection check only: movement, rendering, lifecycle cleanup, authentication and Linux runtime are not certified.' }
+    if (-not $CastingScenario -and -not $EvadeScenario -and -not $ThreatScenario -and -not $AggroScenario -and -not $MemoryScenario -and -not $RegenScenario -and -not $RestRegenScenario -and -not $FallScenario -and -not $SwimScenario -and -not $CrouchScenario -and -not $BackpedalScenario -and -not $RoadScenario -and -not $SnowScenario -and -not $AssistScenario -and -not $RespawnScenario -and -not $AutoAttackScenario -and -not $UnstuckScenario -and -not $SpiritReleaseScenario -and -not $GreenlandsBoarNetcheck -and -not $GreenlandsEnvironmentNetcheck -and -not $GreenlandsMovementNetcheck) { Write-Output 'Headless connection check only: movement, rendering, lifecycle cleanup, authentication and Linux runtime are not certified.' }
 } finally {
     foreach ($process in $ownedProcesses) {
         if (-not $process.HasExited) { Stop-Process -Id $process.Id -ErrorAction SilentlyContinue }

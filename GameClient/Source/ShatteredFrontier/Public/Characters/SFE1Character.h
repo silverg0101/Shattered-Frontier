@@ -106,6 +106,9 @@ private:
     int32 RespawnScenarioStage = 0;
     int32 AutoAttackScenarioStage = 0;
     int32 UnstuckScenarioStage = 0;
+    int32 SpiritReleaseScenarioStage = 0;
+    double SpiritReleaseScenarioAt = 0.0;
+    double NextSpiritReleaseSampleAt = 0.0;
     double UnstuckScenarioAt = 0.0;
     FVector UnstuckScenarioInitial = FVector::ZeroVector;
     double AutoAttackScenarioAt = 0.0;
@@ -146,6 +149,7 @@ private:
     void TickRespawnScenario();
     void TickAutoAttackScenario();
     void TickUnstuckScenario();
+    void TickSpiritReleaseScenario();
     void TickRegenScenario();
     void TickRestRegenScenario();
     void TickFallScenario();

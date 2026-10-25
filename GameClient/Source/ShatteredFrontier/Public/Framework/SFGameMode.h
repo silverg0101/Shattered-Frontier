@@ -59,6 +59,7 @@ public:
     /** Server-only physical environmental hit from an actual landing. */
     void ApplyFallDamage(ASFE1Character* Victim, float ImpactSpeedMps);
     void RestoreDeadPlayer(ASFE1Character* Player, const struct FSFGameplayResponse& State);
+    bool ReleaseSpirit(ASFE1Character* Player);
     bool HasPendingDeathReport(const FString& CharacterId) const;
     void BoarDied(ASFPilotBoar* Boar, ASFE1Character* Killer);
     /** Grants the killer's hides for this death, at most once; returns the number granted. */
