@@ -18,6 +18,18 @@ docs/hand-offs/
 - **Keep it short.** Facts only: goal, state, evidence, next step. Link to commits, docs and folders instead of copying their content.
 - **Never put secrets** (passwords, keys, tokens) in a hand-off.
 
+## How we work
+
+- **One task, one worktree.** Each task names its worktree. Lanes are reusable worktrees: `pwsh tools/Enter-Lane.ps1 -Name <a..e>` creates `C:\Projects\SF-lane-<name>` from origin/main, or moves an existing clean lane up to origin/main. Run one Unreal-heavy job at a time across all lanes.
+- **The main checkout (`C:\Projects\Shattered-Frontier`) is shared.** Other sessions keep staged changes there; don't edit, stage, stash or reset it. Untracked art and reviews that must outlive a lane go in its git-ignored `Artifacts\` folder.
+- **Committing:** `git fetch`, rebase onto origin/main, stage your files by name (never `git add -A`, `.` or `commit -a`), check `git diff --cached --stat`, then `git push origin HEAD:main`. Never force-push, stash, autostash or reset others' work. Commit and push finished work without asking. End messages with the co-author trailer of whoever did the work (Claude Opus, Claude Fable or Codex).
+- **Removing a lane:** first unlink its junctions with `cmd /c rmdir` (`Artifacts\ThirdParty` and the others `tools/Link-WorktreeDeps.ps1` made), then `git worktree remove`. A remove that follows a junction deletes the main checkout's files.
+- **Workers:** at most 2 Claude and 2 Codex workers at once. Send graphics work to Sonnet; debugging, design and reviews to Opus; scriptable non-graphical work to Codex (`codex exec -m gpt-6-sol`). Give each a narrow brief and take back a short result.
+- **Visual work:** check every returned image yourself. A fresh Opus reviewer that did not build the work judges it against the concept with `docs/visual-review.md`; implement only its fix list. Stop after 3 rounds and hand it to the owner.
+- **Art generation** runs on local models via the Asset Forge (`http://192.168.50.133:8090`). Fix generated models at the input-image level; never patch them in Blender.
+- **Unreal:** write only under `/Game/Frontier/`; stop only processes you started; with the editor open, use `python tools/Run-InEditor.py <script.py>` instead of commandlets. Run netchecks from PowerShell (Git Bash rewrites `/Game/` paths).
+- **Design values:** never invent them. Add the question, with the default you used, to `docs/decisions/` for the owner.
+
 ## Writing a hand-off
 
 1. Copy `TEMPLATE.md` to `queue/<area>-<short-name>.md`.

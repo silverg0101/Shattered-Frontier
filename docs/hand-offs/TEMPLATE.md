@@ -3,6 +3,7 @@
 - **Area:** art | gameplay | backend | ui | world | tools | owner
 - **Owner of the next step:** agent | owner
 - **Updated:** YYYY-MM-DD
+- **Worktree:** C:\Projects\SF-lane-<name> (`pwsh tools/Enter-Lane.ps1 -Name <name>`), or "none"
 
 ## Goal
 

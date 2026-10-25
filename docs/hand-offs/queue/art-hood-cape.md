@@ -3,6 +3,7 @@
 - **Area:** art
 - **Owner of the next step:** owner
 - **Updated:** 2026-10-25
+- **Worktree:** C:\Projects\SF-lane-d (`pwsh tools/Enter-Lane.ps1 -Name d`); round 3 files kept in `C:\Projects\Shattered-Frontier\Artifacts\Hood\hood_v3\`
 
 ## Goal
 
@@ -30,7 +31,7 @@ Once the owner chooses, an Opus builder implements that route in lane d, capture
 
 ## Rules for this task
 
-- Start from the raw v4 GLB; render raw vs each processing stage before blaming generation.
+- Start from the raw v4 GLB (committed under `GameClient/ArtSource/Characters/Player/outfit-asset/hood_v4/`); render raw vs each processing stage before blaming generation.
 - Keep the checks: drift, 0 see-through rays, head clearance in three poses, face visible.
 - No paid tools (Marvelous Designer is out).
 - The review cap restarts only if the owner says so.

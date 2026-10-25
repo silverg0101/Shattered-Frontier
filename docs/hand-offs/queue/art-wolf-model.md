@@ -3,6 +3,7 @@
 - **Area:** art
 - **Owner of the next step:** agent
 - **Updated:** 2026-10-25
+- **Worktree:** C:\Projects\SF-lane-a (`pwsh tools/Enter-Lane.ps1 -Name a`)
 
 ## Goal
 

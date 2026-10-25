@@ -3,6 +3,7 @@
 - **Area:** owner
 - **Owner of the next step:** owner
 - **Updated:** 2026-10-25
+- **Worktree:** none (docs only; read them in any up-to-date checkout)
 
 ## Goal
 

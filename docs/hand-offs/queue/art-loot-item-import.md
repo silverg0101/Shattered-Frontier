@@ -3,6 +3,7 @@
 - **Area:** art
 - **Owner of the next step:** owner (sign-off), then agent
 - **Updated:** 2026-10-25
+- **Worktree:** C:\Projects\SF-lane-b (`pwsh tools/Enter-Lane.ps1 -Name b`)
 
 ## Goal
 
@@ -14,7 +15,7 @@ All 8 passed independent review: archers_gloves, fangtooth_dagger, wolf_fang (ro
 
 ## Evidence
 
-- Models and reviews: `C:\Projects\SF-lane-b\Artifacts\LootItems\` (REVIEW-round1..3.md, FINAL-signoff-sheet.jpg). Final files: round-1 items in `<name>\`, round-2 items in `<name>\round2\` (brigand_blade_v3), round-3 items in `<name>\round3\` (captains_longsword_s222.glb).
+- Models and reviews: `C:\Projects\Shattered-Frontier\Artifacts\LootItems\` (git-ignored, moved out of lane b) (REVIEW-round1..3.md, FINAL-signoff-sheet.jpg). Final files: round-1 items in `<name>\`, round-2 items in `<name>\round2\` (brigand_blade_v3), round-3 items in `<name>\round3\` (captains_longsword_s222.glb).
 - Item list and sizes: `content/items/forge-handoff.json` (9dafb6ed, 449ee18a).
 - Item records: SFItemDefinition assets from ee22f632.
 
