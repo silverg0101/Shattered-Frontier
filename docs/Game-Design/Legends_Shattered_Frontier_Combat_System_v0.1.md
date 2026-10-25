@@ -17,6 +17,7 @@ Short name in cross-references: **Combat spec**. Part folder: [`Combat/`](Combat
 | Part 3 | [Abilities, effects, state machine and runtime](Combat/Legends_Shattered_Frontier_Combat_Abilities_Effects_and_Runtime_v1.0.md) | Ability and effect content model (ERD, JSON), stat modifier keys, Party-scoped effects, crowd control and diminishing returns, casting and GCD, throughput budget, procs, combat state machine, zone-server runtime contracts, outbox |
 | Part 4 | [Agent implementation guide](Combat/Legends_Shattered_Frontier_Combat_Agent_Implementation_Guide_v1.0.md) | Module layout, milestones, invariants, validators, test matrix, acceptance criteria, pitfalls, Do/Don't |
 | Part 5 | [Energy, starter abilities, taunt and interrupt](Combat/Legends_Shattered_Frontier_Combat_Starter_Abilities_and_Energy_v0.1.md) | Two-pool energy rule and hybrids, level 1–20 starter kits (38 abilities), published taunt/interrupt values and five-rank enhanced ladder, sprint drain keys, death/durability touch points, owner checks |
+| Part 6 | [Starter stats, weapons, ability coefficients, mitigation and Greenlands NPCs](Combat/Legends_Shattered_Frontier_Combat_Starter_Stats_Weapons_and_NPCs_v0.1.md) | Level 1–20 constants (`s`, `K`, `skill_ref`, `σ`, `H_ref`, `attr_ref`), six archetype stat lines, weapon lines consistent with `gear_greenlands_starter.json`, coefficients for the 38 abilities, spread, armor/resistance curves, shield block, absorbs, boar/wolf/bandit/alpha/captain stat lines, `FAttack` input map, controls, owner checks |
 
 Glossary: Registry, Glossary. Terms specific to this spec are defined where they are introduced (`σ(L)`, `DPS_ref`, MPS, `t_ref`).
 
@@ -454,5 +455,6 @@ Combat repair in an active battle follows Territory's single-target, 5%-health-p
 
 | Date | Change |
 | --- | --- |
+| 2026-10-25 | Part 6 added: starter stats, weapon lines, ability coefficients, mitigation curves, block, absorbs and Greenlands NPC lines for the shared resolution path. |
 | 2026-10-17 | v0.1 contract patch: rating constants, haste, luck, movement, reference build, creature-tier rule, damage pipeline, `combat.*` payloads moved from Dungeon. |
 | 2026-10-17 | Version 1.0 expanded edition: entry + four parts; skill effects on combat; reference throughput `σ(L)` and canonical `DPS_ref`; NPC combat profiles; full threat model; kill credit; ability/effect model; CC and DR; combat state machine; runtime contracts and outbox; agent guide; additive payload fields; registry proposals. |
