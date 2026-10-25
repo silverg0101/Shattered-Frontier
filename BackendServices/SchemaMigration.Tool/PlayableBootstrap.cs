@@ -52,6 +52,7 @@ internal static class PlayableBootstrap
                     {
                         // All identifiers are fixed code; the generated private passwords are hex only.
                         Execute(connection, $"CREATE ROLE {Owner(store.Schema)} NOLOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS; " +
+                            $"GRANT CREATE ON DATABASE sf_playable TO {Owner(store.Schema)}; " +
                             $"CREATE ROLE {Service(store.Schema)} LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOREPLICATION NOBYPASSRLS PASSWORD '{Password(store.Schema)}'; " +
                             $"GRANT CONNECT ON DATABASE sf_playable TO {Service(store.Schema)}; CREATE SCHEMA {Q(store.Schema)} AUTHORIZATION {Owner(store.Schema)};", transaction);
                         if (store.Base.Length != 0)
