@@ -308,6 +308,7 @@ void ASFPilotBoar::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
     DOREPLIFETIME(ASFPilotBoar, CurrentHealth);
     DOREPLIFETIME(ASFPilotBoar, SpawnGroup);
+    DOREPLIFETIME(ASFPilotBoar, CreatureId);
     DOREPLIFETIME(ASFPilotBoar, Slot);
     DOREPLIFETIME(ASFPilotBoar, bReturning);
     DOREPLIFETIME(ASFPilotBoar, ReplicatedTarget);
@@ -1952,7 +1953,7 @@ void ASFGameMode::RespawnPlayer(TWeakObjectPtr<ASFE1Character> Player, int32 Res
             TryBoarAttack(FixtureBoar, FixturePlayer);
             TryPlayerAttack(FixturePlayer);
             // A kill credited inside the town (a replayed or forged death) grants nothing.
-            const int32 TownReward = RewardKill(FixtureBoar->DeathId(), Town, Player.Get());
+            const int32 TownReward = RewardKill(FixtureBoar, Player.Get());
             UE_LOG(LogTemp, Display, TEXT("COMBAT_PILOT_SAFE_CHECK Protected=%d PlayerHP=%d BoarHP=%d Reward=%d Passed=%d"),
                 IsSafe(Town), FixturePlayer->CombatHealth(), FixtureBoar->Health(), TownReward,
                 IsSafe(Town) && Before == FixturePlayer->CombatHealth() && FixtureBoar->Health() == CapturedSettings->BoarHealth && TownReward == 0);
@@ -1962,9 +1963,11 @@ void ASFGameMode::RespawnPlayer(TWeakObjectPtr<ASFE1Character> Player, int32 Res
     }
 }
 
-int32 ASFGameMode::RewardKill(const FString& DeathId, const FVector& BoarAt, ASFE1Character* Killer)
+int32 ASFGameMode::RewardKill(ASFPilotBoar* Boar, ASFE1Character* Killer)
 {
-    if (!CapturedSettings || !HasAuthority()) { return 0; }
+    if (!CapturedSettings || !HasAuthority() || !IsValid(Boar)) { return 0; }
+    const FString DeathId = Boar->DeathId();
+    const FVector BoarAt = Boar->GetActorLocation();
     const bool bProtected = IsSafe(BoarAt) || !IsValid(Killer) || IsSafe(Killer->GetActorLocation());
     auto* KillerController = IsValid(Killer) ? Cast<APlayerController>(Killer->GetController()) : nullptr;
     TArray<APlayerController*> Eligible;
@@ -2001,16 +2004,35 @@ int32 ASFGameMode::RewardKill(const FString& DeathId, const FVector& BoarAt, ASF
         const bool bBoarSafe = IsSafe(BoarAt);
         // The process nonce prevents a restarted server's slot serials from reusing a durable defeat ID.
         static const FString Epoch = FGuid::NewGuid().ToString(EGuidFormats::Digits);
+        if (Boar->HasSingleDrop())
+        {
+            FSFGameplayRequest Request; Request.Rpc = ESFGameplayRpc::CreateSharedDefeatDrop;
+            Request.OperationId = Epoch + TEXT(":") + DeathId;
+            Request.KillerCharacterId = KillerId; Request.CreatureId = Boar->GetCreatureId();
+            Request.TableId = Boar->GetLootTableId(); Request.bKillerProtected = bProtected;
+            Request.bBoarProtected = bBoarSafe;
+            TArray<TWeakObjectPtr<ASFPlayerController>> Players;
+            for (APlayerController* Recipient : Eligible)
+            {
+                USFBackpackComponent* Backpack = USFBackpackComponent::FindOrCreate(Recipient);
+                if (Backpack && !Backpack->GetCharacterId().IsEmpty())
+                { Request.EligibleCharacterIds.AddUnique(Backpack->GetCharacterId()); Players.Add(Cast<ASFPlayerController>(Recipient)); }
+            }
+            if (!Request.EligibleCharacterIds.IsEmpty()) { RetrySharedDrop(Request, Players); }
+            return 0;
+        }
         for (APlayerController* Recipient : Eligible)
         {
             USFBackpackComponent* Backpack = USFBackpackComponent::FindOrCreate(Recipient);
             const ASFE1Character* Character = Cast<ASFE1Character>(Recipient->GetPawn());
             RetryDefeatReward(DeathId, Epoch + TEXT(":") + DeathId, KillerId,
                 Backpack ? Backpack->GetCharacterId() : FString(), Backpack ? Backpack->GetContainerId() : FString(),
+                Boar->GetCreatureId(), Boar->GetLootTableId(),
                 !Character || IsSafe(Character->GetActorLocation()), bBoarSafe, Recipient);
         }
         return 0;
     }
+    if (Boar->HasSingleDrop()) { return 0; }
     int32 Granted = 0;
     for (APlayerController* Recipient : Eligible)
     {
@@ -2024,7 +2046,8 @@ int32 ASFGameMode::RewardKill(const FString& DeathId, const FVector& BoarAt, ASF
 }
 
 void ASFGameMode::RetryDefeatReward(const FString& DeathId, const FString& ServiceEventId, const FString& KillerId, const FString& CharacterId,
-    const FString& ContainerId, bool bKillerSafe, bool bBoarSafe, TWeakObjectPtr<APlayerController> Controller)
+    const FString& ContainerId, const FString& CreatureId, const FString& TableId,
+    bool bKillerSafe, bool bBoarSafe, TWeakObjectPtr<APlayerController> Controller)
 {
     USFBackpackComponent* Backpack = Controller.IsValid() ? USFBackpackComponent::FindOrCreate(Controller.Get()) : nullptr;
     if (!Backpack)
@@ -2034,9 +2057,9 @@ void ASFGameMode::RetryDefeatReward(const FString& DeathId, const FString& Servi
         {
             FTimerHandle Retry;
             GetWorldTimerManager().SetTimer(Retry, FTimerDelegate::CreateWeakLambda(this,
-                [WeakMode = TWeakObjectPtr<ASFGameMode>(this), DeathId, ServiceEventId, KillerId, CharacterId, ContainerId,
+                [WeakMode = TWeakObjectPtr<ASFGameMode>(this), DeathId, ServiceEventId, KillerId, CharacterId, ContainerId, CreatureId, TableId,
                  bKillerSafe, bBoarSafe, Controller]()
-                { if (ASFGameMode* Mode = WeakMode.Get()) Mode->RetryDefeatReward(DeathId, ServiceEventId, KillerId, CharacterId, ContainerId, bKillerSafe, bBoarSafe, Controller); }), 3.0f, false);
+                { if (ASFGameMode* Mode = WeakMode.Get()) Mode->RetryDefeatReward(DeathId, ServiceEventId, KillerId, CharacterId, ContainerId, CreatureId, TableId, bKillerSafe, bBoarSafe, Controller); }), 3.0f, false);
         }
         return;
     }
@@ -2046,11 +2069,11 @@ void ASFGameMode::RetryDefeatReward(const FString& DeathId, const FString& Servi
     auto Receipt = MakeShared<FSFGameplayResponse>();
     FSFBackpackMutation Mutation; Mutation.Label = TEXT("defeat_reward"); Mutation.OperationId = ServiceEventId;
     Mutation.bRetryStale = false;
-    Mutation.Run = [Receipt, ServiceEventId, KillerId, RecipientId, RecipientContainer, bKillerSafe, bBoarSafe](const FString&, int64 Expected,
+    Mutation.Run = [Receipt, ServiceEventId, KillerId, RecipientId, RecipientContainer, CreatureId, TableId, bKillerSafe, bBoarSafe](const FString&, int64 Expected,
         TFunction<void(ESFBackpackOutcome, int64)> Report)
     {
         FSFGameplayRequest Q = SFCombatPilotRewards::BuildDefeatRequest(ServiceEventId, KillerId, RecipientId,
-            RecipientContainer, Expected, bKillerSafe, bBoarSafe);
+            RecipientContainer, Expected, bKillerSafe, bBoarSafe, CreatureId, TableId);
         USFBackpackComponent::Services()->Call(Q, [Receipt, Report](const FSFGameplayResponse& R)
         {
             *Receipt = R;
@@ -2061,7 +2084,7 @@ void ASFGameMode::RetryDefeatReward(const FString& DeathId, const FString& Servi
         });
     };
     Mutation.Finished = [WeakMode = TWeakObjectPtr<ASFGameMode>(this), Receipt, DeathId, ServiceEventId,
-        KillerId, RecipientId, RecipientContainer, bKillerSafe, bBoarSafe, Controller, Weak = TWeakObjectPtr<USFBackpackComponent>(Backpack)](ESFBackpackOutcome Outcome)
+        KillerId, RecipientId, RecipientContainer, CreatureId, TableId, bKillerSafe, bBoarSafe, Controller, Weak = TWeakObjectPtr<USFBackpackComponent>(Backpack)](ESFBackpackOutcome Outcome)
     {
         ASFGameMode* Mode = WeakMode.Get(); if (!Mode) return;
         const bool bGranted = Outcome == ESFBackpackOutcome::Committed && Receipt->bGranted;
@@ -2083,11 +2106,89 @@ void ASFGameMode::RetryDefeatReward(const FString& DeathId, const FString& Servi
             UE_LOG(LogTemp, Warning, TEXT("COMBAT_PILOT_REWARD_HELD Death=%s Code=%d"), *DeathId, Receipt->GrpcCode);
             FTimerHandle Retry;
             Mode->GetWorldTimerManager().SetTimer(Retry, FTimerDelegate::CreateWeakLambda(Mode,
-                [WeakMode, DeathId, ServiceEventId, KillerId, RecipientId, RecipientContainer, bKillerSafe, bBoarSafe, Controller]()
-                { if (ASFGameMode* M = WeakMode.Get()) M->RetryDefeatReward(DeathId, ServiceEventId, KillerId, RecipientId, RecipientContainer, bKillerSafe, bBoarSafe, Controller); }), 3.0f, false);
+                [WeakMode, DeathId, ServiceEventId, KillerId, RecipientId, RecipientContainer, CreatureId, TableId, bKillerSafe, bBoarSafe, Controller]()
+                { if (ASFGameMode* M = WeakMode.Get()) M->RetryDefeatReward(DeathId, ServiceEventId, KillerId, RecipientId, RecipientContainer, CreatureId, TableId, bKillerSafe, bBoarSafe, Controller); }), 3.0f, false);
         }
     };
     Backpack->Enqueue(MoveTemp(Mutation));
+}
+
+void ASFGameMode::RetrySharedDrop(const FSFGameplayRequest& Request,
+    const TArray<TWeakObjectPtr<ASFPlayerController>>& Players)
+{
+    if (!USFBackpackComponent::Services()) { return; }
+    USFBackpackComponent::Services()->Call(Request,
+        [WeakMode = TWeakObjectPtr<ASFGameMode>(this), Request, Players](const FSFGameplayResponse& Reply)
+    {
+        ASFGameMode* Mode = WeakMode.Get(); if (!Mode) { return; }
+        if (Reply.Status == ESFGameplayStatus::Ok)
+        {
+            UE_LOG(LogTemp, Display, TEXT("SHARED_LOOT_CREATED Event=%s Creature=%s Eligible=%d Items=%lld"),
+                *Request.OperationId, *Request.CreatureId, Request.EligibleCharacterIds.Num(), Reply.Quantity);
+            for (const TWeakObjectPtr<ASFPlayerController>& Player : Players)
+            { if (Player.IsValid()) { Player->ClientSharedDropAvailable(Request.OperationId); } }
+        }
+        else if (Reply.Status == ESFGameplayStatus::Unavailable)
+        {
+            FTimerHandle Retry;
+            Mode->GetWorldTimerManager().SetTimer(Retry, FTimerDelegate::CreateWeakLambda(Mode,
+                [WeakMode, Request, Players]()
+                { if (ASFGameMode* M = WeakMode.Get()) { M->RetrySharedDrop(Request, Players); } }), 3.0f, false);
+        }
+        else { UE_LOG(LogTemp, Warning, TEXT("SHARED_LOOT_CREATE_DENIED Event=%s Code=%d"), *Request.OperationId, Reply.GrpcCode); }
+    });
+}
+
+void ASFGameMode::ClaimSharedDrop(ASFPlayerController* Player, const FString& EventId)
+{
+    if (!IsValid(Player) || !HasAuthority() || EventId.IsEmpty() || !USFBackpackComponent::Services()) { return; }
+    USFBackpackComponent* Backpack = USFBackpackComponent::FindOrCreate(Player);
+    if (!Backpack || Backpack->GetCharacterId().IsEmpty() || Backpack->GetContainerId().IsEmpty()) { return; }
+    FSFGameplayRequest Request; Request.Rpc = ESFGameplayRpc::ClaimSharedDefeatDrop;
+    Request.OperationId = EventId; Request.CharacterId = Backpack->GetCharacterId();
+    Request.ContainerId = Backpack->GetContainerId();
+    USFBackpackComponent::Services()->Call(Request,
+        [WeakMode = TWeakObjectPtr<ASFGameMode>(this), WeakPlayer = TWeakObjectPtr<ASFPlayerController>(Player),
+         WeakBackpack = TWeakObjectPtr<USFBackpackComponent>(Backpack), Request](const FSFGameplayResponse& Reply)
+    {
+        if (!WeakMode.IsValid()) { return; }
+        const bool bWon = Reply.Status == ESFGameplayStatus::Ok && Reply.ClaimantCharacterId == Request.CharacterId;
+        UE_LOG(LogTemp, Display, TEXT("SHARED_LOOT_CLAIM Event=%s Character=%s Won=%d Code=%d Items=%lld"),
+            *Request.OperationId, *Request.CharacterId, bWon, Reply.GrpcCode, Reply.Quantity);
+        if (bWon)
+        { if (USFBackpackComponent* Owner = WeakBackpack.Get()) { Owner->Reconcile(); } }
+        else if (Reply.Status == ESFGameplayStatus::Unavailable && WeakPlayer.IsValid())
+        {
+            ASFGameMode* Mode = WeakMode.Get(); FTimerHandle Retry;
+            Mode->GetWorldTimerManager().SetTimer(Retry, FTimerDelegate::CreateWeakLambda(Mode,
+                [WeakMode, WeakPlayer, RetryEvent = Request.OperationId]()
+                { if (ASFGameMode* M = WeakMode.Get()) { M->ClaimSharedDrop(WeakPlayer.Get(), RetryEvent); } }), 3.0f, false);
+        }
+    });
+}
+
+void ASFPlayerController::ClientSharedDropAvailable_Implementation(const FString& EventId)
+{
+    UE_LOG(LogTemp, Display, TEXT("SHARED_LOOT_AVAILABLE Event=%s"), *EventId);
+    if (FParse::Param(FCommandLine::Get(), TEXT("PersonalLootScenario")))
+    {
+        int32 ScenarioRole = 0; FParse::Value(FCommandLine::Get(), TEXT("PartyXpScenarioRole="), ScenarioRole);
+        FTimerHandle ClaimTimer;
+        GetWorldTimerManager().SetTimer(ClaimTimer, FTimerDelegate::CreateWeakLambda(this,
+            [Weak = TWeakObjectPtr<ASFPlayerController>(this), EventId]()
+            { if (ASFPlayerController* Player = Weak.Get()) { Player->ServerClaimSharedDrop(EventId); } }),
+            ScenarioRole == 1 ? 0.2f : 1.5f, false);
+    }
+}
+
+void ASFPlayerController::ServerClaimSharedDrop_Implementation(const FString& EventId)
+{
+    if (ASFGameMode* Mode = GetWorld()->GetAuthGameMode<ASFGameMode>()) { Mode->ClaimSharedDrop(this, EventId); }
+}
+
+void ASFPlayerController::SFClaimDrop(const FString& EventId)
+{
+    ServerClaimSharedDrop(EventId);
 }
 
 void ASFGameMode::BoarDied(ASFPilotBoar* Boar, ASFE1Character* Killer)
@@ -2097,7 +2198,7 @@ void ASFGameMode::BoarDied(ASFPilotBoar* Boar, ASFE1Character* Killer)
     if (bCompanionSandbox)
     {
         if (GetWorld()->GetOutermost()->GetName() == TEXT("/Game/Frontier/Maps/Sandbox/SB_PersonalLoot"))
-        { RewardKill(Boar->DeathId(), Boar->GetActorLocation(), Killer); }
+        { RewardKill(Boar, Killer); }
         if (bRespawnSandbox)
         {
             int32 PlayersInArea = 0;
@@ -2121,7 +2222,7 @@ void ASFGameMode::BoarDied(ASFPilotBoar* Boar, ASFE1Character* Killer)
     }
     const FString Key = FString::Printf(TEXT("%s:%d"), *Boar->GroupId(), Boar->SlotIndex());
     UE_LOG(LogTemp, Display, TEXT("COMBAT_PILOT_BOAR_DEAD Group=%s Slot=%d"), *Boar->GroupId(), Boar->SlotIndex());
-    RewardKill(Boar->DeathId(), Boar->GetActorLocation(), Killer);
+    RewardKill(Boar, Killer);
     bSlotBridgeHealthy = RunWorldSlots(TEXT("defeat"), Boar->GroupId(), Boar->SlotIndex());
     ActiveBoars.Remove(Key);
     Boar->Destroy();

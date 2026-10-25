@@ -17,13 +17,14 @@ int32 SFCombatPilotRewards::HidesFor(TSet<FString>& Granted, const FString& Deat
 }
 
 FSFGameplayRequest SFCombatPilotRewards::BuildDefeatRequest(const FString& EventId, const FString& KillerId, const FString& CharacterId,
-    const FString& ContainerId, int64 ExpectedRevision, bool bKillerProtected, bool bBoarProtected)
+    const FString& ContainerId, int64 ExpectedRevision, bool bKillerProtected, bool bBoarProtected,
+    const FString& CreatureId, const FString& TableId)
 {
     FSFGameplayRequest Request; Request.Rpc = ESFGameplayRpc::GrantDefeatReward;
     Request.OperationId = EventId; Request.KillerCharacterId = KillerId; Request.CharacterId = CharacterId; Request.ContainerId = ContainerId;
     Request.ExpectedContainerRevision = ExpectedRevision;
     Request.bKillerProtected = bKillerProtected; Request.bBoarProtected = bBoarProtected;
-    Request.TableId = TEXT("loot/greenlands_silverbrook_boar");
+    Request.CreatureId = CreatureId; Request.TableId = TableId;
     return Request;
 }
 

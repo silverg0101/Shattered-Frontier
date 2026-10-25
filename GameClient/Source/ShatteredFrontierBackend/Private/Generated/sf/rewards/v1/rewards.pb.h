@@ -339,282 +339,6 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED SharedDropItem final : public ::goo
 };
 // -------------------------------------------------------------------
 
-class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED RewardReceipt final : public ::google::protobuf::Message
-/* @@protoc_insertion_point(class_definition:sf.rewards.v1.RewardReceipt) */ {
- public:
-  inline RewardReceipt() : RewardReceipt(nullptr) {}
-  ~RewardReceipt() PROTOBUF_FINAL;
-
-#if defined(PROTOBUF_CUSTOM_VTABLE)
-  void operator delete(RewardReceipt* PROTOBUF_NONNULL msg, ::std::destroying_delete_t) {
-    SharedDtor(*msg);
-    ::google::protobuf::internal::SizedDelete(msg, sizeof(RewardReceipt));
-  }
-#endif
-
-  template <typename = void>
-  explicit constexpr RewardReceipt(::google::protobuf::internal::ConstantInitialized,
-                           const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
-                               class_data);
-
-  inline RewardReceipt(const RewardReceipt& from) : RewardReceipt(nullptr, from) {}
-  inline RewardReceipt(RewardReceipt&& from) noexcept : RewardReceipt(nullptr, ::std::move(from)) {}
-  inline RewardReceipt& operator=(const RewardReceipt& from) {
-    CopyFrom(from);
-    return *this;
-  }
-  inline RewardReceipt& operator=(RewardReceipt&& from) noexcept {
-    if (this == &from) return *this;
-    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
-      InternalSwap(&from);
-    } else {
-      CopyFrom(from);
-    }
-    return *this;
-  }
-
-  [[nodiscard]] inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
-      ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
-  }
-  [[nodiscard]] inline ::google::protobuf::UnknownFieldSet* PROTOBUF_NONNULL
-  mutable_unknown_fields() ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
-  }
-
-  [[nodiscard]] static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL descriptor() {
-    return GetDescriptor();
-  }
-  [[nodiscard]] static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL
-  GetDescriptor() {
-    return default_instance().GetMetadata().descriptor;
-  }
-  [[nodiscard]] static const ::google::protobuf::Reflection* PROTOBUF_NONNULL GetReflection() {
-    return default_instance().GetMetadata().reflection;
-  }
-  [[nodiscard]] static const RewardReceipt& default_instance() {
-    return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<RewardReceipt>(&RewardReceipt_globals_);
-  }
-  static constexpr int kIndexInFileMessages = 5;
-  friend void swap(RewardReceipt& a, RewardReceipt& b) { a.Swap(&b); }
-  inline void Swap(RewardReceipt* PROTOBUF_NONNULL other) {
-    if (other == this) return;
-    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
-      InternalSwap(other);
-    } else {
-      ::google::protobuf::internal::GenericSwap(this, other);
-    }
-  }
-  void UnsafeArenaSwap(RewardReceipt* PROTOBUF_NONNULL other) {
-    if (other == this) return;
-    ABSL_DCHECK(GetArena() == other->GetArena());
-    InternalSwap(other);
-  }
-
-  // implements Message ----------------------------------------------
-
-  [[nodiscard]] RewardReceipt* PROTOBUF_NONNULL
-  New(::google::protobuf::Arena* PROTOBUF_NULLABLE arena = nullptr) const {
-    return ::google::protobuf::Message::DefaultConstruct<RewardReceipt>(arena);
-  }
-  using ::google::protobuf::Message::CopyFrom;
-  void CopyFrom(const RewardReceipt& from);
-  using ::google::protobuf::Message::MergeFrom;
-  void MergeFrom(const RewardReceipt& from) { RewardReceipt::MergeImpl(*this, from); }
-
-  private:
-  static void MergeImpl(::google::protobuf::MessageLite& to_msg,
-                        const ::google::protobuf::MessageLite& from_msg);
-
-  public:
-  [[nodiscard]] bool IsInitialized() const {
-    return true;
-  }
-  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
-  #if defined(PROTOBUF_CUSTOM_VTABLE)
-  private:
-  [[nodiscard]] static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
-  [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
-      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
-      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
-
-  public:
-  [[nodiscard]] ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
-  [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
-      ::uint8_t* PROTOBUF_NONNULL target,
-      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
-    return _InternalSerialize(*this, target, stream);
-  }
-  #else   // PROTOBUF_CUSTOM_VTABLE
-  [[nodiscard]] ::size_t ByteSizeLong() const final;
-  [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
-      ::uint8_t* PROTOBUF_NONNULL target,
-      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const final;
-  #endif  // PROTOBUF_CUSTOM_VTABLE
-  [[nodiscard]] int GetCachedSize() const {
-    return _impl_._cached_size_.Get();
-  }
-
-  private:
-  void SharedCtor(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
-  static void SharedDtor(MessageLite& self);
-  void InternalSwap(RewardReceipt* PROTOBUF_NONNULL other);
- private:
-  template <typename T>
-  friend ::absl::string_view(::google::protobuf::internal::GetAnyMessageName)();
-  static ::absl::string_view FullMessageName() { return "sf.rewards.v1.RewardReceipt"; }
-
-  explicit RewardReceipt(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
-  RewardReceipt(::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const RewardReceipt& from);
-  RewardReceipt(
-      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, RewardReceipt&& from) noexcept
-      : RewardReceipt(arena) {
-    *this = ::std::move(from);
-  }
-  const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL GetClassData() const PROTOBUF_FINAL;
-  static void* PROTOBUF_NONNULL PlacementNew_(
-      const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
-      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
-  static constexpr auto InternalNewImpl_();
-
- public:
-  static constexpr auto InternalGenerateClassData_(
-      const MessageLite& prototype,
-      const ::google::protobuf::internal::TcParseTableBase* PROTOBUF_NULLABLE tc_table = nullptr);
-
-  [[nodiscard]] ::google::protobuf::Metadata GetMetadata() const;
-  // nested types ----------------------------------------------------
-
-  // accessors -------------------------------------------------------
-  enum : int {
-    kSourceCodeFieldNumber = 2,
-    kLedgerOperationIdFieldNumber = 3,
-    kDefinitionIdFieldNumber = 4,
-    kQuantityFieldNumber = 5,
-    kContainerRevisionFieldNumber = 6,
-    kGrantedFieldNumber = 1,
-  };
-  // string source_code = 2;
-  void clear_source_code() ;
-  [[nodiscard]] const ::std::string& source_code() const;
-  template <typename Arg_ = const ::std::string&, typename... Args_>
-  void set_source_code(Arg_&& arg, Args_... args);
-  ::std::string* PROTOBUF_NONNULL mutable_source_code();
-  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_source_code();
-  void set_allocated_source_code(::std::string* PROTOBUF_NULLABLE value);
-
-  private:
-  const ::std::string& _internal_source_code() const;
-  PROTOBUF_ALWAYS_INLINE void _internal_set_source_code(const ::std::string& value);
-  ::std::string* PROTOBUF_NONNULL _internal_mutable_source_code();
-
-  public:
-  // string ledger_operation_id = 3;
-  void clear_ledger_operation_id() ;
-  [[nodiscard]] const ::std::string& ledger_operation_id() const;
-  template <typename Arg_ = const ::std::string&, typename... Args_>
-  void set_ledger_operation_id(Arg_&& arg, Args_... args);
-  ::std::string* PROTOBUF_NONNULL mutable_ledger_operation_id();
-  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_ledger_operation_id();
-  void set_allocated_ledger_operation_id(::std::string* PROTOBUF_NULLABLE value);
-
-  private:
-  const ::std::string& _internal_ledger_operation_id() const;
-  PROTOBUF_ALWAYS_INLINE void _internal_set_ledger_operation_id(const ::std::string& value);
-  ::std::string* PROTOBUF_NONNULL _internal_mutable_ledger_operation_id();
-
-  public:
-  // string definition_id = 4;
-  void clear_definition_id() ;
-  [[nodiscard]] const ::std::string& definition_id() const;
-  template <typename Arg_ = const ::std::string&, typename... Args_>
-  void set_definition_id(Arg_&& arg, Args_... args);
-  ::std::string* PROTOBUF_NONNULL mutable_definition_id();
-  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_definition_id();
-  void set_allocated_definition_id(::std::string* PROTOBUF_NULLABLE value);
-
-  private:
-  const ::std::string& _internal_definition_id() const;
-  PROTOBUF_ALWAYS_INLINE void _internal_set_definition_id(const ::std::string& value);
-  ::std::string* PROTOBUF_NONNULL _internal_mutable_definition_id();
-
-  public:
-  // int64 quantity = 5;
-  void clear_quantity() ;
-  [[nodiscard]] ::int64_t quantity() const;
-  void set_quantity(::int64_t value);
-
-  private:
-  ::int64_t _internal_quantity() const;
-  void _internal_set_quantity(::int64_t value);
-
-  public:
-  // int64 container_revision = 6;
-  void clear_container_revision() ;
-  [[nodiscard]] ::int64_t container_revision() const;
-  void set_container_revision(::int64_t value);
-
-  private:
-  ::int64_t _internal_container_revision() const;
-  void _internal_set_container_revision(::int64_t value);
-
-  public:
-  // bool granted = 1;
-  void clear_granted() ;
-  [[nodiscard]] bool granted() const;
-  void set_granted(bool value);
-
-  private:
-  bool _internal_granted() const;
-  void _internal_set_granted(bool value);
-
-  public:
-  // @@protoc_insertion_point(class_scope:sf.rewards.v1.RewardReceipt)
- private:
-  class _Internal;
-  using ParseTableT_ =
-      ::google::protobuf::internal::TcParseTable<3, 6,
-                          0, 79,
-                          2>;
-  static constexpr ParseTableT_ InternalGenerateParseTable_(
-      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
-  friend class ::google::protobuf::internal::TcParser;
-  #ifndef PROTOBUF_MESSAGE_GLOBALS
-  static const ParseTableT_ _table_;
-  #endif
-
-  friend class ::google::protobuf::MessageLite;
-  friend class ::google::protobuf::Arena;
-  friend ::google::protobuf::internal::PrivateAccess;
-  template <typename T>
-  friend class ::google::protobuf::Arena::InternalHelper;
-  using InternalArenaConstructable_ = void;
-  using DestructorSkippable_ = void;
-  struct Impl_ {
-    inline explicit constexpr Impl_(::google::protobuf::internal::InternalVisibility visibility,
-                                    ::google::protobuf::internal::ConstantInitialized) noexcept;
-    inline explicit Impl_(
-        ::google::protobuf::internal::InternalVisibility visibility,
-        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
-    inline explicit Impl_(
-        ::google::protobuf::internal::InternalVisibility visibility,
-        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
-        const RewardReceipt& from_msg);
-    ::google::protobuf::internal::HasBits<1> _has_bits_;
-    ::google::protobuf::internal::CachedSize _cached_size_;
-    ::google::protobuf::internal::ArenaStringPtr source_code_;
-    ::google::protobuf::internal::ArenaStringPtr ledger_operation_id_;
-    ::google::protobuf::internal::ArenaStringPtr definition_id_;
-    ::int64_t quantity_;
-    ::int64_t container_revision_;
-    bool granted_;
-    PROTOBUF_TSAN_DECLARE_MEMBER
-  };
-  union { Impl_ _impl_; };
-  friend struct ::TableStruct_sf_2frewards_2fv1_2frewards_2eproto;
-};
-// -------------------------------------------------------------------
-
 class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED GrantDefeatRewardRequest final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:sf.rewards.v1.GrantDefeatRewardRequest) */ {
  public:
@@ -768,6 +492,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED GrantDefeatRewardRequest final : pu
     kRecipientCharacterIdFieldNumber = 3,
     kContainerIdFieldNumber = 4,
     kTableIdFieldNumber = 8,
+    kCreatureIdFieldNumber = 9,
     kExpectedContainerRevisionFieldNumber = 5,
     kKillerInProtectedTownFieldNumber = 6,
     kBoarInProtectedTownFieldNumber = 7,
@@ -847,6 +572,21 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED GrantDefeatRewardRequest final : pu
   ::std::string* PROTOBUF_NONNULL _internal_mutable_table_id();
 
   public:
+  // string creature_id = 9;
+  void clear_creature_id() ;
+  [[nodiscard]] const ::std::string& creature_id() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_creature_id(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_creature_id();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_creature_id();
+  void set_allocated_creature_id(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_creature_id() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_creature_id(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_creature_id();
+
+  public:
   // int64 expected_container_revision = 5;
   void clear_expected_container_revision() ;
   [[nodiscard]] ::int64_t expected_container_revision() const;
@@ -881,8 +621,8 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED GrantDefeatRewardRequest final : pu
  private:
   class _Internal;
   using ParseTableT_ =
-      ::google::protobuf::internal::TcParseTable<3, 8,
-                          0, 131,
+      ::google::protobuf::internal::TcParseTable<4, 9,
+                          0, 142,
                           2>;
   static constexpr ParseTableT_ InternalGenerateParseTable_(
       const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
@@ -915,6 +655,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED GrantDefeatRewardRequest final : pu
     ::google::protobuf::internal::ArenaStringPtr recipient_character_id_;
     ::google::protobuf::internal::ArenaStringPtr container_id_;
     ::google::protobuf::internal::ArenaStringPtr table_id_;
+    ::google::protobuf::internal::ArenaStringPtr creature_id_;
     ::int64_t expected_container_revision_;
     bool killer_in_protected_town_;
     bool boar_in_protected_town_;
@@ -1743,6 +1484,305 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED SharedDefeatDropReceipt final : pub
     ::google::protobuf::internal::ArenaStringPtr claimant_character_id_;
     ::google::protobuf::internal::ArenaStringPtr ledger_operation_id_;
     ::int64_t container_revision_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_sf_2frewards_2fv1_2frewards_2eproto;
+};
+// -------------------------------------------------------------------
+
+class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED RewardReceipt final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:sf.rewards.v1.RewardReceipt) */ {
+ public:
+  inline RewardReceipt() : RewardReceipt(nullptr) {}
+  ~RewardReceipt() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(RewardReceipt* PROTOBUF_NONNULL msg, ::std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(RewardReceipt));
+  }
+#endif
+
+  template <typename = void>
+  explicit constexpr RewardReceipt(::google::protobuf::internal::ConstantInitialized,
+                           const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+                               class_data);
+
+  inline RewardReceipt(const RewardReceipt& from) : RewardReceipt(nullptr, from) {}
+  inline RewardReceipt(RewardReceipt&& from) noexcept : RewardReceipt(nullptr, ::std::move(from)) {}
+  inline RewardReceipt& operator=(const RewardReceipt& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline RewardReceipt& operator=(RewardReceipt&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  [[nodiscard]] inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  [[nodiscard]] inline ::google::protobuf::UnknownFieldSet* PROTOBUF_NONNULL
+  mutable_unknown_fields() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  [[nodiscard]] static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL descriptor() {
+    return GetDescriptor();
+  }
+  [[nodiscard]] static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL
+  GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  [[nodiscard]] static const ::google::protobuf::Reflection* PROTOBUF_NONNULL GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  [[nodiscard]] static const RewardReceipt& default_instance() {
+    return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<RewardReceipt>(&RewardReceipt_globals_);
+  }
+  static constexpr int kIndexInFileMessages = 5;
+  friend void swap(RewardReceipt& a, RewardReceipt& b) { a.Swap(&b); }
+  inline void Swap(RewardReceipt* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(RewardReceipt* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  [[nodiscard]] RewardReceipt* PROTOBUF_NONNULL
+  New(::google::protobuf::Arena* PROTOBUF_NULLABLE arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<RewardReceipt>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const RewardReceipt& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const RewardReceipt& from) { RewardReceipt::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(::google::protobuf::MessageLite& to_msg,
+                        const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  [[nodiscard]] bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  [[nodiscard]] static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+
+  public:
+  [[nodiscard]] ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  [[nodiscard]] ::size_t ByteSizeLong() const final;
+  [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  [[nodiscard]] int GetCachedSize() const {
+    return _impl_._cached_size_.Get();
+  }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(RewardReceipt* PROTOBUF_NONNULL other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "sf.rewards.v1.RewardReceipt"; }
+
+  explicit RewardReceipt(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  RewardReceipt(::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const RewardReceipt& from);
+  RewardReceipt(
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, RewardReceipt&& from) noexcept
+      : RewardReceipt(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL GetClassData() const PROTOBUF_FINAL;
+  static void* PROTOBUF_NONNULL PlacementNew_(
+      const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static constexpr auto InternalNewImpl_();
+
+ public:
+  static constexpr auto InternalGenerateClassData_(
+      const MessageLite& prototype,
+      const ::google::protobuf::internal::TcParseTableBase* PROTOBUF_NULLABLE tc_table = nullptr);
+
+  [[nodiscard]] ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kItemsFieldNumber = 7,
+    kSourceCodeFieldNumber = 2,
+    kLedgerOperationIdFieldNumber = 3,
+    kDefinitionIdFieldNumber = 4,
+    kQuantityFieldNumber = 5,
+    kContainerRevisionFieldNumber = 6,
+    kGrantedFieldNumber = 1,
+  };
+  // repeated .sf.rewards.v1.SharedDropItem items = 7;
+  [[nodiscard]] int items_size()
+      const;
+  private:
+  int _internal_items_size() const;
+
+  public:
+  void clear_items() ;
+  [[nodiscard]] const ::sf::rewards::v1::SharedDropItem& items(int index) const;
+  [[nodiscard]] ::sf::rewards::v1::SharedDropItem* PROTOBUF_NONNULL mutable_items(int index);
+  ::sf::rewards::v1::SharedDropItem* PROTOBUF_NONNULL add_items();
+  [[nodiscard]] const ::google::protobuf::RepeatedPtrField<::sf::rewards::v1::SharedDropItem>&
+  items() const;
+  [[nodiscard]] ::google::protobuf::RepeatedPtrField<::sf::rewards::v1::SharedDropItem>* PROTOBUF_NONNULL
+  mutable_items();
+
+  private:
+  const ::google::protobuf::RepeatedPtrField<::sf::rewards::v1::SharedDropItem>& _internal_items() const;
+  ::google::protobuf::RepeatedPtrField<::sf::rewards::v1::SharedDropItem>* PROTOBUF_NONNULL _internal_mutable_items();
+
+  public:
+  // string source_code = 2;
+  void clear_source_code() ;
+  [[nodiscard]] const ::std::string& source_code() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_source_code(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_source_code();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_source_code();
+  void set_allocated_source_code(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_source_code() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_source_code(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_source_code();
+
+  public:
+  // string ledger_operation_id = 3;
+  void clear_ledger_operation_id() ;
+  [[nodiscard]] const ::std::string& ledger_operation_id() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_ledger_operation_id(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_ledger_operation_id();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_ledger_operation_id();
+  void set_allocated_ledger_operation_id(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_ledger_operation_id() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_ledger_operation_id(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_ledger_operation_id();
+
+  public:
+  // string definition_id = 4;
+  void clear_definition_id() ;
+  [[nodiscard]] const ::std::string& definition_id() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_definition_id(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_definition_id();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_definition_id();
+  void set_allocated_definition_id(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_definition_id() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_definition_id(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_definition_id();
+
+  public:
+  // int64 quantity = 5;
+  void clear_quantity() ;
+  [[nodiscard]] ::int64_t quantity() const;
+  void set_quantity(::int64_t value);
+
+  private:
+  ::int64_t _internal_quantity() const;
+  void _internal_set_quantity(::int64_t value);
+
+  public:
+  // int64 container_revision = 6;
+  void clear_container_revision() ;
+  [[nodiscard]] ::int64_t container_revision() const;
+  void set_container_revision(::int64_t value);
+
+  private:
+  ::int64_t _internal_container_revision() const;
+  void _internal_set_container_revision(::int64_t value);
+
+  public:
+  // bool granted = 1;
+  void clear_granted() ;
+  [[nodiscard]] bool granted() const;
+  void set_granted(bool value);
+
+  private:
+  bool _internal_granted() const;
+  void _internal_set_granted(bool value);
+
+  public:
+  // @@protoc_insertion_point(class_scope:sf.rewards.v1.RewardReceipt)
+ private:
+  class _Internal;
+  using ParseTableT_ =
+      ::google::protobuf::internal::TcParseTable<3, 7,
+                          1, 79,
+                          2>;
+  static constexpr ParseTableT_ InternalGenerateParseTable_(
+      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+  friend class ::google::protobuf::internal::TcParser;
+  #ifndef PROTOBUF_MESSAGE_GLOBALS
+  static const ParseTableT_ _table_;
+  #endif
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  friend ::google::protobuf::internal::PrivateAccess;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                                    ::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+        const RewardReceipt& from_msg);
+    ::google::protobuf::internal::HasBits<1> _has_bits_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    ::google::protobuf::RepeatedPtrField< ::sf::rewards::v1::SharedDropItem > items_;
+    ::google::protobuf::internal::ArenaStringPtr source_code_;
+    ::google::protobuf::internal::ArenaStringPtr ledger_operation_id_;
+    ::google::protobuf::internal::ArenaStringPtr definition_id_;
+    ::int64_t quantity_;
+    ::int64_t container_revision_;
+    bool granted_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
   union { Impl_ _impl_; };
@@ -2968,7 +3008,7 @@ inline void GrantDefeatRewardRequest::set_allocated_container_id(::std::string* 
 inline void GrantDefeatRewardRequest::clear_expected_container_revision() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.expected_container_revision_ = ::int64_t{0};
-  ClearHasBit(_impl_._has_bits_[0], 0x00000020U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000040U);
 }
 inline ::int64_t GrantDefeatRewardRequest::expected_container_revision() const {
   // @@protoc_insertion_point(field_get:sf.rewards.v1.GrantDefeatRewardRequest.expected_container_revision)
@@ -2976,7 +3016,7 @@ inline ::int64_t GrantDefeatRewardRequest::expected_container_revision() const {
 }
 inline void GrantDefeatRewardRequest::set_expected_container_revision(::int64_t value) {
   _internal_set_expected_container_revision(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000020U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000040U);
   // @@protoc_insertion_point(field_set:sf.rewards.v1.GrantDefeatRewardRequest.expected_container_revision)
 }
 inline ::int64_t GrantDefeatRewardRequest::_internal_expected_container_revision() const {
@@ -2992,7 +3032,7 @@ inline void GrantDefeatRewardRequest::_internal_set_expected_container_revision(
 inline void GrantDefeatRewardRequest::clear_killer_in_protected_town() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.killer_in_protected_town_ = false;
-  ClearHasBit(_impl_._has_bits_[0], 0x00000040U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000080U);
 }
 inline bool GrantDefeatRewardRequest::killer_in_protected_town() const {
   // @@protoc_insertion_point(field_get:sf.rewards.v1.GrantDefeatRewardRequest.killer_in_protected_town)
@@ -3000,7 +3040,7 @@ inline bool GrantDefeatRewardRequest::killer_in_protected_town() const {
 }
 inline void GrantDefeatRewardRequest::set_killer_in_protected_town(bool value) {
   _internal_set_killer_in_protected_town(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000040U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000080U);
   // @@protoc_insertion_point(field_set:sf.rewards.v1.GrantDefeatRewardRequest.killer_in_protected_town)
 }
 inline bool GrantDefeatRewardRequest::_internal_killer_in_protected_town() const {
@@ -3016,7 +3056,7 @@ inline void GrantDefeatRewardRequest::_internal_set_killer_in_protected_town(boo
 inline void GrantDefeatRewardRequest::clear_boar_in_protected_town() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.boar_in_protected_town_ = false;
-  ClearHasBit(_impl_._has_bits_[0], 0x00000080U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000100U);
 }
 inline bool GrantDefeatRewardRequest::boar_in_protected_town() const {
   // @@protoc_insertion_point(field_get:sf.rewards.v1.GrantDefeatRewardRequest.boar_in_protected_town)
@@ -3024,7 +3064,7 @@ inline bool GrantDefeatRewardRequest::boar_in_protected_town() const {
 }
 inline void GrantDefeatRewardRequest::set_boar_in_protected_town(bool value) {
   _internal_set_boar_in_protected_town(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000080U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000100U);
   // @@protoc_insertion_point(field_set:sf.rewards.v1.GrantDefeatRewardRequest.boar_in_protected_town)
 }
 inline bool GrantDefeatRewardRequest::_internal_boar_in_protected_town() const {
@@ -3100,6 +3140,70 @@ inline void GrantDefeatRewardRequest::set_allocated_table_id(::std::string* PROT
   // @@protoc_insertion_point(field_set_allocated:sf.rewards.v1.GrantDefeatRewardRequest.table_id)
 }
 
+// string creature_id = 9;
+inline void GrantDefeatRewardRequest::clear_creature_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.creature_id_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000020U);
+}
+inline const ::std::string& GrantDefeatRewardRequest::creature_id() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.rewards.v1.GrantDefeatRewardRequest.creature_id)
+  return _internal_creature_id();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void GrantDefeatRewardRequest::set_creature_id(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000020U);
+  _impl_.creature_id_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:sf.rewards.v1.GrantDefeatRewardRequest.creature_id)
+}
+inline ::std::string* PROTOBUF_NONNULL GrantDefeatRewardRequest::mutable_creature_id()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000020U);
+  ::std::string* _s = _internal_mutable_creature_id();
+  // @@protoc_insertion_point(field_mutable:sf.rewards.v1.GrantDefeatRewardRequest.creature_id)
+  return _s;
+}
+inline const ::std::string& GrantDefeatRewardRequest::_internal_creature_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.creature_id_.Get();
+}
+inline void GrantDefeatRewardRequest::_internal_set_creature_id(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.creature_id_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL GrantDefeatRewardRequest::_internal_mutable_creature_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.creature_id_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE GrantDefeatRewardRequest::release_creature_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:sf.rewards.v1.GrantDefeatRewardRequest.creature_id)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000020U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000020U);
+  auto* released = _impl_.creature_id_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.creature_id_.Set("", GetArena());
+  }
+  return released;
+}
+inline void GrantDefeatRewardRequest::set_allocated_creature_id(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000020U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000020U);
+  }
+  _impl_.creature_id_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.creature_id_.IsDefault()) {
+    _impl_.creature_id_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:sf.rewards.v1.GrantDefeatRewardRequest.creature_id)
+}
+
 // -------------------------------------------------------------------
 
 // RewardReceipt
@@ -3108,7 +3212,7 @@ inline void GrantDefeatRewardRequest::set_allocated_table_id(::std::string* PROT
 inline void RewardReceipt::clear_granted() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.granted_ = false;
-  ClearHasBit(_impl_._has_bits_[0], 0x00000020U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000040U);
 }
 inline bool RewardReceipt::granted() const {
   // @@protoc_insertion_point(field_get:sf.rewards.v1.RewardReceipt.granted)
@@ -3116,7 +3220,7 @@ inline bool RewardReceipt::granted() const {
 }
 inline void RewardReceipt::set_granted(bool value) {
   _internal_set_granted(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000020U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000040U);
   // @@protoc_insertion_point(field_set:sf.rewards.v1.RewardReceipt.granted)
 }
 inline bool RewardReceipt::_internal_granted() const {
@@ -3132,7 +3236,7 @@ inline void RewardReceipt::_internal_set_granted(bool value) {
 inline void RewardReceipt::clear_source_code() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.source_code_.ClearToEmpty();
-  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
 }
 inline const ::std::string& RewardReceipt::source_code() const
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
@@ -3142,13 +3246,13 @@ inline const ::std::string& RewardReceipt::source_code() const
 template <typename Arg_, typename... Args_>
 PROTOBUF_ALWAYS_INLINE void RewardReceipt::set_source_code(Arg_&& arg, Args_... args) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
   _impl_.source_code_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
   // @@protoc_insertion_point(field_set:sf.rewards.v1.RewardReceipt.source_code)
 }
 inline ::std::string* PROTOBUF_NONNULL RewardReceipt::mutable_source_code()
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
   ::std::string* _s = _internal_mutable_source_code();
   // @@protoc_insertion_point(field_mutable:sf.rewards.v1.RewardReceipt.source_code)
   return _s;
@@ -3168,10 +3272,10 @@ inline ::std::string* PROTOBUF_NONNULL RewardReceipt::_internal_mutable_source_c
 inline ::std::string* PROTOBUF_NULLABLE RewardReceipt::release_source_code() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   // @@protoc_insertion_point(field_release:sf.rewards.v1.RewardReceipt.source_code)
-  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000001U)) {
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000002U)) {
     return nullptr;
   }
-  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
   auto* released = _impl_.source_code_.Release();
   if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
     _impl_.source_code_.Set("", GetArena());
@@ -3181,9 +3285,9 @@ inline ::std::string* PROTOBUF_NULLABLE RewardReceipt::release_source_code() {
 inline void RewardReceipt::set_allocated_source_code(::std::string* PROTOBUF_NULLABLE value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   if (value != nullptr) {
-    SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+    SetHasBit(_impl_._has_bits_[0], 0x00000002U);
   } else {
-    ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+    ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
   }
   _impl_.source_code_.SetAllocated(value, GetArena());
   if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.source_code_.IsDefault()) {
@@ -3196,7 +3300,7 @@ inline void RewardReceipt::set_allocated_source_code(::std::string* PROTOBUF_NUL
 inline void RewardReceipt::clear_ledger_operation_id() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.ledger_operation_id_.ClearToEmpty();
-  ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
 }
 inline const ::std::string& RewardReceipt::ledger_operation_id() const
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
@@ -3206,13 +3310,13 @@ inline const ::std::string& RewardReceipt::ledger_operation_id() const
 template <typename Arg_, typename... Args_>
 PROTOBUF_ALWAYS_INLINE void RewardReceipt::set_ledger_operation_id(Arg_&& arg, Args_... args) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000004U);
   _impl_.ledger_operation_id_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
   // @@protoc_insertion_point(field_set:sf.rewards.v1.RewardReceipt.ledger_operation_id)
 }
 inline ::std::string* PROTOBUF_NONNULL RewardReceipt::mutable_ledger_operation_id()
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000004U);
   ::std::string* _s = _internal_mutable_ledger_operation_id();
   // @@protoc_insertion_point(field_mutable:sf.rewards.v1.RewardReceipt.ledger_operation_id)
   return _s;
@@ -3232,10 +3336,10 @@ inline ::std::string* PROTOBUF_NONNULL RewardReceipt::_internal_mutable_ledger_o
 inline ::std::string* PROTOBUF_NULLABLE RewardReceipt::release_ledger_operation_id() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   // @@protoc_insertion_point(field_release:sf.rewards.v1.RewardReceipt.ledger_operation_id)
-  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000002U)) {
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000004U)) {
     return nullptr;
   }
-  ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
   auto* released = _impl_.ledger_operation_id_.Release();
   if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
     _impl_.ledger_operation_id_.Set("", GetArena());
@@ -3245,9 +3349,9 @@ inline ::std::string* PROTOBUF_NULLABLE RewardReceipt::release_ledger_operation_
 inline void RewardReceipt::set_allocated_ledger_operation_id(::std::string* PROTOBUF_NULLABLE value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   if (value != nullptr) {
-    SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+    SetHasBit(_impl_._has_bits_[0], 0x00000004U);
   } else {
-    ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+    ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
   }
   _impl_.ledger_operation_id_.SetAllocated(value, GetArena());
   if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.ledger_operation_id_.IsDefault()) {
@@ -3260,7 +3364,7 @@ inline void RewardReceipt::set_allocated_ledger_operation_id(::std::string* PROT
 inline void RewardReceipt::clear_definition_id() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.definition_id_.ClearToEmpty();
-  ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000008U);
 }
 inline const ::std::string& RewardReceipt::definition_id() const
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
@@ -3270,13 +3374,13 @@ inline const ::std::string& RewardReceipt::definition_id() const
 template <typename Arg_, typename... Args_>
 PROTOBUF_ALWAYS_INLINE void RewardReceipt::set_definition_id(Arg_&& arg, Args_... args) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
-  SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000008U);
   _impl_.definition_id_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
   // @@protoc_insertion_point(field_set:sf.rewards.v1.RewardReceipt.definition_id)
 }
 inline ::std::string* PROTOBUF_NONNULL RewardReceipt::mutable_definition_id()
     ABSL_ATTRIBUTE_LIFETIME_BOUND {
-  SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000008U);
   ::std::string* _s = _internal_mutable_definition_id();
   // @@protoc_insertion_point(field_mutable:sf.rewards.v1.RewardReceipt.definition_id)
   return _s;
@@ -3296,10 +3400,10 @@ inline ::std::string* PROTOBUF_NONNULL RewardReceipt::_internal_mutable_definiti
 inline ::std::string* PROTOBUF_NULLABLE RewardReceipt::release_definition_id() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   // @@protoc_insertion_point(field_release:sf.rewards.v1.RewardReceipt.definition_id)
-  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000004U)) {
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000008U)) {
     return nullptr;
   }
-  ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000008U);
   auto* released = _impl_.definition_id_.Release();
   if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
     _impl_.definition_id_.Set("", GetArena());
@@ -3309,9 +3413,9 @@ inline ::std::string* PROTOBUF_NULLABLE RewardReceipt::release_definition_id() {
 inline void RewardReceipt::set_allocated_definition_id(::std::string* PROTOBUF_NULLABLE value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   if (value != nullptr) {
-    SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+    SetHasBit(_impl_._has_bits_[0], 0x00000008U);
   } else {
-    ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+    ClearHasBit(_impl_._has_bits_[0], 0x00000008U);
   }
   _impl_.definition_id_.SetAllocated(value, GetArena());
   if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.definition_id_.IsDefault()) {
@@ -3324,7 +3428,7 @@ inline void RewardReceipt::set_allocated_definition_id(::std::string* PROTOBUF_N
 inline void RewardReceipt::clear_quantity() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.quantity_ = ::int64_t{0};
-  ClearHasBit(_impl_._has_bits_[0], 0x00000008U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000010U);
 }
 inline ::int64_t RewardReceipt::quantity() const {
   // @@protoc_insertion_point(field_get:sf.rewards.v1.RewardReceipt.quantity)
@@ -3332,7 +3436,7 @@ inline ::int64_t RewardReceipt::quantity() const {
 }
 inline void RewardReceipt::set_quantity(::int64_t value) {
   _internal_set_quantity(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000008U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000010U);
   // @@protoc_insertion_point(field_set:sf.rewards.v1.RewardReceipt.quantity)
 }
 inline ::int64_t RewardReceipt::_internal_quantity() const {
@@ -3348,7 +3452,7 @@ inline void RewardReceipt::_internal_set_quantity(::int64_t value) {
 inline void RewardReceipt::clear_container_revision() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.container_revision_ = ::int64_t{0};
-  ClearHasBit(_impl_._has_bits_[0], 0x00000010U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000020U);
 }
 inline ::int64_t RewardReceipt::container_revision() const {
   // @@protoc_insertion_point(field_get:sf.rewards.v1.RewardReceipt.container_revision)
@@ -3356,7 +3460,7 @@ inline ::int64_t RewardReceipt::container_revision() const {
 }
 inline void RewardReceipt::set_container_revision(::int64_t value) {
   _internal_set_container_revision(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000010U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000020U);
   // @@protoc_insertion_point(field_set:sf.rewards.v1.RewardReceipt.container_revision)
 }
 inline ::int64_t RewardReceipt::_internal_container_revision() const {
@@ -3366,6 +3470,61 @@ inline ::int64_t RewardReceipt::_internal_container_revision() const {
 inline void RewardReceipt::_internal_set_container_revision(::int64_t value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.container_revision_ = value;
+}
+
+// repeated .sf.rewards.v1.SharedDropItem items = 7;
+inline int RewardReceipt::_internal_items_size() const {
+  return _internal_items().size();
+}
+inline int RewardReceipt::items_size() const {
+  return _internal_items_size();
+}
+inline void RewardReceipt::clear_items() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.items_.Clear();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+}
+inline const ::sf::rewards::v1::SharedDropItem& RewardReceipt::items(int index) const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.rewards.v1.RewardReceipt.items)
+  return _internal_items().Get(index);
+}
+inline ::sf::rewards::v1::SharedDropItem* PROTOBUF_NONNULL RewardReceipt::mutable_items(int index)
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_mutable:sf.rewards.v1.RewardReceipt.items)
+  return _internal_mutable_items()->Mutable(index);
+}
+inline ::sf::rewards::v1::SharedDropItem* PROTOBUF_NONNULL RewardReceipt::add_items()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::sf::rewards::v1::SharedDropItem* _add =
+      _internal_mutable_items()->InternalAddWithArena(
+          ::google::protobuf::MessageLite::internal_visibility(), GetArena());
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  // @@protoc_insertion_point(field_add:sf.rewards.v1.RewardReceipt.items)
+  return _add;
+}
+inline const ::google::protobuf::RepeatedPtrField<::sf::rewards::v1::SharedDropItem>& RewardReceipt::items() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_list:sf.rewards.v1.RewardReceipt.items)
+  return _internal_items();
+}
+inline ::google::protobuf::RepeatedPtrField<::sf::rewards::v1::SharedDropItem>* PROTOBUF_NONNULL
+RewardReceipt::mutable_items() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  // @@protoc_insertion_point(field_mutable_list:sf.rewards.v1.RewardReceipt.items)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _internal_mutable_items();
+}
+inline const ::google::protobuf::RepeatedPtrField<::sf::rewards::v1::SharedDropItem>&
+RewardReceipt::_internal_items() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.items_;
+}
+inline ::google::protobuf::RepeatedPtrField<::sf::rewards::v1::SharedDropItem>* PROTOBUF_NONNULL
+RewardReceipt::_internal_mutable_items() {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return &_impl_.items_;
 }
 
 #ifdef __GNUC__

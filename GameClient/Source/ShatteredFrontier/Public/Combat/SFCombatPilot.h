@@ -216,6 +216,9 @@ public:
     /** Authority-only transition when the open-world leash or safe-zone rule fires. */
     void EnterEvade();
     const FString& GroupId() const { return SpawnGroup; }
+    const FString& GetCreatureId() const { return CreatureId; }
+    const FString& GetLootTableId() const { return LootTableId; }
+    bool HasSingleDrop() const { return bSingleDrop; }
     int32 SlotIndex() const { return Slot; }
     /** One id per spawned boar, so its death rewards once. */
     FString DeathId() const { return FString::Printf(TEXT("%s:%d:%d"), *SpawnGroup, Slot, SpawnSerial); }
@@ -251,6 +254,9 @@ private:
     double EngagedSince = -1;
     double NextAggroFixtureTraceAt = 0;
     UPROPERTY(Replicated) FString SpawnGroup;
+    UPROPERTY(EditAnywhere, Replicated, Category="Loot") FString CreatureId = TEXT("npc/boar");
+    UPROPERTY(EditAnywhere, Category="Loot") FString LootTableId = TEXT("loot/greenlands_silverbrook_boar");
+    UPROPERTY(EditAnywhere, Category="Loot") bool bSingleDrop = false;
     UPROPERTY(Replicated) int32 Slot = INDEX_NONE;
     int32 SpawnSerial = 0;
     TArray<FVector2D> Territory;

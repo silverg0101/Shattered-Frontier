@@ -69,7 +69,8 @@ public:
     bool HasPendingDeathReport(const FString& CharacterId) const;
     void BoarDied(ASFPilotBoar* Boar, ASFE1Character* Killer);
     /** Grants the killer's hides for this death, at most once; returns the number granted. */
-    int32 RewardKill(const FString& DeathId, const FVector& BoarAt, ASFE1Character* Killer);
+    int32 RewardKill(ASFPilotBoar* Boar, ASFE1Character* Killer);
+    void ClaimSharedDrop(class ASFPlayerController* Player, const FString& EventId);
     bool IsSafe(const FVector& Location) const;
     bool IsInsideTerritory(const FVector& Location, const TArray<FVector2D>& Polygon) const;
     bool IsCombatActive() const { return bPilotActive; }
@@ -176,7 +177,9 @@ private:
     TSet<FString> RewardedDeaths;
     TSet<FString> CreditedXpDeaths;
     void RetryDefeatReward(const FString& DeathId, const FString& ServiceEventId, const FString& KillerId, const FString& CharacterId,
-        const FString& ContainerId, bool bKillerSafe, bool bBoarSafe, TWeakObjectPtr<APlayerController> Controller);
+        const FString& ContainerId, const FString& CreatureId, const FString& TableId,
+        bool bKillerSafe, bool bBoarSafe, TWeakObjectPtr<APlayerController> Controller);
+    void RetrySharedDrop(const struct FSFGameplayRequest& Request, const TArray<TWeakObjectPtr<class ASFPlayerController>>& Players);
     int32 NextBoarSerial = 0;
     FString SlotStatePath;
     const USFCombatPilotSettings* CapturedSettings = nullptr;

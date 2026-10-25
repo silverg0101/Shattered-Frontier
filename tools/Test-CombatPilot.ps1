@@ -177,7 +177,7 @@ try {
         Invoke-WithEnv $serverEnv { $script:server = Start-Owned 'server' $url $serverFlags }
     } else { $server = Start-Owned 'server' $url $serverFlags }
     if ($PartyXpScenario -and $Clients -eq 2) {
-        Wait-Log $server 'server' 'COMBAT_SANDBOX_READY Map=/Game/Frontier/Maps/Sandbox/SB_PersonalLoot Boars=1'
+        Wait-Log $server 'server' 'COMBAT_SANDBOX_READY Map=/Game/Frontier/Maps/Sandbox/SB_PersonalLoot Boars=2'
         foreach ($role in 1..2) {
             $identity = @('alpha','beta')[$role - 1]
             $null = Start-Owned "client$role" ("127.0.0.1:$Port`?SFDevCharacter=$identity") @('-game','-CombatGroupScenario','-PartyXpScenario','-PersonalLootScenario',"-PartyXpScenarioRole=$role","-CombatGroupRole=$role")
@@ -186,7 +186,10 @@ try {
             $process = @($owned | Where-Object { $_.Id -eq (@($result.runs | Where-Object name -eq "client$role")[0].pid) })[0]
             Wait-Log $process "client$role" "PARTY_XP_READY Role=$role Members=2"
         }
-        Wait-Log $server 'server' 'COMPANION_SANDBOX_BOAR_DEAD Slot=0' 90
+        Wait-Log $server 'server' 'COMPANION_SANDBOX_BOAR_DEAD Slot=[01]' 90
+        Wait-Log $server 'server' 'SHARED_LOOT_CREATED Event=.* Creature=npc/bandit_captain Eligible=2 Items=1' 90
+        Wait-Log $server 'server' 'SHARED_LOOT_CLAIM Event=.* Character=chr_dev_alpha Won=1 Code=0 Items=1' 60
+        Wait-Log $server 'server' 'SHARED_LOOT_CLAIM Event=.* Character=chr_dev_beta Won=0 Code=6' 60
         $rows = ''
         for ($attempt = 0; $attempt -lt 50; $attempt++) {
             $rows = Invoke-LedgerSql $fx "SELECT string_agg(recipient_id,',' ORDER BY recipient_id) FROM inventory.defeat_reward_intents WHERE state='Complete'" $fx.db
@@ -194,10 +197,14 @@ try {
             Start-Sleep -Milliseconds 200
         }
         if ($rows -ne 'chr_dev_alpha,chr_dev_beta') { throw "Personal loot recipients incorrect: $rows" }
+        $shared = Invoke-LedgerSql $fx "SELECT creature_id||'|'||table_id||'|'||array_to_string(ARRAY(SELECT unnest(eligible_ids) ORDER BY 1),',')||'|'||claimant_id||'|'||state FROM inventory.shared_defeat_drops" $fx.db
+        if ($shared -ne 'npc/bandit_captain|loot/boss_greenlands_bandit_captain|chr_dev_alpha,chr_dev_beta|chr_dev_alpha|Complete') { throw "Shared drop snapshot/claim incorrect: $shared" }
         foreach ($identity in @('alpha','beta')) {
             $view = Get-LedgerView $fx "ctn_dev_$identity"
             $amount = [int]$view.items['item/boar_hide']
             if ($amount -lt 2 -or $amount -gt 3) { throw "Personal loot missing for $identity`: $amount" }
+            $bossItems = @('item/studded_jerkin','item/reinforced_greaves','item/captains_longsword') | ForEach-Object { [int]$view.items[$_] } | Measure-Object -Sum
+            if ($bossItems.Sum -ne [int]($identity -eq 'alpha')) { throw "Boss set claim incorrect for $identity`: $($bossItems.Sum)" }
         }
         $result.status = 'Passed'
         $result.lootRecipients = $rows

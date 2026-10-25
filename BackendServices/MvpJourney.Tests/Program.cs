@@ -10,7 +10,7 @@ var clock = new FixedClock();
 var journey = new Journey("content/world/zones/greenlands_silverbrook.json",
     "content/quests/greenlands_frontier_founder.json", ["content/crafting/recipes_greenlands_starter.json"], clock,
     [new("gathering_node/oak_tree", ResourceKind.Wood, "item/oak_log", 2, 1),
-     new("gathering_node/iron_vein", ResourceKind.Ore, "item/iron_ore", 1, 1)], "silverbrook-journey",
+     new("gathering_node/iron_vein", ResourceKind.Ore, "item/iron_ore", 2, 1)], "silverbrook-journey",
     "content/loot/greenlands_starter.json", () => 0);
 journey.RegisterCharacter("chr_ada", 100);
 journey.RegisterCharacter("chr_ben", 100);

@@ -147,6 +147,13 @@ def main():
                                                  u.Rotator(yaw=180) if names[0] in ('Aggro', 'Dodge') else u.Rotator())
         creature.set_actor_label(names[0] + 'Boar')
         creature.set_editor_property('tags', [u.Name('SF_' + names[0] + 'SandboxWildlife')])
+        if names[0] == 'PersonalLoot':
+            boss = actors.spawn_actor_from_class(boar, u.Vector(180, 100, 115), u.Rotator())
+            boss.set_actor_label('PersonalLootBoss_BanditCaptainBinding')
+            boss.set_editor_property('tags', [u.Name('SF_PersonalLootSandboxWildlife')])
+            boss.set_editor_property('creature_id', 'npc/bandit_captain')
+            boss.set_editor_property('loot_table_id', 'loot/boss_greenlands_bandit_captain')
+            boss.set_editor_property('single_drop', True)
         if names[0] == 'SpiritRelease':
             point = actors.spawn_actor_from_class(u.StaticMeshActor, u.Vector(3500, 0, 115))
             point.set_actor_label('SpiritHealerRespawnPoint')

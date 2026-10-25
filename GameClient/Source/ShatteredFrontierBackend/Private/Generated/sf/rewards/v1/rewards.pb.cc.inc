@@ -200,195 +200,6 @@ const ::_pbi::ClassData* SharedDropItem_get_class_data() {
 }
 }  // namespace
 #endif  // PROTOBUF_CUSTOM_VTABLE
-class RewardReceipt::_Internal {
- public:
-  using HasBits = decltype(::std::declval<RewardReceipt>()._impl_._has_bits_);
-  static constexpr ::int32_t kHasBitsOffset =
-      8 * PROTOBUF_FIELD_OFFSET(RewardReceipt, _impl_._has_bits_);
-};
-
-constexpr RewardReceipt::ParseTableT_ RewardReceipt::InternalGenerateParseTable_(const ::_pbi::ClassData* class_data) {
-  return ParseTableT_{
-    {
-      PROTOBUF_FIELD_OFFSET(RewardReceipt, _impl_._has_bits_),
-      0, // no _extensions_
-      6, 56,  // max_field_number, fast_idx_mask
-      offsetof(ParseTableT_, field_lookup_table),
-      4294967232,  // skipmap
-      offsetof(ParseTableT_, field_entries),
-      6,  // num_field_entries
-      0,  // num_aux_entries
-      offsetof(ParseTableT_, field_names),  // no aux_entries
-      class_data,
-      nullptr,  // post_loop_handler
-      ::_pbi::TcParser::GenericFallback,  // fallback
-      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
-      ::_pbi::TcParser::GetTable<::sf::rewards::v1::RewardReceipt>(),  // to_prefetch
-      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
-    }, {{
-      {::_pbi::TcParser::MiniParse, {}},
-      // bool granted = 1;
-      {::_pbi::TcParser::SingularVarintNoZag1<bool, offsetof(RewardReceipt, _impl_.granted_), 5>(),
-       {8, 5, 0,
-        PROTOBUF_FIELD_OFFSET(RewardReceipt, _impl_.granted_)}},
-      // string source_code = 2;
-      {::_pbi::TcParser::FastUS1,
-       {18, 0, 0,
-        PROTOBUF_FIELD_OFFSET(RewardReceipt, _impl_.source_code_)}},
-      // string ledger_operation_id = 3;
-      {::_pbi::TcParser::FastUS1,
-       {26, 1, 0,
-        PROTOBUF_FIELD_OFFSET(RewardReceipt, _impl_.ledger_operation_id_)}},
-      // string definition_id = 4;
-      {::_pbi::TcParser::FastUS1,
-       {34, 2, 0,
-        PROTOBUF_FIELD_OFFSET(RewardReceipt, _impl_.definition_id_)}},
-      // int64 quantity = 5;
-      {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(RewardReceipt, _impl_.quantity_), 3>(),
-       {40, 3, 0,
-        PROTOBUF_FIELD_OFFSET(RewardReceipt, _impl_.quantity_)}},
-      // int64 container_revision = 6;
-      {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(RewardReceipt, _impl_.container_revision_), 4>(),
-       {48, 4, 0,
-        PROTOBUF_FIELD_OFFSET(RewardReceipt, _impl_.container_revision_)}},
-      {::_pbi::TcParser::MiniParse, {}},
-    }}, {{
-      65535, 65535
-    }}, {{
-      // bool granted = 1;
-      {PROTOBUF_FIELD_OFFSET(RewardReceipt, _impl_.granted_), _Internal::kHasBitsOffset + 5, 0, (0 | ::_fl::kFcOptional | ::_fl::kBool)},
-      // string source_code = 2;
-      {PROTOBUF_FIELD_OFFSET(RewardReceipt, _impl_.source_code_), _Internal::kHasBitsOffset + 0, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
-      // string ledger_operation_id = 3;
-      {PROTOBUF_FIELD_OFFSET(RewardReceipt, _impl_.ledger_operation_id_), _Internal::kHasBitsOffset + 1, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
-      // string definition_id = 4;
-      {PROTOBUF_FIELD_OFFSET(RewardReceipt, _impl_.definition_id_), _Internal::kHasBitsOffset + 2, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
-      // int64 quantity = 5;
-      {PROTOBUF_FIELD_OFFSET(RewardReceipt, _impl_.quantity_), _Internal::kHasBitsOffset + 3, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt64)},
-      // int64 container_revision = 6;
-      {PROTOBUF_FIELD_OFFSET(RewardReceipt, _impl_.container_revision_), _Internal::kHasBitsOffset + 4, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt64)},
-    }},
-    // no aux_entries
-    {{
-      "\33\0\13\23\15\0\0\0"
-      "sf.rewards.v1.RewardReceipt"
-      "source_code"
-      "ledger_operation_id"
-      "definition_id"
-    }},
-  };
-}
-
-
-inline constexpr RewardReceipt::Impl_::Impl_(
-    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
-    ::_pbi::ConstantInitialized) noexcept
-      : _cached_size_{0},
-        source_code_(
-            &::google::protobuf::internal::fixed_address_empty_string,
-            ::_pbi::ConstantInitialized()),
-        ledger_operation_id_(
-            &::google::protobuf::internal::fixed_address_empty_string,
-            ::_pbi::ConstantInitialized()),
-        definition_id_(
-            &::google::protobuf::internal::fixed_address_empty_string,
-            ::_pbi::ConstantInitialized()),
-        quantity_{::int64_t{0}},
-        container_revision_{::int64_t{0}},
-        granted_{false} {}
-
-template <typename>
-constexpr RewardReceipt::RewardReceipt(::_pbi::ConstantInitialized,
-                       const ::_pbi::ClassData* PROTOBUF_NONNULL class_data)
-    : ::google::protobuf::Message(
-#if defined(PROTOBUF_CUSTOM_VTABLE)
-          class_data
-#endif  // PROTOBUF_CUSTOM_VTABLE
-          ),
-      _impl_(internal_visibility(), ::_pbi::ConstantInitialized()) {
-}
-inline void* PROTOBUF_NONNULL RewardReceipt::PlacementNew_(
-    const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
-    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena) {
-  return ::new (mem) RewardReceipt(arena);
-}
-constexpr auto RewardReceipt::InternalNewImpl_() {
-  return ::google::protobuf::internal::MessageCreator::CopyInit(sizeof(RewardReceipt), alignof(RewardReceipt));
-}
-constexpr auto RewardReceipt::InternalGenerateClassData_(
-    const MessageLite& prototype,
-    const ::google::protobuf::internal::TcParseTableBase* tc_table) {
-  return ::google::protobuf::internal::ClassDataFull{
-      ::google::protobuf::internal::ClassData{
-          &prototype,
-#ifndef PROTOBUF_MESSAGE_GLOBALS
-          &_table_.header,
-#else
-          tc_table,
-#endif
-          nullptr,  // IsInitialized
-          &RewardReceipt::MergeImpl,
-          ::google::protobuf::Message::GetNewImpl<RewardReceipt>(),
-#if defined(PROTOBUF_CUSTOM_VTABLE)
-          &RewardReceipt::SharedDtor,
-          ::google::protobuf::Message::GetClearImpl<RewardReceipt>(), &RewardReceipt::ByteSizeLong,
-              &RewardReceipt::_InternalSerialize,
-#endif  // PROTOBUF_CUSTOM_VTABLE
-          PROTOBUF_FIELD_OFFSET(RewardReceipt, _impl_._cached_size_),
-          false,
-      },
-#ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[5],
-#else   // !PROTOBUF_MESSAGE_GLOBALS
-      &::_pbi::kDescriptorMethods,
-      &descriptor_table_sf_2frewards_2fv1_2frewards_2eproto,
-      nullptr,  // tracker
-#endif  // PROTOBUF_MESSAGE_GLOBALS
-  };
-}
-struct RewardReceiptGlobalsTypeInternal : ::_pbi::MessageGlobalsBase {
-  constexpr RewardReceiptGlobalsTypeInternal()
-      :
-#ifndef PROTOBUF_MESSAGE_GLOBALS
-        _default(::_pbi::ConstantInitialized{},
-                 RewardReceipt_class_data_.base())
-#else   // !PROTOBUF_MESSAGE_GLOBALS
-        MessageGlobalsBase(RewardReceipt::InternalGenerateClassData_(
-            _default, &RewardReceipt_globals_._table.header)),
-        _default(::_pbi::ConstantInitialized{}, GetClassData()),
-        _table(::_pbi::PrivateAccess::GenerateParseTable<RewardReceipt>(
-            GetClassData()))
-#endif  // PROTOBUF_MESSAGE_GLOBALS
-  {
-  }
-  ~RewardReceiptGlobalsTypeInternal() {}
-  union {
-    alignas(::_pbi::kMaxMessageAlignment) RewardReceipt _default;
-  };
-#ifdef PROTOBUF_MESSAGE_GLOBALS
-  decltype(::_pbi::PrivateAccess::GenerateParseTable<RewardReceipt>(
-      ::std::declval<const ::_pbi::ClassData*>())) _table;
-#endif
-};
-#ifdef PROTOBUF_MESSAGE_GLOBALS
-static_assert(PROTOBUF_FIELD_OFFSET(RewardReceiptGlobalsTypeInternal, _default) ==
-              ::_pbi::MessageGlobalsBase::OffsetToDefault());
-#endif  // PROTOBUF_MESSAGE_GLOBALS
-
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
-    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 PROTOBUF_MESSAGE_GLOBALS_CONST RewardReceiptGlobalsTypeInternal RewardReceipt_globals_
-        PROTOBUF_MESSAGE_GLOBALS_SECTION(.data.rel.ro);
-#if defined(PROTOBUF_CUSTOM_VTABLE)
-namespace {
-const ::_pbi::ClassData* RewardReceipt_get_class_data() {
-#ifdef PROTOBUF_MESSAGE_GLOBALS
-  return RewardReceipt_globals_.GetClassData();
-#else
-  return RewardReceipt_class_data_.base();
-#endif  // PROTOBUF_MESSAGE_GLOBALS
-}
-}  // namespace
-#endif  // PROTOBUF_CUSTOM_VTABLE
 class GrantDefeatRewardRequest::_Internal {
  public:
   using HasBits = decltype(::std::declval<GrantDefeatRewardRequest>()._impl_._has_bits_);
@@ -401,11 +212,11 @@ constexpr GrantDefeatRewardRequest::ParseTableT_ GrantDefeatRewardRequest::Inter
     {
       PROTOBUF_FIELD_OFFSET(GrantDefeatRewardRequest, _impl_._has_bits_),
       0, // no _extensions_
-      8, 56,  // max_field_number, fast_idx_mask
+      9, 120,  // max_field_number, fast_idx_mask
       offsetof(ParseTableT_, field_lookup_table),
-      4294967040,  // skipmap
+      4294966784,  // skipmap
       offsetof(ParseTableT_, field_entries),
-      8,  // num_field_entries
+      9,  // num_field_entries
       0,  // num_aux_entries
       offsetof(ParseTableT_, field_names),  // no aux_entries
       class_data,
@@ -415,10 +226,7 @@ constexpr GrantDefeatRewardRequest::ParseTableT_ GrantDefeatRewardRequest::Inter
       ::_pbi::TcParser::GetTable<::sf::rewards::v1::GrantDefeatRewardRequest>(),  // to_prefetch
       #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
     }, {{
-      // string table_id = 8;
-      {::_pbi::TcParser::FastUS1,
-       {66, 4, 0,
-        PROTOBUF_FIELD_OFFSET(GrantDefeatRewardRequest, _impl_.table_id_)}},
+      {::_pbi::TcParser::MiniParse, {}},
       // string defeat_event_id = 1;
       {::_pbi::TcParser::FastUS1,
        {10, 0, 0,
@@ -436,17 +244,31 @@ constexpr GrantDefeatRewardRequest::ParseTableT_ GrantDefeatRewardRequest::Inter
        {34, 3, 0,
         PROTOBUF_FIELD_OFFSET(GrantDefeatRewardRequest, _impl_.container_id_)}},
       // int64 expected_container_revision = 5;
-      {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(GrantDefeatRewardRequest, _impl_.expected_container_revision_), 5>(),
-       {40, 5, 0,
+      {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(GrantDefeatRewardRequest, _impl_.expected_container_revision_), 6>(),
+       {40, 6, 0,
         PROTOBUF_FIELD_OFFSET(GrantDefeatRewardRequest, _impl_.expected_container_revision_)}},
       // bool killer_in_protected_town = 6;
-      {::_pbi::TcParser::SingularVarintNoZag1<bool, offsetof(GrantDefeatRewardRequest, _impl_.killer_in_protected_town_), 6>(),
-       {48, 6, 0,
+      {::_pbi::TcParser::SingularVarintNoZag1<bool, offsetof(GrantDefeatRewardRequest, _impl_.killer_in_protected_town_), 7>(),
+       {48, 7, 0,
         PROTOBUF_FIELD_OFFSET(GrantDefeatRewardRequest, _impl_.killer_in_protected_town_)}},
       // bool boar_in_protected_town = 7;
-      {::_pbi::TcParser::SingularVarintNoZag1<bool, offsetof(GrantDefeatRewardRequest, _impl_.boar_in_protected_town_), 7>(),
-       {56, 7, 0,
+      {::_pbi::TcParser::SingularVarintNoZag1<bool, offsetof(GrantDefeatRewardRequest, _impl_.boar_in_protected_town_), 8>(),
+       {56, 8, 0,
         PROTOBUF_FIELD_OFFSET(GrantDefeatRewardRequest, _impl_.boar_in_protected_town_)}},
+      // string table_id = 8;
+      {::_pbi::TcParser::FastUS1,
+       {66, 4, 0,
+        PROTOBUF_FIELD_OFFSET(GrantDefeatRewardRequest, _impl_.table_id_)}},
+      // string creature_id = 9;
+      {::_pbi::TcParser::FastUS1,
+       {74, 5, 0,
+        PROTOBUF_FIELD_OFFSET(GrantDefeatRewardRequest, _impl_.creature_id_)}},
+      {::_pbi::TcParser::MiniParse, {}},
+      {::_pbi::TcParser::MiniParse, {}},
+      {::_pbi::TcParser::MiniParse, {}},
+      {::_pbi::TcParser::MiniParse, {}},
+      {::_pbi::TcParser::MiniParse, {}},
+      {::_pbi::TcParser::MiniParse, {}},
     }}, {{
       65535, 65535
     }}, {{
@@ -459,23 +281,26 @@ constexpr GrantDefeatRewardRequest::ParseTableT_ GrantDefeatRewardRequest::Inter
       // string container_id = 4;
       {PROTOBUF_FIELD_OFFSET(GrantDefeatRewardRequest, _impl_.container_id_), _Internal::kHasBitsOffset + 3, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
       // int64 expected_container_revision = 5;
-      {PROTOBUF_FIELD_OFFSET(GrantDefeatRewardRequest, _impl_.expected_container_revision_), _Internal::kHasBitsOffset + 5, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt64)},
+      {PROTOBUF_FIELD_OFFSET(GrantDefeatRewardRequest, _impl_.expected_container_revision_), _Internal::kHasBitsOffset + 6, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt64)},
       // bool killer_in_protected_town = 6;
-      {PROTOBUF_FIELD_OFFSET(GrantDefeatRewardRequest, _impl_.killer_in_protected_town_), _Internal::kHasBitsOffset + 6, 0, (0 | ::_fl::kFcOptional | ::_fl::kBool)},
+      {PROTOBUF_FIELD_OFFSET(GrantDefeatRewardRequest, _impl_.killer_in_protected_town_), _Internal::kHasBitsOffset + 7, 0, (0 | ::_fl::kFcOptional | ::_fl::kBool)},
       // bool boar_in_protected_town = 7;
-      {PROTOBUF_FIELD_OFFSET(GrantDefeatRewardRequest, _impl_.boar_in_protected_town_), _Internal::kHasBitsOffset + 7, 0, (0 | ::_fl::kFcOptional | ::_fl::kBool)},
+      {PROTOBUF_FIELD_OFFSET(GrantDefeatRewardRequest, _impl_.boar_in_protected_town_), _Internal::kHasBitsOffset + 8, 0, (0 | ::_fl::kFcOptional | ::_fl::kBool)},
       // string table_id = 8;
       {PROTOBUF_FIELD_OFFSET(GrantDefeatRewardRequest, _impl_.table_id_), _Internal::kHasBitsOffset + 4, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // string creature_id = 9;
+      {PROTOBUF_FIELD_OFFSET(GrantDefeatRewardRequest, _impl_.creature_id_), _Internal::kHasBitsOffset + 5, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
     }},
     // no aux_entries
     {{
-      "\46\17\23\26\14\0\0\0\10\0\0\0\0\0\0\0"
+      "\46\17\23\26\14\0\0\0\10\13\0\0\0\0\0\0"
       "sf.rewards.v1.GrantDefeatRewardRequest"
       "defeat_event_id"
       "killer_character_id"
       "recipient_character_id"
       "container_id"
       "table_id"
+      "creature_id"
     }},
   };
 }
@@ -498,6 +323,9 @@ inline constexpr GrantDefeatRewardRequest::Impl_::Impl_(
             &::google::protobuf::internal::fixed_address_empty_string,
             ::_pbi::ConstantInitialized()),
         table_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        creature_id_(
             &::google::protobuf::internal::fixed_address_empty_string,
             ::_pbi::ConstantInitialized()),
         expected_container_revision_{::int64_t{0}},
@@ -1159,6 +987,211 @@ const ::_pbi::ClassData* SharedDefeatDropReceipt_get_class_data() {
 }
 }  // namespace
 #endif  // PROTOBUF_CUSTOM_VTABLE
+class RewardReceipt::_Internal {
+ public:
+  using HasBits = decltype(::std::declval<RewardReceipt>()._impl_._has_bits_);
+  static constexpr ::int32_t kHasBitsOffset =
+      8 * PROTOBUF_FIELD_OFFSET(RewardReceipt, _impl_._has_bits_);
+};
+
+constexpr RewardReceipt::ParseTableT_ RewardReceipt::InternalGenerateParseTable_(const ::_pbi::ClassData* class_data) {
+  return ParseTableT_{
+    {
+      PROTOBUF_FIELD_OFFSET(RewardReceipt, _impl_._has_bits_),
+      0, // no _extensions_
+      7, 56,  // max_field_number, fast_idx_mask
+      offsetof(ParseTableT_, field_lookup_table),
+      4294967168,  // skipmap
+      offsetof(ParseTableT_, field_entries),
+      7,  // num_field_entries
+      1,  // num_aux_entries
+      offsetof(ParseTableT_, aux_entries),
+      class_data,
+      nullptr,  // post_loop_handler
+      ::_pbi::TcParser::GenericFallback,  // fallback
+      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+      ::_pbi::TcParser::GetTable<::sf::rewards::v1::RewardReceipt>(),  // to_prefetch
+      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+    }, {{
+      {::_pbi::TcParser::MiniParse, {}},
+      // bool granted = 1;
+      {::_pbi::TcParser::SingularVarintNoZag1<bool, offsetof(RewardReceipt, _impl_.granted_), 6>(),
+       {8, 6, 0,
+        PROTOBUF_FIELD_OFFSET(RewardReceipt, _impl_.granted_)}},
+      // string source_code = 2;
+      {::_pbi::TcParser::FastUS1,
+       {18, 1, 0,
+        PROTOBUF_FIELD_OFFSET(RewardReceipt, _impl_.source_code_)}},
+      // string ledger_operation_id = 3;
+      {::_pbi::TcParser::FastUS1,
+       {26, 2, 0,
+        PROTOBUF_FIELD_OFFSET(RewardReceipt, _impl_.ledger_operation_id_)}},
+      // string definition_id = 4;
+      {::_pbi::TcParser::FastUS1,
+       {34, 3, 0,
+        PROTOBUF_FIELD_OFFSET(RewardReceipt, _impl_.definition_id_)}},
+      // int64 quantity = 5;
+      {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(RewardReceipt, _impl_.quantity_), 4>(),
+       {40, 4, 0,
+        PROTOBUF_FIELD_OFFSET(RewardReceipt, _impl_.quantity_)}},
+      // int64 container_revision = 6;
+      {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(RewardReceipt, _impl_.container_revision_), 5>(),
+       {48, 5, 0,
+        PROTOBUF_FIELD_OFFSET(RewardReceipt, _impl_.container_revision_)}},
+      // repeated .sf.rewards.v1.SharedDropItem items = 7;
+      {::_pbi::TcParser::FastMtR1,
+       {58, 0, 0,
+        PROTOBUF_FIELD_OFFSET(RewardReceipt, _impl_.items_)}},
+    }}, {{
+      65535, 65535
+    }}, {{
+      // bool granted = 1;
+      {PROTOBUF_FIELD_OFFSET(RewardReceipt, _impl_.granted_), _Internal::kHasBitsOffset + 6, 0, (0 | ::_fl::kFcOptional | ::_fl::kBool)},
+      // string source_code = 2;
+      {PROTOBUF_FIELD_OFFSET(RewardReceipt, _impl_.source_code_), _Internal::kHasBitsOffset + 1, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // string ledger_operation_id = 3;
+      {PROTOBUF_FIELD_OFFSET(RewardReceipt, _impl_.ledger_operation_id_), _Internal::kHasBitsOffset + 2, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // string definition_id = 4;
+      {PROTOBUF_FIELD_OFFSET(RewardReceipt, _impl_.definition_id_), _Internal::kHasBitsOffset + 3, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // int64 quantity = 5;
+      {PROTOBUF_FIELD_OFFSET(RewardReceipt, _impl_.quantity_), _Internal::kHasBitsOffset + 4, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt64)},
+      // int64 container_revision = 6;
+      {PROTOBUF_FIELD_OFFSET(RewardReceipt, _impl_.container_revision_), _Internal::kHasBitsOffset + 5, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt64)},
+      // repeated .sf.rewards.v1.SharedDropItem items = 7;
+      {PROTOBUF_FIELD_OFFSET(RewardReceipt, _impl_.items_), _Internal::kHasBitsOffset + 0, 0, (0 | ::_fl::kFcRepeated | ::_fl::kMessage | ::_fl::kTvTable)},
+    }},
+    {{
+        #ifndef PROTOBUF_MESSAGE_GLOBALS
+        {::_pbi::TcParser::GetTable<::sf::rewards::v1::SharedDropItem>()},
+        #else
+        {::_pbi::FieldAuxMessageGlobals(), &::sf::rewards::v1::SharedDropItem_globals_},
+        #endif
+    }},
+    {{
+      "\33\0\13\23\15\0\0\0"
+      "sf.rewards.v1.RewardReceipt"
+      "source_code"
+      "ledger_operation_id"
+      "definition_id"
+    }},
+  };
+}
+
+
+inline constexpr RewardReceipt::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    ::_pbi::ConstantInitialized) noexcept
+      : _cached_size_{0},
+        items_ { visibility, ::_pbi::InternalMetadataOffset::Build<
+            ::sf::rewards::v1::RewardReceipt,
+            PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::RewardReceipt, _impl_.items_)>()
+         }
+        ,
+        source_code_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        ledger_operation_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        definition_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        quantity_{::int64_t{0}},
+        container_revision_{::int64_t{0}},
+        granted_{false} {}
+
+template <typename>
+constexpr RewardReceipt::RewardReceipt(::_pbi::ConstantInitialized,
+                       const ::_pbi::ClassData* PROTOBUF_NONNULL class_data)
+    : ::google::protobuf::Message(
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          class_data
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          ),
+      _impl_(internal_visibility(), ::_pbi::ConstantInitialized()) {
+}
+inline void* PROTOBUF_NONNULL RewardReceipt::PlacementNew_(
+    const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena) {
+  return ::new (mem) RewardReceipt(arena);
+}
+constexpr auto RewardReceipt::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::CopyInit(sizeof(RewardReceipt), alignof(RewardReceipt));
+}
+constexpr auto RewardReceipt::InternalGenerateClassData_(
+    const MessageLite& prototype,
+    const ::google::protobuf::internal::TcParseTableBase* tc_table) {
+  return ::google::protobuf::internal::ClassDataFull{
+      ::google::protobuf::internal::ClassData{
+          &prototype,
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+          &_table_.header,
+#else
+          tc_table,
+#endif
+          nullptr,  // IsInitialized
+          &RewardReceipt::MergeImpl,
+          ::google::protobuf::Message::GetNewImpl<RewardReceipt>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          &RewardReceipt::SharedDtor,
+          ::google::protobuf::Message::GetClearImpl<RewardReceipt>(), &RewardReceipt::ByteSizeLong,
+              &RewardReceipt::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          PROTOBUF_FIELD_OFFSET(RewardReceipt, _impl_._cached_size_),
+          false,
+      },
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+      &file_reflection_data[5],
+#else   // !PROTOBUF_MESSAGE_GLOBALS
+      &::_pbi::kDescriptorMethods,
+      &descriptor_table_sf_2frewards_2fv1_2frewards_2eproto,
+      nullptr,  // tracker
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+  };
+}
+struct RewardReceiptGlobalsTypeInternal : ::_pbi::MessageGlobalsBase {
+  constexpr RewardReceiptGlobalsTypeInternal()
+      :
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+        _default(::_pbi::ConstantInitialized{},
+                 RewardReceipt_class_data_.base())
+#else   // !PROTOBUF_MESSAGE_GLOBALS
+        MessageGlobalsBase(RewardReceipt::InternalGenerateClassData_(
+            _default, &RewardReceipt_globals_._table.header)),
+        _default(::_pbi::ConstantInitialized{}, GetClassData()),
+        _table(::_pbi::PrivateAccess::GenerateParseTable<RewardReceipt>(
+            GetClassData()))
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+  {
+  }
+  ~RewardReceiptGlobalsTypeInternal() {}
+  union {
+    alignas(::_pbi::kMaxMessageAlignment) RewardReceipt _default;
+  };
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+  decltype(::_pbi::PrivateAccess::GenerateParseTable<RewardReceipt>(
+      ::std::declval<const ::_pbi::ClassData*>())) _table;
+#endif
+};
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+static_assert(PROTOBUF_FIELD_OFFSET(RewardReceiptGlobalsTypeInternal, _default) ==
+              ::_pbi::MessageGlobalsBase::OffsetToDefault());
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 PROTOBUF_MESSAGE_GLOBALS_CONST RewardReceiptGlobalsTypeInternal RewardReceipt_globals_
+        PROTOBUF_MESSAGE_GLOBALS_SECTION(.data.rel.ro);
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+namespace {
+const ::_pbi::ClassData* RewardReceipt_get_class_data() {
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+  return RewardReceipt_globals_.GetClassData();
+#else
+  return RewardReceipt_class_data_.base();
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+}
+}  // namespace
+#endif  // PROTOBUF_CUSTOM_VTABLE
 }  // namespace v1
 }  // namespace rewards
 }  // namespace sf
@@ -1217,7 +1250,7 @@ const ::uint32_t
         4,
         0x081, // bitmap
         PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::GrantDefeatRewardRequest, _impl_._has_bits_),
-        11, // hasbit index offset
+        12, // hasbit index offset
         PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::GrantDefeatRewardRequest, _impl_.defeat_event_id_),
         PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::GrantDefeatRewardRequest, _impl_.killer_character_id_),
         PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::GrantDefeatRewardRequest, _impl_.recipient_character_id_),
@@ -1226,29 +1259,33 @@ const ::uint32_t
         PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::GrantDefeatRewardRequest, _impl_.killer_in_protected_town_),
         PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::GrantDefeatRewardRequest, _impl_.boar_in_protected_town_),
         PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::GrantDefeatRewardRequest, _impl_.table_id_),
+        PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::GrantDefeatRewardRequest, _impl_.creature_id_),
         0,
         1,
         2,
         3,
-        5,
         6,
         7,
+        8,
         4,
+        5,
         0x081, // bitmap
         PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::RewardReceipt, _impl_._has_bits_),
-        9, // hasbit index offset
+        10, // hasbit index offset
         PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::RewardReceipt, _impl_.granted_),
         PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::RewardReceipt, _impl_.source_code_),
         PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::RewardReceipt, _impl_.ledger_operation_id_),
         PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::RewardReceipt, _impl_.definition_id_),
         PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::RewardReceipt, _impl_.quantity_),
         PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::RewardReceipt, _impl_.container_revision_),
-        5,
-        0,
+        PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::RewardReceipt, _impl_.items_),
+        6,
         1,
         2,
         3,
         4,
+        5,
+        0,
 };
 
 static const ::_pbi::MigrationSchema
@@ -1258,7 +1295,7 @@ static const ::_pbi::MigrationSchema
         {26, sizeof(::sf::rewards::v1::SharedDropItem)},
         {33, sizeof(::sf::rewards::v1::SharedDefeatDropReceipt)},
         {46, sizeof(::sf::rewards::v1::GrantDefeatRewardRequest)},
-        {65, sizeof(::sf::rewards::v1::RewardReceipt)},
+        {67, sizeof(::sf::rewards::v1::RewardReceipt)},
 };
 static const ::_pbi::MessageGlobalsBase* PROTOBUF_NONNULL const
     file_message_globals[] = {
@@ -1286,32 +1323,34 @@ const char descriptor_table_protodef_sf_2frewards_2fv1_2frewards_2eproto[] ABSL_
     "\030\001 \001(\t\022,\n\005items\030\002 \003(\0132\035.sf.rewards.v1.Sh"
     "aredDropItem\022\035\n\025claimant_character_id\030\003 "
     "\001(\t\022\033\n\023ledger_operation_id\030\004 \001(\t\022\032\n\022cont"
-    "ainer_revision\030\005 \001(\003\"\377\001\n\030GrantDefeatRewa"
+    "ainer_revision\030\005 \001(\003\"\224\002\n\030GrantDefeatRewa"
     "rdRequest\022\027\n\017defeat_event_id\030\001 \001(\t\022\033\n\023ki"
     "ller_character_id\030\002 \001(\t\022\036\n\026recipient_cha"
     "racter_id\030\003 \001(\t\022\024\n\014container_id\030\004 \001(\t\022#\n"
     "\033expected_container_revision\030\005 \001(\003\022 \n\030ki"
     "ller_in_protected_town\030\006 \001(\010\022\036\n\026boar_in_"
-    "protected_town\030\007 \001(\010\022\020\n\010table_id\030\010 \001(\t\"\227"
-    "\001\n\rRewardReceipt\022\017\n\007granted\030\001 \001(\010\022\023\n\013sou"
-    "rce_code\030\002 \001(\t\022\033\n\023ledger_operation_id\030\003 "
-    "\001(\t\022\025\n\rdefinition_id\030\004 \001(\t\022\020\n\010quantity\030\005"
-    " \001(\003\022\032\n\022container_revision\030\006 \001(\0032\303\002\n\007Rew"
-    "ards\022Z\n\021GrantDefeatReward\022\'.sf.rewards.v"
-    "1.GrantDefeatRewardRequest\032\034.sf.rewards."
-    "v1.RewardReceipt\022n\n\026CreateSharedDefeatDr"
-    "op\022,.sf.rewards.v1.CreateSharedDefeatDro"
-    "pRequest\032&.sf.rewards.v1.SharedDefeatDro"
-    "pReceipt\022l\n\025ClaimSharedDefeatDrop\022+.sf.r"
-    "ewards.v1.ClaimSharedDefeatDropRequest\032&"
-    ".sf.rewards.v1.SharedDefeatDropReceiptB\037"
-    "\252\002\034ShatteredFrontier.Rewards.V1b\006proto3"
+    "protected_town\030\007 \001(\010\022\020\n\010table_id\030\010 \001(\t\022\023"
+    "\n\013creature_id\030\t \001(\t\"\305\001\n\rRewardReceipt\022\017\n"
+    "\007granted\030\001 \001(\010\022\023\n\013source_code\030\002 \001(\t\022\033\n\023l"
+    "edger_operation_id\030\003 \001(\t\022\025\n\rdefinition_i"
+    "d\030\004 \001(\t\022\020\n\010quantity\030\005 \001(\003\022\032\n\022container_r"
+    "evision\030\006 \001(\003\022,\n\005items\030\007 \003(\0132\035.sf.reward"
+    "s.v1.SharedDropItem2\303\002\n\007Rewards\022Z\n\021Grant"
+    "DefeatReward\022\'.sf.rewards.v1.GrantDefeat"
+    "RewardRequest\032\034.sf.rewards.v1.RewardRece"
+    "ipt\022n\n\026CreateSharedDefeatDrop\022,.sf.rewar"
+    "ds.v1.CreateSharedDefeatDropRequest\032&.sf"
+    ".rewards.v1.SharedDefeatDropReceipt\022l\n\025C"
+    "laimSharedDefeatDrop\022+.sf.rewards.v1.Cla"
+    "imSharedDefeatDropRequest\032&.sf.rewards.v"
+    "1.SharedDefeatDropReceiptB\037\252\002\034ShatteredF"
+    "rontier.Rewards.V1b\006proto3"
 };
 static ::absl::once_flag descriptor_table_sf_2frewards_2fv1_2frewards_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_sf_2frewards_2fv1_2frewards_2eproto = {
     false,
     false,
-    1399,
+    1466,
     descriptor_table_protodef_sf_2frewards_2fv1_2frewards_2eproto,
     "sf/rewards/v1/rewards.proto",
     &descriptor_table_sf_2frewards_2fv1_2frewards_2eproto_once,
@@ -2648,7 +2687,8 @@ PROTOBUF_NDEBUG_INLINE GrantDefeatRewardRequest::Impl_::Impl_(
         killer_character_id_(arena, from.killer_character_id_),
         recipient_character_id_(arena, from.recipient_character_id_),
         container_id_(arena, from.container_id_),
-        table_id_(arena, from.table_id_) {}
+        table_id_(arena, from.table_id_),
+        creature_id_(arena, from.creature_id_) {}
 
 GrantDefeatRewardRequest::GrantDefeatRewardRequest(
     ::google::protobuf::Arena* PROTOBUF_NULLABLE arena,
@@ -2682,7 +2722,8 @@ PROTOBUF_NDEBUG_INLINE GrantDefeatRewardRequest::Impl_::Impl_(
         killer_character_id_(arena),
         recipient_character_id_(arena),
         container_id_(arena),
-        table_id_(arena) {}
+        table_id_(arena),
+        creature_id_(arena) {}
 
 inline void GrantDefeatRewardRequest::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
   new (&_impl_) Impl_(internal_visibility(), arena);
@@ -2709,6 +2750,7 @@ inline void GrantDefeatRewardRequest::SharedDtor(MessageLite& self) {
   this_._impl_.recipient_character_id_.Destroy();
   this_._impl_.container_id_.Destroy();
   this_._impl_.table_id_.Destroy();
+  this_._impl_.creature_id_.Destroy();
   this_._impl_.~Impl_();
 }
 
@@ -2746,7 +2788,7 @@ PROTOBUF_NOINLINE void GrantDefeatRewardRequest::Clear() {
   (void) cached_has_bits;
 
   cached_has_bits = _impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0x0000001fU)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x0000003fU)) {
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
       _impl_.defeat_event_id_.ClearNonDefaultToEmpty();
     }
@@ -2762,12 +2804,16 @@ PROTOBUF_NOINLINE void GrantDefeatRewardRequest::Clear() {
     if (CheckHasBit(cached_has_bits, 0x00000010U)) {
       _impl_.table_id_.ClearNonDefaultToEmpty();
     }
+    if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+      _impl_.creature_id_.ClearNonDefaultToEmpty();
+    }
   }
-  if (BatchCheckHasBit(cached_has_bits, 0x000000e0U)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x000000c0U)) {
     ::memset(&_impl_.expected_container_revision_, 0, static_cast<::size_t>(
-        reinterpret_cast<char*>(&_impl_.boar_in_protected_town_) -
-        reinterpret_cast<char*>(&_impl_.expected_container_revision_)) + sizeof(_impl_.boar_in_protected_town_));
+        reinterpret_cast<char*>(&_impl_.killer_in_protected_town_) -
+        reinterpret_cast<char*>(&_impl_.expected_container_revision_)) + sizeof(_impl_.killer_in_protected_town_));
   }
+  _impl_.boar_in_protected_town_ = false;
   _impl_._has_bits_.Clear();
   _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
@@ -2832,7 +2878,7 @@ PROTOBUF_NOINLINE void GrantDefeatRewardRequest::Clear() {
   }
 
   // int64 expected_container_revision = 5;
-  if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000040U)) {
     if (this_._internal_expected_container_revision() != 0) {
       target =
           ::google::protobuf::internal::WireFormatLite::WriteInt64ToArrayWithField<5>(
@@ -2841,7 +2887,7 @@ PROTOBUF_NOINLINE void GrantDefeatRewardRequest::Clear() {
   }
 
   // bool killer_in_protected_town = 6;
-  if (CheckHasBit(cached_has_bits, 0x00000040U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000080U)) {
     if (this_._internal_killer_in_protected_town() != 0) {
       target = stream->EnsureSpace(target);
       target = ::_pbi::WireFormatLite::WriteBoolToArray(
@@ -2850,7 +2896,7 @@ PROTOBUF_NOINLINE void GrantDefeatRewardRequest::Clear() {
   }
 
   // bool boar_in_protected_town = 7;
-  if (CheckHasBit(cached_has_bits, 0x00000080U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000100U)) {
     if (this_._internal_boar_in_protected_town() != 0) {
       target = stream->EnsureSpace(target);
       target = ::_pbi::WireFormatLite::WriteBoolToArray(
@@ -2865,6 +2911,16 @@ PROTOBUF_NOINLINE void GrantDefeatRewardRequest::Clear() {
       ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
           _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.rewards.v1.GrantDefeatRewardRequest.table_id");
       target = stream->WriteStringMaybeAliased(8, _s, target);
+    }
+  }
+
+  // string creature_id = 9;
+  if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+    if (!this_._internal_creature_id().empty()) {
+      const ::std::string& _s = this_._internal_creature_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.rewards.v1.GrantDefeatRewardRequest.creature_id");
+      target = stream->WriteStringMaybeAliased(9, _s, target);
     }
   }
 
@@ -2929,21 +2985,30 @@ PROTOBUF_NOINLINE void GrantDefeatRewardRequest::Clear() {
                                         this_._internal_table_id());
       }
     }
-    // int64 expected_container_revision = 5;
+    // string creature_id = 9;
     if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+      if (!this_._internal_creature_id().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_creature_id());
+      }
+    }
+    // int64 expected_container_revision = 5;
+    if (CheckHasBit(cached_has_bits, 0x00000040U)) {
       if (this_._internal_expected_container_revision() != 0) {
         total_size += ::_pbi::WireFormatLite::Int64SizePlusOne(
             this_._internal_expected_container_revision());
       }
     }
     // bool killer_in_protected_town = 6;
-    if (CheckHasBit(cached_has_bits, 0x00000040U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000080U)) {
       if (this_._internal_killer_in_protected_town() != 0) {
         total_size += 2;
       }
     }
+  }
+   {
     // bool boar_in_protected_town = 7;
-    if (CheckHasBit(cached_has_bits, 0x00000080U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000100U)) {
       if (this_._internal_boar_in_protected_town() != 0) {
         total_size += 2;
       }
@@ -3013,19 +3078,28 @@ void GrantDefeatRewardRequest::MergeImpl(::google::protobuf::MessageLite& to_msg
       }
     }
     if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+      if (!from._internal_creature_id().empty()) {
+        _this->_internal_set_creature_id(from._internal_creature_id());
+      } else {
+        if (_this->_impl_.creature_id_.IsDefault()) {
+          _this->_internal_set_creature_id("");
+        }
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000040U)) {
       if (from._internal_expected_container_revision() != 0) {
         _this->_impl_.expected_container_revision_ = from._impl_.expected_container_revision_;
       }
     }
-    if (CheckHasBit(cached_has_bits, 0x00000040U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000080U)) {
       if (from._internal_killer_in_protected_town() != 0) {
         _this->_impl_.killer_in_protected_town_ = from._impl_.killer_in_protected_town_;
       }
     }
-    if (CheckHasBit(cached_has_bits, 0x00000080U)) {
-      if (from._internal_boar_in_protected_town() != 0) {
-        _this->_impl_.boar_in_protected_town_ = from._impl_.boar_in_protected_town_;
-      }
+  }
+  if (CheckHasBit(cached_has_bits, 0x00000100U)) {
+    if (from._internal_boar_in_protected_town() != 0) {
+      _this->_impl_.boar_in_protected_town_ = from._impl_.boar_in_protected_town_;
     }
   }
   _this->_impl_._has_bits_[0] |= cached_has_bits;
@@ -3052,6 +3126,7 @@ void GrantDefeatRewardRequest::InternalSwap(GrantDefeatRewardRequest* PROTOBUF_R
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.recipient_character_id_, &other->_impl_.recipient_character_id_, arena);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.container_id_, &other->_impl_.container_id_, arena);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.table_id_, &other->_impl_.table_id_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.creature_id_, &other->_impl_.creature_id_, arena);
   ::google::protobuf::internal::memswap<
       PROTOBUF_FIELD_OFFSET(GrantDefeatRewardRequest, _impl_.boar_in_protected_town_)
       + sizeof(GrantDefeatRewardRequest::_impl_.boar_in_protected_town_)
@@ -3080,6 +3155,13 @@ PROTOBUF_NDEBUG_INLINE RewardReceipt::Impl_::Impl_(
     [[maybe_unused]] const ::sf::rewards::v1::RewardReceipt& from_msg)
       : _has_bits_{from._has_bits_},
         _cached_size_{0},
+        items_ {
+          visibility, ::_pbi::InternalMetadataOffset::Build<
+              ::sf::rewards::v1::RewardReceipt,
+              PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::RewardReceipt, _impl_.items_)>()
+          , from.items_
+        }
+        ,
         source_code_(arena, from.source_code_),
         ledger_operation_id_(arena, from.ledger_operation_id_),
         definition_id_(arena, from.definition_id_) {}
@@ -3112,6 +3194,11 @@ PROTOBUF_NDEBUG_INLINE RewardReceipt::Impl_::Impl_(
     [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
     [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
       : _cached_size_{0},
+        items_ { visibility, ::_pbi::InternalMetadataOffset::Build<
+            ::sf::rewards::v1::RewardReceipt,
+            PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::RewardReceipt, _impl_.items_)>()
+         }
+        ,
         source_code_(arena),
         ledger_operation_id_(arena),
         definition_id_(arena) {}
@@ -3176,18 +3263,21 @@ PROTOBUF_NOINLINE void RewardReceipt::Clear() {
   (void) cached_has_bits;
 
   cached_has_bits = _impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0x00000007U)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x0000000fU)) {
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
-      _impl_.source_code_.ClearNonDefaultToEmpty();
+      _impl_.items_.Clear();
     }
     if (CheckHasBit(cached_has_bits, 0x00000002U)) {
-      _impl_.ledger_operation_id_.ClearNonDefaultToEmpty();
+      _impl_.source_code_.ClearNonDefaultToEmpty();
     }
     if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      _impl_.ledger_operation_id_.ClearNonDefaultToEmpty();
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
       _impl_.definition_id_.ClearNonDefaultToEmpty();
     }
   }
-  if (BatchCheckHasBit(cached_has_bits, 0x00000038U)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x00000070U)) {
     ::memset(&_impl_.quantity_, 0, static_cast<::size_t>(
         reinterpret_cast<char*>(&_impl_.granted_) -
         reinterpret_cast<char*>(&_impl_.quantity_)) + sizeof(_impl_.granted_));
@@ -3216,7 +3306,7 @@ PROTOBUF_NOINLINE void RewardReceipt::Clear() {
 
   cached_has_bits = this_._impl_._has_bits_[0];
   // bool granted = 1;
-  if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000040U)) {
     if (this_._internal_granted() != 0) {
       target = stream->EnsureSpace(target);
       target = ::_pbi::WireFormatLite::WriteBoolToArray(
@@ -3225,7 +3315,7 @@ PROTOBUF_NOINLINE void RewardReceipt::Clear() {
   }
 
   // string source_code = 2;
-  if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000002U)) {
     if (!this_._internal_source_code().empty()) {
       const ::std::string& _s = this_._internal_source_code();
       ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
@@ -3235,7 +3325,7 @@ PROTOBUF_NOINLINE void RewardReceipt::Clear() {
   }
 
   // string ledger_operation_id = 3;
-  if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000004U)) {
     if (!this_._internal_ledger_operation_id().empty()) {
       const ::std::string& _s = this_._internal_ledger_operation_id();
       ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
@@ -3245,7 +3335,7 @@ PROTOBUF_NOINLINE void RewardReceipt::Clear() {
   }
 
   // string definition_id = 4;
-  if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000008U)) {
     if (!this_._internal_definition_id().empty()) {
       const ::std::string& _s = this_._internal_definition_id();
       ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
@@ -3255,7 +3345,7 @@ PROTOBUF_NOINLINE void RewardReceipt::Clear() {
   }
 
   // int64 quantity = 5;
-  if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000010U)) {
     if (this_._internal_quantity() != 0) {
       target =
           ::google::protobuf::internal::WireFormatLite::WriteInt64ToArrayWithField<5>(
@@ -3264,11 +3354,24 @@ PROTOBUF_NOINLINE void RewardReceipt::Clear() {
   }
 
   // int64 container_revision = 6;
-  if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000020U)) {
     if (this_._internal_container_revision() != 0) {
       target =
           ::google::protobuf::internal::WireFormatLite::WriteInt64ToArrayWithField<6>(
               stream, this_._internal_container_revision(), target);
+    }
+  }
+
+  // repeated .sf.rewards.v1.SharedDropItem items = 7;
+  if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+    for (unsigned i = 0, n = static_cast<unsigned>(
+                             this_._internal_items_size());
+         i < n; i++) {
+      const auto& repfield = this_._internal_items().Get(i);
+      target =
+          ::google::protobuf::internal::WireFormatLite::InternalWriteMessage(
+              7, repfield, repfield.GetCachedSize(),
+              target, stream);
     }
   }
 
@@ -3297,44 +3400,51 @@ PROTOBUF_NOINLINE void RewardReceipt::Clear() {
 
   ::_pbi::Prefetch5LinesFrom7Lines(&this_);
   cached_has_bits = this_._impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0x0000003fU)) {
-    // string source_code = 2;
+  if (BatchCheckHasBit(cached_has_bits, 0x0000007fU)) {
+    // repeated .sf.rewards.v1.SharedDropItem items = 7;
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      total_size += 1UL * this_._internal_items_size();
+      for (const auto& msg : this_._internal_items()) {
+        total_size += ::google::protobuf::internal::WireFormatLite::MessageSize(msg);
+      }
+    }
+    // string source_code = 2;
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
       if (!this_._internal_source_code().empty()) {
         total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
                                         this_._internal_source_code());
       }
     }
     // string ledger_operation_id = 3;
-    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
       if (!this_._internal_ledger_operation_id().empty()) {
         total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
                                         this_._internal_ledger_operation_id());
       }
     }
     // string definition_id = 4;
-    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
       if (!this_._internal_definition_id().empty()) {
         total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
                                         this_._internal_definition_id());
       }
     }
     // int64 quantity = 5;
-    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000010U)) {
       if (this_._internal_quantity() != 0) {
         total_size += ::_pbi::WireFormatLite::Int64SizePlusOne(
             this_._internal_quantity());
       }
     }
     // int64 container_revision = 6;
-    if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000020U)) {
       if (this_._internal_container_revision() != 0) {
         total_size += ::_pbi::WireFormatLite::Int64SizePlusOne(
             this_._internal_container_revision());
       }
     }
     // bool granted = 1;
-    if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000040U)) {
       if (this_._internal_granted() != 0) {
         total_size += 2;
       }
@@ -3351,14 +3461,20 @@ void RewardReceipt::MergeImpl(::google::protobuf::MessageLite& to_msg,
   if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
     from.CheckHasBitConsistency();
   }
+  ::google::protobuf::Arena* arena = _this->GetArena();
   // @@protoc_insertion_point(class_specific_merge_from_start:sf.rewards.v1.RewardReceipt)
   ABSL_DCHECK_NE(&from, _this);
   ::uint32_t cached_has_bits = 0;
   (void)cached_has_bits;
 
   cached_has_bits = from._impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0x0000003fU)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x0000007fU)) {
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      _this->_internal_mutable_items()->InternalMergeFromWithArena(
+          ::google::protobuf::MessageLite::internal_visibility(), arena,
+          from._internal_items());
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
       if (!from._internal_source_code().empty()) {
         _this->_internal_set_source_code(from._internal_source_code());
       } else {
@@ -3367,7 +3483,7 @@ void RewardReceipt::MergeImpl(::google::protobuf::MessageLite& to_msg,
         }
       }
     }
-    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
       if (!from._internal_ledger_operation_id().empty()) {
         _this->_internal_set_ledger_operation_id(from._internal_ledger_operation_id());
       } else {
@@ -3376,7 +3492,7 @@ void RewardReceipt::MergeImpl(::google::protobuf::MessageLite& to_msg,
         }
       }
     }
-    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
       if (!from._internal_definition_id().empty()) {
         _this->_internal_set_definition_id(from._internal_definition_id());
       } else {
@@ -3385,17 +3501,17 @@ void RewardReceipt::MergeImpl(::google::protobuf::MessageLite& to_msg,
         }
       }
     }
-    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000010U)) {
       if (from._internal_quantity() != 0) {
         _this->_impl_.quantity_ = from._impl_.quantity_;
       }
     }
-    if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000020U)) {
       if (from._internal_container_revision() != 0) {
         _this->_impl_.container_revision_ = from._impl_.container_revision_;
       }
     }
-    if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000040U)) {
       if (from._internal_granted() != 0) {
         _this->_impl_.granted_ = from._impl_.granted_;
       }
@@ -3420,6 +3536,7 @@ void RewardReceipt::InternalSwap(RewardReceipt* PROTOBUF_RESTRICT PROTOBUF_NONNU
   ABSL_DCHECK_EQ(arena, other->GetArena());
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
   swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  _impl_.items_.InternalSwap(&other->_impl_.items_);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.source_code_, &other->_impl_.source_code_, arena);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.ledger_operation_id_, &other->_impl_.ledger_operation_id_, arena);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.definition_id_, &other->_impl_.definition_id_, arena);

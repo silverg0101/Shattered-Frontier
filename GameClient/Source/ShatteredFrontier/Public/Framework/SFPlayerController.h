@@ -81,6 +81,9 @@ public:
     // The in-game HUD (WBP_Hud), created on the local controller; null elsewhere or before it exists.
     USFHudWidget* GetHudWidget() const { return HudWidget; }
     UFUNCTION(Server, Reliable) void ServerPartyAction(uint8 Action, const FString& TargetName);
+    UFUNCTION(Client, Reliable) void ClientSharedDropAvailable(const FString& EventId);
+    UFUNCTION(Server, Reliable) void ServerClaimSharedDrop(const FString& EventId);
+    UFUNCTION(Exec) void SFClaimDrop(const FString& EventId);
 #if !UE_BUILD_SHIPPING
     void SFPartyInvite(const FString& Name);
     void SFPartyAccept(const FString& Name);

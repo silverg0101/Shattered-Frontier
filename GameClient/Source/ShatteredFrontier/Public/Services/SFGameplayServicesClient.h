@@ -45,7 +45,7 @@ public:
     bool Validate(FString& Error) const;
 };
 
-enum class ESFGameplayRpc : uint8 { GrantDefeatReward, ApplyReceipt, GetCharacterState, EndSession, CreateCharacter, LearnRecipe, ClaimPlot, GetClaim, Place, Remove, Craft, ListStructures, Grant, SavePosition, ReportDeath, ClearDeath,
+enum class ESFGameplayRpc : uint8 { GrantDefeatReward, CreateSharedDefeatDrop, ClaimSharedDefeatDrop, ApplyReceipt, GetCharacterState, EndSession, CreateCharacter, LearnRecipe, ClaimPlot, GetClaim, Place, Remove, Craft, ListStructures, Grant, SavePosition, ReportDeath, ClearDeath,
     // Exchange (proto/sf/exchange/v1), carried by the Backend transport over the same Gameplay.Host channel.
     ExchangeWallet, OfferTrade, AcceptTrade, CancelTrade, ListItem, BuyListing, CancelListing, ListListings,
     GetGatheringNode, ListGatheringZoneNodes, HarvestGatheringNode, AdvanceWorldSlots,
@@ -82,6 +82,8 @@ struct FSFGameplayRequest
     FString KillerCharacterId;
     bool bKillerProtected = false, bBoarProtected = false;
     FString TableId;
+    FString CreatureId;
+    TArray<FString> EligibleCharacterIds;
     // Progression
     FString Kind;                 // gather | craft | defeat | quest
     int64 ExpectedProgressionRevision = 0, ExpectedQuestRevision = 0;
@@ -117,7 +119,7 @@ struct FSFGameplayResponse
     int32 GrpcCode = 14;
     FString Message;
     // Rewards
-    bool bGranted = false; FString SourceCode, LedgerOperationId, DefinitionId; int64 Quantity = 0;
+    bool bGranted = false; FString SourceCode, LedgerOperationId, DefinitionId, ClaimantCharacterId; int64 Quantity = 0;
     int64 ContainerRevision = 0;  // Rewards and Crafting
     // Progression
     bool bProgressionApplied = false, bQuestAccepted = false, bQuestCompleted = false;

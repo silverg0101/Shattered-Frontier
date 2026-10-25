@@ -16,7 +16,8 @@ namespace SFCombatPilotRewards
     SHATTEREDFRONTIER_API int32 HidesFor(TSet<FString>& Granted, const FString& DeathId, bool bProtected, int32 HidesPerBoar);
     /** Stable trusted facts for a defeat reward replay against the durable backpack. */
     SHATTEREDFRONTIER_API FSFGameplayRequest BuildDefeatRequest(const FString& EventId, const FString& KillerId, const FString& CharacterId,
-        const FString& ContainerId, int64 ExpectedRevision, bool bKillerProtected, bool bBoarProtected);
+        const FString& ContainerId, int64 ExpectedRevision, bool bKillerProtected, bool bBoarProtected,
+        const FString& CreatureId, const FString& TableId);
     /** Adds Count hides to the pilot bag on Owner in one transaction; false (nothing added) without a bag or room. */
     SHATTEREDFRONTIER_API bool GrantHides(AActor* Owner, int32 Count);
     SHATTEREDFRONTIER_API int32 CountHides(const AActor* Owner);

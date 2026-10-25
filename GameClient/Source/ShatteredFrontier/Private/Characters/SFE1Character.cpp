@@ -1175,11 +1175,15 @@ void ASFE1Character::TickCombatScenario()
         const bool bPersonalLoot = FParse::Param(FCommandLine::Get(), TEXT("PersonalLootScenario"));
         ASFPilotBoar* Boar = nullptr;
         double NearestDistance = TNumericLimits<double>::Max();
+        double BestTargetScore = TNumericLimits<double>::Max();
         for (TActorIterator<ASFPilotBoar> It(GetWorld()); It; ++It)
         {
-            if (bPartyXp && (It->GroupId() != (bPersonalLoot ? TEXT("personal_loot_sandbox") : TEXT("boar_farm_edge")) || It->SlotIndex() != 0)) { continue; }
+            if (bPartyXp && (It->GroupId() != (bPersonalLoot ? TEXT("personal_loot_sandbox") : TEXT("boar_farm_edge")) ||
+                (!bPersonalLoot && It->SlotIndex() != 0))) { continue; }
             const double Distance = FVector::Dist2D(GetActorLocation(), It->GetActorLocation());
-            if (It->Health() > 0 && Distance < NearestDistance) { Boar = *It; NearestDistance = Distance; }
+            const double Score = Distance - (bPersonalLoot && It->GetCreatureId() == TEXT("npc/boar") ? 1000.0 : 0.0);
+            if (It->Health() > 0 && Score < BestTargetScore)
+            { Boar = *It; NearestDistance = Distance; BestTargetScore = Score; }
         }
         FString CsvDir;
         if (FParse::Value(FCommandLine::Get(), TEXT("M3CsvDir="), CsvDir))
@@ -1203,7 +1207,7 @@ void ASFE1Character::TickCombatScenario()
                 }), 1.0f, false);
             }
         }
-        const int32 MaxAttacks = bPartyXp && ScenarioRole == 1 ? 2 : 1;
+        const int32 MaxAttacks = bPersonalLoot ? 6 : bPartyXp && ScenarioRole == 1 ? 2 : 1;
         if (ScenarioRole < 1 || ScenarioRole > 3 || CombatScenarioAttackCount >= MaxAttacks || PilotHealth <= 0 ||
             GetWorld()->GetTimeSeconds() < CombatScenarioNextAttackAt) { return; }
         float AttackDelaySeconds = 0.0f;

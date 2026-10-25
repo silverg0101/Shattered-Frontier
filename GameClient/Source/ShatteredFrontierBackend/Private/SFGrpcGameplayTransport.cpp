@@ -254,6 +254,7 @@ void FSFGrpcGameplayTransport::Send(const FSFGameplayRequest& Q, float DeadlineS
         M.set_defeat_event_id(Utf8(Q.OperationId)); M.set_killer_character_id(Utf8(Q.KillerCharacterId)); M.set_recipient_character_id(Utf8(Q.CharacterId));
         M.set_container_id(Utf8(Q.ContainerId)); M.set_expected_container_revision(Q.ExpectedContainerRevision);
         M.set_killer_in_protected_town(Q.bKillerProtected); M.set_boar_in_protected_town(Q.bBoarProtected); M.set_table_id(Utf8(Q.TableId));
+        M.set_creature_id(Utf8(Q.CreatureId));
         auto* Call = new TCall<sf::rewards::v1::RewardReceipt>();
         Call->Copy = [](const sf::rewards::v1::RewardReceipt& R, FSFGameplayResponse& Out)
         {
@@ -261,6 +262,37 @@ void FSFGrpcGameplayTransport::Send(const FSFGameplayRequest& Q, float DeadlineS
             Out.DefinitionId = FromUtf8(R.definition_id()); Out.Quantity = R.quantity(); Out.ContainerRevision = R.container_revision();
         };
         Start(Call, [&](grpc::ClientContext* C) { return Channel->Rewards->AsyncGrantDefeatReward(C, M, &Channel->Queue); });
+        break;
+    }
+    case ESFGameplayRpc::CreateSharedDefeatDrop:
+    {
+        sf::rewards::v1::CreateSharedDefeatDropRequest M;
+        M.set_defeat_event_id(Utf8(Q.OperationId)); M.set_creature_id(Utf8(Q.CreatureId));
+        M.set_table_id(Utf8(Q.TableId)); M.set_killer_character_id(Utf8(Q.KillerCharacterId));
+        for (const FString& Id : Q.EligibleCharacterIds) { M.add_eligible_character_ids(Utf8(Id)); }
+        M.set_killer_in_protected_town(Q.bKillerProtected); M.set_creature_in_protected_town(Q.bBoarProtected);
+        auto* Call = new TCall<sf::rewards::v1::SharedDefeatDropReceipt>();
+        Call->Copy = [](const sf::rewards::v1::SharedDefeatDropReceipt& R, FSFGameplayResponse& Out)
+        {
+            Out.DeathEventId = FromUtf8(R.defeat_event_id()); Out.ClaimantCharacterId = FromUtf8(R.claimant_character_id());
+            Out.LedgerOperationId = FromUtf8(R.ledger_operation_id()); Out.ContainerRevision = R.container_revision();
+            Out.Quantity = R.items_size();
+        };
+        Start(Call, [&](grpc::ClientContext* C) { return Channel->Rewards->AsyncCreateSharedDefeatDrop(C, M, &Channel->Queue); });
+        break;
+    }
+    case ESFGameplayRpc::ClaimSharedDefeatDrop:
+    {
+        sf::rewards::v1::ClaimSharedDefeatDropRequest M;
+        M.set_defeat_event_id(Utf8(Q.OperationId)); M.set_character_id(Utf8(Q.CharacterId)); M.set_container_id(Utf8(Q.ContainerId));
+        auto* Call = new TCall<sf::rewards::v1::SharedDefeatDropReceipt>();
+        Call->Copy = [](const sf::rewards::v1::SharedDefeatDropReceipt& R, FSFGameplayResponse& Out)
+        {
+            Out.DeathEventId = FromUtf8(R.defeat_event_id()); Out.ClaimantCharacterId = FromUtf8(R.claimant_character_id());
+            Out.LedgerOperationId = FromUtf8(R.ledger_operation_id()); Out.ContainerRevision = R.container_revision();
+            Out.Quantity = R.items_size();
+        };
+        Start(Call, [&](grpc::ClientContext* C) { return Channel->Rewards->AsyncClaimSharedDefeatDrop(C, M, &Channel->Queue); });
         break;
     }
     case ESFGameplayRpc::ApplyReceipt:
