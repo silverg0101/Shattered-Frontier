@@ -105,9 +105,39 @@ def fk(joints, frames):
 
 
 def paws(joints, rest):
-    """The (up to) four lowest tips in the rest pose, tail and trajectory helpers aside."""
+    """Quadruped legacy tips, or one stable contact per distinct bird leg branch."""
     tips = [j for j, jt in enumerate(joints) if jt["name"].endswith("_end") and not re.search(r"tail|traj", jt["name"], re.I)]
-    return sorted(tips, key=lambda j: rest[j, 1])[:CONTACT_COUNT]  # the role map is not known yet
+    if CONTACT_COUNT == 4:
+        return sorted(tips, key=lambda j: rest[j, 1])[:4]  # retain quadruped parity
+    def ancestors(j):
+        path = [j]
+        while joints[path[-1]]["parent"] is not None:
+            path.append(joints[path[-1]]["parent"])
+        return path
+    # Rest-pose BVH forward axes vary between packs. Use the first tree fork
+    # joining floor-reaching branches, independent of horizontal orientation.
+    # The floor band matches limbs.group; toe forks below each leg collapse to
+    # their common foot joint instead of competing for the two contact slots.
+    height = float(np.ptp(rest[:,1]))
+    real_height = lambda t: rest[joints[t]["parent"],1]  # End Site directions can be arbitrary
+    floor = min(real_height(t) for t in tips)
+    low = [t for t in tips if real_height(t)-floor < .08*height]
+    paths = {t:ancestors(t) for t in low}
+    current = next(i for i,j in enumerate(joints) if j["parent"] is None)
+    while True:
+        branches = {i:[t for t,path in paths.items() if i in path]
+                    for i,j in enumerate(joints) if j["parent"] == current}
+        branches = {i:ts for i,ts in branches.items() if ts}
+        if len(branches) != 1:
+            break
+        current = next(iter(branches))
+    if len(branches) != 2 or any(rest[current,1]-min(real_height(t) for t in ts) <= .1*height for ts in branches.values()):
+        raise ValueError("grounded bird source needs two distinct floor-reaching leg branches")
+    chosen = []
+    for tips_in_branch in branches.values():
+        common = next(j for j in paths[tips_in_branch[0]] if all(j in paths[t] for t in tips_in_branch[1:]))
+        chosen.append(joints[common]["parent"] if joints[common]["name"].endswith("_end") else common)
+    return chosen
 
 
 def chain(joints, j):
@@ -198,7 +228,8 @@ def defects(joints, frames, ft, name, i, j):
     P, rest = fk(joints, frames[i:j + 1]), fk(joints, None)[0]
     pw = paws(joints, rest)
     leg = float(np.mean([chain(joints, p) for p in pw])) or 1.0
-    pw = [joints[p]["parent"] for p in pw]  # the paw joints: Zoo End Sites point anywhere, so their tips' heights wander
+    if CONTACT_COUNT == 4:
+        pw = [joints[p]["parent"] for p in pw]  # End Sites point anywhere; bird contacts are already real foot joints
     hip = float(rest[0, 1] - rest[pw, 1].mean()) if len(pw) else leg  # the root's height over the paws at rest
     rel = P - P[:, :1]
     pop = float(np.linalg.norm(np.diff(rel, axis=0), axis=2).max(initial=0)) / leg
@@ -323,7 +354,7 @@ def role_map(out):
     animal = json.loads((out / "animal.json").read_text())
     from body_plans import for_skeleton
     family = for_skeleton(animal.get("skeleton", "quadruped_v1"))
-    bones, required = family.bones, family.required
+    bones, required = family.bones, family.source_required
     joints, frames, _, _ = parse((out / animal["clips"][0]["file"]).read_text())
     pose = fk(joints, frames[:1])[0]  # the sheet shows this first frame too
     names = {jt["name"] for jt in joints}
@@ -333,7 +364,7 @@ def role_map(out):
            f"position in the first frame of a {animal['clips'][0]['name']} clip (cm, Y up; '_end' joints are the chain tips):\n{skeleton_text(joints, pose)}\n\n"
            "The image shows that frame from the side (top panel) and from above (bottom panel) with every joint "
            "labelled; blue = left, red = right.\n\nMap the joints onto these shared family bones: "
-           f"{', '.join(bones)}. WL/WR = folded left/right wings, FL/FR = front left/right leg, HL/HR = left/right ground leg, left = the animal's own "
+           f"{', '.join(bones)}. WL/WR = folded left/right wings (01=root, 04=tip; short source wings may omit 02/03, padded in the target), FL/FR = front left/right leg, HL/HR = left/right ground leg, left = the animal's own "
            "left; limb segment 01 is the upper leg (shoulder/hip), 04 the paw or toe tip. root is a static origin "
            "bone: map no joint to it unless a joint is a ground-level trajectory helper. Several joints may map to one "
            "bone (for example a clavicle and an upper arm both to FL_01). These required bones must each get at least one joint: "
@@ -346,10 +377,11 @@ def role_map(out):
     except (ValueError, KeyError) as e:
         raise SystemExit(f"FAIL: the role map reply was not JSON ({e}): {text[:200]}")
     bad = [f"{k}->{v}" for k, v in rm.items() if k not in names or v not in bones]
-    missing = [b for b in required if b not in rm.values()]
-    if bad or missing:
+    parents = {jt["name"]: joints[jt["parent"]]["name"] if jt["parent"] is not None else None for jt in joints}
+    errors = family.source_role_errors(rm, parents)
+    if bad or errors:
         raise SystemExit(f"FAIL: role map {'unknown ' + ', '.join(bad) + '; ' if bad else ''}"
-                         f"{'missing required roles ' + ', '.join(missing) if missing else ''}".strip("; "))
+                         f"{'; '.join(errors)}".strip("; "))
     review = claude([sheet, {"type": "text", "text": (
         f"{brief}\n\nAnother model proposed this map:\n{json.dumps(rm, indent=1)}\n"
         f"unmapped: {unmapped}\n\nCheck it against the joint list and the image: left/right, front/hind, segment order "

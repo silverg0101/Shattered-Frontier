@@ -681,6 +681,22 @@ def build_main(model, labels_path, out):
     verify(out)
 
 
+def deformation_masks(weights, family):
+    """Weighted movement/isolation regions; padded wing tips need not own skin."""
+    return {g: weights[:, [family.bones.index(n) for n in family.deformation_region(g)]].sum(1) > .5
+            for g in family.limbs}
+
+
+def deformation_errors(moved, regions, limb):
+    errors = []
+    if float(moved[regions[limb]].max(initial=0)) <= .001:
+        errors.append(f"posing {limb}_02 does not move its weighted region")
+    bleed = {g: float(moved[mask].max(initial=0)) for g,mask in regions.items() if g != limb}
+    if max(bleed.values()) >= .0001:
+        errors.append(f"posing {limb}_02 moves another limb region: {bleed}")
+    return errors
+
+
 def verify(path):
     """Exact bone list and hierarchy; each leg posed in turn moves no vertex owned by another leg's paw."""
     import bpy
@@ -714,7 +730,7 @@ def verify(path):
                     w[v.index, BONES.index(idx[g.group])] = g.weight
         W.append(w)
     W = np.concatenate(W)
-    paw = {g: W[:, BONES.index(f"{g}_04")] > 0.5 for g in LEGS}
+    paw = deformation_masks(W, FAMILY)
     leg = {g: W[:, [BONES.index(f"{g}_{i:02d}") for i in range(2, 5)]].sum(1) > 0.5 for g in LEGS}
     report = {"bones": BONES, "vertices": len(W)}
     for g in LEGS:
@@ -726,11 +742,9 @@ def verify(path):
                                    **{f"{o}_04 paw max mm": round(float(moved[paw[o]].max(initial=0)) * 1000, 3)
                                       for o in LEGS if o != g},
                                    "other legs' vertices moved >1 mm": int(sum((moved[leg[o]] > 1e-3).sum() for o in LEGS if o != g))}
-        if report[f"{g}_02 posed"]["own paw moved mm"] <= 1:
-            raise SystemExit(f"FAIL: posing {g}_02 does not move its paw")
-        bleed = {o: float(moved[paw[o]].max(initial=0)) for o in LEGS if o != g}
-        if max(bleed.values()) >= 1e-4:
-            raise SystemExit(f"FAIL: posing {g}_02 moves another paw: {bleed}")
+        errors = deformation_errors(moved, paw, g)
+        if errors:
+            raise SystemExit("FAIL: " + "; ".join(errors))
     print("VERIFY", json.dumps(report))
     print("VERIFY PASS")
 

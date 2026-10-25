@@ -1433,8 +1433,9 @@ def run_clip_job(jid, host):
         folder = model_dir(n)
         man, rig = json.loads((folder / f"{n}.json").read_text()), folder / f"{n}.glb"
         family = for_skeleton(man.get("skeleton", SKELETON))
-        for clip in p.get("names", []) or [p.get("prompt") or p.get("clip", "")]:
-            validate_action(family, clip)
+        for instruction in [*p.get("names", []), p.get("clip", ""), p.get("prompt", ""),
+                            p.get("motion", {}).get("action", ""), p.get("motion", {}).get("prompt", "")]:
+            validate_action(family, instruction)
         made = []  # groups (base name, [(suffix, glb bytes, sheet bytes or None, manifest fields)])
         get = lambda f: a.ssh(host, f"cat {q(work + '/' + f)}", timeout=900)
         size, base = man["size_cm"], rig.read_bytes()
@@ -1481,7 +1482,8 @@ def run_clip_job(jid, host):
                 log += [f"take {i}: score {sc:.2f}" for sc, _, i, _ in takes]
                 score, _, i, _ = max(takes)
                 step(f"checking take {i}")
-                groups = [(p["clip"], [("", std_glb_clip(jid, host, "rig.glb", f"take{i}/anim.glb", p["clip"], size),
+                instruction = p["motion"].get("prompt") or p["motion"]["action"]
+                groups = [(p["clip"], [("", std_glb_clip(jid, host, "rig.glb", f"take{i}/anim.glb", p["clip"], size, instruction),
                                         {"source": "video", "action": p["motion"]["action"], "take": i, "score": round(score, 3)})])]
             else:  # another skeleton: labelled like a library animal (a GLB that can't be fails here), then retargeted
                 tmp = Path(tempfile.mkdtemp())

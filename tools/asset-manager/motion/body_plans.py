@@ -29,6 +29,41 @@ class BodyPlan:
         return ("pelvis", "spine_01", "head", *(f"{l}_{i:02}" for l in self.limbs for i in range(1, 5)))
 
     @property
+    def source_required(self):
+        """Source wings may have fewer joints; target segments are padded by retargeting."""
+        return ("pelvis", "spine_01", "head",
+                *(f"{l}_{i:02}" for l in self.limbs for i in (range(1,5) if l in self.contacts else (1,4))))
+
+    def source_role_errors(self, role_map, parents):
+        errors = [f"missing required role {r}" for r in self.source_required if r not in role_map.values()]
+        if self.family != "grounded_bird":
+            return errors
+        for wing in (l for l in self.limbs if l not in self.contacts):
+            mapped = [n for n,r in role_map.items() if r in self.bones and r.startswith(wing+"_")]
+            def ancestors(n):
+                result = set()
+                p = parents.get(n)
+                while p is not None:
+                    result.add(p)
+                    p = parents.get(p)
+                return result
+            lineage = {n: ancestors(n) for n in mapped}
+            if any(a not in lineage[b] and b not in lineage[a] for i,a in enumerate(mapped) for b in mapped[i+1:]):
+                errors.append(f"{wing} source roles do not form one ordered chain")
+            for n in mapped:
+                if any(int(role_map[p][-2:]) > int(role_map[n][-2:]) for p in mapped if p in lineage[n]):
+                    errors.append(f"{wing} source roles reverse order at {n}")
+            roots = [n for n in mapped if role_map[n] == wing+"_01"]
+            for n in (n for n in mapped if role_map[n] == wing+"_04"):
+                if not any(r in lineage[n] for r in roots):
+                    errors.append(f"{wing} tip {n} is not below its source root")
+        return errors
+
+    def deformation_region(self, limb):
+        """Bone region that must deform when segment02 is posed; wings can end in padding."""
+        return (limb+"_04",) if limb in self.contacts else tuple(f"{limb}_{i:02}" for i in range(2,5))
+
+    @property
     def parents(self):
         p = {"root": None, "pelvis": "root", "spine_01": "pelvis", "spine_02": "spine_01",
              "spine_03": "spine_02", "neck": "spine_03", "head": "neck"}
@@ -76,5 +111,5 @@ def capability(entry):
 
 
 def validate_action(family, action):
-    if family == GROUNDED_BIRD and re.search(r"fly|flight|flap|hover|take.?off|landing", action, re.I):
+    if family == GROUNDED_BIRD and re.search(r"fly|flies|flight|flap|hover|take.?off|landing", action, re.I):
         raise ValueError(f"flight action {action!r} is unsupported by {family.skeleton}")

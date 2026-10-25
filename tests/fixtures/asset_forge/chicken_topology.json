@@ -1,0 +1,1110 @@
+{
+ "source": "Zoo-300K/Chicken.zip, cached curated clips/Walk.bvh; topology only, no motion frames",
+ "source_sha256": "64e46494b97d06ad39a30f7e37e527a667ca2fe49b218013f23fe07d4f7a98bc",
+ "role_map": {
+  "Bip01_Pelvis": "pelvis",
+  "Bip01_Spine": "spine_01",
+  "Bip01_Head": "head",
+  "Bip01_L_Thigh": "HL_01",
+  "Bip01_L_Calf": "HL_02",
+  "Bip01_L_HorseLink": "HL_03",
+  "Bip01_L_Foot": "HL_04",
+  "BN_Finger_L_01": "WL_01",
+  "BN_Finger_L_02": "WL_02",
+  "BN_Finger_L_02_end": "WL_04",
+  "Bip01_R_Thigh": "HR_01",
+  "Bip01_R_Calf": "HR_02",
+  "Bip01_R_HorseLink": "HR_03",
+  "Bip01_R_Foot": "HR_04",
+  "BN_Finger_R_01": "WR_01",
+  "BN_Finger_R_02": "WR_02",
+  "BN_Finger_R_02_end": "WR_04"
+ },
+ "joints": [
+  {
+   "name": "Hips",
+   "parent": null,
+   "channels": [
+    [
+     0,
+     "Xposition"
+    ],
+    [
+     1,
+     "Yposition"
+    ],
+    [
+     2,
+     "Zposition"
+    ],
+    [
+     3,
+     "Zrotation"
+    ],
+    [
+     4,
+     "Yrotation"
+    ],
+    [
+     5,
+     "Xrotation"
+    ]
+   ],
+   "offset": [
+    -3.371741,
+    13.596684,
+    0.0
+   ]
+  },
+  {
+   "name": "Bip01_Pelvis",
+   "parent": 0,
+   "channels": [
+    [
+     6,
+     "Zrotation"
+    ],
+    [
+     7,
+     "Yrotation"
+    ],
+    [
+     8,
+     "Xrotation"
+    ]
+   ],
+   "offset": [
+    0.0,
+    0.0,
+    -0.0
+   ]
+  },
+  {
+   "name": "BN_Tail_01",
+   "parent": 1,
+   "channels": [
+    [
+     9,
+     "Zrotation"
+    ],
+    [
+     10,
+     "Yrotation"
+    ],
+    [
+     11,
+     "Xrotation"
+    ]
+   ],
+   "offset": [
+    -1.93658,
+    0.053703,
+    5e-06
+   ]
+  },
+  {
+   "name": "BN_Tail_02",
+   "parent": 2,
+   "channels": [
+    [
+     12,
+     "Zrotation"
+    ],
+    [
+     13,
+     "Yrotation"
+    ],
+    [
+     14,
+     "Xrotation"
+    ]
+   ],
+   "offset": [
+    -3.626481,
+    1.138467,
+    1e-06
+   ]
+  },
+  {
+   "name": "BN_Tail_03",
+   "parent": 3,
+   "channels": [
+    [
+     15,
+     "Zrotation"
+    ],
+    [
+     16,
+     "Yrotation"
+    ],
+    [
+     17,
+     "Xrotation"
+    ]
+   ],
+   "offset": [
+    -3.797893,
+    1.634084,
+    2e-06
+   ]
+  },
+  {
+   "name": "BN_Tail_03_end",
+   "parent": 4,
+   "channels": [],
+   "offset": [
+    -2.083321,
+    -3.571275,
+    1.4e-05
+   ]
+  },
+  {
+   "name": "Bip01_Spine",
+   "parent": 1,
+   "channels": [
+    [
+     18,
+     "Zrotation"
+    ],
+    [
+     19,
+     "Yrotation"
+    ],
+    [
+     20,
+     "Xrotation"
+    ]
+   ],
+   "offset": [
+    2.556911,
+    0.002728,
+    -3e-06
+   ]
+  },
+  {
+   "name": "Bip01_R_Thigh",
+   "parent": 6,
+   "channels": [
+    [
+     21,
+     "Zrotation"
+    ],
+    [
+     22,
+     "Yrotation"
+    ],
+    [
+     23,
+     "Xrotation"
+    ]
+   ],
+   "offset": [
+    -2.55691,
+    -0.002727,
+    2.401809
+   ]
+  },
+  {
+   "name": "Bip01_R_Calf",
+   "parent": 7,
+   "channels": [
+    [
+     24,
+     "Zrotation"
+    ],
+    [
+     25,
+     "Yrotation"
+    ],
+    [
+     26,
+     "Xrotation"
+    ]
+   ],
+   "offset": [
+    5.40742,
+    -4.679298,
+    0.505158
+   ]
+  },
+  {
+   "name": "Bip01_R_HorseLink",
+   "parent": 8,
+   "channels": [
+    [
+     27,
+     "Zrotation"
+    ],
+    [
+     28,
+     "Yrotation"
+    ],
+    [
+     29,
+     "Xrotation"
+    ]
+   ],
+   "offset": [
+    -4.273019,
+    -3.788284,
+    -0.263677
+   ]
+  },
+  {
+   "name": "Bip01_R_Foot",
+   "parent": 9,
+   "channels": [
+    [
+     30,
+     "Zrotation"
+    ],
+    [
+     31,
+     "Yrotation"
+    ],
+    [
+     32,
+     "Xrotation"
+    ]
+   ],
+   "offset": [
+    1.854647,
+    -3.64519,
+    0.210193
+   ]
+  },
+  {
+   "name": "Bip01_R_Toe3",
+   "parent": 10,
+   "channels": [
+    [
+     33,
+     "Zrotation"
+    ],
+    [
+     34,
+     "Yrotation"
+    ],
+    [
+     35,
+     "Xrotation"
+    ]
+   ],
+   "offset": [
+    -0.157273,
+    -0.690854,
+    -0.051563
+   ]
+  },
+  {
+   "name": "Bip01_R_Toe3Nub",
+   "parent": 11,
+   "channels": [
+    [
+     36,
+     "Zrotation"
+    ],
+    [
+     37,
+     "Yrotation"
+    ],
+    [
+     38,
+     "Xrotation"
+    ]
+   ],
+   "offset": [
+    -2.166954,
+    -0.709837,
+    -0.410917
+   ]
+  },
+  {
+   "name": "Bip01_R_Toe3Nub_end",
+   "parent": 12,
+   "channels": [],
+   "offset": [
+    -0.698425,
+    2.205565,
+    -0.126884
+   ]
+  },
+  {
+   "name": "Bip01_R_Toe2",
+   "parent": 10,
+   "channels": [
+    [
+     39,
+     "Zrotation"
+    ],
+    [
+     40,
+     "Yrotation"
+    ],
+    [
+     41,
+     "Xrotation"
+    ]
+   ],
+   "offset": [
+    0.527009,
+    -0.910761,
+    -0.245309
+   ]
+  },
+  {
+   "name": "Bip01_R_Toe2Nub",
+   "parent": 14,
+   "channels": [
+    [
+     42,
+     "Zrotation"
+    ],
+    [
+     43,
+     "Yrotation"
+    ],
+    [
+     44,
+     "Xrotation"
+    ]
+   ],
+   "offset": [
+    2.301253,
+    -0.524378,
+    -0.956887
+   ]
+  },
+  {
+   "name": "Bip01_R_Toe2Nub_end",
+   "parent": 15,
+   "channels": [],
+   "offset": [
+    0.489655,
+    2.492229,
+    -0.188159
+   ]
+  },
+  {
+   "name": "Bip01_R_Toe1",
+   "parent": 10,
+   "channels": [
+    [
+     45,
+     "Zrotation"
+    ],
+    [
+     46,
+     "Yrotation"
+    ],
+    [
+     47,
+     "Xrotation"
+    ]
+   ],
+   "offset": [
+    0.794945,
+    -0.939082,
+    0.204366
+   ]
+  },
+  {
+   "name": "Bip01_R_Toe1Nub",
+   "parent": 17,
+   "channels": [
+    [
+     48,
+     "Zrotation"
+    ],
+    [
+     49,
+     "Yrotation"
+    ],
+    [
+     50,
+     "Xrotation"
+    ]
+   ],
+   "offset": [
+    2.84335,
+    -0.447134,
+    0.78779
+   ]
+  },
+  {
+   "name": "Bip01_R_Toe1Nub_end",
+   "parent": 18,
+   "channels": [],
+   "offset": [
+    0.422765,
+    2.950314,
+    0.148664
+   ]
+  },
+  {
+   "name": "Bip01_R_Toe0",
+   "parent": 10,
+   "channels": [
+    [
+     51,
+     "Zrotation"
+    ],
+    [
+     52,
+     "Yrotation"
+    ],
+    [
+     53,
+     "Xrotation"
+    ]
+   ],
+   "offset": [
+    0.372488,
+    -0.940579,
+    0.455508
+   ]
+  },
+  {
+   "name": "Bip01_R_Toe0Nub",
+   "parent": 20,
+   "channels": [
+    [
+     54,
+     "Zrotation"
+    ],
+    [
+     55,
+     "Yrotation"
+    ],
+    [
+     56,
+     "Xrotation"
+    ]
+   ],
+   "offset": [
+    1.499972,
+    -0.444197,
+    1.996697
+   ]
+  },
+  {
+   "name": "Bip01_R_Toe0Nub_end",
+   "parent": 21,
+   "channels": [],
+   "offset": [
+    0.199955,
+    2.495991,
+    0.40506
+   ]
+  },
+  {
+   "name": "Bip01_L_Thigh",
+   "parent": 6,
+   "channels": [
+    [
+     57,
+     "Zrotation"
+    ],
+    [
+     58,
+     "Yrotation"
+    ],
+    [
+     59,
+     "Xrotation"
+    ]
+   ],
+   "offset": [
+    -2.556916,
+    -0.00273,
+    -2.401803
+   ]
+  },
+  {
+   "name": "Bip01_L_Calf",
+   "parent": 23,
+   "channels": [
+    [
+     60,
+     "Zrotation"
+    ],
+    [
+     61,
+     "Yrotation"
+    ],
+    [
+     62,
+     "Xrotation"
+    ]
+   ],
+   "offset": [
+    5.407413,
+    -4.679301,
+    -0.50516
+   ]
+  },
+  {
+   "name": "Bip01_L_HorseLink",
+   "parent": 24,
+   "channels": [
+    [
+     63,
+     "Zrotation"
+    ],
+    [
+     64,
+     "Yrotation"
+    ],
+    [
+     65,
+     "Xrotation"
+    ]
+   ],
+   "offset": [
+    -4.273021,
+    -3.788278,
+    0.263699
+   ]
+  },
+  {
+   "name": "Bip01_L_Foot",
+   "parent": 25,
+   "channels": [
+    [
+     66,
+     "Zrotation"
+    ],
+    [
+     67,
+     "Yrotation"
+    ],
+    [
+     68,
+     "Xrotation"
+    ]
+   ],
+   "offset": [
+    1.854642,
+    -3.645193,
+    -0.210187
+   ]
+  },
+  {
+   "name": "Bip01_L_Toe3",
+   "parent": 26,
+   "channels": [
+    [
+     69,
+     "Zrotation"
+    ],
+    [
+     70,
+     "Yrotation"
+    ],
+    [
+     71,
+     "Xrotation"
+    ]
+   ],
+   "offset": [
+    -0.157274,
+    -0.690853,
+    0.051566
+   ]
+  },
+  {
+   "name": "Bip01_L_Toe3Nub",
+   "parent": 27,
+   "channels": [
+    [
+     72,
+     "Zrotation"
+    ],
+    [
+     73,
+     "Yrotation"
+    ],
+    [
+     74,
+     "Xrotation"
+    ]
+   ],
+   "offset": [
+    -2.166953,
+    -0.709834,
+    0.410926
+   ]
+  },
+  {
+   "name": "Bip01_L_Toe3Nub_end",
+   "parent": 28,
+   "channels": [],
+   "offset": [
+    0.698421,
+    -2.205566,
+    -0.12688
+   ]
+  },
+  {
+   "name": "Bip01_L_Toe2",
+   "parent": 26,
+   "channels": [
+    [
+     75,
+     "Zrotation"
+    ],
+    [
+     76,
+     "Yrotation"
+    ],
+    [
+     77,
+     "Xrotation"
+    ]
+   ],
+   "offset": [
+    0.527009,
+    -0.910761,
+    0.245309
+   ]
+  },
+  {
+   "name": "Bip01_L_Toe2Nub",
+   "parent": 30,
+   "channels": [
+    [
+     78,
+     "Zrotation"
+    ],
+    [
+     79,
+     "Yrotation"
+    ],
+    [
+     80,
+     "Xrotation"
+    ]
+   ],
+   "offset": [
+    2.301255,
+    -0.524377,
+    0.956884
+   ]
+  },
+  {
+   "name": "Bip01_L_Toe2Nub_end",
+   "parent": 31,
+   "channels": [],
+   "offset": [
+    -0.489659,
+    -2.492229,
+    -0.188152
+   ]
+  },
+  {
+   "name": "Bip01_L_Toe1",
+   "parent": 26,
+   "channels": [
+    [
+     81,
+     "Zrotation"
+    ],
+    [
+     82,
+     "Yrotation"
+    ],
+    [
+     83,
+     "Xrotation"
+    ]
+   ],
+   "offset": [
+    0.794941,
+    -0.939083,
+    -0.204368
+   ]
+  },
+  {
+   "name": "Bip01_L_Toe1Nub",
+   "parent": 33,
+   "channels": [
+    [
+     84,
+     "Zrotation"
+    ],
+    [
+     85,
+     "Yrotation"
+    ],
+    [
+     86,
+     "Xrotation"
+    ]
+   ],
+   "offset": [
+    2.843347,
+    -0.44714,
+    -0.787796
+   ]
+  },
+  {
+   "name": "Bip01_L_Toe1Nub_end",
+   "parent": 34,
+   "channels": [],
+   "offset": [
+    -0.422771,
+    -2.950312,
+    0.148672
+   ]
+  },
+  {
+   "name": "Bip01_L_Toe0",
+   "parent": 26,
+   "channels": [
+    [
+     87,
+     "Zrotation"
+    ],
+    [
+     88,
+     "Yrotation"
+    ],
+    [
+     89,
+     "Xrotation"
+    ]
+   ],
+   "offset": [
+    0.372486,
+    -0.94058,
+    -0.455507
+   ]
+  },
+  {
+   "name": "Bip01_L_Toe0Nub",
+   "parent": 36,
+   "channels": [
+    [
+     90,
+     "Zrotation"
+    ],
+    [
+     91,
+     "Yrotation"
+    ],
+    [
+     92,
+     "Xrotation"
+    ]
+   ],
+   "offset": [
+    1.499965,
+    -0.444205,
+    -1.9967
+   ]
+  },
+  {
+   "name": "Bip01_L_Toe0Nub_end",
+   "parent": 37,
+   "channels": [],
+   "offset": [
+    -0.199959,
+    -2.495989,
+    0.405066
+   ]
+  },
+  {
+   "name": "Bip01_Spine1",
+   "parent": 6,
+   "channels": [
+    [
+     93,
+     "Zrotation"
+    ],
+    [
+     94,
+     "Yrotation"
+    ],
+    [
+     95,
+     "Xrotation"
+    ]
+   ],
+   "offset": [
+    3.422903,
+    1.470734,
+    -6e-06
+   ]
+  },
+  {
+   "name": "BN_Finger_R_01",
+   "parent": 39,
+   "channels": [
+    [
+     96,
+     "Zrotation"
+    ],
+    [
+     97,
+     "Yrotation"
+    ],
+    [
+     98,
+     "Xrotation"
+    ]
+   ],
+   "offset": [
+    2.094885,
+    2.150816,
+    4.58747
+   ]
+  },
+  {
+   "name": "BN_Finger_R_02",
+   "parent": 40,
+   "channels": [
+    [
+     99,
+     "Zrotation"
+    ],
+    [
+     100,
+     "Yrotation"
+    ],
+    [
+     101,
+     "Xrotation"
+    ]
+   ],
+   "offset": [
+    -5.236867,
+    -2.550419,
+    0.804196
+   ]
+  },
+  {
+   "name": "BN_Finger_R_02_end",
+   "parent": 41,
+   "channels": [],
+   "offset": [
+    2.811413,
+    -5.164373,
+    -0.036764
+   ]
+  },
+  {
+   "name": "BN_Finger_L_01",
+   "parent": 39,
+   "channels": [
+    [
+     102,
+     "Zrotation"
+    ],
+    [
+     103,
+     "Yrotation"
+    ],
+    [
+     104,
+     "Xrotation"
+    ]
+   ],
+   "offset": [
+    2.094875,
+    2.150793,
+    -4.587248
+   ]
+  },
+  {
+   "name": "BN_Finger_L_02",
+   "parent": 43,
+   "channels": [
+    [
+     105,
+     "Zrotation"
+    ],
+    [
+     106,
+     "Yrotation"
+    ],
+    [
+     107,
+     "Xrotation"
+    ]
+   ],
+   "offset": [
+    -5.236869,
+    -2.550423,
+    -0.80417
+   ]
+  },
+  {
+   "name": "BN_Finger_L_02_end",
+   "parent": 44,
+   "channels": [],
+   "offset": [
+    -2.811413,
+    5.164373,
+    -0.036788
+   ]
+  },
+  {
+   "name": "Bip01_Neck",
+   "parent": 39,
+   "channels": [
+    [
+     108,
+     "Zrotation"
+    ],
+    [
+     109,
+     "Yrotation"
+    ],
+    [
+     110,
+     "Xrotation"
+    ]
+   ],
+   "offset": [
+    2.968336,
+    2.884048,
+    -8e-06
+   ]
+  },
+  {
+   "name": "Bip01_Neck1",
+   "parent": 46,
+   "channels": [
+    [
+     111,
+     "Zrotation"
+    ],
+    [
+     112,
+     "Yrotation"
+    ],
+    [
+     113,
+     "Xrotation"
+    ]
+   ],
+   "offset": [
+    0.797135,
+    3.119209,
+    -5e-06
+   ]
+  },
+  {
+   "name": "Bip01_Neck2",
+   "parent": 47,
+   "channels": [
+    [
+     114,
+     "Zrotation"
+    ],
+    [
+     115,
+     "Yrotation"
+    ],
+    [
+     116,
+     "Xrotation"
+    ]
+   ],
+   "offset": [
+    0.174294,
+    3.417776,
+    -4e-06
+   ]
+  },
+  {
+   "name": "Bip01_Head",
+   "parent": 48,
+   "channels": [
+    [
+     117,
+     "Zrotation"
+    ],
+    [
+     118,
+     "Yrotation"
+    ],
+    [
+     119,
+     "Xrotation"
+    ]
+   ],
+   "offset": [
+    1.150581,
+    3.117428,
+    -4e-06
+   ]
+  },
+  {
+   "name": "BN_Mouth_01",
+   "parent": 49,
+   "channels": [
+    [
+     120,
+     "Zrotation"
+    ],
+    [
+     121,
+     "Yrotation"
+    ],
+    [
+     122,
+     "Xrotation"
+    ]
+   ],
+   "offset": [
+    1.864357,
+    -0.479641,
+    -2.3e-05
+   ]
+  },
+  {
+   "name": "BN_Mouth_01_end",
+   "parent": 50,
+   "channels": [],
+   "offset": [
+    -0.017213,
+    3.2064,
+    -6e-06
+   ]
+  },
+  {
+   "name": "Bip01_HeadNub",
+   "parent": 49,
+   "channels": [
+    [
+     123,
+     "Zrotation"
+    ],
+    [
+     124,
+     "Yrotation"
+    ],
+    [
+     125,
+     "Xrotation"
+    ]
+   ],
+   "offset": [
+    4.311795,
+    1.244593,
+    -7e-06
+   ]
+  },
+  {
+   "name": "Bip01_HeadNub_end",
+   "parent": 52,
+   "channels": [],
+   "offset": [
+    0.889235,
+    -3.080673,
+    9e-06
+   ]
+  }
+ ]
+}
