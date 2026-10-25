@@ -1,6 +1,6 @@
 """Animal catalogue (Zoo-300K packs), query matcher and library curation. Must not import app at module level: job
 runners reach app's helpers through _app()."""
-import difflib, io, json, os, re, shlex, shutil, struct, sys, tarfile, tempfile, threading, time
+import difflib, io, json, os, random, re, shlex, shutil, struct, sys, tarfile, tempfile, threading, time
 from pathlib import Path
 
 CATALOGUE = Path(__file__).with_name("motion") / "zoo300k.json"
@@ -469,12 +469,13 @@ def depth_concept(jid, host, p, entry, lib, size, brief, log, step, info):
                                 "end_percent": s["creature_depth_end"], "seed": seed}
         draw = lambda only, seed, extra: a.depth_views(jid, dhost, {"prompt": base + extra, "symmetric": True}, log, depth=depth,
                                                        wrap=CREATURE_DEPTH_WRAP, negative=negative, control=control(seed), only=only)
-        extra = ""
+        extra, seed0 = "", random.randrange(1, 2 ** 31 - 10_000)  # a new picture every job and every redraw
+        log.append(f"concept: depth seeds from {seed0}")
         for n in range(1, 4):  # the side view first: it settles the animal
             if a.job_row(jid)["status"] == "cancelling":
                 raise InterruptedError
             step(f"drawing the depth side view (try {n}/3)")
-            views = draw(("left",), 12345 + 1000 * n, extra)
+            views = draw(("left",), seed0 + n, extra)
             r = a.codex_review([views["left"]], brief)
             log.append(f"depth side {n}: {'pass' if r['pass'] else 'fail: ' + '; '.join(r['problems'])}")
             if r["pass"]:
@@ -488,7 +489,7 @@ def depth_concept(jid, host, p, entry, lib, size, brief, log, step, info):
             if a.job_row(jid)["status"] == "cancelling":
                 raise InterruptedError
             step(f"drawing the depth front view (try {n}/2)")
-            views["front"] = draw(("front",), 777 + 1000 * n, extra)["front"]
+            views["front"] = draw(("front",), seed0 + 100 + n, extra)["front"]
             r = a.codex_review([views["front"], views["left"]], FRONT_BRIEF.format(prompt=base))
             log.append(f"depth front {n}: {'pass' if r['pass'] else 'fail: ' + '; '.join(r['problems'])}")
             if r["pass"]:
