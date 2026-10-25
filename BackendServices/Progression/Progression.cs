@@ -94,7 +94,17 @@ public sealed class CharacterProgression
                 if (!skills.ContainsKey(id) || value is < 0 or > ProgressionRules.UnspecializedCap) throw new ArgumentOutOfRangeException(nameof(initialSkills));
                 skills[id] = value;
             }
-        LifetimeXp = initialXp;
+        if (snapshot is not null)
+        {
+            if (snapshot.LifetimeXp < 0) throw new ArgumentException("Invalid progression snapshot XP.");
+            foreach (var (id, value) in snapshot.Skills)
+            {
+                if (!skills.ContainsKey(id) || value is < 0 or > ProgressionRules.UnspecializedCap)
+                    throw new ArgumentException("Invalid progression snapshot skill.");
+                skills[id] = value;
+            }
+        }
+        LifetimeXp = snapshot?.LifetimeXp ?? initialXp;
         while (Level < ProgressionRules.LevelCap && LifetimeXp >= TotalFor(Level + 1)) Level++;
         if (snapshot is not null)
         {

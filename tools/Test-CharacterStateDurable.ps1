@@ -121,7 +121,7 @@ try {
     $restoredPosition = (Invoke-Checked (Join-Path $pg 'psql.exe') @('-X','-A','-t','-h','127.0.0.1','-p',"$($restored.port)",'-U',$restored.username,'-d',$restored.database,'-c',"SELECT revision,x,zone_id FROM character_state.positions WHERE character_id='character-1'") @{ PGPASSWORD=$restored.password }).Trim()
     if ($restoredPosition -ne '1|12.5|silverbrook') { throw 'Restored position differs from backup point.' }
     $results.Add('PASS restored character state equals backup point')
-    [void](Sql 'UPDATE character_state.schema_version SET version=9' "state_$run")
+    [void](Sql 'UPDATE character_state.schema_version SET version=10' "state_$run")
     $results.Add((Invoke-Checked $dotnet @($dll,'newer') @{ CHARACTER_STATE_CONNECTION=$connection }))
     try { [void](Invoke-Checked 'powershell.exe' @('-NoProfile','-File',$backupTool,'-Store','CharacterState','-OutputDirectory',(Join-Path $EvidenceRoot 'newer-backup'),'-HostName','127.0.0.1','-Port',"$port",'-Database',"state_$run",'-Username','state_svc') @{ PGPASSWORD=$servicePassword }); throw 'Newer schema backup accepted.' }
     catch { if ($_.Exception.Message -notmatch 'Unsupported source schema') { throw }; $results.Add('PASS newer schema backup refused') }

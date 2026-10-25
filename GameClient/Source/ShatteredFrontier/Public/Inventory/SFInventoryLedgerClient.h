@@ -60,6 +60,7 @@ struct FSFLedgerResponse
     // Container view (EnsureContainer/GetContainer), or the grant's revision after and quantity delta.
     int64 Revision = 0;
     TMap<FString, int64> Quantities;
+    TMap<FString, int32> DurabilityPercent;
     FString OperationId;
     int64 GrantedDelta = 0;
     int64 ToRevision = 0;  // Transfer: the destination revision after

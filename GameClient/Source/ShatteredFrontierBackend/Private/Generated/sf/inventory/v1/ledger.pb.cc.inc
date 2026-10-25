@@ -33,6 +33,8 @@ PROTOBUF_CONSTINIT ::google::protobuf::internal::ReflectionData
         {&::_pbi::kDescriptorMethods, &::descriptor_table_sf_2finventory_2fv1_2fledger_2eproto, /* tracker*/ nullptr,},
         // ::sf::inventory::v1::ContainerView_QuantitiesEntry_DoNotUse
         {&::_pbi::kDescriptorMethods, &::descriptor_table_sf_2finventory_2fv1_2fledger_2eproto, /* tracker*/ nullptr,},
+        // ::sf::inventory::v1::ContainerView_DurabilityPercentEntry_DoNotUse
+        {&::_pbi::kDescriptorMethods, &::descriptor_table_sf_2finventory_2fv1_2fledger_2eproto, /* tracker*/ nullptr,},
         // ::sf::inventory::v1::ContainerView
         {&::_pbi::kDescriptorMethods, &::descriptor_table_sf_2finventory_2fv1_2fledger_2eproto, /* tracker*/ nullptr,},
         // ::sf::inventory::v1::RevisionChange
@@ -204,7 +206,7 @@ constexpr auto TransferRequest::InternalGenerateClassData_(
           false,
       },
 #ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[9],
+      &file_reflection_data[10],
 #else   // !PROTOBUF_MESSAGE_GLOBALS
       &::_pbi::kDescriptorMethods,
       &descriptor_table_sf_2finventory_2fv1_2fledger_2eproto,
@@ -365,7 +367,7 @@ constexpr auto RevisionChange::InternalGenerateClassData_(
           false,
       },
 #ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[3],
+      &file_reflection_data[4],
 #else   // !PROTOBUF_MESSAGE_GLOBALS
       &::_pbi::kDescriptorMethods,
       &descriptor_table_sf_2finventory_2fv1_2fledger_2eproto,
@@ -529,7 +531,7 @@ constexpr auto QuantityChange::InternalGenerateClassData_(
           false,
       },
 #ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[4],
+      &file_reflection_data[5],
 #else   // !PROTOBUF_MESSAGE_GLOBALS
       &::_pbi::kDescriptorMethods,
       &descriptor_table_sf_2finventory_2fv1_2fledger_2eproto,
@@ -675,7 +677,7 @@ constexpr auto GetContainerRequest::InternalGenerateClassData_(
           false,
       },
 #ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[7],
+      &file_reflection_data[8],
 #else   // !PROTOBUF_MESSAGE_GLOBALS
       &::_pbi::kDescriptorMethods,
       &descriptor_table_sf_2finventory_2fv1_2fledger_2eproto,
@@ -838,7 +840,7 @@ constexpr auto FollowUpIntent::InternalGenerateClassData_(
           false,
       },
 #ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[10],
+      &file_reflection_data[11],
 #else   // !PROTOBUF_MESSAGE_GLOBALS
       &::_pbi::kDescriptorMethods,
       &descriptor_table_sf_2finventory_2fv1_2fledger_2eproto,
@@ -1021,6 +1023,142 @@ const ::_pbi::ClassData* ContainerView_QuantitiesEntry_DoNotUse_get_class_data()
   return ContainerView_QuantitiesEntry_DoNotUse_globals_.GetClassData();
 #else
   return ContainerView_QuantitiesEntry_DoNotUse_class_data_.base();
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+}
+}  // namespace
+#endif  // PROTOBUF_CUSTOM_VTABLE
+constexpr ContainerView_DurabilityPercentEntry_DoNotUse::ParseTableT_ ContainerView_DurabilityPercentEntry_DoNotUse::InternalGenerateParseTable_(const ::_pbi::ClassData* class_data) {
+  return ParseTableT_{
+    {
+      PROTOBUF_FIELD_OFFSET(ContainerView_DurabilityPercentEntry_DoNotUse, _impl_._has_bits_),
+      0, // no _extensions_
+      2, 8,  // max_field_number, fast_idx_mask
+      offsetof(ParseTableT_, field_lookup_table),
+      4294967292,  // skipmap
+      offsetof(ParseTableT_, field_entries),
+      2,  // num_field_entries
+      0,  // num_aux_entries
+      offsetof(ParseTableT_, field_names),  // no aux_entries
+      class_data,
+      nullptr,  // post_loop_handler
+      ::_pbi::TcParser::DiscardEverythingFallback,  // fallback
+      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+      ::_pbi::TcParser::GetTable<::sf::inventory::v1::ContainerView_DurabilityPercentEntry_DoNotUse>(),  // to_prefetch
+      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+    }, {{
+      // int32 value = 2;
+      {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(ContainerView_DurabilityPercentEntry_DoNotUse, _impl_.value_), 1>(),
+       {16, 1, 0,
+        PROTOBUF_FIELD_OFFSET(ContainerView_DurabilityPercentEntry_DoNotUse, _impl_.value_)}},
+      // string key = 1;
+      {::_pbi::TcParser::FastUS1,
+       {10, 0, 0,
+        PROTOBUF_FIELD_OFFSET(ContainerView_DurabilityPercentEntry_DoNotUse, _impl_.key_)}},
+    }}, {{
+      65535, 65535
+    }}, {{
+      // string key = 1;
+      {PROTOBUF_FIELD_OFFSET(ContainerView_DurabilityPercentEntry_DoNotUse, _impl_.key_), _Internal::kHasBitsOffset + 0, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // int32 value = 2;
+      {PROTOBUF_FIELD_OFFSET(ContainerView_DurabilityPercentEntry_DoNotUse, _impl_.value_), _Internal::kHasBitsOffset + 1, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt32)},
+    }},
+    // no aux_entries
+    {{
+      "\64\3\0\0\0\0\0\0"
+      "sf.inventory.v1.ContainerView.DurabilityPercentEntry"
+      "key"
+    }},
+  };
+}
+
+template <typename>
+constexpr ContainerView_DurabilityPercentEntry_DoNotUse::ContainerView_DurabilityPercentEntry_DoNotUse(::_pbi::ConstantInitialized,
+                       const ::_pbi::ClassData* PROTOBUF_NONNULL class_data)
+    : ContainerView_DurabilityPercentEntry_DoNotUse::MapEntry(
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          class_data
+#endif  // PROTOBUF_CUSTOM_VTABLE
+      ) {
+}
+inline void* PROTOBUF_NONNULL ContainerView_DurabilityPercentEntry_DoNotUse::PlacementNew_(
+    const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena) {
+  return ::new (mem) ContainerView_DurabilityPercentEntry_DoNotUse(arena);
+}
+constexpr auto ContainerView_DurabilityPercentEntry_DoNotUse::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::CopyInit(sizeof(ContainerView_DurabilityPercentEntry_DoNotUse), alignof(ContainerView_DurabilityPercentEntry_DoNotUse));
+}
+constexpr auto ContainerView_DurabilityPercentEntry_DoNotUse::InternalGenerateClassData_(
+    const MessageLite& prototype,
+    const ::google::protobuf::internal::TcParseTableBase* tc_table) {
+  return ::google::protobuf::internal::ClassDataFull{
+      ::google::protobuf::internal::ClassData{
+          &prototype,
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+          &_table_.header,
+#else
+          tc_table,
+#endif
+          nullptr,  // IsInitialized
+          &ContainerView_DurabilityPercentEntry_DoNotUse::MergeImpl,
+          ::google::protobuf::Message::GetNewImpl<ContainerView_DurabilityPercentEntry_DoNotUse>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          &ContainerView_DurabilityPercentEntry_DoNotUse::SharedDtor,
+          static_cast<void (::google::protobuf::MessageLite::*)()>(&ContainerView_DurabilityPercentEntry_DoNotUse::ClearImpl),
+              ::google::protobuf::Message::ByteSizeLongImpl, ::google::protobuf::Message::_InternalSerializeImpl
+              ,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          PROTOBUF_FIELD_OFFSET(ContainerView_DurabilityPercentEntry_DoNotUse, _impl_._cached_size_),
+          false,
+      },
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+      &file_reflection_data[2],
+#else   // !PROTOBUF_MESSAGE_GLOBALS
+      &::_pbi::kDescriptorMethods,
+      &descriptor_table_sf_2finventory_2fv1_2fledger_2eproto,
+      nullptr,  // tracker
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+  };
+}
+struct ContainerView_DurabilityPercentEntry_DoNotUseGlobalsTypeInternal : ::_pbi::MessageGlobalsBase {
+  constexpr ContainerView_DurabilityPercentEntry_DoNotUseGlobalsTypeInternal()
+      :
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+        _default(::_pbi::ConstantInitialized{},
+                 ContainerView_DurabilityPercentEntry_DoNotUse_class_data_.base())
+#else   // !PROTOBUF_MESSAGE_GLOBALS
+        MessageGlobalsBase(ContainerView_DurabilityPercentEntry_DoNotUse::InternalGenerateClassData_(
+            _default, &ContainerView_DurabilityPercentEntry_DoNotUse_globals_._table.header)),
+        _default(::_pbi::ConstantInitialized{}, GetClassData()),
+        _table(::_pbi::PrivateAccess::GenerateParseTable<ContainerView_DurabilityPercentEntry_DoNotUse>(
+            GetClassData()))
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+  {
+  }
+  ~ContainerView_DurabilityPercentEntry_DoNotUseGlobalsTypeInternal() {}
+  union {
+    alignas(::_pbi::kMaxMessageAlignment) ContainerView_DurabilityPercentEntry_DoNotUse _default;
+  };
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+  decltype(::_pbi::PrivateAccess::GenerateParseTable<ContainerView_DurabilityPercentEntry_DoNotUse>(
+      ::std::declval<const ::_pbi::ClassData*>())) _table;
+#endif
+};
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+static_assert(PROTOBUF_FIELD_OFFSET(ContainerView_DurabilityPercentEntry_DoNotUseGlobalsTypeInternal, _default) ==
+              ::_pbi::MessageGlobalsBase::OffsetToDefault());
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 PROTOBUF_MESSAGE_GLOBALS_CONST ContainerView_DurabilityPercentEntry_DoNotUseGlobalsTypeInternal ContainerView_DurabilityPercentEntry_DoNotUse_globals_
+        PROTOBUF_MESSAGE_GLOBALS_SECTION(.data.rel.ro);
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+namespace {
+const ::_pbi::ClassData* ContainerView_DurabilityPercentEntry_DoNotUse_get_class_data() {
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+  return ContainerView_DurabilityPercentEntry_DoNotUse_globals_.GetClassData();
+#else
+  return ContainerView_DurabilityPercentEntry_DoNotUse_class_data_.base();
 #endif  // PROTOBUF_MESSAGE_GLOBALS
 }
 }  // namespace
@@ -1340,7 +1478,7 @@ constexpr auto LedgerReceipt::InternalGenerateClassData_(
           false,
       },
 #ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[5],
+      &file_reflection_data[6],
 #else   // !PROTOBUF_MESSAGE_GLOBALS
       &::_pbi::kDescriptorMethods,
       &descriptor_table_sf_2finventory_2fv1_2fledger_2eproto,
@@ -1553,7 +1691,7 @@ constexpr auto GrantRequest::InternalGenerateClassData_(
           false,
       },
 #ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[8],
+      &file_reflection_data[9],
 #else   // !PROTOBUF_MESSAGE_GLOBALS
       &::_pbi::kDescriptorMethods,
       &descriptor_table_sf_2finventory_2fv1_2fledger_2eproto,
@@ -1700,7 +1838,7 @@ constexpr auto EnsureContainerRequest::InternalGenerateClassData_(
           false,
       },
 #ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[6],
+      &file_reflection_data[7],
 #else   // !PROTOBUF_MESSAGE_GLOBALS
       &::_pbi::kDescriptorMethods,
       &descriptor_table_sf_2finventory_2fv1_2fledger_2eproto,
@@ -1763,12 +1901,12 @@ constexpr ContainerView::ParseTableT_ ContainerView::InternalGenerateParseTable_
     {
       PROTOBUF_FIELD_OFFSET(ContainerView, _impl_._has_bits_),
       0, // no _extensions_
-      3, 8,  // max_field_number, fast_idx_mask
+      4, 8,  // max_field_number, fast_idx_mask
       offsetof(ParseTableT_, field_lookup_table),
-      4294967288,  // skipmap
+      4294967280,  // skipmap
       offsetof(ParseTableT_, field_entries),
-      3,  // num_field_entries
-      2,  // num_aux_entries
+      4,  // num_field_entries
+      3,  // num_aux_entries
       offsetof(ParseTableT_, aux_entries),
       class_data,
       nullptr,  // post_loop_handler
@@ -1794,6 +1932,8 @@ constexpr ContainerView::ParseTableT_ ContainerView::InternalGenerateParseTable_
       {PROTOBUF_FIELD_OFFSET(ContainerView, _impl_.revision_), _Internal::kHasBitsOffset + 1, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt64)},
       // map<string, int64> quantities = 3;
       {PROTOBUF_FIELD_OFFSET(ContainerView, _impl_.quantities_), _Internal::kHasBitsOffset + 2, 1, (0 | ::_fl::kFcRepeated | ::_fl::kMap)},
+      // map<string, int32> durability_percent = 4;
+      {PROTOBUF_FIELD_OFFSET(ContainerView, _impl_.durability_percent_), _Internal::kHasBitsOffset + 3, 2, (0 | ::_fl::kFcRepeated | ::_fl::kMap)},
     }},
     {{
         #ifndef PROTOBUF_MESSAGE_GLOBALS
@@ -1803,11 +1943,14 @@ constexpr ContainerView::ParseTableT_ ContainerView::InternalGenerateParseTable_
         #endif
         {::_pbi::TcParser::GetMapAuxInfo(
             1, 0, 9, 3, 0)},
+        {::_pbi::TcParser::GetMapAuxInfo(
+            1, 0, 9, 5, 0)},
     }},
     {{
-      "\35\0\0\12\0\0\0\0"
+      "\35\0\0\12\22\0\0\0"
       "sf.inventory.v1.ContainerView"
       "quantities"
+      "durability_percent"
     }},
   };
 }
@@ -1822,6 +1965,11 @@ inline constexpr ContainerView::Impl_::Impl_(
         quantities_ { visibility, ::_pbi::InternalMetadataOffset::Build<
             ::sf::inventory::v1::ContainerView,
             PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::ContainerView, _impl_.quantities_)>()
+         }
+        ,
+        durability_percent_ { visibility, ::_pbi::InternalMetadataOffset::Build<
+            ::sf::inventory::v1::ContainerView,
+            PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::ContainerView, _impl_.durability_percent_)>()
          }
      {}
 
@@ -1866,7 +2014,7 @@ constexpr auto ContainerView::InternalGenerateClassData_(
           false,
       },
 #ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[2],
+      &file_reflection_data[3],
 #else   // !PROTOBUF_MESSAGE_GLOBALS
       &::_pbi::kDescriptorMethods,
       &descriptor_table_sf_2finventory_2fv1_2fledger_2eproto,
@@ -1948,14 +2096,23 @@ const ::uint32_t
         0,
         1,
         0x081, // bitmap
+        PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::ContainerView_DurabilityPercentEntry_DoNotUse, _impl_._has_bits_),
+        5, // hasbit index offset
+        PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::ContainerView_DurabilityPercentEntry_DoNotUse, _impl_.key_),
+        PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::ContainerView_DurabilityPercentEntry_DoNotUse, _impl_.value_),
+        0,
+        1,
+        0x081, // bitmap
         PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::ContainerView, _impl_._has_bits_),
-        6, // hasbit index offset
+        7, // hasbit index offset
         PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::ContainerView, _impl_.spec_),
         PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::ContainerView, _impl_.revision_),
         PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::ContainerView, _impl_.quantities_),
+        PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::ContainerView, _impl_.durability_percent_),
         0,
         1,
         2,
+        3,
         0x081, // bitmap
         PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::RevisionChange, _impl_._has_bits_),
         6, // hasbit index offset
@@ -2046,20 +2203,22 @@ static const ::_pbi::MigrationSchema
     schemas[] ABSL_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
         {0, sizeof(::sf::inventory::v1::ContainerSpec)},
         {13, sizeof(::sf::inventory::v1::ContainerView_QuantitiesEntry_DoNotUse)},
-        {20, sizeof(::sf::inventory::v1::ContainerView)},
-        {29, sizeof(::sf::inventory::v1::RevisionChange)},
-        {38, sizeof(::sf::inventory::v1::QuantityChange)},
-        {47, sizeof(::sf::inventory::v1::LedgerReceipt)},
-        {58, sizeof(::sf::inventory::v1::EnsureContainerRequest)},
-        {63, sizeof(::sf::inventory::v1::GetContainerRequest)},
-        {68, sizeof(::sf::inventory::v1::GrantRequest)},
-        {87, sizeof(::sf::inventory::v1::TransferRequest)},
-        {104, sizeof(::sf::inventory::v1::FollowUpIntent)},
+        {20, sizeof(::sf::inventory::v1::ContainerView_DurabilityPercentEntry_DoNotUse)},
+        {27, sizeof(::sf::inventory::v1::ContainerView)},
+        {38, sizeof(::sf::inventory::v1::RevisionChange)},
+        {47, sizeof(::sf::inventory::v1::QuantityChange)},
+        {56, sizeof(::sf::inventory::v1::LedgerReceipt)},
+        {67, sizeof(::sf::inventory::v1::EnsureContainerRequest)},
+        {72, sizeof(::sf::inventory::v1::GetContainerRequest)},
+        {77, sizeof(::sf::inventory::v1::GrantRequest)},
+        {96, sizeof(::sf::inventory::v1::TransferRequest)},
+        {113, sizeof(::sf::inventory::v1::FollowUpIntent)},
 };
 static const ::_pbi::MessageGlobalsBase* PROTOBUF_NONNULL const
     file_message_globals[] = {
         &::sf::inventory::v1::ContainerSpec_globals_,
         &::sf::inventory::v1::ContainerView_QuantitiesEntry_DoNotUse_globals_,
+        &::sf::inventory::v1::ContainerView_DurabilityPercentEntry_DoNotUse_globals_,
         &::sf::inventory::v1::ContainerView_globals_,
         &::sf::inventory::v1::RevisionChange_globals_,
         &::sf::inventory::v1::QuantityChange_globals_,
@@ -2077,77 +2236,81 @@ const char descriptor_table_protodef_sf_2finventory_2fv1_2fledger_2eproto[] ABSL
     "\nowner_kind\030\002 \001(\0162\032.sf.inventory.v1.Owne"
     "rKind\022\020\n\010owner_id\030\003 \001(\t\022,\n\004kind\030\004 \001(\0162\036."
     "sf.inventory.v1.ContainerKind\022\020\n\010capacit"
-    "y\030\005 \001(\005\"\306\001\n\rContainerView\022,\n\004spec\030\001 \001(\0132"
+    "y\030\005 \001(\005\"\323\002\n\rContainerView\022,\n\004spec\030\001 \001(\0132"
     "\036.sf.inventory.v1.ContainerSpec\022\020\n\010revis"
     "ion\030\002 \001(\003\022B\n\nquantities\030\003 \003(\0132..sf.inven"
-    "tory.v1.ContainerView.QuantitiesEntry\0321\n"
-    "\017QuantitiesEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002"
-    " \001(\003:\0028\001\"E\n\016RevisionChange\022\024\n\014container_"
-    "id\030\001 \001(\t\022\016\n\006before\030\002 \001(\003\022\r\n\005after\030\003 \001(\003\""
-    "L\n\016QuantityChange\022\024\n\014container_id\030\001 \001(\t\022"
-    "\025\n\rdefinition_id\030\002 \001(\t\022\r\n\005delta\030\003 \001(\003\"\272\001"
-    "\n\rLedgerReceipt\022\024\n\014operation_id\030\001 \001(\t\022-\n"
-    "\006action\030\002 \001(\0162\035.sf.inventory.v1.LedgerAc"
-    "tion\0222\n\trevisions\030\003 \003(\0132\037.sf.inventory.v"
-    "1.RevisionChange\0220\n\007changes\030\004 \003(\0132\037.sf.i"
-    "nventory.v1.QuantityChange\"F\n\026EnsureCont"
-    "ainerRequest\022,\n\004spec\030\001 \001(\0132\036.sf.inventor"
-    "y.v1.ContainerSpec\"+\n\023GetContainerReques"
-    "t\022\024\n\014container_id\030\001 \001(\t\"\337\001\n\014GrantRequest"
-    "\022\024\n\014operation_id\030\001 \001(\t\022\024\n\014container_id\030\002"
-    " \001(\t\022\031\n\021expected_revision\030\003 \001(\003\022\025\n\rdefin"
-    "ition_id\030\004 \001(\t\022\020\n\010quantity\030\005 \001(\003\022\016\n\006sour"
-    "ce\030\006 \001(\t\022\024\n\014causation_id\030\007 \001(\t\0229\n\020follow"
-    "_up_intent\030\010 \001(\0132\037.sf.inventory.v1.Follo"
-    "wUpIntent\"\302\001\n\017TransferRequest\022\024\n\014operati"
-    "on_id\030\001 \001(\t\022\031\n\021from_container_id\030\002 \001(\t\022\036"
-    "\n\026from_expected_revision\030\003 \001(\003\022\027\n\017to_con"
-    "tainer_id\030\004 \001(\t\022\034\n\024to_expected_revision\030"
-    "\005 \001(\003\022\025\n\rdefinition_id\030\006 \001(\t\022\020\n\010quantity"
-    "\030\007 \001(\003\"R\n\016FollowUpIntent\022\027\n\017payload_vers"
-    "ion\030\001 \001(\r\022\017\n\007payload\030\002 \001(\014\022\026\n\016payload_di"
-    "gest\030\003 \001(\t*\206\001\n\tOwnerKind\022\032\n\026OWNER_KIND_U"
-    "NSPECIFIED\020\000\022\030\n\024OWNER_KIND_CHARACTER\020\001\022\026"
-    "\n\022OWNER_KIND_ACCOUNT\020\002\022\024\n\020OWNER_KIND_GUI"
-    "LD\020\003\022\025\n\021OWNER_KIND_SYSTEM\020\004*\377\002\n\rContaine"
-    "rKind\022\036\n\032CONTAINER_KIND_UNSPECIFIED\020\000\022\034\n"
-    "\030CONTAINER_KIND_EQUIPMENT\020\001\022\033\n\027CONTAINER"
-    "_KIND_BACKPACK\020\002\022\026\n\022CONTAINER_KIND_BAG\020\003"
-    "\022\027\n\023CONTAINER_KIND_BANK\020\004\022\037\n\033CONTAINER_K"
-    "IND_ACCOUNT_BANK\020\005\022\035\n\031CONTAINER_KIND_GUI"
-    "LD_BANK\020\006\022\032\n\026CONTAINER_KIND_MAILBOX\020\007\022\031\n"
-    "\025CONTAINER_KIND_ESCROW\020\010\022\032\n\026CONTAINER_KI"
-    "ND_BUYBACK\020\t\022%\n!CONTAINER_KIND_CONSTRUCT"
-    "ION_CACHE\020\n\022(\n$CONTAINER_KIND_CONSTRUCTI"
-    "ON_RECOVERY\020\013*\264\001\n\014LedgerAction\022\035\n\031LEDGER"
-    "_ACTION_UNSPECIFIED\020\000\022\027\n\023LEDGER_ACTION_G"
-    "RANT\020\001\022\031\n\025LEDGER_ACTION_CONSUME\020\002\022\032\n\026LED"
-    "GER_ACTION_TRANSFER\020\003\022\031\n\025LEDGER_ACTION_C"
-    "ONVERT\020\004\022\032\n\026LEDGER_ACTION_EXCHANGE\020\0052\253\003\n"
-    "\017InventoryLedger\022Z\n\017EnsureContainer\022\'.sf"
-    ".inventory.v1.EnsureContainerRequest\032\036.s"
-    "f.inventory.v1.ContainerView\022T\n\014GetConta"
-    "iner\022$.sf.inventory.v1.GetContainerReque"
-    "st\032\036.sf.inventory.v1.ContainerView\022F\n\005Gr"
-    "ant\022\035.sf.inventory.v1.GrantRequest\032\036.sf."
-    "inventory.v1.LedgerReceipt\022P\n\017GrantWithI"
-    "ntent\022\035.sf.inventory.v1.GrantRequest\032\036.s"
-    "f.inventory.v1.LedgerReceipt\022L\n\010Transfer"
-    "\022 .sf.inventory.v1.TransferRequest\032\036.sf."
-    "inventory.v1.LedgerReceiptB\'\252\002$Shattered"
-    "Frontier.InventoryLedger.V1b\006proto3"
+    "tory.v1.ContainerView.QuantitiesEntry\022Q\n"
+    "\022durability_percent\030\004 \003(\01325.sf.inventory"
+    ".v1.ContainerView.DurabilityPercentEntry"
+    "\0321\n\017QuantitiesEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005valu"
+    "e\030\002 \001(\003:\0028\001\0328\n\026DurabilityPercentEntry\022\013\n"
+    "\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\005:\0028\001\"E\n\016Revisio"
+    "nChange\022\024\n\014container_id\030\001 \001(\t\022\016\n\006before\030"
+    "\002 \001(\003\022\r\n\005after\030\003 \001(\003\"L\n\016QuantityChange\022\024"
+    "\n\014container_id\030\001 \001(\t\022\025\n\rdefinition_id\030\002 "
+    "\001(\t\022\r\n\005delta\030\003 \001(\003\"\272\001\n\rLedgerReceipt\022\024\n\014"
+    "operation_id\030\001 \001(\t\022-\n\006action\030\002 \001(\0162\035.sf."
+    "inventory.v1.LedgerAction\0222\n\trevisions\030\003"
+    " \003(\0132\037.sf.inventory.v1.RevisionChange\0220\n"
+    "\007changes\030\004 \003(\0132\037.sf.inventory.v1.Quantit"
+    "yChange\"F\n\026EnsureContainerRequest\022,\n\004spe"
+    "c\030\001 \001(\0132\036.sf.inventory.v1.ContainerSpec\""
+    "+\n\023GetContainerRequest\022\024\n\014container_id\030\001"
+    " \001(\t\"\337\001\n\014GrantRequest\022\024\n\014operation_id\030\001 "
+    "\001(\t\022\024\n\014container_id\030\002 \001(\t\022\031\n\021expected_re"
+    "vision\030\003 \001(\003\022\025\n\rdefinition_id\030\004 \001(\t\022\020\n\010q"
+    "uantity\030\005 \001(\003\022\016\n\006source\030\006 \001(\t\022\024\n\014causati"
+    "on_id\030\007 \001(\t\0229\n\020follow_up_intent\030\010 \001(\0132\037."
+    "sf.inventory.v1.FollowUpIntent\"\302\001\n\017Trans"
+    "ferRequest\022\024\n\014operation_id\030\001 \001(\t\022\031\n\021from"
+    "_container_id\030\002 \001(\t\022\036\n\026from_expected_rev"
+    "ision\030\003 \001(\003\022\027\n\017to_container_id\030\004 \001(\t\022\034\n\024"
+    "to_expected_revision\030\005 \001(\003\022\025\n\rdefinition"
+    "_id\030\006 \001(\t\022\020\n\010quantity\030\007 \001(\003\"R\n\016FollowUpI"
+    "ntent\022\027\n\017payload_version\030\001 \001(\r\022\017\n\007payloa"
+    "d\030\002 \001(\014\022\026\n\016payload_digest\030\003 \001(\t*\206\001\n\tOwne"
+    "rKind\022\032\n\026OWNER_KIND_UNSPECIFIED\020\000\022\030\n\024OWN"
+    "ER_KIND_CHARACTER\020\001\022\026\n\022OWNER_KIND_ACCOUN"
+    "T\020\002\022\024\n\020OWNER_KIND_GUILD\020\003\022\025\n\021OWNER_KIND_"
+    "SYSTEM\020\004*\377\002\n\rContainerKind\022\036\n\032CONTAINER_"
+    "KIND_UNSPECIFIED\020\000\022\034\n\030CONTAINER_KIND_EQU"
+    "IPMENT\020\001\022\033\n\027CONTAINER_KIND_BACKPACK\020\002\022\026\n"
+    "\022CONTAINER_KIND_BAG\020\003\022\027\n\023CONTAINER_KIND_"
+    "BANK\020\004\022\037\n\033CONTAINER_KIND_ACCOUNT_BANK\020\005\022"
+    "\035\n\031CONTAINER_KIND_GUILD_BANK\020\006\022\032\n\026CONTAI"
+    "NER_KIND_MAILBOX\020\007\022\031\n\025CONTAINER_KIND_ESC"
+    "ROW\020\010\022\032\n\026CONTAINER_KIND_BUYBACK\020\t\022%\n!CON"
+    "TAINER_KIND_CONSTRUCTION_CACHE\020\n\022(\n$CONT"
+    "AINER_KIND_CONSTRUCTION_RECOVERY\020\013*\264\001\n\014L"
+    "edgerAction\022\035\n\031LEDGER_ACTION_UNSPECIFIED"
+    "\020\000\022\027\n\023LEDGER_ACTION_GRANT\020\001\022\031\n\025LEDGER_AC"
+    "TION_CONSUME\020\002\022\032\n\026LEDGER_ACTION_TRANSFER"
+    "\020\003\022\031\n\025LEDGER_ACTION_CONVERT\020\004\022\032\n\026LEDGER_"
+    "ACTION_EXCHANGE\020\0052\253\003\n\017InventoryLedger\022Z\n"
+    "\017EnsureContainer\022\'.sf.inventory.v1.Ensur"
+    "eContainerRequest\032\036.sf.inventory.v1.Cont"
+    "ainerView\022T\n\014GetContainer\022$.sf.inventory"
+    ".v1.GetContainerRequest\032\036.sf.inventory.v"
+    "1.ContainerView\022F\n\005Grant\022\035.sf.inventory."
+    "v1.GrantRequest\032\036.sf.inventory.v1.Ledger"
+    "Receipt\022P\n\017GrantWithIntent\022\035.sf.inventor"
+    "y.v1.GrantRequest\032\036.sf.inventory.v1.Ledg"
+    "erReceipt\022L\n\010Transfer\022 .sf.inventory.v1."
+    "TransferRequest\032\036.sf.inventory.v1.Ledger"
+    "ReceiptB\'\252\002$ShatteredFrontier.InventoryL"
+    "edger.V1b\006proto3"
 };
 static ::absl::once_flag descriptor_table_sf_2finventory_2fv1_2fledger_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_sf_2finventory_2fv1_2fledger_2eproto = {
     false,
     false,
-    2555,
+    2696,
     descriptor_table_protodef_sf_2finventory_2fv1_2fledger_2eproto,
     "sf/inventory/v1/ledger.proto",
     &descriptor_table_sf_2finventory_2fv1_2fledger_2eproto_once,
     nullptr,
     0,
-    11,
+    12,
     schemas,
     file_message_globals,
     TableStruct_sf_2finventory_2fv1_2fledger_2eproto::offsets,
@@ -2557,6 +2720,44 @@ PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const ContainerView_QuantitiesEntry_DoNotUse::
 #endif  // !PROTOBUF_MESSAGE_GLOBALS
 // ===================================================================
 
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+ContainerView_DurabilityPercentEntry_DoNotUse::ContainerView_DurabilityPercentEntry_DoNotUse() : SuperType(ContainerView_DurabilityPercentEntry_DoNotUse_get_class_data()) {}
+ContainerView_DurabilityPercentEntry_DoNotUse::ContainerView_DurabilityPercentEntry_DoNotUse(::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+    : SuperType(arena, ContainerView_DurabilityPercentEntry_DoNotUse_get_class_data()) {}
+#else   // PROTOBUF_CUSTOM_VTABLE
+ContainerView_DurabilityPercentEntry_DoNotUse::ContainerView_DurabilityPercentEntry_DoNotUse() : SuperType() {}
+ContainerView_DurabilityPercentEntry_DoNotUse::ContainerView_DurabilityPercentEntry_DoNotUse(::google::protobuf::Arena* PROTOBUF_NULLABLE arena) : SuperType(arena) {}
+#endif  // PROTOBUF_CUSTOM_VTABLE
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
+    ::google::protobuf::internal::ClassDataFull ContainerView_DurabilityPercentEntry_DoNotUse_class_data_ =
+        ContainerView_DurabilityPercentEntry_DoNotUse::InternalGenerateClassData_(ContainerView_DurabilityPercentEntry_DoNotUse_globals_._default);
+
+// including ~ all the vtables and everything they use become part
+// of the same ~ SCC.
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+ContainerView_DurabilityPercentEntry_DoNotUse::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&ContainerView_DurabilityPercentEntry_DoNotUse_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(ContainerView_DurabilityPercentEntry_DoNotUse_class_data_.tc_table);
+  return ContainerView_DurabilityPercentEntry_DoNotUse_class_data_.base();
+}
+#else
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+ContainerView_DurabilityPercentEntry_DoNotUse::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&ContainerView_DurabilityPercentEntry_DoNotUse_globals_);
+  ::google::protobuf::internal::PrefetchToLocalCache(
+      ::google::protobuf::internal::MessageGlobalsBase::ToParseTableBase(&ContainerView_DurabilityPercentEntry_DoNotUse_globals_));
+  return ContainerView_DurabilityPercentEntry_DoNotUse_globals_.GetClassData();
+}
+#endif  // !PROTOBUF_MESSAGE_GLOBALS
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_CONSTINIT
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const ContainerView_DurabilityPercentEntry_DoNotUse::ParseTableT_
+    ContainerView_DurabilityPercentEntry_DoNotUse::_table_ =
+        ContainerView_DurabilityPercentEntry_DoNotUse::InternalGenerateParseTable_(ContainerView_DurabilityPercentEntry_DoNotUse_class_data_.base());
+#endif  // !PROTOBUF_MESSAGE_GLOBALS
+// ===================================================================
+
 ContainerView::ContainerView(::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
 #if defined(PROTOBUF_CUSTOM_VTABLE)
     : ::google::protobuf::Message(arena, ContainerView_get_class_data()) {
@@ -2577,6 +2778,13 @@ PROTOBUF_NDEBUG_INLINE ContainerView::Impl_::Impl_(
               ::sf::inventory::v1::ContainerView,
               PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::ContainerView, _impl_.quantities_)>()
           , from.quantities_
+        }
+        ,
+        durability_percent_ {
+          visibility, ::_pbi::InternalMetadataOffset::Build<
+              ::sf::inventory::v1::ContainerView,
+              PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::ContainerView, _impl_.durability_percent_)>()
+          , from.durability_percent_
         }
      {}
 
@@ -2609,6 +2817,11 @@ PROTOBUF_NDEBUG_INLINE ContainerView::Impl_::Impl_(
         quantities_ { visibility, ::_pbi::InternalMetadataOffset::Build<
             ::sf::inventory::v1::ContainerView,
             PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::ContainerView, _impl_.quantities_)>()
+         }
+        ,
+        durability_percent_ { visibility, ::_pbi::InternalMetadataOffset::Build<
+            ::sf::inventory::v1::ContainerView,
+            PROTOBUF_FIELD_OFFSET(::sf::inventory::v1::ContainerView, _impl_.durability_percent_)>()
          }
      {}
 
@@ -2674,10 +2887,13 @@ PROTOBUF_NOINLINE void ContainerView::Clear() {
     ABSL_DCHECK(_impl_.spec_ != nullptr);
     _impl_.spec_->Clear();
   }
-  if (BatchCheckHasBit(cached_has_bits, 0x00000006U)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x0000000eU)) {
     _impl_.revision_ = ::int64_t{0};
     if (CheckHasBit(cached_has_bits, 0x00000004U)) {
       _impl_.quantities_.Clear();
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+      _impl_.durability_percent_.Clear();
     }
   }
   _impl_._has_bits_.Clear();
@@ -2748,6 +2964,35 @@ PROTOBUF_NOINLINE void ContainerView::Clear() {
     }
   }
 
+  // map<string, int32> durability_percent = 4;
+  if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+    if (!this_._internal_durability_percent().empty()) {
+      using MapType = ::google::protobuf::Map<::std::string, ::int32_t>;
+      using WireHelper = _pbi::MapEntryFuncs<::std::string, ::int32_t,
+                                     _pbi::WireFormatLite::TYPE_STRING,
+                                     _pbi::WireFormatLite::TYPE_INT32>;
+      const auto& field = this_._internal_durability_percent();
+
+      if (stream->IsSerializationDeterministic() && field.size() > 1) {
+        for (const auto& entry : ::google::protobuf::internal::MapSorterPtr<MapType>(field)) {
+          target = WireHelper::InternalSerialize(
+              4, entry.first, entry.second, target, stream);
+          ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+              entry.first.data(), static_cast<int>(entry.first.length()),
+ ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.inventory.v1.ContainerView.durability_percent");
+        }
+      } else {
+        for (const auto& entry : field) {
+          target = WireHelper::InternalSerialize(
+              4, entry.first, entry.second, target, stream);
+          ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+              entry.first.data(), static_cast<int>(entry.first.length()),
+ ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.inventory.v1.ContainerView.durability_percent");
+        }
+      }
+    }
+  }
+
   if (ABSL_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
     target =
         ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
@@ -2773,7 +3018,7 @@ PROTOBUF_NOINLINE void ContainerView::Clear() {
 
   ::_pbi::Prefetch5LinesFrom7Lines(&this_);
   cached_has_bits = this_._impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0x00000007U)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x0000000fU)) {
     // .sf.inventory.v1.ContainerSpec spec = 1;
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
       total_size += 1 +
@@ -2796,6 +3041,16 @@ PROTOBUF_NOINLINE void ContainerView::Clear() {
                                        _pbi::WireFormatLite::TYPE_INT64>::ByteSizeLong(entry.first, entry.second);
       }
     }
+    // map<string, int32> durability_percent = 4;
+    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+      total_size +=
+          1 * ::google::protobuf::internal::FromIntSize(this_._internal_durability_percent_size());
+      for (const auto& entry : this_._internal_durability_percent()) {
+        total_size += _pbi::MapEntryFuncs<::std::string, ::int32_t,
+                                       _pbi::WireFormatLite::TYPE_STRING,
+                                       _pbi::WireFormatLite::TYPE_INT32>::ByteSizeLong(entry.first, entry.second);
+      }
+    }
   }
   return this_.MaybeComputeUnknownFieldsSize(total_size,
                                              &this_._impl_._cached_size_);
@@ -2815,7 +3070,7 @@ void ContainerView::MergeImpl(::google::protobuf::MessageLite& to_msg,
   (void)cached_has_bits;
 
   cached_has_bits = from._impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0x00000007U)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x0000000fU)) {
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
       ABSL_DCHECK(from._impl_.spec_ != nullptr);
       if (_this->_impl_.spec_ == nullptr) {
@@ -2831,6 +3086,9 @@ void ContainerView::MergeImpl(::google::protobuf::MessageLite& to_msg,
     }
     if (CheckHasBit(cached_has_bits, 0x00000004U)) {
       _this->_impl_.quantities_.MergeFrom(from._impl_.quantities_);
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+      _this->_impl_.durability_percent_.MergeFrom(from._impl_.durability_percent_);
     }
   }
   _this->_impl_._has_bits_[0] |= cached_has_bits;
@@ -2857,6 +3115,7 @@ void ContainerView::InternalSwap(ContainerView* PROTOBUF_RESTRICT PROTOBUF_NONNU
           reinterpret_cast<char*>(&_impl_.spec_),
           reinterpret_cast<char*>(&other->_impl_.spec_));
   _impl_.quantities_.InternalSwap(&other->_impl_.quantities_);
+  _impl_.durability_percent_.InternalSwap(&other->_impl_.durability_percent_);
 }
 
 ::google::protobuf::Metadata ContainerView::GetMetadata() const {

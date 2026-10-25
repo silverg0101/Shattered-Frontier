@@ -11,7 +11,7 @@ internal sealed class ProgressionGrpcService(PostgresCharacterStateStore store, 
     ShatteredFrontier.InventoryLedger.Postgres.PostgresInventoryLedgerStore ledgerStore,
     ShatteredFrontier.Exchange.Postgres.PostgresExchangeStore exchange, StarterKitOptions starterKit,
     RecipeLearning learning, AppearanceAllowlist appearanceAllowlist, AppearanceValidator appearanceValidator,
-    Func<double> skillRoll, ProgressionSettings progressionSettings) : Pb.Progression.ProgressionBase
+    Func<double> skillRoll, ProgressionSettings progressionSettings, DeathPenaltyTuning deathPenaltyTuning) : Pb.Progression.ProgressionBase
 {
     private static readonly IReadOnlySet<ushort> NoCosmetics = new HashSet<ushort>();
 
@@ -69,6 +69,14 @@ internal sealed class ProgressionGrpcService(PostgresCharacterStateStore store, 
     { IsDead = s.IsDead, DeathEventId = s.DeathEventId, OccurredAtUnixMs = s.OccurredAtUnixMs,
       RespawnAtUnixMs = s.RespawnAtUnixMs, DeathPosition = WirePosition(s.DeathPosition), RespawnPosition = WirePosition(s.RespawnPosition) };
 
+    private void EnsureDeathWear(string eventId, string characterId)
+    {
+        var tuning = store.ReadDeathPenalty(eventId, characterId);
+        int affected = ledgerStore.ApplyDeathWear(eventId, characterId, tuning.Level,
+            tuning.MinimumLevel, tuning.WearPercent);
+        if (affected > 0) Console.Out.WriteLine($"DEATH_WEAR_APPLIED event={eventId} character={characterId} level={tuning.Level} equipped={affected}");
+    }
+
     public override Task<Pb.DeathState> ReportDeath(Pb.ReportDeathRequest request, ServerCallContext context) =>
         GrpcRun.Call(context, () =>
         {
@@ -78,8 +86,11 @@ internal sealed class ProgressionGrpcService(PostgresCharacterStateStore store, 
                 request.RespawnDelayMs is < 1000 or > 60000 || request.OccurredAtUnixMs < 0)
                 throw new ArgumentException("Invalid death event.");
             var d = request.DeathPosition; var p = request.RespawnPosition;
-            return WireDeath(store.ReportDeath(request.DeathEventId, request.CharacterId, request.OccurredAtUnixMs,
-                new(d.ZoneId, d.X, d.Y, d.Z, 0), new(p.ZoneId, p.X, p.Y, p.Z, 0), request.RespawnDelayMs));
+            var death = store.ReportDeath(request.DeathEventId, request.CharacterId, request.OccurredAtUnixMs,
+                new(d.ZoneId, d.X, d.Y, d.Z, 0), new(p.ZoneId, p.X, p.Y, p.Z, 0), request.RespawnDelayMs,
+                deathPenaltyTuning.MinimumCharacterLevel, deathPenaltyTuning.WearPercentOfMaximum);
+            EnsureDeathWear(request.DeathEventId, request.CharacterId);
+            return WireDeath(death);
         });
 
     public override Task<Pb.DeathState> ClearDeath(Pb.ClearDeathRequest request, ServerCallContext context) =>
@@ -87,6 +98,7 @@ internal sealed class ProgressionGrpcService(PostgresCharacterStateStore store, 
         {
             if (string.IsNullOrWhiteSpace(request.CharacterId) || !Guid.TryParse(request.DeathEventId, out _))
                 throw new ArgumentException("Invalid death identity.");
+            EnsureDeathWear(request.DeathEventId, request.CharacterId);
             return WireDeath(store.ClearDeath(request.CharacterId, request.DeathEventId, request.ResurrectAtDeathPosition));
         });
 
@@ -236,7 +248,11 @@ internal sealed class ProgressionGrpcService(PostgresCharacterStateStore store, 
                     X = position.Result.X, Y = position.Result.Y, Z = position.Result.Z, Yaw = position.Result.Yaw };
             }
             var death = store.ReadDeath(request.CharacterId);
-            if (death is not null) state.Death = WireDeath(death);
+            if (death is not null)
+            {
+                EnsureDeathWear(death.DeathEventId, request.CharacterId);
+                state.Death = WireDeath(death);
+            }
             return state;
         });
 }

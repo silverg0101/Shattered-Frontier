@@ -55,7 +55,10 @@ FSFGearStats SFGear::Equipped(const AActor* Owner)
     for (const FSFEquippedSlot& Slot : Inventory ? Inventory->EquippedItems : TArray<FSFEquippedSlot>())
     {
         const USFItemDefinition* Definition = Slot.Item.LoadSynchronous();
-        if (const FSFGearStats* Stats = Definition ? Find(Definition->UniqueId) : nullptr) { Total.Armor += Stats->Armor; Total.Damage += Stats->Damage; }
+        if (const FSFGearStats* Stats = Definition ? Find(Definition->UniqueId) : nullptr)
+        {
+            if (Slot.DurabilityPercent > 0) { Total.Armor += Stats->Armor; Total.Damage += Stats->Damage; }
+        }
     }
     return Total;
 }

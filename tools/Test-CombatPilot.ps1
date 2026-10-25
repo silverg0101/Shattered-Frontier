@@ -333,6 +333,7 @@ try {
         $serverName = if ($RestartMidDeath) { 'server2' } else { 'server' }
         $clientSuffix = if ($RestartMidDeath) { '-rejoin' } else { '' }
         Wait-Log $server $serverName "COMBAT_DEATH_RESOLVED Event=.* HP=$expected Mode=$DeathResolution"
+        Wait-Log $server $serverName $(if ($DeathResolution -eq 'Release') { 'SPIRIT_RELEASE_SERVER_DENIED' } else { 'RES_ACCEPT_SERVER_DENIED' })
         $serverText = Get-Content -LiteralPath (Join-Path $root "$serverName.log") -Raw
         $serverPosition = [regex]::Match($serverText,"COMBAT_DEATH_RESOLVED Event=.* HP=$expected Mode=$DeathResolution X=(-?\d+) Y=(-?\d+)")
         if (-not $serverPosition.Success) { throw 'Authoritative resolution position missing' }

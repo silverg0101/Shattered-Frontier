@@ -134,11 +134,11 @@ sealed class LedgerService(Dom.InventoryLedger ledger, PostgresInventoryLedgerSt
                 view = kit.GrantOnce(ledger, view);
                 if (view.Revision != before) Console.Out.WriteLine($"ALPHA_STARTER_KIT_GRANTED container={view.Spec.Id} owner={view.Spec.OwnerId} operation={kit.OperationId(view.Spec.OwnerId)}");
             }
-            return ToPb(view);
+            return WithCondition(view);
         });
 
     public override Task<Pb.ContainerView> GetContainer(Pb.GetContainerRequest request, ServerCallContext context) =>
-        Run(context, () => ToPb(ledger.Read(request.ContainerId)));
+        Run(context, () => WithCondition(ledger.Read(request.ContainerId)));
 
     public override Task<Pb.LedgerReceipt> Grant(Pb.GrantRequest r, ServerCallContext context) => GrantCore(r, context, false);
 
@@ -297,6 +297,15 @@ sealed class LedgerService(Dom.InventoryLedger ledger, PostgresInventoryLedgerSt
         };
         foreach (var (id, quantity) in v.Quantities) view.Quantities.Add(id, quantity);
         return view;
+    }
+
+    private Pb.ContainerView WithCondition(Dom.ContainerView v)
+    {
+        var result = ToPb(v);
+        if (v.Spec.Kind == Dom.ContainerKind.Equipment && v.Spec.OwnerKind == Dom.OwnerKind.Character)
+            foreach (var (definition, percent) in store.ReadGearCondition(v.Spec.Id))
+                result.DurabilityPercent.Add(definition, percent);
+        return result;
     }
 
     private static Pb.LedgerReceipt ToPb(Dom.LedgerReceipt r)

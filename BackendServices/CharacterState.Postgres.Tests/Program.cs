@@ -20,6 +20,25 @@ switch (args[0])
         var deathId = "00000000-0000-0000-0000-000000000001";
         var death = store.ReportDeath(deathId, "character-death", 100000, deathPoint, respawnPoint, 4000);
         Check(death.IsDead && death.RespawnAtUnixMs == 104000, "death persisted with deadline");
+        Check(store.ReadDeathLevel(deathId, "character-death") == 1, "death captures character level durably");
+        const string veteran = "character-death-level10";
+        const string veteranDeath = "00000000-0000-0000-0000-000000000099";
+        var veteranProgression = new ProgressionSnapshot(CharacterProgression.TotalFor(10),
+            new Dictionary<string, int>(), new ProgressionSettings(), [],
+            new Dictionary<string, long[]>(), [], []);
+        using (var db = new NpgsqlConnection(connection))
+        {
+            db.Open();
+            using var insert = new NpgsqlCommand("INSERT INTO character_state.progression(character_id,revision,state) VALUES ($1,1,$2::jsonb)", db);
+            insert.Parameters.AddWithValue(veteran);
+            insert.Parameters.AddWithValue(System.Text.Json.JsonSerializer.Serialize(veteranProgression));
+            insert.ExecuteNonQuery();
+        }
+        store.ReportDeath(veteranDeath, veteran, 100000, deathPoint, respawnPoint, 4000);
+        Check(store.ReadDeathLevel(veteranDeath, veteran) == 10, "level ten is captured from server progression");
+        store.ReportDeath(veteranDeath, veteran, 100000, deathPoint, respawnPoint, 4000, 20, 7);
+        Check(store.ReadDeathPenalty(veteranDeath, veteran) == (10, 10, 5),
+            "death keeps its tuning snapshot when replayed after a tuning change");
         Check(store.ReportDeath(deathId, "character-death", 100000, deathPoint, respawnPoint, 4000) == death, "death replay stable");
         try { store.ReportDeath(deathId, "character-death", 100000, deathPoint, respawnPoint, 5000); throw new Exception("death payload replay accepted"); }
         catch (CharacterStoreRejectedException) { Check(true, "death event payload conflict rejected"); }
@@ -86,6 +105,12 @@ switch (args[0])
         break;
     case "restart":
         Check(store.ReadDeath("character-death") is { IsDead: true, RespawnAtUnixMs: 104000 }, "dead state survives restart");
+        Check(store.ReadDeathLevel("00000000-0000-0000-0000-000000000001", "character-death") == 1,
+            "death level survives restart");
+        Check(store.ReadDeathLevel("00000000-0000-0000-0000-000000000099", "character-death-level10") == 10,
+            "level ten death snapshot survives restart");
+        Check(store.ReadDeathPenalty("00000000-0000-0000-0000-000000000099", "character-death-level10") == (10, 10, 5),
+            "death tuning snapshot survives restart");
         Check(!store.ClearDeath("character-death", "00000000-0000-0000-0000-000000000001").IsDead, "respawn clears dead state");
         Check(!store.ClearDeath("character-death", "00000000-0000-0000-0000-000000000001").IsDead, "respawn clear replays");
         Check(store.ReadPosition("character-death")?.Result.X == 100, "respawn point committed with clear");

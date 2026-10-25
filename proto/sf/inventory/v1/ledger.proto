@@ -66,6 +66,8 @@ message ContainerView {
   ContainerSpec spec = 1;
   int64 revision = 2;
   map<string, int64> quantities = 3;
+  // Current condition percent for equipped definitions. Missing means pristine (100%).
+  map<string, int32> durability_percent = 4;
 }
 
 message RevisionChange {

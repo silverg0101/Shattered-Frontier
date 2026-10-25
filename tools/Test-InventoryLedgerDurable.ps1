@@ -86,7 +86,7 @@ try {
     if ((Sql "SELECT to_regclass('inventory.defeat_reward_intents') IS NOT NULL AND to_regclass('inventory.applied_schema_files') IS NOT NULL" "ledger_$run").Trim() -ne 't' -or @($first | Where-Object { $_ -eq 'APPLY inventory/Schema.DefeatRewards.sql' }).Count -ne 1) { throw 'Defeat rewards migration did not apply.' }
     $appliedBefore = (Sql 'SELECT count(*) FROM inventory.applied_schema_files' "ledger_$run").Trim()
     $second = @(& $migration -Connection $migrationConnection -Schemas inventory -Role ledger_owner -Dotnet $dotnet -Nuget (Join-Path $repo 'Artifacts/Persistence/Toolchains/nuget'))
-    if ($appliedBefore -ne '3' -or (Sql 'SELECT count(*) FROM inventory.applied_schema_files' "ledger_$run").Trim() -ne $appliedBefore -or @($second | Where-Object { $_ -match '^(APPLY|RECORD) ' }).Count) { throw 'Second migration run was not a no-op.' }
+    if ($appliedBefore -ne '4' -or (Sql 'SELECT count(*) FROM inventory.applied_schema_files' "ledger_$run").Trim() -ne $appliedBefore -or @($second | Where-Object { $_ -match '^(APPLY|RECORD) ' }).Count) { throw 'Second migration run was not a no-op.' }
     [void](Sql 'GRANT USAGE ON SCHEMA inventory TO ledger_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA inventory TO ledger_svc;' "ledger_$run")
     try { [void](Sql 'CREATE TABLE inventory.service_ddl_probe(id integer)' "ledger_$run" 'ledger_svc' $servicePassword); throw 'Service role could create a table.' }
     catch { if ($_.Exception.Message -notmatch 'permission denied') { throw } }

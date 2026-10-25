@@ -15,6 +15,48 @@ const string item = "item/ore";
 const string bar = "item/bar";
 switch (args[0])
 {
+    case "death-wear-seed":
+    {
+        const string character = "chr_death_wear";
+        const string equipment = "ctn_death_wear_equipment";
+        const string gear = "item/hide_jerkin";
+        const string secondGear = "item/iron_shortsword";
+        var conditionStore = new PostgresInventoryLedgerStore(connection);
+        ledger.CreateContainer(new(equipment, OwnerKind.Character, character, ContainerKind.Equipment, 16));
+        ledger.Grant("death-gear-grant", equipment, 0, gear, 1, "fixture", "death-gear");
+        ledger.Grant("death-second-gear-grant", equipment, 1, secondGear, 1, "fixture", "death-second-gear");
+        string Event(int n) => $"00000000-0000-0000-0000-{n:000000000000}";
+        Check(conditionStore.ApplyDeathWear(Event(1), character, 9, 10, 5) == 0 &&
+            conditionStore.ReadGearCondition(equipment)[gear] == 100, "level below 10 has no death wear");
+        Check(conditionStore.ApplyDeathWear(Event(2), character, 10, 10, 5) == 2 &&
+            conditionStore.ReadGearCondition(equipment)[gear] == 95 &&
+            conditionStore.ReadGearCondition(equipment)[secondGear] == 95, "level 10 death removes 5 percent from every equipped item");
+        Check(conditionStore.ApplyDeathWear(Event(2), character, 10, 10, 5) == 0 &&
+            conditionStore.ReadGearCondition(equipment)[gear] == 95, "death event replay applies no additional wear");
+        Check(conditionStore.ApplyDeathWear(Event(2), character, 10, 20, 7) == 0 &&
+            conditionStore.ReadGearCondition(equipment)[gear] == 95,
+            "replay retains the original event tuning after a later tuning change");
+        for (int n = 3; n <= 21; ++n) conditionStore.ApplyDeathWear(Event(n), character, 10, 10, 5);
+        Check(conditionStore.ReadGearCondition(equipment)[gear] == 0 &&
+            conditionStore.ReadGearCondition(equipment)[secondGear] == 0 &&
+            ledger.Read(equipment).Quantities[gear] == 1 && ledger.Read(equipment).Quantities[secondGear] == 1,
+            "twenty deaths floor at zero without dropping or unequipping gear");
+        conditionStore.ApplyDeathWear(Event(22), character, 10, 10, 5);
+        Check(conditionStore.ReadGearCondition(equipment)[gear] == 0, "further death cannot make durability negative");
+        break;
+    }
+    case "death-wear-restart":
+    {
+        const string character = "chr_death_wear";
+        const string equipment = "ctn_death_wear_equipment";
+        const string gear = "item/hide_jerkin";
+        var conditionStore = new PostgresInventoryLedgerStore(connection);
+        Check(conditionStore.ReadGearCondition(equipment)[gear] == 0 && ledger.Read(equipment).Quantities[gear] == 1,
+            "zero condition and equipment ownership survive database restart");
+        Check(conditionStore.ApplyDeathWear("00000000-0000-0000-0000-000000000002", character, 10, 10, 5) == 0 &&
+            conditionStore.ReadGearCondition(equipment)[gear] == 0, "death replay after restart remains idempotent");
+        break;
+    }
     case "seed":
         ledger.CreateContainer(new(id, OwnerKind.Character, "chr_durable", ContainerKind.Backpack, 100));
         var grant = ledger.Grant("grant-1", id, 0, item, 6, "fixture", "fixture-1");

@@ -80,7 +80,7 @@ bool FSFEquipmentValidationTest::RunTest(const FString& Parameters)
     FActorSpawnParameters Spawn; Spawn.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
     auto* Pawn = World->SpawnActor<ASFE1Character>(FVector(0, 0, 100), FRotator::ZeroRotator, Spawn);
     if (!PC || !Other || !Pawn) { return false; }
-    PC->Possess(Pawn); Pawn->GetCharacterMovement()->SetMovementMode(MOVE_None);
+    PC->Possess(Pawn); Pawn->CombatSetHealth(80); Pawn->GetCharacterMovement()->SetMovementMode(MOVE_None);
     auto* Gear = PC->FindComponentByClass<USFGatheringPilotComponent>();
     auto* OtherGear = Other->FindComponentByClass<USFGatheringPilotComponent>();
     auto* Bag = PC->FindComponentByClass<USFInventoryComponent>();
@@ -144,6 +144,10 @@ bool FSFEquipmentValidationTest::RunTest(const FString& Parameters)
     TestTrue(TEXT("The axe satisfies the oak tool rule"), Gear->HasRequiredTool(ESFGatheringPilotKind::Oak));
     TestEqual(TEXT("The axe is in the main hand"), Gear->GetEquipped(USFGatheringPilotComponent::MainHandSlot()).GetAssetName(), FString(TEXT("DA_IronAxe")));
     TestTrue(TEXT("Pickaxe swaps in"), Gear->TryEquipTool(false) && Gear->HasRequiredTool(ESFGatheringPilotKind::Iron) && !Gear->HasRequiredTool(ESFGatheringPilotKind::Oak));
+    Pawn->CombatSetHealth(0);
+    TestEqual(TEXT("Dead player cannot change equipped gear before wear commits"), Gear->ApplyEquip(CapPath, Head), ESFEquipResult::Disabled);
+    TestEqual(TEXT("Dead player cannot remove equipped gear before wear commits"),
+        Gear->ApplyUnequip(USFGatheringPilotComponent::MainHandSlot()), ESFEquipResult::Disabled);
     return true;
 }
 #endif
@@ -203,6 +207,12 @@ bool FSFEquipmentLedgerTest::RunTest(const FString& Parameters)
     TestEqual(TEXT("The cap is worn after the transfer"), Gear->GetEquipped(Head), CapPath);
     TestEqual(TEXT("The ledger holds it as equipped"), Ledger->FindOrAdd(EquipmentId).Items.FindRef(TEXT("item/hide_cap")), int64(1));
     TestEqual(TEXT("Worn armour counts"), SFGear::Equipped(PC).Armor, 1);
+    if (!TestTrue(TEXT("Worn cap has a condition slot"), Bag->EquippedItems.Num() == 1)) { return false; }
+    Bag->EquippedItems[0].DurabilityPercent = 0;
+    TestEqual(TEXT("Zero durability gives no armour"), SFGear::Equipped(PC).Armor, 0);
+    TestEqual(TEXT("Broken cap remains equipped"), Gear->GetEquipped(Head), CapPath);
+    Bag->EquippedItems[0].DurabilityPercent = 100;
+    TestEqual(TEXT("Full repair restores armour"), SFGear::Equipped(PC).Armor, 1);
 
     TestEqual(TEXT("Gear unequip waits for the ledger"), Gear->ApplyUnequip(Head), ESFEquipResult::Pending);
     Tick(6);

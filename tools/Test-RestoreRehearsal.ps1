@@ -375,7 +375,7 @@ try {
     Stop-Process -Id $hostProcess.Id -Force; $hostProcess.WaitForExit(30000) | Out-Null; $hostProcess.Refresh()
     $hostProcess = $null
     $currentStep = 'consistent five-store backup'
-    $versions = @{inventory=2;character_state=8;housing=6;exchange=3;terrain_delta=1}
+    $versions = @{inventory=2;character_state=9;housing=6;exchange=3;terrain_delta=1}
     foreach ($schema in $versions.Keys) {
         if ((Sql "SELECT version FROM $schema.schema_version WHERE singleton=true" $db).Trim() -ne [string]$versions[$schema]) { throw "Unsupported source schema: $schema" }
     }
@@ -474,4 +474,3 @@ finally {
 }
 if ($failure -ne '') { throw $failure }
 Get-Content (Join-Path $EvidenceRoot 'results.txt')
-

@@ -11,6 +11,91 @@ public sealed class LedgerSchemaCompatibilityException(string message) : Excepti
 // Schema.sql is installed by the migration identity. Runtime needs DML only.
 public sealed class PostgresInventoryLedgerStore(string connectionString) : IInventoryLedgerStore
 {
+    // Only Gameplay.Host calls this after CharacterState has durably recorded the event.
+    // The event receipt and every equipped definition's condition commit together.
+    public int ApplyDeathWear(string eventId, string characterId, int level, int minimumLevel, int wearPercent)
+    {
+        if (!Guid.TryParse(eventId, out _) || string.IsNullOrWhiteSpace(characterId) ||
+            level is < 1 or > 1000 || minimumLevel is < 1 or > 1000 || wearPercent is < 0 or > 100)
+            throw new ArgumentException("Invalid death wear request.");
+        try
+        {
+            using var c = new NpgsqlConnection(connectionString); c.Open();
+            using var t = c.BeginTransaction(); CheckSchema(c, t);
+            using (var advisory = Command(c, t, "SELECT pg_advisory_xact_lock(519763,hashtext($1))"))
+            { advisory.Parameters.AddWithValue(eventId); advisory.ExecuteNonQuery(); }
+            using (var prior = Command(c, t, "SELECT character_id,level_at_death FROM inventory.death_wear_events WHERE death_event_id=$1"))
+            {
+                prior.Parameters.AddWithValue(eventId);
+                using var row = prior.ExecuteReader();
+                if (row.Read())
+                {
+                    // The receipt's tuning snapshot wins on replay after a compatible tuning update.
+                    if (row.GetString(0) != characterId || row.GetInt32(1) != level)
+                        throw new LedgerRejectedException("Death event ID reused with different wear request.");
+                    return 0;
+                }
+            }
+            // Transfer holds these container rows while changing equipment entries.
+            using (var containers = Command(c, t, "SELECT id FROM inventory.containers WHERE owner_kind=0 AND owner_id=$1 AND kind=0 ORDER BY id FOR UPDATE"))
+            {
+                containers.Parameters.AddWithValue(characterId);
+                using var rows = containers.ExecuteReader();
+                while (rows.Read()) { }
+            }
+            var definitions = new List<string>();
+            using (var equipped = Command(c, t, """
+                SELECT DISTINCT e.definition_id FROM inventory.entries e
+                JOIN inventory.containers c ON c.id=e.container_id
+                WHERE c.owner_kind=0 AND c.owner_id=$1 AND c.kind=0 AND e.quantity>0
+                ORDER BY e.definition_id
+                """))
+            {
+                equipped.Parameters.AddWithValue(characterId);
+                using var rows = equipped.ExecuteReader();
+                while (rows.Read()) definitions.Add(rows.GetString(0));
+            }
+            if (level >= minimumLevel && wearPercent > 0)
+                foreach (string definition in definitions)
+                {
+                    using var wear = Command(c, t, """
+                        INSERT INTO inventory.gear_condition(character_id,definition_id,durability,max_durability)
+                        VALUES ($1,$2,100-$3,100)
+                        ON CONFLICT (character_id,definition_id) DO UPDATE
+                        SET durability=greatest(0,inventory.gear_condition.durability-$3)
+                        """);
+                    wear.Parameters.AddWithValue(characterId); wear.Parameters.AddWithValue(definition);
+                    wear.Parameters.AddWithValue(wearPercent); wear.ExecuteNonQuery();
+                }
+            using (var receipt = Command(c, t, "INSERT INTO inventory.death_wear_events(death_event_id,character_id,level_at_death,min_level,wear_percent) VALUES ($1,$2,$3,$4,$5)"))
+            {
+                receipt.Parameters.AddWithValue(eventId); receipt.Parameters.AddWithValue(characterId);
+                receipt.Parameters.AddWithValue(level); receipt.Parameters.AddWithValue(minimumLevel);
+                receipt.Parameters.AddWithValue(wearPercent); receipt.ExecuteNonQuery();
+            }
+            t.Commit(); return level >= minimumLevel ? definitions.Count : 0;
+        }
+        catch (LedgerRejectedException) { throw; }
+        catch (Exception ex) when (ex is NpgsqlException or TimeoutException or System.IO.IOException)
+        { throw new LedgerStoreUnavailableException("Death wear unavailable; retry the death event ID.", ex); }
+    }
+
+    public IReadOnlyDictionary<string, int> ReadGearCondition(string containerId)
+    {
+        using var c = new NpgsqlConnection(connectionString); c.Open();
+        using var t = c.BeginTransaction(); CheckSchema(c, t);
+        using var cmd = Command(c, t, """
+            SELECT e.definition_id,coalesce(g.durability,100) FROM inventory.containers c
+            JOIN inventory.entries e ON e.container_id=c.id
+            LEFT JOIN inventory.gear_condition g ON g.character_id=c.owner_id AND g.definition_id=e.definition_id
+            WHERE c.id=$1 AND c.owner_kind=0 AND c.kind=0 AND e.quantity>0
+            """);
+        cmd.Parameters.AddWithValue(containerId);
+        var result = new Dictionary<string, int>();
+        using var rows = cmd.ExecuteReader();
+        while (rows.Read()) result.Add(rows.GetString(0), rows.GetInt32(1));
+        return result;
+    }
     // Once the host-owned harvest migration is installed, the former client-first gathering
     // Grant path must fail before writing an item. Gameplay.Host grants saved harvest intents directly.
     public bool HasGatheringMigration()

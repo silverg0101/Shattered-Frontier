@@ -121,7 +121,7 @@ try {
         $grant = if ($Store -eq 'Exchange') { "GRANT SELECT ON $schema.schema_version TO $serviceRole; GRANT SELECT,INSERT,UPDATE ON exchange.wallets,exchange.wallet_entries,exchange.operations,exchange.listings,exchange.settlements TO $serviceRole" } else { "GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA $schema TO $serviceRole" }
         [void](Sql "GRANT USAGE ON SCHEMA $schema TO $serviceRole; $grant" $database)
         $version = (Sql "SELECT version FROM $schema.schema_version WHERE singleton=true" $database).Trim()
-        $expectedVersion = if ($schema -eq 'housing') { '6' } elseif ($schema -eq 'character_state') { '8' } elseif ($schema -eq 'exchange') { '3' } elseif ($schema -eq 'inventory') { '2' } else { '1' }
+        $expectedVersion = if ($schema -eq 'housing') { '6' } elseif ($schema -eq 'character_state') { '9' } elseif ($schema -eq 'exchange') { '3' } elseif ($schema -eq 'inventory') { '2' } else { '1' }
         if ($version -ne $expectedVersion) { throw 'Restored schema version mismatch.' }
     }
     foreach ($table in $tables) {

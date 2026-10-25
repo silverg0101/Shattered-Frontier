@@ -300,7 +300,7 @@ public:
     // The item in Slot (owner view), empty when the slot is empty.
     FSoftObjectPath GetEquipped(FName Slot) const;
     // Server: makes the equipped gear match the ledger equipment container (definition id -> quantity); tools are left alone.
-    void ProjectEquipment(const TMap<FString, int64>& Equipment);
+    void ProjectEquipment(const TMap<FString, int64>& Equipment, const TMap<FString, int32>& DurabilityPercent = {});
     // Station recipes come from content/crafting; the first is the default. The choice is per player and server-held.
     void SelectStationRecipe(ESFGatheringPilotKind Station, const FString& RecipeId);
     void CycleStationRecipe(ESFGatheringPilotKind Station);

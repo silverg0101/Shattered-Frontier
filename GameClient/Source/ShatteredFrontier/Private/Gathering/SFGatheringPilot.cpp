@@ -1,4 +1,5 @@
 #include "Gathering/SFGatheringPilot.h"
+#include "Characters/SFE1Character.h"
 #include "Gathering/SFHarvestFallingTree.h"
 #include "Inventory/SFInventoryLedgerClient.h"
 #include "Engine/NetConnection.h"
@@ -898,10 +899,12 @@ void USFGatheringPilotComponent::ServerUnequip_Implementation(FName Slot) { Appl
 ESFEquipResult USFGatheringPilotComponent::ApplyEquip(const FSoftObjectPath& Item, FName Slot)
 {
     ESFEquipResult Result=ESFEquipResult::Disabled;
+    const APlayerController* Controller=Cast<APlayerController>(GetOwner());
+    const ASFE1Character* Pawn=Controller ? Cast<ASFE1Character>(Controller->GetPawn()) : nullptr;
     auto* Inventory=GetOwner() ? GetOwner()->FindComponentByClass<USFInventoryComponent>() : nullptr;
     const int32 BagSlot=FindBagSlot(Item);  // ownership: the item must be in this player's own bag
     const USFItemDefinition* Definition=BagSlot!=INDEX_NONE ? TSoftObjectPtr<USFItemDefinition>(Item).LoadSynchronous() : nullptr;
-    if (!bEnabled || !Inventory || !IsAuthoritativePilotWorld()) { Result=ESFEquipResult::Disabled; }
+    if (!bEnabled || !Inventory || !IsAuthoritativePilotWorld() || (Pawn && Pawn->CombatHealth()<=0)) { Result=ESFEquipResult::Disabled; }
     else if (!EquipmentSlots().Contains(Slot)) { Result=ESFEquipResult::InvalidSlot; }
     else if (BagSlot==INDEX_NONE) { Result=ESFEquipResult::NotOwned; }
     else if (!Definition || Definition->UseType!=ESFItemUseType::Equip) { Result=ESFEquipResult::NotEquippable; }
@@ -940,8 +943,10 @@ ESFEquipResult USFGatheringPilotComponent::ApplyEquip(const FSoftObjectPath& Ite
 ESFEquipResult USFGatheringPilotComponent::ApplyUnequip(FName Slot)
 {
     ESFEquipResult Result=ESFEquipResult::Disabled;
+    const APlayerController* Controller=Cast<APlayerController>(GetOwner());
+    const ASFE1Character* Pawn=Controller ? Cast<ASFE1Character>(Controller->GetPawn()) : nullptr;
     auto* Inventory=GetOwner() ? GetOwner()->FindComponentByClass<USFInventoryComponent>() : nullptr;
-    if (!bEnabled || !Inventory || !IsAuthoritativePilotWorld()) { Result=ESFEquipResult::Disabled; }
+    if (!bEnabled || !Inventory || !IsAuthoritativePilotWorld() || (Pawn && Pawn->CombatHealth()<=0)) { Result=ESFEquipResult::Disabled; }
     else if (!EquipmentSlots().Contains(Slot)) { Result=ESFEquipResult::InvalidSlot; }
     else if (GetEquipped(Slot).IsNull()) { Result=ESFEquipResult::NotEquipped; }
     else if (USFBackpackComponent* Pack=GearId(GetEquipped(Slot)).IsEmpty() ? nullptr : USFBackpackComponent::FindOrCreate(Cast<APlayerController>(GetOwner())))
@@ -962,7 +967,7 @@ ESFEquipResult USFGatheringPilotComponent::ApplyUnequip(FName Slot)
     return Result;
 }
 
-void USFGatheringPilotComponent::ProjectEquipment(const TMap<FString,int64>& Equipment)
+void USFGatheringPilotComponent::ProjectEquipment(const TMap<FString,int64>& Equipment, const TMap<FString,int32>& DurabilityPercent)
 {
     auto* Inventory=GetOwner() ? GetOwner()->FindComponentByClass<USFInventoryComponent>() : nullptr;
     if (!Inventory) { return; }
@@ -980,13 +985,22 @@ void USFGatheringPilotComponent::ProjectEquipment(const TMap<FString,int64>& Equ
         const FString Gear=GearId(GetEquipped(Slot));
         if (!Gear.IsEmpty() && Equipment.FindRef(Gear)<=0 && !(Inventory->UnequipSlot(Slot) && Change(Gear,false))) { ++Mismatches; }
     }
-    for (const TPair<FString,int64>& Held : Equipment)
+      for (const TPair<FString,int64>& Held : Equipment)
     {
         const FSFGearStats* Stats=SFGear::Find(Held.Key);
         if (Held.Value<=0 || !Stats || GearId(GetEquipped(Stats->Slot))==Held.Key) { continue; }
         const int32 Bag=Change(Held.Key,true) ? FindBagSlot(FSoftObjectPath(SFStationRecipes::ItemAssetPath(Held.Key))) : INDEX_NONE;
         if (Bag==INDEX_NONE || !Inventory->EquipFromSlot(Bag)) { ++Mismatches; }
-    }
+      }
+      for (FSFEquippedSlot& Slot : Inventory->EquippedItems)
+      {
+          const USFItemDefinition* Definition = Slot.Item.LoadSynchronous();
+          if (Definition)
+          {
+              const int32* Current = DurabilityPercent.Find(Definition->UniqueId);
+              Slot.DurabilityPercent = FMath::Clamp(Current ? *Current : 100, 0, 100);
+          }
+      }
     GetOwner()->ForceNetUpdate();
     UE_LOG(LogTemp,Display,TEXT("EQUIPMENT_PROJECTED Items=%d Mismatches=%d"),Equipment.Num(),Mismatches);
 }

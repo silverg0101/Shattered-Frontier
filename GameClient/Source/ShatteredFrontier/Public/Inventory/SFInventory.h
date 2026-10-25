@@ -54,6 +54,7 @@ struct FSFEquippedSlot
     UPROPERTY(BlueprintReadOnly, Category = "Inventory") FName SlotName = NAME_None;
     UPROPERTY(BlueprintReadOnly, Category = "Inventory") TSoftObjectPtr<USFItemDefinition> Item;
     UPROPERTY(BlueprintReadOnly, Category = "Inventory") int32 Quantity = 1;
+    UPROPERTY(BlueprintReadOnly, Category = "Inventory") int32 DurabilityPercent = 100;
 };
 
 UCLASS(ClassGroup = (Frontier), meta = (BlueprintSpawnableComponent))

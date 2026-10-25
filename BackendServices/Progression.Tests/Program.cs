@@ -16,6 +16,14 @@ var harvest = new ActionReceipt("harvest-1", "chr_test", ReceiptKind.GatheringHa
 var first = progress.Apply(harvest);
 Check(first.SkillGain == 1 && first.XpGain > 0 && progress.Skills[ProgressionRules.Logging] == 1, "harvest gains skill and XP");
 Check(!progress.Apply(harvest).Applied && progress.LifetimeXp == first.XpGain, "replay idempotent");
+var restoredProgress = new CharacterProgression("chr_test", clock, () => 0, snapshot: progress.Snapshot());
+Check(restoredProgress.LifetimeXp == progress.LifetimeXp &&
+    restoredProgress.Skills[ProgressionRules.Logging] == 1 &&
+    !restoredProgress.Apply(harvest).Applied, "snapshot restores XP, skill and receipt");
+var veteran = new CharacterProgression("chr_veteran", clock, () => 0,
+    initialXp: CharacterProgression.TotalFor(10));
+Check(new CharacterProgression("chr_veteran", clock, () => 0, snapshot: veteran.Snapshot()).Level == 10,
+    "snapshot restores level ten");
 Check(!progress.Apply(harvest with { ReceiptId = "rejected", Accepted = false }).Applied, "rejected receipt ignored");
 var craft = progress.Apply(new("craft-1", "chr_test", ReceiptKind.CraftConvert, true, ProgressionRules.Smithing, 25, 6, 12));
 Check(craft.SkillGain == 1 && progress.Skills[ProgressionRules.Smithing] == 1, "craft skill mapping");

@@ -195,7 +195,7 @@ void USFBackpackComponent::Reconcile(TFunction<void(bool)> Done)
             {
                 USFBackpackComponent* Last = Weak.Get();
                 if (!Last || Equipment.Status != ESFLedgerStatus::Ok) { Report(ESFBackpackOutcome::Unavailable, -1); return; }
-                if (auto* Gathering = Last->GetOwner()->FindComponentByClass<USFGatheringPilotComponent>()) { Gathering->ProjectEquipment(Equipment.Quantities); }
+                if (auto* Gathering = Last->GetOwner()->FindComponentByClass<USFGatheringPilotComponent>()) { Gathering->ProjectEquipment(Equipment.Quantities, Equipment.DurabilityPercent); }
                 Report(ESFBackpackOutcome::Committed, PackRevision);
             });
         });

@@ -61,6 +61,7 @@ namespace
         }
         Out.Revision = Call.View.revision();
         for (const auto& Entry : Call.View.quantities()) { Out.Quantities.Add(FromUtf8(Entry.first), Entry.second); }
+        for (const auto& Entry : Call.View.durability_percent()) { Out.DurabilityPercent.Add(FromUtf8(Entry.first), Entry.second); }
         return Out;
     }
 }

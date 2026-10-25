@@ -106,6 +106,8 @@ var skillRandom = fixtureSkillSeed is null ? null : new Random(int.Parse(fixture
 builder.Services.AddSingleton<Func<double>>(() => skillRandom?.NextDouble() ?? Random.Shared.NextDouble());
 var progressionSettings = new ShatteredFrontier.Progression.ProgressionSettings(); progressionSettings.Validate();
 builder.Services.AddSingleton(progressionSettings);
+var deathPenaltyTuning = new DeathPenaltyTuning(); deathPenaltyTuning.Validate();
+builder.Services.AddSingleton(deathPenaltyTuning);
 builder.Services.AddSingleton(appearanceAllowlist);
 builder.Services.AddSingleton(new AppearanceValidator(appearanceAllowlist));
 builder.Services.AddSingleton<QuestRewardPayout>();

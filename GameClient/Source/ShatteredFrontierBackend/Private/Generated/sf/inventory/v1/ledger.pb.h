@@ -83,6 +83,14 @@ extern const ::google::protobuf::internal::ClassDataFull ContainerView_class_dat
 #else
 extern const ContainerViewGlobalsTypeInternal ContainerView_globals_;
 #endif  // PROTOBUF_MESSAGE_GLOBALS
+class ContainerView_DurabilityPercentEntry_DoNotUse;
+struct ContainerView_DurabilityPercentEntry_DoNotUseGlobalsTypeInternal;
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+extern ContainerView_DurabilityPercentEntry_DoNotUseGlobalsTypeInternal ContainerView_DurabilityPercentEntry_DoNotUse_globals_;
+extern const ::google::protobuf::internal::ClassDataFull ContainerView_DurabilityPercentEntry_DoNotUse_class_data_;
+#else
+extern const ContainerView_DurabilityPercentEntry_DoNotUseGlobalsTypeInternal ContainerView_DurabilityPercentEntry_DoNotUse_globals_;
+#endif  // PROTOBUF_MESSAGE_GLOBALS
 class ContainerView_QuantitiesEntry_DoNotUse;
 struct ContainerView_QuantitiesEntry_DoNotUseGlobalsTypeInternal;
 #ifndef PROTOBUF_MESSAGE_GLOBALS
@@ -376,7 +384,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED TransferRequest final : public ::go
   [[nodiscard]] static const TransferRequest& default_instance() {
     return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<TransferRequest>(&TransferRequest_globals_);
   }
-  static constexpr int kIndexInFileMessages = 9;
+  static constexpr int kIndexInFileMessages = 10;
   friend void swap(TransferRequest& a, TransferRequest& b) { a.Swap(&b); }
   inline void Swap(TransferRequest* PROTOBUF_NONNULL other) {
     if (other == this) return;
@@ -669,7 +677,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED RevisionChange final : public ::goo
   [[nodiscard]] static const RevisionChange& default_instance() {
     return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<RevisionChange>(&RevisionChange_globals_);
   }
-  static constexpr int kIndexInFileMessages = 3;
+  static constexpr int kIndexInFileMessages = 4;
   friend void swap(RevisionChange& a, RevisionChange& b) { a.Swap(&b); }
   inline void Swap(RevisionChange* PROTOBUF_NONNULL other) {
     if (other == this) return;
@@ -899,7 +907,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED QuantityChange final : public ::goo
   [[nodiscard]] static const QuantityChange& default_instance() {
     return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<QuantityChange>(&QuantityChange_globals_);
   }
-  static constexpr int kIndexInFileMessages = 4;
+  static constexpr int kIndexInFileMessages = 5;
   friend void swap(QuantityChange& a, QuantityChange& b) { a.Swap(&b); }
   inline void Swap(QuantityChange* PROTOBUF_NONNULL other) {
     if (other == this) return;
@@ -1134,7 +1142,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED GetContainerRequest final : public 
   [[nodiscard]] static const GetContainerRequest& default_instance() {
     return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<GetContainerRequest>(&GetContainerRequest_globals_);
   }
-  static constexpr int kIndexInFileMessages = 7;
+  static constexpr int kIndexInFileMessages = 8;
   friend void swap(GetContainerRequest& a, GetContainerRequest& b) { a.Swap(&b); }
   inline void Swap(GetContainerRequest* PROTOBUF_NONNULL other) {
     if (other == this) return;
@@ -1340,7 +1348,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED FollowUpIntent final : public ::goo
   [[nodiscard]] static const FollowUpIntent& default_instance() {
     return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<FollowUpIntent>(&FollowUpIntent_globals_);
   }
-  static constexpr int kIndexInFileMessages = 10;
+  static constexpr int kIndexInFileMessages = 11;
   friend void swap(FollowUpIntent& a, FollowUpIntent& b) { a.Swap(&b); }
   inline void Swap(FollowUpIntent* PROTOBUF_NONNULL other) {
     if (other == this) return;
@@ -1552,6 +1560,55 @@ class PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ContainerView_QuantitiesEntry_DoNotU
   using ParseTableT_ =
       ::google::protobuf::internal::TcParseTable<1, 2,
                           0, 57,
+                          2>;
+  static constexpr ParseTableT_ InternalGenerateParseTable_(
+      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+  friend class ::google::protobuf::internal::TcParser;
+  #ifndef PROTOBUF_MESSAGE_GLOBALS
+  static const ParseTableT_ _table_;
+  #endif
+
+  const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL GetClassData() const PROTOBUF_FINAL;
+  static void* PROTOBUF_NONNULL PlacementNew_(
+      const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static constexpr auto InternalNewImpl_();
+};
+// -------------------------------------------------------------------
+
+class PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ContainerView_DurabilityPercentEntry_DoNotUse final
+    : public ::google::protobuf::internal::MapEntry<::std::string, ::int32_t,
+                             ::google::protobuf::internal::WireFormatLite::TYPE_STRING,
+                             ::google::protobuf::internal::WireFormatLite::TYPE_INT32> {
+ public:
+  using SuperType =
+      ::google::protobuf::internal::MapEntry<::std::string, ::int32_t,
+                      ::google::protobuf::internal::WireFormatLite::TYPE_STRING,
+                      ::google::protobuf::internal::WireFormatLite::TYPE_INT32>;
+  ContainerView_DurabilityPercentEntry_DoNotUse();
+  template <typename = void>
+  explicit constexpr ContainerView_DurabilityPercentEntry_DoNotUse(::google::protobuf::internal::ConstantInitialized,
+                           const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+                               class_data);
+  explicit ContainerView_DurabilityPercentEntry_DoNotUse(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static constexpr const void* PROTOBUF_NONNULL internal_message_globals() {
+    return &ContainerView_DurabilityPercentEntry_DoNotUse_globals_;
+  }
+
+
+  static constexpr auto InternalGenerateClassData_(
+      const ::google::protobuf::MessageLite& prototype,
+      const ::google::protobuf::internal::TcParseTableBase* PROTOBUF_NULLABLE tc_table = nullptr);
+
+ private:
+  friend class ::google::protobuf::MessageLite;
+  friend struct ::TableStruct_sf_2finventory_2fv1_2fledger_2eproto;
+  friend ::google::protobuf::internal::PrivateAccess;
+  friend ContainerView_DurabilityPercentEntry_DoNotUseGlobalsTypeInternal;
+
+  using ParseTableT_ =
+      ::google::protobuf::internal::TcParseTable<1, 2,
+                          0, 64,
                           2>;
   static constexpr ParseTableT_ InternalGenerateParseTable_(
       const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
@@ -1883,7 +1940,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED LedgerReceipt final : public ::goog
   [[nodiscard]] static const LedgerReceipt& default_instance() {
     return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<LedgerReceipt>(&LedgerReceipt_globals_);
   }
-  static constexpr int kIndexInFileMessages = 5;
+  static constexpr int kIndexInFileMessages = 6;
   friend void swap(LedgerReceipt& a, LedgerReceipt& b) { a.Swap(&b); }
   inline void Swap(LedgerReceipt* PROTOBUF_NONNULL other) {
     if (other == this) return;
@@ -2147,7 +2204,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED GrantRequest final : public ::googl
   [[nodiscard]] static const GrantRequest& default_instance() {
     return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<GrantRequest>(&GrantRequest_globals_);
   }
-  static constexpr int kIndexInFileMessages = 8;
+  static constexpr int kIndexInFileMessages = 9;
   friend void swap(GrantRequest& a, GrantRequest& b) { a.Swap(&b); }
   inline void Swap(GrantRequest* PROTOBUF_NONNULL other) {
     if (other == this) return;
@@ -2463,7 +2520,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED EnsureContainerRequest final : publ
   [[nodiscard]] static const EnsureContainerRequest& default_instance() {
     return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<EnsureContainerRequest>(&EnsureContainerRequest_globals_);
   }
-  static constexpr int kIndexInFileMessages = 6;
+  static constexpr int kIndexInFileMessages = 7;
   friend void swap(EnsureContainerRequest& a, EnsureContainerRequest& b) { a.Swap(&b); }
   inline void Swap(EnsureContainerRequest* PROTOBUF_NONNULL other) {
     if (other == this) return;
@@ -2670,7 +2727,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ContainerView final : public ::goog
   [[nodiscard]] static const ContainerView& default_instance() {
     return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<ContainerView>(&ContainerView_globals_);
   }
-  static constexpr int kIndexInFileMessages = 2;
+  static constexpr int kIndexInFileMessages = 3;
   friend void swap(ContainerView& a, ContainerView& b) { a.Swap(&b); }
   inline void Swap(ContainerView* PROTOBUF_NONNULL other) {
     if (other == this) return;
@@ -2765,6 +2822,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ContainerView final : public ::goog
     kSpecFieldNumber = 1,
     kRevisionFieldNumber = 2,
     kQuantitiesFieldNumber = 3,
+    kDurabilityPercentFieldNumber = 4,
   };
   // .sf.inventory.v1.ContainerSpec spec = 1;
   [[nodiscard]] bool has_spec()
@@ -2808,12 +2866,28 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ContainerView final : public ::goog
   ::google::protobuf::Map<::std::string, ::int64_t>* PROTOBUF_NONNULL _internal_mutable_quantities();
 
   public:
+  // map<string, int32> durability_percent = 4;
+  [[nodiscard]] int durability_percent_size()
+      const;
+  private:
+  int _internal_durability_percent_size() const;
+
+  public:
+  void clear_durability_percent() ;
+  [[nodiscard]] const ::google::protobuf::Map<::std::string, ::int32_t>& durability_percent() const;
+  [[nodiscard]] ::google::protobuf::Map<::std::string, ::int32_t>* PROTOBUF_NONNULL mutable_durability_percent();
+
+  private:
+  const ::google::protobuf::Map<::std::string, ::int32_t>& _internal_durability_percent() const;
+  ::google::protobuf::Map<::std::string, ::int32_t>* PROTOBUF_NONNULL _internal_mutable_durability_percent();
+
+  public:
   // @@protoc_insertion_point(class_scope:sf.inventory.v1.ContainerView)
  private:
   class _Internal;
   using ParseTableT_ =
-      ::google::protobuf::internal::TcParseTable<1, 3,
-                          2, 48,
+      ::google::protobuf::internal::TcParseTable<1, 4,
+                          3, 66,
                           2>;
   static constexpr ParseTableT_ InternalGenerateParseTable_(
       const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
@@ -2844,6 +2918,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ContainerView final : public ::goog
     ::sf::inventory::v1::ContainerSpec* PROTOBUF_NULLABLE spec_;
     ::int64_t revision_;
     ::google::protobuf::internal::MapField<ContainerView_QuantitiesEntry_DoNotUse, ::std::string, ::int64_t> quantities_;
+    ::google::protobuf::internal::MapField<ContainerView_DurabilityPercentEntry_DoNotUse, ::std::string, ::int32_t> durability_percent_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
   union { Impl_ _impl_; };
@@ -3070,6 +3145,8 @@ inline void ContainerSpec::_internal_set_capacity(::int32_t value) {
 
 // -------------------------------------------------------------------
 
+// -------------------------------------------------------------------
+
 // ContainerView
 
 // .sf.inventory.v1.ContainerSpec spec = 1;
@@ -3223,6 +3300,37 @@ inline ::google::protobuf::Map<::std::string, ::int64_t>* PROTOBUF_NONNULL Conta
   SetHasBit(_impl_._has_bits_[0], 0x00000004U);
   // @@protoc_insertion_point(field_mutable_map:sf.inventory.v1.ContainerView.quantities)
   return _internal_mutable_quantities();
+}
+
+// map<string, int32> durability_percent = 4;
+inline int ContainerView::_internal_durability_percent_size() const {
+  return _internal_durability_percent().size();
+}
+inline int ContainerView::durability_percent_size() const {
+  return _internal_durability_percent_size();
+}
+inline void ContainerView::clear_durability_percent() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.durability_percent_.Clear();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000008U);
+}
+inline const ::google::protobuf::Map<::std::string, ::int32_t>& ContainerView::_internal_durability_percent() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.durability_percent_.GetMap();
+}
+inline const ::google::protobuf::Map<::std::string, ::int32_t>& ContainerView::durability_percent() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_map:sf.inventory.v1.ContainerView.durability_percent)
+  return _internal_durability_percent();
+}
+inline ::google::protobuf::Map<::std::string, ::int32_t>* PROTOBUF_NONNULL ContainerView::_internal_mutable_durability_percent() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.durability_percent_.MutableMap();
+}
+inline ::google::protobuf::Map<::std::string, ::int32_t>* PROTOBUF_NONNULL ContainerView::mutable_durability_percent()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000008U);
+  // @@protoc_insertion_point(field_mutable_map:sf.inventory.v1.ContainerView.durability_percent)
+  return _internal_mutable_durability_percent();
 }
 
 // -------------------------------------------------------------------

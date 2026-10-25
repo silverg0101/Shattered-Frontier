@@ -23,6 +23,15 @@ public sealed class PostgresCharacterStateStore(string connectionString)
 {
     public CharacterDeathSnapshot? ReadDeath(string characterId) => Transaction((c, t) => ReadDeath(c, t, characterId));
 
+    public (int Level, int MinimumLevel, int WearPercent) ReadDeathPenalty(string eventId, string characterId) => Transaction((c, t) =>
+    {
+        using var cmd = Command(c, t, "SELECT level_at_death,wear_min_level,wear_percent FROM character_state.death_events WHERE death_event_id=$1 AND character_id=$2", eventId, characterId);
+        using var row = cmd.ExecuteReader();
+        return row.Read() ? (row.GetInt32(0), row.GetInt32(1), row.GetInt32(2)) :
+            throw new CharacterStoreRejectedException("Unknown death event.");
+    });
+    public int ReadDeathLevel(string eventId, string characterId) => ReadDeathPenalty(eventId, characterId).Level;
+
     private static CharacterDeathSnapshot? ReadDeath(NpgsqlConnection c, NpgsqlTransaction t, string characterId)
     {
         using var cmd = Command(c, t, "SELECT is_dead,death_event_id,occurred_at_unix_ms,respawn_at_unix_ms,death_zone_id,death_x,death_y,death_z,respawn_zone_id,respawn_x,respawn_y,respawn_z FROM character_state.deaths WHERE character_id=$1", characterId);
@@ -33,8 +42,11 @@ public sealed class PostgresCharacterStateStore(string connectionString)
     }
 
     public CharacterDeathSnapshot ReportDeath(string eventId, string characterId, long occurredAtUnixMs,
-        CharacterPositionSnapshot death, CharacterPositionSnapshot respawn, int delayMs) => Transaction((c, t) =>
+        CharacterPositionSnapshot death, CharacterPositionSnapshot respawn, int delayMs,
+        int wearMinLevel = 10, int wearPercent = 5) => Transaction((c, t) =>
     {
+        if (wearMinLevel is < 1 or > 1000 || wearPercent is < 0 or > 100)
+            throw new CharacterStoreRejectedException("Invalid death wear tuning.");
         LockCharacter(c, t, characterId);
         var fingerprint = Fingerprint(new { characterId, occurredAtUnixMs, death, respawn, delayMs });
         bool replay = false;
@@ -50,7 +62,17 @@ public sealed class PostgresCharacterStateStore(string connectionString)
         var prior = ReadDeath(c, t, characterId);
         if (prior?.IsDead == true) throw new CharacterStoreRejectedException("Character is already dead.");
         long due = checked(occurredAtUnixMs + delayMs);
-        using (var cmd = Command(c, t, "INSERT INTO character_state.death_events(death_event_id,character_id,fingerprint) VALUES ($1,$2,$3)", eventId, characterId, fingerprint)) cmd.ExecuteNonQuery();
+        int level = 1;
+        using (var progression = Command(c, t, "SELECT state::text FROM character_state.progression WHERE character_id=$1", characterId))
+        {
+            if (progression.ExecuteScalar() is string json)
+            {
+                var snapshot = JsonSerializer.Deserialize<ProgressionSnapshot>(json) ?? throw new CharacterStoreRejectedException("Invalid stored progression state.");
+                level = new CharacterProgression(characterId, TimeProvider.System, () => .5, snapshot: snapshot).Level;
+            }
+        }
+        using (var cmd = Command(c, t, "INSERT INTO character_state.death_events(death_event_id,character_id,fingerprint,level_at_death,wear_min_level,wear_percent) VALUES ($1,$2,$3,$4,$5,$6)",
+            eventId, characterId, fingerprint, level, wearMinLevel, wearPercent)) cmd.ExecuteNonQuery();
         using (var cmd = Command(c, t, "INSERT INTO character_state.deaths(character_id,death_event_id,is_dead,occurred_at_unix_ms,respawn_at_unix_ms,death_zone_id,death_x,death_y,death_z,respawn_zone_id,respawn_x,respawn_y,respawn_z) VALUES ($1,$2,true,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) ON CONFLICT (character_id) DO UPDATE SET death_event_id=EXCLUDED.death_event_id,is_dead=true,occurred_at_unix_ms=EXCLUDED.occurred_at_unix_ms,respawn_at_unix_ms=EXCLUDED.respawn_at_unix_ms,death_zone_id=EXCLUDED.death_zone_id,death_x=EXCLUDED.death_x,death_y=EXCLUDED.death_y,death_z=EXCLUDED.death_z,respawn_zone_id=EXCLUDED.respawn_zone_id,respawn_x=EXCLUDED.respawn_x,respawn_y=EXCLUDED.respawn_y,respawn_z=EXCLUDED.respawn_z,updated_at=now()",
             characterId, eventId, occurredAtUnixMs, due, death.ZoneId, death.X, death.Y, death.Z, respawn.ZoneId, respawn.X, respawn.Y, respawn.Z)) cmd.ExecuteNonQuery();
         return ReadDeath(c, t, characterId)!;
@@ -287,7 +309,7 @@ public sealed class PostgresCharacterStateStore(string connectionString)
             {
                 using var marker = Command(c, t, "SELECT version,migration_id,compatible_build_min,compatible_build_max FROM character_state.schema_version WHERE singleton=true FOR SHARE");
                 using var row = marker.ExecuteReader();
-                if (!row.Read() || row.GetInt32(0) != 8 || row.GetString(1) != "character-state-008" || row.GetInt32(2) > 8 || row.GetInt32(3) < 8)
+                if (!row.Read() || row.GetInt32(0) != 9 || row.GetString(1) != "character-state-009" || row.GetInt32(2) > 9 || row.GetInt32(3) < 9)
                     throw new CharacterSchemaCompatibilityException("Unsupported character state schema version.");
             }
             catch (PostgresException ex) when (ex.SqlState is "42P01" or "3F000" or "42501")

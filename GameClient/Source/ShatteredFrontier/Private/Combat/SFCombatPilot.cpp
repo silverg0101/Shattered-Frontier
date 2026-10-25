@@ -1853,6 +1853,9 @@ void ASFGameMode::ReportPlayerDeath(TWeakObjectPtr<ASFE1Character> Player, const
         if (Mode->PlayerDeathEvents.FindRef(Player) != Request.DeathEventId) return;
         const int64 RemainingMs = FMath::Max<int64>(0, Reply.RespawnAtUnixMs - UnixNowMs());
         UE_LOG(LogTemp, Display, TEXT("COMBAT_DEATH_RECORDED Character=%s Event=%s RemainingMs=%lld"), *Request.CharacterId, *Request.DeathEventId, RemainingMs);
+        if (AController* Controller = Player->GetController())
+            if (USFBackpackComponent* Backpack = Controller->FindComponentByClass<USFBackpackComponent>())
+                Backpack->Reconcile();
         FString Resolution;
         FParse::Value(FCommandLine::Get(), TEXT("DeathResolution="), Resolution);
         if (FParse::Param(FCommandLine::Get(), TEXT("GreenlandsDeathNetcheck")) &&
@@ -1878,6 +1881,9 @@ void ASFGameMode::RestoreDeadPlayer(ASFE1Character* Player, const FSFGameplayRes
     if (!bPilotActive || !IsValid(Player) || !State.bHasDeath || !State.bIsDead ||
         State.DeathZoneId != FPackageName::GetShortName(GetWorld()->GetOutermost()->GetName()).ToLower() ||
         State.DeathPosition.ContainsNaN() || State.RespawnPosition.ContainsNaN()) return;
+    if (AController* Controller = Player->GetController())
+        if (USFBackpackComponent* Backpack = Controller->FindComponentByClass<USFBackpackComponent>())
+            Backpack->Reconcile();
     const auto Weak = TWeakObjectPtr<ASFE1Character>(Player);
     Player->SetActorLocation(State.DeathPosition, false, nullptr, ETeleportType::TeleportPhysics);
     Player->CombatSetHealth(0); Player->GetCharacterMovement()->DisableMovement();
