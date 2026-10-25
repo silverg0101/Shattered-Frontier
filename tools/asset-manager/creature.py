@@ -311,19 +311,26 @@ def is_model(p: Path) -> bool:
 CONCEPTS = ("depth", "heroes")  # depth: the matched animal's stand-in guides Qwen; heroes: ChatGPT-drawn heroes
 
 
+CREATURE_KEYS = {"name", "prompt", "image", "animal", "clips", "fill_missing", "bake", "size_cm", "concept", "preset"}
+
+
 def creature_params(b) -> dict:
     """A creature request ({name, prompt | image, animal?, clips, fill_missing, bake?, size_cm?, concept?, preset}) checked
     and filled in. Raises ValueError."""
     a = _app()
+    if extra := sorted(set(b) - CREATURE_KEYS):
+        raise ValueError(f"unknown field{'s' * (len(extra) > 1)} {', '.join(map(str, extra))}; a creature takes {', '.join(sorted(CREATURE_KEYS))}")
     for k in ("name", "prompt", "image", "animal", "preset"):
         if not isinstance(b.get(k) or "", str):
             raise ValueError(f"{k} must be a string")
     name = safe_name(b.get("name") or "")
     if not name:
         raise ValueError("give the creature a name (letters, digits, _ and -)")
+    if len(name) > 64:
+        raise ValueError("the creature's name is at most 64 characters")
     if bool(b.get("prompt")) == bool(b.get("image")):
         raise ValueError("give a prompt or an image, not both")
-    if b.get("image") and a.kind_of(a.safe_path(b["image"])) != "image":
+    if b.get("image") and (a.kind_of(a.safe_path(b["image"])) != "image" or not a.safe_path(b["image"]).is_file()):
         raise ValueError(f"image is not an image in the asset library: {b['image']!r}")
     if b.get("animal") and b["animal"] not in {e["id"] for e in json.loads(CATALOGUE.read_text(encoding="utf-8"))}:
         raise ValueError("animal must be an id from /api/animals")
@@ -331,6 +338,9 @@ def creature_params(b) -> dict:
     if clips != "all" and (not isinstance(clips, list) or not clips or
                            any(not isinstance(c, str) or safe_name(c) != c for c in clips)):
         raise ValueError('clips is "all" or a list of clip names (letters, digits, _ and -)')
+    if clips != "all":  # a repeat (in any case) would write one file and two manifest rows
+        seen = set()
+        clips = [c for c in clips if not (c.lower() in seen or seen.add(c.lower()))]
     bake = b.get("bake")
     if bake is not None and (not isinstance(bake, list) or any(not isinstance(c, str) for c in bake)
                              or (clips != "all" and set(bake) - set(clips))):

@@ -2372,7 +2372,10 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.write(b)
 
     def body(self):
-        return json.loads(self.rfile.read(int(self.headers.get("Content-Length", 0))) or b"{}")
+        b = json.loads(self.rfile.read(int(self.headers.get("Content-Length", 0))) or b"{}")
+        if not isinstance(b, dict):
+            raise ValueError("the request body must be a JSON object")
+        return b
 
     def route(self, method):
         u = urllib.parse.urlparse(self.path)
@@ -3082,6 +3085,8 @@ def check():
     except ValueError:
         pass
     for bad in ({"name": "x", "prompt": "a", "image": "b"}, {"name": "!!", "prompt": "a"}, {"name": 5, "prompt": "a"},
+                {"name": "x", "prompt": "a", "fillMissing": False}, {"name": "x" * 65, "prompt": "a"},
+                {"name": "x", "image": "no/such.png"},
                 {"name": "x", "prompt": "a", "clips": ["Walk"], "bake": ["Run"]}, {"name": "x", "prompt": "a", "clips": [1]},
                 {"name": "x", "prompt": "a", "bake": [["Walk"]]}, {"name": "x", "prompt": "a", "fill_missing": "maybe"},
                 {"name": "x", "prompt": "a", "size_cm": "abc"}, {"name": "x", "prompt": "a", "size_cm": [30]},
@@ -3090,8 +3095,8 @@ def check():
             creature.creature_params(bad); raise AssertionError(bad)
         except ValueError:
             pass
-    ok = creature.creature_params({"name": "x", "prompt": "a", "fill_missing": "false", "size_cm": "30"})
-    assert ok["fill_missing"] is False and ok["size_cm"] == 30.0
+    ok = creature.creature_params({"name": "x", "prompt": "a", "fill_missing": "false", "size_cm": "30", "clips": ["Walk", "Idle", "walk"]})
+    assert ok["fill_missing"] is False and ok["size_cm"] == 30.0 and ok["clips"] == ["Walk", "Idle"], ok
     assert ok["concept"] == "depth" and creature.creature_params({"name": "x", "prompt": "a", "concept": "heroes"})["concept"] == "heroes"
     for bad in ("Depth", "", None, ["depth"], 1):  # an explicit null is not "default": 400 on anything but the two names
         try:
