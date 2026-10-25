@@ -29,4 +29,17 @@ namespace SFNpcProfiles
         TMap<FString, FProfile>& Out, FString& Error);
     /** One restart-bound snapshot, sourced from staged repository content. Unknown IDs return null. */
     SHATTEREDFRONTIER_API const FProfile* Find(const FString& DefinitionId);
+#if WITH_DEV_AUTOMATION_TESTS && WITH_EDITOR
+    /** Editor automation only: isolate actor/component tests using an already validated catalogue. */
+    class SHATTEREDFRONTIER_API FScopedTestCatalogue
+    {
+    public:
+        explicit FScopedTestCatalogue(const TMap<FString, FProfile>& ValidatedProfiles);
+        ~FScopedTestCatalogue();
+        FScopedTestCatalogue(const FScopedTestCatalogue&) = delete;
+        FScopedTestCatalogue& operator=(const FScopedTestCatalogue&) = delete;
+    private:
+        const TMap<FString, FProfile>* Previous;
+    };
+#endif
 }

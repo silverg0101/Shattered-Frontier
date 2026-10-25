@@ -586,7 +586,7 @@ bool USFCastingComponent::TryBeginNpcMend()
 {
     ASFPilotBoar* Npc = Cast<ASFPilotBoar>(GetOwner());
     const auto* Mend = SFStarterAbilities::Find(TEXT("mend"));
-    if (!Npc || !Npc->HasAuthority() || !Mend || Npc->GetCreatureId() != TEXT("npc/bandit_captain") ||
+    if (!Npc || !Npc->HasAuthority() || !Mend || !Npc->CanCastMend() ||
         Npc->Health() <= 0 || Npc->IsLeashing() || NpcMana < NpcCastCost()) return false;
     SFCastRules::FAbility Ability;
     Ability.Id = 3; Ability.School = 2; Ability.Cast = Mend->CastSeconds;

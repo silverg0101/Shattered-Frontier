@@ -7,6 +7,9 @@
 
 namespace
 {
+#if WITH_DEV_AUTOMATION_TESTS && WITH_EDITOR
+    thread_local const TMap<FString, SFNpcProfiles::FProfile>* TestCatalogue = nullptr;
+#endif
     bool ReadObject(const FString& Path, TSharedPtr<FJsonObject>& Object)
     {
         FString Json;
@@ -94,6 +97,9 @@ bool SFNpcProfiles::Load(const FString& CataloguePath, const FString& LootRulesD
 
 const SFNpcProfiles::FProfile* SFNpcProfiles::Find(const FString& DefinitionId)
 {
+#if WITH_DEV_AUTOMATION_TESTS && WITH_EDITOR
+    if (TestCatalogue) return TestCatalogue->Find(DefinitionId);
+#endif
     static const TMap<FString, FProfile> Catalogue = []
     {
         TMap<FString, FProfile> Profiles;
@@ -106,3 +112,18 @@ const SFNpcProfiles::FProfile* SFNpcProfiles::Find(const FString& DefinitionId)
     }();
     return Catalogue.Find(DefinitionId);
 }
+
+#if WITH_DEV_AUTOMATION_TESTS && WITH_EDITOR
+SFNpcProfiles::FScopedTestCatalogue::FScopedTestCatalogue(const TMap<FString, FProfile>& ValidatedProfiles)
+    : Previous(TestCatalogue)
+{
+    check(IsInGameThread());
+    TestCatalogue = &ValidatedProfiles;
+}
+
+SFNpcProfiles::FScopedTestCatalogue::~FScopedTestCatalogue()
+{
+    check(IsInGameThread());
+    TestCatalogue = Previous;
+}
+#endif

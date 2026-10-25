@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "profiles": [
+    {
+      "definition_id": "npc/mend_reuse_fixture",
+      "level": 7,
+      "health": 3558,
+      "skill": 194,
+      "swing_seconds": 2.0,
+      "swing_damage": 95.5,
+      "armor": 378,
+      "resistance": 18.9,
+      "crit_chance": 0.053,
+      "crit_damage": 1.5,
+      "attack_kind": "melee",
+      "abilities": [
+        "mend"
+      ],
+      "loot_rule": "mend_reuse_fixture",
+      "local_hides_fixture": false
+    }
+  ]
+}
