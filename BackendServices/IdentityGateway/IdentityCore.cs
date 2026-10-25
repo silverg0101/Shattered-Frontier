@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using CharacterAppearance;
+using ShatteredFrontier.Progression;
 
 namespace IdentityGateway;
 
@@ -40,7 +41,7 @@ public sealed class IdentityOptions
 
 public sealed record Account(string Id, string NameKey, string PasswordHash);
 public sealed record CharacterRecord(string CharacterId, string AccountId, string RealmId, string Name,
-    string NameKey, byte[] Appearance, string State);
+    string NameKey, byte[] Appearance, string State, string Archetype = "fighter");
 public sealed record SessionRecord(string SessionId, string AccountId, DateTimeOffset ExpiresAt);
 public sealed record LoginChallenge(string AccountId, DateTimeOffset ExpiresAt);
 public sealed record TicketClaims(string SessionId, string AccountId, string CharacterId, string RealmId,
@@ -274,15 +275,18 @@ public sealed class IdentityService(IIdentityStore store, IdentityOptions option
 
     public IReadOnlyList<CharacterRecord> ListCharacters(SessionRecord session, string? realmId) => store.ListCharacters(session.AccountId, realmId);
 
-    public CharacterRecord CreateCharacter(SessionRecord session, string? realmId, string? name, byte[]? packet)
+    public CharacterRecord CreateCharacter(SessionRecord session, string? realmId, string? name, byte[]? packet,
+        string? archetypeId = "fighter")
     {
+        if (archetypeId is null || !CombatAttributeTuning.Archetypes.Contains(archetypeId, StringComparer.Ordinal))
+            throw new ApiError(400, "INVALID_ARGUMENT", "ARCHETYPE_INVALID");
         if (realmId is null || !Regex.IsMatch(realmId, "^[a-z0-9][a-z0-9_-]{1,31}$"))
             throw new ApiError(400, "INVALID_ARGUMENT", "REALM_INVALID");
         var (display, key) = Names.Validate(name, options.ReservedNames);
         if (packet is null || packet.Length == 0 || packet[0] != 2 || !appearance.ValidatePacked(packet, NoCosmetics, NoCosmetics).Valid)
             throw new ApiError(400, "INVALID_ARGUMENT", "APPEARANCE_INVALID");
         var record = new CharacterRecord("chr_" + Guid.NewGuid().ToString("N"), session.AccountId, realmId,
-            display, key, packet, "active");
+            display, key, packet, "active", archetypeId);
         var outcome = store.CreateCharacter(record, options.CharacterSlotsPerRealm, options.CharacterSlotsPerAccount);
         if (outcome == CreateCharacterOutcome.NameTaken) throw new ApiError(409, "ALREADY_EXISTS", "NAME_TAKEN");
         if (outcome == CreateCharacterOutcome.SlotsFull) throw new ApiError(429, "RESOURCE_EXHAUSTED", "SLOTS_FULL");

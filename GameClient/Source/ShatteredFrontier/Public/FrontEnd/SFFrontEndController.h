@@ -54,7 +54,7 @@ public:
     void Show(ESFFrontEndScreen Screen);
     void DoSignIn(const FString& InAccount, const FString& Password, bool bRemember);
     void DoSignOut();
-    void DoCreate(const FString& Name, const FSFAppearance& Look);
+    void DoCreate(const FString& Name, const FSFAppearance& Look, const FString& ArchetypeId);
     void DoDelete(int32 Index);
     void DoEnter(int32 Index);
     void OpenSettings();

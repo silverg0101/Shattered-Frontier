@@ -2643,6 +2643,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED CreateCharacterRequest final : publ
   enum : int {
     kCharacterIdFieldNumber = 1,
     kAppearancePacketFieldNumber = 2,
+    kArchetypeIdFieldNumber = 3,
   };
   // string character_id = 1;
   void clear_character_id() ;
@@ -2676,12 +2677,27 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED CreateCharacterRequest final : publ
   ::std::string* PROTOBUF_NONNULL _internal_mutable_appearance_packet();
 
   public:
+  // string archetype_id = 3;
+  void clear_archetype_id() ;
+  [[nodiscard]] const ::std::string& archetype_id() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_archetype_id(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_archetype_id();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_archetype_id();
+  void set_allocated_archetype_id(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_archetype_id() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_archetype_id(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_archetype_id();
+
+  public:
   // @@protoc_insertion_point(class_scope:sf.progression.v1.CreateCharacterRequest)
  private:
   class _Internal;
   using ParseTableT_ =
-      ::google::protobuf::internal::TcParseTable<1, 2,
-                          0, 61,
+      ::google::protobuf::internal::TcParseTable<2, 3,
+                          0, 73,
                           2>;
   static constexpr ParseTableT_ InternalGenerateParseTable_(
       const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
@@ -2711,6 +2727,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED CreateCharacterRequest final : publ
     ::google::protobuf::internal::CachedSize _cached_size_;
     ::google::protobuf::internal::ArenaStringPtr character_id_;
     ::google::protobuf::internal::ArenaStringPtr appearance_packet_;
+    ::google::protobuf::internal::ArenaStringPtr archetype_id_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
   union { Impl_ _impl_; };
@@ -7075,6 +7092,70 @@ inline void CreateCharacterRequest::set_allocated_appearance_packet(::std::strin
     _impl_.appearance_packet_.Set("", GetArena());
   }
   // @@protoc_insertion_point(field_set_allocated:sf.progression.v1.CreateCharacterRequest.appearance_packet)
+}
+
+// string archetype_id = 3;
+inline void CreateCharacterRequest::clear_archetype_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.archetype_id_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+}
+inline const ::std::string& CreateCharacterRequest::archetype_id() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.progression.v1.CreateCharacterRequest.archetype_id)
+  return _internal_archetype_id();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void CreateCharacterRequest::set_archetype_id(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  _impl_.archetype_id_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:sf.progression.v1.CreateCharacterRequest.archetype_id)
+}
+inline ::std::string* PROTOBUF_NONNULL CreateCharacterRequest::mutable_archetype_id()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  ::std::string* _s = _internal_mutable_archetype_id();
+  // @@protoc_insertion_point(field_mutable:sf.progression.v1.CreateCharacterRequest.archetype_id)
+  return _s;
+}
+inline const ::std::string& CreateCharacterRequest::_internal_archetype_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.archetype_id_.Get();
+}
+inline void CreateCharacterRequest::_internal_set_archetype_id(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.archetype_id_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL CreateCharacterRequest::_internal_mutable_archetype_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.archetype_id_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE CreateCharacterRequest::release_archetype_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:sf.progression.v1.CreateCharacterRequest.archetype_id)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000004U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+  auto* released = _impl_.archetype_id_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.archetype_id_.Set("", GetArena());
+  }
+  return released;
+}
+inline void CreateCharacterRequest::set_allocated_archetype_id(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+  }
+  _impl_.archetype_id_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.archetype_id_.IsDefault()) {
+    _impl_.archetype_id_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:sf.progression.v1.CreateCharacterRequest.archetype_id)
 }
 
 // -------------------------------------------------------------------

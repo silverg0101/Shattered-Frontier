@@ -41,6 +41,11 @@ public sealed record CombatAttributeTuning
         _ => throw new ArgumentOutOfRangeException(nameof(archetype))
     };
     public CombatIdentity StarterIdentity => new("fighter", Fighter);
+    public CombatIdentity IdentityFor(string archetype)
+    {
+        Validate();
+        return new(archetype, BaseFor(archetype));
+    }
 
     public void ValidateBase(BaseAttributes a)
     {

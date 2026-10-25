@@ -76,6 +76,7 @@ struct FSFGameplayRequest
     FString OperationId;          // also Rewards.defeat_event_id and Progression.source_receipt_id
     FString CharacterId;          // recipient, actor, owner
     TArray<uint8> AppearancePacket;  // CreateCharacter: CharacterAppearance v2 bytes
+    FString ArchetypeId;  // CreateCharacter: server validates and derives base attributes
     FString ContainerId;
     int64 ExpectedContainerRevision = 0;
     // Rewards

@@ -69,7 +69,7 @@ try {
     $gatewayBuild = Join-Path $private 'gateway-build'; $null = New-Item -ItemType Directory -Path $gatewayBuild
     [void](Invoke-FxOk $fx $dotnet @('build',$gatewayProject,'--configuration','Release','--output',$gatewayBuild,'--verbosity','quiet'))
     $kekPath = Join-Path $private 'account-data-kek'; [IO.File]::WriteAllBytes($kekPath,[Security.Cryptography.RandomNumberGenerator]::GetBytes(32))
-    $gatewayEnv = @{ Identity__Connection=$connection; Identity__TicketSigningKey=$ticketKey; Identity__WorldVerifierKey=$verifierKey; Identity__KekDevPath=$kekPath;
+    $gatewayEnv = @{ ASPNETCORE_ENVIRONMENT='Development'; Identity__Connection=$connection; Identity__TicketSigningKey=$ticketKey; Identity__WorldVerifierKey=$verifierKey; Identity__KekDevPath=$kekPath;
         Identity__ListenUrl=$gatewayUrl; Identity__WorldAddress="127.0.0.1:$WorldPort"; Identity__TicketLifetimeSeconds='120' }
     Invoke-WithEnv $gatewayEnv {
         $script:gatewayProcess = Start-Process -FilePath $dotnet -ArgumentList ('"'+(Join-Path $gatewayBuild 'IdentityGateway.dll')+'"') -PassThru -WindowStyle Hidden `
@@ -90,21 +90,29 @@ try {
     $packet = [byte[]]::new(29); $packet[0]=2; $packet[3]=1; $packet[4]=128; $packet[5]=128; $packet[6]=8
     $characterName = 'Gate' + (-join (1..9 | ForEach-Object { [char](Get-Random -Minimum 97 -Maximum 123) }))
     $character = Invoke-RestMethod "$gatewayUrl/v1/characters" -Method Post -Headers $headers -ContentType 'application/json' `
-        -Body (@{realm_id='greenlands';name=$characterName;appearance_v2_base64=[Convert]::ToBase64String($packet)} | ConvertTo-Json -Compress)
+        -Body (@{realm_id='greenlands';name=$characterName;appearance_v2_base64=[Convert]::ToBase64String($packet);archetype_id='mage'} | ConvertTo-Json -Compress)
+    $secondName = 'Gate' + (-join (1..9 | ForEach-Object { [char](Get-Random -Minimum 97 -Maximum 123) }))
+    $second = Invoke-RestMethod "$gatewayUrl/v1/characters" -Method Post -Headers $headers -ContentType 'application/json' `
+        -Body (@{realm_id='greenlands';name=$secondName;appearance_v2_base64=[Convert]::ToBase64String($packet);archetype_id='guardian'} | ConvertTo-Json -Compress)
+    if ($character.archetype_id -ne 'mage' -or $second.archetype_id -ne 'guardian') { throw 'Gateway did not retain archetype choice.' }
     $entry = Invoke-RestMethod "$gatewayUrl/v1/characters/$($character.character_id)/enter-world" -Method Post -Headers $headers -ContentType 'application/json' -Body '{}'
+    $secondEntry = Invoke-RestMethod "$gatewayUrl/v1/characters/$($second.character_id)/enter-world" -Method Post -Headers $headers -ContentType 'application/json' -Body '{}'
     $untrusted = Invoke-WebRequest "$gatewayUrl/v1/world/verify-ticket" -Method Post -Headers @{ 'X-World-Verifier-Key'='invalid' } `
         -ContentType 'application/json' -Body (@{ticket=$entry.ticket;server_id='srvi_dev_local'} | ConvertTo-Json -Compress) -SkipHttpErrorCheck
     if ($untrusted.StatusCode -ne 401) { throw 'Untrusted world verifier was accepted.' }
     $travel = "127.0.0.1:$WorldPort" + '?SFIdentityTicket=' + $entry.ticket
     $clientLog = Start-Editor 'client' $travel @('-game')
     Wait-Log $serverLog ('GATEWAY_IDENTITY_BOUND Character=' + $character.character_id) 100
+    $secondTravel = "127.0.0.1:$WorldPort" + '?SFIdentityTicket=' + $secondEntry.ticket
+    $secondClientLog = Start-Editor 'second-client' $secondTravel @('-game')
+    Wait-Log $serverLog ('GATEWAY_IDENTITY_BOUND Character=' + $second.character_id) 100
     $replayLog = Start-Editor 'replay' $travel @('-game')
     Wait-Log $serverLog 'GATEWAY_TICKET_REJECTED Reason=verify' 100
     $missingLog = Start-Editor 'missing' "127.0.0.1:$WorldPort" @('-game')
     Wait-Log $serverLog 'GATEWAY_TICKET_REJECTED Reason=missing' 100
     $accepted = @(Select-String -LiteralPath $serverLog -Pattern 'GATEWAY_IDENTITY_BOUND').Count
-    if ($accepted -ne 1) { throw "Expected one admitted connection, found $accepted." }
-    Write-Output 'PASS account/login/create/enter-world; 1 admitted, replay and missing ticket refused by dedicated server'
+    if ($accepted -ne 2) { throw "Expected two admitted connections, found $accepted." }
+    Write-Output 'PASS account/login/create/enter-world; 2 admitted with chosen archetypes, replay and missing ticket refused by dedicated server'
 }
 finally {
     foreach ($process in $owned) { if ($process -and -not $process.HasExited) { Stop-Process -Id $process.Id -Force -ErrorAction SilentlyContinue; $process.WaitForExit() } }

@@ -1725,11 +1725,11 @@ constexpr CreateCharacterRequest::ParseTableT_ CreateCharacterRequest::InternalG
     {
       PROTOBUF_FIELD_OFFSET(CreateCharacterRequest, _impl_._has_bits_),
       0, // no _extensions_
-      2, 8,  // max_field_number, fast_idx_mask
+      3, 24,  // max_field_number, fast_idx_mask
       offsetof(ParseTableT_, field_lookup_table),
-      4294967292,  // skipmap
+      4294967288,  // skipmap
       offsetof(ParseTableT_, field_entries),
-      2,  // num_field_entries
+      3,  // num_field_entries
       0,  // num_aux_entries
       offsetof(ParseTableT_, field_names),  // no aux_entries
       class_data,
@@ -1739,14 +1739,19 @@ constexpr CreateCharacterRequest::ParseTableT_ CreateCharacterRequest::InternalG
       ::_pbi::TcParser::GetTable<::sf::progression::v1::CreateCharacterRequest>(),  // to_prefetch
       #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
     }, {{
-      // optional bytes appearance_packet = 2;
-      {::_pbi::TcParser::FastBS1,
-       {18, 1, 0,
-        PROTOBUF_FIELD_OFFSET(CreateCharacterRequest, _impl_.appearance_packet_)}},
+      {::_pbi::TcParser::MiniParse, {}},
       // string character_id = 1;
       {::_pbi::TcParser::FastUS1,
        {10, 0, 0,
         PROTOBUF_FIELD_OFFSET(CreateCharacterRequest, _impl_.character_id_)}},
+      // optional bytes appearance_packet = 2;
+      {::_pbi::TcParser::FastBS1,
+       {18, 1, 0,
+        PROTOBUF_FIELD_OFFSET(CreateCharacterRequest, _impl_.appearance_packet_)}},
+      // string archetype_id = 3;
+      {::_pbi::TcParser::FastUS1,
+       {26, 2, 0,
+        PROTOBUF_FIELD_OFFSET(CreateCharacterRequest, _impl_.archetype_id_)}},
     }}, {{
       65535, 65535
     }}, {{
@@ -1754,12 +1759,15 @@ constexpr CreateCharacterRequest::ParseTableT_ CreateCharacterRequest::InternalG
       {PROTOBUF_FIELD_OFFSET(CreateCharacterRequest, _impl_.character_id_), _Internal::kHasBitsOffset + 0, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
       // optional bytes appearance_packet = 2;
       {PROTOBUF_FIELD_OFFSET(CreateCharacterRequest, _impl_.appearance_packet_), _Internal::kHasBitsOffset + 1, 0, (0 | ::_fl::kFcOptional | ::_fl::kBytes | ::_fl::kRepAString)},
+      // string archetype_id = 3;
+      {PROTOBUF_FIELD_OFFSET(CreateCharacterRequest, _impl_.archetype_id_), _Internal::kHasBitsOffset + 2, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
     }},
     // no aux_entries
     {{
-      "\50\14\0\0\0\0\0\0"
+      "\50\14\0\14\0\0\0\0"
       "sf.progression.v1.CreateCharacterRequest"
       "character_id"
+      "archetype_id"
     }},
   };
 }
@@ -1773,6 +1781,9 @@ inline constexpr CreateCharacterRequest::Impl_::Impl_(
             &::google::protobuf::internal::fixed_address_empty_string,
             ::_pbi::ConstantInitialized()),
         appearance_packet_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        archetype_id_(
             &::google::protobuf::internal::fixed_address_empty_string,
             ::_pbi::ConstantInitialized()) {}
 
@@ -4936,11 +4947,13 @@ const ::uint32_t
         1,
         0x081, // bitmap
         PROTOBUF_FIELD_OFFSET(::sf::progression::v1::CreateCharacterRequest, _impl_._has_bits_),
-        5, // hasbit index offset
+        6, // hasbit index offset
         PROTOBUF_FIELD_OFFSET(::sf::progression::v1::CreateCharacterRequest, _impl_.character_id_),
         PROTOBUF_FIELD_OFFSET(::sf::progression::v1::CreateCharacterRequest, _impl_.appearance_packet_),
+        PROTOBUF_FIELD_OFFSET(::sf::progression::v1::CreateCharacterRequest, _impl_.archetype_id_),
         0,
         1,
+        2,
         0x081, // bitmap
         PROTOBUF_FIELD_OFFSET(::sf::progression::v1::CreateCharacterReply, _impl_._has_bits_),
         4, // hasbit index offset
@@ -5270,30 +5283,30 @@ static const ::_pbi::MigrationSchema
         {0, sizeof(::sf::progression::v1::EndSessionRequest)},
         {11, sizeof(::sf::progression::v1::EndSessionReply)},
         {18, sizeof(::sf::progression::v1::CreateCharacterRequest)},
-        {25, sizeof(::sf::progression::v1::CreateCharacterReply)},
-        {30, sizeof(::sf::progression::v1::LearnRecipeRequest)},
-        {47, sizeof(::sf::progression::v1::LearnRecipeReply)},
-        {56, sizeof(::sf::progression::v1::KnownRecipe)},
-        {65, sizeof(::sf::progression::v1::ApplyReceiptRequest)},
-        {82, sizeof(::sf::progression::v1::ActionPayload)},
-        {107, sizeof(::sf::progression::v1::QuestEvidence)},
-        {124, sizeof(::sf::progression::v1::ApplyReceiptReply)},
-        {155, sizeof(::sf::progression::v1::CombatAttributes)},
-        {174, sizeof(::sf::progression::v1::GrantedItem)},
-        {181, sizeof(::sf::progression::v1::GetCharacterStateRequest)},
-        {186, sizeof(::sf::progression::v1::CharacterPosition)},
-        {199, sizeof(::sf::progression::v1::SavePositionRequest)},
-        {208, sizeof(::sf::progression::v1::SavePositionReply)},
-        {213, sizeof(::sf::progression::v1::CommitUnstuckRequest)},
-        {224, sizeof(::sf::progression::v1::ReportDeathRequest)},
-        {239, sizeof(::sf::progression::v1::ClearDeathRequest)},
-        {248, sizeof(::sf::progression::v1::DeathState)},
-        {263, sizeof(::sf::progression::v1::CharacterStateReply_SkillsEntry_DoNotUse)},
-        {270, sizeof(::sf::progression::v1::CharacterStateReply_ObjectiveCountsEntry_DoNotUse)},
-        {277, sizeof(::sf::progression::v1::CharacterStateReply_GatheringSkillsEntry_DoNotUse)},
-        {284, sizeof(::sf::progression::v1::CharacterStateReply)},
-        {323, sizeof(::sf::progression::v1::QuestState_CountsEntry_DoNotUse)},
-        {330, sizeof(::sf::progression::v1::QuestState)},
+        {27, sizeof(::sf::progression::v1::CreateCharacterReply)},
+        {32, sizeof(::sf::progression::v1::LearnRecipeRequest)},
+        {49, sizeof(::sf::progression::v1::LearnRecipeReply)},
+        {58, sizeof(::sf::progression::v1::KnownRecipe)},
+        {67, sizeof(::sf::progression::v1::ApplyReceiptRequest)},
+        {84, sizeof(::sf::progression::v1::ActionPayload)},
+        {109, sizeof(::sf::progression::v1::QuestEvidence)},
+        {126, sizeof(::sf::progression::v1::ApplyReceiptReply)},
+        {157, sizeof(::sf::progression::v1::CombatAttributes)},
+        {176, sizeof(::sf::progression::v1::GrantedItem)},
+        {183, sizeof(::sf::progression::v1::GetCharacterStateRequest)},
+        {188, sizeof(::sf::progression::v1::CharacterPosition)},
+        {201, sizeof(::sf::progression::v1::SavePositionRequest)},
+        {210, sizeof(::sf::progression::v1::SavePositionReply)},
+        {215, sizeof(::sf::progression::v1::CommitUnstuckRequest)},
+        {226, sizeof(::sf::progression::v1::ReportDeathRequest)},
+        {241, sizeof(::sf::progression::v1::ClearDeathRequest)},
+        {250, sizeof(::sf::progression::v1::DeathState)},
+        {265, sizeof(::sf::progression::v1::CharacterStateReply_SkillsEntry_DoNotUse)},
+        {272, sizeof(::sf::progression::v1::CharacterStateReply_ObjectiveCountsEntry_DoNotUse)},
+        {279, sizeof(::sf::progression::v1::CharacterStateReply_GatheringSkillsEntry_DoNotUse)},
+        {286, sizeof(::sf::progression::v1::CharacterStateReply)},
+        {325, sizeof(::sf::progression::v1::QuestState_CountsEntry_DoNotUse)},
+        {332, sizeof(::sf::progression::v1::QuestState)},
 };
 static const ::_pbi::MessageGlobalsBase* PROTOBUF_NONNULL const
     file_message_globals[] = {
@@ -5333,138 +5346,139 @@ const char descriptor_table_protodef_sf_2fprogression_2fv1_2fprogression_2eproto
     "\t\022%\n\035expected_progression_revision\030\003 \001(\003"
     "\022\024\n\014in_rest_area\030\004 \001(\010\"G\n\017EndSessionRepl"
     "y\022\034\n\024progression_revision\030\001 \001(\003\022\026\n\016reste"
-    "d_minutes\030\002 \001(\001\"d\n\026CreateCharacterReques"
+    "d_minutes\030\002 \001(\001\"z\n\026CreateCharacterReques"
     "t\022\024\n\014character_id\030\001 \001(\t\022\036\n\021appearance_pa"
-    "cket\030\002 \001(\014H\000\210\001\001B\024\n\022_appearance_packet\"3\n"
-    "\024CreateCharacterReply\022\033\n\023appearance_revi"
-    "sion\030\001 \001(\003\"\267\001\n\022LearnRecipeRequest\022\024\n\014ope"
-    "ration_id\030\001 \001(\t\022\024\n\014character_id\030\002 \001(\t\022\021\n"
-    "\trecipe_id\030\003 \001(\t\022\016\n\006source\030\004 \001(\t\022\023\n\013trai"
-    "ner_npc\030\005 \001(\t\022\030\n\020scroll_container\030\006 \001(\t\022"
-    "#\n\033expected_container_revision\030\007 \001(\003\"X\n\020"
-    "LearnRecipeReply\022\021\n\trecipe_id\030\001 \001(\t\022\034\n\024p"
-    "rogression_revision\030\002 \001(\003\022\023\n\013cost_copper"
-    "\030\003 \001(\003\"L\n\013KnownRecipe\022\021\n\trecipe_id\030\001 \001(\t"
-    "\022\016\n\006source\030\002 \001(\t\022\032\n\022learned_at_unix_ms\030\003"
-    " \001(\003\"\200\002\n\023ApplyReceiptRequest\022\031\n\021source_r"
-    "eceipt_id\030\001 \001(\t\022\014\n\004kind\030\002 \001(\t\022\024\n\014charact"
-    "er_id\030\003 \001(\t\022%\n\035expected_progression_revi"
-    "sion\030\004 \001(\003\022\037\n\027expected_quest_revision\030\005 "
-    "\001(\003\0221\n\007payload\030\006 \001(\0132 .sf.progression.v1"
-    ".ActionPayload\022/\n\005quest\030\007 \001(\0132 .sf.progr"
-    "ession.v1.QuestEvidence\"\217\002\n\rActionPayloa"
-    "d\022\020\n\010skill_id\030\001 \001(\t\022\022\n\ndifficulty\030\002 \001(\005\022"
-    "\026\n\016action_seconds\030\003 \001(\001\022\024\n\014context_hash\030"
-    "\004 \001(\004\022\017\n\007success\030\005 \001(\010\022\023\n\013enemy_level\030\006 "
-    "\001(\005\022\035\n\025enemy_tier_multiplier\030\007 \001(\001\022\033\n\023el"
-    "igible_party_size\030\010 \001(\005\022\023\n\013session_end\030\t"
-    " \001(\010\022\024\n\014in_rest_area\030\n \001(\010\022\035\n\025reference_"
-    "party_level\030\013 \001(\005\"\223\001\n\rQuestEvidence\022\020\n\010q"
-    "uest_id\030\001 \001(\t\022\017\n\007step_id\030\002 \001(\t\022\014\n\004kind\030\003"
-    " \001(\t\022\021\n\ttarget_id\030\004 \001(\t\022\017\n\007node_id\030\005 \001(\t"
-    "\022\020\n\010quantity\030\006 \001(\005\022\033\n\023occurred_at_unix_m"
-    "s\030\007 \001(\003\"\243\003\n\021ApplyReceiptReply\022\033\n\023progres"
-    "sion_applied\030\001 \001(\010\022\022\n\nskill_gain\030\002 \001(\005\022\017"
-    "\n\007xp_gain\030\003 \001(\005\022\r\n\005level\030\004 \001(\005\022\034\n\024progre"
-    "ssion_revision\030\005 \001(\003\022\026\n\016quest_accepted\030\006"
-    " \001(\010\022\026\n\016active_step_id\030\007 \001(\t\022\027\n\017quest_co"
-    "mpleted\030\010 \001(\010\022\026\n\016quest_revision\030\t \001(\003\022\031\n"
-    "\021reward_bundle_ids\030\n \003(\t\0225\n\rgranted_item"
-    "s\030\013 \003(\0132\036.sf.progression.v1.GrantedItem\022"
-    "\024\n\014quest_reason\030\014 \001(\t\022\026\n\016rested_minutes\030"
-    "\r \001(\001\022>\n\021combat_attributes\030\016 \001(\0132#.sf.pr"
-    "ogression.v1.CombatAttributes\"\250\001\n\020Combat"
-    "Attributes\022\021\n\tarchetype\030\001 \001(\t\022\r\n\005level\030\002"
-    " \001(\005\022\020\n\010strength\030\003 \001(\005\022\021\n\tdexterity\030\004 \001("
-    "\005\022\024\n\014constitution\030\005 \001(\005\022\024\n\014intelligence\030"
-    "\006 \001(\005\022\016\n\006wisdom\030\007 \001(\005\022\021\n\twillpower\030\010 \001(\005"
-    "\"6\n\013GrantedItem\022\025\n\rdefinition_id\030\001 \001(\t\022\020"
-    "\n\010quantity\030\002 \001(\003\"0\n\030GetCharacterStateReq"
-    "uest\022\024\n\014character_id\030\001 \001(\t\"R\n\021CharacterP"
-    "osition\022\017\n\007zone_id\030\001 \001(\t\022\t\n\001x\030\002 \001(\001\022\t\n\001y"
-    "\030\003 \001(\001\022\t\n\001z\030\004 \001(\001\022\013\n\003yaw\030\005 \001(\002\"\207\001\n\023SaveP"
-    "ositionRequest\022\024\n\014character_id\030\001 \001(\t\022\"\n\032"
-    "expected_position_revision\030\002 \001(\003\0226\n\010posi"
-    "tion\030\003 \001(\0132$.sf.progression.v1.Character"
-    "Position\".\n\021SavePositionReply\022\031\n\021positio"
-    "n_revision\030\001 \001(\003\"\224\001\n\024CommitUnstuckReques"
-    "t\022\024\n\014character_id\030\001 \001(\t\0226\n\010position\030\002 \001("
-    "\0132$.sf.progression.v1.CharacterPosition\022"
-    "\030\n\020cooldown_seconds\030\003 \001(\005\022\024\n\014operation_i"
-    "d\030\004 \001(\t\"\367\001\n\022ReportDeathRequest\022\026\n\016death_"
-    "event_id\030\001 \001(\t\022\024\n\014character_id\030\002 \001(\t\022\033\n\023"
-    "occurred_at_unix_ms\030\003 \001(\003\022<\n\016death_posit"
-    "ion\030\004 \001(\0132$.sf.progression.v1.CharacterP"
-    "osition\022>\n\020respawn_position\030\005 \001(\0132$.sf.p"
-    "rogression.v1.CharacterPosition\022\030\n\020respa"
-    "wn_delay_ms\030\006 \001(\005\"f\n\021ClearDeathRequest\022\024"
-    "\n\014character_id\030\001 \001(\t\022\026\n\016death_event_id\030\002"
-    " \001(\t\022#\n\033resurrect_at_death_position\030\003 \001("
-    "\010\"\354\001\n\nDeathState\022\017\n\007is_dead\030\001 \001(\010\022\026\n\016dea"
-    "th_event_id\030\002 \001(\t\022\033\n\023occurred_at_unix_ms"
-    "\030\003 \001(\003\022\032\n\022respawn_at_unix_ms\030\004 \001(\003\022<\n\016de"
-    "ath_position\030\005 \001(\0132$.sf.progression.v1.C"
-    "haracterPosition\022>\n\020respawn_position\030\006 \001"
-    "(\0132$.sf.progression.v1.CharacterPosition"
-    "\"\310\007\n\023CharacterStateReply\022\034\n\024progression_"
-    "revision\030\001 \001(\003\022\023\n\013lifetime_xp\030\002 \001(\003\022\r\n\005l"
-    "evel\030\003 \001(\005\022B\n\006skills\030\004 \003(\01322.sf.progress"
-    "ion.v1.CharacterStateReply.SkillsEntry\022\026"
-    "\n\016quest_revision\030\005 \001(\003\022\026\n\016active_step_id"
-    "\030\006 \001(\t\022\027\n\017quest_completed\030\007 \001(\010\022U\n\020objec"
-    "tive_counts\030\010 \003(\0132;.sf.progression.v1.Ch"
-    "aracterStateReply.ObjectiveCountsEntry\0226"
-    "\n\010position\030\t \001(\0132$.sf.progression.v1.Cha"
-    "racterPosition\022\031\n\021position_revision\030\n \001("
-    "\003\022-\n\006quests\030\013 \003(\0132\035.sf.progression.v1.Qu"
-    "estState\0225\n\rknown_recipes\030\014 \003(\0132\036.sf.pro"
-    "gression.v1.KnownRecipe\022\036\n\021appearance_pa"
-    "cket\030\r \001(\014H\000\210\001\001\022\024\n\007face_id\030\016 \001(\tH\001\210\001\001\022U\n"
-    "\020gathering_skills\030\017 \003(\0132;.sf.progression"
-    ".v1.CharacterStateReply.GatheringSkillsE"
-    "ntry\022,\n\005death\030\020 \001(\0132\035.sf.progression.v1."
-    "DeathState\022\026\n\016rested_minutes\030\021 \001(\001\022>\n\021co"
-    "mbat_attributes\030\022 \001(\0132#.sf.progression.v"
-    "1.CombatAttributes\032-\n\013SkillsEntry\022\013\n\003key"
-    "\030\001 \001(\t\022\r\n\005value\030\002 \001(\005:\0028\001\0326\n\024ObjectiveCo"
-    "untsEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\005:\0028"
-    "\001\0326\n\024GatheringSkillsEntry\022\013\n\003key\030\001 \001(\t\022\r"
-    "\n\005value\030\002 \001(\005:\0028\001B\024\n\022_appearance_packetB"
-    "\n\n\010_face_id\"\363\001\n\nQuestState\022\020\n\010quest_id\030\001"
-    " \001(\t\022\r\n\005state\030\002 \001(\t\022\026\n\016active_step_id\030\003 "
-    "\001(\t\0229\n\006counts\030\004 \003(\0132).sf.progression.v1."
-    "QuestState.CountsEntry\022\030\n\020content_revisi"
-    "on\030\005 \001(\005\022\020\n\010revision\030\006 \001(\003\022\026\n\016reward_pen"
-    "ding\030\007 \001(\010\032-\n\013CountsEntry\022\013\n\003key\030\001 \001(\t\022\r"
-    "\n\005value\030\002 \001(\005:\0028\0012\325\006\n\013Progression\022e\n\017Cre"
-    "ateCharacter\022).sf.progression.v1.CreateC"
-    "haracterRequest\032\'.sf.progression.v1.Crea"
-    "teCharacterReply\022\\\n\014ApplyReceipt\022&.sf.pr"
-    "ogression.v1.ApplyReceiptRequest\032$.sf.pr"
-    "ogression.v1.ApplyReceiptReply\022h\n\021GetCha"
-    "racterState\022+.sf.progression.v1.GetChara"
-    "cterStateRequest\032&.sf.progression.v1.Cha"
-    "racterStateReply\022\\\n\014SavePosition\022&.sf.pr"
-    "ogression.v1.SavePositionRequest\032$.sf.pr"
-    "ogression.v1.SavePositionReply\022^\n\rCommit"
-    "Unstuck\022\'.sf.progression.v1.CommitUnstuc"
-    "kRequest\032$.sf.progression.v1.SavePositio"
-    "nReply\022S\n\013ReportDeath\022%.sf.progression.v"
-    "1.ReportDeathRequest\032\035.sf.progression.v1"
-    ".DeathState\022Q\n\nClearDeath\022$.sf.progressi"
-    "on.v1.ClearDeathRequest\032\035.sf.progression"
-    ".v1.DeathState\022Y\n\013LearnRecipe\022%.sf.progr"
-    "ession.v1.LearnRecipeRequest\032#.sf.progre"
-    "ssion.v1.LearnRecipeReply\022V\n\nEndSession\022"
-    "$.sf.progression.v1.EndSessionRequest\032\"."
-    "sf.progression.v1.EndSessionReplyB#\252\002 Sh"
-    "atteredFrontier.Progression.V1b\006proto3"
+    "cket\030\002 \001(\014H\000\210\001\001\022\024\n\014archetype_id\030\003 \001(\tB\024\n"
+    "\022_appearance_packet\"3\n\024CreateCharacterRe"
+    "ply\022\033\n\023appearance_revision\030\001 \001(\003\"\267\001\n\022Lea"
+    "rnRecipeRequest\022\024\n\014operation_id\030\001 \001(\t\022\024\n"
+    "\014character_id\030\002 \001(\t\022\021\n\trecipe_id\030\003 \001(\t\022\016"
+    "\n\006source\030\004 \001(\t\022\023\n\013trainer_npc\030\005 \001(\t\022\030\n\020s"
+    "croll_container\030\006 \001(\t\022#\n\033expected_contai"
+    "ner_revision\030\007 \001(\003\"X\n\020LearnRecipeReply\022\021"
+    "\n\trecipe_id\030\001 \001(\t\022\034\n\024progression_revisio"
+    "n\030\002 \001(\003\022\023\n\013cost_copper\030\003 \001(\003\"L\n\013KnownRec"
+    "ipe\022\021\n\trecipe_id\030\001 \001(\t\022\016\n\006source\030\002 \001(\t\022\032"
+    "\n\022learned_at_unix_ms\030\003 \001(\003\"\200\002\n\023ApplyRece"
+    "iptRequest\022\031\n\021source_receipt_id\030\001 \001(\t\022\014\n"
+    "\004kind\030\002 \001(\t\022\024\n\014character_id\030\003 \001(\t\022%\n\035exp"
+    "ected_progression_revision\030\004 \001(\003\022\037\n\027expe"
+    "cted_quest_revision\030\005 \001(\003\0221\n\007payload\030\006 \001"
+    "(\0132 .sf.progression.v1.ActionPayload\022/\n\005"
+    "quest\030\007 \001(\0132 .sf.progression.v1.QuestEvi"
+    "dence\"\217\002\n\rActionPayload\022\020\n\010skill_id\030\001 \001("
+    "\t\022\022\n\ndifficulty\030\002 \001(\005\022\026\n\016action_seconds\030"
+    "\003 \001(\001\022\024\n\014context_hash\030\004 \001(\004\022\017\n\007success\030\005"
+    " \001(\010\022\023\n\013enemy_level\030\006 \001(\005\022\035\n\025enemy_tier_"
+    "multiplier\030\007 \001(\001\022\033\n\023eligible_party_size\030"
+    "\010 \001(\005\022\023\n\013session_end\030\t \001(\010\022\024\n\014in_rest_ar"
+    "ea\030\n \001(\010\022\035\n\025reference_party_level\030\013 \001(\005\""
+    "\223\001\n\rQuestEvidence\022\020\n\010quest_id\030\001 \001(\t\022\017\n\007s"
+    "tep_id\030\002 \001(\t\022\014\n\004kind\030\003 \001(\t\022\021\n\ttarget_id\030"
+    "\004 \001(\t\022\017\n\007node_id\030\005 \001(\t\022\020\n\010quantity\030\006 \001(\005"
+    "\022\033\n\023occurred_at_unix_ms\030\007 \001(\003\"\243\003\n\021ApplyR"
+    "eceiptReply\022\033\n\023progression_applied\030\001 \001(\010"
+    "\022\022\n\nskill_gain\030\002 \001(\005\022\017\n\007xp_gain\030\003 \001(\005\022\r\n"
+    "\005level\030\004 \001(\005\022\034\n\024progression_revision\030\005 \001"
+    "(\003\022\026\n\016quest_accepted\030\006 \001(\010\022\026\n\016active_ste"
+    "p_id\030\007 \001(\t\022\027\n\017quest_completed\030\010 \001(\010\022\026\n\016q"
+    "uest_revision\030\t \001(\003\022\031\n\021reward_bundle_ids"
+    "\030\n \003(\t\0225\n\rgranted_items\030\013 \003(\0132\036.sf.progr"
+    "ession.v1.GrantedItem\022\024\n\014quest_reason\030\014 "
+    "\001(\t\022\026\n\016rested_minutes\030\r \001(\001\022>\n\021combat_at"
+    "tributes\030\016 \001(\0132#.sf.progression.v1.Comba"
+    "tAttributes\"\250\001\n\020CombatAttributes\022\021\n\tarch"
+    "etype\030\001 \001(\t\022\r\n\005level\030\002 \001(\005\022\020\n\010strength\030\003"
+    " \001(\005\022\021\n\tdexterity\030\004 \001(\005\022\024\n\014constitution\030"
+    "\005 \001(\005\022\024\n\014intelligence\030\006 \001(\005\022\016\n\006wisdom\030\007 "
+    "\001(\005\022\021\n\twillpower\030\010 \001(\005\"6\n\013GrantedItem\022\025\n"
+    "\rdefinition_id\030\001 \001(\t\022\020\n\010quantity\030\002 \001(\003\"0"
+    "\n\030GetCharacterStateRequest\022\024\n\014character_"
+    "id\030\001 \001(\t\"R\n\021CharacterPosition\022\017\n\007zone_id"
+    "\030\001 \001(\t\022\t\n\001x\030\002 \001(\001\022\t\n\001y\030\003 \001(\001\022\t\n\001z\030\004 \001(\001\022"
+    "\013\n\003yaw\030\005 \001(\002\"\207\001\n\023SavePositionRequest\022\024\n\014"
+    "character_id\030\001 \001(\t\022\"\n\032expected_position_"
+    "revision\030\002 \001(\003\0226\n\010position\030\003 \001(\0132$.sf.pr"
+    "ogression.v1.CharacterPosition\".\n\021SavePo"
+    "sitionReply\022\031\n\021position_revision\030\001 \001(\003\"\224"
+    "\001\n\024CommitUnstuckRequest\022\024\n\014character_id\030"
+    "\001 \001(\t\0226\n\010position\030\002 \001(\0132$.sf.progression"
+    ".v1.CharacterPosition\022\030\n\020cooldown_second"
+    "s\030\003 \001(\005\022\024\n\014operation_id\030\004 \001(\t\"\367\001\n\022Report"
+    "DeathRequest\022\026\n\016death_event_id\030\001 \001(\t\022\024\n\014"
+    "character_id\030\002 \001(\t\022\033\n\023occurred_at_unix_m"
+    "s\030\003 \001(\003\022<\n\016death_position\030\004 \001(\0132$.sf.pro"
+    "gression.v1.CharacterPosition\022>\n\020respawn"
+    "_position\030\005 \001(\0132$.sf.progression.v1.Char"
+    "acterPosition\022\030\n\020respawn_delay_ms\030\006 \001(\005\""
+    "f\n\021ClearDeathRequest\022\024\n\014character_id\030\001 \001"
+    "(\t\022\026\n\016death_event_id\030\002 \001(\t\022#\n\033resurrect_"
+    "at_death_position\030\003 \001(\010\"\354\001\n\nDeathState\022\017"
+    "\n\007is_dead\030\001 \001(\010\022\026\n\016death_event_id\030\002 \001(\t\022"
+    "\033\n\023occurred_at_unix_ms\030\003 \001(\003\022\032\n\022respawn_"
+    "at_unix_ms\030\004 \001(\003\022<\n\016death_position\030\005 \001(\013"
+    "2$.sf.progression.v1.CharacterPosition\022>"
+    "\n\020respawn_position\030\006 \001(\0132$.sf.progressio"
+    "n.v1.CharacterPosition\"\310\007\n\023CharacterStat"
+    "eReply\022\034\n\024progression_revision\030\001 \001(\003\022\023\n\013"
+    "lifetime_xp\030\002 \001(\003\022\r\n\005level\030\003 \001(\005\022B\n\006skil"
+    "ls\030\004 \003(\01322.sf.progression.v1.CharacterSt"
+    "ateReply.SkillsEntry\022\026\n\016quest_revision\030\005"
+    " \001(\003\022\026\n\016active_step_id\030\006 \001(\t\022\027\n\017quest_co"
+    "mpleted\030\007 \001(\010\022U\n\020objective_counts\030\010 \003(\0132"
+    ";.sf.progression.v1.CharacterStateReply."
+    "ObjectiveCountsEntry\0226\n\010position\030\t \001(\0132$"
+    ".sf.progression.v1.CharacterPosition\022\031\n\021"
+    "position_revision\030\n \001(\003\022-\n\006quests\030\013 \003(\0132"
+    "\035.sf.progression.v1.QuestState\0225\n\rknown_"
+    "recipes\030\014 \003(\0132\036.sf.progression.v1.KnownR"
+    "ecipe\022\036\n\021appearance_packet\030\r \001(\014H\000\210\001\001\022\024\n"
+    "\007face_id\030\016 \001(\tH\001\210\001\001\022U\n\020gathering_skills\030"
+    "\017 \003(\0132;.sf.progression.v1.CharacterState"
+    "Reply.GatheringSkillsEntry\022,\n\005death\030\020 \001("
+    "\0132\035.sf.progression.v1.DeathState\022\026\n\016rest"
+    "ed_minutes\030\021 \001(\001\022>\n\021combat_attributes\030\022 "
+    "\001(\0132#.sf.progression.v1.CombatAttributes"
+    "\032-\n\013SkillsEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 "
+    "\001(\005:\0028\001\0326\n\024ObjectiveCountsEntry\022\013\n\003key\030\001"
+    " \001(\t\022\r\n\005value\030\002 \001(\005:\0028\001\0326\n\024GatheringSkil"
+    "lsEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\005:\0028\001B"
+    "\024\n\022_appearance_packetB\n\n\010_face_id\"\363\001\n\nQu"
+    "estState\022\020\n\010quest_id\030\001 \001(\t\022\r\n\005state\030\002 \001("
+    "\t\022\026\n\016active_step_id\030\003 \001(\t\0229\n\006counts\030\004 \003("
+    "\0132).sf.progression.v1.QuestState.CountsE"
+    "ntry\022\030\n\020content_revision\030\005 \001(\005\022\020\n\010revisi"
+    "on\030\006 \001(\003\022\026\n\016reward_pending\030\007 \001(\010\032-\n\013Coun"
+    "tsEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\005:\0028\0012"
+    "\325\006\n\013Progression\022e\n\017CreateCharacter\022).sf."
+    "progression.v1.CreateCharacterRequest\032\'."
+    "sf.progression.v1.CreateCharacterReply\022\\"
+    "\n\014ApplyReceipt\022&.sf.progression.v1.Apply"
+    "ReceiptRequest\032$.sf.progression.v1.Apply"
+    "ReceiptReply\022h\n\021GetCharacterState\022+.sf.p"
+    "rogression.v1.GetCharacterStateRequest\032&"
+    ".sf.progression.v1.CharacterStateReply\022\\"
+    "\n\014SavePosition\022&.sf.progression.v1.SaveP"
+    "ositionRequest\032$.sf.progression.v1.SaveP"
+    "ositionReply\022^\n\rCommitUnstuck\022\'.sf.progr"
+    "ession.v1.CommitUnstuckRequest\032$.sf.prog"
+    "ression.v1.SavePositionReply\022S\n\013ReportDe"
+    "ath\022%.sf.progression.v1.ReportDeathReque"
+    "st\032\035.sf.progression.v1.DeathState\022Q\n\nCle"
+    "arDeath\022$.sf.progression.v1.ClearDeathRe"
+    "quest\032\035.sf.progression.v1.DeathState\022Y\n\013"
+    "LearnRecipe\022%.sf.progression.v1.LearnRec"
+    "ipeRequest\032#.sf.progression.v1.LearnReci"
+    "peReply\022V\n\nEndSession\022$.sf.progression.v"
+    "1.EndSessionRequest\032\".sf.progression.v1."
+    "EndSessionReplyB#\252\002 ShatteredFrontier.Pr"
+    "ogression.V1b\006proto3"
 };
 static ::absl::once_flag descriptor_table_sf_2fprogression_2fv1_2fprogression_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_sf_2fprogression_2fv1_2fprogression_2eproto = {
     false,
     false,
-    5278,
+    5300,
     descriptor_table_protodef_sf_2fprogression_2fv1_2fprogression_2eproto,
     "sf/progression/v1/progression.proto",
     &descriptor_table_sf_2fprogression_2fv1_2fprogression_2eproto_once,
@@ -6042,7 +6056,8 @@ PROTOBUF_NDEBUG_INLINE CreateCharacterRequest::Impl_::Impl_(
       : _has_bits_{from._has_bits_},
         _cached_size_{0},
         character_id_(arena, from.character_id_),
-        appearance_packet_(arena, from.appearance_packet_) {}
+        appearance_packet_(arena, from.appearance_packet_),
+        archetype_id_(arena, from.archetype_id_) {}
 
 CreateCharacterRequest::CreateCharacterRequest(
     ::google::protobuf::Arena* PROTOBUF_NULLABLE arena,
@@ -6066,7 +6081,8 @@ PROTOBUF_NDEBUG_INLINE CreateCharacterRequest::Impl_::Impl_(
     [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
       : _cached_size_{0},
         character_id_(arena),
-        appearance_packet_(arena) {}
+        appearance_packet_(arena),
+        archetype_id_(arena) {}
 
 inline void CreateCharacterRequest::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
   new (&_impl_) Impl_(internal_visibility(), arena);
@@ -6084,6 +6100,7 @@ inline void CreateCharacterRequest::SharedDtor(MessageLite& self) {
   ABSL_DCHECK(this_.GetArena() == nullptr);
   this_._impl_.character_id_.Destroy();
   this_._impl_.appearance_packet_.Destroy();
+  this_._impl_.archetype_id_.Destroy();
   this_._impl_.~Impl_();
 }
 
@@ -6121,12 +6138,15 @@ PROTOBUF_NOINLINE void CreateCharacterRequest::Clear() {
   (void) cached_has_bits;
 
   cached_has_bits = _impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0x00000003U)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x00000007U)) {
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
       _impl_.character_id_.ClearNonDefaultToEmpty();
     }
     if (CheckHasBit(cached_has_bits, 0x00000002U)) {
       _impl_.appearance_packet_.ClearNonDefaultToEmpty();
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      _impl_.archetype_id_.ClearNonDefaultToEmpty();
     }
   }
   _impl_._has_bits_.Clear();
@@ -6168,6 +6188,16 @@ PROTOBUF_NOINLINE void CreateCharacterRequest::Clear() {
     target = stream->WriteBytesMaybeAliased(2, _s, target);
   }
 
+  // string archetype_id = 3;
+  if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+    if (!this_._internal_archetype_id().empty()) {
+      const ::std::string& _s = this_._internal_archetype_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.progression.v1.CreateCharacterRequest.archetype_id");
+      target = stream->WriteStringMaybeAliased(3, _s, target);
+    }
+  }
+
   if (ABSL_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
     target =
         ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
@@ -6193,7 +6223,7 @@ PROTOBUF_NOINLINE void CreateCharacterRequest::Clear() {
 
   ::_pbi::Prefetch5LinesFrom7Lines(&this_);
   cached_has_bits = this_._impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0x00000003U)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x00000007U)) {
     // string character_id = 1;
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
       if (!this_._internal_character_id().empty()) {
@@ -6205,6 +6235,13 @@ PROTOBUF_NOINLINE void CreateCharacterRequest::Clear() {
     if (CheckHasBit(cached_has_bits, 0x00000002U)) {
       total_size += 1 + ::google::protobuf::internal::WireFormatLite::BytesSize(
                                       this_._internal_appearance_packet());
+    }
+    // string archetype_id = 3;
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      if (!this_._internal_archetype_id().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_archetype_id());
+      }
     }
   }
   return this_.MaybeComputeUnknownFieldsSize(total_size,
@@ -6224,7 +6261,7 @@ void CreateCharacterRequest::MergeImpl(::google::protobuf::MessageLite& to_msg,
   (void)cached_has_bits;
 
   cached_has_bits = from._impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0x00000003U)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x00000007U)) {
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
       if (!from._internal_character_id().empty()) {
         _this->_internal_set_character_id(from._internal_character_id());
@@ -6236,6 +6273,15 @@ void CreateCharacterRequest::MergeImpl(::google::protobuf::MessageLite& to_msg,
     }
     if (CheckHasBit(cached_has_bits, 0x00000002U)) {
       _this->_internal_set_appearance_packet(from._internal_appearance_packet());
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      if (!from._internal_archetype_id().empty()) {
+        _this->_internal_set_archetype_id(from._internal_archetype_id());
+      } else {
+        if (_this->_impl_.archetype_id_.IsDefault()) {
+          _this->_internal_set_archetype_id("");
+        }
+      }
     }
   }
   _this->_impl_._has_bits_[0] |= cached_has_bits;
@@ -6259,6 +6305,7 @@ void CreateCharacterRequest::InternalSwap(CreateCharacterRequest* PROTOBUF_RESTR
   swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.character_id_, &other->_impl_.character_id_, arena);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.appearance_packet_, &other->_impl_.appearance_packet_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.archetype_id_, &other->_impl_.archetype_id_, arena);
 }
 
 ::google::protobuf::Metadata CreateCharacterRequest::GetMetadata() const {

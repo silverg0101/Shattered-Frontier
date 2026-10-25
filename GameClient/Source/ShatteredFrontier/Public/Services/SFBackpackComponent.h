@@ -37,7 +37,11 @@ public:
     // Development fixture until DEC-04: a stable dev character name for a connection (see ASFGameMode::InitNewPlayer).
     static bool IsValidDevName(const FString& Name);
     static void AssignDevIdentity(APlayerController* Controller, const FString& Name);
-    static void AssignGatewayIdentity(APlayerController* Controller, const FString& CharacterId, const FString& AccountId, const FString& RealmId);
+    static void AssignGatewayIdentity(APlayerController* Controller, const FString& CharacterId, const FString& AccountId,
+        const FString& RealmId, const FString& ArchetypeId, const TArray<uint8>& AppearancePacket);
+    bool HasGatewayCreationSeed() const { return !GatewayArchetypeId.IsEmpty() && !GatewayAppearancePacket.IsEmpty(); }
+    const FString& GetGatewayArchetypeId() const { return GatewayArchetypeId; }
+    const TArray<uint8>& GetGatewayAppearancePacket() const { return GatewayAppearancePacket; }
     const FString& GetContainerId() { BindIdentity(); return ContainerId; }
     const FString& GetCharacterId() { BindIdentity(); return CharacterId; }
     const FString& GetAccountId() { BindIdentity(); return AccountId; }
@@ -70,6 +74,8 @@ private:
     FString DevName;  // "" uses the connection id
     FString VerifiedCharacterId;
     FString VerifiedAccountId, VerifiedRealmId;
+    FString GatewayArchetypeId;
+    TArray<uint8> GatewayAppearancePacket;
     void Pump();
     void Execute(int32 Attempt);
     void Refresh(TFunction<void(bool)> Done);

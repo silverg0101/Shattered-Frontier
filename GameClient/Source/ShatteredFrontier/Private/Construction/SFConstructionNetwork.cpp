@@ -2622,11 +2622,12 @@ FString ASFGameMode::InitNewPlayer(APlayerController* NewPlayerController, const
     if (UsesGatewayAdmission())
     {
         const FString Ticket=UGameplayStatics::ParseOption(Options,TEXT("SFIdentityTicket"));
-        FString AccountId, RealmId;
-        const FString Verified=TakeGatewayCharacter(Ticket,AccountId,RealmId);
+        FString AccountId, RealmId, ArchetypeId;
+        TArray<uint8> Appearance;
+        const FString Verified=TakeGatewayCharacter(Ticket,AccountId,RealmId,ArchetypeId,Appearance);
         if (!Verified.IsEmpty())
         {
-            USFBackpackComponent::AssignGatewayIdentity(NewPlayerController,Verified,AccountId,RealmId);
+            USFBackpackComponent::AssignGatewayIdentity(NewPlayerController,Verified,AccountId,RealmId,ArchetypeId,Appearance);
             if (APlayerState* State=NewPlayerController ? NewPlayerController->GetPlayerState<APlayerState>() : nullptr) { State->SetPlayerName(Verified); }
             UE_LOG(LogTemp,Display,TEXT("GATEWAY_IDENTITY_BOUND Character=%s"),*Verified);
             return Result;

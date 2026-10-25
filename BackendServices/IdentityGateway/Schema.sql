@@ -21,6 +21,7 @@ CREATE TABLE identity.characters (
     name text NOT NULL,
     name_key text NOT NULL,
     appearance bytea NOT NULL,
+    archetype_id text NOT NULL DEFAULT 'fighter' CHECK (archetype_id IN ('fighter','guardian','archer','mage','healer','shadow')),
     state text NOT NULL CHECK (state IN ('active','deleted')),
     created_at timestamptz NOT NULL DEFAULT now(),
     deleted_at timestamptz,

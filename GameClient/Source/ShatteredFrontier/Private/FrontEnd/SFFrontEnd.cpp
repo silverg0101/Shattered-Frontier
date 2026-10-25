@@ -219,6 +219,19 @@ const TCHAR* FSFCreatorState::StepName(int32 Index)
     return Names[FMath::Clamp(Index, 0, NumSteps - 1)];
 }
 
+const TArray<FString>& FSFCreatorState::AvailableArchetypeIds()
+{
+    static const TArray<FString> Ids = {TEXT("fighter"), TEXT("guardian"), TEXT("archer"), TEXT("mage"), TEXT("healer"), TEXT("shadow")};
+    return Ids;
+}
+
+bool FSFCreatorState::SetArchetypeId(const FString& Id)
+{
+    if (!AvailableArchetypeIds().Contains(Id)) { return false; }
+    ArchetypeId = Id;
+    return true;
+}
+
 // ---- remember account
 
 namespace
@@ -252,7 +265,7 @@ public:
     void SignIn(const FString&, const FString&, TFunction<void(bool, const FString&, const FString&)> Done) override { Done(false, FString(), Message()); }
     void SignOut() override {}
     void ListCharacters(TFunction<void(bool, const TArray<FSFCharacterSummary>&, const FString&)> Done) override { Done(false, {}, Message()); }
-    void CreateCharacter(const FString&, const FSFAppearance&, TFunction<void(bool, const FSFCharacterSummary&, const FString&)> Done) override { Done(false, FSFCharacterSummary(), Message()); }
+    void CreateCharacter(const FString&, const FSFAppearance&, const FString&, TFunction<void(bool, const FSFCharacterSummary&, const FString&)> Done) override { Done(false, FSFCharacterSummary(), Message()); }
     void DeleteCharacter(const FString&, TFunction<void(bool, const FString&)> Done) override { Done(false, Message()); }
     void EnterWorld(const FSFCharacterSummary&, TFunction<void(bool, const FString&, const FString&)> Done) override { Done(false, FString(), Message()); }
 private:
@@ -292,11 +305,13 @@ public:
         Done(true, Characters, FString());
     }
 
-    void CreateCharacter(const FString& Name, const FSFAppearance& Look, TFunction<void(bool, const FSFCharacterSummary&, const FString&)> Done) override
+    void CreateCharacter(const FString& Name, const FSFAppearance& Look, const FString& ArchetypeId,
+        TFunction<void(bool, const FSFCharacterSummary&, const FString&)> Done) override
     {
         FString Error;
         if (Account.IsEmpty()) { Done(false, FSFCharacterSummary(), TEXT("Sign in first.")); return; }
-        if (!SFFrontEnd::ValidateCharacterName(Name, Error) || !Look.IsValid()) { Done(false, FSFCharacterSummary(), Error.IsEmpty() ? FString(TEXT("That look is not valid.")) : Error); return; }
+        if (!SFFrontEnd::ValidateCharacterName(Name, Error) || !Look.IsValid() || !FSFCreatorState::AvailableArchetypeIds().Contains(ArchetypeId))
+        { Done(false, FSFCharacterSummary(), Error.IsEmpty() ? FString(TEXT("That look or archetype is not valid.")) : Error); return; }
         if (Characters.Num() >= GetDefault<USFFrontEndSettings>()->SafeSlots()) { Done(false, FSFCharacterSummary(), TEXT("All character slots are used.")); return; }
         if (NameTaken(Name)) { Done(false, FSFCharacterSummary(), TEXT("That name is taken.")); return; }  // NAME_TAKEN: the creator keeps the name
         FSFCharacterSummary Made;
@@ -317,7 +332,7 @@ public:
         if (!GetDefault<USFGameplayServicesSettings>()->bEnabled) { FSFGameplayResponse Local; Local.Status = ESFGameplayStatus::Ok; Complete(Local); return; }
         TSharedPtr<FSFGameplayServicesClient> Services = FSFGameplayServicesClient::Create(*GetDefault<USFGameplayServicesSettings>());
         if (!Services.IsValid()) { FSFGameplayResponse Missing; Missing.Message = TEXT("Gameplay services are unavailable."); Complete(Missing); return; }
-        FSFGameplayRequest Request; Request.Rpc = ESFGameplayRpc::CreateCharacter; Request.CharacterId = Made.Id; Request.AppearancePacket = Packet;
+        FSFGameplayRequest Request; Request.Rpc = ESFGameplayRpc::CreateCharacter; Request.CharacterId = Made.Id; Request.AppearancePacket = Packet; Request.ArchetypeId = ArchetypeId;
         Services->Call(Request, MoveTemp(Complete));
     }
 

@@ -355,6 +355,7 @@ void FSFGrpcGameplayTransport::Send(const FSFGameplayRequest& Q, float DeadlineS
         sf::progression::v1::CreateCharacterRequest M;
         M.set_character_id(Utf8(Q.CharacterId));
         M.set_appearance_packet(std::string(reinterpret_cast<const char*>(Q.AppearancePacket.GetData()), Q.AppearancePacket.Num()));
+        M.set_archetype_id(Utf8(Q.ArchetypeId));
         auto* Call = new TCall<sf::progression::v1::CreateCharacterReply>();
         Call->Copy = [](const sf::progression::v1::CreateCharacterReply& R, FSFGameplayResponse& Out)
         { Out.AppearanceRevision = R.appearance_revision(); };

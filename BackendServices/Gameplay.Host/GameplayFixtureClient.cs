@@ -79,7 +79,7 @@ internal static class GameplayFixtureClient
                 var packet = AppearanceCodec.Pack(new Appearance(2, 0, 1, 1, 128, 128,
                     new byte[8], new ushort[4], new byte[4], [], 6));
                 var created = reconnectProgress.CreateCharacter(new ProgressPb.CreateCharacterRequest
-                { CharacterId = "chr_dev_alpha", AppearancePacket = ByteString.CopyFrom(packet) },
+                { CharacterId = "chr_dev_alpha", AppearancePacket = ByteString.CopyFrom(packet), ArchetypeId = "fighter" },
                     headers, deadline: DateTime.UtcNow.AddSeconds(10));
                 var state = reconnectProgress.GetCharacterState(new ProgressPb.GetCharacterStateRequest
                 { CharacterId = "chr_dev_alpha" }, headers, deadline: DateTime.UtcNow.AddSeconds(10));

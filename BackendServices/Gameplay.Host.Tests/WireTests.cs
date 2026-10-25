@@ -405,15 +405,33 @@ if (mode == "appearance")
     var client = new ProgressPb.Progression.ProgressionClient(channel);
     var appearance = new Appearance(2, 0, 1, 1, 128, 128, new byte[8], new ushort[4], new byte[4], [], 6);
     byte[] packet = AppearanceCodec.Pack(appearance);
-    var create = new ProgressPb.CreateCharacterRequest { CharacterId = "chr_appearance", AppearancePacket = ByteString.CopyFrom(packet) };
+    var create = new ProgressPb.CreateCharacterRequest { CharacterId = "chr_appearance", AppearancePacket = ByteString.CopyFrom(packet), ArchetypeId = "archer" };
     Check(client.CreateCharacter(create, headers, deadline: Deadline()).AppearanceRevision == 1,
         "Appearance create revision missing.");
     var stored = new PostgresCharacterStateStore(Environment.GetEnvironmentVariable("GAMEPLAY_CHARACTER_CONNECTION")!).ReadAppearance(create.CharacterId);
     Check(stored is { Revision: 1 } && stored.Result.SequenceEqual(packet), "Appearance bytes were not stored.");
+    var storedCombat = new PostgresCharacterStateStore(Environment.GetEnvironmentVariable("GAMEPLAY_CHARACTER_CONNECTION")!)
+        .ReadProgression(create.CharacterId)?.Result.CombatIdentity;
+    Check(storedCombat is { Archetype: "archer", Base.Strength: 10, Base.Dexterity: 40, Base.Constitution: 20 },
+        "Server-derived Archer allocation was not stored.");
+    Check(client.CreateCharacter(create, headers, deadline: Deadline()).AppearanceRevision == 1,
+        "Create on a returning gateway login changed the appearance revision.");
     var loaded = client.GetCharacterState(new ProgressPb.GetCharacterStateRequest { CharacterId = create.CharacterId }, headers, deadline: Deadline());
     Check(loaded.HasAppearancePacket && loaded.AppearancePacket.ToByteArray().SequenceEqual(packet) && loaded.FaceId == "Aelfwyn",
         "Stored face and packet missing on load.");
+    Check(loaded.CombatAttributes is { Archetype: "archer", Strength: 10, Dexterity: 40, Constitution: 20 },
+        "Selected archetype attributes were not restored.");
+    try
+    {
+        client.CreateCharacter(new ProgressPb.CreateCharacterRequest { CharacterId = "chr_archetype_invalid",
+            AppearancePacket = ByteString.CopyFrom(packet), ArchetypeId = "custom" }, headers, deadline: Deadline());
+        throw new Exception("Unknown archetype was accepted.");
+    }
+    catch (RpcException ex) when (ex.StatusCode == StatusCode.InvalidArgument && ex.Status.Detail == "ARCHETYPE_INVALID") { }
+    Check(new PostgresCharacterStateStore(Environment.GetEnvironmentVariable("GAMEPLAY_CHARACTER_CONNECTION")!)
+        .ReadProgression("chr_archetype_invalid") is null, "Unknown archetype was stored.");
     var gather = new ProgressPb.ApplyReceiptRequest { SourceReceiptId = "appearance/gather/oak", Kind = "gather",
+        ExpectedProgressionRevision = loaded.ProgressionRevision,
         CharacterId = create.CharacterId, Payload = new ProgressPb.ActionPayload { SkillId = "skill/logging",
             Difficulty = 25, ActionSeconds = 6, Success = true } };
     var firstGather = client.ApplyReceipt(gather, headers, deadline: Deadline());
@@ -428,7 +446,7 @@ if (mode == "appearance")
     try
     {
         client.CreateCharacter(new ProgressPb.CreateCharacterRequest { CharacterId = "chr_appearance_invalid",
-            AppearancePacket = ByteString.CopyFrom(invalid) }, headers, deadline: Deadline());
+            AppearancePacket = ByteString.CopyFrom(invalid), ArchetypeId = "fighter" }, headers, deadline: Deadline());
         throw new Exception("Invalid appearance was accepted.");
     }
     catch (RpcException ex) when (ex.StatusCode == StatusCode.InvalidArgument && ex.Status.Detail == "APPEARANCE_INVALID") { }

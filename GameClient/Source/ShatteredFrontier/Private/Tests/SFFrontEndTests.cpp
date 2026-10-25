@@ -10,6 +10,21 @@
 #include "HAL/FileManager.h"
 
 // Front-end model: the screen flow state machine, the name rules, the creator and the dev identity (non-shipping).
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFFrontEndArchetypesTest, "ShatteredFrontier.FrontEnd.Archetypes", EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSFFrontEndArchetypesTest::RunTest(const FString& Parameters)
+{
+    FSFCreatorState State;
+    const TArray<FString>& Ids = FSFCreatorState::AvailableArchetypeIds();
+    TestEqual(TEXT("Six creation archetypes"), Ids.Num(), 6);
+    for (const FString& Id : {TEXT("fighter"), TEXT("guardian"), TEXT("archer"), TEXT("mage"), TEXT("healer"), TEXT("shadow")})
+    { TestTrue(*FString::Printf(TEXT("Offers %s"), *Id), Ids.Contains(Id)); }
+    TestEqual(TEXT("Default is Fighter"), State.ArchetypeId, FString(TEXT("fighter")));
+    TestTrue(TEXT("Can choose Mage"), State.SetArchetypeId(TEXT("mage")));
+    TestEqual(TEXT("Setter stores choice"), State.ArchetypeId, FString(TEXT("mage")));
+    TestFalse(TEXT("Unknown id rejected"), State.SetArchetypeId(TEXT("custom")));
+    TestEqual(TEXT("Rejected id preserves choice"), State.ArchetypeId, FString(TEXT("mage")));
+    return true;
+}
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFFrontEndFlowTest, "ShatteredFrontier.FrontEnd.Flow", EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
 bool FSFFrontEndFlowTest::RunTest(const FString& Parameters)
 {
@@ -160,6 +175,7 @@ bool FSFFrontEndCreateWireTest::RunTest(const FString& Parameters)
     TestEqual(TEXT("RPC method"), Sent.Rpc, ESFGameplayRpc::CreateCharacter);
     TestEqual(TEXT("RPC uses the entering character id"), Sent.CharacterId, Made.Id);
     TestTrue(TEXT("RPC carries the chosen face packet"), Sent.AppearancePacket == Look.PackV2());
+    TestEqual(TEXT("RPC carries Fighter default"), Sent.ArchetypeId, FString(TEXT("fighter")));
     if (Created) { Identity->DeleteCharacter(Made.Id, [](bool, const FString&) {}); }
     Identity->SignOut();
     FSFGameplayServicesClient::SetSendOverrideForTests(FSFGameplaySend());
@@ -370,7 +386,7 @@ bool FSFMenuFrontEndCreatorTest::RunTest(const FString& Parameters)
     int32 Changes = 0, Leaves = 0, Creates = 0; FString CreatedName;
     Creator->OnChanged.BindLambda([&](const FSFCreatorState&) { ++Changes; });
     Creator->OnLeave.BindLambda([&]() { ++Leaves; });
-    Creator->OnCreate.BindLambda([&](const FString& N, const FSFAppearance&) { ++Creates; CreatedName = N; });
+    Creator->OnCreate.BindLambda([&](const FString& N, const FSFAppearance&, const FString&) { ++Creates; CreatedName = N; });
     Creator->Begin();
     TestEqual(TEXT("Starts on step 1"), Creator->GetState().Step, 0);
     TestEqual(TEXT("The Gender step has no option rows"), Creator->NumOptionRows(), 0);

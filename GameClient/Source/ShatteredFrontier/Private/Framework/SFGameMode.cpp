@@ -24,14 +24,18 @@
 #include "Serialization/JsonSerializer.h"
 #include "Kismet/GameplayStatics.h"
 #include "Misc/SecureHash.h"
+#include "Misc/Base64.h"
 
-FString ASFGameMode::TakeGatewayCharacter(const FString& Ticket, FString& Account, FString& Realm)
+FString ASFGameMode::TakeGatewayCharacter(const FString& Ticket, FString& Account, FString& Realm,
+    FString& Archetype, TArray<uint8>& Appearance)
 {
     FString Id;
     const FString Key = FMD5::HashAnsiString(*Ticket);
     PendingGatewayCharacters.RemoveAndCopyValue(Key, Id);
     PendingGatewayAccounts.RemoveAndCopyValue(Key, Account);
     PendingGatewayRealms.RemoveAndCopyValue(Key, Realm);
+    PendingGatewayArchetypes.RemoveAndCopyValue(Key, Archetype);
+    PendingGatewayAppearances.RemoveAndCopyValue(Key, Appearance);
     return Id;
 }
 
@@ -82,12 +86,21 @@ void ASFGameMode::PreLogin(const FString& Options, const FString& Address, const
     if (!Result->TryGetStringField(TEXT("account_id"), AccountId) || !AccountId.StartsWith(TEXT("acct_")) || AccountId.Len() > 80 ||
         !Result->TryGetStringField(TEXT("realm_id"), RealmId) || RealmId.IsEmpty() || RealmId.Len() > 32)
     { ErrorMessage = TEXT("World ticket was rejected."); UE_LOG(LogTemp, Warning, TEXT("GATEWAY_TICKET_REJECTED Reason=group-claims")); return; }
+    FString Archetype, AppearanceBase64;
+    TArray<uint8> Appearance;
+    if (!Result->TryGetStringField(TEXT("archetype_id"), Archetype) ||
+        !FSFCreatorState::AvailableArchetypeIds().Contains(Archetype) ||
+        !Result->TryGetStringField(TEXT("appearance_v2_base64"), AppearanceBase64) || AppearanceBase64.Len() > 2048 ||
+        !FBase64::Decode(AppearanceBase64, Appearance) || Appearance.IsEmpty())
+    { ErrorMessage = TEXT("World ticket was rejected."); UE_LOG(LogTemp, Warning, TEXT("GATEWAY_TICKET_REJECTED Reason=creation-claims")); return; }
     const FString TicketHash = FMD5::HashAnsiString(*Ticket);
     PendingGatewayCharacters.Add(TicketHash, CharacterId);
     PendingGatewayAccounts.Add(TicketHash, AccountId);
     PendingGatewayRealms.Add(TicketHash, RealmId);
+    PendingGatewayArchetypes.Add(TicketHash, Archetype);
+    PendingGatewayAppearances.Add(TicketHash, MoveTemp(Appearance));
     FTimerHandle Expiry;
-    GetWorldTimerManager().SetTimer(Expiry, FTimerDelegate::CreateWeakLambda(this, [this, TicketHash]() { PendingGatewayCharacters.Remove(TicketHash); PendingGatewayAccounts.Remove(TicketHash); PendingGatewayRealms.Remove(TicketHash); }), 120.f, false);
+    GetWorldTimerManager().SetTimer(Expiry, FTimerDelegate::CreateWeakLambda(this, [this, TicketHash]() { PendingGatewayCharacters.Remove(TicketHash); PendingGatewayAccounts.Remove(TicketHash); PendingGatewayRealms.Remove(TicketHash); PendingGatewayArchetypes.Remove(TicketHash); PendingGatewayAppearances.Remove(TicketHash); }), 120.f, false);
 }
 
 ASFGameMode::ASFGameMode()

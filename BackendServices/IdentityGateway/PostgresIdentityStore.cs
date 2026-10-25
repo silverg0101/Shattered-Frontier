@@ -67,7 +67,7 @@ public sealed class PostgresIdentityStore(string connectionString, PostgresAccou
     public IReadOnlyList<CharacterRecord> ListCharacters(string accountId, string? realmId)
     {
         using var c = Open();
-        using var cmd = new NpgsqlCommand("SELECT character_id,account_id,realm_id,name,name_key,appearance,state FROM identity.characters WHERE account_id=$1 AND state='active' AND ($2::text IS NULL OR realm_id=$2) ORDER BY created_at,character_id", c);
+        using var cmd = new NpgsqlCommand("SELECT character_id,account_id,realm_id,name,name_key,appearance,state,archetype_id FROM identity.characters WHERE account_id=$1 AND state='active' AND ($2::text IS NULL OR realm_id=$2) ORDER BY created_at,character_id", c);
         cmd.Parameters.AddWithValue(accountId); cmd.Parameters.AddWithValue((object?)realmId ?? DBNull.Value);
         using var r = cmd.ExecuteReader();
         var result = new List<CharacterRecord>();
@@ -78,7 +78,7 @@ public sealed class PostgresIdentityStore(string connectionString, PostgresAccou
     public CharacterRecord? FindCharacter(string characterId)
     {
         using var c = Open();
-        using var cmd = new NpgsqlCommand("SELECT character_id,account_id,realm_id,name,name_key,appearance,state FROM identity.characters WHERE character_id=$1", c);
+        using var cmd = new NpgsqlCommand("SELECT character_id,account_id,realm_id,name,name_key,appearance,state,archetype_id FROM identity.characters WHERE character_id=$1", c);
         cmd.Parameters.AddWithValue(characterId);
         using var r = cmd.ExecuteReader();
         return r.Read() ? ReadCharacter(r) : null;
@@ -109,10 +109,11 @@ public sealed class PostgresIdentityStore(string connectionString, PostgresAccou
             using var r = count.ExecuteReader(); r.Read();
             if (r.GetInt64(0) >= realmLimit || r.GetInt64(1) >= accountLimit) return CreateCharacterOutcome.SlotsFull;
         }
-        using var insert = new NpgsqlCommand("INSERT INTO identity.characters(character_id,account_id,realm_id,name,name_key,appearance,state) VALUES ($1,$2,$3,$4,$5,$6,'active') ON CONFLICT DO NOTHING", c, tx);
+        using var insert = new NpgsqlCommand("INSERT INTO identity.characters(character_id,account_id,realm_id,name,name_key,appearance,state,archetype_id) VALUES ($1,$2,$3,$4,$5,$6,'active',$7) ON CONFLICT DO NOTHING", c, tx);
         insert.Parameters.AddWithValue(character.CharacterId); insert.Parameters.AddWithValue(character.AccountId);
         insert.Parameters.AddWithValue(character.RealmId); insert.Parameters.AddWithValue(character.Name);
         insert.Parameters.AddWithValue(character.NameKey); insert.Parameters.AddWithValue(character.Appearance);
+        insert.Parameters.AddWithValue(character.Archetype);
         var inserted = insert.ExecuteNonQuery() == 1;
         tx.Commit();
         return inserted ? CreateCharacterOutcome.Created : CreateCharacterOutcome.NameTaken;
@@ -135,5 +136,5 @@ public sealed class PostgresIdentityStore(string connectionString, PostgresAccou
     }
 
     private static CharacterRecord ReadCharacter(NpgsqlDataReader r) => new(r.GetString(0), r.GetString(1),
-        r.GetString(2), r.GetString(3), r.GetString(4), r.GetFieldValue<byte[]>(5), r.GetString(6));
+        r.GetString(2), r.GetString(3), r.GetString(4), r.GetFieldValue<byte[]>(5), r.GetString(6), r.GetString(7));
 }

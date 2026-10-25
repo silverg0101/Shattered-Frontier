@@ -160,7 +160,7 @@ app.MapPost("/v1/characters", (CharacterCreateRequest request, HttpContext http,
     byte[] packet;
     try { packet = Convert.FromBase64String(request.AppearanceV2Base64 ?? ""); }
     catch (FormatException) { throw new ApiError(400, "INVALID_ARGUMENT", "APPEARANCE_INVALID"); }
-    var character = service.CreateCharacter(service.RequireSession(http.Request.Headers.Authorization), request.RealmId, request.Name, packet);
+    var character = service.CreateCharacter(service.RequireSession(http.Request.Headers.Authorization), request.RealmId, request.Name, packet, request.ArchetypeId);
     return Results.Json(ToResponse(character), statusCode: 201);
 });
 app.MapGet("/v1/characters/{characterId}", (string characterId, HttpContext http, IdentityService service) =>
@@ -181,7 +181,7 @@ app.MapPost("/v1/characters/{characterId}/enter-world", (string characterId, Htt
     var (address, ticket, expires) = service.EnterWorld(service.RequireSession(http.Request.Headers.Authorization), characterId);
     return Results.Ok(new { address, ticket, expires_at_unix_s = expires });
 });
-app.MapPost("/v1/world/verify-ticket", (VerifyTicketRequest request, HttpContext http, TicketVerifier verifier) =>
+app.MapPost("/v1/world/verify-ticket", (VerifyTicketRequest request, HttpContext http, TicketVerifier verifier, IIdentityStore identityStore) =>
 {
     var supplied = System.Text.Encoding.UTF8.GetBytes(http.Request.Headers["X-World-Verifier-Key"].ToString());
     var expected = System.Text.Encoding.UTF8.GetBytes(verifierKey);
@@ -190,7 +190,12 @@ app.MapPost("/v1/world/verify-ticket", (VerifyTicketRequest request, HttpContext
     if (string.IsNullOrWhiteSpace(request.Ticket)) return Results.BadRequest(new ErrorBody("INVALID_ARGUMENT", "TICKET_REQUIRED"));
     if (request.ServerId != options.WorldServerId) return Results.Json(new ErrorBody("UNAUTHENTICATED", "SERVER_MISMATCH"), statusCode: 401);
     var claims = verifier.VerifyAndConsume(request.Ticket, options.WorldServerId);
-    return claims is null ? Results.Json(new ErrorBody("UNAUTHENTICATED", "TICKET_INVALID"), statusCode: 401) : Results.Ok(new { character_id = claims.CharacterId, account_id = claims.AccountId, realm_id = claims.RealmId });
+    if (claims is null) return Results.Json(new ErrorBody("UNAUTHENTICATED", "TICKET_INVALID"), statusCode: 401);
+    var character = identityStore.FindCharacter(claims.CharacterId);
+    if (character is null || character.State != "active" || character.AccountId != claims.AccountId)
+        return Results.Json(new ErrorBody("UNAUTHENTICATED", "TICKET_INVALID"), statusCode: 401);
+    return Results.Ok(new { character_id = claims.CharacterId, account_id = claims.AccountId, realm_id = claims.RealmId,
+        archetype_id = character.Archetype, appearance_v2_base64 = Convert.ToBase64String(character.Appearance) });
 });
 if (chatVerifierKey is not null)
 {
@@ -320,13 +325,13 @@ static void Listen(Microsoft.AspNetCore.Server.Kestrel.Core.KestrelServerOptions
 static object ToResponse(CharacterRecord c) => new
 {
     character_id = c.CharacterId, realm_id = c.RealmId, name = c.Name, state = c.State,
-    appearance_v2_base64 = Convert.ToBase64String(c.Appearance)
+    appearance_v2_base64 = Convert.ToBase64String(c.Appearance), archetype_id = c.Archetype
 };
 
 public sealed record AccountCreateRequest(string? AccountName, string? Password);
 public sealed record LoginBeginRequest(string? AccountName, string? Password);
 public sealed record LoginCompleteRequest(string? LoginId);
-public sealed record CharacterCreateRequest(string? RealmId, string? Name, string? AppearanceV2Base64);
+public sealed record CharacterCreateRequest(string? RealmId, string? Name, string? AppearanceV2Base64, string? ArchetypeId);
 public sealed record VerifyTicketRequest(string? Ticket, string? ServerId);
 public sealed record ErrorBody(string Code, string Reason, int? RetryAfterS = null);
 public sealed record DataKeyRequest(string Service, string Purpose, bool ForWrite, ushort? KeyVersion, int Encryptions = 0);

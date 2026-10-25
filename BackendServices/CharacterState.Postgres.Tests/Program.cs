@@ -33,6 +33,9 @@ switch (args[0])
             "repeat restore preserves combat identity and revision");
         Check(store.EnsureCombatIdentity("character-combat-new", combatTuning) is { Revision: 1, Result.CombatIdentity.Archetype: "fighter" },
             "new character persists starter combat identity");
+        Check(store.EnsureCombatIdentity("character-combat-created-mage", combatTuning, creationArchetype: "mage")
+            is { Result.CombatIdentity: { Archetype: "mage", Base.Intelligence: 40, Base.Wisdom: 20 } },
+            "creation stores the server-derived Mage allocation");
         var guardianCombat = new CharacterProgression("character-combat-guardian", TimeProvider.System, () => .5).Snapshot()
             with { CombatIdentity = new("guardian", combatTuning.Guardian) };
         using (var db = new NpgsqlConnection(connection))

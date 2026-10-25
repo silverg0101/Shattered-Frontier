@@ -51,15 +51,18 @@ void USFBackpackComponent::AssignDevIdentity(APlayerController* Controller, cons
     UE_LOG(LogTemp, Display, TEXT("DEV_IDENTITY_BOUND Character=%s Container=%s"), *Backpack->CharacterId, *Backpack->ContainerId);
 }
 
-void USFBackpackComponent::AssignGatewayIdentity(APlayerController* Controller, const FString& Id, const FString& Account, const FString& Realm)
+void USFBackpackComponent::AssignGatewayIdentity(APlayerController* Controller, const FString& Id, const FString& Account,
+    const FString& Realm, const FString& ArchetypeId, const TArray<uint8>& AppearancePacket)
 {
     if (!Id.StartsWith(TEXT("chr_")) || Id.Len() > 80 || !Account.StartsWith(TEXT("acct_")) || Account.Len() > 80 ||
-        Realm.IsEmpty() || Realm.Len() > 32) { return; }
+        Realm.IsEmpty() || Realm.Len() > 32 || ArchetypeId.IsEmpty() || AppearancePacket.IsEmpty()) { return; }
     USFBackpackComponent* Backpack = FindOrCreate(Controller);
     if (!Backpack || Backpack->bIdentityUsed) { return; }
     Backpack->VerifiedCharacterId = Id;
     Backpack->VerifiedAccountId = Account;
     Backpack->VerifiedRealmId = Realm;
+    Backpack->GatewayArchetypeId = ArchetypeId;
+    Backpack->GatewayAppearancePacket = AppearancePacket;
     Backpack->BindIdentity();
 }
 

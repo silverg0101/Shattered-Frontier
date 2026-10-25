@@ -176,11 +176,13 @@ public sealed class PostgresCharacterStateStore(string connectionString)
     // JSON additive migration: old rows have no CombatIdentity property. Locking the character
     // makes first restore and a concurrent progression receipt converge on one durable identity.
     public VersionedResult<ProgressionSnapshot> EnsureCombatIdentity(string characterId,
-        CombatAttributeTuning tuning, ProgressionSettings? progressionSettings = null) =>
+        CombatAttributeTuning tuning, ProgressionSettings? progressionSettings = null,
+        string? creationArchetype = null) =>
         Transaction<VersionedResult<ProgressionSnapshot>>((c, t) =>
     {
         if (string.IsNullOrWhiteSpace(characterId)) throw new CharacterStoreRejectedException("Character ID required.");
         tuning.Validate();
+        var requestedIdentity = creationArchetype is null ? tuning.StarterIdentity : tuning.IdentityFor(creationArchetype);
         LockCharacter(c, t, characterId);
         long revision = 0;
         ProgressionSnapshot? snapshot = null;
@@ -195,13 +197,15 @@ public sealed class PostgresCharacterStateStore(string connectionString)
         if (snapshot?.CombatIdentity is not null)
         {
             tuning.Snapshot(snapshot.CombatIdentity, 1); // Validate stored identity before publication.
+            if (creationArchetype is not null && snapshot.CombatIdentity.Archetype != creationArchetype)
+                throw new CharacterStoreRejectedException("Character archetype already set.");
             return new(revision, snapshot);
         }
         snapshot = snapshot is null
             ? new CharacterProgression(characterId, TimeProvider.System, () => .5,
                 settings: progressionSettings).Snapshot()
-                with { CombatIdentity = tuning.StarterIdentity }
-            : snapshot with { CombatIdentity = tuning.StarterIdentity };
+                with { CombatIdentity = requestedIdentity }
+            : snapshot with { CombatIdentity = requestedIdentity };
         if (revision == 0)
         {
             using var insert = Command(c, t, "INSERT INTO character_state.progression(character_id,revision,state) VALUES ($1,1,$2::jsonb)",

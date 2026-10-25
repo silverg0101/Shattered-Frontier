@@ -188,7 +188,7 @@ class SHATTEREDFRONTIER_API USFFrontEndCreator : public USFFrontEndPage
 public:
     static constexpr const TCHAR* AssetPath = TEXT("/Game/Frontier/UI/Widgets/FrontEnd/WBP_FrontEndCreator.WBP_FrontEndCreator_C");
     DECLARE_DELEGATE_OneParam(FStateDelegate, const FSFCreatorState&);
-    DECLARE_DELEGATE_TwoParams(FCreateDelegate, const FString& /*Name*/, const FSFAppearance&);
+    DECLARE_DELEGATE_ThreeParams(FCreateDelegate, const FString& /*Name*/, const FSFAppearance&, const FString& /*ArchetypeId*/);
     DECLARE_DELEGATE(FVoidDelegate);
     FStateDelegate OnChanged;  // the look or the step changed: the scene updates the preview
     FCreateDelegate OnCreate;  // Next on the Name step with a valid name
@@ -196,6 +196,9 @@ public:
 
     void Begin();  // a fresh creator on step 1 with the default look
     const FSFCreatorState& GetState() const { return State; }
+    UFUNCTION(BlueprintCallable, Category="SF|Character Creation") TArray<FString> GetAvailableArchetypeIds() const;
+    UFUNCTION(BlueprintCallable, Category="SF|Character Creation") FString GetArchetypeId() const { return State.ArchetypeId; }
+    UFUNCTION(BlueprintCallable, Category="SF|Character Creation") bool SetArchetypeId(const FString& Id);
     void GoToStep(int32 Step);
     void Back();
     void Next();

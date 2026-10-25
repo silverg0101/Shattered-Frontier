@@ -3,6 +3,7 @@
     <ProjectReference Include="../CharacterAppearance/CharacterAppearance.csproj" />
     <ProjectReference Include="../AccountDataCrypto/AccountDataCrypto.csproj" />
     <ProjectReference Include="../CharacterState.Postgres/CharacterState.Postgres.csproj" />
+    <ProjectReference Include="../Progression/Progression.csproj" />
     <PackageReference Include="Npgsql" />
     <EmbeddedResource Include="confusables.txt" />
   </ItemGroup>

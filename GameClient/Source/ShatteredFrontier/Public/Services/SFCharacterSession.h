@@ -5,17 +5,17 @@
 
 class APlayerController;
 
-// INT-05: a dev character's server session on its controller. It restores the character from the services on connect
+// INT-05: a character's server session on its controller. It restores the character from the services on connect
 // (ledger backpack, Progression skills and quest step, saved position), refuses actions until that restore succeeds, saves
 // the position on an interval and at logout, and keeps a disconnected controller alive until its in-flight commits resolve.
-// Exists with Gameplay services, a bound dev identity and either restore-on-connect or an active combat pilot.
+// Exists with Gameplay services and a bound identity; gateway admission always restores before play.
 UCLASS(NotBlueprintable)
 class SHATTEREDFRONTIER_API USFCharacterSessionComponent : public UActorComponent
 {
     GENERATED_BODY()
 public:
     USFCharacterSessionComponent();
-    // Server: attaches a session when restore is enabled and the controller has a dev identity.
+    // Server: attaches a session for a verified gateway identity or a configured dev restore.
     static void AttachIfEnabled(APlayerController* Controller);
     // Server: true while this controller's character is still being restored (actions are refused).
     static bool IsRestoring(const AActor* Owner);

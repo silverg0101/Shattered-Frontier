@@ -36,7 +36,8 @@
           "AccountDataCrypto": "[1.0.0, )",
           "CharacterAppearance": "[1.0.0, )",
           "CharacterState.Postgres": "[1.0.0, )",
-          "Npgsql": "[10.0.3, 10.0.3]"
+          "Npgsql": "[10.0.3, 10.0.3]",
+          "Progression": "[1.0.0, )"
         }
       },
       "progression": {

@@ -131,6 +131,9 @@ struct FSFCreatorState
     int32 Step = 0;
     FSFAppearance Look;
     FString Name;
+    FString ArchetypeId = TEXT("fighter");
+    static const TArray<FString>& AvailableArchetypeIds();
+    bool SetArchetypeId(const FString& Id);
 
     static constexpr int32 NumSteps = static_cast<int32>(ESFCreatorStep::Count);
     static const TCHAR* StepName(int32 Index);
@@ -191,7 +194,11 @@ public:
     virtual void SignIn(const FString& Account, const FString& Password, TFunction<void(bool bOk, const FString& AccountName, const FString& Error)> Done) = 0;
     virtual void SignOut() = 0;
     virtual void ListCharacters(TFunction<void(bool bOk, const TArray<FSFCharacterSummary>&, const FString& Error)> Done) = 0;
-    virtual void CreateCharacter(const FString& Name, const FSFAppearance& Look, TFunction<void(bool bOk, const FSFCharacterSummary&, const FString& Error)> Done) = 0;
+    virtual void CreateCharacter(const FString& Name, const FSFAppearance& Look, const FString& ArchetypeId,
+        TFunction<void(bool bOk, const FSFCharacterSummary&, const FString& Error)> Done) = 0;
+    void CreateCharacter(const FString& Name, const FSFAppearance& Look,
+        TFunction<void(bool bOk, const FSFCharacterSummary&, const FString& Error)> Done)
+    { CreateCharacter(Name, Look, TEXT("fighter"), MoveTemp(Done)); }
     virtual void DeleteCharacter(const FString& Id, TFunction<void(bool bOk, const FString& Error)> Done) = 0;
     // The travel URL that enters the world with this character.
     virtual void EnterWorld(const FSFCharacterSummary& Character, TFunction<void(bool bOk, const FString& TravelUrl, const FString& Error)> Done) = 0;

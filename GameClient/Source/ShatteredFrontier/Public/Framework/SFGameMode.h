@@ -81,8 +81,11 @@ public:
 private:
     TMap<FString, FString> PendingGatewayCharacters;
     TMap<FString, FString> PendingGatewayAccounts, PendingGatewayRealms;
+    TMap<FString, FString> PendingGatewayArchetypes;
+    TMap<FString, TArray<uint8>> PendingGatewayAppearances;
     bool UsesGatewayAdmission() const;
-    FString TakeGatewayCharacter(const FString& Ticket, FString& Account, FString& Realm);
+    FString TakeGatewayCharacter(const FString& Ticket, FString& Account, FString& Realm,
+        FString& Archetype, TArray<uint8>& Appearance);
     FSFPartyModel PartyModel;
     TMap<int32, FString> DurablePartyBySessionId;
     TMap<FString, int32> SessionPartyByDurableId;

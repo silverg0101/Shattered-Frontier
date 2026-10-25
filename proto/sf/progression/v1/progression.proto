@@ -23,6 +23,7 @@ message EndSessionReply { int64 progression_revision = 1; double rested_minutes 
 message CreateCharacterRequest {
   string character_id = 1;
   optional bytes appearance_packet = 2;
+  string archetype_id = 3;
 }
 message CreateCharacterReply { int64 appearance_revision = 1; }
 message LearnRecipeRequest {

@@ -288,6 +288,18 @@ void USFFrontEndCreator::Begin()
     Changed();
 }
 
+TArray<FString> USFFrontEndCreator::GetAvailableArchetypeIds() const
+{
+    return FSFCreatorState::AvailableArchetypeIds();
+}
+
+bool USFFrontEndCreator::SetArchetypeId(const FString& Id)
+{
+    if (!State.SetArchetypeId(Id)) { return false; }
+    Changed();
+    return true;
+}
+
 void USFFrontEndCreator::GoToStep(int32 Step)
 {
     if (State.Jump(Step)) { ShowStep(); Changed(); }
@@ -305,7 +317,7 @@ void USFFrontEndCreator::Next()
     FString Error;
     if (!SFFrontEnd::ValidateCharacterName(State.Name, Error)) { Say(NameStatus, FText::FromString(Error), true); return; }
     if (!State.Look.IsValid()) { Say(NameStatus, FText::FromString(TEXT("Choose a valid face and appearance.")), true); return; }
-    OnCreate.ExecuteIfBound(State.Name, State.Look);
+    OnCreate.ExecuteIfBound(State.Name, State.Look, State.ArchetypeId);
 }
 
 void USFFrontEndCreator::Randomize()

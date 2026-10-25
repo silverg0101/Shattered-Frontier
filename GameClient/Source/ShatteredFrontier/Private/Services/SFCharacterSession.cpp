@@ -91,7 +91,9 @@ void USFCharacterSessionComponent::AttachIfEnabled(APlayerController* Controller
     const auto* Settings = GetDefault<USFGameplayServicesSettings>();
     USFBackpackComponent* Pack = USFBackpackComponent::FindOrCreate(Controller);
     const auto* Mode = Controller->GetWorld()->GetAuthGameMode<ASFGameMode>();
-    if ((!Settings->bRestoreOnConnect && !(Mode && Mode->IsCombatActive())) || !USFBackpackComponent::Services() || !Pack || !Pack->HasDevIdentity()
+    if (!Pack || (!Settings->bRestoreOnConnect && !(Mode && Mode->IsCombatActive()) && !Pack->HasVerifiedIdentity()) ||
+        !USFBackpackComponent::Services() ||
+        (!Pack->HasDevIdentity() && !Pack->HasVerifiedIdentity())
         || Controller->FindComponentByClass<USFCharacterSessionComponent>()) { return; }
     auto* Session = NewObject<USFCharacterSessionComponent>(Controller, TEXT("CharacterSession"));
     Session->CharacterId = Pack->GetCharacterId();
@@ -214,7 +216,11 @@ void USFCharacterSessionComponent::BeginRestore()
             Quest ? Quest->ActiveIds().Num() : -1, Self->bHasRestoredLocation ? TEXT("saved") : TEXT("start"), Pawn ? *Pawn->GetActorLocation().ToString() : TEXT("none"));
     };
     Pack->Reconcile([Part](bool bOk) { Part(1, bOk); });
-    FSFGameplayRequest Get; Get.Rpc = ESFGameplayRpc::GetCharacterState; Get.CharacterId = CharacterId;
+    const auto ReadState = [Weak, Part]()
+    {
+    USFCharacterSessionComponent* Current = Weak.Get();
+    if (!Current || !Current->bRestoreInFlight) { return; }
+    FSFGameplayRequest Get; Get.Rpc = ESFGameplayRpc::GetCharacterState; Get.CharacterId = Current->CharacterId;
     USFBackpackComponent::Services()->Call(Get, [Weak, Part](const FSFGameplayResponse& State)
     {
         USFCharacterSessionComponent* Self = Weak.Get();
@@ -236,6 +242,18 @@ void USFCharacterSessionComponent::BeginRestore()
         { if (auto* Mode = Self->GetWorld()->GetAuthGameMode<ASFGameMode>()) Mode->RestoreDeadPlayer(Cast<ASFE1Character>(Pawn), State); }
         Part(2, true);
     });
+    };
+    if (Pack->HasGatewayCreationSeed())
+    {
+        FSFGameplayRequest Create; Create.Rpc = ESFGameplayRpc::CreateCharacter; Create.CharacterId = CharacterId;
+        Create.ArchetypeId = Pack->GetGatewayArchetypeId(); Create.AppearancePacket = Pack->GetGatewayAppearancePacket();
+        USFBackpackComponent::Services()->Call(Create, [ReadState, Part](const FSFGameplayResponse& Reply)
+        {
+            if (Reply.Status == ESFGameplayStatus::Ok) { ReadState(); }
+            else { Part(2, false); }
+        });
+    }
+    else { ReadState(); }
 }
 
 void USFCharacterSessionComponent::SavePosition(bool bFinal)

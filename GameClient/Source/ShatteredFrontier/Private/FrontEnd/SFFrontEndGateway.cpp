@@ -141,15 +141,17 @@ public:
                 Done(true, List, {});
             });
     }
-    void CreateCharacter(const FString& Name, const FSFAppearance& Look, TFunction<void(bool, const FSFCharacterSummary&, const FString&)> Done) override
+    void CreateCharacter(const FString& Name, const FSFAppearance& Look, const FString& ArchetypeId,
+        TFunction<void(bool, const FSFCharacterSummary&, const FString&)> Done) override
     {
         FString Error;
         const TArray<uint8> Packet = Look.PackV2();
-        if (SessionToken.IsEmpty() || !SFFrontEnd::ValidateCharacterName(Name, Error) || Packet.IsEmpty())
+        if (SessionToken.IsEmpty() || !SFFrontEnd::ValidateCharacterName(Name, Error) || Packet.IsEmpty() || !FSFCreatorState::AvailableArchetypeIds().Contains(ArchetypeId))
         { Done(false, {}, SessionToken.IsEmpty() ? TEXT("Sign in first.") : Error.IsEmpty() ? TEXT("Invalid appearance.") : Error); return; }
         TSharedRef<FJsonObject> Payload = MakeShared<FJsonObject>();
         Payload->SetStringField(TEXT("realm_id"), TEXT("greenlands")); Payload->SetStringField(TEXT("name"), Name);
         Payload->SetStringField(TEXT("appearance_v2_base64"), FBase64::Encode(Packet));
+        Payload->SetStringField(TEXT("archetype_id"), ArchetypeId);
         Http->Send(TEXT("POST"), TEXT("/v1/characters"), Encode(Payload), SessionToken,
             [Done = MoveTemp(Done)](FSFIdentityHttpReply Reply) mutable
             {

@@ -44,10 +44,14 @@ Reject(() => service.CreateCharacter(freshSession, "greenlands", "AdminGuy", pac
 Reject(() => service.CreateCharacter(freshSession, "greenlands", "Arwen", [1, 2, 3]), "APPEARANCE_INVALID", "appearance v2 rejection");
 var character = service.CreateCharacter(freshSession, "greenlands", "Arwen", packet);
 Check(service.ListCharacters(freshSession, "greenlands").Single().CharacterId == character.CharacterId, "character create and list");
+Reject(() => service.CreateCharacter(freshSession, "greenlands", "Unknown", packet, "custom"),
+    "ARCHETYPE_INVALID", "unknown archetype rejected before character insertion");
+Check(service.CreateCharacter(freshSession, "greenlands", "Chosen", packet, "archer").Archetype == "archer",
+    "chosen archetype recorded by identity");
 Reject(() => service.CreateCharacter(freshSession, "greenlands", "arwen", packet), "NAME_TAKEN", "realm name unique");
 service.CreateCharacter(freshSession, "greenlands", "Papa", packet);
 Reject(() => service.CreateCharacter(freshSession, "greenlands", "Рара", packet), "NAME_TAKEN", "whole-script confusable collision");
-for (var i = 0; i < 6; i++) service.CreateCharacter(freshSession, "greenlands", "Nameaa" + (char)('a' + i), packet);
+for (var i = 0; i < 5; i++) service.CreateCharacter(freshSession, "greenlands", "Nameaa" + (char)('a' + i), packet);
 Reject(() => service.CreateCharacter(freshSession, "greenlands", "Extrafolk", packet), "SLOTS_FULL", "realm slot limit");
 var otherAccount = service.CreateAccount("bob", "another-long-password");
 var otherSession = new SessionRecord("ses_other", otherAccount, clock.GetUtcNow().AddMinutes(1));

@@ -343,9 +343,9 @@ void ASFFrontEndController::DoSignOut()
     Show(ESFFrontEndScreen::Title);
 }
 
-void ASFFrontEndController::DoCreate(const FString& Name, const FSFAppearance& Look)
+void ASFFrontEndController::DoCreate(const FString& Name, const FSFAppearance& Look, const FString& ArchetypeId)
 {
-    Identity->CreateCharacter(Name, Look, [this](bool bOk, const FSFCharacterSummary& Made, const FString& Error)
+    Identity->CreateCharacter(Name, Look, ArchetypeId, [this](bool bOk, const FSFCharacterSummary& Made, const FString& Error)
     {
         if (!bOk) { if (Creator) { Creator->SetStatus(FText::FromString(Error), true); } return; }  // NAME_TAKEN and the rest keep the creator and the typed name
         Flow.Created();

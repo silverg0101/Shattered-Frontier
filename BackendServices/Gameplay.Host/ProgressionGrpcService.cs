@@ -37,13 +37,18 @@ internal sealed class ProgressionGrpcService(PostgresCharacterStateStore store, 
         GrpcRun.Call(context, () =>
         {
             if (string.IsNullOrWhiteSpace(request.CharacterId)) throw new ArgumentException("Character ID required.");
+            if (!CombatAttributeTuning.Archetypes.Contains(request.ArchetypeId, StringComparer.Ordinal))
+                throw new GameplayRejectedException("ARCHETYPE_INVALID", StatusCode.InvalidArgument);
             byte[] packet = request.AppearancePacket.ToByteArray();
             var validation = appearanceValidator.ValidatePacked(packet, NoCosmetics, NoCosmetics);
             if (!validation.Valid || !AppearanceCodec.TryUnpack(packet, out var appearance) || appearance!.FaceIndex is null)
                 throw new GameplayRejectedException("APPEARANCE_INVALID", StatusCode.InvalidArgument);
-            var revision = store.SaveAppearance(request.CharacterId, 0,
+            var existing = store.ReadAppearance(request.CharacterId);
+            if (existing is not null && !existing.Result.SequenceEqual(packet))
+                throw new GameplayRejectedException("APPEARANCE_CONFLICT", StatusCode.AlreadyExists);
+            var revision = existing?.Revision ?? store.SaveAppearance(request.CharacterId, 0,
                 packet, appearanceValidator, NoCosmetics, NoCosmetics);
-            store.EnsureCombatIdentity(request.CharacterId, CombatTuning, progressionSettings);
+            store.EnsureCombatIdentity(request.CharacterId, CombatTuning, progressionSettings, request.ArchetypeId);
             return new Pb.CreateCharacterReply { AppearanceRevision = revision };
         });
 
