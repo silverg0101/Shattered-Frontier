@@ -80,7 +80,7 @@ public:
     bool AcceptResurrection(ASFE1Character* Player, uint32 OfferId, const FString& DeathEventId);
     bool HasPendingDeathReport(const FString& CharacterId) const;
     void BoarDied(ASFPilotBoar* Boar, ASFE1Character* Killer);
-    /** Grants the killer's hides for this death, at most once; returns the number granted. */
+    /** Credits defeat once; services own corpse delivery, local fixtures return granted hides. */
     int32 RewardKill(ASFPilotBoar* Boar, ASFE1Character* Killer);
     void ClaimSharedDrop(class ASFPlayerController* Player, const FString& EventId);
     bool IsSafe(const FVector& Location) const;
@@ -184,6 +184,7 @@ private:
 #if WITH_DEV_AUTOMATION_TESTS && WITH_EDITOR
     friend class FSFNpcContentSpawnShotTest;
     friend class FSFNpcProductionParityTest;
+    friend class FSFNpcCorpseRewardTest;
 #endif
     FString CombatZonePath;
     TMap<FString, SFNpcZoneContent::FGroup> Groups;

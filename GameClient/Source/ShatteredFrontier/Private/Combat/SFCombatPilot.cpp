@@ -14,6 +14,7 @@
 #include "Combat/SFStatusEffectsComponent.h"
 #include "Inventory/SFGear.h"
 #include "Inventory/SFInventory.h"
+#include "Inventory/SFLootWorldSubsystem.h"
 #include "Framework/SFGameMode.h"
 #include "Combat/SFCombatPilotRewards.h"
 #include "Characters/SFE1Character.h"
@@ -3289,6 +3290,21 @@ int32 ASFGameMode::RewardKill(ASFPilotBoar* Boar, ASFE1Character* Killer)
         const bool bBoarSafe = IsSafe(BoarAt);
         // The process nonce prevents a restarted server's slot serials from reusing a durable defeat ID.
         static const FString Epoch = FGuid::NewGuid().ToString(EGuidFormats::Digits);
+        FSFLootDefeatSource Source;
+        Source.EventId = Epoch + TEXT(":") + DeathId;
+        Source.CreatureId = Boar->GetCreatureId(); Source.TableId = Boar->GetLootTableId();
+        Source.KillerCharacterId = KillerId; Source.RaidGroupId = RaidId;
+        Source.Position = BoarAt; Source.bShared = Boar->HasSingleDrop();
+        Source.bProtected = bProtected || bBoarSafe;
+        for (APlayerController* Recipient : Eligible)
+        {
+            USFBackpackComponent* Backpack = USFBackpackComponent::FindOrCreate(Recipient);
+            if (Backpack && !Backpack->GetCharacterId().IsEmpty())
+            { Source.EligibleCharacters.AddUnique(Backpack->GetCharacterId()); }
+        }
+        // Admission transfers retry ownership. Never also execute the legacy direct payout.
+        if (USFLootWorldSubsystem* Loot = GetWorld()->GetSubsystem<USFLootWorldSubsystem>())
+        { if (Loot->RegisterDefeat(Boar, Source)) { return 0; } }
         if (Boar->HasSingleDrop())
         {
             FSFGameplayRequest Request; Request.Rpc = ESFGameplayRpc::CreateSharedDefeatDrop;
