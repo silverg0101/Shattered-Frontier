@@ -150,6 +150,7 @@ private:
     void TickCombat();
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     void TickGreenlandsNetcheck();
+    void TickGreenlandsEnergyNetcheck();
 #endif
     bool LoadZoneRecord();
     bool RunWorldSlots(const FString& Command, const FString& Group = FString(), int32 Slot = INDEX_NONE);
@@ -211,5 +212,9 @@ private:
     int32 GreenlandsRegenHealth = 0;
     bool bGreenlandsRegenObserved = false;
     double GreenlandsStageAt = 0;
+    int32 GreenlandsEnergyStage = 0;
+    double GreenlandsEnergyStageAt = 0;
+    float GreenlandsEnergyBeforeSprint = 0.f;
+    TWeakObjectPtr<ASFPilotBoar> GreenlandsEnergyBoar;
 #endif
 };

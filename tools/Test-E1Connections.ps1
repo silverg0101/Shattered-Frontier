@@ -29,7 +29,8 @@ param(
     [switch]$UnstuckScenario,
     [switch]$SpiritReleaseScenario,
     [switch]$ResurrectionAcceptScenario,
-    [switch]$GreenlandsBoarNetcheck
+    [switch]$GreenlandsBoarNetcheck,
+    [switch]$GreenlandsEnergyNetcheck
 )
 $ErrorActionPreference = 'Stop'
 $repoRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
@@ -45,7 +46,7 @@ function Launch([string[]]$LaunchArguments) {
     Write-Output "Started PID $($process.Id)"
 }
 function Wait-Log([string]$Path, [string]$Pattern, [int]$Count = 1) {
-    $deadline = (Get-Date).AddSeconds($(if ($RespawnScenario -or $GreenlandsBoarNetcheck) { 420 } elseif ($EvadeScenario -or $ThreatScenario -or $TauntScenario -or $AggroScenario -or $MemoryScenario -or $RegenScenario -or $RestRegenScenario -or $AssistScenario) { 240 } else { 120 }))
+    $deadline = (Get-Date).AddSeconds($(if ($RespawnScenario -or $GreenlandsBoarNetcheck) { 420 } elseif ($GreenlandsEnergyNetcheck -or $EvadeScenario -or $ThreatScenario -or $TauntScenario -or $AggroScenario -or $MemoryScenario -or $RegenScenario -or $RestRegenScenario -or $AssistScenario) { 240 } else { 120 }))
     while ((Get-Date) -lt $deadline) {
         foreach ($process in $ownedProcesses) { if ($process.HasExited) { throw "Network process $($process.Id) exited before $Pattern" } }
         if (Test-Path -LiteralPath $Path) {
@@ -85,6 +86,18 @@ function Assert-EvadeClient([string]$Path, [string]$Role) {
     return [math]::Round($speed,1)
 }
 try {
+    if ($GreenlandsEnergyNetcheck) {
+        $otherScenarios = @($PSBoundParameters.Keys | Where-Object {
+            $_ -notin @('EngineRoot', 'Port', 'Map', 'Clients', 'GreenlandsEnergyNetcheck')
+        })
+        if ($Map -ne '/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook' -or $Clients -ne 2 -or $otherScenarios.Count) {
+            throw 'GreenlandsEnergyNetcheck requires Greenlands_Silverbrook, two clients, and no other scenario'
+        }
+        foreach ($required in @((Join-Path $repoRoot 'Artifacts/Persistence/Toolchains/dotnet-10.0.402/dotnet.exe'),
+                (Join-Path $repoRoot 'BackendServices/WorldContent.Tool/bin/Debug/net10.0/WorldContent.Tool.dll'))) {
+            if (-not (Test-Path -LiteralPath $required -PathType Leaf)) { throw "Missing WorldContent bridge: $required" }
+        }
+    }
     if ($TravelMountScenario) {
         $otherScenarios = @($PSBoundParameters.Keys | Where-Object {
             $_ -notin @('EngineRoot', 'Port', 'Map', 'Clients', 'TravelMountScenario')
@@ -245,6 +258,7 @@ try {
     if ($ResurrectionAcceptScenario) { $serverArgs += '-ResurrectionAcceptScenario' }
     if ($InterruptScenario) { $serverArgs += '-InterruptScenario' }
     if ($GreenlandsBoarNetcheck) { $serverArgs += '-GreenlandsBoarNetcheck' }
+    if ($GreenlandsEnergyNetcheck) { $serverArgs += '-GreenlandsEnergyNetcheck' }
     if ($GreenlandsEnvironmentNetcheck) { $serverArgs += '-GreenlandsEnvironmentNetcheck' }
     if ($GreenlandsMovementNetcheck) { $serverArgs += '-GreenlandsMovementNetcheck' }
     if ($CrouchScenario) { $serverArgs += '-CrouchScenario' }
@@ -281,6 +295,7 @@ try {
         if ($SpiritReleaseScenario) { $clientArgs += @('-SpiritReleaseScenario', ('-SpiritReleaseRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         if ($ResurrectionAcceptScenario) { $clientArgs += @('-ResurrectionAcceptScenario', ('-ResurrectionAcceptRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         if ($GreenlandsBoarNetcheck) { $clientArgs += @('-GreenlandsBoarNetcheck', ('-GreenlandsBoarRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
+        if ($GreenlandsEnergyNetcheck) { $clientArgs += @('-GreenlandsEnergyNetcheck', ('-EnergyRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         if ($GreenlandsEnvironmentNetcheck) { $clientArgs += @('-GreenlandsEnvironmentNetcheck', ('-GreenlandsEnvironmentRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         if ($GreenlandsMovementNetcheck) { $clientArgs += @('-GreenlandsMovementNetcheck', ('-GreenlandsMovementRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         Launch $clientArgs
@@ -292,6 +307,31 @@ try {
     $pawns = @($possessions | ForEach-Object { $_.Matches[0].Groups[2].Value } | Select-Object -Unique)
     if ($controllers.Count -ne $Clients -or $pawns.Count -ne $Clients) { throw "Expected $Clients distinct authoritative controller/pawn pairs" }
     if (@(Select-String -LiteralPath $serverLog -Pattern "E1_PLAYER_JOIN.*Players=$Clients.*Authority=1").Count -lt 1) { throw "Server did not report $Clients players" }
+    if ($GreenlandsEnergyNetcheck) {
+        Wait-Log $serverLog 'ENERGY_NETCHECK_(IMMUNE|FAILED)'
+        $serverText = Get-Content -LiteralPath $serverLog -Raw
+        if ($serverText -match 'ENERGY_NETCHECK_FAILED') { throw 'Greenlands energy scenario failed a server assertion' }
+        foreach ($marker in @('ENERGY_NETCHECK_BEGIN', 'ENERGY_NETCHECK_DRAIN', 'ENERGY_NETCHECK_REGEN_PAUSED',
+                'ENERGY_NETCHECK_CHALLENGE', 'ENERGY_NETCHECK_IDLE_REFUSED', 'ENERGY_NETCHECK_POMMEL',
+                'ENERGY_NETCHECK_COUNTERSPELL', 'ENERGY_NETCHECK_IMMUNE')) {
+            if ($serverText -notmatch $marker) { throw "Server missed $marker" }
+        }
+        foreach ($item in @(@('CHALLENGE', '9'), @('POMMEL', '9'), @('COUNTERSPELL', '16'))) {
+            $match = [regex]::Match($serverText, ('ENERGY_NETCHECK_' + $item[0] + '.*Cost=([\d.]+)'))
+            if (-not $match.Success -or [math]::Abs([double]::Parse($match.Groups[1].Value, [Globalization.CultureInfo]::InvariantCulture) - [double]$item[1]) -gt 0.05) {
+                throw "$($item[0]) spent the wrong fraction of its maximum pool"
+            }
+        }
+        foreach ($role in @('Driver', 'Observer')) {
+            $path = Join-Path $logs ('Client' + $(if ($role -eq 'Driver') { '1' } else { '2' }) + '.log')
+            Wait-Log $path "ENERGY_CLIENT_SAMPLE Role=$role.*Sprint=0"
+            $samples = @(Select-String -LiteralPath $path -Pattern "ENERGY_CLIENT_SAMPLE Role=$role Stamina=([\d.]+).*Sprint=([01])" |
+                ForEach-Object { [pscustomobject]@{ Stamina=[double]::Parse($_.Matches[0].Groups[1].Value, [Globalization.CultureInfo]::InvariantCulture); Sprint=$_.Matches[0].Groups[2].Value } })
+            if (@($samples | Where-Object Sprint -eq '1').Count -eq 0 -or
+                @($samples | Where-Object { $_.Stamina -lt 180 }).Count -eq 0) { throw "$role missed replicated sprint drain" }
+        }
+        Write-Output "PASS: two clients observed energy pools and sprint drain; server verified level gate, challenge, both interrupts, noncasting refusal and costs. Logs: $logs"
+    }
     if ($CastingScenario) {
         Wait-Log (Join-Path $logs 'Client1.log') 'CASTING_SCENARIO_PASS'
         Wait-Log $serverLog 'CASTING_SERVER_QUEUE Ability=2'
@@ -1137,7 +1177,7 @@ try {
         Write-Output "PASS: Greenlands server dodge and two 2.0 s unarmed hits ($swingGap s observed), client stop, boar threat, ordinary healing ($ordinaryGain HP/tick), Golden Stag rest healing ($restedGain HP/tick), client kill and rotated slot respawn on both clients. Logs: $logs"
     }
     Write-Output "PASS: separate editor server and $Clients client(s) connected; $Clients server-authoritative possession(s). Logs: $logs"
-    if (-not $InterruptScenario -and -not $CastingScenario -and -not $EvadeScenario -and -not $ThreatScenario -and -not $TauntScenario -and -not $AggroScenario -and -not $MemoryScenario -and -not $RegenScenario -and -not $RestRegenScenario -and -not $FallScenario -and -not $SwimScenario -and -not $CrouchScenario -and -not $BackpedalScenario -and -not $RoadScenario -and -not $SnowScenario -and -not $TravelMountScenario -and -not $AssistScenario -and -not $RespawnScenario -and -not $AutoAttackScenario -and -not $DodgeScenario -and -not $UnstuckScenario -and -not $SpiritReleaseScenario -and -not $ResurrectionAcceptScenario -and -not $GreenlandsBoarNetcheck -and -not $GreenlandsEnvironmentNetcheck -and -not $GreenlandsMovementNetcheck) { Write-Output 'Headless connection check only: movement, rendering, lifecycle cleanup, authentication and Linux runtime are not certified.' }
+    if (-not $InterruptScenario -and -not $CastingScenario -and -not $EvadeScenario -and -not $ThreatScenario -and -not $TauntScenario -and -not $AggroScenario -and -not $MemoryScenario -and -not $RegenScenario -and -not $RestRegenScenario -and -not $FallScenario -and -not $SwimScenario -and -not $CrouchScenario -and -not $BackpedalScenario -and -not $RoadScenario -and -not $SnowScenario -and -not $TravelMountScenario -and -not $AssistScenario -and -not $RespawnScenario -and -not $AutoAttackScenario -and -not $DodgeScenario -and -not $UnstuckScenario -and -not $SpiritReleaseScenario -and -not $ResurrectionAcceptScenario -and -not $GreenlandsBoarNetcheck -and -not $GreenlandsEnergyNetcheck -and -not $GreenlandsEnvironmentNetcheck -and -not $GreenlandsMovementNetcheck) { Write-Output 'Headless connection check only: movement, rendering, lifecycle cleanup, authentication and Linux runtime are not certified.' }
 } finally {
     foreach ($process in $ownedProcesses) {
         if (-not $process.HasExited) { Stop-Process -Id $process.Id -ErrorAction SilentlyContinue }

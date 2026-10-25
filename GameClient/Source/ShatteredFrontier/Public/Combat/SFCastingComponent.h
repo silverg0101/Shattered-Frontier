@@ -68,6 +68,8 @@ public:
     UFUNCTION(BlueprintCallable, Category="Combat") void CancelCast();
     /** Sandbox training interrupt. The server selects and validates the nearby caster. */
     UFUNCTION(BlueprintCallable, Category="Combat") void RequestTrainingInterrupt();
+    /** Rank-one published interrupt: pommel (Stamina) or counterspell (Mana). */
+    UFUNCTION(BlueprintCallable, Category="Combat") void RequestPublishedInterrupt(bool bCounterspell, AActor* SelectedTarget);
     /** Server interrupt; school lockout is the training ability's authored lockout. */
     void Interrupt();
     /** Called by the existing combat health path after positive damage. */
@@ -75,10 +77,15 @@ public:
     UFUNCTION(BlueprintPure, Category="Combat") float GetCastProgress() const;
     UFUNCTION(BlueprintPure, Category="Combat") FSFCastView GetCastView() const { return View; }
     UFUNCTION(BlueprintPure, Category="Combat") int32 GetTrainingResource() const { return Resource; }
+    bool IsCurrentCastInterruptible() const { return bCurrentCastInterruptible; }
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    bool BeginPublishedInterruptFixtureCast(bool bInterruptible = true);
+#endif
 private:
     UFUNCTION(Server, Reliable) void ServerUseTrainingAbility(uint8 AbilityId);
     UFUNCTION(Server, Reliable) void ServerCancelCast();
     UFUNCTION(Server, Reliable) void ServerRequestTrainingInterrupt();
+    UFUNCTION(Server, Reliable) void ServerRequestPublishedInterrupt(bool bCounterspell, AActor* SelectedTarget);
     UFUNCTION(Server, Reliable) void ServerSetInterruptScenarioPosition(bool bCaster, bool bNear);
     void TryUse(uint8 AbilityId);
     void SyncView();
@@ -94,6 +101,8 @@ private:
     float CastSeconds = 1.5f, ChannelSeconds = 2.f, CooldownSeconds = 3.f, LockoutSeconds = 3.f;
     int32 ChannelTicks = 4, DamagePerTick = 5, ResourceCost = 10, ResourceMax = 100, CancelRefundPercent = 50;
     float RangeMetres = 5.f, HasteFraction = 0.f;
+    bool bCurrentCastInterruptible = true;
+    double NextPommelAt = 0.0, NextCounterspellAt = 0.0;
     FVector StartLocation = FVector::ZeroVector;
     TWeakObjectPtr<ASFCastingTarget> Target;
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST

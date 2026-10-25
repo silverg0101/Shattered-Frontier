@@ -20,6 +20,9 @@ float USFBackpedalMovement::GetMaxSpeed() const
     if (const ASFE1Character* Pilot = Cast<ASFE1Character>(CharacterOwner))
     {
         if (Pilot->IsTravelMountCasting()) { return 0.0f; }
+        if (Pilot->IsSprinting())
+        { const USFE1Settings* Settings = GetDefault<USFE1Settings>();
+          Base *= Settings->SprintSpeedMetresPerSecond / Settings->RunSpeedMetresPerSecond; }
         if (Pilot->IsTravelMounted())
         { Base = SFTravelMountRules::MountedSpeedCm(GetDefault<USFE1Settings>()->TravelMountSpeedMetresPerSecond,
             GetDefault<USFE1Settings>()->TravelMountSpeedCapMetresPerSecond); }

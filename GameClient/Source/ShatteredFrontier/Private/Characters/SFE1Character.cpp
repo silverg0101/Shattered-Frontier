@@ -25,6 +25,8 @@
 #include "Characters/SFRoadSpeedVolume.h"
 #include "Creatures/SFRestAreaVolume.h"
 #include "Combat/SFCombatPilot.h"
+#include "Combat/SFCombatEnergy.h"
+#include "Gathering/SFGatheringPilot.h"
 #include "Combat/SFAutoAttackRules.h"
 #include "Combat/SFTabTargetSelection.h"
 #include "Combat/SFCrowdControlComponent.h"
@@ -108,6 +110,18 @@ ASFE1Character::ASFE1Character(const FObjectInitializer& ObjectInitializer)
 void ASFE1Character::BeginPlay()
 {
     Super::BeginPlay();
+    if (HasAuthority())
+    {
+        FString EnergyError;
+        if (!GetDefault<USFCombatEnergySettings>()->Validate(EnergyError))
+        { UE_LOG(LogTemp, Fatal, TEXT("Invalid combat energy configuration: %s"), *EnergyError); }
+        MaxStamina = SFCombatEnergy::MaxStamina(10.f, 10.f);
+        Stamina = MaxStamina;
+        MaxMana = SFCombatEnergy::MaxMana(10.f, 1);
+        Mana = MaxMana;
+        NextEnergyTickAt = GetWorld()->GetTimeSeconds() + 1.0;
+        EnergyOutOfCombatAt = GetWorld()->GetTimeSeconds() - GetDefault<USFCombatEnergySettings>()->RegenDelaySeconds;
+    }
     const float WorldGravity = GetWorld()->GetGravityZ();
     if (!FMath::IsFinite(WorldGravity) || WorldGravity >= -UE_SMALL_NUMBER)
     {
@@ -1383,7 +1397,26 @@ void ASFE1Character::SetMouseCaptured(bool bCaptured)
 void ASFE1Character::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
+    if (HasAuthority()) { TickEnergy(); }
     const FString CombatMap = GetWorld()->GetOutermost()->GetName();
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    if (CombatMap == TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook") &&
+        IsLocallyControlled() && FParse::Param(FCommandLine::Get(), TEXT("GreenlandsEnergyNetcheck")) &&
+        GetWorld()->GetTimeSeconds() >= NextEnergyScenarioSampleAt)
+    {
+        NextEnergyScenarioSampleAt = GetWorld()->GetTimeSeconds() + .5;
+        FString EnergyScenarioRole;
+        FParse::Value(FCommandLine::Get(), TEXT("EnergyRole="), EnergyScenarioRole);
+        if (EnergyScenarioRole == TEXT("Driver")) { EnergyScenarioSubject = this; }
+        else if (!EnergyScenarioSubject.IsValid())
+        { for (TActorIterator<ASFE1Character> It(GetWorld()); It; ++It)
+          { if (*It != this && It->IsSprinting()) { EnergyScenarioSubject = *It; break; } } }
+        if (ASFE1Character* Subject = EnergyScenarioSubject.Get())
+        { UE_LOG(LogTemp, Display, TEXT("ENERGY_CLIENT_SAMPLE Role=%s Stamina=%.2f MaxStamina=%.2f Mana=%.2f MaxMana=%.2f Sprint=%d"),
+            *EnergyScenarioRole, Subject->GetStamina(), Subject->GetMaxStamina(), Subject->GetMana(), Subject->GetMaxMana(),
+            Subject->IsSprinting() ? 1 : 0); }
+    }
+#endif
     if (CombatMap == TEXT("/Game/Frontier/Maps/Sandbox/SB_TravelMount")) { TickTravelMount(); }
     if (CombatMap == TEXT("/Game/Frontier/Maps/Sandbox/SB_AutoAttack") ||
         CombatMap == TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook"))
@@ -1791,6 +1824,17 @@ void ASFE1Character::Tick(float DeltaSeconds)
     { if (APlayerController* PC = Cast<APlayerController>(Controller); PC && PC->WasInputKeyJustPressed(EKeys::M)) { RequestTravelMountToggle(); } }
     if (IsLocallyControlled() && GetWorld()->GetOutermost()->GetName() == TEXT("/Game/Frontier/Maps/Sandbox/SB_Taunt"))
     { if (APlayerController* PC = Cast<APlayerController>(Controller); PC && PC->WasInputKeyJustPressed(EKeys::T)) { PilotTaunt(nullptr); } }
+    if (CombatMap == TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook") && IsLocallyControlled())
+    {
+        if (APlayerController* PC = Cast<APlayerController>(Controller))
+        {
+            const bool bWantsSprint = PC->IsInputKeyDown(EKeys::LeftShift) || PC->IsInputKeyDown(EKeys::RightShift);
+            if (bWantsSprint != bLocalSprintIntent) { bLocalSprintIntent = bWantsSprint; SetSprintIntent(bWantsSprint); }
+            if (PC->WasInputKeyJustPressed(EKeys::T)) { PilotTaunt(CombatTarget); }
+            if (Casting && PC->WasInputKeyJustPressed(EKeys::I)) { Casting->RequestPublishedInterrupt(false, CombatTarget); }
+            if (Casting && PC->WasInputKeyJustPressed(EKeys::K)) { Casting->RequestPublishedInterrupt(true, CombatTarget); }
+        }
+    }
 }
 
 void ASFE1Character::TickCameraControls(float Dt)
@@ -2011,6 +2055,102 @@ void ASFE1Character::TickCameraControls(float Dt)
     LastControlPitch = Control.Pitch;
 }
 
+int32 ASFE1Character::CombatCharacterLevel() const
+{
+    const USFGatheringPilotComponent* Progression = Controller ? Controller->FindComponentByClass<USFGatheringPilotComponent>() : nullptr;
+    return Progression ? Progression->GetCharacterLevel() : 1;
+}
+
+bool ASFE1Character::SpendStaminaFraction(float Fraction)
+{
+    if (!HasAuthority() || PilotHealth <= 0) { return false; }
+    const float Before = Stamina;
+    if (!SFCombatEnergy::TrySpend(Stamina, MaxStamina, Fraction,
+        GetDefault<USFCombatEnergySettings>()->AbilityEnergyCostMultiplier)) { return false; }
+    if (bSprinting)
+    { SprintExhaustAt -= (Before - Stamina) /
+        (MaxStamina * GetDefault<USFCombatEnergySettings>()->SprintDrainFractionPerSecond); }
+    ForceNetUpdate();
+    return true;
+}
+
+bool ASFE1Character::SpendManaFraction(float Fraction)
+{
+    if (!HasAuthority() || PilotHealth <= 0) { return false; }
+    if (!SFCombatEnergy::TrySpend(Mana, MaxMana, Fraction,
+        GetDefault<USFCombatEnergySettings>()->AbilityEnergyCostMultiplier)) { return false; }
+    ForceNetUpdate();
+    return true;
+}
+
+bool ASFE1Character::CanUseChallenge(double Now) const
+{ return SFCombatEnergy::CanUseRankOne(CombatCharacterLevel(), PilotHealth > 0, true, false, false) && Now >= NextChallengeAt; }
+
+void ASFE1Character::CommitChallenge(double Now)
+{ NextChallengeAt = Now + GetDefault<USFCombatEnergySettings>()->ChallengeCooldownSeconds; }
+
+void ASFE1Character::SetSprintIntent(bool bEnable)
+{
+    if (HasAuthority()) { ServerSetSprintIntent_Implementation(bEnable); }
+    else { ServerSetSprintIntent(bEnable); }
+}
+
+void ASFE1Character::ServerSetSprintIntent_Implementation(bool bEnable)
+{
+    if (!HasAuthority() || !GetWorld() ||
+        GetWorld()->GetOutermost()->GetName() != TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook")) return;
+    if (!bEnable)
+    {
+        if (bSprinting) { bSprinting = false; LastSprintEndedAt = GetWorld()->GetTimeSeconds(); ForceNetUpdate(); }
+        return;
+    }
+    if (!bSprinting && PilotHealth > 0 && !bTravelMounted && !bTravelMountCasting && !bIsCrouched &&
+        !GetCharacterMovement()->IsSwimming() && SFCombatEnergy::CanStartSprint(Stamina, MaxStamina,
+            GetDefault<USFCombatEnergySettings>()->SprintMinStartFraction, bPilotInCombat))
+    { bSprinting = true;
+      SprintExhaustAt = GetWorld()->GetTimeSeconds() + Stamina /
+          (MaxStamina * GetDefault<USFCombatEnergySettings>()->SprintDrainFractionPerSecond);
+      ForceNetUpdate(); }
+}
+
+void ASFE1Character::TickEnergy()
+{
+    const double Now = GetWorld()->GetTimeSeconds();
+    const USFCombatEnergySettings* Tune = GetDefault<USFCombatEnergySettings>();
+    const float NewMaxMana = SFCombatEnergy::MaxMana(10.f, CombatCharacterLevel());
+    if (NewMaxMana != MaxMana)
+    { Mana = MaxMana > 0 ? FMath::Clamp(Mana * NewMaxMana / MaxMana, 0.f, NewMaxMana) : NewMaxMana;
+      MaxMana = NewMaxMana; ForceNetUpdate(); }
+    if (bPilotInCombat != bEnergyWasInCombat)
+    { bEnergyWasInCombat = bPilotInCombat; if (!bPilotInCombat) EnergyOutOfCombatAt = Now; }
+    if (bSprinting && (bPilotInCombat || PilotHealth <= 0 || bTravelMounted || bIsCrouched || GetCharacterMovement()->IsSwimming()))
+    { bSprinting = false; LastSprintEndedAt = Now; ForceNetUpdate(); }
+    if (bSprinting && Now >= SprintExhaustAt)
+    { Stamina = 0.f; bSprinting = false; LastSprintEndedAt = SprintExhaustAt; ForceNetUpdate(); }
+    if (NextEnergyTickAt <= 0) { NextEnergyTickAt = Now + 1.0; }
+    while (NextEnergyTickAt <= Now)
+    {
+        NextEnergyTickAt += 1.0;
+        if (PilotHealth <= 0) continue;
+        if (bSprinting)
+        {
+            Stamina = SFCombatEnergy::SprintDrain(Stamina, MaxStamina, Tune->SprintDrainFractionPerSecond, 1.f);
+            if (Stamina <= 0) { bSprinting = false; LastSprintEndedAt = Now; }
+        }
+        else if (Now - LastSprintEndedAt >= Tune->SprintRegenDelaySeconds)
+        {
+            if (bPilotInCombat) { Stamina = FMath::Min(MaxStamina, Stamina + Tune->StaminaCombatPerSecond + 10.f / 50.f); }
+            else if (Now - EnergyOutOfCombatAt >= Tune->RegenDelaySeconds)
+            { Stamina = FMath::Min(MaxStamina, Stamina + Tune->StaminaOutOfCombatPerSecond + 10.f / 25.f); }
+        }
+        if (bPilotInCombat) { Mana = FMath::Min(MaxMana, Mana + MaxMana * (Tune->ManaCombatBase + 10.f * Tune->ManaWisdomCoefficient)); }
+        else if (Now - EnergyOutOfCombatAt >= Tune->RegenDelaySeconds)
+        { Mana = FMath::Min(MaxMana, Mana + MaxMana * Tune->ManaOutOfCombatFraction *
+            (ASFRestAreaVolume::IsAtRestArea(GetWorld(), GetActorLocation()) ? 2.f : 1.f)); }
+        ForceNetUpdate();
+    }
+}
+
 void ASFE1Character::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -2018,6 +2158,11 @@ void ASFE1Character::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
     DOREPLIFETIME_CONDITION(ASFE1Character, ResurrectionOfferId, COND_OwnerOnly);
     DOREPLIFETIME_CONDITION(ASFE1Character, ResurrectionOfferDeathEventId, COND_OwnerOnly);
     DOREPLIFETIME(ASFE1Character, bPilotInCombat);
+    DOREPLIFETIME(ASFE1Character, Stamina);
+    DOREPLIFETIME(ASFE1Character, MaxStamina);
+    DOREPLIFETIME(ASFE1Character, Mana);
+    DOREPLIFETIME(ASFE1Character, MaxMana);
+    DOREPLIFETIME(ASFE1Character, bSprinting);
     DOREPLIFETIME(ASFE1Character, bAutoAttacking);
     DOREPLIFETIME(ASFE1Character, bTravelMounted);
     DOREPLIFETIME(ASFE1Character, bTravelMountCasting);
@@ -2134,6 +2279,7 @@ void ASFE1Character::CombatMarkHostile()
          CombatMap != TEXT("/Game/Frontier/Maps/Sandbox/SB_TravelMount") &&
          CombatMap != TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook"))) { return; }
     PilotRegen.Hostile(GetWorld()->GetTimeSeconds());
+    if (bSprinting) { bSprinting = false; LastSprintEndedAt = GetWorld()->GetTimeSeconds(); ForceNetUpdate(); }
     if (!bPilotInCombat) { bPilotInCombat = true; ForceNetUpdate(); }
 }
 

@@ -1,4 +1,6 @@
 #include "Combat/SFCombatPilot.h"
+#include "Combat/SFCombatEnergy.h"
+#include "Combat/SFCastingComponent.h"
 #include "Combat/SFCommonRespawn.h"
 #include "Combat/SFSpiritReleaseRules.h"
 #include "Combat/SFResurrectionAcceptRules.h"
@@ -875,7 +877,8 @@ void ASFGameMode::PostLoginCombat(APlayerController* NewPlayer)
     }
     if (GetWorld()->GetOutermost()->GetName() == TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook") &&
         (FParse::Param(FCommandLine::Get(), TEXT("GreenlandsBoarNetcheck")) ||
-         FParse::Param(FCommandLine::Get(), TEXT("GreenlandsDeathNetcheck"))))
+         FParse::Param(FCommandLine::Get(), TEXT("GreenlandsDeathNetcheck")) ||
+         FParse::Param(FCommandLine::Get(), TEXT("GreenlandsEnergyNetcheck"))))
     {
         if (GetNumPlayers() == 1) { GreenlandsDriverController = NewPlayer; }
         else if (GetNumPlayers() == 2) { GreenlandsObserverController = NewPlayer; }
@@ -1030,10 +1033,138 @@ void ASFGameMode::TickCombat()
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     if (FParse::Param(FCommandLine::Get(), TEXT("GreenlandsBoarNetcheck"))) { TickGreenlandsNetcheck(); }
     if (FParse::Param(FCommandLine::Get(), TEXT("GreenlandsDeathNetcheck"))) { TickGreenlandsDeathNetcheck(); }
+    if (FParse::Param(FCommandLine::Get(), TEXT("GreenlandsEnergyNetcheck"))) { TickGreenlandsEnergyNetcheck(); }
 #endif
 }
 
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+void ASFGameMode::TickGreenlandsEnergyNetcheck()
+{
+    auto* Driver = Cast<ASFE1Character>(GreenlandsDriverController.IsValid() ? GreenlandsDriverController->GetPawn() : nullptr);
+    auto* Observer = Cast<ASFE1Character>(GreenlandsObserverController.IsValid() ? GreenlandsObserverController->GetPawn() : nullptr);
+    if (!Driver || !Observer || Driver->CombatHealth() <= 0 || Observer->CombatHealth() <= 0 ||
+        USFCharacterSessionComponent::IsRestoring(Driver->GetController()) ||
+        USFCharacterSessionComponent::IsRestoring(Observer->GetController())) return;
+    const double Now = GetWorld()->GetTimeSeconds();
+    if (GreenlandsEnergyStage == 0)
+    {
+        auto* Levels = Driver->GetController()->FindComponentByClass<USFGatheringPilotComponent>();
+        if (!Levels) return;
+        Levels->RestoreLevel(10); // Development fixture; production level comes from Progression restore.
+        GreenlandsEnergyBeforeSprint = Driver->GetStamina();
+        Driver->SetSprintIntent(true);
+        if (!Driver->IsSprinting()) { UE_LOG(LogTemp, Error, TEXT("ENERGY_NETCHECK_FAILED SprintStart")); return; }
+        GreenlandsEnergyStage = 1; GreenlandsEnergyStageAt = Now;
+        UE_LOG(LogTemp, Display, TEXT("ENERGY_NETCHECK_BEGIN Level=%d Stamina=%.2f Mana=%.2f"),
+            Driver->CombatCharacterLevel(), Driver->GetStamina(), Driver->GetMana());
+    }
+    else if (GreenlandsEnergyStage == 1 && Now - GreenlandsEnergyStageAt >= 2.2)
+    {
+        Driver->SetSprintIntent(false);
+        if (Driver->GetStamina() >= GreenlandsEnergyBeforeSprint || Driver->IsSprinting())
+        { UE_LOG(LogTemp, Error, TEXT("ENERGY_NETCHECK_FAILED SprintDrain")); return; }
+        GreenlandsEnergyBeforeSprint = Driver->GetStamina();
+        GreenlandsEnergyStage = 2; GreenlandsEnergyStageAt = Now;
+        UE_LOG(LogTemp, Display, TEXT("ENERGY_NETCHECK_DRAIN Stamina=%.2f"), Driver->GetStamina());
+    }
+    else if (GreenlandsEnergyStage == 2 && Now - GreenlandsEnergyStageAt >= 1.0)
+    {
+        if (!FMath::IsNearlyEqual(Driver->GetStamina(), GreenlandsEnergyBeforeSprint, .01f))
+        { UE_LOG(LogTemp, Error, TEXT("ENERGY_NETCHECK_FAILED SprintRegenDelay")); return; }
+        GreenlandsEnergyStage = 3;
+        UE_LOG(LogTemp, Display, TEXT("ENERGY_NETCHECK_REGEN_PAUSED Stamina=%.2f"), Driver->GetStamina());
+    }
+    else if (GreenlandsEnergyStage == 3)
+    {
+        ASFPilotBoar* Boar = nullptr;
+        for (const auto& Slot : ActiveBoars)
+        { if (Slot.Key.StartsWith(TEXT("boar_farm_edge:")) && IsValid(Slot.Value.Get()) && Slot.Value->Health() > 0)
+          { Boar = Slot.Value.Get(); break; } }
+        if (!Boar) return;
+        GreenlandsEnergyBoar = Boar;
+        auto Move = [this](ASFE1Character* Player, const FVector& Point)
+        { Player->SetActorLocation(Grounded(GetWorld(), Point, Player->GetCapsuleComponent()->GetScaledCapsuleHalfHeight()),
+            false, nullptr, ETeleportType::TeleportPhysics); };
+        Move(Observer, Boar->GetActorLocation() + FVector(140, 0, 0));
+        Move(Driver, Boar->GetActorLocation() + FVector(0, 550, 0));
+        Driver->CombatSetHealth(1000); Observer->CombatSetHealth(1000);
+        Boar->ReceivePilotDamage(Observer, 1); // Development pull, separate from the published ability.
+        GreenlandsEnergyStage = 4; GreenlandsEnergyStageAt = Now;
+    }
+    else if (GreenlandsEnergyStage == 4 && Now - GreenlandsEnergyStageAt >= 0.5)
+    {
+        ASFPilotBoar* Boar = GreenlandsEnergyBoar.Get();
+        if (!Boar || !Boar->ThreatTarget()) return;
+        auto* Levels = Driver->GetController()->FindComponentByClass<USFGatheringPilotComponent>();
+        if (!Levels) return;
+        Levels->RestoreLevel(9);
+        const float Before = Driver->GetStamina();
+        const bool bBelowLevel = TryPlayerTaunt(Driver, Boar);
+        if (bBelowLevel || Driver->GetStamina() != Before)
+        { UE_LOG(LogTemp, Error, TEXT("ENERGY_NETCHECK_FAILED LevelGate")); return; }
+        Levels->RestoreLevel(10);
+        if (!TryPlayerTaunt(Driver, Boar))
+        { UE_LOG(LogTemp, Error, TEXT("ENERGY_NETCHECK_FAILED Challenge")); return; }
+        const float After = Driver->GetStamina();
+        const bool bCooldown = TryPlayerTaunt(Driver, Boar);
+        if (bCooldown || Driver->GetStamina() != After)
+        { UE_LOG(LogTemp, Error, TEXT("ENERGY_NETCHECK_FAILED ChallengeCooldown")); return; }
+        UE_LOG(LogTemp, Display, TEXT("ENERGY_NETCHECK_CHALLENGE Level=10 Cost=%.2f Target=%s"),
+            Before - After, *GetNameSafe(Boar->ThreatTarget()));
+        Driver->SetActorLocation(Observer->GetActorLocation() + FVector(0, 150, 0), false, nullptr, ETeleportType::TeleportPhysics);
+        Driver->SetActorRotation((Observer->GetActorLocation() - Driver->GetActorLocation()).Rotation());
+        Driver->SetCombatTarget(Observer); Observer->SetCombatTarget(Driver); // Hostility fixture only.
+        GreenlandsEnergyStage = 5;
+    }
+    else if (GreenlandsEnergyStage == 5)
+    {
+        Driver->SetActorRotation((Observer->GetActorLocation() - Driver->GetActorLocation()).Rotation());
+        const float Before = Driver->GetStamina();
+        Driver->Casting->RequestPublishedInterrupt(false, Observer);
+        if (Driver->GetStamina() != Before)
+        { UE_LOG(LogTemp, Error, TEXT("ENERGY_NETCHECK_FAILED IdleInterruptCost")); return; }
+        UE_LOG(LogTemp, Display, TEXT("ENERGY_NETCHECK_IDLE_REFUSED Stamina=%.2f"), Before);
+        if (!Observer->Casting->BeginPublishedInterruptFixtureCast())
+        { UE_LOG(LogTemp, Error, TEXT("ENERGY_NETCHECK_FAILED FixtureCast")); return; }
+        const int32 BeforeHealth = Observer->CombatHealth();
+        Driver->Casting->RequestPublishedInterrupt(false, Observer);
+        if (!Observer->Casting->GetCastView().bInterrupted || Driver->GetStamina() >= Before ||
+            Observer->CombatHealth() >= BeforeHealth)
+        { UE_LOG(LogTemp, Error, TEXT("ENERGY_NETCHECK_FAILED Pommel")); return; }
+        UE_LOG(LogTemp, Display, TEXT("ENERGY_NETCHECK_POMMEL Cost=%.2f Damage=%d"),
+            Before - Driver->GetStamina(), BeforeHealth - Observer->CombatHealth());
+        GreenlandsEnergyStage = 6; GreenlandsEnergyStageAt = Now;
+    }
+    else if (GreenlandsEnergyStage == 6 && Now - GreenlandsEnergyStageAt >= 3.5)
+    {
+        const float Before = Driver->GetMana();
+        if (!Observer->Casting->BeginPublishedInterruptFixtureCast())
+        { UE_LOG(LogTemp, Error, TEXT("ENERGY_NETCHECK_FAILED FixtureRecast")); return; }
+        const int32 BeforeHealth = Observer->CombatHealth();
+        Driver->Casting->RequestPublishedInterrupt(true, Observer);
+        if (!Observer->Casting->GetCastView().bInterrupted || Driver->GetMana() >= Before ||
+            Observer->CombatHealth() != BeforeHealth)
+        { UE_LOG(LogTemp, Error, TEXT("ENERGY_NETCHECK_FAILED Counterspell")); return; }
+        UE_LOG(LogTemp, Display, TEXT("ENERGY_NETCHECK_COUNTERSPELL Cost=%.2f"), Before - Driver->GetMana());
+        GreenlandsEnergyStage = 7;
+    }
+    else if (GreenlandsEnergyStage == 7 && Now - GreenlandsEnergyStageAt >= 15.2)
+    {
+        Driver->SetActorRotation((Observer->GetActorLocation() - Driver->GetActorLocation()).Rotation());
+        if (!Observer->Casting->BeginPublishedInterruptFixtureCast(false))
+        { UE_LOG(LogTemp, Error, TEXT("ENERGY_NETCHECK_FAILED ImmuneFixtureCast")); return; }
+        const float Before = Driver->GetStamina();
+        const int32 BeforeHealth = Observer->CombatHealth();
+        Driver->Casting->RequestPublishedInterrupt(false, Observer);
+        if (Driver->GetStamina() >= Before || Observer->Casting->GetCastView().Phase == ESFCastPhase::Idle ||
+            Observer->CombatHealth() >= BeforeHealth)
+        { UE_LOG(LogTemp, Error, TEXT("ENERGY_NETCHECK_FAILED ImmuneInterrupt")); return; }
+        UE_LOG(LogTemp, Display, TEXT("ENERGY_NETCHECK_IMMUNE Cost=%.2f Damage=%d"),
+            Before - Driver->GetStamina(), BeforeHealth - Observer->CombatHealth());
+        GreenlandsEnergyStage = 8;
+    }
+}
+
 void ASFGameMode::TickGreenlandsDeathNetcheck()
 {
     // The reconnect fixture starts both clients together; resolve their durable identities
@@ -1491,20 +1622,33 @@ bool ASFGameMode::TryPlayerTaunt(ASFE1Character* Taunter, AActor* SelectedTarget
         { if (ASFPlayerController* PC = Cast<ASFPlayerController>(Taunter->GetController())) { PC->ClientPilotHit(FString::Printf(TEXT("Taunt: %s"), Reason)); } }
         return false;
     };
-    if (GetWorld()->GetOutermost()->GetName() != TEXT("/Game/Frontier/Maps/Sandbox/SB_Taunt") ||
+    const bool bPublished = GetWorld()->GetOutermost()->GetName() == TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook");
+    if ((!bPublished && GetWorld()->GetOutermost()->GetName() != TEXT("/Game/Frontier/Maps/Sandbox/SB_Taunt")) ||
         !bPilotActive || !CapturedSettings || !CapturedSettings->bCombatAvailable ||
         !IsValid(Taunter) || Taunter->CombatHealth() <= 0 ||
         USFCharacterSessionComponent::IsRestoring(Taunter->GetController())) { return Deny(TEXT("unavailable")); }
+    const double Now = GetWorld()->GetTimeSeconds();
+    if (bPublished && !Taunter->CanUseChallenge(Now)) { return Deny(TEXT("level or cooldown")); }
     ASFPilotBoar* Boar = Cast<ASFPilotBoar>(SelectedTarget);
-    if (!IsValid(Boar) || Boar->Health() <= 0 || Boar->IsLeashing() ||
+    if (!IsValid(Boar) || Boar->Health() <= 0 || Boar->IsLeashing() || (bPublished && !Boar->ThreatTarget()) ||
         IsSafe(Taunter->GetActorLocation()) || IsSafe(Boar->GetActorLocation())) { return Deny(TEXT("invalid target")); }
-    if (FVector::Dist2D(Taunter->GetActorLocation(), Boar->GetActorLocation()) > CapturedSettings->MeleeRangeMetres * 100.0)
+    const double RangeMetres = bPublished ? GetDefault<USFCombatEnergySettings>()->ChallengeRangeMetres : CapturedSettings->MeleeRangeMetres;
+    if (FVector::Dist2D(Taunter->GetActorLocation(), Boar->GetActorLocation()) > RangeMetres * 100.0)
     { return Deny(TEXT("out of range")); }
     FHitResult Hit;
     FCollisionQueryParams Query(SCENE_QUERY_STAT(CombatPilotTaunt), false, Taunter);
     if (GetWorld()->LineTraceSingleByChannel(Hit, Taunter->GetActorLocation() + FVector(0, 0, 45),
         Boar->GetActorLocation() + FVector(0, 0, 45), ECC_Visibility, Query) && Hit.GetActor() != Boar) { return Deny(TEXT("line of sight")); }
-    return Boar->ReceivePilotTaunt(Taunter) ? true : Deny(TEXT("not engaged or immune"));
+    if (bPublished)
+    {
+        if (!Taunter->SpendStaminaFraction(GetDefault<USFCombatEnergySettings>()->ChallengeStaminaCostFraction))
+        { return Deny(TEXT("combat_resource")); }
+        Taunter->CommitChallenge(Now);
+    }
+    const bool bApplied = Boar->ReceivePilotTaunt(Taunter);
+    UE_LOG(LogTemp, Display, TEXT("CHALLENGE_SERVER_RESULT Applied=%d Level=%d Stamina=%.2f"),
+        bApplied ? 1 : 0, Taunter->CombatCharacterLevel(), Taunter->GetStamina());
+    return bApplied;
 }
 
 void ASFGameMode::TryBoarAttack(ASFPilotBoar* Boar, ASFE1Character* Victim)

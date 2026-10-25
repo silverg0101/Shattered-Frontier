@@ -34,6 +34,17 @@ public:
     void SetGreenlandsNetcheckStage(int32 Stage, int32 LeadSlot, int32 MateSlot, bool bKill);
 #endif
     int32 CombatHealth() const { return PilotHealth; }
+    UFUNCTION(BlueprintPure, Category="Combat|Energy") float GetStamina() const { return Stamina; }
+    UFUNCTION(BlueprintPure, Category="Combat|Energy") float GetMaxStamina() const { return MaxStamina; }
+    UFUNCTION(BlueprintPure, Category="Combat|Energy") float GetMana() const { return Mana; }
+    UFUNCTION(BlueprintPure, Category="Combat|Energy") float GetMaxMana() const { return MaxMana; }
+    bool IsSprinting() const { return bSprinting; }
+    UFUNCTION(BlueprintCallable, Category="Movement") void SetSprintIntent(bool bEnable);
+    int32 CombatCharacterLevel() const;
+    bool SpendStaminaFraction(float Fraction);
+    bool SpendManaFraction(float Fraction);
+    bool CanUseChallenge(double Now) const;
+    void CommitChallenge(double Now);
     uint32 GetResurrectionOfferId() const { return ResurrectionOfferId; }
     const FString& GetResurrectionOfferDeathEventId() const { return ResurrectionOfferDeathEventId; }
     void BeginResurrectionOffer(double ExpiresAt, const FString& DeathEventId = FString());
@@ -91,6 +102,20 @@ private:
     uint32 NextResurrectionOfferId = 0;
     double ResurrectionOfferExpiresAt = 0.0;
     UPROPERTY(Replicated) bool bPilotInCombat = false;
+    UPROPERTY(Replicated) float Stamina = 0.f;
+    UPROPERTY(Replicated) float MaxStamina = 0.f;
+    UPROPERTY(Replicated) float Mana = 0.f;
+    UPROPERTY(Replicated) float MaxMana = 0.f;
+    UPROPERTY(Replicated) bool bSprinting = false;
+    bool bLocalSprintIntent = false;
+    double NextEnergyTickAt = 0.0;
+    double EnergyOutOfCombatAt = 0.0;
+    bool bEnergyWasInCombat = false;
+    double LastSprintEndedAt = -100.0;
+    double SprintExhaustAt = 0.0;
+    double NextChallengeAt = 0.0;
+    void TickEnergy();
+    UFUNCTION(Server, Reliable) void ServerSetSprintIntent(bool bEnable);
     UPROPERTY(Replicated) bool bAutoAttacking = false;
     UPROPERTY(Replicated) bool bTravelMounted = false;
     UPROPERTY(Replicated) bool bTravelMountCasting = false;
@@ -194,6 +219,8 @@ private:
     void TickTravelMountScenario();
     double TravelMountScenarioStartedAt = -1.0;
     double NextTravelMountSampleAt = 0.0;
+    double NextEnergyScenarioSampleAt = 0.0;
+    TWeakObjectPtr<ASFE1Character> EnergyScenarioSubject;
     bool bTravelMountScenarioCompleted = false;
     int32 TravelMountScenarioStage = 0;
     void TickGreenlandsMovementScenario();

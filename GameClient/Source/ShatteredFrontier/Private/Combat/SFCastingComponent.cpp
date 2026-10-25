@@ -5,6 +5,8 @@
 #include "Combat/SFCombatPilot.h"
 #include "Framework/SFGameMode.h"
 #include "Combat/SFPlayerInterruptRules.h"
+#include "Combat/SFCombatEnergy.h"
+#include "Inventory/SFGear.h"
 #include "Components/StaticMeshComponent.h"
 #include "Engine/StaticMesh.h"
 #include "EngineUtils.h"
@@ -143,6 +145,7 @@ void USFCastingComponent::TryUse(uint8 AbilityId)
     if (Result == SFCastRules::EStart::Started)
     {
         View.bInterrupted = false;
+        bCurrentCastInterruptible = true;
         Resource -= ResourceCost;
         StartLocation = Owner->GetActorLocation();
         Target = Best;
@@ -160,6 +163,78 @@ void USFCastingComponent::RequestTrainingInterrupt()
     if (GetOwner()->HasAuthority()) ServerRequestTrainingInterrupt_Implementation();
     else ServerRequestTrainingInterrupt();
 }
+
+void USFCastingComponent::RequestPublishedInterrupt(bool bCounterspell, AActor* SelectedTarget)
+{
+    if (GetOwner()->HasAuthority()) { ServerRequestPublishedInterrupt_Implementation(bCounterspell, SelectedTarget); }
+    else { ServerRequestPublishedInterrupt(bCounterspell, SelectedTarget); }
+}
+
+void USFCastingComponent::ServerRequestPublishedInterrupt_Implementation(bool bCounterspell, AActor* SelectedTarget)
+{
+    ASFE1Character* Owner = Cast<ASFE1Character>(GetOwner());
+    ASFE1Character* Victim = Cast<ASFE1Character>(SelectedTarget);
+    if (!Owner || !Owner->HasAuthority() || !GetWorld() ||
+        GetWorld()->GetOutermost()->GetName() != TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook")) return;
+    const double Time = Now();
+    const USFCombatEnergySettings* Energy = GetDefault<USFCombatEnergySettings>();
+    const double ReachCm = (bCounterspell ? Energy->CounterspellRangeMetres :
+        GetDefault<USFCombatPilotSettings>()->MeleeRangeMetres) * 100.0;
+    const bool bHostile = Victim && Owner->GetCombatTarget() == Victim && Victim->GetCombatTarget() == Owner;
+    const bool bCasting = Victim && Victim->Casting && Victim->Casting->GetCastView().Phase != ESFCastPhase::Idle;
+    const bool bValid = bHostile && Victim->CombatHealth() > 0 &&
+        FVector::Dist2D(Owner->GetActorLocation(), Victim->GetActorLocation()) <= ReachCm &&
+        (bCounterspell || FVector::DotProduct(Owner->GetActorForwardVector().GetSafeNormal2D(),
+            (Victim->GetActorLocation() - Owner->GetActorLocation()).GetSafeNormal2D()) >= 0.f);
+    if (!SFCombatEnergy::CanUseRankOne(Owner->CombatCharacterLevel(), Owner->CombatHealth() > 0,
+        bValid, bCasting, true))
+    { UE_LOG(LogTemp, Display, TEXT("PUBLISHED_INTERRUPT_DENIED Reason=level_target_or_cast Level=%d Hostile=%d Valid=%d Casting=%d Distance=%.0f Facing=%.2f"),
+        Owner->CombatCharacterLevel(), bHostile ? 1 : 0, bValid ? 1 : 0, bCasting ? 1 : 0,
+        Victim ? FVector::Dist2D(Owner->GetActorLocation(), Victim->GetActorLocation()) : -1.0,
+        Victim ? FVector::DotProduct(Owner->GetActorForwardVector().GetSafeNormal2D(),
+            (Victim->GetActorLocation() - Owner->GetActorLocation()).GetSafeNormal2D()) : -1.0); return; }
+    if (Time < (bCounterspell ? NextCounterspellAt : NextPommelAt))
+    { UE_LOG(LogTemp, Display, TEXT("PUBLISHED_INTERRUPT_DENIED Reason=cooldown")); return; }
+    FCollisionQueryParams Query(SCENE_QUERY_STAT(PublishedInterruptLOS), false, Owner);
+    Query.AddIgnoredActor(Victim);
+    if (GetWorld()->LineTraceTestByChannel(Owner->GetActorLocation() + FVector(0, 0, 50),
+        Victim->GetActorLocation() + FVector(0, 0, 50), ECC_Visibility, Query))
+    { UE_LOG(LogTemp, Display, TEXT("PUBLISHED_INTERRUPT_DENIED Reason=sight")); return; }
+    const bool bPaid = bCounterspell ? Owner->SpendManaFraction(Energy->CounterspellManaCostFraction) :
+        Owner->SpendStaminaFraction(Energy->PommelStaminaCostFraction);
+    if (!bPaid) { UE_LOG(LogTemp, Display, TEXT("PUBLISHED_INTERRUPT_DENIED Reason=combat_resource")); return; }
+    if (bCounterspell) { NextCounterspellAt = Time + Energy->CounterspellCooldownSeconds; }
+    else { NextPommelAt = Time + Energy->PommelCooldownSeconds; }
+    const bool bApplied = Victim->Casting->IsCurrentCastInterruptible();
+    if (bApplied) { Victim->Casting->Interrupt(); }
+    if (!bCounterspell)
+    {
+        const int32 BaseDamage = GetDefault<USFCombatPilotSettings>()->PlayerMeleeDamage +
+            SFGear::Equipped(Owner->GetController()).Damage;
+        const int32 Damage = FMath::Max(1, FMath::RoundToInt(BaseDamage * Energy->PommelPhysicalModifier));
+        Victim->CombatSetHealth(FMath::Max(0, Victim->CombatHealth() - Damage));
+        Owner->CombatMarkHostile();
+    }
+    UE_LOG(LogTemp, Display, TEXT("PUBLISHED_INTERRUPT_APPLIED Kind=%s Applied=%d Level=%d Stamina=%.2f Mana=%.2f"),
+        bCounterspell ? TEXT("counterspell") : TEXT("pommel_strike"), bApplied ? 1 : 0, Owner->CombatCharacterLevel(),
+        Owner->GetStamina(), Owner->GetMana());
+}
+
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+bool USFCastingComponent::BeginPublishedInterruptFixtureCast(bool bInterruptible)
+{
+    if (!GetOwner()->HasAuthority() || !GetWorld() ||
+        GetWorld()->GetOutermost()->GetName() != TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook") ||
+        !FParse::Param(FCommandLine::Get(), TEXT("GreenlandsEnergyNetcheck"))) return false;
+    const auto Result = State.Request(Definition(1), Now(), 0.0, Tune);
+    if (Result != SFCastRules::EStart::Started) return false;
+    bCurrentCastInterruptible = bInterruptible;
+    View.bInterrupted = false;
+    Resource -= ResourceCost;
+    SyncView();
+    return true;
+}
+#endif
 
 void USFCastingComponent::ServerRequestTrainingInterrupt_Implementation()
 {
