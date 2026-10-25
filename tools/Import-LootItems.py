@@ -6,6 +6,7 @@ forge-handoff.json length. Width and thickness are reported, not reshaped.
 """
 import json
 import hashlib
+import sys
 from pathlib import Path
 
 import unreal as u
@@ -18,6 +19,9 @@ NAMES = (
     'archers_gloves', 'fangtooth_dagger', 'wolf_fang', 'brigand_blade',
     'cudgel', 'captains_longsword', 'wolf_pelt', 'wolfhide_bracers',
 )
+requested = set(sys.argv[1:])
+assert not requested or requested <= set(NAMES), requested
+NAMES = tuple(stem for stem in NAMES if not requested or stem in requested)
 rows = {row['item_id'][5:]: row for row in
         json.loads((ROOT / 'content/items/forge-handoff.json').read_text())['items']}
 spans = json.loads((SOURCE / 'principal-spans.json').read_text())
@@ -70,6 +74,11 @@ for stem in NAMES:
                                       u.InterchangeGenericAssetsPipeline, None)
     assert pipeline, pipeline_path
     pipeline.set_editor_property('import_offset_uniform_scale', factor)
+    if stem == 'wolf_pelt':
+        # The GLB includes authored vertex normals; retain them across the
+        # pelt's curved side and regenerate tangents for Unreal shading.
+        pipeline.common_meshes_properties.set_editor_property('recompute_normals', False)
+        pipeline.common_meshes_properties.set_editor_property('recompute_tangents', True)
     assert library.save_loaded_asset(pipeline), pipeline_path
     params = u.ImportAssetParameters()
     params.is_automated = True
@@ -89,6 +98,12 @@ for stem in NAMES:
     nanite.set_editor_property('fallback_target', u.NaniteFallbackTarget.PERCENT_TRIANGLES)
     nanite.set_editor_property('fallback_percent_triangles', 1.0)
     mesh.set_editor_property('nanite_settings', nanite)
+    if stem == 'wolf_pelt':
+        sme = u.get_editor_subsystem(u.StaticMeshEditorSubsystem)
+        settings = sme.get_lod_build_settings(mesh, 0)
+        settings.set_editor_property('recompute_normals', False)
+        settings.set_editor_property('recompute_tangents', True)
+        sme.set_lod_build_settings(mesh, 0, settings)
     assert library.save_loaded_asset(mesh), mesh.get_path_name()
     actual = dimensions(mesh)
     assert abs(principal[0] * factor * 100 - row['size_cm']['length']) < 0.01
@@ -107,6 +122,11 @@ for stem in NAMES:
 
 out = ROOT / 'Artifacts/LootItems/import-evidence.json'
 out.parent.mkdir(parents=True, exist_ok=True)
+if requested and out.is_file():
+    previous = json.loads(out.read_text())
+    updated = {entry['item_id']: entry for entry in report}
+    report = [updated.pop(entry['item_id'], entry) for entry in previous]
+    assert not updated, updated
 out.write_text(json.dumps(report, indent=2))
 assert library.delete_directory(DEST + '/_ScaleRaw')
 print('LOOT_IMPORT_COMPLETE', len(report), out)

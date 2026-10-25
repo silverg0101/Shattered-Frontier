@@ -31,6 +31,13 @@ for stem in names:
     assert nanite.get_editor_property('fallback_target') == u.NaniteFallbackTarget.PERCENT_TRIANGLES
     assert abs(nanite.get_editor_property('fallback_percent_triangles') - 1.0) < .001
     assert all(slot.material_interface for slot in mesh.static_materials), stem
+    if stem == 'wolf_pelt':
+        common = pipeline.common_meshes_properties
+        assert not common.get_editor_property('recompute_normals')
+        assert common.get_editor_property('recompute_tangents')
+        settings = u.get_editor_subsystem(u.StaticMeshEditorSubsystem).get_lod_build_settings(mesh, 0)
+        assert not settings.get_editor_property('recompute_normals')
+        assert settings.get_editor_property('recompute_tangents')
     print('LOOT_CHECK', stem, mesh.get_path_name(), 'principal_length_cm',
           round(length, 2), 'render_triangles', mesh.get_num_triangles(0))
 print('LOOT_CHECK_PASS', len(names))

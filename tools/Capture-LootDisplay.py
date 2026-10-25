@@ -6,7 +6,7 @@ from pathlib import Path
 import unreal as u
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT / 'Artifacts/LootItems/in-engine/round2'
+OUT = ROOT / 'Artifacts/LootItems/in-engine/round3'
 OUT.mkdir(parents=True, exist_ok=True)
 world = u.load_asset('/Game/Frontier/Maps/Sandbox/SB_LootModels')
 pc = u.GameplayStatics.get_player_controller(world, 0)
