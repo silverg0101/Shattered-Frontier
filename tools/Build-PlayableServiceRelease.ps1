@@ -32,5 +32,5 @@ $rows = Get-ChildItem -LiteralPath $output -File -Recurse | Sort-Object FullName
     $relative = [IO.Path]::GetRelativePath($output, $_.FullName).Replace('\','/')
     '{0}  {1}' -f (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant(), $relative
 }
-[IO.File]::WriteAllLines((Join-Path $output 'SHA256SUMS'), $rows, [Text.UTF8Encoding]::new($false))
+[IO.File]::WriteAllText((Join-Path $output 'SHA256SUMS'), ($rows -join "`n") + "`n", [Text.UTF8Encoding]::new($false))
 Write-Output "SERVICE_RELEASE_READY revision=$revision files=$($rows.Count)"

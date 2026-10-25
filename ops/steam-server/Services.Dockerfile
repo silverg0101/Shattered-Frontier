@@ -11,7 +11,10 @@ COPY base-schema ./base-schema
 COPY release.json ./release.json
 COPY Dockerfile ./Dockerfile
 COPY SHA256SUMS ./SHA256SUMS
-RUN test "${#SF_REVISION}" = 40 && sha256sum -c SHA256SUMS --quiet
+RUN test "${#SF_REVISION}" = 40 \
+    && case "$SF_REVISION" in *[!0-9a-f]*) exit 1;; esac \
+    && grep -F "\"revision\": \"$SF_REVISION\"" release.json >/dev/null \
+    && sha256sum -c SHA256SUMS --quiet
 ENV DOTNET_EnableDiagnostics=0 HOME=/tmp
 USER 998:998
 ENTRYPOINT ["dotnet"]
