@@ -25,4 +25,21 @@ bool FSFOutOfCombatRegenTest::RunTest(const FString& Parameters)
     TestEqual(TEXT("Dead player never regenerates"), Clock.Advance(40.0, false, 0, 80, 10, 5, 5, .03), 0);
     return true;
 }
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFRestAreaRegenTest,
+    "ShatteredFrontier.Combat.Pilot.RestAreaRegen",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+
+bool FSFRestAreaRegenTest::RunTest(const FString& Parameters)
+{
+    FSFOutOfCombatRegen Clock;
+    Clock.Hostile(0.0);
+    TestEqual(TEXT("Rest area cannot heal during combat"), Clock.Advance(4.0, false, 40, 80, 10, 5, 5, .03, true), 40);
+    TestEqual(TEXT("Combat exit does not heal in rest area"), Clock.Advance(5.0, false, 40, 80, 10, 5, 5, .03, true), 40);
+    TestEqual(TEXT("Rest area cannot skip regeneration delay"), Clock.Advance(9.0, false, 40, 80, 10, 5, 5, .03, true), 40);
+    TestEqual(TEXT("Ordinary first tick"), Clock.Advance(10.0, false, 40, 80, 10, 5, 5, .03, false), 42);
+    TestEqual(TEXT("Rest tick doubles rate with fractional carry"), Clock.Advance(11.0, false, 42, 80, 10, 5, 5, .03, true), 47);
+    TestEqual(TEXT("Leaving rest restores ordinary rate"), Clock.Advance(12.0, false, 47, 80, 10, 5, 5, .03, false), 49);
+    return true;
+}
 #endif

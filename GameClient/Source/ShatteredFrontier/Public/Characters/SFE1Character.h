@@ -105,6 +105,9 @@ private:
     double RespawnScenarioDeathAt = -1;
     int32 RegenScenarioStage = 0;
     double NextRegenSampleAt = 0;
+    int32 RestRegenScenarioStage = 0;
+    int32 RestRegenHurtHealth = 0;
+    double NextRestRegenSampleAt = 0;
     double NextFallSampleAt = 0;
     double NextSwimSampleAt = 0;
     int32 SwimScenarioStage = 0;
@@ -133,6 +136,7 @@ private:
     void TickAssistScenario();
     void TickRespawnScenario();
     void TickRegenScenario();
+    void TickRestRegenScenario();
     void TickFallScenario();
     void TickSwimScenario();
     void TickCrouchScenario();

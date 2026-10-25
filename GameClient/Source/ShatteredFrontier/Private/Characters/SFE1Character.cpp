@@ -23,6 +23,7 @@
 #include "Characters/SFCombatFramingLogic.h"
 #include "Characters/SFSwimRules.h"
 #include "Characters/SFRoadSpeedVolume.h"
+#include "Creatures/SFRestAreaVolume.h"
 #include "Combat/SFCombatPilot.h"
 #include "Combat/SFTabTargetSelection.h"
 #include "Combat/SFCrowdControlComponent.h"
@@ -657,6 +658,65 @@ void ASFE1Character::TickRegenScenario()
 #endif
 }
 
+void ASFE1Character::TickRestRegenScenario()
+{
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    FString ScenarioRole;
+    FParse::Value(FCommandLine::Get(), TEXT("RestRegenRole="), ScenarioRole);
+    if ((ScenarioRole != TEXT("Driver") && ScenarioRole != TEXT("Observer")) || !Controller) { return; }
+    ASFE1Character* Watched = this;
+    int32 Players = 0;
+    for (TActorIterator<ASFE1Character> It(GetWorld()); It; ++It)
+    {
+        ++Players;
+        if (ScenarioRole == TEXT("Observer") && *It != this) { Watched = *It; }
+    }
+    if (Players < 2 || (ScenarioRole == TEXT("Observer") && Watched == this) || Watched->CombatHealth() <= 0) { return; }
+    const double Now = GetWorld()->GetTimeSeconds();
+    if (Now >= NextRestRegenSampleAt)
+    {
+        NextRestRegenSampleAt = Now + 1.0;
+        UE_LOG(LogTemp, Display, TEXT("REST_REGEN_SAMPLE Role=%s Time=%.2f Health=%d Combat=%d X=%.0f Y=%.0f Z=%.0f Rest=%d"),
+            *ScenarioRole, Now, Watched->CombatHealth(), Watched->IsPilotInCombat() ? 1 : 0,
+            Watched->GetActorLocation().X, Watched->GetActorLocation().Y, Watched->GetActorLocation().Z,
+            ASFRestAreaVolume::IsAtRestArea(GetWorld(), Watched->GetActorLocation()) ? 1 : 0);
+    }
+    if (ScenarioRole == TEXT("Observer"))
+    {
+        if (GetActorLocation().Y > -3000) { AddMovementInput(-FVector::RightVector, 1.0f); }
+        return;
+    }
+    ASFPilotBoar* Boar = nullptr;
+    for (TActorIterator<ASFPilotBoar> It(GetWorld()); It; ++It)
+    { if (It->GroupId() == TEXT("rest_regen_sandbox")) { Boar = *It; break; } }
+    if (!Boar) { return; }
+    if (RestRegenScenarioStage == 0)
+    {
+        if (PilotHealth <= 55)
+        {
+            RestRegenHurtHealth = PilotHealth;
+            RestRegenScenarioStage = 1;
+            UE_LOG(LogTemp, Display, TEXT("REST_REGEN_DRIVER_HURT Health=%d"), PilotHealth);
+        }
+        else { AddMovementInput((Boar->GetActorLocation() - GetActorLocation()).GetSafeNormal2D(), 1.0f); }
+    }
+    if (RestRegenScenarioStage == 1)
+    {
+        if (GetActorLocation().X < 8400) { AddMovementInput(FVector::ForwardVector, 1.0f); }
+        else if (PilotHealth >= RestRegenHurtHealth + 4) { RestRegenScenarioStage = 2; }
+    }
+    if (RestRegenScenarioStage == 2)
+    {
+        for (TActorIterator<ASFRestAreaVolume> It(GetWorld()); It; ++It)
+        {
+            const FVector ToRest = It->GetActorLocation() - GetActorLocation();
+            if (ToRest.Size2D() > 150.f) { AddMovementInput(ToRest.GetSafeNormal2D(), 1.0f); }
+            break;
+        }
+    }
+#endif
+}
+
 void ASFE1Character::TickFallScenario()
 {
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
@@ -1176,6 +1236,7 @@ void ASFE1Character::Tick(float DeltaSeconds)
     }
     if (HasAuthority() && PilotHealth > 0 &&
         (CombatMap == TEXT("/Game/Frontier/Maps/Sandbox/SB_Regeneration") ||
+         CombatMap == TEXT("/Game/Frontier/Maps/Sandbox/SB_RestRegen") ||
          CombatMap == TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook")))
     {
         bool bThreatened = false;
@@ -1183,10 +1244,12 @@ void ASFE1Character::Tick(float DeltaSeconds)
         { if (It->HasThreatFor(this)) { bThreatened = true; break; } }
         const auto* Settings = GetDefault<USFCombatPilotSettings>();
         const bool bWasInCombat = PilotRegen.bInCombat;
+        const bool bRestRegenSandbox = CombatMap == TEXT("/Game/Frontier/Maps/Sandbox/SB_RestRegen");
+        const bool bAtRestArea = bRestRegenSandbox && ASFRestAreaVolume::IsAtRestArea(GetWorld(), GetActorLocation());
         // The pilot has no attribute snapshot yet; use the authored minimum until attributes are integrated.
         const int32 Regenerated = PilotRegen.Advance(GetWorld()->GetTimeSeconds(), bThreatened,
             PilotHealth, Settings->PlayerHealth, 10, Settings->CombatExitSeconds,
-            Settings->RegenDelaySeconds, Settings->HealthRegenOocPct);
+            Settings->RegenDelaySeconds, Settings->HealthRegenOocPct, bAtRestArea);
         if (bWasInCombat != PilotRegen.bInCombat)
         {
             bPilotInCombat = PilotRegen.bInCombat;
@@ -1197,6 +1260,8 @@ void ASFE1Character::Tick(float DeltaSeconds)
         {
             CombatSetHealth(Regenerated);
             UE_LOG(LogTemp, Display, TEXT("REGEN_HEALTH_TICK Health=%d Time=%.2f"), PilotHealth, GetWorld()->GetTimeSeconds());
+            if (bRestRegenSandbox)
+            { UE_LOG(LogTemp, Display, TEXT("REST_REGEN_TICK Health=%d Rest=%d Time=%.2f"), PilotHealth, bAtRestArea ? 1 : 0, GetWorld()->GetTimeSeconds()); }
         }
     }
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
@@ -1346,6 +1411,8 @@ void ASFE1Character::Tick(float DeltaSeconds)
         FParse::Param(FCommandLine::Get(), TEXT("CombatRespawnScenario"))) { TickRespawnScenario(); }
     if (GetNetMode() == NM_Client && IsLocallyControlled() &&
         FParse::Param(FCommandLine::Get(), TEXT("CombatRegenScenario"))) { TickRegenScenario(); }
+    if (GetNetMode() == NM_Client && IsLocallyControlled() &&
+        FParse::Param(FCommandLine::Get(), TEXT("RestRegenScenario"))) { TickRestRegenScenario(); }
     if (GetNetMode() == NM_Client && IsLocallyControlled() &&
         FParse::Param(FCommandLine::Get(), TEXT("CombatFallScenario"))) { TickFallScenario(); }
     if (GetNetMode() == NM_Client && IsLocallyControlled() &&
@@ -1652,6 +1719,7 @@ void ASFE1Character::CombatMarkHostile()
     const FString CombatMap = GetWorld()->GetOutermost()->GetName();
     if (!HasAuthority() ||
         (CombatMap != TEXT("/Game/Frontier/Maps/Sandbox/SB_Regeneration") &&
+         CombatMap != TEXT("/Game/Frontier/Maps/Sandbox/SB_RestRegen") &&
          CombatMap != TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook"))) { return; }
     PilotRegen.Hostile(GetWorld()->GetTimeSeconds());
     if (!bPilotInCombat) { bPilotInCombat = true; ForceNetUpdate(); }

@@ -20,7 +20,8 @@ struct FSFOutOfCombatRegen
     }
 
     int32 Advance(double Now, bool bOnThreatTable, int32 Health, int32 MaxHealth,
-        int32 Constitution, double CombatExitSeconds, double RegenDelaySeconds, double HealthPctPerSecond)
+        int32 Constitution, double CombatExitSeconds, double RegenDelaySeconds, double HealthPctPerSecond,
+        bool bAtRestArea = false)
     {
         if (Health <= 0 || MaxHealth <= 0) { return Health; }
         if (bInCombat)
@@ -31,7 +32,7 @@ struct FSFOutOfCombatRegen
             NextRegenTickAt = FMath::CeilToDouble(OutOfCombatAt + RegenDelaySeconds);
         }
         if (Health >= MaxHealth || OutOfCombatAt < 0.0 || Now < NextRegenTickAt) { return Health; }
-        const double PerTick = MaxHealth * HealthPctPerSecond * (1.0 + Constitution / 500.0);
+        const double PerTick = MaxHealth * HealthPctPerSecond * (1.0 + Constitution / 500.0) * (bAtRestArea ? 2.0 : 1.0);
         while (NextRegenTickAt <= Now && Health < MaxHealth)
         {
             FractionalHealth += PerTick;

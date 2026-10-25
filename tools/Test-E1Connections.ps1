@@ -10,6 +10,7 @@ param(
     [switch]$AggroScenario,
     [switch]$MemoryScenario,
     [switch]$RegenScenario,
+    [switch]$RestRegenScenario,
     [switch]$FallScenario,
     [switch]$SwimScenario,
     [switch]$CrouchScenario,
@@ -35,7 +36,7 @@ function Launch([string[]]$LaunchArguments) {
     Write-Output "Started PID $($process.Id)"
 }
 function Wait-Log([string]$Path, [string]$Pattern, [int]$Count = 1) {
-    $deadline = (Get-Date).AddSeconds($(if ($RespawnScenario -or $GreenlandsBoarNetcheck) { 420 } elseif ($EvadeScenario -or $ThreatScenario -or $AggroScenario -or $MemoryScenario -or $RegenScenario -or $AssistScenario) { 240 } else { 120 }))
+    $deadline = (Get-Date).AddSeconds($(if ($RespawnScenario -or $GreenlandsBoarNetcheck) { 420 } elseif ($EvadeScenario -or $ThreatScenario -or $AggroScenario -or $MemoryScenario -or $RegenScenario -or $RestRegenScenario -or $AssistScenario) { 240 } else { 120 }))
     while ((Get-Date) -lt $deadline) {
         foreach ($process in $ownedProcesses) { if ($process.HasExited) { throw "Network process $($process.Id) exited before $Pattern" } }
         if (Test-Path -LiteralPath $Path) {
@@ -75,6 +76,13 @@ function Assert-EvadeClient([string]$Path, [string]$Role) {
     return [math]::Round($speed,1)
 }
 try {
+    if ($RestRegenScenario -and ($Map -ne '/Game/Frontier/Maps/Sandbox/SB_RestRegen' -or $Clients -ne 2 -or
+        $CastingScenario -or $EvadeScenario -or $ThreatScenario -or $AggroScenario -or $MemoryScenario -or
+        $RegenScenario -or $FallScenario -or $SwimScenario -or $CrouchScenario -or $BackpedalScenario -or
+        $RoadScenario -or $AssistScenario -or $RespawnScenario -or $GreenlandsBoarNetcheck -or
+        $GreenlandsEnvironmentNetcheck -or $GreenlandsMovementNetcheck)) {
+        throw 'RestRegenScenario requires SB_RestRegen, two clients, and no other scenario'
+    }
     if ($RoadScenario -and ($Map -ne '/Game/Frontier/Maps/Sandbox/SB_RoadSpeed' -or $Clients -ne 2 -or
         $CastingScenario -or $EvadeScenario -or $ThreatScenario -or $AggroScenario -or $MemoryScenario -or
         $RegenScenario -or $FallScenario -or $SwimScenario -or $CrouchScenario -or $BackpedalScenario -or
@@ -162,6 +170,7 @@ try {
     if ($AggroScenario) { $serverArgs += '-CombatAggroScenario' }
     if ($MemoryScenario) { $serverArgs += '-CombatMemoryScenario' }
     if ($RegenScenario) { $serverArgs += '-CombatRegenScenario' }
+    if ($RestRegenScenario) { $serverArgs += '-RestRegenScenario' }
     if ($FallScenario) { $serverArgs += '-CombatFallScenario' }
     if ($AssistScenario) { $serverArgs += '-CombatAssistScenario' }
     if ($RespawnScenario) { $serverArgs += '-CombatRespawnScenario' }
@@ -182,6 +191,7 @@ try {
         if ($AggroScenario) { $clientArgs += @('-CombatAggroScenario', ('-CombatAggroRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         if ($MemoryScenario) { $clientArgs += @('-CombatMemoryScenario', ('-CombatMemoryRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         if ($RegenScenario) { $clientArgs += @('-CombatRegenScenario', ('-CombatRegenRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
+        if ($RestRegenScenario) { $clientArgs += @('-RestRegenScenario', ('-RestRegenRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         if ($FallScenario) { $clientArgs += @('-CombatFallScenario', ('-CombatFallRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         if ($SwimScenario) { $clientArgs += @('-SwimScenario', ('-SwimRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         if ($CrouchScenario) { $clientArgs += @('-CrouchScenario', ('-CrouchRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
@@ -327,6 +337,34 @@ try {
             }
         }
         Write-Output "PASS: boar damaged client 1; threat cleared on evade, then both clients observed five-second combat exit, five-second regeneration delay, and one-second health ticks to full. Logs: $logs"
+    }
+    if ($RestRegenScenario) {
+        Wait-Log $serverLog 'COMBAT_PILOT_PLAYER_HIT HP=([1-9][0-9]*) By=SFPilotBoar'
+        Wait-Log $serverLog 'REGEN_COMBAT_EXIT Health='
+        Wait-Log $serverLog 'REST_REGEN_TICK Health=\d+ Rest=0'
+        Wait-Log $serverLog 'REST_REGEN_TICK Health=\d+ Rest=1' 2
+        $ticks = @(Select-String -LiteralPath $serverLog -Pattern 'REST_REGEN_TICK Health=(\d+) Rest=([01])' | ForEach-Object {
+            [pscustomobject]@{ HP=[int]$_.Matches[0].Groups[1].Value; Rest=[int]$_.Matches[0].Groups[2].Value }
+        })
+        $ordinary = @($ticks | Where-Object { $_.Rest -eq 0 })
+        $rested = @($ticks | Where-Object { $_.Rest -eq 1 })
+        if ($ordinary.Count -lt 2 -or $rested.Count -lt 2) { throw 'Server missed ordinary or rested health ticks' }
+        $ordinaryGain = $ordinary[1].HP - $ordinary[0].HP
+        $restedGain = $rested[1].HP - $rested[0].HP
+        if ($ordinaryGain -lt 2 -or $ordinaryGain -gt 3 -or $restedGain -lt 4 -or $restedGain -gt 5) {
+            throw "Server regeneration rates differ from Combat values: ordinary=$ordinaryGain rested=$restedGain"
+        }
+        foreach ($role in @('Driver', 'Observer')) {
+            $path = Join-Path $logs ('Client' + $(if ($role -eq 'Driver') { '1' } else { '2' }) + '.log')
+            Wait-Log $path "REST_REGEN_SAMPLE Role=$role.*Rest=1"
+            $s = Get-Content -LiteralPath $path -Raw
+            if ($s -notmatch "REST_REGEN_SAMPLE Role=$role.*Health=([1-5][0-9]) Combat=1.*Rest=0" -or
+                $s -notmatch "REST_REGEN_SAMPLE Role=$role.*Health=([1-7][0-9]) Combat=0.*Rest=0" -or
+                $s -notmatch "REST_REGEN_SAMPLE Role=$role.*Health=([1-7][0-9]) Combat=0.*Rest=1") {
+                throw "$role missed the replicated damage, combat exit, or rest-area healing sequence"
+            }
+        }
+        Write-Output "PASS: boar damage, combat exit, delayed ordinary healing ($ordinaryGain HP/tick), and rested healing ($restedGain HP/tick) replicated to both clients. Logs: $logs"
     }
     if ($FallScenario) {
         Wait-Log $serverLog 'FALL_DAMAGE ImpactMps='
@@ -688,7 +726,7 @@ try {
         Write-Output "PASS: Greenlands aggro, threat switch, pack assist, leash/evade, attacker memory, regeneration, client kill and rotated slot respawn on both clients. Logs: $logs"
     }
     Write-Output "PASS: separate editor server and $Clients client(s) connected; $Clients server-authoritative possession(s). Logs: $logs"
-    if (-not $CastingScenario -and -not $EvadeScenario -and -not $ThreatScenario -and -not $AggroScenario -and -not $MemoryScenario -and -not $RegenScenario -and -not $FallScenario -and -not $SwimScenario -and -not $CrouchScenario -and -not $BackpedalScenario -and -not $RoadScenario -and -not $AssistScenario -and -not $RespawnScenario -and -not $GreenlandsBoarNetcheck -and -not $GreenlandsEnvironmentNetcheck -and -not $GreenlandsMovementNetcheck) { Write-Output 'Headless connection check only: movement, rendering, lifecycle cleanup, authentication and Linux runtime are not certified.' }
+    if (-not $CastingScenario -and -not $EvadeScenario -and -not $ThreatScenario -and -not $AggroScenario -and -not $MemoryScenario -and -not $RegenScenario -and -not $RestRegenScenario -and -not $FallScenario -and -not $SwimScenario -and -not $CrouchScenario -and -not $BackpedalScenario -and -not $RoadScenario -and -not $AssistScenario -and -not $RespawnScenario -and -not $GreenlandsBoarNetcheck -and -not $GreenlandsEnvironmentNetcheck -and -not $GreenlandsMovementNetcheck) { Write-Output 'Headless connection check only: movement, rendering, lifecycle cleanup, authentication and Linux runtime are not certified.' }
 } finally {
     foreach ($process in $ownedProcesses) {
         if (-not $process.HasExited) { Stop-Process -Id $process.Id -ErrorAction SilentlyContinue }
