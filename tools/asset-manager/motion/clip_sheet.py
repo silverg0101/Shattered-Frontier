@@ -2,8 +2,8 @@
 Contact sheet of a retargeted clip (zoo_retarget.py): 8 side views across the clip (top two rows, head to the right),
 4 front views (third row), orthographic on a floor plane with a red floor line, then a plot of each paw's height
 above the floor per frame (CLIP.json heights_m; planted frames marked).
-python clip_sheet.py --review OUT.png CLIP.json   Claude checks the sheet (ANTHROPIC_API_KEY): prints REVIEW PASS or
-REVIEW FAIL: <reason>."""
+python clip_sheet.py --review OUT.png CLIP.json [PROMPT]   Claude checks the sheet (ANTHROPIC_API_KEY) against PROMPT
+(what the motion should show; default the clip name): prints REVIEW PASS or REVIEW FAIL: <reason>."""
 import json, math, sys
 from pathlib import Path
 
@@ -102,7 +102,7 @@ def sheet(glb, meta_path, out):
     print("SHEET", out, "side frames", side_frames)
 
 
-def review(sheet_path, meta_path):
+def review(sheet_path, meta_path, prompt=None):
     import base64
     sys.path.insert(0, str(Path(__file__).parent))
     from zoo_curate import claude
@@ -110,13 +110,16 @@ def review(sheet_path, meta_path):
     m = {k: meta[k] for k in ("min_paw_cm", "max_slide_cm", "seam_deg", "flips")}
     img = {"type": "image", "source": {"type": "base64", "media_type": "image/png",
                                        "data": base64.b64encode(Path(sheet_path).read_bytes()).decode()}}
+    want = (f"The motion was asked for as: \"{prompt}\". It must show that, specifically: a different action, "
+            "or the right action done in a clearly different way (for example rearing up and sniffing the air when "
+            "asked to sniff the ground), is a FAIL even when it moves cleanly. ") if prompt else ""
     text = claude([img, {"type": "text", "text": (
         f"A library motion clip, \"{meta['clip']}\" ({'a loop' if meta['loop'] else 'a one-shot'}, {meta['frames']} frames "
         f"at {meta['fps']} fps), was retargeted onto a generated quadruped creature for a game. The sheet shows the "
         "creature from its right side at 8 evenly spaced frames (top two rows, read left to right, head to the right), "
         "from the front at 4 of those frames (third row), and a plot of each paw's height above the floor per frame "
         "(bottom; blue FL, orange FR, green HL, red HR; the red line is the floor; coloured blocks under the axis mark the "
-        f"frames each paw is planted). Measured: {json.dumps(m)}.\n\nJudge whether the motion is usable as it is: paws "
+        f"frames each paw is planted). Measured: {json.dumps(m)}.\n\n{want}Judge whether the motion is usable as it is: paws "
         "on or above the floor (red line) and planted while in contact, legs bending the natural way with no "
         "twisted, inverted or dislocated joints, the body and head in a believable pose for this motion, the tail "
         "attached and not through the floor, and the motion recognisably the named action. Ignore lighting, "
@@ -130,7 +133,7 @@ def review(sheet_path, meta_path):
 if __name__ == "__main__":
     a = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else sys.argv[1:]
     if a[0] == "--review":
-        review(a[1], a[2])
+        review(a[1], a[2], a[3] if len(a) > 3 else None)
     else:
         try:
             sheet(*a[:3])
