@@ -2967,6 +2967,17 @@ def check():
     assert min(zc.blocks(f22[:, rcols], zc.STALL)) < zc.MIN_BLOCK and zc.score(j22, f22, False) is None
     assert zc.score(*zc.parse(bvh(6))[:2], False) and zc.score(*zc.parse(bvh(0))[:2], False)
     assert zc.motion_of("Rat/bvh/Scamper_in_betweening_edit_Scamper_Eat_0001_seed10_Rat-Eat_3.bvh") == "Scamper"
+    # source defects: a splice jump, a death that stands back up, a stand with its paw off the floor
+    j0, f0, ft0 = zc.parse(bvh(0))[:3]
+    assert zc.defects(j0, f0, ft0, "Walk", 0, 39) == ""
+    fj = f0.copy(); fj[20, 6:9] += 60  # the spine (and the leg on it) swings 60 degrees in one frame
+    assert "jumps" in zc.defects(j0, fj, ft0, "Walk", 0, 39)
+    fd = f0.copy(); fd[:, 1] = zc.np.linspace(5, 1, 40)  # the root sinks from 5 to 1
+    assert zc.defects(j0, fd, ft0, "Die", 0, 39) == "" and "lying down" in zc.defects(j0, f0, ft0, "Die", 0, 39)
+    assert zc.score(j0, fd, False, True)[0] == 0.2  # deaths rank by how low they end
+    assert "sinks" in zc.defects(j0, fd, ft0, "Idle", 0, 39)
+    fs = f0.copy(); fs[:, 1] = 5; fs[:, 3:12] = 0; fs[:, 8] = zc.np.linspace(0, 60, 40)  # standing, the paw slowly raised
+    assert "paws are on the floor" in zc.defects(j0, fs, ft0, "Idle", 0, 39) and zc.defects(j0, fs[:10], ft0, "Idle", 0, 9) == ""
     with tempfile.TemporaryDirectory() as td:
         with zipfile.ZipFile(f"{td}/Test.zip", "w") as z:
             z.writestr("Test/bvh/Walk_expansion_edit_Walk_Eat_seed10_0.bvh", bvh(10))
@@ -3034,11 +3045,10 @@ def check():
     ys = [sb[b]["head"][1] for b in rs.AXIAL[:5]]
     assert max(abs(y - (0.1 - k * 0.0825)) for k, y in enumerate(ys)) < 1e-6, ys
     assert sb["pelvis"]["sources"] == ["r"] and sb["spine_01"]["sources"] == sb["neck"]["sources"] == [], sb
-    np = rs.np
-    P = np.array([[0, 0.1 - k * 0.0825, 0.33] for k in range(5)] + [[0, -0.3, 0.3]])
-    Wt = np.array([[1.0, 0, 0, 0, 0], [0.6, 0, 0, 0, 0], [0, 0, 0, 0.5, 0], [1.0, 0, 0, 0, 0]])
-    rs.spread_trunk(Wt, P, np.array([[0, 0.12, 0.3], [0, 0.1 - 2 * 0.0825, 0.3], [0, -0.29, 0.31], [0, 0.1 - 1.5 * 0.0825, 0.1]]))
-    assert np.allclose(Wt, [[1, 0, 0, 0, 0], [0, 0.3, 0.3, 0, 0], [0, 0, 0, 0, 0.5], [0, 1, 0, 0, 0]]), Wt
+    P = rs.np.array([[0, 0.1 - k * 0.0825, 0.33] for k in range(5)] + [[0, -0.3, 0.3]])
+    Wt = rs.np.array([[1.0, 0, 0, 0, 0], [0.6, 0, 0, 0, 0], [0, 0, 0, 0.5, 0], [1.0, 0, 0, 0, 0]])
+    rs.spread_trunk(Wt, P, rs.np.array([[0, 0.12, 0.3], [0, 0.1 - 2 * 0.0825, 0.3], [0, -0.29, 0.31], [0, 0.1 - 1.5 * 0.0825, 0.1]]))
+    assert rs.np.allclose(Wt, [[1, 0, 0, 0, 0], [0, 0.3, 0.3, 0, 0], [0, 0, 0, 0, 0.5], [0, 1, 0, 0, 0]]), Wt
     # a head bone stopping short of the skin it carries (SkinTokens: a stub at the chest skinned to the whole head) is
     # laid along that skin, back to front; a head bone that spans its skin stays
     sk = [b | {"skin": [[0.4, -0.05, 0.4], [0.8, 0.05, 0.5], [0.6, 0.0, 0.45]]} if b["name"] == "b4" else b for b in rb]

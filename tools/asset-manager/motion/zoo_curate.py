@@ -23,6 +23,14 @@ MAX_LOOP_DEG = 4.0  # a cyclic clip whose best loop still differs by more than t
 MIN_SWING = 0.1  # every paw lifts at least this share of its leg (root to paw tip) in a loop: sitting and grooming are no cycle
 TURN_W, DETOUR_W = 0.05, 0.5  # loop score per degree the root turns / cm it wanders off the straight line
 CYCLIC = ("walk", "run", "trot", "gallop", "scamper", "swim", "fly")
+DOWN = re.compile(r"die|death|dead|fall|faint|collapse", re.I)  # one-shots that must end lying down
+STAND = re.compile(r"idle|stand|alert|cud|graze|eat|sniff|breath|look", re.I)  # in place on (at least) three paws
+POP = 0.3  # leg lengths a joint may move in one frame (root travel aside); more is a splice jump
+POP_DOWN = 0.5  # a collapse flails faster
+SAG = 0.7  # a gait or a stand whose root dips below this share of its median height tumbles or crouches
+AIRBORNE_S = 0.3  # seconds a gait may have every paw off the floor (a gallop's flight is about 0.1 s)
+PLANTED = 0.9  # share of a stand's frames with three paws on the floor
+ENDS_DOWN = 0.6  # a death ends with the root below this share of its starting height
 EDIT = re.compile(r"_(?:expansion|in_betweening)_edit")
 BONES = ["root", "pelvis", "spine_01", "spine_02", "spine_03", "neck", "head", *[f"tail_{i:02d}" for i in range(1, 7)],
          *[f"{l}_{i:02d}" for l in ("FL", "FR", "HL", "HR") for i in range(1, 5)]]
@@ -123,15 +131,18 @@ def blocks(R, n=BLOCK):
     return list((c[n:] - c[:-n]) / n)
 
 
-def score(joints, frames, cyclic):
+def score(joints, frames, cyclic, down=False):
     """-> (score, i, j, closure deg) with lower better, or None if the clip stalls or (cyclic) has no loop of at least
-    MIN_LOOP frames that closes within MAX_LOOP_DEG."""
+    MIN_LOOP frames that closes within MAX_LOOP_DEG. down: a death, ranked by how low the root ends instead."""
     rcols = [c for jt in joints[1:] for c, k in jt["channels"] if k.endswith("rotation")]
     R = frames[:, rcols]
-    if len(R) < 2 or min(blocks(R, BLOCK if cyclic else STALL)) < MIN_BLOCK:
+    if len(R) < 2 or (not down and min(blocks(R, BLOCK if cyclic else STALL)) < MIN_BLOCK) or (down and max(blocks(R, STALL)) < MIN_BLOCK):  # the dead lie still
         return None
     P = fk(joints, frames)
     feet = P[:, paws(joints, fk(joints, None)[0])] - P[:, :1]  # paws relative to the root
+    if not cyclic and down:  # a death should end far from where it began: rank by how low it ends
+        h = P[:, 0, 1]
+        return float(h[-1] / h[0]) if h[0] > 0 else 1.0, 0, len(R) - 1, 0.0
     if not cyclic:
         dr = _wrap(R[0] - R[-1]).mean()
         dp = np.linalg.norm(feet[0] - feet[-1], axis=1).mean() if feet.shape[1] else 0.0
@@ -163,7 +174,7 @@ def score(joints, frames, cyclic):
         # a loop runs one way: no U-turns or out-and-back (Zoo in-betweening edits often turn round mid-clip)
         turn = (np.maximum.accumulate(yaw[i:]) - np.minimum.accumulate(yaw[i:]))[MIN_LOOP:]
         detour = path[js] - path[i] - np.linalg.norm(xz[js] - xz[i], axis=1)
-        s = dr + dp - 0.3 * swing + TURN_W * turn + DETOUR_W * detour
+        s = dr + dp - 0.3 * np.minimum(swing, 3 * min_swing) + TURN_W * turn + DETOUR_W * detour  # a tumble lifts paws highest
         moving = (cd[js] - cd[i]) / (js - i)  # windows up to BLOCK frames: their mean
         if len(m20) > i:
             lo = np.minimum.accumulate(m20[i:])
@@ -174,6 +185,41 @@ def score(joints, frames, cyclic):
         if np.isfinite(s[k]) and (best is None or s[k] < best[0]):
             best = (float(s[k]), i, int(js[k]), float(dr[k]))
     return best if best and best[3] <= MAX_LOOP_DEG else None
+
+
+def defects(joints, frames, ft, name, i, j):
+    """Why frames i..j of a take (motion `name`) are broken at the source, or "" when they are not: Zoo-300K edits
+    splice generated frames onto real ones and keep jumps, tumbles, floating paws and deaths that stand back up."""
+    P, rest = fk(joints, frames[i:j + 1]), fk(joints, None)[0]
+    pw = paws(joints, rest)
+    leg = float(np.mean([chain(joints, p) for p in pw])) or 1.0
+    pw = [joints[p]["parent"] for p in pw]  # the paw joints: Zoo End Sites point anywhere, so their tips' heights wander
+    hip = float(rest[0, 1] - rest[pw, 1].mean()) if len(pw) else leg  # the root's height over the paws at rest
+    rel = P - P[:, :1]
+    pop = float(np.linalg.norm(np.diff(rel, axis=0), axis=2).max(initial=0)) / leg
+    down, cyclic = bool(DOWN.search(name)), any(c in name.lower() for c in CYCLIC)
+    if pop > (POP_DOWN if down else POP):
+        return f"a joint jumps {pop:.2f} leg lengths in one frame"
+    ry = P[:, 0, 1]
+    if down:
+        end = ry[-1] / ry[0] if ry[0] > 0 else 1.0
+        return f"does not end lying down (root at {end:.2f} of its starting height)" if end > ENDS_DOWN else ""
+    if (cyclic or STAND.search(name)) and ry.min() < SAG * np.median(ry):
+        return f"the body sinks to {ry.min() / np.median(ry):.2f} of its height (tumbles or crouches)"
+    up = P[:, pw, 1] - np.percentile(P[:, pw, 1], 2)  # paw heights over the take's own floor
+    if cyclic:
+        air = up.min(1) > 0.15 * hip
+        run, longest = 0, 0
+        for a in air:
+            run = run + 1 if a else 0
+            longest = max(longest, run)
+        if longest * ft > AIRBORNE_S:
+            return f"every paw is off the floor for {longest * ft:.2f} s"
+    elif STAND.search(name):
+        planted = float(((up < 0.1 * hip).sum(1) >= min(3, len(pw))).mean())
+        if planted < PLANTED:
+            return f"three paws are on the floor in only {planted:.0%} of the frames"
+    return ""
 
 
 def cut_loop(joints, frames, i, j):
@@ -197,17 +243,23 @@ def motion_of(member):
 
 def curate(pack, out):
     out = Path(out); (out / "clips").mkdir(parents=True, exist_ok=True)
-    best, fps, rest = {}, None, None
+    best, fps, rest, rejected = {}, None, None, {}
     with zipfile.ZipFile(pack) as z:
         for m in sorted(n for n in z.namelist() if re.search(r"(^|/)bvh/[^/]+\.bvh$", n)):  # .npy files are broken
             name = motion_of(m)
             cyclic = any(c in name.lower() for c in CYCLIC)
             try:
                 joints, frames, ft, head = parse(z.read(m).decode(errors="replace"))
-                s = score(joints, frames, cyclic)
+                s = score(joints, frames, cyclic, bool(DOWN.search(name)))
+                why = s and defects(joints, frames, ft, name, s[1], s[2])
             except (ValueError, IndexError, KeyError):
                 continue
-            if s and (name not in best or s[0] < best[name][0]):
+            if why:  # broken at the source: the next best take of the motion gets its turn
+                r = rejected.setdefault(name, {"name": name, "rejected": 0, "best_rejected": None, "reason": "", "_s": math.inf})
+                r["rejected"] += 1
+                if s[0] < r["_s"]:
+                    r.update(best_rejected=Path(m).name, reason=why, _s=s[0])
+            elif s and (name not in best or s[0] < best[name][0]):
                 best[name] = (*s[:3], m, cyclic)
         clips = []
         for name, (s, i, j, m, cyclic) in sorted(best.items()):
@@ -229,7 +281,12 @@ def curate(pack, out):
     if not clips:
         raise SystemExit("FAIL: no clip in the pack keeps moving")
     clips.sort(key=lambda c: not c["loop"])  # a gait first: the skeleton sheet and the role map use clips[0]
-    animal = {"id": Path(pack).stem, "fps": fps, "rest": rest, "clips": clips}
+    for r in rejected.values():
+        print(f"REJECTED {r['rejected']} {r['name']} take(s){'' if r['name'] in best else ', none kept'}; best: {r['best_rejected']}: {r['reason']}")
+        r.pop("_s")
+        r["kept"] = r["name"] in best
+    animal = {"id": Path(pack).stem, "fps": fps, "rest": rest, "clips": clips,
+              "rejected": sorted(rejected.values(), key=lambda r: r["name"])}
     (out / "animal.json").write_text(json.dumps(animal, indent=1))
     return animal
 
