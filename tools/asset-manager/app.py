@@ -3031,7 +3031,7 @@ def check():
     assert not any((ROOT / get_settings()["output_folder"]).glob("**/Swamp_Rat*")) and not any(DATA.glob(f".creature{jid}_*"))
     with DB_LOCK, db() as c:
         c.execute("DELETE FROM jobs WHERE id=?", (jid,))
-    # clip jobs (New Animation, Add from GLB): request checks, free names, a glb copy and a refusal on other bones
+    # clip jobs (New Animation, Add from GLB): request checks, free names, and the glb path: copy, retarget or refuse
     lib = td / "lib"
     (lib / "Rat").mkdir(parents=True)
     (lib / "Rat" / "animal.json").write_text(json.dumps({"clips": [{"name": "Trottle"}, {"name": "Eat"}]}))
@@ -3081,15 +3081,38 @@ def check():
     js, _ = creature.glb_read((cm / new["file"]).read_bytes())
     assert [x["name"] for x in js["animations"]] == ["Walk"]  # the source name; combine names it Walk_2
     creature.combine_model(cm.name, ["Walk_2"])  # the copy is on the model's rig: combine takes it
+    # path choice: the same bones were copied above; other bones are labelled and retargeted; unlabellable is refused
     src.write_bytes(tiny_glb(["root", "hips", "spine_01"], "Walk"))
+    ok = creature.clip_params(cm.name, ok)  # accepted: another skeleton is retargeted, not refused
+    calls = []
+    def fake_library(jid, host, from_glb, js, sbin, anims, lib):
+        calls.append(("label", from_glb, anims))
+        if "hips" in json.dumps(js["nodes"]) and src.read_bytes()[-1:] == b"!":
+            raise RuntimeError("FAIL: role map missing required roles FL_01")
+        return lib
+    def fake_retarget(jid, host, rig_glb, lib, clip, size_cm):
+        calls.append(("retarget", rig_glb, clip, size_cm))
+        return {"glb": f"{clip}.glb", "sheet": f"{clip}_sheet.png", "checks": {"passed": True, "reason": "", "review": []}}
+    stubs = creature.glb_library, creature.retarget_clip, put_input, globals()["ssh"]
+    g = globals()
+    creature.glb_library, creature.retarget_clip = fake_library, fake_retarget
+    g["put_input"] = lambda host, name, data: calls.append(("put", name))
+    g["ssh"] = lambda host, cmd, *a, **k: (m / "Rat.glb").read_bytes() if cmd.endswith(".glb'") or cmd.endswith(".glb") else b"png"
     try:
-        creature.clip_params(cm.name, ok); raise AssertionError("other bones")
-    except ValueError as e:
-        assert "skeleton differs" in str(e), e
-    snap = {f: f.read_bytes() for f in cm.rglob("*") if f.is_file()}
-    r = clip_job(ok)  # the file changed after the request was accepted: the job refuses it, the folder stays as it was
-    assert r["status"] == "failed" and "skeleton differs" in r["error"], r
-    assert {f: f.read_bytes() for f in cm.rglob("*") if f.is_file()} == snap
+        r = clip_job(ok)
+        assert r["status"] == "done", r
+        assert [c[0] for c in calls] == ["put", "label", "retarget"] and calls[2][1:] == ("rig.glb", "Walk", 30), calls
+        new = json.loads((cm / f"{cm.name}.json").read_text())["clips"][-1]
+        assert new["name"] == "Walk_3" and new["retargeted"] is True and new["checks"]["passed"] is True, new
+        assert (cm / f"animations/{cm.name}_Walk_3.png").read_bytes() == b"png"
+        src.write_bytes(src.read_bytes() + b"!")  # the stub's sign for a skeleton that can't be labelled
+        snap = {f: f.read_bytes() for f in cm.rglob("*") if f.is_file()}
+        calls.clear()
+        r = clip_job(ok)
+        assert r["status"] == "failed" and "missing required roles" in r["error"], r
+        assert "retarget" not in [c[0] for c in calls] and {f: f.read_bytes() for f in cm.rglob("*") if f.is_file()} == snap
+    finally:
+        creature.glb_library, creature.retarget_clip, g["put_input"], g["ssh"] = stubs
     shutil.rmtree(cm)
     src.unlink()
     shutil.rmtree(td)

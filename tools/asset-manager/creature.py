@@ -80,38 +80,48 @@ def ensure_curated(animal_id, host, jid) -> Path:
         a.ssh_step(host, jid, work, f"cd {q(work)} && curl -fsSL --retry 3 -o pack.zip {q(ZOO_URL.format(entry['file']))}", 3600)
         step("picking the best clip per motion")
         a.ssh_step(host, jid, work, f"cd {q(work)} && {py} zoo_curate.py pack.zip lib; r=$?; rm -f pack.zip; exit $r", 3600)
-        animal = json.loads(a.ssh(host, f"cat {q(out + '/animal.json')}"))
-        a.job_blender(jid)
-        step("drawing the skeleton sheet")
-        a.run_blender(jid, host, "skeleton_sheet.py", [f"lib/{animal['clips'][0]['file']}", "lib/skeleton.png"], ["lib"], ["lib/skeleton.png"], 900)
-        for c in animal["clips"]:
-            step(f"previewing {c['name']}")
-            a.run_blender(jid, host, "skeleton_sheet.py", [f"lib/{c['file']}", f"lib/previews/{c['name']}.png", "--frames", "8"],
-                          ["lib"], [f"lib/previews/{c['name']}.png"], 900)
-        step("mapping the joints with Claude")
-        a.ssh_anthropic(host, f"cd {q(work)} && {py} zoo_curate.py --role-map lib", timeout=1800)
-        step("saving to the motion library")
-        tmp = lib.with_name(f".{animal_id}.{jid}")
-        shutil.rmtree(tmp, ignore_errors=True)
-        try:
-            with tarfile.open(fileobj=io.BytesIO(a.ssh(host, f"tar -C {q(out)} -cf - .", timeout=900))) as t:
-                t.extractall(tmp, filter="data")
-            rm = json.loads((tmp / "role_map.json").read_text())
-            animal = {"id": animal_id, "body_plan": entry["body_plan"], **json.loads((tmp / "animal.json").read_text()),
-                      "role_map": rm["role_map"], "unmapped": rm["unmapped"]}
-            animal["id"] = animal_id
-            (tmp / "animal.json").write_text(json.dumps(animal, indent=1))
-            (tmp / "role_map.json").unlink()
-            shutil.rmtree(lib, ignore_errors=True)
-            tmp.rename(lib)
-        finally:
-            shutil.rmtree(tmp, ignore_errors=True)  # gone after the rename; left over only when a step above failed
-        return lib
+        return label_library(jid, host, "lib", lib, animal_id, entry["body_plan"])
     finally:
         try:
             a.ssh(host, f"rm -rf {q(work)}")
         except Exception:
             pass
+
+
+def label_library(jid, host, rel, lib, animal_id, body_plan) -> Path:
+    """Task 2's labelling of a clip library in job `jid`'s folder <work>/<rel> (animal.json + clips/*.bvh): the
+    skeleton sheet and previews, Claude's role map (zoo_curate.py --role-map: a missing required role or a FAIL review
+    raises), then the whole library copied to the local folder `lib`, replacing it. -> lib."""
+    a = _app()
+    work, _, py, _, step, _ = a.host_tools(jid, host)
+    q, out = shlex.quote, f"{work}/{rel}"
+    animal = json.loads(a.ssh(host, f"cat {q(out + '/animal.json')}"))
+    a.job_blender(jid)
+    step("drawing the skeleton sheet")
+    a.run_blender(jid, host, "skeleton_sheet.py", [f"{rel}/{animal['clips'][0]['file']}", f"{rel}/skeleton.png"], [rel], [f"{rel}/skeleton.png"], 900)
+    for c in animal["clips"]:
+        step(f"previewing {c['name']}")
+        a.run_blender(jid, host, "skeleton_sheet.py", [f"{rel}/{c['file']}", f"{rel}/previews/{c['name']}.png", "--frames", "8"],
+                      [rel], [f"{rel}/previews/{c['name']}.png"], 900)
+    step("mapping the joints with Claude")
+    a.ssh_anthropic(host, f"cd {q(work)} && {py} zoo_curate.py --role-map {q(rel)}", timeout=1800)
+    step("saving to the motion library")
+    tmp = lib.with_name(f".{animal_id}.{jid}")
+    shutil.rmtree(tmp, ignore_errors=True)
+    try:
+        with tarfile.open(fileobj=io.BytesIO(a.ssh(host, f"tar -C {q(out)} -cf - .", timeout=900))) as t:
+            t.extractall(tmp, filter="data")
+        rm = json.loads((tmp / "role_map.json").read_text())
+        animal = {"id": animal_id, "body_plan": body_plan, **json.loads((tmp / "animal.json").read_text()),
+                  "role_map": rm["role_map"], "unmapped": rm["unmapped"]}
+        animal["id"] = animal_id
+        (tmp / "animal.json").write_text(json.dumps(animal, indent=1))
+        (tmp / "role_map.json").unlink()
+        shutil.rmtree(lib, ignore_errors=True)
+        tmp.rename(lib)
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)  # gone after the rename; left over only when a step above failed
+    return lib
 
 
 def run_curate(jid, host):
@@ -703,7 +713,7 @@ def run_creature(jid, host):
 def clip_params(name, b, folder=None, library=None) -> dict:
     """A New Animation / Add from GLB request for model `name` checked and filled in: {source: "library", animal?,
     clip} | {source: "text", prompt, seeds?, clip?} | {source: "video", clip?, ...MOTION_PARAMS} | {source: "glb",
-    from_glb, animations}. Raises ValueError; a GLB on other bones is refused here, before any job is queued."""
+    from_glb, animations}. Raises ValueError."""
     a = _app()
     folder = Path(folder) if folder else model_dir(name)
     if not (folder / f"{name}.json").is_file():
@@ -757,9 +767,8 @@ def clip_params(name, b, folder=None, library=None) -> dict:
     have = [x.get("name") for x in js.get("animations", [])]
     if missing := [x for x in anims if x not in have]:
         raise ValueError(f"{b['from_glb']} has no animation {', '.join(missing)}; it has: {', '.join(map(str, have)) or 'none'}")
-    if glb_bones(js) != glb_bones(glb_read((folder / f"{name}.glb").read_bytes())[0]):
-        raise ValueError(f"{b['from_glb']}: its skeleton differs from {name}.glb ({SKELETON}); only clips on the same "
-                         f"bones (names and parents) can be added")
+    if not js.get("skins"):
+        raise ValueError(f"{b['from_glb']} has no skeleton (no skin)")
     return out | {"from_glb": b["from_glb"], "animations": list(dict.fromkeys(anims))}
 
 
@@ -774,11 +783,34 @@ def clip_names(taken, groups) -> list:
     return out
 
 
+def glb_library(jid, host, from_glb, js, sbin, anims, lib) -> Path:
+    """A GLB on another skeleton made into a clip library like a curated animal: each animation in `anims` turned into
+    a BVH (unimate_bvh.py), then label_library (Task 2's sheet and Claude role map) into the local folder `lib`. A
+    skeleton that can't be labelled (a required role missing, not a quadruped) raises with the role map's reason."""
+    a = _app()
+    work, _, _, _, step, _ = a.host_tools(jid, host)
+    q, names, clips, stem = shlex.quote, [x.get("name") for x in js["animations"]], [], safe_name(Path(from_glb).stem) or "Source"
+    for f in a.MOTION_DIR.glob("*.py"):
+        a.put_input(host, f"{jid}/{f.name}", f.read_bytes())
+    a.job_blender(jid)
+    for an in anims:
+        c = safe_name(an) or "Clip"
+        a.put_input(host, f"{jid}/srclib/{c}.glb", glb_write({**js, "animations": [js["animations"][names.index(an)]]}, sbin))
+        step(f"reading {an} from {from_glb}")
+        a.run_blender(jid, host, "unimate_bvh.py", [f"srclib/{c}.glb", f"srclib/{c}.bvh", f"srclib/{c}_bvh.json"],
+                      [f"srclib/{c}.glb"], [f"srclib/{c}.bvh", f"srclib/{c}_bvh.json"], 900)
+        info = json.loads(a.ssh(host, f"cat {q(work + '/srclib/' + c + '_bvh.json')}"))
+        clips.append({"name": c, "file": f"{c}.bvh", "frames": info["frames"], "loop": False})
+    a.put_input(host, f"{jid}/srclib/animal.json", json.dumps({"id": stem, "fps": info["fps"], "clips": clips}).encode())
+    return label_library(jid, host, "srclib", lib, stem, "quadruped")
+
+
 def run_clip_job(jid, host):
     """A "clip" job (clip_params): make clips on an existing model folder's rig and add them to animations/ and the
     manifest, not baked. Library: retarget_clip; text: UniMate, one candidate per seed, the best marked `best`; video:
     app.motion_takes on <Name>.glb (the one path that may train a detector), its best take through std_glb_clip; glb:
-    the animations copied as they are onto <Name>.glb. Nothing is written into the folder until every clip is made,
+    on the same skeleton the animations are copied as they are onto <Name>.glb, on another one the source is labelled
+    (glb_library) and each animation retargeted. Nothing is written into the folder until every clip is made,
     so a cancel or a failure leaves it unchanged."""
     a = _app()
     p = json.loads(a.job_row(jid)["params"])
@@ -789,41 +821,50 @@ def run_clip_job(jid, host):
         folder = model_dir(n)
         man, rig = json.loads((folder / f"{n}.json").read_text()), folder / f"{n}.glb"
         made = []  # groups (base name, [(suffix, glb bytes, sheet bytes or None, manifest fields)])
-        if p["source"] == "glb":
+        get = lambda f: a.ssh(host, f"cat {q(work + '/' + f)}", timeout=900)
+        size, base = man["size_cm"], rig.read_bytes()
+        src = glb_read(a.safe_path(p["from_glb"]).read_bytes()) if p["source"] == "glb" else None
+        names = [x.get("name") for x in src[0].get("animations", [])] if src else []
+        if src and glb_bones(src[0]) == glb_bones(glb_read(base)[0]):  # the same rig: the clips go in as they are
             step("copying the animations")
-            src, sbin = glb_read(a.safe_path(p["from_glb"]).read_bytes())
-            base = rig.read_bytes()
-            if glb_bones(src) != glb_bones(glb_read(base)[0]):  # checked at the request too; the file may have changed
-                raise ValueError(f"{p['from_glb']}: its skeleton differs from {n}.glb")
-            names = [x.get("name") for x in src.get("animations", [])]
             for an in p["animations"]:
                 js, binary = glb_read(base)
                 c = safe_name(an) or "Clip"
-                _add_animation(js, binary, src, sbin, c, names.index(an))
+                _add_animation(js, binary, src[0], src[1], c, names.index(an))
                 made.append((c, [("", glb_write(js, binary), None, {"source": "glb", "from": p["from_glb"], "animation": an,
                     "checks": {"passed": None, "reason": "copied as is from a GLB on the same skeleton; not checked", "review": []}})]))
                 log.append(f"{c}: copied from {p['from_glb']} ({an})")
         else:
-            get = lambda f: a.ssh(host, f"cat {q(work + '/' + f)}", timeout=900)
-            a.put_input(host, f"{jid}/rig.glb", rig.read_bytes())
-            size = man["size_cm"]
+            groups = []  # (base name, [(suffix, retarget_clip result, manifest fields)])
+            lib = ensure_curated(p["animal"], host, jid) if p["source"] == "library" else None  # curating clears the job folder
+            a.put_input(host, f"{jid}/rig.glb", base)
             if p["source"] == "library":
-                lib = ensure_curated(p["animal"], host, jid)
-                rs = [("", retarget_clip(jid, host, "rig.glb", lib, p["clip"], size), {"source": "library", "animal": p["animal"]})]
+                groups = [(p["clip"], [("", retarget_clip(jid, host, "rig.glb", lib, p["clip"], size), {"source": "library", "animal": p["animal"]})])]
             elif p["source"] == "text":
                 best = unimate_clip(jid, host, "rig.glb", p["clip"], size, p["prompt"], p["seeds"])
-                rs = [(f"_s{r['seed']}", r, {"source": "text", "seed": r["seed"], "prompt": r["prompt"], "best": r["seed"] == best["seed"]})
-                      for r in best["candidates"]]
-            else:
+                groups = [(p["clip"], [(f"_s{r['seed']}", r, {"source": "text", "seed": r["seed"], "prompt": r["prompt"],
+                                                              "best": r["seed"] == best["seed"]}) for r in best["candidates"]])]
+            elif p["source"] == "video":
                 takes, _ = a.motion_takes(jid, host, {**p["motion"], "model": rig.relative_to(a.ROOT).as_posix()}, rig)
                 log += [f"take {i}: score {sc:.2f}" for sc, _, i, _ in takes]
                 score, _, i, _ = max(takes)
                 step(f"checking take {i}")
-                rs = [("", std_glb_clip(jid, host, "rig.glb", f"take{i}/anim.glb", p["clip"], size),
-                       {"source": "video", "action": p["motion"]["action"], "take": i, "score": round(score, 3)})]
-            made.append((p["clip"], [(suf, get(r["glb"]), get(r["sheet"]), extra | {"checks": r["checks"]}) for suf, r, extra in rs]))
-            log += [f"{p['clip']}{suf}: {'passed' if r['checks']['passed'] else 'failed: ' + r['checks']['reason']}"
-                    f"{' (best)' if extra.get('best') else ''}" for suf, r, extra in rs]
+                groups = [(p["clip"], [("", std_glb_clip(jid, host, "rig.glb", f"take{i}/anim.glb", p["clip"], size),
+                                        {"source": "video", "action": p["motion"]["action"], "take": i, "score": round(score, 3)})])]
+            else:  # another skeleton: labelled like a library animal (a GLB that can't be fails here), then retargeted
+                tmp = Path(tempfile.mkdtemp())
+                try:
+                    lib = glb_library(jid, host, p["from_glb"], *src, p["animations"], tmp / "lib")
+                    for an in p["animations"]:
+                        c = safe_name(an) or "Clip"
+                        groups.append((c, [("", retarget_clip(jid, host, "rig.glb", lib, c, size),
+                                            {"source": "glb", "from": p["from_glb"], "animation": an, "retargeted": True})]))
+                finally:
+                    shutil.rmtree(tmp, ignore_errors=True)
+            for b, g in groups:
+                made.append((b, [(suf, get(r["glb"]), get(r["sheet"]), extra | {"checks": r["checks"]}) for suf, r, extra in g]))
+                log += [f"{b}{suf}: {'passed' if r['checks']['passed'] else 'failed: ' + r['checks']['reason']}"
+                        f"{' (best)' if extra.get('best') else ''}" for suf, r, extra in g]
         step("saving into the model folder")
         written, files = [], []
         with MODEL_LOCK:
