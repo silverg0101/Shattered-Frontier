@@ -112,10 +112,11 @@ def review(sheet_path, meta_path, prompt=None):
     sys.path.insert(0, str(Path(__file__).parent))
     from zoo_curate import claude
     meta = json.loads(Path(meta_path).read_text())
-    m = {k: meta[k] for k in ("min_paw_cm", "max_slide_cm", "seam_deg", "flips", "travel_cm_s") if k in meta}
-    tread = (f"The clip plays in place (travel_cm_s is the speed the game moves it at), so in a gait the planted paws "
+    keys = ("min_paw_cm", "max_slide_cm", "seam_deg", "flips", "loop_gap_cm", "max_pitch_deg", "max_roll_deg", "max_neck_deg", "released_pct")
+    m = {k: meta[k] for k in keys + (("travel_cm_s",) if meta.get("loop") else ()) if k in meta}
+    tread = (f"The loop plays in place (travel_cm_s is the speed the game moves it at), so in a gait the planted paws "
              "sweep back under the body like on a treadmill while the body stays put: that is correct, not sliding. "
-             if m.get("travel_cm_s") else "")
+             if meta.get("loop") and m.get("travel_cm_s") else "")
     img = {"type": "image", "source": {"type": "base64", "media_type": "image/png",
                                        "data": base64.b64encode(Path(sheet_path).read_bytes()).decode()}}
     want = (f"The motion was asked for as: \"{prompt}\". It must show that, specifically: a different action, "

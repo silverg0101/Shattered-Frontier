@@ -2943,14 +2943,23 @@ def check():
     assert ok["passed"] is True and ok["reason"] == "", ok
     assert creature.checks_pass({"min_paw_cm": 0.2, "max_slide_cm": 2, "seam_deg": 9, "flips": 1}, DEFAULT_SETTINGS)["reason"].count(";") == 2
     assert ok["travel_cm_s"] == 0.0 and creature.checks_pass({**ok, "travel_cm_s": 80.5}, DEFAULT_SETTINGS)["travel_cm_s"] == 80.5  # reported, not gated
+    # the loop closure, a death's pitch, the head's bend and released stances are gated; a one-shot's gap and a walk's pitch are not
+    assert "loop_gap_cm" in creature.checks_pass({**ok, "loop": True, "loop_gap_cm": 2.5}, DEFAULT_SETTINGS)["reason"]
+    assert creature.checks_pass({**ok, "loop": False, "loop_gap_cm": 2.5}, DEFAULT_SETTINGS)["passed"]
+    assert "max_pitch_deg" in creature.checks_pass({**ok, "max_pitch_deg": 80}, DEFAULT_SETTINGS, "death Die")["reason"]
+    assert creature.checks_pass({**ok, "max_pitch_deg": 80}, DEFAULT_SETTINGS, "walk")["passed"]
+    assert "max_neck_deg" in creature.checks_pass({**ok, "max_neck_deg": 100}, DEFAULT_SETTINGS)["reason"]
+    assert "released_pct" in creature.checks_pass({**ok, "released_pct": 40}, DEFAULT_SETTINGS)["reason"]
     assert all(lo <= DEFAULT_SETTINGS[k] <= hi for k, (_, _, lo, hi) in CREATURE_SETTINGS.items())
     # UniMate labels: the shared skeleton's, or a rig's own bones under rig_standard labels (an unlabelled bone takes
     # its parent's); the face pair is the hind legs' first bones
-    ann = creature.unimate_annotation([("b0", "Armature"), ("b1", "b0"), ("b2", "b1"), ("b3", "b0"), ("b4", "b0"), ("b5", "b4")],
-                                      {"b0": "pelvis", "b1": "HR_01", "b2": "HR_03", "b3": "HL_01", "b5": "FL_02"})
-    assert ann["face_pair"]["right"] == "b1" and ann["face_pair"]["left"] == "b3"
-    assert [(j["parent"], j["label"]) for j in ann["joints"]] == [(None, "Hips"), ("b0", "Right Thigh"), ("b1", "Right Fetlock"),
-                                                                 ("b0", "Left Thigh"), ("b0", "Hips"), ("b4", "Left Upper Arm")], ann
+    ann = creature.unimate_annotation([("b2", "b1"), ("b1", "b0"), ("b0", "Armature"), ("b3", "b0"), ("b4", "b0"), ("b5", "b4"), ("b6", "b0")],
+                                      {"b0": "pelvis", "b1": "HR_01", "b2": "HR_03", "b3": "HL_01", "b5": "FL_02", "b6": "HL_01"}, dropped=["b3"])
+    assert ann["face_pair"]["right"] == "b1" and ann["face_pair"]["left"] == "b6"  # a dropped bone is never the face pair
+    assert [j["raw"] for j in ann["joints"]][0] == "b0" and all(j["parent"] in [k["raw"] for k in ann["joints"][:i]] or j["parent"] is None
+                                                                   for i, j in enumerate(ann["joints"]))  # parents first
+    assert {j["raw"]: j["label"] for j in ann["joints"]} == {"b0": "Hips", "b1": "Right Thigh", "b2": "Right Fetlock", "b3": "Left Thigh",
+                                                             "b4": "Hips", "b5": "Left Upper Arm", "b6": "Left Thigh"}, ann
     assert len(creature.unimate_annotation()["joints"]) == 28 and creature.unimate_label("tail_03") == "Tail"
     # UniMate prompts take the training captions' form, for a clip name in any case; an unknown name uses its words
     assert creature.unimate_prompt("walk") == creature.unimate_prompt("Walk") == "An object walks forward."
@@ -3296,6 +3305,13 @@ def check():
     assert creature.choose_clip("walk", ["WalkLoop"], True, lg, ok, boom)["from_clip"] == "WalkLoop"
     assert creature.choose_clip("walk", ["WalkLoop"], False, lg, ok, boom)["from_clip"] == "WalkLoop"
     assert creature.choose_clip("swim", [], False, lg, ok, boom) is None
+    # another animal's match comes after UniMate and the procedural clip, and a passing one wins over failing ones
+    seen = []
+    def ok2(f):
+        seen.append(f); return {"checks": {"passed": f == "Coyote/Trot", "reason": "slide"}}
+    assert creature.choose_clip("walk", ["WalkLoop", "Coyote/Trot"], True, lg, ok2, boom, boom)["from_clip"] == "Coyote/Trot" and seen == ["WalkLoop", "Coyote/Trot"]
+    seen.clear()
+    assert creature.choose_clip("walk", ["WalkLoop", "Coyote/Trot"], True, lg, ok2, lambda: {"checks": {"passed": True}})["source"] == "text" and seen == ["WalkLoop"]
     # a procedural gait stands in for a UniMate take that fails its checks (or a UniMate crash), never for a passing one
     bad_text = lambda: {"checks": {"passed": False, "reason": "slides"}}
     good = lambda: {"checks": {"passed": True}}
@@ -3303,6 +3319,7 @@ def check():
     assert creature.choose_clip("walk", [], True, lg, ok, good, bad_text)["source"] == "text"
     assert creature.choose_clip("walk", [], True, lg, ok, bad_text, bad_text)["source"] == "text"
     assert creature.choose_clip("walk", [], True, lg, ok, boom, bad_text)["source"] == "procedural"
+    assert creature.choose_clip("walk", [], True, lg, ok, bad_text, boom)["source"] == "text"  # a crashing synth keeps the take
     import importlib.util as _ilu
     _sp = _ilu.spec_from_file_location("gait_synth", MOTION_DIR / "gait_synth.py"); _gs = _ilu.module_from_spec(_sp); _sp.loader.exec_module(_gs)
     assert _gs.check() == "gait_synth ok"
@@ -3460,7 +3477,7 @@ def check():
         g["ssh"] = lambda host, cmd, *a, **k: json.dumps({"min_paw_cm": 0.5, "max_slide_cm": 0, "seam_deg": 1, "flips": 0}).encode()
         g["ssh_anthropic"] = lambda host, cmd, timeout=60: asked.append(cmd) or b"REVIEW FAIL: rears up and sniffs the air\n"
         rt = creature.retarget_clip(jid, h, "rig.glb", lib2, "rig", 30, want)
-        assert rt["glb"] == "out_rig.glb" and not any("rig.glb" in o for o in ran), (rt, ran)
+        assert rt["glb"].startswith("out_") and rt["glb"].endswith("_rig.glb") and not any("rig.glb" in o for o in ran), (rt, ran)
         assert len(asked) == 2 and all(cmd.endswith(f"{shlex.quote(want)}") for cmd in asked), asked
         assert [x["verdict"] for x in rt["checks"]["review"]] == ["FAIL", "FAIL"] and rt["checks"]["passed"] is False, rt
         assert "sniffs the air" in rt["checks"]["reason"], rt

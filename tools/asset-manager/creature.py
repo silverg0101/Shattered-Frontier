@@ -193,9 +193,25 @@ def standardise_rig(jid, host, model_glb):
 CHECKS = ("min_paw_cm", "max_slide_cm", "seam_deg", "flips")
 
 
-def checks_pass(m, settings) -> dict:
-    """A retargeted clip's measurements -> them plus "passed" and "reason" (every failed gate, "; "-joined)."""
+LOOP_GAP_CM = 1.0    # a loop: a paw's first-to-last frame distance
+DEATH_PITCH_DEG = 35.0  # a death: the trunk's pitch from level (a collapse tips onto its side, it never flips)
+NECK_DEG = 85.0      # any clip: the head bone's angle to spine_03 (a head folded back over the neck is a glitch)
+RELEASED_PCT = 25.0  # planted frames the leg could not hold on their pin (a lunge out of reach)
+DEATH = re.compile(r"die|death|dead|collapse", re.I)
+
+
+def checks_pass(m, settings, name="") -> dict:
+    """A retargeted clip's measurements -> them plus "passed" and "reason" (every failed gate, "; "-joined). `name`:
+    the clip's names (requested and source), for the gates that depend on what it is (a death's pitch)."""
     why = []
+    if m.get("loop") and m.get("loop_gap_cm", 0.0) > LOOP_GAP_CM:
+        why.append(f"loop_gap_cm {m['loop_gap_cm']} > {LOOP_GAP_CM}: the paws end away from where they start, the loop pops")
+    if DEATH.search(name) and m.get("max_pitch_deg", 0.0) > DEATH_PITCH_DEG:
+        why.append(f"max_pitch_deg {m['max_pitch_deg']} > {DEATH_PITCH_DEG}: a death tips onto its side, this one flips")
+    if m.get("max_neck_deg", 0.0) > NECK_DEG:
+        why.append(f"max_neck_deg {m['max_neck_deg']} > {NECK_DEG}: the head folds back over the neck")
+    if m.get("released_pct", 0.0) > RELEASED_PCT:
+        why.append(f"released_pct {m['released_pct']} > {RELEASED_PCT}: the legs could not hold their planted paws")
     if m["min_paw_cm"] < 0:
         why.append(f"min_paw_cm {m['min_paw_cm']} < 0: a paw goes below the floor")
     if m["max_slide_cm"] > settings["creature_slide_cm"]:
@@ -205,7 +221,8 @@ def checks_pass(m, settings) -> dict:
     if m["flips"]:
         bones = f" ({', '.join(m['flip_bones'])})" if m.get("flip_bones") else ""
         why.append(f"flips {m['flips']}: a joint turns over 90 degrees in one frame{bones}")
-    return {k: m[k] for k in CHECKS} | {"travel_cm_s": m.get("travel_cm_s", 0.0), "passed": not why, "reason": "; ".join(why)}
+    extra = ("travel_cm_s", "loop_gap_cm", "max_pitch_deg", "max_roll_deg", "max_neck_deg", "released_pct")
+    return {k: m[k] for k in CHECKS} | {k: m.get(k, 0.0) for k in extra} | {"passed": not why, "reason": "; ".join(why)}
 
 
 def retarget_clip(jid, host, rig_glb, animal_dir, clip, size_cm, prompt=None) -> dict:
@@ -221,7 +238,8 @@ def retarget_clip(jid, host, rig_glb, animal_dir, clip, size_cm, prompt=None) ->
     meta = next((c for c in animal["clips"] if c["name"] == clip), None)
     if not meta:
         raise ValueError(f"{animal_dir.name} has no clip {clip!r} ({', '.join(c['name'] for c in animal['clips'])})")
-    glb, sheet, mj = f"out_{clip}.glb", f"out_{clip}_sheet.png", f"out_{clip}_retarget.json"
+    tag = f"out_{safe_name(animal.get('id') or animal_dir.name)}_{clip}"  # keyed by the library too: Coyote/Walking never overwrites DEER/Walking
+    glb, sheet, mj = f"{tag}.glb", f"{tag}_sheet.png", f"{tag}_retarget.json"
     for f in [*a.MOTION_DIR.glob("*.py"), Path(__file__)]:  # zoo_retarget.py imports chain_resample from here
         a.put_input(host, f"{jid}/{f.name}", f.read_bytes())
     for f in ("animal.json", meta["file"]):
@@ -232,7 +250,7 @@ def retarget_clip(jid, host, rig_glb, animal_dir, clip, size_cm, prompt=None) ->
                                                  str(s["creature_height_scale"])], [rig_glb, "zoo", "creature.py"], [glb, mj], 1800)
     step(f"drawing the {clip} sheet")
     a.run_blender(jid, host, "clip_sheet.py", [glb, mj, sheet], [glb, mj], [sheet], 1800)
-    checks = checks_pass(json.loads(a.ssh(host, f"cat {q(work + '/' + mj)}")), s)
+    checks = checks_pass(json.loads(a.ssh(host, f"cat {q(work + '/' + mj)}")), s, f"{clip} {prompt or ''}")
     checks["review"] = []  # [{verdict, reason}] per Claude review, in order; empty without an Anthropic API key
     if a.anthropic_key():
         for n in (1, 2):  # the review is not deterministic: a clip whose numbers pass gets a second look after a FAIL
@@ -301,19 +319,20 @@ def library_matches(want, lib: Path) -> list[str]:
     out = library_clips(want, [c["name"] for c in me["clips"]])
     for d in sorted(d for d in lib.parent.iterdir() if d != lib and d.name in cat and (d / "animal.json").is_file()):
         a = names(d)
-        if a.get("body_plan") == me.get("body_plan"):
+        if a.get("body_plan") and a.get("body_plan") == me.get("body_plan"):
             out += [f"{d.name}/{f}" for f in library_clips(want, [c["name"] for c in a["clips"]])]
     return out
 
 
 def choose_clip(want, matches, fill, log, retarget, unimate, synth=None):
-    """Clip `want` from the first library match (retarget(name) -> result) whose checks pass; when none passes, UniMate
-    (unimate() -> result) if `fill`, falling back to the best failing match should UniMate itself fail; else the best
-    failing match. With `synth` (synth() -> result: a procedural gait, gait_synth.py) a UniMate take that fails its
-    checks gives way to it when that passes, else stays. None when there is no match and no fill. Library results
-    get source "library" and from_clip; UniMate's "text", the procedural one's "procedural"."""
+    """Clip `want`, the first that passes its checks of: the animal's own library matches (retarget(name) -> result,
+    names without a "/"), then with `fill` UniMate (unimate() -> result), the procedural clip (synth() -> result,
+    when given: a gait, an idle, a death, an attack), and last the other curated animals' matches ("Animal/Clip",
+    each two Blender runs and reviews). When none passes: the UniMate take, else the procedural one, else the best
+    failing own match. None when there is no match and no fill. Sources "library" (+ from_clip), "text", "procedural"."""
+    own, foreign = [f for f in matches if "/" not in f], [f for f in matches if "/" in f]
     r = None
-    for f in matches:
+    for f in own:
         t = retarget(f) | {"source": "library", "from_clip": f}
         if t["checks"]["passed"]:
             return t
@@ -321,28 +340,44 @@ def choose_clip(want, matches, fill, log, retarget, unimate, synth=None):
         log.append(f"{want}: library {f} failed its checks ({t['checks']['reason']}), trying the next match")
     if not fill:
         return r
+    u = p = None
     try:
         u = unimate() | {"source": "text"}
+        if u["checks"]["passed"]:
+            return u
+        log.append(f"{want}: UniMate's best take failed its checks ({u['checks']['reason']})")
     except InterruptedError:
         raise
     except Exception as e:
-        if not r and not synth:
+        log.append(f"{want}: UniMate failed ({str(e)[-200:]})")
+    if synth:
+        try:
+            p = synth() | {"source": "procedural"}
+            if p["checks"]["passed"]:
+                return p
+            log.append(f"{want}: the procedural clip failed its checks ({p['checks']['reason']})")
+        except InterruptedError:
             raise
-        log.append(f"{want}: UniMate failed ({str(e)[-200:]}), " + ("trying a procedural gait" if synth else f"keeping library {r['from_clip']}"))
-        u = None
-    if (u is None or not u["checks"]["passed"]) and synth:
-        if u:
-            log.append(f"{want}: UniMate's best take failed its checks ({u['checks']['reason']}), trying a procedural gait")
-        p = synth() | {"source": "procedural"}
-        if p["checks"]["passed"] or u is None:
-            return p
-    return u if u is not None else r
+        except Exception as e:
+            log.append(f"{want}: the procedural clip failed ({str(e)[-200:]})")
+    for f in foreign:
+        t = retarget(f) | {"source": "library", "from_clip": f}
+        if t["checks"]["passed"]:
+            return t
+        log.append(f"{want}: library {f} failed its checks ({t['checks']['reason']}), trying the next match")
+    if u is None and p is None and r is None:
+        raise RuntimeError(f"{want}: no library match, UniMate and the procedural clip failed")
+    return u or p or r
 
 
 SKELETON = "quadruped_v1"
 MODEL_LOCK = threading.RLock()  # ponytail: one lock for every model folder's manifest; per model if it ever contends
 CLIP_SOURCES = ("library", "text", "video", "glb", "procedural")
-GAITS = ("walk", "trot", "run", "gallop")  # clip names a procedural gait (motion/gait_synth.py) can stand in for
+GAITS = ("walk", "trot", "run", "gallop")  # the looping gaits
+LOOPS = GAITS + ("idle",)  # clip names that must loop: a generated take is cut into its best closing loop or fails
+SYNTH = {"gallop": "gallop", "trot": "trot", "walk": "walk", "run": "run", "idle": "idle", "stand": "idle",
+         "death": "death", "die": "death", "dead": "death", "attack": "attack", "bite": "attack", "lunge": "attack"}
+# clip-name words a procedural clip (motion/gait_synth.py) can stand in for, longest match first
 
 
 def safe_name(s) -> str:
@@ -607,9 +642,32 @@ def concept_image(jid, p, entry, log, step, host=None, lib=None, size=None, info
     return a.hero_views(jid, prompt, "auto", png, log)[1]
 
 
-def build_model(jid, host, p, views) -> str:
+MODEL_BUILDS = 3  # builds a creature gets before its job fails: each build is reviewed against the concept
+MODEL_BRIEF = ("The first image is a 3D model built from the concept drawings that follow: its front view on the left and its "
+               "left side on the right, rest pose, plain grey render. Judge the model's body only, never texture or lighting. "
+               "PASS only if it is one single body like the concept: one torso with one smooth top line (a thin bristle fringe "
+               "along it is fine), one head with two ears and a snout pointing straight forward in the side view, four legs, "
+               "one tail. FAIL if a second shell, slab or lump rides above or behind the back, if a seam shows where such a "
+               "shell meets the flank, if a second head, ear, brow or snout shows behind the face, if the head is turned toward "
+               "the camera in the side view, or if a leg is doubled or missing.")
+
+
+def model_review(jid, host, rig_glb, views) -> dict:
+    """The built model (`rig_glb`, on the shared skeleton so it faces -Y) rendered front and side (render_views.py) and
+    judged against the concept views by codex_review: a doubled shell or ghost head from the multi-view build fails.
+    -> {"pass", "problems", "fix"}."""
+    a = _app()
+    work, _, _, _, step, _ = a.host_tools(jid, host)
+    step("checking the built model against the concept")
+    a.run_blender(jid, host, "render_views.py", [rig_glb, "mv"], [rig_glb], ["mv"], 900)
+    png = a.ssh(host, f"cat {shlex.quote(work + '/mv/views.png')}", timeout=300)
+    concepts = [views[k] for k in ("left", "front", "concept") if k in views]
+    return a.codex_review([png, *concepts], MODEL_BRIEF)
+
+
+def build_model(jid, host, p, views, seed=None) -> str:
     """The existing 3D graph with the rig on (Pixal3D geometry, UltraTex texture, SkinTokens rig) from the concept
-    views; the rigged GLB is copied into the job folder as model.glb."""
+    views; the rigged GLB is copied into the job folder as model.glb. `seed`: the graph's, for another build."""
     a = _app()
     s, q, work = a.get_settings(), shlex.quote, f"{host['comfy_dir']}/input/sfam/{jid}"
     names = {}
@@ -618,8 +676,8 @@ def build_model(jid, host, p, views) -> str:
         names[pos] = f"sfam/{jid}/{pos}.png"
     first = "concept" if "concept" in views else "front"
     a.put_input(host, f"{jid}/{first}_ref.png", a.ultratex_reference(views[first]))
-    graph = a.build_graph({"rig": "now", "preset": p["preset"]}, names[first], f"sfam/{jid}/model",
-                          a.pixal_model(host), None if first == "concept" else names)
+    graph = a.build_graph({"rig": "now", "preset": p["preset"], **({"seed": seed} if seed is not None else {})}, names[first],
+                          f"sfam/{jid}/model", a.pixal_model(host), None if first == "concept" else names)
     ok, line = a.gpu_check(host)
     a.GPU_NOTES.setdefault(jid, []).append(line)
     if not ok:
@@ -644,7 +702,7 @@ def unimate_label(std: str) -> str:
     return {"neck": "Neck", "head": "Head"}.get(std) or std.split("_")[0].capitalize()  # Spine, Tail
 
 
-def unimate_annotation(bones=None, labels=None) -> dict:
+def unimate_annotation(bones=None, labels=None, dropped=()) -> dict:
     """UniMate's joint labels: for the shared skeleton (rig_preprocess merges the unweighted root into the pelvis), or
     for a rig's own `bones` [(name, parent)] (glb_bones) under rig_standard `labels` (bone -> shared-skeleton name; a
     bone without one takes its parent's). UniMate steps all four legs of a SkinTokens rig but freezes the forelegs of
@@ -657,14 +715,19 @@ def unimate_annotation(bones=None, labels=None) -> dict:
         labels = {n: n for n, _ in rows}
     else:
         names = {n for n, _ in bones}
-        rows = [(n, pa if pa in names else None) for n, pa in bones]
-        std, parent = dict(labels), dict(rows)
+        parent = {n: (pa if pa in names else None) for n, pa in bones}
+        rows, left = [], dict(parent)
+        while left:  # parents first
+            for n in [n for n, pa in left.items() if pa is None or pa not in left]:
+                rows.append((n, left.pop(n)))
+        std = dict(labels)
         for n, _ in rows:
             m = n
             while m and m not in std: m = parent[m]
             std[n] = std.get(m) or "pelvis"
         labels = std
-    side = lambda s: next((n for n, _ in rows if labels[n] == s), None)
+    depth = lambda n: 0 if dict(rows)[n] is None else 1 + depth(dict(rows)[n])
+    side = lambda s: min((n for n, _ in rows if labels[n] == s and n not in dropped), key=depth, default=None)
     return {"format": "rig_preprocess-annotation/1", "asset": "creature", "notes": [], "n_flagged": 0,
             "face_pair": {"right": side("HR_01"), "left": side("HL_01"), "body_axis": False, "source": "thigh", "check": False},
             "joints": [{"index": i, "raw": n, "parent": pa, "label": unimate_label(labels[n]), "source": "rule", "check": False}
@@ -691,10 +754,17 @@ def std_glb_clip(jid, host, rig_glb, src_glb, name, size_cm, prompt=None, role_m
         a.run_blender(jid, host, "unimate_bvh.py", [src_glb, f"{name}.bvh", f"{name}_bvh.json"],
                       [src_glb], [f"{name}.bvh", f"{name}_bvh.json"], 900)
         info = json.loads(a.ssh(host, f"cat {q(work + '/' + name + '_bvh.json')}"))
-        (lib / "clips" / f"{name}.bvh").write_bytes(a.ssh(host, f"cat {q(work + '/' + name + '.bvh')}", timeout=300))
-        # ponytail: these clips are kept as one-shots; cut a loop (zoo_curate) when cyclic ones need seamless ends
+        loop = any(w in name.lower() for w in LOOPS)
+        if loop:  # a gait or an idle must loop: the take's best closing window, cut and closed like a pack's, or no take
+            py = a.host_tools(jid, host)[2]
+            out = a.ssh(host, f"cd {q(work)} && {py} zoo_curate.py --loop {q(name + '.bvh')} {q(name + '_loop.bvh')} {q(name)}; echo", timeout=600)
+            line = next((ln for ln in out.decode(errors="replace").splitlines() if ln.startswith(("LOOP", "NOLOOP"))), "NOLOOP ?")
+            if line.startswith("NOLOOP"):
+                raise RuntimeError(f"no loop closes in the take ({line[7:].strip()})")
+            info["frames"] = int(line.split()[3])
+        (lib / "clips" / f"{name}.bvh").write_bytes(a.ssh(host, f"cat {q(work + '/' + name + ('_loop' if loop else '') + '.bvh')}", timeout=300))
         (lib / "animal.json").write_text(json.dumps({"id": "UniMate", "fps": info["fps"], "role_map": role_map or {b: b for b in info["bones"]},
-            "clips": [{"name": name, "file": f"clips/{name}.bvh", "frames": info["frames"], "loop": False}]}))
+            "clips": [{"name": name, "file": f"clips/{name}.bvh", "frames": info["frames"], "loop": loop}]}))
         return retarget_clip(jid, host, rig_glb, lib, name, size_cm, prompt)
     finally:
         shutil.rmtree(lib, ignore_errors=True)
@@ -707,16 +777,17 @@ def synth_clip(jid, host, rig_glb, clip, size_cm, prompt=None, bones=None) -> di
     import importlib.util
     spec = importlib.util.spec_from_file_location("gait_synth", _app().MOTION_DIR / "gait_synth.py")
     gait_synth = importlib.util.module_from_spec(spec); spec.loader.exec_module(gait_synth)
-    gait = next((g for g in ("gallop", "trot", "walk", "run") if g in clip.lower()), None)
+    gait = next((g for w, g in SYNTH.items() if w in clip.lower()), None)
     if not gait:
-        raise ValueError(f"no procedural gait for {clip!r} (walk, trot, run or gallop)")
+        raise ValueError(f"no procedural clip for {clip!r} ({', '.join(sorted(set(SYNTH.values())))})")
     lib = Path(tempfile.mkdtemp())
     try:
         (lib / "clips").mkdir()
         text = gait_synth.bvh(gait, bones)
         (lib / "clips" / f"{clip}.bvh").write_text(text)
         (lib / "animal.json").write_text(json.dumps({"id": "gait_synth", "fps": gait_synth.FPS, "role_map": {b: b for b in gait_synth.skeleton(60) if not b.endswith("_end")},
-            "clips": [{"name": clip, "file": f"clips/{clip}.bvh", "frames": len(text.split("MOTION")[1].strip().splitlines()) - 2, "loop": True}]}))
+            "clips": [{"name": clip, "file": f"clips/{clip}.bvh", "frames": len(text.split("MOTION")[1].strip().splitlines()) - 2,
+                       "loop": gait_synth.GAITS[gait]["loop"]}]}))
         return retarget_clip(jid, host, rig_glb, lib, clip, size_cm, prompt) | {"gait": gait}
     finally:
         shutil.rmtree(lib, ignore_errors=True)
@@ -738,7 +809,7 @@ def unimate_clip(jid, host, rig_glb, clip, size_cm, prompt=None, seeds=None, raw
     role_map = {b: l for b, l in raw["labels"].items() if b not in raw["dropped"]} if raw else None
     if not a.ssh(host, f"test -s {um}/creature/cond.npy && echo y || true").strip():
         step("preparing the rig for UniMate")
-        ann = unimate_annotation(raw["bones"], raw["labels"]) if raw else unimate_annotation()
+        ann = unimate_annotation(raw["bones"], raw["labels"], raw["dropped"]) if raw else unimate_annotation()
         a.put_input(host, f"{jid}/um/annotation.json", json.dumps(ann).encode())
         # rig_preprocess can crash on exit after writing everything (bpy teardown): its outputs are the test
         a.ssh_step(host, jid, work, env + f"python -m data_process.rig_preprocess run --input {q(work + '/' + src_rig)} "
@@ -1047,12 +1118,23 @@ def run_creature(jid, host):
             log.append(f"concept and rig: from {fm}")
         else:
             views = concept_image(jid, p, entry, log, step, host, lib, size, info)
-            step("building the model: Pixal3D, UltraTex and the SkinTokens rig")
-            model = build_model(jid, host, p, views)
+            model = None
         png = views.get("left") or views["concept"]  # the side-on design image
-        a.GPU_NOTES.setdefault(jid, []).append(f"[asset-manager] {host['name']}: {a.release_vram(host)}")
-        std = standardise_rig(jid, host, model)
-        log.append(f"rig review: {std['review']}; {len(std['dropped'])} bones merged; {'; '.join(std['warnings']) or 'no warnings'}")
+        # the model is built (a reused one checked first) until it passes its review against the concept: a multi-view
+        # build can fuse a second shell or a ghost head onto the body, which no clip can fix
+        for attempt in range(1, MODEL_BUILDS + 1):
+            if model is None or attempt > 1:
+                step(f"building the model: Pixal3D, UltraTex and the SkinTokens rig{f' (build {attempt})' if attempt > 1 else ''}")
+                model = build_model(jid, host, p, views, None if attempt == 1 else random.randint(0, 0x7fffffff))
+            a.GPU_NOTES.setdefault(jid, []).append(f"[asset-manager] {host['name']}: {a.release_vram(host)}")
+            std = standardise_rig(jid, host, model)
+            log.append(f"rig review: {std['review']}; {len(std['dropped'])} bones merged; {'; '.join(std['warnings']) or 'no warnings'}")
+            r = model_review(jid, host, std["glb"], views)
+            log.append(f"model review (build {attempt}): {'PASS' if r['pass'] else 'FAIL: ' + '; '.join(r['problems'])}")
+            if r["pass"]:
+                break
+            if attempt == MODEL_BUILDS:
+                raise RuntimeError(f"the model failed its review {MODEL_BUILDS} times: {'; '.join(r['problems'])}")
         raw_glb = a.ssh(host, f"cat {q(work + '/' + model)}", timeout=900)  # the SkinTokens rig: UniMate's, and kept in source/
         raw = {"glb": model, "bones": glb_bones(glb_read(raw_glb)[0]), "labels": std["labels"], "dropped": std["dropped"]}
         have = [c["name"] for c in animal["clips"]]
@@ -1063,7 +1145,7 @@ def run_creature(jid, host):
                                 lambda f: retarget_clip(jid, host, std["glb"], lib.parent / f.split("/")[0] if "/" in f else lib,
                                                         f.split("/")[-1], size, c),
                                 lambda: unimate_clip(jid, host, std["glb"], c, size, raw=raw),
-                                (lambda: synth_clip(jid, host, std["glb"], c, size, c, std["bones"])) if any(g in c.lower() for g in GAITS) else None)
+                                (lambda: synth_clip(jid, host, std["glb"], c, size, c, std["bones"])) if any(w in c.lower() for w in SYNTH) else None)
                 if not r:
                     unavailable.append({"name": c, "reason": f"not in the {entry['id']} library and fill_missing is off"})
                     continue
@@ -1297,6 +1379,9 @@ def run_clip_job(jid, host):
                     a.put_input(host, f"{jid}/raw.glb", sk.read_bytes())
                     lj = json.loads(lab.read_text(encoding="utf-8"))
                     raw = {"glb": "raw.glb", "bones": glb_bones(glb_read(sk.read_bytes())[0]), "labels": lj["labels"], "dropped": lj["dropped"]}
+                else:
+                    log.append(f"{p['clip']}: {n} keeps no source/{n}_skintokens.glb + _rig_labels.json (made before they were kept): "
+                               "UniMate animates the shared skeleton, whose forelegs it tends to freeze")
                 best = unimate_clip(jid, host, "rig.glb", p["clip"], size, p["prompt"], p["seeds"], raw)
                 groups = [(p["clip"], [(f"_s{r['seed']}", r, {"source": "text", "seed": r["seed"], "prompt": r["prompt"],
                                                               "best": r["seed"] == best["seed"]}) for r in best["candidates"]])]

@@ -354,6 +354,25 @@ def role_map(out):
     print("ROLE MAP", verdict, json.dumps(rm))
 
 
+def loop_cut(src, out, name):
+    """python zoo_curate.py --loop IN.bvh OUT.bvh NAME: the best closing loop of a generated take (a UniMate gait or
+    idle) cut and closed like a pack's, written to OUT; prints LOOP i j frames. Exits 1 when no loop closes."""
+    joints, frames, ft, head = parse(Path(src).read_text())
+    s = score(joints, frames, True)
+    why = s and defects(joints, frames, ft, name, s[1], s[2])
+    if not s or why:
+        print("NOLOOP", why or f"no loop of {MIN_LOOP}+ frames closes within {MAX_LOOP_DEG} deg")
+        sys.exit(1)
+    seg, travel = cut_loop(joints, frames, s[1], s[2])
+    write(out, head, seg, ft)
+    print("LOOP", s[1], s[2], len(seg), "frames, closure", round(s[3], 2), "deg")
+
+
 if __name__ == "__main__":
     a = sys.argv[1:]
-    role_map(a[1]) if a[0] == "--role-map" else curate(a[0], a[1])
+    if a[0] == "--role-map":
+        role_map(a[1])
+    elif a[0] == "--loop":
+        loop_cut(a[1], a[2], a[3])
+    else:
+        curate(a[0], a[1])
