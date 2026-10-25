@@ -12,6 +12,7 @@
 #include "UI/SFWindowStack.h"
 #include "Engine/StaticMesh.h"
 #include "Engine/World.h"
+#include "EngineUtils.h"
 #include "Net/UnrealNetwork.h"
 #include "TimerManager.h"
 
@@ -28,6 +29,11 @@ bool USFLootComponent::InReach(const APlayerController* Controller, const AActor
     if (FVector::DistSquared(Pawn->GetActorLocation(), Source->GetActorLocation()) > FMath::Square(Reach)) { return false; }
     FVector Eye; FRotator Rotation; Pawn->GetActorEyesViewPoint(Eye, Rotation);
     FCollisionQueryParams Query(SCENE_QUERY_STAT(LootVisibility), false, Pawn); FHitResult Hit;
+    if (const auto* Loot = Cast<ASFLootSourceActor>(Source))
+    {
+        for (TActorIterator<ASFLootSourceActor> It(Controller->GetWorld()); It; ++It)
+        { if (*It != Source && Loot->SharesCorpseBody(*It)) { Query.AddIgnoredActor(*It); } }
+    }
     return !Controller->GetWorld()->LineTraceSingleByChannel(Hit, Eye, Source->GetActorLocation(), ECC_Visibility, Query) || Hit.GetActor() == Source;
 }
 

@@ -188,6 +188,7 @@ private:
     friend class ASFHarvestFallingTree;
     friend class USFGatheringPilotComponent;
     friend class FSFGatheringPilotAuthorityTest;
+    friend class FSFActionTargetDispatchTest;
     friend class FSFGatheringPilotToolTest;
     friend class FSFGatheringPilotLifecycleTest;
     friend class FSFGatheringPilotArtContactTest;
@@ -282,6 +283,8 @@ public:
     virtual void TickComponent(float Delta, ELevelTick Type, FActorComponentTickFunction* Function) override;
     virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out) const override;
     bool InteractFromRay(const FVector& Start, const FVector& Direction);
+    // Retains the shared cursor selection instead of resolving another node.
+    bool InteractWithTarget(ASFGatheringPilotNode* Node, const FVector& Start, const FVector& Direction, const FHitResult* Contact = nullptr);
     // Cancels the harvest in progress or waiting; true when there was one to cancel.
     bool CancelLocalHarvest();
     void EquipAxe();
@@ -358,6 +361,7 @@ public:
 #endif
 private:
     friend class FSFGatheringPilotAuthorityTest;
+    friend class FSFActionTargetDispatchTest;
     friend class FSFGatheringPilotToolTest;
     friend class FSFGatheringPilotLifecycleTest;
     friend class FSFGatheringPilotArtContactTest;

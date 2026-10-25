@@ -17,7 +17,7 @@ struct FSFLootEntry
 // on the public world actor; authorized rows travel only to the owning player.
 struct FSFLootSourceSnapshot
 {
-    FString Id, ZoneId, CreatureId, MeshPath;
+    FString Id, ZoneId, CreatureId, MeshPath, BodyId;
     FVector Position = FVector::ZeroVector;
     FVector MeshScale = FVector::OneVector;
     FRotator MeshRotation = FRotator::ZeroRotator;

@@ -1114,6 +1114,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED LootSource final : public ::google:
     kZoneIdFieldNumber = 2,
     kCreatureIdFieldNumber = 6,
     kMeshPathFieldNumber = 7,
+    kBodyIdFieldNumber = 17,
     kXCmFieldNumber = 3,
     kYCmFieldNumber = 4,
     kZCmFieldNumber = 5,
@@ -1211,6 +1212,21 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED LootSource final : public ::google:
   const ::std::string& _internal_mesh_path() const;
   PROTOBUF_ALWAYS_INLINE void _internal_set_mesh_path(const ::std::string& value);
   ::std::string* PROTOBUF_NONNULL _internal_mutable_mesh_path();
+
+  public:
+  // string body_id = 17;
+  void clear_body_id() ;
+  [[nodiscard]] const ::std::string& body_id() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_body_id(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_body_id();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_body_id();
+  void set_allocated_body_id(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_body_id() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_body_id(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_body_id();
 
   public:
   // double x_cm = 3;
@@ -1327,8 +1343,8 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED LootSource final : public ::google:
  private:
   class _Internal;
   using ParseTableT_ =
-      ::google::protobuf::internal::TcParseTable<4, 16,
-                          0, 100,
+      ::google::protobuf::internal::TcParseTable<5, 17,
+                          0, 107,
                           2>;
   static constexpr ParseTableT_ InternalGenerateParseTable_(
       const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
@@ -1361,6 +1377,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED LootSource final : public ::google:
     ::google::protobuf::internal::ArenaStringPtr zone_id_;
     ::google::protobuf::internal::ArenaStringPtr creature_id_;
     ::google::protobuf::internal::ArenaStringPtr mesh_path_;
+    ::google::protobuf::internal::ArenaStringPtr body_id_;
     double x_cm_;
     double y_cm_;
     double z_cm_;
@@ -4795,7 +4812,7 @@ inline void LootSource::set_allocated_zone_id(::std::string* PROTOBUF_NULLABLE v
 inline void LootSource::clear_x_cm() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.x_cm_ = 0;
-  ClearHasBit(_impl_._has_bits_[0], 0x00000020U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000040U);
 }
 inline double LootSource::x_cm() const {
   // @@protoc_insertion_point(field_get:sf.rewards.v1.LootSource.x_cm)
@@ -4803,7 +4820,7 @@ inline double LootSource::x_cm() const {
 }
 inline void LootSource::set_x_cm(double value) {
   _internal_set_x_cm(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000020U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000040U);
   // @@protoc_insertion_point(field_set:sf.rewards.v1.LootSource.x_cm)
 }
 inline double LootSource::_internal_x_cm() const {
@@ -4819,7 +4836,7 @@ inline void LootSource::_internal_set_x_cm(double value) {
 inline void LootSource::clear_y_cm() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.y_cm_ = 0;
-  ClearHasBit(_impl_._has_bits_[0], 0x00000040U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000080U);
 }
 inline double LootSource::y_cm() const {
   // @@protoc_insertion_point(field_get:sf.rewards.v1.LootSource.y_cm)
@@ -4827,7 +4844,7 @@ inline double LootSource::y_cm() const {
 }
 inline void LootSource::set_y_cm(double value) {
   _internal_set_y_cm(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000040U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000080U);
   // @@protoc_insertion_point(field_set:sf.rewards.v1.LootSource.y_cm)
 }
 inline double LootSource::_internal_y_cm() const {
@@ -4843,7 +4860,7 @@ inline void LootSource::_internal_set_y_cm(double value) {
 inline void LootSource::clear_z_cm() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.z_cm_ = 0;
-  ClearHasBit(_impl_._has_bits_[0], 0x00000080U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000100U);
 }
 inline double LootSource::z_cm() const {
   // @@protoc_insertion_point(field_get:sf.rewards.v1.LootSource.z_cm)
@@ -4851,7 +4868,7 @@ inline double LootSource::z_cm() const {
 }
 inline void LootSource::set_z_cm(double value) {
   _internal_set_z_cm(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000080U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000100U);
   // @@protoc_insertion_point(field_set:sf.rewards.v1.LootSource.z_cm)
 }
 inline double LootSource::_internal_z_cm() const {
@@ -4995,7 +5012,7 @@ inline void LootSource::set_allocated_mesh_path(::std::string* PROTOBUF_NULLABLE
 inline void LootSource::clear_ground() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.ground_ = false;
-  ClearHasBit(_impl_._has_bits_[0], 0x00004000U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00008000U);
 }
 inline bool LootSource::ground() const {
   // @@protoc_insertion_point(field_get:sf.rewards.v1.LootSource.ground)
@@ -5003,7 +5020,7 @@ inline bool LootSource::ground() const {
 }
 inline void LootSource::set_ground(bool value) {
   _internal_set_ground(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00004000U);
+  SetHasBit(_impl_._has_bits_[0], 0x00008000U);
   // @@protoc_insertion_point(field_set:sf.rewards.v1.LootSource.ground)
 }
 inline bool LootSource::_internal_ground() const {
@@ -5019,7 +5036,7 @@ inline void LootSource::_internal_set_ground(bool value) {
 inline void LootSource::clear_shared() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.shared_ = false;
-  ClearHasBit(_impl_._has_bits_[0], 0x00008000U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00010000U);
 }
 inline bool LootSource::shared() const {
   // @@protoc_insertion_point(field_get:sf.rewards.v1.LootSource.shared)
@@ -5027,7 +5044,7 @@ inline bool LootSource::shared() const {
 }
 inline void LootSource::set_shared(bool value) {
   _internal_set_shared(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00008000U);
+  SetHasBit(_impl_._has_bits_[0], 0x00010000U);
   // @@protoc_insertion_point(field_set:sf.rewards.v1.LootSource.shared)
 }
 inline bool LootSource::_internal_shared() const {
@@ -5115,7 +5132,7 @@ LootSource::_internal_mutable_eligible_character_ids() {
 inline void LootSource::clear_scale_x() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.scale_x_ = 0;
-  ClearHasBit(_impl_._has_bits_[0], 0x00000100U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000200U);
 }
 inline double LootSource::scale_x() const {
   // @@protoc_insertion_point(field_get:sf.rewards.v1.LootSource.scale_x)
@@ -5123,7 +5140,7 @@ inline double LootSource::scale_x() const {
 }
 inline void LootSource::set_scale_x(double value) {
   _internal_set_scale_x(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000100U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000200U);
   // @@protoc_insertion_point(field_set:sf.rewards.v1.LootSource.scale_x)
 }
 inline double LootSource::_internal_scale_x() const {
@@ -5139,7 +5156,7 @@ inline void LootSource::_internal_set_scale_x(double value) {
 inline void LootSource::clear_scale_y() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.scale_y_ = 0;
-  ClearHasBit(_impl_._has_bits_[0], 0x00000200U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000400U);
 }
 inline double LootSource::scale_y() const {
   // @@protoc_insertion_point(field_get:sf.rewards.v1.LootSource.scale_y)
@@ -5147,7 +5164,7 @@ inline double LootSource::scale_y() const {
 }
 inline void LootSource::set_scale_y(double value) {
   _internal_set_scale_y(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000200U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000400U);
   // @@protoc_insertion_point(field_set:sf.rewards.v1.LootSource.scale_y)
 }
 inline double LootSource::_internal_scale_y() const {
@@ -5163,7 +5180,7 @@ inline void LootSource::_internal_set_scale_y(double value) {
 inline void LootSource::clear_scale_z() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.scale_z_ = 0;
-  ClearHasBit(_impl_._has_bits_[0], 0x00000400U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000800U);
 }
 inline double LootSource::scale_z() const {
   // @@protoc_insertion_point(field_get:sf.rewards.v1.LootSource.scale_z)
@@ -5171,7 +5188,7 @@ inline double LootSource::scale_z() const {
 }
 inline void LootSource::set_scale_z(double value) {
   _internal_set_scale_z(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000400U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000800U);
   // @@protoc_insertion_point(field_set:sf.rewards.v1.LootSource.scale_z)
 }
 inline double LootSource::_internal_scale_z() const {
@@ -5187,7 +5204,7 @@ inline void LootSource::_internal_set_scale_z(double value) {
 inline void LootSource::clear_pitch() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.pitch_ = 0;
-  ClearHasBit(_impl_._has_bits_[0], 0x00000800U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00001000U);
 }
 inline double LootSource::pitch() const {
   // @@protoc_insertion_point(field_get:sf.rewards.v1.LootSource.pitch)
@@ -5195,7 +5212,7 @@ inline double LootSource::pitch() const {
 }
 inline void LootSource::set_pitch(double value) {
   _internal_set_pitch(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000800U);
+  SetHasBit(_impl_._has_bits_[0], 0x00001000U);
   // @@protoc_insertion_point(field_set:sf.rewards.v1.LootSource.pitch)
 }
 inline double LootSource::_internal_pitch() const {
@@ -5211,7 +5228,7 @@ inline void LootSource::_internal_set_pitch(double value) {
 inline void LootSource::clear_yaw() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.yaw_ = 0;
-  ClearHasBit(_impl_._has_bits_[0], 0x00001000U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00002000U);
 }
 inline double LootSource::yaw() const {
   // @@protoc_insertion_point(field_get:sf.rewards.v1.LootSource.yaw)
@@ -5219,7 +5236,7 @@ inline double LootSource::yaw() const {
 }
 inline void LootSource::set_yaw(double value) {
   _internal_set_yaw(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00001000U);
+  SetHasBit(_impl_._has_bits_[0], 0x00002000U);
   // @@protoc_insertion_point(field_set:sf.rewards.v1.LootSource.yaw)
 }
 inline double LootSource::_internal_yaw() const {
@@ -5235,7 +5252,7 @@ inline void LootSource::_internal_set_yaw(double value) {
 inline void LootSource::clear_roll() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.roll_ = 0;
-  ClearHasBit(_impl_._has_bits_[0], 0x00002000U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00004000U);
 }
 inline double LootSource::roll() const {
   // @@protoc_insertion_point(field_get:sf.rewards.v1.LootSource.roll)
@@ -5243,7 +5260,7 @@ inline double LootSource::roll() const {
 }
 inline void LootSource::set_roll(double value) {
   _internal_set_roll(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00002000U);
+  SetHasBit(_impl_._has_bits_[0], 0x00004000U);
   // @@protoc_insertion_point(field_set:sf.rewards.v1.LootSource.roll)
 }
 inline double LootSource::_internal_roll() const {
@@ -5253,6 +5270,70 @@ inline double LootSource::_internal_roll() const {
 inline void LootSource::_internal_set_roll(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.roll_ = value;
+}
+
+// string body_id = 17;
+inline void LootSource::clear_body_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.body_id_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000020U);
+}
+inline const ::std::string& LootSource::body_id() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.rewards.v1.LootSource.body_id)
+  return _internal_body_id();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void LootSource::set_body_id(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000020U);
+  _impl_.body_id_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:sf.rewards.v1.LootSource.body_id)
+}
+inline ::std::string* PROTOBUF_NONNULL LootSource::mutable_body_id()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000020U);
+  ::std::string* _s = _internal_mutable_body_id();
+  // @@protoc_insertion_point(field_mutable:sf.rewards.v1.LootSource.body_id)
+  return _s;
+}
+inline const ::std::string& LootSource::_internal_body_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.body_id_.Get();
+}
+inline void LootSource::_internal_set_body_id(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.body_id_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL LootSource::_internal_mutable_body_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.body_id_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE LootSource::release_body_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:sf.rewards.v1.LootSource.body_id)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000020U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000020U);
+  auto* released = _impl_.body_id_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.body_id_.Set("", GetArena());
+  }
+  return released;
+}
+inline void LootSource::set_allocated_body_id(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000020U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000020U);
+  }
+  _impl_.body_id_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.body_id_.IsDefault()) {
+    _impl_.body_id_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:sf.rewards.v1.LootSource.body_id)
 }
 
 // -------------------------------------------------------------------

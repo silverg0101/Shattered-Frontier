@@ -28,6 +28,7 @@ message LootSource {
   repeated string eligible_character_ids = 10;
   double scale_x = 11; double scale_y = 12; double scale_z = 13;
   double pitch = 14; double yaw = 15; double roll = 16;
+  string body_id = 17; // opaque authoritative defeat ID; personal views share one physical body
 }
 message LootInstance { string instance_id = 1; string definition_id = 2; int32 durability_percent = 3; }
 message LootSourceView {

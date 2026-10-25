@@ -1699,20 +1699,27 @@ ASFGatheringPilotNode* USFGatheringPilotComponent::FindNode(const FVector& Start
 
 bool USFGatheringPilotComponent::InteractFromRay(const FVector& Start, const FVector& Direction)
 {
+    return InteractWithTarget(FindNode(Start, Direction), Start, Direction);
+}
+
+bool USFGatheringPilotComponent::InteractWithTarget(ASFGatheringPilotNode* Node, const FVector& Start, const FVector& Direction, const FHitResult* Contact)
+{
     if (!bEnabled) { return false; }
     if (Feedback.Phase==ESFGatheringPilotPhase::Harvesting) { CancelLocalHarvest(); return true; }
     if (Feedback.Phase==ESFGatheringPilotPhase::Committing) { return true; }  // the server is saving; nothing to cancel
     if (WaitingOperation!=0)
     {
+        if (WaitingNode != Node) { return true; }
         if (bWaitingHadSurface) { ServerGatheringActionAtSurface(WaitingNode.Get(),WaitingRevision,WaitingOperation,WaitingSurface); }
         else { ServerGatheringAction(WaitingNode.Get(),WaitingRevision,WaitingOperation); }
         return true;
     }
-    auto* Node=FindNode(Start,Direction); if (!Node) { return false; }
+    if (!IsValid(Node) || Node->GetWorld() != GetWorld()) { return false; }
     if (NextLocalOperation==MAX_uint32) { bKeyConflict=true; return true; }
     WaitingOperation=NextLocalOperation++; WaitingNode=Node; WaitingRevision=Node->GetState().Revision; bKeyConflict=false;
     FVector Normal;
-    bWaitingHadSurface=Node->HarvestVisuals&&Node->HarvestVisuals->IsReady()&&Node->HarvestVisuals->TraceSurface(Start,Direction,WaitingSurface,Normal);
+    const FVector ContactDirection = Contact && Contact->GetActor() == Node ? (Contact->ImpactPoint - Start).GetSafeNormal() : Direction;
+    bWaitingHadSurface=Node->HarvestVisuals&&Node->HarvestVisuals->IsReady()&&Node->HarvestVisuals->TraceSurface(Start,ContactDirection,WaitingSurface,Normal);
     if (bWaitingHadSurface) { ServerGatheringActionAtSurface(Node,WaitingRevision,WaitingOperation,WaitingSurface); }
     else { ServerGatheringAction(Node,WaitingRevision,WaitingOperation); }
     return true;

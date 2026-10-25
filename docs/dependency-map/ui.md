@@ -1,5 +1,7 @@
 # UI
 
+Action targeting: `SFActionTargetComponent` now supplies one actor and cursor hit/ray to the highlight, `SFHudLayout` prompt and exact action handler. Selected dialogue/quest/market handlers receive that actor; the ordinary action path no longer chooses a second nearby object. Inventory layout/style is unchanged by the review fixes.
+
 Character creator logic: `FSFCreatorState` holds the selected Part 6 archetype, and `USFFrontEndCreator` exposes `GetAvailableArchetypeIds`, `GetArchetypeId`, and `SetArchetypeId` for a future owner-arranged WBP binding. The current creator WBP has no archetype slot; no layout was changed. `ASFFrontEndController` sends the selected id through the dev Gameplay.Host or IdentityGateway request. Focused automation: `ShatteredFrontier.FrontEnd.Archetypes`.
 
 Chat HUD placeholder: `Chat/SFChatWidget.h/.cpp` binds `WBP_Chat.ChatLog` (ScrollBox) and `MessageInput` (EditableTextBox) to `USFChatSubsystem` messages and rejections, including `not_delivered` and `not_in_party`. `SFWidgetAuthoring.cpp` seeds `/Game/Frontier/UI/Widgets/Hud/WBP_Chat` through `tools/ui/create_widgets.py --only WBP_Chat`; the owner arranges its Designer layout. The placeholder has no art or runtime styling. `USFChatSubsystem` creates it on the local world controller after identity travel. Focused asset check: `ShatteredFrontier.Chat.Widget` (`Private/Tests/SFChatWidgetTests.cpp`); two-client relay check: `tools/Test-ChatUnrealRelay.ps1` and `Private/Tests/SFChatRelayTests.cpp`.

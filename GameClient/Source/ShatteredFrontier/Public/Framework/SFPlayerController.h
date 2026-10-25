@@ -19,6 +19,8 @@ struct FSFPartyMemberView
 };
 
 class ASFE1InteractionTarget;
+class ASFMarketBoardActor;
+struct FSFActionTargetSelection;
 class ISFExchangeService;
 class FSFMarketViewModel;
 class FSFTradeViewModel;
@@ -125,6 +127,7 @@ public:
     // Trading UI: F6 trade window, F7 market board, on the live exchange (the fake only with -ExchangeFake).
     void ToggleTradeDemo();
     void ToggleMarketDemo();
+    void ToggleMarketForTarget(ASFMarketBoardActor* Target);
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     // Observes entry before local request coalescing, so input-routing tests can
     // detect duplicate pawn dispatch even when cooldown hides another request.
@@ -359,10 +362,12 @@ private:
 
     friend class FSFE1InteractionAuthorityTest;
     void BeginPlayInteraction();
+    friend class FSFActionTargetDispatchTest;
+    void DispatchSelectedAction(const FSFActionTargetSelection& Selection);
     void TickInteraction();
     void SetBuildMode(bool bActive);
     void CloseSidePanelsForModal();
-    bool TryOpenDialogue();
+    bool TryOpenDialogue(ASFDialogueNpc* ExactTarget = nullptr);
     void CloseDialogue();
     void HandleDialogueStep(ESFDialogueStep Step);
     void TickDialogue();

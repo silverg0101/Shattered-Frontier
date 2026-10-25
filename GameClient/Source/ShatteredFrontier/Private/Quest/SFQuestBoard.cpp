@@ -360,14 +360,16 @@ void USFQuestBoardPanel::NativeTick(const FGeometry& MyGeometry, float InDeltaTi
     UpdateTooltip();
 }
 
-bool USFQuestBoardPanel::TryOpenBoard(APlayerController* Local)
+bool USFQuestBoardPanel::TryOpenBoard(APlayerController* Local, ASFQuestBoard* ExactTarget)
 {
     if (!Local || !Local->IsLocalController()) { return false; }
     USFQuestPilotComponent* Quests = Local->FindComponentByClass<USFQuestPilotComponent>();
-    ASFQuestBoard* Board = Quests ? ASFQuestBoard::FindInReach(Local) : nullptr;
+    ASFQuestBoard* Board = Quests ? ExactTarget ? ExactTarget : ASFQuestBoard::FindInReach(Local) : nullptr;
+    if (ExactTarget && (!IsValid(ExactTarget) || ExactTarget->GetWorld() != Local->GetWorld() || !Local->GetPawn() ||
+        FVector::Dist2D(ExactTarget->GetActorLocation(), Local->GetPawn()->GetActorLocation()) > GetDefault<USFQuestPilotSettings>()->BoardReachCm())) { return false; }
     USFQuestBoardPanel* Panel = Board ? PanelFor(Local, true) : nullptr;
     if (!Panel) { return false; }
-    if (Panel->IsOpen() && Panel->IsBoard()) { return true; }
+    if (Panel->IsOpen() && Panel->IsBoard() && Panel->BoardId == Board->BoardId) { return true; }
     Panel->OpenBoard(Quests, Board->BoardId, Board->DisplayName());
     return true;
 }

@@ -8,7 +8,7 @@ namespace ShatteredFrontier.InventoryLedger;
 // receipt. No second item database, deferred delete or grant-after-consume saga.
 public sealed record WorldLootSource(string Id, string ZoneId, double X, double Y, double Z,
     string CreatureId, string MeshPath, bool Ground, bool Shared, string[] EligibleCharacters,
-    double ScaleX = 1, double ScaleY = 1, double ScaleZ = 1, double Pitch = 0, double Yaw = 0, double Roll = 0);
+    double ScaleX = 1, double ScaleY = 1, double ScaleZ = 1, double Pitch = 0, double Yaw = 0, double Roll = 0, string BodyId = "");
 public sealed record WorldLootView(WorldLootSource Source, ContainerView Container);
 public sealed record WorldLootSeed(WorldLootSource Source, IReadOnlyList<ItemQuantity> Items, IReadOnlyList<ItemInstance> Instances);
 

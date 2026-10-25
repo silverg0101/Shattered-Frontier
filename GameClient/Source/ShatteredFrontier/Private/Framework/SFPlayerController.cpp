@@ -1,5 +1,6 @@
 #include "Framework/SFPlayerController.h"
 #include "Quest/SFQuestBoard.h"
+#include "Dialogue/SFDialogue.h"
 #include "Construction/SFConstructionSandboxPalette.h"
 #include "Interaction/SFE1InteractionTarget.h"
 #include "Framework/SFE1Settings.h"
@@ -359,21 +360,7 @@ void ASFPlayerController::ServerSelectCombatTarget_Implementation(AActor* Target
 
 void ASFPlayerController::RefreshLocalFeedback()
 {
-    SelectedTarget.Reset();
-    double NearestDistanceSquared = TNumericLimits<double>::Max();
-    if (const APawn* ControlledPawn = GetPawn())
-    {
-        for (TActorIterator<ASFE1InteractionTarget> It(GetWorld()); It; ++It)
-        {
-            if (!IsValid(*It) || It->IsActorBeingDestroyed()) { continue; }
-            const double DistanceSquared = FVector::DistSquared(ControlledPawn->GetActorLocation(), It->GetInteractionAnchor());
-            if (DistanceSquared < NearestDistanceSquared)
-            {
-                NearestDistanceSquared = DistanceSquared;
-                SelectedTarget = *It;
-            }
-        }
-    }
+    SelectedTarget = Cast<ASFE1InteractionTarget>(GetSelectedActionTarget());
     SelectedRevision = SelectedTarget.IsValid() ? SelectedTarget->GetInteractionRevision() : 0;
     const ESFE1InteractionResult Advisory = ValidateTarget(SelectedTarget.Get(), SelectedRevision);
     const bool bShowResult = GetWorld()->GetTimeSeconds() < ResultVisibleUntilSeconds;
@@ -447,34 +434,39 @@ void ASFPlayerController::InteractWithSelectedTarget()
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     if (InteractionInputAttempts != MAX_uint64) { ++InteractionInputAttempts; }
 #endif
-    if (TryInteractLootAtCursor()) { return; }
-    if (auto* Node = Cast<ASFGatheringPilotNode>(GetSelectedActionTarget()))
-    {
-        if (auto* Pilot = FindComponentByClass<USFGatheringPilotComponent>())
-        { const FVector Start = GetPawn() ? GetPawn()->GetPawnViewLocation() : FVector::ZeroVector; if (Pilot->InteractFromRay(Start, (Node->GetActorLocation() - Start).GetSafeNormal())) { return; } }
-    }
-    if (TryOpenDialogue() || USFQuestBoardPanel::TryOpenBoard(this)) { return; }
-    if (IsLocalController() && GetPawn() && GetWorld())
-    {
-        for (TActorIterator<ASFRepairStationActor> It(GetWorld()); It; ++It)
-        {
-            if (FVector::DistSquared(GetPawn()->GetActorLocation(), It->GetActorLocation()) <= FMath::Square(350.f))
-            { if (PendingRepairQuoteId.IsEmpty()) { RequestGearRepair(FString()); } else { ConfirmGearRepair(); } return; }
-        }
-    }
-    if (IsLocalController() && GetPawn() && GetWorld() && GetDefault<USFGameplayServicesSettings>()->bExchangeEnabled)
-    {
-        const float ReachCm = GetDefault<USFGameplayServicesSettings>()->MarketReachM * 100.0f;
-        for (TActorIterator<ASFMarketBoardActor> It(GetWorld()); It; ++It)
-        {
-            if (FVector::DistSquared(GetPawn()->GetActorLocation(), It->GetActorLocation()) <= FMath::Square(ReachCm))
-            { ToggleMarketDemo(); return; }
-        }
-    }
     if (!IsLocalController() || !bSettingsCaptured) { return; }
-    const double Now = GetWorld()->GetTimeSeconds();
-    if (!LocalFeedback.TryBeginRequest(Now)) { return; }
-    ServerRequestInteraction(SelectedTarget.Get(), SelectedRevision);
+    if (FSlateApplication::IsInitialized())
+    {
+        const FVector2D Cursor = FSlateApplication::Get().GetCursorPos();
+        for (UUserWidget* Window : GetWindowStack()->GetOrder())
+        { if (Window && Window->IsVisible() && Window->GetCachedGeometry().IsUnderLocation(Cursor)) { return; } }
+    }
+    if (auto* Selection = FindComponentByClass<USFActionTargetComponent>())
+    { Selection->Refresh(); DispatchSelectedAction(Selection->GetSelection()); }
+}
+
+void ASFPlayerController::DispatchSelectedAction(const FSFActionTargetSelection& Selection)
+{
+    AActor* Target = Selection.Target.Get();
+    if (!IsValid(Target) || Target->GetWorld() != GetWorld()) { return; }
+    if (auto* Source = Cast<ASFLootSourceActor>(Target))
+    { if (auto* Loot = USFLootComponent::Find(this)) { Loot->TryInteract(Source); } return; }
+    if (auto* Node = Cast<ASFGatheringPilotNode>(Target))
+    { if (auto* Pilot = FindComponentByClass<USFGatheringPilotComponent>()) { Pilot->InteractWithTarget(Node, Selection.RayStart, Selection.RayDirection, &Selection.Hit); } return; }
+    if (auto* Speaker = Cast<ASFDialogueNpc>(Target)) { TryOpenDialogue(Speaker); return; }
+    if (auto* Board = Cast<ASFQuestBoard>(Target)) { USFQuestBoardPanel::TryOpenBoard(this, Board); return; }
+    if (auto* Station = Cast<ASFRepairStationActor>(Target))
+    {
+        if (GetPawn() && FVector::DistSquared(GetPawn()->GetActorLocation(), Station->GetActorLocation()) <= FMath::Square(350.f))
+        { if (PendingRepairQuoteId.IsEmpty()) { RequestGearRepair(FString()); } else { ConfirmGearRepair(); } }
+        return;
+    }
+    if (auto* Market = Cast<ASFMarketBoardActor>(Target)) { ToggleMarketForTarget(Market); return; }
+    if (auto* Probe = Cast<ASFE1InteractionTarget>(Target))
+    {
+        if (!LocalFeedback.TryBeginRequest(GetWorld()->GetTimeSeconds())) { return; }
+        ServerRequestInteraction(Probe, Probe->GetInteractionRevision());
+    }
 }
 
 AActor* ASFPlayerController::GetSelectedActionTarget() const
@@ -655,6 +647,9 @@ void ASFPlayerController::ToggleTradeDemo()
 }
 
 void ASFPlayerController::ToggleMarketDemo()
+{ ToggleMarketForTarget(nullptr); }
+
+void ASFPlayerController::ToggleMarketForTarget(ASFMarketBoardActor* ExactTarget)
 {
     if (!IsLocalController()) { return; }
     if (!MarketBoard)
@@ -681,10 +676,12 @@ void ASFPlayerController::ToggleMarketDemo()
     {
         if (!FParse::Param(FCommandLine::Get(), TEXT("ExchangeFake")))
         {
-            ASFMarketBoardActor* Nearby = nullptr;
+            ASFMarketBoardActor* Nearby = ExactTarget;
             const APawn* LocalPawn = GetPawn();
             const float ReachCm = GetDefault<USFGameplayServicesSettings>()->MarketReachM * 100.0f;
-            if (LocalPawn && GetWorld())
+            if (ExactTarget && (!IsValid(ExactTarget) || ExactTarget->GetWorld() != GetWorld() || !LocalPawn ||
+                FVector::DistSquared(LocalPawn->GetActorLocation(), ExactTarget->GetActorLocation()) > FMath::Square(ReachCm))) { return; }
+            if (!ExactTarget && LocalPawn && GetWorld())
             {
                 for (TActorIterator<ASFMarketBoardActor> It(GetWorld()); It; ++It)
                 {

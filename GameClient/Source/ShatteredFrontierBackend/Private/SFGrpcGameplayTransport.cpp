@@ -60,6 +60,7 @@ namespace
         const auto& S = R.source();
         Out.Id = FromUtf8(S.id()); Out.ZoneId = FromUtf8(S.zone_id()); Out.CreatureId = FromUtf8(S.creature_id());
         Out.MeshPath = FromUtf8(S.mesh_path()); Out.Position = FVector(S.x_cm(), S.y_cm(), S.z_cm());
+        Out.BodyId = FromUtf8(S.body_id());
         Out.bGround = S.ground(); Out.bShared = S.shared(); Out.Revision = R.revision();
         Out.MeshScale = FVector(S.scale_x(), S.scale_y(), S.scale_z()); Out.MeshRotation = FRotator(S.pitch(), S.yaw(), S.roll());
         for (const auto& Id : S.eligible_character_ids()) { Out.EligibleCharacters.Add(FromUtf8(Id)); }

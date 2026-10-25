@@ -21,6 +21,13 @@ void USFActionTargetComponent::Refresh()
     FVector Start, Direction;
     if (!Player->DeprojectMousePositionToWorld(Start, Direction))
     { FRotator Rotation; Player->GetPlayerViewPoint(Start, Rotation); Direction = Rotation.Vector(); }
+    RefreshFromRay(Start, Direction);
+}
+
+void USFActionTargetComponent::RefreshFromRay(const FVector& Start, const FVector& Direction)
+{
+    auto* Player = Cast<APlayerController>(GetOwner());
+    if (!Player || !Player->GetPawn()) { Select(nullptr); return; }
     const FVector At = Player->GetPawn()->GetActorLocation();
     const float Reach = GetDefault<USFE1Settings>()->InteractionRangeMetres * 100.f;
     const float TraceLength = FVector::Distance(Start, At) + Reach * 2;
@@ -34,17 +41,14 @@ void USFActionTargetComponent::Refresh()
             Candidate->IsA<ASFMarketBoardActor>() || Candidate->IsA<ASFRepairStationActor>() || Candidate->ActorHasTag(TEXT("SFInteractable"))))
         { Target = Candidate; }
     }
-    if (!Target)
-    {
-        if (const auto* Pilot = Player->FindComponentByClass<USFGatheringPilotComponent>())
-        { Target = Pilot->FindAimedNode(Start, Direction); }
-    }
     if (Target && FVector::DistSquared(At, Target->GetActorLocation()) > FMath::Square(Reach)) { Target = nullptr; }
+    Selection.RayStart = Start; Selection.RayDirection = Direction; Selection.Hit = Hit;
     Select(Target);
 }
 
 void USFActionTargetComponent::Select(AActor* Target)
 {
+    Selection.Target = Target;
     if (Selected == Target) { return; }
     for (const auto& Previous : PreviousOverlays)
     { if (UMeshComponent* Mesh = Previous.Key.Get()) { Mesh->SetOverlayMaterial(Previous.Value.Get()); } }

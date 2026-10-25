@@ -56,7 +56,7 @@ public:
     /** Client tick from the quest subsystem: J toggles the journal, walking away closes a board visit, state changes redraw. */
     static void TickClient(APlayerController* Local, USFQuestPilotComponent* Log);
     /** Interact at a board: opens it; true when the key was used. */
-    static bool TryOpenBoard(APlayerController* Local);
+    static bool TryOpenBoard(APlayerController* Local, ASFQuestBoard* ExactTarget = nullptr);
     /** Development: open a screen for captures ("journal" or "board"). */
     static void OpenForCapture(APlayerController* Local, const FString& Screen);
 

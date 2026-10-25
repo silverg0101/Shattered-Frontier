@@ -142,18 +142,17 @@ void USFHudLayout::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
     APlayerController* Controller = GetOwningPlayer();
     if (!Controller) { return; }
 
-    FVector Start, Direction;
-    if (!Controller->DeprojectMousePositionToWorld(Start, Direction)) { FRotator Rotation; Controller->GetPlayerViewPoint(Start, Rotation); Direction = Rotation.Vector(); }
-    const ASFGatheringPilotNode* Node = Pilot && Pilot->IsEnabled() ? Pilot->FindAimedNode(Start, Direction) : nullptr;
-    ESFPromptContext Context = bBuildMode ? ESFPromptContext::Build : ESFPromptContext::None;
     const auto* SFController = Cast<ASFPlayerController>(Controller);
-    const auto* LootSource = SFController ? Cast<ASFLootSourceActor>(SFController->GetSelectedActionTarget()) : nullptr;
+    const AActor* ActionTarget = SFController ? SFController->GetSelectedActionTarget() : nullptr;
+    const auto* Node = Cast<ASFGatheringPilotNode>(ActionTarget);
+    const auto* LootSource = Cast<ASFLootSourceActor>(ActionTarget);
+    ESFPromptContext Context = bBuildMode ? ESFPromptContext::Build : ESFPromptContext::None;
     if (Node)
     {
         Context = Node->IsRefinery() ? ESFPromptContext::Refine : ESFPromptContext::Harvest;
         HarvestVerb = Node->IsRefinery() ? FString() : Node->ActionVerb();
     }
-    else if (!bBuildMode && ASFQuestBoard::FindInReach(Controller)) { Context = ESFPromptContext::Read; }
+    else if (!bBuildMode && Cast<ASFQuestBoard>(ActionTarget)) { Context = ESFPromptContext::Read; }
     if (!bBuildMode && LootSource) { Context = LootSource->IsGround() ? ESFPromptContext::Pickup : ESFPromptContext::Loot; }
     // While the station panel is open it carries its own title and Craft key: no prompt bar and no target frame over it.
     const bool bStation = Cast<ASFPlayerController>(Controller) && Cast<ASFPlayerController>(Controller)->IsStationPanelOpen();

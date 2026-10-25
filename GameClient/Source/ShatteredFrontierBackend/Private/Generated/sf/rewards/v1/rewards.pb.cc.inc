@@ -610,11 +610,11 @@ constexpr LootSource::ParseTableT_ LootSource::InternalGenerateParseTable_(const
     {
       PROTOBUF_FIELD_OFFSET(LootSource, _impl_._has_bits_),
       0, // no _extensions_
-      16, 120,  // max_field_number, fast_idx_mask
+      17, 248,  // max_field_number, fast_idx_mask
       offsetof(ParseTableT_, field_lookup_table),
-      4294901760,  // skipmap
+      4294836224,  // skipmap
       offsetof(ParseTableT_, field_entries),
-      16,  // num_field_entries
+      17,  // num_field_entries
       0,  // num_aux_entries
       offsetof(ParseTableT_, field_names),  // no aux_entries
       class_data,
@@ -624,10 +624,7 @@ constexpr LootSource::ParseTableT_ LootSource::InternalGenerateParseTable_(const
       ::_pbi::TcParser::GetTable<::sf::rewards::v1::LootSource>(),  // to_prefetch
       #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
     }, {{
-      // double roll = 16;
-      {::_pbi::TcParser::FastF64S2,
-       {385, 13, 0,
-        PROTOBUF_FIELD_OFFSET(LootSource, _impl_.roll_)}},
+      {::_pbi::TcParser::MiniParse, {}},
       // string id = 1;
       {::_pbi::TcParser::FastUS1,
        {10, 1, 0,
@@ -638,15 +635,15 @@ constexpr LootSource::ParseTableT_ LootSource::InternalGenerateParseTable_(const
         PROTOBUF_FIELD_OFFSET(LootSource, _impl_.zone_id_)}},
       // double x_cm = 3;
       {::_pbi::TcParser::FastF64S1,
-       {25, 5, 0,
+       {25, 6, 0,
         PROTOBUF_FIELD_OFFSET(LootSource, _impl_.x_cm_)}},
       // double y_cm = 4;
       {::_pbi::TcParser::FastF64S1,
-       {33, 6, 0,
+       {33, 7, 0,
         PROTOBUF_FIELD_OFFSET(LootSource, _impl_.y_cm_)}},
       // double z_cm = 5;
       {::_pbi::TcParser::FastF64S1,
-       {41, 7, 0,
+       {41, 8, 0,
         PROTOBUF_FIELD_OFFSET(LootSource, _impl_.z_cm_)}},
       // string creature_id = 6;
       {::_pbi::TcParser::FastUS1,
@@ -657,12 +654,12 @@ constexpr LootSource::ParseTableT_ LootSource::InternalGenerateParseTable_(const
        {58, 4, 0,
         PROTOBUF_FIELD_OFFSET(LootSource, _impl_.mesh_path_)}},
       // bool ground = 8;
-      {::_pbi::TcParser::SingularVarintNoZag1<bool, offsetof(LootSource, _impl_.ground_), 14>(),
-       {64, 14, 0,
+      {::_pbi::TcParser::SingularVarintNoZag1<bool, offsetof(LootSource, _impl_.ground_), 15>(),
+       {64, 15, 0,
         PROTOBUF_FIELD_OFFSET(LootSource, _impl_.ground_)}},
       // bool shared = 9;
-      {::_pbi::TcParser::SingularVarintNoZag1<bool, offsetof(LootSource, _impl_.shared_), 15>(),
-       {72, 15, 0,
+      {::_pbi::TcParser::SingularVarintNoZag1<bool, offsetof(LootSource, _impl_.shared_), 16>(),
+       {72, 16, 0,
         PROTOBUF_FIELD_OFFSET(LootSource, _impl_.shared_)}},
       // repeated string eligible_character_ids = 10;
       {::_pbi::TcParser::FastUR1,
@@ -670,24 +667,46 @@ constexpr LootSource::ParseTableT_ LootSource::InternalGenerateParseTable_(const
         PROTOBUF_FIELD_OFFSET(LootSource, _impl_.eligible_character_ids_)}},
       // double scale_x = 11;
       {::_pbi::TcParser::FastF64S1,
-       {89, 8, 0,
+       {89, 9, 0,
         PROTOBUF_FIELD_OFFSET(LootSource, _impl_.scale_x_)}},
       // double scale_y = 12;
       {::_pbi::TcParser::FastF64S1,
-       {97, 9, 0,
+       {97, 10, 0,
         PROTOBUF_FIELD_OFFSET(LootSource, _impl_.scale_y_)}},
       // double scale_z = 13;
       {::_pbi::TcParser::FastF64S1,
-       {105, 10, 0,
+       {105, 11, 0,
         PROTOBUF_FIELD_OFFSET(LootSource, _impl_.scale_z_)}},
       // double pitch = 14;
       {::_pbi::TcParser::FastF64S1,
-       {113, 11, 0,
+       {113, 12, 0,
         PROTOBUF_FIELD_OFFSET(LootSource, _impl_.pitch_)}},
       // double yaw = 15;
       {::_pbi::TcParser::FastF64S1,
-       {121, 12, 0,
+       {121, 13, 0,
         PROTOBUF_FIELD_OFFSET(LootSource, _impl_.yaw_)}},
+      // double roll = 16;
+      {::_pbi::TcParser::FastF64S2,
+       {385, 14, 0,
+        PROTOBUF_FIELD_OFFSET(LootSource, _impl_.roll_)}},
+      // string body_id = 17;
+      {::_pbi::TcParser::FastUS2,
+       {394, 5, 0,
+        PROTOBUF_FIELD_OFFSET(LootSource, _impl_.body_id_)}},
+      {::_pbi::TcParser::MiniParse, {}},
+      {::_pbi::TcParser::MiniParse, {}},
+      {::_pbi::TcParser::MiniParse, {}},
+      {::_pbi::TcParser::MiniParse, {}},
+      {::_pbi::TcParser::MiniParse, {}},
+      {::_pbi::TcParser::MiniParse, {}},
+      {::_pbi::TcParser::MiniParse, {}},
+      {::_pbi::TcParser::MiniParse, {}},
+      {::_pbi::TcParser::MiniParse, {}},
+      {::_pbi::TcParser::MiniParse, {}},
+      {::_pbi::TcParser::MiniParse, {}},
+      {::_pbi::TcParser::MiniParse, {}},
+      {::_pbi::TcParser::MiniParse, {}},
+      {::_pbi::TcParser::MiniParse, {}},
     }}, {{
       65535, 65535
     }}, {{
@@ -696,43 +715,46 @@ constexpr LootSource::ParseTableT_ LootSource::InternalGenerateParseTable_(const
       // string zone_id = 2;
       {PROTOBUF_FIELD_OFFSET(LootSource, _impl_.zone_id_), _Internal::kHasBitsOffset + 2, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
       // double x_cm = 3;
-      {PROTOBUF_FIELD_OFFSET(LootSource, _impl_.x_cm_), _Internal::kHasBitsOffset + 5, 0, (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+      {PROTOBUF_FIELD_OFFSET(LootSource, _impl_.x_cm_), _Internal::kHasBitsOffset + 6, 0, (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
       // double y_cm = 4;
-      {PROTOBUF_FIELD_OFFSET(LootSource, _impl_.y_cm_), _Internal::kHasBitsOffset + 6, 0, (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+      {PROTOBUF_FIELD_OFFSET(LootSource, _impl_.y_cm_), _Internal::kHasBitsOffset + 7, 0, (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
       // double z_cm = 5;
-      {PROTOBUF_FIELD_OFFSET(LootSource, _impl_.z_cm_), _Internal::kHasBitsOffset + 7, 0, (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+      {PROTOBUF_FIELD_OFFSET(LootSource, _impl_.z_cm_), _Internal::kHasBitsOffset + 8, 0, (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
       // string creature_id = 6;
       {PROTOBUF_FIELD_OFFSET(LootSource, _impl_.creature_id_), _Internal::kHasBitsOffset + 3, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
       // string mesh_path = 7;
       {PROTOBUF_FIELD_OFFSET(LootSource, _impl_.mesh_path_), _Internal::kHasBitsOffset + 4, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
       // bool ground = 8;
-      {PROTOBUF_FIELD_OFFSET(LootSource, _impl_.ground_), _Internal::kHasBitsOffset + 14, 0, (0 | ::_fl::kFcOptional | ::_fl::kBool)},
+      {PROTOBUF_FIELD_OFFSET(LootSource, _impl_.ground_), _Internal::kHasBitsOffset + 15, 0, (0 | ::_fl::kFcOptional | ::_fl::kBool)},
       // bool shared = 9;
-      {PROTOBUF_FIELD_OFFSET(LootSource, _impl_.shared_), _Internal::kHasBitsOffset + 15, 0, (0 | ::_fl::kFcOptional | ::_fl::kBool)},
+      {PROTOBUF_FIELD_OFFSET(LootSource, _impl_.shared_), _Internal::kHasBitsOffset + 16, 0, (0 | ::_fl::kFcOptional | ::_fl::kBool)},
       // repeated string eligible_character_ids = 10;
       {PROTOBUF_FIELD_OFFSET(LootSource, _impl_.eligible_character_ids_), _Internal::kHasBitsOffset + 0, 0, (0 | ::_fl::kFcRepeated | ::_fl::kUtf8String | ::_fl::kRepSString)},
       // double scale_x = 11;
-      {PROTOBUF_FIELD_OFFSET(LootSource, _impl_.scale_x_), _Internal::kHasBitsOffset + 8, 0, (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+      {PROTOBUF_FIELD_OFFSET(LootSource, _impl_.scale_x_), _Internal::kHasBitsOffset + 9, 0, (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
       // double scale_y = 12;
-      {PROTOBUF_FIELD_OFFSET(LootSource, _impl_.scale_y_), _Internal::kHasBitsOffset + 9, 0, (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+      {PROTOBUF_FIELD_OFFSET(LootSource, _impl_.scale_y_), _Internal::kHasBitsOffset + 10, 0, (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
       // double scale_z = 13;
-      {PROTOBUF_FIELD_OFFSET(LootSource, _impl_.scale_z_), _Internal::kHasBitsOffset + 10, 0, (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+      {PROTOBUF_FIELD_OFFSET(LootSource, _impl_.scale_z_), _Internal::kHasBitsOffset + 11, 0, (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
       // double pitch = 14;
-      {PROTOBUF_FIELD_OFFSET(LootSource, _impl_.pitch_), _Internal::kHasBitsOffset + 11, 0, (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+      {PROTOBUF_FIELD_OFFSET(LootSource, _impl_.pitch_), _Internal::kHasBitsOffset + 12, 0, (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
       // double yaw = 15;
-      {PROTOBUF_FIELD_OFFSET(LootSource, _impl_.yaw_), _Internal::kHasBitsOffset + 12, 0, (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+      {PROTOBUF_FIELD_OFFSET(LootSource, _impl_.yaw_), _Internal::kHasBitsOffset + 13, 0, (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
       // double roll = 16;
-      {PROTOBUF_FIELD_OFFSET(LootSource, _impl_.roll_), _Internal::kHasBitsOffset + 13, 0, (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+      {PROTOBUF_FIELD_OFFSET(LootSource, _impl_.roll_), _Internal::kHasBitsOffset + 14, 0, (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+      // string body_id = 17;
+      {PROTOBUF_FIELD_OFFSET(LootSource, _impl_.body_id_), _Internal::kHasBitsOffset + 5, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
     }},
     // no aux_entries
     {{
-      "\30\2\7\0\0\0\13\11\0\0\26\0\0\0\0\0\0\0\0\0\0\0\0\0"
+      "\30\2\7\0\0\0\13\11\0\0\26\0\0\0\0\0\0\7\0\0\0\0\0\0"
       "sf.rewards.v1.LootSource"
       "id"
       "zone_id"
       "creature_id"
       "mesh_path"
       "eligible_character_ids"
+      "body_id"
     }},
   };
 }
@@ -757,6 +779,9 @@ inline constexpr LootSource::Impl_::Impl_(
             &::google::protobuf::internal::fixed_address_empty_string,
             ::_pbi::ConstantInitialized()),
         mesh_path_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        body_id_(
             &::google::protobuf::internal::fixed_address_empty_string,
             ::_pbi::ConstantInitialized()),
         x_cm_{0},
@@ -3106,7 +3131,7 @@ const ::uint32_t
         protodesc_cold) = {
         0x081, // bitmap
         PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::LootSource, _impl_._has_bits_),
-        19, // hasbit index offset
+        20, // hasbit index offset
         PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::LootSource, _impl_.id_),
         PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::LootSource, _impl_.zone_id_),
         PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::LootSource, _impl_.x_cm_),
@@ -3123,22 +3148,24 @@ const ::uint32_t
         PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::LootSource, _impl_.pitch_),
         PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::LootSource, _impl_.yaw_),
         PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::LootSource, _impl_.roll_),
+        PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::LootSource, _impl_.body_id_),
         1,
         2,
-        5,
         6,
         7,
+        8,
         3,
         4,
-        14,
         15,
+        16,
         0,
-        8,
         9,
         10,
         11,
         12,
         13,
+        14,
+        5,
         0x081, // bitmap
         PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::LootInstance, _impl_._has_bits_),
         6, // hasbit index offset
@@ -3362,20 +3389,20 @@ const ::uint32_t
 static const ::_pbi::MigrationSchema
     schemas[] ABSL_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
         {0, sizeof(::sf::rewards::v1::LootSource)},
-        {35, sizeof(::sf::rewards::v1::LootInstance)},
-        {44, sizeof(::sf::rewards::v1::LootSourceView)},
-        {59, sizeof(::sf::rewards::v1::CreateCorpseLootRequest)},
-        {100, sizeof(::sf::rewards::v1::ListLootSourcesRequest)},
-        {105, sizeof(::sf::rewards::v1::LootSourcesReply)},
-        {110, sizeof(::sf::rewards::v1::OpenLootSourceRequest)},
-        {117, sizeof(::sf::rewards::v1::TakeLootRequest)},
-        {138, sizeof(::sf::rewards::v1::DropLootRequest)},
-        {165, sizeof(::sf::rewards::v1::CreateSharedDefeatDropRequest)},
-        {184, sizeof(::sf::rewards::v1::ClaimSharedDefeatDropRequest)},
-        {193, sizeof(::sf::rewards::v1::SharedDropItem)},
-        {200, sizeof(::sf::rewards::v1::SharedDefeatDropReceipt)},
-        {215, sizeof(::sf::rewards::v1::GrantDefeatRewardRequest)},
-        {236, sizeof(::sf::rewards::v1::RewardReceipt)},
+        {37, sizeof(::sf::rewards::v1::LootInstance)},
+        {46, sizeof(::sf::rewards::v1::LootSourceView)},
+        {61, sizeof(::sf::rewards::v1::CreateCorpseLootRequest)},
+        {102, sizeof(::sf::rewards::v1::ListLootSourcesRequest)},
+        {107, sizeof(::sf::rewards::v1::LootSourcesReply)},
+        {112, sizeof(::sf::rewards::v1::OpenLootSourceRequest)},
+        {119, sizeof(::sf::rewards::v1::TakeLootRequest)},
+        {140, sizeof(::sf::rewards::v1::DropLootRequest)},
+        {167, sizeof(::sf::rewards::v1::CreateSharedDefeatDropRequest)},
+        {186, sizeof(::sf::rewards::v1::ClaimSharedDefeatDropRequest)},
+        {195, sizeof(::sf::rewards::v1::SharedDropItem)},
+        {202, sizeof(::sf::rewards::v1::SharedDefeatDropReceipt)},
+        {217, sizeof(::sf::rewards::v1::GrantDefeatRewardRequest)},
+        {238, sizeof(::sf::rewards::v1::RewardReceipt)},
 };
 static const ::_pbi::MessageGlobalsBase* PROTOBUF_NONNULL const
     file_message_globals[] = {
@@ -3398,101 +3425,101 @@ static const ::_pbi::MessageGlobalsBase* PROTOBUF_NONNULL const
 const char descriptor_table_protodef_sf_2frewards_2fv1_2frewards_2eproto[] ABSL_ATTRIBUTE_SECTION_VARIABLE(
     protodesc_cold) = {
     "\n\033sf/rewards/v1/rewards.proto\022\rsf.reward"
-    "s.v1\"\230\002\n\nLootSource\022\n\n\002id\030\001 \001(\t\022\017\n\007zone_"
+    "s.v1\"\251\002\n\nLootSource\022\n\n\002id\030\001 \001(\t\022\017\n\007zone_"
     "id\030\002 \001(\t\022\014\n\004x_cm\030\003 \001(\001\022\014\n\004y_cm\030\004 \001(\001\022\014\n\004"
     "z_cm\030\005 \001(\001\022\023\n\013creature_id\030\006 \001(\t\022\021\n\tmesh_"
     "path\030\007 \001(\t\022\016\n\006ground\030\010 \001(\010\022\016\n\006shared\030\t \001"
     "(\010\022\036\n\026eligible_character_ids\030\n \003(\t\022\017\n\007sc"
     "ale_x\030\013 \001(\001\022\017\n\007scale_y\030\014 \001(\001\022\017\n\007scale_z\030"
     "\r \001(\001\022\r\n\005pitch\030\016 \001(\001\022\013\n\003yaw\030\017 \001(\001\022\014\n\004rol"
-    "l\030\020 \001(\001\"V\n\014LootInstance\022\023\n\013instance_id\030\001"
-    " \001(\t\022\025\n\rdefinition_id\030\002 \001(\t\022\032\n\022durabilit"
-    "y_percent\030\003 \001(\005\"\343\001\n\016LootSourceView\022)\n\006so"
-    "urce\030\001 \001(\0132\031.sf.rewards.v1.LootSource\022\020\n"
-    "\010revision\030\002 \001(\003\022,\n\005items\030\003 \003(\0132\035.sf.rewa"
-    "rds.v1.SharedDropItem\022.\n\tinstances\030\004 \003(\013"
-    "2\033.sf.rewards.v1.LootInstance\022\033\n\023ledger_"
-    "operation_id\030\005 \001(\t\022\031\n\021backpack_revision\030"
-    "\006 \001(\003\"\373\002\n\027CreateCorpseLootRequest\022\027\n\017def"
-    "eat_event_id\030\001 \001(\t\022\023\n\013creature_id\030\002 \001(\t\022"
-    "\020\n\010table_id\030\003 \001(\t\022\033\n\023killer_character_id"
-    "\030\004 \001(\t\022\036\n\026eligible_character_ids\030\005 \003(\t\022\021"
-    "\n\tprotected\030\006 \001(\010\022\017\n\007zone_id\030\007 \001(\t\022\014\n\004x_"
-    "cm\030\010 \001(\001\022\014\n\004y_cm\030\t \001(\001\022\014\n\004z_cm\030\n \001(\001\022\021\n\t"
-    "mesh_path\030\013 \001(\t\022\016\n\006shared\030\014 \001(\010\022\025\n\rraid_"
-    "group_id\030\r \001(\t\022\017\n\007scale_x\030\016 \001(\001\022\017\n\007scale"
-    "_y\030\017 \001(\001\022\017\n\007scale_z\030\020 \001(\001\022\r\n\005pitch\030\021 \001(\001"
-    "\022\013\n\003yaw\030\022 \001(\001\022\014\n\004roll\030\023 \001(\001\")\n\026ListLootS"
-    "ourcesRequest\022\017\n\007zone_id\030\001 \001(\t\"B\n\020LootSo"
-    "urcesReply\022.\n\007sources\030\001 \003(\0132\035.sf.rewards"
-    ".v1.LootSourceView\"@\n\025OpenLootSourceRequ"
-    "est\022\021\n\tsource_id\030\001 \001(\t\022\024\n\014character_id\030\002"
-    " \001(\t\"\327\001\n\017TakeLootRequest\022\024\n\014operation_id"
-    "\030\001 \001(\t\022\021\n\tsource_id\030\002 \001(\t\022\024\n\014character_i"
-    "d\030\003 \001(\t\022\023\n\013backpack_id\030\004 \001(\t\022\027\n\017source_r"
-    "evision\030\005 \001(\003\022\031\n\021backpack_revision\030\006 \001(\003"
-    "\022\025\n\rdefinition_id\030\007 \001(\t\022\020\n\010quantity\030\010 \001("
-    "\003\022\023\n\013instance_id\030\t \001(\t\"\371\001\n\017DropLootReque"
-    "st\022\024\n\014operation_id\030\001 \001(\t\022\024\n\014character_id"
-    "\030\002 \001(\t\022\023\n\013backpack_id\030\003 \001(\t\022\031\n\021backpack_"
-    "revision\030\004 \001(\003\022\025\n\rdefinition_id\030\005 \001(\t\022\020\n"
-    "\010quantity\030\006 \001(\003\022\023\n\013instance_id\030\007 \001(\t\022\017\n\007"
-    "zone_id\030\010 \001(\t\022\014\n\004x_cm\030\t \001(\001\022\014\n\004y_cm\030\n \001("
-    "\001\022\014\n\004z_cm\030\013 \001(\001\022\021\n\tmesh_path\030\014 \001(\t\"\371\001\n\035C"
-    "reateSharedDefeatDropRequest\022\027\n\017defeat_e"
-    "vent_id\030\001 \001(\t\022\023\n\013creature_id\030\002 \001(\t\022\020\n\010ta"
-    "ble_id\030\003 \001(\t\022\033\n\023killer_character_id\030\004 \001("
-    "\t\022\036\n\026eligible_character_ids\030\005 \003(\t\022 \n\030kil"
-    "ler_in_protected_town\030\006 \001(\010\022\"\n\032creature_"
-    "in_protected_town\030\007 \001(\010\022\025\n\rraid_group_id"
-    "\030\010 \001(\t\"c\n\034ClaimSharedDefeatDropRequest\022\027"
-    "\n\017defeat_event_id\030\001 \001(\t\022\024\n\014character_id\030"
-    "\002 \001(\t\022\024\n\014container_id\030\003 \001(\t\"9\n\016SharedDro"
-    "pItem\022\025\n\rdefinition_id\030\001 \001(\t\022\020\n\010quantity"
-    "\030\002 \001(\003\"\317\001\n\027SharedDefeatDropReceipt\022\027\n\017de"
-    "feat_event_id\030\001 \001(\t\022,\n\005items\030\002 \003(\0132\035.sf."
-    "rewards.v1.SharedDropItem\022\035\n\025claimant_ch"
-    "aracter_id\030\003 \001(\t\022\033\n\023ledger_operation_id\030"
-    "\004 \001(\t\022\032\n\022container_revision\030\005 \001(\003\022\025\n\rrai"
-    "d_group_id\030\006 \001(\t\"\224\002\n\030GrantDefeatRewardRe"
-    "quest\022\027\n\017defeat_event_id\030\001 \001(\t\022\033\n\023killer"
-    "_character_id\030\002 \001(\t\022\036\n\026recipient_charact"
-    "er_id\030\003 \001(\t\022\024\n\014container_id\030\004 \001(\t\022#\n\033exp"
-    "ected_container_revision\030\005 \001(\003\022 \n\030killer"
-    "_in_protected_town\030\006 \001(\010\022\036\n\026boar_in_prot"
-    "ected_town\030\007 \001(\010\022\020\n\010table_id\030\010 \001(\t\022\023\n\013cr"
-    "eature_id\030\t \001(\t\"\305\001\n\rRewardReceipt\022\017\n\007gra"
-    "nted\030\001 \001(\010\022\023\n\013source_code\030\002 \001(\t\022\033\n\023ledge"
-    "r_operation_id\030\003 \001(\t\022\025\n\rdefinition_id\030\004 "
-    "\001(\t\022\020\n\010quantity\030\005 \001(\003\022\032\n\022container_revis"
-    "ion\030\006 \001(\003\022,\n\005items\030\007 \003(\0132\035.sf.rewards.v1"
-    ".SharedDropItem2\350\005\n\007Rewards\022Z\n\021GrantDefe"
-    "atReward\022\'.sf.rewards.v1.GrantDefeatRewa"
-    "rdRequest\032\034.sf.rewards.v1.RewardReceipt\022"
-    "n\n\026CreateSharedDefeatDrop\022,.sf.rewards.v"
-    "1.CreateSharedDefeatDropRequest\032&.sf.rew"
-    "ards.v1.SharedDefeatDropReceipt\022l\n\025Claim"
-    "SharedDefeatDrop\022+.sf.rewards.v1.ClaimSh"
-    "aredDefeatDropRequest\032&.sf.rewards.v1.Sh"
-    "aredDefeatDropReceipt\022[\n\020CreateCorpseLoo"
-    "t\022&.sf.rewards.v1.CreateCorpseLootReques"
-    "t\032\037.sf.rewards.v1.LootSourcesReply\022Y\n\017Li"
-    "stLootSources\022%.sf.rewards.v1.ListLootSo"
-    "urcesRequest\032\037.sf.rewards.v1.LootSources"
-    "Reply\022U\n\016OpenLootSource\022$.sf.rewards.v1."
-    "OpenLootSourceRequest\032\035.sf.rewards.v1.Lo"
-    "otSourceView\022I\n\010TakeLoot\022\036.sf.rewards.v1"
-    ".TakeLootRequest\032\035.sf.rewards.v1.LootSou"
-    "rceView\022I\n\010DropLoot\022\036.sf.rewards.v1.Drop"
-    "LootRequest\032\035.sf.rewards.v1.LootSourceVi"
-    "ewB\037\252\002\034ShatteredFrontier.Rewards.V1b\006pro"
-    "to3"
+    "l\030\020 \001(\001\022\017\n\007body_id\030\021 \001(\t\"V\n\014LootInstance"
+    "\022\023\n\013instance_id\030\001 \001(\t\022\025\n\rdefinition_id\030\002"
+    " \001(\t\022\032\n\022durability_percent\030\003 \001(\005\"\343\001\n\016Loo"
+    "tSourceView\022)\n\006source\030\001 \001(\0132\031.sf.rewards"
+    ".v1.LootSource\022\020\n\010revision\030\002 \001(\003\022,\n\005item"
+    "s\030\003 \003(\0132\035.sf.rewards.v1.SharedDropItem\022."
+    "\n\tinstances\030\004 \003(\0132\033.sf.rewards.v1.LootIn"
+    "stance\022\033\n\023ledger_operation_id\030\005 \001(\t\022\031\n\021b"
+    "ackpack_revision\030\006 \001(\003\"\373\002\n\027CreateCorpseL"
+    "ootRequest\022\027\n\017defeat_event_id\030\001 \001(\t\022\023\n\013c"
+    "reature_id\030\002 \001(\t\022\020\n\010table_id\030\003 \001(\t\022\033\n\023ki"
+    "ller_character_id\030\004 \001(\t\022\036\n\026eligible_char"
+    "acter_ids\030\005 \003(\t\022\021\n\tprotected\030\006 \001(\010\022\017\n\007zo"
+    "ne_id\030\007 \001(\t\022\014\n\004x_cm\030\010 \001(\001\022\014\n\004y_cm\030\t \001(\001\022"
+    "\014\n\004z_cm\030\n \001(\001\022\021\n\tmesh_path\030\013 \001(\t\022\016\n\006shar"
+    "ed\030\014 \001(\010\022\025\n\rraid_group_id\030\r \001(\t\022\017\n\007scale"
+    "_x\030\016 \001(\001\022\017\n\007scale_y\030\017 \001(\001\022\017\n\007scale_z\030\020 \001"
+    "(\001\022\r\n\005pitch\030\021 \001(\001\022\013\n\003yaw\030\022 \001(\001\022\014\n\004roll\030\023"
+    " \001(\001\")\n\026ListLootSourcesRequest\022\017\n\007zone_i"
+    "d\030\001 \001(\t\"B\n\020LootSourcesReply\022.\n\007sources\030\001"
+    " \003(\0132\035.sf.rewards.v1.LootSourceView\"@\n\025O"
+    "penLootSourceRequest\022\021\n\tsource_id\030\001 \001(\t\022"
+    "\024\n\014character_id\030\002 \001(\t\"\327\001\n\017TakeLootReques"
+    "t\022\024\n\014operation_id\030\001 \001(\t\022\021\n\tsource_id\030\002 \001"
+    "(\t\022\024\n\014character_id\030\003 \001(\t\022\023\n\013backpack_id\030"
+    "\004 \001(\t\022\027\n\017source_revision\030\005 \001(\003\022\031\n\021backpa"
+    "ck_revision\030\006 \001(\003\022\025\n\rdefinition_id\030\007 \001(\t"
+    "\022\020\n\010quantity\030\010 \001(\003\022\023\n\013instance_id\030\t \001(\t\""
+    "\371\001\n\017DropLootRequest\022\024\n\014operation_id\030\001 \001("
+    "\t\022\024\n\014character_id\030\002 \001(\t\022\023\n\013backpack_id\030\003"
+    " \001(\t\022\031\n\021backpack_revision\030\004 \001(\003\022\025\n\rdefin"
+    "ition_id\030\005 \001(\t\022\020\n\010quantity\030\006 \001(\003\022\023\n\013inst"
+    "ance_id\030\007 \001(\t\022\017\n\007zone_id\030\010 \001(\t\022\014\n\004x_cm\030\t"
+    " \001(\001\022\014\n\004y_cm\030\n \001(\001\022\014\n\004z_cm\030\013 \001(\001\022\021\n\tmesh"
+    "_path\030\014 \001(\t\"\371\001\n\035CreateSharedDefeatDropRe"
+    "quest\022\027\n\017defeat_event_id\030\001 \001(\t\022\023\n\013creatu"
+    "re_id\030\002 \001(\t\022\020\n\010table_id\030\003 \001(\t\022\033\n\023killer_"
+    "character_id\030\004 \001(\t\022\036\n\026eligible_character"
+    "_ids\030\005 \003(\t\022 \n\030killer_in_protected_town\030\006"
+    " \001(\010\022\"\n\032creature_in_protected_town\030\007 \001(\010"
+    "\022\025\n\rraid_group_id\030\010 \001(\t\"c\n\034ClaimSharedDe"
+    "featDropRequest\022\027\n\017defeat_event_id\030\001 \001(\t"
+    "\022\024\n\014character_id\030\002 \001(\t\022\024\n\014container_id\030\003"
+    " \001(\t\"9\n\016SharedDropItem\022\025\n\rdefinition_id\030"
+    "\001 \001(\t\022\020\n\010quantity\030\002 \001(\003\"\317\001\n\027SharedDefeat"
+    "DropReceipt\022\027\n\017defeat_event_id\030\001 \001(\t\022,\n\005"
+    "items\030\002 \003(\0132\035.sf.rewards.v1.SharedDropIt"
+    "em\022\035\n\025claimant_character_id\030\003 \001(\t\022\033\n\023led"
+    "ger_operation_id\030\004 \001(\t\022\032\n\022container_revi"
+    "sion\030\005 \001(\003\022\025\n\rraid_group_id\030\006 \001(\t\"\224\002\n\030Gr"
+    "antDefeatRewardRequest\022\027\n\017defeat_event_i"
+    "d\030\001 \001(\t\022\033\n\023killer_character_id\030\002 \001(\t\022\036\n\026"
+    "recipient_character_id\030\003 \001(\t\022\024\n\014containe"
+    "r_id\030\004 \001(\t\022#\n\033expected_container_revisio"
+    "n\030\005 \001(\003\022 \n\030killer_in_protected_town\030\006 \001("
+    "\010\022\036\n\026boar_in_protected_town\030\007 \001(\010\022\020\n\010tab"
+    "le_id\030\010 \001(\t\022\023\n\013creature_id\030\t \001(\t\"\305\001\n\rRew"
+    "ardReceipt\022\017\n\007granted\030\001 \001(\010\022\023\n\013source_co"
+    "de\030\002 \001(\t\022\033\n\023ledger_operation_id\030\003 \001(\t\022\025\n"
+    "\rdefinition_id\030\004 \001(\t\022\020\n\010quantity\030\005 \001(\003\022\032"
+    "\n\022container_revision\030\006 \001(\003\022,\n\005items\030\007 \003("
+    "\0132\035.sf.rewards.v1.SharedDropItem2\350\005\n\007Rew"
+    "ards\022Z\n\021GrantDefeatReward\022\'.sf.rewards.v"
+    "1.GrantDefeatRewardRequest\032\034.sf.rewards."
+    "v1.RewardReceipt\022n\n\026CreateSharedDefeatDr"
+    "op\022,.sf.rewards.v1.CreateSharedDefeatDro"
+    "pRequest\032&.sf.rewards.v1.SharedDefeatDro"
+    "pReceipt\022l\n\025ClaimSharedDefeatDrop\022+.sf.r"
+    "ewards.v1.ClaimSharedDefeatDropRequest\032&"
+    ".sf.rewards.v1.SharedDefeatDropReceipt\022["
+    "\n\020CreateCorpseLoot\022&.sf.rewards.v1.Creat"
+    "eCorpseLootRequest\032\037.sf.rewards.v1.LootS"
+    "ourcesReply\022Y\n\017ListLootSources\022%.sf.rewa"
+    "rds.v1.ListLootSourcesRequest\032\037.sf.rewar"
+    "ds.v1.LootSourcesReply\022U\n\016OpenLootSource"
+    "\022$.sf.rewards.v1.OpenLootSourceRequest\032\035"
+    ".sf.rewards.v1.LootSourceView\022I\n\010TakeLoo"
+    "t\022\036.sf.rewards.v1.TakeLootRequest\032\035.sf.r"
+    "ewards.v1.LootSourceView\022I\n\010DropLoot\022\036.s"
+    "f.rewards.v1.DropLootRequest\032\035.sf.reward"
+    "s.v1.LootSourceViewB\037\252\002\034ShatteredFrontie"
+    "r.Rewards.V1b\006proto3"
 };
 static ::absl::once_flag descriptor_table_sf_2frewards_2fv1_2frewards_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_sf_2frewards_2fv1_2frewards_2eproto = {
     false,
     false,
-    3563,
+    3580,
     descriptor_table_protodef_sf_2frewards_2fv1_2frewards_2eproto,
     "sf/rewards/v1/rewards.proto",
     &descriptor_table_sf_2frewards_2fv1_2frewards_2eproto_once,
@@ -3535,7 +3562,8 @@ PROTOBUF_NDEBUG_INLINE LootSource::Impl_::Impl_(
         id_(arena, from.id_),
         zone_id_(arena, from.zone_id_),
         creature_id_(arena, from.creature_id_),
-        mesh_path_(arena, from.mesh_path_) {}
+        mesh_path_(arena, from.mesh_path_),
+        body_id_(arena, from.body_id_) {}
 
 LootSource::LootSource(
     ::google::protobuf::Arena* PROTOBUF_NULLABLE arena,
@@ -3573,7 +3601,8 @@ PROTOBUF_NDEBUG_INLINE LootSource::Impl_::Impl_(
         id_(arena),
         zone_id_(arena),
         creature_id_(arena),
-        mesh_path_(arena) {}
+        mesh_path_(arena),
+        body_id_(arena) {}
 
 inline void LootSource::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
   new (&_impl_) Impl_(internal_visibility(), arena);
@@ -3599,6 +3628,7 @@ inline void LootSource::SharedDtor(MessageLite& self) {
   this_._impl_.zone_id_.Destroy();
   this_._impl_.creature_id_.Destroy();
   this_._impl_.mesh_path_.Destroy();
+  this_._impl_.body_id_.Destroy();
   this_._impl_.~Impl_();
 }
 
@@ -3636,7 +3666,7 @@ PROTOBUF_NOINLINE void LootSource::Clear() {
   (void) cached_has_bits;
 
   cached_has_bits = _impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0x0000001fU)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x0000003fU)) {
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
       _impl_.eligible_character_ids_.Clear();
     }
@@ -3652,17 +3682,21 @@ PROTOBUF_NOINLINE void LootSource::Clear() {
     if (CheckHasBit(cached_has_bits, 0x00000010U)) {
       _impl_.mesh_path_.ClearNonDefaultToEmpty();
     }
+    if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+      _impl_.body_id_.ClearNonDefaultToEmpty();
+    }
   }
-  if (BatchCheckHasBit(cached_has_bits, 0x000000e0U)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x000000c0U)) {
     ::memset(&_impl_.x_cm_, 0, static_cast<::size_t>(
-        reinterpret_cast<char*>(&_impl_.z_cm_) -
-        reinterpret_cast<char*>(&_impl_.x_cm_)) + sizeof(_impl_.z_cm_));
+        reinterpret_cast<char*>(&_impl_.y_cm_) -
+        reinterpret_cast<char*>(&_impl_.x_cm_)) + sizeof(_impl_.y_cm_));
   }
   if (BatchCheckHasBit(cached_has_bits, 0x0000ff00U)) {
-    ::memset(&_impl_.scale_x_, 0, static_cast<::size_t>(
-        reinterpret_cast<char*>(&_impl_.shared_) -
-        reinterpret_cast<char*>(&_impl_.scale_x_)) + sizeof(_impl_.shared_));
+    ::memset(&_impl_.z_cm_, 0, static_cast<::size_t>(
+        reinterpret_cast<char*>(&_impl_.ground_) -
+        reinterpret_cast<char*>(&_impl_.z_cm_)) + sizeof(_impl_.ground_));
   }
+  _impl_.shared_ = false;
   _impl_._has_bits_.Clear();
   _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
@@ -3707,7 +3741,7 @@ PROTOBUF_NOINLINE void LootSource::Clear() {
   }
 
   // double x_cm = 3;
-  if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000040U)) {
     if (::absl::bit_cast<::uint64_t>(this_._internal_x_cm()) != 0) {
       target = stream->EnsureSpace(target);
       target = ::_pbi::WireFormatLite::WriteDoubleToArray(
@@ -3716,7 +3750,7 @@ PROTOBUF_NOINLINE void LootSource::Clear() {
   }
 
   // double y_cm = 4;
-  if (CheckHasBit(cached_has_bits, 0x00000040U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000080U)) {
     if (::absl::bit_cast<::uint64_t>(this_._internal_y_cm()) != 0) {
       target = stream->EnsureSpace(target);
       target = ::_pbi::WireFormatLite::WriteDoubleToArray(
@@ -3725,7 +3759,7 @@ PROTOBUF_NOINLINE void LootSource::Clear() {
   }
 
   // double z_cm = 5;
-  if (CheckHasBit(cached_has_bits, 0x00000080U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000100U)) {
     if (::absl::bit_cast<::uint64_t>(this_._internal_z_cm()) != 0) {
       target = stream->EnsureSpace(target);
       target = ::_pbi::WireFormatLite::WriteDoubleToArray(
@@ -3754,7 +3788,7 @@ PROTOBUF_NOINLINE void LootSource::Clear() {
   }
 
   // bool ground = 8;
-  if (CheckHasBit(cached_has_bits, 0x00004000U)) {
+  if (CheckHasBit(cached_has_bits, 0x00008000U)) {
     if (this_._internal_ground() != 0) {
       target = stream->EnsureSpace(target);
       target = ::_pbi::WireFormatLite::WriteBoolToArray(
@@ -3763,7 +3797,7 @@ PROTOBUF_NOINLINE void LootSource::Clear() {
   }
 
   // bool shared = 9;
-  if (CheckHasBit(cached_has_bits, 0x00008000U)) {
+  if (CheckHasBit(cached_has_bits, 0x00010000U)) {
     if (this_._internal_shared() != 0) {
       target = stream->EnsureSpace(target);
       target = ::_pbi::WireFormatLite::WriteBoolToArray(
@@ -3782,7 +3816,7 @@ PROTOBUF_NOINLINE void LootSource::Clear() {
   }
 
   // double scale_x = 11;
-  if (CheckHasBit(cached_has_bits, 0x00000100U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000200U)) {
     if (::absl::bit_cast<::uint64_t>(this_._internal_scale_x()) != 0) {
       target = stream->EnsureSpace(target);
       target = ::_pbi::WireFormatLite::WriteDoubleToArray(
@@ -3791,7 +3825,7 @@ PROTOBUF_NOINLINE void LootSource::Clear() {
   }
 
   // double scale_y = 12;
-  if (CheckHasBit(cached_has_bits, 0x00000200U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000400U)) {
     if (::absl::bit_cast<::uint64_t>(this_._internal_scale_y()) != 0) {
       target = stream->EnsureSpace(target);
       target = ::_pbi::WireFormatLite::WriteDoubleToArray(
@@ -3800,7 +3834,7 @@ PROTOBUF_NOINLINE void LootSource::Clear() {
   }
 
   // double scale_z = 13;
-  if (CheckHasBit(cached_has_bits, 0x00000400U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000800U)) {
     if (::absl::bit_cast<::uint64_t>(this_._internal_scale_z()) != 0) {
       target = stream->EnsureSpace(target);
       target = ::_pbi::WireFormatLite::WriteDoubleToArray(
@@ -3809,7 +3843,7 @@ PROTOBUF_NOINLINE void LootSource::Clear() {
   }
 
   // double pitch = 14;
-  if (CheckHasBit(cached_has_bits, 0x00000800U)) {
+  if (CheckHasBit(cached_has_bits, 0x00001000U)) {
     if (::absl::bit_cast<::uint64_t>(this_._internal_pitch()) != 0) {
       target = stream->EnsureSpace(target);
       target = ::_pbi::WireFormatLite::WriteDoubleToArray(
@@ -3818,7 +3852,7 @@ PROTOBUF_NOINLINE void LootSource::Clear() {
   }
 
   // double yaw = 15;
-  if (CheckHasBit(cached_has_bits, 0x00001000U)) {
+  if (CheckHasBit(cached_has_bits, 0x00002000U)) {
     if (::absl::bit_cast<::uint64_t>(this_._internal_yaw()) != 0) {
       target = stream->EnsureSpace(target);
       target = ::_pbi::WireFormatLite::WriteDoubleToArray(
@@ -3827,11 +3861,21 @@ PROTOBUF_NOINLINE void LootSource::Clear() {
   }
 
   // double roll = 16;
-  if (CheckHasBit(cached_has_bits, 0x00002000U)) {
+  if (CheckHasBit(cached_has_bits, 0x00004000U)) {
     if (::absl::bit_cast<::uint64_t>(this_._internal_roll()) != 0) {
       target = stream->EnsureSpace(target);
       target = ::_pbi::WireFormatLite::WriteDoubleToArray(
           16, this_._internal_roll(), target);
+    }
+  }
+
+  // string body_id = 17;
+  if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+    if (!this_._internal_body_id().empty()) {
+      const ::std::string& _s = this_._internal_body_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.rewards.v1.LootSource.body_id");
+      target = stream->WriteStringMaybeAliased(17, _s, target);
     }
   }
 
@@ -3898,70 +3942,79 @@ PROTOBUF_NOINLINE void LootSource::Clear() {
                                         this_._internal_mesh_path());
       }
     }
-    // double x_cm = 3;
+    // string body_id = 17;
     if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+      if (!this_._internal_body_id().empty()) {
+        total_size += 2 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_body_id());
+      }
+    }
+    // double x_cm = 3;
+    if (CheckHasBit(cached_has_bits, 0x00000040U)) {
       if (::absl::bit_cast<::uint64_t>(this_._internal_x_cm()) != 0) {
         total_size += 9;
       }
     }
     // double y_cm = 4;
-    if (CheckHasBit(cached_has_bits, 0x00000040U)) {
-      if (::absl::bit_cast<::uint64_t>(this_._internal_y_cm()) != 0) {
-        total_size += 9;
-      }
-    }
-    // double z_cm = 5;
     if (CheckHasBit(cached_has_bits, 0x00000080U)) {
-      if (::absl::bit_cast<::uint64_t>(this_._internal_z_cm()) != 0) {
+      if (::absl::bit_cast<::uint64_t>(this_._internal_y_cm()) != 0) {
         total_size += 9;
       }
     }
   }
   if (BatchCheckHasBit(cached_has_bits, 0x0000ff00U)) {
-    // double scale_x = 11;
+    // double z_cm = 5;
     if (CheckHasBit(cached_has_bits, 0x00000100U)) {
+      if (::absl::bit_cast<::uint64_t>(this_._internal_z_cm()) != 0) {
+        total_size += 9;
+      }
+    }
+    // double scale_x = 11;
+    if (CheckHasBit(cached_has_bits, 0x00000200U)) {
       if (::absl::bit_cast<::uint64_t>(this_._internal_scale_x()) != 0) {
         total_size += 9;
       }
     }
     // double scale_y = 12;
-    if (CheckHasBit(cached_has_bits, 0x00000200U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000400U)) {
       if (::absl::bit_cast<::uint64_t>(this_._internal_scale_y()) != 0) {
         total_size += 9;
       }
     }
     // double scale_z = 13;
-    if (CheckHasBit(cached_has_bits, 0x00000400U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000800U)) {
       if (::absl::bit_cast<::uint64_t>(this_._internal_scale_z()) != 0) {
         total_size += 9;
       }
     }
     // double pitch = 14;
-    if (CheckHasBit(cached_has_bits, 0x00000800U)) {
+    if (CheckHasBit(cached_has_bits, 0x00001000U)) {
       if (::absl::bit_cast<::uint64_t>(this_._internal_pitch()) != 0) {
         total_size += 9;
       }
     }
     // double yaw = 15;
-    if (CheckHasBit(cached_has_bits, 0x00001000U)) {
+    if (CheckHasBit(cached_has_bits, 0x00002000U)) {
       if (::absl::bit_cast<::uint64_t>(this_._internal_yaw()) != 0) {
         total_size += 9;
       }
     }
     // double roll = 16;
-    if (CheckHasBit(cached_has_bits, 0x00002000U)) {
+    if (CheckHasBit(cached_has_bits, 0x00004000U)) {
       if (::absl::bit_cast<::uint64_t>(this_._internal_roll()) != 0) {
         total_size += 10;
       }
     }
     // bool ground = 8;
-    if (CheckHasBit(cached_has_bits, 0x00004000U)) {
+    if (CheckHasBit(cached_has_bits, 0x00008000U)) {
       if (this_._internal_ground() != 0) {
         total_size += 2;
       }
     }
+  }
+   {
     // bool shared = 9;
-    if (CheckHasBit(cached_has_bits, 0x00008000U)) {
+    if (CheckHasBit(cached_has_bits, 0x00010000U)) {
       if (this_._internal_shared() != 0) {
         total_size += 2;
       }
@@ -4028,61 +4081,70 @@ void LootSource::MergeImpl(::google::protobuf::MessageLite& to_msg,
       }
     }
     if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+      if (!from._internal_body_id().empty()) {
+        _this->_internal_set_body_id(from._internal_body_id());
+      } else {
+        if (_this->_impl_.body_id_.IsDefault()) {
+          _this->_internal_set_body_id("");
+        }
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000040U)) {
       if (::absl::bit_cast<::uint64_t>(from._internal_x_cm()) != 0) {
         _this->_impl_.x_cm_ = from._impl_.x_cm_;
       }
     }
-    if (CheckHasBit(cached_has_bits, 0x00000040U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000080U)) {
       if (::absl::bit_cast<::uint64_t>(from._internal_y_cm()) != 0) {
         _this->_impl_.y_cm_ = from._impl_.y_cm_;
-      }
-    }
-    if (CheckHasBit(cached_has_bits, 0x00000080U)) {
-      if (::absl::bit_cast<::uint64_t>(from._internal_z_cm()) != 0) {
-        _this->_impl_.z_cm_ = from._impl_.z_cm_;
       }
     }
   }
   if (BatchCheckHasBit(cached_has_bits, 0x0000ff00U)) {
     if (CheckHasBit(cached_has_bits, 0x00000100U)) {
+      if (::absl::bit_cast<::uint64_t>(from._internal_z_cm()) != 0) {
+        _this->_impl_.z_cm_ = from._impl_.z_cm_;
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000200U)) {
       if (::absl::bit_cast<::uint64_t>(from._internal_scale_x()) != 0) {
         _this->_impl_.scale_x_ = from._impl_.scale_x_;
       }
     }
-    if (CheckHasBit(cached_has_bits, 0x00000200U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000400U)) {
       if (::absl::bit_cast<::uint64_t>(from._internal_scale_y()) != 0) {
         _this->_impl_.scale_y_ = from._impl_.scale_y_;
       }
     }
-    if (CheckHasBit(cached_has_bits, 0x00000400U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000800U)) {
       if (::absl::bit_cast<::uint64_t>(from._internal_scale_z()) != 0) {
         _this->_impl_.scale_z_ = from._impl_.scale_z_;
       }
     }
-    if (CheckHasBit(cached_has_bits, 0x00000800U)) {
+    if (CheckHasBit(cached_has_bits, 0x00001000U)) {
       if (::absl::bit_cast<::uint64_t>(from._internal_pitch()) != 0) {
         _this->_impl_.pitch_ = from._impl_.pitch_;
       }
     }
-    if (CheckHasBit(cached_has_bits, 0x00001000U)) {
+    if (CheckHasBit(cached_has_bits, 0x00002000U)) {
       if (::absl::bit_cast<::uint64_t>(from._internal_yaw()) != 0) {
         _this->_impl_.yaw_ = from._impl_.yaw_;
       }
     }
-    if (CheckHasBit(cached_has_bits, 0x00002000U)) {
+    if (CheckHasBit(cached_has_bits, 0x00004000U)) {
       if (::absl::bit_cast<::uint64_t>(from._internal_roll()) != 0) {
         _this->_impl_.roll_ = from._impl_.roll_;
       }
     }
-    if (CheckHasBit(cached_has_bits, 0x00004000U)) {
+    if (CheckHasBit(cached_has_bits, 0x00008000U)) {
       if (from._internal_ground() != 0) {
         _this->_impl_.ground_ = from._impl_.ground_;
       }
     }
-    if (CheckHasBit(cached_has_bits, 0x00008000U)) {
-      if (from._internal_shared() != 0) {
-        _this->_impl_.shared_ = from._impl_.shared_;
-      }
+  }
+  if (CheckHasBit(cached_has_bits, 0x00010000U)) {
+    if (from._internal_shared() != 0) {
+      _this->_impl_.shared_ = from._impl_.shared_;
     }
   }
   _this->_impl_._has_bits_[0] |= cached_has_bits;
@@ -4109,6 +4171,7 @@ void LootSource::InternalSwap(LootSource* PROTOBUF_RESTRICT PROTOBUF_NONNULL oth
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.zone_id_, &other->_impl_.zone_id_, arena);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.creature_id_, &other->_impl_.creature_id_, arena);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.mesh_path_, &other->_impl_.mesh_path_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.body_id_, &other->_impl_.body_id_, arena);
   ::google::protobuf::internal::memswap<
       PROTOBUF_FIELD_OFFSET(LootSource, _impl_.shared_)
       + sizeof(LootSource::_impl_.shared_)

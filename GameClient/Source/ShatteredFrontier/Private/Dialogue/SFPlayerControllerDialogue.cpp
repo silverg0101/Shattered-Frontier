@@ -38,10 +38,11 @@ bool ASFPlayerController::IsDialogueOpen() const
 }
 
 // The nearest speaker within its own talk range and in front of the pawn; true when a board is (now) open, so E is consumed.
-bool ASFPlayerController::TryOpenDialogue()
+bool ASFPlayerController::TryOpenDialogue(ASFDialogueNpc* ExactTarget)
 {
     if (!IsLocalController()) { return false; }
-    if (IsDialogueOpen()) { return true; }
+    if (IsDialogueOpen())
+    { if (!ExactTarget || DialogueNpc == ExactTarget) { return true; } CloseDialogue(); }
     APawn* Body = GetPawn();
     UWorld* World = GetWorld();
     if (!Body || !World || !GetLocalPlayer() || !GetLocalPlayer()->ViewportClient) { return false; }
@@ -49,6 +50,7 @@ bool ASFPlayerController::TryOpenDialogue()
     ASFDialogueNpc* Best = nullptr; float BestDistance = TNumericLimits<float>::Max();
     for (TActorIterator<ASFDialogueNpc> It(World); It; ++It)
     {
+        if (ExactTarget && *It != ExactTarget) { continue; }
         const FVector Offset = (*It)->GetActorLocation() - Body->GetActorLocation();
         const float Distance = FVector(Offset.X, Offset.Y, 0.f).Size();
         const bool bInFront = Distance < KINDA_SMALL_NUMBER || FVector::DotProduct(FVector(Offset.X, Offset.Y, 0.f) / Distance, Forward) > 0.2f;

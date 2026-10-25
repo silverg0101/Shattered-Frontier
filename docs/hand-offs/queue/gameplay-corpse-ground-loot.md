@@ -1,7 +1,7 @@
 # Corpse and ground loot interaction
 
 - **Area:** gameplay, backend, UI
-- **Owner of next step:** Codex loot workflow worker
+- **Owner of next step:** independent recheck, then NPC hook and loot workflow worker
 - **Updated:** 2026-10-25
 - **Worktree:** C:/Projects/SF-lane-d
 
@@ -10,6 +10,8 @@
 Corpse click/action opens authorized loot and own inventory together; shift-click/drag transfers. Inventory drops retain WorldMesh; action picks ground loot directly into the bag. One local targeting highlight covers interactables. Layout/style remains in the existing Widget Blueprints.
 
 ## State
+
+Independent checkpoint review found three interaction defects. Follow-up fixes preserve opaque body identity for sibling-only LOS exemptions, replicate/apply mesh-derived hit centre/extents, and carry one shared actor/contact into exact dispatch and HUD prompts. Editor build, four focused Loot tests, existing Gathering.Pilot.Authority, unit/host builds and durable body-ID/instance/restart/concurrency checks pass; quick independent recheck remains before integration. Evidence is under ignored `Artifacts/LootWorkflow/review-fixes-*`; client hit bounds test exercises the receive callback and physics query, not two-client replication transport.
 
 Service/C++ consumers implemented; import dependency is main629a0c84, mechanically complete with appearance deferred. Rewards adds durable create/list/open/take/drop; existing ledger transactions freeze all recipients/rolls, preserve exact copies/condition and receipts, and fence direct-vs-corpse delivery. Source actors recover after restart; C++ routes existing inventory Widget Blueprints, click/F, shift-click/drag, WorldMesh drops and direct ground pickup. Shared local targeting component owns the rim. Combat worker still owns the final RewardKill hook into SFLootWorldSubsystem; this API checkpoint does not claim a tested full player workflow.
 

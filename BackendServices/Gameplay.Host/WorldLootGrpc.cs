@@ -44,7 +44,7 @@ internal sealed class WorldLootGateway(PostgresInventoryLedgerStore store,
             DefeatGearInstances.Add(instances, lines, "corpse:" + id);
             var source = new WorldLootSource(id, request.ZoneId, request.XCm, request.YCm, request.ZCm,
                 request.CreatureId, request.MeshPath, false, request.Shared, request.Shared ? eligible : [recipient],
-                request.ScaleX, request.ScaleY, request.ScaleZ, request.Pitch, request.Yaw, request.Roll);
+                request.ScaleX, request.ScaleY, request.ScaleZ, request.Pitch, request.Yaw, request.Roll, request.DefeatEventId);
             seeds.Add(new(source, lines.Select(x => new ItemQuantity(x.DefinitionId, x.Quantity)).ToArray(), instances.Instances.Values.ToArray()));
         }
         // One durable transaction freezes every recipient's roll and eligibility.
@@ -82,7 +82,7 @@ internal sealed class WorldLootGateway(PostgresInventoryLedgerStore store,
         var reply = new Pb.LootSourceView { Source = new Pb.LootSource { Id = source.Id, ZoneId = source.ZoneId,
             XCm = source.X, YCm = source.Y, ZCm = source.Z, CreatureId = source.CreatureId, MeshPath = source.MeshPath,
             Ground = source.Ground, Shared = source.Shared, ScaleX = source.ScaleX, ScaleY = source.ScaleY, ScaleZ = source.ScaleZ,
-            Pitch = source.Pitch, Yaw = source.Yaw, Roll = source.Roll }, Revision = view.Container.Revision };
+            Pitch = source.Pitch, Yaw = source.Yaw, Roll = source.Roll, BodyId = source.BodyId }, Revision = view.Container.Revision };
         reply.Source.EligibleCharacterIds.AddRange(source.EligibleCharacters);
         reply.Items.AddRange(view.Container.Quantities.OrderBy(x => x.Key, StringComparer.Ordinal)
             .Select(x => new Pb.SharedDropItem { DefinitionId = x.Key, Quantity = x.Value }));
