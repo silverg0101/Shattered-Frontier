@@ -1,25 +1,25 @@
 name: sf-backend
 services:
   identity:
-    image: "${SF_IDENTITY_IMAGE:?Set the verified identity image}"
+    image: "${SF_IDENTITY_IMAGE:-sf-identity:local}"
     restart: unless-stopped
     user: "${SF_UID:?}:${SF_GID:?}"
     environment:
       CREDENTIALS_DIRECTORY: /run/secrets
       Identity__KekId: v1
-      Identity__Connection: "${SF_IDENTITY_CONNECTION:?}"
-      Identity__TicketSigningKey: "${SF_TICKET_SIGNING_KEY:?}"
-      Identity__WorldVerifierKey: "${SF_WORLD_VERIFIER_KEY:?}"
-      Identity__ChatVerifierKey: "${SF_CHAT_VERIFIER_KEY:?}"
-      Identity__DataKeyChatKey: "${SF_DATA_KEY_CHAT_KEY:?}"
       Identity__DataKeyChatClientSha256: "${SF_CHAT_CLIENT_CERT_SHA256:?}"
       Identity__PrivacyClientSha256: "${SF_PRIVACY_CLIENT_CERT_SHA256:?}"
-      Identity__PrivacyWorkflowKey: "${SF_PRIVACY_WORKFLOW_KEY:?}"
       Identity__ListenUrl: http://0.0.0.0:5084
       Identity__InternalListenUrl: https://172.30.57.2:5085
       Identity__InternalServerCertificatePath: /run/identity-tls/server.pfx
     secrets:
       - account-data-kek-v1
+      - identity-connection
+      - ticket-signing-key
+      - world-verifier-key
+      - chat-verifier-key
+      - data-key-chat-key
+      - privacy-workflow-key
     volumes:
       - /etc/shattered-frontier/tls/identity-server.pfx:/run/identity-tls/server.pfx:ro
     ports:
@@ -32,27 +32,29 @@ services:
     security_opt: [no-new-privileges:true]
     cap_drop: [ALL]
   chat:
-    image: "${SF_CHAT_IMAGE:?Set the verified chat image}"
+    image: "${SF_CHAT_IMAGE:-sf-chat:local}"
     restart: unless-stopped
     user: "${SF_UID:?}:${SF_GID:?}"
     environment:
       CHAT_BIND_ADDRESS: 0.0.0.0
-      CHAT_CONNECTION: "${SF_CHAT_CONNECTION:?}"
+      CREDENTIALS_DIRECTORY: /run/secrets
       CHAT_HOST_PORT: "5086"
       CHAT_WS_PORT: "5087"
       CHAT_IDENTITY_URL: http://identity:5084
       CHAT_IDENTITY_INTERNAL_URL: https://172.30.57.2:5085
       CHAT_IDENTITY_CLIENT_CERT_PATH: /run/chat-tls/client.pfx
       CHAT_IDENTITY_SERVER_CERT_SHA256: "${SF_IDENTITY_SERVER_CERT_SHA256:?}"
-      SF_IDENTITY_DATA_KEY_CHAT_KEY: "${SF_DATA_KEY_CHAT_KEY:?}"
-      SF_IDENTITY_CHAT_VERIFIER_KEY: "${SF_CHAT_VERIFIER_KEY:?}"
       CHAT_IDENTITY_SERVER_ID: "${SF_CHAT_SERVER_ID:-srvi_chat_local}"
-      SF_CHAT_TOKEN: "${SF_CHAT_TOKEN:?}"
-      SF_CHAT_PRIVACY_TOKEN: "${SF_CHAT_PRIVACY_TOKEN:?}"
       CHAT_GROUP_URL: "${SF_GROUP_URL:?}"
       CHAT_GUILD_URL: "${SF_GUILD_URL:?}"
-      SF_GAMEPLAY_TOKEN: "${SF_GAMEPLAY_TOKEN:?}"
-      SF_GUILD_TOKEN: "${SF_GUILD_TOKEN:?}"
+    secrets:
+      - chat-connection
+      - data-key-chat-key
+      - chat-verifier-key
+      - chat-token
+      - chat-privacy-token
+      - gameplay-token
+      - guild-token
     volumes:
       - /etc/shattered-frontier/tls/chat-client.pfx:/run/chat-tls/client.pfx:ro
     ports:
@@ -66,12 +68,14 @@ services:
     security_opt: [no-new-privileges:true]
     cap_drop: [ALL]
   identity-maintenance:
-    image: "${SF_IDENTITY_IMAGE:?Set the verified identity image}"
+    image: "${SF_IDENTITY_IMAGE:-sf-identity:local}"
     profiles: [maintenance]
     user: "${SF_UID:?}:${SF_GID:?}"
     command: ["--maintain-data-keys"]
     environment:
-      Identity__MaintenanceConnection: "${SF_IDENTITY_MAINTENANCE_CONNECTION:?}"
+      CREDENTIALS_DIRECTORY: /run/secrets
+    secrets:
+      - identity-maintenance-connection
     networks: [frontend]
     read_only: true
     security_opt: [no-new-privileges:true]
@@ -79,6 +83,30 @@ services:
 secrets:
   account-data-kek-v1:
     file: /run/sf-secrets/account-data-kek-v1
+  identity-connection:
+    file: /run/sf-secrets/identity-connection
+  identity-maintenance-connection:
+    file: /run/sf-secrets/identity-maintenance-connection
+  chat-connection:
+    file: /run/sf-secrets/chat-connection
+  ticket-signing-key:
+    file: /run/sf-secrets/ticket-signing-key
+  world-verifier-key:
+    file: /run/sf-secrets/world-verifier-key
+  chat-verifier-key:
+    file: /run/sf-secrets/chat-verifier-key
+  data-key-chat-key:
+    file: /run/sf-secrets/data-key-chat-key
+  privacy-workflow-key:
+    file: /run/sf-secrets/privacy-workflow-key
+  chat-token:
+    file: /run/sf-secrets/chat-token
+  chat-privacy-token:
+    file: /run/sf-secrets/chat-privacy-token
+  gameplay-token:
+    file: /run/sf-secrets/gameplay-token
+  guild-token:
+    file: /run/sf-secrets/guild-token
 networks:
   frontend: {}
   keyplane:

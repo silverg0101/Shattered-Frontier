@@ -144,7 +144,13 @@ public sealed class PostgresAccountDataKeys(string connectionString, IKekProvide
         using (var account = new NpgsqlCommand("SELECT data_key_id FROM identity.accounts WHERE account_id=$1 FOR UPDATE", c, tx))
         {
             account.Parameters.AddWithValue(accountId);
-            if (account.ExecuteScalar() is not string) throw new InvalidOperationException("Account key unavailable for erasure.");
+            if (account.ExecuteScalar() is not string)
+            {
+                using var tombstone = new NpgsqlCommand("SELECT EXISTS(SELECT 1 FROM auth.erasure_tombstones WHERE account_id=$1)", c, tx);
+                tombstone.Parameters.AddWithValue(accountId);
+                if ((bool)tombstone.ExecuteScalar()!) { tx.Commit(); return; }
+                throw new InvalidOperationException("Account key unavailable for erasure.");
+            }
         }
         using var cmd = new NpgsqlCommand("INSERT INTO auth.account_data_key_erasure(account_id,erase_after,audit_hold) VALUES ($1,$2,$3) ON CONFLICT(account_id) DO UPDATE SET audit_hold=EXCLUDED.audit_hold,erase_after=CASE WHEN auth.account_data_key_erasure.audit_hold AND NOT EXCLUDED.audit_hold THEN EXCLUDED.erase_after ELSE auth.account_data_key_erasure.erase_after END", c, tx);
         cmd.Parameters.AddWithValue(accountId); cmd.Parameters.AddWithValue(now.AddDays(7)); cmd.Parameters.AddWithValue(auditHold);
@@ -182,7 +188,7 @@ public sealed class PostgresAccountDataKeys(string connectionString, IKekProvide
         return accounts.Count;
     }
 
-    // Called only by the owner-role maintenance job; the gateway runtime has no DELETE grant here.
+    // Called only by the restricted maintenance role; the gateway runtime has no DELETE grant here.
     public int PurgeUnwrapAudit(DateTimeOffset now)
     {
         using var c = Open();

@@ -6,13 +6,19 @@ using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 
 var builder = WebApplication.CreateBuilder(args);
+static string? Secret(IConfiguration configuration, string key, string file)
+{
+    var directory = Environment.GetEnvironmentVariable("CREDENTIALS_DIRECTORY");
+    var path = directory is null ? null : Path.Combine(directory, file);
+    return path is null ? configuration[key] : File.Exists(path) ? File.ReadAllText(path).TrimEnd('\r', '\n') : null;
+}
 var publicUrl = new Uri(builder.Configuration["Identity:ListenUrl"] ?? "http://127.0.0.1:5084");
 var internalUrlText = builder.Configuration["Identity:InternalListenUrl"];
 var internalUrl = internalUrlText is null ? null : new Uri(internalUrlText);
 var dataKeyChatSha256 = builder.Configuration["Identity:DataKeyChatClientSha256"];
-var dataKeyChatKey = builder.Configuration["Identity:DataKeyChatKey"];
+var dataKeyChatKey = Secret(builder.Configuration, "Identity:DataKeyChatKey", "data-key-chat-key");
 var privacySha256 = builder.Configuration["Identity:PrivacyClientSha256"];
-var privacyKey = builder.Configuration["Identity:PrivacyWorkflowKey"];
+var privacyKey = Secret(builder.Configuration, "Identity:PrivacyWorkflowKey", "privacy-workflow-key");
 if (builder.Configuration["Identity:KekDevPath"] is not null && !builder.Environment.IsDevelopment())
     throw new InvalidOperationException("Identity:KekDevPath is allowed only in Development.");
 if (dataKeyChatKey is not null && (internalUrl is null || internalUrl.Scheme != Uri.UriSchemeHttps ||
@@ -53,19 +59,19 @@ var options = builder.Configuration.GetSection("Identity").Get<IdentityOptions>(
 options.Validate();
 if (args.Length == 1 && args[0] == "--maintain-data-keys")
 {
-    var ownerConnection = builder.Configuration["Identity:MaintenanceConnection"] ?? throw new InvalidOperationException("Identity:MaintenanceConnection is required.");
+    var ownerConnection = Secret(builder.Configuration, "Identity:MaintenanceConnection", "identity-maintenance-connection") ?? throw new InvalidOperationException("Identity:MaintenanceConnection is required.");
     var maintenance = new PostgresAccountDataKeys(ownerConnection, new FileKekProvider("maintenance-no-kek", null));
     var now = DateTimeOffset.UtcNow;
     Console.WriteLine($"finalized={maintenance.FinalizeErasure(now)} purged_unwrap_audits={maintenance.PurgeUnwrapAudit(now)}");
     return;
 }
-var connection = builder.Configuration["Identity:Connection"] ?? throw new InvalidOperationException("Identity:Connection is required.");
-var encodedKey = builder.Configuration["Identity:TicketSigningKey"] ?? throw new InvalidOperationException("Identity:TicketSigningKey is required.");
+var connection = Secret(builder.Configuration, "Identity:Connection", "identity-connection") ?? throw new InvalidOperationException("Identity:Connection is required.");
+var encodedKey = Secret(builder.Configuration, "Identity:TicketSigningKey", "ticket-signing-key") ?? throw new InvalidOperationException("Identity:TicketSigningKey is required.");
 var signingKey = Convert.FromBase64String(encodedKey);
 if (signingKey.Length < 32) throw new InvalidOperationException("Ticket signing key must be at least 32 bytes.");
-var verifierKey = builder.Configuration["Identity:WorldVerifierKey"] ?? throw new InvalidOperationException("Identity:WorldVerifierKey is required.");
+var verifierKey = Secret(builder.Configuration, "Identity:WorldVerifierKey", "world-verifier-key") ?? throw new InvalidOperationException("Identity:WorldVerifierKey is required.");
 if (verifierKey.Length < 32) throw new InvalidOperationException("World verifier key must be at least 32 characters.");
-var chatVerifierKey = builder.Configuration["Identity:ChatVerifierKey"];
+var chatVerifierKey = Secret(builder.Configuration, "Identity:ChatVerifierKey", "chat-verifier-key");
 if (chatVerifierKey is not null && chatVerifierKey.Length < 32) throw new InvalidOperationException("Chat verifier key must be at least 32 characters.");
 var guildVerifierKey = builder.Configuration["Identity:GuildVerifierKey"];
 if (guildVerifierKey is not null && guildVerifierKey.Length < 32) throw new InvalidOperationException("Guild verifier key must be at least 32 characters.");
@@ -268,10 +274,11 @@ if (privacyKey is not null)
         var now = DateTimeOffset.UtcNow;
         if (!accountId.StartsWith("acct_", StringComparison.Ordinal) || accountId.Length > 96 ||
             request.RequestId is null || !request.RequestId.StartsWith("prq_", StringComparison.Ordinal) ||
+            request.VerifiedAt is null || request.AuditHold is null ||
             request.VerifiedAt > now.AddDays(-14) ||
             request.LegalHoldCheckedAt < now.AddMinutes(-5) || request.LegalHoldCheckedAt > now)
             throw new ApiError(400, "INVALID_ARGUMENT", "ERASURE_HANDOFF_INVALID");
-        keys.ScheduleErasure(accountId, request.AuditHold, now);
+        keys.ScheduleErasure(accountId, request.AuditHold.Value, now);
         return Results.Accepted();
     });
 }
@@ -323,4 +330,4 @@ public sealed record VerifyTicketRequest(string? Ticket, string? ServerId);
 public sealed record ErrorBody(string Code, string Reason, int? RetryAfterS = null);
 public sealed record DataKeyRequest(string Service, string Purpose, bool ForWrite, ushort? KeyVersion, int Encryptions = 0);
 public sealed record ErasedAccountsRequest(string[]? AccountIds);
-public sealed record ErasureHandoff(string? RequestId, DateTimeOffset VerifiedAt, DateTimeOffset LegalHoldCheckedAt, bool AuditHold);
+public sealed record ErasureHandoff(string? RequestId, DateTimeOffset? VerifiedAt, DateTimeOffset LegalHoldCheckedAt, bool? AuditHold);

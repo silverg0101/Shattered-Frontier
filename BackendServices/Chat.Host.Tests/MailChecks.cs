@@ -127,24 +127,28 @@ public static class MailChecks
             cmd.Parameters.AddWithValue(id);
             Check(AccountDataCrypto.Version((byte[])cmd.ExecuteScalar()!) == after.Version, "read reencrypts with latest DEK");
         }
-        using (var handler = new HttpClientHandler { ServerCertificateCustomValidationCallback = (_, cert, _, _) =>
-            cert is not null && Convert.ToHexString(SHA256.HashData(cert.RawData)) == Environment.GetEnvironmentVariable("CHAT_IDENTITY_SERVER_CERT_SHA256") })
-        {
+        using var handler = new HttpClientHandler { ServerCertificateCustomValidationCallback = (_, cert, _, _) =>
+            cert is not null && Convert.ToHexString(SHA256.HashData(cert.RawData)) == Environment.GetEnvironmentVariable("CHAT_IDENTITY_SERVER_CERT_SHA256") };
             handler.ClientCertificates.Add(System.Security.Cryptography.X509Certificates.X509CertificateLoader.LoadPkcs12FromFile(
                 Environment.GetEnvironmentVariable("CHAT_IDENTITY_PRIVACY_CERT_PATH")!, null));
             using var client = new HttpClient(handler) { BaseAddress = new Uri(Environment.GetEnvironmentVariable("CHAT_IDENTITY_INTERNAL_URL") + "/") };
-            async Task<HttpResponseMessage> Handoff(string credential)
+            async Task<HttpResponseMessage> Handoff(string credential, object? body = null)
             {
                 using var request = new HttpRequestMessage(HttpMethod.Post, $"v1/internal/privacy/accounts/{alice.Account}/erasure")
-                { Content = JsonContent.Create(new { request_id = "prq_test", verified_at = DateTimeOffset.UtcNow.AddDays(-15), legal_hold_checked_at = DateTimeOffset.UtcNow, audit_hold = true }) };
+                { Content = JsonContent.Create(body ?? new { request_id = "prq_test", verified_at = DateTimeOffset.UtcNow.AddDays(-15), legal_hold_checked_at = DateTimeOffset.UtcNow, audit_hold = true }) };
                 request.Headers.Add("X-Privacy-Workflow-Key", credential);
                 return await client.SendAsync(request);
             }
             using var denied = await Handoff("wrong");
             Check(denied.StatusCode == System.Net.HttpStatusCode.Unauthorized, "erasure handoff requires coordinator credential");
+            var privacyKey = Environment.GetEnvironmentVariable("Identity__PrivacyWorkflowKey")!;
+            using var missingHold = await Handoff(privacyKey, new { request_id = "prq_test", verified_at = DateTimeOffset.UtcNow.AddDays(-15), legal_hold_checked_at = DateTimeOffset.UtcNow });
+            Check(missingHold.StatusCode == System.Net.HttpStatusCode.BadRequest, "missing audit hold rejects handoff");
+            using var missingVerification = await Handoff(privacyKey, new { request_id = "prq_test", legal_hold_checked_at = DateTimeOffset.UtcNow, audit_hold = false });
+            Check(missingVerification.StatusCode == System.Net.HttpStatusCode.BadRequest, "missing verification rejects handoff");
+            Check(keys.GetForRead(alice.Account, 1, "chat", "mail").Key.Length == 32, "missing handoff fields leave keys available");
             using var accepted = await Handoff(Environment.GetEnvironmentVariable("Identity__PrivacyWorkflowKey")!);
             Check(accepted.StatusCode == System.Net.HttpStatusCode.Accepted, "verified erasure handoff schedules audit hold");
-        }
         Check(!keys.IsErased(alice.Account), "pending audit hold is not erased");
         Check(keys.FinalizeErasure(DateTimeOffset.UtcNow) == 0, "audit hold blocks finalization");
         keys.ScheduleErasure(alice.Account, false, DateTimeOffset.UtcNow.AddDays(-8));
@@ -152,6 +156,8 @@ public static class MailChecks
         using var erased = await Call(HttpMethod.Get, "v1/mail/" + id, bob);
         Check((await erased.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("sender").GetString() == alice.Character, "pending erasure keeps sender label");
         Check(keys.FinalizeErasure(DateTimeOffset.UtcNow) == 1, "seven-day key erasure finalizes");
+        using var repeated = await Handoff(privacyKey);
+        Check(repeated.StatusCode == System.Net.HttpStatusCode.Accepted, "tombstoned erasure handoff is idempotent");
         using var finalized = await Call(HttpMethod.Get, "v1/mail/" + id, bob);
         Check((await finalized.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("sender").GetString() == "erased", "finalized sender label");
         using var labeledInbox = await Call(HttpMethod.Get, "v1/mail", bob);
@@ -186,6 +192,14 @@ public static class MailChecks
             old.Parameters.AddWithValue(bob.Account); old.Parameters.AddWithValue(DateTimeOffset.UtcNow.AddDays(-91)); old.ExecuteNonQuery();
         }
         var maintenance = new PostgresAccountDataKeys(Environment.GetEnvironmentVariable("CHAT_MAINTENANCE_CONNECTION")!, provider);
+        using (var db = new NpgsqlConnection(Environment.GetEnvironmentVariable("CHAT_MAINTENANCE_CONNECTION")))
+        {
+            db.Open();
+            using var role = new NpgsqlCommand("SELECT rolcanlogin AND NOT rolsuper AND NOT rolcreaterole AND NOT rolcreatedb FROM pg_roles WHERE rolname=current_user", db);
+            Check((bool)role.ExecuteScalar()!, "maintenance uses restricted login role");
+        }
+        keys.ScheduleErasure(charlie.Account, false, DateTimeOffset.UtcNow.AddDays(-8));
+        Check(maintenance.FinalizeErasure(DateTimeOffset.UtcNow) == 1 && keys.IsErased(charlie.Account), "restricted maintenance finalizes due erasure");
         Check(maintenance.PurgeUnwrapAudit(DateTimeOffset.UtcNow) == 1, "owner maintenance purges 90-day audit rows");
         using (var db = new NpgsqlConnection(Environment.GetEnvironmentVariable("CHAT_CONNECTION")))
         {

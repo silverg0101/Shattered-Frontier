@@ -73,23 +73,25 @@ try {
     Run (Join-Path $pg 'initdb.exe') @('-D',$data,'-U','fixture_admin','--pwfile',$passwordFile,'--auth','scram-sha-256','--encoding','UTF8','--no-locale')
     Remove-Item -LiteralPath $passwordFile -Force
     [IO.File]::AppendAllText((Join-Path $data 'postgresql.conf'),"`nlisten_addresses='127.0.0.1'`nport=$port`nfsync=on`nsynchronous_commit=on`nfull_page_writes=on`n")
-    [IO.File]::WriteAllLines((Join-Path $data 'pg_hba.conf'),@('host all fixture_admin 127.0.0.1/32 scram-sha-256',"host chat_$run chat_svc 127.0.0.1/32 scram-sha-256","host chat_$run identity_svc 127.0.0.1/32 scram-sha-256",'host all all 127.0.0.1/32 reject','host all all ::1/128 reject'))
+    [IO.File]::WriteAllLines((Join-Path $data 'pg_hba.conf'),@('host all fixture_admin 127.0.0.1/32 scram-sha-256',"host chat_$run chat_svc 127.0.0.1/32 scram-sha-256","host chat_$run identity_svc 127.0.0.1/32 scram-sha-256","host chat_$run identity_maint 127.0.0.1/32 scram-sha-256",'host all all 127.0.0.1/32 reject','host all all ::1/128 reject'))
     CheckOwned
     Run (Join-Path $pg 'pg_ctl.exe') @('-D',$data,'-l',(Join-Path $private 'postgres.log'),'-w','-t','30','start'); $started = $true
     $env:PGPASSWORD = $adminPassword
-    Sql "CREATE ROLE chat_owner NOLOGIN; CREATE ROLE identity_owner NOLOGIN; CREATE ROLE chat_svc LOGIN PASSWORD '$servicePassword'; CREATE ROLE identity_svc LOGIN PASSWORD '$servicePassword'; CREATE DATABASE chat_$run;"
-    Sql "REVOKE ALL ON DATABASE chat_$run FROM PUBLIC; GRANT CONNECT ON DATABASE chat_$run TO chat_svc,identity_svc; GRANT CREATE ON DATABASE chat_$run TO chat_owner,identity_owner; REVOKE ALL ON SCHEMA public FROM PUBLIC;" "chat_$run"
+    Sql "CREATE ROLE chat_owner NOLOGIN; CREATE ROLE identity_owner NOLOGIN; CREATE ROLE chat_svc LOGIN PASSWORD '$servicePassword'; CREATE ROLE identity_svc LOGIN PASSWORD '$servicePassword'; CREATE ROLE identity_maint LOGIN PASSWORD '$servicePassword'; CREATE DATABASE chat_$run;"
+    Sql "REVOKE ALL ON DATABASE chat_$run FROM PUBLIC; GRANT CONNECT ON DATABASE chat_$run TO chat_svc,identity_svc,identity_maint; GRANT CREATE ON DATABASE chat_$run TO chat_owner,identity_owner; REVOKE ALL ON SCHEMA public FROM PUBLIC;" "chat_$run"
     $migration = "Host=127.0.0.1;Port=$port;Database=chat_$run;Username=fixture_admin;Password=$adminPassword;Pooling=false"
-    $env:CHAT_MAINTENANCE_CONNECTION = $migration
     & (Join-Path $repo 'tools/Invoke-SchemaMigrations.ps1') -Connection $migration -Schemas chat -Role chat_owner -Dotnet $dotnet -Nuget $nuget | Out-Null
     & (Join-Path $repo 'tools/Invoke-SchemaMigrations.ps1') -Connection $migration -Schemas identity -Role identity_owner -Dotnet $dotnet -Nuget $nuget | Out-Null
     Sql 'GRANT USAGE ON SCHEMA chat TO chat_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA chat TO chat_svc;' "chat_$run"
     Sql 'GRANT USAGE ON SCHEMA identity TO identity_svc; GRANT SELECT ON identity.schema_version TO identity_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON identity.accounts,identity.sessions,identity.characters,identity.ticket_uses TO identity_svc;' "chat_$run"
     Sql 'GRANT USAGE ON SCHEMA auth TO identity_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON auth.account_data_keys,auth.account_data_key_erasure TO identity_svc; GRANT SELECT,INSERT ON auth.erasure_tombstones,auth.data_key_unwraps TO identity_svc;' "chat_$run"
+    Sql 'GRANT USAGE ON SCHEMA identity,auth TO identity_maint; GRANT SELECT(account_id),UPDATE(data_key_id) ON identity.accounts TO identity_maint; GRANT SELECT,UPDATE,DELETE ON auth.account_data_key_erasure TO identity_maint; GRANT SELECT(account_id),DELETE ON auth.account_data_keys TO identity_maint; GRANT SELECT(account_id),INSERT(account_id,erased_at) ON auth.erasure_tombstones TO identity_maint; GRANT SELECT(at),DELETE ON auth.data_key_unwraps TO identity_maint;' "chat_$run"
     $kekPath = Join-Path $private 'account-data-kek'; [IO.File]::WriteAllBytes($kekPath,[Security.Cryptography.RandomNumberGenerator]::GetBytes(32))
     $env:Identity__KekDevPath = $kekPath
     $env:CHAT_CONNECTION = "Host=127.0.0.1;Port=$port;Database=chat_$run;Username=chat_svc;Password=$servicePassword;Pooling=true;Maximum Pool Size=8;Timeout=2;Command Timeout=5"
     $env:Identity__Connection = "Host=127.0.0.1;Port=$port;Database=chat_$run;Username=identity_svc;Password=$servicePassword;Pooling=true;Maximum Pool Size=8;Timeout=2;Command Timeout=5"
+    $maintenanceConnection = "Host=127.0.0.1;Port=$port;Database=chat_$run;Username=identity_maint;Password=$servicePassword;Pooling=false;Timeout=2;Command Timeout=5"
+    $env:CHAT_MAINTENANCE_CONNECTION = $maintenanceConnection
     $env:Identity__TicketSigningKey = [Convert]::ToBase64String([Security.Cryptography.RandomNumberGenerator]::GetBytes(32))
     $env:Identity__WorldVerifierKey = [Convert]::ToHexString([Security.Cryptography.RandomNumberGenerator]::GetBytes(32))
     $env:Identity__ChatVerifierKey = [Convert]::ToHexString([Security.Cryptography.RandomNumberGenerator]::GetBytes(32))
@@ -124,6 +126,23 @@ try {
     $env:CHAT_GROUP_URL = 'http://127.0.0.1:1'; $env:CHAT_GUILD_URL = 'http://127.0.0.1:1'
     $env:SF_GAMEPLAY_TOKEN = $token; $env:SF_GUILD_TOKEN = $token
     $env:SF_CHAT_PRIVACY_TOKEN = [Convert]::ToHexString([Security.Cryptography.RandomNumberGenerator]::GetBytes(32))
+    $credentials = Join-Path $private 'credentials'; [void](New-Item -ItemType Directory -Path $credentials)
+    $credentialValues = @{
+        'identity-connection' = $env:Identity__Connection
+        'identity-maintenance-connection' = $maintenanceConnection
+        'chat-connection' = $env:CHAT_CONNECTION
+        'ticket-signing-key' = $env:Identity__TicketSigningKey
+        'world-verifier-key' = $env:Identity__WorldVerifierKey
+        'chat-verifier-key' = $env:Identity__ChatVerifierKey
+        'data-key-chat-key' = $env:Identity__DataKeyChatKey
+        'privacy-workflow-key' = $env:Identity__PrivacyWorkflowKey
+        'chat-token' = $env:SF_CHAT_TOKEN
+        'chat-privacy-token' = $env:SF_CHAT_PRIVACY_TOKEN
+        'gameplay-token' = $env:SF_GAMEPLAY_TOKEN
+        'guild-token' = $env:SF_GUILD_TOKEN
+    }
+    foreach ($entry in $credentialValues.GetEnumerator()) { [IO.File]::WriteAllText((Join-Path $credentials $entry.Key),$entry.Value) }
+    $env:CREDENTIALS_DIRECTORY = $credentials
     $startupReject = Start-Process -FilePath $dotnet -ArgumentList @((Join-Path $repo 'BackendServices/IdentityGateway/bin/Release/net10.0/IdentityGateway.dll'),'--maintain-data-keys') -WorkingDirectory $repo -Environment @{ASPNETCORE_ENVIRONMENT='Production'} -PassThru -Wait -WindowStyle Hidden -RedirectStandardOutput (Join-Path $private 'startup-reject.out') -RedirectStandardError (Join-Path $private 'startup-reject.err')
     if ($startupReject.ExitCode -eq 0 -or (Get-Content (Join-Path $private 'startup-reject.err') -Raw) -notmatch 'KekDevPath is allowed only in Development') { throw 'Production dev-KEK startup was not rejected.' }
     Write-Output 'PASS production dev-KEK startup rejection'
@@ -139,15 +158,15 @@ try {
         Run $dotnet @((Join-Path $repo 'BackendServices/Chat.Host.Tests/bin/Release/net10.0/Chat.Host.Tests.dll'),'restart')
     }
     Run $dotnet @((Join-Path $repo 'BackendServices/Chat.Host.Tests/bin/Release/net10.0/Chat.Host.Tests.dll'),'mail')
-    $maintenanceProcess = Start-Process -FilePath $dotnet -ArgumentList @((Join-Path $repo 'BackendServices/IdentityGateway/bin/Release/net10.0/IdentityGateway.dll'),'--maintain-data-keys') -WorkingDirectory $repo -Environment @{ASPNETCORE_ENVIRONMENT='Development';Identity__MaintenanceConnection=$migration} -PassThru -Wait -WindowStyle Hidden -RedirectStandardOutput (Join-Path $private 'maintenance.out') -RedirectStandardError (Join-Path $private 'maintenance.err')
-    if ($maintenanceProcess.ExitCode -ne 0 -or (Get-Content (Join-Path $private 'maintenance.out') -Raw) -notmatch 'finalized=0 purged_unwrap_audits=0') { throw 'Owner maintenance command failed.' }
-    Write-Output 'PASS owner maintenance command'
+    $maintenanceProcess = Start-Process -FilePath $dotnet -ArgumentList @((Join-Path $repo 'BackendServices/IdentityGateway/bin/Release/net10.0/IdentityGateway.dll'),'--maintain-data-keys') -WorkingDirectory $repo -Environment @{ASPNETCORE_ENVIRONMENT='Development';Identity__MaintenanceConnection=$maintenanceConnection} -PassThru -Wait -WindowStyle Hidden -RedirectStandardOutput (Join-Path $private 'maintenance.out') -RedirectStandardError (Join-Path $private 'maintenance.err')
+    if ($maintenanceProcess.ExitCode -ne 0 -or (Get-Content (Join-Path $private 'maintenance.out') -Raw) -notmatch 'finalized=0 purged_unwrap_audits=0') { throw 'Restricted maintenance command failed.' }
+    Write-Output 'PASS restricted maintenance command'
     Write-Output 'PASS ChatContacts fixture'
 }
 finally {
     if ($hostProcess -and -not $hostProcess.HasExited) { Stop-Process -Id $hostProcess.Id -Force; $hostProcess.WaitForExit() }
     if ($identityProcess -and -not $identityProcess.HasExited) { Stop-Process -Id $identityProcess.Id -Force; $identityProcess.WaitForExit() }
     if ($started) { CheckOwned; Run (Join-Path $pg 'pg_ctl.exe') @('-D',$data,'-m','immediate','-w','-t','30','stop') }
-    foreach ($name in @('PGPASSWORD','CHAT_CONNECTION','CHAT_MAINTENANCE_CONNECTION','CHAT_HOST_PORT','CHAT_WS_PORT','SF_CHAT_TOKEN','SF_CHAT_PRIVACY_TOKEN','CHAT_IDENTITY_URL','CHAT_IDENTITY_SERVER_ID','SF_IDENTITY_CHAT_VERIFIER_KEY','SF_IDENTITY_DATA_KEY_CHAT_KEY','CHAT_IDENTITY_INTERNAL_URL','CHAT_IDENTITY_CLIENT_CERT_PATH','CHAT_IDENTITY_WRONG_CERT_PATH','CHAT_IDENTITY_PRIVACY_CERT_PATH','CHAT_IDENTITY_SERVER_CERT_SHA256','CHAT_GROUP_URL','CHAT_GUILD_URL','SF_GAMEPLAY_TOKEN','SF_GUILD_TOKEN','CHAT_TEST_STATE','Identity__Connection','Identity__TicketSigningKey','Identity__WorldVerifierKey','Identity__ChatVerifierKey','Identity__DataKeyChatKey','Identity__ListenUrl','Identity__InternalListenUrl','Identity__InternalServerCertificatePath','Identity__DataKeyChatClientSha256','Identity__PrivacyClientSha256','Identity__PrivacyWorkflowKey','Identity__TicketLifetimeSeconds','Identity__KekDevPath')) { Remove-Item "Env:$name" -ErrorAction SilentlyContinue }
+    foreach ($name in @('PGPASSWORD','CREDENTIALS_DIRECTORY','CHAT_CONNECTION','CHAT_MAINTENANCE_CONNECTION','CHAT_HOST_PORT','CHAT_WS_PORT','SF_CHAT_TOKEN','SF_CHAT_PRIVACY_TOKEN','CHAT_IDENTITY_URL','CHAT_IDENTITY_SERVER_ID','SF_IDENTITY_CHAT_VERIFIER_KEY','SF_IDENTITY_DATA_KEY_CHAT_KEY','CHAT_IDENTITY_INTERNAL_URL','CHAT_IDENTITY_CLIENT_CERT_PATH','CHAT_IDENTITY_WRONG_CERT_PATH','CHAT_IDENTITY_PRIVACY_CERT_PATH','CHAT_IDENTITY_SERVER_CERT_SHA256','CHAT_GROUP_URL','CHAT_GUILD_URL','SF_GAMEPLAY_TOKEN','SF_GUILD_TOKEN','CHAT_TEST_STATE','Identity__Connection','Identity__TicketSigningKey','Identity__WorldVerifierKey','Identity__ChatVerifierKey','Identity__DataKeyChatKey','Identity__ListenUrl','Identity__InternalListenUrl','Identity__InternalServerCertificatePath','Identity__DataKeyChatClientSha256','Identity__PrivacyClientSha256','Identity__PrivacyWorkflowKey','Identity__TicketLifetimeSeconds','Identity__KekDevPath')) { Remove-Item "Env:$name" -ErrorAction SilentlyContinue }
     & $dotnet build-server shutdown | Out-Null
 }

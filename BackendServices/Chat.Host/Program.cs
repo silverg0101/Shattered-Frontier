@@ -6,6 +6,11 @@ using ShatteredFrontier.Chat.Postgres;
 
 static string Required(string name) => Environment.GetEnvironmentVariable(name) is { Length: > 0 } value
     ? value : throw new InvalidOperationException($"{name} is required.");
+static string Credential(string name, string file)
+{
+    var directory = Environment.GetEnvironmentVariable("CREDENTIALS_DIRECTORY");
+    return directory is null ? Required(name) : File.ReadAllText(Path.Combine(directory, file)).TrimEnd('\r', '\n');
+}
 
 if (!int.TryParse(Required("CHAT_HOST_PORT"), out var port) || port is < 1 or > 65535)
     throw new InvalidOperationException("CHAT_HOST_PORT must be 1-65535.");
@@ -27,12 +32,12 @@ builder.WebHost.ConfigureKestrel(options =>
     if (wsPort is int value) options.Listen(bindAddress, value, listen => listen.Protocols = HttpProtocols.Http1);
 });
 builder.Services.AddGrpc();
-builder.Services.AddSingleton(new PostgresContactsStore(Required("CHAT_CONNECTION")));
-builder.Services.AddSingleton(new PostgresMailStore(Required("CHAT_CONNECTION")));
-builder.Services.AddSingleton(new ChatServiceToken(Required("SF_CHAT_TOKEN")));
-builder.Services.AddSingleton(new ChatPrivacyToken(Required("SF_CHAT_PRIVACY_TOKEN")));
+builder.Services.AddSingleton(new PostgresContactsStore(Credential("CHAT_CONNECTION", "chat-connection")));
+builder.Services.AddSingleton(new PostgresMailStore(Credential("CHAT_CONNECTION", "chat-connection")));
+builder.Services.AddSingleton(new ChatServiceToken(Credential("SF_CHAT_TOKEN", "chat-token")));
+builder.Services.AddSingleton(new ChatPrivacyToken(Credential("SF_CHAT_PRIVACY_TOKEN", "chat-privacy-token")));
 builder.Services.AddSingleton(new ChatActorVerifier(new HttpClient { BaseAddress = new Uri(Required("CHAT_IDENTITY_URL").TrimEnd('/') + "/"), Timeout = TimeSpan.FromSeconds(3) },
-    Required("CHAT_IDENTITY_SERVER_ID"), Required("SF_IDENTITY_CHAT_VERIFIER_KEY")));
+    Required("CHAT_IDENTITY_SERVER_ID"), Credential("SF_IDENTITY_CHAT_VERIFIER_KEY", "chat-verifier-key")));
 if (wsPort is not null)
 {
     builder.Services.AddHostedService<MailExpiryJob>();
@@ -45,10 +50,10 @@ if (wsPort is not null)
         Environment.GetEnvironmentVariable("CHAT_IDENTITY_CLIENT_CERT_PASSWORD")));
     handler.ServerCertificateCustomValidationCallback = (_, certificate, _, _) => certificate is not null &&
         CryptographicOperations.FixedTimeEquals(SHA256.HashData(certificate.RawData), serverPin);
-    builder.Services.AddSingleton(new MailKeyClient(new HttpClient(handler) { BaseAddress = internalUrl, Timeout = TimeSpan.FromSeconds(3) }, Required("SF_IDENTITY_DATA_KEY_CHAT_KEY")));
-    builder.Services.AddSingleton(new GroupMembershipClient(Required("CHAT_GROUP_URL"), Required("SF_GAMEPLAY_TOKEN")));
+    builder.Services.AddSingleton(new MailKeyClient(new HttpClient(handler) { BaseAddress = internalUrl, Timeout = TimeSpan.FromSeconds(3) }, Credential("SF_IDENTITY_DATA_KEY_CHAT_KEY", "data-key-chat-key")));
+    builder.Services.AddSingleton(new GroupMembershipClient(Required("CHAT_GROUP_URL"), Credential("SF_GAMEPLAY_TOKEN", "gameplay-token")));
     builder.Services.AddSingleton(new GuildMembershipClient(new HttpClient {
-        BaseAddress = new Uri(Required("CHAT_GUILD_URL").TrimEnd('/') + "/"), Timeout = TimeSpan.FromSeconds(3) }, Required("SF_GUILD_TOKEN")));
+        BaseAddress = new Uri(Required("CHAT_GUILD_URL").TrimEnd('/') + "/"), Timeout = TimeSpan.FromSeconds(3) }, Credential("SF_GUILD_TOKEN", "guild-token")));
     builder.Services.AddSingleton<ChatTransport>();
 }
 var app = builder.Build();
