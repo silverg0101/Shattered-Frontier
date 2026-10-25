@@ -3,6 +3,7 @@
 #include "Characters/SFE1Character.h"
 #include "Combat/SFCrowdControlComponent.h"
 #include "Combat/SFCombatPilot.h"
+#include "Combat/SFPlayerInterruptRules.h"
 #include "Components/StaticMeshComponent.h"
 #include "Engine/StaticMesh.h"
 #include "EngineUtils.h"
@@ -87,7 +88,8 @@ void USFCastingComponent::BeginPlay()
 
 bool USFCastingComponent::InSandbox() const
 {
-    return GetWorld() && GetWorld()->GetMapName().Contains(TEXT("SB_Casting"));
+    return GetWorld() && (GetWorld()->GetMapName().Contains(TEXT("SB_Casting")) ||
+        GetWorld()->GetMapName().Contains(TEXT("SB_Interrupt")));
 }
 
 double USFCastingComponent::Now() const
@@ -148,6 +150,56 @@ void USFCastingComponent::TryUse(uint8 AbilityId)
     }
     else if (Result == SFCastRules::EStart::Queued)
     { UE_LOG(LogTemp, Display, TEXT("CASTING_SERVER_QUEUE Ability=%d"), AbilityId); }
+    else if (Result == SFCastRules::EStart::Locked)
+    { UE_LOG(LogTemp, Display, TEXT("INTERRUPT_SERVER_LOCKED Ability=%d"), AbilityId); }
+}
+
+void USFCastingComponent::RequestTrainingInterrupt()
+{
+    if (GetOwner()->HasAuthority()) ServerRequestTrainingInterrupt_Implementation();
+    else ServerRequestTrainingInterrupt();
+}
+
+void USFCastingComponent::ServerRequestTrainingInterrupt_Implementation()
+{
+    ASFE1Character* Owner = Cast<ASFE1Character>(GetOwner());
+    if (!Owner || !Owner->HasAuthority() || !GetWorld() ||
+        GetWorld()->GetOutermost()->GetName() != TEXT("/Game/Frontier/Maps/Sandbox/SB_Interrupt") ||
+        Owner->CombatHealth() <= 0) return;
+    const double ReachCm = GetDefault<USFCombatPilotSettings>()->MeleeRangeMetres * 100.0;
+    ASFE1Character* Best = nullptr;
+    double Distance = ReachCm;
+    for (TActorIterator<ASFE1Character> It(GetWorld()); It; ++It)
+    {
+        ASFE1Character* Candidate = *It;
+        if (Candidate == Owner || !Candidate->Casting) continue;
+        const double D = FVector::Dist2D(Owner->GetActorLocation(), Candidate->GetActorLocation());
+        if (SFPlayerInterruptRules::CanInterrupt(Owner->CombatHealth() > 0,
+            Candidate->CombatHealth() > 0, Candidate->Casting->GetCastView().Phase != ESFCastPhase::Idle,
+            D, Distance, true)) { Distance = D; Best = Candidate; }
+    }
+    if (!Best) { UE_LOG(LogTemp, Display, TEXT("INTERRUPT_SERVER_DENIED Reason=RangeOrState")); return; }
+    FHitResult Hit;
+    FCollisionQueryParams Query(SCENE_QUERY_STAT(TrainingInterruptLOS), false, Owner);
+    Query.AddIgnoredActor(Best);
+    if (GetWorld()->LineTraceSingleByChannel(Hit, Owner->GetActorLocation() + FVector(0, 0, 50),
+        Best->GetActorLocation() + FVector(0, 0, 50), ECC_Visibility, Query))
+    { UE_LOG(LogTemp, Display, TEXT("INTERRUPT_SERVER_DENIED Reason=Sight")); return; }
+    Best->Casting->Interrupt();
+    UE_LOG(LogTemp, Display, TEXT("INTERRUPT_SERVER_APPLIED Target=%s RangeCm=%.0f Resource=%d"),
+        *Best->GetName(), Distance, Best->Casting->GetTrainingResource());
+}
+
+void USFCastingComponent::ServerSetInterruptScenarioPosition_Implementation(bool bCaster, bool bNear)
+{
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    if (GetWorld() && GetWorld()->GetOutermost()->GetName() == TEXT("/Game/Frontier/Maps/Sandbox/SB_Interrupt") &&
+        FParse::Param(FCommandLine::Get(), TEXT("InterruptScenario")))
+    {
+        if (ASFE1Character* Owner = Cast<ASFE1Character>(GetOwner()))
+        { Owner->SetActorLocation(FVector(0, bCaster ? 0 : (bNear ? 200 : 600), 110)); }
+    }
+#endif
 }
 
 void USFCastingComponent::TickComponent(float Dt, ELevelTick TickType, FActorComponentTickFunction* TickFunction)
@@ -160,6 +212,56 @@ void USFCastingComponent::TickComponent(float Dt, ELevelTick TickType, FActorCom
         if (Owner->IsLocallyControlled())
         {
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+            if (FParse::Param(FCommandLine::Get(), TEXT("InterruptScenario")))
+            {
+                FString Role;
+                FParse::Value(FCommandLine::Get(), TEXT("InterruptRole="), Role);
+                const bool bCaster = Role == TEXT("Caster");
+                if (!InterruptScenarioAt) InterruptScenarioAt = Now();
+                if (InterruptScenarioStep == 0 && Now() - InterruptScenarioAt > 2.0)
+                { ServerSetInterruptScenarioPosition(bCaster, false); InterruptScenarioStep = 1; InterruptScenarioAt = Now(); }
+                else if (bCaster)
+                {
+                    if (InterruptScenarioStep == 1 && Now() - InterruptScenarioAt > 1.0)
+                    {
+                        for (TActorIterator<ASFE1Character> It(GetWorld()); It; ++It)
+                        {
+                            if (*It != Owner && FMath::Abs((*It)->GetActorLocation().Y - 600.0) < 50.0)
+                            { UseTrainingAbility(1); InterruptScenarioStep = 2; break; }
+                        }
+                    }
+                    else if (InterruptScenarioStep == 2 && View.bInterrupted)
+                    {
+                        UE_LOG(LogTemp, Display, TEXT("INTERRUPT_CLIENT_INTERRUPTED Resource=%d"), Resource);
+                        UseTrainingAbility(1); InterruptScenarioStep = 3; InterruptScenarioAt = Now();
+                    }
+                    else if (InterruptScenarioStep == 3 && Now() - InterruptScenarioAt > 3.3)
+                    { UseTrainingAbility(1); InterruptScenarioStep = 4; }
+                    else if (InterruptScenarioStep == 4 && View.Phase == ESFCastPhase::Casting)
+                    { UE_LOG(LogTemp, Display, TEXT("INTERRUPT_CLIENT_RECAST")); InterruptScenarioStep = 5; }
+                    else if (InterruptScenarioStep == 5 && View.Phase == ESFCastPhase::Idle && !View.bInterrupted)
+                    { UE_LOG(LogTemp, Display, TEXT("INTERRUPT_CLIENT_COMPLETE Resource=%d"), Resource); InterruptScenarioStep = 6; }
+                }
+                else
+                {
+                    ASFE1Character* Caster = nullptr;
+                    for (TActorIterator<ASFE1Character> It(GetWorld()); It; ++It)
+                    { if (*It != Owner && (*It)->Casting) { Caster = *It; break; } }
+                    if (Caster && InterruptScenarioStep == 1 && Caster->Casting->GetCastView().Phase == ESFCastPhase::Casting)
+                    { RequestTrainingInterrupt(); UE_LOG(LogTemp, Display, TEXT("INTERRUPT_CLIENT_RANGE_REQUEST")); InterruptScenarioStep = 2; InterruptScenarioAt = Now(); }
+                    else if (InterruptScenarioStep == 2 && Now() - InterruptScenarioAt > 0.15)
+                    { ServerSetInterruptScenarioPosition(false, true); InterruptScenarioStep = 3; InterruptScenarioAt = Now(); }
+                    else if (InterruptScenarioStep == 3 && Now() - InterruptScenarioAt > 0.15)
+                    { RequestTrainingInterrupt(); UE_LOG(LogTemp, Display, TEXT("INTERRUPT_CLIENT_NEAR_REQUEST")); InterruptScenarioStep = 4; }
+                    else if (Caster && InterruptScenarioStep == 4 && Caster->Casting->GetCastView().bInterrupted)
+                    { UE_LOG(LogTemp, Display, TEXT("INTERRUPT_CLIENT_OBSERVED_CANCEL")); InterruptScenarioStep = 5; }
+                    else if (Caster && InterruptScenarioStep == 5 && Caster->Casting->GetCastView().Phase == ESFCastPhase::Casting)
+                    { UE_LOG(LogTemp, Display, TEXT("INTERRUPT_CLIENT_OBSERVED_RECAST")); InterruptScenarioStep = 6; }
+                    else if (Caster && InterruptScenarioStep == 6 && Caster->Casting->GetCastView().Phase == ESFCastPhase::Idle && !Caster->Casting->GetCastView().bInterrupted)
+                    { UE_LOG(LogTemp, Display, TEXT("INTERRUPT_CLIENT_OBSERVED_COMPLETE")); InterruptScenarioStep = 7; }
+                }
+            }
+            else
             if (FParse::Param(FCommandLine::Get(), TEXT("CastingScenario")))
             {
                 if (!ScenarioStartedAt) ScenarioStartedAt = Now();
@@ -190,6 +292,8 @@ void USFCastingComponent::TickComponent(float Dt, ELevelTick TickType, FActorCom
                 if (PC->WasInputKeyJustPressed(EKeys::One)) UseTrainingAbility(1);
                 if (PC->WasInputKeyJustPressed(EKeys::Two)) UseTrainingAbility(2);
                 if (PC->WasInputKeyJustPressed(EKeys::Three)) CancelCast();
+                if (GetWorld()->GetMapName().Contains(TEXT("SB_Interrupt")) && PC->WasInputKeyJustPressed(EKeys::I))
+                { RequestTrainingInterrupt(); }
             }
         }
         return;
@@ -290,7 +394,7 @@ float USFCastingComponent::GetCastProgress() const
 void USFCastingComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-    DOREPLIFETIME_CONDITION(USFCastingComponent, View, COND_OwnerOnly);
+    DOREPLIFETIME(USFCastingComponent, View);
     DOREPLIFETIME_CONDITION(USFCastingComponent, Resource, COND_OwnerOnly);
 }
 

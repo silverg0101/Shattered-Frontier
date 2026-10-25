@@ -85,7 +85,7 @@ def main():
         snow = actors.spawn_actor_from_class(snow_class, u.Vector(2000, 0, 150))
         snow.set_actor_label('DeepSnowTravelVolume')
         snow.set_actor_scale3d(u.Vector(10, 15, 3))
-    if names[0] == 'Casting':
+    if names[0] in ('Casting', 'Interrupt'):
         target_class = u.load_class(None, '/Script/ShatteredFrontier.SFCastingTarget')
         if not target_class:
             raise RuntimeError('SFCastingTarget class is unavailable; build the Editor module first')

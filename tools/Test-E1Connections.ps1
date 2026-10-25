@@ -5,6 +5,7 @@ param(
     [ValidatePattern('^/Game/Frontier/[A-Za-z0-9_/]+$')][string]$Map = '/Game/Frontier/Maps/Greenlands_E1',
     [ValidateRange(1, 2)][int]$Clients = 2,
     [switch]$CastingScenario,
+    [switch]$InterruptScenario,
     [switch]$EvadeScenario,
     [switch]$ThreatScenario,
     [switch]$TauntScenario,
@@ -179,6 +180,9 @@ try {
         }
     }
     if ($CastingScenario -and $Map -ne '/Game/Frontier/Maps/Sandbox/SB_Casting') { throw 'CastingScenario requires SB_Casting' }
+    if ($InterruptScenario -and ($Map -ne '/Game/Frontier/Maps/Sandbox/SB_Interrupt' -or $Clients -ne 2 -or $CastingScenario)) {
+        throw 'InterruptScenario requires SB_Interrupt and two clients'
+    }
     if ($EvadeScenario -and ($Map -ne '/Game/Frontier/Maps/Sandbox/SB_Evade' -or $Clients -ne 2 -or $CastingScenario)) {
         throw 'EvadeScenario requires SB_Evade, two clients, and no CastingScenario'
     }
@@ -234,6 +238,7 @@ try {
     if ($UnstuckScenario) { $serverArgs += '-UnstuckScenario' }
     if ($SpiritReleaseScenario) { $serverArgs += '-SpiritReleaseScenario' }
     if ($ResurrectionAcceptScenario) { $serverArgs += '-ResurrectionAcceptScenario' }
+    if ($InterruptScenario) { $serverArgs += '-InterruptScenario' }
     if ($GreenlandsBoarNetcheck) { $serverArgs += '-GreenlandsBoarNetcheck' }
     if ($GreenlandsEnvironmentNetcheck) { $serverArgs += '-GreenlandsEnvironmentNetcheck' }
     if ($GreenlandsMovementNetcheck) { $serverArgs += '-GreenlandsMovementNetcheck' }
@@ -248,6 +253,7 @@ try {
         $clientLog = Join-Path $logs "Client$index.log"
         $clientArgs = @("127.0.0.1:$Port", '-game', '-NullRHI', '-unattended', '-nosound', '-nop4', ('-abslog="' + $clientLog + '"'))
         if ($CastingScenario -and $index -eq 1) { $clientArgs += '-CastingScenario' }
+        if ($InterruptScenario) { $clientArgs += @('-InterruptScenario', ('-InterruptRole=' + $(if ($index -eq 1) { 'Caster' } else { 'Interrupter' }))) }
         if ($EvadeScenario) { $clientArgs += @('-CombatEvadeScenario', ('-CombatEvadeRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         if ($ThreatScenario) { $clientArgs += @('-CombatThreatScenario', ('-CombatThreatRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         if ($TauntScenario) { $clientArgs += @('-CombatTauntScenario', ('-CombatTauntRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
@@ -285,6 +291,36 @@ try {
         Wait-Log $serverLog 'CASTING_SERVER_QUEUE Ability=2'
         Wait-Log $serverLog 'CASTING_SERVER_COMPLETE Ability=2'
         Write-Output "PASS: server-authoritative cast, queued channel and replicated training-target damage. Logs: $logs"
+    }
+    if ($InterruptScenario) {
+        $casterLog = Join-Path $logs 'Client1.log'
+        $interrupterLog = Join-Path $logs 'Client2.log'
+        Wait-Log $casterLog 'INTERRUPT_CLIENT_COMPLETE Resource=90'
+        Wait-Log $interrupterLog 'INTERRUPT_CLIENT_OBSERVED_COMPLETE'
+        $serverLines = Get-Content -LiteralPath $serverLog
+        $ordered = @('CASTING_SERVER_START Ability=1 Resource=90',
+            'INTERRUPT_SERVER_DENIED Reason=RangeOrState',
+            'INTERRUPT_SERVER_APPLIED Target=.* Resource=100',
+            'INTERRUPT_SERVER_LOCKED Ability=1',
+            'CASTING_SERVER_START Ability=1 Resource=90',
+            'CASTING_SERVER_TICK Ability=1 Health=495',
+            'CASTING_SERVER_COMPLETE Ability=1')
+        $last = -1
+        foreach ($pattern in $ordered) {
+            $found = -1
+            for ($line = $last + 1; $line -lt $serverLines.Count; $line++) {
+                if ($serverLines[$line] -match $pattern) { $found = $line; break }
+            }
+            if ($found -lt 0) { throw "Missing ordered interrupt step: $pattern" }
+            $last = $found
+        }
+        foreach ($pair in @(@($casterLog, 'INTERRUPT_CLIENT_INTERRUPTED Resource=100'),
+                           @($casterLog, 'INTERRUPT_CLIENT_RECAST'),
+                           @($interrupterLog, 'INTERRUPT_CLIENT_OBSERVED_CANCEL'),
+                           @($interrupterLog, 'INTERRUPT_CLIENT_OBSERVED_RECAST'))) {
+            if (-not (Select-String -LiteralPath $pair[0] -Pattern $pair[1] -Quiet)) { throw "Missing client view: $($pair[1])" }
+        }
+        Write-Output "PASS: two clients observed range denial, server interrupt, full refund, school lockout and completed recast. Logs: $logs"
     }
     if ($UnstuckScenario) {
         Wait-Log (Join-Path $logs 'Client1.log') 'UNSTUCK_CLIENT_MOVED Role=Driver Distance='
@@ -1060,7 +1096,7 @@ try {
         Write-Output "PASS: Greenlands 2.0 s unarmed auto attack ($swingGap s observed), client stop, boar threat, ordinary healing ($ordinaryGain HP/tick), Golden Stag rest healing ($restedGain HP/tick), client kill and rotated slot respawn on both clients. Logs: $logs"
     }
     Write-Output "PASS: separate editor server and $Clients client(s) connected; $Clients server-authoritative possession(s). Logs: $logs"
-    if (-not $CastingScenario -and -not $EvadeScenario -and -not $ThreatScenario -and -not $TauntScenario -and -not $AggroScenario -and -not $MemoryScenario -and -not $RegenScenario -and -not $RestRegenScenario -and -not $FallScenario -and -not $SwimScenario -and -not $CrouchScenario -and -not $BackpedalScenario -and -not $RoadScenario -and -not $SnowScenario -and -not $TravelMountScenario -and -not $AssistScenario -and -not $RespawnScenario -and -not $AutoAttackScenario -and -not $UnstuckScenario -and -not $SpiritReleaseScenario -and -not $ResurrectionAcceptScenario -and -not $GreenlandsBoarNetcheck -and -not $GreenlandsEnvironmentNetcheck -and -not $GreenlandsMovementNetcheck) { Write-Output 'Headless connection check only: movement, rendering, lifecycle cleanup, authentication and Linux runtime are not certified.' }
+    if (-not $InterruptScenario -and -not $CastingScenario -and -not $EvadeScenario -and -not $ThreatScenario -and -not $TauntScenario -and -not $AggroScenario -and -not $MemoryScenario -and -not $RegenScenario -and -not $RestRegenScenario -and -not $FallScenario -and -not $SwimScenario -and -not $CrouchScenario -and -not $BackpedalScenario -and -not $RoadScenario -and -not $SnowScenario -and -not $TravelMountScenario -and -not $AssistScenario -and -not $RespawnScenario -and -not $AutoAttackScenario -and -not $UnstuckScenario -and -not $SpiritReleaseScenario -and -not $ResurrectionAcceptScenario -and -not $GreenlandsBoarNetcheck -and -not $GreenlandsEnvironmentNetcheck -and -not $GreenlandsMovementNetcheck) { Write-Output 'Headless connection check only: movement, rendering, lifecycle cleanup, authentication and Linux runtime are not certified.' }
 } finally {
     foreach ($process in $ownedProcesses) {
         if (-not $process.HasExited) { Stop-Process -Id $process.Id -ErrorAction SilentlyContinue }

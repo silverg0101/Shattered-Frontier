@@ -175,6 +175,8 @@ Travel mount sandbox: [scope and World values](../decisions/WORLD-travel-mount-s
 
 ## Owner decisions
 
+Player interrupt sandbox: [scope and Combat values](../decisions/COMBAT-player-interrupt-sandbox.md). `Combat/SFCastingComponent.*` exposes an I-key sandbox training interrupt on `SB_Interrupt`; the server selects an active nearby caster, checks the existing pilot's 2.8 m melee reach and sight, cancels the cast, refunds its 10 training resource and locks the shared training school for 3 s. `Combat/SFPlayerInterruptRules.h` checks admission. `tools/Create-SandboxMap.py Interrupt` creates the target map. Run `ShatteredFrontier.Combat.PlayerInterrupt.Admission` and `tools/Test-E1Connections.ps1 -Map /Game/Frontier/Maps/Sandbox/SB_Interrupt -Clients 2 -InterruptScenario` for range denial, applied interrupt, locked retry and completed recast observed by both clients. Published ability content remains an owner decision.
+
 - Death penalty, durability wear and gear loss amounts remain undecided; this change does not set them. The production resurrection ability and its offer source also remain open.
 
 - For a shared open-world boar kill, should each credited party member get an independent personal loot roll, or should the kill produce a single group drop? If personal, should the current two guaranteed hides apply to every eligible member or be budgeted across the group? Keep the current killer-only boar grant until this is decided.

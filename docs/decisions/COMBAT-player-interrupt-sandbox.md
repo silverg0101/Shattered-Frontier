@@ -1,0 +1,5 @@
+# Player interrupt sandbox scope
+
+`SB_Interrupt` exercises a player-issued interrupt against another player's active training cast. Combat *Abilities, Effects and Runtime* v1.0, "Casting, channeling and the global cooldown" specifies that an interrupt cancels the cast, locks its school for the ability's `lockout_s` (default 3 s, unaffected by haste), and refunds the interrupted cast's resource cost in full. The existing casting training fixture provides a 1.5 s cast, 10 resource cost, 3 s cooldown and 5 m target range; these are development fixtures, not new design values. The existing pilot melee reach of 2.8 m and line of sight gate the interrupter in this sandbox.
+
+The server identifies an active nearby caster, checks life, reach and sight, then applies the existing server-timed lockout. Both clients observe the interrupted cast and later completed recast. A range denial and immediate locked retry are required. The sandbox I key is a development activation; a published interrupt ability, its cost, cooldown, unlock, target policy and range remain content owner decisions before rollout.

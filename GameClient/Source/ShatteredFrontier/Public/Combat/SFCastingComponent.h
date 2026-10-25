@@ -66,6 +66,8 @@ public:
     /** Training ability 1: cast; 2: channel. Sandbox only, through the owning client. */
     UFUNCTION(BlueprintCallable, Category="Combat") void UseTrainingAbility(uint8 AbilityId);
     UFUNCTION(BlueprintCallable, Category="Combat") void CancelCast();
+    /** Sandbox training interrupt. The server selects and validates the nearby caster. */
+    UFUNCTION(BlueprintCallable, Category="Combat") void RequestTrainingInterrupt();
     /** Server interrupt; school lockout is the training ability's authored lockout. */
     void Interrupt();
     /** Called by the existing combat health path after positive damage. */
@@ -76,6 +78,8 @@ public:
 private:
     UFUNCTION(Server, Reliable) void ServerUseTrainingAbility(uint8 AbilityId);
     UFUNCTION(Server, Reliable) void ServerCancelCast();
+    UFUNCTION(Server, Reliable) void ServerRequestTrainingInterrupt();
+    UFUNCTION(Server, Reliable) void ServerSetInterruptScenarioPosition(bool bCaster, bool bNear);
     void TryUse(uint8 AbilityId);
     void SyncView();
     void ResolveTick(uint8 AbilityId);
@@ -97,6 +101,8 @@ private:
     double ScenarioStartedAt = 0;
     double ScenarioCastRequestedAt = 0;
     bool bScenarioSawCastView = false;
+    int32 InterruptScenarioStep = 0;
+    double InterruptScenarioAt = 0;
 #endif
 };
 
