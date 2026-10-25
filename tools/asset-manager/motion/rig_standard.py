@@ -41,15 +41,16 @@ def limb_of(std):
 
 
 # ---------------------------------------------------------------- labelling (no Blender)
-def plan(bones, h):
+def plan(bones, h, floor=None):
     """bones [{name, parent, head, tail, weight?}] in world space (Blender, Z up), h the model height -> labels.json
     content: turn, labels {bone: standard}, dropped, warnings, bones {standard: {head, tail, parent, sources}}.
     weight: the skin weight a bone carries, summed over the vertices; with it, the turn whose head chain carries the
-    most skin wins (a head outweighs a tail, though a boar's lowered snout sits below its raised tail)."""
+    most skin wins (a head outweighs a tail, though a boar's lowered snout sits below its raised tail). floor: the
+    mesh's lowest z; no joint goes below it (SkinTokens can end the paw bones under the feet)."""
     found, errors = [], []
     for turn in (0, -90, 90, 180):
         try:
-            found.append(plan_turned(bones, h, turn))
+            found.append(plan_turned(bones, h, turn, floor))
         except ValueError as e:
             errors.append(f"turned {turn}: {e}")
     if not found:
@@ -60,7 +61,7 @@ def plan(bones, h):
     return best
 
 
-def plan_turned(bones, h, turn):
+def plan_turned(bones, h, turn, floor=None):
     t = math.radians(turn)
     R = np.array([[math.cos(t), -math.sin(t), 0], [math.sin(t), math.cos(t), 0], [0, 0, 1]])
     names = [b["name"] for b in bones]
@@ -86,6 +87,18 @@ def plan_turned(bones, h, turn):
             while m not in limb:
                 m = parent[m]
             limb[n] = limb[m]
+    def below(n):
+        out = [n]
+        for m in out:
+            out += kids[m]
+        return out
+    # a centre chain off the body is the head when it sits ahead of the body, the tail when behind: limbs.group's own
+    # rule (heads forward or up) reads a drooping snout as a tail
+    body_y = np.mean([head[n][1] for n in names if limb[n] == "body"])
+    for n in [n for n in names if limb[n] in ("head", "tail") and limb.get(parent[n]) == "body"]:
+        kind = "head" if np.mean([head[m][1] for m in below(n)]) < body_y else "tail"
+        for m in below(n):
+            limb[m] = kind if limb[m] in ("head", "tail") else limb[m]
     top = lambda kind: [n for n in names if limb[n] == kind and limb.get(parent[n]) != kind]
     size = {}
     def subtree(n):  # bone length below n, n included
@@ -98,6 +111,13 @@ def plan_turned(bones, h, turn):
     if not top("head"):
         raise ValueError("no head chain")
     leg_root = {l: next(n for n in names if limb[n] == l and limb.get(parent[n]) != l) for l in legs}
+    # a first bone starting far nearer the centre line than the other legs' (a collarbone stub inside the chest, its
+    # twin's put on the centre line) is body: the leg starts at its child, or the pair is a segment out of step
+    xs = lambda l: abs(head[leg_root[l]][0] - x0)
+    mid = float(np.median([xs(l) for l in legs]))
+    for l in legs:
+        while xs(l) < 0.5 * mid and len(kids[leg_root[l]]) == 1:
+            leg_root[l] = kids[leg_root[l]][0]
     head_root = max(top("head"), key=subtree)
 
     def up(n):  # n and its ancestors, root last
@@ -109,11 +129,15 @@ def plan_turned(bones, h, turn):
         ua, ub = up(a), up(b)
         common = next(n for n in ua if n in ub)
         return ua[:ua.index(common) + 1] + ub[:ub.index(common)][::-1]
-    at = {l: parent[leg_root[l]] for l in legs}
     # the spine runs from the leg attachment farthest from the head to the bone the head hangs off; the skeleton root
-    # may sit anywhere on it (SkinTokens often roots at the shoulders, the hips then on a branch towards the tail)
-    spine = max((path(at[l], parent[head_root]) for l in legs), key=len) if parent[head_root] else []
-    if any(at[l] not in spine for l in legs):
+    # may sit anywhere on it (SkinTokens often roots at the shoulders, the hips then on a branch towards the tail).
+    # A leg on a short centre stub off the spine attaches where the stub leaves it.
+    if not parent[head_root]:
+        raise ValueError("the head is the skeleton root")
+    spine = max((path(parent[leg_root[l]], parent[head_root]) for l in legs), key=len)
+    at = {l: next(n for n in path(parent[leg_root[l]], parent[head_root]) if n in spine) for l in legs}
+    stub = {l: path(parent[leg_root[l]], at[l])[:-1] for l in legs}
+    if any(sum(np.linalg.norm(tail[n] - head[n]) for n in s) > 0.25 * h for s in stub.values()):
         raise ValueError("a leg hangs off a side branch of the body, not the spine to the head")
     # front vs hind: distance along the spine from the head
     pos = {n: i for i, n in enumerate(spine)}
@@ -141,7 +165,7 @@ def plan_turned(bones, h, turn):
         return path
     neck_head = main_path(head_root, False)
     body_src, spine_src, neck_src = spine[:hind + 1], spine[hind + 1:], neck_head[:-1]
-    tails = [n for n in top("tail") if pos.get(parent[n], -1) <= hind]  # off the hips or behind, not a belly chain
+    tails = top("tail")
     tail_src = main_path(max(tails, key=subtree), True) if tails else []
     groups = {"axial": [body_src] + creature.chain_resample(spine_src, 3, span(spine_src))
                        + creature.chain_resample(neck_src, 1, span(neck_src)) + [[neck_head[-1]]],
@@ -171,6 +195,8 @@ def plan_turned(bones, h, turn):
             pts = [a + np.array([0, 0.1 * h * i / 6, 0]) for i in range(7)]
         else:
             pts = layout(gs, head, tail, h)
+        if floor is not None:
+            pts = [np.array([p[0], p[1], max(p[2], floor)]) for p in pts]
         for i, g in enumerate(gs):
             out[CHAINS[c][i]] = {"head": [round(float(v), 6) for v in pts[i]], "tail": [round(float(v), 6) for v in pts[i + 1]],
                                  "parent": PARENT[CHAINS[c][i]], "sources": [m for m in g if "+" not in m]}
@@ -350,8 +376,9 @@ def sheet(p, path):
 
 
 def label_main(model, labels_path, sheet_path):
+    import render_views as rv
     arm, bones, h = load(model)
-    p = plan(bones, h)
+    p = plan(bones, h, rv.bounds(arm)[0].z)
     Path(labels_path).write_text(json.dumps(p, indent=1))
     turn_scene(p["turn"])
     sheet(p, sheet_path)
