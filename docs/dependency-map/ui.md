@@ -1,6 +1,6 @@
 # UI
 
-Inventory Shift transfer reads the originating selectable's pointer-event Shift state (`WasLastClickShiftDown`), preserving the input event through the existing click delegate. The explicit editor-only loot network fixture exercises native existing WBP click/drag/cancel handlers; layout remains in Widget Blueprints.
+Inventory Shift transfer reads the originating selectable's pointer-event Shift state (`WasLastClickShiftDown`), preserving the input event through the existing click delegate. Bag drags temporarily install `USFWorldDropTarget`, a transparent input surface behind HUD/windows. Only a left-button release on that viewport surface requests a world drop; cancellation and rejected UI drops preserve the bag. `USFItemDragOperation` removes the surface on completion/cancel. Layout remains in Widget Blueprints. Focused regression: `ShatteredFrontier.Loot.WorldRelease`.
 
 Action targeting: `SFActionTargetComponent` now supplies one actor and cursor hit/ray to the highlight, `SFHudLayout` prompt and exact action handler. Selected dialogue/quest/market handlers receive that actor; the ordinary action path no longer chooses a second nearby object. Inventory layout/style is unchanged by the review fixes.
 

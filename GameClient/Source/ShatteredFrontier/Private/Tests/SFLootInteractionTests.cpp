@@ -15,6 +15,10 @@
 #include "Interaction/SFE1InteractionTarget.h"
 #include "Inventory/SFRepairStationActor.h"
 #include "Gathering/SFGatheringPilot.h"
+#include "Tests/SFLootWorkflowNetcheck.h"
+#include "Engine/LocalPlayer.h"
+#include "Engine/Engine.h"
+#include "UI/SFWindowStack.h"
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFLootInteractionAuthorityTest, "ShatteredFrontier.Loot.Authority",
     EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
@@ -135,5 +139,67 @@ bool FSFLootUniqueRowsTest::RunTest(const FString& Parameters)
     TestEqual(TEXT("Same-name unique copies remain separately selectable"), Rows.Num(), 2);
     if (Rows.Num() == 2) { TestEqual(TEXT("First copy retains condition"), Rows[0].DurabilityPercent, 37); TestEqual(TEXT("Second copy retains condition"), Rows[1].DurabilityPercent, 90); }
     return true;
+}
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFLootWorldReleaseTest, "ShatteredFrontier.Loot.WorldRelease",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSFLootWorldReleaseTest::RunTest(const FString& Parameters)
+{
+    FTestWorldWrapper Fixture;
+    if (!Fixture.CreateTestWorld(EWorldType::GameRPC) || !Fixture.BeginPlayInTestWorld()) return false;
+    UWorld* World = Fixture.GetTestWorld(); World->GetWorldSettings()->NotifyBeginPlay();
+    auto* Player = World->SpawnActor<ASFPlayerController>();
+    auto* Local = NewObject<ULocalPlayer>(GEngine);
+    Player->Player = Local; Local->PlayerController = Player;
+    auto* Surface = CreateWidget<USFWorldDropTarget>(Player);
+    const auto SlotClass = LoadClass<USFSlotWidget>(nullptr, TEXT("/Game/Frontier/UI/Widgets/Common/WBP_ItemSlot.WBP_ItemSlot_C"));
+    auto* Slot = CreateWidget<USFSlotWidget>(Player, SlotClass);
+    const auto PanelClass = LoadClass<USFInventoryWidget>(nullptr, USFInventoryWidget::AssetPath);
+    auto* Panel = CreateWidget<USFInventoryWidget>(Player, PanelClass);
+    if (!TestNotNull(TEXT("World drop input surface"), Surface) || !TestNotNull(TEXT("Existing item slot"), Slot) || !TestNotNull(TEXT("Existing inventory"), Panel)) return false;
+    auto* Drag = NewObject<USFItemDragOperation>(Slot); Drag->bFromInventory = true; Drag->Quantity = 1; Drag->DefinitionId = TEXT("item/wolf_pelt"); Drag->WorldDropTarget = Surface;
+    const auto Geometry = FGeometry::MakeRoot(FVector2f(1920,1080), FSlateLayoutTransform());
+    const auto ReleaseAt = [](const FVector2D& Point, bool bDown = false)
+    { return FPointerEvent(0, Point, Point, bDown ? TSet<FKey>{EKeys::LeftMouseButton} : TSet<FKey>{}, EKeys::LeftMouseButton, 0, FModifierKeysState()); };
+    const FPointerEvent Release = ReleaseAt(FVector2D(1500,500));
+    Surface->Configure(Drag);
+    Slot->NativeOnDragCancelled(FDragDropEvent(FPointerEvent(), nullptr), Drag);
+    TestFalse(TEXT("Escape/default cancel cannot request a world release"), Surface->NativeOnDrop(Geometry, FDragDropEvent(Release, nullptr), Drag));
+    Surface->Configure(Drag);
+    TestFalse(TEXT("Existing UI declines an unrelated bag drop"), Panel->NativeOnDrop(Geometry, FDragDropEvent(Release, nullptr), Drag));
+    Slot->NativeOnDragCancelled(FDragDropEvent(Release, nullptr), Drag);
+    TestFalse(TEXT("Failed UI drop cancellation cannot fall through to world"), Surface->NativeOnDrop(Geometry, FDragDropEvent(Release, nullptr), Drag));
+    Surface->Configure(Drag);
+    TestFalse(TEXT("Holding the button is not a release"), Surface->NativeOnDrop(Geometry, FDragDropEvent(ReleaseAt(FVector2D(1500,500), true), nullptr), Drag));
+    TestFalse(TEXT("Outside the viewport is not a world release"), Surface->NativeOnDrop(Geometry, FDragDropEvent(ReleaseAt(FVector2D(-100,-100)), nullptr), Drag));
+    TestTrue(TEXT("Deliberate left release on the world surface requests a drop"), Surface->NativeOnDrop(Geometry, FDragDropEvent(Release, nullptr), Drag));
+    TestFalse(TEXT("One release is consumed once"), Surface->NativeOnDrop(Geometry, FDragDropEvent(Release, nullptr), Drag));
+    Player->Player = nullptr; Local->PlayerController = nullptr;
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFLootFixtureLifecycleTest, "ShatteredFrontier.Loot.FixtureLifecycle",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSFLootFixtureLifecycleTest::RunTest(const FString& Parameters)
+{
+    FSFInventoryEntry Hide; Hide.DefinitionId = TEXT("item/boar_hide"); Hide.Count = 2;
+    FSFInventoryEntry Bonus; Bonus.DefinitionId = TEXT("item/recipe_scroll_iron_brackets"); Bonus.Count = 1;
+    FSFLootEntry HideItem; HideItem.DefinitionId = Hide.DefinitionId; HideItem.Quantity = 2;
+    FSFLootEntry BonusItem; BonusItem.DefinitionId = Bonus.DefinitionId; BonusItem.Quantity = 1;
+    const TArray<FSFInventoryEntry> Rows{Hide, Bonus};
+    TestEqual(TEXT("Guaranteed hides selected first"), FSFLootWorkflowNetcheck::FindAuthorizedRow(Rows, {HideItem,BonusItem}), 0);
+    TestEqual(TEXT("After hides, valid bonus row remains selectable through native workflow"), FSFLootWorkflowNetcheck::FindAuthorizedRow(Rows, {BonusItem}), 1);
+    TestEqual(TEXT("Stale rows are not re-withdrawn after source drains"), FSFLootWorkflowNetcheck::FindAuthorizedRow(Rows, {}), INDEX_NONE);
+    FTestWorldWrapper Fixture;
+    if (!Fixture.CreateTestWorld(EWorldType::GameRPC) || !Fixture.BeginPlayInTestWorld()) return false;
+    UWorld* World = Fixture.GetTestWorld(); World->GetWorldSettings()->NotifyBeginPlay();
+    auto* Ground = World->SpawnActor<ASFLootSourceActor>(); FSFLootSourceSnapshot Snapshot; Snapshot.bGround = true; Ground->Initialize(Snapshot);
+    TestFalse(TEXT("Ground alone preserves privacy"), FSFLootWorkflowNetcheck::HasPersonalSource(World));
+    auto* Leaked = World->SpawnActor<ASFLootSourceActor>();
+    TestTrue(TEXT("Personal source after a ground actor is still detected"), FSFLootWorkflowNetcheck::HasPersonalSource(World));
+    Leaked->Destroy();
+    TestFalse(TEXT("Privacy recovers after leaked fixture is removed"), FSFLootWorkflowNetcheck::HasPersonalSource(World));
+    auto* Late = World->SpawnActor<ASFLootSourceActor>();
+    TestTrue(TEXT("Later-frame personal source remains detected after prior ground observation"), FSFLootWorkflowNetcheck::HasPersonalSource(World));
+    Late->Destroy(); return true;
 }
 #endif

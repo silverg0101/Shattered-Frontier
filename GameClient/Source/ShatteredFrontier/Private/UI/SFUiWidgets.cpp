@@ -355,6 +355,12 @@ void USFSlotWidget::NativeOnDragDetected(const FGeometry& InGeometry, const FPoi
     Operation->Item = DragItem; Operation->ItemSlot = DragItemSlot; Operation->FromEquipSlot = DragFromEquipSlot; Operation->FromHotbar = DragFromHotbar;
     Operation->DefinitionId = DragDefinitionId; Operation->InstanceId = DragInstanceId; Operation->Quantity = DragQuantity;
     Operation->bFromLoot = bDragFromLoot; Operation->bFromInventory = bDragFromInventory;
+    if (bDragFromInventory && !bDragFromLoot && GetOwningPlayer())
+    {
+        Operation->WorldDropTarget = CreateWidget<USFWorldDropTarget>(GetOwningPlayer());
+        Operation->WorldDropTarget->Configure(Operation);
+        Operation->WorldDropTarget->AddToViewport(-100);
+    }
     if (Icon && Icon->GetBrush().GetResourceObject())  // the dragged icon under the cursor, at the slot's on-screen icon size
     {
         UImage* Visual = WidgetTree->ConstructWidget<UImage>();
@@ -371,17 +377,46 @@ void USFSlotWidget::NativeOnDragDetected(const FGeometry& InGeometry, const FPoi
 void USFSlotWidget::NativeOnDragCancelled(const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
 {
     Super::NativeOnDragCancelled(InDragDropEvent, InOperation);
-    const auto* Drag = Cast<USFItemDragOperation>(InOperation);
-    auto* Player = Cast<ASFPlayerController>(GetOwningPlayer());
-    if (Drag && Player && Drag->bFromInventory && !Drag->bFromLoot)
-    {
-        bool bOverWindow = false;
-        for (UUserWidget* Window : Player->GetWindowStack()->GetOrder())
-        { if (Window && Window->GetCachedGeometry().IsUnderLocation(InDragDropEvent.GetScreenSpacePosition())) { bOverWindow = true; break; } }
-        if (!bOverWindow) { if (auto* Loot = USFLootComponent::Find(Player)) { Loot->RequestDrop(Drag->DefinitionId, Drag->Quantity, Drag->InstanceId); } }
-    }
+    // Cancellation (Escape, invalid UI target, focus loss) never debits a bag.
+    if (auto* Drag = Cast<USFItemDragOperation>(InOperation))
+        if (Drag->WorldDropTarget) Drag->WorldDropTarget->Cancel();
     if (DragFromHotbar == INDEX_NONE) { return; }
     if (USFHudHotbarWidget* Bar = GetTypedOuter<USFHudHotbarWidget>()) { Bar->Assign(DragFromHotbar, FString()); }
+}
+
+void USFItemDragOperation::Drop_Implementation(const FPointerEvent& PointerEvent)
+{
+    if (WorldDropTarget) WorldDropTarget->Cancel();
+    Super::Drop_Implementation(PointerEvent);
+}
+void USFItemDragOperation::DragCancelled_Implementation(const FPointerEvent& PointerEvent)
+{
+    if (WorldDropTarget) WorldDropTarget->Cancel();
+    Super::DragCancelled_Implementation(PointerEvent);
+}
+void USFWorldDropTarget::NativeOnInitialized()
+{
+    Super::NativeOnInitialized();
+    auto* Surface = WidgetTree->ConstructWidget<UBorder>();
+    Surface->SetBrushColor(FLinearColor::Transparent);
+    WidgetTree->RootWidget = Surface;
+}
+bool USFWorldDropTarget::NativeOnDrop(const FGeometry& Geometry, const FDragDropEvent& Event, UDragDropOperation* InOperation)
+{
+    auto* Drag = Cast<USFItemDragOperation>(InOperation);
+    auto* Player = Cast<ASFPlayerController>(GetOwningPlayer());
+    if (!Drag || Drag != Operation.Get() || !Drag->bFromInventory || Drag->bFromLoot || Drag->Quantity <= 0 ||
+        Event.GetEffectingButton() != EKeys::LeftMouseButton || Event.IsMouseButtonDown(EKeys::LeftMouseButton) ||
+        !Geometry.IsUnderLocation(Event.GetScreenSpacePosition())) return false;
+    if (Player)
+        for (UUserWidget* Window : Player->GetWindowStack()->GetOrder())
+            if (Window && Window->GetCachedGeometry().IsUnderLocation(Event.GetScreenSpacePosition())) return false;
+    if (auto* Loot = USFLootComponent::Find(Player))
+    {
+        Loot->RequestDrop(Drag->DefinitionId, Drag->Quantity, Drag->InstanceId);
+        Operation.Reset(); RemoveFromParent(); return true;
+    }
+    return false;
 }
 
 void USFSlotWidget::SetKeyText(const FText& Key) { if (KeyLabel) { KeyLabel->SetText(Key); } }

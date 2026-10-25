@@ -226,14 +226,17 @@ try {
         Invoke-WithEnv $serverEnv { $script:server = Start-Owned 'server' $url $serverFlags }
     } else { $server = Start-Owned 'server' $url $serverFlags }
     if ($LootWorkflowNetcheck) {
+        $barrier = Join-Path $root 'loot-driver-complete.barrier'
+        $groundBarrier = Join-Path $root 'loot-observer-ground.barrier'
         foreach ($role in 1..2) {
             $identity = @('alpha','beta')[$role - 1]; $label = @('Driver','Observer')[$role - 1]
-            $null = Start-Owned "client$role" ("127.0.0.1:$Port`?SFDevCharacter=$identity") @('-game','-LootWorkflowNetcheck',"-LootWorkflowRole=$label")
+            $null = Start-Owned "client$role" ("127.0.0.1:$Port`?SFDevCharacter=$identity") @('-game','-LootWorkflowNetcheck',"-LootWorkflowRole=$label",('-LootWorkflowBarrier="'+$barrier+'"'),('-LootWorkflowGroundSeen="'+$groundBarrier+'"'))
         }
         foreach ($role in 1..2) {
             $process = @($owned | Where-Object Id -eq (@($result.runs | Where-Object name -eq "client$role")[0].pid))[0]
-            $pattern = if ($role -eq 1) { 'LOOT_WORKFLOW_DONE NativeShift=1 NativeDrag=1 GroundModel=1 PickupWidget=0 TargetCleared=1' } else { 'LOOT_WORKFLOW_OBSERVER PersonalSources=0 GroundMesh=1' }
+            $pattern = if ($role -eq 1) { 'LOOT_WORKFLOW_DONE NativeShift=1 NativeDrag=1 GroundModel=1 PickupWidget=0 TargetCleared=1' } else { 'LOOT_WORKFLOW_OBSERVER PersonalSources=0 GroundMesh=1 DriverComplete=1' }
             Wait-Log $process "client$role" $pattern 180
+            if ($role -eq 1) { Set-Content -LiteralPath $barrier -Value 'Driver completed native workflow.' }
         }
         $driverView = Get-LedgerView $fx 'ctn_dev_alpha'; $observerView = Get-LedgerView $fx 'ctn_dev_beta'
         if ([int]$driverView.items['item/boar_hide'] -lt 2 -or [int]$driverView.items['item/wolf_pelt'] -lt 1 -or

@@ -18,6 +18,9 @@
 #include "Input/Events.h"
 #include "Misc/CommandLine.h"
 #include "Misc/Parse.h"
+#include "Misc/Paths.h"
+#include "Misc/FileHelper.h"
+#include "UObject/StrongObjectPtr.h"
 
 namespace
 {
@@ -30,6 +33,9 @@ struct FWorkflowState
     FString Item, Instance;
     int32 Quantity = 0, Before = 0;
     bool bSeenCorpse = false;
+    bool bGroundSeen = false, bObserverReported = false, bGroundBarrierWritten = false;
+    double BarrierAt = -1;
+    TStrongObjectPtr<USFItemDragOperation> PendingDrag;
 };
 TMap<TWeakObjectPtr<USFLootComponent>, FWorkflowState> States;
 int32 CountItem(ASFPlayerController* Player, const FString& Id)
@@ -44,11 +50,26 @@ int32 CountItem(ASFPlayerController* Player, const FString& Id)
     }
     return Total;
 }
-FPointerEvent Pointer(bool bShift, const FVector2D& Position = FVector2D(-10000, -10000))
+FPointerEvent Pointer(bool bShift, const FVector2D& Position = FVector2D(1, 1), bool bDown = true)
 {
-    return FPointerEvent(0, Position, Position, TSet<FKey>{EKeys::LeftMouseButton},
+    return FPointerEvent(0, Position, Position, bDown ? TSet<FKey>{EKeys::LeftMouseButton} : TSet<FKey>{},
         EKeys::LeftMouseButton, 0, FModifierKeysState(bShift, false, false, false, false, false, false, false, false));
 }
+}
+
+int32 FSFLootWorkflowNetcheck::FindAuthorizedRow(const TArray<FSFInventoryEntry>& Rows, const TArray<FSFLootEntry>& Items)
+{
+    return Rows.IndexOfByPredicate([&Items](const FSFInventoryEntry& Row)
+    {
+        return Items.ContainsByPredicate([&Row](const FSFLootEntry& Item)
+        { return Item.DefinitionId == Row.DefinitionId && Item.InstanceId == Row.InstanceId && Item.Quantity == Row.Count; });
+    });
+}
+bool FSFLootWorkflowNetcheck::HasPersonalSource(UWorld* World)
+{
+    bool bPersonal = false;
+    for (TActorIterator<ASFLootSourceActor> It(World); It; ++It) bPersonal |= !It->IsGround();
+    return bPersonal;
 }
 
 void FSFLootWorkflowNetcheck::Tick(USFLootComponent& Loot)
@@ -107,13 +128,21 @@ void FSFLootWorkflowNetcheck::Tick(USFLootComponent& Loot)
     }
     if (!Player->IsLocalController()) return;
     FString Role; FParse::Value(FCommandLine::Get(), TEXT("LootWorkflowRole="), Role);
+    FString GroundBarrier; FParse::Value(FCommandLine::Get(), TEXT("LootWorkflowGroundSeen="), GroundBarrier);
     if (Role == TEXT("Observer"))
     {
+        const bool bPersonal = HasPersonalSource(World);
         for (TActorIterator<ASFLootSourceActor> It(World); It; ++It)
+            if (It->IsGround() && It->Mesh->GetStaticMesh()) State.bGroundSeen = true;
+        if (bPersonal) { UE_LOG(LogTemp, Error, TEXT("LOOT_WORKFLOW_FAIL ObserverSawPersonalCorpse")); State.Stage = 99; return; }
+        if (State.bGroundSeen && !State.bGroundBarrierWritten && !GroundBarrier.IsEmpty())
+            State.bGroundBarrierWritten = FFileHelper::SaveStringToFile(TEXT("Observer received the meshed ground source."), *GroundBarrier);
+        FString Barrier; FParse::Value(FCommandLine::Get(), TEXT("LootWorkflowBarrier="), Barrier);
+        if (!Barrier.IsEmpty() && FPaths::FileExists(Barrier) && State.BarrierAt < 0) State.BarrierAt = Now;
+        if (State.bGroundSeen && State.BarrierAt >= 0 && Now >= State.BarrierAt + 1 && !State.bObserverReported)
         {
-            if (!It->IsGround()) { UE_LOG(LogTemp, Error, TEXT("LOOT_WORKFLOW_FAIL ObserverSawPersonalCorpse")); State.Stage = 99; return; }
-            if (It->Mesh->GetStaticMesh())
-            { UE_LOG(LogTemp, Display, TEXT("LOOT_WORKFLOW_OBSERVER PersonalSources=0 GroundMesh=1")); State.Stage = 99; return; }
+            UE_LOG(LogTemp, Display, TEXT("LOOT_WORKFLOW_OBSERVER PersonalSources=0 GroundMesh=1 DriverComplete=1"));
+            State.bObserverReported = true; // Continue monitoring through runner teardown.
         }
         return;
     }
@@ -146,16 +175,19 @@ void FSFLootWorkflowNetcheck::Tick(USFLootComponent& Loot)
     }
     else if (State.Stage == 1 || State.Stage == 3)
     {
+        if (State.Stage == 1 && !State.Source.IsValid() && Loot.ExternalItems.IsEmpty())
+        { Stack->Close(Loot.ExternalWidget); State.Stage = 2; State.NextAt = Now + 1; return; }
         if (!Loot.ExternalWidget || !Player->InventoryWidget || !Stack->IsOpen(Loot.ExternalWidget) || !Stack->IsOpen(Player->InventoryWidget)) return;
         auto* Window = Loot.ExternalWidget.Get();
         // A real NativeTick populates cells from the RPC result, as in normal play.
         if (Window->ShownItems.IsEmpty()) return;
-        int32 Index = 0;
+        int32 Index = FindAuthorizedRow(Window->ShownItems, Loot.ExternalItems);
         if (State.Stage == 3)
         {
             Index = Window->ShownItems.IndexOfByPredicate([](const FSFInventoryEntry& Item) { return Item.DefinitionId == TEXT("item/wolf_pelt"); });
             if (Index == INDEX_NONE) return;
         }
+        if (Index == INDEX_NONE) return;
         const auto Item = Window->ShownItems[Index];
         auto* Cell = Window->GetCell(Index); if (!Cell) return;
         State.Item = Item.DefinitionId; State.Instance = Item.InstanceId; State.Quantity = Item.Count; State.Before = CountItem(Player, State.Item);
@@ -180,7 +212,7 @@ void FSFLootWorkflowNetcheck::Tick(USFLootComponent& Loot)
         if (CountItem(Player, State.Item) != State.Before + State.Quantity) return;
         if (State.Stage == 10)
         {
-            Stack->Close(Loot.ExternalWidget); State.Stage = 2; State.NextAt = Now + 1;
+            State.Stage = 1; // Drain every real rolled row, including bonus recipes.
             UE_LOG(LogTemp, Display, TEXT("LOOT_WORKFLOW_SHIFT_COMMITTED"));
         }
         else
@@ -192,13 +224,30 @@ void FSFLootWorkflowNetcheck::Tick(USFLootComponent& Loot)
             Cell->NativeOnDragDetected(Cell->GetCachedGeometry(), Pointer(false), Operation);
             if (!Operation) return;
             Stack->Close(Loot.ExternalWidget);
-            Cell->NativeOnDragCancelled(FDragDropEvent(Pointer(false), nullptr), Operation);
-            State.Stage = 12;
-            UE_LOG(LogTemp, Display, TEXT("LOOT_WORKFLOW_DROP_REQUEST NativeCancel=1 Item=%s"), *State.Item);
+            State.PendingDrag.Reset(Cast<USFItemDragOperation>(Operation)); State.Stage = 14;
+        }
+    }
+    else if (State.Stage == 14 && State.PendingDrag.IsValid())
+    {
+        auto* Surface = State.PendingDrag->WorldDropTarget.Get(); if (!Surface) return;
+        const FGeometry Geometry = Surface->GetCachedGeometry();
+        if (Geometry.GetLocalSize().X < 100 || Geometry.GetLocalSize().Y < 100) return;
+        for (double X : {.9, .7, .5}) for (double Y : {.4, .6, .2})
+        {
+            const FVector2D Point = Geometry.LocalToAbsolute(FVector2D(Geometry.GetLocalSize()) * FVector2D(X,Y));
+            const auto Release = Pointer(false, Point, false);
+            if (Surface->NativeOnDrop(Geometry, FDragDropEvent(Release, nullptr), State.PendingDrag.Get()))
+            {
+                State.PendingDrag->Drop_Implementation(Release); State.PendingDrag.Reset(); State.Stage = 12;
+                UE_LOG(LogTemp, Display, TEXT("LOOT_WORKFLOW_DROP_REQUEST WorldRelease=1 Item=%s"), *State.Item); return;
+            }
         }
     }
     else if (State.Stage == 12)
     {
+        // Keep the actual replicated ground model alive until the observer has
+        // received it, then continue monitoring privacy through the end barrier.
+        if (GroundBarrier.IsEmpty() || !FPaths::FileExists(GroundBarrier)) return;
         for (TActorIterator<ASFLootSourceActor> It(World); It; ++It)
         {
             if (!It->IsGround() || !It->Mesh->GetStaticMesh() || CountItem(Player, State.Item) != State.Before) continue;

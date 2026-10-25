@@ -262,6 +262,27 @@ public:
     FString DefinitionId, InstanceId;
     int32 Quantity = 0;
     bool bFromLoot = false, bFromInventory = false;
+    virtual void Drop_Implementation(const FPointerEvent& PointerEvent) override;
+    virtual void DragCancelled_Implementation(const FPointerEvent& PointerEvent) override;
+    UPROPERTY(Transient) TObjectPtr<class USFWorldDropTarget> WorldDropTarget;
+};
+
+// Input-only viewport surface behind the HUD/windows, present only during a bag
+// drag. A rejected UI drop keeps its UI hit path and never reaches this sibling.
+UCLASS(Transient)
+class SHATTEREDFRONTIER_API USFWorldDropTarget : public UUserWidget
+{
+    GENERATED_BODY()
+    friend class FSFLootWorkflowNetcheck;
+    friend class FSFLootWorldReleaseTest;
+public:
+    void Configure(USFItemDragOperation* InOperation) { Operation = InOperation; }
+    void Cancel() { Operation.Reset(); RemoveFromParent(); }
+protected:
+    virtual void NativeOnInitialized() override;
+    virtual bool NativeOnDrop(const FGeometry& Geometry, const FDragDropEvent& Event, UDragDropOperation* InOperation) override;
+private:
+    TWeakObjectPtr<USFItemDragOperation> Operation;
 };
 
 // Slot or tile (bag, equipment, hotbar, catalogue; menu slots are WBP_ItemSlot). Binds, all optional: Frame (Border), Icon (Image),
@@ -273,6 +294,7 @@ class SHATTEREDFRONTIER_API USFSlotWidget : public USFSelectableWidget
 {
     GENERATED_BODY()
     friend class FSFLootWorkflowNetcheck;
+    friend class FSFLootWorldReleaseTest;
 public:
     // The one size of every box a player drags an item into or out of (bag grids, paper doll, trade / market / reward slots, the
     // hotbar), in kit art px: windows show art at 0.5, so 72 px on screen; the HUD hotbar is authored at half (also 72 px).

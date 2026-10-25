@@ -48,6 +48,7 @@ class SHATTEREDFRONTIER_API USFInventoryWidget : public USFUiWidget
 {
     GENERATED_BODY()
     friend class FSFLootWorkflowNetcheck;
+    friend class FSFLootWorldReleaseTest;
 public:
     static constexpr int32 GridColumns = 7;
     static constexpr int32 MaxSlots = 64;
