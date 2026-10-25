@@ -216,7 +216,8 @@ def main(args):
         command("up", "-d", "--wait", "--wait-timeout", "60", "database")
         mode = "playable-init" if action == "init" else "playable-verify"
         command("run", "--rm", "--no-deps", "bootstrap", "SchemaMigration.Tool/SchemaMigration.Tool.dll", mode)
-        command("up", "-d", "ledger", "gameplay")
+        # Rejoin the current database namespace even when its container changed.
+        command("up", "-d", "--force-recreate", "ledger", "gameplay")
         for attempt in range(10):
             try:
                 command("run", "--rm", "--no-deps", "probe")
@@ -226,7 +227,7 @@ def main(args):
                     raise
                 time.sleep(2)
         if p["mode"] == "lan-development":
-            command("--profile", "game", "up", "-d", "--wait", "--wait-timeout", "120", "game")
+            command("--profile", "game", "up", "-d", "--force-recreate", "--wait", "--wait-timeout", "120", "game")
         print("PLAYABLE_RUNTIME_STARTED mode=" + p["mode"] + "; remote gameplay acceptance still required")
     elif action == "verify":
         command("run", "--rm", "--no-deps", "bootstrap")
