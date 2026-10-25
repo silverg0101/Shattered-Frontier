@@ -3023,6 +3023,13 @@ def check():
     assert p["turn"] == -90 and (L["b0"], L["b2"], L["b4"], L["b8"], L["hl_hip"], L["fr_paw"]) ==         ("pelvis", "spine_03", "head", "tail_01", "HL_01", "FR_04"), (p["turn"], L)
     assert (L["hr_hip"], L["hr_paw"], L["b3"], L["b9"], L["fr_clav"], L["fr_hip"]) ==         ("HR_01", "HR_04", "neck", "tail_04", "spine_03", "FR_01"), L
     assert rs.plan([{k: v for k, v in b.items() if k != "weight"} for b in rb], 1.0)["turn"] == 90  # unweighed: the higher end
+    # a head bone stopping short of the skin it carries (SkinTokens: a stub at the chest skinned to the whole head) is
+    # laid along that skin, back to front; a head bone that spans its skin stays
+    sk = [b | {"skin": [[0.4, -0.05, 0.4], [0.8, 0.05, 0.5], [0.6, 0.0, 0.45]]} if b["name"] == "b4" else b for b in rb]
+    hb = rs.plan(sk, 1.0)["bones"]["head"]
+    assert max(abs(a - b) for a, b in zip(hb["head"] + hb["tail"], [0, -0.4, 0.45, 0, -0.8, 0.45])) < 1e-6, hb
+    sk = [b | {"skin": [[0.36, -0.05, 0.38], [0.47, 0.05, 0.5], [0.41, 0.0, 0.44]]} if b["name"] == "b4" else b for b in rb]
+    assert rs.plan(sk, 1.0)["bones"]["head"] == p["bones"]["head"]
     # floaters: a triangle 0.2 off a two-triangle body (split along a seam) goes; one 0.01 off (an eye) stays
     body = [(0, 0, 0), (1, 0, 0), (0, 1, 0), (1, 0, 0), (0, 1, 0), (1, 1, 0)]
     co = body + [(0, 0, 0.01), (0.1, 0, 0.01), (0, 0.1, 0.01)] + [(2.2, 0, 0), (2.3, 0, 0), (2.2, 0.1, 0)]

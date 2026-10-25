@@ -195,6 +195,14 @@ def plan_turned(bones, h, turn, floor=None):
             pts = [a + np.array([0, 0.1 * h * i / 6, 0]) for i in range(7)]
         else:
             pts = layout(gs, head, tail, h)
+        skin = next((b["skin"] for b in bones if b["name"] == neck_head[-1] and "skin" in b), None)
+        if c == "axial" and skin:  # a head bone stopping short of the head it carries: along its skin instead
+            lo, hi, cen = (R @ np.asarray(v, float) for v in skin)
+            front, back = min(lo[1], hi[1]), max(lo[1], hi[1])  # facing -Y
+            if pts[-1][1] > front + 0.5 * (back - front):
+                pts[-2] = np.array([cen[0], min(pts[-2][1], back), cen[2]])
+                pts[-1] = np.array([cen[0], front, cen[2]])
+                warnings.append("head: the rig's head bone stopped short of the head; laid along its skin")
         if floor is not None:
             pts = [np.array([p[0], p[1], max(p[2], floor)]) for p in pts]
         for i, g in enumerate(gs):
@@ -268,14 +276,18 @@ def load(model):
     arm = rv.load(model)
     lo, hi = rv.bounds(arm)
     mw = arm.matrix_world
-    w = {}
+    w, pts = {}, {}
     for o in limbs.skinned(arm):
         gname = {g.index: g.name for g in o.vertex_groups}
         for v in o.data.vertices:
             for g in v.groups:
                 w[gname[g.group]] = w.get(gname[g.group], 0) + g.weight
+            if v.groups:  # the vertices each bone carries most of, for skin_box
+                pts.setdefault(gname[max(v.groups, key=lambda g: g.weight).group], []).append(o.matrix_world @ v.co)
+    box = lambda p: [np.percentile(p, 2, 0).tolist(), np.percentile(p, 98, 0).tolist(), np.mean(p, 0).tolist()]
     bones = [{"name": b.name, "parent": b.parent.name if b.parent else None, "weight": w.get(b.name, 0.0),
-              "head": list(mw @ b.head_local), "tail": list(mw @ b.tail_local)} for b in arm.data.bones]
+              "head": list(mw @ b.head_local), "tail": list(mw @ b.tail_local)}
+             | ({"skin": box(np.array(pts[b.name]))} if len(pts.get(b.name, ())) >= 20 else {}) for b in arm.data.bones]
     return arm, bones, hi.z - lo.z
 
 
