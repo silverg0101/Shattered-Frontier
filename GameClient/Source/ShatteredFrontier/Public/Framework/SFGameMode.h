@@ -215,6 +215,8 @@ private:
     bool bReconnectDeathTriggered = false;
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     void TickGreenlandsDeathNetcheck();
+    void TickGreenlandsArcherNetcheck();
+    bool bGreenlandsArcherPositioned = false;
     int32 GreenlandsDeathStage = 0;
     double GreenlandsDeathNextHitAt = 0;
     TWeakObjectPtr<ASFPilotBoar> GreenlandsDeathBoar;

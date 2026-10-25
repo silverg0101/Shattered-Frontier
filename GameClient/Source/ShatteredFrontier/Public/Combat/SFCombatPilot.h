@@ -13,6 +13,9 @@ namespace SFCombatPilotRules
 {
     SHATTEREDFRONTIER_API bool CanMelee(double DistanceCm, double FacingDot, double Now,
         double NextAllowed, double RangeCm);
+    SHATTEREDFRONTIER_API bool CanRanged(double DistanceCm, double RangeCm);
+    SHATTEREDFRONTIER_API bool HasRangedLineOfSight(UWorld* World, const AActor* Source,
+        const AActor* Target, const FVector& Start, const FVector& End);
     SHATTEREDFRONTIER_API int32 RemainingHealth(int32 Current, int32 Damage);
     /** AI NPC Behavior §8.2: returning creatures travel at 1.5 times pursuit speed. */
     constexpr double EvadeReturnSpeedCmPerSecond(double ChaseMetresPerSecond)
@@ -159,6 +162,14 @@ public:
     float BoarMeleeCooldownSeconds = 1.6f;
     UPROPERTY(Config, EditAnywhere, Category="Pilot Balance", meta=(ClampMin="1.0", ClampMax="5.0", Units="m"))
     float MeleeRangeMetres = 2.8f;
+    UPROPERTY(Config, EditAnywhere, Category="Pilot Archer", meta=(ClampMin="5.0", ClampMax="30.0", Units="m", ToolTip="Maximum server-authoritative archer shot range; adopted at next zone start."))
+    float ArcherRangeMetres = 30.0f;
+    UPROPERTY(Config, EditAnywhere, Category="Pilot Archer", meta=(ClampMin="2.0", ClampMax="15.0", Units="m", ToolTip="Archer retreats inside this distance when territory and leash permit; adopted at next zone start."))
+    float ArcherRetreatRangeMetres = 6.0f;
+    UPROPERTY(Config, EditAnywhere, Category="Pilot Archer", meta=(ClampMin="3.0", ClampMax="20.0", Units="m", ToolTip="Archer stops advancing at this distance; adopted at next zone start."))
+    float ArcherPreferredRangeMetres = 10.0f;
+    UPROPERTY(Config, EditAnywhere, Category="Pilot Archer", meta=(ClampMin="1.0", ClampMax="4.0", Units="s", ToolTip="Bandit archer bow auto-attack interval; adopted at next zone start."))
+    float ArcherSwingSeconds = 2.8f;
     UPROPERTY(Config, EditAnywhere, Category="Pilot Targeting", meta=(ClampMin="10", ClampMax="60", Units="m"))
     float TabTargetRangeMetres = 30.0f;
     UPROPERTY(Config, EditAnywhere, Category="Pilot Targeting", meta=(ClampMin="10", ClampMax="100", Units="m"))
@@ -277,6 +288,8 @@ public:
     ASFE1Character* ThreatTarget() const { return ReplicatedTarget; }
     bool HasThreatFor(const ASFE1Character* Character) const;
     bool ReceivePackAssist(ASFE1Character* Character, const FString& CharacterId);
+    bool IsRangedArcher() const { return CreatureId == TEXT("npc/bandit_archer"); }
+    UFUNCTION(NetMulticast, Unreliable) void MulticastArcherTracer(FVector_NetQuantize Start, FVector_NetQuantize End);
 private:
     UFUNCTION() void OnRep_Health();
     UFUNCTION() void OnRep_CreatureId();

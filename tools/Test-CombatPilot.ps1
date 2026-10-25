@@ -6,6 +6,7 @@ param(
     [ValidateRange(1,10)][int]$Clients = 1,
     [ValidatePattern('^/Game/Frontier/[A-Za-z0-9_/]+$')][string]$Map = '/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook',
     [switch]$GreenlandsDeathNetcheck,
+    [switch]$GreenlandsArcherNetcheck,
     [switch]$GreenlandsUnstuckNetcheck,
     [switch]$AttributeSnapshotNetcheck,
     [switch]$GreenlandsAbilityNetcheck,
@@ -25,6 +26,12 @@ $project = Join-Path $repo 'GameClient\ShatteredFrontier.uproject'
 $bridge = Join-Path $repo 'BackendServices\WorldContent.Tool\bin\Debug\net10.0\WorldContent.Tool.dll'
 $sdk = Join-Path $repo 'Artifacts\Persistence\Toolchains\dotnet-10.0.402\dotnet.exe'
 if ($Services -and $TargetScenario) { throw 'Services ledger assertion requires the combat reward scenario.' }
+if ($GreenlandsArcherNetcheck -and (-not $Services -or $Clients -ne 2 -or
+    $Map -ne '/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook' -or
+    $GreenlandsDeathNetcheck -or $GreenlandsUnstuckNetcheck -or $AttributeSnapshotNetcheck -or $GreenlandsAbilityNetcheck -or
+    $PartyScenario -or $PartyXpScenario -or $SpawnOnly)) {
+    throw 'GreenlandsArcherNetcheck requires Silverbrook, two clients and Gameplay Services.'
+}
 if ($AttributeSnapshotNetcheck -and (-not $Services -or $Clients -ne 2 -or
     $Map -ne '/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook' -or
     $GreenlandsDeathNetcheck -or $GreenlandsUnstuckNetcheck -or $PartyXpScenario -or $PartyScenario -or $SpawnOnly)) {
@@ -62,6 +69,7 @@ $fx = @{}
 $owned = [Collections.Generic.List[Diagnostics.Process]]::new()
 $scope = if ($GreenlandsAbilityNetcheck) { 'Greenlands two-client Weapon and ward activation' }
     elseif ($AttributeSnapshotNetcheck) { 'Greenlands two-client authoritative attribute restore and combat' }
+    elseif ($GreenlandsArcherNetcheck) { 'Greenlands two-client bandit archer ranged hit and replicated tracer' }
     elseif ($GreenlandsUnstuckNetcheck) { 'Greenlands two-client Unstuck, token replay, and restart cooldown' }
     elseif ($GreenlandsDeathNetcheck) { "Greenlands two-client durable boar death and $DeathResolution" }
     elseif ($PartyXpScenario) { 'Three-client party: server restart, two in-range personal loot and XP recipients, out-of-range exclusion' }
@@ -176,7 +184,7 @@ try {
         }
     }
     $url = $result.map
-    $scenarioArg = if ($GreenlandsAbilityNetcheck) { '-GreenlandsAbilityNetcheck' } elseif ($GreenlandsUnstuckNetcheck) { '-GreenlandsUnstuckNetcheck' } elseif ($GreenlandsDeathNetcheck) { '-GreenlandsDeathNetcheck' } elseif ($PartyScenario) { '-PartyScenario' } elseif ($Clients -gt 1) { '-CombatGroupScenario' } elseif ($TargetScenario) { '-CombatTargetScenario' } else { '-CombatPilotScenario' }
+    $scenarioArg = if ($GreenlandsArcherNetcheck) { '-GreenlandsArcherNetcheck' } elseif ($GreenlandsAbilityNetcheck) { '-GreenlandsAbilityNetcheck' } elseif ($GreenlandsUnstuckNetcheck) { '-GreenlandsUnstuckNetcheck' } elseif ($GreenlandsDeathNetcheck) { '-GreenlandsDeathNetcheck' } elseif ($PartyScenario) { '-PartyScenario' } elseif ($Clients -gt 1) { '-CombatGroupScenario' } elseif ($TargetScenario) { '-CombatTargetScenario' } else { '-CombatPilotScenario' }
     $serverFlags = @('-server',('-port='+$Port),'-multihome=127.0.0.1',$scenarioArg)
     if ($GreenlandsDeathNetcheck) { $serverFlags += "-DeathResolution=$DeathResolution" }
     if ($PartyScenario) { $serverFlags += '-SFDevIdentity' }
@@ -195,6 +203,21 @@ try {
         $serverEnv = @{ SF_INVENTORY_LEDGER_TOKEN=$fx.token; SF_GAMEPLAY_TOKEN=$gameplayToken }
         Invoke-WithEnv $serverEnv { $script:server = Start-Owned 'server' $url $serverFlags }
     } else { $server = Start-Owned 'server' $url $serverFlags }
+    if ($GreenlandsArcherNetcheck) {
+        foreach ($role in 1..2) {
+            $identity = @('alpha','beta')[$role - 1]
+            $null = Start-Owned "client$role" ("127.0.0.1:$Port`?SFDevCharacter=$identity") @('-game','-GreenlandsArcherNetcheck')
+        }
+        Wait-Log $server 'server' 'ARCHER_NETCHECK_READY Creature=npc/bandit_archer DistanceCm=\d+ Clients=2' 120
+        Wait-Log $server 'server' 'ARCHER_RANGED_SHOT Creature=npc/bandit_archer DistanceCm=\d+' 90
+        Wait-Log $server 'server' 'COMBAT_PILOT_PLAYER_HIT HP=\d+ By=SFPilotBoar' 90
+        foreach ($role in 1..2) {
+            $process = @($owned | Where-Object { $_.Id -eq (@($result.runs | Where-Object name -eq "client$role")[0].pid) })[0]
+            Wait-Log $process "client$role" 'ARCHER_TRACER_RECEIVED Creature=npc/bandit_archer' 90
+        }
+        $result.status='Passed'
+        return
+    }
     if ($PartyXpScenario -and $Clients -eq 2) {
         Wait-Log $server 'server' 'COMBAT_SANDBOX_READY Map=/Game/Frontier/Maps/Sandbox/SB_PersonalLoot Boars=2'
         foreach ($role in 1..2) {

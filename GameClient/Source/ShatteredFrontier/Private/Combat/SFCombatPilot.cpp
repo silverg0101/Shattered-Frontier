@@ -34,6 +34,7 @@
 #include "Misc/PackageName.h"
 #include "Misc/Parse.h"
 #include "Net/UnrealNetwork.h"
+#include "DrawDebugHelpers.h"
 #include "Serialization/JsonReader.h"
 #include "Serialization/JsonSerializer.h"
 #include "TimerManager.h"
@@ -94,6 +95,21 @@ bool SFCombatPilotRules::CanMelee(double DistanceCm, double FacingDot, double No
 {
     return FMath::IsFinite(DistanceCm) && FMath::IsFinite(FacingDot) &&
         DistanceCm <= RangeCm && FacingDot >= 0.35 && Now >= NextAllowed;
+}
+
+bool SFCombatPilotRules::CanRanged(double DistanceCm, double RangeCm)
+{
+    return FMath::IsFinite(DistanceCm) && DistanceCm >= 0.0 && DistanceCm <= RangeCm;
+}
+
+bool SFCombatPilotRules::HasRangedLineOfSight(UWorld* World, const AActor* Source,
+    const AActor* Target, const FVector& Start, const FVector& End)
+{
+    if (!World || !IsValid(Source) || !IsValid(Target)) return false;
+    FCollisionQueryParams Query(SCENE_QUERY_STAT(CombatPilotRanged), false);
+    Query.AddIgnoredActor(Source);
+    Query.AddIgnoredActor(Target);
+    return !World->LineTraceTestByChannel(Start, End, ECC_Visibility, Query);
 }
 
 int32 SFCombatPilotRules::RemainingHealth(int32 Current, int32 Damage)
@@ -261,6 +277,11 @@ bool USFCombatPilotSettings::Validate(FString& Error) const
         !FMath::IsWithinInclusive(PlayerMeleeCooldownSeconds, 0.3f, 5.0f) ||
         !FMath::IsWithinInclusive(BoarMeleeCooldownSeconds, 0.5f, 5.0f) ||
         !FMath::IsWithinInclusive(MeleeRangeMetres, 1.0f, 5.0f) ||
+        !FMath::IsWithinInclusive(ArcherRangeMetres, 5.0f, 30.0f) ||
+        !FMath::IsWithinInclusive(ArcherRetreatRangeMetres, 2.0f, 15.0f) ||
+        !FMath::IsWithinInclusive(ArcherPreferredRangeMetres, ArcherRetreatRangeMetres, 20.0f) ||
+        ArcherPreferredRangeMetres >= ArcherRangeMetres ||
+        !FMath::IsWithinInclusive(ArcherSwingSeconds, 1.0f, 4.0f) ||
         !FMath::IsWithinInclusive(TabTargetRangeMetres, 10.0f, 60.0f) ||
         !FMath::IsWithinInclusive(TabTargetDropRangeMetres, TabTargetRangeMetres, 100.0f) ||
         !FMath::IsWithinInclusive(TabTargetConeDegrees, 60.0f, 360.0f) ||
@@ -456,6 +477,15 @@ void ASFPilotBoar::OnRep_Health()
 }
 
 void ASFPilotBoar::OnRep_CreatureId() { OnRep_Health(); }
+
+void ASFPilotBoar::MulticastArcherTracer_Implementation(FVector_NetQuantize Start, FVector_NetQuantize End)
+{
+    DrawDebugLine(GetWorld(), Start, End, FColor(255, 205, 90), false, 0.22f, 0, 2.0f);
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    if (GetNetMode() == NM_Client && FParse::Param(FCommandLine::Get(), TEXT("GreenlandsArcherNetcheck")))
+    { UE_LOG(LogTemp, Display, TEXT("ARCHER_TRACER_RECEIVED Creature=%s"), *CreatureId); }
+#endif
+}
 
 void ASFPilotBoar::ReceivePilotDodge(ASFE1Character* Attacker)
 {
@@ -698,10 +728,37 @@ void ASFPilotBoar::Tick(float DeltaSeconds)
     float Speed = Mode->CombatSettings()->BoarWanderSpeedMetresPerSecond*100;
     if (Victim)
     {
-        Destination = Victim->GetActorLocation(); Speed = Mode->CombatSettings()->BoarChaseSpeedMetresPerSecond*100;
-        if (FVector::Dist2D(GetActorLocation(), Destination) <= Mode->CombatSettings()->MeleeRangeMetres * 100 && Now >= NextSwingAt)
-        { NextSwingAt = Now + (SFCombatPart6::Active(GetWorld()) ? CombatSwingSecondsValue : Mode->CombatSettings()->BoarMeleeCooldownSeconds);
-          Mode->TryBoarAttack(this, Victim); LastDamageAt = Now; UnreachableSince = -1; }
+        const USFCombatPilotSettings* Settings = Mode->CombatSettings();
+        Destination = Victim->GetActorLocation(); Speed = Settings->BoarChaseSpeedMetresPerSecond*100;
+        const double Distance = FVector::Dist2D(GetActorLocation(), Destination);
+        const bool bRanged = IsRangedArcher();
+        const FVector ShotStart = GetActorLocation() + FVector(0, 0, 80);
+        const FVector ShotEnd = Victim->GetActorLocation() + FVector(0, 0, 60);
+        const bool bClearShot = bRanged && SFCombatPilotRules::HasRangedLineOfSight(
+            GetWorld(), this, Victim, ShotStart, ShotEnd);
+        if (bRanged && bClearShot)
+        {
+            const FVector Away = (GetActorLocation() - Destination).GetSafeNormal2D();
+            if (Distance < Settings->ArcherRetreatRangeMetres * 100.0 && !Away.IsNearlyZero())
+            {
+                const FVector Retreat = GetActorLocation() + Away *
+                    (Settings->ArcherPreferredRangeMetres * 100.0 - Distance);
+                if (Mode->IsInsideTerritory(Retreat, Territory) && !Mode->IsSafe(Retreat) &&
+                    FVector::Dist2D(Anchor, Retreat) <= Settings->BoarLeashRadiusMetres * 100.0)
+                { Destination = Retreat; }
+                else { Destination = GetActorLocation(); }
+            }
+            else if (Distance <= Settings->ArcherPreferredRangeMetres * 100.0)
+            { Destination = GetActorLocation(); }
+        }
+        const double AttackRange = bRanged ? Settings->ArcherRangeMetres : Settings->MeleeRangeMetres;
+        if (Distance <= AttackRange * 100.0 && (!bRanged || bClearShot) && Now >= NextSwingAt)
+        {
+            NextSwingAt = Now + (bRanged ? Settings->ArcherSwingSeconds :
+                (SFCombatPart6::Active(GetWorld()) ? CombatSwingSecondsValue : Settings->BoarMeleeCooldownSeconds));
+            if (bRanged) { SetActorRotation((Victim->GetActorLocation() - GetActorLocation()).Rotation()); }
+            Mode->TryBoarAttack(this, Victim); LastDamageAt = Now; UnreachableSince = -1;
+        }
     }
     else if (bReturning)
     { Destination = Anchor; Speed = SFCombatPilotRules::EvadeReturnSpeedCmPerSecond(
@@ -731,8 +788,13 @@ void ASFPilotBoar::Tick(float DeltaSeconds)
     SetActorLocation(Ground, !bReturning);
     if (Victim && !bReturning)
     {
-        const bool bBlocked = FVector::Dist2D(BeforeMove, GetActorLocation()) < 1.0 &&
-            FVector::Dist2D(GetActorLocation(), Victim->GetActorLocation()) > Mode->CombatSettings()->MeleeRangeMetres * 100;
+        const double Distance = FVector::Dist2D(GetActorLocation(), Victim->GetActorLocation());
+        const bool bOutOfReach = IsRangedArcher() ?
+            (Distance > Mode->CombatSettings()->ArcherRangeMetres * 100.0 ||
+                !SFCombatPilotRules::HasRangedLineOfSight(GetWorld(), this, Victim,
+                    GetActorLocation() + FVector(0, 0, 80), Victim->GetActorLocation() + FVector(0, 0, 60))) :
+            Distance > Mode->CombatSettings()->MeleeRangeMetres * 100.0;
+        const bool bBlocked = FVector::Dist2D(BeforeMove, GetActorLocation()) < 1.0 && bOutOfReach;
         if (bBlocked) { if (UnreachableSince < 0) { UnreachableSince = Now; } }
         else { UnreachableSince = -1; }
     }
@@ -1139,6 +1201,7 @@ void ASFGameMode::TickCombat()
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     if (FParse::Param(FCommandLine::Get(), TEXT("GreenlandsBoarNetcheck"))) { TickGreenlandsNetcheck(); }
     if (FParse::Param(FCommandLine::Get(), TEXT("GreenlandsDeathNetcheck"))) { TickGreenlandsDeathNetcheck(); }
+    if (FParse::Param(FCommandLine::Get(), TEXT("GreenlandsArcherNetcheck"))) { TickGreenlandsArcherNetcheck(); }
     if (FParse::Param(FCommandLine::Get(), TEXT("GreenlandsEnergyNetcheck"))) { TickGreenlandsEnergyNetcheck(); }
     if (FParse::Param(FCommandLine::Get(), TEXT("GreenlandsAbilityNetcheck"))) { TickGreenlandsAbilityNetcheck(); }
 #endif
@@ -1210,6 +1273,46 @@ void ASFGameMode::TickGreenlandsAbilityNetcheck()
         GreenlandsAbilityStage = 3;
         UE_LOG(LogTemp, Display, TEXT("ABILITY_NETCHECK_PASS Absorbed=%.2f Remaining=%.2f DriverHP=%d ObserverHP=%d"),
             Before - Driver->CombatAbsorb(), Driver->CombatAbsorb(), Driver->CombatHealth(), Observer->CombatHealth());
+    }
+}
+
+void ASFGameMode::TickGreenlandsArcherNetcheck()
+{
+    if (bGreenlandsArcherPositioned) return;
+    ASFE1Character* Driver = nullptr;
+    ASFE1Character* Observer = nullptr;
+    for (auto It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+    {
+        if (ThreatIdentity(It->Get()) == TEXT("chr_dev_alpha")) { Driver = Cast<ASFE1Character>(It->Get()->GetPawn()); }
+        if (ThreatIdentity(It->Get()) == TEXT("chr_dev_beta")) { Observer = Cast<ASFE1Character>(It->Get()->GetPawn()); }
+    }
+    if (!Driver || !Observer || USFCharacterSessionComponent::IsRestoring(Driver->GetController()) ||
+        USFCharacterSessionComponent::IsRestoring(Observer->GetController())) return;
+    for (const auto& Slot : ActiveBoars)
+    {
+        ASFPilotBoar* Archer = Slot.Value.Get();
+        if (!IsValid(Archer) || !Archer->IsRangedArcher() || Archer->Health() <= 0) continue;
+        const FVector Origin = Archer->GetActorLocation();
+        for (int32 DirectionIndex = 0; DirectionIndex < 8; ++DirectionIndex)
+        {
+            const double Angle = 2.0 * PI * DirectionIndex / 8.0;
+            const FVector Offset(1200.0 * FMath::Cos(Angle), 1200.0 * FMath::Sin(Angle), 0);
+            const FVector Place = Grounded(GetWorld(), Origin + Offset,
+                Driver->GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
+            if (!IsInsideTerritory(Place, Groups[Archer->GroupId()].Polygon) || IsSafe(Place) ||
+                !SFCombatPilotRules::HasRangedLineOfSight(GetWorld(), Archer, Driver,
+                    Origin + FVector(0, 0, 80), Place + FVector(0, 0, 60))) continue;
+            Driver->SetActorLocation(Place, false, nullptr, ETeleportType::TeleportPhysics);
+            Observer->SetActorLocation(Grounded(GetWorld(), Place + FVector(0, 150, 0),
+                Observer->GetCapsuleComponent()->GetScaledCapsuleHalfHeight()), false, nullptr, ETeleportType::TeleportPhysics);
+            Driver->CombatSetHealth(1000);
+            Observer->CombatSetHealth(1000);
+            if (!Archer->ReceivePackAssist(Driver, TEXT("chr_dev_alpha"))) continue;
+            bGreenlandsArcherPositioned = true;
+            UE_LOG(LogTemp, Display, TEXT("ARCHER_NETCHECK_READY Creature=%s DistanceCm=%.0f Clients=2"),
+                *Archer->GetCreatureId(), FVector::Dist2D(Origin, Place));
+            return;
+        }
     }
 }
 
@@ -1996,7 +2099,17 @@ void ASFGameMode::TryBoarAttack(ASFPilotBoar* Boar, ASFE1Character* Victim)
     if (!bPilotActive || !CapturedSettings->bCombatAvailable || !IsValid(Boar) || !IsValid(Victim) ||
         Boar->Health() <= 0 || Victim->CombatHealth() <= 0 || IsSafe(Boar->GetActorLocation()) ||
         IsSafe(Victim->GetActorLocation()) ||
-        FVector::Dist2D(Boar->GetActorLocation(), Victim->GetActorLocation()) > CapturedSettings->MeleeRangeMetres*100) return;
+        !SFCombatPilotRules::CanRanged(FVector::Dist2D(Boar->GetActorLocation(), Victim->GetActorLocation()),
+            (Boar->IsRangedArcher() ? CapturedSettings->ArcherRangeMetres : CapturedSettings->MeleeRangeMetres) * 100.0)) return;
+    if (Boar->IsRangedArcher())
+    {
+        const FVector Start = Boar->GetActorLocation() + FVector(0, 0, 80);
+        const FVector End = Victim->GetActorLocation() + FVector(0, 0, 60);
+        if (!SFCombatPilotRules::HasRangedLineOfSight(GetWorld(), Boar, Victim, Start, End)) return;
+        Boar->MulticastArcherTracer(Start, End);
+        UE_LOG(LogTemp, Display, TEXT("ARCHER_RANGED_SHOT Creature=%s DistanceCm=%.0f"),
+            *Boar->GetCreatureId(), FVector::Dist2D(Boar->GetActorLocation(), Victim->GetActorLocation()));
+    }
     SFCombatResolution::FAttack Attack;
     const bool bPart6 = SFCombatPart6::Active(GetWorld());
     if (bPart6)
@@ -2026,6 +2139,10 @@ void ASFGameMode::TryBoarAttack(ASFPilotBoar* Boar, ASFE1Character* Victim)
     else { Attack.RawDamage = CapturedSettings->BoarMeleeDamage; }
     Attack.bFrontArc = SFBoarDodgeRules::IsInFrontArc(Victim->GetActorForwardVector(),
         Boar->GetActorLocation() - Victim->GetActorLocation(), CapturedSettings->FrontArcDegrees);
+    // The physical avoidance stages stay active for ranged attacks. Starter gear currently
+    // supplies no player dodge/parry rating, so their chances remain zero until ratings ship.
+    Attack.bCanDodge = Attack.bFrontArc;
+    Attack.bCanParry = Attack.bFrontArc;
     if (!bPart6) { Attack.PilotFlatArmor = SFGear::Equipped(Victim->GetController()).Armor; }
     const auto Result = ResolveCombatAttack(Boar, Attack);
     if (Result.Absorbed > 0) { Victim->ConsumeCombatAbsorb(Result.Absorbed); }

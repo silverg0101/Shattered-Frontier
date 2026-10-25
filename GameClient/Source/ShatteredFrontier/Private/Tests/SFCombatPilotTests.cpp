@@ -11,6 +11,61 @@
 #include "Misc/AutomationTest.h"
 #include "Tests/AutomationCommon.h"
 #include "Engine/World.h"
+#include "Components/BoxComponent.h"
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFArcherRangedAttackTest,
+    "ShatteredFrontier.Combat.Pilot.ArcherRangedAttack",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+
+bool FSFArcherRangedAttackTest::RunTest(const FString& Parameters)
+{
+    const auto* Tune = GetDefault<USFCombatPilotSettings>();
+    TestTrue(TEXT("In-range archer shot admitted"), SFCombatPilotRules::CanRanged(1500, Tune->ArcherRangeMetres * 100));
+    TestFalse(TEXT("Out-of-range archer shot refused"), SFCombatPilotRules::CanRanged(3100, Tune->ArcherRangeMetres * 100));
+    FTestWorldWrapper Fixture;
+    if (!Fixture.CreateTestWorld(EWorldType::GameRPC) || !Fixture.BeginPlayInTestWorld()) return false;
+    UWorld* World = Fixture.GetTestWorld();
+    AActor* Archer = World->SpawnActor<AActor>();
+    AActor* Victim = World->SpawnActor<AActor>();
+    AActor* Wall = World->SpawnActor<AActor>();
+    if (!Archer || !Victim || !Wall) return false;
+    UBoxComponent* Box = NewObject<UBoxComponent>(Wall);
+    Wall->SetRootComponent(Box);
+    Box->SetBoxExtent(FVector(50, 150, 150));
+    Box->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+    Box->SetCollisionObjectType(ECC_WorldStatic);
+    Box->SetCollisionResponseToAllChannels(ECR_Ignore);
+    Box->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
+    Box->RegisterComponent();
+    const FVector Start(0, 0, 80), End(1500, 0, 60);
+    Wall->SetActorLocation(FVector(750, 500, 70));
+    TestTrue(TEXT("Clear archer shot has LOS"), SFCombatPilotRules::HasRangedLineOfSight(World, Archer, Victim, Start, End));
+    Wall->SetActorLocation(FVector(750, 0, 70));
+    TestFalse(TEXT("World geometry blocks archer shot"), SFCombatPilotRules::HasRangedLineOfSight(World, Archer, Victim, Start, End));
+    Wall->SetActorLocation(FVector(750, 500, 70));
+
+    SFCombatResolution::FAttack Attack;
+    Attack.RawDamage = 100;
+    Attack.AttackerLevel = 5;
+    Attack.bHasArmorSnapshot = true;
+    Attack.ArmorKLevel = Tune->ArmorKLevel;
+    Attack.ArmorReductionCap = Tune->ArmorReductionCap;
+    SFCombatResolution::FDraws Draws{.5, .5, .5, .5, .5};
+    const int32 Unarmored = SFCombatResolution::Resolve(Attack, Draws).Damage;
+    TestTrue(TEXT("In-range clear shot resolves a hit"),
+        SFCombatPilotRules::CanRanged(1500, Tune->ArcherRangeMetres * 100) &&
+        SFCombatPilotRules::HasRangedLineOfSight(World, Archer, Victim, Start, End) && Unarmored > 0);
+    Attack.Armor = 300;
+    const int32 Armored = SFCombatResolution::Resolve(Attack, Draws).Damage;
+    TestTrue(TEXT("Ranged physical FAttack applies defender armor"), Armored > 0 && Armored < Unarmored);
+    Attack.bFrontArc = true;
+    Attack.bCanDodge = true;
+    Attack.DodgeChance = .25;
+    Draws.Avoid = .1;
+    TestEqual(TEXT("Ranged physical FAttack can dodge before mitigation"),
+        SFCombatResolution::Resolve(Attack, Draws).Outcome, SFCombatResolution::EOutcome::Dodge);
+    return true;
+}
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFHostileDefinitionsTest,
     "ShatteredFrontier.Combat.Pilot.HostileDefinitions",
