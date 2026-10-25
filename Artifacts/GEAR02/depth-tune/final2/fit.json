@@ -1,0 +1,42 @@
+{
+  "front": {
+    "proxy_contained": false,
+    "proxy_coverage": 0.9713,
+    "uncovered_proxy_px": 10705,
+    "mean_outline_gap_cm": 6.76,
+    "near_zero_trace_fraction": 0.003,
+    "tracing_flag": false,
+    "opening_background_px": 0,
+    "top": 82,
+    "bottom": 887,
+    "height": 806
+  },
+  "left": {
+    "proxy_contained": false,
+    "proxy_coverage": 0.9455,
+    "uncovered_proxy_px": 17054,
+    "mean_outline_gap_cm": 5.99,
+    "near_zero_trace_fraction": 0.003,
+    "tracing_flag": false,
+    "opening_background_px": 6,
+    "top": 97,
+    "bottom": 913,
+    "height": 817
+  },
+  "right": {
+    "proxy_contained": false,
+    "proxy_coverage": 0.9455,
+    "uncovered_proxy_px": 17054,
+    "mean_outline_gap_cm": 5.99,
+    "near_zero_trace_fraction": 0.003,
+    "tracing_flag": false,
+    "opening_background_px": 6,
+    "top": 97,
+    "bottom": 913,
+    "height": 817
+  },
+  "cross_view_height_spread": 0.014,
+  "clearance_cm": 1.5,
+  "mirrored_side_silhouette_iou": 1.0,
+  "passes": false
+}

@@ -1,0 +1,14 @@
+{
+  "source_commit": "1f2a058f",
+  "generator": "tools/Gen-GarmentViewsDepth.py",
+  "host": "RA-SIEMS ComfyUI GPU 1",
+  "model": "Qwen-Image 2.1 + Fun ControlNet Union",
+  "prompt": "Early-medieval Anglo-Saxon undyed walnut-brown coarse twill wool hood with a short symmetrical shoulder cape. One simple continuous garment, no seams that imply a second hood.",
+  "seed": 12345,
+  "cfg": 3.0,
+  "steps": 25,
+  "strength": 0.6,
+  "end_percent": 0.6,
+  "views": "front and left generated; right mirrored from left",
+  "note": "No 3D job. Fit passes=false because proxy containment remains below 100%."
+}

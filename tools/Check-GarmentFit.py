@@ -12,6 +12,7 @@ import os
 import numpy as np
 from PIL import Image, ImageDraw
 from scipy import ndimage as ndi
+from garment_view_metrics import opening_background_px
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ap = argparse.ArgumentParser()
@@ -25,12 +26,14 @@ meta = json.load(open(os.path.join(a.depth_dir, f'{a.slot}_meta.json')))
 clearance_cm = float(meta['clearance_cm'])
 views = ('front', 'left', 'right')
 res = {}
+silhouettes = {}
 sheet = Image.new('RGB', (1024 * 3, 1050), 'white')
 draw = ImageDraw.Draw(sheet)
 for col, v in enumerate(views):
     picture = Image.open(os.path.join(a.views, f'{a.name}-{v}.png')).convert('RGB')
     img = np.asarray(picture).astype(np.int16)
     g = ndi.binary_fill_holes(ndi.binary_opening(img.min(2) < 225, iterations=1))
+    silhouettes[v] = g
     proxy = np.asarray(Image.open(os.path.join(a.depth_dir, f'mask_{a.slot}_{v}.png')).convert('L')) > 127
     body = np.asarray(Image.open(os.path.join(a.depth_dir, f'body_mask_{a.slot}_{v}.png')).convert('L')) > 127
     if g.shape != proxy.shape or body.shape != proxy.shape or not g.any() or not proxy.any() or not body.any():
@@ -53,6 +56,7 @@ for col, v in enumerate(views):
                   mean_outline_gap_cm=round(float(gap.mean()), 2),
                   near_zero_trace_fraction=round(float((np.abs(gap) < clearance_cm / 2).mean()), 3),
                   tracing_flag=tracing,
+                  opening_background_px=opening_background_px(img),
                   top=int(rows.min()), bottom=int(rows.max()), height=int(rows.max() - rows.min() + 1))
     overlay = np.full(img.shape, 255, np.uint8)
     overlay[g & proxy] = (120, 170, 120)
@@ -60,12 +64,16 @@ for col, v in enumerate(views):
     overlay[proxy & ~g] = (220, 50, 50)
     Image.fromarray(overlay).save(os.path.join(a.out, f'overlay_{a.slot}_{v}.png'))
     sheet.paste(picture, (1024 * col, 26))
-    draw.text((1024 * col + 12, 6), f'{v}: {res[v]["mean_outline_gap_cm"]:.2f} cm gap, {res[v]["proxy_coverage"]:.1%} proxy', fill='black')
+    draw.text((1024 * col + 12, 6), f'{v}: {res[v]["mean_outline_gap_cm"]:.2f} cm gap, {res[v]["proxy_coverage"]:.1%} proxy, {res[v]["opening_background_px"]} white inside', fill='black')
 heights = [res[v]['height'] for v in views]
 res['cross_view_height_spread'] = round((max(heights) - min(heights)) / float(np.mean(heights)), 3)
 res['clearance_cm'] = clearance_cm
-res['passes'] = all(res[v]['proxy_contained'] and not res[v]['tracing_flag'] for v in views) and res['cross_view_height_spread'] <= .05
+left, right = silhouettes['left'], np.fliplr(silhouettes['right'])
+res['mirrored_side_silhouette_iou'] = round(float((left & right).sum() / (left | right).sum()), 4)
+res['passes'] = (all(res[v]['proxy_contained'] and not res[v]['tracing_flag'] and
+                     res[v]['opening_background_px'] < 500 for v in views)
+                 and res['cross_view_height_spread'] <= .05 and res['mirrored_side_silhouette_iou'] >= .9)
 sheet.save(os.path.join(a.out, 'sheet.png'))
-with open(os.path.join(a.out, 'fit.json'), 'w') as f:
+with open(os.path.join(a.out, 'fit.json'), 'w', newline='\n') as f:
     json.dump(res, f, indent=2)
 print(json.dumps(res, indent=2))

@@ -3,20 +3,23 @@ Depth maps come from tools/Render-BodyDepthViews.py. Prompt rules are wrapped ar
 background, dark lining in openings). Saves <out>/<name>-{front,left,right}.png and prints seconds per view.
   py -3 tools/Gen-GarmentViewsDepth.py --slot head --name GEAR02-hood --prompt-file hood.txt --gpu 1 [--seed 12345 --cfg 3]
 """
-import argparse, json, os, subprocess, sys, time, urllib.request, uuid
+import argparse, io, json, os, subprocess, sys, time, urllib.request, uuid
+from PIL import Image, ImageOps
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SSH = ['ssh', '-i', os.path.expanduser('~/.ssh/id_ed25519_ra_siems'), '-o', 'IdentitiesOnly=yes', 'raadmin@192.168.0.107']
-VIEWS = ('front', 'left', 'right')
+VIEWS = ('front', 'left')  # symmetric garment: the true right profile is the mirrored left
 WRAP = ("{garment} Ghost-mannequin product photo of ONE single garment on a plain pure white background, seen exactly {view}, "
         "orthographic, no person, no mannequin, no arms, no hands, no body parts, no other objects, no turnaround sheet. "
         "Use the supplied depth only for scale and placement. The garment fully encloses the smooth dress form with air between. "
         "Make the hood deeper than the head in side views, extending behind the skull and beyond the forehead without any "
         "facial-profile contour. Use a simple broad face opening and a roomy rounded crown. The shoulder cape hangs freely "
-        "as a broad bell, flaring beyond the guide and ending below its lower edge with a level hem. Every opening shows dark inner lining, "
-        "never white background or skin.")
+        "as a broad bell, flaring beyond the guide and ending below its lower edge with a level hem. "
+        "The face opening is an opaque recessed charcoal-black fabric lining panel, filling the entire visible aperture "
+        "behind the brown rolled rim from crown to neck; there is no tunnel, gap, or view through to the white backdrop. "
+        "Every opening shows only this dark inner lining.")
 VIEW_TEXT = {'front': 'from the front', 'left': 'from its left side, in profile facing image-left', 'right': 'from its right side, in profile facing image-right'}
-NEG = "person, skin, face, ears, nose, eyes, head, arms, sleeves, hands, torso, chest, tunic, shirt, body, mannequin, text, watermark, white fill inside openings, several garments, collage, floor shadow"
+NEG = "person, skin, face, ears, nose, eyes, head, arms, sleeves, hands, torso, chest, tunic, shirt, body, mannequin, text, watermark, white aperture, transparent face opening, see-through hood, tunnel through hood, white fill inside openings, background visible inside garment, three-quarter rear view, several garments, collage, floor shadow"
 
 
 def call(base, path, data=None, ctype='application/json'):
@@ -58,6 +61,7 @@ if __name__ == '__main__':
     ap.add_argument('--gpu', type=int, default=1, choices=(1, 2)); ap.add_argument('--seed', type=int, default=12345)
     ap.add_argument('--cfg', type=float, default=3.0); ap.add_argument('--steps', type=int, default=25)
     ap.add_argument('--strength', type=float, default=.6); ap.add_argument('--end-percent', type=float, default=.6)
+    ap.add_argument('--independent-right', action='store_true', help='generate right separately for asymmetric garments')
     a = ap.parse_args()
     if not (0 <= a.strength <= 1 and 0 < a.end_percent <= 1):
         ap.error('strength must be 0-1 and end-percent must be greater than 0 through 1')
@@ -68,11 +72,15 @@ if __name__ == '__main__':
     try:
         time.sleep(3)
         base = f'http://127.0.0.1:{port}'
-        for v in VIEWS:
+        for v in VIEWS + (('right',) if a.independent_right else ()):
             t = time.time()
             png = generate(base, os.path.join(a.depth_dir, f'depth_{a.slot}_{v}.png'),
                            WRAP.format(garment=garment, view=VIEW_TEXT[v]), a.seed, a.cfg, a.steps, a.strength, a.end_percent)
             open(os.path.join(a.out, f'{a.name}-{v}.png'), 'wb').write(png)
             print(f'{v}: {time.time() - t:.1f}s', flush=True)
+            if v == 'left' and not a.independent_right:
+                mirror = ImageOps.mirror(Image.open(io.BytesIO(png)).convert('RGB'))
+                mirror.save(os.path.join(a.out, f'{a.name}-right.png'))
+                print('right: mirrored left orthographic side', flush=True)
     finally:
         tun.terminate()

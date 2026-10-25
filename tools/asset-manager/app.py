@@ -2075,23 +2075,30 @@ DEPTH_WRAP = ("{garment} Ghost-mannequin product photo of ONE single garment on 
               "Use the supplied depth only for scale and placement. The garment fully encloses the smooth dress form with air between. "
               "Make the hood deeper than the head in side views, extending behind the skull and beyond the forehead without any "
               "facial-profile contour. Use a simple broad face opening and a roomy rounded crown. The shoulder cape hangs freely "
-              "as a broad bell, flaring beyond the guide and ending below its lower edge with a level hem. Every opening shows dark inner lining, "
-              "never white background or skin.")
+              "as a broad bell, flaring beyond the guide and ending below its lower edge with a level hem. "
+              "The face opening is an opaque recessed charcoal-black fabric lining panel, filling the entire visible aperture "
+              "behind the brown rolled rim from crown to neck; there is no tunnel, gap, or view through to the white backdrop. "
+              "Every opening shows only this dark inner lining.")
 DEPTH_VIEW_TEXT = {"front": "from the front", "left": "from its left side, in profile facing image-left",
                    "right": "from its right side, in profile facing image-right"}
 DEPTH_NEGATIVE = ("person, skin, face, ears, nose, eyes, head, arms, sleeves, hands, torso, chest, tunic, shirt, body, mannequin, text, "
-                  "watermark, white fill inside openings, several garments, collage, floor shadow")
+                  "watermark, white aperture, transparent face opening, see-through hood, tunnel through hood, white fill inside openings, "
+                  "background visible inside garment, three-quarter rear view, several garments, collage, floor shadow")
 IMAGE_MODES = ["single", "multi", "depth"]  # depth: Qwen-Image-2.1 + depth ControlNet on a GPU host, views already at the player's body size
 IMAGE_VIEWS = ["heroes", "mv-adapter"]  # multi: the heroes and a mirror (default), or MV-Adapter around the front
 
 def image_params(params):
-    unknown = set(params) - {"mode", "model", "prompt", "views", "type", "category", "slot"}
+    unknown = set(params) - {"mode", "model", "prompt", "views", "type", "category", "slot", "symmetric"}
     if unknown:
         raise ValueError(f"unknown options: {sorted(unknown)} (image jobs take mode, model, prompt, views, type, category, slot)")
     p = {"mode": params.get("mode", "single"), "model": params.get("model", "auto"), "prompt": str(params.get("prompt", "")).strip(),
          "views": params.get("views", IMAGE_VIEWS[0]), **{k: params[k] for k in ("type", "category") if k in params}}
+    if "symmetric" in params and p["mode"] != "depth":
+        raise ValueError("symmetric applies only to depth mode")
     if p["mode"] == "depth":  # the body slot picks the pre-rendered depth views; the model and view choices don't apply
-        p = {**p, "slot": params.get("slot", "head"), "views": "depth"}
+        p = {**p, "slot": params.get("slot", "head"), "views": "depth", "symmetric": params.get("symmetric", True)}
+        if not isinstance(p["symmetric"], bool):
+            raise ValueError("symmetric must be a boolean")
         if p["slot"] not in DEPTH_SLOTS:
             raise ValueError(f"slot must be one of {DEPTH_SLOTS} (GET /api/schema, image.slots)")
     asset_folder(p)
@@ -2241,12 +2248,14 @@ def depth_views(jid, host, p, log):
     if not ok:
         raise RuntimeError(line)
     names = {pos: f"{jid}_{p['slot']}_{pos}.png" for pos in DEPTH_VIEWS}
-    for pos, n in names.items():
+    drawn = ("front", "left") if p["symmetric"] else DEPTH_VIEWS
+    for pos in drawn:
+        n = names[pos]
         put_input(host, n, (DEPTH_DIR / f"depth_{p['slot']}_{pos}.png").read_bytes())
     views = {}
     try:
         comfy(host, "/free", {"unload_models": True, "free_memory": True})
-        for pos in DEPTH_VIEWS:
+        for pos in drawn:
             t = time.time()
             g = json.loads(json.dumps(DEPTH_WORKFLOW))
             g["5"]["inputs"]["image"] = f"sfam/{names[pos]}"
@@ -2258,8 +2267,13 @@ def depth_views(jid, host, p, log):
             cov, gap = depth_fit(views[pos], p["slot"], pos)
             log.append(f"views: {pos} drawn in {time.time() - t:.0f}s; covers {cov:.1%} of the {p['slot']} dress form; "
                        f"mean outward body-outline gap {gap} cm")
+        if p["symmetric"]:
+            views["right"] = mirrored(views["left"])
+            cov, gap = depth_fit(views["right"], p["slot"], "right")
+            log.append(f"views: right mirrored from the left orthographic side; covers {cov:.1%} of the "
+                       f"{p['slot']} dress form; mean outward body-outline gap {gap} cm")
     finally:
-        cleanup(host, list(names.values()), [f"{jid}_qd"])
+        cleanup(host, [names[pos] for pos in drawn], [f"{jid}_qd"])
     return views
 
 def run_image(jid, host=None):
@@ -2763,6 +2777,8 @@ def check():
     assert "{" not in MV_HERO.format(prompt="rat") + MV_FRONT.format(prompt="rat") + MV_REVIEW.format(prompt="rat", order="front")
     assert image_params({"prompt": "rat", "mode": "multi"})["views"] == "heroes"
     assert image_params({"prompt": "hood", "mode": "depth"})["slot"] == "head" and "head" in DEPTH_SLOTS
+    assert image_params({"prompt": "hood", "mode": "depth"})["symmetric"] is True
+    assert image_params({"prompt": "hood", "mode": "depth", "symmetric": False})["symmetric"] is False
     for bad in ({"prompt": "x", "mode": "depth", "slot": "tail"}, {"prompt": "", "mode": "depth"}):
         try:
             image_params(bad); raise AssertionError(f"image_params accepted {bad}")
