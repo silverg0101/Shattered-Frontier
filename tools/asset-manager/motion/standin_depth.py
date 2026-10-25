@@ -16,16 +16,21 @@ import numpy as np
 from mathutils import Matrix, Vector
 from mathutils.bvhtree import BVHTree
 
-# Radii as fractions of the body length (nose to tail root; tails: of the whole length): the tuning knob. A *_tip entry is
-# the radius of the End Site of that role (default: the role's own radius, tails: half).
-RADII = {"pelvis": 0.115, "spine_01": 0.110, "spine_02": 0.115, "spine_03": 0.125, "neck": 0.070,
-         "head": 0.085, "head_tip": 0.030,
-         "tail_01": 0.014, "tail_02": 0.012, "tail_03": 0.010, "tail_04": 0.009, "tail_05": 0.008, "tail_06": 0.007,
-         "FL_01": 0.060, "FL_02": 0.045, "FL_03": 0.035, "FL_04": 0.028,
-         "HL_01": 0.090, "HL_02": 0.055, "HL_03": 0.038, "HL_04": 0.030}
+# Radii as fractions of the body length (nose to tail root): the tuning knob. A stocky quadruped: the torso is about a
+# third of the body length deep, widest at the chest and hips; the neck is as thick as the head is tall; limbs are thick
+# at the top and taper to a paw; the tail's base is a third of the hips. A *_tip entry is the radius of the End Site of
+# that role (default: the role's own radius, tails: half).
+RADII = {"pelvis": 0.160, "spine_01": 0.165, "spine_02": 0.168, "spine_03": 0.175, "neck": 0.100,
+         "head": 0.115, "head_tip": 0.040,
+         "tail_01": 0.055, "tail_02": 0.045, "tail_03": 0.036, "tail_04": 0.028, "tail_05": 0.021, "tail_06": 0.015,
+         "FL_01": 0.085, "FL_02": 0.060, "FL_03": 0.042, "FL_04": 0.038,
+         "HL_01": 0.105, "HL_02": 0.070, "HL_03": 0.045, "HL_04": 0.038}
 for _s in ("FR", "HR"):
     for _i in range(1, 5):
         RADII[f"{_s}_{_i:02}"] = RADII[f"{_s[0]}L_{_i:02}"]
+SHOULDER = 0.82  # front legs hang this far along the pelvis-to-neck line
+HEAD_LEN = 0.20  # the head is this share of the body length (nose to the pelvis)
+LEG_FRAC = 0.33  # joint height of every leg, of the body length: the belly sits at about 35-40% of the back height
 TAIL_MAX = 1.0  # the tail is at most this many body lengths (pelvis to nose): a Zoo-300K rat's runs 2.3 x, which no concept shows
 HEAD_BLOB = 0.4  # a ball of the head's radius this far along the head (0 = at the joint, 1 = at the nose)
 VOXEL = 1 / 250  # remesh voxel, of the whole length
@@ -49,14 +54,19 @@ sc = bpy.context.scene
 bones = arm.data.bones
 rest = lambda n: bones[n[:-4]].tail_local if n.endswith("_end") else bones[n].head_local
 rad_role, edges = {}, []
+mapped = lambda b: role.get(b.name, "root") != "root"
 for b in bones:
-    if role.get(b.name, "root") == "root":
+    if not mapped(b):
         continue
     rad_role[b.name] = role[b.name]
-    if not b.children:
+    up = b.parent
+    while up is not None and not mapped(up):  # a bone the role map skips (a clavicle, a pastern) joins its neighbours
+        up = up.parent
+    if up is not None:
+        edges.append((up.name, b.name))
+    if not any(mapped(d) for d in b.children_recursive):
         rad_role[f"{b.name}_end"] = role.get(f"{b.name}_end", role[b.name])
         edges.append((b.name, f"{b.name}_end"))
-    edges += [(b.name, c.name) for c in b.children if role.get(c.name, "root") != "root"]
 role_of = lambda n: rad_role[n]
 kids = {}
 for a, b in edges:
@@ -82,9 +92,15 @@ while stack:
         else:
             lay[b] = lay[a] + Vector((0, 1 if is_tail(b) else -1, 0)) * ln
         stack.append(b)
+head_j = next(n for n in lay if role_of(n) == "head" and not n.endswith("_end"))
+lay[nose].y = lay[head_j].y - HEAD_LEN / (1 - HEAD_LEN) * abs(lay[head_j].y)  # the Zoo bones' head is too long or short
+for n in lay:  # shoulders sit at the chest, just behind the neck: the Zoo bones may hang them from mid-spine
+    if is_leg(n) and role_of(leg_root[n])[0] == "F":
+        lay[n].y = lay[head_j].y * SHOULDER
+lb = abs(lay[nose].y - lay[root_t].y)
 roots = {r: max(d for n, d in drop.items() if leg_root[n] == r) for r in set(leg_root.values())}
 mean = lambda v: sum(v) / len(v)
-h = mean(list(roots.values()))  # level spine: every leg, hind ones too (their bends are not drawn), is as long as the mean
+h = LEG_FRAC * lb  # level spine and short legs: the Zoo bones' straight legs are stilts, their bends are not drawn
 for n in drop:
     drop[n] *= h / roots[leg_root[n]]
 zspine = lambda n: h
@@ -104,21 +120,19 @@ if tail_len > TAIL_MAX * body_len:
 scale = size_cm / 100 / (max(p.y for p in pos.values()) - min(p.y for p in pos.values()))  # nose to tail tip, as the creature job sizes the rig
 pos = {n: p * scale for n, p in pos.items()}
 L = size_cm / 100
-Lb = scale * abs(pos[nose].y - pos[root_t].y)  # nose to tail root: the body radii's unit (tails use L)
+Lb = abs(pos[nose].y - pos[root_t].y)  # nose to tail root: the radii's unit
 
 
 def radius(n):
     r = role_of(n)
     if n.endswith("_end") and f"{r}_tip" in RADII:
         return RADII[f"{r}_tip"] * Lb
-    if r.startswith("tail"):
-        return RADII[r] * L * (0.5 if n.endswith("_end") else 1)
-    return RADII[r] * Lb
+    return RADII[r] * Lb * (0.5 if n.endswith("_end") and r.startswith("tail") else 1)
 
 
 for n in pos:  # left legs on +X (the animal faces -Y), a little apart: shoulders and hips are not on the midline
     if is_leg(n):
-        pos[n].x = (1 if role_of(n)[1] == "L" else -1) * 0.55 * radius(parent[leg_root[n]])
+        pos[n].x = (1 if role_of(n)[1] == "L" else -1) * 0.7 * radius(parent[leg_root[n]])
 floor = min(p.z - radius(n) for n, p in pos.items())
 pos = {n: p - Vector((0, 0, floor)) for n, p in pos.items()}
 
@@ -132,6 +146,10 @@ for a, b in edges:
         continue
     m = Matrix.Translation((pos[a] + pos[b]) / 2) @ d.to_track_quat("Z", "Y").to_matrix().to_4x4()
     bmesh.ops.create_cone(bm, cap_ends=True, segments=16, radius1=radius(a), radius2=radius(b), depth=d.length, matrix=m)
+for a, b in edges:  # a plump belly: a ball amid each torso segment, a little wider than its ends
+    if all(role_of(n)[:2] in ("pe", "sp") for n in (a, b)):
+        bmesh.ops.create_uvsphere(bm, u_segments=16, v_segments=10, radius=1.12 * (radius(a) + radius(b)) / 2,
+                                  matrix=Matrix.Translation((pos[a] + pos[b]) / 2))
 head_n = next(n for n in pos if role_of(n) == "head" and not n.endswith("_end"))
 bmesh.ops.create_uvsphere(bm, u_segments=16, v_segments=10, radius=RADII["head"] * Lb,
                           matrix=Matrix.Translation(pos[head_n].lerp(pos[nose], HEAD_BLOB)))
