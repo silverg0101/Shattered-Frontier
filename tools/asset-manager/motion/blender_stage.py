@@ -3,6 +3,7 @@ import json
 from pathlib import Path
 import runpy
 import shutil
+import stat
 import sys
 
 
@@ -12,11 +13,22 @@ def run(script, args, inputs, outputs):
     def confined(name):
         path = Path(name)
         candidate = root / path
-        resolved = candidate.resolve()
-        if path.is_absolute() or ".." in path.parts or resolved == root or root not in resolved.parents:
+        if path.is_absolute() or ".." in path.parts or candidate == root or root not in candidate.parents:
             raise ValueError(f"{script}: path outside stage folder: {name!r}")
-        if any(p.is_symlink() for p in [candidate, *candidate.parents] if p != root and root in p.parents):
-            raise ValueError(f"{script}: stage path must not follow a symlink: {name!r}")
+        # Inspect lexical paths before resolve() erases junction/symlink identity.
+        # Windows junctions are reparse points but do not report is_symlink().
+        for p in [candidate, *candidate.parents]:
+            if p == root or root not in p.parents:
+                continue
+            try:
+                info = p.lstat()
+            except FileNotFoundError:  # a stage may create a new output directory
+                continue
+            if stat.S_ISLNK(info.st_mode) or getattr(info, "st_file_attributes", 0) & getattr(stat, "FILE_ATTRIBUTE_REPARSE_POINT", 0):
+                raise ValueError(f"{script}: stage path must not follow a symlink or reparse alias: {name!r}")
+        resolved = candidate.resolve()
+        if resolved == root or root not in resolved.parents:
+            raise ValueError(f"{script}: path outside stage folder: {name!r}")
         return resolved
 
     # Validate the entire declaration before removing anything. Inputs may contain

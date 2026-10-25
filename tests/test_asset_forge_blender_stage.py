@@ -3,7 +3,10 @@ import base64
 from contextlib import chdir
 import io
 import json
+import os
 from pathlib import Path
+import stat
+import subprocess
 import sys
 import tarfile
 import tempfile
@@ -94,6 +97,37 @@ class BlenderStageTests(unittest.TestCase):
         self.assertIn("--python-exit-code 1 -P blender_stage.py", command)
         self.assertIn('"outputs": ["labels.json"]', command)
         self.assertIn("tail -20 rig_standard.py.log", command)
+
+    def assert_junction_rejected_without_mutation(self, output):
+        with tempfile.TemporaryDirectory() as folder, chdir(folder):
+            root = Path.cwd()
+            Path("keep/subdir").mkdir(parents=True)
+            Path("keep/sentinel").write_text("unrelated target")
+            Path("keep/subdir/sentinel").write_text("nested target")
+            Path("earlier").write_text("earlier declared output")
+            Path("stage.py").write_text("raise AssertionError('stage must not run')")
+            alias = root / "out"
+            subprocess.run(["cmd", "/c", "mklink", "/J", str(alias), str(root / "keep")],
+                           check=True, capture_output=True)
+            try:
+                self.assertFalse(alias.is_symlink(), "exercise the Windows junction distinction")
+                self.assertTrue(alias.lstat().st_file_attributes & stat.FILE_ATTRIBUTE_REPARSE_POINT)
+                with self.assertRaisesRegex(ValueError, "reparse alias"):
+                    blender_stage.run("stage.py", [], [], ["earlier", output])
+                self.assertEqual(Path("earlier").read_text(), "earlier declared output")
+                self.assertEqual(Path("keep/sentinel").read_text(), "unrelated target")
+                self.assertEqual(Path("keep/subdir/sentinel").read_text(), "nested target")
+                self.assertTrue(alias.exists(), "invalid declarations must not remove the alias")
+            finally:
+                os.rmdir(alias)  # unlink this test's junction only, without traversing its target
+
+    @unittest.skipUnless(os.name == "nt", "actual Windows junction fixture")
+    def test_direct_junction_preserves_target_and_all_earlier_outputs(self):
+        self.assert_junction_rejected_without_mutation("out")
+
+    @unittest.skipUnless(os.name == "nt", "actual Windows junction fixture")
+    def test_ancestor_junction_preserves_target_and_all_earlier_outputs(self):
+        self.assert_junction_rejected_without_mutation("out/subdir")
 
     def test_mcp_preserves_original_negative_error_and_rejects_stale_outputs(self):
         buf = io.BytesIO()
