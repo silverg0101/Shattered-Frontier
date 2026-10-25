@@ -804,25 +804,27 @@ def clip_params(name, b, folder=None, library=None) -> dict:
         motion = a.motion_params({k: v for k, v in b.items() if k not in ("source", "clip", "model")})
         return out | {"motion": motion, "clip": clip or safe_name(motion["action"].title()) or "Motion"}
     anims = b.get("animations")
-    if not isinstance(anims, list) or not anims or any(not isinstance(x, str) for x in anims):
-        raise ValueError("animations is a list of the names of from_glb's animations to take")
+    if not isinstance(anims, list) or not anims or any(not isinstance(x, int) or isinstance(x, bool) for x in anims):
+        raise ValueError("animations is a list of the indices (0, 1, ...) of from_glb's animations to take")
     p = a.safe_path(b.get("from_glb") or "")
     if p.suffix.lower() != ".glb" or not p.is_file():
         raise ValueError("from_glb is a .glb file in the asset library")
     js = glb_read(p.read_bytes())[0]
     have = [x.get("name") for x in js.get("animations", [])]
-    if missing := [x for x in anims if x not in have]:
-        raise ValueError(f"{b['from_glb']} has no animation {', '.join(missing)}; it has: {', '.join(map(str, have)) or 'none'}")
+    if bad := [x for x in anims if not 0 <= x < len(have)]:
+        raise ValueError(f"{b['from_glb']} has no animation {', '.join(map(str, bad))}; it has {len(have)} (0-{len(have) - 1})")
+    if len(set(anims)) != len(anims):
+        raise ValueError("animations lists an index twice")
     if not js.get("skins"):
         raise ValueError(f"{b['from_glb']} has no skeleton (no skin)")
-    anims, rename = list(dict.fromkeys(anims)), b.get("rename") or {}
+    rename = b.get("rename") or {}
     if not isinstance(rename, dict) or any(not isinstance(v, str) or not v or safe_name(v) != v for v in rename.values()):
-        raise ValueError("rename maps animation names to clip names of letters, digits, _ and -")
-    if extra := [k for k in rename if k not in anims]:
-        raise ValueError(f"rename names {', '.join(extra)}, not in animations")
-    names = [rename.get(x) or safe_name(x) or "Clip" for x in anims]
+        raise ValueError("rename maps animation indices to clip names of letters, digits, _ and -")
+    if extra := [k for k in rename if str(k) not in map(str, anims)]:
+        raise ValueError(f"rename names {', '.join(map(str, extra))}, not in animations")
+    names = [rename.get(str(i)) or rename.get(i) or safe_name(have[i] or f"Animation_{i}") or "Clip" for i in anims]
     if clash := sorted({c for c in names if names.count(c) > 1}):
-        raise ValueError(f"animations {', '.join(x for x, c in zip(anims, names) if c in clash)} would all be named "
+        raise ValueError(f"animations {', '.join(str(x) for x, c in zip(anims, names) if c in clash)} would all be named "
                          f"{', '.join(clash)}; give them other names with rename")
     return out | {"from_glb": b["from_glb"], "animations": anims, "names": names}
 
@@ -844,13 +846,13 @@ def glb_library(jid, host, from_glb, js, sbin, anims, clip_names_, lib) -> Path:
     skeleton that can't be labelled (a required role missing, not a quadruped) raises with the role map's reason."""
     a = _app()
     work, _, _, _, step, _ = a.host_tools(jid, host)
-    q, names, clips, stem = shlex.quote, [x.get("name") for x in js["animations"]], [], safe_name(Path(from_glb).stem) or "Source"
+    q, clips, stem = shlex.quote, [], safe_name(Path(from_glb).stem) or "Source"
     for f in a.MOTION_DIR.glob("*.py"):
         a.put_input(host, f"{jid}/{f.name}", f.read_bytes())
     a.job_blender(jid)
     for an, c in zip(anims, clip_names_):
-        a.put_input(host, f"{jid}/srclib/{c}.glb", glb_write({**js, "animations": [js["animations"][names.index(an)]]}, sbin))
-        step(f"reading {an} from {from_glb}")
+        a.put_input(host, f"{jid}/srclib/{c}.glb", glb_write({**js, "animations": [js["animations"][an]]}, sbin))
+        step(f"reading animation {an} from {from_glb}")
         a.run_blender(jid, host, "unimate_bvh.py", [f"srclib/{c}.glb", f"srclib/{c}.bvh", f"srclib/{c}_bvh.json"],
                       [f"srclib/{c}.glb"], [f"srclib/{c}.bvh", f"srclib/{c}_bvh.json"], 900)
         info = json.loads(a.ssh(host, f"cat {q(work + '/srclib/' + c + '_bvh.json')}"))
@@ -878,15 +880,15 @@ def run_clip_job(jid, host):
         get = lambda f: a.ssh(host, f"cat {q(work + '/' + f)}", timeout=900)
         size, base = man["size_cm"], rig.read_bytes()
         src = glb_read(a.safe_path(p["from_glb"]).read_bytes()) if p["source"] == "glb" else None
-        names = [x.get("name") for x in src[0].get("animations", [])] if src else []
+        names = [x.get("name") or f"Animation_{i}" for i, x in enumerate(src[0].get("animations", []))] if src else []
         if src and glb_bones(src[0]) == glb_bones(glb_read(base)[0]):  # the same rig: the clips go in as they are
             step("copying the animations")
             for an, c in zip(p["animations"], p["names"]):
                 js, binary = glb_read(base)
-                _add_animation(js, binary, src[0], src[1], c, names.index(an))
-                made.append((c, [("", glb_write(js, binary), None, {"source": "glb", "from": p["from_glb"], "animation": an,
+                _add_animation(js, binary, src[0], src[1], c, an)
+                made.append((c, [("", glb_write(js, binary), None, {"source": "glb", "from": p["from_glb"], "animation": names[an],
                     "checks": {"passed": None, "reason": "copied as is from a GLB on the same skeleton; not checked", "review": []}})]))
-                log.append(f"{c}: copied from {p['from_glb']} ({an})")
+                log.append(f"{c}: copied from {p['from_glb']} ({names[an]})")
         else:
             groups = []  # (base name, [(suffix, retarget_clip result, manifest fields)])
             lib = ensure_curated(p["animal"], host, jid) if p["source"] == "library" else None  # curating clears the job folder
@@ -911,7 +913,7 @@ def run_clip_job(jid, host):
                     lib = glb_library(jid, host, p["from_glb"], *src, p["animations"], p["names"], tmp / "lib")
                     for an, c in zip(p["animations"], p["names"]):
                         groups.append((c, [("", retarget_clip(jid, host, "rig.glb", lib, c, size),
-                                            {"source": "glb", "from": p["from_glb"], "animation": an, "retargeted": True})]))
+                                            {"source": "glb", "from": p["from_glb"], "animation": names[an], "retargeted": True})]))
                 finally:
                     shutil.rmtree(tmp, ignore_errors=True)
             for b, g in groups:

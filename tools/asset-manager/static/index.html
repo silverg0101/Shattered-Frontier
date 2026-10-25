@@ -1123,7 +1123,7 @@ async function renderCreature() {
 
 /* ---------------- model folder view (a folder holding <Name>.json: a creature's clips) */
 // checks.review is [{verdict, reason}]; an older manifest keeps one "VERDICT: reason" string
-const reviewsOf = c => { const r = c.checks?.review; return Array.isArray(r) ? r : typeof r === 'string' && r ? [{ verdict: r.split(':')[0], reason: r.split(':').slice(1).join(':').trim() }] : []; };
+const reviewsOf = c => { const r = c.checks?.review; return Array.isArray(r) ? r.filter(x => x && typeof x === 'object') : typeof r === 'string' && r ? [{ verdict: r.split(':')[0], reason: r.split(':').slice(1).join(':').trim() }] : []; };
 let bakeDirty = null;  // {dir, names}: baked ticks changed but not combined yet; a redraw keeps them
 function clipRow(c, dir, sheets, animal) {
   const k = c.checks || {}, rv = reviewsOf(c), last = rv.at(-1);
@@ -1235,10 +1235,10 @@ async function addFromGlb(man) {
       <input type="file" accept=".glb" data-file hidden><span class="muted" data-path style="font-size:12px;word-break:break-all">No file chosen</span></div>
     <div data-anims class="muted" style="font-size:13px"></div>`,
     async o => {
-      const names = [...o.querySelectorAll('[data-an]:checked')].map(x => x.dataset.an);
+      const names = [...o.querySelectorAll('[data-an]:checked')].map(x => +x.dataset.an);
       if (!glb) throw new Error('Choose a .glb first');
       if (!names.length) throw new Error('Tick at least one animation');
-      const rename = Object.fromEntries(names.map(n => [n, $(`[data-rn="${CSS.escape(n)}"]`, o).value.trim()]).filter(([n, r]) => r && r !== n));
+      const rename = Object.fromEntries(names.map(i => [i, $(`[data-rn="${i}"]`, o).value.trim()]).filter(([i, r]) => r && r !== $(`[data-an="${i}"]`, o).dataset.dn));
       await post(`/api/models/${man.name}/clips`, { source: 'glb', from_glb: glb, animations: names, rename });
     });
   const choose = async p => {
@@ -1248,8 +1248,8 @@ async function addFromGlb(man) {
     try {
       const g = await glbAnimations(p);
       box.innerHTML = (g.skinned ? '' : '<div style="color:var(--danger)">This file has no skeleton (no skin).</div>') + (g.names.length
-        ? g.names.map(n => `<div style="display:flex;align-items:center;gap:10px;margin-top:8px"><label style="display:flex;gap:6px;align-items:center;flex:1;cursor:pointer"><input type="checkbox" data-an="${esc(n)}">${esc(n)}</label>
-          <input type="text" data-rn="${esc(n)}" placeholder="clip name" value="${esc(n)}" style="flex:1" title="Clip name (letters, digits, _ and -)"></div>`).join('')
+        ? g.names.map((n, i) => `<div style="display:flex;align-items:center;gap:10px;margin-top:8px"><label style="display:flex;gap:6px;align-items:center;flex:1;cursor:pointer"><input type="checkbox" data-an="${i}" data-dn="${esc(n)}">${esc(n)}</label>
+          <input type="text" data-rn="${i}" placeholder="clip name" value="${esc(n)}" style="flex:1" title="Clip name (letters, digits, _ and -)"></div>`).join('')
         : '<div style="color:var(--danger)">No animations in this file.</div>');
     } catch (e) { box.innerHTML = `<div style="color:var(--danger)">${esc(e.message)}</div>`; }
   };

@@ -3118,15 +3118,24 @@ def check():
     src.write_bytes(creature.glb_write(sj, sb))
     rel = src.relative_to(ROOT).as_posix()
     gp = lambda **k: creature.clip_params(cm.name, {"source": "glb", "from_glb": rel, **k})
-    for bad, why in (({"animations": ["Run"]}, "has no animation Run; it has: Walk, Walk?"),
-                     ({"animations": ["Walk", "Walk?"]}, "Walk, Walk? would all be named Walk; give them other names with rename"),
-                     ({"animations": ["Walk?"], "rename": {"Walk?": "../x"}}, "rename maps"),
-                     ({"animations": ["Walk"], "rename": {"Walk?": "Sniff"}}, "rename names Walk?, not in animations")):
+    for bad, why in (({"animations": [2]}, "has no animation 2; it has 2"),
+                     ({"animations": ["Walk"]}, "animations is a list of the indices"),
+                     ({"animations": [0, 0]}, "lists an index twice"),
+                     ({"animations": [0, 1]}, "0, 1 would all be named Walk; give them other names with rename"),
+                     ({"animations": [1], "rename": {"1": "../x"}}, "rename maps"),
+                     ({"animations": [0], "rename": {"1": "Sniff"}}, "rename names 1, not in animations")):
         try:
             gp(**bad); raise AssertionError(bad)
         except ValueError as e:
             assert why in str(e), (bad, e)
-    two = gp(animations=["Walk", "Walk?"], rename={"Walk?": "rig"})
+    two = gp(animations=[0, 1], rename={"1": "rig"})
+    assert two["animations"] == [0, 1]
+    sj["animations"].append({**sj["animations"][0], "name": ""})  # unnamed -> Animation_2; a repeat of Walk by index
+    sj["animations"].append({**sj["animations"][0], "name": "Walk"})
+    src.write_bytes(creature.glb_write(sj, sb))
+    assert gp(animations=[2, 3], rename={3: "Walk_2"})["names"] == ["Animation_2", "Walk_2"]
+    sj["animations"][2:] = []
+    src.write_bytes(creature.glb_write(sj, sb))
     assert two["names"] == ["Walk", "rig"], two
     def clip_job(params):
         with DB_LOCK, db() as c:
@@ -3163,7 +3172,7 @@ def check():
     creature.combine_model(cm.name, ["Walk_2"])  # the copy is on the model's rig: combine takes it
     # path choice: the same bones were copied above; other bones are labelled and retargeted; unlabellable is refused
     src.write_bytes(tiny_glb(["root", "hips", "spine_01"], "Walk"))
-    ok = gp(animations=["Walk"])  # accepted: another skeleton is retargeted, not refused
+    ok = gp(animations=[0])  # accepted: another skeleton is retargeted, not refused
     calls = []
     def fake_library(jid, host, from_glb, js, sbin, anims, names, lib):
         calls.append(("label", from_glb, anims, names))
