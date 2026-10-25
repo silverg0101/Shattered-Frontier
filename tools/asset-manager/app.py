@@ -2543,7 +2543,7 @@ class Handler(BaseHTTPRequestHandler):
                     return self.send(creature.combine_model(m[1], self.body().get("clips")))
                 if m[2]:  # New Animation / Add from GLB: a clip job on the model's rig
                     params = creature.clip_params(m[1], self.body())
-                    name = f"{m[1]} {params.get('clip') or ', '.join(params.get('animations', []))}"[:80]
+                    name = creature.clip_job_name(m[1], params)
                     with DB_LOCK, db() as c:
                         jid = c.execute("INSERT INTO jobs (kind, name, params, status, created) VALUES ('clip', ?, ?, 'queued', ?)",
                                         (name, json.dumps(params), time.time())).lastrowid
@@ -3178,6 +3178,7 @@ def check():
             assert why in str(e), (bad, e)
     two = gp(animations=[0, 1], rename={"1": "rig"})
     assert two["animations"] == [0, 1]
+    assert creature.clip_job_name(cm.name, two) == f"{cm.name} Walk, rig"  # the route's job name for a glb request
     sj["animations"].append({**sj["animations"][0], "name": ""})  # unnamed -> Animation_2; a repeat of Walk by index
     sj["animations"].append({**sj["animations"][0], "name": "Walk"})
     src.write_bytes(creature.glb_write(sj, sb))

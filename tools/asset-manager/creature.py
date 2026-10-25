@@ -957,6 +957,11 @@ def clip_params(name, b, folder=None, library=None) -> dict:
     return out | {"from_glb": b["from_glb"], "animations": anims, "names": names}
 
 
+def clip_job_name(model, params) -> str:
+    """The queue name of a clip job built from clip_params: the model and its clip, or its glb clip names."""
+    return f"{model} {params.get('clip') or ', '.join(params.get('names', []))}"[:80]
+
+
 def clip_names(taken, groups) -> list:
     """Free names for groups [(base, [suffix, ...])] (a text clip's seeds share one base): the base, else base_2,
     base_3 ..., so that no base+suffix is in `taken` or in an earlier group. -> the bases chosen."""
