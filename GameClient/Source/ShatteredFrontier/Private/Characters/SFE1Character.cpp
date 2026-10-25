@@ -1728,6 +1728,17 @@ void ASFE1Character::Tick(float DeltaSeconds)
         }
         if (GreenlandsDeathClientStage == 2 && DeathRole == TEXT("Driver") && Now - GreenlandsDeathClientAt >= 12.0)
         {
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+            if (FParse::Param(FCommandLine::Get(), TEXT("DeathRestoreOnly")))
+            {
+                bool bPeerPresent = false;
+                for (TActorIterator<ASFE1Character> It(GetWorld()); It; ++It)
+                { if (*It != this) { bPeerPresent = true; break; } }
+                if (!bPeerPresent) { GreenlandsDeathPeerAt = -1; return; }
+                if (GreenlandsDeathPeerAt < 0) { GreenlandsDeathPeerAt = Now; }
+                if (Now - GreenlandsDeathPeerAt < 2.0) { return; }
+            }
+#endif
             if (ASFPlayerController* PC = Cast<ASFPlayerController>(Controller))
             {
                 if (Resolution == TEXT("Resurrection"))

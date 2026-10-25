@@ -86,6 +86,34 @@ public:
     int32 BoarMeleeDamage = 14;
     UPROPERTY(Config, EditAnywhere, Category="Pilot Balance", meta=(ClampMin="0.0", ClampMax="0.5", DisplayName="Boar frontal dodge chance", ToolTip="Chance per admitted frontal player melee swing; adopted at zone start."))
     float BoarDodgeChance = 0.03f;
+    UPROPERTY(Config, EditAnywhere, Category="Combat Resolution", meta=(ClampMin="0.0", ClampMax="0.5", DisplayName="Boar frontal parry chance", ToolTip="Melee archetype default; adopted at zone start."))
+    float BoarParryChance = 0.03f;
+    UPROPERTY(Config, EditAnywhere, Category="Combat Resolution", meta=(ClampMin="0.0", ClampMax="0.5", DisplayName="Dodge plus parry cap", ToolTip="Proportionally scales frontal avoidance; adopted at zone start."))
+    float AvoidanceCap = 0.5f;
+    UPROPERTY(Config, EditAnywhere, Category="Combat Resolution", meta=(ClampMin="1", ClampMax="360", Units="deg", DisplayName="Frontal avoidance arc", ToolTip="Defender's dodge, parry and block arc; adopted at zone start."))
+    float FrontArcDegrees = 180.0f;
+    UPROPERTY(Config, EditAnywhere, Category="Combat Resolution", meta=(ClampMin="0.0", ClampMax="0.30", DisplayName="Miss chance cap", ToolTip="Maximum attack miss chance; adopted at zone start."))
+    float MissCap = 0.30f;
+    UPROPERTY(Config, EditAnywhere, Category="Combat Resolution", meta=(ClampMin="0.0", ClampMax="0.60", DisplayName="Critical chance cap", ToolTip="Maximum critical chance; adopted at zone start."))
+    float CritCap = 0.60f;
+    UPROPERTY(Config, EditAnywhere, Category="Combat Resolution", meta=(ClampMin="1.0", ClampMax="3.0", DisplayName="Critical damage cap", ToolTip="Maximum critical damage multiplier; adopted at zone start."))
+    float CritDamageCap = 3.0f;
+    UPROPERTY(Config, EditAnywhere, Category="Combat Resolution", meta=(ClampMin="0.0", ClampMax="0.75", DisplayName="Block chance cap", ToolTip="Maximum block chance; adopted at zone start."))
+    float BlockCap = 0.75f;
+    UPROPERTY(Config, EditAnywhere, Category="Combat Resolution", meta=(ClampMin="0.0", ClampMax="0.40", DisplayName="Block reduction cap", ToolTip="Maximum fraction removed by a block; adopted at zone start."))
+    float BlockReductionCap = 0.40f;
+    UPROPERTY(Config, EditAnywhere, Category="Combat Resolution", meta=(ClampMin="1", ClampMax="100000", DisplayName="Armor divisor per attacker level", ToolTip="Physical mitigation divisor; adopted at zone start."))
+    float ArmorKLevel = 100.0f;
+    UPROPERTY(Config, EditAnywhere, Category="Combat Resolution", meta=(ClampMin="0.0", ClampMax="0.85", DisplayName="Armor reduction cap", ToolTip="Physical mitigation cap; adopted at zone start."))
+    float ArmorReductionCap = 0.85f;
+    UPROPERTY(Config, EditAnywhere, Category="Combat Resolution", meta=(ClampMin="1", ClampMax="100000", DisplayName="Resistance divisor per attacker level", ToolTip="Magic mitigation divisor; adopted at zone start."))
+    float ResistK = 5.0f;
+    UPROPERTY(Config, EditAnywhere, Category="Combat Resolution", meta=(ClampMin="0.0", ClampMax="0.75", DisplayName="Resistance reduction cap", ToolTip="Magic mitigation cap; adopted at zone start."))
+    float ResistReductionCap = 0.75f;
+    UPROPERTY(Config, EditAnywhere, Category="Combat Resolution", meta=(ClampMin="0.0", ClampMax="0.60", DisplayName="Armor penetration cap", ToolTip="Maximum percent armor ignored; adopted at zone start."))
+    float ArmorPenetrationCap = 0.60f;
+    UPROPERTY(Config, EditAnywhere, Category="Combat Resolution", meta=(ClampMin="0.0", ClampMax="0.60", DisplayName="Magic penetration cap", ToolTip="Maximum percent resistance ignored; adopted at zone start."))
+    float MagicPenetrationCap = 0.60f;
     UPROPERTY(Config, EditAnywhere, Category="Pilot Balance", meta=(ClampMin="0.3", ClampMax="5.0", Units="s"))
     float PlayerMeleeCooldownSeconds = 0.8f;
     UPROPERTY(Config, EditAnywhere, Category="Pilot Balance", meta=(ClampMin="0.5", ClampMax="5.0", Units="s"))

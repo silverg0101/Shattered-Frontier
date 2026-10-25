@@ -220,6 +220,20 @@ bool USFCombatPilotSettings::Validate(FString& Error) const
         !FMath::IsWithinInclusive(FallSpeedThresholdMps, 0.0f, 50.0f) ||
         PlayerMeleeDamage < 1 || PlayerMeleeDamage > 100 || BoarMeleeDamage < 1 || BoarMeleeDamage > 100 ||
         !FMath::IsWithinInclusive(BoarDodgeChance, 0.0f, 0.5f) ||
+        !FMath::IsWithinInclusive(BoarParryChance, 0.0f, 0.5f) ||
+        !FMath::IsWithinInclusive(AvoidanceCap, 0.0f, 0.5f) ||
+        !FMath::IsWithinInclusive(FrontArcDegrees, 1.0f, 360.0f) ||
+        !FMath::IsWithinInclusive(MissCap, 0.0f, 0.30f) ||
+        !FMath::IsWithinInclusive(CritCap, 0.0f, 0.60f) ||
+        !FMath::IsWithinInclusive(CritDamageCap, 1.0f, 3.0f) ||
+        !FMath::IsWithinInclusive(BlockCap, 0.0f, 0.75f) ||
+        !FMath::IsWithinInclusive(BlockReductionCap, 0.0f, 0.40f) ||
+        !FMath::IsWithinInclusive(ArmorKLevel, 1.0f, 100000.0f) ||
+        !FMath::IsWithinInclusive(ArmorReductionCap, 0.0f, 0.85f) ||
+        !FMath::IsWithinInclusive(ResistK, 1.0f, 100000.0f) ||
+        !FMath::IsWithinInclusive(ResistReductionCap, 0.0f, 0.75f) ||
+        !FMath::IsWithinInclusive(ArmorPenetrationCap, 0.0f, 0.60f) ||
+        !FMath::IsWithinInclusive(MagicPenetrationCap, 0.0f, 0.60f) ||
         !FMath::IsWithinInclusive(PlayerMeleeCooldownSeconds, 0.3f, 5.0f) ||
         !FMath::IsWithinInclusive(BoarMeleeCooldownSeconds, 0.5f, 5.0f) ||
         !FMath::IsWithinInclusive(MeleeRangeMetres, 1.0f, 5.0f) ||
@@ -1022,6 +1036,17 @@ void ASFGameMode::TickCombat()
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
 void ASFGameMode::TickGreenlandsDeathNetcheck()
 {
+    // The reconnect fixture starts both clients together; resolve their durable identities
+    // after restoration instead of depending on which editor process joins first.
+    GreenlandsDriverController.Reset();
+    GreenlandsObserverController.Reset();
+    for (auto It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+    {
+        APlayerController* Controller = It->Get();
+        const FString Id = ThreatIdentity(Controller);
+        if (Id == TEXT("chr_dev_alpha")) { GreenlandsDriverController = Controller; }
+        else if (Id == TEXT("chr_dev_beta")) { GreenlandsObserverController = Controller; }
+    }
     auto* Driver = Cast<ASFE1Character>(GreenlandsDriverController.IsValid() ? GreenlandsDriverController->GetPawn() : nullptr);
     auto* Observer = Cast<ASFE1Character>(GreenlandsObserverController.IsValid() ? GreenlandsObserverController->GetPawn() : nullptr);
     if (!Driver || !Observer || USFCharacterSessionComponent::IsRestoring(Driver->GetController()) ||
@@ -1352,6 +1377,53 @@ void ASFGameMode::SpawnSlot(const FString& Group, int32 Slot, int32 Cycle, const
     UE_LOG(LogTemp, Display, TEXT("COMBAT_PILOT_BOAR_SPAWN Group=%s Slot=%d Cycle=%d Point=%s"), *Group, Slot, Cycle, *PointId);
 }
 
+SFCombatResolution::FResult ASFGameMode::ResolveCombatAttack(AActor* Attacker,
+    const SFCombatResolution::FAttack& Attack, double FixtureAvoidanceDraw)
+{
+    if (!IsValid(Attacker) || !Attacker->HasAuthority()) { return {}; }
+    FRandomStream* Stream = nullptr;
+    if (ASFE1Character* Player = Cast<ASFE1Character>(Attacker))
+    {
+        Stream = PlayerCombatStreams.Find(Player);
+        if (!Stream)
+        {
+            const FString Id = ThreatIdentity(Cast<APlayerController>(Player->GetController()));
+            Stream = &PlayerCombatStreams.Add(Player, FRandomStream(GetTypeHash(Id)));
+        }
+    }
+    else if (ASFPilotBoar* Boar = Cast<ASFPilotBoar>(Attacker))
+    {
+        Stream = BoarCombatStreams.Find(Boar);
+        if (!Stream) { Stream = &BoarCombatStreams.Add(Boar, FRandomStream(GetTypeHash(Boar->DeathId()))); }
+    }
+    if (!Stream) { return {}; }
+    SFCombatResolution::FDraws Draws = SFCombatResolution::Draw(*Stream);
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    if (FixtureAvoidanceDraw >= 0) { Draws.Avoid = FixtureAvoidanceDraw; }
+#endif
+    SFCombatResolution::FAttack Tuned = Attack;
+    if (CapturedSettings)
+    {
+        Tuned.AvoidanceCap = CapturedSettings->AvoidanceCap;
+        Tuned.MissCap = CapturedSettings->MissCap;
+        Tuned.CritCap = CapturedSettings->CritCap;
+        Tuned.CritDamageCap = CapturedSettings->CritDamageCap;
+        Tuned.BlockCap = CapturedSettings->BlockCap;
+        Tuned.BlockReductionCap = CapturedSettings->BlockReductionCap;
+        Tuned.ArmorKLevel = CapturedSettings->ArmorKLevel;
+        Tuned.ArmorReductionCap = CapturedSettings->ArmorReductionCap;
+        Tuned.ResistK = CapturedSettings->ResistK;
+        Tuned.ResistReductionCap = CapturedSettings->ResistReductionCap;
+        Tuned.ArmorPenetrationCap = CapturedSettings->ArmorPenetrationCap;
+        Tuned.MagicPenetrationCap = CapturedSettings->MagicPenetrationCap;
+    }
+    const SFCombatResolution::FResult Result = SFCombatResolution::Resolve(Tuned, Draws);
+    UE_LOG(LogTemp, Display, TEXT("COMBAT_RESOLUTION_SERVER Source=%s Outcome=%s Damage=%d Draws=%.3f,%.3f,%.3f,%.3f,%.3f"),
+        *GetNameSafe(Attacker), SFCombatResolution::Name(Result.Outcome), Result.Damage,
+        Draws.Hit, Draws.Avoid, Draws.Crit, Draws.Block, Draws.Spread);
+    return Result;
+}
+
 void ASFGameMode::TryPlayerAttack(ASFE1Character* Attacker, AActor* SelectedTarget)
 {
     if (!bPilotActive || !CapturedSettings->bCombatAvailable || !IsValid(Attacker) || Attacker->CombatHealth() <= 0 ||
@@ -1381,38 +1453,33 @@ void ASFGameMode::TryPlayerAttack(ASFE1Character* Attacker, AActor* SelectedTarg
     }
     if (!Best) { return; }
     PlayerNextSwing.Add(Attacker, Now + CapturedSettings->PlayerMeleeCooldownSeconds);
-    if (GetWorld()->GetOutermost()->GetName() == TEXT("/Game/Frontier/Maps/Sandbox/SB_Dodge"))
-    {
-        FRandomStream* Stream = PlayerCombatStreams.Find(Attacker);
-        if (!Stream)
-        {
-            const FString Id = ThreatIdentity(Cast<APlayerController>(Attacker->GetController()));
-            Stream = &PlayerCombatStreams.Add(Attacker, FRandomStream(GetTypeHash(Id)));
-        }
-        const double HitDraw = Stream->FRand();
-        double AvoidanceDraw = Stream->FRand();
-        const double CritDraw = Stream->FRand();
-        const double BlockDraw = Stream->FRand();
-        const double SpreadDraw = Stream->FRand();
-        (void)HitDraw; (void)CritDraw; (void)BlockDraw; (void)SpreadDraw;
+    SFCombatResolution::FAttack Attack;
+    Attack.RawDamage = CapturedSettings->PlayerMeleeDamage + SFGear::Equipped(Attacker->GetController()).Damage;
+    Attack.bFrontArc = SFBoarDodgeRules::IsInFrontArc(Best->GetActorForwardVector(),
+        Attacker->GetActorLocation() - Best->GetActorLocation(), CapturedSettings->FrontArcDegrees);
+    const FString Map = GetWorld()->GetOutermost()->GetName();
+    const bool bBoarAvoidance = Map == TEXT("/Game/Frontier/Maps/Sandbox/SB_Dodge") ||
+        Map == TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook");
+    Attack.bCanDodge = bBoarAvoidance && Attack.bFrontArc;
+    Attack.bCanParry = bBoarAvoidance && Attack.bFrontArc;
+    Attack.DodgeChance = CapturedSettings->BoarDodgeChance;
+    Attack.ParryChance = CapturedSettings->BoarParryChance;
+    double FixtureDraw = -1;
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
-        if (FParse::Param(FCommandLine::Get(), TEXT("DodgeScenario")))
-        {
-            const int32 Swing = ++DodgeScenarioSwings.FindOrAdd(Attacker);
-            if (Swing <= 2) { AvoidanceDraw = Swing == 1 ? 0.01 : 0.5; }
-        }
-#endif
-        const bool bFront = SFBoarDodgeRules::IsInFrontArc(Best->GetActorForwardVector(), Attacker->GetActorLocation() - Best->GetActorLocation());
-        if (SFBoarDodgeRules::Dodges(Best->GetActorForwardVector(), Attacker->GetActorLocation() - Best->GetActorLocation(),
-            AvoidanceDraw, CapturedSettings->BoarDodgeChance))
-        {
-            Best->ReceivePilotDodge(Attacker);
-            UE_LOG(LogTemp, Display, TEXT("BOAR_DODGE_SERVER Dodge=1 HP=%d Front=%d Draw=%.3f"), Best->Health(), bFront ? 1 : 0, AvoidanceDraw);
-            return;
-        }
-        UE_LOG(LogTemp, Display, TEXT("BOAR_DODGE_SERVER Dodge=0 HP=%d Front=%d Draw=%.3f"), Best->Health(), bFront ? 1 : 0, AvoidanceDraw);
+    if (FParse::Param(FCommandLine::Get(), TEXT("DodgeScenario")) ||
+        FParse::Param(FCommandLine::Get(), TEXT("GreenlandsBoarNetcheck")))
+    {
+        const int32 Swing = ++DodgeScenarioSwings.FindOrAdd(Attacker);
+        if (Swing <= 3) { FixtureDraw = Swing == 1 ? 0.01 : 0.5; }
     }
-    Best->ReceivePilotDamage(Attacker, CapturedSettings->PlayerMeleeDamage + SFGear::Equipped(Attacker->GetController()).Damage);
+#endif
+    const auto Result = ResolveCombatAttack(Attacker, Attack, FixtureDraw);
+    if (Map == TEXT("/Game/Frontier/Maps/Sandbox/SB_Dodge") && FixtureDraw >= 0)
+    { UE_LOG(LogTemp, Display, TEXT("BOAR_DODGE_SERVER Dodge=%d HP=%d Front=%d Draw=%.3f"),
+        Result.Outcome == SFCombatResolution::EOutcome::Dodge ? 1 : 0, Best->Health(),
+        Attack.bFrontArc ? 1 : 0, FixtureDraw); }
+    if (Result.Damage <= 0) { Best->ReceivePilotDodge(Attacker); return; }
+    Best->ReceivePilotDamage(Attacker, Result.Damage);
 }
 
 bool ASFGameMode::TryPlayerTaunt(ASFE1Character* Taunter, AActor* SelectedTarget)
@@ -1446,7 +1513,13 @@ void ASFGameMode::TryBoarAttack(ASFPilotBoar* Boar, ASFE1Character* Victim)
         Boar->Health() <= 0 || Victim->CombatHealth() <= 0 || IsSafe(Boar->GetActorLocation()) ||
         IsSafe(Victim->GetActorLocation()) ||
         FVector::Dist2D(Boar->GetActorLocation(), Victim->GetActorLocation()) > CapturedSettings->MeleeRangeMetres*100) return;
-    HitPlayer(Boar, Victim, CapturedSettings->BoarMeleeDamage);
+    SFCombatResolution::FAttack Attack;
+    Attack.RawDamage = CapturedSettings->BoarMeleeDamage;
+    Attack.bFrontArc = SFBoarDodgeRules::IsInFrontArc(Victim->GetActorForwardVector(),
+        Boar->GetActorLocation() - Victim->GetActorLocation(), CapturedSettings->FrontArcDegrees);
+    Attack.PilotFlatArmor = SFGear::Equipped(Victim->GetController()).Armor;
+    const auto Result = ResolveCombatAttack(Boar, Attack);
+    if (Result.Damage > 0) { HitPlayer(Boar, Victim, Result.Damage, true); }
 }
 
 void ASFGameMode::ApplyFallDamage(ASFE1Character* Victim, float ImpactSpeedMps)
@@ -1876,6 +1949,7 @@ void ASFGameMode::RetryDefeatReward(const FString& DeathId, const FString& Servi
 void ASFGameMode::BoarDied(ASFPilotBoar* Boar, ASFE1Character* Killer)
 {
     if (!bPilotActive || !IsValid(Boar)) { return; }
+    BoarCombatStreams.Remove(Boar);
     if (bCompanionSandbox)
     {
         if (GetWorld()->GetOutermost()->GetName() == TEXT("/Game/Frontier/Maps/Sandbox/SB_PersonalLoot"))

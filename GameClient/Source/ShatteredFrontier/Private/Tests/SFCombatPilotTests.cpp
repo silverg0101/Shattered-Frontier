@@ -3,12 +3,84 @@
 #include "Combat/SFCombatPilotRewards.h"
 #include "Combat/SFAutoAttackRules.h"
 #include "Combat/SFBoarDodgeRules.h"
+#include "Combat/SFCombatResolution.h"
 #include "Characters/SFE1Character.h"
 #include "Services/SFGameplayServicesClient.h"
 #include "GameFramework/PlayerController.h"
 #include "Misc/AutomationTest.h"
 #include "Tests/AutomationCommon.h"
 #include "Engine/World.h"
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFCombatResolutionTest,
+    "ShatteredFrontier.Combat.Resolution.OrderAndValues",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+
+bool FSFCombatResolutionTest::RunTest(const FString& Parameters)
+{
+    using namespace SFCombatResolution;
+    FRandomStream Stream(9001), Expected(9001);
+    const FDraws Seeded = Draw(Stream);
+    TestEqual(TEXT("Hit draw first"), Seeded.Hit, double(Expected.FRand()));
+    TestEqual(TEXT("Avoidance draw second"), Seeded.Avoid, double(Expected.FRand()));
+    TestEqual(TEXT("Crit draw third"), Seeded.Crit, double(Expected.FRand()));
+    TestEqual(TEXT("Block draw fourth"), Seeded.Block, double(Expected.FRand()));
+    TestEqual(TEXT("Spread draw fifth"), Seeded.Spread, double(Expected.FRand()));
+    TestEqual(TEXT("Exactly five draws consumed"), double(Stream.FRand()), double(Expected.FRand()));
+
+    FAttack Attack;
+    Attack.RawDamage = 100;
+    Attack.bFrontArc = true;
+    Attack.bCanMiss = Attack.bCanDodge = Attack.bCanParry = Attack.bCanCrit = Attack.bCanBlock = true;
+    Attack.MissChance = .1; Attack.DodgeChance = .3; Attack.ParryChance = .3;
+    Attack.AvoidanceCap = GetDefault<USFCombatPilotSettings>()->AvoidanceCap;
+    Attack.CritChance = .2; Attack.CritDamage = 2;
+    Attack.BlockChance = .5; Attack.BlockReduction = .3;
+    const auto* Settings = GetDefault<USFCombatPilotSettings>();
+    Attack.ArmorKLevel = Settings->ArmorKLevel; Attack.ArmorReductionCap = Settings->ArmorReductionCap;
+    Attack.ResistK = Settings->ResistK; Attack.ResistReductionCap = Settings->ResistReductionCap;
+    Attack.ArmorPenetrationCap = Settings->ArmorPenetrationCap;
+    Attack.MagicPenetrationCap = Settings->MagicPenetrationCap;
+    Attack.bHasArmorSnapshot = true; Attack.Armor = 100; Attack.AttackerLevel = 1;
+    FDraws D{.05, .1, .1, .1, .5};
+    TestEqual(TEXT("Miss precedes all later outcomes"), Resolve(Attack, D).Outcome, EOutcome::Miss);
+    D.Hit = .5;
+    TestEqual(TEXT("Scaled dodge precedes parry"), Resolve(Attack, D).Outcome, EOutcome::Dodge);
+    D.Avoid = .3;
+    TestEqual(TEXT("Parry uses the same avoidance draw"), Resolve(Attack, D).Outcome, EOutcome::Parry);
+    D.Avoid = .9;
+    const FResult CritBlock = Resolve(Attack, D);
+    TestEqual(TEXT("Crit then armor then block"), CritBlock.Outcome, EOutcome::CritBlock);
+    TestEqual(TEXT("200 raw, 50 percent armor, 30 percent block"), CritBlock.Damage, 70);
+    Attack.bPhysical = false; Attack.bSpell = true; Attack.bFrontArc = false;
+    Attack.bHasResistanceSnapshot = true; Attack.Resistance = 5;
+    D.Hit = .05;
+    TestEqual(TEXT("Spell miss is resist"), Resolve(Attack, D).Outcome, EOutcome::Resist);
+    D.Hit = .5; D.Crit = .9; D.Block = .9;
+    TestEqual(TEXT("Spell resistance uses resist divisor"), Resolve(Attack, D).Damage, 50);
+    Attack.MagicPenetrationFraction = 0.60;
+    TestEqual(TEXT("Magic penetration uses the design cap"), Resolve(Attack, D).Damage, 71);
+    Attack.MagicPenetrationFraction = 0;
+    Attack.Absorb = 100;
+    TestEqual(TEXT("Full absorb has its own outcome"), Resolve(Attack, D).Outcome, EOutcome::Absorb);
+    FAttack Unbound;
+    Unbound.RawDamage = 2.5;
+    Unbound.bFrontArc = true;
+    Unbound.DodgeChance = 1;
+    Unbound.CritChance = 1;
+    Unbound.Armor = 10000;
+    Unbound.AttackerLevel = 1;
+    TestEqual(TEXT("Unavailable outcomes and armor snapshot stay off; half rounds up"),
+        Resolve(Unbound, FDraws{}).Damage, 3);
+    Unbound.RawDamage = 0.1;
+    TestEqual(TEXT("Nonzero unabsorbed hit remains at least one"), Resolve(Unbound, FDraws{}).Damage, 1);
+    Unbound.RawDamage = 100; Unbound.bHasSpread = true;
+    Unbound.SpreadWeaponDamage = 40; Unbound.SpreadMinimum = .85; Unbound.SpreadMaximum = 1.15;
+    FDraws SpreadDraws; SpreadDraws.Spread = 1;
+    TestEqual(TEXT("Spread changes weapon portion, not power portion"), Resolve(Unbound, SpreadDraws).Damage, 106);
+    Unbound.bHasSpread = false; Unbound.RawDamage = 14; Unbound.PilotFlatArmor = 5;
+    TestEqual(TEXT("Starter gear flat armor preserves boar damage"), Resolve(Unbound, FDraws{}).Damage, 9);
+    return true;
+}
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFBoarDodgeRulesTest,
     "ShatteredFrontier.Combat.Pilot.BoarDodge",
@@ -26,6 +98,8 @@ bool FSFBoarDodgeRulesTest::RunTest(const FString& Parameters)
         SFBoarDodgeRules::Dodges(FVector::ForwardVector, FVector(-1, 0, 0), 0.0, Settings->BoarDodgeChance));
     TestTrue(TEXT("Side boundary remains in front half"),
         SFBoarDodgeRules::IsInFrontArc(FVector::ForwardVector, FVector(0, 1, 0)));
+    TestFalse(TEXT("Narrow configured arc excludes the side"),
+        SFBoarDodgeRules::IsInFrontArc(FVector::ForwardVector, FVector(0, 1, 0), 90.0));
     return true;
 }
 

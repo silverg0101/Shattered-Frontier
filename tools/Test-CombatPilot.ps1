@@ -320,8 +320,8 @@ try {
                 $identity = $names[$role - 1]
                 $label = if ($role -eq 1) { 'Driver' } else { 'Observer' }
                 $null = Start-Owned "client$role-rejoin" ("127.0.0.1:$Port`?SFDevCharacter=$identity") @('-game','-GreenlandsDeathNetcheck','-DeathRestoreOnly',"-GreenlandsDeathRole=$label","-DeathResolution=$DeathResolution")
-                if ($role -eq 1) { Wait-Log $server 'server2' 'COMBAT_DEATH_RESTORED Event=' }
             }
+            Wait-Log $server 'server2' 'COMBAT_DEATH_RESTORED Event='
         }
         $serverName = if ($RestartMidDeath) { 'server2' } else { 'server' }
         $clientSuffix = if ($RestartMidDeath) { '-rejoin' } else { '' }
@@ -333,16 +333,17 @@ try {
             $label = if ($role -eq 1) { 'Driver' } else { 'Observer' }
             $name = "client$role$clientSuffix"
             $process = @($owned | Where-Object { $_.Id -eq (@($result.runs | Where-Object name -eq $name)[0].pid) })[0]
-            Wait-Log $process $name "GREENLANDS_DEATH_CLIENT_REPLAY_SAFE Role=$label HP=$expected"
+            Wait-Log $process $name "GREENLANDS_DEATH_CLIENT_REPLAY_SAFE Role=$label HP=\d+"
             $lines = Get-Content -LiteralPath (Join-Path $root "$name.log") -Raw
             if ($lines -notmatch "GREENLANDS_DEATH_CLIENT_DEAD Role=$label HP=0" -or
                 $lines -notmatch "GREENLANDS_DEATH_CLIENT_RESTORED Role=$label Mode=$DeathResolution HP=$expected") {
                 throw "$label did not observe boar death and $DeathResolution health"
             }
-            $clientPosition = [regex]::Match($lines,"GREENLANDS_DEATH_CLIENT_REPLAY_SAFE Role=$label HP=$expected X=(-?\d+) Y=(-?\d+)")
+            $clientPosition = [regex]::Match($lines,"GREENLANDS_DEATH_CLIENT_REPLAY_SAFE Role=$label HP=(\d+) X=(-?\d+) Y=(-?\d+)")
             if (-not $clientPosition.Success -or
-                [math]::Abs([int]$clientPosition.Groups[1].Value - [int]$serverPosition.Groups[1].Value) -gt 200 -or
-                [math]::Abs([int]$clientPosition.Groups[2].Value - [int]$serverPosition.Groups[2].Value) -gt 200) {
+                [int]$clientPosition.Groups[1].Value -gt $expected -or
+                [math]::Abs([int]$clientPosition.Groups[2].Value - [int]$serverPosition.Groups[1].Value) -gt 200 -or
+                [math]::Abs([int]$clientPosition.Groups[3].Value - [int]$serverPosition.Groups[2].Value) -gt 200) {
                 throw "$label missed the authoritative $DeathResolution position"
             }
         }

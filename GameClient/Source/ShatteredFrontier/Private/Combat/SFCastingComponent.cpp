@@ -3,6 +3,7 @@
 #include "Characters/SFE1Character.h"
 #include "Combat/SFCrowdControlComponent.h"
 #include "Combat/SFCombatPilot.h"
+#include "Framework/SFGameMode.h"
 #include "Combat/SFPlayerInterruptRules.h"
 #include "Components/StaticMeshComponent.h"
 #include "Engine/StaticMesh.h"
@@ -340,7 +341,14 @@ void USFCastingComponent::ResolveTick(uint8 AbilityId)
     if (Owner && Target.IsValid() && Target->GetTrainingHealth() > 0 &&
         FVector::Dist(Owner->GetActorLocation(), Target->GetActorLocation()) <= RangeMetres * 100.0)
     {
-        Target->ReceiveTrainingDamage(DamagePerTick);
+        ASFGameMode* Mode = GetWorld()->GetAuthGameMode<ASFGameMode>();
+        if (!Mode) { return; }
+        SFCombatResolution::FAttack Attack;
+        Attack.RawDamage = DamagePerTick;
+        Attack.bSpell = true;
+        Attack.bPhysical = false;
+        const auto Result = Mode->ResolveCombatAttack(Owner, Attack);
+        if (Result.Damage > 0) { Target->ReceiveTrainingDamage(Result.Damage); }
         UE_LOG(LogTemp, Display, TEXT("CASTING_SERVER_TICK Ability=%d Health=%d"), AbilityId, Target->GetTrainingHealth());
     }
 }

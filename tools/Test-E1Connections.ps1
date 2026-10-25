@@ -1050,22 +1050,31 @@ try {
         $autoDone = Select-String -LiteralPath $serverLog -Pattern 'BOAR_GREENLANDS_AUTO_DONE Health=20' | Select-Object -First 1
         $autoToggles = @(Select-String -LiteralPath $serverLog -Pattern 'AUTO_ATTACK_SERVER_TOGGLE Enabled=([01]) T=([\d.]+)')
         $autoSwings = @(Select-String -LiteralPath $serverLog -Pattern 'AUTO_ATTACK_SERVER_SWING T=([\d.]+) Target=\S+ Health=(\d+)')
-        if (-not $autoReady -or -not $autoStopped -or -not $autoDone -or $autoToggles.Count -ne 2 -or $autoSwings.Count -ne 2 -or
+        $resolutions = @(Select-String -LiteralPath $serverLog -Pattern 'COMBAT_RESOLUTION_SERVER Source=SFE1Character_\d+ Outcome=(dodge|hit) Damage=(\d+) Draws=[\d.]+,(0\.010|0\.500)')
+        if (-not $autoReady -or -not $autoStopped -or -not $autoDone -or $autoToggles.Count -ne 2 -or $autoSwings.Count -ne 3 -or
             $autoToggles[0].Matches[0].Groups[1].Value -ne '1' -or $autoToggles[1].Matches[0].Groups[1].Value -ne '0' -or
-            $autoSwings[0].Matches[0].Groups[2].Value -ne '40' -or $autoSwings[1].Matches[0].Groups[2].Value -ne '20' -or
+            $autoSwings[0].Matches[0].Groups[2].Value -ne '60' -or $autoSwings[1].Matches[0].Groups[2].Value -ne '40' -or
+            $autoSwings[2].Matches[0].Groups[2].Value -ne '20' -or $resolutions.Count -lt 3 -or
+            $resolutions[0].Matches[0].Groups[1].Value -ne 'dodge' -or
+            $resolutions[1].Matches[0].Groups[1].Value -ne 'hit' -or
+            $resolutions[2].Matches[0].Groups[1].Value -ne 'hit' -or
+            $resolutions[0].Matches[0].Groups[2].Value -ne '0' -or
+            $resolutions[1].Matches[0].Groups[2].Value -ne '20' -or
+            $resolutions[2].Matches[0].Groups[2].Value -ne '20' -or
             $autoReady.LineNumber -ge $autoToggles[0].LineNumber -or
             $autoToggles[0].LineNumber -ge $autoSwings[0].LineNumber -or
             $autoSwings[0].LineNumber -ge $autoSwings[1].LineNumber -or
-            $autoSwings[1].LineNumber -ge $autoToggles[1].LineNumber -or
+            $autoSwings[1].LineNumber -ge $autoSwings[2].LineNumber -or
+            $autoSwings[2].LineNumber -ge $autoToggles[1].LineNumber -or
             $autoToggles[1].LineNumber -ge $autoStopped.LineNumber -or
             $autoStopped.LineNumber -ge $autoDone.LineNumber) {
-            throw 'Greenlands auto attack missed ordered client toggle, two hits, threat and stop'
+            throw 'Greenlands auto attack missed ordered server dodge, two hits, threat and stop'
         }
         $number = [Globalization.CultureInfo]::InvariantCulture
-        $swingGap = [double]::Parse($autoSwings[1].Matches[0].Groups[1].Value,$number) -
-            [double]::Parse($autoSwings[0].Matches[0].Groups[1].Value,$number)
-        $stopGap = [double]::Parse($autoToggles[1].Matches[0].Groups[2].Value,$number) -
+        $swingGap = [double]::Parse($autoSwings[2].Matches[0].Groups[1].Value,$number) -
             [double]::Parse($autoSwings[1].Matches[0].Groups[1].Value,$number)
+        $stopGap = [double]::Parse($autoToggles[1].Matches[0].Groups[2].Value,$number) -
+            [double]::Parse($autoSwings[2].Matches[0].Groups[1].Value,$number)
         if ($swingGap -lt 1.95 -or $swingGap -gt 2.5 -or $stopGap -gt 1.0) {
             throw "Greenlands unarmed cadence or stop delayed: swing=$swingGap stop=$stopGap"
         }
@@ -1089,9 +1098,10 @@ try {
             $autoSamples = @([regex]::Matches($s,"BOAR_GREENLANDS_SAMPLE Role=$role Stage=(13|14) .*LeadHP=(60|40|20) .*LeadTarget=(Self|Other)") |
                 ForEach-Object { [pscustomobject]@{ Stage=[int]$_.Groups[1].Value; HP=[int]$_.Groups[2].Value; Target=$_.Groups[3].Value } })
             $autoTarget = if ($role -eq 'Driver') { 'Self' } else { 'Other' }
-            if (@($autoSamples | Where-Object { $_.HP -eq 40 -and $_.Target -eq $autoTarget }).Count -eq 0 -or
+            if (@($autoSamples | Where-Object { $_.HP -eq 60 -and $_.Target -eq $autoTarget }).Count -eq 0 -or
+                @($autoSamples | Where-Object { $_.HP -eq 40 -and $_.Target -eq $autoTarget }).Count -eq 0 -or
                 @($autoSamples | Where-Object { $_.HP -eq 20 -and $_.Target -eq $autoTarget }).Count -eq 0) {
-                throw "$role missed replicated auto attack damage and threat"
+                throw "$role missed replicated dodge threat and auto attack damage"
             }
             if ($role -eq 'Driver' -and ($s -notmatch 'BOAR_GREENLANDS_AUTO_CLIENT_START' -or
                 $s -notmatch 'BOAR_GREENLANDS_AUTO_CLIENT_STOP Health=20')) {
@@ -1124,7 +1134,7 @@ try {
                 throw "$role missed replicated inn rest healing"
             }
         }
-        Write-Output "PASS: Greenlands 2.0 s unarmed auto attack ($swingGap s observed), client stop, boar threat, ordinary healing ($ordinaryGain HP/tick), Golden Stag rest healing ($restedGain HP/tick), client kill and rotated slot respawn on both clients. Logs: $logs"
+        Write-Output "PASS: Greenlands server dodge and two 2.0 s unarmed hits ($swingGap s observed), client stop, boar threat, ordinary healing ($ordinaryGain HP/tick), Golden Stag rest healing ($restedGain HP/tick), client kill and rotated slot respawn on both clients. Logs: $logs"
     }
     Write-Output "PASS: separate editor server and $Clients client(s) connected; $Clients server-authoritative possession(s). Logs: $logs"
     if (-not $InterruptScenario -and -not $CastingScenario -and -not $EvadeScenario -and -not $ThreatScenario -and -not $TauntScenario -and -not $AggroScenario -and -not $MemoryScenario -and -not $RegenScenario -and -not $RestRegenScenario -and -not $FallScenario -and -not $SwimScenario -and -not $CrouchScenario -and -not $BackpedalScenario -and -not $RoadScenario -and -not $SnowScenario -and -not $TravelMountScenario -and -not $AssistScenario -and -not $RespawnScenario -and -not $AutoAttackScenario -and -not $DodgeScenario -and -not $UnstuckScenario -and -not $SpiritReleaseScenario -and -not $ResurrectionAcceptScenario -and -not $GreenlandsBoarNetcheck -and -not $GreenlandsEnvironmentNetcheck -and -not $GreenlandsMovementNetcheck) { Write-Output 'Headless connection check only: movement, rendering, lifecycle cleanup, authentication and Linux runtime are not certified.' }

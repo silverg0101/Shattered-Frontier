@@ -106,6 +106,7 @@ private:
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     int32 GreenlandsDeathClientStage = 0;
     double GreenlandsDeathClientAt = 0;
+    double GreenlandsDeathPeerAt = -1;
     uint32 GreenlandsDeathAcceptedOffer = 0;
     double GreenlandsNextSampleAt = 0;
     double GreenlandsNextAttackAt = 0;

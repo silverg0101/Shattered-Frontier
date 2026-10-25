@@ -3,6 +3,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "Party/SFPartyModel.h"
 #include "Math/RandomStream.h"
+#include "Combat/SFCombatResolution.h"
 #include "SFGameMode.generated.h"
 
 class ASFPlayerController;
@@ -52,6 +53,8 @@ public:
 #endif
 
     // Combat (SFCombatPilot.cpp)
+    SFCombatResolution::FResult ResolveCombatAttack(AActor* Attacker,
+        const SFCombatResolution::FAttack& Attack, double FixtureAvoidanceDraw = -1);
     void TryPlayerAttack(ASFE1Character* Attacker, AActor* SelectedTarget = nullptr);
     bool TryPlayerTaunt(ASFE1Character* Taunter, AActor* SelectedTarget);
     void TryBoarAttack(ASFPilotBoar* Boar, ASFE1Character* Victim);
@@ -163,6 +166,7 @@ private:
     TMap<FString, TArray<double>> LeashEvadesByGroupAndCharacter;
     TMap<TWeakObjectPtr<ASFE1Character>, double> PlayerNextSwing;
     TMap<TWeakObjectPtr<ASFE1Character>, FRandomStream> PlayerCombatStreams;
+    TMap<TWeakObjectPtr<ASFPilotBoar>, FRandomStream> BoarCombatStreams;
     TMap<TWeakObjectPtr<ASFE1Character>, int32> DodgeScenarioSwings;
     TMap<TWeakObjectPtr<ASFE1Character>, FString> PlayerDeathEvents;
     TMap<TWeakObjectPtr<ASFE1Character>, FVector> PlayerDeathRespawnPoints;
