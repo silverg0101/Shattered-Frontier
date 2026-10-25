@@ -2,6 +2,7 @@
 
 #include "Engine/DeveloperSettings.h"
 #include "Construction/SFConstructionNetwork.h"
+#include "Combat/SFNpcProfiles.h"
 #include "GameFramework/Character.h"
 #include "SFCombatPilot.generated.h"
 
@@ -306,7 +307,9 @@ public:
     ASFE1Character* ThreatTarget() const { return ReplicatedTarget; }
     bool HasThreatFor(const ASFE1Character* Character) const;
     bool ReceivePackAssist(ASFE1Character* Character, const FString& CharacterId);
-    bool IsRangedArcher() const { return CreatureId == TEXT("npc/bandit_archer"); }
+    const SFNpcProfiles::FProfile* GetNpcProfile() const { return SFNpcProfiles::Find(CreatureId); }
+    bool IsRangedArcher() const { const auto* P = GetNpcProfile(); return P && P->IsRanged(); }
+    bool CanCastMend() const { const auto* P = GetNpcProfile(); return P && P->CanMend(); }
     UFUNCTION(NetMulticast, Unreliable) void MulticastArcherTracer(FVector_NetQuantize Start, FVector_NetQuantize End);
 private:
     void RetaliateAgainst(ASFE1Character* Attacker);

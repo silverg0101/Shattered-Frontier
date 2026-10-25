@@ -409,24 +409,17 @@ bool ASFPilotBoar::ConfigureCreature(const FString& DefinitionId)
     if (!HasAuthority()) return false;
     FString TableId;
     bool bUnique = false;
-    if (!ResolveCreatureLoot(DefinitionId, TableId, bUnique)) return false;
+    if (!ResolveCreatureLoot(DefinitionId, TableId, bUnique))
+    { UE_LOG(LogTemp, Error, TEXT("NPC_PROFILE_UNKNOWN Definition=%s"), *DefinitionId); return false; }
     CreatureId = DefinitionId; LootTableId = TableId; bSingleDrop = bUnique;
     return true;
 }
 
 bool ASFPilotBoar::ResolveCreatureLoot(const FString& DefinitionId, FString& TableId, bool& bUnique)
 {
-    static const TMap<FString, TPair<FString, bool>> Loot = {
-        {TEXT("npc/boar"), {TEXT("loot/greenlands_silverbrook_boar"), false}},
-        {TEXT("npc/wolf"), {TEXT("loot/greenlands_silverbrook_wolf"), false}},
-        {TEXT("npc/bandit_thug"), {TEXT("loot/greenlands_silverbrook_bandit_thug"), false}},
-        {TEXT("npc/bandit_archer"), {TEXT("loot/greenlands_silverbrook_bandit_archer"), false}},
-        {TEXT("npc/wolf_alpha"), {TEXT("loot/unique_greenlands_wolf_alpha"), true}},
-        {TEXT("npc/bandit_captain"), {TEXT("loot/boss_greenlands_bandit_captain"), true}}
-    };
-    const auto* Binding = Loot.Find(DefinitionId);
-    if (!Binding) return false;
-    TableId = Binding->Key; bUnique = Binding->Value;
+    const auto* Profile = SFNpcProfiles::Find(DefinitionId);
+    if (!Profile) return false;
+    TableId = Profile->LootTableId; bUnique = Profile->bSingleDrop;
     return true;
 }
 
@@ -495,7 +488,7 @@ void ASFPilotBoar::OnRep_Health()
 
 void ASFPilotBoar::CompleteNpcMend(float HealthFraction)
 {
-    if (!HasAuthority() || CreatureId != TEXT("npc/bandit_captain") || CurrentHealth <= 0 || bReturning) return;
+    if (!HasAuthority() || !CanCastMend() || CurrentHealth <= 0 || bReturning) return;
     const int32 Before = CurrentHealth;
     CurrentHealth = FMath::Min(MaximumHealthValue,
         CurrentHealth + FMath::RoundToInt(MaximumHealthValue * HealthFraction));
@@ -664,7 +657,7 @@ void ASFPilotBoar::Tick(float DeltaSeconds)
     Super::Tick(DeltaSeconds);
     if (ActorHasTag(OutOfPlaceNpcTag)) return; // This NPC retaliates; it never hunts players.
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
-    if (!HasAuthority() && !bClientLoggedNpcCast && CreatureId == TEXT("npc/bandit_captain") &&
+    if (!HasAuthority() && !bClientLoggedNpcCast && CanCastMend() &&
         FParse::Param(FCommandLine::Get(), TEXT("GreenlandsAbilityNetcheck")) && Casting &&
         Casting->GetCastView().Phase == ESFCastPhase::Casting)
     {
@@ -839,7 +832,7 @@ void ASFPilotBoar::Tick(float DeltaSeconds)
             }
         }
     }
-    if (Casting && CreatureId == TEXT("npc/bandit_captain") && Victim && !bReturning)
+    if (Casting && CanCastMend() && Victim && !bReturning)
     {
         if (Casting->GetCastView().Phase == ESFCastPhase::Casting) { return; }
         if (CurrentHealth < FMath::RoundToInt(MaximumHealthValue *
@@ -3342,7 +3335,7 @@ int32 ASFGameMode::RewardKill(ASFPilotBoar* Boar, ASFE1Character* Killer)
         }
         return 0;
     }
-    if (Boar->GetCreatureId() != TEXT("npc/boar")) { return 0; }
+    if (!Boar->GetNpcProfile() || !Boar->GetNpcProfile()->bLocalHidesFixture) { return 0; }
     int32 Granted = 0;
     for (APlayerController* Recipient : Eligible)
     {

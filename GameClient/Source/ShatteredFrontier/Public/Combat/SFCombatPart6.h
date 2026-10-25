@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Combat/SFCombatResolution.h"
+#include "Combat/SFNpcProfiles.h"
 #include "Engine/World.h"
 #include "Misc/CommandLine.h"
 #include "Misc/Parse.h"
@@ -118,7 +119,7 @@ namespace SFCombatPart6
     inline double UnarmedDps(int32 Level, double Factor = .40, double WeaponDpsK = 4.0)
     { return Factor * WeaponDpsK * Budget(4 * FMath::Clamp(Level, 1, 20)); }
 
-    // Part 6 §5 release content. Utility abilities have no power coefficient;
+    // Part 6 Ã‚Â§5 release content. Utility abilities have no power coefficient;
     // second_wind is 15% maximum health rather than a weapon/power formula.
     struct FAbilityCoefficient
     {
@@ -193,20 +194,11 @@ namespace SFCombatPart6
     { return PlayerAbility(Source, Weapon, Weapon.bEquipped ? Weapon.SpeedSeconds : 2.0,
         1.0, true, Spread, PowerSpeedReference, UnarmedFactor, WeaponDpsK); }
 
-    struct FNpc
-    {
-        int32 Level = 2, Health = 489, Skill = 32;
-        double SwingSeconds = 1.6, SwingDamage = 23.5, Armor = 108,
-            Resistance = 5.4, CritChance = .056, CritDamage = 1.5;
-    };
+    using FNpc = SFNpcProfiles::FStats;
 
     inline FNpc Npc(const FString& Id)
     {
-        if (Id == TEXT("npc/wolf")) return {6, 667, 82, 1.6, 32.0, 324, 16.2, .057, 1.5};
-        if (Id == TEXT("npc/bandit_thug")) return {5, 623, 71, 2.0, 37.4, 270, 13.5, .053, 1.5};
-        if (Id == TEXT("npc/bandit_archer")) return {5, 623, 71, 2.0, 34.9, 270, 13.5, .058, 1.5};
-        if (Id == TEXT("npc/wolf_alpha")) return {7, 1779, 144, 1.6, 54.0, 378, 18.9, .057, 1.5};
-        if (Id == TEXT("npc/bandit_captain")) return {7, 3558, 194, 2.0, 95.5, 378, 18.9, .053, 1.5};
-        return {};
+        const auto* Profile = SFNpcProfiles::Find(Id);
+        return Profile ? Profile->Stats : FNpc{};
     }
 }

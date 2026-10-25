@@ -9,6 +9,9 @@
 #include "Services/SFGameplayServicesClient.h"
 #include "GameFramework/PlayerController.h"
 #include "Misc/AutomationTest.h"
+#include "Misc/Paths.h"
+#include "Misc/FileHelper.h"
+#include "HAL/FileManager.h"
 #include "Tests/AutomationCommon.h"
 #include "Engine/World.h"
 #include "Components/BoxComponent.h"
@@ -75,6 +78,7 @@ bool FSFHostileDefinitionsTest::RunTest(const FString& Parameters)
 {
     struct FExpected { const TCHAR* Creature; const TCHAR* Table; int32 Level; int32 Health; double SwingDamage; bool bSingle; };
     const FExpected Rows[] = {
+        {TEXT("npc/boar"), TEXT("loot/greenlands_silverbrook_boar"), 2, 489, 23.5, false},
         {TEXT("npc/wolf"), TEXT("loot/greenlands_silverbrook_wolf"), 6, 667, 32.0, false},
         {TEXT("npc/bandit_thug"), TEXT("loot/greenlands_silverbrook_bandit_thug"), 5, 623, 37.4, false},
         {TEXT("npc/bandit_archer"), TEXT("loot/greenlands_silverbrook_bandit_archer"), 5, 623, 34.9, false},
@@ -98,6 +102,85 @@ bool FSFHostileDefinitionsTest::RunTest(const FString& Parameters)
     bool bUnknownSingle = false;
     TestFalse(TEXT("Unknown creature cannot spawn"),
         ASFPilotBoar::ResolveCreatureLoot(TEXT("npc/unknown"), UnknownTable, bUnknownSingle));
+    FTestWorldWrapper Fixture;
+    if (!Fixture.CreateTestWorld(EWorldType::GameRPC) || !Fixture.BeginPlayInTestWorld()) return false;
+    ASFPilotBoar* Npc = Fixture.GetTestWorld()->SpawnActor<ASFPilotBoar>();
+    if (!TestNotNull(TEXT("Authoritative NPC fixture"), Npc)) return false;
+    AddExpectedError(TEXT("NPC_PROFILE_UNKNOWN Definition=npc/unknown"), EAutomationExpectedErrorFlags::Contains, 1);
+    TestFalse(TEXT("Unknown profile rejected at actor configuration"), Npc->ConfigureCreature(TEXT("npc/unknown")));
+    TestTrue(TEXT("Existing ranged profile configures"), Npc->ConfigureCreature(TEXT("npc/bandit_archer")));
+    TestTrue(TEXT("Actor ranged dispatch reads profile"), Npc->IsRangedArcher());
+    TestFalse(TEXT("Archer cannot cast mend"), Npc->CanCastMend());
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFNpcProfileCatalogueTest,
+    "ShatteredFrontier.Combat.Pilot.NpcProfileCatalogue",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+
+bool FSFNpcProfileCatalogueTest::RunTest(const FString& Parameters)
+{
+    const FString Root = FPaths::Combine(FPaths::ProjectDir(), TEXT(".."));
+    const FString ProductionRules = FPaths::Combine(Root, TEXT("content/creatures/loot_rules"));
+    const FString Fixture = FPaths::Combine(Root, TEXT("tests/fixtures/npc-profiles"));
+    const FString Scratch = FPaths::Combine(FPaths::ProjectSavedDir(), TEXT("NpcProfileTests"),
+        FGuid::NewGuid().ToString(EGuidFormats::Digits));
+    IFileManager::Get().MakeDirectory(*Scratch, true);
+    TArray<FString> Files;
+    IFileManager::Get().FindFiles(Files, *(ProductionRules / TEXT("*.json")), true, false);
+    for (const FString& File : Files)
+        IFileManager::Get().Copy(*(Scratch / File), *(ProductionRules / File));
+    IFileManager::Get().Copy(*(Scratch / TEXT("reuse_archer_fixture.json")),
+        *(Fixture / TEXT("loot_rules/reuse_archer_fixture.json")));
+
+    TMap<FString, SFNpcProfiles::FProfile> Profiles;
+    FString Error;
+    const bool bLoaded = SFNpcProfiles::Load(Fixture / TEXT("profiles.json"), Scratch, Profiles, Error);
+    TestTrue(FString::Printf(TEXT("Seven authored types load: %s"), *Error), bLoaded);
+    TestEqual(TEXT("Seven distinct IDs"), Profiles.Num(), 7);
+    const auto* Seventh = Profiles.Find(TEXT("npc/reuse_archer_fixture"));
+    if (TestNotNull(TEXT("Content-only seventh profile"), Seventh))
+    {
+        TestTrue(TEXT("Different ID dispatches ranged capability"), Seventh->IsRanged());
+        TestFalse(TEXT("Ranged profile does not inherit mend"), Seventh->CanMend());
+        const auto* Shipped = SFNpcProfiles::Find(TEXT("npc/bandit_archer"));
+        if (TestNotNull(TEXT("Shipped archer profile"), Shipped))
+        {
+            TestEqual(TEXT("Same authored damage, no species fallback"), Seventh->Stats.SwingDamage, Shipped->Stats.SwingDamage);
+            SFCombatResolution::FAttack Attack;
+            Attack.RawDamage = Seventh->Stats.SwingDamage;
+            Attack.AttackerLevel = Seventh->Stats.Level;
+            SFCombatResolution::FDraws Draws{.5, .5, .5, .5, .5};
+            TestTrue(TEXT("Content ranged profile admits and resolves a ranged hit"), Seventh->IsRanged() &&
+                SFCombatPilotRules::CanRanged(1500, GetDefault<USFCombatPilotSettings>()->ArcherRangeMetres * 100) &&
+                SFCombatResolution::Resolve(Attack, Draws).Damage > 0);
+        }
+    }
+    TestNull(TEXT("Unknown definition has no profile"), SFNpcProfiles::Find(TEXT("npc/unknown")));
+    const auto* Captain = SFNpcProfiles::Find(TEXT("npc/bandit_captain"));
+    if (TestNotNull(TEXT("Captain profile"), Captain)) TestTrue(TEXT("Mend is authored capability"), Captain->CanMend());
+
+    FString Source;
+    FFileHelper::LoadFileToString(Source, *(Fixture / TEXT("profiles.json")));
+    const TPair<FString, FString> Invalid[] = {
+        {TEXT("\"attack_kind\": \"ranged\""), TEXT("\"attack_kind\": \"magic\"")},
+        {TEXT("\"definition_id\": \"npc/boar\""), TEXT("\"definition_id\": \"NPC/boar\"")},
+        {TEXT("\"health\": 489"), TEXT("\"health\": 489.5")},
+        {TEXT("\"abilities\": []"), TEXT("\"abilities\": [\"fireball\"]")},
+        {TEXT("\"abilities\": []"), TEXT("\"abilities\": [\"mend\", \"mend\"]")},
+        {TEXT("\"crit_chance\": 0.056"), TEXT("\"crit_chance\": 1.1")},
+        {TEXT("\"definition_id\": \"npc/wolf\""), TEXT("\"definition_id\": \"npc/boar\"")},
+        {TEXT("\"loot_rule\": \"greenlands_silverbrook_boar\""), TEXT("\"loot_rule\": \"../escape\"")}
+    };
+    for (const auto& Case : Invalid)
+    {
+        const FString InvalidPath = Scratch / TEXT("invalid.json");
+        TestTrue(TEXT("Invalid test mutation applies"), Source.Contains(Case.Key));
+        FFileHelper::SaveStringToFile(Source.Replace(*Case.Key, *Case.Value), *InvalidPath);
+        TestFalse(TEXT("Invalid profile rejected transactionally"), SFNpcProfiles::Load(InvalidPath, Scratch, Profiles, Error));
+        TestEqual(TEXT("Last valid snapshot preserved"), Profiles.Num(), 7);
+    }
+    IFileManager::Get().DeleteDirectory(*Scratch, false, true);
     return true;
 }
 
