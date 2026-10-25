@@ -97,6 +97,14 @@ bool CheckGuardianHealing(FAutomationTestBase& Test, const TCHAR* Id, SFStarterA
     Test.TestEqual(TEXT("effect"), int32(Ability->Effect), int32(Effect));
     Test.TestEqual(TEXT("cast seconds"), Ability->CastSeconds, CastSeconds);
     Test.TestEqual(TEXT("shield required"), Ability->bRequiresShield, bShield);
+    Test.TestEqual(TEXT("ranged weapon required"), Ability->bRequiresRangedWeapon, Kit == EKit::Archery);
+    if (Kit == EKit::Archery)
+    {
+        Test.TestFalse(TEXT("no ranged slot cannot launch archery"), CanUseEquipment(*Ability, false, false, true));
+        Test.TestTrue(TEXT("ranged weapon permits archery"), CanUseEquipment(*Ability, false, true, true));
+    }
+    if (Ability->bHasteCooldown)
+        Test.TestTrue(TEXT("haste shortens cooldown"), SFStarterAbilities::Cooldown(*Ability, .2) < Cooldown);
     const float MaxEnergy = 300, Required = MaxEnergy * Cost;
     Test.TestFalse(TEXT("locked below level"), CanStart(*Ability, Level - 1, true, 100, 0, 0,
         MaxEnergy, MaxEnergy, 1));
@@ -144,7 +152,59 @@ SF_KIT_TEST(FSFPurifyTest, "ShatteredFrontier.Combat.Abilities.Purify", "purify"
 SF_KIT_TEST(FSFReviveAbilityTest, "ShatteredFrontier.Combat.Abilities.Revive", "revive", Healing, Mana, 14, .20f, 0.f, 1.5f, 30.f, DeadAlly, Revive, 0, 10.f, false)
 SF_KIT_TEST(FSFFlashMendTest, "ShatteredFrontier.Combat.Abilities.FlashMend", "flash_mend", Healing, Mana, 18, .10f, 0.f, 1.5f, 30.f, AllyOrSelf, Heal, 1.0, 1.f, false)
 SF_KIT_TEST(FSFHealingCircleTest, "ShatteredFrontier.Combat.Abilities.HealingCircle", "healing_circle", Healing, Mana, 20, .14f, 10.f, 1.5f, 30.f, GroundAlly, HealingCircle, .9, 2.5f, false)
+SF_KIT_TEST(FSFQuickShotTest, "ShatteredFrontier.Combat.Abilities.QuickShot", "quick_shot", Archery, Stamina, 1, .05f, 0.f, 1.5f, 30.f, Enemy, Hit, .7, 0.f, false)
+SF_KIT_TEST(FSFAimedShotTest, "ShatteredFrontier.Combat.Abilities.AimedShot", "aimed_shot", Archery, Stamina, 4, .07f, 0.f, 1.5f, 30.f, Enemy, Hit, 1.3, 2.f, false)
+SF_KIT_TEST(FSFCripplingShotTest, "ShatteredFrontier.Combat.Abilities.CripplingShot", "crippling_shot", Archery, Stamina, 7, .06f, 12.f, 1.5f, 30.f, Enemy, SlowHit, .6, 0.f, false)
+SF_KIT_TEST(FSFDisengageTest, "ShatteredFrontier.Combat.Abilities.Disengage", "disengage", Archery, Stamina, 10, .06f, 20.f, 0.f, 0.f, Self, SelfDisplace, 0, 0.f, false)
+SF_KIT_TEST(FSFMultiShotTest, "ShatteredFrontier.Combat.Abilities.MultiShot", "multi_shot", Archery, Stamina, 14, .09f, 0.f, 1.5f, 25.f, Cone, Hit, .42, 0.f, false)
+SF_KIT_TEST(FSFSerpentStingTest, "ShatteredFrontier.Combat.Abilities.SerpentSting", "serpent_sting", Archery, Stamina, 18, .07f, 12.f, 1.5f, 30.f, Enemy, DamageOverTime, 1.6, 0.f, false)
+SF_KIT_TEST(FSFSteadyFocusTest, "ShatteredFrontier.Combat.Abilities.SteadyFocus", "steady_focus", Archery, Stamina, 20, .08f, 60.f, 0.f, 0.f, Self, HasteBuff, 0, 0.f, false)
+SF_KIT_TEST(FSFFireBoltTest, "ShatteredFrontier.Combat.Abilities.FireBolt", "fire_bolt", Magic, Mana, 1, .05f, 0.f, 1.5f, 30.f, Enemy, Hit, 1.4, 2.f, false)
+SF_KIT_TEST(FSFFrostShardTest, "ShatteredFrontier.Combat.Abilities.FrostShard", "frost_shard", Magic, Mana, 4, .06f, 0.f, 1.5f, 30.f, Enemy, SlowHit, .7, 0.f, false)
+SF_KIT_TEST(FSFCounterspellTest, "ShatteredFrontier.Combat.Abilities.Counterspell", "counterspell", Magic, Mana, 10, .04f, 24.f, 0.f, 30.f, EnemyCasting, Interrupt, 0, 0.f, false)
+SF_KIT_TEST(FSFFlameBurstTest, "ShatteredFrontier.Combat.Abilities.FlameBurst", "flame_burst", Magic, Mana, 14, .10f, 15.f, 1.5f, 30.f, TargetArea, Hit, .9, 0.f, false)
+SF_KIT_TEST(FSFEntangleTest, "ShatteredFrontier.Combat.Abilities.Entangle", "entangle", Magic, Mana, 18, .06f, 20.f, 1.5f, 25.f, Enemy, Root, 0, 0.f, false)
+SF_KIT_TEST(FSFBlinkTest, "ShatteredFrontier.Combat.Abilities.Blink", "blink", Magic, Mana, 20, .08f, 30.f, 0.f, 0.f, Self, Blink, 0, 0.f, false)
+SF_KIT_TEST(FSFHideTest, "ShatteredFrontier.Combat.Abilities.Hide", "hide", Shadow, Stamina, 1, .05f, 6.f, 1.f, 0.f, Self, Hide, 0, 0.f, false)
+SF_KIT_TEST(FSFBackstabTest, "ShatteredFrontier.Combat.Abilities.Backstab", "backstab", Shadow, Stamina, 7, .10f, 20.f, 1.5f, 3.f, Enemy, Backstab, 2.4, 0.f, false)
+SF_KIT_TEST(FSFPoisonedBladeTest, "ShatteredFrontier.Combat.Abilities.PoisonedBlade", "poisoned_blade", Shadow, Stamina, 14, .06f, 0.f, 1.f, 0.f, Self, PoisonBlade, 0, 0.f, false)
+SF_KIT_TEST(FSFVanishTest, "ShatteredFrontier.Combat.Abilities.Vanish", "vanish", Shadow, Stamina, 20, .12f, 90.f, 0.f, 0.f, Self, Vanish, 0, 0.f, false)
 #undef SF_KIT_TEST
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFShadowRulesTest, "ShatteredFrontier.Combat.Abilities.ShadowRules",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSFShadowRulesTest::RunTest(const FString& Parameters)
+{
+    using namespace SFStarterAbilities;
+    const FDefinition* Backstab = Find(TEXT("backstab"));
+    TestFalse(TEXT("hide denied in combat"), CanHide(true));
+    TestTrue(TEXT("hide allowed out of combat"), CanHide(false));
+    TestTrue(TEXT("behind target"), IsBehind(FVector(1, 0, 0), FVector(-1, 0, 0)));
+    TestFalse(TEXT("front of target"), IsBehind(FVector(1, 0, 0), FVector(1, 0, 0)));
+    if (!TestNotNull(TEXT("backstab"), Backstab)) return false;
+    TestFalse(TEXT("sword cannot backstab"), CanUseEquipment(*Backstab, false, false, false));
+    TestTrue(TEXT("dagger or unarmed can backstab"), CanUseEquipment(*Backstab, false, false, true));
+    TestEqual(TEXT("three arrows per multi shot"), Find(TEXT("multi_shot"))->MaximumTargets, 3);
+    TestEqual(TEXT("eight targets per flame burst"), Find(TEXT("flame_burst"))->MaximumTargets, 8);
+    const auto* Poison = SFCombatPart6::Ability(TEXT("effect/weak_poison"));
+    if (!TestNotNull(TEXT("weak poison coefficient"), Poison)) return false;
+    TestEqual(TEXT("weak poison total modifier"), Poison->Modifier, .6);
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFHybridMagicManaTest, "ShatteredFrontier.Combat.Abilities.HybridFighterMagic",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSFHybridMagicManaTest::RunTest(const FString& Parameters)
+{
+    const auto* Bolt = SFStarterAbilities::Find(TEXT("fire_bolt"));
+    if (!TestNotNull(TEXT("fire bolt"), Bolt)) return false;
+    const auto Fighter = SFCombatPart6::Player(SFCombatPart6::EKit::Fighter, 1);
+    TestEqual(TEXT("Fighter casts Magic from Mana"), int32(Bolt->Energy), int32(SFStarterAbilities::EEnergy::Mana));
+    TestTrue(TEXT("Fighter has level-one Mana budget"), Fighter.Mana >= Fighter.Mana * Bolt->StaminaCostFraction);
+    TestEqual(TEXT("off-archetype Magic uses skill floor"),
+        SFStarterAbilities::SkillMultiplier(false, Fighter.SkillMultiplier, .80), .80);
+    return true;
+}
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFHybridHealingManaTest, "ShatteredFrontier.Combat.Abilities.HybridFighterHeal",
     EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)

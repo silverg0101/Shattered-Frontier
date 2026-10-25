@@ -267,6 +267,9 @@ public:
     void ReceivePilotHealingThreat(ASFE1Character* Healer, ASFE1Character* Subject, double Amount);
     void ReceivePilotDodge(ASFE1Character* Attacker);
     bool ReceivePilotTaunt(ASFE1Character* Taunter);
+    void ApplyAbilitySnare(double Until, double SpeedMultiplier);
+    void ApplyAbilityRoot(double Until);
+    void DropAbilityThreat(ASFE1Character* Character);
     /** Authority-only transition when the open-world leash or safe-zone rule fires. */
     void EnterEvade();
     const FString& GroupId() const { return SpawnGroup; }
@@ -318,6 +321,9 @@ private:
     FString ForcedTauntId;
     double ForcedTauntUntil = 0;
     double LastTauntAt = -1;
+    double AbilitySnareUntil = 0, AbilitySnareMultiplier = 1, AbilityRootUntil = 0;
+    double AbilityRootLastAt = -1e9;
+    int32 AbilityRootApplications = 0;
     int32 TauntApplications = 0;
     double EngagedSince = -1;
     double NextAggroFixtureTraceAt = 0;

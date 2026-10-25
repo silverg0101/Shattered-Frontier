@@ -21,6 +21,7 @@ namespace SFGear
         SFCombatPart6::FWeapon Weapon;
         double Armor = 0;
         bool bShield = false;
+        bool bRangedWeapon = false; // No player ranged equipment slot exists in the current inventory.
     };
     // Server equipment snapshot. The five authored weapon lines are release content;
     // legacy armor points use Part 6's development conversion until design armor ships.

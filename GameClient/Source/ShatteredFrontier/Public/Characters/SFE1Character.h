@@ -58,20 +58,31 @@ public:
     UFUNCTION(BlueprintCallable, Category="Combat|Abilities") void RequestCombatAbility(FName AbilityId, AActor* SelectedTarget = nullptr);
     UFUNCTION(BlueprintCallable, Category="Combat|Abilities") void RequestCombatGroundAbility(FName AbilityId, FVector GroundLocation);
     bool CommitCombatAbility(const SFStarterAbilities::FDefinition& Ability, double Now);
-    bool CanBeginCombatAbilityCast(bool bHoly, double Now) const
-    { return ActiveCombatCastId == 0 && (!bHoly || Now >= HolyCastLockoutUntil); }
-    uint32 BeginCombatAbilityCast(bool bHoly)
-    { ActiveCombatCastId = ++NextCombatCastId; bCombatCastHoly = bHoly; return ActiveCombatCastId; }
+    bool CanBeginCombatAbilityCast(bool bSpell, double Now) const
+    { return ActiveCombatCastId == 0 && (!bSpell || Now >= SpellCastLockoutUntil); }
+    uint32 BeginCombatAbilityCast(bool bSpell)
+    { ActiveCombatCastId = ++NextCombatCastId; bCombatCastSpell = bSpell; return ActiveCombatCastId; }
     bool CompleteCombatAbilityCast(uint32 CastId)
     { if (ActiveCombatCastId != CastId || CastId == 0) return false; ActiveCombatCastId = 0; return true; }
     bool IsCombatAbilityCasting() const { return ActiveCombatCastId != 0; }
     void InterruptCombatAbilityCast();
+    bool HasCombatStealth(double Now) const { return CombatStealthLevel > 0 && Now < CombatStealthUntil; }
+    void EnterCombatStealth(int32 Level, double Until);
+    void BreakCombatStealth();
+    UFUNCTION() void OnRep_CombatStealth();
+    bool HasPoisonedBlade(double Now) const { return Now < PoisonBladeUntil; }
+    void SetPoisonedBladeUntil(double Until) { PoisonBladeUntil = Until; }
+    bool TryPoisonProc(double Now);
+    void SetSteadyFocusUntil(double Until) { SteadyFocusUntil = Until; }
+    double CombatHasteFraction(double Now) const { return Now < SteadyFocusUntil ? .20 : 0.0; }
     bool HasNativeCombatKit(SFStarterAbilities::EKit Kit) const
     {
         return (Kit == SFStarterAbilities::EKit::Weapon && CombatArchetype == TEXT("fighter")) ||
             (Kit == SFStarterAbilities::EKit::Guardian && CombatArchetype == TEXT("guardian")) ||
+            (Kit == SFStarterAbilities::EKit::Archery && CombatArchetype == TEXT("archer")) ||
             (Kit == SFStarterAbilities::EKit::Magic && CombatArchetype == TEXT("mage")) ||
-            (Kit == SFStarterAbilities::EKit::Healing && CombatArchetype == TEXT("healer"));
+            (Kit == SFStarterAbilities::EKit::Healing && CombatArchetype == TEXT("healer")) ||
+            (Kit == SFStarterAbilities::EKit::Shadow && CombatArchetype == TEXT("shadow"));
     }
     void ToggleDefensiveStance() { bDefensiveStance = !bDefensiveStance; }
     bool HasDefensiveStance() const { return bDefensiveStance; }
@@ -178,8 +189,10 @@ private:
     double CombatAbilityGcdEndsAt = 0.0;
     TMap<FName, double> CombatAbilityCooldowns;
     uint32 NextCombatCastId = 0, ActiveCombatCastId = 0;
-    bool bCombatCastHoly = false;
-    double HolyCastLockoutUntil = 0;
+    bool bCombatCastSpell = false;
+    double SpellCastLockoutUntil = 0;
+    UPROPERTY(ReplicatedUsing=OnRep_CombatStealth) int32 CombatStealthLevel = 0;
+    double CombatStealthUntil = 0, PoisonBladeUntil = 0, NextPoisonProcAt = 0, SteadyFocusUntil = 0;
     bool bDefensiveStance = false;
     double ShieldBlockUntil = 0, ShieldWallUntil = 0, BulwarkUntil = 0;
     void TickEnergy();

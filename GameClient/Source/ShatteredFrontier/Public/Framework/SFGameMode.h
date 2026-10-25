@@ -60,6 +60,8 @@ public:
         AActor* SelectedTarget = nullptr, bool bCastComplete = false, FVector CastOrigin = FVector::ZeroVector,
         FVector GroundLocation = FVector::ZeroVector);
     void ApplyStarterHeal(ASFE1Character* Healer, ASFE1Character* Subject, int32 Amount);
+    void ApplyStarterWeakPoison(ASFE1Character* Source, ASFPilotBoar* Victim,
+        const SFCombatResolution::FAttack& Attack);
     bool TryPlayerTaunt(ASFE1Character* Taunter, AActor* SelectedTarget);
     void TryBoarAttack(ASFPilotBoar* Boar, ASFE1Character* Victim);
     /** Authority: an NPC's landed melee hit on a player (boar, townsfolk, guard); the caller checks reach and cooldown.
@@ -181,6 +183,7 @@ private:
     TMap<TWeakObjectPtr<ASFE1Character>, double> PlayerNextSwing;
     TMap<uint64, int32> RendGenerations;
     TMap<uint64, int32> RenewGenerations;
+    TMap<uint64, TArray<double>> WeakPoisonExpiries;
     int32 GreenlandsAbilityStage = 0;
     double GreenlandsAbilityStageAt = 0;
     TWeakObjectPtr<ASFPilotBoar> GreenlandsAbilityBoar;

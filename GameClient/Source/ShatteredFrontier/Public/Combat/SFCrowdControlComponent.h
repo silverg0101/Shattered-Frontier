@@ -51,6 +51,7 @@ public:
     /** Server only. StrengthBp is the speed reduction of a snare (ignored for root/stun); ReductionBp is the target's
      *  duration reduction (Willpower + items, capped). Returns the applied duration in ms, 0 when immune or refused. */
     int32 Apply(ESFCrowdControl Type, int32 StrengthBp, int32 DurationMs, int32 ReductionBp = 0);
+    void ClearRoot();
     /** Advances the component clock and expires instances (the tick calls this; tests step it directly). */
     void Advance(float DeltaSeconds);
 

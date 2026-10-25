@@ -2195,11 +2195,13 @@ TArray<FName> ASFE1Character::GetBindableCombatAbilities() const
     using namespace SFStarterAbilities;
     const EKit Primary = CombatArchetype == TEXT("guardian") ? EKit::Guardian :
         CombatArchetype == TEXT("healer") ? EKit::Healing :
-        CombatArchetype == TEXT("mage") ? EKit::Magic : EKit::Weapon;
+        CombatArchetype == TEXT("mage") ? EKit::Magic :
+        CombatArchetype == TEXT("archer") ? EKit::Archery :
+        CombatArchetype == TEXT("shadow") ? EKit::Shadow : EKit::Weapon;
     TArray<FName> Out = BindingIds(Primary, CombatCharacterLevel());
     // Every character can learn a kit at its authored level; expose the complete
     // unlocked catalog for hotbar binding, with the native kit first.
-    for (const EKit Kit : {EKit::Weapon, EKit::Guardian, EKit::Magic, EKit::Healing})
+    for (const EKit Kit : {EKit::Weapon, EKit::Guardian, EKit::Archery, EKit::Magic, EKit::Healing, EKit::Shadow})
         if (Kit != Primary) Out.Append(BindingIds(Kit, CombatCharacterLevel()));
     return Out;
 }
@@ -2236,8 +2238,9 @@ bool ASFE1Character::CommitCombatAbility(const SFStarterAbilities::FDefinition& 
     const auto* Tune = GetDefault<USFCombatEnergySettings>();
     const bool bMagic = Ability.Energy == SFStarterAbilities::EEnergy::Mana;
     SFStarterAbilities::FDefinition Priced = Ability;
-    if (Ability.Effect == SFStarterAbilities::EEffect::Stance && bDefensiveStance)
-        Priced.StaminaCostFraction = 0; // exiting a stance has no energy charge
+    if ((Ability.Effect == SFStarterAbilities::EEffect::Stance && bDefensiveStance) ||
+        (Ability.Effect == SFStarterAbilities::EEffect::Hide && HasCombatStealth(Now)))
+        Priced.StaminaCostFraction = 0; // toggles pay on activation
     if (!SFStarterAbilities::CanStart(Priced, CombatCharacterLevel(), PilotHealth > 0, Now,
         CombatAbilityGcdEndsAt, CombatAbilityCooldowns.FindRef(FName(Ability.Id)),
         bMagic ? Mana : Stamina, bMagic ? MaxMana : MaxStamina,
@@ -2245,9 +2248,13 @@ bool ASFE1Character::CommitCombatAbility(const SFStarterAbilities::FDefinition& 
     if (Priced.StaminaCostFraction > 0 &&
         !(bMagic ? SpendManaFraction(Priced.StaminaCostFraction) :
         SpendStaminaFraction(Priced.StaminaCostFraction))) return false;
-    CombatAbilityGcdEndsAt = Now + Ability.GcdSeconds;
-    // Current Greenlands Fighter/Mage snapshots carry no haste rating (effective haste 0).
-    CombatAbilityCooldowns.Add(FName(Ability.Id), Now + SFStarterAbilities::Cooldown(Ability, 0));
+    const double Haste = CombatHasteFraction(Now);
+    CombatAbilityGcdEndsAt = Now + (Ability.GcdSeconds > 0 ?
+        FMath::Max(1.0, Ability.GcdSeconds / (1.0 + Haste)) : 0.0);
+    CombatAbilityCooldowns.Add(FName(Ability.Id), Now + SFStarterAbilities::Cooldown(Ability, Haste));
+    if (Ability.Effect != SFStarterAbilities::EEffect::Backstab &&
+        Ability.Effect != SFStarterAbilities::EEffect::Hide &&
+        Ability.Effect != SFStarterAbilities::EEffect::Vanish) BreakCombatStealth();
     return true;
 }
 
@@ -2255,7 +2262,44 @@ void ASFE1Character::InterruptCombatAbilityCast()
 {
     if (!HasAuthority() || ActiveCombatCastId == 0) return;
     ActiveCombatCastId = 0;
-    if (bCombatCastHoly) HolyCastLockoutUntil = GetWorld()->GetTimeSeconds() + 3.0;
+    if (bCombatCastSpell) SpellCastLockoutUntil = GetWorld()->GetTimeSeconds() + 3.0;
+}
+
+void ASFE1Character::EnterCombatStealth(int32 Level, double Until)
+{
+    if (!HasAuthority()) return;
+    CombatStealthLevel = Level; CombatStealthUntil = Until;
+    bSprinting = false;
+    OnRep_CombatStealth();
+    ForceNetUpdate();
+}
+
+void ASFE1Character::BreakCombatStealth()
+{
+    if (!HasAuthority() || CombatStealthLevel == 0) return;
+    CombatStealthLevel = 0; CombatStealthUntil = 0;
+    OnRep_CombatStealth();
+    ForceNetUpdate();
+}
+
+void ASFE1Character::OnRep_CombatStealth()
+{
+    if (UCharacterMovementComponent* Movement = GetCharacterMovement())
+        Movement->MaxWalkSpeed = (CombatStealthLevel > 0 ?
+            GetDefault<USFE1Settings>()->CrouchSpeedMetresPerSecond :
+            GetDefault<USFE1Settings>()->RunSpeedMetresPerSecond) * 100.0f;
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    if (GetNetMode() == NM_Client && FParse::Param(FCommandLine::Get(), TEXT("GreenlandsAbilityNetcheck")))
+        UE_LOG(LogTemp, Display, TEXT("ABILITY_NETCHECK_CLIENT_STEALTH Level=%d"), CombatStealthLevel);
+#endif
+}
+
+bool ASFE1Character::TryPoisonProc(double Now)
+{
+    if (!HasAuthority() || Now >= PoisonBladeUntil || Now < NextPoisonProcAt || FMath::FRand() >= .30f)
+        return false;
+    NextPoisonProcAt = Now + 1.0;
+    return true;
 }
 
 bool ASFE1Character::SpendStaminaFraction(float Fraction)
@@ -2296,6 +2340,7 @@ void ASFE1Character::ServerSetSprintIntent_Implementation(bool bEnable)
 {
     if (!HasAuthority() || !GetWorld() ||
         GetWorld()->GetOutermost()->GetName() != TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook")) return;
+    if (bEnable) BreakCombatStealth();
     if (!bEnable)
     {
         if (bSprinting) { bSprinting = false; LastSprintEndedAt = GetWorld()->GetTimeSeconds(); ForceNetUpdate(); }
@@ -2313,6 +2358,7 @@ void ASFE1Character::ServerSetSprintIntent_Implementation(bool bEnable)
 void ASFE1Character::TickEnergy()
 {
     const double Now = GetWorld()->GetTimeSeconds();
+    if (CombatStealthLevel > 0 && Now >= CombatStealthUntil) BreakCombatStealth();
     if (CombatAbsorbs.RemoveAll([Now](const FAbsorbInstance& Instance)
         { return Instance.ExpiresAt <= Now || Instance.Remaining <= 0; }) > 0)
     { CombatAbsorbRemaining = CombatAbsorb(); ForceNetUpdate(); }
@@ -2371,6 +2417,7 @@ void ASFE1Character::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
     DOREPLIFETIME_CONDITION(ASFE1Character, ResurrectionOfferId, COND_OwnerOnly);
     DOREPLIFETIME_CONDITION(ASFE1Character, ResurrectionOfferDeathEventId, COND_OwnerOnly);
     DOREPLIFETIME(ASFE1Character, bPilotInCombat);
+    DOREPLIFETIME(ASFE1Character, CombatStealthLevel);
     DOREPLIFETIME(ASFE1Character, Stamina);
     DOREPLIFETIME(ASFE1Character, MaxStamina);
     DOREPLIFETIME(ASFE1Character, Mana);

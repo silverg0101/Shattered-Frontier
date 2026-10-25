@@ -86,6 +86,13 @@ void USFCrowdControlComponent::Advance(float DeltaSeconds)
     if (!Instances.IsEmpty()) Recompute();
 }
 
+void USFCrowdControlComponent::ClearRoot()
+{
+    if (!GetOwner()->HasAuthority()) return;
+    Instances.RemoveAll([](const FInstance& Instance) { return Instance.Type == ESFCrowdControl::Root; });
+    Recompute();
+}
+
 void USFCrowdControlComponent::Recompute()
 {
     Instances.RemoveAll([this](const FInstance& I) { return I.EndSeconds <= Clock; });

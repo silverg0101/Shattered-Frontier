@@ -5,11 +5,12 @@
 // energy costs are fractions of the named maximum pool.
 namespace SFStarterAbilities
 {
-enum class EKit : uint8 { Weapon, Guardian, Magic, Healing };
+enum class EKit : uint8 { Weapon, Guardian, Archery, Magic, Healing, Shadow };
 enum class EEnergy : uint8 { Stamina, Mana };
-enum class ETarget : uint8 { Enemy, Cone, Self, EnemyCasting, Charge, Ally, AllyOrSelf, DeadAlly, GroundAlly };
+enum class ETarget : uint8 { Enemy, Cone, Self, EnemyCasting, Charge, Ally, AllyOrSelf, DeadAlly, GroundAlly, TargetArea };
 enum class EEffect : uint8 { Hit, Interrupt, HealOverTime, DamageOverTime, DisplaceHit, Absorb,
-    Stance, BlockBuff, Taunt, DamageReduction, Heal, Dispel, Revive, HealingCircle };
+    Stance, BlockBuff, Taunt, DamageReduction, Heal, Dispel, Revive, HealingCircle,
+    SlowHit, SelfDisplace, HasteBuff, Root, Blink, Hide, Backstab, PoisonBlade, Vanish };
 struct FDefinition
 {
     const TCHAR* Id;
@@ -24,6 +25,7 @@ struct FDefinition
     EEnergy Energy = EEnergy::Stamina;
     float CastSeconds = 0;
     bool bRequiresShield = false;
+    bool bRequiresRangedWeapon = false;
 };
 
 inline const TArray<FDefinition>& All()
@@ -48,7 +50,33 @@ inline const TArray<FDefinition>& All()
             false, 1, EKit::Guardian, EEnergy::Stamina, 0, true},
         {TEXT("bulwark"), 18, .08f, 30, 1.5f, 0, 10, ETarget::Ally, EEffect::DamageReduction,
             false, 1, EKit::Guardian},
+        {TEXT("quick_shot"), 1, .05f, 0, 1.5f, 0, 30, ETarget::Enemy, EEffect::Hit,
+            false, 1, EKit::Archery, EEnergy::Stamina, 0, false, true},
+        {TEXT("aimed_shot"), 4, .07f, 0, 1.5f, 0, 30, ETarget::Enemy, EEffect::Hit,
+            false, 1, EKit::Archery, EEnergy::Stamina, 2, false, true},
+        {TEXT("crippling_shot"), 7, .06f, 12, 1.5f, 0, 30, ETarget::Enemy, EEffect::SlowHit,
+            true, 1, EKit::Archery, EEnergy::Stamina, 0, false, true},
+        {TEXT("disengage"), 10, .06f, 20, 0, 0, 0, ETarget::Self, EEffect::SelfDisplace,
+            false, 1, EKit::Archery, EEnergy::Stamina, 0, false, true},
+        {TEXT("multi_shot"), 14, .09f, 0, 1.5f, 0, 25, ETarget::Cone, EEffect::Hit,
+            false, 3, EKit::Archery, EEnergy::Stamina, 0, false, true},
+        {TEXT("serpent_sting"), 18, .07f, 12, 1.5f, 0, 30, ETarget::Enemy, EEffect::DamageOverTime,
+            true, 1, EKit::Archery, EEnergy::Stamina, 0, false, true},
+        {TEXT("steady_focus"), 20, .08f, 60, 0, 0, 0, ETarget::Self, EEffect::HasteBuff,
+            false, 1, EKit::Archery, EEnergy::Stamina, 0, false, true},
+        {TEXT("fire_bolt"), 1, .05f, 0, 1.5f, 0, 30, ETarget::Enemy, EEffect::Hit,
+            false, 1, EKit::Magic, EEnergy::Mana, 2},
+        {TEXT("frost_shard"), 4, .06f, 0, 1.5f, 0, 30, ETarget::Enemy, EEffect::SlowHit,
+            false, 1, EKit::Magic, EEnergy::Mana},
         {TEXT("arcane_ward"), 7, .08f, 30, 1.5f, 0, 0, ETarget::Self, EEffect::Absorb,
+            false, 1, EKit::Magic, EEnergy::Mana},
+        {TEXT("counterspell"), 10, .04f, 24, 0, 0, 30, ETarget::EnemyCasting, EEffect::Interrupt,
+            false, 1, EKit::Magic, EEnergy::Mana},
+        {TEXT("flame_burst"), 14, .10f, 15, 1.5f, 0, 30, ETarget::TargetArea, EEffect::Hit,
+            true, 8, EKit::Magic, EEnergy::Mana},
+        {TEXT("entangle"), 18, .06f, 20, 1.5f, 0, 25, ETarget::Enemy, EEffect::Root,
+            false, 1, EKit::Magic, EEnergy::Mana},
+        {TEXT("blink"), 20, .08f, 30, 0, 0, 0, ETarget::Self, EEffect::Blink,
             false, 1, EKit::Magic, EEnergy::Mana},
         {TEXT("mend"), 1, .06f, 0, 1.5f, 0, 30, ETarget::AllyOrSelf, EEffect::Heal,
             false, 1, EKit::Healing, EEnergy::Mana, 2},
@@ -63,7 +91,15 @@ inline const TArray<FDefinition>& All()
         {TEXT("flash_mend"), 18, .10f, 0, 1.5f, 0, 30, ETarget::AllyOrSelf, EEffect::Heal,
             false, 1, EKit::Healing, EEnergy::Mana, 1},
         {TEXT("healing_circle"), 20, .14f, 10, 1.5f, 0, 30, ETarget::GroundAlly, EEffect::HealingCircle,
-            false, 5, EKit::Healing, EEnergy::Mana, 2.5f}
+            false, 5, EKit::Healing, EEnergy::Mana, 2.5f},
+        {TEXT("hide"), 1, .05f, 6, 1, 0, 0, ETarget::Self, EEffect::Hide,
+            false, 1, EKit::Shadow},
+        {TEXT("backstab"), 7, .10f, 20, 1.5f, 0, 3, ETarget::Enemy, EEffect::Backstab,
+            true, 1, EKit::Shadow},
+        {TEXT("poisoned_blade"), 14, .06f, 0, 1, 0, 0, ETarget::Self, EEffect::PoisonBlade,
+            false, 1, EKit::Shadow},
+        {TEXT("vanish"), 20, .12f, 90, 0, 0, 0, ETarget::Self, EEffect::Vanish,
+            false, 1, EKit::Shadow}
     };
     return Values;
 }
@@ -72,6 +108,13 @@ inline const FDefinition* Find(const FString& Id)
 inline bool IsFriendlyTarget(ETarget Target)
 { return Target == ETarget::Ally || Target == ETarget::AllyOrSelf ||
     Target == ETarget::DeadAlly || Target == ETarget::GroundAlly; }
+inline bool CanUseEquipment(const FDefinition& Ability, bool bShield, bool bRangedWeapon,
+    bool bDaggerOrUnarmed)
+{ return (!Ability.bRequiresShield || bShield) && (!Ability.bRequiresRangedWeapon || bRangedWeapon) &&
+    (Ability.Effect != EEffect::Backstab || bDaggerOrUnarmed); }
+inline bool CanHide(bool bInCombat) { return !bInCombat; }
+inline bool IsBehind(const FVector& VictimForward, const FVector& VictimToAttacker)
+{ return FVector::DotProduct(VictimForward.GetSafeNormal2D(), VictimToAttacker.GetSafeNormal2D()) < -.5f; }
 inline double SkillMultiplier(bool bNativeKit, double NativeMultiplier, double SkillFloor)
 { return bNativeKit ? NativeMultiplier : SkillFloor; }
 inline double HealingThreatPerNpc(int32 EffectiveHealing, int32 EngagedNpcCount)
