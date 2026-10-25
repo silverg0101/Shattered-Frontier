@@ -3024,15 +3024,21 @@ def check():
     (m / "Rat.glb").write_bytes(tiny_glb(["root", "pelvis", "spine_01"], w=0.5))
     (m / "animations/Rat_Walk.glb").write_bytes(tiny_glb(["root", "pelvis", "spine_01"], "Walk_s1"))
     (m / "animations/Rat_Odd.glb").write_bytes(tiny_glb(["root", "hips", "spine_01"], "Odd"))
+    mj, mb = creature.glb_read(tiny_glb(["root", "pelvis", "spine_01"], "Moved"))
+    mj["nodes"][1]["translation"] = [0, 0.5, 0]  # the same bone names on another creature's rest pose
+    (m / "animations/Rat_Moved.glb").write_bytes(creature.glb_write(mj, mb))
+    hj = {"nodes": [{"name": "a", "children": [1], "rotation": [0, 0, 0.70710678, 0.70710678], "translation": [0, 0, 2]},
+                    {"name": "b", "translation": [1, 0, 0]}], "skins": [{"joints": [0, 1]}]}
+    assert all(abs(x - y) < 1e-6 for x, y in zip(creature.glb_heads(hj)["b"], (0, 1, 2))), creature.glb_heads(hj)
     creature.write_manifest(m, {"name": "Rat", "clips": [{"name": c, "file": f"animations/Rat_{c}.glb", "baked": False}
-                                                          for c in ("Walk", "Odd", "Gone")]})
+                                                          for c in ("Walk", "Odd", "Gone", "Moved")]})
     man = creature.combine_model("Rat", ["Walk"], m)
     js, binary = creature.glb_read((m / "Rat_animated.glb").read_bytes())
     assert [x["name"] for x in js["animations"]] == ["Walk"] and js["animations"][0]["channels"][0]["target"]["node"] == 1
     acc = js["accessors"][js["animations"][0]["samplers"][0]["output"]]
     off = js["bufferViews"][acc["bufferView"]]["byteOffset"]
     assert struct.unpack_from("<8f", binary, off) == (0, 0, 0, 1, 0, 0, 0, 1)  # the clip's keys, not the model's bytes
-    assert [c["baked"] for c in man["clips"]] == [True, False, False]
+    assert [c["baked"] for c in man["clips"]] == [True, False, False, False]
     assert json.loads((m / "Rat.json").read_text())["clips"][0]["baked"] is True
     assert creature.set_unreal("Rat", {"state": "fail", "reason": "no AnimSequence"}, m)["unreal"] == {"state": "fail", "reason": "no AnimSequence"}
     assert json.loads((m / "Rat.json").read_text())["unreal"]["state"] == "fail"
@@ -3057,7 +3063,7 @@ def check():
     t = struct.unpack_from("<2f", binary, js["bufferViews"][acc["bufferView"]]["byteOffset"])
     assert abs(t[0]) < 1e-7 and abs(t[1] - (0.5 - 1 / 30)) < 1e-6 and acc["min"] == [0.0], (t, acc)
     before = (m / "Rat_animated.glb").read_bytes()
-    for bad in ("Odd", "Gone"):  # a different skeleton, a missing file
+    for bad in ("Odd", "Gone", "Moved"):  # a different skeleton, a missing file, a foreign rest pose
         try:
             creature.combine_model("Rat", ["Walk", bad], m); raise AssertionError(bad)
         except ValueError as e:
@@ -3249,6 +3255,14 @@ def check():
         r = clip_job(ok)
         assert r["status"] == "failed" and "missing required roles" in r["error"], r
         assert "retarget" not in [c[0] for c in calls] and {f: f.read_bytes() for f in cm.rglob("*") if f.is_file()} == snap
+        # the same bone names: a rest pose within 2% of the model's height is copied, another creature's is retargeted
+        fj, fb = creature.glb_read(tiny_glb(["root", "pelvis", "spine_01"], "Walk"))
+        for dy, path in ((0.01, []), (0.5, ["put", "label", "retarget"])):
+            fj["nodes"][1]["translation"] = [0, dy, 0]
+            src.write_bytes(creature.glb_write(fj, fb))
+            calls.clear()
+            r = clip_job(gp(animations=[0]))
+            assert r["status"] == "done" and [c[0] for c in calls] == path, (dy, r, calls)
     finally:
         creature.glb_library, creature.retarget_clip, g["put_input"], g["ssh"] = stubs
     # UniMate seeds: a bad seed is skipped and recorded, a cancel still stops, no surviving seed fails; the review

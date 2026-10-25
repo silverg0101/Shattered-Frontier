@@ -633,11 +633,50 @@ def glb_write(js, binary) -> bytes:
 
 
 def glb_bones(js) -> list:
-    """The first skin's joints as sorted (name, parent name) pairs: what decides whether two files are the same rig."""
+    """The first skin's joints as sorted (name, parent name) pairs; same_rig also compares their rest positions."""
     nodes = js.get("nodes", [])
     parent = {c: i for i, n in enumerate(nodes) for c in n.get("children", [])}
     joints = js["skins"][0]["joints"] if js.get("skins") else []
     return sorted((nodes[j].get("name"), nodes[parent[j]].get("name") if j in parent else None) for j in joints)
+
+
+def glb_heads(js) -> dict:
+    """{joint name: (x, y, z)}: the first skin's bone heads in model space at rest (node TRS or matrix, through every
+    parent)."""
+    nodes = js.get("nodes", [])
+    parent = {c: i for i, n in enumerate(nodes) for c in n.get("children", [])}
+    def local(n):
+        if "matrix" in n:  # column-major
+            return [[n["matrix"][c * 4 + r] for c in range(4)] for r in range(4)]
+        x, y, z, w = n.get("rotation", (0, 0, 0, 1))
+        sc, t = n.get("scale", (1, 1, 1)), n.get("translation", (0, 0, 0))
+        rot = [[1 - 2 * (y * y + z * z), 2 * (x * y - z * w), 2 * (x * z + y * w)],
+               [2 * (x * y + z * w), 1 - 2 * (x * x + z * z), 2 * (y * z - x * w)],
+               [2 * (x * z - y * w), 2 * (y * z + x * w), 1 - 2 * (x * x + y * y)]]
+        return [[rot[r][0] * sc[0], rot[r][1] * sc[1], rot[r][2] * sc[2], t[r]] for r in range(3)] + [[0, 0, 0, 1]]
+    memo = {}
+    def world(i):
+        if i not in memo:
+            m = local(nodes[i])
+            if i in parent:
+                p = world(parent[i])
+                m = [[sum(p[r][k] * m[k][c] for k in range(4)) for c in range(4)] for r in range(4)]
+            memo[i] = m
+        return memo[i]
+    joints = js["skins"][0]["joints"] if js.get("skins") else []
+    return {nodes[j].get("name"): tuple(world(j)[r][3] for r in range(3)) for j in joints}
+
+
+def same_rig(src, model, tol=0.02) -> bool:
+    """Whether glTF `src` is on `model`'s rig: the same bones and parents, and every bone head at rest within `tol` of
+    the model's height (the heads' vertical extent) of the model's. A clip keys absolute local TRS, so one from another
+    creature with the same bone names would carry that creature's size and rest orientations."""
+    if glb_bones(src) != glb_bones(model):
+        return False
+    a, b = glb_heads(src), glb_heads(model)
+    span = lambda k: max(p[k] for p in b.values()) - min(p[k] for p in b.values()) if b else 0
+    h = span(1) or max(span(0), span(2)) or 1.0  # ponytail: joint extent stands in for the mesh height
+    return all(sum((x - y) ** 2 for x, y in zip(a[n], b[n])) ** 0.5 <= tol * h for n in b)
 
 
 def _add_animation(dst, dbin, src, sbin, name, index=0):
@@ -730,15 +769,15 @@ def _combine(name, clips, folder):
     if not isinstance(clips, list) or not clips or any(not isinstance(c, str) for c in clips):
         raise ValueError("clips is a list of at least one clip name")
     base, bbin = glb_read((folder / f"{name}.glb").read_bytes())
-    bones, by = glb_bones(base), {c["name"]: c for c in man["clips"]}
+    by = {c["name"]: c for c in man["clips"]}
     parts = []
     for c in dict.fromkeys(clips):
         f = folder / by[c]["file"] if c in by else None
         if not f or not f.is_file():
             raise ValueError(f"clip {c}: no such clip file in {name}/animations")
         js, binary = glb_read(f.read_bytes())
-        if glb_bones(js) != bones:
-            raise ValueError(f"clip {c}: its skeleton differs from {name}.glb")
+        if not same_rig(js, base):
+            raise ValueError(f"clip {c}: its skeleton or rest pose differs from {name}.glb")
         if not js.get("animations"):
             raise ValueError(f"clip {c}: the file has no animation")
         parts.append((c, js, binary))
@@ -998,7 +1037,7 @@ def run_clip_job(jid, host):
     """A "clip" job (clip_params): make clips on an existing model folder's rig and add them to animations/ and the
     manifest, not baked. Library: retarget_clip; text: UniMate, one candidate per seed, the best marked `best`; video:
     app.motion_takes on <Name>.glb (the one path that may train a detector), its best take through std_glb_clip; glb:
-    on the same skeleton the animations are copied as they are onto <Name>.glb, on another one the source is labelled
+    on the same rig (same_rig: bones and rest pose) the animations are copied as they are onto <Name>.glb, else the source is labelled
     (glb_library) and each animation retargeted. Nothing is written into the folder until every clip is made,
     so a cancel or a failure leaves it unchanged."""
     a = _app()
@@ -1014,13 +1053,13 @@ def run_clip_job(jid, host):
         size, base = man["size_cm"], rig.read_bytes()
         src = glb_read(a.safe_path(p["from_glb"]).read_bytes()) if p["source"] == "glb" else None
         names = [x.get("name") or f"Animation_{i}" for i, x in enumerate(src[0].get("animations", []))] if src else []
-        if src and glb_bones(src[0]) == glb_bones(glb_read(base)[0]):  # the same rig: the clips go in as they are
+        if src and same_rig(src[0], glb_read(base)[0]):  # the same rig and rest: the clips go in as they are
             step("copying the animations")
             for an, c in zip(p["animations"], p["names"]):
                 js, binary = glb_read(base)
                 _add_animation(js, binary, src[0], src[1], c, an)
                 made.append((c, [("", glb_write(js, binary), None, {"source": "glb", "from": p["from_glb"], "animation": names[an],
-                    "checks": {"passed": None, "reason": "copied as is from a GLB on the same skeleton; not checked", "review": []}})]))
+                    "checks": {"passed": None, "reason": "copied as is from a GLB on the same rig and rest pose; not checked", "review": []}})]))
                 log.append(f"{c}: copied from {p['from_glb']} ({names[an]})")
         else:
             groups = []  # (base name, [(suffix, retarget_clip result, manifest fields)])
