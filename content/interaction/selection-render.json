@@ -1,0 +1,8 @@
+{
+  "schema": 1,
+  "stencil_bit": 128,
+  "radius_pixels": 1.5,
+  "opacity": 0.55,
+  "color_linear_rgb": [0.65, 0.8, 0.9],
+  "occlusion_tolerance_cm": 1.0
+}

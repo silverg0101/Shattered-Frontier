@@ -94,12 +94,14 @@ bool RestoreOwnCaptureMeshes(FWorkflowState& State)
     State.CaptureVisibility.Reset();
     return bExact;
 }
-void CaptureRenderDiagnostic(UStaticMeshComponent* Mesh, bool bSelected)
+void CaptureRenderDiagnostic(UStaticMeshComponent* Mesh, bool bSelected, USFActionTargetComponent* Target)
 {
     const auto* Model = Mesh->GetStaticMesh().Get(); const auto* Overlay = Mesh->GetOverlayMaterial();
     UE_LOG(LogTemp, Display, TEXT("LOOT_CAPTURE_RENDER Selected=%d Model=%s Overlay=%s OverlayBlend=%d NaniteEnabled=%d Visible=%d"),
         bSelected, *GetPathNameSafe(Model), *GetPathNameSafe(Overlay), Overlay ? int32(Overlay->GetBlendMode()) : -1,
         Model ? Model->GetNaniteSettings().bEnabled : false, Mesh->GetVisibleFlag());
+    UE_LOG(LogTemp, Display, TEXT("LOOT_CAPTURE_OUTLINE CustomDepth=%d Stencil=%d MeshMarked=%d CameraPass=%d Material=%s"),
+        Mesh->bRenderCustomDepth, Mesh->CustomDepthStencilValue, Target->IsMeshHighlighted(Mesh), Target->HasSelectionOutline(), *GetPathNameSafe(Target->GetOutlineMaterial()));
     for (int32 I = 0; I < Mesh->GetNumMaterials(); ++I)
     {
         const auto* Material = Mesh->GetMaterial(I);
@@ -313,9 +315,9 @@ void FSFLootWorkflowNetcheck::Tick(USFLootComponent& Loot)
             }
             FVector Start; FRotator Rotation; Player->GetPlayerViewPoint(Start, Rotation);
             Target->RefreshFromRay(Start, (It->InteractionBounds->GetComponentLocation() - Start).GetSafeNormal());
-            if (Target->GetTarget() != *It || !It->Mesh->GetOverlayMaterial())
+            if (Target->GetTarget() != *It || !Target->IsMeshHighlighted(It->Mesh))
             {
-                if (bDiagnosticNow) UE_LOG(LogTemp, Display, TEXT("LOOT_WORKFLOW_GATE Reason=SelectedTarget Source=%s Pawn=%s Distance=%.1f Selected=%s Blocker=%s Rim=%d"), *It->GetActorLocation().ToString(), *Pawn->GetActorLocation().ToString(), FVector::Distance(Pawn->GetActorLocation(), It->GetActorLocation()), *GetNameSafe(Target->GetTarget()), *GetNameSafe(Target->GetSelection().Hit.GetActor()), It->Mesh->GetOverlayMaterial() != nullptr);
+                if (bDiagnosticNow) UE_LOG(LogTemp, Display, TEXT("LOOT_WORKFLOW_GATE Reason=SelectedTarget Source=%s Pawn=%s Distance=%.1f Selected=%s Blocker=%s Rim=%d"), *It->GetActorLocation().ToString(), *Pawn->GetActorLocation().ToString(), FVector::Distance(Pawn->GetActorLocation(), It->GetActorLocation()), *GetNameSafe(Target->GetTarget()), *GetNameSafe(Target->GetSelection().Hit.GetActor()), Target->IsMeshHighlighted(It->Mesh));
                 continue;
             }
             State.Source = *It;
@@ -491,9 +493,9 @@ void FSFLootWorkflowNetcheck::Tick(USFLootComponent& Loot)
     else if (State.Stage == 21 && State.Source.IsValid())
     {
         Target->Refresh();
-        if (State.Source->Mesh->GetOverlayMaterial())
+        if (Target->IsMeshHighlighted(State.Source->Mesh))
         { UE_LOG(LogTemp, Error, TEXT("LOOT_WORKFLOW_FAIL GroundUnselectedRimStillSet")); State.Stage = 99; return; }
-        CaptureRenderDiagnostic(State.Source->Mesh, false);
+        CaptureRenderDiagnostic(State.Source->Mesh, false, Target);
         Capture(Player, TEXT("ground-unselected")); State.Stage = 22;
     }
     else if (State.Stage == 22 && State.Source.IsValid())
@@ -508,9 +510,9 @@ void FSFLootWorkflowNetcheck::Tick(USFLootComponent& Loot)
     {
         Target->Refresh();
         if (!CursorOutsideWindows(Stack) || !Stack->IsOpen(Player->InventoryWidget) ||
-            Target->GetTarget() != State.Source.Get() || !State.Source->Mesh->GetOverlayMaterial())
-        { UE_LOG(LogTemp, Error, TEXT("LOOT_WORKFLOW_FAIL GroundCursor OutsideWindows=%d OwnOpen=%d ExactTarget=%d Rim=%d"), CursorOutsideWindows(Stack), Stack->IsOpen(Player->InventoryWidget), Target->GetTarget() == State.Source.Get(), State.Source->Mesh->GetOverlayMaterial() != nullptr); State.Stage = 99; return; }
-        CaptureRenderDiagnostic(State.Source->Mesh, true);
+            Target->GetTarget() != State.Source.Get() || !Target->IsMeshHighlighted(State.Source->Mesh))
+        { UE_LOG(LogTemp, Error, TEXT("LOOT_WORKFLOW_FAIL GroundCursor OutsideWindows=%d OwnOpen=%d ExactTarget=%d Rim=%d"), CursorOutsideWindows(Stack), Stack->IsOpen(Player->InventoryWidget), Target->GetTarget() == State.Source.Get(), Target->IsMeshHighlighted(State.Source->Mesh)); State.Stage = 99; return; }
+        CaptureRenderDiagnostic(State.Source->Mesh, true, Target);
         Capture(Player, TEXT("ground-selected")); State.Stage = 24;
     }
     else if (State.Stage == 24 && State.Source.IsValid())
