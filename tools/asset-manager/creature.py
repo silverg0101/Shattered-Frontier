@@ -254,7 +254,8 @@ def retarget_clip(jid, host, rig_glb, animal_dir, clip, size_cm, prompt=None) ->
 # <Name>_animated.glb (the chosen clips as named animations), <Name>.json (the manifest), source/ (concept image, rig
 # labels) and animations/<Name>_<Clip>.glb + .png (each clip and its sheet). Every clip file is the same rig, so
 # combining is a plain merge of their glTF animations into <Name>.glb, done here without Blender.
-STANCE = "side-on, legs straight under the body, tail out behind, mouth closed, plain white background"
+STANCE = ("side-on, legs straight under the shoulder and the hip, each far leg right behind its near leg (two overlapping "
+          "pairs), tail out behind, mouth closed, plain white background")
 UNIMATE = "$HOME/unimate-eval/UniMate"  # ponytail: one host has UniMate; a host setting once a second one does
 UNIMATE_RUN = "outputs/unimate_uniml3d_f60_v3"
 MOTION_TEXT = {"Idle": "stands still, breathing", "Walk": "walks in place", "Run": "runs in place", "Trot": "trots in place",
@@ -548,7 +549,10 @@ def concept_image(jid, p, entry, log, step, host=None, lib=None, size=None, info
              f"this: {STANCE}. Fail it if the body plan differs or the pose does (rearing, sitting, lying, curled, legs bent "
              f"or tucked, mouth open, seen from the front or at an angle), or if any leg or the tail is cut off, merged "
              f"with another part or missing, or if a ground shadow, floor or reflection shows under it (the 3D model "
-             f"grows a slab from it). The request: {p['prompt'] or p['name']}")
+             f"grows a slab from it). " + ("" if p.get("image") else "Fail it too if the legs are staggered: seen exactly "
+             "side-on, each far leg must stand right behind its near leg so they overlap as one pair under the shoulder and "
+             "one under the hip (the right side is this view mirrored, so staggered legs become six). ") +
+             f"The request: {p['prompt'] or p['name']}")
     prompt, own, extra = f"{p['prompt'] or p['name']}\n\nPose: {STANCE}.", bool(p.get("image")), ""
     info["concept"] = "image" if own else "heroes"
     if not own and host and lib and p.get("concept", "depth") == "depth":
