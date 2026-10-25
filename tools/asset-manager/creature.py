@@ -358,12 +358,8 @@ def pick_animal(p, s):
 _WRAP_TAIL = (" Soft even studio light, plain pure white background, no other objects, no text, no ground shadow. The supplied depth "
               "gives only the animal's size, stance and body plan; its fur, mane, colour and build follow the description.")
 CREATURE_DEPTH_WRAP = {
-    "left": "{garment}
-
-One whole animal, alone, seen exactly {view}, orthographic, in this pose: " + STANCE + "." + _WRAP_TAIL,
-    "front": "{garment}
-
-One whole animal, alone, seen exactly head-on: it faces the viewer, its nose pointing straight at the "
+    "left": "{garment}\n\nOne whole animal, alone, seen exactly {view}, orthographic, in this pose: " + STANCE + "." + _WRAP_TAIL,
+    "front": "{garment}\n\nOne whole animal, alone, seen exactly head-on: it faces the viewer, its nose pointing straight at the "
              "camera, the body foreshortened behind the head, both front legs visible and symmetric, standing square, mouth "
              "closed, orthographic." + _WRAP_TAIL}
 CREATURE_DEPTH_NEGATIVE = ("several animals, collage, turnaround sheet, text, watermark, ground shadow, scenery, person, cropped, "
@@ -440,9 +436,7 @@ def depth_concept(jid, host, p, entry, lib, size, brief, log, step, info):
             log.append(f"depth side {n}: {'pass' if r['pass'] else 'fail: ' + '; '.join(r['problems'])}")
             if r["pass"]:
                 break
-            extra = f"
-
-A previous drawing was rejected: {'; '.join(r['problems'])}. {r['fix']}"
+            extra = f"\n\nA previous drawing was rejected: {'; '.join(r['problems'])}. {r['fix']}"
         else:
             log.append("concept: the depth views failed their review; using the heroes flow")
             return None
@@ -454,14 +448,10 @@ A previous drawing was rejected: {'; '.join(r['problems'])}. {r['fix']}"
             log.append(f"depth front {n}: {'pass' if r['pass'] else 'fail: ' + '; '.join(r['problems'])}")
             if r["pass"]:
                 return views
-            extra = f"
-
-A previous front view was rejected: {'; '.join(r['problems'])}. {r['fix']}"
+            extra = f"\n\nA previous front view was rejected: {'; '.join(r['problems'])}. {r['fix']}"
         log.append("depth front view failed its review twice: redrawing the front from the side view (heroes flow)")
         step("drawing the front from the side view")
-        return a.hero_views(jid, f"{base}
-
-Pose: {STANCE}.", "auto", views["left"], log)[1]
+        return a.hero_views(jid, f"{base}\n\nPose: {STANCE}.", "auto", views["left"], log)[1]
     except InterruptedError:
         raise
     except Exception as e:
