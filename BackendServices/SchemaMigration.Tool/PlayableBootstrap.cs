@@ -75,6 +75,11 @@ internal static class PlayableBootstrap
                         $"GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA {Q(store.Schema)} TO {Service(store.Schema)}; " +
                         $"GRANT USAGE,SELECT ON ALL SEQUENCES IN SCHEMA {Q(store.Schema)} TO {Service(store.Schema)}; " +
                         $"REVOKE INSERT,UPDATE,DELETE ON {Q(store.Schema)}.schema_version,{Q(store.Schema)}.applied_schema_files FROM {Service(store.Schema)};");
+                    // Existing store admission locks the singleton row FOR SHARE.
+                    // UPDATE on this CHECK(singleton=true) key permits that lock;
+                    // version/checksum/build/audit columns remain immutable to runtime.
+                    if (store.Schema is "inventory" or "character_state" or "housing")
+                        Execute(connection, $"GRANT UPDATE(singleton) ON {Q(store.Schema)}.schema_version TO {Service(store.Schema)}");
                 }
                 Execute(connection, "REVOKE INSERT,UPDATE,DELETE ON inventory.gathering_schema_version FROM sf_inventory_svc");
                 // GearRepair's existing single transaction uses the inventory connection.
@@ -83,6 +88,10 @@ internal static class PlayableBootstrap
                     "GRANT SELECT,INSERT,UPDATE ON exchange.wallets TO sf_inventory_svc; " +
                     "GRANT INSERT ON exchange.wallet_entries TO sf_inventory_svc; " +
                     "GRANT SELECT,INSERT ON exchange.operations TO sf_inventory_svc;");
+                // The recovery worker holds its leadership lock on the character
+                // connection while selecting pending work; mutations use domain stores.
+                Execute(connection, "GRANT USAGE ON SCHEMA housing,exchange TO sf_character_state_svc; " +
+                    "GRANT SELECT ON housing.placements,housing.removals,exchange.settlements TO sf_character_state_svc;");
             }
             stage = "runtime-verification";
             foreach (var store in Stores)
@@ -97,10 +106,18 @@ internal static class PlayableBootstrap
                     Scalar(service, "SELECT has_database_privilege(current_database(),'CREATE') OR has_schema_privilege('public','CREATE')") is not false ||
                     Scalar(service, $"SELECT has_schema_privilege('{store.Schema}','CREATE')") is not false ||
                     Scalar(service, $"SELECT has_table_privilege('{store.Schema}.schema_version','UPDATE') OR has_table_privilege('{store.Schema}.applied_schema_files','UPDATE')") is not false ||
+                    Scalar(service, $"SELECT has_column_privilege('{store.Schema}.schema_version','version','UPDATE')") is not false ||
                     Convert.ToInt64(Scalar(service, "SELECT count(*) FROM pg_auth_members m JOIN pg_roles r ON m.member=r.oid WHERE r.rolname=current_user")) != 0)
                     throw new InvalidOperationException();
-                foreach (var other in Stores.Where(other => other.Schema != store.Schema && !(store.Schema == "inventory" && other.Schema == "exchange")))
+                if (store.Schema is "inventory" or "character_state" or "housing")
+                    _ = Scalar(service, $"SELECT version FROM {Q(store.Schema)}.schema_version WHERE singleton=true FOR SHARE");
+                foreach (var other in Stores.Where(other => other.Schema != store.Schema &&
+                    !(store.Schema == "inventory" && other.Schema == "exchange") &&
+                    !(store.Schema == "character_state" && other.Schema is "housing" or "exchange")))
                     if (Scalar(service, $"SELECT has_schema_privilege('{other.Schema}','USAGE')") is not false) throw new InvalidOperationException();
+                if (store.Schema == "character_state" &&
+                    Scalar(service, "SELECT has_table_privilege('housing.placements','UPDATE') OR has_table_privilege('housing.removals','UPDATE') OR has_table_privilege('exchange.settlements','UPDATE')") is not false)
+                    throw new InvalidOperationException();
             }
             Console.WriteLine("PLAYABLE_DATABASE_VERIFIED schemas=5 runtime_roles=5 ddl=false owner_membership=false");
             return 0;
