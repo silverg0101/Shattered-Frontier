@@ -1,4 +1,5 @@
 #pragma once
+#include "Combat/SFCombatFixtures.h"
 
 #include "Engine/DeveloperSettings.h"
 #include "Construction/SFConstructionNetwork.h"
@@ -238,7 +239,8 @@ public:
     static const FName OutOfPlaceNpcTag;
     virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
     void Initialize(class ASFGameMode* OwnerMode, const FString& Group, int32 Slot,
-        const TArray<FVector2D>& Area, int32 Health, int32 Serial, bool bInDefensive = false);
+        const TArray<FVector2D>& Area, int32 Health, int32 Serial, bool bInDefensive = false,
+        ESFNpcFixtureFlags InFixtureFlags = ESFNpcFixtureFlags::None);
     bool ConfigureCreature(const FString& DefinitionId);
     static bool ResolveCreatureLoot(const FString& DefinitionId, FString& TableId, bool& bSingleDrop);
     void ReceivePilotDamage(ASFE1Character* Attacker, int32 Damage, double AbilityThreatMultiplier = 1.0);
@@ -283,6 +285,9 @@ public:
     bool CanCastMend() const { const auto* P = GetNpcProfile(); return P && P->CanMend(); }
     UFUNCTION(NetMulticast, Unreliable) void MulticastArcherTracer(FVector_NetQuantize Start, FVector_NetQuantize End);
 private:
+#if WITH_DEV_AUTOMATION_TESTS && WITH_EDITOR
+    friend class FSFNpcFixtureExtractionTest;
+#endif
     void RetaliateAgainst(ASFE1Character* Attacker);
     UFUNCTION() void OnRep_Health();
     UFUNCTION() void OnRep_CreatureId();
@@ -318,6 +323,7 @@ private:
     int32 TauntApplications = 0;
     double EngagedSince = -1;
     double NextAggroFixtureTraceAt = 0;
+    ESFNpcFixtureFlags FixtureFlags = ESFNpcFixtureFlags::None;
     UPROPERTY(Replicated) FString SpawnGroup;
     UPROPERTY(EditAnywhere, ReplicatedUsing=OnRep_CreatureId, Category="Loot") FString CreatureId = TEXT("npc/boar");
     UPROPERTY(EditAnywhere, Category="Loot") FString LootTableId = TEXT("loot/greenlands_silverbrook_boar");

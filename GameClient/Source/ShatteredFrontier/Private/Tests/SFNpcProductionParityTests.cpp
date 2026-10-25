@@ -72,6 +72,8 @@ bool FSFNpcProductionParityTest::RunTest(const FString& Parameters)
     FTestWorldWrapper WorldFixture;
     if (!WorldFixture.CreateTestWorld(EWorldType::Game)) return false;
     UWorld* World = WorldFixture.GetTestWorld();
+    const FString OriginalPackage = World->GetOutermost()->GetName();
+    ON_SCOPE_EXIT { World->GetOutermost()->Rename(*OriginalPackage, nullptr, REN_DontCreateRedirectors); };
     if (!TestTrue(TEXT("Named authored world"), World->GetOutermost()->Rename(*MapId, nullptr, REN_DontCreateRedirectors))) return false;
     World->GetWorldSettings()->DefaultGameMode = ASFGameMode::StaticClass();
     if (!WorldFixture.BeginPlayInTestWorld()) return false;

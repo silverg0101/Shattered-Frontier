@@ -1,33 +1,22 @@
-# Reusable NPC profiles
+# Reusable NPC runtime
 
-- **Area:** gameplay
-- **Owner of the next step:** agent
+- **Area/owner:** gameplay / agent
 - **Updated:** 2026-10-25
 - **Worktree:** C:\Projects\SF-lane-e
 
 ## Goal
-Preserve six NPCs while moving species inputs into authored profiles; prove a content-only seventh ranged type and remove per-type spawn branches.
+Preserve the six current NPCs, support a content-only seventh type and arbitrary approved zone/groups, and separate reusable NPC runtime from development fixtures and historical actor naming.
 
 ## State
-Profile slice implemented: exact six stat records, canonical loot-rule bindings, transactional bounded loader, unknown-ID actor rejection, generic ranged/Mend dispatch. Algorithms, service authority and death IDs preserved. Generic map/group loading, authored respawn tiers and defensive points, plus actual seventh SpawnSlot/shot and unique cross-world defeat identity are implemented and pass 27 focused editor checks. Typed referenced behavior/presentation presets are implemented: all six retain one exact current default; real AI/reach/practice and body/collision/label consumers resolve per profile. Static-body animation is explicitly none. Fixture extraction and compatibility rename remain. The reviewed corpse reward hook is published as `2dd4605d`.
+Reviewed profiles/capabilities, generic zone admission, authored respawn tiers/defensive points, cross-world stable defeat identity, production-map parity and corpse hook are published. Typed behavior/presentation presets are published as `8b5b6797` + `646eafd7`; all 18 prior behavior defaults and old six profile fields are unchanged. Static bodies explicitly consume no animation asset.
+Fixture extraction is implemented: `SFCombatFixtures` owns all 18 existing sandbox specs and setup/defeat/respawn lifecycle. Main AI uses explicit default-none idle/aggro-trace flags; group names cannot enable fixture behavior. Await independent review before push.
 
 ## Evidence
-Preset slice: Editor build passed. Twelve existing affected checks pass in `npc-presets.log`; new actual perception/chase/leash/reach/assist/body-reference regression passes in `npc-presets-regression-final.log` after correcting test-clock stepping. Review P2 asset-closure fix: Editor build and all 4 affected checks pass in `npc-presets-asset-admission.log`; missing and non-StaticMesh refs reject loader/actual ConfigureCreature without changing the previous visible body/profile. Dedicated cooks retain no-render-load admission. Ten focused .NET reuse checks and WorldContent.Tool build pass; parsed comparison confirms all 18 old behavior defaults and all old six profile fields unchanged. Schema 2 rejects old semantics.
-Corpse hook: Editor build and all 5 selected checks pass (`npc-corpse-hook-final.log`): actual RewardKill personal/shared delivery, stable opaque retry after actor destruction, frozen eligible raid snapshot, independent once-only XP/quest credit, no legacy grant, protected exclusion and service-disabled local bag delivery. Existing four Loot checks also pass. Combined live two-client death/UI loop remains with the loot worker after hook review.
-Zone parity review fixes: editor build and 9 affected tests pass in shared `npc-zone-parity-integration-final.log`; real one-slot services callback, rejected malformed replies, front dodge/parry/rear hit, real published interrupt/resource cost, production death deadline, durable release/acceptance and true sandbox controls all exercised.
-Zone slice two-client services rechecks passed: `Artifacts/CombatPilot/network-20261025-134633-135` (archer) and `network-20261025-134905-904` (ability).
-Generic zone slice: 9 focused .NET reuse checks, existing --combat checks, zone generator/WorldContent.Tool validation and Gameplay.Host build pass. Editor build and 27 focused checks pass in shared `npc-zone-runtime.log`, including actual seventh ranged shot at 1200 cm and two-world defeat-ID retry stability.
-Casting review fix: editor build and four affected checks passed (`npc-mend-regression-final.log` in shared scratch); actual `npc/mend_reuse_fixture` pays 6 mana and completes an 8-HP heal, while the identical profile without Mend is rejected without spending/healing.
-Editor Development build passed. 24 focused Pilot/Resolution/OutOfPlaceNpc/NpcCasting/Death.ServicesClient tests passed; new profile tests passed again with actor unknown-ID rejection. Two-client services archer and ability netchecks passed: lane `Artifacts/CombatPilot/network-20261025-130419-193` and `network-20261025-130524-272`. Logs/report: shared `Artifacts/Orchestration/20261025-resume/npc-refactor-report.md`. Baseline comparison verifies all 54 stat values and six loot-rule identities. Seventh isolated test content now also drives a live SpawnSlot/shot regression.
-
-## Blocked on
-Profile/casting review passed and commits 909a0e1d + 2ce233e1 are on main. Zone/parity independent recheck passed and both slices are published as `122f8a10` + `4de7c525`. Corpse reward integration passed review and is published as `2dd4605d`; loot worker owns the actual native two-client workflow gate.
+Editor build and all 8 selected checks pass in shared `npc-fixture-extraction-final.log`: real setup/tag filtering, explicit idle/trace, actual lethal defeat/alternate-point respawn, production services/defense/death, live seventh shot, evade/aggro/assist/dodge and retaliation. Non-UE baseline comparison preserves all 18 map/tag/group/bounds/defensive/flag mappings. The first combined run exposed a package-name collision between tests; both test worlds now restore names automatically and the same selection passes.
+Preset evidence: original `npc-presets.log` has 12 successes + 1 fixture-clock failure, superseded by `npc-presets-regression-final.log`; all 4 asset-admission checks pass in `npc-presets-asset-admission.log`. Ten focused .NET reuse checks and bridge build passed. Missing/wrong-type renderer assets reject transactionally; dedicated cooks skip render loads.
 
 ## Next step
-Recheck/publish typed presets plus asset-closure fix. Next extract the sandbox StartCombat map/tag/group setup into a fixture module and replace runtime sandbox-group-name checks with explicit fixture policy. Then separately rename the generic actor with old reflected class redirects/source compatibility and old-map load proof after loot is stable. Coordinate canonical dedicated corpse mesh metadata with the loot worker.
+Review/publish fixture extraction. After the loot worker's actual native two-client loop is stable, separately rename the actor with old reflected class redirects/source compatibility and old-map load proof. Coordinate canonical per-profile dedicated corpse mesh metadata. Keep these remaining acceptance items open; root handles deployment.
 
-## Rules for this task
-Preserve authority, durable death IDs, six profiles and balance. Coordinate Unreal slot. This lane owns SFCombatPilot integration. Generic rename is a separate compatibility-safe commit.
-
-## Outcome
-Profile slice tested; full reuse goal remains open.
+## Rules
+No appearance work. Preserve service authority, XP/quest and slot semantics, stable opaque defeat/retry IDs, once-only corpse/direct delivery fence and historical wire fields. Targeted checks; independent 6.1-Sol review before push; explicit file commits; no shared-main edits or force/stash/reset.

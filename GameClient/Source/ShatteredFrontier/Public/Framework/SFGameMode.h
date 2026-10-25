@@ -12,6 +12,7 @@ class ASFConstructionNetworkState;
 class ASFE1Character;
 class ASFPilotBoar;
 class USFCombatPilotSettings;
+namespace SFCombatFixtures { struct FSpec; }
 enum class ESFConstructionNetworkResult : uint8;
 
 // GM-01: the one game mode. Member bodies stay in their feature .cpp: spawn and lifecycle here, construction and
@@ -165,6 +166,9 @@ private:
 
     // Combat
     void StartCombat();
+    bool StartCombatFixture();
+    void TickCombatFixture();
+    bool HandleCombatFixtureDefeat(ASFPilotBoar* Npc, ASFE1Character* Killer);
     void PostLoginCombat(APlayerController* NewPlayer);
     void RestartCombat(AController* NewPlayer);
     void TickCombat();
@@ -186,6 +190,7 @@ private:
     friend class FSFNpcProductionParityTest;
     friend class FSFNpcCorpseRewardTest;
     friend class FSFNpcPresetRuntimeTest;
+    friend class FSFNpcFixtureExtractionTest;
 #endif
     FString CombatZonePath;
     TMap<FString, SFNpcZoneContent::FGroup> Groups;
@@ -221,6 +226,7 @@ private:
     bool bPilotActive = false;
     bool bCompanionSandbox = false;
     bool bRespawnSandbox = false;
+    const SFCombatFixtures::FSpec* ActiveCombatFixture = nullptr;
     TArray<FTransform> RespawnSandboxPoints;
     double RespawnSandboxDueAt = -1.0;
     int32 RespawnSandboxCycle = 0;
