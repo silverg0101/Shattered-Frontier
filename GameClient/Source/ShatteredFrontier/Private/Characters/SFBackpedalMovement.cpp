@@ -13,9 +13,8 @@ bool USFBackpedalMovement::IsBackpedalling(const FVector& Facing, const FVector&
 float USFBackpedalMovement::GetMaxSpeed() const
 {
     const float Base = Super::GetMaxSpeed();
-    if (!CharacterOwner || !GetWorld() ||
-        GetWorld()->GetOutermost()->GetName() != TEXT("/Game/Frontier/Maps/Sandbox/SB_Backpedal") ||
-        !IsMovingOnGround() || !IsBackpedalling(CharacterOwner->GetActorForwardVector(), Acceleration))
+    if (!CharacterOwner || !GetWorld() || !IsMovingOnGround() ||
+        !IsBackpedalling(CharacterOwner->GetActorForwardVector(), Acceleration))
     {
         return Base;
     }

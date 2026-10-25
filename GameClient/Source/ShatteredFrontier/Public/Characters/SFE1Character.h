@@ -134,6 +134,7 @@ private:
     void TickSwimScenario();
     void TickCrouchScenario();
     void TickBackpedalScenario();
+    void TickGreenlandsMovementScenario();
     void TickGreenlandsEnvironmentScenario();
     UFUNCTION(Server, Reliable) void ServerTargetScenarioStep(int32 Step);
     UFUNCTION(Server, Reliable) void ServerPilotAttack(AActor* SelectedCombatTarget);

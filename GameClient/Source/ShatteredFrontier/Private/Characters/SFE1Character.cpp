@@ -790,6 +790,47 @@ void ASFE1Character::TickBackpedalScenario()
 #endif
 }
 
+void ASFE1Character::TickGreenlandsMovementScenario()
+{
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    FString ScenarioRole;
+    FParse::Value(FCommandLine::Get(), TEXT("GreenlandsMovementRole="), ScenarioRole);
+    if ((ScenarioRole != TEXT("Driver") && ScenarioRole != TEXT("Observer")) || !Controller) { return; }
+    ASFE1Character* Watched = this;
+    int32 Players = 0;
+    for (TActorIterator<ASFE1Character> It(GetWorld()); It; ++It)
+    {
+        ++Players;
+        if (ScenarioRole == TEXT("Observer") && *It != this) { Watched = *It; }
+    }
+    if (Players < 2 || (ScenarioRole == TEXT("Observer") && Watched == this) ||
+        Watched->GetActorLocation().X < 49500.0) { return; }
+    const double Now = GetWorld()->GetTimeSeconds();
+    if (CrouchScenarioStartAt < 0) { CrouchScenarioStartAt = Now; }
+    const double Elapsed = Now - CrouchScenarioStartAt;
+    const int32 Stage = Elapsed < 3.5 ? 0 : Elapsed < 6.5 ? 1 : Elapsed < 9.5 ? 2 : Elapsed < 12.0 ? 3 : 4;
+    if (ScenarioRole == TEXT("Driver"))
+    {
+        Controller->SetControlRotation(FRotator::ZeroRotator);
+        if (Stage == 0 && CrouchScenarioStage == 0 && GetCharacterMovement()->IsMovingOnGround())
+        { Crouch(); CrouchScenarioStage = 1; }
+        if (Stage >= 1 && CrouchScenarioStage == 1)
+        { UnCrouch(); CrouchScenarioStage = 2; }
+        if (Stage < 4) { AddMovementInput(Stage == 2 ? -FVector::ForwardVector : FVector::ForwardVector, 1.0f); }
+        if (Stage == 4 && !bBackpedalScenarioComplete)
+        { bBackpedalScenarioComplete = true; UE_LOG(LogTemp, Display, TEXT("GREENLANDS_MOVEMENT_COMPLETE")); }
+    }
+    if (Now >= NextCrouchSampleAt)
+    {
+        NextCrouchSampleAt = Now + 0.2;
+        UE_LOG(LogTemp, Display, TEXT("GREENLANDS_MOVEMENT_CLIENT Role=%s Stage=%d X=%.0f C=%d Speed=%.0f Facing=%.2f"),
+            *ScenarioRole, Stage, Watched->GetActorLocation().X, Watched->bIsCrouched ? 1 : 0,
+            Watched->GetVelocity().Size2D(),
+            FVector::DotProduct(Watched->GetActorForwardVector(), FVector::ForwardVector));
+    }
+#endif
+}
+
 void ASFE1Character::TickGreenlandsEnvironmentScenario()
 {
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
@@ -1125,6 +1166,16 @@ void ASFE1Character::Tick(float DeltaSeconds)
             FVector::DotProduct(GetActorForwardVector(), GetVelocity().GetSafeNormal2D()),
             GetCharacterMovement()->GetMaxSpeed());
     }
+    if (HasAuthority() && CombatMap == TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook") &&
+        FParse::Param(FCommandLine::Get(), TEXT("GreenlandsMovementNetcheck")) &&
+        GetWorld()->GetTimeSeconds() >= NextCrouchSampleAt)
+    {
+        NextCrouchSampleAt = GetWorld()->GetTimeSeconds() + 0.2;
+        UE_LOG(LogTemp, Display, TEXT("GREENLANDS_MOVEMENT_SERVER Pawn=%s T=%.2f X=%.0f C=%d Speed=%.0f Dot=%.2f Cap=%.0f"),
+            *GetName(), GetWorld()->GetTimeSeconds(), GetActorLocation().X, bIsCrouched ? 1 : 0,
+            GetVelocity().Size2D(), FVector::DotProduct(GetActorForwardVector(), GetVelocity().GetSafeNormal2D()),
+            GetCharacterMovement()->GetMaxSpeed());
+    }
 #endif
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     if (GetNetMode() == NM_Client && IsLocallyControlled() &&
@@ -1235,6 +1286,8 @@ void ASFE1Character::Tick(float DeltaSeconds)
         FParse::Param(FCommandLine::Get(), TEXT("BackpedalScenario"))) { TickBackpedalScenario(); }
     if (GetNetMode() == NM_Client && IsLocallyControlled() &&
         FParse::Param(FCommandLine::Get(), TEXT("GreenlandsEnvironmentNetcheck"))) { TickGreenlandsEnvironmentScenario(); }
+    if (GetNetMode() == NM_Client && IsLocallyControlled() &&
+        FParse::Param(FCommandLine::Get(), TEXT("GreenlandsMovementNetcheck"))) { TickGreenlandsMovementScenario(); }
 #endif
 }
 

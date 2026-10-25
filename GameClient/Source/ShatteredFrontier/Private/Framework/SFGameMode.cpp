@@ -152,7 +152,9 @@ void ASFGameMode::PostLogin(APlayerController* NewPlayer)
     { RecordM3Connection(NewPlayer ? NewPlayer->NetConnection : nullptr); }
     UE_LOG(LogTemp, Display, TEXT("E1_PLAYER_JOIN Controller=%s Players=%d Authority=%d"), *GetNameSafe(NewPlayer), GetNumPlayers(), HasAuthority());
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
-    if (GetNumPlayers() == 2 && FParse::Param(FCommandLine::Get(), TEXT("GreenlandsEnvironmentNetcheck")) &&
+    if (GetNumPlayers() == 2 &&
+        (FParse::Param(FCommandLine::Get(), TEXT("GreenlandsEnvironmentNetcheck")) ||
+         FParse::Param(FCommandLine::Get(), TEXT("GreenlandsMovementNetcheck"))) &&
         GetWorld()->GetOutermost()->GetName() == TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook"))
     {
         TWeakObjectPtr<APlayerController> Driver;
@@ -165,6 +167,22 @@ void ASFGameMode::PostLogin(APlayerController* NewPlayer)
             ASFE1Character* Pawn = Driver.IsValid() ? Cast<ASFE1Character>(Driver->GetPawn()) : nullptr;
             ASFE1Character* Witness = Observer.IsValid() ? Cast<ASFE1Character>(Observer->GetPawn()) : nullptr;
             if (!Pawn || !Witness) { UE_LOG(LogTemp, Error, TEXT("GREENLANDS_ENV_NO_PLAYERS")); return; }
+            if (FParse::Param(FCommandLine::Get(), TEXT("GreenlandsMovementNetcheck")))
+            {
+                // The same dry west shore used by the fall/swim fixture has room for the movement sequence.
+                const FVector Start(50000, 37700, 0);
+                FHitResult Ground;
+                if (!GetWorld()->LineTraceSingleByChannel(Ground, Start + FVector(0, 0, 100000),
+                    Start - FVector(0, 0, 100000), ECC_WorldStatic))
+                { UE_LOG(LogTemp, Error, TEXT("GREENLANDS_MOVEMENT_NO_GROUND")); return; }
+                const FVector Location = Ground.Location + FVector(0, 0, 90);
+                Pawn->SetActorLocation(Location, false, nullptr, ETeleportType::TeleportPhysics);
+                Witness->SetActorLocation(Location + FVector(0, 200, 0), false, nullptr, ETeleportType::TeleportPhysics);
+                Pawn->GetCharacterMovement()->StopMovementImmediately();
+                Witness->GetCharacterMovement()->StopMovementImmediately();
+                UE_LOG(LogTemp, Display, TEXT("GREENLANDS_MOVEMENT_START X=%.0f Y=%.0f"), Location.X, Location.Y);
+                return;
+            }
             // Test-only spawn on the dry west shore of the authored Eastwood Pond, 25 m above its terrain.
             const FVector Shore(51000, 37700, 0);
             FHitResult Ground;
