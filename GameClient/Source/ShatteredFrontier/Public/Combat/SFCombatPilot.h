@@ -8,6 +8,7 @@
 class ASFE1Character;
 class UStaticMeshComponent;
 class UTextRenderComponent;
+class USFCastingComponent;
 
 namespace SFCombatPilotRules
 {
@@ -281,6 +282,8 @@ public:
     FString DeathId() const { return FString::Printf(TEXT("%s:%d:%d"), *SpawnGroup, Slot, SpawnSerial); }
     int32 Health() const { return CurrentHealth; }
     int32 MaximumHealth() const { return MaximumHealthValue; }
+    void CompleteNpcMend(float HealthFraction);
+    USFCastingComponent* GetCasting() const { return Casting; }
     double CombatSwingSeconds() const { return CombatSwingSecondsValue; }
     double CombatSwingDamage() const { return CombatSwingDamageValue; }
     double CombatArmor() const { return CombatArmorValue; }
@@ -305,6 +308,7 @@ private:
     double CombatDodgeValue = .03, CombatParryValue = .03;
     UPROPERTY(VisibleAnywhere) TObjectPtr<UStaticMeshComponent> Body;
     UPROPERTY(VisibleAnywhere) TObjectPtr<UTextRenderComponent> Label;
+    UPROPERTY(VisibleAnywhere) TObjectPtr<USFCastingComponent> Casting;
     TWeakObjectPtr<class ASFGameMode> PilotMode;
     TWeakObjectPtr<ASFE1Character> Target;
     UPROPERTY(Replicated) TObjectPtr<ASFE1Character> ReplicatedTarget;
@@ -341,5 +345,8 @@ private:
     double NextSwingAt = 0;
     double LastDamageAt = 0;
     double UnreachableSince = -1;
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    bool bClientLoggedNpcCast = false;
+#endif
     UPROPERTY(Replicated) bool bReturning = false;
 };

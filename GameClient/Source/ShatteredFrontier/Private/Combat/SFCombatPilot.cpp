@@ -1,4 +1,5 @@
 #include "Combat/SFCombatPilot.h"
+#include "Combat/SFCastingComponent.h"
 #include "Combat/SFCombatEnergy.h"
 #include "Combat/SFStarterAbilities.h"
 #include "Combat/SFCastingComponent.h"
@@ -344,6 +345,7 @@ ASFPilotBoar::ASFPilotBoar()
         Body->SetStaticMesh(Cube.Object);
     }
     Label = CreateDefaultSubobject<UTextRenderComponent>(TEXT("HealthLabel"));
+    Casting = CreateDefaultSubobject<USFCastingComponent>(TEXT("Casting"));
     Label->SetupAttachment(GetCapsuleComponent());
     Label->SetRelativeLocation(FVector(0, 0, 130));
     Label->SetHorizontalAlignment(EHorizTextAligment::EHTA_Center);
@@ -449,6 +451,7 @@ bool ASFPilotBoar::ReceivePackAssist(ASFE1Character* Character, const FString& C
 void ASFPilotBoar::EnterEvade()
 {
     if (!HasAuthority() || bReturning || CurrentHealth <= 0) { return; }
+    if (Casting) { Casting->CancelNpcCast(); }
     FString TopCharacterId;
     if (ASFE1Character* Victim = Target.Get())
     {
@@ -479,6 +482,17 @@ void ASFPilotBoar::OnRep_Health()
     Label->SetText(FText::FromString(FString::Printf(TEXT("%s L%d  %d HP"), *Name,
         SFCombatPart6::Npc(CreatureId).Level, CurrentHealth)));
     Label->SetTextRenderColor(CurrentHealth > 0 ? FColor::Yellow : FColor::Red);
+}
+
+void ASFPilotBoar::CompleteNpcMend(float HealthFraction)
+{
+    if (!HasAuthority() || CreatureId != TEXT("npc/bandit_captain") || CurrentHealth <= 0 || bReturning) return;
+    const int32 Before = CurrentHealth;
+    CurrentHealth = FMath::Min(MaximumHealthValue,
+        CurrentHealth + FMath::RoundToInt(MaximumHealthValue * HealthFraction));
+    OnRep_Health(); ForceNetUpdate();
+    UE_LOG(LogTemp, Display, TEXT("NPC_CAST_COMPLETE Creature=%s Ability=mend Heal=%d HP=%d"),
+        *CreatureId, CurrentHealth - Before, CurrentHealth);
 }
 
 void ASFPilotBoar::OnRep_CreatureId() { OnRep_Health(); }
@@ -567,6 +581,8 @@ void ASFPilotBoar::ReceivePilotDamage(ASFE1Character* Attacker, int32 Damage, do
         DamageAttackers.Add(AttackerId);
     }
     CurrentHealth = SFCombatPilotRules::RemainingHealth(CurrentHealth, Damage);
+    if (CurrentHealth == 0 && Casting) { Casting->CancelNpcCast(); }
+    else if (Casting) { Casting->NotifyDamage(); }
     LastDamageAt = GetWorld()->GetTimeSeconds(); UnreachableSince = -1;
     if (!Attacker->GetCombatTarget() && CurrentHealth > 0) { Attacker->SetCombatTarget(this); }
     OnRep_Health(); ForceNetUpdate();
@@ -606,6 +622,16 @@ bool ASFPilotBoar::ReceivePilotTaunt(ASFE1Character* Taunter)
 void ASFPilotBoar::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    if (!HasAuthority() && !bClientLoggedNpcCast && CreatureId == TEXT("npc/bandit_captain") &&
+        FParse::Param(FCommandLine::Get(), TEXT("GreenlandsAbilityNetcheck")) && Casting &&
+        Casting->GetCastView().Phase == ESFCastPhase::Casting)
+    {
+        bClientLoggedNpcCast = true;
+        UE_LOG(LogTemp, Display, TEXT("NPC_CAST_CLIENT_VIEW Ability=%d EndsAt=%.2f"),
+            Casting->GetCastView().AbilityId, Casting->GetCastView().EndsAt);
+    }
+#endif
     if (!HasAuthority() || CurrentHealth <= 0 || !PilotMode.IsValid() || !PilotMode->IsCombatActive()) { return; }
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     // Keep one shared target alive across the staged client reconnect in this network fixture.
@@ -769,6 +795,13 @@ void ASFPilotBoar::Tick(float DeltaSeconds)
                     *SpawnGroup, Now - EngagedSince, FVector::Dist2D(GetActorLocation(), Packmate->GetActorLocation())); }
             }
         }
+    }
+    if (Casting && CreatureId == TEXT("npc/bandit_captain") && Victim && !bReturning)
+    {
+        if (Casting->GetCastView().Phase == ESFCastPhase::Casting) { return; }
+        if (CurrentHealth < FMath::RoundToInt(MaximumHealthValue *
+            Casting->GetNpcMendHealthThreshold()) && Casting->TryBeginNpcMend())
+        { return; }
     }
     if ((SpawnGroup == TEXT("aggro_sandbox") || SpawnGroup == TEXT("memory_sandbox") ||
         SpawnGroup == TEXT("assist_sandbox") || SpawnGroup == TEXT("respawn_sandbox") ||
@@ -1269,6 +1302,8 @@ void ASFGameMode::TickGreenlandsAbilityNetcheck()
         USFCharacterSessionComponent::IsRestoring(Driver->GetController()) ||
         USFCharacterSessionComponent::IsRestoring(Observer->GetController())) return;
     const double Now = GetWorld()->GetTimeSeconds();
+    if (GreenlandsAbilityStage >= 9 && GreenlandsAbilityStage < 99)
+    { Driver->CombatSetHealth(Driver->CombatMaximumHealth()); }
     if (GreenlandsAbilityStage == 0)
     {
         ASFPilotBoar* Boar = nullptr;
@@ -1424,7 +1459,83 @@ void ASFGameMode::TickGreenlandsAbilityNetcheck()
             !(Driver->GetStamina() < Before))
         { UE_LOG(LogTemp, Error, TEXT("ABILITY_NETCHECK_FAILED EquippedBow")); GreenlandsAbilityStage = 99; return; }
         GreenlandsAbilityStage = 9;
-        UE_LOG(LogTemp, Display, TEXT("ABILITY_NETCHECK_PASS Shadow=1 NoBow=1 EquippedBow=1 Mana=%.2f"), Driver->GetMana());
+        UE_LOG(LogTemp, Display, TEXT("ABILITY_NETCHECK_BOW NoBow=1 EquippedBow=1 Mana=%.2f"), Driver->GetMana());
+    }
+    else if (GreenlandsAbilityStage == 9)
+    {
+        ASFPilotBoar* Captain = nullptr;
+        for (const auto& Slot : ActiveBoars)
+        { if (IsValid(Slot.Value.Get()) && Slot.Value->GetCreatureId() == TEXT("npc/bandit_captain"))
+          { Captain = Slot.Value.Get(); break; } }
+        if (!Captain || !Captain->GetCasting()) return;
+        GreenlandsAbilityBoar = Captain;
+        Driver->SetActorLocation(Grounded(GetWorld(), Captain->GetActorLocation() + FVector(180, 0, 0),
+            Driver->GetCapsuleComponent()->GetScaledCapsuleHalfHeight()), false, nullptr, ETeleportType::TeleportPhysics);
+        Observer->SetActorLocation(Driver->GetActorLocation() + FVector(0, 120, 0), false, nullptr, ETeleportType::TeleportPhysics);
+        Driver->SetActorRotation((Captain->GetActorLocation() - Driver->GetActorLocation()).Rotation());
+        Driver->SetCombatTarget(Captain);
+        Captain->ReceivePilotDamage(Driver, Captain->MaximumHealth() / 2);
+        GreenlandsAbilityBoarHealth = Captain->Health();
+        if (!Captain->GetCasting()->TryBeginNpcMend() || Captain->GetCasting()->GetNpcMana() != 94)
+        { UE_LOG(LogTemp, Error, TEXT("ABILITY_NETCHECK_FAILED NpcCastStart")); GreenlandsAbilityStage = 99; return; }
+        GreenlandsAbilityStage = 10; GreenlandsAbilityStageAt = Now;
+        UE_LOG(LogTemp, Display, TEXT("ABILITY_NETCHECK_NPC_START Mana=94 HP=%d"), Captain->Health());
+    }
+    else if (GreenlandsAbilityStage == 10 && Now - GreenlandsAbilityStageAt >= 2.8)
+    {
+        ASFPilotBoar* Captain = GreenlandsAbilityBoar.Get();
+        if (!Captain || Captain->Health() <= GreenlandsAbilityBoarHealth ||
+            Captain->GetCasting()->GetCastView().Phase != ESFCastPhase::Idle)
+        { UE_LOG(LogTemp, Error, TEXT("ABILITY_NETCHECK_FAILED NpcCastComplete")); GreenlandsAbilityStage = 99; return; }
+        GreenlandsAbilityStage = 11;
+        UE_LOG(LogTemp, Display, TEXT("ABILITY_NETCHECK_NPC_COMPLETE Heal=%d"), Captain->Health() - GreenlandsAbilityBoarHealth);
+    }
+    else if (GreenlandsAbilityStage == 11)
+    {
+        ASFPilotBoar* Captain = GreenlandsAbilityBoar.Get();
+        if (!Captain || !Captain->GetCasting() || Captain->GetCasting()->GetCastView().Phase != ESFCastPhase::Casting) return;
+        Driver->SetActorLocation(Grounded(GetWorld(), Captain->GetActorLocation() + FVector(180, 0, 0),
+            Driver->GetCapsuleComponent()->GetScaledCapsuleHalfHeight()), false, nullptr, ETeleportType::TeleportPhysics);
+        Driver->SetActorRotation((Captain->GetActorLocation() - Driver->GetActorLocation()).Rotation());
+        Driver->Casting->RequestPublishedInterrupt(false, Captain);
+        const int32 Mana = Captain->GetCasting()->GetNpcMana();
+        if (!Captain->GetCasting()->IsNpcSchoolLocked() || Mana != 94 ||
+            Captain->GetCasting()->GetCastView().Phase != ESFCastPhase::Idle)
+        { UE_LOG(LogTemp, Error, TEXT("ABILITY_NETCHECK_FAILED PommelInterrupt Mana=%d"), Mana); GreenlandsAbilityStage = 99; return; }
+        const float Stamina = Driver->GetStamina();
+        Driver->Casting->RequestPublishedInterrupt(false, Captain);
+        if (Captain->GetCasting()->GetNpcMana() != Mana || Driver->GetStamina() != Stamina)
+        { UE_LOG(LogTemp, Error, TEXT("ABILITY_NETCHECK_FAILED DoubleRefund")); GreenlandsAbilityStage = 99; return; }
+        GreenlandsAbilityStage = 12;
+        UE_LOG(LogTemp, Display, TEXT("ABILITY_NETCHECK_NPC_POMMEL Locked=1 Mana=%d"), Mana);
+    }
+    else if (GreenlandsAbilityStage == 12)
+    {
+        ASFPilotBoar* Captain = GreenlandsAbilityBoar.Get();
+        if (!Captain || !Captain->GetCasting() || Captain->GetCasting()->GetCastView().Phase != ESFCastPhase::Casting) return;
+        bool bFound = false;
+        for (int32 Direction = 0; Direction < 8 && !bFound; ++Direction)
+        {
+            const double Angle = Direction * PI / 4.0;
+            const FVector Point = Captain->GetActorLocation() + FVector(FMath::Cos(Angle) * 2990,
+                FMath::Sin(Angle) * 2990, 0);
+            const FVector Ground = Grounded(GetWorld(), Point, Driver->GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
+            FCollisionQueryParams Query(SCENE_QUERY_STAT(NpcNetcheckSight), false, Driver);
+            Query.AddIgnoredActor(Captain);
+            if (!IsSafe(Ground) && !GetWorld()->LineTraceTestByChannel(Ground + FVector(0, 0, 50),
+                Captain->GetActorLocation() + FVector(0, 0, 50), ECC_Visibility, Query))
+            { Driver->SetActorLocation(Ground, false, nullptr, ETeleportType::TeleportPhysics); bFound = true; }
+        }
+        if (!bFound)
+        { UE_LOG(LogTemp, Error, TEXT("ABILITY_NETCHECK_FAILED CounterspellPosition")); GreenlandsAbilityStage = 99; return; }
+        Driver->Casting->RequestPublishedInterrupt(true, Captain);
+        if (!Captain->GetCasting()->IsNpcSchoolLocked() ||
+            Captain->GetCasting()->GetCastView().Phase != ESFCastPhase::Idle)
+        { UE_LOG(LogTemp, Error, TEXT("ABILITY_NETCHECK_FAILED CounterspellInterrupt")); GreenlandsAbilityStage = 99; return; }
+        GreenlandsAbilityStage = 13;
+        UE_LOG(LogTemp, Display, TEXT("ABILITY_NETCHECK_NPC_COUNTERSPELL DistanceCm=%.0f Locked=1"),
+            FVector::Dist2D(Driver->GetActorLocation(), Captain->GetActorLocation()));
+        UE_LOG(LogTemp, Display, TEXT("ABILITY_NETCHECK_PASS Shadow=1 NoBow=1 EquippedBow=1 NpcCast=1"));
     }
 }
 

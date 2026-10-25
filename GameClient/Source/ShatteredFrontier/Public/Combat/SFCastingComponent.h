@@ -6,6 +6,7 @@
 #include "SFCastingComponent.generated.h"
 
 class ASFCastingTarget;
+class ASFPilotBoar;
 
 /** Release-authored combat timing, adopted when a character enters the zone. */
 UCLASS(Config=Game, DefaultConfig, meta=(DisplayName="Combat Casting"))
@@ -33,6 +34,12 @@ public:
     UPROPERTY(Config, EditAnywhere, Category="Training Abilities", meta=(ClampMin="1", ClampMax="20", Units="m")) float TrainingRangeMetres = 5.0f;
     UPROPERTY(Config, EditAnywhere, Category="Training Abilities", meta=(ClampMin="0", ClampMax="0.75")) float TrainingHasteFraction = 0.0f;
     UPROPERTY(Config, EditAnywhere, Category="Training Abilities", meta=(ClampMin="0", ClampMax="10", Units="s")) float TrainingInterruptLockoutSeconds = 3.0f;
+    // Captain Mend is adopted at NPC spawn. The ability's cast and mana cost come from SFStarterAbilities.
+    UPROPERTY(Config, EditAnywhere, Category="Greenlands NPC", meta=(ClampMin="0.1", ClampMax="1.0", ToolTip="Fraction of maximum health. Adopted at NPC spawn.")) float CaptainMendHealthThreshold = 0.7f;
+    UPROPERTY(Config, EditAnywhere, Category="Greenlands NPC", meta=(ClampMin="0.01", ClampMax="0.3", ToolTip="Fraction of maximum health healed. Adopted at NPC spawn.")) float CaptainMendHealFraction = 0.08f;
+    UPROPERTY(Config, EditAnywhere, Category="Greenlands NPC", meta=(ClampMin="3", ClampMax="60", Units="s")) float CaptainMendCooldownSeconds = 12.0f;
+    UPROPERTY(Config, EditAnywhere, Category="Greenlands NPC", meta=(ClampMin="1", ClampMax="10", Units="s")) float NpcSchoolLockoutSeconds = 3.0f;
+    UPROPERTY(Config, EditAnywhere, Category="Greenlands NPC", meta=(ClampMin="20", ClampMax="1000", ToolTip="Captain maximum Mana. Adopted at NPC spawn.")) int32 CaptainManaMaximum = 100;
     bool Validate(FString& Error) const;
     SFCastRules::FTuning Tuning() const;
 };
@@ -78,6 +85,11 @@ public:
     UFUNCTION(BlueprintPure, Category="Combat") FSFCastView GetCastView() const { return View; }
     UFUNCTION(BlueprintPure, Category="Combat") int32 GetTrainingResource() const { return Resource; }
     bool IsCurrentCastInterruptible() const { return bCurrentCastInterruptible; }
+    bool TryBeginNpcMend();
+    void CancelNpcCast();
+    bool IsNpcSchoolLocked() const;
+    int32 GetNpcMana() const { return NpcMana; }
+    float GetNpcMendHealthThreshold() const { return NpcMendHealthThreshold; }
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     bool BeginPublishedInterruptFixtureCast(bool bInterruptible = true);
 #endif
@@ -90,6 +102,7 @@ private:
     void TryUse(uint8 AbilityId);
     void SyncView();
     void ResolveTick(uint8 AbilityId);
+    int32 NpcCastCost() const;
     SFCastRules::FAbility Definition(uint8 AbilityId) const;
     bool InSandbox() const;
     double Now() const;
@@ -102,6 +115,9 @@ private:
     int32 ChannelTicks = 4, DamagePerTick = 5, ResourceCost = 10, ResourceMax = 100, CancelRefundPercent = 50;
     float RangeMetres = 5.f, HasteFraction = 0.f;
     bool bCurrentCastInterruptible = true;
+    int32 NpcMana = 100, NpcManaMaximum = 100;
+    float NpcMendHealthThreshold = 0.7f, NpcMendHealFraction = 0.08f;
+    float NpcMendCooldownSeconds = 12.f, NpcSchoolLockoutSeconds = 3.f;
     double NextPommelAt = 0.0, NextCounterspellAt = 0.0;
     FVector StartLocation = FVector::ZeroVector;
     TWeakObjectPtr<ASFCastingTarget> Target;

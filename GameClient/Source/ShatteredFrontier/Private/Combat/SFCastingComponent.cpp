@@ -3,6 +3,7 @@
 #include "Characters/SFE1Character.h"
 #include "Combat/SFCrowdControlComponent.h"
 #include "Combat/SFCombatPilot.h"
+#include "Combat/SFStarterAbilities.h"
 #include "Combat/SFCombatPart6.h"
 #include "Combat/SFBoarDodgeRules.h"
 #include "Framework/SFGameMode.h"
@@ -39,7 +40,12 @@ bool USFCastingSettings::Validate(FString& Error) const
         !FMath::IsWithinInclusive(TrainingTargetHealth, 10, 10000) ||
         !FMath::IsWithinInclusive(TrainingRangeMetres, 1.f, 20.f) ||
         !FMath::IsWithinInclusive(TrainingHasteFraction, 0.f, HasteMax) ||
-        !FMath::IsWithinInclusive(TrainingInterruptLockoutSeconds, 0.f, 10.f))
+        !FMath::IsWithinInclusive(TrainingInterruptLockoutSeconds, 0.f, 10.f) ||
+        !FMath::IsWithinInclusive(CaptainMendHealthThreshold, .1f, 1.f) ||
+        !FMath::IsWithinInclusive(CaptainMendHealFraction, .01f, .3f) ||
+        !FMath::IsWithinInclusive(CaptainMendCooldownSeconds, 3.f, 60.f) ||
+        !FMath::IsWithinInclusive(NpcSchoolLockoutSeconds, 1.f, 10.f) ||
+        !FMath::IsWithinInclusive(CaptainManaMaximum, 20, 1000))
     { Error = TEXT("Combat casting configuration is outside release bounds"); return false; }
     return true;
 }
@@ -84,6 +90,12 @@ void USFCastingComponent::BeginPlay()
     HasteFraction = Settings->TrainingHasteFraction;
     LockoutSeconds = Settings->TrainingInterruptLockoutSeconds;
     CancelRefundPercent = Settings->CancelRefundPercent;
+    NpcMendHealthThreshold = Settings->CaptainMendHealthThreshold;
+    NpcMendHealFraction = Settings->CaptainMendHealFraction;
+    NpcMendCooldownSeconds = Settings->CaptainMendCooldownSeconds;
+    NpcSchoolLockoutSeconds = Settings->NpcSchoolLockoutSeconds;
+    NpcManaMaximum = Settings->CaptainManaMaximum;
+    NpcMana = NpcManaMaximum;
     if (InSandbox())
     {
         if (ASFE1Character* Owner = Cast<ASFE1Character>(GetOwner()); Owner && Owner->CombatHealth() <= 0)
@@ -183,6 +195,61 @@ void USFCastingComponent::ServerRequestPublishedInterrupt_Implementation(bool bC
     const USFCombatEnergySettings* Energy = GetDefault<USFCombatEnergySettings>();
     const double ReachCm = (bCounterspell ? Energy->CounterspellRangeMetres :
         Energy->MeleeReachMetres) * 100.0;
+    if (ASFPilotBoar* Npc = Cast<ASFPilotBoar>(SelectedTarget))
+    {
+        ASFGameMode* Mode = GetWorld()->GetAuthGameMode<ASFGameMode>();
+        if (!Mode || !Mode->IsCombatActive() || Mode->IsSafe(Owner->GetActorLocation())) return;
+        const bool bCasting = Npc->GetCasting() &&
+            Npc->GetCasting()->GetCastView().Phase == ESFCastPhase::Casting &&
+            Npc->GetCasting()->IsCurrentCastInterruptible();
+        const FVector Delta = Npc->GetActorLocation() - Owner->GetActorLocation();
+        const bool bValid = Npc->Health() > 0 && !Npc->IsLeashing() && Npc->HasThreatFor(Owner) &&
+            Delta.Size2D() <= ReachCm && (bCounterspell ||
+            FVector::DotProduct(Owner->GetActorForwardVector().GetSafeNormal2D(), Delta.GetSafeNormal2D()) >= 0.f);
+        if (!SFCombatEnergy::CanUseRankOne(Owner->CombatCharacterLevel(), Owner->CombatHealth() > 0,
+            bValid, bCasting, true) || Time < (bCounterspell ? NextCounterspellAt : NextPommelAt)) return;
+        FCollisionQueryParams NpcQuery(SCENE_QUERY_STAT(NpcPublishedInterruptLOS), false, Owner);
+        NpcQuery.AddIgnoredActor(Npc);
+        if (GetWorld()->LineTraceTestByChannel(Owner->GetActorLocation() + FVector(0, 0, 50),
+            Npc->GetActorLocation() + FVector(0, 0, 50), ECC_Visibility, NpcQuery)) return;
+        const bool bPaid = bCounterspell ? Owner->SpendManaFraction(Energy->CounterspellManaCostFraction) :
+            Owner->SpendStaminaFraction(Energy->PommelStaminaCostFraction);
+        if (!bPaid) return;
+        if (bCounterspell) NextCounterspellAt = Time + Energy->CounterspellCooldownSeconds;
+        else NextPommelAt = Time + Energy->PommelCooldownSeconds;
+        Npc->GetCasting()->Interrupt();
+        if (!bCounterspell)
+        {
+            if (SFCombatPart6::Active(GetWorld()))
+            {
+                const auto* CombatTune = GetDefault<USFCombatPilotSettings>();
+                const auto Stats = Owner->CombatStats(CombatTune->CritBase, CombatTune->SkillDamageFloor);
+                const auto Weapon = SFGear::CombatEquipment(Owner->GetController(), CombatTune->DevPilotArmorUnit);
+                const auto* Coefficient = SFCombatPart6::Ability(TEXT("pommel_strike"));
+                check(Coefficient);
+                auto Attack = SFCombatPart6::AuthoredAbility(Stats, Weapon.Weapon, *Coefficient,
+                    CombatTune->WeaponSpread, CombatTune->PowerSpeedReferenceSeconds,
+                    CombatTune->UnarmedDpsFactor, CombatTune->WeaponDpsK);
+                Attack.bHasArmorSnapshot = true; Attack.Armor = Npc->CombatArmor();
+                Attack.bFrontArc = SFBoarDodgeRules::IsInFrontArc(Npc->GetActorForwardVector(),
+                    Owner->GetActorLocation() - Npc->GetActorLocation(), CombatTune->FrontArcDegrees);
+                const auto Result = Mode->ResolveCombatAttack(Owner, Attack);
+                if (Result.Damage > 0) { Npc->ReceivePilotDamage(Owner, Result.Damage); }
+            }
+            else
+            {
+                const int32 BaseDamage = GetDefault<USFCombatPilotSettings>()->PlayerMeleeDamage +
+                    SFGear::Equipped(Owner->GetController()).Damage;
+                const int32 Damage = FMath::Max(1, FMath::RoundToInt(BaseDamage * Energy->PommelPhysicalModifier));
+                Npc->ReceivePilotDamage(Owner, Damage);
+            }
+            Owner->CombatMarkHostile();
+        }
+        UE_LOG(LogTemp, Display, TEXT("NPC_INTERRUPT_APPLIED Kind=%s Creature=%s Mana=%d Locked=%d"),
+            bCounterspell ? TEXT("counterspell") : TEXT("pommel_strike"), *Npc->GetCreatureId(),
+            Npc->GetCasting()->GetNpcMana(), Npc->GetCasting()->IsNpcSchoolLocked() ? 1 : 0);
+        return;
+    }
     const bool bHostile = Victim && Owner->GetCombatTarget() == Victim && Victim->GetCombatTarget() == Owner;
     const bool bCasting = Victim && ((Victim->Casting && Victim->Casting->GetCastView().Phase != ESFCastPhase::Idle) ||
         Victim->IsCombatAbilityCasting());
@@ -320,6 +387,23 @@ void USFCastingComponent::ServerSetInterruptScenarioPosition_Implementation(bool
 void USFCastingComponent::TickComponent(float Dt, ELevelTick TickType, FActorComponentTickFunction* TickFunction)
 {
     Super::TickComponent(Dt, TickType, TickFunction);
+    if (ASFPilotBoar* Npc = Cast<ASFPilotBoar>(GetOwner()))
+    {
+        if (Npc->HasAuthority() && State.Phase == SFCastRules::EPhase::Casting)
+        {
+            bool bCompleted = false;
+            SFCastRules::FAbility Ability;
+            Ability.Id = 3; Ability.School = 2;
+            State.Advance(Now(), Ability, bCompleted);
+            if (bCompleted)
+            {
+                Npc->CompleteNpcMend(NpcMendHealFraction);
+                View.bInterrupted = false;
+                SyncView();
+            }
+        }
+        return;
+    }
     ASFE1Character* Owner = Cast<ASFE1Character>(GetOwner());
     if (!Owner || !InSandbox()) return;
     if (!Owner->HasAuthority())
@@ -484,10 +568,49 @@ void USFCastingComponent::ServerCancelCast_Implementation()
 void USFCastingComponent::Interrupt()
 {
     if (!GetOwner()->HasAuthority() || State.Phase == SFCastRules::EPhase::Idle) return;
-    Resource = FMath::Min(ResourceMax, Resource + SFCastRules::Refund(ResourceCost, true, CancelRefundPercent));
-    State.Interrupt(Now(), LockoutSeconds, 1);
+    const bool bNpc = Cast<ASFPilotBoar>(GetOwner()) != nullptr;
+    if (bNpc) { NpcMana = FMath::Min(NpcManaMaximum, NpcMana + NpcCastCost()); }
+    else { Resource = FMath::Min(ResourceMax, Resource + SFCastRules::Refund(ResourceCost, true, CancelRefundPercent)); }
+    State.Interrupt(Now(), bNpc ? NpcSchoolLockoutSeconds : LockoutSeconds, bNpc ? 2 : 1);
     View.bInterrupted = true;
     SyncView();
+}
+
+int32 USFCastingComponent::NpcCastCost() const
+{
+    const auto* Mend = SFStarterAbilities::Find(TEXT("mend"));
+    return Mend ? FMath::RoundToInt(Mend->StaminaCostFraction * NpcManaMaximum) : 0;
+}
+
+bool USFCastingComponent::TryBeginNpcMend()
+{
+    ASFPilotBoar* Npc = Cast<ASFPilotBoar>(GetOwner());
+    const auto* Mend = SFStarterAbilities::Find(TEXT("mend"));
+    if (!Npc || !Npc->HasAuthority() || !Mend || Npc->GetCreatureId() != TEXT("npc/bandit_captain") ||
+        Npc->Health() <= 0 || Npc->IsLeashing() || NpcMana < NpcCastCost()) return false;
+    SFCastRules::FAbility Ability;
+    Ability.Id = 3; Ability.School = 2; Ability.Cast = Mend->CastSeconds;
+    Ability.Cooldown = NpcMendCooldownSeconds;
+    if (State.Request(Ability, Now(), 0.0, Tune) != SFCastRules::EStart::Started) return false;
+    NpcMana -= NpcCastCost();
+    bCurrentCastInterruptible = true;
+    View.bInterrupted = false;
+    SyncView();
+    UE_LOG(LogTemp, Display, TEXT("NPC_CAST_START Creature=%s Ability=mend Mana=%d"), *Npc->GetCreatureId(), NpcMana);
+    return true;
+}
+
+void USFCastingComponent::CancelNpcCast()
+{
+    if (!Cast<ASFPilotBoar>(GetOwner()) || !GetOwner()->HasAuthority() ||
+        State.Phase == SFCastRules::EPhase::Idle) return;
+    State.Cancel(); State.QueuedId = 0; View.bInterrupted = true; SyncView();
+}
+
+bool USFCastingComponent::IsNpcSchoolLocked() const
+{
+    const double* Until = State.SchoolLockEnds.Find(2);
+    return Until && Now() < *Until;
 }
 
 void USFCastingComponent::NotifyDamage()

@@ -521,12 +521,19 @@ INSERT INTO exchange.wallets(owner_id,balance) VALUES ('chr_dev_alpha',5000),('c
             $serverText -notmatch 'ABILITY_NETCHECK_MAGIC' -or
             $serverText -notmatch 'ABILITY_NETCHECK_SHADOW' -or
             $serverText -notmatch 'COMBAT_ABILITY_REFUSED Ability=quick_shot Reason=EquipBow' -or
-            $serverText -notmatch 'ABILITY_NETCHECK_PASS Shadow=1 NoBow=1 EquippedBow=1' -or
+            $serverText -notmatch 'ABILITY_NETCHECK_BOW NoBow=1 EquippedBow=1' -or
+            $serverText -notmatch 'ABILITY_NETCHECK_NPC_START' -or
+            $serverText -notmatch 'ABILITY_NETCHECK_NPC_COMPLETE' -or
+            $serverText -notmatch 'ABILITY_NETCHECK_NPC_POMMEL Locked=1' -or
+            $serverText -notmatch 'ABILITY_NETCHECK_NPC_COUNTERSPELL DistanceCm=29\d\d Locked=1' -or
+            $serverText -notmatch 'ABILITY_NETCHECK_PASS Shadow=1 NoBow=1 EquippedBow=1 NpcCast=1' -or
             [regex]::Matches($serverText, 'COMBAT_ATTRIBUTE_SNAPSHOT Archetype=fighter Level=1').Count -lt 2) {
             throw 'Two-client starter ability evidence incomplete.'
         }
         Wait-Log $owned[$owned.Count - 2] 'clientalpha' 'ABILITY_NETCHECK_CLIENT_STEALTH Level=2'
         Wait-Log $owned[$owned.Count - 1] 'clientbeta' 'ABILITY_NETCHECK_CLIENT_STEALTH Level=2'
+        Wait-Log $owned[$owned.Count - 2] 'clientalpha' 'NPC_CAST_CLIENT_VIEW Ability=3'
+        Wait-Log $owned[$owned.Count - 1] 'clientbeta' 'NPC_CAST_CLIENT_VIEW Ability=3'
         $result.status='Passed'
         return
     }
