@@ -52,6 +52,8 @@ public static class WorldContentValidator
         foreach (var group in zone.SpawnGroups)
         {
             var label = $"group {group.GroupId}";
+            if (group.SpawnKind == "npc" && (!NpcToken(group.GroupId) || group.Points.Any(p => !NpcToken(p.PointId))))
+                issues.Add($"{label} invalid NPC group or point token");
             if (group.SpawnKind is not ("gathering_node" or "npc")) issues.Add($"{label} invalid spawn_kind");
             if (group.PhaseFilter is not ("any" or "day" or "night")) issues.Add($"{label} invalid phase_filter");
             if (group.LayerPolicy is not ("all_layers" or "primary_only")) issues.Add($"{label} invalid layer_policy");
@@ -106,6 +108,8 @@ public static class WorldContentValidator
         return inside;
     }
 
+    private static bool NpcToken(string value) => value.Length > 0 &&
+        value.All(c => c is >= 'a' and <= 'z' or >= '0' and <= '9' or '_');
     private static bool ValidPoint(double[] p) => p.Length >= 2 && p.Take(2).All(double.IsFinite);
     public static bool ValidGrowthProfile(GrowthProfile profile)
     {

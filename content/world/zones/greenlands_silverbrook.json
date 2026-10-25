@@ -12495,7 +12495,8 @@
       -673.4,
       307.5
      ],
-     "facing": 45.0
+     "facing": 45.0,
+     "npc_defensive": false
     },
     {
      "point_id": "boar_farm_edge_01",
@@ -12503,7 +12504,8 @@
       -668.4,
       307.5
      ],
-     "facing": 135.0
+     "facing": 135.0,
+     "npc_defensive": false
     },
     {
      "point_id": "boar_farm_edge_02",
@@ -12511,7 +12513,8 @@
       -673.4,
       312.5
      ],
-     "facing": 315.0
+     "facing": 315.0,
+     "npc_defensive": true
     },
     {
      "point_id": "boar_farm_edge_03",
@@ -12519,7 +12522,8 @@
       -668.4,
       312.5
      ],
-     "facing": 225.0
+     "facing": 225.0,
+     "npc_defensive": true
     },
     {
      "point_id": "boar_farm_edge_04",
@@ -12527,7 +12531,8 @@
       -634.5,
       279.7
      ],
-     "facing": 45.0
+     "facing": 45.0,
+     "npc_defensive": false
     },
     {
      "point_id": "boar_farm_edge_05",
@@ -12535,7 +12540,8 @@
       -629.5,
       279.7
      ],
-     "facing": 135.0
+     "facing": 135.0,
+     "npc_defensive": false
     },
     {
      "point_id": "boar_farm_edge_06",
@@ -12543,7 +12549,8 @@
       -634.5,
       284.7
      ],
-     "facing": 315.0
+     "facing": 315.0,
+     "npc_defensive": true
     },
     {
      "point_id": "boar_farm_edge_07",
@@ -12551,7 +12558,8 @@
       -629.5,
       284.7
      ],
-     "facing": 225.0
+     "facing": 225.0,
+     "npc_defensive": true
     },
     {
      "point_id": "boar_farm_edge_08",
@@ -12559,7 +12567,8 @@
       -703.7,
       314.5
      ],
-     "facing": 45.0
+     "facing": 45.0,
+     "npc_defensive": false
     },
     {
      "point_id": "boar_farm_edge_09",
@@ -12567,7 +12576,8 @@
       -698.7,
       314.5
      ],
-     "facing": 135.0
+     "facing": 135.0,
+     "npc_defensive": false
     },
     {
      "point_id": "boar_farm_edge_10",
@@ -12575,7 +12585,8 @@
       -703.7,
       319.5
      ],
-     "facing": 315.0
+     "facing": 315.0,
+     "npc_defensive": true
     },
     {
      "point_id": "boar_farm_edge_11",
@@ -12583,7 +12594,8 @@
       -698.7,
       319.5
      ],
-     "facing": 225.0
+     "facing": 225.0,
+     "npc_defensive": true
     }
    ],
    "active_count": 5,
@@ -12672,7 +12684,8 @@
       678.1,
       -13.9
      ],
-     "facing": 45.0
+     "facing": 45.0,
+     "npc_defensive": false
     },
     {
      "point_id": "boar_forest_edge_01",
@@ -12680,7 +12693,8 @@
       683.1,
       -13.9
      ],
-     "facing": 135.0
+     "facing": 135.0,
+     "npc_defensive": false
     },
     {
      "point_id": "boar_forest_edge_02",
@@ -12688,7 +12702,8 @@
       678.1,
       -8.9
      ],
-     "facing": 315.0
+     "facing": 315.0,
+     "npc_defensive": true
     },
     {
      "point_id": "boar_forest_edge_03",
@@ -12696,7 +12711,8 @@
       683.1,
       -8.9
      ],
-     "facing": 225.0
+     "facing": 225.0,
+     "npc_defensive": true
     },
     {
      "point_id": "boar_forest_edge_04",
@@ -12704,7 +12720,8 @@
       711.5,
       -37.8
      ],
-     "facing": 45.0
+     "facing": 45.0,
+     "npc_defensive": false
     },
     {
      "point_id": "boar_forest_edge_05",
@@ -12712,7 +12729,8 @@
       716.5,
       -37.8
      ],
-     "facing": 135.0
+     "facing": 135.0,
+     "npc_defensive": false
     },
     {
      "point_id": "boar_forest_edge_06",
@@ -12720,7 +12738,8 @@
       711.5,
       -32.8
      ],
-     "facing": 315.0
+     "facing": 315.0,
+     "npc_defensive": true
     },
     {
      "point_id": "boar_forest_edge_07",
@@ -12728,7 +12747,8 @@
       716.5,
       -32.8
      ],
-     "facing": 225.0
+     "facing": 225.0,
+     "npc_defensive": true
     },
     {
      "point_id": "boar_forest_edge_08",
@@ -12736,7 +12756,8 @@
       652.2,
       -7.9
      ],
-     "facing": 45.0
+     "facing": 45.0,
+     "npc_defensive": false
     },
     {
      "point_id": "boar_forest_edge_09",
@@ -12744,7 +12765,8 @@
       657.2,
       -7.9
      ],
-     "facing": 135.0
+     "facing": 135.0,
+     "npc_defensive": false
     },
     {
      "point_id": "boar_forest_edge_10",
@@ -12752,7 +12774,8 @@
       652.2,
       -2.9
      ],
-     "facing": 315.0
+     "facing": 315.0,
+     "npc_defensive": true
     },
     {
      "point_id": "boar_forest_edge_11",
@@ -12760,7 +12783,8 @@
       657.2,
       -2.9
      ],
-     "facing": 225.0
+     "facing": 225.0,
+     "npc_defensive": true
     }
    ],
    "active_count": 5,

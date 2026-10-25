@@ -68,6 +68,8 @@ bool SFNpcProfiles::Load(const FString& CataloguePath, const FString& LootRulesD
             !Number(*Row, TEXT("resistance"), 0, 18.9, Profile.Stats.Resistance) ||
             !Number(*Row, TEXT("crit_chance"), 0, 1, Profile.Stats.CritChance) ||
             !Number(*Row, TEXT("crit_damage"), 1, 1.5, Profile.Stats.CritDamage) ||
+            !Row->TryGetStringField(TEXT("respawn_tier"), Profile.RespawnTier) ||
+            (Profile.RespawnTier != TEXT("common") && Profile.RespawnTier != TEXT("elite") && Profile.RespawnTier != TEXT("mini_boss")) ||
             !Row->TryGetStringField(TEXT("attack_kind"), Attack) || (Attack != TEXT("melee") && Attack != TEXT("ranged")) ||
             !Row->TryGetArrayField(TEXT("abilities"), Abilities) ||
             !Row->TryGetBoolField(TEXT("local_hides_fixture"), Profile.bLocalHidesFixture) ||

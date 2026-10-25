@@ -31,6 +31,9 @@ internal static class CombatPilotBridge
         try
         {
             var zone = ZoneLoader.Load(args[0]);
+            var contentRoot = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(args[0])!, "..", ".."));
+            var profiles = NpcSpawnCatalog.Load(Path.Combine(contentRoot, "creatures", "profiles.json"));
+            var npcGroups = profiles.Groups(zone);
             var store = new FileSlots(args[1]);
             var service = new SpawnSlotService(zone, new WorldTuning(), TimeProvider.System,
                 new SeededSpawnRandom(2077), store);
@@ -39,14 +42,14 @@ internal static class CombatPilotBridge
             {
                 if (args.Length != 7 || !int.TryParse(args[4], out var slot) ||
                     !int.TryParse(args[5], out var players)) return 2;
-                var group = zone.SpawnGroups.SingleOrDefault(g => g.GroupId == args[3] && SilverbrookCombatGroups.Contains(g.GroupId));
+                npcGroups.TryGetValue(args[3], out var group);
                 if (group is null) return 2;
                 var current = service.Snapshot(group.GroupId).SingleOrDefault(s => s.SlotIndex == slot);
                 if (current is null || current.State != SlotState.Active) return 2;
-                service.DefeatNpc(args[3], slot, SilverbrookCombatGroups.Tier(current.DefinitionId), players);
+                service.DefeatNpc(args[3], slot, profiles.Tier(current.DefinitionId), players);
             }
             service.Tick(DayPhase.Day);
-            foreach (var group in zone.SpawnGroups.Where(g => SilverbrookCombatGroups.Contains(g.GroupId)))
+            foreach (var group in npcGroups.Values)
             {
                 var slots = service.Snapshot(group.GroupId);
                 store.Save(zone.Id, group.GroupId, slots);

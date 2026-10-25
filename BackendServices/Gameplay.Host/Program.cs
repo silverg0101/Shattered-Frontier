@@ -68,8 +68,14 @@ var questFiles = QuestLoader.LoadDirectory(Path.Combine(contentRoot, "quests"));
 var questIssues = QuestValidator.ValidateAll(questFiles);
 if (questIssues.Count != 0) throw new InvalidOperationException("Quest content invalid: " + string.Join("; ", questIssues));
 IReadOnlyDictionary<string, QuestDefinition> quests = questFiles.ToDictionary(f => f.Quest.Id, f => f.Quest, StringComparer.Ordinal);
-var zone = ProtectedZone.Load(Path.Combine(contentRoot, "world", "zones", "greenlands_silverbrook.json"));
-var gatheringZone = ZoneLoader.Load(Path.Combine(contentRoot, "world", "zones", "greenlands_silverbrook.json"));
+// Deployment selects an approved release record; never accepts an arbitrary filesystem path.
+var activeZoneId = Environment.GetEnvironmentVariable("GAMEPLAY_ZONE_ID") ?? "zone/greenlands_silverbrook";
+var activeZone = ZoneLoader.LoadDirectory(Path.Combine(contentRoot, "world", "zones"))
+    .Single(record => record.Zone.Id == activeZoneId);
+var zone = ProtectedZone.Load(activeZone.Path);
+var gatheringZone = activeZone.Zone;
+var npcProfiles = NpcSpawnCatalog.Load(Path.Combine(contentRoot, "creatures", "profiles.json"));
+_ = npcProfiles.Groups(gatheringZone);
 var gatheringTuning = GatheringHostTuning.Shipped; gatheringTuning.Validate();
 var fixtureGatheringRespawn = Environment.GetEnvironmentVariable("GAMEPLAY_FIXTURE_GATHERING_RESPAWN_SECONDS");
 if (fixtureGatheringRespawn is not null && (Environment.GetEnvironmentVariable("GAMEPLAY_FIXTURE_MODE") != "gathering" ||
@@ -131,6 +137,7 @@ if (groupConnection is not null)
 builder.Services.AddSingleton(quests);
 builder.Services.AddSingleton(zone);
 builder.Services.AddSingleton(gatheringZone);
+builder.Services.AddSingleton(npcProfiles);
 builder.Services.AddSingleton<WorldSlotsGrpcService>();
 builder.Services.AddSingleton(new PostgresGatheringStore(ledgerConnection, gatheringZone, gatheringTuning,
     fixtureGatheringRespawn is null ? gatheringTuning.Lifecycle : new NodeSettings(30, 0, RegrowthMode.FullRespawn), ledgerStore));

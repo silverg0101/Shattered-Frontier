@@ -164,6 +164,7 @@ bool FSFNpcProfileCatalogueTest::RunTest(const FString& Parameters)
     FFileHelper::LoadFileToString(Source, *(Fixture / TEXT("profiles.json")));
     const TPair<FString, FString> Invalid[] = {
         {TEXT("\"attack_kind\": \"ranged\""), TEXT("\"attack_kind\": \"magic\"")},
+        {TEXT("\"respawn_tier\": \"common\""), TEXT("\"respawn_tier\": \"unknown\"")},
         {TEXT("\"definition_id\": \"npc/boar\""), TEXT("\"definition_id\": \"NPC/boar\"")},
         {TEXT("\"health\": 489"), TEXT("\"health\": 489.5")},
         {TEXT("\"abilities\": []"), TEXT("\"abilities\": [\"fireball\"]")},

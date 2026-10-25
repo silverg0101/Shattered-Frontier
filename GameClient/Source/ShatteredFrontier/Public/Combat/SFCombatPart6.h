@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "Combat/SFCombatResolution.h"
 #include "Combat/SFNpcProfiles.h"
+#include "Combat/SFNpcZoneContent.h"
 #include "Engine/World.h"
 #include "Misc/CommandLine.h"
 #include "Misc/Parse.h"
@@ -13,8 +14,7 @@ namespace SFCombatPart6
 {
     inline bool Active(const UWorld* World)
     {
-        if (!World || World->GetOutermost()->GetName() !=
-            TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook")) return false;
+        if (!World || SFNpcZoneContent::FindMapFile(World->GetOutermost()->GetName()).IsEmpty()) return false;
 #if !UE_BUILD_SHIPPING && !UE_BUILD_TEST
         return !FParse::Param(FCommandLine::Get(), TEXT("CombatPilotFixture")) &&
             !FParse::Param(FCommandLine::Get(), TEXT("GreenlandsBoarNetcheck")) &&

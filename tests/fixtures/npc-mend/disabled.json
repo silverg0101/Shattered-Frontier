@@ -15,7 +15,8 @@
       "attack_kind": "melee",
       "abilities": [],
       "loot_rule": "mend_reuse_fixture",
-      "local_hides_fixture": false
+      "local_hides_fixture": false,
+      "respawn_tier": "mini_boss"
     }
   ]
 }

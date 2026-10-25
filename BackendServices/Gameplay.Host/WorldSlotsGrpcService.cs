@@ -3,9 +3,10 @@ using ShatteredFrontier.WorldContent;
 using Pb = ShatteredFrontier.World.V1;
 
 // Silverbrook combat slots are session state. The host owns WorldContent transitions; Unreal owns actors.
-internal sealed class WorldSlotsGrpcService(ZoneContent zone) : Pb.WorldSlots.WorldSlotsBase
+internal sealed class WorldSlotsGrpcService(ZoneContent zone, NpcSpawnCatalog profiles) : Pb.WorldSlots.WorldSlotsBase
 {
     private readonly object gate = new();
+    private readonly IReadOnlyDictionary<string, SpawnGroup> npcGroups = profiles.Groups(zone);
     private readonly SpawnSlotService slots = new(zone, new WorldTuning(), TimeProvider.System, new SeededSpawnRandom(2077));
     private bool hostileSpawning = true;
 
@@ -15,8 +16,8 @@ internal sealed class WorldSlotsGrpcService(ZoneContent zone) : Pb.WorldSlots.Wo
     internal Pb.AdvanceSlotsReply AdvanceCore(Pb.AdvanceSlotsRequest request)
     {
         if (request.Command is not ("tick" or "defeat") || request.PlayersInArea is < 0 or > 1000 ||
-            (request.Command == "defeat" && (!SilverbrookCombatGroups.Contains(request.GroupId) ||
-                request.SlotIndex < 0 || request.SlotIndex >= zone.SpawnGroups.Single(g => g.GroupId == request.GroupId).ActiveCount)))
+            (request.Command == "defeat" && (!npcGroups.TryGetValue(request.GroupId, out var requestedGroup) ||
+                request.SlotIndex < 0 || request.SlotIndex >= requestedGroup.ActiveCount)))
             throw new GameplayRejectedException("Invalid WorldContent slot request.", StatusCode.InvalidArgument);
         lock (gate)
         {
@@ -30,11 +31,11 @@ internal sealed class WorldSlotsGrpcService(ZoneContent zone) : Pb.WorldSlots.Wo
                 // A retried request cannot advance an already defeated slot twice.
                 var current = slots.Snapshot(request.GroupId).Single(s => s.SlotIndex == request.SlotIndex);
                 if (current.State == SlotState.Active)
-                    slots.DefeatNpc(request.GroupId, request.SlotIndex, SilverbrookCombatGroups.Tier(current.DefinitionId), request.PlayersInArea);
+                    slots.DefeatNpc(request.GroupId, request.SlotIndex, profiles.Tier(current.DefinitionId), request.PlayersInArea);
             }
             slots.Tick(DayPhase.Day);
             var reply = new Pb.AdvanceSlotsReply();
-            foreach (var group in zone.SpawnGroups.Where(g => SilverbrookCombatGroups.Contains(g.GroupId)))
+            foreach (var group in npcGroups.Values)
             foreach (var slot in slots.Snapshot(group.GroupId))
             {
                 var point = group.Points.FirstOrDefault(p => p.PointId == slot.PointId);

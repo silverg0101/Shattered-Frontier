@@ -5,6 +5,7 @@ namespace ShatteredFrontier.WorldContent;
 public sealed class ZoneContent
 {
     public string Id { get; set; } = "";
+    public string MapId { get; set; } = "";
     public int ZoneIndex { get; set; }
     public double[] Origin { get; set; } = [];
     public double[][] Extent { get; set; } = [];
@@ -21,6 +22,7 @@ public sealed class SpawnPoint
     public string PointId { get; set; } = "";
     public double[] Position { get; set; } = [];
     public double Facing { get; set; }
+    public bool NpcDefensive { get; set; }
 }
 
 public sealed class SpawnDefinition

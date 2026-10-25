@@ -58,23 +58,6 @@ int64 UnixNowMs()
     const FDateTime Now = FDateTime::UtcNow();
     return Now.ToUnixTimestamp() * 1000 + Now.GetMillisecond();
 }
-TArray<FVector2D> ReadPolygon(const TArray<TSharedPtr<FJsonValue>>& Values)
-{
-    TArray<FVector2D> Result;
-    for (const auto& Value : Values)
-    {
-        const auto& Pair = Value->AsArray();
-        if (Pair.Num() >= 2) { Result.Emplace(Pair[0]->AsNumber(), Pair[1]->AsNumber()); }
-    }
-    return Result;
-}
-
-FVector ZonePoint(const TArray<TSharedPtr<FJsonValue>>& Values)
-{
-    return FVector(Values[0]->AsNumber() * 100.0, Values[1]->AsNumber() * 100.0,
-        Values.Num() > 2 ? Values[2]->AsNumber() * 100.0 : 0.0);
-}
-
 FVector Grounded(UWorld* World, const FVector& XY, float HalfHeight)
 {
     FHitResult Hit;
@@ -948,53 +931,18 @@ bool ASFGameMode::IsSafe(const FVector& Location) const
 
 bool ASFGameMode::LoadZoneRecord()
 {
-    const FString Path = FPaths::Combine(FPaths::ProjectDir(), TEXT("../content/world/zones/greenlands_silverbrook.json"));
-    FString Source; TSharedPtr<FJsonObject> Zone;
-    if (!FFileHelper::LoadFileToString(Source, *Path) ||
-        !FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Source), Zone) || !Zone.IsValid() ||
-        Zone->GetStringField(TEXT("map_id")) != TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook"))
-    { return false; }
-    for (const auto& Value : Zone->GetArrayField(TEXT("spawn_groups")))
-    {
-        const auto Group = Value->AsObject();
-        const FString Id = Group->GetStringField(TEXT("group_id"));
-        const bool bBoar = Id == TEXT("boar_farm_edge") || Id == TEXT("boar_forest_edge");
-        const bool bWolf = Id == TEXT("wolf_northwest_den");
-        const bool bBandit = Id == TEXT("bandit_forest_trail_camp");
-        const bool bAlpha = Id == TEXT("wolf_alpha_northwest_den");
-        const bool bCaptain = Id == TEXT("bandit_captain_forest_trail_camp");
-        if (bBoar || bWolf || bBandit || bAlpha || bCaptain)
-        {
-            if (Group->GetStringField(TEXT("spawn_kind")) != TEXT("npc")) return false;
-            TSet<FString> Definitions;
-            for (const auto& Entry : Group->GetArrayField(TEXT("definitions")))
-            { Definitions.Add(Entry->AsObject()->GetStringField(TEXT("definition_id"))); }
-            const bool bExpected = (bBoar && Definitions.Num() == 1 && Definitions.Contains(TEXT("npc/boar"))) ||
-                (bWolf && Definitions.Num() == 1 && Definitions.Contains(TEXT("npc/wolf"))) ||
-                (bBandit && Definitions.Num() == 2 && Definitions.Contains(TEXT("npc/bandit_thug")) && Definitions.Contains(TEXT("npc/bandit_archer"))) ||
-                (bAlpha && Definitions.Num() == 1 && Definitions.Contains(TEXT("npc/wolf_alpha"))) ||
-                (bCaptain && Definitions.Num() == 1 && Definitions.Contains(TEXT("npc/bandit_captain")));
-            if (!bExpected) return false;
-            Groups.Add(Id, { ReadPolygon(Group->GetArrayField(TEXT("area"))) });
-        }
-    }
-    for (const auto& Value : Zone->GetArrayField(TEXT("areas")))
-    {
-        const auto Area = Value->AsObject();
-        if (Area->GetStringField(TEXT("safety")) == TEXT("protected"))
-        { ProtectedAreas.Add(ReadPolygon(Area->GetArrayField(TEXT("polygon")))); }
-    }
-    TSet<FString> LevelTwoAreas;
-    for (const auto& Value : Zone->GetArrayField(TEXT("level_areas")))
-    {
-        const auto Area = Value->AsObject();
-        if (Area->GetIntegerField(TEXT("content_level")) == 2)
-        { LevelTwoAreas.Add(Area->GetStringField(TEXT("area_id"))); }
-    }
-    for (const auto& Value : Zone->GetArrayField(TEXT("respawn_points")))
-    { RespawnPoints.Add(ZonePoint(Value->AsObject()->GetArrayField(TEXT("position")))); }
-    return Groups.Num() == 6 && LevelTwoAreas.Contains(TEXT("boar_farm_edge")) &&
-        LevelTwoAreas.Contains(TEXT("boar_forest_edge")) && ProtectedAreas.Num() > 0 && RespawnPoints.Num() > 0;
+    const FString MapId = GetWorld()->GetOutermost()->GetName();
+    const FString Path = SFNpcZoneContent::FindMapFile(MapId);
+    if (Path.IsEmpty()) return false;
+    SFNpcZoneContent::FZone Zone;
+    FString Error;
+    if (!SFNpcZoneContent::Load(Path, MapId, Zone, Error))
+    { UE_LOG(LogTemp, Error, TEXT("NPC_ZONE_REJECTED Map=%s %s"), *MapId, *Error); return false; }
+    CombatZonePath = Path;
+    Groups = MoveTemp(Zone.Groups);
+    ProtectedAreas = MoveTemp(Zone.ProtectedAreas);
+    RespawnPoints = MoveTemp(Zone.RespawnPoints);
+    return true;
 }
 
 void ASFGameMode::StartCombat()
@@ -1084,9 +1032,8 @@ void ASFGameMode::StartCombat()
         UE_LOG(LogTemp, Display, TEXT("COMBAT_SANDBOX_READY Map=%s Boars=%d"), *MapName, Slot);
         return;
     }
-    // GM-01: on wherever the zone record has boar groups (Silverbrook), on any authority (dedicated, listen, standalone).
-    bPilotActive = GetNetMode() != NM_Client &&
-        GetWorld()->GetOutermost()->GetName() == TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook");
+    // Any authority with an approved matching zone record uses the common NPC runtime.
+    bPilotActive = GetNetMode() != NM_Client && LoadZoneRecord();
 #if !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     bScenario = bPilotActive && (FParse::Param(FCommandLine::Get(), TEXT("CombatPilotScenario")) ||
         FParse::Param(FCommandLine::Get(), TEXT("CombatTargetScenario")) ||
@@ -1095,7 +1042,7 @@ void ASFGameMode::StartCombat()
     if (!bPilotActive) { return; }
     CapturedSettings = GetDefault<USFCombatPilotSettings>();
     FString Error;
-    if (!CapturedSettings->Validate(Error) || !LoadZoneRecord())
+    if (!CapturedSettings->Validate(Error))
     { UE_LOG(LogTemp, Error, TEXT("COMBAT_PILOT_DISABLED Invalid settings or zone record: %s"), *Error); bPilotActive = false; return; }
     bSlotServiceMode = GetDefault<USFGameplayServicesSettings>()->bEnabled;
     if (!bSlotServiceMode)
@@ -2160,7 +2107,7 @@ bool ASFGameMode::RunWorldSlots(const FString& Command, const FString& Group, in
     const FString Root = FPaths::ConvertRelativePathToFull(FPaths::ProjectDir(), TEXT(".."));
     const FString Dotnet = FPaths::Combine(Root, TEXT("Artifacts/Persistence/Toolchains/dotnet-10.0.402/dotnet.exe"));
     const FString Dll = FPaths::Combine(Root, TEXT("BackendServices/WorldContent.Tool/bin/Debug/net10.0/WorldContent.Tool.dll"));
-    const FString Zone = FPaths::Combine(Root, TEXT("content/world/zones/greenlands_silverbrook.json"));
+    const FString Zone = CombatZonePath;
     if (!FPaths::FileExists(Dotnet) || !FPaths::FileExists(Dll)) { return false; }
     FString Args = FString::Printf(TEXT("\"%s\" combat-pilot \"%s\" \"%s\" %s"), *Dll, *Zone, *SlotStatePath, *Command);
     if (Command == TEXT("defeat"))
@@ -2185,19 +2132,18 @@ void ASFGameMode::SpawnSlot(const FString& Group, int32 Slot, int32 Cycle, const
     double X, double Y, double Facing, const FString& DefinitionId)
 {
     const FString Key = FString::Printf(TEXT("%s:%d"), *Group, Slot);
-    if (ActiveBoars.FindRef(Key).IsValid() || PointId == TEXT("-")) { return; }
+    const auto* Record = Groups.Find(Group);
+    if (!Record || !Record->Definitions.Contains(DefinitionId) || !Record->DefensivePoints.Contains(PointId) ||
+        ActiveBoars.FindRef(Key).IsValid() || Slot < 0 || Slot >= Record->ActiveCount) { return; }
     const FVector Where = Grounded(GetWorld(), FVector(X*100,Y*100,0), 65);
     if (IsSafe(Where) || !IsInsideTerritory(Where, Groups[Group].Polygon)) { return; }
     FActorSpawnParameters Params; Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
     auto* Boar = GetWorld()->SpawnActor<ASFPilotBoar>(Where, FRotator(0,Facing,0), Params);
     if (!Boar) { return; }
     if (!Boar->ConfigureCreature(DefinitionId)) { Boar->Destroy(); return; }
-    // Each four-point clearing has two sight-aggressive and two defensive boars.
-    // Defensive packmates join through the common assist rule, then remember actual attackers.
-    const int32 PointOrdinal = FCString::Atoi(*PointId.Right(2));
     Boar->Initialize(this, Group, Slot, Groups[Group].Polygon,
         SFCombatPart6::Active(GetWorld()) ? SFCombatPart6::Npc(DefinitionId).Health : CapturedSettings->BoarHealth,
-        ++NextBoarSerial, Group.StartsWith(TEXT("boar_")) && PointOrdinal % 4 >= 2);
+        ++NextBoarSerial, Record->DefensivePoints.FindChecked(PointId));
     ActiveBoars.Add(Key, Boar);
     UE_LOG(LogTemp, Display, TEXT("COMBAT_PILOT_BOAR_SPAWN Group=%s Slot=%d Cycle=%d Point=%s Creature=%s"), *Group, Slot, Cycle, *PointId, *DefinitionId);
 }
@@ -2219,7 +2165,7 @@ SFCombatResolution::FResult ASFGameMode::ResolveCombatAttack(AActor* Attacker,
     else if (ASFPilotBoar* Boar = Cast<ASFPilotBoar>(Attacker))
     {
         Stream = BoarCombatStreams.Find(Boar);
-        if (!Stream) { Stream = &BoarCombatStreams.Add(Boar, FRandomStream(GetTypeHash(Boar->DeathId()))); }
+        if (!Stream) { Stream = &BoarCombatStreams.Add(Boar, FRandomStream(GetTypeHash(Boar->SpawnSequenceId()))); }
     }
     if (!Stream) { return {}; }
     SFCombatResolution::FDraws Draws = SFCombatResolution::Draw(*Stream);

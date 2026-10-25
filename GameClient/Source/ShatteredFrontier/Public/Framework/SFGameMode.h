@@ -4,6 +4,7 @@
 #include "Party/SFPartyModel.h"
 #include "Math/RandomStream.h"
 #include "Combat/SFCombatResolution.h"
+#include "Combat/SFNpcZoneContent.h"
 #include "SFGameMode.generated.h"
 
 class ASFPlayerController;
@@ -179,8 +180,11 @@ private:
     void RespawnPlayer(TWeakObjectPtr<ASFE1Character> Player, int32 RestoredHealth = -1, bool bAtDeathPosition = false);
     FVector ChooseRespawnPoint(const FVector& DeathLocation) const;
     void ReportPlayerDeath(TWeakObjectPtr<ASFE1Character> Player, const struct FSFGameplayRequest& Request);
-    struct FBoarGroup { TArray<FVector2D> Polygon; };
-    TMap<FString, FBoarGroup> Groups;
+#if WITH_DEV_AUTOMATION_TESTS && WITH_EDITOR
+    friend class FSFNpcContentSpawnShotTest;
+#endif
+    FString CombatZonePath;
+    TMap<FString, SFNpcZoneContent::FGroup> Groups;
     TArray<TArray<FVector2D>> ProtectedAreas;
     TArray<FVector> RespawnPoints;
     TMap<FString, TWeakObjectPtr<ASFPilotBoar>> ActiveBoars;

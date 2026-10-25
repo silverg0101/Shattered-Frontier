@@ -142,6 +142,8 @@ def build(L, candidates):
             # Three authored clearings of four points. Any five active slots include
             # a pair within the common 8 m assist radius, even after point rotation.
             pts = cluster_boar_points(pts)
+            for ordinal, point in enumerate(pts):
+                point['npc_defensive'] = ordinal % 4 >= 2
         ring = circle(c, r)
         groups.append(dict(group_id=gid, spawn_kind='npc', definitions=[dict(definition_id=d, weight=w) for d, w in defs],
                            points=pts, active_count=k, area=ring, phase_filter='any', layer_policy='all_layers'))

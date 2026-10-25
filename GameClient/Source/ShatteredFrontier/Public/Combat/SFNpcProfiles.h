@@ -14,7 +14,7 @@ namespace SFNpcProfiles
     };
     struct FProfile
     {
-        FString DefinitionId, LootTableId;
+        FString DefinitionId, LootTableId, RespawnTier;
         FStats Stats;
         EAttackKind AttackKind = EAttackKind::Melee;
         TSet<FName> Abilities;

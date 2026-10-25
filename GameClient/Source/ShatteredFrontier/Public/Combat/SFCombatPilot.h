@@ -288,8 +288,10 @@ public:
     const FString& GetLootTableId() const { return LootTableId; }
     bool HasSingleDrop() const { return bSingleDrop; }
     int32 SlotIndex() const { return Slot; }
-    /** One id per spawned boar, so its death rewards once. */
-    FString DeathId() const { return FString::Printf(TEXT("%s:%d:%d"), *SpawnGroup, Slot, SpawnSerial); }
+    /** Legacy sequence key remains the combat random seed, independent of durable identity. */
+    FString SpawnSequenceId() const { return FString::Printf(TEXT("%s:%d:%d"), *SpawnGroup, Slot, SpawnSerial); }
+    /** Stable for this actor spawn; unique even when another world reuses the sequence key. */
+    FString DeathId() const { return SpawnSequenceId() + TEXT(":") + SpawnInstanceId.ToString(EGuidFormats::Digits); }
     int32 Health() const { return CurrentHealth; }
     int32 MaximumHealth() const { return MaximumHealthValue; }
     void CompleteNpcMend(float HealthFraction);
@@ -352,6 +354,7 @@ private:
     UPROPERTY(EditAnywhere, Category="Loot") bool bSingleDrop = false;
     UPROPERTY(Replicated) int32 Slot = INDEX_NONE;
     int32 SpawnSerial = 0;
+    FGuid SpawnInstanceId = FGuid::NewGuid();
     TArray<FVector2D> Territory;
     FVector Anchor = FVector::ZeroVector;
     FRotator AnchorFacing = FRotator::ZeroRotator;

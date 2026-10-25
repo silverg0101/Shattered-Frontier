@@ -2,7 +2,8 @@ using System.Text.Json;
 using ShatteredFrontier.WorldContent;
 
 var combatOnly = args.Contains("--combat");
-var path = args.First(a => a != "--combat");
+var path = args.First(a => !a.StartsWith("--", StringComparison.Ordinal));
+if (args.Contains("--npc-reuse")) { NpcReuseTests.Run(path); return; }
 var zone = ZoneLoader.Load(path);
 void Check(bool pass, string name) { if (!pass) throw new Exception(name); Console.WriteLine("PASS " + name); }
 void Broken(string name, Action<ZoneContent> mutate, string expected)
@@ -13,6 +14,7 @@ void Broken(string name, Action<ZoneContent> mutate, string expected)
 }
 if (combatOnly)
 {
+    var profiles = NpcSpawnCatalog.Load("content/creatures/profiles.json");
     var combatClock = new ManualClock();
     var slots = new SpawnSlotService(zone, new WorldTuning(), combatClock, new SeededSpawnRandom(2077));
     slots.Tick(DayPhase.Day);
@@ -49,7 +51,7 @@ if (combatOnly)
         ("bandit_captain_forest_trail_camp", "npc/bandit_captain", 1200, 2400) })
     {
         Check(slots.Snapshot(id).Count == 1, $"{definition} single active boss");
-        slots.DefeatNpc(id, 0, SilverbrookCombatGroups.Tier(definition));
+        slots.DefeatNpc(id, 0, profiles.Tier(definition));
         var defeated = slots.Snapshot(id)[0];
         var delay = (defeated.RespawnAt!.Value - combatClock.GetUtcNow()).TotalSeconds;
         Check(defeated.State == SlotState.Respawning && delay >= minDelay && delay <= maxDelay,
