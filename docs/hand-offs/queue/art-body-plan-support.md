@@ -35,4 +35,6 @@ One actual bounded retry950011 ended after351s before model build. Revised Blend
 
 ## Next step
 
+Fresh source/input recheck `bird-gate-review.md`: source5c50c886+ff4a301c PASS (16 independently rerun tests); reviewed proxy correct, saved inputs FAIL only actual tail projection drift. Reviewed source rebased/pushed through3605248b (source7d9ffa8d/fe10f8ee). Keep proxy unchanged. New bounded fix explicitly carries a horizontal backward rump tail below the head, optionally hidden head-on, into both prompts and accepted-side front reference. One scratch retry uses side0.55/front0.90/end1.0 in memory; shipped defaults0.55/0.75/0.7 stay unchanged. Save every input/verdict and stop at actual outcome; no deployment before model/rig/Walk+import proof.
+
 Fresh independent6.1-Sol source/input review of5c50c886+ff4a301c and950011 evidence, then implement only its fix list (max3 external review rounds, then owner). Complete actual Chicken rig/Walk export and compatible Ostrich reuse before readiness/deployment. Unreal requires the controller's assigned slot; deployment requires integration proof, app regression and idle live queue. Shared scratch report: `Artifacts/Orchestration/20261025-resume/asset-forge-body-plans-report.md` in main checkout.

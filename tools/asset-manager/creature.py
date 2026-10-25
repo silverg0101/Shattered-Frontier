@@ -520,7 +520,9 @@ FRONT_BRIEF = ("Image 1 is meant to show an animal from the front, image 2 the s
                "three-quarter) and it is clearly the same animal as image 2: same colours, markings, build and number of "
                "legs and ears. Fail it too if a shadow, floor or reflection shows under the animal (it becomes a slab on the 3D "
                "model). The animal: {prompt}")
-BIRD_STANCE = ("one torso, one head and closed beak, one tail, exactly two ground legs and feet, standing with extended "
+BIRD_TAIL_POSE = ("one tail rooted at the rump, extending horizontally backward below the top of the head; it may be "
+                  "fully hidden behind the body head-on; no vertical tail or plume above the head")
+BIRD_STANCE = ("one torso, one head and closed beak, " + BIRD_TAIL_POSE + "; exactly two ground legs and feet, standing with extended "
                "visible shanks under the hips; exactly two wings resting backward against the torso, never lifted or spread; "
                "no extra shoulder lobes, low wing-like lobes or raised fans; the same head/torso proportions, leg extension "
                "and feet baseline in every projection")
@@ -543,7 +545,8 @@ BIRD_REVIEW_RULES = (
     "conflicting shank extension, torso/head proportions or feet baseline. Prefix each problem with [anatomy], [pose], "
     "[projection] or [foreground] for those functional risks. Harmless differences use [cosmetic], [occlusion] or [lighting]. "
     "If no functional problem remains, put GEOMETRY: followed by a short standing anatomy/pose description in fix, for the "
-    "next view's geometry reference; no colour/feather/style instructions.")
+    "next view's geometry reference. Explicitly describe the accepted side's rump-tail axis and height: horizontal backward "
+    "and below the head, potentially hidden head-on. No colour/feather/style instructions.")
 BIRD_FRONT_BRIEF = ("Image1 is the front, image2 the accepted side anatomy/pose reference. Compare projections of one "
                     "unchanged standing bird: " + BIRD_STANCE + ". " + BIRD_REVIEW_RULES)
 BIRD_MODEL_BRIEF = ("The first image shows the generated model from the front and left, the following images are its concepts. "
@@ -636,7 +639,7 @@ def depth_concept(jid, host, p, entry, lib, size, brief, log, step, info):
             log.append(f"depth side {n}: {'pass' if r['pass'] else 'fail: ' + '; '.join(r['problems'])}")
             if r["pass"]:
                 if bird:
-                    reference = r["geometry_reference"] or BIRD_STANCE
+                    reference = (r["geometry_reference"] or BIRD_STANCE) + ". Accepted side tail geometry: " + BIRD_TAIL_POSE
                     info["side_geometry_reference"] = reference
                 break
             extra = f"\n\nA previous drawing was rejected: {'; '.join(r['problems'])}. {r['fix']}"

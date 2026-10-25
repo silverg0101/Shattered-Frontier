@@ -256,7 +256,9 @@ class BodyPlanTests(unittest.TestCase):
         self.assertEqual(len(calls),2,"no appearance-only regeneration")
         self.assertIn(reference,calls[1][0]["prompt"])
         self.assertNotIn("recolour",calls[1][0]["prompt"])
-        self.assertEqual(info["side_geometry_reference"],reference)
+        self.assertIn(reference,info["side_geometry_reference"])
+        self.assertIn(creature.BIRD_TAIL_POSE,info["side_geometry_reference"])
+        self.assertIn(creature.BIRD_TAIL_POSE,calls[1][0]["prompt"],"generic provider caption cannot omit the known tail geometry")
         self.assertEqual(app.codex_review.call_args.args[0],[b"front",b"left"])
         self.assertEqual(app.codex_review.call_args.args[1],creature.BIRD_FRONT_BRIEF)
 
