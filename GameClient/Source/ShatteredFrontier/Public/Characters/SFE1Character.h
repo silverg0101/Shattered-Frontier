@@ -4,6 +4,7 @@
 #include "TimerManager.h"
 #include "Combat/SFOutOfCombatRegen.h"
 #include "Combat/SFCombatPart6.h"
+#include "Combat/SFStarterAbilities.h"
 #include "SFE1Character.generated.h"
 
 struct FSFGameplayResponse;
@@ -51,8 +52,14 @@ public:
     int32 CombatConstitution() const;
     double CombatResistance() const;
     double CombatAbsorb() const;
-    void GrantCombatAbsorb(double Amount, double DurationSeconds = 20.0);
+    void GrantCombatAbsorb(double Amount, double DurationSeconds = 20.0, ASFE1Character* Caster = nullptr);
     void ConsumeCombatAbsorb(double Amount);
+    UFUNCTION(BlueprintPure, Category="Combat|Abilities") TArray<FName> GetBindableCombatAbilities() const;
+    UFUNCTION(BlueprintCallable, Category="Combat|Abilities") void RequestCombatAbility(FName AbilityId);
+    bool CommitCombatAbility(const SFStarterAbilities::FDefinition& Ability, double Now);
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    void SetCombatArchetypeFixture(const FString& Archetype) { if (HasAuthority()) { CombatArchetype = Archetype; ForceNetUpdate(); } }
+#endif
     bool SpendStaminaFraction(float Fraction);
     bool SpendManaFraction(float Fraction);
     bool CanUseChallenge(double Now) const;
@@ -110,11 +117,18 @@ private:
     UPROPERTY(Transient) TObjectPtr<AActor> MetaHuman;
     UPROPERTY(Replicated) int32 PilotHealth = 0;  // shown by the vitals HUD (SFE1VitalsHud), not in the world
     UPROPERTY(Replicated) double CombatAbsorbRemaining = 0;
-    double CombatAbsorbExpiresAt = 0;
+    struct FAbsorbInstance
+    {
+        TWeakObjectPtr<ASFE1Character> Caster;
+        double Remaining = 0, ExpiresAt = 0;
+        uint64 InstanceId = 0;
+    };
+    TArray<FAbsorbInstance> CombatAbsorbs;
+    uint64 NextCombatAbsorbId = 0;
     int32 CombatHealthMaximum = 500;
     int64 CombatSnapshotRevision = -1;
     bool bHasCombatSnapshot = false;
-    FString CombatArchetype;
+    UPROPERTY(Replicated) FString CombatArchetype;
     SFCombatPart6::FStats CombatAttributes;
     UPROPERTY(Replicated) uint32 ResurrectionOfferId = 0; // owning client only
     UPROPERTY(Replicated) FString ResurrectionOfferDeathEventId;
@@ -133,6 +147,8 @@ private:
     double LastSprintEndedAt = -100.0;
     double SprintExhaustAt = 0.0;
     double NextChallengeAt = 0.0;
+    double CombatAbilityGcdEndsAt = 0.0;
+    TMap<FName, double> CombatAbilityCooldowns;
     void TickEnergy();
     UFUNCTION(Server, Reliable) void ServerSetSprintIntent(bool bEnable);
     UPROPERTY(Replicated) bool bAutoAttacking = false;
@@ -248,6 +264,7 @@ private:
     UFUNCTION(Server, Reliable) void ServerTargetScenarioStep(int32 Step);
     UFUNCTION(Server, Reliable) void ServerPilotAttack(AActor* SelectedCombatTarget);
     UFUNCTION(Server, Reliable) void ServerPilotTaunt(AActor* SelectedCombatTarget);
+    UFUNCTION(Server, Reliable) void ServerRequestCombatAbility(FName AbilityId);
     UFUNCTION(Server, Reliable) void ServerSetAutoAttack(bool bEnabled);
     void SetAutoAttack(bool bEnabled);
     void PilotAttack();

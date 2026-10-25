@@ -1,5 +1,6 @@
 #include "Combat/SFCombatPilot.h"
 #include "Combat/SFCombatEnergy.h"
+#include "Combat/SFStarterAbilities.h"
 #include "Combat/SFCastingComponent.h"
 #include "Combat/SFCommonRespawn.h"
 #include "Combat/SFSpiritReleaseRules.h"
@@ -982,7 +983,8 @@ void ASFGameMode::PostLoginCombat(APlayerController* NewPlayer)
     if (GetWorld()->GetOutermost()->GetName() == TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook") &&
         (FParse::Param(FCommandLine::Get(), TEXT("GreenlandsBoarNetcheck")) ||
          FParse::Param(FCommandLine::Get(), TEXT("GreenlandsDeathNetcheck")) ||
-         FParse::Param(FCommandLine::Get(), TEXT("GreenlandsEnergyNetcheck"))))
+         FParse::Param(FCommandLine::Get(), TEXT("GreenlandsEnergyNetcheck")) ||
+         FParse::Param(FCommandLine::Get(), TEXT("GreenlandsAbilityNetcheck"))))
     {
         if (GetNumPlayers() == 1) { GreenlandsDriverController = NewPlayer; }
         else if (GetNumPlayers() == 2) { GreenlandsObserverController = NewPlayer; }
@@ -1138,10 +1140,79 @@ void ASFGameMode::TickCombat()
     if (FParse::Param(FCommandLine::Get(), TEXT("GreenlandsBoarNetcheck"))) { TickGreenlandsNetcheck(); }
     if (FParse::Param(FCommandLine::Get(), TEXT("GreenlandsDeathNetcheck"))) { TickGreenlandsDeathNetcheck(); }
     if (FParse::Param(FCommandLine::Get(), TEXT("GreenlandsEnergyNetcheck"))) { TickGreenlandsEnergyNetcheck(); }
+    if (FParse::Param(FCommandLine::Get(), TEXT("GreenlandsAbilityNetcheck"))) { TickGreenlandsAbilityNetcheck(); }
 #endif
 }
 
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+void ASFGameMode::TickGreenlandsAbilityNetcheck()
+{
+    auto* Driver = Cast<ASFE1Character>(GreenlandsDriverController.IsValid() ? GreenlandsDriverController->GetPawn() : nullptr);
+    auto* Observer = Cast<ASFE1Character>(GreenlandsObserverController.IsValid() ? GreenlandsObserverController->GetPawn() : nullptr);
+    if (!Driver || !Observer || !Driver->HasCombatSnapshot() || !Observer->HasCombatSnapshot() ||
+        USFCharacterSessionComponent::IsRestoring(Driver->GetController()) ||
+        USFCharacterSessionComponent::IsRestoring(Observer->GetController())) return;
+    const double Now = GetWorld()->GetTimeSeconds();
+    if (GreenlandsAbilityStage == 0)
+    {
+        ASFPilotBoar* Boar = nullptr;
+        for (const auto& Slot : ActiveBoars)
+        { if (Slot.Key.StartsWith(TEXT("boar_farm_edge:")) && IsValid(Slot.Value.Get()) && Slot.Value->Health() > 0)
+          { Boar = Slot.Value.Get(); break; } }
+        if (!Boar) return;
+        GreenlandsAbilityBoar = Boar;
+        const FVector Point = Boar->GetActorLocation() + FVector(180, 0, 0);
+        Driver->SetActorLocation(Grounded(GetWorld(), Point, Driver->GetCapsuleComponent()->GetScaledCapsuleHalfHeight()),
+            false, nullptr, ETeleportType::TeleportPhysics);
+        Driver->SetActorRotation((Boar->GetActorLocation() - Driver->GetActorLocation()).Rotation());
+        Driver->SetCombatTarget(Boar);
+        if (IsSafe(Driver->GetActorLocation())) { UE_LOG(LogTemp, Error, TEXT("ABILITY_NETCHECK_FAILED SafeLocation")); GreenlandsAbilityStage = 99; return; }
+        GreenlandsAbilityBoarHealth = Boar->Health();
+        GreenlandsAbilityStamina = Driver->GetStamina();
+        TryPlayerCombatAbility(Driver, TEXT("strike"));
+        const float Cost = Driver->GetMaxStamina() * .05f * GetDefault<USFCombatEnergySettings>()->AbilityEnergyCostMultiplier;
+        if (!FMath::IsNearlyEqual(Driver->GetStamina(), GreenlandsAbilityStamina - Cost, .05f) ||
+            Boar->Health() > GreenlandsAbilityBoarHealth)
+        { UE_LOG(LogTemp, Error, TEXT("ABILITY_NETCHECK_FAILED Strike Cost=%.2f HP=%d"),
+            GreenlandsAbilityStamina - Driver->GetStamina(), Boar->Health()); GreenlandsAbilityStage = 99; return; }
+        GreenlandsAbilityStamina = Driver->GetStamina();
+        GreenlandsAbilityBoarHealth = Boar->Health();
+        TryPlayerCombatAbility(Driver, TEXT("strike"));
+        if (Driver->GetStamina() != GreenlandsAbilityStamina || Boar->Health() != GreenlandsAbilityBoarHealth)
+        { UE_LOG(LogTemp, Error, TEXT("ABILITY_NETCHECK_FAILED GCD")); GreenlandsAbilityStage = 99; return; }
+        GreenlandsAbilityStage = 1; GreenlandsAbilityStageAt = Now;
+        UE_LOG(LogTemp, Display, TEXT("ABILITY_NETCHECK_STRIKE Cost=%.2f HP=%d"), Cost, Boar->Health());
+    }
+    else if (GreenlandsAbilityStage == 1 && Now - GreenlandsAbilityStageAt >= 1.7)
+    {
+        auto* Levels = Driver->GetController()->FindComponentByClass<USFGatheringPilotComponent>();
+        if (!Levels) return;
+        Levels->RestoreLevel(7); // Development fixture for the otherwise unavailable Magic kit.
+        Driver->SetCombatArchetypeFixture(TEXT("mage"));
+        const float Before = Driver->GetMana();
+        TryPlayerCombatAbility(Driver, TEXT("arcane_ward"));
+        const float Cost = Driver->GetMaxMana() * .08f * GetDefault<USFCombatEnergySettings>()->AbilityEnergyCostMultiplier;
+        if (!FMath::IsNearlyEqual(Driver->GetMana(), Before - Cost, .05f) || Driver->CombatAbsorb() <= 0)
+        { UE_LOG(LogTemp, Error, TEXT("ABILITY_NETCHECK_FAILED Ward Mana=%.2f Absorb=%.2f"),
+            Driver->GetMana(), Driver->CombatAbsorb()); GreenlandsAbilityStage = 99; return; }
+        GreenlandsAbilityStage = 2;
+        UE_LOG(LogTemp, Display, TEXT("ABILITY_NETCHECK_WARD Cost=%.2f Absorb=%.2f"), Cost, Driver->CombatAbsorb());
+    }
+    else if (GreenlandsAbilityStage == 2)
+    {
+        ASFPilotBoar* Boar = GreenlandsAbilityBoar.Get();
+        if (!Boar || Boar->Health() <= 0) return;
+        const double Before = Driver->CombatAbsorb();
+        for (int32 Attempt = 0; Attempt < 8 && Driver->CombatAbsorb() >= Before; ++Attempt)
+            TryBoarAttack(Boar, Driver);
+        if (Driver->CombatAbsorb() >= Before)
+        { UE_LOG(LogTemp, Error, TEXT("ABILITY_NETCHECK_FAILED AbsorbConsumption")); GreenlandsAbilityStage = 99; return; }
+        GreenlandsAbilityStage = 3;
+        UE_LOG(LogTemp, Display, TEXT("ABILITY_NETCHECK_PASS Absorbed=%.2f Remaining=%.2f DriverHP=%d ObserverHP=%d"),
+            Before - Driver->CombatAbsorb(), Driver->CombatAbsorb(), Driver->CombatHealth(), Observer->CombatHealth());
+    }
+}
+
 void ASFGameMode::TickGreenlandsEnergyNetcheck()
 {
     auto* Driver = Cast<ASFE1Character>(GreenlandsDriverController.IsValid() ? GreenlandsDriverController->GetPawn() : nullptr);
@@ -1660,6 +1731,146 @@ SFCombatResolution::FResult ASFGameMode::ResolveCombatAttack(AActor* Attacker,
         *GetNameSafe(Attacker), SFCombatResolution::Name(Result.Outcome), Result.Damage,
         Draws.Hit, Draws.Avoid, Draws.Crit, Draws.Block, Draws.Spread);
     return Result;
+}
+
+void ASFGameMode::TryPlayerCombatAbility(ASFE1Character* Attacker, FName AbilityId)
+{
+    using namespace SFStarterAbilities;
+    const FDefinition* Ability = Find(AbilityId.ToString());
+    if (!Ability || !bPilotActive || !CapturedSettings || !CapturedSettings->bCombatAvailable ||
+        !SFCombatPart6::Active(GetWorld()) || !IsValid(Attacker) || !Attacker->HasCombatSnapshot() ||
+        Attacker->CombatHealth() <= 0 || USFCharacterSessionComponent::IsRestoring(Attacker->GetController())) return;
+    const double Now = GetWorld()->GetTimeSeconds();
+    if (Ability->Effect == EEffect::Interrupt)
+    {
+        if (Attacker->Casting) Attacker->Casting->RequestPublishedInterrupt(false, Attacker->GetCombatTarget());
+        return;
+    }
+    const bool bSelf = Ability->Target == ETarget::Self;
+    if (!bSelf && IsSafe(Attacker->GetActorLocation())) return;
+    const auto* Energy = GetDefault<USFCombatEnergySettings>();
+    const double MaximumRange = Ability->MaximumRangeMetres == 3 ? Energy->MeleeReachMetres : Ability->MaximumRangeMetres;
+    const FVector Facing = Attacker->GetActorForwardVector().GetSafeNormal2D();
+    const auto ValidEnemy = [&](ASFPilotBoar* Boar)
+    {
+        if (!IsValid(Boar) || Boar->IsActorBeingDestroyed() || Boar->Health() <= 0 ||
+            Boar->IsLeashing() || IsSafe(Boar->GetActorLocation())) return false;
+        const FVector Delta = Boar->GetActorLocation() - Attacker->GetActorLocation();
+        const double Distance = Delta.Size2D() / 100.0;
+        if (Distance < Ability->MinimumRangeMetres || Distance > MaximumRange ||
+            FVector::DotProduct(Facing, Delta.GetSafeNormal2D()) <
+                (Ability->Target == ETarget::Cone ? .70710678 : 0.0)) return false;
+        FCollisionQueryParams Query(SCENE_QUERY_STAT(CombatAbilityLOS), false, Attacker);
+        Query.AddIgnoredActor(Boar);
+        return !GetWorld()->LineTraceTestByChannel(Attacker->GetActorLocation() + FVector(0, 0, 45),
+            Boar->GetActorLocation() + FVector(0, 0, 45), ECC_Visibility, Query);
+    };
+    TArray<ASFPilotBoar*> Targets;
+    if (!bSelf)
+    {
+        if (Ability->Target == ETarget::Cone)
+        {
+            for (TActorIterator<ASFPilotBoar> It(GetWorld()); It; ++It)
+                if (ValidEnemy(*It)) Targets.Add(*It);
+            Targets.Sort([Attacker](const ASFPilotBoar& A, const ASFPilotBoar& B)
+            { return FVector::DistSquared2D(Attacker->GetActorLocation(), A.GetActorLocation()) <
+                FVector::DistSquared2D(Attacker->GetActorLocation(), B.GetActorLocation()); });
+            if (Targets.Num() > Ability->MaximumTargets) Targets.SetNum(Ability->MaximumTargets);
+        }
+        else if (ASFPilotBoar* Boar = Cast<ASFPilotBoar>(Attacker->GetCombatTarget()); ValidEnemy(Boar))
+            Targets.Add(Boar);
+        if (Targets.IsEmpty()) return;
+    }
+    FVector ChargeDestination = FVector::ZeroVector;
+    if (Ability->Effect == EEffect::DisplaceHit)
+    {
+        const FVector Toward = (Targets[0]->GetActorLocation() - Attacker->GetActorLocation()).GetSafeNormal2D();
+        ChargeDestination = Targets[0]->GetActorLocation() - Toward * 160.0;
+        ChargeDestination.Z = Attacker->GetActorLocation().Z;
+        FHitResult Sweep;
+        FCollisionQueryParams Query(SCENE_QUERY_STAT(CombatCharge), false, Attacker);
+        Query.AddIgnoredActor(Targets[0]);
+        if (GetWorld()->SweepSingleByChannel(Sweep, Attacker->GetActorLocation(), ChargeDestination,
+            FQuat::Identity, ECC_Pawn, FCollisionShape::MakeCapsule(Attacker->GetCapsuleComponent()->GetScaledCapsuleRadius(),
+                Attacker->GetCapsuleComponent()->GetScaledCapsuleHalfHeight()), Query)) return;
+    }
+    if (!Attacker->CommitCombatAbility(*Ability, Now)) return;
+    if (Ability->Effect == EEffect::HealOverTime)
+    {
+        TWeakObjectPtr<ASFE1Character> Subject = Attacker;
+        TSharedRef<int32> TickCount = MakeShared<int32>(0);
+        TSharedRef<FTimerHandle> Handle = MakeShared<FTimerHandle>();
+        GetWorld()->GetTimerManager().SetTimer(*Handle, FTimerDelegate::CreateWeakLambda(this,
+            [this, Subject, TickCount, Handle]()
+            {
+                ASFE1Character* Player = Subject.Get();
+                if (!Player || Player->CombatHealth() <= 0)
+                { GetWorld()->GetTimerManager().ClearTimer(*Handle); return; }
+                const int32 Heal = FMath::RoundToInt(Player->CombatMaximumHealth() * .03);
+                Player->CombatSetHealth(FMath::Min(Player->CombatMaximumHealth(), Player->CombatHealth() + Heal));
+                if (++*TickCount >= 5) GetWorld()->GetTimerManager().ClearTimer(*Handle);
+            }), 2.0f, true);
+        return;
+    }
+    const auto* Coefficient = SFCombatPart6::Ability(AbilityId.ToString());
+    if (!Coefficient) return;
+    const auto Stats = Attacker->CombatStats(CapturedSettings->CritBase, CapturedSettings->SkillDamageFloor);
+    const auto Equipment = SFGear::CombatEquipment(Attacker->GetController(), CapturedSettings->DevPilotArmorUnit);
+    SFCombatResolution::FAttack Base = SFCombatPart6::AuthoredAbility(Stats, Equipment.Weapon,
+        *Coefficient, CapturedSettings->WeaponSpread, CapturedSettings->PowerSpeedReferenceSeconds,
+        CapturedSettings->UnarmedDpsFactor, CapturedSettings->WeaponDpsK);
+    if (Ability->Effect == EEffect::Absorb)
+    {
+        Base.bCanCrit = false;
+        const auto Result = ResolveCombatAttack(Attacker, Base);
+        Attacker->GrantCombatAbsorb(Result.Damage, 20.0, Attacker);
+        return;
+    }
+    if (Ability->Effect == EEffect::DisplaceHit) Attacker->SetActorLocation(ChargeDestination, true);
+    for (ASFPilotBoar* Boar : Targets)
+    {
+        SFCombatResolution::FAttack Attack = Base;
+        const auto Npc = SFCombatPart6::Npc(Boar->GetCreatureId());
+        Attack.bCanMiss = Ability->Effect != EEffect::DamageOverTime;
+        Attack.MissChance = FMath::Clamp((Npc.Skill - (Stats.Skill + .10 * Stats.Tactics)) /
+            CapturedSettings->MissDivisor, 0.0, double(CapturedSettings->MissCap));
+        Attack.bHasArmorSnapshot = true; Attack.Armor = Boar->CombatArmor();
+        Attack.bHasResistanceSnapshot = true; Attack.Resistance = Boar->CombatResistance();
+        Attack.bFrontArc = SFBoarDodgeRules::IsInFrontArc(Boar->GetActorForwardVector(),
+            Attacker->GetActorLocation() - Boar->GetActorLocation(), CapturedSettings->FrontArcDegrees);
+        Attack.bCanDodge = Attack.bCanMiss && Attack.bFrontArc;
+        Attack.bCanParry = Attack.bCanMiss && Attack.bFrontArc;
+        Attack.DodgeChance = Boar->CombatDodge(); Attack.ParryChance = Boar->CombatParry();
+        if (Ability->Effect == EEffect::DamageOverTime)
+        {
+            Attack.RawDamage /= 6.0; Attack.SpreadWeaponDamage /= 6.0;
+            Attack.bCanCrit = false; Attack.bCanBlock = false;
+            const uint64 Key = (uint64(Attacker->GetUniqueID()) << 32) | Boar->GetUniqueID();
+            const int32 Generation = ++RendGenerations.FindOrAdd(Key);
+            TWeakObjectPtr<ASFE1Character> Source = Attacker;
+            TWeakObjectPtr<ASFPilotBoar> Victim = Boar;
+            TSharedRef<int32> TickCount = MakeShared<int32>(0);
+            TSharedRef<FTimerHandle> Handle = MakeShared<FTimerHandle>();
+            GetWorld()->GetTimerManager().SetTimer(*Handle, FTimerDelegate::CreateWeakLambda(this,
+                [this, Source, Victim, Attack, Key, Generation, TickCount, Handle]()
+                {
+                    if (RendGenerations.FindRef(Key) != Generation || !Source.IsValid() ||
+                        !Victim.IsValid() || Victim->Health() <= 0 || Victim->IsLeashing())
+                    {
+                        if (RendGenerations.FindRef(Key) == Generation) RendGenerations.Remove(Key);
+                        GetWorld()->GetTimerManager().ClearTimer(*Handle); return;
+                    }
+                    const auto Result = ResolveCombatAttack(Source.Get(), Attack);
+                    if (Result.Damage > 0) Victim->ReceivePilotDamage(Source.Get(), Result.Damage);
+                    if (++*TickCount >= 6)
+                    { RendGenerations.Remove(Key); GetWorld()->GetTimerManager().ClearTimer(*Handle); }
+                }), 2.0f, true);
+            continue;
+        }
+        const auto Result = ResolveCombatAttack(Attacker, Attack);
+        if (Result.Damage > 0) Boar->ReceivePilotDamage(Attacker, Result.Damage);
+        else Boar->ReceivePilotDodge(Attacker);
+    }
 }
 
 void ASFGameMode::TryPlayerAttack(ASFE1Character* Attacker, AActor* SelectedTarget)

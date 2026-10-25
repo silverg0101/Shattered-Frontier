@@ -56,6 +56,7 @@ public:
     SFCombatResolution::FResult ResolveCombatAttack(AActor* Attacker,
         const SFCombatResolution::FAttack& Attack, double FixtureAvoidanceDraw = -1);
     void TryPlayerAttack(ASFE1Character* Attacker, AActor* SelectedTarget = nullptr);
+    void TryPlayerCombatAbility(ASFE1Character* Attacker, FName AbilityId);
     bool TryPlayerTaunt(ASFE1Character* Taunter, AActor* SelectedTarget);
     void TryBoarAttack(ASFPilotBoar* Boar, ASFE1Character* Victim);
     /** Authority: an NPC's landed melee hit on a player (boar, townsfolk, guard); the caller checks reach and cooldown.
@@ -159,6 +160,7 @@ private:
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     void TickGreenlandsNetcheck();
     void TickGreenlandsEnergyNetcheck();
+    void TickGreenlandsAbilityNetcheck();
 #endif
     bool LoadZoneRecord();
     bool RunWorldSlots(const FString& Command, const FString& Group = FString(), int32 Slot = INDEX_NONE);
@@ -174,6 +176,12 @@ private:
     TMap<FString, TWeakObjectPtr<ASFPilotBoar>> ActiveBoars;
     TMap<FString, TArray<double>> LeashEvadesByGroupAndCharacter;
     TMap<TWeakObjectPtr<ASFE1Character>, double> PlayerNextSwing;
+    TMap<uint64, int32> RendGenerations;
+    int32 GreenlandsAbilityStage = 0;
+    double GreenlandsAbilityStageAt = 0;
+    TWeakObjectPtr<ASFPilotBoar> GreenlandsAbilityBoar;
+    int32 GreenlandsAbilityBoarHealth = 0;
+    float GreenlandsAbilityStamina = 0;
     TMap<TWeakObjectPtr<ASFE1Character>, FRandomStream> PlayerCombatStreams;
     TMap<TWeakObjectPtr<ASFPilotBoar>, FRandomStream> BoarCombatStreams;
     TMap<TWeakObjectPtr<ASFE1Character>, int32> DodgeScenarioSwings;

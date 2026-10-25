@@ -8,6 +8,7 @@ param(
     [switch]$GreenlandsDeathNetcheck,
     [switch]$GreenlandsUnstuckNetcheck,
     [switch]$AttributeSnapshotNetcheck,
+    [switch]$GreenlandsAbilityNetcheck,
     [ValidateSet('Release','Resurrection')][string]$DeathResolution = 'Release',
     [switch]$RestartMidDeath,
     [switch]$TargetScenario,
@@ -28,6 +29,10 @@ if ($AttributeSnapshotNetcheck -and (-not $Services -or $Clients -ne 2 -or
     $Map -ne '/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook' -or
     $GreenlandsDeathNetcheck -or $GreenlandsUnstuckNetcheck -or $PartyXpScenario -or $PartyScenario -or $SpawnOnly)) {
     throw 'AttributeSnapshotNetcheck requires Silverbrook, two clients and Gameplay Services.'
+}
+if ($GreenlandsAbilityNetcheck -and (-not $Services -or $Clients -ne 2 -or
+    $Map -ne '/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook')) {
+    throw 'GreenlandsAbilityNetcheck requires Silverbrook, two clients and Gameplay Services.'
 }
 if ($GreenlandsDeathNetcheck -and (-not $Services -or $Clients -ne 2 -or $Map -ne '/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook' -or
     $TargetScenario -or $PartyScenario -or $PartyXpScenario -or $SpawnOnly)) { throw 'GreenlandsDeathNetcheck requires Silverbrook, two clients and Gameplay Services.' }
@@ -55,7 +60,8 @@ $null = New-Item -ItemType Directory -Path $root
 if ($Services) { . (Join-Path $PSScriptRoot 'InventoryLedgerHostFixture.ps1') }
 $fx = @{}
 $owned = [Collections.Generic.List[Diagnostics.Process]]::new()
-$scope = if ($AttributeSnapshotNetcheck) { 'Greenlands two-client authoritative attribute restore and combat' }
+$scope = if ($GreenlandsAbilityNetcheck) { 'Greenlands two-client Weapon and ward activation' }
+    elseif ($AttributeSnapshotNetcheck) { 'Greenlands two-client authoritative attribute restore and combat' }
     elseif ($GreenlandsUnstuckNetcheck) { 'Greenlands two-client Unstuck, token replay, and restart cooldown' }
     elseif ($GreenlandsDeathNetcheck) { "Greenlands two-client durable boar death and $DeathResolution" }
     elseif ($PartyXpScenario) { 'Three-client party: server restart, two in-range personal loot and XP recipients, out-of-range exclusion' }
@@ -170,7 +176,7 @@ try {
         }
     }
     $url = $result.map
-    $scenarioArg = if ($GreenlandsUnstuckNetcheck) { '-GreenlandsUnstuckNetcheck' } elseif ($GreenlandsDeathNetcheck) { '-GreenlandsDeathNetcheck' } elseif ($PartyScenario) { '-PartyScenario' } elseif ($Clients -gt 1) { '-CombatGroupScenario' } elseif ($TargetScenario) { '-CombatTargetScenario' } else { '-CombatPilotScenario' }
+    $scenarioArg = if ($GreenlandsAbilityNetcheck) { '-GreenlandsAbilityNetcheck' } elseif ($GreenlandsUnstuckNetcheck) { '-GreenlandsUnstuckNetcheck' } elseif ($GreenlandsDeathNetcheck) { '-GreenlandsDeathNetcheck' } elseif ($PartyScenario) { '-PartyScenario' } elseif ($Clients -gt 1) { '-CombatGroupScenario' } elseif ($TargetScenario) { '-CombatTargetScenario' } else { '-CombatPilotScenario' }
     $serverFlags = @('-server',('-port='+$Port),'-multihome=127.0.0.1',$scenarioArg)
     if ($GreenlandsDeathNetcheck) { $serverFlags += "-DeathResolution=$DeathResolution" }
     if ($PartyScenario) { $serverFlags += '-SFDevIdentity' }
@@ -441,6 +447,22 @@ try {
             [math]::Abs([int]$positionValues[0] - [int]$serverPosition.Groups[1].Value) -gt 200 -or
             [math]::Abs([int]$positionValues[1] - [int]$serverPosition.Groups[2].Value) -gt 200) {
             throw "Durable $DeathResolution position did not match the authored death record: $positionRow"
+        }
+        $result.status='Passed'
+        return
+    }
+    if ($GreenlandsAbilityNetcheck) {
+        foreach ($identity in @('alpha','beta')) {
+            $null = Start-Owned "client$identity" ("127.0.0.1:$Port`?SFDevCharacter=$identity") @('-game','-GreenlandsAbilityNetcheck')
+        }
+        Wait-Log $server 'server' 'ABILITY_NETCHECK_(PASS|FAILED)'
+        $serverText = Get-Content -LiteralPath (Join-Path $root 'server.log') -Raw
+        if ($serverText -match 'ABILITY_NETCHECK_FAILED' -or
+            $serverText -notmatch 'ABILITY_NETCHECK_STRIKE' -or
+            $serverText -notmatch 'ABILITY_NETCHECK_WARD' -or
+            $serverText -notmatch 'ABILITY_NETCHECK_PASS' -or
+            [regex]::Matches($serverText, 'COMBAT_ATTRIBUTE_SNAPSHOT Archetype=fighter Level=1').Count -lt 2) {
+            throw 'Two-client Weapon or ward evidence incomplete.'
         }
         $result.status='Passed'
         return

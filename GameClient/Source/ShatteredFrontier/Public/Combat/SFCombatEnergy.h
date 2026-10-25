@@ -16,6 +16,7 @@ public:
     UPROPERTY(Config, EditAnywhere, Category="Regeneration", meta=(ClampMin="0", ClampMax="40", ToolTip="In-combat Stamina points per second before Dexterity; realm, immediate, combat.tuning.publish.")) float StaminaCombatPerSecond = 10.f;
     UPROPERTY(Config, EditAnywhere, Category="Regeneration", meta=(ClampMin="5", ClampMax="100", ToolTip="Out-of-combat Stamina points per second before Dexterity; realm, immediate, combat.tuning.publish.")) float StaminaOutOfCombatPerSecond = 25.f;
     UPROPERTY(Config, EditAnywhere, Category="Costs", meta=(ClampMin="0.5", ClampMax="2", ToolTip="Ability energy cost multiplier; realm, immediate, combat.tuning.publish.")) float AbilityEnergyCostMultiplier = 1.f;
+    UPROPERTY(Config, EditAnywhere, Category="Abilities", meta=(ClampMin="2", ClampMax="5", Units="m", ToolTip="Melee ability reach; realm, restart, combat.tuning.publish.")) float MeleeReachMetres = 3.f;
     UPROPERTY(Config, EditAnywhere, Category="Sprint", meta=(ClampMin="0.01", ClampMax="0.20", ToolTip="Sprint stamina drain as fraction of maximum per second; realm, immediate, combat.tuning.publish.")) float SprintDrainFractionPerSecond = .04f;
     UPROPERTY(Config, EditAnywhere, Category="Sprint", meta=(ClampMin="0", ClampMax="10", Units="s", ToolTip="Stamina regeneration pause after sprint; realm, immediate, combat.tuning.publish.")) float SprintRegenDelaySeconds = 2.f;
     UPROPERTY(Config, EditAnywhere, Category="Sprint", meta=(ClampMin="0", ClampMax="0.5", ToolTip="Minimum Stamina fraction required to start sprint; realm, immediate, combat.tuning.publish.")) float SprintMinStartFraction = .10f;
@@ -34,7 +35,8 @@ public:
         if (!Within(RegenDelaySeconds, 0, 15) || !Within(ManaCombatBase, 0, .02f) ||
             !Within(ManaWisdomCoefficient, 0, .0001f) || !Within(ManaOutOfCombatFraction, .01f, .25f) ||
             !Within(StaminaCombatPerSecond, 0, 40) || !Within(StaminaOutOfCombatPerSecond, 5, 100) ||
-            !Within(AbilityEnergyCostMultiplier, .5f, 2) || !Within(SprintDrainFractionPerSecond, .01f, .20f) ||
+            !Within(AbilityEnergyCostMultiplier, .5f, 2) || !Within(MeleeReachMetres, 2, 5) ||
+            !Within(SprintDrainFractionPerSecond, .01f, .20f) ||
             !Within(SprintRegenDelaySeconds, 0, 10) || !Within(SprintMinStartFraction, 0, .5f) ||
             !Within(ChallengeStaminaCostFraction, .01f, .20f) || !Within(ChallengeRangeMetres, 1, 20) ||
             !Within(ChallengeCooldownSeconds, 1, 60) || !Within(PommelStaminaCostFraction, .01f, .20f) ||

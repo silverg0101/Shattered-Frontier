@@ -182,7 +182,7 @@ void USFCastingComponent::ServerRequestPublishedInterrupt_Implementation(bool bC
     const double Time = Now();
     const USFCombatEnergySettings* Energy = GetDefault<USFCombatEnergySettings>();
     const double ReachCm = (bCounterspell ? Energy->CounterspellRangeMetres :
-        GetDefault<USFCombatPilotSettings>()->MeleeRangeMetres) * 100.0;
+        Energy->MeleeReachMetres) * 100.0;
     const bool bHostile = Victim && Owner->GetCombatTarget() == Victim && Victim->GetCombatTarget() == Owner;
     const bool bCasting = Victim && Victim->Casting && Victim->Casting->GetCastView().Phase != ESFCastPhase::Idle;
     const bool bValid = bHostile && Victim->CombatHealth() > 0 &&

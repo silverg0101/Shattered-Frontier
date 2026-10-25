@@ -28,6 +28,7 @@
 #include "Combat/SFCombatPart6.h"
 #include "Inventory/SFGear.h"
 #include "Combat/SFCombatEnergy.h"
+#include "Combat/SFStarterAbilities.h"
 #include "Gathering/SFGatheringPilot.h"
 #include "Inventory/SFInventory.h"
 #include "UI/SFInventoryWidget.h"
@@ -1877,6 +1878,11 @@ void ASFE1Character::Tick(float DeltaSeconds)
             if (PC->WasInputKeyJustPressed(EKeys::T)) { PilotTaunt(CombatTarget); }
             if (Casting && PC->WasInputKeyJustPressed(EKeys::I)) { Casting->RequestPublishedInterrupt(false, CombatTarget); }
             if (Casting && PC->WasInputKeyJustPressed(EKeys::K)) { Casting->RequestPublishedInterrupt(true, CombatTarget); }
+            const FKey AbilityKeys[] = {EKeys::One, EKeys::Two, EKeys::Three, EKeys::Four,
+                EKeys::Five, EKeys::Six, EKeys::Seven};
+            const TArray<FName> Bindings = GetBindableCombatAbilities();
+            for (int32 Index = 0; Index < FMath::Min(Bindings.Num(), int32(UE_ARRAY_COUNT(AbilityKeys))); ++Index)
+            { if (PC->WasInputKeyJustPressed(AbilityKeys[Index])) RequestCombatAbility(Bindings[Index]); }
         }
     }
 }
@@ -2145,21 +2151,83 @@ double ASFE1Character::CombatResistance() const
 { return bHasCombatSnapshot ? CombatStats().Resistance : 0; }
 
 double ASFE1Character::CombatAbsorb() const
-{ return GetWorld() && GetWorld()->GetTimeSeconds() < CombatAbsorbExpiresAt ? CombatAbsorbRemaining : 0.0; }
-
-void ASFE1Character::GrantCombatAbsorb(double Amount, double DurationSeconds)
 {
-    if (!HasAuthority() || !FMath::IsFinite(Amount) || !FMath::IsWithinInclusive(DurationSeconds, 0.0, 30.0)) return;
-    CombatAbsorbRemaining = FMath::Max(0.0, Amount);
-    CombatAbsorbExpiresAt = GetWorld()->GetTimeSeconds() + DurationSeconds;
+    if (!HasAuthority()) return CombatAbsorbRemaining;
+    if (!GetWorld()) return 0;
+    double Total = 0;
+    for (const FAbsorbInstance& Instance : CombatAbsorbs)
+    { if (GetWorld()->GetTimeSeconds() < Instance.ExpiresAt) Total += Instance.Remaining; }
+    return Total;
+}
+
+void ASFE1Character::GrantCombatAbsorb(double Amount, double DurationSeconds, ASFE1Character* Caster)
+{
+    if (!HasAuthority() || !GetWorld() || !FMath::IsFinite(Amount) || Amount < 0 ||
+        !FMath::IsWithinInclusive(DurationSeconds, 0.0, 30.0)) return;
+    CombatAbsorbs.RemoveAll([Caster](const FAbsorbInstance& Instance) { return Instance.Caster.Get() == Caster; });
+    CombatAbsorbs.Add({Caster, Amount, GetWorld()->GetTimeSeconds() + DurationSeconds, ++NextCombatAbsorbId});
+    CombatAbsorbRemaining = CombatAbsorb();
     ForceNetUpdate();
 }
 
 void ASFE1Character::ConsumeCombatAbsorb(double Amount)
 {
-    if (!HasAuthority()) return;
-    CombatAbsorbRemaining = FMath::Max(0.0, CombatAbsorbRemaining - FMath::Max(0.0, Amount));
+    if (!HasAuthority() || !GetWorld()) return;
+    double Left = FMath::Max(0.0, Amount);
+    for (FAbsorbInstance& Instance : CombatAbsorbs)
+    {
+        if (Instance.ExpiresAt <= GetWorld()->GetTimeSeconds()) continue;
+        const double Taken = FMath::Min(Instance.Remaining, Left);
+        Instance.Remaining -= Taken;
+        Left -= Taken;
+        if (Taken > 0) UE_LOG(LogTemp, Display, TEXT("COMBAT_ABSORB_CREDIT Caster=%s Amount=%.2f Instance=%llu"),
+            *GetNameSafe(Instance.Caster.Get()), Taken, Instance.InstanceId);
+        if (Left <= 0) break;
+    }
+    CombatAbsorbs.RemoveAll([this](const FAbsorbInstance& Instance)
+    { return Instance.Remaining <= 0 || Instance.ExpiresAt <= GetWorld()->GetTimeSeconds(); });
+    CombatAbsorbRemaining = CombatAbsorb();
     ForceNetUpdate();
+}
+
+TArray<FName> ASFE1Character::GetBindableCombatAbilities() const
+{
+    if (CombatArchetype == TEXT("fighter"))
+        return SFStarterAbilities::BindingIds(SFStarterAbilities::EKit::Weapon, CombatCharacterLevel());
+    if (CombatArchetype == TEXT("mage"))
+        return SFStarterAbilities::BindingIds(SFStarterAbilities::EKit::Magic, CombatCharacterLevel());
+    return {};
+}
+
+void ASFE1Character::RequestCombatAbility(FName AbilityId)
+{
+    if (HasAuthority()) ServerRequestCombatAbility_Implementation(AbilityId);
+    else ServerRequestCombatAbility(AbilityId);
+}
+
+void ASFE1Character::ServerRequestCombatAbility_Implementation(FName AbilityId)
+{
+    if (ASFGameMode* Mode = GetWorld()->GetAuthGameMode<ASFGameMode>())
+        Mode->TryPlayerCombatAbility(this, AbilityId);
+}
+
+bool ASFE1Character::CommitCombatAbility(const SFStarterAbilities::FDefinition& Ability, double Now)
+{
+    if (!HasAuthority() || !GetWorld() ||
+        ((Ability.Kit == SFStarterAbilities::EKit::Weapon && CombatArchetype != TEXT("fighter")) ||
+         (Ability.Kit == SFStarterAbilities::EKit::Magic && CombatArchetype != TEXT("mage")))) return false;
+    const auto* Tune = GetDefault<USFCombatEnergySettings>();
+    const bool bMagic = Ability.Kit == SFStarterAbilities::EKit::Magic;
+    if (!SFStarterAbilities::CanStart(Ability, CombatCharacterLevel(), PilotHealth > 0, Now,
+        CombatAbilityGcdEndsAt, CombatAbilityCooldowns.FindRef(FName(Ability.Id)),
+        bMagic ? Mana : Stamina, bMagic ? MaxMana : MaxStamina,
+        Tune->AbilityEnergyCostMultiplier)) return false;
+    if (!(bMagic ? SpendManaFraction(Ability.StaminaCostFraction) :
+        SpendStaminaFraction(Ability.StaminaCostFraction))) return false;
+    CombatAbilityGcdEndsAt = Now + Ability.GcdSeconds;
+    // Current Greenlands Fighter/Mage snapshots carry no haste rating (effective haste 0).
+    CombatAbilityCooldowns.Add(FName(Ability.Id), Now + SFStarterAbilities::Cooldown(Ability, 0));
+    return true;
 }
 
 bool ASFE1Character::SpendStaminaFraction(float Fraction)
@@ -2217,8 +2285,9 @@ void ASFE1Character::ServerSetSprintIntent_Implementation(bool bEnable)
 void ASFE1Character::TickEnergy()
 {
     const double Now = GetWorld()->GetTimeSeconds();
-    if (CombatAbsorbRemaining > 0 && Now >= CombatAbsorbExpiresAt)
-    { CombatAbsorbRemaining = 0; ForceNetUpdate(); }
+    if (CombatAbsorbs.RemoveAll([Now](const FAbsorbInstance& Instance)
+        { return Instance.ExpiresAt <= Now || Instance.Remaining <= 0; }) > 0)
+    { CombatAbsorbRemaining = CombatAbsorb(); ForceNetUpdate(); }
     const USFCombatEnergySettings* Tune = GetDefault<USFCombatEnergySettings>();
     const bool bPart6Snapshot = SFCombatPart6::Active(GetWorld()) && bHasCombatSnapshot;
     const auto CurrentStats = bPart6Snapshot ? CombatStats() : SFCombatPart6::FStats();
@@ -2270,6 +2339,7 @@ void ASFE1Character::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
     DOREPLIFETIME(ASFE1Character, PilotHealth);
     DOREPLIFETIME_CONDITION(ASFE1Character, CombatAbsorbRemaining, COND_OwnerOnly);
+    DOREPLIFETIME_CONDITION(ASFE1Character, CombatArchetype, COND_OwnerOnly);
     DOREPLIFETIME_CONDITION(ASFE1Character, ResurrectionOfferId, COND_OwnerOnly);
     DOREPLIFETIME_CONDITION(ASFE1Character, ResurrectionOfferDeathEventId, COND_OwnerOnly);
     DOREPLIFETIME(ASFE1Character, bPilotInCombat);
@@ -2338,7 +2408,7 @@ void ASFE1Character::CombatSetHealth(int32 Value)
         if (Value < PilotHealth) { CombatMarkHostile(); }
         if (Value < PilotHealth && Casting) { Casting->NotifyDamage(); }
         PilotHealth = Value;
-        if (Value <= 0) { CombatAbsorbRemaining = 0; CombatAbsorbExpiresAt = 0; }
+        if (Value <= 0) { CombatAbsorbs.Reset(); CombatAbsorbRemaining = 0; }
         if (Value > 0 && ResurrectionOfferId != 0) { ClearResurrectionOffer(); }
         if (Value <= 0) { SetCombatTarget(nullptr); }
         ForceNetUpdate();
