@@ -1,0 +1,22 @@
+INNER 59233 of 99779 faces; openings (boundary loops, verts) [374, 173, 121, 90, 85, 39]
+HEM level: lowest point per azimuth 134.5..140.9 cm -> 121.6..122.1 cm
+DRAPE column scale 1.03..1.35 (front 1.04); moved 35070 verts, median 52.3 mm, max 103.5 mm
+FOLDS depth limited to ~1.5 cm: max move 31.7 mm, 11622 verts over 5 mm
+FRONT gap to the body, cm: z126 7.4, z136 5.8, z146 4.8
+HEM final lowest point 121.6 cm; push moved max 74.3 mm
+PUSH inner verts inside the skin before the push 2709; moved 45846 of 49867 verts, median move 75.4 mm, max 205.1 mm at (37, -2, 122); fit 14.4 s
+INNER SMOOTH 4058 inner cape verts x3 (factor 0.5); flipped back 104 faces facing against their neighbours
+LOW tris 18999 (raw 99995); boundary edges 5, non-manifold 22
+DRIFT unmoved region (617 final verts): mean 0.34 max 1.26 mm; whole garment vs the pushed raw mesh: mean 0.32 max 3.56 mm
+INNER LIFT x1.5 on 10779 faces, 29% of texels; RIM LIFT x1.35 on 0.6% of texels
+NORMAL Artifacts\Characters\PlayerBase\hood\T_Hood_Normal.png: tabby 0.15 px, slub 0.4 px, mean tilt 10.3 deg
+BAKED Artifacts\Characters\PlayerBase\hood\T_Hood_BaseColor.png mean (0.243, 0.206, 0.169) -> (0.3, 0.225, 0.185)
+SEETHROUGH 0 of 378 back rays from the head centre pass through the garment
+FACE visible from the front: 100% of brow-to-chin verts
+CLEARANCE a_pose cape: min 12.7 mm, median 49.9 mm, 0 skin verts closer than 0.8 x offset, 0 inside the cloth -> ok
+CLEARANCE a_pose head: min 4.2 mm, median 41.7 mm, 0 skin verts closer than 0.8 x offset, 0 inside the cloth -> ok
+CLEARANCE arms_down cape: min 12.7 mm, median 67.6 mm, 0 skin verts closer than zero, 0 inside the cloth -> ok
+CLEARANCE arms_down head: min 4.2 mm, median 41.7 mm, 0 skin verts closer than zero, 0 inside the cloth -> ok
+CLEARANCE crouch cape: min 12.7 mm, median 44.7 mm, 0 skin verts closer than zero, 0 inside the cloth -> ok
+CLEARANCE crouch head: min 4.2 mm, median 41.7 mm, 0 skin verts closer than zero, 0 inside the cloth -> ok
+FINAL tris 18999; fit 14.4 s; checks: all ok

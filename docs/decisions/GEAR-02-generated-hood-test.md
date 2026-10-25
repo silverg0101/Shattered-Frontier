@@ -154,3 +154,21 @@ Checks:
 - clearance: A-pose cape min 10.4 mm, head min 3.5 mm; arms down 11.0 / 3.5 mm; crouch 9.0 / 3.5 mm; 0 inside in every pose
 
 `Capture-PlayerOutfit.py` adds an idle `back` shot. Run it as `-ExecCmds=py <absolute path>`: a relative path resolves against the engine's Binaries folder.
+
+## Round 5: the round-4 fix list
+
+Evidence: `docs/evidence/player-outfit-hood/round5/` (same set as round 4; stage strips now tile raw, 1 fit, 1b level hem, 2a drape, 2b folds, 2 push, final, per view front/left/back/right/top/bottom). Not self-judged. Last round: goes to the owner.
+
+Stages that added the defects (raw vs stages): the flat yoke came from round 4's 2a drape (A-pose deltoid collision + a constant outward shift + per-slice hull); the hem notches are the raw model's centre front/back pleats, which per-azimuth levelling could not even out; the specks were 104 faces flipped against their neighbours after decimation; the short cape is the raw hem (134.5 cm).
+
+Fixes:
+1. **Length and front.** `hem_cm` 122: level_hem now stretches the cape below `level_hem_below_cm` down to 122 cm (smoothstep-blended over 20 cm). The drape fits the front sector (`front_deg` 35..70 off -y) to the chest + `front_gap_cm` 4: gap 4.8 / 5.8 / 7.4 cm at z146/136/126. Hem 121.6..122.1 cm.
+2. **Hem.** The hem height under each vertex is read from the hem loop itself (inverse-distance mean of its 6 nearest loop points, `hem_from_loop`), so the pleats end on one smooth loop; the raw rolled band is kept.
+3. **Sides when walking.** Collision is the arms-down body with arms (`collision_pose`), arm weights all go to the clavicle (`arm_weight_keep` 0), every other bone to `spine_05` (`cape_root_bone`), and the clavicle share fades into spine_05 below the shoulder (`clavicle_fade_cm` [148, 14]). walk_back still shows the back hem riding up with the walk's forward lean and the arms below the side hem: rigid skinning, no cloth sim; the weight change made no visible difference.
+4. **Bell, not yoke.** The drape is now a per-azimuth column scale about the slot axis (keeps the raw slope and flare), capped at `k_max` 1.35 (1.03..1.35). A literal 40 mm cap cannot clear the arms-down shoulder (needs about 7 cm at z156), so the cap is a scale factor.
+5. **Box folds.** `fold_amp_cm` 1.5: fold depth around an azimuth-blurred bell is compressed with amp*tanh(dev/amp).
+6. **Neck band.** A 6 mm outer-layer ridge at z160 (`neck_band`), a ridge highlight and dark seam line in the base colour and the normal map, `rim_albedo_lift` 1.35 on the face-opening rim (`rim_cm` 4).
+7. **Clay.** Faces opposing their neighbours are flipped back (104); `inner_smooth` 3 x 0.5 on inner cape verts, each move clamped to 3 mm (drift limit 5 mm).
+8. **Weave.** Tabby 0.05 + slub 0.06 in albedo, and a new `T_Hood_Normal.png` (tabby 0.15 px, slub 0.4 px, band; DirectX green) imported as `NormalTex`, NormalStrength 1. M_PlayerCloth roughness is a scalar, so no roughness map.
+
+Checks: drift 0.34 / 1.26 mm (unmoved region), 0.32 / 3.56 mm (whole garment); 0 of 378 see-through rays; face 100%; clearance A-pose cape 12.7 mm, head 4.2 mm; arms down 12.7 / 4.2 mm; crouch 12.7 / 4.2 mm; 0 inside in every pose.

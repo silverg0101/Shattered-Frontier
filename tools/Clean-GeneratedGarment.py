@@ -347,36 +347,12 @@ def smooth_field(P, V, X, cell, radius):
     return out
 
 
-def hull_radius(rs, a, at):
-    """Radius at the angles `at` of the convex hull of the polar points (rs, a) and the origin."""
-    pts = sorted(set([(0.0, 0.0)] + list(zip((rs * np.cos(a)).round(4), (rs * np.sin(a)).round(4)))))
-    cr = lambda o, p, q: (p[0] - o[0]) * (q[1] - o[1]) - (p[1] - o[1]) * (q[0] - o[0])
-    lo, hi = [], []
-    for q in pts:
-        while len(lo) >= 2 and cr(lo[-2], lo[-1], q) <= 0:
-            lo.pop()
-        lo.append(q)
-    for q in reversed(pts):
-        while len(hi) >= 2 and cr(hi[-2], hi[-1], q) <= 0:
-            hi.pop()
-        hi.append(q)
-    H = np.array(lo[:-1] + hi[:-1]); E = np.roll(H, -1, axis=0) - H
-    out = np.zeros(len(at))
-    for k, t in enumerate(at):  # ray from the origin along t against every hull edge
-        d = np.array([math.cos(t), math.sin(t)])
-        den = d[0] * E[:, 1] - d[1] * E[:, 0]
-        with np.errstate(divide='ignore', invalid='ignore'):
-            lam = (H[:, 0] * E[:, 1] - H[:, 1] * E[:, 0]) / den
-            mu = (H[:, 0] * d[1] - H[:, 1] * d[0]) / den
-        good = (np.abs(den) > 1e-12) & (mu >= -1e-9) & (mu <= 1 + 1e-9) & (lam > 0)
-        out[k] = lam[good].max() if good.any() else 0.0
-    return out
-
-
-def level_hem(bm, axis_c, z_top, dth=3.0, sigma=8.0):
+def level_hem(bm, axis_c, z_top, target=None, blend=0.0, dth=3.0, sigma=8.0, hem=None):
     """Round 4: a level hem. Per azimuth bin the hem height h is the lowest vertex; h is blurred over azimuth (sigma deg) and every vertex below z_top is
-    stretched along z about z_top so the blurred hem lands on the lowest one: z' = z_top - (z_top - z) * (z_top - H) / (z_top - h(azimuth)). A smooth, low-frequency
-    vertical scale per azimuth (both layers alike), so the bell and its folds are kept. Returns (hem range before, after) in cm."""
+    stretched along z about z_top so the blurred hem lands on H (the lowest one, or `target` cm: round 5 lengthens the cape to it). The stretch of a vertex d cm
+    below z_top is 1 + (K - 1) * smoothstep(d / blend), K per azimuth so the hem lands on H: the shoulders just under the neck band keep the raw slope and the bell
+    below takes the length. Fine bins and a narrow blur (round 5) close the raw hem's notches. A smooth vertical scale per azimuth (both layers alike), so the
+    bell and its folds are kept. Returns (hem range before, after) in cm."""
     X = np.array([v.co for v in bm.verts])
     nt = int(360 / dth)
     th = np.degrees(np.arctan2(X[:, 1] - axis_c[1], X[:, 0] - axis_c[0])) % 360
@@ -386,74 +362,122 @@ def level_hem(bm, axis_c, z_top, dth=3.0, sigma=8.0):
     h = np.where(np.isfinite(h), h, np.nanmin(np.where(np.isfinite(h), h, np.nan)))
     k = max(1, int(round(sigma / dth)))
     hb = box_blur(np.concatenate([h[-nt // 2:], h, h[:nt // 2]]), k, axes=(0,))[nt // 2:nt // 2 + nt]
-    H = h.min()
+    H = h.min() if target is None else target
     qt = th / dth - 0.5; t0 = np.floor(qt).astype(int); b = qt - t0
     hv = hb[t0 % nt] * (1 - b) + hb[(t0 + 1) % nt] * b
+    if hem is not None:  # round 5: the hem height under each vertex is read off the hem loop itself (inverse-distance mean of the 6 nearest loop points):
+        L = X[hem]  # the raw centre front and back notches sit on radial pleats, where one azimuth holds both a low pleat wall and the raised notch
+        kd = KDTree(len(L))
+        for n, p in enumerate(L):
+            kd.insert(p, n)
+        kd.balance()
+        for i in np.where(X[:, 2] < z_top)[0]:
+            nb = kd.find_n(X[i], 6)
+            wts = np.array([1.0 / (d + 0.1) ** 3 for _c, _n, d in nb])
+            hv[i] = float(np.dot(wts, [L[n_, 2] for _c, n_, _d in nb]) / wts.sum())
     below = X[:, 2] < z_top
-    X[below, 2] = z_top - (z_top - X[below, 2]) * (z_top - H) / np.maximum(z_top - hv[below], 1e-3)
+    d = z_top - X[below, 2]; dh = np.maximum(z_top - hv[below], 1e-3)
+    ss = (lambda t: t * t * (3 - 2 * t))(np.clip(d / blend, 0, 1)) if blend > 0 else np.ones_like(d)
+    ssh = (lambda t: t * t * (3 - 2 * t))(np.clip(dh / blend, 0, 1)) if blend > 0 else np.ones_like(d)
+    K = 1 + ((z_top - H) / dh - 1) / np.maximum(ssh, 1e-3)
+    X[below, 2] = z_top - d * (1 + (K - 1) * ss)
     for v, x in zip(bm.verts, X):
         v.co = Vector(x)
     h2 = np.full(nt, np.inf); np.minimum.at(h2, ti, X[:, 2])
     return (float(h.min()), float(h.max())), (float(h2[np.isfinite(h2)].min()), float(h2[np.isfinite(h2)].max()))
 
 
-def drape_radial(bm, inner, skin, offset_at, margin, radial_at, axis_c, top, dth=3.0, dz=0.5, knee=1.5):
-    """Round 4: a loose cape is widened as hung cloth before the local push (round 3's 6 cm voxel push over the shoulders made round lobes). Per (azimuth, height)
-    bin around the slot axis: the radius the inner layer needs (outermost skin on the horizontal ray + offset + margin), carried DOWN the bin column with the raw
-    bell's own flare (cloth that rests on the shoulder hangs from it in the generated bell shape, it never tucks back in), then the convex hull of each slice, dilated and blurred over azimuth and height. Every vertex is scaled radially by
-    softmax(r_inner, r_need) / r_inner of its bin, so both layers move together, the bell keeps its folds below the contact and nothing moves where it already clears.
-    Returns the per-vertex move (cm, numpy)."""
+def circ_blur(G, r):
+    """box_blur along axis 1 (azimuth bins), wrapping around."""
+    nt = G.shape[1]
+    return box_blur(np.concatenate([G[:, -nt // 2:], G, G[:, :nt // 2]], axis=1), max(1, r), axes=(1,))[:, nt // 2:nt // 2 + nt]
+
+
+def bin_lerp(T, z, th, z0, dz, dth):
+    """Bilinear read of the (height, azimuth) bin table T at the vertices (z, th deg), between bin centres; azimuth wraps."""
+    nz, nt = T.shape
+    qz = np.clip((z - z0) / dz - 0.5, 0, nz - 1.001); qt = th / dth - 0.5
+    z_, t_ = np.floor(qz).astype(int), np.floor(qt).astype(int); a_, b_ = qz - z_, qt - t_
+    return sum(T[z_ + i, (t_ + j) % nt] * (a_ if i else 1 - a_) * (b_ if j else 1 - b_) for i in (0, 1) for j in (0, 1))
+
+
+def drape_scale(bm, inner, skin, offset_at, margin, axis_c, z_join, ramp_cm, front_gap, front_deg, k_max, fit_below, dth=3.0):
+    """Round 5 (replaces round 4's additive drape, whose constant outward shift + convex hull turned the bell into a wide, flat yoke): each azimuth column of the
+    cape below the neck band is scaled about the slot axis, r' = r * (1 + (k - 1) * ramp(z)), ramp = smoothstep((z_join - z) / ramp_cm), so the column keeps the
+    raw bell's own slope and flare, only larger or smaller. k is the smallest factor that puts every inner vertex of the column (where ramp >= 0.6) at the skin
+    (outermost hit on the horizontal ray) + offset + margin, and at least 1 (never tucked in), except in the front sector (front_deg: full, fade-out deg off -y)
+    where it is fitted to skin + front_gap cm both ways: the front panel hangs that far off the chest instead of tenting. The column factors are dilated +-6 deg
+    and blurred over azimuth; both layers move alike. Returns the per-vertex move (cm, numpy) and the factor range."""
     X = np.array([v.co for v in bm.verts]); X0 = X.copy()
     vin = np.array(sorted({v.index for f, i in zip(bm.faces, inner) if i for v in f.verts}))
-    rad = np.array([radial_at(z) for z in X[:, 2]])
     th = np.degrees(np.arctan2(X[:, 1] - axis_c[1], X[:, 0] - axis_c[0])) % 360
     r = np.hypot(X[:, 0] - axis_c[0], X[:, 1] - axis_c[1])
-    z0 = X[:, 2].min(); nz = int((X[:, 2].max() - z0) / dz) + 2; nt = int(360 / dth)
-    ti = (th / dth).astype(int) % nt; zi = ((X[:, 2] - z0) / dz).astype(int)
-    rin = np.full((nz, nt), np.inf); need = np.full((nz, nt), -np.inf)
-    for i in vin[rad[vin]]:
-        rin[zi[i], ti[i]] = min(rin[zi[i], ti[i]], r[i])
+    ramp = np.array([smoothstep((z_join - z) / ramp_cm) for z in X[:, 2]])
+    nt = int(360 / dth); ti = (th / dth).astype(int) % nt
+    kb = np.ones(nt); kf = np.full(nt, -np.inf)
+    for i in vin[(ramp[vin] >= 0.6) & (X[vin, 2] <= z_join - fit_below)]:
         d = Vector((X[i, 0] - axis_c[0], X[i, 1] - axis_c[1], 0.0))
         if d.length < 1e-6:
             continue
         d.normalize()
         h = skin.ray_cast(Vector(X[i]) + d * 80, -d, 80 + 30)
-        if h[0] is not None:
-            rs = Vector((h[0].x - axis_c[0], h[0].y - axis_c[1], 0.0)).length
-            need[zi[i], ti[i]] = max(need[zi[i], ti[i]], rs + offset_at(X[i, 2]) + margin)
-    rin_f = np.where(np.isfinite(rin), rin, 0.0)  # bins without inner verts take the column's nearest inner radius
+        if h[0] is None:
+            continue
+        rs = Vector((h[0].x - axis_c[0], h[0].y - axis_c[1], 0.0)).length
+        kb[ti[i]] = max(kb[ti[i]], 1 + ((rs + offset_at(X[i, 2]) + margin) / r[i] - 1) / ramp[i])
+        kf[ti[i]] = max(kf[ti[i]], 1 + ((rs + max(front_gap, offset_at(X[i, 2]) + margin)) / r[i] - 1) / ramp[i])
+    kf = np.where(np.isfinite(kf), kf, kb)
+    ang = (np.arange(nt) + 0.5) * dth
+    off = np.abs((ang - 270 + 180) % 360 - 180)  # degrees off the front (-y)
+    w = np.array([1 - smoothstep((o - front_deg[0]) / max(1e-6, front_deg[1] - front_deg[0])) for o in off])
+    s = int(round(6 / dth))  # dilate + blur the clearance factors; the front fit is only blurred, so its neighbours do not push the front panel out
+    kb = circ_blur(np.max([np.roll(kb, j) for j in range(-s, s + 1)], axis=0)[None, :], s)[0]
+    k = np.minimum(w * circ_blur(kf[None, :], s)[0] + (1 - w) * kb, k_max)
+    kv = np.interp(th, ang, k, period=360)
+    X[:, :2] = axis_c[:2] + (X[:, :2] - axis_c[:2]) * (1 + (kv - 1) * ramp)[:, None]
+    for v, x in zip(bm.verts, X):
+        v.co = Vector(x)
+    return X - X0, (float(k.min()), float(k.max()), float(k[int(270 / dth)]))
+
+
+def fold_limit(bm, axis_c, z_join, ramp_cm, amp, dth=2.0, dz=0.5, sigma_deg=20.0):
+    """Round 5: soft, even flutes instead of a few deep box folds. Per (height, azimuth) bin the outer radius is split into a smooth bell (blurred over sigma_deg
+    of azimuth) and the fold depth around it; the depth is compressed as amp * tanh(depth / amp), so folds well under amp keep their shape and the deepest ones
+    (centre front and back) come down to about amp. Applied as a blurred radial move to both layers below the neck band. Returns the per-vertex move (cm)."""
+    X = np.array([v.co for v in bm.verts]); X0 = X.copy()
+    th = np.degrees(np.arctan2(X[:, 1] - axis_c[1], X[:, 0] - axis_c[0])) % 360
+    r = np.hypot(X[:, 0] - axis_c[0], X[:, 1] - axis_c[1])
+    z0 = X[:, 2].min(); nz = int((X[:, 2].max() - z0) / dz) + 2; nt = int(360 / dth)
+    zi = ((X[:, 2] - z0) / dz).astype(int); ti = (th / dth).astype(int) % nt
+    R = np.full((nz, nt), -np.inf)
+    np.maximum.at(R, (zi, ti), r)
+    ang = np.arange(nt)
+    delta = np.zeros((nz, nt))
     for zb in range(nz):
-        for tb in np.where(~np.isfinite(rin[zb]))[0]:
-            col = np.where(np.isfinite(rin[:, tb]))[0]
-            rin_f[zb, tb] = rin[col[np.argmin(np.abs(col - zb))], tb] if len(col) else 1.0
-    rs_ = box_blur(np.pad(rin_f, [(16, 16), (0, 0)], mode='edge'), max(1, int(round(2.0 / dz))), axes=(0,))[16:-16]  # the raw flare, smoothed over 2 cm (no hem lip spikes)
-    for zb in range(nz - 2, -1, -1):  # carried down: below a contact the cloth keeps the raw bell's own flare (each step's radius change, 0..1 per unit drop)
-        need[zb] = np.maximum(need[zb], need[zb + 1] + np.clip(rs_[zb] - rs_[zb + 1], 0.0, dz))
-    ang = np.radians((np.arange(nt) + 0.5) * dth)
-    for zb in range(nz):  # cloth under tension spans the hollows between the shoulders and the spine: the slice's convex hull
-        ok = np.isfinite(need[zb])
-        if ok.sum() >= 3:
-            need[zb] = hull_radius(need[zb][ok], ang[ok], ang)
-    w = int(round(8 / dth))  # +-8 deg dilation, then blur sigma ~12 deg (azimuth, circular) and ~1.5 cm (height)
-    need = np.max([np.roll(need, s, axis=1) for s in range(-w, w + 1)], axis=0)
-    has = np.isfinite(need); base = np.where(has, need, 0.0)
-    G = np.stack([base, has.astype(float)], -1)
-    G = np.concatenate([G[:, -nt // 2:], G, G[:, :nt // 2]], axis=1)
-    G = box_blur(G, max(1, int(round(12 / dth))), axes=(1,))
-    G = box_blur(G, max(1, int(round(1.5 / dz))), axes=(0,))[:, nt // 2:nt // 2 + nt]
-    need = np.where(G[..., 1] > 0.05, G[..., 0] / np.maximum(G[..., 1], 1e-9), -np.inf)
-    sm = (rin_f + need + np.sqrt((rin_f - need) ** 2 + knee ** 2)) / 2  # softmax: no kink where the cloth starts to rest on the body
-    dr = np.where(np.isfinite(need), np.maximum(0.0, sm - rin_f), 0.0)
-    G = np.concatenate([dr[:, -nt // 2:], dr, dr[:, :nt // 2]], axis=1)  # the per-bin inner radius is noisy (min of a few verts): blur the radial move, not a ratio
-    rz = max(1, int(round(1.0 / dz)))
-    G = np.pad(box_blur(G, max(1, int(round(6 / dth))), axes=(1,)), [(4 * rz, 4 * rz), (0, 0)], mode='edge')  # edge rows repeated: zero padding pulled the hem in
-    dr = box_blur(G, rz, axes=(0,))[4 * rz:-4 * rz, nt // 2:nt // 2 + nt]
-    qz = np.clip((X[:, 2] - z0) / dz - 0.5, 0, nz - 1.001); qt = th / dth - 0.5  # bilinear between bin centres: no steps
-    z_, t_ = np.floor(qz).astype(int), np.floor(qt).astype(int); a_, b_ = qz - z_, qt - t_
-    d = sum(dr[z_ + dz_, (t_ + dt_) % nt] * (a_ if dz_ else 1 - a_) * (b_ if dt_ else 1 - b_) for dz_ in (0, 1) for dt_ in (0, 1))
-    d = d * np.array([smoothstep((top - z) / 4.0) for z in X[:, 2]])  # fades out below the tight (head) region: the neck band stays put
-    u = np.c_[X[:, 0] - axis_c[0], X[:, 1] - axis_c[1]] / np.maximum(r, 1e-6)[:, None]
-    X[:, :2] += u * d[:, None]  # same radial move for both layers at one place: the wall keeps its thickness
+        ok = np.isfinite(R[zb])
+        if ok.sum() < nt // 3:
+            continue
+        row = np.interp(ang, ang[ok], R[zb][ok], period=nt)
+        dev = row - circ_blur(row[None, :], int(round(sigma_deg / dth)))[0]
+        delta[zb] = amp * np.tanh(dev / amp) - dev
+    delta = box_blur(np.pad(circ_blur(delta, 1), [(4, 4), (0, 0)], mode='edge'), 2, axes=(0,))[4:-4]
+    d = bin_lerp(delta, X[:, 2], th, z0, dz, dth) * np.array([smoothstep((z_join - z) / ramp_cm) for z in X[:, 2]])
+    u = (X[:, :2] - axis_c[:2]) / np.maximum(r, 1e-6)[:, None]
+    X[:, :2] += u * d[:, None]
+    for v, x in zip(bm.verts, X):
+        v.co = Vector(x)
+    return X - X0
+
+
+def neck_band(bm, inner, axis_c, zb, height, width):
+    """Round 5: a raised band where the hood meets the cape (round 4's join was invisible in game): the outer layer bulges out by `height` cm in a Gaussian
+    `width` cm tall around z = zb, all the way round. Returns the per-vertex move (cm)."""
+    X = np.array([v.co for v in bm.verts]); X0 = X.copy()
+    vin = {v.index for f, i in zip(bm.faces, inner) if i for v in f.verts}
+    outer = np.array([v.index not in vin for v in bm.verts])
+    r = np.hypot(X[:, 0] - axis_c[0], X[:, 1] - axis_c[1])
+    d = height * np.exp(-((X[:, 2] - zb) / width) ** 2) * outer
+    X[:, :2] += (X[:, :2] - axis_c[:2]) / np.maximum(r, 1e-6)[:, None] * d[:, None]
     for v, x in zip(bm.verts, X):
         v.co = Vector(x)
     return X - X0
@@ -581,7 +605,12 @@ def main():
         rh = bmesh.ops.convex_hull(hull, input=hull.verts[:], use_existing_faces=False)
         bmesh.ops.delete(hull, geom=rh['geom_interior'] + rh['geom_unused'], context='VERTS')
         hh = merged(hb, hull)
-    skin = BVHTree.FromBMesh(merged(bt, hh))
+    if cfg.get('collision_pose'):  # round 5: the cape hangs from the clavicles, not the arms, so it is fitted to the body as it stands in game (arms down, arms
+        pose(arm, cfg['collision_pose'])  # included); the raised A-pose deltoids pushed round 4's shoulders 11 cm out into a flat yoke
+        skin = BVHTree.FromBMesh(merged(body_bm(body, bpy.context.evaluated_depsgraph_get()), hh))
+        pose(arm, 'a_pose')
+    else:
+        skin = BVHTree.FromBMesh(merged(bt, hh))
     head_c = sum((v.co for v in hb.verts), Vector()) / len(hb.verts)
     regs = sorted(cfg['regions'], key=lambda r: r.get('from', -1e9))
     blend = cfg['region_blend_cm']
@@ -637,23 +666,43 @@ def main():
     dump(a, '1_fit', bm)
 
     # 4 push-out of the inner layer
-    axis_c = next((an['centre'] for an in cfg['anchors'] if an['kind'] == 'ring' and an['garment'] == 'waist'), [0, 0, 0])  # the slot axis passes the neck
+    axis_c = np.array(next((an['centre'] for an in cfg['anchors'] if an['kind'] == 'ring' and an['garment'] == 'waist'), [0, 0, 0]), dtype=float)  # the slot axis passes the neck
     radial_at = lambda z: next(r for r in reversed(regs) if z >= r.get('from', -1e9)).get('push') == 'radial'
     X_lv = np.array([v.co for v in bm.verts])
+    z_join = cfg.get('level_hem_below_cm', 1e9)  # the hood-to-cape join (neck band): the cape stages work below it
     if 'level_hem_below_cm' in cfg:
-        before_h, after_h = level_hem(bm, axis_c, cfg['level_hem_below_cm'])
+        before_h, after_h = level_hem(bm, axis_c, z_join, cfg.get('hem_cm'), cfg.get('hem_stretch_blend_cm', 0.0), cfg.get('hem_bin_deg', 3.0), cfg.get('hem_blur_deg', 8.0),
+                                     loops[0] if cfg.get('hem_from_loop') else None)
         print(f'HEM level: lowest point per azimuth {before_h[0]:.1f}..{before_h[1]:.1f} cm -> {after_h[0]:.1f}..{after_h[1]:.1f} cm')
         bm.normal_update()
         dump(a, '1b_level', bm)
     level = np.array([v.co for v in bm.verts]) - X_lv
-    top = min((r['from'] for r in regs if 'from' in r and r.get('push') != 'radial'), default=1e9)
-    drape = drape_radial(bm, inner, skin, offset_at, cfg.get('push_margin_mm', 0) / 10, radial_at, axis_c, top)
+    margin = cfg.get('push_margin_mm', 0) / 10
+    dr = cfg['drape']
+    drape, kr = drape_scale(bm, inner, skin, offset_at, margin, axis_c, z_join, dr['ramp_cm'], dr['front_gap_cm'], dr['front_deg'], dr['k_max'], dr['fit_below_cm'])
     dmv = np.linalg.norm(drape, axis=1)
-    print(f'DRAPE moved {int((dmv > 0.1).sum())} verts radially, median {np.median(dmv[dmv > 0.1]) * 10 if (dmv > 0.1).any() else 0:.1f} mm, max {dmv.max() * 10:.1f} mm')
+    print(f'DRAPE column scale {kr[0]:.2f}..{kr[1]:.2f} (front {kr[2]:.2f}); moved {int((dmv > 0.1).sum())} verts, median {np.median(dmv[dmv > 0.1]) * 10 if (dmv > 0.1).any() else 0:.1f} mm, max {dmv.max() * 10:.1f} mm')
     dump(a, '2a_drape', bm)
-    acc, cut = push_inner(bm, inner, skin, offset_at, cfg['opening_fade_cm'], loops[:cfg.get('loops', 2)], cfg.get('push_margin_mm', 0) / 10,
+    folds = fold_limit(bm, axis_c, z_join, dr['ramp_cm'] * 2, cfg['fold_amp_cm']) if 'fold_amp_cm' in cfg else np.zeros_like(drape)
+    fmv = np.linalg.norm(folds, axis=1)
+    print(f'FOLDS depth limited to ~{cfg.get("fold_amp_cm", 0)} cm: max move {fmv.max() * 10:.1f} mm, {int((fmv > 0.5).sum())} verts over 5 mm')
+    dump(a, '2b_folds', bm)
+    acc, cut = push_inner(bm, inner, skin, offset_at, cfg['opening_fade_cm'], loops[:cfg.get('loops', 2)], margin,
                           cfg['push_radii_cm'], radial_at, axis_c)
-    acc = acc + drape + level
+    nb = cfg.get('neck_band')
+    band = neck_band(bm, inner, axis_c, nb['z_cm'], nb['height_mm'] / 10, nb['width_cm']) if nb else np.zeros_like(drape)
+    acc = acc + drape + level + folds + band
+    lo_h = min(v.co[k] for v in bm.verts)
+    Xg = np.array([v.co for v in bm.verts]); rg = np.hypot(Xg[:, 0] - axis_c[0], Xg[:, 1] - axis_c[1])
+    fr = np.abs((np.degrees(np.arctan2(Xg[:, 1] - axis_c[1], Xg[:, 0] - axis_c[0])) - 270 + 180) % 360 - 180) < 8
+    gaps = []
+    for zz in (126, 136, 146):  # front panel gap to the body at three heights (cloth inner radius minus the body's on the -y ray)
+        hit = skin.ray_cast(Vector((axis_c[0], axis_c[1] - 80, zz)), Vector((0, 1, 0)), 80)[0]
+        sel = fr & (np.abs(Xg[:, 2] - zz) < 1)
+        if hit is not None and sel.any():
+            gaps.append(f'z{zz} {rg[sel].min() - (axis_c[1] - hit.y):.1f}')
+    print(f'FRONT gap to the body, cm: {", ".join(gaps)}')
+    print(f'HEM final lowest point {lo_h:.1f} cm; push moved max {np.linalg.norm(acc - drape - level - folds - band, axis=1).max() * 10:.1f} mm')
     mv = np.linalg.norm(acc, axis=1).tolist()
     bm.normal_update()
     moved = sorted(x for x in mv if x > 0.1)  # moved: more than 1 mm
@@ -691,8 +740,34 @@ def main():
     bml = bmesh.new(); bml.from_mesh(low.data)
     bmesh.ops.recalc_face_normals(bml, faces=bml.faces[:])  # outward for the closed double wall (round 3's centre heuristic cancelled out over the two walls: inside out)
     bml.normal_update()
+    # round 5: the clay specks were faces facing against all their neighbours (recalc cannot orient across the 22 non-manifold edges): flip them back
+    flip = [f for f in bml.faces if sum((g.normal for e in f.edges for g in e.link_faces if g is not f), Vector()).dot(f.normal) < 0]
+    bmesh.ops.reverse_faces(bml, faces=flip)
+    bml.normal_update()
+    sm = cfg.get('inner_smooth')
+    if sm:  # round 5: the inner cape surface carried the raw mesh's small bumps; a few Laplacian passes on the inner-layer cape faces only (openings stay put)
+        inl = inner_faces(bml, axis, Vector((axis_c[0], axis_c[1], 0.0)))
+        bml.faces.index_update()
+        sv = list({v for f, i in zip(bml.faces, inl) if i for v in f.verts if v.co.z < z_join - 2 and not v.is_boundary})
+        sv = [v for v in sv if all(inl[g.index] for g in v.link_faces)]  # not the rim verts shared with the outer layer
+        c0 = [v.co.copy() for v in sv]
+        for _ in range(sm['iters']):
+            bmesh.ops.smooth_vert(bml, verts=sv, factor=sm['factor'], use_axis_x=True, use_axis_y=True, use_axis_z=True)
+        for v, c in zip(sv, c0):  # bumps only: no vertex moves more than max_mm
+            d = v.co - c
+            if d.length > sm['max_mm'] / 10:
+                v.co = c + d * (sm['max_mm'] / 10 / d.length)
+        bml.normal_update()
+        print(f'INNER SMOOTH {len(sv)} inner cape verts x{sm["iters"]} (factor {sm["factor"]}); flipped back {len(flip)} faces facing against their neighbours')
     print(f'LOW tris {len(bml.faces)} (raw {nraw}); boundary edges {sum(e.is_boundary for e in bml.edges)}, non-manifold {sum(not e.is_manifold and not e.is_boundary for e in bml.edges)}')
     inner_low = np.array(inner_faces(bml, axis, Vector((axis_c[0], axis_c[1], 0.0))), dtype=np.int32)  # for the inner albedo lift (step 6)
+    bml.verts.index_update(); bml.verts.ensure_lookup_table()
+    face_loop = max(boundary_loops(bml, inner_low), key=lambda l: np.mean([bml.verts[i].co.z for i in l]))  # the face opening: the highest opening
+    kd_rim = KDTree(len(face_loop))
+    for i in face_loop:
+        kd_rim.insert(bml.verts[i].co, i)
+    kd_rim.balance()
+    rim_low = np.array([1 - smoothstep(kd_rim.find(v.co)[2] / cfg.get('rim_cm', 4.0)) for v in bml.verts])  # 1 at the face-opening rim, 0 from rim_cm away
     bml.to_mesh(low.data); low.data.update()
 
     # shape drift: (a) where the push moved the cloth less than 1 mm, the final surface against the raw (fitted) one; (b) everywhere, the final surface against the
@@ -751,29 +826,55 @@ def main():
     rng = np.random.default_rng(7)
     slub = box_blur(box_blur(rng.normal(0, 1, (n_, n_)), 5, axes=(1,)), 1, axes=(0,))
     slub = np.clip(slub / slub.std(), -2.5, 2.5)
-    px[:, :3] = np.clip(px[:, :3] * (1.0 + (0.03 * tabby + 0.06 * slub).reshape(-1, 1)), 0, 1)
-    lift = cfg.get('inner_albedo_lift', 1.0)
-    if lift != 1.0:  # round 4: the hood interior (face opening, neck band) only gets bounce light in game and read black; a lighter inner wall reads
-        mask = bpy.data.images.new('inner_mask', n_, n_)
-        mats = []
-        for e in (0.0, 1.0):  # inner-layer faces emit white, the rest black, baked onto the same unwrap
-            m = bpy.data.materials.new(f'inner_mask_{int(e)}'); m.use_nodes = True; nt = m.node_tree
-            em = nt.nodes.new('ShaderNodeEmission'); em.inputs['Color'].default_value = (e, e, e, 1.0)
-            nt.links.new(em.outputs[0], nt.nodes['Material Output'].inputs[0])
-            t = nt.nodes.new('ShaderNodeTexImage'); t.image = mask; nt.nodes.active = t
-            mats.append(m)
-        low.data.materials.clear()
-        for m in mats:
-            low.data.materials.append(m)
-        low.data.polygons.foreach_set('material_index', inner_low)
-        sc.render.bake.use_selected_to_active = False
-        bpy.ops.object.select_all(action='DESELECT'); low.select_set(True); bpy.context.view_layer.objects.active = low
-        bpy.ops.object.bake(type='EMIT')
-        mk = np.array(mask.pixels[:], dtype=np.float32).reshape(-1, 4)[:, 0]
-        px[:, :3] = np.clip(px[:, :3] * (1.0 + (lift - 1.0) * mk[:, None]), 0, 1)
-        low.data.materials.clear(); low.data.materials.append(mat)
-        low.data.polygons.foreach_set('material_index', np.zeros(len(low.data.polygons), np.int32))
-        print(f'INNER LIFT x{lift} on {int(inner_low.sum())} faces, {float(mk.mean()) * 100:.0f}% of texels')
+    wv = cfg.get('weave', {'tabby': 0.03, 'slub': 0.06})  # round 5: the tabby a little stronger (round 4's +-3% read as felt at play distance)
+    px[:, :3] = np.clip(px[:, :3] * (1.0 + (wv['tabby'] * tabby + wv['slub'] * slub).reshape(-1, 1)), 0, 1)
+    # masks baked onto the unwrap in one emission bake: R inner-layer faces, G face-opening rim (rim_low), B height about the neck band (+-4 cm -> 0..1)
+    mask = bpy.data.images.new('masks', n_, n_, float_buffer=True)
+    ca = low.data.color_attributes.new('mask', 'FLOAT_COLOR', 'CORNER')
+    li = np.zeros(len(low.data.loops), np.int32); low.data.loops.foreach_get('vertex_index', li)
+    lp = np.zeros(len(low.data.loops), np.int32)
+    for p_ in low.data.polygons:
+        lp[p_.loop_start:p_.loop_start + p_.loop_total] = p_.index
+    cols = np.c_[inner_low[lp], rim_low[li], np.zeros(len(li)), np.ones(len(li))].astype(np.float32)
+    ca.data.foreach_set('color', cols.ravel())
+    zb = cfg['neck_band']['z_cm'] if 'neck_band' in cfg else 0.0
+    m = bpy.data.materials.new('masks'); m.use_nodes = True; nt = m.node_tree
+    at = nt.nodes.new('ShaderNodeAttribute'); at.attribute_name = 'mask'
+    sep = nt.nodes.new('ShaderNodeSeparateColor'); nt.links.new(at.outputs['Color'], sep.inputs[0])
+    tc = nt.nodes.new('ShaderNodeTexCoord'); xyz = nt.nodes.new('ShaderNodeSeparateXYZ'); nt.links.new(tc.outputs['Object'], xyz.inputs[0])
+    mp = nt.nodes.new('ShaderNodeMapRange'); mp.inputs['From Min'].default_value = zb - 4; mp.inputs['From Max'].default_value = zb + 4
+    nt.links.new(xyz.outputs['Z'], mp.inputs['Value'])
+    cmb = nt.nodes.new('ShaderNodeCombineColor')
+    nt.links.new(sep.outputs[0], cmb.inputs[0]); nt.links.new(sep.outputs[1], cmb.inputs[1]); nt.links.new(mp.outputs['Result'], cmb.inputs[2])
+    em = nt.nodes.new('ShaderNodeEmission'); nt.links.new(cmb.outputs[0], em.inputs['Color'])
+    nt.links.new(em.outputs[0], nt.nodes['Material Output'].inputs[0])
+    t = nt.nodes.new('ShaderNodeTexImage'); t.image = mask; nt.nodes.active = t
+    low.data.materials.clear(); low.data.materials.append(m)
+    sc.render.bake.use_selected_to_active = False
+    bpy.ops.object.select_all(action='DESELECT'); low.select_set(True); bpy.context.view_layer.objects.active = low
+    bpy.ops.object.bake(type='EMIT')
+    mk = np.array(mask.pixels[:], dtype=np.float32).reshape(-1, 4)
+    low.data.materials.clear(); low.data.materials.append(mat)
+    low.data.color_attributes.remove(low.data.color_attributes['mask'])
+    lift = cfg.get('inner_albedo_lift', 1.0)  # round 4: the hood interior only gets bounce light in game and read black; a lighter inner wall reads
+    px[:, :3] = np.clip(px[:, :3] * (1.0 + (lift - 1.0) * mk[:, :1]), 0, 1)
+    rl = cfg.get('rim_albedo_lift', 1.0)  # round 5: the face-opening rim read as a plain dark hole
+    px[:, :3] = np.clip(px[:, :3] * (1.0 + (rl - 1.0) * mk[:, 1:2]), 0, 1)
+    print(f'INNER LIFT x{lift} on {int(inner_low.sum())} faces, {float(mk[:, 0].mean()) * 100:.0f}% of texels; RIM LIFT x{rl} on {float((mk[:, 1] > 0.5).mean()) * 100:.1f}% of texels')
+    height = wv.get('tabby_px', 0.0) * tabby + wv.get('slub_px', 0.0) * slub  # texels, for the normal map
+    if 'neck_band' in cfg:  # round 5: the band in the colour and normal map too, outer layer only: a raised ridge with a dark stitch line under it
+        nb = cfg['neck_band']; dzb = (mk[:, 2] - 0.5) * 8.0; out_ = 1.0 - mk[:, 0]
+        ridge = np.exp(-(dzb / nb['width_cm']) ** 2) * out_
+        seam = np.exp(-((dzb + 1.3 * nb['width_cm']) / 0.25) ** 2) * out_
+        px[:, :3] = np.clip(px[:, :3] * (1.0 + nb.get('ridge_lift', 0.08) * ridge - nb.get('seam_dark', 0.35) * seam)[:, None], 0, 1)
+        height = height + (nb.get('ridge_px', 3.0) * ridge - nb.get('seam_px', 1.5) * seam).reshape(n_, n_)
+    gy, gx = np.gradient(height)  # rows run up the image (v), columns along u
+    nrm = np.stack([-gx, gy, np.ones_like(gx)], -1)  # DirectX green (Unreal): +dH/dv
+    nrm /= np.linalg.norm(nrm, axis=-1, keepdims=True)
+    nimg = bpy.data.images.new(f'T_{name}_Normal', n_, n_); nimg.colorspace_settings.name = 'Non-Color'
+    nimg.pixels.foreach_set(np.c_[(nrm.reshape(-1, 3) + 1) / 2, np.ones(n_ * n_)].astype(np.float32).ravel())
+    nimg.filepath_raw = os.path.join(os.path.dirname(out), f'T_{name}_Normal.png'); nimg.file_format = 'PNG'; nimg.save()
+    print(f'NORMAL {nimg.filepath_raw}: tabby {wv.get("tabby_px", 0)} px, slub {wv.get("slub_px", 0)} px, mean tilt {math.degrees(float(np.arccos(nrm[..., 2]).mean())):.1f} deg')
     px[:, 3] = 1.0
     img.pixels.foreach_set(px.ravel())
     img.filepath_raw = os.path.join(os.path.dirname(out), f'T_{name}_BaseColor.png'); img.file_format = 'PNG'; img.save()
@@ -823,7 +924,16 @@ def main():
             for nm in [n for n in w if n.startswith(ARM[1:]) and n[-2:] in ('_l', '_r')]:
                 x = w[nm]; w[nm] = x * keep_arm
                 w['clavicle' + nm[-2:]] = w.get('clavicle' + nm[-2:], 0.0) + x * (1 - keep_arm)
-        tt = max(0.0, min(1.0, (v.co.z - zseam) / max(1e-6, z_head - zseam)))
+        root = cfg.get('cape_root_bone')
+        if root:  # round 5: the cape hangs from the upper chest; the lower spine, pelvis and legs it lies near must not swing its hem (sides split when walking)
+            for nm in [n for n in w if not n.startswith(('clavicle', 'neck', 'head', root) + ARM[1:])]:
+                w[root] = w.get(root, 0.0) + w.pop(nm)
+            cf = cfg.get('clavicle_fade_cm')  # [top, length]: below the shoulder the clavicle share fades into the root bone, so a shrug or arm swing does not lift the hem (round 5 walk_back)
+            if cf:
+                f = smoothstep((cf[0] - v.co.z) / cf[1])
+                for nm in [n for n in w if n.startswith('clavicle')]:
+                    x = w[nm] * f; w[nm] -= x; w[root] = w.get(root, 0.0) + x
+        tt =max(0.0, min(1.0, (v.co.z - zseam) / max(1e-6, z_head - zseam)))
         if tt > 0:
             w = {nm: x * (1 - tt) for nm, x in w.items()}
             w['neck_02'] = w.get('neck_02', 0.0) + tt * (1 - tt) * 2.0
@@ -855,13 +965,15 @@ def main():
 
     # clearance and overlaps in each pose (body and cloth deform together)
     fac = lim['min_clearance_factor']
+    arm_poses = cfg.get('arm_collision_poses')  # round 5: the whole arm is checked in these poses and left out of the others (the cape does not follow the arms)
+    armv = arm_mask(body, dict(cfg, arm_caps_above_cm=1e9, arms_not_collision=True)) + [False] * len(hb.verts) if arm_poses is not None else None
     for ps in cfg['poses']:
         pose(arm, ps)
         dg = bpy.context.evaluated_depsgraph_get()
         hp = hb.copy()  # the head mesh is not skinned: it moves rigidly with neck_01 (the poses do not turn the neck or head bones themselves)
         pb = arm.pose.bones['neck_01']
         hp.transform(arm.matrix_world @ pb.matrix @ pb.bone.matrix_local.inverted() @ arm.matrix_world.inverted())
-        sk = merged(without_arms(body_bm(body, dg), amask), hp)
+        sk = merged(body_bm(body, dg) if armv else without_arms(body_bm(body, dg), amask), hp)
         cm = bmesh.new(); cm.from_mesh(low.evaluated_get(dg).to_mesh()); cm.transform(low.matrix_world)
         ct = BVHTree.FromBMesh(cm)
         if ps == cfg['poses'][0]:  # rest: regions (by height; the face itself is open) and needs (min_clearance_factor x the blended offset) per skin vertex
@@ -869,7 +981,8 @@ def main():
             skip = lambda p: any(r.get('skip_face') for r in regs) and p.y < head_c.y - 6 and head_c.z - 14 < p.z < head_c.z + 14
             region = [None if skip(p) or p.z < lo_h + 6 else next(r['name'] for r in reversed(regs) if p.z >= r.get('from', -1e9)) for p in rest]
             need0 = [fac * offset_at(p.z) for p in rest]
-        cl = clearance(ct, sk, rest, region, need0 if ps == cfg['poses'][0] else [0.0] * len(rest))  # posed: no skin inside the cloth or touching it
+        reg = region if not armv or ps in arm_poses else [None if am else rg for rg, am in zip(region, armv)]
+        cl = clearance(ct, sk, rest, reg, need0 if ps == cfg['poses'][0] else [0.0] * len(rest))  # posed: no skin inside the cloth or touching it
         for r in regs:
             if r['name'] not in cl:
                 continue

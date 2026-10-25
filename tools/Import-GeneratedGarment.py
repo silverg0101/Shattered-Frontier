@@ -1,7 +1,7 @@
 """GEAR-02: import a Clean-GeneratedGarment.py result as a skeletal mesh on the player's MetaHuman skeleton, with its baked texture.
 In the editor: python tools/Run-InEditor.py tools/Import-GeneratedGarment.py [name=Hood]
-Reads Artifacts/Characters/PlayerBase/<name lower>/{<name lower>.fbx, T_<name>_BaseColor.png}; writes under /Game/Frontier/Characters/Player/OutfitAsset/<name>:
-T_<name>_BaseColor, MI_<name> (instance of Garments/M_PlayerCloth, Tiling 1: the bake is not a tiling cloth), SKM_<name>.
+Reads Artifacts/Characters/PlayerBase/<name lower>/{<name lower>.fbx, T_<name>_BaseColor.png, T_<name>_Normal.png (optional, DirectX green)}; writes under /Game/Frontier/Characters/Player/OutfitAsset/<name>:
+T_<name>_BaseColor, T_<name>_Normal, MI_<name> (instance of Garments/M_PlayerCloth, Tiling 1: the bake is not a tiling cloth), SKM_<name>.
 """
 import sys
 from pathlib import Path
@@ -38,7 +38,14 @@ mi = L.load_asset(mi_path) if L.does_asset_exist(mi_path) else TOOLS.create_asse
 mi.set_editor_property('parent', L.load_asset('/Game/Frontier/Characters/Player/Garments/M_PlayerCloth'))
 mel.set_material_instance_texture_parameter_value(mi, 'BaseTex', tex)
 mel.set_material_instance_scalar_parameter_value(mi, 'Tiling', 1.0)
-mel.set_material_instance_scalar_parameter_value(mi, 'NormalStrength', 0.0)
+nrm_png = SRC / f'T_{NAME}_Normal.png'
+if nrm_png.exists():  # round 5: the cleaner bakes the weave + neck band ridge into a normal map
+    nrm = task(nrm_png, f'T_{NAME}_Normal')
+    nrm.set_editor_property('compression_settings', unreal.TextureCompressionSettings.TC_NORMALMAP)
+    nrm.set_editor_property('srgb', False)
+    mel.set_material_instance_texture_parameter_value(mi, 'NormalTex', nrm)
+    L.save_loaded_asset(nrm, only_if_is_dirty=False)
+mel.set_material_instance_scalar_parameter_value(mi, 'NormalStrength', 1.0 if nrm_png.exists() else 0.0)
 mel.set_material_instance_scalar_parameter_value(mi, 'Roughness', 0.9)
 ui = unreal.FbxImportUI()
 for k, v in (('import_mesh', True), ('import_as_skeletal', True), ('import_materials', False), ('import_textures', False),
