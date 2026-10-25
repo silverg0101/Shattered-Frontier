@@ -1,5 +1,5 @@
 {
-  "_doc": "Garment slots for body-conditioned view generation (tools/Render-BodyDepthViews.py). z is a fraction of the body height (feet 0, head top 1) bounding the slot's region (a hard cut at the lower edge); margin scales the square view frame around that region (1.0 = the region's height fills it). A null z is a slot still to fill. Optional arm_cut_z (fraction of height) drops arm-weighted vertices below it, but leaves holes in the torso's side in side views. grow_px / smooth_px: dilate the silhouette (cloth thickness) and blur the depth so skin detail (ears, lips) does not reach the garment.",
+  "_doc": "Garment proxy slots. z and loose_below_z are fractions of bare body height (feet 0, head top 1); margin is the square frame multiplier. clearance_cm is minimum radial and crown clearance (0-10 cm); loose_clearance_cm is shoulder/cape clearance (clearance_cm-15 cm) below loose_below_z, blended into clearance_cm over 10% of body height. Values take effect when depth PNGs are rendered and copied into the Forge. Null z slots are unavailable. Proxy geometry and fit rules are versioned code, not console expressions.",
   "views": [
     "front",
     "left",
@@ -11,8 +11,9 @@
       1.0
     ],
     "margin": 1.35,
-    "grow_px": 24,
-    "smooth_px": 24
+    "clearance_cm": 1.5,
+    "loose_clearance_cm": 3.0,
+    "loose_below_z": 0.84
   },
   "chest": {
     "z": null,

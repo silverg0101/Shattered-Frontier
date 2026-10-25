@@ -2072,9 +2072,11 @@ DEPTH_VIEWS = ("front", "left", "right")
 DEPTH_SLOTS = sorted(s for s in json.loads((DEPTH_DIR / "slots.json").read_text()) if (DEPTH_DIR / f"depth_{s}_front.png").is_file())
 DEPTH_WRAP = ("{garment} Ghost-mannequin product photo of ONE single garment on a plain pure white background, seen exactly {view}, "
               "orthographic, no person, no mannequin, no arms, no hands, no body parts, no other objects, no turnaround sheet. "
-              "The garment follows the supplied depth map exactly: it is worn by an invisible body of that shape, so it hugs that "
-              "silhouette and size. Every opening (neck, face, wrists, hem) stays open and visible, and through each opening you see "
-              "only the dark inner lining of the garment, never the white background or skin.")
+              "Use the supplied depth only for scale and placement. The garment fully encloses the smooth dress form with air between. "
+              "Make the hood deeper than the head in side views, extending behind the skull and beyond the forehead without any "
+              "facial-profile contour. Use a simple broad face opening and a roomy rounded crown. The shoulder cape hangs freely "
+              "as a broad bell, flaring beyond the guide and ending below its lower edge with a level hem. Every opening shows dark inner lining, "
+              "never white background or skin.")
 DEPTH_VIEW_TEXT = {"front": "from the front", "left": "from its left side, in profile facing image-left",
                    "right": "from its right side, in profile facing image-right"}
 DEPTH_NEGATIVE = ("person, skin, face, ears, nose, eyes, head, arms, sleeves, hands, torso, chest, tunic, shirt, body, mannequin, text, "
@@ -2210,14 +2212,27 @@ def hero_views(jid, prompt, model, hero, log):
     return front, views
 
 def depth_fit(png, slot, pos):
-    """(coverage, gap): the share of the body's silhouette (pre-rendered mask, grown by the slot's cloth thickness) the
-    garment view covers and leaves bare. The garment is whatever is not near-white; openings show a dark lining, so they count."""
-    from PIL import Image, ImageChops, ImageFilter
+    """Proxy coverage and mean outward gap from the bare body's external silhouette in centimetres."""
+    from PIL import Image, ImageChops, ImageDraw, ImageFilter
     g = Image.open(io.BytesIO(png)).convert("L").point(lambda v: 255 if v < 225 else 0).filter(ImageFilter.MinFilter(3)).filter(ImageFilter.MaxFilter(3))
-    b = Image.open(DEPTH_DIR / f"mask_{slot}_{pos}.png").convert("L").point(lambda v: 255 if v > 127 else 0)
-    body = b.histogram()[255]
-    both = ImageChops.multiply(g, b).histogram()[255]
-    return round(both / body, 3), round((body - both) / body, 3)
+    holes = ImageChops.invert(g)
+    ImageDraw.floodfill(holes, (0, 0), 0)
+    g = ImageChops.lighter(g, holes)
+    proxy = Image.open(DEPTH_DIR / f"mask_{slot}_{pos}.png").convert("L").point(lambda v: 255 if v > 127 else 0)
+    body = Image.open(DEPTH_DIR / f"body_mask_{slot}_{pos}.png").convert("L").point(lambda v: 255 if v > 127 else 0)
+    covered = ImageChops.multiply(g, proxy).histogram()[255]
+    total = proxy.histogram()[255]
+    cm_per_px = json.loads((DEPTH_DIR / f"{slot}_meta.json").read_text())["size_m"] * 100 / g.width
+    gp, bp = g.tobytes(), body.tobytes()
+    gaps = []
+    for row in range(g.height):
+        start, end = row * g.width, (row + 1) * g.width
+        b_row, g_row = bp[start:end], gp[start:end]
+        left, right = b_row.find(b"\xff"), b_row.rfind(b"\xff")
+        gl, gr = g_row.find(b"\xff"), g_row.rfind(b"\xff")
+        if 0 < left < right < g.width - 1 and gl >= 0 and gr > gl:
+            gaps.extend((left - gl, gr - right))
+    return round(covered / total, 4), round(sum(gaps) / len(gaps) * cm_per_px, 2) if gaps else None
 
 def depth_views(jid, host, p, log):
     """One Qwen-Image-2.1 + depth-ControlNet generation per view on `host`, from the slot's pre-rendered body depth maps."""
@@ -2241,7 +2256,8 @@ def depth_views(jid, host, p, log):
             f = h["outputs"]["11"]["images"][0]
             views[pos] = get_output(host, f"{f['subfolder']}/{f['filename']}"[len("sfam/"):])
             cov, gap = depth_fit(views[pos], p["slot"], pos)
-            log.append(f"views: {pos} drawn in {time.time() - t:.0f}s; covers {cov:.1%} of the {p['slot']} body silhouette, {gap:.1%} bare")
+            log.append(f"views: {pos} drawn in {time.time() - t:.0f}s; covers {cov:.1%} of the {p['slot']} dress form; "
+                       f"mean outward body-outline gap {gap} cm")
     finally:
         cleanup(host, list(names.values()), [f"{jid}_qd"])
     return views

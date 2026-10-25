@@ -1,13 +1,17 @@
-"""Fit of generated garment views against the body silhouette (masks from Render-BodyDepthViews.py): overlay images and numbers.
+"""Measure dress-form containment and outward silhouette clearance for depth-guided garment views.
+
   py -3 tools/Check-GarmentFit.py --slot head --name GEAR02-hood [--views DIR --depth-dir DIR --out DIR]
-coverage = share of the body mask the garment covers; gap = share left bare; overshoot = share of the garment outside the body
-mask (a loose garment is fine; the body mask is already grown by the slot's cloth thickness); top/bottom = rows of the garment
-per view, which must agree across views (same scale and framing).
+
+Uses the renderer's proxy and bare-body masks. Distances refer to the external left/right garment outline
+in rows occupied by the body, so the deliberately open face and hem do not count as a poor fit.
 """
-import argparse, json, os
+import argparse
+import json
+import os
+
 import numpy as np
-from PIL import Image
-from scipy import ndimage as ndi  # noqa
+from PIL import Image, ImageDraw
+from scipy import ndimage as ndi
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ap = argparse.ArgumentParser()
@@ -17,21 +21,51 @@ ap.add_argument('--depth-dir', default=os.path.join(ROOT, 'Artifacts/GEAR02/dept
 ap.add_argument('--out', default=os.path.join(ROOT, 'Artifacts/GEAR02/fit'))
 a = ap.parse_args()
 os.makedirs(a.out, exist_ok=True)
+meta = json.load(open(os.path.join(a.depth_dir, f'{a.slot}_meta.json')))
+clearance_cm = float(meta['clearance_cm'])
+views = ('front', 'left', 'right')
 res = {}
-for v in ('front', 'left', 'right'):
-    img = np.asarray(Image.open(os.path.join(a.views, f'{a.name}-{v}.png')).convert('RGB')).astype(int)
+sheet = Image.new('RGB', (1024 * 3, 1050), 'white')
+draw = ImageDraw.Draw(sheet)
+for col, v in enumerate(views):
+    picture = Image.open(os.path.join(a.views, f'{a.name}-{v}.png')).convert('RGB')
+    img = np.asarray(picture).astype(np.int16)
     g = ndi.binary_fill_holes(ndi.binary_opening(img.min(2) < 225, iterations=1))
-    b = np.asarray(Image.open(os.path.join(a.depth_dir, f'mask_{a.slot}_{v}.png')).convert('L')) > 127
-    inter = g & b
-    # the slot's lower edge is a hard cut and the frame clips the arms: score the body mask only above the garment's own lowest row
-    rows = np.nonzero(g.any(1))[0]
-    res[v] = dict(coverage=round(inter.sum() / b.sum(), 3), gap=round((b & ~g).sum() / b.sum(), 3),
-                  overshoot=round((g & ~b).sum() / g.sum(), 3), top=int(rows.min()), bottom=int(rows.max()),
-                  body_top=int(np.nonzero(b.any(1))[0].min()))
-    o = np.zeros(img.shape, np.uint8)
-    o[...] = 255
-    o[g & b] = (120, 170, 120)   # green: garment over body
-    o[g & ~b] = (230, 190, 60)   # amber: garment beyond the body mask
-    o[b & ~g] = (220, 50, 50)    # red: body bare
-    Image.fromarray(np.where((g | b)[..., None], o, (255, 255, 255)).astype(np.uint8)).save(os.path.join(a.out, f'overlay_{a.slot}_{v}.png'))
-print(json.dumps(res, indent=1))
+    proxy = np.asarray(Image.open(os.path.join(a.depth_dir, f'mask_{a.slot}_{v}.png')).convert('L')) > 127
+    body = np.asarray(Image.open(os.path.join(a.depth_dir, f'body_mask_{a.slot}_{v}.png')).convert('L')) > 127
+    if g.shape != proxy.shape or body.shape != proxy.shape or not g.any() or not proxy.any() or not body.any():
+        raise ValueError(f'{v}: missing subject or mismatched masks')
+    gap_px = []
+    for row in range(g.shape[0]):
+        bx = np.flatnonzero(body[row]); gx = np.flatnonzero(g[row])
+        if len(bx) < 5 or len(gx) < 5 or bx[0] == 0 or bx[-1] == g.shape[1] - 1:
+            continue
+        gap_px.extend((bx[0] - gx[0], gx[-1] - bx[-1]))
+    if not gap_px:
+        raise ValueError(f'{v}: no comparable outline rows')
+    gap = np.array(gap_px) * meta['size_m'] * 100 / g.shape[1]
+    uncovered = int((proxy & ~g).sum())
+    rows = np.flatnonzero(g.any(1))
+    tracing = bool(gap.mean() <= clearance_cm or (np.abs(gap) < clearance_cm / 2).mean() > .1)
+    res[v] = dict(proxy_contained=uncovered == 0,
+                  proxy_coverage=round(1 - uncovered / int(proxy.sum()), 4),
+                  uncovered_proxy_px=uncovered,
+                  mean_outline_gap_cm=round(float(gap.mean()), 2),
+                  near_zero_trace_fraction=round(float((np.abs(gap) < clearance_cm / 2).mean()), 3),
+                  tracing_flag=tracing,
+                  top=int(rows.min()), bottom=int(rows.max()), height=int(rows.max() - rows.min() + 1))
+    overlay = np.full(img.shape, 255, np.uint8)
+    overlay[g & proxy] = (120, 170, 120)
+    overlay[g & ~proxy] = (230, 190, 60)
+    overlay[proxy & ~g] = (220, 50, 50)
+    Image.fromarray(overlay).save(os.path.join(a.out, f'overlay_{a.slot}_{v}.png'))
+    sheet.paste(picture, (1024 * col, 26))
+    draw.text((1024 * col + 12, 6), f'{v}: {res[v]["mean_outline_gap_cm"]:.2f} cm gap, {res[v]["proxy_coverage"]:.1%} proxy', fill='black')
+heights = [res[v]['height'] for v in views]
+res['cross_view_height_spread'] = round((max(heights) - min(heights)) / float(np.mean(heights)), 3)
+res['clearance_cm'] = clearance_cm
+res['passes'] = all(res[v]['proxy_contained'] and not res[v]['tracing_flag'] for v in views) and res['cross_view_height_spread'] <= .05
+sheet.save(os.path.join(a.out, 'sheet.png'))
+with open(os.path.join(a.out, 'fit.json'), 'w') as f:
+    json.dump(res, f, indent=2)
+print(json.dumps(res, indent=2))

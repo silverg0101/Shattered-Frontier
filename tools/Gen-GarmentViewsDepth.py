@@ -10,9 +10,11 @@ SSH = ['ssh', '-i', os.path.expanduser('~/.ssh/id_ed25519_ra_siems'), '-o', 'Ide
 VIEWS = ('front', 'left', 'right')
 WRAP = ("{garment} Ghost-mannequin product photo of ONE single garment on a plain pure white background, seen exactly {view}, "
         "orthographic, no person, no mannequin, no arms, no hands, no body parts, no other objects, no turnaround sheet. "
-        "The garment follows the supplied depth map exactly: it is worn by an invisible body of that shape, so it hugs that "
-        "silhouette and size. Every opening (neck, face, wrists, hem) stays open and visible, and through each opening you see "
-        "only the dark inner lining of the garment, never the white background or skin.")
+        "Use the supplied depth only for scale and placement. The garment fully encloses the smooth dress form with air between. "
+        "Make the hood deeper than the head in side views, extending behind the skull and beyond the forehead without any "
+        "facial-profile contour. Use a simple broad face opening and a roomy rounded crown. The shoulder cape hangs freely "
+        "as a broad bell, flaring beyond the guide and ending below its lower edge with a level hem. Every opening shows dark inner lining, "
+        "never white background or skin.")
 VIEW_TEXT = {'front': 'from the front', 'left': 'from its left side, in profile facing image-left', 'right': 'from its right side, in profile facing image-right'}
 NEG = "person, skin, face, ears, nose, eyes, head, arms, sleeves, hands, torso, chest, tunic, shirt, body, mannequin, text, watermark, white fill inside openings, several garments, collage, floor shadow"
 
@@ -29,11 +31,11 @@ def upload(base, png_path):
     return call(base, '/upload/image', body, f'multipart/form-data; boundary={b}')['name']
 
 
-def generate(base, depth_png, prompt, seed, cfg, steps, strength, workflow=None):
+def generate(base, depth_png, prompt, seed, cfg, steps, strength, end_percent, workflow=None):
     g = json.load(open(workflow or os.path.join(ROOT, 'tools/comfy-workflows/qwen21-depth-garment.json')))
     g['5']['inputs']['image'] = upload(base, depth_png)
     g['6']['inputs'].update(prompt=prompt, negative_prompt=NEG)
-    g['7']['inputs']['strength'] = strength
+    g['7']['inputs'].update(strength=strength, end_percent=end_percent)
     g['9']['inputs'].update(seed=seed, cfg=cfg, steps=steps)
     pid = call(base, '/prompt', json.dumps({'prompt': g, 'client_id': 'garment'}).encode())['prompt_id']
     while True:
@@ -55,8 +57,10 @@ if __name__ == '__main__':
     ap.add_argument('--out', default=os.path.join(ROOT, 'Artifacts/GEAR02/views'))
     ap.add_argument('--gpu', type=int, default=1, choices=(1, 2)); ap.add_argument('--seed', type=int, default=12345)
     ap.add_argument('--cfg', type=float, default=3.0); ap.add_argument('--steps', type=int, default=25)
-    ap.add_argument('--strength', type=float, default=1.0)
+    ap.add_argument('--strength', type=float, default=.6); ap.add_argument('--end-percent', type=float, default=.6)
     a = ap.parse_args()
+    if not (0 <= a.strength <= 1 and 0 < a.end_percent <= 1):
+        ap.error('strength must be 0-1 and end-percent must be greater than 0 through 1')
     garment = a.prompt or open(a.prompt_file, encoding='utf-8').read().strip()
     os.makedirs(a.out, exist_ok=True)
     port = 18187 + a.gpu
@@ -67,7 +71,7 @@ if __name__ == '__main__':
         for v in VIEWS:
             t = time.time()
             png = generate(base, os.path.join(a.depth_dir, f'depth_{a.slot}_{v}.png'),
-                           WRAP.format(garment=garment, view=VIEW_TEXT[v]), a.seed, a.cfg, a.steps, a.strength)
+                           WRAP.format(garment=garment, view=VIEW_TEXT[v]), a.seed, a.cfg, a.steps, a.strength, a.end_percent)
             open(os.path.join(a.out, f'{a.name}-{v}.png'), 'wb').write(png)
             print(f'{v}: {time.time() - t:.1f}s', flush=True)
     finally:

@@ -985,7 +985,7 @@ async function renderImages() {
     <div class="card fade" style="--i:3;margin-top:18px;max-width:760px">
       ${cx.signed_in ? '' : `<div class="err" style="margin-bottom:14px">ChatGPT is not signed in. <a href="#/settings">Sign in under Settings</a> first.</div>`}
       <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap"><div class="eyebrow">Image(s)</div>
-        <div class="seg"><button data-imode="single">Single</button><button data-imode="multi">Multi-view</button><button data-imode="depth" title="Qwen-Image 2.1 + depth ControlNet on a GPU host: views drawn at the player's body size and pose">Depth-guided (ComfyUI Qwen)</button></div></div>
+        <div class="seg"><button data-imode="single">Single</button><button data-imode="multi">Multi-view</button><button data-imode="depth" title="Qwen-Image 2.1 + depth ControlNet on a GPU host: views guided by a smooth garment-clearance dress form">Depth-guided (ComfyUI Qwen)</button></div></div>
       <div class="muted" style="font-size:12px;margin-top:10px" id="inote"></div>
       <div class="fields" style="margin-top:14px">
         <div class="field"><label for="imodel">Model</label><select id="imodel">${cx.models.map(m => `<option ${m === draft.model ? 'selected' : ''}>${esc(m)}</option>`).join('')}</select></div>
@@ -1001,7 +1001,7 @@ async function renderImages() {
     document.querySelectorAll('[data-imode]').forEach(b => b.classList.toggle('on', b.dataset.imode === m));
     $('#islotf').style.display = m === 'depth' ? '' : 'none';
     $('#imodel').closest('.field').style.display = m === 'depth' ? 'none' : '';
-    $('#inote').textContent = m === 'depth' ? 'Views for a multi-view 3D asset, drawn by Qwen-Image 2.1 on a GPU host with a depth ControlNet fed the depth of the reference body (front, left, right) for the chosen slot: the garment comes out at the player body size and pose, a ghost mannequin on white. Describe the garment only. Saved like the multi-view images, so Make 3D asset takes them.' : m === 'single' ? 'One image. The prompt is sent exactly as written.'
+    $('#inote').textContent = m === 'depth' ? 'Views for a multi-view 3D asset, drawn by Qwen-Image 2.1 on a GPU host with a depth ControlNet guided by a smooth clearance dress form (front, left, right) for the chosen slot. Describe the garment only. Saved like the multi-view images, so Make 3D asset takes them.' : m === 'single' ? 'One image. The prompt is sent exactly as written.'
       : 'Views for a multi-view 3D asset. ChatGPT draws one side-view design image in a rig-ready pose and redraws it from the front; the front, the side and the side mirrored become the views, with their height and feet line matched and the set reviewed; a failed front is redrawn (up to 3 tries).';
   };
   document.querySelectorAll('[data-imode]').forEach(b => b.onclick = () => setMode(b.dataset.imode));
