@@ -259,10 +259,10 @@ STANCE = ("side-on, legs straight under the shoulder and the hip, each far leg r
 UNIMATE = "$HOME/unimate-eval/UniMate"  # ponytail: one host has UniMate; a host setting once a second one does
 UNIMATE_RUN = "outputs/unimate_uniml3d_f60_v3"
 # UniMate's captions read "An object walks forward.": a gait is asked for with its travel (the retarget removes it and
-# keeps the stride as a treadmill); "in place" or a bare "walk" gets a creature that stands and twitches
-MOTION_TEXT = {"idle": "stands still, breathing", "walk": "walks forward", "run": "runs forward", "trot": "trots forward",
-               "gallop": "gallops forward", "jump": "jumps up and lands", "sit": "sits down", "sleep": "lies down and sleeps",
-               "eat": "lowers its head and eats", "attack": "lunges forward and bites", "death": "collapses and dies"}
+# keeps the stride as a treadmill); "in place" or a bare "walk" gets a creature that stands and twitches. Other clips
+# are asked for by their name ("An object idle.", "An object death."): longer phrasings ("collapses and dies") had
+# UniMate drop the creature from the air and lift its forelegs in an idle, the bare names passed review
+MOTION_TEXT = {"walk": "walks forward", "run": "runs forward", "trot": "trots forward", "gallop": "gallops forward"}
 # a requested clip's name -> substrings of the library clip names that stand in for it, best first (Zoo-300K packs
 # name their motions freely: Trottle, AlertRun, ...). ponytail: plain substrings; a wrong pick is caught by the review
 _SYN = {"idle": ("idle", "breath", "stand"), "walk": ("walk", "trot"), "run": ("run", "gallop", "sprint"),

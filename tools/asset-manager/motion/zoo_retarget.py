@@ -6,6 +6,7 @@ Ported from proof/retarget.py (the 2026-10-24 hamster run):
 - rest-relative world rotation transfer per role; a source chain shorter or longer than the standard one is resampled
   with creature.chain_resample, a split source bone's rotation (from its parent's) spread over its pieces;
 - the pelvis follows the source hips' offset scaled by the hind-leg length ratio, vertical bob x HEIGHT_SCALE, in place;
+  (a creature's UniMate clips are made on its own rig, so its leg rotations land the paws where the source's did);
 - cleanup: tail follow-through, paws pinned on the floor while in contact (leg IK, 2-frame blend, four correction
   passes, baked to FK), loop seam closed (looping clips). A gait plays in place, so its planted paws sweep back under
   the body at the travel speed (treadmill): each stance is pinned to the line fitted through its contact points,
@@ -226,32 +227,17 @@ def main(rigf, animalf, clip, out, outj, size_cm, height_scale):
         lift += 0.1
     print("RT tail lift", round(lift, 2), "lowest tail joint above floor (cm)", round((tl - floor) * 100, 2))
 
-    # paw paths: the legs follow the source's paws, not its leg rotations (a rig with other leg proportions or rest
-    # pose lifts and plants them wrongly from rotations alone): each paw's wanted contact point is its source paw
-    # end relative to the source hip of that leg, scaled by the leg length ratio, from the rig's hip at that frame
-    # (xy), and its source height over the source's floor, scaled, over the rig's floor (z). Leg IK (full influence,
-    # baked to FK) then takes the ankle there, while planted paws are pinned as below.
+    # contact points: per paw and frame, where the retargeted leg puts it (the source's leg rotations on this rig;
+    # UniMate animates the creature's own rig, so they land where the source's did) and its ankle, for the IK below.
     M = N if loop else N + 1  # distinct frames
-    E = {p: [] for p in PAWS}; A = {p: [] for p in PAWS}; Efk = {p: [] for p in PAWS}  # wanted contact, ankle, FK contact
-    sw = src.matrix_world
-    tip = {p: [] for p in PAWS}; hipp = {p: [] for p in PAWS}
-    for i in range(M):
-        sc.frame_set(f0 + i)
-        for p in PAWS:
-            h_, t_ = src_leg[p]
-            hipp[p].append((sw @ src.pose.bones[h_].head).copy()); tip[p].append((sw @ src.pose.bones[t_].tail).copy())
-    src_floor = sorted(t.z for v in tip.values() for t in v)[int(0.02 * 4 * M)]  # the source's own floor, as zoo_curate
+    H = {p: [] for p in PAWS}; E = {p: [] for p in PAWS}; A = {p: [] for p in PAWS}  # height, contact point, ankle
     for i in range(M):
         sc.frame_set(i + 1)
         for p in PAWS:
-            A[p].append((rig.matrix_world @ rig.pose.bones[f"{p}_03"].tail).copy()); Efk[p].append(paw_point(p))
-            off = (unturn @ (tip[p][i] - hipp[p][i])) * leg_ratio[p]
-            e = rig.matrix_world @ rig.pose.bones[f"{p}_01"].head + off
-            e.z = floor + max(0.0, tip[p][i].z - src_floor) * leg_ratio[p]
-            E[p].append(e)
-    H = {p: [e.z - floor for e in E[p]] for p in PAWS}
+            A[p].append((rig.matrix_world @ rig.pose.bones[f"{p}_03"].tail).copy()); E[p].append(paw_point(p)); H[p].append(paw_h(p))
     # contacts: per paw, planted = in the lowest CONTACT_SHARE of its height range and within CONTACT_M of its lowest
-    # point. A pin's influence on the target ramps over 2 frames in and out, so the paw eases on and off the pin.
+    # point. The IK's influence ramps over 2 frames in and out (rotations blend between FK and the pinned leg, so
+    # the leg eases on and off the pin instead of snapping).
     idx = (lambda i: i % M) if loop else (lambda i: min(max(i, 0), M - 1))
     planted = {}
     for p in PAWS:
@@ -285,13 +271,14 @@ def main(rigf, animalf, clip, out, outj, size_cm, height_scale):
                 if (loop or 0 <= s0 + d < M) and pin[idx(s0 + d)] is None: pin[idx(s0 + d)], pv[idx(s0 + d)] = xy + v * (d - mid), v
         vel[p] = pv
         T, X, I = [], [], []
-        for i in range(M):  # the ankle's IK target: moved by how far the FK contact point should move
-            xy, h = E[p][i].xy.copy(), max(H[p][i], FLOOR_EPS)
+        for i in range(M):  # the ankle's IK target, moved by how far its contact point should move
+            e = A[p][i].copy(); xy = E[p][i].xy.copy(); h = H[p][i]
             on = pin[i] is not None and w[i] > 0
             if on:
-                xy, h = xy.lerp(pin[i], w[i]), h + (FLOOR_EPS - h) * w[i]
-            e = A[p][i].copy(); e.xy += xy - Efk[p][i].xy; e.z += h - (Efk[p][i].z - floor - contact[p][1])
-            T.append(e); X.append(pin[i].copy() if on else None); I.append(1.0)
+                xy, h = pin[i].copy(), FLOOR_EPS
+            e.xy += xy - E[p][i].xy; e.z += max(h, FLOOR_EPS) - H[p][i]
+            T.append(e); X.append(xy if on else None)
+            I.append(w[i] if on else 1.0 if H[p][i] < FLOOR_EPS else 0.0)  # off the pin: IK only to lift a sunk paw
         tgts[p], W[p], want[p], infl[p] = T, [x if pin[i] is not None else 0.0 for i, x in enumerate(w)], X, I
         print("RT contact", p, "".join("#" if x else ("+" if y > 0 else ".") for x, y in zip(c, W[p])))
     sweeps = sorted(vel[p][i].length for p in PAWS for i in range(M) if W[p][i] == 1)
