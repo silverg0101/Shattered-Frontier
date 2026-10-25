@@ -191,6 +191,7 @@ private:
     friend class FSFNpcCorpseRewardTest;
     friend class FSFNpcPresetRuntimeTest;
     friend class FSFNpcFixtureExtractionTest;
+    friend class FSFNpcDedicatedCorpseTest;
 #endif
     FString CombatZonePath;
     TMap<FString, SFNpcZoneContent::FGroup> Groups;

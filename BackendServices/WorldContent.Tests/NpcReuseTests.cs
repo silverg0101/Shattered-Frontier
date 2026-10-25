@@ -41,7 +41,7 @@ internal static class NpcReuseTests
             try { _ = NpcSpawnCatalog.Load(temporary); } catch (JsonException) { rejected = true; }
             Check(rejected, "unknown respawn tier rejected at content admission");
             File.WriteAllText(temporary, File.ReadAllText("tests/fixtures/npc-profiles/profiles.json")
-                .Replace("\"schema_version\": 2", "\"schema_version\": 1", StringComparison.Ordinal));
+                .Replace("\"schema_version\": 3", "\"schema_version\": 2", StringComparison.Ordinal));
             rejected = false;
             try { _ = NpcSpawnCatalog.Load(temporary); } catch (JsonException) { rejected = true; }
             Check(rejected, "old catalogue schema cannot silently ignore required preset semantics");

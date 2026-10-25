@@ -46,7 +46,17 @@ internal static class WorldLootTests
         var replayBatch = loot.CreateDefeat("batch", "immutable-eligible-a-b", []);
         Check(batch.Count == 2 && replayBatch.Count == 2, "all recipient rolls recover without rerolling new content");
         Reject(() => loot.CreateDefeat("batch", "changed-eligibility", []));
-        Console.WriteLine("WORLD_LOOT_PASS eligibility ownership capacity-rollback instance-condition replay recovery concurrent-pickup shared-claim route-fence");
+        var bounds = new WorldLootMeshBounds(10, -5, 2, 50, 40, 30);
+        var described = source with { Id = WorldLoot.SourceId("metadata", "chr_a"), ScaleX = 2, ScaleY = .5, ScaleZ = 1.5, Yaw = 37, MeshBounds = bounds };
+        loot.Create(described, [new("item/pelt", 1)], []);
+        var recoveredBody = new WorldLoot(store).Open(described.Id, "chr_a").Source;
+        Check(recoveredBody.MeshBounds == bounds && recoveredBody.MeshPath == described.MeshPath && recoveredBody.ScaleX == 2 &&
+            recoveredBody.ScaleY == .5 && recoveredBody.ScaleZ == 1.5 && recoveredBody.Yaw == 37 &&
+            recoveredBody.EligibleCharacters.SequenceEqual(described.EligibleCharacters), "immutable local bounds and transform recover without live mesh or content lookup");
+        Reject(() => loot.Create(described with { MeshBounds = bounds with { ExtentXCm = 49 } }, [new("item/pelt", 1)], []));
+        Reject(() => loot.Create(described with { Id = WorldLoot.SourceId("bad-bounds", "chr_a"), MeshBounds = bounds with { ExtentXCm = 0 } }, [], []));
+        Check(!System.Text.Json.JsonSerializer.Serialize(source).Contains("MeshBounds", StringComparison.Ordinal), "absent additive bounds preserve historical source fingerprints");
+        Console.WriteLine("WORLD_LOOT_PASS eligibility ownership capacity-rollback instance-condition replay recovery concurrent-pickup shared-claim route-fence mesh-bounds-recovery");
     }
     private static void Check(bool ok, string message) { if (!ok) throw new Exception(message); }
     private static void Reject(Action action) { try { action(); } catch (LedgerRejectedException) { return; } throw new Exception("Expected ledger rejection"); }

@@ -342,6 +342,11 @@ const SFNpcProfiles::FBehavior& ASFPilotBoar::GetBehavior() const
     return Invalid; // Unknown definitions are never configured; fail closed if an old serialized actor is invalid.
 }
 
+FTransform ASFPilotBoar::GetBodyWorldTransform() const
+{
+    return Body ? Body->GetComponentTransform() : GetActorTransform();
+}
+
 void ASFPilotBoar::OnConstruction(const FTransform& Transform)
 {
     Super::OnConstruction(Transform);
@@ -361,7 +366,7 @@ bool ASFPilotBoar::ApplyPresentation(const SFNpcProfiles::FProfile* Profile)
     const auto& Presentation = Profile->Presentation;
     UStaticMesh* BodyMesh = nullptr;
     // Resolve before mutating any body state. A failed reconfiguration retains its prior valid profile and body.
-    if (!IsRunningDedicatedServer())
+    if (!IsRunningDedicatedServer() && GetNetMode() != NM_DedicatedServer)
     {
         BodyMesh = Cast<UStaticMesh>(Presentation.StaticMeshPath.TryLoad());
         if (!BodyMesh)
@@ -3202,6 +3207,14 @@ int32 ASFGameMode::RewardKill(ASFPilotBoar* Boar, ASFE1Character* Killer)
         Source.CreatureId = Boar->GetCreatureId(); Source.TableId = Boar->GetLootTableId();
         Source.KillerCharacterId = KillerId; Source.RaidGroupId = RaidId;
         Source.Position = BoarAt; Source.bShared = Boar->HasSingleDrop();
+        if (const auto* Profile = Boar->GetNpcProfile())
+        {
+            Source.MeshPath = Profile->Presentation.StaticMeshPath.ToString();
+            Source.MeshTransform = Boar->GetBodyWorldTransform();
+            Source.MeshBoundsOriginCm = Profile->Presentation.MeshBoundsOriginCm;
+            Source.MeshBoundsExtentCm = Profile->Presentation.MeshBoundsExtentCm;
+            Source.bHasMeshBounds = true;
+        }
         Source.bProtected = bProtected || bBoarSafe;
         for (APlayerController* Recipient : Eligible)
         {

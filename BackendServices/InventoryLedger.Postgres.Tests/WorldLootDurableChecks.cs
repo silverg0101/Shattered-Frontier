@@ -11,7 +11,8 @@ internal static class WorldLootDurableChecks
         ledger.CreateContainer(new("ctn_loot_backpack_a", OwnerKind.Character, "chr_loot_a", ContainerKind.Backpack, 3));
         ledger.CreateContainer(new("ctn_loot_backpack_b", OwnerKind.Character, "chr_loot_b", ContainerKind.Backpack, 1));
         var source = new WorldLootSource(WorldLoot.SourceId("durable-kill", "chr_loot_a"), "zone/loot_fixture", 1, 2, 3,
-            "npc/wolf", "/Game/Body", false, false, ["chr_loot_a"], BodyId: "opaque_durable_defeat");
+            "npc/wolf", "/Game/Body", false, false, ["chr_loot_a"], ScaleX: 2, ScaleY: .5, ScaleZ: 1.5, Yaw: 37,
+            BodyId: "opaque_durable_defeat", MeshBounds: new(10,-5,2,50,40,30));
         loot.Create(source, [new("item/hide_cap", 1), new("item/pelt", 3)], [new("itm_loot_exact", "item/hide_cap", 37)]);
         loot.Take("durable-take", source.Id, "chr_loot_a", "ctn_loot_backpack_a", 1, 0, "item/hide_cap", 1, "itm_loot_exact");
         loot.Drop("durable-drop", Ground, "chr_loot_a", "ctn_loot_backpack_a", 1, "item/hide_cap", 1, "itm_loot_exact");
@@ -36,6 +37,9 @@ internal static class WorldLootDurableChecks
             "independent concurrent database transactions have one pickup winner and conserve exact copy");
         var corpse = WorldLoot.SourceId("durable-kill", "chr_loot_a");
         Check(loot.Open(corpse, "chr_loot_a").Source.BodyId == "opaque_durable_defeat", "opaque body identity survives restart");
+        var savedBody = loot.Open(corpse, "chr_loot_a").Source;
+        Check(savedBody.MeshBounds == new WorldLootMeshBounds(10,-5,2,50,40,30) && savedBody.ScaleX == 2 && savedBody.ScaleY == .5 &&
+            savedBody.ScaleZ == 1.5 && savedBody.Yaw == 37, "asset-local bounds and transform survive restart unchanged");
         Reject(() => loot.Open(corpse, "chr_loot_b"));
         Reject(() => loot.Take("durable-full", corpse, "chr_loot_a", "ctn_loot_backpack_b", 2,
             ledger.Read("ctn_loot_backpack_b").Revision, "item/pelt", 3, ""));

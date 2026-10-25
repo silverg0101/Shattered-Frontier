@@ -1,14 +1,17 @@
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace ShatteredFrontier.InventoryLedger;
 
 // Versioned metadata lives in the same store transaction as the escrow and its
 // receipt. No second item database, deferred delete or grant-after-consume saga.
+public sealed record WorldLootMeshBounds(double OriginXCm, double OriginYCm, double OriginZCm, double ExtentXCm, double ExtentYCm, double ExtentZCm);
 public sealed record WorldLootSource(string Id, string ZoneId, double X, double Y, double Z,
     string CreatureId, string MeshPath, bool Ground, bool Shared, string[] EligibleCharacters,
-    double ScaleX = 1, double ScaleY = 1, double ScaleZ = 1, double Pitch = 0, double Yaw = 0, double Roll = 0, string BodyId = "");
+    double ScaleX = 1, double ScaleY = 1, double ScaleZ = 1, double Pitch = 0, double Yaw = 0, double Roll = 0, string BodyId = "",
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] WorldLootMeshBounds? MeshBounds = null);
 public sealed record WorldLootView(WorldLootSource Source, ContainerView Container);
 public sealed record WorldLootSeed(WorldLootSource Source, IReadOnlyList<ItemQuantity> Items, IReadOnlyList<ItemInstance> Instances);
 
@@ -198,6 +201,12 @@ public sealed class WorldLoot(IInventoryLedgerStore store)
     }
     private static void ValidateSource(WorldLootSource source)
     {
+        if (source.MeshBounds is { } b &&
+            (!double.IsFinite(b.OriginXCm) || !double.IsFinite(b.OriginYCm) || !double.IsFinite(b.OriginZCm) ||
+             Math.Abs(b.OriginXCm) > 50 || Math.Abs(b.OriginYCm) > 50 || Math.Abs(b.OriginZCm) > 50 ||
+             !double.IsFinite(b.ExtentXCm) || !double.IsFinite(b.ExtentYCm) || !double.IsFinite(b.ExtentZCm) ||
+             b.ExtentXCm <= 0 || b.ExtentYCm <= 0 || b.ExtentZCm <= 0 || b.ExtentXCm > 50 || b.ExtentYCm > 50 || b.ExtentZCm > 50))
+            throw new LedgerRejectedException("Invalid loot mesh bounds.");
         if (!source.Id.StartsWith("ctn_loot_", StringComparison.Ordinal) || string.IsNullOrWhiteSpace(source.ZoneId) ||
             !double.IsFinite(source.X) || !double.IsFinite(source.Y) || !double.IsFinite(source.Z) ||
             !double.IsFinite(source.ScaleX) || !double.IsFinite(source.ScaleY) || !double.IsFinite(source.ScaleZ) ||

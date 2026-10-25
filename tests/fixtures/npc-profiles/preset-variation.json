@@ -1,5 +1,5 @@
 {
-  "schema_version": 2,
+  "schema_version": 3,
   "profiles": [
     {
       "definition_id": "npc/boar",
@@ -191,7 +191,17 @@
       "capsule_half_height_cm": 65.0,
       "label_height_cm": 130.0,
       "label_world_size_cm": 34.0,
-      "animation_profile": "none"
+      "animation_profile": "none",
+      "mesh_bounds_origin_cm": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "mesh_bounds_extent_cm": [
+        50.0,
+        50.0,
+        50.0
+      ]
     },
     "fixture": {
       "static_mesh": "/Engine/BasicShapes/Cube.Cube",
@@ -204,7 +214,17 @@
       "capsule_half_height_cm": 65.0,
       "label_height_cm": 130.0,
       "label_world_size_cm": 34.0,
-      "animation_profile": "none"
+      "animation_profile": "none",
+      "mesh_bounds_origin_cm": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "mesh_bounds_extent_cm": [
+        50.0,
+        50.0,
+        50.0
+      ]
     }
   }
 }

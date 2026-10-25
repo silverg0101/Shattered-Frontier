@@ -30,6 +30,7 @@ namespace SFNpcProfiles
     {
         FSoftObjectPath StaticMeshPath;
         FVector BodyScale = FVector::ZeroVector;
+        FVector MeshBoundsOriginCm = FVector::ZeroVector, MeshBoundsExtentCm = FVector::ZeroVector;
         double CapsuleRadiusCm = 0, CapsuleHalfHeightCm = 0, LabelHeightCm = 0, LabelWorldSizeCm = 0;
         EAnimationProfile AnimationProfile = EAnimationProfile::None;
     };

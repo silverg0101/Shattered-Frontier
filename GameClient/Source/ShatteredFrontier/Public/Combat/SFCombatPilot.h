@@ -281,6 +281,7 @@ public:
     bool ReceivePackAssist(ASFE1Character* Character, const FString& CharacterId);
     const SFNpcProfiles::FProfile* GetNpcProfile() const { return SFNpcProfiles::Find(CreatureId); }
     const SFNpcProfiles::FBehavior& GetBehavior() const;
+    FTransform GetBodyWorldTransform() const;
     bool IsRangedArcher() const { const auto* P = GetNpcProfile(); return P && P->IsRanged(); }
     bool CanCastMend() const { const auto* P = GetNpcProfile(); return P && P->CanMend(); }
     UFUNCTION(NetMulticast, Unreliable) void MulticastArcherTracer(FVector_NetQuantize Start, FVector_NetQuantize End);

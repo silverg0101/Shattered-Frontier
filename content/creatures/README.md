@@ -1,6 +1,6 @@
 # NPC profiles
 
-`profiles.json` schema 2 is immutable, versioned NPC content keyed by `definition_id`.
+`profiles.json` schema 3 is immutable, versioned NPC content keyed by `definition_id`.
 `SFNpcProfiles` validates the complete catalogue once per process. Invalid content
 rejects the catalogue; an unknown ID cannot configure a spawn. Existing actors use
 the process snapshot until restart. Publication and permission belong to reviewed
@@ -42,7 +42,7 @@ reach, threat algorithms, defense/formula caps and Mend costs/thresholds stay gl
 `attack_kind` and `abilities` select shared algorithms without species-ID checks.
 Preset references and values adopt together on process restart; profile/preset changes
 use the same reviewed release permission/workflow as stats, never console expressions.
-Schema 1 is rejected so an older consumer cannot silently ignore required preset semantics.
+Schemas 1/2 are rejected so older consumers cannot silently ignore required preset/bounds semantics.
 
 | Behavior field | Units | Bounds | Shipped default |
 | --- | --- | --- | --- |
@@ -73,6 +73,12 @@ loading the mesh; renderer asset closure is a required release gate. Actual acto
 configuration also resolves before changing any state, preserving the previous
 profile/body on failure. The shipped mesh remains `/Engine/BasicShapes/Cube.Cube`.
 `body_scale` is a finite three-number array, each 0.01–1.3, default `[1.3,0.7,0.7]`.
+`mesh_bounds_origin_cm` and `mesh_bounds_extent_cm` are finite three-number arrays
+in asset-local centimetres, before any body/world scale. Origin is bounded -50–50
+(default `[0,0,0]`); positive extent is 0.01–50 (default `[50,50,50]`). Editor/client
+asset closure also requires these values to match the actual mesh bounds within
+0.01 cm. This supplies renderless authorities with the same geometry; it adds no
+appearance change. Schema 3 makes the required bounds explicit.
 Capsule radius is 1–55 cm (55 default); half-height is radius–65 cm (65 default).
 Label height is 0–130 cm (130 default); world size is 1–34 cm (34 default).
 Those conservative geometry bounds require a reviewed compatible release to widen.

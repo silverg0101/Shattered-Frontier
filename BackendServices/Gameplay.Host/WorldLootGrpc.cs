@@ -14,9 +14,12 @@ internal sealed class WorldLootGateway(PostgresInventoryLedgerStore store,
     public Pb.LootSourcesReply Create(Pb.CreateCorpseLootRequest request)
     {
         var eligible = request.EligibleCharacterIds.Distinct(StringComparer.Ordinal).Order(StringComparer.Ordinal).ToArray();
-        var admission = JsonSerializer.Serialize(new { request.DefeatEventId, request.CreatureId, request.TableId, request.KillerCharacterId,
+        var originalAdmission = new { request.DefeatEventId, request.CreatureId, request.TableId, request.KillerCharacterId,
             Eligible = eligible, request.Protected, request.Shared, request.RaidGroupId, request.ZoneId, request.XCm, request.YCm, request.ZCm,
-            request.MeshPath, request.ScaleX, request.ScaleY, request.ScaleZ, request.Pitch, request.Yaw, request.Roll });
+            request.MeshPath, request.ScaleX, request.ScaleY, request.ScaleZ, request.Pitch, request.Yaw, request.Roll };
+        var bounds = request.MeshBounds is { } b ? new WorldLootMeshBounds(b.OriginXCm, b.OriginYCm, b.OriginZCm, b.ExtentXCm, b.ExtentYCm, b.ExtentZCm) : null;
+        // Keep the exact legacy admission fingerprint when the additive descriptor is absent.
+        var admission = bounds is null ? JsonSerializer.Serialize(originalAdmission) : JsonSerializer.Serialize(new { Source = originalAdmission, MeshBounds = bounds });
         if (loot.ReplayDefeat(request.DefeatEventId, admission) is { } saved)
         { var replay = new Pb.LootSourcesReply(); replay.Sources.AddRange(saved.Select(v => ToProto(v))); return replay; }
         if (request.Protected || string.IsNullOrWhiteSpace(request.DefeatEventId) ||
@@ -44,7 +47,7 @@ internal sealed class WorldLootGateway(PostgresInventoryLedgerStore store,
             DefeatGearInstances.Add(instances, lines, "corpse:" + id);
             var source = new WorldLootSource(id, request.ZoneId, request.XCm, request.YCm, request.ZCm,
                 request.CreatureId, request.MeshPath, false, request.Shared, request.Shared ? eligible : [recipient],
-                request.ScaleX, request.ScaleY, request.ScaleZ, request.Pitch, request.Yaw, request.Roll, request.DefeatEventId);
+                request.ScaleX, request.ScaleY, request.ScaleZ, request.Pitch, request.Yaw, request.Roll, request.DefeatEventId, bounds);
             seeds.Add(new(source, lines.Select(x => new ItemQuantity(x.DefinitionId, x.Quantity)).ToArray(), instances.Instances.Values.ToArray()));
         }
         // One durable transaction freezes every recipient's roll and eligibility.
@@ -83,6 +86,8 @@ internal sealed class WorldLootGateway(PostgresInventoryLedgerStore store,
             XCm = source.X, YCm = source.Y, ZCm = source.Z, CreatureId = source.CreatureId, MeshPath = source.MeshPath,
             Ground = source.Ground, Shared = source.Shared, ScaleX = source.ScaleX, ScaleY = source.ScaleY, ScaleZ = source.ScaleZ,
             Pitch = source.Pitch, Yaw = source.Yaw, Roll = source.Roll, BodyId = source.BodyId }, Revision = view.Container.Revision };
+        if (source.MeshBounds is { } b) reply.Source.MeshBounds = new Pb.LootMeshBounds
+            { OriginXCm = b.OriginXCm, OriginYCm = b.OriginYCm, OriginZCm = b.OriginZCm, ExtentXCm = b.ExtentXCm, ExtentYCm = b.ExtentYCm, ExtentZCm = b.ExtentZCm };
         reply.Source.EligibleCharacterIds.AddRange(source.EligibleCharacters);
         reply.Items.AddRange(view.Container.Quantities.OrderBy(x => x.Key, StringComparer.Ordinal)
             .Select(x => new Pb.SharedDropItem { DefinitionId = x.Key, Quantity = x.Value }));

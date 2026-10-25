@@ -63,6 +63,12 @@ namespace
         Out.BodyId = FromUtf8(S.body_id());
         Out.bGround = S.ground(); Out.bShared = S.shared(); Out.Revision = R.revision();
         Out.MeshScale = FVector(S.scale_x(), S.scale_y(), S.scale_z()); Out.MeshRotation = FRotator(S.pitch(), S.yaw(), S.roll());
+        Out.bHasMeshBounds = S.has_mesh_bounds();
+        if (Out.bHasMeshBounds)
+        {
+            Out.MeshBoundsOriginCm = FVector(S.mesh_bounds().origin_x_cm(), S.mesh_bounds().origin_y_cm(), S.mesh_bounds().origin_z_cm());
+            Out.MeshBoundsExtentCm = FVector(S.mesh_bounds().extent_x_cm(), S.mesh_bounds().extent_y_cm(), S.mesh_bounds().extent_z_cm());
+        }
         for (const auto& Id : S.eligible_character_ids()) { Out.EligibleCharacters.Add(FromUtf8(Id)); }
         TMap<FString, int32> Copies;
         for (const auto& I : R.instances())
@@ -292,6 +298,12 @@ void FSFGrpcGameplayTransport::Send(const FSFGameplayRequest& Q, float DeadlineS
         M.set_zone_id(Utf8(Q.ZoneId)); M.set_x_cm(Q.Position.X); M.set_y_cm(Q.Position.Y); M.set_z_cm(Q.Position.Z);
         M.set_mesh_path(Utf8(Q.LootMeshPath)); M.set_shared(Q.bSharedLoot); M.set_raid_group_id(Utf8(Q.RaidGroupId));
         const FVector Scale = Q.LootMeshTransform.GetScale3D(); const FRotator Rotation = Q.LootMeshTransform.Rotator();
+        if (Q.bHasLootMeshBounds)
+        {
+            auto* Bounds = M.mutable_mesh_bounds();
+            Bounds->set_origin_x_cm(Q.LootMeshBoundsOriginCm.X); Bounds->set_origin_y_cm(Q.LootMeshBoundsOriginCm.Y); Bounds->set_origin_z_cm(Q.LootMeshBoundsOriginCm.Z);
+            Bounds->set_extent_x_cm(Q.LootMeshBoundsExtentCm.X); Bounds->set_extent_y_cm(Q.LootMeshBoundsExtentCm.Y); Bounds->set_extent_z_cm(Q.LootMeshBoundsExtentCm.Z);
+        }
         M.set_scale_x(Scale.X); M.set_scale_y(Scale.Y); M.set_scale_z(Scale.Z);
         M.set_pitch(Rotation.Pitch); M.set_yaw(Rotation.Yaw); M.set_roll(Rotation.Roll);
         for (const FString& Id : Q.EligibleCharacterIds) { M.add_eligible_character_ids(Utf8(Id)); }

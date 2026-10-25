@@ -24,8 +24,19 @@ bool USFLootWorldSubsystem::RegisterDefeat(AActor* Corpse, const FSFLootDefeatSo
     Request.CreatureId = Source.CreatureId; Request.TableId = Source.TableId; Request.KillerCharacterId = Source.KillerCharacterId;
     Request.RaidGroupId = Source.RaidGroupId; Request.EligibleCharacterIds = Source.EligibleCharacters;
     Request.bSharedLoot = Source.bShared; Request.ZoneId = ZoneKey(GetWorld()); Request.Position = Source.Position;
-    // Retain the existing body's geometry and transform. No new corpse art.
-    if (UStaticMeshComponent* Body = Corpse->FindComponentByClass<UStaticMeshComponent>())
+    if (Source.bHasMeshBounds)
+    {
+        if (Source.MeshPath.IsEmpty() || Source.MeshTransform.ContainsNaN() ||
+            Source.MeshBoundsOriginCm.ContainsNaN() || Source.MeshBoundsExtentCm.ContainsNaN() ||
+            Source.MeshBoundsExtentCm.GetMin() <= 0) return false;
+        Request.LootMeshPath = Source.MeshPath; Request.LootMeshTransform = Source.MeshTransform;
+        Request.Position = Source.MeshTransform.GetLocation();
+        Request.bHasLootMeshBounds = true;
+        Request.LootMeshBoundsOriginCm = Source.MeshBoundsOriginCm;
+        Request.LootMeshBoundsExtentCm = Source.MeshBoundsExtentCm;
+    }
+    // Compatibility for older non-profile callers. New NPC defeats never inspect a render asset.
+    else if (UStaticMeshComponent* Body = Corpse->FindComponentByClass<UStaticMeshComponent>())
     {
         Request.LootMeshTransform = Body->GetComponentTransform();
         if (Body->GetStaticMesh()) { Request.LootMeshPath = Body->GetStaticMesh()->GetPathName(); }

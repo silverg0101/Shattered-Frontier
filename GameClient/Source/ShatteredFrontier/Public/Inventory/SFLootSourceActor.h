@@ -16,6 +16,14 @@ struct FSFLootHitShape
     UPROPERTY() FVector Extent = FVector(25);
 };
 
+USTRUCT()
+struct FSFLootMeshView
+{
+    GENERATED_BODY()
+    UPROPERTY() FString Path;
+    UPROPERTY() FVector Scale = FVector::OneVector;
+};
+
 UCLASS()
 class SHATTEREDFRONTIER_API ASFLootSourceActor : public AActor
 {
@@ -30,11 +38,14 @@ public:
     virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 private:
     friend class FSFLootSourceClientHitTest;
+    friend class FSFNpcDedicatedCorpseTest;
     UFUNCTION() void OnRep_HitShape();
+    UFUNCTION() void OnRep_MeshView();
     UPROPERTY(VisibleAnywhere) TObjectPtr<USceneComponent> SourceRoot;
     UPROPERTY(VisibleAnywhere) TObjectPtr<UBoxComponent> InteractionBounds;
     UPROPERTY(VisibleAnywhere) TObjectPtr<UStaticMeshComponent> Mesh;
     UPROPERTY(Replicated) bool bGround = false;
     UPROPERTY(ReplicatedUsing=OnRep_HitShape) FSFLootHitShape HitShape;
+    UPROPERTY(ReplicatedUsing=OnRep_MeshView) FSFLootMeshView MeshView;
     FSFLootSourceSnapshot ServerSnapshot;
 };

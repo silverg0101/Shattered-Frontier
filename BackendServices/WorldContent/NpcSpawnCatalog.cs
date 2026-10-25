@@ -12,7 +12,7 @@ public sealed class NpcSpawnCatalog
     {
         using var json = JsonDocument.Parse(File.ReadAllText(path));
         var root = json.RootElement;
-        if (root.GetProperty("schema_version").GetInt32() != 2) throw new JsonException("Unsupported NPC schema.");
+        if (root.GetProperty("schema_version").GetInt32() != 3) throw new JsonException("Unsupported NPC schema.");
         var entries = new Dictionary<string, string>(StringComparer.Ordinal);
         foreach (var row in root.GetProperty("profiles").EnumerateArray())
         {

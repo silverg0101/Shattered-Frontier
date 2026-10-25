@@ -21,6 +21,8 @@ struct FSFLootSourceSnapshot
     FVector Position = FVector::ZeroVector;
     FVector MeshScale = FVector::OneVector;
     FRotator MeshRotation = FRotator::ZeroRotator;
+    FVector MeshBoundsOriginCm = FVector::ZeroVector, MeshBoundsExtentCm = FVector::ZeroVector;
+    bool bHasMeshBounds = false;
     bool bGround = false, bShared = false;
     int64 Revision = 0;
     TArray<FString> EligibleCharacters;

@@ -12,6 +12,10 @@ struct FSFLootDefeatSource
     FString EventId, CreatureId, TableId, KillerCharacterId, RaidGroupId;
     TArray<FString> EligibleCharacters;
     FVector Position = FVector::ZeroVector;
+    FString MeshPath;
+    FTransform MeshTransform = FTransform::Identity;
+    FVector MeshBoundsOriginCm = FVector::ZeroVector, MeshBoundsExtentCm = FVector::ZeroVector;
+    bool bHasMeshBounds = false;
     bool bShared = false;
     bool bProtected = false;
 };

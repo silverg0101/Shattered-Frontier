@@ -34,7 +34,7 @@ bool FSFNpcPresetRuntimeTest::RunTest(const FString& Parameters)
     if (!TestTrue(TEXT("Typed preset references validate"), SFNpcProfiles::Load(Fixture / TEXT("preset-variation.json"), Scratch, Profiles, Error))) return false;
     FString Source; FFileHelper::LoadFileToString(Source, *(Fixture / TEXT("preset-variation.json")));
     const TPair<FString, FString> Invalid[] = {
-        {TEXT("\"schema_version\": 2"), TEXT("\"schema_version\": 1")},
+        {TEXT("\"schema_version\": 3"), TEXT("\"schema_version\": 2")},
         {TEXT("\"behavior_preset\": \"fixture\""), TEXT("\"behavior_preset\": \"unknown\"")},
         {TEXT("\"presentation_preset\": \"fixture\""), TEXT("\"presentation_preset\": \"unknown\"")},
         {TEXT("\"aggro_radius_metres\": 4.0"), TEXT("\"aggro_radius_metres\": 0.0")},

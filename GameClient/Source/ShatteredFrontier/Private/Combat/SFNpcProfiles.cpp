@@ -32,6 +32,17 @@ namespace
         return true;
     }
 
+    bool Vector(const FJsonObject& Object, const TCHAR* Key, double Min, double Max, FVector& Out)
+    {
+        const TArray<TSharedPtr<FJsonValue>>* Values = nullptr;
+        if (!Object.TryGetArrayField(Key, Values) || Values->Num() != 3) return false;
+        double XYZ[3];
+        for (int32 Index = 0; Index < 3; ++Index)
+            if (!(*Values)[Index]->TryGetNumber(XYZ[Index]) || !FMath::IsFinite(XYZ[Index]) || XYZ[Index] < Min || XYZ[Index] > Max) return false;
+        Out = FVector(XYZ[0], XYZ[1], XYZ[2]);
+        return true;
+    }
+
     bool Identifier(const FString& Id, const TCHAR* Prefix)
     {
         if ((FCString::Strlen(Prefix) > 0 && !Id.StartsWith(Prefix, ESearchCase::CaseSensitive)) || Id.Len() <= FCString::Strlen(Prefix)) return false;
@@ -73,6 +84,8 @@ namespace
             Mesh.Contains(TEXT("..")) || Mesh.Contains(TEXT(":")) || !FPackageName::IsValidObjectPath(Mesh) ||
             !Row.TryGetStringField(TEXT("animation_profile"), Animation) || Animation != TEXT("none") ||
             !Row.TryGetArrayField(TEXT("body_scale"), Scale) || Scale->Num() != 3 ||
+            !Vector(Row, TEXT("mesh_bounds_origin_cm"), -50, 50, Out.MeshBoundsOriginCm) ||
+            !Vector(Row, TEXT("mesh_bounds_extent_cm"), .01, 50, Out.MeshBoundsExtentCm) ||
             !Number(Row, TEXT("capsule_radius_cm"), 1, 55, Out.CapsuleRadiusCm) ||
             !Number(Row, TEXT("capsule_half_height_cm"), Out.CapsuleRadiusCm, 65, Out.CapsuleHalfHeightCm) ||
             !Number(Row, TEXT("label_height_cm"), 0, 130, Out.LabelHeightCm) ||
@@ -83,8 +96,13 @@ namespace
         Out.StaticMeshPath = FSoftObjectPath(Mesh);
         Out.BodyScale = FVector(Values[0], Values[1], Values[2]);
         // Render assets may be stripped from dedicated cooks. Editor/client release admission must close the asset reference.
-        if (!IsRunningDedicatedServer() && !Cast<UStaticMesh>(Out.StaticMeshPath.TryLoad()))
-        { Error = FString::Printf(TEXT("NPC static_mesh is missing or not a StaticMesh: %s"), *Mesh); return false; }
+        if (!IsRunningDedicatedServer())
+        {
+            const UStaticMesh* Asset = Cast<UStaticMesh>(Out.StaticMeshPath.TryLoad());
+            if (!Asset) { Error = FString::Printf(TEXT("NPC static_mesh is missing or not a StaticMesh: %s"), *Mesh); return false; }
+            if (!Asset->GetBounds().Origin.Equals(Out.MeshBoundsOriginCm, .01) || !Asset->GetBounds().BoxExtent.Equals(Out.MeshBoundsExtentCm, .01))
+            { Error = FString::Printf(TEXT("NPC static_mesh bounds do not match authored geometry: %s"), *Mesh); return false; }
+        }
         return true;
     }
 
@@ -113,7 +131,7 @@ bool SFNpcProfiles::Load(const FString& CataloguePath, const FString& LootRulesD
     double Version;
     Error.Empty();
     if (!ReadObject(CataloguePath, Root) || !Root->TryGetNumberField(TEXT("schema_version"), Version) ||
-        Version != 2 || !Root->TryGetArrayField(TEXT("profiles"), Rows) || Rows->IsEmpty())
+        Version != 3 || !Root->TryGetArrayField(TEXT("profiles"), Rows) || Rows->IsEmpty())
     { Error = TEXT("NPC catalogue missing, empty or unsupported schema"); return false; }
     TMap<FString, FBehavior> Behaviors;
     TMap<FString, FPresentation> Presentations;

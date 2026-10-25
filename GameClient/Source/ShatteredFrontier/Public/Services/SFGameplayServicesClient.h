@@ -97,6 +97,8 @@ struct FSFGameplayRequest
     int64 LootSourceRevision = 0, LootQuantity = 0;
     bool bSharedLoot = false;
     FTransform LootMeshTransform = FTransform::Identity;
+    FVector LootMeshBoundsOriginCm = FVector::ZeroVector, LootMeshBoundsExtentCm = FVector::ZeroVector;
+    bool bHasLootMeshBounds = false;
     // Progression
     FString Kind;                 // gather | craft | defeat | quest
     int64 ExpectedProgressionRevision = 0, ExpectedQuestRevision = 0;
