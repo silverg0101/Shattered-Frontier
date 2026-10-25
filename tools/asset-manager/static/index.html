@@ -1103,6 +1103,11 @@ async function renderCreature() {
     const name = $('#cname').value.trim(), prompt = $('#cprompt').value.trim();
     if (!name) return toast('Give the creature a name', true);
     if (!prompt) return toast('Write a prompt first', true);
+    const typed = $('#canimal').value.trim();  // no candidate clicked: the typed text must itself be an animal id
+    if (!animal && typed) {
+      if (!animalById(typed)) return toast('Pick an animal from the candidates, or clear the box', true);
+      animal = typed; ticked = null; drawClips();
+    }
     const other = $('#cother').value.split(',').map(x => x.trim()).filter(Boolean), a = animalById(animal);
     let clips = 'all';
     if (a?.curated && ticked) {
@@ -1118,7 +1123,8 @@ async function renderCreature() {
 
 /* ---------------- model folder view (a folder holding <Name>.json: a creature's clips) */
 // checks.review is [{verdict, reason}]; an older manifest keeps one "VERDICT: reason" string
-const reviewsOf = c => { const r = c.checks?.review ?? []; return typeof r === 'string' ? [{ verdict: r.split(':')[0], reason: r.split(':').slice(1).join(':').trim() }] : r; };
+const reviewsOf = c => { const r = c.checks?.review; return Array.isArray(r) ? r : typeof r === 'string' && r ? [{ verdict: r.split(':')[0], reason: r.split(':').slice(1).join(':').trim() }] : []; };
+let bakeDirty = null;  // {dir, names}: baked ticks changed but not combined yet; a redraw keeps them
 function clipRow(c, dir, sheets, animal) {
   const k = c.checks || {}, rv = reviewsOf(c), last = rv.at(-1);
   const sheet = c.file.split('/').pop().replace(/\.glb$/i, '.png');
@@ -1130,10 +1136,10 @@ function clipRow(c, dir, sheets, animal) {
     <div><div class="name">${esc(c.name)}</div>
       <div class="meta"><span class="mb" ${c.prompt ? `title="${esc(c.prompt)}"` : ''}>${esc(src)}</span>
         <span class="mb ${chk[0]}" title="${esc(k.reason || '')}">${chk[1]}</span>
-        ${last ? `<span class="mb ${last.verdict === 'PASS' ? 'pass' : 'fail'}" title="${esc(rv.map((r, i) => `${i + 1}. ${r.verdict}: ${r.reason}`).join('\n'))}">review ${esc(last.verdict.toLowerCase())}</span>` : ''}
+        ${last ? `<span class="mb ${last.verdict === 'PASS' ? 'pass' : 'fail'}" title="${esc(rv.map((r, i) => `${i + 1}. ${r.verdict}: ${r.reason}`).join('\n'))}">review ${esc(String(last.verdict ?? '').toLowerCase())}</span>` : ''}
         ${rv.length > 1 ? `<span class="mb warn" title="Needed a second ask: the numbers passed and the first review said FAIL">${rv.length} reviews</span>` : ''}
         ${c.best ? `<span class="mb pass" title="The best of this prompt's seeds: passed first, then the lowest seam">best</span>` : ''}</div></div>
-    <label title="Included in ${esc(dir.split('/').pop())}_animated.glb"><input type="checkbox" data-bake="${esc(c.name)}" ${c.baked ? 'checked' : ''}>baked</label></div>`;
+    <label title="Included in ${esc(dir.split('/').pop())}_animated.glb"><input type="checkbox" data-bake="${esc(c.name)}" ${(bakeDirty?.dir === dir ? bakeDirty.names.has(c.name) : c.baked) ? 'checked' : ''}>baked</label></div>`;
 }
 async function drawModel(name, dir, man) {
   const box = $('#modelview'); if (!box) return;
@@ -1152,11 +1158,12 @@ async function drawModel(name, dir, man) {
     <div style="margin-top:14px">${man.clips.map(c => clipRow(c, dir, sheets, man.animal)).join('') || '<div class="muted">No clips.</div>'}</div>
     ${(man.unavailable || []).map(u => `<div class="muted" style="font-size:12px;margin-top:8px">Not made: <b>${esc(u.name)}</b> · ${esc(u.reason)}</div>`).join('')}</div>`;
   box.querySelectorAll('[data-sheet]').forEach(i => i.onclick = () => lightbox(i.src));
+  box.querySelectorAll('[data-bake]').forEach(cb => cb.onchange = () => { bakeDirty = { dir, names: new Set([...box.querySelectorAll('[data-bake]:checked')].map(x => x.dataset.bake)) }; });
   $('#combine').onclick = async () => {
     const clips = [...box.querySelectorAll('[data-bake]:checked')].map(x => x.dataset.bake), err = $('#merr');
     err.hidden = true;
     if (!clips.length) return toast('Tick at least one clip to bake', true);
-    try { const m = await post(`/api/models/${name}/combine`, { clips }); toast('Combined'); drawModel(name, dir, m); }
+    try { const m = await post(`/api/models/${name}/combine`, { clips }); bakeDirty = null; toast('Combined'); drawModel(name, dir, m); }
     catch (e) { err.textContent = e.message; err.hidden = false; fail(e); }
   };
   $('#newanim').onclick = () => newAnimation(man);
@@ -1171,9 +1178,9 @@ function formModal(title, html, run) {
   document.body.append(o);
   $('[data-x]', o).onclick = () => o.remove();
   $('[data-ok]', o).onclick = async () => {
-    const err = $('[data-err]', o); err.hidden = true;
+    const err = $('[data-err]', o), ok = $('[data-ok]', o); err.hidden = true; ok.disabled = true;
     try { await run(o); o.remove(); toast('Added to queue'); setQueueOpen(true); pollQueue(); }
-    catch (e) { err.textContent = e.message; err.hidden = false; }
+    catch (e) { err.textContent = e.message; err.hidden = false; ok.disabled = false; }
   };
   return o;
 }
@@ -1213,7 +1220,12 @@ async function glbAnimations(path) {
   const buf = await (await fetch(fileUrl(path))).arrayBuffer(), dv = new DataView(buf);
   if (dv.getUint32(0, true) !== 0x46546C67) throw new Error('not a .glb file');
   const js = JSON.parse(new TextDecoder().decode(new Uint8Array(buf, 20, dv.getUint32(12, true))));
-  return { names: (js.animations || []).map(a => a.name), skinned: !!(js.skins || []).length };
+  const seen = new Set(), names = (js.animations || []).map((a, i) => {  // unnamed -> Animation_<i>; repeats -> _2, _3
+    let n = a.name || `Animation_${i}`, k = n, j = 1;
+    while (seen.has(k)) k = `${n}_${++j}`;
+    seen.add(k); return k;
+  });
+  return { names, skinned: !!(js.skins || []).length };
 }
 async function addFromGlb(man) {
   const st = await api('/api/settings').catch(() => ({ input_folder: 'Inputs' }));
