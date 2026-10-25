@@ -943,8 +943,9 @@ void ASFGameMode::TickGreenlandsNetcheck()
     ASFPilotBoar* Lead = GreenlandsLead.Get();
     ASFPilotBoar* Mate = GreenlandsMate.Get();
     if (GreenlandsNetcheckStage <= 8 && (!Lead || !Mate)) { return; }
+    // Switch before the 2 s pack-assist timer so the mate assists the observer deterministically.
     if (GreenlandsNetcheckStage == 1 && Lead->ThreatTarget() == Driver &&
-        !Mate->ThreatTarget() && Now - GreenlandsStageAt >= 1.5)
+        !Mate->ThreatTarget() && Now - GreenlandsStageAt >= 0.5)
     {
         UE_LOG(LogTemp, Display, TEXT("BOAR_GREENLANDS_AGGRO LeadSlot=%d"), GreenlandsLeadSlot);
         // Keep the challenger in the pack clearing so the lead can close back

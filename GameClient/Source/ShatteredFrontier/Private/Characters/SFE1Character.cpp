@@ -118,7 +118,9 @@ void ASFE1Character::Landed(const FHitResult& Hit)
 {
     const float ImpactMps = FMath::Max(0.0f, -GetVelocity().Z / 100.0f);
     Super::Landed(Hit);
-    if (HasAuthority() && GetWorld()->GetOutermost()->GetName() == TEXT("/Game/Frontier/Maps/Sandbox/SB_FallDamage"))
+    const FString Map = GetWorld()->GetOutermost()->GetName();
+    if (HasAuthority() && (Map == TEXT("/Game/Frontier/Maps/Sandbox/SB_FallDamage") ||
+        Map == TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook")))
     {
         if (ASFGameMode* Mode = GetWorld()->GetAuthGameMode<ASFGameMode>())
         { Mode->ApplyFallDamage(this, ImpactMps); }
@@ -704,6 +706,39 @@ void ASFE1Character::TickSwimScenario()
 #endif
 }
 
+void ASFE1Character::TickGreenlandsEnvironmentScenario()
+{
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    FString ScenarioRole;
+    FParse::Value(FCommandLine::Get(), TEXT("GreenlandsEnvironmentRole="), ScenarioRole);
+    if ((ScenarioRole != TEXT("Driver") && ScenarioRole != TEXT("Observer")) || !Controller) { return; }
+    ASFE1Character* Watched = this;
+    int32 Players = 0;
+    for (TActorIterator<ASFE1Character> It(GetWorld()); It; ++It)
+    {
+        ++Players;
+        if (ScenarioRole == TEXT("Observer") && *It != this) { Watched = *It; }
+    }
+    if (Players < 2 || (ScenarioRole == TEXT("Observer") && Watched == this)) { return; }
+    const double Now = GetWorld()->GetTimeSeconds();
+    if (Now >= NextSwimSampleAt)
+    {
+        NextSwimSampleAt = Now + 0.25;
+        UE_LOG(LogTemp, Display, TEXT("GREENLANDS_ENV_SAMPLE Role=%s HP=%d X=%.0f Y=%.0f Z=%.0f Mode=%d Speed=%.0f"),
+            *ScenarioRole, Watched->CombatHealth(), Watched->GetActorLocation().X, Watched->GetActorLocation().Y,
+            Watched->GetActorLocation().Z, int32(Watched->GetCharacterMovement()->MovementMode),
+            Watched->GetVelocity().Size2D());
+    }
+    if (ScenarioRole != TEXT("Driver") || SwimScenarioStage >= 2) { return; }
+    if (SwimScenarioStage == 1 && GetActorLocation().X <= 51500.0 &&
+        !GetCharacterMovement()->IsSwimming())
+    { SwimScenarioStage = 2; UE_LOG(LogTemp, Display, TEXT("GREENLANDS_ENV_COMPLETE")); return; }
+    if (CombatHealth() >= GetDefault<USFCombatPilotSettings>()->PlayerHealth || CombatHealth() <= 0) { return; }
+    if (SwimScenarioStage == 0 && GetActorLocation().X >= 56000.0) { SwimScenarioStage = 1; }
+    AddMovementInput(SwimScenarioStage == 1 ? -FVector::ForwardVector : FVector::ForwardVector, 1.0f);
+#endif
+}
+
 void ASFE1Character::TickCombatScenario()
 {
     if (FParse::Param(FCommandLine::Get(), TEXT("CombatGroupScenario")))
@@ -937,7 +972,8 @@ void ASFE1Character::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
     const FString CombatMap = GetWorld()->GetOutermost()->GetName();
-    if (HasAuthority() && CombatMap == TEXT("/Game/Frontier/Maps/Sandbox/SB_Swimming"))
+    if (HasAuthority() && (CombatMap == TEXT("/Game/Frontier/Maps/Sandbox/SB_Swimming") ||
+        CombatMap == TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook")))
     {
         const APhysicsVolume* Volume = GetPhysicsVolume();
         bool bDeepWater = false;
@@ -1088,6 +1124,8 @@ void ASFE1Character::Tick(float DeltaSeconds)
         FParse::Param(FCommandLine::Get(), TEXT("CombatFallScenario"))) { TickFallScenario(); }
     if (GetNetMode() == NM_Client && IsLocallyControlled() &&
         FParse::Param(FCommandLine::Get(), TEXT("SwimScenario"))) { TickSwimScenario(); }
+    if (GetNetMode() == NM_Client && IsLocallyControlled() &&
+        FParse::Param(FCommandLine::Get(), TEXT("GreenlandsEnvironmentNetcheck"))) { TickGreenlandsEnvironmentScenario(); }
 #endif
 }
 

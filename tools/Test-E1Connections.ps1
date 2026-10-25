@@ -12,6 +12,7 @@ param(
     [switch]$RegenScenario,
     [switch]$FallScenario,
     [switch]$SwimScenario,
+    [switch]$GreenlandsEnvironmentNetcheck,
     [switch]$AssistScenario,
     [switch]$RespawnScenario,
     [switch]$GreenlandsBoarNetcheck
@@ -70,6 +71,13 @@ function Assert-EvadeClient([string]$Path, [string]$Role) {
     return [math]::Round($speed,1)
 }
 try {
+    if ($GreenlandsEnvironmentNetcheck) {
+        if ($Map -ne '/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook' -or $Clients -ne 2 -or
+            $CastingScenario -or $EvadeScenario -or $ThreatScenario -or $AggroScenario -or $MemoryScenario -or
+            $RegenScenario -or $FallScenario -or $SwimScenario -or $AssistScenario -or $RespawnScenario -or $GreenlandsBoarNetcheck) {
+            throw 'GreenlandsEnvironmentNetcheck requires Greenlands_Silverbrook, two clients, and no other scenario'
+        }
+    }
     if ($GreenlandsBoarNetcheck) {
         if ($Map -ne '/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook' -or $Clients -ne 2 -or
             $CastingScenario -or $EvadeScenario -or $ThreatScenario -or $AggroScenario -or $MemoryScenario -or
@@ -129,6 +137,7 @@ try {
     if ($AssistScenario) { $serverArgs += '-CombatAssistScenario' }
     if ($RespawnScenario) { $serverArgs += '-CombatRespawnScenario' }
     if ($GreenlandsBoarNetcheck) { $serverArgs += '-GreenlandsBoarNetcheck' }
+    if ($GreenlandsEnvironmentNetcheck) { $serverArgs += '-GreenlandsEnvironmentNetcheck' }
     Launch $serverArgs
     Wait-Log $serverLog 'E1_WORLD_READY.*NetMode=1'
     foreach ($index in 1..$Clients) {
@@ -145,6 +154,7 @@ try {
         if ($AssistScenario) { $clientArgs += @('-CombatAssistScenario', ('-CombatAssistRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         if ($RespawnScenario) { $clientArgs += @('-CombatRespawnScenario', ('-CombatRespawnRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         if ($GreenlandsBoarNetcheck) { $clientArgs += @('-GreenlandsBoarNetcheck', ('-GreenlandsBoarRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
+        if ($GreenlandsEnvironmentNetcheck) { $clientArgs += @('-GreenlandsEnvironmentNetcheck', ('-GreenlandsEnvironmentRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         Launch $clientArgs
         Wait-Log $clientLog 'Welcomed by server'
     }
@@ -330,6 +340,40 @@ try {
         }
         Write-Output "PASS: server switched at authored deep water; both clients saw walking, capped swimming, and walking after exit. Logs: $logs"
     }
+    if ($GreenlandsEnvironmentNetcheck) {
+        Wait-Log $serverLog 'GREENLANDS_ENV_DROP X='
+        Wait-Log $serverLog 'FALL_DAMAGE ImpactMps='
+        Wait-Log $serverLog 'SWIM_SERVER_MODE Swimming=1'
+        Wait-Log $serverLog 'SWIM_SERVER_MODE Swimming=0'
+        Wait-Log (Join-Path $logs 'Client1.log') 'GREENLANDS_ENV_COMPLETE'
+        $hit = Select-String -LiteralPath $serverLog -Pattern 'FALL_DAMAGE ImpactMps=([\d.]+) Damage=(\d+) HealthBefore=(\d+) Pawn=(\S+)' | Select-Object -First 1
+        $g = $hit.Matches[0].Groups
+        $impact = [double]::Parse($g[1].Value,[Globalization.CultureInfo]::InvariantCulture)
+        $damage = [int]$g[2].Value
+        $before = [int]$g[3].Value
+        $expected = [int][math]::Floor($before * [math]::Min(1.2,[math]::Max(0.0,($impact - 12.0) / 20.0)) + 0.5)
+        if ($impact -le 12 -or $damage -ne $expected -or $damage -ge $before) {
+            throw "Greenlands fall calculation invalid: impact=$impact damage=$damage expected=$expected before=$before"
+        }
+        Wait-Log $serverLog "COMBAT_PILOT_PLAYER_HIT HP=$($before-$damage) By=None"
+        foreach ($role in @('Driver','Observer')) {
+            $path = Join-Path $logs ('Client' + $(if ($role -eq 'Driver') { '1' } else { '2' }) + '.log')
+            $samples = @(Select-String -LiteralPath $path -Pattern "GREENLANDS_ENV_SAMPLE Role=$role HP=(\d+) X=([-\d.]+) Y=([-\d.]+) Z=([-\d.]+) Mode=(\d+) Speed=([\d.]+)" | ForEach-Object {
+                $m = $_.Matches[0].Groups
+                [pscustomobject]@{ HP=[int]$m[1].Value; X=[double]::Parse($m[2].Value,[Globalization.CultureInfo]::InvariantCulture);
+                    Z=[double]::Parse($m[4].Value,[Globalization.CultureInfo]::InvariantCulture); Mode=[int]$m[5].Value;
+                    Speed=[double]::Parse($m[6].Value,[Globalization.CultureInfo]::InvariantCulture) }
+            })
+            $raised = @($samples | Where-Object { $_.HP -eq $before -and $_.X -gt 50000 -and $_.X -lt 52000 -and $_.Z -gt 3500 })
+            $landed = @($samples | Where-Object { $_.HP -eq ($before-$damage) -and $_.X -gt 50000 -and $_.X -lt 53000 -and $_.Z -lt 2700 -and $_.Mode -eq 1 })
+            $swimming = @($samples | Where-Object { $_.Mode -eq 4 -and $_.X -gt 54500 -and $_.X -lt 56500 -and $_.Speed -ge 285 -and $_.Speed -le 315 })
+            $returned = @($samples | Where-Object { $_.Mode -eq 1 -and $_.X -le 51500 } | Select-Object -Last 1)
+            if ($raised.Count -eq 0 -or $landed.Count -eq 0 -or $swimming.Count -eq 0 -or $returned.Count -eq 0) {
+                throw "$role missed the fall, replicated damage, 3.0 m/s swimming or dry-land return"
+            }
+        }
+        Write-Output "PASS: Silverbrook fall $impact m/s caused expected $damage damage; both clients saw 3.0 m/s swimming in Eastwood Pond and dry-land return. Logs: $logs"
+    }
     if ($AssistScenario) {
         $driverLog = Join-Path $logs 'Client1.log'
         $observerLog = Join-Path $logs 'Client2.log'
@@ -438,7 +482,7 @@ try {
         Write-Output "PASS: Greenlands aggro, threat switch, pack assist, leash/evade, attacker memory, regeneration, client kill and rotated slot respawn on both clients. Logs: $logs"
     }
     Write-Output "PASS: separate editor server and $Clients client(s) connected; $Clients server-authoritative possession(s). Logs: $logs"
-    if (-not $CastingScenario -and -not $EvadeScenario -and -not $ThreatScenario -and -not $AggroScenario -and -not $MemoryScenario -and -not $RegenScenario -and -not $FallScenario -and -not $SwimScenario -and -not $AssistScenario -and -not $RespawnScenario -and -not $GreenlandsBoarNetcheck) { Write-Output 'Headless connection check only: movement, rendering, lifecycle cleanup, authentication and Linux runtime are not certified.' }
+    if (-not $CastingScenario -and -not $EvadeScenario -and -not $ThreatScenario -and -not $AggroScenario -and -not $MemoryScenario -and -not $RegenScenario -and -not $FallScenario -and -not $SwimScenario -and -not $AssistScenario -and -not $RespawnScenario -and -not $GreenlandsBoarNetcheck -and -not $GreenlandsEnvironmentNetcheck) { Write-Output 'Headless connection check only: movement, rendering, lifecycle cleanup, authentication and Linux runtime are not certified.' }
 } finally {
     foreach ($process in $ownedProcesses) {
         if (-not $process.HasExited) { Stop-Process -Id $process.Id -ErrorAction SilentlyContinue }

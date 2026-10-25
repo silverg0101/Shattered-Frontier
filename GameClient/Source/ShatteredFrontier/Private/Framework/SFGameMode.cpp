@@ -12,6 +12,7 @@
 #include "Engine/NetDriver.h"
 #include "EngineUtils.h"
 #include "GameFramework/PlayerController.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "TimerManager.h"
 #include "ProfilingDebugging/CsvProfiler.h"
 #include "Tests/SFE1NetworkScenario.h"
@@ -150,6 +151,41 @@ void ASFGameMode::PostLogin(APlayerController* NewPlayer)
     if (FParse::Param(FCommandLine::Get(), TEXT("CombatGroupScenario")))
     { RecordM3Connection(NewPlayer ? NewPlayer->NetConnection : nullptr); }
     UE_LOG(LogTemp, Display, TEXT("E1_PLAYER_JOIN Controller=%s Players=%d Authority=%d"), *GetNameSafe(NewPlayer), GetNumPlayers(), HasAuthority());
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    if (GetNumPlayers() == 2 && FParse::Param(FCommandLine::Get(), TEXT("GreenlandsEnvironmentNetcheck")) &&
+        GetWorld()->GetOutermost()->GetName() == TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook"))
+    {
+        TWeakObjectPtr<APlayerController> Driver;
+        for (TActorIterator<APlayerController> It(GetWorld()); It; ++It)
+        { if (*It != NewPlayer) { Driver = *It; break; } }
+        const TWeakObjectPtr<APlayerController> Observer = NewPlayer;
+        FTimerHandle DropTimer;
+        GetWorldTimerManager().SetTimer(DropTimer, FTimerDelegate::CreateWeakLambda(this, [this, Driver, Observer]()
+        {
+            ASFE1Character* Pawn = Driver.IsValid() ? Cast<ASFE1Character>(Driver->GetPawn()) : nullptr;
+            ASFE1Character* Witness = Observer.IsValid() ? Cast<ASFE1Character>(Observer->GetPawn()) : nullptr;
+            if (!Pawn || !Witness) { UE_LOG(LogTemp, Error, TEXT("GREENLANDS_ENV_NO_PLAYERS")); return; }
+            // Test-only spawn on the dry west shore of the authored Eastwood Pond, 25 m above its terrain.
+            const FVector Shore(51000, 37700, 0);
+            FHitResult Ground;
+            if (!GetWorld()->LineTraceSingleByChannel(Ground, Shore + FVector(0, 0, 100000),
+                Shore - FVector(0, 0, 100000), ECC_WorldStatic))
+            { UE_LOG(LogTemp, Error, TEXT("GREENLANDS_ENV_NO_GROUND")); return; }
+            const FVector WitnessShore(50000, 37700, 0);
+            FHitResult WitnessGround;
+            if (!GetWorld()->LineTraceSingleByChannel(WitnessGround, WitnessShore + FVector(0, 0, 100000),
+                WitnessShore - FVector(0, 0, 100000), ECC_WorldStatic))
+            { UE_LOG(LogTemp, Error, TEXT("GREENLANDS_ENV_NO_WITNESS_GROUND")); return; }
+            Witness->SetActorLocation(WitnessGround.Location + FVector(0, 0, 90), false, nullptr, ETeleportType::TeleportPhysics);
+            const FVector Drop(Shore.X, Shore.Y, Ground.Location.Z + 2500.0);
+            Pawn->SetActorLocation(Drop, false, nullptr, ETeleportType::TeleportPhysics);
+            Pawn->GetCharacterMovement()->StopMovementImmediately();
+            Pawn->GetCharacterMovement()->SetMovementMode(MOVE_Falling);
+            UE_LOG(LogTemp, Display, TEXT("GREENLANDS_ENV_DROP X=%.0f Y=%.0f GroundZ=%.0f StartZ=%.0f"),
+                Drop.X, Drop.Y, Ground.Location.Z, Drop.Z);
+        }), 3.0f, false);
+    }
+#endif
     ScheduleLifecycleAudit(NewPlayer, false);
     PostLoginConstruction(NewPlayer);
     PostLoginCombat(NewPlayer);
