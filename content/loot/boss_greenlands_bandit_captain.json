@@ -1,0 +1,12 @@
+{
+  "id": "loot/boss_greenlands_bandit_captain",
+  "version": 1,
+  "rolls": { "min": 1, "max": 1 },
+  "mode": "weighted_one",
+  "guaranteed": [],
+  "entries": [
+    { "kind": "item", "definition_id": "item/studded_jerkin", "quantity": { "min": 1, "max": 1 }, "weight": 375 },
+    { "kind": "item", "definition_id": "item/reinforced_greaves", "quantity": { "min": 1, "max": 1 }, "weight": 375 },
+    { "kind": "item", "definition_id": "item/captains_longsword", "quantity": { "min": 1, "max": 1 }, "weight": 250 }
+  ]
+}

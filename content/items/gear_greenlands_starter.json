@@ -9,6 +9,18 @@
     {"definition_id": "item/hide_cloak", "slot": "Back", "armor": 1, "damage": 0, "weight_kg": 1.2},
     {"definition_id": "item/iron_ring", "slot": "Ring", "armor": 0, "damage": 1, "weight_kg": 0.1},
     {"definition_id": "item/iron_buckler", "slot": "OffHand", "armor": 2, "damage": 0, "weight_kg": 3.0},
-    {"definition_id": "item/iron_shortsword", "slot": "MainHand", "armor": 0, "damage": 6, "weight_kg": 2.2}
+    {"definition_id": "item/iron_shortsword", "slot": "MainHand", "armor": 0, "damage": 6, "weight_kg": 2.2},
+    {"definition_id": "item/wolfhide_bracers", "slot": "Hands", "armor": 5, "damage": 0, "weight_kg": 0.5},
+    {"definition_id": "item/wolfhide_cloak", "slot": "Back", "armor": 3, "damage": 0, "weight_kg": 1.3},
+    {"definition_id": "item/fangtooth_dagger", "slot": "MainHand", "armor": 0, "damage": 14, "weight_kg": 0.8},
+    {"definition_id": "item/alpha_pelt_mantle", "slot": "Back", "armor": 4, "damage": 0, "weight_kg": 1.6},
+    {"definition_id": "item/cudgel", "slot": "MainHand", "armor": 0, "damage": 12, "weight_kg": 1.8},
+    {"definition_id": "item/padded_jack", "slot": "Chest", "armor": 4, "damage": 0, "weight_kg": 2.0},
+    {"definition_id": "item/brigand_blade", "slot": "MainHand", "armor": 0, "damage": 16, "weight_kg": 2.1},
+    {"definition_id": "item/leather_coif", "slot": "Head", "armor": 6, "damage": 0, "weight_kg": 0.5},
+    {"definition_id": "item/archers_gloves", "slot": "Hands", "armor": 5, "damage": 0, "weight_kg": 0.3},
+    {"definition_id": "item/studded_jerkin", "slot": "Chest", "armor": 9, "damage": 0, "weight_kg": 3.0},
+    {"definition_id": "item/reinforced_greaves", "slot": "Legs", "armor": 9, "damage": 0, "weight_kg": 2.4},
+    {"definition_id": "item/captains_longsword", "slot": "MainHand", "armor": 0, "damage": 20, "weight_kg": 2.4}
   ]
 }

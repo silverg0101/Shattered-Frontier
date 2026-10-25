@@ -1,0 +1,7 @@
+{
+  "version": 1,
+  "materials": [
+    {"definition_id": "item/wolf_pelt", "display_name": "Wolf Pelt", "max_stack": 1000, "weight_kg": 1.5},
+    {"definition_id": "item/wolf_fang", "display_name": "Wolf Fang", "max_stack": 1000, "weight_kg": 0.05}
+  ]
+}
