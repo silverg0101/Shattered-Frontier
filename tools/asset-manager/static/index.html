@@ -231,6 +231,20 @@ aside.queue.closed .vtab { display: block; }
 .modal .item:hover { background: var(--primary-12); }
 .modal .item img { width: 36px; height: 36px; object-fit: cover; border-radius: 6px; }
 .modal .foot { display: flex; justify-content: flex-end; gap: 8px; }
+.cl { display: grid; grid-template-columns: 120px minmax(0, 1fr) auto; gap: 14px; align-items: center; padding: 10px 0; border-top: 1px solid var(--border); }
+.cl img, .cl .nothumb { width: 120px; height: 80px; object-fit: contain; border-radius: 8px; background: var(--card); }
+.cl img { cursor: zoom-in; }
+.cl .nothumb { display: flex; align-items: center; justify-content: center; text-align: center; font-size: 10px; color: var(--muted-foreground); }
+.cl .meta { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+.cl label { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted-foreground); cursor: pointer; }
+.mb { border-radius: 999px; padding: 2px 8px; font: 600 10px/1.6 var(--sans); letter-spacing: .08em; text-transform: uppercase; background: var(--card); color: var(--muted-foreground); border: 1px solid var(--border); white-space: nowrap; cursor: default; }
+.mb.pass { background: var(--success); color: #04180f; border-color: transparent; }
+.mb.fail { background: var(--danger); color: #fff; border-color: transparent; }
+.mb.warn { background: var(--warn); color: #241600; border-color: transparent; }
+.cand { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 8px 12px; border: 1px solid var(--border); border-radius: 10px; margin-top: 6px; cursor: pointer; background: var(--card); font-size: 13px; }
+.cand.on { border-color: var(--primary); box-shadow: 0 0 16px var(--primary-12); }
+.ticks { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 8px; }
+.ticks label { display: flex; align-items: center; gap: 6px; font-size: 13px; cursor: pointer; }
 .lightbox img { max-width: 92vw; max-height: 90vh; border-radius: 12px; box-shadow: 0 0 60px var(--primary-12); }
 .toast { position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%); z-index: 60; padding: 10px 18px; border-radius: 999px; background: var(--card-elevated); border: 1px solid var(--border); box-shadow: 0 10px 30px #0008; animation: fadeUp .35s var(--ease) both; }
 .toast.err { border-color: var(--danger); color: var(--danger); }
@@ -308,7 +322,7 @@ function route() {
   const h = location.hash.slice(2) || 'assets';
   const [page, ...rest] = h.split('/');
   document.querySelectorAll('[data-nav]').forEach(a => a.classList.toggle('on', a.dataset.nav === page));
-  if (page === 'create') return rest[0] === 'images' ? renderImages() : renderCreate();
+  if (page === 'create') return rest[0] === 'images' ? renderImages() : rest[0] === 'creature' ? renderCreature() : renderCreate();
   if (page === 'settings') return renderSettings();
   state.path = rest.map(decodeURIComponent).join('/');
   renderAssets();
@@ -343,10 +357,13 @@ async function renderAssets() {
           <select class="sort" id="sort" title="Sort (folders stay first)">${[['name', 'Name A–Z'], ['-name', 'Name Z–A'], ['-mtime', 'Newest first'], ['mtime', 'Oldest first']]
             .map(([v, t]) => `<option value="${v}" ${v === store.get('assetSort', 'name') ? 'selected' : ''}>${t}</option>`).join('')}</select>
         </div>
+        <div id="modelview"></div>
         <div class="grid" id="grid"></div>
       </div>
       <div id="preview"></div>
     </div>`;
+  const folder = segs.at(-1);
+  if (folder && /^[\w-]+$/.test(folder) && state.entries.some(e => e.name === folder + '.json')) drawModel(folder, state.path);
   drawGrid();
   $('#up')?.addEventListener('click', () => location.hash = assetHref(segs.slice(0, -1).join('/')));
   $('#mkdir').onclick = async () => {
@@ -759,7 +776,8 @@ document.addEventListener('keydown', e => {
 });
 
 /* ---------------- picker modal (folders, or images) */
-function picker(title, wantImage) {
+function picker(title, want) {  // want: true = images, 'glb' = .glb files, falsy = folders only
+  const wantImage = want === true;
   return new Promise(resolve => {
     let cur = wantImage ? (state.createImage || '').split('/').slice(0, -1).join('/') : state.path;
     const o = Object.assign(document.createElement('div'), { className: 'overlay' });
@@ -768,14 +786,14 @@ function picker(title, wantImage) {
     document.body.append(o);
     async function draw() {
       let d; try { d = await api('/api/ls?path=' + encodeURIComponent(cur)); } catch { cur = ''; return draw(); }
-      const items = d.entries.filter(e => e.kind === 'dir' || (wantImage && e.kind === 'image'));
+      const items = d.entries.filter(e => e.kind === 'dir' || (wantImage && e.kind === 'image') || (want === 'glb' && /\.glb$/i.test(e.name)));
       o.innerHTML = `<div class="modal"><h3>${esc(title)}</h3>
         <div class="muted" style="margin-top:6px;font-size:12px">/${esc(cur)}</div>
         <div class="list">
           ${cur ? `<div class="item" data-up>↑ ..</div>` : ''}
-          ${items.map(e => `<div class="item" data-p="${esc(e.path)}" data-k="${e.kind}">${e.kind === 'image' ? `<img src="${fileUrl(e.path)}" loading="lazy" alt="">` : ICON.dir.replace('<svg', '<svg width="20" height="20"')} ${esc(e.name)}</div>`).join('') || '<div class="item muted">Nothing here</div>'}
+          ${items.map(e => `<div class="item" data-p="${esc(e.path)}" data-k="${e.kind}">${e.kind === 'image' ? `<img src="${fileUrl(e.path)}" loading="lazy" alt="">` : (e.kind === 'dir' ? ICON.dir : ICON.model).replace('<svg', '<svg width="20" height="20"')} ${esc(e.name)}</div>`).join('') || '<div class="item muted">Nothing here</div>'}
         </div>
-        <div class="foot"><button class="btn" data-x>Cancel</button>${wantImage ? '' : '<button class="btn primary" data-ok>Move here</button>'}</div></div>`;
+        <div class="foot"><button class="btn" data-x>Cancel</button>${want ? '' : '<button class="btn primary" data-ok>Move here</button>'}</div></div>`;
       $('[data-x]', o).onclick = () => done(null);
       $('[data-ok]', o) && ($('[data-ok]', o).onclick = () => done(cur));
       $('[data-up]', o) && ($('[data-up]', o).onclick = () => { cur = cur.split('/').slice(0, -1).join('/'); draw(); });
@@ -785,6 +803,7 @@ function picker(title, wantImage) {
   });
 }
 const pickFolder = t => picker(t, false);
+const pickGlb = t => picker(t, 'glb');
 // A popup of schema options (choices and numbers); resolves to {key: value} or null when cancelled.
 function optionsModal(title, fields) {
   return new Promise(resolve => {
@@ -852,7 +871,7 @@ async function renderCreate() {
     <h2 class="fade" style="--i:1">Create</h2>
     <div class="types fade" style="--i:2">
       <button class="type on">${ICON.model.replace('<svg', '<svg width="28" height="28"')}<h3>3D Asset</h3><div class="muted" style="font-size:12px" id="typedesc"></div></button>
-      ${imagesType(false)}
+      ${imagesType(false)}${creatureType(false)}
     </div>
     <div class="form">
       <div class="card fade" style="--i:3">
@@ -980,7 +999,7 @@ async function renderImages() {
     <h2 class="fade" style="--i:1">Create</h2>
     <div class="types fade" style="--i:2">
       <button class="type" onclick="location.hash='#/create'">${ICON.model.replace('<svg', '<svg width="28" height="28"')}<h3>3D Asset</h3><div class="muted" style="font-size:12px">Image(s) → textured GLB</div></button>
-      ${imagesType(true)}
+      ${imagesType(true)}${creatureType(false)}
     </div>
     <div class="card fade" style="--i:3;margin-top:18px;max-width:760px">
       ${cx.signed_in ? '' : `<div class="err" style="margin-bottom:14px">ChatGPT is not signed in. <a href="#/settings">Sign in under Settings</a> first.</div>`}
@@ -1018,6 +1037,215 @@ async function renderImages() {
     } catch (e) { fail(e); }
   };
 }
+/* ---------------- create: creature (animated quadruped) */
+const creatureType = on => `<button class="type ${on ? 'on' : ''}" onclick="location.hash='#/create/creature'">${ICON.model.replace('<svg', '<svg width="28" height="28"')}<h3>Creature</h3>
+  <div class="muted" style="font-size:12px">Prompt → animated quadruped · Zoo-300K clips</div></button>`;
+let animalList = null;  // /api/animals: the Zoo-300K catalogue with curated flags and clip lists
+const loadAnimals = async () => animalList ??= (await api('/api/animals')).animals;
+const animalById = id => (animalList || []).find(a => a.id === id);
+
+async function renderCreature() {
+  crumbs([['Create', '#/create'], ['Creature', '#/create/creature']]);
+  let sc; try { [sc] = await Promise.all([api('/api/schema'), loadAnimals(), loadTypes()]); } catch (e) { return fail(e); }
+  const draft = store.get('creatureDraft', {});
+  let animal = '', timer = 0, ticked = null;  // animal: the chosen candidate's id; ticked: its clip names still ticked
+  $('#view').innerHTML = `
+    <div class="eyebrow fade">New job</div>
+    <h2 class="fade" style="--i:1">Create</h2>
+    <div class="types fade" style="--i:2">
+      <button class="type" onclick="location.hash='#/create'">${ICON.model.replace('<svg', '<svg width="28" height="28"')}<h3>3D Asset</h3><div class="muted" style="font-size:12px">Image(s) → textured GLB</div></button>
+      ${imagesType(false)}${creatureType(true)}
+    </div>
+    <div class="card fade" style="--i:3;margin-top:18px;max-width:760px">
+      <div class="muted" style="font-size:12px;margin-bottom:14px">Builds and rigs a quadruped from the prompt, moves it onto the shared skeleton and retargets the clips of a matching animal. Saved as ${esc(typeInfo.types.creature.folder)}/&lt;Name&gt;/.</div>
+      <div class="field"><label for="cname">Creature name</label><input type="text" id="cname" value="${esc(draft.name || '')}" placeholder="Swamp Rat"></div>
+      <div class="field" style="margin-top:14px"><label for="cprompt">Prompt</label><textarea id="cprompt" rows="4" style="resize:vertical">${esc(draft.prompt || '')}</textarea></div>
+      <div class="field" style="margin-top:14px"><label for="canimal">Animal</label><input type="text" id="canimal" autocomplete="off" value="${esc(draft.animal || '')}" placeholder="Type to match; empty matches from the name">
+        <div id="cands"></div></div>
+      <div class="field" style="margin-top:14px"><label>Clips</label><div id="cclips" class="muted" style="font-size:13px"></div></div>
+      <div class="field" style="margin-top:14px"><label for="cother">Other clips (made with UniMate, comma separated)</label><input type="text" id="cother" value="${esc(draft.other || '')}" placeholder="Sniff, Dig"></div>
+      <div class="fields">
+        <div class="field check"><input type="checkbox" id="cfill" ${draft.fill === false ? '' : 'checked'}><label for="cfill">Fill missing clips with UniMate</label></div>
+        <div class="field"><label for="csize">Length (cm)</label><input type="number" id="csize" min="1" max="2000" value="${esc(draft.size || '')}" placeholder="animal's middle"></div>
+        <div class="field"><label for="cpreset">Quality</label><select id="cpreset">${sc.presets.map(l => `<option ${l === (draft.preset || sc.default_preset) ? 'selected' : ''}>${esc(l)}</option>`).join('')}</select></div>
+      </div>
+      <button class="btn primary" id="csubmit" style="width:100%;justify-content:center;margin-top:18px;height:44px">Add to queue</button>
+    </div>`;
+  const keep = () => store.set('creatureDraft', { name: $('#cname').value, prompt: $('#cprompt').value, animal: $('#canimal').value, other: $('#cother').value,
+    fill: $('#cfill').checked, size: $('#csize').value, preset: $('#cpreset').value });
+  ['#cname', '#cprompt', '#canimal', '#cother', '#cfill', '#csize', '#cpreset'].forEach(s => $(s).addEventListener('input', keep));
+  const drawClips = () => {
+    const a = animalById(animal);
+    if (!a) { $('#cclips').textContent = 'Pick an animal below to choose its clips; none picked means all clips of the best match.'; return; }
+    if (!a.curated) { $('#cclips').textContent = `${a.name} is not curated yet: it is curated when the job runs, and every clip is made. Name extra clips below.`; return; }
+    ticked ??= a.clips.map(c => c.name);
+    $('#cclips').innerHTML = `<div class="ticks">${a.clips.map(c => `<label><input type="checkbox" data-clip="${esc(c.name)}" ${ticked.includes(c.name) ? 'checked' : ''}>${esc(c.name)}</label>`).join('')}</div>`;
+    document.querySelectorAll('[data-clip]').forEach(cb => cb.onchange = () => { ticked = [...document.querySelectorAll('[data-clip]:checked')].map(x => x.dataset.clip); });
+  };
+  const drawCands = list => {
+    $('#cands').innerHTML = list.map(c => { const a = animalById(c.id) || {};
+      return `<div class="cand ${c.id === animal ? 'on' : ''}" data-id="${esc(c.id)}"><b>${esc(a.name || c.id)}</b><span class="mb">${c.score.toFixed(2)}</span>
+        <span class="mb ${a.curated ? 'pass' : ''}">${a.curated ? 'curated' : 'not curated'}</span><span class="muted" style="font-size:12px">${esc(c.reason)}</span></div>`; }).join('');
+    $('#cands').querySelectorAll('.cand').forEach(el => el.onclick = () => {
+      animal = el.dataset.id; ticked = null; $('#canimal').value = animal; keep();
+      $('#cands').querySelectorAll('.cand').forEach(x => x.classList.toggle('on', x === el)); drawClips();
+    });
+  };
+  const match = async () => {
+    const q = $('#canimal').value.trim() || $('#cname').value.trim();
+    if (!q) { $('#cands').innerHTML = ''; return; }
+    try { drawCands((await api('/api/animals/match?q=' + encodeURIComponent(q))).candidates); } catch (e) { fail(e); }
+  };
+  $('#canimal').addEventListener('input', () => { animal = ''; ticked = null; drawClips(); clearTimeout(timer); timer = setTimeout(match, 200); });
+  $('#cname').addEventListener('input', () => { if (!$('#canimal').value.trim()) { clearTimeout(timer); timer = setTimeout(match, 200); } });
+  drawClips(); match();
+  $('#csubmit').onclick = async () => {
+    const name = $('#cname').value.trim(), prompt = $('#cprompt').value.trim();
+    if (!name) return toast('Give the creature a name', true);
+    if (!prompt) return toast('Write a prompt first', true);
+    const other = $('#cother').value.split(',').map(x => x.trim()).filter(Boolean), a = animalById(animal);
+    let clips = 'all';
+    if (a?.curated && ticked) {
+      if (!ticked.length && !other.length) return toast('Tick at least one clip', true);
+      if (ticked.length < a.clips.length || other.length) clips = [...ticked, ...other];
+    } else if (other.length) clips = other;
+    const body = { kind: 'creature', name, prompt, clips, fill_missing: $('#cfill').checked, preset: $('#cpreset').value };
+    if (animal) body.animal = animal;
+    if ($('#csize').value) body.size_cm = +$('#csize').value;
+    try { await post('/api/jobs', body); toast('Added to queue'); setQueueOpen(true); pollQueue(); } catch (e) { fail(e); }
+  };
+}
+
+/* ---------------- model folder view (a folder holding <Name>.json: a creature's clips) */
+// checks.review is [{verdict, reason}]; an older manifest keeps one "VERDICT: reason" string
+const reviewsOf = c => { const r = c.checks?.review ?? []; return typeof r === 'string' ? [{ verdict: r.split(':')[0], reason: r.split(':').slice(1).join(':').trim() }] : r; };
+function clipRow(c, dir, sheets, animal) {
+  const k = c.checks || {}, rv = reviewsOf(c), last = rv.at(-1);
+  const sheet = c.file.split('/').pop().replace(/\.glb$/i, '.png');
+  const src = { library: `library · ${c.animal || animal}`, text: `text${c.seed == null ? '' : ' · seed ' + c.seed}`, video: `video · ${c.action || ''} take ${c.take}`,
+    glb: `glb · ${(c.from || '').split('/').pop()} · ${c.animation || ''}${c.retargeted ? ' · retargeted' : ''}` }[c.source] || c.source;
+  const chk = k.passed === true ? ['pass', 'passed'] : k.passed === false ? ['fail', 'failed'] : ['', 'not checked'];
+  return `<div class="cl">
+    ${sheets.has(sheet) ? `<img src="${fileUrl(dir + '/animations/' + sheet)}" alt="${esc(c.name)} sheet" data-sheet loading="lazy">` : '<div class="nothumb">no sheet</div>'}
+    <div><div class="name">${esc(c.name)}</div>
+      <div class="meta"><span class="mb" ${c.prompt ? `title="${esc(c.prompt)}"` : ''}>${esc(src)}</span>
+        <span class="mb ${chk[0]}" title="${esc(k.reason || '')}">${chk[1]}</span>
+        ${last ? `<span class="mb ${last.verdict === 'PASS' ? 'pass' : 'fail'}" title="${esc(rv.map((r, i) => `${i + 1}. ${r.verdict}: ${r.reason}`).join('\n'))}">review ${esc(last.verdict.toLowerCase())}</span>` : ''}
+        ${rv.length > 1 ? `<span class="mb warn" title="Needed a second ask: the numbers passed and the first review said FAIL">${rv.length} reviews</span>` : ''}
+        ${c.best ? `<span class="mb pass" title="The best of this prompt's seeds: passed first, then the lowest seam">best</span>` : ''}</div></div>
+    <label title="Included in ${esc(dir.split('/').pop())}_animated.glb"><input type="checkbox" data-bake="${esc(c.name)}" ${c.baked ? 'checked' : ''}>baked</label></div>`;
+}
+async function drawModel(name, dir, man) {
+  const box = $('#modelview'); if (!box) return;
+  try { man ??= await api('/api/models/' + name); } catch { return; }
+  let sheets = new Set();
+  try { sheets = new Set((await api('/api/ls?path=' + encodeURIComponent(dir + '/animations'))).entries.map(e => e.name)); } catch {}
+  if ($('#modelview') !== box) return;  // navigated away meanwhile
+  const un = man.unreal || { state: 'pending', reason: '' }, ucls = { pass: 'pass', fail: 'fail' }[un.state] || '';
+  box.innerHTML = `<div class="card" style="margin-bottom:18px">
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap"><div class="eyebrow">Creature</div><b>${esc(man.name)}</b>
+      <span class="mb">${esc(man.animal)}${man.match ? ' · ' + man.match.score.toFixed(2) : ''}</span><span class="mb">${esc(man.size_cm)} cm</span><span class="mb">${esc(man.skeleton)}</span>
+      <span class="mb ${ucls}" id="unreal" title="${esc(un.reason || 'Desktop Unreal import check')}">unreal: ${esc(un.state)}</span></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px">
+      <button class="btn primary" id="combine">Combine Animations</button><button class="btn" id="newanim">New Animation</button><button class="btn" id="addglb">Add from GLB</button></div>
+    <div class="err" id="merr" style="margin-top:10px;color:var(--danger);font-size:13px" hidden></div>
+    <div style="margin-top:14px">${man.clips.map(c => clipRow(c, dir, sheets, man.animal)).join('') || '<div class="muted">No clips.</div>'}</div>
+    ${(man.unavailable || []).map(u => `<div class="muted" style="font-size:12px;margin-top:8px">Not made: <b>${esc(u.name)}</b> · ${esc(u.reason)}</div>`).join('')}</div>`;
+  box.querySelectorAll('[data-sheet]').forEach(i => i.onclick = () => lightbox(i.src));
+  $('#combine').onclick = async () => {
+    const clips = [...box.querySelectorAll('[data-bake]:checked')].map(x => x.dataset.bake), err = $('#merr');
+    err.hidden = true;
+    if (!clips.length) return toast('Tick at least one clip to bake', true);
+    try { const m = await post(`/api/models/${name}/combine`, { clips }); toast('Combined'); drawModel(name, dir, m); }
+    catch (e) { err.textContent = e.message; err.hidden = false; fail(e); }
+  };
+  $('#newanim').onclick = () => newAnimation(man);
+  $('#addglb').onclick = () => addFromGlb(man);
+}
+// A popup with a body and an action: run(o) posts (the popup then closes) or throws (its message shows in the popup).
+function formModal(title, html, run) {
+  const o = Object.assign(document.createElement('div'), { className: 'overlay' });
+  o.onclick = ev => { if (ev.target === o) o.remove(); };  // not `&&`: a handler returning false cancels the checkboxes' clicks
+  o.innerHTML = `<div class="modal"><h3>${esc(title)}</h3><div style="display:grid;gap:14px;margin:16px 0;overflow:auto">${html}</div>
+    <div class="err" data-err style="color:var(--danger);font-size:13px" hidden></div><div class="foot"><button class="btn" data-x>Cancel</button><button class="btn primary" data-ok>Add to queue</button></div></div>`;
+  document.body.append(o);
+  $('[data-x]', o).onclick = () => o.remove();
+  $('[data-ok]', o).onclick = async () => {
+    const err = $('[data-err]', o); err.hidden = true;
+    try { await run(o); o.remove(); toast('Added to queue'); setQueueOpen(true); pollQueue(); }
+    catch (e) { err.textContent = e.message; err.hidden = false; }
+  };
+  return o;
+}
+async function newAnimation(man) {
+  let sc; try { [sc] = await Promise.all([api('/api/schema'), loadAnimals()]); } catch (e) { return fail(e); }
+  const actions = sc.motion.find(p => p.key === 'action').options;
+  const fld = (id, label, inner) => `<div class="field"><label for="${id}">${label}</label>${inner}</div>`;
+  const o = formModal('New Animation · ' + man.name, `
+    <div class="seg" style="justify-self:start">${[['library', 'Library'], ['text', 'Describe'], ['video', 'Video']].map(([k, l]) => `<button data-src="${k}">${l}</button>`).join('')}</div>
+    <div data-g="library" style="display:grid;gap:14px">${fld('na_animal', 'Animal', `<input type="text" id="na_animal" list="na_animals" value="${esc(man.animal)}"><datalist id="na_animals">${animalList.map(a => `<option value="${esc(a.id)}">`).join('')}</datalist>`)}
+      ${fld('na_lclip', 'Clip', `<input type="text" id="na_lclip" list="na_clips" placeholder="Trottle"><datalist id="na_clips"></datalist>`)}</div>
+    <div data-g="text" style="display:grid;gap:14px">${fld('na_prompt', 'Describe the motion', `<textarea id="na_prompt" rows="3" placeholder="sniffs the ground"></textarea>`)}
+      ${fld('na_seeds', 'Seeds (1-8, empty = setting)', `<input type="number" id="na_seeds" min="1" max="8">`)}</div>
+    <div data-g="video" style="display:grid;gap:14px">${fld('na_action', 'Action', `<select id="na_action">${actions.map(a => `<option>${esc(a)}</option>`).join('')}</select>`)}
+      ${fld('na_takes', 'Takes (empty = default)', `<input type="number" id="na_takes" min="1" max="4">`)}</div>
+    <div data-g="text video">${fld('na_clip', 'Clip name (optional)', `<input type="text" id="na_clip" placeholder="from the prompt or action">`)}</div>`,
+    async o => {
+      const src = o.dataset.src, v = id => $('#' + id, o).value.trim();
+      let b;
+      if (src === 'library') b = { source: 'library', animal: v('na_animal'), clip: v('na_lclip') };
+      else if (src === 'text') b = { source: 'text', prompt: v('na_prompt'), ...(v('na_seeds') && { seeds: +v('na_seeds') }), ...(v('na_clip') && { clip: v('na_clip') }) };
+      else b = { source: 'video', action: v('na_action'), ...(v('na_takes') && { takes: +v('na_takes') }), ...(v('na_clip') && { clip: v('na_clip') }) };
+      await post(`/api/models/${man.name}/clips`, b);
+    });
+  const setSrc = s => {
+    o.dataset.src = s;
+    o.querySelectorAll('[data-src]').forEach(b => b.classList.toggle('on', b.dataset.src === s));
+    o.querySelectorAll('[data-g]').forEach(g => g.hidden = !g.dataset.g.split(' ').includes(s));
+  };
+  const clipsOf = () => { const a = animalById($('#na_animal', o).value.trim()); $('#na_clips', o).innerHTML = (a?.clips || []).map(c => `<option value="${esc(c.name)}">`).join(''); };
+  o.querySelectorAll('[data-src]').forEach(b => b.onclick = () => setSrc(b.dataset.src));
+  $('#na_animal', o).addEventListener('input', clipsOf);
+  setSrc('library'); clipsOf();
+}
+// The animation names of a .glb in the library, read from its JSON chunk.
+async function glbAnimations(path) {
+  const buf = await (await fetch(fileUrl(path))).arrayBuffer(), dv = new DataView(buf);
+  if (dv.getUint32(0, true) !== 0x46546C67) throw new Error('not a .glb file');
+  const js = JSON.parse(new TextDecoder().decode(new Uint8Array(buf, 20, dv.getUint32(12, true))));
+  return { names: (js.animations || []).map(a => a.name), skinned: !!(js.skins || []).length };
+}
+async function addFromGlb(man) {
+  const st = await api('/api/settings').catch(() => ({ input_folder: 'Inputs' }));
+  let glb = '';
+  const o = formModal('Add from GLB · ' + man.name, `
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><button class="btn" data-pick>Choose from assets</button><button class="btn" data-up>Upload</button>
+      <input type="file" accept=".glb" data-file hidden><span class="muted" data-path style="font-size:12px;word-break:break-all">No file chosen</span></div>
+    <div data-anims class="muted" style="font-size:13px"></div>`,
+    async o => {
+      const names = [...o.querySelectorAll('[data-an]:checked')].map(x => x.dataset.an);
+      if (!glb) throw new Error('Choose a .glb first');
+      if (!names.length) throw new Error('Tick at least one animation');
+      const rename = Object.fromEntries(names.map(n => [n, $(`[data-rn="${CSS.escape(n)}"]`, o).value.trim()]).filter(([n, r]) => r && r !== n));
+      await post(`/api/models/${man.name}/clips`, { source: 'glb', from_glb: glb, animations: names, rename });
+    });
+  const choose = async p => {
+    if (!p) return;
+    glb = p; $('[data-path]', o).textContent = p;
+    const box = $('[data-anims]', o);
+    try {
+      const g = await glbAnimations(p);
+      box.innerHTML = (g.skinned ? '' : '<div style="color:var(--danger)">This file has no skeleton (no skin).</div>') + (g.names.length
+        ? g.names.map(n => `<div style="display:flex;align-items:center;gap:10px;margin-top:8px"><label style="display:flex;gap:6px;align-items:center;flex:1;cursor:pointer"><input type="checkbox" data-an="${esc(n)}">${esc(n)}</label>
+          <input type="text" data-rn="${esc(n)}" placeholder="clip name" value="${esc(n)}" style="flex:1" title="Clip name (letters, digits, _ and -)"></div>`).join('')
+        : '<div style="color:var(--danger)">No animations in this file.</div>');
+    } catch (e) { box.innerHTML = `<div style="color:var(--danger)">${esc(e.message)}</div>`; }
+  };
+  $('[data-pick]', o).onclick = () => pickGlb('Choose a skinned .glb').then(choose);
+  $('[data-up]', o).onclick = () => $('[data-file]', o).click();
+  $('[data-file]', o).onchange = async e => choose((await uploadFiles([...e.target.files].slice(0, 1), st.input_folder))[0]);
+}
+
 // A finished image job's files become the 3D Asset form's source: one image, or views by their -front/-left/... suffix.
 function useImages(job) {
   const paths = job.files.map(f => f.path);
@@ -1220,7 +1448,7 @@ async function pollQueue() {
 }
 let detJobs = null;
 function drawQueue(jobs) {
-  const det = jobs.filter(j => j.kind === 'detector').map(j => j.id + j.status).join();  // badges follow detector jobs
+  const det = jobs.filter(j => ['detector', 'creature', 'clip'].includes(j.kind)).map(j => j.id + j.status).join();  // badges follow detector jobs
   if (detJobs !== null && det !== detJobs && (location.hash.startsWith('#/assets') || !location.hash)) renderAssets();
   detJobs = det;
   const active = jobs.filter(j => ['queued', 'running', 'cancelling'].includes(j.status));
@@ -1235,7 +1463,7 @@ function drawQueue(jobs) {
     const time = j.started ? dur((j.finished || now) - j.started) : 'queued ' + fmtTime(j.created);
     return `<div class="job ${live ? 'running' : ''}" style="animation:none">
       <div class="row"><span class="title" title="${esc(j.name)}">${esc(j.name)}</span><span class="pill ${j.status}">${j.status}</span></div>
-      <div class="sub">${{ motion: 'Motion', rig: 'Rig', image: 'Images', detector: 'Detector' }[j.kind] || '3D Asset'} · #${j.id}${j.host ? ' · ' + esc(j.host) : ''} · ${time}${j.note && (j.status === 'queued' || live) ? ' · ' + esc(j.note) : ''}</div>
+      <div class="sub">${{ motion: 'Motion', rig: 'Rig', image: 'Images', detector: 'Detector', creature: 'Creature', clip: 'Clip' }[j.kind] || '3D Asset'} · #${j.id}${j.host ? ' · ' + esc(j.host) : ''} · ${time}${j.note && (j.status === 'queued' || live) ? ' · ' + esc(j.note) : ''}</div>
       ${j.error ? `<div class="err">${esc(j.error)}</div>` : ''}
       ${j.kind === 'motion' && j.detector?.state === 'failed' ? `<div class="err">The model's joint detector failed its exam, so this job tracked with CoTracker: the legs may move together. Its files include the exam overlay video.</div>` : ''}      ${live && m ? `<div class="metrics">${metric('CPU', m.cpu)}${metric('RAM', m.ram, m.ram_gb.join(' / ') + ' GB')}${metric('GPU', m.gpu)}${metric('VRAM', m.vram, m.vram_gb.join(' / ') + ' GB')}</div>` : ''}
       ${j.log.length || live ? `<div class="log ${open ? 'open' : ''}"><pre data-id="${j.id}">${esc(open ? j.log.join('\n') : j.log.at(-1) || 'waiting for output…')}</pre>
