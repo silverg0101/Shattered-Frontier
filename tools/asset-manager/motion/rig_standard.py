@@ -42,8 +42,10 @@ def limb_of(std):
 
 # ---------------------------------------------------------------- labelling (no Blender)
 def plan(bones, h):
-    """bones [{name, parent, head, tail}] in world space (Blender, Z up), h the model height -> labels.json content:
-    turn, labels {bone: standard}, dropped, warnings, bones {standard: {head, tail, parent, sources}}."""
+    """bones [{name, parent, head, tail, weight?}] in world space (Blender, Z up), h the model height -> labels.json
+    content: turn, labels {bone: standard}, dropped, warnings, bones {standard: {head, tail, parent, sources}}.
+    weight: the skin weight a bone carries, summed over the vertices; with it, the turn whose head chain carries the
+    most skin wins (a head outweighs a tail, though a boar's lowered snout sits below its raised tail)."""
     found, errors = [], []
     for turn in (0, -90, 90, 180):
         try:
@@ -52,8 +54,9 @@ def plan(bones, h):
             errors.append(f"turned {turn}: {e}")
     if not found:
         raise SystemExit("FAIL: no head, body and four legs found: " + "; ".join(errors))
-    best = max(found, key=lambda r: r["_head_z"])  # should a straight tail pass for a head: the head sits higher
-    del best["_head_z"]
+    weighed = all("weight" in b for b in bones)  # should a tail pass for a head: the head is heavier, else higher
+    best = max(found, key=lambda r: r["_head_w"] if weighed else r["_head_z"])
+    del best["_head_z"], best["_head_w"]
     return best
 
 
@@ -102,8 +105,14 @@ def plan_turned(bones, h, turn):
         while parent[out[-1]]:
             out.append(parent[out[-1]])
         return out
-    spine = up(parent[head_root])[::-1] if parent[head_root] else []  # skeleton root .. the bone the head hangs off
+    def path(a, b):  # the bones from a to b through the tree, both included
+        ua, ub = up(a), up(b)
+        common = next(n for n in ua if n in ub)
+        return ua[:ua.index(common) + 1] + ub[:ub.index(common)][::-1]
     at = {l: parent[leg_root[l]] for l in legs}
+    # the spine runs from the leg attachment farthest from the head to the bone the head hangs off; the skeleton root
+    # may sit anywhere on it (SkinTokens often roots at the shoulders, the hips then on a branch towards the tail)
+    spine = max((path(at[l], parent[head_root]) for l in legs), key=len) if parent[head_root] else []
     if any(at[l] not in spine for l in legs):
         raise ValueError("a leg hangs off a side branch of the body, not the spine to the head")
     # front vs hind: distance along the spine from the head
@@ -132,7 +141,7 @@ def plan_turned(bones, h, turn):
         return path
     neck_head = main_path(head_root, False)
     body_src, spine_src, neck_src = spine[:hind + 1], spine[hind + 1:], neck_head[:-1]
-    tails = top("tail")
+    tails = [n for n in top("tail") if pos.get(parent[n], -1) <= hind]  # off the hips or behind, not a belly chain
     tail_src = main_path(max(tails, key=subtree), True) if tails else []
     groups = {"axial": [body_src] + creature.chain_resample(spine_src, 3, span(spine_src))
                        + creature.chain_resample(neck_src, 1, span(neck_src)) + [[neck_head[-1]]],
@@ -169,7 +178,8 @@ def plan_turned(bones, h, turn):
     if not out["head"]["head"][1] < out["pelvis"]["head"][1] - 0.05 * h:
         raise ValueError("the head is not in front of the pelvis")
     return {"turn": turn, "labels": labels, "dropped": [n for n in names if n not in kept], "warnings": warnings, "bones": out,
-            "_head_z": float(np.mean([head[n][2] for n in names if limb[n] == "head"]))}
+            "_head_z": float(np.mean([head[n][2] for n in names if limb[n] == "head"])),
+            "_head_w": sum(b.get("weight", 0) for b in bones if limb[b["name"]] == "head")}
 
 
 def layout(groups, head, tail, h):
@@ -232,7 +242,13 @@ def load(model):
     arm = rv.load(model)
     lo, hi = rv.bounds(arm)
     mw = arm.matrix_world
-    bones = [{"name": b.name, "parent": b.parent.name if b.parent else None,
+    w = {}
+    for o in limbs.skinned(arm):
+        gname = {g.index: g.name for g in o.vertex_groups}
+        for v in o.data.vertices:
+            for g in v.groups:
+                w[gname[g.group]] = w.get(gname[g.group], 0) + g.weight
+    bones = [{"name": b.name, "parent": b.parent.name if b.parent else None, "weight": w.get(b.name, 0.0),
               "head": list(mw @ b.head_local), "tail": list(mw @ b.tail_local)} for b in arm.data.bones]
     return arm, bones, hi.z - lo.z
 
