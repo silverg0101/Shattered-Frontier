@@ -69,7 +69,7 @@ FVector Grounded(UWorld* World, const FVector& XY, float HalfHeight)
     return FVector(XY.X, XY.Y, XY.Z + HalfHeight + 4);
 }
 
-int32 FixtureRewardNpcCount(const TMap<FString, TWeakObjectPtr<ASFPilotBoar>>& Npcs)
+int32 FixtureRewardNpcCount(const TMap<FString, TWeakObjectPtr<ASFCombatNpc>>& Npcs)
 {
     int32 Count = 0;
     for (const auto& Pair : Npcs)
@@ -308,9 +308,9 @@ bool USFCombatPilotSettings::Validate(FString& Error) const
     return true;
 }
 
-const FName ASFPilotBoar::OutOfPlaceNpcTag(TEXT("SF_OutOfPlaceNpc"));
+const FName ASFCombatNpc::OutOfPlaceNpcTag(TEXT("SF_OutOfPlaceNpc"));
 
-ASFPilotBoar::ASFPilotBoar()
+ASFCombatNpc::ASFCombatNpc()
 {
     bReplicates = true;
     SetReplicateMovement(true);
@@ -335,31 +335,31 @@ ASFPilotBoar::ASFPilotBoar()
     SetNetCullDistanceSquared(FMath::Square(80000.0f));
 }
 
-const SFNpcProfiles::FBehavior& ASFPilotBoar::GetBehavior() const
+const SFNpcProfiles::FBehavior& ASFCombatNpc::GetBehavior() const
 {
     if (const auto* Profile = GetNpcProfile()) return Profile->Behavior;
     static const SFNpcProfiles::FBehavior Invalid;
     return Invalid; // Unknown definitions are never configured; fail closed if an old serialized actor is invalid.
 }
 
-FTransform ASFPilotBoar::GetBodyWorldTransform() const
+FTransform ASFCombatNpc::GetBodyWorldTransform() const
 {
     return Body ? Body->GetComponentTransform() : GetActorTransform();
 }
 
-void ASFPilotBoar::OnConstruction(const FTransform& Transform)
+void ASFCombatNpc::OnConstruction(const FTransform& Transform)
 {
     Super::OnConstruction(Transform);
     ApplyPresentation();
 }
 
-void ASFPilotBoar::PostInitializeComponents()
+void ASFCombatNpc::PostInitializeComponents()
 {
     Super::PostInitializeComponents();
     ApplyPresentation();
 }
 
-bool ASFPilotBoar::ApplyPresentation(const SFNpcProfiles::FProfile* Profile)
+bool ASFCombatNpc::ApplyPresentation(const SFNpcProfiles::FProfile* Profile)
 {
     if (!Profile) Profile = GetNpcProfile();
     if (!Profile || !Body || !Label) return false;
@@ -381,19 +381,19 @@ bool ASFPilotBoar::ApplyPresentation(const SFNpcProfiles::FProfile* Profile)
     return true;
 }
 
-void ASFPilotBoar::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+void ASFCombatNpc::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-    DOREPLIFETIME(ASFPilotBoar, CurrentHealth);
-    DOREPLIFETIME(ASFPilotBoar, MaximumHealthValue);
-    DOREPLIFETIME(ASFPilotBoar, SpawnGroup);
-    DOREPLIFETIME(ASFPilotBoar, CreatureId);
-    DOREPLIFETIME(ASFPilotBoar, Slot);
-    DOREPLIFETIME(ASFPilotBoar, bReturning);
-    DOREPLIFETIME(ASFPilotBoar, ReplicatedTarget);
+    DOREPLIFETIME(ASFCombatNpc, CurrentHealth);
+    DOREPLIFETIME(ASFCombatNpc, MaximumHealthValue);
+    DOREPLIFETIME(ASFCombatNpc, SpawnGroup);
+    DOREPLIFETIME(ASFCombatNpc, CreatureId);
+    DOREPLIFETIME(ASFCombatNpc, Slot);
+    DOREPLIFETIME(ASFCombatNpc, bReturning);
+    DOREPLIFETIME(ASFCombatNpc, ReplicatedTarget);
 }
 
-bool ASFPilotBoar::HasThreatFor(const ASFE1Character* Character) const
+bool ASFCombatNpc::HasThreatFor(const ASFE1Character* Character) const
 {
     if (!HasAuthority() || !Character) { return false; }
     for (const auto& Pair : ThreatActors)
@@ -401,7 +401,7 @@ bool ASFPilotBoar::HasThreatFor(const ASFE1Character* Character) const
     return false;
 }
 
-void ASFPilotBoar::Initialize(ASFGameMode* OwnerMode, const FString& Group, int32 InSlot,
+void ASFCombatNpc::Initialize(ASFGameMode* OwnerMode, const FString& Group, int32 InSlot,
     const TArray<FVector2D>& Area, int32 Health, int32 Serial, bool bInDefensive, ESFNpcFixtureFlags InFixtureFlags)
 {
     check(HasAuthority());
@@ -426,7 +426,7 @@ void ASFPilotBoar::Initialize(ASFGameMode* OwnerMode, const FString& Group, int3
     ReplicatedTarget = nullptr; NextThreatDecisionAt = 0; EngagedSince = -1;
 }
 
-bool ASFPilotBoar::ConfigureCreature(const FString& DefinitionId)
+bool ASFCombatNpc::ConfigureCreature(const FString& DefinitionId)
 {
     if (!HasAuthority()) return false;
     FString TableId;
@@ -438,7 +438,7 @@ bool ASFPilotBoar::ConfigureCreature(const FString& DefinitionId)
     return true;
 }
 
-bool ASFPilotBoar::ResolveCreatureLoot(const FString& DefinitionId, FString& TableId, bool& bUnique)
+bool ASFCombatNpc::ResolveCreatureLoot(const FString& DefinitionId, FString& TableId, bool& bUnique)
 {
     const auto* Profile = SFNpcProfiles::Find(DefinitionId);
     if (!Profile) return false;
@@ -446,7 +446,7 @@ bool ASFPilotBoar::ResolveCreatureLoot(const FString& DefinitionId, FString& Tab
     return true;
 }
 
-bool ASFPilotBoar::ReceivePackAssist(ASFE1Character* Character, const FString& CharacterId)
+bool ASFCombatNpc::ReceivePackAssist(ASFE1Character* Character, const FString& CharacterId)
 {
     if (!HasAuthority() || !PilotMode.IsValid() || !IsValid(Character) || CharacterId.IsEmpty() ||
         CurrentHealth <= 0 || bReturning || !TargetCharacterId.IsEmpty() ||
@@ -470,7 +470,7 @@ bool ASFPilotBoar::ReceivePackAssist(ASFE1Character* Character, const FString& C
     return true;
 }
 
-void ASFPilotBoar::EnterEvade()
+void ASFCombatNpc::EnterEvade()
 {
     if (!HasAuthority() || bReturning || CurrentHealth <= 0) { return; }
     if (StatusEffects) StatusEffects->ClearAll();
@@ -500,7 +500,7 @@ void ASFPilotBoar::EnterEvade()
     ForceNetUpdate();
 }
 
-void ASFPilotBoar::OnRep_Health()
+void ASFCombatNpc::OnRep_Health()
 {
     if (!Label) { return; }
     const FString Name = CreatureId.RightChop(4).Replace(TEXT("_"), TEXT(" "));
@@ -509,7 +509,7 @@ void ASFPilotBoar::OnRep_Health()
     Label->SetTextRenderColor(CurrentHealth > 0 ? FColor::Yellow : FColor::Red);
 }
 
-void ASFPilotBoar::CompleteNpcMend(float HealthFraction)
+void ASFCombatNpc::CompleteNpcMend(float HealthFraction)
 {
     if (!HasAuthority() || !CanCastMend() || CurrentHealth <= 0 || bReturning) return;
     const int32 Before = CurrentHealth;
@@ -520,9 +520,9 @@ void ASFPilotBoar::CompleteNpcMend(float HealthFraction)
         *CreatureId, CurrentHealth - Before, CurrentHealth);
 }
 
-void ASFPilotBoar::OnRep_CreatureId() { ApplyPresentation(); OnRep_Health(); }
+void ASFCombatNpc::OnRep_CreatureId() { ApplyPresentation(); OnRep_Health(); }
 
-void ASFPilotBoar::MulticastArcherTracer_Implementation(FVector_NetQuantize Start, FVector_NetQuantize End)
+void ASFCombatNpc::MulticastArcherTracer_Implementation(FVector_NetQuantize Start, FVector_NetQuantize End)
 {
     DrawDebugLine(GetWorld(), Start, End, FColor(255, 205, 90), false, 0.22f, 0, 2.0f);
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
@@ -531,7 +531,7 @@ void ASFPilotBoar::MulticastArcherTracer_Implementation(FVector_NetQuantize Star
 #endif
 }
 
-void ASFPilotBoar::ReceivePilotDodge(ASFE1Character* Attacker)
+void ASFCombatNpc::ReceivePilotDodge(ASFE1Character* Attacker)
 {
     if (!HasAuthority() || !PilotMode.IsValid() || !IsValid(Attacker) || CurrentHealth <= 0 || bReturning) { return; }
     const FString Id = ThreatIdentity(Cast<APlayerController>(Attacker->GetController()));
@@ -550,13 +550,13 @@ void ASFPilotBoar::ReceivePilotDodge(ASFE1Character* Attacker)
     ForceNetUpdate();
 }
 
-bool ASFPilotBoar::HasThreatOn(ASFE1Character* Character) const
+bool ASFCombatNpc::HasThreatOn(ASFE1Character* Character) const
 {
     const FString Id = IsValid(Character) ? ThreatIdentity(Cast<APlayerController>(Character->GetController())) : FString();
     return !Id.IsEmpty() && Threat.Contains(Id) && CurrentHealth > 0 && !bReturning;
 }
 
-void ASFPilotBoar::ReceivePilotHealingThreat(ASFE1Character* Healer, ASFE1Character* Subject, double Amount)
+void ASFCombatNpc::ReceivePilotHealingThreat(ASFE1Character* Healer, ASFE1Character* Subject, double Amount)
 {
     if (!HasAuthority() || !IsValid(Healer) || !HasThreatOn(Subject) || Amount <= 0 || !PilotMode.IsValid()) return;
     const FString Id = ThreatIdentity(Cast<APlayerController>(Healer->GetController()));
@@ -566,14 +566,14 @@ void ASFPilotBoar::ReceivePilotHealingThreat(ASFE1Character* Healer, ASFE1Charac
     Healer->CombatMarkHostile();
 }
 
-void ASFPilotBoar::ApplyAbilitySnare(double Until, double SpeedMultiplier)
+void ASFCombatNpc::ApplyAbilitySnare(double Until, double SpeedMultiplier)
 {
     if (!HasAuthority() || CurrentHealth <= 0) return;
     AbilitySnareUntil = FMath::Max(AbilitySnareUntil, Until);
     AbilitySnareMultiplier = FMath::Min(AbilitySnareMultiplier, SpeedMultiplier);
 }
 
-float ASFPilotBoar::ApplyAbilityRoot(double Until)
+float ASFCombatNpc::ApplyAbilityRoot(double Until)
 {
     if (!HasAuthority() || CurrentHealth <= 0) return 0.f;
     const double Now = GetWorld()->GetTimeSeconds();
@@ -584,7 +584,7 @@ float ASFPilotBoar::ApplyAbilityRoot(double Until)
     return FMath::Max(0.0, (Until - Now) * Percent / 100.0);
 }
 
-void ASFPilotBoar::DropAbilityThreat(ASFE1Character* Character)
+void ASFCombatNpc::DropAbilityThreat(ASFE1Character* Character)
 {
     if (!HasAuthority() || !IsValid(Character)) return;
     for (auto It = ThreatActors.CreateIterator(); It; ++It)
@@ -593,14 +593,14 @@ void ASFPilotBoar::DropAbilityThreat(ASFE1Character* Character)
     if (Target.Get() == Character) { Target.Reset(); ReplicatedTarget = nullptr; TargetCharacterId.Empty(); }
 }
 
-void ASFPilotBoar::RetaliateAgainst(ASFE1Character* Attacker)
+void ASFCombatNpc::RetaliateAgainst(ASFE1Character* Attacker)
 {
     if (!HasAuthority() || !IsValid(Attacker) || !Attacker->HasAuthority() ||
         Attacker->GetWorld() != GetWorld() || Attacker->CombatHealth() <= 0) return;
     ASFGameMode::HitPlayer(this, Attacker, Attacker->CombatHealth(), true, true);
 }
 
-float ASFPilotBoar::TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent,
+float ASFCombatNpc::TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent,
     AController* EventInstigator, AActor* DamageCauser)
 {
     if (!ActorHasTag(OutOfPlaceNpcTag))
@@ -617,7 +617,7 @@ float ASFPilotBoar::TakeDamage(float DamageAmount, const FDamageEvent& DamageEve
     return 0; // Engine damage cannot bypass the same immunity as resolved combat hits.
 }
 
-void ASFPilotBoar::ReceivePilotDamage(ASFE1Character* Attacker, int32 Damage, double AbilityThreatMultiplier)
+void ASFCombatNpc::ReceivePilotDamage(ASFE1Character* Attacker, int32 Damage, double AbilityThreatMultiplier)
 {
     if (ActorHasTag(OutOfPlaceNpcTag))
     {
@@ -649,7 +649,7 @@ void ASFPilotBoar::ReceivePilotDamage(ASFE1Character* Attacker, int32 Damage, do
       SightCache.Empty(); OutsideLeashSince.Empty(); ReplicatedTarget = nullptr; Target.Reset(); PilotMode->BoarDied(this, Attacker); }
 }
 
-bool ASFPilotBoar::ReceivePilotTaunt(ASFE1Character* Taunter)
+bool ASFCombatNpc::ReceivePilotTaunt(ASFE1Character* Taunter)
 {
     if (!HasAuthority() || !IsValid(Taunter) || CurrentHealth <= 0 || bReturning ||
         !PilotMode.IsValid() || Threat.Highest() <= 0) { return false; }
@@ -675,7 +675,7 @@ bool ASFPilotBoar::ReceivePilotTaunt(ASFE1Character* Taunter)
     return true;
 }
 
-void ASFPilotBoar::Tick(float DeltaSeconds)
+void ASFCombatNpc::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
     if (ActorHasTag(OutOfPlaceNpcTag)) return; // This NPC retaliates; it never hunts players.
@@ -840,9 +840,9 @@ void ASFPilotBoar::Tick(float DeltaSeconds)
         SFCombatPilotRules::CanAssist(Now - EngagedSince, 0.0,
             GetBehavior().AssistDelaySeconds, GetBehavior().AssistRadiusMetres))
     {
-        for (TActorIterator<ASFPilotBoar> It(GetWorld()); It; ++It)
+        for (TActorIterator<ASFCombatNpc> It(GetWorld()); It; ++It)
         {
-            ASFPilotBoar* Packmate = *It;
+            ASFCombatNpc* Packmate = *It;
             if (Packmate != this && Packmate->GroupId() == SpawnGroup &&
                 SFCombatPilotRules::CanAssist(Now - EngagedSince,
                     FVector::Dist2D(GetActorLocation(), Packmate->GetActorLocation()) / 100.0,
@@ -1132,12 +1132,12 @@ void ASFGameMode::PostLoginCombat(APlayerController* NewPlayer)
         }
         if (FParse::Param(FCommandLine::Get(), TEXT("CombatTargetScenario")))
         {
-            ASFPilotBoar* Second = nullptr;
+            ASFCombatNpc* Second = nullptr;
             double Nearest = TNumericLimits<double>::Max();
             for (const auto& Pair : ActiveBoars)
             {
                 if (!Pair.Key.StartsWith(TEXT("boar_farm_edge:"))) { continue; }
-                ASFPilotBoar* Candidate = Pair.Value.Get();
+                ASFCombatNpc* Candidate = Pair.Value.Get();
                 if (!Candidate || Candidate == Boar) { continue; }
                 const double Distance = FVector::DistSquared2D(Boar->GetActorLocation(), Candidate->GetActorLocation());
                 if (Distance < Nearest) { Nearest = Distance; Second = Candidate; }
@@ -1251,7 +1251,7 @@ void ASFGameMode::TickGreenlandsAbilityNetcheck()
     }
     if (GreenlandsAbilityStage == 0)
     {
-        ASFPilotBoar* Boar = nullptr;
+        ASFCombatNpc* Boar = nullptr;
         for (const auto& Slot : ActiveBoars)
         { if (Slot.Key.StartsWith(TEXT("boar_farm_edge:")) && IsValid(Slot.Value.Get()) && Slot.Value->Health() > 0)
           { Boar = Slot.Value.Get(); break; } }
@@ -1297,7 +1297,7 @@ void ASFGameMode::TickGreenlandsAbilityNetcheck()
     }
     else if (GreenlandsAbilityStage == 2)
     {
-        ASFPilotBoar* Boar = GreenlandsAbilityBoar.Get();
+        ASFCombatNpc* Boar = GreenlandsAbilityBoar.Get();
         if (!Boar || Boar->Health() <= 0) return;
         const double Before = GreenlandsAbilityWardAbsorb;
         for (int32 Attempt = 0; Attempt < 8 && Driver->CombatAbsorb() >= Before; ++Attempt)
@@ -1378,7 +1378,7 @@ void ASFGameMode::TickGreenlandsAbilityNetcheck()
             GetDefault<USFCombatEnergySettings>()->AbilityEnergyCostMultiplier;
         if (!FMath::IsNearlyEqual(Driver->GetStamina(), Before - Cost, .05f) || !Driver->HasCombatStealth(Now))
         { UE_LOG(LogTemp, Error, TEXT("ABILITY_NETCHECK_FAILED Vanish")); GreenlandsAbilityStage = 99; return; }
-        ASFPilotBoar* BowTarget = nullptr;
+        ASFCombatNpc* BowTarget = nullptr;
         for (const auto& Slot : ActiveBoars)
         { if (Slot.Key.StartsWith(TEXT("boar_farm_edge:")) && IsValid(Slot.Value.Get()) && Slot.Value->Health() > 0)
           { BowTarget = Slot.Value.Get(); break; } }
@@ -1398,7 +1398,7 @@ void ASFGameMode::TickGreenlandsAbilityNetcheck()
     else if (GreenlandsAbilityStage == 8 && Now - GreenlandsAbilityStageAt >= 1.7)
     {
         auto* Inventory = Driver->GetController()->FindComponentByClass<USFInventoryComponent>();
-        ASFPilotBoar* Boar = nullptr;
+        ASFCombatNpc* Boar = nullptr;
         for (const auto& Slot : ActiveBoars)
         { if (Slot.Key.StartsWith(TEXT("boar_farm_edge:")) && IsValid(Slot.Value.Get()) && Slot.Value->Health() > 0)
           { Boar = Slot.Value.Get(); break; } }
@@ -1423,7 +1423,7 @@ void ASFGameMode::TickGreenlandsAbilityNetcheck()
     }
     else if (GreenlandsAbilityStage == 9)
     {
-        ASFPilotBoar* Captain = nullptr;
+        ASFCombatNpc* Captain = nullptr;
         for (const auto& Slot : ActiveBoars)
         { if (IsValid(Slot.Value.Get()) && Slot.Value->GetCreatureId() == TEXT("npc/bandit_captain"))
           { Captain = Slot.Value.Get(); break; } }
@@ -1460,7 +1460,7 @@ void ASFGameMode::TickGreenlandsAbilityNetcheck()
     }
     else if (GreenlandsAbilityStage == 10 && Now - GreenlandsAbilityStageAt >= 2.8)
     {
-        ASFPilotBoar* Captain = GreenlandsAbilityBoar.Get();
+        ASFCombatNpc* Captain = GreenlandsAbilityBoar.Get();
         if (!Captain || Captain->Health() <= GreenlandsAbilityBoarHealth ||
             Captain->GetCasting()->GetCastView().Phase != ESFCastPhase::Idle)
         { UE_LOG(LogTemp, Error, TEXT("ABILITY_NETCHECK_FAILED NpcCastComplete")); GreenlandsAbilityStage = 99; return; }
@@ -1469,7 +1469,7 @@ void ASFGameMode::TickGreenlandsAbilityNetcheck()
     }
     else if (GreenlandsAbilityStage == 11)
     {
-        ASFPilotBoar* Captain = GreenlandsAbilityBoar.Get();
+        ASFCombatNpc* Captain = GreenlandsAbilityBoar.Get();
         if (!Captain || !Captain->GetCasting() || Captain->GetCasting()->GetCastView().Phase != ESFCastPhase::Casting) return;
         Driver->SetActorRotation((Captain->GetActorLocation() - Driver->GetActorLocation()).Rotation());
         Driver->Casting->RequestPublishedInterrupt(false, Captain);
@@ -1486,7 +1486,7 @@ void ASFGameMode::TickGreenlandsAbilityNetcheck()
     }
     else if (GreenlandsAbilityStage == 12)
     {
-        ASFPilotBoar* Captain = GreenlandsAbilityBoar.Get();
+        ASFCombatNpc* Captain = GreenlandsAbilityBoar.Get();
         if (!Captain || !Captain->GetCasting() || Captain->GetCasting()->GetCastView().Phase != ESFCastPhase::Casting) return;
         bool bFound = false;
         for (int32 Direction = 0; Direction < 8 && !bFound; ++Direction)
@@ -1552,7 +1552,7 @@ void ASFGameMode::TickGreenlandsArcherNetcheck()
         USFCharacterSessionComponent::IsRestoring(Observer->GetController())) return;
     for (const auto& Slot : ActiveBoars)
     {
-        ASFPilotBoar* Archer = Slot.Value.Get();
+        ASFCombatNpc* Archer = Slot.Value.Get();
         if (!IsValid(Archer) || !Archer->IsRangedArcher() || Archer->Health() <= 0) continue;
         const FVector Origin = Archer->GetActorLocation();
         for (int32 DirectionIndex = 0; DirectionIndex < 8; ++DirectionIndex)
@@ -1616,7 +1616,7 @@ void ASFGameMode::TickGreenlandsEnergyNetcheck()
     }
     else if (GreenlandsEnergyStage == 3)
     {
-        ASFPilotBoar* Boar = nullptr;
+        ASFCombatNpc* Boar = nullptr;
         for (const auto& Slot : ActiveBoars)
         { if (Slot.Key.StartsWith(TEXT("boar_farm_edge:")) && IsValid(Slot.Value.Get()) && Slot.Value->Health() > 0)
           { Boar = Slot.Value.Get(); break; } }
@@ -1633,7 +1633,7 @@ void ASFGameMode::TickGreenlandsEnergyNetcheck()
     }
     else if (GreenlandsEnergyStage == 4 && Now - GreenlandsEnergyStageAt >= 0.5)
     {
-        ASFPilotBoar* Boar = GreenlandsEnergyBoar.Get();
+        ASFCombatNpc* Boar = GreenlandsEnergyBoar.Get();
         if (!Boar || !Boar->ThreatTarget()) return;
         auto* Levels = Driver->GetController()->FindComponentByClass<USFGatheringPilotComponent>();
         if (!Levels) return;
@@ -1759,7 +1759,7 @@ void ASFGameMode::TickGreenlandsDeathNetcheck()
     {
         for (const auto& Slot : ActiveBoars)
         {
-            ASFPilotBoar* Boar = Slot.Value.Get();
+            ASFCombatNpc* Boar = Slot.Value.Get();
             if (!Slot.Key.StartsWith(TEXT("boar_farm_edge:")) || !Boar || !Boar->IsDefensive()) continue;
             GreenlandsDeathBoar = Boar;
             const FVector Near = Grounded(GetWorld(), Boar->GetActorLocation() + FVector(100, 0, 0),
@@ -1776,7 +1776,7 @@ void ASFGameMode::TickGreenlandsDeathNetcheck()
     }
     else if (GreenlandsDeathStage == 1 && Driver->CombatHealth() > 0 && Now >= GreenlandsDeathNextHitAt)
     {
-        if (ASFPilotBoar* Boar = GreenlandsDeathBoar.Get())
+        if (ASFCombatNpc* Boar = GreenlandsDeathBoar.Get())
         { TryBoarAttack(Boar, Driver); GreenlandsDeathNextHitAt = Now + 1.5; }
     }
     else if (GreenlandsDeathStage == 1 && Driver->CombatHealth() == 0)
@@ -1807,16 +1807,16 @@ void ASFGameMode::TickGreenlandsNetcheck()
     };
     if (GreenlandsNetcheckStage == 0)
     {
-        ASFPilotBoar* BestLead = nullptr;
-        ASFPilotBoar* BestMate = nullptr;
+        ASFCombatNpc* BestLead = nullptr;
+        ASFCombatNpc* BestMate = nullptr;
         double BestDistance = 800.0;
         for (const auto& First : ActiveBoars)
         {
-            ASFPilotBoar* Lead = First.Value.Get();
+            ASFCombatNpc* Lead = First.Value.Get();
             if (!First.Key.StartsWith(TEXT("boar_farm_edge:")) || !Lead || Lead->IsDefensive()) { continue; }
             for (const auto& Second : ActiveBoars)
             {
-                ASFPilotBoar* Mate = Second.Value.Get();
+                ASFCombatNpc* Mate = Second.Value.Get();
                 if (!Second.Key.StartsWith(TEXT("boar_farm_edge:")) || !Mate || !Mate->IsDefensive()) { continue; }
                 const double Distance = FVector::Dist2D(Lead->GetActorLocation(), Mate->GetActorLocation());
                 if (Distance < BestDistance)
@@ -1840,8 +1840,8 @@ void ASFGameMode::TickGreenlandsNetcheck()
         }
         return;
     }
-    ASFPilotBoar* Lead = GreenlandsLead.Get();
-    ASFPilotBoar* Mate = GreenlandsMate.Get();
+    ASFCombatNpc* Lead = GreenlandsLead.Get();
+    ASFCombatNpc* Mate = GreenlandsMate.Get();
     if (GreenlandsNetcheckStage <= 8 && (!Lead || !Mate)) { return; }
     // Switch before the 2 s pack-assist timer so the mate assists the observer deterministically.
     if (GreenlandsNetcheckStage == 1 && Lead->ThreatTarget() == Driver &&
@@ -1968,7 +1968,7 @@ void ASFGameMode::TickGreenlandsNetcheck()
     }
     else if (GreenlandsNetcheckStage == 10)
     {
-        ASFPilotBoar* Fresh = ActiveBoars.FindRef(FString::Printf(TEXT("boar_farm_edge:%d"), GreenlandsLeadSlot)).Get();
+        ASFCombatNpc* Fresh = ActiveBoars.FindRef(FString::Printf(TEXT("boar_farm_edge:%d"), GreenlandsLeadSlot)).Get();
         if (Fresh && Fresh != Lead && Fresh->Health() == Fresh->MaximumHealth())
         {
             Stage(11);
@@ -2089,7 +2089,7 @@ void ASFGameMode::SpawnSlot(const FString& Group, int32 Slot, int32 Cycle, const
     const FVector Where = Grounded(GetWorld(), FVector(X*100,Y*100,0), 65);
     if (IsSafe(Where) || !IsInsideTerritory(Where, Groups[Group].Polygon)) { return; }
     FActorSpawnParameters Params; Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-    auto* Boar = GetWorld()->SpawnActor<ASFPilotBoar>(Where, FRotator(0,Facing,0), Params);
+    auto* Boar = GetWorld()->SpawnActor<ASFCombatNpc>(Where, FRotator(0,Facing,0), Params);
     if (!Boar) { return; }
     if (!Boar->ConfigureCreature(DefinitionId)) { Boar->Destroy(); return; }
     Boar->Initialize(this, Group, Slot, Groups[Group].Polygon,
@@ -2113,7 +2113,7 @@ SFCombatResolution::FResult ASFGameMode::ResolveCombatAttack(AActor* Attacker,
             Stream = &PlayerCombatStreams.Add(Player, FRandomStream(GetTypeHash(Id)));
         }
     }
-    else if (ASFPilotBoar* Boar = Cast<ASFPilotBoar>(Attacker))
+    else if (ASFCombatNpc* Boar = Cast<ASFCombatNpc>(Attacker))
     {
         Stream = BoarCombatStreams.Find(Boar);
         if (!Stream) { Stream = &BoarCombatStreams.Add(Boar, FRandomStream(GetTypeHash(Boar->SpawnSequenceId()))); }
@@ -2152,17 +2152,17 @@ int32 ASFGameMode::ApplyStarterHeal(ASFE1Character* Healer, ASFE1Character* Subj
     const int32 Effective = FMath::Min(Amount, Subject->CombatMaximumHealth() - Subject->CombatHealth());
     if (Effective <= 0) return 0;
     Subject->CombatSetHealth(Subject->CombatHealth() + Effective);
-    TArray<ASFPilotBoar*> Engaged;
-    for (TActorIterator<ASFPilotBoar> It(GetWorld()); It; ++It)
+    TArray<ASFCombatNpc*> Engaged;
+    for (TActorIterator<ASFCombatNpc> It(GetWorld()); It; ++It)
         if (It->HasThreatOn(Subject)) Engaged.Add(*It);
     if (!Engaged.IsEmpty())
-        for (ASFPilotBoar* Boar : Engaged)
+        for (ASFCombatNpc* Boar : Engaged)
             Boar->ReceivePilotHealingThreat(Healer, Subject,
                 SFStarterAbilities::HealingThreatPerNpc(Effective, Engaged.Num()));
     return Engaged.IsEmpty() ? 0 : Effective;
 }
 
-static void RecordPilotCombatPractice(ASFE1Character* Attacker, ASFPilotBoar* Target,
+static void RecordPilotCombatPractice(ASFE1Character* Attacker, ASFCombatNpc* Target,
     const FString& SkillId, double Seconds, bool bSuccess, const FString& AbilityId, int32 Difficulty = -1)
 {
     if (!IsValid(Attacker) || !IsValid(Target) || Target->IsLeashing() || Target->GetCreatureId().IsEmpty()) return;
@@ -2178,7 +2178,7 @@ static void RecordPilotCombatPractice(ASFE1Character* Attacker, ASFPilotBoar* Ta
         Seconds, Context, bSuccess, Npc.Level);
 }
 
-void ASFGameMode::TryHiddenMovementPractice(ASFE1Character* Character, ASFPilotBoar* Observer, double Now)
+void ASFGameMode::TryHiddenMovementPractice(ASFE1Character* Character, ASFCombatNpc* Observer, double Now)
 {
     if (!IsValid(Character) || !IsValid(Observer) || !CapturedSettings ||
         !SFCombatPart6::Active(GetWorld()) || !Character->HasCombatStealth(Now) ||
@@ -2199,7 +2199,7 @@ void ASFGameMode::TryHiddenMovementPractice(ASFE1Character* Character, ASFPilotB
         SFCombatPart6::SkillReference(Npc.Level));
 }
 
-void ASFGameMode::RecordIncomingCombatPractice(ASFPilotBoar* Source, ASFE1Character* Victim,
+void ASFGameMode::RecordIncomingCombatPractice(ASFCombatNpc* Source, ASFE1Character* Victim,
     const SFCombatResolution::FAttack& Attack, const SFCombatResolution::FResult& Result)
 {
     if (!IsValid(Source) || !IsValid(Victim) || !SFCombatPart6::Active(GetWorld()) ||
@@ -2213,7 +2213,7 @@ void ASFGameMode::RecordIncomingCombatPractice(ASFPilotBoar* Source, ASFE1Charac
             Source->CombatSwingSeconds(), true, TEXT("hostile_spell"));
 }
 
-void ASFGameMode::ApplyStarterWeakPoison(ASFE1Character* Source, ASFPilotBoar* Victim,
+void ASFGameMode::ApplyStarterWeakPoison(ASFE1Character* Source, ASFCombatNpc* Victim,
     const SFCombatResolution::FAttack& Attack)
 {
     if (!IsValid(Source) || !IsValid(Victim) || !Victim->GetStatusEffects()) return;
@@ -2223,7 +2223,7 @@ void ASFGameMode::ApplyStarterWeakPoison(ASFE1Character* Source, ASFPilotBoar* V
     TickAttack.SpreadWeaponDamage /= StatusTune->WeakPoisonTicks;
     TickAttack.bCanMiss = false; TickAttack.bCanBlock = false;
     TWeakObjectPtr<ASFE1Character> Caster = Source;
-    TWeakObjectPtr<ASFPilotBoar> Target = Victim;
+    TWeakObjectPtr<ASFCombatNpc> Target = Victim;
     TWeakObjectPtr<ASFGameMode> Mode = this;
     Victim->GetStatusEffects()->Apply(TEXT("effect/weak_poison"), ESFStatusKind::Poison, ESFDispelType::Poison,
         Source, StatusTune->WeakPoisonDurationSeconds,
@@ -2306,7 +2306,7 @@ void ASFGameMode::TryPlayerCombatAbility(ASFE1Character* Attacker, FName Ability
     }
     if (Ability->Effect == EEffect::Revive && Attacker->IsPilotInCombat()) return;
     const FVector Facing = Attacker->GetActorForwardVector().GetSafeNormal2D();
-    const auto ValidEnemy = [&](ASFPilotBoar* Boar)
+    const auto ValidEnemy = [&](ASFCombatNpc* Boar)
     {
         if (!IsValid(Boar) || Boar->IsActorBeingDestroyed() || Boar->Health() <= 0 ||
             Boar->IsLeashing() || IsSafe(Boar->GetActorLocation())) return false;
@@ -2325,23 +2325,23 @@ void ASFGameMode::TryPlayerCombatAbility(ASFE1Character* Attacker, FName Ability
         return !GetWorld()->LineTraceTestByChannel(Attacker->GetActorLocation() + FVector(0, 0, 45),
             Boar->GetActorLocation() + FVector(0, 0, 45), ECC_Visibility, Query);
     };
-    TArray<ASFPilotBoar*> Targets;
+    TArray<ASFCombatNpc*> Targets;
     if (!bSelf && !bFriendly)
     {
         if (Ability->Target == ETarget::Cone)
         {
-            for (TActorIterator<ASFPilotBoar> It(GetWorld()); It; ++It)
+            for (TActorIterator<ASFCombatNpc> It(GetWorld()); It; ++It)
                 if (ValidEnemy(*It)) Targets.Add(*It);
-            Targets.Sort([Attacker](const ASFPilotBoar& A, const ASFPilotBoar& B)
+            Targets.Sort([Attacker](const ASFCombatNpc& A, const ASFCombatNpc& B)
             { return FVector::DistSquared2D(Attacker->GetActorLocation(), A.GetActorLocation()) <
                 FVector::DistSquared2D(Attacker->GetActorLocation(), B.GetActorLocation()); });
             if (Targets.Num() > Ability->MaximumTargets) Targets.SetNum(Ability->MaximumTargets);
         }
-        else if (ASFPilotBoar* Boar = Cast<ASFPilotBoar>(Attacker->GetCombatTarget()); ValidEnemy(Boar))
+        else if (ASFCombatNpc* Boar = Cast<ASFCombatNpc>(Attacker->GetCombatTarget()); ValidEnemy(Boar))
         {
             Targets.Add(Boar);
             if (Ability->Target == ETarget::TargetArea)
-                for (TActorIterator<ASFPilotBoar> It(GetWorld()); It && Targets.Num() < Ability->MaximumTargets; ++It)
+                for (TActorIterator<ASFCombatNpc> It(GetWorld()); It && Targets.Num() < Ability->MaximumTargets; ++It)
                     if (*It != Boar && It->Health() > 0 && !It->IsLeashing() &&
                         FVector::Dist2D(It->GetActorLocation(), Boar->GetActorLocation()) <= 600.0 &&
                         !IsSafe(It->GetActorLocation()) &&
@@ -2394,7 +2394,7 @@ void ASFGameMode::TryPlayerCombatAbility(ASFE1Character* Attacker, FName Ability
     }
     if (Ability->Effect == EEffect::Vanish)
     {
-        for (TActorIterator<ASFPilotBoar> It(GetWorld()); It; ++It) It->DropAbilityThreat(Attacker);
+        for (TActorIterator<ASFCombatNpc> It(GetWorld()); It; ++It) It->DropAbilityThreat(Attacker);
         Attacker->EnterCombatStealth(2, Now + 6.0);
         return;
     }
@@ -2539,7 +2539,7 @@ void ASFGameMode::TryPlayerCombatAbility(ASFE1Character* Attacker, FName Ability
     }
     if (Ability->Effect == EEffect::DisplaceHit) Attacker->SetActorLocation(ChargeDestination, true);
     bool bRecordedPractice = false;
-    for (ASFPilotBoar* Boar : Targets)
+    for (ASFCombatNpc* Boar : Targets)
     {
         SFCombatResolution::FAttack Attack = Base;
         const auto Npc = SFCombatPart6::Npc(Boar->GetCreatureId());
@@ -2566,7 +2566,7 @@ void ASFGameMode::TryPlayerCombatAbility(ASFE1Character* Attacker, FName Ability
             Attack.RawDamage /= Ticks; Attack.SpreadWeaponDamage /= Ticks;
             Attack.bCanBlock = false;
             TWeakObjectPtr<ASFE1Character> Source = Attacker;
-            TWeakObjectPtr<ASFPilotBoar> Victim = Boar;
+            TWeakObjectPtr<ASFCombatNpc> Victim = Boar;
             TWeakObjectPtr<ASFGameMode> Mode = this;
             const double AppliedDamageDone = Attacker->DamageDoneMultiplier();
             Boar->GetStatusEffects()->Apply(AbilityId,
@@ -2640,9 +2640,9 @@ void ASFGameMode::TryPlayerAttack(ASFE1Character* Attacker, AActor* SelectedTarg
     }
     const double Now = GetWorld()->GetTimeSeconds();
     if (Now < PlayerNextSwing.FindRef(Attacker)) { return; }
-    ASFPilotBoar* Best = nullptr; double BestDistance = CapturedSettings->MeleeRangeMetres * 100;
+    ASFCombatNpc* Best = nullptr; double BestDistance = CapturedSettings->MeleeRangeMetres * 100;
     const FVector Facing = Attacker->GetActorForwardVector().GetSafeNormal2D();
-    for (TActorIterator<ASFPilotBoar> It(GetWorld()); It; ++It)
+    for (TActorIterator<ASFCombatNpc> It(GetWorld()); It; ++It)
     {
         if (!IsValid(*It) || It->IsActorBeingDestroyed() || It->Health() <= 0 || It->IsLeashing() || IsSafe(It->GetActorLocation())
             || (SelectedTarget && SelectedTarget != *It)) { continue; }
@@ -2750,7 +2750,7 @@ bool ASFGameMode::TryPlayerTaunt(ASFE1Character* Taunter, AActor* SelectedTarget
         USFCharacterSessionComponent::IsRestoring(Taunter->GetController())) { return Deny(TEXT("unavailable")); }
     const double Now = GetWorld()->GetTimeSeconds();
     if (bPublished && !Taunter->CanUseChallenge(Now)) { return Deny(TEXT("level or cooldown")); }
-    ASFPilotBoar* Boar = Cast<ASFPilotBoar>(SelectedTarget);
+    ASFCombatNpc* Boar = Cast<ASFCombatNpc>(SelectedTarget);
     if (!IsValid(Boar) || Boar->Health() <= 0 || Boar->IsLeashing() || (bPublished && !Boar->ThreatTarget()) ||
         IsSafe(Taunter->GetActorLocation()) || IsSafe(Boar->GetActorLocation())) { return Deny(TEXT("invalid target")); }
     const double RangeMetres = bPublished ? GetDefault<USFCombatEnergySettings>()->ChallengeRangeMetres : CapturedSettings->MeleeRangeMetres;
@@ -2772,7 +2772,7 @@ bool ASFGameMode::TryPlayerTaunt(ASFE1Character* Taunter, AActor* SelectedTarget
     return bApplied;
 }
 
-void ASFGameMode::TryBoarAttack(ASFPilotBoar* Boar, ASFE1Character* Victim)
+void ASFGameMode::TryBoarAttack(ASFCombatNpc* Boar, ASFE1Character* Victim)
 {
     if (!bPilotActive || !CapturedSettings->bCombatAvailable || !IsValid(Boar) || !IsValid(Victim) ||
         Boar->Health() <= 0 || Victim->CombatHealth() <= 0 || IsSafe(Boar->GetActorLocation()) ||
@@ -2846,8 +2846,8 @@ void ASFGameMode::HitPlayer(AActor* Source, ASFE1Character* Victim, int32 Damage
     if (!IsValid(Victim) || !Victim->HasAuthority() || Victim->CombatHealth() <= 0 ||
         USFCharacterSessionComponent::IsRestoring(Victim->GetController())) return;
     const bool bRetaliation = bLethalRetaliation && IsValid(Source) && Source->HasAuthority() &&
-        Source->GetWorld() == Victim->GetWorld() && Source->IsA<ASFPilotBoar>() &&
-        Source->ActorHasTag(ASFPilotBoar::OutOfPlaceNpcTag);
+        Source->GetWorld() == Victim->GetWorld() && Source->IsA<ASFCombatNpc>() &&
+        Source->ActorHasTag(ASFCombatNpc::OutOfPlaceNpcTag);
     if (bRetaliation) Damage = Victim->CombatHealth();
     else
     {
@@ -3136,7 +3136,7 @@ void ASFGameMode::RespawnPlayer(TWeakObjectPtr<ASFE1Character> Player, int32 Res
         const FVector Town = Grounded(GetWorld(), FVector(0,-3000,0), Player->GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
         FActorSpawnParameters Spawn; Spawn.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
         auto* FixturePlayer = GetWorld()->SpawnActor<ASFE1Character>(Town, FRotator::ZeroRotator, Spawn);
-        auto* FixtureBoar = GetWorld()->SpawnActor<ASFPilotBoar>(Town+FVector(150,0,0), FRotator::ZeroRotator, Spawn);
+        auto* FixtureBoar = GetWorld()->SpawnActor<ASFCombatNpc>(Town+FVector(150,0,0), FRotator::ZeroRotator, Spawn);
         if (FixturePlayer && FixtureBoar)
         {
             FixturePlayer->CombatSetHealth(CapturedSettings->PlayerHealth);
@@ -3155,7 +3155,7 @@ void ASFGameMode::RespawnPlayer(TWeakObjectPtr<ASFE1Character> Player, int32 Res
     }
 }
 
-int32 ASFGameMode::RewardKill(ASFPilotBoar* Boar, ASFE1Character* Killer)
+int32 ASFGameMode::RewardKill(ASFCombatNpc* Boar, ASFE1Character* Killer)
 {
     if (!CapturedSettings || !HasAuthority() || !IsValid(Boar)) { return 0; }
     const FString DeathId = Boar->DeathId();
@@ -3413,7 +3413,7 @@ void ASFPlayerController::SFClaimDrop(const FString& EventId)
     ServerClaimSharedDrop(EventId);
 }
 
-void ASFGameMode::BoarDied(ASFPilotBoar* Boar, ASFE1Character* Killer)
+void ASFGameMode::BoarDied(ASFCombatNpc* Boar, ASFE1Character* Killer)
 {
     if (!bPilotActive || !IsValid(Boar)) { return; }
     BoarCombatStreams.Remove(Boar);

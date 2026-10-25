@@ -280,7 +280,7 @@ namespace
 bool IsLiveCombatTarget(const AActor* Actor)
 {
     if (!IsValid(Actor) || Actor->IsActorBeingDestroyed()) { return false; }
-    if (const ASFPilotBoar* Boar = Cast<ASFPilotBoar>(Actor)) { return Boar->Health() > 0 && !Boar->IsLeashing(); }
+    if (const ASFCombatNpc* Boar = Cast<ASFCombatNpc>(Actor)) { return Boar->Health() > 0 && !Boar->IsLeashing(); }
     if (const ASFTownsfolkNpc* Npc = Cast<ASFTownsfolkNpc>(Actor)) { return Npc->Health() > 0; }
     return false;
 }
@@ -327,7 +327,7 @@ void ASFPlayerController::SelectNextCombatTarget()
         Candidates.Add({static_cast<int32>(Actor->GetUniqueID()), Distance, FVector::DotProduct(CameraYaw, Delta.GetSafeNormal2D()), bVisible});
         Actors.Add(static_cast<int32>(Actor->GetUniqueID()), Actor);
     };
-    for (TActorIterator<ASFPilotBoar> It(GetWorld()); It; ++It)
+    for (TActorIterator<ASFCombatNpc> It(GetWorld()); It; ++It)
     { AddCandidate(*It); }
     for (TActorIterator<ASFTownsfolkNpc> It(GetWorld()); It; ++It)
     { AddCandidate(*It); }

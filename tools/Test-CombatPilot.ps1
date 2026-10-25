@@ -289,7 +289,7 @@ INSERT INTO exchange.wallets(owner_id,balance) VALUES ('chr_dev_alpha',5000),('c
         }
         Wait-Log $server 'server' 'ARCHER_NETCHECK_READY Creature=npc/bandit_archer DistanceCm=\d+ Clients=2' 120
         Wait-Log $server 'server' 'ARCHER_RANGED_SHOT Creature=npc/bandit_archer DistanceCm=\d+' 90
-        Wait-Log $server 'server' 'COMBAT_PILOT_PLAYER_HIT HP=\d+ By=SFPilotBoar' 90
+        Wait-Log $server 'server' 'COMBAT_PILOT_PLAYER_HIT HP=\d+ By=(?:SFPilotBoar|SFCombatNpc)' 90
         foreach ($role in 1..2) {
             $process = @($owned | Where-Object { $_.Id -eq (@($result.runs | Where-Object name -eq "client$role")[0].pid) })[0]
             Wait-Log $process "client$role" 'ARCHER_TRACER_RECEIVED Creature=npc/bandit_archer' 90
@@ -526,7 +526,7 @@ INSERT INTO exchange.wallets(owner_id,balance) VALUES ('chr_dev_alpha',5000),('c
             }
         }
         $killText = Get-Content -LiteralPath (Join-Path $root 'server.log') -Raw
-        if ($killText -notmatch 'COMBAT_PILOT_PLAYER_HIT HP=0 By=SFPilotBoar' -or
+        if ($killText -notmatch 'COMBAT_PILOT_PLAYER_HIT HP=0 By=(?:SFPilotBoar|SFCombatNpc)' -or
             $killText -notmatch 'COMBAT_DEATH_RECORDED Character=chr_dev_alpha' -or
             $serverText -notmatch "COMBAT_DEATH_RESOLVED Event=.* HP=$expected Mode=$DeathResolution" -or
             $serverText -notmatch $(if ($DeathResolution -eq 'Release') { 'SPIRIT_RELEASE_SERVER_DENIED' } else { 'RES_ACCEPT_SERVER_DENIED' })) {
@@ -674,7 +674,7 @@ INSERT INTO exchange.wallets(owner_id,balance) VALUES ('chr_dev_alpha',5000),('c
             $clientText = Get-Content -LiteralPath (Join-Path $root ($name+'.log')) -Raw
             $selected = [regex]::Match($clientText,"COMBAT_GROUP_TARGET Role=$role Target=(\S+)")
             if (-not $selected.Success -or $selected.Groups[1].Value -eq 'None' -or
-                $serverText -notmatch "COMBAT_GROUP_SERVER_TARGET Character=chr_dev_$identity Target=SFPilotBoar_") {
+                $serverText -notmatch "COMBAT_GROUP_SERVER_TARGET Character=chr_dev_$identity Target=(?:SFPilotBoar|SFCombatNpc)_") {
                 throw "Owner target replication missing for $identity."
             }
             $view = Get-LedgerView $fx "ctn_dev_$identity"

@@ -22,14 +22,14 @@ bool FSFOutOfPlaceNpcTest::RunTest(const FString& Parameters)
     UWorld* World = Fixture.GetTestWorld();
     FActorSpawnParameters Spawn;
     Spawn.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-    ASFPilotBoar* Npc = World->SpawnActor<ASFPilotBoar>(FVector::ZeroVector, FRotator::ZeroRotator, Spawn);
+    ASFCombatNpc* Npc = World->SpawnActor<ASFCombatNpc>(FVector::ZeroVector, FRotator::ZeroRotator, Spawn);
     ASFE1Character* Attacker = World->SpawnActor<ASFE1Character>(FVector(200, 0, 100), FRotator::ZeroRotator, Spawn);
-    ASFPilotBoar* Ordinary = World->SpawnActor<ASFPilotBoar>(FVector(500, 0, 100), FRotator::ZeroRotator, Spawn);
+    ASFCombatNpc* Ordinary = World->SpawnActor<ASFCombatNpc>(FVector(500, 0, 100), FRotator::ZeroRotator, Spawn);
     if (!Npc || !Attacker || !Ordinary) return false;
     const TArray<FVector2D> Area = { {-10, -10}, {10, -10}, {10, 10}, {-10, 10} };
     Npc->Initialize(nullptr, TEXT("out_of_place_test"), 0, Area, 100, 1);
     Ordinary->Initialize(nullptr, TEXT("ordinary_test"), 0, Area, 100, 2);
-    Npc->Tags.Add(ASFPilotBoar::OutOfPlaceNpcTag);
+    Npc->Tags.Add(ASFCombatNpc::OutOfPlaceNpcTag);
     Attacker->CombatSetHealth(100);
 
     Npc->ReceivePilotDamage(nullptr, 1000);

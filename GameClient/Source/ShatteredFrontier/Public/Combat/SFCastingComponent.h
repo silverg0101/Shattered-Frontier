@@ -6,7 +6,7 @@
 #include "SFCastingComponent.generated.h"
 
 class ASFCastingTarget;
-class ASFPilotBoar;
+class ASFCombatNpc;
 
 /** Release-authored combat timing, adopted when a character enters the zone. */
 UCLASS(Config=Game, DefaultConfig, meta=(DisplayName="Combat Casting"))

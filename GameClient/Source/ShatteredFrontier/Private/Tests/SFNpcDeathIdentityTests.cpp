@@ -12,8 +12,8 @@ bool FSFNpcDeathIdentityTest::RunTest(const FString& Parameters)
     FTestWorldWrapper FirstWorld, SecondWorld;
     if (!FirstWorld.CreateTestWorld(EWorldType::GameRPC) || !FirstWorld.BeginPlayInTestWorld() ||
         !SecondWorld.CreateTestWorld(EWorldType::GameRPC) || !SecondWorld.BeginPlayInTestWorld()) return false;
-    ASFPilotBoar* First = FirstWorld.GetTestWorld()->SpawnActor<ASFPilotBoar>();
-    ASFPilotBoar* Second = SecondWorld.GetTestWorld()->SpawnActor<ASFPilotBoar>();
+    ASFCombatNpc* First = FirstWorld.GetTestWorld()->SpawnActor<ASFCombatNpc>();
+    ASFCombatNpc* Second = SecondWorld.GetTestWorld()->SpawnActor<ASFCombatNpc>();
     if (!TestNotNull(TEXT("First-world NPC"), First) || !TestNotNull(TEXT("Second-world NPC"), Second)) return false;
     First->Initialize(nullptr, TEXT("shared_group"), 0, {}, 100, 1);
     Second->Initialize(nullptr, TEXT("shared_group"), 0, {}, 100, 1);

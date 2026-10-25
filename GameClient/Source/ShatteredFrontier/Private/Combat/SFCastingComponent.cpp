@@ -194,7 +194,7 @@ void USFCastingComponent::ServerRequestPublishedInterrupt_Implementation(bool bC
     const USFCombatEnergySettings* Energy = GetDefault<USFCombatEnergySettings>();
     const double ReachCm = (bCounterspell ? Energy->CounterspellRangeMetres :
         Energy->MeleeReachMetres) * 100.0;
-    if (ASFPilotBoar* Npc = Cast<ASFPilotBoar>(SelectedTarget))
+    if (ASFCombatNpc* Npc = Cast<ASFCombatNpc>(SelectedTarget))
     {
         ASFGameMode* Mode = GetWorld()->GetAuthGameMode<ASFGameMode>();
         if (!Mode || !Mode->IsCombatActive() || Mode->IsSafe(Owner->GetActorLocation())) return;
@@ -386,7 +386,7 @@ void USFCastingComponent::ServerSetInterruptScenarioPosition_Implementation(bool
 void USFCastingComponent::TickComponent(float Dt, ELevelTick TickType, FActorComponentTickFunction* TickFunction)
 {
     Super::TickComponent(Dt, TickType, TickFunction);
-    if (ASFPilotBoar* Npc = Cast<ASFPilotBoar>(GetOwner()))
+    if (ASFCombatNpc* Npc = Cast<ASFCombatNpc>(GetOwner()))
     {
         if (Npc->HasAuthority() && State.Phase == SFCastRules::EPhase::Casting)
         {
@@ -567,7 +567,7 @@ void USFCastingComponent::ServerCancelCast_Implementation()
 void USFCastingComponent::Interrupt()
 {
     if (!GetOwner()->HasAuthority() || State.Phase == SFCastRules::EPhase::Idle) return;
-    const bool bNpc = Cast<ASFPilotBoar>(GetOwner()) != nullptr;
+    const bool bNpc = Cast<ASFCombatNpc>(GetOwner()) != nullptr;
     if (bNpc) { NpcMana = FMath::Min(NpcManaMaximum, NpcMana + NpcCastCost()); }
     else { Resource = FMath::Min(ResourceMax, Resource + SFCastRules::Refund(ResourceCost, true, CancelRefundPercent)); }
     State.Interrupt(Now(), bNpc ? NpcSchoolLockoutSeconds : LockoutSeconds, bNpc ? 2 : 1);
@@ -583,7 +583,7 @@ int32 USFCastingComponent::NpcCastCost() const
 
 bool USFCastingComponent::TryBeginNpcMend()
 {
-    ASFPilotBoar* Npc = Cast<ASFPilotBoar>(GetOwner());
+    ASFCombatNpc* Npc = Cast<ASFCombatNpc>(GetOwner());
     const auto* Mend = SFStarterAbilities::Find(TEXT("mend"));
     if (!Npc || !Npc->HasAuthority() || !Mend || !Npc->CanCastMend() ||
         Npc->Health() <= 0 || Npc->IsLeashing() || NpcMana < NpcCastCost()) return false;
@@ -601,7 +601,7 @@ bool USFCastingComponent::TryBeginNpcMend()
 
 void USFCastingComponent::CancelNpcCast()
 {
-    if (!Cast<ASFPilotBoar>(GetOwner()) || !GetOwner()->HasAuthority() ||
+    if (!Cast<ASFCombatNpc>(GetOwner()) || !GetOwner()->HasAuthority() ||
         State.Phase == SFCastRules::EPhase::Idle) return;
     State.Cancel(); State.QueuedId = 0; View.bInterrupted = true; SyncView();
 }

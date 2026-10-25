@@ -90,7 +90,7 @@ bool FSFHostileDefinitionsTest::RunTest(const FString& Parameters)
         FString Table;
         bool bSingle = false;
         TestTrue(FString::Printf(TEXT("%s has a loot binding"), Row.Creature),
-            ASFPilotBoar::ResolveCreatureLoot(Row.Creature, Table, bSingle));
+            ASFCombatNpc::ResolveCreatureLoot(Row.Creature, Table, bSingle));
         TestEqual(TEXT("Bound table"), Table, FString(Row.Table));
         TestEqual(TEXT("Shared single drop"), bSingle, Row.bSingle);
         const auto Stats = SFCombatPart6::Npc(Row.Creature);
@@ -101,10 +101,10 @@ bool FSFHostileDefinitionsTest::RunTest(const FString& Parameters)
     FString UnknownTable;
     bool bUnknownSingle = false;
     TestFalse(TEXT("Unknown creature cannot spawn"),
-        ASFPilotBoar::ResolveCreatureLoot(TEXT("npc/unknown"), UnknownTable, bUnknownSingle));
+        ASFCombatNpc::ResolveCreatureLoot(TEXT("npc/unknown"), UnknownTable, bUnknownSingle));
     FTestWorldWrapper Fixture;
     if (!Fixture.CreateTestWorld(EWorldType::GameRPC) || !Fixture.BeginPlayInTestWorld()) return false;
-    ASFPilotBoar* Npc = Fixture.GetTestWorld()->SpawnActor<ASFPilotBoar>();
+    ASFCombatNpc* Npc = Fixture.GetTestWorld()->SpawnActor<ASFCombatNpc>();
     if (!TestNotNull(TEXT("Authoritative NPC fixture"), Npc)) return false;
     AddExpectedError(TEXT("NPC_PROFILE_UNKNOWN Definition=npc/unknown"), EAutomationExpectedErrorFlags::Contains, 1);
     TestFalse(TEXT("Unknown profile rejected at actor configuration"), Npc->ConfigureCreature(TEXT("npc/unknown")));
@@ -516,7 +516,7 @@ bool FSFCombatEvadeTest::RunTest(const FString& Parameters)
     if (!Fixture.CreateTestWorld(EWorldType::GameRPC) || !Fixture.BeginPlayInTestWorld()) return false;
     UWorld* World = Fixture.GetTestWorld();
     ASFGameMode* Mode = World->SpawnActor<ASFGameMode>();
-    ASFPilotBoar* Boar = World->SpawnActor<ASFPilotBoar>(FVector(300, 0, 115), FRotator(0, 45, 0));
+    ASFCombatNpc* Boar = World->SpawnActor<ASFCombatNpc>(FVector(300, 0, 115), FRotator(0, 45, 0));
     APlayerController* Controller = World->SpawnActor<APlayerController>();
     ASFE1Character* Character = World->SpawnActor<ASFE1Character>();
     if (!Mode || !Boar || !Controller || !Character) return false;

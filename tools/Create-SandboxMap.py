@@ -119,7 +119,7 @@ def main():
     nav.set_actor_label('NavMeshBounds')
     nav.set_actor_scale3d(u.Vector(50, 50, 6))  # default 200 cm brush -> 100 m square
     if names[0] == 'Companions':
-        boar = u.load_class(None, '/Script/ShatteredFrontier.SFPilotBoar')
+        boar = u.load_class(None, '/Script/ShatteredFrontier.SFCombatNpc')
         rest_area = u.load_class(None, '/Script/ShatteredFrontier.SFRestAreaVolume')
         interaction = u.load_class(None, '/Script/ShatteredFrontier.SFE1InteractionTarget')
         if not boar or not rest_area or not interaction:
@@ -138,7 +138,7 @@ def main():
             marker.static_mesh_component.set_collision_profile_name('NoCollision')
             marker.set_actor_scale3d(u.Vector(0.5, 0.5, 1))
     if names[0] in ('Evade', 'Threat', 'Taunt', 'Aggro', 'AttackerMemory', 'Regeneration', 'RestRegen', 'Assist', 'Respawn', 'AutoAttack', 'Dodge', 'SpiritRelease', 'ResurrectionAccept', 'PersonalLoot', 'OutOfPlaceNpc'):
-        boar = u.load_class(None, '/Script/ShatteredFrontier.SFPilotBoar')
+        boar = u.load_class(None, '/Script/ShatteredFrontier.SFCombatNpc')
         interaction = u.load_class(None, '/Script/ShatteredFrontier.SFE1InteractionTarget')
         if not boar or not interaction:
             raise RuntimeError('Combat sandbox requires boar and network probe classes')

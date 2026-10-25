@@ -2836,9 +2836,9 @@ void ASFPlayerController::SFUi(const FString& Screen)
     else if (Screen.Equals(TEXT("defeated"), ESearchCase::IgnoreCase)) { if (USFE1VitalsHudSubsystem* Vitals = GetWorld() ? GetWorld()->GetSubsystem<USFE1VitalsHudSubsystem>() : nullptr) { Vitals->StageDefeat(); } }
     else if (Screen.Equals(TEXT("target"), ESearchCase::IgnoreCase))
     {
-        ASFPilotBoar* NearestBoar = nullptr;
+        ASFCombatNpc* NearestBoar = nullptr;
         double BestBoar = TNumericLimits<double>::Max();
-        for (TActorIterator<ASFPilotBoar> It(GetWorld()); It && GetPawn(); ++It)
+        for (TActorIterator<ASFCombatNpc> It(GetWorld()); It && GetPawn(); ++It)
         {
             const double Distance = FVector::DistSquared(GetPawn()->GetActorLocation(), It->GetActorLocation());
             if (Distance < BestBoar) { BestBoar = Distance; NearestBoar = *It; }

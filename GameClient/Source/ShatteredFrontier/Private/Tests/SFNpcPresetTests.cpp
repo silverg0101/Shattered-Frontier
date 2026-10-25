@@ -61,7 +61,7 @@ bool FSFNpcPresetRuntimeTest::RunTest(const FString& Parameters)
     if (!Mode) return false;
     Mode->CapturedSettings = GetDefault<USFCombatPilotSettings>(); Mode->bPilotActive = true;
     FActorSpawnParameters Spawn; Spawn.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-    auto* Npc = World->SpawnActor<ASFPilotBoar>(ASFPilotBoar::StaticClass(), FVector(0, 0, 100), FRotator::ZeroRotator, Spawn);
+    auto* Npc = World->SpawnActor<ASFCombatNpc>(ASFCombatNpc::StaticClass(), FVector(0, 0, 100), FRotator::ZeroRotator, Spawn);
     auto* Controller = World->SpawnActor<APlayerController>();
     auto* Victim = World->SpawnActor<ASFE1Character>(ASFE1Character::StaticClass(), FVector(1500, 0, 100), FRotator::ZeroRotator, Spawn);
     if (!Npc || !Controller || !Victim) return false;
@@ -95,7 +95,7 @@ bool FSFNpcPresetRuntimeTest::RunTest(const FString& Parameters)
     Npc->SetActorLocation(FVector(2100, 0, 100)); Npc->Tick(0);
     TestFalse(TEXT("Shipped 60m leash permits same position"), Npc->IsLeashing());
     Victim->CombatSetHealth(100);
-    auto* Packmate = World->SpawnActor<ASFPilotBoar>(ASFPilotBoar::StaticClass(), FVector(300, 0, 100), FRotator::ZeroRotator, Spawn);
+    auto* Packmate = World->SpawnActor<ASFCombatNpc>(ASFCombatNpc::StaticClass(), FVector(300, 0, 100), FRotator::ZeroRotator, Spawn);
     if (!Packmate) return false;
     Packmate->Initialize(Mode, TEXT("preset_group"), 1, Territory, 100, 1, true);
     auto AdvanceAssistTime = [&]

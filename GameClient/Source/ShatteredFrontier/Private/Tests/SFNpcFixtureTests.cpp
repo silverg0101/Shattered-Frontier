@@ -37,11 +37,11 @@ bool FSFNpcFixtureExtractionTest::RunTest(const FString& Parameters)
         const FString Map = FString(TEXT("/Game/Frontier/Maps/Sandbox/")) + Case.Map;
         if (!World->GetOutermost()->Rename(*Map, nullptr, REN_DontCreateRedirectors)) return false;
         auto* Mode = World->SpawnActor<ASFGameMode>();
-        auto* Ignored = World->SpawnActor<ASFPilotBoar>(ASFPilotBoar::StaticClass(), FVector(-2000,0,100), FRotator::ZeroRotator, Spawn);
-        ASFPilotBoar* Npc = nullptr;
+        auto* Ignored = World->SpawnActor<ASFCombatNpc>(ASFCombatNpc::StaticClass(), FVector(-2000,0,100), FRotator::ZeroRotator, Spawn);
+        ASFCombatNpc* Npc = nullptr;
         if (Case.bNpc)
         {
-            Npc = World->SpawnActor<ASFPilotBoar>(ASFPilotBoar::StaticClass(), FVector(0,0,100), FRotator::ZeroRotator, Spawn);
+            Npc = World->SpawnActor<ASFCombatNpc>(ASFCombatNpc::StaticClass(), FVector(0,0,100), FRotator::ZeroRotator, Spawn);
             if (!Npc) return false;
             Npc->Tags.Add(Case.Tag);
         }
@@ -77,8 +77,8 @@ bool FSFNpcFixtureExtractionTest::RunTest(const FString& Parameters)
             TestTrue(TEXT("Actual fixture defeat schedules existing respawn clock"), Npc->IsActorBeingDestroyed() && Mode->RespawnSandboxDueAt > World->GetTimeSeconds());
             Mode->RespawnSandboxDueAt = World->GetTimeSeconds();
             Mode->TickCombat();
-            ASFPilotBoar* Replacement = nullptr;
-            for (TActorIterator<ASFPilotBoar> It(World); It; ++It)
+            ASFCombatNpc* Replacement = nullptr;
+            for (TActorIterator<ASFCombatNpc> It(World); It; ++It)
                 if (!It->IsActorBeingDestroyed() && It->GroupId() == Case.Group) Replacement = *It;
             if (!TestNotNull(TEXT("Actual fixture tick recreates defeated NPC"), Replacement)) return false;
             TestTrue(TEXT("Respawn carries explicit idle/defensive policy"), Replacement->IsDefensive() && EnumHasAnyFlags(Replacement->FixtureFlags, ESFNpcFixtureFlags::HoldIdle));
@@ -89,7 +89,7 @@ bool FSFNpcFixtureExtractionTest::RunTest(const FString& Parameters)
     if (!Fixture.CreateTestWorld(EWorldType::GameRPC) || !Fixture.BeginPlayInTestWorld()) return false;
     UWorld* World = Fixture.GetTestWorld();
     auto* Mode = World->SpawnActor<ASFGameMode>();
-    auto* Npc = World->SpawnActor<ASFPilotBoar>(ASFPilotBoar::StaticClass(), FVector(0,0,100), FRotator::ZeroRotator, Spawn);
+    auto* Npc = World->SpawnActor<ASFCombatNpc>(ASFCombatNpc::StaticClass(), FVector(0,0,100), FRotator::ZeroRotator, Spawn);
     if (!Mode || !Npc) return false;
     Mode->CapturedSettings = GetDefault<USFCombatPilotSettings>(); Mode->bPilotActive = true;
     const TArray<FVector2D> Area{FVector2D(-100,-100),FVector2D(100,-100),FVector2D(100,100),FVector2D(-100,100)};

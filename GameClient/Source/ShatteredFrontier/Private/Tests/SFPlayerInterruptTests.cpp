@@ -48,7 +48,7 @@ bool FSFNpcMendCapabilityTest::RunTest(const FString& Parameters)
         FTestWorldWrapper Fixture;
         if (!Fixture.CreateTestWorld(EWorldType::GameRPC) || !Fixture.BeginPlayInTestWorld()) return false;
         UWorld* World = Fixture.GetTestWorld();
-        ASFPilotBoar* Npc = World->SpawnActor<ASFPilotBoar>();
+        ASFCombatNpc* Npc = World->SpawnActor<ASFCombatNpc>();
         ASFE1Character* Attacker = World->SpawnActor<ASFE1Character>(FVector(1000, 0, 0), FRotator::ZeroRotator);
         if (!TestNotNull(TEXT("NPC actor"), Npc) || !TestNotNull(TEXT("Damage source"), Attacker)) return false;
         if (!TestTrue(TEXT("Non-captain profile configures actor"), Npc->ConfigureCreature(TEXT("npc/mend_reuse_fixture")))) return false;

@@ -66,7 +66,7 @@ bool FSFNpcCorpseRewardTest::RunTest(const FString& Parameters)
         [&](APlayerController*, const FString&, int32 Count, int32) { ++QuestCredits; TestEqual(TEXT("Canonical credit census"), Count, 2); });
     ON_SCOPE_EXIT { SFQuestPilotEvents::OnBoarDefeated().Remove(CreditHandle); };
     FActorSpawnParameters Spawn; Spawn.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-    auto* Npc = World->SpawnActor<ASFPilotBoar>(ASFPilotBoar::StaticClass(), FVector(0, 0, 100), FRotator::ZeroRotator, Spawn);
+    auto* Npc = World->SpawnActor<ASFCombatNpc>(ASFCombatNpc::StaticClass(), FVector(0, 0, 100), FRotator::ZeroRotator, Spawn);
     if (!TestNotNull(TEXT("Personal reward NPC"), Npc)) return false;
     Npc->ConfigureCreature(TEXT("npc/wolf")); Npc->Initialize(Mode, TEXT("arbitrary_group"), 0, {}, 100, 1);
     const FString DeathId = Npc->DeathId();
@@ -91,14 +91,14 @@ bool FSFNpcCorpseRewardTest::RunTest(const FString& Parameters)
     TestTrue(TEXT("Retry preserves immutable eligible snapshot"), CorpseRequests[1].EligibleCharacterIds == First.EligibleCharacterIds);
     TestEqual(TEXT("No personal or shared auto-grant after corpse admission"), DirectPayouts, 0);
     SFQuestPilotEvents::OnBoarDefeated().Remove(CreditHandle);
-    auto* Shared = World->SpawnActor<ASFPilotBoar>(ASFPilotBoar::StaticClass(), FVector::ZeroVector, FRotator::ZeroRotator, Spawn);
+    auto* Shared = World->SpawnActor<ASFCombatNpc>(ASFCombatNpc::StaticClass(), FVector::ZeroVector, FRotator::ZeroRotator, Spawn);
     if (!TestNotNull(TEXT("Shared reward NPC"), Shared)) return false;
     Shared->ConfigureCreature(TEXT("npc/wolf_alpha")); Shared->Initialize(Mode, TEXT("alpha_group"), 0, {}, 100, 1);
     Mode->RewardKill(Shared, Players[0]); Mode->RewardKill(Shared, Players[0]);
     TestEqual(TEXT("Shared profile admitted once"), CorpseRequests.Num(), 3);
     TestTrue(TEXT("Shared profile selects shared corpse"), CorpseRequests.Last().bSharedLoot);
     TestEqual(TEXT("Shared route also fences legacy payout"), DirectPayouts, 0);
-    auto* Protected = World->SpawnActor<ASFPilotBoar>(ASFPilotBoar::StaticClass(), FVector::ZeroVector, FRotator::ZeroRotator, Spawn);
+    auto* Protected = World->SpawnActor<ASFCombatNpc>(ASFCombatNpc::StaticClass(), FVector::ZeroVector, FRotator::ZeroRotator, Spawn);
     if (!TestNotNull(TEXT("Protected reward NPC"), Protected)) return false;
     Protected->Initialize(Mode, TEXT("protected_group"), 0, {}, 100, 1);
     Mode->ProtectedAreas = {{FVector2D(-10,-10), FVector2D(10,-10), FVector2D(10,10), FVector2D(-10,10)}};
@@ -109,7 +109,7 @@ bool FSFNpcCorpseRewardTest::RunTest(const FString& Parameters)
         FSFScopedGameplayServicesForTests Offline(nullptr);
         Mode->ProtectedAreas.Empty();
         SFCombatPilotRewards::AddPilotBag(Controllers[0]);
-        auto* Local = World->SpawnActor<ASFPilotBoar>(ASFPilotBoar::StaticClass(), FVector::ZeroVector, FRotator::ZeroRotator, Spawn);
+        auto* Local = World->SpawnActor<ASFCombatNpc>(ASFCombatNpc::StaticClass(), FVector::ZeroVector, FRotator::ZeroRotator, Spawn);
         if (!TestNotNull(TEXT("Local reward NPC"), Local)) return false;
         Local->Initialize(Mode, TEXT("local_fixture"), 0, {}, 100, 1);
         const int32 Before = SFCombatPilotRewards::CountHides(Controllers[0]);
