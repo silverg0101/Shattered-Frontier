@@ -6,14 +6,7 @@ Mail precedes guild in the candidate list. Backend Part 2 §8.2 defines immediat
 
 ## Account data-key prerequisite (lane c)
 
-Backend Part 2 §6.7 names AES-256-GCM, a per-account DEK created at `CreateAccount`, wrapping by the home region's KMS key-encryption key, `auth.accounts.data_key_id`, allowlisted `GetDataKey(account_id, purpose)` with an in-memory cache of at most five minutes, and phase 4 KMS deletion with a seven-day pending window. Part 3 §2.5 defers key deletion while an `audit` legal hold applies. The current IdentityGateway has only ticket-signing and service-verifier secrets; no KMS client, key registry, account data-key column, or phase 4 erasure workflow exists. Those secrets cannot substitute for a KMS key with per-account deletion. No account key or mail-body storage is enabled by this scope note.
-
-Owner decisions needed before implementing that contract:
-
-- Choose the regional KMS provider and the authorized key API/identity for creating, wrapping, retrieving, scheduling deletion of, and confirming destruction of each account's DEK. Clarify how `data_key_id` identifies the deletable per-account key while a regional key-encryption key wraps it.
-- Define the durable location and restore behavior of wrapped DEKs and their IDs, including how an erased key remains destroyed after restoring an older database or backup. Define region migration and key rotation behavior if either is required for this slice.
-- Define the ciphertext envelope and binding for AES-256-GCM (nonce generation/storage, authentication tag layout, associated data and versioning) so independently deployed services can decrypt only the intended account's fields and reject tampering or cross-account substitution.
-- Define the internal authentication and purpose allowlist for `GetDataKey`, and the erasure coordinator entry point, legal-hold check, pending-deletion behavior and cache invalidation needed for phase 4. The seven-day KMS pending window must be honored.
+The owner approved the KEK provider, DEK registry, envelope, rotation, erasure and access rules on 2026-10-24 in [BACK-account-data-keys](BACK-account-data-keys.md). The prior owner-decision block is closed. Account-key implementation is in IdentityGateway; text mail follows it. Ops provisioning, restore tombstone replay and external legal-hold coordination remain release gates.
 
 Text-only mail can follow this key service and IdentityGateway actor binding. Attachments also require InventoryLedger mail escrow; its current transfer API does not provide the designed `EscrowItems`/`TransferEscrow` pivot.
 

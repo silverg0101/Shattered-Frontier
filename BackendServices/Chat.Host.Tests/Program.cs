@@ -9,6 +9,7 @@ using Pb = ShatteredFrontier.Chat.V1;
 if (args.Length == 2 && args[0] == "unreal-relay") { await UnrealRelayFixture.Run(int.Parse(args[1])); return; }
 var mode = args.Single();
 if (mode == "transport") { await TransportChecks.Run(); return; }
+if (mode == "mail") { await MailChecks.Run(); return; }
 var port = Environment.GetEnvironmentVariable("CHAT_HOST_PORT") ?? throw new Exception("CHAT_HOST_PORT required");
 var token = Environment.GetEnvironmentVariable("SF_CHAT_TOKEN") ?? throw new Exception("SF_CHAT_TOKEN required");
 var privacy = Environment.GetEnvironmentVariable("SF_CHAT_PRIVACY_TOKEN") ?? throw new Exception("SF_CHAT_PRIVACY_TOKEN required");

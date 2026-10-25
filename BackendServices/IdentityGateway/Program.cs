@@ -1,9 +1,11 @@
 using CharacterAppearance;
 using IdentityGateway;
+using Microsoft.AspNetCore.Server.Kestrel.Https;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.UseUrls(builder.Configuration["Identity:ListenUrl"] ?? "http://127.0.0.1:5084");
 builder.WebHost.ConfigureKestrel(server => server.Limits.MaxRequestBodySize = 64 * 1024);
+builder.WebHost.ConfigureKestrel(server => server.ConfigureHttpsDefaults(https => https.ClientCertificateMode = ClientCertificateMode.AllowCertificate));
 builder.Services.ConfigureHttpJsonOptions(o =>
 {
     o.SerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.SnakeCaseLower;
@@ -21,12 +23,29 @@ var chatVerifierKey = builder.Configuration["Identity:ChatVerifierKey"];
 if (chatVerifierKey is not null && chatVerifierKey.Length < 32) throw new InvalidOperationException("Chat verifier key must be at least 32 characters.");
 var guildVerifierKey = builder.Configuration["Identity:GuildVerifierKey"];
 if (guildVerifierKey is not null && guildVerifierKey.Length < 32) throw new InvalidOperationException("Guild verifier key must be at least 32 characters.");
+var dataKeyChatKey = builder.Configuration["Identity:DataKeyChatKey"];
+if (dataKeyChatKey is not null && dataKeyChatKey.Length < 32) throw new InvalidOperationException("Data key chat credential must be at least 32 characters.");
+var dataKeyChatThumbprint = builder.Configuration["Identity:DataKeyChatClientThumbprint"];
+var kek = new FileKekProvider(builder.Configuration["Identity:KekId"] ?? "v1", builder.Configuration["Identity:KekDevPath"]);
+var startupKek = kek.GetKey(kek.KeyId);
+System.Security.Cryptography.CryptographicOperations.ZeroMemory(startupKek);
+var dataKeys = new PostgresAccountDataKeys(connection, kek);
+if (args.Length > 0)
+{
+    if (args.Length == 2 && args[0] == "--rewrap-kek") Console.WriteLine($"rewrapped={dataKeys.Rewrap(args[1])}");
+    else if (args.Length == 2 && args[0] == "--rotate-data-key") Console.WriteLine($"marked={dataKeys.MarkCompromised(args[1])}");
+    else if (args.Length == 1 && args[0] == "--finalize-key-erasure") Console.WriteLine($"erased={dataKeys.FinalizeErasure(DateTimeOffset.UtcNow)}");
+    else if (args.Length == 2 && args[0] == "--replay-key-tombstones") Console.WriteLine($"replayed={dataKeys.ReplayTombstones(File.ReadLines(args[1]), DateTimeOffset.UtcNow)}");
+    else throw new ArgumentException("Unknown key maintenance command.");
+    return;
+}
 var repoAllowlist = Path.Combine(builder.Environment.ContentRootPath, "content/appearance/human.json");
 var allowlistPath = builder.Configuration["Identity:AppearanceAllowlist"] ??
     (File.Exists(repoAllowlist) ? repoAllowlist : Path.GetFullPath(Path.Combine(builder.Environment.ContentRootPath, "../../content/appearance/human.json")));
 builder.Services.AddSingleton(options);
 builder.Services.AddSingleton<TimeProvider>(TimeProvider.System);
-builder.Services.AddSingleton<IIdentityStore>(new PostgresIdentityStore(connection));
+builder.Services.AddSingleton(dataKeys);
+builder.Services.AddSingleton<IIdentityStore>(new PostgresIdentityStore(connection, dataKeys));
 builder.Services.AddSingleton(new AppearanceValidator(AppearanceAllowlist.Load(allowlistPath)));
 builder.Services.AddSingleton(s => new TicketVerifier(signingKey, s.GetRequiredService<IIdentityStore>(), s.GetRequiredService<TimeProvider>()));
 builder.Services.AddSingleton<IdentityService>();
@@ -40,6 +59,11 @@ app.Use(async (context, next) =>
         context.Response.StatusCode = e.Status;
         if (e.RetryAfterSeconds is int seconds) context.Response.Headers.RetryAfter = seconds.ToString();
         await context.Response.WriteAsJsonAsync(new ErrorBody(e.Code, e.Reason, e.RetryAfterSeconds));
+    }
+    catch (System.Security.Cryptography.CryptographicException)
+    {
+        context.Response.StatusCode = 410;
+        await context.Response.WriteAsJsonAsync(new ErrorBody("NOT_FOUND", "DATA_KEY_UNAVAILABLE"));
     }
 });
 
@@ -145,7 +169,46 @@ if (guildVerifierKey is not null)
             : Results.Ok(new { character_id = claims.CharacterId, account_id = claims.AccountId, realm_id = claims.RealmId });
     });
 }
+if (dataKeyChatKey is not null)
+{
+    app.MapPost("/v1/internal/data-keys/{accountId}", (string accountId, DataKeyRequest request, HttpContext http, PostgresAccountDataKeys keys) =>
+    {
+        RequireDataKeyClient(http, dataKeyChatKey, dataKeyChatThumbprint);
+        if (request.Purpose != "mail" || request.Service != "chat") throw new ApiError(403, "PERMISSION_DENIED", "PURPOSE_DENIED");
+        var key = request.ForWrite ? keys.GetForWrite(accountId, "chat", "mail") :
+            request.KeyVersion is ushort version ? keys.GetForRead(accountId, version, "chat", "mail") : keys.GetCurrent(accountId, "chat", "mail");
+        try { return Results.Ok(new { key_version = key.Version, dek_base64 = Convert.ToBase64String(key.Key) }); }
+        finally { System.Security.Cryptography.CryptographicOperations.ZeroMemory(key.Key); }
+    });
+    app.MapGet("/v1/internal/characters/{characterId}/account", (string characterId, HttpContext http, IIdentityStore store) =>
+    {
+        RequireDataKeyClient(http, dataKeyChatKey, dataKeyChatThumbprint);
+        var character = store.FindCharacter(characterId);
+        return character is { State: "active" }
+            ? Results.Ok(new { account_id = character.AccountId, realm_id = character.RealmId })
+            : Results.NotFound();
+    });
+    app.MapGet("/v1/internal/accounts/{accountId}/erased", (string accountId, HttpContext http, PostgresAccountDataKeys keys) =>
+    {
+        RequireDataKeyClient(http, dataKeyChatKey, dataKeyChatThumbprint);
+        return Results.Ok(new { erased = keys.IsErased(accountId) });
+    });
+}
 app.Run();
+
+static void RequireDataKeyClient(HttpContext context, string expected, string? allowedThumbprint)
+{
+    // The token is the client allowlist entry. Non-loopback deployments also require client TLS identity.
+    if (context.Connection.RemoteIpAddress is not { } address ||
+        (!System.Net.IPAddress.IsLoopback(address) && (context.Connection.ClientCertificate is null ||
+            allowedThumbprint is null || !string.Equals(context.Connection.ClientCertificate.Thumbprint,
+                allowedThumbprint, StringComparison.OrdinalIgnoreCase))))
+        throw new ApiError(401, "UNAUTHENTICATED", "MTLS_REQUIRED");
+    var supplied = System.Text.Encoding.UTF8.GetBytes(context.Request.Headers["X-Data-Key-Chat-Key"].ToString());
+    var target = System.Text.Encoding.UTF8.GetBytes(expected);
+    if (supplied.Length != target.Length || !System.Security.Cryptography.CryptographicOperations.FixedTimeEquals(supplied, target))
+        throw new ApiError(401, "UNAUTHENTICATED", "DATA_KEY_CLIENT_DENIED");
+}
 
 static void RequireKey(HttpContext context)
 {
@@ -165,3 +228,4 @@ public sealed record LoginCompleteRequest(string? LoginId);
 public sealed record CharacterCreateRequest(string? RealmId, string? Name, string? AppearanceV2Base64);
 public sealed record VerifyTicketRequest(string? Ticket, string? ServerId);
 public sealed record ErrorBody(string Code, string Reason, int? RetryAfterS = null);
+public sealed record DataKeyRequest(string Service, string Purpose, bool ForWrite, ushort? KeyVersion);

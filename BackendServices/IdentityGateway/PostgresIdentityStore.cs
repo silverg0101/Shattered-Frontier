@@ -2,7 +2,7 @@ using Npgsql;
 
 namespace IdentityGateway;
 
-public sealed class PostgresIdentityStore(string connectionString) : IIdentityStore
+public sealed class PostgresIdentityStore(string connectionString, PostgresAccountDataKeys dataKeys) : IIdentityStore
 {
     private NpgsqlConnection Open()
     {
@@ -20,9 +20,13 @@ public sealed class PostgresIdentityStore(string connectionString) : IIdentitySt
     public bool CreateAccount(Account account)
     {
         using var c = Open();
-        using var cmd = new NpgsqlCommand("INSERT INTO identity.accounts(account_id,account_name_key,password_hash) VALUES ($1,$2,$3) ON CONFLICT (account_name_key) DO NOTHING", c);
+        using var tx = c.BeginTransaction();
+        using var cmd = new NpgsqlCommand("INSERT INTO identity.accounts(account_id,account_name_key,password_hash) VALUES ($1,$2,$3) ON CONFLICT (account_name_key) DO NOTHING", c, tx);
         cmd.Parameters.AddWithValue(account.Id); cmd.Parameters.AddWithValue(account.NameKey); cmd.Parameters.AddWithValue(account.PasswordHash);
-        return cmd.ExecuteNonQuery() == 1;
+        if (cmd.ExecuteNonQuery() != 1) return false;
+        dataKeys.Create(account.Id, c, tx);
+        tx.Commit();
+        return true;
     }
 
     public Account? FindAccount(string nameKey)

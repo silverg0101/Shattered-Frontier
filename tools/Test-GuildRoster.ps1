@@ -112,6 +112,9 @@ try {
     & (Join-Path $repo 'tools/Invoke-SchemaMigrations.ps1') -Connection $migration -Schemas identity -Role identity_owner -Dotnet $dotnet -Nuget $nuget | Out-Null
     Sql 'GRANT USAGE ON SCHEMA guild TO guild_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA guild TO guild_svc; GRANT USAGE ON ALL SEQUENCES IN SCHEMA guild TO guild_svc;' "guild_$run"
     Sql 'GRANT USAGE ON SCHEMA identity TO identity_svc; GRANT SELECT ON identity.schema_version TO identity_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON identity.accounts,identity.sessions,identity.characters,identity.ticket_uses TO identity_svc;' "guild_$run"
+    Sql 'GRANT USAGE ON SCHEMA auth TO identity_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON auth.account_data_keys,auth.account_data_key_erasure,auth.erasure_tombstones TO identity_svc; GRANT INSERT ON auth.data_key_unwraps TO identity_svc;' "guild_$run"
+    $kekPath = Join-Path $private 'account-data-kek'; [IO.File]::WriteAllBytes($kekPath,[Security.Cryptography.RandomNumberGenerator]::GetBytes(32))
+    $env:Identity__KekDevPath = $kekPath
     $env:GUILD_CONNECTION = "Host=127.0.0.1;Port=$port;Database=guild_$run;Username=guild_svc;Password=$servicePassword;Pooling=true;Maximum Pool Size=8;Timeout=2;Command Timeout=5"
     $env:Identity__Connection = "Host=127.0.0.1;Port=$port;Database=guild_$run;Username=identity_svc;Password=$servicePassword;Pooling=true;Maximum Pool Size=8;Timeout=2;Command Timeout=5"
     $env:Identity__TicketSigningKey = [Convert]::ToBase64String([Security.Cryptography.RandomNumberGenerator]::GetBytes(32))
@@ -192,6 +195,6 @@ finally {
     if ($guildProcess -and -not $guildProcess.HasExited) { Stop-Process -Id $guildProcess.Id -Force; $guildProcess.WaitForExit() }
     if ($identityProcess -and -not $identityProcess.HasExited) { Stop-Process -Id $identityProcess.Id -Force; $identityProcess.WaitForExit() }
     if ($started) { CheckOwned; Run (Join-Path $pg 'pg_ctl.exe') @('-D',$data,'-m','immediate','-w','-t','30','stop') }
-    foreach ($name in @('PGPASSWORD','GUILD_CONNECTION','GUILD_HOST_PORT','SF_GUILD_TOKEN','GUILD_IDENTITY_URL','GUILD_IDENTITY_SERVER_ID','SF_IDENTITY_GUILD_VERIFIER_KEY','Identity__Connection','Identity__TicketSigningKey','Identity__WorldVerifierKey','Identity__ChatVerifierKey','Identity__GuildVerifierKey','Identity__ListenUrl')) { Remove-Item "Env:$name" -ErrorAction SilentlyContinue }
+    foreach ($name in @('PGPASSWORD','GUILD_CONNECTION','GUILD_HOST_PORT','SF_GUILD_TOKEN','GUILD_IDENTITY_URL','GUILD_IDENTITY_SERVER_ID','SF_IDENTITY_GUILD_VERIFIER_KEY','Identity__Connection','Identity__TicketSigningKey','Identity__WorldVerifierKey','Identity__ChatVerifierKey','Identity__GuildVerifierKey','Identity__ListenUrl','Identity__KekDevPath')) { Remove-Item "Env:$name" -ErrorAction SilentlyContinue }
     & $dotnet build-server shutdown | Out-Null
 }

@@ -23,7 +23,7 @@ function FreePort {
     $listener = [Net.Sockets.TcpListener]::new([Net.IPAddress]::Loopback,0)
     $listener.Start(); $value = $listener.LocalEndpoint.Port; $listener.Stop(); return $value
 }
-$port = FreePort; $hostPort = FreePort; $identityPort = FreePort
+$port = FreePort; $hostPort = FreePort; $identityPort = FreePort; $mailPort = FreePort
 function Run([string]$file,[string[]]$arguments) {
     & $file @arguments
     if ($LASTEXITCODE -ne 0) { throw "$file exited $LASTEXITCODE" }
@@ -84,11 +84,15 @@ try {
     & (Join-Path $repo 'tools/Invoke-SchemaMigrations.ps1') -Connection $migration -Schemas identity -Role identity_owner -Dotnet $dotnet -Nuget $nuget | Out-Null
     Sql 'GRANT USAGE ON SCHEMA chat TO chat_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA chat TO chat_svc;' "chat_$run"
     Sql 'GRANT USAGE ON SCHEMA identity TO identity_svc; GRANT SELECT ON identity.schema_version TO identity_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON identity.accounts,identity.sessions,identity.characters,identity.ticket_uses TO identity_svc;' "chat_$run"
+    Sql 'GRANT USAGE ON SCHEMA auth TO identity_svc; GRANT SELECT,INSERT,UPDATE,DELETE ON auth.account_data_keys,auth.account_data_key_erasure,auth.erasure_tombstones TO identity_svc; GRANT INSERT ON auth.data_key_unwraps TO identity_svc;' "chat_$run"
+    $kekPath = Join-Path $private 'account-data-kek'; [IO.File]::WriteAllBytes($kekPath,[Security.Cryptography.RandomNumberGenerator]::GetBytes(32))
+    $env:Identity__KekDevPath = $kekPath
     $env:CHAT_CONNECTION = "Host=127.0.0.1;Port=$port;Database=chat_$run;Username=chat_svc;Password=$servicePassword;Pooling=true;Maximum Pool Size=8;Timeout=2;Command Timeout=5"
     $env:Identity__Connection = "Host=127.0.0.1;Port=$port;Database=chat_$run;Username=identity_svc;Password=$servicePassword;Pooling=true;Maximum Pool Size=8;Timeout=2;Command Timeout=5"
     $env:Identity__TicketSigningKey = [Convert]::ToBase64String([Security.Cryptography.RandomNumberGenerator]::GetBytes(32))
     $env:Identity__WorldVerifierKey = [Convert]::ToHexString([Security.Cryptography.RandomNumberGenerator]::GetBytes(32))
     $env:Identity__ChatVerifierKey = [Convert]::ToHexString([Security.Cryptography.RandomNumberGenerator]::GetBytes(32))
+    $env:Identity__DataKeyChatKey = [Convert]::ToHexString([Security.Cryptography.RandomNumberGenerator]::GetBytes(32))
     $env:Identity__ListenUrl = "http://127.0.0.1:$identityPort"
     $env:Identity__TicketLifetimeSeconds = '5'
     $env:CHAT_IDENTITY_URL = $env:Identity__ListenUrl
@@ -96,6 +100,9 @@ try {
     $env:SF_IDENTITY_CHAT_VERIFIER_KEY = $env:Identity__ChatVerifierKey
     $env:CHAT_TEST_STATE = Join-Path $private 'contacts-state.json'
     $env:CHAT_HOST_PORT = "$hostPort"; $env:SF_CHAT_TOKEN = $token
+    $env:CHAT_WS_PORT = "$mailPort"; $env:SF_IDENTITY_DATA_KEY_CHAT_KEY = $env:Identity__DataKeyChatKey
+    $env:CHAT_GROUP_URL = 'http://127.0.0.1:1'; $env:CHAT_GUILD_URL = 'http://127.0.0.1:1'
+    $env:SF_GAMEPLAY_TOKEN = $token; $env:SF_GUILD_TOKEN = $token
     $env:SF_CHAT_PRIVACY_TOKEN = [Convert]::ToHexString([Security.Cryptography.RandomNumberGenerator]::GetBytes(32))
     StartIdentity
     StartHost
@@ -104,12 +111,13 @@ try {
     Remove-Item -LiteralPath (Join-Path $private 'chat-host.out'),(Join-Path $private 'chat-host.err') -Force
     StartHost
     Run $dotnet @((Join-Path $repo 'BackendServices/Chat.Host.Tests/bin/Release/net10.0/Chat.Host.Tests.dll'),'restart')
+    Run $dotnet @((Join-Path $repo 'BackendServices/Chat.Host.Tests/bin/Release/net10.0/Chat.Host.Tests.dll'),'mail')
     Write-Output 'PASS ChatContacts fixture (38 checks)'
 }
 finally {
     if ($hostProcess -and -not $hostProcess.HasExited) { Stop-Process -Id $hostProcess.Id -Force; $hostProcess.WaitForExit() }
     if ($identityProcess -and -not $identityProcess.HasExited) { Stop-Process -Id $identityProcess.Id -Force; $identityProcess.WaitForExit() }
     if ($started) { CheckOwned; Run (Join-Path $pg 'pg_ctl.exe') @('-D',$data,'-m','immediate','-w','-t','30','stop') }
-    foreach ($name in @('PGPASSWORD','CHAT_CONNECTION','CHAT_HOST_PORT','SF_CHAT_TOKEN','SF_CHAT_PRIVACY_TOKEN','CHAT_IDENTITY_URL','CHAT_IDENTITY_SERVER_ID','SF_IDENTITY_CHAT_VERIFIER_KEY','CHAT_TEST_STATE','Identity__Connection','Identity__TicketSigningKey','Identity__WorldVerifierKey','Identity__ChatVerifierKey','Identity__ListenUrl','Identity__TicketLifetimeSeconds')) { Remove-Item "Env:$name" -ErrorAction SilentlyContinue }
+    foreach ($name in @('PGPASSWORD','CHAT_CONNECTION','CHAT_HOST_PORT','CHAT_WS_PORT','SF_CHAT_TOKEN','SF_CHAT_PRIVACY_TOKEN','CHAT_IDENTITY_URL','CHAT_IDENTITY_SERVER_ID','SF_IDENTITY_CHAT_VERIFIER_KEY','SF_IDENTITY_DATA_KEY_CHAT_KEY','CHAT_GROUP_URL','CHAT_GUILD_URL','SF_GAMEPLAY_TOKEN','SF_GUILD_TOKEN','CHAT_TEST_STATE','Identity__Connection','Identity__TicketSigningKey','Identity__WorldVerifierKey','Identity__ChatVerifierKey','Identity__DataKeyChatKey','Identity__ListenUrl','Identity__TicketLifetimeSeconds','Identity__KekDevPath')) { Remove-Item "Env:$name" -ErrorAction SilentlyContinue }
     & $dotnet build-server shutdown | Out-Null
 }

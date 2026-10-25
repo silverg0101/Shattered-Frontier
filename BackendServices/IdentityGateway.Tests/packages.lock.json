@@ -15,6 +15,9 @@
           "Microsoft.Extensions.DependencyInjection.Abstractions": "10.0.0"
         }
       },
+      "accountdatacrypto": {
+        "type": "Project"
+      },
       "characterappearance": {
         "type": "Project"
       },
@@ -30,6 +33,7 @@
       "identitygateway": {
         "type": "Project",
         "dependencies": {
+          "AccountDataCrypto": "[1.0.0, )",
           "CharacterAppearance": "[1.0.0, )",
           "CharacterState.Postgres": "[1.0.0, )",
           "Npgsql": "[10.0.3, 10.0.3]"

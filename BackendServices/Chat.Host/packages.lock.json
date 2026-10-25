@@ -60,6 +60,9 @@
           "Grpc.Core.Api": "2.84.0"
         }
       },
+      "accountdatacrypto": {
+        "type": "Project"
+      },
       "chat.postgres": {
         "type": "Project",
         "dependencies": {

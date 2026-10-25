@@ -3,6 +3,7 @@
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <ProjectReference Include="../Chat.Host/Chat.Host.csproj" />
+    <ProjectReference Include="../IdentityGateway/IdentityGateway.csproj" />
     <PackageReference Include="Grpc.Net.Client" />
     <PackageReference Include="Npgsql" />
   </ItemGroup>

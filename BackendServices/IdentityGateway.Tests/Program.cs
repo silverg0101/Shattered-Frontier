@@ -2,6 +2,7 @@ using System.Security.Cryptography;
 using System.Text;
 using CharacterAppearance;
 using IdentityGateway;
+using ShatteredFrontier.AccountData;
 
 var store = new MemoryStore();
 var clock = new FakeClock();
@@ -62,7 +63,27 @@ service.DeleteCharacter(freshSession, character.CharacterId);
 Check(service.ListCharacters(freshSession, null).All(c => c.CharacterId != character.CharacterId), "character delete");
 Reject(() => service.CreateCharacter(freshSession, "greenlands", "Arwen", packet), "NAME_TAKEN", "deleted name hold");
 Reject(() => service.EnterWorld(freshSession, character.CharacterId), "CHARACTER_NOT_FOUND", "deleted character cannot enter");
+var dek = RandomNumberGenerator.GetBytes(32);
+var kek = RandomNumberGenerator.GetBytes(32);
+var wrapped = AccountDataCrypto.Wrap(dek, kek, account);
+Check(AccountDataCrypto.Unwrap(wrapped, kek, account).SequenceEqual(dek), "DEK wrap round trip");
+Check(ThrowsCrypto(() => AccountDataCrypto.Unwrap(wrapped, kek, otherAccount)), "DEK account AAD binding");
+var envelope = AccountDataCrypto.Encrypt(Encoding.UTF8.GetBytes("private mail"), dek, 1, account, "chat.mail_messages", "body_ct", "mal_1");
+Check(Encoding.UTF8.GetString(AccountDataCrypto.Decrypt(envelope, dek, 1, account, "chat.mail_messages", "body_ct", "mal_1")) == "private mail", "envelope round trip");
+Check(ThrowsCrypto(() => AccountDataCrypto.Decrypt(envelope, dek, 1, account, "chat.mail_messages", "body_ct", "mal_2")), "wrong record AAD rejected");
+var tampered = envelope.ToArray(); tampered[^1] ^= 1;
+Check(ThrowsCrypto(() => AccountDataCrypto.Decrypt(tampered, dek, 1, account, "chat.mail_messages", "body_ct", "mal_1")), "tampered tag rejected");
+Check(ThrowsCrypto(() => AccountDataCrypto.Decrypt(envelope, dek, 2, account, "chat.mail_messages", "body_ct", "mal_1")), "wrong key version rejected");
+var nonces = Enumerable.Range(0, 1000).Select(_ => Convert.ToHexString(AccountDataCrypto.Encrypt([1], dek, 1, account, "chat.mail_messages", "body_ct", "mal_1").AsSpan(3, 12))).ToHashSet();
+Check(nonces.Count == 1000, "random nonce uniqueness sample");
+Check(!DataKeyRotation.Due(2, 3) && DataKeyRotation.Due(3, 3), "injectable counter rotation threshold");
 Console.WriteLine($"TOTAL {passes} passed, 0 failed");
+
+static bool ThrowsCrypto(Action action)
+{
+    try { action(); return false; }
+    catch (CryptographicException) { return true; }
+}
 
 sealed class FakeClock : TimeProvider
 {

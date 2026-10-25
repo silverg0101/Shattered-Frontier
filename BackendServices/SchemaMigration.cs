@@ -30,12 +30,14 @@ public static class SchemaMigration
             "exchange" => new (string File, string Installed)[] {
                 ("Schema.Reads.sql", "SELECT to_regclass('exchange.exchange_active_market_page') IS NOT NULL AND to_regclass('exchange.exchange_pending_trade_a_page') IS NOT NULL") },
             "identity" => new (string File, string Installed)[] {
-                ("Schema.sql", "SELECT to_regclass('identity.schema_version') IS NOT NULL") },
+                ("Schema.sql", "SELECT to_regclass('identity.schema_version') IS NOT NULL"),
+                ("Schema.AccountDataKeys.sql", "SELECT to_regclass('auth.account_data_keys') IS NOT NULL") },
             "group" => new (string File, string Installed)[] {
                 ("Schema.sql", "SELECT to_regclass('\"group\".schema_version') IS NOT NULL") },
             "chat" => new (string File, string Installed)[] {
                 ("Schema.sql", "SELECT to_regclass('chat.schema_version') IS NOT NULL"),
-                ("Schema.Erasure.sql", "SELECT version>=2 FROM chat.schema_version WHERE singleton=true") },
+                ("Schema.Erasure.sql", "SELECT version>=2 FROM chat.schema_version WHERE singleton=true"),
+                ("Schema.Mail.sql", "SELECT to_regclass('chat.mail_messages') IS NOT NULL") },
             "guild" => new (string File, string Installed)[] {
                 ("Schema.sql", "SELECT to_regclass('guild.schema_version') IS NOT NULL"),
                 ("Schema.RosterEvents.sql", "SELECT version>=2 FROM guild.schema_version WHERE singleton=true") },

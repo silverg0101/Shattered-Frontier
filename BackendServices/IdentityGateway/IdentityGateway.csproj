@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
   <ItemGroup>
     <ProjectReference Include="../CharacterAppearance/CharacterAppearance.csproj" />
+    <ProjectReference Include="../AccountDataCrypto/AccountDataCrypto.csproj" />
     <ProjectReference Include="../CharacterState.Postgres/CharacterState.Postgres.csproj" />
     <PackageReference Include="Npgsql" />
     <EmbeddedResource Include="confusables.txt" />

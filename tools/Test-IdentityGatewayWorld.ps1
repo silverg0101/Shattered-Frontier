@@ -60,12 +60,16 @@ try {
     [void](Invoke-LedgerSql $fx "CREATE ROLE identity_owner NOLOGIN; CREATE ROLE identity_service LOGIN PASSWORD '$($fx.servicePassword)'; CREATE DATABASE $($fx.db);")
     [void](Invoke-LedgerSql $fx 'REVOKE ALL ON SCHEMA public FROM PUBLIC; CREATE SCHEMA identity AUTHORIZATION identity_owner;' $fx.db)
     [void](Invoke-LedgerSql $fx ("SET ROLE identity_owner;`n" + (Get-Content (Join-Path $repo 'BackendServices/IdentityGateway/Schema.sql') -Raw)) $fx.db)
+    [void](Invoke-LedgerSql $fx "GRANT CREATE ON DATABASE $($fx.db) TO identity_owner;" $fx.db)
+    [void](Invoke-LedgerSql $fx ("SET ROLE identity_owner;`n" + (Get-Content (Join-Path $repo 'BackendServices/IdentityGateway/Schema.AccountDataKeys.sql') -Raw)) $fx.db)
     [void](Invoke-LedgerSql $fx 'GRANT USAGE ON SCHEMA identity TO identity_service; GRANT SELECT ON identity.schema_version TO identity_service; GRANT SELECT,INSERT,UPDATE,DELETE ON identity.accounts,identity.sessions,identity.characters,identity.ticket_uses TO identity_service;' $fx.db)
+    [void](Invoke-LedgerSql $fx 'GRANT USAGE ON SCHEMA auth TO identity_service; GRANT SELECT,INSERT,UPDATE,DELETE ON auth.account_data_keys,auth.account_data_key_erasure,auth.erasure_tombstones TO identity_service; GRANT INSERT ON auth.data_key_unwraps TO identity_service;' $fx.db)
     $connection = "Host=127.0.0.1;Port=$($fx.pgPort);Database=$($fx.db);Username=identity_service;Password=$($fx.servicePassword);Pooling=false"
     $gatewayProject = Join-Path $repo 'BackendServices/IdentityGateway/IdentityGateway.csproj'
     $gatewayBuild = Join-Path $private 'gateway-build'; $null = New-Item -ItemType Directory -Path $gatewayBuild
     [void](Invoke-FxOk $fx $dotnet @('build',$gatewayProject,'--configuration','Release','--output',$gatewayBuild,'--verbosity','quiet'))
-    $gatewayEnv = @{ Identity__Connection=$connection; Identity__TicketSigningKey=$ticketKey; Identity__WorldVerifierKey=$verifierKey;
+    $kekPath = Join-Path $private 'account-data-kek'; [IO.File]::WriteAllBytes($kekPath,[Security.Cryptography.RandomNumberGenerator]::GetBytes(32))
+    $gatewayEnv = @{ Identity__Connection=$connection; Identity__TicketSigningKey=$ticketKey; Identity__WorldVerifierKey=$verifierKey; Identity__KekDevPath=$kekPath;
         Identity__ListenUrl=$gatewayUrl; Identity__WorldAddress="127.0.0.1:$WorldPort"; Identity__TicketLifetimeSeconds='120' }
     Invoke-WithEnv $gatewayEnv {
         $script:gatewayProcess = Start-Process -FilePath $dotnet -ArgumentList ('"'+(Join-Path $gatewayBuild 'IdentityGateway.dll')+'"') -PassThru -WindowStyle Hidden `
