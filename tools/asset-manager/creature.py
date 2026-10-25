@@ -274,11 +274,14 @@ CLIP_SYNONYMS = _SYN | {"die": _SYN["death"], "dying": _SYN["death"], "sprint": 
 
 def library_clip(want, have):
     """The library clip (one of `have`) that stands in for the requested clip name `want`: the same name ignoring case,
-    else the first clip containing a CLIP_SYNONYMS substring for it; None when the library has nothing for it."""
+    else the first clip with a word (split on _ - and camelCase) starting with a CLIP_SYNONYMS entry for it, skipping
+    transitions like sitting_to_run; None when the library has nothing for it."""
     lo = {h.lower(): h for h in have}
     if want.lower() in lo:
         return lo[want.lower()]
-    return next((h for sub in CLIP_SYNONYMS.get(want.lower(), ()) for h in have if sub in h.lower()), None)
+    words = {h: re.findall(r"[a-z]+", re.sub(r"([a-z])([A-Z])", r"\1 \2", h).lower()) for h in have}
+    return next((h for sub in CLIP_SYNONYMS.get(want.lower(), ()) for h in have
+                 if "to" not in words[h] and any(w.startswith(sub) for w in words[h])), None)
 
 
 SKELETON = "quadruped_v1"

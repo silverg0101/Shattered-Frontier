@@ -3174,6 +3174,7 @@ def check():
     assert cp({"source": "video", "action": "walk"})["clip"] == "Walk"
     zoo = ["Trottle", "AlertRun", "Idle", "Eat", "Itch", "Sniff"]  # a Rat-like library: plain names find its clips
     assert [creature.library_clip(c, zoo) for c in ("idle", "walk", "run", "Die", "trottle")] == ["Idle", "Trottle", "AlertRun", None, "Trottle"]
+    assert [creature.library_clip(c, ["ThreatDisplay", "PlayBow", "sitting_to_run"]) for c in ("eat", "lay", "sit", "run")] == [None] * 4
     assert cp({"source": "library", "animal": "Rat", "clip": "Walk"})["clip"] == "Walk"  # Trottle stands in
     assert creature.clip_names(["Walk", "Sniff_s1"], [("Walk", [""]), ("Sniff", ["_s0", "_s1"]), ("Walk", [""])]) == ["Walk_2", "Sniff_2", "Walk_3"]
     out = ROOT / get_settings()["output_folder"] / "Creatures"
