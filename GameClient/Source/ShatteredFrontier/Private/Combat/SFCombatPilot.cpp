@@ -1051,6 +1051,20 @@ void ASFGameMode::TickGreenlandsNetcheck()
     {
         Move(Driver, Lead->GetActorLocation() + Lead->GetActorForwardVector() * 180);
         Driver->SetCombatTarget(Lead);
+        Stage(13);
+        UE_LOG(LogTemp, Display, TEXT("BOAR_GREENLANDS_AUTO_READY LeadSlot=%d"), GreenlandsLeadSlot);
+    }
+    else if (GreenlandsNetcheckStage == 13 && Lead->Health() == 20 &&
+        Lead->ThreatTarget() == Driver && !Driver->IsAutoAttacking())
+    {
+        Stage(14);
+        UE_LOG(LogTemp, Display, TEXT("BOAR_GREENLANDS_AUTO_STOP Health=%d Target=Driver"), Lead->Health());
+    }
+    else if (GreenlandsNetcheckStage == 14 && Now - GreenlandsStageAt >= 2.5)
+    {
+        if (Lead->Health() != 20 || Driver->IsAutoAttacking())
+        { UE_LOG(LogTemp, Error, TEXT("BOAR_GREENLANDS_AUTO_FAILED Health=%d Enabled=%d"), Lead->Health(), Driver->IsAutoAttacking() ? 1 : 0); return; }
+        UE_LOG(LogTemp, Display, TEXT("BOAR_GREENLANDS_AUTO_DONE Health=%d"), Lead->Health());
         Stage(9, true);
     }
     else if (GreenlandsNetcheckStage == 9 && !GreenlandsLead.IsValid())

@@ -1212,7 +1212,8 @@ void ASFE1Character::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
     const FString CombatMap = GetWorld()->GetOutermost()->GetName();
-    if (CombatMap == TEXT("/Game/Frontier/Maps/Sandbox/SB_AutoAttack"))
+    if (CombatMap == TEXT("/Game/Frontier/Maps/Sandbox/SB_AutoAttack") ||
+        CombatMap == TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook"))
     {
         if (HasAuthority())
         {
@@ -1383,7 +1384,8 @@ void ASFE1Character::Tick(float DeltaSeconds)
             {
                 GreenlandsNextSampleAt = Now +
                     (GreenlandsNetcheckStage <= 4 || GreenlandsNetcheckStage == 6 ||
-                     GreenlandsNetcheckStage == 7 ? 0.2 : 1.0);
+                     GreenlandsNetcheckStage == 7 || GreenlandsNetcheckStage == 13 ||
+                     GreenlandsNetcheckStage == 14 ? 0.2 : 1.0);
                 ASFE1Character* ObservedPlayer = this;
                 if (ScenarioRole == TEXT("Driver"))
                 {
@@ -1401,6 +1403,21 @@ void ASFE1Character::Tick(float DeltaSeconds)
                     Mate ? Mate->Health() : -1, Mate && Mate->IsLeashing() ? 1 : 0,
                     TargetRole(Mate), ObservedPlayer->CombatHealth(), ObservedPlayer->IsPilotInCombat() ? 1 : 0,
                     ASFRestAreaVolume::IsAtRestArea(GetWorld(), ObservedPlayer->GetActorLocation()) ? 1 : 0);
+            }
+            if (ScenarioRole == TEXT("Driver") && GreenlandsNetcheckStage == 13 && Lead)
+            {
+                if (AutoAttackScenarioStage == 0 && CombatTarget == Lead)
+                {
+                    SetAutoAttack(true);
+                    AutoAttackScenarioStage = 1;
+                    UE_LOG(LogTemp, Display, TEXT("BOAR_GREENLANDS_AUTO_CLIENT_START Slot=%d"), GreenlandsLeadSlot);
+                }
+                else if (AutoAttackScenarioStage == 1 && Lead->Health() <= 20)
+                {
+                    SetAutoAttack(false);
+                    AutoAttackScenarioStage = 2;
+                    UE_LOG(LogTemp, Display, TEXT("BOAR_GREENLANDS_AUTO_CLIENT_STOP Health=%d"), Lead->Health());
+                }
             }
             if (ScenarioRole == TEXT("Driver") && bGreenlandsKill && Lead && Lead->Health() > 0 &&
                 Now >= GreenlandsNextAttackAt)
@@ -1801,7 +1818,9 @@ void ASFE1Character::ServerPilotAttack_Implementation(AActor* SelectedCombatTarg
 
 void ASFE1Character::SetAutoAttack(bool bEnabled)
 {
-    if (GetWorld()->GetOutermost()->GetName() != TEXT("/Game/Frontier/Maps/Sandbox/SB_AutoAttack")) { return; }
+    const FString Map = GetWorld()->GetOutermost()->GetName();
+    if (Map != TEXT("/Game/Frontier/Maps/Sandbox/SB_AutoAttack") &&
+        Map != TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook")) { return; }
     if (HasAuthority()) { ServerSetAutoAttack_Implementation(bEnabled); }
     else { ServerSetAutoAttack(bEnabled); }
 }
@@ -1877,7 +1896,9 @@ void ASFE1Character::TickAutoAttackScenario()
 
 void ASFE1Character::ServerSetAutoAttack_Implementation(bool bEnabled)
 {
-    if (GetWorld()->GetOutermost()->GetName() != TEXT("/Game/Frontier/Maps/Sandbox/SB_AutoAttack") ||
+    const FString Map = GetWorld()->GetOutermost()->GetName();
+    if ((Map != TEXT("/Game/Frontier/Maps/Sandbox/SB_AutoAttack") &&
+         Map != TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook")) ||
         (bEnabled && (PilotHealth <= 0 || !Cast<ASFPilotBoar>(CombatTarget)))) { return; }
     bAutoAttacking = bEnabled;
     if (bEnabled) { NextAutoSwingAt = GetWorld()->GetTimeSeconds(); }

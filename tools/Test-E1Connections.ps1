@@ -767,6 +767,7 @@ try {
             'BOAR_GREENLANDS_SWITCH_ASSIST', 'BOAR_GREENLANDS_LEASH_PULL', 'BOAR_GREENLANDS_EVADE',
             'BOAR_GREENLANDS_RESET_REGEN_START', 'BOAR_GREENLANDS_REGEN Health=',
             'BOAR_GREENLANDS_REST_ENTER', 'BOAR_GREENLANDS_REST_EXIT', 'BOAR_GREENLANDS_MEMORY',
+            'BOAR_GREENLANDS_AUTO_READY', 'BOAR_GREENLANDS_AUTO_STOP', 'BOAR_GREENLANDS_AUTO_DONE',
             'BOAR_GREENLANDS_KILL', 'BOAR_GREENLANDS_RESPAWN')
         $lastLine = 0
         foreach ($marker in $ordered) {
@@ -789,6 +790,30 @@ try {
         }
         $leashDistance = [regex]::Match($serverText, 'BOAR_GREENLANDS_LEASH_PULL DistanceCm=(\d+)').Groups[1].Value
         if (-not $leashDistance -or [int]$leashDistance -lt 6000) { throw 'Leash probe did not cross 60 m' }
+        $autoReady = Select-String -LiteralPath $serverLog -Pattern 'BOAR_GREENLANDS_AUTO_READY' | Select-Object -First 1
+        $autoStopped = Select-String -LiteralPath $serverLog -Pattern 'BOAR_GREENLANDS_AUTO_STOP Health=20 Target=Driver' | Select-Object -First 1
+        $autoDone = Select-String -LiteralPath $serverLog -Pattern 'BOAR_GREENLANDS_AUTO_DONE Health=20' | Select-Object -First 1
+        $autoToggles = @(Select-String -LiteralPath $serverLog -Pattern 'AUTO_ATTACK_SERVER_TOGGLE Enabled=([01]) T=([\d.]+)')
+        $autoSwings = @(Select-String -LiteralPath $serverLog -Pattern 'AUTO_ATTACK_SERVER_SWING T=([\d.]+) Target=\S+ Health=(\d+)')
+        if (-not $autoReady -or -not $autoStopped -or -not $autoDone -or $autoToggles.Count -ne 2 -or $autoSwings.Count -ne 2 -or
+            $autoToggles[0].Matches[0].Groups[1].Value -ne '1' -or $autoToggles[1].Matches[0].Groups[1].Value -ne '0' -or
+            $autoSwings[0].Matches[0].Groups[2].Value -ne '40' -or $autoSwings[1].Matches[0].Groups[2].Value -ne '20' -or
+            $autoReady.LineNumber -ge $autoToggles[0].LineNumber -or
+            $autoToggles[0].LineNumber -ge $autoSwings[0].LineNumber -or
+            $autoSwings[0].LineNumber -ge $autoSwings[1].LineNumber -or
+            $autoSwings[1].LineNumber -ge $autoToggles[1].LineNumber -or
+            $autoToggles[1].LineNumber -ge $autoStopped.LineNumber -or
+            $autoStopped.LineNumber -ge $autoDone.LineNumber) {
+            throw 'Greenlands auto attack missed ordered client toggle, two hits, threat and stop'
+        }
+        $number = [Globalization.CultureInfo]::InvariantCulture
+        $swingGap = [double]::Parse($autoSwings[1].Matches[0].Groups[1].Value,$number) -
+            [double]::Parse($autoSwings[0].Matches[0].Groups[1].Value,$number)
+        $stopGap = [double]::Parse($autoToggles[1].Matches[0].Groups[2].Value,$number) -
+            [double]::Parse($autoSwings[1].Matches[0].Groups[1].Value,$number)
+        if ($swingGap -lt 1.95 -or $swingGap -gt 2.5 -or $stopGap -gt 1.0) {
+            throw "Greenlands unarmed cadence or stop delayed: swing=$swingGap stop=$stopGap"
+        }
         $ticks = @([regex]::Matches($serverText, 'BOAR_GREENLANDS_REGEN_TICK Stage=(6|12) Health=(\d+) Rest=([01])') |
             ForEach-Object { [pscustomobject]@{ Stage=[int]$_.Groups[1].Value; HP=[int]$_.Groups[2].Value; Rest=[int]$_.Groups[3].Value } })
         $ordinary = @($ticks | Where-Object { $_.Stage -eq 6 -and $_.Rest -eq 0 })
@@ -806,6 +831,17 @@ try {
             $path = Join-Path $logs ('Client' + $(if ($role -eq 'Driver') { '1' } else { '2' }) + '.log')
             Wait-Log $path "BOAR_GREENLANDS_SAMPLE Role=$role Stage=11 .*LeadHP=60"
             $s = Get-Content -LiteralPath $path -Raw
+            $autoSamples = @([regex]::Matches($s,"BOAR_GREENLANDS_SAMPLE Role=$role Stage=(13|14) .*LeadHP=(60|40|20) .*LeadTarget=(Self|Other)") |
+                ForEach-Object { [pscustomobject]@{ Stage=[int]$_.Groups[1].Value; HP=[int]$_.Groups[2].Value; Target=$_.Groups[3].Value } })
+            $autoTarget = if ($role -eq 'Driver') { 'Self' } else { 'Other' }
+            if (@($autoSamples | Where-Object { $_.HP -eq 40 -and $_.Target -eq $autoTarget }).Count -eq 0 -or
+                @($autoSamples | Where-Object { $_.HP -eq 20 -and $_.Target -eq $autoTarget }).Count -eq 0) {
+                throw "$role missed replicated auto attack damage and threat"
+            }
+            if ($role -eq 'Driver' -and ($s -notmatch 'BOAR_GREENLANDS_AUTO_CLIENT_START' -or
+                $s -notmatch 'BOAR_GREENLANDS_AUTO_CLIENT_STOP Health=20')) {
+                throw 'Driver missed local auto attack toggle sequence'
+            }
             $driverTarget = if ($role -eq 'Driver') { 'Self' } else { 'Other' }
             $observerTarget = if ($role -eq 'Observer') { 'Self' } else { 'Other' }
             foreach ($pattern in @(
@@ -833,7 +869,7 @@ try {
                 throw "$role missed replicated inn rest healing"
             }
         }
-        Write-Output "PASS: Greenlands boar combat, ordinary healing ($ordinaryGain HP/tick), Golden Stag rest healing ($restedGain HP/tick), client kill and rotated slot respawn on both clients. Logs: $logs"
+        Write-Output "PASS: Greenlands 2.0 s unarmed auto attack ($swingGap s observed), client stop, boar threat, ordinary healing ($ordinaryGain HP/tick), Golden Stag rest healing ($restedGain HP/tick), client kill and rotated slot respawn on both clients. Logs: $logs"
     }
     Write-Output "PASS: separate editor server and $Clients client(s) connected; $Clients server-authoritative possession(s). Logs: $logs"
     if (-not $CastingScenario -and -not $EvadeScenario -and -not $ThreatScenario -and -not $AggroScenario -and -not $MemoryScenario -and -not $RegenScenario -and -not $RestRegenScenario -and -not $FallScenario -and -not $SwimScenario -and -not $CrouchScenario -and -not $BackpedalScenario -and -not $RoadScenario -and -not $SnowScenario -and -not $AssistScenario -and -not $RespawnScenario -and -not $AutoAttackScenario -and -not $GreenlandsBoarNetcheck -and -not $GreenlandsEnvironmentNetcheck -and -not $GreenlandsMovementNetcheck) { Write-Output 'Headless connection check only: movement, rendering, lifecycle cleanup, authentication and Linux runtime are not certified.' }
