@@ -21,6 +21,11 @@ from heightfield import in_polygon  # noqa: E402
 NODE = {'tree_pine_tall': 'gathering_node/pine_tree', 'tree_oak': 'gathering_node/oak_tree',
         'tree_broadleaf_young': 'gathering_node/young_broadleaf', 'rock_medium': 'gathering_node/stone_outcrop',
         'boulder_large_moss': 'gathering_node/mossy_boulder', 'iron_vein': 'gathering_node/iron_vein'}
+# Authored iron growth stages from the shipped zone record (dd811247).
+IRON_GROWTH_PROFILE = {'grow_fraction': 0.5, 'stages': [
+    {'name': 'young', 'duration_fraction': 0.5, 'yield_fraction': 0.3},
+    {'name': 'growing', 'duration_fraction': 0.5, 'yield_fraction': 0.5},
+    {'name': 'mature', 'duration_fraction': 0.0, 'yield_fraction': 1.0}]}
 SLOTS_PER_KM2 = 40  # common tier, World Simulation "Balancing targets"
 PLAYABLE_RADIUS = 750  # Settlement Silverbrook, rings
 HOSTILE_CLEARANCE = 80  # m from the wall, build plots, the arrival point and respawn points
@@ -121,7 +126,9 @@ def build(L, candidates):
             k = min(len(pts) // 2, max(2, round(SLOTS_PER_KM2 * area_km2(poly) * len(pts) / len(outside))))
             slug = district.lower().replace(' ', '_')
             groups.append(dict(group_id=f'{slug}_{resource}', spawn_kind='gathering_node',
-                               definitions=[dict(definition_id=d, weight=w) for d, w in sorted(weights.items())],
+                               definitions=[dict(definition_id=d, weight=w,
+                                                 **({'growth_profile': IRON_GROWTH_PROFILE} if d == 'gathering_node/iron_vein' else {}))
+                                            for d, w in sorted(weights.items())],
                                points=[dict(point_id=c['id'], position=c['at'], facing=0.0) for c in pts],
                                active_count=k, area=poly, phase_filter='any', layer_policy='all_layers'))
     for gid, defs, c, r, n, k, level in HOSTILE:
