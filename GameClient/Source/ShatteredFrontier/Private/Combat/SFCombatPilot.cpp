@@ -332,6 +332,8 @@ bool USFCombatPilotSettings::Validate(FString& Error) const
     return true;
 }
 
+const FName ASFPilotBoar::OutOfPlaceNpcTag(TEXT("SF_OutOfPlaceNpc"));
+
 ASFPilotBoar::ASFPilotBoar()
 {
     bReplicates = true;
@@ -575,8 +577,37 @@ void ASFPilotBoar::DropAbilityThreat(ASFE1Character* Character)
     if (Target.Get() == Character) { Target.Reset(); ReplicatedTarget = nullptr; TargetCharacterId.Empty(); }
 }
 
+void ASFPilotBoar::RetaliateAgainst(ASFE1Character* Attacker)
+{
+    if (!HasAuthority() || !IsValid(Attacker) || !Attacker->HasAuthority() ||
+        Attacker->GetWorld() != GetWorld() || Attacker->CombatHealth() <= 0) return;
+    ASFGameMode::HitPlayer(this, Attacker, Attacker->CombatHealth(), true, true);
+}
+
+float ASFPilotBoar::TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent,
+    AController* EventInstigator, AActor* DamageCauser)
+{
+    if (!ActorHasTag(OutOfPlaceNpcTag))
+        return Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+    if (FMath::IsFinite(DamageAmount) && DamageAmount > 0)
+    {
+        APawn* InstigatorPawn = nullptr;
+        if (IsValid(EventInstigator)) InstigatorPawn = EventInstigator->GetPawn();
+        else if (IsValid(DamageCauser)) InstigatorPawn = DamageCauser->GetInstigator();
+        ASFE1Character* Attacker = Cast<ASFE1Character>(InstigatorPawn);
+        if (!Attacker) Attacker = Cast<ASFE1Character>(DamageCauser);
+        RetaliateAgainst(Attacker);
+    }
+    return 0; // Engine damage cannot bypass the same immunity as resolved combat hits.
+}
+
 void ASFPilotBoar::ReceivePilotDamage(ASFE1Character* Attacker, int32 Damage, double AbilityThreatMultiplier)
 {
+    if (ActorHasTag(OutOfPlaceNpcTag))
+    {
+        if (Damage > 0) RetaliateAgainst(Attacker);
+        return;
+    }
     if (!HasAuthority() || CurrentHealth <= 0 || bReturning || !IsValid(Attacker) || Damage <= 0) { return; }
     const int32 EffectiveDamage = FMath::Min(CurrentHealth, Damage);
     Attacker->CombatMarkHostile();
@@ -631,6 +662,7 @@ bool ASFPilotBoar::ReceivePilotTaunt(ASFE1Character* Taunter)
 void ASFPilotBoar::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
+    if (ActorHasTag(OutOfPlaceNpcTag)) return; // This NPC retaliates; it never hunts players.
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     if (!HasAuthority() && !bClientLoggedNpcCast && CreatureId == TEXT("npc/bandit_captain") &&
         FParse::Param(FCommandLine::Get(), TEXT("GreenlandsAbilityNetcheck")) && Casting &&
@@ -990,9 +1022,10 @@ void ASFGameMode::StartCombat()
     const bool bSpiritReleaseSandbox = MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_SpiritRelease");
     const bool bResurrectionAcceptSandbox = MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_ResurrectionAccept");
     const bool bPersonalLootSandbox = MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_PersonalLoot");
+    const bool bOutOfPlaceSandbox = MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_OutOfPlaceNpc");
     bRespawnSandbox = MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_Respawn");
     bCompanionSandbox = GetNetMode() != NM_Client &&
-        (MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_Companions") || bEvadeSandbox || bThreatSandbox || bTauntSandbox || bAggroSandbox || bMemorySandbox || bRegenSandbox || bRestRegenSandbox || bFallSandbox || bAssistSandbox || bRespawnSandbox || bAutoAttackSandbox || bDodgeSandbox || bUnstuckSandbox || bSpiritReleaseSandbox || bResurrectionAcceptSandbox || bPersonalLootSandbox);
+        (MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_Companions") || bEvadeSandbox || bThreatSandbox || bTauntSandbox || bAggroSandbox || bMemorySandbox || bRegenSandbox || bRestRegenSandbox || bFallSandbox || bAssistSandbox || bRespawnSandbox || bAutoAttackSandbox || bDodgeSandbox || bUnstuckSandbox || bSpiritReleaseSandbox || bResurrectionAcceptSandbox || bPersonalLootSandbox || bOutOfPlaceSandbox);
     if (bCompanionSandbox)
     {
         CapturedSettings = GetDefault<USFCombatPilotSettings>();
@@ -1005,7 +1038,7 @@ void ASFGameMode::StartCombat()
         int32 Slot = 0;
         for (TActorIterator<ASFPilotBoar> It(GetWorld()); It; ++It)
         {
-            const FName Tag = bEvadeSandbox ? TEXT("SF_EvadeSandboxWildlife") :
+            const FName Tag = bOutOfPlaceSandbox ? TEXT("SF_OutOfPlaceNpcSandboxWildlife") : bEvadeSandbox ? TEXT("SF_EvadeSandboxWildlife") :
                 bThreatSandbox ? TEXT("SF_ThreatSandboxWildlife") :
                 bTauntSandbox ? TEXT("SF_TauntSandboxWildlife") :
                 bAggroSandbox ? TEXT("SF_AggroSandboxWildlife") :
@@ -1021,7 +1054,7 @@ void ASFGameMode::StartCombat()
                 bPersonalLootSandbox ? TEXT("SF_PersonalLootSandboxWildlife") : TEXT("SF_CompanionSandboxWildlife");
             if (!It->ActorHasTag(Tag)) { continue; }
             if (bRespawnSandbox) { RespawnSandboxPoints.Add(It->GetActorTransform()); }
-            It->Initialize(this, bEvadeSandbox ? TEXT("evade_sandbox") :
+            It->Initialize(this, bOutOfPlaceSandbox ? TEXT("out_of_place_sandbox") : bEvadeSandbox ? TEXT("evade_sandbox") :
                 bThreatSandbox ? TEXT("threat_sandbox") :
                 bTauntSandbox ? TEXT("taunt_sandbox") :
                 bAggroSandbox ? TEXT("aggro_sandbox") :
@@ -2917,12 +2950,20 @@ void ASFGameMode::ApplyFallDamage(ASFE1Character* Victim, float ImpactSpeedMps)
     HitPlayer(nullptr, Victim, Damage, true);
 }
 
-void ASFGameMode::HitPlayer(AActor* Source, ASFE1Character* Victim, int32 Damage, bool bIgnoreArmor)
+void ASFGameMode::HitPlayer(AActor* Source, ASFE1Character* Victim, int32 Damage, bool bIgnoreArmor,
+    bool bLethalRetaliation)
 {
     if (!IsValid(Victim) || !Victim->HasAuthority() || Victim->CombatHealth() <= 0 ||
         USFCharacterSessionComponent::IsRestoring(Victim->GetController())) return;
-    if (!bIgnoreArmor) { Damage = SFGear::MitigatedDamage(Damage, SFGear::Equipped(Victim->GetController()).Armor); }
-    Damage = FMath::Max(1, FMath::RoundToInt(Damage * Victim->DamageTakenMultiplier(Victim->GetWorld()->GetTimeSeconds())));
+    const bool bRetaliation = bLethalRetaliation && IsValid(Source) && Source->HasAuthority() &&
+        Source->GetWorld() == Victim->GetWorld() && Source->IsA<ASFPilotBoar>() &&
+        Source->ActorHasTag(ASFPilotBoar::OutOfPlaceNpcTag);
+    if (bRetaliation) Damage = Victim->CombatHealth();
+    else
+    {
+        if (!bIgnoreArmor) { Damage = SFGear::MitigatedDamage(Damage, SFGear::Equipped(Victim->GetController()).Armor); }
+        Damage = FMath::Max(1, FMath::RoundToInt(Damage * Victim->DamageTakenMultiplier(Victim->GetWorld()->GetTimeSeconds())));
+    }
     Victim->InterruptCombatAbilityCast();
     Victim->CombatSetHealth(SFCombatPilotRules::RemainingHealth(Victim->CombatHealth(), Damage));
     if (ASFPlayerController* PC = Cast<ASFPlayerController>(Victim->GetController())) { PC->ClientPilotHit(TEXT("Hit")); }

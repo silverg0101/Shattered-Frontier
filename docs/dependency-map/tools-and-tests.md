@@ -1,5 +1,7 @@
 # Tools and tests
 
+Out-of-place NPC fixture: `tools/Create-SandboxMap.py OutOfPlaceNpc` adds the tagged, existing-box NPC to `/Game/Frontier/Maps/Sandbox/SB_OutOfPlaceNpc`; it uses the normal game mode and existing combat settings. Focused automation: `ShatteredFrontier.Combat.OutOfPlaceNpc.AuthorityAndRetaliation`. Model review and Greenlands placement are separate gates.
+
 `pwsh tools/Test-CombatPilot.ps1 -Map /Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook -Clients 2 -Services -GreenlandsArcherNetcheck` starts two clients and the existing service fixture, positions them beside a live bandit archer, and requires a server ranged hit plus tracer receipt on both clients. Run from PowerShell so `/Game/` is preserved. The fixture stops its owned clients, server, service hosts and PostgreSQL instance.
 
 Chat relay: `tools/Test-ChatUnrealRelay.ps1` starts the package-free `Chat.Host.Tests -- unreal-relay` fixture using production WebSocket transport with fixed development actors and membership, then two separate Unreal automation clients (`ShatteredFrontier.Chat.TwoClientRelay`). It checks a bidirectional party message and a generic blocked-whisper rejection and stops owned processes. `Chat.Host.Tests -- transport` covers both rejection statuses at the hub.

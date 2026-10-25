@@ -263,6 +263,10 @@ class SHATTEREDFRONTIER_API ASFPilotBoar : public ACharacter
 public:
     ASFPilotBoar();
     virtual void Tick(float DeltaSeconds) override;
+    virtual float TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent,
+        AController* EventInstigator, AActor* DamageCauser) override;
+    /** Release-authored actor tag; immunity/retaliation is an invariant, not balance tuning. */
+    static const FName OutOfPlaceNpcTag;
     virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
     void Initialize(class ASFGameMode* OwnerMode, const FString& Group, int32 Slot,
         const TArray<FVector2D>& Area, int32 Health, int32 Serial, bool bInDefensive = false);
@@ -305,6 +309,7 @@ public:
     bool IsRangedArcher() const { return CreatureId == TEXT("npc/bandit_archer"); }
     UFUNCTION(NetMulticast, Unreliable) void MulticastArcherTracer(FVector_NetQuantize Start, FVector_NetQuantize End);
 private:
+    void RetaliateAgainst(ASFE1Character* Attacker);
     UFUNCTION() void OnRep_Health();
     UFUNCTION() void OnRep_CreatureId();
     UPROPERTY(ReplicatedUsing=OnRep_Health) int32 CurrentHealth = 0;

@@ -1,5 +1,7 @@
 # Gameplay
 
+Out-of-place NPC sandbox: `ASFPilotBoar` in `Combat/SFCombatPilot.*` recognizes the release-authored `SF_OutOfPlaceNpc` actor tag. Resolved combat hits and engine damage preserve its health and defeat the valid authoritative player instigator through `ASFGameMode::HitPlayer`, bypassing armor/reduction/absorb; tagged actors do not run hostile AI. `SFStatusEffectsComponent::Apply` rejects effects on tagged actors so lingering poison cannot retaliate again after same-pawn respawn. `tools/Create-SandboxMap.py OutOfPlaceNpc` creates only `/Game/Frontier/Maps/Sandbox/SB_OutOfPlaceNpc` with an existing box fixture. Run only `ShatteredFrontier.Combat.OutOfPlaceNpc.AuthorityAndRetaliation` (`Private/Tests/SFOutOfPlaceNpcTests.cpp`) and the two `ShatteredFrontier.Combat.StatusEffects` tests when changing status admission. Approved model and Greenlands placement remain pending in [the hand-off](hand-offs/queue/gameplay-out-of-place-npc.md).
+
 Packaged runtime JSON: `GameClient/Content/RuntimeData/Greenlands/` is the source of truth for the three Silverbrook census, town-layout and smart-object files read by townsfolk and quests. The other runtime records remain under repository `content/` and are staged beside the packaged project through `DefaultGame.ini`.
 
 

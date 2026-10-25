@@ -1,4 +1,5 @@
 #include "Combat/SFStatusEffectsComponent.h"
+#include "Combat/SFCombatPilot.h"
 
 #include "Engine/World.h"
 #include "Misc/CommandLine.h"
@@ -56,7 +57,8 @@ void USFStatusEffectsComponent::TickComponent(float DeltaTime, ELevelTick TickTy
 bool USFStatusEffectsComponent::Apply(FName EffectId, ESFStatusKind Kind, ESFDispelType DispelType, AActor* Source,
     float DurationSeconds, float TickSeconds, int32 MaxStacks, bool bStack, TFunction<void()> Tick)
 {
-    if (!GetOwner() || !GetOwner()->HasAuthority() || EffectId.IsNone() || !IsValid(Source) ||
+    if (!GetOwner() || !GetOwner()->HasAuthority() ||
+        GetOwner()->ActorHasTag(ASFPilotBoar::OutOfPlaceNpcTag) || EffectId.IsNone() || !IsValid(Source) ||
         !FMath::IsFinite(DurationSeconds) || DurationSeconds <= 0.f || DurationSeconds > 60.f ||
         !FMath::IsFinite(TickSeconds) || TickSeconds < 0.f || TickSeconds > DurationSeconds ||
         (TickSeconds > 0.f && (TickSeconds < .1f || DurationSeconds / TickSeconds > 60.f)) ||
