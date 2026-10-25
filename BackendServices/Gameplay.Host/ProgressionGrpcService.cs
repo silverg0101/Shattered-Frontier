@@ -14,6 +14,16 @@ internal sealed class ProgressionGrpcService(PostgresCharacterStateStore store, 
     Func<double> skillRoll, ProgressionSettings progressionSettings, DeathPenaltyTuning deathPenaltyTuning) : Pb.Progression.ProgressionBase
 {
     private static readonly IReadOnlySet<ushort> NoCosmetics = new HashSet<ushort>();
+    private static readonly CombatAttributeTuning CombatTuning = new();
+
+    private static Pb.CombatAttributes WireCombat(CombatIdentity identity, int level)
+    {
+        var s = CombatTuning.Snapshot(identity, level);
+        return new Pb.CombatAttributes { Archetype = s.Archetype, Level = s.Level,
+            Strength = s.Attributes.Strength, Dexterity = s.Attributes.Dexterity,
+            Constitution = s.Attributes.Constitution, Intelligence = s.Attributes.Intelligence,
+            Wisdom = s.Attributes.Wisdom, Willpower = s.Attributes.Willpower };
+    }
 
     public override Task<Pb.EndSessionReply> EndSession(Pb.EndSessionRequest request, ServerCallContext context) =>
         GrpcRun.Call(context, () =>
@@ -31,8 +41,10 @@ internal sealed class ProgressionGrpcService(PostgresCharacterStateStore store, 
             var validation = appearanceValidator.ValidatePacked(packet, NoCosmetics, NoCosmetics);
             if (!validation.Valid || !AppearanceCodec.TryUnpack(packet, out var appearance) || appearance!.FaceIndex is null)
                 throw new GameplayRejectedException("APPEARANCE_INVALID", StatusCode.InvalidArgument);
-            return new Pb.CreateCharacterReply { AppearanceRevision = store.SaveAppearance(request.CharacterId, 0,
-                packet, appearanceValidator, NoCosmetics, NoCosmetics) };
+            var revision = store.SaveAppearance(request.CharacterId, 0,
+                packet, appearanceValidator, NoCosmetics, NoCosmetics);
+            store.EnsureCombatIdentity(request.CharacterId, CombatTuning, progressionSettings);
+            return new Pb.CreateCharacterReply { AppearanceRevision = revision };
         });
 
     public override Task<Pb.LearnRecipeReply> LearnRecipe(Pb.LearnRecipeRequest request, ServerCallContext context) =>
@@ -169,6 +181,9 @@ internal sealed class ProgressionGrpcService(PostgresCharacterStateStore store, 
                     reply.ActiveStepId = done.Result.ActiveStepId ?? "";
                     reply.QuestCompleted = done.Result.Completed;
                     reply.QuestRevision = done.Revision;
+                    reply.CombatAttributes = WireCombat(
+                        store.ReadProgression(request.CharacterId)?.Result.CombatIdentity ?? CombatTuning.StarterIdentity,
+                        reply.Level);
                     return reply;
                 }
                 var containers = ledgerStore.FindContainers(ShatteredFrontier.InventoryLedger.OwnerKind.Character,
@@ -193,6 +208,8 @@ internal sealed class ProgressionGrpcService(PostgresCharacterStateStore store, 
                         new Pb.GrantedItem { DefinitionId = i.DefinitionId, Quantity = i.Quantity }));
                 }
             }
+            var combat = store.ReadProgression(request.CharacterId)?.Result.CombatIdentity ?? CombatTuning.StarterIdentity;
+            reply.CombatAttributes = WireCombat(combat, reply.Level);
             return reply;
         });
 
@@ -203,6 +220,7 @@ internal sealed class ProgressionGrpcService(PostgresCharacterStateStore store, 
             // The character restore on connect is first spawn: the kit purse is credited once (idempotent operation ID).
             if (starterKit.Kit is { PurseCopper: > 0 } kit && request.CharacterId.StartsWith("chr_", StringComparison.Ordinal))
                 exchange.Credit(kit.PurseOperationId(request.CharacterId), request.CharacterId, kit.PurseCopper, "starter_kit");
+            store.EnsureCombatIdentity(request.CharacterId, CombatTuning, progressionSettings);
             var progression = store.StartProgressionSession(request.CharacterId, TimeProvider.System, progressionSettings);
             var state = new Pb.CharacterStateReply
             {
@@ -224,6 +242,7 @@ internal sealed class ProgressionGrpcService(PostgresCharacterStateStore store, 
             }
             state.Level = progression is null ? 1 : new CharacterProgression(request.CharacterId,
                 TimeProvider.System, () => .5, snapshot: progression.Result).Level;
+            state.CombatAttributes = WireCombat(progression?.Result.CombatIdentity ?? CombatTuning.StarterIdentity, state.Level);
             if (progression is not null)
             {
                 foreach (var (id, value) in progression.Result.Skills)

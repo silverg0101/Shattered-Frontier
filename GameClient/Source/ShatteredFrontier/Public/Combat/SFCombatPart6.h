@@ -42,6 +42,26 @@ namespace SFCombatPart6
         return 0.04 * (400.0 + 44.5 * L) / (38.0 + 5.882 * L);
     }
 
+    inline FStats FromAttributes(int32 Level, int32 Strength, int32 Dexterity, int32 Constitution,
+        int32 Intelligence, int32 Wisdom, int32 Willpower, double CritBase = 0.05, double SkillFloor = 0.80)
+    {
+        FStats S;
+        S.Level = FMath::Clamp(Level, 1, 20);
+        S.Strength = Strength; S.Dexterity = Dexterity; S.Constitution = Constitution;
+        S.Intelligence = Intelligence; S.Wisdom = Wisdom; S.Willpower = Willpower;
+        S.Health = 100 + 15 * S.Constitution + 25 * S.Level;
+        S.Mana = 100 + 20 * S.Intelligence + 10 * S.Level;
+        S.Stamina = 100 + 5 * S.Constitution + 3 * S.Dexterity;
+        const int32 Reference = SkillReference(S.Level);
+        S.Skill = FMath::Max(100, Reference);
+        S.Tactics = FMath::Max(50, FMath::RoundToInt(.75 * Reference));
+        S.SkillMultiplier = SkillFloor + (1.0 - SkillFloor) *
+            FMath::Min(1.10, double(S.Skill) / FMath::Max(1, Reference));
+        S.CritChance = CritBase + S.Dexterity / 5000.0;
+        S.Resistance = FMath::FloorToInt(S.Wisdom / 2.0);
+        return S;
+    }
+
     inline FStats Player(EKit Kit, int32 Level, double CritBase = 0.05, double SkillFloor = 0.80)
     {
         FStats S; S.Level = FMath::Clamp(Level, 1, 20);
@@ -63,17 +83,8 @@ namespace SFCombatPart6
         S.Intelligence += FMath::RoundToInt(Points * Int);
         S.Wisdom += FMath::RoundToInt(Points * Wis);
         S.Willpower += FMath::RoundToInt(Points * Wil);
-        S.Health = 100 + 15 * S.Constitution + 25 * S.Level;
-        S.Mana = 100 + 20 * S.Intelligence + 10 * S.Level;
-        S.Stamina = 100 + 5 * S.Constitution + 3 * S.Dexterity;
-        const int32 Reference = SkillReference(S.Level);
-        S.Skill = FMath::Max(100, Reference);
-        S.Tactics = FMath::Max(50, FMath::RoundToInt(.75 * Reference));
-        S.SkillMultiplier = SkillFloor + (1.0 - SkillFloor) *
-            FMath::Min(1.10, double(S.Skill) / FMath::Max(1, Reference));
-        S.CritChance = CritBase + S.Dexterity / 5000.0;
-        S.Resistance = FMath::FloorToInt(S.Wisdom / 2.0);
-        return S;
+        return FromAttributes(S.Level, S.Strength, S.Dexterity, S.Constitution,
+            S.Intelligence, S.Wisdom, S.Willpower, CritBase, SkillFloor);
     }
 
     struct FWeapon

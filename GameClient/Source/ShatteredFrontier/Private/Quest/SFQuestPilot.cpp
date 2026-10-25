@@ -52,6 +52,12 @@ SFQuestPilotEvents::FBoarDefeated& SFQuestPilotEvents::OnBoarDefeated() { static
 
 namespace
 {
+    void RestoreCombatAttributes(AActor* Owner, const FSFGameplayResponse& State)
+    {
+        if (const auto* PC = Cast<APlayerController>(Owner))
+            if (auto* Character = Cast<ASFE1Character>(PC->GetPawn()))
+                Character->RestoreCombatSnapshot(State);
+    }
     constexpr int32 MaxObjectiveCount = 500;  // QuestTuning default; same bounds as the backend model
     constexpr int32 MaxOfferLinks = 8;        // boards[] and requires_completed[] (QST-02 content)
 
@@ -550,6 +556,7 @@ void USFQuestPilotComponent::PumpServices()
         FEntry* Entry = Event.QuestId.IsEmpty() ? nullptr : Self->Find(Event.QuestId);
         if (R.Status == ESFGameplayStatus::Ok)
         {
+            RestoreCombatAttributes(Self->GetOwner(), R);
             if (R.bProgressionApplied)
             {
                 if (auto* Pilot = Self->GetOwner()->FindComponentByClass<USFGatheringPilotComponent>())
@@ -618,6 +625,7 @@ void USFQuestPilotComponent::PumpServices()
                 if (!Again) { return; }
                 if (State.Status == ESFGameplayStatus::Ok)
                 {
+                    RestoreCombatAttributes(Again->GetOwner(), State);
                     Again->ProgressionRevision = State.ProgressionRevision;
                     if (auto* Pilot = Again->GetOwner()->FindComponentByClass<USFGatheringPilotComponent>())
                     { Pilot->RestoreLevel(State.Level); Pilot->RestoreRestedMinutes(State.RestedMinutes); }
@@ -664,6 +672,7 @@ void USFQuestPilotComponent::Refresh()
         // Evidence still in flight would be undone by an older read; its reply corrects the mirror itself.
         if (State.Status == ESFGameplayStatus::Ok && !Self->HasPendingServiceWork())
         {
+            RestoreCombatAttributes(Self->GetOwner(), State);
             Self->Restore(State.Quests, State.ProgressionRevision);
             if (auto* Gathering = Self->GetOwner()->FindComponentByClass<USFGatheringPilotComponent>())
             { Gathering->RestoreSkills(State.Skills); Gathering->RestoreLevel(State.Level); Gathering->RestoreRestedMinutes(State.RestedMinutes); }

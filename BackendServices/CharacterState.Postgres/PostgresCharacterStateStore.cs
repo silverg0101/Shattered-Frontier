@@ -173,6 +173,50 @@ public sealed class PostgresCharacterStateStore(string connectionString)
         return r.Read() ? new(r.GetInt64(0), JsonSerializer.Deserialize<ProgressionSnapshot>(r.GetString(1)) ?? throw new CharacterStoreRejectedException("Invalid stored progression state.")) : null;
     });
 
+    // JSON additive migration: old rows have no CombatIdentity property. Locking the character
+    // makes first restore and a concurrent progression receipt converge on one durable identity.
+    public VersionedResult<ProgressionSnapshot> EnsureCombatIdentity(string characterId,
+        CombatAttributeTuning tuning, ProgressionSettings? progressionSettings = null) =>
+        Transaction<VersionedResult<ProgressionSnapshot>>((c, t) =>
+    {
+        if (string.IsNullOrWhiteSpace(characterId)) throw new CharacterStoreRejectedException("Character ID required.");
+        tuning.Validate();
+        LockCharacter(c, t, characterId);
+        long revision = 0;
+        ProgressionSnapshot? snapshot = null;
+        using (var read = Command(c, t, "SELECT revision,state::text FROM character_state.progression WHERE character_id=$1", characterId))
+        using (var row = read.ExecuteReader())
+            if (row.Read())
+            {
+                revision = row.GetInt64(0);
+                snapshot = JsonSerializer.Deserialize<ProgressionSnapshot>(row.GetString(1)) ??
+                    throw new CharacterStoreRejectedException("Invalid stored progression state.");
+            }
+        if (snapshot?.CombatIdentity is not null)
+        {
+            tuning.Snapshot(snapshot.CombatIdentity, 1); // Validate stored identity before publication.
+            return new(revision, snapshot);
+        }
+        snapshot = snapshot is null
+            ? new CharacterProgression(characterId, TimeProvider.System, () => .5,
+                settings: progressionSettings).Snapshot()
+                with { CombatIdentity = tuning.StarterIdentity }
+            : snapshot with { CombatIdentity = tuning.StarterIdentity };
+        if (revision == 0)
+        {
+            using var insert = Command(c, t, "INSERT INTO character_state.progression(character_id,revision,state) VALUES ($1,1,$2::jsonb)",
+                characterId, JsonSerializer.Serialize(snapshot));
+            insert.ExecuteNonQuery();
+        }
+        else
+        {
+            using var update = Command(c, t, "UPDATE character_state.progression SET revision=revision+1,state=$2::jsonb WHERE character_id=$1",
+                characterId, JsonSerializer.Serialize(snapshot));
+            update.ExecuteNonQuery();
+        }
+        return new(revision + 1, snapshot);
+    });
+
     public VersionedResult<ProgressionSnapshot>? StartProgressionSession(string characterId, TimeProvider clock, ProgressionSettings settings) => Transaction<VersionedResult<ProgressionSnapshot>?>((c, t) =>
     {
         LockCharacter(c, t, characterId);

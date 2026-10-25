@@ -7,6 +7,7 @@ param(
     [ValidatePattern('^/Game/Frontier/[A-Za-z0-9_/]+$')][string]$Map = '/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook',
     [switch]$GreenlandsDeathNetcheck,
     [switch]$GreenlandsUnstuckNetcheck,
+    [switch]$AttributeSnapshotNetcheck,
     [ValidateSet('Release','Resurrection')][string]$DeathResolution = 'Release',
     [switch]$RestartMidDeath,
     [switch]$TargetScenario,
@@ -23,6 +24,11 @@ $project = Join-Path $repo 'GameClient\ShatteredFrontier.uproject'
 $bridge = Join-Path $repo 'BackendServices\WorldContent.Tool\bin\Debug\net10.0\WorldContent.Tool.dll'
 $sdk = Join-Path $repo 'Artifacts\Persistence\Toolchains\dotnet-10.0.402\dotnet.exe'
 if ($Services -and $TargetScenario) { throw 'Services ledger assertion requires the combat reward scenario.' }
+if ($AttributeSnapshotNetcheck -and (-not $Services -or $Clients -ne 2 -or
+    $Map -ne '/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook' -or
+    $GreenlandsDeathNetcheck -or $GreenlandsUnstuckNetcheck -or $PartyXpScenario -or $PartyScenario -or $SpawnOnly)) {
+    throw 'AttributeSnapshotNetcheck requires Silverbrook, two clients and Gameplay Services.'
+}
 if ($GreenlandsDeathNetcheck -and (-not $Services -or $Clients -ne 2 -or $Map -ne '/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook' -or
     $TargetScenario -or $PartyScenario -or $PartyXpScenario -or $SpawnOnly)) { throw 'GreenlandsDeathNetcheck requires Silverbrook, two clients and Gameplay Services.' }
 if ($GreenlandsUnstuckNetcheck -and (-not $Services -or $Clients -ne 2 -or $Map -ne '/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook' -or
@@ -49,7 +55,8 @@ $null = New-Item -ItemType Directory -Path $root
 if ($Services) { . (Join-Path $PSScriptRoot 'InventoryLedgerHostFixture.ps1') }
 $fx = @{}
 $owned = [Collections.Generic.List[Diagnostics.Process]]::new()
-$scope = if ($GreenlandsUnstuckNetcheck) { 'Greenlands two-client Unstuck, token replay, and restart cooldown' }
+$scope = if ($AttributeSnapshotNetcheck) { 'Greenlands two-client authoritative attribute restore and combat' }
+    elseif ($GreenlandsUnstuckNetcheck) { 'Greenlands two-client Unstuck, token replay, and restart cooldown' }
     elseif ($GreenlandsDeathNetcheck) { "Greenlands two-client durable boar death and $DeathResolution" }
     elseif ($PartyXpScenario) { 'Three-client party: server restart, two in-range personal loot and XP recipients, out-of-range exclusion' }
     elseif ($PartyScenario) { 'Three clients: invite, decline, accept, leader handoff, kick, leave and party HUD' }
@@ -441,7 +448,11 @@ try {
         for ($role = 1; $role -le 2; $role++) {
             $identity = $names[$role - 1]
             $null = Start-Owned "client$role" ("127.0.0.1:$Port`?SFDevCharacter=$identity") @('-game',$scenarioArg,"-CombatGroupRole=$role")
-            Wait-Log $server 'server' "COMBAT_PILOT_BOAR_HIT Group=boar_farm_edge Slot=0 HP=$(60 - 20*$role) Attacker=chr_dev_$identity"
+            if ($AttributeSnapshotNetcheck) {
+                Wait-Log $server 'server' "COMBAT_PILOT_BOAR_HIT Group=boar_farm_edge Slot=0 HP=\d+ Attacker=chr_dev_$identity"
+            } else {
+                Wait-Log $server 'server' "COMBAT_PILOT_BOAR_HIT Group=boar_farm_edge Slot=0 HP=$(60 - 20*$role) Attacker=chr_dev_$identity"
+            }
             Wait-Log $owned[$owned.Count - 1] "client$role" "COMBAT_GROUP_ATTACK Role=$role"
             if ($role -eq 1 -and $Clients -gt 3) {
                 for ($observer = 4; $observer -le $Clients; $observer++) {
@@ -449,6 +460,17 @@ try {
                     $null = Start-Owned "client$observer" ("127.0.0.1:$Port`?SFDevCharacter=$observerIdentity") @('-game',$scenarioArg,'-CombatGroupRole=0')
                 }
             }
+        }
+        if ($AttributeSnapshotNetcheck) {
+            $serverText = Get-Content -LiteralPath (Join-Path $root 'server.log') -Raw
+            if ([regex]::Matches($serverText, 'COMBAT_ATTRIBUTE_SNAPSHOT Archetype=fighter Level=1 Str=30 Dex=15 Con=25 Int=10 Wis=10 Wil=10').Count -lt 2 -or
+                $serverText -notmatch 'CHARACTER_RESTORED Character=chr_dev_alpha' -or
+                $serverText -notmatch 'CHARACTER_RESTORED Character=chr_dev_beta' -or
+                $serverText -match 'COMBAT_PILOT_SLOT_ERROR|Fatal error:|Assertion failed:') {
+                throw 'Two-client attribute snapshot or combat evidence incomplete.'
+            }
+            $result.status='Passed'
+            return
         }
         $second = $owned[$owned.Count - 1]
         Stop-Process -Id $second.Id

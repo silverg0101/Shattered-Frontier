@@ -126,6 +126,14 @@ struct FSFGameplayResponse
     // Progression
     bool bProgressionApplied = false, bQuestAccepted = false, bQuestCompleted = false;
     int32 SkillGain = 0, XpGain = 0, Level = 0;
+    struct FCombatAttributes
+    {
+        FString Archetype;
+        int32 Level = 0, Strength = 0, Dexterity = 0, Constitution = 0;
+        int32 Intelligence = 0, Wisdom = 0, Willpower = 0;
+        bool IsValid() const { return Level > 0 && !Archetype.IsEmpty() && Strength >= 10 &&
+            Dexterity >= 10 && Constitution >= 10 && Intelligence >= 10 && Wisdom >= 10 && Willpower >= 10; }
+    } CombatAttributes;
     int64 ProgressionRevision = 0, QuestRevision = 0;
     double RestedMinutes = 0;
     int64 AppearanceRevision = 0;  // CreateCharacter

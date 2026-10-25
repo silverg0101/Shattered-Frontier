@@ -10,6 +10,14 @@ namespace
     std::string Utf8(const FString& Value) { return std::string(TCHAR_TO_UTF8(*Value)); }
     FString FromUtf8(const std::string& Value) { return FString(UTF8_TO_TCHAR(Value.c_str())); }
 
+    void CopyCombat(const sf::progression::v1::CombatAttributes& R, FSFGameplayResponse& Out)
+    {
+        auto& A = Out.CombatAttributes;
+        A.Archetype = FromUtf8(R.archetype()); A.Level = R.level();
+        A.Strength = R.strength(); A.Dexterity = R.dexterity(); A.Constitution = R.constitution();
+        A.Intelligence = R.intelligence(); A.Wisdom = R.wisdom(); A.Willpower = R.willpower();
+    }
+
     // One in-flight call. The reply message type differs per RPC; Fill copies it into the flat response.
     struct FCall
     {
@@ -320,6 +328,7 @@ void FSFGrpcGameplayTransport::Send(const FSFGameplayRequest& Q, float DeadlineS
         auto* Call = new TCall<sf::progression::v1::ApplyReceiptReply>();
         Call->Copy = [](const sf::progression::v1::ApplyReceiptReply& R, FSFGameplayResponse& Out)
         {
+            if (R.has_combat_attributes()) { CopyCombat(R.combat_attributes(), Out); }
             Out.bProgressionApplied = R.progression_applied(); Out.SkillGain = R.skill_gain(); Out.XpGain = R.xp_gain(); Out.Level = R.level();
             Out.ProgressionRevision = R.progression_revision(); Out.bQuestAccepted = R.quest_accepted(); Out.ActiveStepId = FromUtf8(R.active_step_id());
             Out.RestedMinutes = R.rested_minutes();
@@ -359,6 +368,7 @@ void FSFGrpcGameplayTransport::Send(const FSFGameplayRequest& Q, float DeadlineS
         auto* Call = new TCall<sf::progression::v1::CharacterStateReply>();
         Call->Copy = [](const sf::progression::v1::CharacterStateReply& R, FSFGameplayResponse& Out)
         {
+            if (R.has_combat_attributes()) { CopyCombat(R.combat_attributes(), Out); }
             Out.ProgressionRevision = R.progression_revision(); Out.Level = R.level(); Out.QuestRevision = R.quest_revision();
             Out.RestedMinutes = R.rested_minutes();
             Out.ActiveStepId = FromUtf8(R.active_step_id()); Out.bQuestCompleted = R.quest_completed();

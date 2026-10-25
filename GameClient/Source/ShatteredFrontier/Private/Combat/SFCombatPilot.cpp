@@ -1643,6 +1643,7 @@ void ASFGameMode::TryPlayerAttack(ASFE1Character* Attacker, AActor* SelectedTarg
     }
     if (!Best) { return; }
     const bool bPart6 = SFCombatPart6::Active(GetWorld());
+    if (bPart6 && !Attacker->HasCombatSnapshot()) return;
     const SFGear::FCombatEquipment Equipment = bPart6 ?
         SFGear::CombatEquipment(Attacker->GetController(), CapturedSettings->DevPilotArmorUnit) :
         SFGear::FCombatEquipment();
@@ -1652,8 +1653,7 @@ void ASFGameMode::TryPlayerAttack(ASFE1Character* Attacker, AActor* SelectedTarg
     SFCombatResolution::FAttack Attack;
     if (bPart6)
     {
-        const auto Stats = SFCombatPart6::Player(SFCombatPart6::EKit::Fighter,
-            Attacker->CombatCharacterLevel(), CapturedSettings->CritBase, CapturedSettings->SkillDamageFloor);
+        const auto Stats = Attacker->CombatStats(CapturedSettings->CritBase, CapturedSettings->SkillDamageFloor);
         Attack = SFCombatPart6::PlayerAuto(Stats, Equipment.Weapon,
             CapturedSettings->WeaponSpread, CapturedSettings->PowerSpeedReferenceSeconds,
             CapturedSettings->UnarmedDpsFactor, CapturedSettings->WeaponDpsK);
@@ -1742,9 +1742,9 @@ void ASFGameMode::TryBoarAttack(ASFPilotBoar* Boar, ASFE1Character* Victim)
     const bool bPart6 = SFCombatPart6::Active(GetWorld());
     if (bPart6)
     {
+        if (!Victim->HasCombatSnapshot()) return;
         const auto Npc = SFCombatPart6::Npc(Boar->GetCreatureId());
-        const auto Defender = SFCombatPart6::Player(SFCombatPart6::EKit::Fighter,
-            Victim->CombatCharacterLevel(), CapturedSettings->CritBase, CapturedSettings->SkillDamageFloor);
+        const auto Defender = Victim->CombatStats(CapturedSettings->CritBase, CapturedSettings->SkillDamageFloor);
         const auto Equipment = SFGear::CombatEquipment(Victim->GetController(), CapturedSettings->DevPilotArmorUnit);
         Attack.RawDamage = Boar->CombatSwingDamage();
         Attack.AttackerLevel = Npc.Level;

@@ -3,7 +3,10 @@
 #include "GameFramework/Character.h"
 #include "TimerManager.h"
 #include "Combat/SFOutOfCombatRegen.h"
+#include "Combat/SFCombatPart6.h"
 #include "SFE1Character.generated.h"
+
+struct FSFGameplayResponse;
 
 class UCameraComponent;
 class UIKRetargeter;
@@ -41,6 +44,9 @@ public:
     bool IsSprinting() const { return bSprinting; }
     UFUNCTION(BlueprintCallable, Category="Movement") void SetSprintIntent(bool bEnable);
     int32 CombatCharacterLevel() const;
+    bool HasCombatSnapshot() const { return bHasCombatSnapshot; }
+    void RestoreCombatSnapshot(const FSFGameplayResponse& State);
+    SFCombatPart6::FStats CombatStats(double CritBase = 0.05, double SkillFloor = 0.80) const;
     int32 CombatMaximumHealth() const;
     int32 CombatConstitution() const;
     double CombatResistance() const;
@@ -105,7 +111,11 @@ private:
     UPROPERTY(Replicated) int32 PilotHealth = 0;  // shown by the vitals HUD (SFE1VitalsHud), not in the world
     UPROPERTY(Replicated) double CombatAbsorbRemaining = 0;
     double CombatAbsorbExpiresAt = 0;
-    int32 CombatHealthLevel = 1;
+    int32 CombatHealthMaximum = 500;
+    int64 CombatSnapshotRevision = -1;
+    bool bHasCombatSnapshot = false;
+    FString CombatArchetype;
+    SFCombatPart6::FStats CombatAttributes;
     UPROPERTY(Replicated) uint32 ResurrectionOfferId = 0; // owning client only
     UPROPERTY(Replicated) FString ResurrectionOfferDeathEventId;
     uint32 NextResurrectionOfferId = 0;

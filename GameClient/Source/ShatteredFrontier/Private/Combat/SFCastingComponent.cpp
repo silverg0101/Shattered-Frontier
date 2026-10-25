@@ -178,6 +178,7 @@ void USFCastingComponent::ServerRequestPublishedInterrupt_Implementation(bool bC
     ASFE1Character* Victim = Cast<ASFE1Character>(SelectedTarget);
     if (!Owner || !Owner->HasAuthority() || !GetWorld() ||
         GetWorld()->GetOutermost()->GetName() != TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook")) return;
+    if (SFCombatPart6::Active(GetWorld()) && !Owner->HasCombatSnapshot()) return;
     const double Time = Now();
     const USFCombatEnergySettings* Energy = GetDefault<USFCombatEnergySettings>();
     const double ReachCm = (bCounterspell ? Energy->CounterspellRangeMetres :
@@ -214,8 +215,7 @@ void USFCastingComponent::ServerRequestPublishedInterrupt_Implementation(bool bC
         if (SFCombatPart6::Active(GetWorld()))
         {
             const auto* CombatTune = GetDefault<USFCombatPilotSettings>();
-            const auto AttackerStats = SFCombatPart6::Player(SFCombatPart6::EKit::Fighter,
-                Owner->CombatCharacterLevel(), CombatTune->CritBase, CombatTune->SkillDamageFloor);
+            const auto AttackerStats = Owner->CombatStats(CombatTune->CritBase, CombatTune->SkillDamageFloor);
             const auto Weapon = SFGear::CombatEquipment(Owner->GetController(), CombatTune->DevPilotArmorUnit);
             const auto DefenderGear = SFGear::CombatEquipment(Victim->GetController(), CombatTune->DevPilotArmorUnit);
             const auto* Coefficient = SFCombatPart6::Ability(TEXT("pommel_strike"));

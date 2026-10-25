@@ -97,6 +97,16 @@ bool FSFCombatPart6Test::RunTest(const FString& Parameters)
     const FStats Fighter = Player(EKit::Fighter, 2, Tune->CritBase, Tune->SkillDamageFloor);
     const FStats Guardian = Player(EKit::Guardian, 2);
     const FStats Mage = Player(EKit::Mage, 2);
+    const FStats BackendFighter = FromAttributes(10, 45, 19, 36, 10, 10, 10,
+        Tune->CritBase, Tune->SkillDamageFloor);
+    const FStats BackendArcher = FromAttributes(10, 10, 63, 28, 10, 10, 10,
+        Tune->CritBase, Tune->SkillDamageFloor);
+    const FAttack FighterSnapshotAttack = PlayerAuto(BackendFighter, ReferenceWeapon(10),
+        Tune->WeaponSpread, Tune->PowerSpeedReferenceSeconds, Tune->UnarmedDpsFactor, Tune->WeaponDpsK);
+    const FAttack ArcherSnapshotAttack = PlayerAuto(BackendArcher, ReferenceWeapon(10),
+        Tune->WeaponSpread, Tune->PowerSpeedReferenceSeconds, Tune->UnarmedDpsFactor, Tune->WeaponDpsK);
+    TestTrue(TEXT("Server L10 attributes feed FAttack physical power"),
+        FighterSnapshotAttack.RawDamage > ArcherSnapshotAttack.RawDamage);
     TestEqual(TEXT("Fighter level 2 health"), Fighter.Health, 540);
     TestTrue(TEXT("Guardian has higher health"), Guardian.Health > Fighter.Health);
     TestTrue(TEXT("Mage has higher spell power"), Mage.Intelligence > Fighter.Intelligence);

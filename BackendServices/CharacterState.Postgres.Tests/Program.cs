@@ -15,6 +15,36 @@ var practice = new ActionReceipt("source-skill-1", "character-skill", ReceiptKin
 switch (args[0])
 {
     case "seed":
+        var combatTuning = new CombatAttributeTuning();
+        var legacyCombat = new CharacterProgression("character-combat-legacy", TimeProvider.System, () => .5).Snapshot();
+        var legacyNode = System.Text.Json.Nodes.JsonNode.Parse(System.Text.Json.JsonSerializer.Serialize(legacyCombat))!.AsObject();
+        legacyNode.Remove("CombatIdentity");
+        using (var db = new NpgsqlConnection(connection))
+        {
+            db.Open();
+            using var insert = new NpgsqlCommand("INSERT INTO character_state.progression(character_id,revision,state) VALUES ($1,1,$2::jsonb)", db);
+            insert.Parameters.AddWithValue("character-combat-legacy");
+            insert.Parameters.AddWithValue(legacyNode.ToJsonString());
+            insert.ExecuteNonQuery();
+        }
+        Check(store.EnsureCombatIdentity("character-combat-legacy", combatTuning) is { Revision: 2, Result.CombatIdentity.Archetype: "fighter" },
+            "legacy row gains starter combat identity once");
+        Check(store.EnsureCombatIdentity("character-combat-legacy", combatTuning).Revision == 2,
+            "repeat restore preserves combat identity and revision");
+        Check(store.EnsureCombatIdentity("character-combat-new", combatTuning) is { Revision: 1, Result.CombatIdentity.Archetype: "fighter" },
+            "new character persists starter combat identity");
+        var guardianCombat = new CharacterProgression("character-combat-guardian", TimeProvider.System, () => .5).Snapshot()
+            with { CombatIdentity = new("guardian", combatTuning.Guardian) };
+        using (var db = new NpgsqlConnection(connection))
+        {
+            db.Open();
+            using var insert = new NpgsqlCommand("INSERT INTO character_state.progression(character_id,revision,state) VALUES ($1,1,$2::jsonb)", db);
+            insert.Parameters.AddWithValue("character-combat-guardian");
+            insert.Parameters.AddWithValue(System.Text.Json.JsonSerializer.Serialize(guardianCombat));
+            insert.ExecuteNonQuery();
+        }
+        Check(store.EnsureCombatIdentity("character-combat-guardian", combatTuning).Result.CombatIdentity?.Archetype == "guardian",
+            "existing archetype choice is preserved");
         var unstuckPoint = new CharacterPositionSnapshot("silverbrook", 200, 0, 50, 0);
         Check(store.CommitUnstuck("unstuck-1", "character-unstuck", unstuckPoint, 900, new FixedClock(1_000_000)) == 1,
             "unstuck position and cooldown committed");
@@ -114,6 +144,11 @@ switch (args[0])
         Check(store.PendingRewardQuests("character-3").Contains("quest/two") && !store.PendingRewardQuests("character-2").Contains("quest/two"), "pending reward quests listed");
         break;
     case "restart":
+        Check(store.ReadProgression("character-combat-legacy")?.Result.CombatIdentity == new CombatAttributeTuning().StarterIdentity,
+            "migrated combat identity survives restart");
+        Check(store.ReadProgression("character-combat-new")?.Result.CombatIdentity?.Archetype == "fighter" &&
+            store.ReadProgression("character-combat-guardian")?.Result.CombatIdentity?.Archetype == "guardian",
+            "new and chosen archetypes survive restart");
         try { store.CommitUnstuck("unstuck-2", "character-unstuck", new("silverbrook", 220, 0, 50, 0), 900,
             new FixedClock(1_001_000)); throw new Exception("unstuck after restart ignored cooldown"); }
         catch (CharacterStoreRejectedException) { Console.WriteLine("PASS unstuck cooldown survives store and database restart"); }

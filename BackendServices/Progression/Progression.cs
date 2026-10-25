@@ -56,7 +56,8 @@ public sealed record ProgressionResult(bool Applied, int SkillGain, int XpGain, 
 public sealed record ProgressionSnapshot(long LifetimeXp, Dictionary<string, int> Skills, ProgressionSettings Settings, string[] Receipts,
     Dictionary<string, long[]> ActiveMinutes, PracticeSnapshot[] Practices, GainSnapshot[] Gains,
     KnownRecipe[]? KnownRecipes = null, double RestedMinutes = 0,
-    DateTimeOffset? LastSessionEndAt = null, bool EndedInRestArea = false, long? LastRestedActiveMinute = null);
+    DateTimeOffset? LastSessionEndAt = null, bool EndedInRestArea = false, long? LastRestedActiveMinute = null,
+    CombatIdentity? CombatIdentity = null);
 public sealed record KnownRecipe(string RecipeId, string Source, DateTimeOffset LearnedAt);
 public sealed record PracticeSnapshot(DateTimeOffset At, string Skill, ulong Context);
 public sealed record GainSnapshot(DateTimeOffset At, string Skill);
@@ -82,12 +83,14 @@ public sealed class CharacterProgression
     public bool EndedInRestArea { get; private set; }
     public long? LastRestedActiveMinute { get; private set; }
     public IReadOnlyDictionary<string, int> Skills => skills;
+    public CombatIdentity CombatIdentity { get; }
 
     public CharacterProgression(string characterId, TimeProvider clock, Func<double> roll, ProgressionSettings? settings = null,
         IReadOnlyDictionary<string, int>? initialSkills = null, long initialXp = 0, ProgressionSnapshot? snapshot = null)
     {
         if (string.IsNullOrWhiteSpace(characterId) || clock is null || roll is null || initialXp < 0) throw new ArgumentException("Invalid progression initialization");
         CharacterId = characterId; this.clock = clock; this.roll = roll; this.settings = snapshot?.Settings ?? settings ?? new(); this.settings.Validate();
+        CombatIdentity = snapshot?.CombatIdentity ?? new CombatAttributeTuning().StarterIdentity;
         if (initialSkills is not null)
             foreach (var (id, value) in initialSkills)
             {
@@ -126,7 +129,7 @@ public sealed class CharacterProgression
         activeMinutes.ToDictionary(p => p.Key, p => p.Value.ToArray(), StringComparer.Ordinal),
         practices.Select(p => new PracticeSnapshot(p.At, p.Skill, p.Context)).ToArray(),
         gains.Select(g => new GainSnapshot(g.At, g.Skill)).ToArray(), knownRecipes.ToArray(),
-        RestedMinutes, LastSessionEndAt, EndedInRestArea, LastRestedActiveMinute);
+        RestedMinutes, LastSessionEndAt, EndedInRestArea, LastRestedActiveMinute, CombatIdentity);
 
     public bool BeginSession()
     {

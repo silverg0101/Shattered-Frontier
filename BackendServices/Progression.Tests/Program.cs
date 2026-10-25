@@ -3,6 +3,26 @@ using ShatteredFrontier.Progression;
 static void Check(bool ok, string name) { if (!ok) throw new Exception(name); Console.WriteLine("PASS " + name); }
 static void Near(double actual, double expected, double epsilon, string name) => Check(Math.Abs(actual - expected) <= epsilon, name);
 var defaults = new ProgressionSettings();
+var combatTuning = new CombatAttributeTuning();
+combatTuning.Validate();
+var combatRows = new (string Archetype, int Level, BaseAttributes Expected)[]
+{
+    ("fighter", 1, new(30,15,25,10,10,10)), ("fighter", 10, new(45,19,36,10,10,10)), ("fighter", 20, new(65,24,51,10,10,10)),
+    ("guardian", 1, new(25,10,30,10,10,15)), ("guardian", 10, new(36,10,45,10,10,19)), ("guardian", 20, new(51,10,65,10,10,24)),
+    ("archer", 1, new(10,40,20,10,10,10)), ("archer", 10, new(10,63,28,10,10,10)), ("archer", 20, new(10,93,38,10,10,10)),
+    ("mage", 1, new(10,10,10,40,20,10)), ("mage", 10, new(10,10,10,63,28,10)), ("mage", 20, new(10,10,10,93,38,10)),
+    ("healer", 1, new(10,10,10,20,40,10)), ("healer", 10, new(10,10,10,28,63,10)), ("healer", 20, new(10,10,10,38,93,10)),
+    ("shadow", 1, new(20,40,10,10,10,10)), ("shadow", 10, new(28,63,10,10,10,10)), ("shadow", 20, new(38,93,10,10,10,10))
+};
+foreach (var row in combatRows)
+    Check(combatTuning.Snapshot(new(row.Archetype, combatTuning.BaseFor(row.Archetype)), row.Level).Attributes == row.Expected,
+        $"{row.Archetype} L{row.Level} attribute snapshot");
+var oldCombatNode = System.Text.Json.Nodes.JsonNode.Parse(System.Text.Json.JsonSerializer.Serialize(
+    new CharacterProgression("legacy", TimeProvider.System, () => .5).Snapshot()))!.AsObject();
+oldCombatNode.Remove("CombatIdentity");
+var oldCombat = System.Text.Json.JsonSerializer.Deserialize<ProgressionSnapshot>(oldCombatNode.ToJsonString())!;
+Check(oldCombat.CombatIdentity is null && new CharacterProgression("legacy", TimeProvider.System, () => .5, snapshot: oldCombat)
+    .Snapshot().CombatIdentity == combatTuning.StarterIdentity, "legacy progression acquires durable Fighter identity");
 Near(ProgressionRules.DifficultyFactor(-150), .216, .001, "trivial boundary");
 Near(ProgressionRules.DifficultyFactor(25), 1, 1e-9, "optimal difficulty");
 Near(ProgressionRules.GainChance(620, 660, 2.5, true, 1.925, 1, 1, defaults), .01727, .00002, "worked example A");

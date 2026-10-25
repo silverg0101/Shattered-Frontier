@@ -87,6 +87,17 @@ message ApplyReceiptReply {
   // Why quest evidence was not accepted (duplicate, completed, prerequisite_missing, not_active, ...); empty when accepted.
   string quest_reason = 12;
   double rested_minutes = 13;
+  CombatAttributes combat_attributes = 14;
+}
+message CombatAttributes {
+  string archetype = 1;
+  int32 level = 2;
+  int32 strength = 3;
+  int32 dexterity = 4;
+  int32 constitution = 5;
+  int32 intelligence = 6;
+  int32 wisdom = 7;
+  int32 willpower = 8;
 }
 message GrantedItem {
   string definition_id = 1;
@@ -149,6 +160,7 @@ message CharacterStateReply {
   map<string, int32> gathering_skills = 15;
   DeathState death = 16;
   double rested_minutes = 17;
+  CombatAttributes combat_attributes = 18;
 }
 message QuestState {
   string quest_id = 1;

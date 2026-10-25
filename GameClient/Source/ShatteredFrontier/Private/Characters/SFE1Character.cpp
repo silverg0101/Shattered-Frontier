@@ -39,6 +39,7 @@
 #include "Framework/SFPlayerController.h"
 #include "Framework/SFGameMode.h"
 #include "Services/SFBackpackComponent.h"
+#include "Services/SFGameplayServicesClient.h"
 #include "Engine/World.h"
 #include "Engine/Engine.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -2104,19 +2105,44 @@ int32 ASFE1Character::CombatCharacterLevel() const
     return Progression ? Progression->GetCharacterLevel() : 1;
 }
 
+void ASFE1Character::RestoreCombatSnapshot(const FSFGameplayResponse& State)
+{
+    const auto& A = State.CombatAttributes;
+    if (!HasAuthority() || !A.IsValid() || State.ProgressionRevision < CombatSnapshotRevision ||
+        A.Level != FMath::Clamp(State.Level, 1, 20) ||
+        A.Strength > 400 || A.Dexterity > 400 || A.Constitution > 400 ||
+        A.Intelligence > 400 || A.Wisdom > 400 || A.Willpower > 400) return;
+    CombatAttributes.Level = A.Level;
+    CombatAttributes.Strength = A.Strength; CombatAttributes.Dexterity = A.Dexterity;
+    CombatAttributes.Constitution = A.Constitution; CombatAttributes.Intelligence = A.Intelligence;
+    CombatAttributes.Wisdom = A.Wisdom; CombatAttributes.Willpower = A.Willpower;
+    CombatArchetype = A.Archetype;
+    CombatSnapshotRevision = State.ProgressionRevision;
+    bHasCombatSnapshot = true;
+    UE_LOG(LogTemp, Display, TEXT("COMBAT_ATTRIBUTE_SNAPSHOT Archetype=%s Level=%d Str=%d Dex=%d Con=%d Int=%d Wis=%d Wil=%d"),
+        *CombatArchetype, A.Level, A.Strength, A.Dexterity, A.Constitution, A.Intelligence, A.Wisdom, A.Willpower);
+}
+
+SFCombatPart6::FStats ASFE1Character::CombatStats(double CritBase, double SkillFloor) const
+{
+    check(bHasCombatSnapshot);
+    return SFCombatPart6::FromAttributes(CombatAttributes.Level, CombatAttributes.Strength,
+        CombatAttributes.Dexterity, CombatAttributes.Constitution, CombatAttributes.Intelligence,
+        CombatAttributes.Wisdom, CombatAttributes.Willpower, CritBase, SkillFloor);
+}
+
 int32 ASFE1Character::CombatMaximumHealth() const
 {
     return SFCombatPart6::Active(GetWorld()) ?
-        SFCombatPart6::Player(SFCombatPart6::EKit::Fighter, CombatCharacterLevel()).Health :
+        (bHasCombatSnapshot ? CombatStats().Health : CombatHealthMaximum) :
         GetDefault<USFCombatPilotSettings>()->PlayerHealth;
 }
 
 int32 ASFE1Character::CombatConstitution() const
-{ return SFCombatPart6::Active(GetWorld()) ?
-    SFCombatPart6::Player(SFCombatPart6::EKit::Fighter, CombatCharacterLevel()).Constitution : 10; }
+{ return SFCombatPart6::Active(GetWorld()) && bHasCombatSnapshot ? CombatAttributes.Constitution : 10; }
 
 double ASFE1Character::CombatResistance() const
-{ return SFCombatPart6::Player(SFCombatPart6::EKit::Fighter, CombatCharacterLevel()).Resistance; }
+{ return bHasCombatSnapshot ? CombatStats().Resistance : 0; }
 
 double ASFE1Character::CombatAbsorb() const
 { return GetWorld() && GetWorld()->GetTimeSeconds() < CombatAbsorbExpiresAt ? CombatAbsorbRemaining : 0.0; }
@@ -2194,16 +2220,16 @@ void ASFE1Character::TickEnergy()
     if (CombatAbsorbRemaining > 0 && Now >= CombatAbsorbExpiresAt)
     { CombatAbsorbRemaining = 0; ForceNetUpdate(); }
     const USFCombatEnergySettings* Tune = GetDefault<USFCombatEnergySettings>();
-    const auto CurrentStats = SFCombatPart6::Player(SFCombatPart6::EKit::Fighter, CombatCharacterLevel());
-    if (SFCombatPart6::Active(GetWorld()) && PilotHealth > 0 && CombatHealthLevel != CurrentStats.Level)
+    const bool bPart6Snapshot = SFCombatPart6::Active(GetWorld()) && bHasCombatSnapshot;
+    const auto CurrentStats = bPart6Snapshot ? CombatStats() : SFCombatPart6::FStats();
+    if (bPart6Snapshot && PilotHealth > 0 && CombatHealthMaximum != CurrentStats.Health)
     {
-        const int32 OldMaximum = SFCombatPart6::Player(SFCombatPart6::EKit::Fighter, CombatHealthLevel).Health;
-        CombatSetHealth(FMath::Clamp(PilotHealth + CurrentStats.Health - OldMaximum, 1, CurrentStats.Health));
-        CombatHealthLevel = CurrentStats.Level;
+        CombatSetHealth(FMath::Clamp(PilotHealth + CurrentStats.Health - CombatHealthMaximum, 1, CurrentStats.Health));
+        CombatHealthMaximum = CurrentStats.Health;
     }
-    const float NewMaxMana = SFCombatPart6::Active(GetWorld()) ? CurrentStats.Mana :
+    const float NewMaxMana = bPart6Snapshot ? CurrentStats.Mana :
         SFCombatEnergy::MaxMana(10.f, CombatCharacterLevel());
-    const float NewMaxStamina = SFCombatPart6::Active(GetWorld()) ? CurrentStats.Stamina : MaxStamina;
+    const float NewMaxStamina = bPart6Snapshot ? CurrentStats.Stamina : MaxStamina;
     if (NewMaxStamina != MaxStamina)
     { Stamina = FMath::Min(Stamina + NewMaxStamina - MaxStamina, NewMaxStamina); MaxStamina = NewMaxStamina; ForceNetUpdate(); }
     if (NewMaxMana != MaxMana)

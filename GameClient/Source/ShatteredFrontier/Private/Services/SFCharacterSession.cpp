@@ -228,6 +228,7 @@ void USFCharacterSessionComponent::BeginRestore()
         Self->PendingFaceId = State.FaceId.IsEmpty() ? NAME_None : FName(*State.FaceId);  // applied once the pawn exists (Tick)
         // A position saved in another zone, or not finite, falls back to the spawn the game mode chose.
         APawn* Pawn = Cast<APlayerController>(Owner)->GetPawn();
+        if (auto* Character = Cast<ASFE1Character>(Pawn)) { Character->RestoreCombatSnapshot(State); }
         Self->bHasRestoredLocation = State.bHasPosition && State.ZoneId == ZoneKey(Self->GetWorld()) && !State.Position.ContainsNaN();
         if (Self->bHasRestoredLocation && Pawn)
         { Pawn->TeleportTo(State.Position, FRotator(0, State.Yaw, 0)); Cast<APlayerController>(Owner)->ClientSetRotation(FRotator(0, State.Yaw, 0)); }
