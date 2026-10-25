@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "profiles": [
     {
       "definition_id": "npc/mend_reuse_fixture",
@@ -16,7 +16,46 @@
       "abilities": [],
       "loot_rule": "mend_reuse_fixture",
       "local_hides_fixture": false,
-      "respawn_tier": "mini_boss"
+      "respawn_tier": "mini_boss",
+      "behavior_preset": "common",
+      "presentation_preset": "placeholder"
     }
-  ]
+  ],
+  "behavior_presets": {
+    "common": {
+      "aggro_radius_metres": 12.0,
+      "near_notice_radius_metres": 1.5,
+      "aggro_minimum_metres": 4.0,
+      "aggro_maximum_bonus_metres": 6.0,
+      "field_of_view_degrees": 160.0,
+      "assist_delay_seconds": 2.0,
+      "assist_radius_metres": 8.0,
+      "leash_radius_metres": 60.0,
+      "wander_radius_metres": 18.0,
+      "wander_speed_metres_per_second": 1.3,
+      "chase_speed_metres_per_second": 3.5,
+      "wander_min_seconds": 3.0,
+      "wander_max_seconds": 6.0,
+      "melee_range_metres": 2.8,
+      "ranged_range_metres": 30.0,
+      "retreat_range_metres": 6.0,
+      "preferred_range_metres": 10.0,
+      "ranged_swing_seconds": 2.8
+    }
+  },
+  "presentation_presets": {
+    "placeholder": {
+      "static_mesh": "/Engine/BasicShapes/Cube.Cube",
+      "body_scale": [
+        1.3,
+        0.7,
+        0.7
+      ],
+      "capsule_radius_cm": 55.0,
+      "capsule_half_height_cm": 65.0,
+      "label_height_cm": 130.0,
+      "label_world_size_cm": 34.0,
+      "animation_profile": "none"
+    }
+  }
 }

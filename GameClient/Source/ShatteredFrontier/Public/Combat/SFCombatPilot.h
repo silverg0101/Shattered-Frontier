@@ -165,14 +165,6 @@ public:
     float BoarMeleeCooldownSeconds = 1.6f;
     UPROPERTY(Config, EditAnywhere, Category="Pilot Balance", meta=(ClampMin="1.0", ClampMax="5.0", Units="m"))
     float MeleeRangeMetres = 2.8f;
-    UPROPERTY(Config, EditAnywhere, Category="Pilot Archer", meta=(ClampMin="5.0", ClampMax="30.0", Units="m", ToolTip="Maximum server-authoritative archer shot range; adopted at next zone start."))
-    float ArcherRangeMetres = 30.0f;
-    UPROPERTY(Config, EditAnywhere, Category="Pilot Archer", meta=(ClampMin="2.0", ClampMax="15.0", Units="m", ToolTip="Archer retreats inside this distance when territory and leash permit; adopted at next zone start."))
-    float ArcherRetreatRangeMetres = 6.0f;
-    UPROPERTY(Config, EditAnywhere, Category="Pilot Archer", meta=(ClampMin="3.0", ClampMax="20.0", Units="m", ToolTip="Archer stops advancing at this distance; adopted at next zone start."))
-    float ArcherPreferredRangeMetres = 10.0f;
-    UPROPERTY(Config, EditAnywhere, Category="Pilot Archer", meta=(ClampMin="1.0", ClampMax="4.0", Units="s", ToolTip="Bandit archer bow auto-attack interval; adopted at next zone start."))
-    float ArcherSwingSeconds = 2.8f;
     UPROPERTY(Config, EditAnywhere, Category="Combat Practice", meta=(ClampMin="0.5", ClampMax="10.0", Units="s", ToolTip="Minimum time between hidden movement practice records; adopted at next zone start."))
     float StealthPracticeIntervalSeconds = 2.0f;
     UPROPERTY(Config, EditAnywhere, Category="Combat Practice", meta=(ClampMin="1.0", ClampMax="10.0", Units="cm/s", ToolTip="Minimum hidden movement speed for practice; adopted at next zone start."))
@@ -204,14 +196,6 @@ public:
     float HealthRegenOocPct = 0.03f;
     UPROPERTY(Config, EditAnywhere, Category="Pilot Balance", meta=(ToolTip="Choose the nearest authored respawn point to the death, or the first authored point; adopted at next zone start."))
     ESFPlayerRespawnPointRule PlayerRespawnPointRule = ESFPlayerRespawnPointRule::NearestToDeath;
-    UPROPERTY(Config, EditAnywhere, Category="Pilot Boar AI", meta=(ClampMin="4.0", ClampMax="18.0", Units="m"))
-    float BoarAggroRadiusMetres = 12.0f;
-    UPROPERTY(Config, EditAnywhere, Category="Pilot Boar AI", meta=(ClampMin="1.0", ClampMax="4.0", Units="m"))
-    float BoarNearNoticeRadiusMetres = 1.5f;
-    UPROPERTY(Config, EditAnywhere, Category="Pilot Boar AI", meta=(ClampMin="1.0", ClampMax="4.0", Units="m"))
-    float BoarAggroMinimumMetres = 4.0f;
-    UPROPERTY(Config, EditAnywhere, Category="Pilot Boar AI", meta=(ClampMin="0.0", ClampMax="6.0", Units="m"))
-    float BoarAggroMaximumBonusMetres = 6.0f;
     UPROPERTY(Config, EditAnywhere, Category="Pilot Boar Threat", meta=(ClampMin="1.01", ClampMax="3.0", ToolTip="Challenger threat divided by current threat within five metres; adopted at next zone start."))
     float ThreatSwitchMelee = 1.10f;
     UPROPERTY(Config, EditAnywhere, Category="Pilot Boar Threat", meta=(ClampMin="1.01", ClampMax="3.0", ToolTip="Challenger threat divided by current threat beyond five metres; adopted at next zone start."))
@@ -226,10 +210,6 @@ public:
     float TauntForceSeconds = 3.0f;
     UPROPERTY(Config, EditAnywhere, Category="Pilot Boar Threat", meta=(ClampMin="18.0", ClampMax="18.0", Units="s", ToolTip="Taunt diminishing-return reset window; adopted at zone start."))
     float TauntDrWindowSeconds = 18.0f;
-    UPROPERTY(Config, EditAnywhere, Category="Pilot Boar AI", meta=(ClampMin="0.5", ClampMax="5.0", Units="s", ToolTip="Common pack assist delay; adopted at next zone start."))
-    float BoarAssistDelaySeconds = 2.0f;
-    UPROPERTY(Config, EditAnywhere, Category="Pilot Boar AI", meta=(ClampMin="2.0", ClampMax="15.0", Units="m", ToolTip="Common pack assist radius; adopted at next zone start."))
-    float BoarAssistRadiusMetres = 8.0f;
     UPROPERTY(Config, EditAnywhere, Category="Pilot Creature Respawn", meta=(ClampMin="300.0", ClampMax="300.0", Units="s", ToolTip="Common NPC base respawn; adopted at zone start."))
     float CommonRespawnSeconds = 300.0f;
     UPROPERTY(Config, EditAnywhere, Category="Pilot Creature Respawn", meta=(ClampMin="0.15", ClampMax="0.15", ToolTip="Player-count respawn slope; adopted at zone start."))
@@ -238,20 +218,6 @@ public:
     float RespawnPlayerFloor = 0.35f;
     UPROPERTY(Config, EditAnywhere, Category="Pilot Creature Respawn", meta=(ClampMin="0.10", ClampMax="0.10", ToolTip="Uniform timer jitter fraction; adopted at zone start."))
     float RespawnJitter = 0.10f;
-    UPROPERTY(Config, EditAnywhere, Category="Pilot Boar AI", meta=(ClampMin="20.0", ClampMax="100.0", Units="m"))
-    float BoarLeashRadiusMetres = 60.0f;
-    UPROPERTY(Config, EditAnywhere, Category="Pilot Boar AI", meta=(ClampMin="60.0", ClampMax="360.0", Units="deg"))
-    float BoarFieldOfViewDegrees = 160.0f;
-    UPROPERTY(Config, EditAnywhere, Category="Pilot Boar AI", meta=(ClampMin="2.0", ClampMax="40.0", Units="m"))
-    float BoarWanderRadiusMetres = 18.0f;
-    UPROPERTY(Config, EditAnywhere, Category="Pilot Boar AI", meta=(ClampMin="0.5", ClampMax="5.0", Units="m/s"))
-    float BoarWanderSpeedMetresPerSecond = 1.3f;
-    UPROPERTY(Config, EditAnywhere, Category="Pilot Boar AI", meta=(ClampMin="1.0", ClampMax="10.0", Units="m/s"))
-    float BoarChaseSpeedMetresPerSecond = 3.5f;
-    UPROPERTY(Config, EditAnywhere, Category="Pilot Boar AI", meta=(ClampMin="1.0", ClampMax="10.0", Units="s"))
-    float BoarWanderMinSeconds = 3.0f;
-    UPROPERTY(Config, EditAnywhere, Category="Pilot Boar AI", meta=(ClampMin="1.0", ClampMax="20.0", Units="s"))
-    float BoarWanderMaxSeconds = 6.0f;
     UPROPERTY(Config, EditAnywhere, Category="Pilot Rewards", meta=(ClampMin="1", ClampMax="5", ToolTip="Boar hides granted to the killer, once per boar death outside protected areas. Adopted at the next zone start."))
     int32 HidesPerBoar = 2;
     bool Validate(FString& Error) const;
@@ -264,6 +230,8 @@ class SHATTEREDFRONTIER_API ASFPilotBoar : public ACharacter
 public:
     ASFPilotBoar();
     virtual void Tick(float DeltaSeconds) override;
+    virtual void OnConstruction(const FTransform& Transform) override;
+    virtual void PostInitializeComponents() override;
     virtual float TakeDamage(float DamageAmount, const FDamageEvent& DamageEvent,
         AController* EventInstigator, AActor* DamageCauser) override;
     /** Release-authored actor tag; immunity/retaliation is an invariant, not balance tuning. */
@@ -310,6 +278,7 @@ public:
     bool HasThreatFor(const ASFE1Character* Character) const;
     bool ReceivePackAssist(ASFE1Character* Character, const FString& CharacterId);
     const SFNpcProfiles::FProfile* GetNpcProfile() const { return SFNpcProfiles::Find(CreatureId); }
+    const SFNpcProfiles::FBehavior& GetBehavior() const;
     bool IsRangedArcher() const { const auto* P = GetNpcProfile(); return P && P->IsRanged(); }
     bool CanCastMend() const { const auto* P = GetNpcProfile(); return P && P->CanMend(); }
     UFUNCTION(NetMulticast, Unreliable) void MulticastArcherTracer(FVector_NetQuantize Start, FVector_NetQuantize End);
@@ -317,6 +286,7 @@ private:
     void RetaliateAgainst(ASFE1Character* Attacker);
     UFUNCTION() void OnRep_Health();
     UFUNCTION() void OnRep_CreatureId();
+    void ApplyPresentation();
     UPROPERTY(ReplicatedUsing=OnRep_Health) int32 CurrentHealth = 0;
     UPROPERTY(Replicated) int32 MaximumHealthValue = 0;
     double CombatSwingSecondsValue = 1.6, CombatSwingDamageValue = 23.5;

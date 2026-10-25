@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "UObject/SoftObjectPath.h"
 
 /** Immutable release content. Operators cannot edit formulas or individual profiles live. */
 namespace SFNpcProfiles
@@ -12,10 +13,32 @@ namespace SFNpcProfiles
         double SwingSeconds = 0, SwingDamage = 0, Armor = 0, Resistance = 0,
             CritChance = 0, CritDamage = 0;
     };
+    /** Species inputs only. Threat/combat algorithms and realm caps remain shared code/settings. */
+    struct FBehavior
+    {
+        double AggroRadiusMetres = 0, NearNoticeRadiusMetres = 0, AggroMinimumMetres = 0,
+            AggroMaximumBonusMetres = 0, FieldOfViewDegrees = 0;
+        double AssistDelaySeconds = 0, AssistRadiusMetres = 0, LeashRadiusMetres = 0,
+            WanderRadiusMetres = 0, WanderSpeedMetresPerSecond = 0, ChaseSpeedMetresPerSecond = 0,
+            WanderMinSeconds = 0, WanderMaxSeconds = 0;
+        double MeleeRangeMetres = 0, RangedRangeMetres = 0, RetreatRangeMetres = 0,
+            PreferredRangeMetres = 0, RangedSwingSeconds = 0;
+    };
+    // The current body is static and consumes no animation asset. Future animation modes need a compatible release.
+    enum class EAnimationProfile : uint8 { None };
+    struct FPresentation
+    {
+        FSoftObjectPath StaticMeshPath;
+        FVector BodyScale = FVector::ZeroVector;
+        double CapsuleRadiusCm = 0, CapsuleHalfHeightCm = 0, LabelHeightCm = 0, LabelWorldSizeCm = 0;
+        EAnimationProfile AnimationProfile = EAnimationProfile::None;
+    };
     struct FProfile
     {
-        FString DefinitionId, LootTableId, RespawnTier;
+        FString DefinitionId, LootTableId, RespawnTier, BehaviorPresetId, PresentationPresetId;
         FStats Stats;
+        FBehavior Behavior;
+        FPresentation Presentation;
         EAttackKind AttackKind = EAttackKind::Melee;
         TSet<FName> Abilities;
         bool bSingleDrop = false;

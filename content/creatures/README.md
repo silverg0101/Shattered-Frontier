@@ -1,6 +1,6 @@
 # NPC profiles
 
-`profiles.json` is immutable, schema-versioned combat content keyed by `definition_id`.
+`profiles.json` schema 2 is immutable, versioned NPC content keyed by `definition_id`.
 `SFNpcProfiles` validates the complete catalogue once per process. Invalid content
 rejects the catalogue; an unknown ID cannot configure a spawn. Existing actors use
 the process snapshot until restart. Publication and permission belong to reviewed
@@ -22,6 +22,8 @@ IDs, eligibility and protected-zone checks retain their existing authority.
 | resistance | number, resistance points | 0–18.9 |
 | crit_chance | number, probability | 0–1 |
 | crit_damage | number, multiplier | 1–1.5 |
+| behavior_preset | ID reference | declared typed `behavior_presets` row |
+| presentation_preset | ID reference | declared typed `presentation_presets` row |
 | attack_kind | enum | `melee`, `ranged` |
 | respawn_tier | enum | `common`, `elite`, `mini_boss`; selects existing World tuning |
 | abilities | unique enum array | `mend` |
@@ -31,9 +33,55 @@ IDs, eligibility and protected-zone checks retain their existing authority.
 All numeric fields must be finite. Bounds conservatively admit the existing six
 profiles; expanding their numerical envelope requires a compatible reviewed release.
 Shipped defaults are the explicit six records, preserved from the previous C++ data.
-Range, kiting, perception, mend costs and thresholds continue using the existing
-typed realm settings and algorithms. `attack_kind` and `abilities` select those
-algorithms, without species-ID checks.
+Each shipped species references the same `common` behavior and `placeholder`
+presentation preset. All defaults preserve the previous settings/body exactly.
+NPC-specific range/kiting/perception/movement/leash/assist settings now resolve
+through that reference, including hidden-movement practice and real attack admission.
+The retired Boar/Archer AI config fields have no competing runtime source. Player
+reach, threat algorithms, defense/formula caps and Mend costs/thresholds stay global.
+`attack_kind` and `abilities` select shared algorithms without species-ID checks.
+Preset references and values adopt together on process restart; profile/preset changes
+use the same reviewed release permission/workflow as stats, never console expressions.
+Schema 1 is rejected so an older consumer cannot silently ignore required preset semantics.
+
+| Behavior field | Units | Bounds | Shipped default |
+| --- | --- | --- | --- |
+| aggro_radius_metres | m | 4–18 | 12 |
+| near_notice_radius_metres | m | 1–4, at most aggro minimum | 1.5 |
+| aggro_minimum_metres | m | 1–4 | 4 |
+| aggro_maximum_bonus_metres | m | 0–6 | 6 |
+| field_of_view_degrees | degrees | 60–360 | 160 |
+| assist_delay_seconds | s | 0.5–5 | 2 |
+| assist_radius_metres | m | 2–15 | 8 |
+| leash_radius_metres | m | 20–100 | 60 |
+| wander_radius_metres | m | 2–40 | 18 |
+| wander_speed_metres_per_second | m/s | 0.5–5 | 1.3 |
+| chase_speed_metres_per_second | m/s | 1–10 | 3.5 |
+| wander_min_seconds | s | 1–10 | 3 |
+| wander_max_seconds | s | minimum–20 | 6 |
+| melee_range_metres | m | 1–5 | 2.8 |
+| ranged_range_metres | m | 5–30 | 30 |
+| retreat_range_metres | m | 2–15 | 6 |
+| preferred_range_metres | m | retreat–20, below ranged maximum | 10 |
+| ranged_swing_seconds | s | 1–4 | 2.8 |
+
+Presentation references use a valid `/Game/` or `/Engine/` static-mesh soft path
+without subobjects or traversal. The shipped mesh remains `/Engine/BasicShapes/Cube.Cube`.
+`body_scale` is a finite three-number array, each 0.01–1.3, default `[1.3,0.7,0.7]`.
+Capsule radius is 1–55 cm (55 default); half-height is radius–65 cm (65 default).
+Label height is 0–130 cm (130 default); world size is 1–34 cm (34 default).
+Those conservative geometry bounds require a reviewed compatible release to widen.
+`animation_profile` is a typed reference with only `none` currently supported: the
+existing static placeholder consumes no animation assets. No skeletal/animation
+framework or appearance change is introduced. Live/editor construction, authority
+configuration and client definition replication consume the same presentation.
+Serialized component names and constructor defaults remain compatible.
+
+`ShatteredFrontier.Combat.NpcReuse.BehaviorAndPresentationPresets` uses scoped,
+automatically restored test content to compare real perception, chase, leash, shot
+reach and assist behavior plus structural mesh/transform application. The alternate
+preset is isolated under `tests/fixtures/npc-profiles/preset-variation.json`; it is
+never published as gameplay balance or staged for players.
 
 Zone NPC groups are selected by `spawn_kind`, and each definition must exist in this
 catalogue. `Combat/SFNpcZoneContent` indexes approved zone files by `map_id`. NPC

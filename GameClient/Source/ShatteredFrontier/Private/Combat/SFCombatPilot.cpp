@@ -280,11 +280,6 @@ bool USFCombatPilotSettings::Validate(FString& Error) const
         !FMath::IsWithinInclusive(PlayerMeleeCooldownSeconds, 0.3f, 5.0f) ||
         !FMath::IsWithinInclusive(BoarMeleeCooldownSeconds, 0.5f, 5.0f) ||
         !FMath::IsWithinInclusive(MeleeRangeMetres, 1.0f, 5.0f) ||
-        !FMath::IsWithinInclusive(ArcherRangeMetres, 5.0f, 30.0f) ||
-        !FMath::IsWithinInclusive(ArcherRetreatRangeMetres, 2.0f, 15.0f) ||
-        !FMath::IsWithinInclusive(ArcherPreferredRangeMetres, ArcherRetreatRangeMetres, 20.0f) ||
-        ArcherPreferredRangeMetres >= ArcherRangeMetres ||
-        !FMath::IsWithinInclusive(ArcherSwingSeconds, 1.0f, 4.0f) ||
         !FMath::IsWithinInclusive(StealthPracticeIntervalSeconds, 0.5f, 10.0f) ||
         !FMath::IsWithinInclusive(StealthPracticeMinimumSpeedCmPerSecond, 1.0f, 10.0f) ||
         !FMath::IsWithinInclusive(TabTargetRangeMetres, 10.0f, 60.0f) ||
@@ -296,11 +291,6 @@ bool USFCombatPilotSettings::Validate(FString& Error) const
         !FMath::IsNearlyEqual(PlayerResFraction, 0.35f) ||
         !FMath::IsNearlyEqual(ResAcceptSeconds, 60.0f) ||
         (PlayerRespawnPointRule != ESFPlayerRespawnPointRule::NearestToDeath && PlayerRespawnPointRule != ESFPlayerRespawnPointRule::FirstAuthored) ||
-        !FMath::IsWithinInclusive(BoarAggroRadiusMetres, 4.0f, 18.0f) ||
-        !FMath::IsWithinInclusive(BoarNearNoticeRadiusMetres, 1.0f, 4.0f) ||
-        !FMath::IsWithinInclusive(BoarAggroMinimumMetres, 1.0f, 4.0f) ||
-        !FMath::IsWithinInclusive(BoarAggroMaximumBonusMetres, 0.0f, 6.0f) ||
-        BoarNearNoticeRadiusMetres > BoarAggroMinimumMetres ||
         !FMath::IsWithinInclusive(ThreatSwitchMelee, 1.01f, 3.0f) ||
         !FMath::IsWithinInclusive(ThreatSwitchRanged, ThreatSwitchMelee, 3.0f) ||
         ThreatTableMax < 1 || ThreatTableMax > 40 ||
@@ -308,19 +298,10 @@ bool USFCombatPilotSettings::Validate(FString& Error) const
         !FMath::IsNearlyEqual(TauntThreatMultiplier, 1.10f) ||
         !FMath::IsNearlyEqual(TauntForceSeconds, 3.0f) ||
         !FMath::IsNearlyEqual(TauntDrWindowSeconds, 18.0f) ||
-        !FMath::IsWithinInclusive(BoarAssistDelaySeconds, 0.5f, 5.0f) ||
-        !FMath::IsWithinInclusive(BoarAssistRadiusMetres, 2.0f, 15.0f) ||
         !FMath::IsNearlyEqual(CommonRespawnSeconds, 300.0f) ||
         !FMath::IsNearlyEqual(RespawnPlayerSlope, 0.15f) ||
         !FMath::IsNearlyEqual(RespawnPlayerFloor, 0.35f) ||
         !FMath::IsNearlyEqual(RespawnJitter, 0.10f) ||
-        !FMath::IsWithinInclusive(BoarLeashRadiusMetres, 20.0f, 100.0f) ||
-        !FMath::IsWithinInclusive(BoarFieldOfViewDegrees, 60.0f, 360.0f) ||
-        !FMath::IsWithinInclusive(BoarWanderRadiusMetres, 2.0f, 40.0f) ||
-        !FMath::IsWithinInclusive(BoarWanderSpeedMetresPerSecond, 0.5f, 5.0f) ||
-        !FMath::IsWithinInclusive(BoarChaseSpeedMetresPerSecond, 1.0f, 10.0f) ||
-        !FMath::IsWithinInclusive(BoarWanderMinSeconds, 1.0f, 10.0f) ||
-        !FMath::IsWithinInclusive(BoarWanderMaxSeconds, BoarWanderMinSeconds, 20.0f) ||
         HidesPerBoar < 1 || HidesPerBoar > 5 ||
         !FMath::IsNearlyEqual(CombatExitSeconds, 5.0f) || !FMath::IsNearlyEqual(RegenDelaySeconds, 5.0f) ||
         !FMath::IsNearlyEqual(HealthRegenOocPct, 0.03f))
@@ -353,6 +334,43 @@ ASFPilotBoar::ASFPilotBoar()
     Label->SetHorizontalAlignment(EHorizTextAligment::EHTA_Center);
     Label->SetWorldSize(34);
     SetNetCullDistanceSquared(FMath::Square(80000.0f));
+}
+
+const SFNpcProfiles::FBehavior& ASFPilotBoar::GetBehavior() const
+{
+    if (const auto* Profile = GetNpcProfile()) return Profile->Behavior;
+    static const SFNpcProfiles::FBehavior Invalid;
+    return Invalid; // Unknown definitions are never configured; fail closed if an old serialized actor is invalid.
+}
+
+void ASFPilotBoar::OnConstruction(const FTransform& Transform)
+{
+    Super::OnConstruction(Transform);
+    ApplyPresentation();
+}
+
+void ASFPilotBoar::PostInitializeComponents()
+{
+    Super::PostInitializeComponents();
+    ApplyPresentation();
+}
+
+void ASFPilotBoar::ApplyPresentation()
+{
+    const auto* Profile = GetNpcProfile();
+    if (!Profile || !Body || !Label) return;
+    const auto& Presentation = Profile->Presentation;
+    GetCapsuleComponent()->SetCapsuleSize(Presentation.CapsuleRadiusCm, Presentation.CapsuleHalfHeightCm);
+    Body->SetRelativeScale3D(Presentation.BodyScale);
+    Label->SetRelativeLocation(FVector(0, 0, Presentation.LabelHeightCm));
+    Label->SetWorldSize(Presentation.LabelWorldSizeCm);
+    // Static-body mode has no animation asset. Asset references are release-authored, never client supplied.
+    if (!IsRunningDedicatedServer())
+    {
+        UStaticMesh* BodyMesh = Cast<UStaticMesh>(Presentation.StaticMeshPath.TryLoad());
+        if (!BodyMesh) { UE_LOG(LogTemp, Error, TEXT("NPC_PRESENTATION_UNAVAILABLE Definition=%s Mesh=%s"), *CreatureId, *Presentation.StaticMeshPath.ToString()); }
+        Body->SetStaticMesh(BodyMesh);
+    }
 }
 
 void ASFPilotBoar::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -408,6 +426,7 @@ bool ASFPilotBoar::ConfigureCreature(const FString& DefinitionId)
     if (!ResolveCreatureLoot(DefinitionId, TableId, bUnique))
     { UE_LOG(LogTemp, Error, TEXT("NPC_PROFILE_UNKNOWN Definition=%s"), *DefinitionId); return false; }
     CreatureId = DefinitionId; LootTableId = TableId; bSingleDrop = bUnique;
+    ApplyPresentation();
     return true;
 }
 
@@ -428,7 +447,7 @@ bool ASFPilotBoar::ReceivePackAssist(ASFE1Character* Character, const FString& C
         USFCharacterSessionComponent::IsRestoring(Character->GetController()) ||
         PilotMode->IsSafe(Character->GetActorLocation()) ||
         !PilotMode->IsInsideTerritory(Character->GetActorLocation(), Territory) ||
-        FVector::Dist2D(Anchor, Character->GetActorLocation()) > PilotMode->CombatSettings()->BoarLeashRadiusMetres * 100.0)
+        FVector::Dist2D(Anchor, Character->GetActorLocation()) > GetBehavior().LeashRadiusMetres * 100.0)
     { return false; }
     Threat.Add(CharacterId, 1.0, PilotMode->CombatSettings()->ThreatTableMax);
     ThreatActors.Add(CharacterId, Character);
@@ -493,7 +512,7 @@ void ASFPilotBoar::CompleteNpcMend(float HealthFraction)
         *CreatureId, CurrentHealth - Before, CurrentHealth);
 }
 
-void ASFPilotBoar::OnRep_CreatureId() { OnRep_Health(); }
+void ASFPilotBoar::OnRep_CreatureId() { ApplyPresentation(); OnRep_Health(); }
 
 void ASFPilotBoar::MulticastArcherTracer_Implementation(FVector_NetQuantize Start, FVector_NetQuantize End)
 {
@@ -670,7 +689,7 @@ void ASFPilotBoar::Tick(float DeltaSeconds)
     auto* Mode = PilotMode.Get();
     const double Now = GetWorld()->GetTimeSeconds();
     ASFE1Character* Victim = Target.Get();
-    if (Victim && FVector::Dist2D(Anchor, GetActorLocation()) > Mode->CombatSettings()->BoarLeashRadiusMetres*100)
+    if (Victim && FVector::Dist2D(Anchor, GetActorLocation()) > GetBehavior().LeashRadiusMetres*100)
     { EnterEvade(); Victim = nullptr; }
     if (Victim && UnreachableSince >= 0 &&
         SFCombatPilotRules::UnreachableEvade(Now - UnreachableSince, Now - LastDamageAt))
@@ -713,10 +732,9 @@ void ASFPilotBoar::Tick(float DeltaSeconds)
                 {
                     const USFGatheringPilotComponent* Progression = It->Get()->FindComponentByClass<USFGatheringPilotComponent>();
                     const int32 CharacterLevel = Progression ? Progression->GetCharacterLevel() : 1;
-                    const USFCombatPilotSettings* Settings = Mode->CombatSettings();
-                    const double Radius = SFCombatPilotRules::AggroRadiusMetres(Settings->BoarAggroRadiusMetres,
+                    const double Radius = SFCombatPilotRules::AggroRadiusMetres(GetBehavior().AggroRadiusMetres,
                         SFCombatPart6::Npc(CreatureId).Level, CharacterLevel,
-                        Settings->BoarAggroMinimumMetres, Settings->BoarAggroMaximumBonusMetres);
+                        GetBehavior().AggroMinimumMetres, GetBehavior().AggroMaximumBonusMetres);
                     const double Facing = FVector::DotProduct(GetActorForwardVector(), Toward.GetSafeNormal2D());
                     if (SpawnGroup == TEXT("aggro_sandbox") && Distance < 1500 && Now >= NextAggroFixtureTraceAt)
                     {
@@ -724,8 +742,8 @@ void ASFPilotBoar::Tick(float DeltaSeconds)
                         UE_LOG(LogTemp, Display, TEXT("BOAR_AGGRO_EVAL Level=%d DistanceCm=%.0f RadiusCm=%.0f Facing=%.2f Yaw=%.0f"),
                             CharacterLevel, Distance, Radius * 100.0, Facing, GetActorRotation().Yaw);
                     }
-                    if (Distance <= Radius * 100.0 && (Distance <= Settings->BoarNearNoticeRadiusMetres * 100.0 ||
-                        Facing >= FMath::Cos(FMath::DegreesToRadians(Settings->BoarFieldOfViewDegrees * 0.5))))
+                    if (Distance <= Radius * 100.0 && (Distance <= GetBehavior().NearNoticeRadiusMetres * 100.0 ||
+                        Facing >= FMath::Cos(FMath::DegreesToRadians(GetBehavior().FieldOfViewDegrees * 0.5))))
                     {
                         const TWeakObjectPtr<ASFE1Character> Key(Candidate);
                         TPair<double, bool>* Cached = SightCache.Find(Key);
@@ -744,9 +762,9 @@ void ASFPilotBoar::Tick(float DeltaSeconds)
                             SightCache.Add(Key, TPair<double, bool>(Now, bVisible));
                         }
                         if (SFCombatPilotRules::DetectBySight(Distance / 100.0, Facing, bVisible, Radius,
-                            Settings->BoarNearNoticeRadiusMetres, Settings->BoarFieldOfViewDegrees))
+                            GetBehavior().NearNoticeRadiusMetres, GetBehavior().FieldOfViewDegrees))
                         {
-                            Threat.Add(Id, 1.0, Settings->ThreatTableMax);
+                            Threat.Add(Id, 1.0, Mode->CombatSettings()->ThreatTableMax);
                             ThreatActors.Add(Id, Candidate);
                             Candidate->CombatMarkHostile();
                             if (bDefensive)
@@ -772,7 +790,7 @@ void ASFPilotBoar::Tick(float DeltaSeconds)
                     Mode->IsSafe(Character->GetActorLocation()))
                 { Threat.Remove(Id); ThreatActors.Remove(Id); OutsideLeashSince.Remove(Id); continue; }
                 const double AnchorDistance = FVector::Dist2D(Anchor, Character->GetActorLocation());
-                if (AnchorDistance > Mode->CombatSettings()->BoarLeashRadiusMetres * 100.0)
+                if (AnchorDistance > GetBehavior().LeashRadiusMetres * 100.0)
                 {
                     double& Since = OutsideLeashSince.FindOrAdd(Id, Now);
                     if (Now - Since >= 5.0)
@@ -812,7 +830,7 @@ void ASFPilotBoar::Tick(float DeltaSeconds)
     }
     if (Victim && !bReturning && EngagedSince >= 0 &&
         SFCombatPilotRules::CanAssist(Now - EngagedSince, 0.0,
-            Mode->CombatSettings()->BoarAssistDelaySeconds, Mode->CombatSettings()->BoarAssistRadiusMetres))
+            GetBehavior().AssistDelaySeconds, GetBehavior().AssistRadiusMetres))
     {
         for (TActorIterator<ASFPilotBoar> It(GetWorld()); It; ++It)
         {
@@ -820,7 +838,7 @@ void ASFPilotBoar::Tick(float DeltaSeconds)
             if (Packmate != this && Packmate->GroupId() == SpawnGroup &&
                 SFCombatPilotRules::CanAssist(Now - EngagedSince,
                     FVector::Dist2D(GetActorLocation(), Packmate->GetActorLocation()) / 100.0,
-                    Mode->CombatSettings()->BoarAssistDelaySeconds, Mode->CombatSettings()->BoarAssistRadiusMetres))
+                    GetBehavior().AssistDelaySeconds, GetBehavior().AssistRadiusMetres))
             {
                 if (Packmate->ReceivePackAssist(Victim, TargetCharacterId))
                 { UE_LOG(LogTemp, Display, TEXT("BOAR_PACK_ASSIST_TIMING Group=%s Elapsed=%.3f DistanceCm=%.0f"),
@@ -839,11 +857,11 @@ void ASFPilotBoar::Tick(float DeltaSeconds)
         SpawnGroup == TEXT("assist_sandbox") || SpawnGroup == TEXT("respawn_sandbox") ||
         SpawnGroup == TEXT("dodge_sandbox")) && !Victim && !bReturning) { return; }
     FVector Destination = WanderDestination;
-    float Speed = Mode->CombatSettings()->BoarWanderSpeedMetresPerSecond*100;
+    float Speed = GetBehavior().WanderSpeedMetresPerSecond*100;
     if (Victim)
     {
         const USFCombatPilotSettings* Settings = Mode->CombatSettings();
-        Destination = Victim->GetActorLocation(); Speed = Settings->BoarChaseSpeedMetresPerSecond*100;
+        Destination = Victim->GetActorLocation(); Speed = GetBehavior().ChaseSpeedMetresPerSecond*100;
         if (Now < AbilityRootUntil) Speed = 0;
         else if (Now < AbilitySnareUntil) Speed *= AbilitySnareMultiplier;
         else AbilitySnareMultiplier = 1;
@@ -856,22 +874,22 @@ void ASFPilotBoar::Tick(float DeltaSeconds)
         if (bRanged && bClearShot)
         {
             const FVector Away = (GetActorLocation() - Destination).GetSafeNormal2D();
-            if (Distance < Settings->ArcherRetreatRangeMetres * 100.0 && !Away.IsNearlyZero())
+            if (Distance < GetBehavior().RetreatRangeMetres * 100.0 && !Away.IsNearlyZero())
             {
                 const FVector Retreat = GetActorLocation() + Away *
-                    (Settings->ArcherPreferredRangeMetres * 100.0 - Distance);
+                    (GetBehavior().PreferredRangeMetres * 100.0 - Distance);
                 if (Mode->IsInsideTerritory(Retreat, Territory) && !Mode->IsSafe(Retreat) &&
-                    FVector::Dist2D(Anchor, Retreat) <= Settings->BoarLeashRadiusMetres * 100.0)
+                    FVector::Dist2D(Anchor, Retreat) <= GetBehavior().LeashRadiusMetres * 100.0)
                 { Destination = Retreat; }
                 else { Destination = GetActorLocation(); }
             }
-            else if (Distance <= Settings->ArcherPreferredRangeMetres * 100.0)
+            else if (Distance <= GetBehavior().PreferredRangeMetres * 100.0)
             { Destination = GetActorLocation(); }
         }
-        const double AttackRange = bRanged ? Settings->ArcherRangeMetres : Settings->MeleeRangeMetres;
+        const double AttackRange = bRanged ? GetBehavior().RangedRangeMetres : GetBehavior().MeleeRangeMetres;
         if (Distance <= AttackRange * 100.0 && (!bRanged || bClearShot) && Now >= NextSwingAt)
         {
-            NextSwingAt = Now + (bRanged ? Settings->ArcherSwingSeconds :
+            NextSwingAt = Now + (bRanged ? GetBehavior().RangedSwingSeconds :
                 (SFCombatPart6::Active(GetWorld()) ? CombatSwingSecondsValue : Settings->BoarMeleeCooldownSeconds));
             if (bRanged) { SetActorRotation((Victim->GetActorLocation() - GetActorLocation()).Rotation()); }
             Mode->TryBoarAttack(this, Victim); LastDamageAt = Now; UnreachableSince = -1;
@@ -879,14 +897,14 @@ void ASFPilotBoar::Tick(float DeltaSeconds)
     }
     else if (bReturning)
     { Destination = Anchor; Speed = SFCombatPilotRules::EvadeReturnSpeedCmPerSecond(
-        Mode->CombatSettings()->BoarChaseSpeedMetresPerSecond); }
+        GetBehavior().ChaseSpeedMetresPerSecond); }
     else if (Now >= NextWanderAt || Destination.IsNearlyZero() || FVector::Dist2D(GetActorLocation(), Destination) < 80)
     {
-        NextWanderAt = Now + FMath::FRandRange(double(Mode->CombatSettings()->BoarWanderMinSeconds),
-            double(Mode->CombatSettings()->BoarWanderMaxSeconds));
+        NextWanderAt = Now + FMath::FRandRange(double(GetBehavior().WanderMinSeconds),
+            double(GetBehavior().WanderMaxSeconds));
         for (int32 Attempt = 0; Attempt < 12; ++Attempt)
         {
-            const double Radius = Mode->CombatSettings()->BoarWanderRadiusMetres*100;
+            const double Radius = GetBehavior().WanderRadiusMetres*100;
             const FVector Candidate = Anchor + FVector(FMath::FRandRange(-Radius, Radius), FMath::FRandRange(-Radius, Radius), 0);
             if (Mode->IsInsideTerritory(Candidate, Territory) && !Mode->IsSafe(Candidate))
             { WanderDestination = Candidate; break; }
@@ -907,10 +925,10 @@ void ASFPilotBoar::Tick(float DeltaSeconds)
     {
         const double Distance = FVector::Dist2D(GetActorLocation(), Victim->GetActorLocation());
         const bool bOutOfReach = IsRangedArcher() ?
-            (Distance > Mode->CombatSettings()->ArcherRangeMetres * 100.0 ||
+            (Distance > GetBehavior().RangedRangeMetres * 100.0 ||
                 !SFCombatPilotRules::HasRangedLineOfSight(GetWorld(), this, Victim,
                     GetActorLocation() + FVector(0, 0, 80), Victim->GetActorLocation() + FVector(0, 0, 60))) :
-            Distance > Mode->CombatSettings()->MeleeRangeMetres * 100.0;
+            Distance > GetBehavior().MeleeRangeMetres * 100.0;
         const bool bBlocked = FVector::Dist2D(BeforeMove, GetActorLocation()) < 1.0 && bOutOfReach;
         if (bBlocked) { if (UnreachableSince < 0) { UnreachableSince = Now; } }
         else { UnreachableSince = -1; }
@@ -2277,9 +2295,9 @@ void ASFGameMode::TryHiddenMovementPractice(ASFE1Character* Character, ASFPilotB
         Character->GetVelocity().Size2D() < CapturedSettings->StealthPracticeMinimumSpeedCmPerSecond ||
         Now < NextStealthPracticeAt.FindRef(Character)) return;
     const auto Npc = SFCombatPart6::Npc(Observer->GetCreatureId());
-    const double Radius = SFCombatPilotRules::AggroRadiusMetres(CapturedSettings->BoarAggroRadiusMetres,
-        Npc.Level, Character->CombatCharacterLevel(), CapturedSettings->BoarAggroMinimumMetres,
-        CapturedSettings->BoarAggroMaximumBonusMetres);
+    const double Radius = SFCombatPilotRules::AggroRadiusMetres(Observer->GetBehavior().AggroRadiusMetres,
+        Npc.Level, Character->CombatCharacterLevel(), Observer->GetBehavior().AggroMinimumMetres,
+        Observer->GetBehavior().AggroMaximumBonusMetres);
     if (FVector::Dist2D(Character->GetActorLocation(), Observer->GetActorLocation()) > Radius * 100.0) return;
     NextStealthPracticeAt.Add(Character, Now + CapturedSettings->StealthPracticeIntervalSeconds);
     RecordPilotCombatPractice(Character, Observer, TEXT("skill/stealth"),
@@ -2866,7 +2884,7 @@ void ASFGameMode::TryBoarAttack(ASFPilotBoar* Boar, ASFE1Character* Victim)
         Boar->Health() <= 0 || Victim->CombatHealth() <= 0 || IsSafe(Boar->GetActorLocation()) ||
         IsSafe(Victim->GetActorLocation()) ||
         !SFCombatPilotRules::CanRanged(FVector::Dist2D(Boar->GetActorLocation(), Victim->GetActorLocation()),
-            (Boar->IsRangedArcher() ? CapturedSettings->ArcherRangeMetres : CapturedSettings->MeleeRangeMetres) * 100.0)) return;
+            (Boar->IsRangedArcher() ? Boar->GetBehavior().RangedRangeMetres : Boar->GetBehavior().MeleeRangeMetres) * 100.0)) return;
     if (Boar->IsRangedArcher())
     {
         const FVector Start = Boar->GetActorLocation() + FVector(0, 0, 80);

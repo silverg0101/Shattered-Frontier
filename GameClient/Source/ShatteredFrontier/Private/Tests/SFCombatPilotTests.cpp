@@ -23,8 +23,8 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFArcherRangedAttackTest,
 bool FSFArcherRangedAttackTest::RunTest(const FString& Parameters)
 {
     const auto* Tune = GetDefault<USFCombatPilotSettings>();
-    TestTrue(TEXT("In-range archer shot admitted"), SFCombatPilotRules::CanRanged(1500, Tune->ArcherRangeMetres * 100));
-    TestFalse(TEXT("Out-of-range archer shot refused"), SFCombatPilotRules::CanRanged(3100, Tune->ArcherRangeMetres * 100));
+    TestTrue(TEXT("In-range archer shot admitted"), SFCombatPilotRules::CanRanged(1500, SFNpcProfiles::Find(TEXT("npc/bandit_archer"))->Behavior.RangedRangeMetres * 100));
+    TestFalse(TEXT("Out-of-range archer shot refused"), SFCombatPilotRules::CanRanged(3100, SFNpcProfiles::Find(TEXT("npc/bandit_archer"))->Behavior.RangedRangeMetres * 100));
     FTestWorldWrapper Fixture;
     if (!Fixture.CreateTestWorld(EWorldType::GameRPC) || !Fixture.BeginPlayInTestWorld()) return false;
     UWorld* World = Fixture.GetTestWorld();
@@ -56,7 +56,7 @@ bool FSFArcherRangedAttackTest::RunTest(const FString& Parameters)
     SFCombatResolution::FDraws Draws{.5, .5, .5, .5, .5};
     const int32 Unarmored = SFCombatResolution::Resolve(Attack, Draws).Damage;
     TestTrue(TEXT("In-range clear shot resolves a hit"),
-        SFCombatPilotRules::CanRanged(1500, Tune->ArcherRangeMetres * 100) &&
+        SFCombatPilotRules::CanRanged(1500, SFNpcProfiles::Find(TEXT("npc/bandit_archer"))->Behavior.RangedRangeMetres * 100) &&
         SFCombatPilotRules::HasRangedLineOfSight(World, Archer, Victim, Start, End) && Unarmored > 0);
     Attack.Armor = 300;
     const int32 Armored = SFCombatResolution::Resolve(Attack, Draws).Damage;
@@ -152,7 +152,7 @@ bool FSFNpcProfileCatalogueTest::RunTest(const FString& Parameters)
             Attack.AttackerLevel = Seventh->Stats.Level;
             SFCombatResolution::FDraws Draws{.5, .5, .5, .5, .5};
             TestTrue(TEXT("Content ranged profile admits and resolves a ranged hit"), Seventh->IsRanged() &&
-                SFCombatPilotRules::CanRanged(1500, GetDefault<USFCombatPilotSettings>()->ArcherRangeMetres * 100) &&
+                SFCombatPilotRules::CanRanged(1500, Seventh->Behavior.RangedRangeMetres * 100) &&
                 SFCombatResolution::Resolve(Attack, Draws).Damage > 0);
         }
     }
@@ -556,9 +556,8 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFCombatPackAssistTest,
 
 bool FSFCombatPackAssistTest::RunTest(const FString& Parameters)
 {
-    const USFCombatPilotSettings* Settings = GetDefault<USFCombatPilotSettings>();
-    TestEqual(TEXT("Common assist waits two seconds"), Settings->BoarAssistDelaySeconds, 2.0f);
-    TestEqual(TEXT("Common assist reaches eight metres"), Settings->BoarAssistRadiusMetres, 8.0f);
+    TestEqual(TEXT("Common assist waits two seconds"), SFNpcProfiles::Find(TEXT("npc/boar"))->Behavior.AssistDelaySeconds, 2.0);
+    TestEqual(TEXT("Common assist reaches eight metres"), SFNpcProfiles::Find(TEXT("npc/boar"))->Behavior.AssistRadiusMetres, 8.0);
     TestFalse(TEXT("Early pack call rejected"), SFCombatPilotRules::CanAssist(1.999, 1.0, 2.0, 8.0));
     TestTrue(TEXT("Exact delay and radius accepted"), SFCombatPilotRules::CanAssist(2.0, 8.0, 2.0, 8.0));
     TestFalse(TEXT("Out-of-range packmate rejected"), SFCombatPilotRules::CanAssist(3.0, 8.001, 2.0, 8.0));
@@ -621,12 +620,11 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFCombatAggroTest,
 
 bool FSFCombatAggroTest::RunTest(const FString& Parameters)
 {
-    const auto* Settings = GetDefault<USFCombatPilotSettings>();
-    TestEqual(TEXT("Common base radius"), Settings->BoarAggroRadiusMetres, 12.0f);
-    TestEqual(TEXT("Proximity exception"), Settings->BoarNearNoticeRadiusMetres, 1.5f);
-    TestEqual(TEXT("Minimum radius"), Settings->BoarAggroMinimumMetres, 4.0f);
-    TestEqual(TEXT("Maximum bonus"), Settings->BoarAggroMaximumBonusMetres, 6.0f);
-    TestEqual(TEXT("Beast field of view"), Settings->BoarFieldOfViewDegrees, 160.0f);
+    TestEqual(TEXT("Common base radius"), SFNpcProfiles::Find(TEXT("npc/boar"))->Behavior.AggroRadiusMetres, 12.0);
+    TestEqual(TEXT("Proximity exception"), SFNpcProfiles::Find(TEXT("npc/boar"))->Behavior.NearNoticeRadiusMetres, 1.5);
+    TestEqual(TEXT("Minimum radius"), SFNpcProfiles::Find(TEXT("npc/boar"))->Behavior.AggroMinimumMetres, 4.0);
+    TestEqual(TEXT("Maximum bonus"), SFNpcProfiles::Find(TEXT("npc/boar"))->Behavior.AggroMaximumBonusMetres, 6.0);
+    TestEqual(TEXT("Beast field of view"), SFNpcProfiles::Find(TEXT("npc/boar"))->Behavior.FieldOfViewDegrees, 160.0);
     TestEqual(TEXT("Higher level character"), SFCombatPilotRules::AggroRadiusMetres(12, 20, 23, 4, 6), 9.0);
     TestEqual(TEXT("Lower level character"), SFCombatPilotRules::AggroRadiusMetres(12, 20, 14, 4, 6), 18.0);
     TestEqual(TEXT("Minimum clamps"), SFCombatPilotRules::AggroRadiusMetres(12, 20, 40, 4, 6), 4.0);

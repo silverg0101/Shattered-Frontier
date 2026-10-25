@@ -185,6 +185,7 @@ private:
     friend class FSFNpcContentSpawnShotTest;
     friend class FSFNpcProductionParityTest;
     friend class FSFNpcCorpseRewardTest;
+    friend class FSFNpcPresetRuntimeTest;
 #endif
     FString CombatZonePath;
     TMap<FString, SFNpcZoneContent::FGroup> Groups;
