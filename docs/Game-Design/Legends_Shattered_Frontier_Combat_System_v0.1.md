@@ -16,6 +16,7 @@ Short name in cross-references: **Combat spec**. Part folder: [`Combat/`](Combat
 | Part 2 | [Damage pipeline, mitigation, NPCs and threat](Combat/Legends_Shattered_Frontier_Combat_Damage_Mitigation_and_NPCs_v1.0.md) | Damage formula, Resolution pipeline, Armor System, Magic Resistance System, NPC mitigation, NPC Attribute Generation (Creature-tier rule), NPC combat profile, Threat & Aggro System (Threat & Aggro), kill credit and death, PvP rules, determinism, balance simulations |
 | Part 3 | [Abilities, effects, state machine and runtime](Combat/Legends_Shattered_Frontier_Combat_Abilities_Effects_and_Runtime_v1.0.md) | Ability and effect content model (ERD, JSON), stat modifier keys, Party-scoped effects, crowd control and diminishing returns, casting and GCD, throughput budget, procs, combat state machine, zone-server runtime contracts, outbox |
 | Part 4 | [Agent implementation guide](Combat/Legends_Shattered_Frontier_Combat_Agent_Implementation_Guide_v1.0.md) | Module layout, milestones, invariants, validators, test matrix, acceptance criteria, pitfalls, Do/Don't |
+| Part 5 | [Energy, starter abilities, taunt and interrupt](Combat/Legends_Shattered_Frontier_Combat_Starter_Abilities_and_Energy_v0.1.md) | Two-pool energy rule and hybrids, level 1–20 starter kits (38 abilities), published taunt/interrupt values and five-rank enhanced ladder, sprint drain keys, death/durability touch points, owner checks |
 
 Glossary: Registry, Glossary. Terms specific to this spec are defined where they are introduced (`σ(L)`, `DPS_ref`, MPS, `t_ref`).
 
