@@ -16,6 +16,7 @@ import creature
 import numpy as np
 import zoo_curate
 import rig_standard
+import bird_proxy
 
 
 def chicken_fixture():
@@ -194,6 +195,70 @@ class BodyPlanTests(unittest.TestCase):
                  patch.object(creature,"std_glb_clip",side_effect=RuntimeError("stop after review call")) as review:
                 creature.run_clip_job(1,{})
             self.assertEqual(review.call_args.args[-1],instruction)
+
+    def test_folded_proxy_stays_on_torso_and_adds_only_two_ground_anchors(self):
+        data,joints=chicken_fixture()
+        roles=data["role_map"]
+        rest=zoo_curate.fk(joints,None)[0]
+        points={j["name"]:(float(p[0]),float(-p[2]),float(p[1])) for j,p in zip(joints,rest) if j["name"] in roles}
+        original=dict(points)
+        wings,radii=bird_proxy.folded_wings(points,roles,((0,0,.33),.10),-.18)
+        self.assertEqual(points,original,"input/source topology and non-wing points stay unchanged")
+        self.assertEqual(len(wings),6,"actual three-joint source wings")
+        for side in ("L","R"):
+            chain=sorted((n for n in wings if roles[n].startswith("W"+side)),key=lambda n:roles[n])
+            self.assertLess(radii[chain[-1]],radii[chain[0]])
+            self.assertEqual([wings[n][1] for n in chain],sorted(wings[n][1] for n in chain))
+            for name in chain:
+                x,y,z=wings[name]
+                self.assertLessEqual(abs(x)+radii[name],.12,"no large shoulder projection")
+                self.assertTrue(-.18<=y<=0 and .20<z<=.33,"backward along torso, never raised")
+        for name,role in roles.items():
+            if role in ("HL_04","HR_04"):
+                points[name]=(.07 if role.startswith("HL") else -.07,0,.02)
+        anchors=bird_proxy.foot_anchors(points,roles,lambda n:.02)
+        self.assertEqual({a["role"] for a in anchors},{"HL","HR"})
+        for anchor in anchors:
+            self.assertLess(anchor["centre"][1],points[anchor["ankle"]][1])
+            self.assertAlmostEqual(anchor["centre"][2]-anchor["radii"][2],0)
+        self.assertAlmostEqual(anchors[0]["centre"][1],anchors[1]["centre"][1])
+
+    def test_geometry_gate_ignores_only_explicit_harmless_differences(self):
+        harmless=["[cosmetic] Feather colour/coverage differs","[occlusion] Tail hidden head-on",
+                  "[lighting] Detached faint shadow, no connected foreground risk"]
+        self.assertTrue(creature.bird_geometry_gate({"pass":False,"problems":harmless,"fix":"recolour it"})["pass"])
+        for problem in ("[anatomy] extra low lobes below raised wing fans","[pose] squatting hides shanks",
+                        "[projection] front head is in profile","[foreground] broad connected footprint could form slab",
+                        "missing wing"):
+            with self.subTest(problem=problem):
+                self.assertFalse(creature.bird_geometry_gate({"pass":False,"problems":harmless+[problem],"fix":"fix geometry"})["pass"])
+        self.assertFalse(creature.bird_geometry_gate({"pass":False,"problems":[]})["pass"])
+
+    def test_front_uses_accepted_side_geometry_and_does_not_retry_cosmetics(self):
+        settings={"creature_depth_strength":.55,"creature_depth_front_strength":.75,"creature_depth_end":.7}
+        reference="extended visible shanks and narrow wings folded backwards along the torso"
+        app=SimpleNamespace(get_settings=lambda:settings,DEPTH_VIEWS=("front","left","right"),job_row=lambda jid:{"status":"running"})
+        files={f"{prefix}_{view}.png":b"depth" for prefix in ("depth","standin") for view in app.DEPTH_VIEWS}|{"standin.json":b"{}"}
+        calls=[]
+        def draw(jid,host,params,log,**kw):
+            calls.append((params,kw))
+            return {pos:pos.encode() for pos in kw["only"]}
+        app.depth_views=draw
+        from unittest.mock import Mock
+        app.codex_review=Mock(side_effect=[{"pass":True,"problems":[],"fix":"GEOMETRY: "+reference},
+                                          {"pass":False,"problems":["[cosmetic] pale feather coverage","[occlusion] hidden tail"],"fix":"recolour"}])
+        entry={"id":"Chicken","name":"Chicken","body_plan":"bird","adapter":"grounded_bird_v1"};info={}
+        with patch.object(creature,"_app",return_value=app),patch.object(creature,"depth_host",return_value={"name":"GPU1"}),\
+             patch.object(creature,"standin_depth",return_value=files):
+            result=creature.depth_concept(1,{}, {"prompt":"chicken","name":"Chicken"},entry,Path("unused"),50,
+                                          creature.BIRD_REVIEW_RULES,[],lambda s:None,info)
+        self.assertEqual(result,{"left":b"left","front":b"front"})
+        self.assertEqual(len(calls),2,"no appearance-only regeneration")
+        self.assertIn(reference,calls[1][0]["prompt"])
+        self.assertNotIn("recolour",calls[1][0]["prompt"])
+        self.assertEqual(info["side_geometry_reference"],reference)
+        self.assertEqual(app.codex_review.call_args.args[0],[b"front",b"left"])
+        self.assertEqual(app.codex_review.call_args.args[1],creature.BIRD_FRONT_BRIEF)
 
 
 if __name__ == "__main__":

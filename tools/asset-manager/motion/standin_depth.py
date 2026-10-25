@@ -44,11 +44,7 @@ animal = json.load(open(animalf))
 role = animal["role_map"]
 bird = animal.get("skeleton") == "grounded_bird_v1"
 if bird:
-    # Versioned proxy geometry, not a generated-model repair. Wings fold backwards
-    # above the floor; only HL/HR provide stance contacts.
-    for side in ("L", "R"):
-        for i in range(1,5):
-            RADII[f"W{side}_{i:02}"] = RADII[f"HL_{i:02}"]
+    from bird_proxy import folded_wings, foot_anchors
 
 bpy.ops.wm.read_factory_settings(use_empty=True)
 bpy.ops.import_anim.bvh(filepath=clipf, global_scale=0.01)
@@ -127,13 +123,11 @@ if tail_len > TAIL_MAX * body_len:
             pos[n].y *= TAIL_MAX * body_len / tail_len
 if bird:
     for n in pos:
-        if is_wing(n):
-            # Fold each chain along the torso, ending at the pelvis. Keep all
-            # source wing joints, but never lay them out as ground limbs.
-            segment = int(role_of(n)[-2:])
-            pos[n].y = lay[head_j].y * (1 - (segment - 1) / 3)
-        elif role_of(n) in ("neck", "head"):
+        if role_of(n) in ("neck", "head"):
             pos[n].z += abs(lay[n].y) / max(body_len, 1e-9) * h
+    shoulder_y = min(p.y for n,p in pos.items() if role_of(n).startswith("spine"))
+    wing_pos, wing_radii = folded_wings(pos,rad_role,(pos[pelvis],RADII["pelvis"]*lb),shoulder_y)
+    pos.update({n:Vector(p) for n,p in wing_pos.items()})
 scale = size_cm / 100 / (max(p.y for p in pos.values()) - min(p.y for p in pos.values()))  # nose to tail tip, as the creature job sizes the rig
 pos = {n: p * scale for n, p in pos.items()}
 L = size_cm / 100
@@ -142,6 +136,8 @@ Lb = abs(pos[nose].y - pos[root_t].y)  # nose to tail root: the radii's unit
 
 def radius(n):
     r = role_of(n)
+    if bird and is_wing(n):
+        return wing_radii[n]*scale
     if n.endswith("_end") and f"{r}_tip" in RADII:
         return RADII[f"{r}_tip"] * Lb
     return RADII[r] * Lb * (0.5 if n.endswith("_end") and r.startswith("tail") else 1)
@@ -150,10 +146,9 @@ def radius(n):
 for n in pos:  # left legs on +X (the animal faces -Y), a little apart: shoulders and hips are not on the midline
     if is_leg(n):
         pos[n].x = (1 if role_of(n)[1] == "L" else -1) * 0.7 * radius(parent[leg_root[n]])
-    elif is_wing(n):
-        pos[n].x = (1 if role_of(n)[1] == "L" else -1) * radius(pelvis)
 floor = min(p.z - radius(n) for n, p in pos.items())
 pos = {n: p - Vector((0, 0, floor)) for n, p in pos.items()}
+feet = foot_anchors(pos,rad_role,radius) if bird else []
 
 
 bm = bmesh.new()
@@ -164,7 +159,13 @@ for a, b in edges:
     if d.length < 1e-6:
         continue
     m = Matrix.Translation((pos[a] + pos[b]) / 2) @ d.to_track_quat("Z", "Y").to_matrix().to_4x4()
-    bmesh.ops.create_cone(bm, cap_ends=True, segments=16, radius1=radius(a), radius2=radius(b), depth=d.length, matrix=m)
+    r1,r2 = radius(a),radius(b)
+    if bird and is_wing(b) and not is_wing(a):
+        r1 = r2  # no torso-sized cone protruding into a round shoulder lobe
+    bmesh.ops.create_cone(bm, cap_ends=True, segments=16, radius1=r1, radius2=r2, depth=d.length, matrix=m)
+for foot in feet:
+    matrix = Matrix.Translation(Vector(foot["centre"])) @ Matrix.Diagonal((*foot["radii"],1))
+    bmesh.ops.create_uvsphere(bm,u_segments=16,v_segments=10,radius=1,matrix=matrix)
 for a, b in edges:  # a plump belly: a ball amid each torso segment, a little wider than its ends
     if all(role_of(n)[:2] in ("pe", "sp") for n in (a, b)):
         bmesh.ops.create_uvsphere(bm, u_segments=16, v_segments=10, radius=1.12 * (radius(a) + radius(b)) / 2,
@@ -205,6 +206,9 @@ def save(g, path):  # g: HxW uint8, row 0 on top
 
 
 meta = {"ortho_scale_m": size, "size_cm": size_cm, "bbox_m": [list(map(float, lo)), list(map(float, hi))], "views": {}}
+if bird:
+    meta["proxy"] = {"profile":"folded-bird-v1","feet":feet,
+                     "wings":{n:{"role":role_of(n),"point":list(pos[n]),"radius":radius(n)} for n in wing_pos}}
 for name, az in (("front", 0), ("left", 90), ("right", 270)):
     a = math.radians(az)
     d = Vector((math.sin(a), -math.cos(a), 0))

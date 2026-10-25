@@ -29,4 +29,6 @@ Reviewed `666a716d` probe ran once with cached Buffalo, GPU1 pin, local-only gua
 
 ## Next step
 
+First functional input review returned three fixes, implemented for one bounded retry: shared standing/folded-wing anatomy and accepted-side geometry reference; smaller tapered torso-bound wing proxy and two simple forward foot anchors without rig topology changes; geometry-only gates with legitimate occlusion/cosmetic differences allowed and shadows rejected only for connected foreground/slab risk. Sixteen focused tests and isolated app.check pass. New source awaits independent code/retry review; no further generation beyond the one authorized retry, no live deployment or Unreal work.
+
 Fresh independent 6.1-Sol review of saved concept/stand-in inputs, then implement only its fix list before another bounded Chicken run (max3 review rounds, then owner). Complete real rig/Walk export and second-species Ostrich reuse before readiness/deployment. Keep gates honest; use the controller's Unreal slot only after assignment. Shared scratch report: `Artifacts/Orchestration/20261025-resume/asset-forge-body-plans-report.md` in main checkout.

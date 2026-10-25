@@ -520,16 +520,48 @@ FRONT_BRIEF = ("Image 1 is meant to show an animal from the front, image 2 the s
                "three-quarter) and it is clearly the same animal as image 2: same colours, markings, build and number of "
                "legs and ears. Fail it too if a shadow, floor or reflection shows under the animal (it becomes a slab on the 3D "
                "model). The animal: {prompt}")
-BIRD_STANCE = ("standing upright on both feet, legs naturally extended under the hips, two wings folded against the body, "
-               "beak closed, head looking straight forward, exactly side-on, far leg hidden behind the near leg")
+BIRD_STANCE = ("one torso, one head and closed beak, one tail, exactly two ground legs and feet, standing with extended "
+               "visible shanks under the hips; exactly two wings resting backward against the torso, never lifted or spread; "
+               "no extra shoulder lobes, low wing-like lobes or raised fans; the same head/torso proportions, leg extension "
+               "and feet baseline in every projection")
+_BIRD_INPUT_TAIL = (" Plain white background. The depth guide fixes this one standing pose and body proportions; "
+                    "do not turn the folded wing guides into spread wings or additional appendages.")
 BIRD_DEPTH_WRAP = {
-    "left": "{garment}\n\nOne whole grounded bird, alone, seen exactly {view}, orthographic. " + BIRD_STANCE + "." + _WRAP_TAIL,
-    "front": "{garment}\n\nOne whole grounded bird, alone, exactly head-on, beak pointing at the camera, both feet visible "
-             "and symmetric, wings folded against the torso, beak closed, orthographic." + _WRAP_TAIL}
+    "left": "{garment}\n\nOne whole grounded bird, alone, seen exactly {view}, orthographic. " + BIRD_STANCE +
+            ". The far leg/foot may be fully hidden behind the near one in this exact side projection." + _BIRD_INPUT_TAIL,
+    "front": "{garment}\n\nThe same standing bird and pose as the accepted side geometry reference, alone, exactly head-on "
+             "and orthographic, beak pointing at the camera. " + BIRD_STANCE +
+             ". Both shanks and feet visible and symmetric; do not squat or hide the shanks. The tail may be hidden "
+             "behind the body in this projection." + _BIRD_INPUT_TAIL}
+BIRD_REVIEW_RULES = (
+    "Judge functional reconstructable anatomy/pose/projection only, not appearance. Ignore feather colour, feather coverage, "
+    "markings, lighting and other cosmetic differences unless they change actual anatomy/silhouette. A far leg can be fully "
+    "occluded in exact side view; the tail can be hidden head-on. Never invent occluded parts into view. A shadow's mere "
+    "presence is not a failure. Respect foreshortening: compare anatomical heights and pose, not frontal width to side length. "
+    "Reject shadows only as connected foreground/ground that could reconstruct as a floor slab. "
+    "Reject missing/doubled/fused/dislocated anatomy, extra wing surfaces, raised/spread versus folded wings, squatting or "
+    "conflicting shank extension, torso/head proportions or feet baseline. Prefix each problem with [anatomy], [pose], "
+    "[projection] or [foreground] for those functional risks. Harmless differences use [cosmetic], [occlusion] or [lighting]. "
+    "If no functional problem remains, put GEOMETRY: followed by a short standing anatomy/pose description in fix, for the "
+    "next view's geometry reference; no colour/feather/style instructions.")
+BIRD_FRONT_BRIEF = ("Image1 is the front, image2 the accepted side anatomy/pose reference. Compare projections of one "
+                    "unchanged standing bird: " + BIRD_STANCE + ". " + BIRD_REVIEW_RULES)
 BIRD_MODEL_BRIEF = ("The first image shows the generated model from the front and left, the following images are its concepts. "
                     "Judge anatomy and pose: one torso, one head with one beak, two legs with feet, two folded wings and a tail. "
                     "FAIL missing, doubled, fused or dislocated body parts, extra shells or floor slabs, a head turned toward the "
                     "side camera, or a body plan/pose inconsistent with the concepts. Ignore lighting and texture.")
+
+
+def bird_geometry_gate(review):
+    """Ignore explicitly harmless differences; unknown/functional failures remain closed."""
+    problems = [str(p) for p in review.get("problems", [])]
+    functional = [p for p in problems if not re.match(r"^\[(cosmetic|occlusion|lighting)\]",p,re.I)]
+    if not review.get("pass") and not problems:
+        functional = ["functional review failed without an anatomy/pose/projection decision"]
+    passed = not functional
+    fix = str(review.get("fix") or "")
+    return {"pass":passed,"problems":functional,"fix":fix if not passed else "",
+            "geometry_reference":fix[len("GEOMETRY:"):].strip() if passed and fix.startswith("GEOMETRY:") else ""}
 
 
 def depth_host(host):
@@ -569,6 +601,7 @@ def depth_concept(jid, host, p, entry, lib, size, brief, log, step, info):
     host with the depth workflow free, a failed stand-in render, or three failed reviews - the caller falls back to the
     heroes flow, as the depth path alone never fails a job."""
     a, s = _app(), _app().get_settings()
+    bird = entry.get("body_plan") == "bird" and entry.get("adapter") == GROUNDED_BIRD.skeleton
     try:
         dhost = depth_host(host)
         if not dhost:
@@ -585,8 +618,9 @@ def depth_concept(jid, host, p, entry, lib, size, brief, log, step, info):
         negative = {"left": neg, "front": neg + FRONT_NEGATIVE}
         control = lambda seed: {"strength": {"left": s["creature_depth_strength"], "front": s["creature_depth_front_strength"]},
                                 "end_percent": s["creature_depth_end"], "seed": seed}
-        bird = for_entry(entry) == GROUNDED_BIRD
-        draw = lambda only, seed, extra: a.depth_views(jid, dhost, {"prompt": base + extra, "symmetric": True}, log, depth=depth,
+        reference = ""
+        draw = lambda only, seed, extra: a.depth_views(jid, dhost, {"prompt": base + extra +
+                                                       ("\n\nAccepted side geometry reference: " + reference if bird and only == ("front",) else ""), "symmetric": True}, log, depth=depth,
                                                        wrap=BIRD_DEPTH_WRAP if bird else CREATURE_DEPTH_WRAP,
                                                        negative=negative, control=control(seed), only=only)
         extra, seed0 = "", random.randrange(1, 2 ** 31 - 10_000)  # a new picture every job and every redraw
@@ -597,8 +631,13 @@ def depth_concept(jid, host, p, entry, lib, size, brief, log, step, info):
             step(f"drawing the depth side view (try {n}/3)")
             views = draw(("left",), seed0 + n, extra)
             r = a.codex_review([views["left"]], brief)
+            if bird:
+                r = bird_geometry_gate(r)
             log.append(f"depth side {n}: {'pass' if r['pass'] else 'fail: ' + '; '.join(r['problems'])}")
             if r["pass"]:
+                if bird:
+                    reference = r["geometry_reference"] or BIRD_STANCE
+                    info["side_geometry_reference"] = reference
                 break
             extra = f"\n\nA previous drawing was rejected: {'; '.join(r['problems'])}. {r['fix']}"
         else:
@@ -610,7 +649,9 @@ def depth_concept(jid, host, p, entry, lib, size, brief, log, step, info):
                 raise InterruptedError
             step(f"drawing the depth front view (try {n}/2)")
             views["front"] = draw(("front",), seed0 + 100 + n, extra)["front"]
-            r = a.codex_review([views["front"], views["left"]], FRONT_BRIEF.format(prompt=base))
+            r = a.codex_review([views["front"], views["left"]], BIRD_FRONT_BRIEF if bird else FRONT_BRIEF.format(prompt=base))
+            if bird:
+                r = bird_geometry_gate(r)
             log.append(f"depth front {n}: {'pass' if r['pass'] else 'fail: ' + '; '.join(r['problems'])}")
             if r["pass"]:
                 return views
@@ -625,7 +666,7 @@ def depth_concept(jid, host, p, entry, lib, size, brief, log, step, info):
     except InterruptedError:
         raise
     except Exception as e:
-        log.append(f"concept: the depth path failed ({str(e)[-200:]}); using the heroes flow")
+        log.append(f"concept: the depth path failed ({str(e)[-200:]}); " + ("local-only bird path stopped" if bird else "using the heroes flow"))
     return None
 
 
@@ -639,11 +680,10 @@ def concept_image(jid, p, entry, log, step, host=None, lib=None, size=None, info
     family = for_entry(entry)
     if family == GROUNDED_BIRD:
         brief = (f"One whole grounded bird like a {entry['name']}: {family.description}, alone, no extra or missing parts. "
-                 f"Required pose: {BIRD_STANCE}. Fail flight, spread wings, staggered feet, clipping, ground shadows, floor or reflection. "
-                 f"The request: {p['prompt'] or p['name']}")
+                 f"Required pose: {BIRD_STANCE}. Exact side projection. " + BIRD_REVIEW_RULES)
         if p.get("image"):
             png = a.safe_path(p["image"]).read_bytes()
-            verdict = a.codex_review([png], brief)
+            verdict = bird_geometry_gate(a.codex_review([png], brief))
             if not verdict["pass"]:
                 raise RuntimeError("bird concept failed review: " + "; ".join(verdict["problems"]))
             info["concept"] = "image"
