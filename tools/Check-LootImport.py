@@ -1,6 +1,7 @@
 """Read-only persisted asset check for the eight approved loot imports."""
 import hashlib
 import json
+import struct
 from pathlib import Path
 import unreal as u
 
@@ -13,7 +14,18 @@ names = ('archers_gloves', 'fangtooth_dagger', 'wolf_fang', 'brigand_blade',
          'cudgel', 'captains_longsword', 'wolf_pelt', 'wolfhide_bracers')
 for stem in names:
     source_file = source / (stem + '.glb')
-    assert hashlib.sha256(source_file.read_bytes()).hexdigest() == spans[stem]['sha256']
+    source_bytes = source_file.read_bytes()
+    assert hashlib.sha256(source_bytes).hexdigest() == spans[stem]['sha256']
+    json_length, json_type = struct.unpack_from('<II', source_bytes, 12)
+    assert json_type == 0x4E4F534A
+    gltf = json.loads(source_bytes[20:20 + json_length])
+    source_triangles = 0
+    for source_mesh in gltf['meshes']:
+        for primitive in source_mesh['primitives']:
+            assert primitive.get('mode', 4) == 4
+            index_count = gltf['accessors'][primitive['indices']]['count']
+            assert index_count % 3 == 0
+            source_triangles += index_count // 3
     title = ''.join(part.title() for part in stem.split('_'))
     definition = u.load_asset('/Game/Frontier/Gameplay/Pilot/DA_' + title)
     assert definition and definition.get_editor_property('UniqueId') == handoff[stem]['item_id']
@@ -25,7 +37,7 @@ for stem in names:
     scale = pipeline.get_editor_property('import_offset_uniform_scale')
     length = spans[stem]['principal_spans_m'][0] * scale * 100
     assert abs(length - handoff[stem]['size_cm']['length']) < .02, (stem, length)
-    assert mesh.get_num_triangles(0) >= 48000 and mesh.static_materials
+    assert mesh.get_num_triangles(0) == source_triangles and mesh.static_materials, stem
     nanite = mesh.get_editor_property('nanite_settings')
     assert nanite.get_editor_property('enabled')
     assert nanite.get_editor_property('fallback_target') == u.NaniteFallbackTarget.PERCENT_TRIANGLES

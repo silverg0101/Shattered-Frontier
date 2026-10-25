@@ -35,3 +35,11 @@ Use the frozen round-3 evidence for the last independent review, then hand any r
 
 ## Outcome
 
+
+## Revised acceptance and outcome — 2026-10-25
+
+The owner explicitly superseded appearance review for this import: acceptance is error-free load, usable item records, correct mesh/material/texture references and retained source geometry/faces without unintended simplification. Texture, lighting, presentation polish and LOOT-01 proportions are deferred; the appearance is not accepted by this completion. Do not start another visual review for this task.
+
+Mechanical import is complete in 38899d15, 9cf2f1e1 and a67253a2. All eight approved GLB hashes are unchanged; direct indexed source triangle counts exactly match the persisted UE render counts (48,460–50,000), with 100% Nanite fallback. The focused checker now requires exact equality rather than a minimum. Existing error-free `LOOT_CHECK_PASS 8`, native build, eight typed WorldMesh/item links, valid material slots, and all sixteen exact source/import texture comparisons (MAE 0) remain valid because their inputs are unchanged. Precise source/count evidence: ignored `Artifacts/Orchestration/20261025-resume/loot-geometry-retention.json`. Geometry retention means unchanged approved sources and retained indexed triangle counts; no claim of identical renderer vertex ordering is made.
+
+This import is enabling work. The separately authorized `gameplay-corpse-ground-loot.md` owns actual corpse, transfer and world-drop behavior; import appearance cannot block it.
