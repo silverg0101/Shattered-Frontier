@@ -39,6 +39,8 @@ Combined `stable-cursor-combined-build-01.log` PASS14.44s; full rendered runtime
 
 Controller reviews retained functional rim pair, then owns matching client/server packages, actual durable service-host rollout and rollback through documented existing deployment targets. Preserve other game/Forge containers and old-state/reward-route compatibility; don't substitute the historical unauthenticated E1 fixture. No further UE run is authorized from this checkpoint; all owned processes cleaned up and UE slot released.
 
+Round2 functional review passed the UI display states but could not discern the rim because the owning pawn's leg occluded the model. Final capture-only fix prepared for controller source review: `-LootWorkflowCapturePair` locally suppresses only owning-pawn/attached-actor mesh visibility, records/restores exact component flags, requests the unchanged fixed unselected/selected pair, retains render/material/Nanite diagnostics and stops before F with `Observed`. No shader/lighting/geometry/policy change and no new full acceptance run. This is the final capture-review round before owner handoff; native click/F/privacy/SQL PASS76d9fa3e stands.
+
 Source/body appearance, textures and lighting remain explicitly deferred; mechanical import629a0c84 stays accepted. The unused installed vendor-plugin manifest is not a demonstrated packaging blocker.
 
 ## Outcome

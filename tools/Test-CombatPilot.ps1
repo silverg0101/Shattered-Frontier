@@ -14,6 +14,7 @@ param(
     [switch]$GreenlandsStatusNetcheck,
     [switch]$LootWorkflowNetcheck,
     [switch]$LootWorkflowCursorProbe,
+    [switch]$LootWorkflowCapturePair,
     [ValidateSet('Release','Resurrection')][string]$DeathResolution = 'Release',
     [switch]$RestartMidDeath,
     [switch]$TargetScenario,
@@ -30,6 +31,7 @@ $project = Join-Path $repo 'GameClient\ShatteredFrontier.uproject'
 $bridge = Join-Path $repo 'BackendServices\WorldContent.Tool\bin\Debug\net10.0\WorldContent.Tool.dll'
 $sdk = Join-Path $repo 'Artifacts\Persistence\Toolchains\dotnet-10.0.402\dotnet.exe'
 if ($LootWorkflowCursorProbe -and -not $LootWorkflowNetcheck) { throw 'LootWorkflowCursorProbe requires LootWorkflowNetcheck.' }
+if ($LootWorkflowCapturePair -and (-not $LootWorkflowNetcheck -or $LootWorkflowCursorProbe)) { throw 'LootWorkflowCapturePair requires LootWorkflowNetcheck and excludes the cursor probe.' }
 if ($LootWorkflowNetcheck -and (-not $Services -or $Clients -ne 2 -or
     $Map -ne '/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook' -or
     $GreenlandsDeathNetcheck -or $GreenlandsRepairNetcheck -or $GreenlandsArcherNetcheck -or $GreenlandsUnstuckNetcheck -or
@@ -237,12 +239,25 @@ try {
             $identity = @('alpha','beta')[$role - 1]; $label = @('Driver','Observer')[$role - 1]
             $lootFlags = @('-game','-LootWorkflowNetcheck',"-LootWorkflowRole=$label",('-LootWorkflowBarrier="'+$barrier+'"'),('-LootWorkflowGroundSeen="'+$groundBarrier+'"'),('-LootWorkflowEvidence="'+$root+'"'))
             if ($LootWorkflowCursorProbe -and $role -eq 1) { $lootFlags += '-LootWorkflowCursorProbe' }
+            if ($LootWorkflowCapturePair -and $role -eq 1) { $lootFlags += '-LootWorkflowCapturePair' }
             $null = Start-Owned "client$role" ("127.0.0.1:$Port`?SFDevCharacter=$identity") $lootFlags
         }
         if ($LootWorkflowCursorProbe) {
             $driver = @($owned | Where-Object Id -eq (@($result.runs | Where-Object name -eq 'client1')[0].pid))[0]
             Wait-Log $driver 'client1' 'LOOT_CURSOR_PROBE_DONE ExactTarget=[01] InputSent=0' 120
             $result.status='Observed'; $result.scope='Diagnostic cursor sample before input; no workflow acceptance'; return
+        }
+        if ($LootWorkflowCapturePair) {
+            $driver = @($owned | Where-Object Id -eq (@($result.runs | Where-Object name -eq 'client1')[0].pid))[0]
+            Wait-Log $driver 'client1' 'LOOT_CAPTURE_PAIR_DONE VisibilityRestored=1 PickupInputSent=0' 120
+            $captureDeadline = [DateTime]::UtcNow.AddSeconds(5)
+            $pairFiles = @('ground-unselected00000.png','ground-selected00000.png')
+            do {
+                $missingPair = @($pairFiles | Where-Object { -not (Test-Path -LiteralPath (Join-Path $root $_)) -or (Get-Item -LiteralPath (Join-Path $root $_)).Length -le 0 })
+                if ($missingPair.Count -eq 0) { break }; Start-Sleep -Milliseconds 100
+            } while ([DateTime]::UtcNow -lt $captureDeadline)
+            if ($missingPair.Count -ne 0) { throw 'Capture pair PNGs were not saved.' }
+            $result.status='Observed'; $result.scope='Fixed-view ground rim capture only; no repeated workflow acceptance'; return
         }
         foreach ($role in 1..2) {
             $process = @($owned | Where-Object Id -eq (@($result.runs | Where-Object name -eq "client$role")[0].pid))[0]

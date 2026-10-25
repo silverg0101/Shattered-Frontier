@@ -13,6 +13,9 @@
 #include "UI/SFWindowStack.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/BoxComponent.h"
+#include "Components/MeshComponent.h"
+#include "Engine/StaticMesh.h"
+#include "Materials/MaterialInterface.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "EngineUtils.h"
 #include "Input/Events.h"
@@ -59,12 +62,50 @@ struct FWorkflowState
     bool bCapturedCorpse = false;
     TWeakObjectPtr<ACameraActor> GroundCamera;
     TWeakObjectPtr<AActor> OriginalView;
+    TMap<TWeakObjectPtr<UMeshComponent>, bool> CaptureVisibility;
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     uint64 GroundInputBefore = 0;
 #endif
     TStrongObjectPtr<USFItemDragOperation> PendingDrag;
 };
 TMap<TWeakObjectPtr<USFLootComponent>, FWorkflowState> States;
+void HideOwnCaptureMeshes(AActor* Pawn, FWorkflowState& State)
+{
+    TArray<AActor*> Attached; Pawn->GetAttachedActors(Attached, true, true); Attached.Add(Pawn);
+    for (AActor* Actor : Attached)
+    {
+        if (!Actor) continue;
+        TArray<UMeshComponent*> Meshes; Actor->GetComponents(Meshes);
+        for (UMeshComponent* Mesh : Meshes)
+        {
+            State.CaptureVisibility.Add(Mesh, Mesh->GetVisibleFlag());
+            Mesh->SetVisibility(false, false); // Local render flag only; no propagation/collision/pose change.
+        }
+    }
+    UE_LOG(LogTemp, Display, TEXT("LOOT_CAPTURE_OWN_MESH HiddenComponents=%d"), State.CaptureVisibility.Num());
+}
+bool RestoreOwnCaptureMeshes(FWorkflowState& State)
+{
+    if (State.CaptureVisibility.IsEmpty()) return true;
+    bool bExact = true;
+    for (const auto& Saved : State.CaptureVisibility)
+        if (auto* Mesh = Saved.Key.Get()) { Mesh->SetVisibility(Saved.Value, false); bExact &= Mesh->GetVisibleFlag() == Saved.Value; }
+    UE_LOG(LogTemp, Display, TEXT("LOOT_CAPTURE_OWN_MESH RestoredComponents=%d ExactFlags=%d"), State.CaptureVisibility.Num(), bExact);
+    State.CaptureVisibility.Reset();
+    return bExact;
+}
+void CaptureRenderDiagnostic(UStaticMeshComponent* Mesh, bool bSelected)
+{
+    const auto* Model = Mesh->GetStaticMesh(); const auto* Overlay = Mesh->GetOverlayMaterial();
+    UE_LOG(LogTemp, Display, TEXT("LOOT_CAPTURE_RENDER Selected=%d Model=%s Overlay=%s OverlayBlend=%d NaniteEnabled=%d Visible=%d"),
+        bSelected, *GetPathNameSafe(Model), *GetPathNameSafe(Overlay), Overlay ? int32(Overlay->GetBlendMode()) : -1,
+        Model ? Model->GetNaniteSettings().bEnabled : false, Mesh->GetVisibleFlag());
+    for (int32 I = 0; I < Mesh->GetNumMaterials(); ++I)
+    {
+        const auto* Material = Mesh->GetMaterial(I);
+        UE_LOG(LogTemp, Display, TEXT("LOOT_CAPTURE_MATERIAL Slot=%d Path=%s Blend=%d"), I, *GetPathNameSafe(Material), Material ? int32(Material->GetBlendMode()) : -1);
+    }
+}
 int32 CountItem(ASFPlayerController* Player, const FString& Id)
 {
     auto* Bag = Player->FindComponentByClass<USFInventoryComponent>();
@@ -159,7 +200,8 @@ void FSFLootWorkflowNetcheck::Tick(USFLootComponent& Loot)
     auto& State = States.FindOrAdd(&Loot);
     UWorld* World = Player->GetWorld();
     const double Now = World->GetTimeSeconds();
-    if (Now < State.NextAt || State.Stage == 99) return;
+    if (State.Stage == 99) { RestoreOwnCaptureMeshes(State); return; }
+    if (Now < State.NextAt) return;
     State.NextAt = Now + .2;
     if (Player->HasAuthority())
     {
@@ -441,6 +483,7 @@ void FSFLootWorkflowNetcheck::Tick(USFLootComponent& Loot)
     }
     else if (State.Stage == 20 && State.Source.IsValid())
     {
+        if (FParse::Param(FCommandLine::Get(), TEXT("LootWorkflowCapturePair")) && State.CaptureVisibility.IsEmpty()) HideOwnCaptureMeshes(Pawn, State);
         int32 Width = 0, Height = 0; Player->GetViewportSize(Width, Height);
         if (Width < 100 || Height < 100) return;
         Player->SetMouseLocation(Width - 32, 32); State.Stage = 21;
@@ -450,6 +493,7 @@ void FSFLootWorkflowNetcheck::Tick(USFLootComponent& Loot)
         Target->Refresh();
         if (State.Source->Mesh->GetOverlayMaterial())
         { UE_LOG(LogTemp, Error, TEXT("LOOT_WORKFLOW_FAIL GroundUnselectedRimStillSet")); State.Stage = 99; return; }
+        CaptureRenderDiagnostic(State.Source->Mesh, false);
         Capture(Player, TEXT("ground-unselected")); State.Stage = 22;
     }
     else if (State.Stage == 22 && State.Source.IsValid())
@@ -466,10 +510,13 @@ void FSFLootWorkflowNetcheck::Tick(USFLootComponent& Loot)
         if (!CursorOutsideWindows(Stack) || !Stack->IsOpen(Player->InventoryWidget) ||
             Target->GetTarget() != State.Source.Get() || !State.Source->Mesh->GetOverlayMaterial())
         { UE_LOG(LogTemp, Error, TEXT("LOOT_WORKFLOW_FAIL GroundCursor OutsideWindows=%d OwnOpen=%d ExactTarget=%d Rim=%d"), CursorOutsideWindows(Stack), Stack->IsOpen(Player->InventoryWidget), Target->GetTarget() == State.Source.Get(), State.Source->Mesh->GetOverlayMaterial() != nullptr); State.Stage = 99; return; }
+        CaptureRenderDiagnostic(State.Source->Mesh, true);
         Capture(Player, TEXT("ground-selected")); State.Stage = 24;
     }
     else if (State.Stage == 24 && State.Source.IsValid())
     {
+        if (FParse::Param(FCommandLine::Get(), TEXT("LootWorkflowCapturePair")))
+        { State.Stage = 26; State.NextAt = Now + .5; return; } // Let existing Shot requests finish before restoring.
         Target->Refresh();
         if (!CursorOutsideWindows(Stack) || Target->GetTarget() != State.Source.Get())
         { UE_LOG(LogTemp, Error, TEXT("LOOT_WORKFLOW_FAIL GroundCursorChangedBeforeInput")); State.Stage = 99; return; }
@@ -492,6 +539,14 @@ void FSFLootWorkflowNetcheck::Tick(USFLootComponent& Loot)
         { UE_LOG(LogTemp, Error, TEXT("LOOT_WORKFLOW_FAIL GroundNativeActionAttempts Before=%llu After=%llu"), State.GroundInputBefore, Player->GetInteractionInputAttemptCount()); State.Stage = 99; return; }
 #endif
         UE_LOG(LogTemp, Display, TEXT("LOOT_WORKFLOW_GROUND Input=NativeF PressRelease=1 CursorOutsideWindows=1 ControllerAction=1 Mesh=1 Rim=1"));
+    }
+    else if (State.Stage == 26)
+    {
+        const bool bRestored = RestoreOwnCaptureMeshes(State);
+        if (State.OriginalView.IsValid()) Player->SetViewTarget(State.OriginalView.Get());
+        if (State.GroundCamera.IsValid()) State.GroundCamera->Destroy();
+        if (!bRestored) { UE_LOG(LogTemp, Error, TEXT("LOOT_WORKFLOW_FAIL CaptureVisibilityRestore")); State.Stage = 99; Player->ConsoleCommand(TEXT("quit")); return; }
+        UE_LOG(LogTemp, Display, TEXT("LOOT_CAPTURE_PAIR_DONE VisibilityRestored=1 PickupInputSent=0")); State.Stage = 99;
     }
     else if (State.Stage == 13 && CountItem(Player, State.Item) == State.Before + State.Quantity && !State.Source.IsValid())
     {
