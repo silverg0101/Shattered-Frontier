@@ -114,6 +114,45 @@ public:
     float ArmorPenetrationCap = 0.60f;
     UPROPERTY(Config, EditAnywhere, Category="Combat Resolution", meta=(ClampMin="0.0", ClampMax="0.60", DisplayName="Magic penetration cap", ToolTip="Maximum percent resistance ignored; adopted at zone start."))
     float MagicPenetrationCap = 0.60f;
+    // Part 6 realm balance controls. Release formulas/content are in SFCombatPart6.
+    UPROPERTY(Config, EditAnywhere, Category="Combat Part 6", meta=(ClampMin="0", ClampMax="0.15", UIMin="0", UIMax="0.15", DisplayName="Base critical chance", ToolTip="Fraction; realm balance; immediate; tooltip visible."))
+    float CritBase = 0.05f;
+    UPROPERTY(Config, EditAnywhere, Category="Combat Part 6", meta=(ClampMin="0.10", ClampMax="0.40", DisplayName="Block damage removed", ToolTip="Fraction; realm balance; immediate; tooltip visible."))
+    float BlockReduction = 0.30f;
+    UPROPERTY(Config, EditAnywhere, Category="Combat Part 6", meta=(ClampMin="0.50", ClampMax="1.00", DisplayName="Damage at zero skill", ToolTip="Fraction; realm balance; immediate; tooltip visible."))
+    float SkillDamageFloor = 0.80f;
+    UPROPERTY(Config, EditAnywhere, Category="Combat Part 6", meta=(ClampMin="500", ClampMax="10000", DisplayName="Miss skill divisor", ToolTip="Skill points; realm balance; immediate; tooltip visible."))
+    float MissDivisor = 2000.0f;
+    UPROPERTY(Config, EditAnywhere, Category="Combat Part 6", meta=(ClampMin="1.5", ClampMax="4.0", Units="s", DisplayName="Power reference time", ToolTip="Seconds; realm balance; restart; tooltip visible."))
+    float PowerSpeedReferenceSeconds = 2.4f;
+    UPROPERTY(Config, EditAnywhere, Category="Combat Part 6", meta=(ClampMin="0.10", ClampMax="1.00", DisplayName="Unarmed damage factor", ToolTip="Fraction; realm balance; immediate; tooltip visible."))
+    float UnarmedDpsFactor = 0.40f;
+    UPROPERTY(Config, EditAnywhere, Category="Combat Part 6", meta=(ClampMin="0", ClampMax="0.30", DisplayName="Weapon damage spread", ToolTip="Fraction; realm balance; restart; tooltip visible."))
+    float WeaponSpread = 0.15f;
+    UPROPERTY(Config, EditAnywhere, Category="Combat Part 6", meta=(ClampMin="1", ClampMax="10", DisplayName="Weapon damage scale", ToolTip="Points per budget; realm balance; restart; tooltip visible."))
+    float WeaponDpsK = 4.0f;
+    UPROPERTY(Config, EditAnywhere, Category="Combat Part 6", meta=(ClampMin="5", ClampMax="100", DisplayName="Armor scale", ToolTip="Points per budget; realm balance; restart; tooltip visible."))
+    float ArmorK = 30.0f;
+    UPROPERTY(Config, EditAnywhere, Category="Combat Part 6", meta=(ClampMin="0.005", ClampMax="0.080", DisplayName="Beast damage per second", ToolTip="Fraction of reference health per second; realm balance; next spawn; tooltip visible."))
+    float BeastDpsCoefficient = 0.030f;
+    UPROPERTY(Config, EditAnywhere, Category="Combat Part 6", meta=(ClampMin="1.0", ClampMax="3.5", Units="s", DisplayName="Beast swing time", ToolTip="Seconds; realm balance; next spawn; tooltip visible."))
+    float BeastSwingSeconds = 1.6f;
+    UPROPERTY(Config, EditAnywhere, Category="Combat Part 6", meta=(ClampMin="1.0", ClampMax="2.0", DisplayName="NPC critical damage", ToolTip="Multiplier; realm balance; immediate; tooltip visible."))
+    float NpcCritDamage = 1.5f;
+    UPROPERTY(Config, EditAnywhere, Category="Combat Part 6", meta=(ClampMin="0.05", ClampMax="0.40", DisplayName="NPC critical chance cap", ToolTip="Fraction; realm balance; immediate; tooltip visible."))
+    float NpcCritCap = 0.20f;
+    UPROPERTY(Config, EditAnywhere, Category="Combat Part 6", meta=(ClampMin="0", ClampMax="0.15", DisplayName="NPC frontal dodge", ToolTip="Fraction; realm balance; next spawn; tooltip visible."))
+    float NpcDodge = 0.03f;
+    UPROPERTY(Config, EditAnywhere, Category="Combat Part 6", meta=(ClampMin="0", ClampMax="0.15", DisplayName="NPC frontal parry", ToolTip="Fraction; realm balance; next spawn; tooltip visible."))
+    float NpcParry = 0.03f;
+    UPROPERTY(Config, EditAnywhere, Category="Combat Part 6", meta=(ClampMin="0.05", ClampMax="2.0", DisplayName="Medium NPC armor", ToolTip="Coefficient; realm balance; next spawn; tooltip visible."))
+    float NpcMediumArmor = 0.54f;
+    UPROPERTY(Config, EditAnywhere, Category="Combat Part 6", meta=(ClampMin="0.05", ClampMax="2.0", DisplayName="Medium NPC resistance", ToolTip="Coefficient; realm balance; next spawn; tooltip visible."))
+    float NpcMediumResistance = 0.54f;
+    UPROPERTY(Config, EditAnywhere, Category="Development Fixture", meta=(ClampMin="0.5", ClampMax="5", DisplayName="Pilot damage unit", ToolTip="Average hit per pilot point; development fixture only; restart."))
+    float DevPilotDamageUnit = 1.2133f;
+    UPROPERTY(Config, EditAnywhere, Category="Development Fixture", meta=(ClampMin="1", ClampMax="10", DisplayName="Pilot armor unit", ToolTip="Armor per pilot point; development fixture only; restart."))
+    float DevPilotArmorUnit = 3.64f;
     UPROPERTY(Config, EditAnywhere, Category="Pilot Balance", meta=(ClampMin="0.3", ClampMax="5.0", Units="s"))
     float PlayerMeleeCooldownSeconds = 0.8f;
     UPROPERTY(Config, EditAnywhere, Category="Pilot Balance", meta=(ClampMin="0.5", ClampMax="5.0", Units="s"))
@@ -223,6 +262,13 @@ public:
     /** One id per spawned boar, so its death rewards once. */
     FString DeathId() const { return FString::Printf(TEXT("%s:%d:%d"), *SpawnGroup, Slot, SpawnSerial); }
     int32 Health() const { return CurrentHealth; }
+    int32 MaximumHealth() const { return MaximumHealthValue; }
+    double CombatSwingSeconds() const { return CombatSwingSecondsValue; }
+    double CombatSwingDamage() const { return CombatSwingDamageValue; }
+    double CombatArmor() const { return CombatArmorValue; }
+    double CombatResistance() const { return CombatResistanceValue; }
+    double CombatDodge() const { return CombatDodgeValue; }
+    double CombatParry() const { return CombatParryValue; }
     bool IsLeashing() const { return bReturning; }
     bool IsDefensive() const { return bDefensive; }
     FVector SpawnAnchor() const { return Anchor; }
@@ -232,6 +278,10 @@ public:
 private:
     UFUNCTION() void OnRep_Health();
     UPROPERTY(ReplicatedUsing=OnRep_Health) int32 CurrentHealth = 0;
+    UPROPERTY(Replicated) int32 MaximumHealthValue = 0;
+    double CombatSwingSecondsValue = 1.6, CombatSwingDamageValue = 23.5;
+    double CombatArmorValue = 108, CombatResistanceValue = 5.4;
+    double CombatDodgeValue = .03, CombatParryValue = .03;
     UPROPERTY(VisibleAnywhere) TObjectPtr<UStaticMeshComponent> Body;
     UPROPERTY(VisibleAnywhere) TObjectPtr<UTextRenderComponent> Label;
     TWeakObjectPtr<class ASFGameMode> PilotMode;

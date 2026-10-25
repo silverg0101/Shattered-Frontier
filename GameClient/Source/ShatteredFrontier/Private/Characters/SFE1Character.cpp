@@ -25,6 +25,8 @@
 #include "Characters/SFRoadSpeedVolume.h"
 #include "Creatures/SFRestAreaVolume.h"
 #include "Combat/SFCombatPilot.h"
+#include "Combat/SFCombatPart6.h"
+#include "Inventory/SFGear.h"
 #include "Combat/SFCombatEnergy.h"
 #include "Gathering/SFGatheringPilot.h"
 #include "Inventory/SFInventory.h"
@@ -117,9 +119,10 @@ void ASFE1Character::BeginPlay()
         FString EnergyError;
         if (!GetDefault<USFCombatEnergySettings>()->Validate(EnergyError))
         { UE_LOG(LogTemp, Fatal, TEXT("Invalid combat energy configuration: %s"), *EnergyError); }
-        MaxStamina = SFCombatEnergy::MaxStamina(10.f, 10.f);
+        const auto InitialStats = SFCombatPart6::Player(SFCombatPart6::EKit::Fighter, 1);
+        MaxStamina = SFCombatPart6::Active(GetWorld()) ? InitialStats.Stamina : SFCombatEnergy::MaxStamina(10.f, 10.f);
         Stamina = MaxStamina;
-        MaxMana = SFCombatEnergy::MaxMana(10.f, 1);
+        MaxMana = SFCombatPart6::Active(GetWorld()) ? InitialStats.Mana : SFCombatEnergy::MaxMana(10.f, 1);
         Mana = MaxMana;
         NextEnergyTickAt = GetWorld()->GetTimeSeconds() + 1.0;
         EnergyOutOfCombatAt = GetWorld()->GetTimeSeconds() - GetDefault<USFCombatEnergySettings>()->RegenDelaySeconds;
@@ -305,7 +308,7 @@ void ASFE1Character::TickEvadeScenario()
         { Controller->SetControlRotation(ToBoar.Rotation()); return; }
         if (Now >= CombatScenarioNextAttackAt)
         { PilotAttack(); CombatScenarioNextAttackAt = Now + 0.9; }
-        if (Boar->Health() < GetDefault<USFCombatPilotSettings>()->BoarHealth)
+        if (Boar->Health() < Boar->MaximumHealth())
         { EvadeScenarioStage = 1; UE_LOG(LogTemp, Display, TEXT("BOAR_EVADE_AGGRO HP=%d"), Boar->Health()); }
     }
     else if (EvadeScenarioStage == 1)
@@ -316,7 +319,7 @@ void ASFE1Character::TickEvadeScenario()
     else if (EvadeScenarioStage == 2 && Boar->IsLeashing())
     { EvadeScenarioStage = 3; UE_LOG(LogTemp, Display, TEXT("BOAR_EVADE_RETURNING HP=%d Target=%d"), Boar->Health(), CombatTarget == Boar ? 1 : 0); }
     else if (EvadeScenarioStage == 3 && !Boar->IsLeashing() &&
-        Boar->Health() == GetDefault<USFCombatPilotSettings>()->BoarHealth)
+        Boar->Health() == Boar->MaximumHealth())
     { EvadeScenarioStage = 4; UE_LOG(LogTemp, Display, TEXT("BOAR_EVADE_FULL_RESET HP=%d"), Boar->Health()); }
     else if (EvadeScenarioStage == 4)
     {
@@ -326,7 +329,7 @@ void ASFE1Character::TickEvadeScenario()
         Controller->SetControlRotation(ToBoar.Rotation());
         if (Now >= CombatScenarioNextAttackAt)
         { PilotAttack(); CombatScenarioNextAttackAt = Now + 0.9; }
-        if (Boar->Health() < GetDefault<USFCombatPilotSettings>()->BoarHealth)
+        if (Boar->Health() < Boar->MaximumHealth())
         { EvadeScenarioStage = 5; UE_LOG(LogTemp, Display, TEXT("BOAR_EVADE_REENGAGED HP=%d"), Boar->Health()); }
     }
 #endif
@@ -525,7 +528,7 @@ void ASFE1Character::TickRespawnScenario()
     const double Now = GetWorld()->GetTimeSeconds();
     if (RespawnScenarioStage == 0)
     {
-        if (!Boar || Boar->Health() != GetDefault<USFCombatPilotSettings>()->BoarHealth) { return; }
+        if (!Boar || Boar->Health() != Boar->MaximumHealth()) { return; }
         int32 Pawns = 0;
         for (TActorIterator<ASFE1Character> It(GetWorld()); It; ++It) { ++Pawns; }
         if (Pawns < 2) { return; }
@@ -646,7 +649,7 @@ void ASFE1Character::TickMemoryScenario()
                 UE_LOG(LogTemp, Display, TEXT("BOAR_MEMORY_INITIAL_NEUTRAL"));
                 PilotAttack(); CombatScenarioNextAttackAt = Now + 0.9;
             }
-            if (Boar->Health() < GetDefault<USFCombatPilotSettings>()->BoarHealth)
+            if (Boar->Health() < Boar->MaximumHealth())
             { MemoryScenarioStage = 1; UE_LOG(LogTemp, Display, TEXT("BOAR_MEMORY_DAMAGED HP=%d"), Boar->Health()); }
         }
         else if (MemoryScenarioStage == 1)
@@ -655,7 +658,7 @@ void ASFE1Character::TickMemoryScenario()
             else { MemoryScenarioStage = 2; UE_LOG(LogTemp, Display, TEXT("BOAR_MEMORY_LEASH_CROSSED X=%.0f"), GetActorLocation().X); }
         }
         else if (MemoryScenarioStage == 2 && !Boar->IsLeashing() &&
-            Boar->Health() == GetDefault<USFCombatPilotSettings>()->BoarHealth)
+            Boar->Health() == Boar->MaximumHealth())
         { MemoryScenarioStage = 3; MemoryScenarioStartedAt = Now;
           UE_LOG(LogTemp, Display, TEXT("BOAR_MEMORY_FULL_RESET")); }
         else if (MemoryScenarioStage == 3 && Now - MemoryScenarioStartedAt >= 5.0)
@@ -679,10 +682,10 @@ void ASFE1Character::TickMemoryScenario()
         }
         if (MemoryScenarioStage == 1)
         {
-            if (Boar->Health() < GetDefault<USFCombatPilotSettings>()->BoarHealth || Boar->IsLeashing())
+            if (Boar->Health() < Boar->MaximumHealth() || Boar->IsLeashing())
             { bMemorySawCombat = true; }
             if (bMemorySawCombat && !Boar->IsLeashing() &&
-                Boar->Health() == GetDefault<USFCombatPilotSettings>()->BoarHealth)
+                Boar->Health() == Boar->MaximumHealth())
             { MemoryScenarioStage = 2; MemoryScenarioStartedAt = Now; }
         }
         else if (MemoryScenarioStage == 2 && Now - MemoryScenarioStartedAt >= 2.0)
@@ -732,7 +735,7 @@ void ASFE1Character::TickRegenScenario()
             int32 Players = 0;
             for (TActorIterator<ASFE1Character> It(GetWorld()); It; ++It) { ++Players; }
             if (Players < 2) { return; }
-            if (PilotHealth < GetDefault<USFCombatPilotSettings>()->PlayerHealth)
+            if (PilotHealth < CombatMaximumHealth())
             { RegenScenarioStage = 1; UE_LOG(LogTemp, Display, TEXT("REGEN_DRIVER_HURT Health=%d"), PilotHealth); }
             else { AddMovementInput((Boar->GetActorLocation() - GetActorLocation()).GetSafeNormal2D(), 1.0f); }
         }
@@ -1160,7 +1163,7 @@ void ASFE1Character::TickGreenlandsEnvironmentScenario()
     if (SwimScenarioStage == 1 && GetActorLocation().X <= 51500.0 &&
         !GetCharacterMovement()->IsSwimming())
     { SwimScenarioStage = 2; UE_LOG(LogTemp, Display, TEXT("GREENLANDS_ENV_COMPLETE")); return; }
-    if (CombatHealth() >= GetDefault<USFCombatPilotSettings>()->PlayerHealth || CombatHealth() <= 0) { return; }
+    if (CombatHealth() >= CombatMaximumHealth() || CombatHealth() <= 0) { return; }
     if (SwimScenarioStage == 0 && GetActorLocation().X >= 56000.0) { SwimScenarioStage = 1; }
     AddMovementInput(SwimScenarioStage == 1 ? -FVector::ForwardVector : FVector::ForwardVector, 1.0f);
 #endif
@@ -1467,7 +1470,14 @@ void ASFE1Character::Tick(float DeltaSeconds)
                 if (ASFGameMode* Mode = GetWorld()->GetAuthGameMode<ASFGameMode>())
                 {
                     Mode->TryPlayerAttack(this, Boar);
-                    NextAutoSwingAt = Now + SFAutoAttackRules::UnarmedSwingSeconds;
+                    double SwingSeconds = SFAutoAttackRules::UnarmedSwingSeconds;
+                    if (SFCombatPart6::Active(GetWorld()))
+                    {
+                        const auto Gear = SFGear::CombatEquipment(GetController(),
+                            GetDefault<USFCombatPilotSettings>()->DevPilotArmorUnit);
+                        if (Gear.Weapon.bEquipped) { SwingSeconds = Gear.Weapon.SpeedSeconds; }
+                    }
+                    NextAutoSwingAt = Now + SwingSeconds;
                     UE_LOG(LogTemp, Display, TEXT("AUTO_ATTACK_SERVER_SWING T=%.2f Target=%s Health=%d"),
                         Now, *GetNameSafe(Boar), Boar->Health());
                 }
@@ -1520,9 +1530,9 @@ void ASFE1Character::Tick(float DeltaSeconds)
         const bool bWasInCombat = PilotRegen.bInCombat;
         const bool bRestRegenSandbox = CombatMap == TEXT("/Game/Frontier/Maps/Sandbox/SB_RestRegen");
         const bool bAtRestArea = ASFRestAreaVolume::IsAtRestArea(GetWorld(), GetActorLocation());
-        // The pilot has no attribute snapshot yet; use the authored minimum until attributes are integrated.
+        // Live Greenlands uses the Part 6 server fallback; sandboxes retain the pilot minimum.
         const int32 Regenerated = PilotRegen.Advance(GetWorld()->GetTimeSeconds(), bThreatened,
-            PilotHealth, Settings->PlayerHealth, 10, Settings->CombatExitSeconds,
+            PilotHealth, CombatMaximumHealth(), CombatConstitution(), Settings->CombatExitSeconds,
             Settings->RegenDelaySeconds, Settings->HealthRegenOocPct, bAtRestArea);
         if (bWasInCombat != PilotRegen.bInCombat)
         {
@@ -2094,6 +2104,38 @@ int32 ASFE1Character::CombatCharacterLevel() const
     return Progression ? Progression->GetCharacterLevel() : 1;
 }
 
+int32 ASFE1Character::CombatMaximumHealth() const
+{
+    return SFCombatPart6::Active(GetWorld()) ?
+        SFCombatPart6::Player(SFCombatPart6::EKit::Fighter, CombatCharacterLevel()).Health :
+        GetDefault<USFCombatPilotSettings>()->PlayerHealth;
+}
+
+int32 ASFE1Character::CombatConstitution() const
+{ return SFCombatPart6::Active(GetWorld()) ?
+    SFCombatPart6::Player(SFCombatPart6::EKit::Fighter, CombatCharacterLevel()).Constitution : 10; }
+
+double ASFE1Character::CombatResistance() const
+{ return SFCombatPart6::Player(SFCombatPart6::EKit::Fighter, CombatCharacterLevel()).Resistance; }
+
+double ASFE1Character::CombatAbsorb() const
+{ return GetWorld() && GetWorld()->GetTimeSeconds() < CombatAbsorbExpiresAt ? CombatAbsorbRemaining : 0.0; }
+
+void ASFE1Character::GrantCombatAbsorb(double Amount, double DurationSeconds)
+{
+    if (!HasAuthority() || !FMath::IsFinite(Amount) || !FMath::IsWithinInclusive(DurationSeconds, 0.0, 30.0)) return;
+    CombatAbsorbRemaining = FMath::Max(0.0, Amount);
+    CombatAbsorbExpiresAt = GetWorld()->GetTimeSeconds() + DurationSeconds;
+    ForceNetUpdate();
+}
+
+void ASFE1Character::ConsumeCombatAbsorb(double Amount)
+{
+    if (!HasAuthority()) return;
+    CombatAbsorbRemaining = FMath::Max(0.0, CombatAbsorbRemaining - FMath::Max(0.0, Amount));
+    ForceNetUpdate();
+}
+
 bool ASFE1Character::SpendStaminaFraction(float Fraction)
 {
     if (!HasAuthority() || PilotHealth <= 0) { return false; }
@@ -2149,8 +2191,21 @@ void ASFE1Character::ServerSetSprintIntent_Implementation(bool bEnable)
 void ASFE1Character::TickEnergy()
 {
     const double Now = GetWorld()->GetTimeSeconds();
+    if (CombatAbsorbRemaining > 0 && Now >= CombatAbsorbExpiresAt)
+    { CombatAbsorbRemaining = 0; ForceNetUpdate(); }
     const USFCombatEnergySettings* Tune = GetDefault<USFCombatEnergySettings>();
-    const float NewMaxMana = SFCombatEnergy::MaxMana(10.f, CombatCharacterLevel());
+    const auto CurrentStats = SFCombatPart6::Player(SFCombatPart6::EKit::Fighter, CombatCharacterLevel());
+    if (SFCombatPart6::Active(GetWorld()) && PilotHealth > 0 && CombatHealthLevel != CurrentStats.Level)
+    {
+        const int32 OldMaximum = SFCombatPart6::Player(SFCombatPart6::EKit::Fighter, CombatHealthLevel).Health;
+        CombatSetHealth(FMath::Clamp(PilotHealth + CurrentStats.Health - OldMaximum, 1, CurrentStats.Health));
+        CombatHealthLevel = CurrentStats.Level;
+    }
+    const float NewMaxMana = SFCombatPart6::Active(GetWorld()) ? CurrentStats.Mana :
+        SFCombatEnergy::MaxMana(10.f, CombatCharacterLevel());
+    const float NewMaxStamina = SFCombatPart6::Active(GetWorld()) ? CurrentStats.Stamina : MaxStamina;
+    if (NewMaxStamina != MaxStamina)
+    { Stamina = FMath::Min(Stamina + NewMaxStamina - MaxStamina, NewMaxStamina); MaxStamina = NewMaxStamina; ForceNetUpdate(); }
     if (NewMaxMana != MaxMana)
     { Mana = MaxMana > 0 ? FMath::Clamp(Mana * NewMaxMana / MaxMana, 0.f, NewMaxMana) : NewMaxMana;
       MaxMana = NewMaxMana; ForceNetUpdate(); }
@@ -2188,6 +2243,7 @@ void ASFE1Character::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
     DOREPLIFETIME(ASFE1Character, PilotHealth);
+    DOREPLIFETIME_CONDITION(ASFE1Character, CombatAbsorbRemaining, COND_OwnerOnly);
     DOREPLIFETIME_CONDITION(ASFE1Character, ResurrectionOfferId, COND_OwnerOnly);
     DOREPLIFETIME_CONDITION(ASFE1Character, ResurrectionOfferDeathEventId, COND_OwnerOnly);
     DOREPLIFETIME(ASFE1Character, bPilotInCombat);
@@ -2256,6 +2312,7 @@ void ASFE1Character::CombatSetHealth(int32 Value)
         if (Value < PilotHealth) { CombatMarkHostile(); }
         if (Value < PilotHealth && Casting) { Casting->NotifyDamage(); }
         PilotHealth = Value;
+        if (Value <= 0) { CombatAbsorbRemaining = 0; CombatAbsorbExpiresAt = 0; }
         if (Value > 0 && ResurrectionOfferId != 0) { ClearResurrectionOffer(); }
         if (Value <= 0) { SetCombatTarget(nullptr); }
         ForceNetUpdate();
@@ -2408,7 +2465,7 @@ void ASFE1Character::TickSpiritReleaseScenario()
     if (ScenarioRole == TEXT("Observer") && SpiritReleaseScenarioStage == 1)
     { SpiritReleaseScenarioStage = 2; }
     if (ScenarioRole == TEXT("Driver") && SpiritReleaseScenarioStage == 2 &&
-        Boar->Health() == GetDefault<USFCombatPilotSettings>()->BoarHealth && Now >= SpiritReleaseScenarioAt)
+        Boar->Health() == Boar->MaximumHealth() && Now >= SpiritReleaseScenarioAt)
     {
         PilotAttack();
         SpiritReleaseScenarioAt = Now + 1.0;
@@ -2494,7 +2551,7 @@ void ASFE1Character::TickResurrectionAcceptScenario()
     if (ScenarioRole == TEXT("Observer") && ResurrectionAcceptScenarioStage == 1)
     { ResurrectionAcceptScenarioStage = 2; }
     if (ScenarioRole == TEXT("Driver") && ResurrectionAcceptScenarioStage == 2 &&
-        Boar->Health() == GetDefault<USFCombatPilotSettings>()->BoarHealth && Now >= ResurrectionAcceptScenarioAt)
+        Boar->Health() == Boar->MaximumHealth() && Now >= ResurrectionAcceptScenarioAt)
     { PilotAttack(); ResurrectionAcceptScenarioAt = Now + 1.0; }
     if (ResurrectionAcceptScenarioStage == 2 && Subject->CombatHealth() == 0)
     {

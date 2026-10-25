@@ -49,6 +49,7 @@ namespace SFCombatResolution
     {
         EOutcome Outcome = EOutcome::Hit;
         int32 Damage = 0;
+        double Absorbed = 0;
     };
 
     inline FResult Resolve(const FAttack& Attack, const FDraws& Draws)
@@ -99,11 +100,12 @@ namespace SFCombatResolution
             Draws.Block < FMath::Clamp(Attack.BlockChance, 0.0, Attack.BlockCap);
         if (bBlock) { Damage *= 1.0 - FMath::Clamp(Attack.BlockReduction, 0.0, Attack.BlockReductionCap); }
         Damage *= FMath::Clamp(Attack.DamageTakenMultiplier, 0.10, 2.0);
+        const double Absorbed = FMath::Min(Damage, FMath::Max(0.0, Attack.Absorb));
         const bool bFullyAbsorbed = Damage > 0 && Attack.Absorb >= Damage;
         Damage = FMath::Max(0.0, Damage - FMath::Max(0.0, Attack.Absorb));
         const int32 Rounded = bFullyAbsorbed ? 0 : (Damage > 0 ? FMath::Max(1, FMath::FloorToInt(Damage + 0.5)) : 0);
         return { bFullyAbsorbed ? EOutcome::Absorb : bBlock ? (bCrit ? EOutcome::CritBlock : EOutcome::Block) :
-            bCrit ? EOutcome::Crit : EOutcome::Hit, Rounded };
+            bCrit ? EOutcome::Crit : EOutcome::Hit, Rounded, Absorbed };
     }
 
     inline const TCHAR* Name(EOutcome Outcome)

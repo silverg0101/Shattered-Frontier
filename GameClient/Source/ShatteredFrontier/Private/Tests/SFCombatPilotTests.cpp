@@ -4,6 +4,7 @@
 #include "Combat/SFAutoAttackRules.h"
 #include "Combat/SFBoarDodgeRules.h"
 #include "Combat/SFCombatResolution.h"
+#include "Combat/SFCombatPart6.h"
 #include "Characters/SFE1Character.h"
 #include "Services/SFGameplayServicesClient.h"
 #include "GameFramework/PlayerController.h"
@@ -79,6 +80,75 @@ bool FSFCombatResolutionTest::RunTest(const FString& Parameters)
     TestEqual(TEXT("Spread changes weapon portion, not power portion"), Resolve(Unbound, SpreadDraws).Damage, 106);
     Unbound.bHasSpread = false; Unbound.RawDamage = 14; Unbound.PilotFlatArmor = 5;
     TestEqual(TEXT("Starter gear flat armor preserves boar damage"), Resolve(Unbound, FDraws{}).Damage, 9);
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFCombatPart6Test,
+    "ShatteredFrontier.Combat.Resolution.Part6OutcomesAndFight",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+
+bool FSFCombatPart6Test::RunTest(const FString& Parameters)
+{
+    using namespace SFCombatPart6;
+    using namespace SFCombatResolution;
+    const auto* Tune = GetDefault<USFCombatPilotSettings>();
+    FString Error;
+    TestTrue(TEXT("Part 6 controls stay within bounds"), Tune->Validate(Error));
+    const FStats Fighter = Player(EKit::Fighter, 2, Tune->CritBase, Tune->SkillDamageFloor);
+    const FStats Guardian = Player(EKit::Guardian, 2);
+    const FStats Mage = Player(EKit::Mage, 2);
+    TestEqual(TEXT("Fighter level 2 health"), Fighter.Health, 540);
+    TestTrue(TEXT("Guardian has higher health"), Guardian.Health > Fighter.Health);
+    TestTrue(TEXT("Mage has higher spell power"), Mage.Intelligence > Fighter.Intelligence);
+    const FNpc Boar = Npc(TEXT("npc/boar"));
+    TestEqual(TEXT("Boar authored health"), Boar.Health, 489);
+    TestEqual(TEXT("Wolf alpha authored health"), Npc(TEXT("npc/wolf_alpha")).Health, 1779);
+    const auto* Pommel = Ability(TEXT("pommel_strike"));
+    const auto* Ward = Ability(TEXT("arcane_ward"));
+    TestTrue(TEXT("Published pommel coefficient is authored"), Pommel &&
+        FMath::IsNearlyEqual(Pommel->Modifier, .3) && FMath::IsNearlyEqual(Pommel->ReferenceSeconds, .5));
+    TestTrue(TEXT("Arcane ward is a non-critical absorb"), Ward && Ward->bAbsorb &&
+        !AuthoredAbility(Mage, ReferenceWeapon(2, 3.4, .7, 1.35), *Ward, .15).bCanCrit);
+    FAttack PlayerHit = PlayerAuto(Fighter, ReferenceWeapon(2), Tune->WeaponSpread,
+        Tune->PowerSpeedReferenceSeconds, Tune->UnarmedDpsFactor, Tune->WeaponDpsK);
+    PlayerHit.bHasArmorSnapshot = true; PlayerHit.Armor = Boar.Armor;
+    FDraws Rolls{.5, .5, .5, .5, 0};
+    const int32 Low = Resolve(PlayerHit, Rolls).Damage;
+    Rolls.Spread = 1;
+    const int32 High = Resolve(PlayerHit, Rolls).Damage;
+    TestTrue(TEXT("Weapon-only spread reaches the resolver"), High > Low);
+    PlayerHit.bHasArmorSnapshot = false;
+    TestTrue(TEXT("Boar armor mitigates the same swing"), Resolve(PlayerHit, Rolls).Damage > High);
+    FAttack BoarHit; BoarHit.RawDamage = Boar.SwingDamage; BoarHit.AttackerLevel = Boar.Level;
+    BoarHit.bHasArmorSnapshot = true; BoarHit.Armor = 64;
+    BoarHit.bFrontArc = true; BoarHit.bCanBlock = true;
+    BoarHit.BlockChance = .10; BoarHit.BlockReduction = Tune->BlockReduction;
+    Rolls = {.5, .5, .5, .5, .5};
+    const int32 Open = Resolve(BoarHit, Rolls).Damage;
+    Rolls.Block = .05;
+    const FResult Blocked = Resolve(BoarHit, Rolls);
+    TestEqual(TEXT("Shield block outcome"), Blocked.Outcome, EOutcome::Block);
+    TestTrue(TEXT("Shield removes post-mitigation damage"), Blocked.Damage < Open);
+    BoarHit.Absorb = 100;
+    const FResult Absorbed = Resolve(BoarHit, Rolls);
+    TestEqual(TEXT("Ward fully absorbs the blocked hit"), Absorbed.Outcome, EOutcome::Absorb);
+    TestTrue(TEXT("Absorbed amount is available for pool consumption"), Absorbed.Absorbed > 0);
+    TestEqual(TEXT("Fully absorbed hit deals zero"), Absorbed.Damage, 0);
+    // Reference auto + filler throughput: expected crit and the NPC's 6% frontal
+    // avoidance. This is the Part 6 design fight, not a live AI timing assertion.
+    const double Mitigation = 1.0 - Boar.Armor / (Boar.Armor + 100.0 * Fighter.Level);
+    const double Auto = PlayerHit.RawDamage;
+    const double Strike = (ReferenceWeapon(2).Dps * 1.5 + 2.0 * Fighter.Strength *
+        1.5 / Tune->PowerSpeedReferenceSeconds) * .7 * Throughput(2) * Fighter.SkillMultiplier;
+    const double Dps = (Auto / 2.0 + Strike / 1.5) * Mitigation * .94 * (1.0 + Fighter.CritChance);
+    const double Seconds = Boar.Health / Dps;
+    const double NpcDps = Boar.SwingDamage / Boar.SwingSeconds *
+        (1.0 - 64.0 / (64.0 + 100.0 * Boar.Level)) *
+        (1.0 + Boar.CritChance * (Boar.CritDamage - 1.0)) *
+        (1.0 - FMath::Clamp((100.0 - Boar.Skill) / Tune->MissDivisor, 0.0, .30));
+    const double Remaining = 1.0 - Seconds * NpcDps / Fighter.Health;
+    TestTrue(TEXT("Fighter L2 versus boar is about 36 seconds"), FMath::Abs(Seconds - 36.0) <= 5.0);
+    TestTrue(TEXT("Fighter finishes near 27 percent health"), FMath::Abs(Remaining - .27) <= .10);
     return true;
 }
 

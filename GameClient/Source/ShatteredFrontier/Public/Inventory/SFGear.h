@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Combat/SFCombatPart6.h"
 
 class AActor;
 
@@ -15,6 +16,15 @@ struct FSFGearStats
 
 namespace SFGear
 {
+    struct FCombatEquipment
+    {
+        SFCombatPart6::FWeapon Weapon;
+        double Armor = 0;
+        bool bShield = false;
+    };
+    // Server equipment snapshot. The five authored weapon lines are release content;
+    // legacy armor points use Part 6's development conversion until design armor ships.
+    SHATTEREDFRONTIER_API FCombatEquipment CombatEquipment(const AActor* Owner, double PilotArmorUnit);
     // Base definition id -> stats, loaded once from content/items/gear_greenlands_starter.json.
     SHATTEREDFRONTIER_API const TMap<FString, FSFGearStats>& Shipped();
     // Graded ids ("item/hide_cap/fine") share their base item's stats. Null for non-gear (tools, materials).

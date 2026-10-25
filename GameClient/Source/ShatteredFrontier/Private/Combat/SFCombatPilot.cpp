@@ -7,6 +7,7 @@
 #include "Combat/SFFallDamage.h"
 #include "Combat/SFTauntRules.h"
 #include "Combat/SFBoarDodgeRules.h"
+#include "Combat/SFCombatPart6.h"
 #include "Inventory/SFGear.h"
 #include "Framework/SFGameMode.h"
 #include "Combat/SFCombatPilotRewards.h"
@@ -236,6 +237,26 @@ bool USFCombatPilotSettings::Validate(FString& Error) const
         !FMath::IsWithinInclusive(ResistReductionCap, 0.0f, 0.75f) ||
         !FMath::IsWithinInclusive(ArmorPenetrationCap, 0.0f, 0.60f) ||
         !FMath::IsWithinInclusive(MagicPenetrationCap, 0.0f, 0.60f) ||
+        !FMath::IsWithinInclusive(CritBase, 0.0f, 0.15f) ||
+        !FMath::IsWithinInclusive(BlockReduction, 0.10f, 0.40f) ||
+        !FMath::IsWithinInclusive(SkillDamageFloor, 0.50f, 1.00f) ||
+        !FMath::IsWithinInclusive(MissDivisor, 500.0f, 10000.0f) ||
+        !FMath::IsWithinInclusive(PowerSpeedReferenceSeconds, 1.5f, 4.0f) ||
+        !FMath::IsWithinInclusive(UnarmedDpsFactor, 0.10f, 1.00f) ||
+        !FMath::IsWithinInclusive(WeaponSpread, 0.0f, 0.30f) ||
+        !FMath::IsWithinInclusive(WeaponDpsK, 1.0f, 10.0f) ||
+        !FMath::IsWithinInclusive(ArmorK, 5.0f, 100.0f) ||
+        !FMath::IsWithinInclusive(BeastDpsCoefficient, 0.005f, 0.080f) ||
+        !FMath::IsWithinInclusive(BeastSwingSeconds, 1.0f, 3.5f) ||
+        !FMath::IsWithinInclusive(NpcCritDamage, 1.0f, 2.0f) ||
+        !FMath::IsWithinInclusive(NpcCritCap, 0.05f, 0.40f) ||
+        !FMath::IsWithinInclusive(NpcDodge, 0.0f, 0.15f) ||
+        !FMath::IsWithinInclusive(NpcParry, 0.0f, 0.15f) ||
+        NpcDodge + NpcParry > AvoidanceCap ||
+        !FMath::IsWithinInclusive(NpcMediumArmor, 0.05f, 2.0f) ||
+        !FMath::IsWithinInclusive(NpcMediumResistance, 0.05f, 2.0f) ||
+        !FMath::IsWithinInclusive(DevPilotDamageUnit, 0.5f, 5.0f) ||
+        !FMath::IsWithinInclusive(DevPilotArmorUnit, 1.0f, 10.0f) ||
         !FMath::IsWithinInclusive(PlayerMeleeCooldownSeconds, 0.3f, 5.0f) ||
         !FMath::IsWithinInclusive(BoarMeleeCooldownSeconds, 0.5f, 5.0f) ||
         !FMath::IsWithinInclusive(MeleeRangeMetres, 1.0f, 5.0f) ||
@@ -307,6 +328,7 @@ void ASFPilotBoar::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
     DOREPLIFETIME(ASFPilotBoar, CurrentHealth);
+    DOREPLIFETIME(ASFPilotBoar, MaximumHealthValue);
     DOREPLIFETIME(ASFPilotBoar, SpawnGroup);
     DOREPLIFETIME(ASFPilotBoar, CreatureId);
     DOREPLIFETIME(ASFPilotBoar, Slot);
@@ -328,7 +350,18 @@ void ASFPilotBoar::Initialize(ASFGameMode* OwnerMode, const FString& Group, int3
     check(HasAuthority());
     PilotMode = OwnerMode; SpawnGroup = Group; Slot = InSlot; Territory = Area; SpawnSerial = Serial;
     bDefensive = bInDefensive;
-    Anchor = GetActorLocation(); AnchorFacing = GetActorRotation(); CurrentHealth = Health; OnRep_Health();
+    Anchor = GetActorLocation(); AnchorFacing = GetActorRotation(); CurrentHealth = Health; MaximumHealthValue = Health; OnRep_Health();
+    if (SFCombatPart6::Active(GetWorld()) && OwnerMode)
+    {
+        const auto* Tune = OwnerMode->CombatSettings();
+        const auto Npc = SFCombatPart6::Npc(CreatureId);
+        CombatSwingSecondsValue = Tune->BeastSwingSeconds;
+        CombatSwingDamageValue = Npc.Health * Tune->BeastDpsCoefficient * CombatSwingSecondsValue;
+        CombatArmorValue = Tune->NpcMediumArmor * 100.0 * Npc.Level;
+        CombatResistanceValue = Tune->NpcMediumResistance * 5.0 * Npc.Level;
+        CombatDodgeValue = Tune->NpcDodge;
+        CombatParryValue = Tune->NpcParry;
+    }
     LastDamageAt = GetWorld()->GetTimeSeconds();
     Threat.Clear(); ThreatActors.Empty(); OutsideLeashSince.Empty(); TargetCharacterId.Empty(); ForcedTauntId.Empty(); ForcedTauntUntil = 0;
     LastTauntAt = -1; TauntApplications = 0;
@@ -481,7 +514,7 @@ void ASFPilotBoar::Tick(float DeltaSeconds)
     {
         SetActorLocation(Anchor, false);
         SetActorRotation(AnchorFacing);
-        CurrentHealth = Mode->CombatSettings()->BoarHealth;
+        CurrentHealth = MaximumHealthValue;
         RecentAttackers.RecordReset(PendingResetAttackers, Now);
         const int32 RememberedCount = PendingResetAttackers.Num();
         PendingResetAttackers.Empty();
@@ -635,7 +668,8 @@ void ASFPilotBoar::Tick(float DeltaSeconds)
     {
         Destination = Victim->GetActorLocation(); Speed = Mode->CombatSettings()->BoarChaseSpeedMetresPerSecond*100;
         if (FVector::Dist2D(GetActorLocation(), Destination) <= Mode->CombatSettings()->MeleeRangeMetres * 100 && Now >= NextSwingAt)
-        { NextSwingAt = Now + Mode->CombatSettings()->BoarMeleeCooldownSeconds; Mode->TryBoarAttack(this, Victim); LastDamageAt = Now; UnreachableSince = -1; }
+        { NextSwingAt = Now + (SFCombatPart6::Active(GetWorld()) ? CombatSwingSecondsValue : Mode->CombatSettings()->BoarMeleeCooldownSeconds);
+          Mode->TryBoarAttack(this, Victim); LastDamageAt = Now; UnreachableSince = -1; }
     }
     else if (bReturning)
     { Destination = Anchor; Speed = SFCombatPilotRules::EvadeReturnSpeedCmPerSecond(
@@ -997,7 +1031,7 @@ void ASFGameMode::PostLoginCombat(APlayerController* NewPlayer)
 void ASFGameMode::RestartCombat(AController* NewPlayer)
 {
     if (bPilotActive)
-    { if (auto* Player = Cast<ASFE1Character>(NewPlayer ? NewPlayer->GetPawn() : nullptr)) Player->CombatSetHealth(CapturedSettings->PlayerHealth); }
+    { if (auto* Player = Cast<ASFE1Character>(NewPlayer ? NewPlayer->GetPawn() : nullptr)) Player->CombatSetHealth(Player->CombatMaximumHealth()); }
 }
 
 void ASFGameMode::TickCombat()
@@ -1357,7 +1391,7 @@ void ASFGameMode::TickGreenlandsNetcheck()
         Stage(5);
     }
     else if (GreenlandsNetcheckStage == 5 && !Lead->IsLeashing() && !Mate->IsLeashing() &&
-        Lead->Health() == CapturedSettings->BoarHealth && Mate->Health() == CapturedSettings->BoarHealth)
+        Lead->Health() == Lead->MaximumHealth() && Mate->Health() == Mate->MaximumHealth())
     {
         GreenlandsRegenHealth = FMath::Min(60, Observer->CombatHealth() - 1);
         Observer->CombatSetHealth(GreenlandsRegenHealth);
@@ -1430,7 +1464,7 @@ void ASFGameMode::TickGreenlandsNetcheck()
     else if (GreenlandsNetcheckStage == 10)
     {
         ASFPilotBoar* Fresh = ActiveBoars.FindRef(FString::Printf(TEXT("boar_farm_edge:%d"), GreenlandsLeadSlot)).Get();
-        if (Fresh && Fresh != Lead && Fresh->Health() == CapturedSettings->BoarHealth)
+        if (Fresh && Fresh != Lead && Fresh->Health() == Fresh->MaximumHealth())
         {
             Stage(11);
             UE_LOG(LogTemp, Display, TEXT("BOAR_GREENLANDS_RESPAWN LeadSlot=%d HP=%d"), GreenlandsLeadSlot, Fresh->Health());
@@ -1526,7 +1560,8 @@ void ASFGameMode::SpawnSlot(const FString& Group, int32 Slot, int32 Cycle, const
     // Each four-point clearing has two sight-aggressive and two defensive boars.
     // Defensive packmates join through the common assist rule, then remember actual attackers.
     const int32 PointOrdinal = FCString::Atoi(*PointId.Right(2));
-    Boar->Initialize(this, Group, Slot, Groups[Group].Polygon, CapturedSettings->BoarHealth,
+    Boar->Initialize(this, Group, Slot, Groups[Group].Polygon,
+        SFCombatPart6::Active(GetWorld()) ? SFCombatPart6::Npc(TEXT("npc/boar")).Health : CapturedSettings->BoarHealth,
         ++NextBoarSerial, PointOrdinal % 4 >= 2);
     ActiveBoars.Add(Key, Boar);
     UE_LOG(LogTemp, Display, TEXT("COMBAT_PILOT_BOAR_SPAWN Group=%s Slot=%d Cycle=%d Point=%s"), *Group, Slot, Cycle, *PointId);
@@ -1607,9 +1642,31 @@ void ASFGameMode::TryPlayerAttack(ASFE1Character* Attacker, AActor* SelectedTarg
         Best = *It; BestDistance = Distance;
     }
     if (!Best) { return; }
-    PlayerNextSwing.Add(Attacker, Now + CapturedSettings->PlayerMeleeCooldownSeconds);
+    const bool bPart6 = SFCombatPart6::Active(GetWorld());
+    const SFGear::FCombatEquipment Equipment = bPart6 ?
+        SFGear::CombatEquipment(Attacker->GetController(), CapturedSettings->DevPilotArmorUnit) :
+        SFGear::FCombatEquipment();
+    PlayerNextSwing.Add(Attacker, Now + (bPart6 ?
+        (Equipment.Weapon.bEquipped ? Equipment.Weapon.SpeedSeconds : 2.0) :
+        CapturedSettings->PlayerMeleeCooldownSeconds));
     SFCombatResolution::FAttack Attack;
-    Attack.RawDamage = CapturedSettings->PlayerMeleeDamage + SFGear::Equipped(Attacker->GetController()).Damage;
+    if (bPart6)
+    {
+        const auto Stats = SFCombatPart6::Player(SFCombatPart6::EKit::Fighter,
+            Attacker->CombatCharacterLevel(), CapturedSettings->CritBase, CapturedSettings->SkillDamageFloor);
+        Attack = SFCombatPart6::PlayerAuto(Stats, Equipment.Weapon,
+            CapturedSettings->WeaponSpread, CapturedSettings->PowerSpeedReferenceSeconds,
+            CapturedSettings->UnarmedDpsFactor, CapturedSettings->WeaponDpsK);
+        const auto Npc = SFCombatPart6::Npc(Best->GetCreatureId());
+        Attack.bCanMiss = true;
+        Attack.MissChance = FMath::Clamp((Npc.Skill - (Stats.Skill + .10 * Stats.Tactics)) /
+            CapturedSettings->MissDivisor, 0.0, double(CapturedSettings->MissCap));
+        Attack.bHasArmorSnapshot = true;
+        Attack.Armor = Best->CombatArmor();
+        Attack.bHasResistanceSnapshot = true;
+        Attack.Resistance = Best->CombatResistance();
+    }
+    else { Attack.RawDamage = CapturedSettings->PlayerMeleeDamage + SFGear::Equipped(Attacker->GetController()).Damage; }
     Attack.bFrontArc = SFBoarDodgeRules::IsInFrontArc(Best->GetActorForwardVector(),
         Attacker->GetActorLocation() - Best->GetActorLocation(), CapturedSettings->FrontArcDegrees);
     const FString Map = GetWorld()->GetOutermost()->GetName();
@@ -1617,8 +1674,8 @@ void ASFGameMode::TryPlayerAttack(ASFE1Character* Attacker, AActor* SelectedTarg
         Map == TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook");
     Attack.bCanDodge = bBoarAvoidance && Attack.bFrontArc;
     Attack.bCanParry = bBoarAvoidance && Attack.bFrontArc;
-    Attack.DodgeChance = CapturedSettings->BoarDodgeChance;
-    Attack.ParryChance = CapturedSettings->BoarParryChance;
+    Attack.DodgeChance = bPart6 ? Best->CombatDodge() : CapturedSettings->BoarDodgeChance;
+    Attack.ParryChance = bPart6 ? Best->CombatParry() : CapturedSettings->BoarParryChance;
     double FixtureDraw = -1;
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     if (FParse::Param(FCommandLine::Get(), TEXT("DodgeScenario")) ||
@@ -1682,18 +1739,44 @@ void ASFGameMode::TryBoarAttack(ASFPilotBoar* Boar, ASFE1Character* Victim)
         IsSafe(Victim->GetActorLocation()) ||
         FVector::Dist2D(Boar->GetActorLocation(), Victim->GetActorLocation()) > CapturedSettings->MeleeRangeMetres*100) return;
     SFCombatResolution::FAttack Attack;
-    Attack.RawDamage = CapturedSettings->BoarMeleeDamage;
+    const bool bPart6 = SFCombatPart6::Active(GetWorld());
+    if (bPart6)
+    {
+        const auto Npc = SFCombatPart6::Npc(Boar->GetCreatureId());
+        const auto Defender = SFCombatPart6::Player(SFCombatPart6::EKit::Fighter,
+            Victim->CombatCharacterLevel(), CapturedSettings->CritBase, CapturedSettings->SkillDamageFloor);
+        const auto Equipment = SFGear::CombatEquipment(Victim->GetController(), CapturedSettings->DevPilotArmorUnit);
+        Attack.RawDamage = Boar->CombatSwingDamage();
+        Attack.AttackerLevel = Npc.Level;
+        Attack.bCanMiss = true;
+        Attack.MissChance = FMath::Clamp((Defender.Skill - Npc.Skill) / CapturedSettings->MissDivisor,
+            0.0, double(CapturedSettings->MissCap));
+        Attack.bCanCrit = true;
+        Attack.CritChance = FMath::Min(double(CapturedSettings->NpcCritCap), Npc.CritChance);
+        Attack.CritDamage = CapturedSettings->NpcCritDamage;
+        Attack.bHasArmorSnapshot = true;
+        Attack.Armor = Equipment.Armor;
+        Attack.bHasResistanceSnapshot = true;
+        Attack.Resistance = Defender.Resistance;
+        Attack.bCanBlock = Equipment.bShield;
+        Attack.BlockChance = Equipment.bShield ? .10 : 0;
+        Attack.BlockReduction = FMath::Min(.40, double(CapturedSettings->BlockReduction) +
+            FMath::Min(.10, FMath::Max(0, Defender.Strength - 10) / 4000.0));
+        Attack.Absorb = Victim->CombatAbsorb();
+    }
+    else { Attack.RawDamage = CapturedSettings->BoarMeleeDamage; }
     Attack.bFrontArc = SFBoarDodgeRules::IsInFrontArc(Victim->GetActorForwardVector(),
         Boar->GetActorLocation() - Victim->GetActorLocation(), CapturedSettings->FrontArcDegrees);
-    Attack.PilotFlatArmor = SFGear::Equipped(Victim->GetController()).Armor;
+    if (!bPart6) { Attack.PilotFlatArmor = SFGear::Equipped(Victim->GetController()).Armor; }
     const auto Result = ResolveCombatAttack(Boar, Attack);
+    if (Result.Absorbed > 0) { Victim->ConsumeCombatAbsorb(Result.Absorbed); }
     if (Result.Damage > 0) { HitPlayer(Boar, Victim, Result.Damage, true); }
 }
 
 void ASFGameMode::ApplyFallDamage(ASFE1Character* Victim, float ImpactSpeedMps)
 {
     if (!bPilotActive || !CapturedSettings || !IsValid(Victim) || !Victim->HasAuthority()) { return; }
-    const int32 Damage = SFFallDamage::Amount(CapturedSettings->PlayerHealth, ImpactSpeedMps,
+    const int32 Damage = SFFallDamage::Amount(Victim->CombatMaximumHealth(), ImpactSpeedMps,
         CapturedSettings->FallSpeedThresholdMps);
     if (Damage <= 0) { return; }
     UE_LOG(LogTemp, Display, TEXT("FALL_DAMAGE ImpactMps=%.2f Damage=%d HealthBefore=%d Pawn=%s"),
@@ -1795,12 +1878,12 @@ bool ASFGameMode::AcceptResurrection(ASFE1Character* Player, uint32 OfferId, con
                 *Player->GetName(), OfferId);
             return false;
         }
-        RespawnPlayer(Weak, FSFResurrectionAcceptRules::RestoredHealth(CapturedSettings->PlayerHealth,
+        RespawnPlayer(Weak, FSFResurrectionAcceptRules::RestoredHealth(Player->CombatMaximumHealth(),
             CapturedSettings->PlayerResFraction), true);
         return true;
     }
     if (!Player->AcceptResurrectionOffer(OfferId, GetWorld()->GetTimeSeconds(),
-        CapturedSettings->PlayerHealth, CapturedSettings->PlayerResFraction)) return false;
+        Player->CombatMaximumHealth(), CapturedSettings->PlayerResFraction)) return false;
     UE_LOG(LogTemp, Display, TEXT("RES_ACCEPT_SERVER_ACCEPTED Pawn=%s Offer=%u HP=%d"),
         *Player->GetName(), OfferId, Player->CombatHealth());
     return true;
@@ -1823,7 +1906,7 @@ bool ASFGameMode::ReleaseSpirit(ASFE1Character* Player)
         const auto Weak = TWeakObjectPtr<ASFE1Character>(Player);
         if (!USFBackpackComponent::Services() || !PlayerDeathEvents.Contains(Weak) ||
             PlayerRespawnInFlight.Contains(Weak)) return false;
-        RespawnPlayer(Weak, FSFSpiritReleaseRules::RestoredHealth(CapturedSettings->PlayerHealth,
+        RespawnPlayer(Weak, FSFSpiritReleaseRules::RestoredHealth(Player->CombatMaximumHealth(),
             CapturedSettings->SpiritResFraction));
         return true;
     }
@@ -1835,7 +1918,7 @@ bool ASFGameMode::ReleaseSpirit(ASFE1Character* Player)
         return false;
     }
     Player->GetCharacterMovement()->SetMovementMode(MOVE_Walking);
-    Player->CombatSetHealth(FSFSpiritReleaseRules::RestoredHealth(CapturedSettings->PlayerHealth,
+    Player->CombatSetHealth(FSFSpiritReleaseRules::RestoredHealth(Player->CombatMaximumHealth(),
         CapturedSettings->SpiritResFraction));
     UE_LOG(LogTemp, Display, TEXT("SPIRIT_RELEASE_SERVER_ACCEPTED Pawn=%s HP=%d X=%.0f Y=%.0f"),
         *Player->GetName(), Player->CombatHealth(), At.X, At.Y);
@@ -1979,7 +2062,7 @@ void ASFGameMode::RespawnPlayer(TWeakObjectPtr<ASFE1Character> Player, int32 Res
         Player->GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
     Player->SetActorLocation(At, false, nullptr, ETeleportType::TeleportPhysics);
     Player->GetCharacterMovement()->SetMovementMode(MOVE_Walking);
-    Player->CombatSetHealth(RestoredHealth > 0 ? RestoredHealth : CapturedSettings->PlayerHealth);
+    Player->CombatSetHealth(RestoredHealth > 0 ? RestoredHealth : Player->CombatMaximumHealth());
     PlayerDeathRespawnPoints.Remove(Player);
     UE_LOG(LogTemp, Display, TEXT("COMBAT_PILOT_PLAYER_RESPAWN X=%.0f Y=%.0f HP=%d"), At.X,At.Y,Player->CombatHealth());
     if (bScenario)

@@ -41,6 +41,12 @@ public:
     bool IsSprinting() const { return bSprinting; }
     UFUNCTION(BlueprintCallable, Category="Movement") void SetSprintIntent(bool bEnable);
     int32 CombatCharacterLevel() const;
+    int32 CombatMaximumHealth() const;
+    int32 CombatConstitution() const;
+    double CombatResistance() const;
+    double CombatAbsorb() const;
+    void GrantCombatAbsorb(double Amount, double DurationSeconds = 20.0);
+    void ConsumeCombatAbsorb(double Amount);
     bool SpendStaminaFraction(float Fraction);
     bool SpendManaFraction(float Fraction);
     bool CanUseChallenge(double Now) const;
@@ -97,6 +103,9 @@ private:
     UFUNCTION() void OnRep_FaceId();  // swaps the MetaHuman body for the new face (client side only)
     UPROPERTY(Transient) TObjectPtr<AActor> MetaHuman;
     UPROPERTY(Replicated) int32 PilotHealth = 0;  // shown by the vitals HUD (SFE1VitalsHud), not in the world
+    UPROPERTY(Replicated) double CombatAbsorbRemaining = 0;
+    double CombatAbsorbExpiresAt = 0;
+    int32 CombatHealthLevel = 1;
     UPROPERTY(Replicated) uint32 ResurrectionOfferId = 0; // owning client only
     UPROPERTY(Replicated) FString ResurrectionOfferDeathEventId;
     uint32 NextResurrectionOfferId = 0;

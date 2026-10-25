@@ -63,6 +63,30 @@ FSFGearStats SFGear::Equipped(const AActor* Owner)
     return Total;
 }
 
+SFGear::FCombatEquipment SFGear::CombatEquipment(const AActor* Owner, double PilotArmorUnit)
+{
+    FCombatEquipment Result;
+    const auto* Inventory = Owner ? Owner->FindComponentByClass<USFInventoryComponent>() : nullptr;
+    for (const FSFEquippedSlot& Slot : Inventory ? Inventory->EquippedItems : TArray<FSFEquippedSlot>())
+    {
+        if (Slot.DurabilityPercent <= 0) { continue; }
+        const USFItemDefinition* Definition = Slot.Item.LoadSynchronous();
+        if (!Definition) { continue; }
+        FString Id = Definition->UniqueId;
+        FString Slug, Grade;
+        if (Id.StartsWith(TEXT("item/")) && Id.Mid(5).Split(TEXT("/"), &Slug, &Grade))
+        { Id = TEXT("item/") + Slug; }
+        if (const FSFGearStats* Stats = Find(Id)) { Result.Armor += Stats->Armor * PilotArmorUnit; }
+        if (Id == TEXT("item/iron_buckler")) { Result.bShield = true; }
+        if (Id == TEXT("item/iron_shortsword")) { Result.Weapon = {3.64, 2.0, true}; }
+        else if (Id == TEXT("item/cudgel")) { Result.Weapon = {7.0, 2.0, true}; }
+        else if (Id == TEXT("item/brigand_blade")) { Result.Weapon = {10.0, 2.0, true}; }
+        else if (Id == TEXT("item/fangtooth_dagger")) { Result.Weapon = {12.4, 1.4, true}; }
+        else if (Id == TEXT("item/captains_longsword")) { Result.Weapon = {12.4, 2.0, true}; }
+    }
+    return Result;
+}
+
 int32 SFGear::MitigatedDamage(int32 Damage, int32 Armor)
 {
     return FMath::Max(1, Damage - FMath::Max(0, Armor));

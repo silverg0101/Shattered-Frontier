@@ -171,11 +171,13 @@ void USFE1VitalsHudSubsystem::Tick(float DeltaTime)
     }
     else if (!Model.IsDefeated() && DefeatGrade) { DefeatGrade->Destroy(); DefeatGrade = nullptr; }
     FSFE1VitalsModel Shown = Model;
-    if (!Model.bActive) { Shown.Health = Settings->PlayerHealth; }
+    const ASFE1Character* Character = Cast<ASFE1Character>(PC->GetPawn());
+    const int32 MaximumHealth = Character ? Character->CombatMaximumHealth() : Settings->PlayerHealth;
+    if (!Model.bActive) { Shown.Health = MaximumHealth; }
     Hud->Present(Shown, FSFE1VitalsModel::RemainingSeconds(Model.DefeatedAt, Now, Settings->PlayerRespawnDelaySeconds), Defeat);
     // The bars live in WBP_Hud; stamina is drawn full (no stamina stat yet).
     if (const ASFPlayerController* SFPlayer = Cast<ASFPlayerController>(PC))
-    { if (USFHudWidget* HudWidget = SFPlayer->GetHudWidget()) { HudWidget->PresentVitals(Shown.Health, Settings->PlayerHealth, Settings->PlayerStamina, Settings->PlayerStamina); } }
+    { if (USFHudWidget* HudWidget = SFPlayer->GetHudWidget()) { HudWidget->PresentVitals(Shown.Health, MaximumHealth, Settings->PlayerStamina, Settings->PlayerStamina); } }
 }
 
 void USFE1VitalsHudSubsystem::Deinitialize()

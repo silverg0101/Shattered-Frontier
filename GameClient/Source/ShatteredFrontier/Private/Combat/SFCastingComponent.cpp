@@ -3,6 +3,8 @@
 #include "Characters/SFE1Character.h"
 #include "Combat/SFCrowdControlComponent.h"
 #include "Combat/SFCombatPilot.h"
+#include "Combat/SFCombatPart6.h"
+#include "Combat/SFBoarDodgeRules.h"
 #include "Framework/SFGameMode.h"
 #include "Combat/SFPlayerInterruptRules.h"
 #include "Combat/SFCombatEnergy.h"
@@ -209,10 +211,40 @@ void USFCastingComponent::ServerRequestPublishedInterrupt_Implementation(bool bC
     if (bApplied) { Victim->Casting->Interrupt(); }
     if (!bCounterspell)
     {
-        const int32 BaseDamage = GetDefault<USFCombatPilotSettings>()->PlayerMeleeDamage +
-            SFGear::Equipped(Owner->GetController()).Damage;
-        const int32 Damage = FMath::Max(1, FMath::RoundToInt(BaseDamage * Energy->PommelPhysicalModifier));
-        Victim->CombatSetHealth(FMath::Max(0, Victim->CombatHealth() - Damage));
+        if (SFCombatPart6::Active(GetWorld()))
+        {
+            const auto* CombatTune = GetDefault<USFCombatPilotSettings>();
+            const auto AttackerStats = SFCombatPart6::Player(SFCombatPart6::EKit::Fighter,
+                Owner->CombatCharacterLevel(), CombatTune->CritBase, CombatTune->SkillDamageFloor);
+            const auto Weapon = SFGear::CombatEquipment(Owner->GetController(), CombatTune->DevPilotArmorUnit);
+            const auto DefenderGear = SFGear::CombatEquipment(Victim->GetController(), CombatTune->DevPilotArmorUnit);
+            const auto* Coefficient = SFCombatPart6::Ability(TEXT("pommel_strike"));
+            check(Coefficient);
+            SFCombatResolution::FAttack Attack = SFCombatPart6::AuthoredAbility(AttackerStats, Weapon.Weapon,
+                *Coefficient, CombatTune->WeaponSpread,
+                CombatTune->PowerSpeedReferenceSeconds, CombatTune->UnarmedDpsFactor, CombatTune->WeaponDpsK);
+            Attack.bFrontArc = SFBoarDodgeRules::IsInFrontArc(Victim->GetActorForwardVector(),
+                Owner->GetActorLocation() - Victim->GetActorLocation(), CombatTune->FrontArcDegrees);
+            Attack.bHasArmorSnapshot = true; Attack.Armor = DefenderGear.Armor;
+            Attack.bCanBlock = DefenderGear.bShield;
+            Attack.BlockChance = DefenderGear.bShield ? .10 : 0;
+            Attack.BlockReduction = CombatTune->BlockReduction;
+            Attack.Absorb = Victim->CombatAbsorb();
+            if (ASFGameMode* Mode = GetWorld()->GetAuthGameMode<ASFGameMode>())
+            {
+                const auto Result = Mode->ResolveCombatAttack(Owner, Attack);
+                Victim->ConsumeCombatAbsorb(Result.Absorbed);
+                if (Result.Damage > 0)
+                { Victim->CombatSetHealth(FMath::Max(0, Victim->CombatHealth() - Result.Damage)); }
+            }
+        }
+        else
+        {
+            const int32 BaseDamage = GetDefault<USFCombatPilotSettings>()->PlayerMeleeDamage +
+                SFGear::Equipped(Owner->GetController()).Damage;
+            const int32 Damage = FMath::Max(1, FMath::RoundToInt(BaseDamage * Energy->PommelPhysicalModifier));
+            Victim->CombatSetHealth(FMath::Max(0, Victim->CombatHealth() - Damage));
+        }
         Owner->CombatMarkHostile();
     }
     UE_LOG(LogTemp, Display, TEXT("PUBLISHED_INTERRUPT_APPLIED Kind=%s Applied=%d Level=%d Stamina=%.2f Mana=%.2f"),
