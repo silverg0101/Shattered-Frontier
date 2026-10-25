@@ -3215,6 +3215,16 @@ def check():
     zoo = ["Trottle", "AlertRun", "Idle", "Eat", "Itch", "Sniff"]  # a Rat-like library: plain names find its clips
     assert [creature.library_clip(c, zoo) for c in ("idle", "walk", "run", "Die", "trottle")] == ["Idle", "Trottle", "AlertRun", None, "Trottle"]
     assert [creature.library_clip(c, ["ThreatDisplay", "PlayBow", "sitting_to_run"]) for c in ("eat", "lay", "sit", "run")] == [None] * 4
+    assert creature.library_clips("idle", ["AlertIdle", "Idle", "Stand"]) == ["Idle", "AlertIdle", "Stand"]
+    # choose_clip: a failing best match gives way to the next synonym, then UniMate, else stays when nothing passes
+    ok = lambda f: {"checks": {"passed": f != "WalkLoop", "reason": "slide"}, "glb": f}
+    def boom(): raise RuntimeError("no UniMate")
+    lg = []
+    assert creature.choose_clip("walk", ["WalkLoop", "Trot"], True, lg, ok, boom)["from_clip"] == "Trot" and len(lg) == 1
+    assert creature.choose_clip("walk", ["WalkLoop"], True, lg, ok, lambda: {"checks": {"passed": True}})["source"] == "text"
+    assert creature.choose_clip("walk", ["WalkLoop"], True, lg, ok, boom)["from_clip"] == "WalkLoop"
+    assert creature.choose_clip("walk", ["WalkLoop"], False, lg, ok, boom)["from_clip"] == "WalkLoop"
+    assert creature.choose_clip("swim", [], False, lg, ok, boom) is None
     assert cp({"source": "library", "animal": "Rat", "clip": "Walk"})["clip"] == "Walk"  # Trottle stands in
     assert creature.clip_names(["Walk", "Sniff_s1"], [("Walk", [""]), ("Sniff", ["_s0", "_s1"]), ("Walk", [""])]) == ["Walk_2", "Sniff_2", "Walk_3"]
     out = ROOT / get_settings()["output_folder"] / "Creatures"

@@ -272,16 +272,44 @@ CLIP_SYNONYMS = _SYN | {"die": _SYN["death"], "dying": _SYN["death"], "sprint": 
                         "rest": _SYN["sleep"], "lay": _SYN["lie"], "leap": _SYN["jump"], "hurt": _SYN["hit"], "itch": _SYN["scratch"]}
 
 
-def library_clip(want, have):
-    """The library clip (one of `have`) that stands in for the requested clip name `want`: the same name ignoring case,
-    else the first clip with a word (split on _ - and camelCase) starting with a CLIP_SYNONYMS entry for it, skipping
-    transitions like sitting_to_run; None when the library has nothing for it."""
-    lo = {h.lower(): h for h in have}
-    if want.lower() in lo:
-        return lo[want.lower()]
+def library_clips(want, have):
+    """The library clips (of `have`) that can stand in for the requested clip name `want`, best first: the same name
+    ignoring case, then clips with a word (split on _ - and camelCase) starting with a CLIP_SYNONYMS entry for it, in
+    synonym order, skipping transitions like sitting_to_run; [] when the library has nothing for it."""
     words = {h: re.findall(r"[a-z]+", re.sub(r"([a-z])([A-Z])", r"\1 \2", h).lower()) for h in have}
-    return next((h for sub in CLIP_SYNONYMS.get(want.lower(), ()) for h in have
-                 if "to" not in words[h] and any(w.startswith(sub) for w in words[h])), None)
+    out = [h for h in have if h.lower() == want.lower()]
+    for sub in CLIP_SYNONYMS.get(want.lower(), ()):
+        out += [h for h in have if h not in out and "to" not in words[h] and any(w.startswith(sub) for w in words[h])]
+    return out
+
+
+def library_clip(want, have):
+    """The best library_clips match for `want`, or None."""
+    return next(iter(library_clips(want, have)), None)
+
+
+def choose_clip(want, matches, fill, log, retarget, unimate):
+    """Clip `want` from the first library match (retarget(name) -> result) whose checks pass; when none passes, UniMate
+    (unimate() -> result) if `fill`, falling back to the best failing match should UniMate itself fail; else the best
+    failing match. None when there is no match and no fill. Library results get source "library" and from_clip."""
+    r = None
+    for f in matches:
+        t = retarget(f) | {"source": "library", "from_clip": f}
+        if t["checks"]["passed"]:
+            return t
+        r = r or t
+        log.append(f"{want}: library {f} failed its checks ({t['checks']['reason']}), trying the next match")
+    if not fill:
+        return r
+    try:
+        return unimate() | {"source": "text"}
+    except InterruptedError:
+        raise
+    except Exception as e:
+        if not r:
+            raise
+        log.append(f"{want}: UniMate failed ({str(e)[-200:]}), keeping library {r['from_clip']}")
+        return r
 
 
 SKELETON = "quadruped_v1"
@@ -894,7 +922,7 @@ def keep_failed(jid, host, p, views, info, error) -> Path:
 
 def run_creature(jid, host):
     """A "creature" job (creature_params): match the animal and curate it if needed, concept image, 3D model and rig,
-    the shared skeleton, then every requested clip (library retarget, else UniMate when fill_missing), each checked;
+    the shared skeleton, then every requested clip (the first library match that passes its checks, else UniMate when fill_missing), each checked;
     the folder is built in a temp dir and moved into <output>/Creatures/ only when it is complete."""
     a = _app()
     p, s = json.loads(a.job_row(jid)["params"]), a.get_settings()
@@ -929,11 +957,10 @@ def run_creature(jid, host):
         clips, unavailable = [], []
         for c in (have if p["clips"] == "all" else p["clips"]):
             try:
-                if from_clip := library_clip(c, have):  # named as requested; the library clip is kept as from_clip
-                    r = retarget_clip(jid, host, std["glb"], lib, from_clip, size, c) | {"source": "library", "from_clip": from_clip}
-                elif p["fill_missing"]:
-                    r = unimate_clip(jid, host, std["glb"], c, size) | {"source": "text"}
-                else:
+                r = choose_clip(c, library_clips(c, have), p["fill_missing"], log,  # named as requested
+                                lambda f: retarget_clip(jid, host, std["glb"], lib, f, size, c),
+                                lambda: unimate_clip(jid, host, std["glb"], c, size))
+                if not r:
                     unavailable.append({"name": c, "reason": f"not in the {entry['id']} library and fill_missing is off"})
                     continue
             except InterruptedError:
