@@ -16,6 +16,14 @@ from body_plans import GROUNDED_BIRD
 from source_rig import BIRD_SOURCE, check_provider, predict
 
 
+def blender_preflight():
+    value = os.environ.get("SKINTOKEN_BLENDER_BIN", "")
+    path = Path(value).expanduser().resolve() if value else None
+    if path is None or not path.is_file() or not os.access(path, os.X_OK):
+        raise RuntimeError("Blender executable unavailable; set SKINTOKEN_BLENDER_BIN to the existing configured provider executable before inference")
+    return path
+
+
 def generate(comfy_root, input_path, output_path, report_path, options):
     comfy_root = Path(comfy_root).resolve()
     input_path, output_path, report_path = map(lambda p:Path(p).resolve(), (input_path, output_path, report_path))
@@ -26,6 +34,7 @@ def generate(comfy_root, input_path, output_path, report_path, options):
         raise RuntimeError("source-rig generation requires one explicitly selected GPU")
     if options.get("skeleton_template") != "Keep model names" or options.get("file_format") != "glb" or options.get("use_transfer") is not True:
         raise ValueError("bird source rig requires unchanged model names, GLB and learned-skin transfer to the original mesh")
+    blender = blender_preflight()  # no provider/CUDA imports or expensive prediction before this dependency passes
     provider = comfy_root / "custom_nodes/ComfyUI-SkinToken"
     check_provider(provider)  # fail before importing/loading CUDA code
     os.environ["HF_HUB_OFFLINE"] = os.environ["TRANSFORMERS_OFFLINE"] = "1"
@@ -67,7 +76,8 @@ def generate(comfy_root, input_path, output_path, report_path, options):
               "raw_bones_normalized":np.asarray(decoded.bones).tolist(),
               "predicted_skin_shape":list(raw.skin_pred.shape),
               "raw_anatomy_gate":"NOT RUN; inspect independent wing chains/skin before any standardization",
-              "cuda_visible_devices":visible, "torch_initial_seed":torch.initial_seed()}
+              "cuda_visible_devices":visible, "torch_initial_seed":torch.initial_seed(),
+              "blender_executable":str(blender)}
     report_path.write_text(json.dumps(report, indent=1), encoding="utf-8")
     # Same existing provider export used by Forge; skin is newly learned above.
     nodes._export_asset(raw.asset, output_path, use_transfer=True,

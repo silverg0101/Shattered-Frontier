@@ -128,7 +128,7 @@ class SourceRigTests(unittest.TestCase):
             sr.predict(Model(bypass=True), {}, "grounded_bird_v1", "unused")
 
     def test_runner_rejects_incompatible_provider_before_loading_models_or_touching_cached_input(self):
-        with tempfile.TemporaryDirectory() as folder, patch.dict(os.environ, {"CUDA_VISIBLE_DEVICES":"1"}):
+        with tempfile.TemporaryDirectory() as folder, patch.dict(os.environ, {"CUDA_VISIBLE_DEVICES":"1", "SKINTOKEN_BLENDER_BIN":sys.executable}):
             root = Path(folder)
             source = root / "cached.glb"
             source.write_bytes(b"retained input sentinel")
@@ -136,6 +136,18 @@ class SourceRigTests(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError, "incompatible SkinTokens"):
                 runner.generate(root, source, root/"new.glb", root/"report.json", options)
             self.assertEqual(source.read_bytes(), b"retained input sentinel")
+            self.assertFalse((root/"new.glb").exists())
+            self.assertFalse((root/"report.json").exists())
+
+    def test_missing_blender_stops_before_provider_import_or_learned_prediction(self):
+        with tempfile.TemporaryDirectory() as folder, patch.dict(os.environ, {"CUDA_VISIBLE_DEVICES":"1", "SKINTOKEN_BLENDER_BIN":""}):
+            root = Path(folder)
+            source = root/"cached.glb"; source.write_bytes(b"cached input")
+            options = {"skeleton_template":"Keep model names", "file_format":"glb", "use_transfer":True}
+            with patch.object(runner,"check_provider",side_effect=AssertionError("must stop before provider import")):
+                with self.assertRaisesRegex(RuntimeError,"Blender executable unavailable"):
+                    runner.generate(root,source,root/"new.glb",root/"report.json",options)
+            self.assertEqual(source.read_bytes(),b"cached input")
             self.assertFalse((root/"new.glb").exists())
             self.assertFalse((root/"report.json").exists())
 
