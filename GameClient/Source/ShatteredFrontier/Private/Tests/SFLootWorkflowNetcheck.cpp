@@ -48,6 +48,11 @@ struct FWorkflowState
     double NextDiagnosticAt = 0;
     double ClickDeadline = 0;
     double CursorProbeUntil = 0;
+    double CursorReadyDeadline = 0;
+    int32 StableProjectionSamples = 0, ExactCursorSamples = 0;
+    FVector2D PreviousProjection = FVector2D::ZeroVector;
+    FVector PreviousView = FVector::ZeroVector;
+    FRotator PreviousViewRotation = FRotator::ZeroRotator;
     FVector2D InitialClickScreen = FVector2D::ZeroVector;
     FVector InitialClickView = FVector::ZeroVector;
     FRotator InitialClickRotation = FRotator::ZeroRotator;
@@ -276,7 +281,8 @@ void FSFLootWorkflowNetcheck::Tick(USFLootComponent& Loot)
             if (State.Stage == 0)
             {
                 const float Yaw = (It->GetActorLocation() - Pawn->GetActorLocation()).Rotation().Yaw;
-                Player->SetControlRotation(FRotator(-15,Yaw,0)); State.Stage = 16; return;
+                Player->SetControlRotation(FRotator(-15,Yaw,0)); State.Stage = 16;
+                State.CursorReadyDeadline = Now + 8; return;
             }
             Player->DispatchSelectedAction(Target->GetSelection());
             ++State.Stage; return;
@@ -319,11 +325,22 @@ void FSFLootWorkflowNetcheck::Tick(USFLootComponent& Loot)
     }
     else if (State.Stage == 16 && State.Source.IsValid())
     {
+        if (Now > State.CursorReadyDeadline)
+        { CursorDiagnostic(Player, Target, State, State.Source->InteractionBounds->GetComponentLocation()); UE_LOG(LogTemp, Error, TEXT("LOOT_WORKFLOW_FAIL CursorProjectionDidNotSettle")); State.Stage = 99; Player->ConsoleCommand(TEXT("quit")); return; }
         FVector2D Screen; int32 Width = 0, Height = 0; Player->GetViewportSize(Width, Height);
         if (!Player->ProjectWorldLocationToScreen(State.Source->InteractionBounds->GetComponentLocation(), Screen) ||
             Screen.X < 0 || Screen.Y < 0 || Screen.X >= Width || Screen.Y >= Height)
         { if (bDiagnosticNow) UE_LOG(LogTemp, Display, TEXT("LOOT_WORKFLOW_GATE Reason=ClickProjection Point=%s Viewport=%dx%d"), *Screen.ToString(), Width, Height); return; }
-        State.InitialClickScreen = Screen; Player->GetPlayerViewPoint(State.InitialClickView, State.InitialClickRotation);
+        FVector View; FRotator Rotation; Player->GetPlayerViewPoint(View, Rotation);
+        // Teleporting the fixture pawn leaves the normal spring-arm camera
+        // catching up. Only aim after consecutive stable views/projections.
+        const bool bStable = FVector2D::Distance(Screen, State.PreviousProjection) <= 1 &&
+            FVector::DistSquared(View, State.PreviousView) <= 1 && Rotation.Equals(State.PreviousViewRotation, .05f);
+        State.StableProjectionSamples = bStable ? State.StableProjectionSamples + 1 : 0;
+        State.PreviousProjection = Screen; State.PreviousView = View; State.PreviousViewRotation = Rotation;
+        if (State.StableProjectionSamples < 2) return;
+        UE_LOG(LogTemp, Display, TEXT("LOOT_CURSOR_STABLE Samples=%d Projected=%s View=%s"), State.StableProjectionSamples, *Screen.ToString(), *View.ToString());
+        State.InitialClickScreen = Screen; State.InitialClickView = View; State.InitialClickRotation = Rotation;
         Player->SetMouseLocation(FMath::RoundToInt(Screen.X), FMath::RoundToInt(Screen.Y)); State.Stage = 17;
         State.CursorProbeUntil = Now + 1;
     }
@@ -339,7 +356,13 @@ void FSFLootWorkflowNetcheck::Tick(USFLootComponent& Loot)
             return; // Diagnostic run stops before any click, transfer or drop.
         }
         if (Target->GetTarget() != State.Source.Get())
-        { if (bDiagnosticNow) UE_LOG(LogTemp, Display, TEXT("LOOT_WORKFLOW_GATE Reason=CursorTarget Selected=%s Expected=%s"), *GetNameSafe(Target->GetTarget()), *GetNameSafe(State.Source.Get())); return; }
+        {
+            State.ExactCursorSamples = 0;
+            if (Now > State.CursorReadyDeadline)
+            { CursorDiagnostic(Player, Target, State, State.Source->InteractionBounds->GetComponentLocation()); UE_LOG(LogTemp, Error, TEXT("LOOT_WORKFLOW_FAIL StableCursorDidNotSelectSource")); State.Stage = 99; Player->ConsoleCommand(TEXT("quit")); return; }
+            if (bDiagnosticNow) UE_LOG(LogTemp, Display, TEXT("LOOT_WORKFLOW_GATE Reason=CursorTarget Selected=%s Expected=%s"), *GetNameSafe(Target->GetTarget()), *GetNameSafe(State.Source.Get())); return;
+        }
+        if (++State.ExactCursorSamples < 2) return;
         MouseLeft(Player, IE_Pressed); State.Stage = 18; State.NextAt = Now + .04;
     }
     else if (State.Stage == 18)
