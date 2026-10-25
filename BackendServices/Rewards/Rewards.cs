@@ -11,7 +11,7 @@ public sealed class RewardContentException(string message) : Exception(message);
 public sealed record CountRange(int Min, int Max);
 public sealed record LootEntry(string Kind, string? DefinitionId, CountRange? Quantity, int? Weight);
 public sealed record LootTable(string Id, int Version, CountRange Rolls, string Mode,
-    IReadOnlyList<LootEntry> Guaranteed, IReadOnlyList<LootEntry> Entries);
+    IReadOnlyList<LootEntry> Guaranteed, IReadOnlyList<LootEntry> Entries, bool SingleDrop = false);
 
 public static class LootCatalog
 {
@@ -88,19 +88,10 @@ public sealed class BoarRewardService
 
     public BoarRewardService(ShatteredFrontier.InventoryLedger.InventoryLedger ledger, LootTable table)
     {
-        ValidateBoarTable(table);
+        LootCatalog.Validate(table);
+        if (table.SingleDrop) throw new RewardContentException("Single-drop tables require a shared claim.");
         this.ledger = ledger;
         this.table = table;
-    }
-
-    public static void ValidateBoarTable(LootTable table)
-    {
-        LootCatalog.Validate(table);
-        if (table.Id != "loot/greenlands_silverbrook_boar" ||
-            table.Guaranteed.Any(e => e.DefinitionId != "item/boar_hide") ||
-            table.Entries.Any(e => e.Kind == "item" && e.DefinitionId is not ("item/boar_hide" or "item/recipe_scroll_iron_brackets")) ||
-            table.Guaranteed.Sum(e => e.Quantity!.Min) != 2)
-            throw new RewardContentException("Boar reward table must ship two guaranteed boar hides.");
     }
 
     public RewardOutcome Grant(DefeatEvent defeat)
@@ -119,12 +110,11 @@ public sealed class BoarRewardService
             if (!BoarEligibility.CanGrant(defeat)) outcome = new(RewardDecision.Ineligible, null, SourceCode);
             else
             {
-                var quantity = Roll(defeat.Id + ":" + defeat.RecipientCharacterId, table);
-                if (quantity == 0) throw new RewardContentException("Boar table must grant an item.");
+                var lines = CreatureLootCatalog.RollPersonal(defeat.Id + ":" + defeat.RecipientCharacterId, table);
                 var operationId = $"defeat:{defeat.Id.Length}:{defeat.Id}:{defeat.RecipientCharacterId}";
-                var receipt = ledger.Grant(operationId, defeat.ContainerId, defeat.ExpectedRevision,
-                    "item/boar_hide", quantity, SourceCode, defeat.Id);
-                outcome = new(RewardDecision.Granted, receipt, SourceCode);
+                var receipt = lines.Count == 0 ? null : ledger.GrantBundle(operationId, defeat.ContainerId, defeat.ExpectedRevision,
+                    lines.Select(line => new ItemQuantity(line.DefinitionId, line.Quantity)).ToArray(), SourceCode, defeat.Id);
+                outcome = new(receipt is null ? RewardDecision.Ineligible : RewardDecision.Granted, receipt, SourceCode);
             }
             decisions.Add(key, (defeat, outcome));
             return outcome;

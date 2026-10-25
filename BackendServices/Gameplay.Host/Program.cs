@@ -61,7 +61,6 @@ var token = Required("SF_GAMEPLAY_TOKEN");
 var contentRoot = Required("GAMEPLAY_CONTENT_ROOT");
 var appearanceAllowlist = AppearanceAllowlist.Load(Path.Combine(contentRoot, "appearance", "human.json"));
 var lootTables = LootCatalog.LoadFiles(Directory.EnumerateFiles(Path.Combine(contentRoot, "loot"), "*.json"));
-var boar = lootTables["loot/greenlands_silverbrook_boar"];
 var creatureLootRoot = Path.Combine(contentRoot, "creatures", "loot_rules");
 var creatureLootRules = CreatureLootCatalog.LoadFiles(
     Directory.Exists(creatureLootRoot) ? Directory.EnumerateFiles(creatureLootRoot, "*.json") : [], lootTables);
@@ -94,8 +93,7 @@ builder.Services.AddSingleton(pools);
 builder.Services.AddSingleton(starterKit);
 builder.Services.AddSingleton(ledgerStore);
 builder.Services.AddSingleton(new DomLedger(ledgerStore));
-builder.Services.AddSingleton(new BoarRewardService(new DomLedger(ledgerStore), boar));
-builder.Services.AddSingleton(new DefeatRewardPayout(ledgerStore, boar, ledgerConnection));
+builder.Services.AddSingleton(new DefeatRewardPayout(ledgerStore, lootTables, creatureLootRules, ledgerConnection));
 builder.Services.AddSingleton(new SharedDefeatDropPayout(ledgerStore, lootTables, creatureLootRules, ledgerConnection));
 builder.Services.AddHostedService<DefeatRewardRecovery>();
 builder.Services.AddSingleton(new PostgresCharacterStateStore(characterConnection));

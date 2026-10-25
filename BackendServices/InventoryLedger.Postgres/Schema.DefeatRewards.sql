@@ -1,4 +1,4 @@
--- Durable boar reward intents. Install after Schema.sql before enabling Gameplay.Host rewards.
+-- Durable per-recipient creature reward intents. Install after Schema.sql before enabling Gameplay.Host rewards.
 CREATE TABLE IF NOT EXISTS inventory.defeat_reward_intents (
     defeat_event_id text NOT NULL,
     recipient_id text NOT NULL,
@@ -10,9 +10,11 @@ CREATE TABLE IF NOT EXISTS inventory.defeat_reward_intents (
     table_id text NOT NULL,
     table_version integer NOT NULL,
     quantity bigint NOT NULL CHECK (quantity >= 0),
+    item_lines jsonb NOT NULL DEFAULT '[]'::jsonb,
     state text NOT NULL CHECK (state IN ('Pending', 'Complete', 'Ineligible')),
     PRIMARY KEY (defeat_event_id, recipient_id)
 );
+ALTER TABLE inventory.defeat_reward_intents ADD COLUMN IF NOT EXISTS item_lines jsonb NOT NULL DEFAULT '[]'::jsonb;
 CREATE INDEX IF NOT EXISTS defeat_reward_pending ON inventory.defeat_reward_intents (state) WHERE state = 'Pending';
 
 CREATE TABLE IF NOT EXISTS inventory.defeat_loot_events (

@@ -702,6 +702,28 @@ if (mode == "rewards")
     Check(second.Granted && second.LedgerOperationId != first.LedgerOperationId &&
         ledger.Read("ctn_rewards_second").Quantities["item/boar_hide"] == second.Quantity,
         "Shared kill did not grant a separate personal reward.");
+    foreach (var (creature, tableId) in new[] {
+        ("npc/wolf", "loot/greenlands_silverbrook_wolf"),
+        ("npc/bandit_thug", "loot/greenlands_silverbrook_bandit_thug"),
+        ("npc/bandit_archer", "loot/greenlands_silverbrook_bandit_archer") })
+    {
+        var target = new RewardPb.GrantDefeatRewardRequest {
+            DefeatEventId = "defeat/" + creature, CreatureId = creature, TableId = tableId,
+            KillerCharacterId = "chr_rewards", RecipientCharacterId = "chr_rewards",
+            ContainerId = "ctn_rewards", ExpectedContainerRevision = ledger.Read("ctn_rewards").Revision };
+        var before = ledger.Read("ctn_rewards");
+        var result = client.GrantDefeatReward(target, headers, deadline: Deadline());
+        Check(result.Granted == (result.Items.Count > 0) &&
+            client.GrantDefeatReward(target, headers, deadline: Deadline()).Equals(result),
+            "Creature personal reward did not replay.");
+        var after = ledger.Read("ctn_rewards");
+        Check(result.Items.All(item => after.Quantities.GetValueOrDefault(item.DefinitionId) ==
+            before.Quantities.GetValueOrDefault(item.DefinitionId) + item.Quantity),
+            "Creature reward used the wrong table items.");
+        var wrongTable = target.Clone(); wrongTable.TableId = request.TableId;
+        Code(() => client.GrantDefeatReward(wrongTable, headers, deadline: Deadline()),
+            StatusCode.InvalidArgument);
+    }
     var sharedRequest = new RewardPb.CreateSharedDefeatDropRequest
     {
         DefeatEventId = "defeat/test-boss", CreatureId = "npc/test_boss",
@@ -745,10 +767,12 @@ if (mode == "rewards")
     Check(uniqueDrop.Items.Any(i => i.DefinitionId == "item/wolf_pelt" && i.Quantity == 2) &&
         uniqueDrop.Items.Any(i => i.DefinitionId == "item/wolf_fang" && i.Quantity == 1),
         "Unique creature did not roll its multi-item set.");
+    var beforeUnique = ledger.Read("ctn_rewards");
     var uniqueClaim = client.ClaimSharedDefeatDrop(new RewardPb.ClaimSharedDefeatDropRequest
     { DefeatEventId = uniqueDrop.DefeatEventId, CharacterId = "chr_rewards", ContainerId = "ctn_rewards" },
         headers, deadline: Deadline());
-    Check(uniqueClaim.Items.All(i => ledger.Read("ctn_rewards").Quantities[i.DefinitionId] == i.Quantity),
+    Check(uniqueClaim.Items.All(i => ledger.Read("ctn_rewards").Quantities[i.DefinitionId] ==
+        beforeUnique.Quantities.GetValueOrDefault(i.DefinitionId) + i.Quantity),
         "Unique multi-item set was not granted atomically.");
     var protectedDrop = new RewardPb.CreateSharedDefeatDropRequest
     { DefeatEventId = "defeat/test-boss-protected", CreatureId = "npc/test_boss",

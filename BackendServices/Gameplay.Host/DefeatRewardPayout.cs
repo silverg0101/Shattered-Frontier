@@ -6,25 +6,30 @@ using ShatteredFrontier.InventoryLedger;
 using ShatteredFrontier.InventoryLedger.Postgres;
 using ShatteredFrontier.Rewards;
 
-internal sealed record DefeatPayout(string OperationId, bool Granted, long Quantity, long Revision);
+internal sealed record DefeatPayout(string OperationId, bool Granted, IReadOnlyList<LootItemLine> Items, long Revision);
 
 // The intent precedes the ledger Grant. A full pack leaves it Pending; a crash after Grant
 // replays the ledger receipt and completes the same intent, as quest payout does.
-internal sealed class DefeatRewardPayout(PostgresInventoryLedgerStore ledgerStore, LootTable table, string connectionString)
+internal sealed class DefeatRewardPayout(PostgresInventoryLedgerStore ledgerStore,
+    IReadOnlyDictionary<string, LootTable> tables, IReadOnlyDictionary<string, CreatureLootRule> creatures, string connectionString)
 {
     private sealed record Intent(string EventId, string RecipientId, string KillerId, string ContainerId,
         string OperationId, bool KillerProtected, bool BoarProtected, string TableId, int TableVersion,
-        long Quantity, string State);
+        long Quantity, LootItemLine[] Items, string State);
 
-    public DefeatPayout Grant(DefeatEvent defeat, string tableId)
+    public DefeatPayout Grant(DefeatEvent defeat, string creatureId, string tableId)
     {
+        if (!creatures.TryGetValue(creatureId, out var creature) || creature.TableId != tableId ||
+            !tables.TryGetValue(tableId, out var table) || table.SingleDrop)
+            throw new GameplayRejectedException("Creature requires a different loot route.", StatusCode.InvalidArgument);
         if (string.IsNullOrWhiteSpace(defeat.Id) || string.IsNullOrWhiteSpace(defeat.RecipientCharacterId) ||
             string.IsNullOrWhiteSpace(defeat.KillerCharacterId) || string.IsNullOrWhiteSpace(defeat.ContainerId) ||
-            defeat.ExpectedRevision < 0 || tableId != table.Id)
+            defeat.ExpectedRevision < 0)
             throw new GameplayRejectedException("Invalid defeat reward request.", StatusCode.InvalidArgument);
         var operationId = $"defeat:{defeat.Id.Length}:{defeat.Id}:{defeat.RecipientCharacterId}";
         var eligible = BoarEligibility.CanGrant(defeat);
-        var quantity = eligible ? BoarRewardService.Roll(defeat.Id + ":" + defeat.RecipientCharacterId, table) : 0;
+        var items = eligible ? CreatureLootCatalog.RollPersonal(defeat.Id + ":" + defeat.RecipientCharacterId, table).ToArray() : [];
+        var quantity = items.Sum(item => item.Quantity);
         using (var connection = new NpgsqlConnection(connectionString))
         {
             connection.Open();
@@ -32,21 +37,24 @@ internal sealed class DefeatRewardPayout(PostgresInventoryLedgerStore ledgerStor
             using (var insert = new NpgsqlCommand("""
                 INSERT INTO inventory.defeat_reward_intents
                   (defeat_event_id,recipient_id,killer_id,container_id,operation_id,killer_protected,boar_protected,
-                   table_id,table_version,quantity,state)
-                VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) ON CONFLICT DO NOTHING
+                   table_id,table_version,quantity,item_lines,state)
+                VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) ON CONFLICT DO NOTHING
                 """, connection))
             {
                 insert.Parameters.AddWithValue(defeat.Id); insert.Parameters.AddWithValue(defeat.RecipientCharacterId);
                 insert.Parameters.AddWithValue(defeat.KillerCharacterId); insert.Parameters.AddWithValue(defeat.ContainerId);
                 insert.Parameters.AddWithValue(operationId); insert.Parameters.AddWithValue(defeat.KillerInProtectedTown);
                 insert.Parameters.AddWithValue(defeat.BoarInProtectedTown); insert.Parameters.AddWithValue(table.Id);
-                insert.Parameters.AddWithValue(table.Version); insert.Parameters.AddWithValue((long)quantity);
-                insert.Parameters.AddWithValue(eligible ? "Pending" : "Ineligible"); insert.ExecuteNonQuery();
+                insert.Parameters.AddWithValue(table.Version); insert.Parameters.AddWithValue(quantity);
+                insert.Parameters.AddWithValue(NpgsqlDbType.Jsonb, JsonSerializer.Serialize(items));
+                insert.Parameters.AddWithValue(eligible && items.Length > 0 ? "Pending" : "Ineligible"); insert.ExecuteNonQuery();
             }
             var saved = Read(connection, defeat.Id, defeat.RecipientCharacterId);
             if (saved.KillerId != defeat.KillerCharacterId || saved.ContainerId != defeat.ContainerId ||
                 saved.KillerProtected != defeat.KillerInProtectedTown || saved.BoarProtected != defeat.BoarInProtectedTown ||
-                saved.TableId != tableId)
+                saved.TableId != tableId || saved.TableVersion != table.Version ||
+                !(saved.Items.SequenceEqual(items) || (saved.Items.Length == 0 && saved.Quantity == quantity &&
+                    tableId == "loot/greenlands_silverbrook_boar")))
                 throw new GameplayRejectedException("Conflicting defeat event ID reuse.", StatusCode.AlreadyExists);
             return Resolve(saved);
         }
@@ -57,7 +65,7 @@ internal sealed class DefeatRewardPayout(PostgresInventoryLedgerStore ledgerStor
         using var connection = new NpgsqlConnection(connectionString); connection.Open();
         using var cmd = new NpgsqlCommand("""
             SELECT defeat_event_id,recipient_id,killer_id,container_id,operation_id,killer_protected,boar_protected,
-                   table_id,table_version,quantity,state
+                   table_id,table_version,quantity,item_lines,state
             FROM inventory.defeat_reward_intents WHERE state='Pending' ORDER BY defeat_event_id
             """, connection);
         var pending = new List<Intent>();
@@ -71,8 +79,18 @@ internal sealed class DefeatRewardPayout(PostgresInventoryLedgerStore ledgerStor
 
     private DefeatPayout Resolve(Intent intent)
     {
-        if (intent.State == "Ineligible") return new(intent.OperationId, false, 0, 0);
-        var fingerprint = $"defeat-reward-v1|{intent.ContainerId}|{intent.RecipientId}|{intent.Quantity}";
+        if (intent.State == "Ineligible") return new(intent.OperationId, false, [], 0);
+        if (intent.Items.Length == 0)
+        {
+            if (intent.Quantity == 0) return new(intent.OperationId, false, [], 0);
+            // Pending boar intents written before item_lines was introduced.
+            if (intent.TableId != "loot/greenlands_silverbrook_boar") throw new InvalidOperationException("Missing reward item snapshot.");
+            intent = intent with { Items = [new LootItemLine("item/boar_hide", intent.Quantity)] };
+        }
+        var legacyBoar = intent.Items.Length == 1 && intent.Items[0].DefinitionId == "item/boar_hide" &&
+            intent.TableId == "loot/greenlands_silverbrook_boar";
+        var fingerprint = legacyBoar ? $"defeat-reward-v1|{intent.ContainerId}|{intent.RecipientId}|{intent.Quantity}" :
+            $"defeat-reward-v2|{intent.ContainerId}|{intent.RecipientId}|{JsonSerializer.Serialize(intent.Items)}";
         var receipt = ledgerStore.Execute(state =>
         {
             if (state.Operations.TryGetValue(intent.OperationId, out var prior))
@@ -85,33 +103,34 @@ internal sealed class DefeatRewardPayout(PostgresInventoryLedgerStore ledgerStor
                 container.Spec.Kind != ContainerKind.Backpack)
                 throw new GameplayRejectedException("Reward backpack missing or owner changed.", StatusCode.FailedPrecondition);
             long total;
-            try { total = checked(container.Quantities.Values.Aggregate(0L, (sum, value) => checked(sum + value)) + intent.Quantity); }
+            try { total = checked(container.Quantities.Values.Aggregate(0L, (sum, value) => checked(sum + value)) + intent.Items.Aggregate(0L, (sum, item) => checked(sum + item.Quantity))); }
             catch (OverflowException) { throw new GameplayRejectedException("Reward quantity overflow.", StatusCode.FailedPrecondition); }
             if (total > container.Spec.Capacity)
                 throw new GameplayRejectedException("Reward backpack full; intent remains pending.", StatusCode.FailedPrecondition);
-            container.Quantities["item/boar_hide"] = checked(container.Quantities.GetValueOrDefault("item/boar_hide") + intent.Quantity);
+            foreach (var item in intent.Items)
+                container.Quantities[item.DefinitionId] = checked(container.Quantities.GetValueOrDefault(item.DefinitionId) + item.Quantity);
             var before = container.Revision++;
             var committed = new LedgerReceipt(intent.OperationId, LedgerAction.Grant,
                 [new RevisionChange(intent.ContainerId, before, container.Revision)],
-                [new QuantityChange(intent.ContainerId, "item/boar_hide", intent.Quantity)]);
+                intent.Items.Select(item => new QuantityChange(intent.ContainerId, item.DefinitionId, item.Quantity)).ToArray());
             state.Operations.Add(intent.OperationId, new StoredOperation(fingerprint, committed));
             return committed;
         });
-        if (receipt.Action != LedgerAction.Grant || receipt.Changes.Count != 1 ||
-            receipt.Changes[0].ContainerId != intent.ContainerId || receipt.Changes[0].DefinitionId != "item/boar_hide" ||
-            receipt.Changes[0].Delta != intent.Quantity)
+        if (receipt.Action != LedgerAction.Grant || receipt.Changes.Count != intent.Items.Length ||
+            intent.Items.Any(item => !receipt.Changes.Any(change => change.ContainerId == intent.ContainerId &&
+                change.DefinitionId == item.DefinitionId && change.Delta == item.Quantity)))
             throw new InvalidOperationException("Defeat reward ledger grant differs from intent.");
         using var connection = new NpgsqlConnection(connectionString); connection.Open();
         using var done = new NpgsqlCommand("UPDATE inventory.defeat_reward_intents SET state='Complete' WHERE defeat_event_id=$1 AND recipient_id=$2", connection);
         done.Parameters.AddWithValue(intent.EventId); done.Parameters.AddWithValue(intent.RecipientId); done.ExecuteNonQuery();
-        return new(intent.OperationId, true, intent.Quantity, receipt.Revisions.Single().After);
+        return new(intent.OperationId, true, intent.Items, receipt.Revisions.Single().After);
     }
 
     private static Intent Read(NpgsqlConnection connection, string eventId, string recipientId)
     {
         using var cmd = new NpgsqlCommand("""
             SELECT defeat_event_id,recipient_id,killer_id,container_id,operation_id,killer_protected,boar_protected,
-                   table_id,table_version,quantity,state
+                   table_id,table_version,quantity,item_lines,state
             FROM inventory.defeat_reward_intents WHERE defeat_event_id=$1 AND recipient_id=$2
             """, connection);
         cmd.Parameters.AddWithValue(eventId); cmd.Parameters.AddWithValue(recipientId);
@@ -122,7 +141,7 @@ internal sealed class DefeatRewardPayout(PostgresInventoryLedgerStore ledgerStor
 
     private static Intent FromRow(NpgsqlDataReader row) => new(row.GetString(0), row.GetString(1), row.GetString(2),
         row.GetString(3), row.GetString(4), row.GetBoolean(5), row.GetBoolean(6), row.GetString(7),
-        row.GetInt32(8), row.GetInt64(9), row.GetString(10));
+        row.GetInt32(8), row.GetInt64(9), JsonSerializer.Deserialize<LootItemLine[]>(row.GetString(10)) ?? [], row.GetString(11));
 }
 
 internal sealed class DefeatRewardRecovery(DefeatRewardPayout payout, SharedDefeatDropPayout shared,

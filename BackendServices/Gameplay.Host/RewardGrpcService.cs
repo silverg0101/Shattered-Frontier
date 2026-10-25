@@ -30,19 +30,22 @@ internal sealed class RewardGrpcService(DefeatRewardPayout payout, SharedDefeatD
     public override Task<Pb.RewardReceipt> GrantDefeatReward(Pb.GrantDefeatRewardRequest request, ServerCallContext context) =>
         GrpcRun.Call(context, () =>
         {
-            if (request.TableId != "loot/greenlands_silverbrook_boar")
-                throw new ArgumentException("Unknown reward table.");
+            var creatureId = string.IsNullOrEmpty(request.CreatureId) && request.TableId == "loot/greenlands_silverbrook_boar"
+                ? "npc/boar" : request.CreatureId;
             var outcome = payout.Grant(new DefeatEvent(request.DefeatEventId, request.KillerCharacterId,
                 request.RecipientCharacterId, request.ContainerId, request.ExpectedContainerRevision,
-                request.KillerInProtectedTown, request.BoarInProtectedTown), request.TableId);
-            return new Pb.RewardReceipt
+                request.KillerInProtectedTown, request.BoarInProtectedTown), creatureId, request.TableId);
+            var receipt = new Pb.RewardReceipt
             {
                 Granted = outcome.Granted,
                 SourceCode = BoarRewardService.SourceCode,
                 LedgerOperationId = outcome.Granted ? outcome.OperationId : "",
-                DefinitionId = outcome.Granted ? "item/boar_hide" : "",
-                Quantity = outcome.Quantity,
+                DefinitionId = outcome.Granted && outcome.Items.Count == 1 ? outcome.Items[0].DefinitionId : "",
+                Quantity = outcome.Items.Count == 1 ? outcome.Items[0].Quantity : 0,
                 ContainerRevision = outcome.Revision
             };
+            receipt.Items.AddRange(outcome.Items.Select(i => new Pb.SharedDropItem
+                { DefinitionId = i.DefinitionId, Quantity = i.Quantity }));
+            return receipt;
         });
 }

@@ -2,8 +2,34 @@ using ShatteredFrontier.InventoryLedger;
 using ShatteredFrontier.Rewards;
 
 if (args.Length != 1) throw new ArgumentException("Pass the loot content directory.");
-var table = LootCatalog.LoadFiles(Directory.EnumerateFiles(args[0], "*.json"))["loot/greenlands_silverbrook_boar"];
-BoarRewardService.ValidateBoarTable(table);
+var tables = LootCatalog.LoadFiles(Directory.EnumerateFiles(args[0], "*.json"));
+var table = tables["loot/greenlands_silverbrook_boar"];
+var rules = CreatureLootCatalog.LoadFiles(Directory.EnumerateFiles("content/creatures/loot_rules", "*.json"), tables);
+if (rules.Count != 6 || rules["npc/boar"].TableId != table.Id ||
+    rules["npc/wolf"].TableId != "loot/greenlands_silverbrook_wolf" ||
+    !tables[rules["npc/wolf_alpha"].TableId].SingleDrop ||
+    !tables[rules["npc/bandit_captain"].TableId].SingleDrop)
+    throw new Exception("Creature loot binding or single-drop marker missing.");
+foreach (var creature in new[] { "npc/wolf", "npc/bandit_thug", "npc/bandit_archer" })
+{
+    var ordinary = tables[rules[creature].TableId];
+    if (ordinary.SingleDrop || !Enumerable.Range(0, 100).Any(i =>
+        CreatureLootCatalog.RollPersonal($"other-kill-{i}:chr_ada", ordinary).Count > 0))
+        throw new Exception("Ordinary creature did not use its personal table.");
+}
+try { CreatureLootCatalog.RollPersonal("boss-kill", tables[rules["npc/wolf_alpha"].TableId]); throw new Exception("Single drop allowed a personal roll."); }
+catch (RewardContentException) { }
+try { CreatureLootCatalog.RollShared("wolf-kill", tables[rules["npc/wolf"].TableId]); throw new Exception("Ordinary table allowed a shared roll."); }
+catch (RewardContentException) { }
+LootCatalog.Validate(table);
+for (var i = 0; i < 100; i++)
+{
+    var seed = $"boar-replay-{i}:chr_ada";
+    var lines = CreatureLootCatalog.RollPersonal(seed, table);
+    if (lines.Count != 1 || lines[0].DefinitionId != "item/boar_hide" ||
+        lines[0].Quantity != BoarRewardService.Roll(seed, table))
+        throw new Exception("Boar roll changed during creature generalization.");
+}
 var store = new InMemoryInventoryLedgerStore();
 var ledger = new ShatteredFrontier.InventoryLedger.InventoryLedger(store);
 ledger.CreateContainer(new ContainerSpec("ctn_boar", OwnerKind.Character, "chr_killer", ContainerKind.Backpack, 100));
