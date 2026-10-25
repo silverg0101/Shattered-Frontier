@@ -126,6 +126,32 @@ def _water(label, x, y, w, d, top, yaw=0.0, pitch=0.0):
     return a
 
 
+def road_speed_volumes():
+    """Mark each authored street and path at its graded surface, including bridge approaches."""
+    road_class = u.load_class(None, '/Script/ShatteredFrontier.SFRoadSpeedVolume')
+    assert road_class, 'SFRoadSpeedVolume is unavailable; build the game module first'
+    for name, points, width, tier in ROADS:
+        elevation = on_road(name, points)
+        for i, (p, q) in enumerate(zip(points, points[1:])):
+            length = math.dist(p, q)
+            pieces = max(1, math.ceil(length / 20.0))
+            yaw = math.degrees(math.atan2(q[1] - p[1], q[0] - p[0]))
+            for k in range(pieces):
+                t0, t1 = k / pieces, (k + 1) / pieces
+                middle = (t0 + t1) / 2
+                heights = [elevation(i, t) for t in (t0, middle, t1)]
+                bottom, top = min(heights) - 0.5, max(heights) + 2.5
+                x = p[0] + (q[0] - p[0]) * middle
+                y = p[1] + (q[1] - p[1]) * middle
+                volume = actors.spawn_actor_from_class(
+                    road_class, u.Vector(x * 100, y * 100, (bottom + top) * 50), u.Rotator(yaw=yaw))
+                # The default brush is a 2 m cube. A small end overlap closes seams on slopes.
+                volume.set_actor_scale3d(u.Vector((length / pieces + 1.0) / 2, width / 2, (top - bottom) / 2))
+                volume.set_actor_label(f'RoadSpeed_{name.replace(" ", "")}_{i:02d}_{k:02d}')
+                volume.set_folder_path(f'Gameplay/RoadSpeed/{tier}')
+                counts['RoadSpeed'] = counts.get('RoadSpeed', 0) + 1
+
+
 def piece(label, mesh, x, y, yaw, z, folder):
     """Spawn a delivered mesh with its origin at (x, y, z) metres and attach its moving parts. `yaw` is the actor's own."""
     a = actors.spawn_actor_from_class(u.StaticMeshActor, u.Vector(x * 100, y * 100, z * 100), u.Rotator(roll=0, pitch=0, yaw=yaw))
@@ -836,6 +862,7 @@ _water('Sea', 0, 0, 2 * ext, 2 * ext, SEA)
 
 for spawn in pending:
     spawn()
+road_speed_volumes()
 def surface_z(x, y):
     """Height (m) of the final collision surface under (x, y): a downward trace through the spawned terrain."""
     hit = u.SystemLibrary.line_trace_single(world, u.Vector(x * 100, y * 100, 3e5), u.Vector(x * 100, y * 100, -3e5),
@@ -938,7 +965,9 @@ u.log(f'SILVERBROOK_PROPS {place_props.place_all()}')  # wells, carts, benches..
 u.log(f'SILVERBROOK_TOWNSFOLK_LANES {townsfolk_lanes.build_in_editor(*townsfolk_lanes.plan(L), ground=HF.at, wet=lambda x, y: water_gap((x, y)) < 0)}')  # footways for the townsfolk prototype
 u.log(f'SILVERBROOK_TOWNSFOLK_SMARTOBJECTS {townsfolk_smartobjects.build_in_editor(L)}')  # doors, stalls and benches residents claim
 u.log('PCG_FINISH_REQUIRED run pcg_dressing.py before capture')  # WP6i review fix 1: PCG volumes generate after this script
-import silverbrook_props; importlib.reload(silverbrook_props); silverbrook_props.dress_all()  # WP6: re-materials Roads/Primary and Roads/Secondary by folder path, adds verges and props
+import silverbrook_props; importlib.reload(silverbrook_props)
+silverbrook_props.LAYOUT = SILVERBROOK_LAYOUT  # use the runtime layout moved under Content/RuntimeData
+silverbrook_props.dress_all()  # WP6: re-materials Roads/Primary and Roads/Secondary by folder path, adds verges and props
 # The editor opens over the market square, 30 m up and 35 m back, looking up the main street (the map keeps its viewport on save).
 _cam = u.Vector(ax * 100 - 35 * 100 * math.cos(math.radians(yaw)), ay * 100 - 35 * 100 * math.sin(math.radians(yaw)), (surface_z(ax, ay) + 30) * 100)
 u.get_editor_subsystem(u.UnrealEditorSubsystem).set_level_viewport_camera_info(_cam, u.Rotator(roll=0, pitch=-25, yaw=yaw))

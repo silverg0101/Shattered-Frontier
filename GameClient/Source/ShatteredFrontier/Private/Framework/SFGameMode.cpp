@@ -181,6 +181,25 @@ void ASFGameMode::PostLogin(APlayerController* NewPlayer)
                 Pawn->GetCharacterMovement()->StopMovementImmediately();
                 Witness->GetCharacterMovement()->StopMovementImmediately();
                 UE_LOG(LogTemp, Display, TEXT("GREENLANDS_MOVEMENT_START X=%.0f Y=%.0f"), Location.X, Location.Y);
+                FTimerHandle RoadTimer;
+                GetWorldTimerManager().SetTimer(RoadTimer, FTimerDelegate::CreateWeakLambda(this, [this, Driver, Observer]()
+                {
+                    ASFE1Character* RoadPawn = Driver.IsValid() ? Cast<ASFE1Character>(Driver->GetPawn()) : nullptr;
+                    ASFE1Character* RoadWitness = Observer.IsValid() ? Cast<ASFE1Character>(Observer->GetPawn()) : nullptr;
+                    if (!RoadPawn || !RoadWitness) { UE_LOG(LogTemp, Error, TEXT("GREENLANDS_ROAD_NO_PLAYERS")); return; }
+                    // Cross the authored Silvermere Road north of town, from dry ground on its west side.
+                    const FVector RoadStart(-4000, -105000, 0);
+                    FHitResult RoadGround;
+                    if (!GetWorld()->LineTraceSingleByChannel(RoadGround, RoadStart + FVector(0, 0, 100000),
+                        RoadStart - FVector(0, 0, 100000), ECC_WorldStatic))
+                    { UE_LOG(LogTemp, Error, TEXT("GREENLANDS_ROAD_NO_GROUND")); return; }
+                    const FVector RoadLocation = RoadGround.Location + FVector(0, 0, 90);
+                    RoadPawn->SetActorLocation(RoadLocation, false, nullptr, ETeleportType::TeleportPhysics);
+                    RoadWitness->SetActorLocation(RoadLocation + FVector(0, 200, 0), false, nullptr, ETeleportType::TeleportPhysics);
+                    RoadPawn->GetCharacterMovement()->StopMovementImmediately();
+                    RoadWitness->GetCharacterMovement()->StopMovementImmediately();
+                    UE_LOG(LogTemp, Display, TEXT("GREENLANDS_ROAD_START X=%.0f Y=%.0f"), RoadLocation.X, RoadLocation.Y);
+                }), 15.0f, false);
                 return;
             }
             // Test-only spawn on the dry west shore of the authored Eastwood Pond, 25 m above its terrain.

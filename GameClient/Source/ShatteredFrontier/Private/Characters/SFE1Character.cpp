@@ -22,6 +22,7 @@
 #include "Framework/SFGameUserSettings.h"
 #include "Characters/SFCombatFramingLogic.h"
 #include "Characters/SFSwimRules.h"
+#include "Characters/SFRoadSpeedVolume.h"
 #include "Combat/SFCombatPilot.h"
 #include "Combat/SFTabTargetSelection.h"
 #include "Combat/SFCrowdControlComponent.h"
@@ -836,9 +837,28 @@ void ASFE1Character::TickGreenlandsMovementScenario()
         ++Players;
         if (ScenarioRole == TEXT("Observer") && *It != this) { Watched = *It; }
     }
-    if (Players < 2 || (ScenarioRole == TEXT("Observer") && Watched == this) ||
-        Watched->GetActorLocation().X < 49500.0) { return; }
+    if (Players < 2 || (ScenarioRole == TEXT("Observer") && Watched == this)) { return; }
     const double Now = GetWorld()->GetTimeSeconds();
+    if (Watched->GetActorLocation().Y < -100000.0)
+    {
+        if (RoadScenarioStartAt < 0) { RoadScenarioStartAt = Now; }
+        if (ScenarioRole == TEXT("Driver"))
+        {
+            Controller->SetControlRotation(FRotator::ZeroRotator);
+            if (Now - RoadScenarioStartAt < 16.0) { AddMovementInput(FVector::ForwardVector, 1.0f); }
+            else if (!bRoadScenarioComplete)
+            { bRoadScenarioComplete = true; UE_LOG(LogTemp, Display, TEXT("GREENLANDS_ROAD_COMPLETE")); }
+        }
+        if (Now >= NextRoadSampleAt)
+        {
+            NextRoadSampleAt = Now + 0.2;
+            UE_LOG(LogTemp, Display, TEXT("GREENLANDS_ROAD_CLIENT Role=%s X=%.0f Speed=%.0f Road=%d"),
+                *ScenarioRole, Watched->GetActorLocation().X, Watched->GetVelocity().Size2D(),
+                Cast<ASFRoadSpeedVolume>(Watched->GetPhysicsVolume()) ? 1 : 0);
+        }
+        return;
+    }
+    if (Watched->GetActorLocation().X < 49500.0) { return; }
     if (CrouchScenarioStartAt < 0) { CrouchScenarioStartAt = Now; }
     const double Elapsed = Now - CrouchScenarioStartAt;
     const int32 Stage = Elapsed < 3.5 ? 0 : Elapsed < 6.5 ? 1 : Elapsed < 9.5 ? 2 : Elapsed < 12.0 ? 3 : 4;
@@ -1216,6 +1236,15 @@ void ASFE1Character::Tick(float DeltaSeconds)
             *GetName(), GetWorld()->GetTimeSeconds(), GetActorLocation().X, bIsCrouched ? 1 : 0,
             GetVelocity().Size2D(), FVector::DotProduct(GetActorForwardVector(), GetVelocity().GetSafeNormal2D()),
             GetCharacterMovement()->GetMaxSpeed());
+    }
+    if (HasAuthority() && CombatMap == TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook") &&
+        FParse::Param(FCommandLine::Get(), TEXT("GreenlandsMovementNetcheck")) &&
+        GetActorLocation().Y < -100000.0 && GetWorld()->GetTimeSeconds() >= NextRoadSampleAt)
+    {
+        NextRoadSampleAt = GetWorld()->GetTimeSeconds() + 0.2;
+        UE_LOG(LogTemp, Display, TEXT("GREENLANDS_ROAD_SERVER Pawn=%s X=%.0f Speed=%.0f Cap=%.0f Road=%d"),
+            *GetName(), GetActorLocation().X, GetVelocity().Size2D(), GetCharacterMovement()->GetMaxSpeed(),
+            Cast<ASFRoadSpeedVolume>(GetPhysicsVolume()) ? 1 : 0);
     }
 #endif
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST

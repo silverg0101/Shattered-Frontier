@@ -511,6 +511,8 @@ try {
     if ($GreenlandsMovementNetcheck) {
         Wait-Log $serverLog 'GREENLANDS_MOVEMENT_START X='
         Wait-Log (Join-Path $logs 'Client1.log') 'GREENLANDS_MOVEMENT_COMPLETE'
+        Wait-Log $serverLog 'GREENLANDS_ROAD_START X='
+        Wait-Log (Join-Path $logs 'Client1.log') 'GREENLANDS_ROAD_COMPLETE'
         $samples = @(Select-String -LiteralPath $serverLog -Pattern 'GREENLANDS_MOVEMENT_SERVER Pawn=(\S+) T=([\d.]+) X=([-\d.]+) C=([01]) Speed=([\d.]+) Dot=([-\d.]+) Cap=([\d.]+)' | ForEach-Object {
             $g = $_.Matches[0].Groups
             [pscustomobject]@{ Pawn=$g[1].Value; T=[double]::Parse($g[2].Value,[Globalization.CultureInfo]::InvariantCulture);
@@ -522,7 +524,7 @@ try {
         $crouch = @($samples | Where-Object { $_.C -eq 1 -and $_.Speed -ge 190 -and $_.Speed -le 201 -and $_.Cap -ge 199 -and $_.Cap -le 201 })
         if ($crouch.Count -lt 3) { throw 'Silverbrook server missed the 2 m/s crouch cap' }
         $pawn = $crouch[0].Pawn
-        $pawnSamples = @($samples | Where-Object { $_.Pawn -eq $pawn })
+        $pawnSamples = @($samples | Where-Object { $_.Pawn -eq $pawn -and $_.X -gt 49500 })
         $run = @($pawnSamples | Where-Object { $_.T -gt $crouch[-1].T -and $_.C -eq 0 -and $_.Speed -ge 665 -and $_.Speed -le 705 -and $_.Dot -gt 0.9 -and $_.Cap -ge 699 -and $_.Cap -le 701 })
         $reverse = @($pawnSamples | Where-Object { $run.Count -gt 0 -and $_.T -gt $run[0].T -and $_.Speed -ge 390 -and $_.Speed -le 425 -and $_.Dot -lt -0.9 -and $_.Cap -ge 419 -and $_.Cap -le 421 })
         $returned = @($pawnSamples | Where-Object { $reverse.Count -gt 0 -and $_.T -gt $reverse[-1].T -and $_.C -eq 0 -and $_.Speed -ge 665 -and $_.Speed -le 705 -and $_.Dot -gt 0.9 -and $_.Cap -ge 699 -and $_.Cap -le 701 })
@@ -548,7 +550,35 @@ try {
                 throw "$role missed replicated Silverbrook crouch, run and backpedal"
             }
         }
-        Write-Output "PASS: Silverbrook server enforced 2 m/s crouch, 7 m/s run and 0.6x backpedal; both clients saw the sequence. Logs: $logs"
+        $roadServer = @(Select-String -LiteralPath $serverLog -Pattern 'GREENLANDS_ROAD_SERVER Pawn=(\S+) X=([-\d.]+) Speed=([\d.]+) Cap=([\d.]+) Road=([01])' | ForEach-Object {
+            $g = $_.Matches[0].Groups
+            [pscustomobject]@{ Pawn=$g[1].Value; X=[double]::Parse($g[2].Value,[Globalization.CultureInfo]::InvariantCulture);
+                Speed=[double]::Parse($g[3].Value,[Globalization.CultureInfo]::InvariantCulture);
+                Cap=[double]::Parse($g[4].Value,[Globalization.CultureInfo]::InvariantCulture); Road=[int]$g[5].Value }
+        } | Where-Object { $_.Pawn -eq $pawn })
+        $onRoad = @($roadServer | Where-Object { $_.Road -eq 1 -and $_.Speed -ge 745 -and $_.Speed -le 775 -and $_.Cap -ge 769 -and $_.Cap -le 771 })
+        $beforeRoad = @($roadServer | Where-Object { $_.Road -eq 0 -and $_.X -lt -500 -and $_.Speed -ge 665 -and $_.Speed -le 705 -and $_.Cap -ge 699 -and $_.Cap -le 701 })
+        $afterRoad = @($roadServer | Where-Object { $_.Road -eq 0 -and $_.X -gt 1500 -and $_.Speed -ge 665 -and $_.Speed -le 705 -and $_.Cap -ge 699 -and $_.Cap -le 701 })
+        if ($beforeRoad.Count -lt 3 -or $onRoad.Count -lt 2 -or $afterRoad.Count -lt 3 -or
+            $beforeRoad[-1].X -ge $onRoad[0].X -or $onRoad[-1].X -ge $afterRoad[0].X) {
+            throw 'Silverbrook server missed the ordered 7.0 -> 7.7 -> 7.0 m/s road crossing'
+        }
+        foreach ($role in @('Driver','Observer')) {
+            $path = Join-Path $logs ('Client' + $(if ($role -eq 'Driver') { '1' } else { '2' }) + '.log')
+            $roadClient = @(Select-String -LiteralPath $path -Pattern "GREENLANDS_ROAD_CLIENT Role=$role X=([-\d.]+) Speed=([\d.]+) Road=([01])" | ForEach-Object {
+                $g = $_.Matches[0].Groups
+                [pscustomobject]@{ X=[double]::Parse($g[1].Value,[Globalization.CultureInfo]::InvariantCulture);
+                    Speed=[double]::Parse($g[2].Value,[Globalization.CultureInfo]::InvariantCulture); Road=[int]$g[3].Value }
+            })
+            $before = @($roadClient | Where-Object { $_.Road -eq 0 -and $_.X -lt -500 -and $_.Speed -ge 600 -and $_.Speed -le 715 })
+            $during = @($roadClient | Where-Object { $_.Road -eq 1 -and $_.Speed -ge 720 -and $_.Speed -le 790 })
+            $after = @($roadClient | Where-Object { $_.Road -eq 0 -and $_.X -gt 1500 -and $_.Speed -ge 600 -and $_.Speed -le 715 })
+            if ($before.Count -lt 2 -or $during.Count -lt 2 -or $after.Count -lt 2 -or
+                $before[-1].X -ge $during[0].X -or $during[-1].X -ge $after[0].X) {
+                throw "$role missed replicated normal-ground, real road and normal-ground travel"
+            }
+        }
+        Write-Output "PASS: Silverbrook server enforced crouch, backpedal and 7.0 -> 7.7 -> 7.0 m/s road travel; both clients saw each phase. Logs: $logs"
     }
     if ($AssistScenario) {
         $driverLog = Join-Path $logs 'Client1.log'
