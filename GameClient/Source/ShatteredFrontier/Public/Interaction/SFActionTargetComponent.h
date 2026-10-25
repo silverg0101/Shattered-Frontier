@@ -60,6 +60,7 @@ private:
         ERendererStencilMask WriteMask;
         int32 AppliedStencil;
     };
+    void RestoreMesh(UMeshComponent* Mesh, const FPreviousDepth& Saved);
     TMap<TWeakObjectPtr<UMeshComponent>, FPreviousDepth> PreviousDepth;
     TWeakObjectPtr<APlayerCameraManager> OutlineCamera;
     UPROPERTY(Transient) TObjectPtr<USFActionTargetCameraModifier> OutlineModifier;

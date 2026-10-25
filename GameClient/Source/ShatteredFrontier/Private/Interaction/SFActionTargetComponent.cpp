@@ -58,29 +58,40 @@ void USFActionTargetComponent::Select(AActor* Target)
     Selection.Target = Target;
     if (Selected.Get() != Target || !Target) { RestoreHighlight(); Selected = Target; }
     if (!Target) { return; }
-    if (!EnsureOutlinePass()) { return; }
-    TArray<AActor*> Actors; Target->GetAttachedActors(Actors, true, true); Actors.Add(Target);
-    for (AActor* Actor : Actors)
+    // Follow scene attachments, not component ownership: a detached component
+    // can retain its owner while no longer belonging to the selected body.
+    TSet<UMeshComponent*> CurrentMeshes;
+    if (USceneComponent* Root = Target->GetRootComponent())
     {
-        if (!Actor) continue;
-        TArray<UMeshComponent*> Meshes; Actor->GetComponents(Meshes, true);
-        for (UMeshComponent* Mesh : Meshes)
+        TArray<USceneComponent*> Components; Root->GetChildrenComponents(true, Components); Components.Add(Root);
+        for (USceneComponent* Component : Components)
+            if (auto* Mesh = Cast<UMeshComponent>(Component); Mesh && Mesh->IsVisible()) CurrentMeshes.Add(Mesh);
+    }
+    for (auto It = PreviousDepth.CreateIterator(); It; ++It)
+    {
+        if (!CurrentMeshes.Contains(It.Key().Get()))
         {
-            if (!Mesh || !Mesh->IsVisible() || PreviousDepth.Contains(Mesh)) continue;
-            // Preserve the lower bits the old write mask actually rendered,
-            // including zero when custom depth was disabled. Do not activate
-            // dormant FX bits just because selection enables the depth pass.
-            static_assert(int32(ERendererStencilMask::ERSM_128) == 9);
-            constexpr int32 WriteBits[] = {255,255,1,2,4,8,16,32,64,128};
-            const int32 MaskIndex = int32(Mesh->CustomDepthStencilWriteMask);
-            const int32 LowerBits = Mesh->bRenderCustomDepth && MaskIndex >= 0 && MaskIndex < UE_ARRAY_COUNT(WriteBits) ?
-                (Mesh->CustomDepthStencilValue & WriteBits[MaskIndex] & ~SelectionStencilBit) : 0;
-            const int32 Applied = LowerBits | SelectionStencilBit;
-            PreviousDepth.Add(Mesh, {bool(Mesh->bRenderCustomDepth), Mesh->CustomDepthStencilValue, Mesh->CustomDepthStencilWriteMask, Applied});
-            Mesh->SetCustomDepthStencilValue(Applied);
-            Mesh->SetCustomDepthStencilWriteMask(ERendererStencilMask::ERSM_255);
-            Mesh->SetRenderCustomDepth(true);
+            if (auto* Mesh = It.Key().Get()) RestoreMesh(Mesh, It.Value());
+            It.RemoveCurrent();
         }
+    }
+    if (!EnsureOutlinePass()) { return; }
+    for (UMeshComponent* Mesh : CurrentMeshes)
+    {
+        if (PreviousDepth.Contains(Mesh)) continue;
+        // Preserve the lower bits the old write mask actually rendered,
+        // including zero when custom depth was disabled. Do not activate
+        // dormant FX bits just because selection enables the depth pass.
+        static_assert(int32(ERendererStencilMask::ERSM_128) == 9);
+        constexpr int32 WriteBits[] = {255,255,1,2,4,8,16,32,64,128};
+        const int32 MaskIndex = int32(Mesh->CustomDepthStencilWriteMask);
+        const int32 LowerBits = Mesh->bRenderCustomDepth && MaskIndex >= 0 && MaskIndex < UE_ARRAY_COUNT(WriteBits) ?
+            (Mesh->CustomDepthStencilValue & WriteBits[MaskIndex] & ~SelectionStencilBit) : 0;
+        const int32 Applied = LowerBits | SelectionStencilBit;
+        PreviousDepth.Add(Mesh, {bool(Mesh->bRenderCustomDepth), Mesh->CustomDepthStencilValue, Mesh->CustomDepthStencilWriteMask, Applied});
+        Mesh->SetCustomDepthStencilValue(Applied);
+        Mesh->SetCustomDepthStencilWriteMask(ERendererStencilMask::ERSM_255);
+        Mesh->SetRenderCustomDepth(true);
     }
 }
 
@@ -111,23 +122,28 @@ bool USFActionTargetComponent::IsMeshHighlighted(const UMeshComponent* Mesh) con
         Mesh->bRenderCustomDepth && (Mesh->CustomDepthStencilValue & SelectionStencilBit) != 0;
 }
 
+void USFActionTargetComponent::RestoreMesh(UMeshComponent* Mesh, const FPreviousDepth& Saved)
+{
+    const bool bUnchanged = Mesh->bRenderCustomDepth && Mesh->CustomDepthStencilValue == Saved.AppliedStencil &&
+        Mesh->CustomDepthStencilWriteMask == ERendererStencilMask::ERSM_255;
+    if (bUnchanged)
+    {
+        Mesh->SetCustomDepthStencilValue(Saved.Stencil);
+        Mesh->SetCustomDepthStencilWriteMask(Saved.WriteMask);
+        Mesh->SetRenderCustomDepth(Saved.bRender);
+    }
+    else
+    {
+        // Another FX writer owns this effective state now. Remove only our
+        // bit; restoring an older restrictive mask would suppress its new FX.
+        Mesh->SetCustomDepthStencilValue(Mesh->CustomDepthStencilValue & ~SelectionStencilBit);
+    }
+}
+
 void USFActionTargetComponent::RestoreHighlight()
 {
     for (const auto& Previous : PreviousDepth)
-    {
-        if (UMeshComponent* Mesh = Previous.Key.Get())
-        {
-            const auto& Saved = Previous.Value;
-            const bool bUnchanged = Mesh->bRenderCustomDepth && Mesh->CustomDepthStencilValue == Saved.AppliedStencil &&
-                Mesh->CustomDepthStencilWriteMask == ERendererStencilMask::ERSM_255;
-            // Preserve another FX writer's changed lower bits/mask. Only our
-            // reserved bit is removed; untouched state restores exactly.
-            Mesh->SetCustomDepthStencilValue(Mesh->CustomDepthStencilValue == Saved.AppliedStencil ? Saved.Stencil :
-                (Mesh->CustomDepthStencilValue & ~SelectionStencilBit) | (Saved.Stencil & SelectionStencilBit));
-            if (Mesh->CustomDepthStencilWriteMask == ERendererStencilMask::ERSM_255) Mesh->SetCustomDepthStencilWriteMask(Saved.WriteMask);
-            if (bUnchanged) Mesh->SetRenderCustomDepth(Saved.bRender);
-        }
-    }
+        if (UMeshComponent* Mesh = Previous.Key.Get()) RestoreMesh(Mesh, Previous.Value);
     PreviousDepth.Reset();
 }
 

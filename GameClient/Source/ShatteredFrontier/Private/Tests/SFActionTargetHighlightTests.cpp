@@ -64,6 +64,34 @@ bool FSFActionTargetHighlightTest::RunTest(const FString& Parameters)
     Plain->SetCustomDepthStencilValue(USFActionTargetComponent::SelectionStencilBit | 3);
     Selection->Select(nullptr);
     TestTrue(TEXT("Concurrent FX lower bits and depth survive release"), Plain->CustomDepthStencilValue == 3 && Plain->bRenderCustomDepth);
+    // Refresh must release departed scene attachments even when ownership and
+    // the selected actor stay unchanged, without resetting surviving FX state.
+    auto* Follower = World->SpawnActor<AActor>();
+    auto* Attached = NewObject<UStaticMeshComponent>(Follower); Follower->SetRootComponent(Attached); Attached->RegisterComponent();
+    Attached->SetStaticMesh(Plain->GetStaticMesh()); Attached->SetCustomDepthStencilValue(12);
+    Attached->SetCustomDepthStencilWriteMask(ERendererStencilMask::ERSM_4);
+    Follower->AttachToComponent(Static, FAttachmentTransformRules::KeepWorldTransform);
+    Selection->Select(Target);
+    TestTrue(TEXT("Attached actor joins the selected hierarchy"), Selection->IsMeshHighlighted(Attached));
+    TestEqual(TEXT("Dormant restrictive FX bits remain dormant while selected"), Attached->CustomDepthStencilValue, 128);
+    Static->SetCustomDepthStencilValue(131);
+    Follower->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+    Skin->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+    Selection->Select(Target);
+    TestTrue(TEXT("Detached actor restores exact dormant triple immediately"), !Attached->bRenderCustomDepth && Attached->CustomDepthStencilValue == 12 && Attached->CustomDepthStencilWriteMask == ERendererStencilMask::ERSM_4);
+    TestFalse(TEXT("Detached component with retained owner stops highlighting"), Skin->bRenderCustomDepth || Selection->IsMeshHighlighted(Skin));
+    TestEqual(TEXT("Surviving selected mesh keeps concurrent FX state during refresh"), Static->CustomDepthStencilValue, 131);
+    Selection->Select(nullptr);
+    TestTrue(TEXT("Restrictive original mask cannot suppress concurrent lower bits"), Static->bRenderCustomDepth && Static->CustomDepthStencilValue == 3 && Static->CustomDepthStencilWriteMask == ERendererStencilMask::ERSM_255);
+    Selection->Select(Follower); Attached->SetCustomDepthStencilValue(131); Selection->Select(nullptr);
+    TestTrue(TEXT("Concurrent activation of dormant restrictive FX remains effective"), Attached->bRenderCustomDepth && Attached->CustomDepthStencilValue == 3 && Attached->CustomDepthStencilWriteMask == ERendererStencilMask::ERSM_255);
+    Selection->Select(Follower); Attached->SetCustomDepthStencilValue(130);
+    Attached->SetCustomDepthStencilWriteMask(ERendererStencilMask::ERSM_2); Attached->SetRenderCustomDepth(false);
+    Selection->Select(nullptr);
+    TestTrue(TEXT("Concurrent writer's explicit mask and disabled depth are preserved"), !Attached->bRenderCustomDepth && Attached->CustomDepthStencilValue == 2 && Attached->CustomDepthStencilWriteMask == ERendererStencilMask::ERSM_2);
+    // Restore the original test fixture state for the independent EndPlay case.
+    Static->SetCustomDepthStencilValue(12); Static->SetCustomDepthStencilWriteMask(ERendererStencilMask::ERSM_4);
+    Skin->AttachToComponent(Static, FAttachmentTransformRules::KeepWorldTransform);
     Selection->Select(Target); Selection->EndPlay(EEndPlayReason::RemovedFromWorld);
     TestTrue(TEXT("EndPlay restores original stencil/write mask and overlay"), Static->CustomDepthStencilValue == 12 && Static->CustomDepthStencilWriteMask == ERendererStencilMask::ERSM_4 && Static->GetOverlayMaterial() == Overlay);
     TestFalse(TEXT("No outline remains after EndPlay"), Selection->HasSelectionOutline());
