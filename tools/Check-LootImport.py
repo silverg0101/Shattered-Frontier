@@ -25,7 +25,12 @@ for stem in names:
     scale = pipeline.get_editor_property('import_offset_uniform_scale')
     length = spans[stem]['principal_spans_m'][0] * scale * 100
     assert abs(length - handoff[stem]['size_cm']['length']) < .02, (stem, length)
-    assert mesh.get_num_triangles(0) > 0 and mesh.static_materials
+    assert mesh.get_num_triangles(0) >= 48000 and mesh.static_materials
+    nanite = mesh.get_editor_property('nanite_settings')
+    assert nanite.get_editor_property('enabled')
+    assert nanite.get_editor_property('fallback_target') == u.NaniteFallbackTarget.PERCENT_TRIANGLES
+    assert abs(nanite.get_editor_property('fallback_percent_triangles') - 1.0) < .001
     assert all(slot.material_interface for slot in mesh.static_materials), stem
-    print('LOOT_CHECK', stem, mesh.get_path_name(), 'principal_length_cm', round(length, 2))
+    print('LOOT_CHECK', stem, mesh.get_path_name(), 'principal_length_cm',
+          round(length, 2), 'render_triangles', mesh.get_num_triangles(0))
 print('LOOT_CHECK_PASS', len(names))

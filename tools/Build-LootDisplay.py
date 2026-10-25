@@ -20,25 +20,40 @@ for actor in u.EditorLevelLibrary.get_all_level_actors():
 rows = json.loads((ROOT / 'Artifacts/LootItems/import-evidence.json').read_text())
 cube = u.load_asset('/Engine/BasicShapes/Cube')
 assert cube
+
+
+def rest_on_floor(actor, rotation):
+    actor.set_actor_rotation(rotation, False)
+    center, extent = actor.get_actor_bounds(False)
+    bottom = center.z - extent.z
+    loc = actor.get_actor_location()
+    actor.set_actor_location(u.Vector(loc.x, loc.y, loc.z + .5 - bottom), False, False)
+
+
 for index, row in enumerate(rows):
     stem = row['item_id'][5:]
     mesh = u.load_asset(row['mesh'])
     assert isinstance(mesh, u.StaticMesh), stem
     x = (index % 4 - 1.5) * 250.0
     y = (index // 4) * 300.0
-    bounds = mesh.get_bounding_box()
-    z = -bounds.min.z + 0.5
-    actor = actor_tools.spawn_actor_from_class(u.StaticMeshActor, u.Vector(x, y, z))
+    actor = actor_tools.spawn_actor_from_class(u.StaticMeshActor, u.Vector(x, y, 0))
     actor.set_actor_label('Loot_' + stem)
     actor.static_mesh_component.set_static_mesh(mesh)
     actor.set_folder_path('LootDisplay')
+    rest = (u.Rotator() if stem == 'wolf_pelt' else
+            u.Rotator(pitch=90) if stem == 'cudgel' else
+            u.Rotator(roll=-90) if stem == 'wolf_fang' else
+            u.Rotator(roll=-90, yaw=90))
+    rest_on_floor(actor, rest)
     if stem == 'wolfhide_bracers':
-        second = actor_tools.spawn_actor_from_class(u.StaticMeshActor, u.Vector(x + 36, y, z))
+        second = actor_tools.spawn_actor_from_class(u.StaticMeshActor, u.Vector(x + 36, y, 0))
         second.set_actor_label('Loot_wolfhide_bracers_mirrored')
         second.static_mesh_component.set_static_mesh(mesh)
         second.set_actor_scale3d(u.Vector(1, -1, 1))
         second.set_folder_path('LootDisplay')
-    reference_x = x + max(18.0, float(row['target_cm']['length']) * .8)
+        rest_on_floor(second, u.Rotator(roll=90, yaw=90))
+    reference_x = (x - 25 if stem == 'wolfhide_bracers' else
+                   x + max(8.0, float(row['target_cm']['length']) * .6))
     reference = actor_tools.spawn_actor_from_class(u.StaticMeshActor, u.Vector(reference_x, y, 5))
     reference.set_actor_label('Scale10cm_' + stem)
     reference.static_mesh_component.set_static_mesh(cube)

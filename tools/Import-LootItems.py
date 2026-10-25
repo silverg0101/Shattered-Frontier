@@ -82,6 +82,14 @@ for stem in NAMES:
     meshes = [asset for asset in imported_objects if isinstance(asset, u.StaticMesh)]
     assert len(meshes) == 1, (stem, imported_objects)
     mesh = meshes[0]
+    # Offscreen -game review uses Nanite's fallback. Keep the source's full
+    # silhouette/details instead of Interchange's tiny automatic fallback.
+    nanite = mesh.get_editor_property('nanite_settings')
+    nanite.set_editor_property('enabled', True)
+    nanite.set_editor_property('fallback_target', u.NaniteFallbackTarget.PERCENT_TRIANGLES)
+    nanite.set_editor_property('fallback_percent_triangles', 1.0)
+    mesh.set_editor_property('nanite_settings', nanite)
+    assert library.save_loaded_asset(mesh), mesh.get_path_name()
     actual = dimensions(mesh)
     assert abs(principal[0] * factor * 100 - row['size_cm']['length']) < 0.01
     assert max(actual) <= row['size_cm']['length'] + 0.5, (stem, actual)
