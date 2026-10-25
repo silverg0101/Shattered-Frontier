@@ -196,6 +196,8 @@ try {
         Wait-Log $server 'server' 'SHARED_LOOT_CREATED Event=.* Creature=npc/bandit_captain Eligible=2 Items=1' 90
         Wait-Log $server 'server' 'SHARED_LOOT_CLAIM Event=.* Character=chr_dev_alpha Won=1 Code=0 Items=1' 60
         Wait-Log $server 'server' 'SHARED_LOOT_CLAIM Event=.* Character=chr_dev_beta Won=0 Code=6' 60
+        $winnerClient = @($owned | Where-Object { $_.Id -eq (@($result.runs | Where-Object name -eq 'client1')[0].pid) })[0]
+        Wait-Log $winnerClient 'client1' 'PERSONAL_LOOT_CLIENT_INVENTORY Item=item/(studded_jerkin|reinforced_greaves|captains_longsword) Name=.+ Count=1' 60
         $rows = ''
         for ($attempt = 0; $attempt -lt 50; $attempt++) {
             $rows = Invoke-LedgerSql $fx "SELECT string_agg(recipient_id,',' ORDER BY recipient_id) FROM inventory.defeat_reward_intents WHERE state='Complete'" $fx.db

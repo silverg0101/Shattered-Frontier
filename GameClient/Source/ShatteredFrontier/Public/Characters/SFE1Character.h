@@ -140,6 +140,7 @@ private:
     UPROPERTY(Replicated) TObjectPtr<AActor> CombatTarget;
     FTimerHandle CombatScenarioTimer;
     int32 CombatScenarioAttackCount = 0;
+    bool bPersonalLootInventoryObserved = false;
     double CombatScenarioNextAttackAt = 0;
     bool bM3ClientCaptureStarted = false;
     bool bM3ClientStopQueued = false;

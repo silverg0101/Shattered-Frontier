@@ -167,4 +167,46 @@ bool FSFInventoryPanelDefinitionTest::RunTest(const FString& Parameters)
     TestEqual(TEXT("Fallback name when unnamed"),USFInventoryWidget::MakeEntry(*Ore,TEXT("Fallback"),1,false).Name.ToString(),FString(TEXT("Fallback")));
     return true;
 }
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFInventoryGreenlandsDropsTest,
+    "ShatteredFrontier.Inventory.Panel.GreenlandsDrops",EAutomationTestFlags::EditorContext|EAutomationTestFlags::EngineFilter)
+
+bool FSFInventoryGreenlandsDropsTest::RunTest(const FString& Parameters)
+{
+    FTestWorldWrapper Fixture;
+    if (!Fixture.CreateTestWorld(EWorldType::GameRPC) || !Fixture.BeginPlayInTestWorld()) { return false; }
+    UWorld* World=Fixture.GetTestWorld(); World->GetWorldSettings()->NotifyBeginPlay();
+    auto* PC=World->SpawnActor<ASFPlayerController>();
+    auto* Pilot=PC ? PC->FindComponentByClass<USFGatheringPilotComponent>() : nullptr;
+    auto* Bag=PC ? PC->FindComponentByClass<USFInventoryComponent>() : nullptr;
+    if (!TestNotNull(TEXT("Client inventory source"),Pilot) || !TestNotNull(TEXT("Replicated bag"),Bag)) { return false; }
+    struct FDrop { const TCHAR* Id; const TCHAR* Asset; const TCHAR* Name; ESFInventoryTab Tab; const TCHAR* Slot; };
+    const FDrop Drops[] = {
+        {TEXT("item/wolf_pelt"),TEXT("DA_WolfPelt"),TEXT("Wolf Pelt"),ESFInventoryTab::Materials,TEXT("")},
+        {TEXT("item/wolfhide_bracers"),TEXT("DA_WolfhideBracers"),TEXT("Wolfhide Bracers"),ESFInventoryTab::Gear,TEXT("Hands")},
+        {TEXT("item/captains_longsword"),TEXT("DA_CaptainsLongsword"),TEXT("Captain's Longsword"),ESFInventoryTab::Gear,TEXT("MainHand")}};
+    TArray<FSFItemQuantity> Granted;
+    for (const FDrop& Drop : Drops)
+    {
+        const FString Path=FString::Printf(TEXT("/Game/Frontier/Gameplay/Pilot/%s.%s"),Drop.Asset,Drop.Asset);
+        auto* Definition=LoadObject<USFItemDefinition>(nullptr,*Path);
+        if (!TestNotNull(FString::Printf(TEXT("Drop definition %s"),Drop.Id),Definition)) { return false; }
+        TestEqual(TEXT("Ledger id links gear stats"),Definition->UniqueId,FString(Drop.Id));
+        TestEqual(TEXT("Display name"),Definition->DisplayName.ToString(),FString(Drop.Name));
+        TestEqual(TEXT("Inventory tab"),USFInventoryWidget::CategoryOf(*Definition),Drop.Tab);
+        TestEqual(TEXT("Equipment slot"),Definition->EquipmentSlot,FName(Drop.Slot));
+        TestFalse(TEXT("Existing placeholder icon assigned"),Definition->Icon.IsNull());
+        FSFItemQuantity Item; Item.Item=TSoftObjectPtr<USFItemDefinition>(FSoftObjectPath(Path)); Item.Quantity=1;
+        Granted.Add(Item);
+    }
+    if (!TestEqual(TEXT("Granted drops enter bag"),SFInventoryTransactions::ExchangeInventoryItems(Bag,{},Granted),ESFInventoryResult::Success)) { return false; }
+    const auto Rows=USFInventoryWidget::BuildRows(Pilot->GetInventoryItems());
+    for (const FDrop& Drop : Drops)
+    {
+        const auto* Row=Rows.FindByPredicate([Drop](const TPair<FText,int32>& Entry)
+        { return Entry.Key.ToString()==Drop.Name; });
+        if (TestNotNull(FString::Printf(TEXT("Inventory list shows %s"),Drop.Id),Row)) { TestEqual(TEXT("Granted count"),Row->Value,1); }
+    }
+    return true;
+}
 #endif

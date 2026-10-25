@@ -27,6 +27,8 @@
 #include "Combat/SFCombatPilot.h"
 #include "Combat/SFCombatEnergy.h"
 #include "Gathering/SFGatheringPilot.h"
+#include "Inventory/SFInventory.h"
+#include "UI/SFInventoryWidget.h"
 #include "Combat/SFAutoAttackRules.h"
 #include "Combat/SFTabTargetSelection.h"
 #include "Combat/SFCrowdControlComponent.h"
@@ -1173,6 +1175,33 @@ void ASFE1Character::TickCombatScenario()
         FParse::Value(FCommandLine::Get(), TEXT("CombatGroupRole="), ScenarioRole);
         const bool bPartyXp = FParse::Param(FCommandLine::Get(), TEXT("PartyXpScenario"));
         const bool bPersonalLoot = FParse::Param(FCommandLine::Get(), TEXT("PersonalLootScenario"));
+        if (bPersonalLoot && ScenarioRole == 1 && !bPersonalLootInventoryObserved)
+        {
+            const auto* PC = Cast<ASFPlayerController>(Controller);
+            const auto* Bag = PC ? PC->FindComponentByClass<USFInventoryComponent>() : nullptr;
+            const auto* Pilot = PC ? PC->FindComponentByClass<USFGatheringPilotComponent>() : nullptr;
+            if (Bag && Pilot)
+            {
+                const auto Rows = USFInventoryWidget::BuildRows(Pilot->GetInventoryItems());
+                for (int32 Index = 0; Index < Bag->NumSlots; ++Index)
+                {
+                    TSoftObjectPtr<USFItemDefinition> Item; int32 Quantity = 0;
+                    if (!Bag->GetSlot(Index, Item, Quantity)) { continue; }
+                    const auto* Definition = Item.LoadSynchronous();
+                    if (!Definition || (Definition->UniqueId != TEXT("item/studded_jerkin") &&
+                        Definition->UniqueId != TEXT("item/reinforced_greaves") && Definition->UniqueId != TEXT("item/captains_longsword"))) { continue; }
+                    const FString Name = Definition->DisplayName.ToString();
+                    if (Rows.ContainsByPredicate([&Name](const TPair<FText,int32>& Row)
+                        { return Row.Key.ToString() == Name && Row.Value > 0; }))
+                    {
+                        bPersonalLootInventoryObserved = true;
+                        UE_LOG(LogTemp, Display, TEXT("PERSONAL_LOOT_CLIENT_INVENTORY Item=%s Name=%s Count=%d"),
+                            *Definition->UniqueId, *Name, Quantity);
+                        break;
+                    }
+                }
+            }
+        }
         ASFPilotBoar* Boar = nullptr;
         double NearestDistance = TNumericLimits<double>::Max();
         double BestTargetScore = TNumericLimits<double>::Max();
