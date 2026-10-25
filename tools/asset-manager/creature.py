@@ -355,11 +355,26 @@ def pick_animal(p, s):
     return entry, m
 
 
-CREATURE_DEPTH_WRAP = ("{garment}\n\nOne whole animal, alone, seen exactly {view}, orthographic, in this pose: " + STANCE + ". "
-                       "Soft even studio light, no other objects, no text, no ground shadow. The supplied depth gives only the "
-                       "animal's size, stance and body plan; its fur, mane, horns, colour and build follow the description.")
+_WRAP_TAIL = (" Soft even studio light, plain pure white background, no other objects, no text, no ground shadow. The supplied depth "
+              "gives only the animal's size, stance and body plan; its fur, mane, colour and build follow the description.")
+CREATURE_DEPTH_WRAP = {
+    "left": "{garment}
+
+One whole animal, alone, seen exactly {view}, orthographic, in this pose: " + STANCE + "." + _WRAP_TAIL,
+    "front": "{garment}
+
+One whole animal, alone, seen exactly head-on: it faces the viewer, its nose pointing straight at the "
+             "camera, the body foreshortened behind the head, both front legs visible and symmetric, standing square, mouth "
+             "closed, orthographic." + _WRAP_TAIL}
 CREATURE_DEPTH_NEGATIVE = ("several animals, collage, turnaround sheet, text, watermark, ground shadow, scenery, person, cropped, "
-                           "cut-off legs, open mouth, three-quarter view, motion blur")
+                           "cut-off legs, open mouth, motion blur")
+FRONT_NEGATIVE = ", side view, profile, three-quarter view, turned head, seen from the side"
+HORNS = ", horns, antlers, spikes"  # an ear drawn as a spike grows into a horn on the 3D model
+HORNY = re.compile(r"horn|antler|spike|tusk|unicorn", re.I)
+FRONT_BRIEF = ("Image 1 is meant to show an animal from the front, image 2 the same animal from its left side. Fail image 1 "
+               "unless the animal faces the camera head-on with its nose pointing at the viewer (not in profile, not "
+               "three-quarter) and it is clearly the same animal as image 2: same colours, markings, build and number of "
+               "legs and ears. The animal: {prompt}")
 
 
 def depth_host(host):
@@ -394,7 +409,8 @@ def standin_depth(jid, host, lib, size_cm) -> dict:
 
 def depth_concept(jid, host, p, entry, lib, size, brief, log, step, info):
     """The concept views {front, left, right} drawn by Qwen-Image-2.1 under the matched animal's stand-in depth maps; the
-    side view is reviewed against `brief` (up to 3 tries, a new seed each). None, logged, when it cannot be done: no
+    side view is reviewed against `brief` (up to 3 tries, a new seed each), then the front (2 tries; failing both, the
+    heroes flow redraws the front from the side view). None, logged, when it cannot be done: no
     host with the depth workflow free, a failed stand-in render, or three failed reviews - the caller falls back to the
     heroes flow, as the depth path alone never fails a job."""
     a, s = _app(), _app().get_settings()
@@ -409,18 +425,43 @@ def depth_concept(jid, host, p, entry, lib, size, brief, log, step, info):
         info["standin"] = {**{f"standin_depth_{v}.png": depth[v] for v in a.DEPTH_VIEWS},
                            **{f"standin_{v}.png": files[f"standin_{v}.png"] for v in a.DEPTH_VIEWS}, "standin.json": files["standin.json"]}
         log.append(f"concept: stand-in rendered for {entry['id']} at {size:g} cm")
-        base, extra = p["prompt"] or p["name"], ""
-        for n in range(1, 4):
-            step(f"drawing the depth concept (try {n}/3)")
-            control = {"strength": s["creature_depth_strength"], "end_percent": s["creature_depth_end"], "seed": 12345 + 1000 * n}
-            views = a.depth_views(jid, dhost, {"prompt": base + extra, "symmetric": True}, log, depth=depth,
-                                  wrap=CREATURE_DEPTH_WRAP, negative=CREATURE_DEPTH_NEGATIVE, control=control)
+        base = p["prompt"] or p["name"]
+        neg = CREATURE_DEPTH_NEGATIVE + ("" if HORNY.search(base) else HORNS)
+        negative = {"left": neg, "front": neg + FRONT_NEGATIVE}
+        control = lambda seed: {"strength": {"left": s["creature_depth_strength"], "front": s["creature_depth_front_strength"]},
+                                "end_percent": s["creature_depth_end"], "seed": seed}
+        draw = lambda only, seed, extra: a.depth_views(jid, dhost, {"prompt": base + extra, "symmetric": True}, log, depth=depth,
+                                                       wrap=CREATURE_DEPTH_WRAP, negative=negative, control=control(seed), only=only)
+        extra = ""
+        for n in range(1, 4):  # the side view first: it settles the animal
+            step(f"drawing the depth side view (try {n}/3)")
+            views = draw(("left",), 12345 + 1000 * n, extra)
             r = a.codex_review([views["left"]], brief)
-            log.append(f"depth concept {n}: {'pass' if r['pass'] else 'fail: ' + '; '.join(r['problems'])}")
+            log.append(f"depth side {n}: {'pass' if r['pass'] else 'fail: ' + '; '.join(r['problems'])}")
+            if r["pass"]:
+                break
+            extra = f"
+
+A previous drawing was rejected: {'; '.join(r['problems'])}. {r['fix']}"
+        else:
+            log.append("concept: the depth views failed their review; using the heroes flow")
+            return None
+        extra = ""
+        for n in (1, 2):  # then the front, which has to face the camera and be the same animal
+            step(f"drawing the depth front view (try {n}/2)")
+            views["front"] = draw(("front",), 777 + 1000 * n, extra)["front"]
+            r = a.codex_review([views["front"], views["left"]], FRONT_BRIEF.format(prompt=base))
+            log.append(f"depth front {n}: {'pass' if r['pass'] else 'fail: ' + '; '.join(r['problems'])}")
             if r["pass"]:
                 return views
-            extra = f"\n\nA previous drawing was rejected: {'; '.join(r['problems'])}. {r['fix']}"
-        log.append("concept: the depth views failed their review; using the heroes flow")
+            extra = f"
+
+A previous front view was rejected: {'; '.join(r['problems'])}. {r['fix']}"
+        log.append("depth front view failed its review twice: redrawing the front from the side view (heroes flow)")
+        step("drawing the front from the side view")
+        return a.hero_views(jid, f"{base}
+
+Pose: {STANCE}.", "auto", views["left"], log)[1]
     except InterruptedError:
         raise
     except Exception as e:
