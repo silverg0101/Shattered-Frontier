@@ -430,6 +430,8 @@ def depth_concept(jid, host, p, entry, lib, size, brief, log, step, info):
                                                        wrap=CREATURE_DEPTH_WRAP, negative=negative, control=control(seed), only=only)
         extra = ""
         for n in range(1, 4):  # the side view first: it settles the animal
+            if a.job_row(jid)["status"] == "cancelling":
+                raise InterruptedError
             step(f"drawing the depth side view (try {n}/3)")
             views = draw(("left",), 12345 + 1000 * n, extra)
             r = a.codex_review([views["left"]], brief)
@@ -442,6 +444,8 @@ def depth_concept(jid, host, p, entry, lib, size, brief, log, step, info):
             return None
         extra = ""
         for n in (1, 2):  # then the front, which has to face the camera and be the same animal
+            if a.job_row(jid)["status"] == "cancelling":
+                raise InterruptedError
             step(f"drawing the depth front view (try {n}/2)")
             views["front"] = draw(("front",), 777 + 1000 * n, extra)["front"]
             r = a.codex_review([views["front"], views["left"]], FRONT_BRIEF.format(prompt=base))
@@ -450,6 +454,8 @@ def depth_concept(jid, host, p, entry, lib, size, brief, log, step, info):
                 return views
             extra = f"\n\nA previous front view was rejected: {'; '.join(r['problems'])}. {r['fix']}"
         log.append("depth front view failed its review twice: redrawing the front from the side view (heroes flow)")
+        if a.job_row(jid)["status"] == "cancelling":
+            raise InterruptedError
         step("drawing the front from the side view")
         return a.hero_views(jid, f"{base}\n\nPose: {STANCE}.", "auto", views["left"], log)[1]
     except InterruptedError:

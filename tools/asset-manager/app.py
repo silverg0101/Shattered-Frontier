@@ -2261,10 +2261,10 @@ def depth_views(jid, host, p, log, depth=None, wrap=DEPTH_WRAP, negative=DEPTH_N
     names = {pos: f"{jid}_{tag}_{pos}.png" for pos in DEPTH_VIEWS}
     drawn = tuple(only or (("front", "left") if p["symmetric"] else DEPTH_VIEWS))
     per = lambda v, pos: v[pos] if isinstance(v, dict) else v
-    for pos in drawn:
-        put_input(host, names[pos], (DEPTH_DIR / f"depth_{p['slot']}_{pos}.png").read_bytes() if depth is None else depth[pos])
     views = {}
     try:
+        for pos in drawn:  # inside the try: a failed upload still cleans up the ones before it
+            put_input(host, names[pos], (DEPTH_DIR / f"depth_{p['slot']}_{pos}.png").read_bytes() if depth is None else depth[pos])
         comfy(host, "/free", {"unload_models": True, "free_memory": True})
         for pos in drawn:
             t = time.time()
