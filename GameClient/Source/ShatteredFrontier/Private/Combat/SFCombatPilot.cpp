@@ -1530,6 +1530,8 @@ void ASFGameMode::TickGreenlandsAbilityNetcheck()
         { if (IsValid(Slot.Value.Get()) && Slot.Value->GetCreatureId() == TEXT("npc/bandit_captain"))
           { Captain = Slot.Value.Get(); break; } }
         if (!Captain || !Captain->GetCasting()) return;
+        // Begin the fixture at the camp anchor so pursuit cannot carry the captain out of territory.
+        Captain->SetActorLocation(Captain->SpawnAnchor(), false, nullptr, ETeleportType::TeleportPhysics);
         GreenlandsAbilityBoar = Captain;
         bool bInsideCamp = false;
         for (int32 Direction = 0; Direction < 8 && !bInsideCamp; ++Direction)
@@ -1571,8 +1573,6 @@ void ASFGameMode::TickGreenlandsAbilityNetcheck()
     {
         ASFPilotBoar* Captain = GreenlandsAbilityBoar.Get();
         if (!Captain || !Captain->GetCasting() || Captain->GetCasting()->GetCastView().Phase != ESFCastPhase::Casting) return;
-        Driver->SetActorLocation(Grounded(GetWorld(), Captain->GetActorLocation() + FVector(180, 0, 0),
-            Driver->GetCapsuleComponent()->GetScaledCapsuleHalfHeight()), false, nullptr, ETeleportType::TeleportPhysics);
         Driver->SetActorRotation((Captain->GetActorLocation() - Driver->GetActorLocation()).Rotation());
         Driver->Casting->RequestPublishedInterrupt(false, Captain);
         const int32 Mana = Captain->GetCasting()->GetNpcMana();
