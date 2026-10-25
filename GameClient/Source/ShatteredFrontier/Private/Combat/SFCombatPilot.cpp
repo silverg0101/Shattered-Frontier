@@ -653,9 +653,10 @@ void ASFGameMode::StartCombat()
     const bool bFallSandbox = MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_FallDamage");
     const bool bAssistSandbox = MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_Assist");
     const bool bAutoAttackSandbox = MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_AutoAttack");
+    const bool bUnstuckSandbox = MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_Unstuck");
     bRespawnSandbox = MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_Respawn");
     bCompanionSandbox = GetNetMode() != NM_Client &&
-        (MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_Companions") || bEvadeSandbox || bThreatSandbox || bAggroSandbox || bMemorySandbox || bRegenSandbox || bRestRegenSandbox || bFallSandbox || bAssistSandbox || bRespawnSandbox || bAutoAttackSandbox);
+        (MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_Companions") || bEvadeSandbox || bThreatSandbox || bAggroSandbox || bMemorySandbox || bRegenSandbox || bRestRegenSandbox || bFallSandbox || bAssistSandbox || bRespawnSandbox || bAutoAttackSandbox || bUnstuckSandbox);
     if (bCompanionSandbox)
     {
         CapturedSettings = GetDefault<USFCombatPilotSettings>();
@@ -698,7 +699,7 @@ void ASFGameMode::StartCombat()
             if (Slot != 1 || RespawnSandboxPoints.Num() != 2)
             { UE_LOG(LogTemp, Error, TEXT("BOAR_RESPAWN_INVALID_POINTS Boars=%d Points=%d"), Slot, RespawnSandboxPoints.Num()); return; }
         }
-        bPilotActive = bFallSandbox || Slot > 0;
+        bPilotActive = bFallSandbox || bUnstuckSandbox || Slot > 0;
         RespawnPoints.Add(FVector(0, 0, 110));
         UE_LOG(LogTemp, Display, TEXT("COMBAT_SANDBOX_READY Map=%s Boars=%d"), *MapName, Slot);
         return;

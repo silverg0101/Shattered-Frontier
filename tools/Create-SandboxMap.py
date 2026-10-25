@@ -51,6 +51,13 @@ def main():
     floor.set_actor_scale3d(u.Vector(floor_size, floor_size, 1))
     start_height = 2000 if names[0] == 'FallDamage' else 110
     actors.spawn_actor_from_class(u.PlayerStart, u.Vector(0, 0, start_height)).set_actor_label('PlayerStart')
+    if names[0] == 'Unstuck':
+        fallback = actors.spawn_actor_from_class(u.StaticMeshActor, u.Vector(1200, 0, 110))
+        fallback.set_actor_label('UnstuckRespawnPoint')
+        fallback.static_mesh_component.set_static_mesh(cube)
+        fallback.static_mesh_component.set_collision_profile_name('NoCollision')
+        fallback.set_actor_scale3d(u.Vector(0.2, 0.2, 0.2))
+        fallback.set_editor_property('tags', [u.Name('SF_RespawnPoint')])
     if names[0] == 'FallDamage':
         platform = actors.spawn_actor_from_class(u.StaticMeshActor, u.Vector(0, 0, 1800))
         platform.set_actor_label('FallPlatform')

@@ -66,6 +66,9 @@ public:
     // Console (development): grant chr_dev_<name> build rights on the plot the pawn stands in, or claim that plot.
     UFUNCTION(Exec) void SFGrantBuild(const FString& DevName);
     UFUNCTION(Exec) void SFClaimPlot();
+    // Player command in the Unstuck sandbox; the server chooses and validates the destination.
+    UFUNCTION(Exec) void SFUnstuck();
+    UFUNCTION(Server, Reliable) void ServerRequestUnstuck();
     // Console (development, UI evidence captures): stage named panels and pilot views.
     UFUNCTION(Exec) void SFUi(const FString& Screen);
     void InteractWithSelectedTarget();
@@ -344,4 +347,5 @@ private:
     void HandleGameMenuChoice(ESFGameMenuAction Action);
     TWeakObjectPtr<ASFDialogueNpc> DialogueNpc;
     bool bBuildMode = false;
+    double LastUnstuckAcceptedAt = -1.0;
 };

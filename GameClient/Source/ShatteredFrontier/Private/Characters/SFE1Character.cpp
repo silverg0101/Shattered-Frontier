@@ -1491,6 +1491,7 @@ void ASFE1Character::Tick(float DeltaSeconds)
         FParse::Param(FCommandLine::Get(), TEXT("RoadScenario"))) { TickRoadScenario(); }
     if (GetNetMode() == NM_Client && IsLocallyControlled() &&
         FParse::Param(FCommandLine::Get(), TEXT("SnowScenario"))) { TickRoadScenario(); }
+    if (IsLocallyControlled() && FParse::Param(FCommandLine::Get(), TEXT("UnstuckScenario"))) { TickUnstuckScenario(); }
     if (GetNetMode() == NM_Client && IsLocallyControlled() &&
         FParse::Param(FCommandLine::Get(), TEXT("GreenlandsEnvironmentNetcheck"))) { TickGreenlandsEnvironmentScenario(); }
     if (GetNetMode() == NM_Client && IsLocallyControlled() &&
@@ -1823,6 +1824,44 @@ void ASFE1Character::SetAutoAttack(bool bEnabled)
         Map != TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook")) { return; }
     if (HasAuthority()) { ServerSetAutoAttack_Implementation(bEnabled); }
     else { ServerSetAutoAttack(bEnabled); }
+}
+
+void ASFE1Character::TickUnstuckScenario()
+{
+#if WITH_DEV_AUTOMATION_TESTS
+    FString ScenarioRole;
+    FParse::Value(FCommandLine::Get(), TEXT("UnstuckRole="), ScenarioRole);
+    if (ScenarioRole != TEXT("Driver") && ScenarioRole != TEXT("Observer")) return;
+    ASFPlayerController* PC = Cast<ASFPlayerController>(Controller);
+    if (!PC) return;
+    const double Now = GetWorld()->GetTimeSeconds();
+    ASFE1Character* Remote = nullptr;
+    for (TActorIterator<ASFE1Character> It(GetWorld()); It; ++It)
+    { if (*It != this) { Remote = *It; break; } }
+    if (!Remote) return;
+    const FVector Observed = ScenarioRole == TEXT("Driver") ? GetActorLocation() : Remote->GetActorLocation();
+    if (UnstuckScenarioStage == 0)
+    {
+        UnstuckScenarioInitial = Observed;
+        UnstuckScenarioAt = Now + 2.0;
+        UnstuckScenarioStage = 1;
+        UE_LOG(LogTemp, Display, TEXT("UNSTUCK_CLIENT_READY Role=%s"), *ScenarioRole);
+    }
+    if (ScenarioRole == TEXT("Driver") && UnstuckScenarioStage == 1 && Now >= UnstuckScenarioAt)
+    {
+        PC->SFUnstuck();
+        UnstuckScenarioStage = 2;
+        UE_LOG(LogTemp, Display, TEXT("UNSTUCK_CLIENT_REQUEST Role=Driver"));
+    }
+    if (UnstuckScenarioStage >= 1 && UnstuckScenarioStage < 3 &&
+        FVector::Dist2D(UnstuckScenarioInitial, Observed) >= 200.0f)
+    {
+        UE_LOG(LogTemp, Display, TEXT("UNSTUCK_CLIENT_MOVED Role=%s Distance=%.0f"),
+            *ScenarioRole, FVector::Dist2D(UnstuckScenarioInitial, Observed));
+        if (ScenarioRole == TEXT("Driver")) { PC->SFUnstuck(); }
+        UnstuckScenarioStage = 3;
+    }
+#endif
 }
 
 void ASFE1Character::TickAutoAttackScenario()
