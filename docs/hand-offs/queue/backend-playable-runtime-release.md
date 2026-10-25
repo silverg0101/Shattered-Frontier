@@ -11,21 +11,21 @@ Deploy a compatible immutable Linux game/service/content release on the authoriz
 
 ## State
 
-Release identity is frozen at `ff59b35dd17fef0edd1a7b7f5b9161b867370bc8`. Exact tracked service export/image and fresh unpublished service smoke passed; game/client packages remain with the package worker. Reviewed runtime/bootstrap code is unchanged from `19fe2914`; protected runtime and the old healthy E1 game on UDP17777 remain untouched. Later documentation commits do not change the frozen component identity.
+Exact `ff59b35dd17fef0edd1a7b7f5b9161b867370bc8` game/client/service packages and immutable images are verified; the final operator packet is sealed. One unpublished packaged-game/services smoke passed and cleaned. Protected application still requires interactive operator authentication; the old healthy E1 game on UDP17777 is untouched. Later documentation commits do not change the frozen component identity.
 
 ## Evidence
 
-Frozen service image `sha256:8d10c43fc5129028bce13987992efe52109cce514b92557ca52d948c3223fde2` has exact full revision/UID998; 107 manifest hashes passed. Fresh PostgreSQL18.6/hosts/role/bearer/content/resource smoke passed and cleaned. PostgreSQL has 125 normal slots versus the enforced 96 pool ceiling (29 headroom). Earlier unchanged SQL persistence/security evidence is retained in the root orchestration report; no redundant whole suite was rerun.
+Game image `sha256:3c6bf45ef93866b67be30aa35b8ca4f9c0c84da68f1d00b9b9fbbb7b62350b19` and service image `sha256:8d10c43fc5129028bce13987992efe52109cce514b92557ca52d948c3223fde2` both carry exact full frozen labels. Service107 hashes and game69 payload+2 installed-entrypoint hashes/UID998/ldd passed. Actual packaged local connection passed both NetCL0/Engine44/Game0/checksum1737972550; package/source/content manifests matched.
 
-The package worker independently matched frozen BackendServices/proto/content manifests. Operator packet has actual frozen service identity/tool hash; game image and final profile hash remain pending. Exact normal-home game staging path is steam-owned and write-probed; home/Docker share about 16.38GB free, while the protected game LV has about 81.56GB. Use actual Linux size plus conservative build/cache peak and margin before transfer; no game-LV write or bypass is authorized. All earlier pre-freeze/unverified images are nonfinal. Remote playable/production acceptance is not established.
+Private startup verified Silverbrook, six authored groups/21 NPCs, gathering19/stations3 and authenticated services without WorldContent.Tool fallback; zero published ports, readonly UID998, exit143/no OOM/restarts, all owned data/processes removed. PostgreSQL125 normal slots versus pool ceiling96 leaves29; prior unchanged SQL/security evidence is reused. Verified binary stdin build passed conservative peak13.966GB including4GiB margin against16.355GB free; no host context/archive or protected LV write. Final profile SHA256 is `cd31eb7381d4ca4dde38253a3f7ac37a827e66d3d527d7f24a460fc221e1d28e`. Public packet paths/hashes/commands are in the root orchestration report; no application or full remote gameplay acceptance is claimed.
 
 ## Blocked on
 
-Verified matching LinuxServer/Win64Client packages and actual game image; final profile/hash; privileged operator application. SSH key access works, but `sudo -n -v` fails; a host operator must authenticate interactively in the session that runs the reviewed application block.
+Privileged operator application. SSH key access works, but `sudo -n -v` fails; a host operator must authenticate interactively in the same root session that runs the sealed block. Then actual two-client remote gameplay/SQL/restart acceptance remains.
 
 ## Next step
 
-Receive the package worker's exact Linux bytes/manifests, verify disk peak/headroom and matching frozen inputs, build/check the actual game image in authorized normal staging or verified stdin context, then finalize the profile/operator hashes. Only then may root request the reviewed privileged operator step; remote two-client gameplay/SQL/restart acceptance still follows.
+Root may now request the concrete operator step using the sealed `operator-packet/operator-apply.md` and exact profile hash. After operator apply, verify the new container's image identity and actual two-client possession/NPC/loot/drop/pickup/privacy/SQL/restart behavior before declaring the release accepted. Retain old image/profile and new database for rollback/recovery.
 
 ## Rules for this task
 
