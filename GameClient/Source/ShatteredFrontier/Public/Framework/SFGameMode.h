@@ -2,6 +2,7 @@
 
 #include "GameFramework/GameModeBase.h"
 #include "Party/SFPartyModel.h"
+#include "Math/RandomStream.h"
 #include "SFGameMode.generated.h"
 
 class ASFPlayerController;
@@ -161,6 +162,8 @@ private:
     TMap<FString, TWeakObjectPtr<ASFPilotBoar>> ActiveBoars;
     TMap<FString, TArray<double>> LeashEvadesByGroupAndCharacter;
     TMap<TWeakObjectPtr<ASFE1Character>, double> PlayerNextSwing;
+    TMap<TWeakObjectPtr<ASFE1Character>, FRandomStream> PlayerCombatStreams;
+    TMap<TWeakObjectPtr<ASFE1Character>, int32> DodgeScenarioSwings;
     TMap<TWeakObjectPtr<ASFE1Character>, FString> PlayerDeathEvents;
     TMap<TWeakObjectPtr<ASFE1Character>, FVector> PlayerDeathRespawnPoints;
     TSet<TWeakObjectPtr<ASFE1Character>> PlayerRespawnInFlight;

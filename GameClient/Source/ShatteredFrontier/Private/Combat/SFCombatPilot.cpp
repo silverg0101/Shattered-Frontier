@@ -4,6 +4,7 @@
 #include "Combat/SFResurrectionAcceptRules.h"
 #include "Combat/SFFallDamage.h"
 #include "Combat/SFTauntRules.h"
+#include "Combat/SFBoarDodgeRules.h"
 #include "Inventory/SFGear.h"
 #include "Framework/SFGameMode.h"
 #include "Combat/SFCombatPilotRewards.h"
@@ -218,6 +219,7 @@ bool USFCombatPilotSettings::Validate(FString& Error) const
     if (PlayerHealth < 20 || PlayerHealth > 500 || BoarHealth < 10 || BoarHealth > 500 ||
         !FMath::IsWithinInclusive(FallSpeedThresholdMps, 0.0f, 50.0f) ||
         PlayerMeleeDamage < 1 || PlayerMeleeDamage > 100 || BoarMeleeDamage < 1 || BoarMeleeDamage > 100 ||
+        !FMath::IsWithinInclusive(BoarDodgeChance, 0.0f, 0.5f) ||
         !FMath::IsWithinInclusive(PlayerMeleeCooldownSeconds, 0.3f, 5.0f) ||
         !FMath::IsWithinInclusive(BoarMeleeCooldownSeconds, 0.5f, 5.0f) ||
         !FMath::IsWithinInclusive(MeleeRangeMetres, 1.0f, 5.0f) ||
@@ -372,6 +374,25 @@ void ASFPilotBoar::OnRep_Health()
     if (!Label) { return; }
     Label->SetText(FText::FromString(FString::Printf(TEXT("Boar L2  %d HP"), CurrentHealth)));
     Label->SetTextRenderColor(CurrentHealth > 0 ? FColor::Yellow : FColor::Red);
+}
+
+void ASFPilotBoar::ReceivePilotDodge(ASFE1Character* Attacker)
+{
+    if (!HasAuthority() || !PilotMode.IsValid() || !IsValid(Attacker) || CurrentHealth <= 0 || bReturning) { return; }
+    const FString Id = ThreatIdentity(Cast<APlayerController>(Attacker->GetController()));
+    if (Id.IsEmpty()) { return; }
+    // A hostile swing starts ordinary detection threat, but gives no damage credit.
+    Threat.Add(Id, 1.0, PilotMode->CombatSettings()->ThreatTableMax);
+    ThreatActors.Add(Id, Attacker);
+    if (TargetCharacterId.IsEmpty())
+    {
+        TargetCharacterId = Id;
+        Target = Attacker;
+        ReplicatedTarget = Attacker;
+        EngagedSince = GetWorld()->GetTimeSeconds();
+    }
+    Attacker->CombatMarkHostile();
+    ForceNetUpdate();
 }
 
 void ASFPilotBoar::ReceivePilotDamage(ASFE1Character* Attacker, int32 Damage)
@@ -589,7 +610,8 @@ void ASFPilotBoar::Tick(float DeltaSeconds)
         }
     }
     if ((SpawnGroup == TEXT("aggro_sandbox") || SpawnGroup == TEXT("memory_sandbox") ||
-        SpawnGroup == TEXT("assist_sandbox") || SpawnGroup == TEXT("respawn_sandbox")) && !Victim && !bReturning) { return; }
+        SpawnGroup == TEXT("assist_sandbox") || SpawnGroup == TEXT("respawn_sandbox") ||
+        SpawnGroup == TEXT("dodge_sandbox")) && !Victim && !bReturning) { return; }
     FVector Destination = WanderDestination;
     float Speed = Mode->CombatSettings()->BoarWanderSpeedMetresPerSecond*100;
     if (Victim)
@@ -709,19 +731,20 @@ void ASFGameMode::StartCombat()
     const bool bFallSandbox = MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_FallDamage");
     const bool bAssistSandbox = MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_Assist");
     const bool bAutoAttackSandbox = MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_AutoAttack");
+    const bool bDodgeSandbox = MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_Dodge");
     const bool bUnstuckSandbox = MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_Unstuck");
     const bool bSpiritReleaseSandbox = MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_SpiritRelease");
     const bool bResurrectionAcceptSandbox = MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_ResurrectionAccept");
     bRespawnSandbox = MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_Respawn");
     bCompanionSandbox = GetNetMode() != NM_Client &&
-        (MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_Companions") || bEvadeSandbox || bThreatSandbox || bTauntSandbox || bAggroSandbox || bMemorySandbox || bRegenSandbox || bRestRegenSandbox || bFallSandbox || bAssistSandbox || bRespawnSandbox || bAutoAttackSandbox || bUnstuckSandbox || bSpiritReleaseSandbox || bResurrectionAcceptSandbox);
+        (MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_Companions") || bEvadeSandbox || bThreatSandbox || bTauntSandbox || bAggroSandbox || bMemorySandbox || bRegenSandbox || bRestRegenSandbox || bFallSandbox || bAssistSandbox || bRespawnSandbox || bAutoAttackSandbox || bDodgeSandbox || bUnstuckSandbox || bSpiritReleaseSandbox || bResurrectionAcceptSandbox);
     if (bCompanionSandbox)
     {
         CapturedSettings = GetDefault<USFCombatPilotSettings>();
         FString Error;
         if (!CapturedSettings->Validate(Error))
         { UE_LOG(LogTemp, Error, TEXT("COMPANION_SANDBOX_DISABLED Invalid combat settings: %s"), *Error); return; }
-        const double Extent = (bEvadeSandbox || bThreatSandbox || bTauntSandbox || bAggroSandbox || bMemorySandbox || bRegenSandbox || bRestRegenSandbox || bAssistSandbox || bRespawnSandbox || bAutoAttackSandbox || bSpiritReleaseSandbox || bResurrectionAcceptSandbox) ? 85.0 : 45.0;
+        const double Extent = (bEvadeSandbox || bThreatSandbox || bTauntSandbox || bAggroSandbox || bMemorySandbox || bRegenSandbox || bRestRegenSandbox || bAssistSandbox || bRespawnSandbox || bAutoAttackSandbox || bDodgeSandbox || bSpiritReleaseSandbox || bResurrectionAcceptSandbox) ? 85.0 : 45.0;
         const TArray<FVector2D> SandboxArea = { FVector2D(-Extent, -Extent), FVector2D(Extent, -Extent),
             FVector2D(Extent, Extent), FVector2D(-Extent, Extent) };
         int32 Slot = 0;
@@ -736,6 +759,7 @@ void ASFGameMode::StartCombat()
                 bRestRegenSandbox ? TEXT("SF_RestRegenSandboxWildlife") :
                 bAssistSandbox ? TEXT("SF_AssistSandboxWildlife") :
                 bAutoAttackSandbox ? TEXT("SF_AutoAttackSandboxWildlife") :
+                bDodgeSandbox ? TEXT("SF_DodgeSandboxWildlife") :
                 bSpiritReleaseSandbox ? TEXT("SF_SpiritReleaseSandboxWildlife") :
                 bResurrectionAcceptSandbox ? TEXT("SF_ResurrectionAcceptSandboxWildlife") :
                 bRespawnSandbox ? TEXT("SF_RespawnSandboxWildlife") : TEXT("SF_CompanionSandboxWildlife");
@@ -750,11 +774,12 @@ void ASFGameMode::StartCombat()
                 bRestRegenSandbox ? TEXT("rest_regen_sandbox") :
                 bAssistSandbox ? TEXT("assist_sandbox") :
                 bAutoAttackSandbox ? TEXT("auto_attack_sandbox") :
+                bDodgeSandbox ? TEXT("dodge_sandbox") :
                 bSpiritReleaseSandbox ? TEXT("spirit_release_sandbox") :
                 bResurrectionAcceptSandbox ? TEXT("resurrection_accept_sandbox") :
                 bRespawnSandbox ? TEXT("respawn_sandbox") : TEXT("companions_sandbox"), Slot++, SandboxArea,
                 CapturedSettings->BoarHealth, ++NextBoarSerial,
-                bMemorySandbox || bRespawnSandbox || bAutoAttackSandbox || bSpiritReleaseSandbox || bResurrectionAcceptSandbox || (bAssistSandbox && It->ActorHasTag(TEXT("SF_AssistDefensive"))));
+                bMemorySandbox || bRespawnSandbox || bAutoAttackSandbox || bDodgeSandbox || bSpiritReleaseSandbox || bResurrectionAcceptSandbox || (bAssistSandbox && It->ActorHasTag(TEXT("SF_AssistDefensive"))));
         }
         if (bRespawnSandbox)
         {
@@ -1353,6 +1378,37 @@ void ASFGameMode::TryPlayerAttack(ASFE1Character* Attacker, AActor* SelectedTarg
     }
     if (!Best) { return; }
     PlayerNextSwing.Add(Attacker, Now + CapturedSettings->PlayerMeleeCooldownSeconds);
+    if (GetWorld()->GetOutermost()->GetName() == TEXT("/Game/Frontier/Maps/Sandbox/SB_Dodge"))
+    {
+        FRandomStream* Stream = PlayerCombatStreams.Find(Attacker);
+        if (!Stream)
+        {
+            const FString Id = ThreatIdentity(Cast<APlayerController>(Attacker->GetController()));
+            Stream = &PlayerCombatStreams.Add(Attacker, FRandomStream(GetTypeHash(Id)));
+        }
+        const double HitDraw = Stream->FRand();
+        double AvoidanceDraw = Stream->FRand();
+        const double CritDraw = Stream->FRand();
+        const double BlockDraw = Stream->FRand();
+        const double SpreadDraw = Stream->FRand();
+        (void)HitDraw; (void)CritDraw; (void)BlockDraw; (void)SpreadDraw;
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+        if (FParse::Param(FCommandLine::Get(), TEXT("DodgeScenario")))
+        {
+            const int32 Swing = ++DodgeScenarioSwings.FindOrAdd(Attacker);
+            if (Swing <= 2) { AvoidanceDraw = Swing == 1 ? 0.01 : 0.5; }
+        }
+#endif
+        const bool bFront = SFBoarDodgeRules::IsInFrontArc(Best->GetActorForwardVector(), Attacker->GetActorLocation() - Best->GetActorLocation());
+        if (SFBoarDodgeRules::Dodges(Best->GetActorForwardVector(), Attacker->GetActorLocation() - Best->GetActorLocation(),
+            AvoidanceDraw, CapturedSettings->BoarDodgeChance))
+        {
+            Best->ReceivePilotDodge(Attacker);
+            UE_LOG(LogTemp, Display, TEXT("BOAR_DODGE_SERVER Dodge=1 HP=%d Front=%d Draw=%.3f"), Best->Health(), bFront ? 1 : 0, AvoidanceDraw);
+            return;
+        }
+        UE_LOG(LogTemp, Display, TEXT("BOAR_DODGE_SERVER Dodge=0 HP=%d Front=%d Draw=%.3f"), Best->Health(), bFront ? 1 : 0, AvoidanceDraw);
+    }
     Best->ReceivePilotDamage(Attacker, CapturedSettings->PlayerMeleeDamage + SFGear::Equipped(Attacker->GetController()).Damage);
 }
 

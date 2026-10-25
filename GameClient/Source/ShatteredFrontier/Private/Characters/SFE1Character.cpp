@@ -1660,6 +1660,8 @@ void ASFE1Character::Tick(float DeltaSeconds)
     if (GetNetMode() == NM_Client && IsLocallyControlled() &&
         FParse::Param(FCommandLine::Get(), TEXT("CombatRespawnScenario"))) { TickRespawnScenario(); }
     if (GetNetMode() == NM_Client && IsLocallyControlled() &&
+        FParse::Param(FCommandLine::Get(), TEXT("DodgeScenario"))) { TickDodgeScenario(); }
+    if (GetNetMode() == NM_Client && IsLocallyControlled() &&
         FParse::Param(FCommandLine::Get(), TEXT("CombatRegenScenario"))) { TickRegenScenario(); }
     if (GetNetMode() == NM_Client && IsLocallyControlled() &&
         FParse::Param(FCommandLine::Get(), TEXT("RestRegenScenario"))) { TickRestRegenScenario(); }
@@ -2114,7 +2116,8 @@ void ASFE1Character::CombatMarkHostile()
 {
     const FString CombatMap = GetWorld()->GetOutermost()->GetName();
     if (!HasAuthority() ||
-        (CombatMap != TEXT("/Game/Frontier/Maps/Sandbox/SB_Regeneration") &&
+        (CombatMap != TEXT("/Game/Frontier/Maps/Sandbox/SB_Dodge") &&
+         CombatMap != TEXT("/Game/Frontier/Maps/Sandbox/SB_Regeneration") &&
          CombatMap != TEXT("/Game/Frontier/Maps/Sandbox/SB_RestRegen") &&
          CombatMap != TEXT("/Game/Frontier/Maps/Sandbox/SB_TravelMount") &&
          CombatMap != TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook"))) { return; }
@@ -2360,6 +2363,65 @@ void ASFE1Character::TickUnstuckScenario()
             *ScenarioRole, FVector::Dist2D(UnstuckScenarioInitial, Observed));
         if (ScenarioRole == TEXT("Driver")) { PC->SFUnstuck(); }
         UnstuckScenarioStage = 3;
+    }
+#endif
+}
+
+void ASFE1Character::TickDodgeScenario()
+{
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    FString ScenarioRole;
+    FParse::Value(FCommandLine::Get(), TEXT("DodgeRole="), ScenarioRole);
+    if (ScenarioRole != TEXT("Driver") && ScenarioRole != TEXT("Observer")) { return; }
+    ASFPilotBoar* Boar = nullptr;
+    for (TActorIterator<ASFPilotBoar> It(GetWorld()); It; ++It) { Boar = *It; break; }
+    if (!Boar || !Controller) { return; }
+    const double Now = GetWorld()->GetTimeSeconds();
+    if (Now >= NextDodgeSampleAt)
+    {
+        UE_LOG(LogTemp, Display, TEXT("BOAR_DODGE_CLIENT_SAMPLE Role=%s HP=%d Targeted=%d Stage=%d"),
+            *ScenarioRole, Boar->Health(), Boar->ThreatTarget() == this ? 1 : 0, DodgeScenarioStage);
+        NextDodgeSampleAt = Now + 0.2;
+    }
+    if (ScenarioRole == TEXT("Observer")) { return; }
+    ASFPlayerController* PC = Cast<ASFPlayerController>(Controller);
+    if (!PC) { return; }
+    if (DodgeScenarioStage == 0)
+    {
+        int32 Players = 0;
+        for (TActorIterator<ASFE1Character> It(GetWorld()); It; ++It) { ++Players; }
+        if (Players < 2 || Now < 2.0) { return; }
+        Controller->SetControlRotation((Boar->GetActorLocation() - GetActorLocation()).Rotation());
+        PC->SelectNextCombatTarget();
+        DodgeScenarioStage = 1;
+        DodgeScenarioAt = Now;
+    }
+    else if (DodgeScenarioStage == 1)
+    {
+        if (Now - DodgeScenarioAt < 0.4) { return; }
+        if (CombatTarget != Boar) { PC->SelectNextCombatTarget(); return; }
+        PilotAttack();
+        DodgeScenarioStage = 2;
+        DodgeScenarioAt = Now;
+        UE_LOG(LogTemp, Display, TEXT("BOAR_DODGE_CLIENT_ATTACK Index=1"));
+    }
+    else if (DodgeScenarioStage == 2 && Now - DodgeScenarioAt >= 1.0)
+    {
+        if (Boar->Health() != 60 || Boar->ThreatTarget() != this)
+        {
+            UE_LOG(LogTemp, Error, TEXT("BOAR_DODGE_CLIENT_FAILED HP=%d Targeted=%d"),
+                Boar->Health(), Boar->ThreatTarget() == this ? 1 : 0);
+            DodgeScenarioStage = 4;
+            return;
+        }
+        PilotAttack();
+        DodgeScenarioStage = 3;
+        UE_LOG(LogTemp, Display, TEXT("BOAR_DODGE_CLIENT_ATTACK Index=2"));
+    }
+    else if (DodgeScenarioStage == 3 && Boar->Health() == 40)
+    {
+        DodgeScenarioStage = 4;
+        UE_LOG(LogTemp, Display, TEXT("BOAR_DODGE_CLIENT_DONE HP=40"));
     }
 #endif
 }

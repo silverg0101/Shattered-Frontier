@@ -1,0 +1,5 @@
+# Boar dodge sandbox scope
+
+Combat Damage, Mitigation and NPCs v1.0, Resolution pipeline and Random draws: a physical melee attack in the defender's 180-degree front arc checks dodge after hit and before crit. Every admitted hit attempt consumes five attacker-stream draws in hit, avoidance, crit, block and spread order; dodge uses the avoidance draw. The NPC combat defaults table specifies a fixed 0.03 dodge chance, never derived from ratings. Combat Attributes and Ratings v1.0, Avoidance, also specifies the 180-degree front arc.
+
+`SB_Dodge` exercises this one avoidance outcome against a defensive boar. The server owns the draw and damage decision. A dodge consumes the swing, deals no damage, and starts the boar's ordinary one-threat engagement. The two-client scenario supplies a low first avoidance draw and a high second draw as development evidence; normal sandbox attacks use the attacker's stream. This does not publish the remaining hit/crit/mitigation pipeline or enable dodge in Greenlands. No owner value is needed for this sandbox mechanic.

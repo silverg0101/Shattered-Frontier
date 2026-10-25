@@ -84,6 +84,8 @@ public:
     int32 PlayerMeleeDamage = 20;
     UPROPERTY(Config, EditAnywhere, Category="Pilot Balance", meta=(ClampMin="1", ClampMax="100"))
     int32 BoarMeleeDamage = 14;
+    UPROPERTY(Config, EditAnywhere, Category="Pilot Balance", meta=(ClampMin="0.0", ClampMax="0.5", DisplayName="Boar frontal dodge chance", ToolTip="Chance per admitted frontal player melee swing; adopted at zone start."))
+    float BoarDodgeChance = 0.03f;
     UPROPERTY(Config, EditAnywhere, Category="Pilot Balance", meta=(ClampMin="0.3", ClampMax="5.0", Units="s"))
     float PlayerMeleeCooldownSeconds = 0.8f;
     UPROPERTY(Config, EditAnywhere, Category="Pilot Balance", meta=(ClampMin="0.5", ClampMax="5.0", Units="s"))
@@ -181,6 +183,7 @@ public:
     void Initialize(class ASFGameMode* OwnerMode, const FString& Group, int32 Slot,
         const TArray<FVector2D>& Area, int32 Health, int32 Serial, bool bInDefensive = false);
     void ReceivePilotDamage(ASFE1Character* Attacker, int32 Damage);
+    void ReceivePilotDodge(ASFE1Character* Attacker);
     bool ReceivePilotTaunt(ASFE1Character* Taunter);
     /** Authority-only transition when the open-world leash or safe-zone rule fires. */
     void EnterEvade();

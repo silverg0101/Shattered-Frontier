@@ -25,6 +25,7 @@ param(
     [switch]$AssistScenario,
     [switch]$RespawnScenario,
     [switch]$AutoAttackScenario,
+    [switch]$DodgeScenario,
     [switch]$UnstuckScenario,
     [switch]$SpiritReleaseScenario,
     [switch]$ResurrectionAcceptScenario,
@@ -121,6 +122,9 @@ try {
         $BackpedalScenario -or $RoadScenario -or $SnowScenario -or $AssistScenario -or $RespawnScenario -or
         $GreenlandsBoarNetcheck -or $GreenlandsEnvironmentNetcheck -or $GreenlandsMovementNetcheck)) {
         throw 'AutoAttackScenario requires SB_AutoAttack, two clients, and no other scenario'
+    }
+    if ($DodgeScenario -and ($Map -ne '/Game/Frontier/Maps/Sandbox/SB_Dodge' -or $Clients -ne 2)) {
+        throw 'DodgeScenario requires SB_Dodge and two clients'
     }
     if ($SnowScenario -and ($Map -ne '/Game/Frontier/Maps/Sandbox/SB_DeepSnow' -or $Clients -ne 2 -or
         $CastingScenario -or $EvadeScenario -or $ThreatScenario -or $AggroScenario -or $MemoryScenario -or
@@ -235,6 +239,7 @@ try {
     if ($AssistScenario) { $serverArgs += '-CombatAssistScenario' }
     if ($RespawnScenario) { $serverArgs += '-CombatRespawnScenario' }
     if ($AutoAttackScenario) { $serverArgs += '-AutoAttackScenario' }
+    if ($DodgeScenario) { $serverArgs += '-DodgeScenario' }
     if ($UnstuckScenario) { $serverArgs += '-UnstuckScenario' }
     if ($SpiritReleaseScenario) { $serverArgs += '-SpiritReleaseScenario' }
     if ($ResurrectionAcceptScenario) { $serverArgs += '-ResurrectionAcceptScenario' }
@@ -271,6 +276,7 @@ try {
         if ($AssistScenario) { $clientArgs += @('-CombatAssistScenario', ('-CombatAssistRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         if ($RespawnScenario) { $clientArgs += @('-CombatRespawnScenario', ('-CombatRespawnRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         if ($AutoAttackScenario) { $clientArgs += @('-AutoAttackScenario', ('-AutoAttackRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
+        if ($DodgeScenario) { $clientArgs += @('-DodgeScenario', ('-DodgeRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         if ($UnstuckScenario) { $clientArgs += @('-UnstuckScenario', ('-UnstuckRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         if ($SpiritReleaseScenario) { $clientArgs += @('-SpiritReleaseScenario', ('-SpiritReleaseRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         if ($ResurrectionAcceptScenario) { $clientArgs += @('-ResurrectionAcceptScenario', ('-ResurrectionAcceptRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
@@ -917,6 +923,31 @@ try {
         }
         Write-Output "PASS: server linked idle defensive packmate after $elapsed s within $distance cm; both clients observed lead then shared-target engagement. Logs: $logs"
     }
+    if ($DodgeScenario) {
+        $driverLog = Join-Path $logs 'Client1.log'
+        $observerLog = Join-Path $logs 'Client2.log'
+        Wait-Log $driverLog 'BOAR_DODGE_CLIENT_DONE HP=40'
+        Wait-Log $observerLog 'BOAR_DODGE_CLIENT_SAMPLE Role=Observer HP=40'
+        $dodged = Select-String -LiteralPath $serverLog -Pattern 'BOAR_DODGE_SERVER Dodge=1 HP=60 Front=1 Draw=0.010' | Select-Object -First 1
+        $hit = Select-String -LiteralPath $serverLog -Pattern 'BOAR_DODGE_SERVER Dodge=0 HP=60 Front=1 Draw=0.500' | Select-Object -First 1
+        $damage = Select-String -LiteralPath $serverLog -Pattern 'COMBAT_PILOT_BOAR_HIT .*HP=40 ' | Select-Object -First 1
+        if (-not $dodged -or -not $hit -or -not $damage -or
+            $dodged.LineNumber -ge $hit.LineNumber -or $hit.LineNumber -ge $damage.LineNumber) {
+            throw 'Server missed ordered frontal dodge, admitted hit and damage'
+        }
+        foreach ($role in @('Driver', 'Observer')) {
+            $path = Join-Path $logs ('Client' + $(if ($role -eq 'Driver') { '1' } else { '2' }) + '.log')
+            $initial = Select-String -LiteralPath $path -Pattern "BOAR_DODGE_CLIENT_SAMPLE Role=$role HP=60 " | Select-Object -First 1
+            $damaged = Select-String -LiteralPath $path -Pattern "BOAR_DODGE_CLIENT_SAMPLE Role=$role HP=40 " | Select-Object -First 1
+            if (-not $initial -or -not $damaged -or $initial.LineNumber -ge $damaged.LineNumber) {
+                throw "$role missed replicated 60 to 40 health sequence"
+            }
+        }
+        if (Select-String -LiteralPath $driverLog -Pattern 'BOAR_DODGE_CLIENT_FAILED' -Quiet) {
+            throw 'Driver rejected the dodge engagement sequence'
+        }
+        Write-Output "PASS: client attack dodged at full health, second client attack damaged boar; both clients saw 60 to 40. Logs: $logs"
+    }
     if ($AutoAttackScenario) {
         $driverLog = Join-Path $logs 'Client1.log'
         $observerLog = Join-Path $logs 'Client2.log'
@@ -1096,7 +1127,7 @@ try {
         Write-Output "PASS: Greenlands 2.0 s unarmed auto attack ($swingGap s observed), client stop, boar threat, ordinary healing ($ordinaryGain HP/tick), Golden Stag rest healing ($restedGain HP/tick), client kill and rotated slot respawn on both clients. Logs: $logs"
     }
     Write-Output "PASS: separate editor server and $Clients client(s) connected; $Clients server-authoritative possession(s). Logs: $logs"
-    if (-not $InterruptScenario -and -not $CastingScenario -and -not $EvadeScenario -and -not $ThreatScenario -and -not $TauntScenario -and -not $AggroScenario -and -not $MemoryScenario -and -not $RegenScenario -and -not $RestRegenScenario -and -not $FallScenario -and -not $SwimScenario -and -not $CrouchScenario -and -not $BackpedalScenario -and -not $RoadScenario -and -not $SnowScenario -and -not $TravelMountScenario -and -not $AssistScenario -and -not $RespawnScenario -and -not $AutoAttackScenario -and -not $UnstuckScenario -and -not $SpiritReleaseScenario -and -not $ResurrectionAcceptScenario -and -not $GreenlandsBoarNetcheck -and -not $GreenlandsEnvironmentNetcheck -and -not $GreenlandsMovementNetcheck) { Write-Output 'Headless connection check only: movement, rendering, lifecycle cleanup, authentication and Linux runtime are not certified.' }
+    if (-not $InterruptScenario -and -not $CastingScenario -and -not $EvadeScenario -and -not $ThreatScenario -and -not $TauntScenario -and -not $AggroScenario -and -not $MemoryScenario -and -not $RegenScenario -and -not $RestRegenScenario -and -not $FallScenario -and -not $SwimScenario -and -not $CrouchScenario -and -not $BackpedalScenario -and -not $RoadScenario -and -not $SnowScenario -and -not $TravelMountScenario -and -not $AssistScenario -and -not $RespawnScenario -and -not $AutoAttackScenario -and -not $DodgeScenario -and -not $UnstuckScenario -and -not $SpiritReleaseScenario -and -not $ResurrectionAcceptScenario -and -not $GreenlandsBoarNetcheck -and -not $GreenlandsEnvironmentNetcheck -and -not $GreenlandsMovementNetcheck) { Write-Output 'Headless connection check only: movement, rendering, lifecycle cleanup, authentication and Linux runtime are not certified.' }
 } finally {
     foreach ($process in $ownedProcesses) {
         if (-not $process.HasExited) { Stop-Process -Id $process.Id -ErrorAction SilentlyContinue }

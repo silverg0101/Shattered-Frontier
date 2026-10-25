@@ -130,6 +130,7 @@ private:
     double AssistScenarioReadyAt = -1;
     int32 RespawnScenarioStage = 0;
     int32 AutoAttackScenarioStage = 0;
+    int32 DodgeScenarioStage = 0;
     int32 UnstuckScenarioStage = 0;
     int32 SpiritReleaseScenarioStage = 0;
     int32 ResurrectionAcceptScenarioStage = 0;
@@ -139,6 +140,8 @@ private:
     double UnstuckScenarioAt = 0.0;
     FVector UnstuckScenarioInitial = FVector::ZeroVector;
     double AutoAttackScenarioAt = 0.0;
+    double DodgeScenarioAt = 0.0;
+    double NextDodgeSampleAt = 0.0;
     double NextAutoAttackSampleAt = 0.0;
     double RespawnScenarioReadyAt = -1;
     double RespawnScenarioDeathAt = -1;
@@ -176,6 +179,7 @@ private:
     void TickAssistScenario();
     void TickRespawnScenario();
     void TickAutoAttackScenario();
+    void TickDodgeScenario();
     void TickUnstuckScenario();
     void TickSpiritReleaseScenario();
     void TickResurrectionAcceptScenario();

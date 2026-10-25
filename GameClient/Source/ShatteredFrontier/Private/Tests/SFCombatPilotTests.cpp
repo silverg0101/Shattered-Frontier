@@ -2,12 +2,32 @@
 #include "Combat/SFCombatPilot.h"
 #include "Combat/SFCombatPilotRewards.h"
 #include "Combat/SFAutoAttackRules.h"
+#include "Combat/SFBoarDodgeRules.h"
 #include "Characters/SFE1Character.h"
 #include "Services/SFGameplayServicesClient.h"
 #include "GameFramework/PlayerController.h"
 #include "Misc/AutomationTest.h"
 #include "Tests/AutomationCommon.h"
 #include "Engine/World.h"
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFBoarDodgeRulesTest,
+    "ShatteredFrontier.Combat.Pilot.BoarDodge",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+
+bool FSFBoarDodgeRulesTest::RunTest(const FString& Parameters)
+{
+    const auto* Settings = GetDefault<USFCombatPilotSettings>();
+    TestEqual(TEXT("Shipped NPC dodge default"), Settings->BoarDodgeChance, 0.03f);
+    TestTrue(TEXT("Low draw in 180-degree front arc dodges"),
+        SFBoarDodgeRules::Dodges(FVector::ForwardVector, FVector(1, 0, 0), 0.029, Settings->BoarDodgeChance));
+    TestFalse(TEXT("Chance boundary does not dodge"),
+        SFBoarDodgeRules::Dodges(FVector::ForwardVector, FVector(1, 0, 0), 0.03, Settings->BoarDodgeChance));
+    TestFalse(TEXT("Rear attack cannot be dodged"),
+        SFBoarDodgeRules::Dodges(FVector::ForwardVector, FVector(-1, 0, 0), 0.0, Settings->BoarDodgeChance));
+    TestTrue(TEXT("Side boundary remains in front half"),
+        SFBoarDodgeRules::IsInFrontArc(FVector::ForwardVector, FVector(0, 1, 0)));
+    return true;
+}
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFAutoAttackRulesTest,
     "ShatteredFrontier.Combat.Pilot.AutoAttack",
