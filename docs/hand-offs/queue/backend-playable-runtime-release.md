@@ -1,7 +1,7 @@
 # Playable runtime release
 
 - **Area:** backend
-- **Owner of the next step:** agent
+- **Owner of the next step:** owner
 - **Updated:** 2026-10-25
 - **Worktree:** C:\Projects\SF-lane-b
 
@@ -25,7 +25,7 @@ Privileged operator application. SSH key access works, but `sudo -n -v` fails; a
 
 ## Next step
 
-Root may now request the concrete operator step using the sealed `operator-packet/operator-apply.md` and exact profile hash. After operator apply, verify the new container's image identity and actual two-client possession/NPC/loot/drop/pickup/privacy/SQL/restart behavior before declaring the release accepted. Retain old image/profile and new database for rollback/recovery.
+Root has requested the concrete operator step using the sealed `operator-packet/operator-apply.md`; await the user's interactive privileged action or existing privileged host session. Do not apply or work around authentication. After that action, root verifies image labels/health and actual two-client possession/NPC/loot/drop/pickup/privacy/SQL/restart behavior before declaring release acceptance. Retain old image/profile and new database for rollback/recovery.
 
 ## Rules for this task
 
