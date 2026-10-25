@@ -37,7 +37,9 @@ No setup blocker claimed. Finish reviewed two-client acceptance before deploymen
 
 ## Next step
 
-NPC worker fixes dedicated ground geometry with authoritative pre-debit bounds, oversized/off-centre traces and durable restart tests; fresh review/integration required. Controller then owns matching release packages, actual durable hosts and rollback through the documented deployment target. No extra UE run is authorized from this checkpoint. Source/body appearance, textures and lighting remain deferred; import629a0c84 stays mechanically accepted.
+Prepared fixture-only follow-up (compile/runtime pending): ground cursor projects outside the open bag, validates the shipped IMC_Player F mapping, and sends native F press/release through the character/controller guard instead of direct dispatch; the controller attempt count and durable pickup must both pass. A local camera requests a fixed-view unselected/selected ground pair clear of legs and the bottom prompt. Corpse click and existing privacy/SQL barriers stay intact. No pre-fix runtime run.
+
+NPC worker fixes dedicated ground geometry with authoritative pre-debit bounds, oversized/off-centre traces and durable restart tests; fresh review/integration required. After its explicit Unreal-slot release, the reviewed combined base needs one incremental build/focused gate and one rendered integration run including this input/capture coverage. Controller then owns matching release packages, actual durable hosts and rollback through the documented deployment target. Source/body appearance, textures and lighting remain deferred; import629a0c84 stays mechanically accepted.
 
 ## Outcome
 

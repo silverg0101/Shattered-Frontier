@@ -240,6 +240,7 @@ try {
             $pattern = if ($role -eq 1) { 'LOOT_WORKFLOW_DONE NativeShift=1 NativeDrag=1 GroundModel=1 PickupWidget=0 TargetCleared=1' } else { 'LOOT_WORKFLOW_OBSERVER PersonalSources=0 GroundMesh=1 DriverComplete=1' }
             Wait-Log $process "client$role" $pattern 180
             if ($role -eq 1 -and -not (Select-String -LiteralPath (Join-Path $root 'client1.log') -Pattern 'LOOT_WORKFLOW_CLICK Input=NativeMouseLeft PressRelease=1 CursorTarget=1 Windows=2' -Quiet)) { throw 'Native corpse cursor-click route was not observed.' }
+            if ($role -eq 1 -and -not (Select-String -LiteralPath (Join-Path $root 'client1.log') -Pattern 'LOOT_WORKFLOW_GROUND Input=NativeF PressRelease=1 CursorOutsideWindows=1 ControllerAction=1 Mesh=1 Rim=1' -Quiet)) { throw 'Native ground F action through the controller guard was not observed.' }
             if ($role -eq 1) { Set-Content -LiteralPath $barrier -Value 'Driver completed native workflow.' }
         }
         $driverView = Get-LedgerView $fx 'ctn_dev_alpha'; $observerView = Get-LedgerView $fx 'ctn_dev_beta'

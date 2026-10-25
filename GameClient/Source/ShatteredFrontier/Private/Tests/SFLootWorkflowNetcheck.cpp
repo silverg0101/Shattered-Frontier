@@ -22,6 +22,11 @@
 #include "Misc/FileHelper.h"
 #include "UObject/StrongObjectPtr.h"
 #include "InputKeyEventArgs.h"
+#include "Camera/CameraActor.h"
+#include "Camera/CameraComponent.h"
+#include "Framework/Application/SlateApplication.h"
+#include "InputAction.h"
+#include "InputMappingContext.h"
 
 namespace
 {
@@ -37,7 +42,12 @@ struct FWorkflowState
     double BarrierAt = -1;
     double NextDiagnosticAt = 0;
     double ClickDeadline = 0;
-    bool bCapturedCorpse = false, bCapturedGround = false;
+    bool bCapturedCorpse = false;
+    TWeakObjectPtr<ACameraActor> GroundCamera;
+    TWeakObjectPtr<AActor> OriginalView;
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    uint64 GroundInputBefore = 0;
+#endif
     TStrongObjectPtr<USFItemDragOperation> PendingDrag;
 };
 TMap<TWeakObjectPtr<USFLootComponent>, FWorkflowState> States;
@@ -66,10 +76,19 @@ void Capture(ASFPlayerController* Player, const TCHAR* Name)
     Player->ConsoleCommand(FString::Printf(TEXT("Shot showui filename=\"%s\" nosuffix"), *Path));
     UE_LOG(LogTemp, Display, TEXT("LOOT_WORKFLOW_CAPTURE Requested=%s"), *Path);
 }
-void MouseLeft(ASFPlayerController* Player, EInputEvent Event)
+void Key(ASFPlayerController* Player, FKey Input, EInputEvent Event)
 {
-    Player->InputKey(FInputKeyEventArgs(nullptr, FInputDeviceId::CreateFromInternalId(0), EKeys::LeftMouseButton,
+    Player->InputKey(FInputKeyEventArgs(nullptr, FInputDeviceId::CreateFromInternalId(0), Input,
         Event, Event == IE_Pressed ? 1.f : 0.f, false, FPlatformTime::Cycles64()));
+}
+void MouseLeft(ASFPlayerController* Player, EInputEvent Event) { Key(Player, EKeys::LeftMouseButton, Event); }
+bool CursorOutsideWindows(USFWindowStack* Stack)
+{
+    if (!FSlateApplication::IsInitialized()) return false;
+    const FVector2D Cursor = FSlateApplication::Get().GetCursorPos();
+    for (UUserWidget* Window : Stack->GetOrder())
+        if (Window && Window->IsVisible() && Window->GetCachedGeometry().IsUnderLocation(Cursor)) return false;
+    return true;
 }
 }
 
@@ -331,22 +350,89 @@ void FSFLootWorkflowNetcheck::Tick(USFLootComponent& Loot)
         for (TActorIterator<ASFLootSourceActor> It(World); It; ++It)
         {
             if (!It->IsGround() || !It->Mesh->GetStaticMesh() || CountItem(Player, State.Item) != State.Before) continue;
-            FVector Start; FRotator Rotation; Player->GetPlayerViewPoint(Start, Rotation);
-            Target->RefreshFromRay(Start, (It->InteractionBounds->GetComponentLocation() - Start).GetSafeNormal());
-            if (Target->GetTarget() != *It || !It->Mesh->GetOverlayMaterial()) continue;
             State.Source = *It;
-            if (!State.bCapturedGround) { Capture(Player, TEXT("ground-before-pickup")); State.bCapturedGround = true; State.NextAt = Now + .2; return; }
-            Player->DispatchSelectedAction(Target->GetSelection()); State.Stage = 13;
-            UE_LOG(LogTemp, Display, TEXT("LOOT_WORKFLOW_GROUND Mesh=1 ClientBounds=1 Rim=1 DirectAction=1")); return;
+            // Local evidence camera only: the pawn/source/collision and server reach
+            // remain untouched. Look from the side away from the pawn, above the
+            // item, so its edge is clear of the legs and bottom interaction prompt.
+            State.OriginalView = Player->GetViewTarget();
+            State.GroundCamera = World->SpawnActor<ACameraActor>();
+            if (!State.GroundCamera.IsValid()) return;
+            const FVector Centre = It->Mesh->Bounds.Origin;
+            const double Radius = FMath::Max(30.0, It->Mesh->Bounds.BoxExtent.GetMax());
+            FVector Away = (Centre - Pawn->GetActorLocation()).GetSafeNormal2D();
+            if (Away.IsNearlyZero()) Away = FVector::ForwardVector;
+            const FVector Eye = Centre + Away * (Radius * 4 + 100) + FVector(0,0,Radius * 3 + 100);
+            State.GroundCamera->SetActorLocationAndRotation(Eye, (Centre - Eye).Rotation());
+            State.GroundCamera->GetCameraComponent()->SetFieldOfView(45.f);
+            State.GroundCamera->GetCameraComponent()->bConstrainAspectRatio = false;
+            Player->SetViewTarget(State.GroundCamera.Get()); State.Stage = 20; return;
         }
+    }
+    else if (State.Stage == 20 && State.Source.IsValid())
+    {
+        int32 Width = 0, Height = 0; Player->GetViewportSize(Width, Height);
+        if (Width < 100 || Height < 100) return;
+        Player->SetMouseLocation(Width - 32, 32); State.Stage = 21;
+    }
+    else if (State.Stage == 21 && State.Source.IsValid())
+    {
+        Target->Refresh();
+        if (State.Source->Mesh->GetOverlayMaterial())
+        { UE_LOG(LogTemp, Error, TEXT("LOOT_WORKFLOW_FAIL GroundUnselectedRimStillSet")); State.Stage = 99; return; }
+        Capture(Player, TEXT("ground-unselected")); State.Stage = 22;
+    }
+    else if (State.Stage == 22 && State.Source.IsValid())
+    {
+        FVector2D Screen; int32 Width = 0, Height = 0; Player->GetViewportSize(Width, Height);
+        if (!Player->ProjectWorldLocationToScreen(State.Source->InteractionBounds->GetComponentLocation(), Screen) ||
+            Screen.X < 32 || Screen.Y < 32 || Screen.X >= Width - 32 || Screen.Y >= Height * .7)
+        { UE_LOG(LogTemp, Error, TEXT("LOOT_WORKFLOW_FAIL GroundProjection Point=%s Viewport=%dx%d"), *Screen.ToString(), Width, Height); State.Stage = 99; return; }
+        Player->SetMouseLocation(FMath::RoundToInt(Screen.X), FMath::RoundToInt(Screen.Y)); State.Stage = 23;
+    }
+    else if (State.Stage == 23 && State.Source.IsValid())
+    {
+        Target->Refresh();
+        if (!CursorOutsideWindows(Stack) || !Stack->IsOpen(Player->InventoryWidget) ||
+            Target->GetTarget() != State.Source.Get() || !State.Source->Mesh->GetOverlayMaterial())
+        { UE_LOG(LogTemp, Error, TEXT("LOOT_WORKFLOW_FAIL GroundCursor OutsideWindows=%d OwnOpen=%d ExactTarget=%d Rim=%d"), CursorOutsideWindows(Stack), Stack->IsOpen(Player->InventoryWidget), Target->GetTarget() == State.Source.Get(), State.Source->Mesh->GetOverlayMaterial() != nullptr); State.Stage = 99; return; }
+        Capture(Player, TEXT("ground-selected")); State.Stage = 24;
+    }
+    else if (State.Stage == 24 && State.Source.IsValid())
+    {
+        Target->Refresh();
+        if (!CursorOutsideWindows(Stack) || Target->GetTarget() != State.Source.Get())
+        { UE_LOG(LogTemp, Error, TEXT("LOOT_WORKFLOW_FAIL GroundCursorChangedBeforeInput")); State.Stage = 99; return; }
+        const auto* Mapping = LoadObject<UInputMappingContext>(nullptr, TEXT("/Game/Frontier/Input/IMC_Player.IMC_Player"));
+        if (!Mapping || !Mapping->GetMappings().ContainsByPredicate([](const FEnhancedActionKeyMapping& Entry)
+            { return Entry.Key == EKeys::F && Entry.Action && Entry.Action->GetFName() == TEXT("IA_Interact"); }))
+        { UE_LOG(LogTemp, Error, TEXT("LOOT_WORKFLOW_FAIL ShippedInteractFMappingMissing")); State.Stage = 99; return; }
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+        State.GroundInputBefore = Player->GetInteractionInputAttemptCount();
+#endif
+        // tools/Create-PlayerInputAssets.py ships IA_Interact on F. The actual
+        // character action must reach the existing controller UI guard/dispatch.
+        Key(Player, EKeys::F, IE_Pressed); State.Stage = 25; State.NextAt = Now + .04;
+    }
+    else if (State.Stage == 25)
+    {
+        Key(Player, EKeys::F, IE_Released); State.Stage = 13; State.ClickDeadline = Now + 5;
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+        if (Player->GetInteractionInputAttemptCount() != State.GroundInputBefore + 1)
+        { UE_LOG(LogTemp, Error, TEXT("LOOT_WORKFLOW_FAIL GroundNativeActionAttempts Before=%llu After=%llu"), State.GroundInputBefore, Player->GetInteractionInputAttemptCount()); State.Stage = 99; return; }
+#endif
+        UE_LOG(LogTemp, Display, TEXT("LOOT_WORKFLOW_GROUND Input=NativeF PressRelease=1 CursorOutsideWindows=1 ControllerAction=1 Mesh=1 Rim=1"));
     }
     else if (State.Stage == 13 && CountItem(Player, State.Item) == State.Before + State.Quantity && !State.Source.IsValid())
     {
         if (Stack->IsOpen(Loot.ExternalWidget)) { UE_LOG(LogTemp, Error, TEXT("LOOT_WORKFLOW_FAIL PickupOpenedWidget")); State.Stage = 99; return; }
         Target->RefreshFromRay(Pawn->GetActorLocation(), FVector::UpVector);
         if (Target->GetTarget()) return;
+        if (State.OriginalView.IsValid()) Player->SetViewTarget(State.OriginalView.Get());
+        if (State.GroundCamera.IsValid()) State.GroundCamera->Destroy();
         Capture(Player, TEXT("final-own-bag"));
         UE_LOG(LogTemp, Display, TEXT("LOOT_WORKFLOW_DONE NativeShift=1 NativeDrag=1 GroundModel=1 PickupWidget=0 TargetCleared=1")); State.Stage = 99;
     }
+    else if (State.Stage == 13 && Now > State.ClickDeadline)
+    { UE_LOG(LogTemp, Error, TEXT("LOOT_WORKFLOW_FAIL NativeGroundActionDidNotCommit")); State.Stage = 99; Player->ConsoleCommand(TEXT("quit")); }
 }
 #endif
