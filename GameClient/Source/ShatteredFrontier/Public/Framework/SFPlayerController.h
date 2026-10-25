@@ -79,6 +79,8 @@ public:
     // Console (development, UI evidence captures): stage named panels and pilot views.
     UFUNCTION(Exec) void SFUi(const FString& Screen);
     void InteractWithSelectedTarget();
+    bool TryInteractLootAtCursor();
+    AActor* GetSelectedActionTarget() const;
     // Optional Equipment WBP hook: pass one copy ID, or leave empty for all equipped.
     UFUNCTION(BlueprintCallable, Category="Gear") void RequestGearRepair(const FString& InstanceId);
     UFUNCTION(BlueprintCallable, Category="Gear") void ConfirmGearRepair();
@@ -107,6 +109,7 @@ public:
     UFUNCTION(Client, Unreliable) void ClientPilotHit(const FString& Message);
     FString GetPilotMessage() const;
     void ToggleInventoryPanel();
+    void OpenInventoryPanel();
     // C (and SFUi equipment): the Equipment window (paper doll, character preview, equippable bag items), a window of the stack.
     void ToggleEquipmentPanel();
     // Open menu windows (inventory now; market, recipes, equipment later). Esc closes the newest; created on first use.

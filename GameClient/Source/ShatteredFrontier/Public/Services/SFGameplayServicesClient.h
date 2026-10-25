@@ -2,6 +2,7 @@
 
 #include "Engine/DeveloperSettings.h"
 #include "Templates/Function.h"
+#include "Inventory/SFLootTypes.h"
 #include "SFGameplayServicesClient.generated.h"
 
 // INT-04 development connection from the UE server to Gameplay.Host (proto/sf/{rewards,progression,housing,crafting}/v1).
@@ -22,6 +23,8 @@ public:
     int32 MaxAttempts = 3;
     UPROPERTY(Config, EditAnywhere, Category="Gathering", meta=(ClampMin="1", ClampMax="30", Units="s", ToolTip="Refresh a gathering node when no stage transition is pending, or retry an unavailable snapshot. Release authors; next world start."))
     float GatheringNodeRetrySeconds = 5;
+    UPROPERTY(Config, EditAnywhere, Category="Loot", meta=(ClampMin="1", ClampMax="60", Units="s", ToolTip="Recover durable world loot and retry pending corpse admission. Release authors; effective next world start."))
+    float LootReconcileSeconds = 5;
     UPROPERTY(Config, EditAnywhere, Category="Reconnect", meta=(ToolTip="INT-05: restore a dev character's backpack, skills, quest step and position on connect, and drain a disconnected controller's in-flight commits. Combat death recovery also attaches when the combat pilot and Gameplay Services are active. Needs the guarded dev identity. Release authors; next world start."))
     bool bRestoreOnConnect = false;
     UPROPERTY(Config, EditAnywhere, Category="Exchange", meta=(ToolTip="Route the trading UI (direct trades, market listings, wallet) through Gameplay.Host Exchange. Off keeps the fake demo service. Release authors; next world start."))
@@ -49,7 +52,8 @@ enum class ESFGameplayRpc : uint8 { GrantDefeatReward, CreateSharedDefeatDrop, C
     // Exchange (proto/sf/exchange/v1), carried by the Backend transport over the same Gameplay.Host channel.
     ExchangeWallet, QuoteRepair, RepairGear, OfferTrade, AcceptTrade, CancelTrade, ListItem, BuyListing, CancelListing, ListListings,
     GetGatheringNode, ListGatheringZoneNodes, HarvestGatheringNode, AdvanceWorldSlots,
-    GroupCreate, GroupJoin, GroupLeave, GroupKick, GroupPromote, GroupAssistant, GroupGet };
+    GroupCreate, GroupJoin, GroupLeave, GroupKick, GroupPromote, GroupAssistant, GroupGet,
+    CreateCorpseLoot, ListLootSources, OpenLootSource, TakeLoot, DropLoot };
 
 // Exchange request fields (each RPC reads only its own). Amounts are whole gold, as in the proto.
 struct FSFExchangeDelivery { FString EscrowId, DestinationId, ItemId; int64 Quantity = 0; };
@@ -89,6 +93,10 @@ struct FSFGameplayRequest
     FString CreatureId;
     TArray<FString> EligibleCharacterIds;
     FString RaidGroupId;
+    FString LootSourceId, LootDefinitionId, LootInstanceId, LootMeshPath;
+    int64 LootSourceRevision = 0, LootQuantity = 0;
+    bool bSharedLoot = false;
+    FTransform LootMeshTransform = FTransform::Identity;
     // Progression
     FString Kind;                 // gather | craft | defeat | quest
     int64 ExpectedProgressionRevision = 0, ExpectedQuestRevision = 0;
@@ -128,6 +136,7 @@ struct FSFGameplayResponse
     // Rewards
     bool bGranted = false; FString SourceCode, LedgerOperationId, DefinitionId, ClaimantCharacterId; int64 Quantity = 0;
     int64 ContainerRevision = 0;  // Rewards and Crafting
+    TArray<FSFLootSourceSnapshot> LootSources;
     // Progression
     bool bProgressionApplied = false, bQuestAccepted = false, bQuestCompleted = false;
     int32 SkillGain = 0, XpGain = 0, Level = 0;

@@ -9,6 +9,7 @@ class UPanelWidget;
 class UProgressBar;
 class UTextBlock;
 class USFGatheringPilotComponent;
+class USFLootComponent;
 
 // Category tabs; Category on an entry is never All.
 enum class ESFInventoryTab : uint8 { All, Materials, Gear, Consumables, Misc };
@@ -26,6 +27,8 @@ struct FSFInventoryEntry
     TSoftObjectPtr<UTexture2D> Icon;
     FSoftObjectPath ItemPath;  // the item definition (equip / drag requests name it)
     FName EquipSlot;           // the definition's equip slot; None when not equippable
+    FString InstanceId;
+    int32 DurabilityPercent = 100;
 };
 
 struct FSFInventoryTooltip { FString Title, Description, RarityLine, TypeLine, WeightLine; };
@@ -50,6 +53,7 @@ public:
     static constexpr const TCHAR* AssetPath = TEXT("/Game/Frontier/UI/Widgets/Inventory/WBP_Inventory.WBP_Inventory_C");
 
     void Configure(USFGatheringPilotComponent* InPilot);
+    void ConfigureExternal(USFLootComponent* InLoot);
     // Shows these entries: SlotCount cells in SlotGrid, the active tab's stacks in order, weight line when MaxKg >= 0 (0 = unlimited).
     void Present(const TArray<FSFInventoryEntry>& All, int32 SlotCount, float TotalKg, float MaxKg);
     void SelectTab(ESFInventoryTab Tab);
@@ -112,9 +116,11 @@ private:
 
     ESFInventoryTab ActiveTab = ESFInventoryTab::All;
     UPROPERTY(Transient) TObjectPtr<USFGatheringPilotComponent> Pilot;
+    UPROPERTY(Transient) TObjectPtr<USFLootComponent> ExternalLoot;
     UPROPERTY(Transient) TArray<TObjectPtr<USFSlotWidget>> Cells;
     TArray<FSFInventoryEntry> ShownItems;  // the filtered entries the grid shows, by cell index
     FString SelectedKey;                   // name of the selected stack; survives refreshes, defaults to the first shown
+    FString SelectedInstance;
     FSFInventoryEntry MainHandEntry;
     bool bHasMainHand = false;
 };

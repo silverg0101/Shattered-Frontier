@@ -6,6 +6,66 @@ service Rewards {
   rpc GrantDefeatReward(GrantDefeatRewardRequest) returns (RewardReceipt);
   rpc CreateSharedDefeatDrop(CreateSharedDefeatDropRequest) returns (SharedDefeatDropReceipt);
   rpc ClaimSharedDefeatDrop(ClaimSharedDefeatDropRequest) returns (SharedDefeatDropReceipt);
+  rpc CreateCorpseLoot(CreateCorpseLootRequest) returns (LootSourcesReply);
+  rpc ListLootSources(ListLootSourcesRequest) returns (LootSourcesReply);
+  rpc OpenLootSource(OpenLootSourceRequest) returns (LootSourceView);
+  rpc TakeLoot(TakeLootRequest) returns (LootSourceView);
+  rpc DropLoot(DropLootRequest) returns (LootSourceView);
+}
+
+// Trusted zone-server API. Range/LOS and actual pawn location are admitted by
+// the authority immediately before dispatch; clients cannot call this channel.
+message LootSource {
+  string id = 1;
+  string zone_id = 2;
+  double x_cm = 3;
+  double y_cm = 4;
+  double z_cm = 5;
+  string creature_id = 6;
+  string mesh_path = 7;
+  bool ground = 8;
+  bool shared = 9;
+  repeated string eligible_character_ids = 10;
+  double scale_x = 11; double scale_y = 12; double scale_z = 13;
+  double pitch = 14; double yaw = 15; double roll = 16;
+}
+message LootInstance { string instance_id = 1; string definition_id = 2; int32 durability_percent = 3; }
+message LootSourceView {
+  LootSource source = 1;
+  int64 revision = 2;
+  repeated SharedDropItem items = 3;
+  repeated LootInstance instances = 4;
+  string ledger_operation_id = 5;
+  int64 backpack_revision = 6;
+}
+message CreateCorpseLootRequest {
+  string defeat_event_id = 1;
+  string creature_id = 2;
+  string table_id = 3;
+  string killer_character_id = 4;
+  repeated string eligible_character_ids = 5;
+  bool protected = 6;
+  string zone_id = 7;
+  double x_cm = 8; double y_cm = 9; double z_cm = 10;
+  string mesh_path = 11;
+  bool shared = 12;
+  string raid_group_id = 13;
+  double scale_x = 14; double scale_y = 15; double scale_z = 16;
+  double pitch = 17; double yaw = 18; double roll = 19;
+}
+message ListLootSourcesRequest { string zone_id = 1; }
+message LootSourcesReply { repeated LootSourceView sources = 1; }
+message OpenLootSourceRequest { string source_id = 1; string character_id = 2; }
+message TakeLootRequest {
+  string operation_id = 1; string source_id = 2; string character_id = 3;
+  string backpack_id = 4; int64 source_revision = 5; int64 backpack_revision = 6;
+  string definition_id = 7; int64 quantity = 8; string instance_id = 9;
+}
+message DropLootRequest {
+  string operation_id = 1; string character_id = 2; string backpack_id = 3;
+  int64 backpack_revision = 4; string definition_id = 5; int64 quantity = 6;
+  string instance_id = 7; string zone_id = 8;
+  double x_cm = 9; double y_cm = 10; double z_cm = 11; string mesh_path = 12;
 }
 
 message CreateSharedDefeatDropRequest {

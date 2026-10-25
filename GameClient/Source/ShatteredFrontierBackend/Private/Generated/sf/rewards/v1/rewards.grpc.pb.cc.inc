@@ -28,6 +28,11 @@ static const char* Rewards_method_names[] = {
   "/sf.rewards.v1.Rewards/GrantDefeatReward",
   "/sf.rewards.v1.Rewards/CreateSharedDefeatDrop",
   "/sf.rewards.v1.Rewards/ClaimSharedDefeatDrop",
+  "/sf.rewards.v1.Rewards/CreateCorpseLoot",
+  "/sf.rewards.v1.Rewards/ListLootSources",
+  "/sf.rewards.v1.Rewards/OpenLootSource",
+  "/sf.rewards.v1.Rewards/TakeLoot",
+  "/sf.rewards.v1.Rewards/DropLoot",
 };
 
 std::unique_ptr< Rewards::Stub> Rewards::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
@@ -40,6 +45,11 @@ Rewards::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, c
   : channel_(channel), rpcmethod_GrantDefeatReward_(Rewards_method_names[0], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_CreateSharedDefeatDrop_(Rewards_method_names[1], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_ClaimSharedDefeatDrop_(Rewards_method_names[2], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_CreateCorpseLoot_(Rewards_method_names[3], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_ListLootSources_(Rewards_method_names[4], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_OpenLootSource_(Rewards_method_names[5], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_TakeLoot_(Rewards_method_names[6], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_DropLoot_(Rewards_method_names[7], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   {}
 
 ::grpc::Status Rewards::Stub::GrantDefeatReward(::grpc::ClientContext* context, const ::sf::rewards::v1::GrantDefeatRewardRequest& request, ::sf::rewards::v1::RewardReceipt* response) {
@@ -111,6 +121,121 @@ void Rewards::Stub::async::ClaimSharedDefeatDrop(::grpc::ClientContext* context,
   return result;
 }
 
+::grpc::Status Rewards::Stub::CreateCorpseLoot(::grpc::ClientContext* context, const ::sf::rewards::v1::CreateCorpseLootRequest& request, ::sf::rewards::v1::LootSourcesReply* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::sf::rewards::v1::CreateCorpseLootRequest, ::sf::rewards::v1::LootSourcesReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_CreateCorpseLoot_, context, request, response);
+}
+
+void Rewards::Stub::async::CreateCorpseLoot(::grpc::ClientContext* context, const ::sf::rewards::v1::CreateCorpseLootRequest* request, ::sf::rewards::v1::LootSourcesReply* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::sf::rewards::v1::CreateCorpseLootRequest, ::sf::rewards::v1::LootSourcesReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_CreateCorpseLoot_, context, request, response, std::move(f));
+}
+
+void Rewards::Stub::async::CreateCorpseLoot(::grpc::ClientContext* context, const ::sf::rewards::v1::CreateCorpseLootRequest* request, ::sf::rewards::v1::LootSourcesReply* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_CreateCorpseLoot_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::sf::rewards::v1::LootSourcesReply>* Rewards::Stub::PrepareAsyncCreateCorpseLootRaw(::grpc::ClientContext* context, const ::sf::rewards::v1::CreateCorpseLootRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::sf::rewards::v1::LootSourcesReply, ::sf::rewards::v1::CreateCorpseLootRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_CreateCorpseLoot_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::sf::rewards::v1::LootSourcesReply>* Rewards::Stub::AsyncCreateCorpseLootRaw(::grpc::ClientContext* context, const ::sf::rewards::v1::CreateCorpseLootRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncCreateCorpseLootRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
+::grpc::Status Rewards::Stub::ListLootSources(::grpc::ClientContext* context, const ::sf::rewards::v1::ListLootSourcesRequest& request, ::sf::rewards::v1::LootSourcesReply* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::sf::rewards::v1::ListLootSourcesRequest, ::sf::rewards::v1::LootSourcesReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_ListLootSources_, context, request, response);
+}
+
+void Rewards::Stub::async::ListLootSources(::grpc::ClientContext* context, const ::sf::rewards::v1::ListLootSourcesRequest* request, ::sf::rewards::v1::LootSourcesReply* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::sf::rewards::v1::ListLootSourcesRequest, ::sf::rewards::v1::LootSourcesReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_ListLootSources_, context, request, response, std::move(f));
+}
+
+void Rewards::Stub::async::ListLootSources(::grpc::ClientContext* context, const ::sf::rewards::v1::ListLootSourcesRequest* request, ::sf::rewards::v1::LootSourcesReply* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_ListLootSources_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::sf::rewards::v1::LootSourcesReply>* Rewards::Stub::PrepareAsyncListLootSourcesRaw(::grpc::ClientContext* context, const ::sf::rewards::v1::ListLootSourcesRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::sf::rewards::v1::LootSourcesReply, ::sf::rewards::v1::ListLootSourcesRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_ListLootSources_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::sf::rewards::v1::LootSourcesReply>* Rewards::Stub::AsyncListLootSourcesRaw(::grpc::ClientContext* context, const ::sf::rewards::v1::ListLootSourcesRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncListLootSourcesRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
+::grpc::Status Rewards::Stub::OpenLootSource(::grpc::ClientContext* context, const ::sf::rewards::v1::OpenLootSourceRequest& request, ::sf::rewards::v1::LootSourceView* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::sf::rewards::v1::OpenLootSourceRequest, ::sf::rewards::v1::LootSourceView, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_OpenLootSource_, context, request, response);
+}
+
+void Rewards::Stub::async::OpenLootSource(::grpc::ClientContext* context, const ::sf::rewards::v1::OpenLootSourceRequest* request, ::sf::rewards::v1::LootSourceView* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::sf::rewards::v1::OpenLootSourceRequest, ::sf::rewards::v1::LootSourceView, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_OpenLootSource_, context, request, response, std::move(f));
+}
+
+void Rewards::Stub::async::OpenLootSource(::grpc::ClientContext* context, const ::sf::rewards::v1::OpenLootSourceRequest* request, ::sf::rewards::v1::LootSourceView* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_OpenLootSource_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::sf::rewards::v1::LootSourceView>* Rewards::Stub::PrepareAsyncOpenLootSourceRaw(::grpc::ClientContext* context, const ::sf::rewards::v1::OpenLootSourceRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::sf::rewards::v1::LootSourceView, ::sf::rewards::v1::OpenLootSourceRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_OpenLootSource_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::sf::rewards::v1::LootSourceView>* Rewards::Stub::AsyncOpenLootSourceRaw(::grpc::ClientContext* context, const ::sf::rewards::v1::OpenLootSourceRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncOpenLootSourceRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
+::grpc::Status Rewards::Stub::TakeLoot(::grpc::ClientContext* context, const ::sf::rewards::v1::TakeLootRequest& request, ::sf::rewards::v1::LootSourceView* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::sf::rewards::v1::TakeLootRequest, ::sf::rewards::v1::LootSourceView, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_TakeLoot_, context, request, response);
+}
+
+void Rewards::Stub::async::TakeLoot(::grpc::ClientContext* context, const ::sf::rewards::v1::TakeLootRequest* request, ::sf::rewards::v1::LootSourceView* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::sf::rewards::v1::TakeLootRequest, ::sf::rewards::v1::LootSourceView, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_TakeLoot_, context, request, response, std::move(f));
+}
+
+void Rewards::Stub::async::TakeLoot(::grpc::ClientContext* context, const ::sf::rewards::v1::TakeLootRequest* request, ::sf::rewards::v1::LootSourceView* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_TakeLoot_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::sf::rewards::v1::LootSourceView>* Rewards::Stub::PrepareAsyncTakeLootRaw(::grpc::ClientContext* context, const ::sf::rewards::v1::TakeLootRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::sf::rewards::v1::LootSourceView, ::sf::rewards::v1::TakeLootRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_TakeLoot_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::sf::rewards::v1::LootSourceView>* Rewards::Stub::AsyncTakeLootRaw(::grpc::ClientContext* context, const ::sf::rewards::v1::TakeLootRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncTakeLootRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
+::grpc::Status Rewards::Stub::DropLoot(::grpc::ClientContext* context, const ::sf::rewards::v1::DropLootRequest& request, ::sf::rewards::v1::LootSourceView* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::sf::rewards::v1::DropLootRequest, ::sf::rewards::v1::LootSourceView, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_DropLoot_, context, request, response);
+}
+
+void Rewards::Stub::async::DropLoot(::grpc::ClientContext* context, const ::sf::rewards::v1::DropLootRequest* request, ::sf::rewards::v1::LootSourceView* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::sf::rewards::v1::DropLootRequest, ::sf::rewards::v1::LootSourceView, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_DropLoot_, context, request, response, std::move(f));
+}
+
+void Rewards::Stub::async::DropLoot(::grpc::ClientContext* context, const ::sf::rewards::v1::DropLootRequest* request, ::sf::rewards::v1::LootSourceView* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_DropLoot_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::sf::rewards::v1::LootSourceView>* Rewards::Stub::PrepareAsyncDropLootRaw(::grpc::ClientContext* context, const ::sf::rewards::v1::DropLootRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::sf::rewards::v1::LootSourceView, ::sf::rewards::v1::DropLootRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_DropLoot_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::sf::rewards::v1::LootSourceView>* Rewards::Stub::AsyncDropLootRaw(::grpc::ClientContext* context, const ::sf::rewards::v1::DropLootRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncDropLootRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
 Rewards::Service::Service() {
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       Rewards_method_names[0],
@@ -142,6 +267,56 @@ Rewards::Service::Service() {
              ::sf::rewards::v1::SharedDefeatDropReceipt* resp) {
                return service->ClaimSharedDefeatDrop(ctx, req, resp);
              }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      Rewards_method_names[3],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< Rewards::Service, ::sf::rewards::v1::CreateCorpseLootRequest, ::sf::rewards::v1::LootSourcesReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](Rewards::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::sf::rewards::v1::CreateCorpseLootRequest* req,
+             ::sf::rewards::v1::LootSourcesReply* resp) {
+               return service->CreateCorpseLoot(ctx, req, resp);
+             }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      Rewards_method_names[4],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< Rewards::Service, ::sf::rewards::v1::ListLootSourcesRequest, ::sf::rewards::v1::LootSourcesReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](Rewards::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::sf::rewards::v1::ListLootSourcesRequest* req,
+             ::sf::rewards::v1::LootSourcesReply* resp) {
+               return service->ListLootSources(ctx, req, resp);
+             }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      Rewards_method_names[5],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< Rewards::Service, ::sf::rewards::v1::OpenLootSourceRequest, ::sf::rewards::v1::LootSourceView, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](Rewards::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::sf::rewards::v1::OpenLootSourceRequest* req,
+             ::sf::rewards::v1::LootSourceView* resp) {
+               return service->OpenLootSource(ctx, req, resp);
+             }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      Rewards_method_names[6],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< Rewards::Service, ::sf::rewards::v1::TakeLootRequest, ::sf::rewards::v1::LootSourceView, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](Rewards::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::sf::rewards::v1::TakeLootRequest* req,
+             ::sf::rewards::v1::LootSourceView* resp) {
+               return service->TakeLoot(ctx, req, resp);
+             }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      Rewards_method_names[7],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< Rewards::Service, ::sf::rewards::v1::DropLootRequest, ::sf::rewards::v1::LootSourceView, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](Rewards::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::sf::rewards::v1::DropLootRequest* req,
+             ::sf::rewards::v1::LootSourceView* resp) {
+               return service->DropLoot(ctx, req, resp);
+             }, this)));
 }
 
 Rewards::Service::~Service() {
@@ -162,6 +337,41 @@ Rewards::Service::~Service() {
 }
 
 ::grpc::Status Rewards::Service::ClaimSharedDefeatDrop(::grpc::ServerContext* context, const ::sf::rewards::v1::ClaimSharedDefeatDropRequest* request, ::sf::rewards::v1::SharedDefeatDropReceipt* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status Rewards::Service::CreateCorpseLoot(::grpc::ServerContext* context, const ::sf::rewards::v1::CreateCorpseLootRequest* request, ::sf::rewards::v1::LootSourcesReply* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status Rewards::Service::ListLootSources(::grpc::ServerContext* context, const ::sf::rewards::v1::ListLootSourcesRequest* request, ::sf::rewards::v1::LootSourcesReply* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status Rewards::Service::OpenLootSource(::grpc::ServerContext* context, const ::sf::rewards::v1::OpenLootSourceRequest* request, ::sf::rewards::v1::LootSourceView* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status Rewards::Service::TakeLoot(::grpc::ServerContext* context, const ::sf::rewards::v1::TakeLootRequest* request, ::sf::rewards::v1::LootSourceView* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status Rewards::Service::DropLoot(::grpc::ServerContext* context, const ::sf::rewards::v1::DropLootRequest* request, ::sf::rewards::v1::LootSourceView* response) {
   (void) context;
   (void) request;
   (void) response;

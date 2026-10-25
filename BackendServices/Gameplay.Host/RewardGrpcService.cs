@@ -2,8 +2,13 @@ using Grpc.Core;
 using ShatteredFrontier.Rewards;
 using Pb = ShatteredFrontier.Rewards.V1;
 
-internal sealed class RewardGrpcService(DefeatRewardPayout payout, SharedDefeatDropPayout shared) : Pb.Rewards.RewardsBase
+internal sealed class RewardGrpcService(DefeatRewardPayout payout, SharedDefeatDropPayout shared, WorldLootGateway loot) : Pb.Rewards.RewardsBase
 {
+    public override Task<Pb.LootSourcesReply> CreateCorpseLoot(Pb.CreateCorpseLootRequest request, ServerCallContext context) => GrpcRun.Call(context, () => loot.Create(request));
+    public override Task<Pb.LootSourcesReply> ListLootSources(Pb.ListLootSourcesRequest request, ServerCallContext context) => GrpcRun.Call(context, () => loot.List(request.ZoneId));
+    public override Task<Pb.LootSourceView> OpenLootSource(Pb.OpenLootSourceRequest request, ServerCallContext context) => GrpcRun.Call(context, () => loot.Open(request));
+    public override Task<Pb.LootSourceView> TakeLoot(Pb.TakeLootRequest request, ServerCallContext context) => GrpcRun.Call(context, () => loot.Take(request));
+    public override Task<Pb.LootSourceView> DropLoot(Pb.DropLootRequest request, ServerCallContext context) => GrpcRun.Call(context, () => loot.Drop(request));
     private static Pb.SharedDefeatDropReceipt SharedReceipt(SharedDropResult result)
     {
         var receipt = new Pb.SharedDefeatDropReceipt

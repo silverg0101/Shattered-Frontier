@@ -1,5 +1,7 @@
 using ShatteredFrontier.InventoryLedger;
 
+if (args.Contains("--world-loot", StringComparer.Ordinal)) { WorldLootTests.Run(); return; }
+
 var store = new InMemoryInventoryLedgerStore();
 var ledger = new InventoryLedger(store);
 var owner = "chr_test";

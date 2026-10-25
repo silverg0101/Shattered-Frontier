@@ -18,6 +18,9 @@
 #include "Inventory/SFGear.h"
 #include "Inventory/SFInventory.h"
 #include "Inventory/SFRepairStationActor.h"
+#include "Inventory/SFLootComponent.h"
+#include "Inventory/SFLootSourceActor.h"
+#include "Interaction/SFActionTargetComponent.h"
 #include "Exchange/SFExchangeWidgets.h"
 #include "Exchange/SFFakeExchange.h"
 #include "Combat/SFCombatPilot.h"
@@ -28,6 +31,7 @@
 #include "Misc/Parse.h"
 #include "Components/InputComponent.h"
 #include "InputCoreTypes.h"
+#include "Framework/Application/SlateApplication.h"
 #include "Engine/Engine.h"
 #include "Engine/World.h"
 #include "EngineUtils.h"
@@ -160,6 +164,7 @@ void ASFPlayerController::ClientInteractionResult_Implementation(ESFE1Interactio
 
 void ASFPlayerController::TickInteraction()
 {
+    if (auto* Target = FindComponentByClass<USFActionTargetComponent>()) { Target->Refresh(); }
     TickDialogue();
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     if (IsLocalController() && FParse::Param(FCommandLine::Get(), TEXT("GreenlandsRepairNetcheck")) && GetPawn())
@@ -415,6 +420,11 @@ void ASFPlayerController::ToggleInventoryPanel()
     if (bOpen) { GetWindowStack()->Open(InventoryWidget); } else { GetWindowStack()->Close(InventoryWidget); }
 }
 
+void ASFPlayerController::OpenInventoryPanel()
+{
+    if (!InventoryWidget || !GetWindowStack()->IsOpen(InventoryWidget)) { ToggleInventoryPanel(); }
+}
+
 void ASFPlayerController::ToggleEquipmentPanel()
 {
     USFGatheringPilotComponent* Pilot = FindComponentByClass<USFGatheringPilotComponent>();
@@ -437,6 +447,12 @@ void ASFPlayerController::InteractWithSelectedTarget()
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     if (InteractionInputAttempts != MAX_uint64) { ++InteractionInputAttempts; }
 #endif
+    if (TryInteractLootAtCursor()) { return; }
+    if (auto* Node = Cast<ASFGatheringPilotNode>(GetSelectedActionTarget()))
+    {
+        if (auto* Pilot = FindComponentByClass<USFGatheringPilotComponent>())
+        { const FVector Start = GetPawn() ? GetPawn()->GetPawnViewLocation() : FVector::ZeroVector; if (Pilot->InteractFromRay(Start, (Node->GetActorLocation() - Start).GetSafeNormal())) { return; } }
+    }
     if (TryOpenDialogue() || USFQuestBoardPanel::TryOpenBoard(this)) { return; }
     if (IsLocalController() && GetPawn() && GetWorld())
     {
@@ -459,6 +475,23 @@ void ASFPlayerController::InteractWithSelectedTarget()
     const double Now = GetWorld()->GetTimeSeconds();
     if (!LocalFeedback.TryBeginRequest(Now)) { return; }
     ServerRequestInteraction(SelectedTarget.Get(), SelectedRevision);
+}
+
+AActor* ASFPlayerController::GetSelectedActionTarget() const
+{ const auto* Selection = FindComponentByClass<USFActionTargetComponent>(); return Selection ? Selection->GetTarget() : nullptr; }
+
+bool ASFPlayerController::TryInteractLootAtCursor()
+{
+    if (!IsLocalController()) { return false; }
+    if (FSlateApplication::IsInitialized())
+    {
+        const FVector2D Cursor = FSlateApplication::Get().GetCursorPos();
+        for (UUserWidget* Window : GetWindowStack()->GetOrder())
+        { if (Window && Window->IsVisible() && Window->GetCachedGeometry().IsUnderLocation(Cursor)) { return true; } }
+    }
+    if (auto* Selection = FindComponentByClass<USFActionTargetComponent>()) { Selection->Refresh(); }
+    if (auto* Loot = USFLootComponent::Find(this)) { return Loot->TryInteract(GetSelectedActionTarget()); }
+    return false;
 }
 
 namespace
@@ -617,7 +650,7 @@ void ASFPlayerController::ToggleTradeDemo()
         TradeWindow->AddToViewport(30);
         TradeWindow->SetVisibility(ESlateVisibility::Collapsed);
     }
-    if (GetWindowStack()->IsOpen(TradeWindow)) { GetWindowStack()->Close(TradeWindow); } else { GetWindowStack()->Open(TradeWindow); }
+    if (GetWindowStack()->IsOpen(TradeWindow)) { GetWindowStack()->Close(TradeWindow); } else { OpenInventoryPanel(); GetWindowStack()->Open(TradeWindow); }
     if (GatheringHud) { GatheringHud->SetStationModal(TradeWindow); }
 }
 
@@ -663,7 +696,7 @@ void ASFPlayerController::ToggleMarketDemo()
             if (!Nearby || !Exchange) { return; }
             MarketBoard->StartLiveRefresh(Exchange, Nearby);
         }
-        GetWindowStack()->Open(MarketBoard);
+        OpenInventoryPanel(); GetWindowStack()->Open(MarketBoard);
     }
     if (GatheringHud) { GatheringHud->SetStationModal(MarketBoard); }
 }

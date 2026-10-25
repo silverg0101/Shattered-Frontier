@@ -1,5 +1,7 @@
 # Tools and tests
 
+Loot: `tools/Test-WorldLootDurable.ps1 -EvidenceRoot <fresh ignored child>` reuses the owned ledger fixture for precise source/receipt/copy-condition recovery and two-transaction pickup after an immediate PostgreSQL stop. `InventoryLedger.Tests --world-loot` covers capacity rollback, ownership, shared claiming and defeat route fencing. `ShatteredFrontier.Loot.` and `ShatteredFrontier.Inventory.Panel` are the focused Unreal authority/row gates; `tools/Create-ActionTargetMaterial.py` creates only the common functional rim and preserves an existing asset.
+
 Out-of-place NPC fixture: `tools/Create-SandboxMap.py OutOfPlaceNpc` adds the tagged, existing-box NPC to `/Game/Frontier/Maps/Sandbox/SB_OutOfPlaceNpc`; it uses the normal game mode and existing combat settings. Focused automation: `ShatteredFrontier.Combat.OutOfPlaceNpc.AuthorityAndRetaliation`. Model review and Greenlands placement are separate gates.
 
 `pwsh tools/Test-CombatPilot.ps1 -Map /Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook -Clients 2 -Services -GreenlandsArcherNetcheck` starts two clients and the existing service fixture, positions them beside a live bandit archer, and requires a server ranged hit plus tracer receipt on both clients. Run from PowerShell so `/Game/` is preserved. The fixture stops its owned clients, server, service hosts and PostgreSQL instance.

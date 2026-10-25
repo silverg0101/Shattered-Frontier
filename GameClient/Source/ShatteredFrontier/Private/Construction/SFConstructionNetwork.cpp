@@ -6,6 +6,8 @@
 #include "Characters/SFE1VitalsHud.h"
 #include "Framework/SFHudLayout.h"
 #include "UI/SFInventoryWidget.h"
+#include "Inventory/SFLootComponent.h"
+#include "Interaction/SFActionTargetComponent.h"
 #include "UI/SFWindowStack.h"
 #include "EnhancedInputComponent.h"
 #include "InputAction.h"
@@ -1388,6 +1390,8 @@ ASFPlayerController::ASFPlayerController()
     PrimaryActorTick.bCanEverTick=true;
     SelectedRotation=uint8(SFConstructionGeometry::IdentityRotation());
     GatheringPilot=CreateDefaultSubobject<USFGatheringPilotComponent>(TEXT("GatheringPilot"));
+    CreateDefaultSubobject<USFLootComponent>(TEXT("Loot"));
+    CreateDefaultSubobject<USFActionTargetComponent>(TEXT("ActionTarget"));
     auto* Inventory=CreateDefaultSubobject<USFInventoryComponent>(TEXT("GatheringPilotInventory"));
     PilotInventory=Inventory;
     Inventory->AllowedEquipmentSlots=USFGatheringPilotComponent::EquipmentSlots();

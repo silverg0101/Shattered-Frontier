@@ -1949,7 +1949,8 @@ void ASFE1Character::TickCameraControls(float Dt)
         SetMouseCaptured(bDragging);
         if (!bDragging) { PC->SetMouseLocation(FMath::RoundToInt(RestoreCursor.X), FMath::RoundToInt(RestoreCursor.Y)); }
     }
-    if (bClickOrbit) { PilotAttack(); }
+    if (bClickOrbit)
+    { auto* ActionController = Cast<ASFPlayerController>(PC); if (!ActionController || !ActionController->TryInteractLootAtCursor()) { PilotAttack(); } }
     if (bClickMouseLook) { Interact(); }
 
     // Camera rotation: mouse while dragging, right stick always (mouselook semantics).

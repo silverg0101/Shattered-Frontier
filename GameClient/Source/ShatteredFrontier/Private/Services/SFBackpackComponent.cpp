@@ -7,6 +7,7 @@
 #include "Inventory/SFInventoryLedgerClient.h"
 #include "Services/SFGameplayServicesClient.h"
 #include "Inventory/SFInventory.h"
+#include "Inventory/SFLootComponent.h"
 
 USFBackpackComponent* USFBackpackComponent::FindOrCreate(APlayerController* Controller)
 {
@@ -177,6 +178,7 @@ void USFBackpackComponent::Reconcile(TFunction<void(bool)> Done)
         {
             USFBackpackComponent* Again = Weak.Get();
             if (!Again || View.Status != ESFLedgerStatus::Ok) { Report(ESFBackpackOutcome::Unavailable, -1); return; }
+            if (auto* Loot = USFLootComponent::Find(Cast<APlayerController>(Again->GetOwner()))) { Loot->SetBackpackInstances(View.Instances); }
             // Every economy item the pilot knows, plus whatever the ledger holds; tools are not ledger items.
             TSet<FString> Items; View.Quantities.GetKeys(Items);
             for (const FSFStationRecipe& Recipe : SFStationRecipes::Shipped())

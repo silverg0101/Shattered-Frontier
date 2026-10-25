@@ -43,6 +43,7 @@ internal sealed class DefeatRewardPayout(PostgresInventoryLedgerStore ledgerStor
 
     public DefeatPayout Grant(DefeatEvent defeat, string creatureId, string tableId)
     {
+        WorldLoot.ReserveDefeatRoute(ledgerStore, defeat.Id, "direct");
         if (!creatures.TryGetValue(creatureId, out var creature) || creature.TableId != tableId ||
             !tables.TryGetValue(tableId, out var table) || table.SingleDrop)
             throw new GameplayRejectedException("Creature requires a different loot route.", StatusCode.InvalidArgument);
@@ -215,6 +216,7 @@ internal sealed class SharedDefeatDropPayout(PostgresInventoryLedgerStore ledger
     public SharedDropResult Create(string eventId, string creatureId, string tableId, string killerId,
         IReadOnlyList<string> eligibleIds, bool killerProtected, bool creatureProtected, string raidGroupId = "")
     {
+        WorldLoot.ReserveDefeatRoute(ledgerStore, eventId, "direct");
         if (string.IsNullOrWhiteSpace(eventId) || string.IsNullOrWhiteSpace(killerId) ||
             !creatures.TryGetValue(creatureId, out var creature) || !creature.UniqueOrBoss ||
             creature.TableId != tableId || !tables.TryGetValue(tableId, out var table))

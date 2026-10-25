@@ -59,6 +59,41 @@ class Rewards final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::rewards::v1::SharedDefeatDropReceipt>> PrepareAsyncClaimSharedDefeatDrop(::grpc::ClientContext* context, const ::sf::rewards::v1::ClaimSharedDefeatDropRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::rewards::v1::SharedDefeatDropReceipt>>(PrepareAsyncClaimSharedDefeatDropRaw(context, request, cq));
     }
+    virtual ::grpc::Status CreateCorpseLoot(::grpc::ClientContext* context, const ::sf::rewards::v1::CreateCorpseLootRequest& request, ::sf::rewards::v1::LootSourcesReply* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::rewards::v1::LootSourcesReply>> AsyncCreateCorpseLoot(::grpc::ClientContext* context, const ::sf::rewards::v1::CreateCorpseLootRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::rewards::v1::LootSourcesReply>>(AsyncCreateCorpseLootRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::rewards::v1::LootSourcesReply>> PrepareAsyncCreateCorpseLoot(::grpc::ClientContext* context, const ::sf::rewards::v1::CreateCorpseLootRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::rewards::v1::LootSourcesReply>>(PrepareAsyncCreateCorpseLootRaw(context, request, cq));
+    }
+    virtual ::grpc::Status ListLootSources(::grpc::ClientContext* context, const ::sf::rewards::v1::ListLootSourcesRequest& request, ::sf::rewards::v1::LootSourcesReply* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::rewards::v1::LootSourcesReply>> AsyncListLootSources(::grpc::ClientContext* context, const ::sf::rewards::v1::ListLootSourcesRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::rewards::v1::LootSourcesReply>>(AsyncListLootSourcesRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::rewards::v1::LootSourcesReply>> PrepareAsyncListLootSources(::grpc::ClientContext* context, const ::sf::rewards::v1::ListLootSourcesRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::rewards::v1::LootSourcesReply>>(PrepareAsyncListLootSourcesRaw(context, request, cq));
+    }
+    virtual ::grpc::Status OpenLootSource(::grpc::ClientContext* context, const ::sf::rewards::v1::OpenLootSourceRequest& request, ::sf::rewards::v1::LootSourceView* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::rewards::v1::LootSourceView>> AsyncOpenLootSource(::grpc::ClientContext* context, const ::sf::rewards::v1::OpenLootSourceRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::rewards::v1::LootSourceView>>(AsyncOpenLootSourceRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::rewards::v1::LootSourceView>> PrepareAsyncOpenLootSource(::grpc::ClientContext* context, const ::sf::rewards::v1::OpenLootSourceRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::rewards::v1::LootSourceView>>(PrepareAsyncOpenLootSourceRaw(context, request, cq));
+    }
+    virtual ::grpc::Status TakeLoot(::grpc::ClientContext* context, const ::sf::rewards::v1::TakeLootRequest& request, ::sf::rewards::v1::LootSourceView* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::rewards::v1::LootSourceView>> AsyncTakeLoot(::grpc::ClientContext* context, const ::sf::rewards::v1::TakeLootRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::rewards::v1::LootSourceView>>(AsyncTakeLootRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::rewards::v1::LootSourceView>> PrepareAsyncTakeLoot(::grpc::ClientContext* context, const ::sf::rewards::v1::TakeLootRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::rewards::v1::LootSourceView>>(PrepareAsyncTakeLootRaw(context, request, cq));
+    }
+    virtual ::grpc::Status DropLoot(::grpc::ClientContext* context, const ::sf::rewards::v1::DropLootRequest& request, ::sf::rewards::v1::LootSourceView* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::rewards::v1::LootSourceView>> AsyncDropLoot(::grpc::ClientContext* context, const ::sf::rewards::v1::DropLootRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::rewards::v1::LootSourceView>>(AsyncDropLootRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::rewards::v1::LootSourceView>> PrepareAsyncDropLoot(::grpc::ClientContext* context, const ::sf::rewards::v1::DropLootRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::rewards::v1::LootSourceView>>(PrepareAsyncDropLootRaw(context, request, cq));
+    }
     class async_interface {
      public:
       virtual ~async_interface() {}
@@ -68,6 +103,16 @@ class Rewards final {
       virtual void CreateSharedDefeatDrop(::grpc::ClientContext* context, const ::sf::rewards::v1::CreateSharedDefeatDropRequest* request, ::sf::rewards::v1::SharedDefeatDropReceipt* response, ::grpc::ClientUnaryReactor* reactor) = 0;
       virtual void ClaimSharedDefeatDrop(::grpc::ClientContext* context, const ::sf::rewards::v1::ClaimSharedDefeatDropRequest* request, ::sf::rewards::v1::SharedDefeatDropReceipt* response, std::function<void(::grpc::Status)>) = 0;
       virtual void ClaimSharedDefeatDrop(::grpc::ClientContext* context, const ::sf::rewards::v1::ClaimSharedDefeatDropRequest* request, ::sf::rewards::v1::SharedDefeatDropReceipt* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void CreateCorpseLoot(::grpc::ClientContext* context, const ::sf::rewards::v1::CreateCorpseLootRequest* request, ::sf::rewards::v1::LootSourcesReply* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void CreateCorpseLoot(::grpc::ClientContext* context, const ::sf::rewards::v1::CreateCorpseLootRequest* request, ::sf::rewards::v1::LootSourcesReply* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void ListLootSources(::grpc::ClientContext* context, const ::sf::rewards::v1::ListLootSourcesRequest* request, ::sf::rewards::v1::LootSourcesReply* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void ListLootSources(::grpc::ClientContext* context, const ::sf::rewards::v1::ListLootSourcesRequest* request, ::sf::rewards::v1::LootSourcesReply* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void OpenLootSource(::grpc::ClientContext* context, const ::sf::rewards::v1::OpenLootSourceRequest* request, ::sf::rewards::v1::LootSourceView* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void OpenLootSource(::grpc::ClientContext* context, const ::sf::rewards::v1::OpenLootSourceRequest* request, ::sf::rewards::v1::LootSourceView* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void TakeLoot(::grpc::ClientContext* context, const ::sf::rewards::v1::TakeLootRequest* request, ::sf::rewards::v1::LootSourceView* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void TakeLoot(::grpc::ClientContext* context, const ::sf::rewards::v1::TakeLootRequest* request, ::sf::rewards::v1::LootSourceView* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void DropLoot(::grpc::ClientContext* context, const ::sf::rewards::v1::DropLootRequest* request, ::sf::rewards::v1::LootSourceView* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void DropLoot(::grpc::ClientContext* context, const ::sf::rewards::v1::DropLootRequest* request, ::sf::rewards::v1::LootSourceView* response, ::grpc::ClientUnaryReactor* reactor) = 0;
     };
     typedef class async_interface experimental_async_interface;
     virtual class async_interface* async() { return nullptr; }
@@ -79,6 +124,16 @@ class Rewards final {
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::rewards::v1::SharedDefeatDropReceipt>* PrepareAsyncCreateSharedDefeatDropRaw(::grpc::ClientContext* context, const ::sf::rewards::v1::CreateSharedDefeatDropRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::rewards::v1::SharedDefeatDropReceipt>* AsyncClaimSharedDefeatDropRaw(::grpc::ClientContext* context, const ::sf::rewards::v1::ClaimSharedDefeatDropRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::rewards::v1::SharedDefeatDropReceipt>* PrepareAsyncClaimSharedDefeatDropRaw(::grpc::ClientContext* context, const ::sf::rewards::v1::ClaimSharedDefeatDropRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::rewards::v1::LootSourcesReply>* AsyncCreateCorpseLootRaw(::grpc::ClientContext* context, const ::sf::rewards::v1::CreateCorpseLootRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::rewards::v1::LootSourcesReply>* PrepareAsyncCreateCorpseLootRaw(::grpc::ClientContext* context, const ::sf::rewards::v1::CreateCorpseLootRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::rewards::v1::LootSourcesReply>* AsyncListLootSourcesRaw(::grpc::ClientContext* context, const ::sf::rewards::v1::ListLootSourcesRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::rewards::v1::LootSourcesReply>* PrepareAsyncListLootSourcesRaw(::grpc::ClientContext* context, const ::sf::rewards::v1::ListLootSourcesRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::rewards::v1::LootSourceView>* AsyncOpenLootSourceRaw(::grpc::ClientContext* context, const ::sf::rewards::v1::OpenLootSourceRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::rewards::v1::LootSourceView>* PrepareAsyncOpenLootSourceRaw(::grpc::ClientContext* context, const ::sf::rewards::v1::OpenLootSourceRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::rewards::v1::LootSourceView>* AsyncTakeLootRaw(::grpc::ClientContext* context, const ::sf::rewards::v1::TakeLootRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::rewards::v1::LootSourceView>* PrepareAsyncTakeLootRaw(::grpc::ClientContext* context, const ::sf::rewards::v1::TakeLootRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::rewards::v1::LootSourceView>* AsyncDropLootRaw(::grpc::ClientContext* context, const ::sf::rewards::v1::DropLootRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::rewards::v1::LootSourceView>* PrepareAsyncDropLootRaw(::grpc::ClientContext* context, const ::sf::rewards::v1::DropLootRequest& request, ::grpc::CompletionQueue* cq) = 0;
   };
   class Stub final : public StubInterface {
    public:
@@ -104,6 +159,41 @@ class Rewards final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::rewards::v1::SharedDefeatDropReceipt>> PrepareAsyncClaimSharedDefeatDrop(::grpc::ClientContext* context, const ::sf::rewards::v1::ClaimSharedDefeatDropRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::rewards::v1::SharedDefeatDropReceipt>>(PrepareAsyncClaimSharedDefeatDropRaw(context, request, cq));
     }
+    ::grpc::Status CreateCorpseLoot(::grpc::ClientContext* context, const ::sf::rewards::v1::CreateCorpseLootRequest& request, ::sf::rewards::v1::LootSourcesReply* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::rewards::v1::LootSourcesReply>> AsyncCreateCorpseLoot(::grpc::ClientContext* context, const ::sf::rewards::v1::CreateCorpseLootRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::rewards::v1::LootSourcesReply>>(AsyncCreateCorpseLootRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::rewards::v1::LootSourcesReply>> PrepareAsyncCreateCorpseLoot(::grpc::ClientContext* context, const ::sf::rewards::v1::CreateCorpseLootRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::rewards::v1::LootSourcesReply>>(PrepareAsyncCreateCorpseLootRaw(context, request, cq));
+    }
+    ::grpc::Status ListLootSources(::grpc::ClientContext* context, const ::sf::rewards::v1::ListLootSourcesRequest& request, ::sf::rewards::v1::LootSourcesReply* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::rewards::v1::LootSourcesReply>> AsyncListLootSources(::grpc::ClientContext* context, const ::sf::rewards::v1::ListLootSourcesRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::rewards::v1::LootSourcesReply>>(AsyncListLootSourcesRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::rewards::v1::LootSourcesReply>> PrepareAsyncListLootSources(::grpc::ClientContext* context, const ::sf::rewards::v1::ListLootSourcesRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::rewards::v1::LootSourcesReply>>(PrepareAsyncListLootSourcesRaw(context, request, cq));
+    }
+    ::grpc::Status OpenLootSource(::grpc::ClientContext* context, const ::sf::rewards::v1::OpenLootSourceRequest& request, ::sf::rewards::v1::LootSourceView* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::rewards::v1::LootSourceView>> AsyncOpenLootSource(::grpc::ClientContext* context, const ::sf::rewards::v1::OpenLootSourceRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::rewards::v1::LootSourceView>>(AsyncOpenLootSourceRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::rewards::v1::LootSourceView>> PrepareAsyncOpenLootSource(::grpc::ClientContext* context, const ::sf::rewards::v1::OpenLootSourceRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::rewards::v1::LootSourceView>>(PrepareAsyncOpenLootSourceRaw(context, request, cq));
+    }
+    ::grpc::Status TakeLoot(::grpc::ClientContext* context, const ::sf::rewards::v1::TakeLootRequest& request, ::sf::rewards::v1::LootSourceView* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::rewards::v1::LootSourceView>> AsyncTakeLoot(::grpc::ClientContext* context, const ::sf::rewards::v1::TakeLootRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::rewards::v1::LootSourceView>>(AsyncTakeLootRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::rewards::v1::LootSourceView>> PrepareAsyncTakeLoot(::grpc::ClientContext* context, const ::sf::rewards::v1::TakeLootRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::rewards::v1::LootSourceView>>(PrepareAsyncTakeLootRaw(context, request, cq));
+    }
+    ::grpc::Status DropLoot(::grpc::ClientContext* context, const ::sf::rewards::v1::DropLootRequest& request, ::sf::rewards::v1::LootSourceView* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::rewards::v1::LootSourceView>> AsyncDropLoot(::grpc::ClientContext* context, const ::sf::rewards::v1::DropLootRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::rewards::v1::LootSourceView>>(AsyncDropLootRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::rewards::v1::LootSourceView>> PrepareAsyncDropLoot(::grpc::ClientContext* context, const ::sf::rewards::v1::DropLootRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::rewards::v1::LootSourceView>>(PrepareAsyncDropLootRaw(context, request, cq));
+    }
     class async final :
       public StubInterface::async_interface {
      public:
@@ -113,6 +203,16 @@ class Rewards final {
       void CreateSharedDefeatDrop(::grpc::ClientContext* context, const ::sf::rewards::v1::CreateSharedDefeatDropRequest* request, ::sf::rewards::v1::SharedDefeatDropReceipt* response, ::grpc::ClientUnaryReactor* reactor) override;
       void ClaimSharedDefeatDrop(::grpc::ClientContext* context, const ::sf::rewards::v1::ClaimSharedDefeatDropRequest* request, ::sf::rewards::v1::SharedDefeatDropReceipt* response, std::function<void(::grpc::Status)>) override;
       void ClaimSharedDefeatDrop(::grpc::ClientContext* context, const ::sf::rewards::v1::ClaimSharedDefeatDropRequest* request, ::sf::rewards::v1::SharedDefeatDropReceipt* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void CreateCorpseLoot(::grpc::ClientContext* context, const ::sf::rewards::v1::CreateCorpseLootRequest* request, ::sf::rewards::v1::LootSourcesReply* response, std::function<void(::grpc::Status)>) override;
+      void CreateCorpseLoot(::grpc::ClientContext* context, const ::sf::rewards::v1::CreateCorpseLootRequest* request, ::sf::rewards::v1::LootSourcesReply* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void ListLootSources(::grpc::ClientContext* context, const ::sf::rewards::v1::ListLootSourcesRequest* request, ::sf::rewards::v1::LootSourcesReply* response, std::function<void(::grpc::Status)>) override;
+      void ListLootSources(::grpc::ClientContext* context, const ::sf::rewards::v1::ListLootSourcesRequest* request, ::sf::rewards::v1::LootSourcesReply* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void OpenLootSource(::grpc::ClientContext* context, const ::sf::rewards::v1::OpenLootSourceRequest* request, ::sf::rewards::v1::LootSourceView* response, std::function<void(::grpc::Status)>) override;
+      void OpenLootSource(::grpc::ClientContext* context, const ::sf::rewards::v1::OpenLootSourceRequest* request, ::sf::rewards::v1::LootSourceView* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void TakeLoot(::grpc::ClientContext* context, const ::sf::rewards::v1::TakeLootRequest* request, ::sf::rewards::v1::LootSourceView* response, std::function<void(::grpc::Status)>) override;
+      void TakeLoot(::grpc::ClientContext* context, const ::sf::rewards::v1::TakeLootRequest* request, ::sf::rewards::v1::LootSourceView* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void DropLoot(::grpc::ClientContext* context, const ::sf::rewards::v1::DropLootRequest* request, ::sf::rewards::v1::LootSourceView* response, std::function<void(::grpc::Status)>) override;
+      void DropLoot(::grpc::ClientContext* context, const ::sf::rewards::v1::DropLootRequest* request, ::sf::rewards::v1::LootSourceView* response, ::grpc::ClientUnaryReactor* reactor) override;
      private:
       friend class Stub;
       explicit async(Stub* stub): stub_(stub) { }
@@ -130,9 +230,24 @@ class Rewards final {
     ::grpc::ClientAsyncResponseReader< ::sf::rewards::v1::SharedDefeatDropReceipt>* PrepareAsyncCreateSharedDefeatDropRaw(::grpc::ClientContext* context, const ::sf::rewards::v1::CreateSharedDefeatDropRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::sf::rewards::v1::SharedDefeatDropReceipt>* AsyncClaimSharedDefeatDropRaw(::grpc::ClientContext* context, const ::sf::rewards::v1::ClaimSharedDefeatDropRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::sf::rewards::v1::SharedDefeatDropReceipt>* PrepareAsyncClaimSharedDefeatDropRaw(::grpc::ClientContext* context, const ::sf::rewards::v1::ClaimSharedDefeatDropRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::sf::rewards::v1::LootSourcesReply>* AsyncCreateCorpseLootRaw(::grpc::ClientContext* context, const ::sf::rewards::v1::CreateCorpseLootRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::sf::rewards::v1::LootSourcesReply>* PrepareAsyncCreateCorpseLootRaw(::grpc::ClientContext* context, const ::sf::rewards::v1::CreateCorpseLootRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::sf::rewards::v1::LootSourcesReply>* AsyncListLootSourcesRaw(::grpc::ClientContext* context, const ::sf::rewards::v1::ListLootSourcesRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::sf::rewards::v1::LootSourcesReply>* PrepareAsyncListLootSourcesRaw(::grpc::ClientContext* context, const ::sf::rewards::v1::ListLootSourcesRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::sf::rewards::v1::LootSourceView>* AsyncOpenLootSourceRaw(::grpc::ClientContext* context, const ::sf::rewards::v1::OpenLootSourceRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::sf::rewards::v1::LootSourceView>* PrepareAsyncOpenLootSourceRaw(::grpc::ClientContext* context, const ::sf::rewards::v1::OpenLootSourceRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::sf::rewards::v1::LootSourceView>* AsyncTakeLootRaw(::grpc::ClientContext* context, const ::sf::rewards::v1::TakeLootRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::sf::rewards::v1::LootSourceView>* PrepareAsyncTakeLootRaw(::grpc::ClientContext* context, const ::sf::rewards::v1::TakeLootRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::sf::rewards::v1::LootSourceView>* AsyncDropLootRaw(::grpc::ClientContext* context, const ::sf::rewards::v1::DropLootRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::sf::rewards::v1::LootSourceView>* PrepareAsyncDropLootRaw(::grpc::ClientContext* context, const ::sf::rewards::v1::DropLootRequest& request, ::grpc::CompletionQueue* cq) override;
     const ::grpc::internal::RpcMethod rpcmethod_GrantDefeatReward_;
     const ::grpc::internal::RpcMethod rpcmethod_CreateSharedDefeatDrop_;
     const ::grpc::internal::RpcMethod rpcmethod_ClaimSharedDefeatDrop_;
+    const ::grpc::internal::RpcMethod rpcmethod_CreateCorpseLoot_;
+    const ::grpc::internal::RpcMethod rpcmethod_ListLootSources_;
+    const ::grpc::internal::RpcMethod rpcmethod_OpenLootSource_;
+    const ::grpc::internal::RpcMethod rpcmethod_TakeLoot_;
+    const ::grpc::internal::RpcMethod rpcmethod_DropLoot_;
   };
   static std::unique_ptr<Stub> NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
 
@@ -143,6 +258,11 @@ class Rewards final {
     virtual ::grpc::Status GrantDefeatReward(::grpc::ServerContext* context, const ::sf::rewards::v1::GrantDefeatRewardRequest* request, ::sf::rewards::v1::RewardReceipt* response);
     virtual ::grpc::Status CreateSharedDefeatDrop(::grpc::ServerContext* context, const ::sf::rewards::v1::CreateSharedDefeatDropRequest* request, ::sf::rewards::v1::SharedDefeatDropReceipt* response);
     virtual ::grpc::Status ClaimSharedDefeatDrop(::grpc::ServerContext* context, const ::sf::rewards::v1::ClaimSharedDefeatDropRequest* request, ::sf::rewards::v1::SharedDefeatDropReceipt* response);
+    virtual ::grpc::Status CreateCorpseLoot(::grpc::ServerContext* context, const ::sf::rewards::v1::CreateCorpseLootRequest* request, ::sf::rewards::v1::LootSourcesReply* response);
+    virtual ::grpc::Status ListLootSources(::grpc::ServerContext* context, const ::sf::rewards::v1::ListLootSourcesRequest* request, ::sf::rewards::v1::LootSourcesReply* response);
+    virtual ::grpc::Status OpenLootSource(::grpc::ServerContext* context, const ::sf::rewards::v1::OpenLootSourceRequest* request, ::sf::rewards::v1::LootSourceView* response);
+    virtual ::grpc::Status TakeLoot(::grpc::ServerContext* context, const ::sf::rewards::v1::TakeLootRequest* request, ::sf::rewards::v1::LootSourceView* response);
+    virtual ::grpc::Status DropLoot(::grpc::ServerContext* context, const ::sf::rewards::v1::DropLootRequest* request, ::sf::rewards::v1::LootSourceView* response);
   };
   template <class BaseClass>
   class WithAsyncMethod_GrantDefeatReward : public BaseClass {
@@ -204,7 +324,107 @@ class Rewards final {
       ::grpc::Service::RequestAsyncUnary(2, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
-  typedef WithAsyncMethod_GrantDefeatReward<WithAsyncMethod_CreateSharedDefeatDrop<WithAsyncMethod_ClaimSharedDefeatDrop<Service > > > AsyncService;
+  template <class BaseClass>
+  class WithAsyncMethod_CreateCorpseLoot : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_CreateCorpseLoot() {
+      ::grpc::Service::MarkMethodAsync(3);
+    }
+    ~WithAsyncMethod_CreateCorpseLoot() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status CreateCorpseLoot(::grpc::ServerContext* /*context*/, const ::sf::rewards::v1::CreateCorpseLootRequest* /*request*/, ::sf::rewards::v1::LootSourcesReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestCreateCorpseLoot(::grpc::ServerContext* context, ::sf::rewards::v1::CreateCorpseLootRequest* request, ::grpc::ServerAsyncResponseWriter< ::sf::rewards::v1::LootSourcesReply>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(3, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_ListLootSources : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_ListLootSources() {
+      ::grpc::Service::MarkMethodAsync(4);
+    }
+    ~WithAsyncMethod_ListLootSources() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ListLootSources(::grpc::ServerContext* /*context*/, const ::sf::rewards::v1::ListLootSourcesRequest* /*request*/, ::sf::rewards::v1::LootSourcesReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestListLootSources(::grpc::ServerContext* context, ::sf::rewards::v1::ListLootSourcesRequest* request, ::grpc::ServerAsyncResponseWriter< ::sf::rewards::v1::LootSourcesReply>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(4, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_OpenLootSource : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_OpenLootSource() {
+      ::grpc::Service::MarkMethodAsync(5);
+    }
+    ~WithAsyncMethod_OpenLootSource() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status OpenLootSource(::grpc::ServerContext* /*context*/, const ::sf::rewards::v1::OpenLootSourceRequest* /*request*/, ::sf::rewards::v1::LootSourceView* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestOpenLootSource(::grpc::ServerContext* context, ::sf::rewards::v1::OpenLootSourceRequest* request, ::grpc::ServerAsyncResponseWriter< ::sf::rewards::v1::LootSourceView>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(5, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_TakeLoot : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_TakeLoot() {
+      ::grpc::Service::MarkMethodAsync(6);
+    }
+    ~WithAsyncMethod_TakeLoot() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status TakeLoot(::grpc::ServerContext* /*context*/, const ::sf::rewards::v1::TakeLootRequest* /*request*/, ::sf::rewards::v1::LootSourceView* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestTakeLoot(::grpc::ServerContext* context, ::sf::rewards::v1::TakeLootRequest* request, ::grpc::ServerAsyncResponseWriter< ::sf::rewards::v1::LootSourceView>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(6, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_DropLoot : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_DropLoot() {
+      ::grpc::Service::MarkMethodAsync(7);
+    }
+    ~WithAsyncMethod_DropLoot() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status DropLoot(::grpc::ServerContext* /*context*/, const ::sf::rewards::v1::DropLootRequest* /*request*/, ::sf::rewards::v1::LootSourceView* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestDropLoot(::grpc::ServerContext* context, ::sf::rewards::v1::DropLootRequest* request, ::grpc::ServerAsyncResponseWriter< ::sf::rewards::v1::LootSourceView>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(7, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  typedef WithAsyncMethod_GrantDefeatReward<WithAsyncMethod_CreateSharedDefeatDrop<WithAsyncMethod_ClaimSharedDefeatDrop<WithAsyncMethod_CreateCorpseLoot<WithAsyncMethod_ListLootSources<WithAsyncMethod_OpenLootSource<WithAsyncMethod_TakeLoot<WithAsyncMethod_DropLoot<Service > > > > > > > > AsyncService;
   template <class BaseClass>
   class WithCallbackMethod_GrantDefeatReward : public BaseClass {
    private:
@@ -286,7 +506,142 @@ class Rewards final {
     virtual ::grpc::ServerUnaryReactor* ClaimSharedDefeatDrop(
       ::grpc::CallbackServerContext* /*context*/, const ::sf::rewards::v1::ClaimSharedDefeatDropRequest* /*request*/, ::sf::rewards::v1::SharedDefeatDropReceipt* /*response*/)  { return nullptr; }
   };
-  typedef WithCallbackMethod_GrantDefeatReward<WithCallbackMethod_CreateSharedDefeatDrop<WithCallbackMethod_ClaimSharedDefeatDrop<Service > > > CallbackService;
+  template <class BaseClass>
+  class WithCallbackMethod_CreateCorpseLoot : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_CreateCorpseLoot() {
+      ::grpc::Service::MarkMethodCallback(3,
+          new ::grpc::internal::CallbackUnaryHandler< ::sf::rewards::v1::CreateCorpseLootRequest, ::sf::rewards::v1::LootSourcesReply>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::sf::rewards::v1::CreateCorpseLootRequest* request, ::sf::rewards::v1::LootSourcesReply* response) { return this->CreateCorpseLoot(context, request, response); }));}
+    void SetMessageAllocatorFor_CreateCorpseLoot(
+        ::grpc::MessageAllocator< ::sf::rewards::v1::CreateCorpseLootRequest, ::sf::rewards::v1::LootSourcesReply>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(3);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::sf::rewards::v1::CreateCorpseLootRequest, ::sf::rewards::v1::LootSourcesReply>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_CreateCorpseLoot() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status CreateCorpseLoot(::grpc::ServerContext* /*context*/, const ::sf::rewards::v1::CreateCorpseLootRequest* /*request*/, ::sf::rewards::v1::LootSourcesReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* CreateCorpseLoot(
+      ::grpc::CallbackServerContext* /*context*/, const ::sf::rewards::v1::CreateCorpseLootRequest* /*request*/, ::sf::rewards::v1::LootSourcesReply* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithCallbackMethod_ListLootSources : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_ListLootSources() {
+      ::grpc::Service::MarkMethodCallback(4,
+          new ::grpc::internal::CallbackUnaryHandler< ::sf::rewards::v1::ListLootSourcesRequest, ::sf::rewards::v1::LootSourcesReply>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::sf::rewards::v1::ListLootSourcesRequest* request, ::sf::rewards::v1::LootSourcesReply* response) { return this->ListLootSources(context, request, response); }));}
+    void SetMessageAllocatorFor_ListLootSources(
+        ::grpc::MessageAllocator< ::sf::rewards::v1::ListLootSourcesRequest, ::sf::rewards::v1::LootSourcesReply>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(4);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::sf::rewards::v1::ListLootSourcesRequest, ::sf::rewards::v1::LootSourcesReply>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_ListLootSources() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ListLootSources(::grpc::ServerContext* /*context*/, const ::sf::rewards::v1::ListLootSourcesRequest* /*request*/, ::sf::rewards::v1::LootSourcesReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* ListLootSources(
+      ::grpc::CallbackServerContext* /*context*/, const ::sf::rewards::v1::ListLootSourcesRequest* /*request*/, ::sf::rewards::v1::LootSourcesReply* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithCallbackMethod_OpenLootSource : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_OpenLootSource() {
+      ::grpc::Service::MarkMethodCallback(5,
+          new ::grpc::internal::CallbackUnaryHandler< ::sf::rewards::v1::OpenLootSourceRequest, ::sf::rewards::v1::LootSourceView>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::sf::rewards::v1::OpenLootSourceRequest* request, ::sf::rewards::v1::LootSourceView* response) { return this->OpenLootSource(context, request, response); }));}
+    void SetMessageAllocatorFor_OpenLootSource(
+        ::grpc::MessageAllocator< ::sf::rewards::v1::OpenLootSourceRequest, ::sf::rewards::v1::LootSourceView>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(5);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::sf::rewards::v1::OpenLootSourceRequest, ::sf::rewards::v1::LootSourceView>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_OpenLootSource() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status OpenLootSource(::grpc::ServerContext* /*context*/, const ::sf::rewards::v1::OpenLootSourceRequest* /*request*/, ::sf::rewards::v1::LootSourceView* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* OpenLootSource(
+      ::grpc::CallbackServerContext* /*context*/, const ::sf::rewards::v1::OpenLootSourceRequest* /*request*/, ::sf::rewards::v1::LootSourceView* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithCallbackMethod_TakeLoot : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_TakeLoot() {
+      ::grpc::Service::MarkMethodCallback(6,
+          new ::grpc::internal::CallbackUnaryHandler< ::sf::rewards::v1::TakeLootRequest, ::sf::rewards::v1::LootSourceView>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::sf::rewards::v1::TakeLootRequest* request, ::sf::rewards::v1::LootSourceView* response) { return this->TakeLoot(context, request, response); }));}
+    void SetMessageAllocatorFor_TakeLoot(
+        ::grpc::MessageAllocator< ::sf::rewards::v1::TakeLootRequest, ::sf::rewards::v1::LootSourceView>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(6);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::sf::rewards::v1::TakeLootRequest, ::sf::rewards::v1::LootSourceView>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_TakeLoot() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status TakeLoot(::grpc::ServerContext* /*context*/, const ::sf::rewards::v1::TakeLootRequest* /*request*/, ::sf::rewards::v1::LootSourceView* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* TakeLoot(
+      ::grpc::CallbackServerContext* /*context*/, const ::sf::rewards::v1::TakeLootRequest* /*request*/, ::sf::rewards::v1::LootSourceView* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithCallbackMethod_DropLoot : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_DropLoot() {
+      ::grpc::Service::MarkMethodCallback(7,
+          new ::grpc::internal::CallbackUnaryHandler< ::sf::rewards::v1::DropLootRequest, ::sf::rewards::v1::LootSourceView>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::sf::rewards::v1::DropLootRequest* request, ::sf::rewards::v1::LootSourceView* response) { return this->DropLoot(context, request, response); }));}
+    void SetMessageAllocatorFor_DropLoot(
+        ::grpc::MessageAllocator< ::sf::rewards::v1::DropLootRequest, ::sf::rewards::v1::LootSourceView>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(7);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::sf::rewards::v1::DropLootRequest, ::sf::rewards::v1::LootSourceView>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_DropLoot() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status DropLoot(::grpc::ServerContext* /*context*/, const ::sf::rewards::v1::DropLootRequest* /*request*/, ::sf::rewards::v1::LootSourceView* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* DropLoot(
+      ::grpc::CallbackServerContext* /*context*/, const ::sf::rewards::v1::DropLootRequest* /*request*/, ::sf::rewards::v1::LootSourceView* /*response*/)  { return nullptr; }
+  };
+  typedef WithCallbackMethod_GrantDefeatReward<WithCallbackMethod_CreateSharedDefeatDrop<WithCallbackMethod_ClaimSharedDefeatDrop<WithCallbackMethod_CreateCorpseLoot<WithCallbackMethod_ListLootSources<WithCallbackMethod_OpenLootSource<WithCallbackMethod_TakeLoot<WithCallbackMethod_DropLoot<Service > > > > > > > > CallbackService;
   typedef CallbackService ExperimentalCallbackService;
   template <class BaseClass>
   class WithGenericMethod_GrantDefeatReward : public BaseClass {
@@ -335,6 +690,91 @@ class Rewards final {
     }
     // disable synchronous version of this method
     ::grpc::Status ClaimSharedDefeatDrop(::grpc::ServerContext* /*context*/, const ::sf::rewards::v1::ClaimSharedDefeatDropRequest* /*request*/, ::sf::rewards::v1::SharedDefeatDropReceipt* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_CreateCorpseLoot : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_CreateCorpseLoot() {
+      ::grpc::Service::MarkMethodGeneric(3);
+    }
+    ~WithGenericMethod_CreateCorpseLoot() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status CreateCorpseLoot(::grpc::ServerContext* /*context*/, const ::sf::rewards::v1::CreateCorpseLootRequest* /*request*/, ::sf::rewards::v1::LootSourcesReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_ListLootSources : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_ListLootSources() {
+      ::grpc::Service::MarkMethodGeneric(4);
+    }
+    ~WithGenericMethod_ListLootSources() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ListLootSources(::grpc::ServerContext* /*context*/, const ::sf::rewards::v1::ListLootSourcesRequest* /*request*/, ::sf::rewards::v1::LootSourcesReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_OpenLootSource : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_OpenLootSource() {
+      ::grpc::Service::MarkMethodGeneric(5);
+    }
+    ~WithGenericMethod_OpenLootSource() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status OpenLootSource(::grpc::ServerContext* /*context*/, const ::sf::rewards::v1::OpenLootSourceRequest* /*request*/, ::sf::rewards::v1::LootSourceView* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_TakeLoot : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_TakeLoot() {
+      ::grpc::Service::MarkMethodGeneric(6);
+    }
+    ~WithGenericMethod_TakeLoot() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status TakeLoot(::grpc::ServerContext* /*context*/, const ::sf::rewards::v1::TakeLootRequest* /*request*/, ::sf::rewards::v1::LootSourceView* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_DropLoot : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_DropLoot() {
+      ::grpc::Service::MarkMethodGeneric(7);
+    }
+    ~WithGenericMethod_DropLoot() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status DropLoot(::grpc::ServerContext* /*context*/, const ::sf::rewards::v1::DropLootRequest* /*request*/, ::sf::rewards::v1::LootSourceView* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -397,6 +837,106 @@ class Rewards final {
     }
     void RequestClaimSharedDefeatDrop(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(2, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_CreateCorpseLoot : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_CreateCorpseLoot() {
+      ::grpc::Service::MarkMethodRaw(3);
+    }
+    ~WithRawMethod_CreateCorpseLoot() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status CreateCorpseLoot(::grpc::ServerContext* /*context*/, const ::sf::rewards::v1::CreateCorpseLootRequest* /*request*/, ::sf::rewards::v1::LootSourcesReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestCreateCorpseLoot(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(3, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_ListLootSources : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_ListLootSources() {
+      ::grpc::Service::MarkMethodRaw(4);
+    }
+    ~WithRawMethod_ListLootSources() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ListLootSources(::grpc::ServerContext* /*context*/, const ::sf::rewards::v1::ListLootSourcesRequest* /*request*/, ::sf::rewards::v1::LootSourcesReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestListLootSources(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(4, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_OpenLootSource : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_OpenLootSource() {
+      ::grpc::Service::MarkMethodRaw(5);
+    }
+    ~WithRawMethod_OpenLootSource() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status OpenLootSource(::grpc::ServerContext* /*context*/, const ::sf::rewards::v1::OpenLootSourceRequest* /*request*/, ::sf::rewards::v1::LootSourceView* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestOpenLootSource(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(5, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_TakeLoot : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_TakeLoot() {
+      ::grpc::Service::MarkMethodRaw(6);
+    }
+    ~WithRawMethod_TakeLoot() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status TakeLoot(::grpc::ServerContext* /*context*/, const ::sf::rewards::v1::TakeLootRequest* /*request*/, ::sf::rewards::v1::LootSourceView* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestTakeLoot(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(6, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_DropLoot : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_DropLoot() {
+      ::grpc::Service::MarkMethodRaw(7);
+    }
+    ~WithRawMethod_DropLoot() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status DropLoot(::grpc::ServerContext* /*context*/, const ::sf::rewards::v1::DropLootRequest* /*request*/, ::sf::rewards::v1::LootSourceView* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestDropLoot(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(7, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -463,6 +1003,116 @@ class Rewards final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     virtual ::grpc::ServerUnaryReactor* ClaimSharedDefeatDrop(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_CreateCorpseLoot : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_CreateCorpseLoot() {
+      ::grpc::Service::MarkMethodRawCallback(3,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->CreateCorpseLoot(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_CreateCorpseLoot() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status CreateCorpseLoot(::grpc::ServerContext* /*context*/, const ::sf::rewards::v1::CreateCorpseLootRequest* /*request*/, ::sf::rewards::v1::LootSourcesReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* CreateCorpseLoot(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_ListLootSources : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_ListLootSources() {
+      ::grpc::Service::MarkMethodRawCallback(4,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->ListLootSources(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_ListLootSources() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ListLootSources(::grpc::ServerContext* /*context*/, const ::sf::rewards::v1::ListLootSourcesRequest* /*request*/, ::sf::rewards::v1::LootSourcesReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* ListLootSources(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_OpenLootSource : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_OpenLootSource() {
+      ::grpc::Service::MarkMethodRawCallback(5,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->OpenLootSource(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_OpenLootSource() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status OpenLootSource(::grpc::ServerContext* /*context*/, const ::sf::rewards::v1::OpenLootSourceRequest* /*request*/, ::sf::rewards::v1::LootSourceView* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* OpenLootSource(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_TakeLoot : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_TakeLoot() {
+      ::grpc::Service::MarkMethodRawCallback(6,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->TakeLoot(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_TakeLoot() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status TakeLoot(::grpc::ServerContext* /*context*/, const ::sf::rewards::v1::TakeLootRequest* /*request*/, ::sf::rewards::v1::LootSourceView* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* TakeLoot(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_DropLoot : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_DropLoot() {
+      ::grpc::Service::MarkMethodRawCallback(7,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->DropLoot(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_DropLoot() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status DropLoot(::grpc::ServerContext* /*context*/, const ::sf::rewards::v1::DropLootRequest* /*request*/, ::sf::rewards::v1::LootSourceView* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* DropLoot(
       ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
@@ -546,9 +1196,144 @@ class Rewards final {
     // replace default version of method with streamed unary
     virtual ::grpc::Status StreamedClaimSharedDefeatDrop(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::sf::rewards::v1::ClaimSharedDefeatDropRequest,::sf::rewards::v1::SharedDefeatDropReceipt>* server_unary_streamer) = 0;
   };
-  typedef WithStreamedUnaryMethod_GrantDefeatReward<WithStreamedUnaryMethod_CreateSharedDefeatDrop<WithStreamedUnaryMethod_ClaimSharedDefeatDrop<Service > > > StreamedUnaryService;
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_CreateCorpseLoot : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_CreateCorpseLoot() {
+      ::grpc::Service::MarkMethodStreamed(3,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::sf::rewards::v1::CreateCorpseLootRequest, ::sf::rewards::v1::LootSourcesReply>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::sf::rewards::v1::CreateCorpseLootRequest, ::sf::rewards::v1::LootSourcesReply>* streamer) {
+                       return this->StreamedCreateCorpseLoot(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_CreateCorpseLoot() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status CreateCorpseLoot(::grpc::ServerContext* /*context*/, const ::sf::rewards::v1::CreateCorpseLootRequest* /*request*/, ::sf::rewards::v1::LootSourcesReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status StreamedCreateCorpseLoot(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::sf::rewards::v1::CreateCorpseLootRequest,::sf::rewards::v1::LootSourcesReply>* server_unary_streamer) = 0;
+  };
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_ListLootSources : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_ListLootSources() {
+      ::grpc::Service::MarkMethodStreamed(4,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::sf::rewards::v1::ListLootSourcesRequest, ::sf::rewards::v1::LootSourcesReply>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::sf::rewards::v1::ListLootSourcesRequest, ::sf::rewards::v1::LootSourcesReply>* streamer) {
+                       return this->StreamedListLootSources(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_ListLootSources() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status ListLootSources(::grpc::ServerContext* /*context*/, const ::sf::rewards::v1::ListLootSourcesRequest* /*request*/, ::sf::rewards::v1::LootSourcesReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status StreamedListLootSources(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::sf::rewards::v1::ListLootSourcesRequest,::sf::rewards::v1::LootSourcesReply>* server_unary_streamer) = 0;
+  };
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_OpenLootSource : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_OpenLootSource() {
+      ::grpc::Service::MarkMethodStreamed(5,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::sf::rewards::v1::OpenLootSourceRequest, ::sf::rewards::v1::LootSourceView>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::sf::rewards::v1::OpenLootSourceRequest, ::sf::rewards::v1::LootSourceView>* streamer) {
+                       return this->StreamedOpenLootSource(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_OpenLootSource() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status OpenLootSource(::grpc::ServerContext* /*context*/, const ::sf::rewards::v1::OpenLootSourceRequest* /*request*/, ::sf::rewards::v1::LootSourceView* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status StreamedOpenLootSource(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::sf::rewards::v1::OpenLootSourceRequest,::sf::rewards::v1::LootSourceView>* server_unary_streamer) = 0;
+  };
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_TakeLoot : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_TakeLoot() {
+      ::grpc::Service::MarkMethodStreamed(6,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::sf::rewards::v1::TakeLootRequest, ::sf::rewards::v1::LootSourceView>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::sf::rewards::v1::TakeLootRequest, ::sf::rewards::v1::LootSourceView>* streamer) {
+                       return this->StreamedTakeLoot(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_TakeLoot() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status TakeLoot(::grpc::ServerContext* /*context*/, const ::sf::rewards::v1::TakeLootRequest* /*request*/, ::sf::rewards::v1::LootSourceView* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status StreamedTakeLoot(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::sf::rewards::v1::TakeLootRequest,::sf::rewards::v1::LootSourceView>* server_unary_streamer) = 0;
+  };
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_DropLoot : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_DropLoot() {
+      ::grpc::Service::MarkMethodStreamed(7,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::sf::rewards::v1::DropLootRequest, ::sf::rewards::v1::LootSourceView>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::sf::rewards::v1::DropLootRequest, ::sf::rewards::v1::LootSourceView>* streamer) {
+                       return this->StreamedDropLoot(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_DropLoot() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status DropLoot(::grpc::ServerContext* /*context*/, const ::sf::rewards::v1::DropLootRequest* /*request*/, ::sf::rewards::v1::LootSourceView* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status StreamedDropLoot(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::sf::rewards::v1::DropLootRequest,::sf::rewards::v1::LootSourceView>* server_unary_streamer) = 0;
+  };
+  typedef WithStreamedUnaryMethod_GrantDefeatReward<WithStreamedUnaryMethod_CreateSharedDefeatDrop<WithStreamedUnaryMethod_ClaimSharedDefeatDrop<WithStreamedUnaryMethod_CreateCorpseLoot<WithStreamedUnaryMethod_ListLootSources<WithStreamedUnaryMethod_OpenLootSource<WithStreamedUnaryMethod_TakeLoot<WithStreamedUnaryMethod_DropLoot<Service > > > > > > > > StreamedUnaryService;
   typedef Service SplitStreamedService;
-  typedef WithStreamedUnaryMethod_GrantDefeatReward<WithStreamedUnaryMethod_CreateSharedDefeatDrop<WithStreamedUnaryMethod_ClaimSharedDefeatDrop<Service > > > StreamedService;
+  typedef WithStreamedUnaryMethod_GrantDefeatReward<WithStreamedUnaryMethod_CreateSharedDefeatDrop<WithStreamedUnaryMethod_ClaimSharedDefeatDrop<WithStreamedUnaryMethod_CreateCorpseLoot<WithStreamedUnaryMethod_ListLootSources<WithStreamedUnaryMethod_OpenLootSource<WithStreamedUnaryMethod_TakeLoot<WithStreamedUnaryMethod_DropLoot<Service > > > > > > > > StreamedService;
 };
 
 }  // namespace v1

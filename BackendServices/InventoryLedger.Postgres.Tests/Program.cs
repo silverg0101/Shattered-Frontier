@@ -21,6 +21,8 @@ const string item = "item/ore";
 const string bar = "item/bar";
 switch (args[0])
 {
+    case "world-loot-seed": WorldLootDurableChecks.Seed(connection); break;
+    case "world-loot-recover": WorldLootDurableChecks.Recover(connection); break;
     case "death-wear-seed":
     {
         const string character = "chr_death_wear";

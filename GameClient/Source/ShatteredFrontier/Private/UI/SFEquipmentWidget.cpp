@@ -433,6 +433,7 @@ bool USFEquipmentWidget::NativeOnDrop(const FGeometry& InGeometry, const FDragDr
 {
     const USFItemDragOperation* Drag = Cast<USFItemDragOperation>(InOperation);
     if (!Drag) { return Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation); }
+    if (Drag->bFromLoot) { return false; }
     if (Drag->FromHotbar != INDEX_NONE) { return false; }  // off the bar: the hotbar slot clears
     const FVector2D At = InDragDropEvent.GetScreenSpacePosition();
     const FName Target = DollSlotAt(At);
@@ -440,7 +441,7 @@ bool USFEquipmentWidget::NativeOnDrop(const FGeometry& InGeometry, const FDragDr
     const bool bOnGrid = Grid && Grid->GetCachedGeometry().IsUnderLocation(At);
     switch (ResolveDrop(Drag->Item, Drag->ItemSlot, Drag->FromEquipSlot, Target, bOnGrid))
     {
-    case ESFEquipDrop::Equip: if (Pilot) { Pilot->RequestEquip(Drag->Item, Target.IsNone() ? Drag->ItemSlot : Target); } break;
+    case ESFEquipDrop::Equip: if (Pilot) { Pilot->RequestEquip(Drag->Item, Target.IsNone() ? Drag->ItemSlot : Target, Drag->InstanceId); } break;
     case ESFEquipDrop::Unequip: if (Pilot) { Pilot->RequestUnequip(Drag->FromEquipSlot); } break;
     default: break;  // an invalid drop does nothing
     }

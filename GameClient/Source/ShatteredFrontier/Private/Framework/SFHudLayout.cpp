@@ -29,6 +29,7 @@
 #include "EngineUtils.h"
 #include "Quest/SFQuestBoard.h"
 #include "Quest/SFQuestPilot.h"
+#include "Inventory/SFLootSourceActor.h"
 
 TArray<FSFPromptSegment> USFHudLayout::PromptsFor(ESFPromptContext Context)
 {
@@ -38,6 +39,8 @@ TArray<FSFPromptSegment> USFHudLayout::PromptsFor(ESFPromptContext Context)
     case ESFPromptContext::Harvest: return {{TEXT("F"), TEXT("Harvest")}};  // CTL-01: interact is F; Q/E strafe
     case ESFPromptContext::Refine: return {{TEXT("F"), TEXT("Refine")}};
     case ESFPromptContext::Read: return {{TEXT("F"), TEXT("Read notices")}};  // QST-02 quest board
+    case ESFPromptContext::Loot: return {{TEXT("F"), TEXT("Loot")}};
+    case ESFPromptContext::Pickup: return {{TEXT("F"), TEXT("Pick up")}};
     default: return {};
     }
 }
@@ -143,12 +146,15 @@ void USFHudLayout::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
     if (!Controller->DeprojectMousePositionToWorld(Start, Direction)) { FRotator Rotation; Controller->GetPlayerViewPoint(Start, Rotation); Direction = Rotation.Vector(); }
     const ASFGatheringPilotNode* Node = Pilot && Pilot->IsEnabled() ? Pilot->FindAimedNode(Start, Direction) : nullptr;
     ESFPromptContext Context = bBuildMode ? ESFPromptContext::Build : ESFPromptContext::None;
+    const auto* SFController = Cast<ASFPlayerController>(Controller);
+    const auto* LootSource = SFController ? Cast<ASFLootSourceActor>(SFController->GetSelectedActionTarget()) : nullptr;
     if (Node)
     {
         Context = Node->IsRefinery() ? ESFPromptContext::Refine : ESFPromptContext::Harvest;
         HarvestVerb = Node->IsRefinery() ? FString() : Node->ActionVerb();
     }
     else if (!bBuildMode && ASFQuestBoard::FindInReach(Controller)) { Context = ESFPromptContext::Read; }
+    if (!bBuildMode && LootSource) { Context = LootSource->IsGround() ? ESFPromptContext::Pickup : ESFPromptContext::Loot; }
     // While the station panel is open it carries its own title and Craft key: no prompt bar and no target frame over it.
     const bool bStation = Cast<ASFPlayerController>(Controller) && Cast<ASFPlayerController>(Controller)->IsStationPanelOpen();
     if (bStation) { Context = ESFPromptContext::None; }

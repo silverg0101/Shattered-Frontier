@@ -1,5 +1,8 @@
 #include "UI/SFUiWidgets.h"
 #include "UI/SFHudWidgets.h"
+#include "Framework/SFPlayerController.h"
+#include "Inventory/SFLootComponent.h"
+#include "UI/SFWindowStack.h"
 
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Blueprint/WidgetTree.h"
@@ -348,6 +351,8 @@ void USFSlotWidget::NativeOnDragDetected(const FGeometry& InGeometry, const FPoi
     if (!CanDrag()) { return; }
     USFItemDragOperation* Operation = NewObject<USFItemDragOperation>(this);
     Operation->Item = DragItem; Operation->ItemSlot = DragItemSlot; Operation->FromEquipSlot = DragFromEquipSlot; Operation->FromHotbar = DragFromHotbar;
+    Operation->DefinitionId = DragDefinitionId; Operation->InstanceId = DragInstanceId; Operation->Quantity = DragQuantity;
+    Operation->bFromLoot = bDragFromLoot; Operation->bFromInventory = bDragFromInventory;
     if (Icon && Icon->GetBrush().GetResourceObject())  // the dragged icon under the cursor, at the slot's on-screen icon size
     {
         UImage* Visual = WidgetTree->ConstructWidget<UImage>();
@@ -364,6 +369,15 @@ void USFSlotWidget::NativeOnDragDetected(const FGeometry& InGeometry, const FPoi
 void USFSlotWidget::NativeOnDragCancelled(const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
 {
     Super::NativeOnDragCancelled(InDragDropEvent, InOperation);
+    const auto* Drag = Cast<USFItemDragOperation>(InOperation);
+    auto* Player = Cast<ASFPlayerController>(GetOwningPlayer());
+    if (Drag && Player && Drag->bFromInventory && !Drag->bFromLoot)
+    {
+        bool bOverWindow = false;
+        for (UUserWidget* Window : Player->GetWindowStack()->GetOrder())
+        { if (Window && Window->GetCachedGeometry().IsUnderLocation(InDragDropEvent.GetScreenSpacePosition())) { bOverWindow = true; break; } }
+        if (!bOverWindow) { if (auto* Loot = USFLootComponent::Find(Player)) { Loot->RequestDrop(Drag->DefinitionId, Drag->Quantity, Drag->InstanceId); } }
+    }
     if (DragFromHotbar == INDEX_NONE) { return; }
     if (USFHudHotbarWidget* Bar = GetTypedOuter<USFHudHotbarWidget>()) { Bar->Assign(DragFromHotbar, FString()); }
 }

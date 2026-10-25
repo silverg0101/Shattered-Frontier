@@ -217,6 +217,7 @@ bool USFHudHotbarWidget::NativeOnDrop(const FGeometry& InGeometry, const FDragDr
     const FVector2D At = InDragDropEvent.GetScreenSpacePosition();
     const int32 Index = Cells.IndexOfByPredicate([&At](const USFSlotWidget* Cell) { return Cell->IsVisible() && Cell->GetCachedGeometry().IsUnderLocation(At); });
     if (!Drag || Index == INDEX_NONE) { return Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation); }
+    if (Drag->bFromLoot) { return false; }
     if (Drag->FromHotbar != INDEX_NONE) { SwapSlots(Drag->FromHotbar, Index); return true; }
     if (const USFItemDefinition* Definition = TSoftObjectPtr<USFItemDefinition>(Drag->Item).LoadSynchronous())
     { Assign(Index, Definition->UniqueId); return true; }

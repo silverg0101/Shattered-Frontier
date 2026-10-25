@@ -257,6 +257,9 @@ public:
     FName ItemSlot;         // that item's equip slot
     FName FromEquipSlot;    // set when the drag left an equipped paper-doll slot
     int32 FromHotbar = INDEX_NONE;  // set when the drag left a hotbar slot (windows ignore it; off the bar it clears the slot)
+    FString DefinitionId, InstanceId;
+    int32 Quantity = 0;
+    bool bFromLoot = false, bFromInventory = false;
 };
 
 // Slot or tile (bag, equipment, hotbar, catalogue; menu slots are WBP_ItemSlot). Binds, all optional: Frame (Border), Icon (Image),
@@ -281,6 +284,8 @@ public:
     UFUNCTION(BlueprintPure, Category = "SF UI") bool HasIcon() const;
     // Drag payload, set by the owning window each refresh; clear both to make the slot not draggable.
     void SetDragPayload(const FSoftObjectPath& Item, FName ItemSlot, FName FromEquipSlot) { DragItem = Item; DragItemSlot = ItemSlot; DragFromEquipSlot = FromEquipSlot; }
+    void SetInventoryDragPayload(const FString& Id, int32 Count, const FString& Copy, bool bExternal)
+    { DragDefinitionId = Id; DragQuantity = Count; DragInstanceId = Copy; bDragFromLoot = bExternal; bDragFromInventory = true; }
     void SetHotbarDrag(int32 Index) { DragFromHotbar = Index; }  // INDEX_NONE: an empty hotbar slot, not draggable
     bool CanDrag() const { return !DragItem.IsNull() || !DragFromEquipSlot.IsNone() || DragFromHotbar != INDEX_NONE; }
     UPROPERTY(BlueprintAssignable, Category = "SF") FSFUiSelectableClicked OnDoubleClicked;
@@ -312,6 +317,9 @@ protected:
     FName DragItemSlot;
     FName DragFromEquipSlot;
     int32 DragFromHotbar = INDEX_NONE;
+    FString DragDefinitionId, DragInstanceId;
+    int32 DragQuantity = 0;
+    bool bDragFromLoot = false, bDragFromInventory = false;
     UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UTextBlock> KeyLabel;
     UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UTextBlock> CountLabel;
     UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UTextBlock> CaptionLabel;

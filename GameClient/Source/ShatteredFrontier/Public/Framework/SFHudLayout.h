@@ -13,7 +13,7 @@ class USFGatheringPilotComponent;
 // One "[key] Action" piece of the prompt bar. Key is a keycap label, or LMB/RMB for the mouse glyphs.
 struct FSFPromptSegment { FString Key; FString Action; };
 
-enum class ESFPromptContext : uint8 { None, Build, Harvest, Refine, Read };
+enum class ESFPromptContext : uint8 { None, Build, Harvest, Refine, Read, Loot, Pickup };
 
 // Code-built part of the HUD that has not moved to Widget Blueprints yet: the action/prompt bar (32-68%, 79-85%) and the
 // target hit message of docs/Game-Design/concept-art/UI/HUD-v1/hud-layout-v4.md. The hotbar, vitals, minimap frame, quest

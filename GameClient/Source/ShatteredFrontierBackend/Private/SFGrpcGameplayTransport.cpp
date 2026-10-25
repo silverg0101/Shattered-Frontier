@@ -54,6 +54,30 @@ namespace
         return Out;
     }
 
+    FSFLootSourceSnapshot CopyLoot(const sf::rewards::v1::LootSourceView& R)
+    {
+        FSFLootSourceSnapshot Out;
+        const auto& S = R.source();
+        Out.Id = FromUtf8(S.id()); Out.ZoneId = FromUtf8(S.zone_id()); Out.CreatureId = FromUtf8(S.creature_id());
+        Out.MeshPath = FromUtf8(S.mesh_path()); Out.Position = FVector(S.x_cm(), S.y_cm(), S.z_cm());
+        Out.bGround = S.ground(); Out.bShared = S.shared(); Out.Revision = R.revision();
+        Out.MeshScale = FVector(S.scale_x(), S.scale_y(), S.scale_z()); Out.MeshRotation = FRotator(S.pitch(), S.yaw(), S.roll());
+        for (const auto& Id : S.eligible_character_ids()) { Out.EligibleCharacters.Add(FromUtf8(Id)); }
+        TMap<FString, int32> Copies;
+        for (const auto& I : R.instances())
+        {
+            FSFLootEntry E; E.DefinitionId = FromUtf8(I.definition_id()); E.InstanceId = FromUtf8(I.instance_id());
+            E.Quantity = 1; E.DurabilityPercent = I.durability_percent(); Out.Items.Add(E); ++Copies.FindOrAdd(E.DefinitionId);
+        }
+        for (const auto& I : R.items())
+        {
+            FSFLootEntry E; E.DefinitionId = FromUtf8(I.definition_id());
+            E.Quantity = static_cast<int32>(FMath::Clamp<int64>(I.quantity() - Copies.FindRef(E.DefinitionId), 0, 10000));
+            if (E.Quantity > 0) { Out.Items.Add(E); }
+        }
+        return Out;
+    }
+
     void CopyClaim(const sf::housing::v1::ClaimReply& R, FSFGameplayResponse& Out)
     { Out.State = FromUtf8(R.state()); Out.OwnerId = FromUtf8(R.owner_id()); Out.Revision = R.revision(); Out.PermissionRevision = R.permission_revision(); Out.bActorPermitted = R.actor_permitted(); }
 
@@ -258,6 +282,59 @@ void FSFGrpcGameplayTransport::Send(const FSFGameplayRequest& Q, float DeadlineS
         };
         Start(Call, [&](grpc::ClientContext* C) { return Channel->Gathering->AsyncHarvestWithIntent(C, M, &Channel->Queue); });
         break;
+    }
+    case ESFGameplayRpc::CreateCorpseLoot:
+    {
+        sf::rewards::v1::CreateCorpseLootRequest M;
+        M.set_defeat_event_id(Utf8(Q.OperationId)); M.set_creature_id(Utf8(Q.CreatureId)); M.set_table_id(Utf8(Q.TableId));
+        M.set_killer_character_id(Utf8(Q.KillerCharacterId)); M.set_protected_(Q.bKillerProtected || Q.bBoarProtected);
+        M.set_zone_id(Utf8(Q.ZoneId)); M.set_x_cm(Q.Position.X); M.set_y_cm(Q.Position.Y); M.set_z_cm(Q.Position.Z);
+        M.set_mesh_path(Utf8(Q.LootMeshPath)); M.set_shared(Q.bSharedLoot); M.set_raid_group_id(Utf8(Q.RaidGroupId));
+        const FVector Scale = Q.LootMeshTransform.GetScale3D(); const FRotator Rotation = Q.LootMeshTransform.Rotator();
+        M.set_scale_x(Scale.X); M.set_scale_y(Scale.Y); M.set_scale_z(Scale.Z);
+        M.set_pitch(Rotation.Pitch); M.set_yaw(Rotation.Yaw); M.set_roll(Rotation.Roll);
+        for (const FString& Id : Q.EligibleCharacterIds) { M.add_eligible_character_ids(Utf8(Id)); }
+        auto* Call = new TCall<sf::rewards::v1::LootSourcesReply>();
+        Call->Copy = [](const sf::rewards::v1::LootSourcesReply& R, FSFGameplayResponse& Out)
+        { for (const auto& S : R.sources()) { Out.LootSources.Add(CopyLoot(S)); } };
+        Start(Call, [&](grpc::ClientContext* C) { return Channel->Rewards->AsyncCreateCorpseLoot(C, M, &Channel->Queue); }); break;
+    }
+    case ESFGameplayRpc::ListLootSources:
+    {
+        sf::rewards::v1::ListLootSourcesRequest M; M.set_zone_id(Utf8(Q.ZoneId));
+        auto* Call = new TCall<sf::rewards::v1::LootSourcesReply>();
+        Call->Copy = [](const sf::rewards::v1::LootSourcesReply& R, FSFGameplayResponse& Out)
+        { for (const auto& S : R.sources()) { Out.LootSources.Add(CopyLoot(S)); } };
+        Start(Call, [&](grpc::ClientContext* C) { return Channel->Rewards->AsyncListLootSources(C, M, &Channel->Queue); }); break;
+    }
+    case ESFGameplayRpc::OpenLootSource:
+    {
+        sf::rewards::v1::OpenLootSourceRequest M; M.set_source_id(Utf8(Q.LootSourceId)); M.set_character_id(Utf8(Q.CharacterId));
+        auto* Call = new TCall<sf::rewards::v1::LootSourceView>();
+        Call->Copy = [](const sf::rewards::v1::LootSourceView& R, FSFGameplayResponse& Out) { Out.LootSources.Add(CopyLoot(R)); };
+        Start(Call, [&](grpc::ClientContext* C) { return Channel->Rewards->AsyncOpenLootSource(C, M, &Channel->Queue); }); break;
+    }
+    case ESFGameplayRpc::TakeLoot:
+    {
+        sf::rewards::v1::TakeLootRequest M; M.set_operation_id(Utf8(Q.OperationId)); M.set_source_id(Utf8(Q.LootSourceId));
+        M.set_character_id(Utf8(Q.CharacterId)); M.set_backpack_id(Utf8(Q.ContainerId));
+        M.set_source_revision(Q.LootSourceRevision); M.set_backpack_revision(Q.ExpectedContainerRevision);
+        M.set_definition_id(Utf8(Q.LootDefinitionId)); M.set_quantity(Q.LootQuantity); M.set_instance_id(Utf8(Q.LootInstanceId));
+        auto* Call = new TCall<sf::rewards::v1::LootSourceView>();
+        Call->Copy = [](const sf::rewards::v1::LootSourceView& R, FSFGameplayResponse& Out)
+        { Out.LootSources.Add(CopyLoot(R)); Out.ContainerRevision = R.backpack_revision(); Out.LedgerOperationId = FromUtf8(R.ledger_operation_id()); };
+        Start(Call, [&](grpc::ClientContext* C) { return Channel->Rewards->AsyncTakeLoot(C, M, &Channel->Queue); }); break;
+    }
+    case ESFGameplayRpc::DropLoot:
+    {
+        sf::rewards::v1::DropLootRequest M; M.set_operation_id(Utf8(Q.OperationId)); M.set_character_id(Utf8(Q.CharacterId));
+        M.set_backpack_id(Utf8(Q.ContainerId)); M.set_backpack_revision(Q.ExpectedContainerRevision);
+        M.set_definition_id(Utf8(Q.LootDefinitionId)); M.set_quantity(Q.LootQuantity); M.set_instance_id(Utf8(Q.LootInstanceId));
+        M.set_zone_id(Utf8(Q.ZoneId)); M.set_x_cm(Q.Position.X); M.set_y_cm(Q.Position.Y); M.set_z_cm(Q.Position.Z); M.set_mesh_path(Utf8(Q.LootMeshPath));
+        auto* Call = new TCall<sf::rewards::v1::LootSourceView>();
+        Call->Copy = [](const sf::rewards::v1::LootSourceView& R, FSFGameplayResponse& Out)
+        { Out.LootSources.Add(CopyLoot(R)); Out.ContainerRevision = R.backpack_revision(); Out.LedgerOperationId = FromUtf8(R.ledger_operation_id()); };
+        Start(Call, [&](grpc::ClientContext* C) { return Channel->Rewards->AsyncDropLoot(C, M, &Channel->Queue); }); break;
     }
     case ESFGameplayRpc::GrantDefeatReward:
     {

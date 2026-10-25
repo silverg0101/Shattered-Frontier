@@ -15,6 +15,8 @@
 #include "Gathering/SFGatheringPilot.h"
 #include "GameFramework/PlayerController.h"
 #include "Inventory/SFInventory.h"
+#include "Inventory/SFLootComponent.h"
+#include "Gathering/SFStationRecipes.h"
 
 void USFInventoryWidget::NativeOnInitialized()
 {
@@ -43,10 +45,33 @@ void USFInventoryWidget::Configure(USFGatheringPilotComponent* InPilot)
     Pilot = InPilot;
 }
 
+void USFInventoryWidget::ConfigureExternal(USFLootComponent* InLoot)
+{
+    ExternalLoot = InLoot; Pilot = nullptr;
+    if (WeightText) { WeightText->SetVisibility(ESlateVisibility::Collapsed); }
+    if (WeightPercentText) { WeightPercentText->SetVisibility(ESlateVisibility::Collapsed); }
+    if (WeightBar) { WeightBar->SetVisibility(ESlateVisibility::Collapsed); }
+    if (USFWindowFrameWidget* Window = Cast<USFWindowFrameWidget>(GetWidgetFromName(TEXT("Window")))) { Window->SetTitle(FText::FromString(TEXT("Loot"))); }
+}
+
 void USFInventoryWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 {
     Super::NativeTick(MyGeometry, InDeltaTime);
-    if (!Pilot || GetVisibility() == ESlateVisibility::Collapsed) { return; }
+    if (GetVisibility() == ESlateVisibility::Collapsed) { return; }
+    if (ExternalLoot)
+    {
+        TArray<FSFInventoryEntry> Rows;
+        for (const FSFLootEntry& Item : ExternalLoot->GetExternalItems())
+        {
+            const FString Path = SFStationRecipes::ItemAssetPath(Item.DefinitionId);
+            if (const auto* Definition = LoadObject<USFItemDefinition>(nullptr, *Path))
+            { auto Entry = MakeEntry(*Definition, Definition->GetName(), Item.Quantity, false); Entry.InstanceId = Item.InstanceId; Entry.DurabilityPercent = Item.DurabilityPercent; Rows.Add(Entry); }
+        }
+        Present(BuildEntries(Rows), Rows.Num(), 0, -1);
+        if (Gold) { Gold->SetVisibility(ESlateVisibility::Collapsed); }
+        UpdateTooltip(); return;
+    }
+    if (!Pilot) { return; }
     int32 Slots = 0;
     const TArray<FSFInventoryEntry> All = CollectEntries(Slots);
     float Total = 0.f, Max = 0.f;
@@ -84,7 +109,8 @@ void USFInventoryWidget::Present(const TArray<FSFInventoryEntry>& All, int32 Slo
     const TArray<FSFInventoryEntry> Items = FilterByTab(All, ActiveTab).FilterByPredicate([](const FSFInventoryEntry& E) { return !E.bEquipped; });
     EnsureCells(Items.Num());
     // Selection follows the stack name; it falls back to the first shown stack when its stack left the tab.
-    if (!Items.ContainsByPredicate([this](const FSFInventoryEntry& E) { return E.Name.ToString() == SelectedKey; })) { SelectedKey = Items.IsEmpty() ? FString() : Items[0].Name.ToString(); }
+    if (!Items.ContainsByPredicate([this](const FSFInventoryEntry& E) { return E.Name.ToString() == SelectedKey && E.InstanceId == SelectedInstance; }))
+    { SelectedKey = Items.IsEmpty() ? FString() : Items[0].Name.ToString(); SelectedInstance = Items.IsEmpty() ? FString() : Items[0].InstanceId; }
     for (int32 Index = 0; Index < Cells.Num(); ++Index)
     {
         USFSlotWidget* Cell = Cells[Index];
@@ -94,9 +120,10 @@ void USFInventoryWidget::Present(const TArray<FSFInventoryEntry>& All, int32 Slo
         // The name is the fallback for items without an icon; the tooltip always carries it.
         Cell->SetKeyText(bFilled && !Icon ? Items[Index].Name : FText::GetEmpty());
         Cell->SetCount(bFilled ? Items[Index].Count : 0);  // the bag slot shows single counts too (bShowSingleCount)
-        Cell->SetSelected(bFilled && Items[Index].Name.ToString() == SelectedKey);
+        Cell->SetSelected(bFilled && Items[Index].Name.ToString() == SelectedKey && Items[Index].InstanceId == SelectedInstance);
         // Every bag stack can be dragged (onto the hotbar; wearables also onto the paper doll).
         Cell->SetDragPayload(bFilled ? Items[Index].ItemPath : FSoftObjectPath(), bFilled ? Items[Index].EquipSlot : NAME_None, NAME_None);
+        if (bFilled) { Cell->SetInventoryDragPayload(Items[Index].DefinitionId, Items[Index].Count, Items[Index].InstanceId, ExternalLoot != nullptr); }
     }
     ShownItems = Items;  // the hover tooltip reads these by cell index
     const FSFInventoryEntry* Equipped = All.FindByPredicate([](const FSFInventoryEntry& E) { return E.bEquipped; });
@@ -109,7 +136,7 @@ void USFInventoryWidget::Present(const TArray<FSFInventoryEntry>& All, int32 Slo
     }
     if (EmptyText)
     {
-        EmptyText->SetText(FText::FromString(All.IsEmpty() ? TEXT("Your pack is empty.") : TEXT("Nothing in this tab.")));
+        EmptyText->SetText(FText::FromString(All.IsEmpty() ? ExternalLoot ? TEXT("No loot remains.") : TEXT("Your pack is empty.") : TEXT("Nothing in this tab.")));
         EmptyText->SetVisibility(Items.IsEmpty() ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Collapsed);
     }
     if (WeightText && MaxKg >= 0.f)
@@ -131,21 +158,33 @@ void USFInventoryWidget::SelectCell(int32 Index)
 {
     if (!ShownItems.IsValidIndex(Index)) { return; }
     SelectedKey = ShownItems[Index].Name.ToString();
+    SelectedInstance = ShownItems[Index].InstanceId;
     for (int32 Cell = 0; Cell < Cells.Num(); ++Cell) { Cells[Cell]->SetSelected(Cell == Index); }
 }
 
-void USFInventoryWidget::HandleSlotClicked(USFSelectableWidget* Source) { SelectCell(Cells.IndexOfByKey(Cast<USFSlotWidget>(Source))); }
+void USFInventoryWidget::HandleSlotClicked(USFSelectableWidget* Source)
+{
+    const int32 Index = Cells.IndexOfByKey(Cast<USFSlotWidget>(Source)); SelectCell(Index);
+    if (ExternalLoot && ShownItems.IsValidIndex(Index) && FSlateApplication::Get().GetModifierKeys().IsShiftDown())
+    { const auto& Item = ShownItems[Index]; ExternalLoot->RequestTake(Item.DefinitionId, Item.Count, Item.InstanceId); }
+}
 
 void USFInventoryWidget::HandleSlotDoubleClicked(USFSelectableWidget* Source)
 {
     const int32 Index = Cells.IndexOfByKey(Cast<USFSlotWidget>(Source));
+    if (ExternalLoot) { return; }
     if (Pilot && ShownItems.IsValidIndex(Index) && !ShownItems[Index].bEquipped && !ShownItems[Index].EquipSlot.IsNone())
-    { Pilot->RequestEquip(ShownItems[Index].ItemPath, ShownItems[Index].EquipSlot); }
+    { Pilot->RequestEquip(ShownItems[Index].ItemPath, ShownItems[Index].EquipSlot, ShownItems[Index].InstanceId); }
 }
 
 bool USFInventoryWidget::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
 {
     const USFItemDragOperation* Drag = Cast<USFItemDragOperation>(InOperation);
+    if (Drag && Drag->bFromLoot && !ExternalLoot)
+    {
+        if (auto* Loot = USFLootComponent::Find(GetOwningPlayer())) { Loot->RequestTake(Drag->DefinitionId, Drag->Quantity, Drag->InstanceId); return true; }
+    }
+    if (ExternalLoot) { return false; } // Corpse inventories are withdrawal-only.
     if (Drag && Drag->FromHotbar != INDEX_NONE) { return false; }  // off the bar: the hotbar slot clears
     if (Drag && Pilot && !Drag->FromEquipSlot.IsNone()) { Pilot->RequestUnequip(Drag->FromEquipSlot); return true; }
     return Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation);
@@ -198,13 +237,13 @@ TArray<FSFInventoryEntry> USFInventoryWidget::BuildEntries(const TArray<FSFInven
     for (const FSFInventoryEntry& Item : Items)
     {
         if (Item.Count <= 0 || Item.Name.IsEmpty()) { continue; }
-        FSFInventoryEntry* Same = Out.FindByPredicate([&Item](const FSFInventoryEntry& E) { return E.bEquipped == Item.bEquipped && E.Name.ToString() == Item.Name.ToString(); });
+        FSFInventoryEntry* Same = Out.FindByPredicate([&Item](const FSFInventoryEntry& E) { return E.bEquipped == Item.bEquipped && E.DefinitionId == Item.DefinitionId && E.InstanceId == Item.InstanceId && E.Name.ToString() == Item.Name.ToString(); });
         if (Same) { Same->Count += Item.Count; } else { Out.Add(Item); }
     }
     Out.Sort([](const FSFInventoryEntry& A, const FSFInventoryEntry& B)
     {
         const int32 Compare = A.Name.ToString().Compare(B.Name.ToString());
-        return Compare != 0 ? Compare < 0 : A.bEquipped < B.bEquipped;
+        return Compare != 0 ? Compare < 0 : A.bEquipped != B.bEquipped ? A.bEquipped < B.bEquipped : A.InstanceId < B.InstanceId;
     });
     return Out;
 }
@@ -234,13 +273,14 @@ FSFInventoryTooltip USFInventoryWidget::BuildTooltip(const FSFInventoryEntry& En
     // ponytail: the item definition has no rarity field, so every item reads Common until a game-side definition adds one.
     Tip.RarityLine = TEXT("Common");
     Tip.TypeLine = FString::Printf(TEXT("%s%s"), *TypeName(Entry.Category), Entry.bEquipped ? TEXT("  -  Equipped") : TEXT(""));
+    if (!Entry.InstanceId.IsEmpty()) { Tip.TypeLine += FString::Printf(TEXT("  -  Condition %d%%"), Entry.DurabilityPercent); }
     Tip.WeightLine = FString::Printf(TEXT("Weight  %.1f kg (per 1)"), Entry.UnitWeight);
     return Tip;
 }
 
 FReply USFInventoryWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
-    if (InMouseEvent.GetEffectingButton() == EKeys::RightMouseButton)
+    if (!ExternalLoot && InMouseEvent.GetEffectingButton() == EKeys::RightMouseButton)
     {
         for (int32 Index = 0; Index < Cells.Num() && Index < ShownItems.Num(); ++Index)
         {
@@ -307,7 +347,23 @@ TArray<FSFInventoryEntry> USFInventoryWidget::CollectEntries(int32& OutSlots) co
     }
     TSoftObjectPtr<USFItemDefinition> Equipped; int32 Quantity = 0;
     if (Inventory->GetEquippedItem(USFGatheringPilotComponent::MainHandSlot(), Equipped, Quantity)) { Add(Equipped, Quantity, true); }  // the main hand, as before the Equipment window
-    return BuildEntries(Items);
+    TArray<FSFInventoryEntry> Rows = BuildEntries(Items);
+    if (const auto* Loot = USFLootComponent::Find(GetOwningPlayer()))
+    {
+        TArray<FSFInventoryEntry> Copies;
+        for (auto& Row : Rows)
+        {
+            if (Row.bEquipped) { continue; }
+            for (const auto& Instance : Loot->GetBackpackInstances())
+            {
+                if (Row.Count <= 0) { break; }
+                if (Instance.DefinitionId == Row.DefinitionId)
+                { auto Copy = Row; Copy.Count = 1; Copy.InstanceId = Instance.InstanceId; Copy.DurabilityPercent = Instance.DurabilityPercent; Copies.Add(Copy); --Row.Count; }
+            }
+        }
+        Rows.Append(Copies);
+    }
+    return BuildEntries(Rows);
 }
 
 // Shows the tooltip for the bag slot (or the main hand) under the cursor, beside the cursor; hidden when nothing is hovered.

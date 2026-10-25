@@ -95,6 +95,7 @@ builder.Services.AddSingleton(ledgerStore);
 builder.Services.AddSingleton(new DomLedger(ledgerStore));
 builder.Services.AddSingleton(new DefeatRewardPayout(ledgerStore, lootTables, creatureLootRules, ledgerConnection));
 builder.Services.AddSingleton(new SharedDefeatDropPayout(ledgerStore, lootTables, creatureLootRules, ledgerConnection));
+builder.Services.AddSingleton(new WorldLootGateway(ledgerStore, lootTables, creatureLootRules, ledgerConnection));
 builder.Services.AddHostedService<DefeatRewardRecovery>();
 builder.Services.AddSingleton(new PostgresCharacterStateStore(characterConnection));
 // Owned reconnect fixtures can seed skill rolls without changing the production roll source.
