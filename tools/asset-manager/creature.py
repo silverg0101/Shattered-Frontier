@@ -642,7 +642,7 @@ def concept_image(jid, p, entry, log, step, host=None, lib=None, size=None, info
     return a.hero_views(jid, prompt, "auto", png, log)[1]
 
 
-MODEL_BUILDS = 3  # builds a creature gets before its job fails: each build is reviewed against the concept
+MODEL_BUILDS = 4  # builds a creature gets before its job fails: each is reviewed against the concept; a reused rig counts
 MODEL_BRIEF = ("The first image is a 3D model built from the concept drawings that follow: its front view on the left and its "
                "left side on the right, rest pose, plain grey render. Judge the model's body only, never texture or lighting. "
                "PASS only if it is one single body like the concept: one torso with one smooth top line (a thin bristle fringe "
@@ -1120,21 +1120,36 @@ def run_creature(jid, host):
             views = concept_image(jid, p, entry, log, step, host, lib, size, info)
             model = None
         png = views.get("left") or views["concept"]  # the side-on design image
-        # the model is built (a reused one checked first) until it passes its review against the concept: a multi-view
-        # build can fuse a second shell or a ghost head onto the body, which no clip can fix
+        # the model is built (a reused one checked first) until its rig labels and its review against the concept pass:
+        # a multi-view build can fuse a second shell or a ghost head onto the body, which no clip can fix, and a
+        # SkinTokens rig can hang a leg off a side branch. Later builds use another seed, then fewer views (the front
+        # and the side, then the side alone), which fuse less.
+        side = views.get("left") or views.get("concept")
+        sets = [views, views, {k: views[k] for k in ("front", "left") if k in views} or views, {"concept": side}]
+        why = ""
         for attempt in range(1, MODEL_BUILDS + 1):
-            if model is None or attempt > 1:
-                step(f"building the model: Pixal3D, UltraTex and the SkinTokens rig{f' (build {attempt})' if attempt > 1 else ''}")
-                model = build_model(jid, host, p, views, None if attempt == 1 else random.randint(0, 0x7fffffff))
-            a.GPU_NOTES.setdefault(jid, []).append(f"[asset-manager] {host['name']}: {a.release_vram(host)}")
-            std = standardise_rig(jid, host, model)
+            try:
+                if model is None or attempt > 1:
+                    step(f"building the model: Pixal3D, UltraTex and the SkinTokens rig{f' (build {attempt})' if attempt > 1 else ''}")
+                    model = build_model(jid, host, p, sets[min(attempt, len(sets)) - 1], None if attempt == 1 else random.randint(0, 0x7fffffff))
+                a.GPU_NOTES.setdefault(jid, []).append(f"[asset-manager] {host['name']}: {a.release_vram(host)}")
+                std = standardise_rig(jid, host, model)
+            except InterruptedError:
+                raise
+            except Exception as e:  # the rig could not be labelled (no head, body and four legs): another build
+                why = str(e)[-300:]
+                log.append(f"rig (build {attempt}): FAIL: {why}")
+                if attempt == MODEL_BUILDS:
+                    raise RuntimeError(f"no build gave a rig with a head, a body and four legs in {MODEL_BUILDS} builds: {why}")
+                continue
             log.append(f"rig review: {std['review']}; {len(std['dropped'])} bones merged; {'; '.join(std['warnings']) or 'no warnings'}")
             r = model_review(jid, host, std["glb"], views)
-            log.append(f"model review (build {attempt}): {'PASS' if r['pass'] else 'FAIL: ' + '; '.join(r['problems'])}")
+            why = "; ".join(r["problems"])
+            log.append(f"model review (build {attempt}): {'PASS' if r['pass'] else 'FAIL: ' + why}")
             if r["pass"]:
                 break
             if attempt == MODEL_BUILDS:
-                raise RuntimeError(f"the model failed its review {MODEL_BUILDS} times: {'; '.join(r['problems'])}")
+                raise RuntimeError(f"the model failed its review in {MODEL_BUILDS} builds: {why}")
         raw_glb = a.ssh(host, f"cat {q(work + '/' + model)}", timeout=900)  # the SkinTokens rig: UniMate's, and kept in source/
         raw = {"glb": model, "bones": glb_bones(glb_read(raw_glb)[0]), "labels": std["labels"], "dropped": std["dropped"]}
         have = [c["name"] for c in animal["clips"]]
