@@ -3231,9 +3231,11 @@ def check():
         creature.ensure_curated, creature.concept_image = stubs
     assert job_row(jid)["status"] == "cancelled", dict(job_row(jid))
     assert not any((ROOT / get_settings()["output_folder"]).glob("**/Swamp_Rat*")) and not any(DATA.glob(f".creature{jid}_*"))
-    # failing after the concept keeps the concept (and whatever the host made) as source, for from_model to retry
+    # failing after the concept keeps the concept (and whatever the host made) as source, for from_model to retry;
+    # a build that fails (the GPU, ComfyUI, ssh) fails the job at once: it is not rebuilt as if the rig were at fault
+    builds = []
     def no_model(*a):
-        raise RuntimeError("pixal died")
+        builds.append(a); raise RuntimeError("pixal died")
     update_job(jid, status="running")
     stubs = creature.ensure_curated, creature.concept_image, creature.build_model
     creature.ensure_curated, creature.concept_image, creature.build_model = (lambda *a: td), (lambda *a: {"left": b"png"}), no_model
@@ -3243,6 +3245,7 @@ def check():
         creature.ensure_curated, creature.concept_image, creature.build_model = stubs
     kept = ROOT / get_settings()["output_folder"] / ASSET_TYPES["creature"]["folder"] / "Swamp_Rat"
     assert job_row(jid)["status"] == "failed" and (kept / "source" / "Swamp_Rat_concept_left.png").read_bytes() == b"png"
+    assert len(builds) == 1 and job_row(jid)["error"] == "pixal died", (len(builds), job_row(jid)["error"])
     assert json.loads((kept / "Swamp_Rat.json").read_text())["status"] == "failed" and not any(DATA.glob(f".creature{jid}_*"))
     try:
         creature.creature_params({"name": "x", "prompt": "a", "from_model": "Swamp_Rat"}); raise AssertionError("no rig kept")
@@ -3323,6 +3326,17 @@ def check():
     import importlib.util as _ilu
     _sp = _ilu.spec_from_file_location("gait_synth", MOTION_DIR / "gait_synth.py"); _gs = _ilu.module_from_spec(_sp); _sp.loader.exec_module(_gs)
     assert _gs.check() == "gait_synth ok"
+    # a stand (a UniMate idle take) loop-cuts: its paws never lift and it barely moves, so the gait rules would drop it
+    ji, fi = zc.parse(_gs.bvh("idle"))[:2]
+    assert zc.score(ji, fi, True) is None and zc.score(ji, fi, True, stand=True)[1:3] == (0, 90)
+    with tempfile.TemporaryDirectory() as td_:
+        Path(f"{td_}/idle_s0.bvh").write_text(_gs.bvh("idle"))
+        zc.loop_cut(f"{td_}/idle_s0.bvh", f"{td_}/idle_s0_loop.bvh", "idle_s0")  # exits 1 on NOLOOP
+        fl = zc.parse(Path(f"{td_}/idle_s0_loop.bvh").read_text())[1]
+        assert len(fl) == 91 and max(abs(fl[0] - fl[-1])) < 1e-6
+        Path(f"{td_}/walk_s0.bvh").write_text(_gs.bvh("walk"))
+        zc.loop_cut(f"{td_}/walk_s0.bvh", f"{td_}/walk_s0_loop.bvh", "walk_s0")  # a gait still goes through the gait rules
+        assert len(zc.parse(Path(f"{td_}/walk_s0_loop.bvh").read_text())[1]) == 31
     assert cp({"source": "library", "animal": "Rat", "clip": "Walk"})["clip"] == "Walk"  # Trottle stands in
     assert creature.clip_names(["Walk", "Sniff_s1"], [("Walk", [""]), ("Sniff", ["_s0", "_s1"]), ("Walk", [""])]) == ["Walk_2", "Sniff_2", "Walk_3"]
     out = ROOT / get_settings()["output_folder"] / "Creatures"
@@ -3453,7 +3467,7 @@ def check():
         if name.endswith("_s2"):
             raise InterruptedError
         return {"glb": "x", "sheet": "y", "checks": {"passed": True, "seam_deg": 1}}
-    stubs = creature.std_glb_clip, g["ssh"], g["ssh_step"], g["put_input"], g["run_blender"], g["job_blender"], g["anthropic_key"], g["ssh_anthropic"]
+    stubs = creature.std_glb_clip, g["ssh"], g["ssh_step"], g["put_input"], g["run_blender"], g["job_blender"], g["anthropic_key"], g["ssh_anthropic"], g["codex_review"]
     creature.std_glb_clip, g["ssh_step"], g["put_input"] = fake_std, lambda *a, **k: b"", lambda *a, **k: None
     g["ssh"] = lambda host, cmd, *a, **k: b"y"  # the rig is prepared for UniMate already
     try:
@@ -3481,8 +3495,29 @@ def check():
         assert len(asked) == 2 and all(cmd.endswith(f"{shlex.quote(want)}") for cmd in asked), asked
         assert [x["verdict"] for x in rt["checks"]["review"]] == ["FAIL", "FAIL"] and rt["checks"]["passed"] is False, rt
         assert "sniffs the air" in rt["checks"]["reason"], rt
+        # the model review: a review that gives no verdict is retried once, then counts as a FAIL (never a PASS); a
+        # cancel goes through
+        answers = []
+        def review(images, brief):
+            answers.append(len(images))
+            if len(answers) == 1: raise RuntimeError("the review answer was not JSON: ''")
+            return {"pass": True, "problems": [], "fix": ""}
+        g["codex_review"] = review
+        assert creature.model_review(jid, h, "rig.glb", {"left": b"l", "front": b"f"})["pass"] is True and answers == [3, 3], answers
+        def no_answer(images, brief):
+            answers.append(0); raise RuntimeError("the review answer was not JSON: ''")
+        g["codex_review"], answers = no_answer, []
+        mr = creature.model_review(jid, h, "rig.glb", {"concept": b"c"})
+        assert mr["pass"] is False and len(answers) == 2 and "no verdict" in mr["problems"][0], (mr, answers)
+        def cancel(images, brief):
+            raise InterruptedError
+        g["codex_review"] = cancel
+        try:
+            creature.model_review(jid, h, "rig.glb", {"concept": b"c"}); raise AssertionError("cancel swallowed")
+        except InterruptedError:
+            pass
     finally:
-        creature.std_glb_clip, g["ssh"], g["ssh_step"], g["put_input"], g["run_blender"], g["job_blender"], g["anthropic_key"], g["ssh_anthropic"] = stubs
+        creature.std_glb_clip, g["ssh"], g["ssh_step"], g["put_input"], g["run_blender"], g["job_blender"], g["anthropic_key"], g["ssh_anthropic"], g["codex_review"] = stubs
         with DB_LOCK, db() as c:
             c.execute("DELETE FROM jobs WHERE id=?", (jid,))
     shutil.rmtree(cm)

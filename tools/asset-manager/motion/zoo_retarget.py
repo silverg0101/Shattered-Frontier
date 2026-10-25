@@ -98,7 +98,9 @@ def main(rigf, animalf, clip, out, outj, size_cm, height_scale):
         rb = rig.data.bones[f"{p}_04"]
         tgt_leg = leg(rig, [f"{p}_{i:02}" for i in range(1, 5)], mw @ rb.head_local.lerp(rb.tail_local, contact[p][0]))
         sl = sorted((j for j, r in role.items() if r.startswith(p + "_")), key=lambda j: depth(src.data.bones[j]))
-        hip_i = max(i for i, j in enumerate(sl) if role[j] == p + "_01")
+        if not sl:
+            raise RuntimeError(f"the role map has no {p} leg")
+        hip_i = max((i for i, j in enumerate(sl) if role[j] == p + "_01"), default=0)  # no _01 (dropped): the whole chain
         leg_ratio[p] = tgt_leg / leg(src, sl[hip_i:], src.matrix_world @ src.data.bones[sl[-1]].tail_local)
     ratio = leg_ratio["HL"]  # the hips' bob follows the hind legs ...
     ratio_xy = min(leg_ratio.values())  # ... their travel the shortest legs, so a lunge keeps every planted paw in reach
@@ -323,26 +325,38 @@ def main(rigf, animalf, clip, out, outj, size_cm, height_scale):
                 e.location = tgts[p][idx(i)]; e.keyframe_insert("location", frame=i + 1)
                 con.influence = infl[p][idx(i)]; con.keyframe_insert("influence", frame=i + 1)
     released = []  # stance runs with a pin the leg could not reach (a lunge's far stance end): no longer planted
-    for it in range(IK_PASSES):
-        key_targets(); worst, where = 0.0, ""
+    # correction passes until the fixes converge or IK_PASSES - 1 ran, then a release pass: a pin the leg still misses by
+    # UNREACHED frees its whole stance run (its frames get their off-pin targets back, so the IK stops dragging the paw
+    # toward the pin) and one more pass solves with those; it ends when a release pass frees nothing
+    it, final = 0, False
+    while True:
+        key_targets(); worst, where, freed = 0.0, "", set()  # freed: (paw, frame) reset this pass; solved next pass
         for i in range(M):
             sc.frame_set(i + 1)
             for p in PAWS:
                 h = paw_h(p)
+                if (p, i) in freed:
+                    continue
                 if infl[p][i] < 1:  # ramp and swing frames blend with FK: nothing to correct, unless the paw sank
                     if h < 0: infl[p][i] = 1.0; worst = max(worst, 0.01); where = where or f"{p} frame {i} sank"  # then full IK from the next pass
                     continue
                 dz = FLOOR_EPS - h if W[p][i] == 1 else max(0.0, FLOOR_EPS - h)  # planted: onto the floor; else: not below
                 dxy = want[p][i] - paw_point(p).xy if W[p][i] == 1 else Vector((0, 0))  # pinned: onto the pin
-                if it == IK_PASSES - 1 and W[p][i] == 1 and dxy.length > UNREACHED:  # the leg cannot hold this pin: release its run
+                if final and W[p][i] == 1 and dxy.length > UNREACHED:  # the leg cannot hold this pin: release its run
                     s0 = next(s0 for s0, fr in runs[p].items() if i in fr)
                     for j in runs[p].pop(s0):
                         W[p][j], want[p][j], infl[p][j] = 0.0, None, (1.0 if H[p][j] < FLOOR_EPS else 0.0)
-                    released.append(f"{p} {s0}"); dxy = Vector((0, 0))
+                        e = A[p][j].copy(); e.z += max(H[p][j], FLOOR_EPS) - H[p][j]  # off the pin: the FK ankle, lifted if sunk
+                        tgts[p][j] = e; freed.add((p, j))
+                    released.append(f"{p} {s0}")
+                    continue
                 tgts[p][i].z += dz; tgts[p][i].xy += dxy
                 if max(abs(dz), dxy.length) > worst: worst, where = max(abs(dz), dxy.length), f"{p} frame {i}"
-        print("RT ik pass", it, "largest fix (cm)", round(worst * 100, 2), where)
-        if worst < 0.001 and it < IK_PASSES - 1: it = IK_PASSES - 1  # converged: one last pass, the release check
+        print("RT ik pass", it, "largest fix (cm)", round(worst * 100, 2), where, "(release pass)" if final else "")
+        it += 1
+        if final and (not freed or it >= 2 * IK_PASSES):  # nothing more to release (every run is finite: the cap is a guard)
+            break
+        final = final or worst < 0.001 or it >= IK_PASSES - 1  # converged, or the corrections are spent: release next
     n_released = n_planted - sum(1 for p in PAWS for i in range(M) if W[p][i] == 1)
     if released: print("RT released stance runs the leg could not hold:", " ".join(released), "frames", n_released, "of", n_planted)
     key_targets()

@@ -8,7 +8,8 @@
 Scoring is ported from proof/pick.py: a clip must keep moving (every BLOCK consecutive frames of a cyclic clip, every
 STALL frames of a non-cyclic one, average >= MIN_BLOCK deg/frame of rotation change) and close well (start vs end pose rotation + paw distance, paws relative to the root). Cyclic motions
 get the best loop window (>= MIN_LOOP frames, every paw must lift), cut, residual spread so the last frame equals frame 0,
-and are written in place; travel_cm_s keeps their speed. BVH units are taken as cm, Y up.
+and are written in place; travel_cm_s keeps their speed. --loop on a stand (STAND name) wants the window to close, not to
+move or lift. BVH units are taken as cm, Y up.
 """
 import base64, json, math, os, re, sys, urllib.error, urllib.request, zipfile
 from pathlib import Path
@@ -131,12 +132,14 @@ def blocks(R, n=BLOCK):
     return list((c[n:] - c[:-n]) / n)
 
 
-def score(joints, frames, cyclic, down=False):
+def score(joints, frames, cyclic, down=False, stand=False):
     """-> (score, i, j, closure deg) with lower better, or None if the clip stalls or (cyclic) has no loop of at least
-    MIN_LOOP frames that closes within MAX_LOOP_DEG. down: a death, ranked by how low the root ends instead."""
+    MIN_LOOP frames that closes within MAX_LOOP_DEG. down: a death, ranked by how low the root ends instead.
+    stand: a cyclic idle (a loop cut from a UniMate take): its paws stay planted and it barely moves (gait_synth's
+    idle averages 0.003 deg/frame, well under MIN_BLOCK), so the stall and paw-lift rules of a gait do not apply."""
     rcols = [c for jt in joints[1:] for c, k in jt["channels"] if k.endswith("rotation")]
     R = frames[:, rcols]
-    if len(R) < 2 or (not down and min(blocks(R, BLOCK if cyclic else STALL)) < MIN_BLOCK) or (down and max(blocks(R, STALL)) < MIN_BLOCK):  # the dead lie still
+    if len(R) < 2 or (not down and not stand and min(blocks(R, BLOCK if cyclic else STALL)) < MIN_BLOCK) or (down and max(blocks(R, STALL)) < MIN_BLOCK):  # the dead lie still
         return None
     P = fk(joints, frames)
     feet = P[:, paws(joints, fk(joints, None)[0])] - P[:, :1]  # paws relative to the root
@@ -180,7 +183,8 @@ def score(joints, frames, cyclic, down=False):
             lo = np.minimum.accumulate(m20[i:])
             long = js - i >= BLOCK
             moving[long] = lo[np.minimum(js[long] - BLOCK - i, len(lo) - 1)]
-        s[(moving < MIN_BLOCK) | ((swing < min_swing) if feet.shape[1] else False)] = np.inf
+        if not stand:  # a gait keeps moving and lifts every paw; a stand does neither
+            s[(moving < MIN_BLOCK) | ((swing < min_swing) if feet.shape[1] else False)] = np.inf
         k = int(s.argmin())
         if np.isfinite(s[k]) and (best is None or s[k] < best[0]):
             best = (float(s[k]), i, int(js[k]), float(dr[k]))
@@ -358,7 +362,7 @@ def loop_cut(src, out, name):
     """python zoo_curate.py --loop IN.bvh OUT.bvh NAME: the best closing loop of a generated take (a UniMate gait or
     idle) cut and closed like a pack's, written to OUT; prints LOOP i j frames. Exits 1 when no loop closes."""
     joints, frames, ft, head = parse(Path(src).read_text())
-    s = score(joints, frames, True)
+    s = score(joints, frames, True, stand=bool(STAND.search(name)))  # an idle's paws stay planted: no gait rules
     why = s and defects(joints, frames, ft, name, s[1], s[2])
     if not s or why:
         print("NOLOOP", why or f"no loop of {MIN_LOOP}+ frames closes within {MAX_LOOP_DEG} deg")

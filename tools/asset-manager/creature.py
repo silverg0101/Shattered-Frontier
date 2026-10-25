@@ -662,7 +662,14 @@ def model_review(jid, host, rig_glb, views) -> dict:
     a.run_blender(jid, host, "render_views.py", [rig_glb, "mv"], [rig_glb], ["mv"], 900)
     png = a.ssh(host, f"cat {shlex.quote(work + '/mv/views.png')}", timeout=300)
     concepts = [views[k] for k in ("left", "front", "concept") if k in views]
-    return a.codex_review([png, *concepts], MODEL_BRIEF)
+    for retry in (True, False):  # a bad answer or a network error is retried once, then counts as a FAIL, never a PASS
+        try:
+            return a.codex_review([png, *concepts], MODEL_BRIEF)
+        except InterruptedError:
+            raise
+        except Exception as e:
+            if not retry:
+                return {"pass": False, "problems": [f"the model review gave no verdict: {str(e)[-200:]}"], "fix": ""}
 
 
 def build_model(jid, host, p, views, seed=None) -> str:
@@ -1128,11 +1135,11 @@ def run_creature(jid, host):
         sets = [views, views, {k: views[k] for k in ("front", "left") if k in views} or views, {"concept": side}]
         why = ""
         for attempt in range(1, MODEL_BUILDS + 1):
+            if model is None or attempt > 1:  # a build that fails (the GPU, ComfyUI, ssh) fails the job: it is no rig defect
+                step(f"building the model: Pixal3D, UltraTex and the SkinTokens rig{f' (build {attempt})' if attempt > 1 else ''}")
+                model = build_model(jid, host, p, sets[min(attempt, len(sets)) - 1], None if attempt == 1 else random.randint(0, 0x7fffffff))
+            a.GPU_NOTES.setdefault(jid, []).append(f"[asset-manager] {host['name']}: {a.release_vram(host)}")
             try:
-                if model is None or attempt > 1:
-                    step(f"building the model: Pixal3D, UltraTex and the SkinTokens rig{f' (build {attempt})' if attempt > 1 else ''}")
-                    model = build_model(jid, host, p, sets[min(attempt, len(sets)) - 1], None if attempt == 1 else random.randint(0, 0x7fffffff))
-                a.GPU_NOTES.setdefault(jid, []).append(f"[asset-manager] {host['name']}: {a.release_vram(host)}")
                 std = standardise_rig(jid, host, model)
             except InterruptedError:
                 raise
