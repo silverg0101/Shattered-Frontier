@@ -10,6 +10,7 @@ param(
     [switch]$AggroScenario,
     [switch]$MemoryScenario,
     [switch]$RegenScenario,
+    [switch]$FallScenario,
     [switch]$AssistScenario,
     [switch]$RespawnScenario,
     [switch]$GreenlandsBoarNetcheck
@@ -97,6 +98,11 @@ try {
         $CastingScenario -or $EvadeScenario -or $ThreatScenario -or $AggroScenario -or $MemoryScenario)) {
         throw 'RegenScenario requires SB_Regeneration, two clients, and no other scenario'
     }
+    if ($FallScenario -and ($Map -ne '/Game/Frontier/Maps/Sandbox/SB_FallDamage' -or $Clients -ne 2 -or
+        $CastingScenario -or $EvadeScenario -or $ThreatScenario -or $AggroScenario -or $MemoryScenario -or
+        $RegenScenario -or $AssistScenario -or $RespawnScenario -or $GreenlandsBoarNetcheck)) {
+        throw 'FallScenario requires SB_FallDamage, two clients, and no other scenario'
+    }
     if ($AssistScenario -and ($Map -ne '/Game/Frontier/Maps/Sandbox/SB_Assist' -or $Clients -ne 2 -or
         $CastingScenario -or $EvadeScenario -or $ThreatScenario -or $AggroScenario -or $MemoryScenario -or $RegenScenario)) {
         throw 'AssistScenario requires SB_Assist, two clients, and no other scenario'
@@ -113,6 +119,7 @@ try {
     if ($AggroScenario) { $serverArgs += '-CombatAggroScenario' }
     if ($MemoryScenario) { $serverArgs += '-CombatMemoryScenario' }
     if ($RegenScenario) { $serverArgs += '-CombatRegenScenario' }
+    if ($FallScenario) { $serverArgs += '-CombatFallScenario' }
     if ($AssistScenario) { $serverArgs += '-CombatAssistScenario' }
     if ($RespawnScenario) { $serverArgs += '-CombatRespawnScenario' }
     if ($GreenlandsBoarNetcheck) { $serverArgs += '-GreenlandsBoarNetcheck' }
@@ -127,6 +134,7 @@ try {
         if ($AggroScenario) { $clientArgs += @('-CombatAggroScenario', ('-CombatAggroRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         if ($MemoryScenario) { $clientArgs += @('-CombatMemoryScenario', ('-CombatMemoryRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         if ($RegenScenario) { $clientArgs += @('-CombatRegenScenario', ('-CombatRegenRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
+        if ($FallScenario) { $clientArgs += @('-CombatFallScenario', ('-CombatFallRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         if ($AssistScenario) { $clientArgs += @('-CombatAssistScenario', ('-CombatAssistRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         if ($RespawnScenario) { $clientArgs += @('-CombatRespawnScenario', ('-CombatRespawnRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         if ($GreenlandsBoarNetcheck) { $clientArgs += @('-GreenlandsBoarNetcheck', ('-GreenlandsBoarRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
@@ -266,6 +274,34 @@ try {
         }
         Write-Output "PASS: boar damaged client 1; threat cleared on evade, then both clients observed five-second combat exit, five-second regeneration delay, and one-second health ticks to full. Logs: $logs"
     }
+    if ($FallScenario) {
+        Wait-Log $serverLog 'FALL_DAMAGE ImpactMps='
+        $hit = Select-String -LiteralPath $serverLog -Pattern 'FALL_DAMAGE ImpactMps=([\d.]+) Damage=(\d+) HealthBefore=(\d+) Pawn=(\S+)' | Select-Object -First 1
+        $g = $hit.Matches[0].Groups
+        $impact = [double]::Parse($g[1].Value,[Globalization.CultureInfo]::InvariantCulture)
+        $damage = [int]$g[2].Value
+        $before = [int]$g[3].Value
+        $rawCoefficient = ($impact - 12.0) / 20.0
+        $coefficient = [math]::Min(1.2, [math]::Max(0.0, $rawCoefficient))
+        $expected = [int][math]::Floor($before * $coefficient + 0.5)
+        if ($impact -le 12 -or $damage -ne $expected -or $damage -ge $before) {
+            throw "Fall calculation invalid: impact=$impact damage=$damage expected=$expected before=$before"
+        }
+        Wait-Log $serverLog "COMBAT_PILOT_PLAYER_HIT HP=$($before-$damage) By=None"
+        foreach ($role in @('Driver','Observer')) {
+            $path = Join-Path $logs ('Client' + $(if ($role -eq 'Driver') { '1' } else { '2' }) + '.log')
+            Wait-Log $path "FALL_SAMPLE Role=$role .*Health=$($before-$damage) "
+            $samples = @(Select-String -LiteralPath $path -Pattern "FALL_SAMPLE Role=$role Time=([\d.]+) Health=(\d+) X=([-\d.]+) Z=([-\d.]+)" | ForEach-Object {
+                $m = $_.Matches[0].Groups
+                [pscustomobject]@{ HP=[int]$m[2].Value; Z=[double]::Parse($m[4].Value,[Globalization.CultureInfo]::InvariantCulture) }
+            })
+            if (@($samples | Where-Object { $_.HP -eq $before -and $_.Z -gt 1800 }).Count -eq 0 -or
+                @($samples | Where-Object { $_.HP -eq ($before-$damage) -and $_.Z -lt 300 }).Count -eq 0) {
+                throw "$role missed the elevated start or replicated post-landing health"
+            }
+        }
+        Write-Output "PASS: server measured $impact m/s landing, applied $damage physical environment damage; both clients observed the elevated start and landed health. Logs: $logs"
+    }
     if ($AssistScenario) {
         $driverLog = Join-Path $logs 'Client1.log'
         $observerLog = Join-Path $logs 'Client2.log'
@@ -374,7 +410,7 @@ try {
         Write-Output "PASS: Greenlands aggro, threat switch, pack assist, leash/evade, attacker memory, regeneration, client kill and rotated slot respawn on both clients. Logs: $logs"
     }
     Write-Output "PASS: separate editor server and $Clients client(s) connected; $Clients server-authoritative possession(s). Logs: $logs"
-    if (-not $CastingScenario -and -not $EvadeScenario -and -not $ThreatScenario -and -not $AggroScenario -and -not $MemoryScenario -and -not $RegenScenario -and -not $AssistScenario -and -not $RespawnScenario -and -not $GreenlandsBoarNetcheck) { Write-Output 'Headless connection check only: movement, rendering, lifecycle cleanup, authentication and Linux runtime are not certified.' }
+    if (-not $CastingScenario -and -not $EvadeScenario -and -not $ThreatScenario -and -not $AggroScenario -and -not $MemoryScenario -and -not $RegenScenario -and -not $FallScenario -and -not $AssistScenario -and -not $RespawnScenario -and -not $GreenlandsBoarNetcheck) { Write-Output 'Headless connection check only: movement, rendering, lifecycle cleanup, authentication and Linux runtime are not certified.' }
 } finally {
     foreach ($process in $ownedProcesses) {
         if (-not $process.HasExited) { Stop-Process -Id $process.Id -ErrorAction SilentlyContinue }

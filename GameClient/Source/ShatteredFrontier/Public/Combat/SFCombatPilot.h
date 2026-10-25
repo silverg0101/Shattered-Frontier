@@ -70,6 +70,8 @@ public:
     bool bSilverbrookHostileSpawning = true;
     UPROPERTY(Config, EditAnywhere, Category="Pilot Balance", meta=(ClampMin="20", ClampMax="500"))
     int32 PlayerHealth = 80;
+    UPROPERTY(Config, EditAnywhere, Category="Pilot Balance", meta=(ClampMin="0", ClampMax="50", Units="m/s", DisplayName="Fall damage speed threshold", ToolTip="Impact speed before fall damage starts; adopted at next zone start."))
+    float FallSpeedThresholdMps = 12.0f;
     // Shown on the vitals stamina bar until a stamina stat is bound (the bar draws full).
     UPROPERTY(Config, EditAnywhere, Category="Pilot Balance", meta=(ClampMin="10", ClampMax="500", DisplayName="Player stamina (display)"))
     int32 PlayerStamina = 150;

@@ -27,6 +27,7 @@
 #include "Combat/SFCastingComponent.h"
 #include "ProfilingDebugging/CsvProfiler.h"
 #include "Framework/SFPlayerController.h"
+#include "Framework/SFGameMode.h"
 #include "Services/SFBackpackComponent.h"
 #include "Engine/World.h"
 #include "Engine/Engine.h"
@@ -108,6 +109,17 @@ void ASFE1Character::BeginPlay()
         FParse::Param(FCommandLine::Get(), TEXT("CombatGroupScenario"))))
     { GetWorldTimerManager().SetTimer(CombatScenarioTimer, this, &ASFE1Character::TickCombatScenario, 1.0f, true); }
 #endif
+}
+
+void ASFE1Character::Landed(const FHitResult& Hit)
+{
+    const float ImpactMps = FMath::Max(0.0f, -GetVelocity().Z / 100.0f);
+    Super::Landed(Hit);
+    if (HasAuthority() && GetWorld()->GetOutermost()->GetName() == TEXT("/Game/Frontier/Maps/Sandbox/SB_FallDamage"))
+    {
+        if (ASFGameMode* Mode = GetWorld()->GetAuthGameMode<ASFGameMode>())
+        { Mode->ApplyFallDamage(this, ImpactMps); }
+    }
 }
 
 bool ASFE1Character::IsAllowedFaceId(FName Id)
@@ -630,6 +642,34 @@ void ASFE1Character::TickRegenScenario()
 #endif
 }
 
+void ASFE1Character::TickFallScenario()
+{
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    FString ScenarioRole;
+    FParse::Value(FCommandLine::Get(), TEXT("CombatFallRole="), ScenarioRole);
+    if ((ScenarioRole != TEXT("Driver") && ScenarioRole != TEXT("Observer")) || !Controller) { return; }
+    ASFE1Character* Watched = this;
+    int32 Players = 0;
+    for (TActorIterator<ASFE1Character> It(GetWorld()); It; ++It)
+    {
+        ++Players;
+        if (ScenarioRole == TEXT("Observer") && *It != this) { Watched = *It; }
+    }
+    if (Players < 2 || (Watched == this && ScenarioRole == TEXT("Observer")) || Watched->CombatHealth() <= 0) { return; }
+    const double Now = GetWorld()->GetTimeSeconds();
+    if (Now >= NextFallSampleAt)
+    {
+        NextFallSampleAt = Now + 0.25;
+        UE_LOG(LogTemp, Display, TEXT("FALL_SAMPLE Role=%s Time=%.2f Health=%d X=%.0f Z=%.0f"),
+            *ScenarioRole, Now, Watched->CombatHealth(), Watched->GetActorLocation().X, Watched->GetActorLocation().Z);
+    }
+    if (ScenarioRole == TEXT("Driver") && PilotHealth > 0 && GetActorLocation().Z > 300)
+    {
+        AddMovementInput(FVector::ForwardVector, 1.0f);
+    }
+#endif
+}
+
 void ASFE1Character::TickCombatScenario()
 {
     if (FParse::Param(FCommandLine::Get(), TEXT("CombatGroupScenario")))
@@ -987,6 +1027,8 @@ void ASFE1Character::Tick(float DeltaSeconds)
         FParse::Param(FCommandLine::Get(), TEXT("CombatRespawnScenario"))) { TickRespawnScenario(); }
     if (GetNetMode() == NM_Client && IsLocallyControlled() &&
         FParse::Param(FCommandLine::Get(), TEXT("CombatRegenScenario"))) { TickRegenScenario(); }
+    if (GetNetMode() == NM_Client && IsLocallyControlled() &&
+        FParse::Param(FCommandLine::Get(), TEXT("CombatFallScenario"))) { TickFallScenario(); }
 #endif
 }
 

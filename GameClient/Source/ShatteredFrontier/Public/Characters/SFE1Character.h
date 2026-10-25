@@ -26,6 +26,7 @@ public:
     virtual void PossessedBy(AController* NewController) override;
     virtual void PawnClientRestart() override;
     virtual void Tick(float DeltaSeconds) override;
+    virtual void Landed(const FHitResult& Hit) override;
     virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
     void CombatSetHealth(int32 Value);
     void CombatMarkHostile(); // server only; sandbox and Silverbrook combat clock
@@ -104,6 +105,7 @@ private:
     double RespawnScenarioDeathAt = -1;
     int32 RegenScenarioStage = 0;
     double NextRegenSampleAt = 0;
+    double NextFallSampleAt = 0;
     bool bMemorySawCombat = false;
     double MemoryScenarioStartedAt = -1;
     double AggroScenarioStartedAt = -1;
@@ -119,6 +121,7 @@ private:
     void TickAssistScenario();
     void TickRespawnScenario();
     void TickRegenScenario();
+    void TickFallScenario();
     UFUNCTION(Server, Reliable) void ServerTargetScenarioStep(int32 Step);
     UFUNCTION(Server, Reliable) void ServerPilotAttack(AActor* SelectedCombatTarget);
     void PilotAttack();

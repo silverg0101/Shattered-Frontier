@@ -1,5 +1,6 @@
 #include "Combat/SFCombatPilot.h"
 #include "Combat/SFCommonRespawn.h"
+#include "Combat/SFFallDamage.h"
 #include "Inventory/SFGear.h"
 #include "Framework/SFGameMode.h"
 #include "Combat/SFCombatPilotRewards.h"
@@ -195,6 +196,7 @@ void ASFGameMode::RecordBoarEvade(const FString& Group, const FString& Character
 bool USFCombatPilotSettings::Validate(FString& Error) const
 {
     if (PlayerHealth < 20 || PlayerHealth > 500 || BoarHealth < 10 || BoarHealth > 500 ||
+        !FMath::IsWithinInclusive(FallSpeedThresholdMps, 0.0f, 50.0f) ||
         PlayerMeleeDamage < 1 || PlayerMeleeDamage > 100 || BoarMeleeDamage < 1 || BoarMeleeDamage > 100 ||
         !FMath::IsWithinInclusive(PlayerMeleeCooldownSeconds, 0.3f, 5.0f) ||
         !FMath::IsWithinInclusive(BoarMeleeCooldownSeconds, 0.5f, 5.0f) ||
@@ -646,10 +648,11 @@ void ASFGameMode::StartCombat()
     const bool bAggroSandbox = MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_Aggro");
     const bool bMemorySandbox = MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_AttackerMemory");
     const bool bRegenSandbox = MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_Regeneration");
+    const bool bFallSandbox = MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_FallDamage");
     const bool bAssistSandbox = MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_Assist");
     bRespawnSandbox = MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_Respawn");
     bCompanionSandbox = GetNetMode() != NM_Client &&
-        (MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_Companions") || bEvadeSandbox || bThreatSandbox || bAggroSandbox || bMemorySandbox || bRegenSandbox || bAssistSandbox || bRespawnSandbox);
+        (MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_Companions") || bEvadeSandbox || bThreatSandbox || bAggroSandbox || bMemorySandbox || bRegenSandbox || bFallSandbox || bAssistSandbox || bRespawnSandbox);
     if (bCompanionSandbox)
     {
         CapturedSettings = GetDefault<USFCombatPilotSettings>();
@@ -688,7 +691,7 @@ void ASFGameMode::StartCombat()
             if (Slot != 1 || RespawnSandboxPoints.Num() != 2)
             { UE_LOG(LogTemp, Error, TEXT("BOAR_RESPAWN_INVALID_POINTS Boars=%d Points=%d"), Slot, RespawnSandboxPoints.Num()); return; }
         }
-        bPilotActive = Slot > 0;
+        bPilotActive = bFallSandbox || Slot > 0;
         RespawnPoints.Add(FVector(0, 0, 110));
         UE_LOG(LogTemp, Display, TEXT("COMBAT_SANDBOX_READY Map=%s Boars=%d"), *MapName, Slot);
         return;
@@ -1179,11 +1182,22 @@ void ASFGameMode::TryBoarAttack(ASFPilotBoar* Boar, ASFE1Character* Victim)
     HitPlayer(Boar, Victim, CapturedSettings->BoarMeleeDamage);
 }
 
-void ASFGameMode::HitPlayer(AActor* Source, ASFE1Character* Victim, int32 Damage)
+void ASFGameMode::ApplyFallDamage(ASFE1Character* Victim, float ImpactSpeedMps)
+{
+    if (!bPilotActive || !CapturedSettings || !IsValid(Victim) || !Victim->HasAuthority()) { return; }
+    const int32 Damage = SFFallDamage::Amount(CapturedSettings->PlayerHealth, ImpactSpeedMps,
+        CapturedSettings->FallSpeedThresholdMps);
+    if (Damage <= 0) { return; }
+    UE_LOG(LogTemp, Display, TEXT("FALL_DAMAGE ImpactMps=%.2f Damage=%d HealthBefore=%d Pawn=%s"),
+        ImpactSpeedMps, Damage, Victim->CombatHealth(), *Victim->GetName());
+    HitPlayer(nullptr, Victim, Damage, true);
+}
+
+void ASFGameMode::HitPlayer(AActor* Source, ASFE1Character* Victim, int32 Damage, bool bIgnoreArmor)
 {
     if (!IsValid(Victim) || !Victim->HasAuthority() || Victim->CombatHealth() <= 0 ||
         USFCharacterSessionComponent::IsRestoring(Victim->GetController())) return;
-    Damage = SFGear::MitigatedDamage(Damage, SFGear::Equipped(Victim->GetController()).Armor);
+    if (!bIgnoreArmor) { Damage = SFGear::MitigatedDamage(Damage, SFGear::Equipped(Victim->GetController()).Armor); }
     Victim->CombatSetHealth(SFCombatPilotRules::RemainingHealth(Victim->CombatHealth(), Damage));
     if (ASFPlayerController* PC = Cast<ASFPlayerController>(Victim->GetController())) { PC->ClientPilotHit(TEXT("Hit")); }
     if (!Victim->GetCombatTarget() && Victim->CombatHealth() > 0) { Victim->SetCombatTarget(Source); }

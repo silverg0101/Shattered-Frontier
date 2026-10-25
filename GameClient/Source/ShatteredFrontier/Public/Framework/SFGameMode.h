@@ -55,7 +55,9 @@ public:
     void TryBoarAttack(ASFPilotBoar* Boar, ASFE1Character* Victim);
     /** Authority: an NPC's landed melee hit on a player (boar, townsfolk, guard); the caller checks reach and cooldown.
       * A downed player respawns when this world's game mode runs the combat pilot. */
-    static void HitPlayer(AActor* Source, ASFE1Character* Victim, int32 Damage);
+    static void HitPlayer(AActor* Source, ASFE1Character* Victim, int32 Damage, bool bIgnoreArmor = false);
+    /** Server-only physical environmental hit from an actual landing. */
+    void ApplyFallDamage(ASFE1Character* Victim, float ImpactSpeedMps);
     void RestoreDeadPlayer(ASFE1Character* Player, const struct FSFGameplayResponse& State);
     bool HasPendingDeathReport(const FString& CharacterId) const;
     void BoarDied(ASFPilotBoar* Boar, ASFE1Character* Killer);
