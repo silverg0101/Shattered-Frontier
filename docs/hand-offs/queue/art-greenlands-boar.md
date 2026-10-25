@@ -1,70 +1,65 @@
 # Greenlands boar: first animated Forge creature
 
 - **Area:** art
+- **Parent:** `art-forge-creatures.md`, which holds how we work, the pipeline facts, deploy steps and what to track where.
 - **Owner of the next step:** agent
 - **Updated:** 2026-10-25
+- **Worktree:** lane `a` (`pwsh tools/Enter-Lane.ps1 -Name a`, which gives `C:\Projects\SF-lane-a`). If lane `a` is busy, use any free lane.
 
 ## Goal
 
-The Asset Forge makes one animated Greenlands boar from a text prompt, with idle, walk, run, attack and death clips. It counts as done when:
-- every clip passes the pipeline's own checks;
-- a fresh Opus review against `docs/visual-review.md` passes it;
-- the owner signs off.
-
-The fixes go into the shared creature pipeline (`tools/asset-manager`), because the other starter creatures go through the same code.
+Get one animated boar from the prompt "a wild boar" with five clips: idle, walk, run, attack and death. It needs to pass the pipeline gates, then a fresh Opus visual review, then owner sign-off.
 
 ## State
 
-- Pipeline Tasks 1-10 are done and deployed to the live Forge: shared quadruped skeleton, Zoo-300K clip library, retarget checks and depth-guided concepts.
-- Boar runs 6-14 fixed the following:
-  - the rig: spine path, head choice, floor slab;
-  - broken library clips are now rejected;
-  - UniMate runs on the creature's own rig;
-  - a gait plays in place with a treadmill stance;
-  - a procedural gait is the fallback.
-- `Greenlands_Boar_14` passes every automatic check.
-- Visual review round 1 **failed every clip**:
-  - doubled back shell with a ghost head (the mesh);
-  - death does a backflip;
-  - idle, walk and run loops don't close;
-  - run sprawls;
-  - attack head-bend glitch.
-- The code review asked for changes: 6 important findings, 5 minor.
-- A Fable agent is running visual round 2 in worktree `C:\Projects\SF-wt-creature`, branch `creature/forge`. Its in-progress commits:
-  - a model judged against the concept and rebuilt on a doubled body;
-  - a check that the loop closes;
-  - procedural clips.
-- About 23 commits on that branch are **not pushed**.
+- Visual round 1 failed every clip on `Greenlands_Boar_14`:
+  - a doubled back shell with a ghost head;
+  - a backflip death;
+  - open loops;
+  - a sprawling run;
+  - an attack where the head folds back.
+- Round 2 code is on main (from Fable, commits "creature clips, round 2" and "a build whose SkinTokens rig cannot be labelled"). It adds:
+  - a model review against the concept, rebuilding on a fail;
+  - loop cutting with a `loop_gap_cm` gate;
+  - procedural idle, death, attack and gallop;
+  - pitch and neck gates.
+  
+  It also fixes all the code-review findings (Important 1-6, Minor 7-11).
+- Tested only in isolation on an old rig, where all five procedural clips passed. The model review correctly failed the doubled rig.
+- **Not yet done:**
+  - a full end-to-end run with rebuilds;
+  - the UniMate loop cut on a real take;
+  - a scoped code re-review of the round 2 commits;
+  - visual round 2.
+
+## Open fix list (visual round 1, items not covered by round 2)
+
+- The head bone should end at the snout tip (`rig_standard`). Do it once a clean single-body model exists.
+- Neck skin weights smear the head during the attack.
+- The tail should be tufted and bushier at the end, like the concept. This is art: fix it in the concept or prompt, not the mesh.
 
 ## Evidence
 
-- Branch `creature/forge` (unpushed), latest d7f0c0ea.
-- Ledger, reports and reviews (git-ignored, in the worktree): `.superpowers/sdd/2026-10-24-forge-animated-creatures/`:
-  - `progress.md`;
-  - `boar-fable-brief.md`, `boar-fable-report.md`;
-  - `review-fable.md`.
-- Sheets and visual review r1: the session scratchpad `scratchpad\boar\` (Greenlands_Boar_14_*.png, visual-review-r1.md).
+Round 2 code: `creature.py` (`model_review`, `MODEL_BUILDS`), `motion/gait_synth.py`, `motion/zoo_retarget.py` (gates) and `motion/zoo_curate.py --loop`.
 
 ## Blocked on
 
-none (Fable round 2 in progress).
+none
 
 ## Next step
 
-When Fable's round 2 reports, get a fresh Opus visual review (round 2 of 3) of the new sheets and a scoped code re-review of the round 2 commits.
+1. Run a scoped Opus code re-review of the two round 2 commits. Fix what it finds.
+2. Do the full scratch run:
+   `py tools/asset-manager/scratch_run.py '{"name": "Greenlands_Boar", "prompt": "a wild boar", "animal": "Buffalo", "clips": ["idle", "walk", "run", "attack", "death"], "size_cm": 150}'`
+   Use `creature_unimate_seeds` 6.
 
-If both pass:
-1. Rebase `creature/forge` onto origin/main.
-2. Run the check (`bash $TEMP/runcheck.sh` → `check ok`).
-3. Push to main.
-4. Deploy the live Forge. Wait for zero active jobs, check in the container, then run `docker compose -p asset-manager --profile tailnet up -d --build`.
-5. Owner sign-off.
+   Expect the model review to rebuild until one body passes. If every rebuild fails, change the concept, not the mesh: a cleaner side view, or `concept: "heroes"`.
+3. Send the new folder's `animations/*.png` and `source/*_rig_labels.png` to a fresh Opus for visual round 2 of 3.
+4. If both reviews pass, deploy the live Forge using the steps in the parent file.
 
 ## Rules for this task
 
-- At most 3 visual review rounds, then it goes to the owner.
-- Fable never does visual reviews.
-- Generated meshes are never hand-patched in Blender; fix the cause upstream.
-- Generation uses local models only. RA-SIEMS: GPU 1 only, ~4.6 GB disk, don't touch `~/sfam-dbg`.
+- This asset is stuck, so a Fable agent does the fix rounds (owner direction). Only fresh Opus agents review it.
+- After round 3, it goes to the owner.
 
 ## Outcome
