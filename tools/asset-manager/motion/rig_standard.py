@@ -24,6 +24,9 @@ import numpy as np
 sys.path.insert(0, str(Path(__file__).parent))
 import creature, limbs  # creature.py is uploaded next to this script
 from zoo_curate import BONES
+from body_plans import QUADRUPED, for_skeleton
+
+FAMILY = QUADRUPED
 
 LEGS = ("FL", "FR", "HL", "HR")
 AXIAL = ["pelvis", "spine_01", "spine_02", "spine_03", "neck", "head"]
@@ -33,6 +36,14 @@ PARENT = {"root": None, "pelvis": "root", "tail_01": "pelvis", "HL_01": "pelvis"
           "FL_01": "spine_03", "FR_01": "spine_03",
           **{c[i]: c[i - 1] for c in CHAINS.values() for i in range(1, len(c))}}
 LIMB_ROOTS = {"FL_01", "FR_01", "HL_01", "HR_01", "tail_01", "neck"}  # may blend with the body and each other
+
+
+def configure(skeleton):
+    global FAMILY, BONES, LEGS, CHAINS, PARENT, LIMB_ROOTS
+    FAMILY = for_skeleton(skeleton)
+    BONES, LEGS, PARENT = list(FAMILY.bones), FAMILY.limbs, FAMILY.parents
+    CHAINS = {"axial": AXIAL, "tail": TAIL, **{g: [f"{g}_{i:02}" for i in range(1,5)] for g in LEGS}}
+    LIMB_ROOTS = {*(f"{g}_01" for g in LEGS), "tail_01", "neck"}
 
 
 def limb_of(std):
@@ -330,11 +341,11 @@ def review(labels_path, sheet_path):
     sheet = {"type": "image", "source": {"type": "base64", "media_type": "image/png",
                                          "data": base64.b64encode(Path(sheet_path).read_bytes()).decode()}}
     text = claude([sheet, {"type": "text", "text": (
-        "A generated quadruped creature's skeleton was relabelled onto shared bone names. The image shows the model "
+        f"A generated {FAMILY.family} creature's skeleton was relabelled onto shared bone names. The image shows the model "
         "(grey, see-through) with the relabelled bones from its left side (top panel) and from above (bottom panel, "
         "head to the left); blue = the animal's left, red = its right, grey = centre. The creature faces -Y, Z up, "
         "so its left is +X. Bones (head -> tail, metres) and the original bones each one took:\n" + rows +
-        "\n\nCheck the labels against the image: FL/FR = front left/right leg, HL/HR = hind left/right leg, left = "
+        "\n\nCheck the labels against the image: WL/WR = folded left/right wing (never legs), FL/FR = front left/right leg, HL/HR = left/right ground leg, left = "
         "the animal's own left; leg segments 01 (shoulder/hip) down to 04 (paw); pelvis at the hips, spine_01..03 "
         "towards the chest, neck and head in the head, tail_01..06 from the base to the tip; every bone inside the "
         "body part it names. Answer with one line only: PASS, or FAIL: <the reason>.")}], effort="medium")
@@ -387,7 +398,7 @@ def sheet(p, path):
     for o in limbs.skinned(arm):
         o.color = (0.75, 0.75, 0.75, 1)
     col = {"L": (0.1, 0.3, 0.95, 1), "R": (0.9, 0.1, 0.1, 1), "C": (0.25, 0.25, 0.25, 1)}
-    side_of = lambda b: "L" if b[:2] in ("FL", "HL") else "R" if b[:2] in ("FR", "HR") else "C"
+    side_of = lambda b: "L" if b[:2] in ("FL", "HL", "WL") else "R" if b[:2] in ("FR", "HR", "WR") else "C"
     c, size = (lo + hi) / 2, hi - lo
     L, r = size.y, size.y * 0.004
     for s in "LRC":
@@ -464,7 +475,12 @@ def sheet(p, path):
 def label_main(model, labels_path, sheet_path):
     import render_views as rv
     arm, bones, h = load(model)
-    p = plan(bones, h, rv.bounds(arm)[0].z)
+    if FAMILY == QUADRUPED:
+        p = plan(bones, h, rv.bounds(arm)[0].z)
+    else:
+        from bird_rig import plan as bird_plan
+        p = bird_plan(bones, h, rv.bounds(arm)[0].z)
+    p["skeleton"] = FAMILY.skeleton
     Path(labels_path).write_text(json.dumps(p, indent=1))
     turn_scene(p["turn"])
     sheet(p, sheet_path)
@@ -590,7 +606,7 @@ def build_main(model, labels_path, out):
         o.data.transform(R @ o.matrix_world, shape_keys=True)
         # the ground sheet first: its upright shreds are then loose islands for floaters
         sheet_faces = floor_sheet([v.co for v in o.data.vertices], [tuple(f.vertices) for f in o.data.polygons], h,
-                                  floor=floor, weight=[sum(g.weight for g in v.groups) for v in o.data.vertices])
+                                  floor=floor, weight=[sum(g.weight for g in v.groups) for v in o.data.vertices]) if FAMILY == QUADRUPED else []
         if sheet_faces:
             import bmesh
             bm = bmesh.new()
@@ -602,7 +618,7 @@ def build_main(model, labels_path, out):
             print(f"BUILD {o.name}: removed {len(sheet_faces)} faces of a ground sheet at paw level")
         e = np.zeros(len(o.data.edges) * 2, int)
         o.data.edges.foreach_get("vertices", e)
-        drop = floaters([v.co for v in o.data.vertices], e.reshape(-1, 2), h)
+        drop = floaters([v.co for v in o.data.vertices], e.reshape(-1, 2), h) if FAMILY == QUADRUPED else []
         if drop:
             import bmesh
             bm = bmesh.new()
@@ -721,6 +737,10 @@ def verify(path):
 
 if __name__ == "__main__":
     argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else sys.argv[1:]
+    if "--skeleton" in argv:
+        i = argv.index("--skeleton")
+        configure(argv[i + 1])
+        del argv[i:i + 2]
     if argv[0] == "--review":
         review(*argv[1:3])
     elif argv[0] == "--label":

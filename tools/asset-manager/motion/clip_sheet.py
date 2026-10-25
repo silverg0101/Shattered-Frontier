@@ -124,7 +124,7 @@ def review(sheet_path, meta_path, prompt=None):
             "asked to sniff the ground), is a FAIL even when it moves cleanly. ") if prompt else ""
     text = claude([img, {"type": "text", "text": (
         f"A library motion clip, \"{meta['clip']}\" ({'a loop' if meta['loop'] else 'a one-shot'}, {meta['frames']} frames "
-        f"at {meta['fps']} fps), was retargeted onto a generated quadruped creature for a game. The sheet shows the "
+        f"at {meta['fps']} fps), was retargeted onto a generated {meta.get('body_family', 'quadruped')} creature for a game. The sheet shows the "
         "creature from its right side at 8 evenly spaced frames (top two rows, read left to right, head to the right), "
         "from the front at 4 of those frames (third row), and a plot of each paw's height above the floor per frame "
         "(bottom; blue FL, orange FR, green HL, red HR; the red line is the floor; coloured blocks under the axis mark the "

@@ -26,6 +26,8 @@ import urllib.request
 from pathlib import Path
 
 import unreal as u
+sys.path.insert(0, str(Path(__file__).with_name("motion")))
+from body_plans import for_skeleton
 
 ARGS = [a for a in (sys.argv[1:] or os.environ.get("CREATURECHECK_ARGS", "").split("|")) if a]
 FOLDER = Path(ARGS[0]).resolve()
@@ -55,9 +57,16 @@ def assets_of(cls):
 
 def run() -> list:
     """-> the list of problems (empty: pass)."""
+    global SHARED, BONES
     if not re.fullmatch(r"[\w-]+", NAME):  # it lands in an asset path and the POST url
         return [f"bad model name {NAME!r}"]
     man = json.loads((FOLDER / f"{NAME}.json").read_text())
+    try:
+        family = for_skeleton(man.get("skeleton", "quadruped_v1"))
+    except ValueError as e:
+        return [str(e)]
+    SHARED = "/Game/Frontier/Creatures/Shared/" + family.unreal_skeleton
+    BONES = list(family.bones)
     glb = FOLDER / f"{NAME}_animated.glb"
     if not glb.is_file():
         return [f"no {glb.name} in the model folder"]
@@ -95,7 +104,7 @@ def run() -> list:
     if names[:1] != ["root"]:
         problems.append(f"top bone is {names[:1]}, not root")
     if sorted(names) != sorted(BONES):
-        problems.append(f"bones differ from quadruped_v1: missing {sorted(set(BONES) - set(names))}, extra {sorted(set(names) - set(BONES))}")
+        problems.append(f"bones differ from {family.skeleton}: missing {sorted(set(BONES) - set(names))}, extra {sorted(set(names) - set(BONES))}")
     elif "head" in names and "pelvis" in names:
         at = lambda b: u.AnimPoseExtensions.get_ref_bone_pose(pose, b, u.AnimPoseSpaces.WORLD).translation
         d = at("head") - at("pelvis")

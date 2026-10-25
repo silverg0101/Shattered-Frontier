@@ -169,6 +169,7 @@
  },
  {
   "id": "Chicken",
+  "adapter": "grounded_bird_v1",
   "name": "Chicken",
   "aliases": [
    "chicken",
@@ -670,6 +671,7 @@
  },
  {
   "id": "Ostrich",
+  "adapter": "grounded_bird_v1",
   "name": "Ostrich",
   "aliases": [
    "ostrich",

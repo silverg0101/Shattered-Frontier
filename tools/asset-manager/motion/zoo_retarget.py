@@ -25,6 +25,7 @@ from pathlib import Path
 from mathutils import Matrix, Quaternion, Vector
 sys.path.insert(0, str(Path(__file__).parent))
 import creature, render_views as rv  # creature.py is uploaded next to this script
+from body_plans import for_skeleton
 
 TAIL_SHARE = 0.35   # share of the tail base's rotation each later segment repeats
 TAIL_LAG = 1        # frames of delay per segment
@@ -53,10 +54,17 @@ def angle(a, b):
 
 
 def main(rigf, animalf, clip, out, outj, size_cm, height_scale):
+    global CHAINS, PAWS, TAIL
     animal = json.loads(Path(animalf).read_text())
+    family = for_skeleton(animal.get("skeleton", "quadruped_v1"))
+    CHAINS = [["pelvis"], ["spine_01", "spine_02", "spine_03", "neck"], ["head"],
+              [f"tail_{i:02}" for i in range(1,7)], *[[f"{l}_{i:02}" for i in range(1,5)] for l in family.limbs]]
+    PAWS, TAIL = family.contacts, CHAINS[3]
     meta = next(c for c in animal["clips"] if c["name"] == clip)
     loop = bool(meta["loop"])
     rig = rv.load(rigf, fps=animal.get("fps", 30))
+    if set(rig.data.bones.keys()) != set(family.bones):
+        raise RuntimeError(f"source motion {family.skeleton} is incompatible with the target rig")
     sc = bpy.context.scene
     for o in list(sc.objects):  # the importer's bone-shape icosphere is not part of the asset
         if o.type == "MESH" and o.name.startswith("Icosphere"): bpy.data.objects.remove(o)
@@ -423,10 +431,15 @@ def main(rigf, animalf, clip, out, outj, size_cm, height_scale):
         print("RT body lifted off the floor, most (cm)", round(max(lifts) * 100, 2), "frames", sum(1 for l in lifts if l > 0))
     # metrics, from the baked clip
     heights = {p: [] for p in PAWS}; pts = {p: [] for p in PAWS}; R = {b.name: [] for b in order}
+    wing_heights = []
     for i in range(N + 1):
         sc.frame_set(i + 1)
         for p in PAWS: heights[p].append(paw_h(p)); pts[p].append(paw_point(p))
         for b in order: R[b.name].append(rig.pose.bones[b.name].matrix_basis.to_quaternion())
+        if family.family == "grounded_bird":
+            wing_heights.extend((rig.matrix_world @ point).z - floor
+                                for prefix in ("WL", "WR") for segment in range(1,5)
+                                for point in (rig.pose.bones[f"{prefix}_{segment:02}"].head, rig.pose.bones[f"{prefix}_{segment:02}"].tail))
     slide = max([(pts[p][idx(i + 1)].xy - pts[p][i].xy - vel[p][i]).length for p in PAWS for i in range(M - (0 if loop else 1))
                  if W[p][i] == 1 and W[p][idx(i + 1)] == 1] or [0.0])  # a planted paw's step off the treadmill line
     flips = [(n, i) for n, qs in R.items() for i in range(N) if angle(qs[i], qs[i + 1]) > FLIP_DEG]
@@ -456,7 +469,9 @@ def main(rigf, animalf, clip, out, outj, size_cm, height_scale):
          "seam_deg": round(seam, 2), "flips": len(flips), "travel_cm_s": round(tread * 100 * sc.render.fps, 1),
          "loop_gap_cm": round(gap * 100, 2), "max_pitch_deg": round(pitch, 1), "max_roll_deg": round(roll, 1),
          "max_neck_deg": round(neck, 1), "released_pct": round(100 * n_released / n_planted, 1) if n_planted else 0.0}
-    info = {"clip": clip, "loop": loop, "frames": N + 1, "fps": sc.render.fps, "size_cm": size_cm, "scale": s,
+    info = {"clip": clip, "skeleton": family.skeleton, "body_family": family.family,
+            "contact_roles": list(PAWS), **({"min_wing_cm": round(min(wing_heights)*100,2)} if wing_heights else {}),
+            "loop": loop, "frames": N + 1, "fps": sc.render.fps, "size_cm": size_cm, "scale": s,
             "leg_ratio": ratio, "tail_lift": lift, "seam_bone": seam_bone, "flip_bones": sorted({n for n, _ in flips}),
             "tail_max_step_deg": round(tail_jump, 1), "max_step_deg": round(steps[big], 1), "max_step_bone": big, "contacts": {p: "".join("#" if x else "." for x in planted[p]) for p in PAWS},
             "heights_m": heights}

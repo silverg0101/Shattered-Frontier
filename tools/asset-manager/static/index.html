@@ -1079,6 +1079,7 @@ async function renderCreature() {
   const drawClips = () => {
     const a = animalById(animal);
     if (!a) { $('#cclips').textContent = 'Pick an animal below to choose its clips; none picked means all clips of the best match.'; return; }
+    if (a.capability && !a.capability.adapter) { $('#cclips').textContent = a.capability.readiness; return; }
     if (!a.curated) { $('#cclips').textContent = `${a.name} is not curated yet: it is curated when the job runs, and every clip is made. Name extra clips below.`; return; }
     ticked ??= a.clips.map(c => c.name);
     $('#cclips').innerHTML = `<div class="ticks">${a.clips.map(c => `<label><input type="checkbox" data-clip="${esc(c.name)}" ${ticked.includes(c.name) ? 'checked' : ''}>${esc(c.name)}${c.seconds ? `<span class="muted" style="font-size:12px">${c.seconds}s</span>` : ''}${c.preview ? `<img class="pv" src="${esc(c.preview)}" loading="lazy" alt="${esc(c.name)} preview">` : ''}</label>`).join('')}</div>`;
@@ -1087,7 +1088,7 @@ async function renderCreature() {
   const drawCands = list => {
     $('#cands').innerHTML = list.map(c => { const a = animalById(c.id) || {};
       return `<div class="cand ${c.id === animal ? 'on' : ''}" data-id="${esc(c.id)}"><b>${esc(a.name || c.id)}</b><span class="mb">${c.score.toFixed(2)}</span>
-        <span class="mb ${a.curated ? 'pass' : ''}">${a.curated ? 'curated' : 'not curated'}</span><span class="muted" style="font-size:12px">${esc(c.reason)}</span></div>`; }).join('');
+        <span class="mb ${a.curated ? 'pass' : ''}">${a.curated ? 'curated' : 'not curated'}</span><span class="muted" style="font-size:12px">${esc(a.capability?.readiness || c.reason)}</span></div>`; }).join('');
     $('#cands').querySelectorAll('.cand').forEach(el => el.onclick = () => {
       animal = el.dataset.id; ticked = null; $('#canimal').value = animal; keep();
       $('#cands').querySelectorAll('.cand').forEach(x => x.classList.toggle('on', x === el)); drawClips();

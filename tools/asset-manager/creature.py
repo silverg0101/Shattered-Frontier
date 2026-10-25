@@ -4,6 +4,8 @@ import difflib, io, json, os, random, re, shlex, shutil, struct, sys, tarfile, t
 from pathlib import Path
 
 CATALOGUE = Path(__file__).with_name("motion") / "zoo300k.json"
+sys.path.insert(0, str(CATALOGUE.parent))
+from body_plans import QUADRUPED, GROUNDED_BIRD, for_entry, for_skeleton, capability, validate_action
 
 
 def load_catalogue(library: Path) -> list[dict]:
@@ -18,6 +20,7 @@ def load_catalogue(library: Path) -> list[dict]:
                 "preview": f"/api/animals/{a['id']}/previews/{c['name']}.png"
                 if safe_name(c["name"]) == c["name"] and (f.parent / "previews" / f"{c['name']}.png").is_file() else None}
                 for c in lib.get("clips", [])]
+        a["capability"] = capability(a)
         out.append(a)
     return out
 
@@ -64,16 +67,16 @@ def ensure_curated(animal_id, host, jid) -> Path:
     """DATA/MotionLibrary/<id>, curating it first on `host` (inside job `jid`) if it is missing."""
     a = _app()
     lib = a.DATA / "MotionLibrary" / animal_id
-    if (lib / "animal.json").is_file():
-        return lib
     cat = json.loads(CATALOGUE.read_text(encoding="utf-8"))
     entry = next((e for e in cat if e["id"] == animal_id), None)
     if not entry:
         raise ValueError(f"no animal {animal_id!r} in the Zoo-300K catalogue")
-    if entry["body_plan"] != "quadruped":
-        quads = [e for e in load_catalogue(lib.parent) if e["body_plan"] == "quadruped"]
-        ranked = ", ".join(f"{c['id']} ({c['score']:.2f})" for c in match(entry["name"], quads))
-        raise RuntimeError(f"body plan not supported yet: {animal_id} is {entry['body_plan']}; candidates: {ranked}")
+    family = for_entry(entry)
+    if (lib / "animal.json").is_file():
+        cached = json.loads((lib / "animal.json").read_text())
+        if cached.get("skeleton", QUADRUPED.skeleton) != family.skeleton:
+            raise RuntimeError(f"{animal_id} library has an incompatible skeleton; curate it with {family.skeleton}")
+        return lib
     work, gpu, py, blender, step, _ = a.host_tools(jid, host)
     q, out = shlex.quote, f"{work}/lib"
     try:
@@ -83,8 +86,8 @@ def ensure_curated(animal_id, host, jid) -> Path:
             a.put_input(host, f"{jid}/{f.name}", f.read_bytes())
         a.ssh_step(host, jid, work, f"cd {q(work)} && curl -fsSL --retry 3 -o pack.zip {q(ZOO_URL.format(entry['file']))}", 3600)
         step("picking the best clip per motion")
-        a.ssh_step(host, jid, work, f"cd {q(work)} && {py} zoo_curate.py pack.zip lib; r=$?; rm -f pack.zip; exit $r", 3600)
-        return label_library(jid, host, "lib", lib, animal_id, entry["body_plan"])
+        a.ssh_step(host, jid, work, f"cd {q(work)} && {py} zoo_curate.py pack.zip lib --skeleton {q(family.skeleton)}; r=$?; rm -f pack.zip; exit $r", 3600)
+        return label_library(jid, host, "lib", lib, animal_id, entry["body_plan"], family.skeleton)
     finally:
         try:
             a.ssh(host, f"rm -rf {q(work)}")
@@ -92,7 +95,7 @@ def ensure_curated(animal_id, host, jid) -> Path:
             pass
 
 
-def label_library(jid, host, rel, lib, animal_id, body_plan) -> Path:
+def label_library(jid, host, rel, lib, animal_id, body_plan, skeleton=QUADRUPED.skeleton) -> Path:
     """Task 2's labelling of a clip library in job `jid`'s folder <work>/<rel> (animal.json + clips/*.bvh): the
     skeleton sheet and previews, Claude's role map (zoo_curate.py --role-map: a missing required role or a FAIL review
     raises), then the whole library copied to the local folder `lib`, replacing it. -> lib."""
@@ -100,6 +103,8 @@ def label_library(jid, host, rel, lib, animal_id, body_plan) -> Path:
     work, _, py, _, step, _ = a.host_tools(jid, host)
     q, out = shlex.quote, f"{work}/{rel}"
     animal = json.loads(a.ssh(host, f"cat {q(out + '/animal.json')}"))
+    animal["skeleton"] = for_skeleton(skeleton).skeleton
+    a.put_input(host, f"{jid}/{rel}/animal.json", json.dumps(animal).encode())
     a.job_blender(jid)
     step("drawing the skeleton sheet")
     a.run_blender(jid, host, "skeleton_sheet.py", [f"{rel}/{animal['clips'][0]['file']}", f"{rel}/skeleton.png"], [rel], [f"{rel}/skeleton.png"], 900)
@@ -118,7 +123,7 @@ def label_library(jid, host, rel, lib, animal_id, body_plan) -> Path:
         rm = json.loads((tmp / "role_map.json").read_text())
         animal = {"id": animal_id, "body_plan": body_plan, **json.loads((tmp / "animal.json").read_text()),
                   "role_map": rm["role_map"], "unmapped": rm["unmapped"]}
-        animal["id"] = animal_id
+        animal.update(id=animal_id, body_plan=body_plan, skeleton=skeleton)
         (tmp / "animal.json").write_text(json.dumps(animal, indent=1))
         (tmp / "role_map.json").unlink()
         shutil.rmtree(lib, ignore_errors=True)
@@ -168,7 +173,7 @@ def chain_resample(names, n, lengths=None):
     return [names[a:b] for a, b in zip([0, *cuts], [*cuts, len(names)])]
 
 
-def standardise_rig(jid, host, model_glb):
+def standardise_rig(jid, host, model_glb, skeleton=QUADRUPED.skeleton):
     """Put a SkinTokens-rigged GLB (in job `jid`'s folder on `host`) on the shared quadruped skeleton: label the bones,
     Claude checks the labelled sheet (FAIL fails the job), then rename, collapse/pad, clean weights and export
     <stem>_std.glb next to it. -> {"labels", "dropped", "warnings", "glb", "sheet", "review"}."""
@@ -180,11 +185,13 @@ def standardise_rig(jid, host, model_glb):
         a.put_input(host, f"{jid}/{f.name}", f.read_bytes())
     a.job_blender(jid)
     step("labelling the bones")
-    a.run_blender(jid, host, "rig_standard.py", ["--label", model_glb, lab, sheet], [model_glb, "creature.py"], [lab, sheet], 900)
+    family = for_skeleton(skeleton)
+    options = ["--skeleton", family.skeleton]
+    a.run_blender(jid, host, "rig_standard.py", ["--label", model_glb, lab, sheet, *options], [model_glb, "creature.py"], [lab, sheet], 900)
     step("checking the bone labels with Claude")
-    review = a.ssh_anthropic(host, f"cd {q(work)} && {py} rig_standard.py --review {q(lab)} {q(sheet)}", timeout=1800)
-    step("moving the rig onto the shared quadruped skeleton")
-    a.run_blender(jid, host, "rig_standard.py", [model_glb, lab, out], [model_glb, lab, "creature.py"], [out], 1800)
+    review = a.ssh_anthropic(host, f"cd {q(work)} && {py} rig_standard.py --review {q(lab)} {q(sheet)} --skeleton {q(family.skeleton)}", timeout=1800)
+    step(f"moving the rig onto the shared {family.family} skeleton")
+    a.run_blender(jid, host, "rig_standard.py", [model_glb, lab, out, *options], [model_glb, lab, "creature.py"], [out], 1800)
     labels = json.loads(a.ssh(host, f"cat {q(work + '/' + lab)}"))
     verdict = next((ln for ln in review.decode(errors="replace").splitlines() if ln.startswith("REVIEW")), "REVIEW ?")
     return {k: labels[k] for k in ("labels", "dropped", "warnings", "bones")} | {"glb": out, "sheet": sheet, "review": verdict[7:]}
@@ -204,6 +211,13 @@ def checks_pass(m, settings, name="") -> dict:
     """A retargeted clip's measurements -> them plus "passed" and "reason" (every failed gate, "; "-joined). `name`:
     the clip's names (requested and source), for the gates that depend on what it is (a death's pitch)."""
     why = []
+    if m.get("skeleton") == GROUNDED_BIRD.skeleton:
+        if tuple(m.get("contact_roles", ())) != GROUNDED_BIRD.contacts:
+            why.append("grounded bird contacts must be exactly HL/HR; wings are not feet")
+        if "min_wing_cm" not in m:
+            why.append("grounded bird wing clearance was not measured")
+        elif not DEATH.search(name) and m["min_wing_cm"] < 0:
+            why.append("a folded wing goes below the floor")
     if m.get("loop") and m.get("loop_gap_cm", 0.0) > LOOP_GAP_CM:
         why.append(f"loop_gap_cm {m['loop_gap_cm']} > {LOOP_GAP_CM}: the paws end away from where they start, the loop pops")
     if DEATH.search(name) and m.get("max_pitch_deg", 0.0) > DEATH_PITCH_DEG:
@@ -235,6 +249,7 @@ def retarget_clip(jid, host, rig_glb, animal_dir, clip, size_cm, prompt=None) ->
     work, _, py, _, step, _ = a.host_tools(jid, host)
     s, q, animal_dir = a.get_settings(), shlex.quote, Path(animal_dir)
     animal = json.loads((animal_dir / "animal.json").read_text())
+    validate_action(for_skeleton(animal.get("skeleton", SKELETON)), prompt or clip)
     meta = next((c for c in animal["clips"] if c["name"] == clip), None)
     if not meta:
         raise ValueError(f"{animal_dir.name} has no clip {clip!r} ({', '.join(c['name'] for c in animal['clips'])})")
@@ -319,7 +334,7 @@ def library_matches(want, lib: Path) -> list[str]:
     out = library_clips(want, [c["name"] for c in me["clips"]])
     for d in sorted(d for d in lib.parent.iterdir() if d != lib and d.name in cat and (d / "animal.json").is_file()):
         a = names(d)
-        if a.get("body_plan") and a.get("body_plan") == me.get("body_plan"):
+        if a.get("body_plan") and a.get("body_plan") == me.get("body_plan") and a.get("skeleton", SKELETON) == me.get("skeleton", SKELETON):
             out += [f"{d.name}/{f}" for f in library_clips(want, [c["name"] for c in a["clips"]])]
     return out
 
@@ -481,10 +496,10 @@ def pick_animal(p, s):
             raise RuntimeError(f"no animal matches well enough (threshold {s['creature_match_threshold']}); "
                                f"name one of: {ranked(best)}")
     entry = next(e for e in cat if e["id"] == m["id"])
-    if entry["body_plan"] != "quadruped":
-        quads = [e for e in cat if e["body_plan"] == "quadruped"]
-        raise RuntimeError(f"body plan not supported yet: {entry['id']} is {entry['body_plan']}; "
-                           f"candidates: {ranked(match(entry['name'], quads))}")
+    try:
+        for_entry(entry)
+    except ValueError as e:
+        raise RuntimeError(str(e)) from None
     return entry, m
 
 
@@ -505,6 +520,16 @@ FRONT_BRIEF = ("Image 1 is meant to show an animal from the front, image 2 the s
                "three-quarter) and it is clearly the same animal as image 2: same colours, markings, build and number of "
                "legs and ears. Fail it too if a shadow, floor or reflection shows under the animal (it becomes a slab on the 3D "
                "model). The animal: {prompt}")
+BIRD_STANCE = ("standing upright on both feet, legs naturally extended under the hips, two wings folded against the body, "
+               "beak closed, head looking straight forward, exactly side-on, far leg hidden behind the near leg")
+BIRD_DEPTH_WRAP = {
+    "left": "{garment}\n\nOne whole grounded bird, alone, seen exactly {view}, orthographic. " + BIRD_STANCE + "." + _WRAP_TAIL,
+    "front": "{garment}\n\nOne whole grounded bird, alone, exactly head-on, beak pointing at the camera, both feet visible "
+             "and symmetric, wings folded against the torso, beak closed, orthographic." + _WRAP_TAIL}
+BIRD_MODEL_BRIEF = ("The first image shows the generated model from the front and left, the following images are its concepts. "
+                    "Judge anatomy and pose: one torso, one head with one beak, two legs with feet, two folded wings and a tail. "
+                    "FAIL missing, doubled, fused or dislocated body parts, extra shells or floor slabs, a head turned toward the "
+                    "side camera, or a body plan/pose inconsistent with the concepts. Ignore lighting and texture.")
 
 
 def depth_host(host):
@@ -560,8 +585,10 @@ def depth_concept(jid, host, p, entry, lib, size, brief, log, step, info):
         negative = {"left": neg, "front": neg + FRONT_NEGATIVE}
         control = lambda seed: {"strength": {"left": s["creature_depth_strength"], "front": s["creature_depth_front_strength"]},
                                 "end_percent": s["creature_depth_end"], "seed": seed}
+        bird = for_entry(entry) == GROUNDED_BIRD
         draw = lambda only, seed, extra: a.depth_views(jid, dhost, {"prompt": base + extra, "symmetric": True}, log, depth=depth,
-                                                       wrap=CREATURE_DEPTH_WRAP, negative=negative, control=control(seed), only=only)
+                                                       wrap=BIRD_DEPTH_WRAP if bird else CREATURE_DEPTH_WRAP,
+                                                       negative=negative, control=control(seed), only=only)
         extra, seed0 = "", random.randrange(1, 2 ** 31 - 10_000)  # a new picture every job and every redraw
         log.append(f"concept: depth seeds from {seed0}")
         for n in range(1, 4):  # the side view first: it settles the animal
@@ -588,6 +615,8 @@ def depth_concept(jid, host, p, entry, lib, size, brief, log, step, info):
             if r["pass"]:
                 return views
             extra = f"\n\nA previous front view was rejected: {'; '.join(r['problems'])}. {r['fix']}"
+        if bird:
+            raise RuntimeError("grounded bird front concept failed local review; external fallback is disabled")
         log.append("depth front view failed its review twice: redrawing the front from the side view (heroes flow)")
         if a.job_row(jid)["status"] == "cancelling":
             raise InterruptedError
@@ -607,6 +636,25 @@ def concept_image(jid, p, entry, log, step, host=None, lib=None, size=None, info
     reviewed for body plan and stance, up to 3 drawings. The request's own image is reviewed once and used as the single
     view. `info` gets `concept` (depth, heroes or image) and, for depth, the stand-in's files."""
     a, info = _app(), {} if info is None else info
+    family = for_entry(entry)
+    if family == GROUNDED_BIRD:
+        brief = (f"One whole grounded bird like a {entry['name']}: {family.description}, alone, no extra or missing parts. "
+                 f"Required pose: {BIRD_STANCE}. Fail flight, spread wings, staggered feet, clipping, ground shadows, floor or reflection. "
+                 f"The request: {p['prompt'] or p['name']}")
+        if p.get("image"):
+            png = a.safe_path(p["image"]).read_bytes()
+            verdict = a.codex_review([png], brief)
+            if not verdict["pass"]:
+                raise RuntimeError("bird concept failed review: " + "; ".join(verdict["problems"]))
+            info["concept"] = "image"
+            return {"concept": png}
+        if not host or not lib or p.get("concept", "depth") != "depth":
+            raise RuntimeError("grounded birds require local depth concepts or a supplied image")
+        views = depth_concept(jid, host, p, entry, lib, size, brief, log, step, info)
+        if not views:
+            raise RuntimeError("local grounded bird depth concept failed; no external image fallback")
+        info["concept"] = "depth"
+        return views
     brief = (f"The image must show one whole {entry['body_plan']} animal like a {entry['name'].lower()} (four legs, a head "
              f"and a tail), alone. An image-to-3D model is built from it, then rigged and animated from a rest pose like "
              f"this: {STANCE}. Fail it if the body plan differs or the pose does (rearing, sitting, lying, curled, legs bent "
@@ -652,7 +700,7 @@ MODEL_BRIEF = ("The first image is a 3D model built from the concept drawings th
                "the camera in the side view, or if a leg is doubled or missing.")
 
 
-def model_review(jid, host, rig_glb, views) -> dict:
+def model_review(jid, host, rig_glb, views, skeleton=QUADRUPED.skeleton) -> dict:
     """The built model (`rig_glb`, on the shared skeleton so it faces -Y) rendered front and side (render_views.py) and
     judged against the concept views by codex_review: a doubled shell or ghost head from the multi-view build fails.
     -> {"pass", "problems", "fix"}."""
@@ -664,7 +712,7 @@ def model_review(jid, host, rig_glb, views) -> dict:
     concepts = [views[k] for k in ("left", "front", "concept") if k in views]
     for retry in (True, False):  # a bad answer or a network error is retried once, then counts as a FAIL, never a PASS
         try:
-            return a.codex_review([png, *concepts], MODEL_BRIEF)
+            return a.codex_review([png, *concepts], BIRD_MODEL_BRIEF if for_skeleton(skeleton) == GROUNDED_BIRD else MODEL_BRIEF)
         except InterruptedError:
             raise
         except Exception as e:
@@ -698,13 +746,14 @@ def build_model(jid, host, p, views, seed=None) -> str:
 
 
 UNIMATE_PARTS = {"F": ("Shoulder", "Upper Arm", "Forearm", "Hand"), "H": ("Thigh", "Shin", "Fetlock", "Foot")}
+UNIMATE_PARTS["W"] = UNIMATE_PARTS["F"]
 
 
 def unimate_label(std: str) -> str:
     """UniMate's vocabulary label for a shared-skeleton bone name (pelvis -> Hips, FL_02 -> Left Upper Arm, ...)."""
     if std in ("pelvis", "root"):
         return "Hips"
-    if std[:2] in ("FL", "FR", "HL", "HR") and std[2:3] == "_":
+    if std[:2] in ("FL", "FR", "HL", "HR", "WL", "WR") and std[2:3] == "_":
         return f"{'Left' if std[1] == 'L' else 'Right'} {UNIMATE_PARTS[std[0]][int(std[3:]) - 1]}"
     return {"neck": "Neck", "head": "Head"}.get(std) or std.split("_")[0].capitalize()  # Spine, Tail
 
@@ -761,16 +810,17 @@ def std_glb_clip(jid, host, rig_glb, src_glb, name, size_cm, prompt=None, role_m
         a.run_blender(jid, host, "unimate_bvh.py", [src_glb, f"{name}.bvh", f"{name}_bvh.json"],
                       [src_glb], [f"{name}.bvh", f"{name}_bvh.json"], 900)
         info = json.loads(a.ssh(host, f"cat {q(work + '/' + name + '_bvh.json')}"))
+        family = GROUNDED_BIRD if any(r.startswith("W") for r in (role_map or {b:b for b in info["bones"]}).values()) else QUADRUPED
         loop = any(w in name.lower() for w in LOOPS)
         if loop:  # a gait or an idle must loop: the take's best closing window, cut and closed like a pack's, or no take
             py = a.host_tools(jid, host)[2]
-            out = a.ssh(host, f"cd {q(work)} && {py} zoo_curate.py --loop {q(name + '.bvh')} {q(name + '_loop.bvh')} {q(name)}; echo", timeout=600)
+            out = a.ssh(host, f"cd {q(work)} && {py} zoo_curate.py --loop {q(name + '.bvh')} {q(name + '_loop.bvh')} {q(name)} --skeleton {q(family.skeleton)}; echo", timeout=600)
             line = next((ln for ln in out.decode(errors="replace").splitlines() if ln.startswith(("LOOP", "NOLOOP"))), "NOLOOP ?")
             if line.startswith("NOLOOP"):
                 raise RuntimeError(f"no loop closes in the take ({line[7:].strip()})")
             info["frames"] = int(line.split()[3])
         (lib / "clips" / f"{name}.bvh").write_bytes(a.ssh(host, f"cat {q(work + '/' + name + ('_loop' if loop else '') + '.bvh')}", timeout=300))
-        (lib / "animal.json").write_text(json.dumps({"id": "UniMate", "fps": info["fps"], "role_map": role_map or {b: b for b in info["bones"]},
+        (lib / "animal.json").write_text(json.dumps({"id": "UniMate", "skeleton": family.skeleton, "fps": info["fps"], "role_map": role_map or {b: b for b in info["bones"]},
             "clips": [{"name": name, "file": f"clips/{name}.bvh", "frames": info["frames"], "loop": loop}]}))
         return retarget_clip(jid, host, rig_glb, lib, name, size_cm, prompt)
     finally:
@@ -785,6 +835,9 @@ def synth_clip(jid, host, rig_glb, clip, size_cm, prompt=None, bones=None) -> di
     spec = importlib.util.spec_from_file_location("gait_synth", _app().MOTION_DIR / "gait_synth.py")
     gait_synth = importlib.util.module_from_spec(spec); spec.loader.exec_module(gait_synth)
     gait = next((g for w, g in SYNTH.items() if w in clip.lower()), None)
+    family = GROUNDED_BIRD if bones and "WL_01" in bones else QUADRUPED
+    if gait and gait not in family.actions:
+        raise ValueError(f"{gait} is unsupported for {family.family}")
     if not gait:
         raise ValueError(f"no procedural clip for {clip!r} ({', '.join(sorted(set(SYNTH.values())))})")
     lib = Path(tempfile.mkdtemp())
@@ -792,7 +845,7 @@ def synth_clip(jid, host, rig_glb, clip, size_cm, prompt=None, bones=None) -> di
         (lib / "clips").mkdir()
         text = gait_synth.bvh(gait, bones)
         (lib / "clips" / f"{clip}.bvh").write_text(text)
-        (lib / "animal.json").write_text(json.dumps({"id": "gait_synth", "fps": gait_synth.FPS, "role_map": {b: b for b in gait_synth.skeleton(60) if not b.endswith("_end")},
+        (lib / "animal.json").write_text(json.dumps({"id": "gait_synth", "skeleton": family.skeleton, "fps": gait_synth.FPS, "role_map": {b: b for b in family.bones if b != "root"},
             "clips": [{"name": clip, "file": f"clips/{clip}.bvh", "frames": len(text.split("MOTION")[1].strip().splitlines()) - 2,
                        "loop": gait_synth.GAITS[gait]["loop"]}]}))
         return retarget_clip(jid, host, rig_glb, lib, clip, size_cm, prompt) | {"gait": gait}
@@ -1112,6 +1165,10 @@ def run_creature(jid, host):
     try:
         step("matching the animal")
         entry, m = pick_animal(p, s)
+        family = for_entry(entry)
+        if p["clips"] != "all":
+            for clip in p["clips"]:
+                validate_action(family, clip)
         log.append(f"animal: {entry['id']} ({m['score']:.2f}, {m['reason']})")
         lib = ensure_curated(entry["id"], host, jid)
         animal = json.loads((lib / "animal.json").read_text())
@@ -1140,17 +1197,17 @@ def run_creature(jid, host):
                 model = build_model(jid, host, p, sets[min(attempt, len(sets)) - 1], None if attempt == 1 else random.randint(0, 0x7fffffff))
             a.GPU_NOTES.setdefault(jid, []).append(f"[asset-manager] {host['name']}: {a.release_vram(host)}")
             try:
-                std = standardise_rig(jid, host, model)
+                std = standardise_rig(jid, host, model, family.skeleton)
             except InterruptedError:
                 raise
             except Exception as e:  # the rig could not be labelled (no head, body and four legs): another build
                 why = str(e)[-300:]
                 log.append(f"rig (build {attempt}): FAIL: {why}")
                 if attempt == MODEL_BUILDS:
-                    raise RuntimeError(f"no build gave a rig with a head, a body and four legs in {MODEL_BUILDS} builds: {why}")
+                    raise RuntimeError(f"no build gave a valid {family.family} rig in {MODEL_BUILDS} builds: {why}")
                 continue
             log.append(f"rig review: {std['review']}; {len(std['dropped'])} bones merged; {'; '.join(std['warnings']) or 'no warnings'}")
-            r = model_review(jid, host, std["glb"], views)
+            r = model_review(jid, host, std["glb"], views, family.skeleton)
             why = "; ".join(r["problems"])
             log.append(f"model review (build {attempt}): {'PASS' if r['pass'] else 'FAIL: ' + why}")
             if r["pass"]:
@@ -1163,6 +1220,7 @@ def run_creature(jid, host):
         clips, unavailable = [], []
         for c in (have if p["clips"] == "all" else p["clips"]):
             try:
+                validate_action(family, c)
                 r = choose_clip(c, library_matches(c, lib), p["fill_missing"], log,  # named as requested
                                 lambda f: retarget_clip(jid, host, std["glb"], lib.parent / f.split("/")[0] if "/" in f else lib,
                                                         f.split("/")[-1], size, c),
@@ -1205,7 +1263,8 @@ def run_creature(jid, host):
         # every clip file is the rig at size: the first one without its animation is the primary model
         (build / f"{n}.glb").write_bytes(glb_without_animations((build / "animations" / f"{n}_{clips[0]['name']}.glb").read_bytes()))
         man = {"name": n, "animal": entry["id"], "match": {"score": m["score"], "reason": m["reason"]},
-               "body_plan": entry["body_plan"], "size_cm": size, "skeleton": SKELETON, "concept": info["concept"],
+               "body_plan": entry["body_plan"], "size_cm": size, "skeleton": family.skeleton, "family": family.family,
+               "capability": capability(entry), "concept": info["concept"],
                "clips": [{"name": c["name"], "file": f"animations/{n}_{c['name']}.glb", "source": c["source"],
                           "checks": c["checks"], "baked": False,
                           **({k: c[k] for k in ("seed", "prompt")} if c["source"] == "text" else {}),
@@ -1336,7 +1395,7 @@ def clip_names(taken, groups) -> list:
     return out
 
 
-def glb_library(jid, host, from_glb, js, sbin, anims, clip_names_, lib) -> Path:
+def glb_library(jid, host, from_glb, js, sbin, anims, clip_names_, lib, skeleton=QUADRUPED.skeleton) -> Path:
     """A GLB on another skeleton made into a clip library like a curated animal: each animation in `anims` turned into
     a BVH (unimate_bvh.py) as clip clip_names_[i], then label_library (Task 2's sheet and Claude role map) into the local folder `lib`. A
     skeleton that can't be labelled (a required role missing, not a quadruped) raises with the role map's reason."""
@@ -1354,7 +1413,8 @@ def glb_library(jid, host, from_glb, js, sbin, anims, clip_names_, lib) -> Path:
         info = json.loads(a.ssh(host, f"cat {q(work + '/srclib/' + c + '_bvh.json')}"))
         clips.append({"name": c, "file": f"{c}.bvh", "frames": info["frames"], "loop": False})
     a.put_input(host, f"{jid}/srclib/animal.json", json.dumps({"id": stem, "fps": info["fps"], "clips": clips}).encode())
-    return label_library(jid, host, "srclib", lib, stem, "quadruped")
+    family = for_skeleton(skeleton)
+    return label_library(jid, host, "srclib", lib, stem, "bird" if family == GROUNDED_BIRD else "quadruped", family.skeleton)
 
 
 def run_clip_job(jid, host):
@@ -1372,6 +1432,9 @@ def run_clip_job(jid, host):
     try:
         folder = model_dir(n)
         man, rig = json.loads((folder / f"{n}.json").read_text()), folder / f"{n}.glb"
+        family = for_skeleton(man.get("skeleton", SKELETON))
+        for clip in p.get("names", []) or [p.get("prompt") or p.get("clip", "")]:
+            validate_action(family, clip)
         made = []  # groups (base name, [(suffix, glb bytes, sheet bytes or None, manifest fields)])
         get = lambda f: a.ssh(host, f"cat {q(work + '/' + f)}", timeout=900)
         size, base = man["size_cm"], rig.read_bytes()
@@ -1390,7 +1453,10 @@ def run_clip_job(jid, host):
             lib = ensure_curated(p["animal"], host, jid) if p["source"] == "library" else None  # curating clears the job folder
             a.put_input(host, f"{jid}/rig.glb", base)
             if p["source"] == "library":  # the clip keeps the requested name; library_clip picks the source
-                have = [c["name"] for c in json.loads((lib / "animal.json").read_text())["clips"]]
+                source = json.loads((lib / "animal.json").read_text())
+                if source.get("skeleton", SKELETON) != family.skeleton:
+                    raise ValueError("library motion is incompatible with this model's skeleton")
+                have = [c["name"] for c in source["clips"]]
                 if not (from_clip := library_clip(p["clip"], have)):
                     raise ValueError(f"{p['animal']} has no clip {p['clip']!r}; its clips: {', '.join(have)}")
                 groups = [(p["clip"], [("", retarget_clip(jid, host, "rig.glb", lib, from_clip, size, p["clip"]),
@@ -1402,6 +1468,8 @@ def run_clip_job(jid, host):
                     lj = json.loads(lab.read_text(encoding="utf-8"))
                     raw = {"glb": "raw.glb", "bones": glb_bones(glb_read(sk.read_bytes())[0]), "labels": lj["labels"], "dropped": lj["dropped"]}
                 else:
+                    if family == GROUNDED_BIRD:
+                        raise ValueError("grounded bird text motion requires its saved source rig and family labels")
                     log.append(f"{p['clip']}: {n} keeps no source/{n}_skintokens.glb + _rig_labels.json (made before they were kept): "
                                "UniMate animates the shared skeleton, whose forelegs it tends to freeze")
                 best = unimate_clip(jid, host, "rig.glb", p["clip"], size, p["prompt"], p["seeds"], raw)
@@ -1418,7 +1486,8 @@ def run_clip_job(jid, host):
             else:  # another skeleton: labelled like a library animal (a GLB that can't be fails here), then retargeted
                 tmp = Path(tempfile.mkdtemp())
                 try:
-                    lib = glb_library(jid, host, p["from_glb"], *src, p["animations"], p["names"], tmp / "lib")
+                    lib = glb_library(jid, host, p["from_glb"], *src, p["animations"], p["names"], tmp / "lib",
+                                      **({"skeleton": family.skeleton} if family != QUADRUPED else {}))
                     for an, c in zip(p["animations"], p["names"]):
                         groups.append((c, [("", retarget_clip(jid, host, "rig.glb", lib, c, size),
                                             {"source": "glb", "from": p["from_glb"], "animation": names[an], "retargeted": True})]))

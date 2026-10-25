@@ -53,15 +53,18 @@ def skeleton_from(bones):
     to = lambda p: (p[0] * 100, p[2] * 100, -p[1] * 100)
     if to(bones["head"]["head"])[2] < to(bones["pelvis"]["head"])[2]:  # faces +Y instead: turn it round
         to = lambda p: (-p[0] * 100, p[2] * 100, p[1] * 100)
-    floor = min(to(bones[f"{l}_04"]["tail"])[1] for l in LEGS)
-    head = {n: to(bones[n]["head"]) for n in JOINTS}
+    from body_plans import GROUNDED_BIRD, QUADRUPED
+    family = GROUNDED_BIRD if "WL_01" in bones else QUADRUPED
+    joints = [n for n in family.bones if n != "root"]
+    floor = min(to(bones[f"{l}_04"]["tail"])[1] for l in family.contacts)
+    head = {n: to(bones[n]["head"]) for n in joints}
     j = {}
-    for n in JOINTS:
+    for n in joints:
         p = bones[n]["parent"] if n != "pelvis" else None
         p = p if p in head else None
         base = head[p] if p else (0, floor, 0)
         j[n] = (p, tuple(a - b for a, b in zip(head[n], base)))
-    for l in LEGS:
+    for l in family.limbs:
         j[f"{l}_end"] = (f"{l}_04", tuple(a - b for a, b in zip(to(bones[f"{l}_04"]["tail"]), head[f"{l}_04"])))
     return j
 
@@ -85,10 +88,14 @@ def smooth(x):
     return x * x * (3 - 2 * x)
 
 
+def legs_of(sk):
+    return tuple(l for l in LEGS if f"{l}_end" in sk)
+
+
 def leg_geometry(sk):
     """Per leg: thigh and knee-to-paw lengths, their rest tilts, and the paw's rest place under the hip."""
     pos, legs = positions(sk), {}
-    for leg in LEGS:
+    for leg in legs_of(sk):
         hip, knee, end = pos[f"{leg}_01"], pos[f"{leg}_02"], pos[f"{leg}_end"]
         thigh = tuple(b - a for a, b in zip(hip, knee)); lower = tuple(b - a for a, b in zip(knee, end))
         legs[leg] = {"l1": max(1e-3, math.hypot(*thigh)), "l2": max(1e-3, math.hypot(*lower)), "t_rest": tilt(thigh),
@@ -111,9 +118,10 @@ def leg_rot(L, leg, zt, yt):
 
 
 def gait_frames(gait, sk):
-    g, pos, legs = GAITS[gait], positions(sk), leg_geometry(sk)
+    g = GAITS["trot"] if "WL_01" in sk and gait == "run" else GAITS[gait]
+    pos, legs = positions(sk), leg_geometry(sk)
     n = round(g["period"] * FPS)
-    span = sum(l["l1"] + l["l2"] for l in legs.values()) / 4
+    span = sum(l["l1"] + l["l2"] for l in legs.values()) / len(legs)
     # half the stance sweep: the swing angle, within what every leg reaches with its paw on the floor and the body
     # dropped 6% at most (the drop below), so all four paws sweep alike
     reach = min([span * math.sin(math.radians(g["swing"]))] +
@@ -134,11 +142,11 @@ def gait_frames(gait, sk):
         # the body drops so every planted leg reaches the floor at its sweep (a leg standing straight at rest can only
         # sweep with the hips lower: the walk's inverted-pendulum dip, highest at mid-stance)
         drop = 0.0
-        for leg in LEGS:
+        for leg in legs:
             L, (z, lift) = legs[leg], sweep(leg, t)
             if lift == 0.0:
                 drop = max(drop, L["h"] - math.sqrt(max(0.0, (0.985 * (L["l1"] + L["l2"])) ** 2 - (L["z"] + z) ** 2)))
-        for leg in LEGS:
+        for leg in legs:
             L, (z, lift) = legs[leg], sweep(leg, t)
             rot[f"{leg}_01"], rot[f"{leg}_02"] = [(x, 0.0, 0.0) for x in leg_rot(L, leg, L["z"] + z, -(L["h"] + bob - drop - lift))]
         rot["pelvis"] = (0.0, 2.0 * math.sin(2 * math.pi * t), 0.0)
@@ -160,7 +168,7 @@ def idle_frames(sk):
         dip = 0.006 * pos["pelvis"][1] * breath
         rot = {"spine_02": (-1.0 * breath, 0.0, 0.0), "neck": (2.0 * breath, 1.5 * math.sin(2 * math.pi * 2 * t), 0.0),
                "head": (1.5 * breath, 3.0 * math.sin(2 * math.pi * 2 * t), 0.0)}
-        for leg in LEGS:
+        for leg in legs:
             L = legs[leg]
             rot[f"{leg}_01"], rot[f"{leg}_02"] = [(x, 0.0, 0.0) for x in leg_rot(L, leg, L["z"], -(L["h"] - dip))]
         out.append(rot)
@@ -183,7 +191,7 @@ def death_frames(sk):
         settle = 1.5 * math.sin(2 * math.pi * max(0.0, t - 0.8) / 0.4) * (1 - smooth((t - 0.8) / 0.2))
         rot = {}
         y = hip_h * (1 - 0.05 * stagger) * (1 - fall) + 0.25 * hip_h * fall  # aimed low: zoo_retarget lands the mesh on the floor
-        for leg in LEGS:  # the legs buckle under the sinking body, the paws staying where they stand; late, they tuck
+        for leg in legs:  # the legs buckle under the sinking body, the paws staying where they stand; late, they tuck
             L = legs[leg]
             tuck = smooth((t - 0.55) / 0.3) * 0.25 * (L["l1"] + L["l2"])
             rot[f"{leg}_01"], rot[f"{leg}_02"] = [(x, 0.0, 0.0) for x in leg_rot(L, leg, L["z"] - tuck, -(L["h"] - (hip_h - y)))]
@@ -209,7 +217,7 @@ def attack_frames(sk):
         hook = smooth((t - 0.5) / 0.12) * (1 - smooth((t - 0.75) / 0.25))  # the tusks hook up
         shift, dip = 0.22 * trunk * lunge, 0.05 * hip_h * (down + lunge)
         rot = {}
-        for leg in LEGS:
+        for leg in legs:
             L = legs[leg]
             rot[f"{leg}_01"], rot[f"{leg}_02"] = [(x, 0.0, 0.0) for x in leg_rot(L, leg, L["z"] - shift, -(L["h"] - dip))]
         rot["pelvis"] = (4.0 * down - 3.0 * hook, 0.0, 0.0)

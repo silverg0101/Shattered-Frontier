@@ -42,6 +42,13 @@ out = os.path.abspath(out)
 os.makedirs(out, exist_ok=True)
 animal = json.load(open(animalf))
 role = animal["role_map"]
+bird = animal.get("skeleton") == "grounded_bird_v1"
+if bird:
+    # Versioned proxy geometry, not a generated-model repair. Wings fold backwards
+    # above the floor; only HL/HR provide stance contacts.
+    for side in ("L", "R"):
+        for i in range(1,5):
+            RADII[f"W{side}_{i:02}"] = RADII[f"HL_{i:02}"]
 
 bpy.ops.wm.read_factory_settings(use_empty=True)
 bpy.ops.import_anim.bvh(filepath=clipf, global_scale=0.01)
@@ -72,9 +79,10 @@ kids = {}
 for a, b in edges:
     kids.setdefault(a, []).append(b)
 nose = next(n for n in rad_role if n.endswith("_end") and role_of(n) == "head")
-root_t = next(n for n in rad_role if role_of(n) == "tail_01")
 pelvis = next(n for n in rad_role if role_of(n) == "pelvis")
+root_t = next((n for n in rad_role if role_of(n) == "tail_01"), pelvis)
 is_leg = lambda n: role_of(n)[:2] in ("FL", "FR", "HL", "HR")
+is_wing = lambda n: role_of(n).startswith(("WL_", "WR_"))
 is_tail = lambda n: role_of(n).startswith("tail")
 
 # pass 1: forward (-Y) along the spine and head, +Y along the tail, x=0, legs as the drop below their root joint
@@ -90,7 +98,7 @@ while stack:
             drop[b] = drop[a] + ln if is_leg(a) else 0.0
             lay[b] = Vector(lay[a])
         else:
-            lay[b] = lay[a] + Vector((0, 1 if is_tail(b) else -1, 0)) * ln
+            lay[b] = lay[a] + Vector((0, 1 if is_tail(b) or is_wing(b) else -1, 0)) * ln
         stack.append(b)
 head_j = next(n for n in lay if role_of(n) == "head" and not n.endswith("_end"))
 lay[nose].y = lay[head_j].y - HEAD_LEN / (1 - HEAD_LEN) * abs(lay[head_j].y)  # the Zoo bones' head is too long or short
@@ -112,11 +120,20 @@ for n, p in lay.items():
         pos[n] = Vector((p.x, p.y, zspine(n)))
 
 body_len = abs(lay[nose].y)
-tail_len = max(lay[n].y for n in lay if is_tail(n))
+tail_len = max([lay[n].y for n in lay if is_tail(n)] or [0])
 if tail_len > TAIL_MAX * body_len:
     for n in lay:
         if is_tail(n):
             pos[n].y *= TAIL_MAX * body_len / tail_len
+if bird:
+    for n in pos:
+        if is_wing(n):
+            # Fold each chain along the torso, ending at the pelvis. Keep all
+            # source wing joints, but never lay them out as ground limbs.
+            segment = int(role_of(n)[-2:])
+            pos[n].y = lay[head_j].y * (1 - (segment - 1) / 3)
+        elif role_of(n) in ("neck", "head"):
+            pos[n].z += abs(lay[n].y) / max(body_len, 1e-9) * h
 scale = size_cm / 100 / (max(p.y for p in pos.values()) - min(p.y for p in pos.values()))  # nose to tail tip, as the creature job sizes the rig
 pos = {n: p * scale for n, p in pos.items()}
 L = size_cm / 100
@@ -133,6 +150,8 @@ def radius(n):
 for n in pos:  # left legs on +X (the animal faces -Y), a little apart: shoulders and hips are not on the midline
     if is_leg(n):
         pos[n].x = (1 if role_of(n)[1] == "L" else -1) * 0.7 * radius(parent[leg_root[n]])
+    elif is_wing(n):
+        pos[n].x = (1 if role_of(n)[1] == "L" else -1) * radius(pelvis)
 floor = min(p.z - radius(n) for n, p in pos.items())
 pos = {n: p - Vector((0, 0, floor)) for n, p in pos.items()}
 

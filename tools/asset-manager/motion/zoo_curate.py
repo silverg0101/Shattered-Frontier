@@ -36,6 +36,7 @@ EDIT = re.compile(r"_(?:expansion|in_betweening)_edit")
 BONES = ["root", "pelvis", "spine_01", "spine_02", "spine_03", "neck", "head", *[f"tail_{i:02d}" for i in range(1, 7)],
          *[f"{l}_{i:02d}" for l in ("FL", "FR", "HL", "HR") for i in range(1, 5)]]
 REQUIRED = ["pelvis", "spine_01", "head", *[f"{l}_{i:02d}" for l in ("FL", "FR", "HL", "HR") for i in range(1, 5)]]
+CONTACT_COUNT = 4
 MODEL = "claude-opus-5-5"
 
 
@@ -106,7 +107,7 @@ def fk(joints, frames):
 def paws(joints, rest):
     """The (up to) four lowest tips in the rest pose, tail and trajectory helpers aside."""
     tips = [j for j, jt in enumerate(joints) if jt["name"].endswith("_end") and not re.search(r"tail|traj", jt["name"], re.I)]
-    return sorted(tips, key=lambda j: rest[j, 1])[:4]  # ponytail: height heuristic; the role map is not known yet
+    return sorted(tips, key=lambda j: rest[j, 1])[:CONTACT_COUNT]  # the role map is not known yet
 
 
 def chain(joints, j):
@@ -320,20 +321,23 @@ def skeleton_text(joints, rest):
 def role_map(out):
     out = Path(out)
     animal = json.loads((out / "animal.json").read_text())
+    from body_plans import for_skeleton
+    family = for_skeleton(animal.get("skeleton", "quadruped_v1"))
+    bones, required = family.bones, family.required
     joints, frames, _, _ = parse((out / animal["clips"][0]["file"]).read_text())
     pose = fk(joints, frames[:1])[0]  # the sheet shows this first frame too
     names = {jt["name"] for jt in joints}
     sheet = {"type": "image", "source": {"type": "base64", "media_type": "image/png",
                                          "data": base64.b64encode((out / "skeleton.png").read_bytes()).decode()}}
-    brief = (f"This is the motion-capture skeleton of a {animal['id']} (a quadruped). Joints with their parent and "
+    brief = (f"This is the motion-capture skeleton of a {animal['id']} ({family.family}). Joints with their parent and "
            f"position in the first frame of a {animal['clips'][0]['name']} clip (cm, Y up; '_end' joints are the chain tips):\n{skeleton_text(joints, pose)}\n\n"
            "The image shows that frame from the side (top panel) and from above (bottom panel) with every joint "
-           "labelled; blue = left, red = right.\n\nMap the joints onto these shared quadruped bones: "
-           f"{', '.join(BONES)}. FL/FR = front left/right leg, HL/HR = hind left/right leg, left = the animal's own "
+           "labelled; blue = left, red = right.\n\nMap the joints onto these shared family bones: "
+           f"{', '.join(bones)}. WL/WR = folded left/right wings, FL/FR = front left/right leg, HL/HR = left/right ground leg, left = the animal's own "
            "left; limb segment 01 is the upper leg (shoulder/hip), 04 the paw or toe tip. root is a static origin "
            "bone: map no joint to it unless a joint is a ground-level trajectory helper. Several joints may map to one "
-           "bone (for example a clavicle and an upper arm both to FL_01). Every bone of pelvis, spine_01, head and "
-           "all four segments of every leg must get at least one joint. List joints that fit no bone as unmapped.")
+           "bone (for example a clavicle and an upper arm both to FL_01). These required bones must each get at least one joint: "
+           f"{', '.join(required)}. List joints that fit no bone as unmapped. Wings are not floor contacts and flight is unsupported.")
     ask = brief + '\n\nReply with JSON only: {"role_map": {"<joint>": "<bone>", ...}, "unmapped": ["<joint>", ...]}'
     text = claude([sheet, {"type": "text", "text": ask}])
     try:
@@ -341,8 +345,8 @@ def role_map(out):
         rm, unmapped = got["role_map"], got.get("unmapped", [])
     except (ValueError, KeyError) as e:
         raise SystemExit(f"FAIL: the role map reply was not JSON ({e}): {text[:200]}")
-    bad = [f"{k}->{v}" for k, v in rm.items() if k not in names or v not in BONES]
-    missing = [b for b in REQUIRED if b not in rm.values()]
+    bad = [f"{k}->{v}" for k, v in rm.items() if k not in names or v not in bones]
+    missing = [b for b in required if b not in rm.values()]
     if bad or missing:
         raise SystemExit(f"FAIL: role map {'unknown ' + ', '.join(bad) + '; ' if bad else ''}"
                          f"{'missing required roles ' + ', '.join(missing) if missing else ''}".strip("; "))
@@ -374,6 +378,11 @@ def loop_cut(src, out, name):
 
 if __name__ == "__main__":
     a = sys.argv[1:]
+    if "--skeleton" in a:
+        from body_plans import for_skeleton
+        i = a.index("--skeleton")
+        CONTACT_COUNT = len(for_skeleton(a[i+1]).contacts)
+        del a[i:i+2]
     if a[0] == "--role-map":
         role_map(a[1])
     elif a[0] == "--loop":
