@@ -14,5 +14,6 @@ public:
     static void Tick(USFLootComponent& Loot);
     static int32 FindAuthorizedRow(const TArray<FSFInventoryEntry>& Rows, const TArray<FSFLootEntry>& Items);
     static bool HasPersonalSource(UWorld* World);
+    static FVector RecordedGeometryAnchor() { return FVector(-62277.420,27886.341,7303.356); }
 };
 #endif

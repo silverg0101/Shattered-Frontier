@@ -19,6 +19,11 @@
 #include "Engine/LocalPlayer.h"
 #include "Engine/Engine.h"
 #include "UI/SFWindowStack.h"
+#include "Tests/AutomationEditorCommon.h"
+#include "Editor.h"
+#include "Misc/App.h"
+#include "Combat/SFCombatPilot.h"
+#include "Framework/SFE1Settings.h"
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFLootInteractionAuthorityTest, "ShatteredFrontier.Loot.Authority",
     EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
@@ -201,5 +206,46 @@ bool FSFLootFixtureLifecycleTest::RunTest(const FString& Parameters)
     auto* Late = World->SpawnActor<ASFLootSourceActor>();
     TestTrue(TEXT("Later-frame personal source remains detected after prior ground observation"), FSFLootWorkflowNetcheck::HasPersonalSource(World));
     Late->Destroy(); return true;
+}
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFLootFixtureMapGeometryTest, "ShatteredFrontier.Loot.FixtureMapGeometry",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSFLootFixtureMapGeometryTest::RunTest(const FString& Parameters)
+{
+    // Replay the exact recorded third-run drop origin against actual map
+    // collision. This unattended diagnostic never saves or edits map assets.
+    if (!FApp::IsUnattended()) { AddError(TEXT("Map geometry fixture requires an unattended test process.")); return false; }
+    FAutomationEditorCommonUtils::LoadMap(TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook"));
+    UWorld* World = GEditor ? GEditor->GetEditorWorldContext().World() : nullptr;
+    if (!TestNotNull(TEXT("Actual Silverbrook collision world"), World)) return false;
+    const FVector RecordedDrop = FSFLootWorkflowNetcheck::RecordedGeometryAnchor();
+    const float HalfHeight = GetDefault<ASFE1Character>()->GetSimpleCollisionHalfHeight();
+    FHitResult Previous, Floor, VisibilityTop, Corrected; FCollisionQueryParams Query(SCENE_QUERY_STAT(LootRecordedFloor), false);
+    const bool bPrevious = World->LineTraceSingleByChannel(Previous, RecordedDrop, RecordedDrop - FVector(0,0,HalfHeight * 2), ECC_Visibility, Query);
+    const bool bVisibilityTop = World->LineTraceSingleByChannel(VisibilityTop, FVector(RecordedDrop.X,RecordedDrop.Y,20000), FVector(RecordedDrop.X,RecordedDrop.Y,-20000), ECC_Visibility, Query);
+    const bool bStaticTop = World->LineTraceSingleByChannel(Floor, FVector(RecordedDrop.X,RecordedDrop.Y,20000), FVector(RecordedDrop.X,RecordedDrop.Y,-20000), ECC_WorldStatic, Query);
+    AddInfo(FString::Printf(TEXT("LOOT_FLOOR_CHANNELS World=%s OriginalVisibility=%d TopVisibility=%d TopWorldStatic=%d StaticActor=%s StaticHit=%s VisibilityActor=%s VisibilityHit=%s"), *World->GetName(), bPrevious, bVisibilityTop, bStaticTop, *GetNameSafe(Floor.GetActor()), *Floor.ImpactPoint.ToString(), *GetNameSafe(VisibilityTop.GetActor()), *VisibilityTop.ImpactPoint.ToString()));
+    if (!TestTrue(TEXT("Actual floor exists on the existing grounding channel"), bStaticTop)) return false;
+    const FVector Grounded(Floor.ImpactPoint.X, Floor.ImpactPoint.Y, Floor.ImpactPoint.Z + HalfHeight + 1);
+    const bool bCorrected = World->LineTraceSingleByChannel(Corrected, Grounded, Grounded - FVector(0,0,HalfHeight * 2), ECC_Visibility, Query);
+    AddInfo(FString::Printf(TEXT("LOOT_RECORDED_FLOOR OriginalHit=%d Start=%s CapsuleHalfHeight=%.1f Floor=%s Actor=%s GroundedHit=%d Corrected=%s"), bPrevious, *RecordedDrop.ToString(), HalfHeight, *Floor.ImpactPoint.ToString(), *GetNameSafe(Floor.GetActor()), bCorrected, *Grounded.ToString()));
+    TestTrue(TEXT("Grounding with the actual player capsule satisfies the unchanged drop floor ray"), bCorrected);
+    auto* Body = World->SpawnActor<ASFLootSourceActor>();
+    FSFLootSourceSnapshot Snapshot; Snapshot.MeshPath = TEXT("/Engine/BasicShapes/Cube.Cube"); Snapshot.MeshScale = FVector(1.3,.7,.7);
+    Snapshot.Position = Floor.ImpactPoint + FVector(0,0,GetDefault<ASFPilotBoar>()->GetSimpleCollisionHalfHeight() + 4); Body->Initialize(Snapshot);
+    FHitResult Edge, NearFloor, Sight;
+    const FTransform Transform = Body->GetActorTransform();
+    TestTrue(TEXT("Corrected actual-map corpse outer section is clickable beyond default25cm bounds"), World->LineTraceSingleByChannel(Edge,
+        Transform.TransformPosition(FVector(52,-200,0)), Transform.TransformPosition(FVector(52,200,0)), ECC_Visibility, Query) && Edge.GetActor() == Body);
+    const FVector Near = RecordedDrop + FVector(130,0,0);
+    Query.AddIgnoredActor(Body);
+    if (!TestTrue(TEXT("Nearby player floor exists"), World->LineTraceSingleByChannel(NearFloor, FVector(Near.X,Near.Y,20000), FVector(Near.X,Near.Y,-20000), ECC_WorldStatic, Query))) { Body->Destroy(); return false; }
+    const FVector PawnAt = NearFloor.ImpactPoint + FVector(0,0,HalfHeight + 1);
+    TestTrue(TEXT("Grounded nearby pawn meets existing configured reach"), FVector::Distance(PawnAt, Snapshot.Position) <= GetDefault<USFE1Settings>()->InteractionRangeMetres * 100);
+    Query.ClearIgnoredActors();
+    const bool bSight = World->LineTraceSingleByChannel(Sight, PawnAt + FVector(0,0,GetDefault<ASFE1Character>()->BaseEyeHeight), Snapshot.Position, ECC_Visibility, Query);
+    TestTrue(TEXT("Existing pawn-eye LOS reaches this corrected body without another occluder"), !bSight || Sight.GetActor() == Body);
+    AddInfo(FString::Printf(TEXT("LOOT_CORRECTED_GEOMETRY Body=%s Pawn=%s Distance=%.1f OuterActor=%s SightActor=%s"), *Snapshot.Position.ToString(), *PawnAt.ToString(), FVector::Distance(PawnAt, Snapshot.Position), *GetNameSafe(Edge.GetActor()), *GetNameSafe(Sight.GetActor())));
+    Body->Destroy();
+    return true;
 }
 #endif

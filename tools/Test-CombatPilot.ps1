@@ -108,7 +108,10 @@ function Start-Owned([string]$Name,[string]$Url,[string[]]$Extra) {
     $null = New-Item -ItemType Directory -Path $user
     $executable = if ($Name -eq 'server' -and $ServerExe) { $ServerExe } else { $editor }
     $projectArg = if ($executable -eq $editor) { @(('"'+$project+'"')) } else { @() }
-    $arguments = @($projectArg)+@($Url,'-unattended','-NullRHI','-nosound','-nop4',('-UserDir="'+$user+'/"'),('-abslog="'+$log+'"'))+$Extra
+    # This workflow must tick actual viewport widgets; NullRHI suppresses their
+    # normal Slate paint/tick path. Other checks and its server stay headless.
+    $renderArgs = if ($LootWorkflowNetcheck -and $Name -like 'client*') { @('-windowed','-ResX=1920','-ResY=1080') } else { @('-NullRHI') }
+    $arguments = @($projectArg)+@($Url,'-unattended','-nosound','-nop4',('-UserDir="'+$user+'/"'),('-abslog="'+$log+'"'))+$renderArgs+$Extra
     if ($Clients -gt 1 -and -not $PartyScenario -and -not $PartyXpScenario -and $Name -like 'client*') {
         $clientCsvDir = Join-Path $root ($Name+'-csv')
         $null = New-Item -ItemType Directory -Path $clientCsvDir

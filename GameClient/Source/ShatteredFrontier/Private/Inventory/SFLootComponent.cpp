@@ -16,6 +16,8 @@
 #include "Net/UnrealNetwork.h"
 #include "TimerManager.h"
 #include "Tests/SFLootWorkflowNetcheck.h"
+#include "Misc/CommandLine.h"
+#include "Misc/Parse.h"
 
 USFLootComponent::USFLootComponent() { SetIsReplicatedByDefault(true); PrimaryComponentTick.bCanEverTick = true; }
 USFLootComponent* USFLootComponent::Find(const APlayerController* Controller)
@@ -50,6 +52,10 @@ void USFLootComponent::ServerOpen_Implementation(ASFLootSourceActor* Source)
     auto* Player = Cast<APlayerController>(GetOwner());
     auto Services = USFBackpackComponent::Services();
     USFBackpackComponent* Backpack = USFBackpackComponent::FindOrCreate(Player);
+#if WITH_EDITOR
+    if (FParse::Param(FCommandLine::Get(), TEXT("LootWorkflowNetcheck")))
+        UE_LOG(LogTemp, Display, TEXT("LOOT_WORKFLOW_OPEN Services=%d Backpack=%d Reach=%d"), Services.IsValid(), Backpack != nullptr, InReach(Player, Source));
+#endif
     if (!Services || !Backpack || !InReach(Player, Source)) { return; }
     FSFGameplayRequest Request; Request.Rpc = ESFGameplayRpc::OpenLootSource;
     Request.LootSourceId = Source->GetSnapshot().Id; Request.CharacterId = Backpack->GetCharacterId();
@@ -57,6 +63,10 @@ void USFLootComponent::ServerOpen_Implementation(ASFLootSourceActor* Source)
     {
         USFLootComponent* Self = Weak.Get(); auto* Player = Self ? Cast<APlayerController>(Self->GetOwner()) : nullptr;
         if (!Self) { return; }
+#if WITH_EDITOR
+        if (FParse::Param(FCommandLine::Get(), TEXT("LootWorkflowNetcheck")))
+            UE_LOG(LogTemp, Display, TEXT("LOOT_WORKFLOW_OPEN_REPLY Status=%d Sources=%d Reach=%d"), int32(Reply.Status), Reply.LootSources.Num(), InReach(Player, Actor.Get()));
+#endif
         if (Reply.Status != ESFGameplayStatus::Ok || Reply.LootSources.Num() != 1 || !InReach(Player, Actor.Get()))
         { if (auto* Controller = Cast<ASFPlayerController>(Player)) { Controller->ClientPilotHit(TEXT("Loot is unavailable. Check your range and eligibility.")); } return; }
         const auto& View = Reply.LootSources[0];
@@ -122,6 +132,10 @@ void USFLootComponent::ServerDrop_Implementation(const FString& DefinitionId, in
         auto* Character = Player ? Cast<ASFE1Character>(Player->GetPawn()) : nullptr;
         USFBackpackComponent* Backpack = Player ? USFBackpackComponent::FindOrCreate(Player) : nullptr;
         USFItemDefinition* Item = LoadObject<USFItemDefinition>(nullptr, *SFStationRecipes::ItemAssetPath(DefinitionId));
+#if WITH_EDITOR
+        if (FParse::Param(FCommandLine::Get(), TEXT("LootWorkflowNetcheck")))
+            UE_LOG(LogTemp, Display, TEXT("LOOT_WORKFLOW_DROP_PREFLIGHT Character=%d Health=%d Definition=%d Mesh=%d"), Character != nullptr, Character ? Character->CombatHealth() : 0, Item != nullptr, Item && !Item->WorldMesh.IsNull());
+#endif
         if (!Self || !Backpack || !Character || Character->CombatHealth() <= 0 || !Item || Item->WorldMesh.IsNull())
         { Report(ESFBackpackOutcome::Rejected, Revision); return; }
         FSFGameplayRequest Q; Q.Rpc = ESFGameplayRpc::DropLoot; Q.OperationId = Op;
@@ -131,7 +145,12 @@ void USFLootComponent::ServerDrop_Implementation(const FString& DefinitionId, in
         const FVector Start = Character->GetActorLocation(); FHitResult Floor;
         FCollisionQueryParams Query(SCENE_QUERY_STAT(LootDropFloor), false, Character);
         if (!Self->GetWorld()->LineTraceSingleByChannel(Floor, Start, Start - FVector(0,0,Character->GetSimpleCollisionHalfHeight() * 2), ECC_Visibility, Query))
-        { Report(ESFBackpackOutcome::Rejected, Revision); return; }
+        {
+#if WITH_EDITOR
+            if (FParse::Param(FCommandLine::Get(), TEXT("LootWorkflowNetcheck"))) UE_LOG(LogTemp, Display, TEXT("LOOT_WORKFLOW_DROP_NO_FLOOR Start=%s"), *Start.ToString());
+#endif
+            Report(ESFBackpackOutcome::Rejected, Revision); return;
+        }
         UStaticMesh* Mesh = Item->WorldMesh.LoadSynchronous();
         Q.Position = Floor.ImpactPoint + FVector(0,0,Mesh ? Mesh->GetBounds().BoxExtent.Z - Mesh->GetBounds().Origin.Z : 0);
         Self->SendMutation(Q, nullptr, MoveTemp(Report));
@@ -150,6 +169,10 @@ void USFLootComponent::SendMutation(const FSFGameplayRequest& Request, TWeakObje
     {
         USFLootComponent* Self = Weak.Get();
         if (!Self) { Report(ESFBackpackOutcome::Unavailable, -1); return; }
+#if WITH_EDITOR
+        if (FParse::Param(FCommandLine::Get(), TEXT("LootWorkflowNetcheck")))
+            UE_LOG(LogTemp, Display, TEXT("LOOT_WORKFLOW_MUTATION_REPLY Rpc=%d Status=%d Grpc=%d Message=%s"), int32(Request.Rpc), int32(Reply.Status), Reply.GrpcCode, *Reply.Message);
+#endif
         if (Reply.Status == ESFGameplayStatus::Unavailable)
         {
             FTimerHandle Retry; Self->GetWorld()->GetTimerManager().SetTimer(Retry,

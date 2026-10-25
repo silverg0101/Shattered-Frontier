@@ -29,12 +29,12 @@ struct FWorkflowState
     int32 Stage = 0;
     double NextAt = 0;
     TWeakObjectPtr<ASFLootSourceActor> Source;
-    FVector BodyAt = FVector::ZeroVector;
     FString Item, Instance;
     int32 Quantity = 0, Before = 0;
     bool bSeenCorpse = false;
     bool bGroundSeen = false, bObserverReported = false, bGroundBarrierWritten = false;
     double BarrierAt = -1;
+    double NextDiagnosticAt = 0;
     TStrongObjectPtr<USFItemDragOperation> PendingDrag;
 };
 TMap<TWeakObjectPtr<USFLootComponent>, FWorkflowState> States;
@@ -105,12 +105,26 @@ void FSFLootWorkflowNetcheck::Tick(USFLootComponent& Loot)
             for (TActorIterator<ASFPilotBoar> It(World); It; ++It)
                 if (It->Health() > 0 && It->GetCreatureId() == Creature && !It->HasSingleDrop() && !Mode->IsSafe(It->GetActorLocation())) { Victim = *It; break; }
             if (!Victim) return;
-            if (State.Stage == 0) State.BodyAt = Victim->GetActorLocation();
-            else Victim->SetActorLocation(State.BodyAt + FVector(600, 0, 0));
-            const FVector At = Victim->GetActorLocation();
-            if (Mode->IsSafe(At + FVector(130, 0, 0))) return;
-            Pawn->SetActorLocation(At + FVector(130, 0, 20), false, nullptr, ETeleportType::TeleportPhysics);
-            Observer->GetPawn()->SetActorLocation(At + FVector(130, 220, 20), false, nullptr, ETeleportType::TeleportPhysics);
+            // Use the recorded drop XY whose actual collision is covered by
+            // FixtureMapGeometry. Its old Z was floating; ground every actor.
+            FVector At = RecordedGeometryAnchor(); FHitResult BodyFloor;
+            FCollisionQueryParams BodyQuery(SCENE_QUERY_STAT(LootFixtureBodyFloor), false, Victim);
+            BodyQuery.AddIgnoredActor(Pawn); BodyQuery.AddIgnoredActor(Observer->GetPawn());
+            if (!World->LineTraceSingleByChannel(BodyFloor, FVector(At.X,At.Y,20000), FVector(At.X,At.Y,-20000), ECC_WorldStatic, BodyQuery)) return;
+            At.Z = BodyFloor.ImpactPoint.Z + Victim->GetSimpleCollisionHalfHeight() + 4;
+            Victim->SetActorLocationAndRotation(At, FRotator::ZeroRotator, false, nullptr, ETeleportType::TeleportPhysics);
+            const auto GroundPawn = [World, Victim, Player, Observer](ASFE1Character* Character, const FVector& Point)
+            {
+                if (!Character) return false;
+                FCollisionQueryParams Query(SCENE_QUERY_STAT(LootFixtureFloor), false, Player->GetPawn());
+                Query.AddIgnoredActor(Victim); Query.AddIgnoredActor(Observer->GetPawn()); FHitResult Floor;
+                if (!World->LineTraceSingleByChannel(Floor, FVector(Point.X,Point.Y,20000), FVector(Point.X,Point.Y,-20000), ECC_WorldStatic, Query)) return false;
+                const FVector Position = Floor.ImpactPoint + FVector(0,0,Character->GetSimpleCollisionHalfHeight() + 1);
+                Character->SetActorLocation(Position, false, nullptr, ETeleportType::TeleportPhysics);
+                return Character->GetActorLocation().Equals(Position, 1);
+            };
+            if (Mode->IsSafe(At + FVector(130, 0, 0)) || !GroundPawn(Pawn, At + FVector(130,0,0)) ||
+                !GroundPawn(Cast<ASFE1Character>(Observer->GetPawn()), At + FVector(130,220,0))) return;
             Pawn->GetCharacterMovement()->DisableMovement();
             if (auto* Other = Cast<ASFE1Character>(Observer->GetPawn())) Other->GetCharacterMovement()->DisableMovement();
             Victim->ReceivePilotDamage(Pawn, 1000000);
@@ -150,23 +164,40 @@ void FSFLootWorkflowNetcheck::Tick(USFLootComponent& Loot)
     auto* Stack = Player->GetWindowStack();
     auto* Target = Player->FindComponentByClass<USFActionTargetComponent>();
     if (!Stack || !Target) return;
+    const bool bDiagnosticNow = Now >= State.NextDiagnosticAt;
+    if (bDiagnosticNow)
+    {
+        State.NextDiagnosticAt = Now + 10;
+        UE_LOG(LogTemp, Display, TEXT("LOOT_WORKFLOW_STATE Stage=%d Own=%d External=%d Items=%d Rows=%d Windows=%d"), State.Stage,
+            Player->InventoryWidget != nullptr, Loot.ExternalWidget != nullptr, Loot.ExternalItems.Num(),
+            Loot.ExternalWidget ? Loot.ExternalWidget->ShownItems.Num() : -1, Stack->Num());
+    }
     if (State.Stage == 0 || State.Stage == 2)
     {
         for (TActorIterator<ASFLootSourceActor> It(World); It; ++It)
         {
             if (It->IsGround() || !It->Mesh->GetStaticMesh()) continue;
             if (!It->InteractionBounds->GetUnscaledBoxExtent().Equals(It->HitShape.Extent, .01) ||
-                !It->InteractionBounds->GetRelativeLocation().Equals(It->HitShape.Center, .01)) continue;
+                !It->InteractionBounds->GetRelativeLocation().Equals(It->HitShape.Center, .01))
+            { if (bDiagnosticNow) UE_LOG(LogTemp, Display, TEXT("LOOT_WORKFLOW_GATE Reason=ReplicatedShape Source=%s"), *It->GetActorLocation().ToString()); continue; }
             // An outer cross-section beyond the constructor's 25 cm box must
             // collide in this actual network client, not just at body centre.
             FHitResult EdgeHit; const auto Transform = It->GetActorTransform();
             const float Edge = It->HitShape.Extent.X * .8f;
             if (Edge <= 25 || !World->LineTraceSingleByChannel(EdgeHit,
                 Transform.TransformPosition(It->HitShape.Center + FVector(Edge, -200, 0)),
-                Transform.TransformPosition(It->HitShape.Center + FVector(Edge, 200, 0)), ECC_Visibility) || EdgeHit.GetActor() != *It) continue;
+                Transform.TransformPosition(It->HitShape.Center + FVector(Edge, 200, 0)), ECC_Visibility) || EdgeHit.GetActor() != *It)
+            {
+                if (bDiagnosticNow) UE_LOG(LogTemp, Display, TEXT("LOOT_WORKFLOW_GATE Reason=OuterHit Source=%s Extent=%s Blocker=%s"), *It->GetActorLocation().ToString(), *It->HitShape.Extent.ToString(), *GetNameSafe(EdgeHit.GetActor()));
+                continue;
+            }
             FVector Start; FRotator Rotation; Player->GetPlayerViewPoint(Start, Rotation);
             Target->RefreshFromRay(Start, (It->InteractionBounds->GetComponentLocation() - Start).GetSafeNormal());
-            if (Target->GetTarget() != *It || !It->Mesh->GetOverlayMaterial()) continue;
+            if (Target->GetTarget() != *It || !It->Mesh->GetOverlayMaterial())
+            {
+                if (bDiagnosticNow) UE_LOG(LogTemp, Display, TEXT("LOOT_WORKFLOW_GATE Reason=SelectedTarget Source=%s Pawn=%s Distance=%.1f Selected=%s Blocker=%s Rim=%d"), *It->GetActorLocation().ToString(), *Pawn->GetActorLocation().ToString(), FVector::Distance(Pawn->GetActorLocation(), It->GetActorLocation()), *GetNameSafe(Target->GetTarget()), *GetNameSafe(Target->GetSelection().Hit.GetActor()), It->Mesh->GetOverlayMaterial() != nullptr);
+                continue;
+            }
             State.Source = *It;
             Player->DispatchSelectedAction(Target->GetSelection());
             UE_LOG(LogTemp, Display, TEXT("LOOT_WORKFLOW_TARGET Corpse=1 ExactTarget=1 Rim=1 ClientBounds=1"));
