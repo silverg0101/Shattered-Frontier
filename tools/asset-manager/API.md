@@ -164,6 +164,13 @@ The result is a folder `Generated/Creatures/<Name>/` (a second creature of the s
 
 - `GET /api/models/<Name>`: the manifest.
 - `POST /api/models/<Name>/combine` with `{"clips": ["Trottle", "Walk"]}`: rebuilds `<Name>_animated.glb` from those clips and returns the manifest. It refuses a clip without a file or on a different skeleton (400, naming the clip).
+- `POST /api/models/<Name>/clips`: New Animation or Add from GLB on the model's rig; queues a `clip` job (`{id, status, status_url}`). Nothing is re-generated and nothing is baked: re-combine to ship a new clip. Bodies:
+  - `{"source": "library", "clip": "Trottle", "animal": "Rat"}`: a curated animal's clip (default animal: the model's), retargeted and checked like at creation. A clip the animal lacks is a 400 that lists its clips.
+  - `{"source": "text", "prompt": "sniffs the ground", "seeds": 4, "clip": "Sniff"}`: UniMate (`prompt` gets the "An object ..." caption form; `seeds` 1-8, default the `creature_unimate_seeds` setting; `clip` defaults to the prompt's verb). Every seed is saved as `<Clip>_s<seed>` with its sheet; the best (passed first, then lowest seam) has `best: true`.
+  - `{"source": "video", "action": "walk", ...}`: the motion job's options (see Motion jobs) on `<Name>.glb`: H3 takes, the joint detector (trained first when the model has none: the only clip source that may), then the best take through the same cleanup and checks. Manifest: `action`, `take`, `score`.
+  - `{"source": "glb", "from_glb": "Imports/RatTrot.glb", "animations": ["Trottle"]}`: each named animation of a GLB in the library, copied as is onto `<Name>.glb`. Its skeleton must match (same bone names and parents, `quadruped_v1`); otherwise it is a 400 and the folder is untouched. Copies are not checked (`checks.passed: null`) and have no sheet. Manifest: `from`, `animation`.
+
+  A clip name already in the folder gets `_2`, `_3`. Files are written only when every clip of the job is made, so a cancel or a failure leaves the folder as it was.
 
 ## Motion jobs
 

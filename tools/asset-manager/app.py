@@ -1378,49 +1378,57 @@ def queue_detector(model_rel, name):
         c.execute("INSERT INTO jobs (kind, name, params, status, created) VALUES ('detector', ?, ?, 'queued', ?)",
                   (name[:80], json.dumps({"model": model_rel}), time.time()))
 
+def motion_takes(jid, host, p, src):
+    """A motion job's takes of model `src` (motion_params `p`): render, film with H3, the joint detector (trained first
+    when the model has none), then track and bake each take into the job folder as take<i>/anim.glb.
+    -> (takes [(score, height_error_pct, i, video path on the host)], detector state)."""
+    s, started = get_settings(), time.time()
+    work, gpu, py, blender, step, device_lines = host_tools(jid, host)
+    q = shlex.quote
+    job_blender(jid)
+    step("uploading the model")
+    model = upload_motion(host, jid, src)
+    step("rendering the front and side views")
+    device_lines(run_blender(jid, host, "render_views.py", [model, ".", "--turn", str(p["turn"])], [model],
+                             ["views.png", "joints.json"], 900), "render")
+    ok, line = gpu_check(host)  # the video runs in the host's ComfyUI: make sure it sits on this host's GPU
+    GPU_NOTES[jid].append(line)
+    if not ok:
+        raise RuntimeError(line)
+    steps = p["steps"] or (8 if p["turbo"] else 20)
+    step(f"generating {p['takes']} take(s) with MiniMax H3 ({'turbo, ' if p['turbo'] else ''}{steps} steps)")
+    h = run_prompt(host, jid, motion_graph(p, f"sfam/{jid}/views.png", f"sfam/{jid}/take"), started, s["job_timeout_min"])
+    videos = sorted(f"{v.get('subfolder', '')}/{v['filename']}".strip("/")
+                    for out in h.get("outputs", {}).values() for v in out.get("images", []) if v.get("type") == "output")
+    if not videos:
+        raise RuntimeError("the video model returned no videos")
+    step("unloading MiniMax H3")
+    GPU_NOTES[jid].append(f"[asset-manager] {host['name']}: {release_vram(host)}")
+    det, state = ensure_detector(host, jid, src, model, p["turn"], p["retrain"])
+    update_job(jid, detector=json.dumps(state))
+    takes = []
+    for i, v in enumerate(videos, 1):
+        step(f"tracking and baking take {i} of {len(videos)}")
+        d, video = f"take{i}", f"{host['comfy_dir']}/output/{v}"
+        device_lines(ssh(host, f"cd {q(work)} && {gpu} {py} track_solve.py {q(video)} joints.json {d}"
+                               f"{' --detector ' + q(det) if det else ''}"
+                               f"{' --loop' if p['action'] in LOOPING else ''}",
+                         timeout=1800), f"take {i} tracking")
+        device_lines(run_blender(jid, host, "bake.py", [model, "joints.json", f"{d}/motion.json", f"{d}/anim.glb"],
+                                 [model, "joints.json", f"{d}/motion.json"], [f"{d}/anim.glb"], 900), f"take {i} bake")
+        m = json.loads(ssh(host, f"{py} -c \"import json; m=json.load(open('{work}/{d}/motion.json')); m.pop('positions'); print(json.dumps(m))\""))
+        takes.append((m["score"], m["height_error_pct"], i, video))
+    return takes, state
+
 def run_motion(jid, host):
     job = job_row(jid)
     p = motion_params(json.loads(job["params"]))
     s = get_settings()
-    started = time.time()
-    work, gpu, py, blender, step, device_lines = host_tools(jid, host)
-    q = shlex.quote
-    log = []
+    work, *_, step, _ = host_tools(jid, host)
+    q, log = shlex.quote, []
     try:
         src = safe_path(p["model"])
-        job_blender(jid)
-        step("uploading the model")
-        model = upload_motion(host, jid, src)
-        step("rendering the front and side views")
-        device_lines(run_blender(jid, host, "render_views.py", [model, ".", "--turn", str(p["turn"])], [model],
-                                 ["views.png", "joints.json"], 900), "render")
-        ok, line = gpu_check(host)  # the video runs in the host's ComfyUI: make sure it sits on this host's GPU
-        GPU_NOTES[jid].append(line)
-        if not ok:
-            raise RuntimeError(line)
-        steps = p["steps"] or (8 if p["turbo"] else 20)
-        step(f"generating {p['takes']} take(s) with MiniMax H3 ({'turbo, ' if p['turbo'] else ''}{steps} steps)")
-        h = run_prompt(host, jid, motion_graph(p, f"sfam/{jid}/views.png", f"sfam/{jid}/take"), started, s["job_timeout_min"])
-        videos = sorted(f"{v.get('subfolder', '')}/{v['filename']}".strip("/")
-                        for out in h.get("outputs", {}).values() for v in out.get("images", []) if v.get("type") == "output")
-        if not videos:
-            raise RuntimeError("the video model returned no videos")
-        step("unloading MiniMax H3")
-        GPU_NOTES[jid].append(f"[asset-manager] {host['name']}: {release_vram(host)}")
-        det, state = ensure_detector(host, jid, src, model, p["turn"], p["retrain"])
-        update_job(jid, detector=json.dumps(state))
-        takes = []
-        for i, v in enumerate(videos, 1):
-            step(f"tracking and baking take {i} of {len(videos)}")
-            d, video = f"take{i}", f"{host['comfy_dir']}/output/{v}"
-            device_lines(ssh(host, f"cd {q(work)} && {gpu} {py} track_solve.py {q(video)} joints.json {d}"
-                                   f"{' --detector ' + q(det) if det else ''}"
-                                   f"{' --loop' if p['action'] in LOOPING else ''}",
-                             timeout=1800), f"take {i} tracking")
-            device_lines(run_blender(jid, host, "bake.py", [model, "joints.json", f"{d}/motion.json", f"{d}/anim.glb"],
-                                     [model, "joints.json", f"{d}/motion.json"], [f"{d}/anim.glb"], 900), f"take {i} bake")
-            m = json.loads(ssh(host, f"{py} -c \"import json; m=json.load(open('{work}/{d}/motion.json')); m.pop('positions'); print(json.dumps(m))\""))
-            takes.append((m["score"], m["height_error_pct"], i, video))
+        takes, state = motion_takes(jid, host, p, src)
         step("saving")
         out_dir = safe_path(s["output_folder"])
         out_dir.mkdir(parents=True, exist_ok=True)
@@ -1561,7 +1569,7 @@ def worker():
                     threading.Thread(target=run_image, args=(jid,), daemon=True).start()
                     continue
                 # Motion and detector jobs run Blender and the tracker over SSH; they need no Trellis2 nodes.
-                over_ssh = kind in ("motion", "detector", "curate")
+                over_ssh = kind in ("motion", "detector", "curate", "clip")
                 fits = ((lambda h, st: h.get("kind") == "ssh") if over_ssh else (lambda h, st: st["qwen_depth"]) if depth else (lambda h, st: st["mvadapter"]) if multi
                         else (lambda h, st: st["trellis"] and h.get("kind") == "ssh") if kind == "creature"  # 3D, then Blender
                         else (lambda h, st: st["trellis"]))
@@ -1572,7 +1580,8 @@ def worker():
                 free.remove(host)
                 update_job(jid, status="running", host=host["name"], started=time.time(), note="")
                 run = {"motion": run_motion, "detector": run_detector, "image": run_image,
-                       "curate": creature.run_curate, "creature": creature.run_creature}.get(kind, run_job)
+                       "curate": creature.run_curate, "creature": creature.run_creature,
+                       "clip": creature.run_clip_job}.get(kind, run_job)
                 threading.Thread(target=run, args=(jid, host), daemon=True).start()
         except Exception:
             traceback.print_exc()
@@ -2479,9 +2488,16 @@ class Handler(BaseHTTPRequestHandler):
                     jid = c.execute("INSERT INTO jobs (kind, name, params, status, created) VALUES (?, ?, ?, 'queued', ?)",
                                     (kind, name, json.dumps(params), time.time())).lastrowid
                 return self.send({"id": jid, "status": "queued", "status_url": f"{base}/api/jobs/{jid}"})
-            if (m := re.fullmatch(r"/api/models/([\w-]+)(/combine)?", p)) and (method, bool(m[2])) in (("GET", False), ("POST", True)):
-                if m[2]:  # rebuild <Name>_animated.glb from the ticked clips
+            if (m := re.fullmatch(r"/api/models/([\w-]+)(/combine|/clips)?", p)) and (method, bool(m[2])) in (("GET", False), ("POST", True)):
+                if m[2] == "/combine":  # rebuild <Name>_animated.glb from the ticked clips
                     return self.send(creature.combine_model(m[1], self.body().get("clips")))
+                if m[2]:  # New Animation / Add from GLB: a clip job on the model's rig
+                    params = creature.clip_params(m[1], self.body())
+                    name = f"{m[1]} {params.get('clip') or ', '.join(params.get('animations', []))}"[:80]
+                    with DB_LOCK, db() as c:
+                        jid = c.execute("INSERT INTO jobs (kind, name, params, status, created) VALUES ('clip', ?, ?, 'queued', ?)",
+                                        (name, json.dumps(params), time.time())).lastrowid
+                    return self.send({"id": jid, "status": "queued", "status_url": f"{base}/api/jobs/{jid}"})
                 f = creature.model_dir(m[1]) / f"{m[1]}.json"
                 if not f.is_file():
                     return self.send({"error": "no such model"}, 404)
@@ -3015,6 +3031,67 @@ def check():
     assert not any((ROOT / get_settings()["output_folder"]).glob("**/Swamp_Rat*")) and not any(DATA.glob(f".creature{jid}_*"))
     with DB_LOCK, db() as c:
         c.execute("DELETE FROM jobs WHERE id=?", (jid,))
+    # clip jobs (New Animation, Add from GLB): request checks, free names, a glb copy and a refusal on other bones
+    lib = td / "lib"
+    (lib / "Rat").mkdir(parents=True)
+    (lib / "Rat" / "animal.json").write_text(json.dumps({"clips": [{"name": "Trottle"}, {"name": "Eat"}]}))
+    cp = lambda b: creature.clip_params("Rat", b, m, lib)
+    for bad, why in (({"source": "dance"}, "source"), ({"source": "glb", "from_glb": "x.glb"}, "animations"),
+                     ({"source": "glb", "from_glb": "x.glb", "animations": []}, "animations"),
+                     ({"source": "library", "animal": "Rat", "clip": "Idle"}, "Rat has no clip 'Idle'; its clips: Trottle, Eat"),
+                     ({"source": "text", "prompt": "sniffs", "seeds": True}, "seeds"), ({"source": "text"}, "prompt"),
+                     ({"source": "video", "action": "fly"}, "action"), ({"source": "library", "animal": "Rat", "clip": "../x"}, "clip")):
+        try:
+            cp(bad); raise AssertionError(bad)
+        except ValueError as e:
+            assert why in str(e), (bad, e)
+    assert cp({"source": "library", "animal": "Rat", "clip": "Eat"}) == {"model": "Rat", "source": "library", "animal": "Rat", "clip": "Eat"}
+    t = cp({"source": "text", "prompt": "Sniffs the ground", "seeds": 2})
+    assert (t["prompt"], t["clip"], t["seeds"]) == ("An object sniffs the ground.", "Sniff", 2), t
+    assert cp({"source": "video", "action": "walk"})["clip"] == "Walk"
+    assert creature.clip_names(["Walk", "Sniff_s1"], [("Walk", [""]), ("Sniff", ["_s0", "_s1"]), ("Walk", [""])]) == ["Walk_2", "Sniff_2", "Walk_3"]
+    out = ROOT / get_settings()["output_folder"] / "Creatures"
+    out.mkdir(parents=True, exist_ok=True)
+    cm = Path(tempfile.mkdtemp(prefix="ClipRat", dir=out))  # a model folder where model_dir finds it
+    for f in ("Rat.glb", "Rat.json"):
+        shutil.copyfile(m / f, cm / f"{cm.name}{f[3:]}")
+    creature.write_manifest(cm, {**json.loads((m / "Rat.json").read_text()), "name": cm.name, "size_cm": 30})
+    src = cm.parent / f"{cm.name}_src.glb"
+    src.write_bytes(tiny_glb(["root", "pelvis", "spine_01"], "Walk"))
+    rel = src.relative_to(ROOT).as_posix()
+    try:
+        creature.clip_params(cm.name, {"source": "glb", "from_glb": rel, "animations": ["Run"]}); raise AssertionError("no Run")
+    except ValueError as e:
+        assert "has no animation Run; it has: Walk" in str(e), e
+    def clip_job(params):
+        with DB_LOCK, db() as c:
+            jid = c.execute("INSERT INTO jobs (kind, name, params, status, created) VALUES ('clip', 'c', ?, 'running', ?)",
+                            (json.dumps(params), time.time())).lastrowid
+        creature.run_clip_job(jid, {"name": "t", "kind": "http", "comfy_dir": "/x", "gpu": 1})
+        r = dict(job_row(jid))
+        with DB_LOCK, db() as c:
+            c.execute("DELETE FROM jobs WHERE id=?", (jid,))
+        return r
+    ok = creature.clip_params(cm.name, {"source": "glb", "from_glb": rel, "animations": ["Walk"]})
+    r = clip_job(ok)
+    assert r["status"] == "done", r
+    man = json.loads((cm / f"{cm.name}.json").read_text())
+    new = man["clips"][-1]
+    assert new["name"] == "Walk_2" and new["source"] == "glb" and new["baked"] is False and new["checks"]["passed"] is None, new
+    js, _ = creature.glb_read((cm / new["file"]).read_bytes())
+    assert [x["name"] for x in js["animations"]] == ["Walk"]  # the source name; combine names it Walk_2
+    creature.combine_model(cm.name, ["Walk_2"])  # the copy is on the model's rig: combine takes it
+    src.write_bytes(tiny_glb(["root", "hips", "spine_01"], "Walk"))
+    try:
+        creature.clip_params(cm.name, ok); raise AssertionError("other bones")
+    except ValueError as e:
+        assert "skeleton differs" in str(e), e
+    snap = {f: f.read_bytes() for f in cm.rglob("*") if f.is_file()}
+    r = clip_job(ok)  # the file changed after the request was accepted: the job refuses it, the folder stays as it was
+    assert r["status"] == "failed" and "skeleton differs" in r["error"], r
+    assert {f: f.read_bytes() for f in cm.rglob("*") if f.is_file()} == snap
+    shutil.rmtree(cm)
+    src.unlink()
     shutil.rmtree(td)
     print("check ok")
 

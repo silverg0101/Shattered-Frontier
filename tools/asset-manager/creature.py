@@ -1,6 +1,6 @@
 """Animal catalogue (Zoo-300K packs), query matcher and library curation. Must not import app at module level: job
 runners reach app's helpers through _app()."""
-import difflib, io, json, os, re, shlex, shutil, struct, sys, tarfile, tempfile, time
+import difflib, io, json, os, re, shlex, shutil, struct, sys, tarfile, tempfile, threading, time
 from pathlib import Path
 
 CATALOGUE = Path(__file__).with_name("motion") / "zoo300k.json"
@@ -246,6 +246,8 @@ MOTION_TEXT = {"Idle": "stands still, breathing", "Walk": "walks in place", "Run
                "Gallop": "gallops in place", "Jump": "jumps up and lands", "Sit": "sits down", "Sleep": "lies down and sleeps",
                "Eat": "lowers its head and eats", "Attack": "lunges forward and bites", "Death": "collapses and dies"}
 SKELETON = "quadruped_v1"
+MODEL_LOCK = threading.RLock()  # ponytail: one lock for every model folder's manifest; per model if it ever contends
+CLIP_SOURCES = ("library", "text", "video", "glb")
 
 
 def safe_name(s) -> str:
@@ -411,10 +413,30 @@ def unimate_prompt(clip) -> str:
     return f"An object {MOTION_TEXT.get(clip) or words}."
 
 
-def unimate_clip(jid, host, rig_glb, clip, size_cm) -> dict:
-    """A clip the library lacks, made by UniMate on the standardised rig over creature_unimate_seeds seeds; each seed is
-    turned into a BVH on the same skeleton and goes through retarget_clip's cleanup, checks and review. -> the best
-    seed (passed first, then lowest seam) as retarget_clip's dict plus "seed" and "prompt"."""
+def std_glb_clip(jid, host, rig_glb, src_glb, name, size_cm) -> dict:
+    """An animated GLB on the shared skeleton in the job folder (a UniMate seed, a video take) as clip `name` on
+    `rig_glb`: turned into a BVH, then retarget_clip's cleanup, checks, sheet and review."""
+    a, q = _app(), shlex.quote
+    work, lib = a.host_tools(jid, host)[0], Path(tempfile.mkdtemp())
+    try:
+        (lib / "clips").mkdir()
+        a.job_blender(jid)
+        a.run_blender(jid, host, "unimate_bvh.py", [src_glb, f"{name}.bvh", f"{name}_bvh.json"],
+                      [src_glb], [f"{name}.bvh", f"{name}_bvh.json"], 900)
+        info = json.loads(a.ssh(host, f"cat {q(work + '/' + name + '_bvh.json')}"))
+        (lib / "clips" / f"{name}.bvh").write_bytes(a.ssh(host, f"cat {q(work + '/' + name + '.bvh')}", timeout=300))
+        # ponytail: these clips are kept as one-shots; cut a loop (zoo_curate) when cyclic ones need seamless ends
+        (lib / "animal.json").write_text(json.dumps({"id": "UniMate", "fps": info["fps"], "role_map": {b: b for b in info["bones"]},
+            "clips": [{"name": name, "file": f"clips/{name}.bvh", "frames": info["frames"], "loop": False}]}))
+        return retarget_clip(jid, host, rig_glb, lib, name, size_cm)
+    finally:
+        shutil.rmtree(lib, ignore_errors=True)
+
+
+def unimate_clip(jid, host, rig_glb, clip, size_cm, prompt=None, seeds=None) -> dict:
+    """A clip the library lacks, made by UniMate on the standardised rig over `seeds` (default creature_unimate_seeds)
+    seeds from `prompt` (default unimate_prompt(clip)); each seed goes through std_glb_clip. -> the best seed (passed
+    first, then lowest seam) as retarget_clip's dict plus "seed" and "prompt", and "candidates": every seed's dict."""
     a = _app()
     work, gpu, _, _, step, _ = a.host_tools(jid, host)
     s, q, um = a.get_settings(), shlex.quote, f"{work}/um"
@@ -427,32 +449,21 @@ def unimate_clip(jid, host, rig_glb, clip, size_cm) -> dict:
         a.ssh_step(host, jid, work, env + f"python -m data_process.rig_preprocess run --input {q(work + '/' + rig_glb)} "
                    f"--output_dir {um}/creature --name creature --annotation {um}/annotation.json --no_review --overwrite "
                    f"> {um}/prep.log 2>&1; test -s {um}/creature/cond.npy" + fail(f"{um}/prep.log"), 1800)
-    prompt, lib, best = unimate_prompt(clip), Path(tempfile.mkdtemp()), None
-    try:
-        (lib / "clips").mkdir()
-        n = s["creature_unimate_seeds"]
-        for seed in range(n):
-            name, d = f"{clip}_s{seed}", f"{um}/{clip}_s{seed}"
-            step(f"generating {clip} with UniMate (seed {seed + 1} of {n})")
-            a.ssh_step(host, jid, work, env + f"python -m unimate.inference.sample --exp_dir {UNIMATE_RUN} --asset {um}/creature "
-                       f"--prompt {q(prompt)} --cfg_scale 5 --seed {seed} --output_dir {d} > {d}.log 2>&1 && "
-                       f"bash scripts/run_animate_motion.sh {d} >> {d}.log 2>&1" + fail(f"{d}.log") +
-                       f" && cp \"$(ls {d}/animated/*.glb | head -1)\" {q(work + '/' + name + '_unimate.glb')}", 1800)
-            a.job_blender(jid)
-            a.run_blender(jid, host, "unimate_bvh.py", [f"{name}_unimate.glb", f"{name}.bvh", f"{name}_bvh.json"],
-                          [f"{name}_unimate.glb"], [f"{name}.bvh", f"{name}_bvh.json"], 900)
-            info = json.loads(a.ssh(host, f"cat {q(work + '/' + name + '_bvh.json')}"))
-            (lib / "clips" / f"{name}.bvh").write_bytes(a.ssh(host, f"cat {q(work + '/' + name + '.bvh')}", timeout=300))
-            # ponytail: UniMate clips are kept as one-shots; cut a loop (zoo_curate) when cyclic ones need seamless ends
-            (lib / "animal.json").write_text(json.dumps({"id": "UniMate", "fps": info["fps"], "role_map": {b: b for b in info["bones"]},
-                "clips": [{"name": name, "file": f"clips/{name}.bvh", "frames": info["frames"], "loop": False}]}))
-            r = retarget_clip(jid, host, rig_glb, lib, name, size_cm) | {"seed": seed, "prompt": prompt}
-            rank = lambda x: (not x["checks"]["passed"], x["checks"]["seam_deg"])
-            if best is None or rank(r) < rank(best):
-                best = r
-    finally:
-        shutil.rmtree(lib, ignore_errors=True)
-    return best
+    prompt, best, cands = prompt or unimate_prompt(clip), None, []
+    n = seeds or s["creature_unimate_seeds"]
+    for seed in range(n):
+        name, d = f"{clip}_s{seed}", f"{um}/{clip}_s{seed}"
+        step(f"generating {clip} with UniMate (seed {seed + 1} of {n})")
+        a.ssh_step(host, jid, work, env + f"python -m unimate.inference.sample --exp_dir {UNIMATE_RUN} --asset {um}/creature "
+                   f"--prompt {q(prompt)} --cfg_scale 5 --seed {seed} --output_dir {d} > {d}.log 2>&1 && "
+                   f"bash scripts/run_animate_motion.sh {d} >> {d}.log 2>&1" + fail(f"{d}.log") +
+                   f" && cp \"$(ls {d}/animated/*.glb | head -1)\" {q(work + '/' + name + '_unimate.glb')}", 1800)
+        r = std_glb_clip(jid, host, rig_glb, f"{name}_unimate.glb", name, size_cm) | {"seed": seed, "prompt": prompt}
+        cands.append(r)
+        rank = lambda x: (not x["checks"]["passed"], x["checks"]["seam_deg"])
+        if best is None or rank(r) < rank(best):
+            best = r
+    return best | {"candidates": cands}
 
 
 def glb_read(b: bytes):
@@ -482,8 +493,8 @@ def glb_bones(js) -> list:
     return sorted((nodes[j].get("name"), nodes[parent[j]].get("name") if j in parent else None) for j in joints)
 
 
-def _add_animation(dst, dbin, src, sbin, name):
-    """Append src's first animation to dst as `name` (bones matched by node name), copying its keys into dbin."""
+def _add_animation(dst, dbin, src, sbin, name, index=0):
+    """Append src's animation `index` to dst as `name` (bones matched by node name), copying its keys into dbin."""
     nodes, views, accs = {n.get("name"): i for i, n in enumerate(dst["nodes"])}, {}, {}
     def view(i):
         if i not in views:
@@ -499,7 +510,7 @@ def _add_animation(dst, dbin, src, sbin, name):
             accs[i] = len(dst.setdefault("accessors", []))
             dst["accessors"].append({**src["accessors"][i], "bufferView": view(src["accessors"][i]["bufferView"])})
         return accs[i]
-    anim = src["animations"][0]
+    anim = src["animations"][index]
     channels = []
     for ch in anim["channels"]:
         bone = src["nodes"][ch["target"]["node"]].get("name")
@@ -529,7 +540,11 @@ def combine_model(name: str, clips: list, folder=None) -> dict:
     """Rebuild <Name>_animated.glb from <Name>.glb and the listed clips (one named animation each) and mark them baked
     in the manifest. Refuses (ValueError naming the clip) a clip without a file or on another skeleton; the old file is
     only replaced once the new one is complete. -> the manifest."""
-    folder = Path(folder) if folder else model_dir(name)
+    with MODEL_LOCK:  # a clip job adding to the manifest meanwhile must not be written over
+        return _combine(name, clips, Path(folder) if folder else model_dir(name))
+
+
+def _combine(name, clips, folder):
     if not (folder / f"{name}.json").is_file():
         raise ValueError(f"no such model: {name}")
     man = json.loads((folder / f"{name}.json").read_text())
@@ -678,6 +693,170 @@ def run_creature(jid, host):
         a.update_job(jid, log="\n".join(a.GPU_NOTES.pop(jid, []) + log + ([] if live is log else live[-100:])))
         a.JOB_BLENDER.pop(jid, None)
         shutil.rmtree(build, ignore_errors=True)  # gone after the move; left over only when a stage failed
+        try:
+            a.cleanup(host, [str(jid)], [str(jid)])
+        except Exception:
+            pass
+
+
+# ---------------------------------------------------------------- adding clips to a model folder
+def clip_params(name, b, folder=None, library=None) -> dict:
+    """A New Animation / Add from GLB request for model `name` checked and filled in: {source: "library", animal?,
+    clip} | {source: "text", prompt, seeds?, clip?} | {source: "video", clip?, ...MOTION_PARAMS} | {source: "glb",
+    from_glb, animations}. Raises ValueError; a GLB on other bones is refused here, before any job is queued."""
+    a = _app()
+    folder = Path(folder) if folder else model_dir(name)
+    if not (folder / f"{name}.json").is_file():
+        raise ValueError(f"no such model: {name}")
+    man = json.loads((folder / f"{name}.json").read_text())
+    src = b.get("source")
+    if src not in CLIP_SOURCES:
+        raise ValueError(f"source is one of {', '.join(CLIP_SOURCES)}")
+    for k in ("animal", "clip", "prompt", "from_glb"):
+        if not isinstance(b.get(k) or "", str):
+            raise ValueError(f"{k} must be a string")
+    clip = b.get("clip") or ""
+    if clip and safe_name(clip) != clip:
+        raise ValueError("clip is a name of letters, digits, _ and -")
+    out = {"model": name, "source": src}
+    if src == "library":
+        animal = b.get("animal") or man["animal"]
+        if animal not in {e["id"] for e in json.loads(CATALOGUE.read_text(encoding="utf-8"))}:
+            raise ValueError("animal must be an id from /api/animals")
+        if not clip:
+            raise ValueError("give the library clip to add")
+        f = Path(library or a.DATA / "MotionLibrary") / animal / "animal.json"
+        if f.is_file():  # not curated yet: the job curates it, and retarget_clip names a missing clip then
+            have = [c["name"] for c in json.loads(f.read_text())["clips"]]
+            if clip not in have:
+                raise ValueError(f"{animal} has no clip {clip!r}; its clips: {', '.join(have)}")
+        return out | {"animal": animal, "clip": clip}
+    if src == "text":
+        prompt = (b.get("prompt") or "").strip()
+        if not prompt:
+            raise ValueError("describe the motion in prompt")
+        if not prompt.lower().startswith("an object"):  # UniMate's training captions read "An object walks ..."
+            prompt = f"An object {prompt[0].lower()}{prompt[1:].rstrip('.')}."
+        seeds = b.get("seeds", a.get_settings()["creature_unimate_seeds"])
+        if not isinstance(seeds, int) or isinstance(seeds, bool) or not 1 <= seeds <= 8:
+            raise ValueError("seeds is a whole number, 1-8")
+        if not clip:  # "An object sniffs the ground." -> Sniff
+            verb = next((w for w in re.findall(r"[a-z]+", prompt.lower()) if w not in ("an", "a", "the", "object")), "clip")
+            clip = (verb[:-1] if verb.endswith("s") and not verb.endswith("ss") else verb).title()
+        return out | {"prompt": prompt[:500], "seeds": seeds, "clip": clip}
+    if src == "video":
+        motion = a.motion_params({k: v for k, v in b.items() if k not in ("source", "clip", "model")})
+        return out | {"motion": motion, "clip": clip or safe_name(motion["action"].title()) or "Motion"}
+    anims = b.get("animations")
+    if not isinstance(anims, list) or not anims or any(not isinstance(x, str) for x in anims):
+        raise ValueError("animations is a list of the names of from_glb's animations to take")
+    p = a.safe_path(b.get("from_glb") or "")
+    if p.suffix.lower() != ".glb" or not p.is_file():
+        raise ValueError("from_glb is a .glb file in the asset library")
+    js = glb_read(p.read_bytes())[0]
+    have = [x.get("name") for x in js.get("animations", [])]
+    if missing := [x for x in anims if x not in have]:
+        raise ValueError(f"{b['from_glb']} has no animation {', '.join(missing)}; it has: {', '.join(map(str, have)) or 'none'}")
+    if glb_bones(js) != glb_bones(glb_read((folder / f"{name}.glb").read_bytes())[0]):
+        raise ValueError(f"{b['from_glb']}: its skeleton differs from {name}.glb ({SKELETON}); only clips on the same "
+                         f"bones (names and parents) can be added")
+    return out | {"from_glb": b["from_glb"], "animations": list(dict.fromkeys(anims))}
+
+
+def clip_names(taken, groups) -> list:
+    """Free names for groups [(base, [suffix, ...])] (a text clip's seeds share one base): the base, else base_2,
+    base_3 ..., so that no base+suffix is in `taken` or in an earlier group. -> the bases chosen."""
+    taken, out = set(taken), []
+    for base, sufs in groups:
+        nb = next(n for n in (base, *(f"{base}_{k}" for k in range(2, 1000))) if not taken & {n + s for s in sufs})
+        taken |= {nb + s for s in sufs}
+        out.append(nb)
+    return out
+
+
+def run_clip_job(jid, host):
+    """A "clip" job (clip_params): make clips on an existing model folder's rig and add them to animations/ and the
+    manifest, not baked. Library: retarget_clip; text: UniMate, one candidate per seed, the best marked `best`; video:
+    app.motion_takes on <Name>.glb (the one path that may train a detector), its best take through std_glb_clip; glb:
+    the animations copied as they are onto <Name>.glb. Nothing is written into the folder until every clip is made,
+    so a cancel or a failure leaves it unchanged."""
+    a = _app()
+    p = json.loads(a.job_row(jid)["params"])
+    work, _, _, _, step, _ = a.host_tools(jid, host)
+    q, log, n = shlex.quote, [], p["model"]
+    a.LIVE[jid] = {"metrics": None, "log": log}
+    try:
+        folder = model_dir(n)
+        man, rig = json.loads((folder / f"{n}.json").read_text()), folder / f"{n}.glb"
+        made = []  # groups (base name, [(suffix, glb bytes, sheet bytes or None, manifest fields)])
+        if p["source"] == "glb":
+            step("copying the animations")
+            src, sbin = glb_read(a.safe_path(p["from_glb"]).read_bytes())
+            base = rig.read_bytes()
+            if glb_bones(src) != glb_bones(glb_read(base)[0]):  # checked at the request too; the file may have changed
+                raise ValueError(f"{p['from_glb']}: its skeleton differs from {n}.glb")
+            names = [x.get("name") for x in src.get("animations", [])]
+            for an in p["animations"]:
+                js, binary = glb_read(base)
+                c = safe_name(an) or "Clip"
+                _add_animation(js, binary, src, sbin, c, names.index(an))
+                made.append((c, [("", glb_write(js, binary), None, {"source": "glb", "from": p["from_glb"], "animation": an,
+                    "checks": {"passed": None, "reason": "copied as is from a GLB on the same skeleton; not checked", "review": []}})]))
+                log.append(f"{c}: copied from {p['from_glb']} ({an})")
+        else:
+            get = lambda f: a.ssh(host, f"cat {q(work + '/' + f)}", timeout=900)
+            a.put_input(host, f"{jid}/rig.glb", rig.read_bytes())
+            size = man["size_cm"]
+            if p["source"] == "library":
+                lib = ensure_curated(p["animal"], host, jid)
+                rs = [("", retarget_clip(jid, host, "rig.glb", lib, p["clip"], size), {"source": "library", "animal": p["animal"]})]
+            elif p["source"] == "text":
+                best = unimate_clip(jid, host, "rig.glb", p["clip"], size, p["prompt"], p["seeds"])
+                rs = [(f"_s{r['seed']}", r, {"source": "text", "seed": r["seed"], "prompt": r["prompt"], "best": r["seed"] == best["seed"]})
+                      for r in best["candidates"]]
+            else:
+                takes, _ = a.motion_takes(jid, host, {**p["motion"], "model": rig.relative_to(a.ROOT).as_posix()}, rig)
+                log += [f"take {i}: score {sc:.2f}" for sc, _, i, _ in takes]
+                score, _, i, _ = max(takes)
+                step(f"checking take {i}")
+                rs = [("", std_glb_clip(jid, host, "rig.glb", f"take{i}/anim.glb", p["clip"], size),
+                       {"source": "video", "action": p["motion"]["action"], "take": i, "score": round(score, 3)})]
+            made.append((p["clip"], [(suf, get(r["glb"]), get(r["sheet"]), extra | {"checks": r["checks"]}) for suf, r, extra in rs]))
+            log += [f"{p['clip']}{suf}: {'passed' if r['checks']['passed'] else 'failed: ' + r['checks']['reason']}"
+                    f"{' (best)' if extra.get('best') else ''}" for suf, r, extra in rs]
+        step("saving into the model folder")
+        written, files = [], []
+        with MODEL_LOCK:
+            man = json.loads((folder / f"{n}.json").read_text())
+            bases = clip_names([c["name"] for c in man["clips"]], [(b, [x[0] for x in g]) for b, g in made])
+            try:
+                for nb, (_, g) in zip(bases, made):
+                    for suf, glb, sheet, fields in g:
+                        c = nb + suf
+                        for data, ext in ((glb, ".glb"), (sheet, ".png")):
+                            if data is not None:
+                                f = folder / "animations" / f"{n}_{c}{ext}"
+                                f.parent.mkdir(exist_ok=True)
+                                tmp = f.with_name(f".{f.name}.tmp")
+                                tmp.write_bytes(data)
+                                os.replace(tmp, f)
+                                written.append(f)
+                        man["clips"].append({"name": c, "file": f"animations/{n}_{c}.glb", "baked": False, **fields})
+                        files.append((folder / "animations" / f"{n}_{c}.glb").relative_to(a.ROOT).as_posix())
+                write_manifest(folder, man)
+            except BaseException:
+                for f in written:
+                    f.unlink(missing_ok=True)
+                raise
+        a.update_job(jid, status="done", output=files[0], files=json.dumps(files), note="", finished=time.time())
+    except InterruptedError:
+        a.update_job(jid, status="cancelled", note="", finished=time.time())
+    except Exception as e:
+        a.update_job(jid, status="failed", error=str(e)[-1000:], note="", finished=time.time())
+    finally:
+        live = a.LIVE.pop(jid, {}).get("log") or []  # run_prompt's polling (video) replaces it with the host log
+        a.update_job(jid, log="\n".join(a.GPU_NOTES.pop(jid, []) + log + ([] if live is log else live[-100:])))
+        a.JOB_BLENDER.pop(jid, None)
         try:
             a.cleanup(host, [str(jid)], [str(jid)])
         except Exception:
