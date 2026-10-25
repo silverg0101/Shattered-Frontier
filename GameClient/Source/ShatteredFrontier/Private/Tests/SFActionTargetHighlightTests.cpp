@@ -11,6 +11,9 @@
 #include "Materials/Material.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "HAL/IConsoleManager.h"
+#include "Engine/Engine.h"
+#include "Engine/LocalPlayer.h"
+#include "Misc/ScopeExit.h"
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFActionTargetHighlightTest, "ShatteredFrontier.Loot.SelectionOutlineCompatibility",
     EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
@@ -20,6 +23,11 @@ bool FSFActionTargetHighlightTest::RunTest(const FString& Parameters)
     if (!Fixture.CreateTestWorld(EWorldType::GameRPC) || !Fixture.BeginPlayInTestWorld()) return false;
     UWorld* World = Fixture.GetTestWorld(); World->GetWorldSettings()->NotifyBeginPlay();
     auto* Player = World->SpawnActor<ASFPlayerController>(); auto* Pawn = World->SpawnActor<ASFE1Character>();
+    // This no-net-driver world needs an actual local-player association, as
+    // IsLocalController deliberately rejects unowned authority controllers.
+    auto* Local = NewObject<ULocalPlayer>(GEngine); Player->Player = Local; Local->PlayerController = Player;
+    ON_SCOPE_EXIT { Player->Player = nullptr; Local->PlayerController = nullptr; };
+    if (!TestTrue(TEXT("Fixture has a real local controller"), Player->IsLocalController())) return false;
     Pawn->GetCharacterMovement()->SetMovementMode(MOVE_None); Player->Possess(Pawn);
     if (!Player->PlayerCameraManager)
     { Player->PlayerCameraManager = World->SpawnActor<APlayerCameraManager>(); Player->PlayerCameraManager->InitializeFor(Player); }
