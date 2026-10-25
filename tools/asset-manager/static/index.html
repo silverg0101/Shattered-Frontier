@@ -245,6 +245,8 @@ aside.queue.closed .vtab { display: block; }
 .cand.on { border-color: var(--primary); box-shadow: 0 0 16px var(--primary-12); }
 .ticks { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 8px; }
 .ticks label { display: flex; align-items: center; gap: 6px; font-size: 13px; cursor: pointer; }
+.ticks img.pv { height: 28px; border-radius: 3px; background: #fff; transition: transform .15s; transform-origin: left center; }
+.ticks img.pv:hover { transform: scale(5); position: relative; z-index: 5; box-shadow: 0 4px 16px rgba(0,0,0,.4); }
 .lightbox img { max-width: 92vw; max-height: 90vh; border-radius: 12px; box-shadow: 0 0 60px var(--primary-12); }
 .toast { position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%); z-index: 60; padding: 10px 18px; border-radius: 999px; background: var(--card-elevated); border: 1px solid var(--border); box-shadow: 0 10px 30px #0008; animation: fadeUp .35s var(--ease) both; }
 .toast.err { border-color: var(--danger); color: var(--danger); }
@@ -1079,7 +1081,7 @@ async function renderCreature() {
     if (!a) { $('#cclips').textContent = 'Pick an animal below to choose its clips; none picked means all clips of the best match.'; return; }
     if (!a.curated) { $('#cclips').textContent = `${a.name} is not curated yet: it is curated when the job runs, and every clip is made. Name extra clips below.`; return; }
     ticked ??= a.clips.map(c => c.name);
-    $('#cclips').innerHTML = `<div class="ticks">${a.clips.map(c => `<label><input type="checkbox" data-clip="${esc(c.name)}" ${ticked.includes(c.name) ? 'checked' : ''}>${esc(c.name)}</label>`).join('')}</div>`;
+    $('#cclips').innerHTML = `<div class="ticks">${a.clips.map(c => `<label><input type="checkbox" data-clip="${esc(c.name)}" ${ticked.includes(c.name) ? 'checked' : ''}>${esc(c.name)}${c.seconds ? `<span class="muted" style="font-size:12px">${c.seconds}s</span>` : ''}${c.preview ? `<img class="pv" src="${esc(c.preview)}" loading="lazy" alt="${esc(c.name)} preview">` : ''}</label>`).join('')}</div>`;
     document.querySelectorAll('[data-clip]').forEach(cb => cb.onchange = () => { ticked = [...document.querySelectorAll('[data-clip]:checked')].map(x => x.dataset.clip); });
   };
   const drawCands = list => {

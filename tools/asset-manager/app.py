@@ -2395,6 +2395,8 @@ class Handler(BaseHTTPRequestHandler):
                 return self.send(jobs_view())
             if method == "GET" and p == "/api/animals":
                 return self.send({"animals": creature.load_catalogue(DATA / "MotionLibrary")})
+            if method == "GET" and (m := re.fullmatch(r"/api/animals/([\w-]+)/previews/([\w-]+)\.png", p)):  # no / or ..
+                return self.file(DATA / "MotionLibrary" / m[1] / "previews" / f"{m[2]}.png")
             if method == "GET" and p == "/api/animals/match":
                 return self.send({"candidates": creature.match(q.get("q", ""), creature.load_catalogue(DATA / "MotionLibrary"))})
             if method == "GET" and p == "/api/schema":
@@ -2908,6 +2910,12 @@ def check():
             shutil.rmtree(f)
         lib.rmdir()
     import creature, tempfile
+    pl = Path(tempfile.mkdtemp())  # a curated animal's clips carry their length and preview url
+    (pl / "Rat" / "previews").mkdir(parents=True)
+    (pl / "Rat" / "animal.json").write_text(json.dumps({"fps": 30, "clips": [{"name": "Walk", "frames": 45}, {"name": "Eat", "frames": 30, "fps": 15}]}))
+    (pl / "Rat" / "previews" / "Walk.png").write_bytes(b"png")
+    rat = next(a for a in creature.load_catalogue(pl) if a["id"] == "Rat")
+    assert [(c["seconds"], c["preview"]) for c in rat["clips"]] == [(1.5, "/api/animals/Rat/previews/Walk.png"), (2.0, None)], rat["clips"]
     cat = creature.load_catalogue(Path(tempfile.mkdtemp()))
     assert any(a["id"] == "Rat" and a["body_plan"] == "quadruped" and not a["curated"] for a in cat)
     top = creature.match("swamp rat", cat)

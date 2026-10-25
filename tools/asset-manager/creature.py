@@ -11,9 +11,13 @@ def load_catalogue(library: Path) -> list[dict]:
     for a in json.loads(CATALOGUE.read_text(encoding="utf-8")):
         a = {k: v for k, v in a.items() if k != "file"} | {"curated": False, "clips": []}
         f = Path(library) / a["id"] / "animal.json"
-        if f.is_file():
-            a["curated"] = True
-            a["clips"] = json.loads(f.read_text(encoding="utf-8")).get("clips", [])
+        if f.is_file():  # each clip gets its length and, when rendered, its preview sheet's url (app's previews route)
+            lib = json.loads(f.read_text(encoding="utf-8"))
+            a["curated"], a["clips"] = True, [c | {
+                "seconds": round(c["frames"] / (c.get("fps") or lib.get("fps") or 30), 2) if c.get("frames") else None,
+                "preview": f"/api/animals/{a['id']}/previews/{c['name']}.png"
+                if safe_name(c["name"]) == c["name"] and (f.parent / "previews" / f"{c['name']}.png").is_file() else None}
+                for c in lib.get("clips", [])]
         out.append(a)
     return out
 
