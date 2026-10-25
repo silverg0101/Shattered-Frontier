@@ -16,7 +16,7 @@ The Asset Forge turns a text prompt into a rigged, animated game creature on the
 | `art-greenlands-boar.md` | Round 2 code-review fixes on `lane/a`, unpushed | Opus re-review of the fix diff, push, full run, visual round 2 |
 | `art-starter-creatures.md` | Blocked on the boar | Deer |
 | `art-quadruped-unreal-import.md` | Blocked on a signed-off creature | Re-run the Task 7 import |
-| `gameplay-out-of-place-npc.md` | The rule can start now; the model is blocked on the boar | `SB_OutOfPlaceNpc` |
+| `gameplay-out-of-place-npc.md` | Sandbox server rule complete (`354c0284`); model blocked on the boar | Approved model, owner sign-off, then Greenlands placement |
 
 ## What to track, and where
 

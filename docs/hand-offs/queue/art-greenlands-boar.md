@@ -32,7 +32,7 @@ Get one animated boar from the prompt "a wild boar" with five clips: idle, walk,
   3. A review answer that was not JSON killed the job after the builds. It is retried once, then counts as a FAIL.
   4. A released pin kept its piled-up target, and convergence no longer stopped the IK passes. Released frames get their off-pin targets back, a pass solves with them, and the passes stop once the fixes converge.
   6. A leg whose only `_01` bone was dropped crashed the retarget. It falls back to the whole chain.
-  
+
   Left as is, with the reasons: 5 (`max_neck_deg` is the documented head-to-`spine_03` angle, the procedural clips passed it on the old rig, and a false fail on a UniMate idle only drops that seed; re-check when the head bone moves to the snout tip) and 7 (the side-alone 4th build is the strategy chosen in commit c6cea807; the model review catches a fused build).
 - **Not yet done:**
   - a fresh Opus code re-review of the fix diff, then the push;
