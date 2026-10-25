@@ -11,7 +11,7 @@ Deploy a compatible immutable Linux game/service/content release on the authoriz
 
 ## State
 
-Runnable durable profile/bootstrap candidate prepared; protected runtime unchanged. The unpublished five-schema PostgreSQL + two-host rehearsal passed and was cleaned. The old `e1-2a5b634429b75d46519ad2a28560b8953ed99831` game remains healthy on approved UDP17777. No game packaging/deployment until the integration freeze and UE slot grant.
+Runnable durable profile/bootstrap candidate passed fresh independent security review and was published through `19fe2914`; protected runtime unchanged. The unpublished five-schema PostgreSQL + two-host rehearsal passed and was cleaned. The old `e1-2a5b634429b75d46519ad2a28560b8953ed99831` game remains healthy on approved UDP17777. Final game/service revision freeze still waits for the owner's highlight follow-up and functional acceptance; no service rebuild or game work in this lane until that freeze.
 
 ## Evidence
 
@@ -21,11 +21,11 @@ Tracked-snapshot exporter/path fix independently passed at `da3ded63`; all earli
 
 ## Blocked on
 
-Fresh security review of the runnable candidate; integration freeze/matching game+client packages; final privileged operator application.
+Final source freeze/matching game+client+service packages; final privileged operator application. SSH key access works, but `sudo -n -v` fails; a host operator must authenticate interactively in the session that runs the reviewed application block.
 
 ## Next step
 
-Independently review the runnable profile/bootstrap range, then rebuild matching game/service/content artifacts at the root-approved freeze. Only after package/provenance checks may the root agent request the concrete privileged operator step in `ops/steam-server/playable-release.md`; remote two-client gameplay/SQL/restart acceptance still follows.
+Wait for the root-approved final freeze, then rebuild matching service/content artifacts and fill the prepared operator packet with real image IDs and verified hashes. Only after matching package/provenance checks may the root agent request the concrete privileged operator step in `ops/steam-server/playable-release.md`; remote two-client gameplay/SQL/restart acceptance still follows.
 
 ## Rules for this task
 
