@@ -1,52 +1,46 @@
 # Corpse and ground loot interaction
 
 - **Area:** gameplay, backend, UI
-- **Owner of next step:** Controller: review fixture camera-settling fix, then bounded validation
+- **Owner of next step:** Controller: fresh functional rim evidence review and coordinated release
 - **Updated:** 2026-10-25
 - **Worktree:** C:/Projects/SF-lane-d
 
 ## Goal
 
-Corpse click/action opens authorized loot and own inventory together; shift-click/drag transfers. Inventory drops retain WorldMesh; action picks ground loot directly into the bag. One local targeting highlight covers interactables. Layout/style remains in the existing Widget Blueprints.
+Corpse click/action opens authorized loot and own inventory together; Shift-click/drag transfers. Inventory drops retain WorldMesh; action picks ground loot directly into the bag. One local targeting highlight covers interactables. Logic stays in C++; layout/style stays in the existing Widget Blueprints.
 
 ## State
 
-Reviewed combined main d9737a5e passed one actual grounded rendered loop in55s: lane-d `Artifacts/CombatPilot/network-20261025-152835-215/results.json`. Real boar/wolf sources, both existing windows, Shift/drag, positive pelt ground drop/model/rim, direct pickup without loot UI, target clear and final observer privacy barrier all passed. SQL alpha revision4 has2 hides+1 pelt, beta revision0 empty; exactly2 defeat receipts. This is shared native action dispatch, not hardware key input. Prior failed runs remain superseded diagnostic evidence.
+Reviewed combined main **76d9fa3e** passed one actual rendered two-client loop in **51.8s**: lane-d `Artifacts/CombatPilot/network-20261025-164416-630/results.json`. Actual authored boar/wolf deaths entered durable loot through the canonical RewardKill hook. Stable fresh cursor projection and native mouse-left press/release opened the exact corpse plus own inventory. Native Shift transferred2 hides; native drag transferred the pelt, then deliberate viewport release created its ground model. The shipped F mapping, actual projected cursor outside the open bag, and native F press/release reached the existing character/controller guard exactly once and picked the ground item directly into the bag without loot UI. Target cleared.
 
-Reviewed combined main9163eb2b passed one rendered native-cursor coverage run in90.4s: lane-d `Artifacts/CombatPilot/network-20261025-160137-352/results.json`. Real native mouse-left press/release opened the exact corpse and both windows; no direct-open fallback. Shift/drag, positive ground-model drop and CENTER pickup without loot UI, target clear, observer receipt/final privacy and exact durable bags/2 receipts passed. Three actual PNGs were saved and retained with logs/results under main ignored `Artifacts/LootWorkflow/native-click-coverage-9163eb2b/` (ungraded functional evidence).
+Observer received the ground model before pickup, then completed the full-source privacy/end barrier: PersonalSources=0, GroundMesh=1, DriverComplete=1. Final SQL: alpha revision4 has item/boar_hide=2 and item/wolf_pelt=1; beta revision0 empty; exactly2 canonical defeat receipts. No direct-open or ground-dispatch fallback.
 
-Reviewed ground fix1715e683 now captures actual canonical/fallback mesh bounds before debit and persists pose/bounds. All8mesh/no-debit/oversized/off-centre dedicated→client and PostgreSQL restart checks passed. Combined fixture c4f4ba8f is published; its build PASS28.81s and GroundGeometryBeforeDebit regression PASS. This clears the identified constructor25cm structural defect; new combined live ground/F acceptance remains pending.
+All4 actual PNGs, hashes and logs/results are retained under main ignored `Artifacts/LootWorkflow/native-ground-76d9fa3e/`: corpse-and-bag00000.png, fixed-camera ground-unselected00000.png / ground-selected00000.png, and final-own-bag00000.png. Fresh functional rim review is pending; this is no object/texture/lighting appearance gate.
 
-Exactly one combined rendered attempt `network-20261025-162330-344` stopped before the first corpse click: real boar defeat and outer-body target/rim/bounds passed, then Stage17 repeatedly reported `CursorTarget Selected=None Expected=SFLootSourceActor_0`. Exact cause is unclassified; no floor/range cause inferred. Exact owned driver was stopped and runner cleanup completed; UE slot released. No new transfer/drop/F/capture observations. Earlier passing loops remain separate evidence.
+Reviewed ground geometry1715e683 freezes actual canonical/fallback bounds before debit and persists full pose/bounds. All8mesh/fallback/no-debit/oversized/off-centre dedicated-to-client outer trace and PostgreSQL restart checks passed. Live drop/F acceptance now uses this descriptor; the oversized/off-centre outer trace remains targeted evidence.
 
-One diagnostic-only probe `network-20261025-163935-217` on rename4a852610 plus diagnostics/access fix0fe5d46c returned `Observed`, InputSent=0. Camera lag after fixture teleport demonstrably invalidated the one-time projection: mouse stayed607,393 while current source projection moved888,584→960,634 over1s; initial view moved about14m. Deprojection succeeded, hit had no blocker, and expected root distance131.1cm was within300cm reach. Focus/WindowActive were1; NativeForeground0 is recorded but no focus cause is needed to explain the measured drift. Combined rebuild PASS14.09s; no workflow acceptance claimed; UE released.
+The earlier c4f4 loop stopped at stale first-corpse cursor coordinates. One diagnostic-only probe proved camera lag after fixture teleport moved the projection while the cursor stayed fixed; no obstruction/range cause. Reviewed fixture fix waits for2 stable camera/projection samples, freshly aims, requires2 exact normal Refresh selections and fails within8s. Its subsequent actual native click passed. Prior9163/d973 passes and frozen diagnostic evidence remain in the worker report.
 
 ## Evidence
 
-New combined `ground-native-combined-build-01.log` PASS28.81s and `ground-native-combined-geometry` PASS on c4f4ba8f. New full loop stopped at Stage17 before the first click. Earlier `cursor-combined-build-01.log` PASS30.92s, dedicated/coupling checks and90.4s native-cursor runtime PASS on9163eb2b stand;55s grounded loop, actual-map geometry, Panel/ExactActionTarget, release/cancel/bonus/privacy/service/durable checks remain applicable. Exact unique37%-condition/restart/concurrency/capacity and corrected ground outer geometry remain targeted evidence.
+Combined `stable-cursor-combined-build-01.log` PASS14.44s; full rendered runtime PASS51.8s on76d9fa3e. `ground-native-combined-geometry` PASS; reviewed NPC rename includes22 affected runtime checks and serialized-map/source-compatibility proof. Earlier Panel/ExternalCoupling/ExactActionTarget, release/cancel/bonus/privacy, ledger and PostgreSQL durability checks retain unchanged inputs. No full suite was run.
 
 | Required behavior | Current evidence |
 | --- | --- |
-| Corpse click | Observed native mouse-left press/release through existing E1 click handler; exact corpse+two windows, no direct-open fallback. |
-| Exact shared action opens corpse plus own bag | Observed in run03 for both real sources (native dispatch, not hardware key input). |
-| Own bag with other authorized inventories | Existing loot/trade/market WBP coupling regression passed (UI stack only); service authorization remains with existing callers and was not replaced by this test. |
-| Shift each actual row / native drag | Boar Shift and pelt native drag observed; rare bonus row drain targeted-test-only. |
-| Deliberate world drop / cancellation safety | Previous drop/model/CENTER direct pickup without loot widget observed; corrected outer geometry targeted PASS; native F new combined runtime pending; cancel/rejected-UI negatives targeted-only. |
-| Common target body/ground/harvest | Previous corpse outer geometry/rim and ground CENTER rim/target clear observed; corrected ground outer bounds targeted PASS; same-view selected/unselected pair not yet captured; harvest exactness targeted-only. |
-| Privacy and economic invariants | End-to-end observer barrier and exact final durable bags passed; range/invalid/capacity/unique-condition/concurrency/retry remain targeted/durable evidence. No live unique gear transfer claim. |
-
-## Blocked on
-
-No setup blocker claimed. Finish reviewed two-client acceptance before deployment; matching current client/server packages and actual durable service-host rollout remain required. The unused installed vendor-plugin manifest is not a demonstrated packaging blocker. Controller owns deployment readiness through the documented steam-server route; preserve other containers and rollback.
+| Corpse click + own/external windows | Observed native mouse-left press/release through existing E1 click handler; exact corpse+2 windows, no direct-open fallback. |
+| Nearby common action opens corpse | Observed exact shared action dispatch for authored wolf; native F input/guard dispatch separately observed on ground pickup. |
+| Own bag with other authorized inventories | Existing loot/trade/market WBP coupling regression passed (UI stack only); authorization remains existing callers, not replaced by the test. |
+| Shift each actual row / native drag | Guaranteed boar row Shift and pelt native drag observed; valid rare bonus row drain targeted-test-only. |
+| Deliberate drop / direct action pickup | Corrected ground model/descriptor and native F pickup with bag open, no loot widget, observed. Cancel/rejected-UI negatives targeted-only. |
+| Common target body/ground/harvest | Exact corpse/ground selection, overlay and target clear observed; actual same-view PNG pair retained for independent functional rim review. Harvest exactness and oversized/off-centre outer geometry targeted-only. |
+| Authority/privacy/economic invariants | End-to-end observer barrier and exact durable bags/2 receipts observed. Range/invalid/capacity/unique37%-condition/concurrency/retry/restart remain targeted/durable evidence; no live unique gear claim. |
 
 ## Next step
 
-Published fixture-only follow-up c4f4ba8f (compile PASS, new runtime pending): ground cursor projects outside the open bag, validates the shipped IMC_Player F mapping, and sends native F press/release through the character/controller guard instead of direct dispatch; the controller attempt count and durable pickup must both pass. A local camera requests a fixed-view unselected/selected ground pair clear of legs and the bottom prompt. Corpse click and existing privacy/SQL barriers stay intact.
+Controller reviews retained functional rim pair, then owns matching client/server packages, actual durable service-host rollout and rollback through documented existing deployment targets. Preserve other game/Forge containers and old-state/reward-route compatibility; don't substitute the historical unauthenticated E1 fixture. No further UE run is authorized from this checkpoint; all owned processes cleaned up and UE slot released.
 
-Minimal fixture-only fix prepared for review (not yet compiled/run): wait for two consecutive stable camera/projection samples before setting the real cursor, require two exact normal Refresh selections before native click, and fail within8s if settling/selection fails. No reproject/focus/direct-open fallback or product camera change. Controller owns validation authorization, matching release packages, actual durable hosts and rollback through the documented deployment target. Ground geometry fix remains reviewed/published/tested; no repeated asset audit. Source/body appearance, textures and lighting remain deferred; import629a0c84 stays mechanically accepted.
-
-Prior9163 passing run also logged Stage17 None three times over30s before click; its pass stays separate evidence. New measured probe classifies the stale projection, rather than inferring a cause from those old logs. No full workflow retry occurred.
+Source/body appearance, textures and lighting remain explicitly deferred; mechanical import629a0c84 stays accepted. The unused installed vendor-plugin manifest is not a demonstrated packaging blocker.
 
 ## Outcome
 
-In progress: earlier cursor/UI/center pickup observed pass; corrected ground outer geometry targeted PASS; combined native cursor/F/capture runtime and deployment integration remain open.
+Integrated native click/F loot workflow observed PASS. Fresh functional rim evidence review and deployment remain with the controller; targeted-only limitations are explicit above.
