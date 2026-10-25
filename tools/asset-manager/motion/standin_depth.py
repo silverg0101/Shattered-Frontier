@@ -9,6 +9,7 @@ background black, depth stretched over the body's own range - the conventions of
 on -Y / +X / -X, one ortho scale for all three), standin_<view>.png (shaded preview) and standin.json (ortho scale, bbox).
 """
 import json, math, os, sys
+sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))
 
 import bmesh
 import bpy
