@@ -15,3 +15,12 @@ public:
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Movement", meta=(ClampMin="0.5", ClampMax="1.2", Units="x"))
     float SpeedMultiplier = 1.10f;
 };
+
+/** Authored deep-snow travel area; uses the same predicted and authoritative terrain speed path. */
+UCLASS()
+class SHATTEREDFRONTIER_API ASFDeepSnowVolume : public ASFRoadSpeedVolume
+{
+    GENERATED_BODY()
+public:
+    ASFDeepSnowVolume();
+};

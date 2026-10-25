@@ -172,6 +172,35 @@ bool FSFE1RoadSpeedTest::RunTest(const FString& Parameters)
     return true;
 }
 
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFE1DeepSnowSpeedTest, "ShatteredFrontier.E1.Movement.DeepSnowSpeed",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+
+bool FSFE1DeepSnowSpeedTest::RunTest(const FString& Parameters)
+{
+    FMovementFixture Fixture;
+    if (!Fixture.Create(*this)) { return false; }
+    UWorld* World = Fixture.Simulation.GetTestWorld();
+    ASFDeepSnowVolume* Snow = World->SpawnActor<ASFDeepSnowVolume>();
+    if (!TestNotNull(TEXT("Deep snow volume spawned"), Snow)) { return false; }
+    TestEqual(TEXT("Shipped deep snow multiplier"), GetDefault<USFE1Settings>()->DeepSnowSpeedMultiplier, 0.8f);
+    TestEqual(TEXT("Authored volume uses shipped multiplier"), Snow->SpeedMultiplier, 0.8f);
+    Fixture.Pawn->GetCapsuleComponent()->SetShouldUpdatePhysicsVolume(false);
+    float PlainPeak = 0;
+    TestTrue(TEXT("Normal ground movement ticks"), Fixture.Tick(120, FVector::ForwardVector, &PlainPeak));
+    Fixture.Pawn->GetCapsuleComponent()->SetPhysicsVolume(Snow, true);
+    TestTrue(TEXT("Snow entry settles below the new cap"), Fixture.Tick(30, FVector::ForwardVector));
+    float SnowPeak = 0;
+    TestTrue(TEXT("Deep snow movement ticks"), Fixture.Tick(120, FVector::ForwardVector, &SnowPeak));
+    TestTrue(TEXT("Deep snow lowers actual movement speed to 5.6 m/s"), SnowPeak >= 550.0f && SnowPeak <= 561.0f);
+    TestEqual(TEXT("Server movement cap inside snow"), Fixture.Pawn->GetCharacterMovement()->GetMaxSpeed(), 560.0f);
+    Fixture.Pawn->GetCapsuleComponent()->SetPhysicsVolume(World->GetDefaultPhysicsVolume(), true);
+    float ReturnPeak = 0;
+    TestTrue(TEXT("Exit movement ticks"), Fixture.Tick(120, FVector::ForwardVector, &ReturnPeak));
+    TestTrue(TEXT("Normal and restored travel are 7.0 m/s"), PlainPeak >= 690.0f && PlainPeak <= 701.0f
+        && ReturnPeak >= 690.0f && ReturnPeak <= 701.0f);
+    return true;
+}
+
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFE1JumpAndLandingTest, "ShatteredFrontier.E1.Movement.JumpAndLanding",
     EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
 
