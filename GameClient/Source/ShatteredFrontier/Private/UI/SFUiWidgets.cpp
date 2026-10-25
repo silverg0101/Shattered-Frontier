@@ -95,6 +95,7 @@ void USFSelectableWidget::NativeOnMouseLeave(const FPointerEvent& InMouseEvent) 
 
 FReply USFSelectableWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
+    bLastClickShiftDown = InMouseEvent.IsShiftDown();
     if (InMouseEvent.GetEffectingButton() == EKeys::LeftMouseButton && OnClicked.IsBound()) { OnClicked.Broadcast(this); return FReply::Handled(); }
     return Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
 }
@@ -332,6 +333,7 @@ void USFSlotWidget::NativePreConstruct()
 
 FReply USFSlotWidget::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
+    bLastClickShiftDown = InMouseEvent.IsShiftDown();
     if (InMouseEvent.GetEffectingButton() == EKeys::LeftMouseButton && CanDrag())
     {
         if (OnClicked.IsBound()) { OnClicked.Broadcast(this); }

@@ -73,6 +73,7 @@ class SHATTEREDFRONTIER_API USFSelectableWidget : public USFUiWidget
 {
     GENERATED_BODY()
 public:
+    bool WasLastClickShiftDown() const { return bLastClickShiftDown; }
     UPROPERTY(BlueprintAssignable, Category = "SF") FSFUiSelectableClicked OnClicked;
 
     UFUNCTION(BlueprintCallable, Category = "SF UI") void SetSelected(bool bInSelected);
@@ -92,6 +93,7 @@ protected:
     UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UWidget> SelectFrame;
     bool bSelected = false;
     bool bPointerOver = false;
+    bool bLastClickShiftDown = false;
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSFUiClicked, class USFButtonWidget*, Source);
@@ -270,6 +272,7 @@ UCLASS(Abstract)
 class SHATTEREDFRONTIER_API USFSlotWidget : public USFSelectableWidget
 {
     GENERATED_BODY()
+    friend class FSFLootWorkflowNetcheck;
 public:
     // The one size of every box a player drags an item into or out of (bag grids, paper doll, trade / market / reward slots, the
     // hotbar), in kit art px: windows show art at 0.5, so 72 px on screen; the HUD hotbar is authored at half (also 72 px).

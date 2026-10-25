@@ -1,5 +1,7 @@
 # UI
 
+Inventory Shift transfer reads the originating selectable's pointer-event Shift state (`WasLastClickShiftDown`), preserving the input event through the existing click delegate. The explicit editor-only loot network fixture exercises native existing WBP click/drag/cancel handlers; layout remains in Widget Blueprints.
+
 Action targeting: `SFActionTargetComponent` now supplies one actor and cursor hit/ray to the highlight, `SFHudLayout` prompt and exact action handler. Selected dialogue/quest/market handlers receive that actor; the ordinary action path no longer chooses a second nearby object. Inventory layout/style is unchanged by the review fixes.
 
 Character creator logic: `FSFCreatorState` holds the selected Part 6 archetype, and `USFFrontEndCreator` exposes `GetAvailableArchetypeIds`, `GetArchetypeId`, and `SetArchetypeId` for a future owner-arranged WBP binding. The current creator WBP has no archetype slot; no layout was changed. `ASFFrontEndController` sends the selected id through the dev Gameplay.Host or IdentityGateway request. Focused automation: `ShatteredFrontier.FrontEnd.Archetypes`.

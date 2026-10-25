@@ -15,6 +15,7 @@
 #include "EngineUtils.h"
 #include "Net/UnrealNetwork.h"
 #include "TimerManager.h"
+#include "Tests/SFLootWorkflowNetcheck.h"
 
 USFLootComponent::USFLootComponent() { SetIsReplicatedByDefault(true); PrimaryComponentTick.bCanEverTick = true; }
 USFLootComponent* USFLootComponent::Find(const APlayerController* Controller)
@@ -199,6 +200,9 @@ void USFLootComponent::ClientCloseExternal_Implementation()
 void USFLootComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
     Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+#if WITH_EDITOR
+    FSFLootWorkflowNetcheck::Tick(*this);
+#endif
     auto* Player = Cast<ASFPlayerController>(GetOwner()); if (!Player) { return; }
     if (Player->IsLocalController() && ExternalWidget && ExternalSource && !Player->GetWindowStack()->IsOpen(ExternalWidget))
     { ExternalSource = nullptr; ExternalItems.Reset(); ServerCloseExternal(); }

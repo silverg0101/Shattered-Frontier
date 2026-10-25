@@ -52,6 +52,7 @@ UCLASS()
 class SHATTEREDFRONTIER_API ASFPlayerController : public APlayerController
 {
     GENERATED_BODY()
+    friend class FSFLootWorkflowNetcheck;
 public:
     int32 PartyMemberCount() const { return PartyView.Num(); }
     ASFPlayerController();

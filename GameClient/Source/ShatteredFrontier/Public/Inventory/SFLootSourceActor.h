@@ -20,6 +20,7 @@ UCLASS()
 class SHATTEREDFRONTIER_API ASFLootSourceActor : public AActor
 {
     GENERATED_BODY()
+    friend class FSFLootWorkflowNetcheck;
 public:
     ASFLootSourceActor();
     void Initialize(const FSFLootSourceSnapshot& Snapshot);

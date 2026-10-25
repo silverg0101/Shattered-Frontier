@@ -12,6 +12,7 @@ param(
     [switch]$AttributeSnapshotNetcheck,
     [switch]$GreenlandsAbilityNetcheck,
     [switch]$GreenlandsStatusNetcheck,
+    [switch]$LootWorkflowNetcheck,
     [ValidateSet('Release','Resurrection')][string]$DeathResolution = 'Release',
     [switch]$RestartMidDeath,
     [switch]$TargetScenario,
@@ -27,6 +28,13 @@ $editor = Join-Path $EngineRoot 'Engine\Binaries\Win64\UnrealEditor-Cmd.exe'
 $project = Join-Path $repo 'GameClient\ShatteredFrontier.uproject'
 $bridge = Join-Path $repo 'BackendServices\WorldContent.Tool\bin\Debug\net10.0\WorldContent.Tool.dll'
 $sdk = Join-Path $repo 'Artifacts\Persistence\Toolchains\dotnet-10.0.402\dotnet.exe'
+if ($LootWorkflowNetcheck -and (-not $Services -or $Clients -ne 2 -or
+    $Map -ne '/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook' -or
+    $GreenlandsDeathNetcheck -or $GreenlandsRepairNetcheck -or $GreenlandsArcherNetcheck -or $GreenlandsUnstuckNetcheck -or
+    $AttributeSnapshotNetcheck -or $GreenlandsAbilityNetcheck -or $GreenlandsStatusNetcheck -or $RestartMidDeath -or
+    $PartyScenario -or $PartyXpScenario -or $TargetScenario -or $SpawnOnly)) {
+    throw 'LootWorkflowNetcheck requires Silverbrook, two clients, Gameplay Services and no other scenario.'
+}
 if ($Services -and $TargetScenario) { throw 'Services ledger assertion requires the combat reward scenario.' }
 if ($GreenlandsRepairNetcheck -and (-not $Services -or $Clients -ne 2 -or
     $Map -ne '/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook' -or $GreenlandsDeathNetcheck -or
@@ -78,7 +86,8 @@ $null = New-Item -ItemType Directory -Path $root
 if ($Services) { . (Join-Path $PSScriptRoot 'InventoryLedgerHostFixture.ps1') }
 $fx = @{}
 $owned = [Collections.Generic.List[Diagnostics.Process]]::new()
-$scope = if ($GreenlandsStatusNetcheck) { 'Greenlands two-client typed status replication and Purify' }
+$scope = if ($LootWorkflowNetcheck) { 'Two-client actual boar/wolf defeat, personal corpse privacy, native inventory transfers and WorldMesh ground pickup' }
+    elseif ($GreenlandsStatusNetcheck) { 'Greenlands two-client typed status replication and Purify' }
     elseif ($GreenlandsAbilityNetcheck) { 'Greenlands two-client starter kit and equipped bow requirement' }
     elseif ($AttributeSnapshotNetcheck) { 'Greenlands two-client authoritative attribute restore and combat' }
     elseif ($GreenlandsArcherNetcheck) { 'Greenlands two-client bandit archer ranged hit and replicated tracer' }
@@ -196,7 +205,7 @@ try {
         }
     }
     $url = $result.map
-    $scenarioArg = if ($GreenlandsRepairNetcheck) { '-GreenlandsRepairNetcheck' } elseif ($GreenlandsArcherNetcheck) { '-GreenlandsArcherNetcheck' } elseif ($GreenlandsStatusNetcheck -or $GreenlandsAbilityNetcheck) { '-GreenlandsAbilityNetcheck' } elseif ($GreenlandsUnstuckNetcheck) { '-GreenlandsUnstuckNetcheck' } elseif ($GreenlandsDeathNetcheck) { '-GreenlandsDeathNetcheck' } elseif ($PartyScenario) { '-PartyScenario' } elseif ($Clients -gt 1) { '-CombatGroupScenario' } elseif ($TargetScenario) { '-CombatTargetScenario' } else { '-CombatPilotScenario' }
+    $scenarioArg = if ($LootWorkflowNetcheck) { '-LootWorkflowNetcheck' } elseif ($GreenlandsRepairNetcheck) { '-GreenlandsRepairNetcheck' } elseif ($GreenlandsArcherNetcheck) { '-GreenlandsArcherNetcheck' } elseif ($GreenlandsStatusNetcheck -or $GreenlandsAbilityNetcheck) { '-GreenlandsAbilityNetcheck' } elseif ($GreenlandsUnstuckNetcheck) { '-GreenlandsUnstuckNetcheck' } elseif ($GreenlandsDeathNetcheck) { '-GreenlandsDeathNetcheck' } elseif ($PartyScenario) { '-PartyScenario' } elseif ($Clients -gt 1) { '-CombatGroupScenario' } elseif ($TargetScenario) { '-CombatTargetScenario' } else { '-CombatPilotScenario' }
     $serverFlags = @('-server',('-port='+$Port),'-multihome=127.0.0.1',$scenarioArg)
     if ($GreenlandsStatusNetcheck) { $serverFlags += '-GreenlandsStatusNetcheck' }
     if ($GreenlandsDeathNetcheck) { $serverFlags += "-DeathResolution=$DeathResolution" }
@@ -216,6 +225,29 @@ try {
         $serverEnv = @{ SF_INVENTORY_LEDGER_TOKEN=$fx.token; SF_GAMEPLAY_TOKEN=$gameplayToken }
         Invoke-WithEnv $serverEnv { $script:server = Start-Owned 'server' $url $serverFlags }
     } else { $server = Start-Owned 'server' $url $serverFlags }
+    if ($LootWorkflowNetcheck) {
+        foreach ($role in 1..2) {
+            $identity = @('alpha','beta')[$role - 1]; $label = @('Driver','Observer')[$role - 1]
+            $null = Start-Owned "client$role" ("127.0.0.1:$Port`?SFDevCharacter=$identity") @('-game','-LootWorkflowNetcheck',"-LootWorkflowRole=$label")
+        }
+        foreach ($role in 1..2) {
+            $process = @($owned | Where-Object Id -eq (@($result.runs | Where-Object name -eq "client$role")[0].pid))[0]
+            $pattern = if ($role -eq 1) { 'LOOT_WORKFLOW_DONE NativeShift=1 NativeDrag=1 GroundModel=1 PickupWidget=0 TargetCleared=1' } else { 'LOOT_WORKFLOW_OBSERVER PersonalSources=0 GroundMesh=1' }
+            Wait-Log $process "client$role" $pattern 180
+        }
+        $driverView = Get-LedgerView $fx 'ctn_dev_alpha'; $observerView = Get-LedgerView $fx 'ctn_dev_beta'
+        if ([int]$driverView.items['item/boar_hide'] -lt 2 -or [int]$driverView.items['item/wolf_pelt'] -lt 1 -or
+            [int]$observerView.items['item/boar_hide'] -ne 0 -or [int]$observerView.items['item/wolf_pelt'] -ne 0) {
+            throw 'Final durable bags do not match the authorized corpse/pickup transfers.'
+        }
+        $sources = Invoke-LedgerSql $fx "SELECT count(*) FROM inventory.operation_receipts WHERE operation_id LIKE 'world-loot-defeat/v1:%'" $fx.db
+        if ($sources -ne '2') { throw "Expected two durable canonical defeat sources, observed $sources." }
+        foreach ($run in $result.runs) {
+            if ((Get-Content $run.log -Raw) -match 'LOOT_WORKFLOW_FAIL|Fatal error:|Assertion failed:') { throw "Loot workflow failure in $($run.name)." }
+        }
+        $result.status='Passed'; $result.defeats=2; $result.driver=$driverView.line; $result.observer=$observerView.line
+        return
+    }
     if ($GreenlandsRepairNetcheck) {
         [void](Invoke-LedgerSql $fx @'
 SET ROLE ledger_owner;

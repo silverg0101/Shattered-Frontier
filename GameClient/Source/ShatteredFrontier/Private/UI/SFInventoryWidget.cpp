@@ -165,7 +165,7 @@ void USFInventoryWidget::SelectCell(int32 Index)
 void USFInventoryWidget::HandleSlotClicked(USFSelectableWidget* Source)
 {
     const int32 Index = Cells.IndexOfByKey(Cast<USFSlotWidget>(Source)); SelectCell(Index);
-    if (ExternalLoot && ShownItems.IsValidIndex(Index) && FSlateApplication::Get().GetModifierKeys().IsShiftDown())
+    if (ExternalLoot && ShownItems.IsValidIndex(Index) && Source && Source->WasLastClickShiftDown())
     { const auto& Item = ShownItems[Index]; ExternalLoot->RequestTake(Item.DefinitionId, Item.Count, Item.InstanceId); }
 }
 

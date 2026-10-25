@@ -14,6 +14,7 @@ UCLASS()
 class SHATTEREDFRONTIER_API USFLootComponent : public UActorComponent
 {
     GENERATED_BODY()
+    friend class FSFLootWorkflowNetcheck;
 public:
     USFLootComponent();
     static USFLootComponent* Find(const APlayerController* Controller);
