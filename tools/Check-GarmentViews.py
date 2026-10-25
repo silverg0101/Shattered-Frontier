@@ -30,6 +30,18 @@ for p in paths:
             if 0 <= yy < n and 0 <= xx < n and bg[yy, xx] and not seen[yy, xx]:
                 seen[yy, xx] = True; q.append((yy, xx))
     enclosed = int((bg & ~seen).sum())
-    print(f'VIEWCHECK {p} enclosed_background_px={enclosed} {"FAIL" if enclosed > limit else "ok"}')
-    bad |= enclosed > limit
+    fg = ~bg; lab = np.zeros(fg.shape, dtype=np.int32); blobs = 0  # one garment per image: a turnaround sheet in one file builds several garments side by side (v3)
+    for y0, x0 in zip(*np.nonzero(fg)):
+        if lab[y0, x0]:
+            continue
+        blobs += 1; lab[y0, x0] = blobs; q = deque([(y0, x0)]); size = 0
+        while q:
+            y, x = q.popleft(); size += 1
+            for yy, xx in ((y + 1, x), (y - 1, x), (y, x + 1), (y, x - 1)):
+                if 0 <= yy < n and 0 <= xx < n and fg[yy, xx] and not lab[yy, xx]:
+                    lab[yy, xx] = blobs; q.append((yy, xx))
+    sizes = np.bincount(lab.ravel())[1:]
+    garments = int((sizes > 0.02 * fg.sum()).sum())
+    print(f'VIEWCHECK {p} enclosed_background_px={enclosed} garments={garments} {"FAIL" if enclosed > limit or garments != 1 else "ok"}')
+    bad |= enclosed > limit or garments != 1
 sys.exit(1 if bad else 0)

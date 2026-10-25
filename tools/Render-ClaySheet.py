@@ -13,6 +13,16 @@ src, out = (os.path.abspath(p) for p in sys.argv[sys.argv.index('--') + 1:][:2])
 tex = '--tex' in sys.argv
 ext = os.path.splitext(src)[1].lower()
 bpy.ops.wm.read_factory_settings(use_empty=True)
+if ext == '.blend':  # a cleaned garment .blend (cm, skinned): keep the mesh only, in metres, so the sheet and --section frame match the GLB path
+    bpy.ops.wm.open_mainfile(filepath=src)
+    for o in [o for o in bpy.data.objects if o.type != 'MESH']:
+        bpy.data.objects.remove(o)
+    for o in bpy.data.objects:
+        o.parent = None; o.modifiers.clear(); o.matrix_world.identity(); o.data.transform(__import__('mathutils').Matrix.Scale(0.01, 4))
+    tmp = os.path.join(os.environ.get('TEMP', '.'), 'claysheet_tmp.glb')  # round-trip through a GLB: the loaded scene's own render settings garbled the tiles
+    bpy.ops.export_scene.gltf(filepath=tmp, export_apply=False)
+    bpy.ops.wm.read_factory_settings(use_empty=True)
+    src, ext = tmp, '.glb'
 {'.glb': lambda: bpy.ops.import_scene.gltf(filepath=src), '.fbx': lambda: bpy.ops.import_scene.fbx(filepath=src),
  '.obj': lambda: bpy.ops.wm.obj_import(filepath=src)}[ext]()
 meshes = [o for o in bpy.data.objects if o.type == 'MESH']

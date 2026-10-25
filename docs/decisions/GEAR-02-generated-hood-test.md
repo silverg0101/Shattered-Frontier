@@ -77,3 +77,43 @@ Evidence: `docs/evidence/player-outfit-hood/round2/` (`edwin_{front,three_quarte
 | 7 Walking | Skin weights are averaged over the cloth six times, so the cape moves as one piece. |
 
 Findings: the cleanup is now about 40 s; clay and section sheets use `Render-ClaySheet.py`. The cape still hangs on the shoulders and upper arms only (hem about mid upper arm), so the lower back shows skin below it when running: that is the designed length, not a tear.
+
+## Round 3: fit the approved v4 hood without reshaping it
+
+Input: the owner-approved raw Forge mesh `ArtSource/Characters/Player/outfit-asset/hood_v4/hood.glb` (100k tris, closed double wall 2 to 19 mm). Evidence: `docs/evidence/player-outfit-hood/round3/` (`edwin_{front,three_quarter,side,walk_back}.jpg`, `hood_generated_clay.png` raw, `hood_cleaned_clay.png`, `hood_cleaned_section.png`, `stages/old_*.png` the round-2 stages). Not self-judged.
+
+### Which stage broke the shape (round-2 script, clay sheet per stage incl. top and bottom)
+
+1. **Fit (worst)**: the garment's inner neck ring (31.7 x 33.1 cm) was matched to the neck (13.6 x 15.7), giving anisotropic scales x0.45 y0.50 z0.63 (hood) / 0.69 (cape): a narrow, pointed hood and a step at the ring.
+2. **calm_hem** flattened the cape folds.
+3. **Shrinkwrap** moved cloth up to 99.5 mm onto a convex hull of the head mesh including its shoulder bib: stretched strips and a step ring at the back, chest lumps, a flat crown.
+Round 3 deletes all three. Kept: weld, decimate (collapse to budget only), bake, skin weights.
+
+### Fit method (all slots)
+
+`tools/Clean-GeneratedGarment.py --slot <slot>` (default head) reads `tools/garment-slots/<slot>.json`:
+- weld (0.00001 units; 0.0008 welded across the thin wall), drop specks, PCA check (main axis 8.1 deg off z is the hood's own asymmetry: reported, not rotated; fails over 30 deg);
+- inner layer = faces that see the slot axis without crossing their own wall; its boundary loops are the openings (6 on the hood);
+- least-squares per-axis scale + translation of garment features (top, extreme points, slices, opening loops in order along the axis) onto the anchors, each pushed out by its region clearance; an axis with no scale data takes the mean scale;
+- push-out with Shrinkwrap "outside" semantics measured on the inner layer (skin cut + missing region offset, fading toward openings), turned into a smooth voxel displacement field that moves both layers, so the wall thickness is kept; "radial" regions push away from the slot axis first, skin normal in the last two passes;
+- collision is OrlandoBare (full torso) + head mesh + its convex hull above 166 cm; swinging arms are not collision below 146 cm (the cape is skinned to them);
+- checks that fail the run: ring residual 8 mm, drift (unmoved region mean 1.5 / max 5 mm; whole garment vs the pushed raw), clearance >= 0.8 x offset and zero skin inside, 378 back rays, then A-pose / arms down / crouch with zero skin inside.
+
+Slot JSON: `item`, `axis`, `anchors` (name, `ring` centre+radius or `point`+dir, measured from a `bone` [`toward`/`normal`/`along_cm`] or `height_cm`, `garment` feature, `match` axes, `region`), `regions` (name, `offset_mm` tight 3 to 5 / loose 15 to 40, `push`, z range), `hull_above_cm`, `arms_not_collision`, `arm_caps_above_cm`, `opening_fade_cm`, `push_radii_cm`, `loops`, `tris`, `poses`, `limits`. Head is filled; chest/legs/feet/hands hold measured left-side anchors (`--measure --slot <slot>` rewrites them) and are untried.
+
+### Measurements (v4, Orlando)
+
+| Check | Result |
+|---|---|
+| Fit | uniform 58.94 cm/unit (anisotropy 1.000); residuals head -1.0, neck +1.0, crown/back 0 mm; hem z 134.5, top 190.7 cm; fit 8.6 s, whole run 20 s |
+| Push | 7187 inner verts inside skin before; moved 42605 of 49867, median 14.9 mm (limit 15), max 96.1 mm at the shoulder (24, 1, 157) |
+| Drift | unmoved region mean 0.27 / max 1.34 mm; whole garment vs pushed raw mean 0.14 / max 1.63 mm |
+| Mesh | 18999 tris (raw 99995), 5 boundary edges, 22 non-manifold edges, 10 specks dropped |
+| Clearance A-pose | cape min 11.9 / median 24.1 mm, head min 3.7 / median 42.5 mm, 0 short, 0 inside |
+| Arms down | cape min 2.6, head 4.1 mm, 0 inside |
+| Crouch | cape min 12.2, head 3.7 mm, 0 inside |
+| See-through | 0 of 378 back rays; face 100% visible from the front |
+
+Round-2 items on v4: 1 cape shape, 2 hem height (z 134.5 cm) and 5 neck band come from v4's own shape, not sculpted. 3 head clearance min 3.7 mm, median 42.5 mm, no skin inside. 4 faceting: 19k tris. 6 colour: bake mean (0.243, 0.207, 0.169) graded to sRGB (0.30, 0.225, 0.185), a cooler mid-brown; 24 px twill + slub on the 2048 map (round 2: 10 px, lost at play distance). 7 slits/specks/pinches: specks dropped, 5 boundary edges left (pinholes holes_fill cannot close), drift max 1.6 mm.
+
+Reproduce: `blender --factory-startup -b --python tools/Clean-GeneratedGarment.py -- --garment GameClient/ArtSource/Characters/Player/outfit-asset/hood_v4/hood.glb --out Artifacts/Characters/PlayerBase/hood/hood.fbx`, then the import/author/build/capture steps above (delete `OutfitAsset/Hood/` first).

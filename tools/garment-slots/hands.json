@@ -1,0 +1,20 @@
+{
+  "slot": "hands",
+  "item": "Gloves",
+  "note": "Not yet used by a garment. Rings measured on Orlando by Clean-GeneratedGarment.py --measure --slot hands (body cross-section at the bone's head, perpendicular to the way to 'toward' or to 'normal'). Same format as head.json; 'loop' anchors match the garment's inner-layer boundary loops in order along the slot axis. Left side only so far.",
+  "loops": 1,
+  "anchors": [
+    {"name": "wrist_l", "kind": "ring", "bone": "hand_l", "toward": "middle_metacarpal_l", "reach_cm": 8, "garment": "loop", "match": ["x", "y", "z", "rx", "ry"], "centre": [49.7, -15.2, 111.4], "radius": [2.6, 2.6, 3.1]}
+  ],
+  "axis": "z",
+  "regions": [
+    {"name": "body", "kind": "loose", "offset_mm": 15}
+  ],
+  "region_blend_cm": 12,
+  "opening_fade_cm": 6,
+  "push_margin_mm": 2,
+  "push_radii_cm": [6, 5, 4, 3, 2, 1, 1],
+  "tris": 19000,
+  "poses": ["a_pose", "arms_down", "crouch"],
+  "limits": {"ring_residual_mm": 8, "min_clearance_factor": 0.8, "median_move_mm": 15, "drift_mean_mm": 1.5, "drift_max_mm": 5}
+}

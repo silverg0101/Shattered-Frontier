@@ -1,0 +1,21 @@
+{
+  "slot": "legs",
+  "item": "Trousers",
+  "note": "Not yet used by a garment. Rings measured on Orlando by Clean-GeneratedGarment.py --measure --slot legs (body cross-section at the bone's head, perpendicular to the way to 'toward' or to 'normal'). Same format as head.json; 'loop' anchors match the garment's inner-layer boundary loops in order along the slot axis. Left side only so far.",
+  "loops": 3,
+  "anchors": [
+    {"name": "waist", "kind": "ring", "bone": "spine_01", "reach_cm": 30, "garment": "loop", "match": ["x", "y", "z", "rx", "ry"], "centre": [0.0, -2.2, 106.4], "radius": [18.2, 11.2, 2.6]},
+    {"name": "ankle_l", "kind": "ring", "bone": "foot_l", "normal": [0, 0, 1], "along_cm": 4, "reach_cm": 10, "garment": "loop", "match": ["z"], "centre": [13.2, 0.6, 13.0], "radius": [3.4, 4.8, 0.0]}
+  ],
+  "axis": "z",
+  "regions": [
+    {"name": "body", "kind": "loose", "offset_mm": 15}
+  ],
+  "region_blend_cm": 12,
+  "opening_fade_cm": 6,
+  "push_margin_mm": 2,
+  "push_radii_cm": [6, 5, 4, 3, 2, 1, 1],
+  "tris": 19000,
+  "poses": ["a_pose", "arms_down", "crouch"],
+  "limits": {"ring_residual_mm": 8, "min_clearance_factor": 0.8, "median_move_mm": 15, "drift_mean_mm": 1.5, "drift_max_mm": 5}
+}
