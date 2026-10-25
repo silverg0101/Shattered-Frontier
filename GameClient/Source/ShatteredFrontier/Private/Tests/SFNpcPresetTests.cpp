@@ -111,6 +111,26 @@ bool FSFNpcPresetRuntimeTest::RunTest(const FString& Parameters)
     Reset(TEXT("npc/bandit_archer")); Npc->ReceivePackAssist(Victim, TEXT("preset_target"));
     AdvanceAssistTime(); Npc->Tick(0);
     TestTrue(TEXT("Same packmate assisted after shipped two seconds"), Packmate->HasThreatFor(Victim));
+    UStaticMesh* ValidBody = Body->GetStaticMesh();
+    const FString ValidDefinition = Npc->GetCreatureId();
+    const FVector ValidScale = Body->GetRelativeScale3D();
+    const FString BadAssets[] = {TEXT("/Engine/BasicShapes/Missing.Missing"), TEXT("/Engine/BasicShapes/BasicShapeMaterial.BasicShapeMaterial")};
+    for (const FString& BadAsset : BadAssets)
+    {
+        FFileHelper::SaveStringToFile(Source.Replace(TEXT("/Engine/BasicShapes/Cube.Cube"), *BadAsset), *(Scratch / TEXT("bad-asset.json")));
+        TestFalse(TEXT("Missing and wrong-type mesh assets reject the catalogue"), SFNpcProfiles::Load(Scratch / TEXT("bad-asset.json"), Scratch, Profiles, Error));
+        TestTrue(TEXT("Asset admission error identifies failed reference"), Error.Contains(BadAsset));
+        TestEqual(TEXT("Asset rejection preserves valid catalogue"), Profiles.Num(), 7);
+        // Simulate an asset-stripped server-admitted descriptor reaching a rendering consumer.
+        auto& Alternate = Profiles[TEXT("npc/reuse_archer_fixture")];
+        const FSoftObjectPath ValidPath = Alternate.Presentation.StaticMeshPath;
+        Alternate.Presentation.StaticMeshPath = FSoftObjectPath(BadAsset);
+        AddExpectedError(TEXT("NPC_PRESENTATION_UNAVAILABLE"), EAutomationExpectedErrorFlags::Contains, 1);
+        TestFalse(TEXT("Actual ConfigureCreature rejects unusable body asset"), Npc->ConfigureCreature(TEXT("npc/reuse_archer_fixture")));
+        TestEqual(TEXT("Failed configuration retains authoritative definition"), Npc->GetCreatureId(), ValidDefinition);
+        TestTrue(TEXT("Failed configuration retains visible body and transform"), Body->GetStaticMesh() == ValidBody && Body->GetRelativeScale3D().Equals(ValidScale));
+        Alternate.Presentation.StaticMeshPath = ValidPath;
+    }
     return true;
 }
 #endif

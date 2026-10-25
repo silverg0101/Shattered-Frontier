@@ -355,22 +355,26 @@ void ASFPilotBoar::PostInitializeComponents()
     ApplyPresentation();
 }
 
-void ASFPilotBoar::ApplyPresentation()
+bool ASFPilotBoar::ApplyPresentation(const SFNpcProfiles::FProfile* Profile)
 {
-    const auto* Profile = GetNpcProfile();
-    if (!Profile || !Body || !Label) return;
+    if (!Profile) Profile = GetNpcProfile();
+    if (!Profile || !Body || !Label) return false;
     const auto& Presentation = Profile->Presentation;
+    UStaticMesh* BodyMesh = nullptr;
+    // Resolve before mutating any body state. A failed reconfiguration retains its prior valid profile and body.
+    if (!IsRunningDedicatedServer())
+    {
+        BodyMesh = Cast<UStaticMesh>(Presentation.StaticMeshPath.TryLoad());
+        if (!BodyMesh)
+        { UE_LOG(LogTemp, Error, TEXT("NPC_PRESENTATION_UNAVAILABLE Definition=%s Mesh=%s"), *Profile->DefinitionId, *Presentation.StaticMeshPath.ToString()); return false; }
+    }
     GetCapsuleComponent()->SetCapsuleSize(Presentation.CapsuleRadiusCm, Presentation.CapsuleHalfHeightCm);
     Body->SetRelativeScale3D(Presentation.BodyScale);
     Label->SetRelativeLocation(FVector(0, 0, Presentation.LabelHeightCm));
     Label->SetWorldSize(Presentation.LabelWorldSizeCm);
     // Static-body mode has no animation asset. Asset references are release-authored, never client supplied.
-    if (!IsRunningDedicatedServer())
-    {
-        UStaticMesh* BodyMesh = Cast<UStaticMesh>(Presentation.StaticMeshPath.TryLoad());
-        if (!BodyMesh) { UE_LOG(LogTemp, Error, TEXT("NPC_PRESENTATION_UNAVAILABLE Definition=%s Mesh=%s"), *CreatureId, *Presentation.StaticMeshPath.ToString()); }
-        Body->SetStaticMesh(BodyMesh);
-    }
+    if (BodyMesh) Body->SetStaticMesh(BodyMesh);
+    return true;
 }
 
 void ASFPilotBoar::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -425,8 +429,8 @@ bool ASFPilotBoar::ConfigureCreature(const FString& DefinitionId)
     bool bUnique = false;
     if (!ResolveCreatureLoot(DefinitionId, TableId, bUnique))
     { UE_LOG(LogTemp, Error, TEXT("NPC_PROFILE_UNKNOWN Definition=%s"), *DefinitionId); return false; }
+    if (!ApplyPresentation(SFNpcProfiles::Find(DefinitionId))) return false;
     CreatureId = DefinitionId; LootTableId = TableId; bSingleDrop = bUnique;
-    ApplyPresentation();
     return true;
 }
 

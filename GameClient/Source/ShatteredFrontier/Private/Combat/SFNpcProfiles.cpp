@@ -1,5 +1,6 @@
 #include "Combat/SFNpcProfiles.h"
 #include "Dom/JsonObject.h"
+#include "Engine/StaticMesh.h"
 #include "Misc/FileHelper.h"
 #include "Misc/Paths.h"
 #include "Misc/PackageName.h"
@@ -63,7 +64,7 @@ namespace
             Number(Row, TEXT("ranged_swing_seconds"), 1, 4, Out.RangedSwingSeconds);
     }
 
-    bool Presentation(const FJsonObject& Row, SFNpcProfiles::FPresentation& Out)
+    bool Presentation(const FJsonObject& Row, SFNpcProfiles::FPresentation& Out, FString& Error)
     {
         FString Mesh, Animation;
         const TArray<TSharedPtr<FJsonValue>>* Scale = nullptr;
@@ -81,6 +82,9 @@ namespace
             if (!(*Scale)[Index]->TryGetNumber(Values[Index]) || !FMath::IsFinite(Values[Index]) || Values[Index] < .01 || Values[Index] > 1.3) return false;
         Out.StaticMeshPath = FSoftObjectPath(Mesh);
         Out.BodyScale = FVector(Values[0], Values[1], Values[2]);
+        // Render assets may be stripped from dedicated cooks. Editor/client release admission must close the asset reference.
+        if (!IsRunningDedicatedServer() && !Cast<UStaticMesh>(Out.StaticMeshPath.TryLoad()))
+        { Error = FString::Printf(TEXT("NPC static_mesh is missing or not a StaticMesh: %s"), *Mesh); return false; }
         return true;
     }
 
@@ -114,8 +118,9 @@ bool SFNpcProfiles::Load(const FString& CataloguePath, const FString& LootRulesD
     TMap<FString, FBehavior> Behaviors;
     TMap<FString, FPresentation> Presentations;
     if (!Presets(*Root, TEXT("behavior_presets"), Behaviors, Behavior) ||
-        !Presets(*Root, TEXT("presentation_presets"), Presentations, Presentation))
-    { Error = TEXT("Invalid NPC behavior or presentation presets"); return false; }
+        !Presets(*Root, TEXT("presentation_presets"), Presentations,
+            [&Error](const FJsonObject& Row, FPresentation& OutPreset) { return Presentation(Row, OutPreset, Error); }))
+    { if (Error.IsEmpty()) Error = TEXT("Invalid NPC behavior or presentation presets"); return false; }
     TMap<FString, FProfile> Candidate;
     for (const auto& Value : *Rows)
     {

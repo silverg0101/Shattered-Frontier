@@ -286,7 +286,7 @@ private:
     void RetaliateAgainst(ASFE1Character* Attacker);
     UFUNCTION() void OnRep_Health();
     UFUNCTION() void OnRep_CreatureId();
-    void ApplyPresentation();
+    bool ApplyPresentation(const SFNpcProfiles::FProfile* Profile = nullptr);
     UPROPERTY(ReplicatedUsing=OnRep_Health) int32 CurrentHealth = 0;
     UPROPERTY(Replicated) int32 MaximumHealthValue = 0;
     double CombatSwingSecondsValue = 1.6, CombatSwingDamageValue = 23.5;

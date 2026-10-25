@@ -66,7 +66,12 @@ Schema 1 is rejected so an older consumer cannot silently ignore required preset
 | ranged_swing_seconds | s | 1–4 | 2.8 |
 
 Presentation references use a valid `/Game/` or `/Engine/` static-mesh soft path
-without subobjects or traversal. The shipped mesh remains `/Engine/BasicShapes/Cube.Cube`.
+without subobjects or traversal. Editor/client catalogue admission also resolves the
+reference as a StaticMesh and rejects missing/wrong-type assets transactionally.
+Dedicated cooks may strip render assets, so they validate the descriptor without
+loading the mesh; renderer asset closure is a required release gate. Actual actor
+configuration also resolves before changing any state, preserving the previous
+profile/body on failure. The shipped mesh remains `/Engine/BasicShapes/Cube.Cube`.
 `body_scale` is a finite three-number array, each 0.01–1.3, default `[1.3,0.7,0.7]`.
 Capsule radius is 1–55 cm (55 default); half-height is radius–65 cm (65 default).
 Label height is 0–130 cm (130 default); world size is 1–34 cm (34 default).
