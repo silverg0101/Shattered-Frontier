@@ -29,6 +29,7 @@ static const char* Progression_method_names[] = {
   "/sf.progression.v1.Progression/ApplyReceipt",
   "/sf.progression.v1.Progression/GetCharacterState",
   "/sf.progression.v1.Progression/SavePosition",
+  "/sf.progression.v1.Progression/CommitUnstuck",
   "/sf.progression.v1.Progression/ReportDeath",
   "/sf.progression.v1.Progression/ClearDeath",
   "/sf.progression.v1.Progression/LearnRecipe",
@@ -46,10 +47,11 @@ Progression::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channe
   , rpcmethod_ApplyReceipt_(Progression_method_names[1], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_GetCharacterState_(Progression_method_names[2], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_SavePosition_(Progression_method_names[3], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_ReportDeath_(Progression_method_names[4], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_ClearDeath_(Progression_method_names[5], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_LearnRecipe_(Progression_method_names[6], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_EndSession_(Progression_method_names[7], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_CommitUnstuck_(Progression_method_names[4], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_ReportDeath_(Progression_method_names[5], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_ClearDeath_(Progression_method_names[6], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_LearnRecipe_(Progression_method_names[7], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_EndSession_(Progression_method_names[8], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   {}
 
 ::grpc::Status Progression::Stub::CreateCharacter(::grpc::ClientContext* context, const ::sf::progression::v1::CreateCharacterRequest& request, ::sf::progression::v1::CreateCharacterReply* response) {
@@ -140,6 +142,29 @@ void Progression::Stub::async::SavePosition(::grpc::ClientContext* context, cons
 ::grpc::ClientAsyncResponseReader< ::sf::progression::v1::SavePositionReply>* Progression::Stub::AsyncSavePositionRaw(::grpc::ClientContext* context, const ::sf::progression::v1::SavePositionRequest& request, ::grpc::CompletionQueue* cq) {
   auto* result =
     this->PrepareAsyncSavePositionRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
+::grpc::Status Progression::Stub::CommitUnstuck(::grpc::ClientContext* context, const ::sf::progression::v1::CommitUnstuckRequest& request, ::sf::progression::v1::SavePositionReply* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::sf::progression::v1::CommitUnstuckRequest, ::sf::progression::v1::SavePositionReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_CommitUnstuck_, context, request, response);
+}
+
+void Progression::Stub::async::CommitUnstuck(::grpc::ClientContext* context, const ::sf::progression::v1::CommitUnstuckRequest* request, ::sf::progression::v1::SavePositionReply* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::sf::progression::v1::CommitUnstuckRequest, ::sf::progression::v1::SavePositionReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_CommitUnstuck_, context, request, response, std::move(f));
+}
+
+void Progression::Stub::async::CommitUnstuck(::grpc::ClientContext* context, const ::sf::progression::v1::CommitUnstuckRequest* request, ::sf::progression::v1::SavePositionReply* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_CommitUnstuck_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::sf::progression::v1::SavePositionReply>* Progression::Stub::PrepareAsyncCommitUnstuckRaw(::grpc::ClientContext* context, const ::sf::progression::v1::CommitUnstuckRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::sf::progression::v1::SavePositionReply, ::sf::progression::v1::CommitUnstuckRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_CommitUnstuck_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::sf::progression::v1::SavePositionReply>* Progression::Stub::AsyncCommitUnstuckRaw(::grpc::ClientContext* context, const ::sf::progression::v1::CommitUnstuckRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncCommitUnstuckRaw(context, request, cq);
   result->StartCall();
   return result;
 }
@@ -280,6 +305,16 @@ Progression::Service::Service() {
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       Progression_method_names[4],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< Progression::Service, ::sf::progression::v1::CommitUnstuckRequest, ::sf::progression::v1::SavePositionReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](Progression::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::sf::progression::v1::CommitUnstuckRequest* req,
+             ::sf::progression::v1::SavePositionReply* resp) {
+               return service->CommitUnstuck(ctx, req, resp);
+             }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      Progression_method_names[5],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
       new ::grpc::internal::RpcMethodHandler< Progression::Service, ::sf::progression::v1::ReportDeathRequest, ::sf::progression::v1::DeathState, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](Progression::Service* service,
              ::grpc::ServerContext* ctx,
@@ -288,7 +323,7 @@ Progression::Service::Service() {
                return service->ReportDeath(ctx, req, resp);
              }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
-      Progression_method_names[5],
+      Progression_method_names[6],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
       new ::grpc::internal::RpcMethodHandler< Progression::Service, ::sf::progression::v1::ClearDeathRequest, ::sf::progression::v1::DeathState, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](Progression::Service* service,
@@ -298,7 +333,7 @@ Progression::Service::Service() {
                return service->ClearDeath(ctx, req, resp);
              }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
-      Progression_method_names[6],
+      Progression_method_names[7],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
       new ::grpc::internal::RpcMethodHandler< Progression::Service, ::sf::progression::v1::LearnRecipeRequest, ::sf::progression::v1::LearnRecipeReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](Progression::Service* service,
@@ -308,7 +343,7 @@ Progression::Service::Service() {
                return service->LearnRecipe(ctx, req, resp);
              }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
-      Progression_method_names[7],
+      Progression_method_names[8],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
       new ::grpc::internal::RpcMethodHandler< Progression::Service, ::sf::progression::v1::EndSessionRequest, ::sf::progression::v1::EndSessionReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](Progression::Service* service,
@@ -344,6 +379,13 @@ Progression::Service::~Service() {
 }
 
 ::grpc::Status Progression::Service::SavePosition(::grpc::ServerContext* context, const ::sf::progression::v1::SavePositionRequest* request, ::sf::progression::v1::SavePositionReply* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status Progression::Service::CommitUnstuck(::grpc::ServerContext* context, const ::sf::progression::v1::CommitUnstuckRequest* request, ::sf::progression::v1::SavePositionReply* response) {
   (void) context;
   (void) request;
   (void) response;

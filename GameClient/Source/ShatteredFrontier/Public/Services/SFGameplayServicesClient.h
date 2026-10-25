@@ -45,7 +45,7 @@ public:
     bool Validate(FString& Error) const;
 };
 
-enum class ESFGameplayRpc : uint8 { GrantDefeatReward, CreateSharedDefeatDrop, ClaimSharedDefeatDrop, ApplyReceipt, GetCharacterState, EndSession, CreateCharacter, LearnRecipe, ClaimPlot, GetClaim, Place, Remove, Craft, ListStructures, Grant, SavePosition, ReportDeath, ClearDeath,
+enum class ESFGameplayRpc : uint8 { GrantDefeatReward, CreateSharedDefeatDrop, ClaimSharedDefeatDrop, ApplyReceipt, GetCharacterState, EndSession, CreateCharacter, LearnRecipe, ClaimPlot, GetClaim, Place, Remove, Craft, ListStructures, Grant, SavePosition, CommitUnstuck, ReportDeath, ClearDeath,
     // Exchange (proto/sf/exchange/v1), carried by the Backend transport over the same Gameplay.Host channel.
     ExchangeWallet, OfferTrade, AcceptTrade, CancelTrade, ListItem, BuyListing, CancelListing, ListListings,
     GetGatheringNode, ListGatheringZoneNodes, HarvestGatheringNode, AdvanceWorldSlots,
@@ -100,6 +100,7 @@ struct FSFGameplayRequest
     FString GranteeId; int32 Rights = 0;  // Grant: the grantee and its ClaimRight bits (1 = build)
     FString ShapeKey; int32 OrientationIndex = 0;  // Place: BLD-01 geometry identity
     FString ZoneId; FVector Position = FVector::ZeroVector; float Yaw = 0; int64 ExpectedPositionRevision = 0;  // SavePosition
+    int32 UnstuckCooldownSeconds = 900;  // CommitUnstuck; zone-server supplied typed tuning
     FString DeathEventId; int64 DeathAtUnixMs = 0; FVector RespawnPosition = FVector::ZeroVector; int32 RespawnDelayMs = 0;
     bool bResurrectAtDeathPosition = false;
     // Crafting

@@ -2503,12 +2503,17 @@ void ASFE1Character::TickUnstuckScenario()
     ASFE1Character* Remote = nullptr;
     for (TActorIterator<ASFE1Character> It(GetWorld()); It; ++It)
     { if (*It != this) { Remote = *It; break; } }
-    if (!Remote) return;
+    if (!Remote && ScenarioRole != TEXT("Driver")) return;
     const FVector Observed = ScenarioRole == TEXT("Driver") ? GetActorLocation() : Remote->GetActorLocation();
     if (UnstuckScenarioStage == 0)
     {
+        if (FParse::Param(FCommandLine::Get(), TEXT("GreenlandsUnstuckNetcheck")))
+        {
+            if (UnstuckScenarioAt <= 0) { UnstuckScenarioAt = Now + 3.0; return; }
+            if (Now < UnstuckScenarioAt) return;
+        }
         UnstuckScenarioInitial = Observed;
-        UnstuckScenarioAt = Now + 2.0;
+        UnstuckScenarioAt = Now + (FParse::Param(FCommandLine::Get(), TEXT("GreenlandsUnstuckNetcheck")) ? 2.0 : 12.0);
         UnstuckScenarioStage = 1;
         UE_LOG(LogTemp, Display, TEXT("UNSTUCK_CLIENT_READY Role=%s"), *ScenarioRole);
     }
@@ -2516,7 +2521,8 @@ void ASFE1Character::TickUnstuckScenario()
     {
         PC->SFUnstuck();
         UnstuckScenarioStage = 2;
-        UE_LOG(LogTemp, Display, TEXT("UNSTUCK_CLIENT_REQUEST Role=Driver"));
+        UE_LOG(LogTemp, Display, TEXT("UNSTUCK_CLIENT_REQUEST Role=Driver Restart=%d"),
+            FParse::Param(FCommandLine::Get(), TEXT("UnstuckRestoreCheck")) ? 1 : 0);
     }
     if (UnstuckScenarioStage >= 1 && UnstuckScenarioStage < 3 &&
         FVector::Dist2D(UnstuckScenarioInitial, Observed) >= 200.0f)

@@ -57,6 +57,17 @@ internal sealed class ProgressionGrpcService(PostgresCharacterStateStore store, 
                 request.ExpectedPositionRevision, new CharacterPositionSnapshot(p.ZoneId, p.X, p.Y, p.Z, p.Yaw)) };
         });
 
+    public override Task<Pb.SavePositionReply> CommitUnstuck(Pb.CommitUnstuckRequest request, ServerCallContext context) =>
+        GrpcRun.Call(context, () =>
+        {
+            if (!Guid.TryParse(request.OperationId, out _) || string.IsNullOrWhiteSpace(request.CharacterId) || !ValidPosition(request.Position) ||
+                request.CooldownSeconds is < 60 or > 3600)
+                throw new ArgumentException("Invalid Unstuck position or cooldown.");
+            var p = request.Position;
+            return new Pb.SavePositionReply { PositionRevision = store.CommitUnstuck(request.OperationId, request.CharacterId,
+                new CharacterPositionSnapshot(p.ZoneId, p.X, p.Y, p.Z, p.Yaw), request.CooldownSeconds) };
+        });
+
     private static bool ValidCoordinate(double value) => double.IsFinite(value) && Math.Abs(value) <= 1e7;
 
     private static bool ValidPosition(Pb.CharacterPosition? p) => p is not null &&

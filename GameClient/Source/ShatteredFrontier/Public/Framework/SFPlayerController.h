@@ -3,6 +3,7 @@
 #include "GameFramework/PlayerController.h"
 #include "Interaction/SFE1InteractionFeedback.h"
 #include "Construction/SFConstructionNetwork.h"
+#include "Framework/SFUnstuckRules.h"
 #include "SFPlayerController.generated.h"
 
 USTRUCT()
@@ -66,9 +67,11 @@ public:
     // Console (development): grant chr_dev_<name> build rights on the plot the pawn stands in, or claim that plot.
     UFUNCTION(Exec) void SFGrantBuild(const FString& DevName);
     UFUNCTION(Exec) void SFClaimPlot();
-    // Player command in the Unstuck sandbox; the server chooses and validates the destination.
+    // Player command; only the zone server chooses and validates the destination.
     UFUNCTION(Exec) void SFUnstuck();
     UFUNCTION(Server, Reliable) void ServerRequestUnstuck();
+    UFUNCTION(Client, Reliable) void ClientUnstuckDisplacement(uint32 NoticeSequence, FVector Destination);
+    UFUNCTION(Server, Reliable) void ServerConfirmUnstuckDisplacement(uint32 NoticeSequence);
     UFUNCTION(Exec) void SFReleaseSpirit();
     UFUNCTION(Server, Reliable) void ServerRequestSpiritRelease();
     UFUNCTION(Exec) void SFAcceptResurrection();
@@ -355,4 +358,7 @@ private:
     TWeakObjectPtr<ASFDialogueNpc> DialogueNpc;
     bool bBuildMode = false;
     double LastUnstuckAcceptedAt = -1.0;
+    bool bUnstuckInFlight = false;
+    uint32 UnstuckNoticeSequence = 0;
+    SFUnstuckRules::FToken UnstuckToken;
 };

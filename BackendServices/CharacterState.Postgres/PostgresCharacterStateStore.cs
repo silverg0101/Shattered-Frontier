@@ -137,6 +137,35 @@ public sealed class PostgresCharacterStateStore(string connectionString)
         return (long)result;
     });
 
+    // The zone server supplies a validated landing; the store owns the wall clock and serializes concurrent requests.
+    // Updating the existing position row and cooldown together makes reconnect and server restart fail closed.
+    public long CommitUnstuck(string operationId, string characterId, CharacterPositionSnapshot position, int cooldownSeconds,
+        TimeProvider? clock = null) => Transaction((c, t) =>
+    {
+        if (string.IsNullOrWhiteSpace(operationId) || string.IsNullOrWhiteSpace(characterId) || cooldownSeconds is < 60 or > 3600)
+            throw new CharacterStoreRejectedException("Invalid Unstuck settings or character.");
+        LockCharacter(c, t, characterId);
+        var now = (clock ?? TimeProvider.System).GetUtcNow().ToUnixTimeMilliseconds();
+        var hash = Fingerprint(new { characterId, position, cooldownSeconds });
+        using (var read = Command(c, t, "SELECT unstuck_at_unix_ms,unstuck_operation_id,unstuck_fingerprint,revision FROM character_state.positions WHERE character_id=$1", characterId))
+        using (var row = read.ExecuteReader())
+        {
+            if (row.Read())
+            {
+                if (row.GetString(1) == operationId)
+                {
+                    if (row.GetString(2) != hash) throw new CharacterStoreRejectedException("Unstuck operation ID reused with different payload.");
+                    return row.GetInt64(3);
+                }
+                if (now - row.GetInt64(0) < cooldownSeconds * 1000L)
+                throw new CharacterStoreRejectedException("Unstuck cooldown active.");
+            }
+        }
+        using var save = Command(c, t, "INSERT INTO character_state.positions(character_id,revision,zone_id,x,y,z,yaw,unstuck_at_unix_ms,unstuck_operation_id,unstuck_fingerprint) VALUES ($1,1,$2,$3,$4,$5,$6,$7,$8,$9) ON CONFLICT (character_id) DO UPDATE SET revision=character_state.positions.revision+1,zone_id=EXCLUDED.zone_id,x=EXCLUDED.x,y=EXCLUDED.y,z=EXCLUDED.z,yaw=EXCLUDED.yaw,unstuck_at_unix_ms=EXCLUDED.unstuck_at_unix_ms,unstuck_operation_id=EXCLUDED.unstuck_operation_id,unstuck_fingerprint=EXCLUDED.unstuck_fingerprint,updated_at=now() RETURNING revision",
+            characterId, position.ZoneId, position.X, position.Y, position.Z, position.Yaw, now, operationId, hash);
+        return (long)(save.ExecuteScalar() ?? throw new CharacterStoreRejectedException("Unstuck position not saved."));
+    });
+
     public VersionedResult<ProgressionSnapshot>? ReadProgression(string characterId) => Transaction<VersionedResult<ProgressionSnapshot>?>((c, t) =>
     {
         using var cmd = Command(c, t, "SELECT revision,state::text FROM character_state.progression WHERE character_id=$1", characterId);
@@ -309,7 +338,7 @@ public sealed class PostgresCharacterStateStore(string connectionString)
             {
                 using var marker = Command(c, t, "SELECT version,migration_id,compatible_build_min,compatible_build_max FROM character_state.schema_version WHERE singleton=true FOR SHARE");
                 using var row = marker.ExecuteReader();
-                if (!row.Read() || row.GetInt32(0) != 9 || row.GetString(1) != "character-state-009" || row.GetInt32(2) > 9 || row.GetInt32(3) < 9)
+                if (!row.Read() || row.GetInt32(0) != 10 || row.GetString(1) != "character-state-010" || row.GetInt32(2) > 10 || row.GetInt32(3) < 10)
                     throw new CharacterSchemaCompatibilityException("Unsupported character state schema version.");
             }
             catch (PostgresException ex) when (ex.SqlState is "42P01" or "3F000" or "42501")

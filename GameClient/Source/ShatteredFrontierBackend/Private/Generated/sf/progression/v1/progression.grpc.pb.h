@@ -66,6 +66,13 @@ class Progression final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::progression::v1::SavePositionReply>> PrepareAsyncSavePosition(::grpc::ClientContext* context, const ::sf::progression::v1::SavePositionRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::progression::v1::SavePositionReply>>(PrepareAsyncSavePositionRaw(context, request, cq));
     }
+    virtual ::grpc::Status CommitUnstuck(::grpc::ClientContext* context, const ::sf::progression::v1::CommitUnstuckRequest& request, ::sf::progression::v1::SavePositionReply* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::progression::v1::SavePositionReply>> AsyncCommitUnstuck(::grpc::ClientContext* context, const ::sf::progression::v1::CommitUnstuckRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::progression::v1::SavePositionReply>>(AsyncCommitUnstuckRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::progression::v1::SavePositionReply>> PrepareAsyncCommitUnstuck(::grpc::ClientContext* context, const ::sf::progression::v1::CommitUnstuckRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::progression::v1::SavePositionReply>>(PrepareAsyncCommitUnstuckRaw(context, request, cq));
+    }
     virtual ::grpc::Status ReportDeath(::grpc::ClientContext* context, const ::sf::progression::v1::ReportDeathRequest& request, ::sf::progression::v1::DeathState* response) = 0;
     std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::progression::v1::DeathState>> AsyncReportDeath(::grpc::ClientContext* context, const ::sf::progression::v1::ReportDeathRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::progression::v1::DeathState>>(AsyncReportDeathRaw(context, request, cq));
@@ -105,6 +112,8 @@ class Progression final {
       virtual void GetCharacterState(::grpc::ClientContext* context, const ::sf::progression::v1::GetCharacterStateRequest* request, ::sf::progression::v1::CharacterStateReply* response, ::grpc::ClientUnaryReactor* reactor) = 0;
       virtual void SavePosition(::grpc::ClientContext* context, const ::sf::progression::v1::SavePositionRequest* request, ::sf::progression::v1::SavePositionReply* response, std::function<void(::grpc::Status)>) = 0;
       virtual void SavePosition(::grpc::ClientContext* context, const ::sf::progression::v1::SavePositionRequest* request, ::sf::progression::v1::SavePositionReply* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void CommitUnstuck(::grpc::ClientContext* context, const ::sf::progression::v1::CommitUnstuckRequest* request, ::sf::progression::v1::SavePositionReply* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void CommitUnstuck(::grpc::ClientContext* context, const ::sf::progression::v1::CommitUnstuckRequest* request, ::sf::progression::v1::SavePositionReply* response, ::grpc::ClientUnaryReactor* reactor) = 0;
       virtual void ReportDeath(::grpc::ClientContext* context, const ::sf::progression::v1::ReportDeathRequest* request, ::sf::progression::v1::DeathState* response, std::function<void(::grpc::Status)>) = 0;
       virtual void ReportDeath(::grpc::ClientContext* context, const ::sf::progression::v1::ReportDeathRequest* request, ::sf::progression::v1::DeathState* response, ::grpc::ClientUnaryReactor* reactor) = 0;
       virtual void ClearDeath(::grpc::ClientContext* context, const ::sf::progression::v1::ClearDeathRequest* request, ::sf::progression::v1::DeathState* response, std::function<void(::grpc::Status)>) = 0;
@@ -126,6 +135,8 @@ class Progression final {
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::progression::v1::CharacterStateReply>* PrepareAsyncGetCharacterStateRaw(::grpc::ClientContext* context, const ::sf::progression::v1::GetCharacterStateRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::progression::v1::SavePositionReply>* AsyncSavePositionRaw(::grpc::ClientContext* context, const ::sf::progression::v1::SavePositionRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::progression::v1::SavePositionReply>* PrepareAsyncSavePositionRaw(::grpc::ClientContext* context, const ::sf::progression::v1::SavePositionRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::progression::v1::SavePositionReply>* AsyncCommitUnstuckRaw(::grpc::ClientContext* context, const ::sf::progression::v1::CommitUnstuckRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::progression::v1::SavePositionReply>* PrepareAsyncCommitUnstuckRaw(::grpc::ClientContext* context, const ::sf::progression::v1::CommitUnstuckRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::progression::v1::DeathState>* AsyncReportDeathRaw(::grpc::ClientContext* context, const ::sf::progression::v1::ReportDeathRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::progression::v1::DeathState>* PrepareAsyncReportDeathRaw(::grpc::ClientContext* context, const ::sf::progression::v1::ReportDeathRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::progression::v1::DeathState>* AsyncClearDeathRaw(::grpc::ClientContext* context, const ::sf::progression::v1::ClearDeathRequest& request, ::grpc::CompletionQueue* cq) = 0;
@@ -166,6 +177,13 @@ class Progression final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::progression::v1::SavePositionReply>> PrepareAsyncSavePosition(::grpc::ClientContext* context, const ::sf::progression::v1::SavePositionRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::progression::v1::SavePositionReply>>(PrepareAsyncSavePositionRaw(context, request, cq));
     }
+    ::grpc::Status CommitUnstuck(::grpc::ClientContext* context, const ::sf::progression::v1::CommitUnstuckRequest& request, ::sf::progression::v1::SavePositionReply* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::progression::v1::SavePositionReply>> AsyncCommitUnstuck(::grpc::ClientContext* context, const ::sf::progression::v1::CommitUnstuckRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::progression::v1::SavePositionReply>>(AsyncCommitUnstuckRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::progression::v1::SavePositionReply>> PrepareAsyncCommitUnstuck(::grpc::ClientContext* context, const ::sf::progression::v1::CommitUnstuckRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::progression::v1::SavePositionReply>>(PrepareAsyncCommitUnstuckRaw(context, request, cq));
+    }
     ::grpc::Status ReportDeath(::grpc::ClientContext* context, const ::sf::progression::v1::ReportDeathRequest& request, ::sf::progression::v1::DeathState* response) override;
     std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::progression::v1::DeathState>> AsyncReportDeath(::grpc::ClientContext* context, const ::sf::progression::v1::ReportDeathRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::progression::v1::DeathState>>(AsyncReportDeathRaw(context, request, cq));
@@ -205,6 +223,8 @@ class Progression final {
       void GetCharacterState(::grpc::ClientContext* context, const ::sf::progression::v1::GetCharacterStateRequest* request, ::sf::progression::v1::CharacterStateReply* response, ::grpc::ClientUnaryReactor* reactor) override;
       void SavePosition(::grpc::ClientContext* context, const ::sf::progression::v1::SavePositionRequest* request, ::sf::progression::v1::SavePositionReply* response, std::function<void(::grpc::Status)>) override;
       void SavePosition(::grpc::ClientContext* context, const ::sf::progression::v1::SavePositionRequest* request, ::sf::progression::v1::SavePositionReply* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void CommitUnstuck(::grpc::ClientContext* context, const ::sf::progression::v1::CommitUnstuckRequest* request, ::sf::progression::v1::SavePositionReply* response, std::function<void(::grpc::Status)>) override;
+      void CommitUnstuck(::grpc::ClientContext* context, const ::sf::progression::v1::CommitUnstuckRequest* request, ::sf::progression::v1::SavePositionReply* response, ::grpc::ClientUnaryReactor* reactor) override;
       void ReportDeath(::grpc::ClientContext* context, const ::sf::progression::v1::ReportDeathRequest* request, ::sf::progression::v1::DeathState* response, std::function<void(::grpc::Status)>) override;
       void ReportDeath(::grpc::ClientContext* context, const ::sf::progression::v1::ReportDeathRequest* request, ::sf::progression::v1::DeathState* response, ::grpc::ClientUnaryReactor* reactor) override;
       void ClearDeath(::grpc::ClientContext* context, const ::sf::progression::v1::ClearDeathRequest* request, ::sf::progression::v1::DeathState* response, std::function<void(::grpc::Status)>) override;
@@ -232,6 +252,8 @@ class Progression final {
     ::grpc::ClientAsyncResponseReader< ::sf::progression::v1::CharacterStateReply>* PrepareAsyncGetCharacterStateRaw(::grpc::ClientContext* context, const ::sf::progression::v1::GetCharacterStateRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::sf::progression::v1::SavePositionReply>* AsyncSavePositionRaw(::grpc::ClientContext* context, const ::sf::progression::v1::SavePositionRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::sf::progression::v1::SavePositionReply>* PrepareAsyncSavePositionRaw(::grpc::ClientContext* context, const ::sf::progression::v1::SavePositionRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::sf::progression::v1::SavePositionReply>* AsyncCommitUnstuckRaw(::grpc::ClientContext* context, const ::sf::progression::v1::CommitUnstuckRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::sf::progression::v1::SavePositionReply>* PrepareAsyncCommitUnstuckRaw(::grpc::ClientContext* context, const ::sf::progression::v1::CommitUnstuckRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::sf::progression::v1::DeathState>* AsyncReportDeathRaw(::grpc::ClientContext* context, const ::sf::progression::v1::ReportDeathRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::sf::progression::v1::DeathState>* PrepareAsyncReportDeathRaw(::grpc::ClientContext* context, const ::sf::progression::v1::ReportDeathRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::sf::progression::v1::DeathState>* AsyncClearDeathRaw(::grpc::ClientContext* context, const ::sf::progression::v1::ClearDeathRequest& request, ::grpc::CompletionQueue* cq) override;
@@ -244,6 +266,7 @@ class Progression final {
     const ::grpc::internal::RpcMethod rpcmethod_ApplyReceipt_;
     const ::grpc::internal::RpcMethod rpcmethod_GetCharacterState_;
     const ::grpc::internal::RpcMethod rpcmethod_SavePosition_;
+    const ::grpc::internal::RpcMethod rpcmethod_CommitUnstuck_;
     const ::grpc::internal::RpcMethod rpcmethod_ReportDeath_;
     const ::grpc::internal::RpcMethod rpcmethod_ClearDeath_;
     const ::grpc::internal::RpcMethod rpcmethod_LearnRecipe_;
@@ -259,6 +282,7 @@ class Progression final {
     virtual ::grpc::Status ApplyReceipt(::grpc::ServerContext* context, const ::sf::progression::v1::ApplyReceiptRequest* request, ::sf::progression::v1::ApplyReceiptReply* response);
     virtual ::grpc::Status GetCharacterState(::grpc::ServerContext* context, const ::sf::progression::v1::GetCharacterStateRequest* request, ::sf::progression::v1::CharacterStateReply* response);
     virtual ::grpc::Status SavePosition(::grpc::ServerContext* context, const ::sf::progression::v1::SavePositionRequest* request, ::sf::progression::v1::SavePositionReply* response);
+    virtual ::grpc::Status CommitUnstuck(::grpc::ServerContext* context, const ::sf::progression::v1::CommitUnstuckRequest* request, ::sf::progression::v1::SavePositionReply* response);
     virtual ::grpc::Status ReportDeath(::grpc::ServerContext* context, const ::sf::progression::v1::ReportDeathRequest* request, ::sf::progression::v1::DeathState* response);
     virtual ::grpc::Status ClearDeath(::grpc::ServerContext* context, const ::sf::progression::v1::ClearDeathRequest* request, ::sf::progression::v1::DeathState* response);
     virtual ::grpc::Status LearnRecipe(::grpc::ServerContext* context, const ::sf::progression::v1::LearnRecipeRequest* request, ::sf::progression::v1::LearnRecipeReply* response);
@@ -345,12 +369,32 @@ class Progression final {
     }
   };
   template <class BaseClass>
+  class WithAsyncMethod_CommitUnstuck : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_CommitUnstuck() {
+      ::grpc::Service::MarkMethodAsync(4);
+    }
+    ~WithAsyncMethod_CommitUnstuck() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status CommitUnstuck(::grpc::ServerContext* /*context*/, const ::sf::progression::v1::CommitUnstuckRequest* /*request*/, ::sf::progression::v1::SavePositionReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestCommitUnstuck(::grpc::ServerContext* context, ::sf::progression::v1::CommitUnstuckRequest* request, ::grpc::ServerAsyncResponseWriter< ::sf::progression::v1::SavePositionReply>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(4, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
   class WithAsyncMethod_ReportDeath : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_ReportDeath() {
-      ::grpc::Service::MarkMethodAsync(4);
+      ::grpc::Service::MarkMethodAsync(5);
     }
     ~WithAsyncMethod_ReportDeath() override {
       BaseClassMustBeDerivedFromService(this);
@@ -361,7 +405,7 @@ class Progression final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestReportDeath(::grpc::ServerContext* context, ::sf::progression::v1::ReportDeathRequest* request, ::grpc::ServerAsyncResponseWriter< ::sf::progression::v1::DeathState>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(4, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(5, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -370,7 +414,7 @@ class Progression final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_ClearDeath() {
-      ::grpc::Service::MarkMethodAsync(5);
+      ::grpc::Service::MarkMethodAsync(6);
     }
     ~WithAsyncMethod_ClearDeath() override {
       BaseClassMustBeDerivedFromService(this);
@@ -381,7 +425,7 @@ class Progression final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestClearDeath(::grpc::ServerContext* context, ::sf::progression::v1::ClearDeathRequest* request, ::grpc::ServerAsyncResponseWriter< ::sf::progression::v1::DeathState>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(5, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(6, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -390,7 +434,7 @@ class Progression final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_LearnRecipe() {
-      ::grpc::Service::MarkMethodAsync(6);
+      ::grpc::Service::MarkMethodAsync(7);
     }
     ~WithAsyncMethod_LearnRecipe() override {
       BaseClassMustBeDerivedFromService(this);
@@ -401,7 +445,7 @@ class Progression final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestLearnRecipe(::grpc::ServerContext* context, ::sf::progression::v1::LearnRecipeRequest* request, ::grpc::ServerAsyncResponseWriter< ::sf::progression::v1::LearnRecipeReply>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(6, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(7, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -410,7 +454,7 @@ class Progression final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_EndSession() {
-      ::grpc::Service::MarkMethodAsync(7);
+      ::grpc::Service::MarkMethodAsync(8);
     }
     ~WithAsyncMethod_EndSession() override {
       BaseClassMustBeDerivedFromService(this);
@@ -421,10 +465,10 @@ class Progression final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestEndSession(::grpc::ServerContext* context, ::sf::progression::v1::EndSessionRequest* request, ::grpc::ServerAsyncResponseWriter< ::sf::progression::v1::EndSessionReply>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(7, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(8, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
-  typedef WithAsyncMethod_CreateCharacter<WithAsyncMethod_ApplyReceipt<WithAsyncMethod_GetCharacterState<WithAsyncMethod_SavePosition<WithAsyncMethod_ReportDeath<WithAsyncMethod_ClearDeath<WithAsyncMethod_LearnRecipe<WithAsyncMethod_EndSession<Service > > > > > > > > AsyncService;
+  typedef WithAsyncMethod_CreateCharacter<WithAsyncMethod_ApplyReceipt<WithAsyncMethod_GetCharacterState<WithAsyncMethod_SavePosition<WithAsyncMethod_CommitUnstuck<WithAsyncMethod_ReportDeath<WithAsyncMethod_ClearDeath<WithAsyncMethod_LearnRecipe<WithAsyncMethod_EndSession<Service > > > > > > > > > AsyncService;
   template <class BaseClass>
   class WithCallbackMethod_CreateCharacter : public BaseClass {
    private:
@@ -534,18 +578,45 @@ class Progression final {
       ::grpc::CallbackServerContext* /*context*/, const ::sf::progression::v1::SavePositionRequest* /*request*/, ::sf::progression::v1::SavePositionReply* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
+  class WithCallbackMethod_CommitUnstuck : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_CommitUnstuck() {
+      ::grpc::Service::MarkMethodCallback(4,
+          new ::grpc::internal::CallbackUnaryHandler< ::sf::progression::v1::CommitUnstuckRequest, ::sf::progression::v1::SavePositionReply>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::sf::progression::v1::CommitUnstuckRequest* request, ::sf::progression::v1::SavePositionReply* response) { return this->CommitUnstuck(context, request, response); }));}
+    void SetMessageAllocatorFor_CommitUnstuck(
+        ::grpc::MessageAllocator< ::sf::progression::v1::CommitUnstuckRequest, ::sf::progression::v1::SavePositionReply>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(4);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::sf::progression::v1::CommitUnstuckRequest, ::sf::progression::v1::SavePositionReply>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_CommitUnstuck() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status CommitUnstuck(::grpc::ServerContext* /*context*/, const ::sf::progression::v1::CommitUnstuckRequest* /*request*/, ::sf::progression::v1::SavePositionReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* CommitUnstuck(
+      ::grpc::CallbackServerContext* /*context*/, const ::sf::progression::v1::CommitUnstuckRequest* /*request*/, ::sf::progression::v1::SavePositionReply* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
   class WithCallbackMethod_ReportDeath : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithCallbackMethod_ReportDeath() {
-      ::grpc::Service::MarkMethodCallback(4,
+      ::grpc::Service::MarkMethodCallback(5,
           new ::grpc::internal::CallbackUnaryHandler< ::sf::progression::v1::ReportDeathRequest, ::sf::progression::v1::DeathState>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::sf::progression::v1::ReportDeathRequest* request, ::sf::progression::v1::DeathState* response) { return this->ReportDeath(context, request, response); }));}
     void SetMessageAllocatorFor_ReportDeath(
         ::grpc::MessageAllocator< ::sf::progression::v1::ReportDeathRequest, ::sf::progression::v1::DeathState>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(4);
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(5);
       static_cast<::grpc::internal::CallbackUnaryHandler< ::sf::progression::v1::ReportDeathRequest, ::sf::progression::v1::DeathState>*>(handler)
               ->SetMessageAllocator(allocator);
     }
@@ -566,13 +637,13 @@ class Progression final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithCallbackMethod_ClearDeath() {
-      ::grpc::Service::MarkMethodCallback(5,
+      ::grpc::Service::MarkMethodCallback(6,
           new ::grpc::internal::CallbackUnaryHandler< ::sf::progression::v1::ClearDeathRequest, ::sf::progression::v1::DeathState>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::sf::progression::v1::ClearDeathRequest* request, ::sf::progression::v1::DeathState* response) { return this->ClearDeath(context, request, response); }));}
     void SetMessageAllocatorFor_ClearDeath(
         ::grpc::MessageAllocator< ::sf::progression::v1::ClearDeathRequest, ::sf::progression::v1::DeathState>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(5);
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(6);
       static_cast<::grpc::internal::CallbackUnaryHandler< ::sf::progression::v1::ClearDeathRequest, ::sf::progression::v1::DeathState>*>(handler)
               ->SetMessageAllocator(allocator);
     }
@@ -593,13 +664,13 @@ class Progression final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithCallbackMethod_LearnRecipe() {
-      ::grpc::Service::MarkMethodCallback(6,
+      ::grpc::Service::MarkMethodCallback(7,
           new ::grpc::internal::CallbackUnaryHandler< ::sf::progression::v1::LearnRecipeRequest, ::sf::progression::v1::LearnRecipeReply>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::sf::progression::v1::LearnRecipeRequest* request, ::sf::progression::v1::LearnRecipeReply* response) { return this->LearnRecipe(context, request, response); }));}
     void SetMessageAllocatorFor_LearnRecipe(
         ::grpc::MessageAllocator< ::sf::progression::v1::LearnRecipeRequest, ::sf::progression::v1::LearnRecipeReply>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(6);
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(7);
       static_cast<::grpc::internal::CallbackUnaryHandler< ::sf::progression::v1::LearnRecipeRequest, ::sf::progression::v1::LearnRecipeReply>*>(handler)
               ->SetMessageAllocator(allocator);
     }
@@ -620,13 +691,13 @@ class Progression final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithCallbackMethod_EndSession() {
-      ::grpc::Service::MarkMethodCallback(7,
+      ::grpc::Service::MarkMethodCallback(8,
           new ::grpc::internal::CallbackUnaryHandler< ::sf::progression::v1::EndSessionRequest, ::sf::progression::v1::EndSessionReply>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::sf::progression::v1::EndSessionRequest* request, ::sf::progression::v1::EndSessionReply* response) { return this->EndSession(context, request, response); }));}
     void SetMessageAllocatorFor_EndSession(
         ::grpc::MessageAllocator< ::sf::progression::v1::EndSessionRequest, ::sf::progression::v1::EndSessionReply>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(7);
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(8);
       static_cast<::grpc::internal::CallbackUnaryHandler< ::sf::progression::v1::EndSessionRequest, ::sf::progression::v1::EndSessionReply>*>(handler)
               ->SetMessageAllocator(allocator);
     }
@@ -641,7 +712,7 @@ class Progression final {
     virtual ::grpc::ServerUnaryReactor* EndSession(
       ::grpc::CallbackServerContext* /*context*/, const ::sf::progression::v1::EndSessionRequest* /*request*/, ::sf::progression::v1::EndSessionReply* /*response*/)  { return nullptr; }
   };
-  typedef WithCallbackMethod_CreateCharacter<WithCallbackMethod_ApplyReceipt<WithCallbackMethod_GetCharacterState<WithCallbackMethod_SavePosition<WithCallbackMethod_ReportDeath<WithCallbackMethod_ClearDeath<WithCallbackMethod_LearnRecipe<WithCallbackMethod_EndSession<Service > > > > > > > > CallbackService;
+  typedef WithCallbackMethod_CreateCharacter<WithCallbackMethod_ApplyReceipt<WithCallbackMethod_GetCharacterState<WithCallbackMethod_SavePosition<WithCallbackMethod_CommitUnstuck<WithCallbackMethod_ReportDeath<WithCallbackMethod_ClearDeath<WithCallbackMethod_LearnRecipe<WithCallbackMethod_EndSession<Service > > > > > > > > > CallbackService;
   typedef CallbackService ExperimentalCallbackService;
   template <class BaseClass>
   class WithGenericMethod_CreateCharacter : public BaseClass {
@@ -712,12 +783,29 @@ class Progression final {
     }
   };
   template <class BaseClass>
+  class WithGenericMethod_CommitUnstuck : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_CommitUnstuck() {
+      ::grpc::Service::MarkMethodGeneric(4);
+    }
+    ~WithGenericMethod_CommitUnstuck() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status CommitUnstuck(::grpc::ServerContext* /*context*/, const ::sf::progression::v1::CommitUnstuckRequest* /*request*/, ::sf::progression::v1::SavePositionReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
   class WithGenericMethod_ReportDeath : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_ReportDeath() {
-      ::grpc::Service::MarkMethodGeneric(4);
+      ::grpc::Service::MarkMethodGeneric(5);
     }
     ~WithGenericMethod_ReportDeath() override {
       BaseClassMustBeDerivedFromService(this);
@@ -734,7 +822,7 @@ class Progression final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_ClearDeath() {
-      ::grpc::Service::MarkMethodGeneric(5);
+      ::grpc::Service::MarkMethodGeneric(6);
     }
     ~WithGenericMethod_ClearDeath() override {
       BaseClassMustBeDerivedFromService(this);
@@ -751,7 +839,7 @@ class Progression final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_LearnRecipe() {
-      ::grpc::Service::MarkMethodGeneric(6);
+      ::grpc::Service::MarkMethodGeneric(7);
     }
     ~WithGenericMethod_LearnRecipe() override {
       BaseClassMustBeDerivedFromService(this);
@@ -768,7 +856,7 @@ class Progression final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_EndSession() {
-      ::grpc::Service::MarkMethodGeneric(7);
+      ::grpc::Service::MarkMethodGeneric(8);
     }
     ~WithGenericMethod_EndSession() override {
       BaseClassMustBeDerivedFromService(this);
@@ -860,12 +948,32 @@ class Progression final {
     }
   };
   template <class BaseClass>
+  class WithRawMethod_CommitUnstuck : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_CommitUnstuck() {
+      ::grpc::Service::MarkMethodRaw(4);
+    }
+    ~WithRawMethod_CommitUnstuck() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status CommitUnstuck(::grpc::ServerContext* /*context*/, const ::sf::progression::v1::CommitUnstuckRequest* /*request*/, ::sf::progression::v1::SavePositionReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestCommitUnstuck(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(4, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
   class WithRawMethod_ReportDeath : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_ReportDeath() {
-      ::grpc::Service::MarkMethodRaw(4);
+      ::grpc::Service::MarkMethodRaw(5);
     }
     ~WithRawMethod_ReportDeath() override {
       BaseClassMustBeDerivedFromService(this);
@@ -876,7 +984,7 @@ class Progression final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestReportDeath(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(4, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(5, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -885,7 +993,7 @@ class Progression final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_ClearDeath() {
-      ::grpc::Service::MarkMethodRaw(5);
+      ::grpc::Service::MarkMethodRaw(6);
     }
     ~WithRawMethod_ClearDeath() override {
       BaseClassMustBeDerivedFromService(this);
@@ -896,7 +1004,7 @@ class Progression final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestClearDeath(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(5, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(6, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -905,7 +1013,7 @@ class Progression final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_LearnRecipe() {
-      ::grpc::Service::MarkMethodRaw(6);
+      ::grpc::Service::MarkMethodRaw(7);
     }
     ~WithRawMethod_LearnRecipe() override {
       BaseClassMustBeDerivedFromService(this);
@@ -916,7 +1024,7 @@ class Progression final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestLearnRecipe(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(6, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(7, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -925,7 +1033,7 @@ class Progression final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_EndSession() {
-      ::grpc::Service::MarkMethodRaw(7);
+      ::grpc::Service::MarkMethodRaw(8);
     }
     ~WithRawMethod_EndSession() override {
       BaseClassMustBeDerivedFromService(this);
@@ -936,7 +1044,7 @@ class Progression final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestEndSession(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(7, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(8, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -1028,12 +1136,34 @@ class Progression final {
       ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
+  class WithRawCallbackMethod_CommitUnstuck : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_CommitUnstuck() {
+      ::grpc::Service::MarkMethodRawCallback(4,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->CommitUnstuck(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_CommitUnstuck() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status CommitUnstuck(::grpc::ServerContext* /*context*/, const ::sf::progression::v1::CommitUnstuckRequest* /*request*/, ::sf::progression::v1::SavePositionReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* CommitUnstuck(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
   class WithRawCallbackMethod_ReportDeath : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawCallbackMethod_ReportDeath() {
-      ::grpc::Service::MarkMethodRawCallback(4,
+      ::grpc::Service::MarkMethodRawCallback(5,
           new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->ReportDeath(context, request, response); }));
@@ -1055,7 +1185,7 @@ class Progression final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawCallbackMethod_ClearDeath() {
-      ::grpc::Service::MarkMethodRawCallback(5,
+      ::grpc::Service::MarkMethodRawCallback(6,
           new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->ClearDeath(context, request, response); }));
@@ -1077,7 +1207,7 @@ class Progression final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawCallbackMethod_LearnRecipe() {
-      ::grpc::Service::MarkMethodRawCallback(6,
+      ::grpc::Service::MarkMethodRawCallback(7,
           new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->LearnRecipe(context, request, response); }));
@@ -1099,7 +1229,7 @@ class Progression final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawCallbackMethod_EndSession() {
-      ::grpc::Service::MarkMethodRawCallback(7,
+      ::grpc::Service::MarkMethodRawCallback(8,
           new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->EndSession(context, request, response); }));
@@ -1224,12 +1354,39 @@ class Progression final {
     virtual ::grpc::Status StreamedSavePosition(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::sf::progression::v1::SavePositionRequest,::sf::progression::v1::SavePositionReply>* server_unary_streamer) = 0;
   };
   template <class BaseClass>
+  class WithStreamedUnaryMethod_CommitUnstuck : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_CommitUnstuck() {
+      ::grpc::Service::MarkMethodStreamed(4,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::sf::progression::v1::CommitUnstuckRequest, ::sf::progression::v1::SavePositionReply>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::sf::progression::v1::CommitUnstuckRequest, ::sf::progression::v1::SavePositionReply>* streamer) {
+                       return this->StreamedCommitUnstuck(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_CommitUnstuck() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status CommitUnstuck(::grpc::ServerContext* /*context*/, const ::sf::progression::v1::CommitUnstuckRequest* /*request*/, ::sf::progression::v1::SavePositionReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status StreamedCommitUnstuck(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::sf::progression::v1::CommitUnstuckRequest,::sf::progression::v1::SavePositionReply>* server_unary_streamer) = 0;
+  };
+  template <class BaseClass>
   class WithStreamedUnaryMethod_ReportDeath : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_ReportDeath() {
-      ::grpc::Service::MarkMethodStreamed(4,
+      ::grpc::Service::MarkMethodStreamed(5,
         new ::grpc::internal::StreamedUnaryHandler<
           ::sf::progression::v1::ReportDeathRequest, ::sf::progression::v1::DeathState>(
             [this](::grpc::ServerContext* context,
@@ -1256,7 +1413,7 @@ class Progression final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_ClearDeath() {
-      ::grpc::Service::MarkMethodStreamed(5,
+      ::grpc::Service::MarkMethodStreamed(6,
         new ::grpc::internal::StreamedUnaryHandler<
           ::sf::progression::v1::ClearDeathRequest, ::sf::progression::v1::DeathState>(
             [this](::grpc::ServerContext* context,
@@ -1283,7 +1440,7 @@ class Progression final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_LearnRecipe() {
-      ::grpc::Service::MarkMethodStreamed(6,
+      ::grpc::Service::MarkMethodStreamed(7,
         new ::grpc::internal::StreamedUnaryHandler<
           ::sf::progression::v1::LearnRecipeRequest, ::sf::progression::v1::LearnRecipeReply>(
             [this](::grpc::ServerContext* context,
@@ -1310,7 +1467,7 @@ class Progression final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_EndSession() {
-      ::grpc::Service::MarkMethodStreamed(7,
+      ::grpc::Service::MarkMethodStreamed(8,
         new ::grpc::internal::StreamedUnaryHandler<
           ::sf::progression::v1::EndSessionRequest, ::sf::progression::v1::EndSessionReply>(
             [this](::grpc::ServerContext* context,
@@ -1331,9 +1488,9 @@ class Progression final {
     // replace default version of method with streamed unary
     virtual ::grpc::Status StreamedEndSession(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::sf::progression::v1::EndSessionRequest,::sf::progression::v1::EndSessionReply>* server_unary_streamer) = 0;
   };
-  typedef WithStreamedUnaryMethod_CreateCharacter<WithStreamedUnaryMethod_ApplyReceipt<WithStreamedUnaryMethod_GetCharacterState<WithStreamedUnaryMethod_SavePosition<WithStreamedUnaryMethod_ReportDeath<WithStreamedUnaryMethod_ClearDeath<WithStreamedUnaryMethod_LearnRecipe<WithStreamedUnaryMethod_EndSession<Service > > > > > > > > StreamedUnaryService;
+  typedef WithStreamedUnaryMethod_CreateCharacter<WithStreamedUnaryMethod_ApplyReceipt<WithStreamedUnaryMethod_GetCharacterState<WithStreamedUnaryMethod_SavePosition<WithStreamedUnaryMethod_CommitUnstuck<WithStreamedUnaryMethod_ReportDeath<WithStreamedUnaryMethod_ClearDeath<WithStreamedUnaryMethod_LearnRecipe<WithStreamedUnaryMethod_EndSession<Service > > > > > > > > > StreamedUnaryService;
   typedef Service SplitStreamedService;
-  typedef WithStreamedUnaryMethod_CreateCharacter<WithStreamedUnaryMethod_ApplyReceipt<WithStreamedUnaryMethod_GetCharacterState<WithStreamedUnaryMethod_SavePosition<WithStreamedUnaryMethod_ReportDeath<WithStreamedUnaryMethod_ClearDeath<WithStreamedUnaryMethod_LearnRecipe<WithStreamedUnaryMethod_EndSession<Service > > > > > > > > StreamedService;
+  typedef WithStreamedUnaryMethod_CreateCharacter<WithStreamedUnaryMethod_ApplyReceipt<WithStreamedUnaryMethod_GetCharacterState<WithStreamedUnaryMethod_SavePosition<WithStreamedUnaryMethod_CommitUnstuck<WithStreamedUnaryMethod_ReportDeath<WithStreamedUnaryMethod_ClearDeath<WithStreamedUnaryMethod_LearnRecipe<WithStreamedUnaryMethod_EndSession<Service > > > > > > > > > StreamedService;
 };
 
 }  // namespace v1

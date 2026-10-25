@@ -853,6 +853,29 @@ void ASFGameMode::PostLoginCombat(APlayerController* NewPlayer)
 {
     if (bPilotActive && !USFBackpackComponent::Services()) { SFCombatPilotRewards::AddPilotBag(NewPlayer); }
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    if (GetNumPlayers() == 2 && FParse::Param(FCommandLine::Get(), TEXT("GreenlandsUnstuckNetcheck")) &&
+        GetWorld()->GetOutermost()->GetName() == TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook"))
+    {
+        TWeakObjectPtr<APlayerController> Driver;
+        for (TActorIterator<APlayerController> It(GetWorld()); It; ++It)
+        { if (*It != NewPlayer) { Driver = *It; break; } }
+        const TWeakObjectPtr<APlayerController> Observer(NewPlayer);
+        FTimerHandle UnstuckFixtureTimer;
+        GetWorldTimerManager().SetTimer(UnstuckFixtureTimer, FTimerDelegate::CreateWeakLambda(this, [this, Driver, Observer]()
+        {
+            ASFE1Character* First = Driver.IsValid() ? Cast<ASFE1Character>(Driver->GetPawn()) : nullptr;
+            ASFE1Character* Second = Observer.IsValid() ? Cast<ASFE1Character>(Observer->GetPawn()) : nullptr;
+            if (!First || !Second) return;
+            const FVector DryShore(50000, 37700, 0);
+            First->SetActorLocation(Grounded(GetWorld(), DryShore, First->GetCapsuleComponent()->GetScaledCapsuleHalfHeight()),
+                false, nullptr, ETeleportType::TeleportPhysics);
+            Second->SetActorLocation(Grounded(GetWorld(), DryShore + FVector(0,200,0),
+                Second->GetCapsuleComponent()->GetScaledCapsuleHalfHeight()), false, nullptr, ETeleportType::TeleportPhysics);
+            First->ForceNetUpdate(); Second->ForceNetUpdate();
+            UE_LOG(LogTemp, Display, TEXT("UNSTUCK_FIXTURE_READY Driver=%s Observer=%s"),
+                *First->GetActorLocation().ToString(), *Second->GetActorLocation().ToString());
+        }), 1.5f, false);
+    }
     if (bPilotActive && GetNumPlayers() == 1 &&
         ((GetWorld()->GetOutermost()->GetName() == TEXT("/Game/Frontier/Maps/Sandbox/SB_SpiritRelease") &&
           FParse::Param(FCommandLine::Get(), TEXT("SpiritReleaseScenario"))) ||
@@ -1830,6 +1853,20 @@ FVector ASFGameMode::ChooseRespawnPoint(const FVector& DeathLocation) const
         { const double D = FVector::DistSquared2D(DeathLocation, Point); if (D < Distance) { Nearest = Point; Distance = D; } }
     }
     return Nearest;
+}
+
+bool ASFGameMode::TryNearestRespawnPoint(const FVector& From, float PawnHalfHeight, FVector& OutLanding) const
+{
+    if (RespawnPoints.IsEmpty()) return false;
+    const FVector* Nearest = &RespawnPoints[0];
+    double Best = FVector::DistSquared2D(From, *Nearest);
+    for (const FVector& Point : RespawnPoints)
+    {
+        const double Distance = FVector::DistSquared2D(From, Point);
+        if (Distance < Best) { Best = Distance; Nearest = &Point; }
+    }
+    OutLanding = Grounded(GetWorld(), *Nearest, PawnHalfHeight);
+    return true;
 }
 
 void ASFGameMode::ReportPlayerDeath(TWeakObjectPtr<ASFE1Character> Player, const FSFGameplayRequest& Request)

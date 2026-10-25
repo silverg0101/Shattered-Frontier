@@ -61,6 +61,8 @@ PROTOBUF_CONSTINIT ::google::protobuf::internal::ReflectionData
         {&::_pbi::kDescriptorMethods, &::descriptor_table_sf_2fprogression_2fv1_2fprogression_2eproto, /* tracker*/ nullptr,},
         // ::sf::progression::v1::SavePositionReply
         {&::_pbi::kDescriptorMethods, &::descriptor_table_sf_2fprogression_2fv1_2fprogression_2eproto, /* tracker*/ nullptr,},
+        // ::sf::progression::v1::CommitUnstuckRequest
+        {&::_pbi::kDescriptorMethods, &::descriptor_table_sf_2fprogression_2fv1_2fprogression_2eproto, /* tracker*/ nullptr,},
         // ::sf::progression::v1::ReportDeathRequest
         {&::_pbi::kDescriptorMethods, &::descriptor_table_sf_2fprogression_2fv1_2fprogression_2eproto, /* tracker*/ nullptr,},
         // ::sf::progression::v1::ClearDeathRequest
@@ -311,7 +313,7 @@ constexpr auto QuestState_CountsEntry_DoNotUse::InternalGenerateClassData_(
           false,
       },
 #ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[23],
+      &file_reflection_data[24],
 #else   // !PROTOBUF_MESSAGE_GLOBALS
       &::_pbi::kDescriptorMethods,
       &descriptor_table_sf_2fprogression_2fv1_2fprogression_2eproto,
@@ -2118,7 +2120,7 @@ constexpr auto ClearDeathRequest::InternalGenerateClassData_(
           false,
       },
 #ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[17],
+      &file_reflection_data[18],
 #else   // !PROTOBUF_MESSAGE_GLOBALS
       &::_pbi::kDescriptorMethods,
       &descriptor_table_sf_2fprogression_2fv1_2fprogression_2eproto,
@@ -2254,7 +2256,7 @@ constexpr auto CharacterStateReply_SkillsEntry_DoNotUse::InternalGenerateClassDa
           false,
       },
 #ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[19],
+      &file_reflection_data[20],
 #else   // !PROTOBUF_MESSAGE_GLOBALS
       &::_pbi::kDescriptorMethods,
       &descriptor_table_sf_2fprogression_2fv1_2fprogression_2eproto,
@@ -2390,7 +2392,7 @@ constexpr auto CharacterStateReply_ObjectiveCountsEntry_DoNotUse::InternalGenera
           false,
       },
 #ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[20],
+      &file_reflection_data[21],
 #else   // !PROTOBUF_MESSAGE_GLOBALS
       &::_pbi::kDescriptorMethods,
       &descriptor_table_sf_2fprogression_2fv1_2fprogression_2eproto,
@@ -2526,7 +2528,7 @@ constexpr auto CharacterStateReply_GatheringSkillsEntry_DoNotUse::InternalGenera
           false,
       },
 #ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[21],
+      &file_reflection_data[22],
 #else   // !PROTOBUF_MESSAGE_GLOBALS
       &::_pbi::kDescriptorMethods,
       &descriptor_table_sf_2fprogression_2fv1_2fprogression_2eproto,
@@ -3288,7 +3290,7 @@ constexpr auto ReportDeathRequest::InternalGenerateClassData_(
           false,
       },
 #ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[16],
+      &file_reflection_data[17],
 #else   // !PROTOBUF_MESSAGE_GLOBALS
       &::_pbi::kDescriptorMethods,
       &descriptor_table_sf_2fprogression_2fv1_2fprogression_2eproto,
@@ -3488,7 +3490,7 @@ constexpr auto QuestState::InternalGenerateClassData_(
           false,
       },
 #ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[24],
+      &file_reflection_data[25],
 #else   // !PROTOBUF_MESSAGE_GLOBALS
       &::_pbi::kDescriptorMethods,
       &descriptor_table_sf_2fprogression_2fv1_2fprogression_2eproto,
@@ -3682,7 +3684,7 @@ constexpr auto DeathState::InternalGenerateClassData_(
           false,
       },
 #ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[18],
+      &file_reflection_data[19],
 #else   // !PROTOBUF_MESSAGE_GLOBALS
       &::_pbi::kDescriptorMethods,
       &descriptor_table_sf_2fprogression_2fv1_2fprogression_2eproto,
@@ -3729,6 +3731,182 @@ const ::_pbi::ClassData* DeathState_get_class_data() {
   return DeathState_globals_.GetClassData();
 #else
   return DeathState_class_data_.base();
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+}
+}  // namespace
+#endif  // PROTOBUF_CUSTOM_VTABLE
+class CommitUnstuckRequest::_Internal {
+ public:
+  using HasBits = decltype(::std::declval<CommitUnstuckRequest>()._impl_._has_bits_);
+  static constexpr ::int32_t kHasBitsOffset =
+      8 * PROTOBUF_FIELD_OFFSET(CommitUnstuckRequest, _impl_._has_bits_);
+};
+
+constexpr CommitUnstuckRequest::ParseTableT_ CommitUnstuckRequest::InternalGenerateParseTable_(const ::_pbi::ClassData* class_data) {
+  return ParseTableT_{
+    {
+      PROTOBUF_FIELD_OFFSET(CommitUnstuckRequest, _impl_._has_bits_),
+      0, // no _extensions_
+      4, 24,  // max_field_number, fast_idx_mask
+      offsetof(ParseTableT_, field_lookup_table),
+      4294967280,  // skipmap
+      offsetof(ParseTableT_, field_entries),
+      4,  // num_field_entries
+      1,  // num_aux_entries
+      offsetof(ParseTableT_, aux_entries),
+      class_data,
+      nullptr,  // post_loop_handler
+      ::_pbi::TcParser::GenericFallback,  // fallback
+      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+      ::_pbi::TcParser::GetTable<::sf::progression::v1::CommitUnstuckRequest>(),  // to_prefetch
+      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+    }, {{
+      // string operation_id = 4;
+      {::_pbi::TcParser::FastUS1,
+       {34, 1, 0,
+        PROTOBUF_FIELD_OFFSET(CommitUnstuckRequest, _impl_.operation_id_)}},
+      // string character_id = 1;
+      {::_pbi::TcParser::FastUS1,
+       {10, 0, 0,
+        PROTOBUF_FIELD_OFFSET(CommitUnstuckRequest, _impl_.character_id_)}},
+      // .sf.progression.v1.CharacterPosition position = 2;
+      {::_pbi::TcParser::FastMtS1,
+       {18, 2, 0,
+        PROTOBUF_FIELD_OFFSET(CommitUnstuckRequest, _impl_.position_)}},
+      // int32 cooldown_seconds = 3;
+      {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(CommitUnstuckRequest, _impl_.cooldown_seconds_), 3>(),
+       {24, 3, 0,
+        PROTOBUF_FIELD_OFFSET(CommitUnstuckRequest, _impl_.cooldown_seconds_)}},
+    }}, {{
+      65535, 65535
+    }}, {{
+      // string character_id = 1;
+      {PROTOBUF_FIELD_OFFSET(CommitUnstuckRequest, _impl_.character_id_), _Internal::kHasBitsOffset + 0, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // .sf.progression.v1.CharacterPosition position = 2;
+      {PROTOBUF_FIELD_OFFSET(CommitUnstuckRequest, _impl_.position_), _Internal::kHasBitsOffset + 2, 0, (0 | ::_fl::kFcOptional | ::_fl::kMessage | ::_fl::kTvTable)},
+      // int32 cooldown_seconds = 3;
+      {PROTOBUF_FIELD_OFFSET(CommitUnstuckRequest, _impl_.cooldown_seconds_), _Internal::kHasBitsOffset + 3, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt32)},
+      // string operation_id = 4;
+      {PROTOBUF_FIELD_OFFSET(CommitUnstuckRequest, _impl_.operation_id_), _Internal::kHasBitsOffset + 1, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    }},
+    {{
+        #ifndef PROTOBUF_MESSAGE_GLOBALS
+        {::_pbi::TcParser::GetTable<::sf::progression::v1::CharacterPosition>()},
+        #else
+        {::_pbi::FieldAuxMessageGlobals(), &::sf::progression::v1::CharacterPosition_globals_},
+        #endif
+    }},
+    {{
+      "\46\14\0\0\14\0\0\0"
+      "sf.progression.v1.CommitUnstuckRequest"
+      "character_id"
+      "operation_id"
+    }},
+  };
+}
+
+
+inline constexpr CommitUnstuckRequest::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    ::_pbi::ConstantInitialized) noexcept
+      : _cached_size_{0},
+        character_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        operation_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        position_{nullptr},
+        cooldown_seconds_{0} {}
+
+template <typename>
+constexpr CommitUnstuckRequest::CommitUnstuckRequest(::_pbi::ConstantInitialized,
+                       const ::_pbi::ClassData* PROTOBUF_NONNULL class_data)
+    : ::google::protobuf::Message(
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          class_data
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          ),
+      _impl_(internal_visibility(), ::_pbi::ConstantInitialized()) {
+}
+inline void* PROTOBUF_NONNULL CommitUnstuckRequest::PlacementNew_(
+    const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena) {
+  return ::new (mem) CommitUnstuckRequest(arena);
+}
+constexpr auto CommitUnstuckRequest::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::CopyInit(sizeof(CommitUnstuckRequest), alignof(CommitUnstuckRequest));
+}
+constexpr auto CommitUnstuckRequest::InternalGenerateClassData_(
+    const MessageLite& prototype,
+    const ::google::protobuf::internal::TcParseTableBase* tc_table) {
+  return ::google::protobuf::internal::ClassDataFull{
+      ::google::protobuf::internal::ClassData{
+          &prototype,
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+          &_table_.header,
+#else
+          tc_table,
+#endif
+          nullptr,  // IsInitialized
+          &CommitUnstuckRequest::MergeImpl,
+          ::google::protobuf::Message::GetNewImpl<CommitUnstuckRequest>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          &CommitUnstuckRequest::SharedDtor,
+          ::google::protobuf::Message::GetClearImpl<CommitUnstuckRequest>(), &CommitUnstuckRequest::ByteSizeLong,
+              &CommitUnstuckRequest::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          PROTOBUF_FIELD_OFFSET(CommitUnstuckRequest, _impl_._cached_size_),
+          false,
+      },
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+      &file_reflection_data[16],
+#else   // !PROTOBUF_MESSAGE_GLOBALS
+      &::_pbi::kDescriptorMethods,
+      &descriptor_table_sf_2fprogression_2fv1_2fprogression_2eproto,
+      nullptr,  // tracker
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+  };
+}
+struct CommitUnstuckRequestGlobalsTypeInternal : ::_pbi::MessageGlobalsBase {
+  constexpr CommitUnstuckRequestGlobalsTypeInternal()
+      :
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+        _default(::_pbi::ConstantInitialized{},
+                 CommitUnstuckRequest_class_data_.base())
+#else   // !PROTOBUF_MESSAGE_GLOBALS
+        MessageGlobalsBase(CommitUnstuckRequest::InternalGenerateClassData_(
+            _default, &CommitUnstuckRequest_globals_._table.header)),
+        _default(::_pbi::ConstantInitialized{}, GetClassData()),
+        _table(::_pbi::PrivateAccess::GenerateParseTable<CommitUnstuckRequest>(
+            GetClassData()))
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+  {
+  }
+  ~CommitUnstuckRequestGlobalsTypeInternal() {}
+  union {
+    alignas(::_pbi::kMaxMessageAlignment) CommitUnstuckRequest _default;
+  };
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+  decltype(::_pbi::PrivateAccess::GenerateParseTable<CommitUnstuckRequest>(
+      ::std::declval<const ::_pbi::ClassData*>())) _table;
+#endif
+};
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+static_assert(PROTOBUF_FIELD_OFFSET(CommitUnstuckRequestGlobalsTypeInternal, _default) ==
+              ::_pbi::MessageGlobalsBase::OffsetToDefault());
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 PROTOBUF_MESSAGE_GLOBALS_CONST CommitUnstuckRequestGlobalsTypeInternal CommitUnstuckRequest_globals_
+        PROTOBUF_MESSAGE_GLOBALS_SECTION(.data.rel.ro);
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+namespace {
+const ::_pbi::ClassData* CommitUnstuckRequest_get_class_data() {
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+  return CommitUnstuckRequest_globals_.GetClassData();
+#else
+  return CommitUnstuckRequest_class_data_.base();
 #endif  // PROTOBUF_MESSAGE_GLOBALS
 }
 }  // namespace
@@ -4458,7 +4636,7 @@ constexpr auto CharacterStateReply::InternalGenerateClassData_(
           false,
       },
 #ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[22],
+      &file_reflection_data[23],
 #else   // !PROTOBUF_MESSAGE_GLOBALS
       &::_pbi::kDescriptorMethods,
       &descriptor_table_sf_2fprogression_2fv1_2fprogression_2eproto,
@@ -4712,6 +4890,17 @@ const ::uint32_t
         PROTOBUF_FIELD_OFFSET(::sf::progression::v1::SavePositionReply, _impl_.position_revision_),
         0,
         0x081, // bitmap
+        PROTOBUF_FIELD_OFFSET(::sf::progression::v1::CommitUnstuckRequest, _impl_._has_bits_),
+        7, // hasbit index offset
+        PROTOBUF_FIELD_OFFSET(::sf::progression::v1::CommitUnstuckRequest, _impl_.character_id_),
+        PROTOBUF_FIELD_OFFSET(::sf::progression::v1::CommitUnstuckRequest, _impl_.position_),
+        PROTOBUF_FIELD_OFFSET(::sf::progression::v1::CommitUnstuckRequest, _impl_.cooldown_seconds_),
+        PROTOBUF_FIELD_OFFSET(::sf::progression::v1::CommitUnstuckRequest, _impl_.operation_id_),
+        0,
+        2,
+        3,
+        1,
+        0x081, // bitmap
         PROTOBUF_FIELD_OFFSET(::sf::progression::v1::ReportDeathRequest, _impl_._has_bits_),
         9, // hasbit index offset
         PROTOBUF_FIELD_OFFSET(::sf::progression::v1::ReportDeathRequest, _impl_.death_event_id_),
@@ -4852,15 +5041,16 @@ static const ::_pbi::MigrationSchema
         {165, sizeof(::sf::progression::v1::CharacterPosition)},
         {178, sizeof(::sf::progression::v1::SavePositionRequest)},
         {187, sizeof(::sf::progression::v1::SavePositionReply)},
-        {192, sizeof(::sf::progression::v1::ReportDeathRequest)},
-        {207, sizeof(::sf::progression::v1::ClearDeathRequest)},
-        {216, sizeof(::sf::progression::v1::DeathState)},
-        {231, sizeof(::sf::progression::v1::CharacterStateReply_SkillsEntry_DoNotUse)},
-        {238, sizeof(::sf::progression::v1::CharacterStateReply_ObjectiveCountsEntry_DoNotUse)},
-        {245, sizeof(::sf::progression::v1::CharacterStateReply_GatheringSkillsEntry_DoNotUse)},
-        {252, sizeof(::sf::progression::v1::CharacterStateReply)},
-        {289, sizeof(::sf::progression::v1::QuestState_CountsEntry_DoNotUse)},
-        {296, sizeof(::sf::progression::v1::QuestState)},
+        {192, sizeof(::sf::progression::v1::CommitUnstuckRequest)},
+        {203, sizeof(::sf::progression::v1::ReportDeathRequest)},
+        {218, sizeof(::sf::progression::v1::ClearDeathRequest)},
+        {227, sizeof(::sf::progression::v1::DeathState)},
+        {242, sizeof(::sf::progression::v1::CharacterStateReply_SkillsEntry_DoNotUse)},
+        {249, sizeof(::sf::progression::v1::CharacterStateReply_ObjectiveCountsEntry_DoNotUse)},
+        {256, sizeof(::sf::progression::v1::CharacterStateReply_GatheringSkillsEntry_DoNotUse)},
+        {263, sizeof(::sf::progression::v1::CharacterStateReply)},
+        {300, sizeof(::sf::progression::v1::QuestState_CountsEntry_DoNotUse)},
+        {307, sizeof(::sf::progression::v1::QuestState)},
 };
 static const ::_pbi::MessageGlobalsBase* PROTOBUF_NONNULL const
     file_message_globals[] = {
@@ -4880,6 +5070,7 @@ static const ::_pbi::MessageGlobalsBase* PROTOBUF_NONNULL const
         &::sf::progression::v1::CharacterPosition_globals_,
         &::sf::progression::v1::SavePositionRequest_globals_,
         &::sf::progression::v1::SavePositionReply_globals_,
+        &::sf::progression::v1::CommitUnstuckRequest_globals_,
         &::sf::progression::v1::ReportDeathRequest_globals_,
         &::sf::progression::v1::ClearDeathRequest_globals_,
         &::sf::progression::v1::DeathState_globals_,
@@ -4946,83 +5137,89 @@ const char descriptor_table_protodef_sf_2fprogression_2fv1_2fprogression_2eproto
     "\t\022\"\n\032expected_position_revision\030\002 \001(\003\0226\n"
     "\010position\030\003 \001(\0132$.sf.progression.v1.Char"
     "acterPosition\".\n\021SavePositionReply\022\031\n\021po"
-    "sition_revision\030\001 \001(\003\"\367\001\n\022ReportDeathReq"
-    "uest\022\026\n\016death_event_id\030\001 \001(\t\022\024\n\014characte"
-    "r_id\030\002 \001(\t\022\033\n\023occurred_at_unix_ms\030\003 \001(\003\022"
-    "<\n\016death_position\030\004 \001(\0132$.sf.progression"
+    "sition_revision\030\001 \001(\003\"\224\001\n\024CommitUnstuckR"
+    "equest\022\024\n\014character_id\030\001 \001(\t\0226\n\010position"
+    "\030\002 \001(\0132$.sf.progression.v1.CharacterPosi"
+    "tion\022\030\n\020cooldown_seconds\030\003 \001(\005\022\024\n\014operat"
+    "ion_id\030\004 \001(\t\"\367\001\n\022ReportDeathRequest\022\026\n\016d"
+    "eath_event_id\030\001 \001(\t\022\024\n\014character_id\030\002 \001("
+    "\t\022\033\n\023occurred_at_unix_ms\030\003 \001(\003\022<\n\016death_"
+    "position\030\004 \001(\0132$.sf.progression.v1.Chara"
+    "cterPosition\022>\n\020respawn_position\030\005 \001(\0132$"
+    ".sf.progression.v1.CharacterPosition\022\030\n\020"
+    "respawn_delay_ms\030\006 \001(\005\"f\n\021ClearDeathRequ"
+    "est\022\024\n\014character_id\030\001 \001(\t\022\026\n\016death_event"
+    "_id\030\002 \001(\t\022#\n\033resurrect_at_death_position"
+    "\030\003 \001(\010\"\354\001\n\nDeathState\022\017\n\007is_dead\030\001 \001(\010\022\026"
+    "\n\016death_event_id\030\002 \001(\t\022\033\n\023occurred_at_un"
+    "ix_ms\030\003 \001(\003\022\032\n\022respawn_at_unix_ms\030\004 \001(\003\022"
+    "<\n\016death_position\030\005 \001(\0132$.sf.progression"
     ".v1.CharacterPosition\022>\n\020respawn_positio"
-    "n\030\005 \001(\0132$.sf.progression.v1.CharacterPos"
-    "ition\022\030\n\020respawn_delay_ms\030\006 \001(\005\"f\n\021Clear"
-    "DeathRequest\022\024\n\014character_id\030\001 \001(\t\022\026\n\016de"
-    "ath_event_id\030\002 \001(\t\022#\n\033resurrect_at_death"
-    "_position\030\003 \001(\010\"\354\001\n\nDeathState\022\017\n\007is_dea"
-    "d\030\001 \001(\010\022\026\n\016death_event_id\030\002 \001(\t\022\033\n\023occur"
-    "red_at_unix_ms\030\003 \001(\003\022\032\n\022respawn_at_unix_"
-    "ms\030\004 \001(\003\022<\n\016death_position\030\005 \001(\0132$.sf.pr"
-    "ogression.v1.CharacterPosition\022>\n\020respaw"
-    "n_position\030\006 \001(\0132$.sf.progression.v1.Cha"
-    "racterPosition\"\210\007\n\023CharacterStateReply\022\034"
-    "\n\024progression_revision\030\001 \001(\003\022\023\n\013lifetime"
-    "_xp\030\002 \001(\003\022\r\n\005level\030\003 \001(\005\022B\n\006skills\030\004 \003(\013"
-    "22.sf.progression.v1.CharacterStateReply"
-    ".SkillsEntry\022\026\n\016quest_revision\030\005 \001(\003\022\026\n\016"
-    "active_step_id\030\006 \001(\t\022\027\n\017quest_completed\030"
-    "\007 \001(\010\022U\n\020objective_counts\030\010 \003(\0132;.sf.pro"
-    "gression.v1.CharacterStateReply.Objectiv"
-    "eCountsEntry\0226\n\010position\030\t \001(\0132$.sf.prog"
-    "ression.v1.CharacterPosition\022\031\n\021position"
-    "_revision\030\n \001(\003\022-\n\006quests\030\013 \003(\0132\035.sf.pro"
-    "gression.v1.QuestState\0225\n\rknown_recipes\030"
-    "\014 \003(\0132\036.sf.progression.v1.KnownRecipe\022\036\n"
-    "\021appearance_packet\030\r \001(\014H\000\210\001\001\022\024\n\007face_id"
-    "\030\016 \001(\tH\001\210\001\001\022U\n\020gathering_skills\030\017 \003(\0132;."
-    "sf.progression.v1.CharacterStateReply.Ga"
-    "theringSkillsEntry\022,\n\005death\030\020 \001(\0132\035.sf.p"
-    "rogression.v1.DeathState\022\026\n\016rested_minut"
-    "es\030\021 \001(\001\032-\n\013SkillsEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005"
-    "value\030\002 \001(\005:\0028\001\0326\n\024ObjectiveCountsEntry\022"
-    "\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\005:\0028\001\0326\n\024Gathe"
-    "ringSkillsEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 "
-    "\001(\005:\0028\001B\024\n\022_appearance_packetB\n\n\010_face_i"
-    "d\"\363\001\n\nQuestState\022\020\n\010quest_id\030\001 \001(\t\022\r\n\005st"
-    "ate\030\002 \001(\t\022\026\n\016active_step_id\030\003 \001(\t\0229\n\006cou"
-    "nts\030\004 \003(\0132).sf.progression.v1.QuestState"
-    ".CountsEntry\022\030\n\020content_revision\030\005 \001(\005\022\020"
-    "\n\010revision\030\006 \001(\003\022\026\n\016reward_pending\030\007 \001(\010"
-    "\032-\n\013CountsEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 "
-    "\001(\005:\0028\0012\365\005\n\013Progression\022e\n\017CreateCharact"
-    "er\022).sf.progression.v1.CreateCharacterRe"
-    "quest\032\'.sf.progression.v1.CreateCharacte"
-    "rReply\022\\\n\014ApplyReceipt\022&.sf.progression."
-    "v1.ApplyReceiptRequest\032$.sf.progression."
-    "v1.ApplyReceiptReply\022h\n\021GetCharacterStat"
-    "e\022+.sf.progression.v1.GetCharacterStateR"
-    "equest\032&.sf.progression.v1.CharacterStat"
-    "eReply\022\\\n\014SavePosition\022&.sf.progression."
-    "v1.SavePositionRequest\032$.sf.progression."
-    "v1.SavePositionReply\022S\n\013ReportDeath\022%.sf"
-    ".progression.v1.ReportDeathRequest\032\035.sf."
-    "progression.v1.DeathState\022Q\n\nClearDeath\022"
-    "$.sf.progression.v1.ClearDeathRequest\032\035."
-    "sf.progression.v1.DeathState\022Y\n\013LearnRec"
-    "ipe\022%.sf.progression.v1.LearnRecipeReque"
-    "st\032#.sf.progression.v1.LearnRecipeReply\022"
-    "V\n\nEndSession\022$.sf.progression.v1.EndSes"
-    "sionRequest\032\".sf.progression.v1.EndSessi"
-    "onReplyB#\252\002 ShatteredFrontier.Progressio"
-    "n.V1b\006proto3"
+    "n\030\006 \001(\0132$.sf.progression.v1.CharacterPos"
+    "ition\"\210\007\n\023CharacterStateReply\022\034\n\024progres"
+    "sion_revision\030\001 \001(\003\022\023\n\013lifetime_xp\030\002 \001(\003"
+    "\022\r\n\005level\030\003 \001(\005\022B\n\006skills\030\004 \003(\01322.sf.pro"
+    "gression.v1.CharacterStateReply.SkillsEn"
+    "try\022\026\n\016quest_revision\030\005 \001(\003\022\026\n\016active_st"
+    "ep_id\030\006 \001(\t\022\027\n\017quest_completed\030\007 \001(\010\022U\n\020"
+    "objective_counts\030\010 \003(\0132;.sf.progression."
+    "v1.CharacterStateReply.ObjectiveCountsEn"
+    "try\0226\n\010position\030\t \001(\0132$.sf.progression.v"
+    "1.CharacterPosition\022\031\n\021position_revision"
+    "\030\n \001(\003\022-\n\006quests\030\013 \003(\0132\035.sf.progression."
+    "v1.QuestState\0225\n\rknown_recipes\030\014 \003(\0132\036.s"
+    "f.progression.v1.KnownRecipe\022\036\n\021appearan"
+    "ce_packet\030\r \001(\014H\000\210\001\001\022\024\n\007face_id\030\016 \001(\tH\001\210"
+    "\001\001\022U\n\020gathering_skills\030\017 \003(\0132;.sf.progre"
+    "ssion.v1.CharacterStateReply.GatheringSk"
+    "illsEntry\022,\n\005death\030\020 \001(\0132\035.sf.progressio"
+    "n.v1.DeathState\022\026\n\016rested_minutes\030\021 \001(\001\032"
+    "-\n\013SkillsEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001"
+    "(\005:\0028\001\0326\n\024ObjectiveCountsEntry\022\013\n\003key\030\001 "
+    "\001(\t\022\r\n\005value\030\002 \001(\005:\0028\001\0326\n\024GatheringSkill"
+    "sEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\005:\0028\001B\024"
+    "\n\022_appearance_packetB\n\n\010_face_id\"\363\001\n\nQue"
+    "stState\022\020\n\010quest_id\030\001 \001(\t\022\r\n\005state\030\002 \001(\t"
+    "\022\026\n\016active_step_id\030\003 \001(\t\0229\n\006counts\030\004 \003(\013"
+    "2).sf.progression.v1.QuestState.CountsEn"
+    "try\022\030\n\020content_revision\030\005 \001(\005\022\020\n\010revisio"
+    "n\030\006 \001(\003\022\026\n\016reward_pending\030\007 \001(\010\032-\n\013Count"
+    "sEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\005:\0028\0012\325"
+    "\006\n\013Progression\022e\n\017CreateCharacter\022).sf.p"
+    "rogression.v1.CreateCharacterRequest\032\'.s"
+    "f.progression.v1.CreateCharacterReply\022\\\n"
+    "\014ApplyReceipt\022&.sf.progression.v1.ApplyR"
+    "eceiptRequest\032$.sf.progression.v1.ApplyR"
+    "eceiptReply\022h\n\021GetCharacterState\022+.sf.pr"
+    "ogression.v1.GetCharacterStateRequest\032&."
+    "sf.progression.v1.CharacterStateReply\022\\\n"
+    "\014SavePosition\022&.sf.progression.v1.SavePo"
+    "sitionRequest\032$.sf.progression.v1.SavePo"
+    "sitionReply\022^\n\rCommitUnstuck\022\'.sf.progre"
+    "ssion.v1.CommitUnstuckRequest\032$.sf.progr"
+    "ession.v1.SavePositionReply\022S\n\013ReportDea"
+    "th\022%.sf.progression.v1.ReportDeathReques"
+    "t\032\035.sf.progression.v1.DeathState\022Q\n\nClea"
+    "rDeath\022$.sf.progression.v1.ClearDeathReq"
+    "uest\032\035.sf.progression.v1.DeathState\022Y\n\013L"
+    "earnRecipe\022%.sf.progression.v1.LearnReci"
+    "peRequest\032#.sf.progression.v1.LearnRecip"
+    "eReply\022V\n\nEndSession\022$.sf.progression.v1"
+    ".EndSessionRequest\032\".sf.progression.v1.E"
+    "ndSessionReplyB#\252\002 ShatteredFrontier.Pro"
+    "gression.V1b\006proto3"
 };
 static ::absl::once_flag descriptor_table_sf_2fprogression_2fv1_2fprogression_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_sf_2fprogression_2fv1_2fprogression_2eproto = {
     false,
     false,
-    4732,
+    4979,
     descriptor_table_protodef_sf_2fprogression_2fv1_2fprogression_2eproto,
     "sf/progression/v1/progression.proto",
     &descriptor_table_sf_2fprogression_2fv1_2fprogression_2eproto_once,
     nullptr,
     0,
-    25,
+    26,
     schemas,
     file_message_globals,
     TableStruct_sf_2fprogression_2fv1_2fprogression_2eproto::offsets,
@@ -10055,6 +10252,323 @@ void SavePositionReply::InternalSwap(SavePositionReply* PROTOBUF_RESTRICT PROTOB
 }
 
 ::google::protobuf::Metadata SavePositionReply::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
+CommitUnstuckRequest::CommitUnstuckRequest(::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, CommitUnstuckRequest_get_class_data()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:sf.progression.v1.CommitUnstuckRequest)
+}
+PROTOBUF_NDEBUG_INLINE CommitUnstuckRequest::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+    [[maybe_unused]] const ::sf::progression::v1::CommitUnstuckRequest& from_msg)
+      : _has_bits_{from._has_bits_},
+        _cached_size_{0},
+        character_id_(arena, from.character_id_),
+        operation_id_(arena, from.operation_id_) {}
+
+CommitUnstuckRequest::CommitUnstuckRequest(
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena,
+    const CommitUnstuckRequest& from)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, CommitUnstuckRequest_get_class_data()) {
+
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  CommitUnstuckRequest* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
+  ::uint32_t cached_has_bits = _impl_._has_bits_[0];
+  _impl_.position_ = (CheckHasBit(cached_has_bits, 0x00000004U))
+                ? ::google::protobuf::Message::CopyConstruct(arena, *from._impl_.position_)
+                : nullptr;
+  _impl_.cooldown_seconds_ = from._impl_.cooldown_seconds_;
+
+  // @@protoc_insertion_point(copy_constructor:sf.progression.v1.CommitUnstuckRequest)
+}
+PROTOBUF_NDEBUG_INLINE CommitUnstuckRequest::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+      : _cached_size_{0},
+        character_id_(arena),
+        operation_id_(arena) {}
+
+inline void CommitUnstuckRequest::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  ::memset(reinterpret_cast<char*>(&_impl_) +
+               offsetof(Impl_, position_),
+           0,
+           offsetof(Impl_, cooldown_seconds_) -
+               offsetof(Impl_, position_) +
+               sizeof(Impl_::cooldown_seconds_));
+}
+CommitUnstuckRequest::~CommitUnstuckRequest() {
+  // @@protoc_insertion_point(destructor:sf.progression.v1.CommitUnstuckRequest)
+  SharedDtor(*this);
+}
+inline void CommitUnstuckRequest::SharedDtor(MessageLite& self) {
+  CommitUnstuckRequest& this_ = static_cast<CommitUnstuckRequest&>(self);
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    this_.CheckHasBitConsistency();
+  }
+  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.character_id_.Destroy();
+  this_._impl_.operation_id_.Destroy();
+  delete this_._impl_.position_;
+  this_._impl_.~Impl_();
+}
+
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
+    ::google::protobuf::internal::ClassDataFull CommitUnstuckRequest_class_data_ =
+        CommitUnstuckRequest::InternalGenerateClassData_(CommitUnstuckRequest_globals_._default);
+
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+CommitUnstuckRequest::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&CommitUnstuckRequest_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(CommitUnstuckRequest_class_data_.tc_table);
+  return CommitUnstuckRequest_class_data_.base();
+}
+#else
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+CommitUnstuckRequest::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&CommitUnstuckRequest_globals_);
+  ::google::protobuf::internal::PrefetchToLocalCache(
+      ::google::protobuf::internal::MessageGlobalsBase::ToParseTableBase(&CommitUnstuckRequest_globals_));
+  return CommitUnstuckRequest_globals_.GetClassData();
+}
+#endif  // !PROTOBUF_MESSAGE_GLOBALS
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_CONSTINIT
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const CommitUnstuckRequest::ParseTableT_
+    CommitUnstuckRequest::_table_ =
+        CommitUnstuckRequest::InternalGenerateParseTable_(CommitUnstuckRequest_class_data_.base());
+#endif  // !PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_NOINLINE void CommitUnstuckRequest::Clear() {
+// @@protoc_insertion_point(message_clear_start:sf.progression.v1.CommitUnstuckRequest)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x00000007U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      _impl_.character_id_.ClearNonDefaultToEmpty();
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      _impl_.operation_id_.ClearNonDefaultToEmpty();
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      ABSL_DCHECK(_impl_.position_ != nullptr);
+      _impl_.position_->Clear();
+    }
+  }
+  _impl_.cooldown_seconds_ = 0;
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::uint8_t* PROTOBUF_NONNULL CommitUnstuckRequest::_InternalSerialize(
+    const ::google::protobuf::MessageLite& base, ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) {
+  const CommitUnstuckRequest& this_ = static_cast<const CommitUnstuckRequest&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::uint8_t* PROTOBUF_NONNULL CommitUnstuckRequest::_InternalSerialize(
+    ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+  const CommitUnstuckRequest& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    this_.CheckHasBitConsistency();
+  }
+  // @@protoc_insertion_point(serialize_to_array_start:sf.progression.v1.CommitUnstuckRequest)
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  cached_has_bits = this_._impl_._has_bits_[0];
+  // string character_id = 1;
+  if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+    if (!this_._internal_character_id().empty()) {
+      const ::std::string& _s = this_._internal_character_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.progression.v1.CommitUnstuckRequest.character_id");
+      target = stream->WriteStringMaybeAliased(1, _s, target);
+    }
+  }
+
+  // .sf.progression.v1.CharacterPosition position = 2;
+  if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+    target = ::google::protobuf::internal::WireFormatLite::InternalWriteMessage(
+        2, *this_._impl_.position_, this_._impl_.position_->GetCachedSize(), target,
+        stream);
+  }
+
+  // int32 cooldown_seconds = 3;
+  if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+    if (this_._internal_cooldown_seconds() != 0) {
+      target =
+          ::google::protobuf::internal::WireFormatLite::WriteInt32ToArrayWithField<3>(
+              stream, this_._internal_cooldown_seconds(), target);
+    }
+  }
+
+  // string operation_id = 4;
+  if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+    if (!this_._internal_operation_id().empty()) {
+      const ::std::string& _s = this_._internal_operation_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.progression.v1.CommitUnstuckRequest.operation_id");
+      target = stream->WriteStringMaybeAliased(4, _s, target);
+    }
+  }
+
+  if (ABSL_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
+    target =
+        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+            this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:sf.progression.v1.CommitUnstuckRequest)
+  return target;
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::size_t CommitUnstuckRequest::ByteSizeLong(const MessageLite& base) {
+  const CommitUnstuckRequest& this_ = static_cast<const CommitUnstuckRequest&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::size_t CommitUnstuckRequest::ByteSizeLong() const {
+  const CommitUnstuckRequest& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  // @@protoc_insertion_point(message_byte_size_start:sf.progression.v1.CommitUnstuckRequest)
+  ::size_t total_size = 0;
+
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void)cached_has_bits;
+
+  ::_pbi::Prefetch5LinesFrom7Lines(&this_);
+  cached_has_bits = this_._impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x0000000fU)) {
+    // string character_id = 1;
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      if (!this_._internal_character_id().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_character_id());
+      }
+    }
+    // string operation_id = 4;
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      if (!this_._internal_operation_id().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_operation_id());
+      }
+    }
+    // .sf.progression.v1.CharacterPosition position = 2;
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      total_size += 1 +
+                    ::google::protobuf::internal::WireFormatLite::MessageSize(*this_._impl_.position_);
+    }
+    // int32 cooldown_seconds = 3;
+    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+      if (this_._internal_cooldown_seconds() != 0) {
+        total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(
+            this_._internal_cooldown_seconds());
+      }
+    }
+  }
+  return this_.MaybeComputeUnknownFieldsSize(total_size,
+                                             &this_._impl_._cached_size_);
+}
+
+void CommitUnstuckRequest::MergeImpl(::google::protobuf::MessageLite& to_msg,
+                      const ::google::protobuf::MessageLite& from_msg) {
+   auto* const _this = static_cast<CommitUnstuckRequest*>(&to_msg);
+  auto& from = static_cast<const CommitUnstuckRequest&>(from_msg);
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    from.CheckHasBitConsistency();
+  }
+  ::google::protobuf::Arena* arena = _this->GetArena();
+  // @@protoc_insertion_point(class_specific_merge_from_start:sf.progression.v1.CommitUnstuckRequest)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  cached_has_bits = from._impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x0000000fU)) {
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      if (!from._internal_character_id().empty()) {
+        _this->_internal_set_character_id(from._internal_character_id());
+      } else {
+        if (_this->_impl_.character_id_.IsDefault()) {
+          _this->_internal_set_character_id("");
+        }
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      if (!from._internal_operation_id().empty()) {
+        _this->_internal_set_operation_id(from._internal_operation_id());
+      } else {
+        if (_this->_impl_.operation_id_.IsDefault()) {
+          _this->_internal_set_operation_id("");
+        }
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      ABSL_DCHECK(from._impl_.position_ != nullptr);
+      if (_this->_impl_.position_ == nullptr) {
+        _this->_impl_.position_ = ::google::protobuf::Message::CopyConstruct(arena, *from._impl_.position_);
+      } else {
+        _this->_impl_.position_->MergeFrom(*from._impl_.position_);
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+      if (from._internal_cooldown_seconds() != 0) {
+        _this->_impl_.cooldown_seconds_ = from._impl_.cooldown_seconds_;
+      }
+    }
+  }
+  _this->_impl_._has_bits_[0] |= cached_has_bits;
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+}
+
+void CommitUnstuckRequest::CopyFrom(const CommitUnstuckRequest& from) {
+  // @@protoc_insertion_point(class_specific_copy_from_start:sf.progression.v1.CommitUnstuckRequest)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void CommitUnstuckRequest::InternalSwap(CommitUnstuckRequest* PROTOBUF_RESTRICT PROTOBUF_NONNULL other) {
+  using ::std::swap;
+  auto* arena = GetArena();
+  ABSL_DCHECK_EQ(arena, other->GetArena());
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.character_id_, &other->_impl_.character_id_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.operation_id_, &other->_impl_.operation_id_, arena);
+  ::google::protobuf::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(CommitUnstuckRequest, _impl_.cooldown_seconds_)
+      + sizeof(CommitUnstuckRequest::_impl_.cooldown_seconds_)
+      - PROTOBUF_FIELD_OFFSET(CommitUnstuckRequest, _impl_.position_)>(
+          reinterpret_cast<char*>(&_impl_.position_),
+          reinterpret_cast<char*>(&other->_impl_.position_));
+}
+
+::google::protobuf::Metadata CommitUnstuckRequest::GetMetadata() const {
   return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
 }
 // ===================================================================

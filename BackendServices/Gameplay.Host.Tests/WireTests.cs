@@ -420,6 +420,10 @@ if (mode.EndsWith("-replay", StringComparison.Ordinal))
         Check(state.PositionRevision == 2 && state.Position?.ZoneId == "silverbrook" && state.Position.X == 11.5 &&
             state.Position.Y == -9.25 && state.Position.Z == 42 && state.Position.Yaw == 90,
             "Position missing after host and PostgreSQL restart.");
+        var unstuck = new ProgressPb.CommitUnstuckRequest { OperationId = "00000000-0000-0000-0000-000000000101", CharacterId = "chr_unstuck_wire", CooldownSeconds = 900,
+            Position = new() { ZoneId = "silverbrook", X = 220, Y = 0, Z = 40 } };
+        Code(() => new ProgressPb.Progression.ProgressionClient(channel).CommitUnstuck(unstuck, headers, deadline: Deadline()),
+            StatusCode.FailedPrecondition);
     }
     else if (mode == "housing-replay")
     {
@@ -876,6 +880,18 @@ else if (mode == "progression")
     Check(client.SavePosition(save, headers, deadline: Deadline()).PositionRevision == 2, "Position update failed.");
     state = client.GetCharacterState(new ProgressPb.GetCharacterStateRequest { CharacterId = "chr_progression" }, headers, deadline: Deadline());
     Check(state.PositionRevision == 2 && state.Position?.X == 11.5, "Saved position missing from state.");
+    var unstuck = new ProgressPb.CommitUnstuckRequest { OperationId = "00000000-0000-0000-0000-000000000100", CharacterId = "chr_unstuck_wire", CooldownSeconds = 900,
+        Position = new() { ZoneId = "silverbrook", X = 200, Y = 0, Z = 40 } };
+    Code(() => client.CommitUnstuck(unstuck, bad, deadline: Deadline()), StatusCode.Unauthenticated);
+    unstuck.CooldownSeconds = 0;
+    Code(() => client.CommitUnstuck(unstuck, headers, deadline: Deadline()), StatusCode.InvalidArgument);
+    unstuck.CooldownSeconds = 900;
+    Check(client.CommitUnstuck(unstuck, headers, deadline: Deadline()).PositionRevision == 1,
+        "Unstuck landing not committed.");
+    Check(client.CommitUnstuck(unstuck, headers, deadline: Deadline()).PositionRevision == 1,
+        "Same Unstuck operation did not replay.");
+    unstuck.OperationId = "00000000-0000-0000-0000-000000000101";
+    Code(() => client.CommitUnstuck(unstuck, headers, deadline: Deadline()), StatusCode.FailedPrecondition);
     request.SourceReceiptId = "harvest/stale";
     Code(() => client.ApplyReceipt(request, headers, deadline: Deadline()), StatusCode.FailedPrecondition);
     request.SourceReceiptId = "bad/kind"; request.Kind = "unknown";

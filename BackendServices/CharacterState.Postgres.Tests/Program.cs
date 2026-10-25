@@ -15,6 +15,16 @@ var practice = new ActionReceipt("source-skill-1", "character-skill", ReceiptKin
 switch (args[0])
 {
     case "seed":
+        var unstuckPoint = new CharacterPositionSnapshot("silverbrook", 200, 0, 50, 0);
+        Check(store.CommitUnstuck("unstuck-1", "character-unstuck", unstuckPoint, 900, new FixedClock(1_000_000)) == 1,
+            "unstuck position and cooldown committed");
+        Check(store.CommitUnstuck("unstuck-1", "character-unstuck", unstuckPoint, 900, new FixedClock(1_001_000)) == 1,
+            "same Unstuck operation safely replays");
+        try { store.CommitUnstuck("unstuck-1", "character-unstuck", unstuckPoint with { X = 201 }, 900,
+            new FixedClock(1_001_000)); throw new Exception("Unstuck operation accepted changed payload"); }
+        catch (CharacterStoreRejectedException) { Console.WriteLine("PASS Unstuck operation payload forgery refused"); }
+        Check(store.SavePosition("character-unstuck", 1, unstuckPoint with { X = 205 }) == 2,
+            "normal position save preserves unstuck cooldown");
         var deathPoint = new CharacterPositionSnapshot("silverbrook", 12, 20, 30, 0);
         var respawnPoint = new CharacterPositionSnapshot("silverbrook", 100, 200, 30, 0);
         var deathId = "00000000-0000-0000-0000-000000000001";
@@ -104,6 +114,12 @@ switch (args[0])
         Check(store.PendingRewardQuests("character-3").Contains("quest/two") && !store.PendingRewardQuests("character-2").Contains("quest/two"), "pending reward quests listed");
         break;
     case "restart":
+        try { store.CommitUnstuck("unstuck-2", "character-unstuck", new("silverbrook", 220, 0, 50, 0), 900,
+            new FixedClock(1_001_000)); throw new Exception("unstuck after restart ignored cooldown"); }
+        catch (CharacterStoreRejectedException) { Console.WriteLine("PASS unstuck cooldown survives store and database restart"); }
+        Check(store.ReadPosition("character-unstuck")?.Result.X == 205, "denied unstuck did not move durable position");
+        Check(store.CommitUnstuck("unstuck-3", "character-unstuck", new("silverbrook", 220, 0, 50, 0), 900,
+            new FixedClock(1_900_000)) == 3, "unstuck accepted at fifteen minutes");
         Check(store.ReadDeath("character-death") is { IsDead: true, RespawnAtUnixMs: 104000 }, "dead state survives restart");
         Check(store.ReadDeathLevel("00000000-0000-0000-0000-000000000001", "character-death") == 1,
             "death level survives restart");
@@ -186,4 +202,9 @@ switch (args[0])
         catch (CharacterSchemaCompatibilityException) { Console.WriteLine("PASS newer schema refused"); }
         break;
     default: throw new ArgumentException("Unknown phase.");
+}
+
+sealed class FixedClock(long unixMs) : TimeProvider
+{
+    public override DateTimeOffset GetUtcNow() => DateTimeOffset.FromUnixTimeMilliseconds(unixMs);
 }

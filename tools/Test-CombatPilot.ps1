@@ -6,6 +6,7 @@ param(
     [ValidateRange(1,10)][int]$Clients = 1,
     [ValidatePattern('^/Game/Frontier/[A-Za-z0-9_/]+$')][string]$Map = '/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook',
     [switch]$GreenlandsDeathNetcheck,
+    [switch]$GreenlandsUnstuckNetcheck,
     [ValidateSet('Release','Resurrection')][string]$DeathResolution = 'Release',
     [switch]$RestartMidDeath,
     [switch]$TargetScenario,
@@ -24,6 +25,10 @@ $sdk = Join-Path $repo 'Artifacts\Persistence\Toolchains\dotnet-10.0.402\dotnet.
 if ($Services -and $TargetScenario) { throw 'Services ledger assertion requires the combat reward scenario.' }
 if ($GreenlandsDeathNetcheck -and (-not $Services -or $Clients -ne 2 -or $Map -ne '/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook' -or
     $TargetScenario -or $PartyScenario -or $PartyXpScenario -or $SpawnOnly)) { throw 'GreenlandsDeathNetcheck requires Silverbrook, two clients and Gameplay Services.' }
+if ($GreenlandsUnstuckNetcheck -and (-not $Services -or $Clients -ne 2 -or $Map -ne '/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook' -or
+    $GreenlandsDeathNetcheck -or $TargetScenario -or $PartyScenario -or $PartyXpScenario -or $SpawnOnly)) {
+    throw 'GreenlandsUnstuckNetcheck requires Silverbrook, two clients and Gameplay Services.'
+}
 if ($RestartMidDeath -and -not $GreenlandsDeathNetcheck) { throw 'RestartMidDeath requires GreenlandsDeathNetcheck.' }
 if ($SpawnOnly -and (-not $Services -or -not $ServerExe)) { throw '-SpawnOnly requires -Services and -ServerExe.' }
 if ($PartyScenario -and ($Clients -ne 3 -or $Services -or $TargetScenario -or $SpawnOnly)) { throw '-PartyScenario requires -Clients 3 without services or other scenarios.' }
@@ -44,7 +49,8 @@ $null = New-Item -ItemType Directory -Path $root
 if ($Services) { . (Join-Path $PSScriptRoot 'InventoryLedgerHostFixture.ps1') }
 $fx = @{}
 $owned = [Collections.Generic.List[Diagnostics.Process]]::new()
-$scope = if ($GreenlandsDeathNetcheck) { "Greenlands two-client durable boar death and $DeathResolution" }
+$scope = if ($GreenlandsUnstuckNetcheck) { 'Greenlands two-client Unstuck, token replay, and restart cooldown' }
+    elseif ($GreenlandsDeathNetcheck) { "Greenlands two-client durable boar death and $DeathResolution" }
     elseif ($PartyXpScenario) { 'Three-client party: server restart, two in-range personal loot and XP recipients, out-of-range exclusion' }
     elseif ($PartyScenario) { 'Three clients: invite, decline, accept, leader handoff, kick, leave and party HUD' }
     elseif ($SpawnOnly) { 'Packaged dedicated server, Gameplay.Host, five boars in each authored group' }
@@ -157,7 +163,7 @@ try {
         }
     }
     $url = $result.map
-    $scenarioArg = if ($GreenlandsDeathNetcheck) { '-GreenlandsDeathNetcheck' } elseif ($PartyScenario) { '-PartyScenario' } elseif ($Clients -gt 1) { '-CombatGroupScenario' } elseif ($TargetScenario) { '-CombatTargetScenario' } else { '-CombatPilotScenario' }
+    $scenarioArg = if ($GreenlandsUnstuckNetcheck) { '-GreenlandsUnstuckNetcheck' } elseif ($GreenlandsDeathNetcheck) { '-GreenlandsDeathNetcheck' } elseif ($PartyScenario) { '-PartyScenario' } elseif ($Clients -gt 1) { '-CombatGroupScenario' } elseif ($TargetScenario) { '-CombatTargetScenario' } else { '-CombatPilotScenario' }
     $serverFlags = @('-server',('-port='+$Port),'-multihome=127.0.0.1',$scenarioArg)
     if ($GreenlandsDeathNetcheck) { $serverFlags += "-DeathResolution=$DeathResolution" }
     if ($PartyScenario) { $serverFlags += '-SFDevIdentity' }
@@ -302,6 +308,50 @@ try {
             }
         }
         if ($serverText -match 'COMBAT_PILOT_SLOT_ERROR|Fatal error:|Assertion failed:') { throw 'Packaged combat logged a slot or fatal error.' }
+        $result.status='Passed'
+        return
+    }
+    if ($GreenlandsUnstuckNetcheck) {
+        $names = @('alpha','beta')
+        for ($role = 1; $role -le 2; $role++) {
+            $label = if ($role -eq 1) { 'Driver' } else { 'Observer' }
+            $null = Start-Owned "client$role" ("127.0.0.1:$Port`?SFDevCharacter=$($names[$role - 1])") @('-game','-UnstuckScenario','-GreenlandsUnstuckNetcheck',"-UnstuckRole=$label")
+        }
+        Wait-Log $server 'server' 'UNSTUCK_SERVER_ACCEPTED .*Distance='
+        Wait-Log $server 'server' 'UNSTUCK_TOKEN_CONSUMED Sequence='
+        Wait-Log $server 'server' 'UNSTUCK_TOKEN_DENIED Sequence='
+        Wait-Log $server 'server' 'UNSTUCK_SERVER_DENIED Reason=NoDestination'
+        foreach ($role in 1..2) {
+            $label = if ($role -eq 1) { 'Driver' } else { 'Observer' }
+            $process = @($owned | Where-Object Id -eq (@($result.runs | Where-Object name -eq "client$role")[0].pid))[0]
+            Wait-Log $process "client$role" "UNSTUCK_CLIENT_MOVED Role=$label Distance="
+        }
+        $first = Get-Content -LiteralPath (Join-Path $root 'server.log') -Raw
+        if ([regex]::Matches($first,'UNSTUCK_SERVER_ACCEPTED').Count -ne 1 -or
+            [regex]::Matches($first,'UNSTUCK_TOKEN_CONSUMED').Count -ne 1 -or
+            [regex]::Matches($first,'UNSTUCK_TOKEN_DENIED').Count -ne 1) { throw 'Initial move or single-use token count invalid.' }
+        $cooldown = Invoke-LedgerSql $fx "SELECT unstuck_at_unix_ms FROM character_state.positions WHERE character_id='chr_dev_alpha'" $fx.db
+        if ([long]$cooldown -le 0) { throw 'Unstuck cooldown was not durably committed.' }
+        foreach ($name in @('client1','client2')) {
+            $p = @($owned | Where-Object Id -eq (@($result.runs | Where-Object name -eq $name)[0].pid))[0]
+            if (-not $p.HasExited) { Stop-Process -Id $p.Id -Force; $p.WaitForExit() }
+        }
+        if (-not $server.HasExited) { Stop-Process -Id $server.Id -Force; $server.WaitForExit() }
+        Invoke-WithEnv $serverEnv { $script:server = Start-Owned 'server2' $url ($serverFlags + '-UnstuckRestoreCheck') }
+        Wait-Log $server 'server2' 'COMBAT_PILOT_READY Boars=10'
+        for ($role = 1; $role -le 2; $role++) {
+            $label = if ($role -eq 1) { 'Driver' } else { 'Observer' }
+            $null = Start-Owned "client$role-rejoin" ("127.0.0.1:$Port`?SFDevCharacter=$($names[$role - 1])") @('-game','-UnstuckScenario','-GreenlandsUnstuckNetcheck','-UnstuckRestoreCheck',"-UnstuckRole=$label")
+        }
+        Wait-Log $server 'server2' 'CHARACTER_RESTORED Character=chr_dev_alpha'
+        Wait-Log $server 'server2' 'UNSTUCK_SERVER_DENIED Reason=StateOrCooldown'
+        $again = Get-Content -LiteralPath (Join-Path $root 'server2.log') -Raw
+        if ($again -match 'UNSTUCK_SERVER_ACCEPTED' -or
+            [regex]::Matches($again,'UNSTUCK_SERVER_DENIED Reason=StateOrCooldown').Count -ne 1) {
+            throw 'Cooldown failed after the server restarted.'
+        }
+        $cooldownAfter = Invoke-LedgerSql $fx "SELECT unstuck_at_unix_ms FROM character_state.positions WHERE character_id='chr_dev_alpha'" $fx.db
+        if ($cooldownAfter -ne $cooldown) { throw 'Denied restart request changed the durable cooldown.' }
         $result.status='Passed'
         return
     }

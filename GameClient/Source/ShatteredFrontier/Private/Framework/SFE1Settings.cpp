@@ -67,5 +67,10 @@ bool USFE1Settings::Validate(FString& OutError) const
         && Check(TEXT("CombatDofSensorWidthMm"), CombatDofSensorWidthMm, 18.0f, 50.0f)
         && Check(TEXT("WalkInputScale"), WalkInputScale, 0.1f, 0.9f)
         && Check(TEXT("InteractionRangeMetres"), InteractionRangeMetres, 0.5f, 5.0f)
-        && Check(TEXT("InteractionAcceptedCooldownSeconds"), InteractionAcceptedCooldownSeconds, 0.1f, 10.0f);
+        && Check(TEXT("InteractionAcceptedCooldownSeconds"), InteractionAcceptedCooldownSeconds, 0.1f, 10.0f)
+        && Check(TEXT("UnstuckCooldownSeconds"), UnstuckCooldownSeconds, 60, 3600)
+        && Check(TEXT("UnstuckMinimumMetres"), UnstuckMinimumMetres, 2.0f, 10.0f)
+        && Check(TEXT("UnstuckMaximumMetres"), UnstuckMaximumMetres, FMath::Max(10.0f, UnstuckMinimumMetres), 30.0f)
+        && Check(TEXT("UnstuckTokenTtlMilliseconds"), UnstuckTokenTtlMilliseconds, 500, 10000)
+        && Check(TEXT("UnstuckDestinationToleranceMetres"), UnstuckDestinationToleranceMetres, 0.5f, 3.0f);
 }

@@ -401,6 +401,18 @@ void FSFGrpcGameplayTransport::Send(const FSFGameplayRequest& Q, float DeadlineS
         Start(Call, [&](grpc::ClientContext* C) { return Channel->Progression->AsyncSavePosition(C, M, &Channel->Queue); });
         break;
     }
+    case ESFGameplayRpc::CommitUnstuck:
+    {
+        sf::progression::v1::CommitUnstuckRequest M;
+        M.set_operation_id(Utf8(Q.OperationId)); M.set_character_id(Utf8(Q.CharacterId));
+        M.set_cooldown_seconds(Q.UnstuckCooldownSeconds);
+        auto* P = M.mutable_position();
+        P->set_zone_id(Utf8(Q.ZoneId)); P->set_x(Q.Position.X); P->set_y(Q.Position.Y); P->set_z(Q.Position.Z); P->set_yaw(Q.Yaw);
+        auto* Call = new TCall<sf::progression::v1::SavePositionReply>();
+        Call->Copy = [](const sf::progression::v1::SavePositionReply& R, FSFGameplayResponse& Out) { Out.PositionRevision = R.position_revision(); };
+        Start(Call, [&](grpc::ClientContext* C) { return Channel->Progression->AsyncCommitUnstuck(C, M, &Channel->Queue); });
+        break;
+    }
     case ESFGameplayRpc::ReportDeath:
     {
         sf::progression::v1::ReportDeathRequest M;

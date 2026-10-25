@@ -155,6 +155,19 @@ public:
     UPROPERTY(Config, EditAnywhere, Category="Interaction (Release Only)", meta=(ClampMin="0.1", ClampMax="10.0", Units="s", ToolTip="Minimum server time between accepted non-economic probes. Default 0.5 s; release review required; next startup only."))
     float InteractionAcceptedCooldownSeconds = 0.5f;
 
+    // World Unstuck: release-author control, captured at process start. The server sends the cooldown to
+    // CharacterState for an atomic position/cooldown commit; clients never choose these values.
+    UPROPERTY(Config, EditAnywhere, Category="Unstuck (Release Only)", meta=(ClampMin="60", ClampMax="3600", Units="s", ToolTip="Minimum time between successful Unstuck moves. Default 900 s; effective next server startup."))
+    int32 UnstuckCooldownSeconds = 900;
+    UPROPERTY(Config, EditAnywhere, Category="Unstuck (Release Only)", meta=(ClampMin="2", ClampMax="10", Units="m", ToolTip="Minimum horizontal displacement. Default 2 m; effective next server startup."))
+    float UnstuckMinimumMetres = 2.0f;
+    UPROPERTY(Config, EditAnywhere, Category="Unstuck (Release Only)", meta=(ClampMin="10", ClampMax="30", Units="m", ToolTip="Maximum horizontal displacement. Default 30 m; effective next server startup."))
+    float UnstuckMaximumMetres = 30.0f;
+    UPROPERTY(Config, EditAnywhere, Category="Unstuck (Release Only)", meta=(ClampMin="500", ClampMax="10000", Units="ms", ToolTip="In-zone displacement notice lifetime. Default 2000 ms; effective next server startup."))
+    int32 UnstuckTokenTtlMilliseconds = 2000;
+    UPROPERTY(Config, EditAnywhere, Category="Unstuck (Release Only)", meta=(ClampMin="0.5", ClampMax="3.0", Units="m", ToolTip="Landing acknowledgement tolerance. Default 1.5 m; effective next server startup."))
+    float UnstuckDestinationToleranceMetres = 1.5f;
+
     // Player MetaHuman faces a character may wear (ASFE1Character::FaceId). Each id names a face built by
     // tools/Build-PlayerMetaHumans.py at /Game/Frontier/Characters/Player/Built/MHC_<id>/BP_MHC_<id>; the server rejects any other id.
     // Shipped list in DefaultGame.ini; must include Orlando (the default face), never a *Bare authoring body (OrlandoBare, HildaBare). Next startup.

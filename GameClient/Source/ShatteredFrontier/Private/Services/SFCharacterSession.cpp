@@ -254,13 +254,27 @@ void USFCharacterSessionComponent::SavePosition(bool bFinal)
         USFCharacterSessionComponent* Self = Weak.Get();
         if (!Self) { return; }
         Self->bSaveInFlight = false;
-        if (Reply.Status == ESFGameplayStatus::Ok) { Self->PositionRevision = Reply.PositionRevision; Self->LastSavedLocation = Saved; return; }
+        if (Reply.Status == ESFGameplayStatus::Ok)
+        {
+            if (Reply.PositionRevision >= Self->PositionRevision)
+            { Self->PositionRevision = Reply.PositionRevision; Self->LastSavedLocation = Saved; }
+            return;
+        }
         // Stale: another writer saved since our read. Take its revision; the next interval saves this pawn again.
         if (Reply.GrpcCode != 9) { return; }
         FSFGameplayRequest Get; Get.Rpc = ESFGameplayRpc::GetCharacterState; Get.CharacterId = Character;
         USFBackpackComponent::Services()->Call(Get, [Weak](const FSFGameplayResponse& State)
-        { if (USFCharacterSessionComponent* Again = Weak.Get(); Again && State.Status == ESFGameplayStatus::Ok) { Again->PositionRevision = State.PositionRevision; } });
+        { if (USFCharacterSessionComponent* Again = Weak.Get(); Again && State.Status == ESFGameplayStatus::Ok)
+          { Again->PositionRevision = FMath::Max(Again->PositionRevision, State.PositionRevision); } });
     });
+}
+
+void USFCharacterSessionComponent::RecordUnstuckCommit(int64 Revision, const FVector& Position)
+{
+    PositionRevision = FMath::Max(PositionRevision, Revision);
+    LastSavedLocation = Position;
+    LastKnownLocation = Position;
+    bHasKnownPose = true;
 }
 
 void USFCharacterSessionComponent::EndPlay(const EEndPlayReason::Type Reason)

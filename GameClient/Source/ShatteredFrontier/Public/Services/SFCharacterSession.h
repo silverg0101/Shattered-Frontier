@@ -24,6 +24,9 @@ public:
     // Connection closed: true keeps the controller alive (detached) until its pending work resolves.
     bool BeginDrain();
     bool IsDraining() const { return DrainStartedAt >= 0; }
+    bool IsRestored() const { return bRestored && !IsDraining(); }
+    const FString& RestoredCharacterId() const { return CharacterId; }
+    void RecordUnstuckCommit(int64 Revision, const FVector& Position);
     virtual void TickComponent(float Delta, ELevelTick Type, FActorComponentTickFunction* Function) override;
     virtual void EndPlay(const EEndPlayReason::Type Reason) override;
 private:

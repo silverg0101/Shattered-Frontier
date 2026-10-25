@@ -72,6 +72,7 @@ public:
     int32 RewardKill(ASFPilotBoar* Boar, ASFE1Character* Killer);
     void ClaimSharedDrop(class ASFPlayerController* Player, const FString& EventId);
     bool IsSafe(const FVector& Location) const;
+    bool TryNearestRespawnPoint(const FVector& From, float PawnHalfHeight, FVector& OutLanding) const;
     bool IsInsideTerritory(const FVector& Location, const TArray<FVector2D>& Polygon) const;
     bool IsCombatActive() const { return bPilotActive; }
     const USFCombatPilotSettings* CombatSettings() const { return CapturedSettings; }
