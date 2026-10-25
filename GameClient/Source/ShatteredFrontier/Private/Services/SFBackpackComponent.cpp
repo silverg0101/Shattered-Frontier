@@ -9,6 +9,25 @@
 #include "Inventory/SFInventory.h"
 #include "Inventory/SFLootComponent.h"
 
+#if WITH_DEV_AUTOMATION_TESTS && WITH_EDITOR
+namespace
+{
+    thread_local TSharedPtr<FSFGameplayServicesClient> TestServices;
+    thread_local bool bTestServicesActive = false;
+}
+FSFScopedGameplayServicesForTests::FSFScopedGameplayServicesForTests(TSharedPtr<FSFGameplayServicesClient> Client)
+    : Previous(TestServices), bPreviousActive(bTestServicesActive)
+{
+    check(IsInGameThread());
+    TestServices = MoveTemp(Client); bTestServicesActive = true;
+}
+FSFScopedGameplayServicesForTests::~FSFScopedGameplayServicesForTests()
+{
+    check(IsInGameThread());
+    TestServices = MoveTemp(Previous); bTestServicesActive = bPreviousActive;
+}
+#endif
+
 USFBackpackComponent* USFBackpackComponent::FindOrCreate(APlayerController* Controller)
 {
     if (!IsValid(Controller) || !Controller->HasAuthority()) { return nullptr; }
@@ -21,6 +40,9 @@ USFBackpackComponent* USFBackpackComponent::FindOrCreate(APlayerController* Cont
 
 TSharedPtr<FSFGameplayServicesClient> USFBackpackComponent::Services()
 {
+#if WITH_DEV_AUTOMATION_TESTS && WITH_EDITOR
+    if (bTestServicesActive) return TestServices;
+#endif
     // One client per server process; it holds the shared transport (one channel per endpoint).
     static TSharedPtr<FSFGameplayServicesClient> Client = FSFGameplayServicesClient::Create(*GetDefault<USFGameplayServicesSettings>());
     return Client;

@@ -1,6 +1,7 @@
 #include "Combat/SFNpcZoneContent.h"
 #include "Combat/SFNpcProfiles.h"
 #include "Dom/JsonObject.h"
+#include "Engine/World.h"
 #include "HAL/FileManager.h"
 #include "Misc/FileHelper.h"
 #include "Misc/Paths.h"
@@ -9,6 +10,9 @@
 
 namespace
 {
+#if WITH_DEV_AUTOMATION_TESTS && WITH_EDITOR
+    thread_local const TMap<FString, FString>* TestMaps = nullptr;
+#endif
     bool Read(const FString& Path, TSharedPtr<FJsonObject>& Root)
     {
         FString Source;
@@ -48,6 +52,9 @@ namespace
 
 FString SFNpcZoneContent::FindMapFile(const FString& MapId)
 {
+#if WITH_DEV_AUTOMATION_TESTS && WITH_EDITOR
+    if (TestMaps) { const auto* Path = TestMaps->Find(MapId); return Path ? *Path : FString(); }
+#endif
     static const TMap<FString, FString> FilesByMap = []
     {
         const FString Directory = FPaths::ConvertRelativePathToFull(FPaths::ProjectDir(), TEXT("../content/world/zones"));
@@ -71,6 +78,13 @@ FString SFNpcZoneContent::FindMapFile(const FString& MapId)
     }();
     const FString* Path = FilesByMap.Find(MapId);
     return Path ? *Path : FString();
+}
+
+bool SFNpcZoneContent::IsProductionMap(const UWorld* World)
+{
+    if (!World) return false;
+    const FString MapId = World->GetOutermost()->GetName();
+    return !MapId.StartsWith(TEXT("/Game/Frontier/Maps/Sandbox/"), ESearchCase::CaseSensitive) && !FindMapFile(MapId).IsEmpty();
 }
 
 bool SFNpcZoneContent::Load(const FString& Path, const FString& MapId, FZone& Out, FString& Error)
@@ -169,3 +183,20 @@ bool SFNpcZoneContent::Load(const FString& Path, const FString& MapId, FZone& Ou
     Error.Empty();
     return true;
 }
+
+#if WITH_DEV_AUTOMATION_TESTS && WITH_EDITOR
+SFNpcZoneContent::FScopedTestMap::FScopedTestMap(const FString& MapId, const FString& Path) : Previous(TestMaps)
+{
+    check(IsInGameThread());
+    FZone Zone;
+    FString Error;
+    checkf(Load(Path, MapId, Zone, Error), TEXT("Invalid automation map fixture: %s"), *Error);
+    Maps.Add(MapId, Path);
+    TestMaps = &Maps;
+}
+SFNpcZoneContent::FScopedTestMap::~FScopedTestMap()
+{
+    check(IsInGameThread());
+    TestMaps = Previous;
+}
+#endif

@@ -8,6 +8,21 @@ class FSFInventoryLedgerClient;
 struct FSFLedgerResponse;
 class FSFGameplayServicesClient;
 
+#if WITH_DEV_AUTOMATION_TESTS && WITH_EDITOR
+/** Isolated automation transport without changing the process's cached production client. */
+class SHATTEREDFRONTIER_API FSFScopedGameplayServicesForTests
+{
+public:
+    explicit FSFScopedGameplayServicesForTests(TSharedPtr<FSFGameplayServicesClient> Client);
+    ~FSFScopedGameplayServicesForTests();
+    FSFScopedGameplayServicesForTests(const FSFScopedGameplayServicesForTests&) = delete;
+    FSFScopedGameplayServicesForTests& operator=(const FSFScopedGameplayServicesForTests&) = delete;
+private:
+    TSharedPtr<FSFGameplayServicesClient> Previous;
+    bool bPreviousActive;
+};
+#endif
+
 enum class ESFBackpackOutcome : uint8 { Committed, Stale, Rejected, Unavailable };
 
 // One queued backpack mutation. Run issues the RPC with the given operation id and expected revision, then reports

@@ -69,6 +69,18 @@ FVector Grounded(UWorld* World, const FVector& XY, float HalfHeight)
     return FVector(XY.X, XY.Y, XY.Z + HalfHeight + 4);
 }
 
+int32 FixtureRewardNpcCount(const TMap<FString, TWeakObjectPtr<ASFPilotBoar>>& Npcs)
+{
+    int32 Count = 0;
+    for (const auto& Pair : Npcs)
+    {
+        const auto* Npc = Pair.Value.Get();
+        const auto* Profile = Npc ? Npc->GetNpcProfile() : nullptr;
+        if (Profile && Profile->bLocalHidesFixture) ++Count;
+    }
+    return Count;
+}
+
 FString ThreatIdentity(APlayerController* Controller)
 {
     if (!IsValid(Controller) || !Controller->HasAuthority()) { return {}; }
@@ -1056,7 +1068,7 @@ void ASFGameMode::StartCombat()
     {
         bSlotReadyLogged = true;
         UE_LOG(LogTemp, Display, TEXT("COMBAT_PILOT_READY Boars=%d Hostiles=%d Combat=%d HostileSpawning=%d"),
-            CapturedSettings->bSilverbrookHostileSpawning ? 10 : 0, ActiveBoars.Num(),
+            FixtureRewardNpcCount(ActiveBoars), ActiveBoars.Num(),
             CapturedSettings->bCombatAvailable, CapturedSettings->bSilverbrookHostileSpawning);
     }
 }
@@ -2053,6 +2065,32 @@ void ASFGameMode::TickGreenlandsNetcheck()
 }
 #endif
 
+bool ASFGameMode::ValidateWorldSlotsReply(const FSFGameplayResponse& Reply) const
+{
+    if (Reply.Status != ESFGameplayStatus::Ok) return false;
+    int64 Expected = 0;
+    for (const auto& Group : Groups) Expected += Group.Value.ActiveCount;
+    if (Expected <= 0 || Reply.BoarSlots.Num() != Expected) return false;
+    TSet<FString> SeenSlots, SeenActivePoints;
+    for (const auto& Row : Reply.BoarSlots)
+    {
+        const auto* Group = Groups.Find(Row.GroupId);
+        const FString Key = FString::Printf(TEXT("%s:%d"), *Row.GroupId, Row.SlotIndex);
+        if (!Group || Row.SlotIndex < 0 || Row.SlotIndex >= Group->ActiveCount || Row.Cycle < 0 ||
+            SeenSlots.Contains(Key) || !FMath::IsFinite(Row.XMetres) || !FMath::IsFinite(Row.YMetres) ||
+            !FMath::IsFinite(Row.FacingDegrees)) return false;
+        SeenSlots.Add(Key);
+        if (Row.bActive)
+        {
+            const FString PointKey = Row.GroupId + TEXT(":") + Row.PointId;
+            if (!Group->Definitions.Contains(Row.DefinitionId) || !Group->DefensivePoints.Contains(Row.PointId) ||
+                SeenActivePoints.Contains(PointKey)) return false;
+            SeenActivePoints.Add(PointKey);
+        }
+    }
+    return true;
+}
+
 bool ASFGameMode::RunWorldSlots(const FString& Command, const FString& Group, int32 Slot)
 {
     if (bSlotServiceMode)
@@ -2075,7 +2113,7 @@ bool ASFGameMode::RunWorldSlots(const FString& Command, const FString& Group, in
             ASFGameMode* Mode = WeakMode.Get();
             if (!Mode) { return; }
             Mode->bSlotRequestInFlight = false;
-            if (Reply.Status != ESFGameplayStatus::Ok || Reply.BoarSlots.Num() != 21)
+            if (!Mode->ValidateWorldSlotsReply(Reply))
             {
                 Mode->bSlotBridgeHealthy = false;
                 UE_LOG(LogTemp, Error, TEXT("COMBAT_PILOT_SLOT_ERROR Gameplay.Host Code=%d Slots=%d"), Reply.GrpcCode, Reply.BoarSlots.Num());
@@ -2097,7 +2135,7 @@ bool ASFGameMode::RunWorldSlots(const FString& Command, const FString& Group, in
             {
                 Mode->bSlotReadyLogged = true;
                 UE_LOG(LogTemp, Display, TEXT("COMBAT_PILOT_READY Boars=%d Hostiles=%d Combat=%d HostileSpawning=%d"),
-                    Mode->CapturedSettings->bSilverbrookHostileSpawning ? 10 : 0, Mode->ActiveBoars.Num(),
+                    FixtureRewardNpcCount(Mode->ActiveBoars), Mode->ActiveBoars.Num(),
                     Mode->CapturedSettings->bCombatAvailable, Mode->CapturedSettings->bSilverbrookHostileSpawning);
             }
             if (Mode->PendingSlotDefeats.Num()) { Mode->RunWorldSlots(TEXT("tick")); }
@@ -2737,8 +2775,8 @@ void ASFGameMode::TryPlayerAttack(ASFE1Character* Attacker, AActor* SelectedTarg
     Attack.bFrontArc = SFBoarDodgeRules::IsInFrontArc(Best->GetActorForwardVector(),
         Attacker->GetActorLocation() - Best->GetActorLocation(), CapturedSettings->FrontArcDegrees);
     const FString Map = GetWorld()->GetOutermost()->GetName();
-    const bool bBoarAvoidance = Map == TEXT("/Game/Frontier/Maps/Sandbox/SB_Dodge") ||
-        Map == TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook");
+    const bool bBoarAvoidance = SFNpcZoneContent::IsProductionMap(GetWorld()) ||
+        Map == TEXT("/Game/Frontier/Maps/Sandbox/SB_Dodge");
     Attack.bCanDodge = bBoarAvoidance && Attack.bFrontArc;
     Attack.bCanParry = bBoarAvoidance && Attack.bFrontArc;
     Attack.DodgeChance = bPart6 ? Best->CombatDodge() : CapturedSettings->BoarDodgeChance;
@@ -2792,7 +2830,7 @@ bool ASFGameMode::TryPlayerTaunt(ASFE1Character* Taunter, AActor* SelectedTarget
         { if (ASFPlayerController* PC = Cast<ASFPlayerController>(Taunter->GetController())) { PC->ClientPilotHit(FString::Printf(TEXT("Taunt: %s"), Reason)); } }
         return false;
     };
-    const bool bPublished = GetWorld()->GetOutermost()->GetName() == TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook");
+    const bool bPublished = SFNpcZoneContent::IsProductionMap(GetWorld());
     if ((!bPublished && GetWorld()->GetOutermost()->GetName() != TEXT("/Game/Frontier/Maps/Sandbox/SB_Taunt")) ||
         !bPilotActive || !CapturedSettings || !CapturedSettings->bCombatAvailable ||
         !IsValid(Taunter) || Taunter->CombatHealth() <= 0 ||
@@ -2951,9 +2989,8 @@ void ASFGameMode::HitPlayer(AActor* Source, ASFE1Character* Victim, int32 Damage
             Request.CharacterId = Pack->GetCharacterId(); Request.DeathAtUnixMs = UnixNowMs();
             Request.ZoneId = FPackageName::GetShortName(Victim->GetWorld()->GetOutermost()->GetName()).ToLower();
             Request.Position = Victim->GetActorLocation(); Request.RespawnPosition = Mode->ChooseRespawnPoint(Request.Position);
-            const bool bGreenlands = Victim->GetWorld()->GetOutermost()->GetName() ==
-                TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook");
-            Request.RespawnDelayMs = FMath::RoundToInt((bGreenlands ? Mode->CapturedSettings->ResAcceptSeconds :
+            const bool bProduction = SFNpcZoneContent::IsProductionMap(Victim->GetWorld());
+            Request.RespawnDelayMs = FMath::RoundToInt((bProduction ? Mode->CapturedSettings->ResAcceptSeconds :
                 Mode->CapturedSettings->PlayerRespawnDelaySeconds) * 1000);
             Mode->PlayerDeathEvents.Add(Weak, Request.DeathEventId);
             Mode->PlayerDeathRespawnPoints.Add(Weak, Request.RespawnPosition);
@@ -2973,15 +3010,15 @@ bool ASFGameMode::AcceptResurrection(ASFE1Character* Player, uint32 OfferId, con
 {
     const FString Map = GetWorld() ? GetWorld()->GetOutermost()->GetName() : FString();
     const bool bSandbox = Map == TEXT("/Game/Frontier/Maps/Sandbox/SB_ResurrectionAccept");
-    const bool bGreenlands = Map == TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook");
-    if ((!bSandbox && !bGreenlands) || (bSandbox && USFBackpackComponent::Services()) ||
+    const bool bProduction = SFNpcZoneContent::IsProductionMap(GetWorld());
+    if ((!bSandbox && !bProduction) || (bSandbox && USFBackpackComponent::Services()) ||
         !HasAuthority() || !bPilotActive || !CapturedSettings ||
         !IsValid(Player) || !Player->CanAcceptResurrectionOffer(OfferId, GetWorld()->GetTimeSeconds()))
     {
         UE_LOG(LogTemp, Display, TEXT("RES_ACCEPT_SERVER_DENIED Pawn=%s Offer=%u"), *GetNameSafe(Player), OfferId);
         return false;
     }
-    if (bGreenlands)
+    if (bProduction)
     {
         const auto Weak = TWeakObjectPtr<ASFE1Character>(Player);
         if (!USFBackpackComponent::Services() || DeathEventId.IsEmpty() ||
@@ -3008,15 +3045,15 @@ bool ASFGameMode::ReleaseSpirit(ASFE1Character* Player)
 {
     const FString Map = GetWorld() ? GetWorld()->GetOutermost()->GetName() : FString();
     const bool bSandbox = Map == TEXT("/Game/Frontier/Maps/Sandbox/SB_SpiritRelease");
-    const bool bGreenlands = Map == TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook");
-    if (!FSFSpiritReleaseRules::CanRelease(bSandbox || bGreenlands, HasAuthority(), IsValid(Player) &&
+    const bool bProduction = SFNpcZoneContent::IsProductionMap(GetWorld());
+    if (!FSFSpiritReleaseRules::CanRelease(bSandbox || bProduction, HasAuthority(), IsValid(Player) &&
         Player->GetController() != nullptr, IsValid(Player) ? Player->CombatHealth() : -1, !RespawnPoints.IsEmpty()) ||
         !bPilotActive || !CapturedSettings || (bSandbox && USFBackpackComponent::Services()))
     {
         UE_LOG(LogTemp, Display, TEXT("SPIRIT_RELEASE_SERVER_DENIED Pawn=%s"), *GetNameSafe(Player));
         return false;
     }
-    if (bGreenlands)
+    if (bProduction)
     {
         const auto Weak = TWeakObjectPtr<ASFE1Character>(Player);
         if (!USFBackpackComponent::Services() || !PlayerDeathEvents.Contains(Weak) ||

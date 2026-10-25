@@ -1,0 +1,114 @@
+{
+  "id": "zone/npc_reuse_fixture",
+  "zone_index": 1,
+  "map_id": "/Game/Frontier/Maps/Greenlands/NpcServiceParity",
+  "origin": [
+    0,
+    0
+  ],
+  "extent": [
+    [
+      -100,
+      -100
+    ],
+    [
+      100,
+      100
+    ]
+  ],
+  "level_range": [
+    1,
+    8
+  ],
+  "default_spawn": {
+    "point_id": "arrival",
+    "position": [
+      50,
+      50
+    ],
+    "facing": 0
+  },
+  "respawn_points": [
+    {
+      "point_id": "arrival",
+      "position": [
+        50,
+        50
+      ],
+      "facing": 0
+    }
+  ],
+  "level_areas": [
+    {
+      "area_id": "ranger_country",
+      "polygon": [
+        [
+          -100,
+          -100
+        ],
+        [
+          100,
+          -100
+        ],
+        [
+          100,
+          100
+        ],
+        [
+          -100,
+          100
+        ]
+      ],
+      "content_level": 5
+    }
+  ],
+  "areas": [],
+  "spawn_groups": [
+    {
+      "group_id": "rangers_across_the_river",
+      "spawn_kind": "npc",
+      "definitions": [
+        {
+          "definition_id": "npc/reuse_archer_fixture",
+          "weight": 1
+        },
+        {
+          "definition_id": "npc/bandit_captain",
+          "weight": 1
+        }
+      ],
+      "points": [
+        {
+          "point_id": "ranger_clearing",
+          "position": [
+            0,
+            0
+          ],
+          "facing": 0,
+          "npc_defensive": true
+        }
+      ],
+      "active_count": 1,
+      "area": [
+        [
+          -20,
+          -20
+        ],
+        [
+          20,
+          -20
+        ],
+        [
+          20,
+          20
+        ],
+        [
+          -20,
+          20
+        ]
+      ],
+      "phase_filter": "any",
+      "layer_policy": "all_layers"
+    }
+  ]
+}

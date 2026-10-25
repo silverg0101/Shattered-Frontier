@@ -54,3 +54,11 @@ nonce and group/slot/serial. Retries for the same spawn retain the same opaque I
 while different worlds cannot collide by reusing group names and counters. The
 legacy sequence key remains the combat random seed; identity scoping does not
 change the combat draw sequence. Wire field names are unchanged.
+
+`SFNpcZoneContent::IsProductionMap` is the common admission rule for approved
+production maps; the Sandbox directory retains explicit fixture policy. Service
+slot replies must cover the selected authored census with unique group/slot keys
+and valid active definitions/points before any row spawns. The production parity
+regression uses a validated one-slot test map through the real services callback,
+front/rear defense and durable death/release/acceptance paths; no extra map or NPC
+is staged for players.

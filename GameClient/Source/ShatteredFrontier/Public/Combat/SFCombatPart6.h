@@ -14,7 +14,7 @@ namespace SFCombatPart6
 {
     inline bool Active(const UWorld* World)
     {
-        if (!World || SFNpcZoneContent::FindMapFile(World->GetOutermost()->GetName()).IsEmpty()) return false;
+        if (!SFNpcZoneContent::IsProductionMap(World)) return false;
 #if !UE_BUILD_SHIPPING && !UE_BUILD_TEST
         return !FParse::Param(FCommandLine::Get(), TEXT("CombatPilotFixture")) &&
             !FParse::Param(FCommandLine::Get(), TEXT("GreenlandsBoarNetcheck")) &&

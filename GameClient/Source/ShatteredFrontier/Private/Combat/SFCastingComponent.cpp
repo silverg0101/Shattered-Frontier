@@ -188,8 +188,7 @@ void USFCastingComponent::ServerRequestPublishedInterrupt_Implementation(bool bC
 {
     ASFE1Character* Owner = Cast<ASFE1Character>(GetOwner());
     ASFE1Character* Victim = Cast<ASFE1Character>(SelectedTarget);
-    if (!Owner || !Owner->HasAuthority() || !GetWorld() ||
-        GetWorld()->GetOutermost()->GetName() != TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook")) return;
+    if (!Owner || !Owner->HasAuthority() || !SFNpcZoneContent::IsProductionMap(GetWorld())) return;
     if (SFCombatPart6::Active(GetWorld()) && !Owner->HasCombatSnapshot()) return;
     const double Time = Now();
     const USFCombatEnergySettings* Energy = GetDefault<USFCombatEnergySettings>();

@@ -26,6 +26,7 @@
 #include "Creatures/SFRestAreaVolume.h"
 #include "Combat/SFCombatPilot.h"
 #include "Combat/SFCombatPart6.h"
+#include "Combat/SFNpcZoneContent.h"
 #include "Inventory/SFGear.h"
 #include "Combat/SFCombatEnergy.h"
 #include "Combat/SFStarterAbilities.h"
@@ -159,7 +160,7 @@ void ASFE1Character::Landed(const FHitResult& Hit)
     Super::Landed(Hit);
     const FString Map = GetWorld()->GetOutermost()->GetName();
     if (HasAuthority() && (Map == TEXT("/Game/Frontier/Maps/Sandbox/SB_FallDamage") ||
-        Map == TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook")))
+        SFNpcZoneContent::IsProductionMap(GetWorld())))
     {
         if (ASFGameMode* Mode = GetWorld()->GetAuthGameMode<ASFGameMode>())
         { Mode->ApplyFallDamage(this, ImpactMps); }
@@ -1459,7 +1460,7 @@ void ASFE1Character::Tick(float DeltaSeconds)
 #endif
     if (CombatMap == TEXT("/Game/Frontier/Maps/Sandbox/SB_TravelMount")) { TickTravelMount(); }
     if (CombatMap == TEXT("/Game/Frontier/Maps/Sandbox/SB_AutoAttack") ||
-        CombatMap == TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook"))
+        SFNpcZoneContent::IsProductionMap(GetWorld()))
     {
         if (HasAuthority())
         {
@@ -1498,7 +1499,7 @@ void ASFE1Character::Tick(float DeltaSeconds)
         }
     }
     if (HasAuthority() && (CombatMap == TEXT("/Game/Frontier/Maps/Sandbox/SB_Swimming") ||
-        CombatMap == TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook")))
+        SFNpcZoneContent::IsProductionMap(GetWorld())))
     {
         const APhysicsVolume* Volume = GetPhysicsVolume();
         bool bDeepWater = false;
@@ -1525,7 +1526,7 @@ void ASFE1Character::Tick(float DeltaSeconds)
         (CombatMap == TEXT("/Game/Frontier/Maps/Sandbox/SB_Regeneration") ||
          CombatMap == TEXT("/Game/Frontier/Maps/Sandbox/SB_RestRegen") ||
          CombatMap == TEXT("/Game/Frontier/Maps/Sandbox/SB_TravelMount") ||
-         CombatMap == TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook")))
+         SFNpcZoneContent::IsProductionMap(GetWorld())))
     {
         bool bThreatened = false;
         for (TActorIterator<ASFPilotBoar> It(GetWorld()); It; ++It)
@@ -1858,8 +1859,7 @@ void ASFE1Character::Tick(float DeltaSeconds)
         }
     }
 #endif
-    if (CombatMap == TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook") &&
-        IsLocallyControlled() && PilotHealth == 0)
+    if (SFNpcZoneContent::IsProductionMap(GetWorld()) && IsLocallyControlled() && PilotHealth == 0)
     {
         if (ASFPlayerController* PC = Cast<ASFPlayerController>(Controller))
         {
@@ -1871,7 +1871,7 @@ void ASFE1Character::Tick(float DeltaSeconds)
     { if (APlayerController* PC = Cast<APlayerController>(Controller); PC && PC->WasInputKeyJustPressed(EKeys::M)) { RequestTravelMountToggle(); } }
     if (IsLocallyControlled() && GetWorld()->GetOutermost()->GetName() == TEXT("/Game/Frontier/Maps/Sandbox/SB_Taunt"))
     { if (APlayerController* PC = Cast<APlayerController>(Controller); PC && PC->WasInputKeyJustPressed(EKeys::T)) { PilotTaunt(nullptr); } }
-    if (CombatMap == TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook") && IsLocallyControlled())
+    if (SFNpcZoneContent::IsProductionMap(GetWorld()) && IsLocallyControlled())
     {
         if (APlayerController* PC = Cast<APlayerController>(Controller))
         {
@@ -2360,8 +2360,7 @@ void ASFE1Character::SetSprintIntent(bool bEnable)
 
 void ASFE1Character::ServerSetSprintIntent_Implementation(bool bEnable)
 {
-    if (!HasAuthority() || !GetWorld() ||
-        GetWorld()->GetOutermost()->GetName() != TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook")) return;
+    if (!HasAuthority() || !SFNpcZoneContent::IsProductionMap(GetWorld())) return;
     if (bEnable) BreakCombatStealth();
     if (!bEnable)
     {
@@ -2554,7 +2553,7 @@ bool ASFE1Character::CanAcceptResurrectionOffer(uint32 RequestedOffer, double No
 {
     const FString Map = GetWorld() ? GetWorld()->GetOutermost()->GetName() : FString();
     const bool bSupported = Map == TEXT("/Game/Frontier/Maps/Sandbox/SB_ResurrectionAccept") ||
-        Map == TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook");
+        SFNpcZoneContent::IsProductionMap(GetWorld());
     return FSFResurrectionAcceptRules::CanAccept(bSupported, HasAuthority(), GetController() != nullptr,
         PilotHealth, ResurrectionOfferId, RequestedOffer, Now, ResurrectionOfferExpiresAt);
 }
@@ -2567,7 +2566,7 @@ void ASFE1Character::CombatMarkHostile()
          CombatMap != TEXT("/Game/Frontier/Maps/Sandbox/SB_Regeneration") &&
          CombatMap != TEXT("/Game/Frontier/Maps/Sandbox/SB_RestRegen") &&
          CombatMap != TEXT("/Game/Frontier/Maps/Sandbox/SB_TravelMount") &&
-         CombatMap != TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook"))) { return; }
+         !SFNpcZoneContent::IsProductionMap(GetWorld()))) { return; }
     PilotRegen.Hostile(GetWorld()->GetTimeSeconds());
     if (bSprinting) { bSprinting = false; LastSprintEndedAt = GetWorld()->GetTimeSeconds(); ForceNetUpdate(); }
     if (!bPilotInCombat) { bPilotInCombat = true; ForceNetUpdate(); }
@@ -2613,7 +2612,7 @@ void ASFE1Character::SetAutoAttack(bool bEnabled)
 {
     const FString Map = GetWorld()->GetOutermost()->GetName();
     if (Map != TEXT("/Game/Frontier/Maps/Sandbox/SB_AutoAttack") &&
-        Map != TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook")) { return; }
+        !SFNpcZoneContent::IsProductionMap(GetWorld())) { return; }
     if (HasAuthority()) { ServerSetAutoAttack_Implementation(bEnabled); }
     else { ServerSetAutoAttack(bEnabled); }
 }
@@ -2954,7 +2953,7 @@ void ASFE1Character::ServerSetAutoAttack_Implementation(bool bEnabled)
 {
     const FString Map = GetWorld()->GetOutermost()->GetName();
     if ((Map != TEXT("/Game/Frontier/Maps/Sandbox/SB_AutoAttack") &&
-         Map != TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook")) ||
+         !SFNpcZoneContent::IsProductionMap(GetWorld())) ||
         (bEnabled && (PilotHealth <= 0 || !Cast<ASFPilotBoar>(CombatTarget)))) { return; }
     bAutoAttacking = bEnabled;
     if (bEnabled) { NextAutoSwingAt = GetWorld()->GetTimeSeconds(); }

@@ -174,6 +174,7 @@ private:
     void TickGreenlandsAbilityNetcheck();
 #endif
     bool LoadZoneRecord();
+    bool ValidateWorldSlotsReply(const struct FSFGameplayResponse& Reply) const;
     bool RunWorldSlots(const FString& Command, const FString& Group = FString(), int32 Slot = INDEX_NONE);
     void SpawnSlot(const FString& Group, int32 Slot, int32 Cycle, const FString& PointId,
         double X, double Y, double Facing, const FString& DefinitionId);
@@ -182,6 +183,7 @@ private:
     void ReportPlayerDeath(TWeakObjectPtr<ASFE1Character> Player, const struct FSFGameplayRequest& Request);
 #if WITH_DEV_AUTOMATION_TESTS && WITH_EDITOR
     friend class FSFNpcContentSpawnShotTest;
+    friend class FSFNpcProductionParityTest;
 #endif
     FString CombatZonePath;
     TMap<FString, SFNpcZoneContent::FGroup> Groups;
