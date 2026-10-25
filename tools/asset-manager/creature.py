@@ -396,8 +396,9 @@ def creature_params(b) -> dict:
         if not 1 <= size <= 2000:
             raise ValueError("size_cm is the creature's length in cm, 1-2000")
     src = b.get("from_model") or ""
-    if src and (not isinstance(src, str) or safe_name(src) != src or not (model_dir(src) / "source" / f"{src}_skintokens.glb").is_file()):
-        raise ValueError("from_model is a creature folder whose source/ keeps its SkinTokens rig (a failed job's)")
+    if src and (not isinstance(src, str) or safe_name(src) != src or not (model_dir(src) / "source" / f"{src}_skintokens.glb").is_file()
+                or failed_manifest(model_dir(src), src) is None):
+        raise ValueError("from_model is a failed creature job's folder whose source/ keeps its SkinTokens rig")
     return {"name": name, "prompt": str(b.get("prompt") or ""), "image": b.get("image") or "", "animal": b.get("animal") or "",
             "clips": clips, "fill_missing": fill, "bake": bake, "size_cm": size,
             "concept": concept, "preset": preset, "from_model": src}
@@ -809,6 +810,20 @@ def glb_without_animations(b: bytes) -> bytes:
     return glb_write(js, binary)
 
 
+def failed_manifest(folder, name):
+    """The manifest of a failed creature job's folder (status "failed": source files only, no model), else None."""
+    try:
+        man = json.loads((Path(folder) / f"{name}.json").read_text())
+    except (OSError, ValueError):
+        return None
+    return man if man.get("status") == "failed" else None
+
+
+def refuse_failed(man, name):
+    if man.get("status") == "failed":
+        raise ValueError(f"{name} is a failed creature job's folder with no model: re-run the creature with from_model: {name}")
+
+
 def write_manifest(folder, man: dict):
     f = Path(folder) / f"{man['name']}.json"
     tmp = f.with_name(f".{f.name}.tmp")
@@ -825,6 +840,7 @@ def set_unreal(name: str, b, folder=None) -> dict:
         if not (folder / f"{name}.json").is_file():
             raise ValueError(f"no such model: {name}")
         man = json.loads((folder / f"{name}.json").read_text())
+        refuse_failed(man, name)
         man["unreal"] = {"state": b["state"], "reason": b.get("reason", "")[:4000]}
         write_manifest(folder, man)
         return man
@@ -1048,6 +1064,7 @@ def clip_params(name, b, folder=None, library=None) -> dict:
     if not (folder / f"{name}.json").is_file():
         raise ValueError(f"no such model: {name}")
     man = json.loads((folder / f"{name}.json").read_text())
+    refuse_failed(man, name)
     src = b.get("source")
     if src not in CLIP_SOURCES:
         raise ValueError(f"source is one of {', '.join(CLIP_SOURCES)}")

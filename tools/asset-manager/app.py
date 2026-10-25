@@ -3219,6 +3219,18 @@ def check():
         pass
     (kept / "source" / "Swamp_Rat_skintokens.glb").write_bytes(b"glb")
     assert creature.creature_params({"name": "x", "prompt": "a", "from_model": "Swamp_Rat"})["from_model"] == "Swamp_Rat"
+    for refused in (lambda: creature.clip_params("Swamp_Rat", {"source": "library", "clip": "Walk"}, kept),
+                    lambda: creature.set_unreal("Swamp_Rat", {"state": "pass"}, kept)):  # a failed folder has no model
+        try:
+            refused(); raise AssertionError("failed folder accepted")
+        except ValueError as e:
+            assert "from_model" in str(e), e
+    man = json.loads((kept / "Swamp_Rat.json").read_text())
+    (kept / "Swamp_Rat.json").write_text(json.dumps(man | {"status": "done"}))
+    try:  # from_model takes only a failed job's folder
+        creature.creature_params({"name": "x", "prompt": "a", "from_model": "Swamp_Rat"}); raise AssertionError("done folder taken")
+    except ValueError:
+        pass
     shutil.rmtree(kept)
     with DB_LOCK, db() as c:
         c.execute("DELETE FROM jobs WHERE id=?", (jid,))
