@@ -13,6 +13,7 @@ param(
     [switch]$GreenlandsAbilityNetcheck,
     [switch]$GreenlandsStatusNetcheck,
     [switch]$LootWorkflowNetcheck,
+    [switch]$LootWorkflowCursorProbe,
     [ValidateSet('Release','Resurrection')][string]$DeathResolution = 'Release',
     [switch]$RestartMidDeath,
     [switch]$TargetScenario,
@@ -28,6 +29,7 @@ $editor = Join-Path $EngineRoot 'Engine\Binaries\Win64\UnrealEditor-Cmd.exe'
 $project = Join-Path $repo 'GameClient\ShatteredFrontier.uproject'
 $bridge = Join-Path $repo 'BackendServices\WorldContent.Tool\bin\Debug\net10.0\WorldContent.Tool.dll'
 $sdk = Join-Path $repo 'Artifacts\Persistence\Toolchains\dotnet-10.0.402\dotnet.exe'
+if ($LootWorkflowCursorProbe -and -not $LootWorkflowNetcheck) { throw 'LootWorkflowCursorProbe requires LootWorkflowNetcheck.' }
 if ($LootWorkflowNetcheck -and (-not $Services -or $Clients -ne 2 -or
     $Map -ne '/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook' -or
     $GreenlandsDeathNetcheck -or $GreenlandsRepairNetcheck -or $GreenlandsArcherNetcheck -or $GreenlandsUnstuckNetcheck -or
@@ -233,7 +235,14 @@ try {
         $groundBarrier = Join-Path $root 'loot-observer-ground.barrier'
         foreach ($role in 1..2) {
             $identity = @('alpha','beta')[$role - 1]; $label = @('Driver','Observer')[$role - 1]
-            $null = Start-Owned "client$role" ("127.0.0.1:$Port`?SFDevCharacter=$identity") @('-game','-LootWorkflowNetcheck',"-LootWorkflowRole=$label",('-LootWorkflowBarrier="'+$barrier+'"'),('-LootWorkflowGroundSeen="'+$groundBarrier+'"'),('-LootWorkflowEvidence="'+$root+'"'))
+            $lootFlags = @('-game','-LootWorkflowNetcheck',"-LootWorkflowRole=$label",('-LootWorkflowBarrier="'+$barrier+'"'),('-LootWorkflowGroundSeen="'+$groundBarrier+'"'),('-LootWorkflowEvidence="'+$root+'"'))
+            if ($LootWorkflowCursorProbe -and $role -eq 1) { $lootFlags += '-LootWorkflowCursorProbe' }
+            $null = Start-Owned "client$role" ("127.0.0.1:$Port`?SFDevCharacter=$identity") $lootFlags
+        }
+        if ($LootWorkflowCursorProbe) {
+            $driver = @($owned | Where-Object Id -eq (@($result.runs | Where-Object name -eq 'client1')[0].pid))[0]
+            Wait-Log $driver 'client1' 'LOOT_CURSOR_PROBE_DONE ExactTarget=[01] InputSent=0' 120
+            $result.status='Observed'; $result.scope='Diagnostic cursor sample before input; no workflow acceptance'; return
         }
         foreach ($role in 1..2) {
             $process = @($owned | Where-Object Id -eq (@($result.runs | Where-Object name -eq "client$role")[0].pid))[0]

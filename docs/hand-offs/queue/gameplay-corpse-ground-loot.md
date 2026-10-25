@@ -43,6 +43,8 @@ Published fixture-only follow-up c4f4ba8f (compile PASS, new runtime pending): g
 
 Diagnose the captured native cursor selection gate narrowly before any further approved run; do not infer a cause from the None selection. Ground geometry fix is reviewed/published/tested, so no repeat asset audit is needed. Controller owns next runtime authorization, matching release packages, actual durable hosts and rollback through the documented deployment target. Source/body appearance, textures and lighting remain deferred; import629a0c84 stays mechanically accepted.
 
+Source/log diagnosis: prior9163 passing run also logged Stage17 None three times over30s before click, so the frozen logs cannot classify the new stop. Prepared diagnostic-only `-LootWorkflowCursorProbe` records actual deprojection/mouse/window/focus/hit/range and initial/current camera/projection over1s, then returns `Observed` before sending input. No cursor repair or production change; compile/probe requires controller review and Unreal-slot coordination.
+
 ## Outcome
 
 In progress: earlier cursor/UI/center pickup observed pass; corrected ground outer geometry targeted PASS; combined native cursor/F/capture runtime and deployment integration remain open.
