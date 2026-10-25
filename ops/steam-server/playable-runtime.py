@@ -65,7 +65,7 @@ def validate(raw):
             raise ValueError("Service checks require their own project and no game")
         if p["bind_address"] != "127.0.0.1":
             raise ValueError("Service checks publish no LAN listener")
-        if not str(root).startswith("/home/steam/sf-release-candidates/"):
+        if not str(root).startswith("/srv/steam/steamhome/sf-release-candidates/"):
             raise ValueError("Service checks belong only in owned candidate staging")
     for key, (low, high) in BOUNDS.items():
         if type(p[key]) is not int or not low <= p[key] <= high:

@@ -12,7 +12,7 @@ class PlayableRuntimeTests(unittest.TestCase):
     def profile(self, **overrides):
         return {"mode": "services-check", "project": "sf-playable-check-012345abcdef",
                 "revision": "a" * 40, "services_image": "sha256:" + "b" * 64,
-                "root": "/home/steam/sf-release-candidates/check-012345abcdef", **overrides}
+                "root": "/srv/steam/steamhome/sf-release-candidates/check-012345abcdef", **overrides}
 
     def credentials(self):
         return {key: format(index, "064x") for index, key in enumerate(sorted(runtime.SECRET_KEYS), 1)}
