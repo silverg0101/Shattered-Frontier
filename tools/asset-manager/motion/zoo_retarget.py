@@ -7,10 +7,13 @@ Ported from proof/retarget.py (the 2026-10-24 hamster run):
   with creature.chain_resample, a split source bone's rotation (from its parent's) spread over its pieces;
 - the pelvis follows the source hips' offset scaled by the hind-leg length ratio, vertical bob x HEIGHT_SCALE, in place;
 - cleanup: tail follow-through, paws pinned on the floor while in contact (leg IK, 2-frame blend, four correction
-  passes, baked to FK), loop seam closed (looping clips);
-- metrics for creature.checks_pass: min_paw_cm, max_slide_cm (planted paws), seam_deg (the loop's end-to-start gap the
-  retarget closed, or that is left after cleanup), flips (a joint turning > 90 deg in one frame); max_step_deg (the
-  largest one-frame turn) is reported, not gated.
+  passes, baked to FK), loop seam closed (looping clips). A gait plays in place, so its planted paws sweep back under
+  the body at the travel speed (treadmill): each stance is pinned to the line fitted through its contact points,
+  a stand's to a point;
+- metrics for creature.checks_pass: min_paw_cm, max_slide_cm (a planted paw's step off its treadmill line), seam_deg
+  (the loop's end-to-start gap the retarget closed, or that is left after cleanup), flips (a joint turning > 90 deg in
+  one frame); travel_cm_s (the treadmill speed the game should move the creature at) and max_step_deg (the largest
+  one-frame turn) are reported, not gated.
 OUT.glb holds the rig, mesh and one action named CLIP; OUT.json the metrics, contacts and per-paw heights (for
 clip_sheet.py)."""
 import bpy, sys, json, math
@@ -26,6 +29,7 @@ TAIL_CLEAR = 0.3    # the tail is lifted (at tail_02) until it clears the floor 
 CONTACT_SHARE = 0.30  # planted: in the lowest 30% of the paw's height range ...
 CONTACT_M = 0.015     # ... and within 1.5 cm of its lowest point
 FLOOR_EPS = 0.002   # m: keep paws this far above the floor
+TREADMILL_MIN = 0.002  # share of the creature's length a stance must sweep per frame to be a gait's treadmill, not a stand
 FLIP_DEG = 90.0
 CHAINS = [["pelvis"], ["spine_01", "spine_02", "spine_03", "neck"], ["head"], [f"tail_{i:02}" for i in range(1, 7)],
           *[[f"{l}_{i:02}" for i in range(1, 5)] for l in ("FL", "FR", "HL", "HR")]]
@@ -229,22 +233,37 @@ def main(rigf, animalf, clip, out, outj, size_cm, height_scale):
         for p in PAWS:
             A[p].append((rig.matrix_world @ rig.pose.bones[f"{p}_03"].tail).copy()); E[p].append(paw_point(p)); H[p].append(paw_h(p))
     idx = (lambda i: i % M) if loop else (lambda i: min(max(i, 0), M - 1))
-    tgts, W, planted, want, infl = {}, {}, {}, {}, {}
+    planted = {}
     for p in PAWS:
         hmin, hmax = min(H[p]), max(H[p])
-        c = [H[p][i] <= min(hmin + CONTACT_SHARE * (hmax - hmin), hmin + CONTACT_M) for i in range(M)]
+        planted[p] = [H[p][i] <= min(hmin + CONTACT_SHARE * (hmax - hmin), hmin + CONTACT_M) for i in range(M)]
+    # treadmill: the clip plays in place, so a gait's planted paws sweep back under the body at the travel speed
+    # (the source's own travel was removed above; a curated loop had it removed at curation). Each stance run is
+    # pinned to the straight line fitted through its contact points (a point when it barely moves: a stand), so the
+    # stride survives; the clip's travel speed is the median sweep of its planted paws. Under TREADMILL_MIN of the
+    # creature's length per frame a run's sweep is noise and it is pinned still.
+    still = TREADMILL_MIN * size_cm / 100
+    tgts, W, want, infl, vel = {}, {}, {}, {}, {}
+    for p in PAWS:
+        c = planted[p]
         def weight(i):  # 1 planted, 2/3 and 1/3 on the two frames either side
             d = next((d for d in (0, 1, 2) if c[idx(i - d)] or c[idx(i + d)]), 3)
             return 1 - d / 3
         w = [weight(i) for i in range(M)]
-        pin = [None] * M
+        pin, pv = [None] * M, [Vector((0, 0))] * M
         starts = [i for i in range(M) if c[i] and (not c[idx(i - 1)] or (not loop and i == 0))] or ([0] if all(c) else [])
-        for s0 in starts:  # stance runs: each gets its own pin point
+        for s0 in starts:  # stance runs: each gets its own pin line
             run = []; i = s0
             while len(run) < M and (loop or i < M) and c[idx(i)]: run.append(idx(i)); i += 1
+            mid = (len(run) - 1) / 2
             xy = sum((E[p][j].xy for j in run), Vector((0, 0))) / len(run)
+            v = sum(((d - mid) * (E[p][j].xy - xy) for d, j in enumerate(run)), Vector((0, 0))) / (sum((d - mid) ** 2 for d in range(len(run))) or 1)
+            if v.length < still: v = Vector((0, 0))
+            print("RT stance", p, f"frames {s0}+{len(run)}", "sweep cm/frame", round(v.length * 100, 2), "fit residual cm",
+                  round(max((E[p][j].xy - xy - v * (d - mid)).length for d, j in enumerate(run)) * 100, 2))
             for d in range(-2, len(run) + 2):
-                if loop or 0 <= s0 + d < M: pin[idx(s0 + d)] = pin[idx(s0 + d)] or xy
+                if (loop or 0 <= s0 + d < M) and pin[idx(s0 + d)] is None: pin[idx(s0 + d)], pv[idx(s0 + d)] = xy + v * (d - mid), v
+        vel[p] = pv
         T, X, I = [], [], []
         for i in range(M):  # the ankle's IK target, moved by how far its contact point should move
             e = A[p][i].copy(); xy = E[p][i].xy.copy(); h = H[p][i]
@@ -254,8 +273,11 @@ def main(rigf, animalf, clip, out, outj, size_cm, height_scale):
             e.xy += xy - E[p][i].xy; e.z += max(h, FLOOR_EPS) - H[p][i]
             T.append(e); X.append(xy if on else None)
             I.append(w[i] if on else 1.0 if H[p][i] < FLOOR_EPS else 0.0)  # off the pin: IK only to lift a sunk paw
-        tgts[p], W[p], planted[p], want[p], infl[p] = T, [x if pin[i] is not None else 0.0 for i, x in enumerate(w)], c, X, I
+        tgts[p], W[p], want[p], infl[p] = T, [x if pin[i] is not None else 0.0 for i, x in enumerate(w)], X, I
         print("RT contact", p, "".join("#" if x else ("+" if y > 0 else ".") for x, y in zip(c, W[p])))
+    sweeps = sorted(vel[p][i].length for p in PAWS for i in range(M) if W[p][i] == 1)
+    tread = sweeps[len(sweeps) // 2] if sweeps else 0.0  # the clip's treadmill speed, m per frame
+    print("RT treadmill cm/frame", round(tread * 100, 2), "cm/s", round(tread * 100 * sc.render.fps, 1))
 
     # IK to the targets; the IK also turns the paw, so correct the targets from the solved contact points, then bake to FK
     bpy.context.view_layer.objects.active = rig; bpy.ops.object.mode_set(mode="POSE")
@@ -272,18 +294,19 @@ def main(rigf, animalf, clip, out, outj, size_cm, height_scale):
                 e.location = tgts[p][idx(i)]; e.keyframe_insert("location", frame=i + 1)
                 con.influence = infl[p][idx(i)]; con.keyframe_insert("influence", frame=i + 1)
     for it in range(4):
-        key_targets(); worst = 0.0
+        key_targets(); worst, where = 0.0, ""
         for i in range(M):
             sc.frame_set(i + 1)
             for p in PAWS:
                 h = paw_h(p)
                 if infl[p][i] < 1:  # ramp and swing frames blend with FK: nothing to correct, unless the paw sank
-                    if h < 0: infl[p][i] = 1.0; worst = max(worst, 0.01)  # then full IK from the next pass
+                    if h < 0: infl[p][i] = 1.0; worst = max(worst, 0.01); where = where or f"{p} frame {i} sank"  # then full IK from the next pass
                     continue
                 dz = FLOOR_EPS - h if W[p][i] == 1 else max(0.0, FLOOR_EPS - h)  # planted: onto the floor; else: not below
                 dxy = want[p][i] - paw_point(p).xy if W[p][i] == 1 else Vector((0, 0))  # pinned: onto the pin
-                tgts[p][i].z += dz; tgts[p][i].xy += dxy; worst = max(worst, abs(dz), dxy.length)
-        print("RT ik pass", it, "largest fix (cm)", round(worst * 100, 2))
+                tgts[p][i].z += dz; tgts[p][i].xy += dxy
+                if max(abs(dz), dxy.length) > worst: worst, where = max(abs(dz), dxy.length), f"{p} frame {i}"
+        print("RT ik pass", it, "largest fix (cm)", round(worst * 100, 2), where)
         if worst < 0.001: break
     key_targets()
     for b in rig.data.bones: b.select = True
@@ -313,8 +336,8 @@ def main(rigf, animalf, clip, out, outj, size_cm, height_scale):
         sc.frame_set(i + 1)
         for p in PAWS: heights[p].append(paw_h(p)); pts[p].append(paw_point(p))
         for b in order: R[b.name].append(rig.pose.bones[b.name].matrix_basis.to_quaternion())
-    slide = max([(pts[p][i + 1].xy - pts[p][i].xy).length for p in PAWS for i in range(M - (0 if loop else 1))
-                 if W[p][i] == 1 and W[p][idx(i + 1)] == 1] or [0.0])
+    slide = max([(pts[p][idx(i + 1)].xy - pts[p][i].xy - vel[p][i]).length for p in PAWS for i in range(M - (0 if loop else 1))
+                 if W[p][i] == 1 and W[p][idx(i + 1)] == 1] or [0.0])  # a planted paw's step off the treadmill line
     flips = [(n, i) for n, qs in R.items() for i in range(N) if angle(qs[i], qs[i + 1]) > FLIP_DEG]
     # seam: how far the loop's ends had to be pulled together (the retarget's closure), or still differ after cleanup
     seam, seam_bone = 0.0, ""
@@ -326,7 +349,7 @@ def main(rigf, animalf, clip, out, outj, size_cm, height_scale):
     big = max(steps, key=steps.get)
     tail_jump = max(angle(R[n][i], R[n][i + 1]) for n in TAIL for i in range(N))
     m = {"min_paw_cm": round(min(min(v) for v in heights.values()) * 100, 2), "max_slide_cm": round(slide * 100, 2),
-         "seam_deg": round(seam, 2), "flips": len(flips)}
+         "seam_deg": round(seam, 2), "flips": len(flips), "travel_cm_s": round(tread * 100 * sc.render.fps, 1)}
     info = {"clip": clip, "loop": loop, "frames": N + 1, "fps": sc.render.fps, "size_cm": size_cm, "scale": s,
             "leg_ratio": ratio, "tail_lift": lift, "seam_bone": seam_bone, "flip_bones": sorted({n for n, _ in flips}),
             "tail_max_step_deg": round(tail_jump, 1), "max_step_deg": round(steps[big], 1), "max_step_bone": big, "contacts": {p: "".join("#" if x else "." for x in planted[p]) for p in PAWS},

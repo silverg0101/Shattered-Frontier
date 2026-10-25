@@ -86,7 +86,12 @@ def sheet(glb, meta_path, out):
     tmp = str(Path(out).with_suffix(".shot.png"))
     def shot(camo, fr):
         sc.camera = camo; sc.frame_set(fr); sc.render.filepath = tmp
-        bpy.ops.render.render(write_still=True)
+        try:
+            bpy.ops.render.render(write_still=True)
+        except RuntimeError as e:  # the GPU is full (UniMate, ComfyUI): these 12 small frames render fine on the CPU
+            if sc.cycles.device != "GPU": raise
+            print("SHEET GPU render failed, rendering on the CPU:", str(e).strip().splitlines()[-1][:120])
+            sc.cycles.device = "CPU"; bpy.ops.render.render(write_still=True)
         img = bpy.data.images.load(tmp); w, h = img.size
         px = np.empty(w * h * 4, np.float32); img.pixels.foreach_get(px); bpy.data.images.remove(img)
         return px.reshape(h, w, 4)
@@ -107,7 +112,10 @@ def review(sheet_path, meta_path, prompt=None):
     sys.path.insert(0, str(Path(__file__).parent))
     from zoo_curate import claude
     meta = json.loads(Path(meta_path).read_text())
-    m = {k: meta[k] for k in ("min_paw_cm", "max_slide_cm", "seam_deg", "flips")}
+    m = {k: meta[k] for k in ("min_paw_cm", "max_slide_cm", "seam_deg", "flips", "travel_cm_s") if k in meta}
+    tread = (f"The clip plays in place (travel_cm_s is the speed the game moves it at), so in a gait the planted paws "
+             "sweep back under the body like on a treadmill while the body stays put: that is correct, not sliding. "
+             if m.get("travel_cm_s") else "")
     img = {"type": "image", "source": {"type": "base64", "media_type": "image/png",
                                        "data": base64.b64encode(Path(sheet_path).read_bytes()).decode()}}
     want = (f"The motion was asked for as: \"{prompt}\". It must show that, specifically: a different action, "
@@ -119,7 +127,7 @@ def review(sheet_path, meta_path, prompt=None):
         "creature from its right side at 8 evenly spaced frames (top two rows, read left to right, head to the right), "
         "from the front at 4 of those frames (third row), and a plot of each paw's height above the floor per frame "
         "(bottom; blue FL, orange FR, green HL, red HR; the red line is the floor; coloured blocks under the axis mark the "
-        f"frames each paw is planted). Measured: {json.dumps(m)}.\n\n{want}Judge whether the motion is usable as it is: paws "
+        f"frames each paw is planted). Measured: {json.dumps(m)}.\n\n{tread}{want}Judge whether the motion is usable as it is: paws "
         "on or above the floor (red line) and planted while in contact, legs bending the natural way with no "
         "twisted, inverted or dislocated joints, the body and head in a believable pose for this motion, the tail "
         "attached and not through the floor, and the motion recognisably the named action. Ignore lighting, "

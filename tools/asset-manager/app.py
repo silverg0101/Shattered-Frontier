@@ -2942,7 +2942,11 @@ def check():
     ok = creature.checks_pass({"min_paw_cm": 0.2, "max_slide_cm": 0.09, "seam_deg": 1.9, "flips": 0}, DEFAULT_SETTINGS)
     assert ok["passed"] is True and ok["reason"] == "", ok
     assert creature.checks_pass({"min_paw_cm": 0.2, "max_slide_cm": 2, "seam_deg": 9, "flips": 1}, DEFAULT_SETTINGS)["reason"].count(";") == 2
+    assert ok["travel_cm_s"] == 0.0 and creature.checks_pass({**ok, "travel_cm_s": 80.5}, DEFAULT_SETTINGS)["travel_cm_s"] == 80.5  # reported, not gated
     assert all(lo <= DEFAULT_SETTINGS[k] <= hi for k, (_, _, lo, hi) in CREATURE_SETTINGS.items())
+    # UniMate prompts take the training captions' form, for a clip name in any case; an unknown name uses its words
+    assert creature.unimate_prompt("walk") == creature.unimate_prompt("Walk") == "An object walks forward."
+    assert creature.unimate_prompt("AlertRun") == "An object alert run."
     assert creature.retarget_clip
     if not importlib.util.find_spec("numpy"):  # zoo_curate runs on the GPU host; the server image has no numpy
         print("check ok (zoo_curate skipped: no numpy)")
@@ -3266,6 +3270,15 @@ def check():
     assert [creature.library_clip(c, zoo) for c in ("idle", "walk", "run", "Die", "trottle")] == ["Idle", "Trottle", "AlertRun", None, "Trottle"]
     assert [creature.library_clip(c, ["ThreatDisplay", "PlayBow", "sitting_to_run"]) for c in ("eat", "lay", "sit", "run")] == [None] * 4
     assert creature.library_clips("idle", ["AlertIdle", "Idle", "Stand"]) == ["Idle", "AlertIdle", "Stand"]
+    # library_matches: the animal's own clips, then another curated animal's of the same body plan as Animal/Clip
+    import tempfile
+    with tempfile.TemporaryDirectory() as ml:
+        for an, plan, clips in (("Buffalo", "quadruped", ["RunLoop", "Die"]), ("Coyote", "quadruped", ["Walking", "Running"]),
+                                ("BIRD", "bird", ["Walk"]), ("Greenlands_Boar", "quadruped", ["Walk"])):  # the last two: a bird, not in the catalogue
+            (Path(ml) / an).mkdir()
+            (Path(ml) / an / "animal.json").write_text(json.dumps({"body_plan": plan, "clips": [{"name": c} for c in clips]}))
+        assert creature.library_matches("walk", Path(ml) / "Buffalo") == ["Coyote/Walking"]
+        assert creature.library_matches("run", Path(ml) / "Buffalo") == ["RunLoop", "Coyote/Running"]
     # choose_clip: a failing best match gives way to the next synonym, then UniMate, else stays when nothing passes
     ok = lambda f: {"checks": {"passed": f != "WalkLoop", "reason": "slide"}, "glb": f}
     def boom(): raise RuntimeError("no UniMate")

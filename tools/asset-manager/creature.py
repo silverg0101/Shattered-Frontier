@@ -205,7 +205,7 @@ def checks_pass(m, settings) -> dict:
     if m["flips"]:
         bones = f" ({', '.join(m['flip_bones'])})" if m.get("flip_bones") else ""
         why.append(f"flips {m['flips']}: a joint turns over 90 degrees in one frame{bones}")
-    return {k: m[k] for k in CHECKS} | {"passed": not why, "reason": "; ".join(why)}
+    return {k: m[k] for k in CHECKS} | {"travel_cm_s": m.get("travel_cm_s", 0.0), "passed": not why, "reason": "; ".join(why)}
 
 
 def retarget_clip(jid, host, rig_glb, animal_dir, clip, size_cm, prompt=None) -> dict:
@@ -258,9 +258,11 @@ STANCE = ("side-on, legs straight under the shoulder and the hip, each far leg r
           "pairs), tail out behind, mouth closed, plain white background")
 UNIMATE = "$HOME/unimate-eval/UniMate"  # ponytail: one host has UniMate; a host setting once a second one does
 UNIMATE_RUN = "outputs/unimate_uniml3d_f60_v3"
-MOTION_TEXT = {"Idle": "stands still, breathing", "Walk": "walks in place", "Run": "runs in place", "Trot": "trots in place",
-               "Gallop": "gallops in place", "Jump": "jumps up and lands", "Sit": "sits down", "Sleep": "lies down and sleeps",
-               "Eat": "lowers its head and eats", "Attack": "lunges forward and bites", "Death": "collapses and dies"}
+# UniMate's captions read "An object walks forward.": a gait is asked for with its travel (the retarget removes it and
+# keeps the stride as a treadmill); "in place" or a bare "walk" gets a creature that stands and twitches
+MOTION_TEXT = {"idle": "stands still, breathing", "walk": "walks forward", "run": "runs forward", "trot": "trots forward",
+               "gallop": "gallops forward", "jump": "jumps up and lands", "sit": "sits down", "sleep": "lies down and sleeps",
+               "eat": "lowers its head and eats", "attack": "lunges forward and bites", "death": "collapses and dies"}
 # a requested clip's name -> substrings of the library clip names that stand in for it, best first (Zoo-300K packs
 # name their motions freely: Trottle, AlertRun, ...). ponytail: plain substrings; a wrong pick is caught by the review
 _SYN = {"idle": ("idle", "breath", "stand"), "walk": ("walk", "trot"), "run": ("run", "gallop", "sprint"),
@@ -287,6 +289,21 @@ def library_clips(want, have):
 def library_clip(want, have):
     """The best library_clips match for `want`, or None."""
     return next(iter(library_clips(want, have)), None)
+
+
+def library_matches(want, lib: Path) -> list[str]:
+    """The clips that can stand in for `want`: the animal library `lib`'s library_clips, then those of every other
+    curated catalogue animal of the same body plan (in DATA/MotionLibrary, by name) as "<animal>/<clip>": a gait this
+    animal's pack lacks a usable take of is taken from another animal's, and the review judges the fit."""
+    names = lambda d: json.loads((d / "animal.json").read_text(encoding="utf-8"))
+    me = names(lib)
+    cat = {e["id"] for e in json.loads(CATALOGUE.read_text(encoding="utf-8"))}
+    out = library_clips(want, [c["name"] for c in me["clips"]])
+    for d in sorted(d for d in lib.parent.iterdir() if d != lib and d.name in cat and (d / "animal.json").is_file()):
+        a = names(d)
+        if a.get("body_plan") == me.get("body_plan"):
+            out += [f"{d.name}/{f}" for f in library_clips(want, [c["name"] for c in a["clips"]])]
+    return out
 
 
 def choose_clip(want, matches, fill, log, retarget, unimate):
@@ -621,9 +638,9 @@ def unimate_annotation() -> dict:
 
 
 def unimate_prompt(clip) -> str:
-    """A training-caption style prompt, e.g. "An object walks in place.", for a clip name."""
+    """A training-caption style prompt, e.g. "An object walks forward.", for a clip name (any case)."""
     words = " ".join(re.findall(r"[A-Z]?[a-z0-9]+|[A-Z]+(?![a-z])", clip)).lower()
-    return f"An object {MOTION_TEXT.get(clip) or words}."
+    return f"An object {MOTION_TEXT.get(clip.lower()) or words}."
 
 
 def std_glb_clip(jid, host, rig_glb, src_glb, name, size_cm, prompt=None) -> dict:
@@ -942,7 +959,8 @@ def keep_failed(jid, host, p, views, info, error) -> Path:
 
 def run_creature(jid, host):
     """A "creature" job (creature_params): match the animal and curate it if needed, concept image, 3D model and rig,
-    the shared skeleton, then every requested clip (the first library match that passes its checks, else UniMate when fill_missing), each checked;
+    the shared skeleton, then every requested clip (the first library match that passes its checks, the animal's own
+    library then the other curated ones of its body plan, else UniMate when fill_missing), each checked;
     the folder is built in a temp dir and moved into <output>/Creatures/ only when it is complete."""
     a = _app()
     p, s = json.loads(a.job_row(jid)["params"]), a.get_settings()
@@ -977,8 +995,9 @@ def run_creature(jid, host):
         clips, unavailable = [], []
         for c in (have if p["clips"] == "all" else p["clips"]):
             try:
-                r = choose_clip(c, library_clips(c, have), p["fill_missing"], log,  # named as requested
-                                lambda f: retarget_clip(jid, host, std["glb"], lib, f, size, c),
+                r = choose_clip(c, library_matches(c, lib), p["fill_missing"], log,  # named as requested
+                                lambda f: retarget_clip(jid, host, std["glb"], lib.parent / f.split("/")[0] if "/" in f else lib,
+                                                        f.split("/")[-1], size, c),
                                 lambda: unimate_clip(jid, host, std["glb"], c, size))
                 if not r:
                     unavailable.append({"name": c, "reason": f"not in the {entry['id']} library and fill_missing is off"})
