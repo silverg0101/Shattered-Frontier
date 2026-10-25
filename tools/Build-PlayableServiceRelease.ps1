@@ -39,7 +39,8 @@ if (& git -C $repo status --porcelain --untracked-files=normal) { throw 'Commit 
 if ((& $Dotnet --version).Trim() -ne '10.0.402') { throw 'Pinned .NET SDK 10.0.402 required.' }
 # Snapshot all required tracked source, locks, proto and content. Never build or
 # recursively copy from the live checkout, where ignored files can contain secrets.
-$scope = @('BackendServices', 'proto', 'content', 'ops/steam-server/Services.Dockerfile')
+$scope = @('BackendServices', 'proto', 'content', 'ops/steam-server/Services.Dockerfile',
+    'ops/steam-server/playable-runtime.py', 'ops/steam-server/playable-entrypoint.sh')
 $rootInputs = & git -C $repo ls-tree --name-only $revision
 if ($LASTEXITCODE) { throw 'Cannot inspect frozen source tree.' }
 $scope += @($rootInputs | Where-Object { $_ -match '^(global\.json|nuget\.config|Directory\.(Build\.(props|targets)|Packages\.props))$' })
@@ -67,6 +68,10 @@ foreach ($store in @('InventoryLedger', 'CharacterState', 'Housing', 'Exchange')
     Copy-Item -LiteralPath (Join-Path $snapshot "BackendServices/$store.Postgres/Schema.sql") -Destination (Join-Path $schema "$store.sql")
 }
 Copy-Item -LiteralPath (Join-Path $snapshot 'ops/steam-server/Services.Dockerfile') -Destination (Join-Path $output 'Dockerfile')
+$runtime = New-Item -ItemType Directory -Path (Join-Path $output 'Runtime')
+foreach ($name in @('playable-runtime.py', 'playable-entrypoint.sh')) {
+    Copy-Item -LiteralPath (Join-Path $snapshot "ops/steam-server/$name") -Destination (Join-Path $runtime $name)
+}
 [IO.File]::WriteAllText((Join-Path $output 'release.json'), (@{ revision=$revision; sdk='10.0.402'; runtime='10.0.13'; authentication='private-development-bearers'; zone='zone/greenlands_silverbrook' } | ConvertTo-Json) + "`n")
 $rows = Get-ChildItem -LiteralPath $output -File -Recurse | Sort-Object FullName | ForEach-Object {
     $relative = [IO.Path]::GetRelativePath($output, $_.FullName).Replace('\','/')

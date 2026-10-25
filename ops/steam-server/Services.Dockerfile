@@ -8,6 +8,7 @@ COPY InventoryLedger.Host ./InventoryLedger.Host
 COPY SchemaMigration.Tool ./SchemaMigration.Tool
 COPY content ./content
 COPY base-schema ./base-schema
+COPY Runtime ./Runtime
 COPY release.json ./release.json
 COPY Dockerfile ./Dockerfile
 COPY SHA256SUMS ./SHA256SUMS

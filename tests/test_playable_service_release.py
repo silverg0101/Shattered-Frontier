@@ -26,6 +26,8 @@ class PlayableServiceReleaseTests(unittest.TestCase):
             "content/tracked.json": '{"tracked":true}',
             "proto/sf/test.proto": 'syntax = "proto3";',
             "ops/steam-server/Services.Dockerfile": "FROM scratch\n",
+            "ops/steam-server/playable-runtime.py": "# tracked runtime\n",
+            "ops/steam-server/playable-entrypoint.sh": "#!/bin/sh\n",
         }
         for host in ("Gameplay.Host", "InventoryLedger.Host", "SchemaMigration.Tool"):
             files[f"BackendServices/{host}/{host}.csproj"] = "<Project />"

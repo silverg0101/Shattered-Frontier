@@ -4,17 +4,19 @@ ARG SF_GID=998
 ARG SF_REVISION
 LABEL org.opencontainers.image.source="https://github.com/silverg0101/Shattered-Frontier" \
       org.opencontainers.image.revision="$SF_REVISION" \
-      com.shatteredfrontier.engine.revision="396c9f059903aed5fec78ecd3d437a40c6415368"
+      com.shatteredfrontier.engine.revision="396c9f059903aed5fec78ecd3d437a40c6415368" \
+      com.shatteredfrontier.playable-runtime="1"
 RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates libgcc-s1 libstdc++6 libcurl4 libssl3 \
     && rm -rf /var/lib/apt/lists/* \
     && groupadd --gid "$SF_GID" sfserver \
     && useradd --uid "$SF_UID" --gid "$SF_GID" --home-dir /srv/home --no-create-home --shell /usr/sbin/nologin sfserver
 COPY package/ /opt/server/
 COPY entrypoint.sh /usr/local/bin/sf-entrypoint
+COPY playable-entrypoint.sh /usr/local/bin/sf-playable-entrypoint
 RUN set -eu; \
     executable="$(find /opt/server -type f -path '*/Binaries/Linux/ShatteredFrontierServer' -print)"; \
     test -n "$executable"; test "$(printf '%s\n' "$executable" | wc -l)" = 1; \
-    chmod 0755 "$executable" /usr/local/bin/sf-entrypoint; \
+    chmod 0755 "$executable" /usr/local/bin/sf-entrypoint /usr/local/bin/sf-playable-entrypoint; \
     printf '%s\n' "$executable" > /opt/server/.sf-executable; \
     project="${executable%/Binaries/Linux/ShatteredFrontierServer}"; \
     test ! -e "$project/Saved"; \

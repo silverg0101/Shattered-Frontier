@@ -22,6 +22,8 @@ using DomLedger = ShatteredFrontier.InventoryLedger.InventoryLedger;
 static string Required(string name) => Environment.GetEnvironmentVariable(name) is { Length: > 0 } value
     ? value : throw new InvalidOperationException($"{name} is required.");
 
+if (args is ["runtime-probe"]) { Environment.Exit(RuntimeProbe.Run()); return; }
+
 if (args is ["outbox-status"])
 {
     var controls = new ReceiptOutboxControls(); controls.Validate();
