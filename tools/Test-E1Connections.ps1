@@ -12,6 +12,7 @@ param(
     [switch]$RegenScenario,
     [switch]$FallScenario,
     [switch]$SwimScenario,
+    [switch]$CrouchScenario,
     [switch]$GreenlandsEnvironmentNetcheck,
     [switch]$AssistScenario,
     [switch]$RespawnScenario,
@@ -71,6 +72,12 @@ function Assert-EvadeClient([string]$Path, [string]$Role) {
     return [math]::Round($speed,1)
 }
 try {
+    if ($CrouchScenario -and ($Map -ne '/Game/Frontier/Maps/Sandbox/SB_Crouch' -or $Clients -ne 2 -or
+        $CastingScenario -or $EvadeScenario -or $ThreatScenario -or $AggroScenario -or $MemoryScenario -or
+        $RegenScenario -or $FallScenario -or $SwimScenario -or $AssistScenario -or $RespawnScenario -or
+        $GreenlandsBoarNetcheck -or $GreenlandsEnvironmentNetcheck)) {
+        throw 'CrouchScenario requires SB_Crouch, two clients, and no other scenario'
+    }
     if ($GreenlandsEnvironmentNetcheck) {
         if ($Map -ne '/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook' -or $Clients -ne 2 -or
             $CastingScenario -or $EvadeScenario -or $ThreatScenario -or $AggroScenario -or $MemoryScenario -or
@@ -138,6 +145,7 @@ try {
     if ($RespawnScenario) { $serverArgs += '-CombatRespawnScenario' }
     if ($GreenlandsBoarNetcheck) { $serverArgs += '-GreenlandsBoarNetcheck' }
     if ($GreenlandsEnvironmentNetcheck) { $serverArgs += '-GreenlandsEnvironmentNetcheck' }
+    if ($CrouchScenario) { $serverArgs += '-CrouchScenario' }
     Launch $serverArgs
     Wait-Log $serverLog 'E1_WORLD_READY.*NetMode=1'
     foreach ($index in 1..$Clients) {
@@ -151,6 +159,7 @@ try {
         if ($RegenScenario) { $clientArgs += @('-CombatRegenScenario', ('-CombatRegenRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         if ($FallScenario) { $clientArgs += @('-CombatFallScenario', ('-CombatFallRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         if ($SwimScenario) { $clientArgs += @('-SwimScenario', ('-SwimRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
+        if ($CrouchScenario) { $clientArgs += @('-CrouchScenario', ('-CrouchRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         if ($AssistScenario) { $clientArgs += @('-CombatAssistScenario', ('-CombatAssistRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         if ($RespawnScenario) { $clientArgs += @('-CombatRespawnScenario', ('-CombatRespawnRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         if ($GreenlandsBoarNetcheck) { $clientArgs += @('-GreenlandsBoarNetcheck', ('-GreenlandsBoarRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
@@ -319,6 +328,35 @@ try {
         }
         Write-Output "PASS: server measured $impact m/s landing, applied $damage physical environment damage; both clients observed the elevated start and landed health. Logs: $logs"
     }
+    if ($CrouchScenario) {
+        Wait-Log (Join-Path $logs 'Client1.log') 'CROUCH_DRIVER_COMPLETE'
+        $serverSamples = @(Select-String -LiteralPath $serverLog -Pattern 'CROUCH_SERVER_SAMPLE Pawn=(\S+) T=([\d.]+) X=([-\d.]+) C=([01]) Speed=([\d.]+)' | ForEach-Object {
+            $g = $_.Matches[0].Groups
+            [pscustomobject]@{ Pawn=$g[1].Value; X=[double]::Parse($g[3].Value,[Globalization.CultureInfo]::InvariantCulture);
+                C=[int]$g[4].Value; Speed=[double]::Parse($g[5].Value,[Globalization.CultureInfo]::InvariantCulture) }
+        })
+        $crouched = @($serverSamples | Where-Object { $_.C -eq 1 -and $_.Speed -ge 190 -and $_.Speed -le 201 })
+        if ($crouched.Count -lt 3) { throw 'Server did not sustain the 2 m/s crouch cap' }
+        $movingPawn = $crouched[0].Pawn
+        $pawnSamples = @($serverSamples | Where-Object { $_.Pawn -eq $movingPawn })
+        $running = @($pawnSamples | Where-Object { $_.C -eq 0 -and $_.Speed -ge 665 -and $_.Speed -le 705 -and $_.X -gt $crouched[-1].X })
+        if ($running.Count -lt 3 -or $crouched[-1].X - $crouched[0].X -lt 350 -or $running[-1].X - $crouched[-1].X -lt 900) {
+            throw 'Server did not travel crouched then return to 7 m/s run'
+        }
+        foreach ($role in @('Driver','Observer')) {
+            $path = Join-Path $logs ('Client' + $(if ($role -eq 'Driver') { '1' } else { '2' }) + '.log')
+            $samples = @(Select-String -LiteralPath $path -Pattern "CROUCH_CLIENT_SAMPLE Role=$role X=([-\d.]+) C=([01]) Speed=([\d.]+)" | ForEach-Object {
+                $g = $_.Matches[0].Groups
+                [pscustomobject]@{ X=[double]::Parse($g[1].Value,[Globalization.CultureInfo]::InvariantCulture); C=[int]$g[2].Value }
+            })
+            $low = @($samples | Where-Object { $_.C -eq 1 })
+            $high = @($samples | Where-Object { $_.C -eq 0 -and $low.Count -gt 0 -and $_.X -gt $low[-1].X + 900 })
+            if ($low.Count -lt 3 -or $low[-1].X - $low[0].X -lt 300 -or $high.Count -lt 2) {
+                throw "$role missed replicated crouch travel and standing run return"
+            }
+        }
+        Write-Output "PASS: server enforced 2 m/s crouch then 7 m/s run; both clients observed stance and travel. Logs: $logs"
+    }
     if ($SwimScenario) {
         Wait-Log $serverLog 'SWIM_SERVER_MODE Swimming=1'
         Wait-Log $serverLog 'SWIM_SERVER_MODE Swimming=0'
@@ -482,7 +520,7 @@ try {
         Write-Output "PASS: Greenlands aggro, threat switch, pack assist, leash/evade, attacker memory, regeneration, client kill and rotated slot respawn on both clients. Logs: $logs"
     }
     Write-Output "PASS: separate editor server and $Clients client(s) connected; $Clients server-authoritative possession(s). Logs: $logs"
-    if (-not $CastingScenario -and -not $EvadeScenario -and -not $ThreatScenario -and -not $AggroScenario -and -not $MemoryScenario -and -not $RegenScenario -and -not $FallScenario -and -not $SwimScenario -and -not $AssistScenario -and -not $RespawnScenario -and -not $GreenlandsBoarNetcheck -and -not $GreenlandsEnvironmentNetcheck) { Write-Output 'Headless connection check only: movement, rendering, lifecycle cleanup, authentication and Linux runtime are not certified.' }
+    if (-not $CastingScenario -and -not $EvadeScenario -and -not $ThreatScenario -and -not $AggroScenario -and -not $MemoryScenario -and -not $RegenScenario -and -not $FallScenario -and -not $SwimScenario -and -not $CrouchScenario -and -not $AssistScenario -and -not $RespawnScenario -and -not $GreenlandsBoarNetcheck -and -not $GreenlandsEnvironmentNetcheck) { Write-Output 'Headless connection check only: movement, rendering, lifecycle cleanup, authentication and Linux runtime are not certified.' }
 } finally {
     foreach ($process in $ownedProcesses) {
         if (-not $process.HasExited) { Stop-Process -Id $process.Id -ErrorAction SilentlyContinue }

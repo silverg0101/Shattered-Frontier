@@ -108,6 +108,9 @@ private:
     double NextFallSampleAt = 0;
     double NextSwimSampleAt = 0;
     int32 SwimScenarioStage = 0;
+    int32 CrouchScenarioStage = 0;
+    double CrouchScenarioStartAt = -1;
+    double NextCrouchSampleAt = 0;
     bool bLastServerDeepWater = false;
     bool bMemorySawCombat = false;
     double MemoryScenarioStartedAt = -1;
@@ -126,6 +129,7 @@ private:
     void TickRegenScenario();
     void TickFallScenario();
     void TickSwimScenario();
+    void TickCrouchScenario();
     void TickGreenlandsEnvironmentScenario();
     UFUNCTION(Server, Reliable) void ServerTargetScenarioStep(int32 Step);
     UFUNCTION(Server, Reliable) void ServerPilotAttack(AActor* SelectedCombatTarget);

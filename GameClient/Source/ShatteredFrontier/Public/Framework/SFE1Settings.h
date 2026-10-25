@@ -13,6 +13,9 @@ public:
     UPROPERTY(Config, EditAnywhere, Category="Movement", meta=(ClampMin="0.5", ClampMax="12.0", Units="m/s"))
     float RunSpeedMetresPerSecond = 7.0f;
 
+    UPROPERTY(Config, EditAnywhere, Category="Movement", meta=(ClampMin="0.5", ClampMax="7.0", Units="m/s"))
+    float CrouchSpeedMetresPerSecond = 2.0f;
+
     UPROPERTY(Config, EditAnywhere, Category="Movement", meta=(ClampMin="0.5", ClampMax="12.0", Units="m/s"))
     float SwimSpeedMetresPerSecond = 3.0f;
 

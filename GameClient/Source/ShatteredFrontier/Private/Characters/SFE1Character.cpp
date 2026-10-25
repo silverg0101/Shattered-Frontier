@@ -61,6 +61,8 @@ ASFE1Character::ASFE1Character()
     GetCharacterMovement()->bOrientRotationToMovement = true;
     GetCharacterMovement()->RotationRate = FRotator(0.0f, Settings->TurnRateDegreesPerSecond, 0.0f);
     GetCharacterMovement()->MaxWalkSpeed = Settings->RunSpeedMetresPerSecond * 100.0f;
+    GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
+    GetCharacterMovement()->MaxWalkSpeedCrouched = Settings->CrouchSpeedMetresPerSecond * 100.0f;
     GetCharacterMovement()->MaxSwimSpeed = Settings->SwimSpeedMetresPerSecond * 100.0f;
     GetCharacterMovement()->JumpZVelocity = FMath::Sqrt(2.0f * Settings->GravityMetresPerSecondSquared * Settings->JumpHeightMetres) * 100.0f;
     GetCharacterMovement()->MaxStepHeight = Settings->StepHeightMetres * 100.0f;
@@ -706,6 +708,45 @@ void ASFE1Character::TickSwimScenario()
 #endif
 }
 
+void ASFE1Character::TickCrouchScenario()
+{
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    if (GetWorld()->GetOutermost()->GetName() != TEXT("/Game/Frontier/Maps/Sandbox/SB_Crouch")) { return; }
+    FString ScenarioRole;
+    FParse::Value(FCommandLine::Get(), TEXT("CrouchRole="), ScenarioRole);
+    if ((ScenarioRole != TEXT("Driver") && ScenarioRole != TEXT("Observer")) || !Controller) { return; }
+    ASFE1Character* Watched = this;
+    int32 Players = 0;
+    for (TActorIterator<ASFE1Character> It(GetWorld()); It; ++It)
+    {
+        ++Players;
+        if (ScenarioRole == TEXT("Observer") && *It != this) { Watched = *It; }
+    }
+    if (Players < 2 || (ScenarioRole == TEXT("Observer") && Watched == this)) { return; }
+    const double Now = GetWorld()->GetTimeSeconds();
+    if (CrouchScenarioStartAt < 0) { CrouchScenarioStartAt = Now; }
+    const double Elapsed = Now - CrouchScenarioStartAt;
+    if (ScenarioRole == TEXT("Driver"))
+    {
+        if (CrouchScenarioStage == 0 && Elapsed >= 0.5 && GetCharacterMovement()->IsMovingOnGround())
+        { Crouch(); CrouchScenarioStage = 1; UE_LOG(LogTemp, Display, TEXT("CROUCH_DRIVER_BEGIN")); }
+        if (CrouchScenarioStage == 1 && Elapsed >= 4.0)
+        { UnCrouch(); CrouchScenarioStage = 2; UE_LOG(LogTemp, Display, TEXT("CROUCH_DRIVER_RETURN")); }
+        if (CrouchScenarioStage == 2 && Elapsed >= 7.0)
+        { CrouchScenarioStage = 3; UE_LOG(LogTemp, Display, TEXT("CROUCH_DRIVER_COMPLETE")); }
+        if ((CrouchScenarioStage == 1 && Elapsed >= 1.0) || CrouchScenarioStage == 2)
+        { AddMovementInput(FVector::ForwardVector, 1.0f); }
+    }
+    if (Now >= NextCrouchSampleAt)
+    {
+        NextCrouchSampleAt = Now + 0.2;
+        UE_LOG(LogTemp, Display, TEXT("CROUCH_CLIENT_SAMPLE Role=%s X=%.0f C=%d Speed=%.0f"),
+            *ScenarioRole, Watched->GetActorLocation().X, Watched->bIsCrouched ? 1 : 0,
+            Watched->GetVelocity().Size2D());
+    }
+#endif
+}
+
 void ASFE1Character::TickGreenlandsEnvironmentScenario()
 {
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
@@ -889,10 +930,10 @@ namespace SFE1CameraControls
 {
     // Order matches the IA_* names below; tools/Create-PlayerInputAssets.py creates the assets.
     enum EAction { IA_MoveForward, IA_MoveBack, IA_StrafeRight, IA_StrafeLeft, IA_TurnRight, IA_TurnLeft, IA_Look, IA_LookStick, IA_Zoom,
-                   IA_MouseLook, IA_Orbit, IA_Jump, IA_Autorun, IA_Walk, IA_WalkToggle, IA_Interact, IA_Count };
+                   IA_MouseLook, IA_Orbit, IA_Jump, IA_Autorun, IA_Walk, IA_WalkToggle, IA_Crouch, IA_Interact, IA_Count };
     const TCHAR* const ActionNames[IA_Count] = { TEXT("IA_MoveForward"), TEXT("IA_MoveBack"), TEXT("IA_StrafeRight"),
         TEXT("IA_StrafeLeft"), TEXT("IA_TurnRight"), TEXT("IA_TurnLeft"), TEXT("IA_Look"), TEXT("IA_LookStick"), TEXT("IA_Zoom"),
-        TEXT("IA_MouseLook"), TEXT("IA_Orbit"), TEXT("IA_Jump"), TEXT("IA_Autorun"), TEXT("IA_Walk"), TEXT("IA_WalkToggle"),
+        TEXT("IA_MouseLook"), TEXT("IA_Orbit"), TEXT("IA_Jump"), TEXT("IA_Autorun"), TEXT("IA_Walk"), TEXT("IA_WalkToggle"), TEXT("IA_Crouch"),
         TEXT("IA_Interact") };
 }
 
@@ -1022,6 +1063,17 @@ void ASFE1Character::Tick(float DeltaSeconds)
         }
     }
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    if (HasAuthority() && CombatMap == TEXT("/Game/Frontier/Maps/Sandbox/SB_Crouch") &&
+        FParse::Param(FCommandLine::Get(), TEXT("CrouchScenario")) &&
+        GetWorld()->GetTimeSeconds() >= NextCrouchSampleAt)
+    {
+        NextCrouchSampleAt = GetWorld()->GetTimeSeconds() + 0.2;
+        UE_LOG(LogTemp, Display, TEXT("CROUCH_SERVER_SAMPLE Pawn=%s T=%.2f X=%.0f C=%d Speed=%.0f"),
+            *GetName(), GetWorld()->GetTimeSeconds(), GetActorLocation().X,
+            bIsCrouched ? 1 : 0, GetVelocity().Size2D());
+    }
+#endif
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     if (GetNetMode() == NM_Client && IsLocallyControlled() &&
         FParse::Param(FCommandLine::Get(), TEXT("GreenlandsBoarNetcheck")))
     {
@@ -1125,6 +1177,8 @@ void ASFE1Character::Tick(float DeltaSeconds)
     if (GetNetMode() == NM_Client && IsLocallyControlled() &&
         FParse::Param(FCommandLine::Get(), TEXT("SwimScenario"))) { TickSwimScenario(); }
     if (GetNetMode() == NM_Client && IsLocallyControlled() &&
+        FParse::Param(FCommandLine::Get(), TEXT("CrouchScenario"))) { TickCrouchScenario(); }
+    if (GetNetMode() == NM_Client && IsLocallyControlled() &&
         FParse::Param(FCommandLine::Get(), TEXT("GreenlandsEnvironmentNetcheck"))) { TickGreenlandsEnvironmentScenario(); }
 #endif
 }
@@ -1140,7 +1194,7 @@ void ASFE1Character::TickCameraControls(float Dt)
     const auto Value = [&](EAction A) { return In->GetActionValue(PlayerActions[A]); };
     const auto Axis = [&](EAction A) { return Value(A).Get<float>(); };
     uint32 Held = 0;
-    for (EAction A : { IA_MouseLook, IA_Orbit, IA_Jump, IA_Autorun, IA_Walk, IA_WalkToggle, IA_Interact }) { if (Value(A).Get<bool>()) { Held |= 1u << A; } }
+    for (EAction A : { IA_MouseLook, IA_Orbit, IA_Jump, IA_Autorun, IA_Walk, IA_WalkToggle, IA_Crouch, IA_Interact }) { if (Value(A).Get<bool>()) { Held |= 1u << A; } }
     const auto IsHeld = [Held](EAction A) { return (Held & (1u << A)) != 0; };
     const uint32 HeldBefore = HeldLastTick;
     HeldLastTick = Held;
@@ -1219,6 +1273,7 @@ void ASFE1Character::TickCameraControls(float Dt)
     if (Forward != 0.0f) { bAutorun = false; }
     if (bAutorun || (OrbitButton.bDown && MouseLookButton.bDown)) { Forward = 1.0f; }
     if (Pressed(IA_WalkToggle)) { bWalkToggled = !bWalkToggled; }
+    if (Pressed(IA_Crouch)) { if (bIsCrouched) { UnCrouch(); } else { Crouch(); } }
     const FRotator Facing(0.0f, Control.Yaw, 0.0f);
     FVector Move = FRotationMatrix(Facing).GetUnitAxis(EAxis::X) * Forward + FRotationMatrix(Facing).GetUnitAxis(EAxis::Y) * Strafe;
     Move = Move.GetClampedToMaxSize(1.0f) * ((IsHeld(IA_Walk) != bWalkToggled) ? S->WalkInputScale : 1.0f);

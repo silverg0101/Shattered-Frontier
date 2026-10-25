@@ -102,6 +102,31 @@ bool FSFE1WalkAndWallTest::RunTest(const FString& Parameters)
     return true;
 }
 
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFE1CrouchTest, "ShatteredFrontier.E1.Movement.Crouch",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+
+bool FSFE1CrouchTest::RunTest(const FString& Parameters)
+{
+    FMovementFixture Fixture;
+    if (!Fixture.Create(*this)) { return false; }
+    const float StandingHalfHeight = Fixture.Pawn->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
+    const float CrouchCap = GetDefault<USFE1Settings>()->CrouchSpeedMetresPerSecond * 100.0f;
+    Fixture.Pawn->Crouch();
+    float CrouchPeak = 0;
+    TestTrue(TEXT("Crouched movement ticks"), Fixture.Tick(120, FVector::ForwardVector, &CrouchPeak));
+    TestTrue(TEXT("Server character crouches"), Fixture.Pawn->bIsCrouched);
+    TestTrue(TEXT("Crouch lowers capsule"), Fixture.Pawn->GetCapsuleComponent()->GetScaledCapsuleHalfHeight() < StandingHalfHeight);
+    TestTrue(TEXT("Crouch reaches authored speed"), CrouchPeak >= CrouchCap * 0.95f);
+    TestTrue(TEXT("Crouch stays under server cap"), CrouchPeak <= CrouchCap + 1.0f);
+    Fixture.Pawn->UnCrouch();
+    float RunPeak = 0;
+    TestTrue(TEXT("Return to run ticks"), Fixture.Tick(120, FVector::ForwardVector, &RunPeak));
+    TestFalse(TEXT("Server character stands"), Fixture.Pawn->bIsCrouched);
+    TestTrue(TEXT("Standing capsule restored"), FMath::IsNearlyEqual(Fixture.Pawn->GetCapsuleComponent()->GetScaledCapsuleHalfHeight(), StandingHalfHeight, 1.0f));
+    TestTrue(TEXT("Run speed restored"), RunPeak >= GetDefault<USFE1Settings>()->RunSpeedMetresPerSecond * 95.0f);
+    return true;
+}
+
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFE1JumpAndLandingTest, "ShatteredFrontier.E1.Movement.JumpAndLanding",
     EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
 

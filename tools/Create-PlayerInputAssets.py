@@ -26,6 +26,7 @@ ACTIONS = {
     'IA_Autorun': (T.BOOLEAN, ['NumLock', 'ThumbMouseButton', 'Gamepad_LeftThumbstick']),
     'IA_Walk': (T.BOOLEAN, ['LeftControl', 'RightControl']),
     'IA_WalkToggle': (T.BOOLEAN, ['Divide']),
+    'IA_Crouch': (T.BOOLEAN, ['Z']),
     'IA_Interact': (T.BOOLEAN, ['F', 'Gamepad_FaceButton_Right']),
     'IA_TargetNext': (T.BOOLEAN, ['Tab']),
     # GM-01: always-on controller actions (ASFPlayerController::SetupInputComponent binds them).
