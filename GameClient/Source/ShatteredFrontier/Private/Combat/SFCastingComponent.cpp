@@ -184,7 +184,8 @@ void USFCastingComponent::ServerRequestPublishedInterrupt_Implementation(bool bC
     const double ReachCm = (bCounterspell ? Energy->CounterspellRangeMetres :
         Energy->MeleeReachMetres) * 100.0;
     const bool bHostile = Victim && Owner->GetCombatTarget() == Victim && Victim->GetCombatTarget() == Owner;
-    const bool bCasting = Victim && Victim->Casting && Victim->Casting->GetCastView().Phase != ESFCastPhase::Idle;
+    const bool bCasting = Victim && ((Victim->Casting && Victim->Casting->GetCastView().Phase != ESFCastPhase::Idle) ||
+        Victim->IsCombatAbilityCasting());
     const bool bValid = bHostile && Victim->CombatHealth() > 0 &&
         FVector::Dist2D(Owner->GetActorLocation(), Victim->GetActorLocation()) <= ReachCm &&
         (bCounterspell || FVector::DotProduct(Owner->GetActorForwardVector().GetSafeNormal2D(),
@@ -208,8 +209,14 @@ void USFCastingComponent::ServerRequestPublishedInterrupt_Implementation(bool bC
     if (!bPaid) { UE_LOG(LogTemp, Display, TEXT("PUBLISHED_INTERRUPT_DENIED Reason=combat_resource")); return; }
     if (bCounterspell) { NextCounterspellAt = Time + Energy->CounterspellCooldownSeconds; }
     else { NextPommelAt = Time + Energy->PommelCooldownSeconds; }
-    const bool bApplied = Victim->Casting->IsCurrentCastInterruptible();
-    if (bApplied) { Victim->Casting->Interrupt(); }
+    const bool bApplied = Victim->IsCombatAbilityCasting() ||
+        (Victim->Casting && Victim->Casting->IsCurrentCastInterruptible());
+    if (bApplied)
+    {
+        Victim->InterruptCombatAbilityCast();
+        if (Victim->Casting && Victim->Casting->GetCastView().Phase != ESFCastPhase::Idle)
+            Victim->Casting->Interrupt();
+    }
     if (!bCounterspell)
     {
         if (SFCombatPart6::Active(GetWorld()))

@@ -2192,42 +2192,70 @@ void ASFE1Character::ConsumeCombatAbsorb(double Amount)
 
 TArray<FName> ASFE1Character::GetBindableCombatAbilities() const
 {
-    if (CombatArchetype == TEXT("fighter"))
-        return SFStarterAbilities::BindingIds(SFStarterAbilities::EKit::Weapon, CombatCharacterLevel());
-    if (CombatArchetype == TEXT("mage"))
-        return SFStarterAbilities::BindingIds(SFStarterAbilities::EKit::Magic, CombatCharacterLevel());
-    return {};
+    using namespace SFStarterAbilities;
+    const EKit Primary = CombatArchetype == TEXT("guardian") ? EKit::Guardian :
+        CombatArchetype == TEXT("healer") ? EKit::Healing :
+        CombatArchetype == TEXT("mage") ? EKit::Magic : EKit::Weapon;
+    TArray<FName> Out = BindingIds(Primary, CombatCharacterLevel());
+    // Every character can learn a kit at its authored level; expose the complete
+    // unlocked catalog for hotbar binding, with the native kit first.
+    for (const EKit Kit : {EKit::Weapon, EKit::Guardian, EKit::Magic, EKit::Healing})
+        if (Kit != Primary) Out.Append(BindingIds(Kit, CombatCharacterLevel()));
+    return Out;
 }
 
-void ASFE1Character::RequestCombatAbility(FName AbilityId)
+void ASFE1Character::RequestCombatAbility(FName AbilityId, AActor* SelectedTarget)
 {
-    if (HasAuthority()) ServerRequestCombatAbility_Implementation(AbilityId);
-    else ServerRequestCombatAbility(AbilityId);
+    if (HasAuthority()) ServerRequestCombatAbility_Implementation(AbilityId, SelectedTarget);
+    else ServerRequestCombatAbility(AbilityId, SelectedTarget);
 }
 
-void ASFE1Character::ServerRequestCombatAbility_Implementation(FName AbilityId)
+void ASFE1Character::ServerRequestCombatAbility_Implementation(FName AbilityId, AActor* SelectedTarget)
 {
     if (ASFGameMode* Mode = GetWorld()->GetAuthGameMode<ASFGameMode>())
-        Mode->TryPlayerCombatAbility(this, AbilityId);
+        Mode->TryPlayerCombatAbility(this, AbilityId, SelectedTarget);
+}
+
+void ASFE1Character::RequestCombatGroundAbility(FName AbilityId, FVector GroundLocation)
+{
+    if (HasAuthority()) ServerRequestCombatGroundAbility_Implementation(AbilityId, GroundLocation);
+    else ServerRequestCombatGroundAbility(AbilityId, GroundLocation);
+}
+
+void ASFE1Character::ServerRequestCombatGroundAbility_Implementation(FName AbilityId, FVector GroundLocation)
+{
+    const auto* Ability = SFStarterAbilities::Find(AbilityId.ToString());
+    if (!Ability || Ability->Target != SFStarterAbilities::ETarget::GroundAlly || GroundLocation.ContainsNaN()) return;
+    if (ASFGameMode* Mode = GetWorld()->GetAuthGameMode<ASFGameMode>())
+        Mode->TryPlayerCombatAbility(this, AbilityId, nullptr, false, FVector::ZeroVector, GroundLocation);
 }
 
 bool ASFE1Character::CommitCombatAbility(const SFStarterAbilities::FDefinition& Ability, double Now)
 {
-    if (!HasAuthority() || !GetWorld() ||
-        ((Ability.Kit == SFStarterAbilities::EKit::Weapon && CombatArchetype != TEXT("fighter")) ||
-         (Ability.Kit == SFStarterAbilities::EKit::Magic && CombatArchetype != TEXT("mage")))) return false;
+    if (!HasAuthority() || !GetWorld()) return false;
     const auto* Tune = GetDefault<USFCombatEnergySettings>();
-    const bool bMagic = Ability.Kit == SFStarterAbilities::EKit::Magic;
-    if (!SFStarterAbilities::CanStart(Ability, CombatCharacterLevel(), PilotHealth > 0, Now,
+    const bool bMagic = Ability.Energy == SFStarterAbilities::EEnergy::Mana;
+    SFStarterAbilities::FDefinition Priced = Ability;
+    if (Ability.Effect == SFStarterAbilities::EEffect::Stance && bDefensiveStance)
+        Priced.StaminaCostFraction = 0; // exiting a stance has no energy charge
+    if (!SFStarterAbilities::CanStart(Priced, CombatCharacterLevel(), PilotHealth > 0, Now,
         CombatAbilityGcdEndsAt, CombatAbilityCooldowns.FindRef(FName(Ability.Id)),
         bMagic ? Mana : Stamina, bMagic ? MaxMana : MaxStamina,
         Tune->AbilityEnergyCostMultiplier)) return false;
-    if (!(bMagic ? SpendManaFraction(Ability.StaminaCostFraction) :
-        SpendStaminaFraction(Ability.StaminaCostFraction))) return false;
+    if (Priced.StaminaCostFraction > 0 &&
+        !(bMagic ? SpendManaFraction(Priced.StaminaCostFraction) :
+        SpendStaminaFraction(Priced.StaminaCostFraction))) return false;
     CombatAbilityGcdEndsAt = Now + Ability.GcdSeconds;
     // Current Greenlands Fighter/Mage snapshots carry no haste rating (effective haste 0).
     CombatAbilityCooldowns.Add(FName(Ability.Id), Now + SFStarterAbilities::Cooldown(Ability, 0));
     return true;
+}
+
+void ASFE1Character::InterruptCombatAbilityCast()
+{
+    if (!HasAuthority() || ActiveCombatCastId == 0) return;
+    ActiveCombatCastId = 0;
+    if (bCombatCastHoly) HolyCastLockoutUntil = GetWorld()->GetTimeSeconds() + 3.0;
 }
 
 bool ASFE1Character::SpendStaminaFraction(float Fraction)
@@ -2407,8 +2435,13 @@ void ASFE1Character::CombatSetHealth(int32 Value)
         if (Value < PilotHealth && (bTravelMounted || bTravelMountCasting)) { DismountTravelMount(TEXT("Damage")); }
         if (Value < PilotHealth) { CombatMarkHostile(); }
         if (Value < PilotHealth && Casting) { Casting->NotifyDamage(); }
+        if (Value < PilotHealth) { InterruptCombatAbilityCast(); }
         PilotHealth = Value;
-        if (Value <= 0) { CombatAbsorbs.Reset(); CombatAbsorbRemaining = 0; }
+        if (Value <= 0)
+        {
+            CombatAbsorbs.Reset(); CombatAbsorbRemaining = 0;
+            bDefensiveStance = false; ShieldBlockUntil = ShieldWallUntil = BulwarkUntil = 0;
+        }
         if (Value > 0 && ResurrectionOfferId != 0) { ClearResurrectionOffer(); }
         if (Value <= 0) { SetCombatTarget(nullptr); }
         ForceNetUpdate();
@@ -2441,6 +2474,7 @@ bool ASFE1Character::AcceptResurrectionOffer(uint32 RequestedOffer, double Now, 
     ClearResurrectionOffer();
     GetCharacterMovement()->SetMovementMode(MOVE_Walking);
     CombatSetHealth(FSFResurrectionAcceptRules::RestoredHealth(MaximumHealth, Fraction));
+    RestoreCombatManaFraction(Fraction);
     bPilotInCombat = false;
     ForceNetUpdate();
     return true;

@@ -55,13 +55,41 @@ public:
     void GrantCombatAbsorb(double Amount, double DurationSeconds = 20.0, ASFE1Character* Caster = nullptr);
     void ConsumeCombatAbsorb(double Amount);
     UFUNCTION(BlueprintPure, Category="Combat|Abilities") TArray<FName> GetBindableCombatAbilities() const;
-    UFUNCTION(BlueprintCallable, Category="Combat|Abilities") void RequestCombatAbility(FName AbilityId);
+    UFUNCTION(BlueprintCallable, Category="Combat|Abilities") void RequestCombatAbility(FName AbilityId, AActor* SelectedTarget = nullptr);
+    UFUNCTION(BlueprintCallable, Category="Combat|Abilities") void RequestCombatGroundAbility(FName AbilityId, FVector GroundLocation);
     bool CommitCombatAbility(const SFStarterAbilities::FDefinition& Ability, double Now);
+    bool CanBeginCombatAbilityCast(bool bHoly, double Now) const
+    { return ActiveCombatCastId == 0 && (!bHoly || Now >= HolyCastLockoutUntil); }
+    uint32 BeginCombatAbilityCast(bool bHoly)
+    { ActiveCombatCastId = ++NextCombatCastId; bCombatCastHoly = bHoly; return ActiveCombatCastId; }
+    bool CompleteCombatAbilityCast(uint32 CastId)
+    { if (ActiveCombatCastId != CastId || CastId == 0) return false; ActiveCombatCastId = 0; return true; }
+    bool IsCombatAbilityCasting() const { return ActiveCombatCastId != 0; }
+    void InterruptCombatAbilityCast();
+    bool HasNativeCombatKit(SFStarterAbilities::EKit Kit) const
+    {
+        return (Kit == SFStarterAbilities::EKit::Weapon && CombatArchetype == TEXT("fighter")) ||
+            (Kit == SFStarterAbilities::EKit::Guardian && CombatArchetype == TEXT("guardian")) ||
+            (Kit == SFStarterAbilities::EKit::Magic && CombatArchetype == TEXT("mage")) ||
+            (Kit == SFStarterAbilities::EKit::Healing && CombatArchetype == TEXT("healer"));
+    }
+    void ToggleDefensiveStance() { bDefensiveStance = !bDefensiveStance; }
+    bool HasDefensiveStance() const { return bDefensiveStance; }
+    void SetShieldBlockUntil(double Until) { ShieldBlockUntil = Until; }
+    void SetShieldWallUntil(double Until) { ShieldWallUntil = Until; }
+    void SetBulwarkUntil(double Until) { BulwarkUntil = Until; }
+    double DamageTakenMultiplier(double Now) const
+    { return (bDefensiveStance ? .90 : 1.0) * (Now < ShieldWallUntil ? .70 : 1.0) * (Now < BulwarkUntil ? .80 : 1.0); }
+    double DamageDoneMultiplier() const { return bDefensiveStance ? .90 : 1.0; }
+    double ThreatMultiplier() const { return bDefensiveStance ? 2.0 : 1.0; }
+    double BlockBonus(double Now) const { return Now < ShieldBlockUntil ? .30 : 0.0; }
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     void SetCombatArchetypeFixture(const FString& Archetype) { if (HasAuthority()) { CombatArchetype = Archetype; ForceNetUpdate(); } }
 #endif
     bool SpendStaminaFraction(float Fraction);
     bool SpendManaFraction(float Fraction);
+    void RestoreCombatManaFraction(float Fraction)
+    { if (HasAuthority()) { Mana = FMath::Clamp(MaxMana * Fraction, 0.f, MaxMana); ForceNetUpdate(); } }
     bool CanUseChallenge(double Now) const;
     void CommitChallenge(double Now);
     uint32 GetResurrectionOfferId() const { return ResurrectionOfferId; }
@@ -149,6 +177,11 @@ private:
     double NextChallengeAt = 0.0;
     double CombatAbilityGcdEndsAt = 0.0;
     TMap<FName, double> CombatAbilityCooldowns;
+    uint32 NextCombatCastId = 0, ActiveCombatCastId = 0;
+    bool bCombatCastHoly = false;
+    double HolyCastLockoutUntil = 0;
+    bool bDefensiveStance = false;
+    double ShieldBlockUntil = 0, ShieldWallUntil = 0, BulwarkUntil = 0;
     void TickEnergy();
     UFUNCTION(Server, Reliable) void ServerSetSprintIntent(bool bEnable);
     UPROPERTY(Replicated) bool bAutoAttacking = false;
@@ -264,7 +297,8 @@ private:
     UFUNCTION(Server, Reliable) void ServerTargetScenarioStep(int32 Step);
     UFUNCTION(Server, Reliable) void ServerPilotAttack(AActor* SelectedCombatTarget);
     UFUNCTION(Server, Reliable) void ServerPilotTaunt(AActor* SelectedCombatTarget);
-    UFUNCTION(Server, Reliable) void ServerRequestCombatAbility(FName AbilityId);
+    UFUNCTION(Server, Reliable) void ServerRequestCombatAbility(FName AbilityId, AActor* SelectedTarget);
+    UFUNCTION(Server, Reliable) void ServerRequestCombatGroundAbility(FName AbilityId, FVector GroundLocation);
     UFUNCTION(Server, Reliable) void ServerSetAutoAttack(bool bEnabled);
     void SetAutoAttack(bool bEnabled);
     void PilotAttack();

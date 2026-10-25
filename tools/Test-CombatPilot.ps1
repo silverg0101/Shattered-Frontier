@@ -67,7 +67,7 @@ $null = New-Item -ItemType Directory -Path $root
 if ($Services) { . (Join-Path $PSScriptRoot 'InventoryLedgerHostFixture.ps1') }
 $fx = @{}
 $owned = [Collections.Generic.List[Diagnostics.Process]]::new()
-$scope = if ($GreenlandsAbilityNetcheck) { 'Greenlands two-client Weapon and ward activation' }
+$scope = if ($GreenlandsAbilityNetcheck) { 'Greenlands two-client Weapon, Guardian and Healing activation' }
     elseif ($AttributeSnapshotNetcheck) { 'Greenlands two-client authoritative attribute restore and combat' }
     elseif ($GreenlandsArcherNetcheck) { 'Greenlands two-client bandit archer ranged hit and replicated tracer' }
     elseif ($GreenlandsUnstuckNetcheck) { 'Greenlands two-client Unstuck, token replay, and restart cooldown' }
@@ -483,9 +483,11 @@ try {
         if ($serverText -match 'ABILITY_NETCHECK_FAILED' -or
             $serverText -notmatch 'ABILITY_NETCHECK_STRIKE' -or
             $serverText -notmatch 'ABILITY_NETCHECK_WARD' -or
+            $serverText -notmatch 'ABILITY_NETCHECK_GUARDIAN' -or
+            $serverText -notmatch 'ABILITY_NETCHECK_HYBRID_MANA' -or
             $serverText -notmatch 'ABILITY_NETCHECK_PASS' -or
             [regex]::Matches($serverText, 'COMBAT_ATTRIBUTE_SNAPSHOT Archetype=fighter Level=1').Count -lt 2) {
-            throw 'Two-client Weapon or ward evidence incomplete.'
+            throw 'Two-client starter ability evidence incomplete.'
         }
         $result.status='Passed'
         return

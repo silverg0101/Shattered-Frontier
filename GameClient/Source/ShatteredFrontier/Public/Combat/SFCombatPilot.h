@@ -262,7 +262,9 @@ public:
         const TArray<FVector2D>& Area, int32 Health, int32 Serial, bool bInDefensive = false);
     bool ConfigureCreature(const FString& DefinitionId);
     static bool ResolveCreatureLoot(const FString& DefinitionId, FString& TableId, bool& bSingleDrop);
-    void ReceivePilotDamage(ASFE1Character* Attacker, int32 Damage);
+    void ReceivePilotDamage(ASFE1Character* Attacker, int32 Damage, double AbilityThreatMultiplier = 1.0);
+    bool HasThreatOn(ASFE1Character* Character) const;
+    void ReceivePilotHealingThreat(ASFE1Character* Healer, ASFE1Character* Subject, double Amount);
     void ReceivePilotDodge(ASFE1Character* Attacker);
     bool ReceivePilotTaunt(ASFE1Character* Taunter);
     /** Authority-only transition when the open-world leash or safe-zone rule fires. */

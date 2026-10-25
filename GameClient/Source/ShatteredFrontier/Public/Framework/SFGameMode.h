@@ -56,7 +56,10 @@ public:
     SFCombatResolution::FResult ResolveCombatAttack(AActor* Attacker,
         const SFCombatResolution::FAttack& Attack, double FixtureAvoidanceDraw = -1);
     void TryPlayerAttack(ASFE1Character* Attacker, AActor* SelectedTarget = nullptr);
-    void TryPlayerCombatAbility(ASFE1Character* Attacker, FName AbilityId);
+    void TryPlayerCombatAbility(ASFE1Character* Attacker, FName AbilityId,
+        AActor* SelectedTarget = nullptr, bool bCastComplete = false, FVector CastOrigin = FVector::ZeroVector,
+        FVector GroundLocation = FVector::ZeroVector);
+    void ApplyStarterHeal(ASFE1Character* Healer, ASFE1Character* Subject, int32 Amount);
     bool TryPlayerTaunt(ASFE1Character* Taunter, AActor* SelectedTarget);
     void TryBoarAttack(ASFPilotBoar* Boar, ASFE1Character* Victim);
     /** Authority: an NPC's landed melee hit on a player (boar, townsfolk, guard); the caller checks reach and cooldown.
@@ -177,6 +180,7 @@ private:
     TMap<FString, TArray<double>> LeashEvadesByGroupAndCharacter;
     TMap<TWeakObjectPtr<ASFE1Character>, double> PlayerNextSwing;
     TMap<uint64, int32> RendGenerations;
+    TMap<uint64, int32> RenewGenerations;
     int32 GreenlandsAbilityStage = 0;
     double GreenlandsAbilityStageAt = 0;
     TWeakObjectPtr<ASFPilotBoar> GreenlandsAbilityBoar;
