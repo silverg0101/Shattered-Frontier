@@ -17,6 +17,7 @@ param(
     [switch]$BackpedalScenario,
     [switch]$RoadScenario,
     [switch]$SnowScenario,
+    [switch]$TravelMountScenario,
     [switch]$GreenlandsEnvironmentNetcheck,
     [switch]$GreenlandsMovementNetcheck,
     [switch]$AssistScenario,
@@ -80,6 +81,14 @@ function Assert-EvadeClient([string]$Path, [string]$Role) {
     return [math]::Round($speed,1)
 }
 try {
+    if ($TravelMountScenario) {
+        $otherScenarios = @($PSBoundParameters.Keys | Where-Object {
+            $_ -notin @('EngineRoot', 'Port', 'Map', 'Clients', 'TravelMountScenario')
+        })
+        if ($Map -ne '/Game/Frontier/Maps/Sandbox/SB_TravelMount' -or $Clients -ne 2 -or $otherScenarios.Count) {
+            throw 'TravelMountScenario requires SB_TravelMount, two clients, and no other scenario'
+        }
+    }
     if ($SpiritReleaseScenario) {
         $otherScenarios = @($PSBoundParameters.Keys | Where-Object {
             $_ -notin @('EngineRoot', 'Port', 'Map', 'Clients', 'SpiritReleaseScenario')
@@ -217,6 +226,7 @@ try {
     if ($BackpedalScenario) { $serverArgs += '-BackpedalScenario' }
     if ($RoadScenario) { $serverArgs += '-RoadScenario' }
     if ($SnowScenario) { $serverArgs += '-SnowScenario' }
+    if ($TravelMountScenario) { $serverArgs += '-TravelMountScenario' }
     Launch $serverArgs
     Wait-Log $serverLog 'E1_WORLD_READY.*NetMode=1'
     foreach ($index in 1..$Clients) {
@@ -235,6 +245,7 @@ try {
         if ($BackpedalScenario) { $clientArgs += @('-BackpedalScenario', ('-BackpedalRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         if ($RoadScenario) { $clientArgs += @('-RoadScenario', ('-RoadRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         if ($SnowScenario) { $clientArgs += @('-SnowScenario', ('-SnowRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
+        if ($TravelMountScenario) { $clientArgs += @('-TravelMountScenario', ('-TravelMountRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         if ($AssistScenario) { $clientArgs += @('-CombatAssistScenario', ('-CombatAssistRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         if ($RespawnScenario) { $clientArgs += @('-CombatRespawnScenario', ('-CombatRespawnRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         if ($AutoAttackScenario) { $clientArgs += @('-AutoAttackScenario', ('-AutoAttackRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
@@ -542,6 +553,46 @@ try {
             }
         }
         Write-Output "PASS: server capped reverse travel at 0.6x run; driver and observer saw ordered forward, reverse, forward movement. Logs: $logs"
+    }
+    if ($TravelMountScenario) {
+        Wait-Log (Join-Path $logs 'Client1.log') 'MOUNT_DRIVER_COMPLETE'
+        $serverText = Get-Content -LiteralPath $serverLog -Raw
+        $cast = [regex]::Match($serverText, 'MOUNT_SERVER_CAST Pawn=(\S+) T=([\d.]+)')
+        if (-not $cast.Success) { throw 'Server missed the owned mount cast' }
+        $pawn = $cast.Groups[1].Value
+        $mounted = [regex]::Match($serverText, "MOUNT_SERVER_MOUNTED Pawn=$pawn T=([\d.]+)")
+        if (-not $mounted.Success -or [double]$mounted.Groups[1].Value - [double]$cast.Groups[2].Value -lt 1.5) {
+            throw 'Server mounted before the 1.5 s stationary cast completed'
+        }
+        if ($serverText -notmatch "MOUNT_SERVER_DENIED Pawn=$pawn Casting=1 Mounted=0" -or
+            $serverText -notmatch "MOUNT_SERVER_DISMOUNT Pawn=$pawn Reason=Player") {
+            throw 'Server missed repeat-cast denial or voluntary dismount'
+        }
+        $samples = @(Select-String -LiteralPath $serverLog -Pattern "MOUNT_SERVER_SAMPLE Pawn=$pawn T=([\d.]+) X=([-\d.]+) Speed=([\d.]+) Cap=([\d.]+) Casting=([01]) Mounted=([01])" | ForEach-Object {
+            $g = $_.Matches[0].Groups
+            [pscustomobject]@{ T=[double]$g[1].Value; X=[double]$g[2].Value; Speed=[double]$g[3].Value;
+                Cap=[double]$g[4].Value; Casting=[int]$g[5].Value; Mounted=[int]$g[6].Value }
+        })
+        $casting = @($samples | Where-Object { $_.Casting -eq 1 -and $_.Mounted -eq 0 -and $_.Cap -eq 0 -and $_.Speed -lt 30 })
+        $riding = @($samples | Where-Object { $_.Mounted -eq 1 -and $_.Speed -ge 1050 -and $_.Speed -le 1110 -and $_.Cap -eq 1100 })
+        $walking = @($samples | Where-Object { $_.Mounted -eq 0 -and $_.T -gt [double]$mounted.Groups[1].Value + 3 -and $_.Speed -ge 650 -and $_.Speed -le 710 -and $_.Cap -eq 700 })
+        if ($casting.Count -lt 2 -or $riding.Count -lt 3 -or $walking.Count -lt 2 -or $riding[0].X -ge $walking[0].X) {
+            throw 'Server missed stationary cast, tier-1 travel, or return to foot speed'
+        }
+        foreach ($role in @('Driver', 'Observer')) {
+            $path = Join-Path $logs ('Client' + $(if ($role -eq 'Driver') { '1' } else { '2' }) + '.log')
+            $view = @(Select-String -LiteralPath $path -Pattern "MOUNT_CLIENT_SAMPLE Role=$role T=([\d.]+) X=([-\d.]+) Speed=([\d.]+) Casting=([01]) Mounted=([01])" | ForEach-Object {
+                $g = $_.Matches[0].Groups
+                [pscustomobject]@{ X=[double]$g[2].Value; Speed=[double]$g[3].Value; Casting=[int]$g[4].Value; Mounted=[int]$g[5].Value }
+            })
+            $castView = @($view | Where-Object { $_.Casting -eq 1 -and $_.Mounted -eq 0 })
+            $rideView = @($view | Where-Object { $_.Mounted -eq 1 -and $_.Speed -ge 1000 -and $_.Speed -le 1150 })
+            $footView = @($view | Where-Object { $_.Mounted -eq 0 -and $_.X -gt 3000 -and $_.Speed -ge 600 -and $_.Speed -le 750 })
+            if ($castView.Count -lt 2 -or $rideView.Count -lt 2 -or $footView.Count -lt 1) {
+                throw "$role missed replicated mount cast, mounted travel or dismount"
+            }
+        }
+        Write-Output "PASS: client cast, denial, 11 m/s mount travel and dismount reached server and both clients. Logs: $logs"
     }
     if ($RoadScenario) {
         Wait-Log (Join-Path $logs 'Client1.log') 'ROAD_DRIVER_COMPLETE'
@@ -934,7 +985,7 @@ try {
         Write-Output "PASS: Greenlands 2.0 s unarmed auto attack ($swingGap s observed), client stop, boar threat, ordinary healing ($ordinaryGain HP/tick), Golden Stag rest healing ($restedGain HP/tick), client kill and rotated slot respawn on both clients. Logs: $logs"
     }
     Write-Output "PASS: separate editor server and $Clients client(s) connected; $Clients server-authoritative possession(s). Logs: $logs"
-    if (-not $CastingScenario -and -not $EvadeScenario -and -not $ThreatScenario -and -not $AggroScenario -and -not $MemoryScenario -and -not $RegenScenario -and -not $RestRegenScenario -and -not $FallScenario -and -not $SwimScenario -and -not $CrouchScenario -and -not $BackpedalScenario -and -not $RoadScenario -and -not $SnowScenario -and -not $AssistScenario -and -not $RespawnScenario -and -not $AutoAttackScenario -and -not $UnstuckScenario -and -not $SpiritReleaseScenario -and -not $GreenlandsBoarNetcheck -and -not $GreenlandsEnvironmentNetcheck -and -not $GreenlandsMovementNetcheck) { Write-Output 'Headless connection check only: movement, rendering, lifecycle cleanup, authentication and Linux runtime are not certified.' }
+    if (-not $CastingScenario -and -not $EvadeScenario -and -not $ThreatScenario -and -not $AggroScenario -and -not $MemoryScenario -and -not $RegenScenario -and -not $RestRegenScenario -and -not $FallScenario -and -not $SwimScenario -and -not $CrouchScenario -and -not $BackpedalScenario -and -not $RoadScenario -and -not $SnowScenario -and -not $TravelMountScenario -and -not $AssistScenario -and -not $RespawnScenario -and -not $AutoAttackScenario -and -not $UnstuckScenario -and -not $SpiritReleaseScenario -and -not $GreenlandsBoarNetcheck -and -not $GreenlandsEnvironmentNetcheck -and -not $GreenlandsMovementNetcheck) { Write-Output 'Headless connection check only: movement, rendering, lifecycle cleanup, authentication and Linux runtime are not certified.' }
 } finally {
     foreach ($process in $ownedProcesses) {
         if (-not $process.HasExited) { Stop-Process -Id $process.Id -ErrorAction SilentlyContinue }

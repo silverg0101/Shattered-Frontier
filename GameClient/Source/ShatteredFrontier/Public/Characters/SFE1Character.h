@@ -36,6 +36,9 @@ public:
     int32 CombatHealth() const { return PilotHealth; }
     bool IsPilotInCombat() const { return bPilotInCombat; }
     bool IsAutoAttacking() const { return bAutoAttacking; }
+    bool IsTravelMounted() const { return bTravelMounted; }
+    bool IsTravelMountCasting() const { return bTravelMountCasting; }
+    void RequestTravelMountToggle();
     UFUNCTION(BlueprintPure, Category="Combat") int32 GetPilotHealthForCapture() const { return PilotHealth; }
     AActor* GetCombatTarget() const { return CombatTarget; }
     void SetCombatTarget(AActor* Target);
@@ -79,6 +82,12 @@ private:
     UPROPERTY(Replicated) int32 PilotHealth = 0;  // shown by the vitals HUD (SFE1VitalsHud), not in the world
     UPROPERTY(Replicated) bool bPilotInCombat = false;
     UPROPERTY(Replicated) bool bAutoAttacking = false;
+    UPROPERTY(Replicated) bool bTravelMounted = false;
+    UPROPERTY(Replicated) bool bTravelMountCasting = false;
+    double TravelMountCastEndsAt = 0.0;
+    void TickTravelMount();
+    void DismountTravelMount(const TCHAR* Reason);
+    UFUNCTION(Server, Reliable) void ServerToggleTravelMount();
     double NextAutoSwingAt = 0.0;
     UPROPERTY(Replicated) int32 GreenlandsNetcheckStage = 0;
     UPROPERTY(Replicated) int32 GreenlandsLeadSlot = -1;
@@ -157,6 +166,11 @@ private:
     void TickCrouchScenario();
     void TickBackpedalScenario();
     void TickRoadScenario();
+    void TickTravelMountScenario();
+    double TravelMountScenarioStartedAt = -1.0;
+    double NextTravelMountSampleAt = 0.0;
+    bool bTravelMountScenarioCompleted = false;
+    int32 TravelMountScenarioStage = 0;
     void TickGreenlandsMovementScenario();
     void TickGreenlandsEnvironmentScenario();
     UFUNCTION(Server, Reliable) void ServerTargetScenarioStep(int32 Step);

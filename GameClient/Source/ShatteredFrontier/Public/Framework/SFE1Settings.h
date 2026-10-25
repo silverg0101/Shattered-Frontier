@@ -28,6 +28,15 @@ public:
     UPROPERTY(Config, EditAnywhere, Category="Movement", meta=(ClampMin="0.5", ClampMax="3.0", Units="m"))
     float SwimDepthMetres = 1.3f;
 
+    UPROPERTY(Config, EditAnywhere, Category="Movement|Travel Mount", meta=(ClampMin="1.0", ClampMax="20.0", Units="m/s", ToolTip="Sandbox tier-1 travel mount speed; release-controlled, effective next startup."))
+    float TravelMountSpeedMetresPerSecond = 11.0f;
+
+    UPROPERTY(Config, EditAnywhere, Category="Movement|Travel Mount", meta=(ClampMin="1.0", ClampMax="20.0", Units="m/s", ToolTip="Sandbox mounted speed cap; release-controlled, effective next startup."))
+    float TravelMountSpeedCapMetresPerSecond = 20.0f;
+
+    UPROPERTY(Config, EditAnywhere, Category="Movement|Travel Mount", meta=(ClampMin="0.1", ClampMax="10.0", Units="s", ToolTip="Stationary mount cast duration; release-controlled, effective next startup."))
+    float TravelMountCastSeconds = 1.5f;
+
     UPROPERTY(Config, EditAnywhere, Category="Movement", meta=(ClampMin="0.1", ClampMax="3.0", Units="m"))
     float JumpHeightMetres = 1.2f;
 

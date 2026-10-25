@@ -50,6 +50,7 @@
 #include "Construction/SFConstructionNetwork.h"
 #include "Construction/SFConstructionSandboxController.h"
 #include "Characters/SFBackpedalMovement.h"
+#include "Characters/SFTravelMountRules.h"
 
 ASFE1Character::ASFE1Character(const FObjectInitializer& ObjectInitializer)
     : Super(ObjectInitializer.SetDefaultSubobjectClass<USFBackpedalMovement>(ACharacter::CharacterMovementComponentName))
@@ -112,6 +113,8 @@ void ASFE1Character::BeginPlay()
         UE_LOG(LogTemp, Fatal, TEXT("E1 fixture requires finite downward world gravity"));
     }
     GetCharacterMovement()->GravityScale = GetDefault<USFE1Settings>()->GravityMetresPerSecondSquared * 100.0f / -WorldGravity;
+    if (HasAuthority() && GetWorld()->GetOutermost()->GetName() == TEXT("/Game/Frontier/Maps/Sandbox/SB_TravelMount"))
+    { CombatSetHealth(GetDefault<USFCombatPilotSettings>()->PlayerHealth); }
     if (GetWorld()->GetOutermost()->GetName() == TEXT("/Game/Frontier/Maps/Sandbox/SB_Backpedal"))
     {
         bUseControllerRotationYaw = true;
@@ -886,6 +889,110 @@ void ASFE1Character::TickRoadScenario()
 #endif
 }
 
+void ASFE1Character::RequestTravelMountToggle()
+{
+    if (GetWorld()->GetOutermost()->GetName() != TEXT("/Game/Frontier/Maps/Sandbox/SB_TravelMount")) { return; }
+    if (HasAuthority()) { ServerToggleTravelMount_Implementation(); }
+    else { ServerToggleTravelMount(); }
+}
+
+void ASFE1Character::ServerToggleTravelMount_Implementation()
+{
+    if (!HasAuthority() || GetWorld()->GetOutermost()->GetName() != TEXT("/Game/Frontier/Maps/Sandbox/SB_TravelMount")) { return; }
+    if (bTravelMounted) { DismountTravelMount(TEXT("Player")); return; }
+    const APhysicsVolume* Volume = GetPhysicsVolume();
+    const bool bRestrictedVolume = Volume && (Volume->bWaterVolume || Volume->ActorHasTag(TEXT("SF_Roof")) || Volume->ActorHasTag(TEXT("SF_NoMount")));
+    // SB_TravelMount grants its pilot character one tier-1 travel entitlement as a development fixture.
+    const bool bAllowed = SFTravelMountRules::CanBegin(true, PilotHealth > 0, bPilotInCombat,
+        GetCharacterMovement()->IsSwimming(), bRestrictedVolume, bTravelMounted, bTravelMountCasting)
+        && GetCharacterMovement()->IsMovingOnGround();
+    if (!bAllowed)
+    {
+        UE_LOG(LogTemp, Display, TEXT("MOUNT_SERVER_DENIED Pawn=%s Casting=%d Mounted=%d"),
+            *GetName(), bTravelMountCasting ? 1 : 0, bTravelMounted ? 1 : 0);
+        return;
+    }
+    bTravelMountCasting = true;
+    TravelMountCastEndsAt = GetWorld()->GetTimeSeconds() + GetDefault<USFE1Settings>()->TravelMountCastSeconds;
+    if (bIsCrouched) { UnCrouch(); }
+    GetCharacterMovement()->StopMovementImmediately();
+    ForceNetUpdate();
+    UE_LOG(LogTemp, Display, TEXT("MOUNT_SERVER_CAST Pawn=%s T=%.2f"), *GetName(), GetWorld()->GetTimeSeconds());
+}
+
+void ASFE1Character::DismountTravelMount(const TCHAR* Reason)
+{
+    if (!HasAuthority() || (!bTravelMounted && !bTravelMountCasting)) { return; }
+    bTravelMounted = false;
+    bTravelMountCasting = false;
+    TravelMountCastEndsAt = 0.0;
+    ForceNetUpdate();
+    UE_LOG(LogTemp, Display, TEXT("MOUNT_SERVER_DISMOUNT Pawn=%s Reason=%s"), *GetName(), Reason);
+}
+
+void ASFE1Character::TickTravelMount()
+{
+    if (!HasAuthority()) { return; }
+    const APhysicsVolume* Volume = GetPhysicsVolume();
+    const bool bNoMount = Volume && (Volume->ActorHasTag(TEXT("SF_Roof")) || Volume->ActorHasTag(TEXT("SF_NoMount")));
+    bool bDeepWater = false;
+    if (Volume && Volume->bWaterVolume)
+    {
+        FVector Origin, Extent;
+        Volume->GetActorBounds(false, Origin, Extent);
+        bDeepWater = SFSwimRules::IsDeepEnough(Origin.Z + Extent.Z,
+            GetActorLocation().Z - GetCapsuleComponent()->GetScaledCapsuleHalfHeight(),
+            GetDefault<USFE1Settings>()->SwimDepthMetres);
+    }
+    if ((bTravelMounted || bTravelMountCasting) &&
+        (PilotHealth <= 0 || bPilotInCombat || bIsCrouched || bNoMount || bDeepWater || GetCharacterMovement()->IsSwimming()))
+    { DismountTravelMount(TEXT("State")); return; }
+    if (bTravelMountCasting && GetWorld()->GetTimeSeconds() >= TravelMountCastEndsAt)
+    {
+        if (Volume && Volume->bWaterVolume) { DismountTravelMount(TEXT("Water")); return; }
+        bTravelMountCasting = false;
+        bTravelMounted = true;
+        ForceNetUpdate();
+        UE_LOG(LogTemp, Display, TEXT("MOUNT_SERVER_MOUNTED Pawn=%s T=%.2f"), *GetName(), GetWorld()->GetTimeSeconds());
+    }
+}
+
+void ASFE1Character::TickTravelMountScenario()
+{
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    FString ScenarioRole;
+    FParse::Value(FCommandLine::Get(), TEXT("TravelMountRole="), ScenarioRole);
+    if ((ScenarioRole != TEXT("Driver") && ScenarioRole != TEXT("Observer")) || !Controller) { return; }
+    ASFE1Character* Watched = this;
+    int32 Players = 0;
+    for (TActorIterator<ASFE1Character> It(GetWorld()); It; ++It)
+    { ++Players; if (ScenarioRole == TEXT("Observer") && *It != this) { Watched = *It; } }
+    if (Players < 2 || (ScenarioRole == TEXT("Observer") && Watched == this)) { return; }
+    const double Now = GetWorld()->GetTimeSeconds();
+    if (TravelMountScenarioStartedAt < 0.0) { TravelMountScenarioStartedAt = Now; }
+    const double Elapsed = Now - TravelMountScenarioStartedAt;
+    if (ScenarioRole == TEXT("Driver"))
+    {
+        if (TravelMountScenarioStage == 0) { RequestTravelMountToggle(); TravelMountScenarioStage = 1; }
+        if (TravelMountScenarioStage == 1 && Elapsed >= 0.35)
+        { RequestTravelMountToggle(); TravelMountScenarioStage = 2; }
+        if (Elapsed >= 2.0 && Elapsed < 4.8) { AddMovementInput(FVector::ForwardVector, 1.0f); }
+        if (TravelMountScenarioStage == 2 && Elapsed >= 5.0)
+        { RequestTravelMountToggle(); TravelMountScenarioStage = 3; }
+        if (Elapsed >= 5.5 && Elapsed < 7.5) { AddMovementInput(FVector::ForwardVector, 1.0f); }
+        if (Elapsed >= 8.0 && !bTravelMountScenarioCompleted)
+        { bTravelMountScenarioCompleted = true; UE_LOG(LogTemp, Display, TEXT("MOUNT_DRIVER_COMPLETE")); }
+    }
+    if (Now >= NextTravelMountSampleAt)
+    {
+        NextTravelMountSampleAt = Now + 0.2;
+        UE_LOG(LogTemp, Display, TEXT("MOUNT_CLIENT_SAMPLE Role=%s T=%.2f X=%.0f Speed=%.0f Casting=%d Mounted=%d"),
+            *ScenarioRole, Now, Watched->GetActorLocation().X, Watched->GetVelocity().Size2D(),
+            Watched->IsTravelMountCasting() ? 1 : 0, Watched->IsTravelMounted() ? 1 : 0);
+    }
+#endif
+}
+
 void ASFE1Character::TickGreenlandsMovementScenario()
 {
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
@@ -1212,6 +1319,7 @@ void ASFE1Character::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
     const FString CombatMap = GetWorld()->GetOutermost()->GetName();
+    if (CombatMap == TEXT("/Game/Frontier/Maps/Sandbox/SB_TravelMount")) { TickTravelMount(); }
     if (CombatMap == TEXT("/Game/Frontier/Maps/Sandbox/SB_AutoAttack") ||
         CombatMap == TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook"))
     {
@@ -1271,6 +1379,7 @@ void ASFE1Character::Tick(float DeltaSeconds)
     if (HasAuthority() && PilotHealth > 0 &&
         (CombatMap == TEXT("/Game/Frontier/Maps/Sandbox/SB_Regeneration") ||
          CombatMap == TEXT("/Game/Frontier/Maps/Sandbox/SB_RestRegen") ||
+         CombatMap == TEXT("/Game/Frontier/Maps/Sandbox/SB_TravelMount") ||
          CombatMap == TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook")))
     {
         bool bThreatened = false;
@@ -1340,6 +1449,15 @@ void ASFE1Character::Tick(float DeltaSeconds)
         NextRoadSampleAt = GetWorld()->GetTimeSeconds() + 0.2;
         UE_LOG(LogTemp, Display, TEXT("SNOW_SERVER_SAMPLE Pawn=%s X=%.0f Speed=%.0f Cap=%.0f"),
             *GetName(), GetActorLocation().X, GetVelocity().Size2D(), GetCharacterMovement()->GetMaxSpeed());
+    }
+    if (HasAuthority() && CombatMap == TEXT("/Game/Frontier/Maps/Sandbox/SB_TravelMount") &&
+        FParse::Param(FCommandLine::Get(), TEXT("TravelMountScenario")) &&
+        GetWorld()->GetTimeSeconds() >= NextTravelMountSampleAt)
+    {
+        NextTravelMountSampleAt = GetWorld()->GetTimeSeconds() + 0.2;
+        UE_LOG(LogTemp, Display, TEXT("MOUNT_SERVER_SAMPLE Pawn=%s T=%.2f X=%.0f Speed=%.0f Cap=%.0f Casting=%d Mounted=%d"),
+            *GetName(), GetWorld()->GetTimeSeconds(), GetActorLocation().X, GetVelocity().Size2D(),
+            GetCharacterMovement()->GetMaxSpeed(), bTravelMountCasting ? 1 : 0, bTravelMounted ? 1 : 0);
     }
     if (HasAuthority() && CombatMap == TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook") &&
         FParse::Param(FCommandLine::Get(), TEXT("GreenlandsMovementNetcheck")) &&
@@ -1491,6 +1609,8 @@ void ASFE1Character::Tick(float DeltaSeconds)
         FParse::Param(FCommandLine::Get(), TEXT("RoadScenario"))) { TickRoadScenario(); }
     if (GetNetMode() == NM_Client && IsLocallyControlled() &&
         FParse::Param(FCommandLine::Get(), TEXT("SnowScenario"))) { TickRoadScenario(); }
+    if (GetNetMode() == NM_Client && IsLocallyControlled() &&
+        FParse::Param(FCommandLine::Get(), TEXT("TravelMountScenario"))) { TickTravelMountScenario(); }
     if (IsLocallyControlled() && FParse::Param(FCommandLine::Get(), TEXT("UnstuckScenario"))) { TickUnstuckScenario(); }
     if (CombatMap == TEXT("/Game/Frontier/Maps/Sandbox/SB_SpiritRelease") && IsLocallyControlled())
     {
@@ -1506,6 +1626,8 @@ void ASFE1Character::Tick(float DeltaSeconds)
     if (GetNetMode() == NM_Client && IsLocallyControlled() &&
         FParse::Param(FCommandLine::Get(), TEXT("GreenlandsMovementNetcheck"))) { TickGreenlandsMovementScenario(); }
 #endif
+    if (CombatMap == TEXT("/Game/Frontier/Maps/Sandbox/SB_TravelMount") && IsLocallyControlled())
+    { if (APlayerController* PC = Cast<APlayerController>(Controller); PC && PC->WasInputKeyJustPressed(EKeys::M)) { RequestTravelMountToggle(); } }
 }
 
 void ASFE1Character::TickCameraControls(float Dt)
@@ -1732,6 +1854,8 @@ void ASFE1Character::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
     DOREPLIFETIME(ASFE1Character, PilotHealth);
     DOREPLIFETIME(ASFE1Character, bPilotInCombat);
     DOREPLIFETIME(ASFE1Character, bAutoAttacking);
+    DOREPLIFETIME(ASFE1Character, bTravelMounted);
+    DOREPLIFETIME(ASFE1Character, bTravelMountCasting);
     DOREPLIFETIME(ASFE1Character, GreenlandsNetcheckStage);
     DOREPLIFETIME(ASFE1Character, GreenlandsLeadSlot);
     DOREPLIFETIME(ASFE1Character, GreenlandsMateSlot);
@@ -1785,6 +1909,7 @@ void ASFE1Character::CombatSetHealth(int32 Value)
 {
     if (HasAuthority())
     {
+        if (Value < PilotHealth && (bTravelMounted || bTravelMountCasting)) { DismountTravelMount(TEXT("Damage")); }
         if (Value < PilotHealth) { CombatMarkHostile(); }
         if (Value < PilotHealth && Casting) { Casting->NotifyDamage(); }
         PilotHealth = Value;
@@ -1799,6 +1924,7 @@ void ASFE1Character::CombatMarkHostile()
     if (!HasAuthority() ||
         (CombatMap != TEXT("/Game/Frontier/Maps/Sandbox/SB_Regeneration") &&
          CombatMap != TEXT("/Game/Frontier/Maps/Sandbox/SB_RestRegen") &&
+         CombatMap != TEXT("/Game/Frontier/Maps/Sandbox/SB_TravelMount") &&
          CombatMap != TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook"))) { return; }
     PilotRegen.Hostile(GetWorld()->GetTimeSeconds());
     if (!bPilotInCombat) { bPilotInCombat = true; ForceNetUpdate(); }
