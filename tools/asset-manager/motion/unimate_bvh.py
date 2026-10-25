@@ -23,6 +23,9 @@ arm.matrix_world = Matrix.Rotation(math.radians(-90), 4, "X") @ arm.matrix_world
 bpy.ops.object.select_all(action="DESELECT")
 arm.select_set(True)
 bpy.context.view_layer.objects.active = arm
+# Applied into the rest pose: the exporter drops the object's turn for the root's offset, so a GLB whose root bone
+# isn't at the origin (a SkinTokens rig, a retargeted clip) came back up to a metre off.
+bpy.ops.object.transform_apply(location=False, rotation=True, scale=False)
 bpy.ops.export_anim.bvh(filepath=out, global_scale=100, frame_start=f0, frame_end=f1, rotate_mode="NATIVE")
 bpy.ops.import_anim.bvh(filepath=out, global_scale=0.01)
 back = bpy.context.active_object

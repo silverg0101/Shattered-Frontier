@@ -430,6 +430,8 @@ def std_glb_clip(jid, host, rig_glb, src_glb, name, size_cm) -> dict:
     work, lib = a.host_tools(jid, host)[0], Path(tempfile.mkdtemp())
     try:
         (lib / "clips").mkdir()
+        for f in a.MOTION_DIR.glob("*.py"):  # a clip job's text path has uploaded no script yet
+            a.put_input(host, f"{jid}/{f.name}", f.read_bytes())
         a.job_blender(jid)
         a.run_blender(jid, host, "unimate_bvh.py", [src_glb, f"{name}.bvh", f"{name}_bvh.json"],
                       [src_glb], [f"{name}.bvh", f"{name}_bvh.json"], 900)
