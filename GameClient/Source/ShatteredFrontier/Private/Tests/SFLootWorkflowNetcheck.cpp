@@ -96,7 +96,7 @@ bool RestoreOwnCaptureMeshes(FWorkflowState& State)
 }
 void CaptureRenderDiagnostic(UStaticMeshComponent* Mesh, bool bSelected)
 {
-    const auto* Model = Mesh->GetStaticMesh(); const auto* Overlay = Mesh->GetOverlayMaterial();
+    const auto* Model = Mesh->GetStaticMesh().Get(); const auto* Overlay = Mesh->GetOverlayMaterial();
     UE_LOG(LogTemp, Display, TEXT("LOOT_CAPTURE_RENDER Selected=%d Model=%s Overlay=%s OverlayBlend=%d NaniteEnabled=%d Visible=%d"),
         bSelected, *GetPathNameSafe(Model), *GetPathNameSafe(Overlay), Overlay ? int32(Overlay->GetBlendMode()) : -1,
         Model ? Model->GetNaniteSettings().bEnabled : false, Mesh->GetVisibleFlag());
