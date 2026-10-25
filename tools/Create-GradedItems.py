@@ -47,6 +47,13 @@ for item_id in sorted(outputs | scrolls):
             existing = library.load_asset(path)
             if existing.get_editor_property('UniqueId') != identity:
                 raise RuntimeError(f'Existing id mismatch at {path}')
+            piece = gear.get(item_id)
+            if piece:
+                category = getattr(unreal.SFEquipmentCategory, piece['category'].upper())
+                if existing.get_editor_property('EquipmentCategory') != category:
+                    existing.set_editor_property('EquipmentCategory', category)
+                    if not library.save_loaded_asset(existing):
+                        raise RuntimeError(f'Could not save {path}')
             continue
         asset = tools.create_asset(asset_name, folder, klass, factory)
         if asset is None:
@@ -63,6 +70,7 @@ for item_id in sorted(outputs | scrolls):
             asset.set_editor_property('Weight', piece['weight_kg'])
             asset.set_editor_property('UseType', unreal.SFItemUseType.EQUIP)
             asset.set_editor_property('EquipmentSlot', piece['slot'])
+            asset.set_editor_property('EquipmentCategory', getattr(unreal.SFEquipmentCategory, piece['category'].upper()))
             stats = [f"+{piece[k]} {k.title()}" for k in ('armor', 'damage') if piece[k]]
             asset.set_editor_property('Description', unreal.Text(', '.join(stats) + '.'))
         if identity in scrolls:

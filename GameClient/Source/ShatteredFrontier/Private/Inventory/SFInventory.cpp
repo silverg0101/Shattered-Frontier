@@ -1,4 +1,5 @@
 #include "Inventory/SFInventory.h"
+#include "Inventory/SFGear.h"
 
 #include "GameFramework/Actor.h"
 #include "Net/UnrealNetwork.h"
@@ -141,27 +142,50 @@ float USFInventoryComponent::GetTotalWeight() const
     return WeightOf(Stacks);
 }
 
-bool USFInventoryComponent::EquipFromSlot(int32 SlotIndex)
+bool USFInventoryComponent::EquipFromSlot(int32 SlotIndex, FName TargetSlot, bool bCommit)
 {
     if (!HasAuthority(this) || !Stacks.IsValidIndex(SlotIndex)) { return false; }
     const TSoftObjectPtr<USFItemDefinition> Item = Stacks[SlotIndex].Item;
     const USFItemDefinition* Definition = Item.LoadSynchronous();
-    if (!Definition || Definition->UseType != ESFItemUseType::Equip || Definition->EquipmentSlot.IsNone()
-        || (!AllowedEquipmentSlots.IsEmpty() && !AllowedEquipmentSlots.Contains(Definition->EquipmentSlot))) { return false; }
+    if (!Definition || Definition->UseType != ESFItemUseType::Equip || Definition->EquipmentSlot.IsNone()) { return false; }
+    if (TargetSlot.IsNone()) { TargetSlot = Definition->EquipmentSlot; }
+    const ESFEquipmentCategory Category = SFGear::Category(Definition);
+    if ((!AllowedEquipmentSlots.IsEmpty() && !AllowedEquipmentSlots.Contains(TargetSlot)) ||
+        (TargetSlot != Definition->EquipmentSlot && !(Category == ESFEquipmentCategory::Ring && TargetSlot == TEXT("Ring2"))) ||
+        (Category == ESFEquipmentCategory::Shield && TargetSlot != TEXT("OffHand")) ||
+        ((Category == ESFEquipmentCategory::TwoHand || Category == ESFEquipmentCategory::Bow || Category == ESFEquipmentCategory::Staff) && TargetSlot != TEXT("MainHand"))) { return false; }
+    const FSFEquippedSlot* Main = EquippedItems.FindByPredicate([](const FSFEquippedSlot& S) { return S.SlotName == TEXT("MainHand"); });
+    if (TargetSlot == TEXT("OffHand") && Main &&
+        (SFGear::Category(Main->Item.LoadSynchronous()) == ESFEquipmentCategory::TwoHand ||
+         SFGear::Category(Main->Item.LoadSynchronous()) == ESFEquipmentCategory::Bow ||
+         SFGear::Category(Main->Item.LoadSynchronous()) == ESFEquipmentCategory::Staff)) { return false; }
     TArray<FSFItemQuantity> Copy = Stacks;
     if (--Copy[SlotIndex].Quantity <= 0) { Copy.RemoveAt(SlotIndex); }
-    FSFEquippedSlot* Worn = EquippedItems.FindByPredicate([Definition](const FSFEquippedSlot& S) { return S.SlotName == Definition->EquipmentSlot; });
+    TArray<FSFEquippedSlot> NewEquipped = EquippedItems;
+    if (TargetSlot == TEXT("MainHand") && (Category == ESFEquipmentCategory::TwoHand || Category == ESFEquipmentCategory::Bow || Category == ESFEquipmentCategory::Staff))
+    {
+        const int32 Off = NewEquipped.IndexOfByPredicate([](const FSFEquippedSlot& S) { return S.SlotName == TEXT("OffHand"); });
+        if (Off != INDEX_NONE)
+        {
+            const FSFEquippedSlot& OldOff = NewEquipped[Off];
+            const USFItemDefinition* Old = OldOff.Item.LoadSynchronous();
+            if (!Old || !Add(Copy, *Old, OldOff.Item, OldOff.Quantity, NumSlots)) { return false; }
+            NewEquipped.RemoveAt(Off);
+        }
+    }
+    FSFEquippedSlot* Worn = NewEquipped.FindByPredicate([TargetSlot](const FSFEquippedSlot& S) { return S.SlotName == TargetSlot; });
     if (Worn)
     {
         const USFItemDefinition* Old = Worn->Item.LoadSynchronous();
-        if (!Old || !Add(Copy, *Old, Worn->Item, Worn->Quantity, NumSlots) || !WithinWeight(*this, Stacks, Copy)) { return false; }
+        if (!Old || !Add(Copy, *Old, Worn->Item, Worn->Quantity, NumSlots)) { return false; }
     }
     else
     {
-        Worn = &EquippedItems.AddDefaulted_GetRef(); Worn->SlotName = Definition->EquipmentSlot;
+        Worn = &NewEquipped.AddDefaulted_GetRef(); Worn->SlotName = TargetSlot;
     }
+    if (!WithinWeight(*this, Stacks, Copy)) { return false; }
     Worn->Item = Item; Worn->Quantity = 1; Worn->InstanceId.Reset(); Worn->DurabilityPercent = 100;
-    Stacks = MoveTemp(Copy);
+    if (bCommit) { Stacks = MoveTemp(Copy); EquippedItems = MoveTemp(NewEquipped); }
     return true;
 }
 

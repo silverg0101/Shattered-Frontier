@@ -252,8 +252,8 @@ enum class ESFGatheringPilotResult : uint8
 
 // Why an equip / unequip request was refused (Ok = applied; Pending = a ledger transfer is queued and the slot changes when it
 // commits). Server-side answer; the client only sees the replicated result.
-UENUM()
-enum class ESFEquipResult : uint8 { Ok, Disabled, InvalidSlot, NotOwned, NotEquippable, WrongSlot, NotEquipped, NoSpace, Pending };
+UENUM(BlueprintType)
+enum class ESFEquipResult : uint8 { Ok, Disabled, InvalidSlot, NotOwned, NotEquippable, WrongSlot, NotEquipped, NoSpace, Pending, OffHandBlocked, LedgerRejected };
 
 USTRUCT()
 struct FSFGatheringPilotFeedback
@@ -289,7 +289,7 @@ public:
     // Equipment (Equipment window, gathering tools). The state is the pilot inventory's replicated EquippedItems; an item's slot is its
     // definition's EquipmentSlot (data). Requests come from the owning client and are validated here on the server: the slot exists, the
     // item is in this player's bag, it is equippable into exactly that slot, and a swap / unequip fits the bag (space and weight).
-    static const TArray<FName>& EquipmentSlots();  // Head, Chest, Hands, Legs, Feet, MainHand, OffHand, Neck, Ring, Back
+    static const TArray<FName>& EquipmentSlots();  // Head, Chest, Hands, Legs, Feet, MainHand, OffHand, Neck, Ring, Ring2, Back
     static FName MainHandSlot() { return FName(TEXT("MainHand")); }
     // Owner (client or server): ask to equip one owned bag item into Slot / return Slot to the bag. False when refused before sending.
     bool RequestEquip(const FSoftObjectPath& Item, FName Slot, const FString& InstanceId = FString());
@@ -298,6 +298,7 @@ public:
     // between the backpack and equipment containers (Pending), so equipped gear survives a restart.
     ESFEquipResult ApplyEquip(const FSoftObjectPath& Item, FName Slot, const FString& InstanceId = FString());
     ESFEquipResult ApplyUnequip(FName Slot);
+    UPROPERTY(Replicated, BlueprintReadOnly, Category="Equipment") ESFEquipResult LastEquipResult = ESFEquipResult::Ok;
     // The item in Slot (owner view), empty when the slot is empty.
     FSoftObjectPath GetEquipped(FName Slot) const;
     // Server: makes the equipped gear match the ledger equipment container (definition id -> quantity); tools are left alone.

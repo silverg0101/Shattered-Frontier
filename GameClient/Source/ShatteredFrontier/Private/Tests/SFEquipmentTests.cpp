@@ -66,6 +66,7 @@ bool FSFEquipmentWidgetTest::RunTest(const FString& Parameters)
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/WorldSettings.h"
 #include "Inventory/SFInventory.h"
+#include "Inventory/SFGear.h"
 
 // Server-side equip validation on the real pilot inventory: slot match, ownership (only this player's bag), swap back to the bag, unequip to the
 // bag and its space rule, and the gathering tools on the main hand.
@@ -102,6 +103,16 @@ bool FSFEquipmentValidationTest::RunTest(const FString& Parameters)
     USFItemDefinition* Helm = Define(TEXT("SFTestHelm"), TEXT("Head"));
     USFItemDefinition* Cap = Define(TEXT("SFTestCap"), TEXT("Head"));
     USFItemDefinition* Ring = Define(TEXT("SFTestRing"), TEXT("Ring"));
+    Ring->EquipmentCategory = ESFEquipmentCategory::Ring;
+    USFItemDefinition* Shield = Define(TEXT("SFTestShield"), TEXT("OffHand"));
+    Shield->EquipmentCategory = ESFEquipmentCategory::Shield;
+    USFItemDefinition* Greatsword = Define(TEXT("SFTestGreatsword"), TEXT("MainHand"));
+    Greatsword->EquipmentCategory = ESFEquipmentCategory::TwoHand;
+    USFItemDefinition* Bow = Define(TEXT("SFTestBow"), TEXT("MainHand"));
+    Bow->EquipmentCategory = ESFEquipmentCategory::Bow;
+    Bow->UniqueId = TEXT("item/starter_bow");
+    USFItemDefinition* OffDagger = Define(TEXT("SFTestOffDagger"), TEXT("OffHand"));
+    OffDagger->EquipmentCategory = ESFEquipmentCategory::Dagger;
     USFItemDefinition* Stone = Define(TEXT("SFTestStone"), NAME_None);
     auto Grant = [](USFInventoryComponent* Into, std::initializer_list<USFItemDefinition*> Items)
     {
@@ -109,7 +120,7 @@ bool FSFEquipmentValidationTest::RunTest(const FString& Parameters)
         for (USFItemDefinition* Item : Items) { FSFItemQuantity Q; Q.Item = TSoftObjectPtr<USFItemDefinition>(Item); Q.Quantity = 1; Adds.Add(Q); }
         return SFInventoryTransactions::ExchangeInventoryItems(Into, {}, Adds) == ESFInventoryResult::Success;
     };
-    if (!TestTrue(TEXT("Grant the test gear"), Grant(Bag, {Helm, Cap, Stone}) && Grant(OtherBag, {Ring}))) { return false; }
+    if (!TestTrue(TEXT("Grant the test gear"), Grant(Bag, {Helm, Cap, Stone, Shield, Greatsword, Bow, OffDagger}) && Grant(OtherBag, {Ring}))) { return false; }
     const FSoftObjectPath HelmPath(Helm), CapPath(Cap), RingPath(Ring), StonePath(Stone);
     const FName Head(TEXT("Head"));
 
@@ -137,6 +148,30 @@ bool FSFEquipmentValidationTest::RunTest(const FString& Parameters)
     TestTrue(TEXT("The helm stays equipped"), Gear->GetEquipped(Head) == HelmPath);
     Bag->NumSlots = Slots;
     TestTrue(TEXT("Request path unequips"), Gear->RequestUnequip(Head) && Gear->GetEquipped(Head).IsNull());
+
+    Bag->NumSlots = Slots + 8;  // extra equipment fixtures below remain in the bag
+    TestTrue(TEXT("Two owned rings"), Grant(Bag, {Ring, Ring}));
+    TestEqual(TEXT("First ring equips"), Gear->ApplyEquip(RingPath, TEXT("Ring")), ESFEquipResult::Ok);
+    TestEqual(TEXT("Second ring equips"), Gear->ApplyEquip(RingPath, TEXT("Ring2")), ESFEquipResult::Ok);
+    TestTrue(TEXT("Both ring slots are occupied"), !Gear->GetEquipped(TEXT("Ring")).IsNull() && !Gear->GetEquipped(TEXT("Ring2")).IsNull());
+    TestEqual(TEXT("Second ring unequips"), Gear->ApplyUnequip(TEXT("Ring2")), ESFEquipResult::Ok);
+    TestEqual(TEXT("First ring unequips"), Gear->ApplyUnequip(TEXT("Ring")), ESFEquipResult::Ok);
+
+    const FSoftObjectPath ShieldPath(Shield), GreatswordPath(Greatsword), BowPath(Bow);
+    TestEqual(TEXT("Shield is refused in main hand"), Gear->ApplyEquip(ShieldPath, TEXT("MainHand")), ESFEquipResult::WrongSlot);
+    TestEqual(TEXT("Shield equips in off hand"), Gear->ApplyEquip(ShieldPath, TEXT("OffHand")), ESFEquipResult::Ok);
+    TestEqual(TEXT("Two hand weapon clears off hand"), Gear->ApplyEquip(GreatswordPath, TEXT("MainHand")), ESFEquipResult::Ok);
+    TestTrue(TEXT("Shield returns to bag"), Gear->GetEquipped(TEXT("OffHand")).IsNull() && Gear->FindBagSlot(ShieldPath)!=INDEX_NONE);
+    TestEqual(TEXT("Off hand is blocked by two hand weapon"), Gear->ApplyEquip(ShieldPath, TEXT("OffHand")), ESFEquipResult::OffHandBlocked);
+    TestEqual(TEXT("Bow replaces two hand weapon"), Gear->ApplyEquip(BowPath, TEXT("MainHand")), ESFEquipResult::Ok);
+    TestEqual(TEXT("Bow also blocks off hand"), Gear->ApplyEquip(ShieldPath, TEXT("OffHand")), ESFEquipResult::OffHandBlocked);
+    TestTrue(TEXT("Bow occupies main hand"), Gear->GetEquipped(TEXT("MainHand"))==BowPath);
+    const auto BowLine=SFGear::CombatEquipment(PC,3.64).Weapon;
+    TestTrue(TEXT("Bow feeds the ranged weapon line"), BowLine.bEquipped && FMath::IsNearlyEqual(BowLine.Dps,4.91) && FMath::IsNearlyEqual(BowLine.SpeedSeconds,2.8));
+    TestEqual(TEXT("Bow unequips"), Gear->ApplyUnequip(TEXT("MainHand")), ESFEquipResult::Ok);
+    const FSoftObjectPath OffDaggerPath(OffDagger);
+    TestEqual(TEXT("One hand dagger can equip off hand"), Gear->ApplyEquip(OffDaggerPath, TEXT("OffHand")), ESFEquipResult::Ok);
+    TestEqual(TEXT("Off hand dagger unequips"), Gear->ApplyUnequip(TEXT("OffHand")), ESFEquipResult::Ok);
 
     // Gathering tools are main-hand items through the same path.
     TestTrue(TEXT("Starter tools"), Gear->InitializeStarterTools());
@@ -254,6 +289,29 @@ bool FSFEquipmentLedgerTest::RunTest(const FString& Parameters)
     Tick(6);
     TestEqual(TEXT("Selected copy is worn"), Bag->EquippedItems[0].InstanceId, FString(TEXT("itm_broken")));
     TestEqual(TEXT("Selected broken copy still gives zero armour"), SFGear::Equipped(PC).Armor, 0);
+    const FSoftObjectPath ShieldPath(TEXT("/Game/Frontier/Gameplay/Pilot/DA_StarterShield.DA_StarterShield"));
+    const FSoftObjectPath BowPath(TEXT("/Game/Frontier/Gameplay/Pilot/DA_StarterBow.DA_StarterBow"));
+    Ledger->FindOrAdd(Pack->GetContainerId()).Items.Add(TEXT("item/starter_shield"), 1);
+    Ledger->FindOrAdd(Pack->GetContainerId()).Items.Add(TEXT("item/starter_bow"), 1);
+    Pack->Reconcile(); Tick(6);
+    TestEqual(TEXT("Ledger shield equip waits"), Gear->ApplyEquip(ShieldPath, TEXT("OffHand")), ESFEquipResult::Pending);
+    Tick(6);
+    TestEqual(TEXT("Ledger shield is worn"), Gear->GetEquipped(TEXT("OffHand")), ShieldPath);
+    TestEqual(TEXT("Ledger bow equip waits"), Gear->ApplyEquip(BowPath, TEXT("MainHand")), ESFEquipResult::Pending);
+    Tick(9);
+    TestTrue(TEXT("Ledger bow cleared off hand"), Gear->GetEquipped(TEXT("OffHand")).IsNull() && Gear->GetEquipped(TEXT("MainHand"))==BowPath);
+    TestEqual(TEXT("Ledger returned shield to bag"), Ledger->FindOrAdd(Pack->GetContainerId()).Items.FindRef(TEXT("item/starter_shield")), int64(1));
+    TestEqual(TEXT("Ledger bow is equipped"), Ledger->FindOrAdd(EquipmentId).Items.FindRef(TEXT("item/starter_bow")), int64(1));
+    const FSoftObjectPath RingPath(TEXT("/Game/Frontier/Gameplay/Pilot/DA_IronRing.DA_IronRing"));
+    Ledger->FindOrAdd(Pack->GetContainerId()).Items.Add(TEXT("item/iron_ring"), 2);
+    Pack->Reconcile(); Tick(6);
+    TestEqual(TEXT("First ledger ring waits"), Gear->ApplyEquip(RingPath, TEXT("Ring")), ESFEquipResult::Pending);
+    Tick(6);
+    TestEqual(TEXT("Second ledger ring waits"), Gear->ApplyEquip(RingPath, TEXT("Ring2")), ESFEquipResult::Pending);
+    Tick(6);
+    TestTrue(TEXT("Both ledger rings project"), !Gear->GetEquipped(TEXT("Ring")).IsNull() && !Gear->GetEquipped(TEXT("Ring2")).IsNull());
+    Pack->Reconcile(); Tick(6);
+    TestTrue(TEXT("Both ledger rings restore"), !Gear->GetEquipped(TEXT("Ring")).IsNull() && !Gear->GetEquipped(TEXT("Ring2")).IsNull());
     return true;
 }
 #endif
@@ -276,6 +334,8 @@ bool FSFGearStatsTest::RunTest(const FString& Parameters)
     TMap<FString, FSFGearStats> Parsed; FString Error;
     TestFalse(TEXT("Negative armour is refused"), SFGear::Parse(TEXT("{\"gear\":[{\"definition_id\":\"item/x\",\"slot\":\"Head\",\"armor\":-1,\"damage\":0}]}"), Parsed, Error));
     TestFalse(TEXT("Duplicate ids are refused"), SFGear::Parse(TEXT("{\"gear\":[{\"definition_id\":\"item/x\",\"slot\":\"Head\",\"armor\":1,\"damage\":0},{\"definition_id\":\"item/x\",\"slot\":\"Head\",\"armor\":1,\"damage\":0}]}"), Parsed, Error));
+    TestFalse(TEXT("Shield in main hand is invalid content"), SFGear::Parse(TEXT("{\"gear\":[{\"definition_id\":\"item/x\",\"slot\":\"MainHand\",\"category\":\"shield\",\"armor\":9,\"damage\":0}]}"), Parsed, Error));
+    TestFalse(TEXT("Bow without speed is invalid content"), SFGear::Parse(TEXT("{\"gear\":[{\"definition_id\":\"item/x\",\"slot\":\"MainHand\",\"category\":\"bow\",\"armor\":0,\"damage\":11,\"weapon_dps\":4.91}]}"), Parsed, Error));
     return true;
 }
 #endif

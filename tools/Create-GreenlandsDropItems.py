@@ -76,6 +76,17 @@ for item_id, (entry, is_gear) in sorted(items.items()):
                 if not library.save_loaded_asset(asset):
                     raise RuntimeError('Could not save ' + path)
                 renamed.append(path)
+        if is_gear:
+            asset = library.load_asset(path)
+            category = getattr(unreal.SFEquipmentCategory, entry['category'].upper())
+            stats = [f"+{entry[key]} {key.title()}" for key in ('armor', 'damage') if entry[key]]
+            description = ', '.join(stats) + '.'
+            if asset.get_editor_property('EquipmentCategory') != category or str(asset.get_editor_property('Description')) != description:
+                asset.set_editor_property('EquipmentCategory', category)
+                asset.set_editor_property('Description', unreal.Text(description))
+                if not library.save_loaded_asset(asset):
+                    raise RuntimeError('Could not save ' + path)
+                renamed.append(path)
         continue
     asset = tools.create_asset(name, folder, klass, factory)
     if asset is None:
@@ -88,6 +99,7 @@ for item_id, (entry, is_gear) in sorted(items.items()):
     if is_gear:
         asset.set_editor_property('UseType', unreal.SFItemUseType.EQUIP)
         asset.set_editor_property('EquipmentSlot', entry['slot'])
+        asset.set_editor_property('EquipmentCategory', getattr(unreal.SFEquipmentCategory, entry['category'].upper()))
         stats = [f"+{entry[key]} {key.title()}" for key in ('armor', 'damage') if entry[key]]
         asset.set_editor_property('Description', unreal.Text(', '.join(stats) + '.'))
     if not library.save_loaded_asset(asset):
@@ -103,5 +115,7 @@ for item_id, (entry, is_gear) in sorted(items.items()):
         raise RuntimeError('Incomplete item definition: ' + path)
     if is_gear and str(asset.get_editor_property('EquipmentSlot')) != entry['slot']:
         raise RuntimeError('Equipment slot mismatch: ' + path)
+    if is_gear and asset.get_editor_property('EquipmentCategory') != getattr(unreal.SFEquipmentCategory, entry['category'].upper()):
+        raise RuntimeError('Equipment category mismatch: ' + path)
 
 unreal.log(f'GREENLANDS_DROP_DEFINITIONS Total={len(items)} Created={len(created)} Renamed={len(renamed)} Paths={",".join(created + renamed)}')

@@ -17,12 +17,31 @@ bool SFGear::Parse(const FString& Json, TMap<FString, FSFGearStats>& Out, FStrin
     for (const TSharedPtr<FJsonValue>& Value : *Gear)
     {
         const TSharedPtr<FJsonObject> Item = Value ? Value->AsObject() : nullptr;
-        FString Id, Slot; int32 Armor = -1, Damage = -1;
+        FString Id, Slot, Category; int32 Armor = -1, Damage = -1;
         if (!Item || !Item->TryGetStringField(TEXT("definition_id"), Id) || !Item->TryGetStringField(TEXT("slot"), Slot)
             || !Item->TryGetNumberField(TEXT("armor"), Armor) || !Item->TryGetNumberField(TEXT("damage"), Damage)
+            || !Item->TryGetStringField(TEXT("category"), Category)
             || !Id.StartsWith(TEXT("item/")) || Slot.IsEmpty() || Armor < 0 || Armor > 50 || Damage < 0 || Damage > 50 || Parsed.Contains(Id))
         { Error = FString::Printf(TEXT("invalid gear entry %s"), *Id); return false; }
-        Parsed.Add(Id, FSFGearStats{FName(*Slot), Armor, Damage});
+        const TMap<FString, ESFEquipmentCategory> Categories = {
+            {TEXT("other"), ESFEquipmentCategory::Other}, {TEXT("one_hand"), ESFEquipmentCategory::OneHand},
+            {TEXT("two_hand"), ESFEquipmentCategory::TwoHand}, {TEXT("bow"), ESFEquipmentCategory::Bow},
+            {TEXT("staff"), ESFEquipmentCategory::Staff}, {TEXT("dagger"), ESFEquipmentCategory::Dagger},
+            {TEXT("shield"), ESFEquipmentCategory::Shield}, {TEXT("ring"), ESFEquipmentCategory::Ring}};
+        const ESFEquipmentCategory* Kind = Categories.Find(Category);
+        double Dps = 0, Speed = 0;
+        Item->TryGetNumberField(TEXT("weapon_dps"), Dps);
+        Item->TryGetNumberField(TEXT("speed_s"), Speed);
+        const bool bWeapon = Kind && (*Kind == ESFEquipmentCategory::OneHand || *Kind == ESFEquipmentCategory::TwoHand ||
+            *Kind == ESFEquipmentCategory::Bow || *Kind == ESFEquipmentCategory::Staff || *Kind == ESFEquipmentCategory::Dagger);
+        const bool bOneHand=Kind && (*Kind == ESFEquipmentCategory::OneHand || *Kind == ESFEquipmentCategory::Dagger);
+        if (!Kind || (bWeapon && (Dps <= 0 || Speed < 1.4 || Speed > 3.8 ||
+            (bOneHand ? Slot != TEXT("MainHand") && Slot != TEXT("OffHand") : Slot != TEXT("MainHand"))))
+            || (*Kind == ESFEquipmentCategory::Shield && Slot != TEXT("OffHand"))
+            || (*Kind == ESFEquipmentCategory::Ring && Slot != TEXT("Ring"))
+            || (!bWeapon && (Dps != 0 || Speed != 0)))
+        { Error = FString::Printf(TEXT("invalid gear category/weapon line %s"), *Id); return false; }
+        Parsed.Add(Id, FSFGearStats{FName(*Slot), Armor, Damage, *Kind, Dps, Speed});
     }
     Out = MoveTemp(Parsed);
     return true;
@@ -46,6 +65,13 @@ const FSFGearStats* SFGear::Find(const FString& DefinitionId)
     FString Base = DefinitionId;
     if (DefinitionId.StartsWith(TEXT("item/"))) { FString Slug, Grade; if (DefinitionId.Mid(5).Split(TEXT("/"), &Slug, &Grade)) { Base = TEXT("item/") + Slug; } }
     return Shipped().Find(Base);
+}
+
+ESFEquipmentCategory SFGear::Category(const USFItemDefinition* Definition)
+{
+    if (!Definition) { return ESFEquipmentCategory::Other; }
+    if (const FSFGearStats* Stats = Find(Definition->UniqueId)) { return Stats->Category; }
+    return Definition->EquipmentCategory;
 }
 
 FSFGearStats SFGear::Equipped(const AActor* Owner)
@@ -76,13 +102,12 @@ SFGear::FCombatEquipment SFGear::CombatEquipment(const AActor* Owner, double Pil
         FString Slug, Grade;
         if (Id.StartsWith(TEXT("item/")) && Id.Mid(5).Split(TEXT("/"), &Slug, &Grade))
         { Id = TEXT("item/") + Slug; }
-        if (const FSFGearStats* Stats = Find(Id)) { Result.Armor += Stats->Armor * PilotArmorUnit; }
-        if (Id == TEXT("item/iron_buckler")) { Result.bShield = true; }
-        if (Id == TEXT("item/iron_shortsword")) { Result.Weapon = {3.64, 2.0, true}; }
-        else if (Id == TEXT("item/cudgel")) { Result.Weapon = {7.0, 2.0, true}; }
-        else if (Id == TEXT("item/brigand_blade")) { Result.Weapon = {10.0, 2.0, true}; }
-        else if (Id == TEXT("item/fangtooth_dagger")) { Result.Weapon = {12.4, 1.4, true}; }
-        else if (Id == TEXT("item/captains_longsword")) { Result.Weapon = {12.4, 2.0, true}; }
+        if (const FSFGearStats* Stats = Find(Id))
+        {
+            Result.Armor += Stats->Armor * PilotArmorUnit;
+            if (Slot.SlotName == TEXT("OffHand") && Stats->Category == ESFEquipmentCategory::Shield) { Result.bShield = true; }
+            if (Slot.SlotName == TEXT("MainHand") && Stats->WeaponDps > 0) { Result.Weapon = {Stats->WeaponDps, Stats->SpeedSeconds, true}; }
+        }
     }
     return Result;
 }

@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Combat/SFCombatPart6.h"
+#include "Inventory/SFInventory.h"
 
 class AActor;
 
@@ -12,6 +13,9 @@ struct FSFGearStats
     FName Slot;
     int32 Armor = 0;
     int32 Damage = 0;
+    ESFEquipmentCategory Category = ESFEquipmentCategory::Other;
+    double WeaponDps = 0;
+    double SpeedSeconds = 0;
 };
 
 namespace SFGear
@@ -30,6 +34,7 @@ namespace SFGear
     SHATTEREDFRONTIER_API const TMap<FString, FSFGearStats>& Shipped();
     // Graded ids ("item/hide_cap/fine") share their base item's stats. Null for non-gear (tools, materials).
     SHATTEREDFRONTIER_API const FSFGearStats* Find(const FString& DefinitionId);
+    SHATTEREDFRONTIER_API ESFEquipmentCategory Category(const USFItemDefinition* Definition);
     SHATTEREDFRONTIER_API bool Parse(const FString& Json, TMap<FString, FSFGearStats>& Out, FString& Error);
     // Totals over the equipment of Owner's inventory (the player controller); zero without one.
     SHATTEREDFRONTIER_API FSFGearStats Equipped(const AActor* Owner);

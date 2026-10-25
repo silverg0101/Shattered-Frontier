@@ -21,6 +21,12 @@ enum class ESFItemUseType : uint8
     Consume,
 };
 
+UENUM(BlueprintType)
+enum class ESFEquipmentCategory : uint8
+{
+    Other, OneHand, TwoHand, Bow, Staff, Dagger, Shield, Ring
+};
+
 UCLASS(BlueprintType)
 class SHATTEREDFRONTIER_API USFItemDefinition : public UPrimaryDataAsset
 {
@@ -37,6 +43,7 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item") ESFItemUseType UseType = ESFItemUseType::None;
     // Equipment slot name (Head, MainHand, ...) for Equip items.
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item") FName EquipmentSlot = NAME_None;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item") ESFEquipmentCategory EquipmentCategory = ESFEquipmentCategory::Other;
 };
 
 USTRUCT(BlueprintType)
@@ -79,7 +86,7 @@ public:
     float GetTotalWeight() const;
 
     // Server only. Wears one unit from a bag slot; a worn item in that slot returns to the bag, refused when it does not fit.
-    bool EquipFromSlot(int32 SlotIndex);
+    bool EquipFromSlot(int32 SlotIndex, FName TargetSlot = NAME_None, bool bCommit = true);
     // Server only. Returns the worn item to the bag, refused when it does not fit.
     bool UnequipSlot(FName EquipmentSlot);
 

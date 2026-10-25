@@ -719,6 +719,7 @@ void USFGatheringPilotComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProp
     DOREPLIFETIME_CONDITION(USFGatheringPilotComponent,bRoleAssigned,COND_OwnerOnly);
     DOREPLIFETIME_CONDITION(USFGatheringPilotComponent,StationRecipes,COND_OwnerOnly);
     DOREPLIFETIME_CONDITION(USFGatheringPilotComponent,KnownRecipes,COND_OwnerOnly);
+    DOREPLIFETIME_CONDITION(USFGatheringPilotComponent,LastEquipResult,COND_OwnerOnly);
 }
 
 float USFGatheringPilotComponent::GetSkillLockCooldownRemaining(ESFGatheringSkill Skill) const
@@ -848,7 +849,7 @@ bool USFGatheringPilotComponent::TryEquipTool(bool bAxe)
 
 const TArray<FName>& USFGatheringPilotComponent::EquipmentSlots()
 {
-    static const TArray<FName> Slots={TEXT("Head"),TEXT("Chest"),TEXT("Hands"),TEXT("Legs"),TEXT("Feet"),TEXT("MainHand"),TEXT("OffHand"),TEXT("Neck"),TEXT("Ring"),TEXT("Back")};
+    static const TArray<FName> Slots={TEXT("Head"),TEXT("Chest"),TEXT("Hands"),TEXT("Legs"),TEXT("Feet"),TEXT("MainHand"),TEXT("OffHand"),TEXT("Neck"),TEXT("Ring"),TEXT("Ring2"),TEXT("Back")};
     return Slots;
 }
 
@@ -908,44 +909,68 @@ ESFEquipResult USFGatheringPilotComponent::ApplyEquip(const FSoftObjectPath& Ite
     else if (!EquipmentSlots().Contains(Slot)) { Result=ESFEquipResult::InvalidSlot; }
     else if (BagSlot==INDEX_NONE) { Result=ESFEquipResult::NotOwned; }
     else if (!Definition || Definition->UseType!=ESFItemUseType::Equip) { Result=ESFEquipResult::NotEquippable; }
-    else if (Definition->EquipmentSlot!=Slot) { Result=ESFEquipResult::WrongSlot; }
-    else if (USFBackpackComponent* Pack=(GearId(Item).IsEmpty() && GearId(GetEquipped(Slot)).IsEmpty()) ? nullptr : USFBackpackComponent::FindOrCreate(Cast<APlayerController>(GetOwner())))
+    else if (Definition->EquipmentSlot!=Slot && !(SFGear::Category(Definition)==ESFEquipmentCategory::Ring && Slot==TEXT("Ring2"))) { Result=ESFEquipResult::WrongSlot; }
+    else if (SFGear::Category(Definition)==ESFEquipmentCategory::Shield && Slot!=TEXT("OffHand")) { Result=ESFEquipResult::WrongSlot; }
+    else if (Slot==TEXT("OffHand") && !GetEquipped(TEXT("MainHand")).IsNull())
     {
-        // The ledger moves first (the old gear back to the backpack, then the new gear in); the slot follows the last commit.
-        // Anything else re-reads the ledger, which projects both containers again.
-        TWeakObjectPtr<USFGatheringPilotComponent> Weak(this);
-        const auto Resync=[Weak]() { if (auto* Self=Weak.Get()) { if (auto* P=USFBackpackComponent::FindOrCreate(Cast<APlayerController>(Self->GetOwner()))) { P->Reconcile(); } } };
-        const auto Apply=[Weak,Item,Resync](ESFBackpackOutcome Outcome)
-        {
-            USFGatheringPilotComponent* Self=Weak.Get();
-            auto* Inv=Self ? Self->GetOwner()->FindComponentByClass<USFInventoryComponent>() : nullptr;
-            const int32 Bag=Inv && Outcome==ESFBackpackOutcome::Committed ? Self->FindBagSlot(Item) : INDEX_NONE;
-            if (Bag!=INDEX_NONE && Inv->EquipFromSlot(Bag))
-            {
-                Self->GetOwner()->ForceNetUpdate();
-                if (!GearId(Item).IsEmpty()) { if (auto* P=USFBackpackComponent::FindOrCreate(Cast<APlayerController>(Self->GetOwner()))) { P->Reconcile(); } }
-                UE_LOG(LogTemp,Display,TEXT("EQUIP_COMMITTED Item=%s"),*Item.GetAssetName()); return;
-            }
-            Resync();
-        };
-        const FString NewGear=GearId(Item), OldGear=GearId(GetEquipped(Slot));
-        const auto EquipNew=[Weak,NewGear,InstanceId,Apply]()
-        {
-            USFBackpackComponent* P=Weak.IsValid() ? USFBackpackComponent::FindOrCreate(Cast<APlayerController>(Weak->GetOwner())) : nullptr;
-            if (NewGear.IsEmpty() || !P) { Apply(P ? ESFBackpackOutcome::Committed : ESFBackpackOutcome::Unavailable); } else { P->TransferEquipment(NewGear,true,Apply,InstanceId); }
-        };
-        if (OldGear.IsEmpty()) { EquipNew(); }
-        else
-        {
-            const FSFEquippedSlot* Worn=Inventory->EquippedItems.FindByPredicate([Slot](const FSFEquippedSlot& S) { return S.SlotName==Slot; });
-            Pack->TransferEquipment(OldGear,false,[EquipNew,Resync](ESFBackpackOutcome Outcome) { if (Outcome==ESFBackpackOutcome::Committed) { EquipNew(); } else { Resync(); } }, Worn ? Worn->InstanceId : FString());
-        }
-        Result=ESFEquipResult::Pending;
+        const USFItemDefinition* Main=TSoftObjectPtr<USFItemDefinition>(GetEquipped(TEXT("MainHand"))).LoadSynchronous();
+        const ESFEquipmentCategory Kind=SFGear::Category(Main);
+        if (Kind==ESFEquipmentCategory::TwoHand || Kind==ESFEquipmentCategory::Bow || Kind==ESFEquipmentCategory::Staff)
+        { Result=ESFEquipResult::OffHandBlocked; }
     }
-    // The inventory moves it atomically: the old item returns to the bag, refused when that does not fit (space or weight).
-    else { Result=Inventory->EquipFromSlot(BagSlot) ? ESFEquipResult::Ok : ESFEquipResult::NoSpace; }
-    if (Result==ESFEquipResult::Ok) { GetOwner()->ForceNetUpdate(); }
-    UE_LOG(LogTemp,Display,TEXT("EQUIP_APPLIED Slot=%s Item=%s Result=%d"),*Slot.ToString(),*Item.GetAssetName(),int32(Result));
+    if (Result==ESFEquipResult::OffHandBlocked) { LastEquipResult=Result; GetOwner()->ForceNetUpdate(); UE_LOG(LogTemp,Display,TEXT("EQUIP_APPLIED Slot=%s Item=%s Result=%d Reason=%s"),*Slot.ToString(),*Item.GetAssetName(),int32(Result),*StaticEnum<ESFEquipResult>()->GetNameStringByValue(int64(Result))); return Result; }
+    if (Result==ESFEquipResult::Disabled && bEnabled && Inventory && IsAuthoritativePilotWorld() && (!Pawn || Pawn->CombatHealth()>0)
+        && EquipmentSlots().Contains(Slot) && BagSlot!=INDEX_NONE && Definition && Definition->UseType==ESFItemUseType::Equip
+        && (Definition->EquipmentSlot==Slot || (SFGear::Category(Definition)==ESFEquipmentCategory::Ring && Slot==TEXT("Ring2"))))
+    {
+        const ESFEquipmentCategory Kind=SFGear::Category(Definition);
+        const bool bTwoHand=Kind==ESFEquipmentCategory::TwoHand || Kind==ESFEquipmentCategory::Bow || Kind==ESFEquipmentCategory::Staff;
+        const FString OffGear=bTwoHand ? GearId(GetEquipped(TEXT("OffHand"))) : FString();
+        if (!Inventory->EquipFromSlot(BagSlot,Slot,false)) { Result=ESFEquipResult::NoSpace; }
+        else if (USFBackpackComponent* Pack=(GearId(Item).IsEmpty() && GearId(GetEquipped(Slot)).IsEmpty() && OffGear.IsEmpty()) ? nullptr : USFBackpackComponent::FindOrCreate(Cast<APlayerController>(GetOwner())))
+        {
+            TWeakObjectPtr<USFGatheringPilotComponent> Weak(this);
+            const auto Resync=[Weak]() { if (auto* Self=Weak.Get()) { Self->LastEquipResult=ESFEquipResult::LedgerRejected; if (auto* P=USFBackpackComponent::FindOrCreate(Cast<APlayerController>(Self->GetOwner()))) { P->Reconcile(); } } };
+            const auto Apply=[Weak,Item,Slot,Resync](ESFBackpackOutcome Outcome)
+            {
+                USFGatheringPilotComponent* Self=Weak.Get();
+                auto* Inv=Self ? Self->GetOwner()->FindComponentByClass<USFInventoryComponent>() : nullptr;
+                const int32 Bag=Inv && Outcome==ESFBackpackOutcome::Committed ? Self->FindBagSlot(Item) : INDEX_NONE;
+                if (Bag!=INDEX_NONE && Inv->EquipFromSlot(Bag,Slot))
+                {
+                    Self->LastEquipResult=ESFEquipResult::Ok;
+                    Self->GetOwner()->ForceNetUpdate();
+                    if (auto* P=USFBackpackComponent::FindOrCreate(Cast<APlayerController>(Self->GetOwner()))) { P->Reconcile(); }
+                    UE_LOG(LogTemp,Display,TEXT("EQUIP_COMMITTED Item=%s"),*Item.GetAssetName()); return;
+                }
+                Resync();
+            };
+            const FString NewGear=GearId(Item), OldGear=GearId(GetEquipped(Slot));
+            const auto EquipNew=[Weak,NewGear,InstanceId,Apply]()
+            {
+                USFBackpackComponent* P=Weak.IsValid() ? USFBackpackComponent::FindOrCreate(Cast<APlayerController>(Weak->GetOwner())) : nullptr;
+                if (NewGear.IsEmpty() || !P) { Apply(P ? ESFBackpackOutcome::Committed : ESFBackpackOutcome::Unavailable); }
+                else { P->TransferEquipment(NewGear,true,Apply,InstanceId); }
+            };
+            const auto ClearMain=[Pack,Inventory,Slot,OldGear,EquipNew,Resync]()
+            {
+                if (OldGear.IsEmpty()) { EquipNew(); return; }
+                const FSFEquippedSlot* Worn=Inventory->EquippedItems.FindByPredicate([Slot](const FSFEquippedSlot& S) { return S.SlotName==Slot; });
+                Pack->TransferEquipment(OldGear,false,[EquipNew,Resync](ESFBackpackOutcome Outcome) { if (Outcome==ESFBackpackOutcome::Committed) { EquipNew(); } else { Resync(); } }, Worn ? Worn->InstanceId : FString());
+            };
+            if (OffGear.IsEmpty()) { ClearMain(); }
+            else
+            {
+                const FSFEquippedSlot* Off=Inventory->EquippedItems.FindByPredicate([](const FSFEquippedSlot& S) { return S.SlotName==TEXT("OffHand"); });
+                Pack->TransferEquipment(OffGear,false,[ClearMain,Resync](ESFBackpackOutcome Outcome) { if (Outcome==ESFBackpackOutcome::Committed) { ClearMain(); } else { Resync(); } }, Off ? Off->InstanceId : FString());
+            }
+            Result=ESFEquipResult::Pending;
+        }
+        else { Result=Inventory->EquipFromSlot(BagSlot,Slot) ? ESFEquipResult::Ok : ESFEquipResult::NoSpace; }
+    }
+    LastEquipResult=Result;
+    GetOwner()->ForceNetUpdate();
+    UE_LOG(LogTemp,Display,TEXT("EQUIP_APPLIED Slot=%s Item=%s Result=%d Reason=%s"),*Slot.ToString(),*Item.GetAssetName(),int32(Result),*StaticEnum<ESFEquipResult>()->GetNameStringByValue(int64(Result)));
     return Result;
 }
 
@@ -967,13 +992,15 @@ ESFEquipResult USFGatheringPilotComponent::ApplyUnequip(FName Slot)
             USFGatheringPilotComponent* Self=Weak.Get();
             auto* Inv=Self ? Self->GetOwner()->FindComponentByClass<USFInventoryComponent>() : nullptr;
             if (Inv && Outcome==ESFBackpackOutcome::Committed && Inv->UnequipSlot(Slot))
-            { Self->GetOwner()->ForceNetUpdate(); if (auto* P=USFBackpackComponent::FindOrCreate(Cast<APlayerController>(Self->GetOwner()))) { P->Reconcile(); } return; }
+            { Self->LastEquipResult=ESFEquipResult::Ok; Self->GetOwner()->ForceNetUpdate(); if (auto* P=USFBackpackComponent::FindOrCreate(Cast<APlayerController>(Self->GetOwner()))) { P->Reconcile(); } return; }
+            if (Self) { Self->LastEquipResult=ESFEquipResult::LedgerRejected; }
             if (auto* P=Self ? USFBackpackComponent::FindOrCreate(Cast<APlayerController>(Self->GetOwner())) : nullptr) { P->Reconcile(); }
         }, Worn ? Worn->InstanceId : FString());
         Result=ESFEquipResult::Pending;
     }
     else { Result=Inventory->UnequipSlot(Slot) ? ESFEquipResult::Ok : ESFEquipResult::NoSpace; }
-    if (Result==ESFEquipResult::Ok) { GetOwner()->ForceNetUpdate(); }
+    LastEquipResult=Result;
+    GetOwner()->ForceNetUpdate();
     UE_LOG(LogTemp,Display,TEXT("UNEQUIP_APPLIED Slot=%s Result=%d"),*Slot.ToString(),int32(Result));
     return Result;
 }
@@ -991,17 +1018,25 @@ void USFGatheringPilotComponent::ProjectEquipment(const TMap<FString,int64>& Equ
         return SFInventoryTransactions::ExecuteInventoryTransaction({Delta})==ESFInventoryResult::Success;
     };
     int32 Mismatches=0;
+    TMap<FString,int64> Remaining=Equipment;
     for (const FName& Slot : EquipmentSlots())
     {
         const FString Gear=GearId(GetEquipped(Slot));
-        if (!Gear.IsEmpty() && Equipment.FindRef(Gear)<=0 && !(Inventory->UnequipSlot(Slot) && Change(Gear,false))) { ++Mismatches; }
+        if (Gear.IsEmpty()) { continue; }
+        if (Remaining.FindRef(Gear)>0) { --Remaining.FindOrAdd(Gear); continue; }
+        if (!(Inventory->UnequipSlot(Slot) && Change(Gear,false))) { ++Mismatches; }
     }
-      for (const TPair<FString,int64>& Held : Equipment)
+      for (const TPair<FString,int64>& Held : Remaining)
     {
         const FSFGearStats* Stats=SFGear::Find(Held.Key);
-        if (Held.Value<=0 || !Stats || GearId(GetEquipped(Stats->Slot))==Held.Key) { continue; }
-        const int32 Bag=Change(Held.Key,true) ? FindBagSlot(FSoftObjectPath(SFStationRecipes::ItemAssetPath(Held.Key))) : INDEX_NONE;
-        if (Bag==INDEX_NONE || !Inventory->EquipFromSlot(Bag)) { ++Mismatches; }
+        if (Held.Value<=0 || !Stats) { continue; }
+        for (int64 Copy=0; Copy<Held.Value; ++Copy)
+        {
+            const FName Target=Stats->Category==ESFEquipmentCategory::Ring && !GetEquipped(TEXT("Ring")).IsNull() ? FName(TEXT("Ring2")) : Stats->Slot;
+            const int32 Bag=Change(Held.Key,true) ? FindBagSlot(FSoftObjectPath(SFStationRecipes::ItemAssetPath(Held.Key))) : INDEX_NONE;
+            if (Bag==INDEX_NONE || !Inventory->EquipFromSlot(Bag,Target))
+            { if (Bag!=INDEX_NONE) { Change(Held.Key,false); } ++Mismatches; }
+        }
       }
       for (FSFEquippedSlot& Slot : Inventory->EquippedItems)
       {
