@@ -7,7 +7,7 @@ Ported from proof/retarget.py (the 2026-10-24 hamster run):
   with creature.chain_resample, a split source bone's rotation (from its parent's) spread over its pieces;
 - the pelvis follows the source hips' offset scaled by the hind-leg length ratio, vertical bob x HEIGHT_SCALE, in place;
   (a creature's UniMate clips are made on its own rig, so its leg rotations land the paws where the source's did);
-- cleanup: tail follow-through, paws pinned on the floor while in contact (leg IK, 2-frame blend, four correction
+- cleanup: tail follow-through, the body kept from going through the floor (a collapse lands on it), paws pinned on the floor while in contact (leg IK, 2-frame blend, four correction
   passes, baked to FK), loop seam closed (looping clips). A gait plays in place, so its planted paws sweep back under
   the body at the travel speed (treadmill): each stance is pinned to the line fitted through its contact points,
   a stand's to a point;
@@ -30,6 +30,7 @@ TAIL_CLEAR = 0.3    # the tail is lifted (at tail_02) until it clears the floor 
 CONTACT_SHARE = 0.30  # planted: in the lowest 30% of the paw's height range ...
 CONTACT_M = 0.015     # ... and within 1.5 cm of its lowest point
 FLOOR_EPS = 0.002   # m: keep paws this far above the floor
+BODY_SINK = 0.005   # m: the mesh may dip this far under the floor (hoof deformation) before the body is lifted
 SINK_LIFT = 0.005   # share of the creature's length a paw may end under the floor for the whole clip to be lifted
 TREADMILL_MIN = 0.002  # share of the creature's length a stance must sweep per frame to be a gait's treadmill, not a stand
 FLIP_DEG = 90.0
@@ -346,6 +347,29 @@ def main(rigf, animalf, clip, out, outj, size_cm, height_scale):
             for kp in fc.keyframe_points: kp.co.y += dz[j]
             fc.update()
         print("RT lifted the clip (cm)", round((sunk + FLOOR_EPS) * 100, 2))
+    # the body never goes through the floor: in a collapse or a lie the mesh's lowest point (belly, side, head) is
+    # kept on it, the pelvis rising per frame by what that needs, the lift dilated 2 frames each way so it eases in
+    import numpy as np
+    meshes = [o for o in sc.objects if o.type == "MESH" and o.parent == rig]
+    dg = bpy.context.evaluated_depsgraph_get()
+    need = []
+    for i in range(N + 1):
+        sc.frame_set(i + 1)
+        low = floor
+        for o in meshes:
+            me = o.evaluated_get(dg).data
+            co = np.empty(len(me.vertices) * 3, np.float32); me.vertices.foreach_get("co", co)
+            Mw = np.array(o.matrix_world)
+            low = min(low, float((co.reshape(-1, 3) @ Mw[:3, :3].T + Mw[:3, 3])[:, 2].min()))
+        need.append(floor - low if floor - low > BODY_SINK else 0.0)
+    lifts = [max(need[idx(i + d)] if loop else need[min(max(i + d, 0), N)] for d in range(-2, 3)) for i in range(N + 1)]
+    if max(lifts) > 0:
+        fcs = [act.fcurves.find('pose.bones["pelvis"].location', index=j) for j in range(3)]
+        for k, lift in enumerate(lifts):
+            dz = RB["pelvis"].to_3x3().inverted() @ (to_arm @ Vector((0, 0, lift)))
+            for j, fc in enumerate(fcs): fc.keyframe_points[k].co.y += dz[j]
+        for fc in fcs: fc.update()
+        print("RT body lifted off the floor, most (cm)", round(max(lifts) * 100, 2), "frames", sum(1 for l in lifts if l > 0))
     # metrics, from the baked clip
     heights = {p: [] for p in PAWS}; pts = {p: [] for p in PAWS}; R = {b.name: [] for b in order}
     for i in range(N + 1):
