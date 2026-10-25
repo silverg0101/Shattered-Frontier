@@ -47,6 +47,8 @@ internal static class PlayableBootstrap
                     throw new InvalidOperationException();
                 using (var transaction = connection.BeginTransaction())
                 {
+                    // Private CREATE ROLE statements must never enter PostgreSQL statement/error logs.
+                    Execute(connection, "SET LOCAL log_statement=none; SET LOCAL log_min_error_statement=panic; SET LOCAL log_min_duration_statement=-1;", transaction);
                     Execute(connection, "REVOKE ALL ON DATABASE sf_playable FROM PUBLIC; REVOKE ALL ON SCHEMA public FROM PUBLIC;", transaction);
                     foreach (var store in Stores)
                     {
