@@ -100,8 +100,8 @@ bool CheckGuardianHealing(FAutomationTestBase& Test, const TCHAR* Id, SFStarterA
     Test.TestEqual(TEXT("ranged weapon required"), Ability->bRequiresRangedWeapon, Kit == EKit::Archery);
     if (Kit == EKit::Archery)
     {
-        Test.TestFalse(TEXT("no ranged slot cannot launch archery"), CanUseEquipment(*Ability, false, false, true));
-        Test.TestTrue(TEXT("ranged weapon permits archery"), CanUseEquipment(*Ability, false, true, true));
+        Test.TestFalse(TEXT("Archery requires an equipped bow"), CanUseEquipment(*Ability, false, false, true));
+        Test.TestTrue(TEXT("equipped bow permits Archery"), CanUseEquipment(*Ability, false, true, true));
     }
     if (Ability->bHasteCooldown)
         Test.TestTrue(TEXT("haste shortens cooldown"), SFStarterAbilities::Cooldown(*Ability, .2) < Cooldown);

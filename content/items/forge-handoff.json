@@ -170,6 +170,42 @@
       "concept_prompt": "MAIN CONCEPT: a well-maintained one-handed longsword with a straight double-edged blade and shallow fuller, slightly down-curved iron cross guard, grip bound in faded red cord, iron wheel pommel with a worn brass inlay; include a leather scabbard with iron chape in the stowed view. Follow the house style; weapon template.",
       "size_cm": { "length": 95, "width": 18, "height": 4 },
       "priority": 2
+    },
+    {
+      "item_id": "item/starter_bow",
+      "display_name": "Starter Bow",
+      "category": "weapon",
+      "slot": "main_hand",
+      "rarity": "common",
+      "route": "asset-forge",
+      "visual": "Simple elm self bow with a wrapped leather grip, plain linen string and modest horn nocks.",
+      "concept_prompt": "MAIN CONCEPT: a practical elm self bow with a worn leather grip, plain linen string and small horn nocks, made for a Greenlands bandit archer. Show the unstrung profile beside the strung bow. Follow the house style; weapon template.",
+      "size_cm": { "length": 150, "width": 12, "height": 4 },
+      "priority": 1
+    },
+    {
+      "item_id": "item/starter_staff",
+      "display_name": "Starter Staff",
+      "category": "weapon",
+      "slot": "main_hand",
+      "rarity": "common",
+      "route": "asset-forge",
+      "visual": "Straight ash quarterstaff with a leather hand wrap and plain iron ferrules at both ends.",
+      "concept_prompt": "MAIN CONCEPT: a straight ash quarterstaff with a worn leather central grip and simple iron ferrules at both ends, sturdy enough for travel and basic spellwork. Follow the house style; weapon template.",
+      "size_cm": { "length": 180, "width": 5, "height": 5 },
+      "priority": 1
+    },
+    {
+      "item_id": "item/starter_shield",
+      "display_name": "Starter Shield",
+      "category": "armor",
+      "slot": "off_hand",
+      "rarity": "uncommon",
+      "route": "asset-forge",
+      "visual": "Round wooden shield with a plain iron boss, narrow iron rim and repaired leather arm straps.",
+      "concept_prompt": "MAIN CONCEPT: a modest round wooden shield made from dark planks, with a plain iron boss and rim and repaired leather arm straps on the back. Show front, edge and back at matching scale. Follow the house style; armor template.",
+      "size_cm": { "length": 65, "width": 65, "height": 12 },
+      "priority": 1
     }
   ]
 }

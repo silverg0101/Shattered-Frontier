@@ -106,7 +106,11 @@ SFGear::FCombatEquipment SFGear::CombatEquipment(const AActor* Owner, double Pil
         {
             Result.Armor += Stats->Armor * PilotArmorUnit;
             if (Slot.SlotName == TEXT("OffHand") && Stats->Category == ESFEquipmentCategory::Shield) { Result.bShield = true; }
-            if (Slot.SlotName == TEXT("MainHand") && Stats->WeaponDps > 0) { Result.Weapon = {Stats->WeaponDps, Stats->SpeedSeconds, true}; }
+            if (Slot.SlotName == TEXT("MainHand") && Stats->WeaponDps > 0)
+            {
+                Result.Weapon = {Stats->WeaponDps, Stats->SpeedSeconds, true};
+                Result.bRangedWeapon = Stats->Category == ESFEquipmentCategory::Bow;
+            }
         }
     }
     return Result;

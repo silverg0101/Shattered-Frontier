@@ -67,6 +67,7 @@ bool FSFEquipmentWidgetTest::RunTest(const FString& Parameters)
 #include "GameFramework/WorldSettings.h"
 #include "Inventory/SFInventory.h"
 #include "Inventory/SFGear.h"
+#include "Combat/SFStarterAbilities.h"
 
 // Server-side equip validation on the real pilot inventory: slot match, ownership (only this player's bag), swap back to the bag, unequip to the
 // bag and its space rule, and the gathering tools on the main hand.
@@ -166,8 +167,11 @@ bool FSFEquipmentValidationTest::RunTest(const FString& Parameters)
     TestEqual(TEXT("Bow replaces two hand weapon"), Gear->ApplyEquip(BowPath, TEXT("MainHand")), ESFEquipResult::Ok);
     TestEqual(TEXT("Bow also blocks off hand"), Gear->ApplyEquip(ShieldPath, TEXT("OffHand")), ESFEquipResult::OffHandBlocked);
     TestTrue(TEXT("Bow occupies main hand"), Gear->GetEquipped(TEXT("MainHand"))==BowPath);
-    const auto BowLine=SFGear::CombatEquipment(PC,3.64).Weapon;
+    const auto BowEquipment=SFGear::CombatEquipment(PC,3.64);
+    const auto BowLine=BowEquipment.Weapon;
     TestTrue(TEXT("Bow feeds the ranged weapon line"), BowLine.bEquipped && FMath::IsNearlyEqual(BowLine.Dps,4.91) && FMath::IsNearlyEqual(BowLine.SpeedSeconds,2.8));
+    TestTrue(TEXT("Equipped bow permits Archery"), BowEquipment.bRangedWeapon && SFStarterAbilities::CanUseEquipment(
+        *SFStarterAbilities::Find(TEXT("quick_shot")), BowEquipment.bShield, BowEquipment.bRangedWeapon, false));
     TestEqual(TEXT("Bow unequips"), Gear->ApplyUnequip(TEXT("MainHand")), ESFEquipResult::Ok);
     const FSoftObjectPath OffDaggerPath(OffDagger);
     TestEqual(TEXT("One hand dagger can equip off hand"), Gear->ApplyEquip(OffDaggerPath, TEXT("OffHand")), ESFEquipResult::Ok);

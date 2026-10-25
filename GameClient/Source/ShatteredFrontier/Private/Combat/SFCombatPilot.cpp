@@ -11,6 +11,7 @@
 #include "Combat/SFCombatPart6.h"
 #include "Combat/SFCrowdControlComponent.h"
 #include "Inventory/SFGear.h"
+#include "Inventory/SFInventory.h"
 #include "Framework/SFGameMode.h"
 #include "Combat/SFCombatPilotRewards.h"
 #include "Characters/SFE1Character.h"
@@ -1396,9 +1397,34 @@ void ASFGameMode::TickGreenlandsAbilityNetcheck()
         const float GateBefore = Driver->GetStamina();
         TryPlayerCombatAbility(Driver, TEXT("quick_shot"));
         if (!FMath::IsNearlyEqual(Driver->GetStamina(), GateBefore, .05f))
-        { UE_LOG(LogTemp, Error, TEXT("ABILITY_NETCHECK_FAILED RangedGate")); GreenlandsAbilityStage = 99; return; }
-        GreenlandsAbilityStage = 8;
-        UE_LOG(LogTemp, Display, TEXT("ABILITY_NETCHECK_PASS Shadow=1 RangedGate=1 Mana=%.2f"), Driver->GetMana());
+        { UE_LOG(LogTemp, Error, TEXT("ABILITY_NETCHECK_FAILED NoBow")); GreenlandsAbilityStage = 99; return; }
+        GreenlandsAbilityStage = 8; GreenlandsAbilityStageAt = Now;
+    }
+    else if (GreenlandsAbilityStage == 8 && Now - GreenlandsAbilityStageAt >= 1.7)
+    {
+        auto* Inventory = Driver->GetController()->FindComponentByClass<USFInventoryComponent>();
+        ASFPilotBoar* Boar = nullptr;
+        for (const auto& Slot : ActiveBoars)
+        { if (Slot.Key.StartsWith(TEXT("boar_farm_edge:")) && IsValid(Slot.Value.Get()) && Slot.Value->Health() > 0)
+          { Boar = Slot.Value.Get(); break; } }
+        if (!Inventory || !Boar)
+        { UE_LOG(LogTemp, Error, TEXT("ABILITY_NETCHECK_FAILED BowSetup")); GreenlandsAbilityStage = 99; return; }
+        Driver->SetActorLocation(Grounded(GetWorld(), Boar->GetActorLocation() + FVector(180, 0, 0),
+            Driver->GetCapsuleComponent()->GetScaledCapsuleHalfHeight()), false, nullptr, ETeleportType::TeleportPhysics);
+        Driver->SetActorRotation((Boar->GetActorLocation() - Driver->GetActorLocation()).Rotation());
+        Driver->SetCombatTarget(Boar);
+        FSFEquippedSlot Bow;
+        Bow.SlotName = TEXT("MainHand");
+        Bow.Item = TSoftObjectPtr<USFItemDefinition>(FSoftObjectPath(
+            TEXT("/Game/Frontier/Gameplay/Pilot/DA_StarterBow.DA_StarterBow")));
+        Inventory->EquippedItems.Add(Bow); // Test fixture: exercise the live server equipment snapshot.
+        const float Before = Driver->GetStamina();
+        TryPlayerCombatAbility(Driver, TEXT("quick_shot"), Boar);
+        if (!SFGear::CombatEquipment(Driver->GetController(), CapturedSettings->DevPilotArmorUnit).bRangedWeapon ||
+            !(Driver->GetStamina() < Before))
+        { UE_LOG(LogTemp, Error, TEXT("ABILITY_NETCHECK_FAILED EquippedBow")); GreenlandsAbilityStage = 99; return; }
+        GreenlandsAbilityStage = 9;
+        UE_LOG(LogTemp, Display, TEXT("ABILITY_NETCHECK_PASS Shadow=1 NoBow=1 EquippedBow=1 Mana=%.2f"), Driver->GetMana());
     }
 }
 
@@ -2072,6 +2098,13 @@ void ASFGameMode::TryPlayerCombatAbility(ASFE1Character* Attacker, FName Ability
     if (!bSelf && !bFriendly && IsSafe(Attacker->GetActorLocation())) return;
     const auto* Energy = GetDefault<USFCombatEnergySettings>();
     const auto Equipment = SFGear::CombatEquipment(Attacker->GetController(), CapturedSettings->DevPilotArmorUnit);
+    if (Ability->bRequiresRangedWeapon && !Equipment.bRangedWeapon)
+    {
+        UE_LOG(LogTemp, Display, TEXT("COMBAT_ABILITY_REFUSED Ability=%s Reason=EquipBow"), *AbilityId.ToString());
+        if (ASFPlayerController* PC = Cast<ASFPlayerController>(Attacker->GetController()))
+        { PC->ClientPilotHit(TEXT("Equip a bow to use Archery.")); }
+        return;
+    }
     const FString GoverningSkill = SFStarterAbilities::GoverningSkill(*Ability,
         SFCombatPart6::WeaponSkill(Equipment.Weapon));
     if (!CanUseEquipment(*Ability, Equipment.bShield, Equipment.bRangedWeapon,

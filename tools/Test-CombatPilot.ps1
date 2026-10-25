@@ -73,7 +73,7 @@ $null = New-Item -ItemType Directory -Path $root
 if ($Services) { . (Join-Path $PSScriptRoot 'InventoryLedgerHostFixture.ps1') }
 $fx = @{}
 $owned = [Collections.Generic.List[Diagnostics.Process]]::new()
-$scope = if ($GreenlandsAbilityNetcheck) { 'Greenlands two-client starter kit activation and ranged gate' }
+$scope = if ($GreenlandsAbilityNetcheck) { 'Greenlands two-client starter kit and equipped bow requirement' }
     elseif ($AttributeSnapshotNetcheck) { 'Greenlands two-client authoritative attribute restore and combat' }
     elseif ($GreenlandsArcherNetcheck) { 'Greenlands two-client bandit archer ranged hit and replicated tracer' }
     elseif ($GreenlandsUnstuckNetcheck) { 'Greenlands two-client Unstuck, token replay, and restart cooldown' }
@@ -520,7 +520,8 @@ INSERT INTO exchange.wallets(owner_id,balance) VALUES ('chr_dev_alpha',5000),('c
             $serverText -notmatch 'ABILITY_NETCHECK_HYBRID_MANA' -or
             $serverText -notmatch 'ABILITY_NETCHECK_MAGIC' -or
             $serverText -notmatch 'ABILITY_NETCHECK_SHADOW' -or
-            $serverText -notmatch 'ABILITY_NETCHECK_PASS' -or
+            $serverText -notmatch 'COMBAT_ABILITY_REFUSED Ability=quick_shot Reason=EquipBow' -or
+            $serverText -notmatch 'ABILITY_NETCHECK_PASS Shadow=1 NoBow=1 EquippedBow=1' -or
             [regex]::Matches($serverText, 'COMBAT_ATTRIBUTE_SNAPSHOT Archetype=fighter Level=1').Count -lt 2) {
             throw 'Two-client starter ability evidence incomplete.'
         }
