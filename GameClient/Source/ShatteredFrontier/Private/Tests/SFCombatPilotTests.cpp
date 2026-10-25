@@ -238,6 +238,16 @@ bool FSFCombatPart6Test::RunTest(const FString& Parameters)
     const FResult Blocked = Resolve(BoarHit, Rolls);
     TestEqual(TEXT("Shield block outcome"), Blocked.Outcome, EOutcome::Block);
     TestTrue(TEXT("Shield removes post-mitigation damage"), Blocked.Damage < Open);
+    TestTrue(TEXT("Real blocked hit grants shield practice"), GrantsShieldPractice(BoarHit, Blocked));
+    TestFalse(TEXT("Unblocked hit grants no shield practice"), GrantsShieldPractice(BoarHit, Resolve(BoarHit, FDraws{.5, .5, .5, .5, .5})));
+    FAttack SpellHit; SpellHit.RawDamage = 30; SpellHit.AttackerLevel = Boar.Level;
+    SpellHit.bSpell = true; SpellHit.bPhysical = false; SpellHit.bHasResistanceSnapshot = true;
+    SpellHit.Resistance = 10;
+    TestTrue(TEXT("Hostile spell mitigation grants resist practice"),
+        GrantsResistPractice(SpellHit, Resolve(SpellHit, Rolls)));
+    SpellHit.Resistance = 0;
+    TestFalse(TEXT("Unmitigated spell grants no resist practice"),
+        GrantsResistPractice(SpellHit, Resolve(SpellHit, Rolls)));
     BoarHit.Absorb = 100;
     const FResult Absorbed = Resolve(BoarHit, Rolls);
     TestEqual(TEXT("Ward fully absorbs the blocked hit"), Absorbed.Outcome, EOutcome::Absorb);

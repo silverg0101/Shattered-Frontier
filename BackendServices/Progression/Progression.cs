@@ -202,7 +202,7 @@ public sealed class CharacterProgression
             string skill = receipt.SkillId ?? "";
             if (receipt.Kind == ReceiptKind.GatheringHarvest ? skill is not (ProgressionRules.Logging or ProgressionRules.Mining) :
                 receipt.Kind == ReceiptKind.CraftConvert ? skill is not (ProgressionRules.Smithing or ProgressionRules.Carpentry or ProgressionRules.Leatherworking) :
-                !ProgressionRules.CombatTrackSkills.Contains(skill, StringComparer.Ordinal))
+                !ProgressionRules.CombatSkills.Contains(skill, StringComparer.Ordinal))
                 throw new ArgumentException("Receipt skill does not match accepted action");
             if (receipt.Difficulty is < 0 or > 1100 || !double.IsFinite(receipt.ActionSeconds) || receipt.ActionSeconds <= 0) throw new ArgumentOutOfRangeException(nameof(receipt));
             if (receipt.Kind == ReceiptKind.CombatPractice && (receipt.EnemyLevel is < 1 or > 200 || !receipt.XpEligible))
@@ -247,7 +247,8 @@ public sealed class CharacterProgression
                 if (sample < chance && hourGains < ProgressionRules.HourlyGainLimit(value, settings) &&
                     skills.Values.Sum() < ProgressionRules.GlobalSkillCap &&
                     (receipt.Kind == ReceiptKind.CraftConvert ? value : receipt.Kind == ReceiptKind.CombatPractice ?
-                        ProgressionRules.CombatTrackSkills.Sum(k => skills[k]) : skills[ProgressionRules.Logging] + skills[ProgressionRules.Mining]) < ProgressionRules.TrackSkillCap)
+                        id == ProgressionRules.Stealth ? value : ProgressionRules.CombatTrackSkills.Sum(k => skills[k]) :
+                        skills[ProgressionRules.Logging] + skills[ProgressionRules.Mining]) < ProgressionRules.TrackSkillCap)
                 { skills[id]++; gains.Add((now, id)); gain = 1; }
             }
             double weight = Math.Clamp(receipt.ActionSeconds / settings.AttemptWeightSeconds, .2, 3);

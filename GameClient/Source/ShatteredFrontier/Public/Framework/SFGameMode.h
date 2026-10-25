@@ -55,6 +55,9 @@ public:
     // Combat (SFCombatPilot.cpp)
     SFCombatResolution::FResult ResolveCombatAttack(AActor* Attacker,
         const SFCombatResolution::FAttack& Attack, double FixtureAvoidanceDraw = -1);
+    void TryHiddenMovementPractice(ASFE1Character* Character, ASFPilotBoar* Observer, double Now);
+    void RecordIncomingCombatPractice(ASFPilotBoar* Source, ASFE1Character* Victim,
+        const SFCombatResolution::FAttack& Attack, const SFCombatResolution::FResult& Result);
     void TryPlayerAttack(ASFE1Character* Attacker, AActor* SelectedTarget = nullptr);
     void TryPlayerCombatAbility(ASFE1Character* Attacker, FName AbilityId,
         AActor* SelectedTarget = nullptr, bool bCastComplete = false, FVector CastOrigin = FVector::ZeroVector,
@@ -181,6 +184,7 @@ private:
     TMap<FString, TWeakObjectPtr<ASFPilotBoar>> ActiveBoars;
     TMap<FString, TArray<double>> LeashEvadesByGroupAndCharacter;
     TMap<TWeakObjectPtr<ASFE1Character>, double> PlayerNextSwing;
+    TMap<TWeakObjectPtr<ASFE1Character>, double> NextStealthPracticeAt;
     TMap<uint64, int32> RendGenerations;
     TMap<uint64, int32> RenewGenerations;
     TMap<uint64, TArray<double>> WeakPoisonExpiries;

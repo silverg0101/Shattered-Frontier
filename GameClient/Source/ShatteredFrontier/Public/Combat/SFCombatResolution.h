@@ -50,7 +50,14 @@ namespace SFCombatResolution
         EOutcome Outcome = EOutcome::Hit;
         int32 Damage = 0;
         double Absorbed = 0;
+        double ResistancePrevented = 0;
     };
+
+    inline bool GrantsShieldPractice(const FAttack& Attack, const FResult& Result)
+    { return Attack.RawDamage > 0 && (Result.Outcome == EOutcome::Block || Result.Outcome == EOutcome::CritBlock); }
+
+    inline bool GrantsResistPractice(const FAttack& Attack, const FResult& Result)
+    { return Attack.bSpell && !Attack.bPhysical && Attack.RawDamage > 0 && Result.ResistancePrevented > 0; }
 
     inline FResult Resolve(const FAttack& Attack, const FDraws& Draws)
     {
@@ -76,6 +83,7 @@ namespace SFCombatResolution
         const bool bCrit = Attack.bCanCrit && Draws.Crit < FMath::Clamp(Attack.CritChance, 0.0, Attack.CritCap);
         if (bCrit) { Damage *= FMath::Clamp(Attack.CritDamage, 1.0, Attack.CritDamageCap); }
 
+        double ResistancePrevented = 0;
         if (Attack.AttackerLevel > 0)
         {
             if (Attack.bPhysical && Attack.bHasArmorSnapshot)
@@ -87,10 +95,12 @@ namespace SFCombatResolution
             }
             else if (!Attack.bPhysical && Attack.bHasResistanceSnapshot)
             {
+                const double BeforeResistance = Damage;
                 const double Resistance = FMath::Max(0.0, Attack.Resistance) *
                     (1.0 - FMath::Clamp(Attack.MagicPenetrationFraction, 0.0, Attack.MagicPenetrationCap));
                 const double Reduction = Resistance / (Resistance + Attack.ResistK * Attack.AttackerLevel);
                 Damage *= 1.0 - FMath::Min(Attack.ResistReductionCap, Reduction);
+                ResistancePrevented = BeforeResistance - Damage;
             }
         }
 
@@ -105,7 +115,7 @@ namespace SFCombatResolution
         Damage = FMath::Max(0.0, Damage - FMath::Max(0.0, Attack.Absorb));
         const int32 Rounded = bFullyAbsorbed ? 0 : (Damage > 0 ? FMath::Max(1, FMath::FloorToInt(Damage + 0.5)) : 0);
         return { bFullyAbsorbed ? EOutcome::Absorb : bBlock ? (bCrit ? EOutcome::CritBlock : EOutcome::Block) :
-            bCrit ? EOutcome::Crit : EOutcome::Hit, Rounded, Absorbed };
+            bCrit ? EOutcome::Crit : EOutcome::Hit, Rounded, Absorbed, ResistancePrevented };
     }
 
     inline const TCHAR* Name(EOutcome Outcome)

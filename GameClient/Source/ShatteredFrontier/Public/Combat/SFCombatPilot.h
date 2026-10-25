@@ -171,6 +171,10 @@ public:
     float ArcherPreferredRangeMetres = 10.0f;
     UPROPERTY(Config, EditAnywhere, Category="Pilot Archer", meta=(ClampMin="1.0", ClampMax="4.0", Units="s", ToolTip="Bandit archer bow auto-attack interval; adopted at next zone start."))
     float ArcherSwingSeconds = 2.8f;
+    UPROPERTY(Config, EditAnywhere, Category="Combat Practice", meta=(ClampMin="0.5", ClampMax="10.0", Units="s", ToolTip="Minimum time between hidden movement practice records; adopted at next zone start."))
+    float StealthPracticeIntervalSeconds = 2.0f;
+    UPROPERTY(Config, EditAnywhere, Category="Combat Practice", meta=(ClampMin="1.0", ClampMax="10.0", Units="cm/s", ToolTip="Minimum hidden movement speed for practice; adopted at next zone start."))
+    float StealthPracticeMinimumSpeedCmPerSecond = 5.0f;
     UPROPERTY(Config, EditAnywhere, Category="Pilot Targeting", meta=(ClampMin="10", ClampMax="60", Units="m"))
     float TabTargetRangeMetres = 30.0f;
     UPROPERTY(Config, EditAnywhere, Category="Pilot Targeting", meta=(ClampMin="10", ClampMax="100", Units="m"))

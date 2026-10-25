@@ -288,6 +288,8 @@ bool USFCombatPilotSettings::Validate(FString& Error) const
         !FMath::IsWithinInclusive(ArcherPreferredRangeMetres, ArcherRetreatRangeMetres, 20.0f) ||
         ArcherPreferredRangeMetres >= ArcherRangeMetres ||
         !FMath::IsWithinInclusive(ArcherSwingSeconds, 1.0f, 4.0f) ||
+        !FMath::IsWithinInclusive(StealthPracticeIntervalSeconds, 0.5f, 10.0f) ||
+        !FMath::IsWithinInclusive(StealthPracticeMinimumSpeedCmPerSecond, 1.0f, 10.0f) ||
         !FMath::IsWithinInclusive(TabTargetRangeMetres, 10.0f, 60.0f) ||
         !FMath::IsWithinInclusive(TabTargetDropRangeMetres, TabTargetRangeMetres, 100.0f) ||
         !FMath::IsWithinInclusive(TabTargetConeDegrees, 60.0f, 360.0f) ||
@@ -668,6 +670,8 @@ void ASFPilotBoar::Tick(float DeltaSeconds)
             auto* Candidate = Cast<ASFE1Character>(It->Get()->GetPawn());
             const FVector Toward = Candidate ? Candidate->GetActorLocation()-GetActorLocation() : FVector::ZeroVector;
             const double Distance = Toward.Size2D();
+            if (IsValid(Candidate) && Candidate->HasCombatStealth(Now) && ThreatTarget())
+            { Mode->TryHiddenMovementPractice(Candidate, this, Now); }
             // A linkdead (draining) character stays visible but is never chosen as prey (INT-05).
             if (IsValid(Candidate) && Candidate->CombatHealth() > 0 && !Candidate->HasCombatStealth(Now) &&
                 !USFCharacterSessionComponent::IsLinkdead(It->Get()) &&
@@ -2139,7 +2143,7 @@ int32 ASFGameMode::ApplyStarterHeal(ASFE1Character* Healer, ASFE1Character* Subj
 }
 
 static void RecordPilotCombatPractice(ASFE1Character* Attacker, ASFPilotBoar* Target,
-    const FString& SkillId, double Seconds, bool bSuccess, const FString& AbilityId)
+    const FString& SkillId, double Seconds, bool bSuccess, const FString& AbilityId, int32 Difficulty = -1)
 {
     if (!IsValid(Attacker) || !IsValid(Target) || Target->IsLeashing() || Target->GetCreatureId().IsEmpty()) return;
     const auto Npc = SFCombatPart6::Npc(Target->GetCreatureId());
@@ -2150,7 +2154,43 @@ static void RecordPilotCombatPractice(ASFE1Character* Attacker, ASFPilotBoar* Ta
     const FIntVector Cell(FMath::FloorToInt(Location.X / 10000.0), FMath::FloorToInt(Location.Y / 10000.0), 0);
     const uint64 Context = uint64(HashCombine(GetTypeHash(AbilityId),
         HashCombine(GetTypeHash(Target->GetCreatureId()), GetTypeHash(Cell))));
-    Quest->RecordCombatPractice(SkillId, Npc.Skill, Seconds, Context, bSuccess, Npc.Level);
+    Quest->RecordCombatPractice(SkillId, Difficulty >= 0 ? Difficulty : Npc.Skill,
+        Seconds, Context, bSuccess, Npc.Level);
+}
+
+void ASFGameMode::TryHiddenMovementPractice(ASFE1Character* Character, ASFPilotBoar* Observer, double Now)
+{
+    if (!IsValid(Character) || !IsValid(Observer) || !CapturedSettings ||
+        !SFCombatPart6::Active(GetWorld()) || !Character->HasCombatStealth(Now) ||
+        !Observer->ThreatTarget() || Character->CombatHealth() <= 0 || Observer->Health() <= 0 ||
+        Observer->IsLeashing() || IsSafe(Character->GetActorLocation()) ||
+        USFCharacterSessionComponent::IsLinkdead(Character->GetController()) ||
+        USFCharacterSessionComponent::IsRestoring(Character->GetController()) ||
+        Character->GetVelocity().Size2D() < CapturedSettings->StealthPracticeMinimumSpeedCmPerSecond ||
+        Now < NextStealthPracticeAt.FindRef(Character)) return;
+    const auto Npc = SFCombatPart6::Npc(Observer->GetCreatureId());
+    const double Radius = SFCombatPilotRules::AggroRadiusMetres(CapturedSettings->BoarAggroRadiusMetres,
+        Npc.Level, Character->CombatCharacterLevel(), CapturedSettings->BoarAggroMinimumMetres,
+        CapturedSettings->BoarAggroMaximumBonusMetres);
+    if (FVector::Dist2D(Character->GetActorLocation(), Observer->GetActorLocation()) > Radius * 100.0) return;
+    NextStealthPracticeAt.Add(Character, Now + CapturedSettings->StealthPracticeIntervalSeconds);
+    RecordPilotCombatPractice(Character, Observer, TEXT("skill/stealth"),
+        CapturedSettings->StealthPracticeIntervalSeconds, true, TEXT("hidden_movement"),
+        SFCombatPart6::SkillReference(Npc.Level));
+}
+
+void ASFGameMode::RecordIncomingCombatPractice(ASFPilotBoar* Source, ASFE1Character* Victim,
+    const SFCombatResolution::FAttack& Attack, const SFCombatResolution::FResult& Result)
+{
+    if (!IsValid(Source) || !IsValid(Victim) || !SFCombatPart6::Active(GetWorld()) ||
+        Source->Health() <= 0 || Victim->CombatHealth() <= 0 ||
+        IsSafe(Source->GetActorLocation()) || IsSafe(Victim->GetActorLocation())) return;
+    if (SFCombatResolution::GrantsShieldPractice(Attack, Result))
+        RecordPilotCombatPractice(Victim, Source, TEXT("skill/shield_defense"),
+            Source->CombatSwingSeconds(), true, TEXT("shield_block"));
+    if (SFCombatResolution::GrantsResistPractice(Attack, Result))
+        RecordPilotCombatPractice(Victim, Source, TEXT("skill/resist_magic"),
+            Source->CombatSwingSeconds(), true, TEXT("hostile_spell"));
 }
 
 void ASFGameMode::ApplyStarterWeakPoison(ASFE1Character* Source, ASFPilotBoar* Victim,
@@ -2746,6 +2786,7 @@ void ASFGameMode::TryBoarAttack(ASFPilotBoar* Boar, ASFE1Character* Victim)
     Attack.bCanParry = Attack.bFrontArc;
     if (!bPart6) { Attack.PilotFlatArmor = SFGear::Equipped(Victim->GetController()).Armor; }
     const auto Result = ResolveCombatAttack(Boar, Attack);
+    RecordIncomingCombatPractice(Boar, Victim, Attack, Result);
     if (Result.Absorbed > 0) { Victim->ConsumeCombatAbsorb(Result.Absorbed); }
     if (Result.Damage > 0) { HitPlayer(Boar, Victim, Result.Damage, true); }
 }

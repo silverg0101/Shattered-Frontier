@@ -58,6 +58,33 @@ for (var value = combat.Skills[ProgressionRules.Swordsmanship]; value < Progress
 Check(combat.Skills[ProgressionRules.Swordsmanship] == ProgressionRules.UnspecializedCap &&
     combat.Apply(strike with { ReceiptId = "at-cap", Difficulty = 925 }).SkillGain == 0,
     "combat skill respects unspecialized cap");
+foreach (var (name, skill) in new[] { ("stealth", ProgressionRules.Stealth),
+    ("shield", ProgressionRules.ShieldDefense), ("resist", ProgressionRules.ResistMagic) })
+{
+    var id = "passive-" + name;
+    var passive = new CharacterProgression(id, combatClock, () => 0);
+    var practice = strike with { ReceiptId = id + "-gain", CharacterId = id,
+        SkillId = skill, Difficulty = 25, ContextHash = 42 };
+    Check(passive.Apply(practice).SkillGain == 1 && passive.Skills[skill] == 1,
+        name + " real hostile practice gains through combat receipt");
+    var restored = new CharacterProgression(id, combatClock, () => 0, snapshot:
+        System.Text.Json.JsonSerializer.Deserialize<ProgressionSnapshot>(
+            System.Text.Json.JsonSerializer.Serialize(passive.Snapshot()))!);
+    Check(restored.Skills[skill] == 1 && restored.Apply(practice).SkillGain == 0,
+        name + " gain and replay fence persist");
+    var capped = new CharacterProgression(id + "-cap", combatClock, () => 0,
+        initialSkills: new Dictionary<string, int> { [skill] = ProgressionRules.UnspecializedCap });
+    Check(capped.Apply(practice with { ReceiptId = id + "-cap", CharacterId = id + "-cap",
+        Difficulty = 925 }).SkillGain == 0, name + " respects skill cap");
+    var trivialPassive = new CharacterProgression(id + "-trivial", combatClock, () => 0,
+        initialSkills: new Dictionary<string, int> { [skill] = 200 });
+    Check(trivialPassive.Apply(practice with { ReceiptId = id + "-trivial", CharacterId = id + "-trivial",
+        Difficulty = 0 }).SkillGain == 0, name + " rejects trivial difficulty");
+    var grayPassive = new CharacterProgression(id + "-gray", combatClock, () => 0,
+        initialXp: CharacterProgression.TotalFor(12));
+    Check(grayPassive.Apply(practice with { ReceiptId = id + "-gray", CharacterId = id + "-gray" }).SkillGain == 0,
+        name + " rejects gray attacker");
+}
 Near(ProgressionRules.DifficultyFactor(-150), .216, .001, "trivial boundary");
 Near(ProgressionRules.DifficultyFactor(25), 1, 1e-9, "optimal difficulty");
 Near(ProgressionRules.GainChance(620, 660, 2.5, true, 1.925, 1, 1, defaults), .01727, .00002, "worked example A");
