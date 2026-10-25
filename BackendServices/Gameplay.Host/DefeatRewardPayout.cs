@@ -22,7 +22,7 @@ internal sealed class DefeatRewardPayout(PostgresInventoryLedgerStore ledgerStor
             throw new GameplayRejectedException("Invalid defeat reward request.", StatusCode.InvalidArgument);
         var operationId = $"defeat:{defeat.Id.Length}:{defeat.Id}:{defeat.RecipientCharacterId}";
         var eligible = BoarEligibility.CanGrant(defeat);
-        var quantity = eligible ? BoarRewardService.Roll(defeat.Id, table) : 0;
+        var quantity = eligible ? BoarRewardService.Roll(defeat.Id + ":" + defeat.RecipientCharacterId, table) : 0;
         using (var connection = new NpgsqlConnection(connectionString))
         {
             connection.Open();

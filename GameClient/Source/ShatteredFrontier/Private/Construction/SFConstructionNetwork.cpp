@@ -2642,7 +2642,10 @@ FString ASFGameMode::InitNewPlayer(APlayerController* NewPlayerController, const
     // Development fixture until DEC-04: a stable character across server restarts for the claim runner. Honoured only in a
     // development build, in the admitted pilot world, with the server's -SFDevIdentity flag; never an identity path elsewhere.
 #if !UE_BUILD_SHIPPING && !UE_BUILD_TEST
-    if (IsAdmitted() && FParse::Param(FCommandLine::Get(),TEXT("SFDevIdentity")) && USFBackpackComponent::IsValidDevName(Name))
+    const bool bPersonalLootFixture = GetWorld() &&
+        GetWorld()->GetOutermost()->GetName() == TEXT("/Game/Frontier/Maps/Sandbox/SB_PersonalLoot") &&
+        FParse::Param(FCommandLine::Get(), TEXT("PersonalLootScenario"));
+    if ((IsAdmitted() || bPersonalLootFixture) && FParse::Param(FCommandLine::Get(),TEXT("SFDevIdentity")) && USFBackpackComponent::IsValidDevName(Name))
     {
         USFBackpackComponent::AssignDevIdentity(NewPlayerController,Name);
         if (APlayerState* State = NewPlayerController ? NewPlayerController->GetPlayerState<APlayerState>() : nullptr)

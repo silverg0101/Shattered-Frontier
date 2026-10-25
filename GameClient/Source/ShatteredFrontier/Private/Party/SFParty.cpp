@@ -328,11 +328,12 @@ void ASFPlayerController::TickPartyScenario()
     if (!IsLocalController() || GetNetMode() != NM_Client || !GetWorld()) { return; }
     if (FParse::Param(FCommandLine::Get(), TEXT("PartyXpScenario")))
     {
+        const bool bPersonalLoot = FParse::Param(FCommandLine::Get(), TEXT("PersonalLootScenario"));
         int32 ScenarioRole = 0;
-        if (!FParse::Value(FCommandLine::Get(), TEXT("PartyXpScenarioRole="), ScenarioRole) || ScenarioRole < 1 || ScenarioRole > 3) { return; }
+        if (!FParse::Value(FCommandLine::Get(), TEXT("PartyXpScenarioRole="), ScenarioRole) || ScenarioRole < 1 || ScenarioRole > (bPersonalLoot ? 2 : 3)) { return; }
         const double Time = GetWorld()->GetTimeSeconds();
         if (Time < PartyScenarioNextAt || PartyScenarioStep == 3) { return; }
-        if (PartyView.Num() == 3)
+        if (PartyView.Num() == (bPersonalLoot ? 2 : 3))
         {
             PartyScenarioStep = 3;
             UE_LOG(LogTemp, Display, TEXT("PARTY_XP_READY Role=%d Members=%d"), ScenarioRole, PartyView.Num());
@@ -342,7 +343,7 @@ void ASFPlayerController::TickPartyScenario()
         if (ScenarioRole == 1)
         {
             if (PartyView.IsEmpty()) { SFPartyInvite(TEXT("beta")); PartyScenarioNextAt = Time + 2; }
-            else if (PartyView.Num() == 2) { SFPartyInvite(TEXT("gamma")); PartyScenarioNextAt = Time + 2; }
+            else if (!bPersonalLoot && PartyView.Num() == 2) { SFPartyInvite(TEXT("gamma")); PartyScenarioNextAt = Time + 2; }
         }
         else if (PartyInvites.Contains(TEXT("alpha")))
         { SFPartyAccept(TEXT("alpha")); PartyScenarioNextAt = Time + 2; }

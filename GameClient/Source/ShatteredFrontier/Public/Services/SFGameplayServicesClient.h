@@ -74,11 +74,12 @@ struct FSFGameplayRequest
 {
     ESFGameplayRpc Rpc = ESFGameplayRpc::GetCharacterState;
     FString OperationId;          // also Rewards.defeat_event_id and Progression.source_receipt_id
-    FString CharacterId;          // killer/recipient, actor, owner
+    FString CharacterId;          // recipient, actor, owner
     TArray<uint8> AppearancePacket;  // CreateCharacter: CharacterAppearance v2 bytes
     FString ContainerId;
     int64 ExpectedContainerRevision = 0;
     // Rewards
+    FString KillerCharacterId;
     bool bKillerProtected = false, bBoarProtected = false;
     FString TableId;
     // Progression

@@ -251,7 +251,7 @@ void FSFGrpcGameplayTransport::Send(const FSFGameplayRequest& Q, float DeadlineS
     case ESFGameplayRpc::GrantDefeatReward:
     {
         sf::rewards::v1::GrantDefeatRewardRequest M;
-        M.set_defeat_event_id(Utf8(Q.OperationId)); M.set_killer_character_id(Utf8(Q.CharacterId)); M.set_recipient_character_id(Utf8(Q.CharacterId));
+        M.set_defeat_event_id(Utf8(Q.OperationId)); M.set_killer_character_id(Utf8(Q.KillerCharacterId)); M.set_recipient_character_id(Utf8(Q.CharacterId));
         M.set_container_id(Utf8(Q.ContainerId)); M.set_expected_container_revision(Q.ExpectedContainerRevision);
         M.set_killer_in_protected_town(Q.bKillerProtected); M.set_boar_in_protected_town(Q.bBoarProtected); M.set_table_id(Utf8(Q.TableId));
         auto* Call = new TCall<sf::rewards::v1::RewardReceipt>();

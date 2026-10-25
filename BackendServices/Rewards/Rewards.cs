@@ -74,7 +74,7 @@ public static class BoarEligibility
 {
     public static bool CanGrant(DefeatEvent defeat) =>
         !string.IsNullOrWhiteSpace(defeat.KillerCharacterId) &&
-        defeat.KillerCharacterId == defeat.RecipientCharacterId &&
+        !string.IsNullOrWhiteSpace(defeat.RecipientCharacterId) &&
         !defeat.KillerInProtectedTown && !defeat.BoarInProtectedTown;
 }
 
@@ -83,7 +83,7 @@ public sealed class BoarRewardService
     private readonly ShatteredFrontier.InventoryLedger.InventoryLedger ledger;
     private readonly LootTable table;
     private readonly object gate = new();
-    private readonly Dictionary<string, (DefeatEvent Event, RewardOutcome Outcome)> decisions = new(StringComparer.Ordinal);
+    private readonly Dictionary<(string EventId, string RecipientId), (DefeatEvent Event, RewardOutcome Outcome)> decisions = new();
     public const string SourceCode = "loot_drop";
 
     public BoarRewardService(ShatteredFrontier.InventoryLedger.InventoryLedger ledger, LootTable table)
@@ -109,7 +109,8 @@ public sealed class BoarRewardService
             throw new ArgumentException("Defeat identity, container and revision are required.");
         lock (gate)
         {
-            if (decisions.TryGetValue(defeat.Id, out var prior))
+            var key = (defeat.Id, defeat.RecipientCharacterId);
+            if (decisions.TryGetValue(key, out var prior))
             {
                 if (prior.Event != defeat) throw new InvalidOperationException("Conflicting defeat event ID reuse.");
                 return prior.Outcome;
@@ -118,13 +119,14 @@ public sealed class BoarRewardService
             if (!BoarEligibility.CanGrant(defeat)) outcome = new(RewardDecision.Ineligible, null, SourceCode);
             else
             {
-                var quantity = Roll(defeat.Id, table);
+                var quantity = Roll(defeat.Id + ":" + defeat.RecipientCharacterId, table);
                 if (quantity == 0) throw new RewardContentException("Boar table must grant an item.");
-                var receipt = ledger.Grant(defeat.Id, defeat.ContainerId, defeat.ExpectedRevision,
+                var operationId = $"defeat:{defeat.Id.Length}:{defeat.Id}:{defeat.RecipientCharacterId}";
+                var receipt = ledger.Grant(operationId, defeat.ContainerId, defeat.ExpectedRevision,
                     "item/boar_hide", quantity, SourceCode, defeat.Id);
                 outcome = new(RewardDecision.Granted, receipt, SourceCode);
             }
-            decisions.Add(defeat.Id, (defeat, outcome));
+            decisions.Add(key, (defeat, outcome));
             return outcome;
         }
     }

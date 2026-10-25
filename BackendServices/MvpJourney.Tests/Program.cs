@@ -50,11 +50,11 @@ Run(() => journey.Craft("nails", "chr_ada", "recipe/iron_nails"), r => Practice(
 Run(() => journey.Craft("wall-bundle", "chr_ada", "recipe/wall_material_bundle"), r => Practice(r, ProgressionRules.Smithing));
 Run(() => journey.Claim("claim", "chr_ada", "clm_ada", new Point(900, 900)), r => Check(r.Claim?.Accepted == true, "claim placed"));
 Run(() => journey.PlaceWall("wall", "chr_ada", "clm_ada"), r => Check(r.Progress?.Accepted == true, "wall objective"));
-int expectedHides = BoarRewardService.Roll("boar", journey.BoarLoot);
+int expectedHides = BoarRewardService.Roll("boar:chr_ada", journey.BoarLoot);
 Run(() => journey.DefeatBoar("boar", "chr_ada"), r =>
 {
     Check(r.Progress?.Completed == true && r.Progress.Grants.Count == 1, "one quest reward");
-    Check(r.Items?.OperationId == "boar" && r.Items.Changes.Single(c => c.DefinitionId == "item/boar_hide").Delta == expectedHides,
+    Check(r.Items?.OperationId == "defeat:4:boar:chr_ada" && r.Items.Changes.Single(c => c.DefinitionId == "item/boar_hide").Delta == expectedHides,
         "hide grant comes from deterministic loot roll");
     var defeat = r.SkillResults?.Single() ?? throw new Exception("missing defeat practice");
     int xp = (int)Math.Round(ProgressionRules.XpToNext(1) / 150d, MidpointRounding.AwayFromZero);

@@ -170,7 +170,7 @@ private:
     TSet<FString> PendingDeathReports;
     TSet<FString> RewardedDeaths;
     TSet<FString> CreditedXpDeaths;
-    void RetryDefeatReward(const FString& DeathId, const FString& ServiceEventId, const FString& CharacterId,
+    void RetryDefeatReward(const FString& DeathId, const FString& ServiceEventId, const FString& KillerId, const FString& CharacterId,
         const FString& ContainerId, bool bKillerSafe, bool bBoarSafe, TWeakObjectPtr<APlayerController> Controller);
     int32 NextBoarSerial = 0;
     FString SlotStatePath;

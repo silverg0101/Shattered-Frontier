@@ -1158,11 +1158,12 @@ void ASFE1Character::TickCombatScenario()
         int32 ScenarioRole = 0;
         FParse::Value(FCommandLine::Get(), TEXT("CombatGroupRole="), ScenarioRole);
         const bool bPartyXp = FParse::Param(FCommandLine::Get(), TEXT("PartyXpScenario"));
+        const bool bPersonalLoot = FParse::Param(FCommandLine::Get(), TEXT("PersonalLootScenario"));
         ASFPilotBoar* Boar = nullptr;
         double NearestDistance = TNumericLimits<double>::Max();
         for (TActorIterator<ASFPilotBoar> It(GetWorld()); It; ++It)
         {
-            if (bPartyXp && (It->GroupId() != TEXT("boar_farm_edge") || It->SlotIndex() != 0)) { continue; }
+            if (bPartyXp && (It->GroupId() != (bPersonalLoot ? TEXT("personal_loot_sandbox") : TEXT("boar_farm_edge")) || It->SlotIndex() != 0)) { continue; }
             const double Distance = FVector::Dist2D(GetActorLocation(), It->GetActorLocation());
             if (It->Health() > 0 && Distance < NearestDistance) { Boar = *It; NearestDistance = Distance; }
         }
@@ -1197,7 +1198,7 @@ void ASFE1Character::TickCombatScenario()
         if (!Boar || NearestDistance > 300.0) { return; }
         auto* PC = Cast<ASFPlayerController>(Controller);
         if (!PC) { return; }
-        if (bPartyXp && (FParse::Param(FCommandLine::Get(), TEXT("PartyXpHoldAttack")) || PC->PartyMemberCount() != 3)) { return; }
+        if (bPartyXp && (FParse::Param(FCommandLine::Get(), TEXT("PartyXpHoldAttack")) || PC->PartyMemberCount() != (bPersonalLoot ? 2 : 3))) { return; }
         const FVector Aim = (Boar->GetActorLocation() - GetActorLocation()).GetSafeNormal2D();
         if (FVector::DotProduct(Controller->GetControlRotation().Vector().GetSafeNormal2D(), Aim) < 0.9)
         { Controller->SetControlRotation(Aim.Rotation()); return; }

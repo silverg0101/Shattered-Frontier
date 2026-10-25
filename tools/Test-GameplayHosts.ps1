@@ -1,5 +1,5 @@
 [CmdletBinding()]
-param([Parameter(Mandatory)][string]$EvidenceRoot, [switch]$RecipesOnly, [switch]$AppearanceOnly, [switch]$GatheringOnly, [switch]$ProgressionOnly, [switch]$GroupOnly)
+param([Parameter(Mandatory)][string]$EvidenceRoot, [switch]$RecipesOnly, [switch]$AppearanceOnly, [switch]$GatheringOnly, [switch]$ProgressionOnly, [switch]$GroupOnly, [switch]$RewardsOnly)
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 $repo = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
@@ -72,7 +72,7 @@ try {
     [void](Invoke-Checked 'icacls.exe' @($private,'/inheritance:r','/grant:r',"${account}:(OI)(CI)F"))
     $listener = [Net.Sockets.TcpListener]::new([Net.IPAddress]::Loopback,0); $listener.Start(); $port = $listener.LocalEndpoint.Port; $listener.Stop()
     @{run=$run;data=$data;port=$port} | ConvertTo-Json | Set-Content (Join-Path $private 'owner.json')
-    $projects = $(if ($GroupOnly) { @('Group') } elseif ($RecipesOnly -or $AppearanceOnly -or $GatheringOnly -or $ProgressionOnly) { @('Progression') } else { @('Rewards','Progression','Housing') }) |
+    $projects = $(if ($GroupOnly) { @('Group') } elseif ($RewardsOnly) { @('Rewards') } elseif ($RecipesOnly -or $AppearanceOnly -or $GatheringOnly -or $ProgressionOnly) { @('Progression') } else { @('Rewards','Progression','Housing') }) |
         ForEach-Object { Join-Path $repo "BackendServices/Gameplay.Host.Tests/$_/$_.Host.Tests.csproj" }
     $buildOutput = (Join-Path $private 'build') + [IO.Path]::DirectorySeparatorChar
     foreach ($project in $projects) {
@@ -152,6 +152,25 @@ try {
         }
         if (-not $ready) { throw 'Gameplay group host restart timeout.' }
         $results.Add((Invoke-Checked $dotnet @($groupDll,'group-restart') @{ GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$connection; SF_GAMEPLAY_TOKEN=$token }))
+    } elseif ($RewardsOnly) {
+        $rewardDll = Join-Path $buildOutput 'Rewards.Host.Tests.dll'
+        $currentStep = 'rewards wire'
+        $results.Add((Invoke-Checked $dotnet @($rewardDll,'rewards') @{
+            GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$connection; SF_GAMEPLAY_TOKEN=$token
+        }))
+        Stop-Process -Id $hostProcess.Id -Force; $hostProcess.WaitForExit(10000) | Out-Null
+        $currentStep = 'rewards restart'
+        $hostProcess = Start-Process -FilePath $dotnet -ArgumentList @($hostDll) -PassThru -WindowStyle Hidden -RedirectStandardOutput (Join-Path $private 'host-rewards-restart.out') -RedirectStandardError (Join-Path $private 'host-rewards-restart.err')
+        $ready = $false
+        for ($i=0; $i -lt 100; $i++) {
+            if ($hostProcess.HasExited) { throw 'Gameplay reward host exited after restart.' }
+            if ((Test-Path (Join-Path $private 'host-rewards-restart.out')) -and (Get-Content (Join-Path $private 'host-rewards-restart.out') -Raw) -match 'GAMEPLAY_HOST_READY') { $ready = $true; break }
+            Start-Sleep -Milliseconds 100
+        }
+        if (-not $ready) { throw 'Gameplay reward host restart timeout.' }
+        $results.Add((Invoke-Checked $dotnet @($rewardDll,'rewards-replay') @{
+            GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$connection; SF_GAMEPLAY_TOKEN=$token
+        }))
     } elseif ($ProgressionOnly) {
         $currentStep = 'progression wire'
         $results.Add((Invoke-Checked $dotnet @($journeyDll,'progression') @{

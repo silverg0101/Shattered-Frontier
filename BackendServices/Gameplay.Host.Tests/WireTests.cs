@@ -682,10 +682,12 @@ if (mode == "rewards")
     ledger.CreateContainer(new ContainerSpec("ctn_rewards_second", OwnerKind.Character, "chr_rewards_second", ContainerKind.Backpack, 100));
     var second = client.GrantDefeatReward(new RewardPb.GrantDefeatRewardRequest
     {
-        DefeatEventId = request.DefeatEventId, KillerCharacterId = "chr_rewards_second", RecipientCharacterId = "chr_rewards_second",
+        DefeatEventId = request.DefeatEventId, KillerCharacterId = "chr_rewards", RecipientCharacterId = "chr_rewards_second",
         ContainerId = "ctn_rewards_second", ExpectedContainerRevision = 0, TableId = request.TableId
     }, headers, deadline: Deadline());
-    Check(second.Granted && second.LedgerOperationId != first.LedgerOperationId, "Recipient replay key is not distinct.");
+    Check(second.Granted && second.LedgerOperationId != first.LedgerOperationId &&
+        ledger.Read("ctn_rewards_second").Quantities["item/boar_hide"] == second.Quantity,
+        "Shared kill did not grant a separate personal reward.");
     request.KillerInProtectedTown = true;
     Code(() => client.GrantDefeatReward(request, headers, deadline: Deadline()), StatusCode.AlreadyExists);
     request.DefeatEventId = "defeat/bad-table"; request.TableId = "loot/unknown";

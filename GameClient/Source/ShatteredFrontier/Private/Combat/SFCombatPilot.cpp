@@ -735,9 +735,10 @@ void ASFGameMode::StartCombat()
     const bool bUnstuckSandbox = MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_Unstuck");
     const bool bSpiritReleaseSandbox = MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_SpiritRelease");
     const bool bResurrectionAcceptSandbox = MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_ResurrectionAccept");
+    const bool bPersonalLootSandbox = MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_PersonalLoot");
     bRespawnSandbox = MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_Respawn");
     bCompanionSandbox = GetNetMode() != NM_Client &&
-        (MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_Companions") || bEvadeSandbox || bThreatSandbox || bTauntSandbox || bAggroSandbox || bMemorySandbox || bRegenSandbox || bRestRegenSandbox || bFallSandbox || bAssistSandbox || bRespawnSandbox || bAutoAttackSandbox || bDodgeSandbox || bUnstuckSandbox || bSpiritReleaseSandbox || bResurrectionAcceptSandbox);
+        (MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_Companions") || bEvadeSandbox || bThreatSandbox || bTauntSandbox || bAggroSandbox || bMemorySandbox || bRegenSandbox || bRestRegenSandbox || bFallSandbox || bAssistSandbox || bRespawnSandbox || bAutoAttackSandbox || bDodgeSandbox || bUnstuckSandbox || bSpiritReleaseSandbox || bResurrectionAcceptSandbox || bPersonalLootSandbox);
     if (bCompanionSandbox)
     {
         CapturedSettings = GetDefault<USFCombatPilotSettings>();
@@ -762,7 +763,8 @@ void ASFGameMode::StartCombat()
                 bDodgeSandbox ? TEXT("SF_DodgeSandboxWildlife") :
                 bSpiritReleaseSandbox ? TEXT("SF_SpiritReleaseSandboxWildlife") :
                 bResurrectionAcceptSandbox ? TEXT("SF_ResurrectionAcceptSandboxWildlife") :
-                bRespawnSandbox ? TEXT("SF_RespawnSandboxWildlife") : TEXT("SF_CompanionSandboxWildlife");
+                bRespawnSandbox ? TEXT("SF_RespawnSandboxWildlife") :
+                bPersonalLootSandbox ? TEXT("SF_PersonalLootSandboxWildlife") : TEXT("SF_CompanionSandboxWildlife");
             if (!It->ActorHasTag(Tag)) { continue; }
             if (bRespawnSandbox) { RespawnSandboxPoints.Add(It->GetActorTransform()); }
             It->Initialize(this, bEvadeSandbox ? TEXT("evade_sandbox") :
@@ -777,9 +779,10 @@ void ASFGameMode::StartCombat()
                 bDodgeSandbox ? TEXT("dodge_sandbox") :
                 bSpiritReleaseSandbox ? TEXT("spirit_release_sandbox") :
                 bResurrectionAcceptSandbox ? TEXT("resurrection_accept_sandbox") :
-                bRespawnSandbox ? TEXT("respawn_sandbox") : TEXT("companions_sandbox"), Slot++, SandboxArea,
+                bRespawnSandbox ? TEXT("respawn_sandbox") :
+                bPersonalLootSandbox ? TEXT("personal_loot_sandbox") : TEXT("companions_sandbox"), Slot++, SandboxArea,
                 CapturedSettings->BoarHealth, ++NextBoarSerial,
-                bMemorySandbox || bRespawnSandbox || bAutoAttackSandbox || bDodgeSandbox || bSpiritReleaseSandbox || bResurrectionAcceptSandbox || (bAssistSandbox && It->ActorHasTag(TEXT("SF_AssistDefensive"))));
+                bMemorySandbox || bRespawnSandbox || bAutoAttackSandbox || bDodgeSandbox || bSpiritReleaseSandbox || bResurrectionAcceptSandbox || bPersonalLootSandbox || (bAssistSandbox && It->ActorHasTag(TEXT("SF_AssistDefensive"))));
         }
         if (bRespawnSandbox)
         {
@@ -1747,9 +1750,9 @@ int32 ASFGameMode::RewardKill(const FString& DeathId, const FVector& BoarAt, ASF
     if (!CapturedSettings || !HasAuthority()) { return 0; }
     const bool bProtected = IsSafe(BoarAt) || !IsValid(Killer) || IsSafe(Killer->GetActorLocation());
     auto* KillerController = IsValid(Killer) ? Cast<APlayerController>(Killer->GetController()) : nullptr;
-    if (!bProtected && KillerController && !CreditedXpDeaths.Contains(DeathId))
+    TArray<APlayerController*> Eligible;
+    if (!bProtected && KillerController)
     {
-        TArray<APlayerController*> Eligible;
         const FSFPartyModel::FParty* Party = PartyModel.FindParty(KillerController->GetUniqueID());
         const float RadiusCm = FMath::Clamp(GetDefault<USFPartySettings>()->KillXpRadiusMeters, 1.0f, 200.0f) * 100.0f;
         for (auto It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
@@ -1761,7 +1764,7 @@ int32 ASFGameMode::RewardKill(const FString& DeathId, const FVector& BoarAt, ASF
                 Character->CombatHealth() > 0 && FVector::Dist(Character->GetActorLocation(), BoarAt) <= RadiusCm))
             { Eligible.Add(Player); }
         }
-        if (!Eligible.IsEmpty())
+        if (!Eligible.IsEmpty() && !CreditedXpDeaths.Contains(DeathId))
         {
             int32 ReferenceLevel = 1;
             for (APlayerController* Player : Eligible)
@@ -1776,23 +1779,34 @@ int32 ASFGameMode::RewardKill(const FString& DeathId, const FVector& BoarAt, ASF
     {
         bool bSeen = false; RewardedDeaths.Add(DeathId, &bSeen);
         if (bSeen) { return 0; }
-        USFBackpackComponent* Backpack = USFBackpackComponent::FindOrCreate(KillerController);
-        const bool bKillerSafe = !IsValid(Killer) || IsSafe(Killer->GetActorLocation()), bBoarSafe = IsSafe(BoarAt);
+        USFBackpackComponent* KillerBackpack = USFBackpackComponent::FindOrCreate(KillerController);
+        const FString KillerId = KillerBackpack ? KillerBackpack->GetCharacterId() : FString();
+        const bool bBoarSafe = IsSafe(BoarAt);
         // The process nonce prevents a restarted server's slot serials from reusing a durable defeat ID.
         static const FString Epoch = FGuid::NewGuid().ToString(EGuidFormats::Digits);
-        RetryDefeatReward(DeathId, Epoch + TEXT(":") + DeathId, Backpack ? Backpack->GetCharacterId() : FString(),
-            Backpack ? Backpack->GetContainerId() : FString(), bKillerSafe, bBoarSafe, KillerController);
+        for (APlayerController* Recipient : Eligible)
+        {
+            USFBackpackComponent* Backpack = USFBackpackComponent::FindOrCreate(Recipient);
+            const ASFE1Character* Character = Cast<ASFE1Character>(Recipient->GetPawn());
+            RetryDefeatReward(DeathId, Epoch + TEXT(":") + DeathId, KillerId,
+                Backpack ? Backpack->GetCharacterId() : FString(), Backpack ? Backpack->GetContainerId() : FString(),
+                !Character || IsSafe(Character->GetActorLocation()), bBoarSafe, Recipient);
+        }
         return 0;
     }
-    const int32 Hides = SFCombatPilotRewards::HidesFor(RewardedDeaths, DeathId, bProtected, CapturedSettings->HidesPerBoar);
-    AActor* Bag = IsValid(Killer) ? Killer->GetController() : nullptr;
-    const bool bGranted = Hides > 0 && SFCombatPilotRewards::GrantHides(Bag, Hides);
+    int32 Granted = 0;
+    for (APlayerController* Recipient : Eligible)
+    {
+        const FString RecipientDeath = DeathId + TEXT(":") + FString::FromInt(Recipient->GetUniqueID());
+        const int32 Hides = SFCombatPilotRewards::HidesFor(RewardedDeaths, RecipientDeath, false, CapturedSettings->HidesPerBoar);
+        if (Hides > 0 && SFCombatPilotRewards::GrantHides(Recipient, Hides)) { Granted += Hides; }
+    }
     UE_LOG(LogTemp, Display, TEXT("COMBAT_PILOT_REWARD Death=%s Hides=%d Granted=%d Total=%d"),
-        *DeathId, Hides, bGranted, SFCombatPilotRewards::CountHides(Bag));
-    return bGranted ? Hides : 0;
+        *DeathId, Granted, Granted > 0, SFCombatPilotRewards::CountHides(KillerController));
+    return Granted;
 }
 
-void ASFGameMode::RetryDefeatReward(const FString& DeathId, const FString& ServiceEventId, const FString& CharacterId,
+void ASFGameMode::RetryDefeatReward(const FString& DeathId, const FString& ServiceEventId, const FString& KillerId, const FString& CharacterId,
     const FString& ContainerId, bool bKillerSafe, bool bBoarSafe, TWeakObjectPtr<APlayerController> Controller)
 {
     USFBackpackComponent* Backpack = Controller.IsValid() ? USFBackpackComponent::FindOrCreate(Controller.Get()) : nullptr;
@@ -1803,9 +1817,9 @@ void ASFGameMode::RetryDefeatReward(const FString& DeathId, const FString& Servi
         {
             FTimerHandle Retry;
             GetWorldTimerManager().SetTimer(Retry, FTimerDelegate::CreateWeakLambda(this,
-                [WeakMode = TWeakObjectPtr<ASFGameMode>(this), DeathId, ServiceEventId, CharacterId, ContainerId,
+                [WeakMode = TWeakObjectPtr<ASFGameMode>(this), DeathId, ServiceEventId, KillerId, CharacterId, ContainerId,
                  bKillerSafe, bBoarSafe, Controller]()
-                { if (ASFGameMode* Mode = WeakMode.Get()) Mode->RetryDefeatReward(DeathId, ServiceEventId, CharacterId, ContainerId, bKillerSafe, bBoarSafe, Controller); }), 3.0f, false);
+                { if (ASFGameMode* Mode = WeakMode.Get()) Mode->RetryDefeatReward(DeathId, ServiceEventId, KillerId, CharacterId, ContainerId, bKillerSafe, bBoarSafe, Controller); }), 3.0f, false);
         }
         return;
     }
@@ -1815,10 +1829,10 @@ void ASFGameMode::RetryDefeatReward(const FString& DeathId, const FString& Servi
     auto Receipt = MakeShared<FSFGameplayResponse>();
     FSFBackpackMutation Mutation; Mutation.Label = TEXT("defeat_reward"); Mutation.OperationId = ServiceEventId;
     Mutation.bRetryStale = false;
-    Mutation.Run = [Receipt, ServiceEventId, RecipientId, RecipientContainer, bKillerSafe, bBoarSafe](const FString&, int64 Expected,
+    Mutation.Run = [Receipt, ServiceEventId, KillerId, RecipientId, RecipientContainer, bKillerSafe, bBoarSafe](const FString&, int64 Expected,
         TFunction<void(ESFBackpackOutcome, int64)> Report)
     {
-        FSFGameplayRequest Q = SFCombatPilotRewards::BuildDefeatRequest(ServiceEventId, RecipientId,
+        FSFGameplayRequest Q = SFCombatPilotRewards::BuildDefeatRequest(ServiceEventId, KillerId, RecipientId,
             RecipientContainer, Expected, bKillerSafe, bBoarSafe);
         USFBackpackComponent::Services()->Call(Q, [Receipt, Report](const FSFGameplayResponse& R)
         {
@@ -1830,7 +1844,7 @@ void ASFGameMode::RetryDefeatReward(const FString& DeathId, const FString& Servi
         });
     };
     Mutation.Finished = [WeakMode = TWeakObjectPtr<ASFGameMode>(this), Receipt, DeathId, ServiceEventId,
-        RecipientId, RecipientContainer, bKillerSafe, bBoarSafe, Controller, Weak = TWeakObjectPtr<USFBackpackComponent>(Backpack)](ESFBackpackOutcome Outcome)
+        KillerId, RecipientId, RecipientContainer, bKillerSafe, bBoarSafe, Controller, Weak = TWeakObjectPtr<USFBackpackComponent>(Backpack)](ESFBackpackOutcome Outcome)
     {
         ASFGameMode* Mode = WeakMode.Get(); if (!Mode) return;
         const bool bGranted = Outcome == ESFBackpackOutcome::Committed && Receipt->bGranted;
@@ -1844,15 +1858,16 @@ void ASFGameMode::RetryDefeatReward(const FString& DeathId, const FString& Servi
         }
         if (bGranted)
         {
-            if (USFBackpackComponent* Owner = Weak.Get()) { Owner->ApplyToBag({{Receipt->DefinitionId, Receipt->Quantity}}); }
+            // The host may replay a completed intent after a restart; project the ledger snapshot.
+            if (USFBackpackComponent* Owner = Weak.Get()) { Owner->Reconcile(); }
         }
         else if (Outcome == ESFBackpackOutcome::Unavailable || Outcome == ESFBackpackOutcome::Stale)
         {
             UE_LOG(LogTemp, Warning, TEXT("COMBAT_PILOT_REWARD_HELD Death=%s Code=%d"), *DeathId, Receipt->GrpcCode);
             FTimerHandle Retry;
             Mode->GetWorldTimerManager().SetTimer(Retry, FTimerDelegate::CreateWeakLambda(Mode,
-                [WeakMode, DeathId, ServiceEventId, RecipientId, RecipientContainer, bKillerSafe, bBoarSafe, Controller]()
-                { if (ASFGameMode* M = WeakMode.Get()) M->RetryDefeatReward(DeathId, ServiceEventId, RecipientId, RecipientContainer, bKillerSafe, bBoarSafe, Controller); }), 3.0f, false);
+                [WeakMode, DeathId, ServiceEventId, KillerId, RecipientId, RecipientContainer, bKillerSafe, bBoarSafe, Controller]()
+                { if (ASFGameMode* M = WeakMode.Get()) M->RetryDefeatReward(DeathId, ServiceEventId, KillerId, RecipientId, RecipientContainer, bKillerSafe, bBoarSafe, Controller); }), 3.0f, false);
         }
     };
     Backpack->Enqueue(MoveTemp(Mutation));
@@ -1863,6 +1878,8 @@ void ASFGameMode::BoarDied(ASFPilotBoar* Boar, ASFE1Character* Killer)
     if (!bPilotActive || !IsValid(Boar)) { return; }
     if (bCompanionSandbox)
     {
+        if (GetWorld()->GetOutermost()->GetName() == TEXT("/Game/Frontier/Maps/Sandbox/SB_PersonalLoot"))
+        { RewardKill(Boar->DeathId(), Boar->GetActorLocation(), Killer); }
         if (bRespawnSandbox)
         {
             int32 PlayersInArea = 0;

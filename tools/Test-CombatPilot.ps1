@@ -27,7 +27,9 @@ if ($GreenlandsDeathNetcheck -and (-not $Services -or $Clients -ne 2 -or $Map -n
 if ($RestartMidDeath -and -not $GreenlandsDeathNetcheck) { throw 'RestartMidDeath requires GreenlandsDeathNetcheck.' }
 if ($SpawnOnly -and (-not $Services -or -not $ServerExe)) { throw '-SpawnOnly requires -Services and -ServerExe.' }
 if ($PartyScenario -and ($Clients -ne 3 -or $Services -or $TargetScenario -or $SpawnOnly)) { throw '-PartyScenario requires -Clients 3 without services or other scenarios.' }
-if ($PartyXpScenario -and ($Clients -ne 3 -or -not $Services -or $PartyScenario -or $TargetScenario -or $SpawnOnly)) { throw '-PartyXpScenario requires -Clients 3 -Services.' }
+if ($PartyXpScenario -and (-not $Services -or $PartyScenario -or $TargetScenario -or $SpawnOnly -or
+    -not (($Clients -eq 3 -and $Map -eq '/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook') -or
+          ($Clients -eq 2 -and $Map -eq '/Game/Frontier/Maps/Sandbox/SB_PersonalLoot')))) { throw '-PartyXpScenario requires three Silverbrook clients or two SB_PersonalLoot clients with -Services.' }
 if ($Clients -gt 1 -and -not $PartyScenario -and (-not $Services -or $TargetScenario)) { throw 'Group combat requires -Services and does not combine with -TargetScenario.' }
 $requiredInputs = @($editor,$project,$ServerExe) | Where-Object { $_ }
 if (-not $Services) { $requiredInputs += @($bridge,$sdk) }
@@ -43,7 +45,7 @@ if ($Services) { . (Join-Path $PSScriptRoot 'InventoryLedgerHostFixture.ps1') }
 $fx = @{}
 $owned = [Collections.Generic.List[Diagnostics.Process]]::new()
 $scope = if ($GreenlandsDeathNetcheck) { "Greenlands two-client durable boar death and $DeathResolution" }
-    elseif ($PartyXpScenario) { 'Three-client party: server restart, two in-range kill XP recipients, out-of-range exclusion and killer-only loot' }
+    elseif ($PartyXpScenario) { 'Three-client party: server restart, two in-range personal loot and XP recipients, out-of-range exclusion' }
     elseif ($PartyScenario) { 'Three clients: invite, decline, accept, leader handoff, kick, leave and party HUD' }
     elseif ($SpawnOnly) { 'Packaged dedicated server, Gameplay.Host, five boars in each authored group' }
     elseif ($Clients -gt 1) { "$Clients clients, one boar, one mid-fight reconnect, owner targeting and durable killer reward" }
@@ -160,6 +162,7 @@ try {
     if ($GreenlandsDeathNetcheck) { $serverFlags += "-DeathResolution=$DeathResolution" }
     if ($PartyScenario) { $serverFlags += '-SFDevIdentity' }
     if ($PartyXpScenario) { $serverFlags += '-PartyXpScenario' }
+    if ($PartyXpScenario -and $Clients -eq 2) { $serverFlags += '-PersonalLootScenario' }
     if ($Clients -gt 3) { $serverFlags += '-CombatGroupCapacitySlots' }
     if ($Clients -gt 1 -and -not $PartyScenario -and -not $PartyXpScenario) {
         $csvDir = Join-Path $root 'server-csv'
@@ -173,6 +176,33 @@ try {
         $serverEnv = @{ SF_INVENTORY_LEDGER_TOKEN=$fx.token; SF_GAMEPLAY_TOKEN=$gameplayToken }
         Invoke-WithEnv $serverEnv { $script:server = Start-Owned 'server' $url $serverFlags }
     } else { $server = Start-Owned 'server' $url $serverFlags }
+    if ($PartyXpScenario -and $Clients -eq 2) {
+        Wait-Log $server 'server' 'COMBAT_SANDBOX_READY Map=/Game/Frontier/Maps/Sandbox/SB_PersonalLoot Boars=1'
+        foreach ($role in 1..2) {
+            $identity = @('alpha','beta')[$role - 1]
+            $null = Start-Owned "client$role" ("127.0.0.1:$Port`?SFDevCharacter=$identity") @('-game','-CombatGroupScenario','-PartyXpScenario','-PersonalLootScenario',"-PartyXpScenarioRole=$role","-CombatGroupRole=$role")
+        }
+        foreach ($role in 1..2) {
+            $process = @($owned | Where-Object { $_.Id -eq (@($result.runs | Where-Object name -eq "client$role")[0].pid) })[0]
+            Wait-Log $process "client$role" "PARTY_XP_READY Role=$role Members=2"
+        }
+        Wait-Log $server 'server' 'COMPANION_SANDBOX_BOAR_DEAD Slot=0' 90
+        $rows = ''
+        for ($attempt = 0; $attempt -lt 50; $attempt++) {
+            $rows = Invoke-LedgerSql $fx "SELECT string_agg(recipient_id,',' ORDER BY recipient_id) FROM inventory.defeat_reward_intents WHERE state='Complete'" $fx.db
+            if ($rows -eq 'chr_dev_alpha,chr_dev_beta') { break }
+            Start-Sleep -Milliseconds 200
+        }
+        if ($rows -ne 'chr_dev_alpha,chr_dev_beta') { throw "Personal loot recipients incorrect: $rows" }
+        foreach ($identity in @('alpha','beta')) {
+            $view = Get-LedgerView $fx "ctn_dev_$identity"
+            $amount = [int]$view.items['item/boar_hide']
+            if ($amount -lt 2 -or $amount -gt 3) { throw "Personal loot missing for $identity`: $amount" }
+        }
+        $result.status = 'Passed'
+        $result.lootRecipients = $rows
+        return
+    }
     Wait-Log $server 'server' 'COMBAT_PILOT_READY Boars=10'
     if ($PartyXpScenario) {
         $names = @('alpha','beta','gamma')
@@ -219,8 +249,16 @@ try {
         $leaderAfter = Invoke-LedgerSql $fx 'SELECT leader_character_id FROM "group".parties WHERE state=''active''' $fx.db
         if ($leaderAfter -ne 'chr_dev_alpha') { throw "Durable leader changed across restart: $leaderAfter" }
         $hides = 0
-        foreach ($identity in $names) { $view = Get-LedgerView $fx "ctn_dev_$identity"; $hides += [int]$view.items['item/boar_hide'] }
-        if ($hides -lt 2 -or $hides -gt 9) { throw "Killer-only hide total incorrect: $hides" }
+        foreach ($identity in @('alpha','beta')) {
+            $view = Get-LedgerView $fx "ctn_dev_$identity"
+            $amount = [int]$view.items['item/boar_hide']
+            if ($amount -lt 2 -or $amount -gt 3) { throw "Personal hides missing for $identity`: $amount" }
+            $hides += $amount
+        }
+        $farBag = Get-LedgerView $fx 'ctn_dev_gamma'
+        if ([int]$farBag.items['item/boar_hide'] -ne 0) { throw 'Out-of-range gamma received personal loot.' }
+        $grantRows = Invoke-LedgerSql $fx "SELECT string_agg(recipient_id,',' ORDER BY recipient_id) FROM inventory.defeat_reward_intents WHERE state='Complete'" $fx.db
+        if ($grantRows -ne 'chr_dev_alpha,chr_dev_beta') { throw "Durable loot recipients incorrect: $grantRows" }
         $result.status = 'Passed'
         $result.xpRecipients = $xpRows
         $result.hidesTotal = $hides
