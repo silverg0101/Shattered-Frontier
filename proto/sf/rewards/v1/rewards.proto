@@ -73,6 +73,9 @@ message DropLootRequest {
   int64 backpack_revision = 4; string definition_id = 5; int64 quantity = 6;
   string instance_id = 7; string zone_id = 8;
   double x_cm = 9; double y_cm = 10; double z_cm = 11; string mesh_path = 12;
+  LootMeshBounds mesh_bounds = 13;
+  double scale_x = 14; double scale_y = 15; double scale_z = 16;
+  double pitch = 17; double yaw = 18; double roll = 19;
 }
 
 message CreateSharedDefeatDropRequest {

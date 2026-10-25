@@ -72,8 +72,10 @@ internal sealed class WorldLootGateway(PostgresInventoryLedgerStore store,
     }
     public Pb.LootSourceView Drop(Pb.DropLootRequest r)
     {
+        var bounds = r.MeshBounds is { } b ? new WorldLootMeshBounds(b.OriginXCm,b.OriginYCm,b.OriginZCm,b.ExtentXCm,b.ExtentYCm,b.ExtentZCm) : null;
         var source = new WorldLootSource(WorldLoot.SourceId(r.OperationId, r.CharacterId), r.ZoneId, r.XCm, r.YCm, r.ZCm,
-            "", r.MeshPath, true, false, []);
+            "", r.MeshPath, true, false, [], bounds is null ? 1 : r.ScaleX, bounds is null ? 1 : r.ScaleY, bounds is null ? 1 : r.ScaleZ,
+            bounds is null ? 0 : r.Pitch, bounds is null ? 0 : r.Yaw, bounds is null ? 0 : r.Roll, MeshBounds: bounds);
         var view = ToProto(loot.Drop(r.OperationId, source, r.CharacterId, r.BackpackId, r.BackpackRevision,
             r.DefinitionId, r.Quantity, r.InstanceId));
         view.LedgerOperationId = r.OperationId; view.BackpackRevision = r.BackpackRevision + 1;

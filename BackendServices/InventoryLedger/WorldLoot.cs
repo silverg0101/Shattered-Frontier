@@ -201,7 +201,9 @@ public sealed class WorldLoot(IInventoryLedgerStore store)
     }
     private static void ValidateSource(WorldLootSource source)
     {
-        if (source.MeshBounds is { } b &&
+        if (source.MeshBounds is { } groundBounds && source.Ground && !GroundGeometryFits(source, groundBounds))
+            throw new LedgerRejectedException("Ground mesh geometry exceeds the engine world envelope.");
+        if (source.MeshBounds is { } b && !source.Ground &&
             (!double.IsFinite(b.OriginXCm) || !double.IsFinite(b.OriginYCm) || !double.IsFinite(b.OriginZCm) ||
              Math.Abs(b.OriginXCm) > 50 || Math.Abs(b.OriginYCm) > 50 || Math.Abs(b.OriginZCm) > 50 ||
              !double.IsFinite(b.ExtentXCm) || !double.IsFinite(b.ExtentYCm) || !double.IsFinite(b.ExtentZCm) ||
@@ -213,6 +215,31 @@ public sealed class WorldLoot(IInventoryLedgerStore store)
             source.ScaleX == 0 || source.ScaleY == 0 || source.ScaleZ == 0 ||
             !double.IsFinite(source.Pitch) || !double.IsFinite(source.Yaw) || !double.IsFinite(source.Roll) ||
             !source.Ground && source.EligibleCharacters.Length == 0) throw new LedgerRejectedException("Invalid loot source.");
+    }
+
+    // Engine 5.8 HALF_WORLD_MAX1; mirrored and static_asserted by SFLootGeometry.cpp. No item-size balance cap.
+    public const double MaximumWorldCoordinateCm = 4_398_046_511_103.0;
+    private static bool InWorld(params double[] values) => values.All(v => double.IsFinite(v) && Math.Abs(v) <= MaximumWorldCoordinateCm);
+    private static bool GroundGeometryFits(WorldLootSource s, WorldLootMeshBounds b)
+    {
+        if (!InWorld(s.X,s.Y,s.Z,b.OriginXCm,b.OriginYCm,b.OriginZCm,b.ExtentXCm,b.ExtentYCm,b.ExtentZCm) ||
+            b.ExtentXCm < 0 || b.ExtentYCm < 0 || b.ExtentZCm < 0 || Math.Max(b.ExtentXCm,Math.Max(b.ExtentYCm,b.ExtentZCm)) <= 0 ||
+            !double.IsFinite(s.ScaleX) || !double.IsFinite(s.ScaleY) || !double.IsFinite(s.ScaleZ) || s.ScaleX == 0 || s.ScaleY == 0 || s.ScaleZ == 0 ||
+            !double.IsFinite(s.Pitch) || !double.IsFinite(s.Yaw) || !double.IsFinite(s.Roll) ||
+            !InWorld(b.OriginXCm*s.ScaleX,b.OriginYCm*s.ScaleY,b.OriginZCm*s.ScaleZ,
+                b.ExtentXCm*Math.Abs(s.ScaleX),b.ExtentYCm*Math.Abs(s.ScaleY),b.ExtentZCm*Math.Abs(s.ScaleZ))) return false;
+        var p = s.Pitch % 360 * Math.PI / 180; var y = s.Yaw % 360 * Math.PI / 180; var r = s.Roll % 360 * Math.PI / 180;
+        var cp = Math.Cos(p); var sp = Math.Sin(p); var cy = Math.Cos(y); var sy = Math.Sin(y); var cr = Math.Cos(r); var sr = Math.Sin(r);
+        // Unreal FRotationMatrix row-vector convention, after component scale.
+        for (var corner = 0; corner < 8; ++corner)
+        {
+            var x = (b.OriginXCm + ((corner & 1) != 0 ? b.ExtentXCm : -b.ExtentXCm)) * s.ScaleX;
+            var yy = (b.OriginYCm + ((corner & 2) != 0 ? b.ExtentYCm : -b.ExtentYCm)) * s.ScaleY;
+            var z = (b.OriginZCm + ((corner & 4) != 0 ? b.ExtentZCm : -b.ExtentZCm)) * s.ScaleZ;
+            if (!InWorld(s.X+x*cp*cy+yy*(sr*sp*cy-cr*sy)-z*(cr*sp*cy+sr*sy),
+                s.Y+x*cp*sy+yy*(sr*sp*sy+cr*cy)+z*(cy*sr-cr*sp*sy), s.Z+x*sp-yy*sr*cp+z*cr*cp)) return false;
+        }
+        return true;
     }
     private static WorldLootSource ReadSource(LedgerState state, string id)
     {

@@ -39,6 +39,7 @@ public:
 private:
     friend class FSFLootSourceClientHitTest;
     friend class FSFNpcDedicatedCorpseTest;
+    friend class FSFLootGroundGeometryTest;
     UFUNCTION() void OnRep_HitShape();
     UFUNCTION() void OnRep_MeshView();
     UPROPERTY(VisibleAnywhere) TObjectPtr<USceneComponent> SourceRoot;

@@ -4,20 +4,13 @@
 - **Updated:** 2026-10-25
 - **Worktree:** C:\Projects\SF-lane-e
 
-## Goal
-Preserve six NPCs and support a content-only seventh type/arbitrary approved groups, with shared runtime independent of development fixtures and historical actor naming.
+## Goal/state
+Six preserved profiles, content-only seventh runtime proof, arbitrary approved groups, unique stable defeat IDs, production parity, corpse route and typed presets are reviewed/published. Fixture extraction is `bc447b02`; canonical renderless corpse metadata is `5b1ee29a`.
+The newly exposed dedicated ground-source geometry gap is fixed and awaits review BEFORE generic rename. Actual item/fallback mesh bounds are frozen before DropLoot debit, persisted with the existing optional descriptor, and used by the existing headless source/client view. Geometry validation uses the engine/world numeric envelope, not a new balance-size cap. Corpse50cm envelope and old absent-metadata fingerprints/fallback remain unchanged.
 
-## State
-Reviewed profiles/capabilities, zone admission/respawn metadata, unique stable defeat identity, production parity, corpse hook and typed presets are published. Fixture extraction is published as `bc447b02`: 18 exact sandbox specs/lifecycle live in SFCombatFixtures; AI uses explicit default-none fixture flags.
-Canonical dedicated corpse metadata is implemented, awaiting independent review. Schema-3 presentation supplies asset-local bounds matching renderer geometry; the hook freezes canonical path and actual component world pose before teardown. Existing ledger metadata and additive Rewards fields retain optional bounds, legacy fingerprints and immutable replay. The source actor builds hit bounds without server render assets and replicates path/scale for client rendering. No database schema/topology or appearance change.
+## Current evidence
+Editor/backend builds, ledger domain and all9 selected Loot/dedicated checks PASS (`ground-loot-geometry.log`). New regression checks actual8 approved meshes, null optional WorldMesh fallback, missing/out-of-world asset rejection without debit RPC, actual oversized/offcenter bounds capture, and real dedicated/client net-mode outer traces under rotation/nonuniform scale. Backend rejects nonfinite/overflow/empty/out-of-world geometry before debit without changing items/revisions. Owned PostgreSQL restart/concurrent pickup PASS with exact oversized/offcenter/nonuniform descriptor recovery: lane `Artifacts/Persistence/GroundLootGeometry-20261025-1640/recovery.txt`.
+Prior metadata log had11 successes plus fixture setup failures, superseded by PASS `npc-dedicated-corpse-headless-final.log`; fixture extraction build+8 checks passed. Loot worker independently observed core55s and new actual cursor90.4s loops before this ground fix; do not label center pickup as outer-bound proof.
 
-## Evidence
-Editor/backend builds passed. Eleven affected checks pass in `npc-dedicated-corpse.log`; its unsupported PIE setup failure and the subsequent GameRPC-without-world-subsystem failure are superseded by PASS `npc-dedicated-corpse-headless-final.log`. The final test uses real dedicated/client net-mode predicates and actual RewardKill/subsystem/actor/OnRep paths: no server mesh, component offset/rotation/nonuniform scale, retry after teardown, one-time scaling and outer client traces before/after mesh resolution.
-Ledger domain and ten NPC metadata checks pass. PostgreSQL immediate restart/concurrent pickup and immutable bounds/transform recovery pass at lane `Artifacts/Persistence/WorldLootMetadata-20261025-1538/recovery.txt`. All old stats/behavior/presentation values compare unchanged. Earlier fixture extraction: build + 8 checks passed in `npc-fixture-extraction-final.log`.
-Preset evidence truth: original `npc-presets.log` had 12 successes + 1 clock failure, superseded by regression-final; asset-admission 4 checks passed. The loot worker's core native two-client loop passed before this metadata slice; combined live descriptor/click/coupling follow-up stays coordinated with that worker.
-
-## Next step
-Review/publish dedicated metadata, then separately rename the actor with old reflected class redirects/source compatibility and old-map load proof. Core loot loop is stable; coordinate temporary fixture/controller refs. Root handles deployment.
-
-## Rules
-No appearance work. Preserve authority, XP/quest/slot semantics, stable opaque retry IDs, once-only corpse/direct route and historical wire fields. Targeted checks; independent 6.1-Sol review before push; explicit file commits; no shared-main edits or force/stash/reset.
+## Next
+Review/publish ground fix. Generic actor rename preparation is safely parked UNTESTED/unreviewed/unpushed as `7fe407fd` on local `codex/npc-rename-compat`; it is NOT part of lane/e ground fix. Resume that separate slice after this gate: preserve reflected redirect/legacy source alias, add actual old map/path load + generic spawn/runtime proof, and coordinate loot callers. Root handles deployment. No appearance work.

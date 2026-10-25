@@ -1312,251 +1312,6 @@ const ::_pbi::ClassData* GrantDefeatRewardRequest_get_class_data() {
 }
 }  // namespace
 #endif  // PROTOBUF_CUSTOM_VTABLE
-class DropLootRequest::_Internal {
- public:
-  using HasBits = decltype(::std::declval<DropLootRequest>()._impl_._has_bits_);
-  static constexpr ::int32_t kHasBitsOffset =
-      8 * PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_._has_bits_);
-};
-
-constexpr DropLootRequest::ParseTableT_ DropLootRequest::InternalGenerateParseTable_(const ::_pbi::ClassData* class_data) {
-  return ParseTableT_{
-    {
-      PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_._has_bits_),
-      0, // no _extensions_
-      12, 120,  // max_field_number, fast_idx_mask
-      offsetof(ParseTableT_, field_lookup_table),
-      4294963200,  // skipmap
-      offsetof(ParseTableT_, field_entries),
-      12,  // num_field_entries
-      0,  // num_aux_entries
-      offsetof(ParseTableT_, field_names),  // no aux_entries
-      class_data,
-      nullptr,  // post_loop_handler
-      ::_pbi::TcParser::GenericFallback,  // fallback
-      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
-      ::_pbi::TcParser::GetTable<::sf::rewards::v1::DropLootRequest>(),  // to_prefetch
-      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
-    }, {{
-      {::_pbi::TcParser::MiniParse, {}},
-      // string operation_id = 1;
-      {::_pbi::TcParser::FastUS1,
-       {10, 0, 0,
-        PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_.operation_id_)}},
-      // string character_id = 2;
-      {::_pbi::TcParser::FastUS1,
-       {18, 1, 0,
-        PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_.character_id_)}},
-      // string backpack_id = 3;
-      {::_pbi::TcParser::FastUS1,
-       {26, 2, 0,
-        PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_.backpack_id_)}},
-      // int64 backpack_revision = 4;
-      {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(DropLootRequest, _impl_.backpack_revision_), 7>(),
-       {32, 7, 0,
-        PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_.backpack_revision_)}},
-      // string definition_id = 5;
-      {::_pbi::TcParser::FastUS1,
-       {42, 3, 0,
-        PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_.definition_id_)}},
-      // int64 quantity = 6;
-      {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(DropLootRequest, _impl_.quantity_), 8>(),
-       {48, 8, 0,
-        PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_.quantity_)}},
-      // string instance_id = 7;
-      {::_pbi::TcParser::FastUS1,
-       {58, 4, 0,
-        PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_.instance_id_)}},
-      // string zone_id = 8;
-      {::_pbi::TcParser::FastUS1,
-       {66, 5, 0,
-        PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_.zone_id_)}},
-      // double x_cm = 9;
-      {::_pbi::TcParser::FastF64S1,
-       {73, 9, 0,
-        PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_.x_cm_)}},
-      // double y_cm = 10;
-      {::_pbi::TcParser::FastF64S1,
-       {81, 10, 0,
-        PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_.y_cm_)}},
-      // double z_cm = 11;
-      {::_pbi::TcParser::FastF64S1,
-       {89, 11, 0,
-        PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_.z_cm_)}},
-      // string mesh_path = 12;
-      {::_pbi::TcParser::FastUS1,
-       {98, 6, 0,
-        PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_.mesh_path_)}},
-      {::_pbi::TcParser::MiniParse, {}},
-      {::_pbi::TcParser::MiniParse, {}},
-      {::_pbi::TcParser::MiniParse, {}},
-    }}, {{
-      65535, 65535
-    }}, {{
-      // string operation_id = 1;
-      {PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_.operation_id_), _Internal::kHasBitsOffset + 0, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
-      // string character_id = 2;
-      {PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_.character_id_), _Internal::kHasBitsOffset + 1, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
-      // string backpack_id = 3;
-      {PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_.backpack_id_), _Internal::kHasBitsOffset + 2, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
-      // int64 backpack_revision = 4;
-      {PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_.backpack_revision_), _Internal::kHasBitsOffset + 7, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt64)},
-      // string definition_id = 5;
-      {PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_.definition_id_), _Internal::kHasBitsOffset + 3, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
-      // int64 quantity = 6;
-      {PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_.quantity_), _Internal::kHasBitsOffset + 8, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt64)},
-      // string instance_id = 7;
-      {PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_.instance_id_), _Internal::kHasBitsOffset + 4, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
-      // string zone_id = 8;
-      {PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_.zone_id_), _Internal::kHasBitsOffset + 5, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
-      // double x_cm = 9;
-      {PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_.x_cm_), _Internal::kHasBitsOffset + 9, 0, (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
-      // double y_cm = 10;
-      {PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_.y_cm_), _Internal::kHasBitsOffset + 10, 0, (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
-      // double z_cm = 11;
-      {PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_.z_cm_), _Internal::kHasBitsOffset + 11, 0, (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
-      // string mesh_path = 12;
-      {PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_.mesh_path_), _Internal::kHasBitsOffset + 6, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
-    }},
-    // no aux_entries
-    {{
-      "\35\14\14\13\0\15\0\13\7\0\0\0\11\0\0\0"
-      "sf.rewards.v1.DropLootRequest"
-      "operation_id"
-      "character_id"
-      "backpack_id"
-      "definition_id"
-      "instance_id"
-      "zone_id"
-      "mesh_path"
-    }},
-  };
-}
-
-
-inline constexpr DropLootRequest::Impl_::Impl_(
-    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
-    ::_pbi::ConstantInitialized) noexcept
-      : _cached_size_{0},
-        operation_id_(
-            &::google::protobuf::internal::fixed_address_empty_string,
-            ::_pbi::ConstantInitialized()),
-        character_id_(
-            &::google::protobuf::internal::fixed_address_empty_string,
-            ::_pbi::ConstantInitialized()),
-        backpack_id_(
-            &::google::protobuf::internal::fixed_address_empty_string,
-            ::_pbi::ConstantInitialized()),
-        definition_id_(
-            &::google::protobuf::internal::fixed_address_empty_string,
-            ::_pbi::ConstantInitialized()),
-        instance_id_(
-            &::google::protobuf::internal::fixed_address_empty_string,
-            ::_pbi::ConstantInitialized()),
-        zone_id_(
-            &::google::protobuf::internal::fixed_address_empty_string,
-            ::_pbi::ConstantInitialized()),
-        mesh_path_(
-            &::google::protobuf::internal::fixed_address_empty_string,
-            ::_pbi::ConstantInitialized()),
-        backpack_revision_{::int64_t{0}},
-        quantity_{::int64_t{0}},
-        x_cm_{0},
-        y_cm_{0},
-        z_cm_{0} {}
-
-template <typename>
-constexpr DropLootRequest::DropLootRequest(::_pbi::ConstantInitialized,
-                       const ::_pbi::ClassData* PROTOBUF_NONNULL class_data)
-    : ::google::protobuf::Message(
-#if defined(PROTOBUF_CUSTOM_VTABLE)
-          class_data
-#endif  // PROTOBUF_CUSTOM_VTABLE
-          ),
-      _impl_(internal_visibility(), ::_pbi::ConstantInitialized()) {
-}
-inline void* PROTOBUF_NONNULL DropLootRequest::PlacementNew_(
-    const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
-    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena) {
-  return ::new (mem) DropLootRequest(arena);
-}
-constexpr auto DropLootRequest::InternalNewImpl_() {
-  return ::google::protobuf::internal::MessageCreator::CopyInit(sizeof(DropLootRequest), alignof(DropLootRequest));
-}
-constexpr auto DropLootRequest::InternalGenerateClassData_(
-    const MessageLite& prototype,
-    const ::google::protobuf::internal::TcParseTableBase* tc_table) {
-  return ::google::protobuf::internal::ClassDataFull{
-      ::google::protobuf::internal::ClassData{
-          &prototype,
-#ifndef PROTOBUF_MESSAGE_GLOBALS
-          &_table_.header,
-#else
-          tc_table,
-#endif
-          nullptr,  // IsInitialized
-          &DropLootRequest::MergeImpl,
-          ::google::protobuf::Message::GetNewImpl<DropLootRequest>(),
-#if defined(PROTOBUF_CUSTOM_VTABLE)
-          &DropLootRequest::SharedDtor,
-          ::google::protobuf::Message::GetClearImpl<DropLootRequest>(), &DropLootRequest::ByteSizeLong,
-              &DropLootRequest::_InternalSerialize,
-#endif  // PROTOBUF_CUSTOM_VTABLE
-          PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_._cached_size_),
-          false,
-      },
-#ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[9],
-#else   // !PROTOBUF_MESSAGE_GLOBALS
-      &::_pbi::kDescriptorMethods,
-      &descriptor_table_sf_2frewards_2fv1_2frewards_2eproto,
-      nullptr,  // tracker
-#endif  // PROTOBUF_MESSAGE_GLOBALS
-  };
-}
-struct DropLootRequestGlobalsTypeInternal : ::_pbi::MessageGlobalsBase {
-  constexpr DropLootRequestGlobalsTypeInternal()
-      :
-#ifndef PROTOBUF_MESSAGE_GLOBALS
-        _default(::_pbi::ConstantInitialized{},
-                 DropLootRequest_class_data_.base())
-#else   // !PROTOBUF_MESSAGE_GLOBALS
-        MessageGlobalsBase(DropLootRequest::InternalGenerateClassData_(
-            _default, &DropLootRequest_globals_._table.header)),
-        _default(::_pbi::ConstantInitialized{}, GetClassData()),
-        _table(::_pbi::PrivateAccess::GenerateParseTable<DropLootRequest>(
-            GetClassData()))
-#endif  // PROTOBUF_MESSAGE_GLOBALS
-  {
-  }
-  ~DropLootRequestGlobalsTypeInternal() {}
-  union {
-    alignas(::_pbi::kMaxMessageAlignment) DropLootRequest _default;
-  };
-#ifdef PROTOBUF_MESSAGE_GLOBALS
-  decltype(::_pbi::PrivateAccess::GenerateParseTable<DropLootRequest>(
-      ::std::declval<const ::_pbi::ClassData*>())) _table;
-#endif
-};
-#ifdef PROTOBUF_MESSAGE_GLOBALS
-static_assert(PROTOBUF_FIELD_OFFSET(DropLootRequestGlobalsTypeInternal, _default) ==
-              ::_pbi::MessageGlobalsBase::OffsetToDefault());
-#endif  // PROTOBUF_MESSAGE_GLOBALS
-
-PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
-    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 PROTOBUF_MESSAGE_GLOBALS_CONST DropLootRequestGlobalsTypeInternal DropLootRequest_globals_
-        PROTOBUF_MESSAGE_GLOBALS_SECTION(.data.rel.ro);
-#if defined(PROTOBUF_CUSTOM_VTABLE)
-namespace {
-const ::_pbi::ClassData* DropLootRequest_get_class_data() {
-#ifdef PROTOBUF_MESSAGE_GLOBALS
-  return DropLootRequest_globals_.GetClassData();
-#else
-  return DropLootRequest_class_data_.base();
-#endif  // PROTOBUF_MESSAGE_GLOBALS
-}
-}  // namespace
-#endif  // PROTOBUF_CUSTOM_VTABLE
 class CreateSharedDefeatDropRequest::_Internal {
  public:
   using HasBits = decltype(::std::declval<CreateSharedDefeatDropRequest>()._impl_._has_bits_);
@@ -2645,6 +2400,315 @@ const ::_pbi::ClassData* LootSource_get_class_data() {
 }
 }  // namespace
 #endif  // PROTOBUF_CUSTOM_VTABLE
+class DropLootRequest::_Internal {
+ public:
+  using HasBits = decltype(::std::declval<DropLootRequest>()._impl_._has_bits_);
+  static constexpr ::int32_t kHasBitsOffset =
+      8 * PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_._has_bits_);
+};
+
+constexpr DropLootRequest::ParseTableT_ DropLootRequest::InternalGenerateParseTable_(const ::_pbi::ClassData* class_data) {
+  return ParseTableT_{
+    {
+      PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_._has_bits_),
+      0, // no _extensions_
+      19, 248,  // max_field_number, fast_idx_mask
+      offsetof(ParseTableT_, field_lookup_table),
+      4294443008,  // skipmap
+      offsetof(ParseTableT_, field_entries),
+      19,  // num_field_entries
+      1,  // num_aux_entries
+      offsetof(ParseTableT_, aux_entries),
+      class_data,
+      nullptr,  // post_loop_handler
+      ::_pbi::TcParser::GenericFallback,  // fallback
+      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+      ::_pbi::TcParser::GetTable<::sf::rewards::v1::DropLootRequest>(),  // to_prefetch
+      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+    }, {{
+      {::_pbi::TcParser::MiniParse, {}},
+      // string operation_id = 1;
+      {::_pbi::TcParser::FastUS1,
+       {10, 0, 0,
+        PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_.operation_id_)}},
+      // string character_id = 2;
+      {::_pbi::TcParser::FastUS1,
+       {18, 1, 0,
+        PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_.character_id_)}},
+      // string backpack_id = 3;
+      {::_pbi::TcParser::FastUS1,
+       {26, 2, 0,
+        PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_.backpack_id_)}},
+      // int64 backpack_revision = 4;
+      {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(DropLootRequest, _impl_.backpack_revision_), 8>(),
+       {32, 8, 0,
+        PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_.backpack_revision_)}},
+      // string definition_id = 5;
+      {::_pbi::TcParser::FastUS1,
+       {42, 3, 0,
+        PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_.definition_id_)}},
+      // int64 quantity = 6;
+      {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(DropLootRequest, _impl_.quantity_), 9>(),
+       {48, 9, 0,
+        PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_.quantity_)}},
+      // string instance_id = 7;
+      {::_pbi::TcParser::FastUS1,
+       {58, 4, 0,
+        PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_.instance_id_)}},
+      // string zone_id = 8;
+      {::_pbi::TcParser::FastUS1,
+       {66, 5, 0,
+        PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_.zone_id_)}},
+      // double x_cm = 9;
+      {::_pbi::TcParser::FastF64S1,
+       {73, 10, 0,
+        PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_.x_cm_)}},
+      // double y_cm = 10;
+      {::_pbi::TcParser::FastF64S1,
+       {81, 11, 0,
+        PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_.y_cm_)}},
+      // double z_cm = 11;
+      {::_pbi::TcParser::FastF64S1,
+       {89, 12, 0,
+        PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_.z_cm_)}},
+      // string mesh_path = 12;
+      {::_pbi::TcParser::FastUS1,
+       {98, 6, 0,
+        PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_.mesh_path_)}},
+      // .sf.rewards.v1.LootMeshBounds mesh_bounds = 13;
+      {::_pbi::TcParser::FastMtS1,
+       {106, 7, 0,
+        PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_.mesh_bounds_)}},
+      // double scale_x = 14;
+      {::_pbi::TcParser::FastF64S1,
+       {113, 13, 0,
+        PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_.scale_x_)}},
+      // double scale_y = 15;
+      {::_pbi::TcParser::FastF64S1,
+       {121, 14, 0,
+        PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_.scale_y_)}},
+      // double scale_z = 16;
+      {::_pbi::TcParser::FastF64S2,
+       {385, 15, 0,
+        PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_.scale_z_)}},
+      // double pitch = 17;
+      {::_pbi::TcParser::FastF64S2,
+       {393, 16, 0,
+        PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_.pitch_)}},
+      // double yaw = 18;
+      {::_pbi::TcParser::FastF64S2,
+       {401, 17, 0,
+        PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_.yaw_)}},
+      // double roll = 19;
+      {::_pbi::TcParser::FastF64S2,
+       {409, 18, 0,
+        PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_.roll_)}},
+      {::_pbi::TcParser::MiniParse, {}},
+      {::_pbi::TcParser::MiniParse, {}},
+      {::_pbi::TcParser::MiniParse, {}},
+      {::_pbi::TcParser::MiniParse, {}},
+      {::_pbi::TcParser::MiniParse, {}},
+      {::_pbi::TcParser::MiniParse, {}},
+      {::_pbi::TcParser::MiniParse, {}},
+      {::_pbi::TcParser::MiniParse, {}},
+      {::_pbi::TcParser::MiniParse, {}},
+      {::_pbi::TcParser::MiniParse, {}},
+      {::_pbi::TcParser::MiniParse, {}},
+      {::_pbi::TcParser::MiniParse, {}},
+    }}, {{
+      65535, 65535
+    }}, {{
+      // string operation_id = 1;
+      {PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_.operation_id_), _Internal::kHasBitsOffset + 0, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // string character_id = 2;
+      {PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_.character_id_), _Internal::kHasBitsOffset + 1, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // string backpack_id = 3;
+      {PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_.backpack_id_), _Internal::kHasBitsOffset + 2, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // int64 backpack_revision = 4;
+      {PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_.backpack_revision_), _Internal::kHasBitsOffset + 8, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt64)},
+      // string definition_id = 5;
+      {PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_.definition_id_), _Internal::kHasBitsOffset + 3, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // int64 quantity = 6;
+      {PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_.quantity_), _Internal::kHasBitsOffset + 9, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt64)},
+      // string instance_id = 7;
+      {PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_.instance_id_), _Internal::kHasBitsOffset + 4, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // string zone_id = 8;
+      {PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_.zone_id_), _Internal::kHasBitsOffset + 5, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // double x_cm = 9;
+      {PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_.x_cm_), _Internal::kHasBitsOffset + 10, 0, (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+      // double y_cm = 10;
+      {PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_.y_cm_), _Internal::kHasBitsOffset + 11, 0, (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+      // double z_cm = 11;
+      {PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_.z_cm_), _Internal::kHasBitsOffset + 12, 0, (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+      // string mesh_path = 12;
+      {PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_.mesh_path_), _Internal::kHasBitsOffset + 6, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // .sf.rewards.v1.LootMeshBounds mesh_bounds = 13;
+      {PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_.mesh_bounds_), _Internal::kHasBitsOffset + 7, 0, (0 | ::_fl::kFcOptional | ::_fl::kMessage | ::_fl::kTvTable)},
+      // double scale_x = 14;
+      {PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_.scale_x_), _Internal::kHasBitsOffset + 13, 0, (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+      // double scale_y = 15;
+      {PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_.scale_y_), _Internal::kHasBitsOffset + 14, 0, (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+      // double scale_z = 16;
+      {PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_.scale_z_), _Internal::kHasBitsOffset + 15, 0, (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+      // double pitch = 17;
+      {PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_.pitch_), _Internal::kHasBitsOffset + 16, 0, (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+      // double yaw = 18;
+      {PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_.yaw_), _Internal::kHasBitsOffset + 17, 0, (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+      // double roll = 19;
+      {PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_.roll_), _Internal::kHasBitsOffset + 18, 0, (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+    }},
+    {{
+        #ifndef PROTOBUF_MESSAGE_GLOBALS
+        {::_pbi::TcParser::GetTable<::sf::rewards::v1::LootMeshBounds>()},
+        #else
+        {::_pbi::FieldAuxMessageGlobals(), &::sf::rewards::v1::LootMeshBounds_globals_},
+        #endif
+    }},
+    {{
+      "\35\14\14\13\0\15\0\13\7\0\0\0\11\0\0\0\0\0\0\0\0\0\0\0"
+      "sf.rewards.v1.DropLootRequest"
+      "operation_id"
+      "character_id"
+      "backpack_id"
+      "definition_id"
+      "instance_id"
+      "zone_id"
+      "mesh_path"
+    }},
+  };
+}
+
+
+inline constexpr DropLootRequest::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    ::_pbi::ConstantInitialized) noexcept
+      : _cached_size_{0},
+        operation_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        character_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        backpack_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        definition_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        instance_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        zone_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        mesh_path_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        mesh_bounds_{nullptr},
+        backpack_revision_{::int64_t{0}},
+        quantity_{::int64_t{0}},
+        x_cm_{0},
+        y_cm_{0},
+        z_cm_{0},
+        scale_x_{0},
+        scale_y_{0},
+        scale_z_{0},
+        pitch_{0},
+        yaw_{0},
+        roll_{0} {}
+
+template <typename>
+constexpr DropLootRequest::DropLootRequest(::_pbi::ConstantInitialized,
+                       const ::_pbi::ClassData* PROTOBUF_NONNULL class_data)
+    : ::google::protobuf::Message(
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          class_data
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          ),
+      _impl_(internal_visibility(), ::_pbi::ConstantInitialized()) {
+}
+inline void* PROTOBUF_NONNULL DropLootRequest::PlacementNew_(
+    const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena) {
+  return ::new (mem) DropLootRequest(arena);
+}
+constexpr auto DropLootRequest::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::CopyInit(sizeof(DropLootRequest), alignof(DropLootRequest));
+}
+constexpr auto DropLootRequest::InternalGenerateClassData_(
+    const MessageLite& prototype,
+    const ::google::protobuf::internal::TcParseTableBase* tc_table) {
+  return ::google::protobuf::internal::ClassDataFull{
+      ::google::protobuf::internal::ClassData{
+          &prototype,
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+          &_table_.header,
+#else
+          tc_table,
+#endif
+          nullptr,  // IsInitialized
+          &DropLootRequest::MergeImpl,
+          ::google::protobuf::Message::GetNewImpl<DropLootRequest>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          &DropLootRequest::SharedDtor,
+          ::google::protobuf::Message::GetClearImpl<DropLootRequest>(), &DropLootRequest::ByteSizeLong,
+              &DropLootRequest::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_._cached_size_),
+          false,
+      },
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+      &file_reflection_data[9],
+#else   // !PROTOBUF_MESSAGE_GLOBALS
+      &::_pbi::kDescriptorMethods,
+      &descriptor_table_sf_2frewards_2fv1_2frewards_2eproto,
+      nullptr,  // tracker
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+  };
+}
+struct DropLootRequestGlobalsTypeInternal : ::_pbi::MessageGlobalsBase {
+  constexpr DropLootRequestGlobalsTypeInternal()
+      :
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+        _default(::_pbi::ConstantInitialized{},
+                 DropLootRequest_class_data_.base())
+#else   // !PROTOBUF_MESSAGE_GLOBALS
+        MessageGlobalsBase(DropLootRequest::InternalGenerateClassData_(
+            _default, &DropLootRequest_globals_._table.header)),
+        _default(::_pbi::ConstantInitialized{}, GetClassData()),
+        _table(::_pbi::PrivateAccess::GenerateParseTable<DropLootRequest>(
+            GetClassData()))
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+  {
+  }
+  ~DropLootRequestGlobalsTypeInternal() {}
+  union {
+    alignas(::_pbi::kMaxMessageAlignment) DropLootRequest _default;
+  };
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+  decltype(::_pbi::PrivateAccess::GenerateParseTable<DropLootRequest>(
+      ::std::declval<const ::_pbi::ClassData*>())) _table;
+#endif
+};
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+static_assert(PROTOBUF_FIELD_OFFSET(DropLootRequestGlobalsTypeInternal, _default) ==
+              ::_pbi::MessageGlobalsBase::OffsetToDefault());
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 PROTOBUF_MESSAGE_GLOBALS_CONST DropLootRequestGlobalsTypeInternal DropLootRequest_globals_
+        PROTOBUF_MESSAGE_GLOBALS_SECTION(.data.rel.ro);
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+namespace {
+const ::_pbi::ClassData* DropLootRequest_get_class_data() {
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+  return DropLootRequest_globals_.GetClassData();
+#else
+  return DropLootRequest_class_data_.base();
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+}
+}  // namespace
+#endif  // PROTOBUF_CUSTOM_VTABLE
 class CreateCorpseLootRequest::_Internal {
  public:
   using HasBits = decltype(::std::declval<CreateCorpseLootRequest>()._impl_._has_bits_);
@@ -3494,7 +3558,7 @@ const ::uint32_t
         5,
         0x081, // bitmap
         PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::DropLootRequest, _impl_._has_bits_),
-        15, // hasbit index offset
+        22, // hasbit index offset
         PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::DropLootRequest, _impl_.operation_id_),
         PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::DropLootRequest, _impl_.character_id_),
         PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::DropLootRequest, _impl_.backpack_id_),
@@ -3507,18 +3571,32 @@ const ::uint32_t
         PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::DropLootRequest, _impl_.y_cm_),
         PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::DropLootRequest, _impl_.z_cm_),
         PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::DropLootRequest, _impl_.mesh_path_),
+        PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::DropLootRequest, _impl_.mesh_bounds_),
+        PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::DropLootRequest, _impl_.scale_x_),
+        PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::DropLootRequest, _impl_.scale_y_),
+        PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::DropLootRequest, _impl_.scale_z_),
+        PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::DropLootRequest, _impl_.pitch_),
+        PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::DropLootRequest, _impl_.yaw_),
+        PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::DropLootRequest, _impl_.roll_),
         0,
         1,
         2,
-        7,
-        3,
         8,
+        3,
+        9,
         4,
         5,
-        9,
         10,
         11,
+        12,
         6,
+        7,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
         0x081, // bitmap
         PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::CreateSharedDefeatDropRequest, _impl_._has_bits_),
         11, // hasbit index offset
@@ -3621,12 +3699,12 @@ static const ::_pbi::MigrationSchema
         {131, sizeof(::sf::rewards::v1::OpenLootSourceRequest)},
         {138, sizeof(::sf::rewards::v1::TakeLootRequest)},
         {159, sizeof(::sf::rewards::v1::DropLootRequest)},
-        {186, sizeof(::sf::rewards::v1::CreateSharedDefeatDropRequest)},
-        {205, sizeof(::sf::rewards::v1::ClaimSharedDefeatDropRequest)},
-        {214, sizeof(::sf::rewards::v1::SharedDropItem)},
-        {221, sizeof(::sf::rewards::v1::SharedDefeatDropReceipt)},
-        {236, sizeof(::sf::rewards::v1::GrantDefeatRewardRequest)},
-        {257, sizeof(::sf::rewards::v1::RewardReceipt)},
+        {200, sizeof(::sf::rewards::v1::CreateSharedDefeatDropRequest)},
+        {219, sizeof(::sf::rewards::v1::ClaimSharedDefeatDropRequest)},
+        {228, sizeof(::sf::rewards::v1::SharedDropItem)},
+        {235, sizeof(::sf::rewards::v1::SharedDefeatDropReceipt)},
+        {250, sizeof(::sf::rewards::v1::GrantDefeatRewardRequest)},
+        {271, sizeof(::sf::rewards::v1::RewardReceipt)},
 };
 static const ::_pbi::MessageGlobalsBase* PROTOBUF_NONNULL const
     file_message_globals[] = {
@@ -3691,66 +3769,70 @@ const char descriptor_table_protodef_sf_2frewards_2fv1_2frewards_2eproto[] ABSL_
     "kpack_id\030\004 \001(\t\022\027\n\017source_revision\030\005 \001(\003\022"
     "\031\n\021backpack_revision\030\006 \001(\003\022\025\n\rdefinition"
     "_id\030\007 \001(\t\022\020\n\010quantity\030\010 \001(\003\022\023\n\013instance_"
-    "id\030\t \001(\t\"\371\001\n\017DropLootRequest\022\024\n\014operatio"
+    "id\030\t \001(\t\"\212\003\n\017DropLootRequest\022\024\n\014operatio"
     "n_id\030\001 \001(\t\022\024\n\014character_id\030\002 \001(\t\022\023\n\013back"
     "pack_id\030\003 \001(\t\022\031\n\021backpack_revision\030\004 \001(\003"
     "\022\025\n\rdefinition_id\030\005 \001(\t\022\020\n\010quantity\030\006 \001("
     "\003\022\023\n\013instance_id\030\007 \001(\t\022\017\n\007zone_id\030\010 \001(\t\022"
     "\014\n\004x_cm\030\t \001(\001\022\014\n\004y_cm\030\n \001(\001\022\014\n\004z_cm\030\013 \001("
-    "\001\022\021\n\tmesh_path\030\014 \001(\t\"\371\001\n\035CreateSharedDef"
-    "eatDropRequest\022\027\n\017defeat_event_id\030\001 \001(\t\022"
-    "\023\n\013creature_id\030\002 \001(\t\022\020\n\010table_id\030\003 \001(\t\022\033"
-    "\n\023killer_character_id\030\004 \001(\t\022\036\n\026eligible_"
-    "character_ids\030\005 \003(\t\022 \n\030killer_in_protect"
-    "ed_town\030\006 \001(\010\022\"\n\032creature_in_protected_t"
-    "own\030\007 \001(\010\022\025\n\rraid_group_id\030\010 \001(\t\"c\n\034Clai"
-    "mSharedDefeatDropRequest\022\027\n\017defeat_event"
-    "_id\030\001 \001(\t\022\024\n\014character_id\030\002 \001(\t\022\024\n\014conta"
-    "iner_id\030\003 \001(\t\"9\n\016SharedDropItem\022\025\n\rdefin"
-    "ition_id\030\001 \001(\t\022\020\n\010quantity\030\002 \001(\003\"\317\001\n\027Sha"
-    "redDefeatDropReceipt\022\027\n\017defeat_event_id\030"
-    "\001 \001(\t\022,\n\005items\030\002 \003(\0132\035.sf.rewards.v1.Sha"
-    "redDropItem\022\035\n\025claimant_character_id\030\003 \001"
-    "(\t\022\033\n\023ledger_operation_id\030\004 \001(\t\022\032\n\022conta"
-    "iner_revision\030\005 \001(\003\022\025\n\rraid_group_id\030\006 \001"
-    "(\t\"\224\002\n\030GrantDefeatRewardRequest\022\027\n\017defea"
-    "t_event_id\030\001 \001(\t\022\033\n\023killer_character_id\030"
-    "\002 \001(\t\022\036\n\026recipient_character_id\030\003 \001(\t\022\024\n"
-    "\014container_id\030\004 \001(\t\022#\n\033expected_containe"
-    "r_revision\030\005 \001(\003\022 \n\030killer_in_protected_"
-    "town\030\006 \001(\010\022\036\n\026boar_in_protected_town\030\007 \001"
-    "(\010\022\020\n\010table_id\030\010 \001(\t\022\023\n\013creature_id\030\t \001("
-    "\t\"\305\001\n\rRewardReceipt\022\017\n\007granted\030\001 \001(\010\022\023\n\013"
-    "source_code\030\002 \001(\t\022\033\n\023ledger_operation_id"
-    "\030\003 \001(\t\022\025\n\rdefinition_id\030\004 \001(\t\022\020\n\010quantit"
-    "y\030\005 \001(\003\022\032\n\022container_revision\030\006 \001(\003\022,\n\005i"
-    "tems\030\007 \003(\0132\035.sf.rewards.v1.SharedDropIte"
-    "m2\350\005\n\007Rewards\022Z\n\021GrantDefeatReward\022\'.sf."
-    "rewards.v1.GrantDefeatRewardRequest\032\034.sf"
-    ".rewards.v1.RewardReceipt\022n\n\026CreateShare"
-    "dDefeatDrop\022,.sf.rewards.v1.CreateShared"
-    "DefeatDropRequest\032&.sf.rewards.v1.Shared"
-    "DefeatDropReceipt\022l\n\025ClaimSharedDefeatDr"
-    "op\022+.sf.rewards.v1.ClaimSharedDefeatDrop"
-    "Request\032&.sf.rewards.v1.SharedDefeatDrop"
-    "Receipt\022[\n\020CreateCorpseLoot\022&.sf.rewards"
-    ".v1.CreateCorpseLootRequest\032\037.sf.rewards"
-    ".v1.LootSourcesReply\022Y\n\017ListLootSources\022"
-    "%.sf.rewards.v1.ListLootSourcesRequest\032\037"
-    ".sf.rewards.v1.LootSourcesReply\022U\n\016OpenL"
-    "ootSource\022$.sf.rewards.v1.OpenLootSource"
-    "Request\032\035.sf.rewards.v1.LootSourceView\022I"
-    "\n\010TakeLoot\022\036.sf.rewards.v1.TakeLootReque"
-    "st\032\035.sf.rewards.v1.LootSourceView\022I\n\010Dro"
-    "pLoot\022\036.sf.rewards.v1.DropLootRequest\032\035."
-    "sf.rewards.v1.LootSourceViewB\037\252\002\034Shatter"
-    "edFrontier.Rewards.V1b\006proto3"
+    "\001\022\021\n\tmesh_path\030\014 \001(\t\0222\n\013mesh_bounds\030\r \001("
+    "\0132\035.sf.rewards.v1.LootMeshBounds\022\017\n\007scal"
+    "e_x\030\016 \001(\001\022\017\n\007scale_y\030\017 \001(\001\022\017\n\007scale_z\030\020 "
+    "\001(\001\022\r\n\005pitch\030\021 \001(\001\022\013\n\003yaw\030\022 \001(\001\022\014\n\004roll\030"
+    "\023 \001(\001\"\371\001\n\035CreateSharedDefeatDropRequest\022"
+    "\027\n\017defeat_event_id\030\001 \001(\t\022\023\n\013creature_id\030"
+    "\002 \001(\t\022\020\n\010table_id\030\003 \001(\t\022\033\n\023killer_charac"
+    "ter_id\030\004 \001(\t\022\036\n\026eligible_character_ids\030\005"
+    " \003(\t\022 \n\030killer_in_protected_town\030\006 \001(\010\022\""
+    "\n\032creature_in_protected_town\030\007 \001(\010\022\025\n\rra"
+    "id_group_id\030\010 \001(\t\"c\n\034ClaimSharedDefeatDr"
+    "opRequest\022\027\n\017defeat_event_id\030\001 \001(\t\022\024\n\014ch"
+    "aracter_id\030\002 \001(\t\022\024\n\014container_id\030\003 \001(\t\"9"
+    "\n\016SharedDropItem\022\025\n\rdefinition_id\030\001 \001(\t\022"
+    "\020\n\010quantity\030\002 \001(\003\"\317\001\n\027SharedDefeatDropRe"
+    "ceipt\022\027\n\017defeat_event_id\030\001 \001(\t\022,\n\005items\030"
+    "\002 \003(\0132\035.sf.rewards.v1.SharedDropItem\022\035\n\025"
+    "claimant_character_id\030\003 \001(\t\022\033\n\023ledger_op"
+    "eration_id\030\004 \001(\t\022\032\n\022container_revision\030\005"
+    " \001(\003\022\025\n\rraid_group_id\030\006 \001(\t\"\224\002\n\030GrantDef"
+    "eatRewardRequest\022\027\n\017defeat_event_id\030\001 \001("
+    "\t\022\033\n\023killer_character_id\030\002 \001(\t\022\036\n\026recipi"
+    "ent_character_id\030\003 \001(\t\022\024\n\014container_id\030\004"
+    " \001(\t\022#\n\033expected_container_revision\030\005 \001("
+    "\003\022 \n\030killer_in_protected_town\030\006 \001(\010\022\036\n\026b"
+    "oar_in_protected_town\030\007 \001(\010\022\020\n\010table_id\030"
+    "\010 \001(\t\022\023\n\013creature_id\030\t \001(\t\"\305\001\n\rRewardRec"
+    "eipt\022\017\n\007granted\030\001 \001(\010\022\023\n\013source_code\030\002 \001"
+    "(\t\022\033\n\023ledger_operation_id\030\003 \001(\t\022\025\n\rdefin"
+    "ition_id\030\004 \001(\t\022\020\n\010quantity\030\005 \001(\003\022\032\n\022cont"
+    "ainer_revision\030\006 \001(\003\022,\n\005items\030\007 \003(\0132\035.sf"
+    ".rewards.v1.SharedDropItem2\350\005\n\007Rewards\022Z"
+    "\n\021GrantDefeatReward\022\'.sf.rewards.v1.Gran"
+    "tDefeatRewardRequest\032\034.sf.rewards.v1.Rew"
+    "ardReceipt\022n\n\026CreateSharedDefeatDrop\022,.s"
+    "f.rewards.v1.CreateSharedDefeatDropReque"
+    "st\032&.sf.rewards.v1.SharedDefeatDropRecei"
+    "pt\022l\n\025ClaimSharedDefeatDrop\022+.sf.rewards"
+    ".v1.ClaimSharedDefeatDropRequest\032&.sf.re"
+    "wards.v1.SharedDefeatDropReceipt\022[\n\020Crea"
+    "teCorpseLoot\022&.sf.rewards.v1.CreateCorps"
+    "eLootRequest\032\037.sf.rewards.v1.LootSources"
+    "Reply\022Y\n\017ListLootSources\022%.sf.rewards.v1"
+    ".ListLootSourcesRequest\032\037.sf.rewards.v1."
+    "LootSourcesReply\022U\n\016OpenLootSource\022$.sf."
+    "rewards.v1.OpenLootSourceRequest\032\035.sf.re"
+    "wards.v1.LootSourceView\022I\n\010TakeLoot\022\036.sf"
+    ".rewards.v1.TakeLootRequest\032\035.sf.rewards"
+    ".v1.LootSourceView\022I\n\010DropLoot\022\036.sf.rewa"
+    "rds.v1.DropLootRequest\032\035.sf.rewards.v1.L"
+    "ootSourceViewB\037\252\002\034ShatteredFrontier.Rewa"
+    "rds.V1b\006proto3"
 };
 static ::absl::once_flag descriptor_table_sf_2frewards_2fv1_2frewards_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_sf_2frewards_2fv1_2frewards_2eproto = {
     false,
     false,
-    3829,
+    3974,
     descriptor_table_protodef_sf_2frewards_2fv1_2frewards_2eproto,
     "sf/rewards/v1/rewards.proto",
     &descriptor_table_sf_2frewards_2fv1_2frewards_2eproto_once,
@@ -7370,13 +7452,17 @@ DropLootRequest::DropLootRequest(
   _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
       from._internal_metadata_);
   new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
+  ::uint32_t cached_has_bits = _impl_._has_bits_[0];
+  _impl_.mesh_bounds_ = (CheckHasBit(cached_has_bits, 0x00000080U))
+                ? ::google::protobuf::Message::CopyConstruct(arena, *from._impl_.mesh_bounds_)
+                : nullptr;
   ::memcpy(reinterpret_cast<char*>(&_impl_) +
                offsetof(Impl_, backpack_revision_),
            reinterpret_cast<const char*>(&from._impl_) +
                offsetof(Impl_, backpack_revision_),
-           offsetof(Impl_, z_cm_) -
+           offsetof(Impl_, roll_) -
                offsetof(Impl_, backpack_revision_) +
-               sizeof(Impl_::z_cm_));
+               sizeof(Impl_::roll_));
 
   // @@protoc_insertion_point(copy_constructor:sf.rewards.v1.DropLootRequest)
 }
@@ -7395,11 +7481,11 @@ PROTOBUF_NDEBUG_INLINE DropLootRequest::Impl_::Impl_(
 inline void DropLootRequest::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
   new (&_impl_) Impl_(internal_visibility(), arena);
   ::memset(reinterpret_cast<char*>(&_impl_) +
-               offsetof(Impl_, backpack_revision_),
+               offsetof(Impl_, mesh_bounds_),
            0,
-           offsetof(Impl_, z_cm_) -
-               offsetof(Impl_, backpack_revision_) +
-               sizeof(Impl_::z_cm_));
+           offsetof(Impl_, roll_) -
+               offsetof(Impl_, mesh_bounds_) +
+               sizeof(Impl_::roll_));
 }
 DropLootRequest::~DropLootRequest() {
   // @@protoc_insertion_point(destructor:sf.rewards.v1.DropLootRequest)
@@ -7419,6 +7505,7 @@ inline void DropLootRequest::SharedDtor(MessageLite& self) {
   this_._impl_.instance_id_.Destroy();
   this_._impl_.zone_id_.Destroy();
   this_._impl_.mesh_path_.Destroy();
+  delete this_._impl_.mesh_bounds_;
   this_._impl_.~Impl_();
 }
 
@@ -7456,7 +7543,7 @@ PROTOBUF_NOINLINE void DropLootRequest::Clear() {
   (void) cached_has_bits;
 
   cached_has_bits = _impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0x0000007fU)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x000000ffU)) {
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
       _impl_.operation_id_.ClearNonDefaultToEmpty();
     }
@@ -7478,12 +7565,20 @@ PROTOBUF_NOINLINE void DropLootRequest::Clear() {
     if (CheckHasBit(cached_has_bits, 0x00000040U)) {
       _impl_.mesh_path_.ClearNonDefaultToEmpty();
     }
+    if (CheckHasBit(cached_has_bits, 0x00000080U)) {
+      ABSL_DCHECK(_impl_.mesh_bounds_ != nullptr);
+      _impl_.mesh_bounds_->Clear();
+    }
   }
-  _impl_.backpack_revision_ = ::int64_t{0};
-  if (BatchCheckHasBit(cached_has_bits, 0x00000f00U)) {
-    ::memset(&_impl_.quantity_, 0, static_cast<::size_t>(
-        reinterpret_cast<char*>(&_impl_.z_cm_) -
-        reinterpret_cast<char*>(&_impl_.quantity_)) + sizeof(_impl_.z_cm_));
+  if (BatchCheckHasBit(cached_has_bits, 0x0000ff00U)) {
+    ::memset(&_impl_.backpack_revision_, 0, static_cast<::size_t>(
+        reinterpret_cast<char*>(&_impl_.scale_z_) -
+        reinterpret_cast<char*>(&_impl_.backpack_revision_)) + sizeof(_impl_.scale_z_));
+  }
+  if (BatchCheckHasBit(cached_has_bits, 0x00070000U)) {
+    ::memset(&_impl_.pitch_, 0, static_cast<::size_t>(
+        reinterpret_cast<char*>(&_impl_.roll_) -
+        reinterpret_cast<char*>(&_impl_.pitch_)) + sizeof(_impl_.roll_));
   }
   _impl_._has_bits_.Clear();
   _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
@@ -7539,7 +7634,7 @@ PROTOBUF_NOINLINE void DropLootRequest::Clear() {
   }
 
   // int64 backpack_revision = 4;
-  if (CheckHasBit(cached_has_bits, 0x00000080U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000100U)) {
     if (this_._internal_backpack_revision() != 0) {
       target =
           ::google::protobuf::internal::WireFormatLite::WriteInt64ToArrayWithField<4>(
@@ -7558,7 +7653,7 @@ PROTOBUF_NOINLINE void DropLootRequest::Clear() {
   }
 
   // int64 quantity = 6;
-  if (CheckHasBit(cached_has_bits, 0x00000100U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000200U)) {
     if (this_._internal_quantity() != 0) {
       target =
           ::google::protobuf::internal::WireFormatLite::WriteInt64ToArrayWithField<6>(
@@ -7587,7 +7682,7 @@ PROTOBUF_NOINLINE void DropLootRequest::Clear() {
   }
 
   // double x_cm = 9;
-  if (CheckHasBit(cached_has_bits, 0x00000200U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000400U)) {
     if (::absl::bit_cast<::uint64_t>(this_._internal_x_cm()) != 0) {
       target = stream->EnsureSpace(target);
       target = ::_pbi::WireFormatLite::WriteDoubleToArray(
@@ -7596,7 +7691,7 @@ PROTOBUF_NOINLINE void DropLootRequest::Clear() {
   }
 
   // double y_cm = 10;
-  if (CheckHasBit(cached_has_bits, 0x00000400U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000800U)) {
     if (::absl::bit_cast<::uint64_t>(this_._internal_y_cm()) != 0) {
       target = stream->EnsureSpace(target);
       target = ::_pbi::WireFormatLite::WriteDoubleToArray(
@@ -7605,7 +7700,7 @@ PROTOBUF_NOINLINE void DropLootRequest::Clear() {
   }
 
   // double z_cm = 11;
-  if (CheckHasBit(cached_has_bits, 0x00000800U)) {
+  if (CheckHasBit(cached_has_bits, 0x00001000U)) {
     if (::absl::bit_cast<::uint64_t>(this_._internal_z_cm()) != 0) {
       target = stream->EnsureSpace(target);
       target = ::_pbi::WireFormatLite::WriteDoubleToArray(
@@ -7620,6 +7715,67 @@ PROTOBUF_NOINLINE void DropLootRequest::Clear() {
       ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
           _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.rewards.v1.DropLootRequest.mesh_path");
       target = stream->WriteStringMaybeAliased(12, _s, target);
+    }
+  }
+
+  // .sf.rewards.v1.LootMeshBounds mesh_bounds = 13;
+  if (CheckHasBit(cached_has_bits, 0x00000080U)) {
+    target = ::google::protobuf::internal::WireFormatLite::InternalWriteMessage(
+        13, *this_._impl_.mesh_bounds_, this_._impl_.mesh_bounds_->GetCachedSize(), target,
+        stream);
+  }
+
+  // double scale_x = 14;
+  if (CheckHasBit(cached_has_bits, 0x00002000U)) {
+    if (::absl::bit_cast<::uint64_t>(this_._internal_scale_x()) != 0) {
+      target = stream->EnsureSpace(target);
+      target = ::_pbi::WireFormatLite::WriteDoubleToArray(
+          14, this_._internal_scale_x(), target);
+    }
+  }
+
+  // double scale_y = 15;
+  if (CheckHasBit(cached_has_bits, 0x00004000U)) {
+    if (::absl::bit_cast<::uint64_t>(this_._internal_scale_y()) != 0) {
+      target = stream->EnsureSpace(target);
+      target = ::_pbi::WireFormatLite::WriteDoubleToArray(
+          15, this_._internal_scale_y(), target);
+    }
+  }
+
+  // double scale_z = 16;
+  if (CheckHasBit(cached_has_bits, 0x00008000U)) {
+    if (::absl::bit_cast<::uint64_t>(this_._internal_scale_z()) != 0) {
+      target = stream->EnsureSpace(target);
+      target = ::_pbi::WireFormatLite::WriteDoubleToArray(
+          16, this_._internal_scale_z(), target);
+    }
+  }
+
+  // double pitch = 17;
+  if (CheckHasBit(cached_has_bits, 0x00010000U)) {
+    if (::absl::bit_cast<::uint64_t>(this_._internal_pitch()) != 0) {
+      target = stream->EnsureSpace(target);
+      target = ::_pbi::WireFormatLite::WriteDoubleToArray(
+          17, this_._internal_pitch(), target);
+    }
+  }
+
+  // double yaw = 18;
+  if (CheckHasBit(cached_has_bits, 0x00020000U)) {
+    if (::absl::bit_cast<::uint64_t>(this_._internal_yaw()) != 0) {
+      target = stream->EnsureSpace(target);
+      target = ::_pbi::WireFormatLite::WriteDoubleToArray(
+          18, this_._internal_yaw(), target);
+    }
+  }
+
+  // double roll = 19;
+  if (CheckHasBit(cached_has_bits, 0x00040000U)) {
+    if (::absl::bit_cast<::uint64_t>(this_._internal_roll()) != 0) {
+      target = stream->EnsureSpace(target);
+      target = ::_pbi::WireFormatLite::WriteDoubleToArray(
+          19, this_._internal_roll(), target);
     }
   }
 
@@ -7698,38 +7854,81 @@ PROTOBUF_NOINLINE void DropLootRequest::Clear() {
                                         this_._internal_mesh_path());
       }
     }
-    // int64 backpack_revision = 4;
+    // .sf.rewards.v1.LootMeshBounds mesh_bounds = 13;
     if (CheckHasBit(cached_has_bits, 0x00000080U)) {
+      total_size += 1 +
+                    ::google::protobuf::internal::WireFormatLite::MessageSize(*this_._impl_.mesh_bounds_);
+    }
+  }
+  if (BatchCheckHasBit(cached_has_bits, 0x0000ff00U)) {
+    // int64 backpack_revision = 4;
+    if (CheckHasBit(cached_has_bits, 0x00000100U)) {
       if (this_._internal_backpack_revision() != 0) {
         total_size += ::_pbi::WireFormatLite::Int64SizePlusOne(
             this_._internal_backpack_revision());
       }
     }
-  }
-  if (BatchCheckHasBit(cached_has_bits, 0x00000f00U)) {
     // int64 quantity = 6;
-    if (CheckHasBit(cached_has_bits, 0x00000100U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000200U)) {
       if (this_._internal_quantity() != 0) {
         total_size += ::_pbi::WireFormatLite::Int64SizePlusOne(
             this_._internal_quantity());
       }
     }
     // double x_cm = 9;
-    if (CheckHasBit(cached_has_bits, 0x00000200U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000400U)) {
       if (::absl::bit_cast<::uint64_t>(this_._internal_x_cm()) != 0) {
         total_size += 9;
       }
     }
     // double y_cm = 10;
-    if (CheckHasBit(cached_has_bits, 0x00000400U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000800U)) {
       if (::absl::bit_cast<::uint64_t>(this_._internal_y_cm()) != 0) {
         total_size += 9;
       }
     }
     // double z_cm = 11;
-    if (CheckHasBit(cached_has_bits, 0x00000800U)) {
+    if (CheckHasBit(cached_has_bits, 0x00001000U)) {
       if (::absl::bit_cast<::uint64_t>(this_._internal_z_cm()) != 0) {
         total_size += 9;
+      }
+    }
+    // double scale_x = 14;
+    if (CheckHasBit(cached_has_bits, 0x00002000U)) {
+      if (::absl::bit_cast<::uint64_t>(this_._internal_scale_x()) != 0) {
+        total_size += 9;
+      }
+    }
+    // double scale_y = 15;
+    if (CheckHasBit(cached_has_bits, 0x00004000U)) {
+      if (::absl::bit_cast<::uint64_t>(this_._internal_scale_y()) != 0) {
+        total_size += 9;
+      }
+    }
+    // double scale_z = 16;
+    if (CheckHasBit(cached_has_bits, 0x00008000U)) {
+      if (::absl::bit_cast<::uint64_t>(this_._internal_scale_z()) != 0) {
+        total_size += 10;
+      }
+    }
+  }
+  if (BatchCheckHasBit(cached_has_bits, 0x00070000U)) {
+    // double pitch = 17;
+    if (CheckHasBit(cached_has_bits, 0x00010000U)) {
+      if (::absl::bit_cast<::uint64_t>(this_._internal_pitch()) != 0) {
+        total_size += 10;
+      }
+    }
+    // double yaw = 18;
+    if (CheckHasBit(cached_has_bits, 0x00020000U)) {
+      if (::absl::bit_cast<::uint64_t>(this_._internal_yaw()) != 0) {
+        total_size += 10;
+      }
+    }
+    // double roll = 19;
+    if (CheckHasBit(cached_has_bits, 0x00040000U)) {
+      if (::absl::bit_cast<::uint64_t>(this_._internal_roll()) != 0) {
+        total_size += 10;
       }
     }
   }
@@ -7744,6 +7943,7 @@ void DropLootRequest::MergeImpl(::google::protobuf::MessageLite& to_msg,
   if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
     from.CheckHasBitConsistency();
   }
+  ::google::protobuf::Arena* arena = _this->GetArena();
   // @@protoc_insertion_point(class_specific_merge_from_start:sf.rewards.v1.DropLootRequest)
   ABSL_DCHECK_NE(&from, _this);
   ::uint32_t cached_has_bits = 0;
@@ -7815,30 +8015,70 @@ void DropLootRequest::MergeImpl(::google::protobuf::MessageLite& to_msg,
       }
     }
     if (CheckHasBit(cached_has_bits, 0x00000080U)) {
+      ABSL_DCHECK(from._impl_.mesh_bounds_ != nullptr);
+      if (_this->_impl_.mesh_bounds_ == nullptr) {
+        _this->_impl_.mesh_bounds_ = ::google::protobuf::Message::CopyConstruct(arena, *from._impl_.mesh_bounds_);
+      } else {
+        _this->_impl_.mesh_bounds_->MergeFrom(*from._impl_.mesh_bounds_);
+      }
+    }
+  }
+  if (BatchCheckHasBit(cached_has_bits, 0x0000ff00U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000100U)) {
       if (from._internal_backpack_revision() != 0) {
         _this->_impl_.backpack_revision_ = from._impl_.backpack_revision_;
       }
     }
-  }
-  if (BatchCheckHasBit(cached_has_bits, 0x00000f00U)) {
-    if (CheckHasBit(cached_has_bits, 0x00000100U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000200U)) {
       if (from._internal_quantity() != 0) {
         _this->_impl_.quantity_ = from._impl_.quantity_;
       }
     }
-    if (CheckHasBit(cached_has_bits, 0x00000200U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000400U)) {
       if (::absl::bit_cast<::uint64_t>(from._internal_x_cm()) != 0) {
         _this->_impl_.x_cm_ = from._impl_.x_cm_;
       }
     }
-    if (CheckHasBit(cached_has_bits, 0x00000400U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000800U)) {
       if (::absl::bit_cast<::uint64_t>(from._internal_y_cm()) != 0) {
         _this->_impl_.y_cm_ = from._impl_.y_cm_;
       }
     }
-    if (CheckHasBit(cached_has_bits, 0x00000800U)) {
+    if (CheckHasBit(cached_has_bits, 0x00001000U)) {
       if (::absl::bit_cast<::uint64_t>(from._internal_z_cm()) != 0) {
         _this->_impl_.z_cm_ = from._impl_.z_cm_;
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00002000U)) {
+      if (::absl::bit_cast<::uint64_t>(from._internal_scale_x()) != 0) {
+        _this->_impl_.scale_x_ = from._impl_.scale_x_;
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00004000U)) {
+      if (::absl::bit_cast<::uint64_t>(from._internal_scale_y()) != 0) {
+        _this->_impl_.scale_y_ = from._impl_.scale_y_;
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00008000U)) {
+      if (::absl::bit_cast<::uint64_t>(from._internal_scale_z()) != 0) {
+        _this->_impl_.scale_z_ = from._impl_.scale_z_;
+      }
+    }
+  }
+  if (BatchCheckHasBit(cached_has_bits, 0x00070000U)) {
+    if (CheckHasBit(cached_has_bits, 0x00010000U)) {
+      if (::absl::bit_cast<::uint64_t>(from._internal_pitch()) != 0) {
+        _this->_impl_.pitch_ = from._impl_.pitch_;
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00020000U)) {
+      if (::absl::bit_cast<::uint64_t>(from._internal_yaw()) != 0) {
+        _this->_impl_.yaw_ = from._impl_.yaw_;
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00040000U)) {
+      if (::absl::bit_cast<::uint64_t>(from._internal_roll()) != 0) {
+        _this->_impl_.roll_ = from._impl_.roll_;
       }
     }
   }
@@ -7869,11 +8109,11 @@ void DropLootRequest::InternalSwap(DropLootRequest* PROTOBUF_RESTRICT PROTOBUF_N
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.zone_id_, &other->_impl_.zone_id_, arena);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.mesh_path_, &other->_impl_.mesh_path_, arena);
   ::google::protobuf::internal::memswap<
-      PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_.z_cm_)
-      + sizeof(DropLootRequest::_impl_.z_cm_)
-      - PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_.backpack_revision_)>(
-          reinterpret_cast<char*>(&_impl_.backpack_revision_),
-          reinterpret_cast<char*>(&other->_impl_.backpack_revision_));
+      PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_.roll_)
+      + sizeof(DropLootRequest::_impl_.roll_)
+      - PROTOBUF_FIELD_OFFSET(DropLootRequest, _impl_.mesh_bounds_)>(
+          reinterpret_cast<char*>(&_impl_.mesh_bounds_),
+          reinterpret_cast<char*>(&other->_impl_.mesh_bounds_));
 }
 
 ::google::protobuf::Metadata DropLootRequest::GetMetadata() const {

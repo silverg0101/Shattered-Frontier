@@ -4,7 +4,8 @@ using ShatteredFrontier.InventoryLedger.Postgres;
 internal static class WorldLootDurableChecks
 {
     private static readonly string GroundId = WorldLoot.SourceId("durable-drop", "chr_loot_a");
-    private static readonly WorldLootSource Ground = new(GroundId, "zone/loot_fixture", 10, 20, 30, "", "/Game/WorldMesh", true, false, []);
+    private static readonly WorldLootSource Ground = new(GroundId, "zone/loot_fixture", 10, 20, 30, "", "/Game/WorldMesh", true, false, [],
+        ScaleX: 2, ScaleY: .5, ScaleZ: 1.5, Pitch: 15, Yaw: 37, Roll: 5, MeshBounds: new(100,-20,5,120,70,10));
     public static void Seed(string connection)
     {
         var store = new PostgresInventoryLedgerStore(connection); var ledger = new InventoryLedger(store); var loot = new WorldLoot(store);
@@ -24,6 +25,8 @@ internal static class WorldLootDurableChecks
         var view = loot.List("zone/loot_fixture").Single(v => v.Source.Ground);
         Check(view.Source.Id == Ground.Id && view.Source.ZoneId == Ground.ZoneId && view.Source.X == 10 && view.Source.Y == 20 && view.Source.Z == 30 &&
             view.Source.MeshPath == Ground.MeshPath && view.Container.Instances!.Single() == new ItemInstance("itm_loot_exact", "item/hide_cap", 37), "source metadata and exact instance condition survive database restart");
+        Check(view.Source.MeshBounds == Ground.MeshBounds && view.Source.ScaleX == 2 && view.Source.ScaleY == .5 && view.Source.ScaleZ == 1.5 &&
+            view.Source.Pitch == 15 && view.Source.Yaw == 37 && view.Source.Roll == 5, "oversized offcenter nonuniform ground bounds survive restart unchanged");
         loot.Drop("durable-drop", Ground, "chr_loot_a", "ctn_loot_backpack_a", 1, "item/hide_cap", 1, "itm_loot_exact");
         Check(ledger.Read("ctn_loot_backpack_a").Quantities.Count == 0, "drop receipt replays across database restart");
         var winners = 0;

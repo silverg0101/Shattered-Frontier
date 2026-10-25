@@ -1,6 +1,7 @@
 #include "Inventory/SFLootComponent.h"
 #include "Inventory/SFLootSourceActor.h"
 #include "Inventory/SFLootWorldSubsystem.h"
+#include "Inventory/SFLootGeometry.h"
 #include "Inventory/SFInventory.h"
 #include "Inventory/SFInventoryLedgerClient.h"
 #include "Gathering/SFStationRecipes.h"
@@ -136,12 +137,18 @@ void USFLootComponent::ServerDrop_Implementation(const FString& DefinitionId, in
         if (FParse::Param(FCommandLine::Get(), TEXT("LootWorkflowNetcheck")))
             UE_LOG(LogTemp, Display, TEXT("LOOT_WORKFLOW_DROP_PREFLIGHT Character=%d Health=%d Definition=%d Mesh=%d"), Character != nullptr, Character ? Character->CombatHealth() : 0, Item != nullptr, Item && !Item->WorldMesh.IsNull());
 #endif
-        if (!Self || !Backpack || !Character || Character->CombatHealth() <= 0 || !Item || Item->WorldMesh.IsNull())
+        if (!Self || !Backpack || !Character || Character->CombatHealth() <= 0 || !Item)
+        { Report(ESFBackpackOutcome::Rejected, Revision); return; }
+        // WorldMesh is optional. Freeze the same canonical model/fallback and its actual bounds before any debit.
+        const FSoftObjectPath MeshPath = Item->WorldMesh.IsNull() ? FSoftObjectPath(TEXT("/Engine/BasicShapes/Cube.Cube")) : Item->WorldMesh.ToSoftObjectPath();
+        UStaticMesh* Mesh = Cast<UStaticMesh>(MeshPath.TryLoad());
+        if (!Mesh || !SFLootGeometry::ValidGroundBounds(Mesh->GetBounds().Origin, Mesh->GetBounds().BoxExtent, FTransform::Identity))
         { Report(ESFBackpackOutcome::Rejected, Revision); return; }
         FSFGameplayRequest Q; Q.Rpc = ESFGameplayRpc::DropLoot; Q.OperationId = Op;
         Q.CharacterId = Backpack->GetCharacterId(); Q.ContainerId = Backpack->GetContainerId(); Q.ExpectedContainerRevision = Revision;
         Q.LootDefinitionId = DefinitionId; Q.LootQuantity = Quantity; Q.LootInstanceId = InstanceId;
-        Q.LootMeshPath = Item->WorldMesh.ToSoftObjectPath().ToString(); Q.ZoneId = USFLootWorldSubsystem::ZoneKey(Self->GetWorld());
+        Q.LootMeshPath = MeshPath.ToString(); Q.ZoneId = USFLootWorldSubsystem::ZoneKey(Self->GetWorld());
+        Q.bHasLootMeshBounds = true; Q.LootMeshBoundsOriginCm = Mesh->GetBounds().Origin; Q.LootMeshBoundsExtentCm = Mesh->GetBounds().BoxExtent;
         const FVector Start = Character->GetActorLocation(); FHitResult Floor;
         FCollisionQueryParams Query(SCENE_QUERY_STAT(LootDropFloor), false, Character);
         if (!Self->GetWorld()->LineTraceSingleByChannel(Floor, Start, Start - FVector(0,0,Character->GetSimpleCollisionHalfHeight() * 2), ECC_Visibility, Query))
@@ -151,8 +158,10 @@ void USFLootComponent::ServerDrop_Implementation(const FString& DefinitionId, in
 #endif
             Report(ESFBackpackOutcome::Rejected, Revision); return;
         }
-        UStaticMesh* Mesh = Item->WorldMesh.LoadSynchronous();
-        Q.Position = Floor.ImpactPoint + FVector(0,0,Mesh ? Mesh->GetBounds().BoxExtent.Z - Mesh->GetBounds().Origin.Z : 0);
+        Q.Position = Floor.ImpactPoint + FVector(0,0,Q.LootMeshBoundsExtentCm.Z - Q.LootMeshBoundsOriginCm.Z);
+        Q.LootMeshTransform.SetLocation(Q.Position);
+        if (!SFLootGeometry::ValidGroundBounds(Q.LootMeshBoundsOriginCm, Q.LootMeshBoundsExtentCm, Q.LootMeshTransform))
+        { Report(ESFBackpackOutcome::Rejected, Revision); return; }
         Self->SendMutation(Q, nullptr, MoveTemp(Report));
     };
     Mutation.Finished = [Weak = TWeakObjectPtr<USFBackpackComponent>(Backpack)](ESFBackpackOutcome Outcome)

@@ -344,6 +344,15 @@ void FSFGrpcGameplayTransport::Send(const FSFGameplayRequest& Q, float DeadlineS
         M.set_backpack_id(Utf8(Q.ContainerId)); M.set_backpack_revision(Q.ExpectedContainerRevision);
         M.set_definition_id(Utf8(Q.LootDefinitionId)); M.set_quantity(Q.LootQuantity); M.set_instance_id(Utf8(Q.LootInstanceId));
         M.set_zone_id(Utf8(Q.ZoneId)); M.set_x_cm(Q.Position.X); M.set_y_cm(Q.Position.Y); M.set_z_cm(Q.Position.Z); M.set_mesh_path(Utf8(Q.LootMeshPath));
+        if (Q.bHasLootMeshBounds)
+        {
+            auto* Bounds = M.mutable_mesh_bounds();
+            Bounds->set_origin_x_cm(Q.LootMeshBoundsOriginCm.X); Bounds->set_origin_y_cm(Q.LootMeshBoundsOriginCm.Y); Bounds->set_origin_z_cm(Q.LootMeshBoundsOriginCm.Z);
+            Bounds->set_extent_x_cm(Q.LootMeshBoundsExtentCm.X); Bounds->set_extent_y_cm(Q.LootMeshBoundsExtentCm.Y); Bounds->set_extent_z_cm(Q.LootMeshBoundsExtentCm.Z);
+            const FVector Scale = Q.LootMeshTransform.GetScale3D(); const FRotator Rotation = Q.LootMeshTransform.Rotator();
+            M.set_scale_x(Scale.X); M.set_scale_y(Scale.Y); M.set_scale_z(Scale.Z);
+            M.set_pitch(Rotation.Pitch); M.set_yaw(Rotation.Yaw); M.set_roll(Rotation.Roll);
+        }
         auto* Call = new TCall<sf::rewards::v1::LootSourceView>();
         Call->Copy = [](const sf::rewards::v1::LootSourceView& R, FSFGameplayResponse& Out)
         { Out.LootSources.Add(CopyLoot(R)); Out.ContainerRevision = R.backpack_revision(); Out.LedgerOperationId = FromUtf8(R.ledger_operation_id()); };

@@ -56,6 +56,26 @@ internal static class WorldLootTests
         Reject(() => loot.Create(described with { MeshBounds = bounds with { ExtentXCm = 49 } }, [new("item/pelt", 1)], []));
         Reject(() => loot.Create(described with { Id = WorldLoot.SourceId("bad-bounds", "chr_a"), MeshBounds = bounds with { ExtentXCm = 0 } }, [], []));
         Check(!System.Text.Json.JsonSerializer.Serialize(source).Contains("MeshBounds", StringComparison.Ordinal), "absent additive bounds preserve historical source fingerprints");
+        ledger.CreateContainer(new("ctn_geometry", OwnerKind.Character, "chr_geometry", ContainerKind.Backpack, 10));
+        ledger.Grant("geometry-seed", "ctn_geometry", 0, "item/pelt", 2, "fixture", "geometry");
+        var groundGeometry = ground with { Id = WorldLoot.SourceId("geometry-drop", "chr_geometry"), X = 1000, Y = 2000, Z = 300,
+            ScaleX = 2, ScaleY = .5, ScaleZ = 1.5, Pitch = 15, Yaw = 37, Roll = 5, MeshBounds = new(100,-20,5,120,70,10) };
+        var invalidGeometry = new[] {
+            groundGeometry with { MeshBounds = groundGeometry.MeshBounds! with { ExtentXCm = double.NaN } },
+            groundGeometry with { ScaleX = double.MaxValue },
+            groundGeometry with { X = WorldLoot.MaximumWorldCoordinateCm },
+            groundGeometry with { MeshBounds = new(0,0,0,0,0,0) }
+        };
+        for (var index = 0; index < invalidGeometry.Length; ++index)
+        {
+            Reject(() => loot.Drop("invalid-geometry-"+index, invalidGeometry[index], "chr_geometry", "ctn_geometry", 1, "item/pelt", 1, ""));
+            Check(ledger.Read("ctn_geometry").Revision == 1 && ledger.Read("ctn_geometry").Quantities["item/pelt"] == 2, "invalid/overflowing geometry rejects before debit");
+        }
+        loot.Drop("geometry-drop", groundGeometry, "chr_geometry", "ctn_geometry", 1, "item/pelt", 1, "");
+        var recoveredGround = new WorldLoot(store).Open(groundGeometry.Id, "chr_geometry").Source;
+        Check(recoveredGround.MeshBounds == groundGeometry.MeshBounds && recoveredGround.ScaleX == 2 && recoveredGround.ScaleY == .5 &&
+            recoveredGround.ScaleZ == 1.5 && recoveredGround.Pitch == 15 && recoveredGround.Yaw == 37 && recoveredGround.Roll == 5,
+            "oversized offcenter nonuniform ground geometry persists without clipping");
         Console.WriteLine("WORLD_LOOT_PASS eligibility ownership capacity-rollback instance-condition replay recovery concurrent-pickup shared-claim route-fence mesh-bounds-recovery");
     }
     private static void Check(bool ok, string message) { if (!ok) throw new Exception(message); }
