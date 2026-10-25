@@ -704,15 +704,27 @@ def has_mvadapter(host):
         NODE_CACHE[key] = (time.time(), bool(comfy(host, "/object_info/DiffusersMVSampler").get("DiffusersMVSampler")))
     return NODE_CACHE[key][1]
 
+def has_qwen_depth(host):
+    """The Qwen-Image-2.1 depth-ControlNet files (and the nodes that load them) are on this host."""
+    key = (host["name"], "qwen_depth")
+    if key not in NODE_CACHE or time.time() - NODE_CACHE[key][0] > 300:
+        need = {"ModelPatchLoader": ("name", DEPTH_WORKFLOW["4"]["inputs"]["name"]), "UNETLoader": ("unet_name", DEPTH_WORKFLOW["1"]["inputs"]["unet_name"]),
+                "CLIPLoader": ("clip_name", DEPTH_WORKFLOW["2"]["inputs"]["clip_name"])}
+        ok = comfy(host, "/object_info/QwenImageDiffsynthControlnet").get("QwenImageDiffsynthControlnet") is not None
+        for node, (field, file) in need.items():
+            ok = ok and file in (comfy(host, f"/object_info/{node}").get(node, {}).get("input", {}).get("required", {}).get(field, [[]])[0])
+        NODE_CACHE[key] = (time.time(), ok)
+    return NODE_CACHE[key][1]
+
 def host_status(host):
     try:
         q = comfy(host, "/queue", timeout=10)
         busy = bool(q.get("queue_running") or q.get("queue_pending"))
         model = pixal_model(host)
-        return {"ok": True, "busy": busy, "trellis": bool(model), "mvadapter": has_mvadapter(host),
+        return {"ok": True, "busy": busy, "trellis": bool(model), "mvadapter": has_mvadapter(host), "qwen_depth": has_qwen_depth(host),
                 "detail": "missing Trellis2 nodes / Pixal3D model" if not model else "busy (another client)" if busy else "ready"}
     except Exception as e:
-        return {"ok": False, "busy": True, "trellis": False, "mvadapter": False, "detail": str(e)[-200:]}
+        return {"ok": False, "busy": True, "trellis": False, "mvadapter": False, "qwen_depth": False, "detail": str(e)[-200:]}
 
 # Job files live in ComfyUI's input/sfam and output/sfam; `name` is relative to those folders.
 def put_input(host, name, data):
@@ -1542,14 +1554,15 @@ def worker():
             free = [h for h in s["hosts"] if h.get("enabled") and h["name"] not in taken]
             for jid, kind, params in queued:
                 jp = json.loads(params or "{}")
-                multi = kind == "image" and jp.get("mode") == "multi" and jp.get("views") == "mv-adapter"  # a GPU host
+                depth = kind == "image" and jp.get("mode") == "depth"  # ComfyUI Qwen on a GPU host
+                multi = kind == "image" and (depth or jp.get("mode") == "multi" and jp.get("views") == "mv-adapter")  # a GPU host
                 if kind == "image" and not multi:  # ChatGPT draws these; no GPU host, so they never wait behind 3D jobs
                     update_job(jid, status="running", host="ChatGPT", started=time.time(), note="")
                     threading.Thread(target=run_image, args=(jid,), daemon=True).start()
                     continue
                 # Motion and detector jobs run Blender and the tracker over SSH; they need no Trellis2 nodes.
                 over_ssh = kind in ("motion", "detector", "curate")
-                fits = ((lambda h, st: h.get("kind") == "ssh") if over_ssh else (lambda h, st: st["mvadapter"]) if multi
+                fits = ((lambda h, st: h.get("kind") == "ssh") if over_ssh else (lambda h, st: st["qwen_depth"]) if depth else (lambda h, st: st["mvadapter"]) if multi
                         else (lambda h, st: st["trellis"] and h.get("kind") == "ssh") if kind == "creature"  # 3D, then Blender
                         else (lambda h, st: st["trellis"]))
                 host = next((h for h in free if (st := host_status(h))["ok"] and not st["busy"] and fits(h, st)), None)
@@ -2044,15 +2057,37 @@ def align_uploads(raw):
     notes.append("[asset-manager] views: aligned to one height and feet line")
     return align_views(subjects), notes
 
+DEPTH_DIR = Path(__file__).with_name("body-depth")  # pre-rendered body depth/mask views (tools/Render-BodyDepthViews.py)
+DEPTH_WORKFLOW = json.loads((DEPTH_DIR / "qwen21-depth-garment.json").read_text())
+DEPTH_VIEWS = ("front", "left", "right")
+DEPTH_SLOTS = sorted(s for s in json.loads((DEPTH_DIR / "slots.json").read_text()) if (DEPTH_DIR / f"depth_{s}_front.png").is_file())
+DEPTH_WRAP = ("{garment} Ghost-mannequin product photo of ONE single garment on a plain pure white background, seen exactly {view}, "
+              "orthographic, no person, no mannequin, no arms, no hands, no body parts, no other objects, no turnaround sheet. "
+              "The garment follows the supplied depth map exactly: it is worn by an invisible body of that shape, so it hugs that "
+              "silhouette and size. Every opening (neck, face, wrists, hem) stays open and visible, and through each opening you see "
+              "only the dark inner lining of the garment, never the white background or skin.")
+DEPTH_VIEW_TEXT = {"front": "from the front", "left": "from its left side, in profile facing image-left",
+                   "right": "from its right side, in profile facing image-right"}
+DEPTH_NEGATIVE = ("person, skin, face, ears, nose, eyes, head, arms, sleeves, hands, torso, chest, tunic, shirt, body, mannequin, text, "
+                  "watermark, white fill inside openings, several garments, collage, floor shadow")
+IMAGE_MODES = ["single", "multi", "depth"]  # depth: Qwen-Image-2.1 + depth ControlNet on a GPU host, views already at the player's body size
 IMAGE_VIEWS = ["heroes", "mv-adapter"]  # multi: the heroes and a mirror (default), or MV-Adapter around the front
 
 def image_params(params):
-    unknown = set(params) - {"mode", "model", "prompt", "views", "type", "category"}
+    unknown = set(params) - {"mode", "model", "prompt", "views", "type", "category", "slot"}
     if unknown:
-        raise ValueError(f"unknown options: {sorted(unknown)} (image jobs take mode, model, prompt, views, type, category)")
+        raise ValueError(f"unknown options: {sorted(unknown)} (image jobs take mode, model, prompt, views, type, category, slot)")
     p = {"mode": params.get("mode", "single"), "model": params.get("model", "auto"), "prompt": str(params.get("prompt", "")).strip(),
          "views": params.get("views", IMAGE_VIEWS[0]), **{k: params[k] for k in ("type", "category") if k in params}}
+    if p["mode"] == "depth":  # the body slot picks the pre-rendered depth views; the model and view choices don't apply
+        p = {**p, "slot": params.get("slot", "head"), "views": "depth"}
+        if p["slot"] not in DEPTH_SLOTS:
+            raise ValueError(f"slot must be one of {DEPTH_SLOTS} (GET /api/schema, image.slots)")
     asset_folder(p)
+    if p["mode"] == "depth":
+        if not p["prompt"]:
+            raise ValueError("a prompt is required")
+        return p
     if p["mode"] not in ("single", "multi") or p["model"] not in IMAGE_MODELS or not p["prompt"] or p["views"] not in IMAGE_VIEWS:
         raise ValueError(f"mode is single or multi, model one of {IMAGE_MODELS}, views one of {IMAGE_VIEWS}, and a prompt is required")
     return p
@@ -2165,6 +2200,43 @@ def hero_views(jid, prompt, model, hero, log):
         log.append("views: kept the last try although the review still failed")
     return front, views
 
+def depth_fit(png, slot, pos):
+    """(coverage, gap): the share of the body's silhouette (pre-rendered mask, grown by the slot's cloth thickness) the
+    garment view covers and leaves bare. The garment is whatever is not near-white; openings show a dark lining, so they count."""
+    from PIL import Image, ImageChops, ImageFilter
+    g = Image.open(io.BytesIO(png)).convert("L").point(lambda v: 255 if v < 225 else 0).filter(ImageFilter.MinFilter(3)).filter(ImageFilter.MaxFilter(3))
+    b = Image.open(DEPTH_DIR / f"mask_{slot}_{pos}.png").convert("L").point(lambda v: 255 if v > 127 else 0)
+    body = b.histogram()[255]
+    both = ImageChops.multiply(g, b).histogram()[255]
+    return round(both / body, 3), round((body - both) / body, 3)
+
+def depth_views(jid, host, p, log):
+    """One Qwen-Image-2.1 + depth-ControlNet generation per view on `host`, from the slot's pre-rendered body depth maps."""
+    ok, line = gpu_check(host)
+    log.append(line)
+    if not ok:
+        raise RuntimeError(line)
+    names = {pos: f"{jid}_{p['slot']}_{pos}.png" for pos in DEPTH_VIEWS}
+    for pos, n in names.items():
+        put_input(host, n, (DEPTH_DIR / f"depth_{p['slot']}_{pos}.png").read_bytes())
+    views = {}
+    try:
+        comfy(host, "/free", {"unload_models": True, "free_memory": True})
+        for pos in DEPTH_VIEWS:
+            t = time.time()
+            g = json.loads(json.dumps(DEPTH_WORKFLOW))
+            g["5"]["inputs"]["image"] = f"sfam/{names[pos]}"
+            g["6"]["inputs"].update(prompt=DEPTH_WRAP.format(garment=p["prompt"], view=DEPTH_VIEW_TEXT[pos]), negative_prompt=DEPTH_NEGATIVE)
+            g["11"]["inputs"]["filename_prefix"] = f"sfam/{jid}_qd/{pos}"
+            h = run_prompt(host, jid, g, time.time(), get_settings()["job_timeout_min"])
+            f = h["outputs"]["11"]["images"][0]
+            views[pos] = get_output(host, f"{f['subfolder']}/{f['filename']}"[len("sfam/"):])
+            cov, gap = depth_fit(views[pos], p["slot"], pos)
+            log.append(f"views: {pos} drawn in {time.time() - t:.0f}s; covers {cov:.1%} of the {p['slot']} body silhouette, {gap:.1%} bare")
+    finally:
+        cleanup(host, list(names.values()), [f"{jid}_qd"])
+    return views
+
 def run_image(jid, host=None):
     job = job_row(jid)
     p = image_params(json.loads(job["params"]))
@@ -2183,6 +2255,9 @@ def run_image(jid, host=None):
         if p["mode"] == "single":
             log.append("generating the image (sent as written)")
             save(codex_image(p["prompt"], p["model"], log=log), "")
+        elif p["mode"] == "depth":  # no ChatGPT: the body's depth maps fix the views' size and pose
+            for pos, png in depth_views(jid, host, p, log).items():
+                save(png, f"-{pos}")
         else:  # a side-view hero and its front from ChatGPT; views from those two, or MV-Adapter around the front
             hero = draw_hero(p["prompt"], p["model"], log)
             if p["views"] == "mv-adapter":
@@ -2267,7 +2342,8 @@ class Handler(BaseHTTPRequestHandler):
                 return self.send({"candidates": creature.match(q.get("q", ""), creature.load_catalogue(DATA / "MotionLibrary"))})
             if method == "GET" and p == "/api/schema":
                 return self.send({"3d": param_schema(), "presets": PRESET_LEVELS, "default_preset": DEFAULT_PRESET,
-                    "types": ASSET_TYPES, "categories": ITEM_CATEGORIES, "motion": [
+                    "types": ASSET_TYPES, "categories": ITEM_CATEGORIES, "image": {"modes": IMAGE_MODES, "models": IMAGE_MODELS,
+                    "views": IMAGE_VIEWS, "slots": DEPTH_SLOTS, "depth_generator": "Depth-guided (ComfyUI Qwen)"}, "motion": [
                     {"key": k, "label": lbl, "section": "Motion", "kind": kind, "default": d, **extra}
                     for k, lbl, kind, extra, d in MOTION_PARAMS], "detector": [
                     {"key": k, "label": lbl, "section": "Detector", "kind": kind, "default": d, **extra}
@@ -2654,6 +2730,16 @@ def check():
             pass
     assert "{" not in MV_HERO.format(prompt="rat") + MV_FRONT.format(prompt="rat") + MV_REVIEW.format(prompt="rat", order="front")
     assert image_params({"prompt": "rat", "mode": "multi"})["views"] == "heroes"
+    assert image_params({"prompt": "hood", "mode": "depth"})["slot"] == "head" and "head" in DEPTH_SLOTS
+    for bad in ({"prompt": "x", "mode": "depth", "slot": "tail"}, {"prompt": "", "mode": "depth"}):
+        try:
+            image_params(bad); raise AssertionError(f"image_params accepted {bad}")
+        except ValueError:
+            pass
+    assert "{garment}" in DEPTH_WRAP and DEPTH_WORKFLOW["5"]["class_type"] == "LoadImage" and DEPTH_WORKFLOW["11"]["class_type"] == "SaveImage"
+    assert DEPTH_WORKFLOW["9"]["inputs"]["cfg"] == 3.0 and DEPTH_WORKFLOW["6"]["inputs"]["resolution"] == 1024
+    _canon = Path(__file__).resolve().parents[1] / "comfy-workflows" / "qwen21-depth-garment.json"
+    assert not _canon.is_file() or json.loads(_canon.read_text()) == DEPTH_WORKFLOW  # the Forge's copy must not drift
     assert all(n in mvadapter_graph("r.png", "rat", 1, "sfam/1_mv/view") for n in MV_SAVE_NODES)
     from PIL import Image, ImageDraw
     def png_of(img):

@@ -115,12 +115,22 @@ An image job draws source images with ChatGPT (the owner's subscription, signed 
 
 | Param | Values | Default |
 |---|---|---|
-| `mode` | `single`: one image, the prompt sent exactly as written. `multi`: four views for a multi-view 3D job | `single` |
+| `mode` | `single`: one image, the prompt sent exactly as written. `multi`: four views for a multi-view 3D job. `depth`: the Depth-guided (ComfyUI Qwen) generator, see below | `single` |
 | `model` | `auto` (ChatGPT's default image model), `gpt-image-2.5-sunburst`, `gpt-image-2.5-flare` | `auto` |
 | `prompt` | Text, required | |
+| `slot` | Depth only: the body slot, one of `GET /api/schema` > `image.slots` (`head` so far; chest, legs, feet and hands are added by rendering their depth views) | `head` |
 | `views` | Multi only. `heroes`: the front, left and a mirrored right from ChatGPT's two hero images. `mv-adapter`: MV-Adapter draws front, left, back and right around the front on a GPU host | `heroes` |
 
 `name` (top level) is required and names the files. Single saves `Inputs/<name>.png`. Multi first has ChatGPT draw one hero image that settles the design: the subject alone, seen exactly from its left side, in a rig-ready pose (quadrupeds square-stanced with the tail straight back and clear; bipeds in an A-pose with separate fingers; mouth closed; no whiskers, bristles or loose hair in the outline), then redraw it from the front. A hero whose far legs show beside the near ones (more than 2 feet on the ground, counted in code) is redrawn up to 3 times first: the mirrored right view would put a second paw on every leg. With `views: heroes` (the default) those two are the front and left views, and the right is the hero mirrored: opposite orthographic views have mirrored outlines, so it can't disagree, and with no back view there is nothing for Pixal3D to build twice (image-model turnarounds gave rats two tails and doubled feet). A failed review redraws the front with the reviewer's fix, up to 3 tries. With `views: mv-adapter`, MV-Adapter (local SDXL, orthographic cameras) draws the left, back and right around the front on a GPU host, the front shrunk by the hero's height/length so the full length fits its square frame; a failed set is redrawn with a new seed. MV-Adapter is consistent by construction but trained on objects whose front shows their size: on a long rat it guessed a short, tailless body. Either way each view is scaled to the same height from the top to the feet with the feet on one line (a tail or staff hanging below the feet is ignored and overhangs), and `gpt-6-luna` reviews them side by side with horizontal guide lines across them, and the log gives every verdict. It saves `Inputs/<name>-front.png`, `-left` and `-right` (plus `-back` with MV-Adapter; 1024 px squares, the `views` shape a 3D job takes), the `-hero.png` and `-hero-front.png` they were drawn from, and `-guides.png`, the strip the reviewer judged. In the web app, the finished job's **Make 3D asset** button fills the 3D Asset form with them.
+
+**Depth-guided (`mode: depth`)** draws gear views already at the player's body size and pose. It runs Qwen-Image 2.1 with the Fun ControlNet Union (depth) on a free RA-SIEMS ComfyUI instead of ChatGPT, one generation per view (front, left, right; about 40 s each on a 3090), fed the pre-rendered depth of the reference MetaHuman body for the `slot` (`tools/asset-manager/body-depth/depth_<slot>_<view>.png`, made by `tools/Render-BodyDepthViews.py`; the container needs no Blender). `prompt` describes the garment only: the server adds ghost-mannequin-on-white wording (openings show a dark lining) and negatives (no body, face, arms). `model` is ignored. It needs a host that has the Qwen files, and waits for one. It saves `Inputs/<name>-front.png`, `-left` and `-right` (1024 px, ready for a multi-view 3D job; Make 3D asset takes them), and the log gives each view's time and how much of the body silhouette the garment covers and leaves bare (`views: front drawn in 37s; covers 97.2% of the head body silhouette, 2.8% bare`). No ChatGPT review runs. The files are in `body-depth/` and the workflow is `tools/comfy-workflows/qwen21-depth-garment.json` (a copy lives beside the depth views; the self-check fails if they differ).
+
+```bash
+curl -X POST http://192.168.50.133:8090/api/jobs -H "Content-Type: application/json" -d '{
+  "kind": "image", "name": "Hood", "params": {"mode": "depth", "slot": "head", "type": "item", "category": "Armor/Cloth/Head",
+  "prompt": "an undyed wool hood with a short shoulder cape, walnut brown, coarse twill"}
+}'
+```
 
 ```bash
 curl -X POST http://192.168.50.133:8090/api/jobs -H "Content-Type: application/json" -d '{

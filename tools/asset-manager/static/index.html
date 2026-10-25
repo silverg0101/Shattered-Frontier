@@ -814,7 +814,7 @@ const createViews = () => store.get('createViews', {});
 const setCreateView = (pos, p) => { const v = createViews(); p ? (v[pos] = p) : delete v[pos]; store.set('createViews', v); };
 // Asset type (Creature: animated; Item: gear, weapons, props) and the Items category, from /api/schema; shared by both forms.
 let typeInfo = null;
-const loadTypes = async () => { if (!typeInfo) { const r = await api('/api/schema'); typeInfo = { types: r.types, categories: r.categories }; } return typeInfo; };
+const loadTypes = async () => { if (!typeInfo) { const r = await api('/api/schema'); typeInfo = { types: r.types, categories: r.categories, slots: (r.image || {}).slots || [] }; } return typeInfo; };
 const typeHtml = () => `<div class="field" style="margin-top:18px"><label>Asset type</label>
     <div class="seg">${Object.entries(typeInfo.types).map(([k, t]) => `<button data-atype="${k}">${esc(t.label)}</button>`).join('')}</div></div>
   <div class="field" id="catrow" style="margin-top:14px"><label for="acat">Category (saved under ${esc(typeInfo.types.item.folder)}/)</label>
@@ -985,11 +985,12 @@ async function renderImages() {
     <div class="card fade" style="--i:3;margin-top:18px;max-width:760px">
       ${cx.signed_in ? '' : `<div class="err" style="margin-bottom:14px">ChatGPT is not signed in. <a href="#/settings">Sign in under Settings</a> first.</div>`}
       <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap"><div class="eyebrow">Image(s)</div>
-        <div class="seg"><button data-imode="single">Single</button><button data-imode="multi">Multi-view</button></div></div>
+        <div class="seg"><button data-imode="single">Single</button><button data-imode="multi">Multi-view</button><button data-imode="depth" title="Qwen-Image 2.1 + depth ControlNet on a GPU host: views drawn at the player's body size and pose">Depth-guided (ComfyUI Qwen)</button></div></div>
       <div class="muted" style="font-size:12px;margin-top:10px" id="inote"></div>
       <div class="fields" style="margin-top:14px">
         <div class="field"><label for="imodel">Model</label><select id="imodel">${cx.models.map(m => `<option ${m === draft.model ? 'selected' : ''}>${esc(m)}</option>`).join('')}</select></div>
       </div>
+      <div class="field" id="islotf" style="margin-top:14px;max-width:240px"><label for="islot">Body slot</label><select id="islot">${(typeInfo.slots || []).map(sl => `<option ${sl === draft.slot ? 'selected' : ''}>${esc(sl)}</option>`).join('')}</select></div>
       <div class="field" style="margin-top:14px"><label for="iprompt">Prompt</label><textarea id="iprompt" rows="6" style="width:100%;resize:vertical">${esc(draft.prompt || '')}</textarea></div>
       ${typeHtml()}
       <div class="field" style="margin-top:14px"><label for="iname">Asset name</label><input type="text" id="iname" value="${esc(draft.name || '')}" placeholder="Greenlands - Rat"></div>
@@ -998,19 +999,21 @@ async function renderImages() {
   const setMode = m => {
     mode = m; store.set('imageMode', m);
     document.querySelectorAll('[data-imode]').forEach(b => b.classList.toggle('on', b.dataset.imode === m));
-    $('#inote').textContent = m === 'single' ? 'One image. The prompt is sent exactly as written.'
+    $('#islotf').style.display = m === 'depth' ? '' : 'none';
+    $('#imodel').closest('.field').style.display = m === 'depth' ? 'none' : '';
+    $('#inote').textContent = m === 'depth' ? 'Views for a multi-view 3D asset, drawn by Qwen-Image 2.1 on a GPU host with a depth ControlNet fed the depth of the reference body (front, left, right) for the chosen slot: the garment comes out at the player body size and pose, a ghost mannequin on white. Describe the garment only. Saved like the multi-view images, so Make 3D asset takes them.' : m === 'single' ? 'One image. The prompt is sent exactly as written.'
       : 'Views for a multi-view 3D asset. ChatGPT draws one side-view design image in a rig-ready pose and redraws it from the front; the front, the side and the side mirrored become the views, with their height and feet line matched and the set reviewed; a failed front is redrawn (up to 3 tries).';
   };
   document.querySelectorAll('[data-imode]').forEach(b => b.onclick = () => setMode(b.dataset.imode));
   setMode(mode); wireType();
-  const keep = () => store.set('imageDraft', { model: $('#imodel').value, prompt: $('#iprompt').value, name: $('#iname').value });
-  ['#imodel', '#iprompt', '#iname'].forEach(s => $(s).addEventListener('input', keep));
+  const keep = () => store.set('imageDraft', { model: $('#imodel').value, slot: $('#islot').value, prompt: $('#iprompt').value, name: $('#iname').value });
+  ['#imodel', '#islot', '#iprompt', '#iname'].forEach(s => $(s).addEventListener('input', keep));
   $('#isubmit').onclick = async () => {
     const prompt = $('#iprompt').value.trim(), name = $('#iname').value.trim();
     if (!prompt) return toast('Write a prompt first', true);
     if (!name) return toast('Give it an asset name', true);
     try {
-      await post('/api/jobs', { kind: 'image', name, params: { mode, model: $('#imodel').value, prompt, ...typeVals() } });
+      await post('/api/jobs', { kind: 'image', name, params: { mode, ...(mode === 'depth' ? { slot: $('#islot').value } : { model: $('#imodel').value }), prompt, ...typeVals() } });
       toast('Added to queue'); setQueueOpen(true); pollQueue();
     } catch (e) { fail(e); }
   };

@@ -1,0 +1,33 @@
+{
+  "_doc": "Garment slots for body-conditioned view generation (tools/Render-BodyDepthViews.py). z is a fraction of the body height (feet 0, head top 1) bounding the slot's region (a hard cut at the lower edge); margin scales the square view frame around that region (1.0 = the region's height fills it). A null z is a slot still to fill. Optional arm_cut_z (fraction of height) drops arm-weighted vertices below it, but leaves holes in the torso's side in side views. grow_px / smooth_px: dilate the silhouette (cloth thickness) and blur the depth so skin detail (ears, lips) does not reach the garment.",
+  "views": [
+    "front",
+    "left",
+    "right"
+  ],
+  "head": {
+    "z": [
+      0.7,
+      1.0
+    ],
+    "margin": 1.35,
+    "grow_px": 24,
+    "smooth_px": 24
+  },
+  "chest": {
+    "z": null,
+    "margin": 1.1
+  },
+  "legs": {
+    "z": null,
+    "margin": 1.1
+  },
+  "feet": {
+    "z": null,
+    "margin": 1.1
+  },
+  "hands": {
+    "z": null,
+    "margin": 1.1
+  }
+}
