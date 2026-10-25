@@ -30,6 +30,7 @@ TAIL_CLEAR = 0.3    # the tail is lifted (at tail_02) until it clears the floor 
 CONTACT_SHARE = 0.30  # planted: in the lowest 30% of the paw's height range ...
 CONTACT_M = 0.015     # ... and within 1.5 cm of its lowest point
 FLOOR_EPS = 0.002   # m: keep paws this far above the floor
+SINK_LIFT = 0.005   # share of the creature's length a paw may end under the floor for the whole clip to be lifted
 TREADMILL_MIN = 0.002  # share of the creature's length a stance must sweep per frame to be a gait's treadmill, not a stand
 FLIP_DEG = 90.0
 CHAINS = [["pelvis"], ["spine_01", "spine_02", "spine_03", "neck"], ["head"], [f"tail_{i:02}" for i in range(1, 7)],
@@ -336,6 +337,15 @@ def main(rigf, animalf, clip, out, outj, size_cm, height_scale):
             prev = q
         for f in fc: f.update()
 
+    # a paw the blends left a touch under the floor: the whole clip rises by that much (up to SINK_LIFT of the length)
+    sunk = -min(paw_h(p) for i in range(N + 1) for p in PAWS if not sc.frame_set(i + 1))
+    if 0 < sunk <= SINK_LIFT * size_cm / 100:
+        dz = RB["pelvis"].to_3x3().inverted() @ (to_arm @ Vector((0, 0, sunk + FLOOR_EPS)))
+        for j in range(3):
+            fc = act.fcurves.find('pose.bones["pelvis"].location', index=j)
+            for kp in fc.keyframe_points: kp.co.y += dz[j]
+            fc.update()
+        print("RT lifted the clip (cm)", round((sunk + FLOOR_EPS) * 100, 2))
     # metrics, from the baked clip
     heights = {p: [] for p in PAWS}; pts = {p: [] for p in PAWS}; R = {b.name: [] for b in order}
     for i in range(N + 1):

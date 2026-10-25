@@ -187,7 +187,7 @@ def standardise_rig(jid, host, model_glb):
     a.run_blender(jid, host, "rig_standard.py", [model_glb, lab, out], [model_glb, lab, "creature.py"], [out], 1800)
     labels = json.loads(a.ssh(host, f"cat {q(work + '/' + lab)}"))
     verdict = next((ln for ln in review.decode(errors="replace").splitlines() if ln.startswith("REVIEW")), "REVIEW ?")
-    return {k: labels[k] for k in ("labels", "dropped", "warnings")} | {"glb": out, "sheet": sheet, "review": verdict[7:]}
+    return {k: labels[k] for k in ("labels", "dropped", "warnings", "bones")} | {"glb": out, "sheet": sheet, "review": verdict[7:]}
 
 
 CHECKS = ("min_paw_cm", "max_slide_cm", "seam_deg", "flips")
@@ -306,10 +306,12 @@ def library_matches(want, lib: Path) -> list[str]:
     return out
 
 
-def choose_clip(want, matches, fill, log, retarget, unimate):
+def choose_clip(want, matches, fill, log, retarget, unimate, synth=None):
     """Clip `want` from the first library match (retarget(name) -> result) whose checks pass; when none passes, UniMate
     (unimate() -> result) if `fill`, falling back to the best failing match should UniMate itself fail; else the best
-    failing match. None when there is no match and no fill. Library results get source "library" and from_clip."""
+    failing match. With `synth` (synth() -> result: a procedural gait, gait_synth.py) a UniMate take that fails its
+    checks gives way to it when that passes, else stays. None when there is no match and no fill. Library results
+    get source "library" and from_clip; UniMate's "text", the procedural one's "procedural"."""
     r = None
     for f in matches:
         t = retarget(f) | {"source": "library", "from_clip": f}
@@ -320,19 +322,27 @@ def choose_clip(want, matches, fill, log, retarget, unimate):
     if not fill:
         return r
     try:
-        return unimate() | {"source": "text"}
+        u = unimate() | {"source": "text"}
     except InterruptedError:
         raise
     except Exception as e:
-        if not r:
+        if not r and not synth:
             raise
-        log.append(f"{want}: UniMate failed ({str(e)[-200:]}), keeping library {r['from_clip']}")
-        return r
+        log.append(f"{want}: UniMate failed ({str(e)[-200:]}), " + ("trying a procedural gait" if synth else f"keeping library {r['from_clip']}"))
+        u = None
+    if (u is None or not u["checks"]["passed"]) and synth:
+        if u:
+            log.append(f"{want}: UniMate's best take failed its checks ({u['checks']['reason']}), trying a procedural gait")
+        p = synth() | {"source": "procedural"}
+        if p["checks"]["passed"] or u is None:
+            return p
+    return u if u is not None else r
 
 
 SKELETON = "quadruped_v1"
 MODEL_LOCK = threading.RLock()  # ponytail: one lock for every model folder's manifest; per model if it ever contends
-CLIP_SOURCES = ("library", "text", "video", "glb")
+CLIP_SOURCES = ("library", "text", "video", "glb", "procedural")
+GAITS = ("walk", "trot", "run", "gallop")  # clip names a procedural gait (motion/gait_synth.py) can stand in for
 
 
 def safe_name(s) -> str:
@@ -690,6 +700,28 @@ def std_glb_clip(jid, host, rig_glb, src_glb, name, size_cm, prompt=None, role_m
         shutil.rmtree(lib, ignore_errors=True)
 
 
+def synth_clip(jid, host, rig_glb, clip, size_cm, prompt=None, bones=None) -> dict:
+    """A procedural gait cycle (motion/gait_synth.py: walk, trot, run/gallop) as clip `clip` on `rig_glb`, built on
+    the rig's own rest skeleton (`bones`: rig_standard's, standardise_rig()["bones"]) so the rotations land its paws,
+    through retarget_clip's cleanup, checks, sheet and review. The last resort for a gait, loop True."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("gait_synth", _app().MOTION_DIR / "gait_synth.py")
+    gait_synth = importlib.util.module_from_spec(spec); spec.loader.exec_module(gait_synth)
+    gait = next((g for g in ("gallop", "trot", "walk", "run") if g in clip.lower()), None)
+    if not gait:
+        raise ValueError(f"no procedural gait for {clip!r} (walk, trot, run or gallop)")
+    lib = Path(tempfile.mkdtemp())
+    try:
+        (lib / "clips").mkdir()
+        text = gait_synth.bvh(gait, bones)
+        (lib / "clips" / f"{clip}.bvh").write_text(text)
+        (lib / "animal.json").write_text(json.dumps({"id": "gait_synth", "fps": gait_synth.FPS, "role_map": {b: b for b in gait_synth.skeleton(60) if not b.endswith("_end")},
+            "clips": [{"name": clip, "file": f"clips/{clip}.bvh", "frames": len(text.split("MOTION")[1].strip().splitlines()) - 2, "loop": True}]}))
+        return retarget_clip(jid, host, rig_glb, lib, clip, size_cm, prompt) | {"gait": gait}
+    finally:
+        shutil.rmtree(lib, ignore_errors=True)
+
+
 def unimate_clip(jid, host, rig_glb, clip, size_cm, prompt=None, seeds=None, raw=None) -> dict:
     """A clip the library lacks, made by UniMate over `seeds` (default creature_unimate_seeds) seeds from `prompt`
     (default unimate_prompt(clip)), on the creature's own SkinTokens rig when `raw` = {"glb": its file in the job
@@ -1030,7 +1062,8 @@ def run_creature(jid, host):
                 r = choose_clip(c, library_matches(c, lib), p["fill_missing"], log,  # named as requested
                                 lambda f: retarget_clip(jid, host, std["glb"], lib.parent / f.split("/")[0] if "/" in f else lib,
                                                         f.split("/")[-1], size, c),
-                                lambda: unimate_clip(jid, host, std["glb"], c, size, raw=raw))
+                                lambda: unimate_clip(jid, host, std["glb"], c, size, raw=raw),
+                                (lambda: synth_clip(jid, host, std["glb"], c, size, c, std["bones"])) if any(g in c.lower() for g in GAITS) else None)
                 if not r:
                     unavailable.append({"name": c, "reason": f"not in the {entry['id']} library and fill_missing is off"})
                     continue
@@ -1072,6 +1105,7 @@ def run_creature(jid, host):
                "clips": [{"name": c["name"], "file": f"animations/{n}_{c['name']}.glb", "source": c["source"],
                           "checks": c["checks"], "baked": False,
                           **({k: c[k] for k in ("seed", "prompt")} if c["source"] == "text" else {}),
+                          **({"gait": c["gait"]} if c["source"] == "procedural" else {}),
                           **({"from_clip": c["from_clip"]} if c["source"] == "library" else {})} for c in clips],
                "unavailable": unavailable, "unreal": {"state": "pending", "reason": ""}, "job": jid}
         write_manifest(build, man)

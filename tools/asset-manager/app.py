@@ -3296,6 +3296,16 @@ def check():
     assert creature.choose_clip("walk", ["WalkLoop"], True, lg, ok, boom)["from_clip"] == "WalkLoop"
     assert creature.choose_clip("walk", ["WalkLoop"], False, lg, ok, boom)["from_clip"] == "WalkLoop"
     assert creature.choose_clip("swim", [], False, lg, ok, boom) is None
+    # a procedural gait stands in for a UniMate take that fails its checks (or a UniMate crash), never for a passing one
+    bad_text = lambda: {"checks": {"passed": False, "reason": "slides"}}
+    good = lambda: {"checks": {"passed": True}}
+    assert creature.choose_clip("walk", [], True, lg, ok, bad_text, good)["source"] == "procedural"
+    assert creature.choose_clip("walk", [], True, lg, ok, good, bad_text)["source"] == "text"
+    assert creature.choose_clip("walk", [], True, lg, ok, bad_text, bad_text)["source"] == "text"
+    assert creature.choose_clip("walk", [], True, lg, ok, boom, bad_text)["source"] == "procedural"
+    import importlib.util as _ilu
+    _sp = _ilu.spec_from_file_location("gait_synth", MOTION_DIR / "gait_synth.py"); _gs = _ilu.module_from_spec(_sp); _sp.loader.exec_module(_gs)
+    assert _gs.check() == "gait_synth ok"
     assert cp({"source": "library", "animal": "Rat", "clip": "Walk"})["clip"] == "Walk"  # Trottle stands in
     assert creature.clip_names(["Walk", "Sniff_s1"], [("Walk", [""]), ("Sniff", ["_s0", "_s1"]), ("Walk", [""])]) == ["Walk_2", "Sniff_2", "Walk_3"]
     out = ROOT / get_settings()["output_folder"] / "Creatures"
