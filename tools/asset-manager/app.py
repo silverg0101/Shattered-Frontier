@@ -3159,6 +3159,9 @@ def check():
     t = cp({"source": "text", "prompt": "Sniffs the ground", "seeds": 2})
     assert (t["prompt"], t["clip"], t["seeds"]) == ("An object sniffs the ground.", "Sniff", 2), t
     assert cp({"source": "video", "action": "walk"})["clip"] == "Walk"
+    zoo = ["Trottle", "AlertRun", "Idle", "Eat", "Itch", "Sniff"]  # a Rat-like library: plain names find its clips
+    assert [creature.library_clip(c, zoo) for c in ("idle", "walk", "run", "Die", "trottle")] == ["Idle", "Trottle", "AlertRun", None, "Trottle"]
+    assert cp({"source": "library", "animal": "Rat", "clip": "Walk"})["clip"] == "Walk"  # Trottle stands in
     assert creature.clip_names(["Walk", "Sniff_s1"], [("Walk", [""]), ("Sniff", ["_s0", "_s1"]), ("Walk", [""])]) == ["Walk_2", "Sniff_2", "Walk_3"]
     out = ROOT / get_settings()["output_folder"] / "Creatures"
     out.mkdir(parents=True, exist_ok=True)
@@ -3249,6 +3252,16 @@ def check():
         new = json.loads((cm / f"{cm.name}.json").read_text())["clips"][-1]
         assert new["name"] == "Walk_3" and new["retargeted"] is True and new["checks"]["passed"] is True, new
         assert (cm / f"animations/{cm.name}_Walk_3.png").read_bytes() == b"png"
+        calls.clear()  # a library clip asked for as Run: AlertRun retargeted, saved as Run with from_clip
+        saved_cur, creature.ensure_curated = creature.ensure_curated, lambda *a: lib / "Rat"
+        (lib / "Rat" / "animal.json").write_text(json.dumps({"clips": [{"name": "Trottle"}, {"name": "AlertRun"}]}))
+        try:
+            r = clip_job({"model": cm.name, "source": "library", "animal": "Rat", "clip": "Run"})
+        finally:
+            creature.ensure_curated = saved_cur
+        assert r["status"] == "done" and calls[-1][2] == "AlertRun", (r, calls)
+        new = json.loads((cm / f"{cm.name}.json").read_text())["clips"][-1]
+        assert (new["name"], new["from_clip"]) == ("Run", "AlertRun"), new
         src.write_bytes(src.read_bytes() + b"!")  # the stub's sign for a skeleton that can't be labelled
         snap = {f: f.read_bytes() for f in cm.rglob("*") if f.is_file()}
         calls.clear()

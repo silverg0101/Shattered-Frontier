@@ -256,6 +256,27 @@ UNIMATE_RUN = "outputs/unimate_uniml3d_f60_v3"
 MOTION_TEXT = {"Idle": "stands still, breathing", "Walk": "walks in place", "Run": "runs in place", "Trot": "trots in place",
                "Gallop": "gallops in place", "Jump": "jumps up and lands", "Sit": "sits down", "Sleep": "lies down and sleeps",
                "Eat": "lowers its head and eats", "Attack": "lunges forward and bites", "Death": "collapses and dies"}
+# a requested clip's name -> substrings of the library clip names that stand in for it, best first (Zoo-300K packs
+# name their motions freely: Trottle, AlertRun, ...). ponytail: plain substrings; a wrong pick is caught by the review
+_SYN = {"idle": ("idle", "breath", "stand"), "walk": ("walk", "trot"), "run": ("run", "gallop", "sprint"),
+        "trot": ("trot", "walk"), "gallop": ("gallop", "run", "sprint"), "attack": ("attack", "bite", "lunge", "strike"),
+        "bite": ("bite", "attack"), "eat": ("eat", "graze", "feed"), "drink": ("drink",), "sleep": ("sleep", "lie", "rest"),
+        "sit": ("sit",), "lie": ("lie", "lay", "sleep"), "jump": ("jump", "leap", "hop", "pounce"), "turn": ("turn",),
+        "death": ("death", "die", "dead"), "hit": ("hit", "hurt", "flinch", "damage"), "sniff": ("sniff", "smell"),
+        "swim": ("swim",), "roar": ("roar", "howl", "bark", "call"), "dig": ("dig",), "scratch": ("scratch", "itch")}
+CLIP_SYNONYMS = _SYN | {"die": _SYN["death"], "dying": _SYN["death"], "sprint": _SYN["run"], "graze": _SYN["eat"],
+                        "rest": _SYN["sleep"], "lay": _SYN["lie"], "leap": _SYN["jump"], "hurt": _SYN["hit"], "itch": _SYN["scratch"]}
+
+
+def library_clip(want, have):
+    """The library clip (one of `have`) that stands in for the requested clip name `want`: the same name ignoring case,
+    else the first clip containing a CLIP_SYNONYMS substring for it; None when the library has nothing for it."""
+    lo = {h.lower(): h for h in have}
+    if want.lower() in lo:
+        return lo[want.lower()]
+    return next((h for sub in CLIP_SYNONYMS.get(want.lower(), ()) for h in have if sub in h.lower()), None)
+
+
 SKELETON = "quadruped_v1"
 MODEL_LOCK = threading.RLock()  # ponytail: one lock for every model folder's manifest; per model if it ever contends
 CLIP_SOURCES = ("library", "text", "video", "glb")
@@ -850,8 +871,8 @@ def run_creature(jid, host):
         clips, unavailable = [], []
         for c in (have if p["clips"] == "all" else p["clips"]):
             try:
-                if c in have:
-                    r = retarget_clip(jid, host, std["glb"], lib, c, size) | {"source": "library"}
+                if from_clip := library_clip(c, have):  # named as requested; the library clip is kept as from_clip
+                    r = retarget_clip(jid, host, std["glb"], lib, from_clip, size, c) | {"source": "library", "from_clip": from_clip}
                 elif p["fill_missing"]:
                     r = unimate_clip(jid, host, std["glb"], c, size) | {"source": "text"}
                 else:
@@ -892,7 +913,8 @@ def run_creature(jid, host):
                "body_plan": entry["body_plan"], "size_cm": size, "skeleton": SKELETON, "concept": info["concept"],
                "clips": [{"name": c["name"], "file": f"animations/{n}_{c['name']}.glb", "source": c["source"],
                           "checks": c["checks"], "baked": False,
-                          **({k: c[k] for k in ("seed", "prompt")} if c["source"] == "text" else {})} for c in clips],
+                          **({k: c[k] for k in ("seed", "prompt")} if c["source"] == "text" else {}),
+                          **({"from_clip": c["from_clip"]} if c["source"] == "library" else {})} for c in clips],
                "unavailable": unavailable, "unreal": {"state": "pending", "reason": ""}, "job": jid}
         write_manifest(build, man)
         bake = [c["name"] for c in clips if c["checks"]["passed"] and (p["bake"] is None or c["name"] in p["bake"])]
@@ -951,7 +973,7 @@ def clip_params(name, b, folder=None, library=None) -> dict:
         f = Path(library or a.DATA / "MotionLibrary") / animal / "animal.json"
         if f.is_file():  # not curated yet: the job curates it, and retarget_clip names a missing clip then
             have = [c["name"] for c in json.loads(f.read_text())["clips"]]
-            if clip not in have:
+            if not library_clip(clip, have):
                 raise ValueError(f"{animal} has no clip {clip!r}; its clips: {', '.join(have)}")
         return out | {"animal": animal, "clip": clip}
     if src == "text":
@@ -1065,8 +1087,12 @@ def run_clip_job(jid, host):
             groups = []  # (base name, [(suffix, retarget_clip result, manifest fields)])
             lib = ensure_curated(p["animal"], host, jid) if p["source"] == "library" else None  # curating clears the job folder
             a.put_input(host, f"{jid}/rig.glb", base)
-            if p["source"] == "library":
-                groups = [(p["clip"], [("", retarget_clip(jid, host, "rig.glb", lib, p["clip"], size), {"source": "library", "animal": p["animal"]})])]
+            if p["source"] == "library":  # the clip keeps the requested name; library_clip picks the source
+                have = [c["name"] for c in json.loads((lib / "animal.json").read_text())["clips"]]
+                if not (from_clip := library_clip(p["clip"], have)):
+                    raise ValueError(f"{p['animal']} has no clip {p['clip']!r}; its clips: {', '.join(have)}")
+                groups = [(p["clip"], [("", retarget_clip(jid, host, "rig.glb", lib, from_clip, size, p["clip"]),
+                                        {"source": "library", "animal": p["animal"], "from_clip": from_clip})])]
             elif p["source"] == "text":
                 best = unimate_clip(jid, host, "rig.glb", p["clip"], size, p["prompt"], p["seeds"])
                 groups = [(p["clip"], [(f"_s{r['seed']}", r, {"source": "text", "seed": r["seed"], "prompt": r["prompt"],
