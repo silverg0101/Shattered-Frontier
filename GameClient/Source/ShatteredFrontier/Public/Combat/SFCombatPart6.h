@@ -62,6 +62,15 @@ namespace SFCombatPart6
         return S;
     }
 
+    inline FStats WithSkills(FStats Stats, int32 GoverningSkill, int32 Tactics, double SkillFloor)
+    {
+        Stats.Skill = FMath::Clamp(GoverningSkill, 0, 900);
+        Stats.Tactics = FMath::Clamp(Tactics, 0, 900);
+        Stats.SkillMultiplier = SkillFloor + (1.0 - SkillFloor) *
+            FMath::Min(1.10, double(Stats.Skill) / FMath::Max(1, SkillReference(Stats.Level)));
+        return Stats;
+    }
+
     inline FStats Player(EKit Kit, int32 Level, double CritBase = 0.05, double SkillFloor = 0.80)
     {
         FStats S; S.Level = FMath::Clamp(Level, 1, 20);
@@ -92,6 +101,13 @@ namespace SFCombatPart6
         double Dps = 0, SpeedSeconds = 2;
         bool bEquipped = false;
     };
+    inline FString WeaponSkill(const FWeapon& Weapon)
+    {
+        if (!Weapon.bEquipped) return TEXT("skill/unarmed");
+        if (FMath::IsNearlyEqual(Weapon.SpeedSeconds, 1.4)) return TEXT("skill/daggers");
+        if (FMath::IsNearlyEqual(Weapon.Dps, 7.0)) return TEXT("skill/maces");
+        return TEXT("skill/swordsmanship");
+    }
 
     inline double Budget(int32 ItemLevel) { return 1.0 + 0.075 * ItemLevel; }
     inline FWeapon ReferenceWeapon(int32 Level, double SpeedSeconds = 2.0,

@@ -196,6 +196,16 @@ bool FSFCombatPart6Test::RunTest(const FString& Parameters)
         Tune->WeaponSpread, Tune->PowerSpeedReferenceSeconds, Tune->UnarmedDpsFactor, Tune->WeaponDpsK);
     TestTrue(TEXT("Server L10 attributes feed FAttack physical power"),
         FighterSnapshotAttack.RawDamage > ArcherSnapshotAttack.RawDamage);
+    const FStats Untrained = WithSkills(BackendFighter, 0, 0, Tune->SkillDamageFloor);
+    const FStats Trained = WithSkills(BackendFighter, 100, 50, Tune->SkillDamageFloor);
+    const FAttack WeakStrike = PlayerAuto(Untrained, ReferenceWeapon(10), Tune->WeaponSpread,
+        Tune->PowerSpeedReferenceSeconds, Tune->UnarmedDpsFactor, Tune->WeaponDpsK);
+    const FAttack StrongStrike = PlayerAuto(Trained, ReferenceWeapon(10), Tune->WeaponSpread,
+        Tune->PowerSpeedReferenceSeconds, Tune->UnarmedDpsFactor, Tune->WeaponDpsK);
+    TestTrue(TEXT("A persisted governing skill changes resolved attack damage"),
+        Resolve(StrongStrike, FDraws{}).Damage > Resolve(WeakStrike, FDraws{}).Damage);
+    TestTrue(TEXT("Tactics raises the hit skill used by FAttack"),
+        Trained.Skill + .1 * Trained.Tactics > Untrained.Skill + .1 * Untrained.Tactics);
     TestEqual(TEXT("Fighter level 2 health"), Fighter.Health, 540);
     TestTrue(TEXT("Guardian has higher health"), Guardian.Health > Fighter.Health);
     TestTrue(TEXT("Mage has higher spell power"), Mage.Intelligence > Fighter.Intelligence);

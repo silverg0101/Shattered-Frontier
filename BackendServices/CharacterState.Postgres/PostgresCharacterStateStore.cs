@@ -199,13 +199,27 @@ public sealed class PostgresCharacterStateStore(string connectionString)
             tuning.Snapshot(snapshot.CombatIdentity, 1); // Validate stored identity before publication.
             if (creationArchetype is not null && snapshot.CombatIdentity.Archetype != creationArchetype)
                 throw new CharacterStoreRejectedException("Character archetype already set.");
+            // Old snapshots predate combat skills. Seed only when no combat skill was ever stored.
+            if (!snapshot.Skills.Keys.Any(k => ProgressionRules.CombatSkills.Contains(k, StringComparer.Ordinal)))
+            {
+                var skills = new Dictionary<string, int>(snapshot.Skills, StringComparer.Ordinal);
+                foreach (var (id, value) in ProgressionRules.StarterSkills(snapshot.CombatIdentity.Archetype)) skills[id] = value;
+                snapshot = snapshot with { Skills = skills };
+                using var upgrade = Command(c, t, "UPDATE character_state.progression SET revision=revision+1,state=$2::jsonb WHERE character_id=$1",
+                    characterId, JsonSerializer.Serialize(snapshot));
+                upgrade.ExecuteNonQuery();
+                revision++;
+            }
             return new(revision, snapshot);
         }
         snapshot = snapshot is null
             ? new CharacterProgression(characterId, TimeProvider.System, () => .5,
-                settings: progressionSettings).Snapshot()
+                settings: progressionSettings, initialSkills: ProgressionRules.StarterSkills(requestedIdentity.Archetype)).Snapshot()
                 with { CombatIdentity = requestedIdentity }
-            : snapshot with { CombatIdentity = requestedIdentity };
+            : snapshot with { CombatIdentity = requestedIdentity,
+                Skills = snapshot.Skills.Keys.Any(k => ProgressionRules.CombatSkills.Contains(k, StringComparer.Ordinal))
+                    ? snapshot.Skills : snapshot.Skills.Concat(ProgressionRules.StarterSkills(requestedIdentity.Archetype))
+                        .ToDictionary(pair => pair.Key, pair => pair.Value, StringComparer.Ordinal) };
         if (revision == 0)
         {
             using var insert = Command(c, t, "INSERT INTO character_state.progression(character_id,revision,state) VALUES ($1,1,$2::jsonb)",

@@ -76,6 +76,14 @@ extern const ::google::protobuf::internal::ClassDataFull ApplyReceiptReply_class
 #else
 extern const ApplyReceiptReplyGlobalsTypeInternal ApplyReceiptReply_globals_;
 #endif  // PROTOBUF_MESSAGE_GLOBALS
+class ApplyReceiptReply_SkillsEntry_DoNotUse;
+struct ApplyReceiptReply_SkillsEntry_DoNotUseGlobalsTypeInternal;
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+extern ApplyReceiptReply_SkillsEntry_DoNotUseGlobalsTypeInternal ApplyReceiptReply_SkillsEntry_DoNotUse_globals_;
+extern const ::google::protobuf::internal::ClassDataFull ApplyReceiptReply_SkillsEntry_DoNotUse_class_data_;
+#else
+extern const ApplyReceiptReply_SkillsEntry_DoNotUseGlobalsTypeInternal ApplyReceiptReply_SkillsEntry_DoNotUse_globals_;
+#endif  // PROTOBUF_MESSAGE_GLOBALS
 class ApplyReceiptRequest;
 struct ApplyReceiptRequestGlobalsTypeInternal;
 #ifndef PROTOBUF_MESSAGE_GLOBALS
@@ -349,7 +357,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED SavePositionReply final : public ::
   [[nodiscard]] static const SavePositionReply& default_instance() {
     return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<SavePositionReply>(&SavePositionReply_globals_);
   }
-  static constexpr int kIndexInFileMessages = 16;
+  static constexpr int kIndexInFileMessages = 17;
   friend void swap(SavePositionReply& a, SavePositionReply& b) { a.Swap(&b); }
   inline void Swap(SavePositionReply* PROTOBUF_NONNULL other) {
     if (other == this) return;
@@ -1665,7 +1673,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED GrantedItem final : public ::google
   [[nodiscard]] static const GrantedItem& default_instance() {
     return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<GrantedItem>(&GrantedItem_globals_);
   }
-  static constexpr int kIndexInFileMessages = 12;
+  static constexpr int kIndexInFileMessages = 13;
   friend void swap(GrantedItem& a, GrantedItem& b) { a.Swap(&b); }
   inline void Swap(GrantedItem* PROTOBUF_NONNULL other) {
     if (other == this) return;
@@ -1883,7 +1891,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED GetCharacterStateRequest final : pu
   [[nodiscard]] static const GetCharacterStateRequest& default_instance() {
     return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<GetCharacterStateRequest>(&GetCharacterStateRequest_globals_);
   }
-  static constexpr int kIndexInFileMessages = 13;
+  static constexpr int kIndexInFileMessages = 14;
   friend void swap(GetCharacterStateRequest& a, GetCharacterStateRequest& b) { a.Swap(&b); }
   inline void Swap(GetCharacterStateRequest* PROTOBUF_NONNULL other) {
     if (other == this) return;
@@ -2992,7 +3000,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED CombatAttributes final : public ::g
   [[nodiscard]] static const CombatAttributes& default_instance() {
     return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<CombatAttributes>(&CombatAttributes_globals_);
   }
-  static constexpr int kIndexInFileMessages = 11;
+  static constexpr int kIndexInFileMessages = 12;
   friend void swap(CombatAttributes& a, CombatAttributes& b) { a.Swap(&b); }
   inline void Swap(CombatAttributes* PROTOBUF_NONNULL other) {
     if (other == this) return;
@@ -3282,7 +3290,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ClearDeathRequest final : public ::
   [[nodiscard]] static const ClearDeathRequest& default_instance() {
     return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<ClearDeathRequest>(&ClearDeathRequest_globals_);
   }
-  static constexpr int kIndexInFileMessages = 19;
+  static constexpr int kIndexInFileMessages = 20;
   friend void swap(ClearDeathRequest& a, ClearDeathRequest& b) { a.Swap(&b); }
   inline void Swap(ClearDeathRequest* PROTOBUF_NONNULL other) {
     if (other == this) return;
@@ -3664,7 +3672,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED CharacterPosition final : public ::
   [[nodiscard]] static const CharacterPosition& default_instance() {
     return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<CharacterPosition>(&CharacterPosition_globals_);
   }
-  static constexpr int kIndexInFileMessages = 14;
+  static constexpr int kIndexInFileMessages = 15;
   friend void swap(CharacterPosition& a, CharacterPosition& b) { a.Swap(&b); }
   inline void Swap(CharacterPosition* PROTOBUF_NONNULL other) {
     if (other == this) return;
@@ -3862,6 +3870,55 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED CharacterPosition final : public ::
 };
 // -------------------------------------------------------------------
 
+class PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ApplyReceiptReply_SkillsEntry_DoNotUse final
+    : public ::google::protobuf::internal::MapEntry<::std::string, ::int32_t,
+                             ::google::protobuf::internal::WireFormatLite::TYPE_STRING,
+                             ::google::protobuf::internal::WireFormatLite::TYPE_INT32> {
+ public:
+  using SuperType =
+      ::google::protobuf::internal::MapEntry<::std::string, ::int32_t,
+                      ::google::protobuf::internal::WireFormatLite::TYPE_STRING,
+                      ::google::protobuf::internal::WireFormatLite::TYPE_INT32>;
+  ApplyReceiptReply_SkillsEntry_DoNotUse();
+  template <typename = void>
+  explicit constexpr ApplyReceiptReply_SkillsEntry_DoNotUse(::google::protobuf::internal::ConstantInitialized,
+                           const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+                               class_data);
+  explicit ApplyReceiptReply_SkillsEntry_DoNotUse(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static constexpr const void* PROTOBUF_NONNULL internal_message_globals() {
+    return &ApplyReceiptReply_SkillsEntry_DoNotUse_globals_;
+  }
+
+
+  static constexpr auto InternalGenerateClassData_(
+      const ::google::protobuf::MessageLite& prototype,
+      const ::google::protobuf::internal::TcParseTableBase* PROTOBUF_NULLABLE tc_table = nullptr);
+
+ private:
+  friend class ::google::protobuf::MessageLite;
+  friend struct ::TableStruct_sf_2fprogression_2fv1_2fprogression_2eproto;
+  friend ::google::protobuf::internal::PrivateAccess;
+  friend ApplyReceiptReply_SkillsEntry_DoNotUseGlobalsTypeInternal;
+
+  using ParseTableT_ =
+      ::google::protobuf::internal::TcParseTable<1, 2,
+                          0, 59,
+                          2>;
+  static constexpr ParseTableT_ InternalGenerateParseTable_(
+      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+  friend class ::google::protobuf::internal::TcParser;
+  #ifndef PROTOBUF_MESSAGE_GLOBALS
+  static const ParseTableT_ _table_;
+  #endif
+
+  const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL GetClassData() const PROTOBUF_FINAL;
+  static void* PROTOBUF_NONNULL PlacementNew_(
+      const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static constexpr auto InternalNewImpl_();
+};
+// -------------------------------------------------------------------
+
 class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ActionPayload final : public ::google::protobuf::Message
 /* @@protoc_insertion_point(class_definition:sf.progression.v1.ActionPayload) */ {
  public:
@@ -4020,6 +4077,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ActionPayload final : public ::goog
     kSuccessFieldNumber = 5,
     kSessionEndFieldNumber = 9,
     kInRestAreaFieldNumber = 10,
+    kXpEligibleFieldNumber = 12,
     kReferencePartyLevelFieldNumber = 11,
   };
   // string skill_id = 1;
@@ -4127,6 +4185,16 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ActionPayload final : public ::goog
   void _internal_set_in_rest_area(bool value);
 
   public:
+  // bool xp_eligible = 12;
+  void clear_xp_eligible() ;
+  [[nodiscard]] bool xp_eligible() const;
+  void set_xp_eligible(bool value);
+
+  private:
+  bool _internal_xp_eligible() const;
+  void _internal_set_xp_eligible(bool value);
+
+  public:
   // int32 reference_party_level = 11;
   void clear_reference_party_level() ;
   [[nodiscard]] ::int32_t reference_party_level() const;
@@ -4141,7 +4209,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ActionPayload final : public ::goog
  private:
   class _Internal;
   using ParseTableT_ =
-      ::google::protobuf::internal::TcParseTable<4, 11,
+      ::google::protobuf::internal::TcParseTable<4, 12,
                           0, 56,
                           2>;
   static constexpr ParseTableT_ InternalGenerateParseTable_(
@@ -4180,6 +4248,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ActionPayload final : public ::goog
     bool success_;
     bool session_end_;
     bool in_rest_area_;
+    bool xp_eligible_;
     ::int32_t reference_party_level_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
@@ -4244,7 +4313,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED SavePositionRequest final : public 
   [[nodiscard]] static const SavePositionRequest& default_instance() {
     return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<SavePositionRequest>(&SavePositionRequest_globals_);
   }
-  static constexpr int kIndexInFileMessages = 15;
+  static constexpr int kIndexInFileMessages = 16;
   friend void swap(SavePositionRequest& a, SavePositionRequest& b) { a.Swap(&b); }
   inline void Swap(SavePositionRequest* PROTOBUF_NONNULL other) {
     if (other == this) return;
@@ -4480,7 +4549,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ReportDeathRequest final : public :
   [[nodiscard]] static const ReportDeathRequest& default_instance() {
     return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<ReportDeathRequest>(&ReportDeathRequest_globals_);
   }
-  static constexpr int kIndexInFileMessages = 18;
+  static constexpr int kIndexInFileMessages = 19;
   friend void swap(ReportDeathRequest& a, ReportDeathRequest& b) { a.Swap(&b); }
   inline void Swap(ReportDeathRequest* PROTOBUF_NONNULL other) {
     if (other == this) return;
@@ -4763,7 +4832,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED QuestState final : public ::google:
   [[nodiscard]] static const QuestState& default_instance() {
     return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<QuestState>(&QuestState_globals_);
   }
-  static constexpr int kIndexInFileMessages = 26;
+  static constexpr int kIndexInFileMessages = 27;
   friend void swap(QuestState& a, QuestState& b) { a.Swap(&b); }
   inline void Swap(QuestState* PROTOBUF_NONNULL other) {
     if (other == this) return;
@@ -5057,7 +5126,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED DeathState final : public ::google:
   [[nodiscard]] static const DeathState& default_instance() {
     return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<DeathState>(&DeathState_globals_);
   }
-  static constexpr int kIndexInFileMessages = 20;
+  static constexpr int kIndexInFileMessages = 21;
   friend void swap(DeathState& a, DeathState& b) { a.Swap(&b); }
   inline void Swap(DeathState* PROTOBUF_NONNULL other) {
     if (other == this) return;
@@ -5335,7 +5404,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED CommitUnstuckRequest final : public
   [[nodiscard]] static const CommitUnstuckRequest& default_instance() {
     return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<CommitUnstuckRequest>(&CommitUnstuckRequest_globals_);
   }
-  static constexpr int kIndexInFileMessages = 17;
+  static constexpr int kIndexInFileMessages = 18;
   friend void swap(CommitUnstuckRequest& a, CommitUnstuckRequest& b) { a.Swap(&b); }
   inline void Swap(CommitUnstuckRequest* PROTOBUF_NONNULL other) {
     if (other == this) return;
@@ -5888,7 +5957,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ApplyReceiptReply final : public ::
   [[nodiscard]] static const ApplyReceiptReply& default_instance() {
     return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<ApplyReceiptReply>(&ApplyReceiptReply_globals_);
   }
-  static constexpr int kIndexInFileMessages = 10;
+  static constexpr int kIndexInFileMessages = 11;
   friend void swap(ApplyReceiptReply& a, ApplyReceiptReply& b) { a.Swap(&b); }
   inline void Swap(ApplyReceiptReply* PROTOBUF_NONNULL other) {
     if (other == this) return;
@@ -5994,6 +6063,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ApplyReceiptReply final : public ::
     kProgressionRevisionFieldNumber = 5,
     kQuestRevisionFieldNumber = 9,
     kRestedMinutesFieldNumber = 13,
+    kSkillsFieldNumber = 15,
   };
   // repeated string reward_bundle_ids = 10;
   [[nodiscard]] int reward_bundle_ids_size()
@@ -6179,12 +6249,28 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ApplyReceiptReply final : public ::
   void _internal_set_rested_minutes(double value);
 
   public:
+  // map<string, int32> skills = 15;
+  [[nodiscard]] int skills_size()
+      const;
+  private:
+  int _internal_skills_size() const;
+
+  public:
+  void clear_skills() ;
+  [[nodiscard]] const ::google::protobuf::Map<::std::string, ::int32_t>& skills() const;
+  [[nodiscard]] ::google::protobuf::Map<::std::string, ::int32_t>* PROTOBUF_NONNULL mutable_skills();
+
+  private:
+  const ::google::protobuf::Map<::std::string, ::int32_t>& _internal_skills() const;
+  ::google::protobuf::Map<::std::string, ::int32_t>* PROTOBUF_NONNULL _internal_mutable_skills();
+
+  public:
   // @@protoc_insertion_point(class_scope:sf.progression.v1.ApplyReceiptReply)
  private:
   class _Internal;
   using ParseTableT_ =
-      ::google::protobuf::internal::TcParseTable<4, 14,
-                          2, 95,
+      ::google::protobuf::internal::TcParseTable<4, 15,
+                          3, 101,
                           2>;
   static constexpr ParseTableT_ InternalGenerateParseTable_(
       const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
@@ -6226,6 +6312,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ApplyReceiptReply final : public ::
     ::int64_t progression_revision_;
     ::int64_t quest_revision_;
     double rested_minutes_;
+    ::google::protobuf::internal::MapField<ApplyReceiptReply_SkillsEntry_DoNotUse, ::std::string, ::int32_t> skills_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
   union { Impl_ _impl_; };
@@ -6289,7 +6376,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED CharacterStateReply final : public 
   [[nodiscard]] static const CharacterStateReply& default_instance() {
     return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<CharacterStateReply>(&CharacterStateReply_globals_);
   }
-  static constexpr int kIndexInFileMessages = 24;
+  static constexpr int kIndexInFileMessages = 25;
   friend void swap(CharacterStateReply& a, CharacterStateReply& b) { a.Swap(&b); }
   inline void Swap(CharacterStateReply* PROTOBUF_NONNULL other) {
     if (other == this) return;
@@ -8598,7 +8685,7 @@ inline void ActionPayload::_internal_set_in_rest_area(bool value) {
 inline void ActionPayload::clear_reference_party_level() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.reference_party_level_ = 0;
-  ClearHasBit(_impl_._has_bits_[0], 0x00000400U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000800U);
 }
 inline ::int32_t ActionPayload::reference_party_level() const {
   // @@protoc_insertion_point(field_get:sf.progression.v1.ActionPayload.reference_party_level)
@@ -8606,7 +8693,7 @@ inline ::int32_t ActionPayload::reference_party_level() const {
 }
 inline void ActionPayload::set_reference_party_level(::int32_t value) {
   _internal_set_reference_party_level(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000400U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000800U);
   // @@protoc_insertion_point(field_set:sf.progression.v1.ActionPayload.reference_party_level)
 }
 inline ::int32_t ActionPayload::_internal_reference_party_level() const {
@@ -8616,6 +8703,30 @@ inline ::int32_t ActionPayload::_internal_reference_party_level() const {
 inline void ActionPayload::_internal_set_reference_party_level(::int32_t value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.reference_party_level_ = value;
+}
+
+// bool xp_eligible = 12;
+inline void ActionPayload::clear_xp_eligible() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.xp_eligible_ = false;
+  ClearHasBit(_impl_._has_bits_[0], 0x00000400U);
+}
+inline bool ActionPayload::xp_eligible() const {
+  // @@protoc_insertion_point(field_get:sf.progression.v1.ActionPayload.xp_eligible)
+  return _internal_xp_eligible();
+}
+inline void ActionPayload::set_xp_eligible(bool value) {
+  _internal_set_xp_eligible(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000400U);
+  // @@protoc_insertion_point(field_set:sf.progression.v1.ActionPayload.xp_eligible)
+}
+inline bool ActionPayload::_internal_xp_eligible() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.xp_eligible_;
+}
+inline void ActionPayload::_internal_set_xp_eligible(bool value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.xp_eligible_ = value;
 }
 
 // -------------------------------------------------------------------
@@ -8989,6 +9100,8 @@ inline void QuestEvidence::_internal_set_occurred_at_unix_ms(::int64_t value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.occurred_at_unix_ms_ = value;
 }
+
+// -------------------------------------------------------------------
 
 // -------------------------------------------------------------------
 
@@ -9561,6 +9674,37 @@ inline void ApplyReceiptReply::set_allocated_combat_attributes(::sf::progression
 
   _impl_.combat_attributes_ = reinterpret_cast<::sf::progression::v1::CombatAttributes*>(value);
   // @@protoc_insertion_point(field_set_allocated:sf.progression.v1.ApplyReceiptReply.combat_attributes)
+}
+
+// map<string, int32> skills = 15;
+inline int ApplyReceiptReply::_internal_skills_size() const {
+  return _internal_skills().size();
+}
+inline int ApplyReceiptReply::skills_size() const {
+  return _internal_skills_size();
+}
+inline void ApplyReceiptReply::clear_skills() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.skills_.Clear();
+  ClearHasBit(_impl_._has_bits_[0], 0x00004000U);
+}
+inline const ::google::protobuf::Map<::std::string, ::int32_t>& ApplyReceiptReply::_internal_skills() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.skills_.GetMap();
+}
+inline const ::google::protobuf::Map<::std::string, ::int32_t>& ApplyReceiptReply::skills() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_map:sf.progression.v1.ApplyReceiptReply.skills)
+  return _internal_skills();
+}
+inline ::google::protobuf::Map<::std::string, ::int32_t>* PROTOBUF_NONNULL ApplyReceiptReply::_internal_mutable_skills() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.skills_.MutableMap();
+}
+inline ::google::protobuf::Map<::std::string, ::int32_t>* PROTOBUF_NONNULL ApplyReceiptReply::mutable_skills()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00004000U);
+  // @@protoc_insertion_point(field_mutable_map:sf.progression.v1.ApplyReceiptReply.skills)
+  return _internal_mutable_skills();
 }
 
 // -------------------------------------------------------------------

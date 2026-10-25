@@ -142,6 +142,7 @@ internal sealed class ProgressionGrpcService(PostgresCharacterStateStore store, 
                 "gather" => ReceiptKind.GatheringHarvest,
                 "craft" => ReceiptKind.CraftConvert,
                 "defeat" => ReceiptKind.EnemyDefeat,
+                "combat" => ReceiptKind.CombatPractice,
                 "quest" => (ReceiptKind?)null,
                 _ => throw new ArgumentException("Unknown receipt kind.")
             };
@@ -152,7 +153,7 @@ internal sealed class ProgressionGrpcService(PostgresCharacterStateStore store, 
                 var action = new ActionReceipt(request.SourceReceiptId, request.CharacterId, kind.Value, true,
                     p.SkillId, p.Difficulty, p.ActionSeconds, p.ContextHash, p.Success,
                     p.EnemyLevel, p.EnemyTierMultiplier, p.EligiblePartySize, p.SessionEnd, p.InRestArea,
-                    p.ReferencePartyLevel);
+                    p.ReferencePartyLevel, p.XpEligible);
                 var progression = store.ApplyProgression(action, request.ExpectedProgressionRevision,
                     TimeProvider.System, skillRoll, progressionSettings);
                 reply.ProgressionApplied = progression.Result.Applied;
@@ -213,7 +214,10 @@ internal sealed class ProgressionGrpcService(PostgresCharacterStateStore store, 
                         new Pb.GrantedItem { DefinitionId = i.DefinitionId, Quantity = i.Quantity }));
                 }
             }
-            var combat = store.ReadProgression(request.CharacterId)?.Result.CombatIdentity ?? CombatTuning.StarterIdentity;
+            var current = store.ReadProgression(request.CharacterId)?.Result;
+            if (current is not null)
+                foreach (var (id, value) in current.Skills) reply.Skills.Add(id, value);
+            var combat = current?.CombatIdentity ?? CombatTuning.StarterIdentity;
             reply.CombatAttributes = WireCombat(combat, reply.Level);
             return reply;
         });

@@ -318,6 +318,7 @@ void FSFGrpcGameplayTransport::Send(const FSFGameplayRequest& Q, float DeadlineS
             P->set_skill_id(Utf8(Q.SkillId)); P->set_difficulty(Q.Difficulty); P->set_action_seconds(Q.ActionSeconds); P->set_context_hash(Q.ContextHash);
             P->set_success(Q.bSuccess); P->set_enemy_level(Q.EnemyLevel); P->set_enemy_tier_multiplier(Q.EnemyTierMultiplier); P->set_eligible_party_size(Q.PartySize);
             P->set_reference_party_level(Q.ReferencePartyLevel);
+            P->set_xp_eligible(Q.bXpEligible);
             P->set_session_end(Q.bSessionEnd); P->set_in_rest_area(Q.bInRestArea);
         }
         if (Q.bHasQuest)
@@ -333,6 +334,7 @@ void FSFGrpcGameplayTransport::Send(const FSFGameplayRequest& Q, float DeadlineS
             Out.bProgressionApplied = R.progression_applied(); Out.SkillGain = R.skill_gain(); Out.XpGain = R.xp_gain(); Out.Level = R.level();
             Out.ProgressionRevision = R.progression_revision(); Out.bQuestAccepted = R.quest_accepted(); Out.ActiveStepId = FromUtf8(R.active_step_id());
             Out.RestedMinutes = R.rested_minutes();
+            for (const auto& Skill : R.skills()) { Out.Skills.Add(FromUtf8(Skill.first), Skill.second); }
             Out.bQuestCompleted = R.quest_completed(); Out.QuestRevision = R.quest_revision(); Out.QuestReason = FromUtf8(R.quest_reason());
             for (const auto& Bundle : R.reward_bundle_ids()) { Out.RewardBundleIds.Add(FromUtf8(Bundle)); }
             for (const auto& Item : R.granted_items()) { Out.GrantedItems.FindOrAdd(FromUtf8(Item.definition_id())) += Item.quantity(); }

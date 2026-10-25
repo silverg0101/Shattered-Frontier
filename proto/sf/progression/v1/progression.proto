@@ -61,6 +61,7 @@ message ActionPayload {
     bool in_rest_area = 10;
     // Highest level among eligible party members on a trusted zone-server kill; 0 for legacy solo receipts.
     int32 reference_party_level = 11;
+    bool xp_eligible = 12; // Combat practice producer asserts a hostile, damageable target.
 }
 // kind: gather | craft | build | defeat | talk_resident | talk_npc (progress evidence for step_id),
 // or accept | abandon (QST-02; step_id and target_id empty, quantity 0).
@@ -89,6 +90,7 @@ message ApplyReceiptReply {
   string quest_reason = 12;
   double rested_minutes = 13;
   CombatAttributes combat_attributes = 14;
+  map<string, int32> skills = 15; // Effective current values after this receipt.
 }
 message CombatAttributes {
   string archetype = 1;

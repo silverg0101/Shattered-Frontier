@@ -94,6 +94,7 @@ struct FSFGameplayRequest
     int64 ExpectedProgressionRevision = 0, ExpectedQuestRevision = 0;
     bool bSessionEnd = false, bInRestArea = false;
     FString SkillId; int32 Difficulty = 0; double ActionSeconds = 0; uint64 ContextHash = 0; bool bSuccess = true;
+    bool bXpEligible = false;
     int32 EnemyLevel = 0; double EnemyTierMultiplier = 0; int32 PartySize = 0; int32 ReferencePartyLevel = 0;
     bool bHasQuest = false;
     FString QuestId, StepId, QuestKind, TargetId, NodeId; int32 Quantity = 1; int64 OccurredAtUnixMs = 0;

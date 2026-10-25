@@ -516,6 +516,20 @@ bool USFQuestPilotComponent::Observe(const FString& Kind, const FString& TargetI
     return !Matches.IsEmpty();
 }
 
+void USFQuestPilotComponent::RecordCombatPractice(const FString& SkillId, int32 Difficulty,
+    double ActionSeconds, uint64 ContextHash, bool bSuccess, int32 EnemyLevel)
+{
+    if (!GetOwner() || !GetOwner()->HasAuthority() || !bRestored ||
+        SkillId.IsEmpty() || EnemyLevel <= 0) return;
+    FServiceEvent& Event = ServiceQueue.AddDefaulted_GetRef();
+    Event.ReceiptKind = TEXT("combat"); Event.QuestKind = TEXT("combat");
+    Event.OperationId = FString::Printf(TEXT("combat:%s"), *FGuid::NewGuid().ToString(EGuidFormats::Digits));
+    Event.SkillId = SkillId; Event.Difficulty = Difficulty;
+    Event.ActionSeconds = ActionSeconds; Event.ContextHash = ContextHash;
+    Event.bSuccess = bSuccess; Event.EnemyLevel = EnemyLevel;
+    PumpServices();
+}
+
 void USFQuestPilotComponent::PumpServices()
 {
     auto* PC = Cast<APlayerController>(GetOwner());
@@ -540,6 +554,12 @@ void USFQuestPilotComponent::PumpServices()
     { Q.SkillId = TEXT("skill/smithing"); Q.Difficulty = 1; Q.ActionSeconds = GetDefault<USFGatheringPilotSettings>()->RefineSeconds; Q.ContextHash = GetTypeHash(Event.TargetId); }
     else if (Event.ReceiptKind == TEXT("defeat"))
     { Q.EnemyLevel = 2; Q.EnemyTierMultiplier = 1; Q.PartySize = Event.EligiblePartySize; Q.ReferencePartyLevel = Event.ReferencePartyLevel; }
+    else if (Event.ReceiptKind == TEXT("combat"))
+    {
+        Q.SkillId = Event.SkillId; Q.Difficulty = Event.Difficulty;
+        Q.ActionSeconds = Event.ActionSeconds; Q.ContextHash = Event.ContextHash;
+        Q.bSuccess = Event.bSuccess; Q.EnemyLevel = Event.EnemyLevel; Q.bXpEligible = true;
+    }
     if (!Event.QuestId.IsEmpty() && (bLifecycle || (Entry && !Entry->Progress.IsComplete(*Entry->Quest))))
     {
         LastOccurredMs = FMath::Max(LastOccurredMs + 1, FDateTime::UtcNow().ToUnixTimestamp() * 1000 + FDateTime::UtcNow().GetMillisecond());

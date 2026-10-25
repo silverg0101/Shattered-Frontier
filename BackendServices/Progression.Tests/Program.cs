@@ -23,6 +23,41 @@ oldCombatNode.Remove("CombatIdentity");
 var oldCombat = System.Text.Json.JsonSerializer.Deserialize<ProgressionSnapshot>(oldCombatNode.ToJsonString())!;
 Check(oldCombat.CombatIdentity is null && new CharacterProgression("legacy", TimeProvider.System, () => .5, snapshot: oldCombat)
     .Snapshot().CombatIdentity == combatTuning.StarterIdentity, "legacy progression acquires durable Fighter identity");
+Check(ProgressionRules.StarterSkills("fighter")[ProgressionRules.Swordsmanship] == 100 &&
+    ProgressionRules.StarterSkills("fighter")[ProgressionRules.Tactics] == 50 &&
+    ProgressionRules.StarterSkills("healer")[ProgressionRules.Healing] == 100,
+    "kit skill creation allocation");
+var combatClock = new ManualClock();
+var combat = new CharacterProgression("combat", combatClock, () => 0,
+    initialSkills: ProgressionRules.StarterSkills("fighter"));
+var strike = new ActionReceipt("strike-1", "combat", ReceiptKind.CombatPractice, true,
+    ProgressionRules.Swordsmanship, 125, 2.4, 19, EnemyLevel: 1);
+Check(combat.Apply(strike).SkillGain == 1 && combat.Skills[ProgressionRules.Swordsmanship] == 101 &&
+    combat.LifetimeXp == 0, "resolved ability grants governing skill only");
+Check(!combat.Apply(strike).Applied && combat.Skills[ProgressionRules.Swordsmanship] == 101,
+    "combat receipt replay cannot duplicate gain");
+var persistedCombat = System.Text.Json.JsonSerializer.Deserialize<ProgressionSnapshot>(
+    System.Text.Json.JsonSerializer.Serialize(combat.Snapshot()))!;
+combat = new CharacterProgression("combat", combatClock, () => 0, snapshot: persistedCombat);
+Check(combat.Skills[ProgressionRules.Swordsmanship] == 101 && combat.Apply(strike).SkillGain == 0,
+    "combat skill and receipt survive snapshot restart");
+var trivial = new CharacterProgression("trivial", combatClock, () => 0,
+    initialSkills: new Dictionary<string, int> { [ProgressionRules.Swordsmanship] = 200 });
+Check(trivial.Apply(strike with { ReceiptId = "trivial", CharacterId = "trivial", Difficulty = 0 }).SkillGain == 0,
+    "trivial target cannot train skill");
+var grayVeteran = new CharacterProgression("gray", combatClock, () => 0,
+    initialSkills: ProgressionRules.StarterSkills("fighter"),
+    initialXp: CharacterProgression.TotalFor(12));
+Check(grayVeteran.Apply(strike with { ReceiptId = "gray", CharacterId = "gray", Difficulty = 125 }).SkillGain == 0,
+    "gray target cannot train skill");
+for (var value = combat.Skills[ProgressionRules.Swordsmanship]; value < ProgressionRules.UnspecializedCap; value++)
+{
+    combatClock.Advance(TimeSpan.FromMinutes(2));
+    combat.Apply(strike with { ReceiptId = "cap-" + value, Difficulty = value + 25 });
+}
+Check(combat.Skills[ProgressionRules.Swordsmanship] == ProgressionRules.UnspecializedCap &&
+    combat.Apply(strike with { ReceiptId = "at-cap", Difficulty = 925 }).SkillGain == 0,
+    "combat skill respects unspecialized cap");
 Near(ProgressionRules.DifficultyFactor(-150), .216, .001, "trivial boundary");
 Near(ProgressionRules.DifficultyFactor(25), 1, 1e-9, "optimal difficulty");
 Near(ProgressionRules.GainChance(620, 660, 2.5, true, 1.925, 1, 1, defaults), .01727, .00002, "worked example A");

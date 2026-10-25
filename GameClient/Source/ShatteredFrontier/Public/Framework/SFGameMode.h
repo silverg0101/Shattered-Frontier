@@ -59,7 +59,7 @@ public:
     void TryPlayerCombatAbility(ASFE1Character* Attacker, FName AbilityId,
         AActor* SelectedTarget = nullptr, bool bCastComplete = false, FVector CastOrigin = FVector::ZeroVector,
         FVector GroundLocation = FVector::ZeroVector);
-    void ApplyStarterHeal(ASFE1Character* Healer, ASFE1Character* Subject, int32 Amount);
+    int32 ApplyStarterHeal(ASFE1Character* Healer, ASFE1Character* Subject, int32 Amount);
     void ApplyStarterWeakPoison(ASFE1Character* Source, ASFPilotBoar* Victim,
         const SFCombatResolution::FAttack& Attack);
     bool TryPlayerTaunt(ASFE1Character* Taunter, AActor* SelectedTarget);

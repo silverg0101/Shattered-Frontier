@@ -116,7 +116,18 @@ inline bool CanHide(bool bInCombat) { return !bInCombat; }
 inline bool IsBehind(const FVector& VictimForward, const FVector& VictimToAttacker)
 { return FVector::DotProduct(VictimForward.GetSafeNormal2D(), VictimToAttacker.GetSafeNormal2D()) < -.5f; }
 inline double SkillMultiplier(bool bNativeKit, double NativeMultiplier, double SkillFloor)
-{ return bNativeKit ? NativeMultiplier : SkillFloor; }
+{ return NativeMultiplier; } // The selected skill already applies the hybrid floor at value zero.
+inline FString GoverningSkill(const FDefinition& Ability, const FString& WeaponSkill)
+{
+    if (Ability.Kit == EKit::Magic) return TEXT("skill/magic");
+    if (Ability.Kit == EKit::Healing) return TEXT("skill/healing");
+    if (Ability.Kit == EKit::Archery) return TEXT("skill/archery");
+    if (Ability.Kit == EKit::Guardian)
+        return Ability.Effect == EEffect::Taunt ? TEXT("skill/tactics") : TEXT("skill/shield_defense");
+    if (Ability.Kit == EKit::Shadow)
+        return Ability.Effect == EEffect::Backstab ? WeaponSkill : TEXT("skill/stealth");
+    return WeaponSkill;
+}
 inline double HealingThreatPerNpc(int32 EffectiveHealing, int32 EngagedNpcCount)
 { return EngagedNpcCount > 0 ? .5 * FMath::Max(0, EffectiveHealing) / EngagedNpcCount : 0.0; }
 inline bool IsGroundWithinRange(const FVector& Caster, const FVector& Ground, float RangeMetres)

@@ -19,6 +19,7 @@ switch (args[0])
         var legacyCombat = new CharacterProgression("character-combat-legacy", TimeProvider.System, () => .5).Snapshot();
         var legacyNode = System.Text.Json.Nodes.JsonNode.Parse(System.Text.Json.JsonSerializer.Serialize(legacyCombat))!.AsObject();
         legacyNode.Remove("CombatIdentity");
+        foreach (var id in ProgressionRules.CombatSkills) legacyNode["Skills"]!.AsObject().Remove(id);
         using (var db = new NpgsqlConnection(connection))
         {
             db.Open();
@@ -31,8 +32,16 @@ switch (args[0])
             "legacy row gains starter combat identity once");
         Check(store.EnsureCombatIdentity("character-combat-legacy", combatTuning).Revision == 2,
             "repeat restore preserves combat identity and revision");
+        Check(store.ReadProgression("character-combat-legacy")?.Result.Skills[ProgressionRules.Swordsmanship] == 100,
+            "legacy snapshot safely acquires starter combat skills");
         Check(store.EnsureCombatIdentity("character-combat-new", combatTuning) is { Revision: 1, Result.CombatIdentity.Archetype: "fighter" },
             "new character persists starter combat identity");
+        var combatGain = store.ApplyProgression(new ActionReceipt("combat-skill-1", "character-combat-new",
+            ReceiptKind.CombatPractice, true, ProgressionRules.Swordsmanship, 125, 2.4, 17, EnemyLevel: 1),
+            1, TimeProvider.System, () => 0);
+        Check(combatGain.Result.SkillGain == 1 && combatGain.Revision == 2 &&
+            store.ReadProgression("character-combat-new")?.Result.Skills[ProgressionRules.Swordsmanship] == 101,
+            "combat skill gain commits atomically to CharacterState");
         Check(store.EnsureCombatIdentity("character-combat-created-mage", combatTuning, creationArchetype: "mage")
             is { Result.CombatIdentity: { Archetype: "mage", Base.Intelligence: 40, Base.Wisdom: 20 } },
             "creation stores the server-derived Mage allocation");
@@ -152,6 +161,11 @@ switch (args[0])
         Check(store.ReadProgression("character-combat-new")?.Result.CombatIdentity?.Archetype == "fighter" &&
             store.ReadProgression("character-combat-guardian")?.Result.CombatIdentity?.Archetype == "guardian",
             "new and chosen archetypes survive restart");
+        Check(store.ReadProgression("character-combat-new")?.Result.Skills[ProgressionRules.Swordsmanship] == 101 &&
+            store.ApplyProgression(new ActionReceipt("combat-skill-1", "character-combat-new",
+                ReceiptKind.CombatPractice, true, ProgressionRules.Swordsmanship, 125, 2.4, 17, EnemyLevel: 1),
+                2, TimeProvider.System, () => 0).Result.SkillGain == 1,
+            "combat skill and replay survive database restart");
         try { store.CommitUnstuck("unstuck-2", "character-unstuck", new("silverbrook", 220, 0, 50, 0), 900,
             new FixedClock(1_001_000)); throw new Exception("unstuck after restart ignored cooldown"); }
         catch (CharacterStoreRejectedException) { Console.WriteLine("PASS unstuck cooldown survives store and database restart"); }

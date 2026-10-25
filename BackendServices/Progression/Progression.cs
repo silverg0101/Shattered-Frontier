@@ -7,11 +7,38 @@ public static class ProgressionRules
     public const int GlobalSkillCap = 7200, TrackSkillCap = 4000;
     public const string Logging = "skill/logging", Mining = "skill/mining", Smithing = "skill/smithing",
         Carpentry = "skill/carpentry", Leatherworking = "skill/leatherworking";
+    public const string Swordsmanship = "skill/swordsmanship", Axes = "skill/axes", Maces = "skill/maces",
+        Polearms = "skill/polearms", Daggers = "skill/daggers", Archery = "skill/archery",
+        Unarmed = "skill/unarmed", ShieldDefense = "skill/shield_defense", Tactics = "skill/tactics",
+        Magic = "skill/magic", Healing = "skill/healing", ResistMagic = "skill/resist_magic",
+        Stealth = "skill/stealth";
+    public static readonly string[] CombatSkills = [Swordsmanship, Axes, Maces, Polearms, Daggers, Archery,
+        Unarmed, ShieldDefense, Tactics, Magic, Healing, ResistMagic, Stealth];
+    public static readonly string[] CombatTrackSkills = [Swordsmanship, Axes, Maces, Polearms, Daggers,
+        Archery, Unarmed, ShieldDefense, Tactics, Magic, Healing, ResistMagic];
+    public static Dictionary<string, int> StarterSkills(string archetype)
+    {
+        var result = CombatSkills.ToDictionary(id => id, _ => 0, StringComparer.Ordinal);
+        var (primary, secondary) = archetype switch
+        {
+            "fighter" => (Swordsmanship, Tactics), "guardian" => (ShieldDefense, Tactics),
+            "archer" => (Archery, Tactics), "mage" => (Magic, Tactics),
+            "healer" => (Healing, Magic), "shadow" => (Stealth, Daggers),
+            _ => throw new ArgumentOutOfRangeException(nameof(archetype))
+        };
+        result[primary] = 100; result[secondary] = 50;
+        return result;
+    }
     public static int XpToNext(int level) => level < 1 ? throw new ArgumentOutOfRangeException(nameof(level))
         : checked((int)(10 * Math.Round((400 * Math.Pow(level, 1.5) + 600) / 10, MidpointRounding.AwayFromZero)));
     public static double SkillFactor(int value) => 1 / Math.Max(1, value / 100d);
     public static double BandFactor(int value) => value >= 900 ? .5 : value >= 700 ? .8 : value >= 500 ? .9 : 1;
-    public static double DifficultyFactor(int difference) => difference is < -150 or > 250 ? 0 : Math.Exp(-Math.Pow((difference - 25) / 100d, 2) / 2);
+    public static double DifficultyFactor(int difference, ProgressionSettings? settings = null)
+    {
+        settings ??= new();
+        return difference < settings.TrivialDifficultyDelta || difference > settings.ImpossibleDifficultyDelta ? 0 :
+            Math.Exp(-Math.Pow((difference - settings.DifficultyOptimum) / settings.DifficultySigma, 2) / 2);
+    }
     public static double Fatigue(int activeMinutes, ProgressionSettings s) => activeMinutes <= s.FatigueFreeMinutes ? 1
         : Math.Max(s.FatigueFloor, 1 - (1 - s.FatigueFloor) * (activeMinutes - s.FatigueFreeMinutes) / (double)(s.FatigueWindowMinutes - s.FatigueFreeMinutes));
     public static int HourlyGainLimit(int value, ProgressionSettings s) => (int)Math.Ceiling(2 * s.ReferenceAttemptsPerHour * s.BaseGainRate * SkillFactor(value) * BandFactor(value) * 3);
@@ -19,7 +46,7 @@ public static class ProgressionRules
     {
         double weight = Math.Clamp(seconds / s.AttemptWeightSeconds, .2, 3);
         return Math.Min(s.MaximumGainChance, s.BaseGainRate * weight * SkillFactor(value) * BandFactor(value)
-            * DifficultyFactor(difficulty - value) * (success ? 1 : .5) * Math.Clamp(bonus, 1, 3)) * fatigue * antiMacro;
+            * DifficultyFactor(difficulty - value, s) * (success ? 1 : s.FailureGainFactor) * Math.Clamp(bonus, 1, 3)) * fatigue * antiMacro;
     }
 }
 
@@ -31,7 +58,10 @@ public sealed record ProgressionSettings(
     int GainWindowMinutes = 60, int ReferenceAttemptsPerHour = 600,
     int RestedNormalMinutesPerMinute = 4, int RestedAreaMinutesPerMinute = 2,
     int RestedCapMinutes = 600, double RestedXpMultiplier = 1.5, double RestedGainMultiplier = 1.75,
-    int KillsPerLevel = 150, double AdditionalPartyShare = .2)
+    int KillsPerLevel = 150, double AdditionalPartyShare = .2,
+    int CombatRepeatThreshold = 400, int TrivialDifficultyDelta = -150, int ImpossibleDifficultyDelta = 250,
+    int DifficultyOptimum = 25, double DifficultySigma = 100, double FailureGainFactor = .5,
+    int GrayLevelDelta = -10)
 {
     public void Validate()
     {
@@ -42,16 +72,20 @@ public sealed record ProgressionSettings(
             RestedNormalMinutesPerMinute is < 1 or > 60 || RestedAreaMinutesPerMinute is < 1 or > 60 ||
             RestedCapMinutes is < 1 or > 1440 || !double.IsFinite(RestedXpMultiplier) || RestedXpMultiplier is < 1 or > 3 ||
             !double.IsFinite(RestedGainMultiplier) || RestedGainMultiplier is < 1 or > 3 ||
-            KillsPerLevel is < 1 or > 1000 || !double.IsFinite(AdditionalPartyShare) || AdditionalPartyShare is < 0 or > 1)
+            KillsPerLevel is < 1 or > 1000 || !double.IsFinite(AdditionalPartyShare) || AdditionalPartyShare is < 0 or > 1 ||
+            CombatRepeatThreshold is < 1 or > 2000 || TrivialDifficultyDelta is < -500 or > 0 ||
+            ImpossibleDifficultyDelta is < 0 or > 500 || DifficultyOptimum is < -100 or > 150 ||
+            !double.IsFinite(DifficultySigma) || DifficultySigma is < 10 or > 300 ||
+            !double.IsFinite(FailureGainFactor) || FailureGainFactor is < 0 or > 1 || GrayLevelDelta is < -30 or > -1)
             throw new ArgumentOutOfRangeException(nameof(ProgressionSettings));
     }
 }
 
-public enum ReceiptKind { GatheringHarvest, CraftConvert, EnemyDefeat }
+public enum ReceiptKind { GatheringHarvest, CraftConvert, EnemyDefeat, CombatPractice }
 public sealed record ActionReceipt(string ReceiptId, string CharacterId, ReceiptKind Kind, bool Accepted,
     string? SkillId = null, int Difficulty = 0, double ActionSeconds = 6, ulong ContextHash = 0,
     bool Success = true, int EnemyLevel = 1, double EnemyTierMultiplier = 1, int EligiblePartySize = 1,
-    bool SessionEnd = false, bool InRestArea = false, int ReferencePartyLevel = 0);
+    bool SessionEnd = false, bool InRestArea = false, int ReferencePartyLevel = 0, bool XpEligible = true);
 public sealed record ProgressionResult(bool Applied, int SkillGain, int XpGain, int Level, double GainChance, double RestedMinutes = 0);
 public sealed record ProgressionSnapshot(long LifetimeXp, Dictionary<string, int> Skills, ProgressionSettings Settings, string[] Receipts,
     Dictionary<string, long[]> ActiveMinutes, PracticeSnapshot[] Practices, GainSnapshot[] Gains,
@@ -90,6 +124,7 @@ public sealed class CharacterProgression
     {
         if (string.IsNullOrWhiteSpace(characterId) || clock is null || roll is null || initialXp < 0) throw new ArgumentException("Invalid progression initialization");
         CharacterId = characterId; this.clock = clock; this.roll = roll; this.settings = snapshot?.Settings ?? settings ?? new(); this.settings.Validate();
+        foreach (var id in ProgressionRules.CombatSkills) skills[id] = 0;
         CombatIdentity = snapshot?.CombatIdentity ?? new CombatAttributeTuning().StarterIdentity;
         if (initialSkills is not null)
             foreach (var (id, value) in initialSkills)
@@ -162,13 +197,16 @@ public sealed class CharacterProgression
         if (receipts.Contains(receipt.ReceiptId)) return new(false, 0, 0, Level, 0, RestedMinutes);
         if (!receipt.SessionEnd && receipt.InRestArea) throw new ArgumentException("Rest area requires session end.");
         BeginSession();
-        if (receipt.Kind is ReceiptKind.GatheringHarvest or ReceiptKind.CraftConvert)
+        if (receipt.Kind is ReceiptKind.GatheringHarvest or ReceiptKind.CraftConvert or ReceiptKind.CombatPractice)
         {
             string skill = receipt.SkillId ?? "";
             if (receipt.Kind == ReceiptKind.GatheringHarvest ? skill is not (ProgressionRules.Logging or ProgressionRules.Mining) :
-                skill is not (ProgressionRules.Smithing or ProgressionRules.Carpentry or ProgressionRules.Leatherworking))
+                receipt.Kind == ReceiptKind.CraftConvert ? skill is not (ProgressionRules.Smithing or ProgressionRules.Carpentry or ProgressionRules.Leatherworking) :
+                !ProgressionRules.CombatTrackSkills.Contains(skill, StringComparer.Ordinal))
                 throw new ArgumentException("Receipt skill does not match accepted action");
             if (receipt.Difficulty is < 0 or > 1100 || !double.IsFinite(receipt.ActionSeconds) || receipt.ActionSeconds <= 0) throw new ArgumentOutOfRangeException(nameof(receipt));
+            if (receipt.Kind == ReceiptKind.CombatPractice && (receipt.EnemyLevel is < 1 or > 200 || !receipt.XpEligible))
+                throw new ArgumentOutOfRangeException(nameof(receipt));
         }
         else if (receipt.Kind == ReceiptKind.EnemyDefeat)
         {
@@ -182,7 +220,7 @@ public sealed class CharacterProgression
         var activeMinute = now.ToUnixTimeSeconds() / 60;
         bool rested = RestedMinutes > 0;
         int xp = 0, gain = 0; double chance = 0;
-        if (receipt.Kind is ReceiptKind.GatheringHarvest or ReceiptKind.CraftConvert)
+        if (receipt.Kind is ReceiptKind.GatheringHarvest or ReceiptKind.CraftConvert or ReceiptKind.CombatPractice)
         {
             string id = receipt.SkillId ?? "";
             practices.RemoveAll(p => p.At <= now.AddMinutes(-settings.RepetitionWindowMinutes));
@@ -192,25 +230,29 @@ public sealed class CharacterProgression
             minutes.Add(now.ToUnixTimeSeconds() / 60);
             practices.Add((now, id, receipt.ContextHash));
             int repeats = practices.Count(p => p.Skill == id && p.Context == receipt.ContextHash);
-            int threshold = receipt.Kind == ReceiptKind.CraftConvert ? settings.CraftingRepeatThreshold : settings.GatheringRepeatThreshold;
+            int threshold = receipt.Kind == ReceiptKind.CraftConvert ? settings.CraftingRepeatThreshold :
+                receipt.Kind == ReceiptKind.CombatPractice ? settings.CombatRepeatThreshold : settings.GatheringRepeatThreshold;
             double anti = repeats <= threshold ? 1 : Math.Max(.2, threshold / (double)repeats);
             double fatigue = ProgressionRules.Fatigue(minutes.Count, settings);
             int value = skills[id];
-            if (value < ProgressionRules.UnspecializedCap)
+            if (value < ProgressionRules.UnspecializedCap &&
+                (receipt.Kind != ReceiptKind.CombatPractice || receipt.EnemyLevel - Level > settings.GrayLevelDelta))
             {
                 chance = ProgressionRules.GainChance(value, receipt.Difficulty, receipt.ActionSeconds, receipt.Success,
                     rested ? settings.RestedGainMultiplier : 1, fatigue, anti, settings);
                 int hourGains = gains.Count(g => g.Skill == id);
-                double sample = roll();
-                if (!double.IsFinite(sample) || sample < 0 || sample >= 1) throw new InvalidOperationException("Roll must be in [0, 1)");
+                double sample = chance > 0 ? roll() : 1;
+                if (chance > 0 && (!double.IsFinite(sample) || sample < 0 || sample >= 1))
+                    throw new InvalidOperationException("Roll must be in [0, 1)");
                 if (sample < chance && hourGains < ProgressionRules.HourlyGainLimit(value, settings) &&
                     skills.Values.Sum() < ProgressionRules.GlobalSkillCap &&
-                    (receipt.Kind == ReceiptKind.CraftConvert ? value : skills[ProgressionRules.Logging] + skills[ProgressionRules.Mining]) < ProgressionRules.TrackSkillCap)
+                    (receipt.Kind == ReceiptKind.CraftConvert ? value : receipt.Kind == ReceiptKind.CombatPractice ?
+                        ProgressionRules.CombatTrackSkills.Sum(k => skills[k]) : skills[ProgressionRules.Logging] + skills[ProgressionRules.Mining]) < ProgressionRules.TrackSkillCap)
                 { skills[id]++; gains.Add((now, id)); gain = 1; }
             }
             double weight = Math.Clamp(receipt.ActionSeconds / settings.AttemptWeightSeconds, .2, 3);
-            xp = (int)Math.Round(Math.Round(ProgressionRules.XpToNext(Level) / 12d, MidpointRounding.AwayFromZero) * .012 * weight *
-                ProgressionRules.DifficultyFactor(receipt.Difficulty - value) * fatigue * anti *
+            xp = receipt.Kind == ReceiptKind.CombatPractice ? 0 : (int)Math.Round(Math.Round(ProgressionRules.XpToNext(Level) / 12d, MidpointRounding.AwayFromZero) * .012 * weight *
+                ProgressionRules.DifficultyFactor(receipt.Difficulty - value, settings) * fatigue * anti *
                 (rested ? settings.RestedXpMultiplier : 1), MidpointRounding.AwayFromZero);
         }
         else if (receipt.Kind == ReceiptKind.EnemyDefeat)

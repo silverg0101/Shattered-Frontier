@@ -43,6 +43,7 @@
 #include "TimerManager.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Quest/SFQuestPilotEvents.h"
+#include "Quest/SFQuestPilot.h"
 #include "Services/SFBackpackComponent.h"
 #include "Services/SFCharacterSession.h"
 #include "Services/SFGameplayServicesClient.h"
@@ -1984,11 +1985,11 @@ SFCombatResolution::FResult ASFGameMode::ResolveCombatAttack(AActor* Attacker,
     return Result;
 }
 
-void ASFGameMode::ApplyStarterHeal(ASFE1Character* Healer, ASFE1Character* Subject, int32 Amount)
+int32 ASFGameMode::ApplyStarterHeal(ASFE1Character* Healer, ASFE1Character* Subject, int32 Amount)
 {
-    if (!IsValid(Healer) || !IsValid(Subject) || Subject->CombatHealth() <= 0 || Amount <= 0) return;
+    if (!IsValid(Healer) || !IsValid(Subject) || Subject->CombatHealth() <= 0 || Amount <= 0) return 0;
     const int32 Effective = FMath::Min(Amount, Subject->CombatMaximumHealth() - Subject->CombatHealth());
-    if (Effective <= 0) return;
+    if (Effective <= 0) return 0;
     Subject->CombatSetHealth(Subject->CombatHealth() + Effective);
     TArray<ASFPilotBoar*> Engaged;
     for (TActorIterator<ASFPilotBoar> It(GetWorld()); It; ++It)
@@ -1997,6 +1998,22 @@ void ASFGameMode::ApplyStarterHeal(ASFE1Character* Healer, ASFE1Character* Subje
         for (ASFPilotBoar* Boar : Engaged)
             Boar->ReceivePilotHealingThreat(Healer, Subject,
                 SFStarterAbilities::HealingThreatPerNpc(Effective, Engaged.Num()));
+    return Engaged.IsEmpty() ? 0 : Effective;
+}
+
+static void RecordPilotCombatPractice(ASFE1Character* Attacker, ASFPilotBoar* Target,
+    const FString& SkillId, double Seconds, bool bSuccess, const FString& AbilityId)
+{
+    if (!IsValid(Attacker) || !IsValid(Target) || Target->IsLeashing() || Target->GetCreatureId().IsEmpty()) return;
+    const auto Npc = SFCombatPart6::Npc(Target->GetCreatureId());
+    if (Npc.Level - Attacker->CombatCharacterLevel() <= -10) return;
+    auto* Quest = Attacker->GetController() ? Attacker->GetController()->FindComponentByClass<USFQuestPilotComponent>() : nullptr;
+    if (!Quest) return;
+    const FVector Location = Target->GetActorLocation();
+    const FIntVector Cell(FMath::FloorToInt(Location.X / 10000.0), FMath::FloorToInt(Location.Y / 10000.0), 0);
+    const uint64 Context = uint64(HashCombine(GetTypeHash(AbilityId),
+        HashCombine(GetTypeHash(Target->GetCreatureId()), GetTypeHash(Cell))));
+    Quest->RecordCombatPractice(SkillId, Npc.Skill, Seconds, Context, bSuccess, Npc.Level);
 }
 
 void ASFGameMode::ApplyStarterWeakPoison(ASFE1Character* Source, ASFPilotBoar* Victim,
@@ -2055,6 +2072,8 @@ void ASFGameMode::TryPlayerCombatAbility(ASFE1Character* Attacker, FName Ability
     if (!bSelf && !bFriendly && IsSafe(Attacker->GetActorLocation())) return;
     const auto* Energy = GetDefault<USFCombatEnergySettings>();
     const auto Equipment = SFGear::CombatEquipment(Attacker->GetController(), CapturedSettings->DevPilotArmorUnit);
+    const FString GoverningSkill = SFStarterAbilities::GoverningSkill(*Ability,
+        SFCombatPart6::WeaponSkill(Equipment.Weapon));
     if (!CanUseEquipment(*Ability, Equipment.bShield, Equipment.bRangedWeapon,
         !Equipment.Weapon.bEquipped || Equipment.Weapon.SpeedSeconds == 1.4)) return;
     if (Ability->Effect == EEffect::Hide && !CanHide(Attacker->IsPilotInCombat())) return;
@@ -2189,10 +2208,12 @@ void ASFGameMode::TryPlayerCombatAbility(ASFE1Character* Attacker, FName Ability
             Attacker->CrowdControl->ClearRoot();
         return;
     }
-    if (Ability->Effect == EEffect::Root) { Targets[0]->ApplyAbilityRoot(Now + 5.0); return; }
+    if (Ability->Effect == EEffect::Root)
+    { Targets[0]->ApplyAbilityRoot(Now + 5.0); RecordPilotCombatPractice(Attacker, Targets[0], GoverningSkill, 2.0, true, AbilityId.ToString()); return; }
     if (Ability->Effect == EEffect::Stance) { Attacker->ToggleDefensiveStance(); return; }
     if (Ability->Effect == EEffect::BlockBuff) { Attacker->SetShieldBlockUntil(Now + 6); return; }
-    if (Ability->Effect == EEffect::Taunt) { Targets[0]->ReceivePilotTaunt(Attacker); return; }
+    if (Ability->Effect == EEffect::Taunt)
+    { Targets[0]->ReceivePilotTaunt(Attacker); RecordPilotCombatPractice(Attacker, Targets[0], GoverningSkill, 1.5, true, AbilityId.ToString()); return; }
     if (Ability->Effect == EEffect::DamageReduction)
     {
         if (AbilityId == TEXT("shield_wall")) Attacker->SetShieldWallUntil(Now + 8);
@@ -2215,7 +2236,7 @@ void ASFGameMode::TryPlayerCombatAbility(ASFE1Character* Attacker, FName Ability
         int32 Generation = 0;
         if (bRenew)
         {
-            auto Stats = Attacker->CombatStats(CapturedSettings->CritBase, CapturedSettings->SkillDamageFloor);
+            auto Stats = Attacker->CombatStats(CapturedSettings->CritBase, CapturedSettings->SkillDamageFloor, GoverningSkill);
             Stats.SkillMultiplier = SkillMultiplier(Attacker->HasNativeCombatKit(Ability->Kit),
                 Stats.SkillMultiplier, CapturedSettings->SkillDamageFloor);
             TickAttack = SFCombatPart6::AuthoredAbility(Stats, Equipment.Weapon,
@@ -2228,9 +2249,10 @@ void ASFGameMode::TryPlayerCombatAbility(ASFE1Character* Attacker, FName Ability
         }
         TWeakObjectPtr<ASFE1Character> Source = Attacker, Subject = bRenew ? Friendly : Attacker;
         TSharedRef<int32> TickCount = MakeShared<int32>(0);
+        TSharedRef<bool> bPracticed = MakeShared<bool>(false);
         TSharedRef<FTimerHandle> Handle = MakeShared<FTimerHandle>();
         GetWorld()->GetTimerManager().SetTimer(*Handle, FTimerDelegate::CreateWeakLambda(this,
-            [this, Source, Subject, TickCount, Handle, bRenew, TickAttack, Key, Generation]()
+            [this, Source, Subject, TickCount, bPracticed, Handle, bRenew, TickAttack, Key, Generation]()
             {
                 ASFE1Character* Player = Subject.Get();
                 if (!Source.IsValid() || !Player || Player->CombatHealth() <= 0 ||
@@ -2238,7 +2260,15 @@ void ASFGameMode::TryPlayerCombatAbility(ASFE1Character* Attacker, FName Ability
                 { GetWorld()->GetTimerManager().ClearTimer(*Handle); return; }
                 const int32 Heal = bRenew ? ResolveCombatAttack(Source.Get(), TickAttack).Damage :
                     FMath::RoundToInt(Player->CombatMaximumHealth() * .03);
-                ApplyStarterHeal(Source.Get(), Player, Heal);
+                const int32 Effective = ApplyStarterHeal(Source.Get(), Player, Heal);
+                if (bRenew && Effective > 0 && !*bPracticed && Source->GetController())
+                {
+                    if (auto* Quest = Source->GetController()->FindComponentByClass<USFQuestPilotComponent>())
+                        Quest->RecordCombatPractice(TEXT("skill/healing"),
+                            SFCombatPart6::SkillReference(Source->CombatCharacterLevel()), 3.0,
+                            GetTypeHash(FString(TEXT("renew"))), true, Source->CombatCharacterLevel());
+                    *bPracticed = true;
+                }
                 if (++*TickCount >= (bRenew ? 4 : 5))
                 {
                     if (bRenew) RenewGenerations.Remove(Key);
@@ -2249,7 +2279,7 @@ void ASFGameMode::TryPlayerCombatAbility(ASFE1Character* Attacker, FName Ability
     }
     const auto* Coefficient = SFCombatPart6::Ability(AbilityId.ToString());
     if (!Coefficient) return;
-    auto Stats = Attacker->CombatStats(CapturedSettings->CritBase, CapturedSettings->SkillDamageFloor);
+    auto Stats = Attacker->CombatStats(CapturedSettings->CritBase, CapturedSettings->SkillDamageFloor, GoverningSkill);
     Stats.SkillMultiplier = SkillMultiplier(Attacker->HasNativeCombatKit(Ability->Kit),
         Stats.SkillMultiplier, CapturedSettings->SkillDamageFloor);
     SFCombatResolution::FAttack Base = SFCombatPart6::AuthoredAbility(Stats, Equipment.Weapon,
@@ -2262,7 +2292,11 @@ void ASFGameMode::TryPlayerCombatAbility(ASFE1Character* Attacker, FName Ability
     }
     if (Ability->Effect == EEffect::Heal)
     {
-        ApplyStarterHeal(Attacker, Friendly, ResolveCombatAttack(Attacker, Base).Damage);
+        const int32 Effective = ApplyStarterHeal(Attacker, Friendly, ResolveCombatAttack(Attacker, Base).Damage);
+        if (Effective > 0)
+            if (auto* Quest = Attacker->GetController()->FindComponentByClass<USFQuestPilotComponent>())
+                Quest->RecordCombatPractice(TEXT("skill/healing"), SFCombatPart6::SkillReference(Stats.Level),
+                    Coefficient->ReferenceSeconds, GetTypeHash(AbilityId), true, Stats.Level);
         return;
     }
     if (Ability->Effect == EEffect::HealingCircle)
@@ -2274,8 +2308,13 @@ void ASFGameMode::TryPlayerCombatAbility(ASFE1Character* Attacker, FName Ability
         Allies.Sort([GroundCenter](const ASFE1Character& A, const ASFE1Character& B)
         { return FVector::DistSquared2D(A.GetActorLocation(), GroundCenter) <
             FVector::DistSquared2D(B.GetActorLocation(), GroundCenter); });
+        bool bEffective = false;
         for (int32 Index = 0; Index < FMath::Min(Ability->MaximumTargets, Allies.Num()); ++Index)
-            ApplyStarterHeal(Attacker, Allies[Index], ResolveCombatAttack(Attacker, Base).Damage);
+            bEffective |= ApplyStarterHeal(Attacker, Allies[Index], ResolveCombatAttack(Attacker, Base).Damage) > 0;
+        if (bEffective)
+            if (auto* Quest = Attacker->GetController()->FindComponentByClass<USFQuestPilotComponent>())
+                Quest->RecordCombatPractice(TEXT("skill/healing"), SFCombatPart6::SkillReference(Stats.Level),
+                    Coefficient->ReferenceSeconds, GetTypeHash(AbilityId), true, Stats.Level);
         return;
     }
     if (Ability->Effect == EEffect::Absorb)
@@ -2286,6 +2325,7 @@ void ASFGameMode::TryPlayerCombatAbility(ASFE1Character* Attacker, FName Ability
         return;
     }
     if (Ability->Effect == EEffect::DisplaceHit) Attacker->SetActorLocation(ChargeDestination, true);
+    bool bRecordedPractice = false;
     for (ASFPilotBoar* Boar : Targets)
     {
         SFCombatResolution::FAttack Attack = Base;
@@ -2302,6 +2342,11 @@ void ASFGameMode::TryPlayerCombatAbility(ASFE1Character* Attacker, FName Ability
         Attack.DodgeChance = Boar->CombatDodge(); Attack.ParryChance = Boar->CombatParry();
         if (Ability->Effect == EEffect::DamageOverTime)
         {
+            if (!bRecordedPractice)
+            {
+                RecordPilotCombatPractice(Attacker, Boar, GoverningSkill, Coefficient->ReferenceSeconds, true, AbilityId.ToString());
+                bRecordedPractice = true;
+            }
             const bool bSerpent = AbilityId == TEXT("serpent_sting");
             const int32 Ticks = bSerpent ? 5 : 6;
             Attack.RawDamage /= Ticks; Attack.SpreadWeaponDamage /= Ticks;
@@ -2330,6 +2375,16 @@ void ASFGameMode::TryPlayerCombatAbility(ASFE1Character* Attacker, FName Ability
             continue;
         }
         const auto Result = ResolveCombatAttack(Attacker, Attack);
+        if (!bRecordedPractice)
+        {
+            RecordPilotCombatPractice(Attacker, Boar, GoverningSkill, Coefficient->ReferenceSeconds,
+                Result.Damage > 0, AbilityId.ToString());
+            if (Equipment.Weapon.bEquipped &&
+                (Ability->Kit == EKit::Weapon || Ability->Kit == EKit::Archery || Ability->Effect == EEffect::Backstab))
+                RecordPilotCombatPractice(Attacker, Boar, TEXT("skill/tactics"), Coefficient->ReferenceSeconds,
+                    Result.Damage > 0, AbilityId.ToString());
+            bRecordedPractice = true;
+        }
         if (Result.Damage > 0) Boar->ReceivePilotDamage(Attacker, Result.Damage,
             AbilityId == TEXT("shield_bash") ? 1.5 : 1.0);
         else Boar->ReceivePilotDodge(Attacker);
@@ -2391,7 +2446,8 @@ void ASFGameMode::TryPlayerAttack(ASFE1Character* Attacker, AActor* SelectedTarg
     SFCombatResolution::FAttack Attack;
     if (bPart6)
     {
-        const auto Stats = Attacker->CombatStats(CapturedSettings->CritBase, CapturedSettings->SkillDamageFloor);
+        const FString WeaponSkill = SFCombatPart6::WeaponSkill(Equipment.Weapon);
+        const auto Stats = Attacker->CombatStats(CapturedSettings->CritBase, CapturedSettings->SkillDamageFloor, WeaponSkill);
         Attack = SFCombatPart6::PlayerAuto(Stats, Equipment.Weapon,
             CapturedSettings->WeaponSpread, CapturedSettings->PowerSpeedReferenceSeconds,
             CapturedSettings->UnarmedDpsFactor, CapturedSettings->WeaponDpsK);
@@ -2426,6 +2482,15 @@ void ASFGameMode::TryPlayerAttack(ASFE1Character* Attacker, AActor* SelectedTarg
     }
 #endif
     const auto Result = ResolveCombatAttack(Attacker, Attack, FixtureDraw);
+    if (bPart6)
+    {
+        const FString WeaponSkill = SFCombatPart6::WeaponSkill(Equipment.Weapon);
+        RecordPilotCombatPractice(Attacker, Best, WeaponSkill,
+            Equipment.Weapon.bEquipped ? Equipment.Weapon.SpeedSeconds : 2.0, Result.Damage > 0, TEXT("auto"));
+        if (Equipment.Weapon.bEquipped)
+            RecordPilotCombatPractice(Attacker, Best, TEXT("skill/tactics"), Equipment.Weapon.SpeedSeconds,
+                Result.Damage > 0, TEXT("auto"));
+    }
     if (Map == TEXT("/Game/Frontier/Maps/Sandbox/SB_Dodge") && FixtureDraw >= 0)
     { UE_LOG(LogTemp, Display, TEXT("BOAR_DODGE_SERVER Dodge=%d HP=%d Front=%d Draw=%.3f"),
         Result.Outcome == SFCombatResolution::EOutcome::Dodge ? 1 : 0, Best->Health(),

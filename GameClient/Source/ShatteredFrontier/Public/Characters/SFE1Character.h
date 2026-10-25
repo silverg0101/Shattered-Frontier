@@ -47,7 +47,8 @@ public:
     int32 CombatCharacterLevel() const;
     bool HasCombatSnapshot() const { return bHasCombatSnapshot; }
     void RestoreCombatSnapshot(const FSFGameplayResponse& State);
-    SFCombatPart6::FStats CombatStats(double CritBase = 0.05, double SkillFloor = 0.80) const;
+    SFCombatPart6::FStats CombatStats(double CritBase = 0.05, double SkillFloor = 0.80,
+        const FString& SkillId = FString()) const;
     int32 CombatMaximumHealth() const;
     int32 CombatConstitution() const;
     double CombatResistance() const;
@@ -169,6 +170,7 @@ private:
     bool bHasCombatSnapshot = false;
     UPROPERTY(Replicated) FString CombatArchetype;
     SFCombatPart6::FStats CombatAttributes;
+    TMap<FString, int32> CombatSkills;
     UPROPERTY(Replicated) uint32 ResurrectionOfferId = 0; // owning client only
     UPROPERTY(Replicated) FString ResurrectionOfferDeathEventId;
     uint32 NextResurrectionOfferId = 0;

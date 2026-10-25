@@ -2118,23 +2118,39 @@ void ASFE1Character::RestoreCombatSnapshot(const FSFGameplayResponse& State)
         A.Level != FMath::Clamp(State.Level, 1, 20) ||
         A.Strength > 400 || A.Dexterity > 400 || A.Constitution > 400 ||
         A.Intelligence > 400 || A.Wisdom > 400 || A.Willpower > 400) return;
+    for (const auto& Skill : State.Skills)
+        if (Skill.Value < 0 || Skill.Value > 900) return;
     CombatAttributes.Level = A.Level;
     CombatAttributes.Strength = A.Strength; CombatAttributes.Dexterity = A.Dexterity;
     CombatAttributes.Constitution = A.Constitution; CombatAttributes.Intelligence = A.Intelligence;
     CombatAttributes.Wisdom = A.Wisdom; CombatAttributes.Willpower = A.Willpower;
     CombatArchetype = A.Archetype;
+    CombatSkills = State.Skills;
     CombatSnapshotRevision = State.ProgressionRevision;
     bHasCombatSnapshot = true;
     UE_LOG(LogTemp, Display, TEXT("COMBAT_ATTRIBUTE_SNAPSHOT Archetype=%s Level=%d Str=%d Dex=%d Con=%d Int=%d Wis=%d Wil=%d"),
         *CombatArchetype, A.Level, A.Strength, A.Dexterity, A.Constitution, A.Intelligence, A.Wisdom, A.Willpower);
 }
 
-SFCombatPart6::FStats ASFE1Character::CombatStats(double CritBase, double SkillFloor) const
+SFCombatPart6::FStats ASFE1Character::CombatStats(double CritBase, double SkillFloor, const FString& SkillId) const
 {
     check(bHasCombatSnapshot);
-    return SFCombatPart6::FromAttributes(CombatAttributes.Level, CombatAttributes.Strength,
+    auto Stats = SFCombatPart6::FromAttributes(CombatAttributes.Level, CombatAttributes.Strength,
         CombatAttributes.Dexterity, CombatAttributes.Constitution, CombatAttributes.Intelligence,
         CombatAttributes.Wisdom, CombatAttributes.Willpower, CritBase, SkillFloor);
+    FString Governing = SkillId;
+    if (Governing.IsEmpty())
+    {
+        Governing = CombatArchetype == TEXT("guardian") ? TEXT("skill/shield_defense") :
+            CombatArchetype == TEXT("archer") ? TEXT("skill/archery") :
+            CombatArchetype == TEXT("mage") ? TEXT("skill/magic") :
+            CombatArchetype == TEXT("healer") ? TEXT("skill/healing") :
+            CombatArchetype == TEXT("shadow") ? TEXT("skill/daggers") : TEXT("skill/swordsmanship");
+    }
+    return SFCombatPart6::WithSkills(Stats,
+        CombatSkills.Contains(Governing) ? CombatSkills[Governing] : Stats.Skill,
+        CombatSkills.Contains(TEXT("skill/tactics")) ? CombatSkills[TEXT("skill/tactics")] : Stats.Tactics,
+        SkillFloor);
 }
 
 int32 ASFE1Character::CombatMaximumHealth() const
