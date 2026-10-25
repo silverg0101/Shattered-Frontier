@@ -16,6 +16,7 @@ Deliver grounded Chicken and a second compatible bird through a reusable family 
 
 - Seven focused tests cover quadruped gait regression, two bird proportions, missing wings, explicit catalogue routing, unsupported Bat/flight, two-foot/wing motion checks and no external bird concept fallback. App self-check passes against initialized throwaway data/assets; Python compile checks pass. These are source-contract checks, not generated-asset proof.
 - Chicken end-to-end, second-species reuse, actual Blender GLB bone/animation export and Unreal import remain unproved. No Unreal job is authorized in this lane yet; another worker owns that slot. Family readiness is explicitly experimental/pending.
+- Bounded raw Chicken pack proof950007 completed in64s: two-contact curator kept Walk (44 frames, loop), rejected IdlePecking for a joint jump. Raw library is in main scratch `scratch-data/RawMotionLibrary/Chicken/`; no family labels/review/generation ran. Actual source has only three joints per wing, including End Site. Current source role-map required-role contract incorrectly demands four wing roles; distinguish source wing root/tip requirements from the padded standard skeleton before end-to-end generation. Retarget already resamples short chains. Remote950007 input folder was removed; no process from this lane remains running.
 - Fresh independent 6.1-Sol code review, then in-engine/concept visual review and owner signoff remain required. Hold push pending controller review.
 
 ## Bounded boar diagnostic
