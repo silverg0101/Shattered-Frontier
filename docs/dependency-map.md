@@ -17,3 +17,4 @@ The browser path is `server/index.js` → `server/world.js` → `public/{index.h
 | Art pipeline | [art-pipeline.md](dependency-map/art-pipeline.md) | Image generation, Pixal3D/TRELLIS lab, Blender tools | Asset generation and review |
 | Tools and tests | [tools-and-tests.md](dependency-map/tools-and-tests.md) | Build/test/netcheck commands, runners, worktrees | Tooling and validation |
 | Design references | [design-refs.md](dependency-map/design-refs.md) | Design references, planning and production | Specs and owner decisions |
+| Hand-offs | [hand-offs/README.md](hand-offs/README.md) | Task queue and completed task files | Picking up or handing off a task; open only the named task file |
