@@ -2147,8 +2147,9 @@ SFCombatPart6::FStats ASFE1Character::CombatStats(double CritBase, double SkillF
             CombatArchetype == TEXT("healer") ? TEXT("skill/healing") :
             CombatArchetype == TEXT("shadow") ? TEXT("skill/daggers") : TEXT("skill/swordsmanship");
     }
+    const int32* StoredSkill = CombatSkills.Find(Governing);
     return SFCombatPart6::WithSkills(Stats,
-        CombatSkills.Contains(Governing) ? CombatSkills[Governing] : Stats.Skill,
+        StoredSkill ? *StoredSkill : (SkillId.IsEmpty() ? Stats.Skill : 0),
         CombatSkills.Contains(TEXT("skill/tactics")) ? CombatSkills[TEXT("skill/tactics")] : Stats.Tactics,
         SkillFloor);
 }

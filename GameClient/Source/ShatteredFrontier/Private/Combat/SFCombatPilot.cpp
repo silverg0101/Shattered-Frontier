@@ -2532,7 +2532,8 @@ void ASFGameMode::TryPlayerAttack(ASFE1Character* Attacker, AActor* SelectedTarg
     Best->ReceivePilotDamage(Attacker, Result.Damage);
     if (bPart6 && Attacker->TryPoisonProc(Now))
     {
-        auto Stats = Attacker->CombatStats(CapturedSettings->CritBase, CapturedSettings->SkillDamageFloor);
+        auto Stats = Attacker->CombatStats(CapturedSettings->CritBase, CapturedSettings->SkillDamageFloor,
+            TEXT("skill/stealth"));
         Stats.SkillMultiplier = SFStarterAbilities::SkillMultiplier(
             Attacker->HasNativeCombatKit(SFStarterAbilities::EKit::Shadow),
             Stats.SkillMultiplier, CapturedSettings->SkillDamageFloor);

@@ -201,8 +201,12 @@ bool FSFHybridMagicManaTest::RunTest(const FString& Parameters)
     const auto Fighter = SFCombatPart6::Player(SFCombatPart6::EKit::Fighter, 1);
     TestEqual(TEXT("Fighter casts Magic from Mana"), int32(Bolt->Energy), int32(SFStarterAbilities::EEnergy::Mana));
     TestTrue(TEXT("Fighter has level-one Mana budget"), Fighter.Mana >= Fighter.Mana * Bolt->StaminaCostFraction);
+    const auto Untrained = SFCombatPart6::WithSkills(Fighter, 0, Fighter.Tactics, .80);
     TestEqual(TEXT("off-archetype Magic uses skill floor"),
-        SFStarterAbilities::SkillMultiplier(false, Fighter.SkillMultiplier, .80), .80);
+        SFStarterAbilities::SkillMultiplier(false, Untrained.SkillMultiplier, .80), .80);
+    const auto Trained = SFCombatPart6::WithSkills(Fighter, 50, Fighter.Tactics, .80);
+    TestTrue(TEXT("trained off-archetype Magic improves above floor"),
+        SFStarterAbilities::SkillMultiplier(false, Trained.SkillMultiplier, .80) > .80);
     return true;
 }
 
@@ -215,8 +219,12 @@ bool FSFHybridHealingManaTest::RunTest(const FString& Parameters)
     const auto Fighter = SFCombatPart6::Player(SFCombatPart6::EKit::Fighter, 1);
     TestEqual(TEXT("Fighter healing uses Mana"), int32(Mend->Energy), int32(SFStarterAbilities::EEnergy::Mana));
     TestTrue(TEXT("Fighter has Mana to heal"), Fighter.Mana >= Fighter.Mana * Mend->StaminaCostFraction);
+    const auto Untrained = SFCombatPart6::WithSkills(Fighter, 0, Fighter.Tactics, .80);
     TestEqual(TEXT("untrained Healing uses skill floor"),
-        SFStarterAbilities::SkillMultiplier(false, Fighter.SkillMultiplier, .80), .80);
+        SFStarterAbilities::SkillMultiplier(false, Untrained.SkillMultiplier, .80), .80);
+    const auto Trained = SFCombatPart6::WithSkills(Fighter, 50, Fighter.Tactics, .80);
+    TestTrue(TEXT("trained off-archetype Healing improves above floor"),
+        SFStarterAbilities::SkillMultiplier(false, Trained.SkillMultiplier, .80) > .80);
     TestEqual(TEXT("effective healing threat splits across engaged NPCs"),
         SFStarterAbilities::HealingThreatPerNpc(120, 3), 20.0);
     TestEqual(TEXT("overheal generates no threat"),
