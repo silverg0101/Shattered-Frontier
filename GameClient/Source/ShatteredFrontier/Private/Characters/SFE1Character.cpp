@@ -1245,7 +1245,7 @@ void ASFE1Character::Tick(float DeltaSeconds)
         const auto* Settings = GetDefault<USFCombatPilotSettings>();
         const bool bWasInCombat = PilotRegen.bInCombat;
         const bool bRestRegenSandbox = CombatMap == TEXT("/Game/Frontier/Maps/Sandbox/SB_RestRegen");
-        const bool bAtRestArea = bRestRegenSandbox && ASFRestAreaVolume::IsAtRestArea(GetWorld(), GetActorLocation());
+        const bool bAtRestArea = ASFRestAreaVolume::IsAtRestArea(GetWorld(), GetActorLocation());
         // The pilot has no attribute snapshot yet; use the authored minimum until attributes are integrated.
         const int32 Regenerated = PilotRegen.Advance(GetWorld()->GetTimeSeconds(), bThreatened,
             PilotHealth, Settings->PlayerHealth, 10, Settings->CombatExitSeconds,
@@ -1262,6 +1262,13 @@ void ASFE1Character::Tick(float DeltaSeconds)
             UE_LOG(LogTemp, Display, TEXT("REGEN_HEALTH_TICK Health=%d Time=%.2f"), PilotHealth, GetWorld()->GetTimeSeconds());
             if (bRestRegenSandbox)
             { UE_LOG(LogTemp, Display, TEXT("REST_REGEN_TICK Health=%d Rest=%d Time=%.2f"), PilotHealth, bAtRestArea ? 1 : 0, GetWorld()->GetTimeSeconds()); }
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+            if (CombatMap == TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook") &&
+                FParse::Param(FCommandLine::Get(), TEXT("GreenlandsBoarNetcheck")) &&
+                (GreenlandsNetcheckStage == 6 || GreenlandsNetcheckStage == 12))
+            { UE_LOG(LogTemp, Display, TEXT("BOAR_GREENLANDS_REGEN_TICK Stage=%d Health=%d Rest=%d Time=%.2f"),
+                GreenlandsNetcheckStage, PilotHealth, bAtRestArea ? 1 : 0, GetWorld()->GetTimeSeconds()); }
+#endif
         }
     }
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
@@ -1347,11 +1354,12 @@ void ASFE1Character::Tick(float DeltaSeconds)
                     return !Boar || !Boar->ThreatTarget() ? TEXT("None") :
                         Boar->ThreatTarget() == this ? TEXT("Self") : TEXT("Other");
                 };
-                UE_LOG(LogTemp, Display, TEXT("BOAR_GREENLANDS_SAMPLE Role=%s Stage=%d LeadSlot=%d LeadHP=%d LeadReturn=%d LeadTarget=%s MateSlot=%d MateHP=%d MateReturn=%d MateTarget=%s ObserverHP=%d ObserverCombat=%d"),
+                UE_LOG(LogTemp, Display, TEXT("BOAR_GREENLANDS_SAMPLE Role=%s Stage=%d LeadSlot=%d LeadHP=%d LeadReturn=%d LeadTarget=%s MateSlot=%d MateHP=%d MateReturn=%d MateTarget=%s ObserverHP=%d ObserverCombat=%d ObserverRest=%d"),
                     *ScenarioRole, GreenlandsNetcheckStage, GreenlandsLeadSlot, Lead ? Lead->Health() : -1,
                     Lead && Lead->IsLeashing() ? 1 : 0, TargetRole(Lead), GreenlandsMateSlot,
                     Mate ? Mate->Health() : -1, Mate && Mate->IsLeashing() ? 1 : 0,
-                    TargetRole(Mate), ObservedPlayer->CombatHealth(), ObservedPlayer->IsPilotInCombat() ? 1 : 0);
+                    TargetRole(Mate), ObservedPlayer->CombatHealth(), ObservedPlayer->IsPilotInCombat() ? 1 : 0,
+                    ASFRestAreaVolume::IsAtRestArea(GetWorld(), ObservedPlayer->GetActorLocation()) ? 1 : 0);
             }
             if (ScenarioRole == TEXT("Driver") && bGreenlandsKill && Lead && Lead->Health() > 0 &&
                 Now >= GreenlandsNextAttackAt)

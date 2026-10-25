@@ -5,6 +5,7 @@
 #include "Framework/SFGameMode.h"
 #include "Combat/SFCombatPilotRewards.h"
 #include "Characters/SFE1Character.h"
+#include "Creatures/SFRestAreaVolume.h"
 #include "Framework/SFPlayerController.h"
 #include "Party/SFPartySettings.h"
 #include "Gathering/SFGatheringPilot.h"
@@ -1017,9 +1018,24 @@ void ASFGameMode::TickGreenlandsNetcheck()
         }
         else if (Now - GreenlandsStageAt >= 2.0)
         {
-            Move(Observer, Mate->GetActorLocation() + Mate->GetActorForwardVector() * 500);
-            Stage(7);
+            for (TActorIterator<ASFRestAreaVolume> It(GetWorld()); It; ++It)
+            {
+                if (It->Kind != ESFRestAreaKind::Inn) { continue; }
+                Observer->SetActorLocation(It->GetActorLocation() - FVector(0, 0, 200),
+                    false, nullptr, ETeleportType::TeleportPhysics);
+                if (!It->Contains(Observer->GetActorLocation())) { return; }
+                Stage(12);
+                UE_LOG(LogTemp, Display, TEXT("BOAR_GREENLANDS_REST_ENTER Health=%d"), Observer->CombatHealth());
+                break;
+            }
         }
+    }
+    else if (GreenlandsNetcheckStage == 12 && Now - GreenlandsStageAt >= 3.0 &&
+        ASFRestAreaVolume::IsInsideInn(GetWorld(), Observer->GetActorLocation()))
+    {
+        Move(Observer, Mate->GetActorLocation() + Mate->GetActorForwardVector() * 500);
+        Stage(7);
+        UE_LOG(LogTemp, Display, TEXT("BOAR_GREENLANDS_REST_EXIT Health=%d"), Observer->CombatHealth());
     }
     else if (GreenlandsNetcheckStage == 7 && Mate->ThreatTarget() == Observer && Now - GreenlandsStageAt >= 2.0)
     {

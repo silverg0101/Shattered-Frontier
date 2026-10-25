@@ -676,7 +676,8 @@ try {
         $serverText = Get-Content -LiteralPath $serverLog -Raw
         $ordered = @('BOAR_GREENLANDS_BEGIN', 'BOAR_GREENLANDS_AGGRO',
             'BOAR_GREENLANDS_SWITCH_ASSIST', 'BOAR_GREENLANDS_LEASH_PULL', 'BOAR_GREENLANDS_EVADE',
-            'BOAR_GREENLANDS_RESET_REGEN_START', 'BOAR_GREENLANDS_REGEN', 'BOAR_GREENLANDS_MEMORY',
+            'BOAR_GREENLANDS_RESET_REGEN_START', 'BOAR_GREENLANDS_REGEN Health=',
+            'BOAR_GREENLANDS_REST_ENTER', 'BOAR_GREENLANDS_REST_EXIT', 'BOAR_GREENLANDS_MEMORY',
             'BOAR_GREENLANDS_KILL', 'BOAR_GREENLANDS_RESPAWN')
         $lastLine = 0
         foreach ($marker in $ordered) {
@@ -699,6 +700,18 @@ try {
         }
         $leashDistance = [regex]::Match($serverText, 'BOAR_GREENLANDS_LEASH_PULL DistanceCm=(\d+)').Groups[1].Value
         if (-not $leashDistance -or [int]$leashDistance -lt 6000) { throw 'Leash probe did not cross 60 m' }
+        $ticks = @([regex]::Matches($serverText, 'BOAR_GREENLANDS_REGEN_TICK Stage=(6|12) Health=(\d+) Rest=([01])') |
+            ForEach-Object { [pscustomobject]@{ Stage=[int]$_.Groups[1].Value; HP=[int]$_.Groups[2].Value; Rest=[int]$_.Groups[3].Value } })
+        $ordinary = @($ticks | Where-Object { $_.Stage -eq 6 -and $_.Rest -eq 0 })
+        $rested = @($ticks | Where-Object { $_.Stage -eq 12 -and $_.Rest -eq 1 })
+        if ($ordinary.Count -lt 2 -or $rested.Count -lt 2 -or $ticks.Count -ne $ordinary.Count + $rested.Count) {
+            throw 'Server missed ordinary or inn rest ticks on the damaged observer'
+        }
+        $ordinaryGain = $ordinary[1].HP - $ordinary[0].HP
+        $restedGain = $rested[1].HP - $rested[0].HP
+        if ($ordinaryGain -lt 2 -or $ordinaryGain -gt 3 -or $restedGain -lt 4 -or $restedGain -gt 5) {
+            throw "Server regeneration rates differ from Combat values: ordinary=$ordinaryGain rested=$restedGain"
+        }
         if ($serverText -match 'COMBAT_PILOT_SLOT_ERROR|Fatal error:|Assertion failed:') { throw 'Server logged a slot or fatal error' }
         foreach ($role in @('Driver','Observer')) {
             $path = Join-Path $logs ('Client' + $(if ($role -eq 'Driver') { '1' } else { '2' }) + '.log')
@@ -716,14 +729,22 @@ try {
                 "BOAR_GREENLANDS_SAMPLE Role=$role Stage=11 .*LeadHP=60")) {
                 if ($s -notmatch $pattern) { throw "$role missed replicated sequence: $pattern" }
             }
+            $boarDamage = @([regex]::Matches($s,"BOAR_GREENLANDS_SAMPLE Role=$role Stage=[2345] .*ObserverHP=(\d+) ObserverCombat=1") |
+                ForEach-Object { [int]$_.Groups[1].Value } | Where-Object { $_ -gt 0 -and $_ -lt 1000 })
+            if ($boarDamage.Count -eq 0) { throw "$role missed the observer taking boar damage" }
             $regen = @([regex]::Matches($s,"BOAR_GREENLANDS_SAMPLE Role=$role Stage=6 .*ObserverHP=(\d+) ObserverCombat=([01])") |
                 ForEach-Object { [pscustomobject]@{ HP=[int]$_.Groups[1].Value; Combat=[int]$_.Groups[2].Value } })
             if ($regen.Count -lt 3 -or @($regen | Where-Object { $_.HP -le 60 -and $_.Combat -eq 1 }).Count -eq 0 -or
                 @($regen | Where-Object { $_.HP -gt 60 -and $_.Combat -eq 0 }).Count -eq 0) {
                 throw "$role missed replicated combat exit and delayed observer healing"
             }
+            $rest = @([regex]::Matches($s,"BOAR_GREENLANDS_SAMPLE Role=$role Stage=12 .*ObserverHP=(\d+) ObserverCombat=0 ObserverRest=1") |
+                ForEach-Object { [int]$_.Groups[1].Value })
+            if ($rest.Count -lt 2 -or $rest[-1] -le $rest[0] -or $rest[0] -le $regen[0].HP) {
+                throw "$role missed replicated inn rest healing"
+            }
         }
-        Write-Output "PASS: Greenlands aggro, threat switch, pack assist, leash/evade, attacker memory, regeneration, client kill and rotated slot respawn on both clients. Logs: $logs"
+        Write-Output "PASS: Greenlands boar combat, ordinary healing ($ordinaryGain HP/tick), Golden Stag rest healing ($restedGain HP/tick), client kill and rotated slot respawn on both clients. Logs: $logs"
     }
     Write-Output "PASS: separate editor server and $Clients client(s) connected; $Clients server-authoritative possession(s). Logs: $logs"
     if (-not $CastingScenario -and -not $EvadeScenario -and -not $ThreatScenario -and -not $AggroScenario -and -not $MemoryScenario -and -not $RegenScenario -and -not $RestRegenScenario -and -not $FallScenario -and -not $SwimScenario -and -not $CrouchScenario -and -not $BackpedalScenario -and -not $RoadScenario -and -not $AssistScenario -and -not $RespawnScenario -and -not $GreenlandsBoarNetcheck -and -not $GreenlandsEnvironmentNetcheck -and -not $GreenlandsMovementNetcheck) { Write-Output 'Headless connection check only: movement, rendering, lifecycle cleanup, authentication and Linux runtime are not certified.' }
