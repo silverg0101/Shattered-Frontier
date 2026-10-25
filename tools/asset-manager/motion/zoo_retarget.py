@@ -5,7 +5,8 @@ Ported from proof/retarget.py (the 2026-10-24 hamster run):
 - the model is scaled so its length (Y) is SIZE_CM, applied to the rig and mesh;
 - rest-relative world rotation transfer per role; a source chain shorter or longer than the standard one is resampled
   with creature.chain_resample, a split source bone's rotation (from its parent's) spread over its pieces;
-- the pelvis follows the source hips' offset scaled by the hind-leg length ratio, vertical bob x HEIGHT_SCALE, in place;
+- the pelvis follows the source hips' offset scaled by the leg length ratio (the shortest legs' for its travel, the
+  hind legs' for its height), vertical bob x HEIGHT_SCALE, in place;
   (a creature's UniMate clips are made on its own rig, so its leg rotations land the paws where the source's did);
 - cleanup: tail follow-through, the body kept from going through the floor (a collapse lands on it), paws pinned on the floor while in contact (leg IK, 2-frame blend, four correction
   passes, baked to FK), loop seam closed (looping clips). A gait plays in place, so its planted paws sweep back under
@@ -29,6 +30,8 @@ TAIL_SWAY = 0.10    # radians of side sway per segment, once per clip
 TAIL_CLEAR = 0.3    # the tail is lifted (at tail_02) until it clears the floor by this share of the rest hip height
 CONTACT_SHARE = 0.30  # planted: in the lowest 30% of the paw's height range ...
 CONTACT_M = 0.015     # ... and within 1.5 cm of its lowest point
+MIN_STANCE = 3        # frames: a shorter touch is a skim, not a plant (no pin, no slide measured)
+UNREACHED = 0.01      # m: a pin the leg still misses by this after two IK passes is released (the paw was pulled off it)
 FLOOR_EPS = 0.002   # m: keep paws this far above the floor
 BODY_SINK = 0.005   # m: the mesh may dip this far under the floor (hoof deformation) before the body is lifted
 SINK_LIFT = 0.005   # share of the creature's length a paw may end under the floor for the whole clip to be lifted
@@ -93,7 +96,8 @@ def main(rigf, animalf, clip, out, outj, size_cm, height_scale):
         sl = sorted((j for j, r in role.items() if r.startswith(p + "_")), key=lambda j: depth(src.data.bones[j]))
         src_leg[p] = (sl[0], sl[-1])
         leg_ratio[p] = tgt_leg / leg(src, sl, src.matrix_world @ src.data.bones[sl[-1]].tail_local)
-    ratio = leg_ratio["HL"]
+    ratio = leg_ratio["HL"]  # the hips' bob follows the hind legs ...
+    ratio_xy = min(leg_ratio.values())  # ... their travel the shortest legs, so a lunge keeps every planted paw in reach
     hips = next(j for j, r in role.items() if r == "pelvis")
     print("RT leg ratio", {p: round(r, 4) for p, r in leg_ratio.items()}, "hips", hips)
 
@@ -140,7 +144,8 @@ def main(rigf, animalf, clip, out, outj, size_cm, height_scale):
     print("RT clip heading vs rest (deg)", round(math.degrees(yaw), 1))
     OFF = []
     for k in range(N + 1):
-        sc.frame_set(f0 + k); OFF.append(unturn @ ((src.matrix_world @ src.pose.bones[hips].head - pel_rest) * ratio))
+        sc.frame_set(f0 + k); v = unturn @ (src.matrix_world @ src.pose.bones[hips].head - pel_rest)
+        OFF.append(Vector((v.x * ratio_xy, v.y * ratio_xy, v.z * ratio)))
     start, drift = OFF[0].xy.to_3d(), (OFF[-1] - OFF[0]).xy.to_3d()  # in place: remove the xy travel, start to end
     OFF = [o - start - drift * (i / N) for i, o in enumerate(OFF)]
     zm = sum(o.z for o in OFF) / len(OFF)
@@ -263,6 +268,9 @@ def main(rigf, animalf, clip, out, outj, size_cm, height_scale):
         for s0 in starts:  # stance runs: each gets its own pin line
             run = []; i = s0
             while len(run) < M and (loop or i < M) and c[idx(i)]: run.append(idx(i)); i += 1
+            if len(run) < MIN_STANCE:  # a paw skimming the floor for a frame or two (a lunge, a stumble) is not planted
+                for j in run: c[j] = False
+                continue
             mid = (len(run) - 1) / 2
             xy = sum((E[p][j].xy for j in run), Vector((0, 0))) / len(run)
             v = sum(((d - mid) * (E[p][j].xy - xy) for d, j in enumerate(run)), Vector((0, 0))) / (sum((d - mid) ** 2 for d in range(len(run))) or 1)
@@ -301,7 +309,8 @@ def main(rigf, animalf, clip, out, outj, size_cm, height_scale):
             for i in range(N + 1):
                 e.location = tgts[p][idx(i)]; e.keyframe_insert("location", frame=i + 1)
                 con.influence = infl[p][idx(i)]; con.keyframe_insert("influence", frame=i + 1)
-    for it in range(4):
+    released = []  # pins the leg could not reach (a lunge's far stance end): those frames are not planted
+    for it in range(5):
         key_targets(); worst, where = 0.0, ""
         for i in range(M):
             sc.frame_set(i + 1)
@@ -312,10 +321,14 @@ def main(rigf, animalf, clip, out, outj, size_cm, height_scale):
                     continue
                 dz = FLOOR_EPS - h if W[p][i] == 1 else max(0.0, FLOOR_EPS - h)  # planted: onto the floor; else: not below
                 dxy = want[p][i] - paw_point(p).xy if W[p][i] == 1 else Vector((0, 0))  # pinned: onto the pin
+                if it >= 2 and W[p][i] == 1 and dxy.length > UNREACHED:  # the leg cannot hold this pin: release it
+                    W[p][i], want[p][i], infl[p][i], dxy = 0.0, None, (1.0 if h < FLOOR_EPS else 0.0), Vector((0, 0))
+                    released.append(f"{p} {i}")
                 tgts[p][i].z += dz; tgts[p][i].xy += dxy
                 if max(abs(dz), dxy.length) > worst: worst, where = max(abs(dz), dxy.length), f"{p} frame {i}"
         print("RT ik pass", it, "largest fix (cm)", round(worst * 100, 2), where)
         if worst < 0.001: break
+    if released: print("RT released pins the leg could not reach:", " ".join(released))
     key_targets()
     for b in rig.data.bones: b.select = True
     bpy.ops.nla.bake(frame_start=1, frame_end=N + 1, only_selected=False, visual_keying=True, clear_constraints=True,
