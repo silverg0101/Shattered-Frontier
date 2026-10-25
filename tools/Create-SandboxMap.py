@@ -130,13 +130,13 @@ def main():
             marker.static_mesh_component.set_static_mesh(cube)
             marker.static_mesh_component.set_collision_profile_name('NoCollision')
             marker.set_actor_scale3d(u.Vector(0.5, 0.5, 1))
-    if names[0] in ('Evade', 'Threat', 'Aggro', 'AttackerMemory', 'Regeneration', 'RestRegen', 'Assist', 'Respawn'):
+    if names[0] in ('Evade', 'Threat', 'Aggro', 'AttackerMemory', 'Regeneration', 'RestRegen', 'Assist', 'Respawn', 'AutoAttack'):
         boar = u.load_class(None, '/Script/ShatteredFrontier.SFPilotBoar')
         interaction = u.load_class(None, '/Script/ShatteredFrontier.SFE1InteractionTarget')
         if not boar or not interaction:
             raise RuntimeError('Combat sandbox requires boar and network probe classes')
         actors.spawn_actor_from_class(interaction, u.Vector(-300, -750, 60)).set_actor_label('NetworkProbe')
-        creature = actors.spawn_actor_from_class(boar, u.Vector(1800, 0, 115),
+        creature = actors.spawn_actor_from_class(boar, u.Vector(250 if names[0] == 'AutoAttack' else 1800, 0, 115),
                                                  u.Rotator(yaw=180) if names[0] == 'Aggro' else u.Rotator())
         creature.set_actor_label(names[0] + 'Boar')
         creature.set_editor_property('tags', [u.Name('SF_' + names[0] + 'SandboxWildlife')])

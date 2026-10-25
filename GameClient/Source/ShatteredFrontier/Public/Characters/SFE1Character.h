@@ -35,6 +35,7 @@ public:
 #endif
     int32 CombatHealth() const { return PilotHealth; }
     bool IsPilotInCombat() const { return bPilotInCombat; }
+    bool IsAutoAttacking() const { return bAutoAttacking; }
     UFUNCTION(BlueprintPure, Category="Combat") int32 GetPilotHealthForCapture() const { return PilotHealth; }
     AActor* GetCombatTarget() const { return CombatTarget; }
     void SetCombatTarget(AActor* Target);
@@ -77,6 +78,8 @@ private:
     UPROPERTY(Transient) TObjectPtr<AActor> MetaHuman;
     UPROPERTY(Replicated) int32 PilotHealth = 0;  // shown by the vitals HUD (SFE1VitalsHud), not in the world
     UPROPERTY(Replicated) bool bPilotInCombat = false;
+    UPROPERTY(Replicated) bool bAutoAttacking = false;
+    double NextAutoSwingAt = 0.0;
     UPROPERTY(Replicated) int32 GreenlandsNetcheckStage = 0;
     UPROPERTY(Replicated) int32 GreenlandsLeadSlot = -1;
     UPROPERTY(Replicated) int32 GreenlandsMateSlot = -1;
@@ -101,6 +104,9 @@ private:
     int32 AssistScenarioStage = 0;
     double AssistScenarioReadyAt = -1;
     int32 RespawnScenarioStage = 0;
+    int32 AutoAttackScenarioStage = 0;
+    double AutoAttackScenarioAt = 0.0;
+    double NextAutoAttackSampleAt = 0.0;
     double RespawnScenarioReadyAt = -1;
     double RespawnScenarioDeathAt = -1;
     int32 RegenScenarioStage = 0;
@@ -135,6 +141,7 @@ private:
     void TickMemoryScenario();
     void TickAssistScenario();
     void TickRespawnScenario();
+    void TickAutoAttackScenario();
     void TickRegenScenario();
     void TickRestRegenScenario();
     void TickFallScenario();
@@ -146,6 +153,8 @@ private:
     void TickGreenlandsEnvironmentScenario();
     UFUNCTION(Server, Reliable) void ServerTargetScenarioStep(int32 Step);
     UFUNCTION(Server, Reliable) void ServerPilotAttack(AActor* SelectedCombatTarget);
+    UFUNCTION(Server, Reliable) void ServerSetAutoAttack(bool bEnabled);
+    void SetAutoAttack(bool bEnabled);
     void PilotAttack();
     UPROPERTY(VisibleAnywhere) TObjectPtr<USpringArmComponent> CameraBoom;
     UPROPERTY(VisibleAnywhere) TObjectPtr<UCameraComponent> FollowCamera;

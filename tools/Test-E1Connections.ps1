@@ -21,6 +21,7 @@ param(
     [switch]$GreenlandsMovementNetcheck,
     [switch]$AssistScenario,
     [switch]$RespawnScenario,
+    [switch]$AutoAttackScenario,
     [switch]$GreenlandsBoarNetcheck
 )
 $ErrorActionPreference = 'Stop'
@@ -77,6 +78,13 @@ function Assert-EvadeClient([string]$Path, [string]$Role) {
     return [math]::Round($speed,1)
 }
 try {
+    if ($AutoAttackScenario -and ($Map -ne '/Game/Frontier/Maps/Sandbox/SB_AutoAttack' -or $Clients -ne 2 -or
+        $CastingScenario -or $EvadeScenario -or $ThreatScenario -or $AggroScenario -or $MemoryScenario -or
+        $RegenScenario -or $RestRegenScenario -or $FallScenario -or $SwimScenario -or $CrouchScenario -or
+        $BackpedalScenario -or $RoadScenario -or $SnowScenario -or $AssistScenario -or $RespawnScenario -or
+        $GreenlandsBoarNetcheck -or $GreenlandsEnvironmentNetcheck -or $GreenlandsMovementNetcheck)) {
+        throw 'AutoAttackScenario requires SB_AutoAttack, two clients, and no other scenario'
+    }
     if ($SnowScenario -and ($Map -ne '/Game/Frontier/Maps/Sandbox/SB_DeepSnow' -or $Clients -ne 2 -or
         $CastingScenario -or $EvadeScenario -or $ThreatScenario -or $AggroScenario -or $MemoryScenario -or
         $RegenScenario -or $RestRegenScenario -or $FallScenario -or $SwimScenario -or $CrouchScenario -or
@@ -182,6 +190,7 @@ try {
     if ($FallScenario) { $serverArgs += '-CombatFallScenario' }
     if ($AssistScenario) { $serverArgs += '-CombatAssistScenario' }
     if ($RespawnScenario) { $serverArgs += '-CombatRespawnScenario' }
+    if ($AutoAttackScenario) { $serverArgs += '-AutoAttackScenario' }
     if ($GreenlandsBoarNetcheck) { $serverArgs += '-GreenlandsBoarNetcheck' }
     if ($GreenlandsEnvironmentNetcheck) { $serverArgs += '-GreenlandsEnvironmentNetcheck' }
     if ($GreenlandsMovementNetcheck) { $serverArgs += '-GreenlandsMovementNetcheck' }
@@ -209,6 +218,7 @@ try {
         if ($SnowScenario) { $clientArgs += @('-SnowScenario', ('-SnowRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         if ($AssistScenario) { $clientArgs += @('-CombatAssistScenario', ('-CombatAssistRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         if ($RespawnScenario) { $clientArgs += @('-CombatRespawnScenario', ('-CombatRespawnRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
+        if ($AutoAttackScenario) { $clientArgs += @('-AutoAttackScenario', ('-AutoAttackRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         if ($GreenlandsBoarNetcheck) { $clientArgs += @('-GreenlandsBoarNetcheck', ('-GreenlandsBoarRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         if ($GreenlandsEnvironmentNetcheck) { $clientArgs += @('-GreenlandsEnvironmentNetcheck', ('-GreenlandsEnvironmentRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         if ($GreenlandsMovementNetcheck) { $clientArgs += @('-GreenlandsMovementNetcheck', ('-GreenlandsMovementRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
@@ -683,6 +693,42 @@ try {
         }
         Write-Output "PASS: server linked idle defensive packmate after $elapsed s within $distance cm; both clients observed lead then shared-target engagement. Logs: $logs"
     }
+    if ($AutoAttackScenario) {
+        $driverLog = Join-Path $logs 'Client1.log'
+        $observerLog = Join-Path $logs 'Client2.log'
+        Wait-Log $driverLog 'AUTO_ATTACK_CLIENT_DONE Role=Driver HP=20'
+        Wait-Log $observerLog 'AUTO_ATTACK_CLIENT_SAMPLE Role=Observer .*HP=20'
+        $toggles = @(Select-String -LiteralPath $serverLog -Pattern 'AUTO_ATTACK_SERVER_TOGGLE Enabled=([01]) T=([\d.]+)')
+        $swings = @(Select-String -LiteralPath $serverLog -Pattern 'AUTO_ATTACK_SERVER_SWING T=([\d.]+) Target=\S+ Health=(\d+)')
+        if ($toggles.Count -ne 3 -or $swings.Count -ne 2 -or
+            $toggles[0].Matches[0].Groups[1].Value -ne '1' -or
+            $toggles[1].Matches[0].Groups[1].Value -ne '0' -or
+            $toggles[2].Matches[0].Groups[1].Value -ne '1' -or
+            $swings[0].Matches[0].Groups[2].Value -ne '40' -or
+            $swings[1].Matches[0].Groups[2].Value -ne '20' -or
+            $toggles[0].LineNumber -ge $swings[0].LineNumber -or
+            $swings[0].LineNumber -ge $toggles[1].LineNumber -or
+            $toggles[1].LineNumber -ge $toggles[2].LineNumber -or
+            $toggles[2].LineNumber -ge $swings[1].LineNumber) {
+            throw 'Server missed ordered enable, swing, stop, resume, swing sequence'
+        }
+        $number = [Globalization.CultureInfo]::InvariantCulture
+        $stoppedFor = [double]::Parse($toggles[2].Matches[0].Groups[2].Value,$number) -
+            [double]::Parse($toggles[1].Matches[0].Groups[2].Value,$number)
+        if ($stoppedFor -lt 2.4) { throw "Auto attack stop lasted only $stoppedFor seconds" }
+        foreach ($role in @('Driver','Observer')) {
+            $path = Join-Path $logs ('Client' + $(if ($role -eq 'Driver') { '1' } else { '2' }) + '.log')
+            $samples = @(Select-String -LiteralPath $path -Pattern "AUTO_ATTACK_CLIENT_SAMPLE Role=$role T=([\d.]+) HP=(\d+)")
+            $initial = @($samples | Where-Object { $_.Matches[0].Groups[2].Value -eq '60' } | Select-Object -First 1)
+            $stopped = @($samples | Where-Object { $_.Matches[0].Groups[2].Value -eq '40' } | Select-Object -First 1)
+            $resumed = @($samples | Where-Object { $_.Matches[0].Groups[2].Value -eq '20' } | Select-Object -First 1)
+            if ($initial.Count -ne 1 -or $stopped.Count -ne 1 -or $resumed.Count -ne 1 -or
+                $initial[0].LineNumber -ge $stopped[0].LineNumber -or $stopped[0].LineNumber -ge $resumed[0].LineNumber) {
+                throw "$role missed replicated 60 to 40 to 20 health sequence"
+            }
+        }
+        Write-Output "PASS: authoritative unarmed swings stopped for $stoppedFor s and resumed; both clients saw 60 to 40 to 20 health. Logs: $logs"
+    }
     if ($RespawnScenario) {
         Wait-Log $serverLog 'BOAR_RESPAWN_ACTIVE Cycle=1 Point=1'
         $dead = Select-String -LiteralPath $serverLog -Pattern 'BOAR_RESPAWN_DEAD Cycle=1 Players=(\d+) Delay=([\d.]+) Due=([\d.]+)' | Select-Object -First 1
@@ -790,7 +836,7 @@ try {
         Write-Output "PASS: Greenlands boar combat, ordinary healing ($ordinaryGain HP/tick), Golden Stag rest healing ($restedGain HP/tick), client kill and rotated slot respawn on both clients. Logs: $logs"
     }
     Write-Output "PASS: separate editor server and $Clients client(s) connected; $Clients server-authoritative possession(s). Logs: $logs"
-    if (-not $CastingScenario -and -not $EvadeScenario -and -not $ThreatScenario -and -not $AggroScenario -and -not $MemoryScenario -and -not $RegenScenario -and -not $RestRegenScenario -and -not $FallScenario -and -not $SwimScenario -and -not $CrouchScenario -and -not $BackpedalScenario -and -not $RoadScenario -and -not $SnowScenario -and -not $AssistScenario -and -not $RespawnScenario -and -not $GreenlandsBoarNetcheck -and -not $GreenlandsEnvironmentNetcheck -and -not $GreenlandsMovementNetcheck) { Write-Output 'Headless connection check only: movement, rendering, lifecycle cleanup, authentication and Linux runtime are not certified.' }
+    if (-not $CastingScenario -and -not $EvadeScenario -and -not $ThreatScenario -and -not $AggroScenario -and -not $MemoryScenario -and -not $RegenScenario -and -not $RestRegenScenario -and -not $FallScenario -and -not $SwimScenario -and -not $CrouchScenario -and -not $BackpedalScenario -and -not $RoadScenario -and -not $SnowScenario -and -not $AssistScenario -and -not $RespawnScenario -and -not $AutoAttackScenario -and -not $GreenlandsBoarNetcheck -and -not $GreenlandsEnvironmentNetcheck -and -not $GreenlandsMovementNetcheck) { Write-Output 'Headless connection check only: movement, rendering, lifecycle cleanup, authentication and Linux runtime are not certified.' }
 } finally {
     foreach ($process in $ownedProcesses) {
         if (-not $process.HasExited) { Stop-Process -Id $process.Id -ErrorAction SilentlyContinue }

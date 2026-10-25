@@ -652,16 +652,17 @@ void ASFGameMode::StartCombat()
     const bool bRestRegenSandbox = MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_RestRegen");
     const bool bFallSandbox = MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_FallDamage");
     const bool bAssistSandbox = MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_Assist");
+    const bool bAutoAttackSandbox = MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_AutoAttack");
     bRespawnSandbox = MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_Respawn");
     bCompanionSandbox = GetNetMode() != NM_Client &&
-        (MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_Companions") || bEvadeSandbox || bThreatSandbox || bAggroSandbox || bMemorySandbox || bRegenSandbox || bRestRegenSandbox || bFallSandbox || bAssistSandbox || bRespawnSandbox);
+        (MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_Companions") || bEvadeSandbox || bThreatSandbox || bAggroSandbox || bMemorySandbox || bRegenSandbox || bRestRegenSandbox || bFallSandbox || bAssistSandbox || bRespawnSandbox || bAutoAttackSandbox);
     if (bCompanionSandbox)
     {
         CapturedSettings = GetDefault<USFCombatPilotSettings>();
         FString Error;
         if (!CapturedSettings->Validate(Error))
         { UE_LOG(LogTemp, Error, TEXT("COMPANION_SANDBOX_DISABLED Invalid combat settings: %s"), *Error); return; }
-        const double Extent = (bEvadeSandbox || bThreatSandbox || bAggroSandbox || bMemorySandbox || bRegenSandbox || bRestRegenSandbox || bAssistSandbox || bRespawnSandbox) ? 85.0 : 45.0;
+        const double Extent = (bEvadeSandbox || bThreatSandbox || bAggroSandbox || bMemorySandbox || bRegenSandbox || bRestRegenSandbox || bAssistSandbox || bRespawnSandbox || bAutoAttackSandbox) ? 85.0 : 45.0;
         const TArray<FVector2D> SandboxArea = { FVector2D(-Extent, -Extent), FVector2D(Extent, -Extent),
             FVector2D(Extent, Extent), FVector2D(-Extent, Extent) };
         int32 Slot = 0;
@@ -674,6 +675,7 @@ void ASFGameMode::StartCombat()
                 bRegenSandbox ? TEXT("SF_RegenerationSandboxWildlife") :
                 bRestRegenSandbox ? TEXT("SF_RestRegenSandboxWildlife") :
                 bAssistSandbox ? TEXT("SF_AssistSandboxWildlife") :
+                bAutoAttackSandbox ? TEXT("SF_AutoAttackSandboxWildlife") :
                 bRespawnSandbox ? TEXT("SF_RespawnSandboxWildlife") : TEXT("SF_CompanionSandboxWildlife");
             if (!It->ActorHasTag(Tag)) { continue; }
             if (bRespawnSandbox) { RespawnSandboxPoints.Add(It->GetActorTransform()); }
@@ -684,9 +686,10 @@ void ASFGameMode::StartCombat()
                 bRegenSandbox ? TEXT("regeneration_sandbox") :
                 bRestRegenSandbox ? TEXT("rest_regen_sandbox") :
                 bAssistSandbox ? TEXT("assist_sandbox") :
+                bAutoAttackSandbox ? TEXT("auto_attack_sandbox") :
                 bRespawnSandbox ? TEXT("respawn_sandbox") : TEXT("companions_sandbox"), Slot++, SandboxArea,
                 CapturedSettings->BoarHealth, ++NextBoarSerial,
-                bMemorySandbox || bRespawnSandbox || (bAssistSandbox && It->ActorHasTag(TEXT("SF_AssistDefensive"))));
+                bMemorySandbox || bRespawnSandbox || bAutoAttackSandbox || (bAssistSandbox && It->ActorHasTag(TEXT("SF_AssistDefensive"))));
         }
         if (bRespawnSandbox)
         {

@@ -1,12 +1,29 @@
 #if WITH_DEV_AUTOMATION_TESTS && WITH_EDITOR
 #include "Combat/SFCombatPilot.h"
 #include "Combat/SFCombatPilotRewards.h"
+#include "Combat/SFAutoAttackRules.h"
 #include "Characters/SFE1Character.h"
 #include "Services/SFGameplayServicesClient.h"
 #include "GameFramework/PlayerController.h"
 #include "Misc/AutomationTest.h"
 #include "Tests/AutomationCommon.h"
 #include "Engine/World.h"
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFAutoAttackRulesTest,
+    "ShatteredFrontier.Combat.Pilot.AutoAttack",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+
+bool FSFAutoAttackRulesTest::RunTest(const FString& Parameters)
+{
+    TestEqual(TEXT("Unarmed weapon swing is 2 seconds"), SFAutoAttackRules::UnarmedSwingSeconds, 2.0);
+    TestFalse(TEXT("Cannot swing before due"), SFAutoAttackRules::CanSwing(true, true, true, false, 1.99, 2.0));
+    TestTrue(TEXT("Swing at due time"), SFAutoAttackRules::CanSwing(true, true, true, false, 2.0, 2.0));
+    TestFalse(TEXT("Toggle stops swings"), SFAutoAttackRules::CanSwing(false, true, true, false, 3.0, 2.0));
+    TestFalse(TEXT("Target loss stops swings"), SFAutoAttackRules::CanSwing(true, false, true, false, 3.0, 2.0));
+    TestFalse(TEXT("Dead player cannot swing"), SFAutoAttackRules::CanSwing(true, true, false, false, 3.0, 2.0));
+    TestFalse(TEXT("Casting pauses swings"), SFAutoAttackRules::CanSwing(true, true, true, true, 3.0, 2.0));
+    return true;
+}
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFCombatPilotRulesTest,
     "ShatteredFrontier.Combat.Pilot.Rules",

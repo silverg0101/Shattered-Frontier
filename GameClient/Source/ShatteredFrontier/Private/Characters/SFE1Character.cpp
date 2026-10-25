@@ -25,6 +25,7 @@
 #include "Characters/SFRoadSpeedVolume.h"
 #include "Creatures/SFRestAreaVolume.h"
 #include "Combat/SFCombatPilot.h"
+#include "Combat/SFAutoAttackRules.h"
 #include "Combat/SFTabTargetSelection.h"
 #include "Combat/SFCrowdControlComponent.h"
 #include "Combat/SFCastingComponent.h"
@@ -1211,6 +1212,37 @@ void ASFE1Character::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
     const FString CombatMap = GetWorld()->GetOutermost()->GetName();
+    if (CombatMap == TEXT("/Game/Frontier/Maps/Sandbox/SB_AutoAttack"))
+    {
+        if (HasAuthority())
+        {
+            const double Now = GetWorld()->GetTimeSeconds();
+            ASFPilotBoar* Boar = Cast<ASFPilotBoar>(CombatTarget);
+            const bool bLiveTarget = IsValid(Boar) && Boar->Health() > 0 &&
+                FVector::Dist2D(GetActorLocation(), Boar->GetActorLocation()) <=
+                    GetDefault<USFCombatPilotSettings>()->MeleeRangeMetres * 100.0;
+            const bool bCasting = Casting && Casting->GetCastView().Phase != ESFCastPhase::Idle;
+            if (SFAutoAttackRules::CanSwing(bAutoAttacking, bLiveTarget, PilotHealth > 0, bCasting, Now, NextAutoSwingAt))
+            {
+                if (ASFGameMode* Mode = GetWorld()->GetAuthGameMode<ASFGameMode>())
+                {
+                    Mode->TryPlayerAttack(this, Boar);
+                    NextAutoSwingAt = Now + SFAutoAttackRules::UnarmedSwingSeconds;
+                    UE_LOG(LogTemp, Display, TEXT("AUTO_ATTACK_SERVER_SWING T=%.2f Target=%s Health=%d"),
+                        Now, *GetNameSafe(Boar), Boar->Health());
+                }
+            }
+        }
+        else if (IsLocallyControlled())
+        {
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+            if (FParse::Param(FCommandLine::Get(), TEXT("AutoAttackScenario"))) { TickAutoAttackScenario(); }
+            else
+#endif
+            if (APlayerController* PC = Cast<APlayerController>(Controller); PC && PC->WasInputKeyJustPressed(EKeys::Four))
+            { SetAutoAttack(!bAutoAttacking); }
+        }
+    }
     if (HasAuthority() && (CombatMap == TEXT("/Game/Frontier/Maps/Sandbox/SB_Swimming") ||
         CombatMap == TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook")))
     {
@@ -1672,6 +1704,7 @@ void ASFE1Character::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
     DOREPLIFETIME(ASFE1Character, PilotHealth);
     DOREPLIFETIME(ASFE1Character, bPilotInCombat);
+    DOREPLIFETIME(ASFE1Character, bAutoAttacking);
     DOREPLIFETIME(ASFE1Character, GreenlandsNetcheckStage);
     DOREPLIFETIME(ASFE1Character, GreenlandsLeadSlot);
     DOREPLIFETIME(ASFE1Character, GreenlandsMateSlot);
@@ -1764,6 +1797,93 @@ void ASFE1Character::ServerPilotAttack_Implementation(AActor* SelectedCombatTarg
 {
     if (auto* Mode = Cast<ASFGameMode>(GetWorld()->GetAuthGameMode()))
     { Mode->TryPlayerAttack(this, SelectedCombatTarget); }
+}
+
+void ASFE1Character::SetAutoAttack(bool bEnabled)
+{
+    if (GetWorld()->GetOutermost()->GetName() != TEXT("/Game/Frontier/Maps/Sandbox/SB_AutoAttack")) { return; }
+    if (HasAuthority()) { ServerSetAutoAttack_Implementation(bEnabled); }
+    else { ServerSetAutoAttack(bEnabled); }
+}
+
+void ASFE1Character::TickAutoAttackScenario()
+{
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    FString ScenarioRole;
+    FParse::Value(FCommandLine::Get(), TEXT("AutoAttackRole="), ScenarioRole);
+    if (ScenarioRole != TEXT("Driver") && ScenarioRole != TEXT("Observer")) { return; }
+    const double Now = GetWorld()->GetTimeSeconds();
+    ASFPilotBoar* Boar = nullptr;
+    for (TActorIterator<ASFPilotBoar> It(GetWorld()); It; ++It) { Boar = *It; break; }
+    if (!Boar || !Controller) { return; }
+    if (Now >= NextAutoAttackSampleAt)
+    {
+        NextAutoAttackSampleAt = Now + 0.2;
+        UE_LOG(LogTemp, Display, TEXT("AUTO_ATTACK_CLIENT_SAMPLE Role=%s T=%.2f HP=%d Stage=%d Enabled=%d"),
+            *ScenarioRole, Now, Boar->Health(), AutoAttackScenarioStage, bAutoAttacking ? 1 : 0);
+    }
+    if (ScenarioRole == TEXT("Observer")) { return; }
+    ASFPlayerController* PC = Cast<ASFPlayerController>(Controller);
+    if (!PC) { return; }
+    if (AutoAttackScenarioStage == 0)
+    {
+        int32 PresentPlayers = 0;
+        for (TActorIterator<ASFE1Character> It(GetWorld()); It; ++It) { ++PresentPlayers; }
+        if (PresentPlayers < 2) { return; }
+        if (AutoAttackScenarioAt == 0.0) { AutoAttackScenarioAt = Now + 2.0; }
+        if (Now < AutoAttackScenarioAt) { return; }
+        Controller->SetControlRotation((Boar->GetActorLocation() - GetActorLocation()).Rotation());
+        PC->SelectNextCombatTarget();
+        AutoAttackScenarioAt = Now;
+        AutoAttackScenarioStage = 1;
+    }
+    else if (AutoAttackScenarioStage == 1)
+    {
+        if (Now - AutoAttackScenarioAt < 0.3) { return; }
+        PC->SelectNextCombatTarget();
+        AutoAttackScenarioAt = Now;
+        AutoAttackScenarioStage = 2;
+    }
+    else if (AutoAttackScenarioStage == 2 && CombatTarget == Boar)
+    {
+        SetAutoAttack(true);
+        AutoAttackScenarioStage = 3;
+        UE_LOG(LogTemp, Display, TEXT("AUTO_ATTACK_CLIENT_START Role=Driver"));
+    }
+    else if (AutoAttackScenarioStage == 2 && Now - AutoAttackScenarioAt >= 1.0)
+    { PC->SelectNextCombatTarget(); AutoAttackScenarioAt = Now; }
+    else if (AutoAttackScenarioStage == 3 && Boar->Health() <= 40)
+    {
+        SetAutoAttack(false);
+        AutoAttackScenarioAt = Now;
+        AutoAttackScenarioStage = 4;
+        UE_LOG(LogTemp, Display, TEXT("AUTO_ATTACK_CLIENT_STOP Role=Driver HP=%d"), Boar->Health());
+    }
+    else if (AutoAttackScenarioStage == 4 && Now - AutoAttackScenarioAt >= 2.5)
+    {
+        if (Boar->Health() != 40)
+        { UE_LOG(LogTemp, Error, TEXT("AUTO_ATTACK_CLIENT_FAILED StopHealth=%d"), Boar->Health()); AutoAttackScenarioStage = 6; return; }
+        SetAutoAttack(true);
+        AutoAttackScenarioStage = 5;
+        UE_LOG(LogTemp, Display, TEXT("AUTO_ATTACK_CLIENT_RESUME Role=Driver HP=%d"), Boar->Health());
+    }
+    else if (AutoAttackScenarioStage == 5 && Boar->Health() <= 20)
+    {
+        AutoAttackScenarioStage = 6;
+        UE_LOG(LogTemp, Display, TEXT("AUTO_ATTACK_CLIENT_DONE Role=Driver HP=%d"), Boar->Health());
+    }
+#endif
+}
+
+void ASFE1Character::ServerSetAutoAttack_Implementation(bool bEnabled)
+{
+    if (GetWorld()->GetOutermost()->GetName() != TEXT("/Game/Frontier/Maps/Sandbox/SB_AutoAttack") ||
+        (bEnabled && (PilotHealth <= 0 || !Cast<ASFPilotBoar>(CombatTarget)))) { return; }
+    bAutoAttacking = bEnabled;
+    if (bEnabled) { NextAutoSwingAt = GetWorld()->GetTimeSeconds(); }
+    ForceNetUpdate();
+    UE_LOG(LogTemp, Display, TEXT("AUTO_ATTACK_SERVER_TOGGLE Enabled=%d T=%.2f"),
+        bEnabled ? 1 : 0, GetWorld()->GetTimeSeconds());
 }
 
 void ASFE1Character::Interact()
