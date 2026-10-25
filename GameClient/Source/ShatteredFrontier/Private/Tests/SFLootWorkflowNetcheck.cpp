@@ -135,9 +135,9 @@ void FSFLootWorkflowNetcheck::Tick(USFLootComponent& Loot)
         // real RewardKill path. Canonical profile, eligibility and rolls stay intact.
         if (State.Stage == 0 || State.Stage == 2)
         {
-            ASFPilotBoar* Victim = nullptr;
+            ASFCombatNpc* Victim = nullptr;
             const FString Creature = State.Stage == 0 ? TEXT("npc/boar") : TEXT("npc/wolf");
-            for (TActorIterator<ASFPilotBoar> It(World); It; ++It)
+            for (TActorIterator<ASFCombatNpc> It(World); It; ++It)
                 if (It->Health() > 0 && It->GetCreatureId() == Creature && !It->HasSingleDrop() && !Mode->IsSafe(It->GetActorLocation())) { Victim = *It; break; }
             if (!Victim) return;
             // Use the recorded drop XY whose actual collision is covered by

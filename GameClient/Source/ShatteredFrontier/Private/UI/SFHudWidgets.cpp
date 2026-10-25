@@ -558,7 +558,7 @@ void USFHudWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
     const AActor* CombatTarget = Player ? Player->GetSelectedCombatTarget() : nullptr;
     int32 Health = 0, MaxHealth = 0;
     FString Name;
-    if (const ASFPilotBoar* Boar = Cast<ASFPilotBoar>(CombatTarget))
+    if (const ASFCombatNpc* Boar = Cast<ASFCombatNpc>(CombatTarget))
     { Health = Boar->Health(); MaxHealth = GetDefault<USFCombatPilotSettings>()->BoarHealth; Name = TEXT("Boar"); }
     else if (const ASFTownsfolkNpc* Npc = Cast<ASFTownsfolkNpc>(CombatTarget))
     { Health = Npc->Health(); MaxHealth = GetDefault<USFTownsfolkSettings>()->ResidentHealth; Name = Npc->Id(); }

@@ -231,7 +231,7 @@ bool FSFLootFixtureMapGeometryTest::RunTest(const FString& Parameters)
     TestTrue(TEXT("Grounding with the actual player capsule satisfies the unchanged drop floor ray"), bCorrected);
     auto* Body = World->SpawnActor<ASFLootSourceActor>();
     FSFLootSourceSnapshot Snapshot; Snapshot.MeshPath = TEXT("/Engine/BasicShapes/Cube.Cube"); Snapshot.MeshScale = FVector(1.3,.7,.7);
-    Snapshot.Position = Floor.ImpactPoint + FVector(0,0,GetDefault<ASFPilotBoar>()->GetSimpleCollisionHalfHeight() + 4); Body->Initialize(Snapshot);
+    Snapshot.Position = Floor.ImpactPoint + FVector(0,0,GetDefault<ASFCombatNpc>()->GetSimpleCollisionHalfHeight() + 4); Body->Initialize(Snapshot);
     FHitResult Edge, NearFloor, Sight;
     const FTransform Transform = Body->GetActorTransform();
     TestTrue(TEXT("Corrected actual-map corpse outer section is clickable beyond default25cm bounds"), World->LineTraceSingleByChannel(Edge,

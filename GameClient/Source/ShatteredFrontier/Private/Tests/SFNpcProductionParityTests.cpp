@@ -81,7 +81,7 @@ bool FSFNpcProductionParityTest::RunTest(const FString& Parameters)
     if (!TestNotNull(TEXT("Real authority game mode"), Mode)) return false;
     TestTrue(TEXT("New map uses common production rules"), SFNpcZoneContent::IsProductionMap(World) && SFCombatPart6::Active(World));
     TestTrue(TEXT("Actual services callback accepts authored one-slot census"), SlotCalls > 0 && Mode->bSlotBridgeHealthy && Mode->ActiveBoars.Num() == 1);
-    ASFPilotBoar* Npc = Mode->ActiveBoars.FindRef(TEXT("rangers_across_the_river:0")).Get();
+    ASFCombatNpc* Npc = Mode->ActiveBoars.FindRef(TEXT("rangers_across_the_river:0")).Get();
     if (!TestNotNull(TEXT("Service reply spawned NPC"), Npc)) return false;
     AddExpectedError(TEXT("COMBAT_PILOT_SLOT_ERROR Gameplay.Host"), EAutomationExpectedErrorFlags::Contains, 5);
     Rows.Empty(); Mode->RunWorldSlots(TEXT("tick"));

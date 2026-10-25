@@ -229,7 +229,7 @@ private:
     double CombatScenarioNextAttackAt = 0;
     bool bM3ClientCaptureStarted = false;
     bool bM3ClientStopQueued = false;
-    TWeakObjectPtr<class ASFPilotBoar> M3ClientTarget;
+    TWeakObjectPtr<class ASFCombatNpc> M3ClientTarget;
     int32 TargetScenarioStage = 0;
     int32 EvadeScenarioStage = 0;
     int32 ThreatScenarioStage = 0;

@@ -1003,10 +1003,10 @@ namespace
         return Best;
     }
 
-    ASFPilotBoar* NearestBoar(UWorld* World, const FVector& To)
+    ASFCombatNpc* NearestBoar(UWorld* World, const FVector& To)
     {
-        ASFPilotBoar* Best = nullptr;
-        for (TActorIterator<ASFPilotBoar> It(World); It; ++It)
+        ASFCombatNpc* Best = nullptr;
+        for (TActorIterator<ASFCombatNpc> It(World); It; ++It)
         { if (It->Health() > 0 && (!Best || FVector::Dist2D(It->GetActorLocation(), To) < FVector::Dist2D(Best->GetActorLocation(), To))) { Best = *It; } }
         return Best;
     }

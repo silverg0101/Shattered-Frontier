@@ -61,7 +61,7 @@ bool ASFGameMode::StartCombatFixture()
     { UE_LOG(LogTemp, Error, TEXT("COMPANION_SANDBOX_DISABLED Invalid combat settings: %s"), *Error); return true; }
     const auto SandboxArea = Area(*Spec);
     int32 Slot = 0;
-    for (TActorIterator<ASFPilotBoar> It(GetWorld()); It; ++It)
+    for (TActorIterator<ASFCombatNpc> It(GetWorld()); It; ++It)
     {
         if (!It->ActorHasTag(Spec->WildlifeTag)) continue;
         if (bRespawnSandbox) RespawnSandboxPoints.Add(It->GetActorTransform());
@@ -104,7 +104,7 @@ void ASFGameMode::TickCombatFixture()
     if (NextPoint == INDEX_NONE) return;
     const FTransform& Point = RespawnSandboxPoints[NextPoint];
     FActorSpawnParameters Params; Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-    auto* Npc = GetWorld()->SpawnActor<ASFPilotBoar>(ASFPilotBoar::StaticClass(), Point, Params);
+    auto* Npc = GetWorld()->SpawnActor<ASFCombatNpc>(ASFCombatNpc::StaticClass(), Point, Params);
     if (!Npc) return;
     Npc->Initialize(this, ActiveCombatFixture->GroupId, 0, Area(*ActiveCombatFixture),
         CapturedSettings->BoarHealth, ++NextBoarSerial, ActiveCombatFixture->bDefensive, ActiveCombatFixture->NpcFlags);
@@ -113,7 +113,7 @@ void ASFGameMode::TickCombatFixture()
         RespawnSandboxCycle, NextPoint, GetWorld()->GetTimeSeconds(), Npc->Health(), Point.GetLocation().X, Point.GetLocation().Y);
 }
 
-bool ASFGameMode::HandleCombatFixtureDefeat(ASFPilotBoar* Npc, ASFE1Character* Killer)
+bool ASFGameMode::HandleCombatFixtureDefeat(ASFCombatNpc* Npc, ASFE1Character* Killer)
 {
     if (!bCompanionSandbox || !ActiveCombatFixture) return false;
     if (ActiveCombatFixture->Kind == SFCombatFixtures::EKind::PersonalLoot) RewardKill(Npc, Killer);

@@ -60,7 +60,7 @@ bool FSFNpcContentSpawnShotTest::RunTest(const FString& Parameters)
     Mode->SpawnSlot(TEXT("rangers_across_the_river"), 1, 0, TEXT("ranger_clearing"), 0, 0, 0, TEXT("npc/reuse_archer_fixture"));
     TestTrue(TEXT("Slot outside declared census is rejected"), Mode->ActiveBoars.IsEmpty());
     Mode->SpawnSlot(TEXT("rangers_across_the_river"), 0, 0, TEXT("ranger_clearing"), 0, 0, 0, TEXT("npc/reuse_archer_fixture"));
-    ASFPilotBoar* Npc = Mode->ActiveBoars.FindRef(TEXT("rangers_across_the_river:0")).Get();
+    ASFCombatNpc* Npc = Mode->ActiveBoars.FindRef(TEXT("rangers_across_the_river:0")).Get();
     if (!TestNotNull(TEXT("Seventh profile spawned by real slot path"), Npc)) return false;
     TestTrue(TEXT("Defensive behavior reads authored point, independent of group name"), Npc->IsDefensive());
     TestTrue(TEXT("New definition selects ranged actor behavior"), Npc->IsRangedArcher());

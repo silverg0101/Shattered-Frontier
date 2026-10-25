@@ -290,8 +290,8 @@ void ASFE1Character::TickEvadeScenario()
     FString ScenarioRoleName;
     FParse::Value(FCommandLine::Get(), TEXT("CombatEvadeRole="), ScenarioRoleName);
     if (ScenarioRoleName != TEXT("Driver") && ScenarioRoleName != TEXT("Observer")) { return; }
-    ASFPilotBoar* Boar = nullptr;
-    for (TActorIterator<ASFPilotBoar> It(GetWorld()); It; ++It)
+    ASFCombatNpc* Boar = nullptr;
+    for (TActorIterator<ASFCombatNpc> It(GetWorld()); It; ++It)
     { if (It->GroupId() == TEXT("evade_sandbox")) { Boar = *It; break; } }
     if (!Boar || !Controller) { return; }
     const double Now = GetWorld()->GetTimeSeconds();
@@ -346,8 +346,8 @@ void ASFE1Character::TickThreatScenario()
     FString ScenarioRoleName;
     FParse::Value(FCommandLine::Get(), TEXT("CombatThreatRole="), ScenarioRoleName);
     if (ScenarioRoleName != TEXT("Driver") && ScenarioRoleName != TEXT("Observer")) { return; }
-    ASFPilotBoar* Boar = nullptr;
-    for (TActorIterator<ASFPilotBoar> It(GetWorld()); It; ++It)
+    ASFCombatNpc* Boar = nullptr;
+    for (TActorIterator<ASFCombatNpc> It(GetWorld()); It; ++It)
     { if (It->GroupId() == TEXT("threat_sandbox")) { Boar = *It; break; } }
     if (!Boar || !Controller || PilotHealth <= 0) { return; }
     const double Now = GetWorld()->GetTimeSeconds();
@@ -408,8 +408,8 @@ void ASFE1Character::TickTauntScenario()
     FString ScenarioRole;
     FParse::Value(FCommandLine::Get(), TEXT("CombatTauntRole="), ScenarioRole);
     if ((ScenarioRole != TEXT("Driver") && ScenarioRole != TEXT("Observer")) || !Controller || PilotHealth <= 0) { return; }
-    ASFPilotBoar* Boar = nullptr;
-    for (TActorIterator<ASFPilotBoar> It(GetWorld()); It; ++It)
+    ASFCombatNpc* Boar = nullptr;
+    for (TActorIterator<ASFCombatNpc> It(GetWorld()); It; ++It)
     { if (It->GroupId() == TEXT("taunt_sandbox")) { Boar = *It; break; } }
     if (!Boar) { return; }
     const double Now = GetWorld()->GetTimeSeconds();
@@ -471,9 +471,9 @@ void ASFE1Character::TickAssistScenario()
     FString ScenarioRole;
     FParse::Value(FCommandLine::Get(), TEXT("CombatAssistRole="), ScenarioRole);
     if ((ScenarioRole != TEXT("Driver") && ScenarioRole != TEXT("Observer")) || !Controller || PilotHealth <= 0) { return; }
-    ASFPilotBoar* Lead = nullptr;
-    ASFPilotBoar* Mate = nullptr;
-    for (TActorIterator<ASFPilotBoar> It(GetWorld()); It; ++It)
+    ASFCombatNpc* Lead = nullptr;
+    ASFCombatNpc* Mate = nullptr;
+    for (TActorIterator<ASFCombatNpc> It(GetWorld()); It; ++It)
     {
         if (It->GroupId() != TEXT("assist_sandbox")) { continue; }
         if (It->ActorHasTag(TEXT("SF_AssistDefensive"))) { Mate = *It; }
@@ -527,8 +527,8 @@ void ASFE1Character::TickRespawnScenario()
     FString ScenarioRole;
     FParse::Value(FCommandLine::Get(), TEXT("CombatRespawnRole="), ScenarioRole);
     if ((ScenarioRole != TEXT("Driver") && ScenarioRole != TEXT("Observer")) || !Controller || PilotHealth <= 0) { return; }
-    ASFPilotBoar* Boar = nullptr;
-    for (TActorIterator<ASFPilotBoar> It(GetWorld()); It; ++It)
+    ASFCombatNpc* Boar = nullptr;
+    for (TActorIterator<ASFCombatNpc> It(GetWorld()); It; ++It)
     { if (It->GroupId() == TEXT("respawn_sandbox")) { Boar = *It; break; } }
     const double Now = GetWorld()->GetTimeSeconds();
     if (RespawnScenarioStage == 0)
@@ -574,8 +574,8 @@ void ASFE1Character::TickAggroScenario()
     FString ScenarioRole;
     FParse::Value(FCommandLine::Get(), TEXT("CombatAggroRole="), ScenarioRole);
     if (ScenarioRole != TEXT("Driver") && ScenarioRole != TEXT("Observer")) { return; }
-    ASFPilotBoar* Boar = nullptr;
-    for (TActorIterator<ASFPilotBoar> It(GetWorld()); It; ++It)
+    ASFCombatNpc* Boar = nullptr;
+    for (TActorIterator<ASFCombatNpc> It(GetWorld()); It; ++It)
     { if (It->GroupId() == TEXT("aggro_sandbox")) { Boar = *It; break; } }
     if (!Boar || !Controller || PilotHealth <= 0) { return; }
     const double Now = GetWorld()->GetTimeSeconds();
@@ -623,8 +623,8 @@ void ASFE1Character::TickMemoryScenario()
     FString ScenarioRoleName;
     FParse::Value(FCommandLine::Get(), TEXT("CombatMemoryRole="), ScenarioRoleName);
     if (ScenarioRoleName != TEXT("Driver") && ScenarioRoleName != TEXT("Observer")) { return; }
-    ASFPilotBoar* Boar = nullptr;
-    for (TActorIterator<ASFPilotBoar> It(GetWorld()); It; ++It)
+    ASFCombatNpc* Boar = nullptr;
+    for (TActorIterator<ASFCombatNpc> It(GetWorld()); It; ++It)
     { if (It->GroupId() == TEXT("memory_sandbox")) { Boar = *It; break; } }
     if (!Boar || !Controller || PilotHealth <= 0) { return; }
     const double Now = GetWorld()->GetTimeSeconds();
@@ -712,8 +712,8 @@ void ASFE1Character::TickRegenScenario()
     FString ScenarioRoleName;
     FParse::Value(FCommandLine::Get(), TEXT("CombatRegenRole="), ScenarioRoleName);
     if (ScenarioRoleName != TEXT("Driver") && ScenarioRoleName != TEXT("Observer")) { return; }
-    ASFPilotBoar* Boar = nullptr;
-    for (TActorIterator<ASFPilotBoar> It(GetWorld()); It; ++It)
+    ASFCombatNpc* Boar = nullptr;
+    for (TActorIterator<ASFCombatNpc> It(GetWorld()); It; ++It)
     { if (It->GroupId() == TEXT("regeneration_sandbox")) { Boar = *It; break; } }
     if (!Boar || !Controller) { return; }
     ASFE1Character* Watched = this;
@@ -778,8 +778,8 @@ void ASFE1Character::TickRestRegenScenario()
         if (GetActorLocation().Y > -3000) { AddMovementInput(-FVector::RightVector, 1.0f); }
         return;
     }
-    ASFPilotBoar* Boar = nullptr;
-    for (TActorIterator<ASFPilotBoar> It(GetWorld()); It; ++It)
+    ASFCombatNpc* Boar = nullptr;
+    for (TActorIterator<ASFCombatNpc> It(GetWorld()); It; ++It)
     { if (It->GroupId() == TEXT("rest_regen_sandbox")) { Boar = *It; break; } }
     if (!Boar) { return; }
     if (RestRegenScenarioStage == 0)
@@ -1210,10 +1210,10 @@ void ASFE1Character::TickCombatScenario()
                 }
             }
         }
-        ASFPilotBoar* Boar = nullptr;
+        ASFCombatNpc* Boar = nullptr;
         double NearestDistance = TNumericLimits<double>::Max();
         double BestTargetScore = TNumericLimits<double>::Max();
-        for (TActorIterator<ASFPilotBoar> It(GetWorld()); It; ++It)
+        for (TActorIterator<ASFCombatNpc> It(GetWorld()); It; ++It)
         {
             if (bPartyXp && (It->GroupId() != (bPersonalLoot ? TEXT("personal_loot_sandbox") : TEXT("boar_farm_edge")) ||
                 (!bPersonalLoot && It->SlotIndex() != 0))) { continue; }
@@ -1267,8 +1267,8 @@ void ASFE1Character::TickCombatScenario()
     }
     if (FParse::Param(FCommandLine::Get(), TEXT("CombatTargetScenario"))) { TickTargetScenario(); return; }
     if (!IsLocallyControlled() || CombatScenarioAttackCount >= 3) { return; }
-    ASFPilotBoar* Nearest = nullptr; double Distance = 300;
-    for (TActorIterator<ASFPilotBoar> It(GetWorld()); It; ++It)
+    ASFCombatNpc* Nearest = nullptr; double Distance = 300;
+    for (TActorIterator<ASFCombatNpc> It(GetWorld()); It; ++It)
     {
         const double D = FVector::Dist2D(GetActorLocation(), It->GetActorLocation());
         if (It->Health() > 0 && D < Distance) { Nearest = *It; Distance = D; }
@@ -1290,11 +1290,11 @@ void ASFE1Character::TickTargetScenario()
     if (!PC) { return; }
     if (TargetScenarioStage == 0)
     {
-        TArray<ASFPilotBoar*> Nearby;
-        for (TActorIterator<ASFPilotBoar> It(GetWorld()); It; ++It)
+        TArray<ASFCombatNpc*> Nearby;
+        for (TActorIterator<ASFCombatNpc> It(GetWorld()); It; ++It)
         { if (It->Health() > 0 && FVector::Dist2D(GetActorLocation(), It->GetActorLocation()) < 2900.0) { Nearby.Add(*It); } }
         if (Nearby.Num() < 2) { return; }
-        Nearby.Sort([this](const ASFPilotBoar& A, const ASFPilotBoar& B)
+        Nearby.Sort([this](const ASFCombatNpc& A, const ASFCombatNpc& B)
         { return FVector::DistSquared2D(GetActorLocation(), A.GetActorLocation()) < FVector::DistSquared2D(GetActorLocation(), B.GetActorLocation()); });
         const FVector Aim = (Nearby[0]->GetActorLocation() + Nearby[1]->GetActorLocation()) * 0.5 - GetActorLocation();
         PC->SetControlRotation(Aim.Rotation());
@@ -1465,7 +1465,7 @@ void ASFE1Character::Tick(float DeltaSeconds)
         if (HasAuthority())
         {
             const double Now = GetWorld()->GetTimeSeconds();
-            ASFPilotBoar* Boar = Cast<ASFPilotBoar>(CombatTarget);
+            ASFCombatNpc* Boar = Cast<ASFCombatNpc>(CombatTarget);
             const bool bLiveTarget = IsValid(Boar) && Boar->Health() > 0 &&
                 FVector::Dist2D(GetActorLocation(), Boar->GetActorLocation()) <=
                     GetDefault<USFCombatPilotSettings>()->MeleeRangeMetres * 100.0;
@@ -1529,7 +1529,7 @@ void ASFE1Character::Tick(float DeltaSeconds)
          SFNpcZoneContent::IsProductionMap(GetWorld())))
     {
         bool bThreatened = false;
-        for (TActorIterator<ASFPilotBoar> It(GetWorld()); It; ++It)
+        for (TActorIterator<ASFCombatNpc> It(GetWorld()); It; ++It)
         { if (It->HasThreatFor(this)) { bThreatened = true; break; } }
         const auto* Settings = GetDefault<USFCombatPilotSettings>();
         const bool bWasInCombat = PilotRegen.bInCombat;
@@ -1633,9 +1633,9 @@ void ASFE1Character::Tick(float DeltaSeconds)
         FParse::Value(FCommandLine::Get(), TEXT("GreenlandsBoarRole="), ScenarioRole);
         if (ScenarioRole == TEXT("Driver") || ScenarioRole == TEXT("Observer"))
         {
-            ASFPilotBoar* Lead = nullptr;
-            ASFPilotBoar* Mate = nullptr;
-            for (TActorIterator<ASFPilotBoar> It(GetWorld()); It; ++It)
+            ASFCombatNpc* Lead = nullptr;
+            ASFCombatNpc* Mate = nullptr;
+            for (TActorIterator<ASFCombatNpc> It(GetWorld()); It; ++It)
             {
                 if (It->GroupId() == TEXT("boar_farm_edge"))
                 {
@@ -1656,7 +1656,7 @@ void ASFE1Character::Tick(float DeltaSeconds)
                     for (TActorIterator<ASFE1Character> It(GetWorld()); It; ++It)
                     { if (*It != this) { ObservedPlayer = *It; break; } }
                 }
-                auto TargetRole = [this](const ASFPilotBoar* Boar) -> const TCHAR*
+                auto TargetRole = [this](const ASFCombatNpc* Boar) -> const TCHAR*
                 {
                     return !Boar || !Boar->ThreatTarget() ? TEXT("None") :
                         Boar->ThreatTarget() == this ? TEXT("Self") : TEXT("Other");
@@ -1710,7 +1710,7 @@ void ASFE1Character::Tick(float DeltaSeconds)
 #endif
     if (HasAuthority() && CombatTarget)
     {
-        const ASFPilotBoar* Boar = Cast<ASFPilotBoar>(CombatTarget);
+        const ASFCombatNpc* Boar = Cast<ASFCombatNpc>(CombatTarget);
         const ASFTownsfolkNpc* Npc = Cast<ASFTownsfolkNpc>(CombatTarget);
         if (PilotHealth <= 0 || !IsValid(CombatTarget) || CombatTarget->GetWorld() != GetWorld()
             || (Boar && (Boar->Health() <= 0 || Boar->IsLeashing()))
@@ -2633,8 +2633,8 @@ void ASFE1Character::TickSpiritReleaseScenario()
         { if (*It != this) { Subject = *It; break; } }
     }
     if (!Subject) return;
-    ASFPilotBoar* Boar = nullptr;
-    for (TActorIterator<ASFPilotBoar> It(GetWorld()); It; ++It)
+    ASFCombatNpc* Boar = nullptr;
+    for (TActorIterator<ASFCombatNpc> It(GetWorld()); It; ++It)
     { if (It->GroupId() == TEXT("spirit_release_sandbox")) { Boar = *It; break; } }
     if (!Boar) return;
     const double Now = GetWorld()->GetTimeSeconds();
@@ -2720,8 +2720,8 @@ void ASFE1Character::TickResurrectionAcceptScenario()
         { if (*It != this) { Subject = *It; break; } }
     }
     if (!Subject) return;
-    ASFPilotBoar* Boar = nullptr;
-    for (TActorIterator<ASFPilotBoar> It(GetWorld()); It; ++It)
+    ASFCombatNpc* Boar = nullptr;
+    for (TActorIterator<ASFCombatNpc> It(GetWorld()); It; ++It)
     { if (It->GroupId() == TEXT("resurrection_accept_sandbox")) { Boar = *It; break; } }
     if (!Boar) return;
     const double Now = GetWorld()->GetTimeSeconds();
@@ -2827,8 +2827,8 @@ void ASFE1Character::TickDodgeScenario()
     FString ScenarioRole;
     FParse::Value(FCommandLine::Get(), TEXT("DodgeRole="), ScenarioRole);
     if (ScenarioRole != TEXT("Driver") && ScenarioRole != TEXT("Observer")) { return; }
-    ASFPilotBoar* Boar = nullptr;
-    for (TActorIterator<ASFPilotBoar> It(GetWorld()); It; ++It) { Boar = *It; break; }
+    ASFCombatNpc* Boar = nullptr;
+    for (TActorIterator<ASFCombatNpc> It(GetWorld()); It; ++It) { Boar = *It; break; }
     if (!Boar || !Controller) { return; }
     const double Now = GetWorld()->GetTimeSeconds();
     if (Now >= NextDodgeSampleAt)
@@ -2887,8 +2887,8 @@ void ASFE1Character::TickAutoAttackScenario()
     FParse::Value(FCommandLine::Get(), TEXT("AutoAttackRole="), ScenarioRole);
     if (ScenarioRole != TEXT("Driver") && ScenarioRole != TEXT("Observer")) { return; }
     const double Now = GetWorld()->GetTimeSeconds();
-    ASFPilotBoar* Boar = nullptr;
-    for (TActorIterator<ASFPilotBoar> It(GetWorld()); It; ++It) { Boar = *It; break; }
+    ASFCombatNpc* Boar = nullptr;
+    for (TActorIterator<ASFCombatNpc> It(GetWorld()); It; ++It) { Boar = *It; break; }
     if (!Boar || !Controller) { return; }
     if (Now >= NextAutoAttackSampleAt)
     {
@@ -2954,7 +2954,7 @@ void ASFE1Character::ServerSetAutoAttack_Implementation(bool bEnabled)
     const FString Map = GetWorld()->GetOutermost()->GetName();
     if ((Map != TEXT("/Game/Frontier/Maps/Sandbox/SB_AutoAttack") &&
          !SFNpcZoneContent::IsProductionMap(GetWorld())) ||
-        (bEnabled && (PilotHealth <= 0 || !Cast<ASFPilotBoar>(CombatTarget)))) { return; }
+        (bEnabled && (PilotHealth <= 0 || !Cast<ASFCombatNpc>(CombatTarget)))) { return; }
     bAutoAttacking = bEnabled;
     if (bEnabled) { NextAutoSwingAt = GetWorld()->GetTimeSeconds(); }
     ForceNetUpdate();

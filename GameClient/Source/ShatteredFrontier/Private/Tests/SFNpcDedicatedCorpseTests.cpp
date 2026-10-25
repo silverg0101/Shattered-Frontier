@@ -59,7 +59,7 @@ bool FSFNpcDedicatedCorpseTest::RunTest(const FString& Parameters)
     auto* Mode = World->SpawnActor<ASFGameMode>();
     auto* Controller = World->SpawnActor<ASFPlayerController>();
     auto* Killer = World->SpawnActor<ASFE1Character>(ASFE1Character::StaticClass(), FVector(1100,2000,300), FRotator::ZeroRotator, Spawn);
-    auto* Npc = World->SpawnActor<ASFPilotBoar>(ASFPilotBoar::StaticClass(), FVector(1000,2000,300), FRotator(15,40,0), Spawn);
+    auto* Npc = World->SpawnActor<ASFCombatNpc>(ASFCombatNpc::StaticClass(), FVector(1000,2000,300), FRotator(15,40,0), Spawn);
     if (!Mode || !Controller || !Killer || !Npc) return false;
     Mode->CapturedSettings = GetDefault<USFCombatPilotSettings>();
     USFBackpackComponent::CreateForTests(Controller, Ledger); USFBackpackComponent::AssignDevIdentity(Controller, TEXT("headless"));

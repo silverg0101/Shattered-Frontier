@@ -10,7 +10,7 @@
 class ASFPlayerController;
 class ASFConstructionNetworkState;
 class ASFE1Character;
-class ASFPilotBoar;
+class ASFCombatNpc;
 class USFCombatPilotSettings;
 namespace SFCombatFixtures { struct FSpec; }
 enum class ESFConstructionNetworkResult : uint8;
@@ -57,18 +57,18 @@ public:
     // Combat (SFCombatPilot.cpp)
     SFCombatResolution::FResult ResolveCombatAttack(AActor* Attacker,
         const SFCombatResolution::FAttack& Attack, double FixtureAvoidanceDraw = -1);
-    void TryHiddenMovementPractice(ASFE1Character* Character, ASFPilotBoar* Observer, double Now);
-    void RecordIncomingCombatPractice(ASFPilotBoar* Source, ASFE1Character* Victim,
+    void TryHiddenMovementPractice(ASFE1Character* Character, ASFCombatNpc* Observer, double Now);
+    void RecordIncomingCombatPractice(ASFCombatNpc* Source, ASFE1Character* Victim,
         const SFCombatResolution::FAttack& Attack, const SFCombatResolution::FResult& Result);
     void TryPlayerAttack(ASFE1Character* Attacker, AActor* SelectedTarget = nullptr);
     void TryPlayerCombatAbility(ASFE1Character* Attacker, FName AbilityId,
         AActor* SelectedTarget = nullptr, bool bCastComplete = false, FVector CastOrigin = FVector::ZeroVector,
         FVector GroundLocation = FVector::ZeroVector);
     int32 ApplyStarterHeal(ASFE1Character* Healer, ASFE1Character* Subject, int32 Amount);
-    void ApplyStarterWeakPoison(ASFE1Character* Source, ASFPilotBoar* Victim,
+    void ApplyStarterWeakPoison(ASFE1Character* Source, ASFCombatNpc* Victim,
         const SFCombatResolution::FAttack& Attack);
     bool TryPlayerTaunt(ASFE1Character* Taunter, AActor* SelectedTarget);
-    void TryBoarAttack(ASFPilotBoar* Boar, ASFE1Character* Victim);
+    void TryBoarAttack(ASFCombatNpc* Boar, ASFE1Character* Victim);
     /** Authority: an NPC's landed melee hit on a player (boar, townsfolk, guard); the caller checks reach and cooldown.
       * A downed player respawns when this world's game mode runs the combat pilot.
       * Lethal retaliation is admitted only from an authoritative, same-world tagged pilot NPC. */
@@ -80,9 +80,9 @@ public:
     bool ReleaseSpirit(ASFE1Character* Player);
     bool AcceptResurrection(ASFE1Character* Player, uint32 OfferId, const FString& DeathEventId);
     bool HasPendingDeathReport(const FString& CharacterId) const;
-    void BoarDied(ASFPilotBoar* Boar, ASFE1Character* Killer);
+    void BoarDied(ASFCombatNpc* Boar, ASFE1Character* Killer);
     /** Credits defeat once; services own corpse delivery, local fixtures return granted hides. */
-    int32 RewardKill(ASFPilotBoar* Boar, ASFE1Character* Killer);
+    int32 RewardKill(ASFCombatNpc* Boar, ASFE1Character* Killer);
     void ClaimSharedDrop(class ASFPlayerController* Player, const FString& EventId);
     bool IsSafe(const FVector& Location) const;
     bool TryNearestRespawnPoint(const FVector& From, float PawnHalfHeight, FVector& OutLanding) const;
@@ -168,7 +168,7 @@ private:
     void StartCombat();
     bool StartCombatFixture();
     void TickCombatFixture();
-    bool HandleCombatFixtureDefeat(ASFPilotBoar* Npc, ASFE1Character* Killer);
+    bool HandleCombatFixtureDefeat(ASFCombatNpc* Npc, ASFE1Character* Killer);
     void PostLoginCombat(APlayerController* NewPlayer);
     void RestartCombat(AController* NewPlayer);
     void TickCombat();
@@ -197,19 +197,19 @@ private:
     TMap<FString, SFNpcZoneContent::FGroup> Groups;
     TArray<TArray<FVector2D>> ProtectedAreas;
     TArray<FVector> RespawnPoints;
-    TMap<FString, TWeakObjectPtr<ASFPilotBoar>> ActiveBoars;
+    TMap<FString, TWeakObjectPtr<ASFCombatNpc>> ActiveBoars;
     TMap<FString, TArray<double>> LeashEvadesByGroupAndCharacter;
     TMap<TWeakObjectPtr<ASFE1Character>, double> PlayerNextSwing;
     TMap<TWeakObjectPtr<ASFE1Character>, double> NextStealthPracticeAt;
     TMap<uint64, int32> RenewGenerations;
     int32 GreenlandsAbilityStage = 0;
     double GreenlandsAbilityStageAt = 0;
-    TWeakObjectPtr<ASFPilotBoar> GreenlandsAbilityBoar;
+    TWeakObjectPtr<ASFCombatNpc> GreenlandsAbilityBoar;
     int32 GreenlandsAbilityBoarHealth = 0;
     float GreenlandsAbilityStamina = 0;
     double GreenlandsAbilityWardAbsorb = 0;
     TMap<TWeakObjectPtr<ASFE1Character>, FRandomStream> PlayerCombatStreams;
-    TMap<TWeakObjectPtr<ASFPilotBoar>, FRandomStream> BoarCombatStreams;
+    TMap<TWeakObjectPtr<ASFCombatNpc>, FRandomStream> BoarCombatStreams;
     TMap<TWeakObjectPtr<ASFE1Character>, int32> DodgeScenarioSwings;
     TMap<TWeakObjectPtr<ASFE1Character>, FString> PlayerDeathEvents;
     TMap<TWeakObjectPtr<ASFE1Character>, FVector> PlayerDeathRespawnPoints;
@@ -248,11 +248,11 @@ private:
     bool bGreenlandsArcherPositioned = false;
     int32 GreenlandsDeathStage = 0;
     double GreenlandsDeathNextHitAt = 0;
-    TWeakObjectPtr<ASFPilotBoar> GreenlandsDeathBoar;
+    TWeakObjectPtr<ASFCombatNpc> GreenlandsDeathBoar;
     TWeakObjectPtr<APlayerController> GreenlandsDriverController;
     TWeakObjectPtr<APlayerController> GreenlandsObserverController;
-    TWeakObjectPtr<ASFPilotBoar> GreenlandsLead;
-    TWeakObjectPtr<ASFPilotBoar> GreenlandsMate;
+    TWeakObjectPtr<ASFCombatNpc> GreenlandsLead;
+    TWeakObjectPtr<ASFCombatNpc> GreenlandsMate;
     FVector GreenlandsLeadAnchor = FVector::ZeroVector;
     FVector GreenlandsMateAnchor = FVector::ZeroVector;
     int32 GreenlandsNetcheckStage = 0;
@@ -264,6 +264,6 @@ private:
     int32 GreenlandsEnergyStage = 0;
     double GreenlandsEnergyStageAt = 0;
     float GreenlandsEnergyBeforeSprint = 0.f;
-    TWeakObjectPtr<ASFPilotBoar> GreenlandsEnergyBoar;
+    TWeakObjectPtr<ASFCombatNpc> GreenlandsEnergyBoar;
 #endif
 };

@@ -148,7 +148,7 @@ void USFE1VitalsHudSubsystem::Tick(float DeltaTime)
         Defeat = FSFE1DefeatView();
         Defeat.DelaySeconds = Settings->PlayerRespawnDelaySeconds;
         const FVector At = Pawn->GetActorLocation();
-        for (TActorIterator<ASFPilotBoar> It(World); It; ++It)
+        for (TActorIterator<ASFCombatNpc> It(World); It; ++It)
         { if (FVector::Dist2D(It->GetActorLocation(), At) < 1500.0) { Defeat.Cause = TEXT("Wild Boar"); break; } }
         const FVitalsZone& Zone = VitalsZone();
         double Best = TNumericLimits<double>::Max();

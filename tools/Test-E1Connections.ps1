@@ -389,7 +389,7 @@ try {
         Wait-Log $observerLog 'RES_ACCEPT_CLIENT_RESTORED Role=Observer HP=28'
         Wait-Log $serverLog 'RES_ACCEPT_SERVER_DENIED' 2
         $offer = Select-String -LiteralPath $serverLog -Pattern 'RES_ACCEPT_SERVER_OFFER Pawn=.* Offer=1 HP=0' | Select-Object -First 1
-        $killingHit = Select-String -LiteralPath $serverLog -Pattern 'COMBAT_PILOT_PLAYER_HIT HP=0 By=SFPilotBoar' | Select-Object -First 1
+        $killingHit = Select-String -LiteralPath $serverLog -Pattern 'COMBAT_PILOT_PLAYER_HIT HP=0 By=(?:SFPilotBoar|SFCombatNpc)' | Select-Object -First 1
         $accepted = Select-String -LiteralPath $serverLog -Pattern 'RES_ACCEPT_SERVER_ACCEPTED Pawn=.* Offer=1 HP=28' | Select-Object -First 1
         $denied = @(Select-String -LiteralPath $serverLog -Pattern 'RES_ACCEPT_SERVER_DENIED Pawn=')
         if (-not $offer -or -not $killingHit -or -not $accepted -or $denied.Count -ne 2 -or
@@ -563,7 +563,7 @@ try {
         Write-Output "PASS: server accepted damage, leashed and reset, ignored visible bystander at $distance cm, then gave the original attacker threat 1; both clients observed the sequence. Logs: $logs"
     }
     if ($RegenScenario) {
-        Wait-Log $serverLog 'COMBAT_PILOT_PLAYER_HIT HP=([1-9][0-9]*) By=SFPilotBoar'
+        Wait-Log $serverLog 'COMBAT_PILOT_PLAYER_HIT HP=([1-9][0-9]*) By=(?:SFPilotBoar|SFCombatNpc)'
         Wait-Log $serverLog 'BOAR_EVADE_RESET Group=regeneration_sandbox'
         Wait-Log $serverLog 'REGEN_COMBAT_EXIT Health='
         Wait-Log $serverLog 'REGEN_HEALTH_TICK Health=80 '
@@ -589,7 +589,7 @@ try {
         Write-Output "PASS: boar damaged client 1; threat cleared on evade, then both clients observed five-second combat exit, five-second regeneration delay, and one-second health ticks to full. Logs: $logs"
     }
     if ($RestRegenScenario) {
-        Wait-Log $serverLog 'COMBAT_PILOT_PLAYER_HIT HP=([1-9][0-9]*) By=SFPilotBoar'
+        Wait-Log $serverLog 'COMBAT_PILOT_PLAYER_HIT HP=([1-9][0-9]*) By=(?:SFPilotBoar|SFCombatNpc)'
         Wait-Log $serverLog 'REGEN_COMBAT_EXIT Health='
         Wait-Log $serverLog 'REST_REGEN_TICK Health=\d+ Rest=0'
         Wait-Log $serverLog 'REST_REGEN_TICK Health=\d+ Rest=1' 2
