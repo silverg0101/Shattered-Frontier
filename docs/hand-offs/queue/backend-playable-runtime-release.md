@@ -11,21 +11,21 @@ Deploy a compatible immutable Linux game/service/content release on the authoriz
 
 ## State
 
-Runnable durable profile/bootstrap candidate passed fresh independent security review and was published through `19fe2914`; protected runtime unchanged. The unpublished five-schema PostgreSQL + two-host rehearsal passed and was cleaned. The old `e1-2a5b634429b75d46519ad2a28560b8953ed99831` game remains healthy on approved UDP17777. Final game/service revision freeze still waits for the owner's highlight follow-up and functional acceptance; no service rebuild or game work in this lane until that freeze.
+Release identity is frozen at `ff59b35dd17fef0edd1a7b7f5b9161b867370bc8`. Exact tracked service export/image and fresh unpublished service smoke passed; game/client packages remain with the package worker. Reviewed runtime/bootstrap code is unchanged from `19fe2914`; protected runtime and the old healthy E1 game on UDP17777 remain untouched. Later documentation commits do not change the frozen component identity.
 
 ## Evidence
 
-2026-10-25: five focused Python regressions passed; both targeted .NET builds passed with zero warnings/errors. The service-only Linux rehearsal verified all five role/schema gates, authenticated and wrong-bearer probes, one fixture grant (2 items / revision 1 / one receipt), denied version changes, constrained singleton locks, stable private credentials, database-container recreation with retained state, nonempty-init refusal, 0600 files and no published ports. Owned containers/volume were removed; old E1 stayed healthy. Exact evidence is in the root orchestration runtime-release report.
+Frozen service image `sha256:8d10c43fc5129028bce13987992efe52109cce514b92557ca52d948c3223fde2` has exact full revision/UID998; 107 manifest hashes passed. Fresh PostgreSQL18.6/hosts/role/bearer/content/resource smoke passed and cleaned. PostgreSQL has 125 normal slots versus the enforced 96 pool ceiling (29 headroom). Earlier unchanged SQL persistence/security evidence is retained in the root orchestration report; no redundant whole suite was rerun.
 
-Tracked-snapshot exporter/path fix independently passed at `da3ded63`; all earlier unverified-provenance artifacts remain superseded. The runnable rehearsal used 105 verified Linux hashes and service image `sha256:7526e7874ca42e961b5b3386ae150d52f676843217030285b0b263f51c9ad603` at pre-rebase `db08d72d`, plus the committed dependent-namespace recreation fix. This is pre-freeze enabling evidence, not remote playable/production acceptance. `/home/steam` resolves to `/srv/steam/steamhome`; diagnostic roots use that verified canonical home. Protected runtime inspection/application still requires a privileged operator; no bypass was attempted.
+The package worker independently matched frozen BackendServices/proto/content manifests. Operator packet has actual frozen service identity/tool hash; game image and final profile hash remain pending. Exact normal-home game staging path is steam-owned and write-probed; home/Docker share about 16.38GB free, while the protected game LV has about 81.56GB. Use actual Linux size plus conservative build/cache peak and margin before transfer; no game-LV write or bypass is authorized. All earlier pre-freeze/unverified images are nonfinal. Remote playable/production acceptance is not established.
 
 ## Blocked on
 
-Final source freeze/matching game+client+service packages; final privileged operator application. SSH key access works, but `sudo -n -v` fails; a host operator must authenticate interactively in the session that runs the reviewed application block.
+Verified matching LinuxServer/Win64Client packages and actual game image; final profile/hash; privileged operator application. SSH key access works, but `sudo -n -v` fails; a host operator must authenticate interactively in the session that runs the reviewed application block.
 
 ## Next step
 
-Wait for the root-approved final freeze, then rebuild matching service/content artifacts and fill the prepared operator packet with real image IDs and verified hashes. Only after matching package/provenance checks may the root agent request the concrete privileged operator step in `ops/steam-server/playable-release.md`; remote two-client gameplay/SQL/restart acceptance still follows.
+Receive the package worker's exact Linux bytes/manifests, verify disk peak/headroom and matching frozen inputs, build/check the actual game image in authorized normal staging or verified stdin context, then finalize the profile/operator hashes. Only then may root request the reviewed privileged operator step; remote two-client gameplay/SQL/restart acceptance still follows.
 
 ## Rules for this task
 
