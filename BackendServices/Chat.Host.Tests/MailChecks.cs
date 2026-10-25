@@ -132,9 +132,9 @@ public static class MailChecks
             handler.ClientCertificates.Add(System.Security.Cryptography.X509Certificates.X509CertificateLoader.LoadPkcs12FromFile(
                 Environment.GetEnvironmentVariable("CHAT_IDENTITY_PRIVACY_CERT_PATH")!, null));
             using var client = new HttpClient(handler) { BaseAddress = new Uri(Environment.GetEnvironmentVariable("CHAT_IDENTITY_INTERNAL_URL") + "/") };
-            async Task<HttpResponseMessage> Handoff(string credential, object? body = null)
+            async Task<HttpResponseMessage> Handoff(string credential, object? body = null, string? accountId = null)
             {
-                using var request = new HttpRequestMessage(HttpMethod.Post, $"v1/internal/privacy/accounts/{alice.Account}/erasure")
+                using var request = new HttpRequestMessage(HttpMethod.Post, $"v1/internal/privacy/accounts/{accountId ?? alice.Account}/erasure")
                 { Content = JsonContent.Create(body ?? new { request_id = "prq_test", verified_at = DateTimeOffset.UtcNow.AddDays(-15), legal_hold_checked_at = DateTimeOffset.UtcNow, audit_hold = true }) };
                 request.Headers.Add("X-Privacy-Workflow-Key", credential);
                 return await client.SendAsync(request);
@@ -142,6 +142,8 @@ public static class MailChecks
             using var denied = await Handoff("wrong");
             Check(denied.StatusCode == System.Net.HttpStatusCode.Unauthorized, "erasure handoff requires coordinator credential");
             var privacyKey = Environment.GetEnvironmentVariable("Identity__PrivacyWorkflowKey")!;
+            using var unknown = await Handoff(privacyKey, accountId: "acct_missing");
+            Check(unknown.StatusCode == System.Net.HttpStatusCode.NotFound, "unknown account without tombstone rejects erasure handoff");
             using var missingHold = await Handoff(privacyKey, new { request_id = "prq_test", verified_at = DateTimeOffset.UtcNow.AddDays(-15), legal_hold_checked_at = DateTimeOffset.UtcNow });
             Check(missingHold.StatusCode == System.Net.HttpStatusCode.BadRequest, "missing audit hold rejects handoff");
             using var missingVerification = await Handoff(privacyKey, new { request_id = "prq_test", legal_hold_checked_at = DateTimeOffset.UtcNow, audit_hold = false });

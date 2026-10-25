@@ -137,18 +137,20 @@ public sealed class PostgresAccountDataKeys(string connectionString, IKekProvide
         return cmd.ExecuteNonQuery() == 1;
     }
 
-    public void ScheduleErasure(string accountId, bool auditHold, DateTimeOffset now)
+    public bool ScheduleErasure(string accountId, bool auditHold, DateTimeOffset now)
     {
         using var c = Open();
         using var tx = c.BeginTransaction();
         using (var account = new NpgsqlCommand("SELECT data_key_id FROM identity.accounts WHERE account_id=$1 FOR UPDATE", c, tx))
         {
             account.Parameters.AddWithValue(accountId);
-            if (account.ExecuteScalar() is not string)
+            var dataKeyId = account.ExecuteScalar();
+            if (dataKeyId is not string)
             {
                 using var tombstone = new NpgsqlCommand("SELECT EXISTS(SELECT 1 FROM auth.erasure_tombstones WHERE account_id=$1)", c, tx);
                 tombstone.Parameters.AddWithValue(accountId);
-                if ((bool)tombstone.ExecuteScalar()!) { tx.Commit(); return; }
+                if ((bool)tombstone.ExecuteScalar()!) { tx.Commit(); return true; }
+                if (dataKeyId is null) return false;
                 throw new InvalidOperationException("Account key unavailable for erasure.");
             }
         }
@@ -161,6 +163,7 @@ public sealed class PostgresAccountDataKeys(string connectionString, IKekProvide
             retire.Parameters.AddWithValue(accountId); retire.Parameters.AddWithValue(now); retire.ExecuteNonQuery();
         }
         tx.Commit();
+        return true;
     }
 
     public int FinalizeErasure(DateTimeOffset now)

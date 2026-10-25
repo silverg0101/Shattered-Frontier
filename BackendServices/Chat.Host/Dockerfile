@@ -1,10 +1,11 @@
 FROM mcr.microsoft.com/dotnet/sdk:10.0.402 AS build
 WORKDIR /src
 COPY BackendServices/ BackendServices/
+COPY proto/ proto/
 RUN dotnet restore BackendServices/Chat.Host/Chat.Host.csproj --locked-mode
 RUN dotnet publish BackendServices/Chat.Host/Chat.Host.csproj -c Release --no-restore -o /app
 
-FROM mcr.microsoft.com/dotnet/aspnet:10.0
+FROM mcr.microsoft.com/dotnet/aspnet:10.0.13
 WORKDIR /app
 COPY --from=build /app/ ./
 ENTRYPOINT ["dotnet", "Chat.Host.dll"]

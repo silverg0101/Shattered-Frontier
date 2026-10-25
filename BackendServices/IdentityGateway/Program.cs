@@ -278,7 +278,8 @@ if (privacyKey is not null)
             request.VerifiedAt > now.AddDays(-14) ||
             request.LegalHoldCheckedAt < now.AddMinutes(-5) || request.LegalHoldCheckedAt > now)
             throw new ApiError(400, "INVALID_ARGUMENT", "ERASURE_HANDOFF_INVALID");
-        keys.ScheduleErasure(accountId, request.AuditHold.Value, now);
+        if (!keys.ScheduleErasure(accountId, request.AuditHold.Value, now))
+            throw new ApiError(404, "NOT_FOUND", "ACCOUNT_NOT_FOUND");
         return Results.Accepted();
     });
 }
