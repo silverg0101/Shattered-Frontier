@@ -26,10 +26,18 @@ Get one animated boar from the prompt "a wild boar" with five clips: idle, walk,
   
   It also fixes all the code-review findings (Important 1-6, Minor 7-11).
 - Tested only in isolation on an old rig, where all five procedural clips passed. The model review correctly failed the doubled rig.
+- The scoped Opus code review of the round 2 commits (2026-10-25) failed it on 7 findings. Fable fixed 1-4 and 6 in lane `a` (branch `lane/a`, not pushed until the fix diff has its own Opus re-review):
+  1. `zoo_curate.py --loop` scored every take as a gait, so no idle could ever loop-cut (its paws never lift; the procedural idle moves 0.003 deg/frame, under the stall rule). A stand now only has to close.
+  2. A failed build (GPU, ComfyUI, ssh) was logged as a rig failure and rebuilt up to 4 times. It now fails the job.
+  3. A review answer that was not JSON killed the job after the builds. It is retried once, then counts as a FAIL.
+  4. A released pin kept its piled-up target, and convergence no longer stopped the IK passes. Released frames get their off-pin targets back, a pass solves with them, and the passes stop once the fixes converge.
+  6. A leg whose only `_01` bone was dropped crashed the retarget. It falls back to the whole chain.
+  
+  Left as is, with the reasons: 5 (`max_neck_deg` is the documented head-to-`spine_03` angle, the procedural clips passed it on the old rig, and a false fail on a UniMate idle only drops that seed; re-check when the head bone moves to the snout tip) and 7 (the side-alone 4th build is the strategy chosen in commit c6cea807; the model review catches a fused build).
 - **Not yet done:**
+  - a fresh Opus code re-review of the fix diff, then the push;
   - a full end-to-end run with rebuilds;
   - the UniMate loop cut on a real take;
-  - a scoped code re-review of the round 2 commits;
   - visual round 2.
 
 ## Open fix list (visual round 1, items not covered by round 2)
@@ -42,13 +50,15 @@ Get one animated boar from the prompt "a wild boar" with five clips: idle, walk,
 
 Round 2 code: `creature.py` (`model_review`, `MODEL_BUILDS`), `motion/gait_synth.py`, `motion/zoo_retarget.py` (gates) and `motion/zoo_curate.py --loop`.
 
+Code-review fixes: `app.py check()` prints `check ok` with new asserts for the idle loop cut (`LOOP 0 90 91 frames`), a failed build failing the job once, and the model review's retry, fail-closed and cancel paths. The IK release pass (`zoo_retarget.py`) runs only in Blender and is unverified until the scratch run; its `RT ik pass` lines show the pass count and "(release pass)".
+
 ## Blocked on
 
 none
 
 ## Next step
 
-1. Run a scoped Opus code re-review of the two round 2 commits. Fix what it finds.
+1. Fresh Opus code re-review of the fix commits on `lane/a` (the review's findings 1-4 and 6; its 5 and 7 are answered above). Fix what it finds, then push.
 2. Do the full scratch run:
    `py tools/asset-manager/scratch_run.py '{"name": "Greenlands_Boar", "prompt": "a wild boar", "animal": "Buffalo", "clips": ["idle", "walk", "run", "attack", "death"], "size_cm": 150}'`
    Use `creature_unimate_seeds` 6.
