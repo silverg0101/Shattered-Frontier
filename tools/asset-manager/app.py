@@ -3023,6 +3023,21 @@ def check():
             creature.set_unreal("Rat", bad, m); raise AssertionError(bad)
         except ValueError:
             pass
+    late = td / "Late"  # a clip whose keys start at frame 1 (Blender's export) is combined starting at t=0
+    (late / "animations").mkdir(parents=True)
+    (late / "Late.glb").write_bytes(tiny_glb(["root", "pelvis", "spine_01"]))
+    lj, lb = creature.glb_read(tiny_glb(["root", "pelvis", "spine_01"], "Walk"))
+    struct.pack_into("<2f", lb, 0, 1 / 30, 0.5)
+    lj["accessors"][0].update(min=[1 / 30], max=[0.5])
+    (late / "animations/Late_Walk.glb").write_bytes(creature.glb_write(lj, lb))
+    creature.write_manifest(late, {"name": "Late", "clips": [{"name": "Walk", "file": "animations/Late_Walk.glb", "baked": False}],
+                                   "unreal": {"state": "pass", "reason": ""}})
+    lm = creature.combine_model("Late", ["Walk"], late)
+    assert lm["unreal"] == {"state": "pending", "reason": ""}, lm["unreal"]  # a stale pass doesn't survive a rebuild
+    js, binary = creature.glb_read((late / "Late_animated.glb").read_bytes())
+    acc = js["accessors"][js["animations"][0]["samplers"][0]["input"]]
+    t = struct.unpack_from("<2f", binary, js["bufferViews"][acc["bufferView"]]["byteOffset"])
+    assert abs(t[0]) < 1e-7 and abs(t[1] - (0.5 - 1 / 30)) < 1e-6 and acc["min"] == [0.0], (t, acc)
     before = (m / "Rat_animated.glb").read_bytes()
     for bad in ("Odd", "Gone"):  # a different skeleton, a missing file
         try:

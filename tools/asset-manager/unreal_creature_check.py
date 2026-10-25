@@ -12,12 +12,13 @@ With the editor open: python tools/Run-InEditor.py tools/asset-manager/unreal_cr
 mesh under /Game/Frontier/Tests/AssetForge/<Name> (replacing an earlier import) against the shared skeleton
 /Game/Frontier/Creatures/Shared/SK_Quadruped_v1, which the first import creates when it is missing. Checks: the bone
 list is quadruped_v1's with `root` on top, one AnimSequence per manifest clip with `baked: true` (named <Name>_<Clip>,
-on the shared skeleton) with the GLB's frame count. A creature not facing Unreal +X is noted in `reason`. The result is logged as
+on the shared skeleton) with the GLB's key count. Which way the creature faces is noted in `reason`. The result is logged as
 `CREATURECHECK result {...}` and POSTed as {state, reason} to <forge url>/api/models/<Name>/unreal when a url is given.
 """
 import json
 import math
 import os
+import re
 import struct
 import sys
 import traceback
@@ -36,18 +37,16 @@ SHARED = "/Game/Frontier/Creatures/Shared/SK_Quadruped_v1"
 BONES = ["root", "pelvis", "spine_01", "spine_02", "spine_03", "neck", "head", *[f"tail_{i:02d}" for i in range(1, 7)],
          *[f"{leg}_{i:02d}" for leg in ("FL", "FR", "HL", "HR") for i in range(1, 5)]]
 lib = u.EditorAssetLibrary
-FPS = 30  # ponytail: the Forge bakes every clip at 30 fps; read the rate from the GLB if that changes
 NOTES = []  # reported in `reason` without failing the check
 
 
-def glb_frames(path) -> dict:
-    """{animation name: frame count} from a GLB's JSON chunk: its last key time at FPS. Blender's keys start at frame
-    1, Unreal's at 0, so the key counts differ by one while the frames match."""
+def glb_keys(path) -> dict:
+    """{animation name: key count (its longest sampler input)} from a GLB's JSON chunk. combine_model starts every clip
+    at t=0, where Unreal starts sampling, so a match means Unreal adds no held first frame."""
     b = path.read_bytes()
     n = struct.unpack_from("<I", b, 12)[0]
     js = json.loads(b[20:20 + n])
-    return {a["name"]: round(max(js["accessors"][s["input"]]["max"][0] for s in a["samplers"]) * FPS)
-            for a in js.get("animations", [])}
+    return {a["name"]: max(js["accessors"][s["input"]]["count"] for s in a["samplers"]) for a in js.get("animations", [])}
 
 
 def assets_of(cls):
@@ -56,12 +55,14 @@ def assets_of(cls):
 
 def run() -> list:
     """-> the list of problems (empty: pass)."""
+    if not re.fullmatch(r"[\w-]+", NAME):  # it lands in an asset path and the POST url
+        return [f"bad model name {NAME!r}"]
     man = json.loads((FOLDER / f"{NAME}.json").read_text())
     glb = FOLDER / f"{NAME}_animated.glb"
     if not glb.is_file():
         return [f"no {glb.name} in the model folder"]
     baked = [c["name"] for c in man["clips"] if c.get("baked")]
-    frames = glb_frames(glb)
+    keys = glb_keys(glb)
     if lib.does_directory_exist(DEST):
         lib.delete_directory(DEST)
     skel = lib.load_asset(SHARED) if lib.does_asset_exist(SHARED) else None
@@ -100,8 +101,7 @@ def run() -> list:
         d = at("head") - at("pelvis")
         yaw = math.degrees(math.atan2(d.y, d.x))
         u.log(f"CREATURECHECK facing yaw {yaw:.1f} (head minus pelvis {d.x:.1f}, {d.y:.1f})")
-        if abs(yaw) > 30:  # a note, not a fail: every glTF import turns the same way, so the fix is a project decision
-            NOTES.append(f"faces yaw {yaw:.0f} degrees, not +X: needs {-yaw:.0f} degrees about Z")
+        NOTES.append(f"faces yaw {yaw:.0f} degrees (+Y, 90, is Unreal's skeletal-mesh forward, as the Mannequin)")
     for a in assets_of(u.AnimSequence):  # Interchange names them <glb stem><Clip>; the project's name is <Name>_<Clip>
         if a.get_name().startswith(glb.stem):
             lib.rename_asset(a.get_path_name().split(".")[0], f"{DEST}/{NAME}_{a.get_name()[len(glb.stem):].lstrip('_')}")
@@ -113,14 +113,15 @@ def run() -> list:
     for a, c in want.items():
         if a not in anims:
             problems.append(f"clip {c}: baked in the manifest, but no AnimSequence {a}" +
-                            ("" if c in frames else f" ({glb.name} has no animation {c})"))
+                            ("" if c in keys else f" ({glb.name} has no animation {c})"))
             continue
         if anims[a].get_skeleton() != skel:
             problems.append(f"clip {c}: on {anims[a].get_skeleton().get_path_name()}, not {SHARED}")
-        n = u.AnimationLibrary.get_num_frames(anims[a])
-        if c in frames and n != frames[c]:
-            problems.append(f"clip {c}: {n} frames in Unreal, {frames[c]} in the GLB")
-        u.log(f"CREATURECHECK clip {c}: {n} frames (GLB {frames.get(c)})")
+        n = u.AnimationLibrary.get_num_keys(anims[a])
+        if c in keys and n != keys[c]:
+            problems.append(f"clip {c}: {n} keys in Unreal, {keys[c]} in the GLB" +
+                            (" (its first key is after t=0, so Unreal holds the first pose)" if n == keys[c] + 1 else ""))
+        u.log(f"CREATURECHECK clip {c}: {n} keys (GLB {keys.get(c)})")
     return problems
 
 
@@ -131,8 +132,11 @@ except Exception as e:  # a crash is a fail the page can show, not a silent pend
     problems = [f"check crashed: {type(e).__name__}: {str(e).splitlines()[0] if str(e) else ''}"]
 result = {"state": "fail" if problems else "pass", "reason": "; ".join(problems + NOTES)}
 u.log(f"CREATURECHECK result {json.dumps(result)}")
-if FORGE:
+if FORGE and re.fullmatch(r"[\w-]+", NAME):
     req = urllib.request.Request(f"{FORGE}/api/models/{NAME}/unreal", json.dumps(result).encode(),
                                  {"Content-Type": "application/json"}, method="POST")
-    with urllib.request.urlopen(req, timeout=30) as r:
-        u.log(f"CREATURECHECK posted to {FORGE}: {r.status}")
+    try:
+        with urllib.request.urlopen(req, timeout=30) as r:
+            u.log(f"CREATURECHECK posted to {FORGE}: {r.status}")
+    except Exception as e:  # the result line above still holds the verdict
+        u.log_error(f"CREATURECHECK could not post to {FORGE}: {e}")

@@ -544,6 +544,24 @@ def _add_animation(dst, dbin, src, sbin, name, index=0):
     dst.setdefault("animations", []).append({"name": name, "samplers": samplers, "channels": channels})
 
 
+def _start_at_zero(js, binary, anim):
+    """Shift an animation's key times so its first key is at t=0. Blender exports start at frame 1, and Unreal samples
+    from 0, so it would hold the first pose for a frame."""
+    spans = {}
+    for i in {s["input"] for s in anim["samplers"]}:
+        a, v = js["accessors"][i], js["bufferViews"][js["accessors"][i]["bufferView"]]
+        spans[i] = (v.get("byteOffset", 0) + a.get("byteOffset", 0), v.get("byteStride", 4), a["count"])
+    times = {i: [struct.unpack_from("<f", binary, o + k * st)[0] for k in range(n)] for i, (o, st, n) in spans.items()}
+    t0 = min(min(t) for t in times.values())
+    done = set()
+    for i, (o, st, n) in spans.items():
+        if o not in done:  # two accessors on the same keys: shift them once
+            done.add(o)
+            for k, t in enumerate(times[i]):
+                struct.pack_into("<f", binary, o + k * st, t - t0)
+        js["accessors"][i].update(min=[min(times[i]) - t0], max=[max(times[i]) - t0])
+
+
 def glb_without_animations(b: bytes) -> bytes:
     # ponytail: the animation's keys stay in the BIN chunk unreferenced (one clip's worth); compact if size matters
     js, binary = glb_read(b)
@@ -602,12 +620,14 @@ def _combine(name, clips, folder):
     base.pop("animations", None)
     for c, js, binary in parts:
         _add_animation(base, bbin, js, binary, c)
+        _start_at_zero(base, bbin, base["animations"][-1])  # its keys are fresh copies, so shifting them is safe
     out = folder / f"{name}_animated.glb"
     tmp = out.with_name(f".{out.name}.tmp")
     tmp.write_bytes(glb_write(base, bbin))
     os.replace(tmp, out)
     for c in man["clips"]:
         c["baked"] = c["name"] in clips
+    man["unreal"] = {"state": "pending", "reason": ""}  # a new _animated.glb needs a new Unreal check
     write_manifest(folder, man)
     return man
 
