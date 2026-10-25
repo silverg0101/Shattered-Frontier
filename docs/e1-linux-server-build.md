@@ -1,6 +1,12 @@
 # E1 Linux dedicated-server build route
 
-`steam-server` (Ubuntu22.04, Docker) is the selected Linux x86_64 test destination, superseding Unraid on user instruction. The user authorized source-engine/SDK setup, game-server deployment, and storage allocation/mounting. Native compilation uses Windows cross-tools; native Linux staging and the initial dedicated-server deployment now pass. `Build-LinuxServer.ps1` remains a Windows-only packaging entry point and never deploys. The running LAN server still lacks compatible remote-client acceptance, as recorded below.
+`steam-server` (Ubuntu22.04, Docker) is the selected Linux x86_64 test destination, superseding Unraid on user instruction. The user authorized source-engine/SDK setup, game-server deployment, and storage allocation/mounting. `Build-LinuxServer.ps1` is a Windows-only packaging entry point and never deploys. Current deployment and remaining gameplay acceptance are recorded first; older blockers/history below are not current gates.
+
+## Frozen Silverbrook plus durable LAN hosts — 2026-10-25
+
+Exact source `ff59b35dd17fef0edd1a7b7f5b9161b867370bc8` is deployed at192.168.50.133:17777 with matching source Win64Client/LinuxServer packages and immutable game/service images. The reviewed profile/bootstrap owns five PostgreSQL schemas with separate NOLOGIN owners and DML runtime roles; private gRPC hosts share the database namespace and only approved LAN UDP17777 is published. Game and database health, source/image/content hashes, authenticated host probes and two distinct packaged-client welcomes passed. New private root/files are700/600; old2a5b634 image/profile remain retained and its container stopped for rollback.
+
+Private startup proved21 authored NPCs across6 groups and19 gathering nodes/3 stations without WorldContent.Tool fallback. The user then supplied working sudo; the root-owned sealed apply was hash-verified and executed without security changes. Actual native Alpha-personal-corpse→own-bag→deliberate-ground-drop→rendered-Beta-visible/native-F pickup, corpse-content privacy, SQL exactly-once transfer and coordinated restart/reconnect acceptance remain pending. Do not infer these from startup or welcome. The current hand-off is `hand-offs/queue/backend-playable-runtime-release.md`; the canonical runtime contract/rollback is `ops/steam-server/playable-release.md`. This remains a LAN development identity fixture, not production session authentication.
 
 ## Windows package with gRPC backend — 2026-10-24
 
