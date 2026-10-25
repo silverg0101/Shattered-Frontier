@@ -2,11 +2,35 @@ using Grpc.Core;
 using Npgsql;
 using NpgsqlTypes;
 using System.Text.Json;
+using System.Text;
+using System.Security.Cryptography;
 using ShatteredFrontier.InventoryLedger;
 using ShatteredFrontier.InventoryLedger.Postgres;
 using ShatteredFrontier.Rewards;
 
 internal sealed record DefeatPayout(string OperationId, bool Granted, IReadOnlyList<LootItemLine> Items, long Revision);
+
+internal static class DefeatGearInstances
+{
+    // The ledger's instance invariant also applies to multi-item defeat grants.
+    public static string[] Add(ContainerRecord container, IReadOnlyList<LootItemLine> items, string operationId)
+    {
+        var ids = new List<string>();
+        var ordinals = new Dictionary<string, long>(StringComparer.Ordinal);
+        foreach (var item in items.Where(item => GearDefinitions.IsGear(item.DefinitionId)))
+            for (long n = 0; n < item.Quantity; ++n)
+            {
+                var ordinal = ordinals.GetValueOrDefault(item.DefinitionId);
+                ordinals[item.DefinitionId] = ordinal + 1;
+                var id = "itm_" + Convert.ToHexStringLower(SHA256.HashData(
+                    Encoding.UTF8.GetBytes($"{operationId}|{item.DefinitionId}|{ordinal}")))[..32];
+                if (!container.Instances.TryAdd(id, new ItemInstance(id, item.DefinitionId, 100)))
+                    throw new InvalidOperationException("Duplicate defeat gear instance.");
+                ids.Add(id);
+            }
+        return [.. ids];
+    }
+}
 
 // The intent precedes the ledger Grant. A full pack leaves it Pending; a crash after Grant
 // replays the ledger receipt and completes the same intent, as quest payout does.
@@ -109,10 +133,11 @@ internal sealed class DefeatRewardPayout(PostgresInventoryLedgerStore ledgerStor
                 throw new GameplayRejectedException("Reward backpack full; intent remains pending.", StatusCode.FailedPrecondition);
             foreach (var item in intent.Items)
                 container.Quantities[item.DefinitionId] = checked(container.Quantities.GetValueOrDefault(item.DefinitionId) + item.Quantity);
+            var instanceIds = DefeatGearInstances.Add(container, intent.Items, intent.OperationId);
             var before = container.Revision++;
             var committed = new LedgerReceipt(intent.OperationId, LedgerAction.Grant,
                 [new RevisionChange(intent.ContainerId, before, container.Revision)],
-                intent.Items.Select(item => new QuantityChange(intent.ContainerId, item.DefinitionId, item.Quantity)).ToArray());
+                intent.Items.Select(item => new QuantityChange(intent.ContainerId, item.DefinitionId, item.Quantity)).ToArray(), instanceIds);
             state.Operations.Add(intent.OperationId, new StoredOperation(fingerprint, committed));
             return committed;
         });
@@ -159,7 +184,7 @@ internal sealed class DefeatRewardRecovery(DefeatRewardPayout payout, SharedDefe
 }
 
 internal sealed record SharedDropResult(string EventId, IReadOnlyList<LootItemLine> Items, string? ClaimantId,
-    string? OperationId, long Revision);
+    string? OperationId, long Revision, string RaidGroupId);
 
 internal static class DefeatLootScope
 {
@@ -184,11 +209,11 @@ internal sealed class SharedDefeatDropPayout(PostgresInventoryLedgerStore ledger
     IReadOnlyDictionary<string, CreatureLootRule> creatures, string connectionString)
 {
     private sealed record Intent(string EventId, string CreatureId, string TableId, int TableVersion,
-        string KillerId, bool KillerProtected, bool CreatureProtected, string[] EligibleIds, LootItemLine[] Items, string? ClaimantId,
+        string KillerId, bool KillerProtected, bool CreatureProtected, string[] EligibleIds, LootItemLine[] Items, string RaidGroupId, string? ClaimantId,
         string? ContainerId, string? OperationId, string State);
 
     public SharedDropResult Create(string eventId, string creatureId, string tableId, string killerId,
-        IReadOnlyList<string> eligibleIds, bool killerProtected, bool creatureProtected)
+        IReadOnlyList<string> eligibleIds, bool killerProtected, bool creatureProtected, string raidGroupId = "")
     {
         if (string.IsNullOrWhiteSpace(eventId) || string.IsNullOrWhiteSpace(killerId) ||
             !creatures.TryGetValue(creatureId, out var creature) || !creature.UniqueOrBoss ||
@@ -198,6 +223,9 @@ internal sealed class SharedDefeatDropPayout(PostgresInventoryLedgerStore ledger
         if (eligible.Length == 0 || eligible.Any(string.IsNullOrWhiteSpace) ||
             !eligible.Contains(killerId, StringComparer.Ordinal))
             throw new GameplayRejectedException("Invalid eligible group snapshot.", StatusCode.InvalidArgument);
+        if (eligible.Length > 25 || (raidGroupId.Length > 0 &&
+            !System.Text.RegularExpressions.Regex.IsMatch(raidGroupId, "^rgp_[a-z0-9]+$")))
+            throw new GameplayRejectedException("Invalid raid group snapshot.", StatusCode.InvalidArgument);
         LootItemLine[] items = killerProtected || creatureProtected ? [] : CreatureLootCatalog.RollShared(eventId, table).ToArray();
         if (!killerProtected && !creatureProtected && items.Length == 0)
             throw new GameplayRejectedException("Shared table rolled no item.", StatusCode.FailedPrecondition);
@@ -206,8 +234,8 @@ internal sealed class SharedDefeatDropPayout(PostgresInventoryLedgerStore ledger
         using (var insert = new NpgsqlCommand("""
             INSERT INTO inventory.shared_defeat_drops
               (defeat_event_id,creature_id,table_id,table_version,killer_id,killer_protected,creature_protected,
-               eligible_ids,item_lines,state)
-            VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) ON CONFLICT DO NOTHING
+               eligible_ids,item_lines,state,raid_group_id)
+            VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) ON CONFLICT DO NOTHING
             """, connection))
         {
             insert.Parameters.AddWithValue(eventId); insert.Parameters.AddWithValue(creatureId);
@@ -216,15 +244,17 @@ internal sealed class SharedDefeatDropPayout(PostgresInventoryLedgerStore ledger
             insert.Parameters.AddWithValue(creatureProtected); insert.Parameters.AddWithValue(eligible);
             insert.Parameters.AddWithValue(NpgsqlDbType.Jsonb, JsonSerializer.Serialize(items));
             insert.Parameters.AddWithValue(killerProtected || creatureProtected ? "Ineligible" : "Open");
+            insert.Parameters.AddWithValue(raidGroupId);
             insert.ExecuteNonQuery();
         }
         var saved = Read(connection, eventId);
         if (saved.CreatureId != creatureId || saved.TableId != tableId || saved.TableVersion != table.Version ||
             saved.KillerId != killerId || saved.KillerProtected != killerProtected ||
-            saved.CreatureProtected != creatureProtected || !saved.EligibleIds.SequenceEqual(eligible) ||
+            saved.CreatureProtected != creatureProtected || saved.RaidGroupId != raidGroupId ||
+            !saved.EligibleIds.SequenceEqual(eligible) ||
             !saved.Items.SequenceEqual(items))
             throw new GameplayRejectedException("Conflicting shared defeat event reuse.", StatusCode.AlreadyExists);
-        return new(eventId, saved.Items, saved.ClaimantId, saved.OperationId, 0);
+        return new(eventId, saved.Items, saved.ClaimantId, saved.OperationId, 0, saved.RaidGroupId);
     }
 
     public SharedDropResult Claim(string eventId, string characterId, string containerId)
@@ -303,10 +333,11 @@ internal sealed class SharedDefeatDropPayout(PostgresInventoryLedgerStore ledger
                 throw new GameplayRejectedException("Claim backpack full; drop remains pending.", StatusCode.FailedPrecondition);
             foreach (var line in intent.Items)
                 container.Quantities[line.DefinitionId] = checked(container.Quantities.GetValueOrDefault(line.DefinitionId) + line.Quantity);
+            var instanceIds = DefeatGearInstances.Add(container, intent.Items, intent.OperationId);
             var before = container.Revision++;
             var committed = new LedgerReceipt(intent.OperationId, LedgerAction.Grant,
                 [new RevisionChange(intent.ContainerId, before, container.Revision)],
-                intent.Items.Select(line => new QuantityChange(intent.ContainerId, line.DefinitionId, line.Quantity)).ToArray());
+                intent.Items.Select(line => new QuantityChange(intent.ContainerId, line.DefinitionId, line.Quantity)).ToArray(), instanceIds);
             state.Operations.Add(intent.OperationId, new StoredOperation(fingerprint, committed));
             return committed;
         });
@@ -317,14 +348,14 @@ internal sealed class SharedDefeatDropPayout(PostgresInventoryLedgerStore ledger
         using var connection = new NpgsqlConnection(connectionString); connection.Open();
         using var done = new NpgsqlCommand("UPDATE inventory.shared_defeat_drops SET state='Complete' WHERE defeat_event_id=$1", connection);
         done.Parameters.AddWithValue(intent.EventId); done.ExecuteNonQuery();
-        return new(intent.EventId, intent.Items, intent.ClaimantId, intent.OperationId, receipt.Revisions.Single().After);
+        return new(intent.EventId, intent.Items, intent.ClaimantId, intent.OperationId, receipt.Revisions.Single().After, intent.RaidGroupId);
     }
 
     private static Intent Read(NpgsqlConnection connection, string eventId, NpgsqlTransaction? transaction = null, bool lockRow = false)
     {
         using var command = new NpgsqlCommand("""
             SELECT defeat_event_id,creature_id,table_id,table_version,killer_id,killer_protected,creature_protected,
-                   eligible_ids,item_lines,claimant_id,container_id,operation_id,state
+                   eligible_ids,item_lines,claimant_id,container_id,operation_id,state,raid_group_id
             FROM inventory.shared_defeat_drops WHERE defeat_event_id=$1
             """ + (lockRow ? " FOR UPDATE" : ""), connection, transaction);
         command.Parameters.AddWithValue(eventId);
@@ -333,7 +364,7 @@ internal sealed class SharedDefeatDropPayout(PostgresInventoryLedgerStore ledger
         var items = JsonSerializer.Deserialize<LootItemLine[]>(row.GetString(8))
             ?? throw new InvalidOperationException("Shared drop item snapshot missing.");
         return new(row.GetString(0), row.GetString(1), row.GetString(2), row.GetInt32(3), row.GetString(4),
-            row.GetBoolean(5), row.GetBoolean(6), row.GetFieldValue<string[]>(7), items,
+            row.GetBoolean(5), row.GetBoolean(6), row.GetFieldValue<string[]>(7), items, row.GetString(13),
             row.IsDBNull(9) ? null : row.GetString(9), row.IsDBNull(10) ? null : row.GetString(10),
             row.IsDBNull(11) ? null : row.GetString(11), row.GetString(12));
     }

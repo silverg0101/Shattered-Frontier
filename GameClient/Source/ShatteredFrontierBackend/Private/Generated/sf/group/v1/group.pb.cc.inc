@@ -29,6 +29,12 @@ namespace _fl = ::google::protobuf::internal::field_layout;
 namespace {
 PROTOBUF_CONSTINIT ::google::protobuf::internal::ReflectionData
     file_reflection_data[] = {
+        // ::sf::group::v1::CreateRaidRequest
+        {&::_pbi::kDescriptorMethods, &::descriptor_table_sf_2fgroup_2fv1_2fgroup_2eproto, /* tracker*/ nullptr,},
+        // ::sf::group::v1::AddPartyToRaidRequest
+        {&::_pbi::kDescriptorMethods, &::descriptor_table_sf_2fgroup_2fv1_2fgroup_2eproto, /* tracker*/ nullptr,},
+        // ::sf::group::v1::Raid
+        {&::_pbi::kDescriptorMethods, &::descriptor_table_sf_2fgroup_2fv1_2fgroup_2eproto, /* tracker*/ nullptr,},
         // ::sf::group::v1::CreatePartyRequest
         {&::_pbi::kDescriptorMethods, &::descriptor_table_sf_2fgroup_2fv1_2fgroup_2eproto, /* tracker*/ nullptr,},
         // ::sf::group::v1::JoinPartyRequest
@@ -45,6 +51,177 @@ PROTOBUF_CONSTINIT ::google::protobuf::internal::ReflectionData
 namespace sf {
 namespace group {
 namespace v1 {
+class Raid::_Internal {
+ public:
+  using HasBits = decltype(::std::declval<Raid>()._impl_._has_bits_);
+  static constexpr ::int32_t kHasBitsOffset =
+      8 * PROTOBUF_FIELD_OFFSET(Raid, _impl_._has_bits_);
+};
+
+constexpr Raid::ParseTableT_ Raid::InternalGenerateParseTable_(const ::_pbi::ClassData* class_data) {
+  return ParseTableT_{
+    {
+      PROTOBUF_FIELD_OFFSET(Raid, _impl_._has_bits_),
+      0, // no _extensions_
+      3, 24,  // max_field_number, fast_idx_mask
+      offsetof(ParseTableT_, field_lookup_table),
+      4294967288,  // skipmap
+      offsetof(ParseTableT_, field_entries),
+      3,  // num_field_entries
+      0,  // num_aux_entries
+      offsetof(ParseTableT_, field_names),  // no aux_entries
+      class_data,
+      nullptr,  // post_loop_handler
+      ::_pbi::TcParser::GenericFallback,  // fallback
+      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+      ::_pbi::TcParser::GetTable<::sf::group::v1::Raid>(),  // to_prefetch
+      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+    }, {{
+      {::_pbi::TcParser::MiniParse, {}},
+      // string raid_group_id = 1;
+      {::_pbi::TcParser::FastUS1,
+       {10, 2, 0,
+        PROTOBUF_FIELD_OFFSET(Raid, _impl_.raid_group_id_)}},
+      // repeated string party_ids = 2;
+      {::_pbi::TcParser::FastUR1,
+       {18, 0, 0,
+        PROTOBUF_FIELD_OFFSET(Raid, _impl_.party_ids_)}},
+      // repeated string member_character_ids = 3;
+      {::_pbi::TcParser::FastUR1,
+       {26, 1, 0,
+        PROTOBUF_FIELD_OFFSET(Raid, _impl_.member_character_ids_)}},
+    }}, {{
+      65535, 65535
+    }}, {{
+      // string raid_group_id = 1;
+      {PROTOBUF_FIELD_OFFSET(Raid, _impl_.raid_group_id_), _Internal::kHasBitsOffset + 2, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // repeated string party_ids = 2;
+      {PROTOBUF_FIELD_OFFSET(Raid, _impl_.party_ids_), _Internal::kHasBitsOffset + 0, 0, (0 | ::_fl::kFcRepeated | ::_fl::kUtf8String | ::_fl::kRepSString)},
+      // repeated string member_character_ids = 3;
+      {PROTOBUF_FIELD_OFFSET(Raid, _impl_.member_character_ids_), _Internal::kHasBitsOffset + 1, 0, (0 | ::_fl::kFcRepeated | ::_fl::kUtf8String | ::_fl::kRepSString)},
+    }},
+    // no aux_entries
+    {{
+      "\20\15\11\24\0\0\0\0"
+      "sf.group.v1.Raid"
+      "raid_group_id"
+      "party_ids"
+      "member_character_ids"
+    }},
+  };
+}
+
+
+inline constexpr Raid::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    ::_pbi::ConstantInitialized) noexcept
+      : _cached_size_{0},
+        party_ids_ { visibility, ::_pbi::InternalMetadataOffset::Build<
+            ::sf::group::v1::Raid,
+            PROTOBUF_FIELD_OFFSET(::sf::group::v1::Raid, _impl_.party_ids_)>()
+         }
+        ,
+        member_character_ids_ { visibility, ::_pbi::InternalMetadataOffset::Build<
+            ::sf::group::v1::Raid,
+            PROTOBUF_FIELD_OFFSET(::sf::group::v1::Raid, _impl_.member_character_ids_)>()
+         }
+        ,
+        raid_group_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()) {}
+
+template <typename>
+constexpr Raid::Raid(::_pbi::ConstantInitialized,
+                       const ::_pbi::ClassData* PROTOBUF_NONNULL class_data)
+    : ::google::protobuf::Message(
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          class_data
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          ),
+      _impl_(internal_visibility(), ::_pbi::ConstantInitialized()) {
+}
+inline void* PROTOBUF_NONNULL Raid::PlacementNew_(
+    const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena) {
+  return ::new (mem) Raid(arena);
+}
+constexpr auto Raid::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::CopyInit(sizeof(Raid), alignof(Raid));
+}
+constexpr auto Raid::InternalGenerateClassData_(
+    const MessageLite& prototype,
+    const ::google::protobuf::internal::TcParseTableBase* tc_table) {
+  return ::google::protobuf::internal::ClassDataFull{
+      ::google::protobuf::internal::ClassData{
+          &prototype,
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+          &_table_.header,
+#else
+          tc_table,
+#endif
+          nullptr,  // IsInitialized
+          &Raid::MergeImpl,
+          ::google::protobuf::Message::GetNewImpl<Raid>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          &Raid::SharedDtor,
+          ::google::protobuf::Message::GetClearImpl<Raid>(), &Raid::ByteSizeLong,
+              &Raid::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          PROTOBUF_FIELD_OFFSET(Raid, _impl_._cached_size_),
+          false,
+      },
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+      &file_reflection_data[2],
+#else   // !PROTOBUF_MESSAGE_GLOBALS
+      &::_pbi::kDescriptorMethods,
+      &descriptor_table_sf_2fgroup_2fv1_2fgroup_2eproto,
+      nullptr,  // tracker
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+  };
+}
+struct RaidGlobalsTypeInternal : ::_pbi::MessageGlobalsBase {
+  constexpr RaidGlobalsTypeInternal()
+      :
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+        _default(::_pbi::ConstantInitialized{},
+                 Raid_class_data_.base())
+#else   // !PROTOBUF_MESSAGE_GLOBALS
+        MessageGlobalsBase(Raid::InternalGenerateClassData_(
+            _default, &Raid_globals_._table.header)),
+        _default(::_pbi::ConstantInitialized{}, GetClassData()),
+        _table(::_pbi::PrivateAccess::GenerateParseTable<Raid>(
+            GetClassData()))
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+  {
+  }
+  ~RaidGlobalsTypeInternal() {}
+  union {
+    alignas(::_pbi::kMaxMessageAlignment) Raid _default;
+  };
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+  decltype(::_pbi::PrivateAccess::GenerateParseTable<Raid>(
+      ::std::declval<const ::_pbi::ClassData*>())) _table;
+#endif
+};
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+static_assert(PROTOBUF_FIELD_OFFSET(RaidGlobalsTypeInternal, _default) ==
+              ::_pbi::MessageGlobalsBase::OffsetToDefault());
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 PROTOBUF_MESSAGE_GLOBALS_CONST RaidGlobalsTypeInternal Raid_globals_
+        PROTOBUF_MESSAGE_GLOBALS_SECTION(.data.rel.ro);
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+namespace {
+const ::_pbi::ClassData* Raid_get_class_data() {
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+  return Raid_globals_.GetClassData();
+#else
+  return Raid_class_data_.base();
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+}
+}  // namespace
+#endif  // PROTOBUF_CUSTOM_VTABLE
 class Party::_Internal {
  public:
   using HasBits = decltype(::std::declval<Party>()._impl_._has_bits_);
@@ -57,11 +234,11 @@ constexpr Party::ParseTableT_ Party::InternalGenerateParseTable_(const ::_pbi::C
     {
       PROTOBUF_FIELD_OFFSET(Party, _impl_._has_bits_),
       0, // no _extensions_
-      6, 56,  // max_field_number, fast_idx_mask
+      8, 56,  // max_field_number, fast_idx_mask
       offsetof(ParseTableT_, field_lookup_table),
-      4294967232,  // skipmap
+      4294967040,  // skipmap
       offsetof(ParseTableT_, field_entries),
-      6,  // num_field_entries
+      8,  // num_field_entries
       0,  // num_aux_entries
       offsetof(ParseTableT_, field_names),  // no aux_entries
       class_data,
@@ -71,57 +248,69 @@ constexpr Party::ParseTableT_ Party::InternalGenerateParseTable_(const ::_pbi::C
       ::_pbi::TcParser::GetTable<::sf::group::v1::Party>(),  // to_prefetch
       #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
     }, {{
-      {::_pbi::TcParser::MiniParse, {}},
+      // repeated string raid_member_character_ids = 8;
+      {::_pbi::TcParser::FastUR1,
+       {66, 1, 0,
+        PROTOBUF_FIELD_OFFSET(Party, _impl_.raid_member_character_ids_)}},
       // string party_id = 1;
       {::_pbi::TcParser::FastUS1,
-       {10, 1, 0,
+       {10, 2, 0,
         PROTOBUF_FIELD_OFFSET(Party, _impl_.party_id_)}},
       // string leader_character_id = 2;
       {::_pbi::TcParser::FastUS1,
-       {18, 2, 0,
+       {18, 3, 0,
         PROTOBUF_FIELD_OFFSET(Party, _impl_.leader_character_id_)}},
       // string assistant_character_id = 3;
       {::_pbi::TcParser::FastUS1,
-       {26, 3, 0,
+       {26, 4, 0,
         PROTOBUF_FIELD_OFFSET(Party, _impl_.assistant_character_id_)}},
       // repeated string member_character_ids = 4;
       {::_pbi::TcParser::FastUR1,
        {34, 0, 0,
         PROTOBUF_FIELD_OFFSET(Party, _impl_.member_character_ids_)}},
       // int32 version = 5;
-      {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(Party, _impl_.version_), 5>(),
-       {40, 5, 0,
+      {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(Party, _impl_.version_), 7>(),
+       {40, 7, 0,
         PROTOBUF_FIELD_OFFSET(Party, _impl_.version_)}},
       // string state = 6;
       {::_pbi::TcParser::FastUS1,
-       {50, 4, 0,
+       {50, 5, 0,
         PROTOBUF_FIELD_OFFSET(Party, _impl_.state_)}},
-      {::_pbi::TcParser::MiniParse, {}},
+      // string raid_group_id = 7;
+      {::_pbi::TcParser::FastUS1,
+       {58, 6, 0,
+        PROTOBUF_FIELD_OFFSET(Party, _impl_.raid_group_id_)}},
     }}, {{
       65535, 65535
     }}, {{
       // string party_id = 1;
-      {PROTOBUF_FIELD_OFFSET(Party, _impl_.party_id_), _Internal::kHasBitsOffset + 1, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      {PROTOBUF_FIELD_OFFSET(Party, _impl_.party_id_), _Internal::kHasBitsOffset + 2, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
       // string leader_character_id = 2;
-      {PROTOBUF_FIELD_OFFSET(Party, _impl_.leader_character_id_), _Internal::kHasBitsOffset + 2, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      {PROTOBUF_FIELD_OFFSET(Party, _impl_.leader_character_id_), _Internal::kHasBitsOffset + 3, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
       // string assistant_character_id = 3;
-      {PROTOBUF_FIELD_OFFSET(Party, _impl_.assistant_character_id_), _Internal::kHasBitsOffset + 3, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      {PROTOBUF_FIELD_OFFSET(Party, _impl_.assistant_character_id_), _Internal::kHasBitsOffset + 4, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
       // repeated string member_character_ids = 4;
       {PROTOBUF_FIELD_OFFSET(Party, _impl_.member_character_ids_), _Internal::kHasBitsOffset + 0, 0, (0 | ::_fl::kFcRepeated | ::_fl::kUtf8String | ::_fl::kRepSString)},
       // int32 version = 5;
-      {PROTOBUF_FIELD_OFFSET(Party, _impl_.version_), _Internal::kHasBitsOffset + 5, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt32)},
+      {PROTOBUF_FIELD_OFFSET(Party, _impl_.version_), _Internal::kHasBitsOffset + 7, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt32)},
       // string state = 6;
-      {PROTOBUF_FIELD_OFFSET(Party, _impl_.state_), _Internal::kHasBitsOffset + 4, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      {PROTOBUF_FIELD_OFFSET(Party, _impl_.state_), _Internal::kHasBitsOffset + 5, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // string raid_group_id = 7;
+      {PROTOBUF_FIELD_OFFSET(Party, _impl_.raid_group_id_), _Internal::kHasBitsOffset + 6, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // repeated string raid_member_character_ids = 8;
+      {PROTOBUF_FIELD_OFFSET(Party, _impl_.raid_member_character_ids_), _Internal::kHasBitsOffset + 1, 0, (0 | ::_fl::kFcRepeated | ::_fl::kUtf8String | ::_fl::kRepSString)},
     }},
     // no aux_entries
     {{
-      "\21\10\23\26\24\0\5\0"
+      "\21\10\23\26\24\0\5\15\31\0\0\0\0\0\0\0"
       "sf.group.v1.Party"
       "party_id"
       "leader_character_id"
       "assistant_character_id"
       "member_character_ids"
       "state"
+      "raid_group_id"
+      "raid_member_character_ids"
     }},
   };
 }
@@ -136,6 +325,11 @@ inline constexpr Party::Impl_::Impl_(
             PROTOBUF_FIELD_OFFSET(::sf::group::v1::Party, _impl_.member_character_ids_)>()
          }
         ,
+        raid_member_character_ids_ { visibility, ::_pbi::InternalMetadataOffset::Build<
+            ::sf::group::v1::Party,
+            PROTOBUF_FIELD_OFFSET(::sf::group::v1::Party, _impl_.raid_member_character_ids_)>()
+         }
+        ,
         party_id_(
             &::google::protobuf::internal::fixed_address_empty_string,
             ::_pbi::ConstantInitialized()),
@@ -146,6 +340,9 @@ inline constexpr Party::Impl_::Impl_(
             &::google::protobuf::internal::fixed_address_empty_string,
             ::_pbi::ConstantInitialized()),
         state_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        raid_group_id_(
             &::google::protobuf::internal::fixed_address_empty_string,
             ::_pbi::ConstantInitialized()),
         version_{0} {}
@@ -191,7 +388,7 @@ constexpr auto Party::InternalGenerateClassData_(
           false,
       },
 #ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[4],
+      &file_reflection_data[7],
 #else   // !PROTOBUF_MESSAGE_GLOBALS
       &::_pbi::kDescriptorMethods,
       &descriptor_table_sf_2fgroup_2fv1_2fgroup_2eproto,
@@ -367,7 +564,7 @@ constexpr auto MemberActionRequest::InternalGenerateClassData_(
           false,
       },
 #ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[2],
+      &file_reflection_data[5],
 #else   // !PROTOBUF_MESSAGE_GLOBALS
       &::_pbi::kDescriptorMethods,
       &descriptor_table_sf_2fgroup_2fv1_2fgroup_2eproto,
@@ -565,7 +762,7 @@ constexpr auto JoinPartyRequest::InternalGenerateClassData_(
           false,
       },
 #ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[1],
+      &file_reflection_data[4],
 #else   // !PROTOBUF_MESSAGE_GLOBALS
       &::_pbi::kDescriptorMethods,
       &descriptor_table_sf_2fgroup_2fv1_2fgroup_2eproto,
@@ -612,6 +809,173 @@ const ::_pbi::ClassData* JoinPartyRequest_get_class_data() {
   return JoinPartyRequest_globals_.GetClassData();
 #else
   return JoinPartyRequest_class_data_.base();
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+}
+}  // namespace
+#endif  // PROTOBUF_CUSTOM_VTABLE
+class CreateRaidRequest::_Internal {
+ public:
+  using HasBits = decltype(::std::declval<CreateRaidRequest>()._impl_._has_bits_);
+  static constexpr ::int32_t kHasBitsOffset =
+      8 * PROTOBUF_FIELD_OFFSET(CreateRaidRequest, _impl_._has_bits_);
+};
+
+constexpr CreateRaidRequest::ParseTableT_ CreateRaidRequest::InternalGenerateParseTable_(const ::_pbi::ClassData* class_data) {
+  return ParseTableT_{
+    {
+      PROTOBUF_FIELD_OFFSET(CreateRaidRequest, _impl_._has_bits_),
+      0, // no _extensions_
+      3, 24,  // max_field_number, fast_idx_mask
+      offsetof(ParseTableT_, field_lookup_table),
+      4294967288,  // skipmap
+      offsetof(ParseTableT_, field_entries),
+      3,  // num_field_entries
+      0,  // num_aux_entries
+      offsetof(ParseTableT_, field_names),  // no aux_entries
+      class_data,
+      nullptr,  // post_loop_handler
+      ::_pbi::TcParser::GenericFallback,  // fallback
+      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+      ::_pbi::TcParser::GetTable<::sf::group::v1::CreateRaidRequest>(),  // to_prefetch
+      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+    }, {{
+      {::_pbi::TcParser::MiniParse, {}},
+      // string idempotency_key = 1;
+      {::_pbi::TcParser::FastUS1,
+       {10, 0, 0,
+        PROTOBUF_FIELD_OFFSET(CreateRaidRequest, _impl_.idempotency_key_)}},
+      // string party_id = 2;
+      {::_pbi::TcParser::FastUS1,
+       {18, 1, 0,
+        PROTOBUF_FIELD_OFFSET(CreateRaidRequest, _impl_.party_id_)}},
+      // string actor_character_id = 3;
+      {::_pbi::TcParser::FastUS1,
+       {26, 2, 0,
+        PROTOBUF_FIELD_OFFSET(CreateRaidRequest, _impl_.actor_character_id_)}},
+    }}, {{
+      65535, 65535
+    }}, {{
+      // string idempotency_key = 1;
+      {PROTOBUF_FIELD_OFFSET(CreateRaidRequest, _impl_.idempotency_key_), _Internal::kHasBitsOffset + 0, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // string party_id = 2;
+      {PROTOBUF_FIELD_OFFSET(CreateRaidRequest, _impl_.party_id_), _Internal::kHasBitsOffset + 1, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // string actor_character_id = 3;
+      {PROTOBUF_FIELD_OFFSET(CreateRaidRequest, _impl_.actor_character_id_), _Internal::kHasBitsOffset + 2, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    }},
+    // no aux_entries
+    {{
+      "\35\17\10\22\0\0\0\0"
+      "sf.group.v1.CreateRaidRequest"
+      "idempotency_key"
+      "party_id"
+      "actor_character_id"
+    }},
+  };
+}
+
+
+inline constexpr CreateRaidRequest::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    ::_pbi::ConstantInitialized) noexcept
+      : _cached_size_{0},
+        idempotency_key_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        party_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        actor_character_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()) {}
+
+template <typename>
+constexpr CreateRaidRequest::CreateRaidRequest(::_pbi::ConstantInitialized,
+                       const ::_pbi::ClassData* PROTOBUF_NONNULL class_data)
+    : ::google::protobuf::Message(
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          class_data
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          ),
+      _impl_(internal_visibility(), ::_pbi::ConstantInitialized()) {
+}
+inline void* PROTOBUF_NONNULL CreateRaidRequest::PlacementNew_(
+    const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena) {
+  return ::new (mem) CreateRaidRequest(arena);
+}
+constexpr auto CreateRaidRequest::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::CopyInit(sizeof(CreateRaidRequest), alignof(CreateRaidRequest));
+}
+constexpr auto CreateRaidRequest::InternalGenerateClassData_(
+    const MessageLite& prototype,
+    const ::google::protobuf::internal::TcParseTableBase* tc_table) {
+  return ::google::protobuf::internal::ClassDataFull{
+      ::google::protobuf::internal::ClassData{
+          &prototype,
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+          &_table_.header,
+#else
+          tc_table,
+#endif
+          nullptr,  // IsInitialized
+          &CreateRaidRequest::MergeImpl,
+          ::google::protobuf::Message::GetNewImpl<CreateRaidRequest>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          &CreateRaidRequest::SharedDtor,
+          ::google::protobuf::Message::GetClearImpl<CreateRaidRequest>(), &CreateRaidRequest::ByteSizeLong,
+              &CreateRaidRequest::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          PROTOBUF_FIELD_OFFSET(CreateRaidRequest, _impl_._cached_size_),
+          false,
+      },
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+      &file_reflection_data[0],
+#else   // !PROTOBUF_MESSAGE_GLOBALS
+      &::_pbi::kDescriptorMethods,
+      &descriptor_table_sf_2fgroup_2fv1_2fgroup_2eproto,
+      nullptr,  // tracker
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+  };
+}
+struct CreateRaidRequestGlobalsTypeInternal : ::_pbi::MessageGlobalsBase {
+  constexpr CreateRaidRequestGlobalsTypeInternal()
+      :
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+        _default(::_pbi::ConstantInitialized{},
+                 CreateRaidRequest_class_data_.base())
+#else   // !PROTOBUF_MESSAGE_GLOBALS
+        MessageGlobalsBase(CreateRaidRequest::InternalGenerateClassData_(
+            _default, &CreateRaidRequest_globals_._table.header)),
+        _default(::_pbi::ConstantInitialized{}, GetClassData()),
+        _table(::_pbi::PrivateAccess::GenerateParseTable<CreateRaidRequest>(
+            GetClassData()))
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+  {
+  }
+  ~CreateRaidRequestGlobalsTypeInternal() {}
+  union {
+    alignas(::_pbi::kMaxMessageAlignment) CreateRaidRequest _default;
+  };
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+  decltype(::_pbi::PrivateAccess::GenerateParseTable<CreateRaidRequest>(
+      ::std::declval<const ::_pbi::ClassData*>())) _table;
+#endif
+};
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+static_assert(PROTOBUF_FIELD_OFFSET(CreateRaidRequestGlobalsTypeInternal, _default) ==
+              ::_pbi::MessageGlobalsBase::OffsetToDefault());
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 PROTOBUF_MESSAGE_GLOBALS_CONST CreateRaidRequestGlobalsTypeInternal CreateRaidRequest_globals_
+        PROTOBUF_MESSAGE_GLOBALS_SECTION(.data.rel.ro);
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+namespace {
+const ::_pbi::ClassData* CreateRaidRequest_get_class_data() {
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+  return CreateRaidRequest_globals_.GetClassData();
+#else
+  return CreateRaidRequest_class_data_.base();
 #endif  // PROTOBUF_MESSAGE_GLOBALS
 }
 }  // namespace
@@ -754,7 +1118,7 @@ constexpr auto CreatePartyRequest::InternalGenerateClassData_(
           false,
       },
 #ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[0],
+      &file_reflection_data[3],
 #else   // !PROTOBUF_MESSAGE_GLOBALS
       &::_pbi::kDescriptorMethods,
       &descriptor_table_sf_2fgroup_2fv1_2fgroup_2eproto,
@@ -900,7 +1264,7 @@ constexpr auto CharacterRef::InternalGenerateClassData_(
           false,
       },
 #ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[3],
+      &file_reflection_data[6],
 #else   // !PROTOBUF_MESSAGE_GLOBALS
       &::_pbi::kDescriptorMethods,
       &descriptor_table_sf_2fgroup_2fv1_2fgroup_2eproto,
@@ -951,6 +1315,195 @@ const ::_pbi::ClassData* CharacterRef_get_class_data() {
 }
 }  // namespace
 #endif  // PROTOBUF_CUSTOM_VTABLE
+class AddPartyToRaidRequest::_Internal {
+ public:
+  using HasBits = decltype(::std::declval<AddPartyToRaidRequest>()._impl_._has_bits_);
+  static constexpr ::int32_t kHasBitsOffset =
+      8 * PROTOBUF_FIELD_OFFSET(AddPartyToRaidRequest, _impl_._has_bits_);
+};
+
+constexpr AddPartyToRaidRequest::ParseTableT_ AddPartyToRaidRequest::InternalGenerateParseTable_(const ::_pbi::ClassData* class_data) {
+  return ParseTableT_{
+    {
+      PROTOBUF_FIELD_OFFSET(AddPartyToRaidRequest, _impl_._has_bits_),
+      0, // no _extensions_
+      5, 56,  // max_field_number, fast_idx_mask
+      offsetof(ParseTableT_, field_lookup_table),
+      4294967264,  // skipmap
+      offsetof(ParseTableT_, field_entries),
+      5,  // num_field_entries
+      0,  // num_aux_entries
+      offsetof(ParseTableT_, field_names),  // no aux_entries
+      class_data,
+      nullptr,  // post_loop_handler
+      ::_pbi::TcParser::GenericFallback,  // fallback
+      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+      ::_pbi::TcParser::GetTable<::sf::group::v1::AddPartyToRaidRequest>(),  // to_prefetch
+      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+    }, {{
+      {::_pbi::TcParser::MiniParse, {}},
+      // string idempotency_key = 1;
+      {::_pbi::TcParser::FastUS1,
+       {10, 0, 0,
+        PROTOBUF_FIELD_OFFSET(AddPartyToRaidRequest, _impl_.idempotency_key_)}},
+      // string raid_group_id = 2;
+      {::_pbi::TcParser::FastUS1,
+       {18, 1, 0,
+        PROTOBUF_FIELD_OFFSET(AddPartyToRaidRequest, _impl_.raid_group_id_)}},
+      // string party_id = 3;
+      {::_pbi::TcParser::FastUS1,
+       {26, 2, 0,
+        PROTOBUF_FIELD_OFFSET(AddPartyToRaidRequest, _impl_.party_id_)}},
+      // string actor_character_id = 4;
+      {::_pbi::TcParser::FastUS1,
+       {34, 3, 0,
+        PROTOBUF_FIELD_OFFSET(AddPartyToRaidRequest, _impl_.actor_character_id_)}},
+      // string joining_party_leader_character_id = 5;
+      {::_pbi::TcParser::FastUS1,
+       {42, 4, 0,
+        PROTOBUF_FIELD_OFFSET(AddPartyToRaidRequest, _impl_.joining_party_leader_character_id_)}},
+      {::_pbi::TcParser::MiniParse, {}},
+      {::_pbi::TcParser::MiniParse, {}},
+    }}, {{
+      65535, 65535
+    }}, {{
+      // string idempotency_key = 1;
+      {PROTOBUF_FIELD_OFFSET(AddPartyToRaidRequest, _impl_.idempotency_key_), _Internal::kHasBitsOffset + 0, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // string raid_group_id = 2;
+      {PROTOBUF_FIELD_OFFSET(AddPartyToRaidRequest, _impl_.raid_group_id_), _Internal::kHasBitsOffset + 1, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // string party_id = 3;
+      {PROTOBUF_FIELD_OFFSET(AddPartyToRaidRequest, _impl_.party_id_), _Internal::kHasBitsOffset + 2, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // string actor_character_id = 4;
+      {PROTOBUF_FIELD_OFFSET(AddPartyToRaidRequest, _impl_.actor_character_id_), _Internal::kHasBitsOffset + 3, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // string joining_party_leader_character_id = 5;
+      {PROTOBUF_FIELD_OFFSET(AddPartyToRaidRequest, _impl_.joining_party_leader_character_id_), _Internal::kHasBitsOffset + 4, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    }},
+    // no aux_entries
+    {{
+      "\41\17\15\10\22\41\0\0"
+      "sf.group.v1.AddPartyToRaidRequest"
+      "idempotency_key"
+      "raid_group_id"
+      "party_id"
+      "actor_character_id"
+      "joining_party_leader_character_id"
+    }},
+  };
+}
+
+
+inline constexpr AddPartyToRaidRequest::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    ::_pbi::ConstantInitialized) noexcept
+      : _cached_size_{0},
+        idempotency_key_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        raid_group_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        party_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        actor_character_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        joining_party_leader_character_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()) {}
+
+template <typename>
+constexpr AddPartyToRaidRequest::AddPartyToRaidRequest(::_pbi::ConstantInitialized,
+                       const ::_pbi::ClassData* PROTOBUF_NONNULL class_data)
+    : ::google::protobuf::Message(
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          class_data
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          ),
+      _impl_(internal_visibility(), ::_pbi::ConstantInitialized()) {
+}
+inline void* PROTOBUF_NONNULL AddPartyToRaidRequest::PlacementNew_(
+    const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena) {
+  return ::new (mem) AddPartyToRaidRequest(arena);
+}
+constexpr auto AddPartyToRaidRequest::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::CopyInit(sizeof(AddPartyToRaidRequest), alignof(AddPartyToRaidRequest));
+}
+constexpr auto AddPartyToRaidRequest::InternalGenerateClassData_(
+    const MessageLite& prototype,
+    const ::google::protobuf::internal::TcParseTableBase* tc_table) {
+  return ::google::protobuf::internal::ClassDataFull{
+      ::google::protobuf::internal::ClassData{
+          &prototype,
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+          &_table_.header,
+#else
+          tc_table,
+#endif
+          nullptr,  // IsInitialized
+          &AddPartyToRaidRequest::MergeImpl,
+          ::google::protobuf::Message::GetNewImpl<AddPartyToRaidRequest>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          &AddPartyToRaidRequest::SharedDtor,
+          ::google::protobuf::Message::GetClearImpl<AddPartyToRaidRequest>(), &AddPartyToRaidRequest::ByteSizeLong,
+              &AddPartyToRaidRequest::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          PROTOBUF_FIELD_OFFSET(AddPartyToRaidRequest, _impl_._cached_size_),
+          false,
+      },
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+      &file_reflection_data[1],
+#else   // !PROTOBUF_MESSAGE_GLOBALS
+      &::_pbi::kDescriptorMethods,
+      &descriptor_table_sf_2fgroup_2fv1_2fgroup_2eproto,
+      nullptr,  // tracker
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+  };
+}
+struct AddPartyToRaidRequestGlobalsTypeInternal : ::_pbi::MessageGlobalsBase {
+  constexpr AddPartyToRaidRequestGlobalsTypeInternal()
+      :
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+        _default(::_pbi::ConstantInitialized{},
+                 AddPartyToRaidRequest_class_data_.base())
+#else   // !PROTOBUF_MESSAGE_GLOBALS
+        MessageGlobalsBase(AddPartyToRaidRequest::InternalGenerateClassData_(
+            _default, &AddPartyToRaidRequest_globals_._table.header)),
+        _default(::_pbi::ConstantInitialized{}, GetClassData()),
+        _table(::_pbi::PrivateAccess::GenerateParseTable<AddPartyToRaidRequest>(
+            GetClassData()))
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+  {
+  }
+  ~AddPartyToRaidRequestGlobalsTypeInternal() {}
+  union {
+    alignas(::_pbi::kMaxMessageAlignment) AddPartyToRaidRequest _default;
+  };
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+  decltype(::_pbi::PrivateAccess::GenerateParseTable<AddPartyToRaidRequest>(
+      ::std::declval<const ::_pbi::ClassData*>())) _table;
+#endif
+};
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+static_assert(PROTOBUF_FIELD_OFFSET(AddPartyToRaidRequestGlobalsTypeInternal, _default) ==
+              ::_pbi::MessageGlobalsBase::OffsetToDefault());
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 PROTOBUF_MESSAGE_GLOBALS_CONST AddPartyToRaidRequestGlobalsTypeInternal AddPartyToRaidRequest_globals_
+        PROTOBUF_MESSAGE_GLOBALS_SECTION(.data.rel.ro);
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+namespace {
+const ::_pbi::ClassData* AddPartyToRaidRequest_get_class_data() {
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+  return AddPartyToRaidRequest_globals_.GetClassData();
+#else
+  return AddPartyToRaidRequest_class_data_.base();
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+}
+}  // namespace
+#endif  // PROTOBUF_CUSTOM_VTABLE
 }  // namespace v1
 }  // namespace group
 }  // namespace sf
@@ -961,6 +1514,37 @@ static constexpr const ::_pb::ServiceDescriptor* PROTOBUF_NONNULL* PROTOBUF_NULL
 const ::uint32_t
     TableStruct_sf_2fgroup_2fv1_2fgroup_2eproto::offsets[] ABSL_ATTRIBUTE_SECTION_VARIABLE(
         protodesc_cold) = {
+        0x081, // bitmap
+        PROTOBUF_FIELD_OFFSET(::sf::group::v1::CreateRaidRequest, _impl_._has_bits_),
+        6, // hasbit index offset
+        PROTOBUF_FIELD_OFFSET(::sf::group::v1::CreateRaidRequest, _impl_.idempotency_key_),
+        PROTOBUF_FIELD_OFFSET(::sf::group::v1::CreateRaidRequest, _impl_.party_id_),
+        PROTOBUF_FIELD_OFFSET(::sf::group::v1::CreateRaidRequest, _impl_.actor_character_id_),
+        0,
+        1,
+        2,
+        0x081, // bitmap
+        PROTOBUF_FIELD_OFFSET(::sf::group::v1::AddPartyToRaidRequest, _impl_._has_bits_),
+        8, // hasbit index offset
+        PROTOBUF_FIELD_OFFSET(::sf::group::v1::AddPartyToRaidRequest, _impl_.idempotency_key_),
+        PROTOBUF_FIELD_OFFSET(::sf::group::v1::AddPartyToRaidRequest, _impl_.raid_group_id_),
+        PROTOBUF_FIELD_OFFSET(::sf::group::v1::AddPartyToRaidRequest, _impl_.party_id_),
+        PROTOBUF_FIELD_OFFSET(::sf::group::v1::AddPartyToRaidRequest, _impl_.actor_character_id_),
+        PROTOBUF_FIELD_OFFSET(::sf::group::v1::AddPartyToRaidRequest, _impl_.joining_party_leader_character_id_),
+        0,
+        1,
+        2,
+        3,
+        4,
+        0x081, // bitmap
+        PROTOBUF_FIELD_OFFSET(::sf::group::v1::Raid, _impl_._has_bits_),
+        6, // hasbit index offset
+        PROTOBUF_FIELD_OFFSET(::sf::group::v1::Raid, _impl_.raid_group_id_),
+        PROTOBUF_FIELD_OFFSET(::sf::group::v1::Raid, _impl_.party_ids_),
+        PROTOBUF_FIELD_OFFSET(::sf::group::v1::Raid, _impl_.member_character_ids_),
+        2,
+        0,
+        1,
         0x081, // bitmap
         PROTOBUF_FIELD_OFFSET(::sf::group::v1::CreatePartyRequest, _impl_._has_bits_),
         8, // hasbit index offset
@@ -1007,31 +1591,41 @@ const ::uint32_t
         0,
         0x081, // bitmap
         PROTOBUF_FIELD_OFFSET(::sf::group::v1::Party, _impl_._has_bits_),
-        9, // hasbit index offset
+        11, // hasbit index offset
         PROTOBUF_FIELD_OFFSET(::sf::group::v1::Party, _impl_.party_id_),
         PROTOBUF_FIELD_OFFSET(::sf::group::v1::Party, _impl_.leader_character_id_),
         PROTOBUF_FIELD_OFFSET(::sf::group::v1::Party, _impl_.assistant_character_id_),
         PROTOBUF_FIELD_OFFSET(::sf::group::v1::Party, _impl_.member_character_ids_),
         PROTOBUF_FIELD_OFFSET(::sf::group::v1::Party, _impl_.version_),
         PROTOBUF_FIELD_OFFSET(::sf::group::v1::Party, _impl_.state_),
-        1,
+        PROTOBUF_FIELD_OFFSET(::sf::group::v1::Party, _impl_.raid_group_id_),
+        PROTOBUF_FIELD_OFFSET(::sf::group::v1::Party, _impl_.raid_member_character_ids_),
         2,
         3,
-        0,
-        5,
         4,
+        0,
+        7,
+        5,
+        6,
+        1,
 };
 
 static const ::_pbi::MigrationSchema
     schemas[] ABSL_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
-        {0, sizeof(::sf::group::v1::CreatePartyRequest)},
-        {13, sizeof(::sf::group::v1::JoinPartyRequest)},
-        {28, sizeof(::sf::group::v1::MemberActionRequest)},
-        {39, sizeof(::sf::group::v1::CharacterRef)},
-        {44, sizeof(::sf::group::v1::Party)},
+        {0, sizeof(::sf::group::v1::CreateRaidRequest)},
+        {9, sizeof(::sf::group::v1::AddPartyToRaidRequest)},
+        {22, sizeof(::sf::group::v1::Raid)},
+        {31, sizeof(::sf::group::v1::CreatePartyRequest)},
+        {44, sizeof(::sf::group::v1::JoinPartyRequest)},
+        {59, sizeof(::sf::group::v1::MemberActionRequest)},
+        {70, sizeof(::sf::group::v1::CharacterRef)},
+        {75, sizeof(::sf::group::v1::Party)},
 };
 static const ::_pbi::MessageGlobalsBase* PROTOBUF_NONNULL const
     file_message_globals[] = {
+        &::sf::group::v1::CreateRaidRequest_globals_,
+        &::sf::group::v1::AddPartyToRaidRequest_globals_,
+        &::sf::group::v1::Raid_globals_,
         &::sf::group::v1::CreatePartyRequest_globals_,
         &::sf::group::v1::JoinPartyRequest_globals_,
         &::sf::group::v1::MemberActionRequest_globals_,
@@ -1040,48 +1634,61 @@ static const ::_pbi::MessageGlobalsBase* PROTOBUF_NONNULL const
 };
 const char descriptor_table_protodef_sf_2fgroup_2fv1_2fgroup_2eproto[] ABSL_ATTRIBUTE_SECTION_VARIABLE(
     protodesc_cold) = {
-    "\n\027sf/group/v1/group.proto\022\013sf.group.v1\"\203"
-    "\001\n\022CreatePartyRequest\022\027\n\017idempotency_key"
-    "\030\001 \001(\t\022\033\n\023leader_character_id\030\002 \001(\t\022\022\n\na"
-    "ccount_id\030\003 \001(\t\022\020\n\010realm_id\030\004 \001(\t\022\021\n\tdc_"
-    "region\030\005 \001(\t\"\225\001\n\020JoinPartyRequest\022\027\n\017ide"
-    "mpotency_key\030\001 \001(\t\022\020\n\010party_id\030\002 \001(\t\022\032\n\022"
-    "actor_character_id\030\003 \001(\t\022\024\n\014character_id"
-    "\030\004 \001(\t\022\022\n\naccount_id\030\005 \001(\t\022\020\n\010realm_id\030\006"
-    " \001(\t\"r\n\023MemberActionRequest\022\027\n\017idempoten"
-    "cy_key\030\001 \001(\t\022\020\n\010party_id\030\002 \001(\t\022\032\n\022actor_"
-    "character_id\030\003 \001(\t\022\024\n\014character_id\030\004 \001(\t"
-    "\"$\n\014CharacterRef\022\024\n\014character_id\030\001 \001(\t\"\224"
-    "\001\n\005Party\022\020\n\010party_id\030\001 \001(\t\022\033\n\023leader_cha"
-    "racter_id\030\002 \001(\t\022\036\n\026assistant_character_i"
-    "d\030\003 \001(\t\022\034\n\024member_character_ids\030\004 \003(\t\022\017\n"
-    "\007version\030\005 \001(\005\022\r\n\005state\030\006 \001(\t2\361\003\n\014GroupS"
-    "ervice\022B\n\013CreateParty\022\037.sf.group.v1.Crea"
-    "tePartyRequest\032\022.sf.group.v1.Party\022>\n\tJo"
-    "inParty\022\035.sf.group.v1.JoinPartyRequest\032\022"
-    ".sf.group.v1.Party\022B\n\nLeaveParty\022 .sf.gr"
-    "oup.v1.MemberActionRequest\032\022.sf.group.v1"
-    ".Party\022B\n\nKickMember\022 .sf.group.v1.Membe"
-    "rActionRequest\032\022.sf.group.v1.Party\022E\n\rPr"
-    "omoteLeader\022 .sf.group.v1.MemberActionRe"
-    "quest\032\022.sf.group.v1.Party\022G\n\017AssignAssis"
-    "tant\022 .sf.group.v1.MemberActionRequest\032\022"
-    ".sf.group.v1.Party\022E\n\024GetPartyForCharact"
-    "er\022\031.sf.group.v1.CharacterRef\032\022.sf.group"
-    ".v1.PartyB\035\252\002\032ShatteredFrontier.Group.V1"
-    "b\006proto3"
+    "\n\027sf/group/v1/group.proto\022\013sf.group.v1\"Z"
+    "\n\021CreateRaidRequest\022\027\n\017idempotency_key\030\001"
+    " \001(\t\022\020\n\010party_id\030\002 \001(\t\022\032\n\022actor_characte"
+    "r_id\030\003 \001(\t\"\240\001\n\025AddPartyToRaidRequest\022\027\n\017"
+    "idempotency_key\030\001 \001(\t\022\025\n\rraid_group_id\030\002"
+    " \001(\t\022\020\n\010party_id\030\003 \001(\t\022\032\n\022actor_characte"
+    "r_id\030\004 \001(\t\022)\n!joining_party_leader_chara"
+    "cter_id\030\005 \001(\t\"N\n\004Raid\022\025\n\rraid_group_id\030\001"
+    " \001(\t\022\021\n\tparty_ids\030\002 \003(\t\022\034\n\024member_charac"
+    "ter_ids\030\003 \003(\t\"\203\001\n\022CreatePartyRequest\022\027\n\017"
+    "idempotency_key\030\001 \001(\t\022\033\n\023leader_characte"
+    "r_id\030\002 \001(\t\022\022\n\naccount_id\030\003 \001(\t\022\020\n\010realm_"
+    "id\030\004 \001(\t\022\021\n\tdc_region\030\005 \001(\t\"\225\001\n\020JoinPart"
+    "yRequest\022\027\n\017idempotency_key\030\001 \001(\t\022\020\n\010par"
+    "ty_id\030\002 \001(\t\022\032\n\022actor_character_id\030\003 \001(\t\022"
+    "\024\n\014character_id\030\004 \001(\t\022\022\n\naccount_id\030\005 \001("
+    "\t\022\020\n\010realm_id\030\006 \001(\t\"r\n\023MemberActionReque"
+    "st\022\027\n\017idempotency_key\030\001 \001(\t\022\020\n\010party_id\030"
+    "\002 \001(\t\022\032\n\022actor_character_id\030\003 \001(\t\022\024\n\014cha"
+    "racter_id\030\004 \001(\t\"$\n\014CharacterRef\022\024\n\014chara"
+    "cter_id\030\001 \001(\t\"\316\001\n\005Party\022\020\n\010party_id\030\001 \001("
+    "\t\022\033\n\023leader_character_id\030\002 \001(\t\022\036\n\026assist"
+    "ant_character_id\030\003 \001(\t\022\034\n\024member_charact"
+    "er_ids\030\004 \003(\t\022\017\n\007version\030\005 \001(\005\022\r\n\005state\030\006"
+    " \001(\t\022\025\n\rraid_group_id\030\007 \001(\t\022!\n\031raid_memb"
+    "er_character_ids\030\010 \003(\t2\373\004\n\014GroupService\022"
+    "B\n\013CreateParty\022\037.sf.group.v1.CreateParty"
+    "Request\032\022.sf.group.v1.Party\022>\n\tJoinParty"
+    "\022\035.sf.group.v1.JoinPartyRequest\032\022.sf.gro"
+    "up.v1.Party\022B\n\nLeaveParty\022 .sf.group.v1."
+    "MemberActionRequest\032\022.sf.group.v1.Party\022"
+    "B\n\nKickMember\022 .sf.group.v1.MemberAction"
+    "Request\032\022.sf.group.v1.Party\022E\n\rPromoteLe"
+    "ader\022 .sf.group.v1.MemberActionRequest\032\022"
+    ".sf.group.v1.Party\022G\n\017AssignAssistant\022 ."
+    "sf.group.v1.MemberActionRequest\032\022.sf.gro"
+    "up.v1.Party\022E\n\024GetPartyForCharacter\022\031.sf"
+    ".group.v1.CharacterRef\032\022.sf.group.v1.Par"
+    "ty\022\?\n\nCreateRaid\022\036.sf.group.v1.CreateRai"
+    "dRequest\032\021.sf.group.v1.Raid\022G\n\016AddPartyT"
+    "oRaid\022\".sf.group.v1.AddPartyToRaidReques"
+    "t\032\021.sf.group.v1.RaidB\035\252\002\032ShatteredFronti"
+    "er.Group.V1b\006proto3"
 };
 static ::absl::once_flag descriptor_table_sf_2fgroup_2fv1_2fgroup_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_sf_2fgroup_2fv1_2fgroup_2eproto = {
     false,
     false,
-    1168,
+    1699,
     descriptor_table_protodef_sf_2fgroup_2fv1_2fgroup_2eproto,
     "sf/group/v1/group.proto",
     &descriptor_table_sf_2fgroup_2fv1_2fgroup_2eproto_once,
     nullptr,
     0,
-    5,
+    8,
     schemas,
     file_message_globals,
     TableStruct_sf_2fgroup_2fv1_2fgroup_2eproto::offsets,
@@ -1091,6 +1698,942 @@ PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_sf_2fgroup_2fv
 namespace sf {
 namespace group {
 namespace v1 {
+// ===================================================================
+
+CreateRaidRequest::CreateRaidRequest(::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, CreateRaidRequest_get_class_data()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:sf.group.v1.CreateRaidRequest)
+}
+PROTOBUF_NDEBUG_INLINE CreateRaidRequest::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+    [[maybe_unused]] const ::sf::group::v1::CreateRaidRequest& from_msg)
+      : _has_bits_{from._has_bits_},
+        _cached_size_{0},
+        idempotency_key_(arena, from.idempotency_key_),
+        party_id_(arena, from.party_id_),
+        actor_character_id_(arena, from.actor_character_id_) {}
+
+CreateRaidRequest::CreateRaidRequest(
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena,
+    const CreateRaidRequest& from)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, CreateRaidRequest_get_class_data()) {
+
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  CreateRaidRequest* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
+
+  // @@protoc_insertion_point(copy_constructor:sf.group.v1.CreateRaidRequest)
+}
+PROTOBUF_NDEBUG_INLINE CreateRaidRequest::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+      : _cached_size_{0},
+        idempotency_key_(arena),
+        party_id_(arena),
+        actor_character_id_(arena) {}
+
+inline void CreateRaidRequest::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+}
+CreateRaidRequest::~CreateRaidRequest() {
+  // @@protoc_insertion_point(destructor:sf.group.v1.CreateRaidRequest)
+  SharedDtor(*this);
+}
+inline void CreateRaidRequest::SharedDtor(MessageLite& self) {
+  CreateRaidRequest& this_ = static_cast<CreateRaidRequest&>(self);
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    this_.CheckHasBitConsistency();
+  }
+  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.idempotency_key_.Destroy();
+  this_._impl_.party_id_.Destroy();
+  this_._impl_.actor_character_id_.Destroy();
+  this_._impl_.~Impl_();
+}
+
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
+    ::google::protobuf::internal::ClassDataFull CreateRaidRequest_class_data_ =
+        CreateRaidRequest::InternalGenerateClassData_(CreateRaidRequest_globals_._default);
+
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+CreateRaidRequest::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&CreateRaidRequest_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(CreateRaidRequest_class_data_.tc_table);
+  return CreateRaidRequest_class_data_.base();
+}
+#else
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+CreateRaidRequest::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&CreateRaidRequest_globals_);
+  ::google::protobuf::internal::PrefetchToLocalCache(
+      ::google::protobuf::internal::MessageGlobalsBase::ToParseTableBase(&CreateRaidRequest_globals_));
+  return CreateRaidRequest_globals_.GetClassData();
+}
+#endif  // !PROTOBUF_MESSAGE_GLOBALS
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_CONSTINIT
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const CreateRaidRequest::ParseTableT_
+    CreateRaidRequest::_table_ =
+        CreateRaidRequest::InternalGenerateParseTable_(CreateRaidRequest_class_data_.base());
+#endif  // !PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_NOINLINE void CreateRaidRequest::Clear() {
+// @@protoc_insertion_point(message_clear_start:sf.group.v1.CreateRaidRequest)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x00000007U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      _impl_.idempotency_key_.ClearNonDefaultToEmpty();
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      _impl_.party_id_.ClearNonDefaultToEmpty();
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      _impl_.actor_character_id_.ClearNonDefaultToEmpty();
+    }
+  }
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::uint8_t* PROTOBUF_NONNULL CreateRaidRequest::_InternalSerialize(
+    const ::google::protobuf::MessageLite& base, ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) {
+  const CreateRaidRequest& this_ = static_cast<const CreateRaidRequest&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::uint8_t* PROTOBUF_NONNULL CreateRaidRequest::_InternalSerialize(
+    ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+  const CreateRaidRequest& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    this_.CheckHasBitConsistency();
+  }
+  // @@protoc_insertion_point(serialize_to_array_start:sf.group.v1.CreateRaidRequest)
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  cached_has_bits = this_._impl_._has_bits_[0];
+  // string idempotency_key = 1;
+  if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+    if (!this_._internal_idempotency_key().empty()) {
+      const ::std::string& _s = this_._internal_idempotency_key();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.group.v1.CreateRaidRequest.idempotency_key");
+      target = stream->WriteStringMaybeAliased(1, _s, target);
+    }
+  }
+
+  // string party_id = 2;
+  if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+    if (!this_._internal_party_id().empty()) {
+      const ::std::string& _s = this_._internal_party_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.group.v1.CreateRaidRequest.party_id");
+      target = stream->WriteStringMaybeAliased(2, _s, target);
+    }
+  }
+
+  // string actor_character_id = 3;
+  if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+    if (!this_._internal_actor_character_id().empty()) {
+      const ::std::string& _s = this_._internal_actor_character_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.group.v1.CreateRaidRequest.actor_character_id");
+      target = stream->WriteStringMaybeAliased(3, _s, target);
+    }
+  }
+
+  if (ABSL_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
+    target =
+        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+            this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:sf.group.v1.CreateRaidRequest)
+  return target;
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::size_t CreateRaidRequest::ByteSizeLong(const MessageLite& base) {
+  const CreateRaidRequest& this_ = static_cast<const CreateRaidRequest&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::size_t CreateRaidRequest::ByteSizeLong() const {
+  const CreateRaidRequest& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  // @@protoc_insertion_point(message_byte_size_start:sf.group.v1.CreateRaidRequest)
+  ::size_t total_size = 0;
+
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void)cached_has_bits;
+
+  ::_pbi::Prefetch5LinesFrom7Lines(&this_);
+  cached_has_bits = this_._impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x00000007U)) {
+    // string idempotency_key = 1;
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      if (!this_._internal_idempotency_key().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_idempotency_key());
+      }
+    }
+    // string party_id = 2;
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      if (!this_._internal_party_id().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_party_id());
+      }
+    }
+    // string actor_character_id = 3;
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      if (!this_._internal_actor_character_id().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_actor_character_id());
+      }
+    }
+  }
+  return this_.MaybeComputeUnknownFieldsSize(total_size,
+                                             &this_._impl_._cached_size_);
+}
+
+void CreateRaidRequest::MergeImpl(::google::protobuf::MessageLite& to_msg,
+                      const ::google::protobuf::MessageLite& from_msg) {
+   auto* const _this = static_cast<CreateRaidRequest*>(&to_msg);
+  auto& from = static_cast<const CreateRaidRequest&>(from_msg);
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    from.CheckHasBitConsistency();
+  }
+  // @@protoc_insertion_point(class_specific_merge_from_start:sf.group.v1.CreateRaidRequest)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  cached_has_bits = from._impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x00000007U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      if (!from._internal_idempotency_key().empty()) {
+        _this->_internal_set_idempotency_key(from._internal_idempotency_key());
+      } else {
+        if (_this->_impl_.idempotency_key_.IsDefault()) {
+          _this->_internal_set_idempotency_key("");
+        }
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      if (!from._internal_party_id().empty()) {
+        _this->_internal_set_party_id(from._internal_party_id());
+      } else {
+        if (_this->_impl_.party_id_.IsDefault()) {
+          _this->_internal_set_party_id("");
+        }
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      if (!from._internal_actor_character_id().empty()) {
+        _this->_internal_set_actor_character_id(from._internal_actor_character_id());
+      } else {
+        if (_this->_impl_.actor_character_id_.IsDefault()) {
+          _this->_internal_set_actor_character_id("");
+        }
+      }
+    }
+  }
+  _this->_impl_._has_bits_[0] |= cached_has_bits;
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+}
+
+void CreateRaidRequest::CopyFrom(const CreateRaidRequest& from) {
+  // @@protoc_insertion_point(class_specific_copy_from_start:sf.group.v1.CreateRaidRequest)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void CreateRaidRequest::InternalSwap(CreateRaidRequest* PROTOBUF_RESTRICT PROTOBUF_NONNULL other) {
+  using ::std::swap;
+  auto* arena = GetArena();
+  ABSL_DCHECK_EQ(arena, other->GetArena());
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.idempotency_key_, &other->_impl_.idempotency_key_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.party_id_, &other->_impl_.party_id_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.actor_character_id_, &other->_impl_.actor_character_id_, arena);
+}
+
+::google::protobuf::Metadata CreateRaidRequest::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
+AddPartyToRaidRequest::AddPartyToRaidRequest(::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, AddPartyToRaidRequest_get_class_data()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:sf.group.v1.AddPartyToRaidRequest)
+}
+PROTOBUF_NDEBUG_INLINE AddPartyToRaidRequest::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+    [[maybe_unused]] const ::sf::group::v1::AddPartyToRaidRequest& from_msg)
+      : _has_bits_{from._has_bits_},
+        _cached_size_{0},
+        idempotency_key_(arena, from.idempotency_key_),
+        raid_group_id_(arena, from.raid_group_id_),
+        party_id_(arena, from.party_id_),
+        actor_character_id_(arena, from.actor_character_id_),
+        joining_party_leader_character_id_(arena, from.joining_party_leader_character_id_) {}
+
+AddPartyToRaidRequest::AddPartyToRaidRequest(
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena,
+    const AddPartyToRaidRequest& from)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, AddPartyToRaidRequest_get_class_data()) {
+
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  AddPartyToRaidRequest* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
+
+  // @@protoc_insertion_point(copy_constructor:sf.group.v1.AddPartyToRaidRequest)
+}
+PROTOBUF_NDEBUG_INLINE AddPartyToRaidRequest::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+      : _cached_size_{0},
+        idempotency_key_(arena),
+        raid_group_id_(arena),
+        party_id_(arena),
+        actor_character_id_(arena),
+        joining_party_leader_character_id_(arena) {}
+
+inline void AddPartyToRaidRequest::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+}
+AddPartyToRaidRequest::~AddPartyToRaidRequest() {
+  // @@protoc_insertion_point(destructor:sf.group.v1.AddPartyToRaidRequest)
+  SharedDtor(*this);
+}
+inline void AddPartyToRaidRequest::SharedDtor(MessageLite& self) {
+  AddPartyToRaidRequest& this_ = static_cast<AddPartyToRaidRequest&>(self);
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    this_.CheckHasBitConsistency();
+  }
+  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.idempotency_key_.Destroy();
+  this_._impl_.raid_group_id_.Destroy();
+  this_._impl_.party_id_.Destroy();
+  this_._impl_.actor_character_id_.Destroy();
+  this_._impl_.joining_party_leader_character_id_.Destroy();
+  this_._impl_.~Impl_();
+}
+
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
+    ::google::protobuf::internal::ClassDataFull AddPartyToRaidRequest_class_data_ =
+        AddPartyToRaidRequest::InternalGenerateClassData_(AddPartyToRaidRequest_globals_._default);
+
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+AddPartyToRaidRequest::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&AddPartyToRaidRequest_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(AddPartyToRaidRequest_class_data_.tc_table);
+  return AddPartyToRaidRequest_class_data_.base();
+}
+#else
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+AddPartyToRaidRequest::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&AddPartyToRaidRequest_globals_);
+  ::google::protobuf::internal::PrefetchToLocalCache(
+      ::google::protobuf::internal::MessageGlobalsBase::ToParseTableBase(&AddPartyToRaidRequest_globals_));
+  return AddPartyToRaidRequest_globals_.GetClassData();
+}
+#endif  // !PROTOBUF_MESSAGE_GLOBALS
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_CONSTINIT
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const AddPartyToRaidRequest::ParseTableT_
+    AddPartyToRaidRequest::_table_ =
+        AddPartyToRaidRequest::InternalGenerateParseTable_(AddPartyToRaidRequest_class_data_.base());
+#endif  // !PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_NOINLINE void AddPartyToRaidRequest::Clear() {
+// @@protoc_insertion_point(message_clear_start:sf.group.v1.AddPartyToRaidRequest)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x0000001fU)) {
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      _impl_.idempotency_key_.ClearNonDefaultToEmpty();
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      _impl_.raid_group_id_.ClearNonDefaultToEmpty();
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      _impl_.party_id_.ClearNonDefaultToEmpty();
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+      _impl_.actor_character_id_.ClearNonDefaultToEmpty();
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+      _impl_.joining_party_leader_character_id_.ClearNonDefaultToEmpty();
+    }
+  }
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::uint8_t* PROTOBUF_NONNULL AddPartyToRaidRequest::_InternalSerialize(
+    const ::google::protobuf::MessageLite& base, ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) {
+  const AddPartyToRaidRequest& this_ = static_cast<const AddPartyToRaidRequest&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::uint8_t* PROTOBUF_NONNULL AddPartyToRaidRequest::_InternalSerialize(
+    ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+  const AddPartyToRaidRequest& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    this_.CheckHasBitConsistency();
+  }
+  // @@protoc_insertion_point(serialize_to_array_start:sf.group.v1.AddPartyToRaidRequest)
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  cached_has_bits = this_._impl_._has_bits_[0];
+  // string idempotency_key = 1;
+  if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+    if (!this_._internal_idempotency_key().empty()) {
+      const ::std::string& _s = this_._internal_idempotency_key();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.group.v1.AddPartyToRaidRequest.idempotency_key");
+      target = stream->WriteStringMaybeAliased(1, _s, target);
+    }
+  }
+
+  // string raid_group_id = 2;
+  if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+    if (!this_._internal_raid_group_id().empty()) {
+      const ::std::string& _s = this_._internal_raid_group_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.group.v1.AddPartyToRaidRequest.raid_group_id");
+      target = stream->WriteStringMaybeAliased(2, _s, target);
+    }
+  }
+
+  // string party_id = 3;
+  if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+    if (!this_._internal_party_id().empty()) {
+      const ::std::string& _s = this_._internal_party_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.group.v1.AddPartyToRaidRequest.party_id");
+      target = stream->WriteStringMaybeAliased(3, _s, target);
+    }
+  }
+
+  // string actor_character_id = 4;
+  if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+    if (!this_._internal_actor_character_id().empty()) {
+      const ::std::string& _s = this_._internal_actor_character_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.group.v1.AddPartyToRaidRequest.actor_character_id");
+      target = stream->WriteStringMaybeAliased(4, _s, target);
+    }
+  }
+
+  // string joining_party_leader_character_id = 5;
+  if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+    if (!this_._internal_joining_party_leader_character_id().empty()) {
+      const ::std::string& _s = this_._internal_joining_party_leader_character_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.group.v1.AddPartyToRaidRequest.joining_party_leader_character_id");
+      target = stream->WriteStringMaybeAliased(5, _s, target);
+    }
+  }
+
+  if (ABSL_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
+    target =
+        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+            this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:sf.group.v1.AddPartyToRaidRequest)
+  return target;
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::size_t AddPartyToRaidRequest::ByteSizeLong(const MessageLite& base) {
+  const AddPartyToRaidRequest& this_ = static_cast<const AddPartyToRaidRequest&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::size_t AddPartyToRaidRequest::ByteSizeLong() const {
+  const AddPartyToRaidRequest& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  // @@protoc_insertion_point(message_byte_size_start:sf.group.v1.AddPartyToRaidRequest)
+  ::size_t total_size = 0;
+
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void)cached_has_bits;
+
+  ::_pbi::Prefetch5LinesFrom7Lines(&this_);
+  cached_has_bits = this_._impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x0000001fU)) {
+    // string idempotency_key = 1;
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      if (!this_._internal_idempotency_key().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_idempotency_key());
+      }
+    }
+    // string raid_group_id = 2;
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      if (!this_._internal_raid_group_id().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_raid_group_id());
+      }
+    }
+    // string party_id = 3;
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      if (!this_._internal_party_id().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_party_id());
+      }
+    }
+    // string actor_character_id = 4;
+    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+      if (!this_._internal_actor_character_id().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_actor_character_id());
+      }
+    }
+    // string joining_party_leader_character_id = 5;
+    if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+      if (!this_._internal_joining_party_leader_character_id().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_joining_party_leader_character_id());
+      }
+    }
+  }
+  return this_.MaybeComputeUnknownFieldsSize(total_size,
+                                             &this_._impl_._cached_size_);
+}
+
+void AddPartyToRaidRequest::MergeImpl(::google::protobuf::MessageLite& to_msg,
+                      const ::google::protobuf::MessageLite& from_msg) {
+   auto* const _this = static_cast<AddPartyToRaidRequest*>(&to_msg);
+  auto& from = static_cast<const AddPartyToRaidRequest&>(from_msg);
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    from.CheckHasBitConsistency();
+  }
+  // @@protoc_insertion_point(class_specific_merge_from_start:sf.group.v1.AddPartyToRaidRequest)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  cached_has_bits = from._impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x0000001fU)) {
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      if (!from._internal_idempotency_key().empty()) {
+        _this->_internal_set_idempotency_key(from._internal_idempotency_key());
+      } else {
+        if (_this->_impl_.idempotency_key_.IsDefault()) {
+          _this->_internal_set_idempotency_key("");
+        }
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      if (!from._internal_raid_group_id().empty()) {
+        _this->_internal_set_raid_group_id(from._internal_raid_group_id());
+      } else {
+        if (_this->_impl_.raid_group_id_.IsDefault()) {
+          _this->_internal_set_raid_group_id("");
+        }
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      if (!from._internal_party_id().empty()) {
+        _this->_internal_set_party_id(from._internal_party_id());
+      } else {
+        if (_this->_impl_.party_id_.IsDefault()) {
+          _this->_internal_set_party_id("");
+        }
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+      if (!from._internal_actor_character_id().empty()) {
+        _this->_internal_set_actor_character_id(from._internal_actor_character_id());
+      } else {
+        if (_this->_impl_.actor_character_id_.IsDefault()) {
+          _this->_internal_set_actor_character_id("");
+        }
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+      if (!from._internal_joining_party_leader_character_id().empty()) {
+        _this->_internal_set_joining_party_leader_character_id(from._internal_joining_party_leader_character_id());
+      } else {
+        if (_this->_impl_.joining_party_leader_character_id_.IsDefault()) {
+          _this->_internal_set_joining_party_leader_character_id("");
+        }
+      }
+    }
+  }
+  _this->_impl_._has_bits_[0] |= cached_has_bits;
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+}
+
+void AddPartyToRaidRequest::CopyFrom(const AddPartyToRaidRequest& from) {
+  // @@protoc_insertion_point(class_specific_copy_from_start:sf.group.v1.AddPartyToRaidRequest)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void AddPartyToRaidRequest::InternalSwap(AddPartyToRaidRequest* PROTOBUF_RESTRICT PROTOBUF_NONNULL other) {
+  using ::std::swap;
+  auto* arena = GetArena();
+  ABSL_DCHECK_EQ(arena, other->GetArena());
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.idempotency_key_, &other->_impl_.idempotency_key_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.raid_group_id_, &other->_impl_.raid_group_id_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.party_id_, &other->_impl_.party_id_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.actor_character_id_, &other->_impl_.actor_character_id_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.joining_party_leader_character_id_, &other->_impl_.joining_party_leader_character_id_, arena);
+}
+
+::google::protobuf::Metadata AddPartyToRaidRequest::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
+Raid::Raid(::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, Raid_get_class_data()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:sf.group.v1.Raid)
+}
+PROTOBUF_NDEBUG_INLINE Raid::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+    [[maybe_unused]] const ::sf::group::v1::Raid& from_msg)
+      : _has_bits_{from._has_bits_},
+        _cached_size_{0},
+        party_ids_ {
+          visibility, ::_pbi::InternalMetadataOffset::Build<
+              ::sf::group::v1::Raid,
+              PROTOBUF_FIELD_OFFSET(::sf::group::v1::Raid, _impl_.party_ids_)>()
+          , from.party_ids_
+        }
+        ,
+        member_character_ids_ {
+          visibility, ::_pbi::InternalMetadataOffset::Build<
+              ::sf::group::v1::Raid,
+              PROTOBUF_FIELD_OFFSET(::sf::group::v1::Raid, _impl_.member_character_ids_)>()
+          , from.member_character_ids_
+        }
+        ,
+        raid_group_id_(arena, from.raid_group_id_) {}
+
+Raid::Raid(
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena,
+    const Raid& from)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, Raid_get_class_data()) {
+
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  Raid* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
+
+  // @@protoc_insertion_point(copy_constructor:sf.group.v1.Raid)
+}
+PROTOBUF_NDEBUG_INLINE Raid::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+      : _cached_size_{0},
+        party_ids_ { visibility, ::_pbi::InternalMetadataOffset::Build<
+            ::sf::group::v1::Raid,
+            PROTOBUF_FIELD_OFFSET(::sf::group::v1::Raid, _impl_.party_ids_)>()
+         }
+        ,
+        member_character_ids_ { visibility, ::_pbi::InternalMetadataOffset::Build<
+            ::sf::group::v1::Raid,
+            PROTOBUF_FIELD_OFFSET(::sf::group::v1::Raid, _impl_.member_character_ids_)>()
+         }
+        ,
+        raid_group_id_(arena) {}
+
+inline void Raid::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+}
+Raid::~Raid() {
+  // @@protoc_insertion_point(destructor:sf.group.v1.Raid)
+  SharedDtor(*this);
+}
+inline void Raid::SharedDtor(MessageLite& self) {
+  Raid& this_ = static_cast<Raid&>(self);
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    this_.CheckHasBitConsistency();
+  }
+  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.raid_group_id_.Destroy();
+  this_._impl_.~Impl_();
+}
+
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
+    ::google::protobuf::internal::ClassDataFull Raid_class_data_ =
+        Raid::InternalGenerateClassData_(Raid_globals_._default);
+
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+Raid::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&Raid_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(Raid_class_data_.tc_table);
+  return Raid_class_data_.base();
+}
+#else
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+Raid::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&Raid_globals_);
+  ::google::protobuf::internal::PrefetchToLocalCache(
+      ::google::protobuf::internal::MessageGlobalsBase::ToParseTableBase(&Raid_globals_));
+  return Raid_globals_.GetClassData();
+}
+#endif  // !PROTOBUF_MESSAGE_GLOBALS
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_CONSTINIT
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const Raid::ParseTableT_
+    Raid::_table_ =
+        Raid::InternalGenerateParseTable_(Raid_class_data_.base());
+#endif  // !PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_NOINLINE void Raid::Clear() {
+// @@protoc_insertion_point(message_clear_start:sf.group.v1.Raid)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x00000007U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      _impl_.party_ids_.Clear();
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      _impl_.member_character_ids_.Clear();
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      _impl_.raid_group_id_.ClearNonDefaultToEmpty();
+    }
+  }
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::uint8_t* PROTOBUF_NONNULL Raid::_InternalSerialize(
+    const ::google::protobuf::MessageLite& base, ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) {
+  const Raid& this_ = static_cast<const Raid&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::uint8_t* PROTOBUF_NONNULL Raid::_InternalSerialize(
+    ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+  const Raid& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    this_.CheckHasBitConsistency();
+  }
+  // @@protoc_insertion_point(serialize_to_array_start:sf.group.v1.Raid)
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  cached_has_bits = this_._impl_._has_bits_[0];
+  // string raid_group_id = 1;
+  if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+    if (!this_._internal_raid_group_id().empty()) {
+      const ::std::string& _s = this_._internal_raid_group_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.group.v1.Raid.raid_group_id");
+      target = stream->WriteStringMaybeAliased(1, _s, target);
+    }
+  }
+
+  // repeated string party_ids = 2;
+  if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+    for (int i = 0, n = this_._internal_party_ids_size(); i < n; ++i) {
+      const auto& s = this_._internal_party_ids().Get(i);
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          s.data(), static_cast<int>(s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.group.v1.Raid.party_ids");
+      target = stream->WriteString(2, s, target);
+    }
+  }
+
+  // repeated string member_character_ids = 3;
+  if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+    for (int i = 0, n = this_._internal_member_character_ids_size(); i < n; ++i) {
+      const auto& s = this_._internal_member_character_ids().Get(i);
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          s.data(), static_cast<int>(s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.group.v1.Raid.member_character_ids");
+      target = stream->WriteString(3, s, target);
+    }
+  }
+
+  if (ABSL_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
+    target =
+        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+            this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:sf.group.v1.Raid)
+  return target;
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::size_t Raid::ByteSizeLong(const MessageLite& base) {
+  const Raid& this_ = static_cast<const Raid&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::size_t Raid::ByteSizeLong() const {
+  const Raid& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  // @@protoc_insertion_point(message_byte_size_start:sf.group.v1.Raid)
+  ::size_t total_size = 0;
+
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void)cached_has_bits;
+
+  ::_pbi::Prefetch5LinesFrom7Lines(&this_);
+  cached_has_bits = this_._impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x00000007U)) {
+    // repeated string party_ids = 2;
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      total_size +=
+          1 * ::google::protobuf::internal::FromIntSize(this_._internal_party_ids().size());
+      for (int i = 0, n = this_._internal_party_ids().size(); i < n; ++i) {
+        total_size += ::google::protobuf::internal::WireFormatLite::StringSize(
+            this_._internal_party_ids().Get(i));
+      }
+    }
+    // repeated string member_character_ids = 3;
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      total_size +=
+          1 * ::google::protobuf::internal::FromIntSize(this_._internal_member_character_ids().size());
+      for (int i = 0, n = this_._internal_member_character_ids().size(); i < n; ++i) {
+        total_size += ::google::protobuf::internal::WireFormatLite::StringSize(
+            this_._internal_member_character_ids().Get(i));
+      }
+    }
+    // string raid_group_id = 1;
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      if (!this_._internal_raid_group_id().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_raid_group_id());
+      }
+    }
+  }
+  return this_.MaybeComputeUnknownFieldsSize(total_size,
+                                             &this_._impl_._cached_size_);
+}
+
+void Raid::MergeImpl(::google::protobuf::MessageLite& to_msg,
+                      const ::google::protobuf::MessageLite& from_msg) {
+   auto* const _this = static_cast<Raid*>(&to_msg);
+  auto& from = static_cast<const Raid&>(from_msg);
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    from.CheckHasBitConsistency();
+  }
+  ::google::protobuf::Arena* arena = _this->GetArena();
+  // @@protoc_insertion_point(class_specific_merge_from_start:sf.group.v1.Raid)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  cached_has_bits = from._impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x00000007U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      _this->_internal_mutable_party_ids()->InternalMergeFromWithArena(
+          ::google::protobuf::MessageLite::internal_visibility(), arena,
+          from._internal_party_ids());
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      _this->_internal_mutable_member_character_ids()->InternalMergeFromWithArena(
+          ::google::protobuf::MessageLite::internal_visibility(), arena,
+          from._internal_member_character_ids());
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      if (!from._internal_raid_group_id().empty()) {
+        _this->_internal_set_raid_group_id(from._internal_raid_group_id());
+      } else {
+        if (_this->_impl_.raid_group_id_.IsDefault()) {
+          _this->_internal_set_raid_group_id("");
+        }
+      }
+    }
+  }
+  _this->_impl_._has_bits_[0] |= cached_has_bits;
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+}
+
+void Raid::CopyFrom(const Raid& from) {
+  // @@protoc_insertion_point(class_specific_copy_from_start:sf.group.v1.Raid)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void Raid::InternalSwap(Raid* PROTOBUF_RESTRICT PROTOBUF_NONNULL other) {
+  using ::std::swap;
+  auto* arena = GetArena();
+  ABSL_DCHECK_EQ(arena, other->GetArena());
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  _impl_.party_ids_.InternalSwap(&other->_impl_.party_ids_);
+  _impl_.member_character_ids_.InternalSwap(&other->_impl_.member_character_ids_);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.raid_group_id_, &other->_impl_.raid_group_id_, arena);
+}
+
+::google::protobuf::Metadata Raid::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
 // ===================================================================
 
 CreatePartyRequest::CreatePartyRequest(::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
@@ -2382,10 +3925,18 @@ PROTOBUF_NDEBUG_INLINE Party::Impl_::Impl_(
           , from.member_character_ids_
         }
         ,
+        raid_member_character_ids_ {
+          visibility, ::_pbi::InternalMetadataOffset::Build<
+              ::sf::group::v1::Party,
+              PROTOBUF_FIELD_OFFSET(::sf::group::v1::Party, _impl_.raid_member_character_ids_)>()
+          , from.raid_member_character_ids_
+        }
+        ,
         party_id_(arena, from.party_id_),
         leader_character_id_(arena, from.leader_character_id_),
         assistant_character_id_(arena, from.assistant_character_id_),
-        state_(arena, from.state_) {}
+        state_(arena, from.state_),
+        raid_group_id_(arena, from.raid_group_id_) {}
 
 Party::Party(
     ::google::protobuf::Arena* PROTOBUF_NULLABLE arena,
@@ -2414,10 +3965,16 @@ PROTOBUF_NDEBUG_INLINE Party::Impl_::Impl_(
             PROTOBUF_FIELD_OFFSET(::sf::group::v1::Party, _impl_.member_character_ids_)>()
          }
         ,
+        raid_member_character_ids_ { visibility, ::_pbi::InternalMetadataOffset::Build<
+            ::sf::group::v1::Party,
+            PROTOBUF_FIELD_OFFSET(::sf::group::v1::Party, _impl_.raid_member_character_ids_)>()
+         }
+        ,
         party_id_(arena),
         leader_character_id_(arena),
         assistant_character_id_(arena),
-        state_(arena) {}
+        state_(arena),
+        raid_group_id_(arena) {}
 
 inline void Party::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
   new (&_impl_) Impl_(internal_visibility(), arena);
@@ -2438,6 +3995,7 @@ inline void Party::SharedDtor(MessageLite& self) {
   this_._impl_.leader_character_id_.Destroy();
   this_._impl_.assistant_character_id_.Destroy();
   this_._impl_.state_.Destroy();
+  this_._impl_.raid_group_id_.Destroy();
   this_._impl_.~Impl_();
 }
 
@@ -2475,21 +4033,27 @@ PROTOBUF_NOINLINE void Party::Clear() {
   (void) cached_has_bits;
 
   cached_has_bits = _impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0x0000001fU)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x0000007fU)) {
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
       _impl_.member_character_ids_.Clear();
     }
     if (CheckHasBit(cached_has_bits, 0x00000002U)) {
-      _impl_.party_id_.ClearNonDefaultToEmpty();
+      _impl_.raid_member_character_ids_.Clear();
     }
     if (CheckHasBit(cached_has_bits, 0x00000004U)) {
-      _impl_.leader_character_id_.ClearNonDefaultToEmpty();
+      _impl_.party_id_.ClearNonDefaultToEmpty();
     }
     if (CheckHasBit(cached_has_bits, 0x00000008U)) {
-      _impl_.assistant_character_id_.ClearNonDefaultToEmpty();
+      _impl_.leader_character_id_.ClearNonDefaultToEmpty();
     }
     if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+      _impl_.assistant_character_id_.ClearNonDefaultToEmpty();
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000020U)) {
       _impl_.state_.ClearNonDefaultToEmpty();
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000040U)) {
+      _impl_.raid_group_id_.ClearNonDefaultToEmpty();
     }
   }
   _impl_.version_ = 0;
@@ -2517,7 +4081,7 @@ PROTOBUF_NOINLINE void Party::Clear() {
 
   cached_has_bits = this_._impl_._has_bits_[0];
   // string party_id = 1;
-  if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000004U)) {
     if (!this_._internal_party_id().empty()) {
       const ::std::string& _s = this_._internal_party_id();
       ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
@@ -2527,7 +4091,7 @@ PROTOBUF_NOINLINE void Party::Clear() {
   }
 
   // string leader_character_id = 2;
-  if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000008U)) {
     if (!this_._internal_leader_character_id().empty()) {
       const ::std::string& _s = this_._internal_leader_character_id();
       ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
@@ -2537,7 +4101,7 @@ PROTOBUF_NOINLINE void Party::Clear() {
   }
 
   // string assistant_character_id = 3;
-  if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000010U)) {
     if (!this_._internal_assistant_character_id().empty()) {
       const ::std::string& _s = this_._internal_assistant_character_id();
       ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
@@ -2557,7 +4121,7 @@ PROTOBUF_NOINLINE void Party::Clear() {
   }
 
   // int32 version = 5;
-  if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000080U)) {
     if (this_._internal_version() != 0) {
       target =
           ::google::protobuf::internal::WireFormatLite::WriteInt32ToArrayWithField<5>(
@@ -2566,12 +4130,32 @@ PROTOBUF_NOINLINE void Party::Clear() {
   }
 
   // string state = 6;
-  if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000020U)) {
     if (!this_._internal_state().empty()) {
       const ::std::string& _s = this_._internal_state();
       ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
           _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.group.v1.Party.state");
       target = stream->WriteStringMaybeAliased(6, _s, target);
+    }
+  }
+
+  // string raid_group_id = 7;
+  if (CheckHasBit(cached_has_bits, 0x00000040U)) {
+    if (!this_._internal_raid_group_id().empty()) {
+      const ::std::string& _s = this_._internal_raid_group_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.group.v1.Party.raid_group_id");
+      target = stream->WriteStringMaybeAliased(7, _s, target);
+    }
+  }
+
+  // repeated string raid_member_character_ids = 8;
+  if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+    for (int i = 0, n = this_._internal_raid_member_character_ids_size(); i < n; ++i) {
+      const auto& s = this_._internal_raid_member_character_ids().Get(i);
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          s.data(), static_cast<int>(s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.group.v1.Party.raid_member_character_ids");
+      target = stream->WriteString(8, s, target);
     }
   }
 
@@ -2600,7 +4184,7 @@ PROTOBUF_NOINLINE void Party::Clear() {
 
   ::_pbi::Prefetch5LinesFrom7Lines(&this_);
   cached_has_bits = this_._impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0x0000003fU)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x000000ffU)) {
     // repeated string member_character_ids = 4;
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
       total_size +=
@@ -2610,36 +4194,52 @@ PROTOBUF_NOINLINE void Party::Clear() {
             this_._internal_member_character_ids().Get(i));
       }
     }
-    // string party_id = 1;
+    // repeated string raid_member_character_ids = 8;
     if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      total_size +=
+          1 * ::google::protobuf::internal::FromIntSize(this_._internal_raid_member_character_ids().size());
+      for (int i = 0, n = this_._internal_raid_member_character_ids().size(); i < n; ++i) {
+        total_size += ::google::protobuf::internal::WireFormatLite::StringSize(
+            this_._internal_raid_member_character_ids().Get(i));
+      }
+    }
+    // string party_id = 1;
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
       if (!this_._internal_party_id().empty()) {
         total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
                                         this_._internal_party_id());
       }
     }
     // string leader_character_id = 2;
-    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
       if (!this_._internal_leader_character_id().empty()) {
         total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
                                         this_._internal_leader_character_id());
       }
     }
     // string assistant_character_id = 3;
-    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000010U)) {
       if (!this_._internal_assistant_character_id().empty()) {
         total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
                                         this_._internal_assistant_character_id());
       }
     }
     // string state = 6;
-    if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000020U)) {
       if (!this_._internal_state().empty()) {
         total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
                                         this_._internal_state());
       }
     }
+    // string raid_group_id = 7;
+    if (CheckHasBit(cached_has_bits, 0x00000040U)) {
+      if (!this_._internal_raid_group_id().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_raid_group_id());
+      }
+    }
     // int32 version = 5;
-    if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000080U)) {
       if (this_._internal_version() != 0) {
         total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(
             this_._internal_version());
@@ -2664,13 +4264,18 @@ void Party::MergeImpl(::google::protobuf::MessageLite& to_msg,
   (void)cached_has_bits;
 
   cached_has_bits = from._impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0x0000003fU)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x000000ffU)) {
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
       _this->_internal_mutable_member_character_ids()->InternalMergeFromWithArena(
           ::google::protobuf::MessageLite::internal_visibility(), arena,
           from._internal_member_character_ids());
     }
     if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      _this->_internal_mutable_raid_member_character_ids()->InternalMergeFromWithArena(
+          ::google::protobuf::MessageLite::internal_visibility(), arena,
+          from._internal_raid_member_character_ids());
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
       if (!from._internal_party_id().empty()) {
         _this->_internal_set_party_id(from._internal_party_id());
       } else {
@@ -2679,7 +4284,7 @@ void Party::MergeImpl(::google::protobuf::MessageLite& to_msg,
         }
       }
     }
-    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
       if (!from._internal_leader_character_id().empty()) {
         _this->_internal_set_leader_character_id(from._internal_leader_character_id());
       } else {
@@ -2688,7 +4293,7 @@ void Party::MergeImpl(::google::protobuf::MessageLite& to_msg,
         }
       }
     }
-    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000010U)) {
       if (!from._internal_assistant_character_id().empty()) {
         _this->_internal_set_assistant_character_id(from._internal_assistant_character_id());
       } else {
@@ -2697,7 +4302,7 @@ void Party::MergeImpl(::google::protobuf::MessageLite& to_msg,
         }
       }
     }
-    if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000020U)) {
       if (!from._internal_state().empty()) {
         _this->_internal_set_state(from._internal_state());
       } else {
@@ -2706,7 +4311,16 @@ void Party::MergeImpl(::google::protobuf::MessageLite& to_msg,
         }
       }
     }
-    if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000040U)) {
+      if (!from._internal_raid_group_id().empty()) {
+        _this->_internal_set_raid_group_id(from._internal_raid_group_id());
+      } else {
+        if (_this->_impl_.raid_group_id_.IsDefault()) {
+          _this->_internal_set_raid_group_id("");
+        }
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000080U)) {
       if (from._internal_version() != 0) {
         _this->_impl_.version_ = from._impl_.version_;
       }
@@ -2732,10 +4346,12 @@ void Party::InternalSwap(Party* PROTOBUF_RESTRICT PROTOBUF_NONNULL other) {
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
   swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
   _impl_.member_character_ids_.InternalSwap(&other->_impl_.member_character_ids_);
+  _impl_.raid_member_character_ids_.InternalSwap(&other->_impl_.raid_member_character_ids_);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.party_id_, &other->_impl_.party_id_, arena);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.leader_character_id_, &other->_impl_.leader_character_id_, arena);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.assistant_character_id_, &other->_impl_.assistant_character_id_, arena);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.state_, &other->_impl_.state_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.raid_group_id_, &other->_impl_.raid_group_id_, arena);
   swap(_impl_.version_, other->_impl_.version_);
 }
 

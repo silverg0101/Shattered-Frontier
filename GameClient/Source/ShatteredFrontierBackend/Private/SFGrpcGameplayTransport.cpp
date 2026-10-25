@@ -72,6 +72,8 @@ namespace
         Out.GroupAssistantId = FromUtf8(R.assistant_character_id()); Out.GroupState = FromUtf8(R.state());
         Out.GroupVersion = R.version();
         for (const auto& Id : R.member_character_ids()) { Out.GroupMembers.Add(FromUtf8(Id)); }
+        Out.RaidGroupId = FromUtf8(R.raid_group_id());
+        for (const auto& Id : R.raid_member_character_ids()) { Out.RaidMembers.Add(FromUtf8(Id)); }
     }
     void CopyNode(const sf::gathering::v1::NodeReply& R, FSFGameplayResponse& Out)
     {
@@ -270,6 +272,7 @@ void FSFGrpcGameplayTransport::Send(const FSFGameplayRequest& Q, float DeadlineS
         M.set_defeat_event_id(Utf8(Q.OperationId)); M.set_creature_id(Utf8(Q.CreatureId));
         M.set_table_id(Utf8(Q.TableId)); M.set_killer_character_id(Utf8(Q.KillerCharacterId));
         for (const FString& Id : Q.EligibleCharacterIds) { M.add_eligible_character_ids(Utf8(Id)); }
+        M.set_raid_group_id(Utf8(Q.RaidGroupId));
         M.set_killer_in_protected_town(Q.bKillerProtected); M.set_creature_in_protected_town(Q.bBoarProtected);
         auto* Call = new TCall<sf::rewards::v1::SharedDefeatDropReceipt>();
         Call->Copy = [](const sf::rewards::v1::SharedDefeatDropReceipt& R, FSFGameplayResponse& Out)

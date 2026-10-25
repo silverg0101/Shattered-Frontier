@@ -11,8 +11,31 @@ internal sealed class GroupGrpcService(PostgresGroupStore store) : Pb.GroupServi
         party.PartyId = value.PartyId; party.LeaderCharacterId = value.Leader;
         party.AssistantCharacterId = value.Assistant; party.Version = value.Version; party.State = value.State;
         party.MemberCharacterIds.AddRange(value.Members);
+        party.RaidGroupId = value.RaidGroupId ?? "";
+        party.RaidMemberCharacterIds.AddRange(value.RaidMembers ?? []);
         return party;
     }
+    private static Pb.Raid Wire(RaidSnapshot value)
+    {
+        var raid = new Pb.Raid { RaidGroupId = value.RaidGroupId };
+        raid.PartyIds.AddRange(value.PartyIds);
+        raid.MemberCharacterIds.AddRange(value.Members);
+        return raid;
+    }
+    private static Task<Pb.Raid> RunRaid(ServerCallContext context, Func<RaidSnapshot> work) => GrpcRun.Call(context, () =>
+    {
+        try { return Wire(work()); }
+        catch (GroupRejectedException ex)
+        {
+            throw new RpcException(new Status(ex.Code switch
+            {
+                "invalid" => StatusCode.InvalidArgument,
+                "permission" => StatusCode.PermissionDenied,
+                "not_found" => StatusCode.NotFound,
+                _ => StatusCode.FailedPrecondition
+            }, ex.Message));
+        }
+    });
     private static Task<Pb.Party> Run(ServerCallContext context, Func<PartySnapshot?> work) => GrpcRun.Call(context, () =>
     {
         try { return Wire(work()); }
@@ -41,4 +64,9 @@ internal sealed class GroupGrpcService(PostgresGroupStore store) : Pb.GroupServi
         Run(c, () => store.SetRole(r.IdempotencyKey, "assistant", r.PartyId, r.ActorCharacterId, r.CharacterId));
     public override Task<Pb.Party> GetPartyForCharacter(Pb.CharacterRef r, ServerCallContext c) =>
         Run(c, () => store.GetForCharacter(r.CharacterId));
+    public override Task<Pb.Raid> CreateRaid(Pb.CreateRaidRequest r, ServerCallContext c) =>
+        RunRaid(c, () => store.CreateRaid(r.IdempotencyKey, r.PartyId, r.ActorCharacterId));
+    public override Task<Pb.Raid> AddPartyToRaid(Pb.AddPartyToRaidRequest r, ServerCallContext c) =>
+        RunRaid(c, () => store.AddPartyToRaid(r.IdempotencyKey, r.RaidGroupId, r.PartyId,
+            r.ActorCharacterId, r.JoiningPartyLeaderCharacterId));
 }

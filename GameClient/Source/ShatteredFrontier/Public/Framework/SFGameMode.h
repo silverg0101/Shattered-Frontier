@@ -86,6 +86,9 @@ private:
     FSFPartyModel PartyModel;
     TMap<int32, FString> DurablePartyBySessionId;
     TMap<FString, int32> SessionPartyByDurableId;
+    TMap<FString, FString> RaidIdByCharacter;
+    TMap<FString, TArray<FString>> RaidMembersById;
+    void UpdateRaidRoster(const struct FSFGameplayResponse& Reply);
     TSet<int32> PendingPartyActions;
     void RestorePartyForPlayer(class ASFPlayerController* Player);
     void RefreshPartyViews();

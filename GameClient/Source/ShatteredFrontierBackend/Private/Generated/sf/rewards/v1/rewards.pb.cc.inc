@@ -436,11 +436,11 @@ constexpr CreateSharedDefeatDropRequest::ParseTableT_ CreateSharedDefeatDropRequ
     {
       PROTOBUF_FIELD_OFFSET(CreateSharedDefeatDropRequest, _impl_._has_bits_),
       0, // no _extensions_
-      7, 56,  // max_field_number, fast_idx_mask
+      8, 56,  // max_field_number, fast_idx_mask
       offsetof(ParseTableT_, field_lookup_table),
-      4294967168,  // skipmap
+      4294967040,  // skipmap
       offsetof(ParseTableT_, field_entries),
-      7,  // num_field_entries
+      8,  // num_field_entries
       0,  // num_aux_entries
       offsetof(ParseTableT_, field_names),  // no aux_entries
       class_data,
@@ -450,7 +450,10 @@ constexpr CreateSharedDefeatDropRequest::ParseTableT_ CreateSharedDefeatDropRequ
       ::_pbi::TcParser::GetTable<::sf::rewards::v1::CreateSharedDefeatDropRequest>(),  // to_prefetch
       #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
     }, {{
-      {::_pbi::TcParser::MiniParse, {}},
+      // string raid_group_id = 8;
+      {::_pbi::TcParser::FastUS1,
+       {66, 5, 0,
+        PROTOBUF_FIELD_OFFSET(CreateSharedDefeatDropRequest, _impl_.raid_group_id_)}},
       // string defeat_event_id = 1;
       {::_pbi::TcParser::FastUS1,
        {10, 1, 0,
@@ -472,12 +475,12 @@ constexpr CreateSharedDefeatDropRequest::ParseTableT_ CreateSharedDefeatDropRequ
        {42, 0, 0,
         PROTOBUF_FIELD_OFFSET(CreateSharedDefeatDropRequest, _impl_.eligible_character_ids_)}},
       // bool killer_in_protected_town = 6;
-      {::_pbi::TcParser::SingularVarintNoZag1<bool, offsetof(CreateSharedDefeatDropRequest, _impl_.killer_in_protected_town_), 5>(),
-       {48, 5, 0,
+      {::_pbi::TcParser::SingularVarintNoZag1<bool, offsetof(CreateSharedDefeatDropRequest, _impl_.killer_in_protected_town_), 6>(),
+       {48, 6, 0,
         PROTOBUF_FIELD_OFFSET(CreateSharedDefeatDropRequest, _impl_.killer_in_protected_town_)}},
       // bool creature_in_protected_town = 7;
-      {::_pbi::TcParser::SingularVarintNoZag1<bool, offsetof(CreateSharedDefeatDropRequest, _impl_.creature_in_protected_town_), 6>(),
-       {56, 6, 0,
+      {::_pbi::TcParser::SingularVarintNoZag1<bool, offsetof(CreateSharedDefeatDropRequest, _impl_.creature_in_protected_town_), 7>(),
+       {56, 7, 0,
         PROTOBUF_FIELD_OFFSET(CreateSharedDefeatDropRequest, _impl_.creature_in_protected_town_)}},
     }}, {{
       65535, 65535
@@ -493,19 +496,22 @@ constexpr CreateSharedDefeatDropRequest::ParseTableT_ CreateSharedDefeatDropRequ
       // repeated string eligible_character_ids = 5;
       {PROTOBUF_FIELD_OFFSET(CreateSharedDefeatDropRequest, _impl_.eligible_character_ids_), _Internal::kHasBitsOffset + 0, 0, (0 | ::_fl::kFcRepeated | ::_fl::kUtf8String | ::_fl::kRepSString)},
       // bool killer_in_protected_town = 6;
-      {PROTOBUF_FIELD_OFFSET(CreateSharedDefeatDropRequest, _impl_.killer_in_protected_town_), _Internal::kHasBitsOffset + 5, 0, (0 | ::_fl::kFcOptional | ::_fl::kBool)},
+      {PROTOBUF_FIELD_OFFSET(CreateSharedDefeatDropRequest, _impl_.killer_in_protected_town_), _Internal::kHasBitsOffset + 6, 0, (0 | ::_fl::kFcOptional | ::_fl::kBool)},
       // bool creature_in_protected_town = 7;
-      {PROTOBUF_FIELD_OFFSET(CreateSharedDefeatDropRequest, _impl_.creature_in_protected_town_), _Internal::kHasBitsOffset + 6, 0, (0 | ::_fl::kFcOptional | ::_fl::kBool)},
+      {PROTOBUF_FIELD_OFFSET(CreateSharedDefeatDropRequest, _impl_.creature_in_protected_town_), _Internal::kHasBitsOffset + 7, 0, (0 | ::_fl::kFcOptional | ::_fl::kBool)},
+      // string raid_group_id = 8;
+      {PROTOBUF_FIELD_OFFSET(CreateSharedDefeatDropRequest, _impl_.raid_group_id_), _Internal::kHasBitsOffset + 5, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
     }},
     // no aux_entries
     {{
-      "\53\17\13\10\23\26\0\0"
+      "\53\17\13\10\23\26\0\0\15\0\0\0\0\0\0\0"
       "sf.rewards.v1.CreateSharedDefeatDropRequest"
       "defeat_event_id"
       "creature_id"
       "table_id"
       "killer_character_id"
       "eligible_character_ids"
+      "raid_group_id"
     }},
   };
 }
@@ -530,6 +536,9 @@ inline constexpr CreateSharedDefeatDropRequest::Impl_::Impl_(
             &::google::protobuf::internal::fixed_address_empty_string,
             ::_pbi::ConstantInitialized()),
         killer_character_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        raid_group_id_(
             &::google::protobuf::internal::fixed_address_empty_string,
             ::_pbi::ConstantInitialized()),
         killer_in_protected_town_{false},
@@ -806,11 +815,11 @@ constexpr SharedDefeatDropReceipt::ParseTableT_ SharedDefeatDropReceipt::Interna
     {
       PROTOBUF_FIELD_OFFSET(SharedDefeatDropReceipt, _impl_._has_bits_),
       0, // no _extensions_
-      5, 56,  // max_field_number, fast_idx_mask
+      6, 56,  // max_field_number, fast_idx_mask
       offsetof(ParseTableT_, field_lookup_table),
-      4294967264,  // skipmap
+      4294967232,  // skipmap
       offsetof(ParseTableT_, field_entries),
-      5,  // num_field_entries
+      6,  // num_field_entries
       1,  // num_aux_entries
       offsetof(ParseTableT_, aux_entries),
       class_data,
@@ -838,10 +847,13 @@ constexpr SharedDefeatDropReceipt::ParseTableT_ SharedDefeatDropReceipt::Interna
        {34, 3, 0,
         PROTOBUF_FIELD_OFFSET(SharedDefeatDropReceipt, _impl_.ledger_operation_id_)}},
       // int64 container_revision = 5;
-      {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(SharedDefeatDropReceipt, _impl_.container_revision_), 4>(),
-       {40, 4, 0,
+      {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(SharedDefeatDropReceipt, _impl_.container_revision_), 5>(),
+       {40, 5, 0,
         PROTOBUF_FIELD_OFFSET(SharedDefeatDropReceipt, _impl_.container_revision_)}},
-      {::_pbi::TcParser::MiniParse, {}},
+      // string raid_group_id = 6;
+      {::_pbi::TcParser::FastUS1,
+       {50, 4, 0,
+        PROTOBUF_FIELD_OFFSET(SharedDefeatDropReceipt, _impl_.raid_group_id_)}},
       {::_pbi::TcParser::MiniParse, {}},
     }}, {{
       65535, 65535
@@ -855,7 +867,9 @@ constexpr SharedDefeatDropReceipt::ParseTableT_ SharedDefeatDropReceipt::Interna
       // string ledger_operation_id = 4;
       {PROTOBUF_FIELD_OFFSET(SharedDefeatDropReceipt, _impl_.ledger_operation_id_), _Internal::kHasBitsOffset + 3, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
       // int64 container_revision = 5;
-      {PROTOBUF_FIELD_OFFSET(SharedDefeatDropReceipt, _impl_.container_revision_), _Internal::kHasBitsOffset + 4, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt64)},
+      {PROTOBUF_FIELD_OFFSET(SharedDefeatDropReceipt, _impl_.container_revision_), _Internal::kHasBitsOffset + 5, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt64)},
+      // string raid_group_id = 6;
+      {PROTOBUF_FIELD_OFFSET(SharedDefeatDropReceipt, _impl_.raid_group_id_), _Internal::kHasBitsOffset + 4, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
     }},
     {{
         #ifndef PROTOBUF_MESSAGE_GLOBALS
@@ -865,11 +879,12 @@ constexpr SharedDefeatDropReceipt::ParseTableT_ SharedDefeatDropReceipt::Interna
         #endif
     }},
     {{
-      "\45\17\0\25\23\0\0\0"
+      "\45\17\0\25\23\0\15\0"
       "sf.rewards.v1.SharedDefeatDropReceipt"
       "defeat_event_id"
       "claimant_character_id"
       "ledger_operation_id"
+      "raid_group_id"
     }},
   };
 }
@@ -891,6 +906,9 @@ inline constexpr SharedDefeatDropReceipt::Impl_::Impl_(
             &::google::protobuf::internal::fixed_address_empty_string,
             ::_pbi::ConstantInitialized()),
         ledger_operation_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        raid_group_id_(
             &::google::protobuf::internal::fixed_address_empty_string,
             ::_pbi::ConstantInitialized()),
         container_revision_{::int64_t{0}} {}
@@ -1204,7 +1222,7 @@ const ::uint32_t
         protodesc_cold) = {
         0x081, // bitmap
         PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::CreateSharedDefeatDropRequest, _impl_._has_bits_),
-        10, // hasbit index offset
+        11, // hasbit index offset
         PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::CreateSharedDefeatDropRequest, _impl_.defeat_event_id_),
         PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::CreateSharedDefeatDropRequest, _impl_.creature_id_),
         PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::CreateSharedDefeatDropRequest, _impl_.table_id_),
@@ -1212,13 +1230,15 @@ const ::uint32_t
         PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::CreateSharedDefeatDropRequest, _impl_.eligible_character_ids_),
         PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::CreateSharedDefeatDropRequest, _impl_.killer_in_protected_town_),
         PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::CreateSharedDefeatDropRequest, _impl_.creature_in_protected_town_),
+        PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::CreateSharedDefeatDropRequest, _impl_.raid_group_id_),
         1,
         2,
         3,
         4,
         0,
-        5,
         6,
+        7,
+        5,
         0x081, // bitmap
         PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::ClaimSharedDefeatDropRequest, _impl_._has_bits_),
         6, // hasbit index offset
@@ -1237,16 +1257,18 @@ const ::uint32_t
         1,
         0x081, // bitmap
         PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::SharedDefeatDropReceipt, _impl_._has_bits_),
-        8, // hasbit index offset
+        9, // hasbit index offset
         PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::SharedDefeatDropReceipt, _impl_.defeat_event_id_),
         PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::SharedDefeatDropReceipt, _impl_.items_),
         PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::SharedDefeatDropReceipt, _impl_.claimant_character_id_),
         PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::SharedDefeatDropReceipt, _impl_.ledger_operation_id_),
         PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::SharedDefeatDropReceipt, _impl_.container_revision_),
+        PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::SharedDefeatDropReceipt, _impl_.raid_group_id_),
         1,
         0,
         2,
         3,
+        5,
         4,
         0x081, // bitmap
         PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::GrantDefeatRewardRequest, _impl_._has_bits_),
@@ -1291,11 +1313,11 @@ const ::uint32_t
 static const ::_pbi::MigrationSchema
     schemas[] ABSL_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
         {0, sizeof(::sf::rewards::v1::CreateSharedDefeatDropRequest)},
-        {17, sizeof(::sf::rewards::v1::ClaimSharedDefeatDropRequest)},
-        {26, sizeof(::sf::rewards::v1::SharedDropItem)},
-        {33, sizeof(::sf::rewards::v1::SharedDefeatDropReceipt)},
-        {46, sizeof(::sf::rewards::v1::GrantDefeatRewardRequest)},
-        {67, sizeof(::sf::rewards::v1::RewardReceipt)},
+        {19, sizeof(::sf::rewards::v1::ClaimSharedDefeatDropRequest)},
+        {28, sizeof(::sf::rewards::v1::SharedDropItem)},
+        {35, sizeof(::sf::rewards::v1::SharedDefeatDropReceipt)},
+        {50, sizeof(::sf::rewards::v1::GrantDefeatRewardRequest)},
+        {71, sizeof(::sf::rewards::v1::RewardReceipt)},
 };
 static const ::_pbi::MessageGlobalsBase* PROTOBUF_NONNULL const
     file_message_globals[] = {
@@ -1309,48 +1331,49 @@ static const ::_pbi::MessageGlobalsBase* PROTOBUF_NONNULL const
 const char descriptor_table_protodef_sf_2frewards_2fv1_2frewards_2eproto[] ABSL_ATTRIBUTE_SECTION_VARIABLE(
     protodesc_cold) = {
     "\n\033sf/rewards/v1/rewards.proto\022\rsf.reward"
-    "s.v1\"\342\001\n\035CreateSharedDefeatDropRequest\022\027"
+    "s.v1\"\371\001\n\035CreateSharedDefeatDropRequest\022\027"
     "\n\017defeat_event_id\030\001 \001(\t\022\023\n\013creature_id\030\002"
     " \001(\t\022\020\n\010table_id\030\003 \001(\t\022\033\n\023killer_charact"
     "er_id\030\004 \001(\t\022\036\n\026eligible_character_ids\030\005 "
     "\003(\t\022 \n\030killer_in_protected_town\030\006 \001(\010\022\"\n"
-    "\032creature_in_protected_town\030\007 \001(\010\"c\n\034Cla"
-    "imSharedDefeatDropRequest\022\027\n\017defeat_even"
-    "t_id\030\001 \001(\t\022\024\n\014character_id\030\002 \001(\t\022\024\n\014cont"
-    "ainer_id\030\003 \001(\t\"9\n\016SharedDropItem\022\025\n\rdefi"
-    "nition_id\030\001 \001(\t\022\020\n\010quantity\030\002 \001(\003\"\270\001\n\027Sh"
-    "aredDefeatDropReceipt\022\027\n\017defeat_event_id"
-    "\030\001 \001(\t\022,\n\005items\030\002 \003(\0132\035.sf.rewards.v1.Sh"
-    "aredDropItem\022\035\n\025claimant_character_id\030\003 "
-    "\001(\t\022\033\n\023ledger_operation_id\030\004 \001(\t\022\032\n\022cont"
-    "ainer_revision\030\005 \001(\003\"\224\002\n\030GrantDefeatRewa"
-    "rdRequest\022\027\n\017defeat_event_id\030\001 \001(\t\022\033\n\023ki"
-    "ller_character_id\030\002 \001(\t\022\036\n\026recipient_cha"
-    "racter_id\030\003 \001(\t\022\024\n\014container_id\030\004 \001(\t\022#\n"
-    "\033expected_container_revision\030\005 \001(\003\022 \n\030ki"
-    "ller_in_protected_town\030\006 \001(\010\022\036\n\026boar_in_"
-    "protected_town\030\007 \001(\010\022\020\n\010table_id\030\010 \001(\t\022\023"
-    "\n\013creature_id\030\t \001(\t\"\305\001\n\rRewardReceipt\022\017\n"
-    "\007granted\030\001 \001(\010\022\023\n\013source_code\030\002 \001(\t\022\033\n\023l"
-    "edger_operation_id\030\003 \001(\t\022\025\n\rdefinition_i"
-    "d\030\004 \001(\t\022\020\n\010quantity\030\005 \001(\003\022\032\n\022container_r"
-    "evision\030\006 \001(\003\022,\n\005items\030\007 \003(\0132\035.sf.reward"
-    "s.v1.SharedDropItem2\303\002\n\007Rewards\022Z\n\021Grant"
-    "DefeatReward\022\'.sf.rewards.v1.GrantDefeat"
-    "RewardRequest\032\034.sf.rewards.v1.RewardRece"
-    "ipt\022n\n\026CreateSharedDefeatDrop\022,.sf.rewar"
-    "ds.v1.CreateSharedDefeatDropRequest\032&.sf"
-    ".rewards.v1.SharedDefeatDropReceipt\022l\n\025C"
-    "laimSharedDefeatDrop\022+.sf.rewards.v1.Cla"
-    "imSharedDefeatDropRequest\032&.sf.rewards.v"
-    "1.SharedDefeatDropReceiptB\037\252\002\034ShatteredF"
-    "rontier.Rewards.V1b\006proto3"
+    "\032creature_in_protected_town\030\007 \001(\010\022\025\n\rrai"
+    "d_group_id\030\010 \001(\t\"c\n\034ClaimSharedDefeatDro"
+    "pRequest\022\027\n\017defeat_event_id\030\001 \001(\t\022\024\n\014cha"
+    "racter_id\030\002 \001(\t\022\024\n\014container_id\030\003 \001(\t\"9\n"
+    "\016SharedDropItem\022\025\n\rdefinition_id\030\001 \001(\t\022\020"
+    "\n\010quantity\030\002 \001(\003\"\317\001\n\027SharedDefeatDropRec"
+    "eipt\022\027\n\017defeat_event_id\030\001 \001(\t\022,\n\005items\030\002"
+    " \003(\0132\035.sf.rewards.v1.SharedDropItem\022\035\n\025c"
+    "laimant_character_id\030\003 \001(\t\022\033\n\023ledger_ope"
+    "ration_id\030\004 \001(\t\022\032\n\022container_revision\030\005 "
+    "\001(\003\022\025\n\rraid_group_id\030\006 \001(\t\"\224\002\n\030GrantDefe"
+    "atRewardRequest\022\027\n\017defeat_event_id\030\001 \001(\t"
+    "\022\033\n\023killer_character_id\030\002 \001(\t\022\036\n\026recipie"
+    "nt_character_id\030\003 \001(\t\022\024\n\014container_id\030\004 "
+    "\001(\t\022#\n\033expected_container_revision\030\005 \001(\003"
+    "\022 \n\030killer_in_protected_town\030\006 \001(\010\022\036\n\026bo"
+    "ar_in_protected_town\030\007 \001(\010\022\020\n\010table_id\030\010"
+    " \001(\t\022\023\n\013creature_id\030\t \001(\t\"\305\001\n\rRewardRece"
+    "ipt\022\017\n\007granted\030\001 \001(\010\022\023\n\013source_code\030\002 \001("
+    "\t\022\033\n\023ledger_operation_id\030\003 \001(\t\022\025\n\rdefini"
+    "tion_id\030\004 \001(\t\022\020\n\010quantity\030\005 \001(\003\022\032\n\022conta"
+    "iner_revision\030\006 \001(\003\022,\n\005items\030\007 \003(\0132\035.sf."
+    "rewards.v1.SharedDropItem2\303\002\n\007Rewards\022Z\n"
+    "\021GrantDefeatReward\022\'.sf.rewards.v1.Grant"
+    "DefeatRewardRequest\032\034.sf.rewards.v1.Rewa"
+    "rdReceipt\022n\n\026CreateSharedDefeatDrop\022,.sf"
+    ".rewards.v1.CreateSharedDefeatDropReques"
+    "t\032&.sf.rewards.v1.SharedDefeatDropReceip"
+    "t\022l\n\025ClaimSharedDefeatDrop\022+.sf.rewards."
+    "v1.ClaimSharedDefeatDropRequest\032&.sf.rew"
+    "ards.v1.SharedDefeatDropReceiptB\037\252\002\034Shat"
+    "teredFrontier.Rewards.V1b\006proto3"
 };
 static ::absl::once_flag descriptor_table_sf_2frewards_2fv1_2frewards_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_sf_2frewards_2fv1_2frewards_2eproto = {
     false,
     false,
-    1466,
+    1512,
     descriptor_table_protodef_sf_2frewards_2fv1_2frewards_2eproto,
     "sf/rewards/v1/rewards.proto",
     &descriptor_table_sf_2frewards_2fv1_2frewards_2eproto_once,
@@ -1393,7 +1416,8 @@ PROTOBUF_NDEBUG_INLINE CreateSharedDefeatDropRequest::Impl_::Impl_(
         defeat_event_id_(arena, from.defeat_event_id_),
         creature_id_(arena, from.creature_id_),
         table_id_(arena, from.table_id_),
-        killer_character_id_(arena, from.killer_character_id_) {}
+        killer_character_id_(arena, from.killer_character_id_),
+        raid_group_id_(arena, from.raid_group_id_) {}
 
 CreateSharedDefeatDropRequest::CreateSharedDefeatDropRequest(
     ::google::protobuf::Arena* PROTOBUF_NULLABLE arena,
@@ -1431,7 +1455,8 @@ PROTOBUF_NDEBUG_INLINE CreateSharedDefeatDropRequest::Impl_::Impl_(
         defeat_event_id_(arena),
         creature_id_(arena),
         table_id_(arena),
-        killer_character_id_(arena) {}
+        killer_character_id_(arena),
+        raid_group_id_(arena) {}
 
 inline void CreateSharedDefeatDropRequest::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
   new (&_impl_) Impl_(internal_visibility(), arena);
@@ -1457,6 +1482,7 @@ inline void CreateSharedDefeatDropRequest::SharedDtor(MessageLite& self) {
   this_._impl_.creature_id_.Destroy();
   this_._impl_.table_id_.Destroy();
   this_._impl_.killer_character_id_.Destroy();
+  this_._impl_.raid_group_id_.Destroy();
   this_._impl_.~Impl_();
 }
 
@@ -1494,7 +1520,7 @@ PROTOBUF_NOINLINE void CreateSharedDefeatDropRequest::Clear() {
   (void) cached_has_bits;
 
   cached_has_bits = _impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0x0000001fU)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x0000003fU)) {
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
       _impl_.eligible_character_ids_.Clear();
     }
@@ -1509,6 +1535,9 @@ PROTOBUF_NOINLINE void CreateSharedDefeatDropRequest::Clear() {
     }
     if (CheckHasBit(cached_has_bits, 0x00000010U)) {
       _impl_.killer_character_id_.ClearNonDefaultToEmpty();
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+      _impl_.raid_group_id_.ClearNonDefaultToEmpty();
     }
   }
   ::memset(&_impl_.killer_in_protected_town_, 0, static_cast<::size_t>(
@@ -1588,7 +1617,7 @@ PROTOBUF_NOINLINE void CreateSharedDefeatDropRequest::Clear() {
   }
 
   // bool killer_in_protected_town = 6;
-  if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000040U)) {
     if (this_._internal_killer_in_protected_town() != 0) {
       target = stream->EnsureSpace(target);
       target = ::_pbi::WireFormatLite::WriteBoolToArray(
@@ -1597,11 +1626,21 @@ PROTOBUF_NOINLINE void CreateSharedDefeatDropRequest::Clear() {
   }
 
   // bool creature_in_protected_town = 7;
-  if (CheckHasBit(cached_has_bits, 0x00000040U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000080U)) {
     if (this_._internal_creature_in_protected_town() != 0) {
       target = stream->EnsureSpace(target);
       target = ::_pbi::WireFormatLite::WriteBoolToArray(
           7, this_._internal_creature_in_protected_town(), target);
+    }
+  }
+
+  // string raid_group_id = 8;
+  if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+    if (!this_._internal_raid_group_id().empty()) {
+      const ::std::string& _s = this_._internal_raid_group_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.rewards.v1.CreateSharedDefeatDropRequest.raid_group_id");
+      target = stream->WriteStringMaybeAliased(8, _s, target);
     }
   }
 
@@ -1630,7 +1669,7 @@ PROTOBUF_NOINLINE void CreateSharedDefeatDropRequest::Clear() {
 
   ::_pbi::Prefetch5LinesFrom7Lines(&this_);
   cached_has_bits = this_._impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0x0000007fU)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x000000ffU)) {
     // repeated string eligible_character_ids = 5;
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
       total_size +=
@@ -1668,14 +1707,21 @@ PROTOBUF_NOINLINE void CreateSharedDefeatDropRequest::Clear() {
                                         this_._internal_killer_character_id());
       }
     }
-    // bool killer_in_protected_town = 6;
+    // string raid_group_id = 8;
     if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+      if (!this_._internal_raid_group_id().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_raid_group_id());
+      }
+    }
+    // bool killer_in_protected_town = 6;
+    if (CheckHasBit(cached_has_bits, 0x00000040U)) {
       if (this_._internal_killer_in_protected_town() != 0) {
         total_size += 2;
       }
     }
     // bool creature_in_protected_town = 7;
-    if (CheckHasBit(cached_has_bits, 0x00000040U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000080U)) {
       if (this_._internal_creature_in_protected_town() != 0) {
         total_size += 2;
       }
@@ -1699,7 +1745,7 @@ void CreateSharedDefeatDropRequest::MergeImpl(::google::protobuf::MessageLite& t
   (void)cached_has_bits;
 
   cached_has_bits = from._impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0x0000007fU)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x000000ffU)) {
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
       _this->_internal_mutable_eligible_character_ids()->InternalMergeFromWithArena(
           ::google::protobuf::MessageLite::internal_visibility(), arena,
@@ -1742,11 +1788,20 @@ void CreateSharedDefeatDropRequest::MergeImpl(::google::protobuf::MessageLite& t
       }
     }
     if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+      if (!from._internal_raid_group_id().empty()) {
+        _this->_internal_set_raid_group_id(from._internal_raid_group_id());
+      } else {
+        if (_this->_impl_.raid_group_id_.IsDefault()) {
+          _this->_internal_set_raid_group_id("");
+        }
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000040U)) {
       if (from._internal_killer_in_protected_town() != 0) {
         _this->_impl_.killer_in_protected_town_ = from._impl_.killer_in_protected_town_;
       }
     }
-    if (CheckHasBit(cached_has_bits, 0x00000040U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000080U)) {
       if (from._internal_creature_in_protected_town() != 0) {
         _this->_impl_.creature_in_protected_town_ = from._impl_.creature_in_protected_town_;
       }
@@ -1776,6 +1831,7 @@ void CreateSharedDefeatDropRequest::InternalSwap(CreateSharedDefeatDropRequest* 
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.creature_id_, &other->_impl_.creature_id_, arena);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.table_id_, &other->_impl_.table_id_, arena);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.killer_character_id_, &other->_impl_.killer_character_id_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.raid_group_id_, &other->_impl_.raid_group_id_, arena);
   ::google::protobuf::internal::memswap<
       PROTOBUF_FIELD_OFFSET(CreateSharedDefeatDropRequest, _impl_.creature_in_protected_town_)
       + sizeof(CreateSharedDefeatDropRequest::_impl_.creature_in_protected_town_)
@@ -2340,7 +2396,8 @@ PROTOBUF_NDEBUG_INLINE SharedDefeatDropReceipt::Impl_::Impl_(
         ,
         defeat_event_id_(arena, from.defeat_event_id_),
         claimant_character_id_(arena, from.claimant_character_id_),
-        ledger_operation_id_(arena, from.ledger_operation_id_) {}
+        ledger_operation_id_(arena, from.ledger_operation_id_),
+        raid_group_id_(arena, from.raid_group_id_) {}
 
 SharedDefeatDropReceipt::SharedDefeatDropReceipt(
     ::google::protobuf::Arena* PROTOBUF_NULLABLE arena,
@@ -2371,7 +2428,8 @@ PROTOBUF_NDEBUG_INLINE SharedDefeatDropReceipt::Impl_::Impl_(
         ,
         defeat_event_id_(arena),
         claimant_character_id_(arena),
-        ledger_operation_id_(arena) {}
+        ledger_operation_id_(arena),
+        raid_group_id_(arena) {}
 
 inline void SharedDefeatDropReceipt::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
   new (&_impl_) Impl_(internal_visibility(), arena);
@@ -2391,6 +2449,7 @@ inline void SharedDefeatDropReceipt::SharedDtor(MessageLite& self) {
   this_._impl_.defeat_event_id_.Destroy();
   this_._impl_.claimant_character_id_.Destroy();
   this_._impl_.ledger_operation_id_.Destroy();
+  this_._impl_.raid_group_id_.Destroy();
   this_._impl_.~Impl_();
 }
 
@@ -2428,7 +2487,7 @@ PROTOBUF_NOINLINE void SharedDefeatDropReceipt::Clear() {
   (void) cached_has_bits;
 
   cached_has_bits = _impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0x0000000fU)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x0000001fU)) {
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
       _impl_.items_.Clear();
     }
@@ -2440,6 +2499,9 @@ PROTOBUF_NOINLINE void SharedDefeatDropReceipt::Clear() {
     }
     if (CheckHasBit(cached_has_bits, 0x00000008U)) {
       _impl_.ledger_operation_id_.ClearNonDefaultToEmpty();
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+      _impl_.raid_group_id_.ClearNonDefaultToEmpty();
     }
   }
   _impl_.container_revision_ = ::int64_t{0};
@@ -2510,11 +2572,21 @@ PROTOBUF_NOINLINE void SharedDefeatDropReceipt::Clear() {
   }
 
   // int64 container_revision = 5;
-  if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000020U)) {
     if (this_._internal_container_revision() != 0) {
       target =
           ::google::protobuf::internal::WireFormatLite::WriteInt64ToArrayWithField<5>(
               stream, this_._internal_container_revision(), target);
+    }
+  }
+
+  // string raid_group_id = 6;
+  if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+    if (!this_._internal_raid_group_id().empty()) {
+      const ::std::string& _s = this_._internal_raid_group_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.rewards.v1.SharedDefeatDropReceipt.raid_group_id");
+      target = stream->WriteStringMaybeAliased(6, _s, target);
     }
   }
 
@@ -2543,7 +2615,7 @@ PROTOBUF_NOINLINE void SharedDefeatDropReceipt::Clear() {
 
   ::_pbi::Prefetch5LinesFrom7Lines(&this_);
   cached_has_bits = this_._impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0x0000001fU)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x0000003fU)) {
     // repeated .sf.rewards.v1.SharedDropItem items = 2;
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
       total_size += 1UL * this_._internal_items_size();
@@ -2572,8 +2644,15 @@ PROTOBUF_NOINLINE void SharedDefeatDropReceipt::Clear() {
                                         this_._internal_ledger_operation_id());
       }
     }
-    // int64 container_revision = 5;
+    // string raid_group_id = 6;
     if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+      if (!this_._internal_raid_group_id().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_raid_group_id());
+      }
+    }
+    // int64 container_revision = 5;
+    if (CheckHasBit(cached_has_bits, 0x00000020U)) {
       if (this_._internal_container_revision() != 0) {
         total_size += ::_pbi::WireFormatLite::Int64SizePlusOne(
             this_._internal_container_revision());
@@ -2598,7 +2677,7 @@ void SharedDefeatDropReceipt::MergeImpl(::google::protobuf::MessageLite& to_msg,
   (void)cached_has_bits;
 
   cached_has_bits = from._impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0x0000001fU)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x0000003fU)) {
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
       _this->_internal_mutable_items()->InternalMergeFromWithArena(
           ::google::protobuf::MessageLite::internal_visibility(), arena,
@@ -2632,6 +2711,15 @@ void SharedDefeatDropReceipt::MergeImpl(::google::protobuf::MessageLite& to_msg,
       }
     }
     if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+      if (!from._internal_raid_group_id().empty()) {
+        _this->_internal_set_raid_group_id(from._internal_raid_group_id());
+      } else {
+        if (_this->_impl_.raid_group_id_.IsDefault()) {
+          _this->_internal_set_raid_group_id("");
+        }
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000020U)) {
       if (from._internal_container_revision() != 0) {
         _this->_impl_.container_revision_ = from._impl_.container_revision_;
       }
@@ -2660,6 +2748,7 @@ void SharedDefeatDropReceipt::InternalSwap(SharedDefeatDropReceipt* PROTOBUF_RES
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.defeat_event_id_, &other->_impl_.defeat_event_id_, arena);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.claimant_character_id_, &other->_impl_.claimant_character_id_, arena);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.ledger_operation_id_, &other->_impl_.ledger_operation_id_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.raid_group_id_, &other->_impl_.raid_group_id_, arena);
   swap(_impl_.container_revision_, other->_impl_.container_revision_);
 }
 

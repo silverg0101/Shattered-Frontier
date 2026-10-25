@@ -147,6 +147,8 @@ try {
         $groupDll = Join-Path $buildOutput 'Group.Host.Tests.dll'
         $currentStep = 'group wire'
         $results.Add((Invoke-Checked $dotnet @($groupDll,'group') @{ GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$connection; SF_GAMEPLAY_TOKEN=$token }))
+        $currentStep = 'raid rewards wire'
+        $results.Add((Invoke-Checked $dotnet @($groupDll,'raid-rewards') @{ GAMEPLAY_HOST_PORT="$hostPort"; GAMEPLAY_LEDGER_CONNECTION=$connection; SF_GAMEPLAY_TOKEN=$token }))
         Stop-Process -Id $hostProcess.Id -Force; $hostProcess.WaitForExit(10000) | Out-Null
         $currentStep = 'group restart'
         $hostProcess = Start-Process -FilePath $dotnet -ArgumentList @($hostDll) -PassThru -WindowStyle Hidden -RedirectStandardOutput (Join-Path $private 'host-group-restart.out') -RedirectStandardError (Join-Path $private 'host-group-restart.err')

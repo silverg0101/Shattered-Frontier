@@ -208,7 +208,7 @@ try {
         foreach ($identity in @('alpha','beta')) {
             $view = Get-LedgerView $fx "ctn_dev_$identity"
             $amount = [int]$view.items['item/boar_hide']
-            if ($amount -lt 2 -or $amount -gt 3) { throw "Personal loot missing for $identity`: $amount" }
+            if ($amount -lt 2 -or $amount -gt 3) { throw "Personal loot missing for $identity`: $amount; ledger get exit=$($view.exitCode) line=$($view.line)" }
             $bossItems = @('item/studded_jerkin','item/reinforced_greaves','item/captains_longsword') | ForEach-Object { [int]$view.items[$_] } | Measure-Object -Sum
             if ($bossItems.Sum -ne [int]($identity -eq 'alpha')) { throw "Boss set claim incorrect for $identity`: $($bossItems.Sum)" }
         }

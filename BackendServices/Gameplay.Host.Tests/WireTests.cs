@@ -40,6 +40,74 @@ var headers = new Metadata { { "authorization", "Bearer " + token } };
 var bad = new Metadata { { "authorization", "Bearer wrong" } };
 DateTime Deadline() => DateTime.UtcNow.AddSeconds(5);
 
+if (mode == "raid-rewards")
+{
+    var group = new GroupPb.GroupService.GroupServiceClient(channel);
+    var rewards = new RewardPb.Rewards.RewardsClient(channel);
+    var ledger = new InventoryLedger(new PostgresInventoryLedgerStore(connection));
+    GroupPb.Party MakeParty(string suffix)
+    {
+        var leader = "chr_raid_" + suffix;
+        var created = group.CreateParty(new GroupPb.CreatePartyRequest { IdempotencyKey = "raid/create/" + suffix,
+            LeaderCharacterId = leader, AccountId = "acct_raid_" + suffix, RealmId = "realm_dev", DcRegion = "dc_dev" },
+            headers, Deadline());
+        return group.JoinParty(new GroupPb.JoinPartyRequest { IdempotencyKey = "raid/join/" + suffix,
+            PartyId = created.PartyId, ActorCharacterId = leader, CharacterId = leader + "_second",
+            AccountId = "acct_raid_" + suffix + "_second", RealmId = "realm_dev" }, headers, Deadline());
+    }
+    var a = MakeParty("a"); var b = MakeParty("b");
+    var raid = group.CreateRaid(new GroupPb.CreateRaidRequest { IdempotencyKey = "raid/establish",
+        PartyId = a.PartyId, ActorCharacterId = "chr_raid_a" }, headers, Deadline());
+    Check(raid.RaidGroupId.StartsWith("rgp_") && raid.PartyIds.SequenceEqual([a.PartyId]), "Raid creation failed.");
+    var link = new GroupPb.AddPartyToRaidRequest { IdempotencyKey = "raid/link-b", RaidGroupId = raid.RaidGroupId,
+        PartyId = b.PartyId, ActorCharacterId = "chr_raid_a", JoiningPartyLeaderCharacterId = "chr_raid_b" };
+    raid = group.AddPartyToRaid(link, headers, Deadline());
+    Check(raid.PartyIds.Count == 2 && raid.MemberCharacterIds.Count == 4 &&
+        group.AddPartyToRaid(link, headers, Deadline()).Equals(raid), "Two-party raid or replay failed.");
+    var aView = group.GetPartyForCharacter(new GroupPb.CharacterRef { CharacterId = "chr_raid_a_second" }, headers, Deadline());
+    var bView = group.GetPartyForCharacter(new GroupPb.CharacterRef { CharacterId = "chr_raid_b_second" }, headers, Deadline());
+    Check(aView.RaidGroupId == raid.RaidGroupId && bView.RaidGroupId == raid.RaidGroupId &&
+        aView.RaidMemberCharacterIds.Count == 4 && bView.RaidMemberCharacterIds.Count == 4,
+        "Raid membership was not visible from both parties.");
+    Code(() => group.CreateRaid(new GroupPb.CreateRaidRequest { IdempotencyKey = "raid/duplicate",
+        PartyId = b.PartyId, ActorCharacterId = "chr_raid_b" }, headers, Deadline()), StatusCode.FailedPrecondition);
+    foreach (var member in new[] { "chr_raid_a_second", "chr_raid_b_second" })
+    {
+        var container = "ctn_" + member;
+        ledger.CreateContainer(new ContainerSpec(container, OwnerKind.Character, member, ContainerKind.Backpack, 100));
+        var personal = rewards.GrantDefeatReward(new RewardPb.GrantDefeatRewardRequest {
+            DefeatEventId = "defeat/raid-ordinary", KillerCharacterId = "chr_raid_a_second",
+            RecipientCharacterId = member, ContainerId = container, ExpectedContainerRevision = 0,
+            CreatureId = "npc/boar", TableId = "loot/greenlands_silverbrook_boar" }, headers, Deadline());
+        Check(personal.Granted && ledger.Read(container).Quantities.GetValueOrDefault("item/boar_hide") > 0,
+            "A raid member in another party missed personal loot.");
+    }
+    var boss = new RewardPb.CreateSharedDefeatDropRequest { DefeatEventId = "defeat/raid-boss",
+        CreatureId = "npc/test_boss", TableId = "loot/boss_greenlands_bandit_captain",
+        KillerCharacterId = "chr_raid_a_second", RaidGroupId = raid.RaidGroupId };
+    boss.EligibleCharacterIds.AddRange(["chr_raid_a_second", "chr_raid_b_second"]);
+    var drop = rewards.CreateSharedDefeatDrop(boss, headers, Deadline());
+    Check(drop.RaidGroupId == raid.RaidGroupId && drop.Items.Count == 1,
+        "Boss did not snapshot one raid-wide set.");
+    var claim = rewards.ClaimSharedDefeatDrop(new RewardPb.ClaimSharedDefeatDropRequest {
+        DefeatEventId = drop.DefeatEventId, CharacterId = "chr_raid_b_second",
+        ContainerId = "ctn_chr_raid_b_second" }, headers, Deadline());
+    Check(claim.ClaimantCharacterId == "chr_raid_b_second" && claim.RaidGroupId == raid.RaidGroupId,
+        "Second party could not claim the raid set.");
+    var claimedBag = ledger.Read("ctn_chr_raid_b_second");
+    Check(claim.Items.All(item => claimedBag.Quantities.GetValueOrDefault(item.DefinitionId) == item.Quantity) &&
+        claim.Items.Where(item => GearDefinitions.IsGear(item.DefinitionId)).All(item =>
+            claimedBag.Instances!.Count(instance => instance.DefinitionId == item.DefinitionId) == item.Quantity),
+        "Boss claim did not persist readable gear copies.");
+    Code(() => rewards.ClaimSharedDefeatDrop(new RewardPb.ClaimSharedDefeatDropRequest {
+        DefeatEventId = drop.DefeatEventId, CharacterId = "chr_raid_a_second",
+        ContainerId = "ctn_chr_raid_a_second" }, headers, Deadline()), StatusCode.AlreadyExists);
+    var changed = boss.Clone(); changed.RaidGroupId = "rgp_other";
+    Code(() => rewards.CreateSharedDefeatDrop(changed, headers, Deadline()), StatusCode.AlreadyExists);
+    Console.WriteLine("PASS raid two-party membership/replay/visibility/personal grants/single boss claim (8)");
+    return;
+}
+
 if (mode is "group" or "group-restart")
 {
     var group = new GroupPb.GroupService.GroupServiceClient(channel);

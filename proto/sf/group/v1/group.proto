@@ -11,6 +11,25 @@ service GroupService {
   rpc PromoteLeader(MemberActionRequest) returns (Party);
   rpc AssignAssistant(MemberActionRequest) returns (Party);
   rpc GetPartyForCharacter(CharacterRef) returns (Party);
+  rpc CreateRaid(CreateRaidRequest) returns (Raid);
+  rpc AddPartyToRaid(AddPartyToRaidRequest) returns (Raid);
+}
+message CreateRaidRequest {
+  string idempotency_key = 1;
+  string party_id = 2;
+  string actor_character_id = 3;
+}
+message AddPartyToRaidRequest {
+  string idempotency_key = 1;
+  string raid_group_id = 2;
+  string party_id = 3;
+  string actor_character_id = 4;
+  string joining_party_leader_character_id = 5;
+}
+message Raid {
+  string raid_group_id = 1;
+  repeated string party_ids = 2;
+  repeated string member_character_ids = 3;
 }
 message CreatePartyRequest {
   string idempotency_key = 1;
@@ -41,4 +60,6 @@ message Party {
   repeated string member_character_ids = 4;
   int32 version = 5;
   string state = 6;
+  string raid_group_id = 7;
+  repeated string raid_member_character_ids = 8;
 }

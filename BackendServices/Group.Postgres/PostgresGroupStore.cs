@@ -11,14 +11,20 @@ public sealed record GroupControls
 {
     // Release-declared party limits. Changes take effect at the next host start.
     public int PartyMaxMembers { get; init; } = 5;
+    // Release-declared raid capacity; effective at the next host start.
+    public int RaidMaxMembers { get; init; } = 25;
+    public int RaidMaxParties { get; init; } = 5;
     public void Validate()
     {
-        if (PartyMaxMembers is < 2 or > 5)
+        if (PartyMaxMembers is < 2 or > 5 || RaidMaxMembers is < 2 or > 25 || RaidMaxMembers < PartyMaxMembers ||
+            RaidMaxParties is < 2 or > 5)
             throw new InvalidOperationException("Group controls outside shipped bounds.");
     }
 }
 
-public sealed record PartySnapshot(string PartyId, string Leader, string Assistant, string[] Members, int Version, string State);
+public sealed record PartySnapshot(string PartyId, string Leader, string Assistant, string[] Members, int Version, string State,
+    string RaidGroupId, string[] RaidMembers);
+public sealed record RaidSnapshot(string RaidGroupId, string[] PartyIds, string[] Members);
 public sealed class GroupRejectedException(string message, string code) : InvalidOperationException(message)
 {
     public string Code { get; } = code;
@@ -63,7 +69,93 @@ public sealed class PostgresGroupStore(string connectionString, GroupControls co
         using var members = m.ExecuteReader();
         var ids = new List<string>(); var assistant = "";
         while (members.Read()) { ids.Add(members.GetString(0)); if (members.GetBoolean(1)) assistant = members.GetString(0); }
-        return new PartySnapshot(partyId, leader, assistant, [.. ids], version, state);
+        members.Close();
+        using var link = Command(db, tx, "SELECT raid_group_id FROM \"group\".raid_parties WHERE party_id=$1", partyId);
+        var raidId = link.ExecuteScalar() as string;
+        var raidMembers = raidId is null ? [] : ReadRaid(db, tx, raidId).Members;
+        return new PartySnapshot(partyId, leader, assistant, [.. ids], version, state, raidId ?? "", raidMembers);
+    }
+    private static RaidSnapshot ReadRaid(NpgsqlConnection db, NpgsqlTransaction? tx, string raidId)
+    {
+        using var cmd = Command(db, tx, "SELECT rp.party_id,pm.character_id FROM \"group\".raid_parties rp " +
+            "JOIN \"group\".parties p ON p.party_id=rp.party_id AND p.state='active' " +
+            "LEFT JOIN \"group\".party_members pm ON pm.party_id=rp.party_id AND pm.left_at IS NULL " +
+            "WHERE rp.raid_group_id=$1 ORDER BY rp.joined_at,rp.party_id,pm.joined_at,pm.character_id", raidId);
+        using var row = cmd.ExecuteReader();
+        var parties = new List<string>(); var members = new List<string>();
+        while (row.Read())
+        {
+            var party = row.GetString(0);
+            if (!parties.Contains(party)) parties.Add(party);
+            if (!row.IsDBNull(1)) members.Add(row.GetString(1));
+        }
+        return new RaidSnapshot(raidId, [.. parties], [.. members]);
+    }
+    private static string PartyRealm(NpgsqlConnection db, NpgsqlTransaction tx, string partyId)
+    {
+        using var cmd = Command(db, tx, "SELECT realm_id FROM \"group\".party_members WHERE party_id=$1 AND left_at IS NULL LIMIT 1", partyId);
+        return cmd.ExecuteScalar() as string ?? "";
+    }
+    private RaidSnapshot MutateRaid(string key, string rpc, string input, Func<NpgsqlConnection, NpgsqlTransaction, string> apply)
+    {
+        Key(key);
+        var hash = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(input)));
+        using var db = new NpgsqlConnection(connectionString); db.Open();
+        using var tx = db.BeginTransaction();
+        using (var l = Command(db, tx, "SELECT pg_advisory_xact_lock(208940, 1)")) l.ExecuteNonQuery();
+        RaidSnapshot? prior = null;
+        using (var replay = Command(db, tx, "SELECT rpc,request_hash,response FROM \"group\".idempotency_keys WHERE idempotency_key=$1", key))
+        using (var row = replay.ExecuteReader())
+        {
+            if (row.Read())
+            {
+                Require(row.GetString(0) == rpc && row.GetString(1) == hash, "Idempotency key reused with different request.", "invalid");
+                prior = JsonSerializer.Deserialize<RaidSnapshot>((byte[])row[2])!;
+            }
+        }
+        if (prior is not null) { tx.Commit(); return prior; }
+        var id = apply(db, tx);
+        var snapshot = ReadRaid(db, tx, id);
+        using (var receipt = Command(db, tx, "INSERT INTO \"group\".idempotency_keys(idempotency_key,rpc,request_hash,response) VALUES ($1,$2,$3,$4)",
+            key, rpc, hash, JsonSerializer.SerializeToUtf8Bytes(snapshot))) receipt.ExecuteNonQuery();
+        tx.Commit(); return snapshot;
+    }
+    public RaidSnapshot CreateRaid(string key, string partyId, string actor)
+    {
+        Id(partyId, "pty_"); Id(actor, "chr_");
+        return MutateRaid(key, "create_raid", string.Join("|", partyId, actor), (db, tx) =>
+        {
+            var party = ReadParty(db, tx, partyId);
+            Require(party.State == "active" && party.Leader == actor, "Only an active party leader can create a raid.", "permission");
+            Require(party.RaidGroupId.Length == 0, "Party already belongs to a raid.");
+            Require(party.Members.Length <= controls.RaidMaxMembers, "Raid is full.");
+            var id = "rgp_" + Guid.NewGuid().ToString("N");
+            using (var group = Command(db, tx, "INSERT INTO \"group\".raid_groups(raid_group_id,realm_id,leader_party_id) VALUES ($1,$2,$3)",
+                id, PartyRealm(db, tx, partyId), partyId)) group.ExecuteNonQuery();
+            using (var link = Command(db, tx, "INSERT INTO \"group\".raid_parties(raid_group_id,party_id) VALUES ($1,$2)", id, partyId)) link.ExecuteNonQuery();
+            return id;
+        });
+    }
+    public RaidSnapshot AddPartyToRaid(string key, string raidId, string partyId, string actor, string joiningLeader)
+    {
+        Id(raidId, "rgp_"); Id(partyId, "pty_"); Id(actor, "chr_"); Id(joiningLeader, "chr_");
+        return MutateRaid(key, "add_raid_party", string.Join("|", raidId, partyId, actor, joiningLeader), (db, tx) =>
+        {
+            using var group = Command(db, tx, "SELECT realm_id,leader_party_id FROM \"group\".raid_groups WHERE raid_group_id=$1", raidId);
+            using var row = group.ExecuteReader();
+            Require(row.Read(), "Raid not found.", "not_found");
+            var realm = row.GetString(0); var leaderParty = row.GetString(1); row.Close();
+            var leader = ReadParty(db, tx, leaderParty);
+            var joining = ReadParty(db, tx, partyId);
+            Require(leader.State == "active" && leader.Leader == actor && joining.State == "active" &&
+                joining.Leader == joiningLeader, "Both active party leaders must authorize the raid link.", "permission");
+            Require(joining.RaidGroupId.Length == 0 && realm == PartyRealm(db, tx, partyId), "Party already raided or in another realm.");
+            var current = ReadRaid(db, tx, raidId);
+            Require(current.PartyIds.Length < controls.RaidMaxParties &&
+                current.Members.Length + joining.Members.Length <= controls.RaidMaxMembers, "Raid is full.");
+            using var link = Command(db, tx, "INSERT INTO \"group\".raid_parties(raid_group_id,party_id) VALUES ($1,$2)", raidId, partyId);
+            link.ExecuteNonQuery(); return raidId;
+        });
     }
     private PartySnapshot Mutate(string key, string rpc, string input, Func<NpgsqlConnection, NpgsqlTransaction, string> apply)
     {
@@ -111,6 +203,8 @@ public sealed class PostgresGroupStore(string connectionString, GroupControls co
             var party = ReadParty(db, tx, partyId);
             Require(party.State == "active" && party.Leader == actor, "Only an active party leader can add a member.", "permission");
             Require(party.Members.Length < controls.PartyMaxMembers && actor != member, "Party full or invalid member.");
+            if (party.RaidGroupId.Length > 0)
+                Require(ReadRaid(db, tx, party.RaidGroupId).Members.Length < controls.RaidMaxMembers, "Raid is full.");
             Require(FindForCharacter(db, tx, member) is null, "Character already in a party.");
             using var realmCheck = Command(db, tx, "SELECT realm_id FROM \"group\".party_members WHERE party_id=$1 AND left_at IS NULL LIMIT 1", partyId);
             Require((string?)realmCheck.ExecuteScalar() == realm, "Premade parties must share a realm.");

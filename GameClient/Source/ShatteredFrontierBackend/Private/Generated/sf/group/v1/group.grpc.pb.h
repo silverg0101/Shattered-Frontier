@@ -88,6 +88,20 @@ class GroupService final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::group::v1::Party>> PrepareAsyncGetPartyForCharacter(::grpc::ClientContext* context, const ::sf::group::v1::CharacterRef& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::group::v1::Party>>(PrepareAsyncGetPartyForCharacterRaw(context, request, cq));
     }
+    virtual ::grpc::Status CreateRaid(::grpc::ClientContext* context, const ::sf::group::v1::CreateRaidRequest& request, ::sf::group::v1::Raid* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::group::v1::Raid>> AsyncCreateRaid(::grpc::ClientContext* context, const ::sf::group::v1::CreateRaidRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::group::v1::Raid>>(AsyncCreateRaidRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::group::v1::Raid>> PrepareAsyncCreateRaid(::grpc::ClientContext* context, const ::sf::group::v1::CreateRaidRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::group::v1::Raid>>(PrepareAsyncCreateRaidRaw(context, request, cq));
+    }
+    virtual ::grpc::Status AddPartyToRaid(::grpc::ClientContext* context, const ::sf::group::v1::AddPartyToRaidRequest& request, ::sf::group::v1::Raid* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::group::v1::Raid>> AsyncAddPartyToRaid(::grpc::ClientContext* context, const ::sf::group::v1::AddPartyToRaidRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::group::v1::Raid>>(AsyncAddPartyToRaidRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::group::v1::Raid>> PrepareAsyncAddPartyToRaid(::grpc::ClientContext* context, const ::sf::group::v1::AddPartyToRaidRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::group::v1::Raid>>(PrepareAsyncAddPartyToRaidRaw(context, request, cq));
+    }
     class async_interface {
      public:
       virtual ~async_interface() {}
@@ -105,6 +119,10 @@ class GroupService final {
       virtual void AssignAssistant(::grpc::ClientContext* context, const ::sf::group::v1::MemberActionRequest* request, ::sf::group::v1::Party* response, ::grpc::ClientUnaryReactor* reactor) = 0;
       virtual void GetPartyForCharacter(::grpc::ClientContext* context, const ::sf::group::v1::CharacterRef* request, ::sf::group::v1::Party* response, std::function<void(::grpc::Status)>) = 0;
       virtual void GetPartyForCharacter(::grpc::ClientContext* context, const ::sf::group::v1::CharacterRef* request, ::sf::group::v1::Party* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void CreateRaid(::grpc::ClientContext* context, const ::sf::group::v1::CreateRaidRequest* request, ::sf::group::v1::Raid* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void CreateRaid(::grpc::ClientContext* context, const ::sf::group::v1::CreateRaidRequest* request, ::sf::group::v1::Raid* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void AddPartyToRaid(::grpc::ClientContext* context, const ::sf::group::v1::AddPartyToRaidRequest* request, ::sf::group::v1::Raid* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void AddPartyToRaid(::grpc::ClientContext* context, const ::sf::group::v1::AddPartyToRaidRequest* request, ::sf::group::v1::Raid* response, ::grpc::ClientUnaryReactor* reactor) = 0;
     };
     typedef class async_interface experimental_async_interface;
     virtual class async_interface* async() { return nullptr; }
@@ -124,6 +142,10 @@ class GroupService final {
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::group::v1::Party>* PrepareAsyncAssignAssistantRaw(::grpc::ClientContext* context, const ::sf::group::v1::MemberActionRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::group::v1::Party>* AsyncGetPartyForCharacterRaw(::grpc::ClientContext* context, const ::sf::group::v1::CharacterRef& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::group::v1::Party>* PrepareAsyncGetPartyForCharacterRaw(::grpc::ClientContext* context, const ::sf::group::v1::CharacterRef& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::group::v1::Raid>* AsyncCreateRaidRaw(::grpc::ClientContext* context, const ::sf::group::v1::CreateRaidRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::group::v1::Raid>* PrepareAsyncCreateRaidRaw(::grpc::ClientContext* context, const ::sf::group::v1::CreateRaidRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::group::v1::Raid>* AsyncAddPartyToRaidRaw(::grpc::ClientContext* context, const ::sf::group::v1::AddPartyToRaidRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::group::v1::Raid>* PrepareAsyncAddPartyToRaidRaw(::grpc::ClientContext* context, const ::sf::group::v1::AddPartyToRaidRequest& request, ::grpc::CompletionQueue* cq) = 0;
   };
   class Stub final : public StubInterface {
    public:
@@ -177,6 +199,20 @@ class GroupService final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::group::v1::Party>> PrepareAsyncGetPartyForCharacter(::grpc::ClientContext* context, const ::sf::group::v1::CharacterRef& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::group::v1::Party>>(PrepareAsyncGetPartyForCharacterRaw(context, request, cq));
     }
+    ::grpc::Status CreateRaid(::grpc::ClientContext* context, const ::sf::group::v1::CreateRaidRequest& request, ::sf::group::v1::Raid* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::group::v1::Raid>> AsyncCreateRaid(::grpc::ClientContext* context, const ::sf::group::v1::CreateRaidRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::group::v1::Raid>>(AsyncCreateRaidRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::group::v1::Raid>> PrepareAsyncCreateRaid(::grpc::ClientContext* context, const ::sf::group::v1::CreateRaidRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::group::v1::Raid>>(PrepareAsyncCreateRaidRaw(context, request, cq));
+    }
+    ::grpc::Status AddPartyToRaid(::grpc::ClientContext* context, const ::sf::group::v1::AddPartyToRaidRequest& request, ::sf::group::v1::Raid* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::group::v1::Raid>> AsyncAddPartyToRaid(::grpc::ClientContext* context, const ::sf::group::v1::AddPartyToRaidRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::group::v1::Raid>>(AsyncAddPartyToRaidRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::group::v1::Raid>> PrepareAsyncAddPartyToRaid(::grpc::ClientContext* context, const ::sf::group::v1::AddPartyToRaidRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::group::v1::Raid>>(PrepareAsyncAddPartyToRaidRaw(context, request, cq));
+    }
     class async final :
       public StubInterface::async_interface {
      public:
@@ -194,6 +230,10 @@ class GroupService final {
       void AssignAssistant(::grpc::ClientContext* context, const ::sf::group::v1::MemberActionRequest* request, ::sf::group::v1::Party* response, ::grpc::ClientUnaryReactor* reactor) override;
       void GetPartyForCharacter(::grpc::ClientContext* context, const ::sf::group::v1::CharacterRef* request, ::sf::group::v1::Party* response, std::function<void(::grpc::Status)>) override;
       void GetPartyForCharacter(::grpc::ClientContext* context, const ::sf::group::v1::CharacterRef* request, ::sf::group::v1::Party* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void CreateRaid(::grpc::ClientContext* context, const ::sf::group::v1::CreateRaidRequest* request, ::sf::group::v1::Raid* response, std::function<void(::grpc::Status)>) override;
+      void CreateRaid(::grpc::ClientContext* context, const ::sf::group::v1::CreateRaidRequest* request, ::sf::group::v1::Raid* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void AddPartyToRaid(::grpc::ClientContext* context, const ::sf::group::v1::AddPartyToRaidRequest* request, ::sf::group::v1::Raid* response, std::function<void(::grpc::Status)>) override;
+      void AddPartyToRaid(::grpc::ClientContext* context, const ::sf::group::v1::AddPartyToRaidRequest* request, ::sf::group::v1::Raid* response, ::grpc::ClientUnaryReactor* reactor) override;
      private:
       friend class Stub;
       explicit async(Stub* stub): stub_(stub) { }
@@ -219,6 +259,10 @@ class GroupService final {
     ::grpc::ClientAsyncResponseReader< ::sf::group::v1::Party>* PrepareAsyncAssignAssistantRaw(::grpc::ClientContext* context, const ::sf::group::v1::MemberActionRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::sf::group::v1::Party>* AsyncGetPartyForCharacterRaw(::grpc::ClientContext* context, const ::sf::group::v1::CharacterRef& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::sf::group::v1::Party>* PrepareAsyncGetPartyForCharacterRaw(::grpc::ClientContext* context, const ::sf::group::v1::CharacterRef& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::sf::group::v1::Raid>* AsyncCreateRaidRaw(::grpc::ClientContext* context, const ::sf::group::v1::CreateRaidRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::sf::group::v1::Raid>* PrepareAsyncCreateRaidRaw(::grpc::ClientContext* context, const ::sf::group::v1::CreateRaidRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::sf::group::v1::Raid>* AsyncAddPartyToRaidRaw(::grpc::ClientContext* context, const ::sf::group::v1::AddPartyToRaidRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::sf::group::v1::Raid>* PrepareAsyncAddPartyToRaidRaw(::grpc::ClientContext* context, const ::sf::group::v1::AddPartyToRaidRequest& request, ::grpc::CompletionQueue* cq) override;
     const ::grpc::internal::RpcMethod rpcmethod_CreateParty_;
     const ::grpc::internal::RpcMethod rpcmethod_JoinParty_;
     const ::grpc::internal::RpcMethod rpcmethod_LeaveParty_;
@@ -226,6 +270,8 @@ class GroupService final {
     const ::grpc::internal::RpcMethod rpcmethod_PromoteLeader_;
     const ::grpc::internal::RpcMethod rpcmethod_AssignAssistant_;
     const ::grpc::internal::RpcMethod rpcmethod_GetPartyForCharacter_;
+    const ::grpc::internal::RpcMethod rpcmethod_CreateRaid_;
+    const ::grpc::internal::RpcMethod rpcmethod_AddPartyToRaid_;
   };
   static std::unique_ptr<Stub> NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
 
@@ -240,6 +286,8 @@ class GroupService final {
     virtual ::grpc::Status PromoteLeader(::grpc::ServerContext* context, const ::sf::group::v1::MemberActionRequest* request, ::sf::group::v1::Party* response);
     virtual ::grpc::Status AssignAssistant(::grpc::ServerContext* context, const ::sf::group::v1::MemberActionRequest* request, ::sf::group::v1::Party* response);
     virtual ::grpc::Status GetPartyForCharacter(::grpc::ServerContext* context, const ::sf::group::v1::CharacterRef* request, ::sf::group::v1::Party* response);
+    virtual ::grpc::Status CreateRaid(::grpc::ServerContext* context, const ::sf::group::v1::CreateRaidRequest* request, ::sf::group::v1::Raid* response);
+    virtual ::grpc::Status AddPartyToRaid(::grpc::ServerContext* context, const ::sf::group::v1::AddPartyToRaidRequest* request, ::sf::group::v1::Raid* response);
   };
   template <class BaseClass>
   class WithAsyncMethod_CreateParty : public BaseClass {
@@ -381,7 +429,47 @@ class GroupService final {
       ::grpc::Service::RequestAsyncUnary(6, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
-  typedef WithAsyncMethod_CreateParty<WithAsyncMethod_JoinParty<WithAsyncMethod_LeaveParty<WithAsyncMethod_KickMember<WithAsyncMethod_PromoteLeader<WithAsyncMethod_AssignAssistant<WithAsyncMethod_GetPartyForCharacter<Service > > > > > > > AsyncService;
+  template <class BaseClass>
+  class WithAsyncMethod_CreateRaid : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_CreateRaid() {
+      ::grpc::Service::MarkMethodAsync(7);
+    }
+    ~WithAsyncMethod_CreateRaid() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status CreateRaid(::grpc::ServerContext* /*context*/, const ::sf::group::v1::CreateRaidRequest* /*request*/, ::sf::group::v1::Raid* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestCreateRaid(::grpc::ServerContext* context, ::sf::group::v1::CreateRaidRequest* request, ::grpc::ServerAsyncResponseWriter< ::sf::group::v1::Raid>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(7, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_AddPartyToRaid : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_AddPartyToRaid() {
+      ::grpc::Service::MarkMethodAsync(8);
+    }
+    ~WithAsyncMethod_AddPartyToRaid() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status AddPartyToRaid(::grpc::ServerContext* /*context*/, const ::sf::group::v1::AddPartyToRaidRequest* /*request*/, ::sf::group::v1::Raid* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestAddPartyToRaid(::grpc::ServerContext* context, ::sf::group::v1::AddPartyToRaidRequest* request, ::grpc::ServerAsyncResponseWriter< ::sf::group::v1::Raid>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(8, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  typedef WithAsyncMethod_CreateParty<WithAsyncMethod_JoinParty<WithAsyncMethod_LeaveParty<WithAsyncMethod_KickMember<WithAsyncMethod_PromoteLeader<WithAsyncMethod_AssignAssistant<WithAsyncMethod_GetPartyForCharacter<WithAsyncMethod_CreateRaid<WithAsyncMethod_AddPartyToRaid<Service > > > > > > > > > AsyncService;
   template <class BaseClass>
   class WithCallbackMethod_CreateParty : public BaseClass {
    private:
@@ -571,7 +659,61 @@ class GroupService final {
     virtual ::grpc::ServerUnaryReactor* GetPartyForCharacter(
       ::grpc::CallbackServerContext* /*context*/, const ::sf::group::v1::CharacterRef* /*request*/, ::sf::group::v1::Party* /*response*/)  { return nullptr; }
   };
-  typedef WithCallbackMethod_CreateParty<WithCallbackMethod_JoinParty<WithCallbackMethod_LeaveParty<WithCallbackMethod_KickMember<WithCallbackMethod_PromoteLeader<WithCallbackMethod_AssignAssistant<WithCallbackMethod_GetPartyForCharacter<Service > > > > > > > CallbackService;
+  template <class BaseClass>
+  class WithCallbackMethod_CreateRaid : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_CreateRaid() {
+      ::grpc::Service::MarkMethodCallback(7,
+          new ::grpc::internal::CallbackUnaryHandler< ::sf::group::v1::CreateRaidRequest, ::sf::group::v1::Raid>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::sf::group::v1::CreateRaidRequest* request, ::sf::group::v1::Raid* response) { return this->CreateRaid(context, request, response); }));}
+    void SetMessageAllocatorFor_CreateRaid(
+        ::grpc::MessageAllocator< ::sf::group::v1::CreateRaidRequest, ::sf::group::v1::Raid>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(7);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::sf::group::v1::CreateRaidRequest, ::sf::group::v1::Raid>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_CreateRaid() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status CreateRaid(::grpc::ServerContext* /*context*/, const ::sf::group::v1::CreateRaidRequest* /*request*/, ::sf::group::v1::Raid* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* CreateRaid(
+      ::grpc::CallbackServerContext* /*context*/, const ::sf::group::v1::CreateRaidRequest* /*request*/, ::sf::group::v1::Raid* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithCallbackMethod_AddPartyToRaid : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_AddPartyToRaid() {
+      ::grpc::Service::MarkMethodCallback(8,
+          new ::grpc::internal::CallbackUnaryHandler< ::sf::group::v1::AddPartyToRaidRequest, ::sf::group::v1::Raid>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::sf::group::v1::AddPartyToRaidRequest* request, ::sf::group::v1::Raid* response) { return this->AddPartyToRaid(context, request, response); }));}
+    void SetMessageAllocatorFor_AddPartyToRaid(
+        ::grpc::MessageAllocator< ::sf::group::v1::AddPartyToRaidRequest, ::sf::group::v1::Raid>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(8);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::sf::group::v1::AddPartyToRaidRequest, ::sf::group::v1::Raid>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_AddPartyToRaid() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status AddPartyToRaid(::grpc::ServerContext* /*context*/, const ::sf::group::v1::AddPartyToRaidRequest* /*request*/, ::sf::group::v1::Raid* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* AddPartyToRaid(
+      ::grpc::CallbackServerContext* /*context*/, const ::sf::group::v1::AddPartyToRaidRequest* /*request*/, ::sf::group::v1::Raid* /*response*/)  { return nullptr; }
+  };
+  typedef WithCallbackMethod_CreateParty<WithCallbackMethod_JoinParty<WithCallbackMethod_LeaveParty<WithCallbackMethod_KickMember<WithCallbackMethod_PromoteLeader<WithCallbackMethod_AssignAssistant<WithCallbackMethod_GetPartyForCharacter<WithCallbackMethod_CreateRaid<WithCallbackMethod_AddPartyToRaid<Service > > > > > > > > > CallbackService;
   typedef CallbackService ExperimentalCallbackService;
   template <class BaseClass>
   class WithGenericMethod_CreateParty : public BaseClass {
@@ -688,6 +830,40 @@ class GroupService final {
     }
     // disable synchronous version of this method
     ::grpc::Status GetPartyForCharacter(::grpc::ServerContext* /*context*/, const ::sf::group::v1::CharacterRef* /*request*/, ::sf::group::v1::Party* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_CreateRaid : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_CreateRaid() {
+      ::grpc::Service::MarkMethodGeneric(7);
+    }
+    ~WithGenericMethod_CreateRaid() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status CreateRaid(::grpc::ServerContext* /*context*/, const ::sf::group::v1::CreateRaidRequest* /*request*/, ::sf::group::v1::Raid* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_AddPartyToRaid : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_AddPartyToRaid() {
+      ::grpc::Service::MarkMethodGeneric(8);
+    }
+    ~WithGenericMethod_AddPartyToRaid() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status AddPartyToRaid(::grpc::ServerContext* /*context*/, const ::sf::group::v1::AddPartyToRaidRequest* /*request*/, ::sf::group::v1::Raid* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -830,6 +1006,46 @@ class GroupService final {
     }
     void RequestGetPartyForCharacter(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(6, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_CreateRaid : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_CreateRaid() {
+      ::grpc::Service::MarkMethodRaw(7);
+    }
+    ~WithRawMethod_CreateRaid() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status CreateRaid(::grpc::ServerContext* /*context*/, const ::sf::group::v1::CreateRaidRequest* /*request*/, ::sf::group::v1::Raid* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestCreateRaid(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(7, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_AddPartyToRaid : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_AddPartyToRaid() {
+      ::grpc::Service::MarkMethodRaw(8);
+    }
+    ~WithRawMethod_AddPartyToRaid() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status AddPartyToRaid(::grpc::ServerContext* /*context*/, const ::sf::group::v1::AddPartyToRaidRequest* /*request*/, ::sf::group::v1::Raid* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestAddPartyToRaid(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(8, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -984,6 +1200,50 @@ class GroupService final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     virtual ::grpc::ServerUnaryReactor* GetPartyForCharacter(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_CreateRaid : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_CreateRaid() {
+      ::grpc::Service::MarkMethodRawCallback(7,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->CreateRaid(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_CreateRaid() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status CreateRaid(::grpc::ServerContext* /*context*/, const ::sf::group::v1::CreateRaidRequest* /*request*/, ::sf::group::v1::Raid* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* CreateRaid(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_AddPartyToRaid : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_AddPartyToRaid() {
+      ::grpc::Service::MarkMethodRawCallback(8,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->AddPartyToRaid(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_AddPartyToRaid() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status AddPartyToRaid(::grpc::ServerContext* /*context*/, const ::sf::group::v1::AddPartyToRaidRequest* /*request*/, ::sf::group::v1::Raid* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* AddPartyToRaid(
       ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
@@ -1175,9 +1435,63 @@ class GroupService final {
     // replace default version of method with streamed unary
     virtual ::grpc::Status StreamedGetPartyForCharacter(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::sf::group::v1::CharacterRef,::sf::group::v1::Party>* server_unary_streamer) = 0;
   };
-  typedef WithStreamedUnaryMethod_CreateParty<WithStreamedUnaryMethod_JoinParty<WithStreamedUnaryMethod_LeaveParty<WithStreamedUnaryMethod_KickMember<WithStreamedUnaryMethod_PromoteLeader<WithStreamedUnaryMethod_AssignAssistant<WithStreamedUnaryMethod_GetPartyForCharacter<Service > > > > > > > StreamedUnaryService;
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_CreateRaid : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_CreateRaid() {
+      ::grpc::Service::MarkMethodStreamed(7,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::sf::group::v1::CreateRaidRequest, ::sf::group::v1::Raid>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::sf::group::v1::CreateRaidRequest, ::sf::group::v1::Raid>* streamer) {
+                       return this->StreamedCreateRaid(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_CreateRaid() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status CreateRaid(::grpc::ServerContext* /*context*/, const ::sf::group::v1::CreateRaidRequest* /*request*/, ::sf::group::v1::Raid* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status StreamedCreateRaid(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::sf::group::v1::CreateRaidRequest,::sf::group::v1::Raid>* server_unary_streamer) = 0;
+  };
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_AddPartyToRaid : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_AddPartyToRaid() {
+      ::grpc::Service::MarkMethodStreamed(8,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::sf::group::v1::AddPartyToRaidRequest, ::sf::group::v1::Raid>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::sf::group::v1::AddPartyToRaidRequest, ::sf::group::v1::Raid>* streamer) {
+                       return this->StreamedAddPartyToRaid(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_AddPartyToRaid() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status AddPartyToRaid(::grpc::ServerContext* /*context*/, const ::sf::group::v1::AddPartyToRaidRequest* /*request*/, ::sf::group::v1::Raid* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status StreamedAddPartyToRaid(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::sf::group::v1::AddPartyToRaidRequest,::sf::group::v1::Raid>* server_unary_streamer) = 0;
+  };
+  typedef WithStreamedUnaryMethod_CreateParty<WithStreamedUnaryMethod_JoinParty<WithStreamedUnaryMethod_LeaveParty<WithStreamedUnaryMethod_KickMember<WithStreamedUnaryMethod_PromoteLeader<WithStreamedUnaryMethod_AssignAssistant<WithStreamedUnaryMethod_GetPartyForCharacter<WithStreamedUnaryMethod_CreateRaid<WithStreamedUnaryMethod_AddPartyToRaid<Service > > > > > > > > > StreamedUnaryService;
   typedef Service SplitStreamedService;
-  typedef WithStreamedUnaryMethod_CreateParty<WithStreamedUnaryMethod_JoinParty<WithStreamedUnaryMethod_LeaveParty<WithStreamedUnaryMethod_KickMember<WithStreamedUnaryMethod_PromoteLeader<WithStreamedUnaryMethod_AssignAssistant<WithStreamedUnaryMethod_GetPartyForCharacter<Service > > > > > > > StreamedService;
+  typedef WithStreamedUnaryMethod_CreateParty<WithStreamedUnaryMethod_JoinParty<WithStreamedUnaryMethod_LeaveParty<WithStreamedUnaryMethod_KickMember<WithStreamedUnaryMethod_PromoteLeader<WithStreamedUnaryMethod_AssignAssistant<WithStreamedUnaryMethod_GetPartyForCharacter<WithStreamedUnaryMethod_CreateRaid<WithStreamedUnaryMethod_AddPartyToRaid<Service > > > > > > > > > StreamedService;
 };
 
 }  // namespace v1

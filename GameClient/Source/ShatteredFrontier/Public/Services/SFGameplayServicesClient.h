@@ -84,6 +84,7 @@ struct FSFGameplayRequest
     FString TableId;
     FString CreatureId;
     TArray<FString> EligibleCharacterIds;
+    FString RaidGroupId;
     // Progression
     FString Kind;                 // gather | craft | defeat | quest
     int64 ExpectedProgressionRevision = 0, ExpectedQuestRevision = 0;
@@ -163,6 +164,8 @@ struct FSFGameplayResponse
     struct FBoarSlot { FString GroupId, PointId; int32 SlotIndex = 0, Cycle = 0; bool bActive = false; double XMetres = 0, YMetres = 0, FacingDegrees = 0; };
     TArray<FBoarSlot> BoarSlots;
     FString GroupPartyId, GroupLeaderId, GroupAssistantId, GroupState;
+    FString RaidGroupId;
+    TArray<FString> RaidMembers;
     TArray<FString> GroupMembers;
     int32 GroupVersion = 0;
 };

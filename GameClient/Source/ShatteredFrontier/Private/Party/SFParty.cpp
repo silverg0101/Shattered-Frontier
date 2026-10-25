@@ -24,6 +24,16 @@ FString PartyName(const ASFPlayerController* Player)
 }
 }
 
+void ASFGameMode::UpdateRaidRoster(const FSFGameplayResponse& Reply)
+{
+    if (Reply.RaidGroupId.IsEmpty()) { return; }
+    for (auto It = RaidIdByCharacter.CreateIterator(); It; ++It)
+    { if (It.Value() == Reply.RaidGroupId) { It.RemoveCurrent(); } }
+    RaidMembersById.Add(Reply.RaidGroupId, Reply.RaidMembers);
+    for (const FString& Member : Reply.RaidMembers)
+    { RaidIdByCharacter.Add(Member, Reply.RaidGroupId); }
+}
+
 void ASFGameMode::RestorePartyForPlayer(ASFPlayerController* Player)
 {
     const auto Service = USFBackpackComponent::Services();
@@ -35,7 +45,10 @@ void ASFGameMode::RestorePartyForPlayer(ASFPlayerController* Player)
     {
         ASFGameMode* Mode = WeakMode.Get();
         ASFPlayerController* Connected = WeakPlayer.Get();
-        if (!Mode || !Connected || Reply.Status != ESFGameplayStatus::Ok || Reply.GroupPartyId.IsEmpty() ||
+        if (!Mode || !Connected || Reply.Status != ESFGameplayStatus::Ok) { return; }
+        Mode->RaidIdByCharacter.Remove(CharacterId);
+        Mode->UpdateRaidRoster(Reply);
+        if (Reply.GroupPartyId.IsEmpty() ||
             !Reply.GroupMembers.Contains(CharacterId)) { return; }
         int32 SessionId = Mode->SessionPartyByDurableId.FindRef(Reply.GroupPartyId);
         TMap<FString, int32> ConnectedIds;
@@ -141,6 +154,7 @@ void ASFGameMode::PartyAction(ASFPlayerController* Actor, uint8 Action, const FS
             bool bDone = false;
             if (Reply.Status == ESFGameplayStatus::Ok && WeakActor.IsValid() && (Action == Leave || WeakTarget.IsValid()))
             {
+                Mode->UpdateRaidRoster(Reply);
                 switch (Action)
                 {
                 case Accept: bDone = Mode->PartyModel.Accept(Other, Self, Mode->GetWorld()->GetTimeSeconds()); break;

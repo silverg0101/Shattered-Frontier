@@ -2013,6 +2013,9 @@ int32 ASFGameMode::RewardKill(ASFPilotBoar* Boar, ASFE1Character* Killer)
     const FVector BoarAt = Boar->GetActorLocation();
     const bool bProtected = IsSafe(BoarAt) || !IsValid(Killer) || IsSafe(Killer->GetActorLocation());
     auto* KillerController = IsValid(Killer) ? Cast<APlayerController>(Killer->GetController()) : nullptr;
+    USFBackpackComponent* KillerIdentity = KillerController ? KillerController->FindComponentByClass<USFBackpackComponent>() : nullptr;
+    const FString RaidId = KillerIdentity ? RaidIdByCharacter.FindRef(KillerIdentity->GetCharacterId()) : FString();
+    const TArray<FString>* RaidMembers = RaidId.IsEmpty() ? nullptr : RaidMembersById.Find(RaidId);
     TArray<APlayerController*> Eligible;
     if (!bProtected && KillerController)
     {
@@ -2023,8 +2026,11 @@ int32 ASFGameMode::RewardKill(ASFPilotBoar* Boar, ASFE1Character* Killer)
             APlayerController* Player = Cast<APlayerController>(It->Get());
             const ASFE1Character* Character = IsValid(Player) ? Cast<ASFE1Character>(Player->GetPawn()) : nullptr;
             if (!Character) { continue; }
-            if (Player == KillerController || (Party && Party->Members.Contains(Player->GetUniqueID()) &&
-                Character->CombatHealth() > 0 && FVector::Dist(Character->GetActorLocation(), BoarAt) <= RadiusCm))
+            USFBackpackComponent* Identity = Player->FindComponentByClass<USFBackpackComponent>();
+            const bool bRaidMember = RaidMembers && Identity && RaidMembers->Contains(Identity->GetCharacterId());
+            if (Player == KillerController || (((Party && Party->Members.Contains(Player->GetUniqueID())) || bRaidMember) &&
+                Character->CombatHealth() > 0 && !IsSafe(Character->GetActorLocation()) &&
+                FVector::Dist(Character->GetActorLocation(), BoarAt) <= RadiusCm))
             { Eligible.Add(Player); }
         }
         if (!Eligible.IsEmpty() && !CreditedXpDeaths.Contains(DeathId))
@@ -2053,6 +2059,7 @@ int32 ASFGameMode::RewardKill(ASFPilotBoar* Boar, ASFE1Character* Killer)
             Request.OperationId = Epoch + TEXT(":") + DeathId;
             Request.KillerCharacterId = KillerId; Request.CreatureId = Boar->GetCreatureId();
             Request.TableId = Boar->GetLootTableId(); Request.bKillerProtected = bProtected;
+            Request.RaidGroupId = RaidId;
             Request.bBoarProtected = bBoarSafe;
             TArray<TWeakObjectPtr<ASFPlayerController>> Players;
             for (APlayerController* Recipient : Eligible)

@@ -32,6 +32,8 @@ static const char* GroupService_method_names[] = {
   "/sf.group.v1.GroupService/PromoteLeader",
   "/sf.group.v1.GroupService/AssignAssistant",
   "/sf.group.v1.GroupService/GetPartyForCharacter",
+  "/sf.group.v1.GroupService/CreateRaid",
+  "/sf.group.v1.GroupService/AddPartyToRaid",
 };
 
 std::unique_ptr< GroupService::Stub> GroupService::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
@@ -48,6 +50,8 @@ GroupService::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& chann
   , rpcmethod_PromoteLeader_(GroupService_method_names[4], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_AssignAssistant_(GroupService_method_names[5], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_GetPartyForCharacter_(GroupService_method_names[6], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_CreateRaid_(GroupService_method_names[7], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_AddPartyToRaid_(GroupService_method_names[8], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   {}
 
 ::grpc::Status GroupService::Stub::CreateParty(::grpc::ClientContext* context, const ::sf::group::v1::CreatePartyRequest& request, ::sf::group::v1::Party* response) {
@@ -211,6 +215,52 @@ void GroupService::Stub::async::GetPartyForCharacter(::grpc::ClientContext* cont
   return result;
 }
 
+::grpc::Status GroupService::Stub::CreateRaid(::grpc::ClientContext* context, const ::sf::group::v1::CreateRaidRequest& request, ::sf::group::v1::Raid* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::sf::group::v1::CreateRaidRequest, ::sf::group::v1::Raid, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_CreateRaid_, context, request, response);
+}
+
+void GroupService::Stub::async::CreateRaid(::grpc::ClientContext* context, const ::sf::group::v1::CreateRaidRequest* request, ::sf::group::v1::Raid* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::sf::group::v1::CreateRaidRequest, ::sf::group::v1::Raid, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_CreateRaid_, context, request, response, std::move(f));
+}
+
+void GroupService::Stub::async::CreateRaid(::grpc::ClientContext* context, const ::sf::group::v1::CreateRaidRequest* request, ::sf::group::v1::Raid* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_CreateRaid_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::sf::group::v1::Raid>* GroupService::Stub::PrepareAsyncCreateRaidRaw(::grpc::ClientContext* context, const ::sf::group::v1::CreateRaidRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::sf::group::v1::Raid, ::sf::group::v1::CreateRaidRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_CreateRaid_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::sf::group::v1::Raid>* GroupService::Stub::AsyncCreateRaidRaw(::grpc::ClientContext* context, const ::sf::group::v1::CreateRaidRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncCreateRaidRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
+::grpc::Status GroupService::Stub::AddPartyToRaid(::grpc::ClientContext* context, const ::sf::group::v1::AddPartyToRaidRequest& request, ::sf::group::v1::Raid* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::sf::group::v1::AddPartyToRaidRequest, ::sf::group::v1::Raid, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_AddPartyToRaid_, context, request, response);
+}
+
+void GroupService::Stub::async::AddPartyToRaid(::grpc::ClientContext* context, const ::sf::group::v1::AddPartyToRaidRequest* request, ::sf::group::v1::Raid* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::sf::group::v1::AddPartyToRaidRequest, ::sf::group::v1::Raid, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_AddPartyToRaid_, context, request, response, std::move(f));
+}
+
+void GroupService::Stub::async::AddPartyToRaid(::grpc::ClientContext* context, const ::sf::group::v1::AddPartyToRaidRequest* request, ::sf::group::v1::Raid* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_AddPartyToRaid_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::sf::group::v1::Raid>* GroupService::Stub::PrepareAsyncAddPartyToRaidRaw(::grpc::ClientContext* context, const ::sf::group::v1::AddPartyToRaidRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::sf::group::v1::Raid, ::sf::group::v1::AddPartyToRaidRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_AddPartyToRaid_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::sf::group::v1::Raid>* GroupService::Stub::AsyncAddPartyToRaidRaw(::grpc::ClientContext* context, const ::sf::group::v1::AddPartyToRaidRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncAddPartyToRaidRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
 GroupService::Service::Service() {
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       GroupService_method_names[0],
@@ -282,6 +332,26 @@ GroupService::Service::Service() {
              ::sf::group::v1::Party* resp) {
                return service->GetPartyForCharacter(ctx, req, resp);
              }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      GroupService_method_names[7],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< GroupService::Service, ::sf::group::v1::CreateRaidRequest, ::sf::group::v1::Raid, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](GroupService::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::sf::group::v1::CreateRaidRequest* req,
+             ::sf::group::v1::Raid* resp) {
+               return service->CreateRaid(ctx, req, resp);
+             }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      GroupService_method_names[8],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< GroupService::Service, ::sf::group::v1::AddPartyToRaidRequest, ::sf::group::v1::Raid, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](GroupService::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::sf::group::v1::AddPartyToRaidRequest* req,
+             ::sf::group::v1::Raid* resp) {
+               return service->AddPartyToRaid(ctx, req, resp);
+             }, this)));
 }
 
 GroupService::Service::~Service() {
@@ -330,6 +400,20 @@ GroupService::Service::~Service() {
 }
 
 ::grpc::Status GroupService::Service::GetPartyForCharacter(::grpc::ServerContext* context, const ::sf::group::v1::CharacterRef* request, ::sf::group::v1::Party* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status GroupService::Service::CreateRaid(::grpc::ServerContext* context, const ::sf::group::v1::CreateRaidRequest* request, ::sf::group::v1::Raid* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status GroupService::Service::AddPartyToRaid(::grpc::ServerContext* context, const ::sf::group::v1::AddPartyToRaidRequest* request, ::sf::group::v1::Raid* response) {
   (void) context;
   (void) request;
   (void) response;

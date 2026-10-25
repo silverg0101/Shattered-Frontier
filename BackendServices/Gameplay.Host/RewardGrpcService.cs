@@ -11,7 +11,8 @@ internal sealed class RewardGrpcService(DefeatRewardPayout payout, SharedDefeatD
             DefeatEventId = result.EventId,
             ClaimantCharacterId = result.ClaimantId ?? "",
             LedgerOperationId = result.OperationId ?? "",
-            ContainerRevision = result.Revision
+            ContainerRevision = result.Revision,
+            RaidGroupId = result.RaidGroupId
         };
         receipt.Items.AddRange(result.Items.Select(i => new Pb.SharedDropItem
             { DefinitionId = i.DefinitionId, Quantity = i.Quantity }));
@@ -21,7 +22,7 @@ internal sealed class RewardGrpcService(DefeatRewardPayout payout, SharedDefeatD
     public override Task<Pb.SharedDefeatDropReceipt> CreateSharedDefeatDrop(Pb.CreateSharedDefeatDropRequest request,
         ServerCallContext context) => GrpcRun.Call(context, () => SharedReceipt(shared.Create(request.DefeatEventId,
             request.CreatureId, request.TableId, request.KillerCharacterId, request.EligibleCharacterIds,
-            request.KillerInProtectedTown, request.CreatureInProtectedTown)));
+            request.KillerInProtectedTown, request.CreatureInProtectedTown, request.RaidGroupId)));
 
     public override Task<Pb.SharedDefeatDropReceipt> ClaimSharedDefeatDrop(Pb.ClaimSharedDefeatDropRequest request,
         ServerCallContext context) => GrpcRun.Call(context, () => SharedReceipt(shared.Claim(request.DefeatEventId,
