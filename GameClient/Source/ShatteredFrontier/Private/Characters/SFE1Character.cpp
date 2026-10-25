@@ -2636,8 +2636,9 @@ void ASFE1Character::TickUnstuckScenario()
         UE_LOG(LogTemp, Display, TEXT("UNSTUCK_CLIENT_REQUEST Role=Driver Restart=%d"),
             FParse::Param(FCommandLine::Get(), TEXT("UnstuckRestoreCheck")) ? 1 : 0);
     }
+    // The nearest legal Recast landing is 2 m away; replication can round it slightly inward.
     if (UnstuckScenarioStage >= 1 && UnstuckScenarioStage < 3 &&
-        FVector::Dist2D(UnstuckScenarioInitial, Observed) >= 200.0f)
+        FVector::Dist2D(UnstuckScenarioInitial, Observed) >= 190.0f)
     {
         UE_LOG(LogTemp, Display, TEXT("UNSTUCK_CLIENT_MOVED Role=%s Distance=%.0f"),
             *ScenarioRole, FVector::Dist2D(UnstuckScenarioInitial, Observed));

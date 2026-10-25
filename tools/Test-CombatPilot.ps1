@@ -326,10 +326,10 @@ try {
             $label = if ($role -eq 1) { 'Driver' } else { 'Observer' }
             $null = Start-Owned "client$role" ("127.0.0.1:$Port`?SFDevCharacter=$($names[$role - 1])") @('-game','-UnstuckScenario','-GreenlandsUnstuckNetcheck',"-UnstuckRole=$label")
         }
-        Wait-Log $server 'server' 'UNSTUCK_SERVER_ACCEPTED .*Distance='
+        Wait-Log $server 'server' 'UNSTUCK_SERVER_ACCEPTED .*Source=NavMesh'
         Wait-Log $server 'server' 'UNSTUCK_TOKEN_CONSUMED Sequence='
         Wait-Log $server 'server' 'UNSTUCK_TOKEN_DENIED Sequence='
-        Wait-Log $server 'server' 'UNSTUCK_SERVER_DENIED Reason=NoDestination'
+        Wait-Log $server 'server' 'UNSTUCK_SERVER_DENIED Reason=StateOrCooldown'
         foreach ($role in 1..2) {
             $label = if ($role -eq 1) { 'Driver' } else { 'Observer' }
             $process = @($owned | Where-Object Id -eq (@($result.runs | Where-Object name -eq "client$role")[0].pid))[0]
@@ -338,7 +338,10 @@ try {
         $first = Get-Content -LiteralPath (Join-Path $root 'server.log') -Raw
         if ([regex]::Matches($first,'UNSTUCK_SERVER_ACCEPTED').Count -ne 1 -or
             [regex]::Matches($first,'UNSTUCK_TOKEN_CONSUMED').Count -ne 1 -or
-            [regex]::Matches($first,'UNSTUCK_TOKEN_DENIED').Count -ne 1) { throw 'Initial move or single-use token count invalid.' }
+            [regex]::Matches($first,'UNSTUCK_TOKEN_DENIED').Count -ne 1 -or
+            [regex]::Matches($first,'UNSTUCK_SERVER_ACCEPTED .*Source=NavMesh').Count -ne 1) {
+            throw 'Initial navmesh landing or single-use token count invalid.'
+        }
         $cooldown = Invoke-LedgerSql $fx "SELECT unstuck_at_unix_ms FROM character_state.positions WHERE character_id='chr_dev_alpha'" $fx.db
         if ([long]$cooldown -le 0) { throw 'Unstuck cooldown was not durably committed.' }
         foreach ($name in @('client1','client2')) {

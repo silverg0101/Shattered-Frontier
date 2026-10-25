@@ -112,6 +112,7 @@ void ASFPlayerController::ServerRequestUnstuck_Implementation()
             }
         }
     }
+    const bool bNavLanding = bFound;
     if (!bFound)
     {
         if (const ASFGameMode* Mode = GetWorld()->GetAuthGameMode<ASFGameMode>())
@@ -136,7 +137,7 @@ void ASFPlayerController::ServerRequestUnstuck_Implementation()
 
     const FString CharacterId = bSandbox ? GetName() : Session->RestoredCharacterId();
     const auto FinishMove = [WeakController = TWeakObjectPtr<ASFPlayerController>(this),
-        WeakTarget = TWeakObjectPtr<ASFE1Character>(Target), From, Destination, CharacterId, bSandbox,
+        WeakTarget = TWeakObjectPtr<ASFE1Character>(Target), From, Destination, CharacterId, bSandbox, bNavLanding,
         TokenTtlMs = Settings->UnstuckTokenTtlMilliseconds,
         ToleranceCm = Settings->UnstuckDestinationToleranceMetres * 100.0f](int64 Revision)
     {
@@ -168,9 +169,9 @@ void ASFPlayerController::ServerRequestUnstuck_Implementation()
         Controller->UnstuckToken.bOutstanding = true;
         ControlledCharacter->ForceNetUpdate();
         Controller->ClientUnstuckDisplacement(Controller->UnstuckNoticeSequence, Destination);
-        UE_LOG(LogTemp, Display, TEXT("UNSTUCK_SERVER_ACCEPTED Pawn=%s X=%.0f Y=%.0f Distance=%.0f Token=%s"),
+        UE_LOG(LogTemp, Display, TEXT("UNSTUCK_SERVER_ACCEPTED Pawn=%s X=%.0f Y=%.0f Distance=%.0f Token=%s Source=%s"),
             *ControlledCharacter->GetName(), Destination.X, Destination.Y, FVector::Dist2D(From, ControlledCharacter->GetActorLocation()),
-            *Controller->UnstuckToken.Id);
+            *Controller->UnstuckToken.Id, bNavLanding ? TEXT("NavMesh") : TEXT("Respawn"));
     };
 
     if (bSandbox) { FinishMove(0); return; }
