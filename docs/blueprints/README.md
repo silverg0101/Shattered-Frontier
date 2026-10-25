@@ -18,11 +18,11 @@ One doc per asset kind. **Load only the doc for your asset**, plus this page. Ea
 ## Shared rules (every visual job)
 
 ### Routing
-1. **Sonnet builds** (editor passes, Blender, materials, scripts, C++ widgets).
-2. **Codex does image generation only**: concept sheets, textures, masks, UI PNGs. Write the prompt to `prompt.txt` (start with "Generate one image with your image generation tool:" and end with "Save it as <name>.png in the current directory.") and run it from an empty or package `concept/` folder: `codex exec --skip-git-repo-check -s workspace-write -o codex-last-message.txt - < prompt.txt` (stdin redirect; the `cat prompt.txt | codex exec ... -` pipe is refused by the command guard; about 20 k tokens and 1-2 min per image). Codex stores every image under `~/.codex/generated_images/` and copies it into the cwd when the prompt says so; if the file is missing, copy the newest PNG from that folder (`Get-ChildItem ~/.codex/generated_images -Recurse -Filter *.png | Sort-Object LastWriteTime | Select-Object -Last 1 | Copy-Item -Destination .\<name>.png`). Commit `prompt.txt` and `codex-last-message.txt` beside the image. Codex may also run already-committed scripts in the background; it never makes judgement calls on art.
-3. **A fresh Opus reviewer judges, spawned by the builder**: after every capture or render batch the builder calls the `Agent` tool (`subagent_type` general-purpose, `model: opus`, no prior context) with the brief in [docs/visual-review.md](../visual-review.md), the `*-compare.png` or render paths, the concept paths and, from round 2, the previous open list. It asks for `REVIEW.md` in the evidence folder. The builder never grades its own work and implements only the reviewer's numbered fix list.
+1. **GPT-6.1 Sol builds** (editor passes, Blender, materials, scripts, C++ widgets) and handles design and difficult debugging; use high reasoning effort for those decisions. GPT-6 Luna may handle simple, bounded mechanical tasks at medium effort. This routing replaces the former Sonnet, Fable and Opus assignments in category recipes.
+2. **Raster assets use the current imagegen skill and image-generation tool**: concept sheets, textures, masks and UI PNGs. Follow that skill for generation and edits. Keep the prompt and the exact returned output path or identifier beside the resulting asset; copy only the output associated with that request into its named package path. If it is missing, recover that exact output or report the missing result; never substitute the newest image from a shared output folder. Images do not grant their builder review authority.
+3. **A fresh GPT-6.1 Sol reviewer judges, spawned by the builder** at high reasoning effort with no prior context: after each capture or render batch give it the brief in [docs/visual-review.md](../visual-review.md), the `*-compare.png` or render paths, the concept paths and, from round 2, the previous open list. It writes `REVIEW.md` in the evidence folder. The builder never grades its own work and implements only the reviewer's numbered fix list.
 4. **At most 3 review rounds, then the owner.** After round 3 (or a PASS) the work goes to the owner with the latest compare images and open list; the owner's sign-off is what makes it done.
-5. One active Claude task at a time; everything scriptable goes to Codex.
+5. Delegate only useful parallel work, with at most three subagents active at once. Run one Unreal-heavy job at a time across all lanes; follow the ownership rules in [hand-offs](../hand-offs/README.md#how-we-work).
 
 ### Capture rules
 1. World captures are `-game` HighResShots at **1920x1080**, timed from a Python capture script, with the editor closed:
@@ -44,7 +44,7 @@ One doc per asset kind. **Load only the doc for your asset**, plus this page. Ea
 | PCG dressing grounded | `py -3 tools/Run-InEditor.py GameClient/ArtSource/Greenlands/check_dressing_grounded.py` | `DRESSING_GROUNDED {"floating": 0, ...}` |
 | House details | `py -3 tools/Run-InEditor.py <evidence>/check_details.py` | `SILL_PLANTERS 140 expected 140 GROUP_DETAIL_OVERLAPS 0 []` |
 | Frame time | `perf_bookmark_game.py <view>` (docstring has the launch line) | `perf-<view>.json` p95 <= 16.7 ms, median <= 13 ms at 1440p Standard |
-| Visual | fresh Opus review of the pairs (max 3 rounds), then owner sign-off | `REVIEW.md` verdict plus owner sign-off |
+| Visual | independent review under the routing above (max 3 rounds), then owner sign-off | `REVIEW.md` verdict plus owner sign-off |
 The counts above are the whole-town values; a single building in a dev map uses the per-doc values (for example [buildings.md](buildings.md) §6: `FOUNDATION_CHECK 1 failures 0 ...`).
 
 ### Worktrees (a feature session in its own checkout)

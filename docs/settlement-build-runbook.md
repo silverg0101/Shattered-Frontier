@@ -137,7 +137,7 @@ UnrealEditor.exe <uproject> <map> -game -RenderOffscreen -unattended -nosound -w
 **Pass looks like:**
 - `passed: true`, and every `review_route` leg reached with 0 stuck events.
 - The swim check: `swimming_after_4s: true`, `climbed_out: true`.
-- Frame times as a comparison, not a budget. Silverbrook: 3.7 ms median, 5.8 ms p95.
+- Frame times at 720p are movement-run comparisons only, not graphics-budget acceptance. Historical Silverbrook sample: 3.7 ms median, 5.8 ms p95. Graphics acceptance uses `perf_bookmark_game.py` at 1440p Standard on the budget card under [GFX-02's performance procedure](decisions/GFX-02-photoreal-ground-pipeline.md#6-performance-budget-and-measurement).
 - Captures for the arrival view, the aerial view and each review camera. Look at them: doors facing the street, nothing floating, the wall closed over the river.
 
 ## 6. Troubleshooting

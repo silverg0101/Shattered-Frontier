@@ -12,7 +12,7 @@ Status: proposed 2026-10-19; Silverbrook is the first user ([zone plan](greenlan
 | Settlement definition (`docs/Game-Design/Regions/…Settlement_<Name>…md`) | Every number and name inside the settlement. Wins all conflicts within the zone. |
 | Design board ([standard](Game-Design/World-Simulation/Legends_Shattered_Frontier_Settlement_Design_Board_Standard_v1.0.md)) | Visual direction only. Layout is traced from it, then reconciled to the definition. |
 | [Zone Definition Standard](Game-Design/World-Simulation/Legends_Shattered_Frontier_World_Zone_Definition_Standard_v0.1.md) | Z-checklist, budgets, compass axes (north −Y, east +X) |
-| [DEC-03](decisions/DEC-03-terrain.md) | Voxel density is the terrain authority. The client surface/mesh adapter is still open (see [TER-01](decisions/TER-01-mesh-terrain-fit-check.md)). |
+| [DEC-03](decisions/DEC-03-terrain.md) and adopted [TER-01](decisions/TER-01-mesh-terrain-fit-check.md) | Voxel density is the terrain authority; the diggable zone ground uses the voxel adapter. The outer region backdrop remains a non-editable Landscape under [GFX-02's binding TER-01b changes](decisions/GFX-02-photoreal-ground-pipeline.md#decision). |
 | [Tuning architecture](Game-Design/Legends_Shattered_Frontier_Tuning_and_Configuration_Architecture_v0.1.md) | How seeds and dressing parameters are declared |
 | Look reference and look profile (per biome) | The finished look: species, rocks, ground cover, terrain character. Greenlands: [`Greenlands-Forest-Look-v1.webp`](Game-Design/concept-art/Greenlands-Forest-Look-v1.webp), read into `GameClient/ArtSource/Greenlands/greenlands-look-profile.json` |
 
@@ -33,7 +33,7 @@ A zone's backdrop is the region terrain beyond the zone's edge. Never invent it 
 | 0. Lay out the region | Trace the region map into region layout data at the owner-confirmed scale. First instance: `GameClient/ArtSource/Greenlands/greenlands-region-layout.json`, checked by `validate_region.py`. `region_heightfield.py` writes `greenlands-region-heightfield-preview.png`, and its `zone_edges()` lists a tile's edge heights plus the rivers and roads that cross its edge. Include coastline and sea level, mountain ranges with heights, the main rivers from source to mouth with water levels and falls, lakes, settlements with their zone footprints, the roads between settlements, and biome areas. From that, build one coarse region heightfield. | `<region>-region-layout.json` and the region heightfield script | Region validator: rivers run downhill to the sea, settlements and zones sit on land and don't overlap, roads connect the settlements named in the region definition, and every zone's edge heights and its river and road entry and exit points can be read from it |
 | 1. Read the board | Trace the board into layout data, using its scale bar, and reconcile it to the settlement definition. Read the whole board, not only the town plan: the town map, the isometric view and every panel together describe one area. Capture the relief at the centre (such as a raised district), the land around the town, and the backdrop (mountains, cliffs and waterfalls), as well as the streets and buildings. These tie into each other: streets climb the high ground, the river cuts through the relief, and the backdrop frames the views. Includes elevation: high ground, ridges, cliffs, water levels, waterfall drops and the backdrop's heights and distances. | Layout JSON (Stage 1) | Layout validator |
 | 2. Read the look | Turn each look reference into a look profile: asset roles per layer (canopy, understory, ground cover, rocks, litter, surface, backdrop), with variants, shares and placement rules. Record which project assets already fill each role. | `<biome>-look-profile.json` | Profile schema check; owner review of the role list |
-| 3. Shape the land | Generate the terrain from the layout's elevation data: rolling macro forms, high ground, valleys cut for rivers, flattened road and building beds, cliffs and outcrop zones. Also the backdrop beyond the zone edge (mountains and far hills), so no view ends at the edge of the world. Not flat: the relief must read at the board's scale from the arrival point. | Terrain source plus build script (Stage 2; the surface type depends on [TER-01](decisions/TER-01-mesh-terrain-fit-check.md)) | Height samples at landmarks, roads within grade, rivers below banks |
+| 3. Shape the land | Generate the terrain from the layout's elevation data: rolling macro forms, high ground, valleys cut for rivers, flattened road and building beds, cliffs and outcrop zones. Also the backdrop beyond the zone edge (mountains and far hills), so no view ends at the edge of the world. Not flat: the relief must read at the board's scale from the arrival point. | Terrain source plus build script (Stage 2; voxel zone ground and outer Landscape per adopted [TER-01](decisions/TER-01-mesh-terrain-fit-check.md)) | Height samples at landmarks, roads within grade, rivers below banks |
 | 4. Build the town | Splines, district volumes and landmark blockouts on the shaped terrain | Zone map via the builder (Stage 2) | One-line summary; arrival capture |
 | 5. Dress it | Layered PCG driven by the look profile's slope, height, shade and distance rules: macro rocks and bedrock on steep ground, canopy by height and moisture, understory, ground cover, litter. | PCG graphs plus saved output (Stage 3) | Regenerate-and-compare; capture compared against the look reference |
 | 6. List what's missing | Compare look-profile roles and the settlement's building library against the biome library | Missing-asset batch (Stage 4) | Every gap row traces back to a role or building |
@@ -47,8 +47,8 @@ A zone's backdrop is the region terrain beyond the zone's edge. Never invent it 
 - **Lighting is out of bounds.** Do not change Lumen, GI, reflections, exposure, VSM or post-processing.
 - **Write only under `/Game/Frontier/`.** Megascans/Fab content is read-only.
 - **Every lasting change is a committed script or asset.** No editor-only clicks.
-- **Use the editor's MCP server to inspect only.** Close the editor before building.
-- **Run targeted checks only.** Update `docs/dependency-map.md` and the settlement's zone plan in the same change.
+- **Use the editor's MCP server to inspect only.** Run asset/map authoring scripts inside this checkout's open editor through `tools/Run-InEditor.py`; do not run asset-writing commandlets while it holds the assets. Close it for C++ builds (or use Live Coding) and before `-game` captures; check for unsaved packages first. See the [runbook](settlement-build-runbook.md#0-before-you-start).
+- **Run targeted checks only.** Update the matching area file under `docs/dependency-map/` when roles, routes, tests or commands change (the index only for a new area), and keep the settlement's zone plan current.
 - **Report each stage** by what can be observed in-game, separately from enabling work.
 
 ## Stage 1 — Layout file and validator
@@ -115,7 +115,7 @@ The aim is that the owner can dress a region from the layout file in minutes, th
 - **Same version ⇒ identical output.** A regenerate-and-compare check proves it by comparing the instance count and a hash of the transforms.
 
 **Generation policy:**
-- Output is generated in the editor and saved. Clients and the server never generate at runtime.
+- This stage's PCG output is generated in the editor and saved. Clients and the server do not rerun this zone-dressing generation at runtime. The separate adopted voxel-surface grass target follows [GFX-02 J3](decisions/GFX-02-photoreal-ground-pipeline.md#decision): regeneration per edited leaf, with grass absent on dedicated servers.
 - A world's seed is fixed. A new seed only arrives as a new content release with a GM wipe, never as a live command.
 
 **Two kinds of output:**
@@ -134,7 +134,7 @@ The gameplay-candidates file is produced but not used yet. Harvestable plant ass
 1. Exclusion and override volumes, and painted density masks used as graph inputs.
 2. Manual per-instance edits in 5.8. Check Epic's 5.8 PCG documentation to confirm the edits survive regeneration, and record the result here. Forum reports, which are not yet verified, say the 5.8.0 editing tool can freeze. If it proves unreliable, document the volume-based workaround instead.
 
-**Player terrain edits (DEC-03):** write a design note on how decoration instances inside an edited voxel chunk are removed at runtime. This is a design note only; nothing is implemented.
+**Player terrain edits (DEC-03):** follow the adopted [TER-01/GFX-02 surface contract](decisions/GFX-02-photoreal-ground-pipeline.md#decision) for voxel edits, per-leaf grass regeneration and RVT invalidation. This pipeline's historical dressing evidence does not establish those jobs' implementation status.
 
 **Exit:**
 - The regenerate-and-compare check passes. **Met 2026-10-19:**
@@ -143,7 +143,7 @@ The gameplay-candidates file is produced but not used yet. Harvestable plant ass
   - `pcg_dressing.py` checks that PCG generated exactly the decided instance count, 22,036.
 - One district is dressed end to end, with in-game captures. **Met 2026-10-19:** Silverbrook Eastwood, `Silverbrook-Eastwood-InGame.png`, with 1,055 gameplay candidates.
 - Frame time and instance count are compared against the per-actor scatter in `dress_region.py`. **Half met:**
-  - The Silverbrook walk records frame time: a 2.2 ms median and 3.0 ms p95, offscreen at 1280 × 720.
+  - The Silverbrook walk recorded 2.2 ms median and 3.0 ms p95, offscreen at 1280 × 720. This is historical movement-run comparison evidence, not graphics-budget acceptance; use the existing [1440p Standard performance procedure](decisions/GFX-02-photoreal-ground-pipeline.md#6-performance-budget-and-measurement) for that gate.
   - The art-review map hasn't been measured the same way yet.
 - The checklist below is filled in. **Not yet.** Also open: confirming that 5.8's per-instance edits survive regeneration (fine-tuning step 2).
 
