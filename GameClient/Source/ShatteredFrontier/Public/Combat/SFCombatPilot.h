@@ -249,6 +249,8 @@ public:
     virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
     void Initialize(class ASFGameMode* OwnerMode, const FString& Group, int32 Slot,
         const TArray<FVector2D>& Area, int32 Health, int32 Serial, bool bInDefensive = false);
+    bool ConfigureCreature(const FString& DefinitionId);
+    static bool ResolveCreatureLoot(const FString& DefinitionId, FString& TableId, bool& bSingleDrop);
     void ReceivePilotDamage(ASFE1Character* Attacker, int32 Damage);
     void ReceivePilotDodge(ASFE1Character* Attacker);
     bool ReceivePilotTaunt(ASFE1Character* Taunter);
@@ -277,6 +279,7 @@ public:
     bool ReceivePackAssist(ASFE1Character* Character, const FString& CharacterId);
 private:
     UFUNCTION() void OnRep_Health();
+    UFUNCTION() void OnRep_CreatureId();
     UPROPERTY(ReplicatedUsing=OnRep_Health) int32 CurrentHealth = 0;
     UPROPERTY(Replicated) int32 MaximumHealthValue = 0;
     double CombatSwingSecondsValue = 1.6, CombatSwingDamageValue = 23.5;
@@ -304,7 +307,7 @@ private:
     double EngagedSince = -1;
     double NextAggroFixtureTraceAt = 0;
     UPROPERTY(Replicated) FString SpawnGroup;
-    UPROPERTY(EditAnywhere, Replicated, Category="Loot") FString CreatureId = TEXT("npc/boar");
+    UPROPERTY(EditAnywhere, ReplicatedUsing=OnRep_CreatureId, Category="Loot") FString CreatureId = TEXT("npc/boar");
     UPROPERTY(EditAnywhere, Category="Loot") FString LootTableId = TEXT("loot/greenlands_silverbrook_boar");
     UPROPERTY(EditAnywhere, Category="Loot") bool bSingleDrop = false;
     UPROPERTY(Replicated) int32 Slot = INDEX_NONE;

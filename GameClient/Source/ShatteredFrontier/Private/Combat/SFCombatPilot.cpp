@@ -355,10 +355,10 @@ void ASFPilotBoar::Initialize(ASFGameMode* OwnerMode, const FString& Group, int3
     {
         const auto* Tune = OwnerMode->CombatSettings();
         const auto Npc = SFCombatPart6::Npc(CreatureId);
-        CombatSwingSecondsValue = Tune->BeastSwingSeconds;
-        CombatSwingDamageValue = Npc.Health * Tune->BeastDpsCoefficient * CombatSwingSecondsValue;
-        CombatArmorValue = Tune->NpcMediumArmor * 100.0 * Npc.Level;
-        CombatResistanceValue = Tune->NpcMediumResistance * 5.0 * Npc.Level;
+        CombatSwingSecondsValue = Npc.SwingSeconds;
+        CombatSwingDamageValue = Npc.SwingDamage;
+        CombatArmorValue = Npc.Armor;
+        CombatResistanceValue = Npc.Resistance;
         CombatDodgeValue = Tune->NpcDodge;
         CombatParryValue = Tune->NpcParry;
     }
@@ -367,6 +367,32 @@ void ASFPilotBoar::Initialize(ASFGameMode* OwnerMode, const FString& Group, int3
     LastTauntAt = -1; TauntApplications = 0;
     RecentAttackers = FSFRecentAttackerMemory(); DamageAttackers.Empty(); PendingResetAttackers.Empty();
     ReplicatedTarget = nullptr; NextThreatDecisionAt = 0; EngagedSince = -1;
+}
+
+bool ASFPilotBoar::ConfigureCreature(const FString& DefinitionId)
+{
+    if (!HasAuthority()) return false;
+    FString TableId;
+    bool bUnique = false;
+    if (!ResolveCreatureLoot(DefinitionId, TableId, bUnique)) return false;
+    CreatureId = DefinitionId; LootTableId = TableId; bSingleDrop = bUnique;
+    return true;
+}
+
+bool ASFPilotBoar::ResolveCreatureLoot(const FString& DefinitionId, FString& TableId, bool& bUnique)
+{
+    static const TMap<FString, TPair<FString, bool>> Loot = {
+        {TEXT("npc/boar"), {TEXT("loot/greenlands_silverbrook_boar"), false}},
+        {TEXT("npc/wolf"), {TEXT("loot/greenlands_silverbrook_wolf"), false}},
+        {TEXT("npc/bandit_thug"), {TEXT("loot/greenlands_silverbrook_bandit_thug"), false}},
+        {TEXT("npc/bandit_archer"), {TEXT("loot/greenlands_silverbrook_bandit_archer"), false}},
+        {TEXT("npc/wolf_alpha"), {TEXT("loot/unique_greenlands_wolf_alpha"), true}},
+        {TEXT("npc/bandit_captain"), {TEXT("loot/boss_greenlands_bandit_captain"), true}}
+    };
+    const auto* Binding = Loot.Find(DefinitionId);
+    if (!Binding) return false;
+    TableId = Binding->Key; bUnique = Binding->Value;
+    return true;
 }
 
 bool ASFPilotBoar::ReceivePackAssist(ASFE1Character* Character, const FString& CharacterId)
@@ -422,9 +448,13 @@ void ASFPilotBoar::EnterEvade()
 void ASFPilotBoar::OnRep_Health()
 {
     if (!Label) { return; }
-    Label->SetText(FText::FromString(FString::Printf(TEXT("Boar L2  %d HP"), CurrentHealth)));
+    const FString Name = CreatureId.RightChop(4).Replace(TEXT("_"), TEXT(" "));
+    Label->SetText(FText::FromString(FString::Printf(TEXT("%s L%d  %d HP"), *Name,
+        SFCombatPart6::Npc(CreatureId).Level, CurrentHealth)));
     Label->SetTextRenderColor(CurrentHealth > 0 ? FColor::Yellow : FColor::Red);
 }
+
+void ASFPilotBoar::OnRep_CreatureId() { OnRep_Health(); }
 
 void ASFPilotBoar::ReceivePilotDodge(ASFE1Character* Attacker)
 {
@@ -547,7 +577,8 @@ void ASFPilotBoar::Tick(float DeltaSeconds)
                     const int32 CharacterLevel = Progression ? Progression->GetCharacterLevel() : 1;
                     const USFCombatPilotSettings* Settings = Mode->CombatSettings();
                     const double Radius = SFCombatPilotRules::AggroRadiusMetres(Settings->BoarAggroRadiusMetres,
-                        2, CharacterLevel, Settings->BoarAggroMinimumMetres, Settings->BoarAggroMaximumBonusMetres);
+                        SFCombatPart6::Npc(CreatureId).Level, CharacterLevel,
+                        Settings->BoarAggroMinimumMetres, Settings->BoarAggroMaximumBonusMetres);
                     const double Facing = FVector::DotProduct(GetActorForwardVector(), Toward.GetSafeNormal2D());
                     if (SpawnGroup == TEXT("aggro_sandbox") && Distance < 1500 && Now >= NextAggroFixtureTraceAt)
                     {
@@ -743,10 +774,23 @@ bool ASFGameMode::LoadZoneRecord()
     {
         const auto Group = Value->AsObject();
         const FString Id = Group->GetStringField(TEXT("group_id"));
-        if (Id == TEXT("boar_farm_edge") || Id == TEXT("boar_forest_edge"))
+        const bool bBoar = Id == TEXT("boar_farm_edge") || Id == TEXT("boar_forest_edge");
+        const bool bWolf = Id == TEXT("wolf_northwest_den");
+        const bool bBandit = Id == TEXT("bandit_forest_trail_camp");
+        const bool bAlpha = Id == TEXT("wolf_alpha_northwest_den");
+        const bool bCaptain = Id == TEXT("bandit_captain_forest_trail_camp");
+        if (bBoar || bWolf || bBandit || bAlpha || bCaptain)
         {
-            if (Group->GetStringField(TEXT("spawn_kind")) != TEXT("npc") ||
-                Group->GetArrayField(TEXT("definitions"))[0]->AsObject()->GetStringField(TEXT("definition_id")) != TEXT("npc/boar")) return false;
+            if (Group->GetStringField(TEXT("spawn_kind")) != TEXT("npc")) return false;
+            TSet<FString> Definitions;
+            for (const auto& Entry : Group->GetArrayField(TEXT("definitions")))
+            { Definitions.Add(Entry->AsObject()->GetStringField(TEXT("definition_id"))); }
+            const bool bExpected = (bBoar && Definitions.Num() == 1 && Definitions.Contains(TEXT("npc/boar"))) ||
+                (bWolf && Definitions.Num() == 1 && Definitions.Contains(TEXT("npc/wolf"))) ||
+                (bBandit && Definitions.Num() == 2 && Definitions.Contains(TEXT("npc/bandit_thug")) && Definitions.Contains(TEXT("npc/bandit_archer"))) ||
+                (bAlpha && Definitions.Num() == 1 && Definitions.Contains(TEXT("npc/wolf_alpha"))) ||
+                (bCaptain && Definitions.Num() == 1 && Definitions.Contains(TEXT("npc/bandit_captain")));
+            if (!bExpected) return false;
             Groups.Add(Id, { ReadPolygon(Group->GetArrayField(TEXT("area"))) });
         }
     }
@@ -765,7 +809,7 @@ bool ASFGameMode::LoadZoneRecord()
     }
     for (const auto& Value : Zone->GetArrayField(TEXT("respawn_points")))
     { RespawnPoints.Add(ZonePoint(Value->AsObject()->GetArrayField(TEXT("position")))); }
-    return Groups.Num() == 2 && LevelTwoAreas.Contains(TEXT("boar_farm_edge")) &&
+    return Groups.Num() == 6 && LevelTwoAreas.Contains(TEXT("boar_farm_edge")) &&
         LevelTwoAreas.Contains(TEXT("boar_forest_edge")) && ProtectedAreas.Num() > 0 && RespawnPoints.Num() > 0;
 }
 
@@ -879,7 +923,9 @@ void ASFGameMode::StartCombat()
     if (!bSlotServiceMode)
     {
         bSlotReadyLogged = true;
-        UE_LOG(LogTemp, Display, TEXT("COMBAT_PILOT_READY Boars=%d Combat=%d HostileSpawning=%d"), ActiveBoars.Num(), CapturedSettings->bCombatAvailable, CapturedSettings->bSilverbrookHostileSpawning);
+        UE_LOG(LogTemp, Display, TEXT("COMBAT_PILOT_READY Boars=%d Hostiles=%d Combat=%d HostileSpawning=%d"),
+            CapturedSettings->bSilverbrookHostileSpawning ? 10 : 0, ActiveBoars.Num(),
+            CapturedSettings->bCombatAvailable, CapturedSettings->bSilverbrookHostileSpawning);
     }
 }
 
@@ -1495,7 +1541,7 @@ bool ASFGameMode::RunWorldSlots(const FString& Command, const FString& Group, in
             ASFGameMode* Mode = WeakMode.Get();
             if (!Mode) { return; }
             Mode->bSlotRequestInFlight = false;
-            if (Reply.Status != ESFGameplayStatus::Ok || Reply.BoarSlots.Num() != 10)
+            if (Reply.Status != ESFGameplayStatus::Ok || Reply.BoarSlots.Num() != 21)
             {
                 Mode->bSlotBridgeHealthy = false;
                 UE_LOG(LogTemp, Error, TEXT("COMBAT_PILOT_SLOT_ERROR Gameplay.Host Code=%d Slots=%d"), Reply.GrpcCode, Reply.BoarSlots.Num());
@@ -1511,13 +1557,14 @@ bool ASFGameMode::RunWorldSlots(const FString& Command, const FString& Group, in
                 { return Pending.Key == Row.GroupId && Pending.Value == Row.SlotIndex; });
                 if (Row.bActive && !bDefeatPending && Mode->CapturedSettings->bSilverbrookHostileSpawning && Mode->Groups.Contains(Row.GroupId))
                 { Mode->SpawnSlot(Row.GroupId, Row.SlotIndex, Row.Cycle, Row.PointId,
-                    Row.XMetres, Row.YMetres, Row.FacingDegrees); }
+                    Row.XMetres, Row.YMetres, Row.FacingDegrees, Row.DefinitionId); }
             }
             if (!Mode->bSlotReadyLogged)
             {
                 Mode->bSlotReadyLogged = true;
-                UE_LOG(LogTemp, Display, TEXT("COMBAT_PILOT_READY Boars=%d Combat=%d HostileSpawning=%d"),
-                    Mode->ActiveBoars.Num(), Mode->CapturedSettings->bCombatAvailable, Mode->CapturedSettings->bSilverbrookHostileSpawning);
+                UE_LOG(LogTemp, Display, TEXT("COMBAT_PILOT_READY Boars=%d Hostiles=%d Combat=%d HostileSpawning=%d"),
+                    Mode->CapturedSettings->bSilverbrookHostileSpawning ? 10 : 0, Mode->ActiveBoars.Num(),
+                    Mode->CapturedSettings->bCombatAvailable, Mode->CapturedSettings->bSilverbrookHostileSpawning);
             }
             if (Mode->PendingSlotDefeats.Num()) { Mode->RunWorldSlots(TEXT("tick")); }
         });
@@ -1539,16 +1586,16 @@ bool ASFGameMode::RunWorldSlots(const FString& Command, const FString& Group, in
     for (const FString& Line : Lines)
     {
         TArray<FString> Fields; Line.ParseIntoArray(Fields, TEXT("|"), false);
-        if (Fields.Num() != 9 || Fields[0] != TEXT("SLOT") || !Groups.Contains(Fields[1])) { continue; }
+        if (Fields.Num() != 10 || Fields[0] != TEXT("SLOT") || !Groups.Contains(Fields[1])) { continue; }
         if (Fields[4] == TEXT("Active") && CapturedSettings->bSilverbrookHostileSpawning)
         { SpawnSlot(Fields[1], FCString::Atoi(*Fields[2]), FCString::Atoi(*Fields[3]), Fields[5],
-            FCString::Atod(*Fields[6]), FCString::Atod(*Fields[7]), FCString::Atod(*Fields[8])); }
+            FCString::Atod(*Fields[6]), FCString::Atod(*Fields[7]), FCString::Atod(*Fields[8]), Fields[9]); }
     }
     return true;
 }
 
 void ASFGameMode::SpawnSlot(const FString& Group, int32 Slot, int32 Cycle, const FString& PointId,
-    double X, double Y, double Facing)
+    double X, double Y, double Facing, const FString& DefinitionId)
 {
     const FString Key = FString::Printf(TEXT("%s:%d"), *Group, Slot);
     if (ActiveBoars.FindRef(Key).IsValid() || PointId == TEXT("-")) { return; }
@@ -1557,14 +1604,15 @@ void ASFGameMode::SpawnSlot(const FString& Group, int32 Slot, int32 Cycle, const
     FActorSpawnParameters Params; Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
     auto* Boar = GetWorld()->SpawnActor<ASFPilotBoar>(Where, FRotator(0,Facing,0), Params);
     if (!Boar) { return; }
+    if (!Boar->ConfigureCreature(DefinitionId)) { Boar->Destroy(); return; }
     // Each four-point clearing has two sight-aggressive and two defensive boars.
     // Defensive packmates join through the common assist rule, then remember actual attackers.
     const int32 PointOrdinal = FCString::Atoi(*PointId.Right(2));
     Boar->Initialize(this, Group, Slot, Groups[Group].Polygon,
-        SFCombatPart6::Active(GetWorld()) ? SFCombatPart6::Npc(TEXT("npc/boar")).Health : CapturedSettings->BoarHealth,
-        ++NextBoarSerial, PointOrdinal % 4 >= 2);
+        SFCombatPart6::Active(GetWorld()) ? SFCombatPart6::Npc(DefinitionId).Health : CapturedSettings->BoarHealth,
+        ++NextBoarSerial, Group.StartsWith(TEXT("boar_")) && PointOrdinal % 4 >= 2);
     ActiveBoars.Add(Key, Boar);
-    UE_LOG(LogTemp, Display, TEXT("COMBAT_PILOT_BOAR_SPAWN Group=%s Slot=%d Cycle=%d Point=%s"), *Group, Slot, Cycle, *PointId);
+    UE_LOG(LogTemp, Display, TEXT("COMBAT_PILOT_BOAR_SPAWN Group=%s Slot=%d Cycle=%d Point=%s Creature=%s"), *Group, Slot, Cycle, *PointId, *DefinitionId);
 }
 
 SFCombatResolution::FResult ASFGameMode::ResolveCombatAttack(AActor* Attacker,
@@ -2165,7 +2213,7 @@ int32 ASFGameMode::RewardKill(ASFPilotBoar* Boar, ASFE1Character* Killer)
         }
         return 0;
     }
-    if (Boar->HasSingleDrop()) { return 0; }
+    if (Boar->GetCreatureId() != TEXT("npc/boar")) { return 0; }
     int32 Granted = 0;
     for (APlayerController* Recipient : Eligible)
     {

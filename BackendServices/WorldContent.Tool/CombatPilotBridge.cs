@@ -39,11 +39,14 @@ internal static class CombatPilotBridge
             {
                 if (args.Length != 7 || !int.TryParse(args[4], out var slot) ||
                     !int.TryParse(args[5], out var players)) return 2;
-                if (args[3] is not ("boar_farm_edge" or "boar_forest_edge")) return 2;
-                service.DefeatNpc(args[3], slot, "common", players);
+                var group = zone.SpawnGroups.SingleOrDefault(g => g.GroupId == args[3] && SilverbrookCombatGroups.Contains(g.GroupId));
+                if (group is null) return 2;
+                var current = service.Snapshot(group.GroupId).SingleOrDefault(s => s.SlotIndex == slot);
+                if (current is null || current.State != SlotState.Active) return 2;
+                service.DefeatNpc(args[3], slot, SilverbrookCombatGroups.Tier(current.DefinitionId), players);
             }
             service.Tick(DayPhase.Day);
-            foreach (var group in zone.SpawnGroups.Where(g => g.GroupId is "boar_farm_edge" or "boar_forest_edge"))
+            foreach (var group in zone.SpawnGroups.Where(g => SilverbrookCombatGroups.Contains(g.GroupId)))
             {
                 var slots = service.Snapshot(group.GroupId);
                 store.Save(zone.Id, group.GroupId, slots);
@@ -51,7 +54,7 @@ internal static class CombatPilotBridge
                 {
                     var point = group.Points.FirstOrDefault(p => p.PointId == slot.PointId);
                     Console.WriteLine(FormattableString.Invariant(
-                        $"SLOT|{group.GroupId}|{slot.SlotIndex}|{slot.Cycle}|{slot.State}|{point?.PointId ?? "-"}|{point?.Position[0] ?? 0:R}|{point?.Position[1] ?? 0:R}|{point?.Facing ?? 0:R}"));
+                        $"SLOT|{group.GroupId}|{slot.SlotIndex}|{slot.Cycle}|{slot.State}|{point?.PointId ?? "-"}|{point?.Position[0] ?? 0:R}|{point?.Position[1] ?? 0:R}|{point?.Facing ?? 0:R}|{slot.DefinitionId ?? "-"}"));
                 }
             }
             store.Flush();

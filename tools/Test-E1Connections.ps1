@@ -1058,6 +1058,17 @@ try {
     if ($GreenlandsBoarNetcheck) {
         Wait-Log $serverLog 'BOAR_GREENLANDS_RESPAWN LeadSlot='
         $serverText = Get-Content -LiteralPath $serverLog -Raw
+        foreach ($group in @(@('wolf_northwest_den',4), @('bandit_forest_trail_camp',5),
+                             @('wolf_alpha_northwest_den',1), @('bandit_captain_forest_trail_camp',1))) {
+            if ([regex]::Matches($serverText, "COMBAT_PILOT_BOAR_SPAWN Group=$($group[0]) Slot=\d+ Cycle=0").Count -ne $group[1]) {
+                throw "Expected $($group[1]) active $($group[0]) slots"
+            }
+        }
+        foreach ($creature in @('wolf','bandit_thug','bandit_archer','wolf_alpha','bandit_captain')) {
+            if ($serverText -notmatch "COMBAT_PILOT_BOAR_SPAWN Group=.* Creature=npc/$creature") {
+                throw "Missing selected npc/$creature spawn"
+            }
+        }
         $ordered = @('BOAR_GREENLANDS_BEGIN', 'BOAR_GREENLANDS_AGGRO',
             'BOAR_GREENLANDS_SWITCH_ASSIST', 'BOAR_GREENLANDS_LEASH_PULL', 'BOAR_GREENLANDS_EVADE',
             'BOAR_GREENLANDS_RESET_REGEN_START', 'BOAR_GREENLANDS_REGEN Health=',

@@ -1,7 +1,8 @@
 using System.Text.Json;
 using ShatteredFrontier.WorldContent;
 
-var path = args.Single();
+var combatOnly = args.Contains("--combat");
+var path = args.First(a => a != "--combat");
 var zone = ZoneLoader.Load(path);
 void Check(bool pass, string name) { if (!pass) throw new Exception(name); Console.WriteLine("PASS " + name); }
 void Broken(string name, Action<ZoneContent> mutate, string expected)
@@ -9,6 +10,56 @@ void Broken(string name, Action<ZoneContent> mutate, string expected)
     var copy = JsonSerializer.Deserialize<ZoneContent>(JsonSerializer.Serialize(zone, ZoneLoader.JsonOptions), ZoneLoader.JsonOptions)!;
     mutate(copy);
     Check(WorldContentValidator.Validate(copy).Any(i => i.Contains(expected, StringComparison.Ordinal)), name);
+}
+if (combatOnly)
+{
+    var combatClock = new ManualClock();
+    var slots = new SpawnSlotService(zone, new WorldTuning(), combatClock, new SeededSpawnRandom(2077));
+    slots.Tick(DayPhase.Day);
+    var expected = new Dictionary<string, string[]>
+    {
+        ["boar_farm_edge"] = ["npc/boar"], ["boar_forest_edge"] = ["npc/boar"],
+        ["wolf_northwest_den"] = ["npc/wolf"],
+        ["bandit_forest_trail_camp"] = ["npc/bandit_thug", "npc/bandit_archer"],
+        ["wolf_alpha_northwest_den"] = ["npc/wolf_alpha"],
+        ["bandit_captain_forest_trail_camp"] = ["npc/bandit_captain"]
+    };
+    foreach (var (id, definitions) in expected)
+    {
+        var group = zone.SpawnGroups.Single(g => g.GroupId == id);
+        var active = slots.Snapshot(id).Where(s => s.State == SlotState.Active).ToArray();
+        Check(active.Length == group.ActiveCount && active.All(s => definitions.Contains(s.DefinitionId)), $"{id} active definitions");
+        foreach (var definition in definitions)
+        {
+            var ruleFile = Directory.GetFiles("content/creatures/loot_rules", "*.json")
+                .Single(file => JsonDocument.Parse(File.ReadAllText(file)).RootElement.GetProperty("creature_id").GetString() == definition);
+            using var rule = JsonDocument.Parse(File.ReadAllText(ruleFile));
+            var tableId = rule.RootElement.GetProperty("table_id").GetString()!;
+            var tableFile = Directory.GetFiles("content/loot", "*.json")
+                .Single(file => JsonDocument.Parse(File.ReadAllText(file)).RootElement.GetProperty("id").GetString() == tableId);
+            using var table = JsonDocument.Parse(File.ReadAllText(tableFile));
+            var boss = definition is "npc/wolf_alpha" or "npc/bandit_captain";
+            Check(rule.RootElement.GetProperty("unique_or_boss").GetBoolean() == boss &&
+                (table.RootElement.TryGetProperty("single_drop", out var marker) && marker.GetBoolean()) == boss,
+                $"{definition} bound loot route");
+        }
+    }
+    foreach (var (id, definition, minDelay, maxDelay) in new[] {
+        ("wolf_alpha_northwest_den", "npc/wolf_alpha", 600, 1200),
+        ("bandit_captain_forest_trail_camp", "npc/bandit_captain", 1200, 2400) })
+    {
+        Check(slots.Snapshot(id).Count == 1, $"{definition} single active boss");
+        slots.DefeatNpc(id, 0, SilverbrookCombatGroups.Tier(definition));
+        var defeated = slots.Snapshot(id)[0];
+        var delay = (defeated.RespawnAt!.Value - combatClock.GetUtcNow()).TotalSeconds;
+        Check(defeated.State == SlotState.Respawning && delay >= minDelay && delay <= maxDelay,
+            $"{definition} tier respawn after defeat");
+        combatClock.Advance(TimeSpan.FromSeconds(delay + 1));
+        slots.Tick(DayPhase.Day);
+        Check(slots.Snapshot(id)[0] is { State: SlotState.Active, Cycle: 1 } &&
+            slots.Snapshot(id)[0].DefinitionId == definition, $"{definition} reappears at its sole point");
+    }
+    return;
 }
 Check(WorldContentValidator.Validate(zone).Count == 0, "generated zone validates");
 Broken("N >= 2K", z => z.SpawnGroups.First(g => g.SpawnKind == "gathering_node").ActiveCount = 999, "N >= 2K");

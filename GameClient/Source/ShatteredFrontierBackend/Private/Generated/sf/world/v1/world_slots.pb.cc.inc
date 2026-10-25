@@ -53,11 +53,11 @@ constexpr BoarSlot::ParseTableT_ BoarSlot::InternalGenerateParseTable_(const ::_
     {
       PROTOBUF_FIELD_OFFSET(BoarSlot, _impl_._has_bits_),
       0, // no _extensions_
-      8, 56,  // max_field_number, fast_idx_mask
+      9, 120,  // max_field_number, fast_idx_mask
       offsetof(ParseTableT_, field_lookup_table),
-      4294967040,  // skipmap
+      4294966784,  // skipmap
       offsetof(ParseTableT_, field_entries),
-      8,  // num_field_entries
+      9,  // num_field_entries
       0,  // num_aux_entries
       offsetof(ParseTableT_, field_names),  // no aux_entries
       class_data,
@@ -67,25 +67,22 @@ constexpr BoarSlot::ParseTableT_ BoarSlot::InternalGenerateParseTable_(const ::_
       ::_pbi::TcParser::GetTable<::sf::world::v1::BoarSlot>(),  // to_prefetch
       #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
     }, {{
-      // double facing_degrees = 8;
-      {::_pbi::TcParser::FastF64S1,
-       {65, 6, 0,
-        PROTOBUF_FIELD_OFFSET(BoarSlot, _impl_.facing_degrees_)}},
+      {::_pbi::TcParser::MiniParse, {}},
       // string group_id = 1;
       {::_pbi::TcParser::FastUS1,
        {10, 0, 0,
         PROTOBUF_FIELD_OFFSET(BoarSlot, _impl_.group_id_)}},
       // int32 slot_index = 2;
-      {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(BoarSlot, _impl_.slot_index_), 2>(),
-       {16, 2, 0,
+      {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(BoarSlot, _impl_.slot_index_), 3>(),
+       {16, 3, 0,
         PROTOBUF_FIELD_OFFSET(BoarSlot, _impl_.slot_index_)}},
       // int32 cycle = 3;
-      {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(BoarSlot, _impl_.cycle_), 3>(),
-       {24, 3, 0,
+      {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(BoarSlot, _impl_.cycle_), 4>(),
+       {24, 4, 0,
         PROTOBUF_FIELD_OFFSET(BoarSlot, _impl_.cycle_)}},
       // bool active = 4;
-      {::_pbi::TcParser::SingularVarintNoZag1<bool, offsetof(BoarSlot, _impl_.active_), 7>(),
-       {32, 7, 0,
+      {::_pbi::TcParser::SingularVarintNoZag1<bool, offsetof(BoarSlot, _impl_.active_), 8>(),
+       {32, 8, 0,
         PROTOBUF_FIELD_OFFSET(BoarSlot, _impl_.active_)}},
       // string point_id = 5;
       {::_pbi::TcParser::FastUS1,
@@ -93,38 +90,55 @@ constexpr BoarSlot::ParseTableT_ BoarSlot::InternalGenerateParseTable_(const ::_
         PROTOBUF_FIELD_OFFSET(BoarSlot, _impl_.point_id_)}},
       // double x_metres = 6;
       {::_pbi::TcParser::FastF64S1,
-       {49, 4, 0,
+       {49, 5, 0,
         PROTOBUF_FIELD_OFFSET(BoarSlot, _impl_.x_metres_)}},
       // double y_metres = 7;
       {::_pbi::TcParser::FastF64S1,
-       {57, 5, 0,
+       {57, 6, 0,
         PROTOBUF_FIELD_OFFSET(BoarSlot, _impl_.y_metres_)}},
+      // double facing_degrees = 8;
+      {::_pbi::TcParser::FastF64S1,
+       {65, 7, 0,
+        PROTOBUF_FIELD_OFFSET(BoarSlot, _impl_.facing_degrees_)}},
+      // string definition_id = 9;
+      {::_pbi::TcParser::FastUS1,
+       {74, 2, 0,
+        PROTOBUF_FIELD_OFFSET(BoarSlot, _impl_.definition_id_)}},
+      {::_pbi::TcParser::MiniParse, {}},
+      {::_pbi::TcParser::MiniParse, {}},
+      {::_pbi::TcParser::MiniParse, {}},
+      {::_pbi::TcParser::MiniParse, {}},
+      {::_pbi::TcParser::MiniParse, {}},
+      {::_pbi::TcParser::MiniParse, {}},
     }}, {{
       65535, 65535
     }}, {{
       // string group_id = 1;
       {PROTOBUF_FIELD_OFFSET(BoarSlot, _impl_.group_id_), _Internal::kHasBitsOffset + 0, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
       // int32 slot_index = 2;
-      {PROTOBUF_FIELD_OFFSET(BoarSlot, _impl_.slot_index_), _Internal::kHasBitsOffset + 2, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt32)},
+      {PROTOBUF_FIELD_OFFSET(BoarSlot, _impl_.slot_index_), _Internal::kHasBitsOffset + 3, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt32)},
       // int32 cycle = 3;
-      {PROTOBUF_FIELD_OFFSET(BoarSlot, _impl_.cycle_), _Internal::kHasBitsOffset + 3, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt32)},
+      {PROTOBUF_FIELD_OFFSET(BoarSlot, _impl_.cycle_), _Internal::kHasBitsOffset + 4, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt32)},
       // bool active = 4;
-      {PROTOBUF_FIELD_OFFSET(BoarSlot, _impl_.active_), _Internal::kHasBitsOffset + 7, 0, (0 | ::_fl::kFcOptional | ::_fl::kBool)},
+      {PROTOBUF_FIELD_OFFSET(BoarSlot, _impl_.active_), _Internal::kHasBitsOffset + 8, 0, (0 | ::_fl::kFcOptional | ::_fl::kBool)},
       // string point_id = 5;
       {PROTOBUF_FIELD_OFFSET(BoarSlot, _impl_.point_id_), _Internal::kHasBitsOffset + 1, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
       // double x_metres = 6;
-      {PROTOBUF_FIELD_OFFSET(BoarSlot, _impl_.x_metres_), _Internal::kHasBitsOffset + 4, 0, (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+      {PROTOBUF_FIELD_OFFSET(BoarSlot, _impl_.x_metres_), _Internal::kHasBitsOffset + 5, 0, (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
       // double y_metres = 7;
-      {PROTOBUF_FIELD_OFFSET(BoarSlot, _impl_.y_metres_), _Internal::kHasBitsOffset + 5, 0, (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+      {PROTOBUF_FIELD_OFFSET(BoarSlot, _impl_.y_metres_), _Internal::kHasBitsOffset + 6, 0, (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
       // double facing_degrees = 8;
-      {PROTOBUF_FIELD_OFFSET(BoarSlot, _impl_.facing_degrees_), _Internal::kHasBitsOffset + 6, 0, (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+      {PROTOBUF_FIELD_OFFSET(BoarSlot, _impl_.facing_degrees_), _Internal::kHasBitsOffset + 7, 0, (0 | ::_fl::kFcOptional | ::_fl::kDouble)},
+      // string definition_id = 9;
+      {PROTOBUF_FIELD_OFFSET(BoarSlot, _impl_.definition_id_), _Internal::kHasBitsOffset + 2, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
     }},
     // no aux_entries
     {{
-      "\24\10\0\0\0\10\0\0\0\0\0\0\0\0\0\0"
+      "\24\10\0\0\0\10\0\0\0\15\0\0\0\0\0\0"
       "sf.world.v1.BoarSlot"
       "group_id"
       "point_id"
+      "definition_id"
     }},
   };
 }
@@ -138,6 +152,9 @@ inline constexpr BoarSlot::Impl_::Impl_(
             &::google::protobuf::internal::fixed_address_empty_string,
             ::_pbi::ConstantInitialized()),
         point_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        definition_id_(
             &::google::protobuf::internal::fixed_address_empty_string,
             ::_pbi::ConstantInitialized()),
         slot_index_{0},
@@ -595,7 +612,7 @@ const ::uint32_t
         4,
         0x081, // bitmap
         PROTOBUF_FIELD_OFFSET(::sf::world::v1::BoarSlot, _impl_._has_bits_),
-        11, // hasbit index offset
+        12, // hasbit index offset
         PROTOBUF_FIELD_OFFSET(::sf::world::v1::BoarSlot, _impl_.group_id_),
         PROTOBUF_FIELD_OFFSET(::sf::world::v1::BoarSlot, _impl_.slot_index_),
         PROTOBUF_FIELD_OFFSET(::sf::world::v1::BoarSlot, _impl_.cycle_),
@@ -604,14 +621,16 @@ const ::uint32_t
         PROTOBUF_FIELD_OFFSET(::sf::world::v1::BoarSlot, _impl_.x_metres_),
         PROTOBUF_FIELD_OFFSET(::sf::world::v1::BoarSlot, _impl_.y_metres_),
         PROTOBUF_FIELD_OFFSET(::sf::world::v1::BoarSlot, _impl_.facing_degrees_),
+        PROTOBUF_FIELD_OFFSET(::sf::world::v1::BoarSlot, _impl_.definition_id_),
         0,
-        2,
         3,
-        7,
-        1,
         4,
+        8,
+        1,
         5,
         6,
+        7,
+        2,
         0x081, // bitmap
         PROTOBUF_FIELD_OFFSET(::sf::world::v1::AdvanceSlotsReply, _impl_._has_bits_),
         4, // hasbit index offset
@@ -623,7 +642,7 @@ static const ::_pbi::MigrationSchema
     schemas[] ABSL_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
         {0, sizeof(::sf::world::v1::AdvanceSlotsRequest)},
         {13, sizeof(::sf::world::v1::BoarSlot)},
-        {32, sizeof(::sf::world::v1::AdvanceSlotsReply)},
+        {34, sizeof(::sf::world::v1::AdvanceSlotsReply)},
 };
 static const ::_pbi::MessageGlobalsBase* PROTOBUF_NONNULL const
     file_message_globals[] = {
@@ -637,22 +656,22 @@ const char descriptor_table_protodef_sf_2fworld_2fv1_2fworld_5fslots_2eproto[] A
     "d.v1\"\177\n\023AdvanceSlotsRequest\022\017\n\007command\030\001"
     " \001(\t\022\020\n\010group_id\030\002 \001(\t\022\022\n\nslot_index\030\003 \001"
     "(\005\022\027\n\017players_in_area\030\004 \001(\005\022\030\n\020hostile_s"
-    "pawning\030\005 \001(\010\"\235\001\n\010BoarSlot\022\020\n\010group_id\030\001"
+    "pawning\030\005 \001(\010\"\264\001\n\010BoarSlot\022\020\n\010group_id\030\001"
     " \001(\t\022\022\n\nslot_index\030\002 \001(\005\022\r\n\005cycle\030\003 \001(\005\022"
     "\016\n\006active\030\004 \001(\010\022\020\n\010point_id\030\005 \001(\t\022\020\n\010x_m"
     "etres\030\006 \001(\001\022\020\n\010y_metres\030\007 \001(\001\022\026\n\016facing_"
-    "degrees\030\010 \001(\001\"9\n\021AdvanceSlotsReply\022$\n\005sl"
-    "ots\030\001 \003(\0132\025.sf.world.v1.BoarSlot2Y\n\nWorl"
-    "dSlots\022K\n\007Advance\022 .sf.world.v1.AdvanceS"
-    "lotsRequest\032\036.sf.world.v1.AdvanceSlotsRe"
-    "plyB\035\252\002\032ShatteredFrontier.World.V1b\006prot"
-    "o3"
+    "degrees\030\010 \001(\001\022\025\n\rdefinition_id\030\t \001(\t\"9\n\021"
+    "AdvanceSlotsReply\022$\n\005slots\030\001 \003(\0132\025.sf.wo"
+    "rld.v1.BoarSlot2Y\n\nWorldSlots\022K\n\007Advance"
+    "\022 .sf.world.v1.AdvanceSlotsRequest\032\036.sf."
+    "world.v1.AdvanceSlotsReplyB\035\252\002\032Shattered"
+    "Frontier.World.V1b\006proto3"
 };
 static ::absl::once_flag descriptor_table_sf_2fworld_2fv1_2fworld_5fslots_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_sf_2fworld_2fv1_2fworld_5fslots_2eproto = {
     false,
     false,
-    522,
+    545,
     descriptor_table_protodef_sf_2fworld_2fv1_2fworld_5fslots_2eproto,
     "sf/world/v1/world_slots.proto",
     &descriptor_table_sf_2fworld_2fv1_2fworld_5fslots_2eproto_once,
@@ -1024,7 +1043,8 @@ PROTOBUF_NDEBUG_INLINE BoarSlot::Impl_::Impl_(
       : _has_bits_{from._has_bits_},
         _cached_size_{0},
         group_id_(arena, from.group_id_),
-        point_id_(arena, from.point_id_) {}
+        point_id_(arena, from.point_id_),
+        definition_id_(arena, from.definition_id_) {}
 
 BoarSlot::BoarSlot(
     ::google::protobuf::Arena* PROTOBUF_NULLABLE arena,
@@ -1055,7 +1075,8 @@ PROTOBUF_NDEBUG_INLINE BoarSlot::Impl_::Impl_(
     [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
       : _cached_size_{0},
         group_id_(arena),
-        point_id_(arena) {}
+        point_id_(arena),
+        definition_id_(arena) {}
 
 inline void BoarSlot::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
   new (&_impl_) Impl_(internal_visibility(), arena);
@@ -1079,6 +1100,7 @@ inline void BoarSlot::SharedDtor(MessageLite& self) {
   ABSL_DCHECK(this_.GetArena() == nullptr);
   this_._impl_.group_id_.Destroy();
   this_._impl_.point_id_.Destroy();
+  this_._impl_.definition_id_.Destroy();
   this_._impl_.~Impl_();
 }
 
@@ -1116,19 +1138,23 @@ PROTOBUF_NOINLINE void BoarSlot::Clear() {
   (void) cached_has_bits;
 
   cached_has_bits = _impl_._has_bits_[0];
-  if (BatchCheckHasBit(cached_has_bits, 0x00000003U)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x00000007U)) {
     if (CheckHasBit(cached_has_bits, 0x00000001U)) {
       _impl_.group_id_.ClearNonDefaultToEmpty();
     }
     if (CheckHasBit(cached_has_bits, 0x00000002U)) {
       _impl_.point_id_.ClearNonDefaultToEmpty();
     }
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      _impl_.definition_id_.ClearNonDefaultToEmpty();
+    }
   }
-  if (BatchCheckHasBit(cached_has_bits, 0x000000fcU)) {
+  if (BatchCheckHasBit(cached_has_bits, 0x000000f8U)) {
     ::memset(&_impl_.slot_index_, 0, static_cast<::size_t>(
-        reinterpret_cast<char*>(&_impl_.active_) -
-        reinterpret_cast<char*>(&_impl_.slot_index_)) + sizeof(_impl_.active_));
+        reinterpret_cast<char*>(&_impl_.facing_degrees_) -
+        reinterpret_cast<char*>(&_impl_.slot_index_)) + sizeof(_impl_.facing_degrees_));
   }
+  _impl_.active_ = false;
   _impl_._has_bits_.Clear();
   _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
 }
@@ -1163,7 +1189,7 @@ PROTOBUF_NOINLINE void BoarSlot::Clear() {
   }
 
   // int32 slot_index = 2;
-  if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000008U)) {
     if (this_._internal_slot_index() != 0) {
       target =
           ::google::protobuf::internal::WireFormatLite::WriteInt32ToArrayWithField<2>(
@@ -1172,7 +1198,7 @@ PROTOBUF_NOINLINE void BoarSlot::Clear() {
   }
 
   // int32 cycle = 3;
-  if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000010U)) {
     if (this_._internal_cycle() != 0) {
       target =
           ::google::protobuf::internal::WireFormatLite::WriteInt32ToArrayWithField<3>(
@@ -1181,7 +1207,7 @@ PROTOBUF_NOINLINE void BoarSlot::Clear() {
   }
 
   // bool active = 4;
-  if (CheckHasBit(cached_has_bits, 0x00000080U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000100U)) {
     if (this_._internal_active() != 0) {
       target = stream->EnsureSpace(target);
       target = ::_pbi::WireFormatLite::WriteBoolToArray(
@@ -1200,7 +1226,7 @@ PROTOBUF_NOINLINE void BoarSlot::Clear() {
   }
 
   // double x_metres = 6;
-  if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000020U)) {
     if (::absl::bit_cast<::uint64_t>(this_._internal_x_metres()) != 0) {
       target = stream->EnsureSpace(target);
       target = ::_pbi::WireFormatLite::WriteDoubleToArray(
@@ -1209,7 +1235,7 @@ PROTOBUF_NOINLINE void BoarSlot::Clear() {
   }
 
   // double y_metres = 7;
-  if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000040U)) {
     if (::absl::bit_cast<::uint64_t>(this_._internal_y_metres()) != 0) {
       target = stream->EnsureSpace(target);
       target = ::_pbi::WireFormatLite::WriteDoubleToArray(
@@ -1218,11 +1244,21 @@ PROTOBUF_NOINLINE void BoarSlot::Clear() {
   }
 
   // double facing_degrees = 8;
-  if (CheckHasBit(cached_has_bits, 0x00000040U)) {
+  if (CheckHasBit(cached_has_bits, 0x00000080U)) {
     if (::absl::bit_cast<::uint64_t>(this_._internal_facing_degrees()) != 0) {
       target = stream->EnsureSpace(target);
       target = ::_pbi::WireFormatLite::WriteDoubleToArray(
           8, this_._internal_facing_degrees(), target);
+    }
+  }
+
+  // string definition_id = 9;
+  if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+    if (!this_._internal_definition_id().empty()) {
+      const ::std::string& _s = this_._internal_definition_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.world.v1.BoarSlot.definition_id");
+      target = stream->WriteStringMaybeAliased(9, _s, target);
     }
   }
 
@@ -1266,40 +1302,49 @@ PROTOBUF_NOINLINE void BoarSlot::Clear() {
                                         this_._internal_point_id());
       }
     }
-    // int32 slot_index = 2;
+    // string definition_id = 9;
     if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      if (!this_._internal_definition_id().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_definition_id());
+      }
+    }
+    // int32 slot_index = 2;
+    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
       if (this_._internal_slot_index() != 0) {
         total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(
             this_._internal_slot_index());
       }
     }
     // int32 cycle = 3;
-    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000010U)) {
       if (this_._internal_cycle() != 0) {
         total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(
             this_._internal_cycle());
       }
     }
     // double x_metres = 6;
-    if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000020U)) {
       if (::absl::bit_cast<::uint64_t>(this_._internal_x_metres()) != 0) {
         total_size += 9;
       }
     }
     // double y_metres = 7;
-    if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000040U)) {
       if (::absl::bit_cast<::uint64_t>(this_._internal_y_metres()) != 0) {
         total_size += 9;
       }
     }
     // double facing_degrees = 8;
-    if (CheckHasBit(cached_has_bits, 0x00000040U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000080U)) {
       if (::absl::bit_cast<::uint64_t>(this_._internal_facing_degrees()) != 0) {
         total_size += 9;
       }
     }
+  }
+   {
     // bool active = 4;
-    if (CheckHasBit(cached_has_bits, 0x00000080U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000100U)) {
       if (this_._internal_active() != 0) {
         total_size += 2;
       }
@@ -1342,34 +1387,43 @@ void BoarSlot::MergeImpl(::google::protobuf::MessageLite& to_msg,
       }
     }
     if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      if (!from._internal_definition_id().empty()) {
+        _this->_internal_set_definition_id(from._internal_definition_id());
+      } else {
+        if (_this->_impl_.definition_id_.IsDefault()) {
+          _this->_internal_set_definition_id("");
+        }
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
       if (from._internal_slot_index() != 0) {
         _this->_impl_.slot_index_ = from._impl_.slot_index_;
       }
     }
-    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000010U)) {
       if (from._internal_cycle() != 0) {
         _this->_impl_.cycle_ = from._impl_.cycle_;
       }
     }
-    if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000020U)) {
       if (::absl::bit_cast<::uint64_t>(from._internal_x_metres()) != 0) {
         _this->_impl_.x_metres_ = from._impl_.x_metres_;
       }
     }
-    if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000040U)) {
       if (::absl::bit_cast<::uint64_t>(from._internal_y_metres()) != 0) {
         _this->_impl_.y_metres_ = from._impl_.y_metres_;
       }
     }
-    if (CheckHasBit(cached_has_bits, 0x00000040U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000080U)) {
       if (::absl::bit_cast<::uint64_t>(from._internal_facing_degrees()) != 0) {
         _this->_impl_.facing_degrees_ = from._impl_.facing_degrees_;
       }
     }
-    if (CheckHasBit(cached_has_bits, 0x00000080U)) {
-      if (from._internal_active() != 0) {
-        _this->_impl_.active_ = from._impl_.active_;
-      }
+  }
+  if (CheckHasBit(cached_has_bits, 0x00000100U)) {
+    if (from._internal_active() != 0) {
+      _this->_impl_.active_ = from._impl_.active_;
     }
   }
   _this->_impl_._has_bits_[0] |= cached_has_bits;
@@ -1393,6 +1447,7 @@ void BoarSlot::InternalSwap(BoarSlot* PROTOBUF_RESTRICT PROTOBUF_NONNULL other) 
   swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.group_id_, &other->_impl_.group_id_, arena);
   ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.point_id_, &other->_impl_.point_id_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.definition_id_, &other->_impl_.definition_id_, arena);
   ::google::protobuf::internal::memswap<
       PROTOBUF_FIELD_OFFSET(BoarSlot, _impl_.active_)
       + sizeof(BoarSlot::_impl_.active_)

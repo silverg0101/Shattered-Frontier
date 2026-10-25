@@ -207,6 +207,7 @@ void FSFGrpcGameplayTransport::Send(const FSFGameplayRequest& Q, float DeadlineS
             {
                 auto& Row = Out.BoarSlots.AddDefaulted_GetRef();
                 Row.GroupId = FromUtf8(Slot.group_id()); Row.PointId = FromUtf8(Slot.point_id());
+                Row.DefinitionId = FromUtf8(Slot.definition_id());
                 Row.SlotIndex = Slot.slot_index(); Row.Cycle = Slot.cycle(); Row.bActive = Slot.active();
                 Row.XMetres = Slot.x_metres(); Row.YMetres = Slot.y_metres(); Row.FacingDegrees = Slot.facing_degrees();
             }

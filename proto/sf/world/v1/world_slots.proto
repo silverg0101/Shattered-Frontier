@@ -23,6 +23,7 @@ message BoarSlot {
   double x_metres = 6;
   double y_metres = 7;
   double facing_degrees = 8;
+  string definition_id = 9;
 }
 
 message AdvanceSlotsReply { repeated BoarSlot slots = 1; }

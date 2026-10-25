@@ -2,7 +2,7 @@ using Grpc.Core;
 using ShatteredFrontier.WorldContent;
 using Pb = ShatteredFrontier.World.V1;
 
-// Common boar slots are session state. The host owns WorldContent transitions; Unreal owns actors.
+// Silverbrook combat slots are session state. The host owns WorldContent transitions; Unreal owns actors.
 internal sealed class WorldSlotsGrpcService(ZoneContent zone) : Pb.WorldSlots.WorldSlotsBase
 {
     private readonly object gate = new();
@@ -15,8 +15,8 @@ internal sealed class WorldSlotsGrpcService(ZoneContent zone) : Pb.WorldSlots.Wo
     internal Pb.AdvanceSlotsReply AdvanceCore(Pb.AdvanceSlotsRequest request)
     {
         if (request.Command is not ("tick" or "defeat") || request.PlayersInArea is < 0 or > 1000 ||
-            (request.Command == "defeat" && (request.GroupId is not ("boar_farm_edge" or "boar_forest_edge") ||
-                request.SlotIndex is < 0 or > 4)))
+            (request.Command == "defeat" && (!SilverbrookCombatGroups.Contains(request.GroupId) ||
+                request.SlotIndex < 0 || request.SlotIndex >= zone.SpawnGroups.Single(g => g.GroupId == request.GroupId).ActiveCount)))
             throw new GameplayRejectedException("Invalid WorldContent slot request.", StatusCode.InvalidArgument);
         lock (gate)
         {
@@ -30,11 +30,11 @@ internal sealed class WorldSlotsGrpcService(ZoneContent zone) : Pb.WorldSlots.Wo
                 // A retried request cannot advance an already defeated slot twice.
                 var current = slots.Snapshot(request.GroupId).Single(s => s.SlotIndex == request.SlotIndex);
                 if (current.State == SlotState.Active)
-                    slots.DefeatNpc(request.GroupId, request.SlotIndex, "common", request.PlayersInArea);
+                    slots.DefeatNpc(request.GroupId, request.SlotIndex, SilverbrookCombatGroups.Tier(current.DefinitionId), request.PlayersInArea);
             }
             slots.Tick(DayPhase.Day);
             var reply = new Pb.AdvanceSlotsReply();
-            foreach (var group in zone.SpawnGroups.Where(g => g.GroupId is "boar_farm_edge" or "boar_forest_edge"))
+            foreach (var group in zone.SpawnGroups.Where(g => SilverbrookCombatGroups.Contains(g.GroupId)))
             foreach (var slot in slots.Snapshot(group.GroupId))
             {
                 var point = group.Points.FirstOrDefault(p => p.PointId == slot.PointId);
@@ -43,7 +43,7 @@ internal sealed class WorldSlotsGrpcService(ZoneContent zone) : Pb.WorldSlots.Wo
                     GroupId = group.GroupId, SlotIndex = slot.SlotIndex, Cycle = slot.Cycle,
                     Active = slot.State == SlotState.Active, PointId = point?.PointId ?? "",
                     XMetres = point?.Position[0] ?? 0, YMetres = point?.Position[1] ?? 0,
-                    FacingDegrees = point?.Facing ?? 0
+                    FacingDegrees = point?.Facing ?? 0, DefinitionId = slot.DefinitionId ?? ""
                 });
             }
             return reply;

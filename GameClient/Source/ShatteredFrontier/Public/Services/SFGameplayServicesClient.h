@@ -170,7 +170,7 @@ struct FSFGameplayResponse
         int64 RegrowAtUnixMs = 0, NextTransitionUnixMs = 0; FVector PositionMetres = FVector::ZeroVector;
         double FacingDegrees = 0; bool bActive = false; };
     TArray<FZoneNode> ZoneNodes;
-    struct FBoarSlot { FString GroupId, PointId; int32 SlotIndex = 0, Cycle = 0; bool bActive = false; double XMetres = 0, YMetres = 0, FacingDegrees = 0; };
+    struct FBoarSlot { FString GroupId, PointId, DefinitionId; int32 SlotIndex = 0, Cycle = 0; bool bActive = false; double XMetres = 0, YMetres = 0, FacingDegrees = 0; };
     TArray<FBoarSlot> BoarSlots;
     FString GroupPartyId, GroupLeaderId, GroupAssistantId, GroupState;
     FString RaidGroupId;

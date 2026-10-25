@@ -12,6 +12,40 @@
 #include "Tests/AutomationCommon.h"
 #include "Engine/World.h"
 
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFHostileDefinitionsTest,
+    "ShatteredFrontier.Combat.Pilot.HostileDefinitions",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+
+bool FSFHostileDefinitionsTest::RunTest(const FString& Parameters)
+{
+    struct FExpected { const TCHAR* Creature; const TCHAR* Table; int32 Level; int32 Health; double SwingDamage; bool bSingle; };
+    const FExpected Rows[] = {
+        {TEXT("npc/wolf"), TEXT("loot/greenlands_silverbrook_wolf"), 6, 667, 32.0, false},
+        {TEXT("npc/bandit_thug"), TEXT("loot/greenlands_silverbrook_bandit_thug"), 5, 623, 37.4, false},
+        {TEXT("npc/bandit_archer"), TEXT("loot/greenlands_silverbrook_bandit_archer"), 5, 623, 34.9, false},
+        {TEXT("npc/wolf_alpha"), TEXT("loot/unique_greenlands_wolf_alpha"), 7, 1779, 54.0, true},
+        {TEXT("npc/bandit_captain"), TEXT("loot/boss_greenlands_bandit_captain"), 7, 3558, 95.5, true}
+    };
+    for (const FExpected& Row : Rows)
+    {
+        FString Table;
+        bool bSingle = false;
+        TestTrue(FString::Printf(TEXT("%s has a loot binding"), Row.Creature),
+            ASFPilotBoar::ResolveCreatureLoot(Row.Creature, Table, bSingle));
+        TestEqual(TEXT("Bound table"), Table, FString(Row.Table));
+        TestEqual(TEXT("Shared single drop"), bSingle, Row.bSingle);
+        const auto Stats = SFCombatPart6::Npc(Row.Creature);
+        TestEqual(TEXT("Part 6 level"), Stats.Level, Row.Level);
+        TestEqual(TEXT("Part 6 health"), Stats.Health, Row.Health);
+        TestEqual(TEXT("Part 6 swing"), Stats.SwingDamage, Row.SwingDamage);
+    }
+    FString UnknownTable;
+    bool bUnknownSingle = false;
+    TestFalse(TEXT("Unknown creature cannot spawn"),
+        ASFPilotBoar::ResolveCreatureLoot(TEXT("npc/unknown"), UnknownTable, bUnknownSingle));
+    return true;
+}
+
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFCombatResolutionTest,
     "ShatteredFrontier.Combat.Resolution.OrderAndValues",
     EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)

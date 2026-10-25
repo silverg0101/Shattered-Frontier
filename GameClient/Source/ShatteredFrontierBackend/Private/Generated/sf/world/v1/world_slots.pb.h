@@ -247,6 +247,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED BoarSlot final : public ::google::p
   enum : int {
     kGroupIdFieldNumber = 1,
     kPointIdFieldNumber = 5,
+    kDefinitionIdFieldNumber = 9,
     kSlotIndexFieldNumber = 2,
     kCycleFieldNumber = 3,
     kXMetresFieldNumber = 6,
@@ -282,6 +283,21 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED BoarSlot final : public ::google::p
   const ::std::string& _internal_point_id() const;
   PROTOBUF_ALWAYS_INLINE void _internal_set_point_id(const ::std::string& value);
   ::std::string* PROTOBUF_NONNULL _internal_mutable_point_id();
+
+  public:
+  // string definition_id = 9;
+  void clear_definition_id() ;
+  [[nodiscard]] const ::std::string& definition_id() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_definition_id(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_definition_id();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_definition_id();
+  void set_allocated_definition_id(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_definition_id() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_definition_id(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_definition_id();
 
   public:
   // int32 slot_index = 2;
@@ -348,8 +364,8 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED BoarSlot final : public ::google::p
  private:
   class _Internal;
   using ParseTableT_ =
-      ::google::protobuf::internal::TcParseTable<3, 8,
-                          0, 53,
+      ::google::protobuf::internal::TcParseTable<4, 9,
+                          0, 66,
                           2>;
   static constexpr ParseTableT_ InternalGenerateParseTable_(
       const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
@@ -379,6 +395,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED BoarSlot final : public ::google::p
     ::google::protobuf::internal::CachedSize _cached_size_;
     ::google::protobuf::internal::ArenaStringPtr group_id_;
     ::google::protobuf::internal::ArenaStringPtr point_id_;
+    ::google::protobuf::internal::ArenaStringPtr definition_id_;
     ::int32_t slot_index_;
     ::int32_t cycle_;
     double x_metres_;
@@ -1150,7 +1167,7 @@ inline void BoarSlot::set_allocated_group_id(::std::string* PROTOBUF_NULLABLE va
 inline void BoarSlot::clear_slot_index() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.slot_index_ = 0;
-  ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000008U);
 }
 inline ::int32_t BoarSlot::slot_index() const {
   // @@protoc_insertion_point(field_get:sf.world.v1.BoarSlot.slot_index)
@@ -1158,7 +1175,7 @@ inline ::int32_t BoarSlot::slot_index() const {
 }
 inline void BoarSlot::set_slot_index(::int32_t value) {
   _internal_set_slot_index(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000008U);
   // @@protoc_insertion_point(field_set:sf.world.v1.BoarSlot.slot_index)
 }
 inline ::int32_t BoarSlot::_internal_slot_index() const {
@@ -1174,7 +1191,7 @@ inline void BoarSlot::_internal_set_slot_index(::int32_t value) {
 inline void BoarSlot::clear_cycle() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.cycle_ = 0;
-  ClearHasBit(_impl_._has_bits_[0], 0x00000008U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000010U);
 }
 inline ::int32_t BoarSlot::cycle() const {
   // @@protoc_insertion_point(field_get:sf.world.v1.BoarSlot.cycle)
@@ -1182,7 +1199,7 @@ inline ::int32_t BoarSlot::cycle() const {
 }
 inline void BoarSlot::set_cycle(::int32_t value) {
   _internal_set_cycle(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000008U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000010U);
   // @@protoc_insertion_point(field_set:sf.world.v1.BoarSlot.cycle)
 }
 inline ::int32_t BoarSlot::_internal_cycle() const {
@@ -1198,7 +1215,7 @@ inline void BoarSlot::_internal_set_cycle(::int32_t value) {
 inline void BoarSlot::clear_active() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.active_ = false;
-  ClearHasBit(_impl_._has_bits_[0], 0x00000080U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000100U);
 }
 inline bool BoarSlot::active() const {
   // @@protoc_insertion_point(field_get:sf.world.v1.BoarSlot.active)
@@ -1206,7 +1223,7 @@ inline bool BoarSlot::active() const {
 }
 inline void BoarSlot::set_active(bool value) {
   _internal_set_active(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000080U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000100U);
   // @@protoc_insertion_point(field_set:sf.world.v1.BoarSlot.active)
 }
 inline bool BoarSlot::_internal_active() const {
@@ -1286,7 +1303,7 @@ inline void BoarSlot::set_allocated_point_id(::std::string* PROTOBUF_NULLABLE va
 inline void BoarSlot::clear_x_metres() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.x_metres_ = 0;
-  ClearHasBit(_impl_._has_bits_[0], 0x00000010U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000020U);
 }
 inline double BoarSlot::x_metres() const {
   // @@protoc_insertion_point(field_get:sf.world.v1.BoarSlot.x_metres)
@@ -1294,7 +1311,7 @@ inline double BoarSlot::x_metres() const {
 }
 inline void BoarSlot::set_x_metres(double value) {
   _internal_set_x_metres(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000010U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000020U);
   // @@protoc_insertion_point(field_set:sf.world.v1.BoarSlot.x_metres)
 }
 inline double BoarSlot::_internal_x_metres() const {
@@ -1310,7 +1327,7 @@ inline void BoarSlot::_internal_set_x_metres(double value) {
 inline void BoarSlot::clear_y_metres() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.y_metres_ = 0;
-  ClearHasBit(_impl_._has_bits_[0], 0x00000020U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000040U);
 }
 inline double BoarSlot::y_metres() const {
   // @@protoc_insertion_point(field_get:sf.world.v1.BoarSlot.y_metres)
@@ -1318,7 +1335,7 @@ inline double BoarSlot::y_metres() const {
 }
 inline void BoarSlot::set_y_metres(double value) {
   _internal_set_y_metres(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000020U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000040U);
   // @@protoc_insertion_point(field_set:sf.world.v1.BoarSlot.y_metres)
 }
 inline double BoarSlot::_internal_y_metres() const {
@@ -1334,7 +1351,7 @@ inline void BoarSlot::_internal_set_y_metres(double value) {
 inline void BoarSlot::clear_facing_degrees() {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.facing_degrees_ = 0;
-  ClearHasBit(_impl_._has_bits_[0], 0x00000040U);
+  ClearHasBit(_impl_._has_bits_[0], 0x00000080U);
 }
 inline double BoarSlot::facing_degrees() const {
   // @@protoc_insertion_point(field_get:sf.world.v1.BoarSlot.facing_degrees)
@@ -1342,7 +1359,7 @@ inline double BoarSlot::facing_degrees() const {
 }
 inline void BoarSlot::set_facing_degrees(double value) {
   _internal_set_facing_degrees(value);
-  SetHasBit(_impl_._has_bits_[0], 0x00000040U);
+  SetHasBit(_impl_._has_bits_[0], 0x00000080U);
   // @@protoc_insertion_point(field_set:sf.world.v1.BoarSlot.facing_degrees)
 }
 inline double BoarSlot::_internal_facing_degrees() const {
@@ -1352,6 +1369,70 @@ inline double BoarSlot::_internal_facing_degrees() const {
 inline void BoarSlot::_internal_set_facing_degrees(double value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.facing_degrees_ = value;
+}
+
+// string definition_id = 9;
+inline void BoarSlot::clear_definition_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.definition_id_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+}
+inline const ::std::string& BoarSlot::definition_id() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.world.v1.BoarSlot.definition_id)
+  return _internal_definition_id();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void BoarSlot::set_definition_id(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  _impl_.definition_id_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:sf.world.v1.BoarSlot.definition_id)
+}
+inline ::std::string* PROTOBUF_NONNULL BoarSlot::mutable_definition_id()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  ::std::string* _s = _internal_mutable_definition_id();
+  // @@protoc_insertion_point(field_mutable:sf.world.v1.BoarSlot.definition_id)
+  return _s;
+}
+inline const ::std::string& BoarSlot::_internal_definition_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.definition_id_.Get();
+}
+inline void BoarSlot::_internal_set_definition_id(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.definition_id_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL BoarSlot::_internal_mutable_definition_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.definition_id_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE BoarSlot::release_definition_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:sf.world.v1.BoarSlot.definition_id)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000004U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+  auto* released = _impl_.definition_id_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.definition_id_.Set("", GetArena());
+  }
+  return released;
+}
+inline void BoarSlot::set_allocated_definition_id(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+  }
+  _impl_.definition_id_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.definition_id_.IsDefault()) {
+    _impl_.definition_id_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:sf.world.v1.BoarSlot.definition_id)
 }
 
 // -------------------------------------------------------------------

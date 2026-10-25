@@ -163,7 +163,7 @@ private:
     bool LoadZoneRecord();
     bool RunWorldSlots(const FString& Command, const FString& Group = FString(), int32 Slot = INDEX_NONE);
     void SpawnSlot(const FString& Group, int32 Slot, int32 Cycle, const FString& PointId,
-        double X, double Y, double Facing);
+        double X, double Y, double Facing, const FString& DefinitionId);
     void RespawnPlayer(TWeakObjectPtr<ASFE1Character> Player, int32 RestoredHealth = -1, bool bAtDeathPosition = false);
     FVector ChooseRespawnPoint(const FVector& DeathLocation) const;
     void ReportPlayerDeath(TWeakObjectPtr<ASFE1Character> Player, const struct FSFGameplayRequest& Request);
