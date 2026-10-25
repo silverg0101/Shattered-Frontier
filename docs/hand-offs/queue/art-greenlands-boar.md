@@ -67,7 +67,7 @@ The three prompt-only concept attempts are complete and capped. A separate bound
 
 ## Next step
 
-1. Fresh short Opus re-review of the probe fixes (M1, M2, L1-L3, nit) before the probe runs again.
+1. Fresh Opus code re-review of probe fixes passed (`03bd3099`; `boar-probe-rereview.md` beside the reports). Offline stub checks and compile passed; real depth/Blender operation remains to be proved below.
 2. At most two concept-only probes, same current photoreal prompt, side and front PNGs and verdicts preserved:
    `DEPTH=0.9,1.0 py tools/asset-manager/scratch_concept.py '{"name": "Greenlands_Boar", "prompt": "a wild boar", "animal": "Buffalo", "size_cm": 150}' <outdir>`
    then, only if it fails, `DEPTH=1.0,1.0` (scratch `DATA_DIR`/`ASSET_ROOT`, `SSH_KEY`, `PYTHONIOENCODING=utf-8`; the Buffalo library must already be in the scratch `MotionLibrary`). A pass goes to the owner with the PNGs as the evidence for a default change, with a fresh Opus code re-review if one is made. If both fail, the stand-in's body shape (`motion/standin_depth.py` RADII) is the next input to look at, never the mesh.
