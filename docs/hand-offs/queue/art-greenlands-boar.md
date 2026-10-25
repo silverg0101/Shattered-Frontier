@@ -59,22 +59,25 @@ Fable's concept diagnosis (2026-10-25, `tools/asset-manager/scratch_concept.py`,
   3. the same leg wording with "photographic, lit evenly from every side, isolated on white": FAIL 3/3, staggered legs again, a faint shadow on try 3. Try 1 is the closest photoreal drawing (square stance, far hooves just visible).
   So prompt wording alone does not hold a photoreal Qwen drawing to two overlapping pairs; it only did when the drawing followed the stand-in's silhouette. `creature.py` is unchanged (both wordings reverted). PNGs, prompts and verdicts: `Artifacts/Orchestration/20261025-resume/boar-concept/{before,after,after2}/`; report `boar-concept-fable-report.md` there.
 
-## Blocked on
+Probe code review (fresh Opus, `boar-probe-code-review.md` there) failed `scratch_concept.py` at 4c1de6f6 on two Medium findings; Fable fixed the whole list: the draw is pinned to GPU 1 (`creature.depth_host` is the identity, so a host that cannot draw fails the depth path closed instead of walking to GPU 2); `--one-try` stops after the first side verdict, pass or fail; the stand-in files are written to the out folder as soon as they are rendered, so the failure path keeps them; the scratch `DATA_DIR`/`ASSET_ROOT`/`SSH_KEY` are asserted before `app` is imported; `DEPTH=` is held in memory for the run, checked against the Settings bounds, and never written to the scratch database; the unused Anthropic key fetch is gone. Offline stub check `boar-probe-stub-check.py` there (one-try pass and fail, three fails under `DEPTH=0.9,1.0`, out-of-bounds `DEPTH`, GPU 1 only while GPU 1 reports no `qwen_depth`); it fails on the 4c1de6f6 script and passes on the fix. Report `boar-probe-fix-report.md`.
 
-Owner decision: the three bounded concept attempts are spent without a side and front pass. The untested lever within the authored bounds is the depth control itself (`creature_depth_strength` up to 1.0 and `creature_depth_end` up to 1.0, Settings), which the evidence points at: the one passing side view was the one that followed the stand-in's silhouette. Its cost is a blob-shaped boar body from the capsule stand-in, which the model review and visual round 2 would then judge.
+## Ruling (controller, 2026-10-25)
+
+The three prompt-only concept attempts are complete and capped. A separate bounded test of the existing typed depth controls (`creature_depth_strength`, `creature_depth_end`, Settings, bounds 0.2-1.0) is authorised on the scratch root within those bounds; that cap was our own diagnostic limit and needs no owner approval. The evidence points at this lever: the one passing side view was the one that followed the stand-in's silhouette; its cost is a blob-shaped body from the capsule stand-in, which the model review and visual round 2 then judge. The shipped defaults stay 0.55 / 0.7 / front 0.75; changing them is an owner decision made on actual results, never on one sample PASS. Still GPU 1 only, local models, the cached Buffalo library, no live settings and no auth refresh. No mesh, full creature run, deploy or import until the concept passes side and front.
 
 ## Next step
 
-1. With owner approval, prove the depth-control lever on the scratch root, with the current prompt first:
+1. Fresh short Opus re-review of the probe fixes (M1, M2, L1-L3, nit) before the probe runs again.
+2. At most two concept-only probes, same current photoreal prompt, side and front PNGs and verdicts preserved:
    `DEPTH=0.9,1.0 py tools/asset-manager/scratch_concept.py '{"name": "Greenlands_Boar", "prompt": "a wild boar", "animal": "Buffalo", "size_cm": 150}' <outdir>`
-   (scratch `DATA_DIR`/`ASSET_ROOT`, `SSH_KEY`, `PYTHONIOENCODING=utf-8`; the Buffalo library must already be in the scratch `MotionLibrary`). A pass changes the shipped defaults in `app.py` `DEFAULT_SETTINGS`, with a fresh Opus code re-review. If it fails too, the stand-in's body shape (`motion/standin_depth.py` RADII) is the next input to look at, never the mesh.
-2. Do the full scratch run:
+   then, only if it fails, `DEPTH=1.0,1.0` (scratch `DATA_DIR`/`ASSET_ROOT`, `SSH_KEY`, `PYTHONIOENCODING=utf-8`; the Buffalo library must already be in the scratch `MotionLibrary`). A pass goes to the owner with the PNGs as the evidence for a default change, with a fresh Opus code re-review if one is made. If both fail, the stand-in's body shape (`motion/standin_depth.py` RADII) is the next input to look at, never the mesh.
+3. Do the full scratch run:
    `py tools/asset-manager/scratch_run.py '{"name": "Greenlands_Boar", "prompt": "a wild boar", "animal": "Buffalo", "clips": ["idle", "walk", "run", "attack", "death"], "size_cm": 150}'`
    Use `creature_unimate_seeds` 6, `SSH_KEY=~/.ssh/id_ed25519_ra_siems`, `PYTHONIOENCODING=utf-8`, scratch-only data/assets, and an in-memory guard rejecting `app.draw_hero`/`app.hero_views`. Keep GPU 1 only.
 
    Expect the model review to rebuild until one body passes. If every rebuild fails, fix the local concept, never the mesh. Inspect IK release/neck logs and reject frozen or very short idle loops in visual review.
-3. Send the new folder's `animations/*.png` and `source/*_rig_labels.png` to a fresh Opus for visual round 2 of 3.
-4. If both reviews pass, deploy the live Forge using the steps in the parent file.
+4. Send the new folder's `animations/*.png` and `source/*_rig_labels.png` to a fresh Opus for visual round 2 of 3.
+5. If both reviews pass, deploy the live Forge using the steps in the parent file.
 
 ## Rules for this task
 

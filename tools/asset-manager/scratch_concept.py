@@ -2,9 +2,11 @@
 against a scratch DATA_DIR/ASSET_ROOT (set both and SSH_KEY first), never the live server; the heroes flow (external image
 generation) is blocked. Every drawn view, its prompt, the stand-in files, the verdicts and the log land in OUTDIR.
 Usage: py scratch_concept.py '{"name": "Greenlands_Boar", "prompt": "a wild boar", "animal": "Buffalo", "size_cm": 150}' OUTDIR [--one-try]
-`--one-try` stops after the first side verdict (a before/after proof). Optional DEPTH=strength,end as in scratch_run.py."""
+`--one-try` stops after the first side verdict, pass or fail (a before/after proof). Optional DEPTH=strength,end as in
+scratch_run.py, held in memory for this run only (must lie within the Settings bounds); the scratch database keeps its values."""
 import json, os, subprocess, sys, time
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+assert all(os.environ.get(k) for k in ("DATA_DIR", "ASSET_ROOT", "SSH_KEY")), "set the scratch DATA_DIR, ASSET_ROOT and SSH_KEY first"
 import app, creature
 
 params, out, one_try = json.loads(sys.argv[1]), os.path.abspath(sys.argv[2]), "--one-try" in sys.argv
@@ -13,19 +15,20 @@ os.makedirs(out, exist_ok=True)
 def _no_external(*a, **k):
     raise RuntimeError("local-model-only guard: external image generation forbidden")
 app.draw_hero = app.hero_views = _no_external
+creature.depth_host = lambda h: h  # GPU 1 only: never walk to another host; if it cannot draw, the depth path fails closed
 
 def store(path):
     return subprocess.run(["ssh", "-i", os.path.expanduser("~/.ssh/id_ed25519_steam_server"), "-o", "IdentitiesOnly=yes",
                            "steam@192.168.50.133", f"cat /mnt/ssd2/asset-manager/data/{path}"], capture_output=True, check=True).stdout
-KEY = store("anthropic_key").decode().strip()
 AUTH = json.loads(store("codex_auth.json"))
 assert AUTH["expires"] > time.time() + 3600  # no refresh from here: that would rotate the live server's token
-app.anthropic_key = lambda: KEY
 app.codex_auth = lambda: (AUTH["access_token"], AUTH["account_id"])
 app.init_db()
-if os.environ.get("DEPTH"):
-    st = app.get_settings(); st["creature_depth_strength"], st["creature_depth_end"] = map(float, os.environ["DEPTH"].split(",")); app.save_settings(st)
 s = app.get_settings()
+if os.environ.get("DEPTH"):
+    s["creature_depth_strength"], s["creature_depth_end"] = map(float, os.environ["DEPTH"].split(","))
+    assert all(lo <= s[k] <= hi for k, (_, _, lo, hi) in app.CREATURE_SETTINGS.items() if k.startswith("creature_depth")), "DEPTH outside the Settings bounds"
+    app.get_settings = lambda: s
 print("depth settings", s["creature_depth_strength"], s["creature_depth_end"], s["creature_depth_front_strength"], flush=True)
 
 host = app.DEFAULT_SETTINGS["hosts"][0]  # RA-SIEMS GPU 1
@@ -53,10 +56,16 @@ def review(images, brief):
     verdicts.append({"images": len(images), **r})
     print("review:", json.dumps(verdicts[-1]), flush=True)
     json.dump(verdicts, open(os.path.join(out, "verdicts.json"), "w"), indent=1)
-    if one_try and len(verdicts) == 1 and not r["pass"]:
+    if one_try and len(verdicts) == 1:
         raise InterruptedError
     return r
-app.depth_views, app.codex_review = draw, review
+real_standin = creature.standin_depth
+def standin(*a):  # the stand-in files land in OUTDIR as soon as they exist, whatever the concept stage does next
+    files = real_standin(*a)
+    for f, data in files.items():
+        open(os.path.join(out, f if f.startswith("standin") else "standin_" + f), "wb").write(data)
+    return files
+app.depth_views, app.codex_review, creature.standin_depth = draw, review, standin
 
 log, info, t = [], {}, time.time()
 step = app.host_tools(jid, host)[4]
@@ -70,8 +79,6 @@ except InterruptedError:
     status = "interrupted"
 except Exception as e:
     status, log = "failed", log + [f"ERROR {e}"]
-for f, data in info.get("standin", {}).items():
-    open(os.path.join(out, f), "wb").write(data)
 for pos, png in views.items():
     open(os.path.join(out, f"final_{pos}.png"), "wb").write(png)
 try:
