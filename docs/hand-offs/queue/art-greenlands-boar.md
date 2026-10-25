@@ -53,13 +53,21 @@ Code-review fixes: `app.py check()` prints `check ok` with new asserts for the i
 
 Scratch job `950002` (2026-10-25, 700 s) curated Buffalo and rendered the stand-in, but all three local Qwen side concepts failed review: staggered far legs, plus ground shadows on tries 2/3. The in-memory local-only guard blocked the external heroes fallback. No model, rig or animations were produced; visual round 2 remains unused. Evidence: `Artifacts/Orchestration/20261025-resume/{boar-runner-report.md,boar-950002-full-joblog.txt}`; reusable Buffalo library in `scratch-data/MotionLibrary/Buffalo/` there.
 
+Fable's concept diagnosis (2026-10-25, `tools/asset-manager/scratch_concept.py`, scratch jobs 950003-950005, GPU 1 only, Buffalo library reused): the stand-in is not the cause. Its side view (`standin_left.png`) shows exactly two leg silhouettes (left legs at +X, right at -X on the same Y, so each far leg is hidden) and its depth map has no floor. Qwen adds the staggered far legs and the shadow itself, under the loose depth control (strength 0.55 to 70% of the steps). Three prompt-only attempts, all with the review unchanged:
+  1. `before` (current prompt, one try): FAIL, staggered legs. Proof of the symptom.
+  2. side prompt describing what is seen ("only two legs are visible ... far legs completely hidden"), "a clean cut-out, flat shadowless lighting": side PASS on try 1, but as a black vector silhouette; the front failed twice (flat icon, a doubled head) and no front can match a silhouette.
+  3. the same leg wording with "photographic, lit evenly from every side, isolated on white": FAIL 3/3, staggered legs again, a faint shadow on try 3. Try 1 is the closest photoreal drawing (square stance, far hooves just visible).
+  So prompt wording alone does not hold a photoreal Qwen drawing to two overlapping pairs; it only did when the drawing followed the stand-in's silhouette. `creature.py` is unchanged (both wordings reverted). PNGs, prompts and verdicts: `Artifacts/Orchestration/20261025-resume/boar-concept/{before,after,after2}/`; report `boar-concept-fable-report.md` there.
+
 ## Blocked on
 
-An approved local concept: Fable must correct the input stance/shadows without relaxing review or using external image generation.
+Owner decision: the three bounded concept attempts are spent without a side and front pass. The untested lever within the authored bounds is the depth control itself (`creature_depth_strength` up to 1.0 and `creature_depth_end` up to 1.0, Settings), which the evidence points at: the one passing side view was the one that followed the stand-in's silhouette. Its cost is a blob-shaped boar body from the capsule stand-in, which the model review and visual round 2 would then judge.
 
 ## Next step
 
-1. Fable diagnoses the local depth input against the concept review's stance/shadow fix list. Reuse the scratch Buffalo library; prove the corrected local concept before another full run. Code fixes require a fresh Opus re-review.
+1. With owner approval, prove the depth-control lever on the scratch root, with the current prompt first:
+   `DEPTH=0.9,1.0 py tools/asset-manager/scratch_concept.py '{"name": "Greenlands_Boar", "prompt": "a wild boar", "animal": "Buffalo", "size_cm": 150}' <outdir>`
+   (scratch `DATA_DIR`/`ASSET_ROOT`, `SSH_KEY`, `PYTHONIOENCODING=utf-8`; the Buffalo library must already be in the scratch `MotionLibrary`). A pass changes the shipped defaults in `app.py` `DEFAULT_SETTINGS`, with a fresh Opus code re-review. If it fails too, the stand-in's body shape (`motion/standin_depth.py` RADII) is the next input to look at, never the mesh.
 2. Do the full scratch run:
    `py tools/asset-manager/scratch_run.py '{"name": "Greenlands_Boar", "prompt": "a wild boar", "animal": "Buffalo", "clips": ["idle", "walk", "run", "attack", "death"], "size_cm": 150}'`
    Use `creature_unimate_seeds` 6, `SSH_KEY=~/.ssh/id_ed25519_ra_siems`, `PYTHONIOENCODING=utf-8`, scratch-only data/assets, and an in-memory guard rejecting `app.draw_hero`/`app.hero_views`. Keep GPU 1 only.

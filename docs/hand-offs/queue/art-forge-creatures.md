@@ -13,7 +13,7 @@ The Asset Forge turns a text prompt into a rigged, animated game creature on the
 
 | File | State | Next |
 |---|---|---|
-| `art-greenlands-boar.md` | Code re-review passed; scratch run blocked by three local concept rejections | Fable fixes input stance/shadows, then full run and visual round 2 |
+| `art-greenlands-boar.md` | Concept diagnosis done: the stand-in is right, Qwen staggers the legs; three prompt attempts spent, none passed side and front | Owner decides on the depth-control lever (`scratch_concept.py` with `DEPTH=0.9,1.0`), then full run and visual round 2 |
 | `art-starter-creatures.md` | Blocked on the boar | Deer |
 | `art-quadruped-unreal-import.md` | Blocked on a signed-off creature | Re-run the Task 7 import |
 | `gameplay-out-of-place-npc.md` | Sandbox server rule complete (`354c0284`); model blocked on the boar | Approved model, owner sign-off, then Greenlands placement |
