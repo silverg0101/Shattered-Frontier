@@ -3008,6 +3008,16 @@ def check():
     long_ears = [(n, pa, h, (t[0], t[1], t[2] + 0.12) if n in ("b5", "b6") else t) for n, pa, h, t in bones]  # read as arms
     L = rs.plan([{"name": n, "parent": pa, "head": h, "tail": t} for n, pa, h, t in long_ears], 0.94)["labels"]
     assert (L["b4"], L["b5"], L["b6"], L["fl_paw"]) == ("head", "head", "head", "FL_04"), L
+    # rooted at the chest (as SkinTokens often roots it): the hips hang off a branch towards the tail; with the tail
+    # raised above the lowered head, the skin weight still tells the head from the tail
+    chest = {"b2": None, "b1": "b2", "b0": "b1"}
+    raised = [(n, chest.get(n, pa), h, t) if n not in ("b8", "b9") else (n, pa, (h[0], h[1], h[2] + 0.4), (t[0], t[1], t[2] + 0.4))
+              for n, pa, h, t in bones]
+    rb = [{"name": n, "parent": pa, "head": h, "tail": t, "weight": 5.0 if n in ("b3", "b4", "b7") else 1.0} for n, pa, h, t in raised]
+    p = rs.plan(rb, 1.0)
+    L = p["labels"]
+    assert p["turn"] == -90 and (L["b0"], L["b2"], L["b4"], L["b8"], L["hl_hip"], L["fr_paw"]) ==         ("pelvis", "spine_03", "head", "tail_01", "HL_01", "FR_04"), (p["turn"], L)
+    assert rs.plan([{k: v for k, v in b.items() if k != "weight"} for b in rb], 1.0)["turn"] == 90  # unweighed: the higher end
     # floaters: a triangle 0.2 off a two-triangle body (split along a seam) goes; one 0.01 off (an eye) stays
     body = [(0, 0, 0), (1, 0, 0), (0, 1, 0), (1, 0, 0), (0, 1, 0), (1, 1, 0)]
     co = body + [(0, 0, 0.01), (0.1, 0, 0.01), (0, 0.1, 0.01)] + [(2.2, 0, 0), (2.3, 0, 0), (2.2, 0.1, 0)]
