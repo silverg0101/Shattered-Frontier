@@ -1,0 +1,5 @@
+# Taunt sandbox scope
+
+`SB_Taunt` tests a player-issued, server-authoritative taunt against one engaged common boar. Combat Damage, Mitigation and NPCs §Threat & Aggro, rule 3 sets threat to `max(own, top × 1.10)` and forces the target for 3 s. Combat Abilities, Effects and Runtime §Crowd control and diminishing returns sets taunt force durations to 3, 1.5, 0.75, then 0 s, resetting 18 s after the last application. The pilot uses its existing server-validated 2.8 m melee reach and line of sight; the sandbox T action is a development activation, not a published ability. The three taunt values are typed release settings adopted at zone start.
+
+The two-client sequence is a real player pull, another player's taunt, an additional hit while the forced target holds, and a switch back after expiry. No party loot policy, new ability cost, cooldown or unlock is set. A production taunt ability definition and its cost, cooldown, reach and unlock are content owner decisions before Greenlands rollout.

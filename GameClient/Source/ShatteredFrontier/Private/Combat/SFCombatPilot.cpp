@@ -3,6 +3,7 @@
 #include "Combat/SFSpiritReleaseRules.h"
 #include "Combat/SFResurrectionAcceptRules.h"
 #include "Combat/SFFallDamage.h"
+#include "Combat/SFTauntRules.h"
 #include "Inventory/SFGear.h"
 #include "Framework/SFGameMode.h"
 #include "Combat/SFCombatPilotRewards.h"
@@ -141,6 +142,22 @@ void FSFBoarThreatTable::Remove(const FString& CharacterId)
 bool FSFBoarThreatTable::Contains(const FString& CharacterId) const
 { return Entries.ContainsByPredicate([&](const FEntry& Entry) { return Entry.Id == CharacterId; }); }
 
+double FSFBoarThreatTable::Highest() const
+{
+    double Top = 0;
+    for (const FEntry& Entry : Entries) { Top = FMath::Max(Top, Entry.Threat); }
+    return Top;
+}
+
+double FSFBoarThreatTable::Get(const FString& CharacterId) const
+{
+    for (const FEntry& Entry : Entries) { if (Entry.Id == CharacterId) { return Entry.Threat; } }
+    return 0;
+}
+
+void FSFBoarThreatTable::RaiseTo(const FString& CharacterId, double Amount, int32 MaxEntries)
+{ Add(CharacterId, Amount - Get(CharacterId), MaxEntries); }
+
 void FSFRecentAttackerMemory::RecordReset(const TSet<FString>& Attackers, double Now)
 {
     for (const FString& Id : Attackers)
@@ -222,6 +239,9 @@ bool USFCombatPilotSettings::Validate(FString& Error) const
         !FMath::IsWithinInclusive(ThreatSwitchRanged, ThreatSwitchMelee, 3.0f) ||
         ThreatTableMax < 1 || ThreatTableMax > 40 ||
         !FMath::IsWithinInclusive(ThreatDecisionSeconds, 0.05f, 1.0f) ||
+        !FMath::IsNearlyEqual(TauntThreatMultiplier, 1.10f) ||
+        !FMath::IsNearlyEqual(TauntForceSeconds, 3.0f) ||
+        !FMath::IsNearlyEqual(TauntDrWindowSeconds, 18.0f) ||
         !FMath::IsWithinInclusive(BoarAssistDelaySeconds, 0.5f, 5.0f) ||
         !FMath::IsWithinInclusive(BoarAssistRadiusMetres, 2.0f, 15.0f) ||
         !FMath::IsNearlyEqual(CommonRespawnSeconds, 300.0f) ||
@@ -291,7 +311,8 @@ void ASFPilotBoar::Initialize(ASFGameMode* OwnerMode, const FString& Group, int3
     bDefensive = bInDefensive;
     Anchor = GetActorLocation(); AnchorFacing = GetActorRotation(); CurrentHealth = Health; OnRep_Health();
     LastDamageAt = GetWorld()->GetTimeSeconds();
-    Threat.Clear(); ThreatActors.Empty(); OutsideLeashSince.Empty(); TargetCharacterId.Empty();
+    Threat.Clear(); ThreatActors.Empty(); OutsideLeashSince.Empty(); TargetCharacterId.Empty(); ForcedTauntId.Empty(); ForcedTauntUntil = 0;
+    LastTauntAt = -1; TauntApplications = 0;
     RecentAttackers = FSFRecentAttackerMemory(); DamageAttackers.Empty(); PendingResetAttackers.Empty();
     ReplicatedTarget = nullptr; NextThreatDecisionAt = 0; EngagedSince = -1;
 }
@@ -332,7 +353,7 @@ void ASFPilotBoar::EnterEvade()
     if (PilotMode.IsValid()) { PilotMode->RecordBoarEvade(SpawnGroup, TopCharacterId); }
     PendingResetAttackers = MoveTemp(DamageAttackers);
     DamageAttackers.Empty();
-    Target.Reset(); ReplicatedTarget = nullptr; TargetCharacterId.Empty();
+    Target.Reset(); ReplicatedTarget = nullptr; TargetCharacterId.Empty(); ForcedTauntId.Empty(); ForcedTauntUntil = 0;
     EngagedSince = -1;
     Threat.Clear(); ThreatActors.Empty(); OutsideLeashSince.Empty();
     WanderDestination = Anchor; bReturning = true; UnreachableSince = -1;
@@ -372,8 +393,34 @@ void ASFPilotBoar::ReceivePilotDamage(ASFE1Character* Attacker, int32 Damage)
     UE_LOG(LogTemp, Display, TEXT("COMBAT_PILOT_BOAR_HIT Group=%s Slot=%d HP=%d Attacker=%s"),
         *SpawnGroup, Slot, CurrentHealth, AttackerId.IsEmpty() ? TEXT("none") : *AttackerId);
     if (CurrentHealth == 0 && PilotMode.IsValid())
-    { Threat.Clear(); ThreatActors.Empty(); DamageAttackers.Empty(); PendingResetAttackers.Empty();
+    { Threat.Clear(); ThreatActors.Empty(); DamageAttackers.Empty(); PendingResetAttackers.Empty(); ForcedTauntId.Empty(); ForcedTauntUntil = 0;
       SightCache.Empty(); OutsideLeashSince.Empty(); ReplicatedTarget = nullptr; Target.Reset(); PilotMode->BoarDied(this, Attacker); }
+}
+
+bool ASFPilotBoar::ReceivePilotTaunt(ASFE1Character* Taunter)
+{
+    if (!HasAuthority() || !IsValid(Taunter) || CurrentHealth <= 0 || bReturning ||
+        !PilotMode.IsValid() || Threat.Highest() <= 0) { return false; }
+    const FString Id = ThreatIdentity(Cast<APlayerController>(Taunter->GetController()));
+    if (Id.IsEmpty()) { return false; }
+    const USFCombatPilotSettings* Settings = PilotMode->CombatSettings();
+    const double Now = GetWorld()->GetTimeSeconds();
+    const double SinceLast = LastTauntAt < 0 ? Settings->TauntDrWindowSeconds : Now - LastTauntAt;
+    if (SinceLast >= Settings->TauntDrWindowSeconds) { TauntApplications = 0; }
+    const double Duration = SFTauntRules::ForcedDuration(TauntApplications, SinceLast,
+        Settings->TauntForceSeconds, Settings->TauntDrWindowSeconds);
+    LastTauntAt = Now;
+    ++TauntApplications;
+    if (Duration <= 0) { UE_LOG(LogTemp, Display, TEXT("BOAR_TAUNT_IMMUNE Group=%s"), *SpawnGroup); return false; }
+    const double Raised = SFTauntRules::RaisedThreat(Threat.Get(Id), Threat.Highest(), Settings->TauntThreatMultiplier);
+    Threat.RaiseTo(Id, Raised, Settings->ThreatTableMax);
+    ThreatActors.Add(Id, Taunter);
+    ForcedTauntId = Id; ForcedTauntUntil = Now + Duration;
+    Taunter->CombatMarkHostile();
+    NextThreatDecisionAt = Now;
+    UE_LOG(LogTemp, Display, TEXT("BOAR_TAUNT_APPLIED Group=%s Taunter=%s Threat=%.2f Duration=%.2f HP=%d"),
+        *SpawnGroup, *Id, Raised, Duration, CurrentHealth);
+    return true;
 }
 
 void ASFPilotBoar::Tick(float DeltaSeconds)
@@ -498,8 +545,11 @@ void ASFPilotBoar::Tick(float DeltaSeconds)
                 if (Mode->IsInsideTerritory(Character->GetActorLocation(), Territory))
                 { Reachable.Add(Id, FVector::Dist2D(GetActorLocation(), Character->GetActorLocation())); }
             }
-            const FString NextId = Threat.Select(TargetCharacterId, Reachable,
+            FString NextId = Threat.Select(TargetCharacterId, Reachable,
                 Mode->CombatSettings()->ThreatSwitchMelee, Mode->CombatSettings()->ThreatSwitchRanged);
+            if (Now < ForcedTauntUntil && Reachable.Contains(ForcedTauntId)) { NextId = ForcedTauntId; }
+            else if (!ForcedTauntId.IsEmpty() && Now >= ForcedTauntUntil)
+            { UE_LOG(LogTemp, Display, TEXT("BOAR_TAUNT_EXPIRED Group=%s"), *SpawnGroup); ForcedTauntId.Empty(); }
             if (NextId != TargetCharacterId)
             {
                 const bool bLostEngagement = NextId.IsEmpty() && !TargetCharacterId.IsEmpty();
@@ -651,6 +701,7 @@ void ASFGameMode::StartCombat()
     const FString MapName = GetWorld()->GetOutermost()->GetName();
     const bool bEvadeSandbox = MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_Evade");
     const bool bThreatSandbox = MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_Threat");
+    const bool bTauntSandbox = MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_Taunt");
     const bool bAggroSandbox = MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_Aggro");
     const bool bMemorySandbox = MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_AttackerMemory");
     const bool bRegenSandbox = MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_Regeneration");
@@ -663,14 +714,14 @@ void ASFGameMode::StartCombat()
     const bool bResurrectionAcceptSandbox = MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_ResurrectionAccept");
     bRespawnSandbox = MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_Respawn");
     bCompanionSandbox = GetNetMode() != NM_Client &&
-        (MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_Companions") || bEvadeSandbox || bThreatSandbox || bAggroSandbox || bMemorySandbox || bRegenSandbox || bRestRegenSandbox || bFallSandbox || bAssistSandbox || bRespawnSandbox || bAutoAttackSandbox || bUnstuckSandbox || bSpiritReleaseSandbox || bResurrectionAcceptSandbox);
+        (MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_Companions") || bEvadeSandbox || bThreatSandbox || bTauntSandbox || bAggroSandbox || bMemorySandbox || bRegenSandbox || bRestRegenSandbox || bFallSandbox || bAssistSandbox || bRespawnSandbox || bAutoAttackSandbox || bUnstuckSandbox || bSpiritReleaseSandbox || bResurrectionAcceptSandbox);
     if (bCompanionSandbox)
     {
         CapturedSettings = GetDefault<USFCombatPilotSettings>();
         FString Error;
         if (!CapturedSettings->Validate(Error))
         { UE_LOG(LogTemp, Error, TEXT("COMPANION_SANDBOX_DISABLED Invalid combat settings: %s"), *Error); return; }
-        const double Extent = (bEvadeSandbox || bThreatSandbox || bAggroSandbox || bMemorySandbox || bRegenSandbox || bRestRegenSandbox || bAssistSandbox || bRespawnSandbox || bAutoAttackSandbox || bSpiritReleaseSandbox || bResurrectionAcceptSandbox) ? 85.0 : 45.0;
+        const double Extent = (bEvadeSandbox || bThreatSandbox || bTauntSandbox || bAggroSandbox || bMemorySandbox || bRegenSandbox || bRestRegenSandbox || bAssistSandbox || bRespawnSandbox || bAutoAttackSandbox || bSpiritReleaseSandbox || bResurrectionAcceptSandbox) ? 85.0 : 45.0;
         const TArray<FVector2D> SandboxArea = { FVector2D(-Extent, -Extent), FVector2D(Extent, -Extent),
             FVector2D(Extent, Extent), FVector2D(-Extent, Extent) };
         int32 Slot = 0;
@@ -678,6 +729,7 @@ void ASFGameMode::StartCombat()
         {
             const FName Tag = bEvadeSandbox ? TEXT("SF_EvadeSandboxWildlife") :
                 bThreatSandbox ? TEXT("SF_ThreatSandboxWildlife") :
+                bTauntSandbox ? TEXT("SF_TauntSandboxWildlife") :
                 bAggroSandbox ? TEXT("SF_AggroSandboxWildlife") :
                 bMemorySandbox ? TEXT("SF_AttackerMemorySandboxWildlife") :
                 bRegenSandbox ? TEXT("SF_RegenerationSandboxWildlife") :
@@ -691,6 +743,7 @@ void ASFGameMode::StartCombat()
             if (bRespawnSandbox) { RespawnSandboxPoints.Add(It->GetActorTransform()); }
             It->Initialize(this, bEvadeSandbox ? TEXT("evade_sandbox") :
                 bThreatSandbox ? TEXT("threat_sandbox") :
+                bTauntSandbox ? TEXT("taunt_sandbox") :
                 bAggroSandbox ? TEXT("aggro_sandbox") :
                 bMemorySandbox ? TEXT("memory_sandbox") :
                 bRegenSandbox ? TEXT("regeneration_sandbox") :
@@ -1301,6 +1354,31 @@ void ASFGameMode::TryPlayerAttack(ASFE1Character* Attacker, AActor* SelectedTarg
     if (!Best) { return; }
     PlayerNextSwing.Add(Attacker, Now + CapturedSettings->PlayerMeleeCooldownSeconds);
     Best->ReceivePilotDamage(Attacker, CapturedSettings->PlayerMeleeDamage + SFGear::Equipped(Attacker->GetController()).Damage);
+}
+
+bool ASFGameMode::TryPlayerTaunt(ASFE1Character* Taunter, AActor* SelectedTarget)
+{
+    const auto Deny = [Taunter](const TCHAR* Reason)
+    {
+        UE_LOG(LogTemp, Display, TEXT("BOAR_TAUNT_DENIED Reason=%s"), Reason);
+        if (IsValid(Taunter))
+        { if (ASFPlayerController* PC = Cast<ASFPlayerController>(Taunter->GetController())) { PC->ClientPilotHit(FString::Printf(TEXT("Taunt: %s"), Reason)); } }
+        return false;
+    };
+    if (GetWorld()->GetOutermost()->GetName() != TEXT("/Game/Frontier/Maps/Sandbox/SB_Taunt") ||
+        !bPilotActive || !CapturedSettings || !CapturedSettings->bCombatAvailable ||
+        !IsValid(Taunter) || Taunter->CombatHealth() <= 0 ||
+        USFCharacterSessionComponent::IsRestoring(Taunter->GetController())) { return Deny(TEXT("unavailable")); }
+    ASFPilotBoar* Boar = Cast<ASFPilotBoar>(SelectedTarget);
+    if (!IsValid(Boar) || Boar->Health() <= 0 || Boar->IsLeashing() ||
+        IsSafe(Taunter->GetActorLocation()) || IsSafe(Boar->GetActorLocation())) { return Deny(TEXT("invalid target")); }
+    if (FVector::Dist2D(Taunter->GetActorLocation(), Boar->GetActorLocation()) > CapturedSettings->MeleeRangeMetres * 100.0)
+    { return Deny(TEXT("out of range")); }
+    FHitResult Hit;
+    FCollisionQueryParams Query(SCENE_QUERY_STAT(CombatPilotTaunt), false, Taunter);
+    if (GetWorld()->LineTraceSingleByChannel(Hit, Taunter->GetActorLocation() + FVector(0, 0, 45),
+        Boar->GetActorLocation() + FVector(0, 0, 45), ECC_Visibility, Query) && Hit.GetActor() != Boar) { return Deny(TEXT("line of sight")); }
+    return Boar->ReceivePilotTaunt(Taunter) ? true : Deny(TEXT("not engaged or immune"));
 }
 
 void ASFGameMode::TryBoarAttack(ASFPilotBoar* Boar, ASFE1Character* Victim)

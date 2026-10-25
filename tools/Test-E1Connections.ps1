@@ -7,6 +7,7 @@ param(
     [switch]$CastingScenario,
     [switch]$EvadeScenario,
     [switch]$ThreatScenario,
+    [switch]$TauntScenario,
     [switch]$AggroScenario,
     [switch]$MemoryScenario,
     [switch]$RegenScenario,
@@ -42,7 +43,7 @@ function Launch([string[]]$LaunchArguments) {
     Write-Output "Started PID $($process.Id)"
 }
 function Wait-Log([string]$Path, [string]$Pattern, [int]$Count = 1) {
-    $deadline = (Get-Date).AddSeconds($(if ($RespawnScenario -or $GreenlandsBoarNetcheck) { 420 } elseif ($EvadeScenario -or $ThreatScenario -or $AggroScenario -or $MemoryScenario -or $RegenScenario -or $RestRegenScenario -or $AssistScenario) { 240 } else { 120 }))
+    $deadline = (Get-Date).AddSeconds($(if ($RespawnScenario -or $GreenlandsBoarNetcheck) { 420 } elseif ($EvadeScenario -or $ThreatScenario -or $TauntScenario -or $AggroScenario -or $MemoryScenario -or $RegenScenario -or $RestRegenScenario -or $AssistScenario) { 240 } else { 120 }))
     while ((Get-Date) -lt $deadline) {
         foreach ($process in $ownedProcesses) { if ($process.HasExited) { throw "Network process $($process.Id) exited before $Pattern" } }
         if (Test-Path -LiteralPath $Path) {
@@ -184,6 +185,9 @@ try {
     if ($ThreatScenario -and ($Map -ne '/Game/Frontier/Maps/Sandbox/SB_Threat' -or $Clients -ne 2 -or $CastingScenario -or $EvadeScenario)) {
         throw 'ThreatScenario requires SB_Threat, two clients, and no other scenario'
     }
+    if ($TauntScenario -and ($Map -ne '/Game/Frontier/Maps/Sandbox/SB_Taunt' -or $Clients -ne 2 -or $CastingScenario -or $EvadeScenario -or $ThreatScenario)) {
+        throw 'TauntScenario requires SB_Taunt, two clients, and no other scenario'
+    }
     if ($AggroScenario -and ($Map -ne '/Game/Frontier/Maps/Sandbox/SB_Aggro' -or $Clients -ne 2 -or $CastingScenario -or $EvadeScenario -or $ThreatScenario)) {
         throw 'AggroScenario requires SB_Aggro, two clients, and no other scenario'
     }
@@ -218,6 +222,7 @@ try {
     $serverArgs = @($Map, '-server', '-NullRHI', '-unattended', '-nosound', '-nop4', "-port=$Port", '-MULTIHOME=127.0.0.1', ('-abslog="' + $serverLog + '"'))
     if ($EvadeScenario) { $serverArgs += '-CombatEvadeScenario' }
     if ($ThreatScenario) { $serverArgs += '-CombatThreatScenario' }
+    if ($TauntScenario) { $serverArgs += '-CombatTauntScenario' }
     if ($AggroScenario) { $serverArgs += '-CombatAggroScenario' }
     if ($MemoryScenario) { $serverArgs += '-CombatMemoryScenario' }
     if ($RegenScenario) { $serverArgs += '-CombatRegenScenario' }
@@ -245,6 +250,7 @@ try {
         if ($CastingScenario -and $index -eq 1) { $clientArgs += '-CastingScenario' }
         if ($EvadeScenario) { $clientArgs += @('-CombatEvadeScenario', ('-CombatEvadeRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         if ($ThreatScenario) { $clientArgs += @('-CombatThreatScenario', ('-CombatThreatRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
+        if ($TauntScenario) { $clientArgs += @('-CombatTauntScenario', ('-CombatTauntRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         if ($AggroScenario) { $clientArgs += @('-CombatAggroScenario', ('-CombatAggroRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         if ($MemoryScenario) { $clientArgs += @('-CombatMemoryScenario', ('-CombatMemoryRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         if ($RegenScenario) { $clientArgs += @('-CombatRegenScenario', ('-CombatRegenRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
@@ -388,6 +394,33 @@ try {
             }
         }
         Write-Output "PASS: two clients pulled, landed distinct server-accepted hits, observed threat switch and retained target. Logs: $logs"
+    }
+    if ($TauntScenario) {
+        $driverLog = Join-Path $logs 'Client1.log'
+        $observerLog = Join-Path $logs 'Client2.log'
+        Wait-Log $driverLog 'BOAR_TAUNT_EXPIRED Role=Driver HP=20'
+        Wait-Log $observerLog 'BOAR_TAUNT_EXPIRED Role=Observer HP=20'
+        Wait-Log $serverLog 'BOAR_TAUNT_EXPIRED Group=taunt_sandbox'
+        $rangeRequest = @(Select-String -LiteralPath $driverLog -Pattern 'BOAR_TAUNT_RANGE_REQUEST Role=Driver')
+        $rangeDenial = @(Select-String -LiteralPath $serverLog -Pattern 'BOAR_TAUNT_DENIED Reason=out of range')
+        $hits = @(Select-String -LiteralPath $serverLog -Pattern 'COMBAT_PILOT_BOAR_HIT Group=taunt_sandbox Slot=0 HP=(40|20) Attacker=(\S+)')
+        $applied = @(Select-String -LiteralPath $serverLog -Pattern 'BOAR_TAUNT_APPLIED Group=taunt_sandbox Taunter=(\S+) Threat=23.10 Duration=3.00 HP=40')
+        if ($rangeRequest.Count -ne 1 -or $rangeDenial.Count -ne 1 -or $hits.Count -ne 2 -or
+            $hits[0].Matches[0].Groups[2].Value -ne $hits[1].Matches[0].Groups[2].Value -or $applied.Count -ne 1 -or
+            $applied[0].Matches[0].Groups[1].Value -eq $hits[0].Matches[0].Groups[2].Value) {
+            throw 'Authoritative pull, range denial, repeated attacker damage, or distinct taunt failed'
+        }
+        foreach ($role in @('Driver','Observer')) {
+            $path = $(if ($role -eq 'Driver') { $driverLog } else { $observerLog })
+            $forced = @(Select-String -LiteralPath $path -Pattern "BOAR_TAUNT_$(if ($role -eq 'Driver') { 'FORCED' } else { 'HELD' }) Role=$role")
+            $held = @(Select-String -LiteralPath $path -Pattern "BOAR_TAUNT_HELD Role=$role HP=20")
+            $expired = @(Select-String -LiteralPath $path -Pattern "BOAR_TAUNT_EXPIRED Role=$role HP=20")
+            if ($forced.Count -ne 1 -or $held.Count -ne 1 -or $expired.Count -ne 1 -or
+                $forced[0].LineNumber -gt $held[0].LineNumber -or $held[0].LineNumber -ge $expired[0].LineNumber) {
+                throw "$role missed forced, held, or expired target sequence"
+            }
+        }
+        Write-Output "PASS: two clients observed authoritative pull, taunt, held target under added threat, and expiry switch. Logs: $logs"
     }
     if ($AggroScenario) {
         $driverLog = Join-Path $logs 'Client1.log'
@@ -1027,7 +1060,7 @@ try {
         Write-Output "PASS: Greenlands 2.0 s unarmed auto attack ($swingGap s observed), client stop, boar threat, ordinary healing ($ordinaryGain HP/tick), Golden Stag rest healing ($restedGain HP/tick), client kill and rotated slot respawn on both clients. Logs: $logs"
     }
     Write-Output "PASS: separate editor server and $Clients client(s) connected; $Clients server-authoritative possession(s). Logs: $logs"
-    if (-not $CastingScenario -and -not $EvadeScenario -and -not $ThreatScenario -and -not $AggroScenario -and -not $MemoryScenario -and -not $RegenScenario -and -not $RestRegenScenario -and -not $FallScenario -and -not $SwimScenario -and -not $CrouchScenario -and -not $BackpedalScenario -and -not $RoadScenario -and -not $SnowScenario -and -not $TravelMountScenario -and -not $AssistScenario -and -not $RespawnScenario -and -not $AutoAttackScenario -and -not $UnstuckScenario -and -not $SpiritReleaseScenario -and -not $ResurrectionAcceptScenario -and -not $GreenlandsBoarNetcheck -and -not $GreenlandsEnvironmentNetcheck -and -not $GreenlandsMovementNetcheck) { Write-Output 'Headless connection check only: movement, rendering, lifecycle cleanup, authentication and Linux runtime are not certified.' }
+    if (-not $CastingScenario -and -not $EvadeScenario -and -not $ThreatScenario -and -not $TauntScenario -and -not $AggroScenario -and -not $MemoryScenario -and -not $RegenScenario -and -not $RestRegenScenario -and -not $FallScenario -and -not $SwimScenario -and -not $CrouchScenario -and -not $BackpedalScenario -and -not $RoadScenario -and -not $SnowScenario -and -not $TravelMountScenario -and -not $AssistScenario -and -not $RespawnScenario -and -not $AutoAttackScenario -and -not $UnstuckScenario -and -not $SpiritReleaseScenario -and -not $ResurrectionAcceptScenario -and -not $GreenlandsBoarNetcheck -and -not $GreenlandsEnvironmentNetcheck -and -not $GreenlandsMovementNetcheck) { Write-Output 'Headless connection check only: movement, rendering, lifecycle cleanup, authentication and Linux runtime are not certified.' }
 } finally {
     foreach ($process in $ownedProcesses) {
         if (-not $process.HasExited) { Stop-Process -Id $process.Id -ErrorAction SilentlyContinue }

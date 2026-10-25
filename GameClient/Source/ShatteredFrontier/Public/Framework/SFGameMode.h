@@ -52,6 +52,7 @@ public:
 
     // Combat (SFCombatPilot.cpp)
     void TryPlayerAttack(ASFE1Character* Attacker, AActor* SelectedTarget = nullptr);
+    bool TryPlayerTaunt(ASFE1Character* Taunter, AActor* SelectedTarget);
     void TryBoarAttack(ASFPilotBoar* Boar, ASFE1Character* Victim);
     /** Authority: an NPC's landed melee hit on a player (boar, townsfolk, guard); the caller checks reach and cooldown.
       * A downed player respawns when this world's game mode runs the combat pilot. */

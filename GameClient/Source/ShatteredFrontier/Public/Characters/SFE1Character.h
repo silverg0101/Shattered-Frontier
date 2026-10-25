@@ -121,6 +121,9 @@ private:
     int32 TargetScenarioStage = 0;
     int32 EvadeScenarioStage = 0;
     int32 ThreatScenarioStage = 0;
+    int32 TauntScenarioStage = 0;
+    double TauntScenarioAt = 0;
+    bool bTauntScenarioTriedRange = false;
     int32 AggroScenarioStage = 0;
     int32 MemoryScenarioStage = 0;
     int32 AssistScenarioStage = 0;
@@ -167,6 +170,7 @@ private:
     void TickTargetScenario();
     void TickEvadeScenario();
     void TickThreatScenario();
+    void TickTauntScenario();
     void TickAggroScenario();
     void TickMemoryScenario();
     void TickAssistScenario();
@@ -191,9 +195,11 @@ private:
     void TickGreenlandsEnvironmentScenario();
     UFUNCTION(Server, Reliable) void ServerTargetScenarioStep(int32 Step);
     UFUNCTION(Server, Reliable) void ServerPilotAttack(AActor* SelectedCombatTarget);
+    UFUNCTION(Server, Reliable) void ServerPilotTaunt(AActor* SelectedCombatTarget);
     UFUNCTION(Server, Reliable) void ServerSetAutoAttack(bool bEnabled);
     void SetAutoAttack(bool bEnabled);
     void PilotAttack();
+    void PilotTaunt(AActor* Target);
     UPROPERTY(VisibleAnywhere) TObjectPtr<USpringArmComponent> CameraBoom;
     UPROPERTY(VisibleAnywhere) TObjectPtr<UCameraComponent> FollowCamera;
 

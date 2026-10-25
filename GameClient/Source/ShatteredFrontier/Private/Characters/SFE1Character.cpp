@@ -378,6 +378,69 @@ void ASFE1Character::TickThreatScenario()
 #endif
 }
 
+void ASFE1Character::TickTauntScenario()
+{
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    FString ScenarioRole;
+    FParse::Value(FCommandLine::Get(), TEXT("CombatTauntRole="), ScenarioRole);
+    if ((ScenarioRole != TEXT("Driver") && ScenarioRole != TEXT("Observer")) || !Controller || PilotHealth <= 0) { return; }
+    ASFPilotBoar* Boar = nullptr;
+    for (TActorIterator<ASFPilotBoar> It(GetWorld()); It; ++It)
+    { if (It->GroupId() == TEXT("taunt_sandbox")) { Boar = *It; break; } }
+    if (!Boar) { return; }
+    const double Now = GetWorld()->GetTimeSeconds();
+    const ASFE1Character* Target = Boar->ThreatTarget();
+    const FVector Toward = (Boar->GetActorLocation() - GetActorLocation()).GetSafeNormal2D();
+    if (Now >= NextEvadeSampleAt)
+    {
+        NextEvadeSampleAt = Now + 0.2;
+        UE_LOG(LogTemp, Display, TEXT("BOAR_TAUNT_SAMPLE Role=%s T=%.3f HP=%d Target=%s"),
+            *ScenarioRole, Now, Boar->Health(), Target == this ? TEXT("Self") : Target ? TEXT("Other") : TEXT("None"));
+    }
+    if (ScenarioRole == TEXT("Observer"))
+    {
+        if (TauntScenarioStage == 0)
+        {
+            if (FVector::Dist2D(GetActorLocation(), Boar->GetActorLocation()) > 230)
+            { AddMovementInput(Toward, 1.0f); return; }
+            Controller->SetControlRotation(Toward.Rotation());
+            PilotAttack(); TauntScenarioStage = 1; TauntScenarioAt = Now;
+            UE_LOG(LogTemp, Display, TEXT("BOAR_TAUNT_PULL Role=Observer"));
+        }
+        else if (TauntScenarioStage == 1 && Boar->Health() == 40 && Target && Target != this)
+        {
+            if (Now - TauntScenarioAt < 1.0) { return; }
+            Controller->SetControlRotation(Toward.Rotation());
+            PilotAttack(); TauntScenarioStage = 2;
+        }
+        else if (TauntScenarioStage == 2 && Boar->Health() == 20 && Target && Target != this)
+        { TauntScenarioStage = 3; UE_LOG(LogTemp, Display, TEXT("BOAR_TAUNT_HELD Role=Observer HP=20")); }
+        else if (TauntScenarioStage == 3 && Target == this)
+        { TauntScenarioStage = 4; UE_LOG(LogTemp, Display, TEXT("BOAR_TAUNT_EXPIRED Role=Observer HP=%d"), Boar->Health()); }
+    }
+    else
+    {
+        if (TauntScenarioStage == 0 && Boar->Health() == 40 && Target && Target != this)
+        {
+            if (FVector::Dist2D(GetActorLocation(), Boar->GetActorLocation()) > 230)
+            {
+                if (!bTauntScenarioTriedRange)
+                { PilotTaunt(Boar); bTauntScenarioTriedRange = true; UE_LOG(LogTemp, Display, TEXT("BOAR_TAUNT_RANGE_REQUEST Role=Driver")); }
+                AddMovementInput(Toward, 1.0f); return;
+            }
+            PilotTaunt(Boar); TauntScenarioStage = 1;
+            UE_LOG(LogTemp, Display, TEXT("BOAR_TAUNT_REQUEST Role=Driver"));
+        }
+        else if (TauntScenarioStage == 1 && Target == this)
+        { TauntScenarioStage = 2; UE_LOG(LogTemp, Display, TEXT("BOAR_TAUNT_FORCED Role=Driver HP=%d"), Boar->Health()); }
+        else if (TauntScenarioStage == 2 && Boar->Health() == 20 && Target == this)
+        { TauntScenarioStage = 3; UE_LOG(LogTemp, Display, TEXT("BOAR_TAUNT_HELD Role=Driver HP=20")); }
+        else if (TauntScenarioStage == 3 && Target && Target != this)
+        { TauntScenarioStage = 4; UE_LOG(LogTemp, Display, TEXT("BOAR_TAUNT_EXPIRED Role=Driver HP=%d"), Boar->Health()); }
+    }
+#endif
+}
+
 void ASFE1Character::TickAssistScenario()
 {
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
@@ -1587,6 +1650,8 @@ void ASFE1Character::Tick(float DeltaSeconds)
     if (GetNetMode() == NM_Client && IsLocallyControlled() &&
         FParse::Param(FCommandLine::Get(), TEXT("CombatThreatScenario"))) { TickThreatScenario(); }
     if (GetNetMode() == NM_Client && IsLocallyControlled() &&
+        FParse::Param(FCommandLine::Get(), TEXT("CombatTauntScenario"))) { TickTauntScenario(); }
+    if (GetNetMode() == NM_Client && IsLocallyControlled() &&
         FParse::Param(FCommandLine::Get(), TEXT("CombatAggroScenario"))) { TickAggroScenario(); }
     if (GetNetMode() == NM_Client && IsLocallyControlled() &&
         FParse::Param(FCommandLine::Get(), TEXT("CombatMemoryScenario"))) { TickMemoryScenario(); }
@@ -1710,6 +1775,8 @@ void ASFE1Character::Tick(float DeltaSeconds)
     }
     if (CombatMap == TEXT("/Game/Frontier/Maps/Sandbox/SB_TravelMount") && IsLocallyControlled())
     { if (APlayerController* PC = Cast<APlayerController>(Controller); PC && PC->WasInputKeyJustPressed(EKeys::M)) { RequestTravelMountToggle(); } }
+    if (IsLocallyControlled() && GetWorld()->GetOutermost()->GetName() == TEXT("/Game/Frontier/Maps/Sandbox/SB_Taunt"))
+    { if (APlayerController* PC = Cast<APlayerController>(Controller); PC && PC->WasInputKeyJustPressed(EKeys::T)) { PilotTaunt(nullptr); } }
 }
 
 void ASFE1Character::TickCameraControls(float Dt)
@@ -2075,6 +2142,20 @@ void ASFE1Character::ServerPilotAttack_Implementation(AActor* SelectedCombatTarg
 {
     if (auto* Mode = Cast<ASFGameMode>(GetWorld()->GetAuthGameMode()))
     { Mode->TryPlayerAttack(this, SelectedCombatTarget); }
+}
+
+void ASFE1Character::PilotTaunt(AActor* Target)
+{
+    if (!IsLocallyControlled() || PilotHealth <= 0) { return; }
+    if (!Target)
+    { if (ASFPlayerController* PC = Cast<ASFPlayerController>(Controller)) { Target = PC->GetSelectedCombatTarget(); } }
+    if (Target) { ServerPilotTaunt(Target); }
+}
+
+void ASFE1Character::ServerPilotTaunt_Implementation(AActor* SelectedCombatTarget)
+{
+    if (ASFGameMode* Mode = GetWorld()->GetAuthGameMode<ASFGameMode>())
+    { Mode->TryPlayerTaunt(this, SelectedCombatTarget); }
 }
 
 void ASFE1Character::SetAutoAttack(bool bEnabled)

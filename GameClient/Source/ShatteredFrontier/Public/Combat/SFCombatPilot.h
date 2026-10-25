@@ -36,6 +36,9 @@ public:
     void Remove(const FString& CharacterId);
     void Clear() { Entries.Empty(); }
     bool Contains(const FString& CharacterId) const;
+    double Highest() const;
+    double Get(const FString& CharacterId) const;
+    void RaiseTo(const FString& CharacterId, double Amount, int32 MaxEntries);
     FString Select(const FString& CurrentId, const TMap<FString, double>& ReachableDistancesCm,
         double MeleeThreshold, double RangedThreshold) const;
 private:
@@ -130,6 +133,12 @@ public:
     int32 ThreatTableMax = 40;
     UPROPERTY(Config, EditAnywhere, Category="Pilot Boar Threat", meta=(ClampMin="0.05", ClampMax="1.0", Units="s", ToolTip="Server target-decision interval; adopted at next zone start."))
     float ThreatDecisionSeconds = 0.1f;
+    UPROPERTY(Config, EditAnywhere, Category="Pilot Boar Threat", meta=(ClampMin="1.10", ClampMax="1.10", ToolTip="Taunt threat relative to the current top; adopted at zone start."))
+    float TauntThreatMultiplier = 1.10f;
+    UPROPERTY(Config, EditAnywhere, Category="Pilot Boar Threat", meta=(ClampMin="3.0", ClampMax="3.0", Units="s", ToolTip="First taunt forced-target duration; adopted at zone start."))
+    float TauntForceSeconds = 3.0f;
+    UPROPERTY(Config, EditAnywhere, Category="Pilot Boar Threat", meta=(ClampMin="18.0", ClampMax="18.0", Units="s", ToolTip="Taunt diminishing-return reset window; adopted at zone start."))
+    float TauntDrWindowSeconds = 18.0f;
     UPROPERTY(Config, EditAnywhere, Category="Pilot Boar AI", meta=(ClampMin="0.5", ClampMax="5.0", Units="s", ToolTip="Common pack assist delay; adopted at next zone start."))
     float BoarAssistDelaySeconds = 2.0f;
     UPROPERTY(Config, EditAnywhere, Category="Pilot Boar AI", meta=(ClampMin="2.0", ClampMax="15.0", Units="m", ToolTip="Common pack assist radius; adopted at next zone start."))
@@ -172,6 +181,7 @@ public:
     void Initialize(class ASFGameMode* OwnerMode, const FString& Group, int32 Slot,
         const TArray<FVector2D>& Area, int32 Health, int32 Serial, bool bInDefensive = false);
     void ReceivePilotDamage(ASFE1Character* Attacker, int32 Damage);
+    bool ReceivePilotTaunt(ASFE1Character* Taunter);
     /** Authority-only transition when the open-world leash or safe-zone rule fires. */
     void EnterEvade();
     const FString& GroupId() const { return SpawnGroup; }
@@ -203,6 +213,10 @@ private:
     TMap<FString, double> OutsideLeashSince;
     FString TargetCharacterId;
     double NextThreatDecisionAt = 0;
+    FString ForcedTauntId;
+    double ForcedTauntUntil = 0;
+    double LastTauntAt = -1;
+    int32 TauntApplications = 0;
     double EngagedSince = -1;
     double NextAggroFixtureTraceAt = 0;
     UPROPERTY(Replicated) FString SpawnGroup;
