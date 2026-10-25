@@ -314,7 +314,7 @@ def is_model(p: Path) -> bool:
 CONCEPTS = ("depth", "heroes")  # depth: the matched animal's stand-in guides Qwen; heroes: ChatGPT-drawn heroes
 
 
-CREATURE_KEYS = {"name", "prompt", "image", "animal", "clips", "fill_missing", "bake", "size_cm", "concept", "preset"}
+CREATURE_KEYS = {"name", "prompt", "image", "animal", "clips", "fill_missing", "bake", "size_cm", "concept", "preset", "from_model"}
 
 
 def creature_params(b) -> dict:
@@ -366,9 +366,12 @@ def creature_params(b) -> dict:
             size = float("nan")
         if not 1 <= size <= 2000:
             raise ValueError("size_cm is the creature's length in cm, 1-2000")
+    src = b.get("from_model") or ""
+    if src and (not isinstance(src, str) or safe_name(src) != src or not (model_dir(src) / "source" / f"{src}_skintokens.glb").is_file()):
+        raise ValueError("from_model is a creature folder whose source/ keeps its SkinTokens rig (a failed job's)")
     return {"name": name, "prompt": str(b.get("prompt") or ""), "image": b.get("image") or "", "animal": b.get("animal") or "",
             "clips": clips, "fill_missing": fill, "bake": bake, "size_cm": size,
-            "concept": concept, "preset": preset}
+            "concept": concept, "preset": preset, "from_model": src}
 
 
 def pick_animal(p, s):
@@ -859,6 +862,33 @@ def place_model(build, out_dir, stem) -> Path:
     raise RuntimeError(f"no free folder name for {stem} in {out_dir}")
 
 
+def keep_failed(jid, host, p, views, info, error) -> Path:
+    """A creature job that failed after its concept keeps what it made in <output>/Creatures/<Name>/source/: the concept
+    views, depth guides, the SkinTokens-rigged GLB and the rig label sheet (whichever exist), with a manifest
+    {status: failed, error}, to inspect or to retry with from_model."""
+    a, q = _app(), shlex.quote
+    n, work = safe_name(p["name"]), a.host_tools(jid, host)[0]
+    out_dir = a.safe_path(f"{a.get_settings()['output_folder']}/{a.ASSET_TYPES['creature']['folder']}")
+    out_dir.mkdir(parents=True, exist_ok=True)
+    build = Path(tempfile.mkdtemp(prefix=f".creature{jid}_failed_", dir=a.DATA))
+    try:
+        (build / "source").mkdir()
+        for pos, v in views.items():
+            (build / "source" / f"{n}_concept{'' if pos == 'concept' else '_' + pos}.png").write_bytes(v)
+        for f, data in info.get("standin", {}).items():
+            (build / "source" / f).write_bytes(data)
+        for f, to in (("model.glb", "skintokens.glb"), ("model_labels.png", "rig_labels.png"), ("model_labels.json", "rig_labels.json")):
+            try:  # absent when the job failed before that stage
+                (build / "source" / f"{n}_{to}").write_bytes(a.ssh(host, f"cat {q(work + '/' + f)}", timeout=900))
+            except Exception:
+                pass
+        write_manifest(build, {"name": n, "status": "failed", "error": error, "job": jid, "concept": info.get("concept"),
+                               "prompt": p["prompt"], "size_cm": p["size_cm"], "clips": []})
+        return place_model(build, out_dir, n)
+    finally:
+        shutil.rmtree(build, ignore_errors=True)
+
+
 def run_creature(jid, host):
     """A "creature" job (creature_params): match the animal and curate it if needed, concept image, 3D model and rig,
     the shared skeleton, then every requested clip (library retarget, else UniMate when fill_missing), each checked;
@@ -869,6 +899,7 @@ def run_creature(jid, host):
     q, log = shlex.quote, []
     a.LIVE[jid] = {"metrics": None, "log": log}
     build = Path(tempfile.mkdtemp(prefix=f".creature{jid}_", dir=a.DATA))
+    views, info = {}, {}
     try:
         step("matching the animal")
         entry, m = pick_animal(p, s)
@@ -876,11 +907,18 @@ def run_creature(jid, host):
         lib = ensure_curated(entry["id"], host, jid)
         animal = json.loads((lib / "animal.json").read_text())
         size = p["size_cm"] or sum(entry["size_cm"]) / 2
-        info = {}
-        views = concept_image(jid, p, entry, log, step, host, lib, size, info)
+        if p.get("from_model"):  # a failed job's concept and rig: skip drawing and building
+            src, fm = model_dir(p["from_model"]) / "source", p["from_model"]
+            views = {f.stem[len(fm) + 9:] or "concept": f.read_bytes() for f in src.glob(f"{fm}_concept*.png")}
+            info["concept"] = json.loads((src.parent / f"{fm}.json").read_text()).get("concept", "depth")
+            a.put_input(host, f"{jid}/model.glb", (src / f"{fm}_skintokens.glb").read_bytes())
+            model = "model.glb"
+            log.append(f"concept and rig: from {fm}")
+        else:
+            views = concept_image(jid, p, entry, log, step, host, lib, size, info)
+            step("building the model: Pixal3D, UltraTex and the SkinTokens rig")
+            model = build_model(jid, host, p, views)
         png = views.get("left") or views["concept"]  # the side-on design image
-        step("building the model: Pixal3D, UltraTex and the SkinTokens rig")
-        model = build_model(jid, host, p, views)
         a.GPU_NOTES.setdefault(jid, []).append(f"[asset-manager] {host['name']}: {a.release_vram(host)}")
         std = standardise_rig(jid, host, model)
         log.append(f"rig review: {std['review']}; {len(std['dropped'])} bones merged; {'; '.join(std['warnings']) or 'no warnings'}")
@@ -950,6 +988,11 @@ def run_creature(jid, host):
         a.update_job(jid, status="cancelled", note="", finished=time.time())
     except Exception as e:
         a.update_job(jid, status="failed", error=str(e)[-1000:], note="", finished=time.time())
+        if views:
+            try:
+                keep_failed(jid, host, p, views, info, str(e)[-1000:])
+            except Exception as k:
+                log.append(f"keeping the failed job's files failed: {k}")
     finally:
         live = a.LIVE.pop(jid, {}).get("log") or []  # run_prompt's polling replaces it with the host log
         a.update_job(jid, log="\n".join(a.GPU_NOTES.pop(jid, []) + log + ([] if live is log else live[-100:])))

@@ -3152,6 +3152,26 @@ def check():
         creature.ensure_curated, creature.concept_image = stubs
     assert job_row(jid)["status"] == "cancelled", dict(job_row(jid))
     assert not any((ROOT / get_settings()["output_folder"]).glob("**/Swamp_Rat*")) and not any(DATA.glob(f".creature{jid}_*"))
+    # failing after the concept keeps the concept (and whatever the host made) as source, for from_model to retry
+    def no_model(*a):
+        raise RuntimeError("pixal died")
+    update_job(jid, status="running")
+    stubs = creature.ensure_curated, creature.concept_image, creature.build_model
+    creature.ensure_curated, creature.concept_image, creature.build_model = (lambda *a: td), (lambda *a: {"left": b"png"}), no_model
+    try:
+        creature.run_creature(jid, {"name": "t", "kind": "http", "comfy_dir": "/x", "gpu": 1})
+    finally:
+        creature.ensure_curated, creature.concept_image, creature.build_model = stubs
+    kept = ROOT / get_settings()["output_folder"] / ASSET_TYPES["creature"]["folder"] / "Swamp_Rat"
+    assert job_row(jid)["status"] == "failed" and (kept / "source" / "Swamp_Rat_concept_left.png").read_bytes() == b"png"
+    assert json.loads((kept / "Swamp_Rat.json").read_text())["status"] == "failed" and not any(DATA.glob(f".creature{jid}_*"))
+    try:
+        creature.creature_params({"name": "x", "prompt": "a", "from_model": "Swamp_Rat"}); raise AssertionError("no rig kept")
+    except ValueError:
+        pass
+    (kept / "source" / "Swamp_Rat_skintokens.glb").write_bytes(b"glb")
+    assert creature.creature_params({"name": "x", "prompt": "a", "from_model": "Swamp_Rat"})["from_model"] == "Swamp_Rat"
+    shutil.rmtree(kept)
     with DB_LOCK, db() as c:
         c.execute("DELETE FROM jobs WHERE id=?", (jid,))
     # clip jobs (New Animation, Add from GLB): request checks, free names, and the glb path: copy, retarget or refuse
