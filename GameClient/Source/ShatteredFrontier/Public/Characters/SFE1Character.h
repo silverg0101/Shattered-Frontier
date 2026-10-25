@@ -106,6 +106,9 @@ private:
     int32 RegenScenarioStage = 0;
     double NextRegenSampleAt = 0;
     double NextFallSampleAt = 0;
+    double NextSwimSampleAt = 0;
+    int32 SwimScenarioStage = 0;
+    bool bLastServerDeepWater = false;
     bool bMemorySawCombat = false;
     double MemoryScenarioStartedAt = -1;
     double AggroScenarioStartedAt = -1;
@@ -122,6 +125,7 @@ private:
     void TickRespawnScenario();
     void TickRegenScenario();
     void TickFallScenario();
+    void TickSwimScenario();
     UFUNCTION(Server, Reliable) void ServerTargetScenarioStep(int32 Step);
     UFUNCTION(Server, Reliable) void ServerPilotAttack(AActor* SelectedCombatTarget);
     void PilotAttack();

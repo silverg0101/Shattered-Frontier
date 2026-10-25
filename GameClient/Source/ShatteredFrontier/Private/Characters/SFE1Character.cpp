@@ -21,6 +21,7 @@
 #include "Framework/SFE1Settings.h"
 #include "Framework/SFGameUserSettings.h"
 #include "Characters/SFCombatFramingLogic.h"
+#include "Characters/SFSwimRules.h"
 #include "Combat/SFCombatPilot.h"
 #include "Combat/SFTabTargetSelection.h"
 #include "Combat/SFCrowdControlComponent.h"
@@ -32,6 +33,7 @@
 #include "Engine/World.h"
 #include "Engine/Engine.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/PhysicsVolume.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/GameUserSettings.h"
 #include "UObject/ConstructorHelpers.h"
@@ -59,6 +61,7 @@ ASFE1Character::ASFE1Character()
     GetCharacterMovement()->bOrientRotationToMovement = true;
     GetCharacterMovement()->RotationRate = FRotator(0.0f, Settings->TurnRateDegreesPerSecond, 0.0f);
     GetCharacterMovement()->MaxWalkSpeed = Settings->RunSpeedMetresPerSecond * 100.0f;
+    GetCharacterMovement()->MaxSwimSpeed = Settings->SwimSpeedMetresPerSecond * 100.0f;
     GetCharacterMovement()->JumpZVelocity = FMath::Sqrt(2.0f * Settings->GravityMetresPerSecondSquared * Settings->JumpHeightMetres) * 100.0f;
     GetCharacterMovement()->MaxStepHeight = Settings->StepHeightMetres * 100.0f;
     GetCharacterMovement()->AirControl = 0.0f;
@@ -670,6 +673,37 @@ void ASFE1Character::TickFallScenario()
 #endif
 }
 
+void ASFE1Character::TickSwimScenario()
+{
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    FString ScenarioRole;
+    FParse::Value(FCommandLine::Get(), TEXT("SwimRole="), ScenarioRole);
+    if ((ScenarioRole != TEXT("Driver") && ScenarioRole != TEXT("Observer")) || !Controller) { return; }
+    ASFE1Character* Watched = this;
+    int32 Players = 0;
+    for (TActorIterator<ASFE1Character> It(GetWorld()); It; ++It)
+    {
+        ++Players;
+        if (ScenarioRole == TEXT("Observer") && *It != this) { Watched = *It; }
+    }
+    if (Players < 2 || (ScenarioRole == TEXT("Observer") && Watched == this)) { return; }
+    const double Now = GetWorld()->GetTimeSeconds();
+    if (Now >= NextSwimSampleAt)
+    {
+        NextSwimSampleAt = Now + 0.5;
+        UE_LOG(LogTemp, Display, TEXT("SWIM_SAMPLE Role=%s Stage=%d X=%.0f Mode=%d Speed=%.0f"),
+            *ScenarioRole, SwimScenarioStage, Watched->GetActorLocation().X,
+            int32(Watched->GetCharacterMovement()->MovementMode), Watched->GetVelocity().Size2D());
+    }
+    if (ScenarioRole != TEXT("Driver") || SwimScenarioStage >= 3) { return; }
+    if (SwimScenarioStage == 0 && GetCharacterMovement()->IsSwimming()) { SwimScenarioStage = 1; }
+    if (SwimScenarioStage == 1 && GetActorLocation().X > 2200) { SwimScenarioStage = 2; }
+    if (SwimScenarioStage == 2 && GetActorLocation().X < 1000 && !GetCharacterMovement()->IsSwimming())
+    { SwimScenarioStage = 3; UE_LOG(LogTemp, Display, TEXT("SWIM_DRIVER_COMPLETE")); return; }
+    AddMovementInput(SwimScenarioStage == 2 ? -FVector::ForwardVector : FVector::ForwardVector, 1.0f);
+#endif
+}
+
 void ASFE1Character::TickCombatScenario()
 {
     if (FParse::Param(FCommandLine::Get(), TEXT("CombatGroupScenario")))
@@ -903,6 +937,29 @@ void ASFE1Character::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
     const FString CombatMap = GetWorld()->GetOutermost()->GetName();
+    if (HasAuthority() && CombatMap == TEXT("/Game/Frontier/Maps/Sandbox/SB_Swimming"))
+    {
+        const APhysicsVolume* Volume = GetPhysicsVolume();
+        bool bDeepWater = false;
+        if (Volume && Volume->bWaterVolume)
+        {
+            FVector Origin, Extent;
+            Volume->GetActorBounds(false, Origin, Extent);
+            const float FeetZ = GetActorLocation().Z - GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
+            bDeepWater = SFSwimRules::IsDeepEnough(Origin.Z + Extent.Z, FeetZ,
+                GetDefault<USFE1Settings>()->SwimDepthMetres);
+        }
+        if (bDeepWater != GetCharacterMovement()->IsSwimming())
+        {
+            GetCharacterMovement()->SetMovementMode(bDeepWater ? MOVE_Swimming : MOVE_Walking);
+        }
+        if (bDeepWater != bLastServerDeepWater)
+        {
+            bLastServerDeepWater = bDeepWater;
+            UE_LOG(LogTemp, Display, TEXT("SWIM_SERVER_MODE Swimming=%d X=%.0f Mode=%d"),
+                bDeepWater ? 1 : 0, GetActorLocation().X, int32(GetCharacterMovement()->MovementMode));
+        }
+    }
     if (HasAuthority() && PilotHealth > 0 &&
         (CombatMap == TEXT("/Game/Frontier/Maps/Sandbox/SB_Regeneration") ||
          CombatMap == TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook")))
@@ -1029,6 +1086,8 @@ void ASFE1Character::Tick(float DeltaSeconds)
         FParse::Param(FCommandLine::Get(), TEXT("CombatRegenScenario"))) { TickRegenScenario(); }
     if (GetNetMode() == NM_Client && IsLocallyControlled() &&
         FParse::Param(FCommandLine::Get(), TEXT("CombatFallScenario"))) { TickFallScenario(); }
+    if (GetNetMode() == NM_Client && IsLocallyControlled() &&
+        FParse::Param(FCommandLine::Get(), TEXT("SwimScenario"))) { TickSwimScenario(); }
 #endif
 }
 

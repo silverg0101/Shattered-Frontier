@@ -57,6 +57,13 @@ def main():
         platform.static_mesh_component.set_static_mesh(cube)
         platform.static_mesh_component.set_collision_profile_name('BlockAll')
         platform.set_actor_scale3d(u.Vector(3, 3, 1))
+    if names[0] == 'Swimming':
+        # Default PhysicsVolume brush is 200 cm cubed. Its upper face is 3 m
+        # above the floor so the player crosses the 1.3 m depth threshold.
+        water = actors.spawn_actor_from_class(u.PhysicsVolume, u.Vector(2300, 0, 150))
+        water.set_actor_label('DeepWater')
+        water.set_actor_scale3d(u.Vector(10, 5, 1.5))
+        water.set_editor_property('water_volume', True)
     if names[0] == 'Casting':
         target_class = u.load_class(None, '/Script/ShatteredFrontier.SFCastingTarget')
         if not target_class:

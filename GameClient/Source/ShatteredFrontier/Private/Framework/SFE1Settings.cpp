@@ -21,6 +21,8 @@ bool USFE1Settings::Validate(FString& OutError) const
         if (!PlayerFaceIds.Contains(Id)) { OutError = FString::Printf(TEXT("FemaleFaceIds entry %s is not in PlayerFaceIds"), *Id.ToString()); return false; }
     }
     return Check(TEXT("RunSpeedMetresPerSecond"), RunSpeedMetresPerSecond, 0.5f, 12.0f)
+        && Check(TEXT("SwimSpeedMetresPerSecond"), SwimSpeedMetresPerSecond, 0.5f, 12.0f)
+        && Check(TEXT("SwimDepthMetres"), SwimDepthMetres, 0.5f, 3.0f)
         && Check(TEXT("JumpHeightMetres"), JumpHeightMetres, 0.1f, 3.0f)
         && Check(TEXT("GravityMetresPerSecondSquared"), GravityMetresPerSecondSquared, 1.0f, 20.0f)
         && Check(TEXT("StepHeightMetres"), StepHeightMetres, 0.0f, 1.0f)
