@@ -99,7 +99,7 @@ bool CursorOutsideWindows(USFWindowStack* Stack)
         if (Window && Window->IsVisible() && Window->GetCachedGeometry().IsUnderLocation(Cursor)) return false;
     return true;
 }
-void CursorDiagnostic(ASFPlayerController* Player, USFActionTargetComponent* Target, const FWorkflowState& State)
+void CursorDiagnostic(ASFPlayerController* Player, USFActionTargetComponent* Target, const FWorkflowState& State, const FVector& SourceBounds)
 {
     if (!State.Source.IsValid()) return;
     FVector Start = FVector::ZeroVector, Direction = FVector::ZeroVector, View; FRotator Rotation;
@@ -107,7 +107,7 @@ void CursorDiagnostic(ASFPlayerController* Player, USFActionTargetComponent* Tar
     Player->GetPlayerViewPoint(View, Rotation);
     float MouseX = 0, MouseY = 0; const bool bMouse = Player->GetMousePosition(MouseX, MouseY);
     FVector2D Projected = FVector2D::ZeroVector;
-    const bool bProjected = Player->ProjectWorldLocationToScreen(State.Source->InteractionBounds->GetComponentLocation(), Projected);
+    const bool bProjected = Player->ProjectWorldLocationToScreen(SourceBounds, Projected);
     int32 Width = 0, Height = 0; Player->GetViewportSize(Width, Height);
     auto* Client = Player->GetWorld()->GetGameViewport(); auto* Viewport = Client ? Client->Viewport : nullptr;
     const auto Window = Client ? Client->GetWindow() : TSharedPtr<SWindow>();
@@ -122,7 +122,7 @@ void CursorDiagnostic(ASFPlayerController* Player, USFActionTargetComponent* Tar
         *WindowPosition.ToString(), *WindowSize.ToString(), Viewport ? Viewport->HasFocus() : -1, Viewport ? Viewport->HasMouseCapture() : -1, Window ? Window->IsActive() : -1, Native ? Native->IsForegroundWindow() : -1);
     UE_LOG(LogTemp, Display, TEXT("LOOT_CURSOR_VIEW DeprojectOK=%d Start=%s Dir=%s View=%s Rotation=%s InitialView=%s InitialRotation=%s SourceRoot=%s SourceBounds=%s"),
         bDeproject, *Start.ToString(), *Direction.ToString(), *View.ToString(), *Rotation.ToString(), *State.InitialClickView.ToString(), *State.InitialClickRotation.ToString(),
-        *State.Source->GetActorLocation().ToString(), *State.Source->InteractionBounds->GetComponentLocation().ToString());
+        *State.Source->GetActorLocation().ToString(), *SourceBounds.ToString());
     UE_LOG(LogTemp, Display, TEXT("LOOT_CURSOR_HIT Selected=%s Expected=%s Blocking=%d Actor=%s Contact=%s TraceDistance=%.1f ExpectedRootDistance=%.1f HitRootDistance=%.1f ReachCm=%.1f SelectionStart=%s SelectionDir=%s"),
         *GetNameSafe(Target->GetTarget()), *GetNameSafe(State.Source.Get()), Hit.bBlockingHit, *GetNameSafe(Hit.GetActor()), *Hit.ImpactPoint.ToString(), Hit.Distance,
         FVector::Distance(Pawn, State.Source->GetActorLocation()), Hit.GetActor() ? FVector::Distance(Pawn, Hit.GetActor()->GetActorLocation()) : -1,
@@ -331,7 +331,7 @@ void FSFLootWorkflowNetcheck::Tick(USFLootComponent& Loot)
     {
         Target->Refresh();
         const bool bProbe = FParse::Param(FCommandLine::Get(), TEXT("LootWorkflowCursorProbe"));
-        if (bDiagnosticNow || bProbe) CursorDiagnostic(Player, Target, State);
+        if (bDiagnosticNow || bProbe) CursorDiagnostic(Player, Target, State, State.Source->InteractionBounds->GetComponentLocation());
         if (bProbe)
         {
             if (Now >= State.CursorProbeUntil)
