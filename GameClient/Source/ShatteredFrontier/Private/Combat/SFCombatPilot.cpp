@@ -11,6 +11,7 @@
 #include "Combat/SFBoarDodgeRules.h"
 #include "Combat/SFCombatPart6.h"
 #include "Combat/SFCrowdControlComponent.h"
+#include "Combat/SFStatusEffectsComponent.h"
 #include "Inventory/SFGear.h"
 #include "Inventory/SFInventory.h"
 #include "Framework/SFGameMode.h"
@@ -348,6 +349,7 @@ ASFPilotBoar::ASFPilotBoar()
     }
     Label = CreateDefaultSubobject<UTextRenderComponent>(TEXT("HealthLabel"));
     Casting = CreateDefaultSubobject<USFCastingComponent>(TEXT("Casting"));
+    StatusEffects = CreateDefaultSubobject<USFStatusEffectsComponent>(TEXT("StatusEffects"));
     Label->SetupAttachment(GetCapsuleComponent());
     Label->SetRelativeLocation(FVector(0, 0, 130));
     Label->SetHorizontalAlignment(EHorizTextAligment::EHTA_Center);
@@ -453,6 +455,9 @@ bool ASFPilotBoar::ReceivePackAssist(ASFE1Character* Character, const FString& C
 void ASFPilotBoar::EnterEvade()
 {
     if (!HasAuthority() || bReturning || CurrentHealth <= 0) { return; }
+    if (StatusEffects) StatusEffects->ClearAll();
+    AbilityRootUntil = AbilitySnareUntil = 0;
+    AbilitySnareMultiplier = 1;
     if (Casting) { Casting->CancelNpcCast(); }
     FString TopCharacterId;
     if (ASFE1Character* Victim = Target.Get())
@@ -550,14 +555,15 @@ void ASFPilotBoar::ApplyAbilitySnare(double Until, double SpeedMultiplier)
     AbilitySnareMultiplier = FMath::Min(AbilitySnareMultiplier, SpeedMultiplier);
 }
 
-void ASFPilotBoar::ApplyAbilityRoot(double Until)
+float ASFPilotBoar::ApplyAbilityRoot(double Until)
 {
-    if (!HasAuthority() || CurrentHealth <= 0) return;
+    if (!HasAuthority() || CurrentHealth <= 0) return 0.f;
     const double Now = GetWorld()->GetTimeSeconds();
     if (Now - AbilityRootLastAt > 18.0) AbilityRootApplications = 0;
     const int32 Percent = SFCrowdControlRules::DrStepPercent(AbilityRootApplications++);
     AbilityRootLastAt = Now;
     AbilityRootUntil = FMath::Max(AbilityRootUntil, Now + (Until - Now) * Percent / 100.0);
+    return FMath::Max(0.0, (Until - Now) * Percent / 100.0);
 }
 
 void ASFPilotBoar::DropAbilityThreat(ASFE1Character* Character)
@@ -583,6 +589,7 @@ void ASFPilotBoar::ReceivePilotDamage(ASFE1Character* Attacker, int32 Damage, do
         DamageAttackers.Add(AttackerId);
     }
     CurrentHealth = SFCombatPilotRules::RemainingHealth(CurrentHealth, Damage);
+    if (CurrentHealth == 0 && StatusEffects) StatusEffects->ClearAll();
     if (CurrentHealth == 0 && Casting) { Casting->CancelNpcCast(); }
     else if (Casting) { Casting->NotifyDamage(); }
     LastDamageAt = GetWorld()->GetTimeSeconds(); UnreachableSince = -1;
@@ -1306,8 +1313,44 @@ void ASFGameMode::TickGreenlandsAbilityNetcheck()
         USFCharacterSessionComponent::IsRestoring(Driver->GetController()) ||
         USFCharacterSessionComponent::IsRestoring(Observer->GetController())) return;
     const double Now = GetWorld()->GetTimeSeconds();
+    if (FParse::Param(FCommandLine::Get(), TEXT("GreenlandsStatusNetcheck")))
+    {
+        if (GreenlandsAbilityStage == 0)
+        {
+            auto* Levels = Driver->GetController()->FindComponentByClass<USFGatheringPilotComponent>();
+            if (!Levels || RespawnPoints.IsEmpty() || !IsSafe(RespawnPoints[0])) return;
+            Levels->RestoreLevel(10); // Development fixture for the otherwise unavailable Healing rank.
+            Driver->SetActorLocation(RespawnPoints[0], false, nullptr, ETeleportType::TeleportPhysics);
+            Observer->SetActorLocation(RespawnPoints[0] + FVector(0, 100, 0), false, nullptr, ETeleportType::TeleportPhysics);
+            Observer->CombatSetHealth(Observer->CombatMaximumHealth());
+            Observer->StatusEffects->Apply(TEXT("netcheck/poison"), ESFStatusKind::Poison, ESFDispelType::Poison,
+                Driver, 10.f, 0.f, 1, false);
+            Observer->StatusEffects->Apply(TEXT("netcheck/curse"), ESFStatusKind::Curse, ESFDispelType::Curse,
+                Driver, 10.f, 0.f, 1, false);
+            GreenlandsAbilityStage = 1; GreenlandsAbilityStageAt = Now;
+            UE_LOG(LogTemp, Display, TEXT("STATUS_NETCHECK_APPLIED Poison=1 Curse=1"));
+        }
+        else if (GreenlandsAbilityStage == 1 && Now - GreenlandsAbilityStageAt >= 1.0)
+        {
+            TryPlayerCombatAbility(Driver, TEXT("purify"), Observer);
+            if (Observer->StatusEffects->GetStacks(TEXT("netcheck/poison"), Driver) != 0 ||
+                Observer->StatusEffects->GetStacks(TEXT("netcheck/curse"), Driver) != 1)
+            { UE_LOG(LogTemp, Error, TEXT("STATUS_NETCHECK_FAILED Purify")); GreenlandsAbilityStage = 99; return; }
+            GreenlandsAbilityStage = 2; GreenlandsAbilityStageAt = Now;
+            UE_LOG(LogTemp, Display, TEXT("STATUS_NETCHECK_PURIFY Poison=0 Curse=1"));
+        }
+        else if (GreenlandsAbilityStage == 2 && Now - GreenlandsAbilityStageAt >= 1.0)
+        {
+            GreenlandsAbilityStage = 3;
+            UE_LOG(LogTemp, Display, TEXT("STATUS_NETCHECK_PASS Clients=2"));
+        }
+        return;
+    }
     if (GreenlandsAbilityStage >= 9 && GreenlandsAbilityStage < 99)
-    { Driver->CombatSetHealth(Driver->CombatMaximumHealth()); }
+    {
+        Driver->CombatSetHealth(Driver->CombatMaximumHealth());
+        Observer->CombatSetHealth(Observer->CombatMaximumHealth());
+    }
     if (GreenlandsAbilityStage == 0)
     {
         ASFPilotBoar* Boar = nullptr;
@@ -1350,6 +1393,7 @@ void ASFGameMode::TickGreenlandsAbilityNetcheck()
         if (!FMath::IsNearlyEqual(Driver->GetMana(), Before - Cost, .05f) || Driver->CombatAbsorb() <= 0)
         { UE_LOG(LogTemp, Error, TEXT("ABILITY_NETCHECK_FAILED Ward Mana=%.2f Absorb=%.2f"),
             Driver->GetMana(), Driver->CombatAbsorb()); GreenlandsAbilityStage = 99; return; }
+        GreenlandsAbilityWardAbsorb = Driver->CombatAbsorb();
         GreenlandsAbilityStage = 2;
         UE_LOG(LogTemp, Display, TEXT("ABILITY_NETCHECK_WARD Cost=%.2f Absorb=%.2f"), Cost, Driver->CombatAbsorb());
     }
@@ -1357,7 +1401,7 @@ void ASFGameMode::TickGreenlandsAbilityNetcheck()
     {
         ASFPilotBoar* Boar = GreenlandsAbilityBoar.Get();
         if (!Boar || Boar->Health() <= 0) return;
-        const double Before = Driver->CombatAbsorb();
+        const double Before = GreenlandsAbilityWardAbsorb;
         for (int32 Attempt = 0; Attempt < 8 && Driver->CombatAbsorb() >= Before; ++Attempt)
             TryBoarAttack(Boar, Driver);
         if (Driver->CombatAbsorb() >= Before)
@@ -1370,6 +1414,9 @@ void ASFGameMode::TickGreenlandsAbilityNetcheck()
     }
     else if (GreenlandsAbilityStage == 3 && Now - GreenlandsAbilityStageAt >= 1.7)
     {
+        if (RespawnPoints.IsEmpty() || !IsSafe(RespawnPoints[0]))
+        { UE_LOG(LogTemp, Error, TEXT("ABILITY_NETCHECK_FAILED FriendlySafePoint")); GreenlandsAbilityStage = 99; return; }
+        Driver->SetActorLocation(RespawnPoints[0], false, nullptr, ETeleportType::TeleportPhysics);
         Driver->SetCombatArchetypeFixture(TEXT("guardian"));
         const float Before = Driver->GetStamina();
         TryPlayerCombatAbility(Driver, TEXT("defensive_stance"));
@@ -1433,6 +1480,17 @@ void ASFGameMode::TickGreenlandsAbilityNetcheck()
             GetDefault<USFCombatEnergySettings>()->AbilityEnergyCostMultiplier;
         if (!FMath::IsNearlyEqual(Driver->GetStamina(), Before - Cost, .05f) || !Driver->HasCombatStealth(Now))
         { UE_LOG(LogTemp, Error, TEXT("ABILITY_NETCHECK_FAILED Vanish")); GreenlandsAbilityStage = 99; return; }
+        ASFPilotBoar* BowTarget = nullptr;
+        for (const auto& Slot : ActiveBoars)
+        { if (Slot.Key.StartsWith(TEXT("boar_farm_edge:")) && IsValid(Slot.Value.Get()) && Slot.Value->Health() > 0)
+          { BowTarget = Slot.Value.Get(); break; } }
+        if (!BowTarget)
+        { UE_LOG(LogTemp, Error, TEXT("ABILITY_NETCHECK_FAILED NoBowTarget")); GreenlandsAbilityStage = 99; return; }
+        Driver->SetActorLocation(Grounded(GetWorld(), BowTarget->GetActorLocation() + FVector(180, 0, 0),
+            Driver->GetCapsuleComponent()->GetScaledCapsuleHalfHeight()), false, nullptr, ETeleportType::TeleportPhysics);
+        Driver->SetCombatTarget(BowTarget);
+        if (IsSafe(Driver->GetActorLocation()))
+        { UE_LOG(LogTemp, Error, TEXT("ABILITY_NETCHECK_FAILED NoBowSafeLocation")); GreenlandsAbilityStage = 99; return; }
         const float GateBefore = Driver->GetStamina();
         TryPlayerCombatAbility(Driver, TEXT("quick_shot"));
         if (!FMath::IsNearlyEqual(Driver->GetStamina(), GateBefore, .05f))
@@ -1473,8 +1531,23 @@ void ASFGameMode::TickGreenlandsAbilityNetcheck()
           { Captain = Slot.Value.Get(); break; } }
         if (!Captain || !Captain->GetCasting()) return;
         GreenlandsAbilityBoar = Captain;
-        Driver->SetActorLocation(Grounded(GetWorld(), Captain->GetActorLocation() + FVector(180, 0, 0),
-            Driver->GetCapsuleComponent()->GetScaledCapsuleHalfHeight()), false, nullptr, ETeleportType::TeleportPhysics);
+        bool bInsideCamp = false;
+        for (int32 Direction = 0; Direction < 8 && !bInsideCamp; ++Direction)
+        {
+            const double Angle = Direction * PI / 4.0;
+            const FVector Candidate = Grounded(GetWorld(), Captain->GetActorLocation() +
+                FVector(FMath::Cos(Angle) * 180, FMath::Sin(Angle) * 180, 0),
+                Driver->GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
+            if (!IsInsideTerritory(Candidate, Groups[Captain->GroupId()].Polygon) || IsSafe(Candidate)) continue;
+            FCollisionQueryParams Sight(SCENE_QUERY_STAT(CaptainNetcheckPosition), false, Driver);
+            Sight.AddIgnoredActor(Captain);
+            if (GetWorld()->LineTraceTestByChannel(Candidate + FVector(0, 0, 50),
+                Captain->GetActorLocation() + FVector(0, 0, 50), ECC_Visibility, Sight)) continue;
+            Driver->SetActorLocation(Candidate, false, nullptr, ETeleportType::TeleportPhysics);
+            bInsideCamp = true;
+        }
+        if (!bInsideCamp)
+        { UE_LOG(LogTemp, Error, TEXT("ABILITY_NETCHECK_FAILED CaptainPosition")); GreenlandsAbilityStage = 99; return; }
         Observer->SetActorLocation(Driver->GetActorLocation() + FVector(0, 120, 0), false, nullptr, ETeleportType::TeleportPhysics);
         Driver->SetActorRotation((Captain->GetActorLocation() - Driver->GetActorLocation()).Rotation());
         Driver->SetCombatTarget(Captain);
@@ -1536,9 +1609,33 @@ void ASFGameMode::TickGreenlandsAbilityNetcheck()
         if (!Captain->GetCasting()->IsNpcSchoolLocked() ||
             Captain->GetCasting()->GetCastView().Phase != ESFCastPhase::Idle)
         { UE_LOG(LogTemp, Error, TEXT("ABILITY_NETCHECK_FAILED CounterspellInterrupt")); GreenlandsAbilityStage = 99; return; }
-        GreenlandsAbilityStage = 13;
+        GreenlandsAbilityStage = 13; GreenlandsAbilityStageAt = Now;
         UE_LOG(LogTemp, Display, TEXT("ABILITY_NETCHECK_NPC_COUNTERSPELL DistanceCm=%.0f Locked=1"),
             FVector::Dist2D(Driver->GetActorLocation(), Captain->GetActorLocation()));
+        Observer->SetActorLocation(Driver->GetActorLocation() + FVector(0, 100, 0), false, nullptr, ETeleportType::TeleportPhysics);
+        Observer->StatusEffects->Apply(TEXT("netcheck/poison"), ESFStatusKind::Poison, ESFDispelType::Poison,
+            Driver, 10.f, 0.f, 1, false);
+        Observer->StatusEffects->Apply(TEXT("netcheck/curse"), ESFStatusKind::Curse, ESFDispelType::Curse,
+            Driver, 10.f, 0.f, 1, false);
+        UE_LOG(LogTemp, Display, TEXT("STATUS_NETCHECK_APPLIED Poison=1 Curse=1"));
+    }
+    else if (GreenlandsAbilityStage == 13 && Now - GreenlandsAbilityStageAt >= 1.0)
+    {
+        const float ManaBefore = Driver->GetMana();
+        UE_LOG(LogTemp, Display, TEXT("STATUS_NETCHECK_PURIFY_GATE Cast=%d Level=%d HP=%d Mana=%.2f Distance=%.0f"),
+            Driver->CanBeginCombatAbilityCast(true, Now), Driver->CombatCharacterLevel(),
+            Observer->CombatHealth(), ManaBefore,
+            FVector::Dist2D(Driver->GetActorLocation(), Observer->GetActorLocation()));
+        TryPlayerCombatAbility(Driver, TEXT("purify"), Observer);
+        if (Observer->StatusEffects->GetStacks(TEXT("netcheck/poison"), Driver) != 0 ||
+            Observer->StatusEffects->GetStacks(TEXT("netcheck/curse"), Driver) != 1)
+        { UE_LOG(LogTemp, Error, TEXT("ABILITY_NETCHECK_FAILED Purify ManaAfter=%.2f"), Driver->GetMana()); GreenlandsAbilityStage = 99; return; }
+        GreenlandsAbilityStage = 14; GreenlandsAbilityStageAt = Now;
+        UE_LOG(LogTemp, Display, TEXT("STATUS_NETCHECK_PURIFY Poison=0 Curse=1"));
+    }
+    else if (GreenlandsAbilityStage == 14 && Now - GreenlandsAbilityStageAt >= 1.0)
+    {
+        GreenlandsAbilityStage = 15;
         UE_LOG(LogTemp, Display, TEXT("ABILITY_NETCHECK_PASS Shadow=1 NoBow=1 EquippedBow=1 NpcCast=1"));
     }
 }
@@ -2196,34 +2293,30 @@ void ASFGameMode::RecordIncomingCombatPractice(ASFPilotBoar* Source, ASFE1Charac
 void ASFGameMode::ApplyStarterWeakPoison(ASFE1Character* Source, ASFPilotBoar* Victim,
     const SFCombatResolution::FAttack& Attack)
 {
-    if (!IsValid(Source) || !IsValid(Victim)) return;
-    const uint64 Key = (uint64(Source->GetUniqueID()) << 32) | Victim->GetUniqueID();
-    const double ExpiresAt = GetWorld()->GetTimeSeconds() + 6.0;
-    TArray<double>& Stacks = WeakPoisonExpiries.FindOrAdd(Key);
-    Stacks.RemoveAll([ExpiresAt](double End) { return End <= ExpiresAt - 6.0; });
-    if (Stacks.Num() >= 3) return;
-    Stacks.Add(ExpiresAt);
+    if (!IsValid(Source) || !IsValid(Victim) || !Victim->GetStatusEffects()) return;
+    const auto* StatusTune = GetDefault<USFStatusEffectsSettings>();
     SFCombatResolution::FAttack TickAttack = Attack;
-    TickAttack.RawDamage /= 3.0; TickAttack.SpreadWeaponDamage /= 3.0;
-    TickAttack.bCanCrit = false; TickAttack.bCanMiss = false; TickAttack.bCanBlock = false;
+    TickAttack.RawDamage /= StatusTune->WeakPoisonTicks;
+    TickAttack.SpreadWeaponDamage /= StatusTune->WeakPoisonTicks;
+    TickAttack.bCanMiss = false; TickAttack.bCanBlock = false;
     TWeakObjectPtr<ASFE1Character> Caster = Source;
     TWeakObjectPtr<ASFPilotBoar> Target = Victim;
-    TSharedRef<int32> Count = MakeShared<int32>(0);
-    TSharedRef<FTimerHandle> Handle = MakeShared<FTimerHandle>();
-    GetWorldTimerManager().SetTimer(*Handle, FTimerDelegate::CreateWeakLambda(this,
-        [this, Caster, Target, TickAttack, Count, Handle, Key, ExpiresAt]()
+    TWeakObjectPtr<ASFGameMode> Mode = this;
+    Victim->GetStatusEffects()->Apply(TEXT("effect/weak_poison"), ESFStatusKind::Poison, ESFDispelType::Poison,
+        Source, StatusTune->WeakPoisonDurationSeconds,
+        StatusTune->WeakPoisonDurationSeconds / StatusTune->WeakPoisonTicks,
+        StatusTune->WeakPoisonMaxStacks, true, [Mode, Caster, Target, TickAttack]()
         {
-            if (!Caster.IsValid() || !Target.IsValid() || Target->Health() <= 0 || Target->IsLeashing())
-            { GetWorldTimerManager().ClearTimer(*Handle); return; }
-            const auto Hit = ResolveCombatAttack(Caster.Get(), TickAttack);
+            if (!Mode.IsValid() || !Caster.IsValid() || !Target.IsValid() ||
+                Target->Health() <= 0 || Target->IsLeashing()) return;
+            auto CurrentTick = TickAttack;
+            CurrentTick.RawDamage *= Caster->DamageDoneMultiplier();
+            CurrentTick.SpreadWeaponDamage *= Caster->DamageDoneMultiplier();
+            CurrentTick.Armor = Target->CombatArmor();
+            CurrentTick.Resistance = Target->CombatResistance();
+            const auto Hit = Mode->ResolveCombatAttack(Caster.Get(), CurrentTick);
             if (Hit.Damage > 0) Target->ReceivePilotDamage(Caster.Get(), Hit.Damage);
-            if (++*Count >= 3)
-            {
-                if (TArray<double>* Active = WeakPoisonExpiries.Find(Key))
-                { Active->RemoveSingle(ExpiresAt); if (Active->IsEmpty()) WeakPoisonExpiries.Remove(Key); }
-                GetWorldTimerManager().ClearTimer(*Handle);
-            }
-        }), 2.0f, true);
+        });
 }
 
 void ASFGameMode::TryPlayerCombatAbility(ASFE1Character* Attacker, FName AbilityId,
@@ -2248,6 +2341,7 @@ void ASFGameMode::TryPlayerCombatAbility(ASFE1Character* Attacker, FName Ability
     const bool bFriendly = IsFriendlyTarget(Ability->Target);
     if (!bSelf && !bFriendly && IsSafe(Attacker->GetActorLocation())) return;
     const auto* Energy = GetDefault<USFCombatEnergySettings>();
+    const auto* StatusTune = GetDefault<USFStatusEffectsSettings>();
     const auto Equipment = SFGear::CombatEquipment(Attacker->GetController(), CapturedSettings->DevPilotArmorUnit);
     if (Ability->bRequiresRangedWeapon && !Equipment.bRangedWeapon)
     {
@@ -2381,7 +2475,8 @@ void ASFGameMode::TryPlayerCombatAbility(ASFE1Character* Attacker, FName Ability
         Attacker->EnterCombatStealth(2, Now + 6.0);
         return;
     }
-    if (Ability->Effect == EEffect::PoisonBlade) { Attacker->SetPoisonedBladeUntil(Now + 30.0); return; }
+    if (Ability->Effect == EEffect::PoisonBlade)
+    { Attacker->SetPoisonedBladeUntil(Now + StatusTune->PoisonBladeDurationSeconds); return; }
     if (Ability->Effect == EEffect::HasteBuff) { Attacker->SetSteadyFocusUntil(Now + 10.0); return; }
     if (Ability->Effect == EEffect::SelfDisplace || Ability->Effect == EEffect::Blink)
     {
@@ -2393,7 +2488,14 @@ void ASFGameMode::TryPlayerCombatAbility(ASFE1Character* Attacker, FName Ability
         return;
     }
     if (Ability->Effect == EEffect::Root)
-    { Targets[0]->ApplyAbilityRoot(Now + 5.0); RecordPilotCombatPractice(Attacker, Targets[0], GoverningSkill, 2.0, true, AbilityId.ToString()); return; }
+    {
+        const float RootSeconds = Targets[0]->ApplyAbilityRoot(Now + StatusTune->EntangleDurationSeconds);
+        if (RootSeconds > 0.f)
+            Targets[0]->GetStatusEffects()->Apply(AbilityId, ESFStatusKind::Magic, ESFDispelType::Magic,
+                Attacker, RootSeconds, 0.f, 1, false);
+        RecordPilotCombatPractice(Attacker, Targets[0], GoverningSkill, 2.0, RootSeconds > 0.f, AbilityId.ToString());
+        return;
+    }
     if (Ability->Effect == EEffect::Stance) { Attacker->ToggleDefensiveStance(); return; }
     if (Ability->Effect == EEffect::BlockBuff) { Attacker->SetShieldBlockUntil(Now + 6); return; }
     if (Ability->Effect == EEffect::Taunt)
@@ -2404,7 +2506,11 @@ void ASFGameMode::TryPlayerCombatAbility(ASFE1Character* Attacker, FName Ability
         else if (Friendly) Friendly->SetBulwarkUntil(Now + 6);
         return;
     }
-    if (Ability->Effect == EEffect::Dispel) return; // No typed dispellable status is active in Greenlands yet.
+    if (Ability->Effect == EEffect::Dispel)
+    {
+        if (Friendly && Friendly->StatusEffects) Friendly->StatusEffects->PurifyNewest();
+        return;
+    }
     if (Ability->Effect == EEffect::Revive)
     {
         Friendly->BeginResurrectionOffer(Now + CapturedSettings->ResAcceptSeconds,
@@ -2532,30 +2638,31 @@ void ASFGameMode::TryPlayerCombatAbility(ASFE1Character* Attacker, FName Ability
                 bRecordedPractice = true;
             }
             const bool bSerpent = AbilityId == TEXT("serpent_sting");
-            const int32 Ticks = bSerpent ? 5 : 6;
+            const int32 Ticks = bSerpent ? StatusTune->SerpentTicks : StatusTune->RendTicks;
+            const float Duration = bSerpent ? StatusTune->SerpentDurationSeconds : StatusTune->RendDurationSeconds;
             Attack.RawDamage /= Ticks; Attack.SpreadWeaponDamage /= Ticks;
-            Attack.bCanCrit = false; Attack.bCanBlock = false;
-            const uint64 Key = ((uint64(Attacker->GetUniqueID()) << 32) | Boar->GetUniqueID()) ^
-                (bSerpent ? 0x8000000000000000ull : 0ull);
-            const int32 Generation = ++RendGenerations.FindOrAdd(Key);
+            Attack.bCanBlock = false;
             TWeakObjectPtr<ASFE1Character> Source = Attacker;
             TWeakObjectPtr<ASFPilotBoar> Victim = Boar;
-            TSharedRef<int32> TickCount = MakeShared<int32>(0);
-            TSharedRef<FTimerHandle> Handle = MakeShared<FTimerHandle>();
-            GetWorld()->GetTimerManager().SetTimer(*Handle, FTimerDelegate::CreateWeakLambda(this,
-                [this, Source, Victim, Attack, Key, Generation, TickCount, Handle, Ticks]()
+            TWeakObjectPtr<ASFGameMode> Mode = this;
+            const double AppliedDamageDone = Attacker->DamageDoneMultiplier();
+            Boar->GetStatusEffects()->Apply(AbilityId,
+                bSerpent ? ESFStatusKind::Poison : ESFStatusKind::Physical,
+                bSerpent ? ESFDispelType::Poison : ESFDispelType::None,
+                Attacker, Duration, Duration / Ticks, 1, false,
+                [Mode, Source, Victim, Attack, AppliedDamageDone]()
                 {
-                    if (RendGenerations.FindRef(Key) != Generation || !Source.IsValid() ||
-                        !Victim.IsValid() || Victim->Health() <= 0 || Victim->IsLeashing())
-                    {
-                        if (RendGenerations.FindRef(Key) == Generation) RendGenerations.Remove(Key);
-                        GetWorld()->GetTimerManager().ClearTimer(*Handle); return;
-                    }
-                    const auto Result = ResolveCombatAttack(Source.Get(), Attack);
+                    if (!Mode.IsValid() || !Source.IsValid() || !Victim.IsValid() ||
+                        Victim->Health() <= 0 || Victim->IsLeashing()) return;
+                    auto CurrentTick = Attack;
+                    const double DamageRatio = Source->DamageDoneMultiplier() / AppliedDamageDone;
+                    CurrentTick.RawDamage *= DamageRatio;
+                    CurrentTick.SpreadWeaponDamage *= DamageRatio;
+                    CurrentTick.Armor = Victim->CombatArmor();
+                    CurrentTick.Resistance = Victim->CombatResistance();
+                    const auto Result = Mode->ResolveCombatAttack(Source.Get(), CurrentTick);
                     if (Result.Damage > 0) Victim->ReceivePilotDamage(Source.Get(), Result.Damage);
-                    if (++*TickCount >= Ticks)
-                    { RendGenerations.Remove(Key); GetWorld()->GetTimerManager().ClearTimer(*Handle); }
-                }), bSerpent ? 3.0f : 2.0f, true);
+                });
             continue;
         }
         const auto Result = ResolveCombatAttack(Attacker, Attack);
@@ -2573,8 +2680,16 @@ void ASFGameMode::TryPlayerCombatAbility(ASFE1Character* Attacker, FName Ability
             AbilityId == TEXT("shield_bash") ? 1.5 : 1.0);
         else Boar->ReceivePilotDodge(Attacker);
         if (Result.Damage > 0 && Ability->Effect == EEffect::SlowHit)
-            Boar->ApplyAbilitySnare(Now + (AbilityId == TEXT("frost_shard") ? 4.0 : 6.0),
-                AbilityId == TEXT("frost_shard") ? .70 : .60);
+        {
+            const float SlowDuration = AbilityId == TEXT("frost_shard") ?
+                StatusTune->FrostSlowDurationSeconds : StatusTune->CripplingSlowDurationSeconds;
+            Boar->ApplyAbilitySnare(Now + SlowDuration,
+                AbilityId == TEXT("frost_shard") ? StatusTune->FrostSlowMultiplier : StatusTune->CripplingSlowMultiplier);
+            Boar->GetStatusEffects()->Apply(AbilityId,
+                AbilityId == TEXT("frost_shard") ? ESFStatusKind::Magic : ESFStatusKind::Physical,
+                ESFDispelType::None,
+                Attacker, SlowDuration, 0.f, 1, false);
+        }
         if (Result.Damage > 0 && Coefficient->bPhysical && Attacker->TryPoisonProc(Now))
         {
             const auto* Poison = SFCombatPart6::Ability(TEXT("effect/weak_poison"));

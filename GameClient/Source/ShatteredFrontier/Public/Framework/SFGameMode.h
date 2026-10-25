@@ -185,14 +185,13 @@ private:
     TMap<FString, TArray<double>> LeashEvadesByGroupAndCharacter;
     TMap<TWeakObjectPtr<ASFE1Character>, double> PlayerNextSwing;
     TMap<TWeakObjectPtr<ASFE1Character>, double> NextStealthPracticeAt;
-    TMap<uint64, int32> RendGenerations;
     TMap<uint64, int32> RenewGenerations;
-    TMap<uint64, TArray<double>> WeakPoisonExpiries;
     int32 GreenlandsAbilityStage = 0;
     double GreenlandsAbilityStageAt = 0;
     TWeakObjectPtr<ASFPilotBoar> GreenlandsAbilityBoar;
     int32 GreenlandsAbilityBoarHealth = 0;
     float GreenlandsAbilityStamina = 0;
+    double GreenlandsAbilityWardAbsorb = 0;
     TMap<TWeakObjectPtr<ASFE1Character>, FRandomStream> PlayerCombatStreams;
     TMap<TWeakObjectPtr<ASFPilotBoar>, FRandomStream> BoarCombatStreams;
     TMap<TWeakObjectPtr<ASFE1Character>, int32> DodgeScenarioSwings;

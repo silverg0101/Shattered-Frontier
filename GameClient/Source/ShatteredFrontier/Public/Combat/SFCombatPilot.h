@@ -9,6 +9,7 @@ class ASFE1Character;
 class UStaticMeshComponent;
 class UTextRenderComponent;
 class USFCastingComponent;
+class USFStatusEffectsComponent;
 
 namespace SFCombatPilotRules
 {
@@ -273,7 +274,7 @@ public:
     void ReceivePilotDodge(ASFE1Character* Attacker);
     bool ReceivePilotTaunt(ASFE1Character* Taunter);
     void ApplyAbilitySnare(double Until, double SpeedMultiplier);
-    void ApplyAbilityRoot(double Until);
+    float ApplyAbilityRoot(double Until);
     void DropAbilityThreat(ASFE1Character* Character);
     /** Authority-only transition when the open-world leash or safe-zone rule fires. */
     void EnterEvade();
@@ -288,6 +289,7 @@ public:
     int32 MaximumHealth() const { return MaximumHealthValue; }
     void CompleteNpcMend(float HealthFraction);
     USFCastingComponent* GetCasting() const { return Casting; }
+    USFStatusEffectsComponent* GetStatusEffects() const { return StatusEffects; }
     double CombatSwingSeconds() const { return CombatSwingSecondsValue; }
     double CombatSwingDamage() const { return CombatSwingDamageValue; }
     double CombatArmor() const { return CombatArmorValue; }
@@ -313,6 +315,7 @@ private:
     UPROPERTY(VisibleAnywhere) TObjectPtr<UStaticMeshComponent> Body;
     UPROPERTY(VisibleAnywhere) TObjectPtr<UTextRenderComponent> Label;
     UPROPERTY(VisibleAnywhere) TObjectPtr<USFCastingComponent> Casting;
+    UPROPERTY(VisibleAnywhere) TObjectPtr<USFStatusEffectsComponent> StatusEffects;
     TWeakObjectPtr<class ASFGameMode> PilotMode;
     TWeakObjectPtr<ASFE1Character> Target;
     UPROPERTY(Replicated) TObjectPtr<ASFE1Character> ReplicatedTarget;

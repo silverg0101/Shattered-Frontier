@@ -14,6 +14,7 @@ class UIKRetargeter;
 class UInputAction;
 class UInputMappingContext;
 class USFCrowdControlComponent;
+class USFStatusEffectsComponent;
 class USFCastingComponent;
 class USFQuestPilotComponent;
 class USpringArmComponent;
@@ -123,6 +124,7 @@ public:
     void SetDialogueFramingTarget(AActor* Speaker);
     static FVector DialogueHeadPoint(const AActor* Speaker);
     UPROPERTY(VisibleAnywhere) TObjectPtr<USFCrowdControlComponent> CrowdControl;
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Combat") TObjectPtr<USFStatusEffectsComponent> StatusEffects;
     /** Authoritative cast/channel timing and owner-replicated cast bar data. */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Combat") TObjectPtr<USFCastingComponent> Casting;
     // The visible body (not on a dedicated server): the player MetaHuman for FaceId, built by tools/Build-PlayerMetaHumans.py, attached

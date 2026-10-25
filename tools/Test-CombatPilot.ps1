@@ -11,6 +11,7 @@ param(
     [switch]$GreenlandsUnstuckNetcheck,
     [switch]$AttributeSnapshotNetcheck,
     [switch]$GreenlandsAbilityNetcheck,
+    [switch]$GreenlandsStatusNetcheck,
     [ValidateSet('Release','Resurrection')][string]$DeathResolution = 'Release',
     [switch]$RestartMidDeath,
     [switch]$TargetScenario,
@@ -47,6 +48,10 @@ if ($GreenlandsAbilityNetcheck -and (-not $Services -or $Clients -ne 2 -or
     $Map -ne '/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook')) {
     throw 'GreenlandsAbilityNetcheck requires Silverbrook, two clients and Gameplay Services.'
 }
+if ($GreenlandsStatusNetcheck -and (-not $Services -or $Clients -ne 2 -or
+    $Map -ne '/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook' -or $GreenlandsAbilityNetcheck)) {
+    throw 'GreenlandsStatusNetcheck requires Silverbrook, two clients and Gameplay Services.'
+}
 if ($GreenlandsDeathNetcheck -and (-not $Services -or $Clients -ne 2 -or $Map -ne '/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook' -or
     $TargetScenario -or $PartyScenario -or $PartyXpScenario -or $SpawnOnly)) { throw 'GreenlandsDeathNetcheck requires Silverbrook, two clients and Gameplay Services.' }
 if ($GreenlandsUnstuckNetcheck -and (-not $Services -or $Clients -ne 2 -or $Map -ne '/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook' -or
@@ -73,7 +78,8 @@ $null = New-Item -ItemType Directory -Path $root
 if ($Services) { . (Join-Path $PSScriptRoot 'InventoryLedgerHostFixture.ps1') }
 $fx = @{}
 $owned = [Collections.Generic.List[Diagnostics.Process]]::new()
-$scope = if ($GreenlandsAbilityNetcheck) { 'Greenlands two-client starter kit and equipped bow requirement' }
+$scope = if ($GreenlandsStatusNetcheck) { 'Greenlands two-client typed status replication and Purify' }
+    elseif ($GreenlandsAbilityNetcheck) { 'Greenlands two-client starter kit and equipped bow requirement' }
     elseif ($AttributeSnapshotNetcheck) { 'Greenlands two-client authoritative attribute restore and combat' }
     elseif ($GreenlandsArcherNetcheck) { 'Greenlands two-client bandit archer ranged hit and replicated tracer' }
     elseif ($GreenlandsUnstuckNetcheck) { 'Greenlands two-client Unstuck, token replay, and restart cooldown' }
@@ -190,8 +196,9 @@ try {
         }
     }
     $url = $result.map
-    $scenarioArg = if ($GreenlandsRepairNetcheck) { '-GreenlandsRepairNetcheck' } elseif ($GreenlandsArcherNetcheck) { '-GreenlandsArcherNetcheck' } elseif ($GreenlandsAbilityNetcheck) { '-GreenlandsAbilityNetcheck' } elseif ($GreenlandsUnstuckNetcheck) { '-GreenlandsUnstuckNetcheck' } elseif ($GreenlandsDeathNetcheck) { '-GreenlandsDeathNetcheck' } elseif ($PartyScenario) { '-PartyScenario' } elseif ($Clients -gt 1) { '-CombatGroupScenario' } elseif ($TargetScenario) { '-CombatTargetScenario' } else { '-CombatPilotScenario' }
+    $scenarioArg = if ($GreenlandsRepairNetcheck) { '-GreenlandsRepairNetcheck' } elseif ($GreenlandsArcherNetcheck) { '-GreenlandsArcherNetcheck' } elseif ($GreenlandsStatusNetcheck -or $GreenlandsAbilityNetcheck) { '-GreenlandsAbilityNetcheck' } elseif ($GreenlandsUnstuckNetcheck) { '-GreenlandsUnstuckNetcheck' } elseif ($GreenlandsDeathNetcheck) { '-GreenlandsDeathNetcheck' } elseif ($PartyScenario) { '-PartyScenario' } elseif ($Clients -gt 1) { '-CombatGroupScenario' } elseif ($TargetScenario) { '-CombatTargetScenario' } else { '-CombatPilotScenario' }
     $serverFlags = @('-server',('-port='+$Port),'-multihome=127.0.0.1',$scenarioArg)
+    if ($GreenlandsStatusNetcheck) { $serverFlags += '-GreenlandsStatusNetcheck' }
     if ($GreenlandsDeathNetcheck) { $serverFlags += "-DeathResolution=$DeathResolution" }
     if ($PartyScenario) { $serverFlags += '-SFDevIdentity' }
     if ($PartyXpScenario) { $serverFlags += '-PartyXpScenario' }
@@ -507,6 +514,25 @@ INSERT INTO exchange.wallets(owner_id,balance) VALUES ('chr_dev_alpha',5000),('c
         $result.status='Passed'
         return
     }
+    if ($GreenlandsStatusNetcheck) {
+        foreach ($identity in @('alpha','beta')) {
+            $null = Start-Owned "client$identity" ("127.0.0.1:$Port`?SFDevCharacter=$identity") @('-game','-GreenlandsAbilityNetcheck','-GreenlandsStatusNetcheck')
+        }
+        Wait-Log $server 'server' 'STATUS_NETCHECK_(PASS|FAILED)'
+        $serverText = Get-Content -LiteralPath (Join-Path $root 'server.log') -Raw
+        if ($serverText -match 'STATUS_NETCHECK_FAILED' -or
+            $serverText -notmatch 'STATUS_NETCHECK_APPLIED Poison=1 Curse=1' -or
+            $serverText -notmatch 'STATUS_NETCHECK_PURIFY Poison=0 Curse=1' -or
+            $serverText -notmatch 'STATUS_NETCHECK_PASS Clients=2') {
+            throw 'Two-client status evidence incomplete.'
+        }
+        Wait-Log $owned[$owned.Count - 2] 'clientalpha' 'STATUS_NETCHECK_CLIENT_VIEW Poison=1 Curse=1'
+        Wait-Log $owned[$owned.Count - 1] 'clientbeta' 'STATUS_NETCHECK_CLIENT_VIEW Poison=1 Curse=1'
+        Wait-Log $owned[$owned.Count - 2] 'clientalpha' 'STATUS_NETCHECK_CLIENT_VIEW Poison=0 Curse=1'
+        Wait-Log $owned[$owned.Count - 1] 'clientbeta' 'STATUS_NETCHECK_CLIENT_VIEW Poison=0 Curse=1'
+        $result.status='Passed'
+        return
+    }
     if ($GreenlandsAbilityNetcheck) {
         foreach ($identity in @('alpha','beta')) {
             $null = Start-Owned "client$identity" ("127.0.0.1:$Port`?SFDevCharacter=$identity") @('-game','-GreenlandsAbilityNetcheck')
@@ -526,6 +552,8 @@ INSERT INTO exchange.wallets(owner_id,balance) VALUES ('chr_dev_alpha',5000),('c
             $serverText -notmatch 'ABILITY_NETCHECK_NPC_COMPLETE' -or
             $serverText -notmatch 'ABILITY_NETCHECK_NPC_POMMEL Locked=1' -or
             $serverText -notmatch 'ABILITY_NETCHECK_NPC_COUNTERSPELL DistanceCm=29\d\d Locked=1' -or
+            $serverText -notmatch 'STATUS_NETCHECK_APPLIED Poison=1 Curse=1' -or
+            $serverText -notmatch 'STATUS_NETCHECK_PURIFY Poison=0 Curse=1' -or
             $serverText -notmatch 'ABILITY_NETCHECK_PASS Shadow=1 NoBow=1 EquippedBow=1 NpcCast=1' -or
             [regex]::Matches($serverText, 'COMBAT_ATTRIBUTE_SNAPSHOT Archetype=fighter Level=1').Count -lt 2) {
             throw 'Two-client starter ability evidence incomplete.'
@@ -534,6 +562,10 @@ INSERT INTO exchange.wallets(owner_id,balance) VALUES ('chr_dev_alpha',5000),('c
         Wait-Log $owned[$owned.Count - 1] 'clientbeta' 'ABILITY_NETCHECK_CLIENT_STEALTH Level=2'
         Wait-Log $owned[$owned.Count - 2] 'clientalpha' 'NPC_CAST_CLIENT_VIEW Ability=3'
         Wait-Log $owned[$owned.Count - 1] 'clientbeta' 'NPC_CAST_CLIENT_VIEW Ability=3'
+        Wait-Log $owned[$owned.Count - 2] 'clientalpha' 'STATUS_NETCHECK_CLIENT_VIEW Poison=1 Curse=1'
+        Wait-Log $owned[$owned.Count - 1] 'clientbeta' 'STATUS_NETCHECK_CLIENT_VIEW Poison=1 Curse=1'
+        Wait-Log $owned[$owned.Count - 2] 'clientalpha' 'STATUS_NETCHECK_CLIENT_VIEW Poison=0 Curse=1'
+        Wait-Log $owned[$owned.Count - 1] 'clientbeta' 'STATUS_NETCHECK_CLIENT_VIEW Poison=0 Curse=1'
         $result.status='Passed'
         return
     }

@@ -35,6 +35,7 @@
 #include "Combat/SFAutoAttackRules.h"
 #include "Combat/SFTabTargetSelection.h"
 #include "Combat/SFCrowdControlComponent.h"
+#include "Combat/SFStatusEffectsComponent.h"
 #include "Combat/SFCastingComponent.h"
 #include "ProfilingDebugging/CsvProfiler.h"
 #include "Framework/SFPlayerController.h"
@@ -84,6 +85,7 @@ ASFE1Character::ASFE1Character(const FObjectInitializer& ObjectInitializer)
     GetCharacterMovement()->AirControl = 0.0f;
 
     CrowdControl = CreateDefaultSubobject<USFCrowdControlComponent>(TEXT("CrowdControl"));
+    StatusEffects = CreateDefaultSubobject<USFStatusEffectsComponent>(TEXT("StatusEffects"));
     Casting = CreateDefaultSubobject<USFCastingComponent>(TEXT("Casting"));
     // Rigged body on the UE4 mannequin skeleton the NPC pipeline also fits. Locomotion comes from the AnimBP reading
     // replicated CharacterMovement velocity and falling state, so remote proxies animate with no extra replication.
@@ -2313,9 +2315,11 @@ void ASFE1Character::OnRep_CombatStealth()
 
 bool ASFE1Character::TryPoisonProc(double Now)
 {
-    if (!HasAuthority() || Now >= PoisonBladeUntil || Now < NextPoisonProcAt || FMath::FRand() >= .30f)
+    const auto* StatusTune = GetDefault<USFStatusEffectsSettings>();
+    if (!HasAuthority() || Now >= PoisonBladeUntil || Now < NextPoisonProcAt ||
+        FMath::FRand() >= StatusTune->WeakPoisonProcChance)
         return false;
-    NextPoisonProcAt = Now + 1.0;
+    NextPoisonProcAt = Now + StatusTune->WeakPoisonIcdSeconds;
     return true;
 }
 
@@ -2503,6 +2507,7 @@ void ASFE1Character::CombatSetHealth(int32 Value)
         PilotHealth = Value;
         if (Value <= 0)
         {
+            if (StatusEffects) StatusEffects->ClearAll();
             CombatAbsorbs.Reset(); CombatAbsorbRemaining = 0;
             bDefensiveStance = false; ShieldBlockUntil = ShieldWallUntil = BulwarkUntil = 0;
         }
