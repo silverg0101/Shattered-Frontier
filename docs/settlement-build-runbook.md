@@ -6,6 +6,8 @@ The [settlement layout-to-world pipeline](settlement-world-pipeline.md) says wha
 
 ## 0. Before you start
 
+For an environment pass, record its [playable purpose](settlement-world-pipeline.md#target-the-agent-zone-workflow): one existing route or activity, its authored design reference and the observable improvement.
+
 **Tools**
 - Unreal 5.8 at `C:\Program Files\Epic Games\UE_5.8`.
 - UE's Python: `Engine/Binaries/ThirdParty/Python3/Win64/python.exe`. Run the standard-library scripts with `-I`, from the repository root.
@@ -139,6 +141,7 @@ UnrealEditor.exe <uproject> <map> -game -RenderOffscreen -unattended -nosound -w
 - The swim check: `swimming_after_4s: true`, `climbed_out: true`.
 - Frame times at 720p are movement-run comparisons only, not graphics-budget acceptance. Historical Silverbrook sample: 3.7 ms median, 5.8 ms p95. Graphics acceptance uses `perf_bookmark_game.py` at 1440p Standard on the budget card under [GFX-02's performance procedure](decisions/GFX-02-photoreal-ground-pipeline.md#6-performance-budget-and-measurement).
 - Captures for the arrival view, the aerial view and each review camera. Look at them: doors facing the street, nothing floating, the wall closed over the river.
+- When a route changes, use existing player-height/context captures where adequate to show its arrival, decision point and destination, including the return cue. Review readability under [visual review](visual-review.md#reviewer-brief); report missing mechanics as integration gaps. The walk proves movement/swimming only, not that the activity works.
 
 ## 6. Troubleshooting
 
