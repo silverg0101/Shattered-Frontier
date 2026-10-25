@@ -17,7 +17,7 @@ Service artifact candidate built; protected runtime unchanged. Current host runs
 
 2026-10-25 SSH inventory: game healthy, only Forge/Tailscale alongside it; 76 GiB free on existing game volume. Runtime directory is private; `sudo -n` requires a password. Contracts: `ops/steam-server/README.md`, `docs/e1-linux-server-build.md`, both host READMEs. Current host contracts use loopback-only HTTP/2 and private development bearers, not production session authentication.
 
-`tools/Build-PlayableServiceRelease.ps1` locked publishes passed at `0a3f3adbd3e6dad2b88382cda09a38f84d8cf7ee`; all 103 Linux manifest hashes passed. Image `sha256:388679586d6a1dd3de61118a7519ae278a8e7948f1dbb665be2c39cd5439f0f5` has matching revision and UID/GID 998. Network-disabled/read-only runtime and migration usage probes passed. Host staging: `/home/steam/sf-release-candidates/20261025-0a3f3adb`. A caught CRLF manifest error was fixed before successful rerun. This is enabling evidence, not service/database/gameplay acceptance.
+Independent review reproduced a P2 provenance defect: the earlier exporter included ignored checkout content. Every pre-fix image/artifact, including `0a3f3adb`/`sha256:388679586d6a1dd3de61118a7519ae278a8e7948f1dbb665be2c39cd5439f0f5`, is superseded and must not be a final release. The fix builds/copies only an isolated tracked Git archive, rejects checkout/output/snapshot overlap before writes, and retains the frozen SDK/locks/proto closure. Focused synthetic ignored-content/source and overlap regressions pass; fresh portable validation follows. This remains enabling work, not service/database/gameplay acceptance.
 
 ## Blocked on
 
