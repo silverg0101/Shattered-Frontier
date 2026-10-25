@@ -1172,7 +1172,8 @@ def go():
     os.chdir(d); sys.path.insert(0, d)
     try:
         with contextlib.redirect_stdout(out):
-            runpy.run_path(SCRIPT, run_name="__main__")
+            from blender_stage import run
+            run(SCRIPT, ARGS, INPUTS, OUT)
     except SystemExit as e:
         err = None if e.code in (None, 0) else f"exit {e.code}"
     except Exception:
@@ -1197,14 +1198,16 @@ MCP_POLL = "import bpy\nresult = bpy.app.driver_namespace.get('forge', {}).pop(T
 
 def run_blender(jid, host, script, args, inputs, outputs, timeout):
     """Run motion/<script> in Blender for a job whose files sit in its folder on its GPU `host` -> Blender's output.
-    Python-Direct on the job's own host runs in place, as before; another host gets the scripts and `inputs` (paths
-    in the job folder) copied over, and `outputs` (files or folders) copied back."""
+    Python-Direct on the job's own host runs in place; another host gets the scripts and `inputs` (paths
+    in the job folder) copied over, and `outputs` (files or folders) copied back. Both routes invalidate old
+    declared outputs and require fresh nonempty outputs before any following stage can consume them."""
     bh, q, work = job_blender(jid), shlex.quote, f"{host['comfy_dir']}/input/sfam/{jid}"
     names = [f.name for f in MOTION_DIR.glob("*.py")] + list(inputs)
     gpu = bh.get("gpu")
     env = f"CUDA_DEVICE_ORDER=PCI_BUS_ID CUDA_VISIBLE_DEVICES={int(host['gpu'] if gpu is None else gpu)}"
     log = q(f"{script}.log")
-    run = (f"{env} {bh.get('blender')} -b -P {q(script)} -- {' '.join(map(q, args))} > {log} 2>&1"
+    spec = json.dumps({"script": script, "args": list(args), "inputs": list(inputs), "outputs": list(outputs)})
+    run = (f"{env} {bh.get('blender')} -b --python-exit-code 1 -P blender_stage.py -- {q(spec)} > {log} 2>&1"
            f" || {{ tail -20 {log} >&2; exit 1; }}; cat {log}")
     if bh["mode"] == "python" and bh["ssh"] == host.get("ssh"):
         return ssh_step(host, jid, work, f"cd {q(work)} && {run}", timeout)
@@ -1219,7 +1222,7 @@ def run_blender(jid, host, script, args, inputs, outputs, timeout):
             ssh(bh, f"rm -rf {q(d)}")
     else:
         token = f"{jid}-{uuid.uuid4().hex[:8]}"
-        consts = {"PACK": base64.b64encode(pack).decode(), "SCRIPT": script, "ARGS": list(args), "OUT": list(outputs), "TOKEN": token}
+        consts = {"PACK": base64.b64encode(pack).decode(), "SCRIPT": script, "ARGS": list(args), "INPUTS": list(inputs), "OUT": list(outputs), "TOKEN": token}
         head = "".join(f"{k} = {json.dumps(v)}\n" for k, v in consts.items())
         if not BLENDER_MCP_LOCK.acquire(blocking=False):
             update_job(jid, note=f"waiting for Blender on {bh['name']} (MCP runs one job at a time)")
@@ -2656,8 +2659,9 @@ def check_blender_mcp():
         with tarfile.open(fileobj=buf, mode="w") as t:
             data = b"import sys, pathlib\nprint('render device: fake')\npathlib.Path(sys.argv[-1]).write_text(sys.argv[-2])\n"
             info = tarfile.TarInfo("s.py"); info.size = len(data); t.addfile(info, io.BytesIO(data))
+            t.add(MOTION_DIR / "blender_stage.py", "blender_stage.py")
         consts = {"PACK": base64.b64encode(buf.getvalue()).decode(), "SCRIPT": "s.py", "ARGS": ["hi", "o.txt"],
-                  "OUT": ["o.txt"], "TOKEN": "t1"}
+                  "INPUTS": [], "OUT": ["o.txt"], "TOKEN": "t1"}
         assert blender_code(url, "".join(f"{k} = {json.dumps(v)}\n" for k, v in consts.items()) + MCP_START) == {"started": "t1"}
         r = blender_code(url, 'TOKEN = "t1"\n' + MCP_POLL)
         assert r["error"] is None and "render device: fake" in r["stdout"], r
