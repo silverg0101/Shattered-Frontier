@@ -13,6 +13,7 @@ param(
     [switch]$FallScenario,
     [switch]$SwimScenario,
     [switch]$CrouchScenario,
+    [switch]$BackpedalScenario,
     [switch]$GreenlandsEnvironmentNetcheck,
     [switch]$AssistScenario,
     [switch]$RespawnScenario,
@@ -72,6 +73,12 @@ function Assert-EvadeClient([string]$Path, [string]$Role) {
     return [math]::Round($speed,1)
 }
 try {
+    if ($BackpedalScenario -and ($Map -ne '/Game/Frontier/Maps/Sandbox/SB_Backpedal' -or $Clients -ne 2 -or
+        $CastingScenario -or $EvadeScenario -or $ThreatScenario -or $AggroScenario -or $MemoryScenario -or
+        $RegenScenario -or $FallScenario -or $SwimScenario -or $CrouchScenario -or $AssistScenario -or
+        $RespawnScenario -or $GreenlandsBoarNetcheck -or $GreenlandsEnvironmentNetcheck)) {
+        throw 'BackpedalScenario requires SB_Backpedal, two clients, and no other scenario'
+    }
     if ($CrouchScenario -and ($Map -ne '/Game/Frontier/Maps/Sandbox/SB_Crouch' -or $Clients -ne 2 -or
         $CastingScenario -or $EvadeScenario -or $ThreatScenario -or $AggroScenario -or $MemoryScenario -or
         $RegenScenario -or $FallScenario -or $SwimScenario -or $AssistScenario -or $RespawnScenario -or
@@ -146,6 +153,7 @@ try {
     if ($GreenlandsBoarNetcheck) { $serverArgs += '-GreenlandsBoarNetcheck' }
     if ($GreenlandsEnvironmentNetcheck) { $serverArgs += '-GreenlandsEnvironmentNetcheck' }
     if ($CrouchScenario) { $serverArgs += '-CrouchScenario' }
+    if ($BackpedalScenario) { $serverArgs += '-BackpedalScenario' }
     Launch $serverArgs
     Wait-Log $serverLog 'E1_WORLD_READY.*NetMode=1'
     foreach ($index in 1..$Clients) {
@@ -160,6 +168,7 @@ try {
         if ($FallScenario) { $clientArgs += @('-CombatFallScenario', ('-CombatFallRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         if ($SwimScenario) { $clientArgs += @('-SwimScenario', ('-SwimRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         if ($CrouchScenario) { $clientArgs += @('-CrouchScenario', ('-CrouchRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
+        if ($BackpedalScenario) { $clientArgs += @('-BackpedalScenario', ('-BackpedalRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         if ($AssistScenario) { $clientArgs += @('-CombatAssistScenario', ('-CombatAssistRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         if ($RespawnScenario) { $clientArgs += @('-CombatRespawnScenario', ('-CombatRespawnRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         if ($GreenlandsBoarNetcheck) { $clientArgs += @('-GreenlandsBoarNetcheck', ('-GreenlandsBoarRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
@@ -357,6 +366,44 @@ try {
         }
         Write-Output "PASS: server enforced 2 m/s crouch then 7 m/s run; both clients observed stance and travel. Logs: $logs"
     }
+    if ($BackpedalScenario) {
+        Wait-Log (Join-Path $logs 'Client1.log') 'BACKPEDAL_DRIVER_COMPLETE'
+        $serverSamples = @(Select-String -LiteralPath $serverLog -Pattern 'BACKPEDAL_SERVER_SAMPLE Pawn=(\S+) T=([\d.]+) X=([-\d.]+) Speed=([\d.]+) Dot=([-\d.]+) Cap=([\d.]+)' | ForEach-Object {
+            $g = $_.Matches[0].Groups
+            [pscustomobject]@{ Pawn=$g[1].Value; T=[double]::Parse($g[2].Value,[Globalization.CultureInfo]::InvariantCulture);
+                X=[double]::Parse($g[3].Value,[Globalization.CultureInfo]::InvariantCulture);
+                Speed=[double]::Parse($g[4].Value,[Globalization.CultureInfo]::InvariantCulture);
+                Dot=[double]::Parse($g[5].Value,[Globalization.CultureInfo]::InvariantCulture);
+                Cap=[double]::Parse($g[6].Value,[Globalization.CultureInfo]::InvariantCulture) }
+        })
+        $reverse = @($serverSamples | Where-Object { $_.Speed -ge 390 -and $_.Speed -le 425 -and $_.Dot -lt -0.9 -and $_.Cap -ge 419 -and $_.Cap -le 421 })
+        if ($reverse.Count -lt 3) { throw 'Server did not enforce sustained 0.6x reverse movement' }
+        $pawn = $reverse[0].Pawn
+        $forwardBefore = @($serverSamples | Where-Object { $_.Pawn -eq $pawn -and $_.T -lt $reverse[0].T -and $_.Speed -ge 665 -and $_.Speed -le 705 -and $_.Dot -gt 0.9 })
+        $forwardAfter = @($serverSamples | Where-Object { $_.Pawn -eq $pawn -and $_.T -gt $reverse[-1].T -and $_.Speed -ge 665 -and $_.Speed -le 705 -and $_.Dot -gt 0.9 })
+        if ($forwardBefore.Count -lt 3 -or $forwardAfter.Count -lt 3 -or
+            $forwardBefore[-1].X - $forwardBefore[0].X -lt 500 -or
+            $reverse[0].X - $reverse[-1].X -lt 400 -or
+            $forwardAfter[-1].X - $forwardAfter[0].X -lt 500) {
+            throw 'Server missed ordered forward, reverse, forward travel'
+        }
+        foreach ($role in @('Driver','Observer')) {
+            $path = Join-Path $logs ('Client' + $(if ($role -eq 'Driver') { '1' } else { '2' }) + '.log')
+            $samples = @(Select-String -LiteralPath $path -Pattern "BACKPEDAL_CLIENT_SAMPLE Role=$role Stage=(\d+) X=([-\d.]+) Speed=([\d.]+) Facing=([-\d.]+)" | ForEach-Object {
+                $g = $_.Matches[0].Groups
+                [pscustomobject]@{ Stage=[int]$g[1].Value; X=[double]::Parse($g[2].Value,[Globalization.CultureInfo]::InvariantCulture);
+                    Speed=[double]::Parse($g[3].Value,[Globalization.CultureInfo]::InvariantCulture);
+                    Facing=[double]::Parse($g[4].Value,[Globalization.CultureInfo]::InvariantCulture) }
+            })
+            $a = @($samples | Where-Object { $_.Stage -eq 0 -and $_.Speed -ge 600 -and $_.Facing -gt 0.9 })
+            $b = @($samples | Where-Object { $_.Stage -eq 1 -and $_.Speed -ge 350 -and $_.Speed -le 450 -and $_.Facing -gt 0.9 })
+            $c = @($samples | Where-Object { $_.Stage -eq 2 -and $_.Speed -ge 600 -and $_.Facing -gt 0.9 })
+            if ($a.Count -lt 2 -or $b.Count -lt 2 -or $c.Count -lt 2 -or $b[0].X - $b[-1].X -lt 250) {
+                throw "$role missed ordered forward, slower reverse, forward observation"
+            }
+        }
+        Write-Output "PASS: server capped reverse travel at 0.6x run; driver and observer saw ordered forward, reverse, forward movement. Logs: $logs"
+    }
     if ($SwimScenario) {
         Wait-Log $serverLog 'SWIM_SERVER_MODE Swimming=1'
         Wait-Log $serverLog 'SWIM_SERVER_MODE Swimming=0'
@@ -520,7 +567,7 @@ try {
         Write-Output "PASS: Greenlands aggro, threat switch, pack assist, leash/evade, attacker memory, regeneration, client kill and rotated slot respawn on both clients. Logs: $logs"
     }
     Write-Output "PASS: separate editor server and $Clients client(s) connected; $Clients server-authoritative possession(s). Logs: $logs"
-    if (-not $CastingScenario -and -not $EvadeScenario -and -not $ThreatScenario -and -not $AggroScenario -and -not $MemoryScenario -and -not $RegenScenario -and -not $FallScenario -and -not $SwimScenario -and -not $CrouchScenario -and -not $AssistScenario -and -not $RespawnScenario -and -not $GreenlandsBoarNetcheck -and -not $GreenlandsEnvironmentNetcheck) { Write-Output 'Headless connection check only: movement, rendering, lifecycle cleanup, authentication and Linux runtime are not certified.' }
+    if (-not $CastingScenario -and -not $EvadeScenario -and -not $ThreatScenario -and -not $AggroScenario -and -not $MemoryScenario -and -not $RegenScenario -and -not $FallScenario -and -not $SwimScenario -and -not $CrouchScenario -and -not $BackpedalScenario -and -not $AssistScenario -and -not $RespawnScenario -and -not $GreenlandsBoarNetcheck -and -not $GreenlandsEnvironmentNetcheck) { Write-Output 'Headless connection check only: movement, rendering, lifecycle cleanup, authentication and Linux runtime are not certified.' }
 } finally {
     foreach ($process in $ownedProcesses) {
         if (-not $process.HasExited) { Stop-Process -Id $process.Id -ErrorAction SilentlyContinue }

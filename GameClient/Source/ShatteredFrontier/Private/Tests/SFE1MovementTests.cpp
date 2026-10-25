@@ -3,6 +3,7 @@
 #include "Misc/AutomationTest.h"
 #include "Tests/AutomationCommon.h"
 #include "Characters/SFE1Character.h"
+#include "Characters/SFBackpedalMovement.h"
 #include "Framework/SFE1Settings.h"
 #include "Components/BoxComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -124,6 +125,22 @@ bool FSFE1CrouchTest::RunTest(const FString& Parameters)
     TestFalse(TEXT("Server character stands"), Fixture.Pawn->bIsCrouched);
     TestTrue(TEXT("Standing capsule restored"), FMath::IsNearlyEqual(Fixture.Pawn->GetCapsuleComponent()->GetScaledCapsuleHalfHeight(), StandingHalfHeight, 1.0f));
     TestTrue(TEXT("Run speed restored"), RunPeak >= GetDefault<USFE1Settings>()->RunSpeedMetresPerSecond * 95.0f);
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFE1BackpedalTest, "ShatteredFrontier.E1.Movement.Backpedal",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+
+bool FSFE1BackpedalTest::RunTest(const FString& Parameters)
+{
+    const USFE1Settings* Settings = GetDefault<USFE1Settings>();
+    TestTrue(TEXT("Shipped reverse factor is valid"), Settings->BackpedalFactor > 0.0f && Settings->BackpedalFactor <= 1.0f);
+    TestEqual(TEXT("World section movement default"), Settings->BackpedalFactor, 0.6f);
+    TestTrue(TEXT("Pure backward input is backpedal"), USFBackpedalMovement::IsBackpedalling(FVector::ForwardVector, -FVector::ForwardVector));
+    TestTrue(TEXT("Input just beyond 120 degrees is backpedal"), USFBackpedalMovement::IsBackpedalling(FVector::ForwardVector, FVector(-0.51f, 0.86f, 0)));
+    TestFalse(TEXT("Input inside front 240-degree sector keeps run cap"), USFBackpedalMovement::IsBackpedalling(FVector::ForwardVector, FVector(-0.49f, 0.87f, 0)));
+    TestFalse(TEXT("Stopped character does not backpedal"), USFBackpedalMovement::IsBackpedalling(FVector::ForwardVector, FVector::ZeroVector));
+    TestFalse(TEXT("Strafe keeps run cap"), USFBackpedalMovement::IsBackpedalling(FVector::ForwardVector, FVector::RightVector));
     return true;
 }
 

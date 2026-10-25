@@ -20,7 +20,7 @@ class SHATTEREDFRONTIER_API ASFE1Character : public ACharacter
     GENERATED_BODY()
 
 public:
-    ASFE1Character();
+    ASFE1Character(const FObjectInitializer& ObjectInitializer);
     virtual void BeginPlay() override;
     virtual void EndPlay(const EEndPlayReason::Type Reason) override;
     virtual void PossessedBy(AController* NewController) override;
@@ -111,6 +111,9 @@ private:
     int32 CrouchScenarioStage = 0;
     double CrouchScenarioStartAt = -1;
     double NextCrouchSampleAt = 0;
+    double BackpedalScenarioStartAt = -1;
+    double NextBackpedalSampleAt = 0;
+    bool bBackpedalScenarioComplete = false;
     bool bLastServerDeepWater = false;
     bool bMemorySawCombat = false;
     double MemoryScenarioStartedAt = -1;
@@ -130,6 +133,7 @@ private:
     void TickFallScenario();
     void TickSwimScenario();
     void TickCrouchScenario();
+    void TickBackpedalScenario();
     void TickGreenlandsEnvironmentScenario();
     UFUNCTION(Server, Reliable) void ServerTargetScenarioStep(int32 Step);
     UFUNCTION(Server, Reliable) void ServerPilotAttack(AActor* SelectedCombatTarget);

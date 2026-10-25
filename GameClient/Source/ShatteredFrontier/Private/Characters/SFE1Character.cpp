@@ -46,8 +46,10 @@
 #include "Townsfolk/SFTownsfolk.h"
 #include "Construction/SFConstructionNetwork.h"
 #include "Construction/SFConstructionSandboxController.h"
+#include "Characters/SFBackpedalMovement.h"
 
-ASFE1Character::ASFE1Character()
+ASFE1Character::ASFE1Character(const FObjectInitializer& ObjectInitializer)
+    : Super(ObjectInitializer.SetDefaultSubobjectClass<USFBackpedalMovement>(ACharacter::CharacterMovementComponentName))
 {
     const USFE1Settings* Settings = GetDefault<USFE1Settings>();
     FString Error;
@@ -107,6 +109,11 @@ void ASFE1Character::BeginPlay()
         UE_LOG(LogTemp, Fatal, TEXT("E1 fixture requires finite downward world gravity"));
     }
     GetCharacterMovement()->GravityScale = GetDefault<USFE1Settings>()->GravityMetresPerSecondSquared * 100.0f / -WorldGravity;
+    if (GetWorld()->GetOutermost()->GetName() == TEXT("/Game/Frontier/Maps/Sandbox/SB_Backpedal"))
+    {
+        bUseControllerRotationYaw = true;
+        GetCharacterMovement()->bOrientRotationToMovement = false;
+    }
     if (GetNetMode() != NM_DedicatedServer) { SpawnMetaHuman(); }
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     if (GetNetMode() == NM_Client && (FParse::Param(FCommandLine::Get(), TEXT("CombatPilotScenario")) ||
@@ -747,6 +754,42 @@ void ASFE1Character::TickCrouchScenario()
 #endif
 }
 
+void ASFE1Character::TickBackpedalScenario()
+{
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    if (GetWorld()->GetOutermost()->GetName() != TEXT("/Game/Frontier/Maps/Sandbox/SB_Backpedal")) { return; }
+    FString ScenarioRole;
+    FParse::Value(FCommandLine::Get(), TEXT("BackpedalRole="), ScenarioRole);
+    if ((ScenarioRole != TEXT("Driver") && ScenarioRole != TEXT("Observer")) || !Controller) { return; }
+    ASFE1Character* Watched = this;
+    int32 Players = 0;
+    for (TActorIterator<ASFE1Character> It(GetWorld()); It; ++It)
+    {
+        ++Players;
+        if (ScenarioRole == TEXT("Observer") && *It != this) { Watched = *It; }
+    }
+    if (Players < 2 || (ScenarioRole == TEXT("Observer") && Watched == this)) { return; }
+    const double Now = GetWorld()->GetTimeSeconds();
+    if (BackpedalScenarioStartAt < 0) { BackpedalScenarioStartAt = Now; }
+    const double Elapsed = Now - BackpedalScenarioStartAt;
+    const int32 Stage = Elapsed < 3.0 ? 0 : Elapsed < 6.0 ? 1 : Elapsed < 9.0 ? 2 : 3;
+    if (ScenarioRole == TEXT("Driver"))
+    {
+        Controller->SetControlRotation(FRotator::ZeroRotator);
+        if (Stage < 3) { AddMovementInput(Stage == 1 ? -FVector::ForwardVector : FVector::ForwardVector, 1.0f); }
+        if (Stage == 3 && !bBackpedalScenarioComplete)
+        { bBackpedalScenarioComplete = true; UE_LOG(LogTemp, Display, TEXT("BACKPEDAL_DRIVER_COMPLETE")); }
+    }
+    if (Now >= NextBackpedalSampleAt)
+    {
+        NextBackpedalSampleAt = Now + 0.2;
+        UE_LOG(LogTemp, Display, TEXT("BACKPEDAL_CLIENT_SAMPLE Role=%s Stage=%d X=%.0f Speed=%.0f Facing=%.2f"),
+            *ScenarioRole, Stage, Watched->GetActorLocation().X, Watched->GetVelocity().Size2D(),
+            FVector::DotProduct(Watched->GetActorForwardVector(), FVector::ForwardVector));
+    }
+#endif
+}
+
 void ASFE1Character::TickGreenlandsEnvironmentScenario()
 {
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
@@ -1072,6 +1115,16 @@ void ASFE1Character::Tick(float DeltaSeconds)
             *GetName(), GetWorld()->GetTimeSeconds(), GetActorLocation().X,
             bIsCrouched ? 1 : 0, GetVelocity().Size2D());
     }
+    if (HasAuthority() && CombatMap == TEXT("/Game/Frontier/Maps/Sandbox/SB_Backpedal") &&
+        FParse::Param(FCommandLine::Get(), TEXT("BackpedalScenario")) &&
+        GetWorld()->GetTimeSeconds() >= NextBackpedalSampleAt)
+    {
+        NextBackpedalSampleAt = GetWorld()->GetTimeSeconds() + 0.2;
+        UE_LOG(LogTemp, Display, TEXT("BACKPEDAL_SERVER_SAMPLE Pawn=%s T=%.2f X=%.0f Speed=%.0f Dot=%.2f Cap=%.0f"),
+            *GetName(), GetWorld()->GetTimeSeconds(), GetActorLocation().X, GetVelocity().Size2D(),
+            FVector::DotProduct(GetActorForwardVector(), GetVelocity().GetSafeNormal2D()),
+            GetCharacterMovement()->GetMaxSpeed());
+    }
 #endif
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     if (GetNetMode() == NM_Client && IsLocallyControlled() &&
@@ -1178,6 +1231,8 @@ void ASFE1Character::Tick(float DeltaSeconds)
         FParse::Param(FCommandLine::Get(), TEXT("SwimScenario"))) { TickSwimScenario(); }
     if (GetNetMode() == NM_Client && IsLocallyControlled() &&
         FParse::Param(FCommandLine::Get(), TEXT("CrouchScenario"))) { TickCrouchScenario(); }
+    if (GetNetMode() == NM_Client && IsLocallyControlled() &&
+        FParse::Param(FCommandLine::Get(), TEXT("BackpedalScenario"))) { TickBackpedalScenario(); }
     if (GetNetMode() == NM_Client && IsLocallyControlled() &&
         FParse::Param(FCommandLine::Get(), TEXT("GreenlandsEnvironmentNetcheck"))) { TickGreenlandsEnvironmentScenario(); }
 #endif

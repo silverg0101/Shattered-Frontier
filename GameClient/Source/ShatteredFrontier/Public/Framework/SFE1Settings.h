@@ -13,6 +13,9 @@ public:
     UPROPERTY(Config, EditAnywhere, Category="Movement", meta=(ClampMin="0.5", ClampMax="12.0", Units="m/s"))
     float RunSpeedMetresPerSecond = 7.0f;
 
+    UPROPERTY(Config, EditAnywhere, Category="Movement", meta=(ClampMin="0.1", ClampMax="1.0", ToolTip="Backpedal speed as a fraction of the active grounded mode; release-controlled, next startup."))
+    float BackpedalFactor = 0.6f;
+
     UPROPERTY(Config, EditAnywhere, Category="Movement", meta=(ClampMin="0.5", ClampMax="7.0", Units="m/s"))
     float CrouchSpeedMetresPerSecond = 2.0f;
 
