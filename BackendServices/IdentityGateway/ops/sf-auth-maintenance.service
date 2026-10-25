@@ -1,0 +1,10 @@
+[Unit]
+Description=Finalize account key erasure and purge 90-day unwrap audits
+Requires=sf-backend-compose.service
+After=sf-backend-compose.service
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/shattered-frontier/backend
+EnvironmentFile=/etc/shattered-frontier/backend.env
+ExecStart=/usr/bin/docker compose --env-file /etc/shattered-frontier/backend.env -f compose.yaml --profile maintenance run --rm identity-maintenance

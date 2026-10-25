@@ -1,11 +1,49 @@
 using CharacterAppearance;
 using IdentityGateway;
 using Microsoft.AspNetCore.Server.Kestrel.Https;
+using System.Net;
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.WebHost.UseUrls(builder.Configuration["Identity:ListenUrl"] ?? "http://127.0.0.1:5084");
-builder.WebHost.ConfigureKestrel(server => server.Limits.MaxRequestBodySize = 64 * 1024);
-builder.WebHost.ConfigureKestrel(server => server.ConfigureHttpsDefaults(https => https.ClientCertificateMode = ClientCertificateMode.AllowCertificate));
+var publicUrl = new Uri(builder.Configuration["Identity:ListenUrl"] ?? "http://127.0.0.1:5084");
+var internalUrlText = builder.Configuration["Identity:InternalListenUrl"];
+var internalUrl = internalUrlText is null ? null : new Uri(internalUrlText);
+var dataKeyChatSha256 = builder.Configuration["Identity:DataKeyChatClientSha256"];
+var dataKeyChatKey = builder.Configuration["Identity:DataKeyChatKey"];
+var privacySha256 = builder.Configuration["Identity:PrivacyClientSha256"];
+var privacyKey = builder.Configuration["Identity:PrivacyWorkflowKey"];
+if (builder.Configuration["Identity:KekDevPath"] is not null && !builder.Environment.IsDevelopment())
+    throw new InvalidOperationException("Identity:KekDevPath is allowed only in Development.");
+if (dataKeyChatKey is not null && (internalUrl is null || internalUrl.Scheme != Uri.UriSchemeHttps ||
+    string.IsNullOrWhiteSpace(builder.Configuration["Identity:InternalServerCertificatePath"]) ||
+    dataKeyChatSha256 is null || !System.Text.RegularExpressions.Regex.IsMatch(dataKeyChatSha256, "^[0-9a-fA-F]{64}$")))
+    throw new InvalidOperationException("Internal HTTPS listener, server certificate, and pinned chat client SHA256 are required.");
+if (internalUrl is not null && (internalUrl.Port == publicUrl.Port || internalUrl.Scheme != Uri.UriSchemeHttps))
+    throw new InvalidOperationException("Internal HTTPS listener must use a separate port.");
+if (privacyKey is not null && (privacyKey.Length < 32 || privacySha256 is null ||
+    !System.Text.RegularExpressions.Regex.IsMatch(privacySha256, "^[0-9a-fA-F]{64}$") || internalUrl is null))
+    throw new InvalidOperationException("Privacy workflow requires an internal listener, pinned client certificate, and 32-character credential.");
+if (internalUrl is not null && string.IsNullOrWhiteSpace(builder.Configuration["Identity:InternalServerCertificatePath"]))
+    throw new InvalidOperationException("Internal server certificate is required.");
+builder.WebHost.ConfigureKestrel(server =>
+{
+    server.Limits.MaxRequestBodySize = 64 * 1024;
+    Listen(server, publicUrl, null);
+    if (internalUrl is not null)
+    {
+        var cert = X509CertificateLoader.LoadPkcs12FromFile(builder.Configuration["Identity:InternalServerCertificatePath"]!,
+            builder.Configuration["Identity:InternalServerCertificatePassword"]);
+        Listen(server, internalUrl, https =>
+        {
+            https.ServerCertificate = cert;
+            https.ClientCertificateMode = ClientCertificateMode.RequireCertificate;
+            https.ClientCertificateValidation = (client, _, _) => client is not null &&
+                (dataKeyChatSha256 is not null && CryptographicOperations.FixedTimeEquals(SHA256.HashData(client.RawData), Convert.FromHexString(dataKeyChatSha256)) ||
+                 privacySha256 is not null && CryptographicOperations.FixedTimeEquals(SHA256.HashData(client.RawData), Convert.FromHexString(privacySha256)));
+        });
+    }
+});
 builder.Services.ConfigureHttpJsonOptions(o =>
 {
     o.SerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.SnakeCaseLower;
@@ -13,6 +51,14 @@ builder.Services.ConfigureHttpJsonOptions(o =>
 });
 var options = builder.Configuration.GetSection("Identity").Get<IdentityOptions>() ?? new IdentityOptions();
 options.Validate();
+if (args.Length == 1 && args[0] == "--maintain-data-keys")
+{
+    var ownerConnection = builder.Configuration["Identity:MaintenanceConnection"] ?? throw new InvalidOperationException("Identity:MaintenanceConnection is required.");
+    var maintenance = new PostgresAccountDataKeys(ownerConnection, new FileKekProvider("maintenance-no-kek", null));
+    var now = DateTimeOffset.UtcNow;
+    Console.WriteLine($"finalized={maintenance.FinalizeErasure(now)} purged_unwrap_audits={maintenance.PurgeUnwrapAudit(now)}");
+    return;
+}
 var connection = builder.Configuration["Identity:Connection"] ?? throw new InvalidOperationException("Identity:Connection is required.");
 var encodedKey = builder.Configuration["Identity:TicketSigningKey"] ?? throw new InvalidOperationException("Identity:TicketSigningKey is required.");
 var signingKey = Convert.FromBase64String(encodedKey);
@@ -23,12 +69,11 @@ var chatVerifierKey = builder.Configuration["Identity:ChatVerifierKey"];
 if (chatVerifierKey is not null && chatVerifierKey.Length < 32) throw new InvalidOperationException("Chat verifier key must be at least 32 characters.");
 var guildVerifierKey = builder.Configuration["Identity:GuildVerifierKey"];
 if (guildVerifierKey is not null && guildVerifierKey.Length < 32) throw new InvalidOperationException("Guild verifier key must be at least 32 characters.");
-var dataKeyChatKey = builder.Configuration["Identity:DataKeyChatKey"];
 if (dataKeyChatKey is not null && dataKeyChatKey.Length < 32) throw new InvalidOperationException("Data key chat credential must be at least 32 characters.");
-var dataKeyChatThumbprint = builder.Configuration["Identity:DataKeyChatClientThumbprint"];
 var kek = new FileKekProvider(builder.Configuration["Identity:KekId"] ?? "v1", builder.Configuration["Identity:KekDevPath"]);
 var startupKek = kek.GetKey(kek.KeyId);
 System.Security.Cryptography.CryptographicOperations.ZeroMemory(startupKek);
+Console.WriteLine($"IDENTITY_KEK_PROVIDER provider={(builder.Configuration["Identity:KekDevPath"] is null ? "systemd-credential-file" : "development-file")} kek_id={kek.KeyId}");
 var dataKeys = new PostgresAccountDataKeys(connection, kek);
 if (args.Length > 0)
 {
@@ -50,6 +95,18 @@ builder.Services.AddSingleton(new AppearanceValidator(AppearanceAllowlist.Load(a
 builder.Services.AddSingleton(s => new TicketVerifier(signingKey, s.GetRequiredService<IIdentityStore>(), s.GetRequiredService<TimeProvider>()));
 builder.Services.AddSingleton<IdentityService>();
 var app = builder.Build();
+
+app.Use(async (context, next) =>
+{
+    if (context.Request.Path.StartsWithSegments("/v1/internal"))
+    {
+        if (internalUrl is null || context.Connection.LocalPort != internalUrl.Port || context.Connection.ClientCertificate is null)
+        { context.Response.StatusCode = 404; return; }
+    }
+    else if (context.Connection.LocalPort != publicUrl.Port)
+    { context.Response.StatusCode = 404; return; }
+    await next();
+});
 
 app.Use(async (context, next) =>
 {
@@ -173,16 +230,18 @@ if (dataKeyChatKey is not null)
 {
     app.MapPost("/v1/internal/data-keys/{accountId}", (string accountId, DataKeyRequest request, HttpContext http, PostgresAccountDataKeys keys) =>
     {
-        RequireDataKeyClient(http, dataKeyChatKey, dataKeyChatThumbprint);
+        RequireDataKeyClient(http, dataKeyChatKey, dataKeyChatSha256);
         if (request.Purpose != "mail" || request.Service != "chat") throw new ApiError(403, "PERMISSION_DENIED", "PURPOSE_DENIED");
-        var key = request.ForWrite ? keys.GetForWrite(accountId, "chat", "mail") :
+        if (request.ForWrite ? request.Encryptions is < 1 or > 1024 || request.KeyVersion is not null : request.Encryptions != 0)
+            throw new ApiError(400, "INVALID_ARGUMENT", "ENCRYPTION_COUNT_INVALID");
+        var key = request.ForWrite ? keys.GetForWrite(accountId, "chat", "mail", request.Encryptions) :
             request.KeyVersion is ushort version ? keys.GetForRead(accountId, version, "chat", "mail") : keys.GetCurrent(accountId, "chat", "mail");
         try { return Results.Ok(new { key_version = key.Version, dek_base64 = Convert.ToBase64String(key.Key) }); }
         finally { System.Security.Cryptography.CryptographicOperations.ZeroMemory(key.Key); }
     });
     app.MapGet("/v1/internal/characters/{characterId}/account", (string characterId, HttpContext http, IIdentityStore store) =>
     {
-        RequireDataKeyClient(http, dataKeyChatKey, dataKeyChatThumbprint);
+        RequireDataKeyClient(http, dataKeyChatKey, dataKeyChatSha256);
         var character = store.FindCharacter(characterId);
         return character is { State: "active" }
             ? Results.Ok(new { account_id = character.AccountId, realm_id = character.RealmId })
@@ -190,21 +249,45 @@ if (dataKeyChatKey is not null)
     });
     app.MapGet("/v1/internal/accounts/{accountId}/erased", (string accountId, HttpContext http, PostgresAccountDataKeys keys) =>
     {
-        RequireDataKeyClient(http, dataKeyChatKey, dataKeyChatThumbprint);
+        RequireDataKeyClient(http, dataKeyChatKey, dataKeyChatSha256);
         return Results.Ok(new { erased = keys.IsErased(accountId) });
+    });
+    app.MapPost("/v1/internal/accounts/erased", (ErasedAccountsRequest request, HttpContext http, PostgresAccountDataKeys keys) =>
+    {
+        RequireDataKeyClient(http, dataKeyChatKey, dataKeyChatSha256);
+        if (request.AccountIds is null || request.AccountIds.Length > 100 || request.AccountIds.Any(id => id is null || id.Length is < 1 or > 96))
+            throw new ApiError(400, "INVALID_ARGUMENT", "ACCOUNT_IDS_INVALID");
+        return Results.Ok(new { account_ids = keys.ErasedAccounts(request.AccountIds) });
+    });
+}
+if (privacyKey is not null)
+{
+    app.MapPost("/v1/internal/privacy/accounts/{accountId}/erasure", (string accountId, ErasureHandoff request, HttpContext http, PostgresAccountDataKeys keys) =>
+    {
+        RequirePinnedClient(http, privacyKey, privacySha256!, "X-Privacy-Workflow-Key");
+        var now = DateTimeOffset.UtcNow;
+        if (!accountId.StartsWith("acct_", StringComparison.Ordinal) || accountId.Length > 96 ||
+            request.RequestId is null || !request.RequestId.StartsWith("prq_", StringComparison.Ordinal) ||
+            request.VerifiedAt > now.AddDays(-14) ||
+            request.LegalHoldCheckedAt < now.AddMinutes(-5) || request.LegalHoldCheckedAt > now)
+            throw new ApiError(400, "INVALID_ARGUMENT", "ERASURE_HANDOFF_INVALID");
+        keys.ScheduleErasure(accountId, request.AuditHold, now);
+        return Results.Accepted();
     });
 }
 app.Run();
 
-static void RequireDataKeyClient(HttpContext context, string expected, string? allowedThumbprint)
+static void RequireDataKeyClient(HttpContext context, string expected, string? allowedSha256)
 {
-    // The token is the client allowlist entry. Non-loopback deployments also require client TLS identity.
-    if (context.Connection.RemoteIpAddress is not { } address ||
-        (!System.Net.IPAddress.IsLoopback(address) && (context.Connection.ClientCertificate is null ||
-            allowedThumbprint is null || !string.Equals(context.Connection.ClientCertificate.Thumbprint,
-                allowedThumbprint, StringComparison.OrdinalIgnoreCase))))
+    RequirePinnedClient(context, expected, allowedSha256, "X-Data-Key-Chat-Key");
+}
+
+static void RequirePinnedClient(HttpContext context, string expected, string? allowedSha256, string header)
+{
+    if (context.Connection.ClientCertificate is null || allowedSha256 is null ||
+        !CryptographicOperations.FixedTimeEquals(SHA256.HashData(context.Connection.ClientCertificate.RawData), Convert.FromHexString(allowedSha256)))
         throw new ApiError(401, "UNAUTHENTICATED", "MTLS_REQUIRED");
-    var supplied = System.Text.Encoding.UTF8.GetBytes(context.Request.Headers["X-Data-Key-Chat-Key"].ToString());
+    var supplied = System.Text.Encoding.UTF8.GetBytes(context.Request.Headers[header].ToString());
     var target = System.Text.Encoding.UTF8.GetBytes(expected);
     if (supplied.Length != target.Length || !System.Security.Cryptography.CryptographicOperations.FixedTimeEquals(supplied, target))
         throw new ApiError(401, "UNAUTHENTICATED", "DATA_KEY_CLIENT_DENIED");
@@ -214,6 +297,16 @@ static void RequireKey(HttpContext context)
 {
     var key = context.Request.Headers["Idempotency-Key"].ToString();
     if (key.Length is < 1 or > 128) throw new ApiError(400, "INVALID_ARGUMENT", "IDEMPOTENCY_KEY_REQUIRED");
+}
+
+static void Listen(Microsoft.AspNetCore.Server.Kestrel.Core.KestrelServerOptions server, Uri url, Action<HttpsConnectionAdapterOptions>? configureHttps)
+{
+    if (!IPAddress.TryParse(url.Host, out var address)) throw new InvalidOperationException("Listener URL must have an IP address.");
+    server.Listen(address, url.Port, listen =>
+    {
+        if (configureHttps is not null) listen.UseHttps(configureHttps);
+        else if (url.Scheme == Uri.UriSchemeHttps) listen.UseHttps();
+    });
 }
 
 static object ToResponse(CharacterRecord c) => new
@@ -228,4 +321,6 @@ public sealed record LoginCompleteRequest(string? LoginId);
 public sealed record CharacterCreateRequest(string? RealmId, string? Name, string? AppearanceV2Base64);
 public sealed record VerifyTicketRequest(string? Ticket, string? ServerId);
 public sealed record ErrorBody(string Code, string Reason, int? RetryAfterS = null);
-public sealed record DataKeyRequest(string Service, string Purpose, bool ForWrite, ushort? KeyVersion);
+public sealed record DataKeyRequest(string Service, string Purpose, bool ForWrite, ushort? KeyVersion, int Encryptions = 0);
+public sealed record ErasedAccountsRequest(string[]? AccountIds);
+public sealed record ErasureHandoff(string? RequestId, DateTimeOffset VerifiedAt, DateTimeOffset LegalHoldCheckedAt, bool AuditHold);

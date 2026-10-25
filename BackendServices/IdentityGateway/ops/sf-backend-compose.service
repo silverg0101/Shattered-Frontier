@@ -1,0 +1,15 @@
+[Unit]
+Description=Shattered Frontier identity and chat Compose stack
+Requires=sf-auth-kek.service docker.service
+After=sf-auth-kek.service docker.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory=/opt/shattered-frontier/backend
+EnvironmentFile=/etc/shattered-frontier/backend.env
+ExecStart=/usr/bin/docker compose --env-file /etc/shattered-frontier/backend.env -f compose.yaml up -d identity chat
+ExecStop=/usr/bin/docker compose --env-file /etc/shattered-frontier/backend.env -f compose.yaml down
+
+[Install]
+WantedBy=multi-user.target

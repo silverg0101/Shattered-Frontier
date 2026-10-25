@@ -112,4 +112,12 @@ public sealed class PostgresMailStore
         using var cmd = new NpgsqlCommand("UPDATE chat.mail_messages SET state='deleted',subject_ct='\\x'::bytea,body_ct='\\x'::bytea,version=version+1 WHERE recipient_character_id=$1 AND mail_id=$2 AND state IN ('delivered','read')", c);
         cmd.Parameters.AddWithValue(recipient); cmd.Parameters.AddWithValue(mailId); return cmd.ExecuteNonQuery()==1;
     }
+
+    public int PurgeExpired(DateTimeOffset now)
+    {
+        using var c = Open();
+        using var cmd = new NpgsqlCommand("UPDATE chat.mail_messages SET state='deleted',subject_ct='\\x'::bytea,body_ct='\\x'::bytea,version=version+1 WHERE expires_at<=$1 AND (octet_length(subject_ct)>0 OR octet_length(body_ct)>0)", c);
+        cmd.Parameters.AddWithValue(now);
+        return cmd.ExecuteNonQuery();
+    }
 }

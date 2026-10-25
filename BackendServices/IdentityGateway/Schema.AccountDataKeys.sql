@@ -30,4 +30,3 @@ CREATE TABLE auth.account_data_key_erasure (
     erase_after timestamptz NOT NULL,
     audit_hold boolean NOT NULL DEFAULT false
 );
-REVOKE UPDATE, DELETE, TRUNCATE ON auth.data_key_unwraps FROM PUBLIC;

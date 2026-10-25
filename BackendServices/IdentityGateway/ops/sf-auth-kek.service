@@ -1,0 +1,19 @@
+[Unit]
+Description=Decrypt account data KEK into runtime tmpfs
+Before=sf-backend-compose.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+UMask=0077
+EnvironmentFile=/etc/shattered-frontier/backend.env
+ExecStartPre=/usr/bin/install -d -m 0700 /run/sf-secrets
+ExecStartPre=/usr/bin/mount -t tmpfs -o size=1m,mode=0700 tmpfs /run/sf-secrets
+ExecStart=/usr/bin/systemd-creds decrypt --name=account-data-kek-v1 /etc/credstore.encrypted/account-data-kek-v1 /run/sf-secrets/account-data-kek-v1
+ExecStartPost=/usr/bin/chown ${SF_UID}:${SF_GID} /run/sf-secrets /run/sf-secrets/account-data-kek-v1
+ExecStartPost=/usr/bin/chmod 0700 /run/sf-secrets
+ExecStartPost=/usr/bin/chmod 0400 /run/sf-secrets/account-data-kek-v1
+ExecStop=/usr/bin/umount /run/sf-secrets
+
+[Install]
+WantedBy=sf-backend-compose.service

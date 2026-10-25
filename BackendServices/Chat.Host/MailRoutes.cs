@@ -36,7 +36,7 @@ public static class MailRoutes
             { return Results.BadRequest(new { reason = "MAIL_NOT_DELIVERED" }); }
             if (from.RealmId != to.RealmId) return Results.BadRequest(new { reason = "MAIL_NOT_DELIVERED" });
             var mailId = "mal_" + Guid.NewGuid().ToString("N");
-            var dataKey = await keys.Key(to.AccountId, true, null, http.RequestAborted);
+            var dataKey = await keys.Key(to.AccountId, true, null, http.RequestAborted, 2);
             var dek = dataKey.Bytes;
             try
             {
@@ -59,10 +59,13 @@ public static class MailRoutes
             var actor = await Actor(http, verifier);
             var account = await keys.Resolve(actor, http.RequestAborted);
             var result = new List<object>();
-            foreach (var row in mail.Inbox(actor))
+            var rows = mail.Inbox(actor);
+            var erased = await keys.ErasedMany(rows.Select(row => row.SenderAccountId), http.RequestAborted);
+            using var cache = new MailDecryptCache(account.AccountId, keys, http.RequestAborted);
+            foreach (var row in rows)
             {
-                var subject = await Decrypt(row.Subject, account.AccountId, "subject_ct", row.MailId, keys, http.RequestAborted);
-                var sender = (await keys.Erased(row.SenderAccountId, http.RequestAborted)).Erased ? "erased" : row.SenderCharacterId;
+                var subject = await cache.Decrypt(row.Subject, "subject_ct", row.MailId);
+                var sender = erased.Contains(row.SenderAccountId) ? "erased" : row.SenderCharacterId;
                 result.Add(new { mail_id = row.MailId, sender, subject, state = row.State, sent_at = row.SentAt });
             }
             return Results.Ok(new { messages = result });
@@ -76,18 +79,21 @@ public static class MailRoutes
             var row = mail.Find(actor, mailId);
             if (row is null) return Results.NotFound();
             var account = await keys.Resolve(actor, http.RequestAborted);
-            var subject = await Decrypt(row.Subject, account.AccountId, "subject_ct", mailId, keys, http.RequestAborted);
-            var body = await Decrypt(row.Body, account.AccountId, "body_ct", mailId, keys, http.RequestAborted);
+            using var cache = new MailDecryptCache(account.AccountId, keys, http.RequestAborted);
             var current = await keys.Key(account.AccountId, false, null, http.RequestAborted);
             var currentDek = current.Bytes;
-            try
+            cache.Add(current.KeyVersion, currentDek);
+            var subject = await cache.Decrypt(row.Subject, "subject_ct", mailId);
+            var body = await cache.Decrypt(row.Body, "body_ct", mailId);
+            if (AccountDataCrypto.Version(row.Body) != current.KeyVersion || AccountDataCrypto.Version(row.Subject) != current.KeyVersion)
             {
-                if (AccountDataCrypto.Version(row.Body) != current.KeyVersion)
-                    mail.Reencrypt(actor, mailId,
-                        AccountDataCrypto.Encrypt(Encoding.UTF8.GetBytes(subject), currentDek, current.KeyVersion, account.AccountId, "chat.mail_messages", "subject_ct", mailId),
-                        AccountDataCrypto.Encrypt(Encoding.UTF8.GetBytes(body), currentDek, current.KeyVersion, account.AccountId, "chat.mail_messages", "body_ct", mailId));
+                var write = await keys.Key(account.AccountId, true, null, http.RequestAborted, 2);
+                var writeDek = write.Bytes;
+                try { mail.Reencrypt(actor, mailId,
+                    AccountDataCrypto.Encrypt(Encoding.UTF8.GetBytes(subject), writeDek, write.KeyVersion, account.AccountId, "chat.mail_messages", "subject_ct", mailId),
+                    AccountDataCrypto.Encrypt(Encoding.UTF8.GetBytes(body), writeDek, write.KeyVersion, account.AccountId, "chat.mail_messages", "body_ct", mailId)); }
+                finally { CryptographicOperations.ZeroMemory(writeDek); }
             }
-            finally { CryptographicOperations.ZeroMemory(currentDek); }
             mail.MarkRead(actor, mailId);
             var sender = (await keys.Erased(row.SenderAccountId, http.RequestAborted)).Erased ? "erased" : row.SenderCharacterId;
             return Results.Ok(new { mail_id = mailId, sender, subject, body, state = "read", sent_at = row.SentAt });
@@ -106,13 +112,20 @@ public static class MailRoutes
     private static Task<string> Actor(HttpContext http, ChatActorVerifier verifier) =>
         verifier.VerifyTicket(http.Request.Headers["X-Contact-Ticket"].ToString(), http.RequestAborted);
 
-    private static async Task<string> Decrypt(byte[] envelope, string accountId, string column, string id,
-        MailKeyClient keys, CancellationToken cancellationToken)
+    private sealed class MailDecryptCache(string accountId, MailKeyClient keys, CancellationToken cancellationToken) : IDisposable
     {
-        var version = AccountDataCrypto.Version(envelope);
-        var key = await keys.Key(accountId, false, version, cancellationToken);
-        var dek = key.Bytes;
-        try { return Encoding.UTF8.GetString(AccountDataCrypto.Decrypt(envelope, dek, version, accountId, "chat.mail_messages", column, id)); }
-        finally { CryptographicOperations.ZeroMemory(dek); }
+        private readonly Dictionary<ushort, byte[]> cache = [];
+        public void Add(ushort version, byte[] key) => cache.Add(version, key);
+        public async Task<string> Decrypt(byte[] envelope, string column, string id)
+        {
+            var version = AccountDataCrypto.Version(envelope);
+            if (!cache.TryGetValue(version, out var dek))
+            {
+                dek = (await keys.Key(accountId, false, version, cancellationToken)).Bytes;
+                cache.Add(version, dek);
+            }
+            return Encoding.UTF8.GetString(AccountDataCrypto.Decrypt(envelope, dek, version, accountId, "chat.mail_messages", column, id));
+        }
+        public void Dispose() { foreach (var key in cache.Values) CryptographicOperations.ZeroMemory(key); }
     }
 }

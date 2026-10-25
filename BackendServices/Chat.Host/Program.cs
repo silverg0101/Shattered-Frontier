@@ -1,4 +1,6 @@
 using System.Net;
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using ShatteredFrontier.Chat.Postgres;
 
@@ -16,12 +18,13 @@ if (!string.IsNullOrWhiteSpace(wsPortText))
     wsPort = value;
 }
 var builder = WebApplication.CreateBuilder(args);
+var bindAddress = IPAddress.Parse(Environment.GetEnvironmentVariable("CHAT_BIND_ADDRESS") ?? "127.0.0.1");
 builder.Services.ConfigureHttpJsonOptions(o => o.SerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.SnakeCaseLower);
 builder.WebHost.ConfigureKestrel(o => o.Limits.MaxRequestBodySize = 64 * 1024);
 builder.WebHost.ConfigureKestrel(options =>
 {
-    options.Listen(IPAddress.Loopback, port, listen => listen.Protocols = HttpProtocols.Http2);
-    if (wsPort is int value) options.Listen(IPAddress.Loopback, value, listen => listen.Protocols = HttpProtocols.Http1);
+    options.Listen(bindAddress, port, listen => listen.Protocols = HttpProtocols.Http2);
+    if (wsPort is int value) options.Listen(bindAddress, value, listen => listen.Protocols = HttpProtocols.Http1);
 });
 builder.Services.AddGrpc();
 builder.Services.AddSingleton(new PostgresContactsStore(Required("CHAT_CONNECTION")));
@@ -32,7 +35,17 @@ builder.Services.AddSingleton(new ChatActorVerifier(new HttpClient { BaseAddress
     Required("CHAT_IDENTITY_SERVER_ID"), Required("SF_IDENTITY_CHAT_VERIFIER_KEY")));
 if (wsPort is not null)
 {
-    builder.Services.AddSingleton(new MailKeyClient(new HttpClient { BaseAddress = new Uri(Required("CHAT_IDENTITY_URL").TrimEnd('/') + "/"), Timeout = TimeSpan.FromSeconds(3) }, Required("SF_IDENTITY_DATA_KEY_CHAT_KEY")));
+    builder.Services.AddHostedService<MailExpiryJob>();
+    var internalUrl = new Uri(Required("CHAT_IDENTITY_INTERNAL_URL").TrimEnd('/') + "/");
+    if (internalUrl.Scheme != Uri.UriSchemeHttps) throw new InvalidOperationException("CHAT_IDENTITY_INTERNAL_URL must use HTTPS.");
+    var serverPin = Convert.FromHexString(Required("CHAT_IDENTITY_SERVER_CERT_SHA256"));
+    if (serverPin.Length != 32) throw new InvalidOperationException("Invalid identity server certificate SHA256.");
+    var handler = new HttpClientHandler();
+    handler.ClientCertificates.Add(X509CertificateLoader.LoadPkcs12FromFile(Required("CHAT_IDENTITY_CLIENT_CERT_PATH"),
+        Environment.GetEnvironmentVariable("CHAT_IDENTITY_CLIENT_CERT_PASSWORD")));
+    handler.ServerCertificateCustomValidationCallback = (_, certificate, _, _) => certificate is not null &&
+        CryptographicOperations.FixedTimeEquals(SHA256.HashData(certificate.RawData), serverPin);
+    builder.Services.AddSingleton(new MailKeyClient(new HttpClient(handler) { BaseAddress = internalUrl, Timeout = TimeSpan.FromSeconds(3) }, Required("SF_IDENTITY_DATA_KEY_CHAT_KEY")));
     builder.Services.AddSingleton(new GroupMembershipClient(Required("CHAT_GROUP_URL"), Required("SF_GAMEPLAY_TOKEN")));
     builder.Services.AddSingleton(new GuildMembershipClient(new HttpClient {
         BaseAddress = new Uri(Required("CHAT_GUILD_URL").TrimEnd('/') + "/"), Timeout = TimeSpan.FromSeconds(3) }, Required("SF_GUILD_TOKEN")));
@@ -61,3 +74,16 @@ if (wsPort is int mailPort) app.MapMail(mailPort);
 app.MapGrpcService<ContactsGrpcService>();
 app.Lifetime.ApplicationStarted.Register(() => Console.WriteLine($"CHAT_HOST_READY port={port}"));
 app.Run();
+
+public sealed class MailExpiryJob(PostgresMailStore store, ILogger<MailExpiryJob> logger) : BackgroundService
+{
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        using var timer = new PeriodicTimer(TimeSpan.FromHours(1));
+        do
+        {
+            try { store.PurgeExpired(DateTimeOffset.UtcNow); }
+            catch (Exception e) { logger.LogError(e, "Expired mail ciphertext purge failed"); }
+        } while (await timer.WaitForNextTickAsync(stoppingToken));
+    }
+}

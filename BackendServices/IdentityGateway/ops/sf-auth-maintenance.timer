@@ -1,0 +1,10 @@
+[Unit]
+Description=Run account data maintenance daily
+
+[Timer]
+OnCalendar=daily
+Persistent=true
+Unit=sf-auth-maintenance.service
+
+[Install]
+WantedBy=timers.target

@@ -56,9 +56,10 @@ public sealed class PostgresAccountDataKeys(string connectionString, IKekProvide
         return GetForRead(accountId, (ushort)version, service, purpose);
     }
 
-    public DataKeyResult GetForWrite(string accountId, string service, string purpose)
+    public DataKeyResult GetForWrite(string accountId, string service, string purpose, int encryptions)
     {
         if (rotationLimit < 1) throw new InvalidOperationException("Rotation limit must be positive.");
+        if (encryptions is < 1 or > 1024 || encryptions > rotationLimit) throw new ArgumentOutOfRangeException(nameof(encryptions));
         using var c = Open();
         using var tx = c.BeginTransaction();
         using var cmd = new NpgsqlCommand("SELECT k.key_version,k.kek_id,k.wrapped_dek,k.messages_written FROM identity.accounts a JOIN auth.account_data_keys k ON k.data_key_id=a.data_key_id WHERE a.account_id=$1 AND k.retired_at IS NULL AND NOT EXISTS(SELECT 1 FROM auth.erasure_tombstones t WHERE t.account_id=$1) AND NOT EXISTS(SELECT 1 FROM auth.account_data_key_erasure e WHERE e.account_id=$1) FOR UPDATE OF a,k", c, tx);
@@ -69,15 +70,16 @@ public sealed class PostgresAccountDataKeys(string connectionString, IKekProvide
         var wrapped = reader.GetFieldValue<byte[]>(2); var writes = reader.GetInt64(3);
         reader.Close();
         byte[] key;
-        if (DataKeyRotation.Due(writes, rotationLimit))
+        if (writes > rotationLimit - encryptions)
         {
             if (version == ushort.MaxValue) throw new CryptographicException("Key version exhausted.");
             version++;
             key = RandomNumberGenerator.GetBytes(32);
-            using var insert = new NpgsqlCommand("INSERT INTO auth.account_data_keys(account_id,key_version,kek_id,wrapped_dek,messages_written) VALUES ($1,$2,$3,$4,1)", c, tx);
+            using var insert = new NpgsqlCommand("INSERT INTO auth.account_data_keys(account_id,key_version,kek_id,wrapped_dek,messages_written) VALUES ($1,$2,$3,$4,$5)", c, tx);
             insert.Parameters.AddWithValue(accountId); insert.Parameters.AddWithValue((int)version);
             insert.Parameters.AddWithValue(kek.KeyId);
             insert.Parameters.AddWithValue(WrapDek(key, kek.KeyId, accountId));
+            insert.Parameters.AddWithValue((long)encryptions);
             insert.ExecuteNonQuery();
             using var pointer = new NpgsqlCommand("UPDATE identity.accounts SET data_key_id=$2 WHERE account_id=$1", c, tx);
             pointer.Parameters.AddWithValue(accountId); pointer.Parameters.AddWithValue(accountId + ":" + version);
@@ -86,8 +88,9 @@ public sealed class PostgresAccountDataKeys(string connectionString, IKekProvide
         else
         {
             key = UnwrapDek(wrapped, kekId, accountId);
-            using var increment = new NpgsqlCommand("UPDATE auth.account_data_keys SET messages_written=messages_written+1 WHERE account_id=$1 AND key_version=$2", c, tx);
+            using var increment = new NpgsqlCommand("UPDATE auth.account_data_keys SET messages_written=messages_written+$3 WHERE account_id=$1 AND key_version=$2", c, tx);
             increment.Parameters.AddWithValue(accountId); increment.Parameters.AddWithValue((int)version);
+            increment.Parameters.AddWithValue((long)encryptions);
             increment.ExecuteNonQuery();
         }
         Audit(c, tx, accountId, service, purpose);
@@ -138,6 +141,11 @@ public sealed class PostgresAccountDataKeys(string connectionString, IKekProvide
     {
         using var c = Open();
         using var tx = c.BeginTransaction();
+        using (var account = new NpgsqlCommand("SELECT data_key_id FROM identity.accounts WHERE account_id=$1 FOR UPDATE", c, tx))
+        {
+            account.Parameters.AddWithValue(accountId);
+            if (account.ExecuteScalar() is not string) throw new InvalidOperationException("Account key unavailable for erasure.");
+        }
         using var cmd = new NpgsqlCommand("INSERT INTO auth.account_data_key_erasure(account_id,erase_after,audit_hold) VALUES ($1,$2,$3) ON CONFLICT(account_id) DO UPDATE SET audit_hold=EXCLUDED.audit_hold,erase_after=CASE WHEN auth.account_data_key_erasure.audit_hold AND NOT EXCLUDED.audit_hold THEN EXCLUDED.erase_after ELSE auth.account_data_key_erasure.erase_after END", c, tx);
         cmd.Parameters.AddWithValue(accountId); cmd.Parameters.AddWithValue(now.AddDays(7)); cmd.Parameters.AddWithValue(auditHold);
         cmd.ExecuteNonQuery();
@@ -174,12 +182,34 @@ public sealed class PostgresAccountDataKeys(string connectionString, IKekProvide
         return accounts.Count;
     }
 
+    // Called only by the owner-role maintenance job; the gateway runtime has no DELETE grant here.
+    public int PurgeUnwrapAudit(DateTimeOffset now)
+    {
+        using var c = Open();
+        using var cmd = new NpgsqlCommand("DELETE FROM auth.data_key_unwraps WHERE at < $1", c);
+        cmd.Parameters.AddWithValue(now.AddDays(-90));
+        return cmd.ExecuteNonQuery();
+    }
+
     public bool IsErased(string accountId)
     {
         using var c = Open();
-        using var cmd = new NpgsqlCommand("SELECT EXISTS(SELECT 1 FROM auth.account_data_key_erasure WHERE account_id=$1 UNION ALL SELECT 1 FROM auth.erasure_tombstones WHERE account_id=$1)", c);
+        using var cmd = new NpgsqlCommand("SELECT EXISTS(SELECT 1 FROM auth.erasure_tombstones WHERE account_id=$1)", c);
         cmd.Parameters.AddWithValue(accountId);
         return (bool)cmd.ExecuteScalar()!;
+    }
+
+    public IReadOnlySet<string> ErasedAccounts(IReadOnlyCollection<string> accountIds)
+    {
+        if (accountIds.Count == 0) return new HashSet<string>();
+        if (accountIds.Count > 100 || accountIds.Any(id => id is null || id.Length is < 1 or > 96)) throw new ArgumentOutOfRangeException(nameof(accountIds));
+        using var c = Open();
+        using var cmd = new NpgsqlCommand("SELECT account_id FROM auth.erasure_tombstones WHERE account_id=ANY($1)", c);
+        cmd.Parameters.AddWithValue(accountIds.ToArray());
+        using var r = cmd.ExecuteReader();
+        var erased = new HashSet<string>(StringComparer.Ordinal);
+        while (r.Read()) erased.Add(r.GetString(0));
+        return erased;
     }
 
     // Feed this from the independent, retained tombstone export before a restored database serves traffic.

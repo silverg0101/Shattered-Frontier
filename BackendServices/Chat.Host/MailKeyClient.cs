@@ -18,11 +18,11 @@ public sealed class MailKeyClient(HttpClient http, string clientKey)
     public Task<ErasedState> Erased(string accountId, CancellationToken cancellationToken) =>
         Get<ErasedState>("v1/internal/accounts/" + Uri.EscapeDataString(accountId) + "/erased", cancellationToken);
 
-    public async Task<AccountKey> Key(string accountId, bool forWrite, ushort? version, CancellationToken cancellationToken)
+    public async Task<AccountKey> Key(string accountId, bool forWrite, ushort? version, CancellationToken cancellationToken, int encryptions = 0)
     {
         using var request = new HttpRequestMessage(HttpMethod.Post, "v1/internal/data-keys/" + Uri.EscapeDataString(accountId))
         {
-            Content = JsonContent.Create(new { service = "chat", purpose = "mail", for_write = forWrite, key_version = version })
+            Content = JsonContent.Create(new { service = "chat", purpose = "mail", for_write = forWrite, key_version = version, encryptions })
         };
         request.Headers.Add("X-Data-Key-Chat-Key", clientKey);
         using var response = await http.SendAsync(request, cancellationToken);
@@ -31,11 +31,23 @@ public sealed class MailKeyClient(HttpClient http, string clientKey)
         if (key.DekBase64 is null || Convert.FromBase64String(key.DekBase64).Length != 32) throw new InvalidDataException("Invalid data key response.");
         return key;
     }
+
+    public async Task<IReadOnlySet<string>> ErasedMany(IEnumerable<string> accountIds, CancellationToken cancellationToken)
+    {
+        using var request = new HttpRequestMessage(HttpMethod.Post, "v1/internal/accounts/erased")
+        { Content = JsonContent.Create(new { account_ids = accountIds.Distinct(StringComparer.Ordinal).ToArray() }) };
+        request.Headers.Add("X-Data-Key-Chat-Key", clientKey);
+        using var response = await http.SendAsync(request, cancellationToken);
+        response.EnsureSuccessStatusCode();
+        var result = (await response.Content.ReadFromJsonAsync<ErasedAccounts>(cancellationToken: cancellationToken))!;
+        return result.AccountIds.ToHashSet(StringComparer.Ordinal);
+    }
 }
 
 public sealed record CharacterAccount([property: JsonPropertyName("account_id")] string AccountId,
     [property: JsonPropertyName("realm_id")] string RealmId);
 public sealed record ErasedState([property: JsonPropertyName("erased")] bool Erased);
+public sealed record ErasedAccounts([property: JsonPropertyName("account_ids")] string[] AccountIds);
 public sealed record AccountKey([property: JsonPropertyName("key_version")] ushort KeyVersion,
     [property: JsonPropertyName("dek_base64")] string DekBase64)
 {
