@@ -2998,11 +2998,11 @@ def check():
     L = p["labels"]
     assert p["turn"] == -90 and list(p["bones"]) == rs.BONES, (p["turn"], list(p["bones"]))
     assert (L["b0"], L["b1"], L["b2"], L["b3"], L["b4"], L["b7"], L["b8"], L["b9"]) == \
-        ("pelvis", "spine_01", "spine_03", "neck", "head", "head", "tail_01", "tail_04"), L
+        ("pelvis", "spine_02", "spine_03", "neck", "head", "head", "tail_01", "tail_04"), L
     assert (L["fl_hip"], L["fl_paw"], L["fl_toe1"], L["fr_thigh"], L["hl_shin"], L["hr_paw"]) == \
         ("FL_01", "FL_04", "FL_04", "FR_02", "HL_03", "HR_04"), L
     assert {"b5", "b6", "b7", "fl_toe0"} <= set(p["dropped"]) and "b4" not in p["dropped"]
-    assert p["bones"]["spine_02"]["sources"] == [] and p["bones"]["FL_01"]["parent"] == "spine_03"
+    assert p["bones"]["spine_01"]["sources"] == [] and p["bones"]["FL_01"]["parent"] == "spine_03"
     assert max(abs(a - b) for a, b in zip(p["bones"]["pelvis"]["head"], [c, 0.3, 0.6])) < 1e-9 and p["bones"]["root"]["head"] == [0, 0, 0]
     assert any("tail" in w for w in p["warnings"]), p["warnings"]
     long_ears = [(n, pa, h, (t[0], t[1], t[2] + 0.12) if n in ("b5", "b6") else t) for n, pa, h, t in bones]  # read as arms
@@ -3023,6 +3023,21 @@ def check():
     assert p["turn"] == -90 and (L["b0"], L["b2"], L["b4"], L["b8"], L["hl_hip"], L["fr_paw"]) ==         ("pelvis", "spine_03", "head", "tail_01", "HL_01", "FR_04"), (p["turn"], L)
     assert (L["hr_hip"], L["hr_paw"], L["b3"], L["b9"], L["fr_clav"], L["fr_hip"]) ==         ("HR_01", "HR_04", "neck", "tail_04", "spine_03", "FR_01"), L
     assert rs.plan([{k: v for k, v in b.items() if k != "weight"} for b in rb], 1.0)["turn"] == 90  # unweighed: the higher end
+    # a sparse trunk (SkinTokens on the boar: a root at the hips carrying the whole back, one chest bone): the pelvis
+    # sits at the hind legs, spine_01..03 evenly up to the front legs, the neck from there; the gaps have no rig bone
+    sp = [("r", None, (0, 0.15, 0.33), (0, 0.15, 0.43), 50), ("c", "r", (0, -0.27, 0.33), (0, -0.35, 0.33), 5),
+          ("hd", "c", (0, -0.3, 0.3), (0, -0.45, 0.25), 9), ("t", "r", (0, 0.3, 0.3), (0, 0.45, 0.28), 1)]
+    for leg, x, y, at in (("fl", 0.07, -0.23, "c"), ("fr", -0.07, -0.23, "c"), ("hl", 0.07, 0.1, "r"), ("hr", -0.07, 0.1, "r")):
+        sp += [(f"{leg}1", at, (x, y, 0.28), (x, y, 0.15), 1), (f"{leg}2", f"{leg}1", (x, y, 0.15), (x, y, 0.0), 1)]
+    sb = rs.plan([{"name": n, "parent": pa, "head": h, "tail": t, "weight": w} for n, pa, h, t, w in sp], 0.4)["bones"]
+    ys = [sb[b]["head"][1] for b in rs.AXIAL[:5]]
+    assert max(abs(y - (0.1 - k * 0.0825)) for k, y in enumerate(ys)) < 1e-6, ys
+    assert sb["pelvis"]["sources"] == ["r"] and sb["spine_01"]["sources"] == sb["neck"]["sources"] == [], sb
+    np = rs.np
+    P = np.array([[0, 0.1 - k * 0.0825, 0.33] for k in range(5)] + [[0, -0.3, 0.3]])
+    Wt = np.array([[1.0, 0, 0, 0, 0], [0.6, 0, 0, 0, 0], [0, 0, 0, 0.5, 0], [1.0, 0, 0, 0, 0]])
+    rs.spread_trunk(Wt, P, np.array([[0, 0.12, 0.3], [0, 0.1 - 2 * 0.0825, 0.3], [0, -0.29, 0.31], [0, 0.1 - 1.5 * 0.0825, 0.1]]))
+    assert np.allclose(Wt, [[1, 0, 0, 0, 0], [0, 0.3, 0.3, 0, 0], [0, 0, 0, 0, 0.5], [0, 1, 0, 0, 0]]), Wt
     # a head bone stopping short of the skin it carries (SkinTokens: a stub at the chest skinned to the whole head) is
     # laid along that skin, back to front; a head bone that spans its skin stays
     sk = [b | {"skin": [[0.4, -0.05, 0.4], [0.8, 0.05, 0.5], [0.6, 0.0, 0.45]]} if b["name"] == "b4" else b for b in rb]

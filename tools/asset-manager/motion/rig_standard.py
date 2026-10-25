@@ -11,7 +11,8 @@
 Labels come from limbs.group (legs, head, tail, body); front vs hind by distance along the spine from the head, left vs
 right by the sign of X once the model faces -Y (the turn that makes it so is found here and applied to the output).
 Chains collapse or pad with creature.chain_resample: collapsed bones' weights merge into the bone that keeps their
-group, padded bones get no weights. Bones off a chain (toes, ears, jaw) merge into the chain bone they hang off.
+group, padded bones get no weights. The trunk (pelvis..neck) is laid by length from the hind legs to the front legs; a
+rig with too few trunk bones has its trunk skin spread along it by position. Bones off a chain (toes, ears, jaw) merge into the chain bone they hang off.
 The weight clean-up (from proof/wfix.py): a vertex weighted to two limbs keeps only the limb nearest it by bone
 distance (limb roots may still blend), and a vertex wholly on one leg but far nearer another limb's bone moves there.
 """
@@ -167,8 +168,24 @@ def plan_turned(bones, h, turn, floor=None):
     body_src, spine_src, neck_src = spine[:hind + 1], spine[hind + 1:], neck_head[:-1]
     tails = top("tail")
     tail_src = main_path(max(tails, key=subtree), True) if tails else []
-    groups = {"axial": [body_src] + creature.chain_resample(spine_src, 3, span(spine_src))
-                       + creature.chain_resample(neck_src, 1, span(neck_src)) + [[neck_head[-1]]],
+    # the trunk (pelvis, spine_01..03, neck) by length along the rig's own line from the hips to the head: pelvis where
+    # the hind legs join, the spine evenly up to where the front legs join, the neck from there; each trunk bone of the
+    # rig goes to the standard bone its middle falls in (a rig with too few trunk bones then leaves gaps, and the
+    # build spreads the trunk's skin by position instead)
+    joint = lambda x, y: head[y] if parent[y] == x else head[x]
+    line = [head[spine[0]] if len(spine) < 2 or parent[spine[1]] == spine[0] else tail[spine[0]]]
+    line += [joint(x, y) for x, y in zip(spine, spine[1:])] + [head[n] for n in neck_head]
+    cut = len(spine) + 1  # the anchors lie on the spine part: up to where the head chain starts
+    leg_y = lambda pair: float(np.mean([head[leg_root[l]][1] for l in pair]))
+    s_hip, s_sh = at_y(line[:cut], leg_y(order[2:])), at_y(line[:cut], leg_y(order[:2]))
+    s_sh = max(s_sh, s_hip)
+    trunk_pts = [point_at(line, s_hip + k / 4 * (s_sh - s_hip)) for k in range(5)] + [head[neck_head[-1]]]
+    trunk_src = body_src + spine_src + neck_src
+    at_t = along(np.array(trunk_pts), np.array([(head[m] + tail[m]) / 2 for m in trunk_src])) if trunk_src else []
+    # the bones behind the hind legs stay pelvis, the ones up to the front legs' stay spine
+    fa = max(pos[at[l]] for l in order[:2])
+    cap = lambda m: 0 if m in body_src else 3 if m in spine[:fa + 1] else 4
+    groups = {"axial": [[m for m, t in zip(trunk_src, at_t) if min(int(t), cap(m)) == i] for i in range(5)] + [[neck_head[-1]]],
               "tail": creature.chain_resample(tail_src, 6, span(tail_src))}
     for l in legs:
         src = main_path(leg_root[l], True)
@@ -194,7 +211,7 @@ def plan_turned(bones, h, turn, floor=None):
             a = head[body_src[0]]
             pts = [a + np.array([0, 0.1 * h * i / 6, 0]) for i in range(7)]
         else:
-            pts = layout(gs, head, tail, h)
+            pts = nonzero(trunk_pts + [tail[neck_head[-1]]], h) if c == "axial" else layout(gs, head, tail, h)
         skin = next((b["skin"] for b in bones if b["name"] == neck_head[-1] and "skin" in b), None)
         if c == "axial" and skin:  # a head bone stopping short of the head it carries: along its skin instead
             lo, hi, cen = (R @ np.asarray(v, float) for v in skin)
@@ -214,6 +231,51 @@ def plan_turned(bones, h, turn, floor=None):
     return {"turn": turn, "labels": labels, "dropped": [n for n in names if n not in kept], "warnings": warnings, "bones": out,
             "_head_z": float(np.mean([head[n][2] for n in names if limb[n] == "head"])),
             "_head_w": sum(b.get("weight", 0) for b in bones if limb[b["name"]] == "head")}
+
+
+def arc(pts):
+    return np.concatenate([[0], np.cumsum([np.linalg.norm(b - a) for a, b in zip(pts, pts[1:])])])
+
+
+def at_y(pts, y):
+    """Arc length along the polyline pts to its first point at depth y (facing -Y), else to its nearest point."""
+    pts, s = [np.asarray(p, float) for p in pts], arc(pts)
+    for i, (a, b) in enumerate(zip(pts, pts[1:])):
+        if a[1] != b[1] and (a[1] - y) * (b[1] - y) <= 0:
+            return float(s[i] + (y - a[1]) / (b[1] - a[1]) * (s[i + 1] - s[i]))
+    return float(s[min(range(len(pts)), key=lambda i: abs(pts[i][1] - y))])
+
+
+def point_at(pts, d):
+    pts, s = [np.asarray(p, float) for p in pts], arc(pts)
+    i = min(int(np.searchsorted(s, d, side="right")) - 1, len(pts) - 2)
+    i = max(i, 0)
+    return pts[i] + (d - s[i]) / max(s[i + 1] - s[i], 1e-12) * (pts[i + 1] - pts[i])
+
+
+def along(P, Q):
+    """Where points Q (m x 3) sit along the joint chain P (k+1 x 3): i + u on the nearest segment i (bone i, u in 0..1)."""
+    a, d = P[:-1], P[1:] - P[:-1]
+    u = np.clip(np.einsum("mkc,kc->mk", Q[:, None] - a[None], d) / np.maximum((d * d).sum(1), 1e-12), 0, 1)
+    dist = np.linalg.norm(Q[:, None] - (a[None] + u[..., None] * d[None]), axis=2)
+    k = dist.argmin(1)
+    return k + u[np.arange(len(Q)), k]
+
+
+TRUNK = AXIAL[:5]  # pelvis .. neck
+
+
+def spread_trunk(W, P, co):
+    """A trunk with a standard bone no rig bone went to: each vertex's trunk weight (W columns TRUNK, in order) spread
+    over the trunk bones by where it sits along the trunk joints P (6 points, pelvis head .. head head), blending
+    linearly between neighbouring bone middles. In place."""
+    tot = W.sum(1)
+    t = np.clip(along(P, co) - 0.5, 0, 4)
+    i = np.minimum(t.astype(int), 3)
+    f = t - i
+    W[:] = 0
+    W[np.arange(len(W)), i] = tot * (1 - f)
+    W[np.arange(len(W)), i + 1] += tot * f
 
 
 def layout(groups, head, tail, h):
@@ -239,9 +301,15 @@ def layout(groups, head, tail, h):
             a = max(k for k in range(i) if starts[k] is not None)
             b = min(k for k in range(i, n + 1) if starts[k] is not None)
             starts[i] = starts[a] + (i - a) / (b - a) * (starts[b] - starts[a])
+    return nonzero(starts, h)
+
+
+def nonzero(starts, h):
+    """No zero-length bones: a joint on top of the one before moves 0.02 h on along the chain."""
+    starts = [np.asarray(p, float) for p in starts]
     d = starts[-1] - starts[0]
     d = d / np.linalg.norm(d) if np.linalg.norm(d) > 1e-9 else np.array([0, 0, 1.0])
-    for i in range(1, n + 1):  # no zero-length bones
+    for i in range(1, len(starts)):
         if np.linalg.norm(starts[i] - starts[i - 1]) < 0.005 * h:
             starts[i] = starts[i - 1] + 0.02 * h * d
     return starts
@@ -251,7 +319,7 @@ def review(labels_path, sheet_path):
     import base64
     from zoo_curate import claude
     p = json.loads(Path(labels_path).read_text())
-    rows = "\n".join(f"{b}: from {', '.join(v['sources']) or 'nothing (inserted)'} at "
+    rows = "\n".join(f"{b}: from {', '.join(v['sources']) or ('nothing (skin spread along the trunk)' if b in TRUNK else 'nothing (inserted)')} at "
                      f"{[round(x, 3) for x in v['head']]} -> {[round(x, 3) for x in v['tail']]}" for b, v in p["bones"].items())
     sheet = {"type": "image", "source": {"type": "base64", "media_type": "image/png",
                                          "data": base64.b64encode(Path(sheet_path).read_bytes()).decode()}}
@@ -560,6 +628,12 @@ def build_main(model, labels_path, out):
                 if g.group in gstd:
                     W[v.index, gstd[g.group]] += g.weight
         co = np.array([v.co for v in o.data.vertices])
+        if any(not p["bones"][b]["sources"] for b in TRUNK):  # too few trunk bones in the rig: spread by position
+            ti = [BONES.index(b) for b in TRUNK]
+            sub = W[:, ti]
+            spread_trunk(sub, np.array([p["bones"][b]["head"] for b in AXIAL]), co)
+            W[:, ti] = sub
+            print(f"BUILD {o.name}: trunk skin spread along pelvis..neck")
         n1, n2 = clean(W, (a, bvec), limb, root, co)
         print(f"BUILD {o.name}: {n1} vertices lost weight on a second limb, {n2} rebound to a nearer limb")
         o.vertex_groups.clear()
