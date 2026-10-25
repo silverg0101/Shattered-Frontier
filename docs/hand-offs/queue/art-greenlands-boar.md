@@ -51,18 +51,20 @@ Round 2 code: `creature.py` (`model_review`, `MODEL_BUILDS`), `motion/gait_synth
 
 Code-review fixes: `app.py check()` prints `check ok` with new asserts for the idle loop cut (`LOOP 0 90 91 frames`), a failed build failing the job once, and the model review's retry, fail-closed and cancel paths. The IK release pass (`zoo_retarget.py`) runs only in Blender and is unverified until the scratch run; its `RT ik pass` lines show the pass count and "(release pass)".
 
+Scratch job `950002` (2026-10-25, 700 s) curated Buffalo and rendered the stand-in, but all three local Qwen side concepts failed review: staggered far legs, plus ground shadows on tries 2/3. The in-memory local-only guard blocked the external heroes fallback. No model, rig or animations were produced; visual round 2 remains unused. Evidence: `Artifacts/Orchestration/20261025-resume/{boar-runner-report.md,boar-950002-full-joblog.txt}`; reusable Buffalo library in `scratch-data/MotionLibrary/Buffalo/` there.
+
 ## Blocked on
 
-none
+An approved local concept: Fable must correct the input stance/shadows without relaxing review or using external image generation.
 
 ## Next step
 
-1. Code re-review passed. In the run, inspect IK release logs and neck-gate values; visual review must reject a frozen or excessively short idle loop. A persistent review outage still fails closed but can consume all four model builds.
+1. Fable diagnoses the local depth input against the concept review's stance/shadow fix list. Reuse the scratch Buffalo library; prove the corrected local concept before another full run. Code fixes require a fresh Opus re-review.
 2. Do the full scratch run:
    `py tools/asset-manager/scratch_run.py '{"name": "Greenlands_Boar", "prompt": "a wild boar", "animal": "Buffalo", "clips": ["idle", "walk", "run", "attack", "death"], "size_cm": 150}'`
-   Use `creature_unimate_seeds` 6.
+   Use `creature_unimate_seeds` 6, `SSH_KEY=~/.ssh/id_ed25519_ra_siems`, `PYTHONIOENCODING=utf-8`, scratch-only data/assets, and an in-memory guard rejecting `app.draw_hero`/`app.hero_views`. Keep GPU 1 only.
 
-   Expect the model review to rebuild until one body passes. If every rebuild fails, change the concept, not the mesh: a cleaner side view, or `concept: "heroes"`.
+   Expect the model review to rebuild until one body passes. If every rebuild fails, fix the local concept, never the mesh. Inspect IK release/neck logs and reject frozen or very short idle loops in visual review.
 3. Send the new folder's `animations/*.png` and `source/*_rig_labels.png` to a fresh Opus for visual round 2 of 3.
 4. If both reviews pass, deploy the live Forge using the steps in the parent file.
 
