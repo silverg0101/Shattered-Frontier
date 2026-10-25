@@ -79,17 +79,20 @@ def main(rigf, animalf, clip, out, outj, size_cm, height_scale):
     def paw_h(p):
         return paw_point(p).z - floor - contact[p][1]
 
-    # hind-leg length ratio: hip to the contact point on the rig, hip to the paw end on the source
+    # leg length ratio per leg: hip to the contact point on the rig, hip to the paw end on the source
     def leg(arm, names, end):
         pts = [arm.matrix_world @ arm.data.bones[n].head_local for n in names] + [end]
         return sum((a - b).length for a, b in zip(pts, pts[1:]))
-    hl = [f"HL_{i:02}" for i in range(1, 5)]
-    rb = rig.data.bones["HL_04"]
-    tgt_leg = leg(rig, hl, mw @ rb.head_local.lerp(rb.tail_local, contact["HL"][0]))
-    sl = sorted((j for j, r in role.items() if r.startswith("HL_")), key=lambda j: depth(src.data.bones[j]))
-    ratio = tgt_leg / leg(src, sl, src.matrix_world @ src.data.bones[sl[-1]].tail_local)
+    src_leg, leg_ratio = {}, {}  # paw -> (source hip bone, source paw end bone), length ratio
+    for p in PAWS:
+        rb = rig.data.bones[f"{p}_04"]
+        tgt_leg = leg(rig, [f"{p}_{i:02}" for i in range(1, 5)], mw @ rb.head_local.lerp(rb.tail_local, contact[p][0]))
+        sl = sorted((j for j, r in role.items() if r.startswith(p + "_")), key=lambda j: depth(src.data.bones[j]))
+        src_leg[p] = (sl[0], sl[-1])
+        leg_ratio[p] = tgt_leg / leg(src, sl, src.matrix_world @ src.data.bones[sl[-1]].tail_local)
+    ratio = leg_ratio["HL"]
     hips = next(j for j, r in role.items() if r == "pelvis")
-    print("RT leg ratio", round(ratio, 4), "hips", hips)
+    print("RT leg ratio", {p: round(r, 4) for p, r in leg_ratio.items()}, "hips", hips)
 
     # each standard chain: its source bones (by role order, then depth), resampled onto it
     src_of = {}  # target bone -> (source bone, piece index, piece count) or None
@@ -223,15 +226,32 @@ def main(rigf, animalf, clip, out, outj, size_cm, height_scale):
         lift += 0.1
     print("RT tail lift", round(lift, 2), "lowest tail joint above floor (cm)", round((tl - floor) * 100, 2))
 
-    # contacts: per paw, planted = in the lowest CONTACT_SHARE of its height range and within CONTACT_M of its lowest
-    # point; every stance run is pinned at its mean xy on the floor. The IK's influence ramps over 2 frames in and out
-    # (rotations blend between FK and the pinned leg, so the leg eases on and off the pin instead of snapping).
+    # paw paths: the legs follow the source's paws, not its leg rotations (a rig with other leg proportions or rest
+    # pose lifts and plants them wrongly from rotations alone): each paw's wanted contact point is its source paw
+    # end relative to the source hip of that leg, scaled by the leg length ratio, from the rig's hip at that frame
+    # (xy), and its source height over the source's floor, scaled, over the rig's floor (z). Leg IK (full influence,
+    # baked to FK) then takes the ankle there, while planted paws are pinned as below.
     M = N if loop else N + 1  # distinct frames
-    H = {p: [] for p in PAWS}; E = {p: [] for p in PAWS}; A = {p: [] for p in PAWS}  # height, contact point, ankle
+    E = {p: [] for p in PAWS}; A = {p: [] for p in PAWS}; Efk = {p: [] for p in PAWS}  # wanted contact, ankle, FK contact
+    sw = src.matrix_world
+    tip = {p: [] for p in PAWS}; hipp = {p: [] for p in PAWS}
+    for i in range(M):
+        sc.frame_set(f0 + i)
+        for p in PAWS:
+            h_, t_ = src_leg[p]
+            hipp[p].append((sw @ src.pose.bones[h_].head).copy()); tip[p].append((sw @ src.pose.bones[t_].tail).copy())
+    src_floor = sorted(t.z for v in tip.values() for t in v)[int(0.02 * 4 * M)]  # the source's own floor, as zoo_curate
     for i in range(M):
         sc.frame_set(i + 1)
         for p in PAWS:
-            A[p].append((rig.matrix_world @ rig.pose.bones[f"{p}_03"].tail).copy()); E[p].append(paw_point(p)); H[p].append(paw_h(p))
+            A[p].append((rig.matrix_world @ rig.pose.bones[f"{p}_03"].tail).copy()); Efk[p].append(paw_point(p))
+            off = (unturn @ (tip[p][i] - hipp[p][i])) * leg_ratio[p]
+            e = rig.matrix_world @ rig.pose.bones[f"{p}_01"].head + off
+            e.z = floor + max(0.0, tip[p][i].z - src_floor) * leg_ratio[p]
+            E[p].append(e)
+    H = {p: [e.z - floor for e in E[p]] for p in PAWS}
+    # contacts: per paw, planted = in the lowest CONTACT_SHARE of its height range and within CONTACT_M of its lowest
+    # point. A pin's influence on the target ramps over 2 frames in and out, so the paw eases on and off the pin.
     idx = (lambda i: i % M) if loop else (lambda i: min(max(i, 0), M - 1))
     planted = {}
     for p in PAWS:
@@ -265,14 +285,13 @@ def main(rigf, animalf, clip, out, outj, size_cm, height_scale):
                 if (loop or 0 <= s0 + d < M) and pin[idx(s0 + d)] is None: pin[idx(s0 + d)], pv[idx(s0 + d)] = xy + v * (d - mid), v
         vel[p] = pv
         T, X, I = [], [], []
-        for i in range(M):  # the ankle's IK target, moved by how far its contact point should move
-            e = A[p][i].copy(); xy = E[p][i].xy.copy(); h = H[p][i]
+        for i in range(M):  # the ankle's IK target: moved by how far the FK contact point should move
+            xy, h = E[p][i].xy.copy(), max(H[p][i], FLOOR_EPS)
             on = pin[i] is not None and w[i] > 0
             if on:
-                xy, h = pin[i].copy(), FLOOR_EPS
-            e.xy += xy - E[p][i].xy; e.z += max(h, FLOOR_EPS) - H[p][i]
-            T.append(e); X.append(xy if on else None)
-            I.append(w[i] if on else 1.0 if H[p][i] < FLOOR_EPS else 0.0)  # off the pin: IK only to lift a sunk paw
+                xy, h = xy.lerp(pin[i], w[i]), h + (FLOOR_EPS - h) * w[i]
+            e = A[p][i].copy(); e.xy += xy - Efk[p][i].xy; e.z += h - (Efk[p][i].z - floor - contact[p][1])
+            T.append(e); X.append(pin[i].copy() if on else None); I.append(1.0)
         tgts[p], W[p], want[p], infl[p] = T, [x if pin[i] is not None else 0.0 for i, x in enumerate(w)], X, I
         print("RT contact", p, "".join("#" if x else ("+" if y > 0 else ".") for x, y in zip(c, W[p])))
     sweeps = sorted(vel[p][i].length for p in PAWS for i in range(M) if W[p][i] == 1)

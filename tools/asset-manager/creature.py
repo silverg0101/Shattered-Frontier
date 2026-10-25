@@ -622,19 +622,43 @@ def build_model(jid, host, p, views) -> str:
     return "model.glb"
 
 
-def unimate_annotation() -> dict:
-    """UniMate's joint labels for the shared skeleton (rig_preprocess merges the unweighted root into the pelvis)."""
-    parts = {"F": ("Shoulder", "Upper Arm", "Forearm", "Hand"), "H": ("Thigh", "Shin", "Fetlock", "Foot")}
-    rows = [("pelvis", None, "Hips"), ("spine_01", "pelvis", "Spine"), ("spine_02", "spine_01", "Spine"),
-            ("spine_03", "spine_02", "Spine"), ("neck", "spine_03", "Neck"), ("head", "neck", "Head")]
-    rows += [(f"tail_{i:02}", f"tail_{i - 1:02}" if i > 1 else "pelvis", "Tail") for i in range(1, 7)]
-    for leg in ("FL", "FR", "HL", "HR"):
-        side, at = "Left" if leg[1] == "L" else "Right", "spine_03" if leg[0] == "F" else "pelvis"
-        rows += [(f"{leg}_{i:02}", f"{leg}_{i - 1:02}" if i > 1 else at, f"{side} {parts[leg[0]][i - 1]}") for i in range(1, 5)]
+UNIMATE_PARTS = {"F": ("Shoulder", "Upper Arm", "Forearm", "Hand"), "H": ("Thigh", "Shin", "Fetlock", "Foot")}
+
+
+def unimate_label(std: str) -> str:
+    """UniMate's vocabulary label for a shared-skeleton bone name (pelvis -> Hips, FL_02 -> Left Upper Arm, ...)."""
+    if std in ("pelvis", "root"):
+        return "Hips"
+    if std[:2] in ("FL", "FR", "HL", "HR") and std[2:3] == "_":
+        return f"{'Left' if std[1] == 'L' else 'Right'} {UNIMATE_PARTS[std[0]][int(std[3:]) - 1]}"
+    return {"neck": "Neck", "head": "Head"}.get(std) or std.split("_")[0].capitalize()  # Spine, Tail
+
+
+def unimate_annotation(bones=None, labels=None) -> dict:
+    """UniMate's joint labels: for the shared skeleton (rig_preprocess merges the unweighted root into the pelvis), or
+    for a rig's own `bones` [(name, parent)] (glb_bones) under rig_standard `labels` (bone -> shared-skeleton name; a
+    bone without one takes its parent's). UniMate steps all four legs of a SkinTokens rig but freezes the forelegs of
+    the padded shared skeleton, so a creature's clips are made on its own rig and retargeted by these labels."""
+    if bones is None:
+        rows = [("pelvis", None), ("spine_01", "pelvis"), ("spine_02", "spine_01"), ("spine_03", "spine_02"), ("neck", "spine_03"),
+                ("head", "neck")] + [(f"tail_{i:02}", f"tail_{i - 1:02}" if i > 1 else "pelvis") for i in range(1, 7)]
+        rows += [(f"{leg}_{i:02}", f"{leg}_{i - 1:02}" if i > 1 else ("spine_03" if leg[0] == "F" else "pelvis"))
+                 for leg in ("FL", "FR", "HL", "HR") for i in range(1, 5)]
+        labels = {n: n for n, _ in rows}
+    else:
+        names = {n for n, _ in bones}
+        rows = [(n, pa if pa in names else None) for n, pa in bones]
+        std, parent = dict(labels), dict(rows)
+        for n, _ in rows:
+            m = n
+            while m and m not in std: m = parent[m]
+            std[n] = std.get(m) or "pelvis"
+        labels = std
+    side = lambda s: next((n for n, _ in rows if labels[n] == s), None)
     return {"format": "rig_preprocess-annotation/1", "asset": "creature", "notes": [], "n_flagged": 0,
-            "face_pair": {"right": "HR_01", "left": "HL_01", "body_axis": False, "source": "thigh", "check": False},
-            "joints": [{"index": i, "raw": n, "parent": pa, "label": lab, "source": "rule", "check": False}
-                       for i, (n, pa, lab) in enumerate(rows)]}
+            "face_pair": {"right": side("HR_01"), "left": side("HL_01"), "body_axis": False, "source": "thigh", "check": False},
+            "joints": [{"index": i, "raw": n, "parent": pa, "label": unimate_label(labels[n]), "source": "rule", "check": False}
+                       for i, (n, pa) in enumerate(rows)]}
 
 
 def unimate_prompt(clip) -> str:
@@ -643,9 +667,10 @@ def unimate_prompt(clip) -> str:
     return f"An object {MOTION_TEXT.get(clip.lower()) or words}."
 
 
-def std_glb_clip(jid, host, rig_glb, src_glb, name, size_cm, prompt=None) -> dict:
-    """An animated GLB on the shared skeleton in the job folder (a UniMate seed, a video take) as clip `name` on
-    `rig_glb`: turned into a BVH, then retarget_clip's cleanup, checks, sheet and review (against `prompt`)."""
+def std_glb_clip(jid, host, rig_glb, src_glb, name, size_cm, prompt=None, role_map=None) -> dict:
+    """An animated GLB in the job folder (a UniMate seed, a video take) as clip `name` on `rig_glb`: turned into a
+    BVH, then retarget_clip's cleanup, checks, sheet and review (against `prompt`). `role_map` names its bones' shared-
+    skeleton roles (default: it is on the shared skeleton already)."""
     a, q = _app(), shlex.quote
     work, lib = a.host_tools(jid, host)[0], Path(tempfile.mkdtemp())
     try:
@@ -658,28 +683,33 @@ def std_glb_clip(jid, host, rig_glb, src_glb, name, size_cm, prompt=None) -> dic
         info = json.loads(a.ssh(host, f"cat {q(work + '/' + name + '_bvh.json')}"))
         (lib / "clips" / f"{name}.bvh").write_bytes(a.ssh(host, f"cat {q(work + '/' + name + '.bvh')}", timeout=300))
         # ponytail: these clips are kept as one-shots; cut a loop (zoo_curate) when cyclic ones need seamless ends
-        (lib / "animal.json").write_text(json.dumps({"id": "UniMate", "fps": info["fps"], "role_map": {b: b for b in info["bones"]},
+        (lib / "animal.json").write_text(json.dumps({"id": "UniMate", "fps": info["fps"], "role_map": role_map or {b: b for b in info["bones"]},
             "clips": [{"name": name, "file": f"clips/{name}.bvh", "frames": info["frames"], "loop": False}]}))
         return retarget_clip(jid, host, rig_glb, lib, name, size_cm, prompt)
     finally:
         shutil.rmtree(lib, ignore_errors=True)
 
 
-def unimate_clip(jid, host, rig_glb, clip, size_cm, prompt=None, seeds=None) -> dict:
-    """A clip the library lacks, made by UniMate on the standardised rig over `seeds` (default creature_unimate_seeds)
-    seeds from `prompt` (default unimate_prompt(clip)); each seed goes through std_glb_clip. -> the best seed (passed
-    first, then lowest seam) as retarget_clip's dict plus "seed" and "prompt", "candidates": every seed's dict, and
-    "errors": ["seed N: <error>"] for seeds that failed and were skipped; raises only when no seed survives."""
+def unimate_clip(jid, host, rig_glb, clip, size_cm, prompt=None, seeds=None, raw=None) -> dict:
+    """A clip the library lacks, made by UniMate over `seeds` (default creature_unimate_seeds) seeds from `prompt`
+    (default unimate_prompt(clip)), on the creature's own SkinTokens rig when `raw` = {"glb": its file in the job
+    folder, "bones": glb_bones, "labels", "dropped": rig_standard's} is given (see unimate_annotation), else on the
+    standardised `rig_glb`; each seed goes through std_glb_clip onto `rig_glb`. -> the best seed (passed first, then
+    lowest seam) as retarget_clip's dict plus "seed" and "prompt", "candidates": every seed's dict, and "errors":
+    ["seed N: <error>"] for seeds that failed and were skipped; raises only when no seed survives."""
     a = _app()
     work, gpu, _, _, step, _ = a.host_tools(jid, host)
     s, q, um = a.get_settings(), shlex.quote, f"{work}/um"
     env = f"cd {UNIMATE} && source ../.venv311/bin/activate && export {gpu} PATH=$HOME/unimate-eval/bin:$PATH && "
     fail = lambda log: f" || {{ tail -20 {log} >&2; exit 1; }}"
+    src_rig = raw["glb"] if raw else rig_glb
+    role_map = {b: l for b, l in raw["labels"].items() if b not in raw["dropped"]} if raw else None
     if not a.ssh(host, f"test -s {um}/creature/cond.npy && echo y || true").strip():
         step("preparing the rig for UniMate")
-        a.put_input(host, f"{jid}/um/annotation.json", json.dumps(unimate_annotation()).encode())
+        ann = unimate_annotation(raw["bones"], raw["labels"]) if raw else unimate_annotation()
+        a.put_input(host, f"{jid}/um/annotation.json", json.dumps(ann).encode())
         # rig_preprocess can crash on exit after writing everything (bpy teardown): its outputs are the test
-        a.ssh_step(host, jid, work, env + f"python -m data_process.rig_preprocess run --input {q(work + '/' + rig_glb)} "
+        a.ssh_step(host, jid, work, env + f"python -m data_process.rig_preprocess run --input {q(work + '/' + src_rig)} "
                    f"--output_dir {um}/creature --name creature --annotation {um}/annotation.json --no_review --overwrite "
                    f"> {um}/prep.log 2>&1; test -s {um}/creature/cond.npy" + fail(f"{um}/prep.log"), 1800)
     prompt, best, cands, errors = prompt or unimate_prompt(clip), None, [], []
@@ -692,7 +722,7 @@ def unimate_clip(jid, host, rig_glb, clip, size_cm, prompt=None, seeds=None) -> 
                        f"--prompt {q(prompt)} --cfg_scale 5 --seed {seed} --output_dir {d} > {d}.log 2>&1 && "
                        f"bash scripts/run_animate_motion.sh {d} >> {d}.log 2>&1" + fail(f"{d}.log") +
                        f" && cp \"$(ls {d}/animated/*.glb | head -1)\" {q(work + '/' + name + '_unimate.glb')}", 1800)
-            r = std_glb_clip(jid, host, rig_glb, f"{name}_unimate.glb", name, size_cm, prompt) | {"seed": seed, "prompt": prompt}
+            r = std_glb_clip(jid, host, rig_glb, f"{name}_unimate.glb", name, size_cm, prompt, role_map) | {"seed": seed, "prompt": prompt}
         except InterruptedError:  # a cancel, not a bad seed
             raise
         except Exception as e:  # one bad seed (UniMate crash, an unreadable take) doesn't lose the others
@@ -991,6 +1021,8 @@ def run_creature(jid, host):
         a.GPU_NOTES.setdefault(jid, []).append(f"[asset-manager] {host['name']}: {a.release_vram(host)}")
         std = standardise_rig(jid, host, model)
         log.append(f"rig review: {std['review']}; {len(std['dropped'])} bones merged; {'; '.join(std['warnings']) or 'no warnings'}")
+        raw_glb = a.ssh(host, f"cat {q(work + '/' + model)}", timeout=900)  # the SkinTokens rig: UniMate's, and kept in source/
+        raw = {"glb": model, "bones": glb_bones(glb_read(raw_glb)[0]), "labels": std["labels"], "dropped": std["dropped"]}
         have = [c["name"] for c in animal["clips"]]
         clips, unavailable = [], []
         for c in (have if p["clips"] == "all" else p["clips"]):
@@ -998,7 +1030,7 @@ def run_creature(jid, host):
                 r = choose_clip(c, library_matches(c, lib), p["fill_missing"], log,  # named as requested
                                 lambda f: retarget_clip(jid, host, std["glb"], lib.parent / f.split("/")[0] if "/" in f else lib,
                                                         f.split("/")[-1], size, c),
-                                lambda: unimate_clip(jid, host, std["glb"], c, size))
+                                lambda: unimate_clip(jid, host, std["glb"], c, size, raw=raw))
                 if not r:
                     unavailable.append({"name": c, "reason": f"not in the {entry['id']} library and fill_missing is off"})
                     continue
@@ -1026,6 +1058,8 @@ def run_creature(jid, host):
         for f, data in info.get("standin", {}).items():  # the depth guides, kept as source
             (build / "source" / f).write_bytes(data)
         (build / "source" / f"{n}_rig_labels.png").write_bytes(get(std["sheet"]))
+        (build / "source" / f"{n}_rig_labels.json").write_bytes(get(f"{Path(model).stem}_labels.json"))
+        (build / "source" / f"{n}_skintokens.glb").write_bytes(raw_glb)
         for t in (n, f"{n}_animated"):
             (build / ".thumbs" / f"{t}.png").write_bytes(png)
         for c in clips:
@@ -1224,7 +1258,12 @@ def run_clip_job(jid, host):
                 groups = [(p["clip"], [("", retarget_clip(jid, host, "rig.glb", lib, from_clip, size, p["clip"]),
                                         {"source": "library", "animal": p["animal"], "from_clip": from_clip})])]
             elif p["source"] == "text":
-                best = unimate_clip(jid, host, "rig.glb", p["clip"], size, p["prompt"], p["seeds"])
+                raw, sk, lab = None, folder / "source" / f"{n}_skintokens.glb", folder / "source" / f"{n}_rig_labels.json"
+                if sk.is_file() and lab.is_file():  # the creature's own rig: UniMate animates it better than the shared skeleton
+                    a.put_input(host, f"{jid}/raw.glb", sk.read_bytes())
+                    lj = json.loads(lab.read_text(encoding="utf-8"))
+                    raw = {"glb": "raw.glb", "bones": glb_bones(glb_read(sk.read_bytes())[0]), "labels": lj["labels"], "dropped": lj["dropped"]}
+                best = unimate_clip(jid, host, "rig.glb", p["clip"], size, p["prompt"], p["seeds"], raw)
                 groups = [(p["clip"], [(f"_s{r['seed']}", r, {"source": "text", "seed": r["seed"], "prompt": r["prompt"],
                                                               "best": r["seed"] == best["seed"]}) for r in best["candidates"]])]
                 log += [f"{p['clip']} {e} (skipped)" for e in best["errors"]]

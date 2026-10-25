@@ -2944,6 +2944,14 @@ def check():
     assert creature.checks_pass({"min_paw_cm": 0.2, "max_slide_cm": 2, "seam_deg": 9, "flips": 1}, DEFAULT_SETTINGS)["reason"].count(";") == 2
     assert ok["travel_cm_s"] == 0.0 and creature.checks_pass({**ok, "travel_cm_s": 80.5}, DEFAULT_SETTINGS)["travel_cm_s"] == 80.5  # reported, not gated
     assert all(lo <= DEFAULT_SETTINGS[k] <= hi for k, (_, _, lo, hi) in CREATURE_SETTINGS.items())
+    # UniMate labels: the shared skeleton's, or a rig's own bones under rig_standard labels (an unlabelled bone takes
+    # its parent's); the face pair is the hind legs' first bones
+    ann = creature.unimate_annotation([("b0", "Armature"), ("b1", "b0"), ("b2", "b1"), ("b3", "b0"), ("b4", "b0"), ("b5", "b4")],
+                                      {"b0": "pelvis", "b1": "HR_01", "b2": "HR_03", "b3": "HL_01", "b5": "FL_02"})
+    assert ann["face_pair"]["right"] == "b1" and ann["face_pair"]["left"] == "b3"
+    assert [(j["parent"], j["label"]) for j in ann["joints"]] == [(None, "Hips"), ("b0", "Right Thigh"), ("b1", "Right Fetlock"),
+                                                                 ("b0", "Left Thigh"), ("b0", "Hips"), ("b4", "Left Upper Arm")], ann
+    assert len(creature.unimate_annotation()["joints"]) == 28 and creature.unimate_label("tail_03") == "Tail"
     # UniMate prompts take the training captions' form, for a clip name in any case; an unknown name uses its words
     assert creature.unimate_prompt("walk") == creature.unimate_prompt("Walk") == "An object walks forward."
     assert creature.unimate_prompt("AlertRun") == "An object alert run."
@@ -3411,7 +3419,7 @@ def check():
         jid = c.execute("INSERT INTO jobs (kind, name, params, status, created) VALUES ('clip', 'c', '{}', 'running', ?)",
                         (time.time(),)).lastrowid
     h, want, seen = {"name": "t", "kind": "http", "comfy_dir": "/x", "gpu": 1}, "An object sniffs the ground.", []
-    def fake_std(jid, host, rig_glb, src_glb, name, size_cm, prompt=None):
+    def fake_std(jid, host, rig_glb, src_glb, name, size_cm, prompt=None, role_map=None):
         seen.append((name, prompt))
         if name.endswith("_s0"):
             raise RuntimeError("UniMate crashed")
