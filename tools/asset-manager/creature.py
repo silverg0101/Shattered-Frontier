@@ -404,14 +404,15 @@ CREATURE_DEPTH_WRAP = {
              "camera, the body foreshortened behind the head, both front legs visible and symmetric, standing square, mouth "
              "closed, orthographic." + _WRAP_TAIL}
 CREATURE_DEPTH_NEGATIVE = ("several animals, collage, turnaround sheet, text, watermark, ground shadow, scenery, person, cropped, "
-                           "cut-off legs, open mouth, motion blur")
+                           "cut-off legs, open mouth, motion blur, shadow, cast shadow, ground, floor, ground plane, reflection")
 FRONT_NEGATIVE = ", side view, profile, three-quarter view, turned head, seen from the side"
 HORNS = ", horns, antlers, spikes"  # an ear drawn as a spike grows into a horn on the 3D model
 HORNY = re.compile(r"horn|antler|spike|tusk|unicorn", re.I)
 FRONT_BRIEF = ("Image 1 is meant to show an animal from the front, image 2 the same animal from its left side. Fail image 1 "
                "unless the animal faces the camera head-on with its nose pointing at the viewer (not in profile, not "
                "three-quarter) and it is clearly the same animal as image 2: same colours, markings, build and number of "
-               "legs and ears. The animal: {prompt}")
+               "legs and ears. Fail it too if a shadow, floor or reflection shows under the animal (it becomes a slab on the 3D "
+               "model). The animal: {prompt}")
 
 
 def depth_host(host):
@@ -518,7 +519,8 @@ def concept_image(jid, p, entry, log, step, host=None, lib=None, size=None, info
              f"and a tail), alone. An image-to-3D model is built from it, then rigged and animated from a rest pose like "
              f"this: {STANCE}. Fail it if the body plan differs or the pose does (rearing, sitting, lying, curled, legs bent "
              f"or tucked, mouth open, seen from the front or at an angle), or if any leg or the tail is cut off, merged "
-             f"with another part or missing. The request: {p['prompt'] or p['name']}")
+             f"with another part or missing, or if a ground shadow, floor or reflection shows under it (the 3D model "
+             f"grows a slab from it). The request: {p['prompt'] or p['name']}")
     prompt, own, extra = f"{p['prompt'] or p['name']}\n\nPose: {STANCE}.", bool(p.get("image")), ""
     info["concept"] = "image" if own else "heroes"
     if not own and host and lib and p.get("concept", "depth") == "depth":

@@ -3028,6 +3028,11 @@ def check():
     co = body + [(0, 0, 0.01), (0.1, 0, 0.01), (0, 0.1, 0.01)] + [(2.2, 0, 0), (2.3, 0, 0), (2.2, 0.1, 0)]
     edges = [(0, 1), (1, 2), (3, 4), (4, 5), (6, 7), (7, 8), (9, 10), (10, 11)]
     assert rs.floaters(co, edges, 1.0) == [9, 10, 11], rs.floaters(co, edges, 1.0)
+    # floor_sheet: two upright legs; a small sole under one stays, a wide flat sheet joined to the other paw goes
+    co = [(0, 0, 0), (0.1, 0, 0), (0, 0, 1), (0.1, 0, 1), (2, 0, 0), (2.1, 0, 0), (2, 0, 1), (2.1, 0, 1),
+          (0.05, 0.04, 0), (3, 0, 0), (2, 1, 0)]
+    faces = [(0, 1, 2), (1, 3, 2), (4, 5, 6), (5, 7, 6), (0, 1, 8), (4, 9, 10)]
+    assert rs.floor_sheet(co, faces, 1.0) == [5], rs.floor_sheet(co, faces, 1.0)
     # creature jobs: folder names, combine and its refusals, a cancel leaves no folder behind
     assert creature.safe_name("Swamp Rat #2") == "Swamp_Rat_2"
     td = Path(tempfile.mkdtemp())
