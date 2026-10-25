@@ -283,8 +283,11 @@ def is_model(p: Path) -> bool:
     return p.suffix.lower() == ".glb" and p.stem in (n, f"{n}_animated") and (p.parent / f"{n}.json").is_file()
 
 
+CONCEPTS = ("depth", "heroes")  # depth: the matched animal's stand-in guides Qwen; heroes: ChatGPT-drawn heroes
+
+
 def creature_params(b) -> dict:
-    """A creature request ({name, prompt | image, animal?, clips, fill_missing, bake?, size_cm?, preset}) checked
+    """A creature request ({name, prompt | image, animal?, clips, fill_missing, bake?, size_cm?, concept?, preset}) checked
     and filled in. Raises ValueError."""
     a = _app()
     for k in ("name", "prompt", "image", "animal", "preset"):
@@ -314,6 +317,9 @@ def creature_params(b) -> dict:
     preset = b.get("preset", a.DEFAULT_PRESET)
     if preset not in a.PRESET_LEVELS:
         raise ValueError(f"preset must be one of {a.PRESET_LEVELS}")
+    concept = b.get("concept", "depth")
+    if concept not in CONCEPTS:
+        raise ValueError(f"concept must be one of {CONCEPTS}")
     size = b.get("size_cm")
     if size is not None:
         try:  # a number or a numeric string; anything else (true, a list) fails the range check as NaN
@@ -324,7 +330,7 @@ def creature_params(b) -> dict:
             raise ValueError("size_cm is the creature's length in cm, 1-2000")
     return {"name": name, "prompt": str(b.get("prompt") or ""), "image": b.get("image") or "", "animal": b.get("animal") or "",
             "clips": clips, "fill_missing": fill, "bake": bake, "size_cm": size,
-            "preset": preset}
+            "concept": concept, "preset": preset}
 
 
 def pick_animal(p, s):
@@ -349,17 +355,99 @@ def pick_animal(p, s):
     return entry, m
 
 
-def concept_image(jid, p, entry, log, step) -> dict:
-    """The concept views {pos: png}. Drawn: the multi-view heroes flow (a side-on hero, its front redraw and its mirror),
-    as one side view hides the far legs and Pixal3D then fuses each pair; the hero is first reviewed for body plan and
-    stance, up to 3 drawings. The request's own image is reviewed once and used as the single view."""
+CREATURE_DEPTH_WRAP = ("{garment}\n\nOne whole animal, alone, seen exactly {view}, orthographic, in this pose: " + STANCE + ". "
+                       "Soft even studio light, no other objects, no text, no ground shadow. The supplied depth gives only the "
+                       "animal's size, stance and body plan; its fur, mane, horns, colour and build follow the description.")
+CREATURE_DEPTH_NEGATIVE = ("several animals, collage, turnaround sheet, text, watermark, ground shadow, scenery, person, cropped, "
+                           "cut-off legs, open mouth, three-quarter view, motion blur")
+
+
+def depth_host(host):
+    """`host` if it can run the Qwen depth workflow, else another enabled host that can and has no job; None if none."""
     a = _app()
+    if a.host_status(host)["qwen_depth"]:
+        return host
+    with a.DB_LOCK, a.db() as c:
+        taken = {r[0] for r in c.execute("SELECT host FROM jobs WHERE status IN ('running','cancelling')")}
+    for h in a.get_settings()["hosts"]:
+        if h.get("enabled") and h["name"] not in taken and (st := a.host_status(h))["ok"] and not st["busy"] and st["qwen_depth"]:
+            return h
+    return None
+
+
+def standin_depth(jid, host, lib, size_cm) -> dict:
+    """motion/standin_depth.py in Blender on `host` for the animal library folder `lib` at `size_cm` -> {file name: bytes}:
+    depth_<view>.png, standin_<view>.png and standin.json."""
+    a, q = _app(), shlex.quote
+    work, animal = a.host_tools(jid, host)[0], json.loads((Path(lib) / "animal.json").read_text())
+    clip = animal["clips"][0]["file"]
+    for f in a.MOTION_DIR.glob("*.py"):
+        a.put_input(host, f"{jid}/{f.name}", f.read_bytes())
+    for f in ("animal.json", clip):
+        a.put_input(host, f"{jid}/zoo/{f}", (Path(lib) / f).read_bytes())
+    a.job_blender(jid)
+    a.run_blender(jid, host, "standin_depth.py", ["zoo/animal.json", f"zoo/{clip}", str(size_cm), "standin"], ["zoo"],
+                  ["standin"], 900)
+    names = [f"{k}_{v}.png" for k in ("depth", "standin") for v in a.DEPTH_VIEWS] + ["standin.json"]
+    return {n: a.ssh(host, f"cat {q(work + '/standin/' + n)}", timeout=300) for n in names}
+
+
+def depth_concept(jid, host, p, entry, lib, size, brief, log, step, info):
+    """The concept views {front, left, right} drawn by Qwen-Image-2.1 under the matched animal's stand-in depth maps; the
+    side view is reviewed against `brief` (up to 3 tries, a new seed each). None, logged, when it cannot be done: no
+    host with the depth workflow free, a failed stand-in render, or three failed reviews - the caller falls back to the
+    heroes flow, as the depth path alone never fails a job."""
+    a, s = _app(), _app().get_settings()
+    try:
+        dhost = depth_host(host)
+        if not dhost:
+            log.append("concept: no host with the Qwen depth workflow is free; using the heroes flow")
+            return None
+        step("rendering the stand-in")
+        files = standin_depth(jid, host, lib, size)
+        depth = {v: files[f"depth_{v}.png"] for v in a.DEPTH_VIEWS}
+        info["standin"] = {**{f"standin_depth_{v}.png": depth[v] for v in a.DEPTH_VIEWS},
+                           **{f"standin_{v}.png": files[f"standin_{v}.png"] for v in a.DEPTH_VIEWS}, "standin.json": files["standin.json"]}
+        log.append(f"concept: stand-in rendered for {entry['id']} at {size:g} cm")
+        base, extra = p["prompt"] or p["name"], ""
+        for n in range(1, 4):
+            step(f"drawing the depth concept (try {n}/3)")
+            control = {"strength": s["creature_depth_strength"], "end_percent": s["creature_depth_end"], "seed": 12345 + 1000 * n}
+            views = a.depth_views(jid, dhost, {"prompt": base + extra, "symmetric": True}, log, depth=depth,
+                                  wrap=CREATURE_DEPTH_WRAP, negative=CREATURE_DEPTH_NEGATIVE, control=control)
+            r = a.codex_review([views["left"]], brief)
+            log.append(f"depth concept {n}: {'pass' if r['pass'] else 'fail: ' + '; '.join(r['problems'])}")
+            if r["pass"]:
+                return views
+            extra = f"\n\nA previous drawing was rejected: {'; '.join(r['problems'])}. {r['fix']}"
+        log.append("concept: the depth views failed their review; using the heroes flow")
+    except InterruptedError:
+        raise
+    except Exception as e:
+        log.append(f"concept: the depth path failed ({str(e)[-200:]}); using the heroes flow")
+    return None
+
+
+def concept_image(jid, p, entry, log, step, host=None, lib=None, size=None, info=None) -> dict:
+    """The concept views {pos: png}. With `concept` "depth" (the default; needs `host` and the animal's `lib`): the
+    matched animal's stand-in guides Qwen (depth_concept), else the multi-view heroes flow (a side-on hero, its front
+    redraw and its mirror), as one side view hides the far legs and Pixal3D then fuses each pair; the hero is first
+    reviewed for body plan and stance, up to 3 drawings. The request's own image is reviewed once and used as the single
+    view. `info` gets `concept` (depth, heroes or image) and, for depth, the stand-in's files."""
+    a, info = _app(), {} if info is None else info
     brief = (f"The image must show one whole {entry['body_plan']} animal like a {entry['name'].lower()} (four legs, a head "
              f"and a tail), alone. An image-to-3D model is built from it, then rigged and animated from a rest pose like "
              f"this: {STANCE}. Fail it if the body plan differs or the pose does (rearing, sitting, lying, curled, legs bent "
              f"or tucked, mouth open, seen from the front or at an angle), or if any leg or the tail is cut off, merged "
              f"with another part or missing. The request: {p['prompt'] or p['name']}")
     prompt, own, extra = f"{p['prompt'] or p['name']}\n\nPose: {STANCE}.", bool(p.get("image")), ""
+    info["concept"] = "image" if own else "heroes"
+    if not own and host and lib and p.get("concept", "depth") == "depth":
+        views = depth_concept(jid, host, p, entry, lib, size, brief, log, step, info)
+        if views:
+            info["concept"] = "depth"
+            return views
+        info.pop("standin", None)
     for n in range(1, 2 if own else 4):
         if a.job_row(jid)["status"] == "cancelling":
             raise InterruptedError
@@ -674,7 +762,8 @@ def run_creature(jid, host):
         lib = ensure_curated(entry["id"], host, jid)
         animal = json.loads((lib / "animal.json").read_text())
         size = p["size_cm"] or sum(entry["size_cm"]) / 2
-        views = concept_image(jid, p, entry, log, step)
+        info = {}
+        views = concept_image(jid, p, entry, log, step, host, lib, size, info)
         png = views.get("left") or views["concept"]  # the side-on design image
         step("building the model: Pixal3D, UltraTex and the SkinTokens rig")
         model = build_model(jid, host, p, views)
@@ -713,6 +802,8 @@ def run_creature(jid, host):
             (build / d).mkdir()
         for pos, v in views.items():  # <Name>_concept.png, or <Name>_concept_<view>.png per drawn view
             (build / "source" / f"{n}_concept{'' if pos == 'concept' else '_' + pos}.png").write_bytes(v)
+        for f, data in info.get("standin", {}).items():  # the depth guides, kept as source
+            (build / "source" / f).write_bytes(data)
         (build / "source" / f"{n}_rig_labels.png").write_bytes(get(std["sheet"]))
         for t in (n, f"{n}_animated"):
             (build / ".thumbs" / f"{t}.png").write_bytes(png)
@@ -722,7 +813,7 @@ def run_creature(jid, host):
         # every clip file is the rig at size: the first one without its animation is the primary model
         (build / f"{n}.glb").write_bytes(glb_without_animations((build / "animations" / f"{n}_{clips[0]['name']}.glb").read_bytes()))
         man = {"name": n, "animal": entry["id"], "match": {"score": m["score"], "reason": m["reason"]},
-               "body_plan": entry["body_plan"], "size_cm": size, "skeleton": SKELETON,
+               "body_plan": entry["body_plan"], "size_cm": size, "skeleton": SKELETON, "concept": info["concept"],
                "clips": [{"name": c["name"], "file": f"animations/{n}_{c['name']}.glb", "source": c["source"],
                           "checks": c["checks"], "baked": False,
                           **({k: c[k] for k in ("seed", "prompt")} if c["source"] == "text" else {})} for c in clips],

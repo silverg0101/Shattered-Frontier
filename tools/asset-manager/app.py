@@ -49,6 +49,8 @@ DEFAULT_SETTINGS = {
     "creature_seam_deg": 3.0,
     "creature_match_threshold": 0.5,
     "creature_unimate_seeds": 4,
+    "creature_depth_strength": 0.55,
+    "creature_depth_end": 0.7,
 }
 # key: (unit, type, min, max). detector_limits are the exam's "good" bar in % of the model's height, each 0.5-20;
 # "usable" is within detector_usable_x times them; auto-train trains a detector when a model is rigged.
@@ -61,7 +63,10 @@ CREATURE_SETTINGS = {"creature_height_scale": ("x the source bob", float, 0.2, 1
                      "creature_slide_cm": ("cm", float, 0.0, 10.0),
                      "creature_seam_deg": ("degrees", float, 0.0, 30.0),
                      "creature_match_threshold": ("match score 0-1", float, 0.0, 1.0),  # below it a creature job fails
-                     "creature_unimate_seeds": ("UniMate seeds per missing clip", int, 1, 8)}
+                     "creature_unimate_seeds": ("UniMate seeds per missing clip", int, 1, 8),
+                     # the depth concept's ControlNet: loose enough that fur, manes, horns and "fat" or "lean" still show
+                     "creature_depth_strength": ("ControlNet strength", float, 0.2, 1.0),
+                     "creature_depth_end": ("ControlNet end percent of the steps", float, 0.3, 1.0)}
 
 # ---------------------------------------------------------------- 3D Asset workflow
 # API-format version of "Trellis2 + Pixal3d.json": Pixal3D geometry, UltraTex texturing.
@@ -2241,17 +2246,19 @@ def depth_fit(png, slot, pos):
             gaps.extend((left - gl, gr - right))
     return round(covered / total, 4), round(sum(gaps) / len(gaps) * cm_per_px, 2) if gaps else None
 
-def depth_views(jid, host, p, log):
-    """One Qwen-Image-2.1 + depth-ControlNet generation per view on `host`, from the slot's pre-rendered body depth maps."""
+def depth_views(jid, host, p, log, depth=None, wrap=DEPTH_WRAP, negative=DEPTH_NEGATIVE, control=None):
+    """One Qwen-Image-2.1 + depth-ControlNet generation per view on `host`: from the slot's pre-rendered body depth maps
+    (garments), or from `depth` {view: png} with its own prompt `wrap` ({garment} and {view} are filled in) and
+    `negative` (creature concepts, which skip the dress-form fit). `control` overrides {strength, end, seed}."""
     ok, line = gpu_check(host)
     log.append(line)
     if not ok:
         raise RuntimeError(line)
-    names = {pos: f"{jid}_{p['slot']}_{pos}.png" for pos in DEPTH_VIEWS}
+    tag = p["slot"] if depth is None else "depth"
+    names = {pos: f"{jid}_{tag}_{pos}.png" for pos in DEPTH_VIEWS}
     drawn = ("front", "left") if p["symmetric"] else DEPTH_VIEWS
     for pos in drawn:
-        n = names[pos]
-        put_input(host, n, (DEPTH_DIR / f"depth_{p['slot']}_{pos}.png").read_bytes())
+        put_input(host, names[pos], (DEPTH_DIR / f"depth_{p['slot']}_{pos}.png").read_bytes() if depth is None else depth[pos])
     views = {}
     try:
         comfy(host, "/free", {"unload_models": True, "free_memory": True})
@@ -2259,19 +2266,25 @@ def depth_views(jid, host, p, log):
             t = time.time()
             g = json.loads(json.dumps(DEPTH_WORKFLOW))
             g["5"]["inputs"]["image"] = f"sfam/{names[pos]}"
-            g["6"]["inputs"].update(prompt=DEPTH_WRAP.format(garment=p["prompt"], view=DEPTH_VIEW_TEXT[pos]), negative_prompt=DEPTH_NEGATIVE)
+            g["6"]["inputs"].update(prompt=wrap.format(garment=p["prompt"], view=DEPTH_VIEW_TEXT[pos]), negative_prompt=negative)
+            g["7"]["inputs"].update({k: v for k, v in (control or {}).items() if k in ("strength", "end_percent")})
+            g["9"]["inputs"]["seed"] = (control or {}).get("seed", g["9"]["inputs"]["seed"])
             g["11"]["inputs"]["filename_prefix"] = f"sfam/{jid}_qd/{pos}"
             h = run_prompt(host, jid, g, time.time(), get_settings()["job_timeout_min"])
             f = h["outputs"]["11"]["images"][0]
             views[pos] = get_output(host, f"{f['subfolder']}/{f['filename']}"[len("sfam/"):])
+            if depth is not None:
+                log.append(f"views: {pos} drawn in {time.time() - t:.0f}s")
+                continue
             cov, gap = depth_fit(views[pos], p["slot"], pos)
             log.append(f"views: {pos} drawn in {time.time() - t:.0f}s; covers {cov:.1%} of the {p['slot']} dress form; "
                        f"mean outward body-outline gap {gap} cm")
         if p["symmetric"]:
             views["right"] = mirrored(views["left"])
-            cov, gap = depth_fit(views["right"], p["slot"], "right")
-            log.append(f"views: right mirrored from the left orthographic side; covers {cov:.1%} of the "
-                       f"{p['slot']} dress form; mean outward body-outline gap {gap} cm")
+            if depth is None:
+                cov, gap = depth_fit(views["right"], p["slot"], "right")
+                log.append(f"views: right mirrored from the left orthographic side; covers {cov:.1%} of the "
+                           f"{p['slot']} dress form; mean outward body-outline gap {gap} cm")
     finally:
         cleanup(host, [names[pos] for pos in drawn], [f"{jid}_qd"])
     return views
@@ -3060,6 +3073,32 @@ def check():
             pass
     ok = creature.creature_params({"name": "x", "prompt": "a", "fill_missing": "false", "size_cm": "30"})
     assert ok["fill_missing"] is False and ok["size_cm"] == 30.0
+    assert ok["concept"] == "depth" and creature.creature_params({"name": "x", "prompt": "a", "concept": "heroes"})["concept"] == "heroes"
+    for bad in ("Depth", "", None, ["depth"], 1):  # an explicit null is not "default": 400 on anything but the two names
+        try:
+            creature.creature_params({"name": "x", "prompt": "a", "concept": bad}); raise AssertionError(f"concept {bad!r}")
+        except ValueError:
+            pass
+    for k, (lo, hi, d) in {"creature_depth_strength": (0.2, 1.0, 0.55), "creature_depth_end": (0.3, 1.0, 0.7)}.items():
+        assert CREATURE_SETTINGS[k][2:] == (lo, hi) and DEFAULT_SETTINGS[k] == d, k
+    import inspect  # depth_views keeps the garment call shape; the creature inputs are optional keywords
+    ps = inspect.signature(depth_views).parameters
+    assert list(ps)[:4] == ["jid", "host", "p", "log"] and all(ps[k].default is not inspect.Parameter.empty for k in list(ps)[4:])
+    assert "{garment}" in creature.CREATURE_DEPTH_WRAP and "{view}" in creature.CREATURE_DEPTH_WRAP
+    creature.CREATURE_DEPTH_WRAP.format(garment="a rat", view="from the front")
+    # the depth concept never fails a job: no host, or a failed stand-in, returns None for the heroes flow
+    saved = creature.depth_host, creature.standin_depth
+    dlog, dinfo = [], {}
+    try:
+        creature.depth_host = lambda h: None
+        assert creature.depth_concept(1, {}, {"prompt": "a", "name": "x"}, {"id": "Rat"}, td, 30, "", dlog, lambda n: None, dinfo) is None
+        creature.depth_host = lambda h: h
+        def no_standin(*a): raise RuntimeError("blender died")
+        creature.standin_depth = no_standin
+        assert creature.depth_concept(1, {"name": "t"}, {"prompt": "a", "name": "x"}, {"id": "Rat"}, td, 30, "", dlog, lambda n: None, dinfo) is None
+        assert "no host" in dlog[0] and "blender died" in dlog[1] and "standin" not in dinfo, dlog
+    finally:
+        creature.depth_host, creature.standin_depth = saved
     # place_model: a name taken while the job ran gets the next suffix, files and manifest renamed; never nested
     b = td / "build"
     (b / "animations").mkdir(parents=True)
