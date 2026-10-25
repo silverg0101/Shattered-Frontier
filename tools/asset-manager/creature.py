@@ -558,6 +558,20 @@ def write_manifest(folder, man: dict):
     os.replace(tmp, f)
 
 
+def set_unreal(name: str, b, folder=None) -> dict:
+    """Store unreal_creature_check.py's verdict ({state: pass | fail, reason}) as the manifest's `unreal`. -> the manifest."""
+    if not isinstance(b, dict) or b.get("state") not in ("pass", "fail") or not isinstance(b.get("reason", ""), str):
+        raise ValueError("send {state: pass or fail, reason: text}")
+    with MODEL_LOCK:
+        folder = Path(folder) if folder else model_dir(name)
+        if not (folder / f"{name}.json").is_file():
+            raise ValueError(f"no such model: {name}")
+        man = json.loads((folder / f"{name}.json").read_text())
+        man["unreal"] = {"state": b["state"], "reason": b.get("reason", "")[:4000]}
+        write_manifest(folder, man)
+        return man
+
+
 def combine_model(name: str, clips: list, folder=None) -> dict:
     """Rebuild <Name>_animated.glb from <Name>.glb and the listed clips (one named animation each) and mark them baked
     in the manifest. Refuses (ValueError naming the clip) a clip without a file or on another skeleton; the old file is

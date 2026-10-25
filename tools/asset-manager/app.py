@@ -2518,7 +2518,9 @@ class Handler(BaseHTTPRequestHandler):
                     jid = c.execute("INSERT INTO jobs (kind, name, params, status, created) VALUES (?, ?, ?, 'queued', ?)",
                                     (kind, name, json.dumps(params), time.time())).lastrowid
                 return self.send({"id": jid, "status": "queued", "status_url": f"{base}/api/jobs/{jid}"})
-            if (m := re.fullmatch(r"/api/models/([\w-]+)(/combine|/clips)?", p)) and (method, bool(m[2])) in (("GET", False), ("POST", True)):
+            if (m := re.fullmatch(r"/api/models/([\w-]+)(/combine|/clips|/unreal)?", p)) and (method, bool(m[2])) in (("GET", False), ("POST", True)):
+                if m[2] == "/unreal":  # unreal_creature_check.py's verdict from the desktop
+                    return self.send(creature.set_unreal(m[1], self.body()))
                 if m[2] == "/combine":  # rebuild <Name>_animated.glb from the ticked clips
                     return self.send(creature.combine_model(m[1], self.body().get("clips")))
                 if m[2]:  # New Animation / Add from GLB: a clip job on the model's rig
@@ -3014,6 +3016,13 @@ def check():
     assert struct.unpack_from("<8f", binary, off) == (0, 0, 0, 1, 0, 0, 0, 1)  # the clip's keys, not the model's bytes
     assert [c["baked"] for c in man["clips"]] == [True, False, False]
     assert json.loads((m / "Rat.json").read_text())["clips"][0]["baked"] is True
+    assert creature.set_unreal("Rat", {"state": "fail", "reason": "no AnimSequence"}, m)["unreal"] == {"state": "fail", "reason": "no AnimSequence"}
+    assert json.loads((m / "Rat.json").read_text())["unreal"]["state"] == "fail"
+    for bad in ({"state": "pending"}, {"state": "pass", "reason": 5}, ["pass"]):
+        try:
+            creature.set_unreal("Rat", bad, m); raise AssertionError(bad)
+        except ValueError:
+            pass
     before = (m / "Rat_animated.glb").read_bytes()
     for bad in ("Odd", "Gone"):  # a different skeleton, a missing file
         try:
