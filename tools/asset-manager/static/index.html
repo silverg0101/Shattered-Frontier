@@ -1238,7 +1238,7 @@ async function addFromGlb(man) {
       const names = [...o.querySelectorAll('[data-an]:checked')].map(x => +x.dataset.an);
       if (!glb) throw new Error('Choose a .glb first');
       if (!names.length) throw new Error('Tick at least one animation');
-      const rename = Object.fromEntries(names.map(i => [i, $(`[data-rn="${i}"]`, o).value.trim()]).filter(([i, r]) => r && r !== $(`[data-an="${i}"]`, o).dataset.dn));
+      const rename = Object.fromEntries(names.map(i => [i, $(`[data-rn="${i}"]`, o).value.trim()]).filter(([i, r]) => r));
       await post(`/api/models/${man.name}/clips`, { source: 'glb', from_glb: glb, animations: names, rename });
     });
   const choose = async p => {
