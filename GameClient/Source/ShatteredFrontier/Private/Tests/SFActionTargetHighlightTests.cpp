@@ -14,6 +14,8 @@
 #include "Engine/Engine.h"
 #include "Engine/LocalPlayer.h"
 #include "Misc/ScopeExit.h"
+#include "MaterialShared.h"
+#include "RHI.h"
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFActionTargetHighlightTest, "ShatteredFrontier.Loot.SelectionOutlineCompatibility",
     EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
@@ -55,6 +57,11 @@ bool FSFActionTargetHighlightTest::RunTest(const FString& Parameters)
     auto* Outline = Selection->GetOutlineMaterial();
     if (!TestNotNull(TEXT("Generated common outline material loaded"), Outline)) return false;
     TestEqual(TEXT("Actual material uses the postprocess renderer path"), EMaterialDomain(Outline->GetMaterial()->MaterialDomain), MD_PostProcess);
+    auto* Resource = Outline->GetMaterialResource(GMaxRHIShaderPlatform);
+    if (!TestNotNull(TEXT("Actual RHI outline material resource"), Resource)) return false;
+    Resource->FinishCompilation(); // This material only, not a global shader/asset flush.
+    for (const FString& Error : Resource->GetCompileErrors()) AddError(Error);
+    if (!TestTrue(TEXT("Outline shader compilation succeeds with a real shader map"), Resource->IsCompilationFinished() && Resource->GetGameThreadShaderMap() && Resource->GetCompileErrors().IsEmpty())) return false;
     FMinimalViewInfo View; View.PostProcessBlendWeight = .25f; View.PostProcessSettings.bOverride_AutoExposureBias = true; View.PostProcessSettings.AutoExposureBias = 3;
     Player->PlayerCameraManager->ApplyCameraModifiers(.016f, View);
     const TArray<FPostProcessSettings>* Blends = nullptr; const TArray<float>* Weights = nullptr;
