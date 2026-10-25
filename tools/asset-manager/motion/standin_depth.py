@@ -31,7 +31,7 @@ for _s in ("FR", "HR"):
 SHOULDER = 0.82  # front legs hang this far along the pelvis-to-neck line
 HEAD_LEN = 0.20  # the head is this share of the body length (nose to the pelvis)
 LEG_FRAC = 0.33  # joint height of every leg, of the body length: the belly sits at about 35-40% of the back height
-TAIL_MAX = 1.0  # the tail is at most this many body lengths (pelvis to nose): a Zoo-300K rat's runs 2.3 x, which no concept shows
+TAIL_MAX = 0.5  # the tail is at most this many body lengths (pelvis to nose): a Zoo-300K rat's runs 2.3 x and a buffalo's 1 x, which drew stiff long tails on the concept
 HEAD_BLOB = 0.4  # a ball of the head's radius this far along the head (0 = at the joint, 1 = at the nose)
 VOXEL = 1 / 250  # remesh voxel, of the whole length
 S = 1024
