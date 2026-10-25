@@ -139,6 +139,9 @@ private:
     void PostLoginCombat(APlayerController* NewPlayer);
     void RestartCombat(AController* NewPlayer);
     void TickCombat();
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    void TickGreenlandsNetcheck();
+#endif
     bool LoadZoneRecord();
     bool RunWorldSlots(const FString& Command, const FString& Group = FString(), int32 Slot = INDEX_NONE);
     void SpawnSlot(const FString& Group, int32 Slot, int32 Cycle, const FString& PointId,
@@ -179,4 +182,18 @@ private:
     bool bScenario = false;
     bool bScenarioFirstBoarDied = false;
     bool bReconnectDeathTriggered = false;
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    TWeakObjectPtr<APlayerController> GreenlandsDriverController;
+    TWeakObjectPtr<APlayerController> GreenlandsObserverController;
+    TWeakObjectPtr<ASFPilotBoar> GreenlandsLead;
+    TWeakObjectPtr<ASFPilotBoar> GreenlandsMate;
+    FVector GreenlandsLeadAnchor = FVector::ZeroVector;
+    FVector GreenlandsMateAnchor = FVector::ZeroVector;
+    int32 GreenlandsNetcheckStage = 0;
+    int32 GreenlandsLeadSlot = -1;
+    int32 GreenlandsMateSlot = -1;
+    int32 GreenlandsRegenHealth = 0;
+    bool bGreenlandsRegenObserved = false;
+    double GreenlandsStageAt = 0;
+#endif
 };

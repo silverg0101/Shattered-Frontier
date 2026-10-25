@@ -563,7 +563,9 @@ void ASFPilotBoar::Tick(float DeltaSeconds)
     { EnterEvade(); return; }
     const FVector Ground = Grounded(GetWorld(), Candidate, GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
     const FVector BeforeMove = GetActorLocation();
-    SetActorLocation(Ground, true);
+    // An immune return follows its straight anchor path; sweeping can pin it
+    // against Silverbrook fences indefinitely before health/threat reset.
+    SetActorLocation(Ground, !bReturning);
     if (Victim && !bReturning)
     {
         const bool bBlocked = FVector::Dist2D(BeforeMove, GetActorLocation()) < 1.0 &&
@@ -723,6 +725,12 @@ void ASFGameMode::PostLoginCombat(APlayerController* NewPlayer)
 {
     if (bPilotActive && !USFBackpackComponent::Services()) { SFCombatPilotRewards::AddPilotBag(NewPlayer); }
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    if (GetWorld()->GetOutermost()->GetName() == TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook") &&
+        FParse::Param(FCommandLine::Get(), TEXT("GreenlandsBoarNetcheck")))
+    {
+        if (GetNumPlayers() == 1) { GreenlandsDriverController = NewPlayer; }
+        else if (GetNumPlayers() == 2) { GreenlandsObserverController = NewPlayer; }
+    }
     if (GetWorld()->GetOutermost()->GetName() == TEXT("/Game/Frontier/Maps/Sandbox/SB_Aggro") &&
         FParse::Param(FCommandLine::Get(), TEXT("CombatAggroScenario")))
     {
@@ -870,7 +878,172 @@ void ASFGameMode::TickCombat()
     if (!bPilotActive || !CapturedSettings->bSilverbrookHostileSpawning || (!bSlotServiceMode && !bSlotBridgeHealthy)) { return; }
     if (GetWorld()->GetTimeSeconds() >= NextSlotTick)
     { NextSlotTick = GetWorld()->GetTimeSeconds() + 2.0; bSlotBridgeHealthy = RunWorldSlots(TEXT("tick")); }
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    if (FParse::Param(FCommandLine::Get(), TEXT("GreenlandsBoarNetcheck"))) { TickGreenlandsNetcheck(); }
+#endif
 }
+
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+void ASFGameMode::TickGreenlandsNetcheck()
+{
+    auto* Driver = Cast<ASFE1Character>(GreenlandsDriverController.IsValid() ? GreenlandsDriverController->GetPawn() : nullptr);
+    auto* Observer = Cast<ASFE1Character>(GreenlandsObserverController.IsValid() ? GreenlandsObserverController->GetPawn() : nullptr);
+    if (!Driver || !Observer || Driver->CombatHealth() <= 0 || Observer->CombatHealth() <= 0) { return; }
+    const double Now = GetWorld()->GetTimeSeconds();
+    auto Move = [this](ASFE1Character* Player, const FVector& XY)
+    {
+        Player->SetActorLocation(Grounded(GetWorld(), XY, Player->GetCapsuleComponent()->GetScaledCapsuleHalfHeight()),
+            false, nullptr, ETeleportType::TeleportPhysics);
+    };
+    auto Stage = [this, Driver, Observer, Now](int32 Value, bool bKill = false)
+    {
+        GreenlandsNetcheckStage = Value;
+        GreenlandsStageAt = Now;
+        Driver->SetGreenlandsNetcheckStage(Value, GreenlandsLeadSlot, GreenlandsMateSlot, bKill);
+        Observer->SetGreenlandsNetcheckStage(Value, GreenlandsLeadSlot, GreenlandsMateSlot, false);
+    };
+    if (GreenlandsNetcheckStage == 0)
+    {
+        ASFPilotBoar* BestLead = nullptr;
+        ASFPilotBoar* BestMate = nullptr;
+        double BestDistance = 800.0;
+        for (const auto& First : ActiveBoars)
+        {
+            ASFPilotBoar* Lead = First.Value.Get();
+            if (!First.Key.StartsWith(TEXT("boar_farm_edge:")) || !Lead || Lead->IsDefensive()) { continue; }
+            for (const auto& Second : ActiveBoars)
+            {
+                ASFPilotBoar* Mate = Second.Value.Get();
+                if (!Second.Key.StartsWith(TEXT("boar_farm_edge:")) || !Mate || !Mate->IsDefensive()) { continue; }
+                const double Distance = FVector::Dist2D(Lead->GetActorLocation(), Mate->GetActorLocation());
+                if (Distance < BestDistance)
+                { BestDistance = Distance; BestLead = Lead; BestMate = Mate; }
+            }
+        }
+        if (BestLead && BestMate)
+        {
+            GreenlandsLead = BestLead; GreenlandsMate = BestMate;
+            GreenlandsLeadSlot = BestLead->SlotIndex(); GreenlandsMateSlot = BestMate->SlotIndex();
+            GreenlandsLeadAnchor = BestLead->SpawnAnchor();
+            GreenlandsMateAnchor = BestMate->SpawnAnchor();
+            Move(Driver, BestLead->GetActorLocation() + BestLead->GetActorForwardVector() * 700);
+            Move(Observer, BestLead->GetActorLocation() - BestLead->GetActorForwardVector() * 3000);
+            // Keep the two test pawns alive through several minutes of observed AI transitions.
+            Driver->CombatSetHealth(1000);
+            Observer->CombatSetHealth(1000);
+            Stage(1);
+            UE_LOG(LogTemp, Display, TEXT("BOAR_GREENLANDS_BEGIN LeadSlot=%d MateSlot=%d DistanceCm=%.0f"),
+                GreenlandsLeadSlot, GreenlandsMateSlot, BestDistance);
+        }
+        return;
+    }
+    ASFPilotBoar* Lead = GreenlandsLead.Get();
+    ASFPilotBoar* Mate = GreenlandsMate.Get();
+    if (GreenlandsNetcheckStage <= 8 && (!Lead || !Mate)) { return; }
+    if (GreenlandsNetcheckStage == 1 && Lead->ThreatTarget() == Driver &&
+        !Mate->ThreatTarget() && Now - GreenlandsStageAt >= 1.5)
+    {
+        UE_LOG(LogTemp, Display, TEXT("BOAR_GREENLANDS_AGGRO LeadSlot=%d"), GreenlandsLeadSlot);
+        // Keep the challenger in the pack clearing so the lead can close back
+        // within the common 8 m assist radius after switching targets.
+        const FVector TowardLead = (Lead->GetActorLocation() - Mate->GetActorLocation()).GetSafeNormal2D();
+        Move(Observer, Mate->GetActorLocation() + TowardLead * 180);
+        Lead->ReceivePilotDamage(Observer, 20);
+        Stage(2);
+    }
+    else if (GreenlandsNetcheckStage == 2 && Lead->ThreatTarget() == Observer && Mate->ThreatTarget() == Observer)
+    {
+        Mate->ReceivePilotDamage(Observer, 1); // accepted damage seeds the defensive boar's later memory
+        UE_LOG(LogTemp, Display, TEXT("BOAR_GREENLANDS_SWITCH_ASSIST LeadSlot=%d MateSlot=%d"),
+            GreenlandsLeadSlot, GreenlandsMateSlot);
+        Move(Driver, GreenlandsLeadAnchor + FVector(-10000, 0, 0));
+        Stage(3);
+    }
+    else if (GreenlandsNetcheckStage == 3 && Now - GreenlandsStageAt >= 2.0)
+    {
+        FVector2D Centre = FVector2D::ZeroVector;
+        const auto& Polygon = Groups[TEXT("boar_farm_edge")].Polygon;
+        for (const FVector2D& Corner : Polygon) { Centre += Corner; }
+        Centre /= Polygon.Num();
+        const FVector TowardCentre = (FVector(Centre.X * 100, Centre.Y * 100, 0) -
+            GreenlandsLeadAnchor).GetSafeNormal2D();
+        Move(Observer, GreenlandsLeadAnchor + TowardCentre * 5200);
+        // Probe the authored 60 m leash with both engaged boars. The farm
+        // clearing has collision that otherwise ends pursuit near the anchor.
+        const FVector MateTowardCentre = (FVector(Centre.X * 100, Centre.Y * 100, 0) -
+            GreenlandsMateAnchor).GetSafeNormal2D();
+        Lead->SetActorLocation(Grounded(GetWorld(), GreenlandsLeadAnchor + TowardCentre * 6200,
+            Lead->GetCapsuleComponent()->GetScaledCapsuleHalfHeight()), false, nullptr, ETeleportType::TeleportPhysics);
+        Mate->SetActorLocation(Grounded(GetWorld(), GreenlandsMateAnchor + MateTowardCentre * 6200,
+            Mate->GetCapsuleComponent()->GetScaledCapsuleHalfHeight()), false, nullptr, ETeleportType::TeleportPhysics);
+        UE_LOG(LogTemp, Display, TEXT("BOAR_GREENLANDS_CHASE_POINT X=%.0f Y=%.0f Inside=%d"),
+            Observer->GetActorLocation().X, Observer->GetActorLocation().Y,
+            IsInsideTerritory(Observer->GetActorLocation(), Polygon) ? 1 : 0);
+        UE_LOG(LogTemp, Display, TEXT("BOAR_GREENLANDS_LEASH_PULL DistanceCm=%.0f"),
+            FVector::Dist2D(Lead->GetActorLocation(), GreenlandsLeadAnchor));
+        Stage(4);
+    }
+    else if (GreenlandsNetcheckStage == 4 && Lead->IsLeashing() && Mate->IsLeashing() &&
+        Now - GreenlandsStageAt >= 2.0)
+    {
+        Move(Observer, GreenlandsLeadAnchor + FVector(-10000, 0, 0));
+        UE_LOG(LogTemp, Display, TEXT("BOAR_GREENLANDS_EVADE LeadSlot=%d MateSlot=%d"),
+            GreenlandsLeadSlot, GreenlandsMateSlot);
+        Stage(5);
+    }
+    else if (GreenlandsNetcheckStage == 5 && !Lead->IsLeashing() && !Mate->IsLeashing() &&
+        Lead->Health() == CapturedSettings->BoarHealth && Mate->Health() == CapturedSettings->BoarHealth)
+    {
+        GreenlandsRegenHealth = FMath::Min(60, Observer->CombatHealth() - 1);
+        Observer->CombatSetHealth(GreenlandsRegenHealth);
+        UE_LOG(LogTemp, Display, TEXT("BOAR_GREENLANDS_RESET_REGEN_START Health=%d"), GreenlandsRegenHealth);
+        Stage(6);
+    }
+    else if (GreenlandsNetcheckStage == 6 && Observer->CombatHealth() > GreenlandsRegenHealth &&
+        !Observer->IsPilotInCombat())
+    {
+        if (!bGreenlandsRegenObserved)
+        {
+            bGreenlandsRegenObserved = true;
+            GreenlandsStageAt = Now;
+            UE_LOG(LogTemp, Display, TEXT("BOAR_GREENLANDS_REGEN Health=%d"), Observer->CombatHealth());
+        }
+        else if (Now - GreenlandsStageAt >= 2.0)
+        {
+            Move(Observer, Mate->GetActorLocation() + Mate->GetActorForwardVector() * 500);
+            Stage(7);
+        }
+    }
+    else if (GreenlandsNetcheckStage == 7 && Mate->ThreatTarget() == Observer && Now - GreenlandsStageAt >= 2.0)
+    {
+        UE_LOG(LogTemp, Display, TEXT("BOAR_GREENLANDS_MEMORY MateSlot=%d"), GreenlandsMateSlot);
+        Move(Observer, GreenlandsLeadAnchor + FVector(-10000, 0, 0));
+        Stage(8);
+    }
+    else if (GreenlandsNetcheckStage == 8 && !Lead->IsLeashing() && !Mate->IsLeashing() &&
+        !Lead->ThreatTarget() && !Mate->ThreatTarget() && Now - GreenlandsStageAt >= 1.0)
+    {
+        Move(Driver, Lead->GetActorLocation() + Lead->GetActorForwardVector() * 180);
+        Driver->SetCombatTarget(Lead);
+        Stage(9, true);
+    }
+    else if (GreenlandsNetcheckStage == 9 && !GreenlandsLead.IsValid())
+    {
+        Move(Driver, GreenlandsLeadAnchor + FVector(-10000, 0, 0));
+        Stage(10);
+        UE_LOG(LogTemp, Display, TEXT("BOAR_GREENLANDS_KILL LeadSlot=%d"), GreenlandsLeadSlot);
+    }
+    else if (GreenlandsNetcheckStage == 10)
+    {
+        ASFPilotBoar* Fresh = ActiveBoars.FindRef(FString::Printf(TEXT("boar_farm_edge:%d"), GreenlandsLeadSlot)).Get();
+        if (Fresh && Fresh != Lead && Fresh->Health() == CapturedSettings->BoarHealth)
+        {
+            Stage(11);
+            UE_LOG(LogTemp, Display, TEXT("BOAR_GREENLANDS_RESPAWN LeadSlot=%d HP=%d"), GreenlandsLeadSlot, Fresh->Health());
+        }
+    }
+}
+#endif
 
 bool ASFGameMode::RunWorldSlots(const FString& Command, const FString& Group, int32 Slot)
 {
@@ -956,7 +1129,11 @@ void ASFGameMode::SpawnSlot(const FString& Group, int32 Slot, int32 Cycle, const
     FActorSpawnParameters Params; Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
     auto* Boar = GetWorld()->SpawnActor<ASFPilotBoar>(Where, FRotator(0,Facing,0), Params);
     if (!Boar) { return; }
-    Boar->Initialize(this, Group, Slot, Groups[Group].Polygon, CapturedSettings->BoarHealth, ++NextBoarSerial);
+    // Each four-point clearing has two sight-aggressive and two defensive boars.
+    // Defensive packmates join through the common assist rule, then remember actual attackers.
+    const int32 PointOrdinal = FCString::Atoi(*PointId.Right(2));
+    Boar->Initialize(this, Group, Slot, Groups[Group].Polygon, CapturedSettings->BoarHealth,
+        ++NextBoarSerial, PointOrdinal % 4 >= 2);
     ActiveBoars.Add(Key, Boar);
     UE_LOG(LogTemp, Display, TEXT("COMBAT_PILOT_BOAR_SPAWN Group=%s Slot=%d Cycle=%d Point=%s"), *Group, Slot, Cycle, *PointId);
 }

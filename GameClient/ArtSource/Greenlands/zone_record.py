@@ -34,6 +34,16 @@ HOSTILE = [
 ]
 
 
+def cluster_boar_points(points):
+    """Keep each boar group in three clearings where common pack assist can fire."""
+    centres = [points[j]['position'] for j in (0, 4, 8)]
+    offsets = [(-2.5, -2.5), (2.5, -2.5), (-2.5, 2.5), (2.5, 2.5)]
+    return [dict(point_id=points[j * 4 + i]['point_id'],
+                 position=[round(x + dx, 1), round(y + dy, 1)],
+                 facing=round(math.degrees(math.atan2(-dy, -dx)) % 360, 1))
+            for j, (x, y) in enumerate(centres) for i, (dx, dy) in enumerate(offsets)]
+
+
 def ellipse(L, n=48):
     W = L['wall']; cx, cy = W['centre']
     return [[round(cx + W['semi_axis_x'] * math.cos(2 * math.pi * k / n), 1),
@@ -121,6 +131,10 @@ def build(L, candidates):
             p = [round(c[0] + rr * math.cos(a), 1), round(c[1] + rr * math.sin(a), 1)]
             if not wet(L, p) and all(math.dist(p, q['position']) > 6 for q in pts):
                 pts.append(dict(point_id=f'{gid}_{len(pts):02d}', position=p, facing=round(math.degrees(a) % 360, 1)))
+        if gid.startswith('boar_'):
+            # Three authored clearings of four points. Any five active slots include
+            # a pair within the common 8 m assist radius, even after point rotation.
+            pts = cluster_boar_points(pts)
         ring = circle(c, r)
         groups.append(dict(group_id=gid, spawn_kind='npc', definitions=[dict(definition_id=d, weight=w) for d, w in defs],
                            points=pts, active_count=k, area=ring, phase_filter='any', layer_policy='all_layers'))

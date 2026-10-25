@@ -171,6 +171,8 @@ public:
     FString DeathId() const { return FString::Printf(TEXT("%s:%d:%d"), *SpawnGroup, Slot, SpawnSerial); }
     int32 Health() const { return CurrentHealth; }
     bool IsLeashing() const { return bReturning; }
+    bool IsDefensive() const { return bDefensive; }
+    FVector SpawnAnchor() const { return Anchor; }
     ASFE1Character* ThreatTarget() const { return ReplicatedTarget; }
     bool HasThreatFor(const ASFE1Character* Character) const;
     bool ReceivePackAssist(ASFE1Character* Character, const FString& CharacterId);

@@ -862,14 +862,17 @@ void ASFE1Character::SetMouseCaptured(bool bCaptured)
 void ASFE1Character::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
-    if (HasAuthority() && GetWorld()->GetOutermost()->GetName() == TEXT("/Game/Frontier/Maps/Sandbox/SB_Regeneration") && PilotHealth > 0)
+    const FString CombatMap = GetWorld()->GetOutermost()->GetName();
+    if (HasAuthority() && PilotHealth > 0 &&
+        (CombatMap == TEXT("/Game/Frontier/Maps/Sandbox/SB_Regeneration") ||
+         CombatMap == TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook")))
     {
         bool bThreatened = false;
         for (TActorIterator<ASFPilotBoar> It(GetWorld()); It; ++It)
         { if (It->HasThreatFor(this)) { bThreatened = true; break; } }
         const auto* Settings = GetDefault<USFCombatPilotSettings>();
         const bool bWasInCombat = PilotRegen.bInCombat;
-        // The pilot has no attribute snapshot yet. Its isolated fixture uses the authored ATTRIBUTE_MIN 10.
+        // The pilot has no attribute snapshot yet; use the authored minimum until attributes are integrated.
         const int32 Regenerated = PilotRegen.Advance(GetWorld()->GetTimeSeconds(), bThreatened,
             PilotHealth, Settings->PlayerHealth, 10, Settings->CombatExitSeconds,
             Settings->RegenDelaySeconds, Settings->HealthRegenOocPct);
@@ -886,6 +889,56 @@ void ASFE1Character::Tick(float DeltaSeconds)
         }
     }
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    if (GetNetMode() == NM_Client && IsLocallyControlled() &&
+        FParse::Param(FCommandLine::Get(), TEXT("GreenlandsBoarNetcheck")))
+    {
+        FString ScenarioRole;
+        FParse::Value(FCommandLine::Get(), TEXT("GreenlandsBoarRole="), ScenarioRole);
+        if (ScenarioRole == TEXT("Driver") || ScenarioRole == TEXT("Observer"))
+        {
+            ASFPilotBoar* Lead = nullptr;
+            ASFPilotBoar* Mate = nullptr;
+            for (TActorIterator<ASFPilotBoar> It(GetWorld()); It; ++It)
+            {
+                if (It->GroupId() == TEXT("boar_farm_edge"))
+                {
+                    if (It->SlotIndex() == GreenlandsLeadSlot) { Lead = *It; }
+                    if (It->SlotIndex() == GreenlandsMateSlot) { Mate = *It; }
+                }
+            }
+            const double Now = GetWorld()->GetTimeSeconds();
+            if (GreenlandsLeadSlot >= 0 && Now >= GreenlandsNextSampleAt)
+            {
+                GreenlandsNextSampleAt = Now +
+                    (GreenlandsNetcheckStage <= 4 || GreenlandsNetcheckStage == 6 ||
+                     GreenlandsNetcheckStage == 7 ? 0.2 : 1.0);
+                ASFE1Character* ObservedPlayer = this;
+                if (ScenarioRole == TEXT("Driver"))
+                {
+                    for (TActorIterator<ASFE1Character> It(GetWorld()); It; ++It)
+                    { if (*It != this) { ObservedPlayer = *It; break; } }
+                }
+                auto TargetRole = [this](const ASFPilotBoar* Boar) -> const TCHAR*
+                {
+                    return !Boar || !Boar->ThreatTarget() ? TEXT("None") :
+                        Boar->ThreatTarget() == this ? TEXT("Self") : TEXT("Other");
+                };
+                UE_LOG(LogTemp, Display, TEXT("BOAR_GREENLANDS_SAMPLE Role=%s Stage=%d LeadSlot=%d LeadHP=%d LeadReturn=%d LeadTarget=%s MateSlot=%d MateHP=%d MateReturn=%d MateTarget=%s ObserverHP=%d ObserverCombat=%d"),
+                    *ScenarioRole, GreenlandsNetcheckStage, GreenlandsLeadSlot, Lead ? Lead->Health() : -1,
+                    Lead && Lead->IsLeashing() ? 1 : 0, TargetRole(Lead), GreenlandsMateSlot,
+                    Mate ? Mate->Health() : -1, Mate && Mate->IsLeashing() ? 1 : 0,
+                    TargetRole(Mate), ObservedPlayer->CombatHealth(), ObservedPlayer->IsPilotInCombat() ? 1 : 0);
+            }
+            if (ScenarioRole == TEXT("Driver") && bGreenlandsKill && Lead && Lead->Health() > 0 &&
+                Now >= GreenlandsNextAttackAt)
+            {
+                GreenlandsNextAttackAt = Now + 1.0;
+                if (Controller)
+                { Controller->SetControlRotation((Lead->GetActorLocation() - GetActorLocation()).Rotation()); }
+                PilotAttack();
+            }
+        }
+    }
     static bool bReconnectSawAlive = false;
     static bool bReconnectTravelled = false;
     FString ReconnectUrl;
@@ -1158,9 +1211,26 @@ void ASFE1Character::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
     DOREPLIFETIME(ASFE1Character, PilotHealth);
+    DOREPLIFETIME(ASFE1Character, bPilotInCombat);
+    DOREPLIFETIME(ASFE1Character, GreenlandsNetcheckStage);
+    DOREPLIFETIME(ASFE1Character, GreenlandsLeadSlot);
+    DOREPLIFETIME(ASFE1Character, GreenlandsMateSlot);
+    DOREPLIFETIME(ASFE1Character, bGreenlandsKill);
     DOREPLIFETIME(ASFE1Character, FaceId);
     DOREPLIFETIME_CONDITION(ASFE1Character, CombatTarget, COND_OwnerOnly);
 }
+
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+void ASFE1Character::SetGreenlandsNetcheckStage(int32 Stage, int32 LeadSlot, int32 MateSlot, bool bKill)
+{
+    if (!HasAuthority()) { return; }
+    GreenlandsNetcheckStage = Stage;
+    GreenlandsLeadSlot = LeadSlot;
+    GreenlandsMateSlot = MateSlot;
+    bGreenlandsKill = bKill;
+    ForceNetUpdate();
+}
+#endif
 
 void ASFE1Character::SetCombatTarget(AActor* Target)
 {
@@ -1205,7 +1275,10 @@ void ASFE1Character::CombatSetHealth(int32 Value)
 
 void ASFE1Character::CombatMarkHostile()
 {
-    if (!HasAuthority() || GetWorld()->GetOutermost()->GetName() != TEXT("/Game/Frontier/Maps/Sandbox/SB_Regeneration")) { return; }
+    const FString CombatMap = GetWorld()->GetOutermost()->GetName();
+    if (!HasAuthority() ||
+        (CombatMap != TEXT("/Game/Frontier/Maps/Sandbox/SB_Regeneration") &&
+         CombatMap != TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook"))) { return; }
     PilotRegen.Hostile(GetWorld()->GetTimeSeconds());
     if (!bPilotInCombat) { bPilotInCombat = true; ForceNetUpdate(); }
 }

@@ -949,4 +949,7 @@ import importlib.util
 _rest_spec = importlib.util.spec_from_file_location('place_rest_areas', ROOT.parents[2] / 'tools' / 'Place-RestAreaVolumes.py')
 _rest = importlib.util.module_from_spec(_rest_spec); _rest_spec.loader.exec_module(_rest)
 _rest.place()  # inn gameplay volume survives a regenerated map
+_boar_spec = importlib.util.spec_from_file_location('place_boar_spawns', ROOT.parents[2] / 'tools' / 'Place-SilverbrookBoarSpawns.py')
+_boar = importlib.util.module_from_spec(_boar_spec); _boar_spec.loader.exec_module(_boar)
+_boar.place(ground=HF.at)  # World-authored boar point markers survive a regenerated map
 u.log(f'SILVERBROOK_BUILT Map={ZONE} Datum={DATUM} Bridges={len(bridges)} Fill={fill_report} Terrain={terrain_stats} Foundations={foundation} Dressing={dressing} Counts={counts}')

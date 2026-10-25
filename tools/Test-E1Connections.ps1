@@ -11,7 +11,8 @@ param(
     [switch]$MemoryScenario,
     [switch]$RegenScenario,
     [switch]$AssistScenario,
-    [switch]$RespawnScenario
+    [switch]$RespawnScenario,
+    [switch]$GreenlandsBoarNetcheck
 )
 $ErrorActionPreference = 'Stop'
 $repoRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
@@ -27,7 +28,7 @@ function Launch([string[]]$LaunchArguments) {
     Write-Output "Started PID $($process.Id)"
 }
 function Wait-Log([string]$Path, [string]$Pattern, [int]$Count = 1) {
-    $deadline = (Get-Date).AddSeconds($(if ($RespawnScenario) { 420 } elseif ($EvadeScenario -or $ThreatScenario -or $AggroScenario -or $MemoryScenario -or $RegenScenario -or $AssistScenario) { 240 } else { 120 }))
+    $deadline = (Get-Date).AddSeconds($(if ($RespawnScenario -or $GreenlandsBoarNetcheck) { 420 } elseif ($EvadeScenario -or $ThreatScenario -or $AggroScenario -or $MemoryScenario -or $RegenScenario -or $AssistScenario) { 240 } else { 120 }))
     while ((Get-Date) -lt $deadline) {
         foreach ($process in $ownedProcesses) { if ($process.HasExited) { throw "Network process $($process.Id) exited before $Pattern" } }
         if (Test-Path -LiteralPath $Path) {
@@ -67,6 +68,17 @@ function Assert-EvadeClient([string]$Path, [string]$Role) {
     return [math]::Round($speed,1)
 }
 try {
+    if ($GreenlandsBoarNetcheck) {
+        if ($Map -ne '/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook' -or $Clients -ne 2 -or
+            $CastingScenario -or $EvadeScenario -or $ThreatScenario -or $AggroScenario -or $MemoryScenario -or
+            $RegenScenario -or $AssistScenario -or $RespawnScenario) {
+            throw 'GreenlandsBoarNetcheck requires Greenlands_Silverbrook, two clients, and no other scenario'
+        }
+        foreach ($required in @((Join-Path $repoRoot 'Artifacts/Persistence/Toolchains/dotnet-10.0.402/dotnet.exe'),
+                (Join-Path $repoRoot 'BackendServices/WorldContent.Tool/bin/Debug/net10.0/WorldContent.Tool.dll'))) {
+            if (-not (Test-Path -LiteralPath $required -PathType Leaf)) { throw "Missing WorldContent bridge: $required" }
+        }
+    }
     if ($CastingScenario -and $Map -ne '/Game/Frontier/Maps/Sandbox/SB_Casting') { throw 'CastingScenario requires SB_Casting' }
     if ($EvadeScenario -and ($Map -ne '/Game/Frontier/Maps/Sandbox/SB_Evade' -or $Clients -ne 2 -or $CastingScenario)) {
         throw 'EvadeScenario requires SB_Evade, two clients, and no CastingScenario'
@@ -103,6 +115,7 @@ try {
     if ($RegenScenario) { $serverArgs += '-CombatRegenScenario' }
     if ($AssistScenario) { $serverArgs += '-CombatAssistScenario' }
     if ($RespawnScenario) { $serverArgs += '-CombatRespawnScenario' }
+    if ($GreenlandsBoarNetcheck) { $serverArgs += '-GreenlandsBoarNetcheck' }
     Launch $serverArgs
     Wait-Log $serverLog 'E1_WORLD_READY.*NetMode=1'
     foreach ($index in 1..$Clients) {
@@ -116,6 +129,7 @@ try {
         if ($RegenScenario) { $clientArgs += @('-CombatRegenScenario', ('-CombatRegenRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         if ($AssistScenario) { $clientArgs += @('-CombatAssistScenario', ('-CombatAssistRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         if ($RespawnScenario) { $clientArgs += @('-CombatRespawnScenario', ('-CombatRespawnRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
+        if ($GreenlandsBoarNetcheck) { $clientArgs += @('-GreenlandsBoarNetcheck', ('-GreenlandsBoarRole=' + $(if ($index -eq 1) { 'Driver' } else { 'Observer' }))) }
         Launch $clientArgs
         Wait-Log $clientLog 'Welcomed by server'
     }
@@ -305,8 +319,62 @@ try {
         }
         Write-Output "PASS: two clients observed client-caused boar death, $([math]::Round($delay,1)) s authoritative timer and fresh full-health boar at alternate point. Logs: $logs"
     }
+    if ($GreenlandsBoarNetcheck) {
+        Wait-Log $serverLog 'BOAR_GREENLANDS_RESPAWN LeadSlot='
+        $serverText = Get-Content -LiteralPath $serverLog -Raw
+        $ordered = @('BOAR_GREENLANDS_BEGIN', 'BOAR_GREENLANDS_AGGRO',
+            'BOAR_GREENLANDS_SWITCH_ASSIST', 'BOAR_GREENLANDS_LEASH_PULL', 'BOAR_GREENLANDS_EVADE',
+            'BOAR_GREENLANDS_RESET_REGEN_START', 'BOAR_GREENLANDS_REGEN', 'BOAR_GREENLANDS_MEMORY',
+            'BOAR_GREENLANDS_KILL', 'BOAR_GREENLANDS_RESPAWN')
+        $lastLine = 0
+        foreach ($marker in $ordered) {
+            $found = Select-String -LiteralPath $serverLog -Pattern $marker | Select-Object -First 1
+            if (-not $found -or $found.LineNumber -le $lastLine) { throw "Server missed ordered $marker" }
+            $lastLine = $found.LineNumber
+        }
+        foreach ($pattern in @('BOAR_AGGRO_DETECTED Group=boar_farm_edge',
+            'BOAR_THREAT_TARGET Group=boar_farm_edge', 'BOAR_PACK_ASSIST_TIMING Group=boar_farm_edge',
+            'BOAR_EVADE_RESET Group=boar_farm_edge', 'BOAR_MEMORY_REACQUIRED Group=boar_farm_edge',
+            'COMBAT_PILOT_BOAR_HIT Group=boar_farm_edge Slot=\d+ HP=0',
+            'COMBAT_PILOT_BOAR_SPAWN Group=boar_farm_edge Slot=\d+ Cycle=1')) {
+            if ($serverText -notmatch $pattern) { throw "Server missed $pattern" }
+        }
+        $leadSlot = [regex]::Match($serverText, 'BOAR_GREENLANDS_BEGIN LeadSlot=(\d+)').Groups[1].Value
+        $firstPoint = [regex]::Match($serverText, "COMBAT_PILOT_BOAR_SPAWN Group=boar_farm_edge Slot=$leadSlot Cycle=0 Point=(\S+)").Groups[1].Value
+        $nextPoint = [regex]::Match($serverText, "COMBAT_PILOT_BOAR_SPAWN Group=boar_farm_edge Slot=$leadSlot Cycle=1 Point=(\S+)").Groups[1].Value
+        if (-not $firstPoint -or -not $nextPoint -or $firstPoint -eq $nextPoint) {
+            throw "World slot $leadSlot did not rotate to a fresh respawn point"
+        }
+        $leashDistance = [regex]::Match($serverText, 'BOAR_GREENLANDS_LEASH_PULL DistanceCm=(\d+)').Groups[1].Value
+        if (-not $leashDistance -or [int]$leashDistance -lt 6000) { throw 'Leash probe did not cross 60 m' }
+        if ($serverText -match 'COMBAT_PILOT_SLOT_ERROR|Fatal error:|Assertion failed:') { throw 'Server logged a slot or fatal error' }
+        foreach ($role in @('Driver','Observer')) {
+            $path = Join-Path $logs ('Client' + $(if ($role -eq 'Driver') { '1' } else { '2' }) + '.log')
+            Wait-Log $path "BOAR_GREENLANDS_SAMPLE Role=$role Stage=11 .*LeadHP=60"
+            $s = Get-Content -LiteralPath $path -Raw
+            $driverTarget = if ($role -eq 'Driver') { 'Self' } else { 'Other' }
+            $observerTarget = if ($role -eq 'Observer') { 'Self' } else { 'Other' }
+            foreach ($pattern in @(
+                "BOAR_GREENLANDS_SAMPLE Role=$role Stage=1 .*LeadHP=60 .*LeadTarget=$driverTarget .*MateTarget=None",
+                "BOAR_GREENLANDS_SAMPLE Role=$role Stage=3 .*LeadHP=40 .*LeadTarget=$observerTarget .*MateHP=59 .*MateTarget=$observerTarget",
+                "BOAR_GREENLANDS_SAMPLE Role=$role Stage=4 .*LeadReturn=1 .*MateReturn=1",
+                "BOAR_GREENLANDS_SAMPLE Role=$role Stage=6 .*LeadHP=60 .*MateHP=60",
+                "BOAR_GREENLANDS_SAMPLE Role=$role Stage=7 .*MateTarget=$observerTarget",
+                "BOAR_GREENLANDS_SAMPLE Role=$role Stage=10 .*LeadHP=-1",
+                "BOAR_GREENLANDS_SAMPLE Role=$role Stage=11 .*LeadHP=60")) {
+                if ($s -notmatch $pattern) { throw "$role missed replicated sequence: $pattern" }
+            }
+            $regen = @([regex]::Matches($s,"BOAR_GREENLANDS_SAMPLE Role=$role Stage=6 .*ObserverHP=(\d+) ObserverCombat=([01])") |
+                ForEach-Object { [pscustomobject]@{ HP=[int]$_.Groups[1].Value; Combat=[int]$_.Groups[2].Value } })
+            if ($regen.Count -lt 3 -or @($regen | Where-Object { $_.HP -le 60 -and $_.Combat -eq 1 }).Count -eq 0 -or
+                @($regen | Where-Object { $_.HP -gt 60 -and $_.Combat -eq 0 }).Count -eq 0) {
+                throw "$role missed replicated combat exit and delayed observer healing"
+            }
+        }
+        Write-Output "PASS: Greenlands aggro, threat switch, pack assist, leash/evade, attacker memory, regeneration, client kill and rotated slot respawn on both clients. Logs: $logs"
+    }
     Write-Output "PASS: separate editor server and $Clients client(s) connected; $Clients server-authoritative possession(s). Logs: $logs"
-    if (-not $CastingScenario -and -not $EvadeScenario -and -not $ThreatScenario -and -not $AggroScenario -and -not $MemoryScenario -and -not $RegenScenario -and -not $AssistScenario -and -not $RespawnScenario) { Write-Output 'Headless connection check only: movement, rendering, lifecycle cleanup, authentication and Linux runtime are not certified.' }
+    if (-not $CastingScenario -and -not $EvadeScenario -and -not $ThreatScenario -and -not $AggroScenario -and -not $MemoryScenario -and -not $RegenScenario -and -not $AssistScenario -and -not $RespawnScenario -and -not $GreenlandsBoarNetcheck) { Write-Output 'Headless connection check only: movement, rendering, lifecycle cleanup, authentication and Linux runtime are not certified.' }
 } finally {
     foreach ($process in $ownedProcesses) {
         if (-not $process.HasExited) { Stop-Process -Id $process.Id -ErrorAction SilentlyContinue }

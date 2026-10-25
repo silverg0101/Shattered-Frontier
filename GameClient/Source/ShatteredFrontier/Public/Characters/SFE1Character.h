@@ -28,7 +28,10 @@ public:
     virtual void Tick(float DeltaSeconds) override;
     virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
     void CombatSetHealth(int32 Value);
-    void CombatMarkHostile(); // server only; sandbox combat clock
+    void CombatMarkHostile(); // server only; sandbox and Silverbrook combat clock
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    void SetGreenlandsNetcheckStage(int32 Stage, int32 LeadSlot, int32 MateSlot, bool bKill);
+#endif
     int32 CombatHealth() const { return PilotHealth; }
     bool IsPilotInCombat() const { return bPilotInCombat; }
     UFUNCTION(BlueprintPure, Category="Combat") int32 GetPilotHealthForCapture() const { return PilotHealth; }
@@ -73,6 +76,14 @@ private:
     UPROPERTY(Transient) TObjectPtr<AActor> MetaHuman;
     UPROPERTY(Replicated) int32 PilotHealth = 0;  // shown by the vitals HUD (SFE1VitalsHud), not in the world
     UPROPERTY(Replicated) bool bPilotInCombat = false;
+    UPROPERTY(Replicated) int32 GreenlandsNetcheckStage = 0;
+    UPROPERTY(Replicated) int32 GreenlandsLeadSlot = -1;
+    UPROPERTY(Replicated) int32 GreenlandsMateSlot = -1;
+    UPROPERTY(Replicated) bool bGreenlandsKill = false;
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    double GreenlandsNextSampleAt = 0;
+    double GreenlandsNextAttackAt = 0;
+#endif
     FSFOutOfCombatRegen PilotRegen;
     UPROPERTY(Replicated) TObjectPtr<AActor> CombatTarget;
     FTimerHandle CombatScenarioTimer;
