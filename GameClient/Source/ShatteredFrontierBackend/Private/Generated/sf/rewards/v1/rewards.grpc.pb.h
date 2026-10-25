@@ -45,11 +45,29 @@ class Rewards final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::rewards::v1::RewardReceipt>> PrepareAsyncGrantDefeatReward(::grpc::ClientContext* context, const ::sf::rewards::v1::GrantDefeatRewardRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::rewards::v1::RewardReceipt>>(PrepareAsyncGrantDefeatRewardRaw(context, request, cq));
     }
+    virtual ::grpc::Status CreateSharedDefeatDrop(::grpc::ClientContext* context, const ::sf::rewards::v1::CreateSharedDefeatDropRequest& request, ::sf::rewards::v1::SharedDefeatDropReceipt* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::rewards::v1::SharedDefeatDropReceipt>> AsyncCreateSharedDefeatDrop(::grpc::ClientContext* context, const ::sf::rewards::v1::CreateSharedDefeatDropRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::rewards::v1::SharedDefeatDropReceipt>>(AsyncCreateSharedDefeatDropRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::rewards::v1::SharedDefeatDropReceipt>> PrepareAsyncCreateSharedDefeatDrop(::grpc::ClientContext* context, const ::sf::rewards::v1::CreateSharedDefeatDropRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::rewards::v1::SharedDefeatDropReceipt>>(PrepareAsyncCreateSharedDefeatDropRaw(context, request, cq));
+    }
+    virtual ::grpc::Status ClaimSharedDefeatDrop(::grpc::ClientContext* context, const ::sf::rewards::v1::ClaimSharedDefeatDropRequest& request, ::sf::rewards::v1::SharedDefeatDropReceipt* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::rewards::v1::SharedDefeatDropReceipt>> AsyncClaimSharedDefeatDrop(::grpc::ClientContext* context, const ::sf::rewards::v1::ClaimSharedDefeatDropRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::rewards::v1::SharedDefeatDropReceipt>>(AsyncClaimSharedDefeatDropRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::rewards::v1::SharedDefeatDropReceipt>> PrepareAsyncClaimSharedDefeatDrop(::grpc::ClientContext* context, const ::sf::rewards::v1::ClaimSharedDefeatDropRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::rewards::v1::SharedDefeatDropReceipt>>(PrepareAsyncClaimSharedDefeatDropRaw(context, request, cq));
+    }
     class async_interface {
      public:
       virtual ~async_interface() {}
       virtual void GrantDefeatReward(::grpc::ClientContext* context, const ::sf::rewards::v1::GrantDefeatRewardRequest* request, ::sf::rewards::v1::RewardReceipt* response, std::function<void(::grpc::Status)>) = 0;
       virtual void GrantDefeatReward(::grpc::ClientContext* context, const ::sf::rewards::v1::GrantDefeatRewardRequest* request, ::sf::rewards::v1::RewardReceipt* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void CreateSharedDefeatDrop(::grpc::ClientContext* context, const ::sf::rewards::v1::CreateSharedDefeatDropRequest* request, ::sf::rewards::v1::SharedDefeatDropReceipt* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void CreateSharedDefeatDrop(::grpc::ClientContext* context, const ::sf::rewards::v1::CreateSharedDefeatDropRequest* request, ::sf::rewards::v1::SharedDefeatDropReceipt* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void ClaimSharedDefeatDrop(::grpc::ClientContext* context, const ::sf::rewards::v1::ClaimSharedDefeatDropRequest* request, ::sf::rewards::v1::SharedDefeatDropReceipt* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void ClaimSharedDefeatDrop(::grpc::ClientContext* context, const ::sf::rewards::v1::ClaimSharedDefeatDropRequest* request, ::sf::rewards::v1::SharedDefeatDropReceipt* response, ::grpc::ClientUnaryReactor* reactor) = 0;
     };
     typedef class async_interface experimental_async_interface;
     virtual class async_interface* async() { return nullptr; }
@@ -57,6 +75,10 @@ class Rewards final {
    private:
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::rewards::v1::RewardReceipt>* AsyncGrantDefeatRewardRaw(::grpc::ClientContext* context, const ::sf::rewards::v1::GrantDefeatRewardRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::rewards::v1::RewardReceipt>* PrepareAsyncGrantDefeatRewardRaw(::grpc::ClientContext* context, const ::sf::rewards::v1::GrantDefeatRewardRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::rewards::v1::SharedDefeatDropReceipt>* AsyncCreateSharedDefeatDropRaw(::grpc::ClientContext* context, const ::sf::rewards::v1::CreateSharedDefeatDropRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::rewards::v1::SharedDefeatDropReceipt>* PrepareAsyncCreateSharedDefeatDropRaw(::grpc::ClientContext* context, const ::sf::rewards::v1::CreateSharedDefeatDropRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::rewards::v1::SharedDefeatDropReceipt>* AsyncClaimSharedDefeatDropRaw(::grpc::ClientContext* context, const ::sf::rewards::v1::ClaimSharedDefeatDropRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::rewards::v1::SharedDefeatDropReceipt>* PrepareAsyncClaimSharedDefeatDropRaw(::grpc::ClientContext* context, const ::sf::rewards::v1::ClaimSharedDefeatDropRequest& request, ::grpc::CompletionQueue* cq) = 0;
   };
   class Stub final : public StubInterface {
    public:
@@ -68,11 +90,29 @@ class Rewards final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::rewards::v1::RewardReceipt>> PrepareAsyncGrantDefeatReward(::grpc::ClientContext* context, const ::sf::rewards::v1::GrantDefeatRewardRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::rewards::v1::RewardReceipt>>(PrepareAsyncGrantDefeatRewardRaw(context, request, cq));
     }
+    ::grpc::Status CreateSharedDefeatDrop(::grpc::ClientContext* context, const ::sf::rewards::v1::CreateSharedDefeatDropRequest& request, ::sf::rewards::v1::SharedDefeatDropReceipt* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::rewards::v1::SharedDefeatDropReceipt>> AsyncCreateSharedDefeatDrop(::grpc::ClientContext* context, const ::sf::rewards::v1::CreateSharedDefeatDropRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::rewards::v1::SharedDefeatDropReceipt>>(AsyncCreateSharedDefeatDropRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::rewards::v1::SharedDefeatDropReceipt>> PrepareAsyncCreateSharedDefeatDrop(::grpc::ClientContext* context, const ::sf::rewards::v1::CreateSharedDefeatDropRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::rewards::v1::SharedDefeatDropReceipt>>(PrepareAsyncCreateSharedDefeatDropRaw(context, request, cq));
+    }
+    ::grpc::Status ClaimSharedDefeatDrop(::grpc::ClientContext* context, const ::sf::rewards::v1::ClaimSharedDefeatDropRequest& request, ::sf::rewards::v1::SharedDefeatDropReceipt* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::rewards::v1::SharedDefeatDropReceipt>> AsyncClaimSharedDefeatDrop(::grpc::ClientContext* context, const ::sf::rewards::v1::ClaimSharedDefeatDropRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::rewards::v1::SharedDefeatDropReceipt>>(AsyncClaimSharedDefeatDropRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::rewards::v1::SharedDefeatDropReceipt>> PrepareAsyncClaimSharedDefeatDrop(::grpc::ClientContext* context, const ::sf::rewards::v1::ClaimSharedDefeatDropRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::rewards::v1::SharedDefeatDropReceipt>>(PrepareAsyncClaimSharedDefeatDropRaw(context, request, cq));
+    }
     class async final :
       public StubInterface::async_interface {
      public:
       void GrantDefeatReward(::grpc::ClientContext* context, const ::sf::rewards::v1::GrantDefeatRewardRequest* request, ::sf::rewards::v1::RewardReceipt* response, std::function<void(::grpc::Status)>) override;
       void GrantDefeatReward(::grpc::ClientContext* context, const ::sf::rewards::v1::GrantDefeatRewardRequest* request, ::sf::rewards::v1::RewardReceipt* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void CreateSharedDefeatDrop(::grpc::ClientContext* context, const ::sf::rewards::v1::CreateSharedDefeatDropRequest* request, ::sf::rewards::v1::SharedDefeatDropReceipt* response, std::function<void(::grpc::Status)>) override;
+      void CreateSharedDefeatDrop(::grpc::ClientContext* context, const ::sf::rewards::v1::CreateSharedDefeatDropRequest* request, ::sf::rewards::v1::SharedDefeatDropReceipt* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void ClaimSharedDefeatDrop(::grpc::ClientContext* context, const ::sf::rewards::v1::ClaimSharedDefeatDropRequest* request, ::sf::rewards::v1::SharedDefeatDropReceipt* response, std::function<void(::grpc::Status)>) override;
+      void ClaimSharedDefeatDrop(::grpc::ClientContext* context, const ::sf::rewards::v1::ClaimSharedDefeatDropRequest* request, ::sf::rewards::v1::SharedDefeatDropReceipt* response, ::grpc::ClientUnaryReactor* reactor) override;
      private:
       friend class Stub;
       explicit async(Stub* stub): stub_(stub) { }
@@ -86,7 +126,13 @@ class Rewards final {
     class async async_stub_{this};
     ::grpc::ClientAsyncResponseReader< ::sf::rewards::v1::RewardReceipt>* AsyncGrantDefeatRewardRaw(::grpc::ClientContext* context, const ::sf::rewards::v1::GrantDefeatRewardRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::sf::rewards::v1::RewardReceipt>* PrepareAsyncGrantDefeatRewardRaw(::grpc::ClientContext* context, const ::sf::rewards::v1::GrantDefeatRewardRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::sf::rewards::v1::SharedDefeatDropReceipt>* AsyncCreateSharedDefeatDropRaw(::grpc::ClientContext* context, const ::sf::rewards::v1::CreateSharedDefeatDropRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::sf::rewards::v1::SharedDefeatDropReceipt>* PrepareAsyncCreateSharedDefeatDropRaw(::grpc::ClientContext* context, const ::sf::rewards::v1::CreateSharedDefeatDropRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::sf::rewards::v1::SharedDefeatDropReceipt>* AsyncClaimSharedDefeatDropRaw(::grpc::ClientContext* context, const ::sf::rewards::v1::ClaimSharedDefeatDropRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::sf::rewards::v1::SharedDefeatDropReceipt>* PrepareAsyncClaimSharedDefeatDropRaw(::grpc::ClientContext* context, const ::sf::rewards::v1::ClaimSharedDefeatDropRequest& request, ::grpc::CompletionQueue* cq) override;
     const ::grpc::internal::RpcMethod rpcmethod_GrantDefeatReward_;
+    const ::grpc::internal::RpcMethod rpcmethod_CreateSharedDefeatDrop_;
+    const ::grpc::internal::RpcMethod rpcmethod_ClaimSharedDefeatDrop_;
   };
   static std::unique_ptr<Stub> NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
 
@@ -95,6 +141,8 @@ class Rewards final {
     Service();
     virtual ~Service();
     virtual ::grpc::Status GrantDefeatReward(::grpc::ServerContext* context, const ::sf::rewards::v1::GrantDefeatRewardRequest* request, ::sf::rewards::v1::RewardReceipt* response);
+    virtual ::grpc::Status CreateSharedDefeatDrop(::grpc::ServerContext* context, const ::sf::rewards::v1::CreateSharedDefeatDropRequest* request, ::sf::rewards::v1::SharedDefeatDropReceipt* response);
+    virtual ::grpc::Status ClaimSharedDefeatDrop(::grpc::ServerContext* context, const ::sf::rewards::v1::ClaimSharedDefeatDropRequest* request, ::sf::rewards::v1::SharedDefeatDropReceipt* response);
   };
   template <class BaseClass>
   class WithAsyncMethod_GrantDefeatReward : public BaseClass {
@@ -116,7 +164,47 @@ class Rewards final {
       ::grpc::Service::RequestAsyncUnary(0, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
-  typedef WithAsyncMethod_GrantDefeatReward<Service > AsyncService;
+  template <class BaseClass>
+  class WithAsyncMethod_CreateSharedDefeatDrop : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_CreateSharedDefeatDrop() {
+      ::grpc::Service::MarkMethodAsync(1);
+    }
+    ~WithAsyncMethod_CreateSharedDefeatDrop() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status CreateSharedDefeatDrop(::grpc::ServerContext* /*context*/, const ::sf::rewards::v1::CreateSharedDefeatDropRequest* /*request*/, ::sf::rewards::v1::SharedDefeatDropReceipt* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestCreateSharedDefeatDrop(::grpc::ServerContext* context, ::sf::rewards::v1::CreateSharedDefeatDropRequest* request, ::grpc::ServerAsyncResponseWriter< ::sf::rewards::v1::SharedDefeatDropReceipt>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(1, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_ClaimSharedDefeatDrop : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_ClaimSharedDefeatDrop() {
+      ::grpc::Service::MarkMethodAsync(2);
+    }
+    ~WithAsyncMethod_ClaimSharedDefeatDrop() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ClaimSharedDefeatDrop(::grpc::ServerContext* /*context*/, const ::sf::rewards::v1::ClaimSharedDefeatDropRequest* /*request*/, ::sf::rewards::v1::SharedDefeatDropReceipt* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestClaimSharedDefeatDrop(::grpc::ServerContext* context, ::sf::rewards::v1::ClaimSharedDefeatDropRequest* request, ::grpc::ServerAsyncResponseWriter< ::sf::rewards::v1::SharedDefeatDropReceipt>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(2, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  typedef WithAsyncMethod_GrantDefeatReward<WithAsyncMethod_CreateSharedDefeatDrop<WithAsyncMethod_ClaimSharedDefeatDrop<Service > > > AsyncService;
   template <class BaseClass>
   class WithCallbackMethod_GrantDefeatReward : public BaseClass {
    private:
@@ -144,7 +232,61 @@ class Rewards final {
     virtual ::grpc::ServerUnaryReactor* GrantDefeatReward(
       ::grpc::CallbackServerContext* /*context*/, const ::sf::rewards::v1::GrantDefeatRewardRequest* /*request*/, ::sf::rewards::v1::RewardReceipt* /*response*/)  { return nullptr; }
   };
-  typedef WithCallbackMethod_GrantDefeatReward<Service > CallbackService;
+  template <class BaseClass>
+  class WithCallbackMethod_CreateSharedDefeatDrop : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_CreateSharedDefeatDrop() {
+      ::grpc::Service::MarkMethodCallback(1,
+          new ::grpc::internal::CallbackUnaryHandler< ::sf::rewards::v1::CreateSharedDefeatDropRequest, ::sf::rewards::v1::SharedDefeatDropReceipt>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::sf::rewards::v1::CreateSharedDefeatDropRequest* request, ::sf::rewards::v1::SharedDefeatDropReceipt* response) { return this->CreateSharedDefeatDrop(context, request, response); }));}
+    void SetMessageAllocatorFor_CreateSharedDefeatDrop(
+        ::grpc::MessageAllocator< ::sf::rewards::v1::CreateSharedDefeatDropRequest, ::sf::rewards::v1::SharedDefeatDropReceipt>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(1);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::sf::rewards::v1::CreateSharedDefeatDropRequest, ::sf::rewards::v1::SharedDefeatDropReceipt>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_CreateSharedDefeatDrop() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status CreateSharedDefeatDrop(::grpc::ServerContext* /*context*/, const ::sf::rewards::v1::CreateSharedDefeatDropRequest* /*request*/, ::sf::rewards::v1::SharedDefeatDropReceipt* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* CreateSharedDefeatDrop(
+      ::grpc::CallbackServerContext* /*context*/, const ::sf::rewards::v1::CreateSharedDefeatDropRequest* /*request*/, ::sf::rewards::v1::SharedDefeatDropReceipt* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithCallbackMethod_ClaimSharedDefeatDrop : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_ClaimSharedDefeatDrop() {
+      ::grpc::Service::MarkMethodCallback(2,
+          new ::grpc::internal::CallbackUnaryHandler< ::sf::rewards::v1::ClaimSharedDefeatDropRequest, ::sf::rewards::v1::SharedDefeatDropReceipt>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::sf::rewards::v1::ClaimSharedDefeatDropRequest* request, ::sf::rewards::v1::SharedDefeatDropReceipt* response) { return this->ClaimSharedDefeatDrop(context, request, response); }));}
+    void SetMessageAllocatorFor_ClaimSharedDefeatDrop(
+        ::grpc::MessageAllocator< ::sf::rewards::v1::ClaimSharedDefeatDropRequest, ::sf::rewards::v1::SharedDefeatDropReceipt>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(2);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::sf::rewards::v1::ClaimSharedDefeatDropRequest, ::sf::rewards::v1::SharedDefeatDropReceipt>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_ClaimSharedDefeatDrop() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ClaimSharedDefeatDrop(::grpc::ServerContext* /*context*/, const ::sf::rewards::v1::ClaimSharedDefeatDropRequest* /*request*/, ::sf::rewards::v1::SharedDefeatDropReceipt* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* ClaimSharedDefeatDrop(
+      ::grpc::CallbackServerContext* /*context*/, const ::sf::rewards::v1::ClaimSharedDefeatDropRequest* /*request*/, ::sf::rewards::v1::SharedDefeatDropReceipt* /*response*/)  { return nullptr; }
+  };
+  typedef WithCallbackMethod_GrantDefeatReward<WithCallbackMethod_CreateSharedDefeatDrop<WithCallbackMethod_ClaimSharedDefeatDrop<Service > > > CallbackService;
   typedef CallbackService ExperimentalCallbackService;
   template <class BaseClass>
   class WithGenericMethod_GrantDefeatReward : public BaseClass {
@@ -159,6 +301,40 @@ class Rewards final {
     }
     // disable synchronous version of this method
     ::grpc::Status GrantDefeatReward(::grpc::ServerContext* /*context*/, const ::sf::rewards::v1::GrantDefeatRewardRequest* /*request*/, ::sf::rewards::v1::RewardReceipt* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_CreateSharedDefeatDrop : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_CreateSharedDefeatDrop() {
+      ::grpc::Service::MarkMethodGeneric(1);
+    }
+    ~WithGenericMethod_CreateSharedDefeatDrop() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status CreateSharedDefeatDrop(::grpc::ServerContext* /*context*/, const ::sf::rewards::v1::CreateSharedDefeatDropRequest* /*request*/, ::sf::rewards::v1::SharedDefeatDropReceipt* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_ClaimSharedDefeatDrop : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_ClaimSharedDefeatDrop() {
+      ::grpc::Service::MarkMethodGeneric(2);
+    }
+    ~WithGenericMethod_ClaimSharedDefeatDrop() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ClaimSharedDefeatDrop(::grpc::ServerContext* /*context*/, const ::sf::rewards::v1::ClaimSharedDefeatDropRequest* /*request*/, ::sf::rewards::v1::SharedDefeatDropReceipt* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -184,6 +360,46 @@ class Rewards final {
     }
   };
   template <class BaseClass>
+  class WithRawMethod_CreateSharedDefeatDrop : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_CreateSharedDefeatDrop() {
+      ::grpc::Service::MarkMethodRaw(1);
+    }
+    ~WithRawMethod_CreateSharedDefeatDrop() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status CreateSharedDefeatDrop(::grpc::ServerContext* /*context*/, const ::sf::rewards::v1::CreateSharedDefeatDropRequest* /*request*/, ::sf::rewards::v1::SharedDefeatDropReceipt* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestCreateSharedDefeatDrop(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(1, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_ClaimSharedDefeatDrop : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_ClaimSharedDefeatDrop() {
+      ::grpc::Service::MarkMethodRaw(2);
+    }
+    ~WithRawMethod_ClaimSharedDefeatDrop() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ClaimSharedDefeatDrop(::grpc::ServerContext* /*context*/, const ::sf::rewards::v1::ClaimSharedDefeatDropRequest* /*request*/, ::sf::rewards::v1::SharedDefeatDropReceipt* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestClaimSharedDefeatDrop(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(2, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
   class WithRawCallbackMethod_GrantDefeatReward : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
@@ -203,6 +419,50 @@ class Rewards final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     virtual ::grpc::ServerUnaryReactor* GrantDefeatReward(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_CreateSharedDefeatDrop : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_CreateSharedDefeatDrop() {
+      ::grpc::Service::MarkMethodRawCallback(1,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->CreateSharedDefeatDrop(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_CreateSharedDefeatDrop() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status CreateSharedDefeatDrop(::grpc::ServerContext* /*context*/, const ::sf::rewards::v1::CreateSharedDefeatDropRequest* /*request*/, ::sf::rewards::v1::SharedDefeatDropReceipt* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* CreateSharedDefeatDrop(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_ClaimSharedDefeatDrop : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_ClaimSharedDefeatDrop() {
+      ::grpc::Service::MarkMethodRawCallback(2,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->ClaimSharedDefeatDrop(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_ClaimSharedDefeatDrop() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ClaimSharedDefeatDrop(::grpc::ServerContext* /*context*/, const ::sf::rewards::v1::ClaimSharedDefeatDropRequest* /*request*/, ::sf::rewards::v1::SharedDefeatDropReceipt* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* ClaimSharedDefeatDrop(
       ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
@@ -232,9 +492,63 @@ class Rewards final {
     // replace default version of method with streamed unary
     virtual ::grpc::Status StreamedGrantDefeatReward(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::sf::rewards::v1::GrantDefeatRewardRequest,::sf::rewards::v1::RewardReceipt>* server_unary_streamer) = 0;
   };
-  typedef WithStreamedUnaryMethod_GrantDefeatReward<Service > StreamedUnaryService;
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_CreateSharedDefeatDrop : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_CreateSharedDefeatDrop() {
+      ::grpc::Service::MarkMethodStreamed(1,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::sf::rewards::v1::CreateSharedDefeatDropRequest, ::sf::rewards::v1::SharedDefeatDropReceipt>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::sf::rewards::v1::CreateSharedDefeatDropRequest, ::sf::rewards::v1::SharedDefeatDropReceipt>* streamer) {
+                       return this->StreamedCreateSharedDefeatDrop(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_CreateSharedDefeatDrop() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status CreateSharedDefeatDrop(::grpc::ServerContext* /*context*/, const ::sf::rewards::v1::CreateSharedDefeatDropRequest* /*request*/, ::sf::rewards::v1::SharedDefeatDropReceipt* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status StreamedCreateSharedDefeatDrop(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::sf::rewards::v1::CreateSharedDefeatDropRequest,::sf::rewards::v1::SharedDefeatDropReceipt>* server_unary_streamer) = 0;
+  };
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_ClaimSharedDefeatDrop : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_ClaimSharedDefeatDrop() {
+      ::grpc::Service::MarkMethodStreamed(2,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::sf::rewards::v1::ClaimSharedDefeatDropRequest, ::sf::rewards::v1::SharedDefeatDropReceipt>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::sf::rewards::v1::ClaimSharedDefeatDropRequest, ::sf::rewards::v1::SharedDefeatDropReceipt>* streamer) {
+                       return this->StreamedClaimSharedDefeatDrop(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_ClaimSharedDefeatDrop() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status ClaimSharedDefeatDrop(::grpc::ServerContext* /*context*/, const ::sf::rewards::v1::ClaimSharedDefeatDropRequest* /*request*/, ::sf::rewards::v1::SharedDefeatDropReceipt* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status StreamedClaimSharedDefeatDrop(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::sf::rewards::v1::ClaimSharedDefeatDropRequest,::sf::rewards::v1::SharedDefeatDropReceipt>* server_unary_streamer) = 0;
+  };
+  typedef WithStreamedUnaryMethod_GrantDefeatReward<WithStreamedUnaryMethod_CreateSharedDefeatDrop<WithStreamedUnaryMethod_ClaimSharedDefeatDrop<Service > > > StreamedUnaryService;
   typedef Service SplitStreamedService;
-  typedef WithStreamedUnaryMethod_GrantDefeatReward<Service > StreamedService;
+  typedef WithStreamedUnaryMethod_GrantDefeatReward<WithStreamedUnaryMethod_CreateSharedDefeatDrop<WithStreamedUnaryMethod_ClaimSharedDefeatDrop<Service > > > StreamedService;
 };
 
 }  // namespace v1

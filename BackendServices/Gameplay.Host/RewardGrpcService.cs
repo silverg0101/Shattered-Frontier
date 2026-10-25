@@ -2,8 +2,31 @@ using Grpc.Core;
 using ShatteredFrontier.Rewards;
 using Pb = ShatteredFrontier.Rewards.V1;
 
-internal sealed class RewardGrpcService(DefeatRewardPayout payout) : Pb.Rewards.RewardsBase
+internal sealed class RewardGrpcService(DefeatRewardPayout payout, SharedDefeatDropPayout shared) : Pb.Rewards.RewardsBase
 {
+    private static Pb.SharedDefeatDropReceipt SharedReceipt(SharedDropResult result)
+    {
+        var receipt = new Pb.SharedDefeatDropReceipt
+        {
+            DefeatEventId = result.EventId,
+            ClaimantCharacterId = result.ClaimantId ?? "",
+            LedgerOperationId = result.OperationId ?? "",
+            ContainerRevision = result.Revision
+        };
+        receipt.Items.AddRange(result.Items.Select(i => new Pb.SharedDropItem
+            { DefinitionId = i.DefinitionId, Quantity = i.Quantity }));
+        return receipt;
+    }
+
+    public override Task<Pb.SharedDefeatDropReceipt> CreateSharedDefeatDrop(Pb.CreateSharedDefeatDropRequest request,
+        ServerCallContext context) => GrpcRun.Call(context, () => SharedReceipt(shared.Create(request.DefeatEventId,
+            request.CreatureId, request.TableId, request.KillerCharacterId, request.EligibleCharacterIds,
+            request.KillerInProtectedTown, request.CreatureInProtectedTown)));
+
+    public override Task<Pb.SharedDefeatDropReceipt> ClaimSharedDefeatDrop(Pb.ClaimSharedDefeatDropRequest request,
+        ServerCallContext context) => GrpcRun.Call(context, () => SharedReceipt(shared.Claim(request.DefeatEventId,
+            request.CharacterId, request.ContainerId)));
+
     public override Task<Pb.RewardReceipt> GrantDefeatReward(Pb.GrantDefeatRewardRequest request, ServerCallContext context) =>
         GrpcRun.Call(context, () =>
         {

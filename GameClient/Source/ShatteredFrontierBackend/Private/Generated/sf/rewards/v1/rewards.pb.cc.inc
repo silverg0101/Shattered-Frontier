@@ -29,6 +29,14 @@ namespace _fl = ::google::protobuf::internal::field_layout;
 namespace {
 PROTOBUF_CONSTINIT ::google::protobuf::internal::ReflectionData
     file_reflection_data[] = {
+        // ::sf::rewards::v1::CreateSharedDefeatDropRequest
+        {&::_pbi::kDescriptorMethods, &::descriptor_table_sf_2frewards_2fv1_2frewards_2eproto, /* tracker*/ nullptr,},
+        // ::sf::rewards::v1::ClaimSharedDefeatDropRequest
+        {&::_pbi::kDescriptorMethods, &::descriptor_table_sf_2frewards_2fv1_2frewards_2eproto, /* tracker*/ nullptr,},
+        // ::sf::rewards::v1::SharedDropItem
+        {&::_pbi::kDescriptorMethods, &::descriptor_table_sf_2frewards_2fv1_2frewards_2eproto, /* tracker*/ nullptr,},
+        // ::sf::rewards::v1::SharedDefeatDropReceipt
+        {&::_pbi::kDescriptorMethods, &::descriptor_table_sf_2frewards_2fv1_2frewards_2eproto, /* tracker*/ nullptr,},
         // ::sf::rewards::v1::GrantDefeatRewardRequest
         {&::_pbi::kDescriptorMethods, &::descriptor_table_sf_2frewards_2fv1_2frewards_2eproto, /* tracker*/ nullptr,},
         // ::sf::rewards::v1::RewardReceipt
@@ -39,6 +47,159 @@ PROTOBUF_CONSTINIT ::google::protobuf::internal::ReflectionData
 namespace sf {
 namespace rewards {
 namespace v1 {
+class SharedDropItem::_Internal {
+ public:
+  using HasBits = decltype(::std::declval<SharedDropItem>()._impl_._has_bits_);
+  static constexpr ::int32_t kHasBitsOffset =
+      8 * PROTOBUF_FIELD_OFFSET(SharedDropItem, _impl_._has_bits_);
+};
+
+constexpr SharedDropItem::ParseTableT_ SharedDropItem::InternalGenerateParseTable_(const ::_pbi::ClassData* class_data) {
+  return ParseTableT_{
+    {
+      PROTOBUF_FIELD_OFFSET(SharedDropItem, _impl_._has_bits_),
+      0, // no _extensions_
+      2, 8,  // max_field_number, fast_idx_mask
+      offsetof(ParseTableT_, field_lookup_table),
+      4294967292,  // skipmap
+      offsetof(ParseTableT_, field_entries),
+      2,  // num_field_entries
+      0,  // num_aux_entries
+      offsetof(ParseTableT_, field_names),  // no aux_entries
+      class_data,
+      nullptr,  // post_loop_handler
+      ::_pbi::TcParser::GenericFallback,  // fallback
+      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+      ::_pbi::TcParser::GetTable<::sf::rewards::v1::SharedDropItem>(),  // to_prefetch
+      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+    }, {{
+      // int64 quantity = 2;
+      {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(SharedDropItem, _impl_.quantity_), 1>(),
+       {16, 1, 0,
+        PROTOBUF_FIELD_OFFSET(SharedDropItem, _impl_.quantity_)}},
+      // string definition_id = 1;
+      {::_pbi::TcParser::FastUS1,
+       {10, 0, 0,
+        PROTOBUF_FIELD_OFFSET(SharedDropItem, _impl_.definition_id_)}},
+    }}, {{
+      65535, 65535
+    }}, {{
+      // string definition_id = 1;
+      {PROTOBUF_FIELD_OFFSET(SharedDropItem, _impl_.definition_id_), _Internal::kHasBitsOffset + 0, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // int64 quantity = 2;
+      {PROTOBUF_FIELD_OFFSET(SharedDropItem, _impl_.quantity_), _Internal::kHasBitsOffset + 1, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt64)},
+    }},
+    // no aux_entries
+    {{
+      "\34\15\0\0\0\0\0\0"
+      "sf.rewards.v1.SharedDropItem"
+      "definition_id"
+    }},
+  };
+}
+
+
+inline constexpr SharedDropItem::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    ::_pbi::ConstantInitialized) noexcept
+      : _cached_size_{0},
+        definition_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        quantity_{::int64_t{0}} {}
+
+template <typename>
+constexpr SharedDropItem::SharedDropItem(::_pbi::ConstantInitialized,
+                       const ::_pbi::ClassData* PROTOBUF_NONNULL class_data)
+    : ::google::protobuf::Message(
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          class_data
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          ),
+      _impl_(internal_visibility(), ::_pbi::ConstantInitialized()) {
+}
+inline void* PROTOBUF_NONNULL SharedDropItem::PlacementNew_(
+    const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena) {
+  return ::new (mem) SharedDropItem(arena);
+}
+constexpr auto SharedDropItem::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::CopyInit(sizeof(SharedDropItem), alignof(SharedDropItem));
+}
+constexpr auto SharedDropItem::InternalGenerateClassData_(
+    const MessageLite& prototype,
+    const ::google::protobuf::internal::TcParseTableBase* tc_table) {
+  return ::google::protobuf::internal::ClassDataFull{
+      ::google::protobuf::internal::ClassData{
+          &prototype,
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+          &_table_.header,
+#else
+          tc_table,
+#endif
+          nullptr,  // IsInitialized
+          &SharedDropItem::MergeImpl,
+          ::google::protobuf::Message::GetNewImpl<SharedDropItem>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          &SharedDropItem::SharedDtor,
+          ::google::protobuf::Message::GetClearImpl<SharedDropItem>(), &SharedDropItem::ByteSizeLong,
+              &SharedDropItem::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          PROTOBUF_FIELD_OFFSET(SharedDropItem, _impl_._cached_size_),
+          false,
+      },
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+      &file_reflection_data[2],
+#else   // !PROTOBUF_MESSAGE_GLOBALS
+      &::_pbi::kDescriptorMethods,
+      &descriptor_table_sf_2frewards_2fv1_2frewards_2eproto,
+      nullptr,  // tracker
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+  };
+}
+struct SharedDropItemGlobalsTypeInternal : ::_pbi::MessageGlobalsBase {
+  constexpr SharedDropItemGlobalsTypeInternal()
+      :
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+        _default(::_pbi::ConstantInitialized{},
+                 SharedDropItem_class_data_.base())
+#else   // !PROTOBUF_MESSAGE_GLOBALS
+        MessageGlobalsBase(SharedDropItem::InternalGenerateClassData_(
+            _default, &SharedDropItem_globals_._table.header)),
+        _default(::_pbi::ConstantInitialized{}, GetClassData()),
+        _table(::_pbi::PrivateAccess::GenerateParseTable<SharedDropItem>(
+            GetClassData()))
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+  {
+  }
+  ~SharedDropItemGlobalsTypeInternal() {}
+  union {
+    alignas(::_pbi::kMaxMessageAlignment) SharedDropItem _default;
+  };
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+  decltype(::_pbi::PrivateAccess::GenerateParseTable<SharedDropItem>(
+      ::std::declval<const ::_pbi::ClassData*>())) _table;
+#endif
+};
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+static_assert(PROTOBUF_FIELD_OFFSET(SharedDropItemGlobalsTypeInternal, _default) ==
+              ::_pbi::MessageGlobalsBase::OffsetToDefault());
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 PROTOBUF_MESSAGE_GLOBALS_CONST SharedDropItemGlobalsTypeInternal SharedDropItem_globals_
+        PROTOBUF_MESSAGE_GLOBALS_SECTION(.data.rel.ro);
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+namespace {
+const ::_pbi::ClassData* SharedDropItem_get_class_data() {
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+  return SharedDropItem_globals_.GetClassData();
+#else
+  return SharedDropItem_class_data_.base();
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+}
+}  // namespace
+#endif  // PROTOBUF_CUSTOM_VTABLE
 class RewardReceipt::_Internal {
  public:
   using HasBits = decltype(::std::declval<RewardReceipt>()._impl_._has_bits_);
@@ -177,7 +338,7 @@ constexpr auto RewardReceipt::InternalGenerateClassData_(
           false,
       },
 #ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[1],
+      &file_reflection_data[5],
 #else   // !PROTOBUF_MESSAGE_GLOBALS
       &::_pbi::kDescriptorMethods,
       &descriptor_table_sf_2frewards_2fv1_2frewards_2eproto,
@@ -384,7 +545,7 @@ constexpr auto GrantDefeatRewardRequest::InternalGenerateClassData_(
           false,
       },
 #ifdef PROTOBUF_MESSAGE_GLOBALS
-      &file_reflection_data[0],
+      &file_reflection_data[4],
 #else   // !PROTOBUF_MESSAGE_GLOBALS
       &::_pbi::kDescriptorMethods,
       &descriptor_table_sf_2frewards_2fv1_2frewards_2eproto,
@@ -435,6 +596,569 @@ const ::_pbi::ClassData* GrantDefeatRewardRequest_get_class_data() {
 }
 }  // namespace
 #endif  // PROTOBUF_CUSTOM_VTABLE
+class CreateSharedDefeatDropRequest::_Internal {
+ public:
+  using HasBits = decltype(::std::declval<CreateSharedDefeatDropRequest>()._impl_._has_bits_);
+  static constexpr ::int32_t kHasBitsOffset =
+      8 * PROTOBUF_FIELD_OFFSET(CreateSharedDefeatDropRequest, _impl_._has_bits_);
+};
+
+constexpr CreateSharedDefeatDropRequest::ParseTableT_ CreateSharedDefeatDropRequest::InternalGenerateParseTable_(const ::_pbi::ClassData* class_data) {
+  return ParseTableT_{
+    {
+      PROTOBUF_FIELD_OFFSET(CreateSharedDefeatDropRequest, _impl_._has_bits_),
+      0, // no _extensions_
+      7, 56,  // max_field_number, fast_idx_mask
+      offsetof(ParseTableT_, field_lookup_table),
+      4294967168,  // skipmap
+      offsetof(ParseTableT_, field_entries),
+      7,  // num_field_entries
+      0,  // num_aux_entries
+      offsetof(ParseTableT_, field_names),  // no aux_entries
+      class_data,
+      nullptr,  // post_loop_handler
+      ::_pbi::TcParser::GenericFallback,  // fallback
+      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+      ::_pbi::TcParser::GetTable<::sf::rewards::v1::CreateSharedDefeatDropRequest>(),  // to_prefetch
+      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+    }, {{
+      {::_pbi::TcParser::MiniParse, {}},
+      // string defeat_event_id = 1;
+      {::_pbi::TcParser::FastUS1,
+       {10, 1, 0,
+        PROTOBUF_FIELD_OFFSET(CreateSharedDefeatDropRequest, _impl_.defeat_event_id_)}},
+      // string creature_id = 2;
+      {::_pbi::TcParser::FastUS1,
+       {18, 2, 0,
+        PROTOBUF_FIELD_OFFSET(CreateSharedDefeatDropRequest, _impl_.creature_id_)}},
+      // string table_id = 3;
+      {::_pbi::TcParser::FastUS1,
+       {26, 3, 0,
+        PROTOBUF_FIELD_OFFSET(CreateSharedDefeatDropRequest, _impl_.table_id_)}},
+      // string killer_character_id = 4;
+      {::_pbi::TcParser::FastUS1,
+       {34, 4, 0,
+        PROTOBUF_FIELD_OFFSET(CreateSharedDefeatDropRequest, _impl_.killer_character_id_)}},
+      // repeated string eligible_character_ids = 5;
+      {::_pbi::TcParser::FastUR1,
+       {42, 0, 0,
+        PROTOBUF_FIELD_OFFSET(CreateSharedDefeatDropRequest, _impl_.eligible_character_ids_)}},
+      // bool killer_in_protected_town = 6;
+      {::_pbi::TcParser::SingularVarintNoZag1<bool, offsetof(CreateSharedDefeatDropRequest, _impl_.killer_in_protected_town_), 5>(),
+       {48, 5, 0,
+        PROTOBUF_FIELD_OFFSET(CreateSharedDefeatDropRequest, _impl_.killer_in_protected_town_)}},
+      // bool creature_in_protected_town = 7;
+      {::_pbi::TcParser::SingularVarintNoZag1<bool, offsetof(CreateSharedDefeatDropRequest, _impl_.creature_in_protected_town_), 6>(),
+       {56, 6, 0,
+        PROTOBUF_FIELD_OFFSET(CreateSharedDefeatDropRequest, _impl_.creature_in_protected_town_)}},
+    }}, {{
+      65535, 65535
+    }}, {{
+      // string defeat_event_id = 1;
+      {PROTOBUF_FIELD_OFFSET(CreateSharedDefeatDropRequest, _impl_.defeat_event_id_), _Internal::kHasBitsOffset + 1, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // string creature_id = 2;
+      {PROTOBUF_FIELD_OFFSET(CreateSharedDefeatDropRequest, _impl_.creature_id_), _Internal::kHasBitsOffset + 2, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // string table_id = 3;
+      {PROTOBUF_FIELD_OFFSET(CreateSharedDefeatDropRequest, _impl_.table_id_), _Internal::kHasBitsOffset + 3, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // string killer_character_id = 4;
+      {PROTOBUF_FIELD_OFFSET(CreateSharedDefeatDropRequest, _impl_.killer_character_id_), _Internal::kHasBitsOffset + 4, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // repeated string eligible_character_ids = 5;
+      {PROTOBUF_FIELD_OFFSET(CreateSharedDefeatDropRequest, _impl_.eligible_character_ids_), _Internal::kHasBitsOffset + 0, 0, (0 | ::_fl::kFcRepeated | ::_fl::kUtf8String | ::_fl::kRepSString)},
+      // bool killer_in_protected_town = 6;
+      {PROTOBUF_FIELD_OFFSET(CreateSharedDefeatDropRequest, _impl_.killer_in_protected_town_), _Internal::kHasBitsOffset + 5, 0, (0 | ::_fl::kFcOptional | ::_fl::kBool)},
+      // bool creature_in_protected_town = 7;
+      {PROTOBUF_FIELD_OFFSET(CreateSharedDefeatDropRequest, _impl_.creature_in_protected_town_), _Internal::kHasBitsOffset + 6, 0, (0 | ::_fl::kFcOptional | ::_fl::kBool)},
+    }},
+    // no aux_entries
+    {{
+      "\53\17\13\10\23\26\0\0"
+      "sf.rewards.v1.CreateSharedDefeatDropRequest"
+      "defeat_event_id"
+      "creature_id"
+      "table_id"
+      "killer_character_id"
+      "eligible_character_ids"
+    }},
+  };
+}
+
+
+inline constexpr CreateSharedDefeatDropRequest::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    ::_pbi::ConstantInitialized) noexcept
+      : _cached_size_{0},
+        eligible_character_ids_ { visibility, ::_pbi::InternalMetadataOffset::Build<
+            ::sf::rewards::v1::CreateSharedDefeatDropRequest,
+            PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::CreateSharedDefeatDropRequest, _impl_.eligible_character_ids_)>()
+         }
+        ,
+        defeat_event_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        creature_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        table_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        killer_character_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        killer_in_protected_town_{false},
+        creature_in_protected_town_{false} {}
+
+template <typename>
+constexpr CreateSharedDefeatDropRequest::CreateSharedDefeatDropRequest(::_pbi::ConstantInitialized,
+                       const ::_pbi::ClassData* PROTOBUF_NONNULL class_data)
+    : ::google::protobuf::Message(
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          class_data
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          ),
+      _impl_(internal_visibility(), ::_pbi::ConstantInitialized()) {
+}
+inline void* PROTOBUF_NONNULL CreateSharedDefeatDropRequest::PlacementNew_(
+    const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena) {
+  return ::new (mem) CreateSharedDefeatDropRequest(arena);
+}
+constexpr auto CreateSharedDefeatDropRequest::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::CopyInit(sizeof(CreateSharedDefeatDropRequest), alignof(CreateSharedDefeatDropRequest));
+}
+constexpr auto CreateSharedDefeatDropRequest::InternalGenerateClassData_(
+    const MessageLite& prototype,
+    const ::google::protobuf::internal::TcParseTableBase* tc_table) {
+  return ::google::protobuf::internal::ClassDataFull{
+      ::google::protobuf::internal::ClassData{
+          &prototype,
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+          &_table_.header,
+#else
+          tc_table,
+#endif
+          nullptr,  // IsInitialized
+          &CreateSharedDefeatDropRequest::MergeImpl,
+          ::google::protobuf::Message::GetNewImpl<CreateSharedDefeatDropRequest>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          &CreateSharedDefeatDropRequest::SharedDtor,
+          ::google::protobuf::Message::GetClearImpl<CreateSharedDefeatDropRequest>(), &CreateSharedDefeatDropRequest::ByteSizeLong,
+              &CreateSharedDefeatDropRequest::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          PROTOBUF_FIELD_OFFSET(CreateSharedDefeatDropRequest, _impl_._cached_size_),
+          false,
+      },
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+      &file_reflection_data[0],
+#else   // !PROTOBUF_MESSAGE_GLOBALS
+      &::_pbi::kDescriptorMethods,
+      &descriptor_table_sf_2frewards_2fv1_2frewards_2eproto,
+      nullptr,  // tracker
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+  };
+}
+struct CreateSharedDefeatDropRequestGlobalsTypeInternal : ::_pbi::MessageGlobalsBase {
+  constexpr CreateSharedDefeatDropRequestGlobalsTypeInternal()
+      :
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+        _default(::_pbi::ConstantInitialized{},
+                 CreateSharedDefeatDropRequest_class_data_.base())
+#else   // !PROTOBUF_MESSAGE_GLOBALS
+        MessageGlobalsBase(CreateSharedDefeatDropRequest::InternalGenerateClassData_(
+            _default, &CreateSharedDefeatDropRequest_globals_._table.header)),
+        _default(::_pbi::ConstantInitialized{}, GetClassData()),
+        _table(::_pbi::PrivateAccess::GenerateParseTable<CreateSharedDefeatDropRequest>(
+            GetClassData()))
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+  {
+  }
+  ~CreateSharedDefeatDropRequestGlobalsTypeInternal() {}
+  union {
+    alignas(::_pbi::kMaxMessageAlignment) CreateSharedDefeatDropRequest _default;
+  };
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+  decltype(::_pbi::PrivateAccess::GenerateParseTable<CreateSharedDefeatDropRequest>(
+      ::std::declval<const ::_pbi::ClassData*>())) _table;
+#endif
+};
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+static_assert(PROTOBUF_FIELD_OFFSET(CreateSharedDefeatDropRequestGlobalsTypeInternal, _default) ==
+              ::_pbi::MessageGlobalsBase::OffsetToDefault());
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 PROTOBUF_MESSAGE_GLOBALS_CONST CreateSharedDefeatDropRequestGlobalsTypeInternal CreateSharedDefeatDropRequest_globals_
+        PROTOBUF_MESSAGE_GLOBALS_SECTION(.data.rel.ro);
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+namespace {
+const ::_pbi::ClassData* CreateSharedDefeatDropRequest_get_class_data() {
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+  return CreateSharedDefeatDropRequest_globals_.GetClassData();
+#else
+  return CreateSharedDefeatDropRequest_class_data_.base();
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+}
+}  // namespace
+#endif  // PROTOBUF_CUSTOM_VTABLE
+class ClaimSharedDefeatDropRequest::_Internal {
+ public:
+  using HasBits = decltype(::std::declval<ClaimSharedDefeatDropRequest>()._impl_._has_bits_);
+  static constexpr ::int32_t kHasBitsOffset =
+      8 * PROTOBUF_FIELD_OFFSET(ClaimSharedDefeatDropRequest, _impl_._has_bits_);
+};
+
+constexpr ClaimSharedDefeatDropRequest::ParseTableT_ ClaimSharedDefeatDropRequest::InternalGenerateParseTable_(const ::_pbi::ClassData* class_data) {
+  return ParseTableT_{
+    {
+      PROTOBUF_FIELD_OFFSET(ClaimSharedDefeatDropRequest, _impl_._has_bits_),
+      0, // no _extensions_
+      3, 24,  // max_field_number, fast_idx_mask
+      offsetof(ParseTableT_, field_lookup_table),
+      4294967288,  // skipmap
+      offsetof(ParseTableT_, field_entries),
+      3,  // num_field_entries
+      0,  // num_aux_entries
+      offsetof(ParseTableT_, field_names),  // no aux_entries
+      class_data,
+      nullptr,  // post_loop_handler
+      ::_pbi::TcParser::GenericFallback,  // fallback
+      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+      ::_pbi::TcParser::GetTable<::sf::rewards::v1::ClaimSharedDefeatDropRequest>(),  // to_prefetch
+      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+    }, {{
+      {::_pbi::TcParser::MiniParse, {}},
+      // string defeat_event_id = 1;
+      {::_pbi::TcParser::FastUS1,
+       {10, 0, 0,
+        PROTOBUF_FIELD_OFFSET(ClaimSharedDefeatDropRequest, _impl_.defeat_event_id_)}},
+      // string character_id = 2;
+      {::_pbi::TcParser::FastUS1,
+       {18, 1, 0,
+        PROTOBUF_FIELD_OFFSET(ClaimSharedDefeatDropRequest, _impl_.character_id_)}},
+      // string container_id = 3;
+      {::_pbi::TcParser::FastUS1,
+       {26, 2, 0,
+        PROTOBUF_FIELD_OFFSET(ClaimSharedDefeatDropRequest, _impl_.container_id_)}},
+    }}, {{
+      65535, 65535
+    }}, {{
+      // string defeat_event_id = 1;
+      {PROTOBUF_FIELD_OFFSET(ClaimSharedDefeatDropRequest, _impl_.defeat_event_id_), _Internal::kHasBitsOffset + 0, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // string character_id = 2;
+      {PROTOBUF_FIELD_OFFSET(ClaimSharedDefeatDropRequest, _impl_.character_id_), _Internal::kHasBitsOffset + 1, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // string container_id = 3;
+      {PROTOBUF_FIELD_OFFSET(ClaimSharedDefeatDropRequest, _impl_.container_id_), _Internal::kHasBitsOffset + 2, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    }},
+    // no aux_entries
+    {{
+      "\52\17\14\14\0\0\0\0"
+      "sf.rewards.v1.ClaimSharedDefeatDropRequest"
+      "defeat_event_id"
+      "character_id"
+      "container_id"
+    }},
+  };
+}
+
+
+inline constexpr ClaimSharedDefeatDropRequest::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    ::_pbi::ConstantInitialized) noexcept
+      : _cached_size_{0},
+        defeat_event_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        character_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        container_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()) {}
+
+template <typename>
+constexpr ClaimSharedDefeatDropRequest::ClaimSharedDefeatDropRequest(::_pbi::ConstantInitialized,
+                       const ::_pbi::ClassData* PROTOBUF_NONNULL class_data)
+    : ::google::protobuf::Message(
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          class_data
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          ),
+      _impl_(internal_visibility(), ::_pbi::ConstantInitialized()) {
+}
+inline void* PROTOBUF_NONNULL ClaimSharedDefeatDropRequest::PlacementNew_(
+    const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena) {
+  return ::new (mem) ClaimSharedDefeatDropRequest(arena);
+}
+constexpr auto ClaimSharedDefeatDropRequest::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::CopyInit(sizeof(ClaimSharedDefeatDropRequest), alignof(ClaimSharedDefeatDropRequest));
+}
+constexpr auto ClaimSharedDefeatDropRequest::InternalGenerateClassData_(
+    const MessageLite& prototype,
+    const ::google::protobuf::internal::TcParseTableBase* tc_table) {
+  return ::google::protobuf::internal::ClassDataFull{
+      ::google::protobuf::internal::ClassData{
+          &prototype,
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+          &_table_.header,
+#else
+          tc_table,
+#endif
+          nullptr,  // IsInitialized
+          &ClaimSharedDefeatDropRequest::MergeImpl,
+          ::google::protobuf::Message::GetNewImpl<ClaimSharedDefeatDropRequest>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          &ClaimSharedDefeatDropRequest::SharedDtor,
+          ::google::protobuf::Message::GetClearImpl<ClaimSharedDefeatDropRequest>(), &ClaimSharedDefeatDropRequest::ByteSizeLong,
+              &ClaimSharedDefeatDropRequest::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          PROTOBUF_FIELD_OFFSET(ClaimSharedDefeatDropRequest, _impl_._cached_size_),
+          false,
+      },
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+      &file_reflection_data[1],
+#else   // !PROTOBUF_MESSAGE_GLOBALS
+      &::_pbi::kDescriptorMethods,
+      &descriptor_table_sf_2frewards_2fv1_2frewards_2eproto,
+      nullptr,  // tracker
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+  };
+}
+struct ClaimSharedDefeatDropRequestGlobalsTypeInternal : ::_pbi::MessageGlobalsBase {
+  constexpr ClaimSharedDefeatDropRequestGlobalsTypeInternal()
+      :
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+        _default(::_pbi::ConstantInitialized{},
+                 ClaimSharedDefeatDropRequest_class_data_.base())
+#else   // !PROTOBUF_MESSAGE_GLOBALS
+        MessageGlobalsBase(ClaimSharedDefeatDropRequest::InternalGenerateClassData_(
+            _default, &ClaimSharedDefeatDropRequest_globals_._table.header)),
+        _default(::_pbi::ConstantInitialized{}, GetClassData()),
+        _table(::_pbi::PrivateAccess::GenerateParseTable<ClaimSharedDefeatDropRequest>(
+            GetClassData()))
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+  {
+  }
+  ~ClaimSharedDefeatDropRequestGlobalsTypeInternal() {}
+  union {
+    alignas(::_pbi::kMaxMessageAlignment) ClaimSharedDefeatDropRequest _default;
+  };
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+  decltype(::_pbi::PrivateAccess::GenerateParseTable<ClaimSharedDefeatDropRequest>(
+      ::std::declval<const ::_pbi::ClassData*>())) _table;
+#endif
+};
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+static_assert(PROTOBUF_FIELD_OFFSET(ClaimSharedDefeatDropRequestGlobalsTypeInternal, _default) ==
+              ::_pbi::MessageGlobalsBase::OffsetToDefault());
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 PROTOBUF_MESSAGE_GLOBALS_CONST ClaimSharedDefeatDropRequestGlobalsTypeInternal ClaimSharedDefeatDropRequest_globals_
+        PROTOBUF_MESSAGE_GLOBALS_SECTION(.data.rel.ro);
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+namespace {
+const ::_pbi::ClassData* ClaimSharedDefeatDropRequest_get_class_data() {
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+  return ClaimSharedDefeatDropRequest_globals_.GetClassData();
+#else
+  return ClaimSharedDefeatDropRequest_class_data_.base();
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+}
+}  // namespace
+#endif  // PROTOBUF_CUSTOM_VTABLE
+class SharedDefeatDropReceipt::_Internal {
+ public:
+  using HasBits = decltype(::std::declval<SharedDefeatDropReceipt>()._impl_._has_bits_);
+  static constexpr ::int32_t kHasBitsOffset =
+      8 * PROTOBUF_FIELD_OFFSET(SharedDefeatDropReceipt, _impl_._has_bits_);
+};
+
+constexpr SharedDefeatDropReceipt::ParseTableT_ SharedDefeatDropReceipt::InternalGenerateParseTable_(const ::_pbi::ClassData* class_data) {
+  return ParseTableT_{
+    {
+      PROTOBUF_FIELD_OFFSET(SharedDefeatDropReceipt, _impl_._has_bits_),
+      0, // no _extensions_
+      5, 56,  // max_field_number, fast_idx_mask
+      offsetof(ParseTableT_, field_lookup_table),
+      4294967264,  // skipmap
+      offsetof(ParseTableT_, field_entries),
+      5,  // num_field_entries
+      1,  // num_aux_entries
+      offsetof(ParseTableT_, aux_entries),
+      class_data,
+      nullptr,  // post_loop_handler
+      ::_pbi::TcParser::GenericFallback,  // fallback
+      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+      ::_pbi::TcParser::GetTable<::sf::rewards::v1::SharedDefeatDropReceipt>(),  // to_prefetch
+      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+    }, {{
+      {::_pbi::TcParser::MiniParse, {}},
+      // string defeat_event_id = 1;
+      {::_pbi::TcParser::FastUS1,
+       {10, 1, 0,
+        PROTOBUF_FIELD_OFFSET(SharedDefeatDropReceipt, _impl_.defeat_event_id_)}},
+      // repeated .sf.rewards.v1.SharedDropItem items = 2;
+      {::_pbi::TcParser::FastMtR1,
+       {18, 0, 0,
+        PROTOBUF_FIELD_OFFSET(SharedDefeatDropReceipt, _impl_.items_)}},
+      // string claimant_character_id = 3;
+      {::_pbi::TcParser::FastUS1,
+       {26, 2, 0,
+        PROTOBUF_FIELD_OFFSET(SharedDefeatDropReceipt, _impl_.claimant_character_id_)}},
+      // string ledger_operation_id = 4;
+      {::_pbi::TcParser::FastUS1,
+       {34, 3, 0,
+        PROTOBUF_FIELD_OFFSET(SharedDefeatDropReceipt, _impl_.ledger_operation_id_)}},
+      // int64 container_revision = 5;
+      {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(SharedDefeatDropReceipt, _impl_.container_revision_), 4>(),
+       {40, 4, 0,
+        PROTOBUF_FIELD_OFFSET(SharedDefeatDropReceipt, _impl_.container_revision_)}},
+      {::_pbi::TcParser::MiniParse, {}},
+      {::_pbi::TcParser::MiniParse, {}},
+    }}, {{
+      65535, 65535
+    }}, {{
+      // string defeat_event_id = 1;
+      {PROTOBUF_FIELD_OFFSET(SharedDefeatDropReceipt, _impl_.defeat_event_id_), _Internal::kHasBitsOffset + 1, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // repeated .sf.rewards.v1.SharedDropItem items = 2;
+      {PROTOBUF_FIELD_OFFSET(SharedDefeatDropReceipt, _impl_.items_), _Internal::kHasBitsOffset + 0, 0, (0 | ::_fl::kFcRepeated | ::_fl::kMessage | ::_fl::kTvTable)},
+      // string claimant_character_id = 3;
+      {PROTOBUF_FIELD_OFFSET(SharedDefeatDropReceipt, _impl_.claimant_character_id_), _Internal::kHasBitsOffset + 2, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // string ledger_operation_id = 4;
+      {PROTOBUF_FIELD_OFFSET(SharedDefeatDropReceipt, _impl_.ledger_operation_id_), _Internal::kHasBitsOffset + 3, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // int64 container_revision = 5;
+      {PROTOBUF_FIELD_OFFSET(SharedDefeatDropReceipt, _impl_.container_revision_), _Internal::kHasBitsOffset + 4, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt64)},
+    }},
+    {{
+        #ifndef PROTOBUF_MESSAGE_GLOBALS
+        {::_pbi::TcParser::GetTable<::sf::rewards::v1::SharedDropItem>()},
+        #else
+        {::_pbi::FieldAuxMessageGlobals(), &::sf::rewards::v1::SharedDropItem_globals_},
+        #endif
+    }},
+    {{
+      "\45\17\0\25\23\0\0\0"
+      "sf.rewards.v1.SharedDefeatDropReceipt"
+      "defeat_event_id"
+      "claimant_character_id"
+      "ledger_operation_id"
+    }},
+  };
+}
+
+
+inline constexpr SharedDefeatDropReceipt::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    ::_pbi::ConstantInitialized) noexcept
+      : _cached_size_{0},
+        items_ { visibility, ::_pbi::InternalMetadataOffset::Build<
+            ::sf::rewards::v1::SharedDefeatDropReceipt,
+            PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::SharedDefeatDropReceipt, _impl_.items_)>()
+         }
+        ,
+        defeat_event_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        claimant_character_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        ledger_operation_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        container_revision_{::int64_t{0}} {}
+
+template <typename>
+constexpr SharedDefeatDropReceipt::SharedDefeatDropReceipt(::_pbi::ConstantInitialized,
+                       const ::_pbi::ClassData* PROTOBUF_NONNULL class_data)
+    : ::google::protobuf::Message(
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          class_data
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          ),
+      _impl_(internal_visibility(), ::_pbi::ConstantInitialized()) {
+}
+inline void* PROTOBUF_NONNULL SharedDefeatDropReceipt::PlacementNew_(
+    const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena) {
+  return ::new (mem) SharedDefeatDropReceipt(arena);
+}
+constexpr auto SharedDefeatDropReceipt::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::CopyInit(sizeof(SharedDefeatDropReceipt), alignof(SharedDefeatDropReceipt));
+}
+constexpr auto SharedDefeatDropReceipt::InternalGenerateClassData_(
+    const MessageLite& prototype,
+    const ::google::protobuf::internal::TcParseTableBase* tc_table) {
+  return ::google::protobuf::internal::ClassDataFull{
+      ::google::protobuf::internal::ClassData{
+          &prototype,
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+          &_table_.header,
+#else
+          tc_table,
+#endif
+          nullptr,  // IsInitialized
+          &SharedDefeatDropReceipt::MergeImpl,
+          ::google::protobuf::Message::GetNewImpl<SharedDefeatDropReceipt>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          &SharedDefeatDropReceipt::SharedDtor,
+          ::google::protobuf::Message::GetClearImpl<SharedDefeatDropReceipt>(), &SharedDefeatDropReceipt::ByteSizeLong,
+              &SharedDefeatDropReceipt::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          PROTOBUF_FIELD_OFFSET(SharedDefeatDropReceipt, _impl_._cached_size_),
+          false,
+      },
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+      &file_reflection_data[3],
+#else   // !PROTOBUF_MESSAGE_GLOBALS
+      &::_pbi::kDescriptorMethods,
+      &descriptor_table_sf_2frewards_2fv1_2frewards_2eproto,
+      nullptr,  // tracker
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+  };
+}
+struct SharedDefeatDropReceiptGlobalsTypeInternal : ::_pbi::MessageGlobalsBase {
+  constexpr SharedDefeatDropReceiptGlobalsTypeInternal()
+      :
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+        _default(::_pbi::ConstantInitialized{},
+                 SharedDefeatDropReceipt_class_data_.base())
+#else   // !PROTOBUF_MESSAGE_GLOBALS
+        MessageGlobalsBase(SharedDefeatDropReceipt::InternalGenerateClassData_(
+            _default, &SharedDefeatDropReceipt_globals_._table.header)),
+        _default(::_pbi::ConstantInitialized{}, GetClassData()),
+        _table(::_pbi::PrivateAccess::GenerateParseTable<SharedDefeatDropReceipt>(
+            GetClassData()))
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+  {
+  }
+  ~SharedDefeatDropReceiptGlobalsTypeInternal() {}
+  union {
+    alignas(::_pbi::kMaxMessageAlignment) SharedDefeatDropReceipt _default;
+  };
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+  decltype(::_pbi::PrivateAccess::GenerateParseTable<SharedDefeatDropReceipt>(
+      ::std::declval<const ::_pbi::ClassData*>())) _table;
+#endif
+};
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+static_assert(PROTOBUF_FIELD_OFFSET(SharedDefeatDropReceiptGlobalsTypeInternal, _default) ==
+              ::_pbi::MessageGlobalsBase::OffsetToDefault());
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 PROTOBUF_MESSAGE_GLOBALS_CONST SharedDefeatDropReceiptGlobalsTypeInternal SharedDefeatDropReceipt_globals_
+        PROTOBUF_MESSAGE_GLOBALS_SECTION(.data.rel.ro);
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+namespace {
+const ::_pbi::ClassData* SharedDefeatDropReceipt_get_class_data() {
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+  return SharedDefeatDropReceipt_globals_.GetClassData();
+#else
+  return SharedDefeatDropReceipt_class_data_.base();
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+}
+}  // namespace
+#endif  // PROTOBUF_CUSTOM_VTABLE
 }  // namespace v1
 }  // namespace rewards
 }  // namespace sf
@@ -445,6 +1169,52 @@ static constexpr const ::_pb::ServiceDescriptor* PROTOBUF_NONNULL* PROTOBUF_NULL
 const ::uint32_t
     TableStruct_sf_2frewards_2fv1_2frewards_2eproto::offsets[] ABSL_ATTRIBUTE_SECTION_VARIABLE(
         protodesc_cold) = {
+        0x081, // bitmap
+        PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::CreateSharedDefeatDropRequest, _impl_._has_bits_),
+        10, // hasbit index offset
+        PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::CreateSharedDefeatDropRequest, _impl_.defeat_event_id_),
+        PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::CreateSharedDefeatDropRequest, _impl_.creature_id_),
+        PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::CreateSharedDefeatDropRequest, _impl_.table_id_),
+        PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::CreateSharedDefeatDropRequest, _impl_.killer_character_id_),
+        PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::CreateSharedDefeatDropRequest, _impl_.eligible_character_ids_),
+        PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::CreateSharedDefeatDropRequest, _impl_.killer_in_protected_town_),
+        PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::CreateSharedDefeatDropRequest, _impl_.creature_in_protected_town_),
+        1,
+        2,
+        3,
+        4,
+        0,
+        5,
+        6,
+        0x081, // bitmap
+        PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::ClaimSharedDefeatDropRequest, _impl_._has_bits_),
+        6, // hasbit index offset
+        PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::ClaimSharedDefeatDropRequest, _impl_.defeat_event_id_),
+        PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::ClaimSharedDefeatDropRequest, _impl_.character_id_),
+        PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::ClaimSharedDefeatDropRequest, _impl_.container_id_),
+        0,
+        1,
+        2,
+        0x081, // bitmap
+        PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::SharedDropItem, _impl_._has_bits_),
+        5, // hasbit index offset
+        PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::SharedDropItem, _impl_.definition_id_),
+        PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::SharedDropItem, _impl_.quantity_),
+        0,
+        1,
+        0x081, // bitmap
+        PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::SharedDefeatDropReceipt, _impl_._has_bits_),
+        8, // hasbit index offset
+        PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::SharedDefeatDropReceipt, _impl_.defeat_event_id_),
+        PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::SharedDefeatDropReceipt, _impl_.items_),
+        PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::SharedDefeatDropReceipt, _impl_.claimant_character_id_),
+        PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::SharedDefeatDropReceipt, _impl_.ledger_operation_id_),
+        PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::SharedDefeatDropReceipt, _impl_.container_revision_),
+        1,
+        0,
+        2,
+        3,
+        4,
         0x081, // bitmap
         PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::GrantDefeatRewardRequest, _impl_._has_bits_),
         11, // hasbit index offset
@@ -483,43 +1253,71 @@ const ::uint32_t
 
 static const ::_pbi::MigrationSchema
     schemas[] ABSL_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
-        {0, sizeof(::sf::rewards::v1::GrantDefeatRewardRequest)},
-        {19, sizeof(::sf::rewards::v1::RewardReceipt)},
+        {0, sizeof(::sf::rewards::v1::CreateSharedDefeatDropRequest)},
+        {17, sizeof(::sf::rewards::v1::ClaimSharedDefeatDropRequest)},
+        {26, sizeof(::sf::rewards::v1::SharedDropItem)},
+        {33, sizeof(::sf::rewards::v1::SharedDefeatDropReceipt)},
+        {46, sizeof(::sf::rewards::v1::GrantDefeatRewardRequest)},
+        {65, sizeof(::sf::rewards::v1::RewardReceipt)},
 };
 static const ::_pbi::MessageGlobalsBase* PROTOBUF_NONNULL const
     file_message_globals[] = {
+        &::sf::rewards::v1::CreateSharedDefeatDropRequest_globals_,
+        &::sf::rewards::v1::ClaimSharedDefeatDropRequest_globals_,
+        &::sf::rewards::v1::SharedDropItem_globals_,
+        &::sf::rewards::v1::SharedDefeatDropReceipt_globals_,
         &::sf::rewards::v1::GrantDefeatRewardRequest_globals_,
         &::sf::rewards::v1::RewardReceipt_globals_,
 };
 const char descriptor_table_protodef_sf_2frewards_2fv1_2frewards_2eproto[] ABSL_ATTRIBUTE_SECTION_VARIABLE(
     protodesc_cold) = {
     "\n\033sf/rewards/v1/rewards.proto\022\rsf.reward"
-    "s.v1\"\377\001\n\030GrantDefeatRewardRequest\022\027\n\017def"
-    "eat_event_id\030\001 \001(\t\022\033\n\023killer_character_i"
-    "d\030\002 \001(\t\022\036\n\026recipient_character_id\030\003 \001(\t\022"
-    "\024\n\014container_id\030\004 \001(\t\022#\n\033expected_contai"
-    "ner_revision\030\005 \001(\003\022 \n\030killer_in_protecte"
-    "d_town\030\006 \001(\010\022\036\n\026boar_in_protected_town\030\007"
-    " \001(\010\022\020\n\010table_id\030\010 \001(\t\"\227\001\n\rRewardReceipt"
-    "\022\017\n\007granted\030\001 \001(\010\022\023\n\013source_code\030\002 \001(\t\022\033"
-    "\n\023ledger_operation_id\030\003 \001(\t\022\025\n\rdefinitio"
-    "n_id\030\004 \001(\t\022\020\n\010quantity\030\005 \001(\003\022\032\n\022containe"
-    "r_revision\030\006 \001(\0032e\n\007Rewards\022Z\n\021GrantDefe"
-    "atReward\022\'.sf.rewards.v1.GrantDefeatRewa"
-    "rdRequest\032\034.sf.rewards.v1.RewardReceiptB"
-    "\037\252\002\034ShatteredFrontier.Rewards.V1b\006proto3"
+    "s.v1\"\342\001\n\035CreateSharedDefeatDropRequest\022\027"
+    "\n\017defeat_event_id\030\001 \001(\t\022\023\n\013creature_id\030\002"
+    " \001(\t\022\020\n\010table_id\030\003 \001(\t\022\033\n\023killer_charact"
+    "er_id\030\004 \001(\t\022\036\n\026eligible_character_ids\030\005 "
+    "\003(\t\022 \n\030killer_in_protected_town\030\006 \001(\010\022\"\n"
+    "\032creature_in_protected_town\030\007 \001(\010\"c\n\034Cla"
+    "imSharedDefeatDropRequest\022\027\n\017defeat_even"
+    "t_id\030\001 \001(\t\022\024\n\014character_id\030\002 \001(\t\022\024\n\014cont"
+    "ainer_id\030\003 \001(\t\"9\n\016SharedDropItem\022\025\n\rdefi"
+    "nition_id\030\001 \001(\t\022\020\n\010quantity\030\002 \001(\003\"\270\001\n\027Sh"
+    "aredDefeatDropReceipt\022\027\n\017defeat_event_id"
+    "\030\001 \001(\t\022,\n\005items\030\002 \003(\0132\035.sf.rewards.v1.Sh"
+    "aredDropItem\022\035\n\025claimant_character_id\030\003 "
+    "\001(\t\022\033\n\023ledger_operation_id\030\004 \001(\t\022\032\n\022cont"
+    "ainer_revision\030\005 \001(\003\"\377\001\n\030GrantDefeatRewa"
+    "rdRequest\022\027\n\017defeat_event_id\030\001 \001(\t\022\033\n\023ki"
+    "ller_character_id\030\002 \001(\t\022\036\n\026recipient_cha"
+    "racter_id\030\003 \001(\t\022\024\n\014container_id\030\004 \001(\t\022#\n"
+    "\033expected_container_revision\030\005 \001(\003\022 \n\030ki"
+    "ller_in_protected_town\030\006 \001(\010\022\036\n\026boar_in_"
+    "protected_town\030\007 \001(\010\022\020\n\010table_id\030\010 \001(\t\"\227"
+    "\001\n\rRewardReceipt\022\017\n\007granted\030\001 \001(\010\022\023\n\013sou"
+    "rce_code\030\002 \001(\t\022\033\n\023ledger_operation_id\030\003 "
+    "\001(\t\022\025\n\rdefinition_id\030\004 \001(\t\022\020\n\010quantity\030\005"
+    " \001(\003\022\032\n\022container_revision\030\006 \001(\0032\303\002\n\007Rew"
+    "ards\022Z\n\021GrantDefeatReward\022\'.sf.rewards.v"
+    "1.GrantDefeatRewardRequest\032\034.sf.rewards."
+    "v1.RewardReceipt\022n\n\026CreateSharedDefeatDr"
+    "op\022,.sf.rewards.v1.CreateSharedDefeatDro"
+    "pRequest\032&.sf.rewards.v1.SharedDefeatDro"
+    "pReceipt\022l\n\025ClaimSharedDefeatDrop\022+.sf.r"
+    "ewards.v1.ClaimSharedDefeatDropRequest\032&"
+    ".sf.rewards.v1.SharedDefeatDropReceiptB\037"
+    "\252\002\034ShatteredFrontier.Rewards.V1b\006proto3"
 };
 static ::absl::once_flag descriptor_table_sf_2frewards_2fv1_2frewards_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_sf_2frewards_2fv1_2frewards_2eproto = {
     false,
     false,
-    600,
+    1399,
     descriptor_table_protodef_sf_2frewards_2fv1_2frewards_2eproto,
     "sf/rewards/v1/rewards.proto",
     &descriptor_table_sf_2frewards_2fv1_2frewards_2eproto_once,
     nullptr,
     0,
-    2,
+    6,
     schemas,
     file_message_globals,
     TableStruct_sf_2frewards_2fv1_2frewards_2eproto::offsets,
@@ -529,6 +1327,1306 @@ PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_sf_2frewards_2
 namespace sf {
 namespace rewards {
 namespace v1 {
+// ===================================================================
+
+CreateSharedDefeatDropRequest::CreateSharedDefeatDropRequest(::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, CreateSharedDefeatDropRequest_get_class_data()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:sf.rewards.v1.CreateSharedDefeatDropRequest)
+}
+PROTOBUF_NDEBUG_INLINE CreateSharedDefeatDropRequest::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+    [[maybe_unused]] const ::sf::rewards::v1::CreateSharedDefeatDropRequest& from_msg)
+      : _has_bits_{from._has_bits_},
+        _cached_size_{0},
+        eligible_character_ids_ {
+          visibility, ::_pbi::InternalMetadataOffset::Build<
+              ::sf::rewards::v1::CreateSharedDefeatDropRequest,
+              PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::CreateSharedDefeatDropRequest, _impl_.eligible_character_ids_)>()
+          , from.eligible_character_ids_
+        }
+        ,
+        defeat_event_id_(arena, from.defeat_event_id_),
+        creature_id_(arena, from.creature_id_),
+        table_id_(arena, from.table_id_),
+        killer_character_id_(arena, from.killer_character_id_) {}
+
+CreateSharedDefeatDropRequest::CreateSharedDefeatDropRequest(
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena,
+    const CreateSharedDefeatDropRequest& from)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, CreateSharedDefeatDropRequest_get_class_data()) {
+
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  CreateSharedDefeatDropRequest* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
+  ::memcpy(reinterpret_cast<char*>(&_impl_) +
+               offsetof(Impl_, killer_in_protected_town_),
+           reinterpret_cast<const char*>(&from._impl_) +
+               offsetof(Impl_, killer_in_protected_town_),
+           offsetof(Impl_, creature_in_protected_town_) -
+               offsetof(Impl_, killer_in_protected_town_) +
+               sizeof(Impl_::creature_in_protected_town_));
+
+  // @@protoc_insertion_point(copy_constructor:sf.rewards.v1.CreateSharedDefeatDropRequest)
+}
+PROTOBUF_NDEBUG_INLINE CreateSharedDefeatDropRequest::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+      : _cached_size_{0},
+        eligible_character_ids_ { visibility, ::_pbi::InternalMetadataOffset::Build<
+            ::sf::rewards::v1::CreateSharedDefeatDropRequest,
+            PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::CreateSharedDefeatDropRequest, _impl_.eligible_character_ids_)>()
+         }
+        ,
+        defeat_event_id_(arena),
+        creature_id_(arena),
+        table_id_(arena),
+        killer_character_id_(arena) {}
+
+inline void CreateSharedDefeatDropRequest::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  ::memset(reinterpret_cast<char*>(&_impl_) +
+               offsetof(Impl_, killer_in_protected_town_),
+           0,
+           offsetof(Impl_, creature_in_protected_town_) -
+               offsetof(Impl_, killer_in_protected_town_) +
+               sizeof(Impl_::creature_in_protected_town_));
+}
+CreateSharedDefeatDropRequest::~CreateSharedDefeatDropRequest() {
+  // @@protoc_insertion_point(destructor:sf.rewards.v1.CreateSharedDefeatDropRequest)
+  SharedDtor(*this);
+}
+inline void CreateSharedDefeatDropRequest::SharedDtor(MessageLite& self) {
+  CreateSharedDefeatDropRequest& this_ = static_cast<CreateSharedDefeatDropRequest&>(self);
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    this_.CheckHasBitConsistency();
+  }
+  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.defeat_event_id_.Destroy();
+  this_._impl_.creature_id_.Destroy();
+  this_._impl_.table_id_.Destroy();
+  this_._impl_.killer_character_id_.Destroy();
+  this_._impl_.~Impl_();
+}
+
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
+    ::google::protobuf::internal::ClassDataFull CreateSharedDefeatDropRequest_class_data_ =
+        CreateSharedDefeatDropRequest::InternalGenerateClassData_(CreateSharedDefeatDropRequest_globals_._default);
+
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+CreateSharedDefeatDropRequest::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&CreateSharedDefeatDropRequest_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(CreateSharedDefeatDropRequest_class_data_.tc_table);
+  return CreateSharedDefeatDropRequest_class_data_.base();
+}
+#else
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+CreateSharedDefeatDropRequest::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&CreateSharedDefeatDropRequest_globals_);
+  ::google::protobuf::internal::PrefetchToLocalCache(
+      ::google::protobuf::internal::MessageGlobalsBase::ToParseTableBase(&CreateSharedDefeatDropRequest_globals_));
+  return CreateSharedDefeatDropRequest_globals_.GetClassData();
+}
+#endif  // !PROTOBUF_MESSAGE_GLOBALS
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_CONSTINIT
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const CreateSharedDefeatDropRequest::ParseTableT_
+    CreateSharedDefeatDropRequest::_table_ =
+        CreateSharedDefeatDropRequest::InternalGenerateParseTable_(CreateSharedDefeatDropRequest_class_data_.base());
+#endif  // !PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_NOINLINE void CreateSharedDefeatDropRequest::Clear() {
+// @@protoc_insertion_point(message_clear_start:sf.rewards.v1.CreateSharedDefeatDropRequest)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x0000001fU)) {
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      _impl_.eligible_character_ids_.Clear();
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      _impl_.defeat_event_id_.ClearNonDefaultToEmpty();
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      _impl_.creature_id_.ClearNonDefaultToEmpty();
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+      _impl_.table_id_.ClearNonDefaultToEmpty();
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+      _impl_.killer_character_id_.ClearNonDefaultToEmpty();
+    }
+  }
+  ::memset(&_impl_.killer_in_protected_town_, 0, static_cast<::size_t>(
+      reinterpret_cast<char*>(&_impl_.creature_in_protected_town_) -
+      reinterpret_cast<char*>(&_impl_.killer_in_protected_town_)) + sizeof(_impl_.creature_in_protected_town_));
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::uint8_t* PROTOBUF_NONNULL CreateSharedDefeatDropRequest::_InternalSerialize(
+    const ::google::protobuf::MessageLite& base, ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) {
+  const CreateSharedDefeatDropRequest& this_ = static_cast<const CreateSharedDefeatDropRequest&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::uint8_t* PROTOBUF_NONNULL CreateSharedDefeatDropRequest::_InternalSerialize(
+    ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+  const CreateSharedDefeatDropRequest& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    this_.CheckHasBitConsistency();
+  }
+  // @@protoc_insertion_point(serialize_to_array_start:sf.rewards.v1.CreateSharedDefeatDropRequest)
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  cached_has_bits = this_._impl_._has_bits_[0];
+  // string defeat_event_id = 1;
+  if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+    if (!this_._internal_defeat_event_id().empty()) {
+      const ::std::string& _s = this_._internal_defeat_event_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.rewards.v1.CreateSharedDefeatDropRequest.defeat_event_id");
+      target = stream->WriteStringMaybeAliased(1, _s, target);
+    }
+  }
+
+  // string creature_id = 2;
+  if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+    if (!this_._internal_creature_id().empty()) {
+      const ::std::string& _s = this_._internal_creature_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.rewards.v1.CreateSharedDefeatDropRequest.creature_id");
+      target = stream->WriteStringMaybeAliased(2, _s, target);
+    }
+  }
+
+  // string table_id = 3;
+  if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+    if (!this_._internal_table_id().empty()) {
+      const ::std::string& _s = this_._internal_table_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.rewards.v1.CreateSharedDefeatDropRequest.table_id");
+      target = stream->WriteStringMaybeAliased(3, _s, target);
+    }
+  }
+
+  // string killer_character_id = 4;
+  if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+    if (!this_._internal_killer_character_id().empty()) {
+      const ::std::string& _s = this_._internal_killer_character_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.rewards.v1.CreateSharedDefeatDropRequest.killer_character_id");
+      target = stream->WriteStringMaybeAliased(4, _s, target);
+    }
+  }
+
+  // repeated string eligible_character_ids = 5;
+  if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+    for (int i = 0, n = this_._internal_eligible_character_ids_size(); i < n; ++i) {
+      const auto& s = this_._internal_eligible_character_ids().Get(i);
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          s.data(), static_cast<int>(s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.rewards.v1.CreateSharedDefeatDropRequest.eligible_character_ids");
+      target = stream->WriteString(5, s, target);
+    }
+  }
+
+  // bool killer_in_protected_town = 6;
+  if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+    if (this_._internal_killer_in_protected_town() != 0) {
+      target = stream->EnsureSpace(target);
+      target = ::_pbi::WireFormatLite::WriteBoolToArray(
+          6, this_._internal_killer_in_protected_town(), target);
+    }
+  }
+
+  // bool creature_in_protected_town = 7;
+  if (CheckHasBit(cached_has_bits, 0x00000040U)) {
+    if (this_._internal_creature_in_protected_town() != 0) {
+      target = stream->EnsureSpace(target);
+      target = ::_pbi::WireFormatLite::WriteBoolToArray(
+          7, this_._internal_creature_in_protected_town(), target);
+    }
+  }
+
+  if (ABSL_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
+    target =
+        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+            this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:sf.rewards.v1.CreateSharedDefeatDropRequest)
+  return target;
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::size_t CreateSharedDefeatDropRequest::ByteSizeLong(const MessageLite& base) {
+  const CreateSharedDefeatDropRequest& this_ = static_cast<const CreateSharedDefeatDropRequest&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::size_t CreateSharedDefeatDropRequest::ByteSizeLong() const {
+  const CreateSharedDefeatDropRequest& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  // @@protoc_insertion_point(message_byte_size_start:sf.rewards.v1.CreateSharedDefeatDropRequest)
+  ::size_t total_size = 0;
+
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void)cached_has_bits;
+
+  ::_pbi::Prefetch5LinesFrom7Lines(&this_);
+  cached_has_bits = this_._impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x0000007fU)) {
+    // repeated string eligible_character_ids = 5;
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      total_size +=
+          1 * ::google::protobuf::internal::FromIntSize(this_._internal_eligible_character_ids().size());
+      for (int i = 0, n = this_._internal_eligible_character_ids().size(); i < n; ++i) {
+        total_size += ::google::protobuf::internal::WireFormatLite::StringSize(
+            this_._internal_eligible_character_ids().Get(i));
+      }
+    }
+    // string defeat_event_id = 1;
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      if (!this_._internal_defeat_event_id().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_defeat_event_id());
+      }
+    }
+    // string creature_id = 2;
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      if (!this_._internal_creature_id().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_creature_id());
+      }
+    }
+    // string table_id = 3;
+    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+      if (!this_._internal_table_id().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_table_id());
+      }
+    }
+    // string killer_character_id = 4;
+    if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+      if (!this_._internal_killer_character_id().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_killer_character_id());
+      }
+    }
+    // bool killer_in_protected_town = 6;
+    if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+      if (this_._internal_killer_in_protected_town() != 0) {
+        total_size += 2;
+      }
+    }
+    // bool creature_in_protected_town = 7;
+    if (CheckHasBit(cached_has_bits, 0x00000040U)) {
+      if (this_._internal_creature_in_protected_town() != 0) {
+        total_size += 2;
+      }
+    }
+  }
+  return this_.MaybeComputeUnknownFieldsSize(total_size,
+                                             &this_._impl_._cached_size_);
+}
+
+void CreateSharedDefeatDropRequest::MergeImpl(::google::protobuf::MessageLite& to_msg,
+                      const ::google::protobuf::MessageLite& from_msg) {
+   auto* const _this = static_cast<CreateSharedDefeatDropRequest*>(&to_msg);
+  auto& from = static_cast<const CreateSharedDefeatDropRequest&>(from_msg);
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    from.CheckHasBitConsistency();
+  }
+  ::google::protobuf::Arena* arena = _this->GetArena();
+  // @@protoc_insertion_point(class_specific_merge_from_start:sf.rewards.v1.CreateSharedDefeatDropRequest)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  cached_has_bits = from._impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x0000007fU)) {
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      _this->_internal_mutable_eligible_character_ids()->InternalMergeFromWithArena(
+          ::google::protobuf::MessageLite::internal_visibility(), arena,
+          from._internal_eligible_character_ids());
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      if (!from._internal_defeat_event_id().empty()) {
+        _this->_internal_set_defeat_event_id(from._internal_defeat_event_id());
+      } else {
+        if (_this->_impl_.defeat_event_id_.IsDefault()) {
+          _this->_internal_set_defeat_event_id("");
+        }
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      if (!from._internal_creature_id().empty()) {
+        _this->_internal_set_creature_id(from._internal_creature_id());
+      } else {
+        if (_this->_impl_.creature_id_.IsDefault()) {
+          _this->_internal_set_creature_id("");
+        }
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+      if (!from._internal_table_id().empty()) {
+        _this->_internal_set_table_id(from._internal_table_id());
+      } else {
+        if (_this->_impl_.table_id_.IsDefault()) {
+          _this->_internal_set_table_id("");
+        }
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+      if (!from._internal_killer_character_id().empty()) {
+        _this->_internal_set_killer_character_id(from._internal_killer_character_id());
+      } else {
+        if (_this->_impl_.killer_character_id_.IsDefault()) {
+          _this->_internal_set_killer_character_id("");
+        }
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000020U)) {
+      if (from._internal_killer_in_protected_town() != 0) {
+        _this->_impl_.killer_in_protected_town_ = from._impl_.killer_in_protected_town_;
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000040U)) {
+      if (from._internal_creature_in_protected_town() != 0) {
+        _this->_impl_.creature_in_protected_town_ = from._impl_.creature_in_protected_town_;
+      }
+    }
+  }
+  _this->_impl_._has_bits_[0] |= cached_has_bits;
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+}
+
+void CreateSharedDefeatDropRequest::CopyFrom(const CreateSharedDefeatDropRequest& from) {
+  // @@protoc_insertion_point(class_specific_copy_from_start:sf.rewards.v1.CreateSharedDefeatDropRequest)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void CreateSharedDefeatDropRequest::InternalSwap(CreateSharedDefeatDropRequest* PROTOBUF_RESTRICT PROTOBUF_NONNULL other) {
+  using ::std::swap;
+  auto* arena = GetArena();
+  ABSL_DCHECK_EQ(arena, other->GetArena());
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  _impl_.eligible_character_ids_.InternalSwap(&other->_impl_.eligible_character_ids_);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.defeat_event_id_, &other->_impl_.defeat_event_id_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.creature_id_, &other->_impl_.creature_id_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.table_id_, &other->_impl_.table_id_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.killer_character_id_, &other->_impl_.killer_character_id_, arena);
+  ::google::protobuf::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(CreateSharedDefeatDropRequest, _impl_.creature_in_protected_town_)
+      + sizeof(CreateSharedDefeatDropRequest::_impl_.creature_in_protected_town_)
+      - PROTOBUF_FIELD_OFFSET(CreateSharedDefeatDropRequest, _impl_.killer_in_protected_town_)>(
+          reinterpret_cast<char*>(&_impl_.killer_in_protected_town_),
+          reinterpret_cast<char*>(&other->_impl_.killer_in_protected_town_));
+}
+
+::google::protobuf::Metadata CreateSharedDefeatDropRequest::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
+ClaimSharedDefeatDropRequest::ClaimSharedDefeatDropRequest(::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, ClaimSharedDefeatDropRequest_get_class_data()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:sf.rewards.v1.ClaimSharedDefeatDropRequest)
+}
+PROTOBUF_NDEBUG_INLINE ClaimSharedDefeatDropRequest::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+    [[maybe_unused]] const ::sf::rewards::v1::ClaimSharedDefeatDropRequest& from_msg)
+      : _has_bits_{from._has_bits_},
+        _cached_size_{0},
+        defeat_event_id_(arena, from.defeat_event_id_),
+        character_id_(arena, from.character_id_),
+        container_id_(arena, from.container_id_) {}
+
+ClaimSharedDefeatDropRequest::ClaimSharedDefeatDropRequest(
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena,
+    const ClaimSharedDefeatDropRequest& from)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, ClaimSharedDefeatDropRequest_get_class_data()) {
+
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  ClaimSharedDefeatDropRequest* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
+
+  // @@protoc_insertion_point(copy_constructor:sf.rewards.v1.ClaimSharedDefeatDropRequest)
+}
+PROTOBUF_NDEBUG_INLINE ClaimSharedDefeatDropRequest::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+      : _cached_size_{0},
+        defeat_event_id_(arena),
+        character_id_(arena),
+        container_id_(arena) {}
+
+inline void ClaimSharedDefeatDropRequest::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+}
+ClaimSharedDefeatDropRequest::~ClaimSharedDefeatDropRequest() {
+  // @@protoc_insertion_point(destructor:sf.rewards.v1.ClaimSharedDefeatDropRequest)
+  SharedDtor(*this);
+}
+inline void ClaimSharedDefeatDropRequest::SharedDtor(MessageLite& self) {
+  ClaimSharedDefeatDropRequest& this_ = static_cast<ClaimSharedDefeatDropRequest&>(self);
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    this_.CheckHasBitConsistency();
+  }
+  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.defeat_event_id_.Destroy();
+  this_._impl_.character_id_.Destroy();
+  this_._impl_.container_id_.Destroy();
+  this_._impl_.~Impl_();
+}
+
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
+    ::google::protobuf::internal::ClassDataFull ClaimSharedDefeatDropRequest_class_data_ =
+        ClaimSharedDefeatDropRequest::InternalGenerateClassData_(ClaimSharedDefeatDropRequest_globals_._default);
+
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+ClaimSharedDefeatDropRequest::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&ClaimSharedDefeatDropRequest_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(ClaimSharedDefeatDropRequest_class_data_.tc_table);
+  return ClaimSharedDefeatDropRequest_class_data_.base();
+}
+#else
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+ClaimSharedDefeatDropRequest::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&ClaimSharedDefeatDropRequest_globals_);
+  ::google::protobuf::internal::PrefetchToLocalCache(
+      ::google::protobuf::internal::MessageGlobalsBase::ToParseTableBase(&ClaimSharedDefeatDropRequest_globals_));
+  return ClaimSharedDefeatDropRequest_globals_.GetClassData();
+}
+#endif  // !PROTOBUF_MESSAGE_GLOBALS
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_CONSTINIT
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const ClaimSharedDefeatDropRequest::ParseTableT_
+    ClaimSharedDefeatDropRequest::_table_ =
+        ClaimSharedDefeatDropRequest::InternalGenerateParseTable_(ClaimSharedDefeatDropRequest_class_data_.base());
+#endif  // !PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_NOINLINE void ClaimSharedDefeatDropRequest::Clear() {
+// @@protoc_insertion_point(message_clear_start:sf.rewards.v1.ClaimSharedDefeatDropRequest)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x00000007U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      _impl_.defeat_event_id_.ClearNonDefaultToEmpty();
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      _impl_.character_id_.ClearNonDefaultToEmpty();
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      _impl_.container_id_.ClearNonDefaultToEmpty();
+    }
+  }
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::uint8_t* PROTOBUF_NONNULL ClaimSharedDefeatDropRequest::_InternalSerialize(
+    const ::google::protobuf::MessageLite& base, ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) {
+  const ClaimSharedDefeatDropRequest& this_ = static_cast<const ClaimSharedDefeatDropRequest&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::uint8_t* PROTOBUF_NONNULL ClaimSharedDefeatDropRequest::_InternalSerialize(
+    ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+  const ClaimSharedDefeatDropRequest& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    this_.CheckHasBitConsistency();
+  }
+  // @@protoc_insertion_point(serialize_to_array_start:sf.rewards.v1.ClaimSharedDefeatDropRequest)
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  cached_has_bits = this_._impl_._has_bits_[0];
+  // string defeat_event_id = 1;
+  if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+    if (!this_._internal_defeat_event_id().empty()) {
+      const ::std::string& _s = this_._internal_defeat_event_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.rewards.v1.ClaimSharedDefeatDropRequest.defeat_event_id");
+      target = stream->WriteStringMaybeAliased(1, _s, target);
+    }
+  }
+
+  // string character_id = 2;
+  if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+    if (!this_._internal_character_id().empty()) {
+      const ::std::string& _s = this_._internal_character_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.rewards.v1.ClaimSharedDefeatDropRequest.character_id");
+      target = stream->WriteStringMaybeAliased(2, _s, target);
+    }
+  }
+
+  // string container_id = 3;
+  if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+    if (!this_._internal_container_id().empty()) {
+      const ::std::string& _s = this_._internal_container_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.rewards.v1.ClaimSharedDefeatDropRequest.container_id");
+      target = stream->WriteStringMaybeAliased(3, _s, target);
+    }
+  }
+
+  if (ABSL_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
+    target =
+        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+            this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:sf.rewards.v1.ClaimSharedDefeatDropRequest)
+  return target;
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::size_t ClaimSharedDefeatDropRequest::ByteSizeLong(const MessageLite& base) {
+  const ClaimSharedDefeatDropRequest& this_ = static_cast<const ClaimSharedDefeatDropRequest&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::size_t ClaimSharedDefeatDropRequest::ByteSizeLong() const {
+  const ClaimSharedDefeatDropRequest& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  // @@protoc_insertion_point(message_byte_size_start:sf.rewards.v1.ClaimSharedDefeatDropRequest)
+  ::size_t total_size = 0;
+
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void)cached_has_bits;
+
+  ::_pbi::Prefetch5LinesFrom7Lines(&this_);
+  cached_has_bits = this_._impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x00000007U)) {
+    // string defeat_event_id = 1;
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      if (!this_._internal_defeat_event_id().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_defeat_event_id());
+      }
+    }
+    // string character_id = 2;
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      if (!this_._internal_character_id().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_character_id());
+      }
+    }
+    // string container_id = 3;
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      if (!this_._internal_container_id().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_container_id());
+      }
+    }
+  }
+  return this_.MaybeComputeUnknownFieldsSize(total_size,
+                                             &this_._impl_._cached_size_);
+}
+
+void ClaimSharedDefeatDropRequest::MergeImpl(::google::protobuf::MessageLite& to_msg,
+                      const ::google::protobuf::MessageLite& from_msg) {
+   auto* const _this = static_cast<ClaimSharedDefeatDropRequest*>(&to_msg);
+  auto& from = static_cast<const ClaimSharedDefeatDropRequest&>(from_msg);
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    from.CheckHasBitConsistency();
+  }
+  // @@protoc_insertion_point(class_specific_merge_from_start:sf.rewards.v1.ClaimSharedDefeatDropRequest)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  cached_has_bits = from._impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x00000007U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      if (!from._internal_defeat_event_id().empty()) {
+        _this->_internal_set_defeat_event_id(from._internal_defeat_event_id());
+      } else {
+        if (_this->_impl_.defeat_event_id_.IsDefault()) {
+          _this->_internal_set_defeat_event_id("");
+        }
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      if (!from._internal_character_id().empty()) {
+        _this->_internal_set_character_id(from._internal_character_id());
+      } else {
+        if (_this->_impl_.character_id_.IsDefault()) {
+          _this->_internal_set_character_id("");
+        }
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      if (!from._internal_container_id().empty()) {
+        _this->_internal_set_container_id(from._internal_container_id());
+      } else {
+        if (_this->_impl_.container_id_.IsDefault()) {
+          _this->_internal_set_container_id("");
+        }
+      }
+    }
+  }
+  _this->_impl_._has_bits_[0] |= cached_has_bits;
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+}
+
+void ClaimSharedDefeatDropRequest::CopyFrom(const ClaimSharedDefeatDropRequest& from) {
+  // @@protoc_insertion_point(class_specific_copy_from_start:sf.rewards.v1.ClaimSharedDefeatDropRequest)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void ClaimSharedDefeatDropRequest::InternalSwap(ClaimSharedDefeatDropRequest* PROTOBUF_RESTRICT PROTOBUF_NONNULL other) {
+  using ::std::swap;
+  auto* arena = GetArena();
+  ABSL_DCHECK_EQ(arena, other->GetArena());
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.defeat_event_id_, &other->_impl_.defeat_event_id_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.character_id_, &other->_impl_.character_id_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.container_id_, &other->_impl_.container_id_, arena);
+}
+
+::google::protobuf::Metadata ClaimSharedDefeatDropRequest::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
+SharedDropItem::SharedDropItem(::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, SharedDropItem_get_class_data()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:sf.rewards.v1.SharedDropItem)
+}
+PROTOBUF_NDEBUG_INLINE SharedDropItem::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+    [[maybe_unused]] const ::sf::rewards::v1::SharedDropItem& from_msg)
+      : _has_bits_{from._has_bits_},
+        _cached_size_{0},
+        definition_id_(arena, from.definition_id_) {}
+
+SharedDropItem::SharedDropItem(
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena,
+    const SharedDropItem& from)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, SharedDropItem_get_class_data()) {
+
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedDropItem* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
+  _impl_.quantity_ = from._impl_.quantity_;
+
+  // @@protoc_insertion_point(copy_constructor:sf.rewards.v1.SharedDropItem)
+}
+PROTOBUF_NDEBUG_INLINE SharedDropItem::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+      : _cached_size_{0},
+        definition_id_(arena) {}
+
+inline void SharedDropItem::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  _impl_.quantity_ = {};
+}
+SharedDropItem::~SharedDropItem() {
+  // @@protoc_insertion_point(destructor:sf.rewards.v1.SharedDropItem)
+  SharedDtor(*this);
+}
+inline void SharedDropItem::SharedDtor(MessageLite& self) {
+  SharedDropItem& this_ = static_cast<SharedDropItem&>(self);
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    this_.CheckHasBitConsistency();
+  }
+  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.definition_id_.Destroy();
+  this_._impl_.~Impl_();
+}
+
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
+    ::google::protobuf::internal::ClassDataFull SharedDropItem_class_data_ =
+        SharedDropItem::InternalGenerateClassData_(SharedDropItem_globals_._default);
+
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+SharedDropItem::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&SharedDropItem_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(SharedDropItem_class_data_.tc_table);
+  return SharedDropItem_class_data_.base();
+}
+#else
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+SharedDropItem::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&SharedDropItem_globals_);
+  ::google::protobuf::internal::PrefetchToLocalCache(
+      ::google::protobuf::internal::MessageGlobalsBase::ToParseTableBase(&SharedDropItem_globals_));
+  return SharedDropItem_globals_.GetClassData();
+}
+#endif  // !PROTOBUF_MESSAGE_GLOBALS
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_CONSTINIT
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const SharedDropItem::ParseTableT_
+    SharedDropItem::_table_ =
+        SharedDropItem::InternalGenerateParseTable_(SharedDropItem_class_data_.base());
+#endif  // !PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_NOINLINE void SharedDropItem::Clear() {
+// @@protoc_insertion_point(message_clear_start:sf.rewards.v1.SharedDropItem)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+    _impl_.definition_id_.ClearNonDefaultToEmpty();
+  }
+  _impl_.quantity_ = ::int64_t{0};
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::uint8_t* PROTOBUF_NONNULL SharedDropItem::_InternalSerialize(
+    const ::google::protobuf::MessageLite& base, ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) {
+  const SharedDropItem& this_ = static_cast<const SharedDropItem&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::uint8_t* PROTOBUF_NONNULL SharedDropItem::_InternalSerialize(
+    ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+  const SharedDropItem& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    this_.CheckHasBitConsistency();
+  }
+  // @@protoc_insertion_point(serialize_to_array_start:sf.rewards.v1.SharedDropItem)
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  cached_has_bits = this_._impl_._has_bits_[0];
+  // string definition_id = 1;
+  if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+    if (!this_._internal_definition_id().empty()) {
+      const ::std::string& _s = this_._internal_definition_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.rewards.v1.SharedDropItem.definition_id");
+      target = stream->WriteStringMaybeAliased(1, _s, target);
+    }
+  }
+
+  // int64 quantity = 2;
+  if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+    if (this_._internal_quantity() != 0) {
+      target =
+          ::google::protobuf::internal::WireFormatLite::WriteInt64ToArrayWithField<2>(
+              stream, this_._internal_quantity(), target);
+    }
+  }
+
+  if (ABSL_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
+    target =
+        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+            this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:sf.rewards.v1.SharedDropItem)
+  return target;
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::size_t SharedDropItem::ByteSizeLong(const MessageLite& base) {
+  const SharedDropItem& this_ = static_cast<const SharedDropItem&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::size_t SharedDropItem::ByteSizeLong() const {
+  const SharedDropItem& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  // @@protoc_insertion_point(message_byte_size_start:sf.rewards.v1.SharedDropItem)
+  ::size_t total_size = 0;
+
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void)cached_has_bits;
+
+  ::_pbi::Prefetch5LinesFrom7Lines(&this_);
+  cached_has_bits = this_._impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x00000003U)) {
+    // string definition_id = 1;
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      if (!this_._internal_definition_id().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_definition_id());
+      }
+    }
+    // int64 quantity = 2;
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      if (this_._internal_quantity() != 0) {
+        total_size += ::_pbi::WireFormatLite::Int64SizePlusOne(
+            this_._internal_quantity());
+      }
+    }
+  }
+  return this_.MaybeComputeUnknownFieldsSize(total_size,
+                                             &this_._impl_._cached_size_);
+}
+
+void SharedDropItem::MergeImpl(::google::protobuf::MessageLite& to_msg,
+                      const ::google::protobuf::MessageLite& from_msg) {
+   auto* const _this = static_cast<SharedDropItem*>(&to_msg);
+  auto& from = static_cast<const SharedDropItem&>(from_msg);
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    from.CheckHasBitConsistency();
+  }
+  // @@protoc_insertion_point(class_specific_merge_from_start:sf.rewards.v1.SharedDropItem)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  cached_has_bits = from._impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x00000003U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      if (!from._internal_definition_id().empty()) {
+        _this->_internal_set_definition_id(from._internal_definition_id());
+      } else {
+        if (_this->_impl_.definition_id_.IsDefault()) {
+          _this->_internal_set_definition_id("");
+        }
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      if (from._internal_quantity() != 0) {
+        _this->_impl_.quantity_ = from._impl_.quantity_;
+      }
+    }
+  }
+  _this->_impl_._has_bits_[0] |= cached_has_bits;
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+}
+
+void SharedDropItem::CopyFrom(const SharedDropItem& from) {
+  // @@protoc_insertion_point(class_specific_copy_from_start:sf.rewards.v1.SharedDropItem)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void SharedDropItem::InternalSwap(SharedDropItem* PROTOBUF_RESTRICT PROTOBUF_NONNULL other) {
+  using ::std::swap;
+  auto* arena = GetArena();
+  ABSL_DCHECK_EQ(arena, other->GetArena());
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.definition_id_, &other->_impl_.definition_id_, arena);
+  swap(_impl_.quantity_, other->_impl_.quantity_);
+}
+
+::google::protobuf::Metadata SharedDropItem::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
+SharedDefeatDropReceipt::SharedDefeatDropReceipt(::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, SharedDefeatDropReceipt_get_class_data()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:sf.rewards.v1.SharedDefeatDropReceipt)
+}
+PROTOBUF_NDEBUG_INLINE SharedDefeatDropReceipt::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+    [[maybe_unused]] const ::sf::rewards::v1::SharedDefeatDropReceipt& from_msg)
+      : _has_bits_{from._has_bits_},
+        _cached_size_{0},
+        items_ {
+          visibility, ::_pbi::InternalMetadataOffset::Build<
+              ::sf::rewards::v1::SharedDefeatDropReceipt,
+              PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::SharedDefeatDropReceipt, _impl_.items_)>()
+          , from.items_
+        }
+        ,
+        defeat_event_id_(arena, from.defeat_event_id_),
+        claimant_character_id_(arena, from.claimant_character_id_),
+        ledger_operation_id_(arena, from.ledger_operation_id_) {}
+
+SharedDefeatDropReceipt::SharedDefeatDropReceipt(
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena,
+    const SharedDefeatDropReceipt& from)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, SharedDefeatDropReceipt_get_class_data()) {
+
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedDefeatDropReceipt* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
+  _impl_.container_revision_ = from._impl_.container_revision_;
+
+  // @@protoc_insertion_point(copy_constructor:sf.rewards.v1.SharedDefeatDropReceipt)
+}
+PROTOBUF_NDEBUG_INLINE SharedDefeatDropReceipt::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+      : _cached_size_{0},
+        items_ { visibility, ::_pbi::InternalMetadataOffset::Build<
+            ::sf::rewards::v1::SharedDefeatDropReceipt,
+            PROTOBUF_FIELD_OFFSET(::sf::rewards::v1::SharedDefeatDropReceipt, _impl_.items_)>()
+         }
+        ,
+        defeat_event_id_(arena),
+        claimant_character_id_(arena),
+        ledger_operation_id_(arena) {}
+
+inline void SharedDefeatDropReceipt::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  _impl_.container_revision_ = {};
+}
+SharedDefeatDropReceipt::~SharedDefeatDropReceipt() {
+  // @@protoc_insertion_point(destructor:sf.rewards.v1.SharedDefeatDropReceipt)
+  SharedDtor(*this);
+}
+inline void SharedDefeatDropReceipt::SharedDtor(MessageLite& self) {
+  SharedDefeatDropReceipt& this_ = static_cast<SharedDefeatDropReceipt&>(self);
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    this_.CheckHasBitConsistency();
+  }
+  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.defeat_event_id_.Destroy();
+  this_._impl_.claimant_character_id_.Destroy();
+  this_._impl_.ledger_operation_id_.Destroy();
+  this_._impl_.~Impl_();
+}
+
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
+    ::google::protobuf::internal::ClassDataFull SharedDefeatDropReceipt_class_data_ =
+        SharedDefeatDropReceipt::InternalGenerateClassData_(SharedDefeatDropReceipt_globals_._default);
+
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+SharedDefeatDropReceipt::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&SharedDefeatDropReceipt_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(SharedDefeatDropReceipt_class_data_.tc_table);
+  return SharedDefeatDropReceipt_class_data_.base();
+}
+#else
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+SharedDefeatDropReceipt::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&SharedDefeatDropReceipt_globals_);
+  ::google::protobuf::internal::PrefetchToLocalCache(
+      ::google::protobuf::internal::MessageGlobalsBase::ToParseTableBase(&SharedDefeatDropReceipt_globals_));
+  return SharedDefeatDropReceipt_globals_.GetClassData();
+}
+#endif  // !PROTOBUF_MESSAGE_GLOBALS
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_CONSTINIT
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const SharedDefeatDropReceipt::ParseTableT_
+    SharedDefeatDropReceipt::_table_ =
+        SharedDefeatDropReceipt::InternalGenerateParseTable_(SharedDefeatDropReceipt_class_data_.base());
+#endif  // !PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_NOINLINE void SharedDefeatDropReceipt::Clear() {
+// @@protoc_insertion_point(message_clear_start:sf.rewards.v1.SharedDefeatDropReceipt)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x0000000fU)) {
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      _impl_.items_.Clear();
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      _impl_.defeat_event_id_.ClearNonDefaultToEmpty();
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      _impl_.claimant_character_id_.ClearNonDefaultToEmpty();
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+      _impl_.ledger_operation_id_.ClearNonDefaultToEmpty();
+    }
+  }
+  _impl_.container_revision_ = ::int64_t{0};
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::uint8_t* PROTOBUF_NONNULL SharedDefeatDropReceipt::_InternalSerialize(
+    const ::google::protobuf::MessageLite& base, ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) {
+  const SharedDefeatDropReceipt& this_ = static_cast<const SharedDefeatDropReceipt&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::uint8_t* PROTOBUF_NONNULL SharedDefeatDropReceipt::_InternalSerialize(
+    ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+  const SharedDefeatDropReceipt& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    this_.CheckHasBitConsistency();
+  }
+  // @@protoc_insertion_point(serialize_to_array_start:sf.rewards.v1.SharedDefeatDropReceipt)
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  cached_has_bits = this_._impl_._has_bits_[0];
+  // string defeat_event_id = 1;
+  if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+    if (!this_._internal_defeat_event_id().empty()) {
+      const ::std::string& _s = this_._internal_defeat_event_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.rewards.v1.SharedDefeatDropReceipt.defeat_event_id");
+      target = stream->WriteStringMaybeAliased(1, _s, target);
+    }
+  }
+
+  // repeated .sf.rewards.v1.SharedDropItem items = 2;
+  if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+    for (unsigned i = 0, n = static_cast<unsigned>(
+                             this_._internal_items_size());
+         i < n; i++) {
+      const auto& repfield = this_._internal_items().Get(i);
+      target =
+          ::google::protobuf::internal::WireFormatLite::InternalWriteMessage(
+              2, repfield, repfield.GetCachedSize(),
+              target, stream);
+    }
+  }
+
+  // string claimant_character_id = 3;
+  if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+    if (!this_._internal_claimant_character_id().empty()) {
+      const ::std::string& _s = this_._internal_claimant_character_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.rewards.v1.SharedDefeatDropReceipt.claimant_character_id");
+      target = stream->WriteStringMaybeAliased(3, _s, target);
+    }
+  }
+
+  // string ledger_operation_id = 4;
+  if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+    if (!this_._internal_ledger_operation_id().empty()) {
+      const ::std::string& _s = this_._internal_ledger_operation_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.rewards.v1.SharedDefeatDropReceipt.ledger_operation_id");
+      target = stream->WriteStringMaybeAliased(4, _s, target);
+    }
+  }
+
+  // int64 container_revision = 5;
+  if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+    if (this_._internal_container_revision() != 0) {
+      target =
+          ::google::protobuf::internal::WireFormatLite::WriteInt64ToArrayWithField<5>(
+              stream, this_._internal_container_revision(), target);
+    }
+  }
+
+  if (ABSL_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
+    target =
+        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+            this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:sf.rewards.v1.SharedDefeatDropReceipt)
+  return target;
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::size_t SharedDefeatDropReceipt::ByteSizeLong(const MessageLite& base) {
+  const SharedDefeatDropReceipt& this_ = static_cast<const SharedDefeatDropReceipt&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::size_t SharedDefeatDropReceipt::ByteSizeLong() const {
+  const SharedDefeatDropReceipt& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  // @@protoc_insertion_point(message_byte_size_start:sf.rewards.v1.SharedDefeatDropReceipt)
+  ::size_t total_size = 0;
+
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void)cached_has_bits;
+
+  ::_pbi::Prefetch5LinesFrom7Lines(&this_);
+  cached_has_bits = this_._impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x0000001fU)) {
+    // repeated .sf.rewards.v1.SharedDropItem items = 2;
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      total_size += 1UL * this_._internal_items_size();
+      for (const auto& msg : this_._internal_items()) {
+        total_size += ::google::protobuf::internal::WireFormatLite::MessageSize(msg);
+      }
+    }
+    // string defeat_event_id = 1;
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      if (!this_._internal_defeat_event_id().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_defeat_event_id());
+      }
+    }
+    // string claimant_character_id = 3;
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      if (!this_._internal_claimant_character_id().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_claimant_character_id());
+      }
+    }
+    // string ledger_operation_id = 4;
+    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+      if (!this_._internal_ledger_operation_id().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_ledger_operation_id());
+      }
+    }
+    // int64 container_revision = 5;
+    if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+      if (this_._internal_container_revision() != 0) {
+        total_size += ::_pbi::WireFormatLite::Int64SizePlusOne(
+            this_._internal_container_revision());
+      }
+    }
+  }
+  return this_.MaybeComputeUnknownFieldsSize(total_size,
+                                             &this_._impl_._cached_size_);
+}
+
+void SharedDefeatDropReceipt::MergeImpl(::google::protobuf::MessageLite& to_msg,
+                      const ::google::protobuf::MessageLite& from_msg) {
+   auto* const _this = static_cast<SharedDefeatDropReceipt*>(&to_msg);
+  auto& from = static_cast<const SharedDefeatDropReceipt&>(from_msg);
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    from.CheckHasBitConsistency();
+  }
+  ::google::protobuf::Arena* arena = _this->GetArena();
+  // @@protoc_insertion_point(class_specific_merge_from_start:sf.rewards.v1.SharedDefeatDropReceipt)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  cached_has_bits = from._impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x0000001fU)) {
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      _this->_internal_mutable_items()->InternalMergeFromWithArena(
+          ::google::protobuf::MessageLite::internal_visibility(), arena,
+          from._internal_items());
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      if (!from._internal_defeat_event_id().empty()) {
+        _this->_internal_set_defeat_event_id(from._internal_defeat_event_id());
+      } else {
+        if (_this->_impl_.defeat_event_id_.IsDefault()) {
+          _this->_internal_set_defeat_event_id("");
+        }
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      if (!from._internal_claimant_character_id().empty()) {
+        _this->_internal_set_claimant_character_id(from._internal_claimant_character_id());
+      } else {
+        if (_this->_impl_.claimant_character_id_.IsDefault()) {
+          _this->_internal_set_claimant_character_id("");
+        }
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+      if (!from._internal_ledger_operation_id().empty()) {
+        _this->_internal_set_ledger_operation_id(from._internal_ledger_operation_id());
+      } else {
+        if (_this->_impl_.ledger_operation_id_.IsDefault()) {
+          _this->_internal_set_ledger_operation_id("");
+        }
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000010U)) {
+      if (from._internal_container_revision() != 0) {
+        _this->_impl_.container_revision_ = from._impl_.container_revision_;
+      }
+    }
+  }
+  _this->_impl_._has_bits_[0] |= cached_has_bits;
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+}
+
+void SharedDefeatDropReceipt::CopyFrom(const SharedDefeatDropReceipt& from) {
+  // @@protoc_insertion_point(class_specific_copy_from_start:sf.rewards.v1.SharedDefeatDropReceipt)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void SharedDefeatDropReceipt::InternalSwap(SharedDefeatDropReceipt* PROTOBUF_RESTRICT PROTOBUF_NONNULL other) {
+  using ::std::swap;
+  auto* arena = GetArena();
+  ABSL_DCHECK_EQ(arena, other->GetArena());
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  _impl_.items_.InternalSwap(&other->_impl_.items_);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.defeat_event_id_, &other->_impl_.defeat_event_id_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.claimant_character_id_, &other->_impl_.claimant_character_id_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.ledger_operation_id_, &other->_impl_.ledger_operation_id_, arena);
+  swap(_impl_.container_revision_, other->_impl_.container_revision_);
+}
+
+::google::protobuf::Metadata SharedDefeatDropReceipt::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
 // ===================================================================
 
 GrantDefeatRewardRequest::GrantDefeatRewardRequest(::google::protobuf::Arena* PROTOBUF_NULLABLE arena)

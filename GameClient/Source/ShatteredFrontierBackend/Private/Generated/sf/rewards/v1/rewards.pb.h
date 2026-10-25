@@ -56,6 +56,22 @@ extern const ::google::protobuf::internal::DescriptorTable descriptor_table_sf_2
 namespace sf {
 namespace rewards {
 namespace v1 {
+class ClaimSharedDefeatDropRequest;
+struct ClaimSharedDefeatDropRequestGlobalsTypeInternal;
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+extern ClaimSharedDefeatDropRequestGlobalsTypeInternal ClaimSharedDefeatDropRequest_globals_;
+extern const ::google::protobuf::internal::ClassDataFull ClaimSharedDefeatDropRequest_class_data_;
+#else
+extern const ClaimSharedDefeatDropRequestGlobalsTypeInternal ClaimSharedDefeatDropRequest_globals_;
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+class CreateSharedDefeatDropRequest;
+struct CreateSharedDefeatDropRequestGlobalsTypeInternal;
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+extern CreateSharedDefeatDropRequestGlobalsTypeInternal CreateSharedDefeatDropRequest_globals_;
+extern const ::google::protobuf::internal::ClassDataFull CreateSharedDefeatDropRequest_class_data_;
+#else
+extern const CreateSharedDefeatDropRequestGlobalsTypeInternal CreateSharedDefeatDropRequest_globals_;
+#endif  // PROTOBUF_MESSAGE_GLOBALS
 class GrantDefeatRewardRequest;
 struct GrantDefeatRewardRequestGlobalsTypeInternal;
 #ifndef PROTOBUF_MESSAGE_GLOBALS
@@ -72,6 +88,22 @@ extern const ::google::protobuf::internal::ClassDataFull RewardReceipt_class_dat
 #else
 extern const RewardReceiptGlobalsTypeInternal RewardReceipt_globals_;
 #endif  // PROTOBUF_MESSAGE_GLOBALS
+class SharedDefeatDropReceipt;
+struct SharedDefeatDropReceiptGlobalsTypeInternal;
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+extern SharedDefeatDropReceiptGlobalsTypeInternal SharedDefeatDropReceipt_globals_;
+extern const ::google::protobuf::internal::ClassDataFull SharedDefeatDropReceipt_class_data_;
+#else
+extern const SharedDefeatDropReceiptGlobalsTypeInternal SharedDefeatDropReceipt_globals_;
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+class SharedDropItem;
+struct SharedDropItemGlobalsTypeInternal;
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+extern SharedDropItemGlobalsTypeInternal SharedDropItem_globals_;
+extern const ::google::protobuf::internal::ClassDataFull SharedDropItem_class_data_;
+#else
+extern const SharedDropItemGlobalsTypeInternal SharedDropItem_globals_;
+#endif  // PROTOBUF_MESSAGE_GLOBALS
 }  // namespace v1
 }  // namespace rewards
 }  // namespace sf
@@ -87,6 +119,224 @@ namespace v1 {
 // ===================================================================
 
 
+// -------------------------------------------------------------------
+
+class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED SharedDropItem final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:sf.rewards.v1.SharedDropItem) */ {
+ public:
+  inline SharedDropItem() : SharedDropItem(nullptr) {}
+  ~SharedDropItem() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(SharedDropItem* PROTOBUF_NONNULL msg, ::std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(SharedDropItem));
+  }
+#endif
+
+  template <typename = void>
+  explicit constexpr SharedDropItem(::google::protobuf::internal::ConstantInitialized,
+                           const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+                               class_data);
+
+  inline SharedDropItem(const SharedDropItem& from) : SharedDropItem(nullptr, from) {}
+  inline SharedDropItem(SharedDropItem&& from) noexcept : SharedDropItem(nullptr, ::std::move(from)) {}
+  inline SharedDropItem& operator=(const SharedDropItem& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline SharedDropItem& operator=(SharedDropItem&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  [[nodiscard]] inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  [[nodiscard]] inline ::google::protobuf::UnknownFieldSet* PROTOBUF_NONNULL
+  mutable_unknown_fields() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  [[nodiscard]] static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL descriptor() {
+    return GetDescriptor();
+  }
+  [[nodiscard]] static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL
+  GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  [[nodiscard]] static const ::google::protobuf::Reflection* PROTOBUF_NONNULL GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  [[nodiscard]] static const SharedDropItem& default_instance() {
+    return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<SharedDropItem>(&SharedDropItem_globals_);
+  }
+  static constexpr int kIndexInFileMessages = 2;
+  friend void swap(SharedDropItem& a, SharedDropItem& b) { a.Swap(&b); }
+  inline void Swap(SharedDropItem* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(SharedDropItem* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  [[nodiscard]] SharedDropItem* PROTOBUF_NONNULL
+  New(::google::protobuf::Arena* PROTOBUF_NULLABLE arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<SharedDropItem>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const SharedDropItem& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const SharedDropItem& from) { SharedDropItem::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(::google::protobuf::MessageLite& to_msg,
+                        const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  [[nodiscard]] bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  [[nodiscard]] static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+
+  public:
+  [[nodiscard]] ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  [[nodiscard]] ::size_t ByteSizeLong() const final;
+  [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  [[nodiscard]] int GetCachedSize() const {
+    return _impl_._cached_size_.Get();
+  }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(SharedDropItem* PROTOBUF_NONNULL other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "sf.rewards.v1.SharedDropItem"; }
+
+  explicit SharedDropItem(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  SharedDropItem(::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const SharedDropItem& from);
+  SharedDropItem(
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, SharedDropItem&& from) noexcept
+      : SharedDropItem(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL GetClassData() const PROTOBUF_FINAL;
+  static void* PROTOBUF_NONNULL PlacementNew_(
+      const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static constexpr auto InternalNewImpl_();
+
+ public:
+  static constexpr auto InternalGenerateClassData_(
+      const MessageLite& prototype,
+      const ::google::protobuf::internal::TcParseTableBase* PROTOBUF_NULLABLE tc_table = nullptr);
+
+  [[nodiscard]] ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kDefinitionIdFieldNumber = 1,
+    kQuantityFieldNumber = 2,
+  };
+  // string definition_id = 1;
+  void clear_definition_id() ;
+  [[nodiscard]] const ::std::string& definition_id() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_definition_id(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_definition_id();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_definition_id();
+  void set_allocated_definition_id(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_definition_id() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_definition_id(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_definition_id();
+
+  public:
+  // int64 quantity = 2;
+  void clear_quantity() ;
+  [[nodiscard]] ::int64_t quantity() const;
+  void set_quantity(::int64_t value);
+
+  private:
+  ::int64_t _internal_quantity() const;
+  void _internal_set_quantity(::int64_t value);
+
+  public:
+  // @@protoc_insertion_point(class_scope:sf.rewards.v1.SharedDropItem)
+ private:
+  class _Internal;
+  using ParseTableT_ =
+      ::google::protobuf::internal::TcParseTable<1, 2,
+                          0, 50,
+                          2>;
+  static constexpr ParseTableT_ InternalGenerateParseTable_(
+      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+  friend class ::google::protobuf::internal::TcParser;
+  #ifndef PROTOBUF_MESSAGE_GLOBALS
+  static const ParseTableT_ _table_;
+  #endif
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  friend ::google::protobuf::internal::PrivateAccess;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                                    ::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+        const SharedDropItem& from_msg);
+    ::google::protobuf::internal::HasBits<1> _has_bits_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    ::google::protobuf::internal::ArenaStringPtr definition_id_;
+    ::int64_t quantity_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_sf_2frewards_2fv1_2frewards_2eproto;
+};
 // -------------------------------------------------------------------
 
 class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED RewardReceipt final : public ::google::protobuf::Message
@@ -145,7 +395,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED RewardReceipt final : public ::goog
   [[nodiscard]] static const RewardReceipt& default_instance() {
     return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<RewardReceipt>(&RewardReceipt_globals_);
   }
-  static constexpr int kIndexInFileMessages = 1;
+  static constexpr int kIndexInFileMessages = 5;
   friend void swap(RewardReceipt& a, RewardReceipt& b) { a.Swap(&b); }
   inline void Swap(RewardReceipt* PROTOBUF_NONNULL other) {
     if (other == this) return;
@@ -421,7 +671,7 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED GrantDefeatRewardRequest final : pu
   [[nodiscard]] static const GrantDefeatRewardRequest& default_instance() {
     return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<GrantDefeatRewardRequest>(&GrantDefeatRewardRequest_globals_);
   }
-  static constexpr int kIndexInFileMessages = 0;
+  static constexpr int kIndexInFileMessages = 4;
   friend void swap(GrantDefeatRewardRequest& a, GrantDefeatRewardRequest& b) { a.Swap(&b); }
   inline void Swap(GrantDefeatRewardRequest* PROTOBUF_NONNULL other) {
     if (other == this) return;
@@ -673,6 +923,831 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED GrantDefeatRewardRequest final : pu
   union { Impl_ _impl_; };
   friend struct ::TableStruct_sf_2frewards_2fv1_2frewards_2eproto;
 };
+// -------------------------------------------------------------------
+
+class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED CreateSharedDefeatDropRequest final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:sf.rewards.v1.CreateSharedDefeatDropRequest) */ {
+ public:
+  inline CreateSharedDefeatDropRequest() : CreateSharedDefeatDropRequest(nullptr) {}
+  ~CreateSharedDefeatDropRequest() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(CreateSharedDefeatDropRequest* PROTOBUF_NONNULL msg, ::std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(CreateSharedDefeatDropRequest));
+  }
+#endif
+
+  template <typename = void>
+  explicit constexpr CreateSharedDefeatDropRequest(::google::protobuf::internal::ConstantInitialized,
+                           const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+                               class_data);
+
+  inline CreateSharedDefeatDropRequest(const CreateSharedDefeatDropRequest& from) : CreateSharedDefeatDropRequest(nullptr, from) {}
+  inline CreateSharedDefeatDropRequest(CreateSharedDefeatDropRequest&& from) noexcept : CreateSharedDefeatDropRequest(nullptr, ::std::move(from)) {}
+  inline CreateSharedDefeatDropRequest& operator=(const CreateSharedDefeatDropRequest& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline CreateSharedDefeatDropRequest& operator=(CreateSharedDefeatDropRequest&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  [[nodiscard]] inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  [[nodiscard]] inline ::google::protobuf::UnknownFieldSet* PROTOBUF_NONNULL
+  mutable_unknown_fields() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  [[nodiscard]] static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL descriptor() {
+    return GetDescriptor();
+  }
+  [[nodiscard]] static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL
+  GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  [[nodiscard]] static const ::google::protobuf::Reflection* PROTOBUF_NONNULL GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  [[nodiscard]] static const CreateSharedDefeatDropRequest& default_instance() {
+    return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<CreateSharedDefeatDropRequest>(&CreateSharedDefeatDropRequest_globals_);
+  }
+  static constexpr int kIndexInFileMessages = 0;
+  friend void swap(CreateSharedDefeatDropRequest& a, CreateSharedDefeatDropRequest& b) { a.Swap(&b); }
+  inline void Swap(CreateSharedDefeatDropRequest* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(CreateSharedDefeatDropRequest* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  [[nodiscard]] CreateSharedDefeatDropRequest* PROTOBUF_NONNULL
+  New(::google::protobuf::Arena* PROTOBUF_NULLABLE arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<CreateSharedDefeatDropRequest>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const CreateSharedDefeatDropRequest& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const CreateSharedDefeatDropRequest& from) { CreateSharedDefeatDropRequest::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(::google::protobuf::MessageLite& to_msg,
+                        const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  [[nodiscard]] bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  [[nodiscard]] static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+
+  public:
+  [[nodiscard]] ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  [[nodiscard]] ::size_t ByteSizeLong() const final;
+  [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  [[nodiscard]] int GetCachedSize() const {
+    return _impl_._cached_size_.Get();
+  }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(CreateSharedDefeatDropRequest* PROTOBUF_NONNULL other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "sf.rewards.v1.CreateSharedDefeatDropRequest"; }
+
+  explicit CreateSharedDefeatDropRequest(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  CreateSharedDefeatDropRequest(::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const CreateSharedDefeatDropRequest& from);
+  CreateSharedDefeatDropRequest(
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, CreateSharedDefeatDropRequest&& from) noexcept
+      : CreateSharedDefeatDropRequest(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL GetClassData() const PROTOBUF_FINAL;
+  static void* PROTOBUF_NONNULL PlacementNew_(
+      const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static constexpr auto InternalNewImpl_();
+
+ public:
+  static constexpr auto InternalGenerateClassData_(
+      const MessageLite& prototype,
+      const ::google::protobuf::internal::TcParseTableBase* PROTOBUF_NULLABLE tc_table = nullptr);
+
+  [[nodiscard]] ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kEligibleCharacterIdsFieldNumber = 5,
+    kDefeatEventIdFieldNumber = 1,
+    kCreatureIdFieldNumber = 2,
+    kTableIdFieldNumber = 3,
+    kKillerCharacterIdFieldNumber = 4,
+    kKillerInProtectedTownFieldNumber = 6,
+    kCreatureInProtectedTownFieldNumber = 7,
+  };
+  // repeated string eligible_character_ids = 5;
+  [[nodiscard]] int eligible_character_ids_size()
+      const;
+  private:
+  int _internal_eligible_character_ids_size() const;
+
+  public:
+  void clear_eligible_character_ids() ;
+  [[nodiscard]] const ::std::string& eligible_character_ids(int index) const;
+  ::std::string* PROTOBUF_NONNULL mutable_eligible_character_ids(int index);
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_eligible_character_ids(int index, Arg_&& value, Args_... args);
+  ::std::string* PROTOBUF_NONNULL add_eligible_character_ids();
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void add_eligible_character_ids(Arg_&& value, Args_... args);
+  [[nodiscard]] const
+      ::google::protobuf::RepeatedPtrField<::std::string>&
+      eligible_character_ids() const;
+  [[nodiscard]] ::google::protobuf::RepeatedPtrField<::std::string>*
+      PROTOBUF_NONNULL
+      mutable_eligible_character_ids();
+
+  private:
+  const ::google::protobuf::RepeatedPtrField<::std::string>& _internal_eligible_character_ids() const;
+  ::google::protobuf::RepeatedPtrField<::std::string>* PROTOBUF_NONNULL _internal_mutable_eligible_character_ids();
+
+  public:
+  // string defeat_event_id = 1;
+  void clear_defeat_event_id() ;
+  [[nodiscard]] const ::std::string& defeat_event_id() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_defeat_event_id(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_defeat_event_id();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_defeat_event_id();
+  void set_allocated_defeat_event_id(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_defeat_event_id() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_defeat_event_id(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_defeat_event_id();
+
+  public:
+  // string creature_id = 2;
+  void clear_creature_id() ;
+  [[nodiscard]] const ::std::string& creature_id() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_creature_id(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_creature_id();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_creature_id();
+  void set_allocated_creature_id(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_creature_id() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_creature_id(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_creature_id();
+
+  public:
+  // string table_id = 3;
+  void clear_table_id() ;
+  [[nodiscard]] const ::std::string& table_id() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_table_id(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_table_id();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_table_id();
+  void set_allocated_table_id(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_table_id() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_table_id(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_table_id();
+
+  public:
+  // string killer_character_id = 4;
+  void clear_killer_character_id() ;
+  [[nodiscard]] const ::std::string& killer_character_id() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_killer_character_id(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_killer_character_id();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_killer_character_id();
+  void set_allocated_killer_character_id(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_killer_character_id() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_killer_character_id(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_killer_character_id();
+
+  public:
+  // bool killer_in_protected_town = 6;
+  void clear_killer_in_protected_town() ;
+  [[nodiscard]] bool killer_in_protected_town() const;
+  void set_killer_in_protected_town(bool value);
+
+  private:
+  bool _internal_killer_in_protected_town() const;
+  void _internal_set_killer_in_protected_town(bool value);
+
+  public:
+  // bool creature_in_protected_town = 7;
+  void clear_creature_in_protected_town() ;
+  [[nodiscard]] bool creature_in_protected_town() const;
+  void set_creature_in_protected_town(bool value);
+
+  private:
+  bool _internal_creature_in_protected_town() const;
+  void _internal_set_creature_in_protected_town(bool value);
+
+  public:
+  // @@protoc_insertion_point(class_scope:sf.rewards.v1.CreateSharedDefeatDropRequest)
+ private:
+  class _Internal;
+  using ParseTableT_ =
+      ::google::protobuf::internal::TcParseTable<3, 7,
+                          0, 127,
+                          2>;
+  static constexpr ParseTableT_ InternalGenerateParseTable_(
+      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+  friend class ::google::protobuf::internal::TcParser;
+  #ifndef PROTOBUF_MESSAGE_GLOBALS
+  static const ParseTableT_ _table_;
+  #endif
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  friend ::google::protobuf::internal::PrivateAccess;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                                    ::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+        const CreateSharedDefeatDropRequest& from_msg);
+    ::google::protobuf::internal::HasBits<1> _has_bits_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    ::google::protobuf::RepeatedPtrField<::std::string> eligible_character_ids_;
+    ::google::protobuf::internal::ArenaStringPtr defeat_event_id_;
+    ::google::protobuf::internal::ArenaStringPtr creature_id_;
+    ::google::protobuf::internal::ArenaStringPtr table_id_;
+    ::google::protobuf::internal::ArenaStringPtr killer_character_id_;
+    bool killer_in_protected_town_;
+    bool creature_in_protected_town_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_sf_2frewards_2fv1_2frewards_2eproto;
+};
+// -------------------------------------------------------------------
+
+class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED ClaimSharedDefeatDropRequest final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:sf.rewards.v1.ClaimSharedDefeatDropRequest) */ {
+ public:
+  inline ClaimSharedDefeatDropRequest() : ClaimSharedDefeatDropRequest(nullptr) {}
+  ~ClaimSharedDefeatDropRequest() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(ClaimSharedDefeatDropRequest* PROTOBUF_NONNULL msg, ::std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(ClaimSharedDefeatDropRequest));
+  }
+#endif
+
+  template <typename = void>
+  explicit constexpr ClaimSharedDefeatDropRequest(::google::protobuf::internal::ConstantInitialized,
+                           const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+                               class_data);
+
+  inline ClaimSharedDefeatDropRequest(const ClaimSharedDefeatDropRequest& from) : ClaimSharedDefeatDropRequest(nullptr, from) {}
+  inline ClaimSharedDefeatDropRequest(ClaimSharedDefeatDropRequest&& from) noexcept : ClaimSharedDefeatDropRequest(nullptr, ::std::move(from)) {}
+  inline ClaimSharedDefeatDropRequest& operator=(const ClaimSharedDefeatDropRequest& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline ClaimSharedDefeatDropRequest& operator=(ClaimSharedDefeatDropRequest&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  [[nodiscard]] inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  [[nodiscard]] inline ::google::protobuf::UnknownFieldSet* PROTOBUF_NONNULL
+  mutable_unknown_fields() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  [[nodiscard]] static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL descriptor() {
+    return GetDescriptor();
+  }
+  [[nodiscard]] static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL
+  GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  [[nodiscard]] static const ::google::protobuf::Reflection* PROTOBUF_NONNULL GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  [[nodiscard]] static const ClaimSharedDefeatDropRequest& default_instance() {
+    return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<ClaimSharedDefeatDropRequest>(&ClaimSharedDefeatDropRequest_globals_);
+  }
+  static constexpr int kIndexInFileMessages = 1;
+  friend void swap(ClaimSharedDefeatDropRequest& a, ClaimSharedDefeatDropRequest& b) { a.Swap(&b); }
+  inline void Swap(ClaimSharedDefeatDropRequest* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(ClaimSharedDefeatDropRequest* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  [[nodiscard]] ClaimSharedDefeatDropRequest* PROTOBUF_NONNULL
+  New(::google::protobuf::Arena* PROTOBUF_NULLABLE arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<ClaimSharedDefeatDropRequest>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const ClaimSharedDefeatDropRequest& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const ClaimSharedDefeatDropRequest& from) { ClaimSharedDefeatDropRequest::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(::google::protobuf::MessageLite& to_msg,
+                        const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  [[nodiscard]] bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  [[nodiscard]] static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+
+  public:
+  [[nodiscard]] ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  [[nodiscard]] ::size_t ByteSizeLong() const final;
+  [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  [[nodiscard]] int GetCachedSize() const {
+    return _impl_._cached_size_.Get();
+  }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(ClaimSharedDefeatDropRequest* PROTOBUF_NONNULL other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "sf.rewards.v1.ClaimSharedDefeatDropRequest"; }
+
+  explicit ClaimSharedDefeatDropRequest(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  ClaimSharedDefeatDropRequest(::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const ClaimSharedDefeatDropRequest& from);
+  ClaimSharedDefeatDropRequest(
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, ClaimSharedDefeatDropRequest&& from) noexcept
+      : ClaimSharedDefeatDropRequest(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL GetClassData() const PROTOBUF_FINAL;
+  static void* PROTOBUF_NONNULL PlacementNew_(
+      const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static constexpr auto InternalNewImpl_();
+
+ public:
+  static constexpr auto InternalGenerateClassData_(
+      const MessageLite& prototype,
+      const ::google::protobuf::internal::TcParseTableBase* PROTOBUF_NULLABLE tc_table = nullptr);
+
+  [[nodiscard]] ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kDefeatEventIdFieldNumber = 1,
+    kCharacterIdFieldNumber = 2,
+    kContainerIdFieldNumber = 3,
+  };
+  // string defeat_event_id = 1;
+  void clear_defeat_event_id() ;
+  [[nodiscard]] const ::std::string& defeat_event_id() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_defeat_event_id(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_defeat_event_id();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_defeat_event_id();
+  void set_allocated_defeat_event_id(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_defeat_event_id() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_defeat_event_id(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_defeat_event_id();
+
+  public:
+  // string character_id = 2;
+  void clear_character_id() ;
+  [[nodiscard]] const ::std::string& character_id() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_character_id(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_character_id();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_character_id();
+  void set_allocated_character_id(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_character_id() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_character_id(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_character_id();
+
+  public:
+  // string container_id = 3;
+  void clear_container_id() ;
+  [[nodiscard]] const ::std::string& container_id() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_container_id(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_container_id();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_container_id();
+  void set_allocated_container_id(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_container_id() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_container_id(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_container_id();
+
+  public:
+  // @@protoc_insertion_point(class_scope:sf.rewards.v1.ClaimSharedDefeatDropRequest)
+ private:
+  class _Internal;
+  using ParseTableT_ =
+      ::google::protobuf::internal::TcParseTable<2, 3,
+                          0, 90,
+                          2>;
+  static constexpr ParseTableT_ InternalGenerateParseTable_(
+      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+  friend class ::google::protobuf::internal::TcParser;
+  #ifndef PROTOBUF_MESSAGE_GLOBALS
+  static const ParseTableT_ _table_;
+  #endif
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  friend ::google::protobuf::internal::PrivateAccess;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                                    ::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+        const ClaimSharedDefeatDropRequest& from_msg);
+    ::google::protobuf::internal::HasBits<1> _has_bits_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    ::google::protobuf::internal::ArenaStringPtr defeat_event_id_;
+    ::google::protobuf::internal::ArenaStringPtr character_id_;
+    ::google::protobuf::internal::ArenaStringPtr container_id_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_sf_2frewards_2fv1_2frewards_2eproto;
+};
+// -------------------------------------------------------------------
+
+class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED SharedDefeatDropReceipt final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:sf.rewards.v1.SharedDefeatDropReceipt) */ {
+ public:
+  inline SharedDefeatDropReceipt() : SharedDefeatDropReceipt(nullptr) {}
+  ~SharedDefeatDropReceipt() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(SharedDefeatDropReceipt* PROTOBUF_NONNULL msg, ::std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(SharedDefeatDropReceipt));
+  }
+#endif
+
+  template <typename = void>
+  explicit constexpr SharedDefeatDropReceipt(::google::protobuf::internal::ConstantInitialized,
+                           const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+                               class_data);
+
+  inline SharedDefeatDropReceipt(const SharedDefeatDropReceipt& from) : SharedDefeatDropReceipt(nullptr, from) {}
+  inline SharedDefeatDropReceipt(SharedDefeatDropReceipt&& from) noexcept : SharedDefeatDropReceipt(nullptr, ::std::move(from)) {}
+  inline SharedDefeatDropReceipt& operator=(const SharedDefeatDropReceipt& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline SharedDefeatDropReceipt& operator=(SharedDefeatDropReceipt&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  [[nodiscard]] inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  [[nodiscard]] inline ::google::protobuf::UnknownFieldSet* PROTOBUF_NONNULL
+  mutable_unknown_fields() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  [[nodiscard]] static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL descriptor() {
+    return GetDescriptor();
+  }
+  [[nodiscard]] static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL
+  GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  [[nodiscard]] static const ::google::protobuf::Reflection* PROTOBUF_NONNULL GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  [[nodiscard]] static const SharedDefeatDropReceipt& default_instance() {
+    return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<SharedDefeatDropReceipt>(&SharedDefeatDropReceipt_globals_);
+  }
+  static constexpr int kIndexInFileMessages = 3;
+  friend void swap(SharedDefeatDropReceipt& a, SharedDefeatDropReceipt& b) { a.Swap(&b); }
+  inline void Swap(SharedDefeatDropReceipt* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(SharedDefeatDropReceipt* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  [[nodiscard]] SharedDefeatDropReceipt* PROTOBUF_NONNULL
+  New(::google::protobuf::Arena* PROTOBUF_NULLABLE arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<SharedDefeatDropReceipt>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const SharedDefeatDropReceipt& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const SharedDefeatDropReceipt& from) { SharedDefeatDropReceipt::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(::google::protobuf::MessageLite& to_msg,
+                        const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  [[nodiscard]] bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  [[nodiscard]] static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+
+  public:
+  [[nodiscard]] ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  [[nodiscard]] ::size_t ByteSizeLong() const final;
+  [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  [[nodiscard]] int GetCachedSize() const {
+    return _impl_._cached_size_.Get();
+  }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(SharedDefeatDropReceipt* PROTOBUF_NONNULL other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "sf.rewards.v1.SharedDefeatDropReceipt"; }
+
+  explicit SharedDefeatDropReceipt(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  SharedDefeatDropReceipt(::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const SharedDefeatDropReceipt& from);
+  SharedDefeatDropReceipt(
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, SharedDefeatDropReceipt&& from) noexcept
+      : SharedDefeatDropReceipt(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL GetClassData() const PROTOBUF_FINAL;
+  static void* PROTOBUF_NONNULL PlacementNew_(
+      const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static constexpr auto InternalNewImpl_();
+
+ public:
+  static constexpr auto InternalGenerateClassData_(
+      const MessageLite& prototype,
+      const ::google::protobuf::internal::TcParseTableBase* PROTOBUF_NULLABLE tc_table = nullptr);
+
+  [[nodiscard]] ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kItemsFieldNumber = 2,
+    kDefeatEventIdFieldNumber = 1,
+    kClaimantCharacterIdFieldNumber = 3,
+    kLedgerOperationIdFieldNumber = 4,
+    kContainerRevisionFieldNumber = 5,
+  };
+  // repeated .sf.rewards.v1.SharedDropItem items = 2;
+  [[nodiscard]] int items_size()
+      const;
+  private:
+  int _internal_items_size() const;
+
+  public:
+  void clear_items() ;
+  [[nodiscard]] const ::sf::rewards::v1::SharedDropItem& items(int index) const;
+  [[nodiscard]] ::sf::rewards::v1::SharedDropItem* PROTOBUF_NONNULL mutable_items(int index);
+  ::sf::rewards::v1::SharedDropItem* PROTOBUF_NONNULL add_items();
+  [[nodiscard]] const ::google::protobuf::RepeatedPtrField<::sf::rewards::v1::SharedDropItem>&
+  items() const;
+  [[nodiscard]] ::google::protobuf::RepeatedPtrField<::sf::rewards::v1::SharedDropItem>* PROTOBUF_NONNULL
+  mutable_items();
+
+  private:
+  const ::google::protobuf::RepeatedPtrField<::sf::rewards::v1::SharedDropItem>& _internal_items() const;
+  ::google::protobuf::RepeatedPtrField<::sf::rewards::v1::SharedDropItem>* PROTOBUF_NONNULL _internal_mutable_items();
+
+  public:
+  // string defeat_event_id = 1;
+  void clear_defeat_event_id() ;
+  [[nodiscard]] const ::std::string& defeat_event_id() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_defeat_event_id(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_defeat_event_id();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_defeat_event_id();
+  void set_allocated_defeat_event_id(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_defeat_event_id() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_defeat_event_id(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_defeat_event_id();
+
+  public:
+  // string claimant_character_id = 3;
+  void clear_claimant_character_id() ;
+  [[nodiscard]] const ::std::string& claimant_character_id() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_claimant_character_id(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_claimant_character_id();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_claimant_character_id();
+  void set_allocated_claimant_character_id(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_claimant_character_id() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_claimant_character_id(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_claimant_character_id();
+
+  public:
+  // string ledger_operation_id = 4;
+  void clear_ledger_operation_id() ;
+  [[nodiscard]] const ::std::string& ledger_operation_id() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_ledger_operation_id(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_ledger_operation_id();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_ledger_operation_id();
+  void set_allocated_ledger_operation_id(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_ledger_operation_id() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_ledger_operation_id(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_ledger_operation_id();
+
+  public:
+  // int64 container_revision = 5;
+  void clear_container_revision() ;
+  [[nodiscard]] ::int64_t container_revision() const;
+  void set_container_revision(::int64_t value);
+
+  private:
+  ::int64_t _internal_container_revision() const;
+  void _internal_set_container_revision(::int64_t value);
+
+  public:
+  // @@protoc_insertion_point(class_scope:sf.rewards.v1.SharedDefeatDropReceipt)
+ private:
+  class _Internal;
+  using ParseTableT_ =
+      ::google::protobuf::internal::TcParseTable<3, 5,
+                          1, 101,
+                          2>;
+  static constexpr ParseTableT_ InternalGenerateParseTable_(
+      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+  friend class ::google::protobuf::internal::TcParser;
+  #ifndef PROTOBUF_MESSAGE_GLOBALS
+  static const ParseTableT_ _table_;
+  #endif
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  friend ::google::protobuf::internal::PrivateAccess;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                                    ::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+        const SharedDefeatDropReceipt& from_msg);
+    ::google::protobuf::internal::HasBits<1> _has_bits_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    ::google::protobuf::RepeatedPtrField< ::sf::rewards::v1::SharedDropItem > items_;
+    ::google::protobuf::internal::ArenaStringPtr defeat_event_id_;
+    ::google::protobuf::internal::ArenaStringPtr claimant_character_id_;
+    ::google::protobuf::internal::ArenaStringPtr ledger_operation_id_;
+    ::int64_t container_revision_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_sf_2frewards_2fv1_2frewards_2eproto;
+};
 
 // ===================================================================
 
@@ -686,6 +1761,949 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED GrantDefeatRewardRequest final : pu
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wstrict-aliasing"
 #endif  // __GNUC__
+// -------------------------------------------------------------------
+
+// CreateSharedDefeatDropRequest
+
+// string defeat_event_id = 1;
+inline void CreateSharedDefeatDropRequest::clear_defeat_event_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.defeat_event_id_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+}
+inline const ::std::string& CreateSharedDefeatDropRequest::defeat_event_id() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.rewards.v1.CreateSharedDefeatDropRequest.defeat_event_id)
+  return _internal_defeat_event_id();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void CreateSharedDefeatDropRequest::set_defeat_event_id(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  _impl_.defeat_event_id_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:sf.rewards.v1.CreateSharedDefeatDropRequest.defeat_event_id)
+}
+inline ::std::string* PROTOBUF_NONNULL CreateSharedDefeatDropRequest::mutable_defeat_event_id()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  ::std::string* _s = _internal_mutable_defeat_event_id();
+  // @@protoc_insertion_point(field_mutable:sf.rewards.v1.CreateSharedDefeatDropRequest.defeat_event_id)
+  return _s;
+}
+inline const ::std::string& CreateSharedDefeatDropRequest::_internal_defeat_event_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.defeat_event_id_.Get();
+}
+inline void CreateSharedDefeatDropRequest::_internal_set_defeat_event_id(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.defeat_event_id_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL CreateSharedDefeatDropRequest::_internal_mutable_defeat_event_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.defeat_event_id_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE CreateSharedDefeatDropRequest::release_defeat_event_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:sf.rewards.v1.CreateSharedDefeatDropRequest.defeat_event_id)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000002U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+  auto* released = _impl_.defeat_event_id_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.defeat_event_id_.Set("", GetArena());
+  }
+  return released;
+}
+inline void CreateSharedDefeatDropRequest::set_allocated_defeat_event_id(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+  }
+  _impl_.defeat_event_id_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.defeat_event_id_.IsDefault()) {
+    _impl_.defeat_event_id_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:sf.rewards.v1.CreateSharedDefeatDropRequest.defeat_event_id)
+}
+
+// string creature_id = 2;
+inline void CreateSharedDefeatDropRequest::clear_creature_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.creature_id_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+}
+inline const ::std::string& CreateSharedDefeatDropRequest::creature_id() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.rewards.v1.CreateSharedDefeatDropRequest.creature_id)
+  return _internal_creature_id();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void CreateSharedDefeatDropRequest::set_creature_id(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  _impl_.creature_id_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:sf.rewards.v1.CreateSharedDefeatDropRequest.creature_id)
+}
+inline ::std::string* PROTOBUF_NONNULL CreateSharedDefeatDropRequest::mutable_creature_id()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  ::std::string* _s = _internal_mutable_creature_id();
+  // @@protoc_insertion_point(field_mutable:sf.rewards.v1.CreateSharedDefeatDropRequest.creature_id)
+  return _s;
+}
+inline const ::std::string& CreateSharedDefeatDropRequest::_internal_creature_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.creature_id_.Get();
+}
+inline void CreateSharedDefeatDropRequest::_internal_set_creature_id(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.creature_id_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL CreateSharedDefeatDropRequest::_internal_mutable_creature_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.creature_id_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE CreateSharedDefeatDropRequest::release_creature_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:sf.rewards.v1.CreateSharedDefeatDropRequest.creature_id)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000004U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+  auto* released = _impl_.creature_id_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.creature_id_.Set("", GetArena());
+  }
+  return released;
+}
+inline void CreateSharedDefeatDropRequest::set_allocated_creature_id(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+  }
+  _impl_.creature_id_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.creature_id_.IsDefault()) {
+    _impl_.creature_id_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:sf.rewards.v1.CreateSharedDefeatDropRequest.creature_id)
+}
+
+// string table_id = 3;
+inline void CreateSharedDefeatDropRequest::clear_table_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.table_id_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000008U);
+}
+inline const ::std::string& CreateSharedDefeatDropRequest::table_id() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.rewards.v1.CreateSharedDefeatDropRequest.table_id)
+  return _internal_table_id();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void CreateSharedDefeatDropRequest::set_table_id(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000008U);
+  _impl_.table_id_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:sf.rewards.v1.CreateSharedDefeatDropRequest.table_id)
+}
+inline ::std::string* PROTOBUF_NONNULL CreateSharedDefeatDropRequest::mutable_table_id()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000008U);
+  ::std::string* _s = _internal_mutable_table_id();
+  // @@protoc_insertion_point(field_mutable:sf.rewards.v1.CreateSharedDefeatDropRequest.table_id)
+  return _s;
+}
+inline const ::std::string& CreateSharedDefeatDropRequest::_internal_table_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.table_id_.Get();
+}
+inline void CreateSharedDefeatDropRequest::_internal_set_table_id(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.table_id_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL CreateSharedDefeatDropRequest::_internal_mutable_table_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.table_id_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE CreateSharedDefeatDropRequest::release_table_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:sf.rewards.v1.CreateSharedDefeatDropRequest.table_id)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000008U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000008U);
+  auto* released = _impl_.table_id_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.table_id_.Set("", GetArena());
+  }
+  return released;
+}
+inline void CreateSharedDefeatDropRequest::set_allocated_table_id(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000008U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000008U);
+  }
+  _impl_.table_id_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.table_id_.IsDefault()) {
+    _impl_.table_id_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:sf.rewards.v1.CreateSharedDefeatDropRequest.table_id)
+}
+
+// string killer_character_id = 4;
+inline void CreateSharedDefeatDropRequest::clear_killer_character_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.killer_character_id_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000010U);
+}
+inline const ::std::string& CreateSharedDefeatDropRequest::killer_character_id() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.rewards.v1.CreateSharedDefeatDropRequest.killer_character_id)
+  return _internal_killer_character_id();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void CreateSharedDefeatDropRequest::set_killer_character_id(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000010U);
+  _impl_.killer_character_id_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:sf.rewards.v1.CreateSharedDefeatDropRequest.killer_character_id)
+}
+inline ::std::string* PROTOBUF_NONNULL CreateSharedDefeatDropRequest::mutable_killer_character_id()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000010U);
+  ::std::string* _s = _internal_mutable_killer_character_id();
+  // @@protoc_insertion_point(field_mutable:sf.rewards.v1.CreateSharedDefeatDropRequest.killer_character_id)
+  return _s;
+}
+inline const ::std::string& CreateSharedDefeatDropRequest::_internal_killer_character_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.killer_character_id_.Get();
+}
+inline void CreateSharedDefeatDropRequest::_internal_set_killer_character_id(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.killer_character_id_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL CreateSharedDefeatDropRequest::_internal_mutable_killer_character_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.killer_character_id_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE CreateSharedDefeatDropRequest::release_killer_character_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:sf.rewards.v1.CreateSharedDefeatDropRequest.killer_character_id)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000010U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000010U);
+  auto* released = _impl_.killer_character_id_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.killer_character_id_.Set("", GetArena());
+  }
+  return released;
+}
+inline void CreateSharedDefeatDropRequest::set_allocated_killer_character_id(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000010U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000010U);
+  }
+  _impl_.killer_character_id_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.killer_character_id_.IsDefault()) {
+    _impl_.killer_character_id_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:sf.rewards.v1.CreateSharedDefeatDropRequest.killer_character_id)
+}
+
+// repeated string eligible_character_ids = 5;
+inline int CreateSharedDefeatDropRequest::_internal_eligible_character_ids_size() const {
+  return _internal_eligible_character_ids().size();
+}
+inline int CreateSharedDefeatDropRequest::eligible_character_ids_size() const {
+  return _internal_eligible_character_ids_size();
+}
+inline void CreateSharedDefeatDropRequest::clear_eligible_character_ids() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.eligible_character_ids_.Clear();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+}
+inline ::std::string* PROTOBUF_NONNULL CreateSharedDefeatDropRequest::add_eligible_character_ids()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::std::string* _s =
+      _internal_mutable_eligible_character_ids()->InternalAddWithArena(
+          ::google::protobuf::MessageLite::internal_visibility(), GetArena());
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  // @@protoc_insertion_point(field_add_mutable:sf.rewards.v1.CreateSharedDefeatDropRequest.eligible_character_ids)
+  return _s;
+}
+inline const ::std::string& CreateSharedDefeatDropRequest::eligible_character_ids(int index) const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.rewards.v1.CreateSharedDefeatDropRequest.eligible_character_ids)
+  return _internal_eligible_character_ids().Get(index);
+}
+inline ::std::string* PROTOBUF_NONNULL CreateSharedDefeatDropRequest::mutable_eligible_character_ids(int index)
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_mutable:sf.rewards.v1.CreateSharedDefeatDropRequest.eligible_character_ids)
+  return _internal_mutable_eligible_character_ids()->Mutable(index);
+}
+template <typename Arg_, typename... Args_>
+inline void CreateSharedDefeatDropRequest::set_eligible_character_ids(int index, Arg_&& value, Args_... args) {
+  ::google::protobuf::internal::AssignToString(
+      *_internal_mutable_eligible_character_ids()->Mutable(index),
+      ::std::forward<Arg_>(value), args... );
+  // @@protoc_insertion_point(field_set:sf.rewards.v1.CreateSharedDefeatDropRequest.eligible_character_ids)
+}
+template <typename Arg_, typename... Args_>
+inline void CreateSharedDefeatDropRequest::add_eligible_character_ids(Arg_&& value, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::google::protobuf::internal::AddToRepeatedPtrField(
+      ::google::protobuf::MessageLite::internal_visibility(), GetArena(),
+      *_internal_mutable_eligible_character_ids(), ::std::forward<Arg_>(value),
+      args... );
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  // @@protoc_insertion_point(field_add:sf.rewards.v1.CreateSharedDefeatDropRequest.eligible_character_ids)
+}
+inline const ::google::protobuf::RepeatedPtrField<::std::string>& CreateSharedDefeatDropRequest::eligible_character_ids()
+    const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_list:sf.rewards.v1.CreateSharedDefeatDropRequest.eligible_character_ids)
+  return _internal_eligible_character_ids();
+}
+inline ::google::protobuf::RepeatedPtrField<::std::string>* PROTOBUF_NONNULL
+CreateSharedDefeatDropRequest::mutable_eligible_character_ids() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  // @@protoc_insertion_point(field_mutable_list:sf.rewards.v1.CreateSharedDefeatDropRequest.eligible_character_ids)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _internal_mutable_eligible_character_ids();
+}
+inline const ::google::protobuf::RepeatedPtrField<::std::string>&
+CreateSharedDefeatDropRequest::_internal_eligible_character_ids() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.eligible_character_ids_;
+}
+inline ::google::protobuf::RepeatedPtrField<::std::string>* PROTOBUF_NONNULL
+CreateSharedDefeatDropRequest::_internal_mutable_eligible_character_ids() {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return &_impl_.eligible_character_ids_;
+}
+
+// bool killer_in_protected_town = 6;
+inline void CreateSharedDefeatDropRequest::clear_killer_in_protected_town() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.killer_in_protected_town_ = false;
+  ClearHasBit(_impl_._has_bits_[0], 0x00000020U);
+}
+inline bool CreateSharedDefeatDropRequest::killer_in_protected_town() const {
+  // @@protoc_insertion_point(field_get:sf.rewards.v1.CreateSharedDefeatDropRequest.killer_in_protected_town)
+  return _internal_killer_in_protected_town();
+}
+inline void CreateSharedDefeatDropRequest::set_killer_in_protected_town(bool value) {
+  _internal_set_killer_in_protected_town(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000020U);
+  // @@protoc_insertion_point(field_set:sf.rewards.v1.CreateSharedDefeatDropRequest.killer_in_protected_town)
+}
+inline bool CreateSharedDefeatDropRequest::_internal_killer_in_protected_town() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.killer_in_protected_town_;
+}
+inline void CreateSharedDefeatDropRequest::_internal_set_killer_in_protected_town(bool value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.killer_in_protected_town_ = value;
+}
+
+// bool creature_in_protected_town = 7;
+inline void CreateSharedDefeatDropRequest::clear_creature_in_protected_town() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.creature_in_protected_town_ = false;
+  ClearHasBit(_impl_._has_bits_[0], 0x00000040U);
+}
+inline bool CreateSharedDefeatDropRequest::creature_in_protected_town() const {
+  // @@protoc_insertion_point(field_get:sf.rewards.v1.CreateSharedDefeatDropRequest.creature_in_protected_town)
+  return _internal_creature_in_protected_town();
+}
+inline void CreateSharedDefeatDropRequest::set_creature_in_protected_town(bool value) {
+  _internal_set_creature_in_protected_town(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000040U);
+  // @@protoc_insertion_point(field_set:sf.rewards.v1.CreateSharedDefeatDropRequest.creature_in_protected_town)
+}
+inline bool CreateSharedDefeatDropRequest::_internal_creature_in_protected_town() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.creature_in_protected_town_;
+}
+inline void CreateSharedDefeatDropRequest::_internal_set_creature_in_protected_town(bool value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.creature_in_protected_town_ = value;
+}
+
+// -------------------------------------------------------------------
+
+// ClaimSharedDefeatDropRequest
+
+// string defeat_event_id = 1;
+inline void ClaimSharedDefeatDropRequest::clear_defeat_event_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.defeat_event_id_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+}
+inline const ::std::string& ClaimSharedDefeatDropRequest::defeat_event_id() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.rewards.v1.ClaimSharedDefeatDropRequest.defeat_event_id)
+  return _internal_defeat_event_id();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void ClaimSharedDefeatDropRequest::set_defeat_event_id(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  _impl_.defeat_event_id_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:sf.rewards.v1.ClaimSharedDefeatDropRequest.defeat_event_id)
+}
+inline ::std::string* PROTOBUF_NONNULL ClaimSharedDefeatDropRequest::mutable_defeat_event_id()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  ::std::string* _s = _internal_mutable_defeat_event_id();
+  // @@protoc_insertion_point(field_mutable:sf.rewards.v1.ClaimSharedDefeatDropRequest.defeat_event_id)
+  return _s;
+}
+inline const ::std::string& ClaimSharedDefeatDropRequest::_internal_defeat_event_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.defeat_event_id_.Get();
+}
+inline void ClaimSharedDefeatDropRequest::_internal_set_defeat_event_id(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.defeat_event_id_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL ClaimSharedDefeatDropRequest::_internal_mutable_defeat_event_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.defeat_event_id_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE ClaimSharedDefeatDropRequest::release_defeat_event_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:sf.rewards.v1.ClaimSharedDefeatDropRequest.defeat_event_id)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000001U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+  auto* released = _impl_.defeat_event_id_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.defeat_event_id_.Set("", GetArena());
+  }
+  return released;
+}
+inline void ClaimSharedDefeatDropRequest::set_allocated_defeat_event_id(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+  }
+  _impl_.defeat_event_id_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.defeat_event_id_.IsDefault()) {
+    _impl_.defeat_event_id_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:sf.rewards.v1.ClaimSharedDefeatDropRequest.defeat_event_id)
+}
+
+// string character_id = 2;
+inline void ClaimSharedDefeatDropRequest::clear_character_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.character_id_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+}
+inline const ::std::string& ClaimSharedDefeatDropRequest::character_id() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.rewards.v1.ClaimSharedDefeatDropRequest.character_id)
+  return _internal_character_id();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void ClaimSharedDefeatDropRequest::set_character_id(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  _impl_.character_id_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:sf.rewards.v1.ClaimSharedDefeatDropRequest.character_id)
+}
+inline ::std::string* PROTOBUF_NONNULL ClaimSharedDefeatDropRequest::mutable_character_id()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  ::std::string* _s = _internal_mutable_character_id();
+  // @@protoc_insertion_point(field_mutable:sf.rewards.v1.ClaimSharedDefeatDropRequest.character_id)
+  return _s;
+}
+inline const ::std::string& ClaimSharedDefeatDropRequest::_internal_character_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.character_id_.Get();
+}
+inline void ClaimSharedDefeatDropRequest::_internal_set_character_id(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.character_id_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL ClaimSharedDefeatDropRequest::_internal_mutable_character_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.character_id_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE ClaimSharedDefeatDropRequest::release_character_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:sf.rewards.v1.ClaimSharedDefeatDropRequest.character_id)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000002U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+  auto* released = _impl_.character_id_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.character_id_.Set("", GetArena());
+  }
+  return released;
+}
+inline void ClaimSharedDefeatDropRequest::set_allocated_character_id(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+  }
+  _impl_.character_id_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.character_id_.IsDefault()) {
+    _impl_.character_id_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:sf.rewards.v1.ClaimSharedDefeatDropRequest.character_id)
+}
+
+// string container_id = 3;
+inline void ClaimSharedDefeatDropRequest::clear_container_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.container_id_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+}
+inline const ::std::string& ClaimSharedDefeatDropRequest::container_id() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.rewards.v1.ClaimSharedDefeatDropRequest.container_id)
+  return _internal_container_id();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void ClaimSharedDefeatDropRequest::set_container_id(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  _impl_.container_id_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:sf.rewards.v1.ClaimSharedDefeatDropRequest.container_id)
+}
+inline ::std::string* PROTOBUF_NONNULL ClaimSharedDefeatDropRequest::mutable_container_id()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  ::std::string* _s = _internal_mutable_container_id();
+  // @@protoc_insertion_point(field_mutable:sf.rewards.v1.ClaimSharedDefeatDropRequest.container_id)
+  return _s;
+}
+inline const ::std::string& ClaimSharedDefeatDropRequest::_internal_container_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.container_id_.Get();
+}
+inline void ClaimSharedDefeatDropRequest::_internal_set_container_id(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.container_id_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL ClaimSharedDefeatDropRequest::_internal_mutable_container_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.container_id_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE ClaimSharedDefeatDropRequest::release_container_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:sf.rewards.v1.ClaimSharedDefeatDropRequest.container_id)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000004U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+  auto* released = _impl_.container_id_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.container_id_.Set("", GetArena());
+  }
+  return released;
+}
+inline void ClaimSharedDefeatDropRequest::set_allocated_container_id(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+  }
+  _impl_.container_id_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.container_id_.IsDefault()) {
+    _impl_.container_id_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:sf.rewards.v1.ClaimSharedDefeatDropRequest.container_id)
+}
+
+// -------------------------------------------------------------------
+
+// SharedDropItem
+
+// string definition_id = 1;
+inline void SharedDropItem::clear_definition_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.definition_id_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+}
+inline const ::std::string& SharedDropItem::definition_id() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.rewards.v1.SharedDropItem.definition_id)
+  return _internal_definition_id();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void SharedDropItem::set_definition_id(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  _impl_.definition_id_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:sf.rewards.v1.SharedDropItem.definition_id)
+}
+inline ::std::string* PROTOBUF_NONNULL SharedDropItem::mutable_definition_id()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  ::std::string* _s = _internal_mutable_definition_id();
+  // @@protoc_insertion_point(field_mutable:sf.rewards.v1.SharedDropItem.definition_id)
+  return _s;
+}
+inline const ::std::string& SharedDropItem::_internal_definition_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.definition_id_.Get();
+}
+inline void SharedDropItem::_internal_set_definition_id(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.definition_id_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL SharedDropItem::_internal_mutable_definition_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.definition_id_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE SharedDropItem::release_definition_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:sf.rewards.v1.SharedDropItem.definition_id)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000001U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+  auto* released = _impl_.definition_id_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.definition_id_.Set("", GetArena());
+  }
+  return released;
+}
+inline void SharedDropItem::set_allocated_definition_id(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+  }
+  _impl_.definition_id_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.definition_id_.IsDefault()) {
+    _impl_.definition_id_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:sf.rewards.v1.SharedDropItem.definition_id)
+}
+
+// int64 quantity = 2;
+inline void SharedDropItem::clear_quantity() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.quantity_ = ::int64_t{0};
+  ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+}
+inline ::int64_t SharedDropItem::quantity() const {
+  // @@protoc_insertion_point(field_get:sf.rewards.v1.SharedDropItem.quantity)
+  return _internal_quantity();
+}
+inline void SharedDropItem::set_quantity(::int64_t value) {
+  _internal_set_quantity(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  // @@protoc_insertion_point(field_set:sf.rewards.v1.SharedDropItem.quantity)
+}
+inline ::int64_t SharedDropItem::_internal_quantity() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.quantity_;
+}
+inline void SharedDropItem::_internal_set_quantity(::int64_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.quantity_ = value;
+}
+
+// -------------------------------------------------------------------
+
+// SharedDefeatDropReceipt
+
+// string defeat_event_id = 1;
+inline void SharedDefeatDropReceipt::clear_defeat_event_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.defeat_event_id_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+}
+inline const ::std::string& SharedDefeatDropReceipt::defeat_event_id() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.rewards.v1.SharedDefeatDropReceipt.defeat_event_id)
+  return _internal_defeat_event_id();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void SharedDefeatDropReceipt::set_defeat_event_id(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  _impl_.defeat_event_id_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:sf.rewards.v1.SharedDefeatDropReceipt.defeat_event_id)
+}
+inline ::std::string* PROTOBUF_NONNULL SharedDefeatDropReceipt::mutable_defeat_event_id()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  ::std::string* _s = _internal_mutable_defeat_event_id();
+  // @@protoc_insertion_point(field_mutable:sf.rewards.v1.SharedDefeatDropReceipt.defeat_event_id)
+  return _s;
+}
+inline const ::std::string& SharedDefeatDropReceipt::_internal_defeat_event_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.defeat_event_id_.Get();
+}
+inline void SharedDefeatDropReceipt::_internal_set_defeat_event_id(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.defeat_event_id_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL SharedDefeatDropReceipt::_internal_mutable_defeat_event_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.defeat_event_id_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE SharedDefeatDropReceipt::release_defeat_event_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:sf.rewards.v1.SharedDefeatDropReceipt.defeat_event_id)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000002U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+  auto* released = _impl_.defeat_event_id_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.defeat_event_id_.Set("", GetArena());
+  }
+  return released;
+}
+inline void SharedDefeatDropReceipt::set_allocated_defeat_event_id(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+  }
+  _impl_.defeat_event_id_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.defeat_event_id_.IsDefault()) {
+    _impl_.defeat_event_id_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:sf.rewards.v1.SharedDefeatDropReceipt.defeat_event_id)
+}
+
+// repeated .sf.rewards.v1.SharedDropItem items = 2;
+inline int SharedDefeatDropReceipt::_internal_items_size() const {
+  return _internal_items().size();
+}
+inline int SharedDefeatDropReceipt::items_size() const {
+  return _internal_items_size();
+}
+inline void SharedDefeatDropReceipt::clear_items() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.items_.Clear();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+}
+inline const ::sf::rewards::v1::SharedDropItem& SharedDefeatDropReceipt::items(int index) const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.rewards.v1.SharedDefeatDropReceipt.items)
+  return _internal_items().Get(index);
+}
+inline ::sf::rewards::v1::SharedDropItem* PROTOBUF_NONNULL SharedDefeatDropReceipt::mutable_items(int index)
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_mutable:sf.rewards.v1.SharedDefeatDropReceipt.items)
+  return _internal_mutable_items()->Mutable(index);
+}
+inline ::sf::rewards::v1::SharedDropItem* PROTOBUF_NONNULL SharedDefeatDropReceipt::add_items()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::sf::rewards::v1::SharedDropItem* _add =
+      _internal_mutable_items()->InternalAddWithArena(
+          ::google::protobuf::MessageLite::internal_visibility(), GetArena());
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  // @@protoc_insertion_point(field_add:sf.rewards.v1.SharedDefeatDropReceipt.items)
+  return _add;
+}
+inline const ::google::protobuf::RepeatedPtrField<::sf::rewards::v1::SharedDropItem>& SharedDefeatDropReceipt::items() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_list:sf.rewards.v1.SharedDefeatDropReceipt.items)
+  return _internal_items();
+}
+inline ::google::protobuf::RepeatedPtrField<::sf::rewards::v1::SharedDropItem>* PROTOBUF_NONNULL
+SharedDefeatDropReceipt::mutable_items() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  // @@protoc_insertion_point(field_mutable_list:sf.rewards.v1.SharedDefeatDropReceipt.items)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _internal_mutable_items();
+}
+inline const ::google::protobuf::RepeatedPtrField<::sf::rewards::v1::SharedDropItem>&
+SharedDefeatDropReceipt::_internal_items() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.items_;
+}
+inline ::google::protobuf::RepeatedPtrField<::sf::rewards::v1::SharedDropItem>* PROTOBUF_NONNULL
+SharedDefeatDropReceipt::_internal_mutable_items() {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return &_impl_.items_;
+}
+
+// string claimant_character_id = 3;
+inline void SharedDefeatDropReceipt::clear_claimant_character_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.claimant_character_id_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+}
+inline const ::std::string& SharedDefeatDropReceipt::claimant_character_id() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.rewards.v1.SharedDefeatDropReceipt.claimant_character_id)
+  return _internal_claimant_character_id();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void SharedDefeatDropReceipt::set_claimant_character_id(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  _impl_.claimant_character_id_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:sf.rewards.v1.SharedDefeatDropReceipt.claimant_character_id)
+}
+inline ::std::string* PROTOBUF_NONNULL SharedDefeatDropReceipt::mutable_claimant_character_id()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  ::std::string* _s = _internal_mutable_claimant_character_id();
+  // @@protoc_insertion_point(field_mutable:sf.rewards.v1.SharedDefeatDropReceipt.claimant_character_id)
+  return _s;
+}
+inline const ::std::string& SharedDefeatDropReceipt::_internal_claimant_character_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.claimant_character_id_.Get();
+}
+inline void SharedDefeatDropReceipt::_internal_set_claimant_character_id(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.claimant_character_id_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL SharedDefeatDropReceipt::_internal_mutable_claimant_character_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.claimant_character_id_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE SharedDefeatDropReceipt::release_claimant_character_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:sf.rewards.v1.SharedDefeatDropReceipt.claimant_character_id)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000004U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+  auto* released = _impl_.claimant_character_id_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.claimant_character_id_.Set("", GetArena());
+  }
+  return released;
+}
+inline void SharedDefeatDropReceipt::set_allocated_claimant_character_id(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+  }
+  _impl_.claimant_character_id_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.claimant_character_id_.IsDefault()) {
+    _impl_.claimant_character_id_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:sf.rewards.v1.SharedDefeatDropReceipt.claimant_character_id)
+}
+
+// string ledger_operation_id = 4;
+inline void SharedDefeatDropReceipt::clear_ledger_operation_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.ledger_operation_id_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000008U);
+}
+inline const ::std::string& SharedDefeatDropReceipt::ledger_operation_id() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.rewards.v1.SharedDefeatDropReceipt.ledger_operation_id)
+  return _internal_ledger_operation_id();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void SharedDefeatDropReceipt::set_ledger_operation_id(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000008U);
+  _impl_.ledger_operation_id_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:sf.rewards.v1.SharedDefeatDropReceipt.ledger_operation_id)
+}
+inline ::std::string* PROTOBUF_NONNULL SharedDefeatDropReceipt::mutable_ledger_operation_id()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000008U);
+  ::std::string* _s = _internal_mutable_ledger_operation_id();
+  // @@protoc_insertion_point(field_mutable:sf.rewards.v1.SharedDefeatDropReceipt.ledger_operation_id)
+  return _s;
+}
+inline const ::std::string& SharedDefeatDropReceipt::_internal_ledger_operation_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.ledger_operation_id_.Get();
+}
+inline void SharedDefeatDropReceipt::_internal_set_ledger_operation_id(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.ledger_operation_id_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL SharedDefeatDropReceipt::_internal_mutable_ledger_operation_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.ledger_operation_id_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE SharedDefeatDropReceipt::release_ledger_operation_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:sf.rewards.v1.SharedDefeatDropReceipt.ledger_operation_id)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000008U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000008U);
+  auto* released = _impl_.ledger_operation_id_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.ledger_operation_id_.Set("", GetArena());
+  }
+  return released;
+}
+inline void SharedDefeatDropReceipt::set_allocated_ledger_operation_id(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000008U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000008U);
+  }
+  _impl_.ledger_operation_id_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.ledger_operation_id_.IsDefault()) {
+    _impl_.ledger_operation_id_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:sf.rewards.v1.SharedDefeatDropReceipt.ledger_operation_id)
+}
+
+// int64 container_revision = 5;
+inline void SharedDefeatDropReceipt::clear_container_revision() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.container_revision_ = ::int64_t{0};
+  ClearHasBit(_impl_._has_bits_[0], 0x00000010U);
+}
+inline ::int64_t SharedDefeatDropReceipt::container_revision() const {
+  // @@protoc_insertion_point(field_get:sf.rewards.v1.SharedDefeatDropReceipt.container_revision)
+  return _internal_container_revision();
+}
+inline void SharedDefeatDropReceipt::set_container_revision(::int64_t value) {
+  _internal_set_container_revision(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000010U);
+  // @@protoc_insertion_point(field_set:sf.rewards.v1.SharedDefeatDropReceipt.container_revision)
+}
+inline ::int64_t SharedDefeatDropReceipt::_internal_container_revision() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.container_revision_;
+}
+inline void SharedDefeatDropReceipt::_internal_set_container_revision(::int64_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.container_revision_ = value;
+}
+
 // -------------------------------------------------------------------
 
 // GrantDefeatRewardRequest

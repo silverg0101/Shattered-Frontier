@@ -121,6 +121,12 @@ try {
     if ($GroupOnly) { $env:GAMEPLAY_GROUP_CONNECTION = $connection }
     $fixtureContent = Join-Path $private 'content'
     Copy-Item -LiteralPath (Join-Path $repo 'content') -Destination $fixtureContent -Recurse
+    $rules = Join-Path $fixtureContent 'creatures/loot_rules'
+    $null = New-Item -ItemType Directory -Path $rules -Force
+    '{"creature_id":"npc/test_boss","unique_or_boss":true,"table_id":"loot/boss_greenlands_bandit_captain"}' |
+        Set-Content (Join-Path $rules 'test_boss.json')
+    '{"creature_id":"npc/test_unique","unique_or_boss":true,"table_id":"loot/unique_greenlands_wolf_alpha"}' |
+        Set-Content (Join-Path $rules 'test_unique.json')
     $env:GAMEPLAY_CONTENT_ROOT = $fixtureContent
     $env:SF_GAMEPLAY_TOKEN = $token
     $env:GAMEPLAY_FIXTURE_MODE = 'gathering'

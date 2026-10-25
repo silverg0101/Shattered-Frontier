@@ -4,6 +4,37 @@ option csharp_namespace = "ShatteredFrontier.Rewards.V1";
 
 service Rewards {
   rpc GrantDefeatReward(GrantDefeatRewardRequest) returns (RewardReceipt);
+  rpc CreateSharedDefeatDrop(CreateSharedDefeatDropRequest) returns (SharedDefeatDropReceipt);
+  rpc ClaimSharedDefeatDrop(ClaimSharedDefeatDropRequest) returns (SharedDefeatDropReceipt);
+}
+
+message CreateSharedDefeatDropRequest {
+  string defeat_event_id = 1;
+  string creature_id = 2;
+  string table_id = 3;
+  string killer_character_id = 4;
+  repeated string eligible_character_ids = 5;
+  bool killer_in_protected_town = 6;
+  bool creature_in_protected_town = 7;
+}
+
+message ClaimSharedDefeatDropRequest {
+  string defeat_event_id = 1;
+  string character_id = 2;
+  string container_id = 3;
+}
+
+message SharedDropItem {
+  string definition_id = 1;
+  int64 quantity = 2;
+}
+
+message SharedDefeatDropReceipt {
+  string defeat_event_id = 1;
+  repeated SharedDropItem items = 2;
+  string claimant_character_id = 3;
+  string ledger_operation_id = 4;
+  int64 container_revision = 5;
 }
 
 message GrantDefeatRewardRequest {

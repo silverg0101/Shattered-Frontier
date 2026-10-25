@@ -384,6 +384,20 @@ if (mode.EndsWith("-replay", StringComparison.Ordinal))
             ContainerId = "ctn_rewards", TableId = "loot/greenlands_silverbrook_boar"
         }, headers, deadline: Deadline());
         Check(result.Granted && result.LedgerOperationId == "defeat:16:defeat/test-boar:chr_rewards", "Reward restart replay failed.");
+        var shared = new RewardPb.Rewards.RewardsClient(channel).ClaimSharedDefeatDrop(
+            new RewardPb.ClaimSharedDefeatDropRequest
+            { DefeatEventId = "defeat/test-boss", CharacterId = "chr_rewards_second", ContainerId = "ctn_rewards_second" },
+            headers, deadline: Deadline());
+        Check(shared.ClaimantCharacterId == "chr_rewards_second" && shared.Items.Count == 1 &&
+            shared.LedgerOperationId == "shared-defeat:16:defeat/test-boss", "Boss claim restart replay failed.");
+        var pending = new RewardPb.Rewards.RewardsClient(channel).ClaimSharedDefeatDrop(
+            new RewardPb.ClaimSharedDefeatDropRequest
+            { DefeatEventId = "defeat/test-boss-pending", CharacterId = "chr_rewards", ContainerId = "ctn_shared_full" },
+            headers, deadline: Deadline());
+        var ledger = new InventoryLedger(new PostgresInventoryLedgerStore(connection));
+        Check(pending.Items.Count == 1 &&
+            ledger.Read("ctn_shared_full").Quantities[pending.Items[0].DefinitionId] == pending.Items[0].Quantity,
+            "Pending boss claim did not complete once after restart.");
     }
     else if (mode == "progression-replay")
     {
@@ -688,6 +702,84 @@ if (mode == "rewards")
     Check(second.Granted && second.LedgerOperationId != first.LedgerOperationId &&
         ledger.Read("ctn_rewards_second").Quantities["item/boar_hide"] == second.Quantity,
         "Shared kill did not grant a separate personal reward.");
+    var sharedRequest = new RewardPb.CreateSharedDefeatDropRequest
+    {
+        DefeatEventId = "defeat/test-boss", CreatureId = "npc/test_boss",
+        TableId = "loot/boss_greenlands_bandit_captain", KillerCharacterId = "chr_rewards"
+    };
+    sharedRequest.EligibleCharacterIds.AddRange(["chr_rewards", "chr_rewards_second"]);
+    var drop = client.CreateSharedDefeatDrop(sharedRequest, headers, deadline: Deadline());
+    Check(drop.Items.Count == 1 && drop.ClaimantCharacterId == "", "Boss did not create one shared set.");
+    var wrongScope = new RewardPb.CreateSharedDefeatDropRequest
+    { DefeatEventId = request.DefeatEventId, CreatureId = sharedRequest.CreatureId,
+        TableId = sharedRequest.TableId, KillerCharacterId = sharedRequest.KillerCharacterId };
+    wrongScope.EligibleCharacterIds.Add("chr_rewards");
+    Code(() => client.CreateSharedDefeatDrop(wrongScope, headers, deadline: Deadline()), StatusCode.AlreadyExists);
+    Code(() => client.GrantDefeatReward(new RewardPb.GrantDefeatRewardRequest
+    { DefeatEventId = drop.DefeatEventId, KillerCharacterId = "chr_rewards", RecipientCharacterId = "chr_rewards",
+        ContainerId = "ctn_rewards", TableId = request.TableId }, headers, deadline: Deadline()), StatusCode.AlreadyExists);
+    Check(client.CreateSharedDefeatDrop(sharedRequest, headers, deadline: Deadline()).Equals(drop),
+        "Boss create retry changed its drop.");
+    Code(() => client.ClaimSharedDefeatDrop(new RewardPb.ClaimSharedDefeatDropRequest
+    { DefeatEventId = drop.DefeatEventId, CharacterId = "chr_uncredited", ContainerId = "ctn_rewards_second" },
+        headers, deadline: Deadline()), StatusCode.PermissionDenied);
+    Code(() => client.ClaimSharedDefeatDrop(new RewardPb.ClaimSharedDefeatDropRequest
+    { DefeatEventId = drop.DefeatEventId, CharacterId = "chr_rewards", ContainerId = "ctn_rewards_second" },
+        headers, deadline: Deadline()), StatusCode.PermissionDenied);
+    var claimRequest = new RewardPb.ClaimSharedDefeatDropRequest
+    { DefeatEventId = drop.DefeatEventId, CharacterId = "chr_rewards_second", ContainerId = "ctn_rewards_second" };
+    var claimed = client.ClaimSharedDefeatDrop(claimRequest, headers, deadline: Deadline());
+    Check(claimed.ClaimantCharacterId == "chr_rewards_second" && claimed.Items.Count == 1 &&
+        ledger.Read("ctn_rewards_second").Quantities[claimed.Items[0].DefinitionId] == claimed.Items[0].Quantity,
+        "Boss set was not granted to its claimant.");
+    Check(client.ClaimSharedDefeatDrop(claimRequest, headers, deadline: Deadline()).Equals(claimed),
+        "Boss claim retry duplicated the set.");
+    Code(() => client.ClaimSharedDefeatDrop(new RewardPb.ClaimSharedDefeatDropRequest
+    { DefeatEventId = drop.DefeatEventId, CharacterId = "chr_rewards", ContainerId = "ctn_rewards" },
+        headers, deadline: Deadline()), StatusCode.AlreadyExists);
+    var uniqueRequest = new RewardPb.CreateSharedDefeatDropRequest
+    { DefeatEventId = "defeat/test-unique", CreatureId = "npc/test_unique",
+        TableId = "loot/unique_greenlands_wolf_alpha", KillerCharacterId = "chr_rewards" };
+    uniqueRequest.EligibleCharacterIds.AddRange(["chr_rewards", "chr_rewards_second"]);
+    var uniqueDrop = client.CreateSharedDefeatDrop(uniqueRequest, headers, deadline: Deadline());
+    Check(uniqueDrop.Items.Any(i => i.DefinitionId == "item/wolf_pelt" && i.Quantity == 2) &&
+        uniqueDrop.Items.Any(i => i.DefinitionId == "item/wolf_fang" && i.Quantity == 1),
+        "Unique creature did not roll its multi-item set.");
+    var uniqueClaim = client.ClaimSharedDefeatDrop(new RewardPb.ClaimSharedDefeatDropRequest
+    { DefeatEventId = uniqueDrop.DefeatEventId, CharacterId = "chr_rewards", ContainerId = "ctn_rewards" },
+        headers, deadline: Deadline());
+    Check(uniqueClaim.Items.All(i => ledger.Read("ctn_rewards").Quantities[i.DefinitionId] == i.Quantity),
+        "Unique multi-item set was not granted atomically.");
+    var protectedDrop = new RewardPb.CreateSharedDefeatDropRequest
+    { DefeatEventId = "defeat/test-boss-protected", CreatureId = "npc/test_boss",
+        TableId = sharedRequest.TableId, KillerCharacterId = "chr_rewards", CreatureInProtectedTown = true };
+    protectedDrop.EligibleCharacterIds.Add("chr_rewards");
+    Check(client.CreateSharedDefeatDrop(protectedDrop, headers, deadline: Deadline()).Items.Count == 0,
+        "Protected boss generated loot.");
+    Code(() => client.ClaimSharedDefeatDrop(new RewardPb.ClaimSharedDefeatDropRequest
+    { DefeatEventId = protectedDrop.DefeatEventId, CharacterId = "chr_rewards", ContainerId = "ctn_rewards" },
+        headers, deadline: Deadline()), StatusCode.FailedPrecondition);
+    protectedDrop.CreatureInProtectedTown = false;
+    Code(() => client.CreateSharedDefeatDrop(protectedDrop, headers, deadline: Deadline()), StatusCode.AlreadyExists);
+    ledger.CreateContainer(new ContainerSpec("ctn_shared_full", OwnerKind.Character, "chr_rewards", ContainerKind.Backpack, 1));
+    ledger.Grant("shared/full/seed", "ctn_shared_full", 0, "item/oak_log", 1, "fixture", "shared/full/seed");
+    var pendingDrop = new RewardPb.CreateSharedDefeatDropRequest
+    {
+        DefeatEventId = "defeat/test-boss-pending", CreatureId = "npc/test_boss",
+        TableId = sharedRequest.TableId, KillerCharacterId = "chr_rewards"
+    };
+    pendingDrop.EligibleCharacterIds.Add("chr_rewards");
+    client.CreateSharedDefeatDrop(pendingDrop, headers, deadline: Deadline());
+    Code(() => client.ClaimSharedDefeatDrop(new RewardPb.ClaimSharedDefeatDropRequest
+    { DefeatEventId = pendingDrop.DefeatEventId, CharacterId = "chr_rewards", ContainerId = "ctn_shared_full" },
+        headers, deadline: Deadline()), StatusCode.FailedPrecondition);
+    using (var db = new Npgsql.NpgsqlConnection(connection))
+    {
+        db.Open();
+        using var pending = new Npgsql.NpgsqlCommand("SELECT state FROM inventory.shared_defeat_drops WHERE defeat_event_id='defeat/test-boss-pending'", db);
+        Check((string?)pending.ExecuteScalar() == "ClaimPending", "Full backpack lost shared claim intent.");
+    }
+    ledger.Consume("shared/full/free", "ctn_shared_full", 1, "item/oak_log", 1, "fixture");
     request.KillerInProtectedTown = true;
     Code(() => client.GrantDefeatReward(request, headers, deadline: Deadline()), StatusCode.AlreadyExists);
     request.DefeatEventId = "defeat/bad-table"; request.TableId = "loot/unknown";

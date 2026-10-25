@@ -26,6 +26,8 @@ namespace v1 {
 
 static const char* Rewards_method_names[] = {
   "/sf.rewards.v1.Rewards/GrantDefeatReward",
+  "/sf.rewards.v1.Rewards/CreateSharedDefeatDrop",
+  "/sf.rewards.v1.Rewards/ClaimSharedDefeatDrop",
 };
 
 std::unique_ptr< Rewards::Stub> Rewards::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
@@ -36,6 +38,8 @@ std::unique_ptr< Rewards::Stub> Rewards::NewStub(const std::shared_ptr< ::grpc::
 
 Rewards::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options)
   : channel_(channel), rpcmethod_GrantDefeatReward_(Rewards_method_names[0], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_CreateSharedDefeatDrop_(Rewards_method_names[1], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_ClaimSharedDefeatDrop_(Rewards_method_names[2], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   {}
 
 ::grpc::Status Rewards::Stub::GrantDefeatReward(::grpc::ClientContext* context, const ::sf::rewards::v1::GrantDefeatRewardRequest& request, ::sf::rewards::v1::RewardReceipt* response) {
@@ -61,6 +65,52 @@ void Rewards::Stub::async::GrantDefeatReward(::grpc::ClientContext* context, con
   return result;
 }
 
+::grpc::Status Rewards::Stub::CreateSharedDefeatDrop(::grpc::ClientContext* context, const ::sf::rewards::v1::CreateSharedDefeatDropRequest& request, ::sf::rewards::v1::SharedDefeatDropReceipt* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::sf::rewards::v1::CreateSharedDefeatDropRequest, ::sf::rewards::v1::SharedDefeatDropReceipt, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_CreateSharedDefeatDrop_, context, request, response);
+}
+
+void Rewards::Stub::async::CreateSharedDefeatDrop(::grpc::ClientContext* context, const ::sf::rewards::v1::CreateSharedDefeatDropRequest* request, ::sf::rewards::v1::SharedDefeatDropReceipt* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::sf::rewards::v1::CreateSharedDefeatDropRequest, ::sf::rewards::v1::SharedDefeatDropReceipt, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_CreateSharedDefeatDrop_, context, request, response, std::move(f));
+}
+
+void Rewards::Stub::async::CreateSharedDefeatDrop(::grpc::ClientContext* context, const ::sf::rewards::v1::CreateSharedDefeatDropRequest* request, ::sf::rewards::v1::SharedDefeatDropReceipt* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_CreateSharedDefeatDrop_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::sf::rewards::v1::SharedDefeatDropReceipt>* Rewards::Stub::PrepareAsyncCreateSharedDefeatDropRaw(::grpc::ClientContext* context, const ::sf::rewards::v1::CreateSharedDefeatDropRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::sf::rewards::v1::SharedDefeatDropReceipt, ::sf::rewards::v1::CreateSharedDefeatDropRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_CreateSharedDefeatDrop_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::sf::rewards::v1::SharedDefeatDropReceipt>* Rewards::Stub::AsyncCreateSharedDefeatDropRaw(::grpc::ClientContext* context, const ::sf::rewards::v1::CreateSharedDefeatDropRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncCreateSharedDefeatDropRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
+::grpc::Status Rewards::Stub::ClaimSharedDefeatDrop(::grpc::ClientContext* context, const ::sf::rewards::v1::ClaimSharedDefeatDropRequest& request, ::sf::rewards::v1::SharedDefeatDropReceipt* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::sf::rewards::v1::ClaimSharedDefeatDropRequest, ::sf::rewards::v1::SharedDefeatDropReceipt, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_ClaimSharedDefeatDrop_, context, request, response);
+}
+
+void Rewards::Stub::async::ClaimSharedDefeatDrop(::grpc::ClientContext* context, const ::sf::rewards::v1::ClaimSharedDefeatDropRequest* request, ::sf::rewards::v1::SharedDefeatDropReceipt* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::sf::rewards::v1::ClaimSharedDefeatDropRequest, ::sf::rewards::v1::SharedDefeatDropReceipt, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_ClaimSharedDefeatDrop_, context, request, response, std::move(f));
+}
+
+void Rewards::Stub::async::ClaimSharedDefeatDrop(::grpc::ClientContext* context, const ::sf::rewards::v1::ClaimSharedDefeatDropRequest* request, ::sf::rewards::v1::SharedDefeatDropReceipt* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_ClaimSharedDefeatDrop_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::sf::rewards::v1::SharedDefeatDropReceipt>* Rewards::Stub::PrepareAsyncClaimSharedDefeatDropRaw(::grpc::ClientContext* context, const ::sf::rewards::v1::ClaimSharedDefeatDropRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::sf::rewards::v1::SharedDefeatDropReceipt, ::sf::rewards::v1::ClaimSharedDefeatDropRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_ClaimSharedDefeatDrop_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::sf::rewards::v1::SharedDefeatDropReceipt>* Rewards::Stub::AsyncClaimSharedDefeatDropRaw(::grpc::ClientContext* context, const ::sf::rewards::v1::ClaimSharedDefeatDropRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncClaimSharedDefeatDropRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
 Rewards::Service::Service() {
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       Rewards_method_names[0],
@@ -72,12 +122,46 @@ Rewards::Service::Service() {
              ::sf::rewards::v1::RewardReceipt* resp) {
                return service->GrantDefeatReward(ctx, req, resp);
              }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      Rewards_method_names[1],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< Rewards::Service, ::sf::rewards::v1::CreateSharedDefeatDropRequest, ::sf::rewards::v1::SharedDefeatDropReceipt, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](Rewards::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::sf::rewards::v1::CreateSharedDefeatDropRequest* req,
+             ::sf::rewards::v1::SharedDefeatDropReceipt* resp) {
+               return service->CreateSharedDefeatDrop(ctx, req, resp);
+             }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      Rewards_method_names[2],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< Rewards::Service, ::sf::rewards::v1::ClaimSharedDefeatDropRequest, ::sf::rewards::v1::SharedDefeatDropReceipt, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](Rewards::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::sf::rewards::v1::ClaimSharedDefeatDropRequest* req,
+             ::sf::rewards::v1::SharedDefeatDropReceipt* resp) {
+               return service->ClaimSharedDefeatDrop(ctx, req, resp);
+             }, this)));
 }
 
 Rewards::Service::~Service() {
 }
 
 ::grpc::Status Rewards::Service::GrantDefeatReward(::grpc::ServerContext* context, const ::sf::rewards::v1::GrantDefeatRewardRequest* request, ::sf::rewards::v1::RewardReceipt* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status Rewards::Service::CreateSharedDefeatDrop(::grpc::ServerContext* context, const ::sf::rewards::v1::CreateSharedDefeatDropRequest* request, ::sf::rewards::v1::SharedDefeatDropReceipt* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status Rewards::Service::ClaimSharedDefeatDrop(::grpc::ServerContext* context, const ::sf::rewards::v1::ClaimSharedDefeatDropRequest* request, ::sf::rewards::v1::SharedDefeatDropReceipt* response) {
   (void) context;
   (void) request;
   (void) response;
