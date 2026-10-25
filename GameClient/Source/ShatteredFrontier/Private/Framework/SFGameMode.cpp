@@ -7,6 +7,7 @@
 #include "Characters/SFE1Character.h"
 #include "Interaction/SFE1InteractionTarget.h"
 #include "Exchange/SFMarketBoardActor.h"
+#include "Inventory/SFRepairStationActor.h"
 #include "Engine/World.h"
 #include "Engine/NetConnection.h"
 #include "Engine/NetDriver.h"
@@ -136,6 +137,14 @@ void ASFGameMode::StartPlay()
     }
     if (GetWorld()->GetMapName().EndsWith(TEXT("Greenlands_Silverbrook")))
     {
+        // Authored blacksmith at [-60,25] m; the south entrance is outside its footprint.
+        // This replicated point gives dedicated servers an interaction anchor without
+        // changing the building, doors or the client-only ambient townsfolk.
+        FHitResult RepairGround;
+        if (GetWorld()->LineTraceSingleByChannel(RepairGround, FVector(-6000,1700,50000),
+            FVector(-6000,1700,-50000), ECC_WorldStatic))
+        { GetWorld()->SpawnActor<ASFRepairStationActor>(RepairGround.Location+FVector(0,0,50), FRotator::ZeroRotator); }
+        else { UE_LOG(LogTemp, Error, TEXT("REPAIR_STATION_GROUND_MISSING Silverbrook")); }
         bool bBoardExists = false;
         for (TActorIterator<ASFMarketBoardActor> It(GetWorld()); It; ++It) { bBoardExists = true; break; }
         if (!bBoardExists)

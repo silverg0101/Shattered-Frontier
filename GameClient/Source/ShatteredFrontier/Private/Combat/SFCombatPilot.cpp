@@ -15,6 +15,8 @@
 #include "Characters/SFE1Character.h"
 #include "Creatures/SFRestAreaVolume.h"
 #include "Framework/SFPlayerController.h"
+#include "Townsfolk/SFTownsfolk.h"
+#include "Inventory/SFRepairStationActor.h"
 #include "Party/SFPartySettings.h"
 #include "Gathering/SFGatheringPilot.h"
 #include "Components/CapsuleComponent.h"
@@ -1218,6 +1220,7 @@ void ASFGameMode::TickCombat()
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     if (FParse::Param(FCommandLine::Get(), TEXT("GreenlandsBoarNetcheck"))) { TickGreenlandsNetcheck(); }
     if (FParse::Param(FCommandLine::Get(), TEXT("GreenlandsDeathNetcheck"))) { TickGreenlandsDeathNetcheck(); }
+    if (FParse::Param(FCommandLine::Get(), TEXT("GreenlandsRepairNetcheck"))) { TickGreenlandsRepairNetcheck(); }
     if (FParse::Param(FCommandLine::Get(), TEXT("GreenlandsArcherNetcheck"))) { TickGreenlandsArcherNetcheck(); }
     if (FParse::Param(FCommandLine::Get(), TEXT("GreenlandsEnergyNetcheck"))) { TickGreenlandsEnergyNetcheck(); }
     if (FParse::Param(FCommandLine::Get(), TEXT("GreenlandsAbilityNetcheck"))) { TickGreenlandsAbilityNetcheck(); }
@@ -1494,6 +1497,29 @@ void ASFGameMode::TickGreenlandsEnergyNetcheck()
         UE_LOG(LogTemp, Display, TEXT("ENERGY_NETCHECK_IMMUNE Cost=%.2f Damage=%d"),
             Before - Driver->GetStamina(), BeforeHealth - Observer->CombatHealth());
         GreenlandsEnergyStage = 8;
+    }
+}
+
+void ASFGameMode::TickGreenlandsRepairNetcheck()
+{
+    if (bGreenlandsRepairPositioned || GetNumPlayers() != 2) { return; }
+    APlayerController* Driver = nullptr;
+    APlayerController* Observer = nullptr;
+    for (auto It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+    {
+        if (ThreatIdentity(It->Get()) == TEXT("chr_dev_alpha")) { Driver = It->Get(); }
+        if (ThreatIdentity(It->Get()) == TEXT("chr_dev_beta")) { Observer = It->Get(); }
+    }
+    if (!Driver || !Observer || !Driver->GetPawn() || !Observer->GetPawn() ||
+        USFCharacterSessionComponent::IsRestoring(Driver) || USFCharacterSessionComponent::IsRestoring(Observer)) { return; }
+    for (TActorIterator<ASFRepairStationActor> It(GetWorld()); It; ++It)
+    {
+        const FVector Near = It->GetActorLocation() + FVector(0,-150,0);
+        Driver->GetPawn()->SetActorLocation(Near, false, nullptr, ETeleportType::TeleportPhysics);
+        Observer->GetPawn()->SetActorLocation(Near + FVector(0, 150, 0), false, nullptr, ETeleportType::TeleportPhysics);
+        bGreenlandsRepairPositioned = true;
+        UE_LOG(LogTemp, Display, TEXT("GREENLANDS_REPAIR_READY Clients=2 Smith=%s"), *It->GetName());
+        return;
     }
 }
 

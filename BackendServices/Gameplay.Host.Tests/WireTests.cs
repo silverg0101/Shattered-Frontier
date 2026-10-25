@@ -21,6 +21,7 @@ using HousingPb = ShatteredFrontier.Housing.V1;
 using GatheringPb = ShatteredFrontier.Gathering.V1;
 using WorldPb = ShatteredFrontier.World.V1;
 using GroupPb = ShatteredFrontier.Group.V1;
+using ExchangePb = ShatteredFrontier.Exchange.V1;
 
 static void Check(bool condition, string message)
 {
@@ -39,6 +40,81 @@ using var channel = GrpcChannel.ForAddress($"http://127.0.0.1:{port}");
 var headers = new Metadata { { "authorization", "Bearer " + token } };
 var bad = new Metadata { { "authorization", "Bearer wrong" } };
 DateTime Deadline() => DateTime.UtcNow.AddSeconds(5);
+
+if (mode is "gear-repair" or "gear-repair-restart")
+{
+    var exchange = new ExchangePb.Exchange.ExchangeClient(channel);
+    using var db = new NpgsqlConnection(connection); db.Open();
+    static void Sql(NpgsqlConnection db, string sql)
+    { using var cmd = new NpgsqlCommand(sql, db); cmd.ExecuteNonQuery(); }
+    static (long Balance, int Current, int Max, int Receipts, int Debits) State(NpgsqlConnection db, string owner, string instance)
+    {
+        using var cmd = new NpgsqlCommand("""
+            SELECT w.balance,i.durability_percent,i.max_durability_percent,
+            (SELECT count(*) FROM inventory.repair_receipts WHERE owner_id=$1),
+            (SELECT count(*) FROM exchange.wallet_entries WHERE owner_id=$1 AND code='repair_cost')
+            FROM exchange.wallets w JOIN inventory.item_instances i ON i.instance_id=$2 WHERE w.owner_id=$1
+            """, db);
+        cmd.Parameters.AddWithValue(owner); cmd.Parameters.AddWithValue(instance);
+        using var row = cmd.ExecuteReader(); Check(row.Read(), "Gear repair state exists.");
+        return (row.GetInt64(0),row.GetInt32(1),row.GetInt32(2),Convert.ToInt32(row.GetInt64(3)),Convert.ToInt32(row.GetInt64(4)));
+    }
+    const string op = "58d518be-d038-4e6b-871d-ab082aac0b21";
+    if (mode == "gear-repair")
+    {
+        Sql(db, """
+            INSERT INTO inventory.containers(id,owner_kind,owner_id,kind,capacity) VALUES
+            ('ctn_repair_equipped',0,'chr_repair',0,16),('ctn_repair_poor',0,'chr_repair_poor',1,16),
+            ('ctn_repair_single',0,'chr_repair_single',1,16);
+            INSERT INTO inventory.entries(container_id,definition_id,quantity) VALUES
+            ('ctn_repair_equipped','item/hide_cap',1),('ctn_repair_equipped','item/iron_shortsword',1),
+            ('ctn_repair_poor','item/hide_cap',1),('ctn_repair_single','item/hide_cap',1);
+            INSERT INTO inventory.item_instances(instance_id,container_id,definition_id,durability_percent) VALUES
+            ('itm_repair_broken','ctn_repair_equipped','item/hide_cap',0),
+            ('itm_repair_worn','ctn_repair_equipped','item/iron_shortsword',40),
+            ('itm_repair_poor','ctn_repair_poor','item/hide_cap',0),
+            ('itm_repair_single','ctn_repair_single','item/hide_cap',40);
+            INSERT INTO exchange.wallets(owner_id,balance) VALUES
+            ('chr_repair',5000),('chr_repair_poor',0),('chr_repair_single',5000);
+            """);
+        var quote = exchange.QuoteRepair(new ExchangePb.RepairQuoteRequest { OwnerId="chr_repair", AllEquipped=true },headers,Deadline());
+        Check(quote.ItemCount == 2 && quote.CostCopper > 0, "All equipped quote prices two damaged copies.");
+        var request = new ExchangePb.RepairGearRequest { OperationId=op, QuoteId=quote.QuoteId, OwnerId="chr_repair" };
+        var receipt = exchange.RepairGear(request,headers,Deadline());
+        var state = State(db,"chr_repair","itm_repair_broken");
+        Check(receipt.Committed && state.Balance == 5000-quote.CostCopper && state.Debits == 1,
+            "Repair fee debited once in the Exchange ledger.");
+        Check(state.Current == 98 && state.Max == 98 && State(db,"chr_repair","itm_repair_worn").Current == 100,
+            "Broken and worn gear restore to their maximum durability; broken maximum loses two points.");
+        var replay = exchange.RepairGear(request,headers,Deadline());
+        state = State(db,"chr_repair","itm_repair_broken");
+        Check(replay.CostCopper == receipt.CostCopper && state.Debits == 1 && state.Receipts == 1 && state.Balance == 5000-quote.CostCopper,
+            "Repair request replay is idempotent.");
+        var poor = exchange.QuoteRepair(new ExchangePb.RepairQuoteRequest { OwnerId="chr_repair_poor", InstanceId="itm_repair_poor" },headers,Deadline());
+        Code(() => exchange.RepairGear(new ExchangePb.RepairGearRequest { OperationId=Guid.NewGuid().ToString(), QuoteId=poor.QuoteId,
+            OwnerId="chr_repair_poor" },headers,Deadline()),StatusCode.FailedPrecondition);
+        Check(State(db,"chr_repair_poor","itm_repair_poor").Current == 0 && State(db,"chr_repair_poor","itm_repair_poor").Debits == 0,
+            "Insufficient funds refuse repair without changing gear.");
+        var single = exchange.QuoteRepair(new ExchangePb.RepairQuoteRequest { OwnerId="chr_repair_single", InstanceId="itm_repair_single" },headers,Deadline());
+        exchange.RepairGear(new ExchangePb.RepairGearRequest { OperationId=Guid.NewGuid().ToString(), QuoteId=single.QuoteId,
+            OwnerId="chr_repair_single" },headers,Deadline());
+        Check(State(db,"chr_repair_single","itm_repair_single").Current == 100,
+            "One selected copy can be repaired.");
+        Console.WriteLine("PASS gear repair: 5 checks");
+    }
+    else
+    {
+        using var cmd = new NpgsqlCommand("SELECT quote_id FROM inventory.repair_receipts WHERE operation_id=$1",db);
+        cmd.Parameters.AddWithValue(op); var quoteId = (string?)cmd.ExecuteScalar() ?? throw new Exception("Repair receipt lost on restart.");
+        var receipt = exchange.RepairGear(new ExchangePb.RepairGearRequest { OperationId=op, QuoteId=quoteId,
+            OwnerId="chr_repair" },headers,Deadline());
+        var state = State(db,"chr_repair","itm_repair_broken");
+        Check(receipt.Committed && state.Current == 98 && state.Debits == 1 && state.Receipts == 1,
+            "PostgreSQL restart preserves the repair and its replay receipt.");
+        Console.WriteLine("PASS gear repair restart: 1 check");
+    }
+    return;
+}
 
 if (mode == "raid-rewards")
 {

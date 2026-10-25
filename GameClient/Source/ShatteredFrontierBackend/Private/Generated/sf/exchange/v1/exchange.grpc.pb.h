@@ -45,6 +45,20 @@ class Exchange final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::exchange::v1::WalletReply>> PrepareAsyncWallet(::grpc::ClientContext* context, const ::sf::exchange::v1::WalletRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::exchange::v1::WalletReply>>(PrepareAsyncWalletRaw(context, request, cq));
     }
+    virtual ::grpc::Status QuoteRepair(::grpc::ClientContext* context, const ::sf::exchange::v1::RepairQuoteRequest& request, ::sf::exchange::v1::RepairQuoteReply* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::exchange::v1::RepairQuoteReply>> AsyncQuoteRepair(::grpc::ClientContext* context, const ::sf::exchange::v1::RepairQuoteRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::exchange::v1::RepairQuoteReply>>(AsyncQuoteRepairRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::exchange::v1::RepairQuoteReply>> PrepareAsyncQuoteRepair(::grpc::ClientContext* context, const ::sf::exchange::v1::RepairQuoteRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::exchange::v1::RepairQuoteReply>>(PrepareAsyncQuoteRepairRaw(context, request, cq));
+    }
+    virtual ::grpc::Status RepairGear(::grpc::ClientContext* context, const ::sf::exchange::v1::RepairGearRequest& request, ::sf::exchange::v1::RepairGearReply* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::exchange::v1::RepairGearReply>> AsyncRepairGear(::grpc::ClientContext* context, const ::sf::exchange::v1::RepairGearRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::exchange::v1::RepairGearReply>>(AsyncRepairGearRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::exchange::v1::RepairGearReply>> PrepareAsyncRepairGear(::grpc::ClientContext* context, const ::sf::exchange::v1::RepairGearRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::exchange::v1::RepairGearReply>>(PrepareAsyncRepairGearRaw(context, request, cq));
+    }
     virtual ::grpc::Status OfferTrade(::grpc::ClientContext* context, const ::sf::exchange::v1::TradeOfferRequest& request, ::sf::exchange::v1::ExchangeReply* response) = 0;
     std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::exchange::v1::ExchangeReply>> AsyncOfferTrade(::grpc::ClientContext* context, const ::sf::exchange::v1::TradeOfferRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::exchange::v1::ExchangeReply>>(AsyncOfferTradeRaw(context, request, cq));
@@ -106,6 +120,10 @@ class Exchange final {
       virtual ~async_interface() {}
       virtual void Wallet(::grpc::ClientContext* context, const ::sf::exchange::v1::WalletRequest* request, ::sf::exchange::v1::WalletReply* response, std::function<void(::grpc::Status)>) = 0;
       virtual void Wallet(::grpc::ClientContext* context, const ::sf::exchange::v1::WalletRequest* request, ::sf::exchange::v1::WalletReply* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void QuoteRepair(::grpc::ClientContext* context, const ::sf::exchange::v1::RepairQuoteRequest* request, ::sf::exchange::v1::RepairQuoteReply* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void QuoteRepair(::grpc::ClientContext* context, const ::sf::exchange::v1::RepairQuoteRequest* request, ::sf::exchange::v1::RepairQuoteReply* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void RepairGear(::grpc::ClientContext* context, const ::sf::exchange::v1::RepairGearRequest* request, ::sf::exchange::v1::RepairGearReply* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void RepairGear(::grpc::ClientContext* context, const ::sf::exchange::v1::RepairGearRequest* request, ::sf::exchange::v1::RepairGearReply* response, ::grpc::ClientUnaryReactor* reactor) = 0;
       virtual void OfferTrade(::grpc::ClientContext* context, const ::sf::exchange::v1::TradeOfferRequest* request, ::sf::exchange::v1::ExchangeReply* response, std::function<void(::grpc::Status)>) = 0;
       virtual void OfferTrade(::grpc::ClientContext* context, const ::sf::exchange::v1::TradeOfferRequest* request, ::sf::exchange::v1::ExchangeReply* response, ::grpc::ClientUnaryReactor* reactor) = 0;
       virtual void AcceptTrade(::grpc::ClientContext* context, const ::sf::exchange::v1::TradeActionRequest* request, ::sf::exchange::v1::ExchangeReply* response, std::function<void(::grpc::Status)>) = 0;
@@ -129,6 +147,10 @@ class Exchange final {
    private:
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::exchange::v1::WalletReply>* AsyncWalletRaw(::grpc::ClientContext* context, const ::sf::exchange::v1::WalletRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::exchange::v1::WalletReply>* PrepareAsyncWalletRaw(::grpc::ClientContext* context, const ::sf::exchange::v1::WalletRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::exchange::v1::RepairQuoteReply>* AsyncQuoteRepairRaw(::grpc::ClientContext* context, const ::sf::exchange::v1::RepairQuoteRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::exchange::v1::RepairQuoteReply>* PrepareAsyncQuoteRepairRaw(::grpc::ClientContext* context, const ::sf::exchange::v1::RepairQuoteRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::exchange::v1::RepairGearReply>* AsyncRepairGearRaw(::grpc::ClientContext* context, const ::sf::exchange::v1::RepairGearRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::exchange::v1::RepairGearReply>* PrepareAsyncRepairGearRaw(::grpc::ClientContext* context, const ::sf::exchange::v1::RepairGearRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::exchange::v1::ExchangeReply>* AsyncOfferTradeRaw(::grpc::ClientContext* context, const ::sf::exchange::v1::TradeOfferRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::exchange::v1::ExchangeReply>* PrepareAsyncOfferTradeRaw(::grpc::ClientContext* context, const ::sf::exchange::v1::TradeOfferRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::exchange::v1::ExchangeReply>* AsyncAcceptTradeRaw(::grpc::ClientContext* context, const ::sf::exchange::v1::TradeActionRequest& request, ::grpc::CompletionQueue* cq) = 0;
@@ -155,6 +177,20 @@ class Exchange final {
     }
     std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::exchange::v1::WalletReply>> PrepareAsyncWallet(::grpc::ClientContext* context, const ::sf::exchange::v1::WalletRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::exchange::v1::WalletReply>>(PrepareAsyncWalletRaw(context, request, cq));
+    }
+    ::grpc::Status QuoteRepair(::grpc::ClientContext* context, const ::sf::exchange::v1::RepairQuoteRequest& request, ::sf::exchange::v1::RepairQuoteReply* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::exchange::v1::RepairQuoteReply>> AsyncQuoteRepair(::grpc::ClientContext* context, const ::sf::exchange::v1::RepairQuoteRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::exchange::v1::RepairQuoteReply>>(AsyncQuoteRepairRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::exchange::v1::RepairQuoteReply>> PrepareAsyncQuoteRepair(::grpc::ClientContext* context, const ::sf::exchange::v1::RepairQuoteRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::exchange::v1::RepairQuoteReply>>(PrepareAsyncQuoteRepairRaw(context, request, cq));
+    }
+    ::grpc::Status RepairGear(::grpc::ClientContext* context, const ::sf::exchange::v1::RepairGearRequest& request, ::sf::exchange::v1::RepairGearReply* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::exchange::v1::RepairGearReply>> AsyncRepairGear(::grpc::ClientContext* context, const ::sf::exchange::v1::RepairGearRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::exchange::v1::RepairGearReply>>(AsyncRepairGearRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::exchange::v1::RepairGearReply>> PrepareAsyncRepairGear(::grpc::ClientContext* context, const ::sf::exchange::v1::RepairGearRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::exchange::v1::RepairGearReply>>(PrepareAsyncRepairGearRaw(context, request, cq));
     }
     ::grpc::Status OfferTrade(::grpc::ClientContext* context, const ::sf::exchange::v1::TradeOfferRequest& request, ::sf::exchange::v1::ExchangeReply* response) override;
     std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::exchange::v1::ExchangeReply>> AsyncOfferTrade(::grpc::ClientContext* context, const ::sf::exchange::v1::TradeOfferRequest& request, ::grpc::CompletionQueue* cq) {
@@ -217,6 +253,10 @@ class Exchange final {
      public:
       void Wallet(::grpc::ClientContext* context, const ::sf::exchange::v1::WalletRequest* request, ::sf::exchange::v1::WalletReply* response, std::function<void(::grpc::Status)>) override;
       void Wallet(::grpc::ClientContext* context, const ::sf::exchange::v1::WalletRequest* request, ::sf::exchange::v1::WalletReply* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void QuoteRepair(::grpc::ClientContext* context, const ::sf::exchange::v1::RepairQuoteRequest* request, ::sf::exchange::v1::RepairQuoteReply* response, std::function<void(::grpc::Status)>) override;
+      void QuoteRepair(::grpc::ClientContext* context, const ::sf::exchange::v1::RepairQuoteRequest* request, ::sf::exchange::v1::RepairQuoteReply* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void RepairGear(::grpc::ClientContext* context, const ::sf::exchange::v1::RepairGearRequest* request, ::sf::exchange::v1::RepairGearReply* response, std::function<void(::grpc::Status)>) override;
+      void RepairGear(::grpc::ClientContext* context, const ::sf::exchange::v1::RepairGearRequest* request, ::sf::exchange::v1::RepairGearReply* response, ::grpc::ClientUnaryReactor* reactor) override;
       void OfferTrade(::grpc::ClientContext* context, const ::sf::exchange::v1::TradeOfferRequest* request, ::sf::exchange::v1::ExchangeReply* response, std::function<void(::grpc::Status)>) override;
       void OfferTrade(::grpc::ClientContext* context, const ::sf::exchange::v1::TradeOfferRequest* request, ::sf::exchange::v1::ExchangeReply* response, ::grpc::ClientUnaryReactor* reactor) override;
       void AcceptTrade(::grpc::ClientContext* context, const ::sf::exchange::v1::TradeActionRequest* request, ::sf::exchange::v1::ExchangeReply* response, std::function<void(::grpc::Status)>) override;
@@ -246,6 +286,10 @@ class Exchange final {
     class async async_stub_{this};
     ::grpc::ClientAsyncResponseReader< ::sf::exchange::v1::WalletReply>* AsyncWalletRaw(::grpc::ClientContext* context, const ::sf::exchange::v1::WalletRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::sf::exchange::v1::WalletReply>* PrepareAsyncWalletRaw(::grpc::ClientContext* context, const ::sf::exchange::v1::WalletRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::sf::exchange::v1::RepairQuoteReply>* AsyncQuoteRepairRaw(::grpc::ClientContext* context, const ::sf::exchange::v1::RepairQuoteRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::sf::exchange::v1::RepairQuoteReply>* PrepareAsyncQuoteRepairRaw(::grpc::ClientContext* context, const ::sf::exchange::v1::RepairQuoteRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::sf::exchange::v1::RepairGearReply>* AsyncRepairGearRaw(::grpc::ClientContext* context, const ::sf::exchange::v1::RepairGearRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::sf::exchange::v1::RepairGearReply>* PrepareAsyncRepairGearRaw(::grpc::ClientContext* context, const ::sf::exchange::v1::RepairGearRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::sf::exchange::v1::ExchangeReply>* AsyncOfferTradeRaw(::grpc::ClientContext* context, const ::sf::exchange::v1::TradeOfferRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::sf::exchange::v1::ExchangeReply>* PrepareAsyncOfferTradeRaw(::grpc::ClientContext* context, const ::sf::exchange::v1::TradeOfferRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::sf::exchange::v1::ExchangeReply>* AsyncAcceptTradeRaw(::grpc::ClientContext* context, const ::sf::exchange::v1::TradeActionRequest& request, ::grpc::CompletionQueue* cq) override;
@@ -263,6 +307,8 @@ class Exchange final {
     ::grpc::ClientAsyncResponseReader< ::sf::exchange::v1::ListTradesReply>* AsyncListTradesRaw(::grpc::ClientContext* context, const ::sf::exchange::v1::ListTradesRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::sf::exchange::v1::ListTradesReply>* PrepareAsyncListTradesRaw(::grpc::ClientContext* context, const ::sf::exchange::v1::ListTradesRequest& request, ::grpc::CompletionQueue* cq) override;
     const ::grpc::internal::RpcMethod rpcmethod_Wallet_;
+    const ::grpc::internal::RpcMethod rpcmethod_QuoteRepair_;
+    const ::grpc::internal::RpcMethod rpcmethod_RepairGear_;
     const ::grpc::internal::RpcMethod rpcmethod_OfferTrade_;
     const ::grpc::internal::RpcMethod rpcmethod_AcceptTrade_;
     const ::grpc::internal::RpcMethod rpcmethod_CancelTrade_;
@@ -279,6 +325,8 @@ class Exchange final {
     Service();
     virtual ~Service();
     virtual ::grpc::Status Wallet(::grpc::ServerContext* context, const ::sf::exchange::v1::WalletRequest* request, ::sf::exchange::v1::WalletReply* response);
+    virtual ::grpc::Status QuoteRepair(::grpc::ServerContext* context, const ::sf::exchange::v1::RepairQuoteRequest* request, ::sf::exchange::v1::RepairQuoteReply* response);
+    virtual ::grpc::Status RepairGear(::grpc::ServerContext* context, const ::sf::exchange::v1::RepairGearRequest* request, ::sf::exchange::v1::RepairGearReply* response);
     virtual ::grpc::Status OfferTrade(::grpc::ServerContext* context, const ::sf::exchange::v1::TradeOfferRequest* request, ::sf::exchange::v1::ExchangeReply* response);
     virtual ::grpc::Status AcceptTrade(::grpc::ServerContext* context, const ::sf::exchange::v1::TradeActionRequest* request, ::sf::exchange::v1::ExchangeReply* response);
     virtual ::grpc::Status CancelTrade(::grpc::ServerContext* context, const ::sf::exchange::v1::TradeActionRequest* request, ::sf::exchange::v1::ExchangeReply* response);
@@ -309,12 +357,52 @@ class Exchange final {
     }
   };
   template <class BaseClass>
+  class WithAsyncMethod_QuoteRepair : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_QuoteRepair() {
+      ::grpc::Service::MarkMethodAsync(1);
+    }
+    ~WithAsyncMethod_QuoteRepair() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status QuoteRepair(::grpc::ServerContext* /*context*/, const ::sf::exchange::v1::RepairQuoteRequest* /*request*/, ::sf::exchange::v1::RepairQuoteReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestQuoteRepair(::grpc::ServerContext* context, ::sf::exchange::v1::RepairQuoteRequest* request, ::grpc::ServerAsyncResponseWriter< ::sf::exchange::v1::RepairQuoteReply>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(1, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_RepairGear : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_RepairGear() {
+      ::grpc::Service::MarkMethodAsync(2);
+    }
+    ~WithAsyncMethod_RepairGear() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status RepairGear(::grpc::ServerContext* /*context*/, const ::sf::exchange::v1::RepairGearRequest* /*request*/, ::sf::exchange::v1::RepairGearReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestRepairGear(::grpc::ServerContext* context, ::sf::exchange::v1::RepairGearRequest* request, ::grpc::ServerAsyncResponseWriter< ::sf::exchange::v1::RepairGearReply>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(2, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
   class WithAsyncMethod_OfferTrade : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_OfferTrade() {
-      ::grpc::Service::MarkMethodAsync(1);
+      ::grpc::Service::MarkMethodAsync(3);
     }
     ~WithAsyncMethod_OfferTrade() override {
       BaseClassMustBeDerivedFromService(this);
@@ -325,7 +413,7 @@ class Exchange final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestOfferTrade(::grpc::ServerContext* context, ::sf::exchange::v1::TradeOfferRequest* request, ::grpc::ServerAsyncResponseWriter< ::sf::exchange::v1::ExchangeReply>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(1, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(3, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -334,7 +422,7 @@ class Exchange final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_AcceptTrade() {
-      ::grpc::Service::MarkMethodAsync(2);
+      ::grpc::Service::MarkMethodAsync(4);
     }
     ~WithAsyncMethod_AcceptTrade() override {
       BaseClassMustBeDerivedFromService(this);
@@ -345,7 +433,7 @@ class Exchange final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestAcceptTrade(::grpc::ServerContext* context, ::sf::exchange::v1::TradeActionRequest* request, ::grpc::ServerAsyncResponseWriter< ::sf::exchange::v1::ExchangeReply>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(2, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(4, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -354,7 +442,7 @@ class Exchange final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_CancelTrade() {
-      ::grpc::Service::MarkMethodAsync(3);
+      ::grpc::Service::MarkMethodAsync(5);
     }
     ~WithAsyncMethod_CancelTrade() override {
       BaseClassMustBeDerivedFromService(this);
@@ -365,7 +453,7 @@ class Exchange final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestCancelTrade(::grpc::ServerContext* context, ::sf::exchange::v1::TradeActionRequest* request, ::grpc::ServerAsyncResponseWriter< ::sf::exchange::v1::ExchangeReply>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(3, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(5, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -374,7 +462,7 @@ class Exchange final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_ListItem() {
-      ::grpc::Service::MarkMethodAsync(4);
+      ::grpc::Service::MarkMethodAsync(6);
     }
     ~WithAsyncMethod_ListItem() override {
       BaseClassMustBeDerivedFromService(this);
@@ -385,7 +473,7 @@ class Exchange final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestListItem(::grpc::ServerContext* context, ::sf::exchange::v1::ListItemRequest* request, ::grpc::ServerAsyncResponseWriter< ::sf::exchange::v1::ExchangeReply>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(4, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(6, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -394,7 +482,7 @@ class Exchange final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_BuyListing() {
-      ::grpc::Service::MarkMethodAsync(5);
+      ::grpc::Service::MarkMethodAsync(7);
     }
     ~WithAsyncMethod_BuyListing() override {
       BaseClassMustBeDerivedFromService(this);
@@ -405,7 +493,7 @@ class Exchange final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestBuyListing(::grpc::ServerContext* context, ::sf::exchange::v1::BuyListingRequest* request, ::grpc::ServerAsyncResponseWriter< ::sf::exchange::v1::ExchangeReply>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(5, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(7, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -414,7 +502,7 @@ class Exchange final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_CancelListing() {
-      ::grpc::Service::MarkMethodAsync(6);
+      ::grpc::Service::MarkMethodAsync(8);
     }
     ~WithAsyncMethod_CancelListing() override {
       BaseClassMustBeDerivedFromService(this);
@@ -425,7 +513,7 @@ class Exchange final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestCancelListing(::grpc::ServerContext* context, ::sf::exchange::v1::ListingActionRequest* request, ::grpc::ServerAsyncResponseWriter< ::sf::exchange::v1::ExchangeReply>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(6, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(8, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -434,7 +522,7 @@ class Exchange final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_ListListings() {
-      ::grpc::Service::MarkMethodAsync(7);
+      ::grpc::Service::MarkMethodAsync(9);
     }
     ~WithAsyncMethod_ListListings() override {
       BaseClassMustBeDerivedFromService(this);
@@ -445,7 +533,7 @@ class Exchange final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestListListings(::grpc::ServerContext* context, ::sf::exchange::v1::ListListingsRequest* request, ::grpc::ServerAsyncResponseWriter< ::sf::exchange::v1::ListListingsReply>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(7, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(9, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -454,7 +542,7 @@ class Exchange final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_ListTrades() {
-      ::grpc::Service::MarkMethodAsync(8);
+      ::grpc::Service::MarkMethodAsync(10);
     }
     ~WithAsyncMethod_ListTrades() override {
       BaseClassMustBeDerivedFromService(this);
@@ -465,10 +553,10 @@ class Exchange final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestListTrades(::grpc::ServerContext* context, ::sf::exchange::v1::ListTradesRequest* request, ::grpc::ServerAsyncResponseWriter< ::sf::exchange::v1::ListTradesReply>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(8, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(10, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
-  typedef WithAsyncMethod_Wallet<WithAsyncMethod_OfferTrade<WithAsyncMethod_AcceptTrade<WithAsyncMethod_CancelTrade<WithAsyncMethod_ListItem<WithAsyncMethod_BuyListing<WithAsyncMethod_CancelListing<WithAsyncMethod_ListListings<WithAsyncMethod_ListTrades<Service > > > > > > > > > AsyncService;
+  typedef WithAsyncMethod_Wallet<WithAsyncMethod_QuoteRepair<WithAsyncMethod_RepairGear<WithAsyncMethod_OfferTrade<WithAsyncMethod_AcceptTrade<WithAsyncMethod_CancelTrade<WithAsyncMethod_ListItem<WithAsyncMethod_BuyListing<WithAsyncMethod_CancelListing<WithAsyncMethod_ListListings<WithAsyncMethod_ListTrades<Service > > > > > > > > > > > AsyncService;
   template <class BaseClass>
   class WithCallbackMethod_Wallet : public BaseClass {
    private:
@@ -497,18 +585,72 @@ class Exchange final {
       ::grpc::CallbackServerContext* /*context*/, const ::sf::exchange::v1::WalletRequest* /*request*/, ::sf::exchange::v1::WalletReply* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
+  class WithCallbackMethod_QuoteRepair : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_QuoteRepair() {
+      ::grpc::Service::MarkMethodCallback(1,
+          new ::grpc::internal::CallbackUnaryHandler< ::sf::exchange::v1::RepairQuoteRequest, ::sf::exchange::v1::RepairQuoteReply>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::sf::exchange::v1::RepairQuoteRequest* request, ::sf::exchange::v1::RepairQuoteReply* response) { return this->QuoteRepair(context, request, response); }));}
+    void SetMessageAllocatorFor_QuoteRepair(
+        ::grpc::MessageAllocator< ::sf::exchange::v1::RepairQuoteRequest, ::sf::exchange::v1::RepairQuoteReply>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(1);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::sf::exchange::v1::RepairQuoteRequest, ::sf::exchange::v1::RepairQuoteReply>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_QuoteRepair() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status QuoteRepair(::grpc::ServerContext* /*context*/, const ::sf::exchange::v1::RepairQuoteRequest* /*request*/, ::sf::exchange::v1::RepairQuoteReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* QuoteRepair(
+      ::grpc::CallbackServerContext* /*context*/, const ::sf::exchange::v1::RepairQuoteRequest* /*request*/, ::sf::exchange::v1::RepairQuoteReply* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithCallbackMethod_RepairGear : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_RepairGear() {
+      ::grpc::Service::MarkMethodCallback(2,
+          new ::grpc::internal::CallbackUnaryHandler< ::sf::exchange::v1::RepairGearRequest, ::sf::exchange::v1::RepairGearReply>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::sf::exchange::v1::RepairGearRequest* request, ::sf::exchange::v1::RepairGearReply* response) { return this->RepairGear(context, request, response); }));}
+    void SetMessageAllocatorFor_RepairGear(
+        ::grpc::MessageAllocator< ::sf::exchange::v1::RepairGearRequest, ::sf::exchange::v1::RepairGearReply>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(2);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::sf::exchange::v1::RepairGearRequest, ::sf::exchange::v1::RepairGearReply>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_RepairGear() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status RepairGear(::grpc::ServerContext* /*context*/, const ::sf::exchange::v1::RepairGearRequest* /*request*/, ::sf::exchange::v1::RepairGearReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* RepairGear(
+      ::grpc::CallbackServerContext* /*context*/, const ::sf::exchange::v1::RepairGearRequest* /*request*/, ::sf::exchange::v1::RepairGearReply* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
   class WithCallbackMethod_OfferTrade : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithCallbackMethod_OfferTrade() {
-      ::grpc::Service::MarkMethodCallback(1,
+      ::grpc::Service::MarkMethodCallback(3,
           new ::grpc::internal::CallbackUnaryHandler< ::sf::exchange::v1::TradeOfferRequest, ::sf::exchange::v1::ExchangeReply>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::sf::exchange::v1::TradeOfferRequest* request, ::sf::exchange::v1::ExchangeReply* response) { return this->OfferTrade(context, request, response); }));}
     void SetMessageAllocatorFor_OfferTrade(
         ::grpc::MessageAllocator< ::sf::exchange::v1::TradeOfferRequest, ::sf::exchange::v1::ExchangeReply>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(1);
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(3);
       static_cast<::grpc::internal::CallbackUnaryHandler< ::sf::exchange::v1::TradeOfferRequest, ::sf::exchange::v1::ExchangeReply>*>(handler)
               ->SetMessageAllocator(allocator);
     }
@@ -529,13 +671,13 @@ class Exchange final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithCallbackMethod_AcceptTrade() {
-      ::grpc::Service::MarkMethodCallback(2,
+      ::grpc::Service::MarkMethodCallback(4,
           new ::grpc::internal::CallbackUnaryHandler< ::sf::exchange::v1::TradeActionRequest, ::sf::exchange::v1::ExchangeReply>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::sf::exchange::v1::TradeActionRequest* request, ::sf::exchange::v1::ExchangeReply* response) { return this->AcceptTrade(context, request, response); }));}
     void SetMessageAllocatorFor_AcceptTrade(
         ::grpc::MessageAllocator< ::sf::exchange::v1::TradeActionRequest, ::sf::exchange::v1::ExchangeReply>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(2);
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(4);
       static_cast<::grpc::internal::CallbackUnaryHandler< ::sf::exchange::v1::TradeActionRequest, ::sf::exchange::v1::ExchangeReply>*>(handler)
               ->SetMessageAllocator(allocator);
     }
@@ -556,13 +698,13 @@ class Exchange final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithCallbackMethod_CancelTrade() {
-      ::grpc::Service::MarkMethodCallback(3,
+      ::grpc::Service::MarkMethodCallback(5,
           new ::grpc::internal::CallbackUnaryHandler< ::sf::exchange::v1::TradeActionRequest, ::sf::exchange::v1::ExchangeReply>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::sf::exchange::v1::TradeActionRequest* request, ::sf::exchange::v1::ExchangeReply* response) { return this->CancelTrade(context, request, response); }));}
     void SetMessageAllocatorFor_CancelTrade(
         ::grpc::MessageAllocator< ::sf::exchange::v1::TradeActionRequest, ::sf::exchange::v1::ExchangeReply>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(3);
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(5);
       static_cast<::grpc::internal::CallbackUnaryHandler< ::sf::exchange::v1::TradeActionRequest, ::sf::exchange::v1::ExchangeReply>*>(handler)
               ->SetMessageAllocator(allocator);
     }
@@ -583,13 +725,13 @@ class Exchange final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithCallbackMethod_ListItem() {
-      ::grpc::Service::MarkMethodCallback(4,
+      ::grpc::Service::MarkMethodCallback(6,
           new ::grpc::internal::CallbackUnaryHandler< ::sf::exchange::v1::ListItemRequest, ::sf::exchange::v1::ExchangeReply>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::sf::exchange::v1::ListItemRequest* request, ::sf::exchange::v1::ExchangeReply* response) { return this->ListItem(context, request, response); }));}
     void SetMessageAllocatorFor_ListItem(
         ::grpc::MessageAllocator< ::sf::exchange::v1::ListItemRequest, ::sf::exchange::v1::ExchangeReply>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(4);
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(6);
       static_cast<::grpc::internal::CallbackUnaryHandler< ::sf::exchange::v1::ListItemRequest, ::sf::exchange::v1::ExchangeReply>*>(handler)
               ->SetMessageAllocator(allocator);
     }
@@ -610,13 +752,13 @@ class Exchange final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithCallbackMethod_BuyListing() {
-      ::grpc::Service::MarkMethodCallback(5,
+      ::grpc::Service::MarkMethodCallback(7,
           new ::grpc::internal::CallbackUnaryHandler< ::sf::exchange::v1::BuyListingRequest, ::sf::exchange::v1::ExchangeReply>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::sf::exchange::v1::BuyListingRequest* request, ::sf::exchange::v1::ExchangeReply* response) { return this->BuyListing(context, request, response); }));}
     void SetMessageAllocatorFor_BuyListing(
         ::grpc::MessageAllocator< ::sf::exchange::v1::BuyListingRequest, ::sf::exchange::v1::ExchangeReply>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(5);
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(7);
       static_cast<::grpc::internal::CallbackUnaryHandler< ::sf::exchange::v1::BuyListingRequest, ::sf::exchange::v1::ExchangeReply>*>(handler)
               ->SetMessageAllocator(allocator);
     }
@@ -637,13 +779,13 @@ class Exchange final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithCallbackMethod_CancelListing() {
-      ::grpc::Service::MarkMethodCallback(6,
+      ::grpc::Service::MarkMethodCallback(8,
           new ::grpc::internal::CallbackUnaryHandler< ::sf::exchange::v1::ListingActionRequest, ::sf::exchange::v1::ExchangeReply>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::sf::exchange::v1::ListingActionRequest* request, ::sf::exchange::v1::ExchangeReply* response) { return this->CancelListing(context, request, response); }));}
     void SetMessageAllocatorFor_CancelListing(
         ::grpc::MessageAllocator< ::sf::exchange::v1::ListingActionRequest, ::sf::exchange::v1::ExchangeReply>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(6);
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(8);
       static_cast<::grpc::internal::CallbackUnaryHandler< ::sf::exchange::v1::ListingActionRequest, ::sf::exchange::v1::ExchangeReply>*>(handler)
               ->SetMessageAllocator(allocator);
     }
@@ -664,13 +806,13 @@ class Exchange final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithCallbackMethod_ListListings() {
-      ::grpc::Service::MarkMethodCallback(7,
+      ::grpc::Service::MarkMethodCallback(9,
           new ::grpc::internal::CallbackUnaryHandler< ::sf::exchange::v1::ListListingsRequest, ::sf::exchange::v1::ListListingsReply>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::sf::exchange::v1::ListListingsRequest* request, ::sf::exchange::v1::ListListingsReply* response) { return this->ListListings(context, request, response); }));}
     void SetMessageAllocatorFor_ListListings(
         ::grpc::MessageAllocator< ::sf::exchange::v1::ListListingsRequest, ::sf::exchange::v1::ListListingsReply>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(7);
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(9);
       static_cast<::grpc::internal::CallbackUnaryHandler< ::sf::exchange::v1::ListListingsRequest, ::sf::exchange::v1::ListListingsReply>*>(handler)
               ->SetMessageAllocator(allocator);
     }
@@ -691,13 +833,13 @@ class Exchange final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithCallbackMethod_ListTrades() {
-      ::grpc::Service::MarkMethodCallback(8,
+      ::grpc::Service::MarkMethodCallback(10,
           new ::grpc::internal::CallbackUnaryHandler< ::sf::exchange::v1::ListTradesRequest, ::sf::exchange::v1::ListTradesReply>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::sf::exchange::v1::ListTradesRequest* request, ::sf::exchange::v1::ListTradesReply* response) { return this->ListTrades(context, request, response); }));}
     void SetMessageAllocatorFor_ListTrades(
         ::grpc::MessageAllocator< ::sf::exchange::v1::ListTradesRequest, ::sf::exchange::v1::ListTradesReply>* allocator) {
-      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(8);
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(10);
       static_cast<::grpc::internal::CallbackUnaryHandler< ::sf::exchange::v1::ListTradesRequest, ::sf::exchange::v1::ListTradesReply>*>(handler)
               ->SetMessageAllocator(allocator);
     }
@@ -712,7 +854,7 @@ class Exchange final {
     virtual ::grpc::ServerUnaryReactor* ListTrades(
       ::grpc::CallbackServerContext* /*context*/, const ::sf::exchange::v1::ListTradesRequest* /*request*/, ::sf::exchange::v1::ListTradesReply* /*response*/)  { return nullptr; }
   };
-  typedef WithCallbackMethod_Wallet<WithCallbackMethod_OfferTrade<WithCallbackMethod_AcceptTrade<WithCallbackMethod_CancelTrade<WithCallbackMethod_ListItem<WithCallbackMethod_BuyListing<WithCallbackMethod_CancelListing<WithCallbackMethod_ListListings<WithCallbackMethod_ListTrades<Service > > > > > > > > > CallbackService;
+  typedef WithCallbackMethod_Wallet<WithCallbackMethod_QuoteRepair<WithCallbackMethod_RepairGear<WithCallbackMethod_OfferTrade<WithCallbackMethod_AcceptTrade<WithCallbackMethod_CancelTrade<WithCallbackMethod_ListItem<WithCallbackMethod_BuyListing<WithCallbackMethod_CancelListing<WithCallbackMethod_ListListings<WithCallbackMethod_ListTrades<Service > > > > > > > > > > > CallbackService;
   typedef CallbackService ExperimentalCallbackService;
   template <class BaseClass>
   class WithGenericMethod_Wallet : public BaseClass {
@@ -732,12 +874,46 @@ class Exchange final {
     }
   };
   template <class BaseClass>
+  class WithGenericMethod_QuoteRepair : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_QuoteRepair() {
+      ::grpc::Service::MarkMethodGeneric(1);
+    }
+    ~WithGenericMethod_QuoteRepair() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status QuoteRepair(::grpc::ServerContext* /*context*/, const ::sf::exchange::v1::RepairQuoteRequest* /*request*/, ::sf::exchange::v1::RepairQuoteReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_RepairGear : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_RepairGear() {
+      ::grpc::Service::MarkMethodGeneric(2);
+    }
+    ~WithGenericMethod_RepairGear() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status RepairGear(::grpc::ServerContext* /*context*/, const ::sf::exchange::v1::RepairGearRequest* /*request*/, ::sf::exchange::v1::RepairGearReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
   class WithGenericMethod_OfferTrade : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_OfferTrade() {
-      ::grpc::Service::MarkMethodGeneric(1);
+      ::grpc::Service::MarkMethodGeneric(3);
     }
     ~WithGenericMethod_OfferTrade() override {
       BaseClassMustBeDerivedFromService(this);
@@ -754,7 +930,7 @@ class Exchange final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_AcceptTrade() {
-      ::grpc::Service::MarkMethodGeneric(2);
+      ::grpc::Service::MarkMethodGeneric(4);
     }
     ~WithGenericMethod_AcceptTrade() override {
       BaseClassMustBeDerivedFromService(this);
@@ -771,7 +947,7 @@ class Exchange final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_CancelTrade() {
-      ::grpc::Service::MarkMethodGeneric(3);
+      ::grpc::Service::MarkMethodGeneric(5);
     }
     ~WithGenericMethod_CancelTrade() override {
       BaseClassMustBeDerivedFromService(this);
@@ -788,7 +964,7 @@ class Exchange final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_ListItem() {
-      ::grpc::Service::MarkMethodGeneric(4);
+      ::grpc::Service::MarkMethodGeneric(6);
     }
     ~WithGenericMethod_ListItem() override {
       BaseClassMustBeDerivedFromService(this);
@@ -805,7 +981,7 @@ class Exchange final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_BuyListing() {
-      ::grpc::Service::MarkMethodGeneric(5);
+      ::grpc::Service::MarkMethodGeneric(7);
     }
     ~WithGenericMethod_BuyListing() override {
       BaseClassMustBeDerivedFromService(this);
@@ -822,7 +998,7 @@ class Exchange final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_CancelListing() {
-      ::grpc::Service::MarkMethodGeneric(6);
+      ::grpc::Service::MarkMethodGeneric(8);
     }
     ~WithGenericMethod_CancelListing() override {
       BaseClassMustBeDerivedFromService(this);
@@ -839,7 +1015,7 @@ class Exchange final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_ListListings() {
-      ::grpc::Service::MarkMethodGeneric(7);
+      ::grpc::Service::MarkMethodGeneric(9);
     }
     ~WithGenericMethod_ListListings() override {
       BaseClassMustBeDerivedFromService(this);
@@ -856,7 +1032,7 @@ class Exchange final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_ListTrades() {
-      ::grpc::Service::MarkMethodGeneric(8);
+      ::grpc::Service::MarkMethodGeneric(10);
     }
     ~WithGenericMethod_ListTrades() override {
       BaseClassMustBeDerivedFromService(this);
@@ -888,12 +1064,52 @@ class Exchange final {
     }
   };
   template <class BaseClass>
+  class WithRawMethod_QuoteRepair : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_QuoteRepair() {
+      ::grpc::Service::MarkMethodRaw(1);
+    }
+    ~WithRawMethod_QuoteRepair() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status QuoteRepair(::grpc::ServerContext* /*context*/, const ::sf::exchange::v1::RepairQuoteRequest* /*request*/, ::sf::exchange::v1::RepairQuoteReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestQuoteRepair(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(1, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_RepairGear : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_RepairGear() {
+      ::grpc::Service::MarkMethodRaw(2);
+    }
+    ~WithRawMethod_RepairGear() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status RepairGear(::grpc::ServerContext* /*context*/, const ::sf::exchange::v1::RepairGearRequest* /*request*/, ::sf::exchange::v1::RepairGearReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestRepairGear(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(2, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
   class WithRawMethod_OfferTrade : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_OfferTrade() {
-      ::grpc::Service::MarkMethodRaw(1);
+      ::grpc::Service::MarkMethodRaw(3);
     }
     ~WithRawMethod_OfferTrade() override {
       BaseClassMustBeDerivedFromService(this);
@@ -904,7 +1120,7 @@ class Exchange final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestOfferTrade(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(1, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(3, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -913,7 +1129,7 @@ class Exchange final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_AcceptTrade() {
-      ::grpc::Service::MarkMethodRaw(2);
+      ::grpc::Service::MarkMethodRaw(4);
     }
     ~WithRawMethod_AcceptTrade() override {
       BaseClassMustBeDerivedFromService(this);
@@ -924,7 +1140,7 @@ class Exchange final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestAcceptTrade(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(2, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(4, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -933,7 +1149,7 @@ class Exchange final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_CancelTrade() {
-      ::grpc::Service::MarkMethodRaw(3);
+      ::grpc::Service::MarkMethodRaw(5);
     }
     ~WithRawMethod_CancelTrade() override {
       BaseClassMustBeDerivedFromService(this);
@@ -944,7 +1160,7 @@ class Exchange final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestCancelTrade(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(3, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(5, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -953,7 +1169,7 @@ class Exchange final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_ListItem() {
-      ::grpc::Service::MarkMethodRaw(4);
+      ::grpc::Service::MarkMethodRaw(6);
     }
     ~WithRawMethod_ListItem() override {
       BaseClassMustBeDerivedFromService(this);
@@ -964,7 +1180,7 @@ class Exchange final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestListItem(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(4, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(6, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -973,7 +1189,7 @@ class Exchange final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_BuyListing() {
-      ::grpc::Service::MarkMethodRaw(5);
+      ::grpc::Service::MarkMethodRaw(7);
     }
     ~WithRawMethod_BuyListing() override {
       BaseClassMustBeDerivedFromService(this);
@@ -984,7 +1200,7 @@ class Exchange final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestBuyListing(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(5, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(7, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -993,7 +1209,7 @@ class Exchange final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_CancelListing() {
-      ::grpc::Service::MarkMethodRaw(6);
+      ::grpc::Service::MarkMethodRaw(8);
     }
     ~WithRawMethod_CancelListing() override {
       BaseClassMustBeDerivedFromService(this);
@@ -1004,7 +1220,7 @@ class Exchange final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestCancelListing(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(6, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(8, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -1013,7 +1229,7 @@ class Exchange final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_ListListings() {
-      ::grpc::Service::MarkMethodRaw(7);
+      ::grpc::Service::MarkMethodRaw(9);
     }
     ~WithRawMethod_ListListings() override {
       BaseClassMustBeDerivedFromService(this);
@@ -1024,7 +1240,7 @@ class Exchange final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestListListings(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(7, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(9, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -1033,7 +1249,7 @@ class Exchange final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_ListTrades() {
-      ::grpc::Service::MarkMethodRaw(8);
+      ::grpc::Service::MarkMethodRaw(10);
     }
     ~WithRawMethod_ListTrades() override {
       BaseClassMustBeDerivedFromService(this);
@@ -1044,7 +1260,7 @@ class Exchange final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     void RequestListTrades(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
-      ::grpc::Service::RequestAsyncUnary(8, context, request, response, new_call_cq, notification_cq, tag);
+      ::grpc::Service::RequestAsyncUnary(10, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -1070,12 +1286,56 @@ class Exchange final {
       ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
+  class WithRawCallbackMethod_QuoteRepair : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_QuoteRepair() {
+      ::grpc::Service::MarkMethodRawCallback(1,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->QuoteRepair(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_QuoteRepair() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status QuoteRepair(::grpc::ServerContext* /*context*/, const ::sf::exchange::v1::RepairQuoteRequest* /*request*/, ::sf::exchange::v1::RepairQuoteReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* QuoteRepair(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_RepairGear : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_RepairGear() {
+      ::grpc::Service::MarkMethodRawCallback(2,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->RepairGear(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_RepairGear() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status RepairGear(::grpc::ServerContext* /*context*/, const ::sf::exchange::v1::RepairGearRequest* /*request*/, ::sf::exchange::v1::RepairGearReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* RepairGear(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
   class WithRawCallbackMethod_OfferTrade : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawCallbackMethod_OfferTrade() {
-      ::grpc::Service::MarkMethodRawCallback(1,
+      ::grpc::Service::MarkMethodRawCallback(3,
           new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->OfferTrade(context, request, response); }));
@@ -1097,7 +1357,7 @@ class Exchange final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawCallbackMethod_AcceptTrade() {
-      ::grpc::Service::MarkMethodRawCallback(2,
+      ::grpc::Service::MarkMethodRawCallback(4,
           new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->AcceptTrade(context, request, response); }));
@@ -1119,7 +1379,7 @@ class Exchange final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawCallbackMethod_CancelTrade() {
-      ::grpc::Service::MarkMethodRawCallback(3,
+      ::grpc::Service::MarkMethodRawCallback(5,
           new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->CancelTrade(context, request, response); }));
@@ -1141,7 +1401,7 @@ class Exchange final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawCallbackMethod_ListItem() {
-      ::grpc::Service::MarkMethodRawCallback(4,
+      ::grpc::Service::MarkMethodRawCallback(6,
           new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->ListItem(context, request, response); }));
@@ -1163,7 +1423,7 @@ class Exchange final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawCallbackMethod_BuyListing() {
-      ::grpc::Service::MarkMethodRawCallback(5,
+      ::grpc::Service::MarkMethodRawCallback(7,
           new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->BuyListing(context, request, response); }));
@@ -1185,7 +1445,7 @@ class Exchange final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawCallbackMethod_CancelListing() {
-      ::grpc::Service::MarkMethodRawCallback(6,
+      ::grpc::Service::MarkMethodRawCallback(8,
           new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->CancelListing(context, request, response); }));
@@ -1207,7 +1467,7 @@ class Exchange final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawCallbackMethod_ListListings() {
-      ::grpc::Service::MarkMethodRawCallback(7,
+      ::grpc::Service::MarkMethodRawCallback(9,
           new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->ListListings(context, request, response); }));
@@ -1229,7 +1489,7 @@ class Exchange final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawCallbackMethod_ListTrades() {
-      ::grpc::Service::MarkMethodRawCallback(8,
+      ::grpc::Service::MarkMethodRawCallback(10,
           new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
             [this](
                    ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->ListTrades(context, request, response); }));
@@ -1273,12 +1533,66 @@ class Exchange final {
     virtual ::grpc::Status StreamedWallet(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::sf::exchange::v1::WalletRequest,::sf::exchange::v1::WalletReply>* server_unary_streamer) = 0;
   };
   template <class BaseClass>
+  class WithStreamedUnaryMethod_QuoteRepair : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_QuoteRepair() {
+      ::grpc::Service::MarkMethodStreamed(1,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::sf::exchange::v1::RepairQuoteRequest, ::sf::exchange::v1::RepairQuoteReply>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::sf::exchange::v1::RepairQuoteRequest, ::sf::exchange::v1::RepairQuoteReply>* streamer) {
+                       return this->StreamedQuoteRepair(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_QuoteRepair() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status QuoteRepair(::grpc::ServerContext* /*context*/, const ::sf::exchange::v1::RepairQuoteRequest* /*request*/, ::sf::exchange::v1::RepairQuoteReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status StreamedQuoteRepair(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::sf::exchange::v1::RepairQuoteRequest,::sf::exchange::v1::RepairQuoteReply>* server_unary_streamer) = 0;
+  };
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_RepairGear : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_RepairGear() {
+      ::grpc::Service::MarkMethodStreamed(2,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::sf::exchange::v1::RepairGearRequest, ::sf::exchange::v1::RepairGearReply>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::sf::exchange::v1::RepairGearRequest, ::sf::exchange::v1::RepairGearReply>* streamer) {
+                       return this->StreamedRepairGear(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_RepairGear() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status RepairGear(::grpc::ServerContext* /*context*/, const ::sf::exchange::v1::RepairGearRequest* /*request*/, ::sf::exchange::v1::RepairGearReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status StreamedRepairGear(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::sf::exchange::v1::RepairGearRequest,::sf::exchange::v1::RepairGearReply>* server_unary_streamer) = 0;
+  };
+  template <class BaseClass>
   class WithStreamedUnaryMethod_OfferTrade : public BaseClass {
    private:
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_OfferTrade() {
-      ::grpc::Service::MarkMethodStreamed(1,
+      ::grpc::Service::MarkMethodStreamed(3,
         new ::grpc::internal::StreamedUnaryHandler<
           ::sf::exchange::v1::TradeOfferRequest, ::sf::exchange::v1::ExchangeReply>(
             [this](::grpc::ServerContext* context,
@@ -1305,7 +1619,7 @@ class Exchange final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_AcceptTrade() {
-      ::grpc::Service::MarkMethodStreamed(2,
+      ::grpc::Service::MarkMethodStreamed(4,
         new ::grpc::internal::StreamedUnaryHandler<
           ::sf::exchange::v1::TradeActionRequest, ::sf::exchange::v1::ExchangeReply>(
             [this](::grpc::ServerContext* context,
@@ -1332,7 +1646,7 @@ class Exchange final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_CancelTrade() {
-      ::grpc::Service::MarkMethodStreamed(3,
+      ::grpc::Service::MarkMethodStreamed(5,
         new ::grpc::internal::StreamedUnaryHandler<
           ::sf::exchange::v1::TradeActionRequest, ::sf::exchange::v1::ExchangeReply>(
             [this](::grpc::ServerContext* context,
@@ -1359,7 +1673,7 @@ class Exchange final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_ListItem() {
-      ::grpc::Service::MarkMethodStreamed(4,
+      ::grpc::Service::MarkMethodStreamed(6,
         new ::grpc::internal::StreamedUnaryHandler<
           ::sf::exchange::v1::ListItemRequest, ::sf::exchange::v1::ExchangeReply>(
             [this](::grpc::ServerContext* context,
@@ -1386,7 +1700,7 @@ class Exchange final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_BuyListing() {
-      ::grpc::Service::MarkMethodStreamed(5,
+      ::grpc::Service::MarkMethodStreamed(7,
         new ::grpc::internal::StreamedUnaryHandler<
           ::sf::exchange::v1::BuyListingRequest, ::sf::exchange::v1::ExchangeReply>(
             [this](::grpc::ServerContext* context,
@@ -1413,7 +1727,7 @@ class Exchange final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_CancelListing() {
-      ::grpc::Service::MarkMethodStreamed(6,
+      ::grpc::Service::MarkMethodStreamed(8,
         new ::grpc::internal::StreamedUnaryHandler<
           ::sf::exchange::v1::ListingActionRequest, ::sf::exchange::v1::ExchangeReply>(
             [this](::grpc::ServerContext* context,
@@ -1440,7 +1754,7 @@ class Exchange final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_ListListings() {
-      ::grpc::Service::MarkMethodStreamed(7,
+      ::grpc::Service::MarkMethodStreamed(9,
         new ::grpc::internal::StreamedUnaryHandler<
           ::sf::exchange::v1::ListListingsRequest, ::sf::exchange::v1::ListListingsReply>(
             [this](::grpc::ServerContext* context,
@@ -1467,7 +1781,7 @@ class Exchange final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_ListTrades() {
-      ::grpc::Service::MarkMethodStreamed(8,
+      ::grpc::Service::MarkMethodStreamed(10,
         new ::grpc::internal::StreamedUnaryHandler<
           ::sf::exchange::v1::ListTradesRequest, ::sf::exchange::v1::ListTradesReply>(
             [this](::grpc::ServerContext* context,
@@ -1488,9 +1802,9 @@ class Exchange final {
     // replace default version of method with streamed unary
     virtual ::grpc::Status StreamedListTrades(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::sf::exchange::v1::ListTradesRequest,::sf::exchange::v1::ListTradesReply>* server_unary_streamer) = 0;
   };
-  typedef WithStreamedUnaryMethod_Wallet<WithStreamedUnaryMethod_OfferTrade<WithStreamedUnaryMethod_AcceptTrade<WithStreamedUnaryMethod_CancelTrade<WithStreamedUnaryMethod_ListItem<WithStreamedUnaryMethod_BuyListing<WithStreamedUnaryMethod_CancelListing<WithStreamedUnaryMethod_ListListings<WithStreamedUnaryMethod_ListTrades<Service > > > > > > > > > StreamedUnaryService;
+  typedef WithStreamedUnaryMethod_Wallet<WithStreamedUnaryMethod_QuoteRepair<WithStreamedUnaryMethod_RepairGear<WithStreamedUnaryMethod_OfferTrade<WithStreamedUnaryMethod_AcceptTrade<WithStreamedUnaryMethod_CancelTrade<WithStreamedUnaryMethod_ListItem<WithStreamedUnaryMethod_BuyListing<WithStreamedUnaryMethod_CancelListing<WithStreamedUnaryMethod_ListListings<WithStreamedUnaryMethod_ListTrades<Service > > > > > > > > > > > StreamedUnaryService;
   typedef Service SplitStreamedService;
-  typedef WithStreamedUnaryMethod_Wallet<WithStreamedUnaryMethod_OfferTrade<WithStreamedUnaryMethod_AcceptTrade<WithStreamedUnaryMethod_CancelTrade<WithStreamedUnaryMethod_ListItem<WithStreamedUnaryMethod_BuyListing<WithStreamedUnaryMethod_CancelListing<WithStreamedUnaryMethod_ListListings<WithStreamedUnaryMethod_ListTrades<Service > > > > > > > > > StreamedService;
+  typedef WithStreamedUnaryMethod_Wallet<WithStreamedUnaryMethod_QuoteRepair<WithStreamedUnaryMethod_RepairGear<WithStreamedUnaryMethod_OfferTrade<WithStreamedUnaryMethod_AcceptTrade<WithStreamedUnaryMethod_CancelTrade<WithStreamedUnaryMethod_ListItem<WithStreamedUnaryMethod_BuyListing<WithStreamedUnaryMethod_CancelListing<WithStreamedUnaryMethod_ListListings<WithStreamedUnaryMethod_ListTrades<Service > > > > > > > > > > > StreamedService;
 };
 
 }  // namespace v1

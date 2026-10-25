@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="../../Gameplay.Host/Gameplay.Host.csproj" />
+    <PackageReference Include="Grpc.Net.Client" />
+    <Compile Include="../WireTests.cs" Link="WireTests.cs" />
+  </ItemGroup>
+  <PropertyGroup><OutputType>Exe</OutputType></PropertyGroup>
+</Project>

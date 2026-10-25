@@ -6,6 +6,7 @@ param(
     [ValidateRange(1,10)][int]$Clients = 1,
     [ValidatePattern('^/Game/Frontier/[A-Za-z0-9_/]+$')][string]$Map = '/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook',
     [switch]$GreenlandsDeathNetcheck,
+    [switch]$GreenlandsRepairNetcheck,
     [switch]$GreenlandsArcherNetcheck,
     [switch]$GreenlandsUnstuckNetcheck,
     [switch]$AttributeSnapshotNetcheck,
@@ -26,6 +27,11 @@ $project = Join-Path $repo 'GameClient\ShatteredFrontier.uproject'
 $bridge = Join-Path $repo 'BackendServices\WorldContent.Tool\bin\Debug\net10.0\WorldContent.Tool.dll'
 $sdk = Join-Path $repo 'Artifacts\Persistence\Toolchains\dotnet-10.0.402\dotnet.exe'
 if ($Services -and $TargetScenario) { throw 'Services ledger assertion requires the combat reward scenario.' }
+if ($GreenlandsRepairNetcheck -and (-not $Services -or $Clients -ne 2 -or
+    $Map -ne '/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook' -or $GreenlandsDeathNetcheck -or
+    $TargetScenario -or $PartyScenario -or $PartyXpScenario -or $SpawnOnly)) {
+    throw 'GreenlandsRepairNetcheck requires Silverbrook, two clients and Gameplay Services.'
+}
 if ($GreenlandsArcherNetcheck -and (-not $Services -or $Clients -ne 2 -or
     $Map -ne '/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook' -or
     $GreenlandsDeathNetcheck -or $GreenlandsUnstuckNetcheck -or $AttributeSnapshotNetcheck -or $GreenlandsAbilityNetcheck -or
@@ -184,7 +190,7 @@ try {
         }
     }
     $url = $result.map
-    $scenarioArg = if ($GreenlandsArcherNetcheck) { '-GreenlandsArcherNetcheck' } elseif ($GreenlandsAbilityNetcheck) { '-GreenlandsAbilityNetcheck' } elseif ($GreenlandsUnstuckNetcheck) { '-GreenlandsUnstuckNetcheck' } elseif ($GreenlandsDeathNetcheck) { '-GreenlandsDeathNetcheck' } elseif ($PartyScenario) { '-PartyScenario' } elseif ($Clients -gt 1) { '-CombatGroupScenario' } elseif ($TargetScenario) { '-CombatTargetScenario' } else { '-CombatPilotScenario' }
+    $scenarioArg = if ($GreenlandsRepairNetcheck) { '-GreenlandsRepairNetcheck' } elseif ($GreenlandsArcherNetcheck) { '-GreenlandsArcherNetcheck' } elseif ($GreenlandsAbilityNetcheck) { '-GreenlandsAbilityNetcheck' } elseif ($GreenlandsUnstuckNetcheck) { '-GreenlandsUnstuckNetcheck' } elseif ($GreenlandsDeathNetcheck) { '-GreenlandsDeathNetcheck' } elseif ($PartyScenario) { '-PartyScenario' } elseif ($Clients -gt 1) { '-CombatGroupScenario' } elseif ($TargetScenario) { '-CombatTargetScenario' } else { '-CombatPilotScenario' }
     $serverFlags = @('-server',('-port='+$Port),'-multihome=127.0.0.1',$scenarioArg)
     if ($GreenlandsDeathNetcheck) { $serverFlags += "-DeathResolution=$DeathResolution" }
     if ($PartyScenario) { $serverFlags += '-SFDevIdentity' }
@@ -203,6 +209,33 @@ try {
         $serverEnv = @{ SF_INVENTORY_LEDGER_TOKEN=$fx.token; SF_GAMEPLAY_TOKEN=$gameplayToken }
         Invoke-WithEnv $serverEnv { $script:server = Start-Owned 'server' $url $serverFlags }
     } else { $server = Start-Owned 'server' $url $serverFlags }
+    if ($GreenlandsRepairNetcheck) {
+        [void](Invoke-LedgerSql $fx @'
+SET ROLE ledger_owner;
+INSERT INTO inventory.containers(id,owner_kind,owner_id,kind,capacity) VALUES
+ ('ctn_dev_alpha_equipment',0,'chr_dev_alpha',0,10),('ctn_dev_beta_equipment',0,'chr_dev_beta',0,10);
+INSERT INTO inventory.entries(container_id,definition_id,quantity) VALUES
+ ('ctn_dev_alpha_equipment','item/hide_cap',1),('ctn_dev_beta_equipment','item/hide_cap',1);
+INSERT INTO inventory.item_instances(instance_id,container_id,definition_id,durability_percent) VALUES
+ ('itm_greenlands_repair_alpha','ctn_dev_alpha_equipment','item/hide_cap',0),
+ ('itm_greenlands_repair_beta','ctn_dev_beta_equipment','item/hide_cap',100);
+INSERT INTO exchange.wallets(owner_id,balance) VALUES ('chr_dev_alpha',5000),('chr_dev_beta',5000);
+'@ $fx.db)
+        foreach ($identity in @('alpha','beta')) {
+            $args = if ($identity -eq 'alpha') { @('-game','-GreenlandsRepairNetcheck') } else { @('-game') }
+            $null = Start-Owned "client$identity" ("127.0.0.1:$Port`?SFDevCharacter=$identity") $args
+        }
+        Wait-Log $server 'server' 'GREENLANDS_REPAIR_READY Clients=2' 120
+        $driver = @($owned | Where-Object { $_.Id -eq (@($result.runs | Where-Object name -eq 'clientalpha')[0].pid) })[0]
+        Wait-Log $driver 'clientalpha' 'GEAR_REPAIR_ZERO_STATS Armor=0' 120
+        Wait-Log $driver 'clientalpha' 'GEAR_REPAIR_STATS_RESTORED Armor=[1-9]' 120
+        $row = Invoke-LedgerSql $fx "SELECT w.balance||'|'||i.durability_percent||'|'||i.max_durability_percent||'|'||(SELECT count(*) FROM exchange.wallet_entries WHERE owner_id='chr_dev_alpha' AND code='repair_cost') FROM exchange.wallets w JOIN inventory.item_instances i ON i.instance_id='itm_greenlands_repair_alpha' WHERE w.owner_id='chr_dev_alpha'" $fx.db
+        $other = Invoke-LedgerSql $fx "SELECT w.balance||'|'||i.durability_percent FROM exchange.wallets w JOIN inventory.item_instances i ON i.instance_id='itm_greenlands_repair_beta' WHERE w.owner_id='chr_dev_beta'" $fx.db
+        if ($row -notmatch '^\d+\|98\|98\|1$' -or [int](($row -split '\|')[0]) -ge 5000 -or $other -ne '5000|100') {
+            throw "Two-client repair state invalid: driver=$row observer=$other"
+        }
+        $result.status='Passed'; $result.repair=$row; return
+    }
     if ($GreenlandsArcherNetcheck) {
         foreach ($role in 1..2) {
             $identity = @('alpha','beta')[$role - 1]

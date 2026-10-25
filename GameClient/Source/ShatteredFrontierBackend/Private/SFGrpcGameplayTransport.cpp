@@ -542,6 +542,28 @@ void FSFGrpcGameplayTransport::Send(const FSFGameplayRequest& Q, float DeadlineS
         Start(Call, [&](grpc::ClientContext* C) { return Channel->Exchange->AsyncWallet(C, M, &Channel->Queue); });
         break;
     }
+    case ESFGameplayRpc::QuoteRepair:
+    {
+        sf::exchange::v1::RepairQuoteRequest M;
+        M.set_owner_id(Utf8(Q.CharacterId)); M.set_instance_id(Utf8(Q.Exchange.RepairInstanceId));
+        M.set_all_equipped(Q.Exchange.bRepairAllEquipped);
+        auto* Call = new TCall<sf::exchange::v1::RepairQuoteReply>();
+        Call->Copy = [](const sf::exchange::v1::RepairQuoteReply& R, FSFGameplayResponse& Out)
+        { Out.Exchange.RepairQuoteId = FromUtf8(R.quote_id()); Out.Exchange.Amount = R.cost_copper();
+          Out.Exchange.RepairItemCount = R.item_count(); Out.Exchange.RepairQuoteExpiresAtUnixMs = R.expires_at_unix_ms(); };
+        Start(Call, [&](grpc::ClientContext* C) { return Channel->Exchange->AsyncQuoteRepair(C, M, &Channel->Queue); });
+        break;
+    }
+    case ESFGameplayRpc::RepairGear:
+    {
+        sf::exchange::v1::RepairGearRequest M;
+        M.set_operation_id(Utf8(Q.OperationId)); M.set_quote_id(Utf8(Q.Exchange.RepairQuoteId)); M.set_owner_id(Utf8(Q.CharacterId));
+        auto* Call = new TCall<sf::exchange::v1::RepairGearReply>();
+        Call->Copy = [](const sf::exchange::v1::RepairGearReply& R, FSFGameplayResponse& Out)
+        { Out.Exchange.Amount = R.cost_copper(); Out.Exchange.RepairItemCount = R.item_count(); Out.Exchange.bCommitted = R.committed(); };
+        Start(Call, [&](grpc::ClientContext* C) { return Channel->Exchange->AsyncRepairGear(C, M, &Channel->Queue); });
+        break;
+    }
     case ESFGameplayRpc::ListListings:
     {
         sf::exchange::v1::ListListingsRequest M;

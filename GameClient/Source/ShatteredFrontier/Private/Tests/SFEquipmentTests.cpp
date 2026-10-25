@@ -222,8 +222,8 @@ bool FSFEquipmentLedgerTest::RunTest(const FString& Parameters)
     Bag->EquippedItems[0].DurabilityPercent = 0;
     TestEqual(TEXT("Zero durability gives no armour"), SFGear::Equipped(PC).Armor, 0);
     TestEqual(TEXT("Broken cap remains equipped"), Gear->GetEquipped(Head), CapPath);
-    Bag->EquippedItems[0].DurabilityPercent = 100;
-    TestEqual(TEXT("Full repair restores armour"), SFGear::Equipped(PC).Armor, 1);
+    Bag->EquippedItems[0].DurabilityPercent = 98; // first broken NPC repair lowers maximum by two points
+    TestEqual(TEXT("Repaired cap restores armour at its new maximum"), SFGear::Equipped(PC).Armor, 1);
 
     TestEqual(TEXT("Gear unequip waits for the ledger"), Gear->ApplyUnequip(Head), ESFEquipResult::Pending);
     Tick(6);

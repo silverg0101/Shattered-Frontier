@@ -14,6 +14,10 @@
 #include "Exchange/SFExchangeComponent.h"
 #include "Exchange/SFMarketBoardActor.h"
 #include "Services/SFGameplayServicesClient.h"
+#include "Services/SFBackpackComponent.h"
+#include "Inventory/SFGear.h"
+#include "Inventory/SFInventory.h"
+#include "Inventory/SFRepairStationActor.h"
 #include "Exchange/SFExchangeWidgets.h"
 #include "Exchange/SFFakeExchange.h"
 #include "Combat/SFCombatPilot.h"
@@ -158,6 +162,23 @@ void ASFPlayerController::TickInteraction()
 {
     TickDialogue();
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    if (IsLocalController() && FParse::Param(FCommandLine::Get(), TEXT("GreenlandsRepairNetcheck")) && GetPawn())
+    {
+        if (!bRepairFixtureStarted)
+        {
+            for (TActorIterator<ASFRepairStationActor> It(GetWorld()); It; ++It)
+                if (FVector::DistSquared(GetPawn()->GetActorLocation(), It->GetActorLocation()) <= FMath::Square(350.f))
+                {
+                    USFInventoryComponent* Inventory = FindComponentByClass<USFInventoryComponent>();
+                    TSoftObjectPtr<USFItemDefinition> Cap; int32 Quantity = 0;
+                    if (Inventory && Inventory->GetEquippedItem(TEXT("Head"), Cap, Quantity) && Quantity == 1 && SFGear::Equipped(this).Armor == 0)
+                    { UE_LOG(LogTemp, Display, TEXT("GEAR_REPAIR_ZERO_STATS Armor=0")); bRepairFixtureStarted = true; RequestGearRepair(FString()); }
+                    break;
+                }
+        }
+        if (bRepairFixtureCommitted && !bRepairFixtureStatsLogged && SFGear::Equipped(this).Armor > 0)
+        { bRepairFixtureStatsLogged = true; UE_LOG(LogTemp, Display, TEXT("GEAR_REPAIR_STATS_RESTORED Armor=%d"), SFGear::Equipped(this).Armor); }
+    }
     if (IsLocalController() && FParse::Param(FCommandLine::Get(), TEXT("ExchangeLiveRefreshProbe")))
     {
         static bool bOpened = false;
@@ -179,6 +200,13 @@ void ASFPlayerController::TickInteraction()
         if (bOpened && MarketBoard) { MarketBoard->ProbeLiveRefresh(); }
     }
 #endif
+    if (IsLocalController() && GetPawn() && PendingRepairQuoteId.IsEmpty() &&
+        GetWorld()->GetTimeSeconds() >= PilotMessageUntil)
+    {
+        for (TActorIterator<ASFRepairStationActor> It(GetWorld()); It; ++It)
+            if (FVector::DistSquared(GetPawn()->GetActorLocation(), It->GetActorLocation()) <= FMath::Square(350.f))
+            { PilotMessage = TEXT("E: Ask the smith about gear repairs"); PilotMessageUntil = GetWorld()->GetTimeSeconds()+1; break; }
+    }
     if (IsLocalController() && WasInputKeyJustPressed(EKeys::Tab)) { SelectNextCombatTarget(); }
     const bool bHasPlayer = GetLocalPlayer() != nullptr;  // CreateWidget needs an attached player (a controller made local without one, as the cursor tests do, has no HUD)
     if (bHasPlayer && IsLocalController() && !GatheringHud)
@@ -410,6 +438,14 @@ void ASFPlayerController::InteractWithSelectedTarget()
     if (InteractionInputAttempts != MAX_uint64) { ++InteractionInputAttempts; }
 #endif
     if (TryOpenDialogue() || USFQuestBoardPanel::TryOpenBoard(this)) { return; }
+    if (IsLocalController() && GetPawn() && GetWorld())
+    {
+        for (TActorIterator<ASFRepairStationActor> It(GetWorld()); It; ++It)
+        {
+            if (FVector::DistSquared(GetPawn()->GetActorLocation(), It->GetActorLocation()) <= FMath::Square(350.f))
+            { if (PendingRepairQuoteId.IsEmpty()) { RequestGearRepair(FString()); } else { ConfirmGearRepair(); } return; }
+        }
+    }
     if (IsLocalController() && GetPawn() && GetWorld() && GetDefault<USFGameplayServicesSettings>()->bExchangeEnabled)
     {
         const float ReachCm = GetDefault<USFGameplayServicesSettings>()->MarketReachM * 100.0f;
@@ -423,6 +459,103 @@ void ASFPlayerController::InteractWithSelectedTarget()
     const double Now = GetWorld()->GetTimeSeconds();
     if (!LocalFeedback.TryBeginRequest(Now)) { return; }
     ServerRequestInteraction(SelectedTarget.Get(), SelectedRevision);
+}
+
+namespace
+{
+bool NearRepairStation(const ASFPlayerController* Controller)
+{
+    const APawn* Pawn = Controller->GetPawn();
+    if (!Pawn || !Controller->GetWorld()) { return false; }
+    for (TActorIterator<ASFRepairStationActor> It(Controller->GetWorld()); It; ++It)
+    {
+        if (FVector::DistSquared(Pawn->GetActorLocation(), It->GetActorLocation()) > FMath::Square(350.f)) { continue; }
+        FHitResult Hit; FCollisionQueryParams Params(SCENE_QUERY_STAT(RepairSmithLOS), false, Pawn);
+        const FVector Eye = Pawn->GetActorLocation() + FVector(0,0,100);
+        const FVector Target = It->GetActorLocation() + FVector(0,0,100);
+        if (!Controller->GetWorld()->LineTraceSingleByChannel(Hit, Eye, Target, ECC_Visibility, Params) || Hit.GetActor() == *It)
+        { return true; }
+    }
+    return false;
+}
+}
+
+void ASFPlayerController::RequestGearRepair(const FString& InstanceId)
+{
+    if (!IsLocalController()) { return; }
+    PendingRepairQuoteId.Reset(); PendingRepairOperationId.Reset();
+    ServerRepairQuote(InstanceId, InstanceId.IsEmpty());
+}
+
+void ASFPlayerController::ConfirmGearRepair()
+{
+    if (!IsLocalController() || PendingRepairQuoteId.IsEmpty()) { return; }
+    if (FDateTime::UtcNow().ToUnixTimestamp() * 1000 > PendingRepairExpiresAtUnixMs)
+    { PendingRepairQuoteId.Reset(); PilotMessage = TEXT("Repair quote expired. Ask the smith again."); PilotMessageUntil = GetWorld()->GetTimeSeconds()+5; return; }
+    if (PendingRepairOperationId.IsEmpty()) { PendingRepairOperationId = FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphensLower); }
+    ServerRepairCommit(PendingRepairQuoteId, PendingRepairOperationId);
+}
+
+void ASFPlayerController::ServerRepairQuote_Implementation(const FString& InstanceId, bool bAllEquipped)
+{
+    if (!NearRepairStation(this) || !GetDefault<USFGameplayServicesSettings>()->bExchangeEnabled) { ClientRepairResult(false, TEXT("Move closer to the smith."), 0); return; }
+    USFBackpackComponent* Pack = USFBackpackComponent::FindOrCreate(this);
+    TSharedPtr<FSFGameplayServicesClient> Services = USFBackpackComponent::Services();
+    if (!Pack || !Services || (bAllEquipped == !InstanceId.IsEmpty())) { ClientRepairResult(false, TEXT("Repair unavailable."), 0); return; }
+    FSFGameplayRequest Request; Request.Rpc = ESFGameplayRpc::QuoteRepair;
+    Request.CharacterId = Pack->GetCharacterId(); Request.Exchange.RepairInstanceId = InstanceId; Request.Exchange.bRepairAllEquipped = bAllEquipped;
+    Services->Call(Request, [Weak=TWeakObjectPtr<ASFPlayerController>(this)](const FSFGameplayResponse& Response)
+    {
+        if (ASFPlayerController* Self = Weak.Get())
+        { if (Response.Status == ESFGameplayStatus::Ok) { Self->ClientRepairQuote(Response.Exchange.RepairQuoteId, Response.Exchange.Amount,
+              Response.Exchange.RepairItemCount, Response.Exchange.RepairQuoteExpiresAtUnixMs); }
+          else { Self->ClientRepairResult(false, Response.Message, 0); } }
+    });
+}
+
+void ASFPlayerController::ServerRepairCommit_Implementation(const FString& QuoteId, const FString& OperationId)
+{
+    if (!NearRepairStation(this) || !GetDefault<USFGameplayServicesSettings>()->bExchangeEnabled) { ClientRepairResult(false, TEXT("Move closer to the smith."), 0); return; }
+    USFBackpackComponent* Pack = USFBackpackComponent::FindOrCreate(this);
+    TSharedPtr<FSFGameplayServicesClient> Services = USFBackpackComponent::Services();
+    if (!Pack || !Services) { ClientRepairResult(false, TEXT("Repair unavailable."), 0); return; }
+    FSFGameplayRequest Request; Request.Rpc = ESFGameplayRpc::RepairGear; Request.OperationId = OperationId;
+    Request.CharacterId = Pack->GetCharacterId(); Request.Exchange.RepairQuoteId = QuoteId;
+    Services->Call(Request, [Weak=TWeakObjectPtr<ASFPlayerController>(this)](const FSFGameplayResponse& Response)
+    {
+        if (ASFPlayerController* Self = Weak.Get())
+        {
+            if (Response.Status == ESFGameplayStatus::Ok && Response.Exchange.bCommitted)
+            {
+                if (USFBackpackComponent* Again = USFBackpackComponent::FindOrCreate(Self)) { Again->Reconcile(); }
+                Self->ClientRepairResult(true, TEXT("Gear repaired."), Response.Exchange.Amount);
+            }
+            else { Self->ClientRepairResult(false, Response.Message, 0); }
+        }
+    });
+}
+
+void ASFPlayerController::ClientRepairQuote_Implementation(const FString& QuoteId, int64 CostCopper, int32 ItemCount, int64 ExpiresAtUnixMs)
+{
+    PendingRepairQuoteId = QuoteId; PendingRepairOperationId.Reset(); PendingRepairExpiresAtUnixMs = ExpiresAtUnixMs;
+    PilotMessage = FString::Printf(TEXT("Smith: repair %d item(s) for %lld copper? Press E again to confirm."), ItemCount, CostCopper);
+    PilotMessageUntil = GetWorld()->GetTimeSeconds()+FMath::Clamp<double>(
+        (ExpiresAtUnixMs - FDateTime::UtcNow().ToUnixTimestamp()*1000) / 1000.0, 1.0, 60.0);
+    UE_LOG(LogTemp, Display, TEXT("GEAR_REPAIR_QUOTE Items=%d Cost=%lld"), ItemCount, CostCopper);
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    if (FParse::Param(FCommandLine::Get(), TEXT("GreenlandsRepairNetcheck"))) { ConfirmGearRepair(); }
+#endif
+}
+
+void ASFPlayerController::ClientRepairResult_Implementation(bool bCommitted, const FString& Message, int64 CostCopper)
+{
+    if (bCommitted) { PendingRepairQuoteId.Reset(); PendingRepairOperationId.Reset(); }
+    PilotMessage = bCommitted ? FString::Printf(TEXT("Gear repaired for %lld copper."), CostCopper) : Message;
+    PilotMessageUntil = GetWorld()->GetTimeSeconds()+6;
+    UE_LOG(LogTemp, Display, TEXT("GEAR_REPAIR_RESULT Committed=%d Cost=%lld Message=%s"), bCommitted, CostCopper, *Message);
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    if (bCommitted && FParse::Param(FCommandLine::Get(), TEXT("GreenlandsRepairNetcheck"))) { bRepairFixtureCommitted = true; }
+#endif
 }
 
 namespace

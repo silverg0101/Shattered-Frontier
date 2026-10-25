@@ -59,6 +59,14 @@ PROTOBUF_CONSTINIT ::google::protobuf::internal::ReflectionData
         {&::_pbi::kDescriptorMethods, &::descriptor_table_sf_2fexchange_2fv1_2fexchange_2eproto, /* tracker*/ nullptr,},
         // ::sf::exchange::v1::ExchangeReply
         {&::_pbi::kDescriptorMethods, &::descriptor_table_sf_2fexchange_2fv1_2fexchange_2eproto, /* tracker*/ nullptr,},
+        // ::sf::exchange::v1::RepairQuoteRequest
+        {&::_pbi::kDescriptorMethods, &::descriptor_table_sf_2fexchange_2fv1_2fexchange_2eproto, /* tracker*/ nullptr,},
+        // ::sf::exchange::v1::RepairQuoteReply
+        {&::_pbi::kDescriptorMethods, &::descriptor_table_sf_2fexchange_2fv1_2fexchange_2eproto, /* tracker*/ nullptr,},
+        // ::sf::exchange::v1::RepairGearRequest
+        {&::_pbi::kDescriptorMethods, &::descriptor_table_sf_2fexchange_2fv1_2fexchange_2eproto, /* tracker*/ nullptr,},
+        // ::sf::exchange::v1::RepairGearReply
+        {&::_pbi::kDescriptorMethods, &::descriptor_table_sf_2fexchange_2fv1_2fexchange_2eproto, /* tracker*/ nullptr,},
 };
 }  // namespace
 #endif
@@ -740,6 +748,671 @@ const ::_pbi::ClassData* TradeActionRequest_get_class_data() {
   return TradeActionRequest_globals_.GetClassData();
 #else
   return TradeActionRequest_class_data_.base();
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+}
+}  // namespace
+#endif  // PROTOBUF_CUSTOM_VTABLE
+class RepairQuoteRequest::_Internal {
+ public:
+  using HasBits = decltype(::std::declval<RepairQuoteRequest>()._impl_._has_bits_);
+  static constexpr ::int32_t kHasBitsOffset =
+      8 * PROTOBUF_FIELD_OFFSET(RepairQuoteRequest, _impl_._has_bits_);
+};
+
+constexpr RepairQuoteRequest::ParseTableT_ RepairQuoteRequest::InternalGenerateParseTable_(const ::_pbi::ClassData* class_data) {
+  return ParseTableT_{
+    {
+      PROTOBUF_FIELD_OFFSET(RepairQuoteRequest, _impl_._has_bits_),
+      0, // no _extensions_
+      3, 24,  // max_field_number, fast_idx_mask
+      offsetof(ParseTableT_, field_lookup_table),
+      4294967288,  // skipmap
+      offsetof(ParseTableT_, field_entries),
+      3,  // num_field_entries
+      0,  // num_aux_entries
+      offsetof(ParseTableT_, field_names),  // no aux_entries
+      class_data,
+      nullptr,  // post_loop_handler
+      ::_pbi::TcParser::GenericFallback,  // fallback
+      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+      ::_pbi::TcParser::GetTable<::sf::exchange::v1::RepairQuoteRequest>(),  // to_prefetch
+      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+    }, {{
+      {::_pbi::TcParser::MiniParse, {}},
+      // string owner_id = 1;
+      {::_pbi::TcParser::FastUS1,
+       {10, 0, 0,
+        PROTOBUF_FIELD_OFFSET(RepairQuoteRequest, _impl_.owner_id_)}},
+      // string instance_id = 2;
+      {::_pbi::TcParser::FastUS1,
+       {18, 1, 0,
+        PROTOBUF_FIELD_OFFSET(RepairQuoteRequest, _impl_.instance_id_)}},
+      // bool all_equipped = 3;
+      {::_pbi::TcParser::SingularVarintNoZag1<bool, offsetof(RepairQuoteRequest, _impl_.all_equipped_), 2>(),
+       {24, 2, 0,
+        PROTOBUF_FIELD_OFFSET(RepairQuoteRequest, _impl_.all_equipped_)}},
+    }}, {{
+      65535, 65535
+    }}, {{
+      // string owner_id = 1;
+      {PROTOBUF_FIELD_OFFSET(RepairQuoteRequest, _impl_.owner_id_), _Internal::kHasBitsOffset + 0, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // string instance_id = 2;
+      {PROTOBUF_FIELD_OFFSET(RepairQuoteRequest, _impl_.instance_id_), _Internal::kHasBitsOffset + 1, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // bool all_equipped = 3;
+      {PROTOBUF_FIELD_OFFSET(RepairQuoteRequest, _impl_.all_equipped_), _Internal::kHasBitsOffset + 2, 0, (0 | ::_fl::kFcOptional | ::_fl::kBool)},
+    }},
+    // no aux_entries
+    {{
+      "\41\10\13\0\0\0\0\0"
+      "sf.exchange.v1.RepairQuoteRequest"
+      "owner_id"
+      "instance_id"
+    }},
+  };
+}
+
+
+inline constexpr RepairQuoteRequest::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    ::_pbi::ConstantInitialized) noexcept
+      : _cached_size_{0},
+        owner_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        instance_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        all_equipped_{false} {}
+
+template <typename>
+constexpr RepairQuoteRequest::RepairQuoteRequest(::_pbi::ConstantInitialized,
+                       const ::_pbi::ClassData* PROTOBUF_NONNULL class_data)
+    : ::google::protobuf::Message(
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          class_data
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          ),
+      _impl_(internal_visibility(), ::_pbi::ConstantInitialized()) {
+}
+inline void* PROTOBUF_NONNULL RepairQuoteRequest::PlacementNew_(
+    const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena) {
+  return ::new (mem) RepairQuoteRequest(arena);
+}
+constexpr auto RepairQuoteRequest::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::CopyInit(sizeof(RepairQuoteRequest), alignof(RepairQuoteRequest));
+}
+constexpr auto RepairQuoteRequest::InternalGenerateClassData_(
+    const MessageLite& prototype,
+    const ::google::protobuf::internal::TcParseTableBase* tc_table) {
+  return ::google::protobuf::internal::ClassDataFull{
+      ::google::protobuf::internal::ClassData{
+          &prototype,
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+          &_table_.header,
+#else
+          tc_table,
+#endif
+          nullptr,  // IsInitialized
+          &RepairQuoteRequest::MergeImpl,
+          ::google::protobuf::Message::GetNewImpl<RepairQuoteRequest>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          &RepairQuoteRequest::SharedDtor,
+          ::google::protobuf::Message::GetClearImpl<RepairQuoteRequest>(), &RepairQuoteRequest::ByteSizeLong,
+              &RepairQuoteRequest::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          PROTOBUF_FIELD_OFFSET(RepairQuoteRequest, _impl_._cached_size_),
+          false,
+      },
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+      &file_reflection_data[15],
+#else   // !PROTOBUF_MESSAGE_GLOBALS
+      &::_pbi::kDescriptorMethods,
+      &descriptor_table_sf_2fexchange_2fv1_2fexchange_2eproto,
+      nullptr,  // tracker
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+  };
+}
+struct RepairQuoteRequestGlobalsTypeInternal : ::_pbi::MessageGlobalsBase {
+  constexpr RepairQuoteRequestGlobalsTypeInternal()
+      :
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+        _default(::_pbi::ConstantInitialized{},
+                 RepairQuoteRequest_class_data_.base())
+#else   // !PROTOBUF_MESSAGE_GLOBALS
+        MessageGlobalsBase(RepairQuoteRequest::InternalGenerateClassData_(
+            _default, &RepairQuoteRequest_globals_._table.header)),
+        _default(::_pbi::ConstantInitialized{}, GetClassData()),
+        _table(::_pbi::PrivateAccess::GenerateParseTable<RepairQuoteRequest>(
+            GetClassData()))
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+  {
+  }
+  ~RepairQuoteRequestGlobalsTypeInternal() {}
+  union {
+    alignas(::_pbi::kMaxMessageAlignment) RepairQuoteRequest _default;
+  };
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+  decltype(::_pbi::PrivateAccess::GenerateParseTable<RepairQuoteRequest>(
+      ::std::declval<const ::_pbi::ClassData*>())) _table;
+#endif
+};
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+static_assert(PROTOBUF_FIELD_OFFSET(RepairQuoteRequestGlobalsTypeInternal, _default) ==
+              ::_pbi::MessageGlobalsBase::OffsetToDefault());
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 PROTOBUF_MESSAGE_GLOBALS_CONST RepairQuoteRequestGlobalsTypeInternal RepairQuoteRequest_globals_
+        PROTOBUF_MESSAGE_GLOBALS_SECTION(.data.rel.ro);
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+namespace {
+const ::_pbi::ClassData* RepairQuoteRequest_get_class_data() {
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+  return RepairQuoteRequest_globals_.GetClassData();
+#else
+  return RepairQuoteRequest_class_data_.base();
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+}
+}  // namespace
+#endif  // PROTOBUF_CUSTOM_VTABLE
+class RepairQuoteReply::_Internal {
+ public:
+  using HasBits = decltype(::std::declval<RepairQuoteReply>()._impl_._has_bits_);
+  static constexpr ::int32_t kHasBitsOffset =
+      8 * PROTOBUF_FIELD_OFFSET(RepairQuoteReply, _impl_._has_bits_);
+};
+
+constexpr RepairQuoteReply::ParseTableT_ RepairQuoteReply::InternalGenerateParseTable_(const ::_pbi::ClassData* class_data) {
+  return ParseTableT_{
+    {
+      PROTOBUF_FIELD_OFFSET(RepairQuoteReply, _impl_._has_bits_),
+      0, // no _extensions_
+      4, 24,  // max_field_number, fast_idx_mask
+      offsetof(ParseTableT_, field_lookup_table),
+      4294967280,  // skipmap
+      offsetof(ParseTableT_, field_entries),
+      4,  // num_field_entries
+      0,  // num_aux_entries
+      offsetof(ParseTableT_, field_names),  // no aux_entries
+      class_data,
+      nullptr,  // post_loop_handler
+      ::_pbi::TcParser::GenericFallback,  // fallback
+      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+      ::_pbi::TcParser::GetTable<::sf::exchange::v1::RepairQuoteReply>(),  // to_prefetch
+      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+    }, {{
+      // int64 expires_at_unix_ms = 4;
+      {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(RepairQuoteReply, _impl_.expires_at_unix_ms_), 2>(),
+       {32, 2, 0,
+        PROTOBUF_FIELD_OFFSET(RepairQuoteReply, _impl_.expires_at_unix_ms_)}},
+      // string quote_id = 1;
+      {::_pbi::TcParser::FastUS1,
+       {10, 0, 0,
+        PROTOBUF_FIELD_OFFSET(RepairQuoteReply, _impl_.quote_id_)}},
+      // int64 cost_copper = 2;
+      {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(RepairQuoteReply, _impl_.cost_copper_), 1>(),
+       {16, 1, 0,
+        PROTOBUF_FIELD_OFFSET(RepairQuoteReply, _impl_.cost_copper_)}},
+      // int32 item_count = 3;
+      {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(RepairQuoteReply, _impl_.item_count_), 3>(),
+       {24, 3, 0,
+        PROTOBUF_FIELD_OFFSET(RepairQuoteReply, _impl_.item_count_)}},
+    }}, {{
+      65535, 65535
+    }}, {{
+      // string quote_id = 1;
+      {PROTOBUF_FIELD_OFFSET(RepairQuoteReply, _impl_.quote_id_), _Internal::kHasBitsOffset + 0, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // int64 cost_copper = 2;
+      {PROTOBUF_FIELD_OFFSET(RepairQuoteReply, _impl_.cost_copper_), _Internal::kHasBitsOffset + 1, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt64)},
+      // int32 item_count = 3;
+      {PROTOBUF_FIELD_OFFSET(RepairQuoteReply, _impl_.item_count_), _Internal::kHasBitsOffset + 3, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt32)},
+      // int64 expires_at_unix_ms = 4;
+      {PROTOBUF_FIELD_OFFSET(RepairQuoteReply, _impl_.expires_at_unix_ms_), _Internal::kHasBitsOffset + 2, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt64)},
+    }},
+    // no aux_entries
+    {{
+      "\37\10\0\0\0\0\0\0"
+      "sf.exchange.v1.RepairQuoteReply"
+      "quote_id"
+    }},
+  };
+}
+
+
+inline constexpr RepairQuoteReply::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    ::_pbi::ConstantInitialized) noexcept
+      : _cached_size_{0},
+        quote_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        cost_copper_{::int64_t{0}},
+        expires_at_unix_ms_{::int64_t{0}},
+        item_count_{0} {}
+
+template <typename>
+constexpr RepairQuoteReply::RepairQuoteReply(::_pbi::ConstantInitialized,
+                       const ::_pbi::ClassData* PROTOBUF_NONNULL class_data)
+    : ::google::protobuf::Message(
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          class_data
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          ),
+      _impl_(internal_visibility(), ::_pbi::ConstantInitialized()) {
+}
+inline void* PROTOBUF_NONNULL RepairQuoteReply::PlacementNew_(
+    const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena) {
+  return ::new (mem) RepairQuoteReply(arena);
+}
+constexpr auto RepairQuoteReply::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::CopyInit(sizeof(RepairQuoteReply), alignof(RepairQuoteReply));
+}
+constexpr auto RepairQuoteReply::InternalGenerateClassData_(
+    const MessageLite& prototype,
+    const ::google::protobuf::internal::TcParseTableBase* tc_table) {
+  return ::google::protobuf::internal::ClassDataFull{
+      ::google::protobuf::internal::ClassData{
+          &prototype,
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+          &_table_.header,
+#else
+          tc_table,
+#endif
+          nullptr,  // IsInitialized
+          &RepairQuoteReply::MergeImpl,
+          ::google::protobuf::Message::GetNewImpl<RepairQuoteReply>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          &RepairQuoteReply::SharedDtor,
+          ::google::protobuf::Message::GetClearImpl<RepairQuoteReply>(), &RepairQuoteReply::ByteSizeLong,
+              &RepairQuoteReply::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          PROTOBUF_FIELD_OFFSET(RepairQuoteReply, _impl_._cached_size_),
+          false,
+      },
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+      &file_reflection_data[16],
+#else   // !PROTOBUF_MESSAGE_GLOBALS
+      &::_pbi::kDescriptorMethods,
+      &descriptor_table_sf_2fexchange_2fv1_2fexchange_2eproto,
+      nullptr,  // tracker
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+  };
+}
+struct RepairQuoteReplyGlobalsTypeInternal : ::_pbi::MessageGlobalsBase {
+  constexpr RepairQuoteReplyGlobalsTypeInternal()
+      :
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+        _default(::_pbi::ConstantInitialized{},
+                 RepairQuoteReply_class_data_.base())
+#else   // !PROTOBUF_MESSAGE_GLOBALS
+        MessageGlobalsBase(RepairQuoteReply::InternalGenerateClassData_(
+            _default, &RepairQuoteReply_globals_._table.header)),
+        _default(::_pbi::ConstantInitialized{}, GetClassData()),
+        _table(::_pbi::PrivateAccess::GenerateParseTable<RepairQuoteReply>(
+            GetClassData()))
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+  {
+  }
+  ~RepairQuoteReplyGlobalsTypeInternal() {}
+  union {
+    alignas(::_pbi::kMaxMessageAlignment) RepairQuoteReply _default;
+  };
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+  decltype(::_pbi::PrivateAccess::GenerateParseTable<RepairQuoteReply>(
+      ::std::declval<const ::_pbi::ClassData*>())) _table;
+#endif
+};
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+static_assert(PROTOBUF_FIELD_OFFSET(RepairQuoteReplyGlobalsTypeInternal, _default) ==
+              ::_pbi::MessageGlobalsBase::OffsetToDefault());
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 PROTOBUF_MESSAGE_GLOBALS_CONST RepairQuoteReplyGlobalsTypeInternal RepairQuoteReply_globals_
+        PROTOBUF_MESSAGE_GLOBALS_SECTION(.data.rel.ro);
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+namespace {
+const ::_pbi::ClassData* RepairQuoteReply_get_class_data() {
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+  return RepairQuoteReply_globals_.GetClassData();
+#else
+  return RepairQuoteReply_class_data_.base();
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+}
+}  // namespace
+#endif  // PROTOBUF_CUSTOM_VTABLE
+class RepairGearRequest::_Internal {
+ public:
+  using HasBits = decltype(::std::declval<RepairGearRequest>()._impl_._has_bits_);
+  static constexpr ::int32_t kHasBitsOffset =
+      8 * PROTOBUF_FIELD_OFFSET(RepairGearRequest, _impl_._has_bits_);
+};
+
+constexpr RepairGearRequest::ParseTableT_ RepairGearRequest::InternalGenerateParseTable_(const ::_pbi::ClassData* class_data) {
+  return ParseTableT_{
+    {
+      PROTOBUF_FIELD_OFFSET(RepairGearRequest, _impl_._has_bits_),
+      0, // no _extensions_
+      3, 24,  // max_field_number, fast_idx_mask
+      offsetof(ParseTableT_, field_lookup_table),
+      4294967288,  // skipmap
+      offsetof(ParseTableT_, field_entries),
+      3,  // num_field_entries
+      0,  // num_aux_entries
+      offsetof(ParseTableT_, field_names),  // no aux_entries
+      class_data,
+      nullptr,  // post_loop_handler
+      ::_pbi::TcParser::GenericFallback,  // fallback
+      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+      ::_pbi::TcParser::GetTable<::sf::exchange::v1::RepairGearRequest>(),  // to_prefetch
+      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+    }, {{
+      {::_pbi::TcParser::MiniParse, {}},
+      // string operation_id = 1;
+      {::_pbi::TcParser::FastUS1,
+       {10, 0, 0,
+        PROTOBUF_FIELD_OFFSET(RepairGearRequest, _impl_.operation_id_)}},
+      // string quote_id = 2;
+      {::_pbi::TcParser::FastUS1,
+       {18, 1, 0,
+        PROTOBUF_FIELD_OFFSET(RepairGearRequest, _impl_.quote_id_)}},
+      // string owner_id = 3;
+      {::_pbi::TcParser::FastUS1,
+       {26, 2, 0,
+        PROTOBUF_FIELD_OFFSET(RepairGearRequest, _impl_.owner_id_)}},
+    }}, {{
+      65535, 65535
+    }}, {{
+      // string operation_id = 1;
+      {PROTOBUF_FIELD_OFFSET(RepairGearRequest, _impl_.operation_id_), _Internal::kHasBitsOffset + 0, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // string quote_id = 2;
+      {PROTOBUF_FIELD_OFFSET(RepairGearRequest, _impl_.quote_id_), _Internal::kHasBitsOffset + 1, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // string owner_id = 3;
+      {PROTOBUF_FIELD_OFFSET(RepairGearRequest, _impl_.owner_id_), _Internal::kHasBitsOffset + 2, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+    }},
+    // no aux_entries
+    {{
+      "\40\14\10\10\0\0\0\0"
+      "sf.exchange.v1.RepairGearRequest"
+      "operation_id"
+      "quote_id"
+      "owner_id"
+    }},
+  };
+}
+
+
+inline constexpr RepairGearRequest::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    ::_pbi::ConstantInitialized) noexcept
+      : _cached_size_{0},
+        operation_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        quote_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        owner_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()) {}
+
+template <typename>
+constexpr RepairGearRequest::RepairGearRequest(::_pbi::ConstantInitialized,
+                       const ::_pbi::ClassData* PROTOBUF_NONNULL class_data)
+    : ::google::protobuf::Message(
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          class_data
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          ),
+      _impl_(internal_visibility(), ::_pbi::ConstantInitialized()) {
+}
+inline void* PROTOBUF_NONNULL RepairGearRequest::PlacementNew_(
+    const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena) {
+  return ::new (mem) RepairGearRequest(arena);
+}
+constexpr auto RepairGearRequest::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::CopyInit(sizeof(RepairGearRequest), alignof(RepairGearRequest));
+}
+constexpr auto RepairGearRequest::InternalGenerateClassData_(
+    const MessageLite& prototype,
+    const ::google::protobuf::internal::TcParseTableBase* tc_table) {
+  return ::google::protobuf::internal::ClassDataFull{
+      ::google::protobuf::internal::ClassData{
+          &prototype,
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+          &_table_.header,
+#else
+          tc_table,
+#endif
+          nullptr,  // IsInitialized
+          &RepairGearRequest::MergeImpl,
+          ::google::protobuf::Message::GetNewImpl<RepairGearRequest>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          &RepairGearRequest::SharedDtor,
+          ::google::protobuf::Message::GetClearImpl<RepairGearRequest>(), &RepairGearRequest::ByteSizeLong,
+              &RepairGearRequest::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          PROTOBUF_FIELD_OFFSET(RepairGearRequest, _impl_._cached_size_),
+          false,
+      },
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+      &file_reflection_data[17],
+#else   // !PROTOBUF_MESSAGE_GLOBALS
+      &::_pbi::kDescriptorMethods,
+      &descriptor_table_sf_2fexchange_2fv1_2fexchange_2eproto,
+      nullptr,  // tracker
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+  };
+}
+struct RepairGearRequestGlobalsTypeInternal : ::_pbi::MessageGlobalsBase {
+  constexpr RepairGearRequestGlobalsTypeInternal()
+      :
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+        _default(::_pbi::ConstantInitialized{},
+                 RepairGearRequest_class_data_.base())
+#else   // !PROTOBUF_MESSAGE_GLOBALS
+        MessageGlobalsBase(RepairGearRequest::InternalGenerateClassData_(
+            _default, &RepairGearRequest_globals_._table.header)),
+        _default(::_pbi::ConstantInitialized{}, GetClassData()),
+        _table(::_pbi::PrivateAccess::GenerateParseTable<RepairGearRequest>(
+            GetClassData()))
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+  {
+  }
+  ~RepairGearRequestGlobalsTypeInternal() {}
+  union {
+    alignas(::_pbi::kMaxMessageAlignment) RepairGearRequest _default;
+  };
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+  decltype(::_pbi::PrivateAccess::GenerateParseTable<RepairGearRequest>(
+      ::std::declval<const ::_pbi::ClassData*>())) _table;
+#endif
+};
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+static_assert(PROTOBUF_FIELD_OFFSET(RepairGearRequestGlobalsTypeInternal, _default) ==
+              ::_pbi::MessageGlobalsBase::OffsetToDefault());
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 PROTOBUF_MESSAGE_GLOBALS_CONST RepairGearRequestGlobalsTypeInternal RepairGearRequest_globals_
+        PROTOBUF_MESSAGE_GLOBALS_SECTION(.data.rel.ro);
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+namespace {
+const ::_pbi::ClassData* RepairGearRequest_get_class_data() {
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+  return RepairGearRequest_globals_.GetClassData();
+#else
+  return RepairGearRequest_class_data_.base();
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+}
+}  // namespace
+#endif  // PROTOBUF_CUSTOM_VTABLE
+class RepairGearReply::_Internal {
+ public:
+  using HasBits = decltype(::std::declval<RepairGearReply>()._impl_._has_bits_);
+  static constexpr ::int32_t kHasBitsOffset =
+      8 * PROTOBUF_FIELD_OFFSET(RepairGearReply, _impl_._has_bits_);
+};
+
+constexpr RepairGearReply::ParseTableT_ RepairGearReply::InternalGenerateParseTable_(const ::_pbi::ClassData* class_data) {
+  return ParseTableT_{
+    {
+      PROTOBUF_FIELD_OFFSET(RepairGearReply, _impl_._has_bits_),
+      0, // no _extensions_
+      4, 24,  // max_field_number, fast_idx_mask
+      offsetof(ParseTableT_, field_lookup_table),
+      4294967280,  // skipmap
+      offsetof(ParseTableT_, field_entries),
+      4,  // num_field_entries
+      0,  // num_aux_entries
+      offsetof(ParseTableT_, field_names),  // no aux_entries
+      class_data,
+      nullptr,  // post_loop_handler
+      ::_pbi::TcParser::GenericFallback,  // fallback
+      #ifdef PROTOBUF_PREFETCH_PARSE_TABLE
+      ::_pbi::TcParser::GetTable<::sf::exchange::v1::RepairGearReply>(),  // to_prefetch
+      #endif  // PROTOBUF_PREFETCH_PARSE_TABLE
+    }, {{
+      // bool committed = 4;
+      {::_pbi::TcParser::SingularVarintNoZag1<bool, offsetof(RepairGearReply, _impl_.committed_), 3>(),
+       {32, 3, 0,
+        PROTOBUF_FIELD_OFFSET(RepairGearReply, _impl_.committed_)}},
+      // string operation_id = 1;
+      {::_pbi::TcParser::FastUS1,
+       {10, 0, 0,
+        PROTOBUF_FIELD_OFFSET(RepairGearReply, _impl_.operation_id_)}},
+      // int64 cost_copper = 2;
+      {::_pbi::TcParser::SingularVarintNoZag1<::uint64_t, offsetof(RepairGearReply, _impl_.cost_copper_), 1>(),
+       {16, 1, 0,
+        PROTOBUF_FIELD_OFFSET(RepairGearReply, _impl_.cost_copper_)}},
+      // int32 item_count = 3;
+      {::_pbi::TcParser::SingularVarintNoZag1<::uint32_t, offsetof(RepairGearReply, _impl_.item_count_), 2>(),
+       {24, 2, 0,
+        PROTOBUF_FIELD_OFFSET(RepairGearReply, _impl_.item_count_)}},
+    }}, {{
+      65535, 65535
+    }}, {{
+      // string operation_id = 1;
+      {PROTOBUF_FIELD_OFFSET(RepairGearReply, _impl_.operation_id_), _Internal::kHasBitsOffset + 0, 0, (0 | ::_fl::kFcOptional | ::_fl::kUtf8String | ::_fl::kRepAString)},
+      // int64 cost_copper = 2;
+      {PROTOBUF_FIELD_OFFSET(RepairGearReply, _impl_.cost_copper_), _Internal::kHasBitsOffset + 1, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt64)},
+      // int32 item_count = 3;
+      {PROTOBUF_FIELD_OFFSET(RepairGearReply, _impl_.item_count_), _Internal::kHasBitsOffset + 2, 0, (0 | ::_fl::kFcOptional | ::_fl::kInt32)},
+      // bool committed = 4;
+      {PROTOBUF_FIELD_OFFSET(RepairGearReply, _impl_.committed_), _Internal::kHasBitsOffset + 3, 0, (0 | ::_fl::kFcOptional | ::_fl::kBool)},
+    }},
+    // no aux_entries
+    {{
+      "\36\14\0\0\0\0\0\0"
+      "sf.exchange.v1.RepairGearReply"
+      "operation_id"
+    }},
+  };
+}
+
+
+inline constexpr RepairGearReply::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    ::_pbi::ConstantInitialized) noexcept
+      : _cached_size_{0},
+        operation_id_(
+            &::google::protobuf::internal::fixed_address_empty_string,
+            ::_pbi::ConstantInitialized()),
+        cost_copper_{::int64_t{0}},
+        item_count_{0},
+        committed_{false} {}
+
+template <typename>
+constexpr RepairGearReply::RepairGearReply(::_pbi::ConstantInitialized,
+                       const ::_pbi::ClassData* PROTOBUF_NONNULL class_data)
+    : ::google::protobuf::Message(
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          class_data
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          ),
+      _impl_(internal_visibility(), ::_pbi::ConstantInitialized()) {
+}
+inline void* PROTOBUF_NONNULL RepairGearReply::PlacementNew_(
+    const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena) {
+  return ::new (mem) RepairGearReply(arena);
+}
+constexpr auto RepairGearReply::InternalNewImpl_() {
+  return ::google::protobuf::internal::MessageCreator::CopyInit(sizeof(RepairGearReply), alignof(RepairGearReply));
+}
+constexpr auto RepairGearReply::InternalGenerateClassData_(
+    const MessageLite& prototype,
+    const ::google::protobuf::internal::TcParseTableBase* tc_table) {
+  return ::google::protobuf::internal::ClassDataFull{
+      ::google::protobuf::internal::ClassData{
+          &prototype,
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+          &_table_.header,
+#else
+          tc_table,
+#endif
+          nullptr,  // IsInitialized
+          &RepairGearReply::MergeImpl,
+          ::google::protobuf::Message::GetNewImpl<RepairGearReply>(),
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+          &RepairGearReply::SharedDtor,
+          ::google::protobuf::Message::GetClearImpl<RepairGearReply>(), &RepairGearReply::ByteSizeLong,
+              &RepairGearReply::_InternalSerialize,
+#endif  // PROTOBUF_CUSTOM_VTABLE
+          PROTOBUF_FIELD_OFFSET(RepairGearReply, _impl_._cached_size_),
+          false,
+      },
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+      &file_reflection_data[18],
+#else   // !PROTOBUF_MESSAGE_GLOBALS
+      &::_pbi::kDescriptorMethods,
+      &descriptor_table_sf_2fexchange_2fv1_2fexchange_2eproto,
+      nullptr,  // tracker
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+  };
+}
+struct RepairGearReplyGlobalsTypeInternal : ::_pbi::MessageGlobalsBase {
+  constexpr RepairGearReplyGlobalsTypeInternal()
+      :
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+        _default(::_pbi::ConstantInitialized{},
+                 RepairGearReply_class_data_.base())
+#else   // !PROTOBUF_MESSAGE_GLOBALS
+        MessageGlobalsBase(RepairGearReply::InternalGenerateClassData_(
+            _default, &RepairGearReply_globals_._table.header)),
+        _default(::_pbi::ConstantInitialized{}, GetClassData()),
+        _table(::_pbi::PrivateAccess::GenerateParseTable<RepairGearReply>(
+            GetClassData()))
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+  {
+  }
+  ~RepairGearReplyGlobalsTypeInternal() {}
+  union {
+    alignas(::_pbi::kMaxMessageAlignment) RepairGearReply _default;
+  };
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+  decltype(::_pbi::PrivateAccess::GenerateParseTable<RepairGearReply>(
+      ::std::declval<const ::_pbi::ClassData*>())) _table;
+#endif
+};
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+static_assert(PROTOBUF_FIELD_OFFSET(RepairGearReplyGlobalsTypeInternal, _default) ==
+              ::_pbi::MessageGlobalsBase::OffsetToDefault());
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT
+    PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 PROTOBUF_MESSAGE_GLOBALS_CONST RepairGearReplyGlobalsTypeInternal RepairGearReply_globals_
+        PROTOBUF_MESSAGE_GLOBALS_SECTION(.data.rel.ro);
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+namespace {
+const ::_pbi::ClassData* RepairGearReply_get_class_data() {
+#ifdef PROTOBUF_MESSAGE_GLOBALS
+  return RepairGearReply_globals_.GetClassData();
+#else
+  return RepairGearReply_class_data_.base();
 #endif  // PROTOBUF_MESSAGE_GLOBALS
 }
 }  // namespace
@@ -2995,6 +3668,46 @@ const ::uint32_t
         5,
         3,
         4,
+        0x081, // bitmap
+        PROTOBUF_FIELD_OFFSET(::sf::exchange::v1::RepairQuoteRequest, _impl_._has_bits_),
+        6, // hasbit index offset
+        PROTOBUF_FIELD_OFFSET(::sf::exchange::v1::RepairQuoteRequest, _impl_.owner_id_),
+        PROTOBUF_FIELD_OFFSET(::sf::exchange::v1::RepairQuoteRequest, _impl_.instance_id_),
+        PROTOBUF_FIELD_OFFSET(::sf::exchange::v1::RepairQuoteRequest, _impl_.all_equipped_),
+        0,
+        1,
+        2,
+        0x081, // bitmap
+        PROTOBUF_FIELD_OFFSET(::sf::exchange::v1::RepairQuoteReply, _impl_._has_bits_),
+        7, // hasbit index offset
+        PROTOBUF_FIELD_OFFSET(::sf::exchange::v1::RepairQuoteReply, _impl_.quote_id_),
+        PROTOBUF_FIELD_OFFSET(::sf::exchange::v1::RepairQuoteReply, _impl_.cost_copper_),
+        PROTOBUF_FIELD_OFFSET(::sf::exchange::v1::RepairQuoteReply, _impl_.item_count_),
+        PROTOBUF_FIELD_OFFSET(::sf::exchange::v1::RepairQuoteReply, _impl_.expires_at_unix_ms_),
+        0,
+        1,
+        3,
+        2,
+        0x081, // bitmap
+        PROTOBUF_FIELD_OFFSET(::sf::exchange::v1::RepairGearRequest, _impl_._has_bits_),
+        6, // hasbit index offset
+        PROTOBUF_FIELD_OFFSET(::sf::exchange::v1::RepairGearRequest, _impl_.operation_id_),
+        PROTOBUF_FIELD_OFFSET(::sf::exchange::v1::RepairGearRequest, _impl_.quote_id_),
+        PROTOBUF_FIELD_OFFSET(::sf::exchange::v1::RepairGearRequest, _impl_.owner_id_),
+        0,
+        1,
+        2,
+        0x081, // bitmap
+        PROTOBUF_FIELD_OFFSET(::sf::exchange::v1::RepairGearReply, _impl_._has_bits_),
+        7, // hasbit index offset
+        PROTOBUF_FIELD_OFFSET(::sf::exchange::v1::RepairGearReply, _impl_.operation_id_),
+        PROTOBUF_FIELD_OFFSET(::sf::exchange::v1::RepairGearReply, _impl_.cost_copper_),
+        PROTOBUF_FIELD_OFFSET(::sf::exchange::v1::RepairGearReply, _impl_.item_count_),
+        PROTOBUF_FIELD_OFFSET(::sf::exchange::v1::RepairGearReply, _impl_.committed_),
+        0,
+        1,
+        2,
+        3,
 };
 
 static const ::_pbi::MigrationSchema
@@ -3014,6 +3727,10 @@ static const ::_pbi::MigrationSchema
         {146, sizeof(::sf::exchange::v1::BuyListingRequest)},
         {165, sizeof(::sf::exchange::v1::ListingActionRequest)},
         {176, sizeof(::sf::exchange::v1::ExchangeReply)},
+        {191, sizeof(::sf::exchange::v1::RepairQuoteRequest)},
+        {200, sizeof(::sf::exchange::v1::RepairQuoteReply)},
+        {211, sizeof(::sf::exchange::v1::RepairGearRequest)},
+        {220, sizeof(::sf::exchange::v1::RepairGearReply)},
 };
 static const ::_pbi::MessageGlobalsBase* PROTOBUF_NONNULL const
     file_message_globals[] = {
@@ -3032,6 +3749,10 @@ static const ::_pbi::MessageGlobalsBase* PROTOBUF_NONNULL const
         &::sf::exchange::v1::BuyListingRequest_globals_,
         &::sf::exchange::v1::ListingActionRequest_globals_,
         &::sf::exchange::v1::ExchangeReply_globals_,
+        &::sf::exchange::v1::RepairQuoteRequest_globals_,
+        &::sf::exchange::v1::RepairQuoteReply_globals_,
+        &::sf::exchange::v1::RepairGearRequest_globals_,
+        &::sf::exchange::v1::RepairGearReply_globals_,
 };
 const char descriptor_table_protodef_sf_2fexchange_2fv1_2fexchange_2eproto[] ABSL_ATTRIBUTE_SECTION_VARIABLE(
     protodesc_cold) = {
@@ -3082,39 +3803,52 @@ const char descriptor_table_protodef_sf_2fexchange_2fv1_2fexchange_2eproto[] ABS
     "\022\021\n\tmarket_id\030\004 \001(\t\"x\n\rExchangeReply\022\024\n\014"
     "operation_id\030\001 \001(\t\022\022\n\nsubject_id\030\002 \001(\t\022\r"
     "\n\005state\030\003 \001(\t\022\021\n\tcommitted\030\004 \001(\010\022\016\n\006amou"
-    "nt\030\005 \001(\003\022\013\n\003fee\030\006 \001(\0032\340\005\n\010Exchange\022D\n\006Wa"
-    "llet\022\035.sf.exchange.v1.WalletRequest\032\033.sf"
-    ".exchange.v1.WalletReply\022N\n\nOfferTrade\022!"
-    ".sf.exchange.v1.TradeOfferRequest\032\035.sf.e"
-    "xchange.v1.ExchangeReply\022P\n\013AcceptTrade\022"
-    "\".sf.exchange.v1.TradeActionRequest\032\035.sf"
-    ".exchange.v1.ExchangeReply\022P\n\013CancelTrad"
-    "e\022\".sf.exchange.v1.TradeActionRequest\032\035."
-    "sf.exchange.v1.ExchangeReply\022J\n\010ListItem"
-    "\022\037.sf.exchange.v1.ListItemRequest\032\035.sf.e"
-    "xchange.v1.ExchangeReply\022N\n\nBuyListing\022!"
-    ".sf.exchange.v1.BuyListingRequest\032\035.sf.e"
-    "xchange.v1.ExchangeReply\022T\n\rCancelListin"
-    "g\022$.sf.exchange.v1.ListingActionRequest\032"
-    "\035.sf.exchange.v1.ExchangeReply\022V\n\014ListLi"
-    "stings\022#.sf.exchange.v1.ListListingsRequ"
-    "est\032!.sf.exchange.v1.ListListingsReply\022P"
-    "\n\nListTrades\022!.sf.exchange.v1.ListTrades"
-    "Request\032\037.sf.exchange.v1.ListTradesReply"
-    "B \252\002\035ShatteredFrontier.Exchange.V1b\006prot"
-    "o3"
+    "nt\030\005 \001(\003\022\013\n\003fee\030\006 \001(\003\"Q\n\022RepairQuoteRequ"
+    "est\022\020\n\010owner_id\030\001 \001(\t\022\023\n\013instance_id\030\002 \001"
+    "(\t\022\024\n\014all_equipped\030\003 \001(\010\"i\n\020RepairQuoteR"
+    "eply\022\020\n\010quote_id\030\001 \001(\t\022\023\n\013cost_copper\030\002 "
+    "\001(\003\022\022\n\nitem_count\030\003 \001(\005\022\032\n\022expires_at_un"
+    "ix_ms\030\004 \001(\003\"M\n\021RepairGearRequest\022\024\n\014oper"
+    "ation_id\030\001 \001(\t\022\020\n\010quote_id\030\002 \001(\t\022\020\n\010owne"
+    "r_id\030\003 \001(\t\"c\n\017RepairGearReply\022\024\n\014operati"
+    "on_id\030\001 \001(\t\022\023\n\013cost_copper\030\002 \001(\003\022\022\n\nitem"
+    "_count\030\003 \001(\005\022\021\n\tcommitted\030\004 \001(\0102\207\007\n\010Exch"
+    "ange\022D\n\006Wallet\022\035.sf.exchange.v1.WalletRe"
+    "quest\032\033.sf.exchange.v1.WalletReply\022S\n\013Qu"
+    "oteRepair\022\".sf.exchange.v1.RepairQuoteRe"
+    "quest\032 .sf.exchange.v1.RepairQuoteReply\022"
+    "P\n\nRepairGear\022!.sf.exchange.v1.RepairGea"
+    "rRequest\032\037.sf.exchange.v1.RepairGearRepl"
+    "y\022N\n\nOfferTrade\022!.sf.exchange.v1.TradeOf"
+    "ferRequest\032\035.sf.exchange.v1.ExchangeRepl"
+    "y\022P\n\013AcceptTrade\022\".sf.exchange.v1.TradeA"
+    "ctionRequest\032\035.sf.exchange.v1.ExchangeRe"
+    "ply\022P\n\013CancelTrade\022\".sf.exchange.v1.Trad"
+    "eActionRequest\032\035.sf.exchange.v1.Exchange"
+    "Reply\022J\n\010ListItem\022\037.sf.exchange.v1.ListI"
+    "temRequest\032\035.sf.exchange.v1.ExchangeRepl"
+    "y\022N\n\nBuyListing\022!.sf.exchange.v1.BuyList"
+    "ingRequest\032\035.sf.exchange.v1.ExchangeRepl"
+    "y\022T\n\rCancelListing\022$.sf.exchange.v1.List"
+    "ingActionRequest\032\035.sf.exchange.v1.Exchan"
+    "geReply\022V\n\014ListListings\022#.sf.exchange.v1"
+    ".ListListingsRequest\032!.sf.exchange.v1.Li"
+    "stListingsReply\022P\n\nListTrades\022!.sf.excha"
+    "nge.v1.ListTradesRequest\032\037.sf.exchange.v"
+    "1.ListTradesReplyB \252\002\035ShatteredFrontier."
+    "Exchange.V1b\006proto3"
 };
 static ::absl::once_flag descriptor_table_sf_2fexchange_2fv1_2fexchange_2eproto_once;
 PROTOBUF_CONSTINIT const ::_pbi::DescriptorTable descriptor_table_sf_2fexchange_2fv1_2fexchange_2eproto = {
     false,
     false,
-    2682,
+    3219,
     descriptor_table_protodef_sf_2fexchange_2fv1_2fexchange_2eproto,
     "sf/exchange/v1/exchange.proto",
     &descriptor_table_sf_2fexchange_2fv1_2fexchange_2eproto_once,
     nullptr,
     0,
-    15,
+    19,
     schemas,
     file_message_globals,
     TableStruct_sf_2fexchange_2fv1_2fexchange_2eproto::offsets,
@@ -8195,6 +8929,1174 @@ void ExchangeReply::InternalSwap(ExchangeReply* PROTOBUF_RESTRICT PROTOBUF_NONNU
 }
 
 ::google::protobuf::Metadata ExchangeReply::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
+RepairQuoteRequest::RepairQuoteRequest(::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, RepairQuoteRequest_get_class_data()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:sf.exchange.v1.RepairQuoteRequest)
+}
+PROTOBUF_NDEBUG_INLINE RepairQuoteRequest::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+    [[maybe_unused]] const ::sf::exchange::v1::RepairQuoteRequest& from_msg)
+      : _has_bits_{from._has_bits_},
+        _cached_size_{0},
+        owner_id_(arena, from.owner_id_),
+        instance_id_(arena, from.instance_id_) {}
+
+RepairQuoteRequest::RepairQuoteRequest(
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena,
+    const RepairQuoteRequest& from)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, RepairQuoteRequest_get_class_data()) {
+
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  RepairQuoteRequest* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
+  _impl_.all_equipped_ = from._impl_.all_equipped_;
+
+  // @@protoc_insertion_point(copy_constructor:sf.exchange.v1.RepairQuoteRequest)
+}
+PROTOBUF_NDEBUG_INLINE RepairQuoteRequest::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+      : _cached_size_{0},
+        owner_id_(arena),
+        instance_id_(arena) {}
+
+inline void RepairQuoteRequest::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  _impl_.all_equipped_ = {};
+}
+RepairQuoteRequest::~RepairQuoteRequest() {
+  // @@protoc_insertion_point(destructor:sf.exchange.v1.RepairQuoteRequest)
+  SharedDtor(*this);
+}
+inline void RepairQuoteRequest::SharedDtor(MessageLite& self) {
+  RepairQuoteRequest& this_ = static_cast<RepairQuoteRequest&>(self);
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    this_.CheckHasBitConsistency();
+  }
+  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.owner_id_.Destroy();
+  this_._impl_.instance_id_.Destroy();
+  this_._impl_.~Impl_();
+}
+
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
+    ::google::protobuf::internal::ClassDataFull RepairQuoteRequest_class_data_ =
+        RepairQuoteRequest::InternalGenerateClassData_(RepairQuoteRequest_globals_._default);
+
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+RepairQuoteRequest::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&RepairQuoteRequest_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(RepairQuoteRequest_class_data_.tc_table);
+  return RepairQuoteRequest_class_data_.base();
+}
+#else
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+RepairQuoteRequest::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&RepairQuoteRequest_globals_);
+  ::google::protobuf::internal::PrefetchToLocalCache(
+      ::google::protobuf::internal::MessageGlobalsBase::ToParseTableBase(&RepairQuoteRequest_globals_));
+  return RepairQuoteRequest_globals_.GetClassData();
+}
+#endif  // !PROTOBUF_MESSAGE_GLOBALS
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_CONSTINIT
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const RepairQuoteRequest::ParseTableT_
+    RepairQuoteRequest::_table_ =
+        RepairQuoteRequest::InternalGenerateParseTable_(RepairQuoteRequest_class_data_.base());
+#endif  // !PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_NOINLINE void RepairQuoteRequest::Clear() {
+// @@protoc_insertion_point(message_clear_start:sf.exchange.v1.RepairQuoteRequest)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x00000003U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      _impl_.owner_id_.ClearNonDefaultToEmpty();
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      _impl_.instance_id_.ClearNonDefaultToEmpty();
+    }
+  }
+  _impl_.all_equipped_ = false;
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::uint8_t* PROTOBUF_NONNULL RepairQuoteRequest::_InternalSerialize(
+    const ::google::protobuf::MessageLite& base, ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) {
+  const RepairQuoteRequest& this_ = static_cast<const RepairQuoteRequest&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::uint8_t* PROTOBUF_NONNULL RepairQuoteRequest::_InternalSerialize(
+    ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+  const RepairQuoteRequest& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    this_.CheckHasBitConsistency();
+  }
+  // @@protoc_insertion_point(serialize_to_array_start:sf.exchange.v1.RepairQuoteRequest)
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  cached_has_bits = this_._impl_._has_bits_[0];
+  // string owner_id = 1;
+  if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+    if (!this_._internal_owner_id().empty()) {
+      const ::std::string& _s = this_._internal_owner_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.exchange.v1.RepairQuoteRequest.owner_id");
+      target = stream->WriteStringMaybeAliased(1, _s, target);
+    }
+  }
+
+  // string instance_id = 2;
+  if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+    if (!this_._internal_instance_id().empty()) {
+      const ::std::string& _s = this_._internal_instance_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.exchange.v1.RepairQuoteRequest.instance_id");
+      target = stream->WriteStringMaybeAliased(2, _s, target);
+    }
+  }
+
+  // bool all_equipped = 3;
+  if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+    if (this_._internal_all_equipped() != 0) {
+      target = stream->EnsureSpace(target);
+      target = ::_pbi::WireFormatLite::WriteBoolToArray(
+          3, this_._internal_all_equipped(), target);
+    }
+  }
+
+  if (ABSL_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
+    target =
+        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+            this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:sf.exchange.v1.RepairQuoteRequest)
+  return target;
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::size_t RepairQuoteRequest::ByteSizeLong(const MessageLite& base) {
+  const RepairQuoteRequest& this_ = static_cast<const RepairQuoteRequest&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::size_t RepairQuoteRequest::ByteSizeLong() const {
+  const RepairQuoteRequest& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  // @@protoc_insertion_point(message_byte_size_start:sf.exchange.v1.RepairQuoteRequest)
+  ::size_t total_size = 0;
+
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void)cached_has_bits;
+
+  ::_pbi::Prefetch5LinesFrom7Lines(&this_);
+  cached_has_bits = this_._impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x00000007U)) {
+    // string owner_id = 1;
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      if (!this_._internal_owner_id().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_owner_id());
+      }
+    }
+    // string instance_id = 2;
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      if (!this_._internal_instance_id().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_instance_id());
+      }
+    }
+    // bool all_equipped = 3;
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      if (this_._internal_all_equipped() != 0) {
+        total_size += 2;
+      }
+    }
+  }
+  return this_.MaybeComputeUnknownFieldsSize(total_size,
+                                             &this_._impl_._cached_size_);
+}
+
+void RepairQuoteRequest::MergeImpl(::google::protobuf::MessageLite& to_msg,
+                      const ::google::protobuf::MessageLite& from_msg) {
+   auto* const _this = static_cast<RepairQuoteRequest*>(&to_msg);
+  auto& from = static_cast<const RepairQuoteRequest&>(from_msg);
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    from.CheckHasBitConsistency();
+  }
+  // @@protoc_insertion_point(class_specific_merge_from_start:sf.exchange.v1.RepairQuoteRequest)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  cached_has_bits = from._impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x00000007U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      if (!from._internal_owner_id().empty()) {
+        _this->_internal_set_owner_id(from._internal_owner_id());
+      } else {
+        if (_this->_impl_.owner_id_.IsDefault()) {
+          _this->_internal_set_owner_id("");
+        }
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      if (!from._internal_instance_id().empty()) {
+        _this->_internal_set_instance_id(from._internal_instance_id());
+      } else {
+        if (_this->_impl_.instance_id_.IsDefault()) {
+          _this->_internal_set_instance_id("");
+        }
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      if (from._internal_all_equipped() != 0) {
+        _this->_impl_.all_equipped_ = from._impl_.all_equipped_;
+      }
+    }
+  }
+  _this->_impl_._has_bits_[0] |= cached_has_bits;
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+}
+
+void RepairQuoteRequest::CopyFrom(const RepairQuoteRequest& from) {
+  // @@protoc_insertion_point(class_specific_copy_from_start:sf.exchange.v1.RepairQuoteRequest)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void RepairQuoteRequest::InternalSwap(RepairQuoteRequest* PROTOBUF_RESTRICT PROTOBUF_NONNULL other) {
+  using ::std::swap;
+  auto* arena = GetArena();
+  ABSL_DCHECK_EQ(arena, other->GetArena());
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.owner_id_, &other->_impl_.owner_id_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.instance_id_, &other->_impl_.instance_id_, arena);
+  swap(_impl_.all_equipped_, other->_impl_.all_equipped_);
+}
+
+::google::protobuf::Metadata RepairQuoteRequest::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
+RepairQuoteReply::RepairQuoteReply(::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, RepairQuoteReply_get_class_data()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:sf.exchange.v1.RepairQuoteReply)
+}
+PROTOBUF_NDEBUG_INLINE RepairQuoteReply::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+    [[maybe_unused]] const ::sf::exchange::v1::RepairQuoteReply& from_msg)
+      : _has_bits_{from._has_bits_},
+        _cached_size_{0},
+        quote_id_(arena, from.quote_id_) {}
+
+RepairQuoteReply::RepairQuoteReply(
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena,
+    const RepairQuoteReply& from)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, RepairQuoteReply_get_class_data()) {
+
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  RepairQuoteReply* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
+  ::memcpy(reinterpret_cast<char*>(&_impl_) +
+               offsetof(Impl_, cost_copper_),
+           reinterpret_cast<const char*>(&from._impl_) +
+               offsetof(Impl_, cost_copper_),
+           offsetof(Impl_, item_count_) -
+               offsetof(Impl_, cost_copper_) +
+               sizeof(Impl_::item_count_));
+
+  // @@protoc_insertion_point(copy_constructor:sf.exchange.v1.RepairQuoteReply)
+}
+PROTOBUF_NDEBUG_INLINE RepairQuoteReply::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+      : _cached_size_{0},
+        quote_id_(arena) {}
+
+inline void RepairQuoteReply::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  ::memset(reinterpret_cast<char*>(&_impl_) +
+               offsetof(Impl_, cost_copper_),
+           0,
+           offsetof(Impl_, item_count_) -
+               offsetof(Impl_, cost_copper_) +
+               sizeof(Impl_::item_count_));
+}
+RepairQuoteReply::~RepairQuoteReply() {
+  // @@protoc_insertion_point(destructor:sf.exchange.v1.RepairQuoteReply)
+  SharedDtor(*this);
+}
+inline void RepairQuoteReply::SharedDtor(MessageLite& self) {
+  RepairQuoteReply& this_ = static_cast<RepairQuoteReply&>(self);
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    this_.CheckHasBitConsistency();
+  }
+  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.quote_id_.Destroy();
+  this_._impl_.~Impl_();
+}
+
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
+    ::google::protobuf::internal::ClassDataFull RepairQuoteReply_class_data_ =
+        RepairQuoteReply::InternalGenerateClassData_(RepairQuoteReply_globals_._default);
+
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+RepairQuoteReply::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&RepairQuoteReply_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(RepairQuoteReply_class_data_.tc_table);
+  return RepairQuoteReply_class_data_.base();
+}
+#else
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+RepairQuoteReply::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&RepairQuoteReply_globals_);
+  ::google::protobuf::internal::PrefetchToLocalCache(
+      ::google::protobuf::internal::MessageGlobalsBase::ToParseTableBase(&RepairQuoteReply_globals_));
+  return RepairQuoteReply_globals_.GetClassData();
+}
+#endif  // !PROTOBUF_MESSAGE_GLOBALS
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_CONSTINIT
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const RepairQuoteReply::ParseTableT_
+    RepairQuoteReply::_table_ =
+        RepairQuoteReply::InternalGenerateParseTable_(RepairQuoteReply_class_data_.base());
+#endif  // !PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_NOINLINE void RepairQuoteReply::Clear() {
+// @@protoc_insertion_point(message_clear_start:sf.exchange.v1.RepairQuoteReply)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+    _impl_.quote_id_.ClearNonDefaultToEmpty();
+  }
+  if (BatchCheckHasBit(cached_has_bits, 0x0000000eU)) {
+    ::memset(&_impl_.cost_copper_, 0, static_cast<::size_t>(
+        reinterpret_cast<char*>(&_impl_.item_count_) -
+        reinterpret_cast<char*>(&_impl_.cost_copper_)) + sizeof(_impl_.item_count_));
+  }
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::uint8_t* PROTOBUF_NONNULL RepairQuoteReply::_InternalSerialize(
+    const ::google::protobuf::MessageLite& base, ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) {
+  const RepairQuoteReply& this_ = static_cast<const RepairQuoteReply&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::uint8_t* PROTOBUF_NONNULL RepairQuoteReply::_InternalSerialize(
+    ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+  const RepairQuoteReply& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    this_.CheckHasBitConsistency();
+  }
+  // @@protoc_insertion_point(serialize_to_array_start:sf.exchange.v1.RepairQuoteReply)
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  cached_has_bits = this_._impl_._has_bits_[0];
+  // string quote_id = 1;
+  if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+    if (!this_._internal_quote_id().empty()) {
+      const ::std::string& _s = this_._internal_quote_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.exchange.v1.RepairQuoteReply.quote_id");
+      target = stream->WriteStringMaybeAliased(1, _s, target);
+    }
+  }
+
+  // int64 cost_copper = 2;
+  if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+    if (this_._internal_cost_copper() != 0) {
+      target =
+          ::google::protobuf::internal::WireFormatLite::WriteInt64ToArrayWithField<2>(
+              stream, this_._internal_cost_copper(), target);
+    }
+  }
+
+  // int32 item_count = 3;
+  if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+    if (this_._internal_item_count() != 0) {
+      target =
+          ::google::protobuf::internal::WireFormatLite::WriteInt32ToArrayWithField<3>(
+              stream, this_._internal_item_count(), target);
+    }
+  }
+
+  // int64 expires_at_unix_ms = 4;
+  if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+    if (this_._internal_expires_at_unix_ms() != 0) {
+      target =
+          ::google::protobuf::internal::WireFormatLite::WriteInt64ToArrayWithField<4>(
+              stream, this_._internal_expires_at_unix_ms(), target);
+    }
+  }
+
+  if (ABSL_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
+    target =
+        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+            this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:sf.exchange.v1.RepairQuoteReply)
+  return target;
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::size_t RepairQuoteReply::ByteSizeLong(const MessageLite& base) {
+  const RepairQuoteReply& this_ = static_cast<const RepairQuoteReply&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::size_t RepairQuoteReply::ByteSizeLong() const {
+  const RepairQuoteReply& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  // @@protoc_insertion_point(message_byte_size_start:sf.exchange.v1.RepairQuoteReply)
+  ::size_t total_size = 0;
+
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void)cached_has_bits;
+
+  ::_pbi::Prefetch5LinesFrom7Lines(&this_);
+  cached_has_bits = this_._impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x0000000fU)) {
+    // string quote_id = 1;
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      if (!this_._internal_quote_id().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_quote_id());
+      }
+    }
+    // int64 cost_copper = 2;
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      if (this_._internal_cost_copper() != 0) {
+        total_size += ::_pbi::WireFormatLite::Int64SizePlusOne(
+            this_._internal_cost_copper());
+      }
+    }
+    // int64 expires_at_unix_ms = 4;
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      if (this_._internal_expires_at_unix_ms() != 0) {
+        total_size += ::_pbi::WireFormatLite::Int64SizePlusOne(
+            this_._internal_expires_at_unix_ms());
+      }
+    }
+    // int32 item_count = 3;
+    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+      if (this_._internal_item_count() != 0) {
+        total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(
+            this_._internal_item_count());
+      }
+    }
+  }
+  return this_.MaybeComputeUnknownFieldsSize(total_size,
+                                             &this_._impl_._cached_size_);
+}
+
+void RepairQuoteReply::MergeImpl(::google::protobuf::MessageLite& to_msg,
+                      const ::google::protobuf::MessageLite& from_msg) {
+   auto* const _this = static_cast<RepairQuoteReply*>(&to_msg);
+  auto& from = static_cast<const RepairQuoteReply&>(from_msg);
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    from.CheckHasBitConsistency();
+  }
+  // @@protoc_insertion_point(class_specific_merge_from_start:sf.exchange.v1.RepairQuoteReply)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  cached_has_bits = from._impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x0000000fU)) {
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      if (!from._internal_quote_id().empty()) {
+        _this->_internal_set_quote_id(from._internal_quote_id());
+      } else {
+        if (_this->_impl_.quote_id_.IsDefault()) {
+          _this->_internal_set_quote_id("");
+        }
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      if (from._internal_cost_copper() != 0) {
+        _this->_impl_.cost_copper_ = from._impl_.cost_copper_;
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      if (from._internal_expires_at_unix_ms() != 0) {
+        _this->_impl_.expires_at_unix_ms_ = from._impl_.expires_at_unix_ms_;
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+      if (from._internal_item_count() != 0) {
+        _this->_impl_.item_count_ = from._impl_.item_count_;
+      }
+    }
+  }
+  _this->_impl_._has_bits_[0] |= cached_has_bits;
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+}
+
+void RepairQuoteReply::CopyFrom(const RepairQuoteReply& from) {
+  // @@protoc_insertion_point(class_specific_copy_from_start:sf.exchange.v1.RepairQuoteReply)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void RepairQuoteReply::InternalSwap(RepairQuoteReply* PROTOBUF_RESTRICT PROTOBUF_NONNULL other) {
+  using ::std::swap;
+  auto* arena = GetArena();
+  ABSL_DCHECK_EQ(arena, other->GetArena());
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.quote_id_, &other->_impl_.quote_id_, arena);
+  ::google::protobuf::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(RepairQuoteReply, _impl_.item_count_)
+      + sizeof(RepairQuoteReply::_impl_.item_count_)
+      - PROTOBUF_FIELD_OFFSET(RepairQuoteReply, _impl_.cost_copper_)>(
+          reinterpret_cast<char*>(&_impl_.cost_copper_),
+          reinterpret_cast<char*>(&other->_impl_.cost_copper_));
+}
+
+::google::protobuf::Metadata RepairQuoteReply::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
+RepairGearRequest::RepairGearRequest(::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, RepairGearRequest_get_class_data()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:sf.exchange.v1.RepairGearRequest)
+}
+PROTOBUF_NDEBUG_INLINE RepairGearRequest::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+    [[maybe_unused]] const ::sf::exchange::v1::RepairGearRequest& from_msg)
+      : _has_bits_{from._has_bits_},
+        _cached_size_{0},
+        operation_id_(arena, from.operation_id_),
+        quote_id_(arena, from.quote_id_),
+        owner_id_(arena, from.owner_id_) {}
+
+RepairGearRequest::RepairGearRequest(
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena,
+    const RepairGearRequest& from)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, RepairGearRequest_get_class_data()) {
+
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  RepairGearRequest* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
+
+  // @@protoc_insertion_point(copy_constructor:sf.exchange.v1.RepairGearRequest)
+}
+PROTOBUF_NDEBUG_INLINE RepairGearRequest::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+      : _cached_size_{0},
+        operation_id_(arena),
+        quote_id_(arena),
+        owner_id_(arena) {}
+
+inline void RepairGearRequest::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+}
+RepairGearRequest::~RepairGearRequest() {
+  // @@protoc_insertion_point(destructor:sf.exchange.v1.RepairGearRequest)
+  SharedDtor(*this);
+}
+inline void RepairGearRequest::SharedDtor(MessageLite& self) {
+  RepairGearRequest& this_ = static_cast<RepairGearRequest&>(self);
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    this_.CheckHasBitConsistency();
+  }
+  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.operation_id_.Destroy();
+  this_._impl_.quote_id_.Destroy();
+  this_._impl_.owner_id_.Destroy();
+  this_._impl_.~Impl_();
+}
+
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
+    ::google::protobuf::internal::ClassDataFull RepairGearRequest_class_data_ =
+        RepairGearRequest::InternalGenerateClassData_(RepairGearRequest_globals_._default);
+
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+RepairGearRequest::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&RepairGearRequest_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(RepairGearRequest_class_data_.tc_table);
+  return RepairGearRequest_class_data_.base();
+}
+#else
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+RepairGearRequest::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&RepairGearRequest_globals_);
+  ::google::protobuf::internal::PrefetchToLocalCache(
+      ::google::protobuf::internal::MessageGlobalsBase::ToParseTableBase(&RepairGearRequest_globals_));
+  return RepairGearRequest_globals_.GetClassData();
+}
+#endif  // !PROTOBUF_MESSAGE_GLOBALS
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_CONSTINIT
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const RepairGearRequest::ParseTableT_
+    RepairGearRequest::_table_ =
+        RepairGearRequest::InternalGenerateParseTable_(RepairGearRequest_class_data_.base());
+#endif  // !PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_NOINLINE void RepairGearRequest::Clear() {
+// @@protoc_insertion_point(message_clear_start:sf.exchange.v1.RepairGearRequest)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x00000007U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      _impl_.operation_id_.ClearNonDefaultToEmpty();
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      _impl_.quote_id_.ClearNonDefaultToEmpty();
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      _impl_.owner_id_.ClearNonDefaultToEmpty();
+    }
+  }
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::uint8_t* PROTOBUF_NONNULL RepairGearRequest::_InternalSerialize(
+    const ::google::protobuf::MessageLite& base, ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) {
+  const RepairGearRequest& this_ = static_cast<const RepairGearRequest&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::uint8_t* PROTOBUF_NONNULL RepairGearRequest::_InternalSerialize(
+    ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+  const RepairGearRequest& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    this_.CheckHasBitConsistency();
+  }
+  // @@protoc_insertion_point(serialize_to_array_start:sf.exchange.v1.RepairGearRequest)
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  cached_has_bits = this_._impl_._has_bits_[0];
+  // string operation_id = 1;
+  if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+    if (!this_._internal_operation_id().empty()) {
+      const ::std::string& _s = this_._internal_operation_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.exchange.v1.RepairGearRequest.operation_id");
+      target = stream->WriteStringMaybeAliased(1, _s, target);
+    }
+  }
+
+  // string quote_id = 2;
+  if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+    if (!this_._internal_quote_id().empty()) {
+      const ::std::string& _s = this_._internal_quote_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.exchange.v1.RepairGearRequest.quote_id");
+      target = stream->WriteStringMaybeAliased(2, _s, target);
+    }
+  }
+
+  // string owner_id = 3;
+  if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+    if (!this_._internal_owner_id().empty()) {
+      const ::std::string& _s = this_._internal_owner_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.exchange.v1.RepairGearRequest.owner_id");
+      target = stream->WriteStringMaybeAliased(3, _s, target);
+    }
+  }
+
+  if (ABSL_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
+    target =
+        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+            this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:sf.exchange.v1.RepairGearRequest)
+  return target;
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::size_t RepairGearRequest::ByteSizeLong(const MessageLite& base) {
+  const RepairGearRequest& this_ = static_cast<const RepairGearRequest&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::size_t RepairGearRequest::ByteSizeLong() const {
+  const RepairGearRequest& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  // @@protoc_insertion_point(message_byte_size_start:sf.exchange.v1.RepairGearRequest)
+  ::size_t total_size = 0;
+
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void)cached_has_bits;
+
+  ::_pbi::Prefetch5LinesFrom7Lines(&this_);
+  cached_has_bits = this_._impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x00000007U)) {
+    // string operation_id = 1;
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      if (!this_._internal_operation_id().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_operation_id());
+      }
+    }
+    // string quote_id = 2;
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      if (!this_._internal_quote_id().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_quote_id());
+      }
+    }
+    // string owner_id = 3;
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      if (!this_._internal_owner_id().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_owner_id());
+      }
+    }
+  }
+  return this_.MaybeComputeUnknownFieldsSize(total_size,
+                                             &this_._impl_._cached_size_);
+}
+
+void RepairGearRequest::MergeImpl(::google::protobuf::MessageLite& to_msg,
+                      const ::google::protobuf::MessageLite& from_msg) {
+   auto* const _this = static_cast<RepairGearRequest*>(&to_msg);
+  auto& from = static_cast<const RepairGearRequest&>(from_msg);
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    from.CheckHasBitConsistency();
+  }
+  // @@protoc_insertion_point(class_specific_merge_from_start:sf.exchange.v1.RepairGearRequest)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  cached_has_bits = from._impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x00000007U)) {
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      if (!from._internal_operation_id().empty()) {
+        _this->_internal_set_operation_id(from._internal_operation_id());
+      } else {
+        if (_this->_impl_.operation_id_.IsDefault()) {
+          _this->_internal_set_operation_id("");
+        }
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      if (!from._internal_quote_id().empty()) {
+        _this->_internal_set_quote_id(from._internal_quote_id());
+      } else {
+        if (_this->_impl_.quote_id_.IsDefault()) {
+          _this->_internal_set_quote_id("");
+        }
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      if (!from._internal_owner_id().empty()) {
+        _this->_internal_set_owner_id(from._internal_owner_id());
+      } else {
+        if (_this->_impl_.owner_id_.IsDefault()) {
+          _this->_internal_set_owner_id("");
+        }
+      }
+    }
+  }
+  _this->_impl_._has_bits_[0] |= cached_has_bits;
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+}
+
+void RepairGearRequest::CopyFrom(const RepairGearRequest& from) {
+  // @@protoc_insertion_point(class_specific_copy_from_start:sf.exchange.v1.RepairGearRequest)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void RepairGearRequest::InternalSwap(RepairGearRequest* PROTOBUF_RESTRICT PROTOBUF_NONNULL other) {
+  using ::std::swap;
+  auto* arena = GetArena();
+  ABSL_DCHECK_EQ(arena, other->GetArena());
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.operation_id_, &other->_impl_.operation_id_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.quote_id_, &other->_impl_.quote_id_, arena);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.owner_id_, &other->_impl_.owner_id_, arena);
+}
+
+::google::protobuf::Metadata RepairGearRequest::GetMetadata() const {
+  return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
+}
+// ===================================================================
+
+RepairGearReply::RepairGearReply(::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, RepairGearReply_get_class_data()) {
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  SharedCtor(arena);
+  // @@protoc_insertion_point(arena_constructor:sf.exchange.v1.RepairGearReply)
+}
+PROTOBUF_NDEBUG_INLINE RepairGearReply::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+    [[maybe_unused]] const ::sf::exchange::v1::RepairGearReply& from_msg)
+      : _has_bits_{from._has_bits_},
+        _cached_size_{0},
+        operation_id_(arena, from.operation_id_) {}
+
+RepairGearReply::RepairGearReply(
+    ::google::protobuf::Arena* PROTOBUF_NULLABLE arena,
+    const RepairGearReply& from)
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+    : ::google::protobuf::Message(arena, RepairGearReply_get_class_data()) {
+
+#else   // PROTOBUF_CUSTOM_VTABLE
+    : ::google::protobuf::Message(arena) {
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  RepairGearReply* const _this = this;
+  (void)_this;
+  _internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+  new (&_impl_) Impl_(internal_visibility(), arena, from._impl_, from);
+  ::memcpy(reinterpret_cast<char*>(&_impl_) +
+               offsetof(Impl_, cost_copper_),
+           reinterpret_cast<const char*>(&from._impl_) +
+               offsetof(Impl_, cost_copper_),
+           offsetof(Impl_, committed_) -
+               offsetof(Impl_, cost_copper_) +
+               sizeof(Impl_::committed_));
+
+  // @@protoc_insertion_point(copy_constructor:sf.exchange.v1.RepairGearReply)
+}
+PROTOBUF_NDEBUG_INLINE RepairGearReply::Impl_::Impl_(
+    [[maybe_unused]] ::google::protobuf::internal::InternalVisibility visibility,
+    [[maybe_unused]] ::google::protobuf::Arena* PROTOBUF_NULLABLE arena)
+      : _cached_size_{0},
+        operation_id_(arena) {}
+
+inline void RepairGearReply::SharedCtor(::_pb::Arena* PROTOBUF_NULLABLE arena) {
+  new (&_impl_) Impl_(internal_visibility(), arena);
+  ::memset(reinterpret_cast<char*>(&_impl_) +
+               offsetof(Impl_, cost_copper_),
+           0,
+           offsetof(Impl_, committed_) -
+               offsetof(Impl_, cost_copper_) +
+               sizeof(Impl_::committed_));
+}
+RepairGearReply::~RepairGearReply() {
+  // @@protoc_insertion_point(destructor:sf.exchange.v1.RepairGearReply)
+  SharedDtor(*this);
+}
+inline void RepairGearReply::SharedDtor(MessageLite& self) {
+  RepairGearReply& this_ = static_cast<RepairGearReply&>(self);
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    this_.CheckHasBitConsistency();
+  }
+  this_._internal_metadata_.Delete<::google::protobuf::UnknownFieldSet>();
+  ABSL_DCHECK(this_.GetArena() == nullptr);
+  this_._impl_.operation_id_.Destroy();
+  this_._impl_.~Impl_();
+}
+
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const
+    ::google::protobuf::internal::ClassDataFull RepairGearReply_class_data_ =
+        RepairGearReply::InternalGenerateClassData_(RepairGearReply_globals_._default);
+
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+RepairGearReply::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&RepairGearReply_class_data_);
+  ::google::protobuf::internal::PrefetchToLocalCache(RepairGearReply_class_data_.tc_table);
+  return RepairGearReply_class_data_.base();
+}
+#else
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+RepairGearReply::GetClassData() const {
+  ::google::protobuf::internal::PrefetchToLocalCache(&RepairGearReply_globals_);
+  ::google::protobuf::internal::PrefetchToLocalCache(
+      ::google::protobuf::internal::MessageGlobalsBase::ToParseTableBase(&RepairGearReply_globals_));
+  return RepairGearReply_globals_.GetClassData();
+}
+#endif  // !PROTOBUF_MESSAGE_GLOBALS
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_CONSTINIT
+PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const RepairGearReply::ParseTableT_
+    RepairGearReply::_table_ =
+        RepairGearReply::InternalGenerateParseTable_(RepairGearReply_class_data_.base());
+#endif  // !PROTOBUF_MESSAGE_GLOBALS
+PROTOBUF_NOINLINE void RepairGearReply::Clear() {
+// @@protoc_insertion_point(message_clear_start:sf.exchange.v1.RepairGearReply)
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  cached_has_bits = _impl_._has_bits_[0];
+  if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+    _impl_.operation_id_.ClearNonDefaultToEmpty();
+  }
+  if (BatchCheckHasBit(cached_has_bits, 0x0000000eU)) {
+    ::memset(&_impl_.cost_copper_, 0, static_cast<::size_t>(
+        reinterpret_cast<char*>(&_impl_.committed_) -
+        reinterpret_cast<char*>(&_impl_.cost_copper_)) + sizeof(_impl_.committed_));
+  }
+  _impl_._has_bits_.Clear();
+  _internal_metadata_.Clear<::google::protobuf::UnknownFieldSet>();
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::uint8_t* PROTOBUF_NONNULL RepairGearReply::_InternalSerialize(
+    const ::google::protobuf::MessageLite& base, ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) {
+  const RepairGearReply& this_ = static_cast<const RepairGearReply&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::uint8_t* PROTOBUF_NONNULL RepairGearReply::_InternalSerialize(
+    ::uint8_t* PROTOBUF_NONNULL target,
+    ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+  const RepairGearReply& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    this_.CheckHasBitConsistency();
+  }
+  // @@protoc_insertion_point(serialize_to_array_start:sf.exchange.v1.RepairGearReply)
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  cached_has_bits = this_._impl_._has_bits_[0];
+  // string operation_id = 1;
+  if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+    if (!this_._internal_operation_id().empty()) {
+      const ::std::string& _s = this_._internal_operation_id();
+      ::google::protobuf::internal::WireFormatLite::VerifyUtf8String(
+          _s.data(), static_cast<int>(_s.length()), ::google::protobuf::internal::WireFormatLite::SERIALIZE, "sf.exchange.v1.RepairGearReply.operation_id");
+      target = stream->WriteStringMaybeAliased(1, _s, target);
+    }
+  }
+
+  // int64 cost_copper = 2;
+  if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+    if (this_._internal_cost_copper() != 0) {
+      target =
+          ::google::protobuf::internal::WireFormatLite::WriteInt64ToArrayWithField<2>(
+              stream, this_._internal_cost_copper(), target);
+    }
+  }
+
+  // int32 item_count = 3;
+  if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+    if (this_._internal_item_count() != 0) {
+      target =
+          ::google::protobuf::internal::WireFormatLite::WriteInt32ToArrayWithField<3>(
+              stream, this_._internal_item_count(), target);
+    }
+  }
+
+  // bool committed = 4;
+  if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+    if (this_._internal_committed() != 0) {
+      target = stream->EnsureSpace(target);
+      target = ::_pbi::WireFormatLite::WriteBoolToArray(
+          4, this_._internal_committed(), target);
+    }
+  }
+
+  if (ABSL_PREDICT_FALSE(this_._internal_metadata_.have_unknown_fields())) {
+    target =
+        ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+            this_._internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:sf.exchange.v1.RepairGearReply)
+  return target;
+}
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+::size_t RepairGearReply::ByteSizeLong(const MessageLite& base) {
+  const RepairGearReply& this_ = static_cast<const RepairGearReply&>(base);
+#else   // PROTOBUF_CUSTOM_VTABLE
+::size_t RepairGearReply::ByteSizeLong() const {
+  const RepairGearReply& this_ = *this;
+#endif  // PROTOBUF_CUSTOM_VTABLE
+  // @@protoc_insertion_point(message_byte_size_start:sf.exchange.v1.RepairGearReply)
+  ::size_t total_size = 0;
+
+  ::uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void)cached_has_bits;
+
+  ::_pbi::Prefetch5LinesFrom7Lines(&this_);
+  cached_has_bits = this_._impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x0000000fU)) {
+    // string operation_id = 1;
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      if (!this_._internal_operation_id().empty()) {
+        total_size += 1 + ::google::protobuf::internal::WireFormatLite::StringSize(
+                                        this_._internal_operation_id());
+      }
+    }
+    // int64 cost_copper = 2;
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      if (this_._internal_cost_copper() != 0) {
+        total_size += ::_pbi::WireFormatLite::Int64SizePlusOne(
+            this_._internal_cost_copper());
+      }
+    }
+    // int32 item_count = 3;
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      if (this_._internal_item_count() != 0) {
+        total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(
+            this_._internal_item_count());
+      }
+    }
+    // bool committed = 4;
+    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+      if (this_._internal_committed() != 0) {
+        total_size += 2;
+      }
+    }
+  }
+  return this_.MaybeComputeUnknownFieldsSize(total_size,
+                                             &this_._impl_._cached_size_);
+}
+
+void RepairGearReply::MergeImpl(::google::protobuf::MessageLite& to_msg,
+                      const ::google::protobuf::MessageLite& from_msg) {
+   auto* const _this = static_cast<RepairGearReply*>(&to_msg);
+  auto& from = static_cast<const RepairGearReply&>(from_msg);
+  if constexpr (::_pbi::DebugHardenCheckHasBitConsistency()) {
+    from.CheckHasBitConsistency();
+  }
+  // @@protoc_insertion_point(class_specific_merge_from_start:sf.exchange.v1.RepairGearReply)
+  ABSL_DCHECK_NE(&from, _this);
+  ::uint32_t cached_has_bits = 0;
+  (void)cached_has_bits;
+
+  cached_has_bits = from._impl_._has_bits_[0];
+  if (BatchCheckHasBit(cached_has_bits, 0x0000000fU)) {
+    if (CheckHasBit(cached_has_bits, 0x00000001U)) {
+      if (!from._internal_operation_id().empty()) {
+        _this->_internal_set_operation_id(from._internal_operation_id());
+      } else {
+        if (_this->_impl_.operation_id_.IsDefault()) {
+          _this->_internal_set_operation_id("");
+        }
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000002U)) {
+      if (from._internal_cost_copper() != 0) {
+        _this->_impl_.cost_copper_ = from._impl_.cost_copper_;
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000004U)) {
+      if (from._internal_item_count() != 0) {
+        _this->_impl_.item_count_ = from._impl_.item_count_;
+      }
+    }
+    if (CheckHasBit(cached_has_bits, 0x00000008U)) {
+      if (from._internal_committed() != 0) {
+        _this->_impl_.committed_ = from._impl_.committed_;
+      }
+    }
+  }
+  _this->_impl_._has_bits_[0] |= cached_has_bits;
+  _this->_internal_metadata_.MergeFrom<::google::protobuf::UnknownFieldSet>(
+      from._internal_metadata_);
+}
+
+void RepairGearReply::CopyFrom(const RepairGearReply& from) {
+  // @@protoc_insertion_point(class_specific_copy_from_start:sf.exchange.v1.RepairGearReply)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+
+void RepairGearReply::InternalSwap(RepairGearReply* PROTOBUF_RESTRICT PROTOBUF_NONNULL other) {
+  using ::std::swap;
+  auto* arena = GetArena();
+  ABSL_DCHECK_EQ(arena, other->GetArena());
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
+  ::_pbi::ArenaStringPtr::InternalSwap(&_impl_.operation_id_, &other->_impl_.operation_id_, arena);
+  ::google::protobuf::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(RepairGearReply, _impl_.committed_)
+      + sizeof(RepairGearReply::_impl_.committed_)
+      - PROTOBUF_FIELD_OFFSET(RepairGearReply, _impl_.cost_copper_)>(
+          reinterpret_cast<char*>(&_impl_.cost_copper_),
+          reinterpret_cast<char*>(&other->_impl_.cost_copper_));
+}
+
+::google::protobuf::Metadata RepairGearReply::GetMetadata() const {
   return ::google::protobuf::Message::GetMetadataImpl(GetClassData()->full());
 }
 // @@protoc_insertion_point(namespace_scope)

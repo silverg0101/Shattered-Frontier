@@ -10,7 +10,7 @@ using Pb = ShatteredFrontier.Exchange.V1;
 
 internal sealed class ExchangeGrpcService(PostgresExchangeStore exchange, PostgresInventoryLedgerStore inventoryStore,
     GameplayRecoverySettings recoverySettings, DatabasePoolSettings pools, MarketCatalog markets,
-    PostgresCharacterStateStore characters) : Pb.Exchange.ExchangeBase
+    PostgresCharacterStateStore characters, GearRepair repairs) : Pb.Exchange.ExchangeBase
 {
     private static readonly ExchangeSettings MarketSettings = new();
     private InventoryLedger Ledger => new(inventoryStore);
@@ -56,6 +56,20 @@ internal sealed class ExchangeGrpcService(PostgresExchangeStore exchange, Postgr
         Require(request.OwnerId.StartsWith("chr_", StringComparison.Ordinal), "Invalid character.");
         var w = exchange.Wallet(request.OwnerId);
         return new Pb.WalletReply { Balance = w.Balance, Reserved = w.Reserved, Available = w.Spendable, Revision = w.Sequence };
+    });
+    public override Task<Pb.RepairQuoteReply> QuoteRepair(Pb.RepairQuoteRequest request, ServerCallContext context) => GrpcRun.Call(context, () =>
+    {
+        var snapshot = characters.ReadProgression(request.OwnerId)?.Result;
+        int level = snapshot is null ? 1 : new CharacterProgression(request.OwnerId, TimeProvider.System, () => .5, snapshot: snapshot).Level;
+        var quote = repairs.Quote(request.OwnerId, request.InstanceId, request.AllEquipped, level);
+        return new Pb.RepairQuoteReply { QuoteId = quote.Id, CostCopper = quote.CostCopper, ItemCount = quote.ItemCount,
+            ExpiresAtUnixMs = quote.ExpiresAt.ToUnixTimeMilliseconds() };
+    });
+    public override Task<Pb.RepairGearReply> RepairGear(Pb.RepairGearRequest request, ServerCallContext context) => GrpcRun.Call(context, () =>
+    {
+        var receipt = repairs.Repair(request.OperationId, request.QuoteId, request.OwnerId);
+        return new Pb.RepairGearReply { OperationId = receipt.OperationId, CostCopper = receipt.CostCopper,
+            ItemCount = receipt.ItemCount, Committed = true };
     });
     public override Task<Pb.ListListingsReply> ListListings(Pb.ListListingsRequest request, ServerCallContext context) => GrpcRun.Call(context, () =>
     {

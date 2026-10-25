@@ -4,6 +4,8 @@ option csharp_namespace = "ShatteredFrontier.Exchange.V1";
 
 service Exchange {
   rpc Wallet (WalletRequest) returns (WalletReply);
+  rpc QuoteRepair (RepairQuoteRequest) returns (RepairQuoteReply);
+  rpc RepairGear (RepairGearRequest) returns (RepairGearReply);
   rpc OfferTrade (TradeOfferRequest) returns (ExchangeReply);
   rpc AcceptTrade (TradeActionRequest) returns (ExchangeReply);
   rpc CancelTrade (TradeActionRequest) returns (ExchangeReply);
@@ -42,3 +44,7 @@ message BuyListingRequest {
 }
 message ListingActionRequest { string operation_id = 1; string listing_id = 2; string seller_id = 3; string market_id = 4; }
 message ExchangeReply { string operation_id = 1; string subject_id = 2; string state = 3; bool committed = 4; int64 amount = 5; int64 fee = 6; }
+message RepairQuoteRequest { string owner_id = 1; string instance_id = 2; bool all_equipped = 3; }
+message RepairQuoteReply { string quote_id = 1; int64 cost_copper = 2; int32 item_count = 3; int64 expires_at_unix_ms = 4; }
+message RepairGearRequest { string operation_id = 1; string quote_id = 2; string owner_id = 3; }
+message RepairGearReply { string operation_id = 1; int64 cost_copper = 2; int32 item_count = 3; bool committed = 4; }

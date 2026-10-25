@@ -108,6 +108,10 @@ var progressionSettings = new ShatteredFrontier.Progression.ProgressionSettings(
 builder.Services.AddSingleton(progressionSettings);
 var deathPenaltyTuning = new DeathPenaltyTuning(); deathPenaltyTuning.Validate();
 builder.Services.AddSingleton(deathPenaltyTuning);
+var repairTuning = new GearRepairTuning(); repairTuning.Validate();
+builder.Services.AddSingleton(repairTuning);
+builder.Services.AddSingleton(new GearRepair(ledgerConnection, exchangeConnection, repairTuning,
+    Path.Combine(contentRoot, "items", "gear_greenlands_starter.json")));
 builder.Services.AddSingleton(appearanceAllowlist);
 builder.Services.AddSingleton(new AppearanceValidator(appearanceAllowlist));
 builder.Services.AddSingleton<QuestRewardPayout>();

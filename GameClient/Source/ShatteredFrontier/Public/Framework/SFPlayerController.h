@@ -79,6 +79,13 @@ public:
     // Console (development, UI evidence captures): stage named panels and pilot views.
     UFUNCTION(Exec) void SFUi(const FString& Screen);
     void InteractWithSelectedTarget();
+    // Optional Equipment WBP hook: pass one copy ID, or leave empty for all equipped.
+    UFUNCTION(BlueprintCallable, Category="Gear") void RequestGearRepair(const FString& InstanceId);
+    UFUNCTION(BlueprintCallable, Category="Gear") void ConfirmGearRepair();
+    UFUNCTION(Server, Reliable) void ServerRepairQuote(const FString& InstanceId, bool bAllEquipped);
+    UFUNCTION(Server, Reliable) void ServerRepairCommit(const FString& QuoteId, const FString& OperationId);
+    UFUNCTION(Client, Reliable) void ClientRepairQuote(const FString& QuoteId, int64 CostCopper, int32 ItemCount, int64 ExpiresAtUnixMs);
+    UFUNCTION(Client, Reliable) void ClientRepairResult(bool bCommitted, const FString& Message, int64 CostCopper);
     void SelectNextCombatTarget();
     AActor* GetSelectedCombatTarget() const;
     // The in-game HUD (WBP_Hud), created on the local controller; null elsewhere or before it exists.
@@ -331,6 +338,11 @@ private:
     int32 NextTabTargetIndex = 0;
     double LastTabAt = -1.0e30;
     FString PilotMessage;
+    FString PendingRepairQuoteId, PendingRepairOperationId;
+    int64 PendingRepairExpiresAtUnixMs = 0;
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    bool bRepairFixtureStarted = false, bRepairFixtureCommitted = false, bRepairFixtureStatsLogged = false;
+#endif
     double PilotMessageUntil = 0.0;
     uint32 SelectedRevision = 0;
     double LastAcceptedServerSeconds = -1.0e30;

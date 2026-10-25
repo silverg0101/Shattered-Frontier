@@ -136,6 +136,38 @@ extern const ::google::protobuf::internal::ClassDataFull ListingView_class_data_
 #else
 extern const ListingViewGlobalsTypeInternal ListingView_globals_;
 #endif  // PROTOBUF_MESSAGE_GLOBALS
+class RepairGearReply;
+struct RepairGearReplyGlobalsTypeInternal;
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+extern RepairGearReplyGlobalsTypeInternal RepairGearReply_globals_;
+extern const ::google::protobuf::internal::ClassDataFull RepairGearReply_class_data_;
+#else
+extern const RepairGearReplyGlobalsTypeInternal RepairGearReply_globals_;
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+class RepairGearRequest;
+struct RepairGearRequestGlobalsTypeInternal;
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+extern RepairGearRequestGlobalsTypeInternal RepairGearRequest_globals_;
+extern const ::google::protobuf::internal::ClassDataFull RepairGearRequest_class_data_;
+#else
+extern const RepairGearRequestGlobalsTypeInternal RepairGearRequest_globals_;
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+class RepairQuoteReply;
+struct RepairQuoteReplyGlobalsTypeInternal;
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+extern RepairQuoteReplyGlobalsTypeInternal RepairQuoteReply_globals_;
+extern const ::google::protobuf::internal::ClassDataFull RepairQuoteReply_class_data_;
+#else
+extern const RepairQuoteReplyGlobalsTypeInternal RepairQuoteReply_globals_;
+#endif  // PROTOBUF_MESSAGE_GLOBALS
+class RepairQuoteRequest;
+struct RepairQuoteRequestGlobalsTypeInternal;
+#ifndef PROTOBUF_MESSAGE_GLOBALS
+extern RepairQuoteRequestGlobalsTypeInternal RepairQuoteRequest_globals_;
+extern const ::google::protobuf::internal::ClassDataFull RepairQuoteRequest_class_data_;
+#else
+extern const RepairQuoteRequestGlobalsTypeInternal RepairQuoteRequest_globals_;
+#endif  // PROTOBUF_MESSAGE_GLOBALS
 class TradeActionRequest;
 struct TradeActionRequestGlobalsTypeInternal;
 #ifndef PROTOBUF_MESSAGE_GLOBALS
@@ -1172,6 +1204,965 @@ class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED TradeActionRequest final : public :
     ::google::protobuf::internal::ArenaStringPtr trade_id_;
     ::google::protobuf::internal::ArenaStringPtr actor_id_;
     ::google::protobuf::internal::ArenaStringPtr offer_operation_id_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_sf_2fexchange_2fv1_2fexchange_2eproto;
+};
+// -------------------------------------------------------------------
+
+class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED RepairQuoteRequest final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:sf.exchange.v1.RepairQuoteRequest) */ {
+ public:
+  inline RepairQuoteRequest() : RepairQuoteRequest(nullptr) {}
+  ~RepairQuoteRequest() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(RepairQuoteRequest* PROTOBUF_NONNULL msg, ::std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(RepairQuoteRequest));
+  }
+#endif
+
+  template <typename = void>
+  explicit constexpr RepairQuoteRequest(::google::protobuf::internal::ConstantInitialized,
+                           const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+                               class_data);
+
+  inline RepairQuoteRequest(const RepairQuoteRequest& from) : RepairQuoteRequest(nullptr, from) {}
+  inline RepairQuoteRequest(RepairQuoteRequest&& from) noexcept : RepairQuoteRequest(nullptr, ::std::move(from)) {}
+  inline RepairQuoteRequest& operator=(const RepairQuoteRequest& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline RepairQuoteRequest& operator=(RepairQuoteRequest&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  [[nodiscard]] inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  [[nodiscard]] inline ::google::protobuf::UnknownFieldSet* PROTOBUF_NONNULL
+  mutable_unknown_fields() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  [[nodiscard]] static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL descriptor() {
+    return GetDescriptor();
+  }
+  [[nodiscard]] static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL
+  GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  [[nodiscard]] static const ::google::protobuf::Reflection* PROTOBUF_NONNULL GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  [[nodiscard]] static const RepairQuoteRequest& default_instance() {
+    return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<RepairQuoteRequest>(&RepairQuoteRequest_globals_);
+  }
+  static constexpr int kIndexInFileMessages = 15;
+  friend void swap(RepairQuoteRequest& a, RepairQuoteRequest& b) { a.Swap(&b); }
+  inline void Swap(RepairQuoteRequest* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(RepairQuoteRequest* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  [[nodiscard]] RepairQuoteRequest* PROTOBUF_NONNULL
+  New(::google::protobuf::Arena* PROTOBUF_NULLABLE arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<RepairQuoteRequest>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const RepairQuoteRequest& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const RepairQuoteRequest& from) { RepairQuoteRequest::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(::google::protobuf::MessageLite& to_msg,
+                        const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  [[nodiscard]] bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  [[nodiscard]] static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+
+  public:
+  [[nodiscard]] ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  [[nodiscard]] ::size_t ByteSizeLong() const final;
+  [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  [[nodiscard]] int GetCachedSize() const {
+    return _impl_._cached_size_.Get();
+  }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(RepairQuoteRequest* PROTOBUF_NONNULL other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "sf.exchange.v1.RepairQuoteRequest"; }
+
+  explicit RepairQuoteRequest(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  RepairQuoteRequest(::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const RepairQuoteRequest& from);
+  RepairQuoteRequest(
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, RepairQuoteRequest&& from) noexcept
+      : RepairQuoteRequest(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL GetClassData() const PROTOBUF_FINAL;
+  static void* PROTOBUF_NONNULL PlacementNew_(
+      const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static constexpr auto InternalNewImpl_();
+
+ public:
+  static constexpr auto InternalGenerateClassData_(
+      const MessageLite& prototype,
+      const ::google::protobuf::internal::TcParseTableBase* PROTOBUF_NULLABLE tc_table = nullptr);
+
+  [[nodiscard]] ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kOwnerIdFieldNumber = 1,
+    kInstanceIdFieldNumber = 2,
+    kAllEquippedFieldNumber = 3,
+  };
+  // string owner_id = 1;
+  void clear_owner_id() ;
+  [[nodiscard]] const ::std::string& owner_id() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_owner_id(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_owner_id();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_owner_id();
+  void set_allocated_owner_id(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_owner_id() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_owner_id(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_owner_id();
+
+  public:
+  // string instance_id = 2;
+  void clear_instance_id() ;
+  [[nodiscard]] const ::std::string& instance_id() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_instance_id(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_instance_id();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_instance_id();
+  void set_allocated_instance_id(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_instance_id() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_instance_id(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_instance_id();
+
+  public:
+  // bool all_equipped = 3;
+  void clear_all_equipped() ;
+  [[nodiscard]] bool all_equipped() const;
+  void set_all_equipped(bool value);
+
+  private:
+  bool _internal_all_equipped() const;
+  void _internal_set_all_equipped(bool value);
+
+  public:
+  // @@protoc_insertion_point(class_scope:sf.exchange.v1.RepairQuoteRequest)
+ private:
+  class _Internal;
+  using ParseTableT_ =
+      ::google::protobuf::internal::TcParseTable<2, 3,
+                          0, 61,
+                          2>;
+  static constexpr ParseTableT_ InternalGenerateParseTable_(
+      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+  friend class ::google::protobuf::internal::TcParser;
+  #ifndef PROTOBUF_MESSAGE_GLOBALS
+  static const ParseTableT_ _table_;
+  #endif
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  friend ::google::protobuf::internal::PrivateAccess;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                                    ::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+        const RepairQuoteRequest& from_msg);
+    ::google::protobuf::internal::HasBits<1> _has_bits_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    ::google::protobuf::internal::ArenaStringPtr owner_id_;
+    ::google::protobuf::internal::ArenaStringPtr instance_id_;
+    bool all_equipped_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_sf_2fexchange_2fv1_2fexchange_2eproto;
+};
+// -------------------------------------------------------------------
+
+class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED RepairQuoteReply final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:sf.exchange.v1.RepairQuoteReply) */ {
+ public:
+  inline RepairQuoteReply() : RepairQuoteReply(nullptr) {}
+  ~RepairQuoteReply() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(RepairQuoteReply* PROTOBUF_NONNULL msg, ::std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(RepairQuoteReply));
+  }
+#endif
+
+  template <typename = void>
+  explicit constexpr RepairQuoteReply(::google::protobuf::internal::ConstantInitialized,
+                           const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+                               class_data);
+
+  inline RepairQuoteReply(const RepairQuoteReply& from) : RepairQuoteReply(nullptr, from) {}
+  inline RepairQuoteReply(RepairQuoteReply&& from) noexcept : RepairQuoteReply(nullptr, ::std::move(from)) {}
+  inline RepairQuoteReply& operator=(const RepairQuoteReply& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline RepairQuoteReply& operator=(RepairQuoteReply&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  [[nodiscard]] inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  [[nodiscard]] inline ::google::protobuf::UnknownFieldSet* PROTOBUF_NONNULL
+  mutable_unknown_fields() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  [[nodiscard]] static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL descriptor() {
+    return GetDescriptor();
+  }
+  [[nodiscard]] static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL
+  GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  [[nodiscard]] static const ::google::protobuf::Reflection* PROTOBUF_NONNULL GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  [[nodiscard]] static const RepairQuoteReply& default_instance() {
+    return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<RepairQuoteReply>(&RepairQuoteReply_globals_);
+  }
+  static constexpr int kIndexInFileMessages = 16;
+  friend void swap(RepairQuoteReply& a, RepairQuoteReply& b) { a.Swap(&b); }
+  inline void Swap(RepairQuoteReply* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(RepairQuoteReply* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  [[nodiscard]] RepairQuoteReply* PROTOBUF_NONNULL
+  New(::google::protobuf::Arena* PROTOBUF_NULLABLE arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<RepairQuoteReply>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const RepairQuoteReply& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const RepairQuoteReply& from) { RepairQuoteReply::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(::google::protobuf::MessageLite& to_msg,
+                        const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  [[nodiscard]] bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  [[nodiscard]] static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+
+  public:
+  [[nodiscard]] ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  [[nodiscard]] ::size_t ByteSizeLong() const final;
+  [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  [[nodiscard]] int GetCachedSize() const {
+    return _impl_._cached_size_.Get();
+  }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(RepairQuoteReply* PROTOBUF_NONNULL other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "sf.exchange.v1.RepairQuoteReply"; }
+
+  explicit RepairQuoteReply(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  RepairQuoteReply(::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const RepairQuoteReply& from);
+  RepairQuoteReply(
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, RepairQuoteReply&& from) noexcept
+      : RepairQuoteReply(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL GetClassData() const PROTOBUF_FINAL;
+  static void* PROTOBUF_NONNULL PlacementNew_(
+      const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static constexpr auto InternalNewImpl_();
+
+ public:
+  static constexpr auto InternalGenerateClassData_(
+      const MessageLite& prototype,
+      const ::google::protobuf::internal::TcParseTableBase* PROTOBUF_NULLABLE tc_table = nullptr);
+
+  [[nodiscard]] ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kQuoteIdFieldNumber = 1,
+    kCostCopperFieldNumber = 2,
+    kExpiresAtUnixMsFieldNumber = 4,
+    kItemCountFieldNumber = 3,
+  };
+  // string quote_id = 1;
+  void clear_quote_id() ;
+  [[nodiscard]] const ::std::string& quote_id() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_quote_id(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_quote_id();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_quote_id();
+  void set_allocated_quote_id(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_quote_id() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_quote_id(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_quote_id();
+
+  public:
+  // int64 cost_copper = 2;
+  void clear_cost_copper() ;
+  [[nodiscard]] ::int64_t cost_copper() const;
+  void set_cost_copper(::int64_t value);
+
+  private:
+  ::int64_t _internal_cost_copper() const;
+  void _internal_set_cost_copper(::int64_t value);
+
+  public:
+  // int64 expires_at_unix_ms = 4;
+  void clear_expires_at_unix_ms() ;
+  [[nodiscard]] ::int64_t expires_at_unix_ms() const;
+  void set_expires_at_unix_ms(::int64_t value);
+
+  private:
+  ::int64_t _internal_expires_at_unix_ms() const;
+  void _internal_set_expires_at_unix_ms(::int64_t value);
+
+  public:
+  // int32 item_count = 3;
+  void clear_item_count() ;
+  [[nodiscard]] ::int32_t item_count() const;
+  void set_item_count(::int32_t value);
+
+  private:
+  ::int32_t _internal_item_count() const;
+  void _internal_set_item_count(::int32_t value);
+
+  public:
+  // @@protoc_insertion_point(class_scope:sf.exchange.v1.RepairQuoteReply)
+ private:
+  class _Internal;
+  using ParseTableT_ =
+      ::google::protobuf::internal::TcParseTable<2, 4,
+                          0, 48,
+                          2>;
+  static constexpr ParseTableT_ InternalGenerateParseTable_(
+      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+  friend class ::google::protobuf::internal::TcParser;
+  #ifndef PROTOBUF_MESSAGE_GLOBALS
+  static const ParseTableT_ _table_;
+  #endif
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  friend ::google::protobuf::internal::PrivateAccess;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                                    ::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+        const RepairQuoteReply& from_msg);
+    ::google::protobuf::internal::HasBits<1> _has_bits_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    ::google::protobuf::internal::ArenaStringPtr quote_id_;
+    ::int64_t cost_copper_;
+    ::int64_t expires_at_unix_ms_;
+    ::int32_t item_count_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_sf_2fexchange_2fv1_2fexchange_2eproto;
+};
+// -------------------------------------------------------------------
+
+class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED RepairGearRequest final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:sf.exchange.v1.RepairGearRequest) */ {
+ public:
+  inline RepairGearRequest() : RepairGearRequest(nullptr) {}
+  ~RepairGearRequest() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(RepairGearRequest* PROTOBUF_NONNULL msg, ::std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(RepairGearRequest));
+  }
+#endif
+
+  template <typename = void>
+  explicit constexpr RepairGearRequest(::google::protobuf::internal::ConstantInitialized,
+                           const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+                               class_data);
+
+  inline RepairGearRequest(const RepairGearRequest& from) : RepairGearRequest(nullptr, from) {}
+  inline RepairGearRequest(RepairGearRequest&& from) noexcept : RepairGearRequest(nullptr, ::std::move(from)) {}
+  inline RepairGearRequest& operator=(const RepairGearRequest& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline RepairGearRequest& operator=(RepairGearRequest&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  [[nodiscard]] inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  [[nodiscard]] inline ::google::protobuf::UnknownFieldSet* PROTOBUF_NONNULL
+  mutable_unknown_fields() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  [[nodiscard]] static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL descriptor() {
+    return GetDescriptor();
+  }
+  [[nodiscard]] static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL
+  GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  [[nodiscard]] static const ::google::protobuf::Reflection* PROTOBUF_NONNULL GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  [[nodiscard]] static const RepairGearRequest& default_instance() {
+    return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<RepairGearRequest>(&RepairGearRequest_globals_);
+  }
+  static constexpr int kIndexInFileMessages = 17;
+  friend void swap(RepairGearRequest& a, RepairGearRequest& b) { a.Swap(&b); }
+  inline void Swap(RepairGearRequest* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(RepairGearRequest* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  [[nodiscard]] RepairGearRequest* PROTOBUF_NONNULL
+  New(::google::protobuf::Arena* PROTOBUF_NULLABLE arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<RepairGearRequest>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const RepairGearRequest& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const RepairGearRequest& from) { RepairGearRequest::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(::google::protobuf::MessageLite& to_msg,
+                        const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  [[nodiscard]] bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  [[nodiscard]] static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+
+  public:
+  [[nodiscard]] ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  [[nodiscard]] ::size_t ByteSizeLong() const final;
+  [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  [[nodiscard]] int GetCachedSize() const {
+    return _impl_._cached_size_.Get();
+  }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(RepairGearRequest* PROTOBUF_NONNULL other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "sf.exchange.v1.RepairGearRequest"; }
+
+  explicit RepairGearRequest(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  RepairGearRequest(::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const RepairGearRequest& from);
+  RepairGearRequest(
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, RepairGearRequest&& from) noexcept
+      : RepairGearRequest(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL GetClassData() const PROTOBUF_FINAL;
+  static void* PROTOBUF_NONNULL PlacementNew_(
+      const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static constexpr auto InternalNewImpl_();
+
+ public:
+  static constexpr auto InternalGenerateClassData_(
+      const MessageLite& prototype,
+      const ::google::protobuf::internal::TcParseTableBase* PROTOBUF_NULLABLE tc_table = nullptr);
+
+  [[nodiscard]] ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kOperationIdFieldNumber = 1,
+    kQuoteIdFieldNumber = 2,
+    kOwnerIdFieldNumber = 3,
+  };
+  // string operation_id = 1;
+  void clear_operation_id() ;
+  [[nodiscard]] const ::std::string& operation_id() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_operation_id(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_operation_id();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_operation_id();
+  void set_allocated_operation_id(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_operation_id() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_operation_id(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_operation_id();
+
+  public:
+  // string quote_id = 2;
+  void clear_quote_id() ;
+  [[nodiscard]] const ::std::string& quote_id() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_quote_id(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_quote_id();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_quote_id();
+  void set_allocated_quote_id(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_quote_id() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_quote_id(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_quote_id();
+
+  public:
+  // string owner_id = 3;
+  void clear_owner_id() ;
+  [[nodiscard]] const ::std::string& owner_id() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_owner_id(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_owner_id();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_owner_id();
+  void set_allocated_owner_id(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_owner_id() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_owner_id(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_owner_id();
+
+  public:
+  // @@protoc_insertion_point(class_scope:sf.exchange.v1.RepairGearRequest)
+ private:
+  class _Internal;
+  using ParseTableT_ =
+      ::google::protobuf::internal::TcParseTable<2, 3,
+                          0, 69,
+                          2>;
+  static constexpr ParseTableT_ InternalGenerateParseTable_(
+      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+  friend class ::google::protobuf::internal::TcParser;
+  #ifndef PROTOBUF_MESSAGE_GLOBALS
+  static const ParseTableT_ _table_;
+  #endif
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  friend ::google::protobuf::internal::PrivateAccess;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                                    ::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+        const RepairGearRequest& from_msg);
+    ::google::protobuf::internal::HasBits<1> _has_bits_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    ::google::protobuf::internal::ArenaStringPtr operation_id_;
+    ::google::protobuf::internal::ArenaStringPtr quote_id_;
+    ::google::protobuf::internal::ArenaStringPtr owner_id_;
+    PROTOBUF_TSAN_DECLARE_MEMBER
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_sf_2fexchange_2fv1_2fexchange_2eproto;
+};
+// -------------------------------------------------------------------
+
+class  PROTOBUF_FUTURE_ADD_EARLY_WARN_UNUSED RepairGearReply final : public ::google::protobuf::Message
+/* @@protoc_insertion_point(class_definition:sf.exchange.v1.RepairGearReply) */ {
+ public:
+  inline RepairGearReply() : RepairGearReply(nullptr) {}
+  ~RepairGearReply() PROTOBUF_FINAL;
+
+#if defined(PROTOBUF_CUSTOM_VTABLE)
+  void operator delete(RepairGearReply* PROTOBUF_NONNULL msg, ::std::destroying_delete_t) {
+    SharedDtor(*msg);
+    ::google::protobuf::internal::SizedDelete(msg, sizeof(RepairGearReply));
+  }
+#endif
+
+  template <typename = void>
+  explicit constexpr RepairGearReply(::google::protobuf::internal::ConstantInitialized,
+                           const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL
+                               class_data);
+
+  inline RepairGearReply(const RepairGearReply& from) : RepairGearReply(nullptr, from) {}
+  inline RepairGearReply(RepairGearReply&& from) noexcept : RepairGearReply(nullptr, ::std::move(from)) {}
+  inline RepairGearReply& operator=(const RepairGearReply& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline RepairGearReply& operator=(RepairGearReply&& from) noexcept {
+    if (this == &from) return *this;
+    if (::google::protobuf::internal::CanMoveWithInternalSwap(GetArena(), from.GetArena())) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  [[nodiscard]] inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const
+      ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.unknown_fields<::google::protobuf::UnknownFieldSet>(::google::protobuf::UnknownFieldSet::default_instance);
+  }
+  [[nodiscard]] inline ::google::protobuf::UnknownFieldSet* PROTOBUF_NONNULL
+  mutable_unknown_fields() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+    return _internal_metadata_.mutable_unknown_fields<::google::protobuf::UnknownFieldSet>();
+  }
+
+  [[nodiscard]] static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL descriptor() {
+    return GetDescriptor();
+  }
+  [[nodiscard]] static const ::google::protobuf::Descriptor* PROTOBUF_NONNULL
+  GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  [[nodiscard]] static const ::google::protobuf::Reflection* PROTOBUF_NONNULL GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  [[nodiscard]] static const RepairGearReply& default_instance() {
+    return *::google::protobuf::internal::MessageGlobalsBase::ToDefaultInstance<RepairGearReply>(&RepairGearReply_globals_);
+  }
+  static constexpr int kIndexInFileMessages = 18;
+  friend void swap(RepairGearReply& a, RepairGearReply& b) { a.Swap(&b); }
+  inline void Swap(RepairGearReply* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    if (::google::protobuf::internal::CanUseInternalSwap(GetArena(), other->GetArena())) {
+      InternalSwap(other);
+    } else {
+      ::google::protobuf::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(RepairGearReply* PROTOBUF_NONNULL other) {
+    if (other == this) return;
+    ABSL_DCHECK(GetArena() == other->GetArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  [[nodiscard]] RepairGearReply* PROTOBUF_NONNULL
+  New(::google::protobuf::Arena* PROTOBUF_NULLABLE arena = nullptr) const {
+    return ::google::protobuf::Message::DefaultConstruct<RepairGearReply>(arena);
+  }
+  using ::google::protobuf::Message::CopyFrom;
+  void CopyFrom(const RepairGearReply& from);
+  using ::google::protobuf::Message::MergeFrom;
+  void MergeFrom(const RepairGearReply& from) { RepairGearReply::MergeImpl(*this, from); }
+
+  private:
+  static void MergeImpl(::google::protobuf::MessageLite& to_msg,
+                        const ::google::protobuf::MessageLite& from_msg);
+
+  public:
+  [[nodiscard]] bool IsInitialized() const {
+    return true;
+  }
+  ABSL_ATTRIBUTE_REINITIALIZES void Clear() PROTOBUF_FINAL;
+  #if defined(PROTOBUF_CUSTOM_VTABLE)
+  private:
+  [[nodiscard]] static ::size_t ByteSizeLong(const ::google::protobuf::MessageLite& msg);
+  [[nodiscard]] static ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      const ::google::protobuf::MessageLite& msg, ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream);
+
+  public:
+  [[nodiscard]] ::size_t ByteSizeLong() const { return ByteSizeLong(*this); }
+  [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const {
+    return _InternalSerialize(*this, target, stream);
+  }
+  #else   // PROTOBUF_CUSTOM_VTABLE
+  [[nodiscard]] ::size_t ByteSizeLong() const final;
+  [[nodiscard]] ::uint8_t* PROTOBUF_NONNULL _InternalSerialize(
+      ::uint8_t* PROTOBUF_NONNULL target,
+      ::google::protobuf::io::EpsCopyOutputStream* PROTOBUF_NONNULL stream) const final;
+  #endif  // PROTOBUF_CUSTOM_VTABLE
+  [[nodiscard]] int GetCachedSize() const {
+    return _impl_._cached_size_.Get();
+  }
+
+  private:
+  void SharedCtor(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static void SharedDtor(MessageLite& self);
+  void InternalSwap(RepairGearReply* PROTOBUF_NONNULL other);
+ private:
+  template <typename T>
+  friend ::absl::string_view(::google::protobuf::internal::GetAnyMessageName)();
+  static ::absl::string_view FullMessageName() { return "sf.exchange.v1.RepairGearReply"; }
+
+  explicit RepairGearReply(::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  RepairGearReply(::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const RepairGearReply& from);
+  RepairGearReply(
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, RepairGearReply&& from) noexcept
+      : RepairGearReply(arena) {
+    *this = ::std::move(from);
+  }
+  const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL GetClassData() const PROTOBUF_FINAL;
+  static void* PROTOBUF_NONNULL PlacementNew_(
+      const void* PROTOBUF_NONNULL, void* PROTOBUF_NONNULL mem,
+      ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+  static constexpr auto InternalNewImpl_();
+
+ public:
+  static constexpr auto InternalGenerateClassData_(
+      const MessageLite& prototype,
+      const ::google::protobuf::internal::TcParseTableBase* PROTOBUF_NULLABLE tc_table = nullptr);
+
+  [[nodiscard]] ::google::protobuf::Metadata GetMetadata() const;
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+  enum : int {
+    kOperationIdFieldNumber = 1,
+    kCostCopperFieldNumber = 2,
+    kItemCountFieldNumber = 3,
+    kCommittedFieldNumber = 4,
+  };
+  // string operation_id = 1;
+  void clear_operation_id() ;
+  [[nodiscard]] const ::std::string& operation_id() const;
+  template <typename Arg_ = const ::std::string&, typename... Args_>
+  void set_operation_id(Arg_&& arg, Args_... args);
+  ::std::string* PROTOBUF_NONNULL mutable_operation_id();
+  [[nodiscard]] ::std::string* PROTOBUF_NULLABLE release_operation_id();
+  void set_allocated_operation_id(::std::string* PROTOBUF_NULLABLE value);
+
+  private:
+  const ::std::string& _internal_operation_id() const;
+  PROTOBUF_ALWAYS_INLINE void _internal_set_operation_id(const ::std::string& value);
+  ::std::string* PROTOBUF_NONNULL _internal_mutable_operation_id();
+
+  public:
+  // int64 cost_copper = 2;
+  void clear_cost_copper() ;
+  [[nodiscard]] ::int64_t cost_copper() const;
+  void set_cost_copper(::int64_t value);
+
+  private:
+  ::int64_t _internal_cost_copper() const;
+  void _internal_set_cost_copper(::int64_t value);
+
+  public:
+  // int32 item_count = 3;
+  void clear_item_count() ;
+  [[nodiscard]] ::int32_t item_count() const;
+  void set_item_count(::int32_t value);
+
+  private:
+  ::int32_t _internal_item_count() const;
+  void _internal_set_item_count(::int32_t value);
+
+  public:
+  // bool committed = 4;
+  void clear_committed() ;
+  [[nodiscard]] bool committed() const;
+  void set_committed(bool value);
+
+  private:
+  bool _internal_committed() const;
+  void _internal_set_committed(bool value);
+
+  public:
+  // @@protoc_insertion_point(class_scope:sf.exchange.v1.RepairGearReply)
+ private:
+  class _Internal;
+  using ParseTableT_ =
+      ::google::protobuf::internal::TcParseTable<2, 4,
+                          0, 51,
+                          2>;
+  static constexpr ParseTableT_ InternalGenerateParseTable_(
+      const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL class_data);
+  friend class ::google::protobuf::internal::TcParser;
+  #ifndef PROTOBUF_MESSAGE_GLOBALS
+  static const ParseTableT_ _table_;
+  #endif
+
+  friend class ::google::protobuf::MessageLite;
+  friend class ::google::protobuf::Arena;
+  friend ::google::protobuf::internal::PrivateAccess;
+  template <typename T>
+  friend class ::google::protobuf::Arena::InternalHelper;
+  using InternalArenaConstructable_ = void;
+  using DestructorSkippable_ = void;
+  struct Impl_ {
+    inline explicit constexpr Impl_(::google::protobuf::internal::InternalVisibility visibility,
+                                    ::google::protobuf::internal::ConstantInitialized) noexcept;
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena);
+    inline explicit Impl_(
+        ::google::protobuf::internal::InternalVisibility visibility,
+        ::google::protobuf::Arena* PROTOBUF_NULLABLE arena, const Impl_& from,
+        const RepairGearReply& from_msg);
+    ::google::protobuf::internal::HasBits<1> _has_bits_;
+    ::google::protobuf::internal::CachedSize _cached_size_;
+    ::google::protobuf::internal::ArenaStringPtr operation_id_;
+    ::int64_t cost_copper_;
+    ::int32_t item_count_;
+    bool committed_;
     PROTOBUF_TSAN_DECLARE_MEMBER
   };
   union { Impl_ _impl_; };
@@ -7921,6 +8912,638 @@ inline ::int64_t ExchangeReply::_internal_fee() const {
 inline void ExchangeReply::_internal_set_fee(::int64_t value) {
   ::google::protobuf::internal::TSanWrite(&_impl_);
   _impl_.fee_ = value;
+}
+
+// -------------------------------------------------------------------
+
+// RepairQuoteRequest
+
+// string owner_id = 1;
+inline void RepairQuoteRequest::clear_owner_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.owner_id_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+}
+inline const ::std::string& RepairQuoteRequest::owner_id() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.exchange.v1.RepairQuoteRequest.owner_id)
+  return _internal_owner_id();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void RepairQuoteRequest::set_owner_id(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  _impl_.owner_id_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:sf.exchange.v1.RepairQuoteRequest.owner_id)
+}
+inline ::std::string* PROTOBUF_NONNULL RepairQuoteRequest::mutable_owner_id()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  ::std::string* _s = _internal_mutable_owner_id();
+  // @@protoc_insertion_point(field_mutable:sf.exchange.v1.RepairQuoteRequest.owner_id)
+  return _s;
+}
+inline const ::std::string& RepairQuoteRequest::_internal_owner_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.owner_id_.Get();
+}
+inline void RepairQuoteRequest::_internal_set_owner_id(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.owner_id_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL RepairQuoteRequest::_internal_mutable_owner_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.owner_id_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE RepairQuoteRequest::release_owner_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:sf.exchange.v1.RepairQuoteRequest.owner_id)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000001U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+  auto* released = _impl_.owner_id_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.owner_id_.Set("", GetArena());
+  }
+  return released;
+}
+inline void RepairQuoteRequest::set_allocated_owner_id(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+  }
+  _impl_.owner_id_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.owner_id_.IsDefault()) {
+    _impl_.owner_id_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:sf.exchange.v1.RepairQuoteRequest.owner_id)
+}
+
+// string instance_id = 2;
+inline void RepairQuoteRequest::clear_instance_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.instance_id_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+}
+inline const ::std::string& RepairQuoteRequest::instance_id() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.exchange.v1.RepairQuoteRequest.instance_id)
+  return _internal_instance_id();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void RepairQuoteRequest::set_instance_id(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  _impl_.instance_id_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:sf.exchange.v1.RepairQuoteRequest.instance_id)
+}
+inline ::std::string* PROTOBUF_NONNULL RepairQuoteRequest::mutable_instance_id()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  ::std::string* _s = _internal_mutable_instance_id();
+  // @@protoc_insertion_point(field_mutable:sf.exchange.v1.RepairQuoteRequest.instance_id)
+  return _s;
+}
+inline const ::std::string& RepairQuoteRequest::_internal_instance_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.instance_id_.Get();
+}
+inline void RepairQuoteRequest::_internal_set_instance_id(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.instance_id_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL RepairQuoteRequest::_internal_mutable_instance_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.instance_id_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE RepairQuoteRequest::release_instance_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:sf.exchange.v1.RepairQuoteRequest.instance_id)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000002U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+  auto* released = _impl_.instance_id_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.instance_id_.Set("", GetArena());
+  }
+  return released;
+}
+inline void RepairQuoteRequest::set_allocated_instance_id(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+  }
+  _impl_.instance_id_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.instance_id_.IsDefault()) {
+    _impl_.instance_id_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:sf.exchange.v1.RepairQuoteRequest.instance_id)
+}
+
+// bool all_equipped = 3;
+inline void RepairQuoteRequest::clear_all_equipped() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.all_equipped_ = false;
+  ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+}
+inline bool RepairQuoteRequest::all_equipped() const {
+  // @@protoc_insertion_point(field_get:sf.exchange.v1.RepairQuoteRequest.all_equipped)
+  return _internal_all_equipped();
+}
+inline void RepairQuoteRequest::set_all_equipped(bool value) {
+  _internal_set_all_equipped(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  // @@protoc_insertion_point(field_set:sf.exchange.v1.RepairQuoteRequest.all_equipped)
+}
+inline bool RepairQuoteRequest::_internal_all_equipped() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.all_equipped_;
+}
+inline void RepairQuoteRequest::_internal_set_all_equipped(bool value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.all_equipped_ = value;
+}
+
+// -------------------------------------------------------------------
+
+// RepairQuoteReply
+
+// string quote_id = 1;
+inline void RepairQuoteReply::clear_quote_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.quote_id_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+}
+inline const ::std::string& RepairQuoteReply::quote_id() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.exchange.v1.RepairQuoteReply.quote_id)
+  return _internal_quote_id();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void RepairQuoteReply::set_quote_id(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  _impl_.quote_id_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:sf.exchange.v1.RepairQuoteReply.quote_id)
+}
+inline ::std::string* PROTOBUF_NONNULL RepairQuoteReply::mutable_quote_id()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  ::std::string* _s = _internal_mutable_quote_id();
+  // @@protoc_insertion_point(field_mutable:sf.exchange.v1.RepairQuoteReply.quote_id)
+  return _s;
+}
+inline const ::std::string& RepairQuoteReply::_internal_quote_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.quote_id_.Get();
+}
+inline void RepairQuoteReply::_internal_set_quote_id(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.quote_id_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL RepairQuoteReply::_internal_mutable_quote_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.quote_id_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE RepairQuoteReply::release_quote_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:sf.exchange.v1.RepairQuoteReply.quote_id)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000001U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+  auto* released = _impl_.quote_id_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.quote_id_.Set("", GetArena());
+  }
+  return released;
+}
+inline void RepairQuoteReply::set_allocated_quote_id(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+  }
+  _impl_.quote_id_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.quote_id_.IsDefault()) {
+    _impl_.quote_id_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:sf.exchange.v1.RepairQuoteReply.quote_id)
+}
+
+// int64 cost_copper = 2;
+inline void RepairQuoteReply::clear_cost_copper() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.cost_copper_ = ::int64_t{0};
+  ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+}
+inline ::int64_t RepairQuoteReply::cost_copper() const {
+  // @@protoc_insertion_point(field_get:sf.exchange.v1.RepairQuoteReply.cost_copper)
+  return _internal_cost_copper();
+}
+inline void RepairQuoteReply::set_cost_copper(::int64_t value) {
+  _internal_set_cost_copper(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  // @@protoc_insertion_point(field_set:sf.exchange.v1.RepairQuoteReply.cost_copper)
+}
+inline ::int64_t RepairQuoteReply::_internal_cost_copper() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.cost_copper_;
+}
+inline void RepairQuoteReply::_internal_set_cost_copper(::int64_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.cost_copper_ = value;
+}
+
+// int32 item_count = 3;
+inline void RepairQuoteReply::clear_item_count() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.item_count_ = 0;
+  ClearHasBit(_impl_._has_bits_[0], 0x00000008U);
+}
+inline ::int32_t RepairQuoteReply::item_count() const {
+  // @@protoc_insertion_point(field_get:sf.exchange.v1.RepairQuoteReply.item_count)
+  return _internal_item_count();
+}
+inline void RepairQuoteReply::set_item_count(::int32_t value) {
+  _internal_set_item_count(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000008U);
+  // @@protoc_insertion_point(field_set:sf.exchange.v1.RepairQuoteReply.item_count)
+}
+inline ::int32_t RepairQuoteReply::_internal_item_count() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.item_count_;
+}
+inline void RepairQuoteReply::_internal_set_item_count(::int32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.item_count_ = value;
+}
+
+// int64 expires_at_unix_ms = 4;
+inline void RepairQuoteReply::clear_expires_at_unix_ms() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.expires_at_unix_ms_ = ::int64_t{0};
+  ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+}
+inline ::int64_t RepairQuoteReply::expires_at_unix_ms() const {
+  // @@protoc_insertion_point(field_get:sf.exchange.v1.RepairQuoteReply.expires_at_unix_ms)
+  return _internal_expires_at_unix_ms();
+}
+inline void RepairQuoteReply::set_expires_at_unix_ms(::int64_t value) {
+  _internal_set_expires_at_unix_ms(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  // @@protoc_insertion_point(field_set:sf.exchange.v1.RepairQuoteReply.expires_at_unix_ms)
+}
+inline ::int64_t RepairQuoteReply::_internal_expires_at_unix_ms() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.expires_at_unix_ms_;
+}
+inline void RepairQuoteReply::_internal_set_expires_at_unix_ms(::int64_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.expires_at_unix_ms_ = value;
+}
+
+// -------------------------------------------------------------------
+
+// RepairGearRequest
+
+// string operation_id = 1;
+inline void RepairGearRequest::clear_operation_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.operation_id_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+}
+inline const ::std::string& RepairGearRequest::operation_id() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.exchange.v1.RepairGearRequest.operation_id)
+  return _internal_operation_id();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void RepairGearRequest::set_operation_id(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  _impl_.operation_id_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:sf.exchange.v1.RepairGearRequest.operation_id)
+}
+inline ::std::string* PROTOBUF_NONNULL RepairGearRequest::mutable_operation_id()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  ::std::string* _s = _internal_mutable_operation_id();
+  // @@protoc_insertion_point(field_mutable:sf.exchange.v1.RepairGearRequest.operation_id)
+  return _s;
+}
+inline const ::std::string& RepairGearRequest::_internal_operation_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.operation_id_.Get();
+}
+inline void RepairGearRequest::_internal_set_operation_id(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.operation_id_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL RepairGearRequest::_internal_mutable_operation_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.operation_id_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE RepairGearRequest::release_operation_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:sf.exchange.v1.RepairGearRequest.operation_id)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000001U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+  auto* released = _impl_.operation_id_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.operation_id_.Set("", GetArena());
+  }
+  return released;
+}
+inline void RepairGearRequest::set_allocated_operation_id(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+  }
+  _impl_.operation_id_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.operation_id_.IsDefault()) {
+    _impl_.operation_id_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:sf.exchange.v1.RepairGearRequest.operation_id)
+}
+
+// string quote_id = 2;
+inline void RepairGearRequest::clear_quote_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.quote_id_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+}
+inline const ::std::string& RepairGearRequest::quote_id() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.exchange.v1.RepairGearRequest.quote_id)
+  return _internal_quote_id();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void RepairGearRequest::set_quote_id(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  _impl_.quote_id_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:sf.exchange.v1.RepairGearRequest.quote_id)
+}
+inline ::std::string* PROTOBUF_NONNULL RepairGearRequest::mutable_quote_id()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  ::std::string* _s = _internal_mutable_quote_id();
+  // @@protoc_insertion_point(field_mutable:sf.exchange.v1.RepairGearRequest.quote_id)
+  return _s;
+}
+inline const ::std::string& RepairGearRequest::_internal_quote_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.quote_id_.Get();
+}
+inline void RepairGearRequest::_internal_set_quote_id(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.quote_id_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL RepairGearRequest::_internal_mutable_quote_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.quote_id_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE RepairGearRequest::release_quote_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:sf.exchange.v1.RepairGearRequest.quote_id)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000002U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+  auto* released = _impl_.quote_id_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.quote_id_.Set("", GetArena());
+  }
+  return released;
+}
+inline void RepairGearRequest::set_allocated_quote_id(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+  }
+  _impl_.quote_id_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.quote_id_.IsDefault()) {
+    _impl_.quote_id_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:sf.exchange.v1.RepairGearRequest.quote_id)
+}
+
+// string owner_id = 3;
+inline void RepairGearRequest::clear_owner_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.owner_id_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+}
+inline const ::std::string& RepairGearRequest::owner_id() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.exchange.v1.RepairGearRequest.owner_id)
+  return _internal_owner_id();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void RepairGearRequest::set_owner_id(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  _impl_.owner_id_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:sf.exchange.v1.RepairGearRequest.owner_id)
+}
+inline ::std::string* PROTOBUF_NONNULL RepairGearRequest::mutable_owner_id()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  ::std::string* _s = _internal_mutable_owner_id();
+  // @@protoc_insertion_point(field_mutable:sf.exchange.v1.RepairGearRequest.owner_id)
+  return _s;
+}
+inline const ::std::string& RepairGearRequest::_internal_owner_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.owner_id_.Get();
+}
+inline void RepairGearRequest::_internal_set_owner_id(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.owner_id_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL RepairGearRequest::_internal_mutable_owner_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.owner_id_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE RepairGearRequest::release_owner_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:sf.exchange.v1.RepairGearRequest.owner_id)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000004U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+  auto* released = _impl_.owner_id_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.owner_id_.Set("", GetArena());
+  }
+  return released;
+}
+inline void RepairGearRequest::set_allocated_owner_id(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+  }
+  _impl_.owner_id_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.owner_id_.IsDefault()) {
+    _impl_.owner_id_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:sf.exchange.v1.RepairGearRequest.owner_id)
+}
+
+// -------------------------------------------------------------------
+
+// RepairGearReply
+
+// string operation_id = 1;
+inline void RepairGearReply::clear_operation_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.operation_id_.ClearToEmpty();
+  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+}
+inline const ::std::string& RepairGearReply::operation_id() const
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  // @@protoc_insertion_point(field_get:sf.exchange.v1.RepairGearReply.operation_id)
+  return _internal_operation_id();
+}
+template <typename Arg_, typename... Args_>
+PROTOBUF_ALWAYS_INLINE void RepairGearReply::set_operation_id(Arg_&& arg, Args_... args) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  _impl_.operation_id_.Set(static_cast<Arg_&&>(arg), args..., GetArena());
+  // @@protoc_insertion_point(field_set:sf.exchange.v1.RepairGearReply.operation_id)
+}
+inline ::std::string* PROTOBUF_NONNULL RepairGearReply::mutable_operation_id()
+    ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  ::std::string* _s = _internal_mutable_operation_id();
+  // @@protoc_insertion_point(field_mutable:sf.exchange.v1.RepairGearReply.operation_id)
+  return _s;
+}
+inline const ::std::string& RepairGearReply::_internal_operation_id() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.operation_id_.Get();
+}
+inline void RepairGearReply::_internal_set_operation_id(const ::std::string& value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.operation_id_.Set(value, GetArena());
+}
+inline ::std::string* PROTOBUF_NONNULL RepairGearReply::_internal_mutable_operation_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  return _impl_.operation_id_.Mutable( GetArena());
+}
+inline ::std::string* PROTOBUF_NULLABLE RepairGearReply::release_operation_id() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  // @@protoc_insertion_point(field_release:sf.exchange.v1.RepairGearReply.operation_id)
+  if (!CheckHasBit(_impl_._has_bits_[0], 0x00000001U)) {
+    return nullptr;
+  }
+  ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+  auto* released = _impl_.operation_id_.Release();
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString()) {
+    _impl_.operation_id_.Set("", GetArena());
+  }
+  return released;
+}
+inline void RepairGearReply::set_allocated_operation_id(::std::string* PROTOBUF_NULLABLE value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  if (value != nullptr) {
+    SetHasBit(_impl_._has_bits_[0], 0x00000001U);
+  } else {
+    ClearHasBit(_impl_._has_bits_[0], 0x00000001U);
+  }
+  _impl_.operation_id_.SetAllocated(value, GetArena());
+  if (::google::protobuf::internal::DebugHardenForceCopyDefaultString() && _impl_.operation_id_.IsDefault()) {
+    _impl_.operation_id_.Set("", GetArena());
+  }
+  // @@protoc_insertion_point(field_set_allocated:sf.exchange.v1.RepairGearReply.operation_id)
+}
+
+// int64 cost_copper = 2;
+inline void RepairGearReply::clear_cost_copper() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.cost_copper_ = ::int64_t{0};
+  ClearHasBit(_impl_._has_bits_[0], 0x00000002U);
+}
+inline ::int64_t RepairGearReply::cost_copper() const {
+  // @@protoc_insertion_point(field_get:sf.exchange.v1.RepairGearReply.cost_copper)
+  return _internal_cost_copper();
+}
+inline void RepairGearReply::set_cost_copper(::int64_t value) {
+  _internal_set_cost_copper(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000002U);
+  // @@protoc_insertion_point(field_set:sf.exchange.v1.RepairGearReply.cost_copper)
+}
+inline ::int64_t RepairGearReply::_internal_cost_copper() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.cost_copper_;
+}
+inline void RepairGearReply::_internal_set_cost_copper(::int64_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.cost_copper_ = value;
+}
+
+// int32 item_count = 3;
+inline void RepairGearReply::clear_item_count() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.item_count_ = 0;
+  ClearHasBit(_impl_._has_bits_[0], 0x00000004U);
+}
+inline ::int32_t RepairGearReply::item_count() const {
+  // @@protoc_insertion_point(field_get:sf.exchange.v1.RepairGearReply.item_count)
+  return _internal_item_count();
+}
+inline void RepairGearReply::set_item_count(::int32_t value) {
+  _internal_set_item_count(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000004U);
+  // @@protoc_insertion_point(field_set:sf.exchange.v1.RepairGearReply.item_count)
+}
+inline ::int32_t RepairGearReply::_internal_item_count() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.item_count_;
+}
+inline void RepairGearReply::_internal_set_item_count(::int32_t value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.item_count_ = value;
+}
+
+// bool committed = 4;
+inline void RepairGearReply::clear_committed() {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.committed_ = false;
+  ClearHasBit(_impl_._has_bits_[0], 0x00000008U);
+}
+inline bool RepairGearReply::committed() const {
+  // @@protoc_insertion_point(field_get:sf.exchange.v1.RepairGearReply.committed)
+  return _internal_committed();
+}
+inline void RepairGearReply::set_committed(bool value) {
+  _internal_set_committed(value);
+  SetHasBit(_impl_._has_bits_[0], 0x00000008U);
+  // @@protoc_insertion_point(field_set:sf.exchange.v1.RepairGearReply.committed)
+}
+inline bool RepairGearReply::_internal_committed() const {
+  ::google::protobuf::internal::TSanRead(&_impl_);
+  return _impl_.committed_;
+}
+inline void RepairGearReply::_internal_set_committed(bool value) {
+  ::google::protobuf::internal::TSanWrite(&_impl_);
+  _impl_.committed_ = value;
 }
 
 #ifdef __GNUC__

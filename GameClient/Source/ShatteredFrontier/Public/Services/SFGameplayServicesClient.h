@@ -47,7 +47,7 @@ public:
 
 enum class ESFGameplayRpc : uint8 { GrantDefeatReward, CreateSharedDefeatDrop, ClaimSharedDefeatDrop, ApplyReceipt, GetCharacterState, EndSession, CreateCharacter, LearnRecipe, ClaimPlot, GetClaim, Place, Remove, Craft, ListStructures, Grant, SavePosition, CommitUnstuck, ReportDeath, ClearDeath,
     // Exchange (proto/sf/exchange/v1), carried by the Backend transport over the same Gameplay.Host channel.
-    ExchangeWallet, OfferTrade, AcceptTrade, CancelTrade, ListItem, BuyListing, CancelListing, ListListings,
+    ExchangeWallet, QuoteRepair, RepairGear, OfferTrade, AcceptTrade, CancelTrade, ListItem, BuyListing, CancelListing, ListListings,
     GetGatheringNode, ListGatheringZoneNodes, HarvestGatheringNode, AdvanceWorldSlots,
     GroupCreate, GroupJoin, GroupLeave, GroupKick, GroupPromote, GroupAssistant, GroupGet };
 
@@ -61,9 +61,12 @@ struct FSFExchangeRequest
     FString ListingId, SellerId, SourceContainerId, EscrowContainerId, ItemId, MarketId;
     int64 Quantity = 0, UnitPrice = 0, Fee = 0, CreatedAtUnixMs = 0;
     FString DestinationContainerId;  // BuyListing
+    FString RepairInstanceId, RepairQuoteId;
+    bool bRepairAllEquipped = false;
     int64 ExpectedRevision = 0, ExpectedUnitPrice = 0;
 };
-struct FSFExchangeResponse { int64 Balance = 0, Reserved = 0, Available = 0, WalletRevision = 0, Amount = 0, Fee = 0; FString SubjectId, State; bool bCommitted = false; };
+struct FSFExchangeResponse { int64 Balance = 0, Reserved = 0, Available = 0, WalletRevision = 0, Amount = 0, Fee = 0;
+    FString SubjectId, State, RepairQuoteId; int32 RepairItemCount = 0; int64 RepairQuoteExpiresAtUnixMs = 0; bool bCommitted = false; };
 struct FSFMarketListingResponse { FString Id, SellerId, ItemId; int64 Quantity = 0, UnitPrice = 0; };
 // Ok; Rejected = a typed gameplay refusal (FAILED_PRECONDITION, PERMISSION_DENIED, ALREADY_EXISTS, INVALID_ARGUMENT, ...);
 // Unavailable = UNAVAILABLE / DEADLINE_EXCEEDED / CANCELLED, retried with the same operation id.

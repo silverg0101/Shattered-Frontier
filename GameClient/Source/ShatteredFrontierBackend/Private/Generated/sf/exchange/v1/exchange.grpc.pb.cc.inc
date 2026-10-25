@@ -26,6 +26,8 @@ namespace v1 {
 
 static const char* Exchange_method_names[] = {
   "/sf.exchange.v1.Exchange/Wallet",
+  "/sf.exchange.v1.Exchange/QuoteRepair",
+  "/sf.exchange.v1.Exchange/RepairGear",
   "/sf.exchange.v1.Exchange/OfferTrade",
   "/sf.exchange.v1.Exchange/AcceptTrade",
   "/sf.exchange.v1.Exchange/CancelTrade",
@@ -44,14 +46,16 @@ std::unique_ptr< Exchange::Stub> Exchange::NewStub(const std::shared_ptr< ::grpc
 
 Exchange::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options)
   : channel_(channel), rpcmethod_Wallet_(Exchange_method_names[0], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_OfferTrade_(Exchange_method_names[1], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_AcceptTrade_(Exchange_method_names[2], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_CancelTrade_(Exchange_method_names[3], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_ListItem_(Exchange_method_names[4], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_BuyListing_(Exchange_method_names[5], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_CancelListing_(Exchange_method_names[6], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_ListListings_(Exchange_method_names[7], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
-  , rpcmethod_ListTrades_(Exchange_method_names[8], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_QuoteRepair_(Exchange_method_names[1], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_RepairGear_(Exchange_method_names[2], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_OfferTrade_(Exchange_method_names[3], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_AcceptTrade_(Exchange_method_names[4], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_CancelTrade_(Exchange_method_names[5], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_ListItem_(Exchange_method_names[6], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_BuyListing_(Exchange_method_names[7], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_CancelListing_(Exchange_method_names[8], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_ListListings_(Exchange_method_names[9], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_ListTrades_(Exchange_method_names[10], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   {}
 
 ::grpc::Status Exchange::Stub::Wallet(::grpc::ClientContext* context, const ::sf::exchange::v1::WalletRequest& request, ::sf::exchange::v1::WalletReply* response) {
@@ -73,6 +77,52 @@ void Exchange::Stub::async::Wallet(::grpc::ClientContext* context, const ::sf::e
 ::grpc::ClientAsyncResponseReader< ::sf::exchange::v1::WalletReply>* Exchange::Stub::AsyncWalletRaw(::grpc::ClientContext* context, const ::sf::exchange::v1::WalletRequest& request, ::grpc::CompletionQueue* cq) {
   auto* result =
     this->PrepareAsyncWalletRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
+::grpc::Status Exchange::Stub::QuoteRepair(::grpc::ClientContext* context, const ::sf::exchange::v1::RepairQuoteRequest& request, ::sf::exchange::v1::RepairQuoteReply* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::sf::exchange::v1::RepairQuoteRequest, ::sf::exchange::v1::RepairQuoteReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_QuoteRepair_, context, request, response);
+}
+
+void Exchange::Stub::async::QuoteRepair(::grpc::ClientContext* context, const ::sf::exchange::v1::RepairQuoteRequest* request, ::sf::exchange::v1::RepairQuoteReply* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::sf::exchange::v1::RepairQuoteRequest, ::sf::exchange::v1::RepairQuoteReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_QuoteRepair_, context, request, response, std::move(f));
+}
+
+void Exchange::Stub::async::QuoteRepair(::grpc::ClientContext* context, const ::sf::exchange::v1::RepairQuoteRequest* request, ::sf::exchange::v1::RepairQuoteReply* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_QuoteRepair_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::sf::exchange::v1::RepairQuoteReply>* Exchange::Stub::PrepareAsyncQuoteRepairRaw(::grpc::ClientContext* context, const ::sf::exchange::v1::RepairQuoteRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::sf::exchange::v1::RepairQuoteReply, ::sf::exchange::v1::RepairQuoteRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_QuoteRepair_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::sf::exchange::v1::RepairQuoteReply>* Exchange::Stub::AsyncQuoteRepairRaw(::grpc::ClientContext* context, const ::sf::exchange::v1::RepairQuoteRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncQuoteRepairRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
+::grpc::Status Exchange::Stub::RepairGear(::grpc::ClientContext* context, const ::sf::exchange::v1::RepairGearRequest& request, ::sf::exchange::v1::RepairGearReply* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::sf::exchange::v1::RepairGearRequest, ::sf::exchange::v1::RepairGearReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_RepairGear_, context, request, response);
+}
+
+void Exchange::Stub::async::RepairGear(::grpc::ClientContext* context, const ::sf::exchange::v1::RepairGearRequest* request, ::sf::exchange::v1::RepairGearReply* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::sf::exchange::v1::RepairGearRequest, ::sf::exchange::v1::RepairGearReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_RepairGear_, context, request, response, std::move(f));
+}
+
+void Exchange::Stub::async::RepairGear(::grpc::ClientContext* context, const ::sf::exchange::v1::RepairGearRequest* request, ::sf::exchange::v1::RepairGearReply* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_RepairGear_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::sf::exchange::v1::RepairGearReply>* Exchange::Stub::PrepareAsyncRepairGearRaw(::grpc::ClientContext* context, const ::sf::exchange::v1::RepairGearRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::sf::exchange::v1::RepairGearReply, ::sf::exchange::v1::RepairGearRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_RepairGear_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::sf::exchange::v1::RepairGearReply>* Exchange::Stub::AsyncRepairGearRaw(::grpc::ClientContext* context, const ::sf::exchange::v1::RepairGearRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncRepairGearRaw(context, request, cq);
   result->StartCall();
   return result;
 }
@@ -275,6 +325,26 @@ Exchange::Service::Service() {
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       Exchange_method_names[1],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< Exchange::Service, ::sf::exchange::v1::RepairQuoteRequest, ::sf::exchange::v1::RepairQuoteReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](Exchange::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::sf::exchange::v1::RepairQuoteRequest* req,
+             ::sf::exchange::v1::RepairQuoteReply* resp) {
+               return service->QuoteRepair(ctx, req, resp);
+             }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      Exchange_method_names[2],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< Exchange::Service, ::sf::exchange::v1::RepairGearRequest, ::sf::exchange::v1::RepairGearReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](Exchange::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::sf::exchange::v1::RepairGearRequest* req,
+             ::sf::exchange::v1::RepairGearReply* resp) {
+               return service->RepairGear(ctx, req, resp);
+             }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      Exchange_method_names[3],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
       new ::grpc::internal::RpcMethodHandler< Exchange::Service, ::sf::exchange::v1::TradeOfferRequest, ::sf::exchange::v1::ExchangeReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](Exchange::Service* service,
              ::grpc::ServerContext* ctx,
@@ -283,7 +353,7 @@ Exchange::Service::Service() {
                return service->OfferTrade(ctx, req, resp);
              }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
-      Exchange_method_names[2],
+      Exchange_method_names[4],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
       new ::grpc::internal::RpcMethodHandler< Exchange::Service, ::sf::exchange::v1::TradeActionRequest, ::sf::exchange::v1::ExchangeReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](Exchange::Service* service,
@@ -293,7 +363,7 @@ Exchange::Service::Service() {
                return service->AcceptTrade(ctx, req, resp);
              }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
-      Exchange_method_names[3],
+      Exchange_method_names[5],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
       new ::grpc::internal::RpcMethodHandler< Exchange::Service, ::sf::exchange::v1::TradeActionRequest, ::sf::exchange::v1::ExchangeReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](Exchange::Service* service,
@@ -303,7 +373,7 @@ Exchange::Service::Service() {
                return service->CancelTrade(ctx, req, resp);
              }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
-      Exchange_method_names[4],
+      Exchange_method_names[6],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
       new ::grpc::internal::RpcMethodHandler< Exchange::Service, ::sf::exchange::v1::ListItemRequest, ::sf::exchange::v1::ExchangeReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](Exchange::Service* service,
@@ -313,7 +383,7 @@ Exchange::Service::Service() {
                return service->ListItem(ctx, req, resp);
              }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
-      Exchange_method_names[5],
+      Exchange_method_names[7],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
       new ::grpc::internal::RpcMethodHandler< Exchange::Service, ::sf::exchange::v1::BuyListingRequest, ::sf::exchange::v1::ExchangeReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](Exchange::Service* service,
@@ -323,7 +393,7 @@ Exchange::Service::Service() {
                return service->BuyListing(ctx, req, resp);
              }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
-      Exchange_method_names[6],
+      Exchange_method_names[8],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
       new ::grpc::internal::RpcMethodHandler< Exchange::Service, ::sf::exchange::v1::ListingActionRequest, ::sf::exchange::v1::ExchangeReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](Exchange::Service* service,
@@ -333,7 +403,7 @@ Exchange::Service::Service() {
                return service->CancelListing(ctx, req, resp);
              }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
-      Exchange_method_names[7],
+      Exchange_method_names[9],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
       new ::grpc::internal::RpcMethodHandler< Exchange::Service, ::sf::exchange::v1::ListListingsRequest, ::sf::exchange::v1::ListListingsReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](Exchange::Service* service,
@@ -343,7 +413,7 @@ Exchange::Service::Service() {
                return service->ListListings(ctx, req, resp);
              }, this)));
   AddMethod(new ::grpc::internal::RpcServiceMethod(
-      Exchange_method_names[8],
+      Exchange_method_names[10],
       ::grpc::internal::RpcMethod::NORMAL_RPC,
       new ::grpc::internal::RpcMethodHandler< Exchange::Service, ::sf::exchange::v1::ListTradesRequest, ::sf::exchange::v1::ListTradesReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
           [](Exchange::Service* service,
@@ -358,6 +428,20 @@ Exchange::Service::~Service() {
 }
 
 ::grpc::Status Exchange::Service::Wallet(::grpc::ServerContext* context, const ::sf::exchange::v1::WalletRequest* request, ::sf::exchange::v1::WalletReply* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status Exchange::Service::QuoteRepair(::grpc::ServerContext* context, const ::sf::exchange::v1::RepairQuoteRequest* request, ::sf::exchange::v1::RepairQuoteReply* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status Exchange::Service::RepairGear(::grpc::ServerContext* context, const ::sf::exchange::v1::RepairGearRequest* request, ::sf::exchange::v1::RepairGearReply* response) {
   (void) context;
   (void) request;
   (void) response;
