@@ -34,6 +34,10 @@ public:
     void SetGreenlandsNetcheckStage(int32 Stage, int32 LeadSlot, int32 MateSlot, bool bKill);
 #endif
     int32 CombatHealth() const { return PilotHealth; }
+    uint32 GetResurrectionOfferId() const { return ResurrectionOfferId; }
+    void BeginResurrectionOffer(double ExpiresAt);
+    void ClearResurrectionOffer();
+    bool AcceptResurrectionOffer(uint32 RequestedOffer, double Now, int32 MaximumHealth, float Fraction);
     bool IsPilotInCombat() const { return bPilotInCombat; }
     bool IsAutoAttacking() const { return bAutoAttacking; }
     bool IsTravelMounted() const { return bTravelMounted; }
@@ -80,6 +84,9 @@ private:
     UFUNCTION() void OnRep_FaceId();  // swaps the MetaHuman body for the new face (client side only)
     UPROPERTY(Transient) TObjectPtr<AActor> MetaHuman;
     UPROPERTY(Replicated) int32 PilotHealth = 0;  // shown by the vitals HUD (SFE1VitalsHud), not in the world
+    UPROPERTY(Replicated) uint32 ResurrectionOfferId = 0; // owning client only
+    uint32 NextResurrectionOfferId = 0;
+    double ResurrectionOfferExpiresAt = 0.0;
     UPROPERTY(Replicated) bool bPilotInCombat = false;
     UPROPERTY(Replicated) bool bAutoAttacking = false;
     UPROPERTY(Replicated) bool bTravelMounted = false;
@@ -116,6 +123,8 @@ private:
     int32 AutoAttackScenarioStage = 0;
     int32 UnstuckScenarioStage = 0;
     int32 SpiritReleaseScenarioStage = 0;
+    int32 ResurrectionAcceptScenarioStage = 0;
+    double ResurrectionAcceptScenarioAt = 0.0;
     double SpiritReleaseScenarioAt = 0.0;
     double NextSpiritReleaseSampleAt = 0.0;
     double UnstuckScenarioAt = 0.0;
@@ -159,6 +168,7 @@ private:
     void TickAutoAttackScenario();
     void TickUnstuckScenario();
     void TickSpiritReleaseScenario();
+    void TickResurrectionAcceptScenario();
     void TickRegenScenario();
     void TickRestRegenScenario();
     void TickFallScenario();

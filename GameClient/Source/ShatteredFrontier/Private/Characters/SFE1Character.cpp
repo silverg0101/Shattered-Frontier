@@ -51,6 +51,7 @@
 #include "Construction/SFConstructionSandboxController.h"
 #include "Characters/SFBackpedalMovement.h"
 #include "Characters/SFTravelMountRules.h"
+#include "Combat/SFResurrectionAcceptRules.h"
 
 ASFE1Character::ASFE1Character(const FObjectInitializer& ObjectInitializer)
     : Super(ObjectInitializer.SetDefaultSubobjectClass<USFBackpedalMovement>(ACharacter::CharacterMovementComponentName))
@@ -1621,6 +1622,12 @@ void ASFE1Character::Tick(float DeltaSeconds)
         if (PilotHealth == 0)
         { if (ASFPlayerController* PC = Cast<ASFPlayerController>(Controller); PC && PC->WasInputKeyJustPressed(EKeys::R)) { PC->SFReleaseSpirit(); } }
     }
+    if (CombatMap == TEXT("/Game/Frontier/Maps/Sandbox/SB_ResurrectionAccept") && IsLocallyControlled())
+    {
+        if (FParse::Param(FCommandLine::Get(), TEXT("ResurrectionAcceptScenario"))) { TickResurrectionAcceptScenario(); }
+        else if (PilotHealth == 0 && ResurrectionOfferId != 0)
+        { if (ASFPlayerController* PC = Cast<ASFPlayerController>(Controller); PC && PC->WasInputKeyJustPressed(EKeys::R)) { PC->SFAcceptResurrection(); } }
+    }
     if (GetNetMode() == NM_Client && IsLocallyControlled() &&
         FParse::Param(FCommandLine::Get(), TEXT("GreenlandsEnvironmentNetcheck"))) { TickGreenlandsEnvironmentScenario(); }
     if (GetNetMode() == NM_Client && IsLocallyControlled() &&
@@ -1852,6 +1859,7 @@ void ASFE1Character::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
     DOREPLIFETIME(ASFE1Character, PilotHealth);
+    DOREPLIFETIME_CONDITION(ASFE1Character, ResurrectionOfferId, COND_OwnerOnly);
     DOREPLIFETIME(ASFE1Character, bPilotInCombat);
     DOREPLIFETIME(ASFE1Character, bAutoAttacking);
     DOREPLIFETIME(ASFE1Character, bTravelMounted);
@@ -1913,9 +1921,42 @@ void ASFE1Character::CombatSetHealth(int32 Value)
         if (Value < PilotHealth) { CombatMarkHostile(); }
         if (Value < PilotHealth && Casting) { Casting->NotifyDamage(); }
         PilotHealth = Value;
+        if (Value > 0 && ResurrectionOfferId != 0) { ClearResurrectionOffer(); }
         if (Value <= 0) { SetCombatTarget(nullptr); }
         ForceNetUpdate();
     }
+}
+
+void ASFE1Character::BeginResurrectionOffer(double ExpiresAt)
+{
+    if (!HasAuthority()) return;
+    ++NextResurrectionOfferId;
+    if (NextResurrectionOfferId == 0) ++NextResurrectionOfferId;
+    ResurrectionOfferId = NextResurrectionOfferId;
+    ResurrectionOfferExpiresAt = ExpiresAt;
+    ForceNetUpdate();
+}
+
+void ASFE1Character::ClearResurrectionOffer()
+{
+    if (!HasAuthority()) return;
+    ResurrectionOfferId = 0;
+    ResurrectionOfferExpiresAt = 0.0;
+    ForceNetUpdate();
+}
+
+bool ASFE1Character::AcceptResurrectionOffer(uint32 RequestedOffer, double Now, int32 MaximumHealth, float Fraction)
+{
+    const bool bSandbox = GetWorld() && GetWorld()->GetOutermost()->GetName() ==
+        TEXT("/Game/Frontier/Maps/Sandbox/SB_ResurrectionAccept");
+    if (!FSFResurrectionAcceptRules::CanAccept(bSandbox, HasAuthority(), GetController() != nullptr,
+        PilotHealth, ResurrectionOfferId, RequestedOffer, Now, ResurrectionOfferExpiresAt)) return false;
+    ClearResurrectionOffer();
+    GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+    CombatSetHealth(FSFResurrectionAcceptRules::RestoredHealth(MaximumHealth, Fraction));
+    bPilotInCombat = false;
+    ForceNetUpdate();
+    return true;
 }
 
 void ASFE1Character::CombatMarkHostile()
@@ -2044,6 +2085,78 @@ void ASFE1Character::TickSpiritReleaseScenario()
         UE_LOG(LogTemp, Display, TEXT("SPIRIT_RELEASE_CLIENT_RESTORED Role=%s HP=%d X=%.0f"),
             *ScenarioRole, Subject->CombatHealth(), Subject->GetActorLocation().X);
         if (ScenarioRole == TEXT("Driver")) { PC->SFReleaseSpirit(); }
+    }
+#endif
+}
+
+void ASFE1Character::TickResurrectionAcceptScenario()
+{
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    FString ScenarioRole;
+    FParse::Value(FCommandLine::Get(), TEXT("ResurrectionAcceptRole="), ScenarioRole);
+    if (ScenarioRole != TEXT("Driver") && ScenarioRole != TEXT("Observer")) return;
+    ASFPlayerController* PC = Cast<ASFPlayerController>(Controller);
+    if (!PC) return;
+    ASFE1Character* Subject = this;
+    if (ScenarioRole == TEXT("Observer"))
+    {
+        Subject = nullptr;
+        for (TActorIterator<ASFE1Character> It(GetWorld()); It; ++It)
+        { if (*It != this) { Subject = *It; break; } }
+    }
+    if (!Subject) return;
+    ASFPilotBoar* Boar = nullptr;
+    for (TActorIterator<ASFPilotBoar> It(GetWorld()); It; ++It)
+    { if (It->GroupId() == TEXT("resurrection_accept_sandbox")) { Boar = *It; break; } }
+    if (!Boar) return;
+    const double Now = GetWorld()->GetTimeSeconds();
+    if (ResurrectionAcceptScenarioStage == 0)
+    {
+        int32 Pawns = 0;
+        for (TActorIterator<ASFE1Character> It(GetWorld()); It; ++It) { ++Pawns; }
+        if (Pawns < 2 || Subject->CombatHealth() != 35) return;
+        UE_LOG(LogTemp, Display, TEXT("RES_ACCEPT_CLIENT_INITIAL Role=%s HP=%d"), *ScenarioRole, Subject->CombatHealth());
+        if (ScenarioRole == TEXT("Driver")) { PC->SFAcceptResurrection(); } // Living request must fail.
+        ResurrectionAcceptScenarioStage = 1;
+    }
+    if (ScenarioRole == TEXT("Driver") && ResurrectionAcceptScenarioStage == 1)
+    {
+        const FVector Toward = (Boar->GetActorLocation() - GetActorLocation()).GetSafeNormal2D();
+        if (FVector::Dist2D(GetActorLocation(), Boar->GetActorLocation()) > 220.0)
+        { AddMovementInput(Toward, 1.0f); return; }
+        Controller->SetControlRotation(Toward.Rotation());
+        if (ResurrectionAcceptScenarioAt == 0.0) { ResurrectionAcceptScenarioAt = Now + 0.5; return; }
+        if (Now < ResurrectionAcceptScenarioAt) return;
+        PilotAttack();
+        ResurrectionAcceptScenarioStage = 2;
+        ResurrectionAcceptScenarioAt = Now + 1.0;
+        UE_LOG(LogTemp, Display, TEXT("RES_ACCEPT_CLIENT_ATTACK Role=Driver"));
+    }
+    if (ScenarioRole == TEXT("Observer") && ResurrectionAcceptScenarioStage == 1)
+    { ResurrectionAcceptScenarioStage = 2; }
+    if (ScenarioRole == TEXT("Driver") && ResurrectionAcceptScenarioStage == 2 &&
+        Boar->Health() == GetDefault<USFCombatPilotSettings>()->BoarHealth && Now >= ResurrectionAcceptScenarioAt)
+    { PilotAttack(); ResurrectionAcceptScenarioAt = Now + 1.0; }
+    if (ResurrectionAcceptScenarioStage == 2 && Subject->CombatHealth() == 0)
+    {
+        ResurrectionAcceptScenarioStage = 3;
+        ResurrectionAcceptScenarioAt = Now;
+        UE_LOG(LogTemp, Display, TEXT("RES_ACCEPT_CLIENT_DEAD Role=%s HP=0"), *ScenarioRole);
+    }
+    if (ScenarioRole == TEXT("Driver") && ResurrectionAcceptScenarioStage == 3 &&
+        GetResurrectionOfferId() != 0 && Now - ResurrectionAcceptScenarioAt >= 5.0)
+    {
+        UE_LOG(LogTemp, Display, TEXT("RES_ACCEPT_CLIENT_OFFER Role=Driver Offer=%u"), GetResurrectionOfferId());
+        PC->SFAcceptResurrection();
+        ResurrectionAcceptScenarioStage = 4;
+    }
+    if (ScenarioRole == TEXT("Observer") && ResurrectionAcceptScenarioStage == 3)
+    { ResurrectionAcceptScenarioStage = 4; }
+    if (ResurrectionAcceptScenarioStage == 4 && Subject->CombatHealth() == 28)
+    {
+        ResurrectionAcceptScenarioStage = 5;
+        UE_LOG(LogTemp, Display, TEXT("RES_ACCEPT_CLIENT_RESTORED Role=%s HP=28"), *ScenarioRole);
+        if (ScenarioRole == TEXT("Driver")) { PC->ServerAcceptResurrection(1); } // Replayed offer must fail.
     }
 #endif
 }

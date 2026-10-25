@@ -137,7 +137,7 @@ def main():
             marker.static_mesh_component.set_static_mesh(cube)
             marker.static_mesh_component.set_collision_profile_name('NoCollision')
             marker.set_actor_scale3d(u.Vector(0.5, 0.5, 1))
-    if names[0] in ('Evade', 'Threat', 'Aggro', 'AttackerMemory', 'Regeneration', 'RestRegen', 'Assist', 'Respawn', 'AutoAttack', 'SpiritRelease'):
+    if names[0] in ('Evade', 'Threat', 'Aggro', 'AttackerMemory', 'Regeneration', 'RestRegen', 'Assist', 'Respawn', 'AutoAttack', 'SpiritRelease', 'ResurrectionAccept'):
         boar = u.load_class(None, '/Script/ShatteredFrontier.SFPilotBoar')
         interaction = u.load_class(None, '/Script/ShatteredFrontier.SFE1InteractionTarget')
         if not boar or not interaction:

@@ -209,6 +209,8 @@ bool USFCombatPilotSettings::Validate(FString& Error) const
         !FMath::IsWithinInclusive(TabTargetCycleResetSeconds, 0.5f, 5.0f) ||
         !FMath::IsWithinInclusive(PlayerRespawnDelaySeconds, 1.0f, 60.0f) ||
         !FMath::IsNearlyEqual(SpiritResFraction, 0.5f) ||
+        !FMath::IsNearlyEqual(PlayerResFraction, 0.35f) ||
+        !FMath::IsNearlyEqual(ResAcceptSeconds, 60.0f) ||
         (PlayerRespawnPointRule != ESFPlayerRespawnPointRule::NearestToDeath && PlayerRespawnPointRule != ESFPlayerRespawnPointRule::FirstAuthored) ||
         !FMath::IsWithinInclusive(BoarAggroRadiusMetres, 4.0f, 18.0f) ||
         !FMath::IsWithinInclusive(BoarNearNoticeRadiusMetres, 1.0f, 4.0f) ||
@@ -657,16 +659,17 @@ void ASFGameMode::StartCombat()
     const bool bAutoAttackSandbox = MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_AutoAttack");
     const bool bUnstuckSandbox = MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_Unstuck");
     const bool bSpiritReleaseSandbox = MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_SpiritRelease");
+    const bool bResurrectionAcceptSandbox = MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_ResurrectionAccept");
     bRespawnSandbox = MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_Respawn");
     bCompanionSandbox = GetNetMode() != NM_Client &&
-        (MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_Companions") || bEvadeSandbox || bThreatSandbox || bAggroSandbox || bMemorySandbox || bRegenSandbox || bRestRegenSandbox || bFallSandbox || bAssistSandbox || bRespawnSandbox || bAutoAttackSandbox || bUnstuckSandbox || bSpiritReleaseSandbox);
+        (MapName == TEXT("/Game/Frontier/Maps/Sandbox/SB_Companions") || bEvadeSandbox || bThreatSandbox || bAggroSandbox || bMemorySandbox || bRegenSandbox || bRestRegenSandbox || bFallSandbox || bAssistSandbox || bRespawnSandbox || bAutoAttackSandbox || bUnstuckSandbox || bSpiritReleaseSandbox || bResurrectionAcceptSandbox);
     if (bCompanionSandbox)
     {
         CapturedSettings = GetDefault<USFCombatPilotSettings>();
         FString Error;
         if (!CapturedSettings->Validate(Error))
         { UE_LOG(LogTemp, Error, TEXT("COMPANION_SANDBOX_DISABLED Invalid combat settings: %s"), *Error); return; }
-        const double Extent = (bEvadeSandbox || bThreatSandbox || bAggroSandbox || bMemorySandbox || bRegenSandbox || bRestRegenSandbox || bAssistSandbox || bRespawnSandbox || bAutoAttackSandbox || bSpiritReleaseSandbox) ? 85.0 : 45.0;
+        const double Extent = (bEvadeSandbox || bThreatSandbox || bAggroSandbox || bMemorySandbox || bRegenSandbox || bRestRegenSandbox || bAssistSandbox || bRespawnSandbox || bAutoAttackSandbox || bSpiritReleaseSandbox || bResurrectionAcceptSandbox) ? 85.0 : 45.0;
         const TArray<FVector2D> SandboxArea = { FVector2D(-Extent, -Extent), FVector2D(Extent, -Extent),
             FVector2D(Extent, Extent), FVector2D(-Extent, Extent) };
         int32 Slot = 0;
@@ -681,6 +684,7 @@ void ASFGameMode::StartCombat()
                 bAssistSandbox ? TEXT("SF_AssistSandboxWildlife") :
                 bAutoAttackSandbox ? TEXT("SF_AutoAttackSandboxWildlife") :
                 bSpiritReleaseSandbox ? TEXT("SF_SpiritReleaseSandboxWildlife") :
+                bResurrectionAcceptSandbox ? TEXT("SF_ResurrectionAcceptSandboxWildlife") :
                 bRespawnSandbox ? TEXT("SF_RespawnSandboxWildlife") : TEXT("SF_CompanionSandboxWildlife");
             if (!It->ActorHasTag(Tag)) { continue; }
             if (bRespawnSandbox) { RespawnSandboxPoints.Add(It->GetActorTransform()); }
@@ -693,9 +697,10 @@ void ASFGameMode::StartCombat()
                 bAssistSandbox ? TEXT("assist_sandbox") :
                 bAutoAttackSandbox ? TEXT("auto_attack_sandbox") :
                 bSpiritReleaseSandbox ? TEXT("spirit_release_sandbox") :
+                bResurrectionAcceptSandbox ? TEXT("resurrection_accept_sandbox") :
                 bRespawnSandbox ? TEXT("respawn_sandbox") : TEXT("companions_sandbox"), Slot++, SandboxArea,
                 CapturedSettings->BoarHealth, ++NextBoarSerial,
-                bMemorySandbox || bRespawnSandbox || bAutoAttackSandbox || bSpiritReleaseSandbox || (bAssistSandbox && It->ActorHasTag(TEXT("SF_AssistDefensive"))));
+                bMemorySandbox || bRespawnSandbox || bAutoAttackSandbox || bSpiritReleaseSandbox || bResurrectionAcceptSandbox || (bAssistSandbox && It->ActorHasTag(TEXT("SF_AssistDefensive"))));
         }
         if (bRespawnSandbox)
         {
@@ -750,8 +755,10 @@ void ASFGameMode::PostLoginCombat(APlayerController* NewPlayer)
     if (bPilotActive && !USFBackpackComponent::Services()) { SFCombatPilotRewards::AddPilotBag(NewPlayer); }
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     if (bPilotActive && GetNumPlayers() == 1 &&
-        GetWorld()->GetOutermost()->GetName() == TEXT("/Game/Frontier/Maps/Sandbox/SB_SpiritRelease") &&
-        FParse::Param(FCommandLine::Get(), TEXT("SpiritReleaseScenario")))
+        ((GetWorld()->GetOutermost()->GetName() == TEXT("/Game/Frontier/Maps/Sandbox/SB_SpiritRelease") &&
+          FParse::Param(FCommandLine::Get(), TEXT("SpiritReleaseScenario"))) ||
+         (GetWorld()->GetOutermost()->GetName() == TEXT("/Game/Frontier/Maps/Sandbox/SB_ResurrectionAccept") &&
+          FParse::Param(FCommandLine::Get(), TEXT("ResurrectionAcceptScenario")))))
     {
         const TWeakObjectPtr<APlayerController> Weak(NewPlayer);
         FTimerHandle FixtureTimer;
@@ -762,7 +769,10 @@ void ASFGameMode::PostLoginCombat(APlayerController* NewPlayer)
                 if (ASFE1Character* Driver = Cast<ASFE1Character>(Weak->GetPawn()))
                 {
                     Driver->CombatSetHealth(35); // Fixture: three real 14-point boar hits can cause death.
-                    UE_LOG(LogTemp, Display, TEXT("SPIRIT_RELEASE_FIXTURE_HEALTH HP=%d"), Driver->CombatHealth());
+                    if (Driver->GetWorld()->GetOutermost()->GetName() == TEXT("/Game/Frontier/Maps/Sandbox/SB_SpiritRelease"))
+                    { UE_LOG(LogTemp, Display, TEXT("SPIRIT_RELEASE_FIXTURE_HEALTH HP=%d"), Driver->CombatHealth()); }
+                    else
+                    { UE_LOG(LogTemp, Display, TEXT("RES_ACCEPT_FIXTURE_HEALTH HP=%d"), Driver->CombatHealth()); }
                 }
             }
         }), 1.0f, false);
@@ -1287,6 +1297,25 @@ void ASFGameMode::HitPlayer(AActor* Source, ASFE1Character* Victim, int32 Damage
             UE_LOG(LogTemp, Display, TEXT("SPIRIT_RELEASE_SERVER_DEAD Pawn=%s X=%.0f Y=%.0f"),
                 *Victim->GetName(), Victim->GetActorLocation().X, Victim->GetActorLocation().Y);
         }
+        else if (Victim->GetWorld()->GetOutermost()->GetName() == TEXT("/Game/Frontier/Maps/Sandbox/SB_ResurrectionAccept") &&
+            !USFBackpackComponent::Services())
+        {
+            const double ExpiresAt = Mode->GetWorld()->GetTimeSeconds() + Mode->CapturedSettings->ResAcceptSeconds;
+            Victim->BeginResurrectionOffer(ExpiresAt); // Sandbox ability-offer fixture; only the dead owner may accept.
+            const uint32 OfferId = Victim->GetResurrectionOfferId();
+            UE_LOG(LogTemp, Display, TEXT("RES_ACCEPT_SERVER_OFFER Pawn=%s Offer=%u HP=0 ExpiresAt=%.2f"),
+                *Victim->GetName(), OfferId, ExpiresAt);
+            FTimerHandle Timer;
+            Mode->GetWorldTimerManager().SetTimer(Timer, FTimerDelegate::CreateWeakLambda(Mode,
+                [Mode, Weak, OfferId]()
+                {
+                    if (Weak.IsValid() && Weak->CombatHealth() == 0 && Weak->GetResurrectionOfferId() == OfferId)
+                    {
+                        Weak->ClearResurrectionOffer();
+                        Mode->RespawnPlayer(Weak);
+                    }
+                }), Mode->CapturedSettings->ResAcceptSeconds, false);
+        }
         else if (USFBackpackComponent::Services() && Pack && Pack->HasDevIdentity())
         {
             FSFGameplayRequest Request; Request.Rpc = ESFGameplayRpc::ReportDeath;
@@ -1307,6 +1336,23 @@ void ASFGameMode::HitPlayer(AActor* Source, ASFE1Character* Victim, int32 Damage
                 [Mode, Weak]() { Mode->RespawnPlayer(Weak); }), Mode->CapturedSettings->PlayerRespawnDelaySeconds, false);
         }
     }
+}
+
+bool ASFGameMode::AcceptResurrection(ASFE1Character* Player, uint32 OfferId)
+{
+    const bool bSandbox = GetWorld() && GetWorld()->GetOutermost()->GetName() ==
+        TEXT("/Game/Frontier/Maps/Sandbox/SB_ResurrectionAccept");
+    if (!bSandbox || !HasAuthority() || !bPilotActive || !CapturedSettings ||
+        USFBackpackComponent::Services() || !IsValid(Player) || Player->GetController() == nullptr ||
+        !Player->AcceptResurrectionOffer(OfferId, GetWorld()->GetTimeSeconds(),
+            CapturedSettings->PlayerHealth, CapturedSettings->PlayerResFraction))
+    {
+        UE_LOG(LogTemp, Display, TEXT("RES_ACCEPT_SERVER_DENIED Pawn=%s Offer=%u"), *GetNameSafe(Player), OfferId);
+        return false;
+    }
+    UE_LOG(LogTemp, Display, TEXT("RES_ACCEPT_SERVER_ACCEPTED Pawn=%s Offer=%u HP=%d"),
+        *Player->GetName(), OfferId, Player->CombatHealth());
+    return true;
 }
 
 bool ASFGameMode::ReleaseSpirit(ASFE1Character* Player)
