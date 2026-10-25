@@ -3057,12 +3057,21 @@ def check():
         shutil.copyfile(m / f, cm / f"{cm.name}{f[3:]}")
     creature.write_manifest(cm, {**json.loads((m / "Rat.json").read_text()), "name": cm.name, "size_cm": 30})
     src = cm.parent / f"{cm.name}_src.glb"
-    src.write_bytes(tiny_glb(["root", "pelvis", "spine_01"], "Walk"))
+    sj, sb = creature.glb_read(tiny_glb(["root", "pelvis", "spine_01"], "Walk"))
+    sj["animations"].append({**sj["animations"][0], "name": "Walk?"})  # sanitises to Walk too
+    src.write_bytes(creature.glb_write(sj, sb))
     rel = src.relative_to(ROOT).as_posix()
-    try:
-        creature.clip_params(cm.name, {"source": "glb", "from_glb": rel, "animations": ["Run"]}); raise AssertionError("no Run")
-    except ValueError as e:
-        assert "has no animation Run; it has: Walk" in str(e), e
+    gp = lambda **k: creature.clip_params(cm.name, {"source": "glb", "from_glb": rel, **k})
+    for bad, why in (({"animations": ["Run"]}, "has no animation Run; it has: Walk, Walk?"),
+                     ({"animations": ["Walk", "Walk?"]}, "Walk, Walk? would all be named Walk; give them other names with rename"),
+                     ({"animations": ["Walk?"], "rename": {"Walk?": "../x"}}, "rename maps"),
+                     ({"animations": ["Walk"], "rename": {"Walk?": "Sniff"}}, "rename names Walk?, not in animations")):
+        try:
+            gp(**bad); raise AssertionError(bad)
+        except ValueError as e:
+            assert why in str(e), (bad, e)
+    two = gp(animations=["Walk", "Walk?"], rename={"Walk?": "rig"})
+    assert two["names"] == ["Walk", "rig"], two
     def clip_job(params):
         with DB_LOCK, db() as c:
             jid = c.execute("INSERT INTO jobs (kind, name, params, status, created) VALUES ('clip', 'c', ?, 'running', ?)",
@@ -3072,25 +3081,40 @@ def check():
         with DB_LOCK, db() as c:
             c.execute("DELETE FROM jobs WHERE id=?", (jid,))
         return r
-    ok = creature.clip_params(cm.name, {"source": "glb", "from_glb": rel, "animations": ["Walk"]})
-    r = clip_job(ok)
+    # a save that fails partway (the second file) leaves the folder as it was: no clip, no .tmp, no new animations/
+    snap = {f: f.read_bytes() if f.is_file() else None for f in cm.rglob("*")}
+    real_replace, n_replace = os.replace, []
+    def flaky_replace(a, b):
+        n_replace.append(b)
+        if len(n_replace) == 2:
+            raise OSError("disk full")
+        real_replace(a, b)
+    os.replace = flaky_replace
+    try:
+        r = clip_job(two)
+    finally:
+        os.replace = real_replace
+    assert r["status"] == "failed" and "disk full" in r["error"], r
+    assert {f: f.read_bytes() if f.is_file() else None for f in cm.rglob("*")} == snap
+    r = clip_job(two)
     assert r["status"] == "done", r
     man = json.loads((cm / f"{cm.name}.json").read_text())
-    new = man["clips"][-1]
+    new, renamed = man["clips"][-2:]
     assert new["name"] == "Walk_2" and new["source"] == "glb" and new["baked"] is False and new["checks"]["passed"] is None, new
+    assert renamed["name"] == "rig" and renamed["animation"] == "Walk?", renamed  # a clip called rig is just a clip
     js, _ = creature.glb_read((cm / new["file"]).read_bytes())
     assert [x["name"] for x in js["animations"]] == ["Walk"]  # the source name; combine names it Walk_2
     creature.combine_model(cm.name, ["Walk_2"])  # the copy is on the model's rig: combine takes it
     # path choice: the same bones were copied above; other bones are labelled and retargeted; unlabellable is refused
     src.write_bytes(tiny_glb(["root", "hips", "spine_01"], "Walk"))
-    ok = creature.clip_params(cm.name, ok)  # accepted: another skeleton is retargeted, not refused
+    ok = gp(animations=["Walk"])  # accepted: another skeleton is retargeted, not refused
     calls = []
-    def fake_library(jid, host, from_glb, js, sbin, anims, lib):
-        calls.append(("label", from_glb, anims))
+    def fake_library(jid, host, from_glb, js, sbin, anims, names, lib):
+        calls.append(("label", from_glb, anims, names))
         if "hips" in json.dumps(js["nodes"]) and src.read_bytes()[-1:] == b"!":
             raise RuntimeError("FAIL: role map missing required roles FL_01")
         return lib
-    def fake_retarget(jid, host, rig_glb, lib, clip, size_cm):
+    def fake_retarget(jid, host, rig_glb, lib, clip, size_cm, prompt=None):
         calls.append(("retarget", rig_glb, clip, size_cm))
         return {"glb": f"{clip}.glb", "sheet": f"{clip}_sheet.png", "checks": {"passed": True, "reason": "", "review": []}}
     stubs = creature.glb_library, creature.retarget_clip, put_input, globals()["ssh"]
@@ -3113,6 +3137,51 @@ def check():
         assert "retarget" not in [c[0] for c in calls] and {f: f.read_bytes() for f in cm.rglob("*") if f.is_file()} == snap
     finally:
         creature.glb_library, creature.retarget_clip, g["put_input"], g["ssh"] = stubs
+    # UniMate seeds: a bad seed is skipped and recorded, a cancel still stops, no surviving seed fails; the review
+    # gets the prompt; a clip called rig keeps off the job's rig.glb
+    with DB_LOCK, db() as c:
+        jid = c.execute("INSERT INTO jobs (kind, name, params, status, created) VALUES ('clip', 'c', '{}', 'running', ?)",
+                        (time.time(),)).lastrowid
+    h, want, seen = {"name": "t", "kind": "http", "comfy_dir": "/x", "gpu": 1}, "An object sniffs the ground.", []
+    def fake_std(jid, host, rig_glb, src_glb, name, size_cm, prompt=None):
+        seen.append((name, prompt))
+        if name.endswith("_s0"):
+            raise RuntimeError("UniMate crashed")
+        if name.endswith("_s2"):
+            raise InterruptedError
+        return {"glb": "x", "sheet": "y", "checks": {"passed": True, "seam_deg": 1}}
+    stubs = creature.std_glb_clip, g["ssh"], g["ssh_step"], g["put_input"], g["run_blender"], g["job_blender"], g["anthropic_key"], g["ssh_anthropic"]
+    creature.std_glb_clip, g["ssh_step"], g["put_input"] = fake_std, lambda *a, **k: b"", lambda *a, **k: None
+    g["ssh"] = lambda host, cmd, *a, **k: b"y"  # the rig is prepared for UniMate already
+    try:
+        u = creature.unimate_clip(jid, h, "rig.glb", "Sniff", 30, want, 2)
+        assert u["seed"] == 1 and len(u["candidates"]) == 1 and u["errors"] == ["seed 0: UniMate crashed"], u
+        assert seen == [("Sniff_s0", want), ("Sniff_s1", want)], seen
+        try:
+            creature.unimate_clip(jid, h, "rig.glb", "Sniff", 30, want, 1); raise AssertionError("no seed survived")
+        except RuntimeError as e:
+            assert "UniMate made no Sniff: seed 0: UniMate crashed" in str(e), e
+        try:
+            creature.unimate_clip(jid, h, "rig.glb", "Sniff", 30, want, 3); raise AssertionError("cancel swallowed")
+        except InterruptedError:
+            pass
+        lib2, ran, asked = td / "lib2", [], []
+        (lib2 / "clips").mkdir(parents=True)
+        (lib2 / "animal.json").write_text(json.dumps({"clips": [{"name": "rig", "file": "clips/rig.bvh"}]}))
+        (lib2 / "clips" / "rig.bvh").write_text("x")
+        g["run_blender"] = lambda jid, host, script, args, inputs, outputs, timeout: ran.append(outputs)
+        g["job_blender"], g["anthropic_key"] = lambda jid: {}, lambda: "k"
+        g["ssh"] = lambda host, cmd, *a, **k: json.dumps({"min_paw_cm": 0.5, "max_slide_cm": 0, "seam_deg": 1, "flips": 0}).encode()
+        g["ssh_anthropic"] = lambda host, cmd, timeout=60: asked.append(cmd) or b"REVIEW FAIL: rears up and sniffs the air\n"
+        rt = creature.retarget_clip(jid, h, "rig.glb", lib2, "rig", 30, want)
+        assert rt["glb"] == "out_rig.glb" and not any("rig.glb" in o for o in ran), (rt, ran)
+        assert len(asked) == 2 and all(cmd.endswith(f"{shlex.quote(want)}") for cmd in asked), asked
+        assert [x["verdict"] for x in rt["checks"]["review"]] == ["FAIL", "FAIL"] and rt["checks"]["passed"] is False, rt
+        assert "sniffs the air" in rt["checks"]["reason"], rt
+    finally:
+        creature.std_glb_clip, g["ssh"], g["ssh_step"], g["put_input"], g["run_blender"], g["job_blender"], g["anthropic_key"], g["ssh_anthropic"] = stubs
+        with DB_LOCK, db() as c:
+            c.execute("DELETE FROM jobs WHERE id=?", (jid,))
     shutil.rmtree(cm)
     src.unlink()
     shutil.rmtree(td)

@@ -204,11 +204,12 @@ def checks_pass(m, settings) -> dict:
     return {k: m[k] for k in CHECKS} | {"passed": not why, "reason": "; ".join(why)}
 
 
-def retarget_clip(jid, host, rig_glb, animal_dir, clip, size_cm) -> dict:
+def retarget_clip(jid, host, rig_glb, animal_dir, clip, size_cm, prompt=None) -> dict:
     """Retarget library clip `clip` of `animal_dir` (DATA/MotionLibrary/<animal>) onto `rig_glb` (a standardise_rig
     output in job `jid`'s folder on `host`), clean it up, check it and draw its sheet; with an Anthropic key set,
-    Claude reviews the sheet. -> {"glb": <clip>.glb, "sheet": <clip>_sheet.png, "checks": {..., "passed", "reason",
-    "review"}}, files in the job folder."""
+    Claude reviews the sheet against `prompt` (what the motion should show; default the clip name).
+    -> {"glb": out_<clip>.glb, "sheet": out_<clip>_sheet.png, "checks": {..., "passed", "reason", "review"}}, files
+    in the job folder; the out_ prefix keeps a clip called rig or zoo off the job's own work files."""
     a = _app()
     work, _, py, _, step, _ = a.host_tools(jid, host)
     s, q, animal_dir = a.get_settings(), shlex.quote, Path(animal_dir)
@@ -216,7 +217,7 @@ def retarget_clip(jid, host, rig_glb, animal_dir, clip, size_cm) -> dict:
     meta = next((c for c in animal["clips"] if c["name"] == clip), None)
     if not meta:
         raise ValueError(f"{animal_dir.name} has no clip {clip!r} ({', '.join(c['name'] for c in animal['clips'])})")
-    glb, sheet, mj = f"{clip}.glb", f"{clip}_sheet.png", f"{clip}_retarget.json"
+    glb, sheet, mj = f"out_{clip}.glb", f"out_{clip}_sheet.png", f"out_{clip}_retarget.json"
     for f in [*a.MOTION_DIR.glob("*.py"), Path(__file__)]:  # zoo_retarget.py imports chain_resample from here
         a.put_input(host, f"{jid}/{f.name}", f.read_bytes())
     for f in ("animal.json", meta["file"]):
@@ -232,7 +233,7 @@ def retarget_clip(jid, host, rig_glb, animal_dir, clip, size_cm) -> dict:
     if a.anthropic_key():
         for n in (1, 2):  # the review is not deterministic: a clip whose numbers pass gets a second look after a FAIL
             step(f"checking the {clip} sheet with Claude{' again' if n > 1 else ''}")
-            out = a.ssh_anthropic(host, f"cd {q(work)} && {py} clip_sheet.py --review {q(sheet)} {q(mj)}", timeout=1800)
+            out = a.ssh_anthropic(host, f"cd {q(work)} && {py} clip_sheet.py --review {q(sheet)} {q(mj)} {q(prompt or clip)}", timeout=1800)
             verdict = next((ln[7:] for ln in out.decode(errors="replace").splitlines() if ln.startswith("REVIEW ")), "FAIL: no verdict")
             ok = verdict.upper().startswith("PASS")
             checks["review"].append({"verdict": "PASS" if ok else "FAIL", "reason": verdict.split(":", 1)[1].strip() if ":" in verdict else ""})
@@ -423,9 +424,9 @@ def unimate_prompt(clip) -> str:
     return f"An object {MOTION_TEXT.get(clip) or words}."
 
 
-def std_glb_clip(jid, host, rig_glb, src_glb, name, size_cm) -> dict:
+def std_glb_clip(jid, host, rig_glb, src_glb, name, size_cm, prompt=None) -> dict:
     """An animated GLB on the shared skeleton in the job folder (a UniMate seed, a video take) as clip `name` on
-    `rig_glb`: turned into a BVH, then retarget_clip's cleanup, checks, sheet and review."""
+    `rig_glb`: turned into a BVH, then retarget_clip's cleanup, checks, sheet and review (against `prompt`)."""
     a, q = _app(), shlex.quote
     work, lib = a.host_tools(jid, host)[0], Path(tempfile.mkdtemp())
     try:
@@ -440,7 +441,7 @@ def std_glb_clip(jid, host, rig_glb, src_glb, name, size_cm) -> dict:
         # ponytail: these clips are kept as one-shots; cut a loop (zoo_curate) when cyclic ones need seamless ends
         (lib / "animal.json").write_text(json.dumps({"id": "UniMate", "fps": info["fps"], "role_map": {b: b for b in info["bones"]},
             "clips": [{"name": name, "file": f"clips/{name}.bvh", "frames": info["frames"], "loop": False}]}))
-        return retarget_clip(jid, host, rig_glb, lib, name, size_cm)
+        return retarget_clip(jid, host, rig_glb, lib, name, size_cm, prompt)
     finally:
         shutil.rmtree(lib, ignore_errors=True)
 
@@ -448,7 +449,8 @@ def std_glb_clip(jid, host, rig_glb, src_glb, name, size_cm) -> dict:
 def unimate_clip(jid, host, rig_glb, clip, size_cm, prompt=None, seeds=None) -> dict:
     """A clip the library lacks, made by UniMate on the standardised rig over `seeds` (default creature_unimate_seeds)
     seeds from `prompt` (default unimate_prompt(clip)); each seed goes through std_glb_clip. -> the best seed (passed
-    first, then lowest seam) as retarget_clip's dict plus "seed" and "prompt", and "candidates": every seed's dict."""
+    first, then lowest seam) as retarget_clip's dict plus "seed" and "prompt", "candidates": every seed's dict, and
+    "errors": ["seed N: <error>"] for seeds that failed and were skipped; raises only when no seed survives."""
     a = _app()
     work, gpu, _, _, step, _ = a.host_tools(jid, host)
     s, q, um = a.get_settings(), shlex.quote, f"{work}/um"
@@ -461,21 +463,29 @@ def unimate_clip(jid, host, rig_glb, clip, size_cm, prompt=None, seeds=None) -> 
         a.ssh_step(host, jid, work, env + f"python -m data_process.rig_preprocess run --input {q(work + '/' + rig_glb)} "
                    f"--output_dir {um}/creature --name creature --annotation {um}/annotation.json --no_review --overwrite "
                    f"> {um}/prep.log 2>&1; test -s {um}/creature/cond.npy" + fail(f"{um}/prep.log"), 1800)
-    prompt, best, cands = prompt or unimate_prompt(clip), None, []
+    prompt, best, cands, errors = prompt or unimate_prompt(clip), None, [], []
     n = seeds or s["creature_unimate_seeds"]
     for seed in range(n):
         name, d = f"{clip}_s{seed}", f"{um}/{clip}_s{seed}"
         step(f"generating {clip} with UniMate (seed {seed + 1} of {n})")
-        a.ssh_step(host, jid, work, env + f"python -m unimate.inference.sample --exp_dir {UNIMATE_RUN} --asset {um}/creature "
-                   f"--prompt {q(prompt)} --cfg_scale 5 --seed {seed} --output_dir {d} > {d}.log 2>&1 && "
-                   f"bash scripts/run_animate_motion.sh {d} >> {d}.log 2>&1" + fail(f"{d}.log") +
-                   f" && cp \"$(ls {d}/animated/*.glb | head -1)\" {q(work + '/' + name + '_unimate.glb')}", 1800)
-        r = std_glb_clip(jid, host, rig_glb, f"{name}_unimate.glb", name, size_cm) | {"seed": seed, "prompt": prompt}
+        try:
+            a.ssh_step(host, jid, work, env + f"python -m unimate.inference.sample --exp_dir {UNIMATE_RUN} --asset {um}/creature "
+                       f"--prompt {q(prompt)} --cfg_scale 5 --seed {seed} --output_dir {d} > {d}.log 2>&1 && "
+                       f"bash scripts/run_animate_motion.sh {d} >> {d}.log 2>&1" + fail(f"{d}.log") +
+                       f" && cp \"$(ls {d}/animated/*.glb | head -1)\" {q(work + '/' + name + '_unimate.glb')}", 1800)
+            r = std_glb_clip(jid, host, rig_glb, f"{name}_unimate.glb", name, size_cm, prompt) | {"seed": seed, "prompt": prompt}
+        except InterruptedError:  # a cancel, not a bad seed
+            raise
+        except Exception as e:  # one bad seed (UniMate crash, an unreadable take) doesn't lose the others
+            errors.append(f"seed {seed}: {str(e)[-300:]}")
+            continue
         cands.append(r)
         rank = lambda x: (not x["checks"]["passed"], x["checks"]["seam_deg"])
         if best is None or rank(r) < rank(best):
             best = r
-    return best | {"candidates": cands}
+    if best is None:
+        raise RuntimeError(f"UniMate made no {clip}: {'; '.join(errors)}")
+    return best | {"candidates": cands, "errors": errors}
 
 
 def glb_read(b: bytes):
@@ -715,7 +725,7 @@ def run_creature(jid, host):
 def clip_params(name, b, folder=None, library=None) -> dict:
     """A New Animation / Add from GLB request for model `name` checked and filled in: {source: "library", animal?,
     clip} | {source: "text", prompt, seeds?, clip?} | {source: "video", clip?, ...MOTION_PARAMS} | {source: "glb",
-    from_glb, animations}. Raises ValueError."""
+    from_glb, animations, rename?: {animation: clip name}} (-> "names", the clip name per animation). Raises ValueError."""
     a = _app()
     folder = Path(folder) if folder else model_dir(name)
     if not (folder / f"{name}.json").is_file():
@@ -771,7 +781,16 @@ def clip_params(name, b, folder=None, library=None) -> dict:
         raise ValueError(f"{b['from_glb']} has no animation {', '.join(missing)}; it has: {', '.join(map(str, have)) or 'none'}")
     if not js.get("skins"):
         raise ValueError(f"{b['from_glb']} has no skeleton (no skin)")
-    return out | {"from_glb": b["from_glb"], "animations": list(dict.fromkeys(anims))}
+    anims, rename = list(dict.fromkeys(anims)), b.get("rename") or {}
+    if not isinstance(rename, dict) or any(not isinstance(v, str) or not v or safe_name(v) != v for v in rename.values()):
+        raise ValueError("rename maps animation names to clip names of letters, digits, _ and -")
+    if extra := [k for k in rename if k not in anims]:
+        raise ValueError(f"rename names {', '.join(extra)}, not in animations")
+    names = [rename.get(x) or safe_name(x) or "Clip" for x in anims]
+    if clash := sorted({c for c in names if names.count(c) > 1}):
+        raise ValueError(f"animations {', '.join(x for x, c in zip(anims, names) if c in clash)} would all be named "
+                         f"{', '.join(clash)}; give them other names with rename")
+    return out | {"from_glb": b["from_glb"], "animations": anims, "names": names}
 
 
 def clip_names(taken, groups) -> list:
@@ -785,9 +804,9 @@ def clip_names(taken, groups) -> list:
     return out
 
 
-def glb_library(jid, host, from_glb, js, sbin, anims, lib) -> Path:
+def glb_library(jid, host, from_glb, js, sbin, anims, clip_names_, lib) -> Path:
     """A GLB on another skeleton made into a clip library like a curated animal: each animation in `anims` turned into
-    a BVH (unimate_bvh.py), then label_library (Task 2's sheet and Claude role map) into the local folder `lib`. A
+    a BVH (unimate_bvh.py) as clip clip_names_[i], then label_library (Task 2's sheet and Claude role map) into the local folder `lib`. A
     skeleton that can't be labelled (a required role missing, not a quadruped) raises with the role map's reason."""
     a = _app()
     work, _, _, _, step, _ = a.host_tools(jid, host)
@@ -795,8 +814,7 @@ def glb_library(jid, host, from_glb, js, sbin, anims, lib) -> Path:
     for f in a.MOTION_DIR.glob("*.py"):
         a.put_input(host, f"{jid}/{f.name}", f.read_bytes())
     a.job_blender(jid)
-    for an in anims:
-        c = safe_name(an) or "Clip"
+    for an, c in zip(anims, clip_names_):
         a.put_input(host, f"{jid}/srclib/{c}.glb", glb_write({**js, "animations": [js["animations"][names.index(an)]]}, sbin))
         step(f"reading {an} from {from_glb}")
         a.run_blender(jid, host, "unimate_bvh.py", [f"srclib/{c}.glb", f"srclib/{c}.bvh", f"srclib/{c}_bvh.json"],
@@ -829,9 +847,8 @@ def run_clip_job(jid, host):
         names = [x.get("name") for x in src[0].get("animations", [])] if src else []
         if src and glb_bones(src[0]) == glb_bones(glb_read(base)[0]):  # the same rig: the clips go in as they are
             step("copying the animations")
-            for an in p["animations"]:
+            for an, c in zip(p["animations"], p["names"]):
                 js, binary = glb_read(base)
-                c = safe_name(an) or "Clip"
                 _add_animation(js, binary, src[0], src[1], c, names.index(an))
                 made.append((c, [("", glb_write(js, binary), None, {"source": "glb", "from": p["from_glb"], "animation": an,
                     "checks": {"passed": None, "reason": "copied as is from a GLB on the same skeleton; not checked", "review": []}})]))
@@ -846,6 +863,7 @@ def run_clip_job(jid, host):
                 best = unimate_clip(jid, host, "rig.glb", p["clip"], size, p["prompt"], p["seeds"])
                 groups = [(p["clip"], [(f"_s{r['seed']}", r, {"source": "text", "seed": r["seed"], "prompt": r["prompt"],
                                                               "best": r["seed"] == best["seed"]}) for r in best["candidates"]])]
+                log += [f"{p['clip']} {e} (skipped)" for e in best["errors"]]
             elif p["source"] == "video":
                 takes, _ = a.motion_takes(jid, host, {**p["motion"], "model": rig.relative_to(a.ROOT).as_posix()}, rig)
                 log += [f"take {i}: score {sc:.2f}" for sc, _, i, _ in takes]
@@ -856,9 +874,8 @@ def run_clip_job(jid, host):
             else:  # another skeleton: labelled like a library animal (a GLB that can't be fails here), then retargeted
                 tmp = Path(tempfile.mkdtemp())
                 try:
-                    lib = glb_library(jid, host, p["from_glb"], *src, p["animations"], tmp / "lib")
-                    for an in p["animations"]:
-                        c = safe_name(an) or "Clip"
+                    lib = glb_library(jid, host, p["from_glb"], *src, p["animations"], p["names"], tmp / "lib")
+                    for an, c in zip(p["animations"], p["names"]):
                         groups.append((c, [("", retarget_clip(jid, host, "rig.glb", lib, c, size),
                                             {"source": "glb", "from": p["from_glb"], "animation": an, "retargeted": True})]))
                 finally:
@@ -868,8 +885,9 @@ def run_clip_job(jid, host):
                 log += [f"{b}{suf}: {'passed' if r['checks']['passed'] else 'failed: ' + r['checks']['reason']}"
                         f"{' (best)' if extra.get('best') else ''}" for suf, r, extra in g]
         step("saving into the model folder")
-        written, files = [], []
+        written, files, anim_dir = [], [], folder / "animations"
         with MODEL_LOCK:
+            new_dir = not anim_dir.exists()
             man = json.loads((folder / f"{n}.json").read_text())
             bases = clip_names([c["name"] for c in man["clips"]], [(b, [x[0] for x in g]) for b, g in made])
             try:
@@ -878,18 +896,22 @@ def run_clip_job(jid, host):
                         c = nb + suf
                         for data, ext in ((glb, ".glb"), (sheet, ".png")):
                             if data is not None:
-                                f = folder / "animations" / f"{n}_{c}{ext}"
-                                f.parent.mkdir(exist_ok=True)
-                                tmp = f.with_name(f".{f.name}.tmp")
-                                tmp.write_bytes(data)
-                                os.replace(tmp, f)
+                                f = anim_dir / f"{n}_{c}{ext}"
+                                anim_dir.mkdir(exist_ok=True)
+                                part = f.with_name(f".{f.name}.tmp")
+                                written.append(part)
+                                part.write_bytes(data)
+                                os.replace(part, f)
                                 written.append(f)
                         man["clips"].append({"name": c, "file": f"animations/{n}_{c}.glb", "baked": False, **fields})
                         files.append((folder / "animations" / f"{n}_{c}.glb").relative_to(a.ROOT).as_posix())
+                written.append(folder / f".{n}.json.tmp")  # write_manifest's own temp file
                 write_manifest(folder, man)
-            except BaseException:
+            except BaseException:  # the folder goes back to what it was: no clip, .tmp or new animations/ left
                 for f in written:
                     f.unlink(missing_ok=True)
+                if new_dir:
+                    shutil.rmtree(anim_dir, ignore_errors=True)
                 raise
         a.update_job(jid, status="done", output=files[0], files=json.dumps(files), note="", finished=time.time())
     except InterruptedError:
