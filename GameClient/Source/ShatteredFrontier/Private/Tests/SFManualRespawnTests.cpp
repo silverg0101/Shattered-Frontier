@@ -20,8 +20,14 @@ bool FSFManualRespawnTest::RunTest(const FString& Parameters)
     if (!Fixture.CreateTestWorld(EWorldType::GameRPC) || !Fixture.BeginPlayInTestWorld()) return false;
     UWorld* World = Fixture.GetTestWorld();
     const FString Original = World->GetOutermost()->GetName();
+    const TCHAR* ProductionMap = TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook");
+    if (!World->GetOutermost()->Rename(ProductionMap, nullptr, REN_Test | REN_DontCreateRedirectors))
+    {
+        AddError(TEXT("ManualRespawn requires an unloaded Silverbrook package; start the test runner on /Engine/Maps/Entry."));
+        return false;
+    }
     ON_SCOPE_EXIT { World->GetOutermost()->Rename(*Original, nullptr, REN_DontCreateRedirectors); };
-    if (!World->GetOutermost()->Rename(TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook"), nullptr, REN_DontCreateRedirectors)) return false;
+    if (!World->GetOutermost()->Rename(ProductionMap, nullptr, REN_DontCreateRedirectors)) return false;
     World->GetWorldSettings()->NotifyBeginPlay();
     FActorSpawnParameters Spawn; Spawn.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
     auto* Mode = World->SpawnActor<ASFGameMode>();
