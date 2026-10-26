@@ -1,51 +1,29 @@
 # Hand-offs
 
-A hand-off passes one unfinished task to the next session or agent. Each task is one Markdown file.
-
-```
-docs/hand-offs/
-  README.md        these instructions
-  TEMPLATE.md      copy this for a new task
-  queue/           open tasks, one file each
-  completed/       finished tasks, moved here unchanged except for the Outcome section
-```
+A hand-off passes one unfinished task to the next session or agent. Each task is one Markdown file: `queue/` for open tasks, `completed/` for finished ones. Copy `TEMPLATE.md` to start one.
 
 ## Rules
 
-- **Workers read only the task they are working on.** Open it by its file name; do not list, scan or read other files in `queue/` or `completed/`. A coordinating session may list queue filenames when the owner authorizes queue selection; that permission does not extend to workers or unrelated completed tasks.
-- **Read `completed/` only for a reason**, such as a task that names an earlier one. Then open only the file or files it names.
-- **One task per file**, named `<area>-<short-name>.md` in lower-case kebab case, e.g. `art-wolf-model.md`. Area is one of `art`, `gameplay`, `backend`, `ui`, `world`, `tools`, `owner`.
-- **Keep it short.** Facts only: goal, state, evidence, next step. Link to commits, docs and folders instead of copying their content.
-- **Never put secrets** (passwords, keys, tokens) in a hand-off.
+- **Read only your task.** Open it by name; don't scan `queue/` or `completed/`. Open a completed file only when your task names it.
+- **One task per file**, named `<area>-<short-name>.md`. Area is `art`, `gameplay`, `backend`, `ui`, `world`, `tools` or `owner`.
+- **Short.** Keep it to about 40 lines: goal, state, the next step. Put hashes, byte counts and logs in evidence files and link to them. Replace stale text; don't append history.
+- **No secrets** in a hand-off.
 
 ## How we work
 
-- **One task, one worktree.** Each task names its worktree. Lanes are reusable worktrees: `pwsh tools/Enter-Lane.ps1 -Name <a..e>` creates `C:\Projects\SF-lane-<name>` from origin/main, or moves an existing clean lane up to origin/main. Run one Unreal-heavy job at a time across all lanes.
-- **The main checkout (`C:\Projects\Shattered-Frontier`) is shared.** Other sessions keep staged changes there; don't edit, stage, stash or reset it. Untracked art and reviews that must outlive a lane go in its git-ignored `Artifacts\` folder.
-- **Committing:** `git fetch`, rebase onto origin/main, stage your files by name (never `git add -A`, `.` or `commit -a`), check `git diff --cached --stat`, then `git push origin HEAD:main`. Never force-push, stash, autostash or reset others' work. Commit and push finished work without asking. End commit messages with the co-author trailer of whoever did the work (Codex for this workflow).
-- **Removing a lane:** first unlink its junctions with `cmd /c rmdir` (`Artifacts\ThirdParty` and the others `tools/Link-WorktreeDeps.ps1` made), then `git worktree remove`. A remove that follows a junction deletes the main checkout's files.
-- **Workers:** delegate only useful parallel work, with at most three subagents active at once. GPT-6.1 Sol handles implementation, design, difficult debugging and independent reviews. Choose appropriate effort: high for architecture, security, difficult debugging or complex world/animation reviews; medium for bounded implementation and comparisons. GPT-6 Luna may handle simple, bounded mechanical tasks. Give each a narrow brief and take back a short result. Run one Unreal-heavy job at a time across all lanes.
-- **Visual work:** the builder verifies returned assets and captures; a fresh reviewer that did not build the work judges them against the concept using [the central routing](../blueprints/README.md#routing) and [visual review](../visual-review.md). Implement only its fix list. Stop after 3 rounds and hand it to the owner; completion requires owner sign-off.
-- **Art generation** runs on local models via the Asset Forge (`http://192.168.50.133:8090`). Fix generated models at the input-image level; never patch them in Blender. Session raster jobs use the current imagegen skill/tool only when the owner has authorized that workflow; preserve the asset recipe's source/licensing rules and [central provenance guidance](../blueprints/README.md#routing).
-- **Unreal:** write only under `/Game/Frontier/`; stop only processes you started; with the editor open, use `python tools/Run-InEditor.py <script.py>` instead of commandlets. Run netchecks from PowerShell (Git Bash rewrites `/Game/` paths).
-- **Design values:** never invent them. Add the question, with the default you used, to `docs/decisions/` for the owner.
+- **Land on main as you go.** Once a change's focused checks pass, rebase onto origin/main and push to main. Don't hold finished work on side or integration branches waiting for a bigger acceptance.
+- **Committing:** `git fetch`, rebase onto origin/main, stage your files by name (never `git add -A`, `.` or `commit -a`), then `git push origin HEAD:main`. Never force-push, stash or reset others' work. Commit finished work without asking.
+- **Worktrees:** each task names its worktree. `pwsh tools/Enter-Lane.ps1 -Name <a..e>` gives `C:\Projects\SF-lane-<name>` at origin/main. The main checkout is shared; don't edit, stage or reset it. Untracked keepers go in its git-ignored `Artifacts\`.
+- **Removing a lane:** first unlink its junctions without following them (`[System.IO.Directory]::Delete(path, $false)`), then `git worktree remove`. Following a junction deletes main's files.
+- **Checks:** run only the focused tests for your change. Prefer an automated netcheck or test over a manual run. A manual playtest by the owner is optional, not a gate.
+- **Deploying to the LAN server:** `pwsh tools/Deploy-Lan.ps1` (backup, build, swap, health, automatic rollback). See `ops/steam-server/playable-release.md`.
+- **Visual work:** a fresh reviewer that didn't build it judges it with [visual review](../visual-review.md); implement only its fix list. After 3 rounds it goes to the owner, and owner sign-off ends it. If round 2 still fails on the same kind of defect, change route instead of iterating.
+- **Unreal:** write only under `/Game/Frontier/`, run one Unreal-heavy job at a time, and stop only processes you started. Run netchecks from PowerShell.
+- **Design values:** never invent them. Note the default you used in `docs/decisions/` for the owner.
 
-## Writing a hand-off
+## Picking up and finishing
 
-1. Copy `TEMPLATE.md` to `queue/<area>-<short-name>.md`.
-2. Fill every section. Write "none" when a section has nothing.
-3. Commit it with your work. Stage it by name.
-
-## Picking up a hand-off
-
-1. Open the task file you were given, by name.
-2. Read `docs/dependency-map.md` and only the area file the task names.
-3. Check `Blocked on` first. If it is still blocked, stop and report, or move to another task you were given.
-4. Do the `Next step`. Update `State` and `Evidence` in the file as you go.
-
-## Finishing a hand-off
-
-1. Fill in the `Outcome` section: commit hashes, checks run, what is left.
-2. Move the file with `git mv docs/hand-offs/queue/<file> docs/hand-offs/completed/<file>`.
-3. If work remains, write a new queue file for it rather than leaving the finished one in `queue/`.
-4. Commit and push.
+1. Open the named task, read `docs/dependency-map.md` and the one area file it needs.
+2. If `Blocked on` still holds, report it and move to your next task.
+3. Do the `Next step`; keep `State` current.
+4. When done, fill in `Outcome`, `git mv` the file to `completed/`, write a new queue file for any remaining work, commit and push.
