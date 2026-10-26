@@ -23,7 +23,7 @@ Fix the owner-reported packaged-client regressions, review the resulting behavio
 | Drag into/out of hotbar broken | Catalogue/bag shortcut assignment, swap and deliberate removal regression passed. Native packaged drag pending. |
 | MetaHuman avatar instead of Unreal mannequin | Existing 1,181-file assembly cache hash verified; client-only cook contract passed; Orlando spawned in Editor. Packaged closure/animation/review pending. |
 | Gathering skill Raise/Hold/Lower controls | Real caps confirmed; unsupported service controls hidden/guarded; combined tests passed. Durable six-skill support remains a production gap. |
-| Two-player public ground loot and persistence | Now the automated netcheck `loot-handoff` (`pwsh tools/Test-CombatPilot.ps1 -Clients 2 -Services -LootHandoffNetcheck`). Passed 2026-10-26 in lane e (94 s): alpha took 2 boar hides from its own corpse and dropped them, beta collected them with the shared action and no window, ledger `alphaHide=0, betaHide=2`, one drop and one take receipt, corpse eligible to alpha only, ground empty; unchanged after a server restart and reconnect of both clients. Editor/headless with the local PostgreSQL and hosts; a manual owner playtest on packages is optional, not a gate. |
+| Two-player public ground loot and persistence | Now the automated netcheck `loot-handoff` (`pwsh tools/Test-CombatPilot.ps1 -Clients 2 -Services -LootHandoffNetcheck`). Passed 2026-10-26 in lane e (94 s): alpha took 2 boar hides from its own corpse and dropped them, beta collected them with the shared action and no window, ledger `alphaHide=0, betaHide=2`, one drop and one take receipt, corpse eligible to alpha only, ground empty; unchanged after a server restart and reconnect of both clients. Editor/headless with the local PostgreSQL and hosts; a manual owner playtest on packages is optional, not a gate. Live run on dbe514e7 (2026-10-26) **blocked, not run**: see Live loot attempt. |
 
 ## Evidence
 
@@ -32,6 +32,10 @@ Frozen `ff59b35dd17fef0edd1a7b7f5b9161b867370bc8` is deployed on LAN `192.168.50
 Lane B integrated `cfb9c752` plus existing-store release documentation `6cd197df`; it has not been deployed. Independent source review found no actionable P1/P2. Fifteen distinct targeted Editor/gameplay checks passed at `cfb9c752`, with final feedback/widget regressions run after the Slate measurement fix. Static UI-art/cook checks and all nine face-class hashes pass. Fresh independent staged combat round 2 passed the one prior burst failure (7 frames, no fix list); unchanged round 1 views retain their pass. Staged screenshots do not prove live network behavior or owner sign-off.
 
 Owner screenshots: `codex-clipboard-dbf9067a-2a14-470e-95b6-6d1560bb7be2.png` (death wording), `codex-clipboard-d0b3a4b0-fcf9-430d-a2a8-697ca812dadf.png` (missing building imagery). Raw evidence and fixture-position setup are under ignored `Artifacts/Orchestration/20261025-resume/` and lane e `Artifacts/PackagedAcceptance/LAN-ff59b35d-20261025-190917/`.
+
+## Live loot attempt (2026-10-26, dbe514e7 on 192.168.50.133)
+
+Not run; no client connected, no SQL write, no restart. Live game `8dc672a2…` runs `-SFDevIdentity` (dev admission open) but not `-LootHandoffNetcheck`. Blockers: (1) the packaged dbe514e7 client has no driver: `SFLootHandoffNetcheck.cpp` arrived in e723914e, after dbe514e7, and it and `SFLootWorkflowNetcheck.cpp` are `#if WITH_EDITOR`. (2) Editor `-game` clients from lane e are no substitute: the boar kill is the server half of the fixture (`FSFLootWorkflowNetcheck::Tick` with server authority: teleport plus `ReceivePilotDamage(1000000)`), absent from the packaged Linux server and barred live as a cheat kill. The client driver only waits for a corpse and has no combat. Exit: a person plays Alpha's real boar kill, or a client-side combat driver lands in a packaged build. Live DB baseline was not read: socket psql as `sf_admin` asks for a password, which was not handled.
 
 ## Blocked on
 
