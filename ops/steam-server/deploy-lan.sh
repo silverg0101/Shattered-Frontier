@@ -56,7 +56,7 @@ switch_to() { # REV — start, verify, health; on failure start FALLBACK again
 backup() { # LABEL
     local file; file="$BACKUPS/sf_playable-pre-$1-$(date -u +%Y%m%dT%H%M%SZ).dump"
     step "backup $file (keep newest 5)"
-    act sh -c "docker exec $DATABASE pg_dump -U sf_admin -Fc sf_playable > '$file' && chmod 600 '$file'" || die "pg_dump failed"
+    act sh -c "docker exec $DATABASE sh -c 'PGPASSWORD=\$POSTGRES_PASSWORD pg_dump -U sf_admin -Fc sf_playable' >'$file' && chmod 600 '$file'" || die "pg_dump failed"
     act sh -c "ls -1t $BACKUPS/sf_playable-*.dump | tail -n +6 | xargs -r rm --"
 }
 
