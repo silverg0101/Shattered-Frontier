@@ -50,7 +50,9 @@ New-Item -ItemType Directory -Path $snapshot | Out-Null
 $archive = Join-Path $snapshot 'source.tar'
 & git -C $repo archive --format=tar "--output=$archive" $revision -- @scope
 if ($LASTEXITCODE) { throw 'Tracked source archive failed.' }
-& tar -xf $archive -C $snapshot
+# Git-for-Windows GNU tar reads "C:" as a remote host; prefer the Windows tar.
+$tar = Join-Path $env:SystemRoot 'System32\tar.exe'
+& $(if (Test-Path $tar) { $tar } else { 'tar' }) -xf $archive -C $snapshot
 if ($LASTEXITCODE) { throw 'Tracked source archive extraction failed.' }
 Remove-Item -LiteralPath $archive
 New-Item -ItemType Directory -Path $output | Out-Null
