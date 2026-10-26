@@ -447,6 +447,76 @@
    "content_level": 2
   },
   {
+   "area_id": "boar_east_gate",
+   "polygon": [
+    [
+     513.0,
+     -200.0
+    ],
+    [
+     511.6,
+     -193.1
+    ],
+    [
+     507.7,
+     -187.3
+    ],
+    [
+     501.9,
+     -183.4
+    ],
+    [
+     495.0,
+     -182.0
+    ],
+    [
+     488.1,
+     -183.4
+    ],
+    [
+     482.3,
+     -187.3
+    ],
+    [
+     478.4,
+     -193.1
+    ],
+    [
+     477.0,
+     -200.0
+    ],
+    [
+     478.4,
+     -206.9
+    ],
+    [
+     482.3,
+     -212.7
+    ],
+    [
+     488.1,
+     -216.6
+    ],
+    [
+     495.0,
+     -218.0
+    ],
+    [
+     501.9,
+     -216.6
+    ],
+    [
+     507.7,
+     -212.7
+    ],
+    [
+     511.6,
+     -206.9
+    ]
+   ],
+   "content_level": 2
+  },
+  {
    "area_id": "wolf_northwest_den",
    "polygon": [
     [
@@ -22090,6 +22160,195 @@
     [
      745.4,
      -43.0
+    ]
+   ],
+   "phase_filter": "any",
+   "layer_policy": "all_layers"
+  },
+  {
+   "group_id": "boar_east_gate",
+   "spawn_kind": "npc",
+   "definitions": [
+    {
+     "definition_id": "npc/boar",
+     "weight": 1
+    }
+   ],
+   "points": [
+    {
+     "point_id": "boar_east_gate_00",
+     "position": [
+      489.7,
+      -199.9
+     ],
+     "facing": 45.0,
+     "npc_defensive": false
+    },
+    {
+     "point_id": "boar_east_gate_01",
+     "position": [
+      494.7,
+      -199.9
+     ],
+     "facing": 135.0,
+     "npc_defensive": false
+    },
+    {
+     "point_id": "boar_east_gate_02",
+     "position": [
+      489.7,
+      -194.9
+     ],
+     "facing": 315.0,
+     "npc_defensive": true
+    },
+    {
+     "point_id": "boar_east_gate_03",
+     "position": [
+      494.7,
+      -194.9
+     ],
+     "facing": 225.0,
+     "npc_defensive": true
+    },
+    {
+     "point_id": "boar_east_gate_04",
+     "position": [
+      499.7,
+      -207.1
+     ],
+     "facing": 45.0,
+     "npc_defensive": false
+    },
+    {
+     "point_id": "boar_east_gate_05",
+     "position": [
+      504.7,
+      -207.1
+     ],
+     "facing": 135.0,
+     "npc_defensive": false
+    },
+    {
+     "point_id": "boar_east_gate_06",
+     "position": [
+      499.7,
+      -202.1
+     ],
+     "facing": 315.0,
+     "npc_defensive": true
+    },
+    {
+     "point_id": "boar_east_gate_07",
+     "position": [
+      504.7,
+      -202.1
+     ],
+     "facing": 225.0,
+     "npc_defensive": true
+    },
+    {
+     "point_id": "boar_east_gate_08",
+     "position": [
+      481.9,
+      -198.1
+     ],
+     "facing": 45.0,
+     "npc_defensive": false
+    },
+    {
+     "point_id": "boar_east_gate_09",
+     "position": [
+      486.9,
+      -198.1
+     ],
+     "facing": 135.0,
+     "npc_defensive": false
+    },
+    {
+     "point_id": "boar_east_gate_10",
+     "position": [
+      481.9,
+      -193.1
+     ],
+     "facing": 315.0,
+     "npc_defensive": true
+    },
+    {
+     "point_id": "boar_east_gate_11",
+     "position": [
+      486.9,
+      -193.1
+     ],
+     "facing": 225.0,
+     "npc_defensive": true
+    }
+   ],
+   "active_count": 3,
+   "area": [
+    [
+     513.0,
+     -200.0
+    ],
+    [
+     511.6,
+     -193.1
+    ],
+    [
+     507.7,
+     -187.3
+    ],
+    [
+     501.9,
+     -183.4
+    ],
+    [
+     495.0,
+     -182.0
+    ],
+    [
+     488.1,
+     -183.4
+    ],
+    [
+     482.3,
+     -187.3
+    ],
+    [
+     478.4,
+     -193.1
+    ],
+    [
+     477.0,
+     -200.0
+    ],
+    [
+     478.4,
+     -206.9
+    ],
+    [
+     482.3,
+     -212.7
+    ],
+    [
+     488.1,
+     -216.6
+    ],
+    [
+     495.0,
+     -218.0
+    ],
+    [
+     501.9,
+     -216.6
+    ],
+    [
+     507.7,
+     -212.7
+    ],
+    [
+     511.6,
+     -206.9
     ]
    ],
    "phase_filter": "any",

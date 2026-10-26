@@ -20,12 +20,17 @@ if (combatOnly)
     slots.Tick(DayPhase.Day);
     var expected = new Dictionary<string, string[]>
     {
-        ["boar_farm_edge"] = ["npc/boar"], ["boar_forest_edge"] = ["npc/boar"],
+        ["boar_farm_edge"] = ["npc/boar"], ["boar_forest_edge"] = ["npc/boar"], ["boar_east_gate"] = ["npc/boar"],
         ["wolf_northwest_den"] = ["npc/wolf"],
         ["bandit_forest_trail_camp"] = ["npc/bandit_thug", "npc/bandit_archer"],
         ["wolf_alpha_northwest_den"] = ["npc/wolf_alpha"],
         ["bandit_captain_forest_trail_camp"] = ["npc/bandit_captain"]
     };
+    // Owner request: a boar group just outside the East Gate, every point outside the protected town.
+    var eastGate = zone.SpawnGroups.Single(g => g.GroupId == "boar_east_gate");
+    var gate = zone.RespawnPoints.Single(p => p.PointId == "east_gate").Position;
+    Check(eastGate.Points.All(p => !WorldContentValidator.IsProtected(zone, p.Position) &&
+        Math.Sqrt(Math.Pow(p.Position[0] - gate[0], 2) + Math.Pow(p.Position[1] - gate[1], 2)) < 210), "boar_east_gate outside the protected town, within a 30 s run of the East Gate");
     foreach (var (id, definitions) in expected)
     {
         var group = zone.SpawnGroups.Single(g => g.GroupId == id);

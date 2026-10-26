@@ -34,6 +34,8 @@ HOSTILE_CLEARANCE = 80  # m from the wall, build plots, the arrival point and re
 HOSTILE = [
     ('boar_farm_edge', [('npc/boar', 1)], (-660, 300), 70, 12, 5, 2),
     ('boar_forest_edge', [('npc/boar', 1)], (690, -20), 60, 12, 5, 2),
+    # Owner request: boar a short run outside the East Gate (just past the hostile clearance), so new players find one.
+    ('boar_east_gate', [('npc/boar', 1)], (495, -200), 18, 12, 3, 2),
     ('wolf_northwest_den', [('npc/wolf', 1)], (-760, -760), 80, 8, 4, 6),
     ('bandit_forest_trail_camp', [('npc/bandit_thug', 3), ('npc/bandit_archer', 1)], (880, -640), 60, 8, 5, 5),
 ]

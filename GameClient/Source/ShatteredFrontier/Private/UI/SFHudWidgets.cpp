@@ -176,9 +176,16 @@ void USFHudHotbarWidget::NativeOnInitialized()
         USFSlotWidget* Cell = Cast<USFSlotWidget>(Child);
         if (!Cell || Cells.Num() >= SlotCount) { continue; }
         Cell->SetKeyText(FText::AsNumber((Cells.Num() + 1) % 10));  // the tenth key is 0
+        Cell->OnClicked.AddUniqueDynamic(this, &USFHudHotbarWidget::HandleCellClicked);
         Cells.Add(Cell);
     }
     ShownIds.Init(TEXT("?"), Cells.Num());  // matches no assignment, so the first Present draws every icon
+}
+
+void USFHudHotbarWidget::HandleCellClicked(USFSelectableWidget* Source)
+{
+    const int32 Index = Cells.IndexOfByKey(Source);
+    if (ASFPlayerController* Player = Cast<ASFPlayerController>(GetOwningPlayer()); Player && Index != INDEX_NONE) { Player->UseHotbarSlot(Index); }
 }
 
 void USFHudHotbarWidget::LoadLayout(const FString& Character)

@@ -132,6 +132,8 @@ protected:
 
 private:
     void SaveLayout() const;
+    // A left click on a slot uses it like its number key (ASFPlayerController::UseHotbarSlot).
+    UFUNCTION() void HandleCellClicked(USFSelectableWidget* Source);
     UPROPERTY(Transient) TArray<TObjectPtr<USFSlotWidget>> Cells;
     TArray<FString> Layout;
     TArray<FString> ShownIds;  // the assignment each cell's icon was drawn for

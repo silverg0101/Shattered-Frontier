@@ -391,6 +391,7 @@ private:
     friend class FSFEquipmentValidationTest;
     friend class FSFEquipmentLedgerTest;
     friend class FSFGatheringPilotServiceTest;
+    friend class FSFHotbarToolInHandTest;
     UFUNCTION(Server, Reliable) void ServerGatheringAction(ASFGatheringPilotNode* Node, uint32 Revision, uint32 Operation);
     UFUNCTION(Server, Reliable) void ServerGatheringActionAtSurface(ASFGatheringPilotNode* Node, uint32 Revision, uint32 Operation,FVector_NetQuantize10 RequestedPoint);
     void ProcessGatheringAction(ASFGatheringPilotNode* Node,uint32 Revision,uint32 Operation,bool bSurface,const FVector& RequestedPoint);

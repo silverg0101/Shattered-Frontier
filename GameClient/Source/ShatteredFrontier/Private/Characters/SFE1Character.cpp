@@ -1,10 +1,13 @@
 #include "Characters/SFE1Character.h"
 #include "Characters/SFMetaHumanRetarget.h"
+#include "Engine/AssetManager.h"
 #include "Retargeter/IKRetargeter.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "Components/StaticMeshComponent.h"
+#include "Engine/StaticMesh.h"
 #include "Animation/AnimInstance.h"
 #include "Engine/SkeletalMesh.h"
 #include "Materials/MaterialInterface.h"
@@ -94,6 +97,12 @@ ASFE1Character::ASFE1Character(const FObjectInitializer& ObjectInitializer)
     GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     // Skinned body: always invalidate its virtual shadow map pages, so no stale shadow pieces stay behind it.
     GetMesh()->ShadowCacheInvalidationBehavior = EShadowCacheInvalidationBehavior::Always;
+    HeldItem = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("HeldItem"));
+    HeldItem->SetupAttachment(GetMesh(), HeldItemBone);
+    HeldItem->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    HeldItem->SetHiddenInGame(true);
+    // Grip for the tool meshes of tools/Import-HandTools.py (grip at the origin, haft along +Z, head toward +X) on the MetaHuman hand_r.
+    HeldItemGrip = FTransform(FRotator(0, 0, 0), FVector(0, 0, 0));
     if (!IsRunningDedicatedServer())
     {
         static ConstructorHelpers::FObjectFinder<USkeletalMesh> Body(TEXT("/Game/Mannequin/Character/Mesh/SK_Mannequin.SK_Mannequin"));
@@ -151,6 +160,36 @@ void ASFE1Character::BeginPlay()
         FParse::Param(FCommandLine::Get(), TEXT("CombatTargetScenario")) ||
         FParse::Param(FCommandLine::Get(), TEXT("CombatGroupScenario"))))
     { GetWorldTimerManager().SetTimer(CombatScenarioTimer, this, &ASFE1Character::TickCombatScenario, 1.0f, true); }
+    if (GetNetMode() == NM_Client && FParse::Param(FCommandLine::Get(), TEXT("RemoteAppearanceNetcheck")))
+    { GetWorldTimerManager().SetTimer(RemoteAppearanceTimer, this, &ASFE1Character::TickRemoteAppearanceCheck, 2.0f, true); }
+#endif
+}
+
+void ASFE1Character::TickRemoteAppearanceCheck()
+{
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    if (GetLocalRole() == ROLE_SimulatedProxy) { GetWorldTimerManager().ClearTimer(RemoteAppearanceTimer); return; }
+    if (!IsLocallyControlled()) { return; }
+    // Each client picks a face (-RemoteAppearanceFace=Hilda): the server changes it after spawn, as the stored face does live.
+    FString Face;
+    if (RemoteAppearanceTicks == 0 && FParse::Value(FCommandLine::Get(), TEXT("RemoteAppearanceFace="), Face))
+    { if (auto* Player = Cast<ASFPlayerController>(GetController())) { Player->SFFace(Face); } }
+    bool bPass = false;
+    for (TActorIterator<ASFE1Character> It(GetWorld()); It; ++It)
+    {
+        if (*It == this) { continue; }
+        const AActor* Body = It->GetMetaHuman();
+        const double Apart = FVector::Dist2D(It->GetActorLocation(), GetActorLocation());
+        UE_LOG(LogTemp, Display, TEXT("REMOTE_APPEARANCE Self=%s Other=%s Role=%d Face=%s MetaHuman=%s MannequinHidden=%d ApartCm=%.0f"), *GetName(), *It->GetName(),
+            (int32)It->GetLocalRole(), *It->GetFaceId().ToString(), *GetNameSafe(Body ? Body->GetClass() : nullptr), It->GetMesh()->bHiddenInGame ? 1 : 0, Apart);
+        bPass |= Body && Body->GetClass()->GetName().Contains(It->GetFaceId().ToString()) && It->GetFaceId() != TEXT("Orlando")
+            && It->GetMesh()->bHiddenInGame && Apart >= 100.0;
+    }
+    if (bPass || ++RemoteAppearanceTicks >= 30)
+    {
+        UE_LOG(LogTemp, Display, TEXT("REMOTE_APPEARANCE_%s"), bPass ? TEXT("PASS") : TEXT("FAIL"));
+        GetWorldTimerManager().ClearTimer(RemoteAppearanceTimer);
+    }
 #endif
 }
 
@@ -208,6 +247,7 @@ void ASFE1Character::OnRep_FaceId()
     if (GetNetMode() == NM_DedicatedServer || !HasActorBegunPlay()) { return; }  // BeginPlay spawns the current face
     if (MetaHuman) { MetaHuman->Destroy(); MetaHuman = nullptr; }
     GetMesh()->SetHiddenInGame(false);  // the mannequin again, should the new face not be built here
+    bMetaHumanRetried = false;
     SpawnMetaHuman();
     OnFaceChanged.Broadcast();
 }
@@ -269,13 +309,46 @@ AActor* ASFE1Character::SpawnPosedMetaHuman(USceneComponent* Parent, const FTran
 void ASFE1Character::SpawnMetaHuman()
 {
     MetaHuman = SpawnPosedMetaHuman(GetMesh(), FTransform::Identity);
-    if (!MetaHuman) { return; }
+    if (!MetaHuman)
+    {
+        // A sync load made while a replicated pawn is being received can fail in a packaged client; load the face
+        // asynchronously and try once more, so other players do not stay on the mannequin.
+        const FSoftClassPath Path = FaceClassPath(FaceId);
+        UE_LOG(LogTemp, Warning, TEXT("PLAYER_METAHUMAN_RETRY Role=%d Face=%s"), (int32)GetLocalRole(), *FaceId.ToString());
+        if (!Path.IsNull() && !bMetaHumanRetried)
+        {
+            bMetaHumanRetried = true;
+            UAssetManager::GetStreamableManager().RequestAsyncLoad(Path, FStreamableDelegate::CreateWeakLambda(this, [this]()
+            { if (!MetaHuman && !IsActorBeingDestroyed()) { SpawnMetaHuman(); } }));
+        }
+        return;
+    }
+    bMetaHumanRetried = false;
     // The mannequin keeps animating unseen: it is the pose source.
     GetMesh()->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
     GetMesh()->SetHiddenInGame(true);
     // Keep the first-person / dialogue hiding (TickCameraControls) when the body is swapped for a new face.
     for (UPrimitiveComponent* Part : TInlineComponentArray<UPrimitiveComponent*>(MetaHuman)) { Part->SetOwnerNoSee(GetMesh()->bOwnerNoSee); }
     UE_LOG(LogTemp, Display, TEXT("PLAYER_METAHUMAN_SPAWNED %s"), *GetNameSafe(MetaHuman->GetClass()));
+}
+
+void ASFE1Character::RefreshHeldItem()
+{
+    const auto* Gear = GetController() ? GetController()->FindComponentByClass<USFGatheringPilotComponent>() : nullptr;
+    const FSoftObjectPath Item = Gear ? Gear->GetEquipped(USFGatheringPilotComponent::MainHandSlot()) : FSoftObjectPath();
+    if (Item == HeldItemShown && HeldItemBody.Get() == MetaHuman) { return; }
+    HeldItemShown = Item; HeldItemBody = MetaHuman;
+    USkeletalMeshComponent* Hand = GetMesh();
+    if (MetaHuman) { for (USkeletalMeshComponent* Part : TInlineComponentArray<USkeletalMeshComponent*>(MetaHuman)) { if (Part->GetFName() == TEXT("Body")) { Hand = Part; } } }
+    const USFItemDefinition* Definition = Item.IsNull() ? nullptr : Cast<USFItemDefinition>(Item.TryLoad());
+    UStaticMesh* Tool = Definition ? Definition->WorldMesh.LoadSynchronous() : nullptr;
+    HeldItem->SetStaticMesh(Tool);
+    HeldItem->AttachToComponent(Hand, FAttachmentTransformRules::SnapToTargetNotIncludingScale, HeldItemBone);
+    HeldItem->SetRelativeTransform(HeldItemGrip);
+    HeldItem->SetOwnerNoSee(GetMesh()->bOwnerNoSee);
+    HeldItem->SetHiddenInGame(!Tool);
+    UE_LOG(LogTemp, Display, TEXT("HELD_ITEM Item=%s Mesh=%s Body=%s Bone=%s Found=%d"), *Item.GetAssetName(), *GetNameSafe(Tool),
+        *GetNameSafe(Hand->GetSkeletalMeshAsset()), *HeldItemBone.ToString(), Hand->DoesSocketExist(HeldItemBone) ? 1 : 0);
 }
 
 void ASFE1Character::EndPlay(const EEndPlayReason::Type Reason)
@@ -1439,6 +1512,7 @@ void ASFE1Character::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
     if (HasAuthority()) { TickEnergy(); }
+    if (IsLocallyControlled()) { RefreshHeldItem(); }
     const FString CombatMap = GetWorld()->GetOutermost()->GetName();
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     if (CombatMap == TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook") &&
@@ -2021,6 +2095,7 @@ void ASFE1Character::TickCameraControls(float Dt)
     {
         GetMesh()->SetOwnerNoSee(bHideBody);
         if (MetaHuman) { for (UPrimitiveComponent* Part : TInlineComponentArray<UPrimitiveComponent*>(MetaHuman)) { Part->SetOwnerNoSee(bHideBody); } }
+        HeldItem->SetOwnerNoSee(bHideBody);
     }
     CameraBoom->bEnableCameraLag = S->CameraLagSpeed > 0.0f && !bFirstPerson;
 

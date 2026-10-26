@@ -7,6 +7,13 @@
 #include "UI/SFHudWidgets.h"
 #include "UI/SFWindowStack.h"
 #include "GameFramework/WorldSettings.h"
+#include "Characters/SFE1Character.h"
+#include "Components/StaticMeshComponent.h"
+#include "Engine/StaticMesh.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "Gathering/SFGatheringPilot.h"
+#include "InputAction.h"
+#include "InputMappingContext.h"
 
 #if WITH_DEV_AUTOMATION_TESTS && WITH_EDITOR
 #include "Editor.h"
@@ -139,6 +146,76 @@ bool FSFConstructionHotbarRegressionTest::RunTest(const FString& Parameters)
     Surface->Configure(WorldDrag);
     TestTrue(TEXT("Left-button release on world removes the shortcut"), Surface->NativeOnDrop(Viewport, FDragDropEvent(ReleaseAt(false), nullptr), WorldDrag));
     TestTrue(TEXT("World release clears only the hotbar assignment"), WorldHud->Hotbar->GetLayout()[2].IsEmpty());
+    return true;
+}
+
+// The default bar's axe (slot 5) and pickaxe (slot 6), chosen by click and by key, are equipped and shown in the avatar's hand.
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFHotbarToolInHandTest,
+    "ShatteredFrontier.Hud.BuildHotbar.ToolInHand", EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+
+bool FSFHotbarToolInHandTest::RunTest(const FString& Parameters)
+{
+    // Key 5 reaches IA_Hotbar5 through IMC_Player (the binding calls UseHotbarSlot(4)).
+    const UInputMappingContext* Context = LoadObject<UInputMappingContext>(nullptr, TEXT("/Game/Frontier/Input/IMC_Player.IMC_Player"));
+    if (!TestNotNull(TEXT("IMC_Player"), Context)) { return false; }
+    TestTrue(TEXT("Key 5 maps to IA_Hotbar5"), Context->GetMappings().ContainsByPredicate([](const FEnhancedActionKeyMapping& M)
+        { return M.Key == EKeys::Five && M.Action && M.Action->GetName() == TEXT("IA_Hotbar5"); }));
+
+    const TSubclassOf<USFHudWidget> HudClass = LoadClass<USFHudWidget>(nullptr, USFHudWidget::AssetPath);
+    AddExpectedError(TEXT("CTL-01 player input assets missing"), EAutomationExpectedErrorFlags::Contains, 0);  // no input subsystem in a test world
+    FTestWorldWrapper Fixture;
+    if (!TestNotNull(TEXT("HUD WBP loads"), HudClass.Get()) || !Fixture.CreateTestWorld(EWorldType::GameRPC) || !Fixture.BeginPlayInTestWorld()) { return false; }
+    UWorld* World = Fixture.GetTestWorld(); World->GetWorldSettings()->NotifyBeginPlay();
+    ASFPlayerController* Player = World->SpawnActor<ASFPlayerController>();
+    FActorSpawnParameters Spawn; Spawn.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+    ASFE1Character* Pawn = World->SpawnActor<ASFE1Character>(FVector(0, 0, 100), FRotator::ZeroRotator, Spawn);
+    if (!TestNotNull(TEXT("Controller"), Player) || !TestNotNull(TEXT("Character"), Pawn)) { return false; }
+    ULocalPlayer* Local = NewObject<ULocalPlayer>(GEngine);
+    Player->Player = Local; Local->PlayerController = Player;
+    Player->Possess(Pawn); Pawn->GetCharacterMovement()->SetMovementMode(MOVE_None);
+    Pawn->CombatSetHealth(Pawn->CombatMaximumHealth());  // a test world pawn starts at 0 (dead players cannot equip)
+    USFGatheringPilotComponent* Gear = Player->FindComponentByClass<USFGatheringPilotComponent>();
+    if (!TestNotNull(TEXT("Gathering pilot"), Gear)) { return false; }
+    Gear->CapturedSettings = DuplicateObject<USFGatheringPilotSettings>(GetDefault<USFGatheringPilotSettings>(), Gear);
+    Gear->bEnabled = true; Gear->bTestWorldAdmission = true;
+    if (!TestTrue(TEXT("Starter axe and pickaxe granted"), Gear->InitializeStarterTools())) { return false; }
+    USFHudWidget* Hud = CreateWidget<USFHudWidget>(Player, HudClass);
+    if (!TestNotNull(TEXT("HUD"), Hud) || !Hud->Hotbar) { return false; }
+    Player->HudWidget = Hud;
+    Hud->Hotbar->Present(USFHudHotbarWidget::StockOf(Player));
+    TestEqual(TEXT("Slot 5 holds the axe"), Hud->Hotbar->GetLayout()[4], FString(TEXT("item/iron_axe")));
+    TestEqual(TEXT("Slot 6 holds the pickaxe"), Hud->Hotbar->GetLayout()[5], FString(TEXT("item/iron_pickaxe")));
+
+    // The packaged client shows the MetaHuman: the tool goes on its Body's hand bone, not the hidden mannequin's.
+    AActor* MetaHuman = Pawn->GetMetaHuman();
+    if (!TestNotNull(TEXT("MetaHuman avatar spawned"), MetaHuman)) { return false; }
+    USkeletalMeshComponent* Body = nullptr;
+    for (USkeletalMeshComponent* Part : TInlineComponentArray<USkeletalMeshComponent*>(MetaHuman)) { if (Part->GetFName() == TEXT("Body")) { Body = Part; } }
+    if (!TestNotNull(TEXT("MetaHuman Body"), Body)) { return false; }
+    TestTrue(TEXT("MetaHuman skeleton has the hand bone"), Body->DoesSocketExist(Pawn->HeldItemBone));
+    const auto InHand = [&](const TCHAR* Label, const TCHAR* Item, const TCHAR* Mesh)
+    {
+        Pawn->RefreshHeldItem();
+        const UStaticMeshComponent* Held = Pawn->HeldItem;
+        TestEqual(FString::Printf(TEXT("%s: main hand holds %s"), Label, Item), Gear->GetEquipped(USFGatheringPilotComponent::MainHandSlot()).GetAssetName(), FString(Item));
+        TestEqual(FString::Printf(TEXT("%s: hand shows %s"), Label, Mesh), GetNameSafe(Held->GetStaticMesh()), FString(Mesh));
+        TestTrue(FString::Printf(TEXT("%s: attached to the MetaHuman hand"), Label), Held->GetAttachParent() == Body && Held->GetAttachSocketName() == Pawn->HeldItemBone);
+        TestTrue(FString::Printf(TEXT("%s: visible"), Label), Held->IsVisible() && !Held->bHiddenInGame);
+        TestTrue(FString::Printf(TEXT("%s: within a hand's reach of the bone"), Label),
+            FVector::Dist(Held->GetComponentLocation(), Body->GetSocketLocation(Pawn->HeldItemBone)) < 15.0);
+    };
+    TestTrue(TEXT("Slot 5 is shown"), Hud->Hotbar->IsSlotShown(4));
+    TestTrue(TEXT("Hotbar controls usable"), Player->CanUseConstructionControls());
+    TestTrue(TEXT("Axe is in the bag"), Gear->FindBagSlot(FSoftObjectPath(TEXT("/Game/Frontier/Gameplay/Pilot/DA_IronAxe.DA_IronAxe"))) != INDEX_NONE);
+    const FGeometry Geometry = FGeometry::MakeRoot(FVector2D(72.f, 72.f), FSlateLayoutTransform());
+    const FPointerEvent Click(0, FVector2D(10.f, 10.f), FVector2D(10.f, 10.f), TSet<FKey>{EKeys::LeftMouseButton}, EKeys::LeftMouseButton, 0, FModifierKeysState());
+    Hud->Hotbar->GetCell(4)->NativeOnMouseButtonDown(Geometry, Click);
+    InHand(TEXT("Click slot 5"), TEXT("DA_IronAxe"), TEXT("SM_Tool_IronAxe"));
+    Player->UseHotbarSlot(5);
+    InHand(TEXT("Key 6"), TEXT("DA_IronPickaxe"), TEXT("SM_Tool_IronPickaxe"));
+    Player->UseHotbarSlot(4);
+    InHand(TEXT("Key 5"), TEXT("DA_IronAxe"), TEXT("SM_Tool_IronAxe"));
+    TestTrue(TEXT("The equipped axe is the gathering tool"), Gear->HasRequiredTool(ESFGatheringPilotKind::Oak));
     return true;
 }
 #endif

@@ -243,7 +243,10 @@ void USFCharacterSessionComponent::BeginRestore()
         if (auto* Character = Cast<ASFE1Character>(Pawn)) { Character->RestoreCombatSnapshot(State); }
         Self->bHasRestoredLocation = State.bHasPosition && State.ZoneId == ZoneKey(Self->GetWorld()) && !State.Position.ContainsNaN();
         if (Self->bHasRestoredLocation && Pawn)
-        { Pawn->TeleportTo(State.Position, FRotator(0, State.Yaw, 0)); Cast<APlayerController>(Owner)->ClientSetRotation(FRotator(0, State.Yaw, 0)); }
+        {
+            Pawn->TeleportTo(State.Position, FRotator(0, State.Yaw, 0)); Cast<APlayerController>(Owner)->ClientSetRotation(FRotator(0, State.Yaw, 0));
+            if (auto* Mode = Self->GetWorld()->GetAuthGameMode<ASFGameMode>()) { Mode->SpreadFromOtherPlayers(Pawn); }  // two saved at one spot
+        }
         if (State.bHasDeath && State.bIsDead && Pawn)
         { if (auto* Mode = Self->GetWorld()->GetAuthGameMode<ASFGameMode>()) Mode->RestoreDeadPlayer(Cast<ASFE1Character>(Pawn), State); }
         Part(2, true);

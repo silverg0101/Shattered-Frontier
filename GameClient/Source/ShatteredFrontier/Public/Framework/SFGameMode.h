@@ -29,6 +29,9 @@ public:
     virtual void PostLogin(APlayerController* NewPlayer) override;
     virtual FString InitNewPlayer(APlayerController* NewPlayerController, const FUniqueNetIdRepl& UniqueId, const FString& Options, const FString& Portal = TEXT("")) override;
     virtual void RestartPlayer(AController* NewPlayer) override;
+    // Players restarted on the same start are moved this far apart (a ring of 8 spots, up to 3 rings out).
+    UPROPERTY(EditDefaultsOnly, Category="Spawn", meta=(ClampMin="60", ClampMax="500", Units="Centimeters")) float SpawnSpacingCm = 150.f;
+    void SpreadFromOtherPlayers(APawn* Pawn);
     virtual void Logout(AController* Exiting) override;
     virtual void Tick(float DeltaSeconds) override;
     // Premade session parties. The controller supplies an intent; identity and target resolution stay on this server.

@@ -18,6 +18,7 @@ class USFStatusEffectsComponent;
 class USFCastingComponent;
 class USFQuestPilotComponent;
 class USpringArmComponent;
+class UStaticMeshComponent;
 
 UCLASS()
 class SHATTEREDFRONTIER_API ASFE1Character : public ACharacter
@@ -158,6 +159,12 @@ public:
     // A MetaHuman of this character's class, attached under Parent at Relative and posed from this character's mannequin
     // (the world body, and the Equipment window's preview). Null when the class or retargeter is not built here.
     AActor* SpawnPosedMetaHuman(USceneComponent* Parent, const FTransform& Relative) const;
+    // The main-hand tool or weapon in the right hand: the equipped item's WorldMesh on HeldItemBone of the visible body (the MetaHuman's
+    // Body, else the mannequin) at HeldItemGrip. Owning client only for now: EquippedItems replicates to the owner.
+    UPROPERTY(VisibleAnywhere, Category="Appearance") TObjectPtr<UStaticMeshComponent> HeldItem;
+    UPROPERTY(EditDefaultsOnly, Category="Appearance") FName HeldItemBone = TEXT("hand_r");
+    UPROPERTY(EditDefaultsOnly, Category="Appearance") FTransform HeldItemGrip;
+    void RefreshHeldItem();  // ticks on the locally controlled character; cheap when nothing changed
 
 private:
     friend class FSFCombatViewpointAimTest;
@@ -166,6 +173,9 @@ private:
     UPROPERTY(ReplicatedUsing=OnRep_FaceId) FName FaceId = TEXT("Orlando");
     UFUNCTION() void OnRep_FaceId();  // swaps the MetaHuman body for the new face (client side only)
     UPROPERTY(Transient) TObjectPtr<AActor> MetaHuman;
+    FSoftObjectPath HeldItemShown;               // the item HeldItem shows
+    bool bMetaHumanRetried = false;              // one async retry per face (SpawnMetaHuman)
+    TWeakObjectPtr<AActor> HeldItemBody;         // the MetaHuman it was attached to (a new face re-attaches)
     UPROPERTY(Replicated) int32 PilotHealth = 0;  // shown by the vitals HUD (SFE1VitalsHud), not in the world
     UPROPERTY(Replicated) double CombatAbsorbRemaining = 0;
     struct FAbsorbInstance
@@ -237,6 +247,9 @@ private:
     FSFOutOfCombatRegen PilotRegen;
     UPROPERTY(Replicated) TObjectPtr<AActor> CombatTarget;
     FTimerHandle CombatScenarioTimer;
+    FTimerHandle RemoteAppearanceTimer;  // -RemoteAppearanceNetcheck: other players show their MetaHuman, not the mannequin
+    int32 RemoteAppearanceTicks = 0;
+    void TickRemoteAppearanceCheck();
     int32 CombatScenarioAttackCount = 0;
     bool bPersonalLootInventoryObserved = false;
     double CombatScenarioNextAttackAt = 0;

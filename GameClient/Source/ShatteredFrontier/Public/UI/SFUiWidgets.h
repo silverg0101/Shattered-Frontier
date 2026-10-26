@@ -297,6 +297,7 @@ class SHATTEREDFRONTIER_API USFSlotWidget : public USFSelectableWidget
     friend class FSFLootWorkflowNetcheck;
     friend class FSFLootWorldReleaseTest;
     friend class FSFConstructionHotbarRegressionTest;
+    friend class FSFHotbarToolInHandTest;
 public:
     // The one size of every box a player drags an item into or out of (bag grids, paper doll, trade / market / reward slots, the
     // hotbar), in kit art px: windows show art at 0.5, so 72 px on screen; the HUD hotbar is authored at half (also 72 px).

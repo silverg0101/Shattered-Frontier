@@ -342,9 +342,40 @@ void ASFGameMode::ScheduleLifecycleAudit(AController* Trigger, bool bLeaving)
         }));
 }
 
+// Every player starts on the one arrival PlayerStart; a newcomer steps aside onto a free spot on a ring round it
+// instead of standing inside someone already there.
+void ASFGameMode::SpreadFromOtherPlayers(APawn* Pawn)
+{
+    if (!Pawn) { return; }
+    const auto Crowded = [this, Pawn](const FVector& At)
+    {
+        for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+        {
+            const APawn* Other = It->Get() ? It->Get()->GetPawn() : nullptr;
+            if (Other && Other != Pawn && FVector::Dist2D(Other->GetActorLocation(), At) < SpawnSpacingCm) { return true; }
+        }
+        return false;
+    };
+    const FVector Start = Pawn->GetActorLocation();
+    if (!Crowded(Start)) { return; }
+    for (int32 Ring = 1; Ring <= 3; ++Ring)
+    {
+        for (int32 Step = 0; Step < 8; ++Step)
+        {
+            const FVector At = Start + FRotator(0, Step * 45.0, 0).Vector() * (SpawnSpacingCm * Ring);
+            if (!Crowded(At) && Pawn->TeleportTo(At, Pawn->GetActorRotation()))
+            {
+                UE_LOG(LogTemp, Display, TEXT("SPAWN_SPREAD Pawn=%s Offset=%s"), *Pawn->GetName(), *(At - Start).ToCompactString());
+                return;
+            }
+        }
+    }
+}
+
 void ASFGameMode::RestartPlayer(AController* NewPlayer)
 {
     Super::RestartPlayer(NewPlayer);
+    SpreadFromOtherPlayers(NewPlayer ? NewPlayer->GetPawn() : nullptr);
     if (NewPlayer && NewPlayer->GetPawn())
     {
         LifecyclePawns.Add(NewPlayer, NewPlayer->GetPawn());

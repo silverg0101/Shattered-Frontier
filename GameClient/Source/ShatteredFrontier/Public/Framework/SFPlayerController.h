@@ -55,6 +55,8 @@ class SHATTEREDFRONTIER_API ASFPlayerController : public APlayerController
     GENERATED_BODY()
     friend class FSFLootWorkflowNetcheck;
     friend class FSFConstructionHotbarRegressionTest;
+    friend class FSFHotbarToolInHandTest;
+    friend class USFHudHotbarWidget;  // a slot click uses the slot like its key
 public:
     int32 PartyMemberCount() const { return PartyView.Num(); }
     ASFPlayerController();
