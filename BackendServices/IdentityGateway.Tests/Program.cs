@@ -10,6 +10,8 @@ var options = new IdentityOptions { SessionLifetimeSeconds = 60, TicketLifetimeS
 options.Validate();
 var ticketVerifier = new TicketVerifier(RandomNumberGenerator.GetBytes(32), store, clock);
 var service = new IdentityService(store, options, new AppearanceValidator(AppearanceAllowlist.Load(args.Length == 1 ? args[0] : "content/appearance/human.json")), ticketVerifier, clock);
+CharacterRecord Create(SessionRecord session, string? realm, string? name, byte[]? appearance, string? archetype = "fighter") =>
+    service.CreateCharacter(session, realm, name, appearance, archetype, Guid.NewGuid().ToString("N"));
 int passes = 0;
 void Check(bool condition, string name)
 {
@@ -38,23 +40,42 @@ Reject(() => service.RequireSession("Bearer " + token), "SESSION_INVALID", "sess
 var freshId = service.BeginLogin("alice", "long-secret-password", "127.0.0.1");
 var (freshToken, freshSession) = service.CompleteLogin(freshId);
 var packet = AppearanceCodec.Pack(new Appearance(2, 0, 0, 1, 128, 128, new byte[8], [0, 0, 0, 0], [0, 0, 0, 0], [], 0));
-Reject(() => service.CreateCharacter(freshSession, "greenlands", "Al", packet), "NAME_INVALID", "name length rejection");
-Reject(() => service.CreateCharacter(freshSession, "greenlands", "Αrwen", packet), "NAME_INVALID", "mixed script rejection");
-Reject(() => service.CreateCharacter(freshSession, "greenlands", "AdminGuy", packet), "NAME_INVALID", "reserved prefix rejection");
-Reject(() => service.CreateCharacter(freshSession, "greenlands", "Arwen", [1, 2, 3]), "APPEARANCE_INVALID", "appearance v2 rejection");
-var character = service.CreateCharacter(freshSession, "greenlands", "Arwen", packet);
+Reject(() => Create(freshSession, "greenlands", "Al", packet), "NAME_INVALID", "name length rejection");
+Reject(() => Create(freshSession, "greenlands", "Αrwen", packet), "NAME_INVALID", "mixed script rejection");
+Reject(() => Create(freshSession, "greenlands", "AdminGuy", packet), "NAME_INVALID", "reserved prefix rejection");
+Reject(() => Create(freshSession, "greenlands", "Arwen", [1, 2, 3]), "APPEARANCE_INVALID", "appearance v2 rejection");
+var character = Create(freshSession, "greenlands", "Arwen", packet);
 Check(service.ListCharacters(freshSession, "greenlands").Single().CharacterId == character.CharacterId, "character create and list");
-Reject(() => service.CreateCharacter(freshSession, "greenlands", "Unknown", packet, "custom"),
+Reject(() => Create(freshSession, "greenlands", "Unknown", packet, "custom"),
     "ARCHETYPE_INVALID", "unknown archetype rejected before character insertion");
-Check(service.CreateCharacter(freshSession, "greenlands", "Chosen", packet, "archer").Archetype == "archer",
+Check(Create(freshSession, "greenlands", "Chosen", packet, "archer").Archetype == "archer",
     "chosen archetype recorded by identity");
-Reject(() => service.CreateCharacter(freshSession, "greenlands", "arwen", packet), "NAME_TAKEN", "realm name unique");
-service.CreateCharacter(freshSession, "greenlands", "Papa", packet);
-Reject(() => service.CreateCharacter(freshSession, "greenlands", "Рара", packet), "NAME_TAKEN", "whole-script confusable collision");
-for (var i = 0; i < 5; i++) service.CreateCharacter(freshSession, "greenlands", "Nameaa" + (char)('a' + i), packet);
-Reject(() => service.CreateCharacter(freshSession, "greenlands", "Extrafolk", packet), "SLOTS_FULL", "realm slot limit");
+Reject(() => Create(freshSession, "greenlands", "arwen", packet), "NAME_TAKEN", "realm name unique");
+Create(freshSession, "greenlands", "Papa", packet);
+Reject(() => Create(freshSession, "greenlands", "Рара", packet), "NAME_TAKEN", "whole-script confusable collision");
+for (var i = 0; i < 5; i++) Create(freshSession, "greenlands", "Nameaa" + (char)('a' + i), packet);
+Reject(() => Create(freshSession, "greenlands", "Extrafolk", packet), "SLOTS_FULL", "realm slot limit");
 var otherAccount = service.CreateAccount("bob", "another-long-password");
 var otherSession = new SessionRecord("ses_other", otherAccount, clock.GetUtcNow().AddMinutes(1));
+const string retryKey = "create-replay";
+var original = service.CreateCharacter(otherSession, "greenlands", "Retryname", packet, "archer", retryKey);
+Check(service.CreateCharacter(otherSession, "greenlands", " Retryname ", packet, "archer", retryKey).CharacterId == original.CharacterId,
+    "same canonical request replays original character");
+Reject(() => service.CreateCharacter(otherSession, "greenlands", "Changed", packet, "archer", retryKey),
+    "IDEMPOTENCY_KEY_CONFLICT", "changed request rejects reused key");
+var restarted = new IdentityService(store, options, new AppearanceValidator(AppearanceAllowlist.Load(args.Length == 1 ? args[0] : "content/appearance/human.json")), ticketVerifier, clock);
+Check(restarted.CreateCharacter(otherSession, "greenlands", "Retryname", packet, "archer", retryKey).CharacterId == original.CharacterId,
+    "retry after service restart returns original character");
+var parallel = Enumerable.Range(0, 12).Select(_ => Task.Run(() =>
+    service.CreateCharacter(otherSession, "greenlands", "Parallel", packet, "fighter", "parallel-create"))).ToArray();
+Task.WaitAll(parallel);
+Check(parallel.Select(task => task.Result.CharacterId).Distinct().Count() == 1 &&
+    service.ListCharacters(otherSession, "greenlands").Count == 2, "concurrent retries create one character");
+var secondAccountSameKey = service.CreateCharacter(freshSession, "otherrealm", "Newrealm", packet, "fighter", retryKey);
+Check(secondAccountSameKey.AccountId == account, "idempotency key scoped to account");
+service.DeleteCharacter(otherSession, original.CharacterId);
+Check(restarted.CreateCharacter(otherSession, "greenlands", "Retryname", packet, "archer", retryKey).State == "active",
+    "replay preserves original creation response after deletion");
 Reject(() => service.DeleteCharacter(otherSession, character.CharacterId), "CHARACTER_NOT_FOUND", "character owner guard");
 var (address, ticket, expires) = service.EnterWorld(freshSession, character.CharacterId);
 Check(address == options.WorldAddress && ticketVerifier.VerifyAndConsume(ticket, options.WorldServerId)?.CharacterId == character.CharacterId, "ticket verifies once");
@@ -65,7 +86,7 @@ Check(ticketVerifier.VerifyAndConsume(expiringTicket, options.WorldServerId) is 
 Check(ticketVerifier.VerifyAndConsume(ticket + "x", options.WorldServerId) is null, "ticket signature tamper");
 service.DeleteCharacter(freshSession, character.CharacterId);
 Check(service.ListCharacters(freshSession, null).All(c => c.CharacterId != character.CharacterId), "character delete");
-Reject(() => service.CreateCharacter(freshSession, "greenlands", "Arwen", packet), "NAME_TAKEN", "deleted name hold");
+Reject(() => Create(freshSession, "greenlands", "Arwen", packet), "NAME_TAKEN", "deleted name hold");
 Reject(() => service.EnterWorld(freshSession, character.CharacterId), "CHARACTER_NOT_FOUND", "deleted character cannot enter");
 var dek = RandomNumberGenerator.GetBytes(32);
 var kek = RandomNumberGenerator.GetBytes(32);
@@ -98,11 +119,13 @@ sealed class FakeClock : TimeProvider
 
 sealed class MemoryStore : IIdentityStore
 {
+    private readonly object _sync = new();
     private readonly Dictionary<string, Account> _accounts = [];
     private readonly Dictionary<string, (SessionRecord Session, bool Ended)> _sessions = [];
     private readonly Dictionary<string, CharacterRecord> _characters = [];
     private readonly HashSet<string> _heldNames = [];
     private readonly HashSet<string> _tickets = [];
+    private readonly Dictionary<(string Account, string Key), (byte[] Hash, CharacterRecord Response)> _creates = [];
     public bool CreateAccount(Account a) { if (_accounts.ContainsKey(a.NameKey)) return false; _accounts[a.NameKey] = a; return true; }
     public Account? FindAccount(string key) => _accounts.GetValueOrDefault(key);
     public void SaveSession(byte[] hash, SessionRecord s) => _sessions[Convert.ToHexString(hash)] = (s, false);
@@ -110,11 +133,20 @@ sealed class MemoryStore : IIdentityStore
     public bool EndSession(byte[] hash) { var key = Convert.ToHexString(hash); if (!_sessions.TryGetValue(key, out var entry)) return false; _sessions[key] = (entry.Session, true); return true; }
     public IReadOnlyList<CharacterRecord> ListCharacters(string accountId, string? realmId) => _characters.Values.Where(c => c.AccountId == accountId && c.State == "active" && (realmId is null || c.RealmId == realmId)).ToArray();
     public CharacterRecord? FindCharacter(string id) => _characters.GetValueOrDefault(id);
-    public CreateCharacterOutcome CreateCharacter(CharacterRecord c, int realmLimit, int accountLimit)
+    public CreateCharacterResult CreateCharacter(CharacterRecord c, string key, byte[] hash, int realmLimit, int accountLimit)
     {
-        if (_heldNames.Contains(c.RealmId + ":" + c.NameKey)) return CreateCharacterOutcome.NameTaken;
-        if (ListCharacters(c.AccountId, c.RealmId).Count >= realmLimit || ListCharacters(c.AccountId, null).Count >= accountLimit) return CreateCharacterOutcome.SlotsFull;
-        _characters.Add(c.CharacterId, c); _heldNames.Add(c.RealmId + ":" + c.NameKey); return CreateCharacterOutcome.Created;
+        lock (_sync)
+        {
+            if (_creates.TryGetValue((c.AccountId, key), out var replay))
+                return CryptographicOperations.FixedTimeEquals(replay.Hash, hash)
+                    ? new(CreateCharacterOutcome.Replayed, replay.Response) : new(CreateCharacterOutcome.KeyConflict);
+            if (_heldNames.Contains(c.RealmId + ":" + c.NameKey)) return new(CreateCharacterOutcome.NameTaken);
+            if (ListCharacters(c.AccountId, c.RealmId).Count >= realmLimit || ListCharacters(c.AccountId, null).Count >= accountLimit)
+                return new(CreateCharacterOutcome.SlotsFull);
+            _characters.Add(c.CharacterId, c); _heldNames.Add(c.RealmId + ":" + c.NameKey);
+            _creates.Add((c.AccountId, key), (hash, c));
+            return new(CreateCharacterOutcome.Created, c);
+        }
     }
     public bool DeleteCharacter(string id, string accountId, DateTimeOffset now, DateTimeOffset nameHoldUntil)
     {

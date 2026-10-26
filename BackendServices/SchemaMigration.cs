@@ -35,7 +35,8 @@ public static class SchemaMigration
                 ("Schema.Reads.sql", "SELECT to_regclass('exchange.exchange_active_market_page') IS NOT NULL AND to_regclass('exchange.exchange_pending_trade_a_page') IS NOT NULL") },
             "identity" => new (string File, string Installed)[] {
                 ("Schema.sql", "SELECT to_regclass('identity.schema_version') IS NOT NULL"),
-                ("Schema.AccountDataKeys.sql", "SELECT to_regclass('auth.account_data_keys') IS NOT NULL") },
+                ("Schema.AccountDataKeys.sql", "SELECT to_regclass('auth.account_data_keys') IS NOT NULL"),
+                ("Schema.CharacterCreateRequests.sql", "SELECT to_regclass('identity.character_create_requests') IS NOT NULL") },
             "group" => new (string File, string Installed)[] {
                 ("Schema.sql", "SELECT to_regclass('\"group\".schema_version') IS NOT NULL") },
             "chat" => new (string File, string Installed)[] {

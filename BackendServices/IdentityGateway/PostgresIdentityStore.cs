@@ -1,4 +1,6 @@
 using Npgsql;
+using System.Security.Cryptography;
+using System.Text.Json;
 
 namespace IdentityGateway;
 
@@ -84,7 +86,8 @@ public sealed class PostgresIdentityStore(string connectionString, PostgresAccou
         return r.Read() ? ReadCharacter(r) : null;
     }
 
-    public CreateCharacterOutcome CreateCharacter(CharacterRecord character, int realmLimit, int accountLimit)
+    public CreateCharacterResult CreateCharacter(CharacterRecord character, string idempotencyKey, byte[] requestHash,
+        int realmLimit, int accountLimit)
     {
         using var c = Open();
         using var tx = c.BeginTransaction();
@@ -92,6 +95,19 @@ public sealed class PostgresIdentityStore(string connectionString, PostgresAccou
         {
             cmd.Parameters.AddWithValue(character.AccountId);
             cmd.ExecuteNonQuery();
+        }
+        using (var replay = new NpgsqlCommand("SELECT request_hash,response::text FROM identity.character_create_requests WHERE account_id=$1 AND idempotency_key=$2", c, tx))
+        {
+            replay.Parameters.AddWithValue(character.AccountId); replay.Parameters.AddWithValue(idempotencyKey);
+            using var row = replay.ExecuteReader();
+            if (row.Read())
+            {
+                if (!CryptographicOperations.FixedTimeEquals(row.GetFieldValue<byte[]>(0), requestHash))
+                    return new(CreateCharacterOutcome.KeyConflict);
+                var original = JsonSerializer.Deserialize<CharacterRecord>(row.GetString(1))
+                    ?? throw new InvalidOperationException("Invalid character creation response.");
+                return new(CreateCharacterOutcome.Replayed, original);
+            }
         }
         using (var nameLock = new NpgsqlCommand("SELECT pg_advisory_xact_lock(hashtext($1), hashtext($2))", c, tx))
         {
@@ -101,13 +117,13 @@ public sealed class PostgresIdentityStore(string connectionString, PostgresAccou
         using (var held = new NpgsqlCommand("SELECT EXISTS(SELECT 1 FROM identity.characters WHERE realm_id=$1 AND name_key=$2 AND (state='active' OR name_hold_until>now()))", c, tx))
         {
             held.Parameters.AddWithValue(character.RealmId); held.Parameters.AddWithValue(character.NameKey);
-            if (held.ExecuteScalar() is true) return CreateCharacterOutcome.NameTaken;
+            if (held.ExecuteScalar() is true) return new(CreateCharacterOutcome.NameTaken);
         }
         using (var count = new NpgsqlCommand("SELECT count(*) FILTER (WHERE realm_id=$2),count(*) FROM identity.characters WHERE account_id=$1 AND state='active'", c, tx))
         {
             count.Parameters.AddWithValue(character.AccountId); count.Parameters.AddWithValue(character.RealmId);
             using var r = count.ExecuteReader(); r.Read();
-            if (r.GetInt64(0) >= realmLimit || r.GetInt64(1) >= accountLimit) return CreateCharacterOutcome.SlotsFull;
+            if (r.GetInt64(0) >= realmLimit || r.GetInt64(1) >= accountLimit) return new(CreateCharacterOutcome.SlotsFull);
         }
         using var insert = new NpgsqlCommand("INSERT INTO identity.characters(character_id,account_id,realm_id,name,name_key,appearance,state,archetype_id) VALUES ($1,$2,$3,$4,$5,$6,'active',$7) ON CONFLICT DO NOTHING", c, tx);
         insert.Parameters.AddWithValue(character.CharacterId); insert.Parameters.AddWithValue(character.AccountId);
@@ -115,8 +131,15 @@ public sealed class PostgresIdentityStore(string connectionString, PostgresAccou
         insert.Parameters.AddWithValue(character.NameKey); insert.Parameters.AddWithValue(character.Appearance);
         insert.Parameters.AddWithValue(character.Archetype);
         var inserted = insert.ExecuteNonQuery() == 1;
+        if (!inserted) return new(CreateCharacterOutcome.NameTaken);
+        using (var save = new NpgsqlCommand("INSERT INTO identity.character_create_requests(account_id,idempotency_key,request_hash,response) VALUES ($1,$2,$3,$4::jsonb)", c, tx))
+        {
+            save.Parameters.AddWithValue(character.AccountId); save.Parameters.AddWithValue(idempotencyKey);
+            save.Parameters.AddWithValue(requestHash); save.Parameters.AddWithValue(JsonSerializer.Serialize(character));
+            save.ExecuteNonQuery();
+        }
         tx.Commit();
-        return inserted ? CreateCharacterOutcome.Created : CreateCharacterOutcome.NameTaken;
+        return new(CreateCharacterOutcome.Created, character);
     }
 
     public bool DeleteCharacter(string characterId, string accountId, DateTimeOffset now, DateTimeOffset nameHoldUntil)

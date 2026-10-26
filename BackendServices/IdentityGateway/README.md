@@ -16,6 +16,7 @@ Grant the runtime role only schema usage, marker read, and table DML:
 GRANT USAGE ON SCHEMA identity TO identity_service;
 GRANT SELECT ON identity.schema_version TO identity_service;
 GRANT SELECT, INSERT, UPDATE, DELETE ON identity.accounts, identity.sessions, identity.characters, identity.ticket_uses TO identity_service;
+GRANT SELECT, INSERT ON identity.character_create_requests TO identity_service;
 GRANT USAGE ON SCHEMA auth TO identity_service;
 GRANT SELECT, INSERT, UPDATE, DELETE ON auth.account_data_keys, auth.account_data_key_erasure TO identity_service;
 GRANT SELECT, INSERT ON auth.data_key_unwraps, auth.erasure_tombstones TO identity_service;
@@ -71,7 +72,7 @@ The mTLS pins are SHA256 hashes of the certificate raw bytes, so expiry alone do
 
 ## HTTP contract
 
-JSON field names are `snake_case`. Send `Idempotency-Key` (1–128 characters) on every POST and DELETE. The gateway validates the header; durable replay receipts are pending. Errors use `{ "code": "<grpc_code>", "reason": "<UPPER_SNAKE_CASE>", "retry_after_s": n? }`. Send the session token as `Authorization: Bearer <session_token>` on character and logout routes.
+JSON field names are `snake_case`. Send `Idempotency-Key` (1–128 characters) on every POST and DELETE. `POST /v1/characters` retains the key for the account and atomically stores the normalized request fingerprint and original 201 response with the character; exact retries return that response and changed requests return `IDEMPOTENCY_KEY_CONFLICT`. Other routes only validate the header. Errors use `{ "code": "<grpc_code>", "reason": "<UPPER_SNAKE_CASE>", "retry_after_s": n? }`. Send the session token as `Authorization: Bearer <session_token>` on character and logout routes.
 
 | Route | Request | Success |
 | --- | --- | --- |
