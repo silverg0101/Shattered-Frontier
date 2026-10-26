@@ -1,7 +1,10 @@
 import importlib.util
 import json
+import os
 from pathlib import Path
+import tempfile
 import unittest
+from unittest.mock import patch
 
 spec = importlib.util.spec_from_file_location("playable_runtime", Path(__file__).resolve().parents[1] / "ops/steam-server/playable-runtime.py")
 runtime = importlib.util.module_from_spec(spec)
@@ -71,6 +74,46 @@ class PlayableRuntimeTests(unittest.TestCase):
                           dict(service_cpus=2, database_cpus=2)):
             with self.subTest(overrides=overrides), self.assertRaises(ValueError):
                 runtime.validate({**raw, **overrides})
+
+    @unittest.skipUnless(os.name == 'posix', 'Private-file ownership requires POSIX')
+    def test_existing_start_changes_release_without_reinitializing_or_rotating_secrets(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            root.chmod(0o700)
+            credentials = self.credentials()
+            runtime.private_json(root / 'secrets.json', credentials)
+            data = root / 'postgres'
+            data.mkdir(mode=0o700)
+            sentinel = data / 'existing-durable-state'
+            sentinel.write_bytes(b'existing positions, items and receipts')
+            old = runtime.validate(self.profile())
+            old['root'] = str(root)
+            runtime.private_json(root / 'compose.private.json', runtime.compose(old, credentials))
+            new = {**old, 'revision': 'd' * 40, 'services_image': 'sha256:' + 'e' * 64}
+            before = (root / 'secrets.json').read_bytes(), sentinel.read_bytes()
+            commands = []
+            def checked(command, **kwargs):
+                commands.append(command)
+                if command[:3] == ['docker', 'image', 'inspect'] and command[3] == new['services_image']:
+                    return json.dumps([{'Config': {'Labels': {'org.opencontainers.image.revision': new['revision']}}}]).encode()
+                return b''
+            # Admission is covered separately; use a real POSIX private temp root for lifecycle behavior.
+            with patch.object(runtime, 'validate', return_value=new), patch.object(runtime, 'read_json', wraps=runtime.read_json) as read, patch.object(runtime, 'checked', side_effect=checked):
+                read.side_effect = lambda path: new if str(path) == 'new-profile.json' else json.loads(Path(path).read_text())
+                runtime.main(['new-profile.json', 'start'])
+            self.assertEqual(before, ((root / 'secrets.json').read_bytes(), sentinel.read_bytes()))
+            rendered = json.loads((root / 'compose.private.json').read_text())
+            self.assertEqual(rendered['services']['ledger']['image'], new['services_image'])
+            self.assertEqual(rendered['services']['database'], runtime.compose(old, credentials)['services']['database'])
+            self.assertTrue(any(command[-1] == 'playable-verify' for command in commands))
+            self.assertFalse(any('playable-init' in command for command in commands))
+            self.assertTrue(any(command[-3:] == ['--force-recreate', 'ledger', 'gameplay'] for command in commands))
+            self.assertEqual((root / 'compose.private.json').stat().st_mode & 0o777, 0o600)
+            with patch.object(runtime, 'validate', return_value=new), patch.object(runtime, 'read_json', return_value=new), patch.object(runtime, 'checked') as checked_mock:
+                with self.assertRaises(FileExistsError):
+                    runtime.main(['new-profile.json', 'prepare'])
+                checked_mock.assert_not_called()
+            self.assertEqual(before, ((root / 'secrets.json').read_bytes(), sentinel.read_bytes()))
 
 
 if __name__ == "__main__":
