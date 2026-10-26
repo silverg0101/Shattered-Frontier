@@ -174,11 +174,169 @@ The result is a folder `Generated/Creatures/<Name>/` (a second creature of the s
   - `{"source": "video", "action": "walk", ...}`: the motion job's options (see Motion jobs) on `<Name>.glb`: H3 takes, the joint detector (trained first when the model has none: the only clip source that may), then the best take through the same cleanup and checks. Manifest: `action`, `take`, `score`.
   - `{"source": "glb", "from_glb": "Imports/RatTrot.glb", "animations": [0]}`: each animation, by its index in the GLB's `animations` array (0, 1, ...; unique, in range, else 400), of a skinned GLB in the library. On the same rig as `<Name>.glb` (bone names and parents, and every bone head at rest within 2% of the model's height of its own) it is copied as is: not checked (`checks.passed: null`), no sheet. Otherwise, including another Forge creature on `quadruped_v1` with its own size and proportions, the source is role-labelled like a library animal (skeleton sheet, Claude role map) and each animation retargeted, cleaned up and checked like a library clip (`retargeted: true`); a skeleton that can't be labelled (a required role missing, not a quadruped) fails the job and leaves the folder as it was. A clip is named after its animation (sanitised; `Animation_<i>` when it has no name); `"rename": {"0": "Trot"}` (index to name) gives an animation another clip name (letters, digits, `_` and `-`), on both paths. Two animations that would get the same name are a 400 until renamed. Manifest: `from`, `animation`.
 
-  A clip name already in the folder gets `_2`, `_3`. Files are written only when every clip of the job is made, so a cancel or a failure leaves the folder as it was.
+  A clip name already in the folder gets `_2`, `_3`. Accepted animation files are written only when every clip is made. Failed native attempts retain their QA evidence under `source/review/job-<id>/`, without replacing accepted animations.
 
 ## Motion jobs
 
+### Creation entry points
+
+Both **Create → Image(s) to Asset** and **Create → Prompt to Asset** expose **Workflow**:
+`forge` retains their existing behavior; `video2rig` creates a native-rig model
+and animations in one job. `direct_gait` is exposed as **Direct gait — preview**:
+it uses the same native rig/model fields and accepts Walk as its only public
+creation clip, with no source video or reader training. Idle remains withheld
+after four failed quality-review rounds. The fourth review exposed an
+overly strict prompt that demanded rig-only isolated stress poses for Idle;
+the prompt is now stage-specific, but Idle still needs another independent
+motion review. Run remains unqualified after two failed independent quality
+reviews. Its deterministic joint-limited
+sagittal gait is generated on the accepted native rig; Opus maps existing leg
+names. The generic Idle controller now adds periodic breathing/body settle,
+forward weight shift, neck/head motion and fixed-foot IK, controlled by typed
+`direct_idle_*` Settings. Idle remains withheld from public clip selection until
+independent quality review passes; Run remains experimental and withheld.
+The controller now includes a periodic support/compression and flight cycle,
+bounded run-specific stride, lift, stance, body and neck controls, and the same
+two/three-segment planted-foot IK used by the gait solver. These typed
+`direct_run_*` Settings are snapshotted for a job. Run is still withheld from
+public clip selection until independent quality review passes.
+This workflow remains preview-only and its output is not accepted in
+Unreal. Its implementation is in `direct_gait.py`,
+`motion/direct_gait_math.py`, `motion/direct_gait_plan.py` and
+`motion/direct_gait_blender.py`, with contract coverage in `test_direct_gait.py`.
+Optional later video additions use the native video motion path; library and
+text motion additions are unavailable. The shared controls come from `/api/schema.creation`
+and the existing motion schema. In Image(s) to Asset select Asset type Creature and provide
+the source image(s). In Prompt to Asset provide a name and prompt (or `image` through
+the API). The native workflow skips Zoo matching/curation and quadruped
+standardization, and uses the existing image generator, Pixal3D/UltraTex and
+MiniMax H3.
+
+Workflow is visible; its rigging/animation controls are in a collapsed **Advanced**
+group. Prompt **Details** contains name, prompt, length (with help) and the
+Low/Normal/High/Ultra quality buttons. Its second collapsed **Advanced** group
+exposes `seed`, `target_face_num` and `texture_size`, using the same bounds as
+image-to-asset generation. Quality selection restores rigged preset budgets
+(10k/30k/50k/100k faces, 1024/2048/2048/2048 px); explicit overrides are forwarded
+to model generation in both workflows. Seed -1 picks a random seed; the prompt
+request stores the resolved seed. API kinds and existing hash routes stay unchanged.
+
+`rig_backend` is `skintokens` (default) or `video2rig`. The latter invokes the
+fork's auto-rigging and skinning. UniRig is optional; the currently installed host
+uses the fork's mesh-based fallback when UniRig is unavailable. The actual method,
+bone count and skin checks are saved in the model manifest. Rigging failures fail
+the job; they do not silently switch back to SkinTokens.
+
+`creation_clips` is 1–8 comma-separated file-safe animation names, default `Walk`.
+Nested `motion` accepts the motion options below, defaulting reader/solver to
+video2rig and one take. Each named action gets its own video prompt. Outputs land
+under `Generated/Creatures/<Name>/`, with the rest model, combined animated GLB,
+per-clip source videos, stage bundles and native-skeleton provenance. Native creation
+requires the configured Anthropic key: an independent Claude rig review must pass
+before reader training/video fitting, and each animation must pass visual and
+measured checks before automatic baking. Manual Combine remains an owner action
+and retains each clip's recorded quality result. A model whose animation step fails is kept as
+`incomplete` and can receive a later Video animation. Native models accept Video
+clips or animated GLBs on the exact same rig, without quadruped retargeting.
+
+`native_quality.py` renders the actual rig from three orthographic directions and
+poses individual branches to reveal skin bleed. A fresh Opus review returns a
+structured pass/fail and fix list. Failed rigs can receive a separate agent's
+complete skeleton proposal; only bounded finite coordinates, approved roles and
+a connected parent-first hierarchy are accepted. Blender re-skins the unchanged
+mesh, then a new independent call reviews it. Generated code is never executed.
+API errors, refusals, invalid evidence and exhausted repair budgets fail closed.
+
+Motion evidence samples the actual keyed frame range from two views and measures
+all frames for root drift, floor penetration and joint jumps. A high tracking
+score cannot overrule these gates. Planar in-place cleanup is allowed only for
+root drift alone; anatomy/deformation faults cannot be waived by that cleanup.
+Other motion failures can generate another MiniMax take within the same review
+budget; saved-video/GLB inputs stop when their available repair cannot pass.
+Known native facing is aligned to the filming convention before applying the
+owner's extra turn. Saved-video/reading replay keeps its original absolute turn.
+
+Settings exposes the typed `native_review_settings` rows from `/api/schema`.
+Defaults: at most **3 review rounds per stage**, root travel **25%** of height for
+in-place actions, floor penetration **3%**, joint movement per frame **20%**.
+Settings are snapshotted when a job starts; existing jobs retain their snapshot.
+Reports include model/image/output hashes, API model/request/usage, measurements,
+and per-attempt candidates, stage archives and source videos in `source/review/`.
+Independent QA does not approve engine readiness or replace owner sign-off.
+
+`GET /api/native-status?model=<library-path>` resolves the native ancestor manifest
+for rest, combined and per-animation GLBs. It reports rig/reader/solver/bake and
+QA states separately. Legacy reader inference is recognized only when the
+archived `reader.npz` matches its provenance hash; it is not a Forge detector exam.
+For direct gait, status identifies `direct_gait`, shows the native rig review,
+clips and baked state, reports solver `direct-gait-v1`, and marks the joint detector
+as not required. The UI identifies it as preview-only; neither status nor baking
+constitutes Unreal acceptance. The preview links evidence and does not offer to
+rig an already rigged native model.
+
+For `workflow: video2rig`, Rigging method defaults to the fork's auto-rig
+(learned UniRig plus mesh checks and Claude-reviewed Blender repair).
+Install its isolated environment with `host-setup/install-unirig.sh`; native
+creation now fails explicitly if UniRig is missing or produces no skeleton.
+Set `rig_backend: skintokens` explicitly only for that A/B path. To retry a
+specific existing unrigged mesh without regenerating images or geometry, submit
+a creature job with `source_glb` pointing to a library GLB with mesh geometry
+and no skin or animation, `workflow: video2rig`, and `rig_backend: video2rig`.
+The pipeline copies that source into the job, runs auto-rig and independent rig
+QA, then generates motion and runs independent motion QA before publishing it.
+
+```json
+{"kind":"creature","name":"Diseased_Chicken","prompt":"a diseased chicken",
+ "workflow":"video2rig","rig_backend":"skintokens","creation_clips":"Walk,Roar",
+ "motion":{"reader":"video2rig","solver":"video2rig","takes":1}}
+```
+
+For a `3d` job put `workflow`, `rig_backend`, `creation_clips` and `motion` inside
+`params` alongside its existing image/view and quality options. Animated creation
+outputs GLB and runs on SSH hosts with the 3D nodes installed.
+
+Focused checks: `test_creation_workflows.py`, `test_native_quality.py` and
+`test_native_status.py` under `tools/asset-manager`.
+
 A motion job animates a rigged model (`.glb` or `.fbx`, such as a 3D job's `<name>_rigged.glb`). The GPU host:
+
+Motion options include independently selectable `reader` and `solver`, each `forge` (default) or `video2rig`.
+Selecting `video2rig` for both uses the fork's reader and constrained pose fit; mixed selections compare stages. The rigged
+model can come from Forge's existing image/3D workflow. Video remains MiniMax H3 by default (`video_source: minimax`);
+no Seedance service is required. `video_source: library` plus `video: <asset-library path>` reuses an existing clip,
+forces one take and skips video generation. Render framing and `turn` must match that clip.
+
+`reader_poses` (300–5000, default 3000), `reader_steps` (100–20000, default 9000), and `reader_tta` (0–16, default 8;
+0 reads once) control only the video2rig reader. Values are captured per queued job; they do not change active jobs.
+`retrain` replaces its cached reader. Its cache binds model, turn, reference-render code/calibration, fork revision,
+environment, training settings and GPU. Missing/wrong/dirty fork installations fail explicitly.
+
+Install once on each SSH GPU host from this folder: `COMFY=~/comfy-h3/ComfyUI bash host-setup/install-video2rig.sh`.
+The separate environment reuses CUDA torch and leaves ComfyUI's packages intact. `video2rig.lock.json` pins
+the [fork](https://github.com/silverg0101/video2rig/tree/codex/asset-forge-stages), original upstream and AGPL-3.0 licence.
+To change the fork, commit and push the changes, update the lock revision and rerun the installer.
+Disable the affected Forge host and wait for its jobs to finish before updating its fork/environment; reenable it after installation passes.
+
+Every take saves `_stages.zip`: first frame, calibration, raw observations, Forge reconstructed positions,
+native reader/fitted motion where applicable, plus hashes/options/provenance. Weights and training renders stay
+in the host cache. For a solver-only comparison, select the original reader, reuse the saved video, set
+`observations: <matching _stages.zip asset-library path>`, and change `solver`. Model/video/calibration hashes
+and artifact integrity must match; its exact recorded first frame is restored and no detector trains or runs. For reader comparisons, reuse the video but leave
+`observations` empty. Example:
+
+```json
+{"kind":"motion","params":{"model":"Generated/Griffin_rigged.glb","reader":"forge","solver":"video2rig",
+ "video_source":"library","video":"Generated/Griffin_walk_take1.mp4",
+ "observations":"Generated/Griffin_walk_take1_stages.zip"}}
+```
+
+The video2rig solver exports its complete fitted clip with native cleanup; Forge's solver retains its existing
+loop cutting/bake. Compare these stages explicitly: height agreement measures reader consistency, not animation
+quality, and is not comparable to a pose-fit error. Creature `source: video` accepts the same options, saves the
+source video and stage bundle next to its clip, and still applies its downstream quadruped retarget/checks.
+This option does not remove the creature-generation route's four-legged body-plan restriction.
+
+The existing Forge/Forge path is:
 
 1. renders the model's rest pose in Blender, front view on the left and left-side view on the right, on grey;
 2. films it with the host's local MiniMax H3 (quantized, in its ComfyUI) from that image as the first frame, with a prompt to perform the action on the spot, once per take;

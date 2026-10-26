@@ -137,7 +137,7 @@ def loop_cut(pos, fps, seen):
     v = np.diff(p, axis=0)
     cost = lambda a, b: np.abs(p[a] - p[b]).mean() + VEL_WEIGHT * np.abs(v[a] - v[b]).mean()
     pairs = [(a, b) for a in range(T // 5, T // 2) for b in range(a + int(LOOP_MIN * fps), T - 1)]
-    return min(pairs, key=lambda ab: cost(*ab)) if pairs else (0, T)
+    return min(pairs, key=lambda ab: cost(*ab)) if pairs else (0, max(0, T - 1))
 
 
 def close_loop(pos):
@@ -187,25 +187,37 @@ def fabrik(p, lengths, target, rounds=12):
     return p
 
 
-def run(video, joints, out, detector=None, loop=False):
+def run(video, joints, out, detector=None, loop=False, observations=None):
     out.mkdir(parents=True, exist_ok=True)
     j = json.loads(Path(joints).read_text())
     frames, fps = read_video(video)
     n = len(j["points"])
     seen = j.get("seen") or [True] * n  # points on empty background steer nothing: don't score or draw them
-    if detector:  # a detector trained on this model: finds each joint by what it looks like, left and right apart
+    if observations:
+        obs = np.load(observations)
+        front, side, vis_f, vis_s, found = (obs[k] for k in ('front', 'side', 'vis_f', 'vis_s', 'detected'))
+        if front.shape != (len(frames), n, 2) or side.shape != front.shape or vis_f.shape != front.shape[:2] or vis_s.shape != vis_f.shape or found.shape != (n,):
+            raise ValueError('observation dimensions do not match the video and skeleton')
+        if not all(np.isfinite(a).all() for a in (front, side, vis_f, vis_s)):
+            raise ValueError('observations contain non-finite values')
+        seen = [bool(a and b) for a, b in zip(seen, found)]
+    elif detector:  # a detector trained on this model: finds each joint by what it looks like, left and right apart
         import detector as det
         ((front, vis_f), (side, vis_s)), found = det.detect(detector, frames, n)
-        front, side = hold(front, vis_f), hold(side, vis_s)
         seen = [bool(a and b) for a, b in zip(seen, found)]  # undetected points (fingers) follow their parent
     else:
         (front, vis_f), (side, vis_s) = track_views(frames, j)
+    # Preserve raw observations before hold/smoothing so either solver can consume the same reading.
+    np.savez_compressed(out / 'observations.npz', front=front, side=side, vis_f=vis_f, vis_s=vis_s,
+                        detected=found if detector or observations else np.asarray(seen))
+    if detector or observations:
+        front, side = hold(front, vis_f), hold(side, vis_s)
     pos, err = solve(front, side, vis_f, vis_s, j["calib"])
     pos = smooth(median3(pos))
     on = np.array(seen)
     s, err_pct = score(err[:, on], vis_f[:, on], vis_s[:, on], j["calib"]["model_height"])
     cut = None
-    if loop:
+    if loop and len(pos) > 1:
         a, b = loop_cut(pos, fps, seen)
         cut = {"start": a, "end": b, "seam_pct": round(float(np.abs(pos[b, on] - pos[a, on]).mean()
                                                                 / j["calib"]["model_height"] * 100), 2)}
@@ -268,4 +280,4 @@ if __name__ == "__main__":
     else:
         argv = sys.argv[1:]
         run(argv[0], argv[1], Path(argv[2]), argv[argv.index("--detector") + 1] if "--detector" in argv else None,
-            "--loop" in argv)
+            "--loop" in argv, argv[argv.index("--observations") + 1] if "--observations" in argv else None)

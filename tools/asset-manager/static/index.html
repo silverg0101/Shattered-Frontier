@@ -129,6 +129,9 @@ input[type=checkbox] { accent-color: var(--primary); width: 16px; height: 16px; 
 .vmodes button:hover:not(:disabled) { border-color: var(--primary-30); color: var(--foreground); }
 .vmodes button.on { background: var(--primary); border-color: var(--primary); color: #fff; }
 .vmodes button:disabled { opacity: .35; cursor: default; }
+.anim-control { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-bottom: 1px solid var(--border); }
+.anim-control label { color: var(--muted-foreground); font-size: 12px; }
+.anim-control select { min-width: 0; max-width: 100%; padding: 4px 8px; border: 1px solid var(--border); border-radius: 8px; background: var(--card); }
 .preview .info { padding: 18px 20px; overflow: auto; min-height: 0; }  /* min-height lets it shrink and scroll */
 .preview .stage, .preview .vmodes { flex-shrink: 0; }
 .wbar { align-items: center; }
@@ -403,7 +406,7 @@ function drawGrid() {
     <div class="tile fade" style="--i:${Math.min(i, 20)}" data-path="${esc(e.path)}" draggable="false">
       <input type="checkbox" class="check" tabindex="-1">
       ${e.kind === 'model' ? `<span class="badge model">${esc(e.name.split('.').pop())}</span>` : e.kind === 'dir' ? '' : `<span class="badge">${esc(e.name.split('.').pop())}</span>`}
-      <div class="thumb">${e.thumb ? `<img loading="lazy" src="${fileUrl(e.thumb)}" alt="">` : ICON[e.kind]}${e.detector ? detBadge(e.detector.state, true) : ''}</div>
+      <div class="thumb">${e.thumb ? `<img loading="lazy" src="${fileUrl(e.thumb)}" alt="">` : ICON[e.kind]}${e.nativeRig ? nativeRigBadge(e.nativeRig) : e.detector && e.detector.state !== 'none' ? detBadge(e.detector.state, true) : ''}</div>
       <div class="meta"><div class="name" title="${esc(e.name)}">${esc(e.name)}</div>
         <div class="sub">${e.kind === 'dir' ? 'Folder' : fmtSize(e.size)} · ${fmtTime(e.mtime)}</div></div>
     </div>`).join('') : `<div class="empty">${state.filter ? 'Nothing matches the filter.' : 'This folder is empty. Drop files here or use Upload.'}</div>`;
@@ -436,13 +439,16 @@ function syncSel() {
   $('#count').textContent = n ? `${n} selected` : `${visible().length} items`;
   drawPreview(n === 1 ? byPath([...state.sel][0]) : null);
 }
+let viewerGeneration = 0;
 function drawPreview(e) {
   const box = $('#preview'); if (!box) return;
   $('#assets').classList.toggle('nopreview', !e);
-  if (!e || box.dataset.path !== e.path) { viewer?.dispose(); viewer = null; }
+  const version = e ? String(e.mtime) : '';
+  if (!e || box.dataset.path !== e.path || box.dataset.version !== version) { viewerGeneration++; viewer?.dispose(); viewer = null; }
   if (!e) { box.innerHTML = ''; return; }
-  if (box.dataset.path === e.path && box.innerHTML) return;
+  if (box.dataset.path === e.path && box.dataset.version === version && box.innerHTML) return;
   box.dataset.path = e.path;
+  box.dataset.version = version;
   const url = fileUrl(e.path), ext = e.name.split('.').pop().toLowerCase();
   const stage = e.kind === 'image' ? `<img src="${url}" alt="" id="zoom">`
     : e.kind === 'video' ? `<video src="${url}" controls loop muted autoplay playsinline style="max-width:100%;max-height:100%"></video>`
@@ -451,18 +457,25 @@ function drawPreview(e) {
   box.innerHTML = `<div class="preview fade">
     <div class="stage">${stage}</div>
     ${stage.includes('id="viewer"') ? `<div class="vmodes">${VIEW_MODES.map(([k, l]) => `<button data-vmode="${k}">${l}</button>`).join('')}</div>` : ''}
+    ${stage.includes('id="viewer"') ? '<div class="anim-control"><label for="viewer-animation">Animation</label><select id="viewer-animation" data-animation disabled><option>Loading animations…</option></select></div>' : ''}
     <div class="info"><div class="eyebrow">${esc(e.kind === 'dir' ? 'Folder' : e.kind)}</div><h3 style="margin-top:8px;word-break:break-all">${esc(e.name)}</h3>
-      <div id="vstats"></div>${e.detector ? '<div id="det" style="margin:14px 0"></div>' : ''}
+      <div id="vstats"></div>${e.kind === 'model' ? '<div id="native-status" class="muted" style="margin:14px 0;font-size:12px">Checking rig and animation status…</div><div id="det" style="margin:14px 0" hidden></div>' : ''}
       <dl><dt>Size</dt><dd>${e.kind === 'dir' ? '—' : fmtSize(e.size)}</dd><dt>Modified</dt><dd>${fmtTime(e.mtime)}</dd><dt>Path</dt><dd>${esc(e.path)}</dd></dl>
       <div class="acts">
         ${e.kind === 'dir' ? `<a class="btn primary" href="${assetHref(e.path)}">Open folder</a>` : `<a class="btn" href="${url}" download>Download</a>`}
         ${e.kind === 'image' ? `<button class="btn primary" id="use">Use in Create</button>` : ''}
         ${e.kind === 'model' && /_rigged\.(glb|fbx)$/i.test(e.name) ? `<button class="btn primary" id="animate">Animate…</button>` : ''}
-        ${e.kind === 'model' && ext === 'glb' && !/_rigged$/i.test(e.name.slice(0, -4)) ? `<button class="btn primary" id="rig">Rig…</button>` : ''}
+        ${e.kind === 'model' && ext === 'glb' && !/_rigged$/i.test(e.name.slice(0, -4)) ? `<button class="btn primary" id="rig" hidden>Rig…</button>` : ''}
       </div></div></div>`;
   $('#zoom') && ($('#zoom').onclick = () => lightbox(url));
-  e.detector && drawDetector(e.path);
-  $('#viewer') && mountViewer($('#viewer'), `${url}?v=${e.mtime}`, e).catch(err => { $('#viewer').textContent = 'Viewer failed: ' + err.message; });
+  e.kind === 'model' && drawModelStatus(e);
+  const viewEl = $('#viewer');
+  viewEl && mountViewer(viewEl, `${url}?v=${e.mtime}`, e).catch(err => {
+    if (viewEl.isConnected && $('#viewer') === viewEl && $('#preview')?.dataset.path === e.path) {
+      viewEl.textContent = 'Viewer failed: ' + err.message;
+      const select = $('#viewer-animation'); if (select) { select.innerHTML = '<option>Animation unavailable</option>'; select.disabled = true; }
+    }
+  });
   const queueJob = async (kind, title, keys, from) => {
     try {
       const r = await api('/api/schema'), params = await optionsModal(title, (r[from] || []).filter(p => keys.includes(p.key)));
@@ -470,12 +483,62 @@ function drawPreview(e) {
       await post('/api/jobs', { kind, params: { ...params, model: e.path } }); toast('Added to queue'); setQueueOpen(true); pollQueue();
     } catch (err) { fail(err); }
   };
-  $('#animate') && ($('#animate').onclick = () => queueJob('motion', 'Animate ' + e.name, ['action', 'takes'], 'motion'));
+  $('#animate') && ($('#animate').onclick = () => queueJob('motion', 'Animate ' + e.name,
+    ['reader', 'solver', 'video_source', 'video', 'observations', 'action', 'takes', 'reader_poses', 'reader_steps', 'reader_tta'], 'motion'));
   $('#rig') && ($('#rig').onclick = () => queueJob('rig', 'Rig ' + e.name, ['rig_format', 'rig_skeleton'], '3d'));
   $('#use') && ($('#use').onclick = () => { setCreateImage(e.path); location.hash = '#/create'; });
 }
+async function drawModelStatus(e) {
+  const box = $('#native-status'), det = $('#det'), rig = $('#rig');
+  if (!box) return;
+  try {
+    const status = await api('/api/native-status?model=' + encodeURIComponent(e.path));
+    if (box !== $('#native-status') || box.closest('.preview')?.parentElement?.dataset.path !== e.path) return;
+    const stem = e.name.replace(/\.(glb|gltf|fbx)$/i, ''), parent = e.path.split('/').at(-2);
+    const tracked = status.native && ([parent, parent + '_animated'].includes(stem) || status.clips?.some(c => c.file === e.path));
+    if (tracked) {
+      e.nativeRig = status.rig?.state || 'exists';
+      const thumb = document.querySelector(`.tile[data-path="${CSS.escape(e.path)}"] .thumb`);
+      if (thumb) { thumb.querySelector('.det')?.remove(); thumb.insertAdjacentHTML('beforeend', nativeRigBadge(e.nativeRig)); }
+      if (det) det.hidden = true;
+      if (rig) rig.hidden = true;
+      const r = status.rig || {};
+      const reader = status.reader || {};
+      const show = value => value == null || value === '' ? '—' : esc(String(value));
+      const stageLabel = value => show(value).replaceAll('_', ' ');
+      const fileLink = (path, label) => path ? `<a href="${fileUrl(path)}" target="_blank" rel="noopener">${label}</a>` : '';
+      box.className = '';
+      const directGait = status.workflow === 'direct_gait';
+      box.innerHTML = `<div class="eyebrow">${directGait ? 'Direct gait — preview' : 'Native video2rig workflow'}</div>
+        <dl style="margin-top:6px"><dt>Rig</dt><dd>${stageLabel(r.state)} · ${show(r.method)}</dd>
+          <dt>Skeleton</dt><dd>${show(r.bones)} bones · ${show(r.vertices)} vertices · ${show(r.unweighted)} unweighted</dd>
+          <dt>${directGait ? 'Motion solver' : 'Joint reader'}</dt><dd>${show(reader.backend)} · ${directGait ? 'Joint detector not required' : stageLabel(reader.state)}${reader.poses || reader.steps ? ` · ${show(reader.poses)} poses / ${show(reader.steps)} steps` : ''}</dd></dl>
+        ${reader.note || reader.exam ? `<div class="muted" style="font-size:12px">${show(reader.note || reader.exam)}</div>` : ''}
+        ${Object.keys(status.stage_status || {}).length ? `<dl>${Object.entries(status.stage_status).map(([name,s]) => `<dt>${esc(name)}</dt><dd>${stageLabel(s.state)}${s.backend ? ' · '+show(s.backend) : ''}${s.error ? ' · '+show(s.error) : ''}</dd>`).join('')}</dl>` : ''}
+        ${status.clips?.length ? status.clips.map(c => `<div style="border-top:1px solid var(--line);padding-top:8px;margin-top:8px">
+          <strong>${esc(c.name)}</strong><div class="muted" style="margin-top:4px">Reader ${show(c.reader)} · solver ${show(c.solver)}${c.training?.reader_poses || c.training?.reader_steps ? ` · training ${show(c.training.reader_poses)} poses / ${show(c.training.reader_steps)} steps` : ''}</div>
+          <div style="margin-top:4px">${fileLink(c.stages, 'Stage archive')}${c.stages && c.video ? ' · ' : ''}${fileLink(c.video, 'Source video')}</div>
+          <div style="margin-top:4px">Baked: ${c.baked ? 'Yes' : 'No'} · Quality review: ${c.quality?.passed === true ? 'Passed' : c.quality?.passed === false ? 'Failed' : 'Not reviewed'}</div>
+          ${c.quality?.reason ? `<div class="muted" style="font-size:12px">${esc(c.quality.reason)}</div>` : ''}</div>`).join('') : '<div class="muted" style="margin-top:6px">No animation clips recorded.</div>'}
+        ${status.review || status.review_files?.length ? `<div style="border-top:1px solid var(--line);padding-top:8px;margin-top:8px"><strong>Model quality review</strong>
+          ${status.review ? `<div>${esc(JSON.stringify(status.review))}</div>` : ''}
+          ${status.review_files?.length ? `<div>${status.review_files.map(f => fileLink(f.path, esc(f.name))).join(' · ')}</div>` : ''}</div>` : ''}`;
+    } else {
+      box.hidden = true;
+      if (det && e.detector) { det.hidden = false; drawDetector(e.path); }
+      if (rig && e.kind === 'model' && e.name.toLowerCase().endsWith('.glb') && !/_rigged\.glb$/i.test(e.name)) rig.hidden = false;
+    }
+  } catch (err) {
+    if (box === $('#native-status')) {
+      box.className = 'muted'; box.textContent = 'Rig status unavailable: ' + err.message;
+      if (det && e.detector) { det.hidden = false; drawDetector(e.path); }
+      if (rig && e.kind === 'model' && e.name.toLowerCase().endsWith('.glb') && !/_rigged\.glb$/i.test(e.name)) rig.hidden = false;
+    }
+  }
+}
 /* ---------------- joint detector (rigged models; it drives motion jobs) */
 const DET_LABEL = { none: 'No detector', queued: 'Detector queued', training: 'Training', good: 'Detector good', usable: 'Detector usable', failed: 'Detector failed' };
+const nativeRigBadge = st => `<span class="det ${st === 'failed' ? 'failed' : st === 'passed' ? 'good' : ''}">${st === 'failed' ? 'Rig QA failed' : st === 'passed' ? 'Rig reviewed' : 'Native rig'}</span>`;
 const detBadge = (st, onTile) => `<span class="det ${esc(st)}" title="Joint detector: ${esc(st)}">${st === 'training' ? '<i class="spin"></i>' : ''}${onTile ? esc(DET_LABEL[st] || st) : esc(st)}</span>`;
 const EXAM_ROWS = [['median', 'Median error'], ['p95', '95th percentile'], ['worst_joint', 'Worst joint'], ['pair_spacing', 'Left/right spacing']];
 async function drawDetector(path) {
@@ -550,11 +613,15 @@ function smoothNormals(THREE, geo) {  // area-weighted normals shared across ver
   geo.setAttribute('normal', new THREE.BufferAttribute(out, 3));
 }
 async function mountViewer(el, url, entry) {
+  const generation = viewerGeneration;
   viewer?.dispose(); viewer = null;
   el.innerHTML = `<canvas class="v3d"></canvas><canvas class="vuv" hidden></canvas><div class="vbusy">Loading model…</div>`;
   const THREE = await import('three');
+  if (generation !== viewerGeneration) return;
   const { GLTFLoader } = await import('three/addons/loaders/GLTFLoader.js');
+  if (generation !== viewerGeneration) return;
   const { OrbitControls } = await import('three/addons/controls/OrbitControls.js');
+  if (generation !== viewerGeneration) return;
   const canvas = $('.v3d', el), uvCanvas = $('.vuv', el);
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
   renderer.setPixelRatio(Math.min(devicePixelRatio, 2)); renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -562,6 +629,7 @@ async function mountViewer(el, url, entry) {
   // Studio lighting: a soft room environment for fill and reflections, plus a key and rim light that move with
   // the camera so the shape always reads, whichever side you orbit to.
   const { RoomEnvironment } = await import('three/addons/environments/RoomEnvironment.js');
+  if (generation !== viewerGeneration) return;
   const pmrem = new THREE.PMREMGenerator(renderer);
   scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture; scene.environmentIntensity = 0.3;
   const camera = new THREE.PerspectiveCamera(35, 1, 0.001, 1000); scene.add(camera);
@@ -569,11 +637,15 @@ async function mountViewer(el, url, entry) {
   const rim = new THREE.DirectionalLight(0xbfd6ff, 0.9); rim.position.set(1.5, 0.8, -1.5); camera.add(rim); camera.add(rim.target); rim.target.position.set(0, 0, -1);
   const controls = new OrbitControls(camera, canvas); controls.enableDamping = true;
   let raf = 0, dead = false, mixer = null;
+  const session = { availableAnimations: [], dispose() {
+    dead = true; mixer?.stopAllAction(); cancelAnimationFrame(raf); ro.disconnect(); pmrem.dispose(); renderer.dispose();
+  } };
   const clock = new THREE.Clock();
   const resize = () => { const w = el.clientWidth, h = el.clientHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); };
   const ro = new ResizeObserver(resize); ro.observe(el); resize();
   const loop = () => { if (dead) return; raf = requestAnimationFrame(loop); mixer?.update(clock.getDelta()); controls.update(); renderer.render(scene, camera); };
-  viewer = { dispose() { dead = true; cancelAnimationFrame(raf); ro.disconnect(); pmrem.dispose(); renderer.dispose(); } };
+  viewer = session;
+  const isCurrentPreview = () => !dead && generation === viewerGeneration && el.isConnected && $('#viewer') === el && $('#preview')?.dataset.path === entry.path;
   let gltf;
   try {
     if (/\.fbx$/i.test(entry.name)) {  // FBXLoader returns the scene itself, with its clips on .animations
@@ -586,8 +658,17 @@ async function mountViewer(el, url, entry) {
         o.material = Array.isArray(o.material) ? o.material.map(pbr) : pbr(o.material);
       });
     } else gltf = await new GLTFLoader().loadAsync(url);
-  } catch (err) { $('.vbusy', el).textContent = 'Could not load: ' + err.message; return; }
-  if (dead) return;
+  } catch (err) { if (isCurrentPreview()) $('.vbusy', el).textContent = 'Could not load: ' + err.message; return; }
+  if (!isCurrentPreview()) { session.dispose(); return; }
+  const animations = Array.isArray(gltf.animations) ? gltf.animations : [];
+  session.availableAnimations = animations.map((clip, index) => ({ name: clip.name || `Clip ${index + 1}`, duration: clip.duration }));
+  const animationSelect = el.closest('.preview')?.querySelector('[data-animation]');
+  if (animationSelect && isCurrentPreview()) {
+    animationSelect.innerHTML = session.availableAnimations.length
+      ? session.availableAnimations.map((animation, index) => `<option value="${index}">${esc(animation.name)} (${animation.duration.toFixed(1)}s)</option>`).join('')
+      : '<option value="">No animations</option>';
+    animationSelect.disabled = !animations.length;
+  }
   $('.vbusy', el).remove();
   const root = gltf.scene; scene.add(root);
   const meshes = []; root.traverse(o => { if (o.isMesh) meshes.push(o); });
@@ -595,7 +676,22 @@ async function mountViewer(el, url, entry) {
   const box = new THREE.Box3(); meshes.forEach(m => box.expandByObject(m));
   const size = box.getSize(new THREE.Vector3()), center = box.getCenter(new THREE.Vector3()), r = size.length() / 2 || 1;
   controls.target.copy(center); camera.position.copy(center).add(new THREE.Vector3(0, r * 0.25, r * 2.6)); camera.near = r / 100; camera.far = r * 100; camera.updateProjectionMatrix();
-  if (gltf.animations.length) { mixer = new THREE.AnimationMixer(root); mixer.clipAction(gltf.animations[0]).play(); }
+  if (animations.length) {
+    mixer = new THREE.AnimationMixer(root);
+    const playSelected = () => {
+      if (!isCurrentPreview()) return;
+      const clip = animations[Number(animationSelect?.value || 0)];
+      mixer.stopAllAction();
+      if (clip) mixer.clipAction(clip).reset().play();
+    };
+    if (animationSelect && isCurrentPreview()) {
+      animationSelect.value = '0';
+      animationSelect.onchange = playSelected;
+    }
+    mixer.clipAction(animations[0]).play();
+  } else if (animationSelect && isCurrentPreview()) {
+    animationSelect.onchange = null;
+  }
   // per-mode materials and overlays
   const orig = new Map(meshes.map(m => [m, m.material]));
   const clay = new THREE.MeshStandardMaterial({ color: 0x8f8f8f, roughness: 0.55, metalness: 0, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 });
@@ -705,7 +801,7 @@ async function mountViewer(el, url, entry) {
     <dt>Triangles</dt><dd>${tris.toLocaleString()}</dd><dt>Vertices</dt><dd>${verts.toLocaleString()}</dd>
     <dt>UV islands</dt><dd>${uv ? islands.toLocaleString() : 'no UVs'}</dd><dt>Meshes</dt><dd>${meshes.length} · ${mats.size} material${mats.size === 1 ? '' : 's'}</dd>
     <dt>Textures</dt><dd>${[...new Set(texs.values())].join('<br>') || 'none'}</dd>
-    <dt>Bones</dt><dd>${bones.size || 'none'}</dd>${gltf.animations.length ? `<dt>Animations</dt><dd>${gltf.animations.map(a => esc(a.name || 'clip') + ` (${a.duration.toFixed(1)}s)`).join(', ')}</dd>` : ''}
+    <dt>Bones</dt><dd>${bones.size || 'none'}</dd>${animations.length ? `<dt>Animations</dt><dd>${animations.map(a => esc(a.name || 'clip') + ` (${a.duration.toFixed(1)}s)`).join(', ')}</dd>` : ''}
     </dl>`;
   const drawUV = () => {
     const w = uvCanvas.width = el.clientWidth * devicePixelRatio, h = uvCanvas.height = el.clientHeight * devicePixelRatio;
@@ -812,9 +908,10 @@ function optionsModal(title, fields) {
     const o = Object.assign(document.createElement('div'), { className: 'overlay' });
     const done = v => { o.remove(); resolve(v); };
     o.onclick = ev => ev.target === o && done(null);
-    o.innerHTML = `<div class="modal"><h3>${esc(title)}</h3><div style="display:grid;gap:14px;margin:16px 0">
+    o.innerHTML = `<div class="modal"><h3>${esc(title)}</h3><div style="display:grid;gap:14px;margin:16px 0;overflow:auto;min-height:0">
       ${fields.map(p => `<div class="field"><label for="m_${p.key}">${esc(p.label)}</label>${p.kind === 'choice'
         ? `<select id="m_${p.key}">${p.options.map(v => `<option ${String(v) === String(p.default) ? 'selected' : ''}>${esc(v)}</option>`).join('')}</select>`
+        : p.kind === 'text' ? `<input type="text" id="m_${p.key}" value="${esc(p.default || '')}" maxlength="${p.max_length}">`
         : `<input type="number" id="m_${p.key}" value="${p.default ?? ''}" min="${p.min}" max="${p.max}" placeholder="${p.default == null ? 'automatic' : ''}">`}</div>`).join('')}</div>
       <div class="foot"><button class="btn" data-x>Cancel</button><button class="btn primary" data-ok>Add to queue</button></div></div>`;
     document.body.append(o);
@@ -822,7 +919,7 @@ function optionsModal(title, fields) {
     $('[data-ok]', o).onclick = () => done(Object.fromEntries(fields.flatMap(p => {
       const v = $('#m_' + p.key, o).value;
       if (v === '') return [];  // left blank: the server picks
-      return [[p.key, p.kind === 'choice' && typeof p.default !== 'number' ? v : +v]];
+      return [[p.key, p.kind === 'text' || p.kind === 'choice' && typeof p.default !== 'number' ? v : +v]];
     })));
   });
 }
@@ -853,10 +950,57 @@ function wireType(onType) {
   $('#acat').addEventListener('input', () => store.set('assetCategory', $('#acat').value));
   set(store.get('assetType', 'creature'));
 }
+const creationMotionKeys = ['reader', 'solver', 'takes', 'seconds', 'reader_poses', 'reader_steps', 'reader_tta', 'turn'];
+function creationFields(sc, draft, prefix) {
+  const order = ['rig_backend', 'creation_clips', 'reader', 'solver', 'reader_poses', 'reader_steps', 'reader_tta', 'seconds', 'takes', 'turn'];
+  const rows = (sc.creation || []).concat((sc.motion || []).filter(p => creationMotionKeys.includes(p.key)).map(p => ({
+    ...p, default: ['reader', 'solver'].includes(p.key) ? 'video2rig' : p.key === 'takes' ? 1 : p.default
+  })));
+  const labelsByKey = { creation_clips: 'Animations', seconds: 'Clip length (seconds)', reader_poses: 'video2rig training poses',
+    reader_steps: 'video2rig training steps', reader_tta: 'video2rig readings per frame', turn: 'Turn the model before filming (degrees)' };
+  const input = p => {
+    const v = draft[p.key] ?? draft.motion?.[p.key] ?? p.default, id = prefix + p.key;
+    const labels = p.key === 'workflow' ? { forge: 'Forge — existing workflow', video2rig: 'Video2Rig + MiniMax — create and animate', direct_gait: 'Direct gait — preview' }
+      : p.key === 'rig_backend' ? { skintokens: 'SkinTokens', video2rig: 'Video2Rig auto-rig (UniRig)' } : {};
+    const options = p.options;
+    return `<div class="field" ${p.key === 'workflow' ? 'style="grid-column:1/-1"' : ''}><label for="${id}" ${p.key === 'turn' ? 'title="Native videos align the detected facing first, then apply this extra turn. Saved video replay uses its original camera turn."' : ''}>${esc(labelsByKey[p.key] || p.label)}</label>${p.kind === 'choice'
+      ? `<select id="${id}">${options.map(o => `<option value="${esc(o)}" ${String(v) === String(o) ? 'selected' : ''}>${esc(labels[o] || o)}</option>`).join('')}</select>`
+      : `<input id="${id}" type="${p.kind === 'text' ? 'text' : 'number'}" value="${esc(v)}" ${p.kind === 'text' ? `maxlength="${p.max_length}"` : `min="${p.min}" max="${p.max}"`}>`}</div>`;
+  };
+  return `<section aria-label="Workflow"><div class="eyebrow">Workflow</div><div class="fields">${rows.filter(p => p.key === 'workflow').map(input).join('')}</div><div class="muted" data-${prefix}preview hidden style="font-size:12px;margin-top:6px">Initial clip: Walk · birds and quadrupeds</div>
+    <details class="sec" data-${prefix}native><summary>Advanced</summary><div class="fields">${order.map(k => rows.find(p => p.key === k)).filter(Boolean).map(input).join('')}</div></details></section>`;
+}
+function creationValues(sc, prefix) {
+  const workflow = $('#' + prefix + 'workflow')?.value || 'forge';
+  if (workflow === 'forge') return { workflow };
+  if (workflow === 'direct_gait') return { workflow, rig_backend: $('#' + prefix + 'rig_backend').value,
+    creation_clips: $('#' + prefix + 'creation_clips').value };
+  const motion = Object.fromEntries((sc.motion || []).filter(p => creationMotionKeys.includes(p.key)).map(p => {
+    const v = $('#' + prefix + p.key).value;
+    return [p.key, p.kind === 'choice' ? (typeof p.default === 'number' ? +v : v) : +v];
+  }));
+  return { workflow, rig_backend: $('#' + prefix + 'rig_backend').value,
+    creation_clips: $('#' + prefix + 'creation_clips').value, motion };
+}
+function wireCreation(prefix, onChange = () => {}) {
+  const update = () => {
+    const workflow = $('#' + prefix + 'workflow')?.value || 'forge';
+    const native = workflow === 'video2rig', direct = workflow === 'direct_gait';
+    document.querySelectorAll(`[data-${prefix}native]`).forEach(el => el.hidden = !(native || direct));
+    document.querySelectorAll(`[data-${prefix}preview]`).forEach(el => el.hidden = !direct);
+    document.querySelectorAll(`[data-${prefix}native] .fields`).forEach(el => {
+      el.querySelectorAll('.field').forEach(field => { const key = field.querySelector('[id]')?.id.slice(prefix.length); field.hidden = direct ? !['rig_backend','creation_clips'].includes(key) : false; });
+    });
+    onChange(native || direct);
+  };
+  $('#' + prefix + 'workflow')?.addEventListener('change', update);
+  $('#' + prefix + 'rig_backend')?.addEventListener('change', update);
+  update();
+}
 async function renderCreate() {
-  crumbs([['Create', '#/create'], ['3D Asset', '#/create']]);
+  crumbs([['Create', '#/create'], ['Image(s) to Asset', '#/create']]);
   await loadTypes().catch(fail);
-  if (!schema) { const r = await api('/api/schema').catch(e => (fail(e), {})); schema = (r['3d'] || []).filter(p => !p.hidden); schema.levels = r.presets || []; }
+  if (!schema) { const r = await api('/api/schema').catch(e => (fail(e), {})); schema = (r['3d'] || []).filter(p => !p.hidden); schema.levels = r.presets || []; schema.creation = r.creation; schema.motion = r.motion; }
   let preset = store.get('createPreset', 'normal');
   const saved = store.get('createParams', {});
   let mode = store.get('createMode', 'single');
@@ -872,7 +1016,7 @@ async function renderCreate() {
     <div class="eyebrow fade">New job</div>
     <h2 class="fade" style="--i:1">Create</h2>
     <div class="types fade" style="--i:2">
-      <button class="type on">${ICON.model.replace('<svg', '<svg width="28" height="28"')}<h3>3D Asset</h3><div class="muted" style="font-size:12px" id="typedesc"></div></button>
+      <button class="type on">${ICON.model.replace('<svg', '<svg width="28" height="28"')}<h3>Image(s) to Asset</h3><div class="muted" style="font-size:12px" id="typedesc"></div></button>
       ${imagesType(false)}${creatureType(false)}
     </div>
     <div class="form">
@@ -899,12 +1043,13 @@ async function renderCreate() {
         <button class="btn primary" id="submit" style="width:100%;justify-content:center;margin-top:18px;height:44px">Add to queue</button>
       </div>
       <div class="card fade" style="--i:4">
+        <div id="creation-settings" style="margin-bottom:18px">${creationFields(schema, saved, 'd_')}</div>
         <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:6px"><div class="eyebrow">Quality</div>
           <div class="seg">${schema.levels.map(l => `<button data-preset="${l}">${l[0].toUpperCase() + l.slice(1)}</button>`).join('')}</div>
           <span class="muted" style="font-size:12px" id="presetnote"></span></div>
         ${sections.map((s, i) => {
           const rows = `<div class="fields">${schema.filter(p => p.section === s).map(field).join('')}</div>`;
-          return i === 0 ? `<div data-sec="${esc(s)}"><div class="eyebrow">${esc(s)}</div>${rows}</div>`
+          return i === 0 ? `<details class="sec" data-sec="${esc(s)}"><summary>Advanced</summary>${rows}</details>`
             : `<details class="sec" data-sec="${esc(s)}"><summary>${esc(s)}</summary>${rows}</details>`;
         }).join('')}
         <div style="margin-top:18px;display:flex;justify-content:flex-end"><button class="btn sm" id="reset">Reset to preset</button></div>
@@ -918,6 +1063,7 @@ async function renderCreate() {
     document.querySelectorAll('[data-mode]').forEach(b => b.classList.toggle('on', b.dataset.mode === m));
     $('#single').hidden = m !== 'single'; $('#multi').hidden = m !== 'multi';
     sections.forEach(s => { document.querySelector(`[data-sec="${CSS.escape(s)}"]`).hidden = !modesOf(s).includes(m); });
+    if (['video2rig', 'direct_gait'].includes($('#d_workflow')?.value)) document.querySelector('[data-sec="Rig"]').hidden = true;
     $('#typedesc').textContent = m === 'single' ? 'One image → textured GLB · Pixal3D geometry, UltraTex texture'
       : 'Front + side/back views → textured GLB · Pixal3D multi-view geometry, UltraTex texture from the front';
   };
@@ -944,6 +1090,15 @@ async function renderCreate() {
     if (typeInfo.types[t].defaults.rig && $('#p_rig')) $('#p_rig').value = typeInfo.types[t].defaults.rig;
     setPreset(preset, true);
   });
+  wireCreation('d_', native => {
+    if (native && $('#p_rig')) {
+      $('#p_rig').value = $('#d_rig_backend').value === 'skintokens' ? 'now' : 'later';
+      $('#p_rig').dispatchEvent(new Event('change'));
+      if ($('#p_file_format')) $('#p_file_format').value = 'glb';
+      if ($('#p_rig_format')) $('#p_rig_format').value = 'glb';
+    }
+    const rig = document.querySelector('[data-sec="Rig"]'); if (rig) rig.hidden = native;
+  });
   document.querySelectorAll('[data-mode]').forEach(b => b.onclick = () => setMode(b.dataset.mode));
   const settings = await api('/api/settings').catch(() => ({ input_folder: 'Inputs' }));
   const upload = async files => (await uploadFiles(files.slice(0, 1), settings.input_folder))[0];
@@ -967,7 +1122,8 @@ async function renderCreate() {
   $('#viewfile').onchange = async e => { const p = await upload([...e.target.files]); if (p && upPos) { setCreateView(upPos, p); drawViews(); } };
   $('#reset').onclick = () => { store.set('createParams', {}); renderCreate(); };  // no saved values: the preset applies
   $('#submit').onclick = async () => {
-    const params = { preset, ...typeVals() };
+    const params = { preset, ...typeVals(), ...creationValues(schema, 'd_') };
+    if (['video2rig', 'direct_gait'].includes(params.workflow) && params.type === 'item') return toast('Native animation workflows require Asset type Creature', true);
     if (mode === 'single') {
       if (!state.createImage) return toast('Pick a source image first', true);
       params.image = state.createImage;
@@ -1000,7 +1156,7 @@ async function renderImages() {
     <div class="eyebrow fade">New job</div>
     <h2 class="fade" style="--i:1">Create</h2>
     <div class="types fade" style="--i:2">
-      <button class="type" onclick="location.hash='#/create'">${ICON.model.replace('<svg', '<svg width="28" height="28"')}<h3>3D Asset</h3><div class="muted" style="font-size:12px">Image(s) → textured GLB</div></button>
+      <button class="type" onclick="location.hash='#/create'">${ICON.model.replace('<svg', '<svg width="28" height="28"')}<h3>Image(s) to Asset</h3><div class="muted" style="font-size:12px">Image(s) → textured GLB</div></button>
       ${imagesType(true)}${creatureType(false)}
     </div>
     <div class="card fade" style="--i:3;margin-top:18px;max-width:760px">
@@ -1040,42 +1196,59 @@ async function renderImages() {
   };
 }
 /* ---------------- create: creature (animated quadruped) */
-const creatureType = on => `<button class="type ${on ? 'on' : ''}" onclick="location.hash='#/create/creature'">${ICON.model.replace('<svg', '<svg width="28" height="28"')}<h3>Creature</h3>
-  <div class="muted" style="font-size:12px">Prompt → animated quadruped · Zoo-300K clips</div></button>`;
+const creatureType = on => `<button class="type ${on ? 'on' : ''}" onclick="location.hash='#/create/creature'">${ICON.model.replace('<svg', '<svg width="28" height="28"')}<h3>Prompt to Asset</h3>
+  <div class="muted" style="font-size:12px">Prompt → creature · choose an animation workflow</div></button>`;
 let animalList = null;  // /api/animals: the Zoo-300K catalogue with curated flags and clip lists
 const loadAnimals = async () => animalList ??= (await api('/api/animals')).animals;
 const animalById = id => (animalList || []).find(a => a.id === id);
 
 async function renderCreature() {
-  crumbs([['Create', '#/create'], ['Creature', '#/create/creature']]);
+  crumbs([['Create', '#/create'], ['Prompt to Asset', '#/create/creature']]);
   let sc; try { [sc] = await Promise.all([api('/api/schema'), loadAnimals(), loadTypes()]); } catch (e) { return fail(e); }
   const draft = store.get('creatureDraft', {});
+  const modelRows = sc['3d'].filter(p => ['seed', 'target_face_num', 'texture_size'].includes(p.key));
+  const modelValues = () => Object.fromEntries(modelRows.map(p => [p.key, +$('#cmodel_' + p.key).value]));
   let animal = '', timer = 0, ticked = null;  // animal: the chosen candidate's id; ticked: its clip names still ticked
   $('#view').innerHTML = `
     <div class="eyebrow fade">New job</div>
     <h2 class="fade" style="--i:1">Create</h2>
     <div class="types fade" style="--i:2">
-      <button class="type" onclick="location.hash='#/create'">${ICON.model.replace('<svg', '<svg width="28" height="28"')}<h3>3D Asset</h3><div class="muted" style="font-size:12px">Image(s) → textured GLB</div></button>
+      <button class="type" onclick="location.hash='#/create'">${ICON.model.replace('<svg', '<svg width="28" height="28"')}<h3>Image(s) to Asset</h3><div class="muted" style="font-size:12px">Image(s) → textured GLB</div></button>
       ${imagesType(false)}${creatureType(true)}
     </div>
     <div class="card fade" style="--i:3;margin-top:18px;max-width:760px">
-      <div class="muted" style="font-size:12px;margin-bottom:14px">Builds and rigs a quadruped from the prompt, moves it onto the shared skeleton and retargets the clips of a matching animal. Saved as ${esc(typeInfo.types.creature.folder)}/&lt;Name&gt;/.</div>
-      <div class="field"><label for="cname">Creature name</label><input type="text" id="cname" value="${esc(draft.name || '')}" placeholder="Swamp Rat"></div>
-      <div class="field" style="margin-top:14px"><label for="cprompt">Prompt</label><textarea id="cprompt" rows="4" style="resize:vertical">${esc(draft.prompt || '')}</textarea></div>
-      <div class="field" style="margin-top:14px"><label for="canimal">Animal</label><input type="text" id="canimal" autocomplete="off" value="${esc(draft.animal || '')}" placeholder="Type to match; empty matches from the name">
+      ${creationFields(sc, draft.creation || {}, 'c_')}
+      <details class="sec" data-legacy-creature><summary>Advanced</summary>
+      <div class="field" data-legacy-creature style="margin-top:14px"><label for="canimal">Animal</label><input type="text" id="canimal" autocomplete="off" value="${esc(draft.animal || '')}" placeholder="Type to match; empty matches from the name">
         <div id="cands"></div></div>
-      <div class="field" style="margin-top:14px"><label>Clips</label><div id="cclips" class="muted" style="font-size:13px"></div></div>
-      <div class="field" style="margin-top:14px"><label for="cother">Other clips (made with UniMate, comma separated)</label><input type="text" id="cother" value="${esc(draft.other || '')}" placeholder="Sniff, Dig"></div>
-      <div class="fields">
-        <div class="field check"><input type="checkbox" id="cfill" ${draft.fill === false ? '' : 'checked'}><label for="cfill">Fill missing clips with UniMate</label></div>
-        <div class="field"><label for="csize">Length (cm)</label><input type="number" id="csize" min="1" max="2000" value="${esc(draft.size || '')}" placeholder="animal's middle"></div>
-        <div class="field"><label for="cpreset">Quality</label><select id="cpreset">${sc.presets.map(l => `<option ${l === (draft.preset || sc.default_preset) ? 'selected' : ''}>${esc(l)}</option>`).join('')}</select></div>
-      </div>
+      <div class="field" data-legacy-creature style="margin-top:14px"><label>Clips</label><div id="cclips" class="muted" style="font-size:13px"></div></div>
+      <div class="field" data-legacy-creature style="margin-top:14px"><label for="cother">Other clips (made with UniMate, comma separated)</label><input type="text" id="cother" value="${esc(draft.other || '')}" placeholder="Sniff, Dig"></div>
+      <div class="field check" data-legacy-creature style="margin-top:14px"><input type="checkbox" id="cfill" ${draft.fill === false ? '' : 'checked'}><label for="cfill">Fill missing clips with UniMate</label></div>
+      </details>
+      <section aria-label="Details" style="margin-top:20px"><div class="eyebrow">Details</div>
+        <div class="field"><label for="cname">Creature Name</label><input type="text" id="cname" value="${esc(draft.name || '')}" placeholder="Swamp Rat"></div>
+        <div class="field" style="margin-top:14px"><label for="cprompt">Prompt</label><textarea id="cprompt" rows="4" style="resize:vertical">${esc(draft.prompt || '')}</textarea></div>
+        <div class="field" style="margin-top:14px"><label for="csize">Length (cm) <span tabindex="0" role="img" aria-label="Length help" title="Sets the creature's overall length in centimetres (1–2000). Forge uses nose-to-tail length; Video2Rig scales the longest horizontal dimension. Leave blank for the matched animal's typical length in Forge, or the generated size in Video2Rig.">?</span></label><input type="number" id="csize" min="1" max="2000" value="${esc(draft.size || '')}" placeholder="Automatic"></div>
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:18px"><div class="eyebrow">Quality</div>
+          <input type="hidden" id="cpreset" value="${esc(draft.preset || sc.default_preset)}">
+          <div class="seg" role="group" aria-label="Quality">${sc.presets.map(l => `<button type="button" data-cpreset="${l}">${l[0].toUpperCase() + l.slice(1)}</button>`).join('')}</div></div>
+        <details class="sec"><summary>Advanced</summary><div class="fields">${modelRows.map(p => `<div class="field"><label for="cmodel_${p.key}">${esc(p.label)}</label><input type="number" id="cmodel_${p.key}" min="${p.min}" max="${p.max}" step="${p.step || 1}"></div>`).join('')}</div></details>
+      </section>
       <button class="btn primary" id="csubmit" style="width:100%;justify-content:center;margin-top:18px;height:44px">Add to queue</button>
     </div>`;
   const keep = () => store.set('creatureDraft', { name: $('#cname').value, prompt: $('#cprompt').value, animal: $('#canimal').value, other: $('#cother').value,
-    fill: $('#cfill').checked, size: $('#csize').value, preset: $('#cpreset').value });
+    fill: $('#cfill').checked, size: $('#csize').value, preset: $('#cpreset').value, model: modelValues(), creation: creationValues(sc, 'c_') });
+  const setQuality = (level, apply) => {
+    $('#cpreset').value = level;
+    document.querySelectorAll('[data-cpreset]').forEach(b => { const selected = b.dataset.cpreset === level; b.classList.toggle('on', selected); b.setAttribute('aria-pressed', selected); });
+    if (apply) modelRows.forEach(p => { $('#cmodel_' + p.key).value = p.key === 'seed' ? -1 : (p.rig_presets || p.presets)?.[level] ?? p.default; });
+  };
+  setQuality($('#cpreset').value, true);
+  modelRows.forEach(p => { if (draft.model?.[p.key] != null) $('#cmodel_' + p.key).value = draft.model[p.key]; });
+  document.querySelectorAll('[data-cpreset]').forEach(b => b.onclick = () => { setQuality(b.dataset.cpreset, true); keep(); });
+  modelRows.forEach(p => $('#cmodel_' + p.key).addEventListener('input', keep));
   ['#cname', '#cprompt', '#canimal', '#cother', '#cfill', '#csize', '#cpreset'].forEach(s => $(s).addEventListener('input', keep));
+  wireCreation('c_', native => { document.querySelectorAll('[data-legacy-creature]').forEach(el => el.hidden = native); keep(); });
   const drawClips = () => {
     const a = animalById(animal);
     if (!a) { $('#cclips').textContent = 'Pick an animal below to choose its clips; none picked means all clips of the best match.'; return; }
@@ -1106,6 +1279,14 @@ async function renderCreature() {
     const name = $('#cname').value.trim(), prompt = $('#cprompt').value.trim();
     if (!name) return toast('Give the creature a name', true);
     if (!prompt) return toast('Write a prompt first', true);
+    const creation = creationValues(sc, 'c_');
+    if (['video2rig', 'direct_gait'].includes(creation.workflow)) {
+      const body = { kind: 'creature', name, prompt, preset: $('#cpreset').value, ...modelValues(), ...creation };
+      if ($('#csize').value) body.size_cm = +$('#csize').value;
+      keep();
+      try { await post('/api/jobs', body); toast('Added to queue'); setQueueOpen(true); pollQueue(); } catch (e) { fail(e); }
+      return;
+    }
     const typed = $('#canimal').value.trim();  // no candidate clicked: the typed text must itself be an animal id
     if (!animal && typed) {
       if (!animalById(typed)) return toast('Pick an animal from the candidates, or clear the box', true);
@@ -1117,7 +1298,7 @@ async function renderCreature() {
       if (!ticked.length && !other.length) return toast('Tick at least one clip', true);
       if (ticked.length < a.clips.length || other.length) clips = [...ticked, ...other];
     } else if (other.length) clips = other;
-    const body = { kind: 'creature', name, prompt, clips, fill_missing: $('#cfill').checked, preset: $('#cpreset').value };
+    const body = { kind: 'creature', name, prompt, clips, fill_missing: $('#cfill').checked, preset: $('#cpreset').value, ...modelValues() };
     if (animal) body.animal = animal;
     if ($('#csize').value) body.size_cm = +$('#csize').value;
     try { await post('/api/jobs', body); toast('Added to queue'); setQueueOpen(true); pollQueue(); } catch (e) { fail(e); }
@@ -1131,7 +1312,7 @@ let bakeDirty = null;  // {dir, names}: baked ticks changed but not combined yet
 function clipRow(c, dir, sheets, animal) {
   const k = c.checks || {}, rv = reviewsOf(c), last = rv.at(-1);
   const sheet = c.file.split('/').pop().replace(/\.glb$/i, '.png');
-  const src = { library: `library · ${c.animal || animal}`, text: `text${c.seed == null ? '' : ' · seed ' + c.seed}`, video: `video · ${c.action || ''} take ${c.take}`,
+  const src = { library: `library · ${c.animal || animal}`, text: `text${c.seed == null ? '' : ' · seed ' + c.seed}`, video: `video · ${c.action || ''}${c.take == null ? '' : ' take ' + c.take}`,
     glb: `glb · ${(c.from || '').split('/').pop()} · ${c.animation || ''}${c.retargeted ? ' · retargeted' : ''}` }[c.source] || c.source;
   const chk = k.passed === true ? ['pass', 'passed'] : k.passed === false ? ['fail', 'failed'] : ['', 'not checked'];
   return `<div class="cl">
@@ -1150,13 +1331,19 @@ async function drawModel(name, dir, man) {
   let sheets = new Set();
   try { sheets = new Set((await api('/api/ls?path=' + encodeURIComponent(dir + '/animations'))).entries.map(e => e.name)); } catch {}
   if ($('#modelview') !== box) return;  // navigated away meanwhile
+  if (man.workflow === 'video2rig') {
+    const managed = new Set([dir + '/' + name + '.glb', dir + '/' + name + '_animated.glb', ...(man.clips || []).map(c => dir + '/' + c.file)]);
+    state.entries.forEach(e => { if (managed.has(e.path)) e.nativeRig = man.stages?.rig?.state || 'exists'; });
+    drawGrid();
+  }
   const un = man.unreal || { state: 'pending', reason: '' }, ucls = { pass: 'pass', fail: 'fail' }[un.state] || '';
   box.innerHTML = `<div class="card" style="margin-bottom:18px">
     <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap"><div class="eyebrow">Creature</div><b>${esc(man.name)}</b>
-      <span class="mb">${esc(man.animal)}${man.match ? ' · ' + man.match.score.toFixed(2) : ''}</span><span class="mb">${esc(man.size_cm)} cm</span><span class="mb">${esc(man.skeleton)}</span>
+      <span class="mb">${esc(man.animal)}${man.match ? ' · ' + man.match.score.toFixed(2) : ''}</span><span class="mb">${man.size_cm == null ? 'native scale' : esc(man.size_cm) + ' cm'}</span><span class="mb">${esc(man.skeleton)}</span>
       <span class="mb ${ucls}" id="unreal" title="${esc(un.reason || 'Desktop Unreal import check')}">unreal: ${esc(un.state)}</span></div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px">
-      <button class="btn primary" id="combine">Combine Animations</button><button class="btn" id="newanim">New Animation</button><button class="btn" id="addglb">Add from GLB</button></div>
+      <button class="btn primary" id="combine">Combine Animations</button><button class="btn" id="newanim">${man.workflow === 'direct_gait' ? 'Add video animation' : 'New Animation'}</button><button class="btn" id="addglb">Add from GLB</button></div>
+    ${man.workflow === 'direct_gait' ? '<div class="muted" style="font-size:12px;margin-top:6px">Optional video additions use the native video motion path; direct-gait creation itself uses no video or training.</div>' : ''}
     <div class="err" id="merr" style="margin-top:10px;color:var(--danger);font-size:13px" hidden></div>
     <div style="margin-top:14px">${man.clips.map(c => clipRow(c, dir, sheets, man.animal)).join('') || '<div class="muted">No clips.</div>'}</div>
     ${(man.unavailable || []).map(u => `<div class="muted" style="font-size:12px;margin-top:8px">Not made: <b>${esc(u.name)}</b> · ${esc(u.reason)}</div>`).join('')}</div>`;
@@ -1190,14 +1377,20 @@ function formModal(title, html, run) {
 async function newAnimation(man) {
   let sc; try { [sc] = await Promise.all([api('/api/schema'), loadAnimals()]); } catch (e) { return fail(e); }
   const actions = sc.motion.find(p => p.key === 'action').options;
+  const stages = sc.motion.filter(p => ['reader', 'solver', 'video_source', 'video', 'observations', 'reader_poses', 'reader_steps', 'reader_tta'].includes(p.key))
+    .map(p => ['video2rig', 'direct_gait'].includes(man.workflow) && ['reader', 'solver'].includes(p.key) ? { ...p, default: 'video2rig' } : p);
   const fld = (id, label, inner) => `<div class="field"><label for="${id}">${label}</label>${inner}</div>`;
   const o = formModal('New Animation · ' + man.name, `
-    <div class="seg" style="justify-self:start">${[['library', 'Library'], ['text', 'Describe'], ['video', 'Video']].map(([k, l]) => `<button data-src="${k}">${l}</button>`).join('')}</div>
+    <div class="muted" data-video-note hidden>Optional video extension; direct-gait creation uses no video or reader training.</div>
+    <div class="seg" style="justify-self:start">${(['video2rig', 'direct_gait'].includes(man.workflow) ? [['video', 'Video']] : [['library', 'Library'], ['text', 'Describe'], ['video', 'Video']]).map(([k, l]) => `<button data-src="${k}">${l}</button>`).join('')}</div>
     <div data-g="library" style="display:grid;gap:14px">${fld('na_animal', 'Animal', `<input type="text" id="na_animal" list="na_animals" value="${esc(man.animal)}"><datalist id="na_animals">${animalList.map(a => `<option value="${esc(a.id)}">`).join('')}</datalist>`)}
       ${fld('na_lclip', 'Clip', `<input type="text" id="na_lclip" list="na_clips" placeholder="Trottle"><datalist id="na_clips"></datalist>`)}</div>
     <div data-g="text" style="display:grid;gap:14px">${fld('na_prompt', 'Describe the motion', `<textarea id="na_prompt" rows="3" placeholder="sniffs the ground"></textarea>`)}
       ${fld('na_seeds', 'Seeds (1-8, empty = setting)', `<input type="number" id="na_seeds" min="1" max="8">`)}</div>
     <div data-g="video" style="display:grid;gap:14px">${fld('na_action', 'Action', `<select id="na_action">${actions.map(a => `<option>${esc(a)}</option>`).join('')}</select>`)}
+      ${stages.map(p => fld('na_' + p.key, p.label, p.kind === 'choice'
+        ? `<select id="na_${p.key}">${p.options.map(v => `<option ${String(v) === String(p.default) ? 'selected' : ''}>${esc(v)}</option>`).join('')}</select>`
+        : `<input id="na_${p.key}" type="${p.kind === 'text' ? 'text' : 'number'}" value="${esc(p.default)}" ${p.kind === 'text' ? `maxlength="${p.max_length}"` : `min="${p.min}" max="${p.max}"`}>`)).join('')}
       ${fld('na_takes', 'Takes (empty = default)', `<input type="number" id="na_takes" min="1" max="4">`)}</div>
     <div data-g="text video">${fld('na_clip', 'Clip name (optional)', `<input type="text" id="na_clip" placeholder="from the prompt or action">`)}</div>`,
     async o => {
@@ -1205,18 +1398,20 @@ async function newAnimation(man) {
       let b;
       if (src === 'library') b = { source: 'library', animal: v('na_animal'), clip: v('na_lclip') };
       else if (src === 'text') b = { source: 'text', prompt: v('na_prompt'), ...(v('na_seeds') && { seeds: +v('na_seeds') }), ...(v('na_clip') && { clip: v('na_clip') }) };
-      else b = { source: 'video', action: v('na_action'), ...(v('na_takes') && { takes: +v('na_takes') }), ...(v('na_clip') && { clip: v('na_clip') }) };
+      else b = { source: 'video', action: v('na_action'), ...Object.fromEntries(stages.map(p => [p.key, p.kind === 'int' ? +v('na_' + p.key) : v('na_' + p.key)])),
+        ...(v('na_takes') && { takes: +v('na_takes') }), ...(v('na_clip') && { clip: v('na_clip') }) };
       await post(`/api/models/${man.name}/clips`, b);
     });
   const setSrc = s => {
     o.dataset.src = s;
+    const note = $('[data-video-note]', o); if (note) note.hidden = !(man.workflow === 'direct_gait' && s === 'video');
     o.querySelectorAll('[data-src]').forEach(b => b.classList.toggle('on', b.dataset.src === s));
     o.querySelectorAll('[data-g]').forEach(g => g.hidden = !g.dataset.g.split(' ').includes(s));
   };
   const clipsOf = () => { const a = animalById($('#na_animal', o).value.trim()); $('#na_clips', o).innerHTML = (a?.clips || []).map(c => `<option value="${esc(c.name)}">`).join(''); };
   o.querySelectorAll('[data-src]').forEach(b => b.onclick = () => setSrc(b.dataset.src));
   $('#na_animal', o).addEventListener('input', clipsOf);
-  setSrc('library'); clipsOf();
+  setSrc(['video2rig', 'direct_gait'].includes(man.workflow) ? 'video' : 'library'); clipsOf();
 }
 // The animation names of a .glb in the library, read from its JSON chunk.
 async function glbAnimations(path) {
@@ -1274,7 +1469,7 @@ function useImages(job) {
 /* ---------------- settings */
 async function renderSettings() {
   crumbs([['Settings', '#/settings']]);
-  let s; try { s = await api('/api/settings'); } catch (e) { return fail(e); }
+  let s, reviewSettings; try { s = await api('/api/settings'); reviewSettings = (await api('/api/schema')).native_review_settings || []; } catch (e) { return fail(e); }
   const row = (h, i) => {
     const direct = h.kind === 'http', inp = (f, v, t = 'text') => `<input type="${t}" data-f="${f}" value="${esc(v ?? '')}">`;
     return `<tr data-i="${i}">
@@ -1311,6 +1506,11 @@ async function renderSettings() {
       </div>
     </div>
     <div class="card fade" style="--i:3;margin-top:18px">
+      <h3>Native creature quality checks</h3>
+      <div class="muted" style="font-size:12px;margin:4px 0 12px">Review the skeleton before filming and the animation before baking. Failed checks trigger bounded repairs, then stop if unresolved. Changes apply to new jobs.</div>
+      <div class="fields">${reviewSettings.map(p => `<div class="field"><label for="s_${p.key}">${esc(p.label)}</label><input type="number" id="s_${p.key}" data-review-setting="${p.key}" value="${s[p.key] ?? p.default}" min="${p.min}" max="${p.max}" step="${p.step}"></div>`).join('')}</div>
+    </div>
+    <div class="card fade" style="--i:3;margin-top:18px">
       <h3>Joint detectors</h3>
       <div class="muted" style="font-size:12px;margin:4px 0 12px">Each rigged model's detector finds its joints in motion-job videos. Its exam errors are in % of the model's height: within the limits it's good, within the usable multiple it's usable, beyond that motion jobs fall back to point tracking.</div>
       <div class="fields">
@@ -1343,6 +1543,7 @@ async function renderSettings() {
   const read = () => ({
     output_folder: $('#s_out').value.trim(), input_folder: $('#s_in').value.trim(), job_timeout_min: +$('#s_to').value,
     detector_images: +$('#s_dimg').value, detector_epochs: +$('#s_dep').value, detector_usable_x: +$('#s_dux').value,
+    ...Object.fromEntries([...document.querySelectorAll('[data-review-setting]')].map(el => [el.dataset.reviewSetting, +el.value])),
     detector_auto_train: $('#s_dauto').checked,
     detector_limits: Object.fromEntries([...document.querySelectorAll('[data-lim]')].map(el => [el.dataset.lim, +el.value])),
     hosts: [...document.querySelectorAll('#hrows tr')].map(rowData),

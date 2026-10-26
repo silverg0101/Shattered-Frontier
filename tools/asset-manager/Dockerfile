@@ -3,7 +3,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends openssh-client 
 # Pillow splits and aligns multi-view turnaround sheets (split_sheet)
 RUN pip install --no-cache-dir pillow==11.3.0
 WORKDIR /app
-COPY app.py creature.py .
+COPY app.py creature.py motion_backend.py creation_workflow.py direct_gait.py native_quality.py native_status.py video2rig.lock.json .
 COPY static static
 COPY motion motion
 COPY body-depth body-depth

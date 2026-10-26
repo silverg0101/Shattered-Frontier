@@ -1,0 +1,5 @@
+Generate one image with your image generation tool:
+
+Create one 16:9 full-screen PC game login screen concept for Legends: Shattered Frontier. Use `GameClient/ArtSource/LoadingScreen/Game-Startup-Splash-Transparent-v1.png` as the exact title-logo reference and `11-title-menu.png` and `9-loading-screen.png` as the UI and environment references. Place a smaller, legible version of the logo in the upper-left quarter. Show a single realistic Greenlands river and frontier-town scene at dawn, with blue mountains and a waterfall. Keep the center view open. On the right third, show a restrained translucent slate-navy, aged-brass-framed panel headed “Sign In”, two fields labeled “Account” and “Password”, a prominent “Sign In” button, and small “Create Account” and “Forgot Password” links. Show unobtrusive “Settings” and “Quit” controls at bottom right. Use warm ivory readable text and the v5 kit's slim frame treatment. No HUD, loading bar, server status, provider branding, personal data, or watermark. Text must be spelled correctly. This is concept art, not a claim that authentication exists.
+
+Save it as 17-login.png in the current directory.
