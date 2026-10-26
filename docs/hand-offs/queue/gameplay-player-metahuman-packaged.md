@@ -1,9 +1,9 @@
 # Restore the intended MetaHuman in packaged gameplay
 
 - **Area:** gameplay
-- **Owner of the next step:** agent (root triage)
+- **Owner of the next step:** root integration/release lane B
 - **Updated:** 2026-10-25
-- **Worktree:** C:\Projects\SF-lane-b
+- **Worktree:** C:\Projects\SF-lane-a (review branch); integration C:\Projects\SF-lane-b
 
 ## Goal
 
@@ -11,19 +11,21 @@ The packaged player renders the intended MetaHuman rather than the Unreal manneq
 
 ## State
 
-Owner observed the mannequin in the deployed ff59 development client. Cause not established: inspect development admission/appearance assignment, existing MetaHuman assembly availability and cook inclusion. Do not treat a missing local assembly as a completed visual import.
+Owner observed the mannequin in deployed ff59. Root confirmed `PLAYER_METAHUMAN_MISSING`: assembled face Blueprint and retarget omitted from package. Approved existing assemblies are now in a canonical ignored, hash-verified cache; no new art/assembly generation. A client-only CookDir contract/preflight is implemented, while actual cook and packaged avatar acceptance remain open.
 
 ## Evidence
 
-`docs/dependency-map/characters.md` identifies `ASFE1Character::SpawnPosedMetaHuman`, replicated `FaceId`, session appearance restoration and ignored generated MetaHuman assemblies. Owner building-catalogue screenshot also shows the mannequin. Parent: `ui-live-client-regressions.md`.
+Preflight verifies1181files/1,802,840,646bytes against pinned manifest SHA2569329b4fe9def930604dd546398b0e1719459f529455f7474391c6d9b128fd0b0, all9configured face BPs and retarget/male/female outfits. LaneA Built junction targets canonical cache; cache bytes unchanged. `ClientCookContract.json`/`Get-ClientCookContract.ps1` emit supported client-only UAT CookDir roots. No globalINI/server/runtime changes or UE job in this slice. Parent: `ui-live-client-regressions.md`.
+
+Static checks PASS: all approved hashes/bytes and9+3required packages; missing cache, server target, incomplete census and modified manifest all rejected. Local evidence: `Artifacts/PlayerMetaHuman-client-preflight.json` and `Artifacts/PlayerMetaHuman-preflight-rejections.txt`. These do not establish cooked hard-reference closure or visual acceptance.
 
 ## Blocked on
 
-Diagnosis; editor/cook work must use the single Unreal job lease.
+Actual cook/dependency closure and packaged avatar review; editor/cook work must use the single Unreal job lease.
 
 ## Next step
 
-Read only the character area and relevant MetaHuman source/assembly contract; identify the first failed condition in the packaged path and fix it.
+Integrate reviewed branch in B; use preflight `.UatArguments` for client cook only, verify all9BPs/retarget/outfits/hard closure in client containers and avatar exclusion in server containers. Capture actual intended avatar/animation/outfit and receiver-head attachment for fresh Sol/owner review. Source/cache invariance and matching package identity remain release gates.
 
 ## Rules for this task
 
