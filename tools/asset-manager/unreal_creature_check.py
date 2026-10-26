@@ -14,6 +14,9 @@ mesh under /Game/Frontier/Tests/AssetForge/<Name> (replacing an earlier import) 
 list is quadruped_v1's with `root` on top, one AnimSequence per manifest clip with `baked: true` (named <Name>_<Clip>,
 on the shared skeleton) with the GLB's key count. Which way the creature faces is noted in `reason`. The result is logged as
 `CREATURECHECK result {...}` and POSTed as {state, reason} to <forge url>/api/models/<Name>/unreal when a url is given.
+Native video2rig/direct_gait manifests instead create their own skeleton and compare against the GLB skin's joint
+names (including Interchange's dot-to-underscore conversion). They never use the shared quadruped skeleton.
+An isolated-project pass proves file import, joint names and clip/key preservation, not game-project or visual acceptance.
 """
 import json
 import math
@@ -49,6 +52,18 @@ def glb_keys(path) -> dict:
     return {a["name"]: max(js["accessors"][s["input"]]["count"] for s in a["samplers"]) for a in js.get("animations", [])}
 
 
+def native_bones(path):
+    """Expected native joint names; never force a bird onto the shared quadruped rig."""
+    raw=path.read_bytes()
+    document=json.loads(raw[20:20+struct.unpack_from('<I',raw,12)[0]])
+    skins=document.get('skins',[])
+    if len(skins)!=1:raise ValueError('native engine check expects one skin')
+    # Interchange replaces dots in joint names (Thigh.L -> Thigh_L).
+    names=[document['nodes'][i].get('name','').replace('.', '_') for i in skins[0]['joints']]
+    if not all(names) or len(set(names))!=len(names):raise ValueError('native joint names must be unique')
+    return names
+
+
 def assets_of(cls):
     return [x for x in (lib.load_asset(p) for p in lib.list_assets(DEST, recursive=True)) if isinstance(x, cls)]
 
@@ -63,9 +78,11 @@ def run() -> list:
         return [f"no {glb.name} in the model folder"]
     baked = [c["name"] for c in man["clips"] if c.get("baked")]
     keys = glb_keys(glb)
-    if lib.does_directory_exist(DEST):
-        lib.delete_directory(DEST)
-    skel = lib.load_asset(SHARED) if lib.does_asset_exist(SHARED) else None
+    native=man.get('workflow') in ('video2rig','direct_gait')
+    expected=native_bones(glb) if native else BONES
+    if lib.does_directory_exist(DEST) and not lib.delete_directory(DEST):
+        return [f"could not clear previous import destination {DEST}"]
+    skel = lib.load_asset(SHARED) if not native and lib.does_asset_exist(SHARED) else None
     pipe = u.InterchangeGenericAssetsPipeline()
     if skel:
         pipe.common_skeletal_meshes_and_animations_properties.skeleton = skel
@@ -79,7 +96,9 @@ def run() -> list:
     if not meshes:
         return [f"no skeletal mesh imported from {glb.name}"]
     mesh = meshes[0]
-    if not skel:  # the first creature import makes the shared skeleton
+    if native:
+        skel=mesh.skeleton
+    elif not skel:  # the first legacy creature import makes the shared skeleton
         made = assets_of(u.Skeleton)
         if not made or not lib.rename_asset(made[0].get_path_name().split(".")[0], SHARED):
             return ["could not create the shared skeleton " + SHARED]
@@ -92,19 +111,27 @@ def run() -> list:
         problems.append(f"the mesh uses {mesh.skeleton.get_path_name()}, not {SHARED}")
     pose = mesh.skeleton.get_reference_pose()
     names = [str(n) for n in u.AnimPoseExtensions.get_bone_names(pose)]
-    if names[:1] != ["root"]:
+    if not native and names[:1] != ["root"]:
         problems.append(f"top bone is {names[:1]}, not root")
-    if sorted(names) != sorted(BONES):
-        problems.append(f"bones differ from quadruped_v1: missing {sorted(set(BONES) - set(names))}, extra {sorted(set(names) - set(BONES))}")
+    if sorted(names) != sorted(expected):
+        problems.append(f"bones differ from source skeleton: missing {sorted(set(expected) - set(names))}, extra {sorted(set(names) - set(expected))}")
     elif "head" in names and "pelvis" in names:
         at = lambda b: u.AnimPoseExtensions.get_ref_bone_pose(pose, b, u.AnimPoseSpaces.WORLD).translation
         d = at("head") - at("pelvis")
         yaw = math.degrees(math.atan2(d.y, d.x))
         u.log(f"CREATURECHECK facing yaw {yaw:.1f} (head minus pelvis {d.x:.1f}, {d.y:.1f})")
         NOTES.append(f"faces yaw {yaw:.0f} degrees (+Y, 90, is Unreal's skeletal-mesh forward, as the Mannequin)")
-    for a in assets_of(u.AnimSequence):  # Interchange names them <glb stem><Clip>; the project's name is <Name>_<Clip>
+    # Interchange names multi-clip imports <glb stem><Clip>, but currently labels a
+    # single imported animation with the generic suffix "Anim". Map it only when
+    # the GLB, manifest, and import each contain exactly that one animation.
+    imported_anims=assets_of(u.AnimSequence)
+    only_clip = baked[0] if len(baked) == 1 and list(keys) == baked and len(imported_anims) == 1 else None
+    for a in imported_anims:  # Interchange names them <glb stem><Clip>; the project's name is <Name>_<Clip>
         if a.get_name().startswith(glb.stem):
-            lib.rename_asset(a.get_path_name().split(".")[0], f"{DEST}/{NAME}_{a.get_name()[len(glb.stem):].lstrip('_')}")
+            suffix=a.get_name()[len(glb.stem):].lstrip('_')
+            if suffix=='Anim' and only_clip:
+                suffix=only_clip
+            lib.rename_asset(a.get_path_name().split(".")[0], f"{DEST}/{NAME}_{suffix}")
     lib.save_directory(DEST)
     anims = {a.get_name(): a for a in assets_of(u.AnimSequence)}
     want = {f"{NAME}_{c}": c for c in baked}

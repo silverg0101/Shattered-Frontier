@@ -1,0 +1,8 @@
+{
+  "repository": "https://github.com/silverg0101/video2rig.git",
+  "upstream": "https://github.com/canitcode/video2rig.git",
+  "upstream_revision": "55d51b3b9685125a8ea27841d6af9523f6352aa1",
+  "revision": "856ab3eb126c77c07a5b51629989c59bfb776e3c",
+  "adapter_version": 1,
+  "license": "AGPL-3.0"
+}

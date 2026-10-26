@@ -1,0 +1,5 @@
+Generate one image with your image generation tool:
+
+Use `17-login.png` as the exact 16:9 background, game-logo, UI palette, panel-style and Settings/Quit reference. Change only the right panel to a taller Create Account form. Title: “Create Account”. Fields in order: “Account Name”, “Email”, “Password”, “Confirm Password”. Leave account and email fields empty; show masked password dots. Primary gold button: “Create Account”. Secondary link: “Back to Sign In”. Keep generous readable spacing, warm ivory text, dark slate and fine aged-brass frame. Do not add personal data, policies, server state, provider branding, HUD, watermark or extra controls. This is concept art only.
+
+Save it as 18-create-account.png in the current directory.

@@ -1,0 +1,41 @@
+# Local Radeon TRELLIS.2 backend
+
+Workstation runtime: Ubuntu 24.04 in WSL2; `/home/grego/sf-asset-lab/venv-current`. Active versions are PyTorch **2.14.0+rocm10.1.0**, torchvision **0.29.0a0+rocm10.1.0**, and ROCm Core SDK **10.1.0**, using the `device-gfx1100` packages from AMD's stable index. The HIP API reports `7.16.26385`; that is the underlying component version, not the ROCm product version. The 7900 XTX passed FP16 arithmetic and 10 GB allocation/write/readback checks. See the asset's `runtime-report.json` and `software-lock.json`.
+
+Version sources, checked 2026-10-18: [AMD compatibility](https://rocm.docs.amd.com/en/latest/compatibility/compatibility-matrix.html), [PyTorch installation](https://rocm.docs.amd.com/projects/ai-ecosystem/en/latest/frameworks/pytorch/install.html), [SDK installation](https://rocm.docs.amd.com/en/latest/install/rocm.html). The exact package lock records the tested state; rerun compatibility review before upgrading.
+
+`/home/grego/sf-asset-lab/sources/trellis2-amd` holds the [ATLAS ROCm port](https://github.com/ATLAS-0321/trellis2-amd) and its pinned submodules. Source revisions and compatibility patches are preserved with `GameClient/ArtSource/Voidreign/Trellis2-20261018/software-lock.json`. PyTorch 2.14 requires C++20; `build-current.sh` updates the three older setup flags and builds FlexGEMM, nvdiffrast, CuMesh and O-Voxel against the **venv SDK**, not `/opt/rocm`.
+
+An older ROCm 7.2.1 SDK remains installed under `/opt` from the initial setup. It is not the active inference/build stack. The ROCDXG 1.2.2 WSL bridge is installed and detects `AMD Radeon RX 7900 XTX`, `gfx1100`. No Windows display driver was replaced.
+
+## Run and inspect
+
+From the repository root in PowerShell, use a **new output folder**:
+
+```powershell
+wsl -d Ubuntu -- /home/grego/sf-asset-lab/venv-current/bin/python -u /mnt/c/Projects/Shattered-Frontier/tools/trellis2/run_voidreign.py --output /mnt/c/Projects/Shattered-Frontier/Artifacts/Art/Voidreign/new-run --pipeline 512
+```
+
+The runner is specific to Voidreign. It accepts `512`, `1024_cascade` or `1536_cascade` and a seed (default 42). `--steps 12..48` sets all three samplers (default 12), `--texture-size 1024|2048|4096` controls texture pixels per side, and `--decimation-target 300000|1000000` controls the requested export triangle budget. These are separate controls. The fixed token cap is 49,152; the cascade may reduce requested resolution, so `run.json` records the effective grid from the output voxel size. It loads the preserved transparent reference, uses low VRAM mode and produces raw PLY, textured GLB and a stage/timing report. An existing run report prevents overwrite. Cancellation stops the owned Python worker; no service starts automatically.
+
+`run_pixal.py` is the explicit-input Pixal3D adapter for other approved assets. Supply `--image`, `--asset-name` and a fresh `--output`; when the image is a prepared derivative, also supply `--reference-image`. It records both image hashes and accepts `--seed`, `--pipeline`, `--sampler-steps`, `--max-num-tokens`, `--texture-size`, `--decimation-target`, `--remesh-band`, and `--remesh-project`. Defaults retain the measured 12-step, 49,152-token, 2,048-pixel, 300,000-triangle export baseline. These settings must be pinned per job and are not client runtime limits. `SF_ASSET_LAB_ROOT` may select the local lab root; otherwise the verified WSL installation path is used. The adapter checks that the active backend is the verified RX 7900 XTX. Compile or inspect the runner before use; do not treat added flags as quality validation or evidence that a generated asset passed review.
+
+## Controlled comparisons
+
+`voidreign-experiments.json` defines three single-variable screening cases against the existing 1024/12-step/2048-texture/300k baseline: retain a 1M mesh, double sampling steps, or request 1536 geometry. `run_experiments.py --output <new-folder>` runs them sequentially and records failures without preventing subsequent cases. Run with the WSL inference Python shown above. Seed 42 and the reference stay fixed; evaluate matching textured and clay views, anatomy, ornament separation, reference fidelity and timing. A single seed cannot establish general superiority. A larger triangle count alone is not a quality score.
+
+`fetch_challengers.py` runs in the separate WSL `fetch-env`, recording resolved revisions, expected bytes, cache paths and per-repository completion/error status in `/home/grego/sf-asset-lab/challengers/*.json`. Default group downloads [Hunyuan3D-2.1](https://github.com/Tencent-Hunyuan/Hunyuan3D-2.1) (shape and PBR paint) and [TripoSG](https://github.com/VAST-AI-Research/TripoSG) (geometry). `--group pixal` downloads official [Pixal3D](https://github.com/TencentARC/Pixal3D) single-view checkpoints and MoGe-2 camera estimation, excluding unused multi-view weights. Existing DINOv3 weights can be reused after checking the backend's expectations. Downloading does not execute downloaded Python or establish Radeon compatibility. Backend environments and dependency adaptation remain separate from the working TRELLIS runtime.
+
+For cross-model A/B, use the same prepared reference, scale, cameras and lights. Compare untextured geometry first (TripoSG has no texture generator), then compare available textures separately. Record model revision, preprocessing, seed, each backend's suitable sampling settings, actual resolution, output budget, elapsed time and failures. Repeat promising settings with additional seeds before choosing a default.
+
+`fetch_challengers.py --group auxiliary` fetches NAF feature-upscaling weights for Pixal3D and Real-ESRGAN weights for Hunyuan painting from their upstream release URLs, recording local SHA-256 hashes without loading repository code. [Challenger runtime instructions](CHALLENGERS.md) cover the working Hunyuan3D-2.1 shape/paint, TripoSG and Pixal3D Radeon adaptations and isolated environments. [Voidreign results](../../GameClient/ArtSource/Voidreign/ModelAB-20261018/README.md) record the matched-input Blender comparison. Checked 2026-10-18: the newer [Hunyuan3D-Buffalo announcement](https://tencent-hunyuan.github.io/Hunyuan3D-Buffalo1.0/) still labels its code “Stay Tuned” and supplies no weight download; it is excluded from runnable comparisons.
+
+Focused CPU queue checks: `wsl -d Ubuntu -- /home/grego/sf-asset-lab/fetch-env/bin/python /mnt/c/Projects/Shattered-Frontier/tests/test_asset_experiments.py`. These check the specification, failure continuation and overwrite guard; generated asset quality requires the Blender review separately.
+
+`verify_challengers.py --output <new-report.json>` runs in `fetch-env` after downloads complete. It checks every selected file's size and each Hub LFS weight's SHA-256 against metadata at the pinned revision, then writes a consolidated inventory. Auxiliary files are compared with locally recorded download hashes. It does not deserialize weights or install dependencies.
+
+`sdpa_adapter.py` implements the sparse variable-length calls using PyTorch's fused ROCm SDPA. `patch_attention_scope.py` permits injection into the port's conditional imports. Dense attention uses its existing SDPA option. The adapter's focused check compares against explicit FP32 attention with unequal sequence lengths; measured maximum absolute error was 0.000872. Experimental Radeon AOTriton attention is explicitly enabled in the runner. This is a local compatibility adaptation, not an official Microsoft AMD support claim.
+
+`fetch_models.py` records weight revisions. The DINOv3 public mirror is checked against the official model's SHA-256 metadata; the weights match. The prepared RGBA input bypasses background removal, avoiding another segmentation model download. `capture_environment.py` saves source patches, input hashes and installed package versions.
+
+Use `tools/Review-GeneratedAsset.py` with Blender 5.1.1 for import, scale/orientation, source save, FBX/GLB export and four review renders. Reopen the saved source and reimport the delivered exports independently before accepting a run. Model and dependency licenses remain those supplied upstream; copies/references are recorded in provenance. Generated geometry still requires artist review, topology work and separate game integration.

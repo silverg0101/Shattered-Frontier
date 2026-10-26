@@ -405,7 +405,8 @@ def is_model(p: Path) -> bool:
 CONCEPTS = ("depth", "heroes")  # depth: the matched animal's stand-in guides Qwen; heroes: ChatGPT-drawn heroes
 
 
-CREATURE_KEYS = {"name", "prompt", "image", "animal", "clips", "fill_missing", "bake", "size_cm", "concept", "preset", "from_model"}
+CREATURE_KEYS = {"name", "prompt", "image", "source_glb", "animal", "clips", "fill_missing", "bake", "size_cm", "concept", "preset", "from_model",
+                 "workflow", "rig_backend", "creation_clips", "motion", "seed", "target_face_num", "texture_size"}
 
 
 def creature_params(b) -> dict:
@@ -414,6 +415,8 @@ def creature_params(b) -> dict:
     a = _app()
     if extra := sorted(set(b) - CREATURE_KEYS):
         raise ValueError(f"unknown field{'s' * (len(extra) > 1)} {', '.join(map(str, extra))}; a creature takes {', '.join(sorted(CREATURE_KEYS))}")
+    import creation_workflow
+    model = creation_workflow.model_options(a, b)
     for k in ("name", "prompt", "image", "animal", "preset"):
         if not isinstance(b.get(k) or "", str):
             raise ValueError(f"{k} must be a string")
@@ -422,10 +425,36 @@ def creature_params(b) -> dict:
         raise ValueError("give the creature a name (letters, digits, _ and -)")
     if len(name) > 64:
         raise ValueError("the creature's name is at most 64 characters")
-    if bool(b.get("prompt")) == bool(b.get("image")):
+    if not b.get('source_glb') and bool(b.get("prompt")) == bool(b.get("image")):
         raise ValueError("give a prompt or an image, not both")
+    if b.get('source_glb'):
+        if b.get('workflow') not in ('video2rig', 'direct_gait') or b.get('rig_backend','video2rig') != 'video2rig' or b.get('image'):
+            raise ValueError('source_glb requires video2rig/direct_gait creation with video2rig rigging, without an image')
+        creation_workflow.source_model(a, b['source_glb'])
     if b.get("image") and (a.kind_of(a.safe_path(b["image"])) != "image" or not a.safe_path(b["image"]).is_file()):
         raise ValueError(f"image is not an image in the asset library: {b['image']!r}")
+    if b.get('workflow') in ('video2rig', 'direct_gait'):
+        import creation_workflow
+        if b.get('from_model'):
+            raise ValueError('add Video animations to the saved native model instead of restarting its creation')
+        opts = creation_workflow.options(a, {**b, 'creation_clips': b.get('creation_clips') or ','.join(b.get('clips') if isinstance(b.get('clips'), list) else ['Walk'])})
+        preset = b.get('preset', a.DEFAULT_PRESET)
+        if preset not in a.PRESET_LEVELS:
+            raise ValueError('unknown quality preset')
+        size = b.get('size_cm')
+        if size is not None:
+            if isinstance(size, bool) or not isinstance(size, (str, int, float)):
+                raise ValueError('size_cm is 1–2000 cm')
+            size = float(size)
+            if not 1 <= size <= 2000:
+                raise ValueError('size_cm is 1–2000 cm')
+        return {'name': name, 'prompt': str(b.get('prompt') or ''), 'image': b.get('image') or '',
+                **({'source_glb':b['source_glb']} if b.get('source_glb') else {}),
+                'preset': preset, 'size_cm': size, **model, **opts}
+    if b.get('workflow', 'forge') != 'forge':
+        raise ValueError('workflow must be forge, video2rig or direct_gait')
+    if b.get('motion') or b.get('rig_backend', 'skintokens') != 'skintokens':
+        raise ValueError('alternate motion/rig options require workflow=video2rig')
     if b.get("animal") and b["animal"] not in {e["id"] for e in json.loads(CATALOGUE.read_text(encoding="utf-8"))}:
         raise ValueError("animal must be an id from /api/animals")
     clips = b.get("clips", "all")
@@ -463,7 +492,7 @@ def creature_params(b) -> dict:
         raise ValueError("from_model is a failed creature job's folder whose source/ keeps its SkinTokens rig")
     return {"name": name, "prompt": str(b.get("prompt") or ""), "image": b.get("image") or "", "animal": b.get("animal") or "",
             "clips": clips, "fill_missing": fill, "bake": bake, "size_cm": size,
-            "concept": concept, "preset": preset, "from_model": src}
+            "concept": concept, "preset": preset, "from_model": src, **model}
 
 
 def pick_animal(p, s):
@@ -676,7 +705,9 @@ def build_model(jid, host, p, views, seed=None) -> str:
         names[pos] = f"sfam/{jid}/{pos}.png"
     first = "concept" if "concept" in views else "front"
     a.put_input(host, f"{jid}/{first}_ref.png", a.ultratex_reference(views[first]))
-    graph = a.build_graph({"rig": "now", "preset": p["preset"], **({"seed": seed} if seed is not None else {})}, names[first],
+    import creation_workflow
+    graph = a.build_graph({"rig": "now", "preset": p["preset"], **{k: p[k] for k in creation_workflow.MODEL_KEYS if k in p},
+                           **({"seed": seed} if seed is not None else {})}, names[first],
                           f"sfam/{jid}/model", a.pixal_model(host), None if first == "concept" else names)
     ok, line = a.gpu_check(host)
     a.GPU_NOTES.setdefault(jid, []).append(line)
@@ -1052,6 +1083,9 @@ def place_model(build, out_dir, stem) -> Path:
             man["name"] = n
             for c in man["clips"]:
                 c["file"] = f"animations/{n}_{c['name']}.glb"
+                for key in ('stages', 'video'):
+                    if key in c:
+                        c[key] = c[key].replace(f'/{old}', f'/{n}', 1)
             write_manifest(build, man)
             old = n
         try:
@@ -1097,6 +1131,9 @@ def run_creature(jid, host):
     the folder is built in a temp dir and moved into <output>/Creatures/ only when it is complete."""
     a = _app()
     p, s = json.loads(a.job_row(jid)["params"]), a.get_settings()
+    if p.get('workflow') in ('video2rig', 'direct_gait'):
+        import creation_workflow
+        return creation_workflow.run(a, jid, host)
     work, _, _, _, step, _ = a.host_tools(jid, host)
     q, log = shlex.quote, []
     a.LIVE[jid] = {"metrics": None, "log": log}
@@ -1252,6 +1289,8 @@ def clip_params(name, b, folder=None, library=None) -> dict:
     src = b.get("source")
     if src not in CLIP_SOURCES:
         raise ValueError(f"source is one of {', '.join(CLIP_SOURCES)}")
+    if man.get('workflow') in ('video2rig', 'direct_gait') and src in ('library', 'text'):
+        raise ValueError('native video2rig models use Video or an animated GLB on the same rig')
     for k in ("animal", "clip", "prompt", "from_glb"):
         if not isinstance(b.get(k) or "", str):
             raise ValueError(f"{k} must be a string")
@@ -1285,7 +1324,8 @@ def clip_params(name, b, folder=None, library=None) -> dict:
             clip = (verb[:-1] if verb.endswith("s") and not verb.endswith("ss") else verb).title()
         return out | {"prompt": prompt[:500], "seeds": seeds, "clip": clip}
     if src == "video":
-        motion = a.motion_params({k: v for k, v in b.items() if k not in ("source", "clip", "model")})
+        defaults = {'reader': 'video2rig', 'solver': 'video2rig'} if man.get('workflow') in ('video2rig', 'direct_gait') else {}
+        motion = a.motion_params({**defaults, **{k: v for k, v in b.items() if k not in ("source", "clip", "model")}})
         return out | {"motion": motion, "clip": clip or safe_name(motion["action"].title()) or "Motion"}
     anims = b.get("animations")
     if not isinstance(anims, list) or not anims or any(not isinstance(x, int) or isinstance(x, bool) for x in anims):
@@ -1294,6 +1334,8 @@ def clip_params(name, b, folder=None, library=None) -> dict:
     if p.suffix.lower() != ".glb" or not p.is_file():
         raise ValueError("from_glb is a .glb file in the asset library")
     js = glb_read(p.read_bytes())[0]
+    if man.get('workflow') in ('video2rig', 'direct_gait') and not same_rig(js, glb_read((folder / f'{name}.glb').read_bytes())[0]):
+        raise ValueError('the animated GLB must use this native model’s skeleton and rest pose')
     have = [x.get("name") for x in js.get("animations", [])]
     if bad := [x for x in anims if not 0 <= x < len(have)]:
         raise ValueError(f"{b['from_glb']} has no animation {', '.join(map(str, bad))}; it has {len(have)} (0-{len(have) - 1})")
@@ -1361,10 +1403,30 @@ def run_clip_job(jid, host):
     p = json.loads(a.job_row(jid)["params"])
     work, _, _, _, step, _ = a.host_tools(jid, host)
     q, log, n = shlex.quote, [], p["model"]
+    stage_files = {}
+    stage_videos = {}
+    qa_stages={}
+    evidence=None
     a.LIVE[jid] = {"metrics": None, "log": log}
     try:
         folder = model_dir(n)
         man, rig = json.loads((folder / f"{n}.json").read_text()), folder / f"{n}.glb"
+        native=man.get('workflow') in ('video2rig', 'direct_gait')
+        if native:
+            import native_quality
+            import creation_workflow
+            if not a.anthropic_key():raise RuntimeError('native clips require the Anthropic key for quality review')
+            limits=native_quality.policy(a);qa_stages['policy']=limits
+            native_quality.check_storage(a,jid,host,limits)
+            evidence=folder/'source/review'/f'job-{jid}'
+            for script in a.MOTION_DIR.glob('*.py'):a.put_input(host,f'{jid}/{script.name}',script.read_bytes())
+            proof=man.get('stages',{}).get('rig',{})
+            if proof.get('state')!='passed' or proof.get('model_sha256')!=native_quality.output_hash(rig.read_bytes()):
+                a.put_input(host,f'{jid}/rig.glb',rig.read_bytes())
+                result,_=native_quality.inspect(a,jid,host,'rig.glb','rig',1,
+                    {'name':n,'prompt':man.get('prompt',n),'stage':'rig'},limits,evidence/'rig-1')
+                if result['verdict']!='pass':raise RuntimeError('saved native rig failed review; recreate it from its preserved source: '+result['reason'])
+                qa_stages['rig']={'state':'passed','model_sha256':result['model_sha256'],'reviews':[result]}
         made = []  # groups (base name, [(suffix, glb bytes, sheet bytes or None, manifest fields)])
         get = lambda f: a.ssh(host, f"cat {q(work + '/' + f)}", timeout=900)
         size, base = man["size_cm"], rig.read_bytes()
@@ -1377,6 +1439,12 @@ def run_clip_job(jid, host):
                 _add_animation(js, binary, src[0], src[1], c, an)
                 made.append((c, [("", glb_write(js, binary), None, {"source": "glb", "from": p["from_glb"], "animation": names[an],
                     "checks": {"passed": None, "reason": "copied as is from a GLB on the same rig and rest pose; not checked", "review": []}})]))
+                if native:
+                    a.put_input(host,f'{jid}/imported-clip.glb',made[-1][1][0][1])
+                    candidate,reviews=native_quality.existing_clip(a,jid,host,'imported-clip.glb',c,n,limits,evidence,qa_stages)
+                    checks={'passed':True,'reason':reviews[-1]['reason'],'review':reviews}
+                    made[-1]=(c,[("",a.ssh(host,f'cat {q(work+"/"+candidate)}',timeout=900),None,
+                        {'source':'glb','from':p['from_glb'],'animation':names[an],'checks':checks})])
                 log.append(f"{c}: copied from {p['from_glb']} ({names[an]})")
         else:
             groups = []  # (base name, [(suffix, retarget_clip result, manifest fields)])
@@ -1402,12 +1470,28 @@ def run_clip_job(jid, host):
                                                               "best": r["seed"] == best["seed"]}) for r in best["candidates"]])]
                 log += [f"{p['clip']} {e} (skipped)" for e in best["errors"]]
             elif p["source"] == "video":
-                takes, _ = a.motion_takes(jid, host, {**p["motion"], "model": rig.relative_to(a.ROOT).as_posix()}, rig)
-                log += [f"take {i}: score {sc:.2f}" for sc, _, i, _ in takes]
-                score, _, i, _ = max(takes)
+                if native:
+                    selected_motion=dict(p['motion'])
+                    if selected_motion.get('video_source','minimax')=='minimax' and not selected_motion.get('observations'):
+                        selected_motion['turn']=creation_workflow.filming_turn(man.get('rigging',{}).get('facing'),selected_motion.get('turn',0))
+                        qa_stages['camera']={'state':'aligned','turn':selected_motion['turn']}
+                    score,i,video,candidate,reviews=native_quality.accepted_motion(a,jid,host,
+                        {**selected_motion,'model':rig.relative_to(a.ROOT).as_posix()},rig,p['clip'],n,limits,evidence,qa_stages)
+                else:
+                    takes, _ = a.motion_takes(jid, host, {**p["motion"], "model": rig.relative_to(a.ROOT).as_posix()}, rig)
+                    log += [f"take {i}: score {sc:.2f}" for sc, _, i, _ in takes]
+                    score, _, i, video = max(takes)
+                stage_files[p['clip']] = get(f'take{i}/stages.zip')
+                stage_videos[p['clip']] = (a.ssh(host, f'cat {q(video)}', timeout=900), Path(video).suffix)
                 step(f"checking take {i}")
-                groups = [(p["clip"], [("", std_glb_clip(jid, host, "rig.glb", f"take{i}/anim.glb", p["clip"], size),
-                                        {"source": "video", "action": p["motion"]["action"], "take": i, "score": round(score, 3)})])]
+                if man.get('workflow') in ('video2rig', 'direct_gait'):
+                    result = {'glb':candidate,'sheet':None,'checks':{'passed':True,'reason':reviews[-1]['reason'],'review':reviews}}
+                else:
+                    result = std_glb_clip(jid, host, "rig.glb", f"take{i}/anim.glb", p["clip"], size)
+                groups = [(p["clip"], [("", result,
+                                        {"source": "video", "action": p["motion"]["action"], "take": i, "score": round(score, 3),
+                                         "reader": p['motion']['reader'], "solver": p['motion']['solver'],
+                                         "video_source": p['motion']['video_source']})])]
             else:  # another skeleton: labelled like a library animal (a GLB that can't be fails here), then retargeted
                 tmp = Path(tempfile.mkdtemp())
                 try:
@@ -1418,7 +1502,7 @@ def run_clip_job(jid, host):
                 finally:
                     shutil.rmtree(tmp, ignore_errors=True)
             for b, g in groups:
-                made.append((b, [(suf, get(r["glb"]), get(r["sheet"]), extra | {"checks": r["checks"]}) for suf, r, extra in g]))
+                made.append((b, [(suf, get(r["glb"]), get(r["sheet"]) if r.get('sheet') else None, extra | {"checks": r["checks"]}) for suf, r, extra in g]))
                 log += [f"{b}{suf}: {'passed' if r['checks']['passed'] else 'failed: ' + r['checks']['reason']}"
                         f"{' (best)' if extra.get('best') else ''}" for suf, r, extra in g]
         step("saving into the model folder")
@@ -1426,12 +1510,20 @@ def run_clip_job(jid, host):
         with MODEL_LOCK:
             new_dir = not anim_dir.exists()
             man = json.loads((folder / f"{n}.json").read_text())
+            if native:man.setdefault('stages',{}).update({k:v for k,v in qa_stages.items() if k in ('policy','rig','reader','solver','camera')})
             bases = clip_names([c["name"] for c in man["clips"]], [(b, [x[0] for x in g]) for b, g in made])
             try:
-                for nb, (_, g) in zip(bases, made):
+                for nb, (original_name, g) in zip(bases, made):
                     for suf, glb, sheet, fields in g:
                         c = nb + suf
-                        for data, ext in ((glb, ".glb"), (sheet, ".png")):
+                        if native and original_name in qa_stages:man['stages'][c]=qa_stages[original_name]
+                        stages = stage_files.get(original_name)
+                        if stages:
+                            fields['stages'] = f'animations/{n}_{c}_stages.zip'
+                        source_video, video_ext = stage_videos.get(original_name, (None, '.mp4'))
+                        if source_video:
+                            fields['video'] = f'animations/{n}_{c}_source{video_ext}'
+                        for data, ext in ((glb, ".glb"), (sheet, ".png"), (stages, '_stages.zip'), (source_video, '_source' + video_ext)):
                             if data is not None:
                                 f = anim_dir / f"{n}_{c}{ext}"
                                 anim_dir.mkdir(exist_ok=True)
@@ -1454,6 +1546,9 @@ def run_clip_job(jid, host):
     except InterruptedError:
         a.update_job(jid, status="cancelled", note="", finished=time.time())
     except Exception as e:
+        if evidence is not None:
+            evidence.mkdir(parents=True,exist_ok=True)
+            (evidence/'job.json').write_text(json.dumps({'status':'failed','error':str(e)[-1000:],'stages':qa_stages},indent=2))
         a.update_job(jid, status="failed", error=str(e)[-1000:], note="", finished=time.time())
     finally:
         live = a.LIVE.pop(jid, {}).get("log") or []  # run_prompt's polling (video) replaces it with the host log

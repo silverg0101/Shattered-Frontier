@@ -8,6 +8,10 @@ import array, base64, glob, hashlib, io, ipaddress, json, math, mimetypes, os, r
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 import creature
+import motion_backend
+import creation_workflow
+import native_status as native_status_reader
+from motion import native_policy
 
 ROOT = Path(os.environ.get("ASSET_ROOT", "./data/assets")).resolve()
 DATA = Path(os.environ.get("DATA_DIR", "./data")).resolve()
@@ -52,6 +56,7 @@ DEFAULT_SETTINGS = {
     "creature_depth_strength": 0.55,
     "creature_depth_end": 0.7,
     "creature_depth_front_strength": 0.75,
+    **native_policy.DEFAULTS,
 }
 # key: (unit, type, min, max). detector_limits are the exam's "good" bar in % of the model's height, each 0.5-20;
 # "usable" is within detector_usable_x times them; auto-train trains a detector when a model is rigged.
@@ -446,6 +451,10 @@ def apply_params(g, params):
 
 def coerce(key, kind, extra, v):
     """An option value checked against its schema row: numbers clamped, choices must be listed."""
+    if kind == "text":
+        if not isinstance(v, str) or len(v) > extra['max_length']:
+            raise ValueError(f'{key} must be text up to {extra["max_length"]} characters')
+        return v.strip()
     if kind == "bool":
         return bool(v)
     if kind in ("int", "float"):
@@ -461,8 +470,11 @@ def coerce(key, kind, extra, v):
 # front and side combine into 3D (both measure height, so their agreement scores the take), and Blender
 # bakes the result onto the skeleton.
 MOTION_DIR = Path(__file__).with_name("motion")
-ACTIONS = {"walk": "walks slowly on the spot, as if on a treadmill, in a steady looping walk cycle"}
-LOOPING = {"walk"}  # actions cut to their best loop: the video opens on the rest pose, then sets off
+ACTIONS = {"walk": "walks slowly on the spot, as if on a treadmill, in a steady looping walk cycle",
+           "run": "runs on the spot in a steady running cycle", "idle": "idles in a relaxed standing pose",
+           "attack": "performs one attack", "roar": "roars once", "death": "collapses to the ground",
+           "custom": "performs the described movement"}
+LOOPING = {"walk", "run", "idle"}
 MOTION_PROMPT = (
     "Split-screen video of the character in <Picture 1> in a plain grey studio, filmed by two fixed orthographic "
     "cameras: the left panel shows it from the front, the right panel shows its left side. Both panels show the "
@@ -479,7 +491,7 @@ H3_SIZE = (1344, 768)  # H3's 16:9 canvas; the first frame is stretched to it, n
 H3_FPS = 24
 
 # (key, label, kind, extra, default)
-MOTION_PARAMS = (
+MOTION_PARAMS = motion_backend.OPTIONS + (
     ("action", "Action", "choice", {"options": list(ACTIONS)}, "walk"),
     ("turbo", "Turbo LoRA (fewer steps, may smear fast motion)", "bool", {}, True),
     ("steps", "Steps (0 = 8 with turbo, 20 without)", "int", {"min": 0, "max": 60}, 0),
@@ -498,6 +510,18 @@ def motion_params(params):
     out = {k: coerce(k, kind, extra, params.get(k, d)) for k, _, kind, extra, d in MOTION_PARAMS}
     out["model"] = params.get("model", "")
     out["prompt"] = str(params.get("prompt") or MOTION_PROMPT.format(action=ACTIONS[out["action"]]))[:2000]
+    if out['video_source'] == 'library':
+        video = safe_path(out['video'])
+        if not out['video'] or not video.is_file() or video.suffix.lower() not in VIDEO_EXT:
+            raise ValueError('choose a saved video in the asset library')
+        if out['takes'] != 1:
+            out['takes'] = 1  # one saved clip, never duplicates counted as independent takes
+    elif out['video']:
+        raise ValueError('saved video requires video_source=library')
+    if out['observations']:
+        archive = safe_path(out['observations'])
+        if out['video_source'] != 'library' or archive.suffix.lower() != '.zip' or not archive.is_file():
+            raise ValueError('saved readings require a stage ZIP and its matching saved video')
     return out
 
 def motion_graph(p, image, prefix):
@@ -574,8 +598,10 @@ def save_settings(s):
     for k in ("output_folder", "input_folder"):
         if k in s:
             safe_path(s[k])
-    for k, (_, typ, lo, hi) in {**DETECTOR_SETTINGS, **CREATURE_SETTINGS}.items():  # clamped to their bounds, like job options
+    for k, (_, typ, lo, hi) in {**DETECTOR_SETTINGS, **CREATURE_SETTINGS, **native_policy.SETTINGS}.items():  # applied to the next job
         if k in s:
+            if k in native_policy.SETTINGS and (isinstance(s[k],bool) or not math.isfinite(float(s[k]))):
+                raise ValueError(f'{k} must be a finite number')
             s[k] = min(max(typ(s[k]), lo), hi)
     if "detector_limits" in s:
         s["detector_limits"] = {k: min(max(float(s["detector_limits"].get(k, v)), LIMIT_RANGE[0]), LIMIT_RANGE[1])
@@ -879,23 +905,30 @@ def add_glb_normals(path: Path) -> bool:
 LIVE = {}  # job id -> {"metrics": {...}, "log": [...]} while running
 CPU_PREV = {}
 
-def poll_metrics(host, jid, since):
+def poll_metrics(host, jid, since, include_logs=True, timeout=20):
     if host.get("kind") == "http":  # ComfyUI reports RAM/VRAM and its log, not CPU/GPU load
-        st = comfy(host, "/system_stats", timeout=20)
+        st = comfy(host, "/system_stats", timeout=timeout)
         ram_t, ram_f = st["system"]["ram_total"], st["system"]["ram_free"]
         dev = st["devices"][0]
         v_t, v_f = dev["vram_total"], dev["vram_free"]
-        logs = comfy(host, "/internal/logs/raw", timeout=20).get("entries", [])
-        lines = [re.sub(r"\x1b\[[0-9;]*m", "", ln.split("\r")[-1]).rstrip() for e in logs for ln in e.get("m", "").splitlines()]
-        LIVE[jid] = {"metrics": {"cpu": None, "gpu": None, "ram": round(100 * (ram_t - ram_f) / ram_t),
-                                 "ram_gb": [round((ram_t - ram_f) / 2**30, 1), round(ram_t / 2**30, 1)],
-                                 "vram": round(100 * (v_t - v_f) / v_t), "vram_gb": [round((v_t - v_f) / 2**30, 1), round(v_t / 2**30, 1)]},
-                     "log": [ln for ln in lines if ln][-200:]}
+        live = LIVE.get(jid) or {}
+        live.setdefault("log", [])
+        metrics = {"cpu": None, "gpu": None, "ram": round(100 * (ram_t - ram_f) / ram_t),
+                   "ram_gb": [round((ram_t - ram_f) / 2**30, 1), round(ram_t / 2**30, 1)],
+                   "vram": round(100 * (v_t - v_f) / v_t), "vram_gb": [round((v_t - v_f) / 2**30, 1), round(v_t / 2**30, 1)],
+                   "sampled_at": time.time()}
+        if include_logs:
+            logs = comfy(host, "/internal/logs/raw", timeout=timeout).get("entries", [])
+            lines = [re.sub(r"\x1b\[[0-9;]*m", "", ln.split("\r")[-1]).rstrip() for e in logs for ln in e.get("m", "").splitlines()]
+            live["log"] = [ln for ln in lines if ln][-200:]
+        LIVE[jid] = {**live, "metrics": metrics}
         return
     cmd = (f"nvidia-smi -i {int(host['gpu'])} --query-gpu=utilization.gpu,memory.used,memory.total --format=csv,noheader,nounits;"
-           " echo @@; free -m | awk '/Mem:/{print $2, $3}'; echo @@; head -1 /proc/stat; echo @@;"
-           f" journalctl --user -u {shlex.quote(host['unit'])} -o cat --no-pager -n 200 --since @{int(since)}")
-    gpu, mem, cpu, log = ssh(host, cmd, timeout=20).decode(errors="replace").split("@@\n", 3)
+           " echo @@; free -m | awk '/Mem:/{print $2, $3}'; echo @@; head -1 /proc/stat")
+    if include_logs:
+        cmd += f"; echo @@; journalctl --user -u {shlex.quote(host['unit'])} -o cat --no-pager -n 200 --since @{int(since)}"
+    parts = ssh(host, cmd, timeout=timeout).decode(errors="replace").split("@@\n", 3)
+    gpu, mem, cpu = parts[:3]
     g_util, v_used, v_total = (float(x) for x in gpu.split(","))
     m_total, m_used = (float(x) for x in mem.split())
     ticks = [int(x) for x in cpu.split()[1:]]
@@ -903,10 +936,15 @@ def poll_metrics(host, jid, since):
     p_idle, p_total = CPU_PREV.get(host["name"], (idle, total))
     CPU_PREV[host["name"]] = (idle, total)
     cpu_pct = 100 * (1 - (idle - p_idle) / (total - p_total)) if total > p_total else 0
-    lines = [re.sub(r"\x1b\[[0-9;]*m", "", ln.split("\r")[-1]).rstrip() for ln in log.splitlines()]
-    LIVE[jid] = {"metrics": {"cpu": round(cpu_pct), "ram": round(100 * m_used / m_total), "ram_gb": [round(m_used / 1024, 1), round(m_total / 1024, 1)],
-                             "gpu": round(g_util), "vram": round(100 * v_used / v_total), "vram_gb": [round(v_used / 1024, 1), round(v_total / 1024, 1)]},
-                 "log": [ln for ln in lines if ln][-200:]}
+    live = LIVE.get(jid) or {}
+    live.setdefault("log", [])
+    metrics = {"cpu": round(cpu_pct), "ram": round(100 * m_used / m_total), "ram_gb": [round(m_used / 1024, 1), round(m_total / 1024, 1)],
+               "gpu": round(g_util), "vram": round(100 * v_used / v_total), "vram_gb": [round(v_used / 1024, 1), round(v_total / 1024, 1)],
+               "sampled_at": time.time()}
+    if include_logs:
+        lines = [re.sub(r"\x1b\[[0-9;]*m", "", ln.split("\r")[-1]).rstrip() for ln in parts[3].splitlines()]
+        live["log"] = [ln for ln in lines if ln][-200:]
+    LIVE[jid] = {**live, "metrics": metrics}
 
 def run_prompt(host, jid, graph, started, timeout_min, extra_data=None):
     """Queue a graph on the host and wait for it; returns its history entry. Honours cancel and the timeout."""
@@ -1247,10 +1285,74 @@ def run_blender(jid, host, script, args, inputs, outputs, timeout):
     ssh(host, f"tar -C {q(work)} -xf -", data=back, timeout=900)
     return out
 
-def ssh_step(host, jid, work, cmd, timeout):
+_PROGRESS_LOG_SCRIPT = r'''import json, pathlib, sys
+root = pathlib.Path(sys.argv[1]).resolve()
+paths = json.loads(sys.argv[2])
+out = {}
+for label, rel in paths.items():
+    path = (root / rel).resolve()
+    if path != root and root not in path.parents:
+        continue
+    try:
+        with path.open("rb") as stream:
+            stream.seek(0, 2)
+            stream.seek(max(0, stream.tell() - 8192))
+            data = stream.read(8192).decode(errors="replace")
+    except OSError:
+        continue
+    lines = [line for line in data.replace("\r\n", "\n").replace("\r", "\n").splitlines() if line.strip()][-8:]
+    if lines:
+        out[label] = lines
+print(json.dumps(out, ensure_ascii=False))
+'''
+
+
+def _progress_log_command(work, progress_logs):
+    """Read a few bounded, job-relative progress logs from the SSH host."""
+    return (f'python3 -c {shlex.quote(_PROGRESS_LOG_SCRIPT)} {shlex.quote(str(work))} '
+            f'{shlex.quote(json.dumps(progress_logs))}')
+
+
+def _publish_progress_logs(jid, snapshots, previous):
+    """Append only newly observed lines and keep the live job log bounded."""
+    added = []
+    for label, lines in snapshots.items():
+        if not isinstance(lines, list):
+            continue
+        lines = [str(line) for line in lines[-8:]]
+        old = previous.get(label, [])
+        overlap = max((n for n in range(1, min(len(old), len(lines)) + 1)
+                       if old[-n:] == lines[:n]), default=0)
+        if old == lines:
+            overlap = len(lines)
+        added.extend(f'[{label}] {line}' for line in lines[overlap:])
+        previous[label] = lines
+    if added:
+        live = LIVE.get(jid) or {}
+        log = list(live.get('log') or [])
+        LIVE[jid] = {**live, 'metrics': live.get('metrics'), 'log': (log + added)[-100:]}
+
+
+def ssh_step(host, jid, work, cmd, timeout, progress_logs=None):
     """ssh() for a long step (detector training, its exam) that a cancel stops at once: the command runs in its
-    own process group on the host, and a cancel kills the group rather than waiting hours for it to end."""
+    own process group on the host, and a cancel kills the group rather than waiting hours for it to end. Optional
+    job-relative progress_logs are polled best-effort and never affect the command."""
     pid, out = shlex.quote(f"{work}/.step.pid"), {}
+    previous, next_live_poll = {}, time.monotonic() + 15
+
+    def poll_live_metrics():
+        try:
+            poll_metrics(host, jid, time.time(), include_logs=False, timeout=5)
+        except Exception:
+            pass  # metrics are observational; SSH/device errors never change the real step
+
+    def poll_progress_logs():
+        try:
+            raw = ssh(host, _progress_log_command(work, progress_logs), timeout=5)
+            _publish_progress_logs(jid, json.loads(raw.decode(errors='replace')), previous)
+        except Exception:
+            pass  # progress is observational; SSH/log problems never change the real step
+
     def go():
         try:
             out["ok"] = ssh(host, f"setsid bash -c {shlex.quote(cmd)} & echo $! > {pid}; wait $!", timeout=timeout)
@@ -1264,6 +1366,14 @@ def ssh_step(host, jid, work, cmd, timeout):
             ssh(host, f"kill -TERM -- -$(cat {pid}) 2>/dev/null || true")
             t.join(30)
             raise InterruptedError
+        if t.is_alive() and time.monotonic() >= next_live_poll:
+            poll_live_metrics()
+            if progress_logs:
+                poll_progress_logs()
+            next_live_poll = time.monotonic() + 15
+    poll_live_metrics()
+    if progress_logs:
+        poll_progress_logs()
     if "err" in out:
         raise out["err"]
     return out["ok"]
@@ -1398,31 +1508,62 @@ def motion_takes(jid, host, p, src):
     step("rendering the front and side views")
     device_lines(run_blender(jid, host, "render_views.py", [model, ".", "--turn", str(p["turn"])], [model],
                              ["views.png", "joints.json"], 900), "render")
-    ok, line = gpu_check(host)  # the video runs in the host's ComfyUI: make sure it sits on this host's GPU
-    GPU_NOTES[jid].append(line)
-    if not ok:
-        raise RuntimeError(line)
-    steps = p["steps"] or (8 if p["turbo"] else 20)
-    step(f"generating {p['takes']} take(s) with MiniMax H3 ({'turbo, ' if p['turbo'] else ''}{steps} steps)")
-    h = run_prompt(host, jid, motion_graph(p, f"sfam/{jid}/views.png", f"sfam/{jid}/take"), started, s["job_timeout_min"])
-    videos = sorted(f"{v.get('subfolder', '')}/{v['filename']}".strip("/")
-                    for out in h.get("outputs", {}).values() for v in out.get("images", []) if v.get("type") == "output")
+    if p['video_source'] == 'library':
+        step('reusing the saved video for a stage comparison')
+        ext = safe_path(p['video']).suffix.lower()
+        put_input(host, f'{jid}/input{ext}', safe_path(p['video']).read_bytes())
+        videos = [f'{work}/input{ext}']
+    else:
+        ok, line = gpu_check(host)
+        GPU_NOTES[jid].append(line)
+        if not ok:
+            raise RuntimeError(line)
+        steps = p["steps"] or (8 if p["turbo"] else 20)
+        step(f"generating {p['takes']} take(s) with MiniMax H3 ({'turbo, ' if p['turbo'] else ''}{steps} steps)")
+        h = run_prompt(host, jid, motion_graph(p, f"sfam/{jid}/views.png", f"sfam/{jid}/take"), started, s["job_timeout_min"])
+        videos = sorted(f"{host['comfy_dir']}/output/" + f"{v.get('subfolder', '')}/{v['filename']}".strip("/")
+                        for out in h.get("outputs", {}).values() for v in out.get("images", []) if v.get("type") == "output")
     if not videos:
         raise RuntimeError("the video model returned no videos")
     step("unloading MiniMax H3")
     GPU_NOTES[jid].append(f"[asset-manager] {host['name']}: {release_vram(host)}")
-    det, state = ensure_detector(host, jid, src, model, p["turn"], p["retrain"])
+    det, state = (ensure_detector(host, jid, src, model, p["turn"], p["retrain"])
+                  if p['reader'] == 'forge' and not p['observations'] else (None, {'state': 'none', 'backend': p['reader']}))
+    needs_fork = p['solver'] == 'video2rig' or p['reader'] == 'video2rig' and not p['observations']
+    native = motion_backend.prepare(sys.modules[__name__], jid, host, p, model) if needs_fork else None
+    put_input(host, f'{jid}/motion-options.json', json.dumps(p).encode())
+    if p['observations']:
+        put_input(host, f'{jid}/saved-stages.zip', safe_path(p['observations']).read_bytes())
     update_job(jid, detector=json.dumps(state))
     takes = []
     for i, v in enumerate(videos, 1):
         step(f"tracking and baking take {i} of {len(videos)}")
-        d, video = f"take{i}", f"{host['comfy_dir']}/output/{v}"
+        d, video = f"take{i}", v
+        project = motion_backend.take_project(sys.modules[__name__], jid, host, native, d) if native else None
+        if p['observations']:
+            ssh_step(host, jid, work, f'cd {q(work)} && {py} stage_bundle.py . {d} {q(video)} {q(model)} motion-options.json --replay saved-stages.zip', 300)
+        elif p['reader'] == 'video2rig':
+            cmd = motion_backend.command(native, 'read', project, video, f'{work}/{d}/input-observations.npz',
+                                         f'--tta {p["reader_tta"]}', gpu=gpu)
+            device_lines(ssh_step(host, jid, work, cmd, 1800), f'take {i} video2rig reader')
         device_lines(ssh(host, f"cd {q(work)} && {gpu} {py} track_solve.py {q(video)} joints.json {d}"
                                f"{' --detector ' + q(det) if det else ''}"
+                               f"{' --observations ' + q(d + '/input-observations.npz') if p['reader'] == 'video2rig' or p['observations'] else ''}"
                                f"{' --loop' if p['action'] in LOOPING else ''}",
                          timeout=1800), f"take {i} tracking")
-        device_lines(run_blender(jid, host, "bake.py", [model, "joints.json", f"{d}/motion.json", f"{d}/anim.glb"],
-                                 [model, "joints.json", f"{d}/motion.json"], [f"{d}/anim.glb"], 900), f"take {i} bake")
+        if p['solver'] == 'video2rig':
+            cmd = motion_backend.command(native, 'fit', project, video, f'{work}/{d}/fit.npz',
+                f'--observations {q(work + "/" + d + "/observations.npz")}' + (' --native' if p['reader'] == 'video2rig' else ''), gpu=gpu)
+            ssh_step(host, jid, work, cmd, 1800)
+            ssh_step(host, jid, work, f'cd {q(work)} && {gpu} {blender} -b -P {q(native["repo"] + "/blender/forge_import.py")} -- '
+                     f'{q(project)} {q(d + "/fit.npz")} joints.json {q(d + "/anim.glb")} > {q(d + "/import.log")} 2>&1 '
+                     f'|| {{ tail -20 {q(d + "/import.log")} >&2; exit 1; }}', 900)
+        else:
+            device_lines(run_blender(jid, host, "bake.py", [model, "joints.json", f"{d}/motion.json", f"{d}/anim.glb"],
+                                     [model, "joints.json", f"{d}/motion.json"], [f"{d}/anim.glb"], 900), f"take {i} bake")
+        ssh_step(host, jid, work, f'cd {q(work)} && {py} stage_bundle.py . {d} {q(video)} {q(model)} motion-options.json'
+                 + (' --fork v2r-lock.json' if native else '')
+                 + (f' --reader-weights {q(det + "/weights.pt")}' if det else ''), 300)
         m = json.loads(ssh(host, f"{py} -c \"import json; m=json.load(open('{work}/{d}/motion.json')); m.pop('positions'); print(json.dumps(m))\""))
         takes.append((m["score"], m["height_error_pct"], i, video))
     return takes, state
@@ -1444,17 +1585,19 @@ def run_motion(jid, host):
         saved = []
         for score, err, i, video in sorted(takes, reverse=True):  # best take first
             stem = f"{safe_name}_{p['action']}_take{i}"
-            for remote, ext in ((f"{work}/take{i}/anim.glb", ".glb"), (video, ".mp4"), (f"{work}/take{i}/overlay.mp4", "_overlay.mp4")):
+            for remote, ext in ((f"{work}/take{i}/anim.glb", ".glb"), (video, Path(video).suffix), (f"{work}/take{i}/overlay.mp4", "_overlay.mp4"),
+                                (f'{work}/take{i}/stages.zip', '_stages.zip')):
                 dest = unique(out_dir / f"{stem}{ext}")
                 dest.write_bytes(ssh(host, f"cat {q(remote)}", timeout=900))
                 saved.append(dest.relative_to(ROOT).as_posix())
             (out_dir / ".thumbs").mkdir(exist_ok=True)
-            (out_dir / ".thumbs" / f"{Path(saved[-3]).stem}.png").write_bytes(views)  # thumbnail for the animated model
+            (out_dir / ".thumbs" / f"{Path(saved[-4]).stem}.png").write_bytes(views)
             log.append(f"take {i}: score {score:.2f}, front/side height disagreement {err:.1f}% of model height")
         lib = detector_dir(src, p["turn"])
         best = max(takes)  # the model card shows real-video quality beside the exam
-        (lib / "last_take.json").write_text(json.dumps({"score": best[0], "height_error_pct": best[1], "job": jid,
-                                                         "when": time.time()}))
+        if p['reader'] == 'forge' and not p['observations']:
+            (lib / "last_take.json").write_text(json.dumps({"score": best[0], "height_error_pct": best[1], "job": jid,
+                                                           "when": time.time()}))
         if state["state"] == "failed" and (lib / "exam_overlay.mp4").exists():  # show why without opening the host
             dest = unique(out_dir / f"{safe_name}_detector_exam_overlay.mp4")
             shutil.copyfile(lib / "exam_overlay.mp4", dest)
@@ -1475,6 +1618,9 @@ def run_motion(jid, host):
 def run_job(jid, host):
     job = job_row(jid)
     params = json.loads(job["params"])
+    if params.get('workflow') in ('video2rig', 'direct_gait'):
+        return creation_workflow.run(sys.modules[__name__], jid, host)
+    params = creation_workflow.graph_params(params)
     s = get_settings()
     remote_in, remote_out = [], []
     started = time.time()
@@ -1577,7 +1723,9 @@ def worker():
                     continue
                 # Motion and detector jobs run Blender and the tracker over SSH; they need no Trellis2 nodes.
                 over_ssh = kind in ("motion", "detector", "curate", "clip")
-                fits = ((lambda h, st: h.get("kind") == "ssh") if over_ssh else (lambda h, st: st["qwen_depth"]) if depth else (lambda h, st: st["mvadapter"]) if multi
+                native_creation = kind in ('3d', 'creature') and jp.get('workflow') in ('video2rig', 'direct_gait')
+                fits = ((lambda h, st: st['trellis'] and h.get('kind') == 'ssh') if native_creation
+                        else (lambda h, st: h.get("kind") == "ssh") if over_ssh else (lambda h, st: st["qwen_depth"]) if depth else (lambda h, st: st["mvadapter"]) if multi
                         else (lambda h, st: st["trellis"] and h.get("kind") == "ssh") if kind == "creature"  # 3D, then Blender
                         else (lambda h, st: st["trellis"]))
                 host = next((h for h in free if (st := host_status(h))["ok"] and not st["busy"] and fits(h, st)), None)
@@ -2403,13 +2551,17 @@ class Handler(BaseHTTPRequestHandler):
             if method == "GET" and p == "/api/animals/match":
                 return self.send({"candidates": creature.match(q.get("q", ""), creature.load_catalogue(DATA / "MotionLibrary"))})
             if method == "GET" and p == "/api/schema":
-                return self.send({"3d": param_schema(), "presets": PRESET_LEVELS, "default_preset": DEFAULT_PRESET,
+                return self.send({"3d": param_schema(), "creation": [
+                    {"key": k, "label": label, "kind": kind, "default": d, **extra} for k, label, kind, extra, d in creation_workflow.OPTIONS],
+                    "presets": PRESET_LEVELS, "default_preset": DEFAULT_PRESET,
                     "types": ASSET_TYPES, "categories": ITEM_CATEGORIES, "image": {"modes": IMAGE_MODES, "models": IMAGE_MODELS,
                     "views": IMAGE_VIEWS, "slots": DEPTH_SLOTS, "depth_generator": "Depth-guided (ComfyUI Qwen)"}, "motion": [
                     {"key": k, "label": lbl, "section": "Motion", "kind": kind, "default": d, **extra}
                     for k, lbl, kind, extra, d in MOTION_PARAMS], "detector": [
                     {"key": k, "label": lbl, "section": "Detector", "kind": kind, "default": d, **extra}
                     for k, lbl, kind, extra, d in DETECTOR_PARAMS],
+                    "native_review_settings": [{"key": k, "label": u, "min": lo, "max": hi, "default": native_policy.DEFAULTS[k],
+                        "step": 1 if typ is int else .1} for k, (u, typ, lo, hi) in native_policy.SETTINGS.items()],
                     "detector_settings": {k: {"unit": u, "min": lo, "max": hi} for k, (u, _, lo, hi) in DETECTOR_SETTINGS.items()}
                     | {"detector_limits": {"unit": "% of model height", "min": LIMIT_RANGE[0], "max": LIMIT_RANGE[1]}}})
             if method == "GET" and p == "/api/detector":  # one model's joint detector, for the Forge and agents
@@ -2417,6 +2569,8 @@ class Handler(BaseHTTPRequestHandler):
                 if not src.is_file():
                     raise FileNotFoundError(q.get("model", ""))
                 return self.send(detector_state(src, int(q.get("turn", 0))))
+            if method == "GET" and p == "/api/native-status":
+                return self.send(native_status_reader.native_status(ROOT, q.get("model", "")))
             if p.startswith("/api/codex"):  # ChatGPT sign-in for image jobs; tokens never leave the server
                 b = self.body() if method == "POST" else {}
                 if method == "POST" and p == "/api/codex/start":
@@ -2506,8 +2660,11 @@ class Handler(BaseHTTPRequestHandler):
                 if kind in ("3d", "image"):  # type and category may sit beside kind or inside params
                     params.update({k: b[k] for k in ("type", "category") if k in b})
                 if kind == "3d":
-                    views = job_views(params)
-                    build_graph(params, "x", "x", "x", views if "views" in params else None)  # validate now, not on the host
+                    creation = creation_workflow.options(sys.modules[__name__], params)
+                    graph_options = creation_workflow.graph_params(params)
+                    views = job_views(graph_options)
+                    build_graph(graph_options, "x", "x", "x", views if "views" in graph_options else None)
+                    params = {**graph_options, **creation}
                     src = views["front"]
                 elif kind in ("motion", "detector"):
                     if Path(params.get("model", "")).suffix.lower() not in (".glb", ".fbx") or not safe_path(params["model"]).is_file():
