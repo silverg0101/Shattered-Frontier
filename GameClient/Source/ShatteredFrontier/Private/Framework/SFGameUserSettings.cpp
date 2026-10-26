@@ -3,6 +3,53 @@
 #include "HAL/IConsoleManager.h"
 #include "Scalability.h"
 
+FSFPlayerControlOptions FSFPlayerControlOptions::Clamped() const
+{
+    FSFPlayerControlOptions Out = *this;
+    Out.MouseHorizontalPercent = FMath::Clamp(MouseHorizontalPercent, MinMousePercent, MaxMousePercent);
+    Out.MouseVerticalPercent = FMath::Clamp(MouseVerticalPercent, MinMousePercent, MaxMousePercent);
+    if (Shoulder != ESFCombatShoulderSide::Right && Shoulder != ESFCombatShoulderSide::Left)
+        Out.Shoulder = ESFCombatShoulderSide::Right;
+    return Out;
+}
+
+bool FSFPlayerControlOptions::operator==(const FSFPlayerControlOptions& Other) const
+{
+    return MouseHorizontalPercent == Other.MouseHorizontalPercent && MouseVerticalPercent == Other.MouseVerticalPercent &&
+        bInvertMouseY == Other.bInvertMouseY && bCombatFraming == Other.bCombatFraming &&
+        bCombatDepthOfField == Other.bCombatDepthOfField && Shoulder == Other.Shoulder;
+}
+
+FVector2D FSFPlayerControlOptions::MouseDegreesPerCount(float ReleaseDegreesPerCount) const
+{
+    const auto Safe = Clamped();
+    return FVector2D(ReleaseDegreesPerCount * Safe.MouseHorizontalPercent / 100.0,
+        ReleaseDegreesPerCount * Safe.MouseVerticalPercent / 100.0 * (Safe.bInvertMouseY ? -1.0 : 1.0));
+}
+
+FSFPlayerControlOptions USFGameUserSettings::CaptureControls() const
+{
+    FSFPlayerControlOptions Out;
+    Out.MouseHorizontalPercent = MouseHorizontalPercent; Out.MouseVerticalPercent = MouseVerticalPercent;
+    Out.bInvertMouseY = bInvertMouseY; Out.bCombatFraming = bCombatFraming;
+    Out.bCombatDepthOfField = bCombatDepthOfField; Out.Shoulder = CombatShoulderSide;
+    return Out.Clamped();
+}
+
+void USFGameUserSettings::StoreControls(const FSFPlayerControlOptions& Options)
+{
+    const auto Safe = Options.Clamped();
+    MouseHorizontalPercent = Safe.MouseHorizontalPercent; MouseVerticalPercent = Safe.MouseVerticalPercent;
+    bInvertMouseY = Safe.bInvertMouseY; bCombatFraming = Safe.bCombatFraming;
+    bCombatDepthOfField = Safe.bCombatDepthOfField; CombatShoulderSide = Safe.Shoulder;
+}
+
+void USFGameUserSettings::ApplyControls(const FSFPlayerControlOptions& Options)
+{
+    StoreControls(Options);
+    SaveSettings();
+}
+
 FSFGraphicsOptions USFGameUserSettings::CaptureGraphics() const
 {
     FSFGraphicsOptions Out;

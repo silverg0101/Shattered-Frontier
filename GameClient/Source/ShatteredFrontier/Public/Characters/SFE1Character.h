@@ -152,6 +152,7 @@ public:
     AActor* SpawnPosedMetaHuman(USceneComponent* Parent, const FTransform& Relative) const;
 
 private:
+    friend class FSFCombatViewpointAimTest;
     friend class USFQuestPilotComponent;  // dev scenario driver swings through the same PilotAttack as the key
     void SpawnMetaHuman();
     UPROPERTY(ReplicatedUsing=OnRep_FaceId) FName FaceId = TEXT("Orlando");

@@ -1954,9 +1954,16 @@ void ASFE1Character::TickCameraControls(float Dt)
     if (bClickMouseLook) { Interact(); }
 
     // Camera rotation: mouse while dragging, right stick always (mouselook semantics).
+    const USFGameUserSettings* Preferences = GEngine ? Cast<USFGameUserSettings>(GEngine->GetGameUserSettings()) : nullptr;
     const FVector2D Stick = Value(IA_LookStick).Get<FVector2D>();
     FVector2D LookDelta = Stick * S->GamepadLookDegreesPerSecond * Dt;
-    if (bDragging) { LookDelta += Value(IA_Look).Get<FVector2D>() * S->MouseLookDegreesPerCount; }
+    if (bDragging)
+    {
+        // Mouse2D is counts accumulated this frame; unlike the stick/keyboard it must not be multiplied by Dt.
+        const FVector2D Gain = (Preferences ? Preferences->CaptureControls() : FSFPlayerControlOptions()).MouseDegreesPerCount(S->MouseLookDegreesPerCount);
+        const FVector2D Counts = Value(IA_Look).Get<FVector2D>();
+        LookDelta += FVector2D(Counts.X * Gain.X, Counts.Y * Gain.Y);
+    }
     CameraRotation.Yaw += LookDelta.X;
     CameraRotation.Pitch = FMath::Clamp(CameraRotation.Pitch + LookDelta.Y * (S->bInvertLookY ? -1.0f : 1.0f), S->CameraPitchMinDegrees, S->CameraPitchMaxDegrees);
     const bool bMouseLook = MouseLookButton.bDragging || !Stick.IsNearlyZero(0.05f);
@@ -2018,7 +2025,6 @@ void ASFE1Character::TickCameraControls(float Dt)
     CameraBoom->bEnableCameraLag = S->CameraLagSpeed > 0.0f && !bFirstPerson;
 
     // CTL-02: all camera changes are local. The owner-only CombatTarget is also the selected Tab target.
-    const USFGameUserSettings* Preferences = GEngine ? Cast<USFGameUserSettings>(GEngine->GetGameUserSettings()) : nullptr;
     AActor* FrameTarget = IsValid(DialogueFramingTarget.Get()) ? DialogueFramingTarget.Get() : CombatTarget.Get();
     if (!IsValid(FrameTarget) || FrameTarget->IsActorBeingDestroyed() || FrameTarget->GetWorld() != GetWorld()) { FrameTarget = nullptr; }
     const bool bWanted = SFCombatFramingLogic::ShouldEngage(bFramingEngaged, FrameTarget != nullptr,
@@ -2074,7 +2080,7 @@ void ASFE1Character::TickCameraControls(float Dt)
     else if (FrameTarget && bWanted && !bOccluded && !bSteering
         && Now - LastFramingSteerAt >= S->CombatFramingSteerHoldSeconds)
     {
-        const FRotator ToTarget = (FrameTarget->GetActorLocation() - CameraBoom->GetComponentLocation()).Rotation();
+        const FRotator ToTarget = SFCombatFramingLogic::TargetAim(FollowCamera->GetComponentLocation(), FrameTarget->GetActorLocation());
         CameraRotation.Yaw = SFCombatFramingLogic::AssistAxis(CameraRotation.Yaw, ToTarget.Yaw,
             S->CombatFramingDeadzoneDegrees, S->CombatFramingYawSpeed, CombatFramingBlend, Dt);
         const float DesiredPitch = FMath::Clamp(FRotator::NormalizeAxis(ToTarget.Pitch) + S->CombatPitchBiasDegrees,

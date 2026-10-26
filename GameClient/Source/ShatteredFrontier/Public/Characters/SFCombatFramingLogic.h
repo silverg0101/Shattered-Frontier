@@ -5,6 +5,11 @@
 // Pure CTL-02 transitions. The release settings supply the durations and zoom threshold.
 namespace SFCombatFramingLogic
 {
+    // The rendered viewpoint includes arm length, shoulder offset and collision retraction. Aiming from the
+    // high arm pivot instead makes nearby ground-level targets pull the view sharply into the ground.
+    inline FRotator TargetAim(const FVector& CameraLocation, const FVector& TargetCentre)
+    { return (TargetCentre - CameraLocation).Rotation(); }
+
     inline bool ShouldEngage(bool bWasEngaged, bool bHasTarget, bool bEnabled, bool bFirstPerson,
         float DesiredZoomCm, float MaxZoomCm)
     {

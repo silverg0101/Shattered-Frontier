@@ -7,12 +7,36 @@
 UENUM(BlueprintType)
 enum class ESFCombatShoulderSide : uint8 { Right, Left };
 
+// Local camera preferences: percent of the release-authored mouse degrees/count, not a frame-time rate.
+// The player owns these values; Apply saves them locally and the camera reads them next frame.
+struct FSFPlayerControlOptions
+{
+    static constexpr int32 MinMousePercent = 25, MaxMousePercent = 800, DefaultMousePercent = 200;
+    int32 MouseHorizontalPercent = DefaultMousePercent, MouseVerticalPercent = DefaultMousePercent;
+    bool bInvertMouseY = false, bCombatFraming = true, bCombatDepthOfField = true;
+    ESFCombatShoulderSide Shoulder = ESFCombatShoulderSide::Right;
+    FSFPlayerControlOptions Clamped() const;
+    bool operator==(const FSFPlayerControlOptions& Other) const;
+    bool operator!=(const FSFPlayerControlOptions& Other) const { return !(*this == Other); }
+    FVector2D MouseDegreesPerCount(float ReleaseDegreesPerCount) const;
+};
+
 // Local player preferences. SaveSettings persists changes in GameUserSettings.ini; effective next frame.
 UCLASS(Config=GameUserSettings)
 class SHATTEREDFRONTIER_API USFGameUserSettings : public UGameUserSettings
 {
     GENERATED_BODY()
 public:
+    UPROPERTY(Config, EditAnywhere, Category="Controls", meta=(DisplayName="Horizontal mouse sensitivity (%)", ClampMin="25", ClampMax="800", ToolTip="Percent of standard mouse tracking. Higher values turn the camera farther for the same mouse movement. Applied locally on Apply."))
+    int32 MouseHorizontalPercent = FSFPlayerControlOptions::DefaultMousePercent;
+    UPROPERTY(Config, EditAnywhere, Category="Controls", meta=(DisplayName="Vertical mouse sensitivity (%)", ClampMin="25", ClampMax="800"))
+    int32 MouseVerticalPercent = FSFPlayerControlOptions::DefaultMousePercent;
+    UPROPERTY(Config, EditAnywhere, Category="Controls", meta=(DisplayName="Invert vertical mouse movement"))
+    bool bInvertMouseY = false;
+    FSFPlayerControlOptions CaptureControls() const;
+    void StoreControls(const FSFPlayerControlOptions& Options);
+    void ApplyControls(const FSFPlayerControlOptions& Options);
+
     // HUD hotbar cells shown (keys 1-9, 0); the rest collapse. Settings > Gameplay.
     static constexpr int32 MinHotbarSlots = 2;
     static constexpr int32 MaxHotbarSlots = 10;

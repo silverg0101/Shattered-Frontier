@@ -164,7 +164,7 @@ bool FSFMenuSettingsTest::RunTest(const FString& Parameters)
 {
     USFGraphicsMenu* Menu = MakeScreen<USFGraphicsMenu>(EditorWorld(), USFGraphicsMenu::AssetPath);
     if (!TestNotNull(TEXT("WBP_Settings constructs"), Menu)) { return false; }
-    TestEqual(TEXT("Graphics: two headings, six display and ten quality rows; Gameplay: a heading and Hotbar Slots"), Menu->SettingRowCount(), 20);
+    TestEqual(TEXT("Graphics twenty existing rows plus seven Controls rows"), Menu->SettingRowCount(), 27);
     Menu->StagePreset(ESFGraphicsPreset::Low);
     TestTrue(TEXT("The preset dropdown edits the pending preset"), Menu->Session().PendingPreset() == ESFGraphicsPreset::Low && Menu->Session().IsDirty());
     Menu->StageCustom();

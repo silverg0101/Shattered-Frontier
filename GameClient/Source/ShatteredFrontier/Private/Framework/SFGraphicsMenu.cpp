@@ -47,7 +47,11 @@ USFSettingRowWidget* USFGraphicsMenu::AddRow(const TCHAR* Label)
     USFSettingRowWidget* Row = SettingRowClass ? CreateWidget<USFSettingRowWidget>(this, SettingRowClass) : nullptr;
     if (!Row) { return nullptr; }
     (RowTarget ? RowTarget : Rows.Get())->AddChild(Row);
+    if (RowTarget == GameplayRows && GameplayRows)
+    { (bAddingControlRows ? ControlRows : InterfaceRows).Add(Row); }
     if (Label) { Row->SetLabel(FText::FromString(Label)); }
+    if (Label && FString(Label).StartsWith(TEXT("Mouse ")))
+    { Row->SetToolTipText(FText::FromString(TEXT("Higher values turn the camera farther for the same mouse movement. 100% is the former response; default 200%. Range 25–800%. Changes take effect when you Apply."))); }
     ++RowCount;
     return Row;
 }
@@ -118,6 +122,7 @@ void USFGraphicsMenu::NativeOnInitialized()
 
     const USFGraphicsPresetSettings* Presets = GetDefault<USFGraphicsPresetSettings>();
     const USFGameUserSettings* Live = LiveSettings();
+    AppliedControls = PendingControls = Live ? Live->CaptureControls() : FSFPlayerControlOptions();
     const FSFGraphicsOptions Start = Live ? Live->CaptureGraphics() : Presets->PresetOptions(ESFGraphicsPreset::High);
     TWeakObjectPtr<USFGraphicsMenu> Self(this);
     EditSession = MakeUnique<FSFGraphicsEditSession>(Start, [Self](const FSFGraphicsOptions& Options)
@@ -213,6 +218,19 @@ void USFGraphicsMenu::NativeOnInitialized()
                 if (USFGameUserSettings* Live = Menu ? Menu->LiveSettings() : nullptr)
                 { Live->HotbarSlots = FMath::Clamp(Value, USFGameUserSettings::MinHotbarSlots, USFGameUserSettings::MaxHotbarSlots); Live->SaveSettings(); }
             });
+        // Share the WBP's existing canonical row host; tab visibility selects its Controls or Gameplay rows.
+        bAddingControlRows = true;
+        if (USFSettingRowWidget* Heading = AddRow(nullptr)) { Heading->SetHeading(FText::FromString(TEXT("Mouse and camera"))); }
+        AddStepper(TEXT("Mouse horizontal (%)"), FSFPlayerControlOptions::MinMousePercent, FSFPlayerControlOptions::MaxMousePercent, 25,
+            [this]() { return PendingControls.MouseHorizontalPercent; }, [this](int32 V) { PendingControls.MouseHorizontalPercent = V; });
+        AddStepper(TEXT("Mouse vertical (%)"), FSFPlayerControlOptions::MinMousePercent, FSFPlayerControlOptions::MaxMousePercent, 25,
+            [this]() { return PendingControls.MouseVerticalPercent; }, [this](int32 V) { PendingControls.MouseVerticalPercent = V; });
+        AddToggle(TEXT("Invert vertical mouse"), [this]() { return PendingControls.bInvertMouseY; }, [this](bool V) { PendingControls.bInvertMouseY = V; });
+        AddToggle(TEXT("Combat camera assist"), [this]() { return PendingControls.bCombatFraming; }, [this](bool V) { PendingControls.bCombatFraming = V; });
+        AddToggle(TEXT("Combat depth of field"), [this]() { return PendingControls.bCombatDepthOfField; }, [this](bool V) { PendingControls.bCombatDepthOfField = V; });
+        AddDropdown(TEXT("Camera shoulder"), {TEXT("Right"), TEXT("Left")}, [this]() { return int32(PendingControls.Shoulder); },
+            [this](int32 V) { PendingControls.Shoulder = V == 1 ? ESFCombatShoulderSide::Left : ESFCombatShoulderSide::Right; });
+        bAddingControlRows = false;
         RowTarget = nullptr;
         GameplayRows->SetVisibility(ESlateVisibility::Collapsed);
     }
@@ -227,7 +245,8 @@ void USFGraphicsMenu::ApplyKitStyle()
 
 void USFGraphicsMenu::Reload()
 {
-    if (const USFGameUserSettings* Live = LiveSettings()) { EditSession->Reset(Live->CaptureGraphics()); }
+    if (const USFGameUserSettings* Live = LiveSettings())
+    { EditSession->Reset(Live->CaptureGraphics()); AppliedControls = PendingControls = Live->CaptureControls(); }
     Refresh();
 }
 
@@ -250,21 +269,36 @@ bool USFGraphicsMenu::HandleEscape()
 
 void USFGraphicsMenu::HandleTab(int32 Index)
 {
-    const bool bGraphics = Index == 0, bGameplay = Index == 3 && GameplayRows;
+    ActiveTab = Index;
+    const bool bGraphics = Index == 0, bGameplay = Index == 3 && GameplayRows, bControls = Index == 2 && GameplayRows;
     if (GraphicsPage) { GraphicsPage->SetVisibility(bGraphics ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed); }
-    if (GameplayRows) { GameplayRows->SetVisibility(bGameplay ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed); }
+    if (GameplayRows) { GameplayRows->SetVisibility(bGameplay || bControls ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed); }
+    for (const auto& Row : ControlRows) if (Row.IsValid()) Row->SetVisibility(bControls ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
+    for (const auto& Row : InterfaceRows) if (Row.IsValid()) Row->SetVisibility(bGameplay ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
     if (ComingSoon)
     {
         static const TCHAR* const Names[4] = {TEXT("Graphics"), TEXT("Audio"), TEXT("Controls"), TEXT("Gameplay")};
         ComingSoon->SetText(FText::FromString(FString::Printf(TEXT("%s settings are coming soon."), Names[FMath::Clamp(Index, 0, 3)])));
-        ComingSoon->SetVisibility(bGraphics || bGameplay ? ESlateVisibility::Collapsed : ESlateVisibility::HitTestInvisible);
+        ComingSoon->SetVisibility(bGraphics || bGameplay || bControls ? ESlateVisibility::Collapsed : ESlateVisibility::HitTestInvisible);
     }
-    if (ApplyButton) { ApplyButton->SetVisibility(bGraphics ? ESlateVisibility::Visible : ESlateVisibility::Collapsed); }
-    if (ResetButton) { ResetButton->SetVisibility(bGraphics ? ESlateVisibility::Visible : ESlateVisibility::Collapsed); }
+    if (ApplyButton) { ApplyButton->SetVisibility(bGraphics || bControls ? ESlateVisibility::Visible : ESlateVisibility::Collapsed); }
+    if (ResetButton) { ResetButton->SetVisibility(bGraphics || bControls ? ESlateVisibility::Visible : ESlateVisibility::Collapsed); }
+    Refresh();
 }
 
-void USFGraphicsMenu::DoApply() { EditSession->Apply(); Refresh(); }
-void USFGraphicsMenu::DoRevert() { EditSession->RevertPending(); Refresh(); }
+void USFGraphicsMenu::DoApply()
+{
+    if (ActiveTab == 2)
+    { if (auto* Live = LiveSettings()) { Live->ApplyControls(PendingControls); AppliedControls = PendingControls = Live->CaptureControls(); } }
+    else { EditSession->Apply(); }
+    Refresh();
+}
+void USFGraphicsMenu::DoRevert()
+{
+    if (ActiveTab == 2) { PendingControls = FSFPlayerControlOptions(); }
+    else { EditSession->RevertPending(); }
+    Refresh();
+}
 void USFGraphicsMenu::DoKeep() { EditSession->Keep(); Refresh(); }
 void USFGraphicsMenu::DoUndo() { EditSession->Undo(); Refresh(); }
 
@@ -294,7 +328,7 @@ void USFGraphicsMenu::Refresh()
     for (const FStepperEntry& Entry : Steppers) { if (Entry.Widget.IsValid()) { Entry.Widget->SetValue(Entry.Get()); } }
     for (const FToggleEntry& Entry : Toggles) { if (Entry.Widget.IsValid()) { Entry.Widget->SetChecked(Entry.Get()); } }
     // With nothing to apply, Apply is disabled (Apply() is a no-op when clean anyway).
-    if (ApplyButton) { ApplyButton->SetButtonEnabled(EditSession->IsDirty()); }
+    if (ApplyButton) { ApplyButton->SetButtonEnabled(ActiveTab == 2 ? PendingControls != AppliedControls : EditSession->IsDirty()); }
     if (KeepLayer) { KeepLayer->SetVisibility(EditSession->IsAwaitingKeep() ? ESlateVisibility::Visible : ESlateVisibility::Collapsed); }
     if (KeepDetailText) { KeepDetailText->SetText(FText::FromString(FString::Printf(TEXT("Resolution %d x %d, %s"), Pending.Resolution.X, Pending.Resolution.Y, *WindowModeName(Pending.WindowMode)))); }
 }

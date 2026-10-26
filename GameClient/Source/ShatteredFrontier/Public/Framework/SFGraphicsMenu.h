@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Framework/SFGraphicsPresets.h"
+#include "Framework/SFGameUserSettings.h"
 #include "UI/SFUiWidgets.h"
 #include "SFGraphicsMenu.generated.h"
 
@@ -25,7 +26,7 @@ public:
 };
 
 // Settings window (WBP_Settings, docs/blueprints/menus.md section 0; concepts 14b / 14c): a WBP_WindowFrame (emblem icon_window_settings) with the
-// Graphics / Audio / Controls / Gameplay tabs (only Graphics has settings; the others say "Coming soon"), the preset dropdown with Auto-Detect, a
+// Graphics / Audio / Controls / Gameplay tabs (Audio is coming soon), the preset dropdown with Auto-Detect, a
 // WBP_ScrollList of WBP_SettingRow rows (label + WBP_Dropdown, WBP_Stepper or WBP_Toggle) and the Apply / Reset footer. Edits are pending until Apply; a
 // resolution or window mode change then asks to keep within USFGraphicsPresetSettings::KeepSeconds or reverts itself (the keep prompt is a framed
 // card over the window). A window of USFWindowStack; Esc closes the keep prompt as Revert, else the window.
@@ -70,7 +71,8 @@ protected:
     UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<USFTabBarWidget> TabBar;
     UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UWidget> GraphicsPage;
     UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UTextBlock> ComingSoon;
-    // The Gameplay tab's rows (hotbar slots); applied and saved as they change, no Apply step.
+    // Existing WBP row host shared by Controls and Gameplay; tab selection hides the other page's rows.
+    // Gameplay hotbar changes save immediately. Controls edits wait for Apply; Reset stages shipped defaults.
     UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UPanelWidget> GameplayRows;
     UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<USFDropdownWidget> PresetDropdown;
     UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<USFButtonWidget> AutoDetectButton;
@@ -84,6 +86,7 @@ protected:
     UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<USFButtonWidget> UndoButton;
 
 private:
+    friend class FSFPlayerControlsMenuTest;
     struct FDropdownEntry { TWeakObjectPtr<USFDropdownWidget> Widget; TFunction<int32()> Get; };
     struct FStepperEntry { TWeakObjectPtr<USFStepperWidget> Widget; TFunction<int32()> Get; };
     struct FToggleEntry { TWeakObjectPtr<USFToggleWidget> Widget; TFunction<bool()> Get; };
@@ -118,4 +121,8 @@ private:
     int32 RowCount = 0;
     bool bRefreshing = false;
     bool bSuppressEngineApply = false;
+    FSFPlayerControlOptions AppliedControls, PendingControls;
+    TArray<TWeakObjectPtr<USFSettingRowWidget>> ControlRows, InterfaceRows;
+    int32 ActiveTab = 0;
+    bool bAddingControlRows = false;
 };
