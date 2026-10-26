@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "target_type": "Client",
+  "assembly_cache_relative": "Artifacts/PlayerMetaHumans/Verified-20261025",
+  "assembly_manifest_sha256": "9329b4fe9def930604dd546398b0e1719459f529455f7474391c6d9b128fd0b0",
+  "assembly_files": 1181,
+  "assembly_bytes": 1802840646,
+  "cook_roots": [
+    "/Game/Frontier/Characters/Player/Built",
+    "/Game/Frontier/Characters/Player/Retarget",
+    "/Game/Frontier/Characters/Player/Outfit"
+  ],
+  "required_packages": [
+    "/Game/Frontier/Characters/Player/Retarget/RTG_SF_MannequinToMetaHuman",
+    "/Game/Frontier/Characters/Player/Outfit/CO_PlayerOutfit",
+    "/Game/Frontier/Characters/Player/Outfit/CO_PlayerOutfit_F"
+  ]
+}
