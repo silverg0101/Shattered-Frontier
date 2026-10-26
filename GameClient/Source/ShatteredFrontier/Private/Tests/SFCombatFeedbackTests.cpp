@@ -8,7 +8,7 @@
 #include "Misc/AutomationTest.h"
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFCombatFeedbackWidgetTest,
-    "ShatteredFrontier.Hud.CombatFeedback", EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+    "ShatteredFrontier.Hud.CombatFeedback.Widget", EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
 bool FSFCombatFeedbackWidgetTest::RunTest(const FString& Parameters)
 {
     UWorld* World = GEditor ? GEditor->GetEditorWorldContext().World() : nullptr;
