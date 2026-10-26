@@ -13,33 +13,33 @@ Fix the owner-reported packaged-client regressions, review the resulting behavio
 
 | Item | Status / task |
 | --- | --- |
-| Combat camera angle and framing | Code/tests passed: `gameplay-camera-mouse-controls.md`, source `209bf3bd`. Actual selected-target visual/input-motion acceptance remains open. |
-| Mouse sensitivity in Settings | H/V controls, Apply/Reset and local persistence passed; independent Settings review 2 PASS/0 FAIL. Owner sign-off and packaged input check pending. |
-| Defeat wording and actual server countdown | Implemented: `ui-combat-feedback-defeat-state.md`, candidate `04d9a86b`; four targeted checks passed. Rendering review pending. |
-| Manual respawn, closable death notice, clickable skull above HP | Same candidate: explicit click after eligibility; closing keeps player dead and able to watch/be revived. Real service reconnect/revival acceptance pending. |
-| Replace HIT with animated damage above the receiver; distinct critical hits | Same candidate: resolved server damage, bounded animated entries. Staged rendering evidence exists; network acceptance pending. |
-| NPC target name and maximum health | Same candidate fixes production boar 489 versus fixture HUD maximum 60; actual selected-actor regression passed. |
-| Building hotbar icons and catalogue previews missing | Candidate `665b3cad`, `ui-building-hotbar-regressions.md`: missing UI cook roots restored; static checks pass, Unreal/package verification pending. |
-| Drag into/out of hotbar broken | Same candidate: catalogue/bag shortcut assignment, swap and deliberate shortcut removal separated from cancellation/physical item drops. Runtime verification pending. |
-| MetaHuman avatar instead of Unreal mannequin | `db946859`, `gameplay-player-metahuman-packaged.md`: verified existing 1,181-file assembly cache and client-only cook preflight. Orlando spawned in Editor rendering; packaged closure/review pending. |
-| Gathering skill Raise/Hold/Lower controls | `144a0520`, `ui-gathering-skill-controls.md`: real caps confirmed, durable preference gap recorded; unsupported service controls hidden/guarded. Combined tests pending. |
+| Combat camera angle and framing | Integrated; targeted tests passed. Native selected-target framing and 200% versus 400% mouse motion remain open. |
+| Mouse sensitivity in Settings | H/V controls, Apply/Reset and persistence passed; independent Settings review 2 PASS/0 FAIL. Owner sign-off and packaged input check pending. |
+| Defeat wording and actual server countdown | Integrated; targeted tests and independent staged visual review passed. Packaged server/death reconnect acceptance and owner sign-off pending. |
+| Manual respawn, closable death notice, clickable skull above HP | Integrated; explicit ready click and revival tests passed. Real service reconnect/revival acceptance pending. |
+| Replace HIT with receiver damage and distinct critical hits | Integrated; bounded burst widget regression and fresh round 2 visual review passed with no fix list. Network acceptance and owner sign-off pending. |
+| NPC target name and maximum health | Actual selected-actor regression passed, including production boar 489 to 481 and Wolf name. Packaged observation pending. |
+| Building hotbar icons and catalogue previews missing | UI cook roots, static asset checks and actual WBP regression passed. Package presence/native view pending. |
+| Drag into/out of hotbar broken | Catalogue/bag shortcut assignment, swap and deliberate removal regression passed. Native packaged drag pending. |
+| MetaHuman avatar instead of Unreal mannequin | Existing 1,181-file assembly cache hash verified; client-only cook contract passed; Orlando spawned in Editor. Packaged closure/animation/review pending. |
+| Gathering skill Raise/Hold/Lower controls | Real caps confirmed; unsupported service controls hidden/guarded; combined tests passed. Durable six-skill support remains a production gap. |
 | Two-player public ground loot and persistence | Pending; required sequence below has not passed. |
 
 ## Evidence
 
 Frozen `ff59b35dd17fef0edd1a7b7f5b9161b867370bc8` is deployed on LAN `192.168.50.133:17777`. Matching packaged clients connected and normal deaths/respawns were observed. No corpse loot, inventory transfer or item receipt was produced. Both owned clients were subsequently closed for the camera build. Runtime handoff commit `613c4e73` retains exact image identities and rollback.
 
-Lane b integration candidate `fd39c823` combines the source branches above; it has not been deployed. Independent source review found no actionable P1/P2 in camera, skill capability, hotbar or combat/death changes. Static UI-art/cook checks and all nine face-class hashes pass. Editor/gameplay tests must now run against the combined source; staged screenshots do not prove live network behavior.
+Lane B integrated `cfb9c752` plus existing-store release documentation `6cd197df`; it has not been deployed. Independent source review found no actionable P1/P2. Fifteen distinct targeted Editor/gameplay checks passed at `cfb9c752`, with final feedback/widget regressions run after the Slate measurement fix. Static UI-art/cook checks and all nine face-class hashes pass. Fresh independent staged combat round 2 passed the one prior burst failure (7 frames, no fix list); unchanged round 1 views retain their pass. Staged screenshots do not prove live network behavior or owner sign-off.
 
 Owner screenshots: `codex-clipboard-dbf9067a-2a14-470e-95b6-6d1560bb7be2.png` (death wording), `codex-clipboard-d0b3a4b0-fcf9-430d-a2a8-697ca812dadf.png` (missing building imagery). Raw evidence and fixture-position setup are under ignored `Artifacts/Orchestration/20261025-resume/` and lane e `Artifacts/PackagedAcceptance/LAN-ff59b35d-20261025-190917/`.
 
 ## Blocked on
 
-Client fixes and matching-package verification. Visual changes require fresh independent Sol review and owner sign-off. One Unreal-heavy job at a time; three available subagent slots are active.
+Matching-package verification, packaged native/network acceptance and owner sign-off for visual changes. One Unreal-heavy job at a time. The existing ff59 release remains live until a compatible server/client update is ready and visual approval is obtained.
 
 ## Next step
 
-Run one combined Editor build and the exact child-task checks in lane b, then complete independent visual review/owner approval, freeze matching packages and resume the required live loot sequence. Keep every row current and distinguish implemented, tested, owner-approved and deployed.
+Freeze and inspect matching packages from the integrated revision, capture real native camera/avatar/hotbar/combat behavior, and prepare the owner review packet. After owner sign-off, apply the compatible existing-store server/client release and resume live loot and persistence acceptance. Continue other ready gameplay work while that gate is pending.
 
 ## Rules for this task
 
