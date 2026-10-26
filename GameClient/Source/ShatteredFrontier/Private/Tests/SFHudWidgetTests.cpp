@@ -231,4 +231,47 @@ bool FSFHudMinimapUvTest::RunTest(const FString& Parameters)
     TestEqual(TEXT("Clamped inside the map"),Edge.Min.X,0.0f); TestEqual(TEXT("Clamped top"),Edge.Min.Y,0.0f);
     return true;
 }
+
+#include "Characters/SFE1Character.h"
+#include "Combat/SFCombatNpc.h"
+#include "Combat/SFNpcProfiles.h"
+#include "Engine/LocalPlayer.h"
+#include "Misc/ScopeExit.h"
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFHudTargetTest,
+    "ShatteredFrontier.Hud.GenericTarget", EAutomationTestFlags::EditorContext|EAutomationTestFlags::EngineFilter)
+bool FSFHudTargetTest::RunTest(const FString& Parameters)
+{
+    FTestWorldWrapper Fixture;
+    if (!Fixture.CreateTestWorld(EWorldType::GameRPC) || !Fixture.BeginPlayInTestWorld()) return false;
+    UWorld* World = Fixture.GetTestWorld();
+    World->GetWorldSettings()->NotifyBeginPlay();
+    FActorSpawnParameters Spawn; Spawn.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+    auto* PC = World->SpawnActor<ASFPlayerController>();
+    auto* Hero = World->SpawnActor<ASFE1Character>(Spawn);
+    auto* Npc = World->SpawnActor<ASFCombatNpc>(Spawn);
+    if (!TestNotNull(TEXT("Controller"), PC) || !TestNotNull(TEXT("Hero"), Hero) || !TestNotNull(TEXT("NPC"), Npc)) return false;
+    const SFNpcProfiles::FProfile* Profile = SFNpcProfiles::Find(TEXT("npc/boar"));
+    if (!TestNotNull(TEXT("Release boar profile"), Profile)) return false;
+    TestTrue(TEXT("Configure release species"), Npc->ConfigureCreature(Profile->DefinitionId));
+    Npc->Initialize(nullptr, TEXT("hud_test"), 0, {}, Profile->Stats.Health, 1);
+    TestEqual(TEXT("Release boar maximum"), Npc->MaximumHealth(), 489);
+    Npc->ReceivePilotDamage(Hero, 8);
+    ULocalPlayer* Local = NewObject<ULocalPlayer>(GEngine);
+    Local->PlayerAdded(nullptr, 0);
+    ON_SCOPE_EXIT { Local->PlayerRemoved(); };
+    PC->SetPlayer(Local);
+    PC->Possess(Hero);
+    Hero->SetCombatTarget(Npc);
+    const TSubclassOf<USFHudWidget> Class = LoadClass<USFHudWidget>(nullptr, USFHudWidget::AssetPath);
+    USFHudWidget* Hud = Class ? CreateWidget<USFHudWidget>(PC, Class) : nullptr;
+    if (!TestNotNull(TEXT("HUD"), Hud) || !Hud->Target) return false;
+    Hud->NativeTick(FGeometry(), .016f);
+    TestEqual(TEXT("Selected actual receiver shows health after 8 damage"), Hud->Target->HealthText->GetText().ToString(), FString(TEXT("481 / 489")));
+    TestEqual(TEXT("Actual generic NPC name"), Hud->Target->NameText->GetText().ToString(), Npc->DisplayName());
+    TestTrue(TEXT("Configure a non-boar species"), Npc->ConfigureCreature(TEXT("npc/wolf")));
+    Hud->NativeTick(FGeometry(), .016f);
+    TestEqual(TEXT("Non-boar label follows selected actor"), Hud->Target->NameText->GetText().ToString(), FString(TEXT("Wolf")));
+    return true;
+}
 #endif

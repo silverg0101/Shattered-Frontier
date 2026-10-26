@@ -14,6 +14,7 @@ class UVerticalBox;
 class UWidget;
 class UWrapBox;
 class USFGatheringPilotComponent;
+class USFPlayerStatusStrip;
 struct FSFCastView;
 
 // In-game HUD as Widget Blueprints on C++ bases (docs/blueprints/menus.md). C++ owns the data and rules here; WBP_Hud and its child
@@ -241,6 +242,7 @@ class SHATTEREDFRONTIER_API USFHudWidget : public USFUiWidget
 public:
     void Configure(USFGatheringPilotComponent* InPilot) { Pilot = InPilot; }
     void PresentVitals(int32 Health, int32 MaxHealth, int32 Stamina, int32 MaxStamina);
+    void PresentDefeated(bool bDead);
     // The player badge: the character level. SyncLevel (each tick) reads it from the pilot component and pushes only when it changes.
     void PresentLevel(int32 Level);
     void SyncLevel();
@@ -255,6 +257,7 @@ public:
     void ClearParty();
     int32 PartyCount() const;
 
+    UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<USFPlayerStatusStrip> StatusStrip;
     UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidget)) TObjectPtr<USFUnitFrameWidget> Vitals;
     UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidget)) TObjectPtr<USFUnitFrameWidget> Target;
     UPROPERTY(BlueprintReadOnly, Category = "SF", meta = (BindWidgetOptional)) TObjectPtr<UVerticalBox> PartyList;
@@ -270,6 +273,9 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "SF") TSubclassOf<USFUnitFrameWidget> PartyFrameClass;  // empty = WBP_PartyFrame
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "SF") TSubclassOf<USFUnitFrameWidget> RaidFrameClass;   // empty = WBP_RaidFrame
 
+#if WITH_DEV_AUTOMATION_TESTS && WITH_EDITOR
+    friend class FSFHudTargetTest;
+#endif
 protected:
     virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 

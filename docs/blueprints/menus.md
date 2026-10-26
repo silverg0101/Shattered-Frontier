@@ -143,3 +143,5 @@ Concept `14b-settings-graphics.png` (menu) and `14c-settings-keep-revert.png` (1
 23. Never regenerate a kit PNG by hand if `build_structures.py` makes it; fix the generator, or the next run overwrites the edit.
 24. Never merge `.uasset` kit files between branches; take either side, then rerun `tools/Process-KitV5.py` and `tools/Import-HudKit.py --save`.
 25. Never fit long data text with an ellipsis in a menu; wrap or `FitWidth` (18 px floor).
+
+Combat/defeat additions (2026-10-25): `WBP_CombatDamage` binds `DamageText`, `CriticalText`, `CriticalNumber`; its Designer owns number styles, and C++ only supplies resolved data plus float/pop/fade transforms. `WBP_PlayerStatusStrip` (`USFPlayerStatusStrip`) binds `SkullButton` above the player vitals in `WBP_Hud.StatusStrip`; only the dead status exists today. `WBP_Defeated.CloseButton` dismisses the notice, while `RespawnButton` submits normal respawn after the owner-replicated service deadline. Neither close/Esc nor the status icon changes the server death state. Existing layouts migrate in place; owner arrangement remains authoritative.

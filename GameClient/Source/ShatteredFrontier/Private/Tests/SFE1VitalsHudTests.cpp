@@ -21,6 +21,12 @@ bool FSFE1VitalsHudModelTest::RunTest(const FString& Parameters)
     TestEqual(TEXT("Respawn point title"),FSFE1VitalsModel::RespawnTitle(TEXT("Silverbrook"),TEXT("north_gate")),FString(TEXT("Silverbrook North Gate")));
     TestEqual(TEXT("Respawn title without a zone"),FSFE1VitalsModel::RespawnTitle(TEXT(""),TEXT("arrival")),FString(TEXT("Arrival")));
 
+    TestEqual(TEXT("Service deadline countdown rounds up"), FSFE1VitalsModel::RespawnStatus(42.2f, true), FString(TEXT("Respawn available in 43s")));
+    TestEqual(TEXT("Expired gate is ready, never a claimed request"), FSFE1VitalsModel::RespawnStatus(0, true), FString(TEXT("Ready to respawn.")));
+    TestEqual(TEXT("Missing deadline awaits authority"), FSFE1VitalsModel::RespawnStatus(0, false), FString(TEXT("Waiting for respawn information\u2026")));
+    TestEqual(TEXT("Only accepted request shows respawning"), FSFE1VitalsModel::RespawnStatus(0, true, true), FString(TEXT("Respawning\u2026")));
+    TestEqual(TEXT("Rejected request returns to ready"), FSFE1VitalsModel::RespawnStatus(0, true, false), FString(TEXT("Ready to respawn.")));
+
     FSFE1VitalsModel Model;
     Model.Observe(0,1.0);
     TestFalse(TEXT("Zero health before combat is inactive, so no HUD"),Model.bActive);

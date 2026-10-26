@@ -1,4 +1,5 @@
 #include "UI/SFWidgetAuthoring.h"
+#include "UI/SFCombatFeedback.h"
 
 #if WITH_EDITOR
 #include "AssetRegistry/AssetRegistryModule.h"
@@ -338,9 +339,43 @@ void UnitFrameLayout(UWidgetTree* T)
 }
 
 // Hud additions preserve the owner's existing placement; CastBar is only a functional placeholder for Designer layout.
+void PlayerStatusLayout(UWidgetTree* T)
+{
+    UHorizontalBox* Row = N<UHorizontalBox>(T, TEXT("StatusRow"));
+    UButton* Skull = N<UButton>(T, TEXT("SkullButton"));
+    FButtonStyle Style;
+    Style.SetNormal(SlotBrush(TEXT("slot_bag_normal"), false));
+    Style.SetHovered(SlotBrush(TEXT("slot_bag_normal"), true));
+    Style.SetPressed(SlotBrush(TEXT("slot_bag_normal"), true));
+    Skull->SetStyle(Style);
+    Skull->SetToolTipText(FText::FromString(TEXT("Defeated - reopen death notice")));
+    UImage* Icon = N<UImage>(T, TEXT("SkullIcon"));
+    FSlateBrush Brush;
+    Brush.SetResourceObject(LoadObject<UTexture2D>(nullptr, TEXT("/Game/Frontier/UI/Status/T_Status_Skull.T_Status_Skull")));
+    Brush.ImageSize = FVector2D(32, 32); Brush.DrawAs = ESlateBrushDrawType::Image;
+    Icon->SetBrush(Brush);
+    Skull->SetContent(Sized(T, nullptr, Icon, 32, 32));
+    Row->AddChildToHorizontalBox(Sized(T, nullptr, Skull, 48, 48));
+    T->RootWidget = Row;
+}
+
+UUserWidget* Inst(UWidgetTree* T, const TCHAR* Dir, const TCHAR* Wbp, const TCHAR* Name);
+
 bool AddHudParts(UWidgetTree* T, UCanvasPanel* Root, UWidgetBlueprint* Blueprint)
 {
-    bool bChanged = false;
+    bool bChanged = Root->GetVisibility() != ESlateVisibility::SelfHitTestInvisible;
+    Root->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+    if (!T->FindWidget(TEXT("StatusStrip")))
+    {
+        if (UUserWidget* Strip = Inst(T, HudDir, TEXT("WBP_PlayerStatusStrip"), TEXT("StatusStrip")))
+        {
+            Strip->SetVisibility(ESlateVisibility::Collapsed);
+            // Initial Designer placement above the player HP bar; never repositioned at runtime.
+            Anchor(Root, Strip, .09f, .86f, 0.f, 1.f);
+            if (Blueprint) Blueprint->OnVariableAdded(Strip->GetFName());
+            bChanged = true;
+        }
+    }
     if (!T->FindWidget(TEXT("Target")))
     {
         if (UClass* Class = SharedClass(UnitFramesDir, TEXT("WBP_TargetFrame")))
@@ -1810,6 +1845,28 @@ void GameMenuLayout(UWidgetTree* T)
     T->RootWidget = Root;
 }
 
+// Floating damage styles are seeded once; subsequent Designer edits remain authoritative.
+void CombatDamageLayout(UWidgetTree* T)
+{
+    UVerticalBox* Column = N<UVerticalBox>(T, TEXT("DamageRoot"));
+    auto Number = [&](const TCHAR* Name, int32 Size, FLinearColor Color)
+    {
+        UTextBlock* Text = N<UTextBlock>(T, Name);
+        FSlateFontInfo Font = Text->GetFont(); Font.Size = FMath::RoundToInt(Size * .75f);
+        Text->SetFont(Font);
+        Text->SetColorAndOpacity(Color);
+        Text->SetShadowOffset(FVector2D(1.5, 2));
+        Text->SetShadowColorAndOpacity(FLinearColor(0.025f, .035f, .04f, .95f));
+        Text->SetJustification(ETextJustify::Center);
+        Column->AddChildToVerticalBox(Text)->SetHorizontalAlignment(HAlign_Center);
+        return Text;
+    };
+    Number(TEXT("CriticalText"), 16, SFHudStyle::Brass())->SetText(FText::FromString(TEXT("CRITICAL!")));
+    Number(TEXT("CriticalNumber"), 38, SFHudStyle::Brass());
+    Number(TEXT("DamageText"), 30, SFHudStyle::Ivory());
+    T->RootWidget = Column;
+}
+
 // WBP_Defeated: the whole-screen layer (a dim and a centred frame): cause, respawn point, countdown and the Respawn button.
 void DefeatedLayout(UWidgetTree* T)
 {
@@ -1826,7 +1883,7 @@ void DefeatedLayout(UWidgetTree* T)
         Cause->SetJustification(ETextJustify::Center);
         Column->AddChildToVerticalBox(Cause)->SetPadding(FMargin(0.f, 0.f, 0.f, 24.f));
         Column->AddChildToVerticalBox(KitRule(T))->SetPadding(FMargin(0.f, 0.f, 0.f, 24.f));
-        UTextBlock* Label = Caption(T, nullptr, TEXT("Respawn point"), 34.f, true);
+        UTextBlock* Label = Caption(T, nullptr, TEXT("Respawn location"), 34.f, true);
         Label->SetJustification(ETextJustify::Center);
         Column->AddChildToVerticalBox(Label);
         UTextBlock* Point = Caption(T, TEXT("PointText"), TEXT("Nearest respawn"), 48.f);
@@ -1836,6 +1893,7 @@ void DefeatedLayout(UWidgetTree* T)
         UTextBlock* Countdown = Caption(T, TEXT("CountdownText"), TEXT(""), 30.f, true);
         Countdown->SetJustification(ETextJustify::Center);
         Column->AddChildToVerticalBox(Countdown)->SetPadding(FMargin(0.f, 20.f, 0.f, 0.f));
+        Column->AddChildToVerticalBox(KitButton(T, TEXT("CloseButton"), TEXT("Close")))->SetHorizontalAlignment(HAlign_Center);
         Fill(Window, TEXT("Content"), Sized(T, nullptr, Column, 1300.f, 0.f));
         Put(Layer, Window, HAlign_Center, VAlign_Center);
     }
@@ -2086,6 +2144,33 @@ void ChatLayout(UWidgetTree* T)
     T->RootWidget = Root;
 }
 
+FString MigrateDefeated()
+{
+    UWidgetBlueprint* Blueprint = LoadObject<UWidgetBlueprint>(nullptr, TEXT("/Game/Frontier/UI/Widgets/Hud/WBP_Defeated.WBP_Defeated"));
+    if (!Blueprint || !Blueprint->WidgetTree) return TEXT("skip   WBP_Defeated migration (missing)\n");
+    UWidgetTree* T = Blueprint->WidgetTree;
+    bool bChanged = false;
+    if (!T->FindWidget(TEXT("CloseButton")))
+    {
+        UWidget* Countdown = T->FindWidget(TEXT("CountdownText"));
+        UVerticalBox* Column = Countdown ? Cast<UVerticalBox>(Countdown->GetParent()) : nullptr;
+        if (!Column) return TEXT("FAIL   WBP_Defeated close control parent missing\n");
+        UUserWidget* Close = KitButton(T, TEXT("CloseButton"), TEXT("Close"));
+        Column->AddChildToVerticalBox(Close)->SetHorizontalAlignment(HAlign_Center);
+        Blueprint->OnVariableAdded(Close->GetFName());
+        bChanged = true;
+    }
+    TArray<UWidget*> Widgets; T->GetAllWidgets(Widgets);
+    for (UWidget* Widget : Widgets)
+        if (UTextBlock* Text = Cast<UTextBlock>(Widget); Text && Text->GetText().ToString() == TEXT("Respawn point"))
+        {
+            Text->SetText(FText::FromString(TEXT("Respawn location")));
+            bChanged = true;
+        }
+    if (!bChanged) return TEXT("skip   WBP_Defeated already migrated\n");
+    return FString::Printf(TEXT("%s WBP_Defeated close control\n"), CompileAndSave(Blueprint) ? TEXT("rebuilt") : TEXT("FAIL   "));
+}
+
 struct FSpec
 {
     const TCHAR* Dir;
@@ -2150,7 +2235,9 @@ TArray<FSpec> Specs()
         {HudDir, TEXT("WBP_HudMinimap"), USFHudMinimapWidget::StaticClass(), MinimapLayout, nullptr},
         {HudDir, TEXT("WBP_HudQuestTracker"), USFHudQuestTrackerWidget::StaticClass(), QuestTrackerLayout, nullptr},
         {HudDir, TEXT("WBP_HudToasts"), USFHudToastsWidget::StaticClass(), ToastsLayout, nullptr},
+        {HudDir, TEXT("WBP_PlayerStatusStrip"), USFPlayerStatusStrip::StaticClass(), PlayerStatusLayout, nullptr},
         {HudDir, TEXT("WBP_Hud"), USFHudWidget::StaticClass(), HudLayout, nullptr},
+        {HudDir, TEXT("WBP_CombatDamage"), USFCombatDamageWidget::StaticClass(), CombatDamageLayout, nullptr},
         {HudDir, TEXT("WBP_Chat"), USFChatWidget::StaticClass(), ChatLayout, nullptr},
         {InventoryDir, TEXT("WBP_Inventory"), USFInventoryWidget::StaticClass(), InventoryLayout, nullptr},
         {EquipmentDir, TEXT("WBP_EquipSlot"), USFSlotWidget::StaticClass(), EquipSlotLayout, ItemSlotDefaults},
@@ -2261,6 +2348,7 @@ FString USFWidgetAuthoring::BuildAll(bool bOverwrite, const FString& Only)
             Blueprint->Status == BS_Error || Blueprint->Status == BS_UpToDateWithWarnings ? TEXT(" (compile errors or warnings: open the asset)") : bSaved ? TEXT("") : TEXT(" (save failed)"));
     }
     if (Wanted(TEXT("WBP_Hud"))) { Report += MigrateHud(); }
+    if (Wanted(TEXT("WBP_Defeated"))) { Report += MigrateDefeated(); }
     return Report;
 }
 #endif

@@ -1,4 +1,5 @@
 #include "Framework/SFPlayerController.h"
+#include "UI/SFCombatFeedback.h"
 #include "Quest/SFQuestBoard.h"
 #include "Dialogue/SFDialogue.h"
 #include "Construction/SFConstructionSandboxPalette.h"
@@ -251,7 +252,7 @@ void ASFPlayerController::TickInteraction()
         else if ((HudWidget = CreateWidget<USFHudWidget>(this, HudClass)))
         {
             HudWidget->AddToViewport(8);
-            HudWidget->SetVisibility(ESlateVisibility::HitTestInvisible);
+            HudWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
         }
     }
     if (IsLocalController() && (HudLayout || HudWidget))
@@ -708,4 +709,11 @@ void ASFPlayerController::ToggleMarketForTarget(ASFMarketBoardActor* ExactTarget
 bool ASFPlayerController::IsStationPanelOpen() const
 {
     return GatheringHud && GatheringHud->IsStationShown();
+}
+
+void ASFPlayerController::ClientCombatDamage_Implementation(AActor* Receiver, FVector Anchor, int32 Damage, bool bCritical)
+{
+ if (IsLocalController() && GetWorld())
+  if (USFCombatFeedbackSubsystem* Feedback = GetWorld()->GetSubsystem<USFCombatFeedbackSubsystem>())
+   Feedback->Receive(Receiver, Anchor, Damage, bCritical);
 }

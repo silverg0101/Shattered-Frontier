@@ -73,11 +73,12 @@ public:
       * A downed player respawns when this world's game mode runs the combat pilot.
       * Lethal retaliation is admitted only from an authoritative, same-world tagged pilot NPC. */
     static void HitPlayer(AActor* Source, ASFE1Character* Victim, int32 Damage, bool bIgnoreArmor = false,
-        bool bLethalRetaliation = false);
+        bool bLethalRetaliation = false, bool bCritical = false);
     /** Server-only physical environmental hit from an actual landing. */
     void ApplyFallDamage(ASFE1Character* Victim, float ImpactSpeedMps);
     void RestoreDeadPlayer(ASFE1Character* Player, const struct FSFGameplayResponse& State);
     bool ReleaseSpirit(ASFE1Character* Player);
+    bool RequestNormalRespawn(ASFE1Character* Player);
     bool AcceptResurrection(ASFE1Character* Player, uint32 OfferId, const FString& DeathEventId);
     bool HasPendingDeathReport(const FString& CharacterId) const;
     void BoarDied(ASFCombatNpc* Boar, ASFE1Character* Killer);
@@ -182,7 +183,7 @@ private:
     bool RunWorldSlots(const FString& Command, const FString& Group = FString(), int32 Slot = INDEX_NONE);
     void SpawnSlot(const FString& Group, int32 Slot, int32 Cycle, const FString& PointId,
         double X, double Y, double Facing, const FString& DefinitionId);
-    void RespawnPlayer(TWeakObjectPtr<ASFE1Character> Player, int32 RestoredHealth = -1, bool bAtDeathPosition = false);
+    void RespawnPlayer(TWeakObjectPtr<ASFE1Character> Player, int32 RestoredHealth = -1, bool bAtDeathPosition = false, bool bPlayerRequest = false);
     FVector ChooseRespawnPoint(const FVector& DeathLocation) const;
     void ReportPlayerDeath(TWeakObjectPtr<ASFE1Character> Player, const struct FSFGameplayRequest& Request);
 #if WITH_DEV_AUTOMATION_TESTS && WITH_EDITOR
@@ -191,6 +192,7 @@ private:
     friend class FSFNpcCorpseRewardTest;
     friend class FSFNpcPresetRuntimeTest;
     friend class FSFNpcFixtureExtractionTest;
+    friend class FSFManualRespawnTest;
     friend class FSFNpcDedicatedCorpseTest;
 #endif
     FString CombatZonePath;

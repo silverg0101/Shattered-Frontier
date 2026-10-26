@@ -1,4 +1,6 @@
 #include "Characters/SFE1VitalsHud.h"
+#include "Components/Button.h"
+#include "GameFramework/GameStateBase.h"
 
 #include "Characters/SFE1Character.h"
 #include "Combat/SFCombatPilot.h"
@@ -52,6 +54,14 @@ FString FSFE1VitalsModel::Countdown(float RemainingSeconds)
     return FString::Printf(TEXT("%02d:%02d"), Whole / 60, Whole % 60);
 }
 
+FString FSFE1VitalsModel::RespawnStatus(float RemainingSeconds, bool bDeadlineKnown, bool bRequestAccepted)
+{
+    if (bRequestAccepted) return TEXT("Respawning\u2026");
+    if (!bDeadlineKnown) return TEXT("Waiting for respawn information\u2026");
+    if (RemainingSeconds > 0) return FString::Printf(TEXT("Respawn available in %ds"), FMath::CeilToInt(RemainingSeconds));
+    return TEXT("Ready to respawn.");
+}
+
 FString FSFE1VitalsModel::RespawnTitle(const FString& ZoneName, const FString& PointId)
 {
     TArray<FString> Words;
@@ -66,7 +76,12 @@ void USFE1VitalsHud::NativeOnInitialized()
 {
     Super::NativeOnInitialized();
     SetIsFocusable(false);
-    if (RespawnButton) { RespawnButton->SetLabel(FText::FromString(TEXT("Respawn"))); }  // the server respawns; the button never takes input, its fill counts the delay down
+    if (RespawnButton)
+    {
+        RespawnButton->SetLabel(FText::FromString(TEXT("Respawn")));
+        RespawnButton->OnClicked.AddDynamic(this, &USFE1VitalsHud::RequestRespawn);
+    }
+    if (CloseButton) CloseButton->OnClicked.AddDynamic(this, &USFE1VitalsHud::CloseNotice);
     DefeatedLayer->SetVisibility(ESlateVisibility::Collapsed);
 }
 
@@ -75,16 +90,22 @@ void USFE1VitalsHud::ApplyKitStyle()
     ApplyFamilyToAllText(TextStyle);
 }
 
-void USFE1VitalsHud::Present(const FSFE1VitalsModel& Model, float RemainingSeconds, const FSFE1DefeatView& Defeat)
+void USFE1VitalsHud::Present(const FSFE1VitalsModel& Model, float RemainingSeconds, const FSFE1DefeatView& Defeat, bool bShowNotice)
 {
-    bDefeatShown = Model.IsDefeated();
-    DefeatedLayer->SetVisibility(bDefeatShown ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Collapsed);
+    bDefeatShown = Model.IsDefeated() && bShowNotice;
+    DefeatedLayer->SetVisibility(bDefeatShown ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
     if (!bDefeatShown) { return; }
-    if (CountdownText) { CountdownText->SetText(FText::FromString(RemainingSeconds > 0.f ? TEXT("Respawning in ") + FSFE1VitalsModel::Countdown(RemainingSeconds) + TEXT(" · dropped items remain at the defeat site") : FString(TEXT("Respawning")))); }
+    if (CountdownText) { CountdownText->SetText(FText::FromString(FSFE1VitalsModel::RespawnStatus(RemainingSeconds, Defeat.bDeadlineKnown, Defeat.bRequestAccepted))); }
     if (CauseText) { CauseText->SetText(FText::FromString(Defeat.Cause.IsEmpty() ? FString(TEXT("You have fallen")) : TEXT("Defeated by ") + Defeat.Cause)); }
     if (PointText && !Defeat.RespawnPoint.IsEmpty()) { PointText->SetText(FText::FromString(Defeat.RespawnPoint)); }
     RespawnProgress = Defeat.DelaySeconds > 0.f ? FMath::Clamp(1.f - RemainingSeconds / Defeat.DelaySeconds, 0.f, 1.f) : 1.f;
-    if (RespawnButton) { RespawnButton->SetProgress(RespawnProgress); }
+    if (RespawnButton)
+    {
+        RespawnButton->SetProgress(RespawnProgress);
+        const ASFPlayerController* PC = Cast<ASFPlayerController>(GetOwningPlayer());
+        RespawnButton->SetButtonEnabled(Defeat.bDeadlineKnown && RemainingSeconds <= 0 && !Defeat.bRequestAccepted &&
+            (!PC || !PC->IsRespawnSubmissionPending()));
+    }
 }
 
 namespace
@@ -125,7 +146,11 @@ void USFE1VitalsHudSubsystem::Tick(float DeltaTime)
     if (!Pawn) { return; }
     const double Now = World->GetTimeSeconds();
     if (bStagedDefeat) { if (Model.DefeatedAt < 0) { Model.bActive = true; Model.Health = 0; Model.DefeatedAt = Now; } }
-    else { Model.Observe(Pawn->CombatHealth(), Now); }
+    else
+    {
+        if (!Model.bActive && Pawn->CombatHealth() <= 0 && (Pawn->GetRespawnReadyAt() >= 0 || !Pawn->GetDefeatCause().IsEmpty())) { Model.bActive = true; Model.Health = 1; }
+        Model.Observe(Pawn->CombatHealth(), Now);
+    }
     // Always on for the local E1 pawn (the master HUD's vitals). Before combat health first replicates (no combat pilot
     // here), nothing can have hurt the player, so the bar reads full.
     if (!Hud)
@@ -136,20 +161,18 @@ void USFE1VitalsHudSubsystem::Tick(float DeltaTime)
         if (!Hud) { return; }
         Hud->AddToViewport(15);
         UE_LOG(LogTemp, Display, TEXT("DEFEATED_HUD_CREATED"));
-        Hud->SetVisibility(ESlateVisibility::HitTestInvisible);
+        Hud->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
     }
     // Client reads the shipped release defaults; the server applies the same captured values.
     const USFCombatPilotSettings* Settings = GetDefault<USFCombatPilotSettings>();
     if (Model.IsDefeated() && DefeatSeenAt != Model.DefeatedAt)
     {
-        // Once per defeat: a boar nearby names the cause (boars are the pilot's only damage source), and the respawn
-        // card names the nearest zone point by the server's own rule (2D distance to the defeat spot).
+        // Cause and deadline come from authority; location naming is read-only.
         DefeatSeenAt = Model.DefeatedAt;
         Defeat = FSFE1DefeatView();
-        Defeat.DelaySeconds = Settings->PlayerRespawnDelaySeconds;
+        Defeat.DelaySeconds = Pawn->GetRespawnDelay();
         const FVector At = Pawn->GetActorLocation();
-        for (TActorIterator<ASFCombatNpc> It(World); It; ++It)
-        { if (FVector::Dist2D(It->GetActorLocation(), At) < 1500.0) { Defeat.Cause = TEXT("Wild Boar"); break; } }
+        Defeat.Cause = Pawn->GetDefeatCause();
         const FVitalsZone& Zone = VitalsZone();
         double Best = TNumericLimits<double>::Max();
         for (const FVitalsRespawnPoint& Point : Zone.Points)
@@ -174,10 +197,19 @@ void USFE1VitalsHudSubsystem::Tick(float DeltaTime)
     const ASFE1Character* Character = Cast<ASFE1Character>(PC->GetPawn());
     const int32 MaximumHealth = Character ? Character->CombatMaximumHealth() : Settings->PlayerHealth;
     if (!Model.bActive) { Shown.Health = MaximumHealth; }
-    Hud->Present(Shown, FSFE1VitalsModel::RemainingSeconds(Model.DefeatedAt, Now, Settings->PlayerRespawnDelaySeconds), Defeat);
+    Defeat.Cause = bStagedDefeat ? TEXT("Wild Boar") : Pawn->GetDefeatCause();
+    Defeat.DelaySeconds = bStagedDefeat ? Settings->ResAcceptSeconds : Pawn->GetRespawnDelay();
+    Defeat.bDeadlineKnown = (bStagedDefeat ? StagedReadyAt : Pawn->GetRespawnReadyAt()) >= 0;
+    const AGameStateBase* State = World->GetGameState();
+    const double ServerNow = State ? State->GetServerWorldTimeSeconds() : Now;
+    const float Remaining = Defeat.bDeadlineKnown ? FMath::Max(0.f, float((bStagedDefeat ? StagedReadyAt : Pawn->GetRespawnReadyAt()) - ServerNow)) : 0.f;
+    Defeat.bRequestAccepted = bStagedDefeat ? bStagedAccepted : Pawn->IsRespawnRequestAccepted();
+    Notice.Observe(Model.IsDefeated());
+    Hud->SetVisibility(Notice.bOpen ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
+    Hud->Present(Shown, Remaining, Defeat, Notice.bOpen);
     // The bars live in WBP_Hud; stamina is drawn full (no stamina stat yet).
     if (const ASFPlayerController* SFPlayer = Cast<ASFPlayerController>(PC))
-    { if (USFHudWidget* HudWidget = SFPlayer->GetHudWidget()) { HudWidget->PresentVitals(Shown.Health, MaximumHealth, Settings->PlayerStamina, Settings->PlayerStamina); } }
+    { if (USFHudWidget* HudWidget = SFPlayer->GetHudWidget()) { HudWidget->PresentVitals(Shown.Health, MaximumHealth, Settings->PlayerStamina, Settings->PlayerStamina); HudWidget->PresentDefeated(Model.IsDefeated()); } }
 }
 
 void USFE1VitalsHudSubsystem::Deinitialize()
@@ -185,4 +217,55 @@ void USFE1VitalsHudSubsystem::Deinitialize()
     if (DefeatGrade) { DefeatGrade->Destroy(); DefeatGrade = nullptr; }
     if (Hud) { Hud->RemoveFromParent(); Hud = nullptr; }
     Super::Deinitialize();
+}
+
+void USFE1VitalsHud::RequestRespawn(USFButtonWidget* Source)
+{
+    if (ASFPlayerController* PC = Cast<ASFPlayerController>(GetOwningPlayer())) PC->RequestNormalRespawn();
+}
+void USFE1VitalsHudSubsystem::StageDefeat(float RemainingSeconds, bool bAccepted)
+{
+#if !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    bStagedDefeat = true;
+    StagedReadyAt = RemainingSeconds >= 0 && GetWorld() ? GetWorld()->GetTimeSeconds() + RemainingSeconds : -1;
+    bStagedAccepted = bAccepted;
+#endif
+}
+void USFE1VitalsHudSubsystem::ClearStagedDefeat()
+{
+#if !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    bStagedDefeat = false;
+    StagedReadyAt = -1; bStagedAccepted = false;
+    Model = FSFE1VitalsModel();
+    Notice.Observe(false);
+#endif
+}
+void USFE1VitalsHud::CloseNotice(USFButtonWidget* Source)
+{
+    if (GetWorld()) if (USFE1VitalsHudSubsystem* Vitals = GetWorld()->GetSubsystem<USFE1VitalsHudSubsystem>()) Vitals->CloseNotice();
+}
+bool USFE1VitalsHudSubsystem::CloseNotice()
+{
+    if (!Notice.bOpen) return false;
+    Notice.Close();
+    if (Hud) Hud->SetVisibility(ESlateVisibility::Collapsed);
+    return true;
+}
+void USFE1VitalsHudSubsystem::ReopenNotice()
+{
+    Notice.Reopen();
+    if (Hud && Notice.bOpen) Hud->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+}
+void USFPlayerStatusStrip::NativeOnInitialized()
+{
+    Super::NativeOnInitialized();
+    if (SkullButton) SkullButton->OnClicked.AddDynamic(this, &USFPlayerStatusStrip::ReopenNotice);
+}
+void USFPlayerStatusStrip::PresentDefeated(bool bDead)
+{
+    SetVisibility(bDead ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
+}
+void USFPlayerStatusStrip::ReopenNotice()
+{
+    if (GetWorld()) if (USFE1VitalsHudSubsystem* Vitals = GetWorld()->GetSubsystem<USFE1VitalsHudSubsystem>()) Vitals->ReopenNotice();
 }

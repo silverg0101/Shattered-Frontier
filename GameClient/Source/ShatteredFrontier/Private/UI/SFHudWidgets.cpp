@@ -1,4 +1,5 @@
 #include "UI/SFHudWidgets.h"
+#include "Characters/SFE1VitalsHud.h"
 
 #include "Characters/SFE1VitalsHud.h"
 #include "Combat/SFCombatPilot.h"
@@ -558,10 +559,15 @@ void USFHudWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
     const AActor* CombatTarget = Player ? Player->GetSelectedCombatTarget() : nullptr;
     int32 Health = 0, MaxHealth = 0;
     FString Name;
-    if (const ASFCombatNpc* Boar = Cast<ASFCombatNpc>(CombatTarget))
-    { Health = Boar->Health(); MaxHealth = GetDefault<USFCombatPilotSettings>()->BoarHealth; Name = TEXT("Boar"); }
+    if (const ASFCombatNpc* CombatNpc = Cast<ASFCombatNpc>(CombatTarget))
+    { Health = CombatNpc->Health(); MaxHealth = CombatNpc->MaximumHealth(); Name = CombatNpc->DisplayName(); }
     else if (const ASFTownsfolkNpc* Npc = Cast<ASFTownsfolkNpc>(CombatTarget))
     { Health = Npc->Health(); MaxHealth = GetDefault<USFTownsfolkSettings>()->ResidentHealth; Name = Npc->Id(); }
     // Targets carry no level yet: level 0 collapses the target badge numeral.
     PresentTarget(CombatTarget && !Player->IsStationPanelOpen(), Name, 0, Health, MaxHealth);
+}
+
+void USFHudWidget::PresentDefeated(bool bDead)
+{
+    if (StatusStrip) StatusStrip->PresentDefeated(bDead);
 }
