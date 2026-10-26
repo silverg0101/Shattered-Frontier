@@ -13,21 +13,23 @@ Fix the owner-reported packaged-client regressions, review the resulting behavio
 
 | Item | Status / task |
 | --- | --- |
-| Combat camera angle and framing | Implementing: `gameplay-camera-mouse-controls.md`, lane a. |
-| Mouse sensitivity in Settings | Implementing: horizontal/vertical controls, Apply/Reset and per-player persistence; same task. |
-| Defeat wording and actual server countdown | Implementing: `ui-combat-feedback-defeat-state.md`, lane d. |
-| Manual respawn, closable death notice, clickable skull above HP | Owner requires explicit click after eligibility; closing keeps player dead and able to watch/be revived. Same task. |
-| Replace HIT with animated damage above the receiver; distinct critical hits | Implementing: same task. Use resolved server damage and existing game styling. |
-| NPC target name and maximum health | Confirmed display defect: production boar 489 HP, HUD showed fixture maximum 60. Same task. |
-| Building hotbar icons and catalogue previews missing | Investigating: `ui-building-hotbar-regressions.md`, lane c. |
-| Drag into/out of hotbar broken | Same task; deliberate shortcut removal must differ from Escape/focus cancellation and physical inventory drops. |
-| MetaHuman avatar instead of Unreal mannequin | Open: `gameplay-player-metahuman-packaged.md`. |
-| Gathering skill Raise/Hold/Lower controls | Open: `ui-gathering-skill-controls.md`; check actual skill-cap rules first. |
+| Combat camera angle and framing | Code/tests passed: `gameplay-camera-mouse-controls.md`, source `209bf3bd`. Actual selected-target visual/input-motion acceptance remains open. |
+| Mouse sensitivity in Settings | H/V controls, Apply/Reset and local persistence passed; independent Settings review 2 PASS/0 FAIL. Owner sign-off and packaged input check pending. |
+| Defeat wording and actual server countdown | Implemented: `ui-combat-feedback-defeat-state.md`, candidate `04d9a86b`; four targeted checks passed. Rendering review pending. |
+| Manual respawn, closable death notice, clickable skull above HP | Same candidate: explicit click after eligibility; closing keeps player dead and able to watch/be revived. Real service reconnect/revival acceptance pending. |
+| Replace HIT with animated damage above the receiver; distinct critical hits | Same candidate: resolved server damage, bounded animated entries. Staged rendering evidence exists; network acceptance pending. |
+| NPC target name and maximum health | Same candidate fixes production boar 489 versus fixture HUD maximum 60; actual selected-actor regression passed. |
+| Building hotbar icons and catalogue previews missing | Candidate `665b3cad`, `ui-building-hotbar-regressions.md`: missing UI cook roots restored; static checks pass, Unreal/package verification pending. |
+| Drag into/out of hotbar broken | Same candidate: catalogue/bag shortcut assignment, swap and deliberate shortcut removal separated from cancellation/physical item drops. Runtime verification pending. |
+| MetaHuman avatar instead of Unreal mannequin | `db946859`, `gameplay-player-metahuman-packaged.md`: verified existing 1,181-file assembly cache and client-only cook preflight. Orlando spawned in Editor rendering; packaged closure/review pending. |
+| Gathering skill Raise/Hold/Lower controls | `144a0520`, `ui-gathering-skill-controls.md`: real caps confirmed, durable preference gap recorded; unsupported service controls hidden/guarded. Combined tests pending. |
 | Two-player public ground loot and persistence | Pending; required sequence below has not passed. |
 
 ## Evidence
 
 Frozen `ff59b35dd17fef0edd1a7b7f5b9161b867370bc8` is deployed on LAN `192.168.50.133:17777`. Matching packaged clients connected and normal deaths/respawns were observed. No corpse loot, inventory transfer or item receipt was produced. Both owned clients were subsequently closed for the camera build. Runtime handoff commit `613c4e73` retains exact image identities and rollback.
+
+Lane b integration candidate `fd39c823` combines the source branches above; it has not been deployed. Independent source review found no actionable P1/P2 in camera, skill capability, hotbar or combat/death changes. Static UI-art/cook checks and all nine face-class hashes pass. Editor/gameplay tests must now run against the combined source; staged screenshots do not prove live network behavior.
 
 Owner screenshots: `codex-clipboard-dbf9067a-2a14-470e-95b6-6d1560bb7be2.png` (death wording), `codex-clipboard-d0b3a4b0-fcf9-430d-a2a8-697ca812dadf.png` (missing building imagery). Raw evidence and fixture-position setup are under ignored `Artifacts/Orchestration/20261025-resume/` and lane e `Artifacts/PackagedAcceptance/LAN-ff59b35d-20261025-190917/`.
 
@@ -37,7 +39,7 @@ Client fixes and matching-package verification. Visual changes require fresh ind
 
 ## Next step
 
-Finish the three active child tasks; route the MetaHuman and gathering-skill tasks as slots free. Keep every row current and distinguish implemented, tested, owner-approved and deployed.
+Run one combined Editor build and the exact child-task checks in lane b, then complete independent visual review/owner approval, freeze matching packages and resume the required live loot sequence. Keep every row current and distinguish implemented, tested, owner-approved and deployed.
 
 ## Rules for this task
 
