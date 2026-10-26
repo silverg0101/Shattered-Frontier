@@ -25,7 +25,7 @@ River and ponds read as real water, the player swims in them, and bridge approac
 - Swim netcheck or automation test: enter Eastwood Pond, swim state replicates.
 
 ## State
-Implemented and landed on main 2026-10-26; visual review stopped after 3 rounds (round 3: 6 PASS, 8 FAIL), so it is **not signed off**. Open list: `docs/evidence/graphics/2026-10-26-silverbrook-water/REVIEW-r3.md`; owner questions: `docs/decisions/WORLD-silverbrook-water-and-swim.md`.
+Implemented and landed on main 2026-10-26; visual review stopped after 3 rounds (round 3: 6 PASS, 8 FAIL), so it is **not signed off**. **Owner of the next step: owner** (sign-off or a fix list after playing the deployed build). Open list: `docs/evidence/graphics/2026-10-26-silverbrook-water/REVIEW-r3.md`; owner questions: `docs/decisions/WORLD-silverbrook-water-and-swim.md`.
 
 ## Outcome
 Water (SLW flow/depth/foam, underwater grade), swim clip and pose, bridge-end fill, node shows its own tree, new hay bales, props out of water. Test: `tools/Test-SwimPose.ps1` PASS; `SilverbrookIntegrity` PASS. Not run: Silverbrook environment netcheck (WorldContent bridge failed here).
