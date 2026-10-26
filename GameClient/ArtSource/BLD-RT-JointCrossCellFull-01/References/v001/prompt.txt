@@ -1,0 +1,5 @@
+Concept sheet prompt:
+Stylized-concept architectural game asset sheet, frontier crafting game, no people and no text. Rough timber beam-to-post cross joint construction module: clear four-way plus junction assembled from square rough-sawn oak beams with dark iron pegs, orthographic assembly study at left and isolated clean full component at right, neutral warm gray background, even studio lighting. Match established handmade rough timber style. Show repeated, rotated and cross-contact logic without additional brackets or protrusions. This is visual reference only, not exact engineering.
+
+Clean view prompt:
+Stylized-concept game asset, no people, no text. Isolated clean full-asset orthographic three-quarter view of one rough timber four-way cross-joint module: central square oak post with four square rough-sawn horizontal beams entering at 90 degrees, restrained dark pegs, compact modular contact faces, neutral warm gray studio background. No repeated samples, no labels, no extra brackets, no overhang embellishments; visual reference only, not dimensionally validated.

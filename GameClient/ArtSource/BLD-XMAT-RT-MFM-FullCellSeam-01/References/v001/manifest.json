@@ -1,0 +1,61 @@
+{
+  "assetId": "BLD-XMAT-RT-MFM-FullCellSeam-01",
+  "version": "v001",
+  "category": "named cross-kit full-cell material seam",
+  "created": "2026-10-18",
+  "sourceReferences": [
+    "docs/art-templates/asset-lists/construction-kit-matrix-07.md — named cross-kit interfaces",
+    "docs/Game-Design/Legends_Shattered_Frontier_Construction_System_Architecture_v0.1.md — §§3.1–3.2, 8–9"
+  ],
+  "definition": {
+    "geometryRef": "full-cell shared contact plane (proposal)",
+    "sourceKits": [
+      "RT",
+      "MFM"
+    ],
+    "contact": "flush full-cell interface; dimensions per source contract, not inferred",
+    "cosmeticOnly": true,
+    "gameplayTierProperties": "remain those of each source material kit"
+  },
+  "generation": {
+    "tool": "built-in image_gen",
+    "date": "2026-10-18",
+    "model": "unavailable",
+    "seed": "unavailable",
+    "promptRecord": "prompt.txt",
+    "referenceImagesAttached": []
+  },
+  "images": [
+    {
+      "path": "concept-sheet.png",
+      "sha256": "e3178ca03a86875a01fb68addc4fd01d5e2287deeec3df1b1b708abee08e3159",
+      "width": 1536,
+      "height": 1024,
+      "pixelFormat": "RGB 24-bit",
+      "alpha": false,
+      "review": "Rough timber and steel-framed masonry stay distinct; repeated seam examples are legible. Clean view is one adjacent timber panel and framed masonry panel; shared plane visible, dimensional fit unknown."
+    },
+    {
+      "path": "asset-view.png",
+      "sha256": "5b76abc070ff535a1effada13e87bd354ef44d5afd63d99b82e97a0fbd6a185d",
+      "width": 1536,
+      "height": 1024,
+      "pixelFormat": "RGB 24-bit",
+      "alpha": false,
+      "review": "Rough timber and steel-framed masonry stay distinct; repeated seam examples are legible. Clean view is one adjacent timber panel and framed masonry panel; shared plane visible, dimensional fit unknown."
+    }
+  ],
+  "review": {
+    "reviewedBy": "Codex",
+    "conceptStatus": "proposed",
+    "cleanViewStatus": "ready-for-model-test",
+    "imageStatus": "image-complete",
+    "geometryAcceptance": "not established",
+    "numericalMeshFit": "not established",
+    "runtimeCollisionSupportClearance": "not established",
+    "actionableFindings": [
+      "Rough timber and steel-framed masonry stay distinct; repeated seam examples are legible. Clean view is one adjacent timber panel and framed masonry panel; shared plane visible, dimensional fit unknown."
+    ]
+  },
+  "componentBoundary": "Named contact-interface subassembly; does not blend source materials or gameplay profiles. No numerical or runtime acceptance."
+}

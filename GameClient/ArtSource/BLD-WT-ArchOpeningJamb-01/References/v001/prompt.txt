@@ -1,0 +1,34 @@
+REJECTED FIRST CONCEPT-SHEET PROMPT
+
+Use case: stylized-concept
+Asset type: worked-timber architectural material surface-treatment concept sheet for later modeling reference; output only concept-sheet.png.
+Primary request: Show the KIT-WT appearance treatment for the two vertical jamb and inner-reveal patches of one documented arch-2m/v1 host. This is a surface treatment on a fixed carrier, not new geometry. Work from the target definition below and use supplied images only for appearance guidance. Make the complete treated arch carrier the dominant view; include useful orthographic and section views, patch/contact diagram, and the exact design-target dimensions.
+Input images: Image 1 is KIT-WT worked-timber finish reference; use its warm dressed wood grain and restrained joinery appearance only. Image 2 is a prior KIT-RT arch-jamb appearance study; use only as an arch-opening visual reference, not as authority for extra members or dimensions.
+Scene/backdrop: plain light neutral studio background.
+Subject: One arch-2m/v1 carrier. Exact target envelope 2.0 m wide (local X) × 0.5 m deep (local Y) × 3.0 m tall (local Z). At local XZ: outer shape is rectangle [0,2]×[0,2] plus an upper semicircle centered (1,2) with radius 1 m. Empty opening subtracts rectangle (0.5,1.5)×[0,2] plus an upper semicircle with the same center and radius 0.5 m. Extrude unchanged through Y. Minimum-grid-corner origin (0,0,0), 0.5 m grid. Show the exact clear opening empty. Apply worked-timber appearance only to the two straight vertical jamb/reveal patches from z=0 to the spring points at z=2; leave crown/ring, threshold, door and window interface surfaces neutral gray so the treatment boundary is visible. Mark the two spring-point seam contacts to the separate arch ring-lintel treatment and the base boundary to the separately tracked threshold role.
+Style/medium: precise polished game construction concept illustration, believable worked timber; smooth dressed beams, warm medium-brown wood, natural grain, no metal reinforcement.
+Composition/framing: dominant complete treated arch carrier; include orthographic front, side-section through Y, and small patch/contact details. All views must be the same exact arch and material treatment.
+Lighting/mood: even neutral studio light.
+Color palette: warm worked oak and neutral gray carrier.
+Materials/textures: clean cut edges, vertical grain on jamb treatment, subtle tool marks.
+Text (verbatim): exact labels only: “Envelope target: 2.0 m × 0.5 m × 3.0 m”; “Opening target: 1.0 m clear width; spring line z=2.0 m”; “Grid: 0.5 m”; “X width / Y depth / Z height”; “Jamb-to-ring seam: z=2.0 m”. These are design targets, not image measurements.
+Constraints: no geometry change, no added thickness or protrusions, no new gameplay properties.
+Avoid: door leaf, window, hardware, tile, plaster, captions, logos, watermark.
+
+SELECTED REPAIR CONCEPT-SHEET PROMPT
+
+Use case: precise-object-edit
+Asset type: replacement worked-timber arched-opening material-treatment concept sheet; output one image, concept-sheet.png.
+Input image: the current jamb concept sheet is the sole design reference.
+Primary request: repair the material treatment so it is a flush appearance layer on the fixed arch-2m/v1 carrier. Preserve the exact arch silhouette, empty opening, overall composition, dimensional labels, orthographic views, section, and contact callouts. Change only the depicted KIT-WT jamb treatment and neutral host representation.
+Constraints: the wood appearance must be painted/grained flush on the two straight jamb and reveal patches only, with zero added thickness and no silhouette change. Remove all block-like jamb overlays, end caps, joints, tabs, slots, cutouts, separate voussoirs, timber frame members, and threshold board. Render the rest of the arch carrier as a simple uninterrupted neutral-gray solid with no invented construction seams. Keep the arch ring/crown, threshold zone, door and window interfaces neutral gray. Preserve the exact 2.0 m × 0.5 m × 3.0 m outer envelope; local X width, Y depth, Z height; 0.5 m grid; 1.0 m clear width; spring line z=2.0 m. Add clearly legible exact labels for outer radius 1.0 m and inner opening radius 0.5 m if space allows. Keep the jamb-to-ring treatment seam at both spring points. Do not add dimensions or geometry beyond these stated contract targets.
+Avoid: wooden members, separate solid assets, recesses, protrusions, extra objects, floor tile, door/window, hardware, pseudo-text, watermark.
+
+
+SELECTED CLEAN ASSET-VIEW PROMPT
+
+Use case: precise-object-edit
+Asset type: clean asset-view.png for one KIT-WT arch-2m jamb surface treatment.
+Input image: the selected concept-sheet.png is the sole identity/master reference.
+Primary request: derive one isolated, intact three-quarter view of the same complete arch-2m/v1 carrier with the same flush worked-timber appearance treatment on the two vertical jamb/reveal patches.
+Constraints: preserve exact outer profile and empty opening from the master; 2.0 m × 0.5 m × 3.0 m target envelope, 1.0 m clear width, spring line z=2.0 m, arch outer radius 1.0 m and inner radius 0.5 m. Wood is a surface appearance flush with the carrier, with no added thickness. Keep all other carrier surfaces plain neutral gray. Show exactly one complete arch carrier and no other object. Use a neutral light-gray seamless studio background, even soft lighting, full silhouette with clear margins. No text, dimensions, panels, labels, detail insets, extra parts, threshold, door, window, hardware, floor tiles, or scene. Do not redesign any geometry or the surface pattern.

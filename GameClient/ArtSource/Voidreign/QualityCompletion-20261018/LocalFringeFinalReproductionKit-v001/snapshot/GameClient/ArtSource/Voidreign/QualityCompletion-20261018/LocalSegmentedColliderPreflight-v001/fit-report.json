@@ -1,0 +1,778 @@
+{
+  "schema_version": 1,
+  "status": "rejected-convex-envelope-interferes-with-source-feature",
+  "cpu_only": true,
+  "profile_sha256": "9ac4de9cf641baca139728b1ed4aea0a06e9636fca63ad1b61e4cff596e4b086",
+  "tool_sha256": "e673a575c193577499e3421fdfd3380093943610a5cbc45a355d8bb6a313945a",
+  "input_sha256": {
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringePrimaryFollowReview-v001/source-indexed-world-points.npz": "80f129671e2d351cb39e33076007d5a0e6486561f78f7165908be63808f54365",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/FullLegFringeRoots-v001/region-roots.npz": "6c87dc69d6bbcf1ea76f7ca12e4f860940f328782c4a374a0a33278008bdf682",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\WalkPilot-v003\\Mount-WalkPilot.blend": "f59dc38bff697b6c2a2c84511413d2e292d9fdbb278acc69cd8df6d26a5bd123"
+  },
+  "required_free_clearance_m": 0.003,
+  "frames": 73,
+  "free_source_vertices": 304,
+  "parts": [
+    {
+      "name": "PRI.hind.L.hip",
+      "context_vertices": 573
+    },
+    {
+      "name": "PRI.hind.L.stifle",
+      "context_vertices": 4860
+    },
+    {
+      "name": "PRI.hind.L.hock",
+      "context_vertices": 3034
+    },
+    {
+      "name": "PRI.hind.L.fetlock",
+      "context_vertices": 2250
+    },
+    {
+      "name": "PRI.body.pelvis",
+      "context_vertices": 82
+    }
+  ],
+  "source_secondary_primary_influences": [],
+  "curves": [
+    {
+      "frame": 1,
+      "hull_vertices": 308,
+      "hull_triangles": 596,
+      "free_inside_count": 14,
+      "free_below_required_clearance_count": 26,
+      "minimum_free_signed_clearance_m": -0.004543759860098362,
+      "worst_source_vertex": 251998,
+      "maximum_root_inside_depth_m": 0.015270107425749302
+    },
+    {
+      "frame": 2,
+      "hull_vertices": 308,
+      "hull_triangles": 596,
+      "free_inside_count": 14,
+      "free_below_required_clearance_count": 26,
+      "minimum_free_signed_clearance_m": -0.004549916833639145,
+      "worst_source_vertex": 251998,
+      "maximum_root_inside_depth_m": 0.015274244360625744
+    },
+    {
+      "frame": 3,
+      "hull_vertices": 308,
+      "hull_triangles": 596,
+      "free_inside_count": 14,
+      "free_below_required_clearance_count": 26,
+      "minimum_free_signed_clearance_m": -0.004554760176688433,
+      "worst_source_vertex": 251998,
+      "maximum_root_inside_depth_m": 0.015277034603059292
+    },
+    {
+      "frame": 4,
+      "hull_vertices": 308,
+      "hull_triangles": 596,
+      "free_inside_count": 14,
+      "free_below_required_clearance_count": 26,
+      "minimum_free_signed_clearance_m": -0.004555687308311462,
+      "worst_source_vertex": 251998,
+      "maximum_root_inside_depth_m": 0.015275493264198303
+    },
+    {
+      "frame": 5,
+      "hull_vertices": 308,
+      "hull_triangles": 596,
+      "free_inside_count": 14,
+      "free_below_required_clearance_count": 26,
+      "minimum_free_signed_clearance_m": -0.004550798796117306,
+      "worst_source_vertex": 251998,
+      "maximum_root_inside_depth_m": 0.015267426148056984
+    },
+    {
+      "frame": 6,
+      "hull_vertices": 307,
+      "hull_triangles": 594,
+      "free_inside_count": 14,
+      "free_below_required_clearance_count": 26,
+      "minimum_free_signed_clearance_m": -0.004538791254162788,
+      "worst_source_vertex": 251998,
+      "maximum_root_inside_depth_m": 0.015251695178449154
+    },
+    {
+      "frame": 7,
+      "hull_vertices": 307,
+      "hull_triangles": 594,
+      "free_inside_count": 14,
+      "free_below_required_clearance_count": 26,
+      "minimum_free_signed_clearance_m": -0.004520202986896038,
+      "worst_source_vertex": 251998,
+      "maximum_root_inside_depth_m": 0.015228435397148132
+    },
+    {
+      "frame": 8,
+      "hull_vertices": 307,
+      "hull_triangles": 594,
+      "free_inside_count": 14,
+      "free_below_required_clearance_count": 26,
+      "minimum_free_signed_clearance_m": -0.0044956933706998825,
+      "worst_source_vertex": 251998,
+      "maximum_root_inside_depth_m": 0.015198600478470325
+    },
+    {
+      "frame": 9,
+      "hull_vertices": 306,
+      "hull_triangles": 592,
+      "free_inside_count": 14,
+      "free_below_required_clearance_count": 26,
+      "minimum_free_signed_clearance_m": -0.004467108752578497,
+      "worst_source_vertex": 251998,
+      "maximum_root_inside_depth_m": 0.015164201147854328
+    },
+    {
+      "frame": 10,
+      "hull_vertices": 306,
+      "hull_triangles": 592,
+      "free_inside_count": 14,
+      "free_below_required_clearance_count": 26,
+      "minimum_free_signed_clearance_m": -0.004437264055013657,
+      "worst_source_vertex": 251998,
+      "maximum_root_inside_depth_m": 0.015128495171666145
+    },
+    {
+      "frame": 11,
+      "hull_vertices": 305,
+      "hull_triangles": 590,
+      "free_inside_count": 14,
+      "free_below_required_clearance_count": 26,
+      "minimum_free_signed_clearance_m": -0.0044090826995670795,
+      "worst_source_vertex": 251998,
+      "maximum_root_inside_depth_m": 0.01509452797472477
+    },
+    {
+      "frame": 12,
+      "hull_vertices": 305,
+      "hull_triangles": 590,
+      "free_inside_count": 14,
+      "free_below_required_clearance_count": 26,
+      "minimum_free_signed_clearance_m": -0.0043855211697518826,
+      "worst_source_vertex": 251998,
+      "maximum_root_inside_depth_m": 0.015065356157720089
+    },
+    {
+      "frame": 13,
+      "hull_vertices": 304,
+      "hull_triangles": 588,
+      "free_inside_count": 14,
+      "free_below_required_clearance_count": 26,
+      "minimum_free_signed_clearance_m": -0.0043689110316336155,
+      "worst_source_vertex": 251998,
+      "maximum_root_inside_depth_m": 0.015044281259179115
+    },
+    {
+      "frame": 14,
+      "hull_vertices": 307,
+      "hull_triangles": 594,
+      "free_inside_count": 14,
+      "free_below_required_clearance_count": 26,
+      "minimum_free_signed_clearance_m": -0.004361441358923912,
+      "worst_source_vertex": 251998,
+      "maximum_root_inside_depth_m": 0.015033066272735596
+    },
+    {
+      "frame": 15,
+      "hull_vertices": 306,
+      "hull_triangles": 592,
+      "free_inside_count": 14,
+      "free_below_required_clearance_count": 26,
+      "minimum_free_signed_clearance_m": -0.004363868851214647,
+      "worst_source_vertex": 251998,
+      "maximum_root_inside_depth_m": 0.015033098869025707
+    },
+    {
+      "frame": 16,
+      "hull_vertices": 307,
+      "hull_triangles": 594,
+      "free_inside_count": 14,
+      "free_below_required_clearance_count": 26,
+      "minimum_free_signed_clearance_m": -0.004376210272312164,
+      "worst_source_vertex": 251998,
+      "maximum_root_inside_depth_m": 0.015044203028082848
+    },
+    {
+      "frame": 17,
+      "hull_vertices": 308,
+      "hull_triangles": 596,
+      "free_inside_count": 14,
+      "free_below_required_clearance_count": 26,
+      "minimum_free_signed_clearance_m": -0.004397867247462273,
+      "worst_source_vertex": 251998,
+      "maximum_root_inside_depth_m": 0.015065533109009266
+    },
+    {
+      "frame": 18,
+      "hull_vertices": 307,
+      "hull_triangles": 594,
+      "free_inside_count": 14,
+      "free_below_required_clearance_count": 26,
+      "minimum_free_signed_clearance_m": -0.004426328465342522,
+      "worst_source_vertex": 251998,
+      "maximum_root_inside_depth_m": 0.015094694681465626
+    },
+    {
+      "frame": 19,
+      "hull_vertices": 307,
+      "hull_triangles": 594,
+      "free_inside_count": 14,
+      "free_below_required_clearance_count": 26,
+      "minimum_free_signed_clearance_m": -0.004459414165467024,
+      "worst_source_vertex": 251998,
+      "maximum_root_inside_depth_m": 0.015128737315535545
+    },
+    {
+      "frame": 20,
+      "hull_vertices": 306,
+      "hull_triangles": 592,
+      "free_inside_count": 14,
+      "free_below_required_clearance_count": 26,
+      "minimum_free_signed_clearance_m": -0.004494488704949617,
+      "worst_source_vertex": 251998,
+      "maximum_root_inside_depth_m": 0.015164617449045181
+    },
+    {
+      "frame": 21,
+      "hull_vertices": 307,
+      "hull_triangles": 594,
+      "free_inside_count": 14,
+      "free_below_required_clearance_count": 26,
+      "minimum_free_signed_clearance_m": -0.004527850076556206,
+      "worst_source_vertex": 251998,
+      "maximum_root_inside_depth_m": 0.015199077315628529
+    },
+    {
+      "frame": 22,
+      "hull_vertices": 309,
+      "hull_triangles": 598,
+      "free_inside_count": 14,
+      "free_below_required_clearance_count": 26,
+      "minimum_free_signed_clearance_m": -0.004557181615382433,
+      "worst_source_vertex": 251998,
+      "maximum_root_inside_depth_m": 0.01522885262966156
+    },
+    {
+      "frame": 23,
+      "hull_vertices": 312,
+      "hull_triangles": 604,
+      "free_inside_count": 14,
+      "free_below_required_clearance_count": 26,
+      "minimum_free_signed_clearance_m": -0.004580959212034941,
+      "worst_source_vertex": 251998,
+      "maximum_root_inside_depth_m": 0.015252443961799145
+    },
+    {
+      "frame": 24,
+      "hull_vertices": 313,
+      "hull_triangles": 606,
+      "free_inside_count": 14,
+      "free_below_required_clearance_count": 26,
+      "minimum_free_signed_clearance_m": -0.004597656894475222,
+      "worst_source_vertex": 251998,
+      "maximum_root_inside_depth_m": 0.015268377028405666
+    },
+    {
+      "frame": 25,
+      "hull_vertices": 311,
+      "hull_triangles": 602,
+      "free_inside_count": 14,
+      "free_below_required_clearance_count": 26,
+      "minimum_free_signed_clearance_m": -0.004580143839120865,
+      "worst_source_vertex": 251998,
+      "maximum_root_inside_depth_m": 0.015244708396494389
+    },
+    {
+      "frame": 26,
+      "hull_vertices": 313,
+      "hull_triangles": 606,
+      "free_inside_count": 14,
+      "free_below_required_clearance_count": 26,
+      "minimum_free_signed_clearance_m": -0.004419466946274042,
+      "worst_source_vertex": 251998,
+      "maximum_root_inside_depth_m": 0.015056731179356575
+    },
+    {
+      "frame": 27,
+      "hull_vertices": 312,
+      "hull_triangles": 604,
+      "free_inside_count": 14,
+      "free_below_required_clearance_count": 26,
+      "minimum_free_signed_clearance_m": -0.004134570248425007,
+      "worst_source_vertex": 251998,
+      "maximum_root_inside_depth_m": 0.01472581084817648
+    },
+    {
+      "frame": 28,
+      "hull_vertices": 316,
+      "hull_triangles": 612,
+      "free_inside_count": 12,
+      "free_below_required_clearance_count": 22,
+      "minimum_free_signed_clearance_m": -0.0037921227049082518,
+      "worst_source_vertex": 251998,
+      "maximum_root_inside_depth_m": 0.014329377561807632
+    },
+    {
+      "frame": 29,
+      "hull_vertices": 314,
+      "hull_triangles": 608,
+      "free_inside_count": 12,
+      "free_below_required_clearance_count": 22,
+      "minimum_free_signed_clearance_m": -0.003487848211079836,
+      "worst_source_vertex": 252081,
+      "maximum_root_inside_depth_m": 0.013968647457659245
+    },
+    {
+      "frame": 30,
+      "hull_vertices": 317,
+      "hull_triangles": 614,
+      "free_inside_count": 12,
+      "free_below_required_clearance_count": 22,
+      "minimum_free_signed_clearance_m": -0.003468223614618182,
+      "worst_source_vertex": 252081,
+      "maximum_root_inside_depth_m": 0.013841044157743454
+    },
+    {
+      "frame": 31,
+      "hull_vertices": 315,
+      "hull_triangles": 610,
+      "free_inside_count": 10,
+      "free_below_required_clearance_count": 22,
+      "minimum_free_signed_clearance_m": -0.0034781130962073803,
+      "worst_source_vertex": 252081,
+      "maximum_root_inside_depth_m": 0.01381799764931202
+    },
+    {
+      "frame": 32,
+      "hull_vertices": 310,
+      "hull_triangles": 600,
+      "free_inside_count": 12,
+      "free_below_required_clearance_count": 22,
+      "minimum_free_signed_clearance_m": -0.003518965095281601,
+      "worst_source_vertex": 252081,
+      "maximum_root_inside_depth_m": 0.013857709243893623
+    },
+    {
+      "frame": 33,
+      "hull_vertices": 303,
+      "hull_triangles": 586,
+      "free_inside_count": 12,
+      "free_below_required_clearance_count": 22,
+      "minimum_free_signed_clearance_m": -0.0036113648675382137,
+      "worst_source_vertex": 251998,
+      "maximum_root_inside_depth_m": 0.014174975454807281
+    },
+    {
+      "frame": 34,
+      "hull_vertices": 309,
+      "hull_triangles": 598,
+      "free_inside_count": 14,
+      "free_below_required_clearance_count": 26,
+      "minimum_free_signed_clearance_m": -0.003937309142202139,
+      "worst_source_vertex": 251998,
+      "maximum_root_inside_depth_m": 0.014565332792699337
+    },
+    {
+      "frame": 35,
+      "hull_vertices": 307,
+      "hull_triangles": 594,
+      "free_inside_count": 14,
+      "free_below_required_clearance_count": 26,
+      "minimum_free_signed_clearance_m": -0.0042459312826395035,
+      "worst_source_vertex": 251998,
+      "maximum_root_inside_depth_m": 0.014928189106285572
+    },
+    {
+      "frame": 36,
+      "hull_vertices": 308,
+      "hull_triangles": 596,
+      "free_inside_count": 14,
+      "free_below_required_clearance_count": 26,
+      "minimum_free_signed_clearance_m": -0.004463724326342344,
+      "worst_source_vertex": 251998,
+      "maximum_root_inside_depth_m": 0.015180012211203575
+    },
+    {
+      "frame": 37,
+      "hull_vertices": 308,
+      "hull_triangles": 596,
+      "free_inside_count": 14,
+      "free_below_required_clearance_count": 26,
+      "minimum_free_signed_clearance_m": -0.004543819930404425,
+      "worst_source_vertex": 251998,
+      "maximum_root_inside_depth_m": 0.015269993804395199
+    },
+    {
+      "frame": 38,
+      "hull_vertices": 308,
+      "hull_triangles": 596,
+      "free_inside_count": 14,
+      "free_below_required_clearance_count": 26,
+      "minimum_free_signed_clearance_m": -0.0045498572289943695,
+      "worst_source_vertex": 251998,
+      "maximum_root_inside_depth_m": 0.015274272300302982
+    },
+    {
+      "frame": 39,
+      "hull_vertices": 308,
+      "hull_triangles": 596,
+      "free_inside_count": 14,
+      "free_below_required_clearance_count": 26,
+      "minimum_free_signed_clearance_m": -0.004554718267172575,
+      "worst_source_vertex": 251998,
+      "maximum_root_inside_depth_m": 0.015277042984962463
+    },
+    {
+      "frame": 40,
+      "hull_vertices": 308,
+      "hull_triangles": 596,
+      "free_inside_count": 14,
+      "free_below_required_clearance_count": 26,
+      "minimum_free_signed_clearance_m": -0.004555621650069952,
+      "worst_source_vertex": 251998,
+      "maximum_root_inside_depth_m": 0.015275444835424423
+    },
+    {
+      "frame": 41,
+      "hull_vertices": 308,
+      "hull_triangles": 596,
+      "free_inside_count": 14,
+      "free_below_required_clearance_count": 26,
+      "minimum_free_signed_clearance_m": -0.004550713114440441,
+      "worst_source_vertex": 251998,
+      "maximum_root_inside_depth_m": 0.015267315320670605
+    },
+    {
+      "frame": 42,
+      "hull_vertices": 307,
+      "hull_triangles": 594,
+      "free_inside_count": 14,
+      "free_below_required_clearance_count": 26,
+      "minimum_free_signed_clearance_m": -0.004538979381322861,
+      "worst_source_vertex": 251998,
+      "maximum_root_inside_depth_m": 0.015251724049448967
+    },
+    {
+      "frame": 43,
+      "hull_vertices": 307,
+      "hull_triangles": 594,
+      "free_inside_count": 14,
+      "free_below_required_clearance_count": 26,
+      "minimum_free_signed_clearance_m": -0.004520080052316189,
+      "worst_source_vertex": 251998,
+      "maximum_root_inside_depth_m": 0.015228372998535633
+    },
+    {
+      "frame": 44,
+      "hull_vertices": 307,
+      "hull_triangles": 594,
+      "free_inside_count": 14,
+      "free_below_required_clearance_count": 26,
+      "minimum_free_signed_clearance_m": -0.004495685454457998,
+      "worst_source_vertex": 251998,
+      "maximum_root_inside_depth_m": 0.015198584645986557
+    },
+    {
+      "frame": 45,
+      "hull_vertices": 306,
+      "hull_triangles": 592,
+      "free_inside_count": 14,
+      "free_below_required_clearance_count": 26,
+      "minimum_free_signed_clearance_m": -0.0044670081697404385,
+      "worst_source_vertex": 251998,
+      "maximum_root_inside_depth_m": 0.015164311043918133
+    },
+    {
+      "frame": 46,
+      "hull_vertices": 306,
+      "hull_triangles": 592,
+      "free_inside_count": 14,
+      "free_below_required_clearance_count": 26,
+      "minimum_free_signed_clearance_m": -0.004437379073351622,
+      "worst_source_vertex": 251998,
+      "maximum_root_inside_depth_m": 0.015128531493246555
+    },
+    {
+      "frame": 47,
+      "hull_vertices": 305,
+      "hull_triangles": 590,
+      "free_inside_count": 14,
+      "free_below_required_clearance_count": 26,
+      "minimum_free_signed_clearance_m": -0.004409197252243757,
+      "worst_source_vertex": 251998,
+      "maximum_root_inside_depth_m": 0.015094448812305927
+    },
+    {
+      "frame": 48,
+      "hull_vertices": 305,
+      "hull_triangles": 590,
+      "free_inside_count": 14,
+      "free_below_required_clearance_count": 26,
+      "minimum_free_signed_clearance_m": -0.00438555795699358,
+      "worst_source_vertex": 251998,
+      "maximum_root_inside_depth_m": 0.015065442770719528
+    },
+    {
+      "frame": 49,
+      "hull_vertices": 304,
+      "hull_triangles": 588,
+      "free_inside_count": 14,
+      "free_below_required_clearance_count": 26,
+      "minimum_free_signed_clearance_m": -0.0043689412996172905,
+      "worst_source_vertex": 251998,
+      "maximum_root_inside_depth_m": 0.015044272877275944
+    },
+    {
+      "frame": 50,
+      "hull_vertices": 307,
+      "hull_triangles": 594,
+      "free_inside_count": 14,
+      "free_below_required_clearance_count": 26,
+      "minimum_free_signed_clearance_m": -0.004361441358923912,
+      "worst_source_vertex": 251998,
+      "maximum_root_inside_depth_m": 0.015033039264380932
+    },
+    {
+      "frame": 51,
+      "hull_vertices": 307,
+      "hull_triangles": 594,
+      "free_inside_count": 14,
+      "free_below_required_clearance_count": 26,
+      "minimum_free_signed_clearance_m": -0.00436388747766614,
+      "worst_source_vertex": 251998,
+      "maximum_root_inside_depth_m": 0.01503312774002552
+    },
+    {
+      "frame": 52,
+      "hull_vertices": 307,
+      "hull_triangles": 594,
+      "free_inside_count": 14,
+      "free_below_required_clearance_count": 26,
+      "minimum_free_signed_clearance_m": -0.0043763043358922005,
+      "worst_source_vertex": 251998,
+      "maximum_root_inside_depth_m": 0.01504426822066307
+    },
+    {
+      "frame": 53,
+      "hull_vertices": 308,
+      "hull_triangles": 596,
+      "free_inside_count": 14,
+      "free_below_required_clearance_count": 26,
+      "minimum_free_signed_clearance_m": -0.0043978020548820496,
+      "worst_source_vertex": 251998,
+      "maximum_root_inside_depth_m": 0.015065554529428482
+    },
+    {
+      "frame": 54,
+      "hull_vertices": 307,
+      "hull_triangles": 594,
+      "free_inside_count": 14,
+      "free_below_required_clearance_count": 26,
+      "minimum_free_signed_clearance_m": -0.004426299594342709,
+      "worst_source_vertex": 251998,
+      "maximum_root_inside_depth_m": 0.01509467326104641
+    },
+    {
+      "frame": 55,
+      "hull_vertices": 307,
+      "hull_triangles": 594,
+      "free_inside_count": 14,
+      "free_below_required_clearance_count": 26,
+      "minimum_free_signed_clearance_m": -0.00445967074483633,
+      "worst_source_vertex": 251998,
+      "maximum_root_inside_depth_m": 0.015128817409276962
+    },
+    {
+      "frame": 56,
+      "hull_vertices": 306,
+      "hull_triangles": 592,
+      "free_inside_count": 14,
+      "free_below_required_clearance_count": 26,
+      "minimum_free_signed_clearance_m": -0.004494395572692156,
+      "worst_source_vertex": 251998,
+      "maximum_root_inside_depth_m": 0.01516482699662447
+    },
+    {
+      "frame": 57,
+      "hull_vertices": 307,
+      "hull_triangles": 594,
+      "free_inside_count": 14,
+      "free_below_required_clearance_count": 26,
+      "minimum_free_signed_clearance_m": -0.00452787009999156,
+      "worst_source_vertex": 251998,
+      "maximum_root_inside_depth_m": 0.015199214220046997
+    },
+    {
+      "frame": 58,
+      "hull_vertices": 309,
+      "hull_triangles": 598,
+      "free_inside_count": 14,
+      "free_below_required_clearance_count": 26,
+      "minimum_free_signed_clearance_m": -0.004557216539978981,
+      "worst_source_vertex": 251998,
+      "maximum_root_inside_depth_m": 0.015228924341499805
+    },
+    {
+      "frame": 59,
+      "hull_vertices": 312,
+      "hull_triangles": 604,
+      "free_inside_count": 14,
+      "free_below_required_clearance_count": 26,
+      "minimum_free_signed_clearance_m": -0.00458096619695425,
+      "worst_source_vertex": 251998,
+      "maximum_root_inside_depth_m": 0.015252524055540562
+    },
+    {
+      "frame": 60,
+      "hull_vertices": 313,
+      "hull_triangles": 606,
+      "free_inside_count": 14,
+      "free_below_required_clearance_count": 26,
+      "minimum_free_signed_clearance_m": -0.004597527906298637,
+      "worst_source_vertex": 251998,
+      "maximum_root_inside_depth_m": 0.01526821218430996
+    },
+    {
+      "frame": 61,
+      "hull_vertices": 311,
+      "hull_triangles": 602,
+      "free_inside_count": 14,
+      "free_below_required_clearance_count": 26,
+      "minimum_free_signed_clearance_m": -0.004580186679959297,
+      "worst_source_vertex": 251998,
+      "maximum_root_inside_depth_m": 0.015244852751493454
+    },
+    {
+      "frame": 62,
+      "hull_vertices": 313,
+      "hull_triangles": 606,
+      "free_inside_count": 14,
+      "free_below_required_clearance_count": 26,
+      "minimum_free_signed_clearance_m": -0.00441927183419466,
+      "worst_source_vertex": 251998,
+      "maximum_root_inside_depth_m": 0.015056472271680832
+    },
+    {
+      "frame": 63,
+      "hull_vertices": 312,
+      "hull_triangles": 604,
+      "free_inside_count": 14,
+      "free_below_required_clearance_count": 26,
+      "minimum_free_signed_clearance_m": -0.004134499002248049,
+      "worst_source_vertex": 251998,
+      "maximum_root_inside_depth_m": 0.014725825749337673
+    },
+    {
+      "frame": 64,
+      "hull_vertices": 316,
+      "hull_triangles": 612,
+      "free_inside_count": 12,
+      "free_below_required_clearance_count": 22,
+      "minimum_free_signed_clearance_m": -0.003792222822085023,
+      "worst_source_vertex": 251998,
+      "maximum_root_inside_depth_m": 0.014329406432807446
+    },
+    {
+      "frame": 65,
+      "hull_vertices": 314,
+      "hull_triangles": 608,
+      "free_inside_count": 12,
+      "free_below_required_clearance_count": 22,
+      "minimum_free_signed_clearance_m": -0.003487788839265704,
+      "worst_source_vertex": 252081,
+      "maximum_root_inside_depth_m": 0.013968654908239841
+    },
+    {
+      "frame": 66,
+      "hull_vertices": 317,
+      "hull_triangles": 614,
+      "free_inside_count": 12,
+      "free_below_required_clearance_count": 22,
+      "minimum_free_signed_clearance_m": -0.003468342823907733,
+      "worst_source_vertex": 252081,
+      "maximum_root_inside_depth_m": 0.013840990141034126
+    },
+    {
+      "frame": 67,
+      "hull_vertices": 315,
+      "hull_triangles": 610,
+      "free_inside_count": 10,
+      "free_below_required_clearance_count": 22,
+      "minimum_free_signed_clearance_m": -0.003478171769529581,
+      "worst_source_vertex": 252081,
+      "maximum_root_inside_depth_m": 0.013817975297570229
+    },
+    {
+      "frame": 68,
+      "hull_vertices": 310,
+      "hull_triangles": 600,
+      "free_inside_count": 12,
+      "free_below_required_clearance_count": 22,
+      "minimum_free_signed_clearance_m": -0.0035189439076930285,
+      "worst_source_vertex": 252081,
+      "maximum_root_inside_depth_m": 0.013857771642506123
+    },
+    {
+      "frame": 69,
+      "hull_vertices": 303,
+      "hull_triangles": 586,
+      "free_inside_count": 12,
+      "free_below_required_clearance_count": 22,
+      "minimum_free_signed_clearance_m": -0.0036114791873842478,
+      "worst_source_vertex": 251998,
+      "maximum_root_inside_depth_m": 0.01417512446641922
+    },
+    {
+      "frame": 70,
+      "hull_vertices": 309,
+      "hull_triangles": 598,
+      "free_inside_count": 14,
+      "free_below_required_clearance_count": 26,
+      "minimum_free_signed_clearance_m": -0.003937401808798313,
+      "worst_source_vertex": 251998,
+      "maximum_root_inside_depth_m": 0.014565421268343925
+    },
+    {
+      "frame": 71,
+      "hull_vertices": 307,
+      "hull_triangles": 594,
+      "free_inside_count": 14,
+      "free_below_required_clearance_count": 26,
+      "minimum_free_signed_clearance_m": -0.004245995543897152,
+      "worst_source_vertex": 251998,
+      "maximum_root_inside_depth_m": 0.014928238466382027
+    },
+    {
+      "frame": 72,
+      "hull_vertices": 308,
+      "hull_triangles": 596,
+      "free_inside_count": 14,
+      "free_below_required_clearance_count": 26,
+      "minimum_free_signed_clearance_m": -0.0044638304971158504,
+      "worst_source_vertex": 251998,
+      "maximum_root_inside_depth_m": 0.015180020593106747
+    },
+    {
+      "frame": 73,
+      "hull_vertices": 308,
+      "hull_triangles": 596,
+      "free_inside_count": 14,
+      "free_below_required_clearance_count": 26,
+      "minimum_free_signed_clearance_m": -0.004543885122984648,
+      "worst_source_vertex": 251998,
+      "maximum_root_inside_depth_m": 0.01526997983455658
+    }
+  ],
+  "limitations": [
+    "Per-frame convex envelopes are fit diagnostics, not a temporally coherent runtime collider.",
+    "Part-union minimum signed distance is a conservative per-part diagnostic, not exact union depth.",
+    "Primary-weight segmentation is a proposed partition, not semantic/anatomical approval.",
+    "Source-context envelope can include ornaments/concavities and overfill intended free space.",
+    "Sampled source integer frames only; no cloth rebake, full-body/self/swept collision acceptance.",
+    "No source model, weight, animation, contact mask or attempt counter changed."
+  ]
+}

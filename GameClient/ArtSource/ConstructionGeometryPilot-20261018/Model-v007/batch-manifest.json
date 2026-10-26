@@ -1,0 +1,239 @@
+{
+  "batch": "construction-material-quality-revision-20261019-a",
+  "status": "prototype-subset",
+  "scope_revision": "User requested continuing construction-model issue fixes on 2026-10-19; prior v006 quality findings retained in provenance.",
+  "batch_size": 3,
+  "acceptance_claim": false,
+  "engine_ready": false,
+  "blender_path": "C:\\Program Files\\Blender Foundation\\Blender 5.1\\blender.exe",
+  "blender_version": "5.1.1",
+  "render_engine": "Cycles CPU",
+  "texture_size_px": [
+    1024,
+    1024
+  ],
+  "maps": [
+    "basecolor",
+    "roughness",
+    "normal",
+    "height"
+  ],
+  "assets": [
+    {
+      "asset_id": "BLD-RT-CellFull-01",
+      "geometry_key": "cell-full",
+      "skin": "rough-timber",
+      "source_manifest": "GameClient/ArtSource/BLD-RT-CellFull-01/References/v001/manifest.json",
+      "source_image": "GameClient/ArtSource/BLD-RT-CellFull-01/References/v001/asset-view.png",
+      "reference_role": "appearance guidance only",
+      "output": "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v007/BLD-RT-CellFull-01",
+      "files": {
+        "asset-view.png": {
+          "sha256": "77474eeb313f39c7332886eca204d985808b4a8a53a7dfed171a11351f0708af",
+          "bytes": 1303725
+        },
+        "blender-build.log": {
+          "sha256": "05d5320cfa7747535d5489e93c9a7b9da3a211d339019d509a6c4aced566c175",
+          "bytes": 1439
+        },
+        "build_material.py": {
+          "sha256": "58807a48c7be16e86ec0244457383050d70840ee070edb30a8dd9e7f73538c92",
+          "bytes": 3719
+        },
+        "SM_BLD_RT_CellFull_01_v002.blend": {
+          "sha256": "9a8d67124195d0b3735684a6b0d441601f1130fe86bd227a2a3b13482aab41b5",
+          "bytes": 286250
+        },
+        "SM_BLD_RT_CellFull_01_v002.fbx": {
+          "sha256": "37c3aa7d55e9429ad936c97638a7a4e7361cd475471a0884d6a2710bb513ac3f",
+          "bytes": 21340
+        },
+        "SM_BLD_RT_CellFull_01_v002.glb": {
+          "sha256": "6e40a2099ed8b603eabb589e4af230715a2e49b69d8c22483b49347a30c8f6ca",
+          "bytes": 269468
+        },
+        "texture-source.json": {
+          "sha256": "914e8d8391140a10fe3cdd151df4a18b56f12c09c16f405148284f8a472b99fb",
+          "bytes": 770
+        },
+        "Textures/basecolor.png": {
+          "sha256": "38ab4cb0ab977daafeea54cca13f04917c2627a310f2beb7505ee5fb39f12263",
+          "bytes": 82095
+        },
+        "Textures/height.png": {
+          "sha256": "898b1c705b41edc9d099330acb66aececdcf3be3d81f3bc69a265fd05de84c47",
+          "bytes": 65084
+        },
+        "Textures/normal.png": {
+          "sha256": "848ac29906e3e90304a91bf0b4bfdc6431121d9cd16f56d35bf5c00fc9d33550",
+          "bytes": 51200
+        },
+        "Textures/roughness.png": {
+          "sha256": "859562ecb5fc628f226e80b5a1c3b11936b5df50a99e9e9845be2f456b8d685e",
+          "bytes": 59513
+        }
+      },
+      "status": "prototype-subset; needs-review; acceptance_claim=false",
+      "checks": {
+        "source_blend_opened": true,
+        "uv0_authored": true,
+        "maps_saved": true,
+        "cpu_render_saved": true,
+        "glb_exported": true,
+        "fbx_exported": true
+      },
+      "open_gates": [
+        "fresh source reopen inspection",
+        "fresh GLB/FBX import inspection",
+        "tile and assembled seam visual review",
+        "unreal import and material preview",
+        "collision/LOD/performance evidence",
+        "approved GEO-01 and applicable GEO-02"
+      ]
+    },
+    {
+      "asset_id": "BLD-SM-CellFull-01",
+      "geometry_key": "cell-full",
+      "skin": "stone-masonry",
+      "source_manifest": "GameClient/ArtSource/BLD-SM-CellFull-01/References/v001/manifest.json",
+      "source_image": "GameClient/ArtSource/BLD-SM-CellFull-01/References/v001/asset-view.png",
+      "reference_role": "appearance guidance only",
+      "output": "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v007/BLD-SM-CellFull-01",
+      "files": {
+        "asset-view.png": {
+          "sha256": "890f08e6cfae547c66dfb731f75fa1f742798d06fc51ee2b221142b686a0a227",
+          "bytes": 1368560
+        },
+        "blender-build.log": {
+          "sha256": "3f7350335903fe97d1bea75dabff57c79fef78200c64ebefe327334db208f4ea",
+          "bytes": 1440
+        },
+        "build_material.py": {
+          "sha256": "f70bbae5196fc8debde396c389d6e4c2fae325de79b8b98afe45fe0064d1f75b",
+          "bytes": 3721
+        },
+        "SM_BLD_SM_CellFull_01_v002.blend": {
+          "sha256": "56d518c2b8f30053c5b9a0ad2692fdc873478473773163f52991d5acad0c3f90",
+          "bytes": 681739
+        },
+        "SM_BLD_SM_CellFull_01_v002.fbx": {
+          "sha256": "563944d8a94587215f6687a761fe72d4a8839056b61571bead763e3ae274e73a",
+          "bytes": 21340
+        },
+        "SM_BLD_SM_CellFull_01_v002.glb": {
+          "sha256": "db2562f357edaf1ca8228f9c8be56dcbbc545892eb5a28481f328b06140f1ddb",
+          "bytes": 834352
+        },
+        "texture-source.json": {
+          "sha256": "87c4a0b1b9808085a88bb8a7dbc6591ebddbbef925a2208edc0d2e7643e296e1",
+          "bytes": 771
+        },
+        "Textures/basecolor.png": {
+          "sha256": "777cfa5a33879668fb8dfc7192a8d91fc3d7ee66adf67029ff9ac72787fef518",
+          "bytes": 355384
+        },
+        "Textures/height.png": {
+          "sha256": "21bf4634c33697b628f8d4c73d515753500f18e27f92b74294b6a5911317b9ad",
+          "bytes": 124026
+        },
+        "Textures/normal.png": {
+          "sha256": "7ff474600c50de44d97875a0cd1402f57ac93b9b0bb1a1e8615355ba6c51525c",
+          "bytes": 152871
+        },
+        "Textures/roughness.png": {
+          "sha256": "6b342ddfb632eeceba462043d4aeabe93876041741ead76ddb70162174d36dc1",
+          "bytes": 79510
+        }
+      },
+      "status": "prototype-subset; needs-review; acceptance_claim=false",
+      "checks": {
+        "source_blend_opened": true,
+        "uv0_authored": true,
+        "maps_saved": true,
+        "cpu_render_saved": true,
+        "glb_exported": true,
+        "fbx_exported": true
+      },
+      "open_gates": [
+        "fresh source reopen inspection",
+        "fresh GLB/FBX import inspection",
+        "tile and assembled seam visual review",
+        "unreal import and material preview",
+        "collision/LOD/performance evidence",
+        "approved GEO-01 and applicable GEO-02"
+      ]
+    },
+    {
+      "asset_id": "BLD-WT-CellFull-01",
+      "geometry_key": "cell-full",
+      "skin": "worked-timber",
+      "source_manifest": "GameClient/ArtSource/BLD-WT-CellFull-01/References/v001/manifest.json",
+      "source_image": "GameClient/ArtSource/BLD-WT-CellFull-01/References/v001/asset-view.png",
+      "reference_role": "appearance guidance only",
+      "output": "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v007/BLD-WT-CellFull-01",
+      "files": {
+        "asset-view.png": {
+          "sha256": "c95ce1d3114b88cb144c9c208362ec9db9f2528cf961f0d7b4dc9d9fe58ec513",
+          "bytes": 1323175
+        },
+        "blender-build.log": {
+          "sha256": "b3df3b9182801a5a8836f679422d0ddfbc554ff79e9cada6d0b0678fb07a32ec",
+          "bytes": 1440
+        },
+        "build_material.py": {
+          "sha256": "bdce1c82679c34f22b879bc595c87bf4f732e47c259331c758b2705af8310e01",
+          "bytes": 3721
+        },
+        "SM_BLD_WT_CellFull_01_v002.blend": {
+          "sha256": "4a3312192861cb046ab2e01f831a22da058bb153f13d5f68959ee72157ee5a72",
+          "bytes": 257560
+        },
+        "SM_BLD_WT_CellFull_01_v002.fbx": {
+          "sha256": "7c9a15a137f1f76f35108b76dce2df4e7d855c7f9c81da6cb5e402ea401a115b",
+          "bytes": 21340
+        },
+        "SM_BLD_WT_CellFull_01_v002.glb": {
+          "sha256": "10e11d5477375944cda59950332ebd9382728ed8b736eafbc3e5dce5295ed678",
+          "bytes": 233108
+        },
+        "texture-source.json": {
+          "sha256": "477ed5d8b20eafbe3ff7e898b8cabb3c2cd31d62b105bb6ecfc03977cfbe6bcf",
+          "bytes": 771
+        },
+        "Textures/basecolor.png": {
+          "sha256": "d930596234714d7474468d7ffc541b0ba54f8f48653725cbc435fa0a22a6f9fe",
+          "bytes": 80714
+        },
+        "Textures/height.png": {
+          "sha256": "a01b3c11aa53287211db4689af5b897edeab40dda0ddf5a0215bed276649ec61",
+          "bytes": 49711
+        },
+        "Textures/normal.png": {
+          "sha256": "4dbbf8fe5f925916364a7a1f4cb42d17941111bbccd264f4d5dd39c00623fe64",
+          "bytes": 45540
+        },
+        "Textures/roughness.png": {
+          "sha256": "4041da0d099a9544411f949878370870d075e3c6f169a27101c53b3f6a970bde",
+          "bytes": 45788
+        }
+      },
+      "status": "prototype-subset; needs-review; acceptance_claim=false",
+      "checks": {
+        "source_blend_opened": true,
+        "uv0_authored": true,
+        "maps_saved": true,
+        "cpu_render_saved": true,
+        "glb_exported": true,
+        "fbx_exported": true
+      },
+      "open_gates": [
+        "fresh source reopen inspection",
+        "fresh GLB/FBX import inspection",
+        "tile and assembled seam visual review",
+        "unreal import and material preview",
+        "collision/LOD/performance evidence",
+        "approved GEO-01 and applicable GEO-02"
+      ]
+    }
+  ]
+}

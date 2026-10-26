@@ -1,0 +1,34 @@
+{
+  "backend": "Pixal3D",
+  "status": "complete",
+  "seed": 42,
+  "pipeline": "1024_cascade",
+  "steps": 12,
+  "image": "/mnt/c/Projects/Shattered-Frontier/GameClient/ArtSource/Voidreign/Trellis2-20261018/Voidreign-clean.png",
+  "image_sha256": "d67522bf160e2dbfe763a5945e651b6b5c508f32676257dac80c98b26a42aca0",
+  "torch": "2.14.0+rocm10.1.0",
+  "hip": "7.16.26385",
+  "gpu": "AMD Radeon RX 7900 XTX",
+  "stages": {
+    "load_seconds": 40.074,
+    "camera_seconds": 15.159,
+    "inference_seconds": 208.866,
+    "export_seconds": 22.881
+  },
+  "texture_size": 2048,
+  "decimation_target": 300000,
+  "max_num_tokens": 49152,
+  "attention": "dense and sparse PyTorch SDPA; NAF shifted dilated neighborhoods via chunked PyTorch",
+  "stage": "complete",
+  "model_revision": "b0cb2e1b794cab9aa0ac38a95d794a4d9337437f",
+  "camera_params": {
+    "camera_angle_x": 0.6147557713989248,
+    "distance": 1.5751069784164429,
+    "mesh_scale": 1.0
+  },
+  "raw_mesh": {
+    "vertices": 2752325,
+    "faces": 6506198
+  },
+  "effective_grid_resolution": 1024
+}

@@ -1,0 +1,4404 @@
+{
+  "schema_version": 1,
+  "status": "feature-support-adjacency-proposals-needs-review",
+  "cpu_only": true,
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz": "0d7599c8064cb81a6e211a23731435e08939b7fb146ce2d4bed810273909a2b2",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LegFringeLabelCorrection-v001\\label-only-selections.npz": "dc78ba7dbd5a03bef0f0397a26435ec6bcf31b079c340aff5d035a2b1566a630",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryDomains-v001\\primary-domains.npz": "38002ef04f9ab82df4456021b3772e422328e2ecebd38bd068a344dd5e27bdb5"
+  },
+  "profile_sha256": "f7506f69167821591508370b2fe38f1e77b40e0654864c0940207a848528b74c",
+  "tool_sha256": "42cc91130d0009540524892e76330b2f03b7ff0e11ee6e93f6ede77a2ceb6b31",
+  "components": 166,
+  "conflicts": 0,
+  "items": [
+    {
+      "id": "FSA-0d7599c806-7411ccf19c6f",
+      "feature": "Mane",
+      "label": 1,
+      "status": "expected-owner-adjacency-only",
+      "vertices": 49685,
+      "faces": 48317,
+      "canonical_nodes": 23103,
+      "support_owner_node_counts": {
+        "5": 823
+      },
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.38423192501068115,
+          -1.1672252416610718,
+          1.4389572143554688
+        ],
+        [
+          0.17974057793617249,
+          0.07478832453489304,
+          2.6000001430511475
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-7411ccf19c6f.vertices",
+      "face_key": "FSA-0d7599c806-7411ccf19c6f.faces",
+      "support_key": "FSA-0d7599c806-7411ccf19c6f.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-c099cf13abd6",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 462,
+      "faces": 404,
+      "canonical_nodes": 189,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.06928768754005432,
+          -0.4848131537437439,
+          1.9003058671951294
+        ],
+        [
+          0.04386404901742935,
+          -0.22059595584869385,
+          2.0114693641662598
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-c099cf13abd6.vertices",
+      "face_key": "FSA-0d7599c806-c099cf13abd6.faces",
+      "support_key": "FSA-0d7599c806-c099cf13abd6.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-7c4413c84bea",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 426,
+      "faces": 516,
+      "canonical_nodes": 260,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.15078508853912354,
+          -0.9220098257064819,
+          1.8661329746246338
+        ],
+        [
+          -0.10864714533090591,
+          -0.33486565947532654,
+          2.308551073074341
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-7c4413c84bea.vertices",
+      "face_key": "FSA-0d7599c806-7c4413c84bea.faces",
+      "support_key": "FSA-0d7599c806-7c4413c84bea.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-f67821f653b4",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 415,
+      "faces": 386,
+      "canonical_nodes": 195,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.34598684310913086,
+          -0.9307000637054443,
+          2.2558083534240723
+        ],
+        [
+          -0.22203189134597778,
+          -0.5456310510635376,
+          2.4629311561584473
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-f67821f653b4.vertices",
+      "face_key": "FSA-0d7599c806-f67821f653b4.faces",
+      "support_key": "FSA-0d7599c806-f67821f653b4.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-c32013effce8",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 312,
+      "faces": 230,
+      "canonical_nodes": 98,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.0930664986371994,
+          -0.6517307758331299,
+          2.1957263946533203
+        ],
+        [
+          -0.07461734116077423,
+          -0.5483832955360413,
+          2.283595323562622
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-c32013effce8.vertices",
+      "face_key": "FSA-0d7599c806-c32013effce8.faces",
+      "support_key": "FSA-0d7599c806-c32013effce8.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-31e7c9bf976e",
+      "feature": "Mane",
+      "label": 1,
+      "status": "expected-owner-adjacency-only",
+      "vertices": 289,
+      "faces": 299,
+      "canonical_nodes": 122,
+      "support_owner_node_counts": {
+        "5": 5
+      },
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.30213651061058044,
+          -1.119003176689148,
+          2.2135798931121826
+        ],
+        [
+          -0.2418496012687683,
+          -1.039731502532959,
+          2.2617979049682617
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-31e7c9bf976e.vertices",
+      "face_key": "FSA-0d7599c806-31e7c9bf976e.faces",
+      "support_key": "FSA-0d7599c806-31e7c9bf976e.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-6be75cefe372",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 248,
+      "faces": 196,
+      "canonical_nodes": 84,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.10170681774616241,
+          -0.44900748133659363,
+          2.0153896808624268
+        ],
+        [
+          -0.08277622610330582,
+          -0.36197078227996826,
+          2.0480706691741943
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-6be75cefe372.vertices",
+      "face_key": "FSA-0d7599c806-6be75cefe372.faces",
+      "support_key": "FSA-0d7599c806-6be75cefe372.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-55c4353543cb",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 228,
+      "faces": 252,
+      "canonical_nodes": 128,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.3204666078090668,
+          -0.5525586605072021,
+          2.1580090522766113
+        ],
+        [
+          -0.21366547048091888,
+          -0.28007763624191284,
+          2.3641600608825684
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-55c4353543cb.vertices",
+      "face_key": "FSA-0d7599c806-55c4353543cb.faces",
+      "support_key": "FSA-0d7599c806-55c4353543cb.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-9711c21ed6ab",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 215,
+      "faces": 176,
+      "canonical_nodes": 91,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.2898327708244324,
+          -1.032805323600769,
+          1.8073556423187256
+        ],
+        [
+          -0.2478889524936676,
+          -0.993196427822113,
+          2.1420094966888428
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-9711c21ed6ab.vertices",
+      "face_key": "FSA-0d7599c806-9711c21ed6ab.faces",
+      "support_key": "FSA-0d7599c806-9711c21ed6ab.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-196495418105",
+      "feature": "Mane",
+      "label": 1,
+      "status": "expected-owner-adjacency-only",
+      "vertices": 201,
+      "faces": 198,
+      "canonical_nodes": 105,
+      "support_owner_node_counts": {
+        "5": 5
+      },
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.10272891819477081,
+          -0.4326820969581604,
+          1.830351710319519
+        ],
+        [
+          -0.08221271634101868,
+          -0.2036515325307846,
+          2.001237392425537
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-196495418105.vertices",
+      "face_key": "FSA-0d7599c806-196495418105.faces",
+      "support_key": "FSA-0d7599c806-196495418105.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-cc7355246898",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 187,
+      "faces": 196,
+      "canonical_nodes": 100,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          0.020319804549217224,
+          -0.818369448184967,
+          2.1603403091430664
+        ],
+        [
+          0.10484901070594788,
+          -0.5261117815971375,
+          2.2468113899230957
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-cc7355246898.vertices",
+      "face_key": "FSA-0d7599c806-cc7355246898.faces",
+      "support_key": "FSA-0d7599c806-cc7355246898.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-c9120cb913d0",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 162,
+      "faces": 142,
+      "canonical_nodes": 61,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          0.01922270655632019,
+          -0.8613134622573853,
+          1.8445477485656738
+        ],
+        [
+          0.038182854652404785,
+          -0.8193638920783997,
+          1.8965939283370972
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-c9120cb913d0.vertices",
+      "face_key": "FSA-0d7599c806-c9120cb913d0.faces",
+      "support_key": "FSA-0d7599c806-c9120cb913d0.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-817c95af85ae",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 161,
+      "faces": 132,
+      "canonical_nodes": 55,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.09510780870914459,
+          -0.7083128690719604,
+          2.281787872314453
+        ],
+        [
+          -0.06454133987426758,
+          -0.662265419960022,
+          2.3191709518432617
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-817c95af85ae.vertices",
+      "face_key": "FSA-0d7599c806-817c95af85ae.faces",
+      "support_key": "FSA-0d7599c806-817c95af85ae.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-4121c52d3626",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 159,
+      "faces": 144,
+      "canonical_nodes": 73,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.1927681267261505,
+          -1.0262748003005981,
+          2.43241024017334
+        ],
+        [
+          -0.16494964063167572,
+          -0.8729530572891235,
+          2.47359037399292
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-4121c52d3626.vertices",
+      "face_key": "FSA-0d7599c806-4121c52d3626.faces",
+      "support_key": "FSA-0d7599c806-4121c52d3626.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-5e0b3a71f2dd",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 151,
+      "faces": 166,
+      "canonical_nodes": 85,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.28909817337989807,
+          -1.0475902557373047,
+          2.3555378913879395
+        ],
+        [
+          -0.21109212934970856,
+          -0.7605863809585571,
+          2.435269594192505
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-5e0b3a71f2dd.vertices",
+      "face_key": "FSA-0d7599c806-5e0b3a71f2dd.faces",
+      "support_key": "FSA-0d7599c806-5e0b3a71f2dd.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-2a2cebfa7306",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 145,
+      "faces": 150,
+      "canonical_nodes": 66,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.15292614698410034,
+          -0.5644352436065674,
+          1.9867846965789795
+        ],
+        [
+          -0.1425105333328247,
+          -0.49859973788261414,
+          2.0301575660705566
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-2a2cebfa7306.vertices",
+      "face_key": "FSA-0d7599c806-2a2cebfa7306.faces",
+      "support_key": "FSA-0d7599c806-2a2cebfa7306.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-eee4d0bda7fe",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 138,
+      "faces": 128,
+      "canonical_nodes": 65,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.04957535117864609,
+          -0.5029666423797607,
+          1.9794249534606934
+        ],
+        [
+          -0.01039198786020279,
+          -0.34495168924331665,
+          2.073343276977539
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-eee4d0bda7fe.vertices",
+      "face_key": "FSA-0d7599c806-eee4d0bda7fe.faces",
+      "support_key": "FSA-0d7599c806-eee4d0bda7fe.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-fbdb01225657",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 138,
+      "faces": 116,
+      "canonical_nodes": 58,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.09166072309017181,
+          -0.9368598461151123,
+          2.3445239067077637
+        ],
+        [
+          -0.009879469871520996,
+          -0.774527907371521,
+          2.3739452362060547
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-fbdb01225657.vertices",
+      "face_key": "FSA-0d7599c806-fbdb01225657.faces",
+      "support_key": "FSA-0d7599c806-fbdb01225657.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-70f49983c020",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 128,
+      "faces": 112,
+      "canonical_nodes": 57,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.19940876960754395,
+          -0.8941242098808289,
+          2.3985085487365723
+        ],
+        [
+          -0.1680656224489212,
+          -0.7475598454475403,
+          2.449859619140625
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-70f49983c020.vertices",
+      "face_key": "FSA-0d7599c806-70f49983c020.faces",
+      "support_key": "FSA-0d7599c806-70f49983c020.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-62fe0741571e",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 126,
+      "faces": 130,
+      "canonical_nodes": 67,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.12414246797561646,
+          -1.1311547756195068,
+          2.354703426361084
+        ],
+        [
+          -0.017247051000595093,
+          -0.9159426689147949,
+          2.413001298904419
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-62fe0741571e.vertices",
+      "face_key": "FSA-0d7599c806-62fe0741571e.faces",
+      "support_key": "FSA-0d7599c806-62fe0741571e.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-4a6d8504b8ff",
+      "feature": "Mane",
+      "label": 1,
+      "status": "expected-owner-adjacency-only",
+      "vertices": 121,
+      "faces": 87,
+      "canonical_nodes": 65,
+      "support_owner_node_counts": {
+        "5": 50
+      },
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.031061023473739624,
+          -1.076223611831665,
+          1.4387519359588623
+        ],
+        [
+          0.15882828831672668,
+          -1.0318366289138794,
+          1.5142961740493774
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-4a6d8504b8ff.vertices",
+      "face_key": "FSA-0d7599c806-4a6d8504b8ff.faces",
+      "support_key": "FSA-0d7599c806-4a6d8504b8ff.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-af61019afdde",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 120,
+      "faces": 122,
+      "canonical_nodes": 63,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.1422640085220337,
+          -1.056057095527649,
+          2.388977289199829
+        ],
+        [
+          -0.11333511769771576,
+          -0.8054425120353699,
+          2.416351795196533
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-af61019afdde.vertices",
+      "face_key": "FSA-0d7599c806-af61019afdde.faces",
+      "support_key": "FSA-0d7599c806-af61019afdde.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-17cc3a783ebb",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 119,
+      "faces": 102,
+      "canonical_nodes": 49,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.015571802854537964,
+          -0.8816516399383545,
+          1.928666114807129
+        ],
+        [
+          0.0014185607433319092,
+          -0.843950092792511,
+          1.990107536315918
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-17cc3a783ebb.vertices",
+      "face_key": "FSA-0d7599c806-17cc3a783ebb.faces",
+      "support_key": "FSA-0d7599c806-17cc3a783ebb.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-5795ca1efed7",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 111,
+      "faces": 78,
+      "canonical_nodes": 41,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.15512599050998688,
+          -0.33046090602874756,
+          1.8757586479187012
+        ],
+        [
+          -0.13609103858470917,
+          -0.27097728848457336,
+          1.921670913696289
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-5795ca1efed7.vertices",
+      "face_key": "FSA-0d7599c806-5795ca1efed7.faces",
+      "support_key": "FSA-0d7599c806-5795ca1efed7.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-11180c6ee01a",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 109,
+      "faces": 120,
+      "canonical_nodes": 62,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.1854550540447235,
+          -0.37963438034057617,
+          2.2450695037841797
+        ],
+        [
+          -0.13190039992332458,
+          -0.29370975494384766,
+          2.36169695854187
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-11180c6ee01a.vertices",
+      "face_key": "FSA-0d7599c806-11180c6ee01a.faces",
+      "support_key": "FSA-0d7599c806-11180c6ee01a.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-2a22b900844a",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 108,
+      "faces": 106,
+      "canonical_nodes": 47,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.26204273104667664,
+          -0.37826547026634216,
+          1.9406676292419434
+        ],
+        [
+          -0.23454830050468445,
+          -0.3336821496486664,
+          1.976649522781372
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-2a22b900844a.vertices",
+      "face_key": "FSA-0d7599c806-2a22b900844a.faces",
+      "support_key": "FSA-0d7599c806-2a22b900844a.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-59939f2168d2",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 108,
+      "faces": 90,
+      "canonical_nodes": 39,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.2687310576438904,
+          -1.0387458801269531,
+          2.127636194229126
+        ],
+        [
+          -0.24091216921806335,
+          -1.0109297037124634,
+          2.1804146766662598
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-59939f2168d2.vertices",
+      "face_key": "FSA-0d7599c806-59939f2168d2.faces",
+      "support_key": "FSA-0d7599c806-59939f2168d2.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-f463bc2264b8",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 102,
+      "faces": 82,
+      "canonical_nodes": 38,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.086233951151371,
+          -0.464802086353302,
+          1.973177194595337
+        ],
+        [
+          -0.07529299706220627,
+          -0.4037141799926758,
+          2.0274574756622314
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-f463bc2264b8.vertices",
+      "face_key": "FSA-0d7599c806-f463bc2264b8.faces",
+      "support_key": "FSA-0d7599c806-f463bc2264b8.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-02f4b933ba5e",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 101,
+      "faces": 122,
+      "canonical_nodes": 63,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.236558198928833,
+          -0.46636930108070374,
+          1.9532939195632935
+        ],
+        [
+          -0.15530382096767426,
+          -0.3479951024055481,
+          2.0461668968200684
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-02f4b933ba5e.vertices",
+      "face_key": "FSA-0d7599c806-02f4b933ba5e.faces",
+      "support_key": "FSA-0d7599c806-02f4b933ba5e.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-e15bce64152a",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 94,
+      "faces": 88,
+      "canonical_nodes": 46,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.35040366649627686,
+          -0.4424419701099396,
+          1.9621243476867676
+        ],
+        [
+          -0.32441380620002747,
+          -0.3255496621131897,
+          1.9836595058441162
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-e15bce64152a.vertices",
+      "face_key": "FSA-0d7599c806-e15bce64152a.faces",
+      "support_key": "FSA-0d7599c806-e15bce64152a.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-b343e04d8e7a",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 93,
+      "faces": 84,
+      "canonical_nodes": 44,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.1497255265712738,
+          -0.5845741629600525,
+          2.2215657234191895
+        ],
+        [
+          -0.12777772545814514,
+          -0.474298894405365,
+          2.311911106109619
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-b343e04d8e7a.vertices",
+      "face_key": "FSA-0d7599c806-b343e04d8e7a.faces",
+      "support_key": "FSA-0d7599c806-b343e04d8e7a.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-3bf68123b435",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 84,
+      "faces": 76,
+      "canonical_nodes": 38,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.22434589266777039,
+          -0.7369259595870972,
+          2.396259307861328
+        ],
+        [
+          -0.1923508644104004,
+          -0.6643625497817993,
+          2.427225112915039
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-3bf68123b435.vertices",
+      "face_key": "FSA-0d7599c806-3bf68123b435.faces",
+      "support_key": "FSA-0d7599c806-3bf68123b435.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-4078087ed946",
+      "feature": "Mane",
+      "label": 1,
+      "status": "expected-owner-adjacency-only",
+      "vertices": 80,
+      "faces": 59,
+      "canonical_nodes": 39,
+      "support_owner_node_counts": {
+        "5": 19
+      },
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          0.1019374281167984,
+          -0.6193094253540039,
+          1.8398852348327637
+        ],
+        [
+          0.14607825875282288,
+          -0.5439742803573608,
+          1.8836085796356201
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-4078087ed946.vertices",
+      "face_key": "FSA-0d7599c806-4078087ed946.faces",
+      "support_key": "FSA-0d7599c806-4078087ed946.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-4a4eca7a98f2",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 77,
+      "faces": 60,
+      "canonical_nodes": 29,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.11472216248512268,
+          -0.6708897352218628,
+          2.1030540466308594
+        ],
+        [
+          -0.09450988471508026,
+          -0.6166679263114929,
+          2.143218994140625
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-4a4eca7a98f2.vertices",
+      "face_key": "FSA-0d7599c806-4a4eca7a98f2.faces",
+      "support_key": "FSA-0d7599c806-4a4eca7a98f2.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-f6eb61fdcdb7",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 76,
+      "faces": 60,
+      "canonical_nodes": 31,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.20801551640033722,
+          -0.2901684045791626,
+          1.9130966663360596
+        ],
+        [
+          -0.19310759007930756,
+          -0.19905203580856323,
+          1.9451345205307007
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-f6eb61fdcdb7.vertices",
+      "face_key": "FSA-0d7599c806-f6eb61fdcdb7.faces",
+      "support_key": "FSA-0d7599c806-f6eb61fdcdb7.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-40e553a972dc",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 72,
+      "faces": 68,
+      "canonical_nodes": 36,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.22831211984157562,
+          -0.6695901155471802,
+          2.4089252948760986
+        ],
+        [
+          -0.20093272626399994,
+          -0.5778685212135315,
+          2.44650936126709
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-40e553a972dc.vertices",
+      "face_key": "FSA-0d7599c806-40e553a972dc.faces",
+      "support_key": "FSA-0d7599c806-40e553a972dc.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-2ddc4fef1b01",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 70,
+      "faces": 74,
+      "canonical_nodes": 39,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          0.04281741380691528,
+          -0.7435974478721619,
+          1.844092845916748
+        ],
+        [
+          0.07967767119407654,
+          -0.6820027828216553,
+          1.9536832571029663
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-2ddc4fef1b01.vertices",
+      "face_key": "FSA-0d7599c806-2ddc4fef1b01.faces",
+      "support_key": "FSA-0d7599c806-2ddc4fef1b01.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-91b4a2fd7953",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 67,
+      "faces": 52,
+      "canonical_nodes": 28,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.0015217959880828857,
+          -1.1059763431549072,
+          1.962591528892517
+        ],
+        [
+          0.031107008457183838,
+          -1.0865273475646973,
+          2.0744869709014893
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-91b4a2fd7953.vertices",
+      "face_key": "FSA-0d7599c806-91b4a2fd7953.faces",
+      "support_key": "FSA-0d7599c806-91b4a2fd7953.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-5046d2045e24",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 66,
+      "faces": 30,
+      "canonical_nodes": 17,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.2525164484977722,
+          -0.9163304567337036,
+          2.3963608741760254
+        ],
+        [
+          -0.22787202894687653,
+          -0.8818064332008362,
+          2.413832664489746
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-5046d2045e24.vertices",
+      "face_key": "FSA-0d7599c806-5046d2045e24.faces",
+      "support_key": "FSA-0d7599c806-5046d2045e24.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-09f519ccee08",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 64,
+      "faces": 64,
+      "canonical_nodes": 29,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.2675207257270813,
+          -0.2940473258495331,
+          1.8977563381195068
+        ],
+        [
+          -0.25274017453193665,
+          -0.25479745864868164,
+          1.9233245849609375
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-09f519ccee08.vertices",
+      "face_key": "FSA-0d7599c806-09f519ccee08.faces",
+      "support_key": "FSA-0d7599c806-09f519ccee08.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-1f1a52936abe",
+      "feature": "Mane",
+      "label": 1,
+      "status": "expected-owner-adjacency-only",
+      "vertices": 62,
+      "faces": 54,
+      "canonical_nodes": 37,
+      "support_owner_node_counts": {
+        "5": 22
+      },
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          0.0036296844482421875,
+          -1.1661361455917358,
+          2.281015157699585
+        ],
+        [
+          0.0920000672340393,
+          -1.1344716548919678,
+          2.410231113433838
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-1f1a52936abe.vertices",
+      "face_key": "FSA-0d7599c806-1f1a52936abe.faces",
+      "support_key": "FSA-0d7599c806-1f1a52936abe.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-c712f120e528",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 59,
+      "faces": 50,
+      "canonical_nodes": 27,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.10084196925163269,
+          -0.8768941164016724,
+          2.301044464111328
+        ],
+        [
+          -0.06464508175849915,
+          -0.7989627718925476,
+          2.329418659210205
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-c712f120e528.vertices",
+      "face_key": "FSA-0d7599c806-c712f120e528.faces",
+      "support_key": "FSA-0d7599c806-c712f120e528.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-1eb408cec8ce",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 58,
+      "faces": 64,
+      "canonical_nodes": 29,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.06244170665740967,
+          -0.6442462801933289,
+          2.1928272247314453
+        ],
+        [
+          -0.03561064600944519,
+          -0.61305832862854,
+          2.227217197418213
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-1eb408cec8ce.vertices",
+      "face_key": "FSA-0d7599c806-1eb408cec8ce.faces",
+      "support_key": "FSA-0d7599c806-1eb408cec8ce.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-08875d14f88e",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 57,
+      "faces": 52,
+      "canonical_nodes": 28,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.007649168372154236,
+          -0.7333053350448608,
+          1.8939456939697266
+        ],
+        [
+          0.02792009711265564,
+          -0.678411066532135,
+          1.959613561630249
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-08875d14f88e.vertices",
+      "face_key": "FSA-0d7599c806-08875d14f88e.faces",
+      "support_key": "FSA-0d7599c806-08875d14f88e.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-05ddabb6cd81",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 56,
+      "faces": 50,
+      "canonical_nodes": 25,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.13458409905433655,
+          -0.6357024312019348,
+          2.2948157787323
+        ],
+        [
+          -0.12765838205814362,
+          -0.57024085521698,
+          2.3277454376220703
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-05ddabb6cd81.vertices",
+      "face_key": "FSA-0d7599c806-05ddabb6cd81.faces",
+      "support_key": "FSA-0d7599c806-05ddabb6cd81.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-b4441af43979",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 55,
+      "faces": 50,
+      "canonical_nodes": 24,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.16627822816371918,
+          -0.2871035039424896,
+          1.853286862373352
+        ],
+        [
+          -0.14841829240322113,
+          -0.2629978060722351,
+          1.872492790222168
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-b4441af43979.vertices",
+      "face_key": "FSA-0d7599c806-b4441af43979.faces",
+      "support_key": "FSA-0d7599c806-b4441af43979.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-da336499e37f",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 55,
+      "faces": 38,
+      "canonical_nodes": 18,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.053896814584732056,
+          -0.7391737699508667,
+          1.9764304161071777
+        ],
+        [
+          -0.04069727659225464,
+          -0.7238093614578247,
+          1.9998631477355957
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-da336499e37f.vertices",
+      "face_key": "FSA-0d7599c806-da336499e37f.faces",
+      "support_key": "FSA-0d7599c806-da336499e37f.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-3c54d350353e",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 52,
+      "faces": 46,
+      "canonical_nodes": 23,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.0001296699047088623,
+          -0.9322172403335571,
+          1.9021161794662476
+        ],
+        [
+          0.01268702745437622,
+          -0.9143629670143127,
+          1.950141429901123
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-3c54d350353e.vertices",
+      "face_key": "FSA-0d7599c806-3c54d350353e.faces",
+      "support_key": "FSA-0d7599c806-3c54d350353e.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-b05f97c2b05a",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 50,
+      "faces": 40,
+      "canonical_nodes": 23,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.011577628552913666,
+          -0.33025550842285156,
+          1.962410569190979
+        ],
+        [
+          0.010864745825529099,
+          -0.25451013445854187,
+          1.9752616882324219
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-b05f97c2b05a.vertices",
+      "face_key": "FSA-0d7599c806-b05f97c2b05a.faces",
+      "support_key": "FSA-0d7599c806-b05f97c2b05a.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-cee772419039",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 50,
+      "faces": 30,
+      "canonical_nodes": 17,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.3384125828742981,
+          -0.437029093503952,
+          2.086674213409424
+        ],
+        [
+          -0.30804702639579773,
+          -0.4158309996128082,
+          2.1067986488342285
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-cee772419039.vertices",
+      "face_key": "FSA-0d7599c806-cee772419039.faces",
+      "support_key": "FSA-0d7599c806-cee772419039.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-decd03c41144",
+      "feature": "Mane",
+      "label": 1,
+      "status": "expected-owner-adjacency-only",
+      "vertices": 47,
+      "faces": 41,
+      "canonical_nodes": 25,
+      "support_owner_node_counts": {
+        "5": 8
+      },
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.1708715260028839,
+          -0.25394949316978455,
+          1.8231425285339355
+        ],
+        [
+          -0.1588635891675949,
+          -0.17908266186714172,
+          1.8600847721099854
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-decd03c41144.vertices",
+      "face_key": "FSA-0d7599c806-decd03c41144.faces",
+      "support_key": "FSA-0d7599c806-decd03c41144.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-1c4978f0aa8b",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 46,
+      "faces": 50,
+      "canonical_nodes": 25,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.25250089168548584,
+          -0.9780679941177368,
+          2.202867269515991
+        ],
+        [
+          -0.23139223456382751,
+          -0.9390844106674194,
+          2.2279510498046875
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-1c4978f0aa8b.vertices",
+      "face_key": "FSA-0d7599c806-1c4978f0aa8b.faces",
+      "support_key": "FSA-0d7599c806-1c4978f0aa8b.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-5c9427d1d079",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 46,
+      "faces": 36,
+      "canonical_nodes": 19,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.11689269542694092,
+          -0.26119348406791687,
+          1.9133191108703613
+        ],
+        [
+          -0.09988542646169662,
+          -0.22220736742019653,
+          1.9295850992202759
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-5c9427d1d079.vertices",
+      "face_key": "FSA-0d7599c806-5c9427d1d079.faces",
+      "support_key": "FSA-0d7599c806-5c9427d1d079.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-155d9149e9d3",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 42,
+      "faces": 30,
+      "canonical_nodes": 17,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.24693267047405243,
+          -1.037232518196106,
+          1.729306936264038
+        ],
+        [
+          -0.21736358106136322,
+          -1.01820707321167,
+          1.7890783548355103
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-155d9149e9d3.vertices",
+      "face_key": "FSA-0d7599c806-155d9149e9d3.faces",
+      "support_key": "FSA-0d7599c806-155d9149e9d3.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-511bd735d5c8",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 42,
+      "faces": 32,
+      "canonical_nodes": 18,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.14056923985481262,
+          -0.23345577716827393,
+          1.8330023288726807
+        ],
+        [
+          -0.12644191086292267,
+          -0.19030283391475677,
+          1.8609766960144043
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-511bd735d5c8.vertices",
+      "face_key": "FSA-0d7599c806-511bd735d5c8.faces",
+      "support_key": "FSA-0d7599c806-511bd735d5c8.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-786fa78ccebd",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 39,
+      "faces": 32,
+      "canonical_nodes": 16,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.31374600529670715,
+          -0.8293290138244629,
+          2.2420654296875
+        ],
+        [
+          -0.2913827896118164,
+          -0.8088566660881042,
+          2.2540745735168457
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-786fa78ccebd.vertices",
+      "face_key": "FSA-0d7599c806-786fa78ccebd.faces",
+      "support_key": "FSA-0d7599c806-786fa78ccebd.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-7eeb441294fc",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 39,
+      "faces": 34,
+      "canonical_nodes": 19,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.055578961968421936,
+          -0.8348598480224609,
+          2.1529793739318848
+        ],
+        [
+          -0.0326559841632843,
+          -0.8155889511108398,
+          2.1889514923095703
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-7eeb441294fc.vertices",
+      "face_key": "FSA-0d7599c806-7eeb441294fc.faces",
+      "support_key": "FSA-0d7599c806-7eeb441294fc.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-45fb0781eb6f",
+      "feature": "Mane",
+      "label": 1,
+      "status": "expected-owner-adjacency-only",
+      "vertices": 38,
+      "faces": 24,
+      "canonical_nodes": 18,
+      "support_owner_node_counts": {
+        "5": 10
+      },
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.4005952775478363,
+          -0.6625492572784424,
+          1.79878830909729
+        ],
+        [
+          -0.36318713426589966,
+          -0.6342044472694397,
+          1.834737777709961
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-45fb0781eb6f.vertices",
+      "face_key": "FSA-0d7599c806-45fb0781eb6f.faces",
+      "support_key": "FSA-0d7599c806-45fb0781eb6f.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-09b6bae635a3",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 37,
+      "faces": 30,
+      "canonical_nodes": 17,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          0.023187994956970215,
+          -0.6312388777732849,
+          2.039000988006592
+        ],
+        [
+          0.062459781765937805,
+          -0.5832473039627075,
+          2.047010898590088
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-09b6bae635a3.vertices",
+      "face_key": "FSA-0d7599c806-09b6bae635a3.faces",
+      "support_key": "FSA-0d7599c806-09b6bae635a3.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-36c6b63a11df",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 37,
+      "faces": 24,
+      "canonical_nodes": 14,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.33259862661361694,
+          -1.0494695901870728,
+          2.108304023742676
+        ],
+        [
+          -0.3186459541320801,
+          -1.0294800996780396,
+          2.1497135162353516
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-36c6b63a11df.vertices",
+      "face_key": "FSA-0d7599c806-36c6b63a11df.faces",
+      "support_key": "FSA-0d7599c806-36c6b63a11df.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-29a24f224571",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 34,
+      "faces": 30,
+      "canonical_nodes": 15,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.08868932723999023,
+          -0.8564244508743286,
+          2.1485960483551025
+        ],
+        [
+          -0.0769830197095871,
+          -0.8418827056884766,
+          2.1643643379211426
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-29a24f224571.vertices",
+      "face_key": "FSA-0d7599c806-29a24f224571.faces",
+      "support_key": "FSA-0d7599c806-29a24f224571.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-a4688fc940bd",
+      "feature": "Mane",
+      "label": 1,
+      "status": "expected-owner-adjacency-only",
+      "vertices": 34,
+      "faces": 11,
+      "canonical_nodes": 12,
+      "support_owner_node_counts": {
+        "5": 14
+      },
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          0.009715944528579712,
+          -1.1594092845916748,
+          2.2941300868988037
+        ],
+        [
+          0.023453593254089355,
+          -1.1467715501785278,
+          2.317171096801758
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-a4688fc940bd.vertices",
+      "face_key": "FSA-0d7599c806-a4688fc940bd.faces",
+      "support_key": "FSA-0d7599c806-a4688fc940bd.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-5c7ac4e46889",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 33,
+      "faces": 28,
+      "canonical_nodes": 16,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.012374326586723328,
+          -0.5532331466674805,
+          2.18868088722229
+        ],
+        [
+          0.010218575596809387,
+          -0.5123702883720398,
+          2.2222747802734375
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-5c7ac4e46889.vertices",
+      "face_key": "FSA-0d7599c806-5c7ac4e46889.faces",
+      "support_key": "FSA-0d7599c806-5c7ac4e46889.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-0d5fd2db0a29",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 32,
+      "faces": 18,
+      "canonical_nodes": 12,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.15433277189731598,
+          -0.42488065361976624,
+          1.8832428455352783
+        ],
+        [
+          -0.14204123616218567,
+          -0.39472803473472595,
+          1.9077626466751099
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-0d5fd2db0a29.vertices",
+      "face_key": "FSA-0d7599c806-0d5fd2db0a29.faces",
+      "support_key": "FSA-0d7599c806-0d5fd2db0a29.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-811f6533343a",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 32,
+      "faces": 14,
+      "canonical_nodes": 8,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.12699845433235168,
+          -0.82105553150177,
+          2.218085527420044
+        ],
+        [
+          -0.11875279247760773,
+          -0.794603705406189,
+          2.2339301109313965
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-811f6533343a.vertices",
+      "face_key": "FSA-0d7599c806-811f6533343a.faces",
+      "support_key": "FSA-0d7599c806-811f6533343a.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-f2924892a502",
+      "feature": "Mane",
+      "label": 1,
+      "status": "expected-owner-adjacency-only",
+      "vertices": 32,
+      "faces": 15,
+      "canonical_nodes": 10,
+      "support_owner_node_counts": {
+        "5": 6
+      },
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.1243712306022644,
+          -1.166171669960022,
+          2.320374011993408
+        ],
+        [
+          -0.11143392324447632,
+          -1.1479084491729736,
+          2.3375015258789062
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-f2924892a502.vertices",
+      "face_key": "FSA-0d7599c806-f2924892a502.faces",
+      "support_key": "FSA-0d7599c806-f2924892a502.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-208b25b3cfd8",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 31,
+      "faces": 30,
+      "canonical_nodes": 17,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.22092965245246887,
+          -0.5917020440101624,
+          2.3762922286987305
+        ],
+        [
+          -0.20942804217338562,
+          -0.567817211151123,
+          2.406240463256836
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-208b25b3cfd8.vertices",
+      "face_key": "FSA-0d7599c806-208b25b3cfd8.faces",
+      "support_key": "FSA-0d7599c806-208b25b3cfd8.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-d934990e1e6f",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 30,
+      "faces": 22,
+      "canonical_nodes": 13,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.16380155086517334,
+          -0.6345868110656738,
+          2.313267230987549
+        ],
+        [
+          -0.15487180650234222,
+          -0.5952135324478149,
+          2.3362152576446533
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-d934990e1e6f.vertices",
+      "face_key": "FSA-0d7599c806-d934990e1e6f.faces",
+      "support_key": "FSA-0d7599c806-d934990e1e6f.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-08b08293f423",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 29,
+      "faces": 20,
+      "canonical_nodes": 12,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          0.014282822608947754,
+          -0.741077721118927,
+          2.3041157722473145
+        ],
+        [
+          0.029129192233085632,
+          -0.7022792100906372,
+          2.3219387531280518
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-08b08293f423.vertices",
+      "face_key": "FSA-0d7599c806-08b08293f423.faces",
+      "support_key": "FSA-0d7599c806-08b08293f423.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-1901ebdbb1ba",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 29,
+      "faces": 20,
+      "canonical_nodes": 12,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.2116345316171646,
+          -0.9995443820953369,
+          2.353471040725708
+        ],
+        [
+          -0.1989692896604538,
+          -0.9700893759727478,
+          2.367215633392334
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-1901ebdbb1ba.vertices",
+      "face_key": "FSA-0d7599c806-1901ebdbb1ba.faces",
+      "support_key": "FSA-0d7599c806-1901ebdbb1ba.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-a38df5a68dca",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 28,
+      "faces": 16,
+      "canonical_nodes": 10,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.24329790472984314,
+          -1.1044695377349854,
+          1.8151901960372925
+        ],
+        [
+          -0.2278604507446289,
+          -1.0846226215362549,
+          1.871435523033142
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-a38df5a68dca.vertices",
+      "face_key": "FSA-0d7599c806-a38df5a68dca.faces",
+      "support_key": "FSA-0d7599c806-a38df5a68dca.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-c0a512399984",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 28,
+      "faces": 32,
+      "canonical_nodes": 15,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.16897380352020264,
+          -0.3552650809288025,
+          1.9692833423614502
+        ],
+        [
+          -0.15754534304141998,
+          -0.33263087272644043,
+          1.9882030487060547
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-c0a512399984.vertices",
+      "face_key": "FSA-0d7599c806-c0a512399984.faces",
+      "support_key": "FSA-0d7599c806-c0a512399984.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-d4a04db6ea38",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 28,
+      "faces": 20,
+      "canonical_nodes": 12,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.19054381549358368,
+          -1.1377421617507935,
+          2.392026901245117
+        ],
+        [
+          -0.1796998530626297,
+          -1.0963398218154907,
+          2.4056549072265625
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-d4a04db6ea38.vertices",
+      "face_key": "FSA-0d7599c806-d4a04db6ea38.faces",
+      "support_key": "FSA-0d7599c806-d4a04db6ea38.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-7385610fbbb7",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 26,
+      "faces": 20,
+      "canonical_nodes": 12,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.09745872020721436,
+          -0.5949686169624329,
+          2.201291084289551
+        ],
+        [
+          -0.08783937990665436,
+          -0.5612267255783081,
+          2.222879648208618
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-7385610fbbb7.vertices",
+      "face_key": "FSA-0d7599c806-7385610fbbb7.faces",
+      "support_key": "FSA-0d7599c806-7385610fbbb7.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-935c1515f1c7",
+      "feature": "Mane",
+      "label": 1,
+      "status": "expected-owner-adjacency-only",
+      "vertices": 26,
+      "faces": 16,
+      "canonical_nodes": 13,
+      "support_owner_node_counts": {
+        "5": 8
+      },
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.22557274997234344,
+          -1.0594215393066406,
+          2.5338194370269775
+        ],
+        [
+          -0.21024027466773987,
+          -1.0082966089248657,
+          2.5473055839538574
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-935c1515f1c7.vertices",
+      "face_key": "FSA-0d7599c806-935c1515f1c7.faces",
+      "support_key": "FSA-0d7599c806-935c1515f1c7.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-078a588e86af",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 25,
+      "faces": 16,
+      "canonical_nodes": 10,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.10597525537014008,
+          -0.40221068263053894,
+          1.978111982345581
+        ],
+        [
+          -0.0986773818731308,
+          -0.37392592430114746,
+          1.9951653480529785
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-078a588e86af.vertices",
+      "face_key": "FSA-0d7599c806-078a588e86af.faces",
+      "support_key": "FSA-0d7599c806-078a588e86af.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-d3c3ffc4312f",
+      "feature": "Mane",
+      "label": 1,
+      "status": "expected-owner-adjacency-only",
+      "vertices": 25,
+      "faces": 10,
+      "canonical_nodes": 13,
+      "support_owner_node_counts": {
+        "5": 25
+      },
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.3382456302642822,
+          -1.0672240257263184,
+          1.4415768384933472
+        ],
+        [
+          -0.30118483304977417,
+          -1.0363507270812988,
+          1.469468355178833
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-d3c3ffc4312f.vertices",
+      "face_key": "FSA-0d7599c806-d3c3ffc4312f.faces",
+      "support_key": "FSA-0d7599c806-d3c3ffc4312f.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-166aaa99bda1",
+      "feature": "Mane",
+      "label": 1,
+      "status": "expected-owner-adjacency-only",
+      "vertices": 23,
+      "faces": 14,
+      "canonical_nodes": 15,
+      "support_owner_node_counts": {
+        "5": 19
+      },
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          0.06305089592933655,
+          -1.070867657661438,
+          1.448521614074707
+        ],
+        [
+          0.15008756518363953,
+          -1.035335659980774,
+          1.4893404245376587
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-166aaa99bda1.vertices",
+      "face_key": "FSA-0d7599c806-166aaa99bda1.faces",
+      "support_key": "FSA-0d7599c806-166aaa99bda1.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-4e030da56018",
+      "feature": "Mane",
+      "label": 1,
+      "status": "expected-owner-adjacency-only",
+      "vertices": 23,
+      "faces": 22,
+      "canonical_nodes": 19,
+      "support_owner_node_counts": {
+        "5": 21
+      },
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.036885276436805725,
+          -0.4245034158229828,
+          1.8642735481262207
+        ],
+        [
+          0.15422335267066956,
+          -0.35969704389572144,
+          1.880636215209961
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-4e030da56018.vertices",
+      "face_key": "FSA-0d7599c806-4e030da56018.faces",
+      "support_key": "FSA-0d7599c806-4e030da56018.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-7477f03ce9aa",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 23,
+      "faces": 20,
+      "canonical_nodes": 11,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.2758437693119049,
+          -0.9310905933380127,
+          2.3740906715393066
+        ],
+        [
+          -0.26533475518226624,
+          -0.9061485528945923,
+          2.386443614959717
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-7477f03ce9aa.vertices",
+      "face_key": "FSA-0d7599c806-7477f03ce9aa.faces",
+      "support_key": "FSA-0d7599c806-7477f03ce9aa.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-d782ff80a4b5",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 23,
+      "faces": 16,
+      "canonical_nodes": 9,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.006691068410873413,
+          -0.6058563590049744,
+          1.921032428741455
+        ],
+        [
+          0.006150692701339722,
+          -0.5835010409355164,
+          1.9291813373565674
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-d782ff80a4b5.vertices",
+      "face_key": "FSA-0d7599c806-d782ff80a4b5.faces",
+      "support_key": "FSA-0d7599c806-d782ff80a4b5.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-937432736c90",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 21,
+      "faces": 12,
+      "canonical_nodes": 8,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.10436905175447464,
+          -0.4501230716705322,
+          1.9073970317840576
+        ],
+        [
+          -0.09799150377511978,
+          -0.43365898728370667,
+          1.925034523010254
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-937432736c90.vertices",
+      "face_key": "FSA-0d7599c806-937432736c90.faces",
+      "support_key": "FSA-0d7599c806-937432736c90.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-b60e58c5a10d",
+      "feature": "Mane",
+      "label": 1,
+      "status": "expected-owner-adjacency-only",
+      "vertices": 21,
+      "faces": 7,
+      "canonical_nodes": 7,
+      "support_owner_node_counts": {
+        "5": 7
+      },
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.0885477364063263,
+          -1.1359660625457764,
+          1.907092809677124
+        ],
+        [
+          -0.07667312026023865,
+          -1.1308199167251587,
+          1.918816328048706
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-b60e58c5a10d.vertices",
+      "face_key": "FSA-0d7599c806-b60e58c5a10d.faces",
+      "support_key": "FSA-0d7599c806-b60e58c5a10d.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-8ce99eba5554",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 20,
+      "faces": 16,
+      "canonical_nodes": 10,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.11898629367351532,
+          -0.8219903707504272,
+          2.3775506019592285
+        ],
+        [
+          -0.1061401218175888,
+          -0.7818217277526855,
+          2.3849682807922363
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-8ce99eba5554.vertices",
+      "face_key": "FSA-0d7599c806-8ce99eba5554.faces",
+      "support_key": "FSA-0d7599c806-8ce99eba5554.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-29019a5f9225",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 18,
+      "faces": 12,
+      "canonical_nodes": 8,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.14905034005641937,
+          -0.4548039436340332,
+          2.1802589893341064
+        ],
+        [
+          -0.1374686360359192,
+          -0.4367266297340393,
+          2.1916298866271973
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-29019a5f9225.vertices",
+      "face_key": "FSA-0d7599c806-29019a5f9225.faces",
+      "support_key": "FSA-0d7599c806-29019a5f9225.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-89ba6e6e6a2a",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 18,
+      "faces": 10,
+      "canonical_nodes": 7,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.2753349840641022,
+          -0.9688681364059448,
+          1.7655017375946045
+        ],
+        [
+          -0.26481300592422485,
+          -0.9575601816177368,
+          1.783694863319397
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-89ba6e6e6a2a.vertices",
+      "face_key": "FSA-0d7599c806-89ba6e6e6a2a.faces",
+      "support_key": "FSA-0d7599c806-89ba6e6e6a2a.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-3f385b3cce65",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 17,
+      "faces": 10,
+      "canonical_nodes": 7,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.09445823729038239,
+          -0.729081928730011,
+          2.1000804901123047
+        ],
+        [
+          -0.08284805715084076,
+          -0.7137308716773987,
+          2.110833168029785
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-3f385b3cce65.vertices",
+      "face_key": "FSA-0d7599c806-3f385b3cce65.faces",
+      "support_key": "FSA-0d7599c806-3f385b3cce65.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-30242255d0a5",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 16,
+      "faces": 8,
+      "canonical_nodes": 6,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.015535011887550354,
+          -0.656668484210968,
+          2.047881841659546
+        ],
+        [
+          0.005314230918884277,
+          -0.6447917222976685,
+          2.0553836822509766
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-30242255d0a5.vertices",
+      "face_key": "FSA-0d7599c806-30242255d0a5.faces",
+      "support_key": "FSA-0d7599c806-30242255d0a5.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-662937d3ec35",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 16,
+      "faces": 8,
+      "canonical_nodes": 6,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.14558124542236328,
+          -0.6595449447631836,
+          2.1564016342163086
+        ],
+        [
+          -0.1402164101600647,
+          -0.6448915004730225,
+          2.1700327396392822
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-662937d3ec35.vertices",
+      "face_key": "FSA-0d7599c806-662937d3ec35.faces",
+      "support_key": "FSA-0d7599c806-662937d3ec35.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-aadbb0ad1fad",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 16,
+      "faces": 16,
+      "canonical_nodes": 10,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.06452324986457825,
+          -0.6610026359558105,
+          2.2635574340820312
+        ],
+        [
+          -0.04450058937072754,
+          -0.6397191286087036,
+          2.2744266986846924
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-aadbb0ad1fad.vertices",
+      "face_key": "FSA-0d7599c806-aadbb0ad1fad.faces",
+      "support_key": "FSA-0d7599c806-aadbb0ad1fad.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-263e9b48f812",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 14,
+      "faces": 6,
+      "canonical_nodes": 5,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.15255999565124512,
+          -0.3706243932247162,
+          1.9050378799438477
+        ],
+        [
+          -0.1475730836391449,
+          -0.35965970158576965,
+          1.9144554138183594
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-263e9b48f812.vertices",
+      "face_key": "FSA-0d7599c806-263e9b48f812.faces",
+      "support_key": "FSA-0d7599c806-263e9b48f812.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-426a1bba192a",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 14,
+      "faces": 6,
+      "canonical_nodes": 5,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          0.09521955251693726,
+          -0.6681870818138123,
+          1.8357384204864502
+        ],
+        [
+          0.10227909684181213,
+          -0.6544830799102783,
+          1.8408632278442383
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-426a1bba192a.vertices",
+      "face_key": "FSA-0d7599c806-426a1bba192a.faces",
+      "support_key": "FSA-0d7599c806-426a1bba192a.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-86587e262b56",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 14,
+      "faces": 10,
+      "canonical_nodes": 7,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.1118888258934021,
+          -0.7413076758384705,
+          2.1141934394836426
+        ],
+        [
+          -0.10138630867004395,
+          -0.7329698204994202,
+          2.1234116554260254
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-86587e262b56.vertices",
+      "face_key": "FSA-0d7599c806-86587e262b56.faces",
+      "support_key": "FSA-0d7599c806-86587e262b56.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-865d2117f3a2",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 14,
+      "faces": 6,
+      "canonical_nodes": 5,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.20837710797786713,
+          -0.5759854316711426,
+          2.186779022216797
+        ],
+        [
+          -0.1978805661201477,
+          -0.5655853152275085,
+          2.198499917984009
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-865d2117f3a2.vertices",
+      "face_key": "FSA-0d7599c806-865d2117f3a2.faces",
+      "support_key": "FSA-0d7599c806-865d2117f3a2.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-d4389137bb6d",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 14,
+      "faces": 10,
+      "canonical_nodes": 6,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.28047841787338257,
+          -1.070317268371582,
+          1.990020751953125
+        ],
+        [
+          -0.27489739656448364,
+          -1.0606999397277832,
+          2.0111773014068604
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-d4389137bb6d.vertices",
+      "face_key": "FSA-0d7599c806-d4389137bb6d.faces",
+      "support_key": "FSA-0d7599c806-d4389137bb6d.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-581ba06ee3b2",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 13,
+      "faces": 8,
+      "canonical_nodes": 6,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.2816833257675171,
+          -0.9497578144073486,
+          1.8020625114440918
+        ],
+        [
+          -0.27495816349983215,
+          -0.9414718151092529,
+          1.833916425704956
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-581ba06ee3b2.vertices",
+      "face_key": "FSA-0d7599c806-581ba06ee3b2.faces",
+      "support_key": "FSA-0d7599c806-581ba06ee3b2.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-1fa9673e272f",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 12,
+      "faces": 4,
+      "canonical_nodes": 4,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.14795616269111633,
+          -0.7433348894119263,
+          2.5228307247161865
+        ],
+        [
+          -0.13840492069721222,
+          -0.7314586043357849,
+          2.5303101539611816
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-1fa9673e272f.vertices",
+      "face_key": "FSA-0d7599c806-1fa9673e272f.faces",
+      "support_key": "FSA-0d7599c806-1fa9673e272f.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-3284b4986767",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 12,
+      "faces": 6,
+      "canonical_nodes": 5,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.14699706435203552,
+          -0.6222026348114014,
+          2.3312110900878906
+        ],
+        [
+          -0.13716870546340942,
+          -0.6049603223800659,
+          2.3394620418548584
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-3284b4986767.vertices",
+      "face_key": "FSA-0d7599c806-3284b4986767.faces",
+      "support_key": "FSA-0d7599c806-3284b4986767.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-77995762cf6f",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 10,
+      "faces": 8,
+      "canonical_nodes": 6,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.22936545312404633,
+          -1.0105122327804565,
+          1.629967451095581
+        ],
+        [
+          -0.20874768495559692,
+          -1.002724051475525,
+          1.6487205028533936
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-77995762cf6f.vertices",
+      "face_key": "FSA-0d7599c806-77995762cf6f.faces",
+      "support_key": "FSA-0d7599c806-77995762cf6f.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-8200bac532f9",
+      "feature": "Mane",
+      "label": 1,
+      "status": "expected-owner-adjacency-only",
+      "vertices": 8,
+      "faces": 2,
+      "canonical_nodes": 4,
+      "support_owner_node_counts": {
+        "5": 6
+      },
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.2188367247581482,
+          -0.48878929018974304,
+          1.8922719955444336
+        ],
+        [
+          -0.21053637564182281,
+          -0.480440616607666,
+          1.902841329574585
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-8200bac532f9.vertices",
+      "face_key": "FSA-0d7599c806-8200bac532f9.faces",
+      "support_key": "FSA-0d7599c806-8200bac532f9.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-9bca02aef948",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 8,
+      "faces": 4,
+      "canonical_nodes": 4,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.20019374787807465,
+          -0.873985230922699,
+          2.4338862895965576
+        ],
+        [
+          -0.19524617493152618,
+          -0.8537229895591736,
+          2.439748764038086
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-9bca02aef948.vertices",
+      "face_key": "FSA-0d7599c806-9bca02aef948.faces",
+      "support_key": "FSA-0d7599c806-9bca02aef948.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-35f4a3d2ee42",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 7,
+      "faces": 4,
+      "canonical_nodes": 4,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.12454551458358765,
+          -1.1584030389785767,
+          2.3895797729492188
+        ],
+        [
+          -0.1178082823753357,
+          -1.1481058597564697,
+          2.3974456787109375
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-35f4a3d2ee42.vertices",
+      "face_key": "FSA-0d7599c806-35f4a3d2ee42.faces",
+      "support_key": "FSA-0d7599c806-35f4a3d2ee42.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-05315925c666",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 6,
+      "faces": 2,
+      "canonical_nodes": 3,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.1285303384065628,
+          -0.7825816869735718,
+          2.393733024597168
+        ],
+        [
+          -0.12082548439502716,
+          -0.7717461585998535,
+          2.3980164527893066
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-05315925c666.vertices",
+      "face_key": "FSA-0d7599c806-05315925c666.faces",
+      "support_key": "FSA-0d7599c806-05315925c666.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-4db5bea56729",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 6,
+      "faces": 2,
+      "canonical_nodes": 3,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.11649066209793091,
+          -0.6571269035339355,
+          2.365453004837036
+        ],
+        [
+          -0.11105549335479736,
+          -0.6470586657524109,
+          2.3689322471618652
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-4db5bea56729.vertices",
+      "face_key": "FSA-0d7599c806-4db5bea56729.faces",
+      "support_key": "FSA-0d7599c806-4db5bea56729.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-f196a0172e52",
+      "feature": "Mane",
+      "label": 1,
+      "status": "no-direct-support-proposal",
+      "vertices": 6,
+      "faces": 2,
+      "canonical_nodes": 3,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.19188639521598816,
+          -0.9442504048347473,
+          2.3699593544006348
+        ],
+        [
+          -0.18886515498161316,
+          -0.9349379539489746,
+          2.377089500427246
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-f196a0172e52.vertices",
+      "face_key": "FSA-0d7599c806-f196a0172e52.faces",
+      "support_key": "FSA-0d7599c806-f196a0172e52.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-1391b54e44a4",
+      "feature": "Mane",
+      "label": 1,
+      "status": "expected-owner-adjacency-only",
+      "vertices": 4,
+      "faces": 0,
+      "canonical_nodes": 2,
+      "support_owner_node_counts": {
+        "5": 8
+      },
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          0.18705745041370392,
+          -0.8442506790161133,
+          1.6680819988250732
+        ],
+        [
+          0.19068923592567444,
+          -0.8128473162651062,
+          1.6885135173797607
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-1391b54e44a4.vertices",
+      "face_key": "FSA-0d7599c806-1391b54e44a4.faces",
+      "support_key": "FSA-0d7599c806-1391b54e44a4.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-174b77c6ef72",
+      "feature": "Mane",
+      "label": 1,
+      "status": "expected-owner-adjacency-only",
+      "vertices": 3,
+      "faces": 0,
+      "canonical_nodes": 1,
+      "support_owner_node_counts": {
+        "5": 3
+      },
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.188288152217865,
+          -1.1670222282409668,
+          2.3470327854156494
+        ],
+        [
+          -0.188288152217865,
+          -1.1670222282409668,
+          2.3470327854156494
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-174b77c6ef72.vertices",
+      "face_key": "FSA-0d7599c806-174b77c6ef72.faces",
+      "support_key": "FSA-0d7599c806-174b77c6ef72.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-60d06ccbfc43",
+      "feature": "Mane",
+      "label": 1,
+      "status": "expected-owner-adjacency-only",
+      "vertices": 3,
+      "faces": 0,
+      "canonical_nodes": 1,
+      "support_owner_node_counts": {
+        "5": 5
+      },
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.40425992012023926,
+          -0.6286158561706543,
+          1.8142600059509277
+        ],
+        [
+          -0.40425992012023926,
+          -0.6286158561706543,
+          1.8142600059509277
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-60d06ccbfc43.vertices",
+      "face_key": "FSA-0d7599c806-60d06ccbfc43.faces",
+      "support_key": "FSA-0d7599c806-60d06ccbfc43.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-8188a95c5fc2",
+      "feature": "Mane",
+      "label": 1,
+      "status": "expected-owner-adjacency-only",
+      "vertices": 2,
+      "faces": 0,
+      "canonical_nodes": 1,
+      "support_owner_node_counts": {
+        "5": 5
+      },
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.20273691415786743,
+          -1.034267783164978,
+          1.4374021291732788
+        ],
+        [
+          -0.20273691415786743,
+          -1.034267783164978,
+          1.4374021291732788
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-8188a95c5fc2.vertices",
+      "face_key": "FSA-0d7599c806-8188a95c5fc2.faces",
+      "support_key": "FSA-0d7599c806-8188a95c5fc2.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-c18424e91f58",
+      "feature": "Mane",
+      "label": 1,
+      "status": "expected-owner-adjacency-only",
+      "vertices": 2,
+      "faces": 0,
+      "canonical_nodes": 1,
+      "support_owner_node_counts": {
+        "5": 5
+      },
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.2956293821334839,
+          -0.7528437972068787,
+          1.7309682369232178
+        ],
+        [
+          -0.2956293821334839,
+          -0.7528437972068787,
+          1.7309682369232178
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-c18424e91f58.vertices",
+      "face_key": "FSA-0d7599c806-c18424e91f58.faces",
+      "support_key": "FSA-0d7599c806-c18424e91f58.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-e81821becd70",
+      "feature": "Mane",
+      "label": 1,
+      "status": "expected-owner-adjacency-only",
+      "vertices": 2,
+      "faces": 0,
+      "canonical_nodes": 1,
+      "support_owner_node_counts": {
+        "5": 4
+      },
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.03241422772407532,
+          -0.5742737054824829,
+          1.8516137599945068
+        ],
+        [
+          -0.03241422772407532,
+          -0.5742737054824829,
+          1.8516137599945068
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-e81821becd70.vertices",
+      "face_key": "FSA-0d7599c806-e81821becd70.faces",
+      "support_key": "FSA-0d7599c806-e81821becd70.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-ffbb7d39433a",
+      "feature": "Mane",
+      "label": 1,
+      "status": "expected-owner-adjacency-only",
+      "vertices": 2,
+      "faces": 0,
+      "canonical_nodes": 1,
+      "support_owner_node_counts": {
+        "5": 5
+      },
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.36128392815589905,
+          -1.0316606760025024,
+          1.4537965059280396
+        ],
+        [
+          -0.36128392815589905,
+          -1.0316606760025024,
+          1.4537965059280396
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-ffbb7d39433a.vertices",
+      "face_key": "FSA-0d7599c806-ffbb7d39433a.faces",
+      "support_key": "FSA-0d7599c806-ffbb7d39433a.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-ad7d0e71dd98",
+      "feature": "Mane",
+      "label": 1,
+      "status": "expected-owner-adjacency-only",
+      "vertices": 1,
+      "faces": 0,
+      "canonical_nodes": 1,
+      "support_owner_node_counts": {
+        "5": 5
+      },
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.18220679461956024,
+          -1.1097748279571533,
+          1.4892560243606567
+        ],
+        [
+          -0.18220679461956024,
+          -1.1097748279571533,
+          1.4892560243606567
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-ad7d0e71dd98.vertices",
+      "face_key": "FSA-0d7599c806-ad7d0e71dd98.faces",
+      "support_key": "FSA-0d7599c806-ad7d0e71dd98.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-d97b2dfc5590",
+      "feature": "Tail",
+      "label": 2,
+      "status": "expected-owner-adjacency-only",
+      "vertices": 61338,
+      "faces": 63053,
+      "canonical_nodes": 30260,
+      "support_owner_node_counts": {
+        "5": 151
+      },
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.2571079730987549,
+          0.6922324895858765,
+          0.020366191864013672
+        ],
+        [
+          0.5898052453994751,
+          1.9149097204208374,
+          1.7294392585754395
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-d97b2dfc5590.vertices",
+      "face_key": "FSA-0d7599c806-d97b2dfc5590.faces",
+      "support_key": "FSA-0d7599c806-d97b2dfc5590.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-9061c37e8e51",
+      "feature": "Tail",
+      "label": 2,
+      "status": "no-direct-support-proposal",
+      "vertices": 620,
+      "faces": 500,
+      "canonical_nodes": 215,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.21963262557983398,
+          0.9024865031242371,
+          1.2411785125732422
+        ],
+        [
+          -0.12864333391189575,
+          1.0792367458343506,
+          1.5676132440567017
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-9061c37e8e51.vertices",
+      "face_key": "FSA-0d7599c806-9061c37e8e51.faces",
+      "support_key": "FSA-0d7599c806-9061c37e8e51.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-12e3025e8e38",
+      "feature": "Tail",
+      "label": 2,
+      "status": "expected-owner-adjacency-only",
+      "vertices": 579,
+      "faces": 657,
+      "canonical_nodes": 334,
+      "support_owner_node_counts": {
+        "5": 9
+      },
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.2401156723499298,
+          0.678838312625885,
+          1.1597529649734497
+        ],
+        [
+          -0.06856662034988403,
+          1.4013408422470093,
+          1.7513391971588135
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-12e3025e8e38.vertices",
+      "face_key": "FSA-0d7599c806-12e3025e8e38.faces",
+      "support_key": "FSA-0d7599c806-12e3025e8e38.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-cc58ae204ca4",
+      "feature": "Tail",
+      "label": 2,
+      "status": "no-direct-support-proposal",
+      "vertices": 378,
+      "faces": 430,
+      "canonical_nodes": 217,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          0.19423341751098633,
+          0.9285024404525757,
+          0.8395586013793945
+        ],
+        [
+          0.4066219925880432,
+          1.2766669988632202,
+          1.324971079826355
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-cc58ae204ca4.vertices",
+      "face_key": "FSA-0d7599c806-cc58ae204ca4.faces",
+      "support_key": "FSA-0d7599c806-cc58ae204ca4.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-710bdff1b34f",
+      "feature": "Tail",
+      "label": 2,
+      "status": "no-direct-support-proposal",
+      "vertices": 347,
+      "faces": 314,
+      "canonical_nodes": 154,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.2012859582901001,
+          1.0574244260787964,
+          1.2659671306610107
+        ],
+        [
+          -0.1308058798313141,
+          1.3459460735321045,
+          1.6241565942764282
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-710bdff1b34f.vertices",
+      "face_key": "FSA-0d7599c806-710bdff1b34f.faces",
+      "support_key": "FSA-0d7599c806-710bdff1b34f.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-34344afc5a56",
+      "feature": "Tail",
+      "label": 2,
+      "status": "no-direct-support-proposal",
+      "vertices": 330,
+      "faces": 290,
+      "canonical_nodes": 133,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          0.0340457558631897,
+          1.0562959909439087,
+          1.3573901653289795
+        ],
+        [
+          0.13602742552757263,
+          1.1818645000457764,
+          1.5513947010040283
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-34344afc5a56.vertices",
+      "face_key": "FSA-0d7599c806-34344afc5a56.faces",
+      "support_key": "FSA-0d7599c806-34344afc5a56.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-9e92da38f862",
+      "feature": "Tail",
+      "label": 2,
+      "status": "no-direct-support-proposal",
+      "vertices": 307,
+      "faces": 358,
+      "canonical_nodes": 181,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          0.2382654845714569,
+          0.9716542959213257,
+          0.7530209422111511
+        ],
+        [
+          0.5039388537406921,
+          1.3451452255249023,
+          1.0597034692764282
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-9e92da38f862.vertices",
+      "face_key": "FSA-0d7599c806-9e92da38f862.faces",
+      "support_key": "FSA-0d7599c806-9e92da38f862.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-f79a26da989e",
+      "feature": "Tail",
+      "label": 2,
+      "status": "no-direct-support-proposal",
+      "vertices": 285,
+      "faces": 330,
+      "canonical_nodes": 165,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          0.05376899242401123,
+          1.0604045391082764,
+          1.2373524904251099
+        ],
+        [
+          0.1935601532459259,
+          1.2826672792434692,
+          1.5164785385131836
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-f79a26da989e.vertices",
+      "face_key": "FSA-0d7599c806-f79a26da989e.faces",
+      "support_key": "FSA-0d7599c806-f79a26da989e.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-2303dc7c5a69",
+      "feature": "Tail",
+      "label": 2,
+      "status": "no-direct-support-proposal",
+      "vertices": 260,
+      "faces": 288,
+      "canonical_nodes": 146,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          0.48542171716690063,
+          1.2938421964645386,
+          0.3033813238143921
+        ],
+        [
+          0.5812434554100037,
+          1.6378427743911743,
+          0.5580453276634216
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-2303dc7c5a69.vertices",
+      "face_key": "FSA-0d7599c806-2303dc7c5a69.faces",
+      "support_key": "FSA-0d7599c806-2303dc7c5a69.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-e9e7c866b91b",
+      "feature": "Tail",
+      "label": 2,
+      "status": "no-direct-support-proposal",
+      "vertices": 256,
+      "faces": 276,
+      "canonical_nodes": 140,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          0.26849833130836487,
+          1.1105374097824097,
+          0.394353985786438
+        ],
+        [
+          0.45276331901550293,
+          1.2610164880752563,
+          0.6883185505867004
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-e9e7c866b91b.vertices",
+      "face_key": "FSA-0d7599c806-e9e7c866b91b.faces",
+      "support_key": "FSA-0d7599c806-e9e7c866b91b.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-e904d1dbe90c",
+      "feature": "Tail",
+      "label": 2,
+      "status": "no-direct-support-proposal",
+      "vertices": 218,
+      "faces": 258,
+      "canonical_nodes": 131,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          0.3989795446395874,
+          1.2307265996932983,
+          0.5689318180084229
+        ],
+        [
+          0.5484827756881714,
+          1.5009161233901978,
+          0.7581093907356262
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-e904d1dbe90c.vertices",
+      "face_key": "FSA-0d7599c806-e904d1dbe90c.faces",
+      "support_key": "FSA-0d7599c806-e904d1dbe90c.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-2b436196939c",
+      "feature": "Tail",
+      "label": 2,
+      "status": "no-direct-support-proposal",
+      "vertices": 199,
+      "faces": 210,
+      "canonical_nodes": 107,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          0.1356210708618164,
+          1.227491021156311,
+          1.112202525138855
+        ],
+        [
+          0.2463400661945343,
+          1.49284827709198,
+          1.283853530883789
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-2b436196939c.vertices",
+      "face_key": "FSA-0d7599c806-2b436196939c.faces",
+      "support_key": "FSA-0d7599c806-2b436196939c.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-a028977a39ed",
+      "feature": "Tail",
+      "label": 2,
+      "status": "no-direct-support-proposal",
+      "vertices": 191,
+      "faces": 156,
+      "canonical_nodes": 78,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          0.18097476661205292,
+          1.0085115432739258,
+          1.2805697917938232
+        ],
+        [
+          0.27919477224349976,
+          1.1235300302505493,
+          1.359984040260315
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-a028977a39ed.vertices",
+      "face_key": "FSA-0d7599c806-a028977a39ed.faces",
+      "support_key": "FSA-0d7599c806-a028977a39ed.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-c2f134a48a2d",
+      "feature": "Tail",
+      "label": 2,
+      "status": "no-direct-support-proposal",
+      "vertices": 172,
+      "faces": 202,
+      "canonical_nodes": 103,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          0.4159339666366577,
+          1.3270469903945923,
+          0.10359764099121094
+        ],
+        [
+          0.5417875647544861,
+          1.4300094842910767,
+          0.35260480642318726
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-c2f134a48a2d.vertices",
+      "face_key": "FSA-0d7599c806-c2f134a48a2d.faces",
+      "support_key": "FSA-0d7599c806-c2f134a48a2d.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-de695d2dab03",
+      "feature": "Tail",
+      "label": 2,
+      "status": "no-direct-support-proposal",
+      "vertices": 156,
+      "faces": 144,
+      "canonical_nodes": 72,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.049647003412246704,
+          0.7323154807090759,
+          1.6746762990951538
+        ],
+        [
+          -0.0055907368659973145,
+          0.952832043170929,
+          1.708689570426941
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-de695d2dab03.vertices",
+      "face_key": "FSA-0d7599c806-de695d2dab03.faces",
+      "support_key": "FSA-0d7599c806-de695d2dab03.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-3192a2d86620",
+      "feature": "Tail",
+      "label": 2,
+      "status": "no-direct-support-proposal",
+      "vertices": 153,
+      "faces": 128,
+      "canonical_nodes": 61,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          0.11492851376533508,
+          1.106737732887268,
+          1.2868345975875854
+        ],
+        [
+          0.1678430140018463,
+          1.1726458072662354,
+          1.3760603666305542
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-3192a2d86620.vertices",
+      "face_key": "FSA-0d7599c806-3192a2d86620.faces",
+      "support_key": "FSA-0d7599c806-3192a2d86620.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-47249b5436a2",
+      "feature": "Tail",
+      "label": 2,
+      "status": "no-direct-support-proposal",
+      "vertices": 151,
+      "faces": 114,
+      "canonical_nodes": 55,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          0.2139393389225006,
+          1.5208464860916138,
+          0.5442054271697998
+        ],
+        [
+          0.26010972261428833,
+          1.5953794717788696,
+          0.5826788544654846
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-47249b5436a2.vertices",
+      "face_key": "FSA-0d7599c806-47249b5436a2.faces",
+      "support_key": "FSA-0d7599c806-47249b5436a2.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-7a6525ebfa26",
+      "feature": "Tail",
+      "label": 2,
+      "status": "expected-owner-adjacency-only",
+      "vertices": 112,
+      "faces": 105,
+      "canonical_nodes": 58,
+      "support_owner_node_counts": {
+        "5": 10
+      },
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.19455158710479736,
+          0.7208861708641052,
+          1.3937873840332031
+        ],
+        [
+          -0.17050090432167053,
+          0.8312593698501587,
+          1.6247599124908447
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-7a6525ebfa26.vertices",
+      "face_key": "FSA-0d7599c806-7a6525ebfa26.faces",
+      "support_key": "FSA-0d7599c806-7a6525ebfa26.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-275f0a831fd4",
+      "feature": "Tail",
+      "label": 2,
+      "status": "expected-owner-adjacency-only",
+      "vertices": 110,
+      "faces": 98,
+      "canonical_nodes": 54,
+      "support_owner_node_counts": {
+        "5": 8
+      },
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.1932462751865387,
+          0.6766626834869385,
+          1.694499135017395
+        ],
+        [
+          -0.14470785856246948,
+          0.833622932434082,
+          1.7581937313079834
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-275f0a831fd4.vertices",
+      "face_key": "FSA-0d7599c806-275f0a831fd4.faces",
+      "support_key": "FSA-0d7599c806-275f0a831fd4.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-f9a1c40d9f09",
+      "feature": "Tail",
+      "label": 2,
+      "status": "no-direct-support-proposal",
+      "vertices": 107,
+      "faces": 106,
+      "canonical_nodes": 53,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          0.12705834209918976,
+          0.9894943833351135,
+          1.34197998046875
+        ],
+        [
+          0.21871531009674072,
+          1.0495356321334839,
+          1.4409445524215698
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-f9a1c40d9f09.vertices",
+      "face_key": "FSA-0d7599c806-f9a1c40d9f09.faces",
+      "support_key": "FSA-0d7599c806-f9a1c40d9f09.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-024eb9cdbfb8",
+      "feature": "Tail",
+      "label": 2,
+      "status": "expected-owner-adjacency-only",
+      "vertices": 103,
+      "faces": 97,
+      "canonical_nodes": 60,
+      "support_owner_node_counts": {
+        "5": 20
+      },
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.20313504338264465,
+          0.720183789730072,
+          1.3747317790985107
+        ],
+        [
+          -0.1645178198814392,
+          0.8418668508529663,
+          1.6385438442230225
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-024eb9cdbfb8.vertices",
+      "face_key": "FSA-0d7599c806-024eb9cdbfb8.faces",
+      "support_key": "FSA-0d7599c806-024eb9cdbfb8.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-82730afb4764",
+      "feature": "Tail",
+      "label": 2,
+      "status": "expected-owner-adjacency-only",
+      "vertices": 79,
+      "faces": 70,
+      "canonical_nodes": 39,
+      "support_owner_node_counts": {
+        "5": 7
+      },
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          0.04036644101142883,
+          0.8153378963470459,
+          1.3741744756698608
+        ],
+        [
+          0.06670068204402924,
+          0.8598191738128662,
+          1.5371577739715576
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-82730afb4764.vertices",
+      "face_key": "FSA-0d7599c806-82730afb4764.faces",
+      "support_key": "FSA-0d7599c806-82730afb4764.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-3139cca3f199",
+      "feature": "Tail",
+      "label": 2,
+      "status": "no-direct-support-proposal",
+      "vertices": 72,
+      "faces": 60,
+      "canonical_nodes": 27,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          0.1810256689786911,
+          1.1360669136047363,
+          0.9385156631469727
+        ],
+        [
+          0.20142368972301483,
+          1.1573803424835205,
+          0.9748728275299072
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-3139cca3f199.vertices",
+      "face_key": "FSA-0d7599c806-3139cca3f199.faces",
+      "support_key": "FSA-0d7599c806-3139cca3f199.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-239e2ff89814",
+      "feature": "Tail",
+      "label": 2,
+      "status": "no-direct-support-proposal",
+      "vertices": 56,
+      "faces": 50,
+      "canonical_nodes": 27,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          0.07324488461017609,
+          0.7736924290657043,
+          1.4567227363586426
+        ],
+        [
+          0.09680595993995667,
+          0.8126817345619202,
+          1.5908259153366089
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-239e2ff89814.vertices",
+      "face_key": "FSA-0d7599c806-239e2ff89814.faces",
+      "support_key": "FSA-0d7599c806-239e2ff89814.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-69b9f73dac50",
+      "feature": "Tail",
+      "label": 2,
+      "status": "no-direct-support-proposal",
+      "vertices": 53,
+      "faces": 44,
+      "canonical_nodes": 22,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.03878036141395569,
+          0.8748354911804199,
+          1.7026475667953491
+        ],
+        [
+          -0.02491319179534912,
+          0.9181897044181824,
+          1.7173388004302979
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-69b9f73dac50.vertices",
+      "face_key": "FSA-0d7599c806-69b9f73dac50.faces",
+      "support_key": "FSA-0d7599c806-69b9f73dac50.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-a3b7bf97a9fb",
+      "feature": "Tail",
+      "label": 2,
+      "status": "no-direct-support-proposal",
+      "vertices": 47,
+      "faces": 42,
+      "canonical_nodes": 23,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          0.537094235420227,
+          1.6692023277282715,
+          0.19864165782928467
+        ],
+        [
+          0.5638661980628967,
+          1.7284190654754639,
+          0.2201770544052124
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-a3b7bf97a9fb.vertices",
+      "face_key": "FSA-0d7599c806-a3b7bf97a9fb.faces",
+      "support_key": "FSA-0d7599c806-a3b7bf97a9fb.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-1da88c856f76",
+      "feature": "Tail",
+      "label": 2,
+      "status": "no-direct-support-proposal",
+      "vertices": 40,
+      "faces": 32,
+      "canonical_nodes": 18,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          0.49892765283584595,
+          1.6327259540557861,
+          0.21992003917694092
+        ],
+        [
+          0.5368367433547974,
+          1.664157509803772,
+          0.2656925916671753
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-1da88c856f76.vertices",
+      "face_key": "FSA-0d7599c806-1da88c856f76.faces",
+      "support_key": "FSA-0d7599c806-1da88c856f76.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-8f7346410f13",
+      "feature": "Tail",
+      "label": 2,
+      "status": "no-direct-support-proposal",
+      "vertices": 33,
+      "faces": 20,
+      "canonical_nodes": 12,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          0.31274694204330444,
+          1.1850825548171997,
+          0.3862351179122925
+        ],
+        [
+          0.3259994089603424,
+          1.1980936527252197,
+          0.41697967052459717
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-8f7346410f13.vertices",
+      "face_key": "FSA-0d7599c806-8f7346410f13.faces",
+      "support_key": "FSA-0d7599c806-8f7346410f13.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-d4d743f9fa58",
+      "feature": "Tail",
+      "label": 2,
+      "status": "no-direct-support-proposal",
+      "vertices": 33,
+      "faces": 20,
+      "canonical_nodes": 11,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.013138622045516968,
+          1.0323888063430786,
+          1.5045245885849
+        ],
+        [
+          -0.0035399794578552246,
+          1.0547008514404297,
+          1.5285453796386719
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-d4d743f9fa58.vertices",
+      "face_key": "FSA-0d7599c806-d4d743f9fa58.faces",
+      "support_key": "FSA-0d7599c806-d4d743f9fa58.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-54fee193745b",
+      "feature": "Tail",
+      "label": 2,
+      "status": "no-direct-support-proposal",
+      "vertices": 30,
+      "faces": 24,
+      "canonical_nodes": 14,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.027290701866149902,
+          0.8449697494506836,
+          1.5891005992889404
+        ],
+        [
+          -0.016621381044387817,
+          0.9008010029792786,
+          1.6230032444000244
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-54fee193745b.vertices",
+      "face_key": "FSA-0d7599c806-54fee193745b.faces",
+      "support_key": "FSA-0d7599c806-54fee193745b.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-14c0d41c36fb",
+      "feature": "Tail",
+      "label": 2,
+      "status": "no-direct-support-proposal",
+      "vertices": 29,
+      "faces": 18,
+      "canonical_nodes": 10,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          0.09214028716087341,
+          1.0920737981796265,
+          1.399656891822815
+        ],
+        [
+          0.10031694173812866,
+          1.1037687063217163,
+          1.414246916770935
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-14c0d41c36fb.vertices",
+      "face_key": "FSA-0d7599c806-14c0d41c36fb.faces",
+      "support_key": "FSA-0d7599c806-14c0d41c36fb.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-3aa99aa7c98a",
+      "feature": "Tail",
+      "label": 2,
+      "status": "no-direct-support-proposal",
+      "vertices": 29,
+      "faces": 26,
+      "canonical_nodes": 15,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          0.1299208700656891,
+          0.8064934015274048,
+          1.468117594718933
+        ],
+        [
+          0.14173270761966705,
+          0.8241152763366699,
+          1.4953216314315796
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-3aa99aa7c98a.vertices",
+      "face_key": "FSA-0d7599c806-3aa99aa7c98a.faces",
+      "support_key": "FSA-0d7599c806-3aa99aa7c98a.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-7e8b26a0da09",
+      "feature": "Tail",
+      "label": 2,
+      "status": "no-direct-support-proposal",
+      "vertices": 29,
+      "faces": 20,
+      "canonical_nodes": 11,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          0.03710514307022095,
+          1.091605544090271,
+          1.380531668663025
+        ],
+        [
+          0.04512113332748413,
+          1.1039905548095703,
+          1.4004828929901123
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-7e8b26a0da09.vertices",
+      "face_key": "FSA-0d7599c806-7e8b26a0da09.faces",
+      "support_key": "FSA-0d7599c806-7e8b26a0da09.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-2eaf745764ee",
+      "feature": "Tail",
+      "label": 2,
+      "status": "no-direct-support-proposal",
+      "vertices": 28,
+      "faces": 20,
+      "canonical_nodes": 11,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          0.007028132677078247,
+          0.9789832234382629,
+          1.3160277605056763
+        ],
+        [
+          0.0140342116355896,
+          0.9918068647384644,
+          1.3662375211715698
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-2eaf745764ee.vertices",
+      "face_key": "FSA-0d7599c806-2eaf745764ee.faces",
+      "support_key": "FSA-0d7599c806-2eaf745764ee.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-8a9b2238af7c",
+      "feature": "Tail",
+      "label": 2,
+      "status": "no-direct-support-proposal",
+      "vertices": 28,
+      "faces": 26,
+      "canonical_nodes": 15,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          0.27036529779434204,
+          1.112568974494934,
+          1.2638870477676392
+        ],
+        [
+          0.2949956953525543,
+          1.1778216361999512,
+          1.2924449443817139
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-8a9b2238af7c.vertices",
+      "face_key": "FSA-0d7599c806-8a9b2238af7c.faces",
+      "support_key": "FSA-0d7599c806-8a9b2238af7c.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-4a746ff90ac2",
+      "feature": "Tail",
+      "label": 2,
+      "status": "no-direct-support-proposal",
+      "vertices": 26,
+      "faces": 24,
+      "canonical_nodes": 14,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          0.34439200162887573,
+          1.2983845472335815,
+          0.8053883910179138
+        ],
+        [
+          0.3532567620277405,
+          1.336747169494629,
+          0.822807788848877
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-4a746ff90ac2.vertices",
+      "face_key": "FSA-0d7599c806-4a746ff90ac2.faces",
+      "support_key": "FSA-0d7599c806-4a746ff90ac2.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-502527ff9433",
+      "feature": "Tail",
+      "label": 2,
+      "status": "no-direct-support-proposal",
+      "vertices": 22,
+      "faces": 16,
+      "canonical_nodes": 10,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.02120727300643921,
+          0.7941551804542542,
+          1.5964062213897705
+        ],
+        [
+          -0.013535141944885254,
+          0.8228203058242798,
+          1.6182940006256104
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-502527ff9433.vertices",
+      "face_key": "FSA-0d7599c806-502527ff9433.faces",
+      "support_key": "FSA-0d7599c806-502527ff9433.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-f39b61473825",
+      "feature": "Tail",
+      "label": 2,
+      "status": "no-direct-support-proposal",
+      "vertices": 20,
+      "faces": 10,
+      "canonical_nodes": 6,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          0.018232524394989014,
+          1.0117650032043457,
+          1.2182906866073608
+        ],
+        [
+          0.02204844355583191,
+          1.0217013359069824,
+          1.2355250120162964
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-f39b61473825.vertices",
+      "face_key": "FSA-0d7599c806-f39b61473825.faces",
+      "support_key": "FSA-0d7599c806-f39b61473825.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-27ce7002ff5e",
+      "feature": "Tail",
+      "label": 2,
+      "status": "no-direct-support-proposal",
+      "vertices": 18,
+      "faces": 16,
+      "canonical_nodes": 9,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          0.23363915085792542,
+          1.113479733467102,
+          0.7852094769477844
+        ],
+        [
+          0.24689064919948578,
+          1.1193608045578003,
+          0.8167699575424194
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-27ce7002ff5e.vertices",
+      "face_key": "FSA-0d7599c806-27ce7002ff5e.faces",
+      "support_key": "FSA-0d7599c806-27ce7002ff5e.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-f36f185cd753",
+      "feature": "Tail",
+      "label": 2,
+      "status": "no-direct-support-proposal",
+      "vertices": 18,
+      "faces": 12,
+      "canonical_nodes": 8,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.013542264699935913,
+          0.7155362367630005,
+          1.664250373840332
+        ],
+        [
+          -0.007487952709197998,
+          0.7334452867507935,
+          1.673346757888794
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-f36f185cd753.vertices",
+      "face_key": "FSA-0d7599c806-f36f185cd753.faces",
+      "support_key": "FSA-0d7599c806-f36f185cd753.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-651741210939",
+      "feature": "Tail",
+      "label": 2,
+      "status": "no-direct-support-proposal",
+      "vertices": 16,
+      "faces": 6,
+      "canonical_nodes": 5,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          0.38119494915008545,
+          1.4970427751541138,
+          0.6185886263847351
+        ],
+        [
+          0.387262225151062,
+          1.5103726387023926,
+          0.6277136206626892
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-651741210939.vertices",
+      "face_key": "FSA-0d7599c806-651741210939.faces",
+      "support_key": "FSA-0d7599c806-651741210939.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-d695d5e84b6d",
+      "feature": "Tail",
+      "label": 2,
+      "status": "no-direct-support-proposal",
+      "vertices": 16,
+      "faces": 6,
+      "canonical_nodes": 5,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          0.2534593343734741,
+          1.2159737348556519,
+          1.0360612869262695
+        ],
+        [
+          0.2616938054561615,
+          1.226463794708252,
+          1.048147439956665
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-d695d5e84b6d.vertices",
+      "face_key": "FSA-0d7599c806-d695d5e84b6d.faces",
+      "support_key": "FSA-0d7599c806-d695d5e84b6d.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-0d05c20dc39b",
+      "feature": "Tail",
+      "label": 2,
+      "status": "no-direct-support-proposal",
+      "vertices": 15,
+      "faces": 14,
+      "canonical_nodes": 9,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          0.05289508402347565,
+          0.8272906541824341,
+          1.6156516075134277
+        ],
+        [
+          0.0695493221282959,
+          0.8561022281646729,
+          1.6263933181762695
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-0d05c20dc39b.vertices",
+      "face_key": "FSA-0d7599c806-0d05c20dc39b.faces",
+      "support_key": "FSA-0d7599c806-0d05c20dc39b.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-ce0320f0a3f5",
+      "feature": "Tail",
+      "label": 2,
+      "status": "no-direct-support-proposal",
+      "vertices": 14,
+      "faces": 6,
+      "canonical_nodes": 5,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          0.20539653301239014,
+          0.9118301272392273,
+          1.3702150583267212
+        ],
+        [
+          0.21177536249160767,
+          0.9201880693435669,
+          1.386648416519165
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-ce0320f0a3f5.vertices",
+      "face_key": "FSA-0d7599c806-ce0320f0a3f5.faces",
+      "support_key": "FSA-0d7599c806-ce0320f0a3f5.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-f31b0746b730",
+      "feature": "Tail",
+      "label": 2,
+      "status": "no-direct-support-proposal",
+      "vertices": 13,
+      "faces": 8,
+      "canonical_nodes": 6,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.2122873067855835,
+          1.3756318092346191,
+          1.2288135290145874
+        ],
+        [
+          -0.19901153445243835,
+          1.3860671520233154,
+          1.2505146265029907
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-f31b0746b730.vertices",
+      "face_key": "FSA-0d7599c806-f31b0746b730.faces",
+      "support_key": "FSA-0d7599c806-f31b0746b730.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-9a96a66e6d0b",
+      "feature": "Tail",
+      "label": 2,
+      "status": "no-direct-support-proposal",
+      "vertices": 12,
+      "faces": 10,
+      "canonical_nodes": 7,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          0.01429128646850586,
+          1.007324457168579,
+          1.1756010055541992
+        ],
+        [
+          0.02065908908843994,
+          1.0239686965942383,
+          1.196908950805664
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-9a96a66e6d0b.vertices",
+      "face_key": "FSA-0d7599c806-9a96a66e6d0b.faces",
+      "support_key": "FSA-0d7599c806-9a96a66e6d0b.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-4635b3adff70",
+      "feature": "Tail",
+      "label": 2,
+      "status": "no-direct-support-proposal",
+      "vertices": 9,
+      "faces": 6,
+      "canonical_nodes": 5,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          0.013432085514068604,
+          0.7669816017150879,
+          1.6290777921676636
+        ],
+        [
+          0.018731743097305298,
+          0.7797588109970093,
+          1.6387004852294922
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-4635b3adff70.vertices",
+      "face_key": "FSA-0d7599c806-4635b3adff70.faces",
+      "support_key": "FSA-0d7599c806-4635b3adff70.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-dac29632a8c4",
+      "feature": "Tail",
+      "label": 2,
+      "status": "no-direct-support-proposal",
+      "vertices": 8,
+      "faces": 4,
+      "canonical_nodes": 4,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          0.09299376606941223,
+          0.8580585718154907,
+          1.3713403940200806
+        ],
+        [
+          0.09321288764476776,
+          0.8582115173339844,
+          1.3719077110290527
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-dac29632a8c4.vertices",
+      "face_key": "FSA-0d7599c806-dac29632a8c4.faces",
+      "support_key": "FSA-0d7599c806-dac29632a8c4.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-67b08e3a91d1",
+      "feature": "Tail",
+      "label": 2,
+      "status": "no-direct-support-proposal",
+      "vertices": 6,
+      "faces": 2,
+      "canonical_nodes": 3,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          -0.049096524715423584,
+          0.7309131622314453,
+          1.6192938089370728
+        ],
+        [
+          -0.045969098806381226,
+          0.7402234077453613,
+          1.6224777698516846
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-67b08e3a91d1.vertices",
+      "face_key": "FSA-0d7599c806-67b08e3a91d1.faces",
+      "support_key": "FSA-0d7599c806-67b08e3a91d1.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-a0dc19261525",
+      "feature": "Tail",
+      "label": 2,
+      "status": "no-direct-support-proposal",
+      "vertices": 6,
+      "faces": 2,
+      "canonical_nodes": 3,
+      "support_owner_node_counts": {},
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          0.37454649806022644,
+          1.6190881729125977,
+          0.5850504636764526
+        ],
+        [
+          0.3818301856517792,
+          1.6312099695205688,
+          0.5885879993438721
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-a0dc19261525.vertices",
+      "face_key": "FSA-0d7599c806-a0dc19261525.faces",
+      "support_key": "FSA-0d7599c806-a0dc19261525.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-419f3a26806c",
+      "feature": "hind.L.fringe-review",
+      "label": 3,
+      "status": "expected-owner-adjacency-only",
+      "vertices": 89,
+      "faces": 68,
+      "canonical_nodes": 50,
+      "support_owner_node_counts": {
+        "3": 31
+      },
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          0.3017016649246216,
+          0.9651904106140137,
+          0.3602787256240845
+        ],
+        [
+          0.4254538416862488,
+          1.0485663414001465,
+          0.6125393509864807
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-419f3a26806c.vertices",
+      "face_key": "FSA-0d7599c806-419f3a26806c.faces",
+      "support_key": "FSA-0d7599c806-419f3a26806c.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-f4e0f8a59f51",
+      "feature": "hind.L.fringe-review",
+      "label": 3,
+      "status": "expected-owner-adjacency-only",
+      "vertices": 61,
+      "faces": 46,
+      "canonical_nodes": 29,
+      "support_owner_node_counts": {
+        "3": 9
+      },
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          0.2405007779598236,
+          0.9598169922828674,
+          0.5621214509010315
+        ],
+        [
+          0.27145880460739136,
+          1.019871473312378,
+          0.6477569341659546
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-f4e0f8a59f51.vertices",
+      "face_key": "FSA-0d7599c806-f4e0f8a59f51.faces",
+      "support_key": "FSA-0d7599c806-f4e0f8a59f51.support_vertices"
+    },
+    {
+      "id": "FSA-0d7599c806-79c8cc654101",
+      "feature": "hind.L.fringe-review",
+      "label": 3,
+      "status": "expected-owner-adjacency-only",
+      "vertices": 45,
+      "faces": 36,
+      "canonical_nodes": 23,
+      "support_owner_node_counts": {
+        "3": 10
+      },
+      "conflicting_owner_ids": [],
+      "bounds_m": [
+        [
+          0.35252779722213745,
+          0.981251060962677,
+          0.43278002738952637
+        ],
+        [
+          0.4090661406517029,
+          1.0187840461730957,
+          0.5023394823074341
+        ]
+      ],
+      "vertex_key": "FSA-0d7599c806-79c8cc654101.vertices",
+      "face_key": "FSA-0d7599c806-79c8cc654101.faces",
+      "support_key": "FSA-0d7599c806-79c8cc654101.support_vertices"
+    }
+  ],
+  "limitations": [
+    "Exact canonical edge adjacency only; no nearest-owner binding or deletion.",
+    "Primary domains and expected support owners are authored priors, not final bones or semantic proof.",
+    "Fused false bridges and disconnected intended attachments require context/reference review.",
+    "Material class and motion feature ownership are separate contracts; appearance labels do not authorize animation bindings."
+  ]
+}

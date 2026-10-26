@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "asset_id": "PROP-GreenlandsWayfindingMarker-01",
+  "batch_id": "GreenlandsModelBatch-20261018",
+  "source_type": "Pixal3D-generated",
+  "attempt": "attempt-03",
+  "reference_manifest": "GameClient/ArtSource/PROP-GreenlandsWayfindingMarker-01/References/v001/manifest.json",
+  "reference_image": "GameClient/ArtSource/PROP-GreenlandsWayfindingMarker-01/References/v001/asset-view.png",
+  "reference_sha256": "46410437aebd82f433db2adfc14667c7287ddcefd7cffd3b1ace0aec4b0ac182",
+  "profile_path": "docs/art-templates/model-profiles/greenlands-static-prop-pixal-20261018.json",
+  "surface_profile": "docs/art-templates/model-profiles/unreal58-surface-quality-20261018.json",
+  "files": [
+    {
+      "path": "asset-review.json",
+      "bytes": 512,
+      "sha256": "911bab76d0924595ee73c43c5472b24bf6f7ddb01a1ab5941df9cf349d23d17f"
+    },
+    {
+      "path": "attempt-provenance.json",
+      "bytes": 1798,
+      "sha256": "f6fcdbcbc980ed9316264e55b40aa31c0f7819b4c0979c09a141f5aac8629765"
+    },
+    {
+      "path": "checks/component-inspection/00-component-selections.npz",
+      "bytes": 4902356,
+      "sha256": "cb025e63adee6a89b0ecfb8733aaf0f1d43cc6fbf03ed4471abad52e8c67ff85"
+    },
+    {
+      "path": "checks/component-inspection/component-report.json",
+      "bytes": 31210,
+      "sha256": "a583cd87b311b46e05efb58a187ed7f2adc3b7181472f6285b14106ce7cdee0b"
+    },
+    {
+      "path": "generation-run.json",
+      "bytes": 1925,
+      "sha256": "46a44a97fc98556e6716bb9b5eba0833ced24404bd83f44c5700efa4fff162ab"
+    },
+    {
+      "path": "input-mask.png",
+      "bytes": 6722,
+      "sha256": "4aa503288aafb125572841ed64dde5a75cc13fd1d6a2caa3de14b3c1d4907265"
+    },
+    {
+      "path": "previews/Beauty.png",
+      "bytes": 1089438,
+      "sha256": "c68a9813c34f6b514d1b7d10f810f28587da4b12dcad0dddd846bd1da84b9aae"
+    },
+    {
+      "path": "previews/Clay.png",
+      "bytes": 928036,
+      "sha256": "9dff45e12ada9bc180629c0f3298b24398e708ed6e5ab1c075adadce2065f385"
+    },
+    {
+      "path": "previews/FreshProcess.png",
+      "bytes": 1089590,
+      "sha256": "80094bf516065badc30dd47e7edadaf7656cc34843d1fdf5e16c567677e86dab"
+    },
+    {
+      "path": "previews/Front.png",
+      "bytes": 663363,
+      "sha256": "894ad395599eab1050d8784e1db1ee2a0988de01f312c6e551aee8662486502e"
+    },
+    {
+      "path": "previews/Rear.png",
+      "bytes": 700417,
+      "sha256": "310de8c2b48b24b10fbfde9fd5ba93ba0fef8f0c15adc6702d89a388ffc05fba"
+    },
+    {
+      "path": "previews/Side.png",
+      "bytes": 684319,
+      "sha256": "4e76294f880a09fa140517ecfe3665972a3bc2d4170ac27c5086676a62718c4f"
+    },
+    {
+      "path": "PROP-GreenlandsWayfindingMarker-01.blend",
+      "bytes": 20817301,
+      "sha256": "03c9a992b2bc957cb916d078a7fa1f0ffda068ad0cb00ca0f6cd0db944648f56"
+    },
+    {
+      "path": "PROP-GreenlandsWayfindingMarker-01.fbx",
+      "bytes": 16812972,
+      "sha256": "e9074bf37c6601b2368ad56c741f7743cca8a9eac63731c73b878fbbc1b93cbb"
+    },
+    {
+      "path": "PROP-GreenlandsWayfindingMarker-01.glb",
+      "bytes": 17093644,
+      "sha256": "d43704b4416fadc2b62400607b4146498f9650718bb4eb396ec60d5bd7fa1391"
+    },
+    {
+      "path": "README.md",
+      "bytes": 1136,
+      "sha256": "d0ee47f3cbdf3ee4e84c1e6a0294b982b31f9bf2acc3b9ff0673043eeb5f78f7"
+    },
+    {
+      "path": "segmentation-report.json",
+      "bytes": 1149,
+      "sha256": "392f12caefc231b8b1802475210b56c50be0fdcd3d1bbce98521392ce52b51e1"
+    },
+    {
+      "path": "validation-report.json",
+      "bytes": 994284,
+      "sha256": "38fb52e9ccf3106dd09d53d9083bd832381124497a190b2fa421c81f3940c5b0"
+    }
+  ]
+}

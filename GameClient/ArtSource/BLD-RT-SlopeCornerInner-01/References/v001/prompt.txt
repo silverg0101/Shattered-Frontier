@@ -1,0 +1,13 @@
+Rejected first concept-sheet prompt/output `exec-4cd468ce-c8f2-4cde-8f94-4f77f52b430b.png`, retained as `rejected-labeled-sheet.png`:
+
+Concept sheet for BLD-RT-SlopeCornerInner-01, a rough-timber inner roof/slope corner appearance on proposed `corner-inner/v1`. The shape is inside one 0.5 m cell envelope and its occupied mask is w<=max(u,v), a concave union of matching 1:1 slope wedges. Focus on how two perpendicular sloped roof faces meet in a valley at the inner corner; show both slope contact faces, front/side orthographic silhouettes, top, underside and small isometric, with empty volume marked by a neutral wire outline. No ridge beam, no structural additions, no supports, no extra objects. Rough timber grain follows the two slopes; keep contours and contact boundaries fixed. Plain background. Image is conceptual only.
+
+Selected corrected concept-sheet prompt/output `exec-6d2542c3-3660-4ff6-be84-f1ca9d9c0e39.png`:
+
+No-text orthographic concept sheet for BLD-RT-SlopeCornerInner-01. One single concave L-shaped sloped wedge component on a pale neutral background. It represents proposed corner-inner/v1, solid w<=max(u,v), within 0.5 m cube envelope: two matching 1:1 slopes meet in a valley, upper inner volume remains empty. Show front, side, top, underside, neutral silhouette, and one small isometric view. Timber material, rough-sawn but flush. Exactly one component in every view; no extra blocks, no assembly, no people, no dimensions, no diagram labels, no typography, no axes. Keep empty space visible and the piece's silhouette coherent. Visual target, no numerical verification.
+
+Selected clean-view prompt/output `exec-274b6fda-0773-454c-a70b-26d5a3ddb7b3.png`:
+
+Isolated rough timber concave inner roof-corner wedge for BLD-RT-SlopeCornerInner-01, three-quarter orthographic. One component, no assembly. Proposed `corner-inner/v1` shape in 0.5 m envelope, two matching 1:1 slope faces forming a valley, open inner volume above. Rough timber surface follows slopes and the edge; no beam or supports. Plain background, no text, no labels, no axes, no dimensions, no people, no props. Show full component boundary and empty region; appearance and occupancy are conceptual only.
+
+No reference image attached; KIT-RT slope material guidance was text-only. Rejected image used labels with a mistaken axis presentation; selected sheet removes diagram text.

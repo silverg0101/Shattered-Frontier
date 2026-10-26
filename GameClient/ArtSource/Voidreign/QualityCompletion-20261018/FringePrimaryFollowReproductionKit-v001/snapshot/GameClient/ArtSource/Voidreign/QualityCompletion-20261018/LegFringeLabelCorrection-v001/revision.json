@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "status": "reviewed-label-correction-derived-motion-invalid",
+  "cpu_only": true,
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selections.npz": "0b6a19f76a2cba73a42e293c29365360b53ba93be101cf8f4ca556e7a5989cc0",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\FeatureSupportAdjacency-v001\\support-selections.npz": "249c7f80d4e46ccc76c78407e2c62fcfa53aef7bca47edbba2f7899804d63637",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LegFringeOwnershipReview-v001\\review.json": "bd814cfb11ee7fbbb9b0b59d3a0a322034f1b2a8285243cdb06a80a98d50e4b4"
+  },
+  "profile_sha256": "091f9e0e1cbe97f1248b542ff72d8fc0640e18f7fab469148590546e287ab8b8",
+  "tool_sha256": "8fe7ff1ab23a9d33961deb5d4815f71c04ffda834bcc5c1a307578d77f23c22d",
+  "changes": [
+    {
+      "id": "FSA-0d7599c806-419f3a26806c",
+      "vertices": 89,
+      "old_label": 2,
+      "new_label": 3
+    },
+    {
+      "id": "FSA-0d7599c806-f4e0f8a59f51",
+      "vertices": 61,
+      "old_label": 2,
+      "new_label": 3
+    },
+    {
+      "id": "FSA-0d7599c806-79c8cc654101",
+      "vertices": 45,
+      "old_label": 2,
+      "new_label": 3
+    }
+  ],
+  "changed_vertices": 195,
+  "label_definitions": {
+    "0": "Nonfeature/unclassified original",
+    "1": "Mane legacy proposal",
+    "2": "Tail legacy proposal minus reviewed leg regions",
+    "3": "hind.L.fringe-review: partial physical feature, intended primary support hind.L; roots/motion unbuilt"
+  },
+  "invalidation": [
+    "Parent root distances, root nodes, guides, attachments, skin weights and simulations do not describe this new label contract.",
+    "No derived arrays copied except canonical index correspondence. Rebuild/review support roots and per-feature motion adapters before using corrected labels.",
+    "Existing material prototype uses its frozen old selection; material appearance class is independent of this motion-owner correction."
+  ],
+  "limitations": [
+    "Correction covers the reviewed misowned vertices, not the full physical fringe or all unknown feature coverage.",
+    "No Blender mesh/rig/source/animation changed; no primary/gait/material attempt consumed.",
+    "Consumer must explicitly support every nonzero label; unknown labels cannot silently become rigid body or be discarded."
+  ]
+}

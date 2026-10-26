@@ -1,0 +1,26 @@
+{
+  "source": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\CompleteMotionCache-v001\\Voidreign-ActualSurfacePilot.blend",
+  "source_sha256": "a5e69cab0f484b2180809b8f60cb61ade34e227bd75ecdecfed97a7f87ae3cb9",
+  "tool_sha256": "2a16049f55c004bc70f2a28ccfa2201cc7a4876c60550123e24b99dfb191952a",
+  "cpu_only": true,
+  "engine": "Cycles",
+  "device": "CPU",
+  "samples": 8,
+  "diagnostic": false,
+  "playback_fps": null,
+  "frames": [
+    {
+      "source_frame": 1,
+      "image": "0001.png"
+    },
+    {
+      "source_frame": 122,
+      "image": "0002.png"
+    },
+    {
+      "source_frame": 299,
+      "image": "0003.png"
+    }
+  ],
+  "scope": "Saved-source playback evidence, not a gait/runtime/collision acceptance"
+}

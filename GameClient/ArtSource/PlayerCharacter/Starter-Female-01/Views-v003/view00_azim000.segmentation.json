@@ -1,0 +1,22 @@
+{
+  "source": "/mnt/c/Projects/Shattered-Frontier/GameClient/ArtSource/PlayerCharacter/Starter-Female-01/Views-v003/cells/view00_azim000.png",
+  "source_sha256": "5595e6642ce4fd097a3be2f90986492a06f8de5b65d71b2cd2ffa60d8adb5200",
+  "output": "/mnt/c/Projects/Shattered-Frontier/GameClient/ArtSource/PlayerCharacter/Starter-Female-01/Views-v003/view00_azim000.png",
+  "output_sha256": "73a35fd30e9df3cd454501f271a4d200dede6d719089d737b1207a9858c0d837",
+  "mask_preview": "/mnt/c/Projects/Shattered-Frontier/GameClient/ArtSource/PlayerCharacter/Starter-Female-01/Views-v003/view00_azim000.mask.png",
+  "mask_preview_sha256": "6cf595cc9b4313fa78cdff47f0dbf624711d50d09f6005c7a39e460ab5aac389",
+  "dimensions_px": [
+    1024,
+    1024
+  ],
+  "method": "border-connected fixed-range RGB flood fill; Gaussian alpha edge 0.8px",
+  "tolerance_rgb": 12,
+  "foreground_fraction": 0.159188,
+  "foreground_bounds_px": [
+    259,
+    18,
+    765,
+    938
+  ],
+  "review_status": "needs-review"
+}

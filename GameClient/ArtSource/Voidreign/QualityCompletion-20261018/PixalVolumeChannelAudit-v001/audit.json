@@ -1,0 +1,164 @@
+{
+  "schema_version": 1,
+  "status": "cpu-volume-channel-diagnostic-only",
+  "cpu_only": true,
+  "gpu_context_initialized": false,
+  "torch": "2.14.0+rocm10.1.0",
+  "volume": "/mnt/c/Projects/Shattered-Frontier/Artifacts/Art/Voidreign/pixal-detail-20261018/generated/material-volume.pt",
+  "volume_sha256": "b8931bd8e6a5ea6bd81b3b82ab9dcb66846dd3c9527e65a2be12663f1135236f",
+  "attrs_shape": [
+    2745908,
+    6
+  ],
+  "attrs_dtype": "torch.float32",
+  "layout": {
+    "base_color": {
+      "start": 0,
+      "stop": 3,
+      "step": null
+    },
+    "metallic": {
+      "start": 3,
+      "stop": 4,
+      "step": null
+    },
+    "roughness": {
+      "start": 4,
+      "stop": 5,
+      "step": null
+    },
+    "alpha": {
+      "start": 5,
+      "stop": 6,
+      "step": null
+    }
+  },
+  "channels": [
+    {
+      "channel": 0,
+      "minimum": -0.026931166648864746,
+      "maximum": 0.9712886810302734,
+      "mean": 0.23793396647324486,
+      "std": 0.10035372453494695,
+      "fraction_below_point1": 0.0593494028204878,
+      "fraction_above_point9": 3.641782608885658e-06,
+      "sampled_quantiles": [
+        -0.002051234245300293,
+        0.05795974433422089,
+        0.22632291913032532,
+        0.5263327509164816,
+        0.8770203590393066
+      ]
+    },
+    {
+      "channel": 1,
+      "minimum": -0.020131945610046387,
+      "maximum": 0.8917157649993896,
+      "mean": 0.1498525683259808,
+      "std": 0.08239040521715287,
+      "fraction_below_point1": 0.25474997705676955,
+      "fraction_above_point9": 0.0,
+      "sampled_quantiles": [
+        -0.004048585891723633,
+        0.03275899440050125,
+        0.13362078368663788,
+        0.45782796889543564,
+        0.8661447763442993
+      ]
+    },
+    {
+      "channel": 2,
+      "minimum": -0.01927173137664795,
+      "maximum": 0.746392011642456,
+      "mean": 0.13635288701199524,
+      "std": 0.06449659584268412,
+      "fraction_below_point1": 0.2962648420850225,
+      "fraction_above_point9": 0.0,
+      "sampled_quantiles": [
+        -0.008916676044464111,
+        0.032496374845504765,
+        0.12892374396324158,
+        0.34846659600734714,
+        0.7415210008621216
+      ]
+    },
+    {
+      "channel": 3,
+      "minimum": 0.899795651435852,
+      "maximum": 1.0445209741592407,
+      "mean": 0.9997111334902831,
+      "std": 0.0015825683376926333,
+      "fraction_below_point1": 0.0,
+      "fraction_above_point9": 0.9999996358217391,
+      "sampled_quantiles": [
+        0.9740267992019653,
+        0.9954998344182968,
+        0.9997662007808685,
+        1.003559982776642,
+        1.012948751449585
+      ]
+    },
+    {
+      "channel": 4,
+      "minimum": 0.8232554793357849,
+      "maximum": 0.865201473236084,
+      "mean": 0.8438547128324486,
+      "std": 0.001786552464036888,
+      "fraction_below_point1": 0.0,
+      "fraction_above_point9": 0.0,
+      "sampled_quantiles": [
+        0.833615243434906,
+        0.8404406607151031,
+        0.8436602354049683,
+        0.848848956823349,
+        0.8574219942092896
+      ]
+    },
+    {
+      "channel": 5,
+      "minimum": -0.04330730438232422,
+      "maximum": 1.0642194747924805,
+      "mean": 0.7470267485978596,
+      "std": 0.25219838988468685,
+      "fraction_below_point1": 0.0006424104522074301,
+      "fraction_above_point9": 0.4489454854277711,
+      "sampled_quantiles": [
+        -0.02197974920272827,
+        0.2583301454782486,
+        0.7976084649562836,
+        1.0005662441253662,
+        1.0514570474624634
+      ]
+    }
+  ],
+  "source_evidence": [
+    {
+      "path": "/home/grego/sf-asset-lab/sources/Pixal3D/pixal3d/representations/mesh/base.py",
+      "sha256": "b3f91a0c59f2614271773b2fe3c5dcf3b66332a006366265b93456de7fb5eb4d",
+      "excerpts": [
+        {
+          "first_line": 167,
+          "text": "    ):\n        self.vertices = vertices.float()\n        self.faces = faces.int()\n        self.material_ids = material_ids    # [M]\n        self.uv_coords = uv_coords          # [M, 3, 2]\n        self.materials = materials\n        self.layout = {\n            'base_color': slice(0, 3),\n            'metallic': slice(3, 4),\n            'roughness': slice(4, 5),\n            'alpha': slice(5, 6),\n        }\n\n    def to(self, device, non_blocking=False):"
+        }
+      ]
+    },
+    {
+      "path": "/home/grego/sf-asset-lab/sources/Pixal3D/pixal3d/pipelines/pixal3d_image_to_3d.py",
+      "sha256": "3f4c70d25159f8cd204c951e56287cf7b1c2c0f70749318eaa2e7b7a43839db8",
+      "excerpts": [
+        {
+          "first_line": 80,
+          "text": "        self.image_cond_model_shape_512 = image_cond_model_shape_512\n        self.image_cond_model_shape_1024 = image_cond_model_shape_1024\n        self.image_cond_model_tex_1024 = image_cond_model_tex_1024\n        self.rembg_model = rembg_model\n        self.low_vram = low_vram\n        self.default_pipeline_type = default_pipeline_type\n        self.pbr_attr_layout = {\n            'base_color': slice(0, 3),\n            'metallic': slice(3, 4),\n            'roughness': slice(4, 5),\n            'alpha': slice(5, 6),\n        }\n        self._device = 'cpu'\n\n    @classmethod\n    def from_pretrained(cls, path: str, config_file: str = \"pipeline.json\") -> \"Pixal3DImageTo3DPipeline\":"
+        },
+        {
+          "first_line": 575,
+          "text": "    def decode_latent(\n        self,\n        shape_slat: SparseTensor,\n        tex_slat: SparseTensor,\n        resolution: int,\n    ) -> List[MeshWithVoxel]:\n        \"\"\"\n        Decode the latent codes.\n\n        Args:\n            shape_slat (SparseTensor): The structured latent for shape.\n            tex_slat (SparseTensor): The structured latent for texture.\n            resolution (int): The resolution of the output.\n        \"\"\"\n        meshes, subs = self.decode_shape_slat(shape_slat, resolution)\n        tex_voxels = self.decode_tex_slat(tex_slat, subs)\n        out_mesh = []\n        torch.cuda.synchronize()\n        for m, v in zip(meshes, tex_voxels):\n            m.fill_holes()\n            out_mesh.append(\n                MeshWithVoxel(\n                    m.vertices, m.faces,\n                    origin = [-0.5, -0.5, -0.5],\n                    voxel_size = 1 / resolution,\n                    coords = v.coords[:, 1:],\n                    attrs = v.feats,\n                    voxel_shape = torch.Size([*v.shape, *v.spatial_shape]),\n                    layout=self.pbr_attr_layout\n                )\n            )\n        return out_mesh\n    \n    @torch.no_grad()\n    def run(\n        self,"
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "Raw volume statistics, not semantic UV coverage or approved PBR values.",
+    "No inference, raster/bake, image/material edit, environment install or shared GPU access."
+  ]
+}

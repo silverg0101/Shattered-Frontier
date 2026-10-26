@@ -1,0 +1,74 @@
+{
+  "assetId": "BLD-SM-CellFull-01",
+  "version": "v001",
+  "category": "building construction component / material appearance study",
+  "brief": "Appearance-only stone-masonry treatment for proposed cell-full geometry; not a complete architectural kit.",
+  "created": "2026-10-18",
+  "sourceReferences": [
+    "docs/art-templates/player-construction-kit-contract.md — canonical reference frame; cell-full; separate shape/material/skin identity",
+    "docs/Game-Design/Legends_Shattered_Frontier_Construction_System_Architecture_v0.1.md — §§3.1–3.2, 8–9",
+    "GameClient/ArtSource/GreenlandsWaystone/Waystone-Turnaround.png — material cue only; unchanged"
+  ],
+  "definition": {
+    "geometryRef": "cell-full/v1 (proposal; not accepted runtime mask)",
+    "envelopeMeters": [0.5, 0.5, 0.5],
+    "solid": "full normalized cube, u/v/w each in [0,1]",
+    "axes": "construction-local X length, Y depth, Z up",
+    "pivot": "minimum grid corner of envelope",
+    "boundaryContacts": ["-X", "+X", "-Y", "+Y", "-Z", "+Z"],
+    "orientation": "grid-aligned; authored 90-degree rotations/mirrors only",
+    "materialKit": "KIT-SM",
+    "structuralMaterialProfile": "Stone masonry (Construction Architecture §3.2); unchanged by this appearance study",
+    "cosmeticSkin": "gray-brown local hand-cut stone courses with restrained mortar",
+    "functionalDefinition": "none"
+  },
+  "generation": {
+    "tool": "built-in image_gen",
+    "date": "2026-10-18",
+    "model": "unavailable",
+    "seed": "unavailable",
+    "promptRecord": "prompt.txt",
+    "selectedConceptInput": "GameClient/ArtSource/GreenlandsWaystone/Waystone-Turnaround.png (material cue only)",
+    "cleanViewInput": "concept-sheet.png"
+  },
+  "images": [
+    {
+      "path": "concept-sheet.png",
+      "sha256": "ADDC2E1AD2F0D8189DF46A5CEAF6F261B7CC976C6A8CA61E179B177F4A0803BD",
+      "width": 1536,
+      "height": 1024,
+      "pixelFormat": "RGB 24-bit",
+      "alpha": false,
+      "review": "Six coordinated square face treatments and a wireframe target; the views show repeated stone courses. The contact panel is visually sparse and only the height target is labeled; use the manifest and contract for full six-face proposal data, not image measurement."
+    },
+    {
+      "path": "asset-view.png",
+      "sha256": "2F71373716575ADC78CD1220432AEACCAB2EC70EC4E19202DBB843B546B308E0",
+      "width": 1536,
+      "height": 1024,
+      "pixelFormat": "RGB 24-bit",
+      "alpha": false,
+      "review": "One full cube with clear margins on neutral background. The corrective iteration creates a substantially straight silhouette and keeps the face treatment inside its apparent boundary. The course seams remain illustrative, not a measured technical mesh."
+    }
+  ],
+  "rejectedIterations": [
+    {
+      "imagePath": "C:/Users/grego/.codex/generated_images/01a15000-e13f-7213-9ec0-df2684201405/exec-9da232bf-2c8e-4d06-a80b-05f5f3d805c0.png",
+      "sha256": "5A1AC89952BA4AC1A624AC5729F35533F973AAD67893DAA995466241406A5B4A",
+      "reason": "Stone course pieces extended beyond the intended straight cube envelope."
+    }
+  ],
+  "review": {
+    "reviewedBy": "Codex",
+    "conceptStatus": "proposed",
+    "cleanViewStatus": "ready-for-model-test",
+    "geometryAcceptance": "not established",
+    "numericalMeshFit": "not established",
+    "runtimeCollisionSupportClearance": "not established",
+    "actionableFindings": [
+      "Concept sheet illustrates surfaces but does not fully depict six numeric contact planes or all three equal target dimensions.",
+      "Corrected clean view appears flush and block-like; do not treat generated masonry detail as numerical evidence."
+    ]
+  },
+  "componentBoundary": "One solid cell-full reference component appearance. Does not fulfill separate kit roles for inside/outside faces, corners, returns, caps, joints, openings, roofs, curves, or cross-kit interfaces."
+}

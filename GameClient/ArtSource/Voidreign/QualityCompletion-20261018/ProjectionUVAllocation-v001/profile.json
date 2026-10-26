@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "uv_report": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ProjectionUVTopology-v001/uv-report.json",
+  "uv_topology": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ProjectionUVTopology-v001/uv-topology.npz",
+  "baseline_uv_topology": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/SourceUVTopology-v001/uv-topology.npz",
+  "mask_reports": [
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReviewedMaterialMask2K-v001/mask-report.json",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReviewedMaterialMask4K-v001/mask-report.json"
+  ],
+  "regions": [
+    {
+      "name": "Head edit projection union",
+      "attributes": [
+        "Head projection weight",
+        "Head-NegX projection weight"
+      ],
+      "preview_rgb": [
+        40,
+        210,
+        235
+      ]
+    },
+    {
+      "name": "Saddle edit projection union",
+      "attributes": [
+        "Saddle projection weight",
+        "Saddle-NegX projection weight"
+      ],
+      "preview_rgb": [
+        240,
+        170,
+        45
+      ]
+    }
+  ],
+  "input_sha256": {
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ProjectionUVTopology-v001/uv-report.json": "b5c8a455c7e47ee794ca4a302eebde3892a116e0a98e329cb45ded32b5e7c53f",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ProjectionUVTopology-v001/uv-topology.npz": "33d4bb778f26724fc173fd16a020790a009e5d8d21ede708f3c4635fd22b0751",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/SourceUVTopology-v001/uv-topology.npz": "7d6b6296ff351ca9c6608eb5dba7098738e35f8ede072a1a63eeea462357ba94",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReviewedMaterialMask2K-v001/mask-report.json": "6ce18751d7ba6b8a5e1d5d8235978994ec4a5b251edce27ae94a40ddc130cbb2",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReviewedMaterialMask4K-v001/mask-report.json": "beb7abebc6b8ab4cafca0eda8dd144474e5250d83df239ee592e0098e4a795b3"
+  }
+}

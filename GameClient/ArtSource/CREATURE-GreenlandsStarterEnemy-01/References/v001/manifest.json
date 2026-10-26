@@ -1,0 +1,29 @@
+{
+  "asset_id": "CREATURE-GreenlandsStarterEnemy-01",
+  "category": "creature",
+  "brief": "Proposed Greenlands starter enemy: one territorial bramble boar with russet fur, tusks and sparse shoulder bristles; species and anatomy are inferred.",
+  "design_sources": [
+    { "path": "docs/Game-Design/Legends_Shattered_Frontier_Vertical_Slice_Specification_v1.0.md", "section": "Scope and exclusions / Combat; Region layout and encounter envelope; Content inventory", "role": "requires one readable enemy in a legible clearing" },
+    { "path": "docs/Game-Design/Legends_Shattered_Frontier_Combat_System_v0.1.md", "section": "Creature-tier rule", "role": "combat context only; does not identify enemy species" }
+  ],
+  "concept_status": "agent-selected; proposed species and details, user approval not claimed",
+  "clean_view_status": "ready-for-model-test; opaque background, segmentation required if later adapter requires alpha",
+  "design_master": "concept-sheet.png",
+  "prompts": "prompt.txt",
+  "generation": { "tool": "built-in image_gen", "model": "unavailable", "generated_date": "2026-10-18", "seed": "unavailable" },
+  "outputs": {
+    "concept-sheet.png": { "sha256": "7A1D25B623C1349940C307F844B0263025B9AF33871BC2C91A7537CFC76DC55F", "dimensions_px": [1536, 1024], "color": "RGB, opaque; PNG color type 2", "master": true },
+    "asset-view.png": { "sha256": "22A3F83EBDC0BD1CC44AF1BD5791563CDD4F12F56825DF7F02DCD66B7F7A1527", "dimensions_px": [1536, 1024], "color": "RGB, opaque; PNG color type 2", "master": false }
+  },
+  "component_boundaries": ["One creature only", "Excludes animation, attack effects, encounter scene, behavior, armor and combat stats"],
+  "scale": "Approximate scale inferred; no creature dimensions established by the design source.",
+  "edits": "No pixel edits or upscaling; clean view generated as a separate interpretation of the selected sheet.",
+  "review": {
+    "reviewer": "Codex visual inspection",
+    "findings": ["Sheet views maintain one low, sturdy boar anatomy with coherent coat, tusks and shoulder bristles.", "Clean view shows one complete neutral standing creature with all legs and tail visible, ample margins and neutral opaque background.", "Materials and broad silhouette agree across the sheet and clean view."],
+    "unresolved": ["Species selection, body scale, threat identity, behavior and attack silhouette are visual proposals only."],
+    "image_complete": true,
+    "approval": "agent-selected; not user-approved",
+    "review_date": "2026-10-18"
+  }
+}

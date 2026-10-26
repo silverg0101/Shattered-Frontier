@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "status": "needs-review-two-local-proofs-neither-promoted",
+  "scope": "New local actual-fringe surface feasibility, not full-mount secondary retry",
+  "comparisons": [
+    {
+      "attempt": "v001",
+      "held_speed_m_s": 0.7953664349760816,
+      "maximum_free_step_m": 0.08289095196524704,
+      "maximum_edge_change_m": 0.02700100720496278,
+      "minimum_sampled_unsigned_leg_gap_m": 1.5826717572053894e-05,
+      "maximum_pin_error_m": 2.9802322387695312e-08,
+      "replay_error_m": 0.0,
+      "internal_springs": false
+    },
+    {
+      "attempt": "v002",
+      "held_speed_m_s": 0.4403833843604026,
+      "maximum_free_step_m": 0.06785865934491639,
+      "maximum_edge_change_m": 0.022798356877608714,
+      "minimum_sampled_unsigned_leg_gap_m": 5.457813585962867e-06,
+      "maximum_pin_error_m": 2.9802322387695312e-08,
+      "replay_error_m": 0.0,
+      "internal_springs": true
+    }
+  ],
+  "findings": [
+    "Root motion, exact source/canonical sampling and saved native cache replay work; this does not accept free-surface motion or collision.",
+    "Initial root/contact incompatibility hypothesis ruled out: no baseline free vertices below3mm and no incompatible root/free rest edges. Do not expand exclusions or reduce margins based on that hypothesis.",
+    "Actual feature consists of3open shells (101/65/36nodes), boundaries16/12/9nodes all pinned. No free surface boundary; surface cloth is not an automatic correct representation.",
+    "Attempt2 isolates shells and adds internal springs with opposite-normal check; held motion decreases but remains0.440m/s, edge change22.798mm and sampled leg gaps as low as5.46micrometres.",
+    "Closest recorded contact: sourceframe14/sceneframe44,canonical22042,geodesic11.080mm,sourcebodyface245249,oriented normal gap negative5.46micrometres. This is local face-side evidence, not signed solid proof."
+  ],
+  "next": "Before last local attempt, diagnose held convergence and exact collider/face contact at recorded cases, evaluate appropriate shape-preserving cage/rod or collider representation. Do not blindly increase damping, expand pin/contact masks or lower limits. Missing tail/otherleg/self/swept/subframe/full-mount coverage remains open.",
+  "local_budget": {
+    "used": 2,
+    "limit": 3,
+    "remaining": 1
+  },
+  "global_budgets_reset": false,
+  "promotion": "None; main actual mesh/skin/materials/gait and GUI unchanged."
+}

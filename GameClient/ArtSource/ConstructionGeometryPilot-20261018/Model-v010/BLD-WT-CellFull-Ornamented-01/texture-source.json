@@ -1,0 +1,25 @@
+{
+  "source_manifest": "GameClient/ArtSource/BLD-WT-CellFull-Ornamented-01/References/v001/manifest.json",
+  "source_manifest_sha256": "2b358c45fd9bf82ac70c52ed2792fb5af3305fb78d1e220916a3839dbce7001f",
+  "source_image": "GameClient/ArtSource/BLD-WT-CellFull-Ornamented-01/References/v001/asset-view.png",
+  "source_image_sha256": "3869abbf9b7705415e388016f5dd544f6535d4aa4f511057d49b84d438e4822e",
+  "role": "appearance guidance; no reference pixels or scene lighting are projected",
+  "recipe": "worked-timber-ornamented",
+  "seed": 1704,
+  "map_size_px": [
+    1024,
+    1024
+  ],
+  "maps": [
+    "basecolor-sRGB",
+    "roughness-linear",
+    "normal-OpenGL-tangent",
+    "height-linear-16bit"
+  ],
+  "height_encoding_m": [
+    -0.00075,
+    0.00075
+  ],
+  "face_texel_density_px_per_m": 2048,
+  "height_use": "reference/export sidecar only; never applied as geometry displacement"
+}

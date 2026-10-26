@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "status": "UV-class-mask-authoring-data-needs-review",
+  "cpu_only": true,
+  "input_sha256": {
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/SourceUVTopology-v001/uv-report.json": "f84f5fb66327985f43c6d0db8f5a1fc3db9bdbc9ca8fc5ec361c7855e4435d85",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/SourceUVTopology-v001/uv-topology.npz": "7d6b6296ff351ca9c6608eb5dba7098738e35f8ede072a1a63eeea462357ba94",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReviewedDielectricFaces-v003/approval.json": "21fbd1e1786b25baac40bf205acfa28b6d47eec9c1ace4bf4b47a9823de1156c",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReviewedDielectricFaces-v003/approved-response-faces.npz": "5352d374f1ea0965dc7f8b3d825a52fbbdbb198b068c4fc08eec46fba7521e22",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReviewedMaterialMask4K-v001/mask-report.json": "beb7abebc6b8ab4cafca0eda8dd144474e5250d83df239ee592e0098e4a795b3"
+  },
+  "profile_sha256": "4bbc5ec409ff5fc2999839cc79bea6e324f07da8b0bc92beb2f499e9862c6161",
+  "tool_sha256": "ffe9cbfa8506837580ce1bec340b2e597a3227c052b586dac741752f16eda8f9",
+  "resolution": 4096,
+  "triangles": 297119,
+  "approved_faces": 1215,
+  "uv_degenerate_faces": 37,
+  "approved_faces_without_safe_pixel": 2,
+  "approved_faces_without_center_sample": 2,
+  "overlap_pixels": 303,
+  "class_contract_version": 2,
+  "coverage_cache_report": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReviewedMaterialMask4K-v001/mask-report.json",
+  "class_pixel_counts": {
+    "0": 7361521,
+    "1": 21226,
+    "2": 1484,
+    "3": 8855,
+    "254": 303,
+    "255": 9383827
+  },
+  "class_legend": {
+    "0": "unknown mesh surface",
+    "1": "reviewed strand nonmetal",
+    "2": "reviewed bone nonmetal",
+    "3": "reviewed organic nonmetal common response - finer class unresolved",
+    "254": "overlapping UV faces - unresolved",
+    "255": "unused atlas"
+  },
+  "outputs": {
+    "MaterialClassIDs.png": "7402b09560c663b246462353d20a7cfcbe03bdd84834c939f8e4a434c2b48ed8",
+    "ClassCoveragePreview.png": "e3e0b4ceef87a5620e0f93647333ac74df98b9290fc3cd37e2774456367d4d87",
+    "coverage.npz": "43d3dfa8d62b83fe886f9235d471695fe6ba7f154f7da5d0eeb691aa5c486dba"
+  },
+  "limitations": [
+    "Pixel-center source UV coverage only; no filtered/mipped texel footprint or engine acceptance.",
+    "Unknown and overlapping pixels are not approvals. No automatic class filling, dilation, PBR map or shader edit.",
+    "Use nearest sampling for class IDs; this data PNG is not an albedo/metallic texture.",
+    "Per-pixel lack of detected overlap does not prove continuous UV topology is non-overlapping."
+  ]
+}

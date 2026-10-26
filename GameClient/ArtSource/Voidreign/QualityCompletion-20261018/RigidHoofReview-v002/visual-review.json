@@ -1,0 +1,12 @@
+{
+  "status": "selection-reviewed-for-proposed-weights-only",
+  "viewed": [
+    "fore.L-side",
+    "fore.R-side",
+    "hind.L-side",
+    "hind.R-side"
+  ],
+  "finding": "All legacy rigid shell vertices retained, sole-connected heel edges included. Four physical hoof-core contexts reviewed; this does not validate collar deformation or fix body skin.",
+  "contract": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidHoofSelectionContract-v001/contract.json",
+  "no_skin_or_model_changes": true
+}

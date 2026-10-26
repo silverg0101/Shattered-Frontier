@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "source": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryOnlyCombinedFull-v001\\Voidreign-ActualSurfacePilot.blend",
+  "object": "geometry_0",
+  "frame_start": 1,
+  "frame_end": 330,
+  "fps": 30,
+  "maximum_error_m": 1e-05,
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryOnlyCombinedFull-v001\\Voidreign-ActualSurfacePilot.blend": "c507e31813fea5ea61e30f7cbf8bae37609135b549238b64ad1e61a1e42111ee",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryOnlyCombinedFull-v001\\Feature-actual-motion.mdd": "1bb2fb689c35f48249f2b5c943534cf5c2dddec404a8f1fddf10fe4542495b67",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryOnlyCombinedFull-v001\\Mane-primary-motion.mdd": "e3e36686b391cfba363ec4f1c0ec46c44b2553888968e6d717628e9adab2321c"
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "status": "baked-actual-surface-pilot-needs-checks",
+  "cpu_only": true,
+  "deformation_input_mode": "rigid-assembly-rest",
+  "root_goal_rest_preflight_error_m": 2.432874123343184e-07,
+  "animated_rest_shape": false,
+  "source_sha256": "a1de9660c66c772cdb4cedec20ac5b1a2229a4417af46550f8167f915680c140",
+  "mesh_hash": "ba2d283db0be5e8cff4cc7549f1f51916cc0a4d18213773300976b11512ececa",
+  "profile_sha256": "8b7135bd0873ab3deeaf6e4d728b1dd3eaf8c3bf503d5849484d30fa2965b238",
+  "tool_sha256": "0ced96df49fe00c660de15cf41a007341897fa9d84cf90770f93115dfc80ae8d",
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ContactMeshExperiment-v001\\Voidreign-CompleteHair.blend": "a1de9660c66c772cdb4cedec20ac5b1a2229a4417af46550f8167f915680c140",
+    "docs\\art-templates\\model-profiles\\voidreign-complete-hair-motion-v003-20261018.json": "9df3ed982c0f5f571210a98d42c1e6b395b80713c139f0b7b162ad861d5cca47",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneGuideProposal-v001\\guide-report.json": "3e776c1cef3380c3a81814d67ce2ec32270bca2e7d7fbece55eefef49e70de67",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selections.npz": "0b6a19f76a2cba73a42e293c29365360b53ba93be101cf8f4ca556e7a5989cc0",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ContactMeshSurfaceCheck-v001\\surface-review.npz": "e8df9e74a7ddd7ddb44654989f1f5f0474d853a43350c32e0674a15163c68c85",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneAttachmentProposals-v001\\attachment-proposals.json": "0e0b6d2096722f4ffa88be6d437c1b17d10eba5999c884a5f1974e860c1c3308",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ContactMeshSurfaceCheck-v001\\surface-report.json": "f1d161b1c52cdc0cf6a78acb6794af03a2bee7372a4673e0f70825fc3faaca7d"
+  },
+  "proxy_vertices": 33233,
+  "proxy_faces": 68878,
+  "original_vertices": 284762,
+  "original_triangles": 297119,
+  "feature_labels": [
+    2
+  ],
+  "source_to_unit_proxy_max_error_m": 4.166554846806826e-07,
+  "proxy_unit_world_scale": [
+    1.0,
+    1.0,
+    1.0
+  ],
+  "pinned_proxy_vertices": 12224,
+  "collision_excluded_vertices": 12224,
+  "attachment_mode": "sewing",
+  "sewing_edges": 44,
+  "warmup_frames": 240,
+  "warmup_mode": "positive-retime",
+  "fresh_cache_retime_max_error_m": 0.0,
+  "warmup_velocity": {
+    "rms_speed_m_s": 0.003723820438608527,
+    "peak_speed_m_s": 0.04771650955080986,
+    "rms_limit_m_s": 0.02,
+    "peak_limit_m_s": 0.08,
+    "passed": true
+  },
+  "cache_frame_start": 1,
+  "cache_frame_end": 270,
+  "inherited_cache_files": 0,
+  "frame_start": 1,
+  "frame_end": 30,
+  "baked": true,
+  "elapsed_seconds": 383.0207170000067,
+  "blender": "5.1.1",
+  "source_output_sha256": "2fda916231929f33fed6c3aaca9e10128a28b8c909cfc46b7d1c2385d2b47874",
+  "limitations": [
+    "Offline Blender cloth cache and geometry-node source sampling, not an engine-compatible exchange.",
+    "Canonical simulation proxy only; original source topology, UVs and named bone weights retained.",
+    "Original free-surface collision exclusion retained; proposed bindings use the reported pin or sewing mode and remain semantically unapproved.",
+    "No strand self/cross-hair collision; proxy polygon contacts differ slightly from analytic capsule checks.",
+    "Source-style deformation, pin/contact conflicts and full surface checks remain required."
+  ]
+}

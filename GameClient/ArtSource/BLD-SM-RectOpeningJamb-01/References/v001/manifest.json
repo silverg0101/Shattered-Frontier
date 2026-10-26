@@ -1,0 +1,66 @@
+{
+  "assetId": "BLD-SM-RectOpeningJamb-01",
+  "version": "v001",
+  "category": "construction kit / rectangular opening component appearance and installation study",
+  "created": "2026-10-18",
+  "sourceReferences": [
+    "docs/art-templates/player-construction-kit-contract.md \u2014 Openings; canonical frame; required kit QA",
+    "docs/Game-Design/Legends_Shattered_Frontier_Construction_System_Architecture_v0.1.md \u2014 \u00a7\u00a73.1\u20133.2, 8\u20139",
+    "GameClient/ArtSource/BLD-SM-CellFull-01/References/v001/asset-view.png \u2014 material cue"
+  ],
+  "definition": {
+    "geometryRef": "rect-opening/v1 (proposal)",
+    "envelopeMeters": "per contract; not inferred from image",
+    "contacts": [
+      "jamb face",
+      "wall return/reveal",
+      "header or base interface per role"
+    ],
+    "opening": "preserve exact contract aperture subtraction and clearance",
+    "materialKit": "KIT-SM",
+    "structuralMaterialProfile": "Stone masonry",
+    "cosmeticSkin": "appearance only",
+    "functionalDefinition": "none"
+  },
+  "generation": {
+    "tool": "built-in image_gen",
+    "date": "2026-10-18",
+    "model": "unavailable",
+    "seed": "unavailable",
+    "promptRecord": "prompt.txt",
+    "referenceImagesAttached": []
+  },
+  "images": [
+    {
+      "path": "concept-sheet.png",
+      "sha256": "0456e33dd6109bf04ef5619c86c7a7f9d648a4c4971ed8dbdead589eef405fa6",
+      "width": 1536,
+      "height": 1024,
+      "pixelFormat": "RGB 24-bit",
+      "alpha": false,
+      "review": "Sheet shows the opening assembled with lintel and sill context; clean jamb is isolated. Aperture dimensions and fit are not accepted."
+    },
+    {
+      "path": "asset-view.png",
+      "sha256": "341a6e8bafcb1471c9c8d753cc88f7583335f198b66e9fd59a206619cbdc8e18",
+      "width": 1024,
+      "height": 1536,
+      "pixelFormat": "RGB 24-bit",
+      "alpha": false,
+      "review": "Sheet shows the opening assembled with lintel and sill context; clean jamb is isolated. Aperture dimensions and fit are not accepted."
+    }
+  ],
+  "review": {
+    "reviewedBy": "Codex",
+    "conceptStatus": "proposed",
+    "cleanViewStatus": "ready-for-model-test",
+    "imageStatus": "image-complete",
+    "geometryAcceptance": "not established",
+    "numericalMeshFit": "not established",
+    "runtimeCollisionSupportClearance": "not established",
+    "actionableFindings": [
+      "Sheet shows the opening assembled with lintel and sill context; clean jamb is isolated. Aperture dimensions and fit are not accepted."
+    ]
+  },
+  "componentBoundary": "One separately indexed opening component appearance role. Assembly views explain installation; they are not complete assemblies and do not define dimensions, clearance or runtime behavior."
+}

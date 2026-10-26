@@ -1,0 +1,12 @@
+{
+  "source_render_report": "render-report.json",
+  "command": "ffmpeg -hide_banner -loglevel error -n -framerate 10 -i %04d.png -c:v libx264 -preset medium -crf 19 -pix_fmt yuv420p -movflags +faststart Voidreign-CompleteHair-Diagnostic.mp4",
+  "frames": 110,
+  "fps": 10,
+  "duration_s": 11,
+  "width": 960,
+  "height": 720,
+  "sha256": "66eb147883690357f42f75aa03002aed776664c2c8e18e5e6dbf1096aa20edce",
+  "verified_with": "ffprobe stream and format metadata",
+  "scope": "Failed diagnostic prototype, not gait or accepted collisions"
+}

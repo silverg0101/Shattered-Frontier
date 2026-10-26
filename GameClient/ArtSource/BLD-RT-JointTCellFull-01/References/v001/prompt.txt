@@ -1,0 +1,9 @@
+Concept-sheet prompt/output `exec-15a30f78-d91c-4f14-85a0-2ded19b82e92.png`:
+
+Concept sheet for BLD-RT-JointTCellFull-01. Separate one isolated full-cell timber module from one small T-intersection assembly of three solid cubes. Each cube is 0.5m target, touch on full planar faces only, grid-aligned; branch meets the middle of the through-wall at a right angle. Show visible seam and surface continuity; no sockets, brackets or protrusions. Include front/top/isometric T assembly views and simple single-component view. Rough warm frontier timber. Plain background, no people/text. Appearance-only study; no structural mechanics or exact fit implied.
+
+Clean-view prompt/output `exec-69a96b42-cd07-4853-901e-e5f2d050f74d.png`:
+
+Single isolated rough timber full-cell module for BLD-RT-JointTCellFull-01, one plain 0.5m cube with flat faces and subtle contact seam styling. Three-quarter orthographic clean component view on pale background. Warm rough-sawn timber, no T assembly, no extra pieces, no bracket or protrusion, no people/text. This component's appearance supports a separately shown T-joint study; cube shape itself is unchanged. Image is not exact geometry validation.
+
+No reference image attached; the earlier KIT-RT full-cell package is the appearance cue only.

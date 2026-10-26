@@ -1,0 +1,167 @@
+{
+  "status": "passed-scoped-surface-checks",
+  "feature_diagnostics": {
+    "Mane": {
+      "maximum_surface_step_m": 0.0013270218623802066,
+      "initial_surface_step_m": 0.0013176975771784782,
+      "maximum_step_frame": 30,
+      "maximum_step_vertex": 130755,
+      "proposed_gap_increase_m": 1.9650906324386597e-07,
+      "maximum_penetration_m": 0.0,
+      "collision_label": null,
+      "collision_frame": null,
+      "collision_vertex": null
+    },
+    "Tail": {
+      "maximum_surface_step_m": 0.0029263703618198633,
+      "initial_surface_step_m": 0.0017423812532797456,
+      "maximum_step_frame": 3,
+      "maximum_step_vertex": 253194,
+      "proposed_gap_increase_m": 1.0151416063308716e-07,
+      "maximum_penetration_m": 0.0,
+      "collision_label": null,
+      "collision_frame": null,
+      "collision_vertex": null
+    }
+  },
+  "source_sha256": "6c5b1b407d0ac6fcf69ae9135870eb3afcf96d48b2eb25131cd84740e45a5ac1",
+  "profile_sha256": "fa539240b1419de0fbff753508745877d71885d735822888feaf86c2b7155615",
+  "config_sha256": "9df3ed982c0f5f571210a98d42c1e6b395b80713c139f0b7b162ad861d5cca47",
+  "tool_sha256": "737a35697eb870e476732e66c63e28e73829a2de233e032ba0fd870411d0eaa1",
+  "cpu_only": true,
+  "checks": [
+    {
+      "id": "skin.protected_rigidity",
+      "status": "passed",
+      "measured": 5.339525159797631e-07,
+      "limit": 1e-05,
+      "units": "m"
+    },
+    {
+      "id": "skin.coincident_seams",
+      "status": "passed",
+      "measured": 0.0,
+      "limit": 1e-05,
+      "units": "m"
+    },
+    {
+      "id": "motion.initial_surface_step",
+      "status": "passed",
+      "measured": 0.0017423812532797456,
+      "limit": 0.02,
+      "units": "m"
+    },
+    {
+      "id": "motion.maximum_surface_step",
+      "status": "passed",
+      "measured": 0.0029263703618198633,
+      "limit": 0.08,
+      "units": "m"
+    },
+    {
+      "id": "attachments.proposed_gap_increase",
+      "status": "passed",
+      "measured": 1.9650906324386597e-07,
+      "limit": 0.005,
+      "units": "m"
+    },
+    {
+      "id": "motion.surface_capsule_clearance",
+      "status": "passed",
+      "measured": 0.0,
+      "limit": 0.005,
+      "units": "m"
+    }
+  ],
+  "frame_count": 30,
+  "collision_frames": [
+    1,
+    2,
+    15,
+    30
+  ],
+  "max_surface_step_frame": 3,
+  "max_gap_increase_frame": 1,
+  "max_gap_binding": "Mane:B025",
+  "protected_vertices": 184970,
+  "tested_free_surface_vertices": 70486,
+  "root_exempt_vertices": 54605,
+  "collision_proxies": {
+    "Horse body": {
+      "maximum_penetration_m": 0.0,
+      "frame": null,
+      "vertex": null
+    },
+    "Horse neck": {
+      "maximum_penetration_m": 0.0,
+      "frame": null,
+      "vertex": null
+    },
+    "Rider torso": {
+      "maximum_penetration_m": 0.0,
+      "frame": null,
+      "vertex": null
+    },
+    "Rider head": {
+      "maximum_penetration_m": 0.0,
+      "frame": null,
+      "vertex": null
+    },
+    "Rider thigh near": {
+      "maximum_penetration_m": 0.0,
+      "frame": null,
+      "vertex": null
+    },
+    "Rider shin near": {
+      "maximum_penetration_m": 0.0,
+      "frame": null,
+      "vertex": null
+    },
+    "Rider thigh far": {
+      "maximum_penetration_m": 0.0,
+      "frame": null,
+      "vertex": null
+    },
+    "Rider shin far": {
+      "maximum_penetration_m": 0.0,
+      "frame": null,
+      "vertex": null
+    },
+    "Rider upper arm": {
+      "maximum_penetration_m": 0.0,
+      "frame": null,
+      "vertex": null
+    },
+    "Rider forearm": {
+      "maximum_penetration_m": 0.0,
+      "frame": null,
+      "vertex": null
+    },
+    "Rider arm far": {
+      "maximum_penetration_m": 0.0,
+      "frame": null,
+      "vertex": null
+    },
+    "Rider hand probe": {
+      "maximum_penetration_m": 0.0,
+      "frame": null,
+      "vertex": null
+    },
+    "Environment post": {
+      "maximum_penetration_m": 0.0,
+      "frame": null,
+      "vertex": null
+    },
+    "Ground": {
+      "maximum_penetration_m": 0.0,
+      "frame": null,
+      "vertex": null
+    }
+  },
+  "limitations": [
+    "Capsule proxies, not triangle-accurate or continuous swept collision.",
+    "Root/attachment band intentionally exempt; review masks and boundaries visually.",
+    "Proposed clump links still need semantic review even if gap metric passes.",
+    "Rigid horse harness, not gait or engine runtime acceptance."
+  ]
+}

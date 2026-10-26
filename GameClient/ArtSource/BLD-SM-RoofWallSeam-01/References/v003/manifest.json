@@ -1,0 +1,66 @@
+{
+  "assetId": "BLD-SM-RoofWallSeam-01",
+  "version": "v003",
+  "category": "construction kit wall-to-roof seam",
+  "created": "2026-10-18",
+  "sourceReferences": [
+    "docs/art-templates/player-construction-kit-contract.md — partial shapes and roof transitions",
+    "docs/Game-Design/Legends_Shattered_Frontier_Construction_System_Architecture_v0.1.md — §§3.1–3.2, 8–9"
+  ],
+  "definition": {
+    "geometryRef": "contract wall/roof contacts (proposal)",
+    "envelopeMeters": "per contract; not inferred",
+    "contacts": [
+      "wall exterior/interior",
+      "roof slope",
+      "underside",
+      "exposed ends"
+    ],
+    "openings": "none",
+    "materialKit": "KIT-SM",
+    "structuralMaterialProfile": "Stone masonry",
+    "cosmeticSkin": "appearance only",
+    "functionalDefinition": "none"
+  },
+  "generation": {
+    "tool": "built-in image_gen",
+    "date": "2026-10-18",
+    "model": "unavailable",
+    "seed": "unavailable",
+    "promptRecord": "prompt.txt",
+    "referenceImagesAttached": []
+  },
+  "images": [
+    {
+      "path": "concept-sheet.png",
+      "sha256": "7a51c35d0085659446fced108d5261241b5d96a24eacc5d22bae3ec002ea9c8d",
+      "width": 1536,
+      "height": 1024,
+      "pixelFormat": "RGB 24-bit",
+      "alpha": false,
+      "review": "Stone-only component sheet and matching single transition view; visual proposal only, geometry unvalidated."
+    },
+    {
+      "path": "asset-view.png",
+      "sha256": "4b24f95ea38c2b64e6e8b04d8ce7c30272c72f61d4f72fb1bd4ac24ce8ea4526",
+      "width": 1536,
+      "height": 1024,
+      "pixelFormat": "RGB 24-bit",
+      "alpha": false,
+      "review": "Stone-only component sheet and matching single transition view; visual proposal only, geometry unvalidated."
+    }
+  ],
+  "review": {
+    "reviewedBy": "Codex",
+    "conceptStatus": "proposed",
+    "cleanViewStatus": "needs-segmentation",
+    "imageStatus": "image-complete",
+    "geometryAcceptance": "not established",
+    "numericalMeshFit": "not established",
+    "runtimeCollisionSupportClearance": "not established",
+    "actionableFindings": [
+      "Regenerated stone-only sheet removes mixed timber. Clean image remains a compact one-cell transition wedge; compare shape against contract. Numerical dimensions, opening clearances and runtime behavior unverified."
+    ]
+  },
+  "componentBoundary": "One separately indexed seam appearance role. No mesh, support, collision, sealing or clearance acceptance implied."
+}

@@ -1,0 +1,13 @@
+Concept-sheet prompt/output `exec-eebabc7e-69ea-43df-882e-e32c4351d1ac.png`:
+
+Concept sheet for BLD-SM-JointStackCellFull-01: one separately indexed stone masonry full-cell stacked-joint surface treatment plus a small assembly study. Show one isolated 0.5m cube in orthographic faces, then separate simple panels of repeated horizontal modules, two stacked courses, and a rotated 90-degree join. The surfaces show restrained gray-tan coursed masonry, flush face contacts, aligned bed joints; no projecting stones, no mortar extrusion, no arches or other extra geometry. Clearly separate the single component from the multi-cell assembly illustration. No labels, people, props or scenery. Assemblies are visual only and imply no support rules.
+
+Rejected clean-view prompt/output `exec-780bd465-acfc-426e-9f10-6883b00b60bd.png`, retained as `rejected-stacked-component-view.png`:
+
+One isolated stone masonry full-cell cube for BLD-SM-JointStackCellFull-01, three-quarter orthographic clean asset view. 0.5 m cube design target, gray-tan coursed stone faces, simple aligned horizontal bed joints visible on front and side. No stacked wall, no extra blocks, no corner assembly, no protruding stones or mortar. Neutral background, no text or people. Appearance-only joint treatment, six planar contacts unchanged, geometry unverified.
+
+Selected corrected component-view prompt/output `exec-4c7c8c28-e974-425e-8b36-eb300d1deced.png`:
+
+One monolithic single full-cell block only for BLD-SM-JointStackCellFull-01. No stack and no wall. It is one 0.5 m cube with a subtle horizontal joint line painted across each side face to indicate the repeated stack seam location. The stone courses are only flat surface pattern, not separate blocks. Three-quarter orthographic isolated on plain background. No lower courses, no extra modules, no footing, no corner, no text, no people. Gray-tan stone, simple cubic silhouette and flat contact planes. Clean component view; image does not establish fit.
+
+No reference image attached; related KIT-SM materials provided textual style only.

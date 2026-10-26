@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "status": "authored-plane-joint-band-layout-proposal-needs-visual-review",
+  "cpu_only": true,
+  "input_sha256": {
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/DegenerateInspection-v001/00-component-selections.npz": "0d7599c8064cb81a6e211a23731435e08939b7fb146ce2d4bed810273909a2b2",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HygieneSemanticSelection-v001/selections.npz": "0b6a19f76a2cba73a42e293c29365360b53ba93be101cf8f4ca556e7a5989cc0",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryDomains-v001/primary-domains.npz": "38002ef04f9ab82df4456021b3772e422328e2ecebd38bd068a344dd5e27bdb5",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidHoofSelectionContract-v001/contract.json": "232f8bbf4f67a57c4de1ffa15be1c7d9b19553d4003f9001fa9d7f764b41ff01",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/JointTopologyInspection-v003/joint-topology.json": "0c6c827b7c7edf0125e5e802c6593288a826442f29f5ca2877c7fcb3f8fed59d"
+  },
+  "profile_sha256": "c4f886319acb1b88547adf7d44d7a65f27690b3a4d3a40e740a62b90bab15455",
+  "tool_sha256": "b28f7c437bd4e2bdece7262ae0e22f005c983a985c1670e3f47c9878bd882bf5",
+  "selection_sha256": "073b8b12463939f3b55b4ef8f8cf43bc4044f8efb1745b13f48feb9a609e0a14",
+  "feet": [
+    {
+      "id": "hind.L",
+      "owner_prior": 3,
+      "protected_core_vertices": 894,
+      "old_collar_vertices": 440,
+      "proposed_band_vertices": 1673,
+      "added_band_vertices": 1233,
+      "removed_old_collar_vertices": 0,
+      "direct_core_exterior_bypass_faces": 0,
+      "outer_boundary_canonical_nodes": 67,
+      "outer_crossing_faces": 135,
+      "semantic_cut_canonical_nodes": 0,
+      "band_bounds_m": [
+        [
+          0.32933488488197327,
+          0.6493534445762634,
+          0.11843454837799072
+        ],
+        [
+          0.5885727405548096,
+          0.9545908570289612,
+          0.2593204975128174
+        ]
+      ],
+      "joint_head_signed_distance_to_outer_plane_m": -0.059999996423721336,
+      "outer_plane_origin_m": [
+        0.448,
+        0.812,
+        0.26
+      ],
+      "outer_plane_normal": [
+        0.0,
+        0.0,
+        1.0
+      ]
+    }
+  ],
+  "limitations": [
+    "Authored plane, owner and semantic labels are proposal constraints, not inferred physical anatomy.",
+    "Protected source core indices retained exactly; no weight, UV, mesh, pose, rig or budget change.",
+    "No blend weights are generated. Zero direct bypass faces does not prove a good physical transition or deformation.",
+    "Outer crossings and semantic cuts need source-indexed review; do not weld/delete shells or include feathers automatically."
+  ]
+}

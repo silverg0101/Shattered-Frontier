@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "status": "anatomy-proposal-needs-review",
+  "cpu_only": true,
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryOnlyCombinedFull-v001\\Voidreign-ActualSurfacePilot.blend": "c507e31813fea5ea61e30f7cbf8bae37609135b549238b64ad1e61a1e42111ee",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz": "0d7599c8064cb81a6e211a23731435e08939b7fb146ce2d4bed810273909a2b2",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryOnlyCombinedFullRetention-v001\\validation.json": "fcd05cbae371af89b71bd0b9ab427bf74a48b3667abc0c454fee46e3947ea840"
+  },
+  "tool_sha256": "f2566950009fa31c8866b34613d9a88ba6cd4f751ab1536bf01ff5f661f50ba0",
+  "profile_sha256": "6fdbd17afc0af5d1db2fb83c7d22ffafb063749d0e55ef2000440ca0368ddc05",
+  "vertices": 284762,
+  "triangles": 297119,
+  "regions": [],
+  "views": [
+    {
+      "id": "side-plus-x",
+      "image": "side-plus-x.png"
+    },
+    {
+      "id": "side-minus-x",
+      "image": "side-minus-x.png"
+    },
+    {
+      "id": "front",
+      "image": "front.png"
+    },
+    {
+      "id": "rear",
+      "image": "rear.png"
+    },
+    {
+      "id": "top",
+      "image": "top.png"
+    },
+    {
+      "id": "three-quarter",
+      "image": "three-quarter.png"
+    }
+  ],
+  "coordinate_convention": {
+    "up": "+Z",
+    "forward": "-Y (head/horn)",
+    "side_names": "Geometric +X/-X until reviewed"
+  },
+  "landmarks": [],
+  "limitations": [
+    "Exact indexed rest diagnostic only; source rig/materials are not copied into this proposal.",
+    "Box domains can include hanging tack or miss curved anatomy; not skin weights or semantic approval.",
+    "Landmarks are authored proposals, not inferred joint centers or accepted stance."
+  ]
+}

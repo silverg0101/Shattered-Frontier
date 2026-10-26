@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "status": "needs-anatomical-skin-review-no-promotion",
+  "comparison": {
+    "WalkPilot-v001": {
+      "maximum_edge_change_m": 0.06538118606351018,
+      "edge_p99_relative": 0.19500761536519087
+    },
+    "WalkPilot-v002": {
+      "maximum_edge_change_m": 0.08517741861999004,
+      "edge_p99_relative": 0.19314502590534838
+    }
+  },
+  "decision": "Continuous reduction is not accepted as a quality improvement. Both candidates remain prototypes; successful foot checks and numerical convergence do not approve skin shape.",
+  "next_owning_cause_review": "Inspect body/limb/tack semantics and sole blend collars around exact worst edges. Do not start another blind weight/profile sweep or loosen the four-influence/contact limits.",
+  "automatic_primary_budget": {
+    "limit": 3,
+    "used": 3,
+    "reset": false
+  },
+  "reviewed_code_corrections": 3,
+  "total_primary_candidates": 6
+}

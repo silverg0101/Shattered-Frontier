@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "status": "attachment-frame-proposal-needs-review",
+  "cpu_only": true,
+  "binding_id": "Mane:B067",
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManeFinalOutputPoints-v001\\output-points.npz": "8702a230cd118806cfa140d114164802efb4fe7882a2dddbe26b1ffc7327223b",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManeWarmupDiagnostic-v004\\held-proxy-points.npz": "77df03bb22624b98eaa6411d3b09b9ddbafc691730ff49cd85939cdfa2fa9450",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManeWarmupDiagnostic-v004\\warmup-report.json": "8941122de0f8aa37545d859f2c7846539b3a0ca666e269d73cd2e8078efb350e"
+  },
+  "tool_sha256": "1fe972ac9174fc41a72fbdd348e5e928f0013459fd549dc363ae292dc810bfd2",
+  "points_sha256": "774ba3f0595e9ff6fc0bb7c8cd5c75ba9903ac9c89cda2b9837e9a4c0220ff41",
+  "child_points": 16,
+  "unchanged_point_count": 26742,
+  "unselected_points_bit_exact": true,
+  "parent_triangle_source_ids": [
+    11780,
+    11782,
+    11772
+  ],
+  "minimum_parent_sine": 0.4044354557991028,
+  "original_rest_gap_m": 0.01158079318702221,
+  "maximum_gap_error_m": 1.1827796697616577e-07,
+  "before_child_peak_m_s": 0.301066130399704,
+  "after_child_peak_m_s": 0.0031796947587281466,
+  "before_global_free_peak_m_s": 0.301066130399704,
+  "after_global_free_peak_m_s": 0.12824563682079315,
+  "after_global_free_rms_m_s": 0.015431101433932781,
+  "limitations": [
+    "Authored rigid micro-fragment behavior is proposed, not approved semantics or natural flexible hair.",
+    "Two native held frames before contact correction; no claim of full held convergence or new physics.",
+    "All full-duration contact/motion/retention/style/export checks must be repeated on a new cache candidate.",
+    "No source geometry, weights, root/free masks or acceptance limits changed."
+  ]
+}

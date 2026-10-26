@@ -1,0 +1,25 @@
+{
+  "source_manifest": "GameClient/ArtSource/BLD-SM-CellFull-01/References/v001/manifest.json",
+  "source_manifest_sha256": "b1bb9b2c8c8adbc7f0d50feba0bcc61fe5b07557a29792824890f1fa00bc5111",
+  "source_image": "GameClient/ArtSource/BLD-SM-CellFull-01/References/v001/asset-view.png",
+  "source_image_sha256": "2f71373716575adc78cd1220432aeaccab2ec70ec4e19202dbb843b546b308e0",
+  "role": "appearance guidance; no reference pixels or scene lighting are projected",
+  "recipe": "stone-masonry",
+  "seed": 1702,
+  "map_size_px": [
+    1024,
+    1024
+  ],
+  "maps": [
+    "basecolor-sRGB",
+    "roughness-linear",
+    "normal-OpenGL-tangent",
+    "height-linear-16bit"
+  ],
+  "height_encoding_m": [
+    -0.0015,
+    0.0015
+  ],
+  "face_texel_density_px_per_m": 2048,
+  "height_use": "reference/export sidecar only; never applied as geometry displacement"
+}

@@ -1,0 +1,70 @@
+{
+  "asset_id": "BLD-WT-CurveStraightJoin-01",
+  "version": "v001",
+  "batch": "construction-worked-timber-curve-straight-join-40",
+  "current_status": "image-complete; explicit interface assembly study; not component coverage; structural readiness blocked",
+  "intended_route": "explicit cell-member assembly study of one curve-quarter-r2 member meeting one cell-full member; no join adapter or new solid",
+  "assembly_frame": {
+    "units": "metres",
+    "grid_m": 0.5,
+    "axes": "X/Y plan, Z height",
+    "member_A": {
+      "id": "curve-quarter-r2",
+      "origin_pivot_m": [0, 0, 0],
+      "envelope_m": {"x": 2.0, "y": 2.0, "z": 0.5},
+      "solid": "first-quadrant quarter-annulus 1.5^2<=x^2+y^2<=2^2, 0<=z<=0.5",
+      "orientation": "identity only"
+    },
+    "member_B": {
+      "id": "cell-full",
+      "origin_pivot_m": [1.5, -0.5, 0],
+      "envelope_m": {"x": 0.5, "y": 0.5, "z": 0.5},
+      "solid": "full cube x=1.5..2.0, y=-0.5..0, z=0..0.5",
+      "orientation": "identity only"
+    },
+    "contact_interface": {
+      "plane": "y=0",
+      "x_m": [1.5, 2.0],
+      "z_m": [0, 0.5],
+      "area_m2": 0.25,
+      "target_status": "derived from contract shape boundaries; not GEO-01 approved or numerically runtime validated"
+    }
+  },
+  "component_boundary": "Two named canonical members, each shown separately and assembled. No adapter, overlap, gap, fastener or added member. This study does not define a reusable new solid and does not close the CurveStraightJoin component role.",
+  "exposed_and_mating_faces": [
+    "Member A: concave inner and convex outer arc faces, top, underside, opposite radial end remain visible as applicable.",
+    "Member B: five outer faces remain exposed.",
+    "Mating: Member A radial end y=0 contacts Member B face y=0 over the shared 0.5x0.5 m target rectangle."
+  ],
+  "named_counterpart_interfaces": [
+    "BLD-WT-CurveInnerCourse-01",
+    "BLD-WT-CurveOuterCourse-01",
+    "BLD-WT-FaceExteriorCellFull-01",
+    "curve-quarter-r2 radial end at y=0 ↔ cell-full face at y=0"
+  ],
+  "source_references": [
+    "docs/art-templates/player-construction-kit-contract.md §§2 curve-quarter-r2 and cell-full",
+    "docs/decisions/BLD-01-voxel-geometry-interface.md grid/pivot/orientation contract",
+    "docs/art-templates/asset-lists/construction-kit-matrix-07.md CurveStraightJoin row",
+    "docs/art-templates/asset-lists/construction-worked-timber-curve-straight-join-40.md"
+  ],
+  "required_selected_outputs": ["concept-sheet.png", "asset-view.png"],
+  "selected_image_count": 2,
+  "additional_images": 0,
+  "generation_history": [
+    {"file": "provenance/exec-71cda1c7-32cf-4243-be19-af25e1a30d4a.png", "selected": false, "reason": "Plan view placed the straight cell at x=2.0..2.5 rather than the documented x=1.5..2.0 contact range.", "metadata": {"format": "PNG", "width_px": 1536, "height_px": 1024, "pixel_format": "RGB 24bpp", "bytes": 1795880, "sha256": "5510a26ec2907c4ac601a5bbc6ed6211b3ffc77832878495fb581aa4c9c16138"}},
+    {"file": "concept-sheet.png", "source_cache_path": "C:\\Users\\grego\\.codex\\generated_images\\01a15000-e13f-7213-9ec0-df2684201405\\exec-b24257a5-d5b4-4d1c-a895-7f54226f7502.png", "selected": true, "metadata": {"format": "PNG", "width_px": 1536, "height_px": 1024, "pixel_format": "RGB 24bpp", "bytes": 1748760, "sha256": "0c699a178ef4e1fbbcf238987a98896efe283598681c5db64bf714bdc5d99f2b"}, "exact_prompt": "prompt.txt#2"},
+    {"file": "asset-view.png", "source_cache_path": "C:\\Users\\grego\\.codex\\generated_images\\01a15000-e13f-7213-9ec0-df2684201405\\exec-b9755e44-9346-49d2-b64b-30deb830e45c.png", "selected": true, "metadata": {"format": "PNG", "width_px": 1536, "height_px": 1024, "pixel_format": "RGB 24bpp", "bytes": 1749284, "sha256": "087956fc759437414b8e050992f12293a388f30818239d58f0948de1c3992f13"}, "exact_prompt": "prompt.txt#3"}
+  ],
+  "visual_review": {
+    "date": "2026-10-18",
+    "concept_sheet": "Accepted for interface-study communication after correction: two named members are individually shown; plan contact rectangle is at x=1.5..2.0, y=0; location and 0.5x0.5 target are legible. The assembled/exploded views preserve the shared boundary without an adapter. Image scale cannot establish actual contact fit.",
+    "asset_view": "Accepted as one two-member assembled study; one visible seam separates the quarter-annulus curve and straight cube; both complete silhouettes are shown; no third member or obvious overlap/gap. Numerical position, collision and runtime compatibility remain unverified."
+  },
+  "compatibility": "GEO-01 approved member manifests/hashes absent; applicable GEO-02 contact/collision evidence absent. This study is not component coverage.",
+  "blockers": [
+    "The member shapes remain geometry proposals until approved GEO-01 payload/manifests and hashes exist.",
+    "GEO-02 numerical interface, collision and runtime fit evidence absent.",
+    "This image package communicates one proposed join and does not replace the per-kit architectural assembly study or a separately approved component role."
+  ]
+}

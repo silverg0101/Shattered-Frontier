@@ -1,0 +1,691 @@
+{
+  "schema_version": 1,
+  "status": "source-bound-edge-stage-comparison-only",
+  "cpu_only": true,
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ContactMeshExperiment-v001\\Voidreign-CompleteHair.blend": "a1de9660c66c772cdb4cedec20ac5b1a2229a4417af46550f8167f915680c140",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ActualTailCloth-v001\\Voidreign-ActualSurfacePilot.blend": "83f2b5117eb62a05c2097cba0443350616e631ecc3d9e8cc98e0690e85077d28",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\TailSurfaceContacts-v001\\Voidreign-SurfaceContacts.blend": "da5ed6b5e4f971c51c45aacac08ba27f52a05ccdfbbc6cf7fb8e434ec373d1cc",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManeClothSettledFull-v001\\Voidreign-ActualSurfacePilot.blend": "3993764fc40cc42baabb07be05f1014831bff83706e68bdd7574643be9625dd8",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManeSurfaceContacts-v001\\Voidreign-SurfaceContacts.blend": "b69e4ceeefbf0a4fcffa7faa6f114d76b94d37cb807ac92f8dd7ae971c925055",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\CompleteMotionCache-v001\\Voidreign-ActualSurfacePilot.blend": "a5e69cab0f484b2180809b8f60cb61ade34e227bd75ecdecfed97a7f87ae3cb9",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManeClothSettledFull-v001\\Settled-feature-motion.mdd": "9600f29031b5b43b0f285ec56de60f7b3ba8ffdf2beb0ecab80da0ea8432ec52",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\CompleteMotionCache-v001\\Feature-actual-motion.mdd": "92f65009a6bdfbc677b24c1a767db9f294fa8e1128db66bae68545c9c9927cf1",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\CompleteMotionCache-v001\\Tail-actual-motion.mdd": "41214c51a69e0d6f27085ab1c1adc08bd566feea1a039f95670b4d4dad0f14bf",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ActualTailCloth-v001\\blendcache_Voidreign-ActualSurfacePilot\\ActualSurfacePilot_000120_00.bphys": "b3b0fbb1aae402beb827b17244bc3054bb54cf44d84dcb054e98ca969a6e5507",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ActualTailCloth-v001\\blendcache_Voidreign-ActualSurfacePilot\\ActualSurfacePilot_000124_00.bphys": "6181348326a4ef313e229c465d72946737ef7a81b8b80fb157abed5a862de898",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ActualTailCloth-v001\\blendcache_Voidreign-ActualSurfacePilot\\ActualSurfacePilot_000185_00.bphys": "2272c647dd52f9464ccdc4e0104f81c8aaa6e8a8f4e86ab0df50a51be0309347",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ActualTailCloth-v001\\blendcache_Voidreign-ActualSurfacePilot\\ActualSurfacePilot_000268_00.bphys": "fcd68386d5acfc081d9ff7fb9e1c464ec48694fba24e61f2852723407c008471",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\TailSurfaceContacts-v001\\blendcache_Voidreign-SurfaceContacts\\ActualSurfacePilot_000120_00.bphys": "b3b0fbb1aae402beb827b17244bc3054bb54cf44d84dcb054e98ca969a6e5507",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\TailSurfaceContacts-v001\\blendcache_Voidreign-SurfaceContacts\\ActualSurfacePilot_000124_00.bphys": "6181348326a4ef313e229c465d72946737ef7a81b8b80fb157abed5a862de898",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\TailSurfaceContacts-v001\\blendcache_Voidreign-SurfaceContacts\\ActualSurfacePilot_000185_00.bphys": "2272c647dd52f9464ccdc4e0104f81c8aaa6e8a8f4e86ab0df50a51be0309347",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\TailSurfaceContacts-v001\\blendcache_Voidreign-SurfaceContacts\\ActualSurfacePilot_000268_00.bphys": "fcd68386d5acfc081d9ff7fb9e1c464ec48694fba24e61f2852723407c008471",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManeClothSettledFull-v001\\blendcache_Voidreign-ActualSurfacePilot\\ActualSurfacePilot_000120_00.bphys": "b3b0fbb1aae402beb827b17244bc3054bb54cf44d84dcb054e98ca969a6e5507",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManeClothSettledFull-v001\\blendcache_Voidreign-ActualSurfacePilot\\ActualSurfacePilot_000124_00.bphys": "6181348326a4ef313e229c465d72946737ef7a81b8b80fb157abed5a862de898",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManeClothSettledFull-v001\\blendcache_Voidreign-ActualSurfacePilot\\ActualSurfacePilot_000185_00.bphys": "2272c647dd52f9464ccdc4e0104f81c8aaa6e8a8f4e86ab0df50a51be0309347",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManeClothSettledFull-v001\\blendcache_Voidreign-ActualSurfacePilot\\ActualSurfacePilot_000268_00.bphys": "fcd68386d5acfc081d9ff7fb9e1c464ec48694fba24e61f2852723407c008471",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManeSurfaceContacts-v001\\blendcache_Voidreign-SurfaceContacts\\ActualSurfacePilot_000120_00.bphys": "b3b0fbb1aae402beb827b17244bc3054bb54cf44d84dcb054e98ca969a6e5507",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManeSurfaceContacts-v001\\blendcache_Voidreign-SurfaceContacts\\ActualSurfacePilot_000124_00.bphys": "6181348326a4ef313e229c465d72946737ef7a81b8b80fb157abed5a862de898",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManeSurfaceContacts-v001\\blendcache_Voidreign-SurfaceContacts\\ActualSurfacePilot_000185_00.bphys": "2272c647dd52f9464ccdc4e0104f81c8aaa6e8a8f4e86ab0df50a51be0309347",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManeSurfaceContacts-v001\\blendcache_Voidreign-SurfaceContacts\\ActualSurfacePilot_000268_00.bphys": "fcd68386d5acfc081d9ff7fb9e1c464ec48694fba24e61f2852723407c008471",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz": "0d7599c8064cb81a6e211a23731435e08939b7fb146ce2d4bed810273909a2b2",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ContactMeshSurfaceCheck-v001\\surface-review.npz": "e8df9e74a7ddd7ddb44654989f1f5f0474d853a43350c32e0674a15163c68c85",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneGuideProposal-v001\\weight-field.npz": "e397b54127123c7ad863706d650bb780b7489a5f82bf2a3b9d74bd16eb480f91"
+  },
+  "tool_sha256": "013371e67cc688725303ba185920ee23006a8e0ee10cc0e224bbd1c7be0b0146",
+  "profile_sha256": "4392d46a4e64c5f436a95055c4344299d5614b5724f56ffc432d929f2507e170",
+  "rows": [
+    {
+      "source": "guide-only",
+      "case": "Mane-relative",
+      "frame": 120,
+      "edge": [
+        71566,
+        71578
+      ],
+      "length_m": 0.19856189488433656,
+      "rest_length_m": 0.0044136475866179,
+      "absolute_change_m": 0.19414824729771868,
+      "relative_change": 43.98816250902602,
+      "endpoints": [
+        {
+          "source_vertex": 71566,
+          "original_free": true,
+          "label": 1,
+          "root_distance_m": 0.293568879365921
+        },
+        {
+          "source_vertex": 71578,
+          "original_free": true,
+          "label": 1,
+          "root_distance_m": 0.2964102625846863
+        }
+      ]
+    },
+    {
+      "source": "guide-only",
+      "case": "Mane-absolute",
+      "frame": 124,
+      "edge": [
+        9095,
+        9114
+      ],
+      "length_m": 0.41138587442248375,
+      "rest_length_m": 0.020529658772692926,
+      "absolute_change_m": 0.39085621564979084,
+      "relative_change": 19.038612379163343,
+      "endpoints": [
+        {
+          "source_vertex": 9095,
+          "original_free": false,
+          "label": 1,
+          "root_distance_m": 0.13202132284641266
+        },
+        {
+          "source_vertex": 9114,
+          "original_free": false,
+          "label": 1,
+          "root_distance_m": 0.11149166524410248
+        }
+      ]
+    },
+    {
+      "source": "guide-only",
+      "case": "Tail-relative",
+      "frame": 185,
+      "edge": [
+        263709,
+        263710
+      ],
+      "length_m": 0.23811785927338958,
+      "rest_length_m": 0.00423977355147666,
+      "absolute_change_m": 0.2338780857219129,
+      "relative_change": 55.16287199830663,
+      "endpoints": [
+        {
+          "source_vertex": 263709,
+          "original_free": true,
+          "label": 2,
+          "root_distance_m": 0.19497276842594147
+        },
+        {
+          "source_vertex": 263710,
+          "original_free": true,
+          "label": 2,
+          "root_distance_m": 0.19921253621578217
+        }
+      ]
+    },
+    {
+      "source": "guide-only",
+      "case": "Tail-absolute",
+      "frame": 268,
+      "edge": [
+        246779,
+        246783
+      ],
+      "length_m": 0.41760143615800627,
+      "rest_length_m": 0.024357821309150287,
+      "absolute_change_m": 0.393243614848856,
+      "relative_change": 16.14444945045761,
+      "endpoints": [
+        {
+          "source_vertex": 246779,
+          "original_free": true,
+          "label": 2,
+          "root_distance_m": 0.9737002849578857
+        },
+        {
+          "source_vertex": 246783,
+          "original_free": true,
+          "label": 2,
+          "root_distance_m": 0.9942944049835205
+        }
+      ]
+    },
+    {
+      "source": "tail-cloth",
+      "case": "Mane-relative",
+      "frame": 120,
+      "edge": [
+        71566,
+        71578
+      ],
+      "length_m": 0.19856189488433656,
+      "rest_length_m": 0.0044136475866179,
+      "absolute_change_m": 0.19414824729771868,
+      "relative_change": 43.98816250902602,
+      "endpoints": [
+        {
+          "source_vertex": 71566,
+          "original_free": true,
+          "label": 1,
+          "root_distance_m": 0.293568879365921
+        },
+        {
+          "source_vertex": 71578,
+          "original_free": true,
+          "label": 1,
+          "root_distance_m": 0.2964102625846863
+        }
+      ]
+    },
+    {
+      "source": "tail-cloth",
+      "case": "Mane-absolute",
+      "frame": 124,
+      "edge": [
+        9095,
+        9114
+      ],
+      "length_m": 0.41138587442248375,
+      "rest_length_m": 0.020529658772692926,
+      "absolute_change_m": 0.39085621564979084,
+      "relative_change": 19.038612379163343,
+      "endpoints": [
+        {
+          "source_vertex": 9095,
+          "original_free": false,
+          "label": 1,
+          "root_distance_m": 0.13202132284641266
+        },
+        {
+          "source_vertex": 9114,
+          "original_free": false,
+          "label": 1,
+          "root_distance_m": 0.11149166524410248
+        }
+      ]
+    },
+    {
+      "source": "tail-cloth",
+      "case": "Tail-relative",
+      "frame": 185,
+      "edge": [
+        263709,
+        263710
+      ],
+      "length_m": 0.23809988653462708,
+      "rest_length_m": 0.00423977355147666,
+      "absolute_change_m": 0.2338601129831504,
+      "relative_change": 55.158632918425525,
+      "endpoints": [
+        {
+          "source_vertex": 263709,
+          "original_free": true,
+          "label": 2,
+          "root_distance_m": 0.19497276842594147
+        },
+        {
+          "source_vertex": 263710,
+          "original_free": true,
+          "label": 2,
+          "root_distance_m": 0.19921253621578217
+        }
+      ]
+    },
+    {
+      "source": "tail-cloth",
+      "case": "Tail-absolute",
+      "frame": 268,
+      "edge": [
+        246779,
+        246783
+      ],
+      "length_m": 0.4178577854063614,
+      "rest_length_m": 0.024357821309150287,
+      "absolute_change_m": 0.39349996409721116,
+      "relative_change": 16.154973759881738,
+      "endpoints": [
+        {
+          "source_vertex": 246779,
+          "original_free": true,
+          "label": 2,
+          "root_distance_m": 0.9737002849578857
+        },
+        {
+          "source_vertex": 246783,
+          "original_free": true,
+          "label": 2,
+          "root_distance_m": 0.9942944049835205
+        }
+      ]
+    },
+    {
+      "source": "tail-corrective",
+      "case": "Mane-relative",
+      "frame": 120,
+      "edge": [
+        71566,
+        71578
+      ],
+      "length_m": 0.19856189488433656,
+      "rest_length_m": 0.0044136475866179,
+      "absolute_change_m": 0.19414824729771868,
+      "relative_change": 43.98816250902602,
+      "endpoints": [
+        {
+          "source_vertex": 71566,
+          "original_free": true,
+          "label": 1,
+          "root_distance_m": 0.293568879365921
+        },
+        {
+          "source_vertex": 71578,
+          "original_free": true,
+          "label": 1,
+          "root_distance_m": 0.2964102625846863
+        }
+      ]
+    },
+    {
+      "source": "tail-corrective",
+      "case": "Mane-absolute",
+      "frame": 124,
+      "edge": [
+        9095,
+        9114
+      ],
+      "length_m": 0.41138587442248375,
+      "rest_length_m": 0.020529658772692926,
+      "absolute_change_m": 0.39085621564979084,
+      "relative_change": 19.038612379163343,
+      "endpoints": [
+        {
+          "source_vertex": 9095,
+          "original_free": false,
+          "label": 1,
+          "root_distance_m": 0.13202132284641266
+        },
+        {
+          "source_vertex": 9114,
+          "original_free": false,
+          "label": 1,
+          "root_distance_m": 0.11149166524410248
+        }
+      ]
+    },
+    {
+      "source": "tail-corrective",
+      "case": "Tail-relative",
+      "frame": 185,
+      "edge": [
+        263709,
+        263710
+      ],
+      "length_m": 0.23809988653462708,
+      "rest_length_m": 0.00423977355147666,
+      "absolute_change_m": 0.2338601129831504,
+      "relative_change": 55.158632918425525,
+      "endpoints": [
+        {
+          "source_vertex": 263709,
+          "original_free": true,
+          "label": 2,
+          "root_distance_m": 0.19497276842594147
+        },
+        {
+          "source_vertex": 263710,
+          "original_free": true,
+          "label": 2,
+          "root_distance_m": 0.19921253621578217
+        }
+      ]
+    },
+    {
+      "source": "tail-corrective",
+      "case": "Tail-absolute",
+      "frame": 268,
+      "edge": [
+        246779,
+        246783
+      ],
+      "length_m": 0.4178577854063614,
+      "rest_length_m": 0.024357821309150287,
+      "absolute_change_m": 0.39349996409721116,
+      "relative_change": 16.154973759881738,
+      "endpoints": [
+        {
+          "source_vertex": 246779,
+          "original_free": true,
+          "label": 2,
+          "root_distance_m": 0.9737002849578857
+        },
+        {
+          "source_vertex": 246783,
+          "original_free": true,
+          "label": 2,
+          "root_distance_m": 0.9942944049835205
+        }
+      ]
+    },
+    {
+      "source": "mane-cloth",
+      "case": "Mane-relative",
+      "frame": 120,
+      "edge": [
+        71566,
+        71578
+      ],
+      "length_m": 0.1986146642102244,
+      "rest_length_m": 0.0044136475866179,
+      "absolute_change_m": 0.1942010166236065,
+      "relative_change": 44.00011845359391,
+      "endpoints": [
+        {
+          "source_vertex": 71566,
+          "original_free": true,
+          "label": 1,
+          "root_distance_m": 0.293568879365921
+        },
+        {
+          "source_vertex": 71578,
+          "original_free": true,
+          "label": 1,
+          "root_distance_m": 0.2964102625846863
+        }
+      ]
+    },
+    {
+      "source": "mane-cloth",
+      "case": "Mane-absolute",
+      "frame": 124,
+      "edge": [
+        9095,
+        9114
+      ],
+      "length_m": 0.4113858877512739,
+      "rest_length_m": 0.020529658772692926,
+      "absolute_change_m": 0.39085622897858097,
+      "relative_change": 19.038613028408918,
+      "endpoints": [
+        {
+          "source_vertex": 9095,
+          "original_free": false,
+          "label": 1,
+          "root_distance_m": 0.13202132284641266
+        },
+        {
+          "source_vertex": 9114,
+          "original_free": false,
+          "label": 1,
+          "root_distance_m": 0.11149166524410248
+        }
+      ]
+    },
+    {
+      "source": "mane-cloth",
+      "case": "Tail-relative",
+      "frame": 185,
+      "edge": [
+        263709,
+        263710
+      ],
+      "length_m": 0.23809988653462708,
+      "rest_length_m": 0.00423977355147666,
+      "absolute_change_m": 0.2338601129831504,
+      "relative_change": 55.158632918425525,
+      "endpoints": [
+        {
+          "source_vertex": 263709,
+          "original_free": true,
+          "label": 2,
+          "root_distance_m": 0.19497276842594147
+        },
+        {
+          "source_vertex": 263710,
+          "original_free": true,
+          "label": 2,
+          "root_distance_m": 0.19921253621578217
+        }
+      ]
+    },
+    {
+      "source": "mane-cloth",
+      "case": "Tail-absolute",
+      "frame": 268,
+      "edge": [
+        246779,
+        246783
+      ],
+      "length_m": 0.4178577854063614,
+      "rest_length_m": 0.024357821309150287,
+      "absolute_change_m": 0.39349996409721116,
+      "relative_change": 16.154973759881738,
+      "endpoints": [
+        {
+          "source_vertex": 246779,
+          "original_free": true,
+          "label": 2,
+          "root_distance_m": 0.9737002849578857
+        },
+        {
+          "source_vertex": 246783,
+          "original_free": true,
+          "label": 2,
+          "root_distance_m": 0.9942944049835205
+        }
+      ]
+    },
+    {
+      "source": "mane-corrective",
+      "case": "Mane-relative",
+      "frame": 120,
+      "edge": [
+        71566,
+        71578
+      ],
+      "length_m": 0.1986146642102244,
+      "rest_length_m": 0.0044136475866179,
+      "absolute_change_m": 0.1942010166236065,
+      "relative_change": 44.00011845359391,
+      "endpoints": [
+        {
+          "source_vertex": 71566,
+          "original_free": true,
+          "label": 1,
+          "root_distance_m": 0.293568879365921
+        },
+        {
+          "source_vertex": 71578,
+          "original_free": true,
+          "label": 1,
+          "root_distance_m": 0.2964102625846863
+        }
+      ]
+    },
+    {
+      "source": "mane-corrective",
+      "case": "Mane-absolute",
+      "frame": 124,
+      "edge": [
+        9095,
+        9114
+      ],
+      "length_m": 0.4113858877512739,
+      "rest_length_m": 0.020529658772692926,
+      "absolute_change_m": 0.39085622897858097,
+      "relative_change": 19.038613028408918,
+      "endpoints": [
+        {
+          "source_vertex": 9095,
+          "original_free": false,
+          "label": 1,
+          "root_distance_m": 0.13202132284641266
+        },
+        {
+          "source_vertex": 9114,
+          "original_free": false,
+          "label": 1,
+          "root_distance_m": 0.11149166524410248
+        }
+      ]
+    },
+    {
+      "source": "mane-corrective",
+      "case": "Tail-relative",
+      "frame": 185,
+      "edge": [
+        263709,
+        263710
+      ],
+      "length_m": 0.23809988653462708,
+      "rest_length_m": 0.00423977355147666,
+      "absolute_change_m": 0.2338601129831504,
+      "relative_change": 55.158632918425525,
+      "endpoints": [
+        {
+          "source_vertex": 263709,
+          "original_free": true,
+          "label": 2,
+          "root_distance_m": 0.19497276842594147
+        },
+        {
+          "source_vertex": 263710,
+          "original_free": true,
+          "label": 2,
+          "root_distance_m": 0.19921253621578217
+        }
+      ]
+    },
+    {
+      "source": "mane-corrective",
+      "case": "Tail-absolute",
+      "frame": 268,
+      "edge": [
+        246779,
+        246783
+      ],
+      "length_m": 0.4178577854063614,
+      "rest_length_m": 0.024357821309150287,
+      "absolute_change_m": 0.39349996409721116,
+      "relative_change": 16.154973759881738,
+      "endpoints": [
+        {
+          "source_vertex": 246779,
+          "original_free": true,
+          "label": 2,
+          "root_distance_m": 0.9737002849578857
+        },
+        {
+          "source_vertex": 246783,
+          "original_free": true,
+          "label": 2,
+          "root_distance_m": 0.9942944049835205
+        }
+      ]
+    },
+    {
+      "source": "final-cache",
+      "case": "Mane-relative",
+      "frame": 120,
+      "edge": [
+        71566,
+        71578
+      ],
+      "length_m": 0.19861455978129175,
+      "rest_length_m": 0.0044136475866179,
+      "absolute_change_m": 0.19420091219467384,
+      "relative_change": 44.000094793133805,
+      "endpoints": [
+        {
+          "source_vertex": 71566,
+          "original_free": true,
+          "label": 1,
+          "root_distance_m": 0.293568879365921
+        },
+        {
+          "source_vertex": 71578,
+          "original_free": true,
+          "label": 1,
+          "root_distance_m": 0.2964102625846863
+        }
+      ]
+    },
+    {
+      "source": "final-cache",
+      "case": "Mane-absolute",
+      "frame": 124,
+      "edge": [
+        9095,
+        9114
+      ],
+      "length_m": 0.4113858877512739,
+      "rest_length_m": 0.020529658772692926,
+      "absolute_change_m": 0.39085622897858097,
+      "relative_change": 19.038613028408918,
+      "endpoints": [
+        {
+          "source_vertex": 9095,
+          "original_free": false,
+          "label": 1,
+          "root_distance_m": 0.13202132284641266
+        },
+        {
+          "source_vertex": 9114,
+          "original_free": false,
+          "label": 1,
+          "root_distance_m": 0.11149166524410248
+        }
+      ]
+    },
+    {
+      "source": "final-cache",
+      "case": "Tail-relative",
+      "frame": 185,
+      "edge": [
+        263709,
+        263710
+      ],
+      "length_m": 0.2380999396200373,
+      "rest_length_m": 0.00423977355147666,
+      "absolute_change_m": 0.23386016606856064,
+      "relative_change": 55.15864543923816,
+      "endpoints": [
+        {
+          "source_vertex": 263709,
+          "original_free": true,
+          "label": 2,
+          "root_distance_m": 0.19497276842594147
+        },
+        {
+          "source_vertex": 263710,
+          "original_free": true,
+          "label": 2,
+          "root_distance_m": 0.19921253621578217
+        }
+      ]
+    },
+    {
+      "source": "final-cache",
+      "case": "Tail-absolute",
+      "frame": 268,
+      "edge": [
+        246779,
+        246783
+      ],
+      "length_m": 0.4178577672714071,
+      "rest_length_m": 0.024357821309150287,
+      "absolute_change_m": 0.39349994596225685,
+      "relative_change": 16.154973015358898,
+      "endpoints": [
+        {
+          "source_vertex": 246779,
+          "original_free": true,
+          "label": 2,
+          "root_distance_m": 0.9737002849578857
+        },
+        {
+          "source_vertex": 246783,
+          "original_free": true,
+          "label": 2,
+          "root_distance_m": 0.9942944049835205
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "Selected diagnostic edges/frames, not a new full-surface check or repair.",
+    "Original free/root classification is recorded without changing masks or acceptance limits."
+  ]
+}

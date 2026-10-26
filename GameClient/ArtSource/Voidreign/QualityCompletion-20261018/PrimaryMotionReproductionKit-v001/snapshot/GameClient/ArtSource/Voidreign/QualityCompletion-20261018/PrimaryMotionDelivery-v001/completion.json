@@ -1,0 +1,10 @@
+{
+  "status": "needs-review-motion-limit-failed",
+  "source": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryOnlyCombinedFull-v001\\Voidreign-ActualSurfacePilot.blend",
+  "source_sha256": "c507e31813fea5ea61e30f7cbf8bae37609135b549238b64ad1e61a1e42111ee",
+  "cpu_only": true,
+  "commands": "commands.json",
+  "limitations": [
+    "No gait, material, semantic, triangle/self/swept collision or runtime acceptance."
+  ]
+}

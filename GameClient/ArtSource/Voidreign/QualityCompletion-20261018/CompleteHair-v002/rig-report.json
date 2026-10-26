@@ -1,0 +1,43 @@
+{
+  "status": "diagnostic-rig-candidate; visual/surface/import checks required",
+  "cpu_only": true,
+  "source_sha256": "9b3eab121765220b031e0c1394058c502009b90196013f0e10ee61492ba12a66",
+  "source_mesh_hash": "f580ad6893e552958d7c1320958834ad3c7a139f941b9016c510dfd4d6a3e794",
+  "source": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\RootRepair-v003\\Voidreign-HairPrototype.blend",
+  "guide_report_sha256": "aa3e5d2077153d850f04a342a3c32b767c488d914b7408e558fa4cef0b487eba",
+  "simulation_report_sha256": "ad2130b2afb4c8c0beb287eaae097d6b9f293678e83c0601e809870279cbfd47",
+  "config_sha256": "1e8d963922f645a91dbd0c1349fb55d0b00d3b0e6ad2c6d2960c8658449b8927",
+  "tool_sha256": "de106749e87002d58016cc6d68c9dc6a0956ba0017c674f62af629f920565051",
+  "guides": 24,
+  "bones": 229,
+  "features": [
+    {
+      "feature": "Mane",
+      "semantic_vertices": 57722,
+      "moving_vertices": 45524,
+      "protected_or_anchored_vertices": 12198
+    },
+    {
+      "feature": "Tail",
+      "semantic_vertices": 67372,
+      "moving_vertices": 66912,
+      "protected_or_anchored_vertices": 460
+    }
+  ],
+  "vertices": 284772,
+  "triangles": 297125,
+  "rest_geometry_unchanged": true,
+  "max_weight_sum_error": 7.450580596923828e-08,
+  "maximum_bone_influences": 4,
+  "protected_vertices": 137820,
+  "protected_motion_weight_max": 0.0,
+  "max_source_bone_head_to_simulation_error_m": 7.158763497748562e-07,
+  "maximum_frame_rotation_step_rad": 0.6593992710113525,
+  "orientation_method": "Temporal parallel transport initialized from authored rest roll; no world-up roll resets",
+  "hierarchy": "Flat deform joints parented to StaticBody; explicit logical chains in armature metadata and guides.json",
+  "limitations": [
+    "Existing isolated-clump binding proposals are not final attachment acceptance.",
+    "Rigid horse harness; legs static. Offline motion, no engine simulation.",
+    "Particle contacts do not establish deformed-surface clearance."
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "scope": "Rest guide coverage proposals only; no source/skin/animation change",
+  "permissions": "Offline author; each path and runtime budget require review before use",
+  "effective_time": "Next proposal build only",
+  "units": "metres",
+  "maximum_guides_per_feature": 24,
+  "coverage_warning_m": 0.05,
+  "existing_root_exemption_extra_m": 0.05,
+  "surface_profile": "docs/art-templates/model-profiles/voidreign-hair-surface-check-20261018.json",
+  "surface_profile_sha256": "f42b54b785653cd13262405b39e26a48e1fc606edeafb392b1372121e29e1abb"
+}

@@ -1,0 +1,41 @@
+FIRST CONCEPT-SHEET PROMPT — REJECTED FOR MISSING INNER REVEAL TREATMENT
+
+Use case: stylized-concept
+Asset type: worked-timber arch-crown surface-treatment concept sheet for later modeling reference; output one named image, concept-sheet.png.
+Primary request: Show the KIT-WT appearance treatment for the curved crown/ring patches of one documented arch-2m/v1 host. This is a flush surface treatment on a fixed carrier, not a separate structural arch ring member. Make the complete treated arch carrier the dominant view, with consistent front elevation, side section through Y, patch/contact diagram and design-target dimensions.
+Scene/backdrop: plain light neutral studio background.
+Subject: One arch-2m/v1 carrier. Exact target envelope 2.0 m wide (local X) × 0.5 m deep (local Y) × 3.0 m tall (local Z). In local XZ, outer shape is rectangle [0,2]×[0,2] plus an upper semicircle centered (1,2), radius 1 m. Empty opening subtracts rectangle (0.5,1.5)×[0,2] plus an upper semicircle with the same center and radius 0.5 m. Extrude unchanged through Y. Minimum-grid-corner origin (0,0,0), 0.5 m grid. Keep the aperture entirely empty. Apply warm worked-timber grain flush only to the curved upper crown/ring patches from the two spring points around the semicircle; show front/back patch surfaces and the inner curved reveal. Leave straight jambs, base/threshold, door and window interface patches neutral gray. Mark seams at both spring points to the separate ArchOpeningJamb treatment. No material volume or geometry change.
+Style/medium: precise polished game construction concept illustration; worked timber is dressed warm brown wood with controlled grain and restrained tool marks, matching a carefully finished frontier kit; no metal.
+Composition/framing: one large dominant three-quarter full carrier; smaller views show only the same carrier and treatment. Clear section through Y depth, exact contact labels and patch extent.
+Lighting/mood: even neutral studio lighting with soft contact shadows.
+Color palette: warm medium brown wood against a neutral gray carrier.
+Materials/textures: smooth dressed timber appearance; grain follows the arch curve as a surface pattern, no individual voussoir blocks, wedges, keystone or seams that imply geometry.
+Text (verbatim): render only these exact target labels clearly: “Envelope target: 2.0 m × 0.5 m × 3.0 m”; “Opening target: 1.0 m clear width; spring line z=2.0 m”; “Outer radius: 1.0 m”; “Inner radius: 0.5 m”; “Grid: 0.5 m”; “X width / Y depth / Z height”; “Crown treatment meets jamb at spring points”. These are contract design targets, not image measurements.
+Constraints: exact arch silhouette and empty opening; the treatment stays flush and inside the existing carrier envelope; no unsupported geometry or gameplay properties.
+Avoid: separate ring parts, wedge stones, keystone, threshold board, door leaf, window, hardware, floor tiles, plinth, cutaway, extra objects, unreadable pseudo-labels, watermark.
+
+SELECTED CONCEPT-SHEET REPAIR PROMPT
+
+Use case: precise-object-edit
+Asset type: repair of the worked-timber arch-crown surface-treatment concept sheet.
+Input image: the current ring-lintel concept sheet is the sole design master.
+Primary request: extend the same flush KIT-WT wood appearance treatment onto the inner curved reveal surface of the upper arch, continuously from the left spring point over the crown to the right spring point. Match the existing warm wood grain and keep the straight jamb patches neutral gray.
+Constraints: preserve the exact arch silhouette, empty opening, all dimensions and labels, section/elevation views, outer/back crown treatment, contact seam markers and layout. Change only the inner curved reveal material from neutral gray to the same worked-timber appearance as the crown band, with no added thickness, geometry, seams, wedges or separate parts. Keep the clear aperture fully empty. Preserve target envelope 2.0 m × 0.5 m × 3.0 m, opening clear width 1.0 m, spring line z=2.0 m, radii 1.0 m and 0.5 m, and grid 0.5 m. Maintain the named interface to the jamb treatment at both spring points. Do not alter text other than keeping it legible.
+
+
+SELECTED CLEAN ASSET-VIEW PROMPT
+
+Use case: precise-object-edit
+Asset type: clean asset-view.png for one KIT-WT arch-crown/ring surface treatment.
+Input image: the selected concept-sheet.png is the sole identity/master reference.
+Primary request: derive one isolated, intact three-quarter view of the same complete arch-2m/v1 carrier with the same flush worked-timber appearance treatment on the curved crown/ring patches and inner curved reveal.
+Constraints: preserve exact arch silhouette and empty opening; 2.0 m × 0.5 m × 3.0 m target envelope, outer radius 1.0 m, opening radius 0.5 m, 1.0 m clear width, spring line z=2.0 m. Wood is a surface appearance flush with the carrier, with no added thickness. Keep both straight jamb patches, base/threshold zone and all other carrier surfaces plain neutral gray. Show exactly one complete arch carrier and no other object. Use neutral light-gray seamless studio background, even soft lighting, full silhouette with clear margins. No text, dimensions, panels, labels, detail insets, separate ring parts, wedges, keystone, extra parts, threshold, door, window, hardware, floor tiles, or scene. Do not redesign geometry or surface pattern.
+
+
+SELECTED CLEAN ASSET-VIEW PROMPT
+
+Use case: precise-object-edit
+Asset type: clean asset-view.png for one KIT-WT arch-crown/ring surface treatment.
+Input image: the selected concept-sheet.png is the sole identity/master reference.
+Primary request: derive one isolated, intact three-quarter view of the same complete arch-2m/v1 carrier with the same flush worked-timber appearance treatment on the curved crown/ring patches and inner curved reveal.
+Constraints: preserve exact arch silhouette and empty opening; 2.0 m × 0.5 m × 3.0 m target envelope, outer radius 1.0 m, opening radius 0.5 m, 1.0 m clear width, spring line z=2.0 m. Wood is a surface appearance flush with the carrier, with no added thickness. Keep both straight jamb patches, base/threshold zone and all other carrier surfaces plain neutral gray. Show exactly one complete arch carrier and no other object. Use neutral light-gray seamless studio background, even soft lighting, full silhouette with clear margins. No text, dimensions, panels, labels, detail insets, separate ring parts, wedges, keystone, extra parts, threshold, door, window, hardware, floor tiles, or scene. Do not redesign geometry or surface pattern.

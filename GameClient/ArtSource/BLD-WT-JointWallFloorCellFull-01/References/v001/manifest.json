@@ -1,0 +1,71 @@
+{
+  "asset_id": "BLD-WT-JointWallFloorCellFull-01",
+  "version": "v001",
+  "batch": "construction-worked-timber-interfaces-35",
+  "source_references": [
+    "docs/art-templates/player-construction-kit-contract.md §§3.2, 8–9",
+    "docs/art-templates/asset-lists/construction-kit-matrix-07.md named worked-timber interface role"
+  ],
+  "dependency": "KIT-WT appearance and source geometry/contact/clearance definitions; gameplay tier unchanged",
+  "exact_prompts": {
+    "concept_sheet": "Worked-timber wall-to-floor interface study: solid plank wall meets a horizontal timber floor at one flush contact edge. Show wall and floor exterior/interior surfaces, top and underside of floor, end grain at edge, isometric plus section detail. No support claim, no extra posts, no text. Preserve source grid and clearances; concept proposal.",
+    "asset_view": "Isolated clean worked-timber wall/floor junction component. One plank wall segment meeting a single plank floor segment flush at a right angle; show interior faces and underside of floor, no room, no extra supports, no overhanging beams, no text. Pale studio background. Preserve visible contact as a proposal, not a structural validation."
+  },
+  "images": [
+    {
+      "file": "concept-sheet.png",
+      "width_px": 1536,
+      "height_px": 1024,
+      "mode": "RGB",
+      "format": "PNG",
+      "sha256": "24d4adcb3530dc7d2b347bba06e0516fc4940fa22d58e0392790b8fd4ae055e8"
+    },
+    {
+      "file": "asset-view.png",
+      "width_px": 1312,
+      "height_px": 1199,
+      "mode": "RGB",
+      "format": "PNG",
+      "sha256": "b5b1fb85e458a760a8cdfc67afdfc3b18be090f0b3b5cca5478719a8b80af0b0"
+    }
+  ],
+  "visual_review": "Contact is clear, though one vertical face/floor panel appears larger than one cell; normalize to known shape envelope before modeling.",
+  "compatibility": "Visual review does not establish numerical mesh, collision, contact, clearance, support or runtime compatibility. Gameplay material properties are unchanged.",
+  "generation_history": [
+    {
+      "file": "exec-3129541a-157b-4561-ab69-272458064995.png",
+      "selected": true
+    },
+    {
+      "file": "exec-9938d73d-ff1d-4efd-aec7-635595bf7033.png",
+      "selected": true
+    }
+  ],
+  "created_utc": "2026-10-18",
+  "historical_status_2026_10_18_before_buildability_review": "image-complete; proposal; visual cautions recorded",
+  "status": "appearance/style evidence only; structural route blocked",
+  "current_route_review": {
+    "date": "2026-10-18",
+    "route": "Blocked; appearance/interface-study evidence only. No approved canonical member set or geometry/interface mapping.",
+    "units": "metres assumed for eventual construction frame; image scale is not evidence",
+    "grid_m": 0.5,
+    "axes_pivot": "not assigned to image members; any future cell-full member would require approved minimum-grid-corner frame and authored rotation allowlist",
+    "member_boundaries": "unresolved; do not infer from planks/panels",
+    "exposed_mating_faces": "Selected sheet depicts a multi-plank wall and multi-plank floor with ambiguous member divisions; clean view is an oversized joined wall/floor assembly with no documented scale. The previous review also noted panel extent larger than one cell. Exact component boundaries, contact plane, units as encoded in the images, axes/pivots, rotations, face masks and clearances are absent.",
+    "named_counterparts": "Candidate style roles BLD-WT-FaceExteriorCellFull-01 and BLD-WT-FaceUndersideCellFull-01 only; no approved mating interface or member IDs.",
+    "visual_finding": "Selected sheet depicts a multi-plank wall and multi-plank floor with ambiguous member divisions; clean view is an oversized joined wall/floor assembly with no documented scale. The previous review also noted panel extent larger than one cell. Exact component boundaries, contact plane, units as encoded in the images, axes/pivots, rotations, face masks and clearances are absent.",
+    "reason": "Keep two selected images as appearance evidence; block reusable structural readiness until a cell-member assembly definition and contact mask are approved."
+  },
+  "buildability_review_history": [
+    {
+      "date": "2026-10-18",
+      "previous_status": "image-complete; proposal; visual cautions recorded",
+      "current_status": "appearance/style evidence only; structural route blocked",
+      "route": "Blocked; appearance/interface-study evidence only. No approved canonical member set or geometry/interface mapping.",
+      "selected_images": "Preserved exactly two historical selected images; no replacement generated.",
+      "finding": "Selected sheet depicts a multi-plank wall and multi-plank floor with ambiguous member divisions; clean view is an oversized joined wall/floor assembly with no documented scale. The previous review also noted panel extent larger than one cell. Exact component boundaries, contact plane, units as encoded in the images, axes/pivots, rotations, face masks and clearances are absent.",
+      "counterparts": "Candidate style roles BLD-WT-FaceExteriorCellFull-01 and BLD-WT-FaceUndersideCellFull-01 only; no approved mating interface or member IDs.",
+      "next_action": "Keep two selected images as appearance evidence; block reusable structural readiness until a cell-member assembly definition and contact mask are approved."
+    }
+  ]
+}

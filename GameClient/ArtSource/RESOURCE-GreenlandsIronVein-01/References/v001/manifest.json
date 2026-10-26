@@ -1,0 +1,30 @@
+{
+  "asset_id": "RESOURCE-GreenlandsIronVein-01",
+  "category": "resource prop / rock outcrop",
+  "brief": "One common iron-ore mining node; visual form is proposed, while iron_ore is listed as a common mining resource.",
+  "design_sources": [
+    { "path": "docs/Game-Design/Legends_Shattered_Frontier_Vertical_Slice_Specification_v1.0.md", "section": "Scope and exclusions / Gathering; Content inventory", "role": "requires distinguishable ore resource opportunities" },
+    { "path": "docs/Game-Design/Crafting/Legends_Shattered_Frontier_Crafting_Gathering_and_Resources_v1.0.md", "section": "1.4 Catalogue; 2.1 gathering_node definition", "role": "lists common iron_ore and node concept" },
+    { "path": "docs/Game-Design/concept-art/Concept.png", "role": "optional style reference" }
+  ],
+  "concept_status": "agent-selected; visual proposal, user approval not claimed",
+  "clean_view_status": "ready-for-model-test; opaque background, segmentation required if later adapter requires alpha",
+  "design_master": "concept-sheet.png",
+  "prompts": "prompt.txt",
+  "generation": { "tool": "built-in image_gen", "model": "unavailable", "generated_date": "2026-10-18", "seed": "unavailable" },
+  "outputs": {
+    "concept-sheet.png": { "sha256": "076A38A946B2FA1484C40B02D7BA047282DA3930C50E8251EB5C99889A7BE54B", "dimensions_px": [1536, 1024], "color": "RGB, opaque; PNG color type 2", "master": true },
+    "asset-view.png": { "sha256": "6530F652638CB88E8A95112C8016C403A662A65B62092F2E90688A81677311FB", "dimensions_px": [1536, 1024], "color": "RGB, opaque; PNG color type 2", "master": false }
+  },
+  "component_boundaries": ["One rock outcrop with embedded iron-bearing seams", "Excludes cave, mine, surrounding terrain, separate ore pieces and tools"],
+  "scale": "Approximate scale inferred; dimensions are not specified in design sources.",
+  "edits": "No pixel edits or upscaling; clean view generated as a separate interpretation of the selected sheet.",
+  "review": {
+    "reviewer": "Codex visual inspection",
+    "findings": ["Sheet views show one compact rock outcrop and maintain visible ore-bearing seams.", "Clean view contains one complete node on neutral background with readable rock/ore contrast and ample margins.", "No tools, people or mine scenery included; opaque background."],
+    "unresolved": ["Exact mineral appearance, scale and mineability remain visual proposals."],
+    "image_complete": true,
+    "approval": "agent-selected; not user-approved",
+    "review_date": "2026-10-18"
+  }
+}

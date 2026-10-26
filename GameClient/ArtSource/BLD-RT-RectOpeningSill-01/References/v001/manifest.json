@@ -1,0 +1,66 @@
+{
+  "assetId": "BLD-RT-RectOpeningSill-01",
+  "version": "v001",
+  "category": "construction kit / rectangular opening sill or threshold appearance and interface study",
+  "created": "2026-10-18",
+  "sourceReferences": [
+    "docs/art-templates/player-construction-kit-contract.md \u2014 Openings; canonical frame; required kit QA",
+    "docs/Game-Design/Legends_Shattered_Frontier_Construction_System_Architecture_v0.1.md \u2014 \u00a7\u00a73.1\u20133.2, 8\u20139",
+    "GameClient/ArtSource/BLD-RT-CellFull-01/References/v001/asset-view.png \u2014 material cue"
+  ],
+  "definition": {
+    "geometryRef": "rect-opening/v1 (proposal)",
+    "envelopeMeters": "per contract; not inferred from image",
+    "contacts": [
+      "opening base",
+      "wall return",
+      "floor threshold interface"
+    ],
+    "opening": "preserve exact aperture subtraction and access clearance",
+    "materialKit": "KIT-RT",
+    "structuralMaterialProfile": "Rough timber",
+    "cosmeticSkin": "appearance only",
+    "functionalDefinition": "none"
+  },
+  "generation": {
+    "tool": "built-in image_gen",
+    "date": "2026-10-18",
+    "model": "unavailable",
+    "seed": "unavailable",
+    "promptRecord": "prompt.txt",
+    "referenceImagesAttached": []
+  },
+  "images": [
+    {
+      "path": "concept-sheet.png",
+      "sha256": "9f61abcd76943f9c0ec964706d7d5c4146d03abbaf026097689f2277a0a70354",
+      "width": 1536,
+      "height": 1024,
+      "pixelFormat": "RGB 24-bit",
+      "alpha": false,
+      "review": "Initial concept exaggerated projection; clean and selected view shows compact member. Exact depth and access clearances unverified."
+    },
+    {
+      "path": "asset-view.png",
+      "sha256": "99f0af40a8f74db6e58be659d87b77cafd10ac99d0e530949d44268e55125867",
+      "width": 1536,
+      "height": 1024,
+      "pixelFormat": "RGB 24-bit",
+      "alpha": false,
+      "review": "Initial concept exaggerated projection; clean and selected view shows compact member. Exact depth and access clearances unverified."
+    }
+  ],
+  "review": {
+    "reviewedBy": "Codex",
+    "conceptStatus": "proposed",
+    "cleanViewStatus": "ready-for-model-test",
+    "imageStatus": "image-complete",
+    "geometryAcceptance": "not established",
+    "numericalMeshFit": "not established",
+    "runtimeCollisionSupportClearance": "not established",
+    "actionableFindings": [
+      "Initial concept exaggerated projection; clean and selected view shows compact member. Exact depth and access clearances unverified."
+    ]
+  },
+  "componentBoundary": "One separately indexed sill or threshold component role. Install views are appearance only and do not establish contract aperture fit or runtime access/collision."
+}

@@ -1,0 +1,49 @@
+{
+  "asset_id": "BLD-WT-JointCrossCellFull-01",
+  "version": "v001",
+  "batch": "construction-worked-timber-joints-34",
+  "status": "historical image pair retained; appearance/study evidence only; structural route blocked",
+  "source_references": [
+    "docs/art-templates/player-construction-kit-contract.md, \u00a7\u00a73.2, 8\u20139",
+    "docs/art-templates/asset-lists/construction-kit-matrix-07.md, worked-timber joint roles"
+  ],
+  "dependency": "KIT-WT surfaces and contract cell contact boundaries; gameplay properties unchanged",
+  "exact_prompts": {
+    "concept_sheet": "Worked-timber four-way cross wall joint concept sheet. Four solid opaque modular wall runs meet at one central perpendicular cross intersection, equal contact heights, horizontal weathered planks, end grain visible at joins. Show exact top plan and isometric detail, no opening, no brackets, no text, neutral background. Preserve cell-based contact boundaries; appearance proposal only.",
+    "asset_view": "Isolated clean worked-timber four-way cross wall joint, four opaque wall arms crossing at one center, equal-height horizontal plank courses and flush meeting faces. Show top-plan inset and three-quarter product view, no hollow cavities, no roof, no supports, no text, pale neutral background."
+  },
+  "images": [
+    {
+      "file": "concept-sheet.png",
+      "width_px": 1536,
+      "height_px": 1024,
+      "mode": "RGB",
+      "format": "PNG",
+      "sha256": "3b27a6c3505c8202364e86f2d4e243c8cdb10c19cb191e1933ec122afc76d9a0"
+    },
+    {
+      "file": "asset-view.png",
+      "width_px": 1536,
+      "height_px": 1024,
+      "mode": "RGB",
+      "format": "PNG",
+      "sha256": "62778da911186f1527d820807bb2d1f5aa22545ff9c7e5bcc7d79b24e50ebc81"
+    }
+  ],
+  "visual_review": "Four-way topology is clear; plan shows intersecting wall width/contact behavior that needs numerical validation.",
+  "compatibility": "Visual review does not establish numerical mesh, collision, contact, clearance or runtime compatibility. Appearance only; gameplay material properties unchanged.",
+  "generation_history": [
+    {
+      "file": "exec-1421c8e9-d3a1-469e-9350-d887c501a523.png",
+      "selected": true
+    },
+    {
+      "file": "exec-86426d23-42dd-4682-808c-04ae0bc06e33.png",
+      "selected": true
+    }
+  ],
+  "current_route_review": "Possible explicit cell-member assembly study only. Exact member count at cell granularity, boundaries, origins, axes/pivot, placement, rotation allowlist, contact masks, mating faces, clearances and counterpart IDs remain undefined. Central intersection has unresolved overlap/contact and could imply unapproved indivisible prefab.",
+  "review_document": "review-2026-10-18.md",
+  "buildability_review_history": [{"date":"2026-10-18","prior_status":"image-complete; proposal; ready-for-model-test","finding":"Selected pair is a four-way appearance study without defined member boundaries or central contact rules. GEO-01 approved manifest/hash and applicable GEO-02 evidence remain absent."}],
+  "created_utc": "2026-10-18"
+}

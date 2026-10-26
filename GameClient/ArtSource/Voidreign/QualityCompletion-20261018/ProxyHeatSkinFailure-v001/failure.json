@@ -1,0 +1,1 @@
+{"status":"failed-filter-no-vertices-reweighted","cause":"inactive feature-rig groups (StaticBody/Mane/Tail) counted as foreign; tool fixed to count only groups of enabled armature modifiers"}

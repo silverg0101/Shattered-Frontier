@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "status": "connected-hoof-selection-proposal-needs-review",
+  "cpu_only": true,
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz": "0d7599c8064cb81a6e211a23731435e08939b7fb146ce2d4bed810273909a2b2",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selections.npz": "0b6a19f76a2cba73a42e293c29365360b53ba93be101cf8f4ca556e7a5989cc0",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryDomains-v001\\primary-domains.npz": "38002ef04f9ab82df4456021b3772e422328e2ecebd38bd068a344dd5e27bdb5",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimarySoleProposals-v001\\sole-patches.npz": "5b055301ae1b1349d3f85fb23e2b93985fd93f2a33e0fc1a1e4a05dbaf98614b",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimarySoleProposals-v001\\sole-report.json": "c40c5da18a99fd1fe9764d0e7d5f64c5ae7dd4336f26716f1b2b76550f853b76"
+  },
+  "profile_sha256": "18e0c171e4353492674a1a78afa52985b45de50cfcdc24b5f0ae32da0cf86e93",
+  "tool_sha256": "03aa7b99c74a5b0c18b6650a6827cdfa3fe14f47bf3827809d9500f4d83a0b43",
+  "seed_policy": "preserve-legacy-rigid",
+  "feet": [
+    {
+      "id": "fore.L",
+      "seed_vertices": 125,
+      "core_vertices": 869,
+      "core_faces": 909,
+      "collar_vertices": 331,
+      "legacy_rigid_vertices": 816,
+      "legacy_rigid_not_in_core": 0,
+      "core_outside_legacy_rigid": 53,
+      "core_bounds_m": [
+        [
+          0.21362914144992828,
+          -0.9618337154388428,
+          0.1026301383972168
+        ],
+        [
+          0.44928303360939026,
+          -0.6859827041625977,
+          0.19990074634552002
+        ]
+      ]
+    },
+    {
+      "id": "fore.R",
+      "seed_vertices": 123,
+      "core_vertices": 1349,
+      "core_faces": 1526,
+      "collar_vertices": 222,
+      "legacy_rigid_vertices": 1162,
+      "legacy_rigid_not_in_core": 0,
+      "core_outside_legacy_rigid": 187,
+      "core_bounds_m": [
+        [
+          -0.4308953881263733,
+          -1.057020902633667,
+          0.08626294136047363
+        ],
+        [
+          -0.17956261336803436,
+          -0.7516728639602661,
+          0.19976866245269775
+        ]
+      ]
+    },
+    {
+      "id": "hind.L",
+      "seed_vertices": 131,
+      "core_vertices": 894,
+      "core_faces": 962,
+      "collar_vertices": 440,
+      "legacy_rigid_vertices": 855,
+      "legacy_rigid_not_in_core": 0,
+      "core_outside_legacy_rigid": 39,
+      "core_bounds_m": [
+        [
+          0.335136353969574,
+          0.5950146913528442,
+          0.049246788024902344
+        ],
+        [
+          0.5834438800811768,
+          0.8763516545295715,
+          0.13997042179107666
+        ]
+      ]
+    },
+    {
+      "id": "hind.R",
+      "seed_vertices": 140,
+      "core_vertices": 1403,
+      "core_faces": 1547,
+      "collar_vertices": 329,
+      "legacy_rigid_vertices": 1350,
+      "legacy_rigid_not_in_core": 0,
+      "core_outside_legacy_rigid": 53,
+      "core_bounds_m": [
+        [
+          -0.35096997022628784,
+          0.15892663598060608,
+          0.009627819061279297
+        ],
+        [
+          -0.10216468572616577,
+          0.45527374744415283,
+          0.13988816738128662
+        ]
+      ]
+    }
+  ],
+  "limitations": [
+    "Owner labels, height planes and source topology are authored priors, not semantic proof.",
+    "Inspect missing legacy rigid vertices and newly included geometry before accepting this selection.",
+    "No weights, geometry, animation or acceptance limits changed; not a new primary rig candidate."
+  ]
+}

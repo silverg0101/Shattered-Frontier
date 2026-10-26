@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "units": "metres",
+  "rest_selection": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz",
+  "semantic_selection": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selections.npz",
+  "selected_labels": [
+    1,
+    2
+  ],
+  "label_names": {
+    "1": "Mane",
+    "2": "Tail"
+  },
+  "permissions": "Read-only inventory, no label/material/mesh changes. Review all mixed patches; retain material attempt3.",
+  "effective_time": "Exact source-indexed semantic proposal only",
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz": "0d7599c8064cb81a6e211a23731435e08939b7fb146ce2d4bed810273909a2b2",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selections.npz": "0b6a19f76a2cba73a42e293c29365360b53ba93be101cf8f4ca556e7a5989cc0"
+  }
+}

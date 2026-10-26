@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "source": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LocalFringeClothProof-v002\\Actual-FringeSecondary.blend",
+  "producer_report": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LocalFringeClothProof-v002\\cloth-report.json",
+  "simulated_points": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LocalFringeClothProof-v002\\simulated-points.npz",
+  "region_roots": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\FullLegFringeRoots-v001\\region-roots.npz",
+  "replay_tolerance_m": 1E-05,
+  "permissions": "Read-only canonical failure/source-face localization; do not rebake or alter limits.",
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LocalFringeClothProof-v002\\Actual-FringeSecondary.blend": "f3b235e8ae2cfd01781abfeac65b0083c2cd2156c16f9937172377d38940c70a",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LocalFringeClothProof-v002\\cloth-report.json": "f83f771cdc91897b65b0119ffbe6eaf067f5f11b3d9b3c2cc58c56b4bc1170b9",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LocalFringeClothProof-v002\\simulated-points.npz": "3cb31c8a95602bf8c63b84dee09c5757c5ae5ababe8964a8e58e803eee6b84b2",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\FullLegFringeRoots-v001\\region-roots.npz": "6c87dc69d6bbcf1ea76f7ca12e4f860940f328782c4a374a0a33278008bdf682",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LegFringeLabelCorrection-v001\\label-only-selections.npz": "dc78ba7dbd5a03bef0f0397a26435ec6bcf31b079c340aff5d035a2b1566a630"
+  },
+  "inspect_worst_topology_and_warmup": true,
+  "semantic_selection": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LegFringeLabelCorrection-v001\\label-only-selections.npz"
+}

@@ -1,0 +1,51 @@
+{
+  "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+  "packages": {
+    "torch": "2.14.0+rocm10.1.0",
+    "torchvision": "0.29.0a0+rocm10.1.0",
+    "rocm": "10.1.0",
+    "rocm-sdk-devel": "10.1.0",
+    "transformers": "5.20.1",
+    "trimesh": "5.1.1",
+    "flex_gemm": "1.0.0",
+    "cumesh": "0.0.1",
+    "o_voxel": "0.0.1",
+    "nvdiffrast": "0.4.0"
+  },
+  "repositories": {
+    "umbrella": {
+      "url": "https://github.com/ATLAS-0321/trellis2-amd.git",
+      "revision": "4034cd8bef63226032a9fb11d42091726a8c5a1e",
+      "local_patch": "umbrella.patch",
+      "patch_sha256": "77ffb908e9b02c78c1e3f2dcf4d0202e27a9ce6feceba46c040e15ef52f087e1"
+    },
+    "CuMesh-rocm": {
+      "url": "git@github.com:ATLAS-0321/CuMesh-rocm.git",
+      "revision": "d1d1e20ccb4ce8e7334bfb3d79b665ffe6430049",
+      "local_patch": "CuMesh-rocm.patch",
+      "patch_sha256": "9de871e19bfeeebc8e42f2e286a50800a0ed7da9cba81e9522cdae37260aa7ed"
+    },
+    "TRELLIS2-rocm": {
+      "url": "git@github.com:ATLAS-0321/TRELLIS2-rocm.git",
+      "revision": "48b20f617188c1f942d054625e869b71f72b21c8",
+      "local_patch": "TRELLIS2-rocm.patch",
+      "patch_sha256": "7868c497289e4ded714ab432bdb870a18d68a1a68e09bbffcaf5e5ba9e56cb05"
+    },
+    "nvdiffrast-rocm": {
+      "url": "git@github.com:ATLAS-0321/nvdiffrast-rocm.git",
+      "revision": "047a4a4b491ee9a51fc1cd80a97e5de9d6c3cb09",
+      "local_patch": "nvdiffrast-rocm.patch",
+      "patch_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "FlexGEMM-rocm": {
+      "url": "git@github.com:ATLAS-0321/FlexGEMM-rocm.git",
+      "revision": "bbfbce0c40cd8a886fc9cee8c62d7f218fb5bdd3",
+      "local_patch": "FlexGEMM-rocm.patch",
+      "patch_sha256": "2035dc7cde590de6c739e14edfa7f388d6d4ea098cc3e9d18c480f3af81db8f8"
+    }
+  },
+  "input_sha256": {
+    "Voidreign-original.png": "b8b5478e46b63274b4b49d7b221b96b9aecfe35c2483818c2d14a7fcffde1efb",
+    "Voidreign-clean.png": "d67522bf160e2dbfe763a5945e651b6b5c508f32676257dac80c98b26a42aca0"
+  }
+}

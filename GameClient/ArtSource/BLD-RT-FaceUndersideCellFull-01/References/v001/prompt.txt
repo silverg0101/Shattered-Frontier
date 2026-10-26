@@ -1,0 +1,23 @@
+CONCEPT SHEET — built-in image_gen, 2026-10-18.
+
+Use case: stylized-concept
+Asset type: separately indexed underside-face treatment for rough-timber construction.
+Input image 1: selected KIT-RT cell-face reference; preserve weathered warm brown grain.
+Scene/backdrop: neutral gray technical studio.
+Subject: one solid 0.5 m target full-cell cube, with the underside face designated and shown; this is a surface treatment, not an added support.
+Style/medium: realistic fantasy construction reference, plain rough-sawn timber boards, slightly darker sheltered finish, flush and restrained.
+Composition/framing: six aligned orthographic views of the same cube, with the underside face clearly shown as a square; include top, exterior/interior, ends, and neutral contact silhouette. Dimensions are design targets.
+Constraints: unchanged solid cube envelope, six contacts, pivot and allowed orientations. Underside boards stay flush to boundary plane. No legs, sleepers, beams, braces, recessed panels, extra objects, floor, stone or metal; no geometry, collision, or gameplay change.
+Avoid: perspective mismatch, double objects, protruding support structures, text clutter, watermark.
+Reference: `GameClient/ArtSource/BLD-RT-CellFull-01/References/v001/concept-sheet.png`.
+
+CLEAN VIEW — built-in image_gen, 2026-10-18; input image 1 is the selected concept sheet.
+
+Use case: stylized-concept
+Asset type: clean full-cell view of the rough-timber underside face role.
+Input image 1: selected six-view sheet; preserve the flush boarded timber underside and rough-timber family.
+Scene/backdrop: neutral light gray studio.
+Subject: exactly one full solid cube, target 0.5 m per edge. Show its underside face clearly while retaining the complete solid block.
+Composition/framing: isolated cube viewed slightly from below in a mild three-quarter angle so the underside and two sides are visible; entire silhouette in frame, ample margin.
+Style/medium: realistic fantasy construction material reference, warm dark rough timber.
+Constraints: underside planks remain flush and do not create a void or supports. Preserve same cube envelope, all six contacts, pivot and orientation as `cell-full`. No legs, sleepers, braces, environment, text, extra asset, gameplay claim, or geometry change.

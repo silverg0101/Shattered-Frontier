@@ -1,0 +1,552 @@
+{
+  "schema_version": 1,
+  "status": "support-distance-diagnostic-no-semantic-acceptance",
+  "cpu_only": true,
+  "input_sha256": {
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/DegenerateInspection-v001/00-component-selections.npz": "0d7599c8064cb81a6e211a23731435e08939b7fb146ce2d4bed810273909a2b2",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryDomains-v001/primary-domains.npz": "38002ef04f9ab82df4456021b3772e422328e2ecebd38bd068a344dd5e27bdb5",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HygieneSemanticSelection-v001/selections.npz": "0b6a19f76a2cba73a42e293c29365360b53ba93be101cf8f4ca556e7a5989cc0",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemInventory-v001/inventory.json": "4cda0c117ca27be89c9a687a21514e6b20685174ebdbc226833964b04c83228f",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemInventory-v001/item-selections.npz": "fcd4db77cdd50ccae21e0f134e845c8bf64c3243285bcc565788f6fda33d665d"
+  },
+  "tool_sha256": "9dd5f67e127b9a691f49e4398b6ead9e39ba1606b23b4445571bc22a4a1e1074",
+  "profile_sha256": "e97217da11a902f1c56fd1bb927f46e85a1f09029651482428022ceabf07cdf6",
+  "support_faces": 169140,
+  "review_distance_m": 0.005,
+  "items": [
+    {
+      "id": "VR-LOOSE-0d7599c806-C0018",
+      "selection_key": "C0018",
+      "sampled_vertices": 288,
+      "minimum_sampled_vertex_distance_m": 0.0033106482587754726,
+      "median_sampled_vertex_distance_m": 0.01016870979219675,
+      "maximum_sampled_vertex_distance_m": 0.014947708696126938,
+      "closest_source_vertex": 194591,
+      "closest_support_source_face": 198063,
+      "closest_support_point_m": [
+        0.15481658279895782,
+        0.5560534000396729,
+        1.0104169845581055
+      ],
+      "support_face_owner_ids": [
+        3,
+        3,
+        3
+      ],
+      "review_flag": "near-surface-still-unattached",
+      "disposition": null,
+      "semantic_owner": null
+    },
+    {
+      "id": "VR-LOOSE-0d7599c806-C0026",
+      "selection_key": "C0026",
+      "sampled_vertices": 185,
+      "minimum_sampled_vertex_distance_m": 0.007626642473042011,
+      "median_sampled_vertex_distance_m": 0.012223606929183006,
+      "maximum_sampled_vertex_distance_m": 0.018156319856643677,
+      "closest_source_vertex": 231263,
+      "closest_support_source_face": 242458,
+      "closest_support_point_m": [
+        0.28196659684181213,
+        0.8684983253479004,
+        0.2706146240234375
+      ],
+      "support_face_owner_ids": [
+        3,
+        3,
+        3
+      ],
+      "review_flag": "sampled-gap-review",
+      "disposition": null,
+      "semantic_owner": null
+    },
+    {
+      "id": "VR-LOOSE-0d7599c806-C0054",
+      "selection_key": "C0054",
+      "sampled_vertices": 97,
+      "minimum_sampled_vertex_distance_m": 0.009064434096217155,
+      "median_sampled_vertex_distance_m": 0.01431468315422535,
+      "maximum_sampled_vertex_distance_m": 0.018078690394759178,
+      "closest_source_vertex": 101870,
+      "closest_support_source_face": 88149,
+      "closest_support_point_m": [
+        -0.36927860975265503,
+        -0.5096727609634399,
+        1.060392141342163
+      ],
+      "support_face_owner_ids": [
+        5,
+        5,
+        5
+      ],
+      "review_flag": "sampled-gap-review",
+      "disposition": null,
+      "semantic_owner": null
+    },
+    {
+      "id": "VR-LOOSE-0d7599c806-C0059",
+      "selection_key": "C0059",
+      "sampled_vertices": 97,
+      "minimum_sampled_vertex_distance_m": 0.015441804192960262,
+      "median_sampled_vertex_distance_m": 0.03912355750799179,
+      "maximum_sampled_vertex_distance_m": 0.07355794310569763,
+      "closest_source_vertex": 60797,
+      "closest_support_source_face": 69348,
+      "closest_support_point_m": [
+        0.10023954510688782,
+        -1.010421633720398,
+        1.1465729475021362
+      ],
+      "support_face_owner_ids": [
+        5,
+        5,
+        5
+      ],
+      "review_flag": "sampled-gap-review",
+      "disposition": null,
+      "semantic_owner": null
+    },
+    {
+      "id": "VR-LOOSE-0d7599c806-C0074",
+      "selection_key": "C0074",
+      "sampled_vertices": 75,
+      "minimum_sampled_vertex_distance_m": 0.007545902859419584,
+      "median_sampled_vertex_distance_m": 0.009015034884214401,
+      "maximum_sampled_vertex_distance_m": 0.01332059409469366,
+      "closest_source_vertex": 77703,
+      "closest_support_source_face": 20913,
+      "closest_support_point_m": [
+        -0.46391013264656067,
+        -0.6514472365379333,
+        0.4192282557487488
+      ],
+      "support_face_owner_ids": [
+        2,
+        2,
+        2
+      ],
+      "review_flag": "sampled-gap-review",
+      "disposition": null,
+      "semantic_owner": null
+    },
+    {
+      "id": "VR-LOOSE-0d7599c806-C0086",
+      "selection_key": "C0086",
+      "sampled_vertices": 65,
+      "minimum_sampled_vertex_distance_m": 0.010786927305161953,
+      "median_sampled_vertex_distance_m": 0.021117139607667923,
+      "maximum_sampled_vertex_distance_m": 0.03745917230844498,
+      "closest_source_vertex": 45764,
+      "closest_support_source_face": 12523,
+      "closest_support_point_m": [
+        -0.19988401234149933,
+        -0.9775376915931702,
+        1.1399085521697998
+      ],
+      "support_face_owner_ids": [
+        5,
+        5,
+        5
+      ],
+      "review_flag": "sampled-gap-review",
+      "disposition": null,
+      "semantic_owner": null
+    },
+    {
+      "id": "VR-LOOSE-0d7599c806-C0102",
+      "selection_key": "C0102",
+      "sampled_vertices": 39,
+      "minimum_sampled_vertex_distance_m": 0.008705345913767815,
+      "median_sampled_vertex_distance_m": 0.010861538350582123,
+      "maximum_sampled_vertex_distance_m": 0.01764109544456005,
+      "closest_source_vertex": 142062,
+      "closest_support_source_face": 36798,
+      "closest_support_point_m": [
+        0.31248754262924194,
+        -0.26383084058761597,
+        0.9703792333602905
+      ],
+      "support_face_owner_ids": [
+        5,
+        5,
+        5
+      ],
+      "review_flag": "sampled-gap-review",
+      "disposition": null,
+      "semantic_owner": null
+    },
+    {
+      "id": "VR-LOOSE-0d7599c806-C0118",
+      "selection_key": "C0118",
+      "sampled_vertices": 37,
+      "minimum_sampled_vertex_distance_m": 0.01028888113796711,
+      "median_sampled_vertex_distance_m": 0.01486198976635933,
+      "maximum_sampled_vertex_distance_m": 0.018457937985658646,
+      "closest_source_vertex": 135990,
+      "closest_support_source_face": 34751,
+      "closest_support_point_m": [
+        0.26301950216293335,
+        -0.4436250925064087,
+        1.2070852518081665
+      ],
+      "support_face_owner_ids": [
+        5,
+        5,
+        5
+      ],
+      "review_flag": "sampled-gap-review",
+      "disposition": null,
+      "semantic_owner": null
+    },
+    {
+      "id": "VR-LOOSE-0d7599c806-C0132",
+      "selection_key": "C0132",
+      "sampled_vertices": 30,
+      "minimum_sampled_vertex_distance_m": 0.007762084249407053,
+      "median_sampled_vertex_distance_m": 0.008834708482027054,
+      "maximum_sampled_vertex_distance_m": 0.011042327620089054,
+      "closest_source_vertex": 197002,
+      "closest_support_source_face": 196872,
+      "closest_support_point_m": [
+        0.08876980096101761,
+        0.506584882736206,
+        1.0381128787994385
+      ],
+      "support_face_owner_ids": [
+        3,
+        3,
+        3
+      ],
+      "review_flag": "sampled-gap-review",
+      "disposition": null,
+      "semantic_owner": null
+    },
+    {
+      "id": "VR-LOOSE-0d7599c806-C0133",
+      "selection_key": "C0133",
+      "sampled_vertices": 28,
+      "minimum_sampled_vertex_distance_m": 0.008858844637870789,
+      "median_sampled_vertex_distance_m": 0.011743346229195595,
+      "maximum_sampled_vertex_distance_m": 0.01713472232222557,
+      "closest_source_vertex": 135959,
+      "closest_support_source_face": 34533,
+      "closest_support_point_m": [
+        0.26932650804519653,
+        -0.45325395464897156,
+        1.0736416578292847
+      ],
+      "support_face_owner_ids": [
+        5,
+        5,
+        5
+      ],
+      "review_flag": "sampled-gap-review",
+      "disposition": null,
+      "semantic_owner": null
+    },
+    {
+      "id": "VR-LOOSE-0d7599c806-C0150",
+      "selection_key": "C0150",
+      "sampled_vertices": 24,
+      "minimum_sampled_vertex_distance_m": 0.00781924556940794,
+      "median_sampled_vertex_distance_m": 0.01364907156676054,
+      "maximum_sampled_vertex_distance_m": 0.01953640580177307,
+      "closest_source_vertex": 143326,
+      "closest_support_source_face": 129286,
+      "closest_support_point_m": [
+        -0.08850202709436417,
+        -0.20254313945770264,
+        1.0650147199630737
+      ],
+      "support_face_owner_ids": [
+        5,
+        5,
+        5
+      ],
+      "review_flag": "sampled-gap-review",
+      "disposition": null,
+      "semantic_owner": null
+    },
+    {
+      "id": "VR-LOOSE-0d7599c806-C0161",
+      "selection_key": "C0161",
+      "sampled_vertices": 24,
+      "minimum_sampled_vertex_distance_m": 0.01704057864844799,
+      "median_sampled_vertex_distance_m": 0.026815440505743027,
+      "maximum_sampled_vertex_distance_m": 0.030636943876743317,
+      "closest_source_vertex": 60171,
+      "closest_support_source_face": 16250,
+      "closest_support_point_m": [
+        -0.37533697485923767,
+        -0.7477108836174011,
+        0.6667410731315613
+      ],
+      "support_face_owner_ids": [
+        2,
+        2,
+        2
+      ],
+      "review_flag": "sampled-gap-review",
+      "disposition": null,
+      "semantic_owner": null
+    },
+    {
+      "id": "VR-LOOSE-0d7599c806-C0158",
+      "selection_key": "C0158",
+      "sampled_vertices": 20,
+      "minimum_sampled_vertex_distance_m": 0.008501202799379826,
+      "median_sampled_vertex_distance_m": 0.0102113988250494,
+      "maximum_sampled_vertex_distance_m": 0.01288602314889431,
+      "closest_source_vertex": 206799,
+      "closest_support_source_face": 208452,
+      "closest_support_point_m": [
+        0.31893694400787354,
+        0.5881010890007019,
+        1.051862359046936
+      ],
+      "support_face_owner_ids": [
+        3,
+        3,
+        3
+      ],
+      "review_flag": "sampled-gap-review",
+      "disposition": null,
+      "semantic_owner": null
+    },
+    {
+      "id": "VR-LOOSE-0d7599c806-C0178",
+      "selection_key": "C0178",
+      "sampled_vertices": 20,
+      "minimum_sampled_vertex_distance_m": 0.021792707964777946,
+      "median_sampled_vertex_distance_m": 0.026768088340759277,
+      "maximum_sampled_vertex_distance_m": 0.02996402606368065,
+      "closest_source_vertex": 161131,
+      "closest_support_source_face": 169003,
+      "closest_support_point_m": [
+        -0.4344407021999359,
+        0.28235334157943726,
+        0.9421552419662476
+      ],
+      "support_face_owner_ids": [
+        4,
+        4,
+        4
+      ],
+      "review_flag": "sampled-gap-review",
+      "disposition": null,
+      "semantic_owner": null
+    },
+    {
+      "id": "VR-LOOSE-0d7599c806-C0163",
+      "selection_key": "C0163",
+      "sampled_vertices": 19,
+      "minimum_sampled_vertex_distance_m": 0.010805037803947926,
+      "median_sampled_vertex_distance_m": 0.011867014691233635,
+      "maximum_sampled_vertex_distance_m": 0.015254056081175804,
+      "closest_source_vertex": 183117,
+      "closest_support_source_face": 180359,
+      "closest_support_point_m": [
+        -0.42529940605163574,
+        0.5531754493713379,
+        0.06672865152359009
+      ],
+      "support_face_owner_ids": [
+        4,
+        4,
+        4
+      ],
+      "review_flag": "sampled-gap-review",
+      "disposition": null,
+      "semantic_owner": null
+    },
+    {
+      "id": "VR-LOOSE-0d7599c806-C0165",
+      "selection_key": "C0165",
+      "sampled_vertices": 18,
+      "minimum_sampled_vertex_distance_m": 0.007770284079015255,
+      "median_sampled_vertex_distance_m": 0.009716506581753492,
+      "maximum_sampled_vertex_distance_m": 0.01364043913781643,
+      "closest_source_vertex": 183134,
+      "closest_support_source_face": 177950,
+      "closest_support_point_m": [
+        -0.36803409457206726,
+        0.5639266967773438,
+        0.07264092564582825
+      ],
+      "support_face_owner_ids": [
+        4,
+        4,
+        4
+      ],
+      "review_flag": "sampled-gap-review",
+      "disposition": null,
+      "semantic_owner": null
+    },
+    {
+      "id": "VR-LOOSE-0d7599c806-C0180",
+      "selection_key": "C0180",
+      "sampled_vertices": 18,
+      "minimum_sampled_vertex_distance_m": 0.009700295515358448,
+      "median_sampled_vertex_distance_m": 0.012340383138507605,
+      "maximum_sampled_vertex_distance_m": 0.016792962327599525,
+      "closest_source_vertex": 188186,
+      "closest_support_source_face": 185186,
+      "closest_support_point_m": [
+        0.11737842857837677,
+        0.3473284840583801,
+        1.1519384384155273
+      ],
+      "support_face_owner_ids": [
+        5,
+        5,
+        5
+      ],
+      "review_flag": "sampled-gap-review",
+      "disposition": null,
+      "semantic_owner": null
+    },
+    {
+      "id": "VR-LOOSE-0d7599c806-C0182",
+      "selection_key": "C0182",
+      "sampled_vertices": 16,
+      "minimum_sampled_vertex_distance_m": 0.008100119419395924,
+      "median_sampled_vertex_distance_m": 0.009788135532289743,
+      "maximum_sampled_vertex_distance_m": 0.01132975798100233,
+      "closest_source_vertex": 63028,
+      "closest_support_source_face": 51862,
+      "closest_support_point_m": [
+        -0.3673221468925476,
+        -0.8217506408691406,
+        1.2194582223892212
+      ],
+      "support_face_owner_ids": [
+        5,
+        5,
+        5
+      ],
+      "review_flag": "sampled-gap-review",
+      "disposition": null,
+      "semantic_owner": null
+    },
+    {
+      "id": "VR-LOOSE-0d7599c806-C0188",
+      "selection_key": "C0188",
+      "sampled_vertices": 13,
+      "minimum_sampled_vertex_distance_m": 0.007754730526357889,
+      "median_sampled_vertex_distance_m": 0.009591273032128811,
+      "maximum_sampled_vertex_distance_m": 0.009835097007453442,
+      "closest_source_vertex": 134700,
+      "closest_support_source_face": 141681,
+      "closest_support_point_m": [
+        -0.45354750752449036,
+        -0.18749772012233734,
+        1.1455588340759277
+      ],
+      "support_face_owner_ids": [
+        5,
+        5,
+        5
+      ],
+      "review_flag": "sampled-gap-review",
+      "disposition": null,
+      "semantic_owner": null
+    },
+    {
+      "id": "VR-LOOSE-0d7599c806-C0192",
+      "selection_key": "C0192",
+      "sampled_vertices": 10,
+      "minimum_sampled_vertex_distance_m": 0.008851354010403156,
+      "median_sampled_vertex_distance_m": 0.011198651976883411,
+      "maximum_sampled_vertex_distance_m": 0.013241599313914776,
+      "closest_source_vertex": 77766,
+      "closest_support_source_face": 20460,
+      "closest_support_point_m": [
+        -0.30107125639915466,
+        -0.6928518414497375,
+        0.2549920380115509
+      ],
+      "support_face_owner_ids": [
+        2,
+        2,
+        2
+      ],
+      "review_flag": "sampled-gap-review",
+      "disposition": null,
+      "semantic_owner": null
+    },
+    {
+      "id": "VR-LOOSE-0d7599c806-C0214",
+      "selection_key": "C0214",
+      "sampled_vertices": 6,
+      "minimum_sampled_vertex_distance_m": 0.011528237722814083,
+      "median_sampled_vertex_distance_m": 0.013017604127526283,
+      "maximum_sampled_vertex_distance_m": 0.013876750133931637,
+      "closest_source_vertex": 141926,
+      "closest_support_source_face": 36538,
+      "closest_support_point_m": [
+        0.33859577775001526,
+        -0.31854355335235596,
+        0.7613608837127686
+      ],
+      "support_face_owner_ids": [
+        5,
+        5,
+        5
+      ],
+      "review_flag": "sampled-gap-review",
+      "disposition": null,
+      "semantic_owner": null
+    },
+    {
+      "id": "VR-LOOSE-0d7599c806-C0216",
+      "selection_key": "C0216",
+      "sampled_vertices": 6,
+      "minimum_sampled_vertex_distance_m": 0.00921472255140543,
+      "median_sampled_vertex_distance_m": 0.00939155463129282,
+      "maximum_sampled_vertex_distance_m": 0.009724942967295647,
+      "closest_source_vertex": 194606,
+      "closest_support_source_face": 184060,
+      "closest_support_point_m": [
+        0.13955342769622803,
+        0.4770916700363159,
+        1.0151572227478027
+      ],
+      "support_face_owner_ids": [
+        3,
+        3,
+        3
+      ],
+      "review_flag": "sampled-gap-review",
+      "disposition": null,
+      "semantic_owner": null
+    },
+    {
+      "id": "VR-LOOSE-0d7599c806-C0210",
+      "selection_key": "C0210",
+      "sampled_vertices": 4,
+      "minimum_sampled_vertex_distance_m": 0.007173210382461548,
+      "median_sampled_vertex_distance_m": 0.007622591219842434,
+      "maximum_sampled_vertex_distance_m": 0.008072007447481155,
+      "closest_source_vertex": 60048,
+      "closest_support_source_face": 15626,
+      "closest_support_point_m": [
+        -0.21559138596057892,
+        -0.8450801968574524,
+        0.32425615191459656
+      ],
+      "support_face_owner_ids": [
+        2,
+        2,
+        2
+      ],
+      "review_flag": "sampled-gap-review",
+      "disposition": null,
+      "semantic_owner": null
+    }
+  ],
+  "limitations": [
+    "Unsigned nearest distances sample item vertices only. Triangle interiors may approach or intersect support more closely.",
+    "Owner labels select a proposed support set and may themselves include tack or anatomical errors.",
+    "Disconnected topology does not imply unwanted debris. No binding, deletion or pass/fail asset acceptance."
+  ]
+}

@@ -1,0 +1,5 @@
+Concept-sheet prompt (exact):
+Worked-timber beam-to-post joint concept sheet: one horizontal timber beam ends at a vertical post with a visible fitted mortise-and-tenon style seat, all within the documented cell contact envelopes. Show front, side, top and isometric details; wood only, no added brackets or hardware, no text. Structural appearance proposal only; no load capacity inferred.
+
+Clean asset-view prompt (exact):
+Isolated clean product study: a vertical worked-oak post and a short horizontal beam ending flush into a notched seat on the post. Show only the immediate joint, beam extends just a short distance, post square section, no extra pieces, no brackets, no text, light background. Concept appearance only.

@@ -1,0 +1,18 @@
+{
+  "status": "reviewed-not-promoted-free-surface-unsettled",
+  "reviewer": "authoring-agent",
+  "sampled_stills_reviewed": [
+    1,
+    25,
+    49
+  ],
+  "decision": "../LocalFringePhysicsDecision-v001/decision.json",
+  "findings": [
+    "Pinned area follows sourceleg and actual source geometry is sampled correctly.",
+    "Free shell folds/curls and settling/contact are not established; no whole-mount acceptance."
+  ],
+  "limits": [
+    "Only local cropped leg/ground; no self/cross-feature, nearbytail/otherleg or swept-solid acceptance.",
+    "Native pin group excludes triangles wholly in group; see native-mask clarification."
+  ]
+}

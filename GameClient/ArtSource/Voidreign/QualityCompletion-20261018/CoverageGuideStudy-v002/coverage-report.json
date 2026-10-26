@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "status": "coverage-proposals-only; not-simulated-or-skinned",
+  "cpu_only": true,
+  "mesh_hash": "ba2d283db0be5e8cff4cc7549f1f51916cc0a4d18213773300976b11512ececa",
+  "source_sha256": "6c6044a533c16fc7fad23d42c0407dde37a0252aca84f9be1bc9b9a2367364f6",
+  "original_guides": 24,
+  "additions": 24,
+  "features": [
+    {
+      "feature": "Mane",
+      "unique_semantic_nodes": 26758,
+      "evaluated_free_nodes": 14027,
+      "protected_or_existing_root_band_nodes": 12731,
+      "original_guides": 12,
+      "proposed_additions": 12,
+      "original": {
+        "maximum_m": 0.23558882713204674,
+        "p95_m": 0.15494305433916433,
+        "warning_nodes": 9198
+      },
+      "proposed": {
+        "maximum_m": 0.1388502002992536,
+        "p95_m": 0.10443575338425513,
+        "warning_nodes": 6853
+      },
+      "status": "needs-semantic-and-path-review"
+    },
+    {
+      "feature": "Tail",
+      "unique_semantic_nodes": 33233,
+      "evaluated_free_nodes": 21009,
+      "protected_or_existing_root_band_nodes": 12224,
+      "original_guides": 12,
+      "proposed_additions": 12,
+      "original": {
+        "maximum_m": 0.3189285597425135,
+        "p95_m": 0.17206867660428563,
+        "warning_nodes": 14346
+      },
+      "proposed": {
+        "maximum_m": 0.17227380705681358,
+        "p95_m": 0.12135673704926955,
+        "warning_nodes": 10049
+      },
+      "status": "needs-semantic-and-path-review"
+    }
+  ],
+  "tool_sha256": "d76610203584765cd8ce89fb9d078cdf974d3fe44de2cf75a4d5bbf00d8359df",
+  "coverage_file_sha256": "a9dd01dfb9caed71b2ae173b0f64ba29131fc048cb7d1711bd67170870dfeaf4",
+  "additional_guides_sha256": "3d25841d2be20fc642f8d922497a1144698a8c4bc83078c099d45277afd10ef9",
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneGuideProposal-v001\\guide-report.json": "3e776c1cef3380c3a81814d67ce2ec32270bca2e7d7fbece55eefef49e70de67",
+    "docs\\art-templates\\model-profiles\\voidreign-coverage-guide-study-v002-20261018.json": "54bf446a67cfdb1c6924a7cc7e50f09fe4de90a3a14183419f87d29b7cc9b585",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selection-report.json": "63eb535dcafe1140c5445ce46bd402cc438af979c437fbb9d7430b723aa11a08",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneAttachmentProposals-v001\\attachment-proposals.json": "0e0b6d2096722f4ffa88be6d437c1b17d10eba5999c884a5f1974e860c1c3308",
+    "docs\\art-templates\\model-profiles\\voidreign-hair-selections-v003-20261018.json": "558f0bb861238b8150450a3495ee83fca561d3b72b979c3cd6aa92041ddd18f9",
+    "docs\\art-templates\\model-profiles\\voidreign-complete-hair-motion-v003-20261018.json": "9df3ed982c0f5f571210a98d42c1e6b395b80713c139f0b7b162ad861d5cca47",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneGuideProposal-v001\\guides.json": "f8f8c15cfa47fcd80ea32cf823227cc5df5d063e0baa1e4bc72de99e77701621",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selections.npz": "0b6a19f76a2cba73a42e293c29365360b53ba93be101cf8f4ca556e7a5989cc0",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneGuideProposal-v001\\weight-field.npz": "e397b54127123c7ad863706d650bb780b7489a5f82bf2a3b9d74bd16eb480f91",
+    "docs\\art-templates\\model-profiles\\voidreign-hair-surface-check-20261018.json": "f42b54b785653cd13262405b39e26a48e1fc606edeafb392b1372121e29e1abb"
+  },
+  "limitations": [
+    "Nearest rest-segment point coverage is not strand identity, centerline, width, skin assignment, motion or contact acceptance.",
+    "Existing semantic regions and proposed virtual attachments remain unapproved; no source topology or root decisions changed.",
+    "Graph paths follow mesh surfaces and may cross unrelated fused branches; inspect them before use.",
+    "Existing root-band exemption reproduced for comparable diagnostics, not enlarged; excluded nodes remain separately counted.",
+    "Additional guides imply higher bone/solver cost and are not an approved runtime budget.",
+    "No model/source/weights/animation/export change or new repair attempt."
+  ]
+}

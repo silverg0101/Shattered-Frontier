@@ -1,0 +1,9 @@
+{
+  "status": "verified",
+  "files": 131,
+  "self_contained": false,
+  "manifest": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\StandingReproductionKit-v001\\manifest.json",
+  "limitations": [
+    "Large sources/caches external. Parent primary-rig kit supplies baseline dependency index. Snapshot predates final checkpoint/verification note."
+  ]
+}

@@ -1,0 +1,2297 @@
+{
+ "schema_version": 1,
+ "units": "metres-seconds-degrees",
+ "permissions": "User-authorized production animation pass 2026-10-19; procedural clips on SmoothedLegSkin-v002 primary rig.",
+ "source": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/SmoothedLegSkin-v002/Mount-ProxyHeatSkin.blend",
+ "object": "geometry_0",
+ "rig_object": "PRIMARY | anatomical rig pilot",
+ "assembly_object": "LOCOMOTION | authored root motion",
+ "semantic_selection": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HygieneSemanticSelection-v001/selections.npz",
+ "sole_patches": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimarySoleProposals-v001/sole-patches.npz",
+ "assembly_base_z_m": -0.11,
+ "fps": 30,
+ "feet": [
+  {
+   "id": "fore.L",
+   "chain": [
+    "PRI.fore.L.shoulder",
+    "PRI.fore.L.elbow",
+    "PRI.fore.L.carpus",
+    "PRI.fore.L.fetlock"
+   ],
+   "nominal_ankle_y_m": -0.53
+  },
+  {
+   "id": "fore.R",
+   "chain": [
+    "PRI.fore.R.shoulder",
+    "PRI.fore.R.elbow",
+    "PRI.fore.R.carpus",
+    "PRI.fore.R.fetlock"
+   ],
+   "nominal_ankle_y_m": -0.6
+  },
+  {
+   "id": "hind.L",
+   "chain": [
+    "PRI.hind.L.hip",
+    "PRI.hind.L.stifle",
+    "PRI.hind.L.hock",
+    "PRI.hind.L.fetlock"
+   ],
+   "nominal_ankle_y_m": 0.66
+  },
+  {
+   "id": "hind.R",
+   "chain": [
+    "PRI.hind.R.hip",
+    "PRI.hind.R.stifle",
+    "PRI.hind.R.hock",
+    "PRI.hind.R.fetlock"
+   ],
+   "nominal_ankle_y_m": 0.58
+  }
+ ],
+ "limits": {
+  "contact_m": 0.005,
+  "slip_m": 0.001,
+  "penetration_m": 0.005,
+  "target_error_m": 0.005,
+  "bone_length_relative": 1e-05,
+  "seam_m": 1e-05,
+  "loop_m": 0.001,
+  "bake_m": 0.0005
+ },
+ "strain_every_frames": 4,
+ "reach_fraction": 0.995,
+ "review": {
+  "ortho_scale_m": 5.2,
+  "camera_local_m": [
+   6,
+   0,
+   1.5
+  ],
+  "samples": 8,
+  "resolution": [
+   640,
+   400
+  ]
+ },
+ "clips": [
+  {
+   "root_z_m": -0.07,
+   "id": "equine.walk_loop",
+   "purpose": "Follow/travel walk, 4-beat lateral",
+   "type": "gait",
+   "loop": true,
+   "frames": 33,
+   "stride_m": 1.5,
+   "stance_fraction": 0.62,
+   "lift_m": 0.12,
+   "phase": {
+    "hind.L": 0,
+    "fore.L": 0.75,
+    "hind.R": 0.5,
+    "fore.R": 0.25
+   },
+   "bob": [
+    {
+     "amp": 0.012,
+     "harmonic": 2,
+     "phase": 0.1
+    }
+   ],
+   "bone_osc": {
+    "PRI.body.neck": [
+     [
+      {
+       "amp": 3,
+       "harmonic": 2,
+       "phase": 0.1
+      }
+     ],
+     [],
+     []
+    ],
+    "PRI.body.pelvis": [
+     [],
+     [
+      {
+       "amp": 1.5,
+       "harmonic": 1,
+       "phase": 0
+      }
+     ],
+     []
+    ],
+    "PRI.body.tail-base": [
+     [],
+     [],
+     [
+      {
+       "amp": 4,
+       "harmonic": 1,
+       "phase": 0
+      }
+     ]
+    ]
+   },
+   "bone_offset": {},
+   "swing_pitch_deg": -20,
+   "root_motion": "root-motion"
+  },
+  {
+   "root_z_m": -0.09,
+   "id": "equine.trot_loop",
+   "purpose": "Mid-speed diagonal trot",
+   "type": "gait",
+   "loop": true,
+   "frames": 21,
+   "stride_m": 2.4,
+   "stance_fraction": 0.42,
+   "lift_m": 0.2,
+   "phase": {
+    "fore.L": 0,
+    "hind.R": 0,
+    "fore.R": 0.5,
+    "hind.L": 0.5
+   },
+   "bob": [
+    {
+     "amp": 0.03,
+     "harmonic": 2,
+     "phase": 0.33
+    }
+   ],
+   "bone_osc": {
+    "PRI.body.neck": [
+     [
+      {
+       "amp": 3,
+       "harmonic": 2,
+       "phase": 0
+      }
+     ],
+     [],
+     []
+    ],
+    "PRI.body.tail-base": [
+     [
+      {
+       "amp": 3,
+       "harmonic": 2,
+       "phase": 0
+      }
+     ],
+     [],
+     []
+    ]
+   },
+   "bone_offset": {},
+   "swing_pitch_deg": -20,
+   "root_motion": "root-motion"
+  },
+  {
+   "root_z_m": -0.12,
+   "id": "equine.canter_loop",
+   "purpose": "Run gait / combat follow, left lead 3-beat",
+   "type": "gait",
+   "loop": true,
+   "frames": 18,
+   "stride_m": 2.4,
+   "stance_fraction": 0.38,
+   "lift_m": 0.3,
+   "phase": {
+    "hind.R": 0,
+    "hind.L": 0.75,
+    "fore.R": 0.75,
+    "fore.L": 0.5
+   },
+   "bob": [
+    {
+     "amp": 0.06,
+     "harmonic": 1,
+     "phase": 0.31
+    }
+   ],
+   "bone_osc": {
+    "PRI.body.pelvis": [
+     [
+      {
+       "amp": 5,
+       "harmonic": 1,
+       "phase": 0.1
+      }
+     ],
+     [],
+     []
+    ],
+    "PRI.body.neck": [
+     [
+      {
+       "amp": 6,
+       "harmonic": 1,
+       "phase": 0.6
+      }
+     ],
+     [],
+     []
+    ],
+    "PRI.body.tail-base": [
+     [
+      {
+       "amp": 4,
+       "harmonic": 1,
+       "phase": 0.3
+      }
+     ],
+     [],
+     []
+    ]
+   },
+   "bone_offset": {},
+   "swing_pitch_deg": -20,
+   "root_motion": "root-motion"
+  },
+  {
+   "root_z_m": -0.13,
+   "id": "equine.gallop_loop",
+   "purpose": "Travel gallop, transverse 4-beat",
+   "type": "gait",
+   "loop": true,
+   "frames": 14,
+   "stride_m": 3.2,
+   "stance_fraction": 0.28,
+   "lift_m": 0.35,
+   "phase": {
+    "hind.R": 0,
+    "hind.L": 0.9,
+    "fore.R": 0.65,
+    "fore.L": 0.55
+   },
+   "bob": [
+    {
+     "amp": 0.07,
+     "harmonic": 1,
+     "phase": 0.2
+    }
+   ],
+   "bone_osc": {
+    "PRI.body.pelvis": [
+     [
+      {
+       "amp": 6,
+       "harmonic": 1,
+       "phase": 0.1
+      }
+     ],
+     [],
+     []
+    ],
+    "PRI.body.neck": [
+     [
+      {
+       "amp": 8,
+       "harmonic": 1,
+       "phase": 0.6
+      }
+     ],
+     [],
+     []
+    ]
+   },
+   "bone_offset": {},
+   "swing_pitch_deg": -20,
+   "root_motion": "root-motion"
+  },
+  {
+   "root_z_m": -0.12,
+   "id": "equine.combat_move_loop.m",
+   "purpose": "Engaged ridden movement, canter head low",
+   "type": "gait",
+   "loop": true,
+   "frames": 18,
+   "stride_m": 2.4,
+   "stance_fraction": 0.38,
+   "lift_m": 0.3,
+   "phase": {
+    "hind.R": 0,
+    "hind.L": 0.75,
+    "fore.R": 0.75,
+    "fore.L": 0.5
+   },
+   "bob": [
+    {
+     "amp": 0.06,
+     "harmonic": 1,
+     "phase": 0.31
+    }
+   ],
+   "bone_osc": {
+    "PRI.body.pelvis": [
+     [
+      {
+       "amp": 5,
+       "harmonic": 1,
+       "phase": 0.1
+      }
+     ],
+     [],
+     []
+    ],
+    "PRI.body.neck": [
+     [
+      {
+       "amp": 6,
+       "harmonic": 1,
+       "phase": 0.6
+      }
+     ],
+     [],
+     []
+    ],
+    "PRI.body.tail-base": [
+     [
+      {
+       "amp": 4,
+       "harmonic": 1,
+       "phase": 0.3
+      }
+     ],
+     [],
+     []
+    ]
+   },
+   "bone_offset": {
+    "PRI.body.neck": [
+     -8,
+     0,
+     0
+    ],
+    "PRI.body.head": [
+     -4,
+     0,
+     0
+    ]
+   },
+   "swing_pitch_deg": -20,
+   "root_motion": "root-motion"
+  },
+  {
+   "root_z_m": -0.13,
+   "id": "voidreign.sig_a.rift_charge_run",
+   "purpose": "Rift Charge travel, horn levelled",
+   "type": "gait",
+   "loop": true,
+   "frames": 14,
+   "stride_m": 3.2,
+   "stance_fraction": 0.28,
+   "lift_m": 0.35,
+   "phase": {
+    "hind.R": 0,
+    "hind.L": 0.9,
+    "fore.R": 0.65,
+    "fore.L": 0.55
+   },
+   "bob": [
+    {
+     "amp": 0.07,
+     "harmonic": 1,
+     "phase": 0.2
+    }
+   ],
+   "bone_osc": {
+    "PRI.body.pelvis": [
+     [
+      {
+       "amp": 6,
+       "harmonic": 1,
+       "phase": 0.1
+      }
+     ],
+     [],
+     []
+    ],
+    "PRI.body.neck": [
+     [
+      {
+       "amp": 5,
+       "harmonic": 1,
+       "phase": 0.6
+      }
+     ],
+     [],
+     []
+    ]
+   },
+   "bone_offset": {
+    "PRI.body.neck": [
+     -14,
+     0,
+     0
+    ],
+    "PRI.body.head": [
+     -4,
+     0,
+     0
+    ]
+   },
+   "swing_pitch_deg": -20,
+   "root_motion": "root-authored"
+  },
+  {
+   "id": "equine.idle_loop",
+   "purpose": "Standing idle",
+   "type": "keyed",
+   "loop": true,
+   "frames": 120,
+   "keys": [
+    {
+     "frame": 1
+    },
+    {
+     "frame": 121
+    }
+   ],
+   "foot_modes": {},
+   "bone_osc": {
+    "PRI.body.neck": [
+     [
+      {
+       "amp": 1.5,
+       "harmonic": 1,
+       "phase": 0
+      }
+     ],
+     [],
+     []
+    ],
+    "PRI.body.head": [
+     [],
+     [],
+     [
+      {
+       "amp": 3,
+       "harmonic": 1,
+       "phase": 0.2
+      }
+     ]
+    ],
+    "PRI.body.tail-base": [
+     [],
+     [],
+     [
+      {
+       "amp": 5,
+       "harmonic": 2,
+       "phase": 0
+      }
+     ]
+    ]
+   },
+   "root_motion": "in-place",
+   "events": {},
+   "root_osc": [
+    [],
+    [],
+    [
+     {
+      "amp": 0.004,
+      "harmonic": 3,
+      "phase": 0
+     }
+    ]
+   ]
+  },
+  {
+   "id": "equine.idle_loop.m",
+   "purpose": "Mounted idle (steadier head)",
+   "type": "keyed",
+   "loop": true,
+   "frames": 120,
+   "keys": [
+    {
+     "frame": 1
+    },
+    {
+     "frame": 121
+    }
+   ],
+   "foot_modes": {},
+   "bone_osc": {
+    "PRI.body.neck": [
+     [
+      {
+       "amp": 1,
+       "harmonic": 1,
+       "phase": 0
+      }
+     ],
+     [],
+     []
+    ],
+    "PRI.body.head": [
+     [],
+     [],
+     [
+      {
+       "amp": 1.5,
+       "harmonic": 1,
+       "phase": 0.2
+      }
+     ]
+    ],
+    "PRI.body.tail-base": [
+     [],
+     [],
+     [
+      {
+       "amp": 5,
+       "harmonic": 2,
+       "phase": 0
+      }
+     ]
+    ]
+   },
+   "root_motion": "in-place",
+   "events": {},
+   "root_osc": [
+    [],
+    [],
+    [
+     {
+      "amp": 0.004,
+      "harmonic": 3,
+      "phase": 0
+     }
+    ]
+   ]
+  },
+  {
+   "id": "equine.combat_idle_loop",
+   "purpose": "Engaged stance with paw",
+   "type": "keyed",
+   "loop": true,
+   "frames": 60,
+   "keys": [
+    {
+     "frame": 1,
+     "feet": {
+      "fore.L": [
+       0,
+       0,
+       0
+      ]
+     },
+     "root_m": [
+      0,
+      0,
+      -0.03
+     ],
+     "bones": {
+      "PRI.body.neck": [
+       -10,
+       0,
+       0
+      ],
+      "PRI.body.head": [
+       -6,
+       0,
+       0
+      ]
+     }
+    },
+    {
+     "frame": 20,
+     "feet": {
+      "fore.L": [
+       0,
+       0,
+       0
+      ]
+     }
+    },
+    {
+     "frame": 28,
+     "feet": {
+      "fore.L": [
+       0,
+       -0.08,
+       0.14
+      ]
+     }
+    },
+    {
+     "frame": 36,
+     "feet": {
+      "fore.L": [
+       0,
+       0,
+       0
+      ]
+     }
+    },
+    {
+     "frame": 61,
+     "feet": {
+      "fore.L": [
+       0,
+       0,
+       0
+      ]
+     },
+     "root_m": [
+      0,
+      0,
+      -0.03
+     ],
+     "bones": {
+      "PRI.body.neck": [
+       -10,
+       0,
+       0
+      ],
+      "PRI.body.head": [
+       -6,
+       0,
+       0
+      ]
+     }
+    }
+   ],
+   "foot_modes": {
+    "fore.L": "free"
+   },
+   "bone_osc": {
+    "PRI.body.neck": [
+     [],
+     [],
+     [
+      {
+       "amp": 4,
+       "harmonic": 1,
+       "phase": 0
+      }
+     ]
+    ],
+    "PRI.body.pelvis": [
+     [],
+     [
+      {
+       "amp": 1.5,
+       "harmonic": 1,
+       "phase": 0
+      }
+     ],
+     []
+    ],
+    "PRI.body.tail-base": [
+     [],
+     [],
+     [
+      {
+       "amp": 8,
+       "harmonic": 2,
+       "phase": 0
+      }
+     ]
+    ]
+   },
+   "root_motion": "in-place",
+   "events": {},
+   "root_osc": [
+    [],
+    [],
+    [
+     {
+      "amp": 0.006,
+      "harmonic": 2,
+      "phase": 0
+     }
+    ]
+   ]
+  },
+  {
+   "id": "equine.combat_idle_loop.m",
+   "purpose": "Engaged ridden stance",
+   "type": "keyed",
+   "loop": true,
+   "frames": 60,
+   "keys": [
+    {
+     "frame": 1,
+     "root_m": [
+      0,
+      0,
+      -0.03
+     ],
+     "bones": {
+      "PRI.body.neck": [
+       -10,
+       0,
+       0
+      ],
+      "PRI.body.head": [
+       -6,
+       0,
+       0
+      ]
+     }
+    },
+    {
+     "frame": 61,
+     "root_m": [
+      0,
+      0,
+      -0.03
+     ],
+     "bones": {
+      "PRI.body.neck": [
+       -10,
+       0,
+       0
+      ],
+      "PRI.body.head": [
+       -6,
+       0,
+       0
+      ]
+     }
+    }
+   ],
+   "foot_modes": {},
+   "bone_osc": {
+    "PRI.body.neck": [
+     [],
+     [],
+     [
+      {
+       "amp": 3,
+       "harmonic": 1,
+       "phase": 0
+      }
+     ]
+    ],
+    "PRI.body.pelvis": [
+     [],
+     [
+      {
+       "amp": 1,
+       "harmonic": 1,
+       "phase": 0
+      }
+     ],
+     []
+    ],
+    "PRI.body.tail-base": [
+     [],
+     [],
+     [
+      {
+       "amp": 8,
+       "harmonic": 2,
+       "phase": 0
+      }
+     ]
+    ]
+   },
+   "root_motion": "in-place",
+   "events": {},
+   "root_osc": [
+    [],
+    [],
+    [
+     {
+      "amp": 0.006,
+      "harmonic": 2,
+      "phase": 0
+     }
+    ]
+   ]
+  },
+  {
+   "id": "voidreign.atk.basic",
+   "purpose": "Horn thrust and fore-hoof strike",
+   "type": "keyed",
+   "loop": false,
+   "frames": 36,
+   "keys": [
+    {
+     "frame": 1,
+     "feet": {
+      "fore.L": [
+       0,
+       0,
+       0
+      ],
+      "fore.R": [
+       0,
+       0,
+       0
+      ]
+     }
+    },
+    {
+     "frame": 10,
+     "bones": {
+      "PRI.body.pelvis": [
+       8,
+       0,
+       0
+      ],
+      "PRI.body.neck": [
+       12,
+       0,
+       0
+      ],
+      "PRI.body.head": [
+       10,
+       0,
+       0
+      ]
+     },
+     "feet": {
+      "fore.L": [
+       0,
+       0.05,
+       0.18
+      ],
+      "fore.R": [
+       0,
+       0,
+       0.1
+      ]
+     }
+    },
+    {
+     "frame": 18,
+     "root_m": [
+      0,
+      -0.12,
+      0
+     ],
+     "bones": {
+      "PRI.body.pelvis": [
+       -3,
+       0,
+       0
+      ],
+      "PRI.body.neck": [
+       -22,
+       0,
+       0
+      ],
+      "PRI.body.head": [
+       -12,
+       0,
+       0
+      ]
+     },
+     "feet": {
+      "fore.L": [
+       0,
+       -0.15,
+       0.1
+      ],
+      "fore.R": [
+       0,
+       -0.05,
+       0.08
+      ]
+     }
+    },
+    {
+     "frame": 26,
+     "root_m": [
+      0,
+      -0.05,
+      0
+     ],
+     "bones": {
+      "PRI.body.neck": [
+       -5,
+       0,
+       0
+      ]
+     },
+     "feet": {
+      "fore.L": [
+       0,
+       -0.05,
+       0.02
+      ],
+      "fore.R": [
+       0,
+       0,
+       0.01
+      ]
+     }
+    },
+    {
+     "frame": 36,
+     "root_m": [
+      0,
+      0,
+      0
+     ],
+     "bones": {},
+     "feet": {
+      "fore.L": [
+       0,
+       0,
+       0
+      ],
+      "fore.R": [
+       0,
+       0,
+       0
+      ]
+     }
+    }
+   ],
+   "foot_modes": {
+    "fore.L": "free",
+    "fore.R": "free"
+   },
+   "bone_osc": {},
+   "root_motion": "in-place",
+   "events": {
+    "hit": 18,
+    "cancel_window": [
+     26,
+     36
+    ]
+   }
+  },
+  {
+   "id": "equine.react.hit_front",
+   "purpose": "Hit reaction from the front",
+   "type": "keyed",
+   "loop": false,
+   "frames": 18,
+   "keys": [
+    {
+     "frame": 1
+    },
+    {
+     "frame": 5,
+     "root_m": [
+      0,
+      0.06,
+      0
+     ],
+     "bones": {
+      "PRI.body.pelvis": [
+       4,
+       0,
+       0
+      ],
+      "PRI.body.neck": [
+       14,
+       0,
+       3
+      ],
+      "PRI.body.head": [
+       8,
+       0,
+       0
+      ]
+     }
+    },
+    {
+     "frame": 10,
+     "root_m": [
+      0,
+      0.03,
+      0
+     ],
+     "bones": {
+      "PRI.body.neck": [
+       6,
+       0,
+       0
+      ]
+     }
+    },
+    {
+     "frame": 18,
+     "root_m": [
+      0,
+      0,
+      0
+     ],
+     "bones": {}
+    }
+   ],
+   "foot_modes": {},
+   "bone_osc": {},
+   "root_motion": "in-place",
+   "events": {}
+  },
+  {
+   "id": "equine.defeat",
+   "purpose": "Collapse to Injured",
+   "type": "keyed",
+   "loop": false,
+   "frames": 50,
+   "keys": [
+    {
+     "frame": 1
+    },
+    {
+     "frame": 15,
+     "root_m": [
+      0,
+      0,
+      -0.15
+     ],
+     "bones": {
+      "PRI.body.pelvis": [
+       -4,
+       6,
+       0
+      ],
+      "PRI.body.neck": [
+       -15,
+       0,
+       0
+      ]
+     }
+    },
+    {
+     "frame": 32,
+     "root_m": [
+      0.05,
+      0,
+      -0.55
+     ],
+     "bones": {
+      "PRI.body.pelvis": [
+       -5,
+       16,
+       0
+      ],
+      "PRI.body.neck": [
+       -25,
+       0,
+       10
+      ],
+      "PRI.body.head": [
+       -10,
+       0,
+       0
+      ]
+     }
+    },
+    {
+     "frame": 50,
+     "root_m": [
+      0.1,
+      0,
+      -0.78
+     ],
+     "bones": {
+      "PRI.body.pelvis": [
+       -6,
+       22,
+       0
+      ],
+      "PRI.body.neck": [
+       -30,
+       -10,
+       15
+      ],
+      "PRI.body.head": [
+       -15,
+       0,
+       0
+      ]
+     }
+    }
+   ],
+   "foot_modes": {},
+   "bone_osc": {},
+   "root_motion": "in-place",
+   "events": {}
+  },
+  {
+   "id": "equine.defeat_hold_loop",
+   "purpose": "Injured, down and breathing",
+   "type": "keyed",
+   "loop": true,
+   "frames": 60,
+   "keys": [
+    {
+     "frame": 1,
+     "root_m": [
+      0.1,
+      0,
+      -0.78
+     ],
+     "bones": {
+      "PRI.body.pelvis": [
+       -6,
+       22,
+       0
+      ],
+      "PRI.body.neck": [
+       -30,
+       -10,
+       15
+      ],
+      "PRI.body.head": [
+       -15,
+       0,
+       0
+      ]
+     }
+    },
+    {
+     "frame": 61,
+     "root_m": [
+      0.1,
+      0,
+      -0.78
+     ],
+     "bones": {
+      "PRI.body.pelvis": [
+       -6,
+       22,
+       0
+      ],
+      "PRI.body.neck": [
+       -30,
+       -10,
+       15
+      ],
+      "PRI.body.head": [
+       -15,
+       0,
+       0
+      ]
+     }
+    }
+   ],
+   "foot_modes": {},
+   "bone_osc": {
+    "PRI.body.neck": [
+     [
+      {
+       "amp": 2,
+       "harmonic": 1,
+       "phase": 0
+      }
+     ],
+     [],
+     []
+    ]
+   },
+   "root_motion": "in-place",
+   "events": {},
+   "root_osc": [
+    [],
+    [],
+    [
+     {
+      "amp": 0.006,
+      "harmonic": 2,
+      "phase": 0
+     }
+    ]
+   ]
+  },
+  {
+   "id": "voidreign.wild.exhausted_loop",
+   "purpose": "Weakened capture window",
+   "type": "keyed",
+   "loop": true,
+   "frames": 90,
+   "keys": [
+    {
+     "frame": 1,
+     "root_m": [
+      0,
+      0,
+      -0.06
+     ],
+     "bones": {
+      "PRI.body.pelvis": [
+       -2,
+       0,
+       0
+      ],
+      "PRI.body.neck": [
+       -20,
+       0,
+       0
+      ],
+      "PRI.body.head": [
+       -10,
+       0,
+       0
+      ]
+     }
+    },
+    {
+     "frame": 91,
+     "root_m": [
+      0,
+      0,
+      -0.06
+     ],
+     "bones": {
+      "PRI.body.pelvis": [
+       -2,
+       0,
+       0
+      ],
+      "PRI.body.neck": [
+       -20,
+       0,
+       0
+      ],
+      "PRI.body.head": [
+       -10,
+       0,
+       0
+      ]
+     }
+    }
+   ],
+   "foot_modes": {},
+   "bone_osc": {
+    "PRI.body.neck": [
+     [
+      {
+       "amp": 2,
+       "harmonic": 3,
+       "phase": 0
+      }
+     ],
+     [],
+     []
+    ]
+   },
+   "root_motion": "in-place",
+   "events": {},
+   "root_osc": [
+    [],
+    [],
+    [
+     {
+      "amp": 0.012,
+      "harmonic": 3,
+      "phase": 0
+     }
+    ]
+   ]
+  },
+  {
+   "id": "capture.bind_loop",
+   "purpose": "Struggling during capture channel",
+   "type": "keyed",
+   "loop": true,
+   "frames": 60,
+   "keys": [
+    {
+     "frame": 1,
+     "feet": {
+      "hind.R": [
+       0,
+       0,
+       0
+      ]
+     }
+    },
+    {
+     "frame": 25,
+     "feet": {
+      "hind.R": [
+       0,
+       0,
+       0
+      ]
+     }
+    },
+    {
+     "frame": 30,
+     "feet": {
+      "hind.R": [
+       0,
+       0,
+       0.1
+      ]
+     }
+    },
+    {
+     "frame": 35,
+     "feet": {
+      "hind.R": [
+       0,
+       0,
+       0
+      ]
+     }
+    },
+    {
+     "frame": 61,
+     "feet": {
+      "hind.R": [
+       0,
+       0,
+       0
+      ]
+     }
+    }
+   ],
+   "foot_modes": {
+    "hind.R": "free"
+   },
+   "bone_osc": {
+    "PRI.body.neck": [
+     [],
+     [],
+     [
+      {
+       "amp": 15,
+       "harmonic": 1,
+       "phase": 0
+      }
+     ]
+    ],
+    "PRI.body.head": [
+     [
+      {
+       "amp": 8,
+       "harmonic": 2,
+       "phase": 0
+      }
+     ],
+     [],
+     []
+    ],
+    "PRI.body.pelvis": [
+     [],
+     [
+      {
+       "amp": 3,
+       "harmonic": 1,
+       "phase": 0
+      }
+     ],
+     []
+    ]
+   },
+   "root_motion": "in-place",
+   "events": {},
+   "root_osc": [
+    [
+     {
+      "amp": 0.03,
+      "harmonic": 1,
+      "phase": 0
+     }
+    ],
+    [],
+    []
+   ]
+  },
+  {
+   "id": "capture.secured",
+   "purpose": "Calms and bows when captured",
+   "type": "keyed",
+   "loop": false,
+   "frames": 45,
+   "keys": [
+    {
+     "frame": 1,
+     "bones": {
+      "PRI.body.neck": [
+       0,
+       0,
+       10
+      ]
+     }
+    },
+    {
+     "frame": 25,
+     "bones": {
+      "PRI.body.neck": [
+       -18,
+       0,
+       0
+      ],
+      "PRI.body.head": [
+       -8,
+       0,
+       0
+      ]
+     }
+    },
+    {
+     "frame": 45,
+     "bones": {
+      "PRI.body.neck": [
+       -8,
+       0,
+       0
+      ],
+      "PRI.body.head": [
+       0,
+       0,
+       0
+      ]
+     }
+    }
+   ],
+   "foot_modes": {},
+   "bone_osc": {},
+   "root_motion": "in-place",
+   "events": {}
+  },
+  {
+   "id": "capture.break",
+   "purpose": "Rears and shakes free",
+   "type": "keyed",
+   "loop": false,
+   "frames": 40,
+   "keys": [
+    {
+     "frame": 1,
+     "feet": {
+      "fore.L": [
+       0,
+       0,
+       0
+      ],
+      "fore.R": [
+       0,
+       0,
+       0
+      ]
+     }
+    },
+    {
+     "frame": 12,
+     "bones": {
+      "PRI.body.pelvis": [
+       18,
+       0,
+       0
+      ],
+      "PRI.body.neck": [
+       15,
+       0,
+       0
+      ]
+     },
+     "feet": {
+      "fore.L": [
+       0,
+       0.1,
+       0.25
+      ],
+      "fore.R": [
+       0,
+       0.1,
+       0.25
+      ]
+     }
+    },
+    {
+     "frame": 22,
+     "bones": {
+      "PRI.body.pelvis": [
+       16,
+       0,
+       0
+      ],
+      "PRI.body.neck": [
+       5,
+       0,
+       -20
+      ]
+     },
+     "feet": {
+      "fore.L": [
+       0,
+       0.1,
+       0.25
+      ],
+      "fore.R": [
+       0,
+       0.1,
+       0.25
+      ]
+     }
+    },
+    {
+     "frame": 32,
+     "bones": {
+      "PRI.body.pelvis": [
+       0,
+       0,
+       0
+      ],
+      "PRI.body.neck": [
+       -5,
+       0,
+       0
+      ]
+     },
+     "feet": {
+      "fore.L": [
+       0,
+       0,
+       0
+      ],
+      "fore.R": [
+       0,
+       0,
+       0
+      ]
+     }
+    },
+    {
+     "frame": 40,
+     "bones": {},
+     "feet": {
+      "fore.L": [
+       0,
+       0,
+       0
+      ],
+      "fore.R": [
+       0,
+       0,
+       0
+      ]
+     }
+    }
+   ],
+   "foot_modes": {
+    "fore.L": "free",
+    "fore.R": "free"
+   },
+   "bone_osc": {},
+   "root_motion": "in-place",
+   "events": {}
+  },
+  {
+   "id": "train.saddle",
+   "purpose": "Saddle lesson shake and settle",
+   "type": "keyed",
+   "loop": false,
+   "frames": 60,
+   "keys": [
+    {
+     "frame": 1,
+     "feet": {
+      "hind.L": [
+       0,
+       0,
+       0
+      ]
+     }
+    },
+    {
+     "frame": 10,
+     "bones": {
+      "PRI.body.pelvis": [
+       0,
+       4,
+       0
+      ],
+      "PRI.body.tail-base": [
+       0,
+       0,
+       15
+      ]
+     }
+    },
+    {
+     "frame": 20,
+     "bones": {
+      "PRI.body.pelvis": [
+       0,
+       -4,
+       0
+      ],
+      "PRI.body.tail-base": [
+       0,
+       0,
+       -15
+      ],
+      "PRI.body.neck": [
+       0,
+       0,
+       8
+      ]
+     }
+    },
+    {
+     "frame": 30,
+     "bones": {
+      "PRI.body.pelvis": [
+       0,
+       3,
+       0
+      ],
+      "PRI.body.tail-base": [
+       0,
+       0,
+       10
+      ]
+     }
+    },
+    {
+     "frame": 40,
+     "bones": {},
+     "feet": {
+      "hind.L": [
+       0,
+       0,
+       0
+      ]
+     }
+    },
+    {
+     "frame": 44,
+     "feet": {
+      "hind.L": [
+       0,
+       0,
+       0.08
+      ]
+     }
+    },
+    {
+     "frame": 48,
+     "feet": {
+      "hind.L": [
+       0,
+       0,
+       0
+      ]
+     }
+    },
+    {
+     "frame": 60,
+     "bones": {},
+     "feet": {
+      "hind.L": [
+       0,
+       0,
+       0
+      ]
+     }
+    }
+   ],
+   "foot_modes": {
+    "hind.L": "free"
+   },
+   "bone_osc": {},
+   "root_motion": "in-place",
+   "events": {}
+  },
+  {
+   "id": "deploy.arrive",
+   "purpose": "Rises into stance when deployed",
+   "type": "keyed",
+   "loop": false,
+   "frames": 45,
+   "keys": [
+    {
+     "frame": 1,
+     "root_m": [
+      0,
+      0,
+      -0.12
+     ],
+     "bones": {
+      "PRI.body.pelvis": [
+       -3,
+       0,
+       0
+      ],
+      "PRI.body.neck": [
+       -25,
+       0,
+       0
+      ],
+      "PRI.body.head": [
+       -10,
+       0,
+       0
+      ]
+     }
+    },
+    {
+     "frame": 30,
+     "root_m": [
+      0,
+      0,
+      0
+     ],
+     "bones": {
+      "PRI.body.neck": [
+       5,
+       0,
+       0
+      ],
+      "PRI.body.head": [
+       5,
+       0,
+       0
+      ]
+     }
+    },
+    {
+     "frame": 45,
+     "bones": {}
+    }
+   ],
+   "foot_modes": {},
+   "bone_osc": {},
+   "root_motion": "in-place",
+   "events": {}
+  },
+  {
+   "id": "store.depart",
+   "purpose": "Bows and sinks when stored",
+   "type": "keyed",
+   "loop": false,
+   "frames": 45,
+   "keys": [
+    {
+     "frame": 1
+    },
+    {
+     "frame": 20,
+     "root_m": [
+      0,
+      0,
+      -0.1
+     ],
+     "bones": {
+      "PRI.body.neck": [
+       -25,
+       0,
+       0
+      ]
+     }
+    },
+    {
+     "frame": 45,
+     "root_m": [
+      0,
+      0,
+      -0.18
+     ],
+     "bones": {
+      "PRI.body.neck": [
+       -30,
+       0,
+       0
+      ],
+      "PRI.body.head": [
+       -12,
+       0,
+       0
+      ]
+     }
+    }
+   ],
+   "foot_modes": {},
+   "bone_osc": {},
+   "root_motion": "in-place",
+   "events": {}
+  },
+  {
+   "id": "voidreign.rear_throw",
+   "purpose": "Forced-dismount rear",
+   "type": "keyed",
+   "loop": false,
+   "frames": 50,
+   "keys": [
+    {
+     "frame": 1,
+     "feet": {
+      "fore.L": [
+       0,
+       0,
+       0
+      ],
+      "fore.R": [
+       0,
+       0,
+       0
+      ]
+     }
+    },
+    {
+     "frame": 14,
+     "bones": {
+      "PRI.body.pelvis": [
+       32,
+       0,
+       0
+      ],
+      "PRI.body.neck": [
+       20,
+       0,
+       0
+      ],
+      "PRI.body.head": [
+       10,
+       0,
+       0
+      ]
+     },
+     "feet": {
+      "fore.L": [
+       0,
+       0.15,
+       0.35
+      ],
+      "fore.R": [
+       0,
+       0.15,
+       0.35
+      ]
+     }
+    },
+    {
+     "frame": 22,
+     "bones": {
+      "PRI.body.pelvis": [
+       34,
+       4,
+       0
+      ],
+      "PRI.body.neck": [
+       24,
+       0,
+       -10
+      ]
+     },
+     "feet": {
+      "fore.L": [
+       0,
+       0.15,
+       0.35
+      ],
+      "fore.R": [
+       0,
+       0.15,
+       0.35
+      ]
+     }
+    },
+    {
+     "frame": 34,
+     "bones": {
+      "PRI.body.pelvis": [
+       0,
+       0,
+       0
+      ],
+      "PRI.body.neck": [
+       -10,
+       0,
+       0
+      ]
+     },
+     "feet": {
+      "fore.L": [
+       0,
+       -0.1,
+       0
+      ],
+      "fore.R": [
+       0,
+       -0.1,
+       0
+      ]
+     }
+    },
+    {
+     "frame": 50,
+     "bones": {},
+     "feet": {
+      "fore.L": [
+       0,
+       0,
+       0
+      ],
+      "fore.R": [
+       0,
+       0,
+       0
+      ]
+     }
+    }
+   ],
+   "foot_modes": {
+    "fore.L": "free",
+    "fore.R": "free"
+   },
+   "bone_osc": {},
+   "root_motion": "in-place",
+   "events": {
+    "rider_release": 20
+   }
+  },
+  {
+   "id": "voidreign.sig_a.rift_windup",
+   "purpose": "Rift Charge telegraph rear",
+   "type": "keyed",
+   "loop": false,
+   "frames": 30,
+   "keys": [
+    {
+     "frame": 1,
+     "feet": {
+      "fore.L": [
+       0,
+       0,
+       0
+      ],
+      "fore.R": [
+       0,
+       0,
+       0
+      ]
+     }
+    },
+    {
+     "frame": 12,
+     "bones": {
+      "PRI.body.pelvis": [
+       24,
+       0,
+       0
+      ],
+      "PRI.body.neck": [
+       18,
+       0,
+       0
+      ],
+      "PRI.body.head": [
+       -5,
+       0,
+       0
+      ]
+     },
+     "feet": {
+      "fore.L": [
+       0,
+       0.1,
+       0.3
+      ],
+      "fore.R": [
+       0,
+       0.1,
+       0.3
+      ]
+     }
+    },
+    {
+     "frame": 20,
+     "bones": {
+      "PRI.body.pelvis": [
+       20,
+       0,
+       0
+      ],
+      "PRI.body.neck": [
+       16,
+       0,
+       0
+      ],
+      "PRI.body.head": [
+       -5,
+       0,
+       0
+      ]
+     },
+     "feet": {
+      "fore.L": [
+       0,
+       0.1,
+       0.28
+      ],
+      "fore.R": [
+       0,
+       0.1,
+       0.28
+      ]
+     }
+    },
+    {
+     "frame": 30,
+     "bones": {
+      "PRI.body.pelvis": [
+       0,
+       0,
+       0
+      ],
+      "PRI.body.neck": [
+       -12,
+       0,
+       0
+      ],
+      "PRI.body.head": [
+       -6,
+       0,
+       0
+      ]
+     },
+     "feet": {
+      "fore.L": [
+       0,
+       0,
+       0
+      ],
+      "fore.R": [
+       0,
+       0,
+       0
+      ]
+     }
+    }
+   ],
+   "foot_modes": {
+    "fore.L": "free",
+    "fore.R": "free"
+   },
+   "bone_osc": {},
+   "root_motion": "in-place",
+   "events": {
+    "telegraph_start": 1,
+    "release": 30
+   }
+  },
+  {
+   "id": "voidreign.sig_a.rift_impact",
+   "purpose": "Rift Charge impact skid",
+   "type": "keyed",
+   "loop": false,
+   "frames": 24,
+   "keys": [
+    {
+     "frame": 1,
+     "root_m": [
+      0,
+      0,
+      0
+     ],
+     "bones": {
+      "PRI.body.neck": [
+       -14,
+       0,
+       0
+      ],
+      "PRI.body.head": [
+       -4,
+       0,
+       0
+      ]
+     }
+    },
+    {
+     "frame": 8,
+     "root_m": [
+      0,
+      -0.4,
+      0
+     ],
+     "bones": {
+      "PRI.body.pelvis": [
+       -4,
+       0,
+       0
+      ],
+      "PRI.body.neck": [
+       -22,
+       0,
+       0
+      ],
+      "PRI.body.head": [
+       -8,
+       0,
+       0
+      ]
+     }
+    },
+    {
+     "frame": 16,
+     "root_m": [
+      0,
+      -0.55,
+      0
+     ],
+     "bones": {
+      "PRI.body.pelvis": [
+       5,
+       0,
+       0
+      ],
+      "PRI.body.neck": [
+       6,
+       0,
+       0
+      ]
+     }
+    },
+    {
+     "frame": 24,
+     "root_m": [
+      0,
+      -0.6,
+      0
+     ],
+     "bones": {}
+    }
+   ],
+   "foot_modes": {
+    "hind.L": "skid",
+    "fore.L": "skid",
+    "hind.R": "skid",
+    "fore.R": "skid"
+   },
+   "bone_osc": {},
+   "root_motion": "root-extracted",
+   "events": {
+    "hit": 8
+   }
+  },
+  {
+   "id": "voidreign.sig_a.recall_enter",
+   "purpose": "Plunges into the rift",
+   "type": "keyed",
+   "loop": false,
+   "frames": 24,
+   "keys": [
+    {
+     "frame": 1
+    },
+    {
+     "frame": 14,
+     "root_m": [
+      0,
+      0,
+      -0.2
+     ],
+     "bones": {
+      "PRI.body.pelvis": [
+       -3,
+       0,
+       0
+      ],
+      "PRI.body.neck": [
+       -20,
+       0,
+       0
+      ]
+     }
+    },
+    {
+     "frame": 24,
+     "root_m": [
+      0,
+      0,
+      -0.28
+     ],
+     "bones": {
+      "PRI.body.neck": [
+       -28,
+       0,
+       0
+      ],
+      "PRI.body.head": [
+       -10,
+       0,
+       0
+      ]
+     }
+    }
+   ],
+   "foot_modes": {},
+   "bone_osc": {},
+   "root_motion": "in-place",
+   "events": {
+    "vanish": 22
+   }
+  },
+  {
+   "id": "voidreign.sig_a.recall_exit",
+   "purpose": "Emerges at the anchor",
+   "type": "keyed",
+   "loop": false,
+   "frames": 30,
+   "keys": [
+    {
+     "frame": 1,
+     "root_m": [
+      0,
+      0,
+      -0.28
+     ],
+     "bones": {
+      "PRI.body.neck": [
+       -28,
+       0,
+       0
+      ],
+      "PRI.body.head": [
+       -10,
+       0,
+       0
+      ]
+     }
+    },
+    {
+     "frame": 16,
+     "root_m": [
+      0,
+      0,
+      0.02
+     ],
+     "bones": {
+      "PRI.body.neck": [
+       15,
+       0,
+       0
+      ],
+      "PRI.body.head": [
+       10,
+       0,
+       0
+      ]
+     }
+    },
+    {
+     "frame": 30,
+     "root_m": [
+      0,
+      0,
+      0
+     ],
+     "bones": {}
+    }
+   ],
+   "foot_modes": {},
+   "bone_osc": {},
+   "root_motion": "in-place",
+   "events": {
+    "appear": 2
+   }
+  }
+ ],
+ "input_sha256": {
+  "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/SmoothedLegSkin-v002/Mount-ProxyHeatSkin.blend": "f110d8920289603013eac7789f3bcf92805f94dfa9aa5c5ff4dcd9582eb24413",
+  "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HygieneSemanticSelection-v001/selections.npz": "0b6a19f76a2cba73a42e293c29365360b53ba93be101cf8f4ca556e7a5989cc0",
+  "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimarySoleProposals-v001/sole-patches.npz": "5b055301ae1b1349d3f85fb23e2b93985fd93f2a33e0fc1a1e4a05dbaf98614b"
+ }
+}

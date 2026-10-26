@@ -1,0 +1,8 @@
+{
+  "status": "verified",
+  "manifest": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\RigidSkinMaterialReproductionKit-v001\\manifest.json",
+  "files": 52,
+  "copied_bytes": 5520635,
+  "self_contained": false,
+  "note": "Verified copied snapshots and external source/selection references using Freeze-AssetEvidence.py --verify. Final job/checkpoint bookkeeping follows frozen snapshot intentionally."
+}

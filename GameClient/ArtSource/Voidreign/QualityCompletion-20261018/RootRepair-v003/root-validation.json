@@ -1,0 +1,71 @@
+{
+  "status": "passed-rest-repair-checks-only",
+  "cpu_only": true,
+  "source_sha256": "d7f145aea17d7b2707363059e8276a5720dbdebfa0d8491f1c987dd53d2db180",
+  "candidate_sha256": "9b3eab121765220b031e0c1394058c502009b90196013f0e10ee61492ba12a66",
+  "tool_sha256": "fca26c8cb5ea71ba3e38d07c003bdb72f37d11a55f50d10834a895d053331a22",
+  "original_vertices_and_weights_unchanged": true,
+  "retained_faces_uv_materials_unchanged": true,
+  "changed_source_cap_faces": [
+    44221,
+    46742,
+    223443,
+    223447,
+    242137,
+    262316,
+    291362,
+    291496,
+    295346,
+    295909
+  ],
+  "new_vertices": 297,
+  "new_triangles": 624,
+  "minimum_new_triangle_area_local_units": 1.037222659761028e-06,
+  "minimum_new_uv_triangle_area": 3.6872259379094885e-07,
+  "new_uv_overlap": "Intentional reuse of child-cap hair patch for root-continuation triangles",
+  "sample_frames": [
+    1,
+    60,
+    120,
+    180,
+    240,
+    300,
+    330
+  ],
+  "max_retained_deformed_vertex_error_m": 0.0,
+  "component_count": 219,
+  "repaired_clumps": [
+    {
+      "source_component_id": "39b034dd77a9:C0029",
+      "repaired_component": 0,
+      "joined": true
+    },
+    {
+      "source_component_id": "39b034dd77a9:C0002",
+      "repaired_component": 0,
+      "joined": true
+    },
+    {
+      "source_component_id": "39b034dd77a9:C0009",
+      "repaired_component": 0,
+      "joined": true
+    },
+    {
+      "source_component_id": "39b034dd77a9:C0032",
+      "repaired_component": 0,
+      "joined": true
+    },
+    {
+      "source_component_id": "39b034dd77a9:C0023",
+      "repaired_component": 0,
+      "joined": true
+    }
+  ],
+  "remaining_gates": [
+    "Root shading/silhouette and intersections",
+    "Complete rebuilt hair rig",
+    "Attachment relation review",
+    "Deformed-surface collision",
+    "Fresh final exports"
+  ]
+}

@@ -1,0 +1,1 @@
+{"status":"failed-before-saving-source","reason":"NumPy scalar multiplied mathutils.Vector produced ndarray","log":"Artifacts/Art/Voidreign/quality-completion-20261018/root-repair-v001.log","repair":"Cast computed radius to native float; all author geometry settings unchanged"}

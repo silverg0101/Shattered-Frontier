@@ -1,0 +1,201 @@
+{
+  "batch": "construction-material-quality-revision-20261019-c",
+  "status": "failed",
+  "scope_revision": "User requested continuing construction-model issue fixes on 2026-10-19; v006/v007/v008 findings retained in provenance.",
+  "batch_size": 3,
+  "acceptance_claim": false,
+  "engine_ready": false,
+  "blender_path": "C:\\Program Files\\Blender Foundation\\Blender 5.1\\blender.exe",
+  "blender_version": "5.1.1",
+  "render_engine": "Cycles CPU",
+  "texture_size_px": [
+    1024,
+    1024
+  ],
+  "maps": [
+    "basecolor",
+    "roughness",
+    "normal",
+    "height"
+  ],
+  "assets": [
+    {
+      "asset_id": "BLD-RT-CellFull-01",
+      "geometry_key": "cell-full",
+      "skin": "rough-timber",
+      "source_manifest": "GameClient/ArtSource/BLD-RT-CellFull-01/References/v001/manifest.json",
+      "source_image": "GameClient/ArtSource/BLD-RT-CellFull-01/References/v001/asset-view.png",
+      "reference_role": "appearance guidance only",
+      "output": "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v009/BLD-RT-CellFull-01",
+      "files": {
+        "blender-build.log": {
+          "sha256": "61f2dc711380af55bc454d99ed4e8696ab8e74022ab9b365ddfb8e08014733e1",
+          "bytes": 569
+        },
+        "build_material.py": {
+          "sha256": "db372e32b8c94e941fbb8c90e37b8203e5cdb2edd765acd7db8182e73d8e1378",
+          "bytes": 4577
+        },
+        "checks/attempt-3-failure.json": {
+          "sha256": "0945d32445231c2e5bd4bf2faf08b73a76db45aa5021500dd214d65db35c342a",
+          "bytes": 569
+        },
+        "texture-source.json": {
+          "sha256": "58a73ccd0a21928bfc22e7c838272c47057c52a18959920c3476d2ace982e29b",
+          "bytes": 876
+        },
+        "Textures/basecolor.png": {
+          "sha256": "9938d48ad98598255af5743d425941609f03d8c0e5f08e21b739977ebec33e35",
+          "bytes": 358643
+        },
+        "Textures/height.png": {
+          "sha256": "1af3f0ca616edaf114ced7a0842ee8bf2e0cb51f6221f53a6ed8ebb8e1ecfedc",
+          "bytes": 1061270
+        },
+        "Textures/normal.png": {
+          "sha256": "42f16f0c40bfdd3d0d52c4a3fff036628f5a9c3ffb2217464926bf6ae8230e9a",
+          "bytes": 254415
+        },
+        "Textures/roughness.png": {
+          "sha256": "2a9a235318c17c049df7aeb3101374233fb70de0562b3b49ba36730fea87edc0",
+          "bytes": 264995
+        }
+      },
+      "status": "failed-attempt-3; needs-review; acceptance_claim=false",
+      "checks": {
+        "map_fields_written": true,
+        "blender_script_compiled": false,
+        "source_blend_saved": false,
+        "cpu_render_saved": false,
+        "glb_exported": false,
+        "fbx_exported": false,
+        "return_code_only_was_insufficient": true
+      },
+      "open_gates": [
+        "materials-stage attempt budget exhausted",
+        "material/reference defects listed in attempt-history.json",
+        "no valid source/render/export from attempt 3",
+        "GEO-01/GEO-02 and Unreal 5.8 gates open"
+      ]
+    },
+    {
+      "asset_id": "BLD-SM-CellFull-01",
+      "geometry_key": "cell-full",
+      "skin": "stone-masonry",
+      "source_manifest": "GameClient/ArtSource/BLD-SM-CellFull-01/References/v001/manifest.json",
+      "source_image": "GameClient/ArtSource/BLD-SM-CellFull-01/References/v001/asset-view.png",
+      "reference_role": "appearance guidance only",
+      "output": "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v009/BLD-SM-CellFull-01",
+      "files": {
+        "blender-build.log": {
+          "sha256": "17e631f90a2c0b6df8f3e2914af44d0879cbb11564c325b18180534ce3db0926",
+          "bytes": 569
+        },
+        "build_material.py": {
+          "sha256": "d7607c1b02023fa0829221ad00e41703e4d639c962f1435853f68c7ca6f7b9df",
+          "bytes": 4580
+        },
+        "checks/attempt-3-failure.json": {
+          "sha256": "019345e39156b19c349100d38f5ae081f69dd4546d8996c8bf4ef5aa21d3dba7",
+          "bytes": 569
+        },
+        "texture-source.json": {
+          "sha256": "c01647dff86cce2787774d154036db58d64ac7b6305870b872f28fc62919c250",
+          "bytes": 877
+        },
+        "Textures/basecolor.png": {
+          "sha256": "cb6225b2f7165c6afd319b40c758de8c0301d35c2a7083dd8ac71407aaaeca05",
+          "bytes": 416591
+        },
+        "Textures/height.png": {
+          "sha256": "b1fdd2776ba3335c7c49d5a851333071aa80c2ef22e4b6f43e8b2a2e4a4443ce",
+          "bytes": 1210337
+        },
+        "Textures/normal.png": {
+          "sha256": "1509b0fde3681830fe0a43bcd8ec838ed7c75873e80af6e4fd585b25451eb766",
+          "bytes": 337625
+        },
+        "Textures/roughness.png": {
+          "sha256": "1f191b3d0ceee413869e33c428a43b5498317eb1b49b487061e0a73b16e4481c",
+          "bytes": 301323
+        }
+      },
+      "status": "failed-attempt-3; needs-review; acceptance_claim=false",
+      "checks": {
+        "map_fields_written": true,
+        "blender_script_compiled": false,
+        "source_blend_saved": false,
+        "cpu_render_saved": false,
+        "glb_exported": false,
+        "fbx_exported": false,
+        "return_code_only_was_insufficient": true
+      },
+      "open_gates": [
+        "materials-stage attempt budget exhausted",
+        "material/reference defects listed in attempt-history.json",
+        "no valid source/render/export from attempt 3",
+        "GEO-01/GEO-02 and Unreal 5.8 gates open"
+      ]
+    },
+    {
+      "asset_id": "BLD-WT-CellFull-01",
+      "geometry_key": "cell-full",
+      "skin": "worked-timber",
+      "source_manifest": "GameClient/ArtSource/BLD-WT-CellFull-01/References/v001/manifest.json",
+      "source_image": "GameClient/ArtSource/BLD-WT-CellFull-01/References/v001/asset-view.png",
+      "reference_role": "appearance guidance only",
+      "output": "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v009/BLD-WT-CellFull-01",
+      "files": {
+        "blender-build.log": {
+          "sha256": "943e1d61fd952b04fa5ff1c2cf4f9a4e261bc7d729eb7437c14e4806203432c0",
+          "bytes": 569
+        },
+        "build_material.py": {
+          "sha256": "e8d9332ee432a553a54156eba6276346129c299d4cbfbe474a2db95929c861c2",
+          "bytes": 4580
+        },
+        "checks/attempt-3-failure.json": {
+          "sha256": "cee881db3574d46cb143a375a9150047b5fea4c21aa0ebd247dc5fa828a7a1e4",
+          "bytes": 569
+        },
+        "texture-source.json": {
+          "sha256": "a774d5277b8011a732cc425e8fac1ac333e15d3e20bef31bee7d16b05bd9c3ff",
+          "bytes": 879
+        },
+        "Textures/basecolor.png": {
+          "sha256": "d01a5854675767e4c004f5fd73e04baa80195de24528807623a020a5194acac3",
+          "bytes": 261339
+        },
+        "Textures/height.png": {
+          "sha256": "d76e1922c60cb6ad9a80dc633cd17f68b9ed0ce723ca2d9383af1e5f51ece4f5",
+          "bytes": 673726
+        },
+        "Textures/normal.png": {
+          "sha256": "5d1f10da5376f55c89a30a7c17bfae5c9ed6fe4bc95c591e2f2aeb994c0fe196",
+          "bytes": 27917
+        },
+        "Textures/roughness.png": {
+          "sha256": "8f468ba2fc013ba22807eaf1402a997ec0ee27382a19322894f92ca579c0e2ad",
+          "bytes": 218011
+        }
+      },
+      "status": "failed-attempt-3; needs-review; acceptance_claim=false",
+      "checks": {
+        "map_fields_written": true,
+        "blender_script_compiled": false,
+        "source_blend_saved": false,
+        "cpu_render_saved": false,
+        "glb_exported": false,
+        "fbx_exported": false,
+        "return_code_only_was_insufficient": true
+      },
+      "open_gates": [
+        "materials-stage attempt budget exhausted",
+        "material/reference defects listed in attempt-history.json",
+        "no valid source/render/export from attempt 3",
+        "GEO-01/GEO-02 and Unreal 5.8 gates open"
+      ]
+    }
+  ],
+  "notes": "The first attempt-3 Blender script raised an IndentationError. Blender returned exit code 0 despite the traceback, so the original manifest falsely marked renders/exports complete. Corrected here from saved per-asset logs; only maps, generated script, log, metadata and failure report exist."
+}

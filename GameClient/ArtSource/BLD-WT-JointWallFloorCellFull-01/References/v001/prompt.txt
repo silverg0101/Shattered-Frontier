@@ -1,0 +1,5 @@
+Concept-sheet prompt (exact):
+Worked-timber wall-to-floor interface study: solid plank wall meets a horizontal timber floor at one flush contact edge. Show wall and floor exterior/interior surfaces, top and underside of floor, end grain at edge, isometric plus section detail. No support claim, no extra posts, no text. Preserve source grid and clearances; concept proposal.
+
+Clean asset-view prompt (exact):
+Isolated clean worked-timber wall/floor junction component. One plank wall segment meeting a single plank floor segment flush at a right angle; show interior faces and underside of floor, no room, no extra supports, no overhanging beams, no text. Pale studio background. Preserve visible contact as a proposal, not a structural validation.

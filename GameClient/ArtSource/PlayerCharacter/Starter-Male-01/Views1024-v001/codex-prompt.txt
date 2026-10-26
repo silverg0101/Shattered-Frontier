@@ -1,0 +1,18 @@
+The attached image is the approved FRONT view of a game character (a realistic man frontier adventurer). Using your image generation tool, generate three SEPARATE new images of exactly the same character and save each as a PNG at exactly these paths (relative to the current directory):
+1. GameClient/ArtSource/PlayerCharacter/Starter-Male-01/Views1024-v001/raw/left.png - LEFT SIDE profile view: the character's left side faces the camera; the character faces image-left.
+2. GameClient/ArtSource/PlayerCharacter/Starter-Male-01/Views1024-v001/raw/back.png - BACK view: the character faces directly away from the camera.
+3. GameClient/ArtSource/PlayerCharacter/Starter-Male-01/Views1024-v001/raw/right.png - RIGHT SIDE profile view: the character's right side faces the camera; the character faces image-right.
+Do not regenerate or modify the front image (GameClient/ArtSource/PlayerCharacter/Starter-Male-01/Views1024-v001/raw/front.png). Treat the attached image only as the design reference.
+
+Rules for all three images:
+- Each image is a single 1024x1024 square with one figure. Not a sheet, not a grid, no collage.
+- Exactly the same character as the attached front view: identical face, hair, outfit, materials, colors, wear, proportions, pose and scale, as if a camera orbits a statue. Invent only what is hidden from the front (the back of the garments and hair) in the same style and materials.
+- Full body, centered, filling about 90% of the image height, feet at the same height as in the front image, small margin on all sides, whole body in frame.
+- Pose: the same neutral A-pose as the front image (arms angled slightly away from the body, hands open with fingers slightly apart, legs straight and shoulder-width apart). In the side views keep the arms angled away from the torso so they do not overlap it.
+- Orthographic camera at chest height, no perspective distortion.
+- Flat even neutral studio lighting, no cast shadows, no rim light, no ground shadow, no floor.
+- Background: plain, perfectly flat, uniform light grey (RGB about 190,190,192), no gradient, no vignette. No text, labels or borders.
+
+Design (must match the front image exactly, left/right are the CHARACTER's own sides): short wavy dark-brown hair and short trimmed beard; a dark olive-green wool hood and short shoulder cape with stitched frayed edges and a round stag-head brooch on the character's LEFT shoulder; off-white linen shirt with sleeves rolled to the elbow; a stitched dark olive and brown leather jerkin with two crossing leather straps over the chest and a wide brown belt with a round iron buckle plus a slanting second belt; one leather pouch on each hip (the character's RIGHT pouch larger); frayed tunic tail at the hips; worn brown trousers; fingerless leather bracers with buckled straps on both forearms and hands; knee-high scuffed brown leather boots with folded cuffs. Muted earthy palette, used and dusty, no weapons, no glowing parts.
+
+Do nothing else: do not edit, create or delete any other file. When the three files exist, print their paths and pixel sizes.

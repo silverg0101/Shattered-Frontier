@@ -1,0 +1,757 @@
+{
+  "schema_version": 1,
+  "status": "passed-scoped-idle-needs-review",
+  "frames": 181,
+  "cpu_only": true,
+  "input_sha256": {
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryContinuousInfluences-v001/Mount-StandingSkinRepair.blend": "aef9634f59269f81e43147f07bc786b302da92a600953adbf5388870fe0d72ba",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selections.npz": "0b6a19f76a2cba73a42e293c29365360b53ba93be101cf8f4ca556e7a5989cc0",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimarySoleProposals-v001\\sole-patches.npz": "5b055301ae1b1349d3f85fb23e2b93985fd93f2a33e0fc1a1e4a05dbaf98614b",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryContinuousCacheCheck-v001/standing-cache-report.json": "a7967811606e90afd9b8a7300d72706452627eb82e6ce62d3c22296ae5191f4c"
+  },
+  "candidate_sha256": "59509512631cb3dcff1600fe456afa19138a1bc47c1f342e3313dd2e2b6dceb5",
+  "profile_sha256": "bb4fcdb16685edf3a1d20c9e8aa351e796455589fa14b7c356cbc0269b38d97c",
+  "tool_sha256": "b608175f1f9120fc7bdc9584edfaea93d58228c6f90a23b4492676c1413ff435",
+  "checks": {
+    "contact": true,
+    "slip": true,
+    "seams": true,
+    "bone_lengths": true,
+    "cycle": true
+  },
+  "maximum_contact_error_m": 3.5374134029320103e-05,
+  "maximum_slip_m": 1.490071067146322e-05,
+  "maximum_seam_error_m": 0.0,
+  "maximum_bone_length_relative_change": 8.162397275857103e-07,
+  "cycle_error_m": 0.0,
+  "poses": [
+    {
+      "frame": 1,
+      "full_mount_minimum_height_m": -0.08963401055637954
+    },
+    {
+      "frame": 2,
+      "full_mount_minimum_height_m": -0.08942477493545065
+    },
+    {
+      "frame": 3,
+      "full_mount_minimum_height_m": -0.08921657706093677
+    },
+    {
+      "frame": 4,
+      "full_mount_minimum_height_m": -0.08901032496095107
+    },
+    {
+      "frame": 5,
+      "full_mount_minimum_height_m": -0.08880705638190856
+    },
+    {
+      "frame": 6,
+      "full_mount_minimum_height_m": -0.08860793878852613
+    },
+    {
+      "frame": 7,
+      "full_mount_minimum_height_m": -0.08841375049061506
+    },
+    {
+      "frame": 8,
+      "full_mount_minimum_height_m": -0.08822552923459037
+    },
+    {
+      "frame": 9,
+      "full_mount_minimum_height_m": -0.0880441830485652
+    },
+    {
+      "frame": 10,
+      "full_mount_minimum_height_m": -0.08787061996065271
+    },
+    {
+      "frame": 11,
+      "full_mount_minimum_height_m": -0.08770561828066414
+    },
+    {
+      "frame": 12,
+      "full_mount_minimum_height_m": -0.08754995631841078
+    },
+    {
+      "frame": 13,
+      "full_mount_minimum_height_m": -0.08740454210200577
+    },
+    {
+      "frame": 14,
+      "full_mount_minimum_height_m": -0.08726989450465661
+    },
+    {
+      "frame": 15,
+      "full_mount_minimum_height_m": -0.08714692155447645
+    },
+    {
+      "frame": 16,
+      "full_mount_minimum_height_m": -0.08703588268806906
+    },
+    {
+      "frame": 17,
+      "full_mount_minimum_height_m": -0.08693755621524568
+    },
+    {
+      "frame": 18,
+      "full_mount_minimum_height_m": -0.08685246100921384
+    },
+    {
+      "frame": 19,
+      "full_mount_minimum_height_m": -0.0867808565065773
+    },
+    {
+      "frame": 20,
+      "full_mount_minimum_height_m": -0.08672313186224168
+    },
+    {
+      "frame": 21,
+      "full_mount_minimum_height_m": -0.08667954651281073
+    },
+    {
+      "frame": 22,
+      "full_mount_minimum_height_m": -0.08665035989488823
+    },
+    {
+      "frame": 23,
+      "full_mount_minimum_height_m": -0.08663570172677604
+    },
+    {
+      "frame": 24,
+      "full_mount_minimum_height_m": -0.08663570172677604
+    },
+    {
+      "frame": 25,
+      "full_mount_minimum_height_m": -0.08665035989488823
+    },
+    {
+      "frame": 26,
+      "full_mount_minimum_height_m": -0.08667954651281073
+    },
+    {
+      "frame": 27,
+      "full_mount_minimum_height_m": -0.08672313186224168
+    },
+    {
+      "frame": 28,
+      "full_mount_minimum_height_m": -0.0867808565065773
+    },
+    {
+      "frame": 29,
+      "full_mount_minimum_height_m": -0.08685246100921384
+    },
+    {
+      "frame": 30,
+      "full_mount_minimum_height_m": -0.08693755621524568
+    },
+    {
+      "frame": 31,
+      "full_mount_minimum_height_m": -0.08703588268806906
+    },
+    {
+      "frame": 32,
+      "full_mount_minimum_height_m": -0.08714692155447645
+    },
+    {
+      "frame": 33,
+      "full_mount_minimum_height_m": -0.08726989450465661
+    },
+    {
+      "frame": 34,
+      "full_mount_minimum_height_m": -0.08740454210200577
+    },
+    {
+      "frame": 35,
+      "full_mount_minimum_height_m": -0.08754995631841078
+    },
+    {
+      "frame": 36,
+      "full_mount_minimum_height_m": -0.08770561828066414
+    },
+    {
+      "frame": 37,
+      "full_mount_minimum_height_m": -0.08787061996065271
+    },
+    {
+      "frame": 38,
+      "full_mount_minimum_height_m": -0.0880441830485652
+    },
+    {
+      "frame": 39,
+      "full_mount_minimum_height_m": -0.08822552923459037
+    },
+    {
+      "frame": 40,
+      "full_mount_minimum_height_m": -0.08841375049061506
+    },
+    {
+      "frame": 41,
+      "full_mount_minimum_height_m": -0.08860793878852613
+    },
+    {
+      "frame": 42,
+      "full_mount_minimum_height_m": -0.08880705638190856
+    },
+    {
+      "frame": 43,
+      "full_mount_minimum_height_m": -0.08901032496095107
+    },
+    {
+      "frame": 44,
+      "full_mount_minimum_height_m": -0.08921657706093677
+    },
+    {
+      "frame": 45,
+      "full_mount_minimum_height_m": -0.08942477493545065
+    },
+    {
+      "frame": 46,
+      "full_mount_minimum_height_m": -0.08963401055637954
+    },
+    {
+      "frame": 47,
+      "full_mount_minimum_height_m": -0.08984324617730843
+    },
+    {
+      "frame": 48,
+      "full_mount_minimum_height_m": -0.0900514440518223
+    },
+    {
+      "frame": 49,
+      "full_mount_minimum_height_m": -0.09025769615180801
+    },
+    {
+      "frame": 50,
+      "full_mount_minimum_height_m": -0.09046096473085052
+    },
+    {
+      "frame": 51,
+      "full_mount_minimum_height_m": -0.09066008232423295
+    },
+    {
+      "frame": 52,
+      "full_mount_minimum_height_m": -0.09085427062214402
+    },
+    {
+      "frame": 53,
+      "full_mount_minimum_height_m": -0.09104249187816871
+    },
+    {
+      "frame": 54,
+      "full_mount_minimum_height_m": -0.091223708345892
+    },
+    {
+      "frame": 55,
+      "full_mount_minimum_height_m": -0.0913972714338045
+    },
+    {
+      "frame": 56,
+      "full_mount_minimum_height_m": -0.09156227311379306
+    },
+    {
+      "frame": 57,
+      "full_mount_minimum_height_m": -0.0917180647943483
+    },
+    {
+      "frame": 58,
+      "full_mount_minimum_height_m": -0.09186347901075331
+    },
+    {
+      "frame": 59,
+      "full_mount_minimum_height_m": -0.09199799688980059
+    },
+    {
+      "frame": 60,
+      "full_mount_minimum_height_m": -0.09212109955828263
+    },
+    {
+      "frame": 61,
+      "full_mount_minimum_height_m": -0.09223200870638815
+    },
+    {
+      "frame": 62,
+      "full_mount_minimum_height_m": -0.09233033517921152
+    },
+    {
+      "frame": 63,
+      "full_mount_minimum_height_m": -0.09241556010354524
+    },
+    {
+      "frame": 64,
+      "full_mount_minimum_height_m": -0.09248716460618178
+    },
+    {
+      "frame": 65,
+      "full_mount_minimum_height_m": -0.0925448892505174
+    },
+    {
+      "frame": 66,
+      "full_mount_minimum_height_m": -0.09258834488164647
+    },
+    {
+      "frame": 67,
+      "full_mount_minimum_height_m": -0.09261753149956897
+    },
+    {
+      "frame": 68,
+      "full_mount_minimum_height_m": -0.09263205994937929
+    },
+    {
+      "frame": 69,
+      "full_mount_minimum_height_m": -0.09263205994937929
+    },
+    {
+      "frame": 70,
+      "full_mount_minimum_height_m": -0.09261753149956897
+    },
+    {
+      "frame": 71,
+      "full_mount_minimum_height_m": -0.09258834488164647
+    },
+    {
+      "frame": 72,
+      "full_mount_minimum_height_m": -0.0925448892505174
+    },
+    {
+      "frame": 73,
+      "full_mount_minimum_height_m": -0.09248716460618178
+    },
+    {
+      "frame": 74,
+      "full_mount_minimum_height_m": -0.09241556010354524
+    },
+    {
+      "frame": 75,
+      "full_mount_minimum_height_m": -0.09233033517921152
+    },
+    {
+      "frame": 76,
+      "full_mount_minimum_height_m": -0.09223200870638815
+    },
+    {
+      "frame": 77,
+      "full_mount_minimum_height_m": -0.09212109955828263
+    },
+    {
+      "frame": 78,
+      "full_mount_minimum_height_m": -0.09199799688980059
+    },
+    {
+      "frame": 79,
+      "full_mount_minimum_height_m": -0.09186347901075331
+    },
+    {
+      "frame": 80,
+      "full_mount_minimum_height_m": -0.0917180647943483
+    },
+    {
+      "frame": 81,
+      "full_mount_minimum_height_m": -0.09156227311379306
+    },
+    {
+      "frame": 82,
+      "full_mount_minimum_height_m": -0.0913972714338045
+    },
+    {
+      "frame": 83,
+      "full_mount_minimum_height_m": -0.091223708345892
+    },
+    {
+      "frame": 84,
+      "full_mount_minimum_height_m": -0.09104249187816871
+    },
+    {
+      "frame": 85,
+      "full_mount_minimum_height_m": -0.09085427062214402
+    },
+    {
+      "frame": 86,
+      "full_mount_minimum_height_m": -0.09066008232423295
+    },
+    {
+      "frame": 87,
+      "full_mount_minimum_height_m": -0.09046096473085052
+    },
+    {
+      "frame": 88,
+      "full_mount_minimum_height_m": -0.09025769615180801
+    },
+    {
+      "frame": 89,
+      "full_mount_minimum_height_m": -0.0900514440518223
+    },
+    {
+      "frame": 90,
+      "full_mount_minimum_height_m": -0.08984324617730843
+    },
+    {
+      "frame": 91,
+      "full_mount_minimum_height_m": -0.08963401055637954
+    },
+    {
+      "frame": 92,
+      "full_mount_minimum_height_m": -0.08942477493545065
+    },
+    {
+      "frame": 93,
+      "full_mount_minimum_height_m": -0.08921657706093677
+    },
+    {
+      "frame": 94,
+      "full_mount_minimum_height_m": -0.08901032496095107
+    },
+    {
+      "frame": 95,
+      "full_mount_minimum_height_m": -0.08880705638190856
+    },
+    {
+      "frame": 96,
+      "full_mount_minimum_height_m": -0.08860793878852613
+    },
+    {
+      "frame": 97,
+      "full_mount_minimum_height_m": -0.08841375049061506
+    },
+    {
+      "frame": 98,
+      "full_mount_minimum_height_m": -0.08822552923459037
+    },
+    {
+      "frame": 99,
+      "full_mount_minimum_height_m": -0.0880441830485652
+    },
+    {
+      "frame": 100,
+      "full_mount_minimum_height_m": -0.08787061996065271
+    },
+    {
+      "frame": 101,
+      "full_mount_minimum_height_m": -0.08770561828066414
+    },
+    {
+      "frame": 102,
+      "full_mount_minimum_height_m": -0.08754995631841078
+    },
+    {
+      "frame": 103,
+      "full_mount_minimum_height_m": -0.08740454210200577
+    },
+    {
+      "frame": 104,
+      "full_mount_minimum_height_m": -0.08726989450465661
+    },
+    {
+      "frame": 105,
+      "full_mount_minimum_height_m": -0.08714692155447645
+    },
+    {
+      "frame": 106,
+      "full_mount_minimum_height_m": -0.08703588268806906
+    },
+    {
+      "frame": 107,
+      "full_mount_minimum_height_m": -0.08693755621524568
+    },
+    {
+      "frame": 108,
+      "full_mount_minimum_height_m": -0.08685246100921384
+    },
+    {
+      "frame": 109,
+      "full_mount_minimum_height_m": -0.0867808565065773
+    },
+    {
+      "frame": 110,
+      "full_mount_minimum_height_m": -0.08672313186224168
+    },
+    {
+      "frame": 111,
+      "full_mount_minimum_height_m": -0.08667954651281073
+    },
+    {
+      "frame": 112,
+      "full_mount_minimum_height_m": -0.08665035989488823
+    },
+    {
+      "frame": 113,
+      "full_mount_minimum_height_m": -0.08663570172677604
+    },
+    {
+      "frame": 114,
+      "full_mount_minimum_height_m": -0.08663570172677604
+    },
+    {
+      "frame": 115,
+      "full_mount_minimum_height_m": -0.08665035989488823
+    },
+    {
+      "frame": 116,
+      "full_mount_minimum_height_m": -0.08667954651281073
+    },
+    {
+      "frame": 117,
+      "full_mount_minimum_height_m": -0.08672313186224168
+    },
+    {
+      "frame": 118,
+      "full_mount_minimum_height_m": -0.0867808565065773
+    },
+    {
+      "frame": 119,
+      "full_mount_minimum_height_m": -0.08685246100921384
+    },
+    {
+      "frame": 120,
+      "full_mount_minimum_height_m": -0.08693755621524568
+    },
+    {
+      "frame": 121,
+      "full_mount_minimum_height_m": -0.08703588268806906
+    },
+    {
+      "frame": 122,
+      "full_mount_minimum_height_m": -0.08714692155447645
+    },
+    {
+      "frame": 123,
+      "full_mount_minimum_height_m": -0.08726989450465661
+    },
+    {
+      "frame": 124,
+      "full_mount_minimum_height_m": -0.08740454210200577
+    },
+    {
+      "frame": 125,
+      "full_mount_minimum_height_m": -0.08754995631841078
+    },
+    {
+      "frame": 126,
+      "full_mount_minimum_height_m": -0.08770561828066414
+    },
+    {
+      "frame": 127,
+      "full_mount_minimum_height_m": -0.08787061996065271
+    },
+    {
+      "frame": 128,
+      "full_mount_minimum_height_m": -0.0880441830485652
+    },
+    {
+      "frame": 129,
+      "full_mount_minimum_height_m": -0.08822552923459037
+    },
+    {
+      "frame": 130,
+      "full_mount_minimum_height_m": -0.08841375049061506
+    },
+    {
+      "frame": 131,
+      "full_mount_minimum_height_m": -0.08860793878852613
+    },
+    {
+      "frame": 132,
+      "full_mount_minimum_height_m": -0.08880705638190856
+    },
+    {
+      "frame": 133,
+      "full_mount_minimum_height_m": -0.08901032496095107
+    },
+    {
+      "frame": 134,
+      "full_mount_minimum_height_m": -0.08921657706093677
+    },
+    {
+      "frame": 135,
+      "full_mount_minimum_height_m": -0.08942477493545065
+    },
+    {
+      "frame": 136,
+      "full_mount_minimum_height_m": -0.08963401055637954
+    },
+    {
+      "frame": 137,
+      "full_mount_minimum_height_m": -0.08984324617730843
+    },
+    {
+      "frame": 138,
+      "full_mount_minimum_height_m": -0.0900514440518223
+    },
+    {
+      "frame": 139,
+      "full_mount_minimum_height_m": -0.09025769615180801
+    },
+    {
+      "frame": 140,
+      "full_mount_minimum_height_m": -0.09046096473085052
+    },
+    {
+      "frame": 141,
+      "full_mount_minimum_height_m": -0.09066008232423295
+    },
+    {
+      "frame": 142,
+      "full_mount_minimum_height_m": -0.09085427062214402
+    },
+    {
+      "frame": 143,
+      "full_mount_minimum_height_m": -0.09104249187816871
+    },
+    {
+      "frame": 144,
+      "full_mount_minimum_height_m": -0.091223708345892
+    },
+    {
+      "frame": 145,
+      "full_mount_minimum_height_m": -0.0913972714338045
+    },
+    {
+      "frame": 146,
+      "full_mount_minimum_height_m": -0.09156227311379306
+    },
+    {
+      "frame": 147,
+      "full_mount_minimum_height_m": -0.0917180647943483
+    },
+    {
+      "frame": 148,
+      "full_mount_minimum_height_m": -0.09186347901075331
+    },
+    {
+      "frame": 149,
+      "full_mount_minimum_height_m": -0.09199799688980059
+    },
+    {
+      "frame": 150,
+      "full_mount_minimum_height_m": -0.09212109955828263
+    },
+    {
+      "frame": 151,
+      "full_mount_minimum_height_m": -0.09223200870638815
+    },
+    {
+      "frame": 152,
+      "full_mount_minimum_height_m": -0.09233033517921152
+    },
+    {
+      "frame": 153,
+      "full_mount_minimum_height_m": -0.09241556010354524
+    },
+    {
+      "frame": 154,
+      "full_mount_minimum_height_m": -0.09248716460618178
+    },
+    {
+      "frame": 155,
+      "full_mount_minimum_height_m": -0.0925448892505174
+    },
+    {
+      "frame": 156,
+      "full_mount_minimum_height_m": -0.09258834488164647
+    },
+    {
+      "frame": 157,
+      "full_mount_minimum_height_m": -0.09261753149956897
+    },
+    {
+      "frame": 158,
+      "full_mount_minimum_height_m": -0.09263205994937929
+    },
+    {
+      "frame": 159,
+      "full_mount_minimum_height_m": -0.09263205994937929
+    },
+    {
+      "frame": 160,
+      "full_mount_minimum_height_m": -0.09261753149956897
+    },
+    {
+      "frame": 161,
+      "full_mount_minimum_height_m": -0.09258834488164647
+    },
+    {
+      "frame": 162,
+      "full_mount_minimum_height_m": -0.0925448892505174
+    },
+    {
+      "frame": 163,
+      "full_mount_minimum_height_m": -0.09248716460618178
+    },
+    {
+      "frame": 164,
+      "full_mount_minimum_height_m": -0.09241556010354524
+    },
+    {
+      "frame": 165,
+      "full_mount_minimum_height_m": -0.09233033517921152
+    },
+    {
+      "frame": 166,
+      "full_mount_minimum_height_m": -0.09223200870638815
+    },
+    {
+      "frame": 167,
+      "full_mount_minimum_height_m": -0.09212109955828263
+    },
+    {
+      "frame": 168,
+      "full_mount_minimum_height_m": -0.09199799688980059
+    },
+    {
+      "frame": 169,
+      "full_mount_minimum_height_m": -0.09186347901075331
+    },
+    {
+      "frame": 170,
+      "full_mount_minimum_height_m": -0.0917180647943483
+    },
+    {
+      "frame": 171,
+      "full_mount_minimum_height_m": -0.09156227311379306
+    },
+    {
+      "frame": 172,
+      "full_mount_minimum_height_m": -0.0913972714338045
+    },
+    {
+      "frame": 173,
+      "full_mount_minimum_height_m": -0.091223708345892
+    },
+    {
+      "frame": 174,
+      "full_mount_minimum_height_m": -0.09104249187816871
+    },
+    {
+      "frame": 175,
+      "full_mount_minimum_height_m": -0.09085427062214402
+    },
+    {
+      "frame": 176,
+      "full_mount_minimum_height_m": -0.09066008232423295
+    },
+    {
+      "frame": 177,
+      "full_mount_minimum_height_m": -0.09046096473085052
+    },
+    {
+      "frame": 178,
+      "full_mount_minimum_height_m": -0.09025769615180801
+    },
+    {
+      "frame": 179,
+      "full_mount_minimum_height_m": -0.0900514440518223
+    },
+    {
+      "frame": 180,
+      "full_mount_minimum_height_m": -0.08984324617730843
+    },
+    {
+      "frame": 181,
+      "full_mount_minimum_height_m": -0.08963401055637954
+    }
+  ],
+  "limitations": [
+    "Authored idle diagnostic, no capture or anatomical acceptance.",
+    "Full-source strain, materials, semantic attachments and secondary collisions remain separate gates."
+  ]
+}

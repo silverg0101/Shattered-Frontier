@@ -1,0 +1,46 @@
+{
+  "asset_id": "BLD-WT-EndExposedCellFull-01",
+  "version": "v001",
+  "batch": "construction-worked-timber-ends-32",
+  "status": "image-complete; proposal; ready-for-model-test",
+  "source_references": [
+    "docs/art-templates/player-construction-kit-contract.md \u2014 \u00a73.2 and \u00a78\u20139",
+    "docs/art-templates/asset-lists/construction-kit-matrix-07.md \u2014 worked-timber full-cell component matrix"
+  ],
+  "dependency": "KIT-WT face/top/underside appearance; source gameplay-tier properties; 0.5 m full-cell envelope and contact planes",
+  "exact_prompts": {
+    "concept_sheet": "Construction design concept sheet on a pale gray background. Depict ONE single modular wall cell, exactly a 1:1:1 cube. The cube is made of worked timber planks with flush corners and no protrusions. Highlight only its right exposed side: show end-grain plank cross sections flush with the side plane. Add two small flat orthographic panels at right: front elevation and exposed-end elevation. Keep every drawing inside the cube silhouette. Solid opaque timber throughout; no openings, no extra blocks, no frame pieces, no separate beams, no text, no labels, no masonry. Consistent square proportions, restrained weathered oak, clear construction-design illustration.",
+    "asset_view": "Isolated single cubic worked-timber construction cell. Show a flush exposed end at the right plane with clear end-grain plank sections, adjoining weathered plank face, top surface. Exact compact cube silhouette on a 0.5 m grid; no extra objects, no label, no protrusions. Three-quarter orthographic product render on pale studio background."
+  },
+  "images": [
+    {
+      "file": "concept-sheet.png",
+      "width_px": 1536,
+      "height_px": 1024,
+      "mode": "RGB",
+      "format": "PNG",
+      "sha256": "1d99115f3942ff865ce731716d2511eb40743a0a6da713b5d84018e5b6f8a9d8"
+    },
+    {
+      "file": "asset-view.png",
+      "width_px": 1333,
+      "height_px": 1180,
+      "mode": "RGB",
+      "format": "PNG",
+      "sha256": "4abf5545ecd29483f372e801c6035fd39c0762a12114c658c40cdc7eb2a5522a"
+    }
+  ],
+  "visual_review": "Concept: clear flush end grain and face, but the cube reads slightly wider than tall in perspective; preserve envelope during modeling. Clean view: acceptable isolated form; no actual numerical compatibility asserted.",
+  "compatibility": "Image review does not establish numerical mesh, collision, contact, clearance or runtime compatibility. This is an appearance-only skin; gameplay material-tier properties remain unchanged.",
+  "generation_history": [
+    {
+      "source": "exec-7f367321-869c-4bbb-ac37-b9231b0d1020.png",
+      "selected": true
+    },
+    {
+      "source": "exec-29fad57c-95e9-4f0c-b7d1-1cd534a5b1a0.png",
+      "selected": true
+    }
+  ],
+  "created_utc": "2026-10-18"
+}

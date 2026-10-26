@@ -1,0 +1,32 @@
+{
+  "backend": "tripo",
+  "status": "complete",
+  "seed": 42,
+  "steps": 50,
+  "image": "/mnt/c/Projects/Shattered-Frontier/GameClient/ArtSource/Voidreign/Trellis2-20261018/Voidreign-clean.png",
+  "image_sha256": "d67522bf160e2dbfe763a5945e651b6b5c508f32676257dac80c98b26a42aca0",
+  "torch": "2.14.0+rocm10.1.0",
+  "hip": "7.16.26385",
+  "gpu": "AMD Radeon RX 7900 XTX",
+  "stages": {
+    "load_seconds": 6.102,
+    "inference_seconds": 124.291
+  },
+  "texture": "geometry-only initial comparison",
+  "decimation_target": 300000,
+  "stage": "complete",
+  "model_revision": "2c1c516d22d58db486a058d98d31bb6177344e06",
+  "dense_octree_depth": 8,
+  "hierarchical_octree_depth": 9,
+  "surface_extractor": "upstream hierarchical marching cubes; flash decoder disabled",
+  "guidance_scale": 7.0,
+  "preprocessing": "upstream prepare_image using supplied alpha; no segmentation model",
+  "raw_mesh": {
+    "vertices": 325365,
+    "faces": 650850
+  },
+  "exported_mesh": {
+    "vertices": 149944,
+    "faces": 300000
+  }
+}

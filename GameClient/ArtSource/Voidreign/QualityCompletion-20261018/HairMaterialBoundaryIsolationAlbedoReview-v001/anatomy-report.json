@@ -1,0 +1,2109 @@
+{
+  "schema_version": 1,
+  "status": "anatomy-proposal-needs-review",
+  "cpu_only": true,
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\WalkPilot-v003\\Mount-WalkPilot.blend": "f59dc38bff697b6c2a2c84511413d2e292d9fdbb278acc69cd8df6d26a5bd123",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\WalkRetention-v003\\validation.json": "0630516734df3c1bb11f95ae92056e353dda46c4f4328c4574e32a2e1a451e49",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz": "0d7599c8064cb81a6e211a23731435e08939b7fb146ce2d4bed810273909a2b2",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz": "83e4f07cf16fa21e1e5277950201af199f2928faa0d4fc004e03d00a6602b686"
+  },
+  "tool_sha256": "bd3718747e6266c2bac1800128c4e6b5e7b46a63733769a527ef3bb8480775e1",
+  "profile_sha256": "10f90a1148ed1faef4654e4de1bdea5c3eb59e290fb81cfc0b43424e19a298a4",
+  "vertices": 284762,
+  "triangles": 297119,
+  "regions": [
+    {
+      "id": "SMB-0d7599c806-f2ac3080aae7",
+      "vertices": 39,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-67a2125f483c",
+      "vertices": 54,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-3bf28272db22",
+      "vertices": 61,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-fcef00460074",
+      "vertices": 47,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-0ded486c5b5e",
+      "vertices": 137,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-d4c63dedbd5e",
+      "vertices": 41,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-bc5c85d932c0",
+      "vertices": 44,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-8575242048e6",
+      "vertices": 33,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-03ddf3586241",
+      "vertices": 34,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-b246d0d8fc50",
+      "vertices": 34,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-1a6b38bcd2ed",
+      "vertices": 60,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-214908334f85",
+      "vertices": 30,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-45e5a199970f",
+      "vertices": 27,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-ae39479acb4e",
+      "vertices": 56,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-496a7c339b64",
+      "vertices": 29,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-76a5b531d804",
+      "vertices": 33,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-142b88f3f5fe",
+      "vertices": 41,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-e985ed9d2776",
+      "vertices": 28,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-f2693581ad0a",
+      "vertices": 26,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-6a2d8e04a727",
+      "vertices": 32,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-4afd6188749c",
+      "vertices": 52,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-4e2fc507de64",
+      "vertices": 30,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-0b3644d3cead",
+      "vertices": 29,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-24c47ae608df",
+      "vertices": 30,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-59ee26f77533",
+      "vertices": 14,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-a21db8bf045e",
+      "vertices": 21,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-79496374c95e",
+      "vertices": 25,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-219022738900",
+      "vertices": 32,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-61056aa72863",
+      "vertices": 70,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-36e9f96b0629",
+      "vertices": 24,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-13afd9fd68f7",
+      "vertices": 23,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-5c255a663a65",
+      "vertices": 27,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-5f9296f0a8b7",
+      "vertices": 22,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-2516a986745a",
+      "vertices": 62,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-faf086e6bbf3",
+      "vertices": 20,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-c1177585d450",
+      "vertices": 38,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-da33066a6671",
+      "vertices": 21,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-13e30963711d",
+      "vertices": 18,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-19f81beb369c",
+      "vertices": 24,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-707b87545777",
+      "vertices": 16,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-1e8b223aad41",
+      "vertices": 22,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-f8c8ec568f04",
+      "vertices": 15,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-cb72c66025e3",
+      "vertices": 19,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-029db0fbd244",
+      "vertices": 21,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-c218565b2652",
+      "vertices": 20,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-9e8e9c14557b",
+      "vertices": 17,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-1d1b12900d1a",
+      "vertices": 6,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-1b91b1cf823d",
+      "vertices": 11,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-602d3f911217",
+      "vertices": 9,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-a990b4f2ab88",
+      "vertices": 9,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-411bed5eb70e",
+      "vertices": 9,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-c9ecd5507ca0",
+      "vertices": 11,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-007f90f080bd",
+      "vertices": 12,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-7d9f8b9ff8a2",
+      "vertices": 9,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-2ce453b2e50e",
+      "vertices": 9,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-1e925dd6eb59",
+      "vertices": 9,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-a23f50cee6c9",
+      "vertices": 809,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-13398d8f6fa9",
+      "vertices": 486,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-c5f686eb393a",
+      "vertices": 193,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-6c0faadfb656",
+      "vertices": 242,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-9461782d30e7",
+      "vertices": 123,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-c95bf113bd82",
+      "vertices": 126,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-fa0932e06fbb",
+      "vertices": 106,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-16aa3f8d2318",
+      "vertices": 80,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-d0197039a013",
+      "vertices": 82,
+      "status": "geometric-proposal-needs-anatomical-review"
+    }
+  ],
+  "views": [
+    {
+      "id": "SMB-0d7599c806-f2ac3080aae7-isolated-overlay",
+      "image": "SMB-0d7599c806-f2ac3080aae7-isolated-overlay.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-f2ac3080aae7"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-f2ac3080aae7"
+      ],
+      "source_face_count": 35
+    },
+    {
+      "id": "SMB-0d7599c806-f2ac3080aae7-isolated-albedo",
+      "image": "SMB-0d7599c806-f2ac3080aae7-isolated-albedo.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-f2ac3080aae7"
+      ],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 35
+    },
+    {
+      "id": "SMB-0d7599c806-67a2125f483c-isolated-overlay",
+      "image": "SMB-0d7599c806-67a2125f483c-isolated-overlay.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-67a2125f483c"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-67a2125f483c"
+      ],
+      "source_face_count": 40
+    },
+    {
+      "id": "SMB-0d7599c806-67a2125f483c-isolated-albedo",
+      "image": "SMB-0d7599c806-67a2125f483c-isolated-albedo.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-67a2125f483c"
+      ],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 40
+    },
+    {
+      "id": "SMB-0d7599c806-3bf28272db22-isolated-overlay",
+      "image": "SMB-0d7599c806-3bf28272db22-isolated-overlay.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-3bf28272db22"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-3bf28272db22"
+      ],
+      "source_face_count": 44
+    },
+    {
+      "id": "SMB-0d7599c806-3bf28272db22-isolated-albedo",
+      "image": "SMB-0d7599c806-3bf28272db22-isolated-albedo.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-3bf28272db22"
+      ],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 44
+    },
+    {
+      "id": "SMB-0d7599c806-fcef00460074-isolated-overlay",
+      "image": "SMB-0d7599c806-fcef00460074-isolated-overlay.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-fcef00460074"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-fcef00460074"
+      ],
+      "source_face_count": 35
+    },
+    {
+      "id": "SMB-0d7599c806-fcef00460074-isolated-albedo",
+      "image": "SMB-0d7599c806-fcef00460074-isolated-albedo.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-fcef00460074"
+      ],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 35
+    },
+    {
+      "id": "SMB-0d7599c806-0ded486c5b5e-isolated-overlay",
+      "image": "SMB-0d7599c806-0ded486c5b5e-isolated-overlay.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-0ded486c5b5e"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-0ded486c5b5e"
+      ],
+      "source_face_count": 84
+    },
+    {
+      "id": "SMB-0d7599c806-0ded486c5b5e-isolated-albedo",
+      "image": "SMB-0d7599c806-0ded486c5b5e-isolated-albedo.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-0ded486c5b5e"
+      ],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 84
+    },
+    {
+      "id": "SMB-0d7599c806-d4c63dedbd5e-isolated-overlay",
+      "image": "SMB-0d7599c806-d4c63dedbd5e-isolated-overlay.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-d4c63dedbd5e"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-d4c63dedbd5e"
+      ],
+      "source_face_count": 33
+    },
+    {
+      "id": "SMB-0d7599c806-d4c63dedbd5e-isolated-albedo",
+      "image": "SMB-0d7599c806-d4c63dedbd5e-isolated-albedo.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-d4c63dedbd5e"
+      ],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 33
+    },
+    {
+      "id": "SMB-0d7599c806-bc5c85d932c0-isolated-overlay",
+      "image": "SMB-0d7599c806-bc5c85d932c0-isolated-overlay.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-bc5c85d932c0"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-bc5c85d932c0"
+      ],
+      "source_face_count": 32
+    },
+    {
+      "id": "SMB-0d7599c806-bc5c85d932c0-isolated-albedo",
+      "image": "SMB-0d7599c806-bc5c85d932c0-isolated-albedo.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-bc5c85d932c0"
+      ],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 32
+    },
+    {
+      "id": "SMB-0d7599c806-8575242048e6-isolated-overlay",
+      "image": "SMB-0d7599c806-8575242048e6-isolated-overlay.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-8575242048e6"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-8575242048e6"
+      ],
+      "source_face_count": 23
+    },
+    {
+      "id": "SMB-0d7599c806-8575242048e6-isolated-albedo",
+      "image": "SMB-0d7599c806-8575242048e6-isolated-albedo.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-8575242048e6"
+      ],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 23
+    },
+    {
+      "id": "SMB-0d7599c806-03ddf3586241-isolated-overlay",
+      "image": "SMB-0d7599c806-03ddf3586241-isolated-overlay.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-03ddf3586241"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-03ddf3586241"
+      ],
+      "source_face_count": 20
+    },
+    {
+      "id": "SMB-0d7599c806-03ddf3586241-isolated-albedo",
+      "image": "SMB-0d7599c806-03ddf3586241-isolated-albedo.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-03ddf3586241"
+      ],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 20
+    },
+    {
+      "id": "SMB-0d7599c806-b246d0d8fc50-isolated-overlay",
+      "image": "SMB-0d7599c806-b246d0d8fc50-isolated-overlay.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-b246d0d8fc50"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-b246d0d8fc50"
+      ],
+      "source_face_count": 24
+    },
+    {
+      "id": "SMB-0d7599c806-b246d0d8fc50-isolated-albedo",
+      "image": "SMB-0d7599c806-b246d0d8fc50-isolated-albedo.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-b246d0d8fc50"
+      ],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 24
+    },
+    {
+      "id": "SMB-0d7599c806-1a6b38bcd2ed-isolated-overlay",
+      "image": "SMB-0d7599c806-1a6b38bcd2ed-isolated-overlay.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-1a6b38bcd2ed"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-1a6b38bcd2ed"
+      ],
+      "source_face_count": 40
+    },
+    {
+      "id": "SMB-0d7599c806-1a6b38bcd2ed-isolated-albedo",
+      "image": "SMB-0d7599c806-1a6b38bcd2ed-isolated-albedo.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-1a6b38bcd2ed"
+      ],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 40
+    },
+    {
+      "id": "SMB-0d7599c806-214908334f85-isolated-overlay",
+      "image": "SMB-0d7599c806-214908334f85-isolated-overlay.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-214908334f85"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-214908334f85"
+      ],
+      "source_face_count": 20
+    },
+    {
+      "id": "SMB-0d7599c806-214908334f85-isolated-albedo",
+      "image": "SMB-0d7599c806-214908334f85-isolated-albedo.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-214908334f85"
+      ],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 20
+    },
+    {
+      "id": "SMB-0d7599c806-45e5a199970f-isolated-overlay",
+      "image": "SMB-0d7599c806-45e5a199970f-isolated-overlay.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-45e5a199970f"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-45e5a199970f"
+      ],
+      "source_face_count": 23
+    },
+    {
+      "id": "SMB-0d7599c806-45e5a199970f-isolated-albedo",
+      "image": "SMB-0d7599c806-45e5a199970f-isolated-albedo.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-45e5a199970f"
+      ],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 23
+    },
+    {
+      "id": "SMB-0d7599c806-ae39479acb4e-isolated-overlay",
+      "image": "SMB-0d7599c806-ae39479acb4e-isolated-overlay.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-ae39479acb4e"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-ae39479acb4e"
+      ],
+      "source_face_count": 36
+    },
+    {
+      "id": "SMB-0d7599c806-ae39479acb4e-isolated-albedo",
+      "image": "SMB-0d7599c806-ae39479acb4e-isolated-albedo.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-ae39479acb4e"
+      ],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 36
+    },
+    {
+      "id": "SMB-0d7599c806-496a7c339b64-isolated-overlay",
+      "image": "SMB-0d7599c806-496a7c339b64-isolated-overlay.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-496a7c339b64"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-496a7c339b64"
+      ],
+      "source_face_count": 19
+    },
+    {
+      "id": "SMB-0d7599c806-496a7c339b64-isolated-albedo",
+      "image": "SMB-0d7599c806-496a7c339b64-isolated-albedo.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-496a7c339b64"
+      ],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 19
+    },
+    {
+      "id": "SMB-0d7599c806-76a5b531d804-isolated-overlay",
+      "image": "SMB-0d7599c806-76a5b531d804-isolated-overlay.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-76a5b531d804"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-76a5b531d804"
+      ],
+      "source_face_count": 23
+    },
+    {
+      "id": "SMB-0d7599c806-76a5b531d804-isolated-albedo",
+      "image": "SMB-0d7599c806-76a5b531d804-isolated-albedo.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-76a5b531d804"
+      ],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 23
+    },
+    {
+      "id": "SMB-0d7599c806-142b88f3f5fe-isolated-overlay",
+      "image": "SMB-0d7599c806-142b88f3f5fe-isolated-overlay.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-142b88f3f5fe"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-142b88f3f5fe"
+      ],
+      "source_face_count": 27
+    },
+    {
+      "id": "SMB-0d7599c806-142b88f3f5fe-isolated-albedo",
+      "image": "SMB-0d7599c806-142b88f3f5fe-isolated-albedo.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-142b88f3f5fe"
+      ],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 27
+    },
+    {
+      "id": "SMB-0d7599c806-e985ed9d2776-isolated-overlay",
+      "image": "SMB-0d7599c806-e985ed9d2776-isolated-overlay.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-e985ed9d2776"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-e985ed9d2776"
+      ],
+      "source_face_count": 18
+    },
+    {
+      "id": "SMB-0d7599c806-e985ed9d2776-isolated-albedo",
+      "image": "SMB-0d7599c806-e985ed9d2776-isolated-albedo.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-e985ed9d2776"
+      ],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 18
+    },
+    {
+      "id": "SMB-0d7599c806-f2693581ad0a-isolated-overlay",
+      "image": "SMB-0d7599c806-f2693581ad0a-isolated-overlay.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-f2693581ad0a"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-f2693581ad0a"
+      ],
+      "source_face_count": 16
+    },
+    {
+      "id": "SMB-0d7599c806-f2693581ad0a-isolated-albedo",
+      "image": "SMB-0d7599c806-f2693581ad0a-isolated-albedo.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-f2693581ad0a"
+      ],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 16
+    },
+    {
+      "id": "SMB-0d7599c806-6a2d8e04a727-isolated-overlay",
+      "image": "SMB-0d7599c806-6a2d8e04a727-isolated-overlay.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-6a2d8e04a727"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-6a2d8e04a727"
+      ],
+      "source_face_count": 17
+    },
+    {
+      "id": "SMB-0d7599c806-6a2d8e04a727-isolated-albedo",
+      "image": "SMB-0d7599c806-6a2d8e04a727-isolated-albedo.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-6a2d8e04a727"
+      ],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 17
+    },
+    {
+      "id": "SMB-0d7599c806-4afd6188749c-isolated-overlay",
+      "image": "SMB-0d7599c806-4afd6188749c-isolated-overlay.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-4afd6188749c"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-4afd6188749c"
+      ],
+      "source_face_count": 31
+    },
+    {
+      "id": "SMB-0d7599c806-4afd6188749c-isolated-albedo",
+      "image": "SMB-0d7599c806-4afd6188749c-isolated-albedo.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-4afd6188749c"
+      ],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 31
+    },
+    {
+      "id": "SMB-0d7599c806-4e2fc507de64-isolated-overlay",
+      "image": "SMB-0d7599c806-4e2fc507de64-isolated-overlay.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-4e2fc507de64"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-4e2fc507de64"
+      ],
+      "source_face_count": 20
+    },
+    {
+      "id": "SMB-0d7599c806-4e2fc507de64-isolated-albedo",
+      "image": "SMB-0d7599c806-4e2fc507de64-isolated-albedo.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-4e2fc507de64"
+      ],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 20
+    },
+    {
+      "id": "SMB-0d7599c806-0b3644d3cead-isolated-overlay",
+      "image": "SMB-0d7599c806-0b3644d3cead-isolated-overlay.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-0b3644d3cead"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-0b3644d3cead"
+      ],
+      "source_face_count": 19
+    },
+    {
+      "id": "SMB-0d7599c806-0b3644d3cead-isolated-albedo",
+      "image": "SMB-0d7599c806-0b3644d3cead-isolated-albedo.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-0b3644d3cead"
+      ],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 19
+    },
+    {
+      "id": "SMB-0d7599c806-24c47ae608df-isolated-overlay",
+      "image": "SMB-0d7599c806-24c47ae608df-isolated-overlay.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-24c47ae608df"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-24c47ae608df"
+      ],
+      "source_face_count": 18
+    },
+    {
+      "id": "SMB-0d7599c806-24c47ae608df-isolated-albedo",
+      "image": "SMB-0d7599c806-24c47ae608df-isolated-albedo.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-24c47ae608df"
+      ],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 18
+    },
+    {
+      "id": "SMB-0d7599c806-59ee26f77533-isolated-overlay",
+      "image": "SMB-0d7599c806-59ee26f77533-isolated-overlay.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-59ee26f77533"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-59ee26f77533"
+      ],
+      "source_face_count": 10
+    },
+    {
+      "id": "SMB-0d7599c806-59ee26f77533-isolated-albedo",
+      "image": "SMB-0d7599c806-59ee26f77533-isolated-albedo.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-59ee26f77533"
+      ],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 10
+    },
+    {
+      "id": "SMB-0d7599c806-a21db8bf045e-isolated-overlay",
+      "image": "SMB-0d7599c806-a21db8bf045e-isolated-overlay.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-a21db8bf045e"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-a21db8bf045e"
+      ],
+      "source_face_count": 13
+    },
+    {
+      "id": "SMB-0d7599c806-a21db8bf045e-isolated-albedo",
+      "image": "SMB-0d7599c806-a21db8bf045e-isolated-albedo.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-a21db8bf045e"
+      ],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 13
+    },
+    {
+      "id": "SMB-0d7599c806-79496374c95e-isolated-overlay",
+      "image": "SMB-0d7599c806-79496374c95e-isolated-overlay.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-79496374c95e"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-79496374c95e"
+      ],
+      "source_face_count": 16
+    },
+    {
+      "id": "SMB-0d7599c806-79496374c95e-isolated-albedo",
+      "image": "SMB-0d7599c806-79496374c95e-isolated-albedo.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-79496374c95e"
+      ],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 16
+    },
+    {
+      "id": "SMB-0d7599c806-219022738900-isolated-overlay",
+      "image": "SMB-0d7599c806-219022738900-isolated-overlay.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-219022738900"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-219022738900"
+      ],
+      "source_face_count": 18
+    },
+    {
+      "id": "SMB-0d7599c806-219022738900-isolated-albedo",
+      "image": "SMB-0d7599c806-219022738900-isolated-albedo.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-219022738900"
+      ],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 18
+    },
+    {
+      "id": "SMB-0d7599c806-61056aa72863-isolated-overlay",
+      "image": "SMB-0d7599c806-61056aa72863-isolated-overlay.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-61056aa72863"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-61056aa72863"
+      ],
+      "source_face_count": 46
+    },
+    {
+      "id": "SMB-0d7599c806-61056aa72863-isolated-albedo",
+      "image": "SMB-0d7599c806-61056aa72863-isolated-albedo.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-61056aa72863"
+      ],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 46
+    },
+    {
+      "id": "SMB-0d7599c806-36e9f96b0629-isolated-overlay",
+      "image": "SMB-0d7599c806-36e9f96b0629-isolated-overlay.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-36e9f96b0629"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-36e9f96b0629"
+      ],
+      "source_face_count": 14
+    },
+    {
+      "id": "SMB-0d7599c806-36e9f96b0629-isolated-albedo",
+      "image": "SMB-0d7599c806-36e9f96b0629-isolated-albedo.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-36e9f96b0629"
+      ],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 14
+    },
+    {
+      "id": "SMB-0d7599c806-13afd9fd68f7-isolated-overlay",
+      "image": "SMB-0d7599c806-13afd9fd68f7-isolated-overlay.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-13afd9fd68f7"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-13afd9fd68f7"
+      ],
+      "source_face_count": 15
+    },
+    {
+      "id": "SMB-0d7599c806-13afd9fd68f7-isolated-albedo",
+      "image": "SMB-0d7599c806-13afd9fd68f7-isolated-albedo.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-13afd9fd68f7"
+      ],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 15
+    },
+    {
+      "id": "SMB-0d7599c806-5c255a663a65-isolated-overlay",
+      "image": "SMB-0d7599c806-5c255a663a65-isolated-overlay.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-5c255a663a65"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-5c255a663a65"
+      ],
+      "source_face_count": 16
+    },
+    {
+      "id": "SMB-0d7599c806-5c255a663a65-isolated-albedo",
+      "image": "SMB-0d7599c806-5c255a663a65-isolated-albedo.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-5c255a663a65"
+      ],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 16
+    },
+    {
+      "id": "SMB-0d7599c806-5f9296f0a8b7-isolated-overlay",
+      "image": "SMB-0d7599c806-5f9296f0a8b7-isolated-overlay.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-5f9296f0a8b7"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-5f9296f0a8b7"
+      ],
+      "source_face_count": 14
+    },
+    {
+      "id": "SMB-0d7599c806-5f9296f0a8b7-isolated-albedo",
+      "image": "SMB-0d7599c806-5f9296f0a8b7-isolated-albedo.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-5f9296f0a8b7"
+      ],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 14
+    },
+    {
+      "id": "SMB-0d7599c806-2516a986745a-isolated-overlay",
+      "image": "SMB-0d7599c806-2516a986745a-isolated-overlay.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-2516a986745a"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-2516a986745a"
+      ],
+      "source_face_count": 34
+    },
+    {
+      "id": "SMB-0d7599c806-2516a986745a-isolated-albedo",
+      "image": "SMB-0d7599c806-2516a986745a-isolated-albedo.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-2516a986745a"
+      ],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 34
+    },
+    {
+      "id": "SMB-0d7599c806-faf086e6bbf3-isolated-overlay",
+      "image": "SMB-0d7599c806-faf086e6bbf3-isolated-overlay.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-faf086e6bbf3"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-faf086e6bbf3"
+      ],
+      "source_face_count": 14
+    },
+    {
+      "id": "SMB-0d7599c806-faf086e6bbf3-isolated-albedo",
+      "image": "SMB-0d7599c806-faf086e6bbf3-isolated-albedo.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-faf086e6bbf3"
+      ],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 14
+    },
+    {
+      "id": "SMB-0d7599c806-c1177585d450-isolated-overlay",
+      "image": "SMB-0d7599c806-c1177585d450-isolated-overlay.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-c1177585d450"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-c1177585d450"
+      ],
+      "source_face_count": 26
+    },
+    {
+      "id": "SMB-0d7599c806-c1177585d450-isolated-albedo",
+      "image": "SMB-0d7599c806-c1177585d450-isolated-albedo.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-c1177585d450"
+      ],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 26
+    },
+    {
+      "id": "SMB-0d7599c806-da33066a6671-isolated-overlay",
+      "image": "SMB-0d7599c806-da33066a6671-isolated-overlay.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-da33066a6671"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-da33066a6671"
+      ],
+      "source_face_count": 15
+    },
+    {
+      "id": "SMB-0d7599c806-da33066a6671-isolated-albedo",
+      "image": "SMB-0d7599c806-da33066a6671-isolated-albedo.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-da33066a6671"
+      ],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 15
+    },
+    {
+      "id": "SMB-0d7599c806-13e30963711d-isolated-overlay",
+      "image": "SMB-0d7599c806-13e30963711d-isolated-overlay.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-13e30963711d"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-13e30963711d"
+      ],
+      "source_face_count": 10
+    },
+    {
+      "id": "SMB-0d7599c806-13e30963711d-isolated-albedo",
+      "image": "SMB-0d7599c806-13e30963711d-isolated-albedo.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-13e30963711d"
+      ],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 10
+    },
+    {
+      "id": "SMB-0d7599c806-19f81beb369c-isolated-overlay",
+      "image": "SMB-0d7599c806-19f81beb369c-isolated-overlay.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-19f81beb369c"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-19f81beb369c"
+      ],
+      "source_face_count": 15
+    },
+    {
+      "id": "SMB-0d7599c806-19f81beb369c-isolated-albedo",
+      "image": "SMB-0d7599c806-19f81beb369c-isolated-albedo.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-19f81beb369c"
+      ],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 15
+    },
+    {
+      "id": "SMB-0d7599c806-707b87545777-isolated-overlay",
+      "image": "SMB-0d7599c806-707b87545777-isolated-overlay.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-707b87545777"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-707b87545777"
+      ],
+      "source_face_count": 10
+    },
+    {
+      "id": "SMB-0d7599c806-707b87545777-isolated-albedo",
+      "image": "SMB-0d7599c806-707b87545777-isolated-albedo.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-707b87545777"
+      ],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 10
+    },
+    {
+      "id": "SMB-0d7599c806-1e8b223aad41-isolated-overlay",
+      "image": "SMB-0d7599c806-1e8b223aad41-isolated-overlay.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-1e8b223aad41"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-1e8b223aad41"
+      ],
+      "source_face_count": 12
+    },
+    {
+      "id": "SMB-0d7599c806-1e8b223aad41-isolated-albedo",
+      "image": "SMB-0d7599c806-1e8b223aad41-isolated-albedo.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-1e8b223aad41"
+      ],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 12
+    },
+    {
+      "id": "SMB-0d7599c806-f8c8ec568f04-isolated-overlay",
+      "image": "SMB-0d7599c806-f8c8ec568f04-isolated-overlay.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-f8c8ec568f04"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-f8c8ec568f04"
+      ],
+      "source_face_count": 7
+    },
+    {
+      "id": "SMB-0d7599c806-f8c8ec568f04-isolated-albedo",
+      "image": "SMB-0d7599c806-f8c8ec568f04-isolated-albedo.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-f8c8ec568f04"
+      ],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 7
+    },
+    {
+      "id": "SMB-0d7599c806-cb72c66025e3-isolated-overlay",
+      "image": "SMB-0d7599c806-cb72c66025e3-isolated-overlay.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-cb72c66025e3"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-cb72c66025e3"
+      ],
+      "source_face_count": 11
+    },
+    {
+      "id": "SMB-0d7599c806-cb72c66025e3-isolated-albedo",
+      "image": "SMB-0d7599c806-cb72c66025e3-isolated-albedo.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-cb72c66025e3"
+      ],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 11
+    },
+    {
+      "id": "SMB-0d7599c806-029db0fbd244-isolated-overlay",
+      "image": "SMB-0d7599c806-029db0fbd244-isolated-overlay.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-029db0fbd244"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-029db0fbd244"
+      ],
+      "source_face_count": 10
+    },
+    {
+      "id": "SMB-0d7599c806-029db0fbd244-isolated-albedo",
+      "image": "SMB-0d7599c806-029db0fbd244-isolated-albedo.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-029db0fbd244"
+      ],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 10
+    },
+    {
+      "id": "SMB-0d7599c806-c218565b2652-isolated-overlay",
+      "image": "SMB-0d7599c806-c218565b2652-isolated-overlay.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-c218565b2652"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-c218565b2652"
+      ],
+      "source_face_count": 12
+    },
+    {
+      "id": "SMB-0d7599c806-c218565b2652-isolated-albedo",
+      "image": "SMB-0d7599c806-c218565b2652-isolated-albedo.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-c218565b2652"
+      ],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 12
+    },
+    {
+      "id": "SMB-0d7599c806-9e8e9c14557b-isolated-overlay",
+      "image": "SMB-0d7599c806-9e8e9c14557b-isolated-overlay.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-9e8e9c14557b"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-9e8e9c14557b"
+      ],
+      "source_face_count": 11
+    },
+    {
+      "id": "SMB-0d7599c806-9e8e9c14557b-isolated-albedo",
+      "image": "SMB-0d7599c806-9e8e9c14557b-isolated-albedo.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-9e8e9c14557b"
+      ],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 11
+    },
+    {
+      "id": "SMB-0d7599c806-1d1b12900d1a-isolated-overlay",
+      "image": "SMB-0d7599c806-1d1b12900d1a-isolated-overlay.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-1d1b12900d1a"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-1d1b12900d1a"
+      ],
+      "source_face_count": 5
+    },
+    {
+      "id": "SMB-0d7599c806-1d1b12900d1a-isolated-albedo",
+      "image": "SMB-0d7599c806-1d1b12900d1a-isolated-albedo.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-1d1b12900d1a"
+      ],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 5
+    },
+    {
+      "id": "SMB-0d7599c806-1b91b1cf823d-isolated-overlay",
+      "image": "SMB-0d7599c806-1b91b1cf823d-isolated-overlay.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-1b91b1cf823d"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-1b91b1cf823d"
+      ],
+      "source_face_count": 7
+    },
+    {
+      "id": "SMB-0d7599c806-1b91b1cf823d-isolated-albedo",
+      "image": "SMB-0d7599c806-1b91b1cf823d-isolated-albedo.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-1b91b1cf823d"
+      ],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 7
+    },
+    {
+      "id": "SMB-0d7599c806-602d3f911217-isolated-overlay",
+      "image": "SMB-0d7599c806-602d3f911217-isolated-overlay.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-602d3f911217"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-602d3f911217"
+      ],
+      "source_face_count": 5
+    },
+    {
+      "id": "SMB-0d7599c806-602d3f911217-isolated-albedo",
+      "image": "SMB-0d7599c806-602d3f911217-isolated-albedo.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-602d3f911217"
+      ],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 5
+    },
+    {
+      "id": "SMB-0d7599c806-a990b4f2ab88-isolated-overlay",
+      "image": "SMB-0d7599c806-a990b4f2ab88-isolated-overlay.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-a990b4f2ab88"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-a990b4f2ab88"
+      ],
+      "source_face_count": 5
+    },
+    {
+      "id": "SMB-0d7599c806-a990b4f2ab88-isolated-albedo",
+      "image": "SMB-0d7599c806-a990b4f2ab88-isolated-albedo.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-a990b4f2ab88"
+      ],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 5
+    },
+    {
+      "id": "SMB-0d7599c806-411bed5eb70e-isolated-overlay",
+      "image": "SMB-0d7599c806-411bed5eb70e-isolated-overlay.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-411bed5eb70e"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-411bed5eb70e"
+      ],
+      "source_face_count": 5
+    },
+    {
+      "id": "SMB-0d7599c806-411bed5eb70e-isolated-albedo",
+      "image": "SMB-0d7599c806-411bed5eb70e-isolated-albedo.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-411bed5eb70e"
+      ],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 5
+    },
+    {
+      "id": "SMB-0d7599c806-c9ecd5507ca0-isolated-overlay",
+      "image": "SMB-0d7599c806-c9ecd5507ca0-isolated-overlay.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-c9ecd5507ca0"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-c9ecd5507ca0"
+      ],
+      "source_face_count": 5
+    },
+    {
+      "id": "SMB-0d7599c806-c9ecd5507ca0-isolated-albedo",
+      "image": "SMB-0d7599c806-c9ecd5507ca0-isolated-albedo.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-c9ecd5507ca0"
+      ],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 5
+    },
+    {
+      "id": "SMB-0d7599c806-007f90f080bd-isolated-overlay",
+      "image": "SMB-0d7599c806-007f90f080bd-isolated-overlay.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-007f90f080bd"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-007f90f080bd"
+      ],
+      "source_face_count": 4
+    },
+    {
+      "id": "SMB-0d7599c806-007f90f080bd-isolated-albedo",
+      "image": "SMB-0d7599c806-007f90f080bd-isolated-albedo.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-007f90f080bd"
+      ],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 4
+    },
+    {
+      "id": "SMB-0d7599c806-7d9f8b9ff8a2-isolated-overlay",
+      "image": "SMB-0d7599c806-7d9f8b9ff8a2-isolated-overlay.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-7d9f8b9ff8a2"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-7d9f8b9ff8a2"
+      ],
+      "source_face_count": 5
+    },
+    {
+      "id": "SMB-0d7599c806-7d9f8b9ff8a2-isolated-albedo",
+      "image": "SMB-0d7599c806-7d9f8b9ff8a2-isolated-albedo.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-7d9f8b9ff8a2"
+      ],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 5
+    },
+    {
+      "id": "SMB-0d7599c806-2ce453b2e50e-isolated-overlay",
+      "image": "SMB-0d7599c806-2ce453b2e50e-isolated-overlay.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-2ce453b2e50e"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-2ce453b2e50e"
+      ],
+      "source_face_count": 3
+    },
+    {
+      "id": "SMB-0d7599c806-2ce453b2e50e-isolated-albedo",
+      "image": "SMB-0d7599c806-2ce453b2e50e-isolated-albedo.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-2ce453b2e50e"
+      ],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 3
+    },
+    {
+      "id": "SMB-0d7599c806-1e925dd6eb59-isolated-overlay",
+      "image": "SMB-0d7599c806-1e925dd6eb59-isolated-overlay.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-1e925dd6eb59"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-1e925dd6eb59"
+      ],
+      "source_face_count": 3
+    },
+    {
+      "id": "SMB-0d7599c806-1e925dd6eb59-isolated-albedo",
+      "image": "SMB-0d7599c806-1e925dd6eb59-isolated-albedo.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-1e925dd6eb59"
+      ],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 3
+    },
+    {
+      "id": "SMB-0d7599c806-a23f50cee6c9-posX-overlay",
+      "image": "SMB-0d7599c806-a23f50cee6c9-posX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-a23f50cee6c9"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-a23f50cee6c9-posX-albedo",
+      "image": "SMB-0d7599c806-a23f50cee6c9-posX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-a23f50cee6c9-negX-overlay",
+      "image": "SMB-0d7599c806-a23f50cee6c9-negX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-a23f50cee6c9"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-a23f50cee6c9-negX-albedo",
+      "image": "SMB-0d7599c806-a23f50cee6c9-negX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-a23f50cee6c9-isolated-overlay",
+      "image": "SMB-0d7599c806-a23f50cee6c9-isolated-overlay.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-a23f50cee6c9"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-a23f50cee6c9"
+      ],
+      "source_face_count": 578
+    },
+    {
+      "id": "SMB-0d7599c806-a23f50cee6c9-isolated-albedo",
+      "image": "SMB-0d7599c806-a23f50cee6c9-isolated-albedo.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-a23f50cee6c9"
+      ],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 578
+    },
+    {
+      "id": "SMB-0d7599c806-13398d8f6fa9-posX-overlay",
+      "image": "SMB-0d7599c806-13398d8f6fa9-posX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-13398d8f6fa9"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-13398d8f6fa9-posX-albedo",
+      "image": "SMB-0d7599c806-13398d8f6fa9-posX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-13398d8f6fa9-negX-overlay",
+      "image": "SMB-0d7599c806-13398d8f6fa9-negX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-13398d8f6fa9"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-13398d8f6fa9-negX-albedo",
+      "image": "SMB-0d7599c806-13398d8f6fa9-negX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-13398d8f6fa9-isolated-overlay",
+      "image": "SMB-0d7599c806-13398d8f6fa9-isolated-overlay.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-13398d8f6fa9"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-13398d8f6fa9"
+      ],
+      "source_face_count": 344
+    },
+    {
+      "id": "SMB-0d7599c806-13398d8f6fa9-isolated-albedo",
+      "image": "SMB-0d7599c806-13398d8f6fa9-isolated-albedo.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-13398d8f6fa9"
+      ],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 344
+    },
+    {
+      "id": "SMB-0d7599c806-c5f686eb393a-posX-overlay",
+      "image": "SMB-0d7599c806-c5f686eb393a-posX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-c5f686eb393a"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-c5f686eb393a-posX-albedo",
+      "image": "SMB-0d7599c806-c5f686eb393a-posX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-c5f686eb393a-negX-overlay",
+      "image": "SMB-0d7599c806-c5f686eb393a-negX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-c5f686eb393a"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-c5f686eb393a-negX-albedo",
+      "image": "SMB-0d7599c806-c5f686eb393a-negX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-c5f686eb393a-isolated-overlay",
+      "image": "SMB-0d7599c806-c5f686eb393a-isolated-overlay.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-c5f686eb393a"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-c5f686eb393a"
+      ],
+      "source_face_count": 155
+    },
+    {
+      "id": "SMB-0d7599c806-c5f686eb393a-isolated-albedo",
+      "image": "SMB-0d7599c806-c5f686eb393a-isolated-albedo.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-c5f686eb393a"
+      ],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 155
+    },
+    {
+      "id": "SMB-0d7599c806-6c0faadfb656-posX-overlay",
+      "image": "SMB-0d7599c806-6c0faadfb656-posX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-6c0faadfb656"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-6c0faadfb656-posX-albedo",
+      "image": "SMB-0d7599c806-6c0faadfb656-posX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-6c0faadfb656-negX-overlay",
+      "image": "SMB-0d7599c806-6c0faadfb656-negX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-6c0faadfb656"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-6c0faadfb656-negX-albedo",
+      "image": "SMB-0d7599c806-6c0faadfb656-negX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-6c0faadfb656-isolated-overlay",
+      "image": "SMB-0d7599c806-6c0faadfb656-isolated-overlay.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-6c0faadfb656"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-6c0faadfb656"
+      ],
+      "source_face_count": 172
+    },
+    {
+      "id": "SMB-0d7599c806-6c0faadfb656-isolated-albedo",
+      "image": "SMB-0d7599c806-6c0faadfb656-isolated-albedo.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-6c0faadfb656"
+      ],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 172
+    },
+    {
+      "id": "SMB-0d7599c806-9461782d30e7-posX-overlay",
+      "image": "SMB-0d7599c806-9461782d30e7-posX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-9461782d30e7"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-9461782d30e7-posX-albedo",
+      "image": "SMB-0d7599c806-9461782d30e7-posX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-9461782d30e7-negX-overlay",
+      "image": "SMB-0d7599c806-9461782d30e7-negX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-9461782d30e7"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-9461782d30e7-negX-albedo",
+      "image": "SMB-0d7599c806-9461782d30e7-negX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-9461782d30e7-isolated-overlay",
+      "image": "SMB-0d7599c806-9461782d30e7-isolated-overlay.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-9461782d30e7"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-9461782d30e7"
+      ],
+      "source_face_count": 87
+    },
+    {
+      "id": "SMB-0d7599c806-9461782d30e7-isolated-albedo",
+      "image": "SMB-0d7599c806-9461782d30e7-isolated-albedo.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-9461782d30e7"
+      ],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 87
+    },
+    {
+      "id": "SMB-0d7599c806-c95bf113bd82-posX-overlay",
+      "image": "SMB-0d7599c806-c95bf113bd82-posX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-c95bf113bd82"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-c95bf113bd82-posX-albedo",
+      "image": "SMB-0d7599c806-c95bf113bd82-posX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-c95bf113bd82-negX-overlay",
+      "image": "SMB-0d7599c806-c95bf113bd82-negX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-c95bf113bd82"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-c95bf113bd82-negX-albedo",
+      "image": "SMB-0d7599c806-c95bf113bd82-negX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-c95bf113bd82-isolated-overlay",
+      "image": "SMB-0d7599c806-c95bf113bd82-isolated-overlay.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-c95bf113bd82"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-c95bf113bd82"
+      ],
+      "source_face_count": 91
+    },
+    {
+      "id": "SMB-0d7599c806-c95bf113bd82-isolated-albedo",
+      "image": "SMB-0d7599c806-c95bf113bd82-isolated-albedo.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-c95bf113bd82"
+      ],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 91
+    },
+    {
+      "id": "SMB-0d7599c806-fa0932e06fbb-posX-overlay",
+      "image": "SMB-0d7599c806-fa0932e06fbb-posX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-fa0932e06fbb"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-fa0932e06fbb-posX-albedo",
+      "image": "SMB-0d7599c806-fa0932e06fbb-posX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-fa0932e06fbb-negX-overlay",
+      "image": "SMB-0d7599c806-fa0932e06fbb-negX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-fa0932e06fbb"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-fa0932e06fbb-negX-albedo",
+      "image": "SMB-0d7599c806-fa0932e06fbb-negX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-fa0932e06fbb-isolated-overlay",
+      "image": "SMB-0d7599c806-fa0932e06fbb-isolated-overlay.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-fa0932e06fbb"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-fa0932e06fbb"
+      ],
+      "source_face_count": 74
+    },
+    {
+      "id": "SMB-0d7599c806-fa0932e06fbb-isolated-albedo",
+      "image": "SMB-0d7599c806-fa0932e06fbb-isolated-albedo.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-fa0932e06fbb"
+      ],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 74
+    },
+    {
+      "id": "SMB-0d7599c806-16aa3f8d2318-posX-overlay",
+      "image": "SMB-0d7599c806-16aa3f8d2318-posX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-16aa3f8d2318"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-16aa3f8d2318-posX-albedo",
+      "image": "SMB-0d7599c806-16aa3f8d2318-posX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-16aa3f8d2318-negX-overlay",
+      "image": "SMB-0d7599c806-16aa3f8d2318-negX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-16aa3f8d2318"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-16aa3f8d2318-negX-albedo",
+      "image": "SMB-0d7599c806-16aa3f8d2318-negX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-16aa3f8d2318-isolated-overlay",
+      "image": "SMB-0d7599c806-16aa3f8d2318-isolated-overlay.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-16aa3f8d2318"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-16aa3f8d2318"
+      ],
+      "source_face_count": 58
+    },
+    {
+      "id": "SMB-0d7599c806-16aa3f8d2318-isolated-albedo",
+      "image": "SMB-0d7599c806-16aa3f8d2318-isolated-albedo.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-16aa3f8d2318"
+      ],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 58
+    },
+    {
+      "id": "SMB-0d7599c806-d0197039a013-posX-overlay",
+      "image": "SMB-0d7599c806-d0197039a013-posX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-d0197039a013"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-d0197039a013-posX-albedo",
+      "image": "SMB-0d7599c806-d0197039a013-posX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-d0197039a013-negX-overlay",
+      "image": "SMB-0d7599c806-d0197039a013-negX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-d0197039a013"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-d0197039a013-negX-albedo",
+      "image": "SMB-0d7599c806-d0197039a013-negX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-d0197039a013-isolated-overlay",
+      "image": "SMB-0d7599c806-d0197039a013-isolated-overlay.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-d0197039a013"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-d0197039a013"
+      ],
+      "source_face_count": 61
+    },
+    {
+      "id": "SMB-0d7599c806-d0197039a013-isolated-albedo",
+      "image": "SMB-0d7599c806-d0197039a013-isolated-albedo.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-d0197039a013"
+      ],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 61
+    }
+  ],
+  "coordinate_convention": {
+    "up": "+Z",
+    "forward": "-Y (head/horn)",
+    "side_names": "Geometric +X/-X until reviewed"
+  },
+  "landmarks": [],
+  "limitations": [
+    "Exact indexed rest diagnostic only; no source rig. Optional albedo-emission copies source UV/color networks for inspection, not PBR acceptance.",
+    "Box domains can include hanging tack or miss curved anatomy; not skin weights or semantic approval.",
+    "Landmarks are authored proposals, not inferred joint centers or accepted stance."
+  ]
+}

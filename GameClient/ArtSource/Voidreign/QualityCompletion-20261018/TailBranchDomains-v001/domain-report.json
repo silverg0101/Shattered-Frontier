@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "status": "unreviewed-clump-domain-proposals-only",
+  "cpu_only": true,
+  "source_sha256": "6c6044a533c16fc7fad23d42c0407dde37a0252aca84f9be1bc9b9a2367364f6",
+  "mesh_hash": "ba2d283db0be5e8cff4cc7549f1f51916cc0a4d18213773300976b11512ececa",
+  "object": "geometry_0",
+  "input_sha256": {
+    "docs\\art-templates\\model-profiles\\voidreign-tail-branch-domains-20261018.json": "f94a1f3e5c99c61edc63ec57900e59ad9d96ac2fd69bad4b4ac856e50d9d9d6c",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneGuideProposal-v001\\guide-report.json": "3e776c1cef3380c3a81814d67ce2ec32270bca2e7d7fbece55eefef49e70de67",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\FailureFeaturePaths-v001\\coverage-report.json": "1af7e79793fd8b1407c4b1b524d21d9ce4258c859558bbc3f94b557ce698dbd6",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\component-report.json": "008dd401251cd2388ab5e5472632bd81213e4b3c9d8f38ae1400fb4b756f1f26",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz": "0d7599c8064cb81a6e211a23731435e08939b7fb146ce2d4bed810273909a2b2",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selection-report.json": "63eb535dcafe1140c5445ce46bd402cc438af979c437fbb9d7430b723aa11a08",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selections.npz": "0b6a19f76a2cba73a42e293c29365360b53ba93be101cf8f4ca556e7a5989cc0",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneGuideProposal-v001\\weight-field.npz": "e397b54127123c7ad863706d650bb780b7489a5f82bf2a3b9d74bd16eb480f91",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\FailureFeaturePaths-v001\\additional-guides.json": "40af3c9d2bc8c363bb0d946fcc5fed3ab16244e063b409db695a714e9b184a6c",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\TailCrossSections-v001\\section-report.json": "c7076ec20556c9c05caff9bf482772dc3b63ec86706fb1e732c95539ef8a7542"
+  },
+  "tool_sha256": "7c0dda3d667e6acbe988b7697b7e57e90633498f5fe1e2e340c86e7fefbff4db",
+  "domain_archive": "domains.npz",
+  "domain_archive_sha256": "9804454ddfbf7e2e427e4e79d2a8e5820c389f083c271076613a6dc4d4f1ead0",
+  "domains": [
+    {
+      "name": "Tail_FAILURE_02",
+      "feature": "Tail",
+      "status": "unreviewed-geodesic-domain",
+      "target_node": 1267,
+      "canonical_nodes": 143,
+      "vertices": 232,
+      "faces": 272,
+      "geometric_components": 1,
+      "geodesic_half_width_m": null,
+      "selection_strategy": "plane-component",
+      "cut_plane": {
+        "path_fraction": 0.7,
+        "origin_m": [
+          0.09922958357916992,
+          1.4624460794812408,
+          0.9934538387165203
+        ],
+        "normal": [
+          0.33288083827708204,
+          0.6577206425068772,
+          -0.6757173254610894
+        ]
+      },
+      "root_node": 29002,
+      "protected_path_nodes_omitted": 1,
+      "source_path_length_m": 0.9942942261695862,
+      "bounds_m": [
+        [
+          0.09460735321044922,
+          1.4488037824630737,
+          0.7750111818313599
+        ],
+        [
+          0.24438908696174622,
+          1.7244994640350342,
+          1.0062223672866821
+        ]
+      ]
+    },
+    {
+      "name": "Tail_FAILURE_03",
+      "feature": "Tail",
+      "status": "unreviewed-geodesic-domain",
+      "target_node": 1260,
+      "canonical_nodes": 8371,
+      "vertices": 16062,
+      "faces": 17091,
+      "geometric_components": 1,
+      "geodesic_half_width_m": null,
+      "selection_strategy": "plane-component",
+      "cut_plane": {
+        "path_fraction": 0.15,
+        "origin_m": [
+          0.20670730975748458,
+          1.0596818260147898,
+          0.9873527515500695
+        ],
+        "normal": [
+          0.34437247448778113,
+          0.4027203566120176,
+          -0.8480707005818866
+        ]
+      },
+      "root_node": 25748,
+      "protected_path_nodes_omitted": 1,
+      "source_path_length_m": 1.4279803037643433,
+      "bounds_m": [
+        [
+          0.09037181735038757,
+          0.9708763957023621,
+          0.020366191864013672
+        ],
+        [
+          0.5898052453994751,
+          1.9149097204208374,
+          1.105137586593628
+        ]
+      ]
+    }
+  ],
+  "limitations": [
+    "Geodesic tube or distal half-space component; neither establishes a complete semantic lock, interior centerline or approved root.",
+    "Fused branches may enter the tube; inspect isolated surfaces and cross sections before any weight change.",
+    "Faces included only when all corners are in the proposed node domain; open selection boundaries are not mesh defects.",
+    "No geometry, selection authority, weight, rig, motion, collider, acceptance or runtime budget changed."
+  ]
+}

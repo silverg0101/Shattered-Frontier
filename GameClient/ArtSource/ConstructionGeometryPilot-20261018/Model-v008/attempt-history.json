@@ -1,0 +1,33 @@
+{
+  "asset_ids": [
+    "BLD-RT-CellFull-01",
+    "BLD-SM-CellFull-01",
+    "BLD-WT-CellFull-01"
+  ],
+  "policy": "one initial attempt plus at most two repairs per failed stage",
+  "stage": "materials",
+  "attempts": [
+    {
+      "attempt": 1,
+      "version": "Model-v007",
+      "result": "needs-review",
+      "findings": [
+        "timber inherited false block-course segmentation",
+        "stone material too flat",
+        "edge-wrap discontinuity observed in height/roughness maps"
+      ],
+      "checks": "GLB/FBX validation passed after fresh import"
+    },
+    {
+      "attempt": 2,
+      "version": "Model-v008",
+      "result": "needs-review",
+      "findings": [
+        "timber now has continuous grain; visual fidelity remains below reference",
+        "stone course appearance remains overly uniform/flat",
+        "edge-wrap acceptance still lacks approved numerical tolerance"
+      ],
+      "checks": "fresh Blender source plus GLB/FBX checks pass; no loose vertices; one position-welded component"
+    }
+  ]
+}

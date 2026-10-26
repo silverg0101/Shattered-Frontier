@@ -1,0 +1,1313 @@
+{
+  "schema_version": 1,
+  "status": "diagnostic-reproduction-kit; failed gates remain",
+  "files": [
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/Cleanup-v002/cleanup-validation.json",
+      "bytes": 1429,
+      "sha256": "e19126a031ed5fdb0726944fbe0c1b35346a817076caa66c015cf900a1ee3232"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/Cleanup-v002/repair-report.json",
+      "bytes": 1257,
+      "sha256": "8a0d9ad9c688cb7704bf406bbffe77a65a464ac8b778771c8802268095c068c0"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/Cleanup-v002/Voidreign-HairPrototype.blend",
+      "bytes": 79515015,
+      "sha256": "d7f145aea17d7b2707363059e8276a5720dbdebfa0d8491f1c987dd53d2db180"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/Cleanup-v002/Voidreign-HairPrototype.fbx",
+      "bytes": 39384956,
+      "sha256": "94411ba505cd599379ed8724857dbe70e67d0c30f2a11a18ba4ab17efd7440b8"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/Cleanup-v002/Voidreign-HairPrototype.glb",
+      "bytes": 113861472,
+      "sha256": "fdcba34e38b726818673b62906c5d30aeee1b718fb01888700d064df2088cf38"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RootRepair-v003/root-repair-report.json",
+      "bytes": 17879,
+      "sha256": "e66c485106c48557957032d11e0bd35f135a907ac0f35b7e1ff0e4714dc4ec99"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RootRepair-v003/root-validation.json",
+      "bytes": 1891,
+      "sha256": "3d9036ecd0bddcf02320b5aff76c7f6c5aa466758438187c9b6d7fb0bea8d315"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RootRepair-v003/tool-source.py",
+      "bytes": 10450,
+      "sha256": "af79fde870915fdd01ae35ca3daf586bfeb3bd6f5db59a1e5056d476ffdc6b02"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RootRepair-v003/Voidreign-HairPrototype.blend",
+      "bytes": 79530797,
+      "sha256": "9b3eab121765220b031e0c1394058c502009b90196013f0e10ee61492ba12a66"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RootRepairInspection-v001/00-component-selections.npz",
+      "bytes": 5812230,
+      "sha256": "28ff0cd9e7e18f628e98a7a3695ed0c699b2883f9e07b2d5cd70b8ca1f523dbd"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RootRepairInspection-v001/component-report.json",
+      "bytes": 248561,
+      "sha256": "b12f553e4d00cd9d2d4c9da777bd6ec57fa7728d2194c0191401bf7797a26111"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/SemanticSelection-v001/guide-proposals.json",
+      "bytes": 43714,
+      "sha256": "79f624ab91263f77522aeb0ff788c27b928bb8413461cda583d299ce2c7e7f29"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/SemanticSelection-v001/selection-report.json",
+      "bytes": 1885,
+      "sha256": "631521c4276bd0067320419c79dcdf8bd2043855047ad12a641f25144ed59d4c"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/SemanticSelection-v001/selections.npz",
+      "bytes": 5506504,
+      "sha256": "a0b36b192e083d25a9fe45604566a9202a3fc4262c40b708ac58935d81a9abf8"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/AttachmentProposals-v001/attachment-proposals.json",
+      "bytes": 62108,
+      "sha256": "8a6e06cf279edb306b34ec99f5573543e71ebd526cfcba6b8263ae6d46402b82"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/GuideProposal-v003/guide-report.json",
+      "bytes": 1963,
+      "sha256": "3995bb5ed68d758d521e3cd9b43d06106969ed2b804b10e104b50d3fdd812704"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/GuideProposal-v003/guides.json",
+      "bytes": 42443,
+      "sha256": "f8f8c15cfa47fcd80ea32cf823227cc5df5d063e0baa1e4bc72de99e77701621"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/GuideProposal-v003/weight-field.npz",
+      "bytes": 990171,
+      "sha256": "9ed4e4972047c53c56568925d475fd8db45f58c1d737e626246078390445321c"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/Simulation-v003/guides.json",
+      "bytes": 42443,
+      "sha256": "f8f8c15cfa47fcd80ea32cf823227cc5df5d063e0baa1e4bc72de99e77701621"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/Simulation-v003/motion-profile.json",
+      "bytes": 6447,
+      "sha256": "9df3ed982c0f5f571210a98d42c1e6b395b80713c139f0b7b162ad861d5cca47"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/Simulation-v003/simulation-report.json",
+      "bytes": 58731,
+      "sha256": "5145baa3fdd4b8e1f981717e73e411692cf73bf1e9738c2e82b531941bfe0935"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/Simulation-v003/tool-source.py",
+      "bytes": 12692,
+      "sha256": "bbb17e6310298993f45e6fbf6b6abadb8824f35969eeb4dd2dfbbe8d3ec6baab"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/Simulation-v003/trajectory.npz",
+      "bytes": 797023,
+      "sha256": "18b5171e372db733ae4155ebcac1e2ed87a1202d5cb89235efa23db022f04530"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHair-v003/motion-profile.json",
+      "bytes": 6447,
+      "sha256": "9df3ed982c0f5f571210a98d42c1e6b395b80713c139f0b7b162ad861d5cca47"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHair-v003/rig-report.json",
+      "bytes": 16431,
+      "sha256": "578e8b6ccd425cf0cdf840cbbce97df3a60e4e2c33d8e37b58639545fe03c660"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHair-v003/tool-source.py",
+      "bytes": 21239,
+      "sha256": "07cc0375894c1458beffa94ba653e88fea8e69478ffb55d8367ed97bd0340310"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHair-v003/Voidreign-CompleteHair.blend",
+      "bytes": 88724143,
+      "sha256": "35f3f95a01387cf805444060fde95a77e17d51f5c01378529879af053894ce96"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHair-v003/Voidreign-CompleteHair.fbx",
+      "bytes": 45973340,
+      "sha256": "e29a1d889e0b6485d98d5c96cc85ba52a55c164f33b5d0bb4e5c9245de161b60"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHair-v003/Voidreign-CompleteHair.glb",
+      "bytes": 130674936,
+      "sha256": "fad67cb279093768c2d25859ffe1cf6aa6af03bc14d20daf73158d2444dc528a"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/SurfaceCheck-v003/surface-report.json",
+      "bytes": 4372,
+      "sha256": "b898669f644b833b2ac68adee07f5d3c1999b5b3fe1c9115199ac61e568de320"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/SurfaceCheck-v003/surface-review.npz",
+      "bytes": 63770,
+      "sha256": "c7cb30df4726e80f512c0dc7a2d9198a2d6af670a78428b0c1d29a4ec67401e5"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairImport-v003/rig-import-contract.json",
+      "bytes": 20403,
+      "sha256": "0a85b976e29db668d09b26c2cb9b4715df90645b1b956d4fa5107907004c527d"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairImport-v003/validation.json",
+      "bytes": 3678,
+      "sha256": "190895d8eeea5cd2472a81eaa53f052d2eb8f2f25a7ce0eabe274eb424f94e60"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairImport-v003/Voidreign-FBX-Reimport.blend",
+      "bytes": 69101966,
+      "sha256": "b270ca39b2bc142362bcf9064bb70cee5016b1944b7a7d9c877d13084e483c36"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/SurfaceDiagnosis-v001/diagnosis.json",
+      "bytes": 11128,
+      "sha256": "22e48812721e43cf85b8fc288e61acb01025f8adec791ce769d6a47e4b33eacd"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/SurfaceDiagnosis-v001/tool-source.py",
+      "bytes": 4515,
+      "sha256": "ccce741d0ee431b237a776204817d2a1d40d34a06b1d795420078a8a814594df"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/SurfaceDiagnosis-v001/trajectory-diagnosis.json",
+      "bytes": 562,
+      "sha256": "f2e936dbe51549ebc8ce8337220d3881b9a9d1439f686975a2c43d4c66799194"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialGuides-v001/Head-NegX-BaseColor.png",
+      "bytes": 1050660,
+      "sha256": "7dbdec939c4527bb298877fd41aa0e3ca03786e576ffae646c3c89e3e632ff75"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialGuides-v001/profile.json",
+      "bytes": 1224,
+      "sha256": "9b1bcc035e0572b41345b3cbc11dfe15326b09b411d86a56b366ad90fec56f10"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialGuides-v001/projection-guides.json",
+      "bytes": 2821,
+      "sha256": "abab172d4890edc076998947a2c1bb2189c67682ddb5742f13e5c534b24082c7"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialGuides-v001/Saddle-NegX-BaseColor.png",
+      "bytes": 1295261,
+      "sha256": "5fd93a7d1bcb70829bf5d5c68024ba026f0d201dce1e6a6065712afcb1892426"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialGuides-v001/tool-source.py",
+      "bytes": 4504,
+      "sha256": "80c0bb6f7f4b0b6f78d0f30e8bd2187e9da68e9c108131c3bd1296ac32576a08"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialEdits-v001/edits.json",
+      "bytes": 532,
+      "sha256": "06ba250494064eb7741a2c051c0d811f3e0528ece6669f8c31bd088ae16eb97e"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialEdits-v001/Head-NegX.png",
+      "bytes": 2014822,
+      "sha256": "285ebba46cb1567fe352d491b9c19055abaf2761afcd0ddd69fe430dc43f69c8"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialEdits-v001/prompts.json",
+      "bytes": 2785,
+      "sha256": "9d14b204ce5ed43e3edfd22335b8eb28cbc0064c782125d502d3c2f6ce6bf9c4"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialEdits-v001/Saddle-NegX.png",
+      "bytes": 2678928,
+      "sha256": "4560fb109594438d44f6f426bb70779afcaab3298e7a393b59b750907e998026"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/OppositeDetail-v001/edits.json",
+      "bytes": 532,
+      "sha256": "06ba250494064eb7741a2c051c0d811f3e0528ece6669f8c31bd088ae16eb97e"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/OppositeDetail-v001/projection-guides.json",
+      "bytes": 2821,
+      "sha256": "abab172d4890edc076998947a2c1bb2189c67682ddb5742f13e5c534b24082c7"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/OppositeDetail-v001/projection-report.json",
+      "bytes": 1271,
+      "sha256": "447e97a456793813ae08005ca8b392d0993e0c4280a006dfe211952cc171382c"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/OppositeDetail-v001/textures/BaseColor-4K.png",
+      "bytes": 24091298,
+      "sha256": "1023bcd5121c571e5bf94781a4304feb8717baeee1897ebf75bd7a67d93ebde1"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/OppositeDetail-v001/textures/ProjectionMask-4K.png",
+      "bytes": 1980573,
+      "sha256": "8acdf8e9b2afe1d9482a82fe650f2e6faf34ece6b2fb0ce0bf36d1e2bed76228"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/OppositeDetail-v001/tool-source.py",
+      "bytes": 10476,
+      "sha256": "6c0d164da659e916e8c3f76dce1a8a737b66a3a98cbcba381a88b78c77504eee"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/OppositeDetail-v001/Voidreign-CompleteHair.blend",
+      "bytes": 117465918,
+      "sha256": "59e4ee6e26f46924e0ada91adda0345e7e8eb12e0fe3ddc43ad870dc68bbce3a"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/OppositeDetail-v001/Voidreign-CompleteHair.fbx",
+      "bytes": 46665036,
+      "sha256": "546866a948d9a66bff225d131e0750e8ba47a15e1fe99b2ffadac9c0ba213e17"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/OppositeDetail-v001/Voidreign-CompleteHair.glb",
+      "bytes": 145464172,
+      "sha256": "f5b41df4222c514ace598230f61849a6b2342183269214b339fdd62d1b5d4015"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/OppositeDetailCheck-v001/tool-source.py",
+      "bytes": 6281,
+      "sha256": "4ec8a4c5b57930d2d63556782f63076e77109dd94ccf8784130852c1c3f64e5e"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/OppositeDetailCheck-v001/validation.json",
+      "bytes": 1310,
+      "sha256": "c24f0744a173035a89e814345da5690eb216cfe08ab22d9aaf33362f19d3ec65"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/OppositeDetailImport-v001/rig-import-contract.json",
+      "bytes": 20405,
+      "sha256": "df0695b784d87b4af6cc049a92f080bbfa5bd87c03f87f517b5e0d391563169b"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/OppositeDetailImport-v001/validation.json",
+      "bytes": 3678,
+      "sha256": "a11709538da374e4a98311126cb15eafa26bbde55feaffb7950ff069db11db9c"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/OppositeDetailImport-v001/Voidreign-FBX-Reimport.blend",
+      "bytes": 70259683,
+      "sha256": "faf68d6c1482cfbc9517b4dda3552d13509e8f6501e8b60a54837ee76f757692"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/SupportInspection-v001/profile.json",
+      "bytes": 1507,
+      "sha256": "22b0bd3abd09d1b6143164a7eed10d77fb6b582eb177b84eeb53e68ad26684b7"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/SupportInspection-v001/support-report.json",
+      "bytes": 4333,
+      "sha256": "96344a5acb8562e433c515b8bf6821e0b1c2ddfcfa6c881a810422477000cac3"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/SupportInspection-v001/support-selections.npz",
+      "bytes": 19415,
+      "sha256": "474171d670a3963831c708aad155233e86f4f7d054456a7d99d9dd890843de43"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/SupportInspection-v001/tool-source.py",
+      "bytes": 4140,
+      "sha256": "505c461af8a5a694d793585773bdf89f802993699f433062b2713ff65b6373a9"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReviewEvidence-v001/component-dispositions.json",
+      "bytes": 2159,
+      "sha256": "544032151e4e082fcdbb35810cb6b665420a2babef698054785481e43503901f"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReviewEvidence-v001/ComponentAtlas/atlas.json",
+      "bytes": 3454,
+      "sha256": "efbec3423b502aaa31354596d858826edb16d2f1c501bb8670acdfb12457e41b"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReviewEvidence-v001/ComponentAtlas/C0002.png",
+      "bytes": 280219,
+      "sha256": "8c13dca970fd9fff451279c99eeb610d5b92f2f575705c618d68851e93df8278"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReviewEvidence-v001/ComponentAtlas/C0009.png",
+      "bytes": 212110,
+      "sha256": "6d1095d141b32e108d1d1e8104f1faaab197105ae953ae854761f3af24bcaa12"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReviewEvidence-v001/ComponentAtlas/C0023.png",
+      "bytes": 269506,
+      "sha256": "43676cb35ccbbc3e1f19dc941b41d47156817a666e2c6403c524960a0d476f38"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReviewEvidence-v001/ComponentAtlas/C0029.png",
+      "bytes": 192182,
+      "sha256": "7f528b3b70386f4f84e2be3aeda5f4edb22719062a3de3720bc6034f7ed062d4"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReviewEvidence-v001/ComponentAtlas/C0032.png",
+      "bytes": 193290,
+      "sha256": "9e7708ea39d9bcee270ca6afc1f87bab2096d65a666e3a938bf766a9e75e6506"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReviewEvidence-v001/ComponentAtlas/C0080.png",
+      "bytes": 149058,
+      "sha256": "371f95bd97c519dc814ae259f6379feaffae2cd30e57f8e20d4e24981d152c8a"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReviewEvidence-v001/ComponentAtlas/C0091.png",
+      "bytes": 208560,
+      "sha256": "aeeed7204fc30252e9ace5990d07416c8c3295c80aa1f168ec52efdbf54cc24a"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReviewEvidence-v001/ComponentAtlas/C0109.png",
+      "bytes": 187134,
+      "sha256": "75feb2602d163ccd2e2303b68c5c8bd5516eadb2ab79f2e6f940eab3c6ee5f77"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReviewEvidence-v001/ComponentAtlas/C0156.png",
+      "bytes": 144222,
+      "sha256": "98d071ddf140ff2b5d3c7906d8a81f1804ce357ea4b7375b7e0feccca343fd5f"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReviewEvidence-v001/material-edit-review.json",
+      "bytes": 2179,
+      "sha256": "b04f4552e42f015f340cb2aa50f3c1855b9f4518e3b6faa45fba3ca40227f121"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReproductionEvidence-v001/Imports-validation.json",
+      "bytes": 3678,
+      "sha256": "0c9dc8f8a47161d408cad28bb09d5e7cf4f38e5661662dcd896598e0622f7300"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReproductionEvidence-v001/reproduction-comparison.json",
+      "bytes": 1245,
+      "sha256": "4e72ecf71e5fcab588ae231db510797022b48e37a9b11139e82adeef08369292"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReproductionEvidence-v001/reproduction-lock.json",
+      "bytes": 4311,
+      "sha256": "39d590b40c5a1b7383d38412169e40c8e147c1b963d4302b9ddc198e426798ab"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReproductionEvidence-v001/Rig-rig-report.json",
+      "bytes": 16431,
+      "sha256": "b7a16e404d9c660b74eda3e081c362760fe0d92dfe73c90658c5dd67365bfbf1"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReproductionEvidence-v001/run-report.json",
+      "bytes": 17535,
+      "sha256": "341883b947cc0258f76559ffe0e3647ed3d28932f3be3a5c7c7bad78dc50050c"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReproductionEvidence-v001/Simulation-simulation-report.json",
+      "bytes": 58800,
+      "sha256": "082d44268138c8876a5e679391dda4d381764a82f13766c97875df2d7d6c7093"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReproductionEvidence-v001/Surfaces-surface-report.json",
+      "bytes": 4372,
+      "sha256": "1631016957057b263c06a57dc6ee501ea9bda258029c6782f1bd85bdd5b950f5"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ComponentLedger-v001/component-review-ledger.json",
+      "bytes": 204435,
+      "sha256": "d9bc4877d6b550cdfd54d56be9cd1e0eaee7507ceca0cb6630f3aac75c066010"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ComponentLedger-v001/tool-source.py",
+      "bytes": 3738,
+      "sha256": "a23a71af2a10853194587358b6d2e49cf19f8b68cf223ac1038a596924991ef4"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0001.png",
+      "bytes": 869020,
+      "sha256": "4ce9556a2042d6b6db17cd0f60fcf830cc3df31601f5e6de8d5970634cf6325d"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0002.png",
+      "bytes": 869034,
+      "sha256": "bbed0677bf64d946bbfafbf47f0f1db0d7da97c1ef264b1d4745d57da1cab891"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0003.png",
+      "bytes": 869106,
+      "sha256": "c535b3964e99b2e55c1ed236920917bfef9db4aeb6df1fccc877ca81e5569737"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0004.png",
+      "bytes": 869607,
+      "sha256": "dac51a33ef11df98a97ac0e15acb00eb5732afb208f05f669aafb0bd67fa6b36"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0005.png",
+      "bytes": 869311,
+      "sha256": "728e8c4fc05cc6ba8bfec4ee63936a2981300d71977b7bb30bb9d7cb32f4bc69"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0006.png",
+      "bytes": 869793,
+      "sha256": "c7e23ffb659f1b35f348f8840bf6440a410d1f4edf29fda3ae5e0956be25e57a"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0007.png",
+      "bytes": 869543,
+      "sha256": "eb5b08745e3c5b76a3a094ee27393999866772ceb45a897b770e4dce1d4b30a0"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0008.png",
+      "bytes": 869618,
+      "sha256": "dfe495e5e6a5338a1c05ae4ca9dec0bce0a22d9cbbe3817834651050061ab644"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0009.png",
+      "bytes": 869509,
+      "sha256": "7a4a08e637e0f0e4b2ac76f06a7a91f6d6253f9e568b01828d46d814bcbc800e"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0010.png",
+      "bytes": 869254,
+      "sha256": "be6729d6a11e09c7abdd79347317fc1436315c4a487206ef2d6464fe8ec86967"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0011.png",
+      "bytes": 870514,
+      "sha256": "d7eacadb9ac17074af99683641c39c64af3d2c512123f7a8b9a98fdde2095871"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0012.png",
+      "bytes": 870529,
+      "sha256": "c4e7efaf3808f7c48f184179a997f88fcb60c7a65c3eef89d0e8355544fa737e"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0013.png",
+      "bytes": 871261,
+      "sha256": "a6725da079ae7d3845e2d9bcffe384a5849e0b72ab373fb5a46b5d292c4d3fee"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0014.png",
+      "bytes": 871352,
+      "sha256": "fed385ca58b5ff48270ba05a5eed506c3f651c4accf7cd02580641a3c4f6e003"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0015.png",
+      "bytes": 870793,
+      "sha256": "8aef1d1796b052cfbcf0a073984d1836f651abd8963afbded13142da709bb302"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0016.png",
+      "bytes": 871369,
+      "sha256": "2420ec9a1a008d5ee5a636e03eea585d4d296edb2f0f96f914fcf1a371ebfc16"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0017.png",
+      "bytes": 870675,
+      "sha256": "1335e36bb2c61916b8da465f44f4ca78b1b281471613512d1eb1a51740377946"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0018.png",
+      "bytes": 869538,
+      "sha256": "33f168b28e71e83a60e404d6af1c9843cb13970fb735f04b78bc0a3d9da0747c"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0019.png",
+      "bytes": 870044,
+      "sha256": "b2a4f22f672b0d51f42e500373bca3f59824f50406c86b4feca1c25eee8e5fbf"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0020.png",
+      "bytes": 870425,
+      "sha256": "36886c1a6b181bb0f7b9e3f53c36b1ec6f6c0d61780f719a52ccbeaed15e48f6"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0021.png",
+      "bytes": 869151,
+      "sha256": "845f3a851dcbb82566691f708a1b7276d8797846481d79c1a17e9e88e1cc341e"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0022.png",
+      "bytes": 869586,
+      "sha256": "065ee844f0d32d6865ae818ac22f7773244d02c77136e8d2f16b3d2afbeb4550"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0023.png",
+      "bytes": 869645,
+      "sha256": "0d83a07a33a4ee79ebe4ace3f12348b4207ac2baf7a07984440bcf5ab287992d"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0024.png",
+      "bytes": 867710,
+      "sha256": "828c4426f16b8ebde2de7bb0321b84506c2811a08ed616a3b0d7697eaffb4aec"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0025.png",
+      "bytes": 866319,
+      "sha256": "e43de6f56be1889565a86d1ad42b6d2fdca53eac63410933882fd3acfc4c2f25"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0026.png",
+      "bytes": 866318,
+      "sha256": "933f79e7fafe33da28b83650af6f80501f88ab7ebbb824aa688a8ebd1c966e15"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0027.png",
+      "bytes": 867737,
+      "sha256": "97e19b0b0226e697e972b0c8fa00658164080d0aadbf6ad7e673bcd727668efb"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0028.png",
+      "bytes": 867954,
+      "sha256": "d138e08444be29c2fc73b03ad8ecdb3887314a27a5c1049f285bb44bbefbe10f"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0029.png",
+      "bytes": 868038,
+      "sha256": "d969dadc3a227d23103f87542673338cae5a9b391f3b6538409a715d1b7f33f1"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0030.png",
+      "bytes": 867020,
+      "sha256": "d4d8215c9613d16fba97db03260e364ccb5fb1e1efa364487afc1a46ebe75917"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0031.png",
+      "bytes": 866869,
+      "sha256": "0771b96af5f185019014e9ab2f516c4db6cf76119c3a2da6c0fb6eb20ae85f85"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0032.png",
+      "bytes": 866741,
+      "sha256": "6c91f588d31619041f6a8cad9b3d1a6818928767260b72ad054dccfb7a94ae5f"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0033.png",
+      "bytes": 867881,
+      "sha256": "b2e4ac29206f0d9633ce51c2a78078c9a93796f290d7dc8f1fe909968eb40272"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0034.png",
+      "bytes": 868078,
+      "sha256": "96020072a682172adfc12ac8ea7ce771dfc043b5a88120cecfa133217f8e1ae0"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0035.png",
+      "bytes": 867915,
+      "sha256": "58fef683a2375064e1bc5e159ff4b57696065c01c3fd6e5a64055fe13d499cb6"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0036.png",
+      "bytes": 868333,
+      "sha256": "d9268c780ac4d805648bdfb9a3c25f7f07fac664540fb004600f4301645cb35b"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0037.png",
+      "bytes": 869244,
+      "sha256": "b44da42b5d4acddc03626a30f14b2c0cd481708949afefcbfcca382c48086baa"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0038.png",
+      "bytes": 868686,
+      "sha256": "58496fadd3673738e154e644c7121b0ce0ce59b39cc72d94375495320c2a56b0"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0039.png",
+      "bytes": 867219,
+      "sha256": "07e84820540a432899a8e7fa411b9c9201c99e369ca8c59fe419e69d39a28cd1"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0040.png",
+      "bytes": 865561,
+      "sha256": "1bb78d4bb790202c2f8129d52182508b1f621c20f09c8d99490c67e3c3cd7cf5"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0041.png",
+      "bytes": 863583,
+      "sha256": "83eda9383aa75bab154c9adbe22c9efdfe09bfe46ec888c89411ed4e2657372f"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0042.png",
+      "bytes": 863788,
+      "sha256": "9f9975f173e2fefad09435f308271c86dedbcddd3aa19432d542104fc8520477"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0043.png",
+      "bytes": 865952,
+      "sha256": "972a9da6d2e8cbc607fdaa14e22898795bfea8050f343149a2be7c62b770cb06"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0044.png",
+      "bytes": 861224,
+      "sha256": "6d00fdf3f7813c3fb683523c25c9ea25d9563c28057c829cd4ca91b6802c0298"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0045.png",
+      "bytes": 860921,
+      "sha256": "4e2b534eab7b91bba3a66047489ce9eab54453b1b1889fda5f6198e6a9a57d53"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0046.png",
+      "bytes": 862328,
+      "sha256": "853e213bdd1e27cb1e1ed7e6c1813ea03b98d66dfc149df8572d53080e65b704"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0047.png",
+      "bytes": 861976,
+      "sha256": "5c269f06677a8c44e8ad12734e6ebb34c8c6149ceef419189adda4a6f7c08a1d"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0048.png",
+      "bytes": 861852,
+      "sha256": "238e1d4672193aaf6a95d009bcb86b1350f910defea19bea9417459101cd2a73"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0049.png",
+      "bytes": 861621,
+      "sha256": "41542435da4bec24d8bcc3de1ae23b141a1d3a284710da0a05b1bd5d4b5e4c2b"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0050.png",
+      "bytes": 861518,
+      "sha256": "bd9d089d2f994a410ee43c6be1c1ed71ecfd248a98a96e8b900927efd33f4945"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0051.png",
+      "bytes": 861181,
+      "sha256": "5193b10b8341aeaccd1af150ef29739a5d943e99812910a6d236a386a5f23481"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0052.png",
+      "bytes": 862520,
+      "sha256": "6723ed07653d097836e5c4d6197c9e6c0886a8c280ca345c933d8437c2e3ba1d"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0053.png",
+      "bytes": 862785,
+      "sha256": "45d4e2a4cc609f5ae1ff6275483fbba6ed9d507ad51bee90d84e6690c42688bc"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0054.png",
+      "bytes": 861786,
+      "sha256": "736aed4fb5a2b5e9e2d9eb25371932dfeb6fe8c6f5af8c7f3287cde4b5f85e72"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0055.png",
+      "bytes": 863142,
+      "sha256": "cd8472143ca265c2b8c8dcf4c06ecdbda22b8ec304018ec6ff006320b801b3da"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0056.png",
+      "bytes": 864088,
+      "sha256": "f0a03f29736df0df18fcccd99892894cf9023a5f2dfa03a0e06af6522ad77486"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0057.png",
+      "bytes": 864246,
+      "sha256": "71bab4ce1b2dbc9fff3fc937d9c793d3a329d2e46e4bc60a656a756666b24aee"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0058.png",
+      "bytes": 865172,
+      "sha256": "bc2ac0c659c77ecad27aec1314c8b749ce7991dc75a29c6be3e196d4c1ee882c"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0059.png",
+      "bytes": 865201,
+      "sha256": "e75b912e2ba8d39ccfd2e92a3787436ec6360ecc7d0a75065d33fa9c6c513579"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0060.png",
+      "bytes": 863991,
+      "sha256": "3662f5e2d583b40dc48d6fcc997e98b5b25ff12d3a65fd7afe6a316456108d49"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0061.png",
+      "bytes": 864086,
+      "sha256": "c385ce7836cb5c6c408d6ebc5a67b5ee4cedf523cef4996131e5c962cf1ebd5d"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0062.png",
+      "bytes": 862753,
+      "sha256": "b74ec2dedeae862797f600a7edacf8eeb43769305e3929ba029222be6502b04e"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0063.png",
+      "bytes": 863332,
+      "sha256": "d21a3e90fca1f0cabd8ed2f3b9fea23759f5d6697e87be1d5b8380245ddeacf4"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0064.png",
+      "bytes": 864637,
+      "sha256": "91d6699f0ee115a7a9308191f8c2b3c22d37ab11db0febaf4d9b8a26709837d3"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0065.png",
+      "bytes": 864180,
+      "sha256": "dfaf09e5330bfe504da3e911f78b3bfe95565cc6a3df84ca6fd1f27929a86272"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0066.png",
+      "bytes": 863667,
+      "sha256": "eaf1aee5c7dda90dad7cea61f97fe57bcda2a6d6f5264b3ecd7129405cb7a554"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0067.png",
+      "bytes": 865096,
+      "sha256": "81e7feba49a655d54a47997e8fab6f9b940986c70263a25b14e88da2e1c85089"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0068.png",
+      "bytes": 864507,
+      "sha256": "0c6556208e5d194357ad18151ebc4d2fbee9ece6ac3f39533cb1912d4a9c26c9"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0069.png",
+      "bytes": 863542,
+      "sha256": "f96c933c7cc91ab088b5648a94e351a8015d8bc5fbe742039af3d4c8edeb62d3"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0070.png",
+      "bytes": 864747,
+      "sha256": "d278acb0874838b7357751185519b17c8c4a3c6c2b2b461b6cf3de6c23d6adac"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0071.png",
+      "bytes": 865722,
+      "sha256": "548f7a105fc2a9ca9168b4b90619624a4cb9ac299f52dc36f993f9a8a6d37415"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0072.png",
+      "bytes": 865183,
+      "sha256": "9cbae67c2624808ed5647625da9219d5eb87c30a94033afe51412baa4c6db67a"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0073.png",
+      "bytes": 864857,
+      "sha256": "88c97a23797e33e638d4980fc9ee354fcacf4ea289b1e7cce450676c65d89252"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0074.png",
+      "bytes": 864445,
+      "sha256": "f146e058765ad7faeda3c5b6c907ee70146fbee6466abf08d8c5a8abd9d0e449"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0075.png",
+      "bytes": 864428,
+      "sha256": "fd4c5b39fdeb507b9a9e9d89236bbe260a3d6dda404fde351b81fe422579f237"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0076.png",
+      "bytes": 864215,
+      "sha256": "2c4fba5650b06b57fae08e48ca5648aab2ca4e5903c8b2f79d17d26af39d1225"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0077.png",
+      "bytes": 864785,
+      "sha256": "fb31b4af42348388b48a818e6f5e4e20d1051da117d400c80cb64c67b7baa519"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0078.png",
+      "bytes": 865431,
+      "sha256": "7c817e163dd658e073429d14cbfc8307c0b702608278c55cda3bfaf0e40e4c21"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0079.png",
+      "bytes": 864791,
+      "sha256": "6a918f474c9d62be0a1a8353caf9a3afca7c1cf592bba07e3b631ecdd0b88f83"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0080.png",
+      "bytes": 864401,
+      "sha256": "671bfead7d6a6e65ee8302545b1130215f500789af70ada75e2618c710043ac2"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0081.png",
+      "bytes": 864739,
+      "sha256": "5c76f176121e2659e10111dcf89d0caaccfbe11c25e31d88d6cef7ef3d5990af"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0082.png",
+      "bytes": 864644,
+      "sha256": "3bbcfa60ed4791d507a05a1a544bc8f2cbecfafe53078102ee2a2ef928b5a85c"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0083.png",
+      "bytes": 865486,
+      "sha256": "b5deca9bca4a28727ec9c88d8a6b05b42fbca8ee881ad920ea35559a83f7dfed"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0084.png",
+      "bytes": 865166,
+      "sha256": "4de8e63bee6893ac97bb29bf1ce4b22059149feb365acf57129f80d318d37fb3"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0085.png",
+      "bytes": 865256,
+      "sha256": "21a20780f7b885804b9575913ec055361ec943b552452fffa45394b971e32e1d"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0086.png",
+      "bytes": 865156,
+      "sha256": "3f8b51502b4e4cf6d0ebac037c9388716f2d5bfef85ec9a00405e027fb21d1a4"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0087.png",
+      "bytes": 865171,
+      "sha256": "485d06151355bc4e944c013df70d17de5074f80a1664d7a061025cfe54918837"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0088.png",
+      "bytes": 865155,
+      "sha256": "d08a66e2e268dc5e3947c890a021bbf7737db8b0d156fe4a4dcdec2bd44dbdfb"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0089.png",
+      "bytes": 864849,
+      "sha256": "d0f6d21e05cc1e86f26286d4e9297ee0b58b2e7d0b9d86502d85ec983c3c2abf"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0090.png",
+      "bytes": 864495,
+      "sha256": "35824ce41076bd8b3809a6d65532d858c5b9779f3edecec68b939eee7c2e16da"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0091.png",
+      "bytes": 865279,
+      "sha256": "a3a8574f710c8b0f2658bca7ad84f00f5f5c193cc88574d578f7a542be60f71a"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0092.png",
+      "bytes": 865960,
+      "sha256": "dda22ecf5caf425af50fee65ec0baeef4c987fc7cc4641f035adfd39c11c43b9"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0093.png",
+      "bytes": 866035,
+      "sha256": "0365d5e459f3c42f60571904ef2f192797208a2f7ddf81a4708e9f686444e411"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0094.png",
+      "bytes": 866081,
+      "sha256": "87af9dc4b28cbcd453abbd279bf355ef3fcee19e3c623800e8b7a5b0f32d02e9"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0095.png",
+      "bytes": 866077,
+      "sha256": "7f1553300ae7e03ae85c20fcc6f37a3ae335166a6fa0aa63a32cc9300bed7153"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0096.png",
+      "bytes": 865985,
+      "sha256": "d38f76219f58d192fdff47ab9ffe0979b7135d14150f36c2334974c75b320b12"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0097.png",
+      "bytes": 865637,
+      "sha256": "c1255a4cf54814ab82d90c7dd95cf34d267168db68b66fb5a65f751a75f18793"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0098.png",
+      "bytes": 865378,
+      "sha256": "3fd8109459d2c7d1294d6518f861b93ebe1e6f0690b440cdeaad2912a97e9876"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0099.png",
+      "bytes": 865022,
+      "sha256": "ce8278a0d5106d536cff444d0d6cb3d31233415bb97bf1e52a431b08a59a940e"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0100.png",
+      "bytes": 865521,
+      "sha256": "ec0a46a7763faaae6d63052c2d7afcc9809b5c5a78288243508c8f144e6b6480"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0101.png",
+      "bytes": 865697,
+      "sha256": "357a67e044e44f330b61f37344f2ed9173ba40e14252f55d29b764be5a325d87"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0102.png",
+      "bytes": 865780,
+      "sha256": "9ba7a54dc9c5857a20d8b003629d04badbba51a08957064c5a4d95d7f77b7042"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0103.png",
+      "bytes": 865600,
+      "sha256": "1efe471bba985ccfca21fc8abc3922a84e19c43319f1b9ffd3007fe733581d70"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0104.png",
+      "bytes": 865409,
+      "sha256": "8f97aaf7cc7278bd9e1fa14e2acbc6dd336ad9f3c1ca43e98bb6f4315dd0347d"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0105.png",
+      "bytes": 865728,
+      "sha256": "9acd4fc47553d6b95573f094746486cf006f6ed28d0a1da0c12b0663c78f1c31"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0106.png",
+      "bytes": 865161,
+      "sha256": "553aaf8c3f55a28ef561eb0690882fa8e6ef06193498b90a3c8167e61ad85745"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0107.png",
+      "bytes": 866406,
+      "sha256": "61bed62ae521d83994f55d2eef7081dd10fc6b0895189feb6636e35641caa11c"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0108.png",
+      "bytes": 865856,
+      "sha256": "0aba4089fd5e1b495ae0d9d3b95b986729006fe1bf856b0f8178db6dccc6c498"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0109.png",
+      "bytes": 865435,
+      "sha256": "0f7100cced575917ad126feee7795065f79cc95d1510b65404438538231226ff"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/0110.png",
+      "bytes": 866362,
+      "sha256": "f77d12162ea367afb669c5e0e373e1d21cb6f341661e11bd83206419b2854b8b"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/encode-report.json",
+      "bytes": 551,
+      "sha256": "136cdb46960ee9f503f811508c1431bd57cbf967cc8c18fb6dd6a48820f28931"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/render-report.json",
+      "bytes": 8237,
+      "sha256": "dae15cd73000158d9570bf392c8b10da2ed43079e7a7db90a60ca2c5f94e018c"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/Voidreign-CompleteHair-Diagnostic.mp4",
+      "bytes": 969554,
+      "sha256": "66eb147883690357f42f75aa03002aed776664c2c8e18e5e6dbf1096aa20edce"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/FinalRestReview-v001/current-weights-front.png",
+      "bytes": 1046422,
+      "sha256": "d6d10204923af08ee2451db5fb403f54e65d94e556a2a989ef69a0856f0d6076"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/FinalRestReview-v001/current-weights-rear.png",
+      "bytes": 1055116,
+      "sha256": "032e53ab93020883ce797bcf9cfab43582b5c226f4d168856bc5f6e9d47b3107"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/FinalRestReview-v001/current-weights-side-negX.png",
+      "bytes": 1086892,
+      "sha256": "90a49cf766adaa0133f1e7bee99cdff90f8bd94475397bc6d9c7c11fb5336ec8"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/FinalRestReview-v001/current-weights-side-posX.png",
+      "bytes": 1087883,
+      "sha256": "6bd4741ed0e93bbfd23615758e001534b08902b73e41d5a08ea85135a1a50223"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/FinalRestReview-v001/current-weights-top.png",
+      "bytes": 1064621,
+      "sha256": "b8469c917dcf1547131a3dc34ee2a968b844b1f423d720412b0f2950599edf8e"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/FinalRestReview-v001/materials-front.png",
+      "bytes": 1183038,
+      "sha256": "c9b66035c6e045448405180912c4f52bc04eba63a21ca09ebbe72588b7c9afdd"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/FinalRestReview-v001/materials-rear.png",
+      "bytes": 1201308,
+      "sha256": "3105fd9fb5ad095606fb07c7c7b692876a49fd26e4b89d2a23c5439854a490d3"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/FinalRestReview-v001/materials-side-negX.png",
+      "bytes": 1371143,
+      "sha256": "a159cef40457e1529766a6d037ec8aac51a793a87add146e11367fb435b8d6ae"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/FinalRestReview-v001/materials-side-posX.png",
+      "bytes": 1359016,
+      "sha256": "13e762695934586b0405f30ddb554d26ffb1e8bec5f3608f83981903459cc094"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/FinalRestReview-v001/materials-top.png",
+      "bytes": 1274740,
+      "sha256": "9970aab8a11e216061807d66ecece0174af177a49f0504847f02729ff630db5b"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/FinalRestReview-v001/views.json",
+      "bytes": 7154,
+      "sha256": "71ac04d13abb80140482ad7fdddfd8fcbfbfbba644595e376a720483e91d683b"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialBefore-v001/Head-NegX.png",
+      "bytes": 1333065,
+      "sha256": "08bbfc15bd6ebaeea3aa9d8dc92d9375c273d87ac93ec5c123a465c26bf23218"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialBefore-v001/render-report.json",
+      "bytes": 844,
+      "sha256": "d47283d22d3897c402b81c67ac27e78ff137bf697aa59240260727a02255b809"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialBefore-v001/Saddle-NegX.png",
+      "bytes": 1423633,
+      "sha256": "918d859a0166d906b45c2a9751a08d8063406724b32160b4ff917b2363e7d208"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialBefore-v001/tool-source.py",
+      "bytes": 3799,
+      "sha256": "f9748e7e58d7bf4512587df05941e09b46864ead7f2981d4d1d472ef6282480c"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialAfter-v001/Head-NegX.png",
+      "bytes": 1400272,
+      "sha256": "9dbd020462f896e5a3d414ede3a0a3afca07cfdee17ebae8d9a187fbe116bb93"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialAfter-v001/render-report.json",
+      "bytes": 846,
+      "sha256": "905aa82ec381b6d0e154c994de29136848b6572bd11010ce623749aac50d549e"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialAfter-v001/Saddle-NegX.png",
+      "bytes": 1586203,
+      "sha256": "c4b42cc4ee56b1bcff0eb1cb3d99d231fe9f4dc0e9b37eafc5eceb6e6b1a6cef"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialAfter-v001/tool-source.py",
+      "bytes": 3799,
+      "sha256": "f9748e7e58d7bf4512587df05941e09b46864ead7f2981d4d1d472ef6282480c"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialOpposingLight-v001/Head-NegX.png",
+      "bytes": 1502383,
+      "sha256": "7e4d8a455c20b5754bed5b8a961879b98f135bc215429888f4b5e734cbf1ad7c"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialOpposingLight-v001/render-report.json",
+      "bytes": 845,
+      "sha256": "4f90b31372bb26f31378a3591dd54d620a86772c1cd9a790053c6f55f405d10a"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialOpposingLight-v001/Saddle-NegX.png",
+      "bytes": 1733700,
+      "sha256": "b6b9e5b0551af655a08a8bdef3580e5ad3a32685d9a6ab4fc8c941400788eeff"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialOpposingLight-v001/tool-source.py",
+      "bytes": 3799,
+      "sha256": "f9748e7e58d7bf4512587df05941e09b46864ead7f2981d4d1d472ef6282480c"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialObliquePlus-v001/Head-NegX.png",
+      "bytes": 1392309,
+      "sha256": "4634308c8f0ead797b4a3465d684529ec82374f81ae6afd7f2975f6130120c7b"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialObliquePlus-v001/render-report.json",
+      "bytes": 870,
+      "sha256": "4ac7121d887e6cf785ec78d420091f55efd7b65a4b2c91a7865c998b4b2b4daa"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialObliquePlus-v001/Saddle-NegX.png",
+      "bytes": 1651473,
+      "sha256": "63db145b32de4836faa86368802131a44cb03dd1555387edd6785ebf5b98c34a"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialObliquePlus-v001/tool-source.py",
+      "bytes": 4233,
+      "sha256": "46513d541d21a95c746519d88d37b849338fb1fbdc9a635eaf17687f9f393be6"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialObliqueMinus-v001/Head-NegX.png",
+      "bytes": 1411164,
+      "sha256": "b033d44d971f44a4dcacaed9d65f90647324b06cde4b5f523142082941b5abfa"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialObliqueMinus-v001/render-report.json",
+      "bytes": 871,
+      "sha256": "2cb25abb96e939cf119f49ba6220be34e622816983394b1ee7936378a3616cdd"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialObliqueMinus-v001/Saddle-NegX.png",
+      "bytes": 1519948,
+      "sha256": "eaa9531d40cb5fb7eefb2fe8d16138a0699c2ddd2ccd67fa3ba922df334d4e26"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialObliqueMinus-v001/tool-source.py",
+      "bytes": 4233,
+      "sha256": "46513d541d21a95c746519d88d37b849338fb1fbdc9a635eaf17687f9f393be6"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReproductionKit-v001/profiles/voidreign-clump-root-repair-v002-20261018.json",
+      "bytes": 3274,
+      "sha256": "e8fbbde44834e7fa1577d3c226fa08ec64c9fd14b8955d3b3cf34e7781627700"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReproductionKit-v001/profiles/voidreign-complete-hair-import-20261018.json",
+      "bytes": 1076,
+      "sha256": "2084f5aaa1bb1379443e076cd8cf32415088f1784d616cc45a05353f8ef6c5d9"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReproductionKit-v001/profiles/voidreign-complete-hair-motion-v003-20261018.json",
+      "bytes": 6447,
+      "sha256": "9df3ed982c0f5f571210a98d42c1e6b395b80713c139f0b7b162ad861d5cca47"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReproductionKit-v001/profiles/voidreign-feature-binding-20261018.json",
+      "bytes": 380,
+      "sha256": "fb14bfc5c023c7957d911b154228c42faa86fa45f05cd419ef04fe31bdb04dd6"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReproductionKit-v001/profiles/voidreign-hair-selections-v003-20261018.json",
+      "bytes": 5232,
+      "sha256": "558f0bb861238b8150450a3495ee83fca561d3b72b979c3cd6aa92041ddd18f9"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReproductionKit-v001/profiles/voidreign-hair-surface-check-20261018.json",
+      "bytes": 1013,
+      "sha256": "f42b54b785653cd13262405b39e26a48e1fc606edeafb392b1372121e29e1abb"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReproductionKit-v001/profiles/voidreign-opposite-texture-guides-20261018.json",
+      "bytes": 1224,
+      "sha256": "9b1bcc035e0572b41345b3cbc11dfe15326b09b411d86a56b366ad90fec56f10"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReproductionKit-v001/profiles/voidreign-quality-reproduction-20261018.json",
+      "bytes": 4311,
+      "sha256": "39d590b40c5a1b7383d38412169e40c8e147c1b963d4302b9ddc198e426798ab"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReproductionKit-v001/profiles/voidreign-support-candidates-20261018.json",
+      "bytes": 1507,
+      "sha256": "22b0bd3abd09d1b6143164a7eed10d77fb6b582eb177b84eeb53e68ad26684b7"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReproductionKit-v001/runtime.json",
+      "bytes": 378,
+      "sha256": "e33ab7ff1980ddf43c62ea53640d53f0a06895bb94285e3e324ce2edfb73b2ab"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReproductionKit-v001/tools/BlenderRigImport.py",
+      "bytes": 4459,
+      "sha256": "8227b3e6cc8e91d6db81e5f05b8307172f0c3227a65de5e03456cbbd608d2207"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReproductionKit-v001/tools/Build-ComponentReviewLedger.py",
+      "bytes": 3738,
+      "sha256": "a23a71af2a10853194587358b6d2e49cf19f8b68cf223ac1038a596924991ef4"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReproductionKit-v001/tools/Build-FeatureGuides.py",
+      "bytes": 7094,
+      "sha256": "56dadce677bd389b489903f3ab48c15a5f0e31fb67633ce07e067065734b789d"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReproductionKit-v001/tools/Build-FeatureMotionRig.py",
+      "bytes": 21239,
+      "sha256": "07cc0375894c1458beffa94ba653e88fea8e69478ffb55d8367ed97bd0340310"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReproductionKit-v001/tools/Build-MeshFeatureSelection.py",
+      "bytes": 8468,
+      "sha256": "55a63b5f87038517cefd0616c7a529e72b538d0f11826a446844757ef3a7882b"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReproductionKit-v001/tools/Check-FeatureMotionSurfaces.py",
+      "bytes": 9765,
+      "sha256": "ad7cb6f80dd5c2589bc5edfbd0f90b94135c6f3542c024333e37cffb610a0f6a"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReproductionKit-v001/tools/Diagnose-FeatureSkinning.py",
+      "bytes": 4515,
+      "sha256": "ccce741d0ee431b237a776204817d2a1d40d34a06b1d795420078a8a814594df"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReproductionKit-v001/tools/Inspect-AssetSupport.py",
+      "bytes": 4140,
+      "sha256": "505c461af8a5a694d793585773bdf89f802993699f433062b2713ff65b6373a9"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReproductionKit-v001/tools/Plot-ComponentAtlas.py",
+      "bytes": 3856,
+      "sha256": "887ccae66f607f73a10de022c6ec21c4692c85d65485d16b01231300150e8ffc"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReproductionKit-v001/tools/Prepare-AssetTextureGuides.py",
+      "bytes": 4504,
+      "sha256": "80c0bb6f7f4b0b6f78d0f30e8bd2187e9da68e9c108131c3bd1296ac32576a08"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReproductionKit-v001/tools/Project-AssetTextureDetails.py",
+      "bytes": 10476,
+      "sha256": "6c0d164da659e916e8c3f76dce1a8a737b66a3a98cbcba381a88b78c77504eee"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReproductionKit-v001/tools/Propose-FeatureAttachments.py",
+      "bytes": 5887,
+      "sha256": "36767bbba1933be006874c1dc3dd80cb3ee658cbe908d0c551347973523da74e"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReproductionKit-v001/tools/Render-AssetDetailViews.py",
+      "bytes": 4233,
+      "sha256": "46513d541d21a95c746519d88d37b849338fb1fbdc9a635eaf17687f9f393be6"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReproductionKit-v001/tools/Render-AssetSemanticViews.py",
+      "bytes": 9916,
+      "sha256": "68e82699986c27900731a6754221e3328489618e77260fef2ce1fd8aea671764"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReproductionKit-v001/tools/Render-FeatureMotion.py",
+      "bytes": 6518,
+      "sha256": "2a16049f55c004bc70f2a28ccfa2201cc7a4876c60550123e24b99dfb191952a"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReproductionKit-v001/tools/Repair-HairClumpRoots.py",
+      "bytes": 10481,
+      "sha256": "d01d5718bbb892f455904d2636fde06a0b5293771ed108a20177b3f452de1615"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReproductionKit-v001/tools/Run-VoidreignQuality.py",
+      "bytes": 6684,
+      "sha256": "424378337887cd8146e6a4b3e7c141f7c68961bcd4e8b49e927f2ac1401e4fa7"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReproductionKit-v001/tools/Simulate-FeatureGuides.py",
+      "bytes": 12692,
+      "sha256": "bbb17e6310298993f45e6fbf6b6abadb8824f35969eeb4dd2dfbbe8d3ec6baab"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReproductionKit-v001/tools/Validate-AssetMaterialRevision.py",
+      "bytes": 6281,
+      "sha256": "4ec8a4c5b57930d2d63556782f63076e77109dd94ccf8784130852c1c3f64e5e"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReproductionKit-v001/tools/Validate-HairRootRepair.py",
+      "bytes": 4685,
+      "sha256": "fca26c8cb5ea71ba3e38d07c003bdb72f37d11a55f50d10834a895d053331a22"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReproductionKit-v001/tools/Validate-VoidreignRigImport.py",
+      "bytes": 10145,
+      "sha256": "7563f72c7c1ca21da46ace5ddcaf2ae9ff318f8baf2a8e8f455511a22cc0c504"
+    }
+  ],
+  "limitations": [
+    "Current tool snapshots are exact current bytes; each historical attempt records its own tool hash.",
+    "RootRepair-v003/tool-source.py is recovered byte-for-byte against its recorded hash.",
+    "Not every historical developmental attempt has a code snapshot.",
+    "Imagegen reruns are stochastic; preserve frozen edits/hashes.",
+    "Pinned replay starts from existing authored rest/semantic artifacts, not arbitrary concepts."
+  ]
+}

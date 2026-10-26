@@ -1,0 +1,48 @@
+ITERATION 1 — concept sheet rejected for duplicate-cube ambiguity; exact prompt retained.
+
+Use case: stylized-concept
+Asset type: separately indexed interior-face treatment for rough-timber construction.
+Input image 1: selected rough-timber cell, material family only. Match its brown timber color but make this opposite face plainly cut and practical, with less weathering.
+Scene/backdrop: neutral warm-gray technical studio.
+Subject: one solid full cube target 0.5 x 0.5 x 0.5 m. Clearly identify its interior wall face, opposite the exterior treatment.
+Style/medium: realistic fantasy architectural reference, simple planed rough-timber interior boards with subdued grain and flush joinery; still the rough-timber tier, not worked timber.
+Composition/framing: aligned orthographic sheet: interior face forward, exterior face opposite, top view, and neutral square contact silhouette. Keep all views identical and straight; 0.5 m is a design target only.
+Constraints: identical full-cell geometry, six contacts, pivot, openings, clearances and material profile as the rough-timber master. Appearance only. No opening, furniture, interior scene, protruding trim, posts, brackets or hardware. The inside finish is not a gameplay tier or cosmetic quality bonus.
+Avoid: fully furnished room, frame silhouette, stone, metal, panel geometry changes, damage-state cues, text clutter, watermark.
+Reference: `GameClient/ArtSource/BLD-RT-CellFull-01/References/v001/asset-view.png`.
+Rejected output: `C:/Users/grego/.codex/generated_images/01a15000-e13f-7213-9ec0-df2684201405/exec-875c4ea5-abf2-4a8b-a963-50eb09935b91.png`, SHA-256 `6BE0809FD78070D9FF00FB562495D64D86EB9B8D7830661D46A1569FAF46DEAF`. Review: showed two cubes as if they were variants; did not isolate one role.
+
+SELECTED CONCEPT SHEET — built-in image_gen, 2026-10-18.
+
+Use case: stylized-concept
+Asset type: one separately indexed rough-timber interior face role.
+Input image 1: chosen rough-timber full-cell block, appearance family only.
+Scene/backdrop: clean neutral gray, technical studio.
+Subject: EXACTLY ONE complete solid 0.5 m cube, with its interior face shown forward. Show orthographic front, back, top, underside, and two ends of this same cube, plus a neutral square silhouette/contact guide. The front designated interior face is smoother planed rough timber; the opposite exterior face is darker and rougher. Both remain the same Rough timber gameplay tier.
+Style/medium: realistic fantasy construction reference, natural warm brown, subtle matte grain, no embellishment.
+Composition/framing: six aligned square-face views of the SAME cube; no duplicate cubes, no before/after. Include tiny clear labels: INTERIOR, EXTERIOR, TOP, UNDERSIDE, END A, END B. A 0.5 m note is a design target.
+Constraints: maintain the exact same proposed full-cell geometry, square outline, six planar contacts, pivot and orientation rules as the rough-timber master. Surface finish only. No posts, frame, room, furniture, opening, stone, metal, trim, protrusions, support/stat claims, extra objects.
+Avoid: multiple instances, collage alternatives, perspective sizes, wrong dimensions, decorative silhouette, text clutter, watermark.
+
+CLEAN VIEW ITERATION 1 — output retained as rejected history because it was generated from the superseded ambiguous concept sheet.
+
+Use case: stylized-concept
+Asset type: clean full-cell view of rough-timber interior-face treatment.
+Input image 1: two-material-study sheet; select the smoother, plainly cut timber face as the main face, preserve the rough-timber family color. Ignore extra cubes and sheet layout.
+Scene/backdrop: neutral light-gray studio.
+Subject: exactly one solid cube, target 0.5 m full cell, with one simpler planed interior wall face facing camera and rough-timber side surface visible.
+Style/medium: realistic fantasy construction asset; smooth-but-still-rough-tier timber boards, understated grain, no ornament.
+Composition/framing: complete cube centered, three-quarter view, front interior face prominent, top and one side visible, clear margins and soft neutral contact shadow.
+Constraints: equal cube edges, full solid geometry and six unchanged contacts; surface finish only. Do not add room or props, wall framing, trim, holes, stone, metal, doors, furniture, statistics or text. Appearance does not change the Rough timber structural profile.
+Rejected output: `C:/Users/grego/.codex/generated_images/01a15000-e13f-7213-9ec0-df2684201405/exec-0f401933-1f2d-45e8-aa9a-aae7ad39c47c.png`, SHA-256 `34CBF64D86322D1CB0089B83C8B1EED98F93DFE402E3581B39A55FB21E96D19D`. Re-generated from the selected sheet for consistency.
+
+SELECTED CLEAN VIEW — built-in image_gen, 2026-10-18. Input image: selected concept-sheet.png.
+
+Use case: stylized-concept
+Asset type: clean full-cell view of rough-timber interior-face treatment.
+Input image 1: selected six-view concept sheet. Preserve its smoother planed INTERIOR face, darker rougher EXTERIOR face, same cube shape and timber family. Do not repeat the sheet.
+Scene/backdrop: neutral light-gray studio.
+Subject: exactly one solid cube, target 0.5 m full cell, with the smoother interior wall face directly toward camera and the darker exterior finish on one side visible.
+Style/medium: realistic fantasy construction asset; simple planed rough-tier timber boards, warm brown, subdued grain, no ornament.
+Composition/framing: complete cube centered, three-quarter view, interior face prominent, top and one side visible, ample margins and soft neutral contact shadow.
+Constraints: equal cube edges, full solid geometry and six unchanged contacts; surface finish only. No room, props, wall framing, trim, holes, stone, metal, doors, furniture, statistics or text. Appearance does not change the Rough timber structural profile.

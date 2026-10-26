@@ -1,0 +1,16 @@
+{
+  "status": "rendered-source-ground-review-only",
+  "cpu_only": true,
+  "input_sha256": {
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingPilot-v001/Mount-StandingPilot.blend": "0f22f6f488ecd4634bbab6a46171924d6e817cc9dd37ba5e4de4b88f40606844"
+  },
+  "tool_sha256": "37af21fe7d3c53f77979aa9adedb596f525417572c89c5e94ba02a48a51f7845",
+  "profile_sha256": "6390bed3027a33e8fee33cdbca1ee816f9c2071837101e3a5de8de7fc79a4d75",
+  "frames": [
+    1,
+    30
+  ],
+  "limitations": [
+    "Diagnostic plane/light were not saved to source. Images do not accept contacts or materials."
+  ]
+}

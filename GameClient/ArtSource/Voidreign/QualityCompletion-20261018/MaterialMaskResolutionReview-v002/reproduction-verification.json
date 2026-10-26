@@ -1,0 +1,8 @@
+{
+  "status": "verified",
+  "manifest": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialMaskUVReproductionKit-v001/manifest.json",
+  "manifest_sha256": "22ca193d05579e2d8ab69aa79b10248469df9bcb885d674ce3ac130ae12f54c9",
+  "files": 50,
+  "copied_bytes": 15026826,
+  "self_contained": false
+}

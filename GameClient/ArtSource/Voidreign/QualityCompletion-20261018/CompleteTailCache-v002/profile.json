@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "permissions": "Offline conversion of verified final tail output",
+  "effective_time": "This frozen source only",
+  "units": "metres and frames",
+  "source": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManeSurfaceContacts-v001\\Voidreign-SurfaceContacts.blend",
+  "positions_file": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\TailFinalOutputPoints-v001\\output-points.npz",
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManeSurfaceContacts-v001\\Voidreign-SurfaceContacts.blend": "b69e4ceeefbf0a4fcffa7faa6f114d76b94d37cb807ac92f8dd7ae971c925055",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\TailFinalOutputPoints-v001\\output-points.npz": "337b2527a8fad6b4bf91f38e897e11a719986331f1751a8b2784d2f73d2e167d",
+    "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManeClothSettledFull-v001\\Settled-feature-motion.mdd": "9600f29031b5b43b0f285ec56de60f7b3ba8ffdf2beb0ecab80da0ea8432ec52"
+  },
+  "proxy_object": "SIM | actual source hair surface",
+  "frame_start": 1,
+  "frame_end": 330,
+  "fps": 30,
+  "maximum_reopen_error_m": 1e-05,
+  "disable_output_modifiers": [
+    {
+      "object": "geometry_0",
+      "modifier": "Actual surface contacts | diagnostic projection"
+    }
+  ],
+  "inherited_mesh_caches": [
+    {
+      "path": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManeClothSettledFull-v001\\Settled-feature-motion.mdd",
+      "filename": "Mane-inherited-motion.mdd",
+      "object": "SIM | actual source hair surface.001",
+      "modifier": "Measured settled surface | verified MDD"
+    }
+  ]
+}

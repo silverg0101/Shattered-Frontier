@@ -1,0 +1,183 @@
+{
+  "schema_version": 1,
+  "status": "diagnostic-study-complete; neither-candidate-accepted",
+  "parent_attempts_unchanged": {
+    "topology_uv": 3,
+    "rig": 3,
+    "secondary_motion": 3
+  },
+  "cases": [
+    {
+      "name": "Baseline",
+      "changed_settings": {},
+      "peak_step_m": 0.15496754904879667,
+      "node_warnings": 118,
+      "warning_frames": 33,
+      "warmup_settled": true,
+      "maximum_segment_relative_error": 0.0279962240632603,
+      "maximum_root_error_m": 4.440892098500626e-16,
+      "maximum_initial_step_m": 5.282105121295899e-05,
+      "missing_required_contacts": [],
+      "maximum_free_envelope_penetration_m": 1.3621155631970971e-05,
+      "maximum_fixed_envelope_penetration_m": 0.022086201445712522,
+      "phase_style": {
+        "SETTLED": {
+          "rms_style_deviation_m": 0.08696150231018207,
+          "maximum_style_deviation_m": 0.30871845827714345
+        },
+        "WALK RESPONSE": {
+          "rms_style_deviation_m": 0.08475598244757047,
+          "maximum_style_deviation_m": 0.31063173002301897
+        },
+        "RUN RESPONSE": {
+          "rms_style_deviation_m": 0.08441589898413447,
+          "maximum_style_deviation_m": 0.31205789304938536
+        },
+        "TURN RESPONSE": {
+          "rms_style_deviation_m": 0.11077103078083743,
+          "maximum_style_deviation_m": 0.7485232474991702
+        },
+        "STOP / SETTLE": {
+          "rms_style_deviation_m": 0.08913867582166878,
+          "maximum_style_deviation_m": 0.3254515866066846
+        },
+        "RIDER CONTACT": {
+          "rms_style_deviation_m": 0.08780979821104314,
+          "maximum_style_deviation_m": 0.3091247659280033
+        }
+      },
+      "end_stop_style": {
+        "frame": 271,
+        "phase": "STOP / SETTLE",
+        "rms_style_deviation_m": 0.089282781640892,
+        "maximum_style_deviation_m": 0.3091483179864241
+      },
+      "input_paths": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/Simulation-v003/simulation-report.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/TrajectoryCheck-v002/trajectory-check.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/GuideClearanceBaseline-v004/guide-clearance.json"
+      ]
+    },
+    {
+      "name": "Drag12",
+      "changed_settings": {
+        "drag_per_second": {
+          "baseline": 5.0,
+          "candidate": 12.0
+        }
+      },
+      "peak_step_m": 0.0956094548630831,
+      "node_warnings": 52,
+      "warning_frames": 27,
+      "warmup_settled": true,
+      "maximum_segment_relative_error": 0.0233785910878328,
+      "maximum_root_error_m": 4.440892098500626e-16,
+      "maximum_initial_step_m": 2.110054083459545e-05,
+      "missing_required_contacts": [],
+      "maximum_free_envelope_penetration_m": 6.903182811518471e-06,
+      "maximum_fixed_envelope_penetration_m": 0.022086201445712522,
+      "phase_style": {
+        "SETTLED": {
+          "rms_style_deviation_m": 0.086951413059269,
+          "maximum_style_deviation_m": 0.30870727712620943
+        },
+        "WALK RESPONSE": {
+          "rms_style_deviation_m": 0.08226718532425617,
+          "maximum_style_deviation_m": 0.3091867796217988
+        },
+        "RUN RESPONSE": {
+          "rms_style_deviation_m": 0.08679929404814768,
+          "maximum_style_deviation_m": 0.3101065706589738
+        },
+        "TURN RESPONSE": {
+          "rms_style_deviation_m": 0.14352744625741035,
+          "maximum_style_deviation_m": 0.7817265157992205
+        },
+        "STOP / SETTLE": {
+          "rms_style_deviation_m": 0.08920579918421222,
+          "maximum_style_deviation_m": 0.5333168072315134
+        },
+        "RIDER CONTACT": {
+          "rms_style_deviation_m": 0.08792264076053355,
+          "maximum_style_deviation_m": 0.3091504332380387
+        }
+      },
+      "end_stop_style": {
+        "frame": 271,
+        "phase": "STOP / SETTLE",
+        "rms_style_deviation_m": 0.08946085089433374,
+        "maximum_style_deviation_m": 0.309172141712718
+      },
+      "input_paths": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MotionDesignStudy-v001/Drag12/simulation-report.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MotionDesignStudy-v001/Drag12Trajectory/trajectory-check.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MotionDesignStudy-v001/Drag12Clearance-v002/guide-clearance.json"
+      ]
+    },
+    {
+      "name": "Spring30",
+      "changed_settings": {
+        "style_spring_per_second_squared": {
+          "baseline": 85.0,
+          "candidate": 30.0
+        }
+      },
+      "peak_step_m": 0.09419535851529258,
+      "node_warnings": 65,
+      "warning_frames": 13,
+      "warmup_settled": true,
+      "maximum_segment_relative_error": 0.03373496063163639,
+      "maximum_root_error_m": 4.440892098500626e-16,
+      "maximum_initial_step_m": 0.0001571627944940701,
+      "missing_required_contacts": [],
+      "maximum_free_envelope_penetration_m": 5.339737600029704e-06,
+      "maximum_fixed_envelope_penetration_m": 0.022086201445712522,
+      "phase_style": {
+        "SETTLED": {
+          "rms_style_deviation_m": 0.17182601113475734,
+          "maximum_style_deviation_m": 0.47766970794902286
+        },
+        "WALK RESPONSE": {
+          "rms_style_deviation_m": 0.16655830240617558,
+          "maximum_style_deviation_m": 0.5299736708920038
+        },
+        "RUN RESPONSE": {
+          "rms_style_deviation_m": 0.1641509634555992,
+          "maximum_style_deviation_m": 0.5550812884444017
+        },
+        "TURN RESPONSE": {
+          "rms_style_deviation_m": 0.2055832430089758,
+          "maximum_style_deviation_m": 0.7902749307290895
+        },
+        "STOP / SETTLE": {
+          "rms_style_deviation_m": 0.1728011273057381,
+          "maximum_style_deviation_m": 0.698595555712616
+        },
+        "RIDER CONTACT": {
+          "rms_style_deviation_m": 0.1708777352304926,
+          "maximum_style_deviation_m": 0.48388542371005067
+        }
+      },
+      "end_stop_style": {
+        "frame": 271,
+        "phase": "STOP / SETTLE",
+        "rms_style_deviation_m": 0.17385900710517233,
+        "maximum_style_deviation_m": 0.47175619789251133
+      },
+      "input_paths": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MotionDesignStudy-v001/Spring30/simulation-report.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MotionDesignStudy-v001/Spring30Trajectory/trajectory-check.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MotionDesignStudy-v001/Spring30Clearance-v002/guide-clearance.json"
+      ]
+    }
+  ],
+  "decision": "No combined profile or delivered rig. Both peak steps still exceed80mm; higher damping increases turn/stop style lag, weaker spring nearly doubles settled deviation. Prioritize reviewed guide/skin coverage and coupled contact/velocity fixtures.",
+  "source_changed": false,
+  "limitations": [
+    "Full-duration guide experiments only; not actual-mesh surface runs.",
+    "Contact event counts do not prove contact correctness.",
+    "Fixed envelope conflict remains22mm.",
+    "No source/export/GUI changes or gate relaxation."
+  ],
+  "additional_validation": "Fresh full-shape/rest/yaw/finite-transform assertions pass for all3cases; metrics identical to study-results.json"
+}

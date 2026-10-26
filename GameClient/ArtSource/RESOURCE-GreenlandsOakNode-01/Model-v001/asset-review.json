@@ -1,0 +1,23 @@
+{
+  "asset_name": "RESOURCE-GreenlandsOakNode-01",
+  "mesh_objects": 1,
+  "triangles": 296289,
+  "dimensions": [
+    0.8871716856956482,
+    0.8727266192436218,
+    0.6318761110305786
+  ],
+  "dimension_unit": "native normalized model units",
+  "target_height_m": null,
+  "scale_status": "unresolved; normalized output preserved",
+  "yaw_degrees": 0,
+  "materials": [
+    "Material_0"
+  ],
+  "uv_layers": [
+    1
+  ],
+  "geometry_only": false,
+  "pitch_degrees": 0,
+  "roll_degrees": 0
+}

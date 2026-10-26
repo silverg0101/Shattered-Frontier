@@ -1,0 +1,66 @@
+{
+  "status": "needs-review",
+  "cleanup_status": "passed",
+  "cpu_only": true,
+  "checks": {
+    "exact_requested_components_removed": true,
+    "retained_vertex_positions_unchanged": true,
+    "retained_faces_unchanged": true,
+    "retained_uvs_unchanged": true,
+    "retained_material_assignments_unchanged": true,
+    "sampled_frames": [
+      1,
+      60,
+      120,
+      180,
+      240,
+      300,
+      330
+    ],
+    "max_retained_deformed_vertex_error_m": 0
+  },
+  "exports": {
+    "glb": {
+      "triangles": 296693,
+      "bones": 20,
+      "image_sizes": [
+        [
+          4096,
+          4096
+        ],
+        [
+          4096,
+          4096
+        ]
+      ],
+      "max_source_bone_head_error_m": 1.39252128702232e-06,
+      "pose_check": "passed",
+      "pose_tolerance_m": 0.005
+    },
+    "fbx": {
+      "triangles": 296693,
+      "bones": 20,
+      "image_sizes": [
+        [
+          4096,
+          4096
+        ],
+        [
+          4096,
+          4096
+        ]
+      ],
+      "max_source_bone_head_error_m": 0.0058586145257677625,
+      "pose_check": "needs-review",
+      "pose_tolerance_m": 0.005
+    }
+  },
+  "remaining_gates": [
+    "Unclassified other components",
+    "Full mane/tail coverage",
+    "Thin bridges",
+    "Deformed-surface attachment/collision",
+    "FBX pose deviation",
+    "Unreal runtime validation"
+  ]
+}

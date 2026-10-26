@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "scope": "Rest guide coverage proposals only; no source/skin/animation change",
+  "permissions": "Offline author; each path and runtime budget require review before use",
+  "effective_time": "Next proposal build only",
+  "units": "metres",
+  "maximum_guides_per_feature": 24,
+  "coverage_warning_m": 0.05,
+  "existing_root_exemption_extra_m": 0.05
+}

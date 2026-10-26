@@ -1,0 +1,5 @@
+Concept-sheet prompt (exact):
+Concept sheet for one worked-timber 90-degree rotated wall-cell join. Show two opaque solid full-cell modules with faces meeting at perpendicular contact planes, horizontal plank courses, one module in authored quarter-turn orientation. Include assembled isometric and top plan. No cavities, no brackets or extended beams, no text. Keep standard cell contact boundaries and appearance-only treatment.
+
+Clean asset-view prompt (exact):
+Isolated clean study of one worked-timber quarter-turn wall join: two opaque wall modules meet on perpendicular faces in a 90-degree L. Show top and exterior faces; simple flush abutment with end grain visible. No extra pieces, no hollow centers, no text, pale studio background.

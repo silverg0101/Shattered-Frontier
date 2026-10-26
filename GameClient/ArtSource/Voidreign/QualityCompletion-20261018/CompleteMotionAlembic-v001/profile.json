@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "source": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\CompleteMotionCache-v001\\Voidreign-ActualSurfacePilot.blend",
+  "object": "geometry_0",
+  "frame_start": 1,
+  "frame_end": 330,
+  "fps": 30,
+  "maximum_error_m": 1e-05,
+  "units": "metres",
+  "permissions": "Offline geometry-cache diagnostic only",
+  "effective_time": "This frozen source and its adjacent caches",
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\CompleteMotionCache-v001\\Voidreign-ActualSurfacePilot.blend": "a5e69cab0f484b2180809b8f60cb61ade34e227bd75ecdecfed97a7f87ae3cb9",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\CompleteMotionCache-v001\\Feature-actual-motion.mdd": "92f65009a6bdfbc677b24c1a767db9f294fa8e1128db66bae68545c9c9927cf1",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\CompleteMotionCache-v001\\Tail-actual-motion.mdd": "41214c51a69e0d6f27085ab1c1adc08bd566feea1a039f95670b4d4dad0f14bf"
+  }
+}

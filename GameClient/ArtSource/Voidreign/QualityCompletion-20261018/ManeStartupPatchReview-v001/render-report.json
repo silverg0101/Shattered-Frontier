@@ -1,0 +1,420 @@
+{
+  "schema_version": 1,
+  "status": "diagnostic-vertex-patch-views-only",
+  "cpu_only": true,
+  "source": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\CompleteMotionCache-v001\\Voidreign-ActualSurfacePilot.blend",
+  "source_sha256": "a5e69cab0f484b2180809b8f60cb61ade34e227bd75ecdecfed97a7f87ae3cb9",
+  "profile": "C:\\Projects\\Shattered-Frontier\\docs\\art-templates\\model-profiles\\voidreign-mane-startup-patch-review-20261018.json",
+  "profile_sha256": "226d5db7b13bc5ce9d63d6b610fdc7e4a0494d468d24256b9a7d4dd57b6fad8d",
+  "surface_report": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\CompleteMotionCacheCheck-v001\\surface-report.json",
+  "surface_report_sha256": "2690a793e806ba6024f73d6c611b634efe4de428500227ded7dfb1752b9384a4",
+  "selection_report": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selection-report.json",
+  "selection_report_sha256": "63eb535dcafe1140c5445ce46bd402cc438af979c437fbb9d7430b723aa11a08",
+  "selection_source_sha256": "6c6044a533c16fc7fad23d42c0407dde37a0252aca84f9be1bc9b9a2367364f6",
+  "selection_file": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selections.npz",
+  "selection_file_sha256": "0b6a19f76a2cba73a42e293c29365360b53ba93be101cf8f4ca556e7a5989cc0",
+  "domain_archive": null,
+  "domain_archive_sha256": null,
+  "retention_report": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\CompleteMotionCacheRetention-v001\\validation.json",
+  "retention_report_sha256": "9b678425ffccaa91bdb43de7ea75189a3f3d26f8869dc6407ae522afa3f1c57b",
+  "retention_status": "passed-indexed-rest-retention-only",
+  "retention_checks": {
+    "positions": true,
+    "faces": true,
+    "edges": true,
+    "loop_vertices": true,
+    "uv": true,
+    "colors": true,
+    "face_materials": true,
+    "smooth_flags": true,
+    "custom_normals": true,
+    "corner_normals": true,
+    "active_uv": true,
+    "material_signature": true,
+    "images": true
+  },
+  "retention_source_sha256": "6c6044a533c16fc7fad23d42c0407dde37a0252aca84f9be1bc9b9a2367364f6",
+  "retention_candidate_sha256": "a5e69cab0f484b2180809b8f60cb61ade34e227bd75ecdecfed97a7f87ae3cb9",
+  "mesh_hash": "ba2d283db0be5e8cff4cc7549f1f51916cc0a4d18213773300976b11512ececa",
+  "assembly_root": "MOTION HARNESS | rigid horse, not gait animation",
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\CompleteMotionCache-v001\\Voidreign-ActualSurfacePilot.blend": "a5e69cab0f484b2180809b8f60cb61ade34e227bd75ecdecfed97a7f87ae3cb9",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\CompleteMotionCache-v001\\Feature-actual-motion.mdd": "92f65009a6bdfbc677b24c1a767db9f294fa8e1128db66bae68545c9c9927cf1",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\CompleteMotionCache-v001\\Tail-actual-motion.mdd": "41214c51a69e0d6f27085ab1c1adc08bd566feea1a039f95670b4d4dad0f14bf",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManeWarmupDiagnostic-v001\\warmup-report.json": "f09739f68faec7ad4866bfdfd878adb77bc9e09bdabfb8ea5762e15ce71663e0"
+  },
+  "selection_to_assembly_max_delta_m": 1.98004506707681e-07,
+  "patch_radius_m": 0.06,
+  "context_pad_m": 0.15,
+  "selection_strategy": "Per-case canonical geodesic radius or explicit profile-bound source triangle domain.",
+  "index_preserving_node_modifiers": [
+    "Actual-surface simulated coordinates | diagnostic",
+    "Actual-surface simulated coordinates | diagnostic.001",
+    "Actual surface contacts | diagnostic projection",
+    "Actual surface contacts | diagnostic projection.001"
+  ],
+  "evaluated_index_checks": "Exact vertex count and triangle index order checked in every rendered state.",
+  "connectivity": "Radius mode uses selection archive canonical_node + geometric edges only; explicit domain mode uses listed source triangles and vertex IDs.",
+  "cases": [
+    {
+      "case_id": "mane-startup-peak-patch",
+      "label": "Peak settling source patch; first output pose",
+      "vertex_id": 133921,
+      "failure_frame": 1,
+      "expected_failure_world_position_m": [
+        -0.08913324773311615,
+        -0.6685527563095093,
+        2.2851691246032715
+      ],
+      "observed_penetration_m": null,
+      "selection_mode": "canonical-geodesic-radius",
+      "domain_prefix": null,
+      "domain_vertex_ids": null,
+      "domain_face_ids": null,
+      "selected_canonical_node_count": 16,
+      "selected_source_vertex_count": 33,
+      "states": [
+        {
+          "state": "rest",
+          "frame": 1,
+          "vertex_id": 133921,
+          "actual_world_position_m": [
+            0.0049067288637161255,
+            -0.5282846689224243,
+            2.1956186294555664
+          ],
+          "expected_world_position_m": null,
+          "posed_world_position_error_m": null,
+          "selection_mode": "canonical-geodesic-radius",
+          "selected_canonical_node_count": 16,
+          "selected_source_vertex_count": 33,
+          "highlighted_face_count": 28,
+          "patch_radius_m": 0.06,
+          "context_pad_m": 0.15,
+          "patch_center_world_m": [
+            -0.0010778335854411125,
+            -0.532801628112793,
+            2.205477714538574
+          ],
+          "patch_bounds_world_m": {
+            "min": [
+              -0.012374285046406364,
+              -0.5532330526753944,
+              2.188680908214252
+            ],
+            "max": [
+              0.010218617947712616,
+              -0.5123701920095369,
+              2.2222745757247537
+            ]
+          }
+        },
+        {
+          "state": "posed",
+          "frame": 1,
+          "vertex_id": 133921,
+          "actual_world_position_m": [
+            -0.08913324773311615,
+            -0.6685527563095093,
+            2.2851691246032715
+          ],
+          "expected_world_position_m": [
+            -0.08913324773311615,
+            -0.6685527563095093,
+            2.2851691246032715
+          ],
+          "posed_world_position_error_m": 0.0,
+          "selection_mode": "canonical-geodesic-radius",
+          "selected_canonical_node_count": 16,
+          "selected_source_vertex_count": 33,
+          "highlighted_face_count": 28,
+          "patch_radius_m": 0.06,
+          "context_pad_m": 0.15,
+          "patch_center_world_m": [
+            -0.060104407370090485,
+            -0.6257789134979248,
+            2.2276194095611572
+          ],
+          "patch_bounds_world_m": {
+            "min": [
+              -0.08913325095853519,
+              -0.6729894922517818,
+              2.1700695748523344
+            ],
+            "max": [
+              -0.03107556237527742,
+              -0.5785683300164299,
+              2.2851690132634133
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "render_settings": {
+    "engine": "CYCLES",
+    "device": "CPU",
+    "samples": 4,
+    "threads": 4,
+    "resolution": [
+      768,
+      640
+    ]
+  },
+  "renders": [
+    {
+      "path": "mane-startup-peak-patch-rest-mesh-patch-side-posX.png",
+      "case_id": "mane-startup-peak-patch",
+      "state": "rest",
+      "frame": 1,
+      "vertex_id": 133921,
+      "view": "side-posX",
+      "isolated_patch_only": false,
+      "depth_tested_against_full_mesh": true,
+      "camera_ortho_width_m": 0.40031238512708517,
+      "framing_pad_m": 0.15,
+      "camera_target_world_m": [
+        -0.0010778335854411125,
+        -0.532801628112793,
+        2.205477714538574
+      ],
+      "patch_projected_bounds_normalized": {
+        "min_x": 0.44896150981122673,
+        "max_x": 0.5510389368747639,
+        "min_y": 0.44964884043459674,
+        "max_y": 0.5503511595654033
+      },
+      "patch_camera_depth_min_m": 1.1462252140045166,
+      "patch_camera_depth_max_m": 1.1688181161880493,
+      "camera_clip_range_m": [
+        0.009999999776482582,
+        2.8150434494018555
+      ],
+      "camera_distance_m": 1.1575217101997592,
+      "label": "mane-startup-peak-patch | REST | frame 1 | MESH + PATCH"
+    },
+    {
+      "path": "mane-startup-peak-patch-rest-patch-only-side-posX.png",
+      "case_id": "mane-startup-peak-patch",
+      "state": "rest",
+      "frame": 1,
+      "vertex_id": 133921,
+      "view": "side-posX",
+      "isolated_patch_only": true,
+      "depth_tested_against_full_mesh": false,
+      "camera_ortho_width_m": 0.40031238512708517,
+      "framing_pad_m": 0.15,
+      "camera_target_world_m": [
+        -0.0010778335854411125,
+        -0.532801628112793,
+        2.205477714538574
+      ],
+      "patch_projected_bounds_normalized": {
+        "min_x": 0.44896150981122673,
+        "max_x": 0.5510389368747639,
+        "min_y": 0.44964884043459674,
+        "max_y": 0.5503511595654033
+      },
+      "patch_camera_depth_min_m": 1.1462252140045166,
+      "patch_camera_depth_max_m": 1.1688181161880493,
+      "camera_clip_range_m": [
+        0.009999999776482582,
+        2.8150434494018555
+      ],
+      "camera_distance_m": 1.1575217101997592,
+      "label": "mane-startup-peak-patch | REST | frame 1 | PATCH ONLY"
+    },
+    {
+      "path": "mane-startup-peak-patch-rest-mesh-patch-side-negX.png",
+      "case_id": "mane-startup-peak-patch",
+      "state": "rest",
+      "frame": 1,
+      "vertex_id": 133921,
+      "view": "side-negX",
+      "isolated_patch_only": false,
+      "depth_tested_against_full_mesh": true,
+      "camera_ortho_width_m": 0.4003123859910788,
+      "framing_pad_m": 0.15,
+      "camera_target_world_m": [
+        -0.0010778335854411125,
+        -0.532801628112793,
+        2.205477714538574
+      ],
+      "patch_projected_bounds_normalized": {
+        "min_x": 0.4489610632353933,
+        "max_x": 0.5510384900786169,
+        "min_y": 0.4496488405432696,
+        "max_y": 0.5503511594567304
+      },
+      "patch_camera_depth_min_m": 1.1462253332138062,
+      "patch_camera_depth_max_m": 1.1688182353973389,
+      "camera_clip_range_m": [
+        0.009999999776482582,
+        2.8150434494018555
+      ],
+      "camera_distance_m": 1.1575217101997592,
+      "label": "mane-startup-peak-patch | REST | frame 1 | MESH + PATCH"
+    },
+    {
+      "path": "mane-startup-peak-patch-rest-patch-only-side-negX.png",
+      "case_id": "mane-startup-peak-patch",
+      "state": "rest",
+      "frame": 1,
+      "vertex_id": 133921,
+      "view": "side-negX",
+      "isolated_patch_only": true,
+      "depth_tested_against_full_mesh": false,
+      "camera_ortho_width_m": 0.4003123859910788,
+      "framing_pad_m": 0.15,
+      "camera_target_world_m": [
+        -0.0010778335854411125,
+        -0.532801628112793,
+        2.205477714538574
+      ],
+      "patch_projected_bounds_normalized": {
+        "min_x": 0.4489610632353933,
+        "max_x": 0.5510384900786169,
+        "min_y": 0.4496488405432696,
+        "max_y": 0.5503511594567304
+      },
+      "patch_camera_depth_min_m": 1.1462253332138062,
+      "patch_camera_depth_max_m": 1.1688182353973389,
+      "camera_clip_range_m": [
+        0.009999999776482582,
+        2.8150434494018555
+      ],
+      "camera_distance_m": 1.1575217101997592,
+      "label": "mane-startup-peak-patch | REST | frame 1 | PATCH ONLY"
+    },
+    {
+      "path": "mane-startup-peak-patch-posed-mesh-patch-side-posX.png",
+      "case_id": "mane-startup-peak-patch",
+      "state": "posed",
+      "frame": 1,
+      "vertex_id": 133921,
+      "view": "side-posX",
+      "isolated_patch_only": false,
+      "depth_tested_against_full_mesh": true,
+      "camera_ortho_width_m": 0.4981195997509852,
+      "framing_pad_m": 0.15,
+      "camera_target_world_m": [
+        -0.060104407370090485,
+        -0.6257789134979248,
+        2.2276194095611572
+      ],
+      "patch_projected_bounds_normalized": {
+        "min_x": 0.4052225392380638,
+        "max_x": 0.5947777075592514,
+        "min_y": 0.36135870945982496,
+        "max_y": 0.6386407072010665
+      },
+      "patch_camera_depth_min_m": 1.230764627456665,
+      "patch_camera_depth_max_m": 1.2888222932815552,
+      "camera_clip_range_m": [
+        0.009999999776482582,
+        3.0195868015289307
+      ],
+      "camera_distance_m": 1.2597934035060612,
+      "label": "mane-startup-peak-patch | POSED | frame 1 | MESH + PATCH"
+    },
+    {
+      "path": "mane-startup-peak-patch-posed-patch-only-side-posX.png",
+      "case_id": "mane-startup-peak-patch",
+      "state": "posed",
+      "frame": 1,
+      "vertex_id": 133921,
+      "view": "side-posX",
+      "isolated_patch_only": true,
+      "depth_tested_against_full_mesh": false,
+      "camera_ortho_width_m": 0.4981195997509852,
+      "framing_pad_m": 0.15,
+      "camera_target_world_m": [
+        -0.060104407370090485,
+        -0.6257789134979248,
+        2.2276194095611572
+      ],
+      "patch_projected_bounds_normalized": {
+        "min_x": 0.4052225392380638,
+        "max_x": 0.5947777075592514,
+        "min_y": 0.36135870945982496,
+        "max_y": 0.6386407072010665
+      },
+      "patch_camera_depth_min_m": 1.230764627456665,
+      "patch_camera_depth_max_m": 1.2888222932815552,
+      "camera_clip_range_m": [
+        0.009999999776482582,
+        3.0195868015289307
+      ],
+      "camera_distance_m": 1.2597934035060612,
+      "label": "mane-startup-peak-patch | POSED | frame 1 | PATCH ONLY"
+    },
+    {
+      "path": "mane-startup-peak-patch-posed-mesh-patch-side-negX.png",
+      "case_id": "mane-startup-peak-patch",
+      "state": "posed",
+      "frame": 1,
+      "vertex_id": 133921,
+      "view": "side-negX",
+      "isolated_patch_only": false,
+      "depth_tested_against_full_mesh": true,
+      "camera_ortho_width_m": 0.498119604655753,
+      "framing_pad_m": 0.15,
+      "camera_target_world_m": [
+        -0.060104407370090485,
+        -0.6257789134979248,
+        2.2276194095611572
+      ],
+      "patch_projected_bounds_normalized": {
+        "min_x": 0.40522229337398363,
+        "max_x": 0.5947774747861165,
+        "min_y": 0.3613587108249657,
+        "max_y": 0.638640723784827
+      },
+      "patch_camera_depth_min_m": 1.2307645082473755,
+      "patch_camera_depth_max_m": 1.2888221740722656,
+      "camera_clip_range_m": [
+        0.009999999776482582,
+        3.0195868015289307
+      ],
+      "camera_distance_m": 1.2597934035060612,
+      "label": "mane-startup-peak-patch | POSED | frame 1 | MESH + PATCH"
+    },
+    {
+      "path": "mane-startup-peak-patch-posed-patch-only-side-negX.png",
+      "case_id": "mane-startup-peak-patch",
+      "state": "posed",
+      "frame": 1,
+      "vertex_id": 133921,
+      "view": "side-negX",
+      "isolated_patch_only": true,
+      "depth_tested_against_full_mesh": false,
+      "camera_ortho_width_m": 0.498119604655753,
+      "framing_pad_m": 0.15,
+      "camera_target_world_m": [
+        -0.060104407370090485,
+        -0.6257789134979248,
+        2.2276194095611572
+      ],
+      "patch_projected_bounds_normalized": {
+        "min_x": 0.40522229337398363,
+        "max_x": 0.5947774747861165,
+        "min_y": 0.3613587108249657,
+        "max_y": 0.638640723784827
+      },
+      "patch_camera_depth_min_m": 1.2307645082473755,
+      "patch_camera_depth_max_m": 1.2888221740722656,
+      "camera_clip_range_m": [
+        0.009999999776482582,
+        3.0195868015289307
+      ],
+      "camera_distance_m": 1.2597934035060612,
+      "label": "mane-startup-peak-patch | POSED | frame 1 | PATCH ONLY"
+    }
+  ],
+  "limitations": [
+    "Highlighted patch is a topology-local visualization around the failed vertex, not a semantic classification.",
+    "A highlighted hair, anatomy, or buried-shell appearance requires human review; no approval or deletion is implied.",
+    "Rest and posed views show the same source faces; isolated views omit surrounding mesh and do not show occlusion.",
+    "No source mesh, weights, material, rig, animation, export, or runtime data was changed or saved."
+  ]
+}

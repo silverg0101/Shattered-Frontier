@@ -1,0 +1,155 @@
+{
+  "schema_version": 1,
+  "workspace": "C:\\Projects\\Shattered-Frontier",
+  "asset_id": "Voidreign",
+  "status": "local-contact-diagnosis-needs-review",
+  "self_contained": false,
+  "scope": "Supplement to verified LocalFringePhysicsReproductionKit-v001. Read-only cached topology/mask/convergence diagnosis; parent kit/external sources required. No new physics attempt.",
+  "commands": [
+    "Run copied Inspect-LocalClothContacts.py with copied canonical-topology profile into a new output folder using CPU background Blender5.1.1. Verify parent kit and its external inputs first."
+  ],
+  "files": [
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeContactInspection-v002/boundary-terminology-clarification.json",
+      "mode": "copy",
+      "bytes": 274,
+      "sha256": "11def60badafe667979d38a2e33b20f5a7bb19d30598cd1cc286af8a377f7bd1",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeContactInspection-v002/boundary-terminology-clarification.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeContactInspection-v002/contacts.json",
+      "mode": "copy",
+      "bytes": 18826,
+      "sha256": "65c25bb5018d8ccd0cb2f86e46499d9fbf1941f72a1e1fa75eeb6358e06d4d1d",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeContactInspection-v002/contacts.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeContactInspection-v002/profile.json",
+      "mode": "copy",
+      "bytes": 1516,
+      "sha256": "5b2acdfe2d19d4c2fb73486c8c3e5b21b8ef0f2da52047aa1b5548a64bdcb706",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeContactInspection-v002/profile.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeContactInspection-v002/tool-source.py",
+      "mode": "copy",
+      "bytes": 7276,
+      "sha256": "7abfebd97172edc5dc34bc859f7ffa7a3d088cea425ff50537d0e77c76ea4438",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeContactInspection-v002/tool-source.py"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeContactInspection-v003/contacts.json",
+      "mode": "copy",
+      "bytes": 19289,
+      "sha256": "427a02336d8c717c205bf1d368bf91932ccfcb13bd69115e85a30f2a9343aa20",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeContactInspection-v003/contacts.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeContactInspection-v003/diagnosis-decision.json",
+      "mode": "copy",
+      "bytes": 1231,
+      "sha256": "98bf8ebd77bc84c8a01c4196217bbe2c98232ed1702c7fca6fbbea35078daf68",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeContactInspection-v003/diagnosis-decision.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeContactInspection-v003/profile.json",
+      "mode": "copy",
+      "bytes": 1858,
+      "sha256": "9e21873295a3ae634c8309ec29303734620784dcd3838091ad1a9a06ee883c49",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeContactInspection-v003/profile.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeContactInspection-v003/tool-source.py",
+      "mode": "copy",
+      "bytes": 8562,
+      "sha256": "74fd3f1162b5a80915e53633ea0c54005805358a47c44d5d2a4c5a563b9e28a9",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeContactInspection-v003/tool-source.py"
+    },
+    {
+      "path": "tools/Inspect-LocalClothContacts.py",
+      "mode": "copy",
+      "bytes": 8562,
+      "sha256": "74fd3f1162b5a80915e53633ea0c54005805358a47c44d5d2a4c5a563b9e28a9",
+      "snapshot": "snapshot/tools/Inspect-LocalClothContacts.py"
+    },
+    {
+      "path": "tools/Freeze-AssetEvidence.py",
+      "mode": "copy",
+      "bytes": 3636,
+      "sha256": "022a766de42da24a27460313b041d386c86c95c5e30573e5f661dc523872dd88",
+      "snapshot": "snapshot/tools/Freeze-AssetEvidence.py"
+    },
+    {
+      "path": "docs/art-templates/model-profiles/voidreign-local-fringe-contact-topology-20261019.json",
+      "mode": "copy",
+      "bytes": 1516,
+      "sha256": "5b2acdfe2d19d4c2fb73486c8c3e5b21b8ef0f2da52047aa1b5548a64bdcb706",
+      "snapshot": "snapshot/docs/art-templates/model-profiles/voidreign-local-fringe-contact-topology-20261019.json"
+    },
+    {
+      "path": "docs/art-templates/model-profiles/voidreign-local-fringe-contact-canonical-topology-20261019.json",
+      "mode": "copy",
+      "bytes": 1858,
+      "sha256": "9e21873295a3ae634c8309ec29303734620784dcd3838091ad1a9a06ee883c49",
+      "snapshot": "snapshot/docs/art-templates/model-profiles/voidreign-local-fringe-contact-canonical-topology-20261019.json"
+    },
+    {
+      "path": "docs/art-templates/mount-secondary-motion.md",
+      "mode": "copy",
+      "bytes": 37301,
+      "sha256": "bafd61664c48377dc607a990247bb699ab64f9195ff05ec822a619e1103bfdfc",
+      "snapshot": "snapshot/docs/art-templates/mount-secondary-motion.md"
+    },
+    {
+      "path": "docs/dependency-map.md",
+      "mode": "copy",
+      "bytes": 97665,
+      "sha256": "11814db5f924b96c0337b57cf9a1425a9d27c67169d6ccccb3032ed3ade3b8dc",
+      "snapshot": "snapshot/docs/dependency-map.md"
+    },
+    {
+      "path": "docs/art-templates/model-jobs/voidreign-quality-20261018.json",
+      "mode": "copy",
+      "bytes": 43996,
+      "sha256": "dfc1a501a4e672c320fceb18700cda82156aa2c7d75a8691ae561f25b6ad1367",
+      "snapshot": "snapshot/docs/art-templates/model-jobs/voidreign-quality-20261018.json"
+    },
+    {
+      "path": "Artifacts/Art/Voidreign/quality-completion-20261018/WORK.md",
+      "mode": "copy",
+      "bytes": 7327,
+      "sha256": "3e7669d131870efa087edc9b09d5c95f8bec2abe3f0439471cca1bb1d0b0ddb2",
+      "snapshot": "snapshot/Artifacts/Art/Voidreign/quality-completion-20261018/WORK.md"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MountProfile.md",
+      "mode": "copy",
+      "bytes": 32601,
+      "sha256": "050da1a2d722bca913314f5ddf12db3f1b5ba32440e0b44719f34b1ceaaf1873",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MountProfile.md"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryLocomotionPlan-v001/queue.json",
+      "mode": "copy",
+      "bytes": 3625,
+      "sha256": "424cded0d6aa655846ba54439217ecb5bb390c0bf9ae5930cc4ea4161daff27c",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryLocomotionPlan-v001/queue.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringePhysicsDecision-v001/reproduction-verification.json",
+      "mode": "copy",
+      "bytes": 496,
+      "sha256": "afdd170cfac1069a0f5271c1773b0c2feabd44a17f922d8253bc25d7ada1dbeb",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringePhysicsDecision-v001/reproduction-verification.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringePhysicsReproductionKit-v001/manifest.json",
+      "mode": "reference",
+      "bytes": 239561,
+      "sha256": "fce8d450474ce80a8f0bbb2c6c042c8d4d2eb2b2fa36ff605b1db8e40efd6dbf",
+      "snapshot": null
+    }
+  ],
+  "profile_sha256": "592620b4b5986887bbbd44f29f55f32a68f6d094211f358579c2d711f705c39b",
+  "tool_sha256": "022a766de42da24a27460313b041d386c86c95c5e30573e5f661dc523872dd88"
+}

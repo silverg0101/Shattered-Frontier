@@ -1,0 +1,1548 @@
+{
+  "schema_version": 1,
+  "workspace": "C:\\Projects\\Shattered-Frontier",
+  "asset_id": "Voidreign",
+  "status": "local-cloth3of3-exhausted-needs-review",
+  "scope": "Source-bound orientation correction and rejected collider fit. No promotion. Requires parent kits/external blend/source inputs.",
+  "limits": {
+    "maximum_entries": 700,
+    "maximum_copy_mib": 128
+  },
+  "commands": [
+    "Use frozen tools/profiles with background CPU Blender5.1.1 into new directories. Native cache files are copied beside source in snapshot; verify external blend hashes first. Diagnostic replay does not accept physics. Do not start a fourth local cloth attempt."
+  ],
+  "files": [
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalConvexColliderPreflight-v001/baseline-envelope.npz",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalConvexColliderPreflight-v001/fit-report.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalConvexColliderPreflight-v001/profile.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalConvexColliderPreflight-v001/tool-source.py",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalSegmentedColliderPreflight-v001/baseline-envelope.npz",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalSegmentedColliderPreflight-v001/fit-report.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalSegmentedColliderPreflight-v001/profile.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalSegmentedColliderPreflight-v001/tool-source.py",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeRestVolumeInspection-v001/contacts.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeRestVolumeInspection-v001/profile.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeRestVolumeInspection-v001/tool-source.py",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeRestVolumeInspection-v002/contacts.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeRestVolumeInspection-v002/profile.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeRestVolumeInspection-v002/tool-source.py",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeRestVolumeInspection-v003/contacts.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeRestVolumeInspection-v003/profile.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeRestVolumeInspection-v003/tool-source.py",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeRestVolumeInspection-v003/winding-correction-review.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeWindingVerification-v001/contacts.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeWindingVerification-v001/profile.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeWindingVerification-v001/tool-source.py",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringePhysicsDecision-v002/decision.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringePhysicsDecision-v002/partition-guard-review.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/Actual-FringeSecondary.blend",
+      "mode": "reference"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/Actual-FringeSecondary.blend1",
+      "mode": "reference"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000001_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000002_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000003_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000004_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000005_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000006_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000007_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000008_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000009_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000010_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000011_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000012_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000013_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000014_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000015_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000016_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000017_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000018_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000019_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000020_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000021_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000022_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000023_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000024_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000025_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000026_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000027_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000028_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000029_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000030_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000031_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000032_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000033_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000034_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000035_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000036_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000037_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000038_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000039_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000040_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000041_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000042_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000043_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000044_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000045_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000046_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000047_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000048_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000049_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000050_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000051_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000052_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000053_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000054_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000055_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000056_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000057_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000058_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000059_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000060_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000061_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000062_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000063_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000064_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000065_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000066_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000067_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000068_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000069_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000070_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000071_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000072_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000073_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000074_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000075_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000076_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000077_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000078_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000079_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000080_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000081_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000082_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000083_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000084_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000085_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000086_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000087_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000088_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000089_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000090_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000091_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000092_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000093_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000094_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000095_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000096_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000097_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000098_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000099_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000100_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000101_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000102_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest0_000103_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000001_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000002_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000003_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000004_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000005_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000006_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000007_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000008_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000009_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000010_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000011_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000012_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000013_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000014_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000015_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000016_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000017_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000018_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000019_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000020_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000021_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000022_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000023_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000024_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000025_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000026_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000027_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000028_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000029_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000030_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000031_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000032_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000033_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000034_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000035_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000036_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000037_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000038_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000039_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000040_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000041_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000042_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000043_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000044_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000045_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000046_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000047_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000048_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000049_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000050_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000051_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000052_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000053_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000054_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000055_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000056_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000057_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000058_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000059_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000060_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000061_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000062_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000063_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000064_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000065_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000066_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000067_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000068_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000069_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000070_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000071_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000072_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000073_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000074_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000075_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000076_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000077_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000078_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000079_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000080_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000081_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000082_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000083_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000084_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000085_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000086_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000087_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000088_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000089_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000090_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000091_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000092_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000093_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000094_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000095_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000096_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000097_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000098_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000099_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000100_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000101_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000102_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest1_000103_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000001_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000002_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000003_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000004_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000005_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000006_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000007_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000008_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000009_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000010_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000011_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000012_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000013_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000014_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000015_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000016_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000017_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000018_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000019_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000020_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000021_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000022_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000023_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000024_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000025_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000026_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000027_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000028_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000029_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000030_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000031_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000032_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000033_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000034_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000035_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000036_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000037_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000038_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000039_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000040_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000041_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000042_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000043_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000044_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000045_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000046_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000047_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000048_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000049_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000050_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000051_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000052_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000053_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000054_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000055_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000056_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000057_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000058_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000059_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000060_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000061_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000062_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000063_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000064_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000065_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000066_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000067_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000068_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000069_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000070_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000071_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000072_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000073_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000074_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000075_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000076_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000077_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000078_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000079_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000080_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000081_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000082_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000083_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000084_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000085_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000086_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000087_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000088_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000089_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000090_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000091_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000092_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000093_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000094_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000095_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000096_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000097_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000098_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000099_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000100_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000101_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000102_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/blendcache_Actual-FringeSecondary/LocalFringeFixedRest2_000103_00.bphys",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/capture-report.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/cloth-report.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/frames/0001.png",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/frames/0007.png",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/frames/0013.png",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/frames/0019.png",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/frames/0025.png",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/frames/0031.png",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/frames/0037.png",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/frames/0043.png",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/frames/0049.png",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/frames/0055.png",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/frames/0061.png",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/frames/0067.png",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/frames/0073.png",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/profile.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/simulated-points.npz",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/tool-source.py",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/visual-review.json",
+      "mode": "copy"
+    },
+    {
+      "path": "tools/Preflight-LocalConvexCollider.py",
+      "mode": "copy"
+    },
+    {
+      "path": "tools/Inspect-LocalClothContacts.py",
+      "mode": "copy"
+    },
+    {
+      "path": "tools/Build-LocalFeatureClothProof.py",
+      "mode": "copy"
+    },
+    {
+      "path": "tools/Freeze-AssetEvidence.py",
+      "mode": "copy"
+    },
+    {
+      "path": "docs/art-templates/mount-secondary-motion.md",
+      "mode": "copy"
+    },
+    {
+      "path": "docs/dependency-map.md",
+      "mode": "copy"
+    },
+    {
+      "path": "docs/art-templates/model-jobs/voidreign-quality-20261018.json",
+      "mode": "copy"
+    },
+    {
+      "path": "docs/art-templates/model-catalog.md",
+      "mode": "copy"
+    },
+    {
+      "path": "Artifacts/Art/Voidreign/quality-completion-20261018/WORK.md",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MountProfile.md",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryLocomotionPlan-v001/queue.json",
+      "mode": "copy"
+    },
+    {
+      "path": "docs/art-templates/model-profiles/voidreign-local-anatomical-collider-preflight-20261019.json",
+      "mode": "copy"
+    },
+    {
+      "path": "docs/art-templates/model-profiles/voidreign-local-convex-collider-preflight-20261019.json",
+      "mode": "copy"
+    },
+    {
+      "path": "docs/art-templates/model-profiles/voidreign-local-fringe-rest-volume-inspection-20261019.json",
+      "mode": "copy"
+    },
+    {
+      "path": "docs/art-templates/model-profiles/voidreign-local-fringe-winding-proof-20261019.json",
+      "mode": "copy"
+    },
+    {
+      "path": "docs/art-templates/model-profiles/voidreign-local-fringe-winding-verification-20261019.json",
+      "mode": "copy"
+    },
+    {
+      "path": "docs/art-templates/model-profiles/voidreign-local-segmented-collider-preflight-20261019.json",
+      "mode": "copy"
+    },
+    {
+      "path": "docs/art-templates/model-profiles/voidreign-local-segmented-dominant-collider-preflight-20261019.json",
+      "mode": "copy"
+    },
+    {
+      "path": "Artifacts/Art/Voidreign/local-convex-collider-preflight-v001.log",
+      "mode": "copy"
+    },
+    {
+      "path": "Artifacts/Art/Voidreign/local-fringe-rest-volume-inspection-v001.log",
+      "mode": "copy"
+    },
+    {
+      "path": "Artifacts/Art/Voidreign/local-fringe-rest-volume-inspection-v002.log",
+      "mode": "copy"
+    },
+    {
+      "path": "Artifacts/Art/Voidreign/local-fringe-rest-volume-inspection-v003.log",
+      "mode": "copy"
+    },
+    {
+      "path": "Artifacts/Art/Voidreign/local-fringe-winding-proof-v003.log",
+      "mode": "copy"
+    },
+    {
+      "path": "Artifacts/Art/Voidreign/local-fringe-winding-verification-v001.log",
+      "mode": "copy"
+    },
+    {
+      "path": "Artifacts/Art/Voidreign/local-segmented-collider-preflight-v001.log",
+      "mode": "copy"
+    },
+    {
+      "path": "Artifacts/Art/Voidreign/local-segmented-collider-preflight-v002.log",
+      "mode": "copy"
+    },
+    {
+      "path": "Artifacts/Art/Voidreign/local-segmented-collider-preflight-v003.log",
+      "mode": "copy"
+    },
+    {
+      "path": "Artifacts/Art/Voidreign/local-segmented-collider-preflight-v004.log",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringePhysicsReproductionKit-v001/manifest.json",
+      "mode": "reference"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeContactReproductionKit-v001/manifest.json",
+      "mode": "reference"
+    }
+  ]
+}

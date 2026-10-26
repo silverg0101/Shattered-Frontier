@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "status": "primary-domain-proposal-needs-review",
+  "cpu_only": true,
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selections.npz": "0b6a19f76a2cba73a42e293c29365360b53ba93be101cf8f4ca556e7a5989cc0",
+    "docs\\art-templates\\model-profiles\\voidreign-primary-anatomy-landmarks-20261019.json": "4fae3f558d0e6b8f24ea197b92b1c3046b8964e8ed3b142d2e9ec85b540d768e"
+  },
+  "profile_sha256": "9b3962dd3e9217fefee3703be033e5ced326deaf5c0106cf57ae860b041db70e",
+  "tool_sha256": "e3ac544d72650af5845af68e6c6475beb41cb8d60463b708aebdafc3aa9d7009",
+  "seeds": [
+    {
+      "id": "fore.L",
+      "owner_id": 1,
+      "canonical_seeds": 2999
+    },
+    {
+      "id": "fore.R",
+      "owner_id": 2,
+      "canonical_seeds": 2915
+    },
+    {
+      "id": "hind.L",
+      "owner_id": 3,
+      "canonical_seeds": 3441
+    },
+    {
+      "id": "hind.R",
+      "owner_id": 4,
+      "canonical_seeds": 2268
+    }
+  ],
+  "source_vertices": 284762,
+  "canonical_vertices": 143117,
+  "domain_vertices": {
+    "fore.L": 9244,
+    "fore.R": 9876,
+    "hind.L": 12632,
+    "hind.R": 7174,
+    "body-seeded": 119606,
+    "unresolved-nonhair": 1139
+  },
+  "limitations": [
+    "Geodesic paths improve ownership proposals but fused false bridges can still misassign tack.",
+    "Disconnected nonhair islands stay unresolved, never nearest-bound or deleted automatically.",
+    "Lower-leg seeds do not define joint centers, final upper-leg blend weights or articulated acceptance."
+  ]
+}

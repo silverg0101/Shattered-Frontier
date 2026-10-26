@@ -1,0 +1,13 @@
+{
+  "status": "author-reviewed-for-local-physics-only",
+  "reviewer": "authoring-agent",
+  "scope": "Finite202canonical-node local surface feasibility, with37exact cut roots following verified existing hind.Lskin. Broad root boundary along fringe/body skin remains a proposal, not full attachment approval.",
+  "evidence": [
+    "FullLegFringeRegion-v001/review.json",
+    "FullLegFringeRoots-v001/roots-report.json",
+    "LegFringeParentTrace-v001/parent-report.json",
+    "LegFringePrimaryFollowReview-v001/visual-review.json"
+  ],
+  "allowed": "Fixed rest, explicit root-only collision exclusion, deforming local leg/ground, no selfcollision acceptance.",
+  "not_allowed": "No full-mount candidate promotion, acceptance-limit change, new source weights, original animation/GUI mutation or expired-budget reset."
+}

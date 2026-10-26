@@ -1,0 +1,39 @@
+ITERATION 1 — rejected concept sheet; reference was incorrectly allowed to bias the geometry. Retained as generation history only.
+
+Use case: stylized-concept
+Asset type: game construction material kit concept sheet for later 3D reconstruction.
+Input image: Reference image 1 is material palette and weathered hand-hewn timber character only; ignore its wall panel shape, embedded stone, dimensions, joints, and silhouette. It is not geometry authority.
+Scene/backdrop: clean neutral warm-gray studio sheet, no scenery.
+Subject: one proposed rough-timber structural cell, exact design target envelope 0.5 x 0.5 x 0.5 meters, square full-cell solid, construction-local X length, Y depth, Z up, pivot at minimum grid corner. Treat this as an appearance study only; dimensions and contact data in the diagram are intended targets, not image measurements.
+Style/medium: realistic fantasy game-asset concept art, restrained natural rough-sawn timber, visible but not excessive grain, simple unornamented joinery.
+Composition/framing: a modeling reference sheet with exactly six coordinated orthographic depictions of the SAME single cube: exterior face, interior face, top, underside, and both exposed ends, plus one neutral silhouette/contact-face diagram. Keep identical proportions, square edges and aligned scale; show all six sides distinctly without invented projections. Contact faces remain planar at the declared cell boundary.
+Materials/textures: rough early shelter timber, matte brown grain, simple pegs only if flush within envelope. Keep surfaces coherent across all six sides.
+Constraints: preserve full cube envelope and six planar boundary contacts; no opening, bevels outside the envelope, stone, metal brackets, nails protruding past faces, floor, bevel enlargement, extra building parts, measurements other than the stated target, or any gameplay/stat claims. If labels are used, only exterior, interior, top, underside, end A, end B, 0.5 m target.
+Avoid: perspective-distorted dimensions, mismatched views, decorative corner brackets, environment, people, text clutter, UI, watermark.
+Reference: `BLD-GreenlandsWallPanel-01/References/v001/asset-view.png` (style cue only; not geometry).
+Iteration-1 image path: C:/Users/grego/.codex/generated_images/01a15000-e13f-7213-9ec0-df2684201405/exec-5a888cff-b969-4141-a14f-c90aee0565b5.png
+Iteration-1 SHA-256: C10010B584CD20A739D6B95E619C86F379C719E9FCA2052CB6AFF4FED28C101E
+Review: rejected; output became a rectangular framed wall-panel form with front/back framing and did not show a solid six-face cube.
+
+ITERATION 2 — selected concept sheet; built-in image_gen, 2026-10-18.
+
+Use case: stylized-concept
+Asset type: full-cell reusable construction block concept sheet, no building scene.
+Scene/backdrop: uniform neutral warm gray studio background.
+Subject: EXACTLY ONE solid, opaque, plain cube of rough timber. It is a single monolithic 0.5 m x 0.5 m x 0.5 m block, six equal square faces, sharp straight cube silhouette, no hollow center. This is not a wall panel or frame.
+Style/medium: restrained realistic fantasy game asset, dark warm-brown rough-sawn end-grain and grain along faces, low-key natural material variation.
+Composition/framing: technical modeling-reference sheet showing six orthographic square face views of the same single cube and one simple neutral wireframe cube diagram. Clearly make each object a cube, all views identical square width and height, directly aligned. Exact 0.5 m dimension is only an intended reference target.
+Materials/textures: one continuous solid rough-timber block; restrained saw marks, grain and flush cut end-grain only. Texture changes appearance only.
+Constraints: preserve identical square solid outline in every view. All six boundary faces are planar full contacts. No projection outside the cube envelope. No frame, no posts, no braces, no border, no assembled planks, no corner reinforcement, no inset center, no holes, no seams that imply empty or separate volumes, no stone or metal.
+Avoid: wall/panel silhouette, plank-built fence, multi-object composition, perspective distortion, extra props, fake scale or gameplay statistics, elaborate text.
+
+CLEAN ASSET VIEW — built-in image_gen, 2026-10-18. Input image: this package's selected `concept-sheet.png`, design master for appearance only.
+
+Use case: stylized-concept
+Asset type: separate clean full-asset view for a reusable construction module.
+Input image 1: selected rough-timber cell concept sheet, design master for material appearance only. Preserve the square proportions and weathered brown grain; do not repeat its sheet views or labels.
+Scene/backdrop: uniform light neutral gray studio background.
+Subject: exactly one solid full cube of rough timber, intended 0.5 x 0.5 x 0.5 m cell; sharp straight six-sided cube silhouette with only tiny edge softening inside the envelope. A monolithic block, not a panel.
+Style/medium: realistic fantasy construction asset, matte rough-sawn timber and coherent grain.
+Composition/framing: single complete cube in a clear three-quarter view, ample margins, top and two side faces visible, simple soft contact shadow.
+Constraints: maintain equal side lengths and full solid volume. No studs, separate planks, borders, joins, metal, stone, apertures, text, ruler, floor slab, or environment. Texture and color are cosmetic appearance only; preserve full-cell geometry and contacts.

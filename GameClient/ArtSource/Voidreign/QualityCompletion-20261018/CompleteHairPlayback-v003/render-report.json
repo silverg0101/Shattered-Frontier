@@ -1,0 +1,454 @@
+{
+  "source": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\CompleteHair-v003\\Voidreign-CompleteHair.blend",
+  "source_sha256": "35f3f95a01387cf805444060fde95a77e17d51f5c01378529879af053894ce96",
+  "tool_sha256": "2a16049f55c004bc70f2a28ccfa2201cc7a4876c60550123e24b99dfb191952a",
+  "cpu_only": true,
+  "engine": "Cycles",
+  "device": "CPU",
+  "samples": 4,
+  "diagnostic": true,
+  "playback_fps": 10.0,
+  "frames": [
+    {
+      "source_frame": 1,
+      "image": "0001.png"
+    },
+    {
+      "source_frame": 4,
+      "image": "0002.png"
+    },
+    {
+      "source_frame": 7,
+      "image": "0003.png"
+    },
+    {
+      "source_frame": 10,
+      "image": "0004.png"
+    },
+    {
+      "source_frame": 13,
+      "image": "0005.png"
+    },
+    {
+      "source_frame": 16,
+      "image": "0006.png"
+    },
+    {
+      "source_frame": 19,
+      "image": "0007.png"
+    },
+    {
+      "source_frame": 22,
+      "image": "0008.png"
+    },
+    {
+      "source_frame": 25,
+      "image": "0009.png"
+    },
+    {
+      "source_frame": 28,
+      "image": "0010.png"
+    },
+    {
+      "source_frame": 31,
+      "image": "0011.png"
+    },
+    {
+      "source_frame": 34,
+      "image": "0012.png"
+    },
+    {
+      "source_frame": 37,
+      "image": "0013.png"
+    },
+    {
+      "source_frame": 40,
+      "image": "0014.png"
+    },
+    {
+      "source_frame": 43,
+      "image": "0015.png"
+    },
+    {
+      "source_frame": 46,
+      "image": "0016.png"
+    },
+    {
+      "source_frame": 49,
+      "image": "0017.png"
+    },
+    {
+      "source_frame": 52,
+      "image": "0018.png"
+    },
+    {
+      "source_frame": 55,
+      "image": "0019.png"
+    },
+    {
+      "source_frame": 58,
+      "image": "0020.png"
+    },
+    {
+      "source_frame": 61,
+      "image": "0021.png"
+    },
+    {
+      "source_frame": 64,
+      "image": "0022.png"
+    },
+    {
+      "source_frame": 67,
+      "image": "0023.png"
+    },
+    {
+      "source_frame": 70,
+      "image": "0024.png"
+    },
+    {
+      "source_frame": 73,
+      "image": "0025.png"
+    },
+    {
+      "source_frame": 76,
+      "image": "0026.png"
+    },
+    {
+      "source_frame": 79,
+      "image": "0027.png"
+    },
+    {
+      "source_frame": 82,
+      "image": "0028.png"
+    },
+    {
+      "source_frame": 85,
+      "image": "0029.png"
+    },
+    {
+      "source_frame": 88,
+      "image": "0030.png"
+    },
+    {
+      "source_frame": 91,
+      "image": "0031.png"
+    },
+    {
+      "source_frame": 94,
+      "image": "0032.png"
+    },
+    {
+      "source_frame": 97,
+      "image": "0033.png"
+    },
+    {
+      "source_frame": 100,
+      "image": "0034.png"
+    },
+    {
+      "source_frame": 103,
+      "image": "0035.png"
+    },
+    {
+      "source_frame": 106,
+      "image": "0036.png"
+    },
+    {
+      "source_frame": 109,
+      "image": "0037.png"
+    },
+    {
+      "source_frame": 112,
+      "image": "0038.png"
+    },
+    {
+      "source_frame": 115,
+      "image": "0039.png"
+    },
+    {
+      "source_frame": 118,
+      "image": "0040.png"
+    },
+    {
+      "source_frame": 121,
+      "image": "0041.png"
+    },
+    {
+      "source_frame": 124,
+      "image": "0042.png"
+    },
+    {
+      "source_frame": 127,
+      "image": "0043.png"
+    },
+    {
+      "source_frame": 130,
+      "image": "0044.png"
+    },
+    {
+      "source_frame": 133,
+      "image": "0045.png"
+    },
+    {
+      "source_frame": 136,
+      "image": "0046.png"
+    },
+    {
+      "source_frame": 139,
+      "image": "0047.png"
+    },
+    {
+      "source_frame": 142,
+      "image": "0048.png"
+    },
+    {
+      "source_frame": 145,
+      "image": "0049.png"
+    },
+    {
+      "source_frame": 148,
+      "image": "0050.png"
+    },
+    {
+      "source_frame": 151,
+      "image": "0051.png"
+    },
+    {
+      "source_frame": 154,
+      "image": "0052.png"
+    },
+    {
+      "source_frame": 157,
+      "image": "0053.png"
+    },
+    {
+      "source_frame": 160,
+      "image": "0054.png"
+    },
+    {
+      "source_frame": 163,
+      "image": "0055.png"
+    },
+    {
+      "source_frame": 166,
+      "image": "0056.png"
+    },
+    {
+      "source_frame": 169,
+      "image": "0057.png"
+    },
+    {
+      "source_frame": 172,
+      "image": "0058.png"
+    },
+    {
+      "source_frame": 175,
+      "image": "0059.png"
+    },
+    {
+      "source_frame": 178,
+      "image": "0060.png"
+    },
+    {
+      "source_frame": 181,
+      "image": "0061.png"
+    },
+    {
+      "source_frame": 184,
+      "image": "0062.png"
+    },
+    {
+      "source_frame": 187,
+      "image": "0063.png"
+    },
+    {
+      "source_frame": 190,
+      "image": "0064.png"
+    },
+    {
+      "source_frame": 193,
+      "image": "0065.png"
+    },
+    {
+      "source_frame": 196,
+      "image": "0066.png"
+    },
+    {
+      "source_frame": 199,
+      "image": "0067.png"
+    },
+    {
+      "source_frame": 202,
+      "image": "0068.png"
+    },
+    {
+      "source_frame": 205,
+      "image": "0069.png"
+    },
+    {
+      "source_frame": 208,
+      "image": "0070.png"
+    },
+    {
+      "source_frame": 211,
+      "image": "0071.png"
+    },
+    {
+      "source_frame": 214,
+      "image": "0072.png"
+    },
+    {
+      "source_frame": 217,
+      "image": "0073.png"
+    },
+    {
+      "source_frame": 220,
+      "image": "0074.png"
+    },
+    {
+      "source_frame": 223,
+      "image": "0075.png"
+    },
+    {
+      "source_frame": 226,
+      "image": "0076.png"
+    },
+    {
+      "source_frame": 229,
+      "image": "0077.png"
+    },
+    {
+      "source_frame": 232,
+      "image": "0078.png"
+    },
+    {
+      "source_frame": 235,
+      "image": "0079.png"
+    },
+    {
+      "source_frame": 238,
+      "image": "0080.png"
+    },
+    {
+      "source_frame": 241,
+      "image": "0081.png"
+    },
+    {
+      "source_frame": 244,
+      "image": "0082.png"
+    },
+    {
+      "source_frame": 247,
+      "image": "0083.png"
+    },
+    {
+      "source_frame": 250,
+      "image": "0084.png"
+    },
+    {
+      "source_frame": 253,
+      "image": "0085.png"
+    },
+    {
+      "source_frame": 256,
+      "image": "0086.png"
+    },
+    {
+      "source_frame": 259,
+      "image": "0087.png"
+    },
+    {
+      "source_frame": 262,
+      "image": "0088.png"
+    },
+    {
+      "source_frame": 265,
+      "image": "0089.png"
+    },
+    {
+      "source_frame": 268,
+      "image": "0090.png"
+    },
+    {
+      "source_frame": 271,
+      "image": "0091.png"
+    },
+    {
+      "source_frame": 274,
+      "image": "0092.png"
+    },
+    {
+      "source_frame": 277,
+      "image": "0093.png"
+    },
+    {
+      "source_frame": 280,
+      "image": "0094.png"
+    },
+    {
+      "source_frame": 283,
+      "image": "0095.png"
+    },
+    {
+      "source_frame": 286,
+      "image": "0096.png"
+    },
+    {
+      "source_frame": 289,
+      "image": "0097.png"
+    },
+    {
+      "source_frame": 292,
+      "image": "0098.png"
+    },
+    {
+      "source_frame": 295,
+      "image": "0099.png"
+    },
+    {
+      "source_frame": 298,
+      "image": "0100.png"
+    },
+    {
+      "source_frame": 301,
+      "image": "0101.png"
+    },
+    {
+      "source_frame": 304,
+      "image": "0102.png"
+    },
+    {
+      "source_frame": 307,
+      "image": "0103.png"
+    },
+    {
+      "source_frame": 310,
+      "image": "0104.png"
+    },
+    {
+      "source_frame": 313,
+      "image": "0105.png"
+    },
+    {
+      "source_frame": 316,
+      "image": "0106.png"
+    },
+    {
+      "source_frame": 319,
+      "image": "0107.png"
+    },
+    {
+      "source_frame": 322,
+      "image": "0108.png"
+    },
+    {
+      "source_frame": 325,
+      "image": "0109.png"
+    },
+    {
+      "source_frame": 328,
+      "image": "0110.png"
+    }
+  ],
+  "scope": "Saved-source playback evidence, not a gait/runtime/collision acceptance"
+}

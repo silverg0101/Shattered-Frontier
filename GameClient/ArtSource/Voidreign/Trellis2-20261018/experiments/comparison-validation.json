@@ -1,0 +1,25 @@
+{
+  "status": "passed",
+  "variants": [
+    {
+      "collection": "A | Baseline 1024 - 12 steps - 300k",
+      "hidden": false,
+      "height_m": 2.6000001430511475
+    },
+    {
+      "collection": "B | retained-detail",
+      "hidden": true,
+      "height_m": 2.5999999046325684
+    },
+    {
+      "collection": "C | more-steps",
+      "hidden": true,
+      "height_m": 2.5999999046325684
+    },
+    {
+      "collection": "D | higher-resolution",
+      "hidden": true,
+      "height_m": 2.6000001430511475
+    }
+  ]
+}

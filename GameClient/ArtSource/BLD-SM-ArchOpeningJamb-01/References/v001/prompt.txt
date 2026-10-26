@@ -1,0 +1,5 @@
+Concept sheet prompt:
+Stone masonry arched-opening jamb/reveal concept sheet for a modular building game, no people or text. Show empty semicircular arch aperture with distinct spring-point side jambs and separate curved crown ring lintel. Include front and side reveal views and a single isolated curved jamb component. Pale limestone blocks, restrained joints, no door. Preserve opening silhouette concept without invented dimensions.
+
+Clean view prompt:
+Single isolated stone masonry arched-opening side jamb/reveal only: vertical limestone spring-point jamb topped by the beginning of one curved inner reveal segment. No crown/ring lintel, no other side, no sill, no full arch. Pale stone blocks on neutral gray background, three-quarter view. Geometry reference only; no dimensions.

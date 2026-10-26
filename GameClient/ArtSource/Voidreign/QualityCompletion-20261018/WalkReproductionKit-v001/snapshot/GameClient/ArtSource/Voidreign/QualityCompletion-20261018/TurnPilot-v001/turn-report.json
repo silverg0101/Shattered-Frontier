@@ -1,0 +1,2235 @@
+{
+  "schema_version": 1,
+  "status": "passed-scoped-turn-pilot-needs-review",
+  "cpu_only": true,
+  "input_sha256": {
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryContinuousInfluences-v001/Mount-StandingSkinRepair.blend": "aef9634f59269f81e43147f07bc786b302da92a600953adbf5388870fe0d72ba",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selections.npz": "0b6a19f76a2cba73a42e293c29365360b53ba93be101cf8f4ca556e7a5989cc0",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimarySoleProposals-v001\\sole-patches.npz": "5b055301ae1b1349d3f85fb23e2b93985fd93f2a33e0fc1a1e4a05dbaf98614b",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryContinuousCacheCheck-v001/standing-cache-report.json": "a7967811606e90afd9b8a7300d72706452627eb82e6ce62d3c22296ae5191f4c",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryContinuousInfluences-v001/weight-repair-report.json": "209efe30ff91f35c09035a0b2a0e8deb89f91cc9cedab3509e08775dac0e3371"
+  },
+  "tool_sha256": "5eb0a71c5aeefe85eb7d6fbd55c8ae2ab379d6a4a9733e6a55522f883239db6a",
+  "profile_sha256": "8d2610964f94eeb28f07a54a07c9a3b607d0eaabe369ebdca4fea3f3e6e8a10b",
+  "candidate_sha256": "68ad8b18e2886efdd042ddb23a47254c761b4159847b5f420c3bd0811cf0650d",
+  "frames": 73,
+  "checks": {
+    "planted_sole_contacts": true,
+    "planted_slip": true,
+    "swing_clearance": true,
+    "foot_targets": true,
+    "bone_lengths": true,
+    "seams": true,
+    "root_relative_cycle": true,
+    "no_walk_suspension": true
+  },
+  "maximum_contact_error_m": 5.307760436634723e-05,
+  "maximum_planted_slip_m": 3.307505148307078e-05,
+  "minimum_swing_height_m": 0.0,
+  "maximum_target_error_m": 7.90637923586523e-05,
+  "maximum_bone_length_relative_change": 9.607738676864486e-07,
+  "maximum_seam_error_m": 0.0,
+  "root_relative_cycle_error_m": 6.708484613643379e-07,
+  "minimum_planned_contacts": 2,
+  "root_travel_m": 0.9,
+  "poses": [
+    {
+      "frame": 1,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": false,
+          "minimum_sole_height_m": 0.06176366022296986,
+          "target_error_m": 5.659460236738652e-06
+        },
+        {
+          "id": "fore.R",
+          "stance": true,
+          "minimum_sole_height_m": -3.725196911252837e-05,
+          "target_error_m": 3.7367667803921004e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": true,
+          "minimum_sole_height_m": 2.3654645686654874e-07,
+          "target_error_m": 2.7637536810325694e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": true,
+          "minimum_sole_height_m": 2.366290827726658e-07,
+          "target_error_m": 1.519626234052415e-07
+        }
+      ],
+      "full_mount_minimum_height_m": -0.0896339426155337
+    },
+    {
+      "frame": 2,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": false,
+          "minimum_sole_height_m": 0.08383146745502934,
+          "target_error_m": 2.8301789224511623e-05
+        },
+        {
+          "id": "fore.R",
+          "stance": true,
+          "minimum_sole_height_m": -2.5836757974406765e-05,
+          "target_error_m": 2.5974087513844593e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": true,
+          "minimum_sole_height_m": 3.6626427957209273e-07,
+          "target_error_m": 4.470348358154297e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": true,
+          "minimum_sole_height_m": 3.663468370884715e-07,
+          "target_error_m": 2.2500259981366246e-07
+        }
+      ],
+      "full_mount_minimum_height_m": -0.08758192879812876
+    },
+    {
+      "frame": 3,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": false,
+          "minimum_sole_height_m": 0.09793521954182705,
+          "target_error_m": 3.941257699548589e-05
+        },
+        {
+          "id": "fore.R",
+          "stance": true,
+          "minimum_sole_height_m": -1.3383800434807469e-05,
+          "target_error_m": 1.3431295365009729e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": true,
+          "minimum_sole_height_m": 1.0682718687426984e-07,
+          "target_error_m": 3.03925246810483e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": true,
+          "minimum_sole_height_m": 3.6634627575971024e-07,
+          "target_error_m": 2.1490760299348766e-07
+        }
+      ],
+      "full_mount_minimum_height_m": -0.08577715806410291
+    },
+    {
+      "frame": 4,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": false,
+          "minimum_sole_height_m": 0.10042010333036955,
+          "target_error_m": 3.979928321978081e-05
+        },
+        {
+          "id": "fore.R",
+          "stance": true,
+          "minimum_sole_height_m": -1.1308307058532918e-05,
+          "target_error_m": 1.134278895785781e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": true,
+          "minimum_sole_height_m": 4.959815937954914e-07,
+          "target_error_m": 4.020553101072324e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": true,
+          "minimum_sole_height_m": 2.3662739878638206e-07,
+          "target_error_m": 9.541398640621973e-08
+        }
+      ],
+      "full_mount_minimum_height_m": -0.08443794631551649
+    },
+    {
+      "frame": 5,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": false,
+          "minimum_sole_height_m": 0.09072093617962085,
+          "target_error_m": 2.8887491169203894e-05
+        },
+        {
+          "id": "fore.R",
+          "stance": true,
+          "minimum_sole_height_m": -9.88140520541414e-06,
+          "target_error_m": 9.915757118809615e-06
+        },
+        {
+          "id": "hind.L",
+          "stance": true,
+          "minimum_sole_height_m": 1.068261796799419e-07,
+          "target_error_m": 1.7881393432617188e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": true,
+          "minimum_sole_height_m": 2.366268101461344e-07,
+          "target_error_m": 2.1696418193818683e-07
+        }
+      ],
+      "full_mount_minimum_height_m": -0.08372514424669797
+    },
+    {
+      "frame": 6,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": false,
+          "minimum_sole_height_m": 0.0712120818854014,
+          "target_error_m": 5.438168518973559e-06
+        },
+        {
+          "id": "fore.R",
+          "stance": true,
+          "minimum_sole_height_m": -4.749971223039218e-05,
+          "target_error_m": 4.767903103762923e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": true,
+          "minimum_sole_height_m": -2.289264022792281e-08,
+          "target_error_m": 2.3276357876976293e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": true,
+          "minimum_sole_height_m": 2.3662620751707664e-07,
+          "target_error_m": 3.7133502347401117e-07
+        }
+      ],
+      "full_mount_minimum_height_m": -0.08372514424669797
+    },
+    {
+      "frame": 7,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": false,
+          "minimum_sole_height_m": 0.047032849851009306,
+          "target_error_m": 1.1096113438088575e-06
+        },
+        {
+          "id": "fore.R",
+          "stance": true,
+          "minimum_sole_height_m": -4.775914832833017e-05,
+          "target_error_m": 4.79029759054903e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": true,
+          "minimum_sole_height_m": 3.6626173760545555e-07,
+          "target_error_m": 4.777675730550706e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": false,
+          "minimum_sole_height_m": 0.002749226879011246,
+          "target_error_m": 2.388837865275353e-07
+        }
+      ],
+      "full_mount_minimum_height_m": -0.08443794631551649
+    },
+    {
+      "frame": 8,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": false,
+          "minimum_sole_height_m": 0.024196721114928543,
+          "target_error_m": 5.967910407334801e-07
+        },
+        {
+          "id": "fore.R",
+          "stance": true,
+          "minimum_sole_height_m": -9.881403688183354e-06,
+          "target_error_m": 9.997824139855221e-06
+        },
+        {
+          "id": "hind.L",
+          "stance": true,
+          "minimum_sole_height_m": -2.2893705597937242e-08,
+          "target_error_m": 2.3276357876976293e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": false,
+          "minimum_sole_height_m": 0.018751146877741265,
+          "target_error_m": 2.4665810700128747e-07
+        }
+      ],
+      "full_mount_minimum_height_m": -0.08577715806410291
+    },
+    {
+      "frame": 9,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": false,
+          "minimum_sole_height_m": 0.006702521770907577,
+          "target_error_m": 4.4728311955343587e-07
+        },
+        {
+          "id": "fore.R",
+          "stance": true,
+          "minimum_sole_height_m": -1.1048867926577444e-05,
+          "target_error_m": 1.123800489555063e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": true,
+          "minimum_sole_height_m": 1.0682404916195765e-07,
+          "target_error_m": 1.6049041769309353e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": false,
+          "minimum_sole_height_m": 0.04476719006590524,
+          "target_error_m": 1.475139697881291e-07
+        }
+      ],
+      "full_mount_minimum_height_m": -0.08758192879812876
+    },
+    {
+      "frame": 10,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": true,
+          "minimum_sole_height_m": -2.2886504913444128e-08,
+          "target_error_m": 5.575503985246929e-07
+        },
+        {
+          "id": "fore.R",
+          "stance": true,
+          "minimum_sole_height_m": -1.1567740668905202e-05,
+          "target_error_m": 1.165183148172517e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": true,
+          "minimum_sole_height_m": 4.959783981295374e-07,
+          "target_error_m": 3.816559456248789e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": false,
+          "minimum_sole_height_m": 0.07544375240449419,
+          "target_error_m": 2.9950963321688443e-07
+        }
+      ],
+      "full_mount_minimum_height_m": -0.0896339426155337
+    },
+    {
+      "frame": 11,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": true,
+          "minimum_sole_height_m": -2.2885845663012105e-08,
+          "target_error_m": 5.397430144630323e-07
+        },
+        {
+          "id": "fore.R",
+          "stance": true,
+          "minimum_sole_height_m": -1.2086613424999726e-05,
+          "target_error_m": 1.20244153680328e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": true,
+          "minimum_sole_height_m": 1.0682292628239054e-07,
+          "target_error_m": 1.6049041769309353e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": false,
+          "minimum_sole_height_m": 0.10331398900075772,
+          "target_error_m": 2.0212918469683135e-07
+        }
+      ],
+      "full_mount_minimum_height_m": -0.0916862158695424
+    },
+    {
+      "frame": 12,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": true,
+          "minimum_sole_height_m": -2.288519662663191e-08,
+          "target_error_m": 5.339525004377638e-07
+        },
+        {
+          "id": "fore.R",
+          "stance": true,
+          "minimum_sole_height_m": -1.1827176383372162e-05,
+          "target_error_m": 1.2042092941263148e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": true,
+          "minimum_sole_height_m": 1.0682235029868536e-07,
+          "target_error_m": 2.682209014892578e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": false,
+          "minimum_sole_height_m": 0.12122341663280944,
+          "target_error_m": 2.2891598188485527e-07
+        }
+      ],
+      "full_mount_minimum_height_m": -0.0934907271669645
+    },
+    {
+      "frame": 13,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": true,
+          "minimum_sole_height_m": -2.2884557582258935e-08,
+          "target_error_m": 5.877936757599122e-07
+        },
+        {
+          "id": "fore.R",
+          "stance": true,
+          "minimum_sole_height_m": -1.1178584449655915e-05,
+          "target_error_m": 1.1346272922059223e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": true,
+          "minimum_sole_height_m": -1.5261483876649606e-07,
+          "target_error_m": 4.3901562281418546e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": false,
+          "minimum_sole_height_m": 0.12440988186111945,
+          "target_error_m": 2.3466372114455137e-07
+        }
+      ],
+      "full_mount_minimum_height_m": -0.0948300686338528
+    },
+    {
+      "frame": 14,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": true,
+          "minimum_sole_height_m": 3.662709771035111e-07,
+          "target_error_m": 5.101335873789695e-07
+        },
+        {
+          "id": "fore.R",
+          "stance": true,
+          "minimum_sole_height_m": -1.0011119322195228e-05,
+          "target_error_m": 1.014527260190425e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": true,
+          "minimum_sole_height_m": 1.0682117013161019e-07,
+          "target_error_m": 2.1696418193818683e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": false,
+          "minimum_sole_height_m": 0.11201432523133859,
+          "target_error_m": 1.519626234052415e-07
+        }
+      ],
+      "full_mount_minimum_height_m": -0.09554287070267131
+    },
+    {
+      "frame": 15,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": true,
+          "minimum_sole_height_m": 1.0683499218622217e-07,
+          "target_error_m": 5.527507362065139e-07
+        },
+        {
+          "id": "fore.R",
+          "stance": true,
+          "minimum_sole_height_m": -3.7511398922829287e-05,
+          "target_error_m": 3.802397949801794e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": true,
+          "minimum_sole_height_m": -2.289773615160584e-08,
+          "target_error_m": 1.519626234052415e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": false,
+          "minimum_sole_height_m": 0.08735928646842228,
+          "target_error_m": 2.2696772533249583e-07
+        }
+      ],
+      "full_mount_minimum_height_m": -0.09554300042097319
+    },
+    {
+      "frame": 16,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": true,
+          "minimum_sole_height_m": -1.5260100294511858e-07,
+          "target_error_m": 7.115206948705508e-07
+        },
+        {
+          "id": "fore.R",
+          "stance": false,
+          "minimum_sole_height_m": 0.00200114143375818,
+          "target_error_m": 3.2774903341957025e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": true,
+          "minimum_sole_height_m": 1.0681995199490757e-07,
+          "target_error_m": 3.4240261593687705e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": false,
+          "minimum_sole_height_m": 0.056879506795955326,
+          "target_error_m": 2.623620161661358e-07
+        }
+      ],
+      "full_mount_minimum_height_m": -0.09482993891555092
+    },
+    {
+      "frame": 17,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": true,
+          "minimum_sole_height_m": -1.526004043128637e-07,
+          "target_error_m": 5.101335873789695e-07
+        },
+        {
+          "id": "fore.R",
+          "stance": false,
+          "minimum_sole_height_m": 0.01385609704244617,
+          "target_error_m": 4.219419760606696e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": true,
+          "minimum_sole_height_m": 1.0681932893774615e-07,
+          "target_error_m": 1.6323404237781945e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": false,
+          "minimum_sole_height_m": 0.02816726870434727,
+          "target_error_m": 2.0485709734063626e-07
+        }
+      ],
+      "full_mount_minimum_height_m": -0.0934907271669645
+    },
+    {
+      "frame": 18,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": true,
+          "minimum_sole_height_m": -2.2881514016859228e-08,
+          "target_error_m": 4.749708607944616e-07
+        },
+        {
+          "id": "fore.R",
+          "stance": false,
+          "minimum_sole_height_m": 0.033913530033146566,
+          "target_error_m": 2.1140252755244795e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": true,
+          "minimum_sole_height_m": -1.5261790742293613e-07,
+          "target_error_m": 3.5262583393452264e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": false,
+          "minimum_sole_height_m": 0.007549452651104405,
+          "target_error_m": 3.650024149988857e-08
+        }
+      ],
+      "full_mount_minimum_height_m": -0.09168608615124052
+    },
+    {
+      "frame": 19,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": true,
+          "minimum_sole_height_m": -2.2880935812708003e-08,
+          "target_error_m": 5.877936757599122e-07
+        },
+        {
+          "id": "fore.R",
+          "stance": false,
+          "minimum_sole_height_m": 0.05756480857662938,
+          "target_error_m": 1.8149247306720646e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": true,
+          "minimum_sole_height_m": -2.2900247476087543e-08,
+          "target_error_m": 2.457562461863554e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": true,
+          "minimum_sole_height_m": 2.3663655857042443e-07,
+          "target_error_m": 9.996002811937585e-08
+        }
+      ],
+      "full_mount_minimum_height_m": -0.0896339426155337
+    },
+    {
+      "frame": 20,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": true,
+          "minimum_sole_height_m": -2.8231697180025606e-07,
+          "target_error_m": 6.854534149169922e-07
+        },
+        {
+          "id": "fore.R",
+          "stance": false,
+          "minimum_sole_height_m": 0.07908014556072063,
+          "target_error_m": 2.4236032091685754e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": true,
+          "minimum_sole_height_m": 2.3653570502268906e-07,
+          "target_error_m": 2.1900144899933143e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": true,
+          "minimum_sole_height_m": 4.960728663405689e-07,
+          "target_error_m": 2.2696772533249583e-07
+        }
+      ],
+      "full_mount_minimum_height_m": -0.08758192879812876
+    },
+    {
+      "frame": 21,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": true,
+          "minimum_sole_height_m": -2.823164142462531e-07,
+          "target_error_m": 6.703866648198362e-07
+        },
+        {
+          "id": "fore.R",
+          "stance": false,
+          "minimum_sole_height_m": 0.0928985173841459,
+          "target_error_m": 5.9714924969667033e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": true,
+          "minimum_sole_height_m": 1.0681674256218798e-07,
+          "target_error_m": 1.7881393432617188e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": true,
+          "minimum_sole_height_m": 3.663542542664544e-07,
+          "target_error_m": 1.519626234052415e-07
+        }
+      ],
+      "full_mount_minimum_height_m": -0.08577715806410291
+    },
+    {
+      "frame": 22,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": true,
+          "minimum_sole_height_m": -1.5259756502850053e-07,
+          "target_error_m": 5.877936757599122e-07
+        },
+        {
+          "id": "fore.R",
+          "stance": false,
+          "minimum_sole_height_m": 0.09534305877884375,
+          "target_error_m": 7.902419596024683e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": true,
+          "minimum_sole_height_m": 3.662526766312624e-07,
+          "target_error_m": 2.6320698458933376e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": true,
+          "minimum_sole_height_m": 3.663539300813312e-07,
+          "target_error_m": 2.4755668231600746e-07
+        }
+      ],
+      "full_mount_minimum_height_m": -0.08443794631551649
+    },
+    {
+      "frame": 23,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": true,
+          "minimum_sole_height_m": 1.0683957585300163e-07,
+          "target_error_m": 5.031211082975308e-07
+        },
+        {
+          "id": "fore.R",
+          "stance": false,
+          "minimum_sole_height_m": 0.08580046161890031,
+          "target_error_m": 3.1242092395775225e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": true,
+          "minimum_sole_height_m": -2.2902908014543755e-08,
+          "target_error_m": 2.6151431761360534e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": true,
+          "minimum_sole_height_m": 3.663535919073979e-07,
+          "target_error_m": 3.332000937312528e-08
+        }
+      ],
+      "full_mount_minimum_height_m": -0.08372514424669797
+    },
+    {
+      "frame": 24,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": true,
+          "minimum_sole_height_m": -2.2878199334996907e-08,
+          "target_error_m": 5.763494850937639e-07
+        },
+        {
+          "id": "fore.R",
+          "stance": false,
+          "minimum_sole_height_m": 0.06675236673284068,
+          "target_error_m": 2.6678997761903414e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": true,
+          "minimum_sole_height_m": -2.2903596130774417e-08,
+          "target_error_m": 2.6320698458933376e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": true,
+          "minimum_sole_height_m": 6.257898430561681e-07,
+          "target_error_m": 3.6010283153040923e-07
+        }
+      ],
+      "full_mount_minimum_height_m": -0.08372514424669797
+    },
+    {
+      "frame": 25,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": true,
+          "minimum_sole_height_m": -1.5259598495909188e-07,
+          "target_error_m": 5.59934801699398e-07
+        },
+        {
+          "id": "fore.R",
+          "stance": false,
+          "minimum_sole_height_m": 0.04325298831856883,
+          "target_error_m": 1.4801476130086054e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": false,
+          "minimum_sole_height_m": 0.0024219475100957233,
+          "target_error_m": 3.677297436968406e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": true,
+          "minimum_sole_height_m": 7.555077785603714e-07,
+          "target_error_m": 4.430433734452279e-07
+        }
+      ],
+      "full_mount_minimum_height_m": -0.08443794631551649
+    },
+    {
+      "frame": 26,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": true,
+          "minimum_sole_height_m": -1.5259547914148186e-07,
+          "target_error_m": 6.536159574824962e-07
+        },
+        {
+          "id": "fore.R",
+          "stance": false,
+          "minimum_sole_height_m": 0.021135369256634506,
+          "target_error_m": 1.3319689896370001e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": false,
+          "minimum_sole_height_m": 0.01616339637892783,
+          "target_error_m": 2.407356265396403e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": true,
+          "minimum_sole_height_m": 7.555073979759186e-07,
+          "target_error_m": 5.164064005364018e-07
+        }
+      ],
+      "full_mount_minimum_height_m": -0.08577715806410291
+    },
+    {
+      "frame": 27,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": true,
+          "minimum_sole_height_m": -4.120315875155711e-07,
+          "target_error_m": 7.115206948705508e-07
+        },
+        {
+          "id": "fore.R",
+          "stance": false,
+          "minimum_sole_height_m": 0.005550234159559464,
+          "target_error_m": 3.3966723003352716e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": false,
+          "minimum_sole_height_m": 0.03697176861805551,
+          "target_error_m": 2.0267770452403194e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": true,
+          "minimum_sole_height_m": 7.555070034026556e-07,
+          "target_error_m": 5.855227322694212e-07
+        }
+      ],
+      "full_mount_minimum_height_m": -0.08758192879812876
+    },
+    {
+      "frame": 28,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": true,
+          "minimum_sole_height_m": -2.2876196936749693e-08,
+          "target_error_m": 6.398829982752767e-07
+        },
+        {
+          "id": "fore.R",
+          "stance": true,
+          "minimum_sole_height_m": -2.0258877320378232e-05,
+          "target_error_m": 2.0604340526215063e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": false,
+          "minimum_sole_height_m": 0.06145869246465763,
+          "target_error_m": 2.1696418193818683e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": true,
+          "minimum_sole_height_m": 4.960699910849797e-07,
+          "target_error_m": 2.1542358837725164e-07
+        }
+      ],
+      "full_mount_minimum_height_m": -0.0896339426155337
+    },
+    {
+      "frame": 29,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": true,
+          "minimum_sole_height_m": -2.823123261830318e-07,
+          "target_error_m": 5.877936757599122e-07
+        },
+        {
+          "id": "fore.R",
+          "stance": true,
+          "minimum_sole_height_m": -4.386760757002506e-05,
+          "target_error_m": 4.4437381372785126e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": false,
+          "minimum_sole_height_m": 0.08373690278588786,
+          "target_error_m": 2.7637536810325694e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": true,
+          "minimum_sole_height_m": 2.3663296477849372e-07,
+          "target_error_m": 9.424321830774485e-08
+        }
+      ],
+      "full_mount_minimum_height_m": -0.09168608615124052
+    },
+    {
+      "frame": 30,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": true,
+          "minimum_sole_height_m": -2.287525857624928e-08,
+          "target_error_m": 5.847637912734921e-07
+        },
+        {
+          "id": "fore.R",
+          "stance": true,
+          "minimum_sole_height_m": -1.234605953470691e-05,
+          "target_error_m": 1.2583287312686622e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": false,
+          "minimum_sole_height_m": 0.09807401810326977,
+          "target_error_m": 2.950279395762582e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": true,
+          "minimum_sole_height_m": 3.6635083011660186e-07,
+          "target_error_m": 2.4934411839666234e-07
+        }
+      ],
+      "full_mount_minimum_height_m": -0.0934907271669645
+    },
+    {
+      "frame": 31,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": true,
+          "minimum_sole_height_m": -5.417480126723717e-07,
+          "target_error_m": 8.55487590694864e-07
+        },
+        {
+          "id": "fore.R",
+          "stance": true,
+          "minimum_sole_height_m": -3.323070547112117e-05,
+          "target_error_m": 3.3387447466389785e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": false,
+          "minimum_sole_height_m": 0.10062700400512936,
+          "target_error_m": 3.82817762454305e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": true,
+          "minimum_sole_height_m": 1.0691377583249562e-07,
+          "target_error_m": 2.1283115233608635e-07
+        }
+      ],
+      "full_mount_minimum_height_m": -0.09483019835215467
+    },
+    {
+      "frame": 32,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": true,
+          "minimum_sole_height_m": -1.5259266405998062e-07,
+          "target_error_m": 6.86100985599836e-07
+        },
+        {
+          "id": "fore.R",
+          "stance": true,
+          "minimum_sole_height_m": -4.581338010067881e-05,
+          "target_error_m": 4.6198877294604964e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": false,
+          "minimum_sole_height_m": 0.09069953264672148,
+          "target_error_m": 4.0094924113374084e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": true,
+          "minimum_sole_height_m": 2.3663161319298354e-07,
+          "target_error_m": 2.421152116249788e-07
+        }
+      ],
+      "full_mount_minimum_height_m": -0.09554287070267131
+    },
+    {
+      "frame": 33,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": true,
+          "minimum_sole_height_m": -2.8231053361693625e-07,
+          "target_error_m": 5.101335873789695e-07
+        },
+        {
+          "id": "fore.R",
+          "stance": true,
+          "minimum_sole_height_m": -5.2688449460713827e-05,
+          "target_error_m": 5.2903288102994916e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": false,
+          "minimum_sole_height_m": 0.0709794969609776,
+          "target_error_m": 5.170509687929592e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": true,
+          "minimum_sole_height_m": 1.069128330311031e-07,
+          "target_error_m": 2.407356265396403e-07
+        }
+      ],
+      "full_mount_minimum_height_m": -0.09554300042097319
+    },
+    {
+      "frame": 34,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": false,
+          "minimum_sole_height_m": 0.002441664722724335,
+          "target_error_m": 6.990852418982924e-07
+        },
+        {
+          "id": "fore.R",
+          "stance": true,
+          "minimum_sole_height_m": -1.1048873931995828e-05,
+          "target_error_m": 1.1129960491952156e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": false,
+          "minimum_sole_height_m": 0.04663681986896617,
+          "target_error_m": 2.7069303579009994e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": true,
+          "minimum_sole_height_m": 3.6634894451381683e-07,
+          "target_error_m": 1.2990531157078367e-07
+        }
+      ],
+      "full_mount_minimum_height_m": -0.0948300686338528
+    },
+    {
+      "frame": 35,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": false,
+          "minimum_sole_height_m": 0.0166484131421214,
+          "target_error_m": 6.058380410151518e-07
+        },
+        {
+          "id": "fore.R",
+          "stance": true,
+          "minimum_sole_height_m": -5.2169575014193725e-05,
+          "target_error_m": 5.242754607373845e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": false,
+          "minimum_sole_height_m": 0.02373012437798372,
+          "target_error_m": 3.6010283153040923e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": true,
+          "minimum_sole_height_m": 2.3663013659636079e-07,
+          "target_error_m": 1.2377834115800373e-07
+        }
+      ],
+      "full_mount_minimum_height_m": -0.0934907271669645
+    },
+    {
+      "frame": 36,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": false,
+          "minimum_sole_height_m": 0.037406843835369186,
+          "target_error_m": 1.2753339684474236e-06
+        },
+        {
+          "id": "fore.R",
+          "stance": true,
+          "minimum_sole_height_m": -4.6202532528294427e-05,
+          "target_error_m": 4.6388521042447805e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": false,
+          "minimum_sole_height_m": 0.006648818391242983,
+          "target_error_m": 2.653076323086747e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": true,
+          "minimum_sole_height_m": 1.0691131469009463e-07,
+          "target_error_m": 1.4600096599955427e-07
+        }
+      ],
+      "full_mount_minimum_height_m": -0.09168608615124052
+    },
+    {
+      "frame": 37,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": false,
+          "minimum_sole_height_m": 0.06176340078636611,
+          "target_error_m": 5.934554648528318e-06
+        },
+        {
+          "id": "fore.R",
+          "stance": true,
+          "minimum_sole_height_m": -3.738168741440617e-05,
+          "target_error_m": 3.757680510203924e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": true,
+          "minimum_sole_height_m": 1.0682815476670271e-07,
+          "target_error_m": 2.4027400458748785e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": true,
+          "minimum_sole_height_m": 2.366290827726658e-07,
+          "target_error_m": 1.4901161193847656e-07
+        }
+      ],
+      "full_mount_minimum_height_m": -0.0896339426155337
+    },
+    {
+      "frame": 38,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": false,
+          "minimum_sole_height_m": 0.08383120801842558,
+          "target_error_m": 2.8441691440980824e-05
+        },
+        {
+          "id": "fore.R",
+          "stance": true,
+          "minimum_sole_height_m": -2.5966476276284567e-05,
+          "target_error_m": 2.6040242844861887e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": true,
+          "minimum_sole_height_m": 3.6626427957209273e-07,
+          "target_error_m": 2.9950963321688443e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": true,
+          "minimum_sole_height_m": 3.663468370884715e-07,
+          "target_error_m": 1.7120130796843852e-07
+        }
+      ],
+      "full_mount_minimum_height_m": -0.08758192879812876
+    },
+    {
+      "frame": 39,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": false,
+          "minimum_sole_height_m": 0.09793508982352517,
+          "target_error_m": 3.956392713820796e-05
+        },
+        {
+          "id": "fore.R",
+          "stance": true,
+          "minimum_sole_height_m": -1.3383800434807469e-05,
+          "target_error_m": 1.3434105491167112e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": true,
+          "minimum_sole_height_m": 2.3654548875207126e-07,
+          "target_error_m": 3.345302391148157e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": true,
+          "minimum_sole_height_m": 4.960645776375117e-07,
+          "target_error_m": 2.4800474907596765e-07
+        }
+      ],
+      "full_mount_minimum_height_m": -0.08577715806410291
+    },
+    {
+      "frame": 40,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": false,
+          "minimum_sole_height_m": 0.10042023304867143,
+          "target_error_m": 3.967680064380712e-05
+        },
+        {
+          "id": "fore.R",
+          "stance": true,
+          "minimum_sole_height_m": -1.1178588756655117e-05,
+          "target_error_m": 1.1282395771951258e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": true,
+          "minimum_sole_height_m": 2.365449900398886e-07,
+          "target_error_m": 2.2940046069533605e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": true,
+          "minimum_sole_height_m": 1.0690909690858064e-07,
+          "target_error_m": 1.769414855098414e-07
+        }
+      ],
+      "full_mount_minimum_height_m": -0.08443794631551649
+    },
+    {
+      "frame": 41,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": false,
+          "minimum_sole_height_m": 0.09072067674301709,
+          "target_error_m": 2.9155019625485595e-05
+        },
+        {
+          "id": "fore.R",
+          "stance": true,
+          "minimum_sole_height_m": -1.0011123507069897e-05,
+          "target_error_m": 1.0093777008760505e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": true,
+          "minimum_sole_height_m": 1.068261796799419e-07,
+          "target_error_m": 2.3466372114455137e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": true,
+          "minimum_sole_height_m": 1.0690850826833298e-07,
+          "target_error_m": 2.0485709734063626e-07
+        }
+      ],
+      "full_mount_minimum_height_m": -0.08372514424669797
+    },
+    {
+      "frame": 42,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": false,
+          "minimum_sole_height_m": 0.07121195216709952,
+          "target_error_m": 5.556035381015635e-06
+        },
+        {
+          "id": "fore.R",
+          "stance": true,
+          "minimum_sole_height_m": -4.749971223039218e-05,
+          "target_error_m": 4.77067145236405e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": true,
+          "minimum_sole_height_m": 1.0682566164987861e-07,
+          "target_error_m": 3.2236140449023154e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": true,
+          "minimum_sole_height_m": 3.6634450939487806e-07,
+          "target_error_m": 2.421152116249788e-07
+        }
+      ],
+      "full_mount_minimum_height_m": -0.08372514424669797
+    },
+    {
+      "frame": 43,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": false,
+          "minimum_sole_height_m": 0.047032849851009306,
+          "target_error_m": 1.1473894119262695e-06
+        },
+        {
+          "id": "fore.R",
+          "stance": true,
+          "minimum_sole_height_m": -4.775914832833017e-05,
+          "target_error_m": 4.80004596036215e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": true,
+          "minimum_sole_height_m": 1.068251338498527e-07,
+          "target_error_m": 2.715120786173433e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": false,
+          "minimum_sole_height_m": 0.002749356597313124,
+          "target_error_m": 1.444721179430583e-07
+        }
+      ],
+      "full_mount_minimum_height_m": -0.08443794631551649
+    },
+    {
+      "frame": 44,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": false,
+          "minimum_sole_height_m": 0.024196591396626665,
+          "target_error_m": 4.460403188197543e-07
+        },
+        {
+          "id": "fore.R",
+          "stance": true,
+          "minimum_sole_height_m": -1.0270558593816759e-05,
+          "target_error_m": 1.0301308099540713e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": true,
+          "minimum_sole_height_m": -2.2893705597937242e-08,
+          "target_error_m": 2.515605541487654e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": false,
+          "minimum_sole_height_m": 0.01875088744113751,
+          "target_error_m": 2.8817474254688197e-07
+        }
+      ],
+      "full_mount_minimum_height_m": -0.08577728778240479
+    },
+    {
+      "frame": 45,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": false,
+          "minimum_sole_height_m": 0.006702651489209455,
+          "target_error_m": 4.4429455744849365e-07
+        },
+        {
+          "id": "fore.R",
+          "stance": true,
+          "minimum_sole_height_m": -1.0919149624699642e-05,
+          "target_error_m": 1.099126306266541e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": true,
+          "minimum_sole_height_m": 2.3654235103975907e-07,
+          "target_error_m": 2.0485709734063626e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": false,
+          "minimum_sole_height_m": 0.044767319784207116,
+          "target_error_m": 3.017255176799981e-07
+        }
+      ],
+      "full_mount_minimum_height_m": -0.08758192879812876
+    },
+    {
+      "frame": 46,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": true,
+          "minimum_sole_height_m": -2.2886504913444128e-08,
+          "target_error_m": 5.339525004377638e-07
+        },
+        {
+          "id": "fore.R",
+          "stance": true,
+          "minimum_sole_height_m": -1.1697458970783003e-05,
+          "target_error_m": 1.1816846315029201e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": true,
+          "minimum_sole_height_m": 1.068234924961331e-07,
+          "target_error_m": 1.3075715880680267e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": false,
+          "minimum_sole_height_m": 0.07544362268619231,
+          "target_error_m": 3.1994149913763833e-07
+        }
+      ],
+      "full_mount_minimum_height_m": -0.0896339426155337
+    },
+    {
+      "frame": 47,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": true,
+          "minimum_sole_height_m": 1.0683245621478932e-07,
+          "target_error_m": 5.364418029785156e-07
+        },
+        {
+          "id": "fore.R",
+          "stance": true,
+          "minimum_sole_height_m": -1.1827176821244123e-05,
+          "target_error_m": 1.1980665652326635e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": true,
+          "minimum_sole_height_m": 1.0682292628239054e-07,
+          "target_error_m": 2.0914776396182476e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": false,
+          "minimum_sole_height_m": 0.1033141187190596,
+          "target_error_m": 2.633124149899526e-07
+        }
+      ],
+      "full_mount_minimum_height_m": -0.09168608615124052
+    },
+    {
+      "frame": 48,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": true,
+          "minimum_sole_height_m": -1.5260349850443333e-07,
+          "target_error_m": 5.840038639982171e-07
+        },
+        {
+          "id": "fore.R",
+          "stance": true,
+          "minimum_sole_height_m": -1.169745808149436e-05,
+          "target_error_m": 1.1746397378200675e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": true,
+          "minimum_sole_height_m": -2.289595157911606e-08,
+          "target_error_m": 2.7028258364226004e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": false,
+          "minimum_sole_height_m": 0.12122296261875287,
+          "target_error_m": 1.802055034406159e-07
+        }
+      ],
+      "full_mount_minimum_height_m": -0.09349085688526637
+    },
+    {
+      "frame": 49,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": true,
+          "minimum_sole_height_m": -2.2884557582258935e-08,
+          "target_error_m": 7.257339752844525e-07
+        },
+        {
+          "id": "fore.R",
+          "stance": true,
+          "minimum_sole_height_m": -1.1178584449655915e-05,
+          "target_error_m": 1.1412587191409745e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": true,
+          "minimum_sole_height_m": -2.289653688869464e-08,
+          "target_error_m": 4.04532908216066e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": false,
+          "minimum_sole_height_m": 0.12440981700196851,
+          "target_error_m": 2.2152168672261396e-07
+        }
+      ],
+      "full_mount_minimum_height_m": -0.0948300686338528
+    },
+    {
+      "frame": 50,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": true,
+          "minimum_sole_height_m": -1.526022304076946e-07,
+          "target_error_m": 5.967910407334801e-07
+        },
+        {
+          "id": "fore.R",
+          "stance": true,
+          "minimum_sole_height_m": -9.881401020317426e-06,
+          "target_error_m": 1.0118491940625946e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": true,
+          "minimum_sole_height_m": 2.365394720094116e-07,
+          "target_error_m": 1.8671101460071903e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": false,
+          "minimum_sole_height_m": 0.11201445494964046,
+          "target_error_m": 3.449868232843347e-07
+        }
+      ],
+      "full_mount_minimum_height_m": -0.09554287070267131
+    },
+    {
+      "frame": 51,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": true,
+          "minimum_sole_height_m": 1.0683499218622217e-07,
+          "target_error_m": 3.816559456248789e-07
+        },
+        {
+          "id": "fore.R",
+          "stance": true,
+          "minimum_sole_height_m": -3.764111722470709e-05,
+          "target_error_m": 3.817211662750179e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": true,
+          "minimum_sole_height_m": 1.0682056572619558e-07,
+          "target_error_m": 2.2549548671277697e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": false,
+          "minimum_sole_height_m": 0.08735941618672416,
+          "target_error_m": 3.125693941623424e-07
+        }
+      ],
+      "full_mount_minimum_height_m": -0.09554287070267131
+    },
+    {
+      "frame": 52,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": true,
+          "minimum_sole_height_m": -1.5260100294511858e-07,
+          "target_error_m": 6.398829982752767e-07
+        },
+        {
+          "id": "fore.R",
+          "stance": false,
+          "minimum_sole_height_m": 0.0020010117154563023,
+          "target_error_m": 3.282028449845312e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": true,
+          "minimum_sole_height_m": -1.5261665176069528e-07,
+          "target_error_m": 3.1994149913763833e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": false,
+          "minimum_sole_height_m": 0.056879506795955326,
+          "target_error_m": 2.9839552036674004e-07
+        }
+      ],
+      "full_mount_minimum_height_m": -0.0948300686338528
+    },
+    {
+      "frame": 53,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": true,
+          "minimum_sole_height_m": -1.526004043128637e-07,
+          "target_error_m": 3.6863436927953305e-07
+        },
+        {
+          "id": "fore.R",
+          "stance": false,
+          "minimum_sole_height_m": 0.013855967324144292,
+          "target_error_m": 4.2356190940994955e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": true,
+          "minimum_sole_height_m": -2.2898972940055273e-08,
+          "target_error_m": 3.171532847552413e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": false,
+          "minimum_sole_height_m": 0.028167009267743515,
+          "target_error_m": 1.2644054553268208e-07
+        }
+      ],
+      "full_mount_minimum_height_m": -0.0934907271669645
+    },
+    {
+      "frame": 54,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": true,
+          "minimum_sole_height_m": -2.2881514016859228e-08,
+          "target_error_m": 4.3800289799866286e-07
+        },
+        {
+          "id": "fore.R",
+          "stance": false,
+          "minimum_sole_height_m": 0.033913530033146566,
+          "target_error_m": 2.1102039659449545e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": true,
+          "minimum_sole_height_m": -1.5261790742293613e-07,
+          "target_error_m": 3.89715934712351e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": false,
+          "minimum_sole_height_m": 0.007549452651104405,
+          "target_error_m": 8.024520884654677e-08
+        }
+      ],
+      "full_mount_minimum_height_m": -0.09168608615124052
+    },
+    {
+      "frame": 55,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": true,
+          "minimum_sole_height_m": -1.5259923791255403e-07,
+          "target_error_m": 4.6932744228910274e-07
+        },
+        {
+          "id": "fore.R",
+          "stance": false,
+          "minimum_sole_height_m": 0.05756454914002562,
+          "target_error_m": 1.8248431014707237e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": true,
+          "minimum_sole_height_m": 1.0681805440171388e-07,
+          "target_error_m": 9.424321830774485e-08
+        },
+        {
+          "id": "hind.R",
+          "stance": true,
+          "minimum_sole_height_m": 4.960731623260273e-07,
+          "target_error_m": 2.3466372114455137e-07
+        }
+      ],
+      "full_mount_minimum_height_m": -0.0896339426155337
+    },
+    {
+      "frame": 56,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": true,
+          "minimum_sole_height_m": -2.8231697180025606e-07,
+          "target_error_m": 5.786564302130818e-07
+        },
+        {
+          "id": "fore.R",
+          "stance": false,
+          "minimum_sole_height_m": 0.0790798861241171,
+          "target_error_m": 2.438493419906649e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": true,
+          "minimum_sole_height_m": -1.526192006107152e-07,
+          "target_error_m": 3.1007307837433834e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": true,
+          "minimum_sole_height_m": 4.960728663405689e-07,
+          "target_error_m": 3.332000937312528e-07
+        }
+      ],
+      "full_mount_minimum_height_m": -0.08758192879812876
+    },
+    {
+      "frame": 57,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": true,
+          "minimum_sole_height_m": -1.5259811236845167e-07,
+          "target_error_m": 5.591411304263389e-07
+        },
+        {
+          "id": "fore.R",
+          "stance": false,
+          "minimum_sole_height_m": 0.09289890653905153,
+          "target_error_m": 5.935689926387652e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": true,
+          "minimum_sole_height_m": -2.290155931561344e-08,
+          "target_error_m": 2.6151431761360534e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": true,
+          "minimum_sole_height_m": 3.663542542664544e-07,
+          "target_error_m": 2.5463115409962923e-07
+        }
+      ],
+      "full_mount_minimum_height_m": -0.08577715806410291
+    },
+    {
+      "frame": 58,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": true,
+          "minimum_sole_height_m": -2.2879263150699103e-08,
+          "target_error_m": 4.460403188197543e-07
+        },
+        {
+          "id": "fore.R",
+          "stance": false,
+          "minimum_sole_height_m": 0.09534305877884375,
+          "target_error_m": 7.90637923586523e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": true,
+          "minimum_sole_height_m": -2.2902229002141894e-08,
+          "target_error_m": 2.1073424255447017e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": true,
+          "minimum_sole_height_m": 3.663539300813312e-07,
+          "target_error_m": 2.4934411839666234e-07
+        }
+      ],
+      "full_mount_minimum_height_m": -0.08443794631551649
+    },
+    {
+      "frame": 59,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": true,
+          "minimum_sole_height_m": 2.3655787773080306e-07,
+          "target_error_m": 4.308471767545033e-07
+        },
+        {
+          "id": "fore.R",
+          "stance": false,
+          "minimum_sole_height_m": 0.08580059133720219,
+          "target_error_m": 3.111935114434715e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": true,
+          "minimum_sole_height_m": -2.2902908014543755e-08,
+          "target_error_m": 3.1994149913763833e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": true,
+          "minimum_sole_height_m": 3.663535919073979e-07,
+          "target_error_m": 1.737759081973225e-07
+        }
+      ],
+      "full_mount_minimum_height_m": -0.08372514424669797
+    },
+    {
+      "frame": 60,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": true,
+          "minimum_sole_height_m": -2.2878199557041512e-08,
+          "target_error_m": 5.535535699429127e-07
+        },
+        {
+          "id": "fore.R",
+          "stance": false,
+          "minimum_sole_height_m": 0.06675210729623693,
+          "target_error_m": 2.6898610219267436e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": true,
+          "minimum_sole_height_m": -2.2903596130774417e-08,
+          "target_error_m": 2.3276357876976293e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": true,
+          "minimum_sole_height_m": 4.960715414004113e-07,
+          "target_error_m": 3.11145380404906e-07
+        }
+      ],
+      "full_mount_minimum_height_m": -0.08372514424669797
+    },
+    {
+      "frame": 61,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": true,
+          "minimum_sole_height_m": -2.823142870589379e-07,
+          "target_error_m": 5.127385417844431e-07
+        },
+        {
+          "id": "fore.R",
+          "stance": false,
+          "minimum_sole_height_m": 0.04325298831856883,
+          "target_error_m": 1.4892411643479687e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": false,
+          "minimum_sole_height_m": 0.0024216880734919677,
+          "target_error_m": 2.484520077784816e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": true,
+          "minimum_sole_height_m": 4.960711748047686e-07,
+          "target_error_m": 2.5463115409962923e-07
+        }
+      ],
+      "full_mount_minimum_height_m": -0.08443794631551649
+    },
+    {
+      "frame": 62,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": true,
+          "minimum_sole_height_m": -2.2877177263680437e-08,
+          "target_error_m": 6.230039882769249e-07
+        },
+        {
+          "id": "fore.R",
+          "stance": false,
+          "minimum_sole_height_m": 0.021135369256634506,
+          "target_error_m": 1.3219345765863149e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": false,
+          "minimum_sole_height_m": 0.016163136942324074,
+          "target_error_m": 2.755707801715572e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": true,
+          "minimum_sole_height_m": 6.257890960981172e-07,
+          "target_error_m": 2.7637536810325694e-07
+        }
+      ],
+      "full_mount_minimum_height_m": -0.08577715806410291
+    },
+    {
+      "frame": 63,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": true,
+          "minimum_sole_height_m": -2.823132856377697e-07,
+          "target_error_m": 6.201461567486767e-07
+        },
+        {
+          "id": "fore.R",
+          "stance": false,
+          "minimum_sole_height_m": 0.005550104441257586,
+          "target_error_m": 3.4106245058733785e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": false,
+          "minimum_sole_height_m": 0.03697176861805551,
+          "target_error_m": 2.6572576910446594e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": true,
+          "minimum_sole_height_m": 3.6635209776925137e-07,
+          "target_error_m": 2.1283115233608635e-07
+        }
+      ],
+      "full_mount_minimum_height_m": -0.08758192879812876
+    },
+    {
+      "frame": 64,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": true,
+          "minimum_sole_height_m": -2.2876196936749693e-08,
+          "target_error_m": 4.777675730550706e-07
+        },
+        {
+          "id": "fore.R",
+          "stance": true,
+          "minimum_sole_height_m": -2.0258877320378232e-05,
+          "target_error_m": 2.0540525092289873e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": false,
+          "minimum_sole_height_m": 0.06145869246465763,
+          "target_error_m": 1.9314112360500873e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": true,
+          "minimum_sole_height_m": 3.663516892071783e-07,
+          "target_error_m": 1.812804499357408e-07
+        }
+      ],
+      "full_mount_minimum_height_m": -0.0896339426155337
+    },
+    {
+      "frame": 65,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": true,
+          "minimum_sole_height_m": -1.525940243052304e-07,
+          "target_error_m": 5.724839184373184e-07
+        },
+        {
+          "id": "fore.R",
+          "stance": true,
+          "minimum_sole_height_m": -4.386760757002506e-05,
+          "target_error_m": 4.4393677876448144e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": false,
+          "minimum_sole_height_m": 0.08373716222249161,
+          "target_error_m": 1.6118070224511577e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": true,
+          "minimum_sole_height_m": 3.6635126665629514e-07,
+          "target_error_m": 2.5463115409962923e-07
+        }
+      ],
+      "full_mount_minimum_height_m": -0.09168608615124052
+    },
+    {
+      "frame": 66,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": true,
+          "minimum_sole_height_m": -1.525935604540507e-07,
+          "target_error_m": 4.0094924113374084e-07
+        },
+        {
+          "id": "fore.R",
+          "stance": true,
+          "minimum_sole_height_m": -1.2735214440340314e-05,
+          "target_error_m": 1.288153458484182e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": false,
+          "minimum_sole_height_m": 0.09807401810326977,
+          "target_error_m": 2.385349660155493e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": true,
+          "minimum_sole_height_m": 3.6635083011660186e-07,
+          "target_error_m": 2.1073424255447017e-07
+        }
+      ],
+      "full_mount_minimum_height_m": -0.0934907271669645
+    },
+    {
+      "frame": 67,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": true,
+          "minimum_sole_height_m": -4.120297107945703e-07,
+          "target_error_m": 7.562981570034933e-07
+        },
+        {
+          "id": "fore.R",
+          "stance": true,
+          "minimum_sole_height_m": -3.2971268867365566e-05,
+          "target_error_m": 3.3250444543567236e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": false,
+          "minimum_sole_height_m": 0.1006267445685256,
+          "target_error_m": 3.2313538256587746e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": true,
+          "minimum_sole_height_m": 2.3663207771029704e-07,
+          "target_error_m": 1.9082797281243946e-07
+        }
+      ],
+      "full_mount_minimum_height_m": -0.0948300686338528
+    },
+    {
+      "frame": 68,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": true,
+          "minimum_sole_height_m": 1.0684393969562223e-07,
+          "target_error_m": 5.057621821307283e-07
+        },
+        {
+          "id": "fore.R",
+          "stance": true,
+          "minimum_sole_height_m": -4.581338010067881e-05,
+          "target_error_m": 4.620298167290914e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": false,
+          "minimum_sole_height_m": 0.09069979208332524,
+          "target_error_m": 3.674277068954096e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": true,
+          "minimum_sole_height_m": 3.6634991507078496e-07,
+          "target_error_m": 1.548574096771071e-07
+        }
+      ],
+      "full_mount_minimum_height_m": -0.09554287070267131
+    },
+    {
+      "frame": 69,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": true,
+          "minimum_sole_height_m": -1.5259223173913483e-07,
+          "target_error_m": 5.503352079576071e-07
+        },
+        {
+          "id": "fore.R",
+          "stance": true,
+          "minimum_sole_height_m": -5.307760436634723e-05,
+          "target_error_m": 5.327631731539264e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": false,
+          "minimum_sole_height_m": 0.0709794969609776,
+          "target_error_m": 5.543552409928523e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": true,
+          "minimum_sole_height_m": -2.2805468846698318e-08,
+          "target_error_m": 2.4755668231600746e-07
+        }
+      ],
+      "full_mount_minimum_height_m": -0.09554300042097319
+    },
+    {
+      "frame": 70,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": false,
+          "minimum_sole_height_m": 0.002441535004422457,
+          "target_error_m": 8.462232866585662e-07
+        },
+        {
+          "id": "fore.R",
+          "stance": true,
+          "minimum_sole_height_m": -1.0919155630118027e-05,
+          "target_error_m": 1.1050675421955421e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": false,
+          "minimum_sole_height_m": 0.046636690150664295,
+          "target_error_m": 3.4045158799874374e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": true,
+          "minimum_sole_height_m": 3.6634894451381683e-07,
+          "target_error_m": 2.9802322387695312e-08
+        }
+      ],
+      "full_mount_minimum_height_m": -0.0948300686338528
+    },
+    {
+      "frame": 71,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": false,
+          "minimum_sole_height_m": 0.01664828342381952,
+          "target_error_m": 6.558204020460065e-07
+        },
+        {
+          "id": "fore.R",
+          "stance": true,
+          "minimum_sole_height_m": -5.2039856712315924e-05,
+          "target_error_m": 5.2321276663215276e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": false,
+          "minimum_sole_height_m": 0.02372999465968184,
+          "target_error_m": 2.7637536810325694e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": true,
+          "minimum_sole_height_m": 1.0691183471855936e-07,
+          "target_error_m": 1.7881393432617188e-07
+        }
+      ],
+      "full_mount_minimum_height_m": -0.0934907271669645
+    },
+    {
+      "frame": 72,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": false,
+          "minimum_sole_height_m": 0.03740671411706731,
+          "target_error_m": 1.346144873627345e-06
+        },
+        {
+          "id": "fore.R",
+          "stance": true,
+          "minimum_sole_height_m": -4.646196913205003e-05,
+          "target_error_m": 4.65940701578489e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": false,
+          "minimum_sole_height_m": 0.006648558954639228,
+          "target_error_m": 3.1007307837433834e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": true,
+          "minimum_sole_height_m": 3.663479184456975e-07,
+          "target_error_m": 6.664001874625056e-08
+        }
+      ],
+      "full_mount_minimum_height_m": -0.09168608615124052
+    },
+    {
+      "frame": 73,
+      "feet": [
+        {
+          "id": "fore.L",
+          "stance": false,
+          "minimum_sole_height_m": 0.06176340078636611,
+          "target_error_m": 5.849839855297418e-06
+        },
+        {
+          "id": "fore.R",
+          "stance": true,
+          "minimum_sole_height_m": -3.738168741440617e-05,
+          "target_error_m": 3.7521254078712654e-05
+        },
+        {
+          "id": "hind.L",
+          "stance": true,
+          "minimum_sole_height_m": 3.6626475852230556e-07,
+          "target_error_m": 2.3701747835556963e-07
+        },
+        {
+          "id": "hind.R",
+          "stance": true,
+          "minimum_sole_height_m": 2.366290827726658e-07,
+          "target_error_m": 1.9542689693874122e-07
+        }
+      ],
+      "full_mount_minimum_height_m": -0.0896339426155337
+    }
+  ],
+  "limitations": [
+    "Procedural slow walk, not captured equine motion or anatomical/production acceptance.",
+    "Secondary hair/tack motion, unresolved ownership, whole-mount ground and self/triangle/swept collision remain separate gates.",
+    "Global assembly root carries unweighted islands without semantically binding them. No engine export/transition acceptance.",
+    "Walking circular turn only; no pivot, run turn, transitions or runtime acceptance."
+  ],
+  "turn_per_cycle_radians": 0.25,
+  "total_turn_radians": 0.5
+}

@@ -1,0 +1,23 @@
+{
+  "inputs": [
+    {
+      "path": "/mnt/c/Projects/Shattered-Frontier/GameClient/ArtSource/PlayerCharacter/Starter-Female-01/Views1024-v001/raw/front.png",
+      "sha256": "57cbe21bf138be97cfe60cb829ee4ace5772e7791fad45b87e16529984dc5320"
+    },
+    {
+      "path": "/mnt/c/Projects/Shattered-Frontier/GameClient/ArtSource/PlayerCharacter/Starter-Female-01/Views1024-v001/raw/left.png",
+      "sha256": "77e7a6cc377ebfd936a8df53bd5b3693f48c262e93794b88dd0f3a1aa28fb146"
+    },
+    {
+      "path": "/mnt/c/Projects/Shattered-Frontier/GameClient/ArtSource/PlayerCharacter/Starter-Female-01/Views1024-v001/raw/back.png",
+      "sha256": "feb4e485b827ca8b7f39eb4bae6d9310564b30d50aef1887864677c1b9e45537"
+    },
+    {
+      "path": "/mnt/c/Projects/Shattered-Frontier/GameClient/ArtSource/PlayerCharacter/Starter-Female-01/Views1024-v001/raw/right.png",
+      "sha256": "8e8f51606608d2ffd0292d107db346f99fd54c308cb5274e0e8db9f994a62d91"
+    }
+  ],
+  "view_px": 1024,
+  "transforms_source": "/home/grego/sf-asset-lab/sources/Pixal3D/assets/mv_images/example/transforms.json",
+  "review_status": "needs-review"
+}

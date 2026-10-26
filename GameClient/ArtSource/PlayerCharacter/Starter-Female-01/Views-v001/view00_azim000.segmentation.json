@@ -1,0 +1,22 @@
+{
+  "source": "/mnt/c/Projects/Shattered-Frontier/GameClient/ArtSource/PlayerCharacter/Starter-Female-01/Views-v001/cells/view00_azim000.png",
+  "source_sha256": "facf3228363dcfc128400a47ecd98de284526340ff0ea1fbb7396be31c668d2b",
+  "output": "/mnt/c/Projects/Shattered-Frontier/Artifacts/tmp-Female-grabcut.png",
+  "output_sha256": "f576dd232bc461ec1e76ac47025e2b0912e9c0e3ddd5fbef16d50bd1ad9283db",
+  "mask_preview": "/mnt/c/Projects/Shattered-Frontier/Artifacts/tmp-Female-grabcut.mask.png",
+  "mask_preview_sha256": "57a52c2ff1b172f7e862496ad74a980b4c2407bdd281416811757a056b1d3002",
+  "dimensions_px": [
+    1024,
+    1024
+  ],
+  "method": "border-connected fixed-range RGB flood fill; 5-iteration GrabCut trimap cleanup; Gaussian alpha edge 0.8px",
+  "tolerance_rgb": 20,
+  "foreground_fraction": 0.142823,
+  "foreground_bounds_px": [
+    261,
+    62,
+    757,
+    940
+  ],
+  "review_status": "needs-review"
+}

@@ -1,0 +1,487 @@
+{
+  "schema_version": 1,
+  "status": "read-only-parent-skin-proposal-not-a-candidate",
+  "cpu_only": true,
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\WalkPilot-v003\\Mount-WalkPilot.blend": "f59dc38bff697b6c2a2c84511413d2e292d9fdbb278acc69cd8df6d26a5bd123",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\FullLegFringeRoots-v001\\region-roots.npz": "6c87dc69d6bbcf1ea76f7ca12e4f860940f328782c4a374a0a33278008bdf682",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz": "0d7599c8064cb81a6e211a23731435e08939b7fb146ce2d4bed810273909a2b2",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LegFringeLabelCorrection-v001\\label-only-selections.npz": "dc78ba7dbd5a03bef0f0397a26435ec6bcf31b079c340aff5d035a2b1566a630"
+  },
+  "tool_sha256": "6ffb188ed092e9b1a024717ee72289ec82cc19d2292e273ad696e1aba53613f4",
+  "profile_sha256": "4dfa66124041366194544bac91aeeaf08968cc0491b6a71586bfafe00a134839",
+  "feature_vertices": 363,
+  "changed_vertices": 304,
+  "original_unweighted_feature_vertices": 0,
+  "incident_edges": 655,
+  "solver_relative_residual": 1.3316496999622734e-15,
+  "maximum_baseline_position_error_m": 4.268454504785594e-07,
+  "baseline_maximum_edge_change_m": 0.0008675537097686953,
+  "proposed_maximum_edge_change_m": 0.0008675596109007644,
+  "regressed_edges_above_reporting_floor": 0,
+  "largest_regressions": [
+    {
+      "vertices": [
+        252065,
+        252069
+      ],
+      "baseline_m": 9.302796306506766e-05,
+      "proposed_m": 9.308944928252457e-05,
+      "increase_m": 6.148621745690613e-08
+    },
+    {
+      "vertices": [
+        252066,
+        252069
+      ],
+      "baseline_m": 0.0004273441105375614,
+      "proposed_m": 0.0004273859085849839,
+      "increase_m": 4.179804742251991e-08
+    },
+    {
+      "vertices": [
+        233794,
+        233795
+      ],
+      "baseline_m": 0.0002178645041189045,
+      "proposed_m": 0.00021789645752243875,
+      "increase_m": 3.1953403534235036e-08
+    },
+    {
+      "vertices": [
+        234162,
+        234163
+      ],
+      "baseline_m": 0.00018688687861497834,
+      "proposed_m": 0.00018691551168357155,
+      "increase_m": 2.8633068593214572e-08
+    },
+    {
+      "vertices": [
+        233786,
+        233793
+      ],
+      "baseline_m": 3.162577301119192e-05,
+      "proposed_m": 3.165181545580591e-05,
+      "increase_m": 2.6042444613988414e-08
+    },
+    {
+      "vertices": [
+        233490,
+        233492
+      ],
+      "baseline_m": 9.356483463103527e-05,
+      "proposed_m": 9.358960194445591e-05,
+      "increase_m": 2.476731342064553e-08
+    },
+    {
+      "vertices": [
+        233883,
+        233884
+      ],
+      "baseline_m": 9.356483463103527e-05,
+      "proposed_m": 9.358960194445591e-05,
+      "increase_m": 2.476731342064553e-08
+    },
+    {
+      "vertices": [
+        234106,
+        234107
+      ],
+      "baseline_m": 9.981196650081514e-05,
+      "proposed_m": 9.983462933695064e-05,
+      "increase_m": 2.2662836135500797e-08
+    },
+    {
+      "vertices": [
+        233881,
+        233882
+      ],
+      "baseline_m": 8.002342426255415e-05,
+      "proposed_m": 8.004572398687473e-05,
+      "increase_m": 2.229972432057914e-08
+    },
+    {
+      "vertices": [
+        252017,
+        252019
+      ],
+      "baseline_m": 0.0004072849870042257,
+      "proposed_m": 0.0004073054684150222,
+      "increase_m": 2.0481410796524546e-08
+    }
+  ],
+  "curves": [
+    {
+      "frame": 1,
+      "baseline_maximum_edge_change_m": 0.00025523050637606126,
+      "proposed_maximum_edge_change_m": 0.0002552183836069463
+    },
+    {
+      "frame": 2,
+      "baseline_maximum_edge_change_m": 0.0002484108794307341,
+      "proposed_maximum_edge_change_m": 0.00024839866064570865
+    },
+    {
+      "frame": 3,
+      "baseline_maximum_edge_change_m": 0.0002420643578593673,
+      "proposed_maximum_edge_change_m": 0.00024205204315808082
+    },
+    {
+      "frame": 4,
+      "baseline_maximum_edge_change_m": 0.0002369215722404852,
+      "proposed_maximum_edge_change_m": 0.0002369091601760534
+    },
+    {
+      "frame": 5,
+      "baseline_maximum_edge_change_m": 0.00023354403615437336,
+      "proposed_maximum_edge_change_m": 0.00023353152417387307
+    },
+    {
+      "frame": 6,
+      "baseline_maximum_edge_change_m": 0.00023225386335742892,
+      "proposed_maximum_edge_change_m": 0.00023224124836804944
+    },
+    {
+      "frame": 7,
+      "baseline_maximum_edge_change_m": 0.00023310498220968645,
+      "proposed_maximum_edge_change_m": 0.0002330922611786801
+    },
+    {
+      "frame": 8,
+      "baseline_maximum_edge_change_m": 0.00023587438057094678,
+      "proposed_maximum_edge_change_m": 0.00023586155116833013
+    },
+    {
+      "frame": 9,
+      "baseline_maximum_edge_change_m": 0.00024007061912317135,
+      "proposed_maximum_edge_change_m": 0.0002400576802495738
+    },
+    {
+      "frame": 10,
+      "baseline_maximum_edge_change_m": 0.00024494734572386156,
+      "proposed_maximum_edge_change_m": 0.0002449342978386934
+    },
+    {
+      "frame": 11,
+      "baseline_maximum_edge_change_m": 0.0002495711833699413,
+      "proposed_maximum_edge_change_m": 0.0002495580286835941
+    },
+    {
+      "frame": 12,
+      "baseline_maximum_edge_change_m": 0.0002529375181684751,
+      "proposed_maximum_edge_change_m": 0.0002529242605661189
+    },
+    {
+      "frame": 13,
+      "baseline_maximum_edge_change_m": 0.00025412847403790545,
+      "proposed_maximum_edge_change_m": 0.0002541151189392257
+    },
+    {
+      "frame": 14,
+      "baseline_maximum_edge_change_m": 0.0002524053391187997,
+      "proposed_maximum_edge_change_m": 0.0002523918928192814
+    },
+    {
+      "frame": 15,
+      "baseline_maximum_edge_change_m": 0.00024739535920152017,
+      "proposed_maximum_edge_change_m": 0.00024738182856874624
+    },
+    {
+      "frame": 16,
+      "baseline_maximum_edge_change_m": 0.00023912352337423365,
+      "proposed_maximum_edge_change_m": 0.00023910991513700908
+    },
+    {
+      "frame": 17,
+      "baseline_maximum_edge_change_m": 0.00022801948917747228,
+      "proposed_maximum_edge_change_m": 0.0002280058094513565
+    },
+    {
+      "frame": 18,
+      "baseline_maximum_edge_change_m": 0.00021482048653488628,
+      "proposed_maximum_edge_change_m": 0.000214806740238431
+    },
+    {
+      "frame": 19,
+      "baseline_maximum_edge_change_m": 0.00020048952986464336,
+      "proposed_maximum_edge_change_m": 0.00020047572049990137
+    },
+    {
+      "frame": 20,
+      "baseline_maximum_edge_change_m": 0.00018602704166890277,
+      "proposed_maximum_edge_change_m": 0.0001860131710913135
+    },
+    {
+      "frame": 21,
+      "baseline_maximum_edge_change_m": 0.00017232441929185965,
+      "proposed_maximum_edge_change_m": 0.00017231048772797797
+    },
+    {
+      "frame": 22,
+      "baseline_maximum_edge_change_m": 0.00016010103510294416,
+      "proposed_maximum_edge_change_m": 0.0001600870414327979
+    },
+    {
+      "frame": 23,
+      "baseline_maximum_edge_change_m": 0.00014980651764135572,
+      "proposed_maximum_edge_change_m": 0.0001497924597972239
+    },
+    {
+      "frame": 24,
+      "baseline_maximum_edge_change_m": 0.00014161256405041678,
+      "proposed_maximum_edge_change_m": 0.0001415984394846012
+    },
+    {
+      "frame": 25,
+      "baseline_maximum_edge_change_m": 0.000141430146030172,
+      "proposed_maximum_edge_change_m": 0.00014141603341005782
+    },
+    {
+      "frame": 26,
+      "baseline_maximum_edge_change_m": 0.0001874540517515788,
+      "proposed_maximum_edge_change_m": 0.00018744910504688017
+    },
+    {
+      "frame": 27,
+      "baseline_maximum_edge_change_m": 0.00031106873108426025,
+      "proposed_maximum_edge_change_m": 0.000311065695341603
+    },
+    {
+      "frame": 28,
+      "baseline_maximum_edge_change_m": 0.0004959241819451274,
+      "proposed_maximum_edge_change_m": 0.0004959236345036047
+    },
+    {
+      "frame": 29,
+      "baseline_maximum_edge_change_m": 0.0006962148291439485,
+      "proposed_maximum_edge_change_m": 0.0006962169027592557
+    },
+    {
+      "frame": 30,
+      "baseline_maximum_edge_change_m": 0.0008396032116726668,
+      "proposed_maximum_edge_change_m": 0.0008396075658093638
+    },
+    {
+      "frame": 31,
+      "baseline_maximum_edge_change_m": 0.0008675537097686953,
+      "proposed_maximum_edge_change_m": 0.0008675596109007644
+    },
+    {
+      "frame": 32,
+      "baseline_maximum_edge_change_m": 0.0007714404542414899,
+      "proposed_maximum_edge_change_m": 0.0007714469431189391
+    },
+    {
+      "frame": 33,
+      "baseline_maximum_edge_change_m": 0.0005969591107989683,
+      "proposed_maximum_edge_change_m": 0.0005969652496429709
+    },
+    {
+      "frame": 34,
+      "baseline_maximum_edge_change_m": 0.00043182088954338976,
+      "proposed_maximum_edge_change_m": 0.00043182396456888095
+    },
+    {
+      "frame": 35,
+      "baseline_maximum_edge_change_m": 0.0003345606454502742,
+      "proposed_maximum_edge_change_m": 0.0003345636912792105
+    },
+    {
+      "frame": 36,
+      "baseline_maximum_edge_change_m": 0.00027730205743935893,
+      "proposed_maximum_edge_change_m": 0.00027730483890585356
+    },
+    {
+      "frame": 37,
+      "baseline_maximum_edge_change_m": 0.0002552061755913826,
+      "proposed_maximum_edge_change_m": 0.0002552088098586036
+    },
+    {
+      "frame": 38,
+      "baseline_maximum_edge_change_m": 0.00024838842791720384,
+      "proposed_maximum_edge_change_m": 0.0002483910945489942
+    },
+    {
+      "frame": 39,
+      "baseline_maximum_edge_change_m": 0.00024204255901777438,
+      "proposed_maximum_edge_change_m": 0.000242045256835334
+    },
+    {
+      "frame": 40,
+      "baseline_maximum_edge_change_m": 0.00023689852574761833,
+      "proposed_maximum_edge_change_m": 0.0002369012531894879
+    },
+    {
+      "frame": 41,
+      "baseline_maximum_edge_change_m": 0.00023352179765857156,
+      "proposed_maximum_edge_change_m": 0.00023352455304526815
+    },
+    {
+      "frame": 42,
+      "baseline_maximum_edge_change_m": 0.00023223035523908114,
+      "proposed_maximum_edge_change_m": 0.00023223313683927438
+    },
+    {
+      "frame": 43,
+      "baseline_maximum_edge_change_m": 0.0002330783038053605,
+      "proposed_maximum_edge_change_m": 0.00023308111007400156
+    },
+    {
+      "frame": 44,
+      "baseline_maximum_edge_change_m": 0.00023585098569880308,
+      "proposed_maximum_edge_change_m": 0.00023585381536342376
+    },
+    {
+      "frame": 45,
+      "baseline_maximum_edge_change_m": 0.00024004764686826746,
+      "proposed_maximum_edge_change_m": 0.00024005049897145303
+    },
+    {
+      "frame": 46,
+      "baseline_maximum_edge_change_m": 0.00024492171554603426,
+      "proposed_maximum_edge_change_m": 0.0002449245895184693
+    },
+    {
+      "frame": 47,
+      "baseline_maximum_edge_change_m": 0.00024955126491874036,
+      "proposed_maximum_edge_change_m": 0.0002495541605728527
+    },
+    {
+      "frame": 48,
+      "baseline_maximum_edge_change_m": 0.00025291662616854643,
+      "proposed_maximum_edge_change_m": 0.0002529195435995446
+    },
+    {
+      "frame": 49,
+      "baseline_maximum_edge_change_m": 0.00025410517387988024,
+      "proposed_maximum_edge_change_m": 0.0002541081134490031
+    },
+    {
+      "frame": 50,
+      "baseline_maximum_edge_change_m": 0.00025238324108516064,
+      "proposed_maximum_edge_change_m": 0.0002523862031555274
+    },
+    {
+      "frame": 51,
+      "baseline_maximum_edge_change_m": 0.0002473700782888305,
+      "proposed_maximum_edge_change_m": 0.00024737306320324337
+    },
+    {
+      "frame": 52,
+      "baseline_maximum_edge_change_m": 0.00023910095931987257,
+      "proposed_maximum_edge_change_m": 0.00023910396736663564
+    },
+    {
+      "frame": 53,
+      "baseline_maximum_edge_change_m": 0.00022799268823690821,
+      "proposed_maximum_edge_change_m": 0.00022799571944601138
+    },
+    {
+      "frame": 54,
+      "baseline_maximum_edge_change_m": 0.00021479698319121915,
+      "proposed_maximum_edge_change_m": 0.0002148000374018605
+    },
+    {
+      "frame": 55,
+      "baseline_maximum_edge_change_m": 0.00020046946986979758,
+      "proposed_maximum_edge_change_m": 0.00020047254663368985
+    },
+    {
+      "frame": 56,
+      "baseline_maximum_edge_change_m": 0.00018599987670058632,
+      "proposed_maximum_edge_change_m": 0.00018600297536483512
+    },
+    {
+      "frame": 57,
+      "baseline_maximum_edge_change_m": 0.00017229965028337652,
+      "proposed_maximum_edge_change_m": 0.00017230276999204153
+    },
+    {
+      "frame": 58,
+      "baseline_maximum_edge_change_m": 0.00016008201951236978,
+      "proposed_maximum_edge_change_m": 0.00016008515930845957
+    },
+    {
+      "frame": 59,
+      "baseline_maximum_edge_change_m": 0.00014978106885807363,
+      "proposed_maximum_edge_change_m": 0.0001497842277513456
+    },
+    {
+      "frame": 60,
+      "baseline_maximum_edge_change_m": 0.00014158887025499112,
+      "proposed_maximum_edge_change_m": 0.00014159204723720314
+    },
+    {
+      "frame": 61,
+      "baseline_maximum_edge_change_m": 0.00014140591155656357,
+      "proposed_maximum_edge_change_m": 0.0001414091953822194
+    },
+    {
+      "frame": 62,
+      "baseline_maximum_edge_change_m": 0.0001874371825109286,
+      "proposed_maximum_edge_change_m": 0.00018744372470258508
+    },
+    {
+      "frame": 63,
+      "baseline_maximum_edge_change_m": 0.0003110507600942447,
+      "proposed_maximum_edge_change_m": 0.00031105928096848007
+    },
+    {
+      "frame": 64,
+      "baseline_maximum_edge_change_m": 0.0004959065064337048,
+      "proposed_maximum_edge_change_m": 0.0004959174818534723
+    },
+    {
+      "frame": 65,
+      "baseline_maximum_edge_change_m": 0.0006962000466790019,
+      "proposed_maximum_edge_change_m": 0.0006962134682943627
+    },
+    {
+      "frame": 66,
+      "baseline_maximum_edge_change_m": 0.0008395866534320826,
+      "proposed_maximum_edge_change_m": 0.0008396020250016484
+    },
+    {
+      "frame": 67,
+      "baseline_maximum_edge_change_m": 0.0008675346226897224,
+      "proposed_maximum_edge_change_m": 0.0008675510747762419
+    },
+    {
+      "frame": 68,
+      "baseline_maximum_edge_change_m": 0.0007714278604151956,
+      "proposed_maximum_edge_change_m": 0.000771444358915789
+    },
+    {
+      "frame": 69,
+      "baseline_maximum_edge_change_m": 0.0005969391122359821,
+      "proposed_maximum_edge_change_m": 0.0005969547351385093
+    },
+    {
+      "frame": 70,
+      "baseline_maximum_edge_change_m": 0.00043180296786560213,
+      "proposed_maximum_edge_change_m": 0.00043182107055992486
+    },
+    {
+      "frame": 71,
+      "baseline_maximum_edge_change_m": 0.00033454067944110183,
+      "proposed_maximum_edge_change_m": 0.0003345584802339763
+    },
+    {
+      "frame": 72,
+      "baseline_maximum_edge_change_m": 0.0002772810667806616,
+      "proposed_maximum_edge_change_m": 0.0002772985250971069
+    },
+    {
+      "frame": 73,
+      "baseline_maximum_edge_change_m": 0.0002551846124208626,
+      "proposed_maximum_edge_change_m": 0.0002552020037392064
+    }
+  ],
+  "limitations": [
+    "Only local existing clip and incident edges; no saved skin, source mutation or new gait.",
+    "Original geometric roots/outer support weights fixed; anatomy and proposed region boundary need review.",
+    "Parent-following linear skin only, not secondary dynamics or collision approval.",
+    "Reporting floor is numerical-noise reporting, not acceptance tolerance."
+  ]
+}

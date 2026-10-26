@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "scope": "Author plus independent agent visual review; no user final approval",
+  "component_source_mesh": "0eb7e75e610ef89d54b622c616bde01ee810d968ca9053c258e12557958ba009",
+  "remove": [
+    {
+      "id": "0eb7e75e610e:C0080",
+      "reason": "Small disconnected floating arc/sliver/cap, no complete clump or distinctive silhouette role; remove exact reviewed component only."
+    },
+    {
+      "id": "0eb7e75e610e:C0109",
+      "reason": "Small disconnected floating arc/sliver/cap, no complete clump or distinctive silhouette role; remove exact reviewed component only."
+    },
+    {
+      "id": "0eb7e75e610e:C0091",
+      "reason": "Small disconnected floating arc/sliver/cap, no complete clump or distinctive silhouette role; remove exact reviewed component only."
+    },
+    {
+      "id": "0eb7e75e610e:C0156",
+      "reason": "Small disconnected floating arc/sliver/cap, no complete clump or distinctive silhouette role; remove exact reviewed component only."
+    }
+  ],
+  "preserve": [
+    {
+      "id": "0eb7e75e610e:C0029",
+      "reason": "Substantial curved hair section contributes silhouette; preserve/reconstruct root after re-inventory."
+    },
+    {
+      "id": "0eb7e75e610e:C0002",
+      "reason": "Substantial curved hair section contributes silhouette; preserve/reconstruct root after re-inventory."
+    },
+    {
+      "id": "0eb7e75e610e:C0009",
+      "reason": "Substantial curved hair section contributes silhouette; preserve/reconstruct root after re-inventory."
+    },
+    {
+      "id": "0eb7e75e610e:C0032",
+      "reason": "Substantial curved hair section contributes silhouette; preserve/reconstruct root after re-inventory."
+    },
+    {
+      "id": "0eb7e75e610e:C0023",
+      "reason": "Substantial curved hair section contributes silhouette; preserve/reconstruct root after re-inventory."
+    }
+  ],
+  "limitations": [
+    "Triangle atlases draw through context and do not prove occlusion.",
+    "Component IDs change after topology edits; root repair uses re-inventoried39b034dd77a9 IDs.",
+    "219remaining components are not219defects."
+  ]
+}

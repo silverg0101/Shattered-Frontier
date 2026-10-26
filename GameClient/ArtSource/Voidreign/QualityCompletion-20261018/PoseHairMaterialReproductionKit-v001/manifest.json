@@ -1,0 +1,853 @@
+{
+  "schema_version": 1,
+  "workspace": "C:\\Projects\\Shattered-Frontier",
+  "asset_id": "Voidreign",
+  "status": "needs-review",
+  "self_contained": false,
+  "scope": "Corrected world-metre worst-edge pose evidence, invalid first diagnostic retained, and material attempt2/3 hair dielectric prototype with exact assignment/scoped retention/five previews. External large sources and candidate required.",
+  "commands": [
+    [
+      "C:/Program Files/Blender Foundation/Blender 5.1/blender.exe",
+      "--background",
+      "--factory-startup",
+      "--threads",
+      "4",
+      "--python-exit-code",
+      "1",
+      "--python",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\RigidSkinPoseReview-v002\\tool-source.py",
+      "--",
+      "--profile",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\RigidSkinPoseReview-v002\\profile.json",
+      "--output",
+      "<NEW_OUTPUT_FOLDER>"
+    ],
+    [
+      "C:/Program Files/Blender Foundation/Blender 5.1/blender.exe",
+      "--background",
+      "--factory-startup",
+      "--threads",
+      "4",
+      "--python-exit-code",
+      "1",
+      "--python",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\RigidSkinEdgePoseReview-v001\\tool-source.py",
+      "--",
+      "--profile",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\RigidSkinEdgePoseReview-v001\\profile.json",
+      "--output",
+      "<NEW_OUTPUT_FOLDER>"
+    ],
+    [
+      "C:/Program Files/Blender Foundation/Blender 5.1/blender.exe",
+      "--background",
+      "--factory-startup",
+      "--threads",
+      "4",
+      "--python-exit-code",
+      "1",
+      "--python",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairDielectricMaterial-v001\\tool-source.py",
+      "--",
+      "--profile",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairDielectricMaterial-v001\\profile.json",
+      "--output",
+      "<NEW_OUTPUT_FOLDER>"
+    ],
+    [
+      "C:/Program Files/Blender Foundation/Blender 5.1/blender.exe",
+      "--background",
+      "--factory-startup",
+      "--threads",
+      "4",
+      "--python-exit-code",
+      "1",
+      "--python",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairDielectricAudit-v001\\tool-source.py",
+      "--",
+      "--profile",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairDielectricAudit-v001\\profile.json",
+      "--output",
+      "<NEW_OUTPUT_FOLDER>"
+    ],
+    [
+      "C:/Program Files/Blender Foundation/Blender 5.1/blender.exe",
+      "--background",
+      "--factory-startup",
+      "--threads",
+      "4",
+      "--python-exit-code",
+      "1",
+      "--python",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairDielectricAssignmentCheck-v002\\tool-source.py",
+      "--",
+      "--profile",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairDielectricMaterial-v001\\profile.json",
+      "--verify-build",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairDielectricMaterial-v001",
+      "--output",
+      "<NEW_OUTPUT_FOLDER>"
+    ],
+    [
+      "C:/Program Files/Blender Foundation/Blender 5.1/blender.exe",
+      "--background",
+      "--factory-startup",
+      "--threads",
+      "4",
+      "--python-exit-code",
+      "1",
+      "--python",
+      "tools/Check-AssetRigRetention.py",
+      "--",
+      "--source",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\WalkPilot-v003\\Mount-WalkPilot.blend",
+      "--candidate",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairDielectricMaterial-v001\\Mount-MaterialPrototype.blend",
+      "--object",
+      "geometry_0",
+      "--output",
+      "<NEW_OUTPUT_FOLDER>"
+    ],
+    [
+      "C:/Program Files/Blender Foundation/Blender 5.1/blender.exe",
+      "--background",
+      "--factory-startup",
+      "--threads",
+      "4",
+      "--python-exit-code",
+      "1",
+      "--python",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairDielectricReview-v001\\tool-source.py",
+      "--",
+      "--source",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairDielectricMaterial-v001\\Mount-MaterialPrototype.blend",
+      "--output",
+      "<NEW_OUTPUT_FOLDER>",
+      "--guides",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairDielectricReview-v001\\guides.json",
+      "--frame",
+      "1",
+      "--samples",
+      "32"
+    ],
+    [
+      "C:/Program Files/Blender Foundation/Blender 5.1/blender.exe",
+      "--background",
+      "--factory-startup",
+      "--threads",
+      "4",
+      "--python-exit-code",
+      "1",
+      "--python",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairDielectricBodyReview-v001\\tool-source.py",
+      "--",
+      "--source",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairDielectricMaterial-v001\\Mount-MaterialPrototype.blend",
+      "--output",
+      "<NEW_OUTPUT_FOLDER>",
+      "--guides",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairDielectricBodyReview-v001\\guides.json",
+      "--frame",
+      "1",
+      "--samples",
+      "16"
+    ]
+  ],
+  "files": [
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPoseReview-v001/INVALIDATED.json",
+      "mode": "copy",
+      "bytes": 430,
+      "sha256": "0131837a0a747a73c3571538641ef9d5ad8f35cc1d829b48344a297a5ca40b49",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPoseReview-v001/INVALIDATED.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPoseReview-v001/pose-review.json",
+      "mode": "copy",
+      "bytes": 3733,
+      "sha256": "a648dd3ed613ee2043ea7c0b1775870fc2fa8e8ece50b883db2f34366495fcd1",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPoseReview-v001/pose-review.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPoseReview-v001/profile.json",
+      "mode": "copy",
+      "bytes": 2858,
+      "sha256": "d8211d687a5401ec010023f62f1d3d81a44fe36841b601221ee2aca7e64deccb",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPoseReview-v001/profile.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPoseReview-v001/source-indexed-pose-copies.npz",
+      "mode": "copy",
+      "bytes": 1265946,
+      "sha256": "50ab00d3fc8f68a38e0fc24f6f3c95ac243a3616fdca13b4a1584c35c5647d10",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPoseReview-v001/source-indexed-pose-copies.npz"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPoseReview-v001/tool-source.py",
+      "mode": "copy",
+      "bytes": 9448,
+      "sha256": "0b0f7a8662fa58b40de223c8b571b9312a0bcd590c5a6d53c00dd25cdf3efaa0",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPoseReview-v001/tool-source.py"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPoseReview-v001/previews/v001-largest-regression-baseline.png",
+      "mode": "copy",
+      "bytes": 453611,
+      "sha256": "87f114ad86bd82f408e47996d4338e8573a00065852d08e12bc6d912f4bda27a",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPoseReview-v001/previews/v001-largest-regression-baseline.png"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPoseReview-v001/previews/v001-largest-regression-proposal.png",
+      "mode": "copy",
+      "bytes": 453639,
+      "sha256": "e78a6a65fd92015b8f366560ce6ef2b584c0ffe5328eda7bb04a0f78eef60f25",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPoseReview-v001/previews/v001-largest-regression-proposal.png"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPoseReview-v001/previews/v001-largest-regression-rest.png",
+      "mode": "copy",
+      "bytes": 440682,
+      "sha256": "ebf9d17e4bf844807399d89d5311f28af72701baac77f3a5ed3022b6d79d5008",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPoseReview-v001/previews/v001-largest-regression-rest.png"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPoseReview-v001/previews/v002-largest-regression-baseline.png",
+      "mode": "copy",
+      "bytes": 594126,
+      "sha256": "13bfd4c99593a090ee6e0158c3ae7ce7404006639ed176bec089067987a4baa6",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPoseReview-v001/previews/v002-largest-regression-baseline.png"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPoseReview-v001/previews/v002-largest-regression-proposal.png",
+      "mode": "copy",
+      "bytes": 590908,
+      "sha256": "b168a76df8ba42eb8c6330c49948735f57f7ae9de34bdfd15e4a90efc07056b9",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPoseReview-v001/previews/v002-largest-regression-proposal.png"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPoseReview-v001/previews/v002-largest-regression-rest.png",
+      "mode": "copy",
+      "bytes": 607190,
+      "sha256": "17ceba35875c2606b2cc63d4d70d77568e0723f4af5e045455c3f757813373ee",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPoseReview-v001/previews/v002-largest-regression-rest.png"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPoseReview-v001/previews/v002-worst-absolute-baseline.png",
+      "mode": "copy",
+      "bytes": 604718,
+      "sha256": "5fbd80aac6f9d52d4afd5db3698d209cf0ffcd1f2f4b03c1b13e8d722fec2ef8",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPoseReview-v001/previews/v002-worst-absolute-baseline.png"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPoseReview-v001/previews/v002-worst-absolute-proposal.png",
+      "mode": "copy",
+      "bytes": 603827,
+      "sha256": "a57f777c343b5516ac74f64af3031b8be373468cc62631d888afeb36fc0e9e4f",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPoseReview-v001/previews/v002-worst-absolute-proposal.png"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPoseReview-v001/previews/v002-worst-absolute-rest.png",
+      "mode": "copy",
+      "bytes": 518680,
+      "sha256": "53a803383ec89c298da31f7cf6feb42b3197f0f9a476611745bfc3968099d1da",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPoseReview-v001/previews/v002-worst-absolute-rest.png"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPoseReview-v002/pose-review.json",
+      "mode": "copy",
+      "bytes": 3728,
+      "sha256": "1d09b27db182a8760ae5a72816b59e9e49399fea43800ae0438033158326c6a2",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPoseReview-v002/pose-review.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPoseReview-v002/profile.json",
+      "mode": "copy",
+      "bytes": 2858,
+      "sha256": "d8211d687a5401ec010023f62f1d3d81a44fe36841b601221ee2aca7e64deccb",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPoseReview-v002/profile.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPoseReview-v002/source-indexed-pose-copies.npz",
+      "mode": "copy",
+      "bytes": 194811,
+      "sha256": "8606529231cdf4043870182fa3f1f6bd80a786ecd83336f9ae5330fea14857c5",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPoseReview-v002/source-indexed-pose-copies.npz"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPoseReview-v002/tool-source.py",
+      "mode": "copy",
+      "bytes": 9841,
+      "sha256": "72b73525edba6e3f7f45727fcf14debb3441d4105bb1e9fcad348b30d1823b11",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPoseReview-v002/tool-source.py"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPoseReview-v002/previews/v001-largest-regression-baseline.png",
+      "mode": "copy",
+      "bytes": 428489,
+      "sha256": "594f62b2031f1ff107657a85d5d9f3c1a7a2d890eb5c20eae7932515220b51dc",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPoseReview-v002/previews/v001-largest-regression-baseline.png"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPoseReview-v002/previews/v001-largest-regression-proposal.png",
+      "mode": "copy",
+      "bytes": 428288,
+      "sha256": "b2c0829c8430324ae167ad2c37060d57b99b4df65d24b4e1968a1c5a1dba3871",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPoseReview-v002/previews/v001-largest-regression-proposal.png"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPoseReview-v002/previews/v001-largest-regression-rest.png",
+      "mode": "copy",
+      "bytes": 423456,
+      "sha256": "a0e3febd8d69a5aad4accbfafc2d7eaee37d9ee2e2e013a871903ae414a5c611",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPoseReview-v002/previews/v001-largest-regression-rest.png"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPoseReview-v002/previews/v002-largest-regression-baseline.png",
+      "mode": "copy",
+      "bytes": 478952,
+      "sha256": "2d2930bd82c41ed715db91fb8f294822470b0bc3a28fc0b5b9c717429c653b4e",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPoseReview-v002/previews/v002-largest-regression-baseline.png"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPoseReview-v002/previews/v002-largest-regression-proposal.png",
+      "mode": "copy",
+      "bytes": 472459,
+      "sha256": "03ab8e36984a0b0ee8e825cefbb35f4e2121456e0073b84defc7739d6f1db792",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPoseReview-v002/previews/v002-largest-regression-proposal.png"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPoseReview-v002/previews/v002-largest-regression-rest.png",
+      "mode": "copy",
+      "bytes": 470740,
+      "sha256": "e097d32854a0b61fe4103397510346674b25ce85530329a086e357be2021d7a9",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPoseReview-v002/previews/v002-largest-regression-rest.png"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPoseReview-v002/previews/v002-worst-absolute-baseline.png",
+      "mode": "copy",
+      "bytes": 543368,
+      "sha256": "88ee2a0e14bf45ee6637800fae16599d39d27d2bc67eab80db4294b63ba3c9e9",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPoseReview-v002/previews/v002-worst-absolute-baseline.png"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPoseReview-v002/previews/v002-worst-absolute-proposal.png",
+      "mode": "copy",
+      "bytes": 536728,
+      "sha256": "c0d437282ea0cf55210e17b46c5de333306e4f11f19f11682fa35a5421781418",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPoseReview-v002/previews/v002-worst-absolute-proposal.png"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPoseReview-v002/previews/v002-worst-absolute-rest.png",
+      "mode": "copy",
+      "bytes": 550952,
+      "sha256": "b779ee734de2e4b062bd53f2ee2b1824b4d394907f5c1d5289529242d3d36c2d",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPoseReview-v002/previews/v002-worst-absolute-rest.png"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinEdgePoseReview-v001/pose-review.json",
+      "mode": "copy",
+      "bytes": 3908,
+      "sha256": "d15449aed59cfe50ddf0212e9d6560fc4ba3332ba9dcaad386ed19c66f0b6154",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinEdgePoseReview-v001/pose-review.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinEdgePoseReview-v001/profile.json",
+      "mode": "copy",
+      "bytes": 3221,
+      "sha256": "48157228042800b6efb920f8c4b89ae6715a90c711105ee75689dc521050f152",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinEdgePoseReview-v001/profile.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinEdgePoseReview-v001/source-indexed-pose-copies.npz",
+      "mode": "copy",
+      "bytes": 11467,
+      "sha256": "a12357878bf5830ca62423406191901cdea6b580489c63f878767b83ba75fe64",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinEdgePoseReview-v001/source-indexed-pose-copies.npz"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinEdgePoseReview-v001/tool-source.py",
+      "mode": "copy",
+      "bytes": 10882,
+      "sha256": "857e1e68aecda2053268407c65049702432a8d08eb9f25a2190faf6ea3d20280",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinEdgePoseReview-v001/tool-source.py"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinEdgePoseReview-v001/visual-review.json",
+      "mode": "copy",
+      "bytes": 1511,
+      "sha256": "b2e4ba065dca76e3846d3969ef717c84d3f7c1ad3fcb5807155a9a40f2a75c4e",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinEdgePoseReview-v001/visual-review.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinEdgePoseReview-v001/previews/v001-largest-regression-baseline.png",
+      "mode": "copy",
+      "bytes": 434154,
+      "sha256": "b8056df084bc1e335424f454aaa053b3155872af4b27f50fd53873d39889a4c5",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinEdgePoseReview-v001/previews/v001-largest-regression-baseline.png"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinEdgePoseReview-v001/previews/v001-largest-regression-proposal.png",
+      "mode": "copy",
+      "bytes": 449381,
+      "sha256": "999e585c1d4cbc7c11ab519345ec3ee40a5367ade2dac2d0f566fd93dc2717c1",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinEdgePoseReview-v001/previews/v001-largest-regression-proposal.png"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinEdgePoseReview-v001/previews/v001-largest-regression-rest.png",
+      "mode": "copy",
+      "bytes": 468026,
+      "sha256": "3f4ec7c32c73b5ff5fe7e5f8dfcd93c169c1a353d08f55f4d21e3b0c8dba47a5",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinEdgePoseReview-v001/previews/v001-largest-regression-rest.png"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinEdgePoseReview-v001/previews/v002-largest-regression-baseline.png",
+      "mode": "copy",
+      "bytes": 461282,
+      "sha256": "d9c8dc8ad2f52fadc540f5a214b7a1d2650ce0ed36e3bfe28554edcf502cf13c",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinEdgePoseReview-v001/previews/v002-largest-regression-baseline.png"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinEdgePoseReview-v001/previews/v002-largest-regression-proposal.png",
+      "mode": "copy",
+      "bytes": 428445,
+      "sha256": "0daa42edeeb76092af3152e65bfebc38add46b04771cafb236110d067ab70bcc",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinEdgePoseReview-v001/previews/v002-largest-regression-proposal.png"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinEdgePoseReview-v001/previews/v002-largest-regression-rest.png",
+      "mode": "copy",
+      "bytes": 443105,
+      "sha256": "e2b5a70d305e6d583739979a9b9496b11a0e8370bb1ec5689f25bbc8f9414376",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinEdgePoseReview-v001/previews/v002-largest-regression-rest.png"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinEdgePoseReview-v001/previews/v002-worst-absolute-baseline.png",
+      "mode": "copy",
+      "bytes": 396060,
+      "sha256": "08fd045c05c4da9d5186d79ffecd8064f7bcf14f4f7c2aec0636dfbc66948449",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinEdgePoseReview-v001/previews/v002-worst-absolute-baseline.png"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinEdgePoseReview-v001/previews/v002-worst-absolute-proposal.png",
+      "mode": "copy",
+      "bytes": 395851,
+      "sha256": "9ee9ee23c91ccc2ce332f5e081c9b31165c30d48d933c3817e607cc8c102752e",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinEdgePoseReview-v001/previews/v002-worst-absolute-proposal.png"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinEdgePoseReview-v001/previews/v002-worst-absolute-rest.png",
+      "mode": "copy",
+      "bytes": 434489,
+      "sha256": "77811d77ff6208ed2553c8037e855255e5f17111c40fe7bd70411dbaa6ea4a3f",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinEdgePoseReview-v001/previews/v002-worst-absolute-rest.png"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairDielectricMaterial-v001/face-selection.npz",
+      "mode": "copy",
+      "bytes": 193378,
+      "sha256": "e949ecb9e806ab29929c73b6aec460abaa1de9aba75e4df3558ff6bd6c975965",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairDielectricMaterial-v001/face-selection.npz"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairDielectricMaterial-v001/material-change.json",
+      "mode": "copy",
+      "bytes": 1168,
+      "sha256": "33175bf991e535b8e3d8af8167701250da3bfba34056e0389bfcea44c5e3a94c",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairDielectricMaterial-v001/material-change.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairDielectricMaterial-v001/Mount-MaterialPrototype.blend",
+      "mode": "reference",
+      "bytes": 124639855,
+      "sha256": "9f655815892fbc693e58faa99880440ed4b30aca4a023248548e084dbf28b42b",
+      "snapshot": null
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairDielectricMaterial-v001/profile.json",
+      "mode": "copy",
+      "bytes": 1388,
+      "sha256": "ff0426b4fcba47fcca8baffb84ad9a3eea4da8f74ae9abfb69971349178e0884",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairDielectricMaterial-v001/profile.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairDielectricMaterial-v001/README.md",
+      "mode": "copy",
+      "bytes": 1261,
+      "sha256": "6be875306cea846975ce7a2a5d28d4120b8364d1bfeb30dda4594606004480d6",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairDielectricMaterial-v001/README.md"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairDielectricMaterial-v001/retention-summary.json",
+      "mode": "copy",
+      "bytes": 1348,
+      "sha256": "a7512fcbb2b2f775c7cde49e713da19411554eaf77b8991c9ed57b26ccd0a649",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairDielectricMaterial-v001/retention-summary.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairDielectricMaterial-v001/tool-source.py",
+      "mode": "copy",
+      "bytes": 5301,
+      "sha256": "d3c8480f5723049f1f55360eac30795b3c9fb5936be16f0742487db3b60dfc5b",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairDielectricMaterial-v001/tool-source.py"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairDielectricAssignmentCheck-v001/validation.json",
+      "mode": "copy",
+      "bytes": 905,
+      "sha256": "3030a3fdce6dff6a0ea4302d9a4ddd48358797b249c7272751d1a3e14e167eb3",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairDielectricAssignmentCheck-v001/validation.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairDielectricAssignmentCheck-v002/tool-source.py",
+      "mode": "copy",
+      "bytes": 6696,
+      "sha256": "d76b818e409d0881e2b82d67f40b6628e2f1dc6210b4f48ace20a23c7c5c3401",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairDielectricAssignmentCheck-v002/tool-source.py"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairDielectricAssignmentCheck-v002/validation.json",
+      "mode": "copy",
+      "bytes": 1041,
+      "sha256": "5cb3b709b105110e3c66492181596fae38aadf3044f0fdf0d1d87b29711b9c88",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairDielectricAssignmentCheck-v002/validation.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairDielectricRetention-v001/changed-weight-vertices.npz",
+      "mode": "copy",
+      "bytes": 208,
+      "sha256": "11edb418fb3b2aa860778b794ac572c6f3086b23a7d775115e738183fd997eda",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairDielectricRetention-v001/changed-weight-vertices.npz"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairDielectricRetention-v001/tool-source.py",
+      "mode": "copy",
+      "bytes": 6955,
+      "sha256": "bd64817e6a7d0b5c8796f523812fcb1a9cce4899cd9b9fc7769d91107126234a",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairDielectricRetention-v001/tool-source.py"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairDielectricRetention-v001/validation.json",
+      "mode": "copy",
+      "bytes": 17010,
+      "sha256": "1a579eadfd4fc5850b9db673156bf052410263966e1d2197d9818cbf4b0620e2",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairDielectricRetention-v001/validation.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairDielectricReview-v001/guides.json",
+      "mode": "copy",
+      "bytes": 1170,
+      "sha256": "5235467fb9a5e13c39237b48e418807825f2684e795618401191267557f1d256",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairDielectricReview-v001/guides.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairDielectricReview-v001/render-report.json",
+      "mode": "copy",
+      "bytes": 2275,
+      "sha256": "43e3d37d96c115c70360d09b44688290e4f80f858d7028c7ddd4b67d7e453a21",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairDielectricReview-v001/render-report.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairDielectricReview-v001/tool-source.py",
+      "mode": "copy",
+      "bytes": 5482,
+      "sha256": "d2141055f11744c6cca8b3a215061406c1b36b36621f991ece68b937f3c585cb",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairDielectricReview-v001/tool-source.py"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairDielectricReview-v001/visual-review.json",
+      "mode": "copy",
+      "bytes": 1225,
+      "sha256": "86f1dd8d700fc397bda4d4b58cc4ad6af12b4fab9264d2f0546cbab912b30c88",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairDielectricReview-v001/visual-review.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairDielectricReview-v001/previews/Detail-Head-Neutral.png",
+      "mode": "copy",
+      "bytes": 1221109,
+      "sha256": "24c1b89332fe874e1e27fd79d931b0d9cf7d363b47694ac7f18f1488d1d49ed1",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairDielectricReview-v001/previews/Detail-Head-Neutral.png"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairDielectricReview-v001/previews/Detail-Saddle-Neutral.png",
+      "mode": "copy",
+      "bytes": 1410529,
+      "sha256": "577d5b4b94dd55b29cfe5f69e46cc178437f826e51c290549a892fe91ae5ed8d",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairDielectricReview-v001/previews/Detail-Saddle-Neutral.png"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairDielectricBodyReview-v001/guides.json",
+      "mode": "copy",
+      "bytes": 2032,
+      "sha256": "3e39546cf3aa30ba43cbc6a6f183c315128d4a16800db2ad395f4fa6c303be00",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairDielectricBodyReview-v001/guides.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairDielectricBodyReview-v001/render-report.json",
+      "mode": "copy",
+      "bytes": 3089,
+      "sha256": "f95405e017696e5b0252abd9d18dbdda8cc879f03b9f6a119abca26b51c169c9",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairDielectricBodyReview-v001/render-report.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairDielectricBodyReview-v001/tool-source.py",
+      "mode": "copy",
+      "bytes": 5482,
+      "sha256": "d2141055f11744c6cca8b3a215061406c1b36b36621f991ece68b937f3c585cb",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairDielectricBodyReview-v001/tool-source.py"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairDielectricBodyReview-v001/previews/Detail-Body-Left.png",
+      "mode": "copy",
+      "bytes": 985744,
+      "sha256": "7c5febc86293e305150fb27b2964c24688219e945c6beb299b14d087af66a08a",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairDielectricBodyReview-v001/previews/Detail-Body-Left.png"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairDielectricBodyReview-v001/previews/Detail-Body-Rear.png",
+      "mode": "copy",
+      "bytes": 898610,
+      "sha256": "30e097876fb75ddb98ac1d7ec3abb26b1e7eb0719938b7f65b9f7da5335a6896",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairDielectricBodyReview-v001/previews/Detail-Body-Rear.png"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairDielectricBodyReview-v001/previews/Detail-Body-Right.png",
+      "mode": "copy",
+      "bytes": 974589,
+      "sha256": "2b20ae5a84ec95d4774e96c0c6a942f237e184b4814cc716028add873b91276e",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairDielectricBodyReview-v001/previews/Detail-Body-Right.png"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairDielectricAudit-v001/material-audit.json",
+      "mode": "copy",
+      "bytes": 11861,
+      "sha256": "3cad1f82da7e0f37b3950453763f7a51af2b757f8ab99390ce710345e6e80e3e",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairDielectricAudit-v001/material-audit.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairDielectricAudit-v001/profile.json",
+      "mode": "copy",
+      "bytes": 785,
+      "sha256": "bcdad25910787f0c4f1daaf246ab0fd9ea0426357a7396cdb6b00dedbd0ef252",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairDielectricAudit-v001/profile.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairDielectricAudit-v001/tool-source.py",
+      "mode": "copy",
+      "bytes": 5464,
+      "sha256": "e64455a8f3965a63f679e85b4405dc8264e9093cea963d2742289d6d099fe352",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairDielectricAudit-v001/tool-source.py"
+    },
+    {
+      "path": "tools/Render-MountSkinProposalPoses.py",
+      "mode": "copy",
+      "bytes": 10882,
+      "sha256": "857e1e68aecda2053268407c65049702432a8d08eb9f25a2190faf6ea3d20280",
+      "snapshot": "snapshot/tools/Render-MountSkinProposalPoses.py"
+    },
+    {
+      "path": "tools/Build-MountSemanticMaterial.py",
+      "mode": "copy",
+      "bytes": 6696,
+      "sha256": "d76b818e409d0881e2b82d67f40b6628e2f1dc6210b4f48ace20a23c7c5c3401",
+      "snapshot": "snapshot/tools/Build-MountSemanticMaterial.py"
+    },
+    {
+      "path": "tools/Render-VoidreignTextureCloseups.py",
+      "mode": "copy",
+      "bytes": 5482,
+      "sha256": "d2141055f11744c6cca8b3a215061406c1b36b36621f991ece68b937f3c585cb",
+      "snapshot": "snapshot/tools/Render-VoidreignTextureCloseups.py"
+    },
+    {
+      "path": "tools/Audit-AssetMaterialChannels.py",
+      "mode": "copy",
+      "bytes": 5464,
+      "sha256": "e64455a8f3965a63f679e85b4405dc8264e9093cea963d2742289d6d099fe352",
+      "snapshot": "snapshot/tools/Audit-AssetMaterialChannels.py"
+    },
+    {
+      "path": "tools/Check-AssetRigRetention.py",
+      "mode": "copy",
+      "bytes": 6955,
+      "sha256": "bd64817e6a7d0b5c8796f523812fcb1a9cce4899cd9b9fc7769d91107126234a",
+      "snapshot": "snapshot/tools/Check-AssetRigRetention.py"
+    },
+    {
+      "path": "tools/Freeze-AssetEvidence.py",
+      "mode": "copy",
+      "bytes": 3636,
+      "sha256": "022a766de42da24a27460313b041d386c86c95c5e30573e5f661dc523872dd88",
+      "snapshot": "snapshot/tools/Freeze-AssetEvidence.py"
+    },
+    {
+      "path": "docs/dependency-map.md",
+      "mode": "copy",
+      "bytes": 94625,
+      "sha256": "3738dcc60d5f4dbbbf1f797be1f6341d445b118a4156079e643b1715520d8675",
+      "snapshot": "snapshot/docs/dependency-map.md"
+    },
+    {
+      "path": "docs/art-templates/mount-primary-motion.md",
+      "mode": "copy",
+      "bytes": 20661,
+      "sha256": "9828b11e3590420988b694308ca9c7d3c455bb81ef239367e5364556db51d9b8",
+      "snapshot": "snapshot/docs/art-templates/mount-primary-motion.md"
+    },
+    {
+      "path": "docs/art-templates/model-production-gates.md",
+      "mode": "copy",
+      "bytes": 30016,
+      "sha256": "a83a52feb856fe9eaa2f3450ed68153e6410fbc6f901bfe0b8cb00f8dec7b681",
+      "snapshot": "snapshot/docs/art-templates/model-production-gates.md"
+    },
+    {
+      "path": "docs/art-templates/model-jobs/voidreign-quality-20261018.json",
+      "mode": "copy",
+      "bytes": 38804,
+      "sha256": "7602ac2175aceb1f6d7a924b86b80b0ac937bad195e2a9ecfe4f61f9c1385493",
+      "snapshot": "snapshot/docs/art-templates/model-jobs/voidreign-quality-20261018.json"
+    },
+    {
+      "path": "docs/art-templates/model-job.schema.json",
+      "mode": "copy",
+      "bytes": 4334,
+      "sha256": "397519c977f2dd3afac92b79b7c790a88ad704a0735d6d1b1e1ef3d375566909",
+      "snapshot": "snapshot/docs/art-templates/model-job.schema.json"
+    },
+    {
+      "path": "docs/art-templates/model-catalog.md",
+      "mode": "copy",
+      "bytes": 5486,
+      "sha256": "c736841d98ee1ac283a2d3892e0527182c8089682de706863b8884ad8270c1b7",
+      "snapshot": "snapshot/docs/art-templates/model-catalog.md"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinMaterialReproductionKit-v001/manifest.json",
+      "mode": "copy",
+      "bytes": 23606,
+      "sha256": "df3bfa8c425a8d65e443103494bc96200291421c83776538ee3ef0f763762ea0",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinMaterialReproductionKit-v001/manifest.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidHoofSelectionContract-v001/contract.json",
+      "mode": "copy",
+      "bytes": 3214,
+      "sha256": "232f8bbf4f67a57c4de1ffa15be1c7d9b19553d4003f9001fa9d7f764b41ff01",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidHoofSelectionContract-v001/contract.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MountProfile.md",
+      "mode": "copy",
+      "bytes": 28867,
+      "sha256": "db79ad7d8594eb8ce5bc402c06ca0df73e3f4383e6e4d504f14adc5e4cc9b6e3",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MountProfile.md"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryLocomotionPlan-v001/queue.json",
+      "mode": "copy",
+      "bytes": 2654,
+      "sha256": "52d66f84ebaa13dc7bd41433f5fac198c1f6f64274162217d76200bad8fac444",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryLocomotionPlan-v001/queue.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkPilot-v001/Mount-WalkPilot.blend",
+      "mode": "reference",
+      "bytes": 124628732,
+      "sha256": "fe004dd3c6357d9b818729e9d5d89060adb7be0eca6d930d7cc7a91369cd5456",
+      "snapshot": null
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkPilot-v003/Mount-WalkPilot.blend",
+      "mode": "reference",
+      "bytes": 124637836,
+      "sha256": "f59dc38bff697b6c2a2c84511413d2e292d9fdbb278acc69cd8df6d26a5bd123",
+      "snapshot": null
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidHoofProposal-v002/hoof-selections.npz",
+      "mode": "reference",
+      "bytes": 29950,
+      "sha256": "742c939481a7939e558d684f09346d12778451d0b481aa46367550b4665752dd",
+      "snapshot": null
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/DegenerateInspection-v001/00-component-selections.npz",
+      "mode": "reference",
+      "bytes": 5812171,
+      "sha256": "0d7599c8064cb81a6e211a23731435e08939b7fb146ce2d4bed810273909a2b2",
+      "snapshot": null
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HygieneSemanticSelection-v001/selections.npz",
+      "mode": "reference",
+      "bytes": 5506471,
+      "sha256": "0b6a19f76a2cba73a42e293c29365360b53ba93be101cf8f4ca556e7a5989cc0",
+      "snapshot": null
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPreflight-v001/preflight.json",
+      "mode": "reference",
+      "bytes": 16124,
+      "sha256": "e83240ab16c818553fb5d12741534d12e48c0933af485ee91c105ae17f65564e",
+      "snapshot": null
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPreflight-v001/proposal-arrays.npz",
+      "mode": "reference",
+      "bytes": 92427,
+      "sha256": "35f764f92fbe8834c24c0c2c977cbe6e35cf755f4549c2e75a472833234bf892",
+      "snapshot": null
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPreflight-v002/preflight.json",
+      "mode": "reference",
+      "bytes": 16601,
+      "sha256": "9819c531802def588c1a33906c5c7fc91e1809cde7e20d55c9c584d3f4d50e1a",
+      "snapshot": null
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinPreflight-v002/proposal-arrays.npz",
+      "mode": "reference",
+      "bytes": 91969,
+      "sha256": "4c39c96dd85994dfd58757da7375610793e5cbe4d88a08738086e5963a25aea8",
+      "snapshot": null
+    },
+    {
+      "path": "docs/art-templates/model-profiles/voidreign-rigid-skin-pose-review-20261019.json",
+      "mode": "copy",
+      "bytes": 2858,
+      "sha256": "d8211d687a5401ec010023f62f1d3d81a44fe36841b601221ee2aca7e64deccb",
+      "snapshot": "snapshot/docs/art-templates/model-profiles/voidreign-rigid-skin-pose-review-20261019.json"
+    },
+    {
+      "path": "docs/art-templates/model-profiles/voidreign-rigid-skin-edge-pose-review-20261019.json",
+      "mode": "copy",
+      "bytes": 3221,
+      "sha256": "48157228042800b6efb920f8c4b89ae6715a90c711105ee75689dc521050f152",
+      "snapshot": "snapshot/docs/art-templates/model-profiles/voidreign-rigid-skin-edge-pose-review-20261019.json"
+    },
+    {
+      "path": "docs/art-templates/model-profiles/voidreign-hair-dielectric-material-20261019.json",
+      "mode": "copy",
+      "bytes": 1388,
+      "sha256": "ff0426b4fcba47fcca8baffb84ad9a3eea4da8f74ae9abfb69971349178e0884",
+      "snapshot": "snapshot/docs/art-templates/model-profiles/voidreign-hair-dielectric-material-20261019.json"
+    },
+    {
+      "path": "docs/art-templates/model-profiles/voidreign-hair-material-body-views-20261019.json",
+      "mode": "copy",
+      "bytes": 2032,
+      "sha256": "3e39546cf3aa30ba43cbc6a6f183c315128d4a16800db2ad395f4fa6c303be00",
+      "snapshot": "snapshot/docs/art-templates/model-profiles/voidreign-hair-material-body-views-20261019.json"
+    },
+    {
+      "path": "docs/art-templates/model-profiles/voidreign-hair-dielectric-audit-20261019.json",
+      "mode": "copy",
+      "bytes": 785,
+      "sha256": "bcdad25910787f0c4f1daaf246ab0fd9ea0426357a7396cdb6b00dedbd0ef252",
+      "snapshot": "snapshot/docs/art-templates/model-profiles/voidreign-hair-dielectric-audit-20261019.json"
+    }
+  ],
+  "profile_sha256": "b3477a259b7e03897586ad446496163cacfb70656f270ba8ba08a1ded8eed4c1",
+  "tool_sha256": "022a766de42da24a27460313b041d386c86c95c5e30573e5f661dc523872dd88"
+}

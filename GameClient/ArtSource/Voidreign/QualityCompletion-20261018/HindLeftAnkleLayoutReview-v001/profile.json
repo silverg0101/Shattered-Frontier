@@ -1,0 +1,562 @@
+{
+  "schema_version": 1,
+  "units": "metres",
+  "permissions": "CPU diagnostic review of HindLeftAnkleLayout-v001 proposal only; no source, weight, rig, topology or budget change.",
+  "effective_time": "This immutable review only",
+  "coordinate_convention": {
+    "up": "+Z",
+    "forward": "-Y (head/horn)",
+    "side_names": "Geometric +X/-X until reviewed"
+  },
+  "object": "geometry_0",
+  "source": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkPilot-v001/Mount-WalkPilot.blend",
+  "rest_selection": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz",
+  "retention_report": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkRetention-v001/validation.json",
+  "render": {
+    "resolution": 768,
+    "samples": 8,
+    "surface_color": [
+      0.36,
+      0.39,
+      0.43
+    ],
+    "landmark_radius_m": 0.008,
+    "light_position_m": [
+      -3,
+      -4,
+      6
+    ],
+    "light_watts": 1300,
+    "light_size_m": 5,
+    "target_m": [
+      0,
+      -0.05,
+      1.3
+    ],
+    "ortho_scale_m": 4.5,
+    "link_radius_m": 0.003
+  },
+  "regions": [
+    {
+      "id": "hind.L.context",
+      "minimum_m": [
+        0.31,
+        0.58,
+        0.03
+      ],
+      "maximum_m": [
+        0.6,
+        0.97,
+        0.3
+      ],
+      "color": [
+        0.36,
+        0.39,
+        0.43
+      ]
+    },
+    {
+      "id": "hind.L.core",
+      "selection_path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HindLeftAnkleLayout-v001/joint-band-selections.npz",
+      "selection_key": "hind.L.core_vertices",
+      "color": [
+        0.03,
+        0.32,
+        0.85
+      ]
+    },
+    {
+      "id": "hind.L.old_collar",
+      "selection_path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HindLeftAnkleLayout-v001/joint-band-selections.npz",
+      "selection_key": "hind.L.old_collar_vertices",
+      "color": [
+        1,
+        0.35,
+        0.03
+      ]
+    },
+    {
+      "id": "hind.L.added_band",
+      "selection_path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HindLeftAnkleLayout-v001/joint-band-selections.npz",
+      "selection_key": "hind.L.added_band_vertices",
+      "color": [
+        0.95,
+        0.85,
+        0.05
+      ]
+    },
+    {
+      "id": "hind.L.outer_crossings",
+      "selection_path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HindLeftAnkleLayout-v001/joint-band-selections.npz",
+      "selection_key": "hind.L.outer_boundary_vertices",
+      "color": [
+        0.9,
+        0.05,
+        0.75
+      ],
+      "face_selection_key": "hind.L.outer_crossing_faces"
+    }
+  ],
+  "landmarks": [
+    {
+      "id": "hind.L.joint.outer",
+      "position_m": [
+        0.61,
+        0.8119999766349792,
+        0.20000000357627867
+      ],
+      "color": [
+        1,
+        0.01,
+        0.05
+      ]
+    },
+    {
+      "id": "hind.L.toe.outer",
+      "position_m": [
+        0.61,
+        0.75,
+        0.05000000134110451
+      ],
+      "color": [
+        0.8,
+        0.05,
+        1
+      ]
+    },
+    {
+      "id": "hind.L.joint.inner",
+      "position_m": [
+        0.3,
+        0.8119999766349792,
+        0.20000000357627867
+      ],
+      "color": [
+        1,
+        0.01,
+        0.05
+      ]
+    },
+    {
+      "id": "hind.L.toe.inner",
+      "position_m": [
+        0.3,
+        0.75,
+        0.05000000134110451
+      ],
+      "color": [
+        0.8,
+        0.05,
+        1
+      ]
+    },
+    {
+      "id": "hind.L.joint.back",
+      "position_m": [
+        0.4480000138282776,
+        0.98,
+        0.20000000357627867
+      ],
+      "color": [
+        1,
+        0.01,
+        0.05
+      ]
+    },
+    {
+      "id": "hind.L.toe.back",
+      "position_m": [
+        0.44999998807907104,
+        0.98,
+        0.05000000134110451
+      ],
+      "color": [
+        0.8,
+        0.05,
+        1
+      ]
+    },
+    {
+      "id": "hind.L.joint.front",
+      "position_m": [
+        0.4480000138282776,
+        0.57,
+        0.20000000357627867
+      ],
+      "color": [
+        1,
+        0.01,
+        0.05
+      ]
+    },
+    {
+      "id": "hind.L.toe.front",
+      "position_m": [
+        0.44999998807907104,
+        0.57,
+        0.05000000134110451
+      ],
+      "color": [
+        0.8,
+        0.05,
+        1
+      ]
+    }
+  ],
+  "views": [
+    {
+      "id": "hind.L-outer",
+      "position_m": [
+        1.955,
+        0.7749999999999999,
+        0.16499999999999998
+      ],
+      "target_m": [
+        0.45499999999999996,
+        0.7749999999999999,
+        0.16499999999999998
+      ],
+      "ortho_scale_m": 0.44,
+      "isolate_regions": [
+        "hind.L.context"
+      ],
+      "visible_landmarks": [
+        "hind.L.joint.outer",
+        "hind.L.toe.outer"
+      ]
+    },
+    {
+      "id": "hind.L-outer-crossings",
+      "position_m": [
+        1.955,
+        0.7749999999999999,
+        0.16499999999999998
+      ],
+      "target_m": [
+        0.45499999999999996,
+        0.7749999999999999,
+        0.16499999999999998
+      ],
+      "ortho_scale_m": 0.44,
+      "isolate_regions": [
+        "hind.L.context"
+      ],
+      "highlight_regions": [
+        "hind.L.outer_crossings"
+      ],
+      "visible_landmarks": [
+        "hind.L.joint.outer",
+        "hind.L.toe.outer"
+      ]
+    },
+    {
+      "id": "hind.L-inner",
+      "position_m": [
+        -1.045,
+        0.7749999999999999,
+        0.16499999999999998
+      ],
+      "target_m": [
+        0.45499999999999996,
+        0.7749999999999999,
+        0.16499999999999998
+      ],
+      "ortho_scale_m": 0.44,
+      "isolate_regions": [
+        "hind.L.context"
+      ],
+      "visible_landmarks": [
+        "hind.L.joint.inner",
+        "hind.L.toe.inner"
+      ]
+    },
+    {
+      "id": "hind.L-inner-crossings",
+      "position_m": [
+        -1.045,
+        0.7749999999999999,
+        0.16499999999999998
+      ],
+      "target_m": [
+        0.45499999999999996,
+        0.7749999999999999,
+        0.16499999999999998
+      ],
+      "ortho_scale_m": 0.44,
+      "isolate_regions": [
+        "hind.L.context"
+      ],
+      "highlight_regions": [
+        "hind.L.outer_crossings"
+      ],
+      "visible_landmarks": [
+        "hind.L.joint.inner",
+        "hind.L.toe.inner"
+      ]
+    },
+    {
+      "id": "hind.L-back",
+      "position_m": [
+        0.45499999999999996,
+        2.275,
+        0.16499999999999998
+      ],
+      "target_m": [
+        0.45499999999999996,
+        0.7749999999999999,
+        0.16499999999999998
+      ],
+      "ortho_scale_m": 0.44,
+      "isolate_regions": [
+        "hind.L.context"
+      ],
+      "visible_landmarks": [
+        "hind.L.joint.back",
+        "hind.L.toe.back"
+      ]
+    },
+    {
+      "id": "hind.L-back-crossings",
+      "position_m": [
+        0.45499999999999996,
+        2.275,
+        0.16499999999999998
+      ],
+      "target_m": [
+        0.45499999999999996,
+        0.7749999999999999,
+        0.16499999999999998
+      ],
+      "ortho_scale_m": 0.44,
+      "isolate_regions": [
+        "hind.L.context"
+      ],
+      "highlight_regions": [
+        "hind.L.outer_crossings"
+      ],
+      "visible_landmarks": [
+        "hind.L.joint.back",
+        "hind.L.toe.back"
+      ]
+    },
+    {
+      "id": "hind.L-front",
+      "position_m": [
+        0.45499999999999996,
+        -0.7250000000000001,
+        0.16499999999999998
+      ],
+      "target_m": [
+        0.45499999999999996,
+        0.7749999999999999,
+        0.16499999999999998
+      ],
+      "ortho_scale_m": 0.44,
+      "isolate_regions": [
+        "hind.L.context"
+      ],
+      "visible_landmarks": [
+        "hind.L.joint.front",
+        "hind.L.toe.front"
+      ]
+    },
+    {
+      "id": "hind.L-front-crossings",
+      "position_m": [
+        0.45499999999999996,
+        -0.7250000000000001,
+        0.16499999999999998
+      ],
+      "target_m": [
+        0.45499999999999996,
+        0.7749999999999999,
+        0.16499999999999998
+      ],
+      "ortho_scale_m": 0.44,
+      "isolate_regions": [
+        "hind.L.context"
+      ],
+      "highlight_regions": [
+        "hind.L.outer_crossings"
+      ],
+      "visible_landmarks": [
+        "hind.L.joint.front",
+        "hind.L.toe.front"
+      ]
+    }
+  ],
+  "input_sha256": {
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkPilot-v001/Mount-WalkPilot.blend": "fe004dd3c6357d9b818729e9d5d89060adb7be0eca6d930d7cc7a91369cd5456",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz": "0d7599c8064cb81a6e211a23731435e08939b7fb146ce2d4bed810273909a2b2",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkRetention-v001/validation.json": "5f6c40f1371229ce05dc7af9a4c6f789a460c7e7757ddca88482815aab26d137",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HindLeftAnkleLayout-v001/joint-band-selections.npz": "073b8b12463939f3b55b4ef8f8cf43bc4044f8efb1745b13f48feb9a609e0a14"
+  },
+  "chains": [
+    {
+      "landmarks": [
+        "hind.L.joint.outer",
+        "hind.L.toe.outer"
+      ],
+      "color": [
+        0.1,
+        0.9,
+        0.2
+      ]
+    },
+    {
+      "landmarks": [
+        "hind.L.joint.inner",
+        "hind.L.toe.inner"
+      ],
+      "color": [
+        0.1,
+        0.9,
+        0.2
+      ]
+    },
+    {
+      "landmarks": [
+        "hind.L.joint.back",
+        "hind.L.toe.back"
+      ],
+      "color": [
+        0.1,
+        0.9,
+        0.2
+      ]
+    },
+    {
+      "landmarks": [
+        "hind.L.joint.front",
+        "hind.L.toe.front"
+      ],
+      "color": [
+        0.1,
+        0.9,
+        0.2
+      ]
+    }
+  ],
+  "orthographic_projected_guides": [
+    {
+      "id": "hind.L.joint.outer",
+      "authored_joint_point_m": [
+        0.4480000138282776,
+        0.8119999766349792,
+        0.20000000357627867
+      ],
+      "screen_projection_point_m": [
+        0.61,
+        0.8119999766349792,
+        0.20000000357627867
+      ],
+      "view_axis": "X",
+      "reason": "Translated only along this view orthographic axis for visibility; not a moved joint."
+    },
+    {
+      "id": "hind.L.toe.outer",
+      "authored_joint_point_m": [
+        0.44999998807907104,
+        0.75,
+        0.05000000134110451
+      ],
+      "screen_projection_point_m": [
+        0.61,
+        0.75,
+        0.05000000134110451
+      ],
+      "view_axis": "X",
+      "reason": "Translated only along this view orthographic axis for visibility; not a moved joint."
+    },
+    {
+      "id": "hind.L.joint.inner",
+      "authored_joint_point_m": [
+        0.4480000138282776,
+        0.8119999766349792,
+        0.20000000357627867
+      ],
+      "screen_projection_point_m": [
+        0.3,
+        0.8119999766349792,
+        0.20000000357627867
+      ],
+      "view_axis": "X",
+      "reason": "Translated only along this view orthographic axis for visibility; not a moved joint."
+    },
+    {
+      "id": "hind.L.toe.inner",
+      "authored_joint_point_m": [
+        0.44999998807907104,
+        0.75,
+        0.05000000134110451
+      ],
+      "screen_projection_point_m": [
+        0.3,
+        0.75,
+        0.05000000134110451
+      ],
+      "view_axis": "X",
+      "reason": "Translated only along this view orthographic axis for visibility; not a moved joint."
+    },
+    {
+      "id": "hind.L.joint.back",
+      "authored_joint_point_m": [
+        0.4480000138282776,
+        0.8119999766349792,
+        0.20000000357627867
+      ],
+      "screen_projection_point_m": [
+        0.4480000138282776,
+        0.98,
+        0.20000000357627867
+      ],
+      "view_axis": "Y",
+      "reason": "Translated only along this view orthographic axis for visibility; not a moved joint."
+    },
+    {
+      "id": "hind.L.toe.back",
+      "authored_joint_point_m": [
+        0.44999998807907104,
+        0.75,
+        0.05000000134110451
+      ],
+      "screen_projection_point_m": [
+        0.44999998807907104,
+        0.98,
+        0.05000000134110451
+      ],
+      "view_axis": "Y",
+      "reason": "Translated only along this view orthographic axis for visibility; not a moved joint."
+    },
+    {
+      "id": "hind.L.joint.front",
+      "authored_joint_point_m": [
+        0.4480000138282776,
+        0.8119999766349792,
+        0.20000000357627867
+      ],
+      "screen_projection_point_m": [
+        0.4480000138282776,
+        0.57,
+        0.20000000357627867
+      ],
+      "view_axis": "Y",
+      "reason": "Translated only along this view orthographic axis for visibility; not a moved joint."
+    },
+    {
+      "id": "hind.L.toe.front",
+      "authored_joint_point_m": [
+        0.44999998807907104,
+        0.75,
+        0.05000000134110451
+      ],
+      "screen_projection_point_m": [
+        0.44999998807907104,
+        0.57,
+        0.05000000134110451
+      ],
+      "view_axis": "Y",
+      "reason": "Translated only along this view orthographic axis for visibility; not a moved joint."
+    }
+  ]
+}

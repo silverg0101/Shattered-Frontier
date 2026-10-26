@@ -1,0 +1,68 @@
+{
+  "assetId": "STUDY-SM-ArchitecturalJoins-01",
+  "version": "v001",
+  "category": "construction assembly study (non-component)",
+  "created": "2026-10-18",
+  "sourceReferences": [
+    "docs/art-templates/player-construction-kit-contract.md — shapes, openings and construction constraints",
+    "docs/Game-Design/Legends_Shattered_Frontier_Construction_System_Architecture_v0.1.md — §§3.1–3.2, 8–9",
+    "docs/art-templates/asset-lists/construction-kit-matrix-07.md — finite component matrix"
+  ],
+  "definition": {
+    "geometryRef": "all references per contract; illustrative only",
+    "materialKit": "KIT-SM",
+    "scope": "supporting assembly study, does not count component roles",
+    "requiredChecks": [
+      "repeated",
+      "stacked",
+      "rotated",
+      "inner/outer corners",
+      "T intersections",
+      "rectangular and arched openings",
+      "roof/slope/curve transitions",
+      "cross-material seam"
+    ],
+    "acceptance": "visual study only; numerical/runtime validation explicitly excluded"
+  },
+  "generation": {
+    "tool": "built-in image_gen",
+    "date": "2026-10-18",
+    "model": "unavailable",
+    "seed": "unavailable",
+    "promptRecord": "prompt.txt",
+    "referenceImagesAttached": []
+  },
+  "images": [
+    {
+      "path": "concept-sheet.png",
+      "sha256": "b8eb91222b99c162a2538b889ceb785bf9173b61c3af4a203b54c54894358867",
+      "width": 1536,
+      "height": 1024,
+      "pixelFormat": "RGB 24-bit",
+      "alpha": false,
+      "review": "Sheet covers the required masonry join/opening/roof/curve study and labels a distinct stone-to-timber seam. Timber appears in roofing and seam callouts by design, while main wall kit remains masonry. Full scene is a coherent masonry assembly. No scale, fit or runtime evidence."
+    },
+    {
+      "path": "asset-view.png",
+      "sha256": "02126543dbc3fb8a97e3f3326a0be5cbe38d3649a8f2095a5a953f5239830142",
+      "width": 1536,
+      "height": 1024,
+      "pixelFormat": "RGB 24-bit",
+      "alpha": false,
+      "review": "Sheet covers the required masonry join/opening/roof/curve study and labels a distinct stone-to-timber seam. Timber appears in roofing and seam callouts by design, while main wall kit remains masonry. Full scene is a coherent masonry assembly. No scale, fit or runtime evidence."
+    }
+  ],
+  "review": {
+    "reviewedBy": "Codex",
+    "conceptStatus": "proposed",
+    "cleanViewStatus": "ready-for-model-test",
+    "imageStatus": "image-complete",
+    "geometryAcceptance": "not established",
+    "numericalMeshFit": "not established",
+    "runtimeCollisionSupportClearance": "not established",
+    "actionableFindings": [
+      "Sheet covers the required masonry join/opening/roof/curve study and labels a distinct stone-to-timber seam. Timber appears in roofing and seam callouts by design, while main wall kit remains masonry. Full scene is a coherent masonry assembly. No scale, fit or runtime evidence."
+    ]
+  },
+  "componentBoundary": "Study only; does not substitute for individually indexed component assets or establish mesh/runtime compatibility."
+}

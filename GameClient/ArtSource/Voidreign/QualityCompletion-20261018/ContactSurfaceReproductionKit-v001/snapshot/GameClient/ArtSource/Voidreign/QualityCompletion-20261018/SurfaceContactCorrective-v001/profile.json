@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "scope": "diagnostic-actual-surface-contact-projection",
+  "permissions": "Offline CPU author; preserve failed parent counts and delivery gates",
+  "effective_time": "Single finite3pass actual-surface corrective experiment",
+  "units": "metres; exact frozen capsule layout and free-vertex mask",
+  "control_contract": "projection_passes default3 bound1..8; no parameter sweep; immutable source and acceptance values",
+  "source": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ContactMeshExperiment-v001\\Voidreign-CompleteHair.blend",
+  "motion_profile": "docs/art-templates/model-profiles/voidreign-complete-hair-motion-v003-20261018.json",
+  "surface_report": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ContactMeshSurfaceCheck-v001\\surface-report.json",
+  "surface_review": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ContactMeshSurfaceCheck-v001\\surface-review.npz",
+  "surface_profile": "docs/art-templates/model-profiles/voidreign-hair-surface-check-20261018.json",
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ContactMeshExperiment-v001\\Voidreign-CompleteHair.blend": "a1de9660c66c772cdb4cedec20ac5b1a2229a4417af46550f8167f915680c140",
+    "docs/art-templates/model-profiles/voidreign-complete-hair-motion-v003-20261018.json": "9df3ed982c0f5f571210a98d42c1e6b395b80713c139f0b7b162ad861d5cca47",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ContactMeshSurfaceCheck-v001\\surface-report.json": "f1d161b1c52cdc0cf6a78acb6794af03a2bee7372a4673e0f70825fc3faaca7d",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ContactMeshSurfaceCheck-v001\\surface-review.npz": "e8df9e74a7ddd7ddb44654989f1f5f0474d853a43350c32e0674a15163c68c85",
+    "docs/art-templates/model-profiles/voidreign-hair-surface-check-20261018.json": "f42b54b785653cd13262405b39e26a48e1fc606edeafb392b1372121e29e1abb"
+  },
+  "object": "geometry_0",
+  "assembly_root": "MOTION HARNESS | rigid horse, not gait animation",
+  "mesh_hash": "ba2d283db0be5e8cff4cc7549f1f51916cc0a4d18213773300976b11512ececa",
+  "projection_passes": 3
+}

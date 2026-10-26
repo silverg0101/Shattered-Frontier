@@ -1,0 +1,20 @@
+{
+  "status": "checked-primary-follow-review-secondary-unbuilt",
+  "reviewer": "authoring-agent",
+  "sampled_stills_reviewed": [
+    1,
+    25,
+    49
+  ],
+  "checked_reopened_frames": 73,
+  "maximum_reopened_position_error_m": 5.960464477539063e-08,
+  "preview": "Primary-Follow-Only-v002.gif",
+  "preview_frames": 13,
+  "findings": [
+    "Actual local fringe mesh follows the hind leg in existing primary animation; gray context, cyan feature, green geometric-root candidates.",
+    "Caption explicitly states existing primary follow and no secondary dynamics. Shape-key source copies preserve exact source-index attributes.",
+    "This demonstrates the current parent path, not newly simulated swinging or a corrected whole mount.",
+    "Local upper context is intentionally cropped, camera tracks feature; not full silhouette/stance/runtime acceptance."
+  ],
+  "next": "Approve anatomical local pin boundary then prototype fixed-rest secondary surface motion against deforming source leg/body/ground; include other nearby features in later collision coverage."
+}

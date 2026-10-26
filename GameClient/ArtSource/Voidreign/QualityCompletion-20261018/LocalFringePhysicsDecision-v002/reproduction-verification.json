@@ -1,0 +1,8 @@
+{
+  "status": "verified",
+  "manifest": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeFinalReproductionKit-v001/manifest.json",
+  "manifest_sha256": "46bda1e238f889d153d49591b55447d48719b3683d428eb7942e6c43fa1893a4",
+  "files": 383,
+  "copied_bytes": 6565015,
+  "self_contained": false
+}

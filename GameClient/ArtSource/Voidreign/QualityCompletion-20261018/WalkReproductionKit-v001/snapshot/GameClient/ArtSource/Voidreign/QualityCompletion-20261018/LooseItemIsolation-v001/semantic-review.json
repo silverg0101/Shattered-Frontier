@@ -1,0 +1,246 @@
+{
+  "schema_version": 1,
+  "status": "23-items-have-paired-diagnostics-no-semantic-acceptance",
+  "rows": [
+    {
+      "id": "VR-LOOSE-0d7599c806-C0018",
+      "selection_key": "C0018",
+      "context": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v001/C0018-context.png",
+      "isolation": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v001/C0018-isolated.png",
+      "source_faces": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v001/isolated-source-faces.npz",
+      "status": "geometry-isolated-semantic-review-required",
+      "disposition": null,
+      "owner": null
+    },
+    {
+      "id": "VR-LOOSE-0d7599c806-C0026",
+      "selection_key": "C0026",
+      "context": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v001/C0026-context.png",
+      "isolation": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v001/C0026-isolated.png",
+      "source_faces": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v001/isolated-source-faces.npz",
+      "status": "geometry-isolated-semantic-review-required",
+      "disposition": null,
+      "owner": null
+    },
+    {
+      "id": "VR-LOOSE-0d7599c806-C0054",
+      "selection_key": "C0054",
+      "context": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v001/C0054-context.png",
+      "isolation": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v001/C0054-isolated.png",
+      "source_faces": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v001/isolated-source-faces.npz",
+      "status": "geometry-isolated-semantic-review-required",
+      "disposition": null,
+      "owner": null
+    },
+    {
+      "id": "VR-LOOSE-0d7599c806-C0059",
+      "selection_key": "C0059",
+      "context": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v002/C0059-context.png",
+      "isolation": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v002/C0059-isolated.png",
+      "source_faces": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v002/isolated-source-faces.npz",
+      "status": "geometry-isolated-semantic-review-required",
+      "disposition": null,
+      "owner": null
+    },
+    {
+      "id": "VR-LOOSE-0d7599c806-C0074",
+      "selection_key": "C0074",
+      "context": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v002/C0074-context.png",
+      "isolation": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v002/C0074-isolated.png",
+      "source_faces": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v002/isolated-source-faces.npz",
+      "status": "geometry-isolated-semantic-review-required",
+      "disposition": null,
+      "owner": null
+    },
+    {
+      "id": "VR-LOOSE-0d7599c806-C0086",
+      "selection_key": "C0086",
+      "context": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v002/C0086-context.png",
+      "isolation": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v002/C0086-isolated.png",
+      "source_faces": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v002/isolated-source-faces.npz",
+      "status": "geometry-isolated-semantic-review-required",
+      "disposition": null,
+      "owner": null
+    },
+    {
+      "id": "VR-LOOSE-0d7599c806-C0102",
+      "selection_key": "C0102",
+      "context": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v002/C0102-context.png",
+      "isolation": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v002/C0102-isolated.png",
+      "source_faces": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v002/isolated-source-faces.npz",
+      "status": "geometry-isolated-semantic-review-required",
+      "disposition": null,
+      "owner": null
+    },
+    {
+      "id": "VR-LOOSE-0d7599c806-C0118",
+      "selection_key": "C0118",
+      "context": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v002/C0118-context.png",
+      "isolation": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v002/C0118-isolated.png",
+      "source_faces": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v002/isolated-source-faces.npz",
+      "status": "geometry-isolated-semantic-review-required",
+      "disposition": null,
+      "owner": null
+    },
+    {
+      "id": "VR-LOOSE-0d7599c806-C0132",
+      "selection_key": "C0132",
+      "context": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v002/C0132-context.png",
+      "isolation": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v002/C0132-isolated.png",
+      "source_faces": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v002/isolated-source-faces.npz",
+      "status": "geometry-isolated-semantic-review-required",
+      "disposition": null,
+      "owner": null
+    },
+    {
+      "id": "VR-LOOSE-0d7599c806-C0133",
+      "selection_key": "C0133",
+      "context": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v002/C0133-context.png",
+      "isolation": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v002/C0133-isolated.png",
+      "source_faces": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v002/isolated-source-faces.npz",
+      "status": "geometry-isolated-semantic-review-required",
+      "disposition": null,
+      "owner": null
+    },
+    {
+      "id": "VR-LOOSE-0d7599c806-C0150",
+      "selection_key": "C0150",
+      "context": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v002/C0150-context.png",
+      "isolation": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v002/C0150-isolated.png",
+      "source_faces": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v002/isolated-source-faces.npz",
+      "status": "geometry-isolated-semantic-review-required",
+      "disposition": null,
+      "owner": null
+    },
+    {
+      "id": "VR-LOOSE-0d7599c806-C0161",
+      "selection_key": "C0161",
+      "context": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v002/C0161-context.png",
+      "isolation": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v002/C0161-isolated.png",
+      "source_faces": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v002/isolated-source-faces.npz",
+      "status": "geometry-isolated-semantic-review-required",
+      "disposition": null,
+      "owner": null
+    },
+    {
+      "id": "VR-LOOSE-0d7599c806-C0158",
+      "selection_key": "C0158",
+      "context": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v002/C0158-context.png",
+      "isolation": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v002/C0158-isolated.png",
+      "source_faces": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v002/isolated-source-faces.npz",
+      "status": "geometry-isolated-semantic-review-required",
+      "disposition": null,
+      "owner": null
+    },
+    {
+      "id": "VR-LOOSE-0d7599c806-C0178",
+      "selection_key": "C0178",
+      "context": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v002/C0178-context.png",
+      "isolation": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v002/C0178-isolated.png",
+      "source_faces": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v002/isolated-source-faces.npz",
+      "status": "geometry-isolated-semantic-review-required",
+      "disposition": null,
+      "owner": null
+    },
+    {
+      "id": "VR-LOOSE-0d7599c806-C0163",
+      "selection_key": "C0163",
+      "context": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v002/C0163-context.png",
+      "isolation": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v002/C0163-isolated.png",
+      "source_faces": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v002/isolated-source-faces.npz",
+      "status": "geometry-isolated-semantic-review-required",
+      "disposition": null,
+      "owner": null
+    },
+    {
+      "id": "VR-LOOSE-0d7599c806-C0165",
+      "selection_key": "C0165",
+      "context": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v002/C0165-context.png",
+      "isolation": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v002/C0165-isolated.png",
+      "source_faces": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v002/isolated-source-faces.npz",
+      "status": "geometry-isolated-semantic-review-required",
+      "disposition": null,
+      "owner": null
+    },
+    {
+      "id": "VR-LOOSE-0d7599c806-C0180",
+      "selection_key": "C0180",
+      "context": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v002/C0180-context.png",
+      "isolation": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v002/C0180-isolated.png",
+      "source_faces": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v002/isolated-source-faces.npz",
+      "status": "geometry-isolated-semantic-review-required",
+      "disposition": null,
+      "owner": null
+    },
+    {
+      "id": "VR-LOOSE-0d7599c806-C0182",
+      "selection_key": "C0182",
+      "context": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v002/C0182-context.png",
+      "isolation": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v002/C0182-isolated.png",
+      "source_faces": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v002/isolated-source-faces.npz",
+      "status": "geometry-isolated-semantic-review-required",
+      "disposition": null,
+      "owner": null
+    },
+    {
+      "id": "VR-LOOSE-0d7599c806-C0188",
+      "selection_key": "C0188",
+      "context": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v002/C0188-context.png",
+      "isolation": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v002/C0188-isolated.png",
+      "source_faces": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v002/isolated-source-faces.npz",
+      "status": "geometry-isolated-semantic-review-required",
+      "disposition": null,
+      "owner": null
+    },
+    {
+      "id": "VR-LOOSE-0d7599c806-C0192",
+      "selection_key": "C0192",
+      "context": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v002/C0192-context.png",
+      "isolation": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v002/C0192-isolated.png",
+      "source_faces": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v002/isolated-source-faces.npz",
+      "status": "geometry-isolated-semantic-review-required",
+      "disposition": null,
+      "owner": null
+    },
+    {
+      "id": "VR-LOOSE-0d7599c806-C0214",
+      "selection_key": "C0214",
+      "context": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v002/C0214-context.png",
+      "isolation": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v002/C0214-isolated.png",
+      "source_faces": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v002/isolated-source-faces.npz",
+      "status": "geometry-isolated-semantic-review-required",
+      "disposition": null,
+      "owner": null
+    },
+    {
+      "id": "VR-LOOSE-0d7599c806-C0216",
+      "selection_key": "C0216",
+      "context": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v002/C0216-context.png",
+      "isolation": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v002/C0216-isolated.png",
+      "source_faces": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v002/isolated-source-faces.npz",
+      "status": "geometry-isolated-semantic-review-required",
+      "disposition": null,
+      "owner": null
+    },
+    {
+      "id": "VR-LOOSE-0d7599c806-C0210",
+      "selection_key": "C0210",
+      "context": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v002/C0210-context.png",
+      "isolation": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v002/C0210-isolated.png",
+      "source_faces": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemIsolation-v002/isolated-source-faces.npz",
+      "status": "geometry-isolated-semantic-review-required",
+      "disposition": null,
+      "owner": null
+    }
+  ],
+  "observations": {
+    "C0018": "Viewed isolated: thin irregular surface fragment; context does not establish intended identity or support.",
+    "C0026": "Viewed isolated: long narrow strip; could be intended ornament or reconstruction fragment; unresolved.",
+    "C0054": "Viewed isolated: bent narrow strip; owner/support not established."
+  },
+  "limitations": [
+    "Only the first three isolated images have received visual inspection so far.",
+    "Isolation uses majority-selected face membership; exact face IDs retained.",
+    "No item removed, attached or accepted. Fused main-component tack is outside this disconnected-item inventory."
+  ]
+}

@@ -1,0 +1,379 @@
+{
+  "schema_version": 1,
+  "units": "metres",
+  "permissions": "Read-only material boundary context/isolation. No semantic relabeling or material attempt.",
+  "effective_time": "This immutable proposal only",
+  "coordinate_convention": {
+    "up": "+Z",
+    "forward": "-Y (head/horn)",
+    "side_names": "Geometric +X/-X until reviewed"
+  },
+  "object": "geometry_0",
+  "source": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\WalkPilot-v003\\Mount-WalkPilot.blend",
+  "rest_selection": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz",
+  "retention_report": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\WalkRetention-v003\\validation.json",
+  "render": {
+    "resolution": 640,
+    "samples": 8,
+    "surface_color": [
+      0.36,
+      0.39,
+      0.43
+    ],
+    "landmark_radius_m": 0.025,
+    "light_position_m": [
+      -3,
+      -4,
+      6
+    ],
+    "light_watts": 1300,
+    "light_size_m": 5,
+    "target_m": [
+      0,
+      -0.05,
+      1.3
+    ],
+    "ortho_scale_m": 4.5
+  },
+  "regions": [
+    {
+      "id": "whole-hair",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz",
+      "selection_key": "whole_vertices",
+      "face_selection_key": "whole_faces",
+      "color": [
+        0.06,
+        0.5,
+        0.7
+      ]
+    },
+    {
+      "id": "mixed-hair",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz",
+      "selection_key": "mixed_vertices",
+      "face_selection_key": "mixed_faces",
+      "color": [
+        0.9,
+        0.06,
+        0.4
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-a23f50cee6c9",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz",
+      "selection_key": "SMB-0d7599c806-a23f50cee6c9.vertices",
+      "face_selection_key": "SMB-0d7599c806-a23f50cee6c9.faces",
+      "color": [
+        0.9,
+        0.06,
+        0.4
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-13398d8f6fa9",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz",
+      "selection_key": "SMB-0d7599c806-13398d8f6fa9.vertices",
+      "face_selection_key": "SMB-0d7599c806-13398d8f6fa9.faces",
+      "color": [
+        0.9,
+        0.06,
+        0.4
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-c5f686eb393a",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz",
+      "selection_key": "SMB-0d7599c806-c5f686eb393a.vertices",
+      "face_selection_key": "SMB-0d7599c806-c5f686eb393a.faces",
+      "color": [
+        0.9,
+        0.06,
+        0.4
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-6c0faadfb656",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz",
+      "selection_key": "SMB-0d7599c806-6c0faadfb656.vertices",
+      "face_selection_key": "SMB-0d7599c806-6c0faadfb656.faces",
+      "color": [
+        0.9,
+        0.06,
+        0.4
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-9461782d30e7",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz",
+      "selection_key": "SMB-0d7599c806-9461782d30e7.vertices",
+      "face_selection_key": "SMB-0d7599c806-9461782d30e7.faces",
+      "color": [
+        0.9,
+        0.06,
+        0.4
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-c95bf113bd82",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz",
+      "selection_key": "SMB-0d7599c806-c95bf113bd82.vertices",
+      "face_selection_key": "SMB-0d7599c806-c95bf113bd82.faces",
+      "color": [
+        0.9,
+        0.06,
+        0.4
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-fa0932e06fbb",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz",
+      "selection_key": "SMB-0d7599c806-fa0932e06fbb.vertices",
+      "face_selection_key": "SMB-0d7599c806-fa0932e06fbb.faces",
+      "color": [
+        0.9,
+        0.06,
+        0.4
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-16aa3f8d2318",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz",
+      "selection_key": "SMB-0d7599c806-16aa3f8d2318.vertices",
+      "face_selection_key": "SMB-0d7599c806-16aa3f8d2318.faces",
+      "color": [
+        0.9,
+        0.06,
+        0.4
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-d0197039a013",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz",
+      "selection_key": "SMB-0d7599c806-d0197039a013.vertices",
+      "face_selection_key": "SMB-0d7599c806-d0197039a013.faces",
+      "color": [
+        0.9,
+        0.06,
+        0.4
+      ]
+    }
+  ],
+  "landmarks": [],
+  "views": [
+    {
+      "id": "Mane-posX",
+      "position_m": [
+        3.897897779941559,
+        -0.9082304336130619,
+        2.302750039100647
+      ],
+      "target_m": [
+        -0.10210222005844116,
+        -0.5582304336130619,
+        2.002750039100647
+      ],
+      "ortho_scale_m": 1.787907315790653
+    },
+    {
+      "id": "Mane-negX",
+      "position_m": [
+        -4.102102220058441,
+        -0.9082304336130619,
+        2.302750039100647
+      ],
+      "target_m": [
+        -0.10210222005844116,
+        -0.5582304336130619,
+        2.002750039100647
+      ],
+      "ortho_scale_m": 1.787907315790653
+    },
+    {
+      "id": "Tail-posX",
+      "position_m": [
+        4.11389297246933,
+        0.6179321646690369,
+        1.347314465045929
+      ],
+      "target_m": [
+        0.11389297246932983,
+        0.9679321646690369,
+        1.047314465045929
+      ],
+      "ortho_scale_m": 1.9254140615463256
+    },
+    {
+      "id": "Tail-negX",
+      "position_m": [
+        -3.88610702753067,
+        0.6179321646690369,
+        1.347314465045929
+      ],
+      "target_m": [
+        0.11389297246932983,
+        0.9679321646690369,
+        1.047314465045929
+      ],
+      "ortho_scale_m": 1.9254140615463256
+    },
+    {
+      "id": "SMB-0d7599c806-a23f50cee6c9-isolation",
+      "position_m": [
+        -3.056732803583145,
+        -0.8800407864153386,
+        2.254925787448883
+      ],
+      "target_m": [
+        -0.05673280358314514,
+        -0.5800407864153385,
+        1.754925787448883
+      ],
+      "ortho_scale_m": 1.552541419455176,
+      "isolate_regions": [
+        "SMB-0d7599c806-a23f50cee6c9"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-13398d8f6fa9-isolation",
+      "position_m": [
+        -3.1476314663887024,
+        -1.4387490034103394,
+        2.7084547877311707
+      ],
+      "target_m": [
+        -0.1476314663887024,
+        -1.1387490034103394,
+        2.2084547877311707
+      ],
+      "ortho_scale_m": 0.856763736185388,
+      "isolate_regions": [
+        "SMB-0d7599c806-13398d8f6fa9"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-c5f686eb393a-isolation",
+      "position_m": [
+        -3.1081274896860123,
+        -1.0983221411705018,
+        2.252293050289154
+      ],
+      "target_m": [
+        -0.10812748968601227,
+        -0.7983221411705017,
+        1.752293050289154
+      ],
+      "ortho_scale_m": 0.9970608581886231,
+      "isolate_regions": [
+        "SMB-0d7599c806-c5f686eb393a"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-6c0faadfb656-isolation",
+      "position_m": [
+        3.034950330853462,
+        0.466267865896225,
+        1.9563390016555786
+      ],
+      "target_m": [
+        0.03495033085346222,
+        0.766267865896225,
+        1.4563390016555786
+      ],
+      "ortho_scale_m": 0.7780332904126861,
+      "isolate_regions": [
+        "SMB-0d7599c806-6c0faadfb656"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-9461782d30e7-isolation",
+      "position_m": [
+        -3.1162132918834686,
+        -1.4262435913085938,
+        2.6238187551498413
+      ],
+      "target_m": [
+        -0.11621329188346863,
+        -1.1262435913085938,
+        2.1238187551498413
+      ],
+      "ortho_scale_m": 0.5464368466516517,
+      "isolate_regions": [
+        "SMB-0d7599c806-9461782d30e7"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-c95bf113bd82-isolation",
+      "position_m": [
+        3.033961072564125,
+        -1.3450381636619568,
+        1.964123785495758
+      ],
+      "target_m": [
+        0.03396107256412506,
+        -1.0450381636619568,
+        1.464123785495758
+      ],
+      "ortho_scale_m": 0.380586084620316,
+      "isolate_regions": [
+        "SMB-0d7599c806-c95bf113bd82"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-fa0932e06fbb-isolation",
+      "position_m": [
+        3.014411449432373,
+        -1.2396540522575379,
+        2.342591881752014
+      ],
+      "target_m": [
+        0.014411449432373047,
+        -0.9396540522575378,
+        1.8425918817520142
+      ],
+      "ortho_scale_m": 0.322465851079196,
+      "isolate_regions": [
+        "SMB-0d7599c806-fa0932e06fbb"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-16aa3f8d2318-isolation",
+      "position_m": [
+        -3.2548813149333,
+        -1.3294302701950074,
+        2.0101776123046875
+      ],
+      "target_m": [
+        -0.2548813149333,
+        -1.0294302701950073,
+        1.5101776123046875
+      ],
+      "ortho_scale_m": 0.3127817845120733,
+      "isolate_regions": [
+        "SMB-0d7599c806-16aa3f8d2318"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-d0197039a013-isolation",
+      "position_m": [
+        3.3611063063144684,
+        0.6988402426242828,
+        0.9963380992412567
+      ],
+      "target_m": [
+        0.3611063063144684,
+        0.9988402426242828,
+        0.4963380992412567
+      ],
+      "ortho_scale_m": 0.4134931378668857,
+      "isolate_regions": [
+        "SMB-0d7599c806-d0197039a013"
+      ]
+    }
+  ],
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\WalkPilot-v003\\Mount-WalkPilot.blend": "f59dc38bff697b6c2a2c84511413d2e292d9fdbb278acc69cd8df6d26a5bd123",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\WalkRetention-v003\\validation.json": "0630516734df3c1bb11f95ae92056e353dda46c4f4328c4574e32a2e1a451e49",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz": "0d7599c8064cb81a6e211a23731435e08939b7fb146ce2d4bed810273909a2b2",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz": "83e4f07cf16fa21e1e5277950201af199f2928faa0d4fc004e03d00a6602b686"
+  }
+}

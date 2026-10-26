@@ -1,0 +1,31 @@
+{
+  "status": "passed-declared-material-edit-retention-only",
+  "source_sha256": "f59dc38bff697b6c2a2c84511413d2e292d9fdbb278acc69cd8df6d26a5bd123",
+  "candidate_sha256": "9f655815892fbc693e58faa99880440ed4b30aca4a023248548e084dbf28b42b",
+  "raw_report": "../HairDielectricRetention-v001/validation.json",
+  "assignment_report": "../HairDielectricAssignmentCheck-v002/validation.json",
+  "unchanged_checks": {
+    "positions": true,
+    "faces": true,
+    "edges": true,
+    "loop_vertices": true,
+    "uv": true,
+    "colors": true,
+    "smooth_flags": true,
+    "custom_normals": true,
+    "corner_normals": true,
+    "active_uv": true,
+    "images": true
+  },
+  "changed_weight_vertices": 0,
+  "bind_data_exact": true,
+  "expected_changes": [
+    "face_materials",
+    "material_signature"
+  ],
+  "scope": "Raw exact-material-retention correctly fails on the two intentionally authored material differences. Independent assignment/common shader-structure checks pass; every other raw check passes. No check result or threshold was changed.",
+  "limitations": [
+    "No semantic/full coverage, animation replay, export/reimport or runtime acceptance from this summary.",
+    "Raw material report and its failure status are preserved; do not substitute this summary for a no-material-edit retention contract."
+  ]
+}

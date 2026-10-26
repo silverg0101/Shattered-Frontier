@@ -1,0 +1,37 @@
+CONCEPT SHEET — built-in image_gen, 2026-10-18.
+
+Use case: stylized-concept
+Asset type: architectural construction assembly and cross-material interface study, not a component.
+Input image 1 is rough-timber kit surface appearance reference only. Input image 2 is stone-masonry kit surface appearance reference only. Preserve each kit's distinct palette and surface language; ignore object proportions and individual ornament.
+Scene/backdrop: neutral warm-gray technical studio sheet, no landscape.
+Subject: small modular construction studies using two separate material kits on the same proposed 0.5 m full-cell geometry/contact grid. Rough timber is visually warm dark timber; stone masonry is gray-brown coursed stone. Materials meet by direct planar contact; do not invent trim, brackets, connector parts, or blended properties.
+Composition/framing: one orderly grid of six clear mini-studies, each a distinct small assembly: (1) repeated and vertically stacked cells, (2) authored 90-degree rotated join, (3) inside and outside right-angle corners, (4) T intersection, (5) rectangular opening and semicircular arched opening with visible jamb/lintel/sill/threshold treatments, (6) named stone-masonry foundation below rough-timber wall with a roof/wall seam. At least one panel clearly depicts rough timber touching stone masonry at a straight planar seam. Preserve open apertures. Use orthographic or mild axonometric views, consistent target grid. Include a small seam close-up and simple contact-face overlay. Any 0.5 m labels are design targets only.
+Constraints: label the two source kits clearly as ROUGH TIMBER and STONE MASONRY. Keep both material identities distinct; no strength blending or gameplay claims. Same contact planes, module envelope, openings and clearances across appearances. No new functionality, door mechanics, windows, hardware, support claims, dimensions not supplied, or unlisted geometry. Assembly study does not count as individual component assets.
+Avoid: standalone houses, scenery, furniture, people, loose props, UI, excessive text, watermark, arbitrary trims or geometry extension.
+References: `BLD-RT-CellFull-01/References/v001/concept-sheet.png`; `BLD-SM-CellFull-01/References/v001/concept-sheet.png`.
+
+CLEAN ASSEMBLY VIEW — first generation rejected due unsupported protruding beam / misaligned parts.
+
+Use case: stylized-concept
+Asset type: clean assembled construction interface study view (not a reusable mesh or accepted build).
+Input image 1: assembly study sheet, preserve its two-material contrast and simple modular construction language. Input image 2: rough-timber appearance. Input image 3: stone-masonry appearance.
+Scene/backdrop: neutral light-gray studio, isolated, no scenery.
+Subject: one compact open architectural test panel on the proposed 0.5 m full-cell grid: two courses of stone masonry below rough-timber wall cells, a clear planar foundation-to-wall seam, one outside corner returning into a short T branch, and one open rectangular passage. Keep the opening unobstructed. A small roof-slope edge can touch the timber wall with a simple seam, but no elaborate roof assembly.
+Style/medium: realistic fantasy construction kit reference. Stone masonry stays gray-brown and coursed; rough timber stays warm brown; no blended surface.
+Composition/framing: whole panel centered, complete margins, mild three-quarter view, joints and material boundary clearly visible. No labels or separate mini-panels.
+Constraints: each proposed cell remains a simple 0.5 m target module; 90-degree grid orientation only. No decorative connector hardware or protruding trim. Do not claim fit, support, collision, clearances, recipe, unlock or material strength. This is a visual seam study only and does not replace indexed component concepts or the full assembly QA list.
+
+Rejected initial clean-image path: `C:/Users/grego/.codex/generated_images/01a15000-e13f-7213-9ec0-df2684201405/exec-2e9d75f0-9a95-4fe4-a153-7f4fee075f34.png`; SHA-256 `F71FC28276B0B4DB1DBDAE4B2041B1EDB724177920A937C814D5F38C9189EECC`.
+Review: large timber overhang / branch geometry and unsupported roof shape contradicted the simple seam brief; retained as rejected history.
+
+CLEAN ASSEMBLY VIEW — selected correction, built-in image_gen, 2026-10-18.
+
+Use case: stylized-concept
+Asset type: clean full-assembly view of a two-kit contact seam study.
+Input image 1: cross-kit study sheet provides the two visual materials only. Input image 2 is rough-timber style; image 3 is stone-masonry style. Ignore any distorted assembly geometry.
+Scene/backdrop: plain neutral light gray studio.
+Subject: exactly two touching solid cubes, one gray-brown stone-masonry cube below and one rough-timber cube directly above. Each is an equal 0.5 m target full cell with identical square width and depth; vertical faces flush and aligned. One clear horizontal contact plane, no gap.
+Style/medium: restrained realistic fantasy construction reference. Keep the stone and timber material identities separate and unmistakable.
+Composition/framing: centered two-cube vertical stack, three-quarter view showing front, side and top. Complete silhouettes of both cubes with ample margins. Clear straight seam at their contact.
+Constraints: exactly two cubes, no additional pieces or trim. Each has the same target full-cell envelope. Contact plane is direct and planar; no hidden connector implied. This is only a visual study, not an approved recipe or numerical fit. Do not imply inherited gameplay properties.
+Avoid: openings, door, roof, beams, branches, protruding ledges, framed panels, mismatched widths, offset blocks, foundation plinth, text, labels, environment, watermark.

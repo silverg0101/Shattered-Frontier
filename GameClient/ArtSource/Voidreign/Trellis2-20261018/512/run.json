@@ -1,0 +1,24 @@
+{
+  "status": "complete",
+  "pipeline": "512",
+  "seed": 42,
+  "torch": "2.14.0+rocm10.1.0",
+  "hip": "7.16.26385",
+  "gpu": "AMD Radeon RX 7900 XTX",
+  "image": "/mnt/c/Projects/Shattered-Frontier/GameClient/ArtSource/Voidreign/Trellis2-20261018/Voidreign-clean.png",
+  "image_sha256": "d67522bf160e2dbfe763a5945e651b6b5c508f32676257dac80c98b26a42aca0",
+  "attention": "PyTorch SDPA; sparse varlen adapter",
+  "stages": {
+    "load_seconds": 28.415,
+    "inference_seconds": 124.875,
+    "export_seconds": 16.423
+  },
+  "stage": "complete",
+  "raw_mesh": {
+    "vertices": 633841,
+    "faces": 1378204
+  },
+  "peak_torch_memory_bytes": null,
+  "memory_note": "Peak GPU memory not measured: caching allocator disabled; native HIP allocations also untracked.",
+  "texture_size": 1024
+}

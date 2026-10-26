@@ -1,0 +1,25 @@
+{
+  "source_manifest": "GameClient/ArtSource/BLD-RT-RoofSlopeFace-01/References/v001/manifest.json",
+  "source_manifest_sha256": "3c1d4462ab6909d7dfe3a21bec63dd3c5d28f7e55f713207d54bddddd205527a",
+  "source_image": "GameClient/ArtSource/BLD-RT-RoofSlopeFace-01/References/v001/asset-view.png",
+  "source_image_sha256": "44d32999a5158c7d7cb0a9144698175a5f9af6152d7ae413d3c482d7d8763fcb",
+  "role": "appearance guidance; no reference pixels or scene lighting are projected",
+  "recipe": "rough-timber",
+  "seed": 1705,
+  "map_size_px": [
+    1024,
+    1024
+  ],
+  "maps": [
+    "basecolor-sRGB",
+    "roughness-linear",
+    "normal-OpenGL-tangent",
+    "height-linear-16bit"
+  ],
+  "height_encoding_m": [
+    -0.0015,
+    0.0015
+  ],
+  "face_texel_density_px_per_m": 2048,
+  "height_use": "reference/export sidecar only; never applied as geometry displacement"
+}

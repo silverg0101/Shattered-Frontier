@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "status": "ownership-proposals-need-label-contract-no-edit",
+  "reviewer": "authoring-agent",
+  "selections": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HindLeftAnkleLayoutReview-v001/fragment-selections.npz (split of below-joint-band.npz by fragment centroid Y relative to joint: rear>+0.08m, front<-0.08m)",
+  "reviewed_images": [
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HindLeftAnkleFragmentReview-v001/hind.L-back-albedo.png",
+      "sha256": "98d909a365d78bd64554dd66c9ec75a34f18f1a553c292d5a64a7714570527a9"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HindLeftAnkleFragmentReview-v001/hind.L-back.png",
+      "sha256": "431befefccbcac227993f3ef5be3fcc3e2ce3caa8c3dcebe1f94bc369c53ef32"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HindLeftAnkleFragmentReview-v001/hind.L-front-albedo.png",
+      "sha256": "33e5185a9ea9521283d8c706cbd1bc2cb7f657da2057a7ed1a98961f5b83133a"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HindLeftAnkleFragmentReview-v001/hind.L-front.png",
+      "sha256": "68b269dc8e91c3783d9a08369b467a67a1ddea10cabe9aab8da598f2106ba431"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HindLeftAnkleFragmentReview-v001/hind.L-inner-albedo.png",
+      "sha256": "2ca847f357a28fa12446334210dcd43e98b1442a717709ce194cb12e9eb7a0c3"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HindLeftAnkleFragmentReview-v001/hind.L-inner.png",
+      "sha256": "da509375459c7419162de08ccfd2a006a29c0e18b213b45c5e277d5b77e4a1dd"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HindLeftAnkleFragmentReview-v001/hind.L-outer-albedo.png",
+      "sha256": "0db24f4e7fa5c95ae5217f968551871e0af3bf8e74aa79146ef7e90813fd6688"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HindLeftAnkleFragmentReview-v001/hind.L-outer.png",
+      "sha256": "1ace7d46fa198f13ca39f3806485fddb612fc7cfbee4ec8f5ecaf581dda9f249"
+    }
+  ],
+  "observations": [
+    {
+      "id": "frag.rear",
+      "vertices": 109,
+      "proposal": "secondary pendant feather (orange-red hair albedo, hangs to Z0.118); exclude from skin band, own like hind.L fringe"
+    },
+    {
+      "id": "frag.front",
+      "vertices": 193,
+      "proposal": "coronet hair skirt lying over the dark hoof wall top; flexible surface layer with hoof-contact risk, not rigid core and not plain skin ring"
+    },
+    {
+      "id": "frag.other",
+      "vertices": 345,
+      "proposal": "red-fur pastern ring just below the joint; plausible flexible ankle skin inside the band"
+    }
+  ],
+  "extra_finding": "Back/outer albedo show the protected rigid core (RigidHoofSelectionContract-v001) includes red-fur heel/pastern surface down to near the sole, not only dark horn. Core contract needs anatomical review before any skin transition; not changed here.",
+  "decision": "No label/source/weight edit. Next: reviewed label proposal for rear feather and front coronet skirt (exact vertex IDs in fragment-selections.npz), plus heel-core fur review; then re-run Propose-JointTransitionBand with those exclusions.",
+  "limitations": [
+    "Centroid-Y split is a review grouping, not segmentation; individual fragments near +/-0.08m need per-fragment confirmation.",
+    "Emission albedo shows painted colour only, not material approval."
+  ],
+  "correction_2026_10_19": "extra_finding superseded: the primary rig chain is hip/stifle/hock/fetlock, and PRI.*.fetlock spans fetlock joint (Z0.20) to toe, so pastern+heel fur riding rigidly with the hoof is consistent with this rig. Below-joint fragments should follow the fetlock bone; no core contract change needed."
+}

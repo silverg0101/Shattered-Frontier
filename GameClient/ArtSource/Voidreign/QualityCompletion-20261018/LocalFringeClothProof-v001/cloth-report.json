@@ -1,0 +1,1279 @@
+{
+  "schema_version": 1,
+  "status": "local-fixed-rest-cloth-proof-needs-review",
+  "cpu_only": true,
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LegFringePrimaryFollowReview-v001\\Actual-FringePrimaryFollow.blend": "fb38c0c4ef3a3fef78b60f8544cb07a87c276b5e1b79c617afc12ffacf9aac85",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LegFringePrimaryFollowReview-v001\\capture-report.json": "d612e6361711b1d5bbe8d646c00408bf9083dc7aabb1fdc15f74f1c13b00ca6e",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LegFringePrimaryFollowReview-v001\\source-indexed-world-points.npz": "80f129671e2d351cb39e33076007d5a0e6486561f78f7165908be63808f54365",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LegFringeLabelCorrection-v001\\label-only-selections.npz": "dc78ba7dbd5a03bef0f0397a26435ec6bcf31b079c340aff5d035a2b1566a630",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\FullLegFringeRoots-v001\\region-roots.npz": "6c87dc69d6bbcf1ea76f7ca12e4f860940f328782c4a374a0a33278008bdf682",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\FullLegFringeRoots-v001\\local-physics-review.json": "fa962ab38a2ca17e8a82bca77d13308e741ea64d9b0e9782d3693e8fa86a3002"
+  },
+  "tool_sha256": "bd4e064350e4503b0fdad0064b0a69c0a56e2d10af7e5a24901a924f7eb5af44",
+  "profile_sha256": "19f0c69fa5a8c86117154e42dea59a59533354a62b237ca12787f3af7610b5fa",
+  "source": "Actual-FringeSecondary.blend",
+  "source_sha256": "3a8e8409d04cf1a0f4604db40ea422843700cd11345dc8075b1cf02ca6180db8",
+  "bake_seconds": 1.4333381000033114,
+  "warmup_frames": 30,
+  "source_frames": 73,
+  "canonical_nodes": 202,
+  "root_nodes": 37,
+  "fixed_rest": true,
+  "self_collision": false,
+  "held_final_free_speed_m_s": 0.7953664349760816,
+  "maximum_pin_error_m": 2.9802322387695312e-08,
+  "maximum_source_sampling_error_m": 0.0,
+  "maximum_reopened_replay_error_m": 0.0,
+  "maximum_free_step_m": 0.08289095196524704,
+  "curves": [
+    {
+      "source_frame": 1,
+      "scene_frame": 31,
+      "maximum_pin_error_m": 0.0,
+      "maximum_edge_change_m": 0.01688076324990922,
+      "minimum_free_unsigned_leg_distance_m": 0.0006671030423603952,
+      "minimum_free_ground_clearance_m": 0.2534730386734009,
+      "maximum_free_parent_offset_m": 0.2361791640316923
+    },
+    {
+      "source_frame": 2,
+      "scene_frame": 32,
+      "maximum_pin_error_m": 0.0,
+      "maximum_edge_change_m": 0.01511732421057454,
+      "minimum_free_unsigned_leg_distance_m": 0.000776667264290154,
+      "minimum_free_ground_clearance_m": 0.25454073667526245,
+      "maximum_free_parent_offset_m": 0.2446911117188866
+    },
+    {
+      "source_frame": 3,
+      "scene_frame": 33,
+      "maximum_pin_error_m": 0.0,
+      "maximum_edge_change_m": 0.014759310221146063,
+      "minimum_free_unsigned_leg_distance_m": 0.0007259749108925462,
+      "minimum_free_ground_clearance_m": 0.25644203543663024,
+      "maximum_free_parent_offset_m": 0.24599599179635098
+    },
+    {
+      "source_frame": 4,
+      "scene_frame": 34,
+      "maximum_pin_error_m": 0.0,
+      "maximum_edge_change_m": 0.01817229390970461,
+      "minimum_free_unsigned_leg_distance_m": 0.0005079391412436962,
+      "minimum_free_ground_clearance_m": 0.25976550102233886,
+      "maximum_free_parent_offset_m": 0.2422203875117594
+    },
+    {
+      "source_frame": 5,
+      "scene_frame": 35,
+      "maximum_pin_error_m": 0.0,
+      "maximum_edge_change_m": 0.013205179625450836,
+      "minimum_free_unsigned_leg_distance_m": 0.0003034163673873991,
+      "minimum_free_ground_clearance_m": 0.2635129940509796,
+      "maximum_free_parent_offset_m": 0.23967455205140567
+    },
+    {
+      "source_frame": 6,
+      "scene_frame": 36,
+      "maximum_pin_error_m": 0.0,
+      "maximum_edge_change_m": 0.015922545698827256,
+      "minimum_free_unsigned_leg_distance_m": 4.9603419029153883e-05,
+      "minimum_free_ground_clearance_m": 0.266876186132431,
+      "maximum_free_parent_offset_m": 0.24150936254725083
+    },
+    {
+      "source_frame": 7,
+      "scene_frame": 37,
+      "maximum_pin_error_m": 0.0,
+      "maximum_edge_change_m": 0.0179447250706165,
+      "minimum_free_unsigned_leg_distance_m": 0.000108636129880324,
+      "minimum_free_ground_clearance_m": 0.26960119128227233,
+      "maximum_free_parent_offset_m": 0.2437598983787336
+    },
+    {
+      "source_frame": 8,
+      "scene_frame": 38,
+      "maximum_pin_error_m": 0.0,
+      "maximum_edge_change_m": 0.020693121233517638,
+      "minimum_free_unsigned_leg_distance_m": 0.0012868825579062104,
+      "minimum_free_ground_clearance_m": 0.2717387330532074,
+      "maximum_free_parent_offset_m": 0.24194912034901486
+    },
+    {
+      "source_frame": 9,
+      "scene_frame": 39,
+      "maximum_pin_error_m": 0.0,
+      "maximum_edge_change_m": 0.017195936798188007,
+      "minimum_free_unsigned_leg_distance_m": 0.00022494788572657853,
+      "minimum_free_ground_clearance_m": 0.2734754931926727,
+      "maximum_free_parent_offset_m": 0.2405703566202804
+    },
+    {
+      "source_frame": 10,
+      "scene_frame": 40,
+      "maximum_pin_error_m": 0.0,
+      "maximum_edge_change_m": 0.016503149274577338,
+      "minimum_free_unsigned_leg_distance_m": 0.0016780354781076312,
+      "minimum_free_ground_clearance_m": 0.275200332403183,
+      "maximum_free_parent_offset_m": 0.23900283349707427
+    },
+    {
+      "source_frame": 11,
+      "scene_frame": 41,
+      "maximum_pin_error_m": 0.0,
+      "maximum_edge_change_m": 0.01699710754689243,
+      "minimum_free_unsigned_leg_distance_m": 0.0020381619688123465,
+      "minimum_free_ground_clearance_m": 0.2774101746082306,
+      "maximum_free_parent_offset_m": 0.24079258770228001
+    },
+    {
+      "source_frame": 12,
+      "scene_frame": 42,
+      "maximum_pin_error_m": 0.0,
+      "maximum_edge_change_m": 0.022649870705780256,
+      "minimum_free_unsigned_leg_distance_m": 0.0006026506307534873,
+      "minimum_free_ground_clearance_m": 0.2803163182735443,
+      "maximum_free_parent_offset_m": 0.240396798590226
+    },
+    {
+      "source_frame": 13,
+      "scene_frame": 43,
+      "maximum_pin_error_m": 0.0,
+      "maximum_edge_change_m": 0.022334980990977478,
+      "minimum_free_unsigned_leg_distance_m": 0.0003905487828887999,
+      "minimum_free_ground_clearance_m": 0.283616806268692,
+      "maximum_free_parent_offset_m": 0.2341275248761901
+    },
+    {
+      "source_frame": 14,
+      "scene_frame": 44,
+      "maximum_pin_error_m": 0.0,
+      "maximum_edge_change_m": 0.01937777583630411,
+      "minimum_free_unsigned_leg_distance_m": 0.00038624420994892716,
+      "minimum_free_ground_clearance_m": 0.2871544909477234,
+      "maximum_free_parent_offset_m": 0.234227786074579
+    },
+    {
+      "source_frame": 15,
+      "scene_frame": 45,
+      "maximum_pin_error_m": 0.0,
+      "maximum_edge_change_m": 0.016822309670329792,
+      "minimum_free_unsigned_leg_distance_m": 0.00022054213332012296,
+      "minimum_free_ground_clearance_m": 0.290825719833374,
+      "maximum_free_parent_offset_m": 0.23309500729057736
+    },
+    {
+      "source_frame": 16,
+      "scene_frame": 46,
+      "maximum_pin_error_m": 0.0,
+      "maximum_edge_change_m": 0.01808176917586369,
+      "minimum_free_unsigned_leg_distance_m": 0.0008974858210422099,
+      "minimum_free_ground_clearance_m": 0.29453643679618835,
+      "maximum_free_parent_offset_m": 0.2284256851609017
+    },
+    {
+      "source_frame": 17,
+      "scene_frame": 47,
+      "maximum_pin_error_m": 0.0,
+      "maximum_edge_change_m": 0.016440716103767336,
+      "minimum_free_unsigned_leg_distance_m": 0.0006172722205519676,
+      "minimum_free_ground_clearance_m": 0.2981795620918274,
+      "maximum_free_parent_offset_m": 0.21999506178464587
+    },
+    {
+      "source_frame": 18,
+      "scene_frame": 48,
+      "maximum_pin_error_m": 0.0,
+      "maximum_edge_change_m": 0.01810580499433479,
+      "minimum_free_unsigned_leg_distance_m": 0.00049358862452209,
+      "minimum_free_ground_clearance_m": 0.30186673521995544,
+      "maximum_free_parent_offset_m": 0.21475640336639432
+    },
+    {
+      "source_frame": 19,
+      "scene_frame": 49,
+      "maximum_pin_error_m": 0.0,
+      "maximum_edge_change_m": 0.022453900427441338,
+      "minimum_free_unsigned_leg_distance_m": 0.00018908665515482426,
+      "minimum_free_ground_clearance_m": 0.3056754124164581,
+      "maximum_free_parent_offset_m": 0.21185512391935904
+    },
+    {
+      "source_frame": 20,
+      "scene_frame": 50,
+      "maximum_pin_error_m": 0.0,
+      "maximum_edge_change_m": 0.014692223626167612,
+      "minimum_free_unsigned_leg_distance_m": 0.00015767774311825633,
+      "minimum_free_ground_clearance_m": 0.30919330835342407,
+      "maximum_free_parent_offset_m": 0.21061945308164368
+    },
+    {
+      "source_frame": 21,
+      "scene_frame": 51,
+      "maximum_pin_error_m": 0.0,
+      "maximum_edge_change_m": 0.016567719244709924,
+      "minimum_free_unsigned_leg_distance_m": 0.0005247422377578914,
+      "minimum_free_ground_clearance_m": 0.31200703501701355,
+      "maximum_free_parent_offset_m": 0.2147499702262082
+    },
+    {
+      "source_frame": 22,
+      "scene_frame": 52,
+      "maximum_pin_error_m": 0.0,
+      "maximum_edge_change_m": 0.01977007467128725,
+      "minimum_free_unsigned_leg_distance_m": 0.00017913403280545026,
+      "minimum_free_ground_clearance_m": 0.3143022310733795,
+      "maximum_free_parent_offset_m": 0.21947862658189238
+    },
+    {
+      "source_frame": 23,
+      "scene_frame": 53,
+      "maximum_pin_error_m": 0.0,
+      "maximum_edge_change_m": 0.021677881736435613,
+      "minimum_free_unsigned_leg_distance_m": 0.0001557610958116129,
+      "minimum_free_ground_clearance_m": 0.3163197588920593,
+      "maximum_free_parent_offset_m": 0.21861310201148676
+    },
+    {
+      "source_frame": 24,
+      "scene_frame": 54,
+      "maximum_pin_error_m": 0.0,
+      "maximum_edge_change_m": 0.01921675211455919,
+      "minimum_free_unsigned_leg_distance_m": 0.00035058404318988323,
+      "minimum_free_ground_clearance_m": 0.31811201095581054,
+      "maximum_free_parent_offset_m": 0.21986866320275333
+    },
+    {
+      "source_frame": 25,
+      "scene_frame": 55,
+      "maximum_pin_error_m": 0.0,
+      "maximum_edge_change_m": 0.01762463590808686,
+      "minimum_free_unsigned_leg_distance_m": 0.00010250371997244656,
+      "minimum_free_ground_clearance_m": 0.32013704895973205,
+      "maximum_free_parent_offset_m": 0.21846021884918235
+    },
+    {
+      "source_frame": 26,
+      "scene_frame": 56,
+      "maximum_pin_error_m": 0.0,
+      "maximum_edge_change_m": 0.01793555329479531,
+      "minimum_free_unsigned_leg_distance_m": 0.0004331626696512103,
+      "minimum_free_ground_clearance_m": 0.3274500024318695,
+      "maximum_free_parent_offset_m": 0.21140468431336404
+    },
+    {
+      "source_frame": 27,
+      "scene_frame": 57,
+      "maximum_pin_error_m": 0.0,
+      "maximum_edge_change_m": 0.01766502720118057,
+      "minimum_free_unsigned_leg_distance_m": 2.4069946448435076e-05,
+      "minimum_free_ground_clearance_m": 0.34765088081359863,
+      "maximum_free_parent_offset_m": 0.20234700551136203
+    },
+    {
+      "source_frame": 28,
+      "scene_frame": 58,
+      "maximum_pin_error_m": 0.0,
+      "maximum_edge_change_m": 0.014796958147048744,
+      "minimum_free_unsigned_leg_distance_m": 4.377186269266531e-05,
+      "minimum_free_ground_clearance_m": 0.37535619258880615,
+      "maximum_free_parent_offset_m": 0.19086905720645728
+    },
+    {
+      "source_frame": 29,
+      "scene_frame": 59,
+      "maximum_pin_error_m": 0.0,
+      "maximum_edge_change_m": 0.017842055523472716,
+      "minimum_free_unsigned_leg_distance_m": 0.0002427234430797398,
+      "minimum_free_ground_clearance_m": 0.40519263863563537,
+      "maximum_free_parent_offset_m": 0.18750617896223698
+    },
+    {
+      "source_frame": 30,
+      "scene_frame": 60,
+      "maximum_pin_error_m": 0.0,
+      "maximum_edge_change_m": 0.01322451316587248,
+      "minimum_free_unsigned_leg_distance_m": 9.232243610313162e-05,
+      "minimum_free_ground_clearance_m": 0.43372469663619995,
+      "maximum_free_parent_offset_m": 0.18847248486846777
+    },
+    {
+      "source_frame": 31,
+      "scene_frame": 61,
+      "maximum_pin_error_m": 0.0,
+      "maximum_edge_change_m": 0.011487848824143238,
+      "minimum_free_unsigned_leg_distance_m": 3.098131492151879e-05,
+      "minimum_free_ground_clearance_m": 0.45804821968078613,
+      "maximum_free_parent_offset_m": 0.19623056986048404
+    },
+    {
+      "source_frame": 32,
+      "scene_frame": 62,
+      "maximum_pin_error_m": 0.0,
+      "maximum_edge_change_m": 0.01414887993312033,
+      "minimum_free_unsigned_leg_distance_m": 0.0010581351816654205,
+      "minimum_free_ground_clearance_m": 0.46907105565071106,
+      "maximum_free_parent_offset_m": 0.2090517401153708
+    },
+    {
+      "source_frame": 33,
+      "scene_frame": 63,
+      "maximum_pin_error_m": 0.0,
+      "maximum_edge_change_m": 0.012339081994310117,
+      "minimum_free_unsigned_leg_distance_m": 0.0008177677518688142,
+      "minimum_free_ground_clearance_m": 0.45921533823013305,
+      "maximum_free_parent_offset_m": 0.22284496150641675
+    },
+    {
+      "source_frame": 34,
+      "scene_frame": 64,
+      "maximum_pin_error_m": 0.0,
+      "maximum_edge_change_m": 0.01726166876647506,
+      "minimum_free_unsigned_leg_distance_m": 6.447320629376918e-05,
+      "minimum_free_ground_clearance_m": 0.43594669818878173,
+      "maximum_free_parent_offset_m": 0.2558417324622548
+    },
+    {
+      "source_frame": 35,
+      "scene_frame": 65,
+      "maximum_pin_error_m": 0.0,
+      "maximum_edge_change_m": 0.013268234239736876,
+      "minimum_free_unsigned_leg_distance_m": 0.00019287109898868948,
+      "minimum_free_ground_clearance_m": 0.4162590157985687,
+      "maximum_free_parent_offset_m": 0.2698929569522781
+    },
+    {
+      "source_frame": 36,
+      "scene_frame": 66,
+      "maximum_pin_error_m": 0.0,
+      "maximum_edge_change_m": 0.016878700463314505,
+      "minimum_free_unsigned_leg_distance_m": 0.00023625974426977336,
+      "minimum_free_ground_clearance_m": 0.40107914328575134,
+      "maximum_free_parent_offset_m": 0.2703381787139115
+    },
+    {
+      "source_frame": 37,
+      "scene_frame": 67,
+      "maximum_pin_error_m": 0.0,
+      "maximum_edge_change_m": 0.018929896771449423,
+      "minimum_free_unsigned_leg_distance_m": 0.0005873175105080009,
+      "minimum_free_ground_clearance_m": 0.3772832107543945,
+      "maximum_free_parent_offset_m": 0.26356960106091076
+    },
+    {
+      "source_frame": 38,
+      "scene_frame": 68,
+      "maximum_pin_error_m": 0.0,
+      "maximum_edge_change_m": 0.013180461174130197,
+      "minimum_free_unsigned_leg_distance_m": 0.00018248763808514923,
+      "minimum_free_ground_clearance_m": 0.36792656302452087,
+      "maximum_free_parent_offset_m": 0.2548935500841277
+    },
+    {
+      "source_frame": 39,
+      "scene_frame": 69,
+      "maximum_pin_error_m": 0.0,
+      "maximum_edge_change_m": 0.013090051988820513,
+      "minimum_free_unsigned_leg_distance_m": 0.00010009363904828206,
+      "minimum_free_ground_clearance_m": 0.3679059100151062,
+      "maximum_free_parent_offset_m": 0.2505290579665748
+    },
+    {
+      "source_frame": 40,
+      "scene_frame": 70,
+      "maximum_pin_error_m": 0.0,
+      "maximum_edge_change_m": 0.014835665347845101,
+      "minimum_free_unsigned_leg_distance_m": 0.00043931687832809985,
+      "minimum_free_ground_clearance_m": 0.3778095197677612,
+      "maximum_free_parent_offset_m": 0.2508715872007089
+    },
+    {
+      "source_frame": 41,
+      "scene_frame": 71,
+      "maximum_pin_error_m": 0.0,
+      "maximum_edge_change_m": 0.016654941605532245,
+      "minimum_free_unsigned_leg_distance_m": 0.00017057637160178274,
+      "minimum_free_ground_clearance_m": 0.391416038274765,
+      "maximum_free_parent_offset_m": 0.25250446327277026
+    },
+    {
+      "source_frame": 42,
+      "scene_frame": 72,
+      "maximum_pin_error_m": 0.0,
+      "maximum_edge_change_m": 0.017357851569436946,
+      "minimum_free_unsigned_leg_distance_m": 0.0002054982614936307,
+      "minimum_free_ground_clearance_m": 0.4026775908470154,
+      "maximum_free_parent_offset_m": 0.25661896706759857
+    },
+    {
+      "source_frame": 43,
+      "scene_frame": 73,
+      "maximum_pin_error_m": 0.0,
+      "maximum_edge_change_m": 0.019694144686253464,
+      "minimum_free_unsigned_leg_distance_m": 9.493096877122298e-05,
+      "minimum_free_ground_clearance_m": 0.40233516216278076,
+      "maximum_free_parent_offset_m": 0.26281351670326153
+    },
+    {
+      "source_frame": 44,
+      "scene_frame": 74,
+      "maximum_pin_error_m": 0.0,
+      "maximum_edge_change_m": 0.017952488634396472,
+      "minimum_free_unsigned_leg_distance_m": 0.0002313307486474514,
+      "minimum_free_ground_clearance_m": 0.40233227133750915,
+      "maximum_free_parent_offset_m": 0.27061373255527166
+    },
+    {
+      "source_frame": 45,
+      "scene_frame": 75,
+      "maximum_pin_error_m": 0.0,
+      "maximum_edge_change_m": 0.019947748801285563,
+      "minimum_free_unsigned_leg_distance_m": 0.0005677182925865054,
+      "minimum_free_ground_clearance_m": 0.405659521818161,
+      "maximum_free_parent_offset_m": 0.27417298740868307
+    },
+    {
+      "source_frame": 46,
+      "scene_frame": 76,
+      "maximum_pin_error_m": 0.0,
+      "maximum_edge_change_m": 0.023693415259691254,
+      "minimum_free_unsigned_leg_distance_m": 0.00026628439081832767,
+      "minimum_free_ground_clearance_m": 0.4112600338459015,
+      "maximum_free_parent_offset_m": 0.2763283336676175
+    },
+    {
+      "source_frame": 47,
+      "scene_frame": 77,
+      "maximum_pin_error_m": 0.0,
+      "maximum_edge_change_m": 0.024785424390503377,
+      "minimum_free_unsigned_leg_distance_m": 8.525876182829961e-05,
+      "minimum_free_ground_clearance_m": 0.4144154441356659,
+      "maximum_free_parent_offset_m": 0.28081287477122824
+    },
+    {
+      "source_frame": 48,
+      "scene_frame": 78,
+      "maximum_pin_error_m": 2.9802322387695312e-08,
+      "maximum_edge_change_m": 0.02434745371416452,
+      "minimum_free_unsigned_leg_distance_m": 0.0003482777392491698,
+      "minimum_free_ground_clearance_m": 0.41776033759117126,
+      "maximum_free_parent_offset_m": 0.283574783539045
+    },
+    {
+      "source_frame": 49,
+      "scene_frame": 79,
+      "maximum_pin_error_m": 2.9802322387695312e-08,
+      "maximum_edge_change_m": 0.02157561458437569,
+      "minimum_free_unsigned_leg_distance_m": 0.0003848211490549147,
+      "minimum_free_ground_clearance_m": 0.42090731382369995,
+      "maximum_free_parent_offset_m": 0.2816075447088615
+    },
+    {
+      "source_frame": 50,
+      "scene_frame": 80,
+      "maximum_pin_error_m": 2.9802322387695312e-08,
+      "maximum_edge_change_m": 0.02079953389967498,
+      "minimum_free_unsigned_leg_distance_m": 0.00022877103765495121,
+      "minimum_free_ground_clearance_m": 0.4228857707977295,
+      "maximum_free_parent_offset_m": 0.2788911592908418
+    },
+    {
+      "source_frame": 51,
+      "scene_frame": 81,
+      "maximum_pin_error_m": 2.9802322387695312e-08,
+      "maximum_edge_change_m": 0.021344962469478816,
+      "minimum_free_unsigned_leg_distance_m": 0.00013355311239138246,
+      "minimum_free_ground_clearance_m": 0.4241332960128784,
+      "maximum_free_parent_offset_m": 0.27830265139953064
+    },
+    {
+      "source_frame": 52,
+      "scene_frame": 82,
+      "maximum_pin_error_m": 2.9802322387695312e-08,
+      "maximum_edge_change_m": 0.02343820242884884,
+      "minimum_free_unsigned_leg_distance_m": 5.869667074875906e-05,
+      "minimum_free_ground_clearance_m": 0.4283980083465576,
+      "maximum_free_parent_offset_m": 0.27819776808212093
+    },
+    {
+      "source_frame": 53,
+      "scene_frame": 83,
+      "maximum_pin_error_m": 2.9802322387695312e-08,
+      "maximum_edge_change_m": 0.02385089332403201,
+      "minimum_free_unsigned_leg_distance_m": 6.804026634199545e-05,
+      "minimum_free_ground_clearance_m": 0.43062129139900207,
+      "maximum_free_parent_offset_m": 0.27632169016832603
+    },
+    {
+      "source_frame": 54,
+      "scene_frame": 84,
+      "maximum_pin_error_m": 2.9802322387695312e-08,
+      "maximum_edge_change_m": 0.02700100720496278,
+      "minimum_free_unsigned_leg_distance_m": 1.99996902665589e-05,
+      "minimum_free_ground_clearance_m": 0.43411951780319213,
+      "maximum_free_parent_offset_m": 0.27320802719355525
+    },
+    {
+      "source_frame": 55,
+      "scene_frame": 85,
+      "maximum_pin_error_m": 2.9802322387695312e-08,
+      "maximum_edge_change_m": 0.026630864749852632,
+      "minimum_free_unsigned_leg_distance_m": 0.00015749047452118248,
+      "minimum_free_ground_clearance_m": 0.43659311056137085,
+      "maximum_free_parent_offset_m": 0.2692865570452968
+    },
+    {
+      "source_frame": 56,
+      "scene_frame": 86,
+      "maximum_pin_error_m": 2.9802322387695312e-08,
+      "maximum_edge_change_m": 0.025630324958195644,
+      "minimum_free_unsigned_leg_distance_m": 0.0001425492373527959,
+      "minimum_free_ground_clearance_m": 0.43663301587104797,
+      "maximum_free_parent_offset_m": 0.26520680068093905
+    },
+    {
+      "source_frame": 57,
+      "scene_frame": 87,
+      "maximum_pin_error_m": 2.9802322387695312e-08,
+      "maximum_edge_change_m": 0.022574489486124873,
+      "minimum_free_unsigned_leg_distance_m": 0.0001419417094439268,
+      "minimum_free_ground_clearance_m": 0.43175243854522705,
+      "maximum_free_parent_offset_m": 0.26227529656287535
+    },
+    {
+      "source_frame": 58,
+      "scene_frame": 88,
+      "maximum_pin_error_m": 2.9802322387695312e-08,
+      "maximum_edge_change_m": 0.0238368203230785,
+      "minimum_free_unsigned_leg_distance_m": 4.4041560613550246e-05,
+      "minimum_free_ground_clearance_m": 0.4269126605987549,
+      "maximum_free_parent_offset_m": 0.2587369966995898
+    },
+    {
+      "source_frame": 59,
+      "scene_frame": 89,
+      "maximum_pin_error_m": 2.9802322387695312e-08,
+      "maximum_edge_change_m": 0.020323135125461814,
+      "minimum_free_unsigned_leg_distance_m": 5.612097811535932e-05,
+      "minimum_free_ground_clearance_m": 0.42347928404808044,
+      "maximum_free_parent_offset_m": 0.2558322000183845
+    },
+    {
+      "source_frame": 60,
+      "scene_frame": 90,
+      "maximum_pin_error_m": 2.9802322387695312e-08,
+      "maximum_edge_change_m": 0.020999988372128763,
+      "minimum_free_unsigned_leg_distance_m": 8.24454691610299e-05,
+      "minimum_free_ground_clearance_m": 0.420787478685379,
+      "maximum_free_parent_offset_m": 0.2566957651461532
+    },
+    {
+      "source_frame": 61,
+      "scene_frame": 91,
+      "maximum_pin_error_m": 2.9802322387695312e-08,
+      "maximum_edge_change_m": 0.022730506029252716,
+      "minimum_free_unsigned_leg_distance_m": 0.0004570980090647936,
+      "minimum_free_ground_clearance_m": 0.42144593119621276,
+      "maximum_free_parent_offset_m": 0.2605726080740145
+    },
+    {
+      "source_frame": 62,
+      "scene_frame": 92,
+      "maximum_pin_error_m": 2.9802322387695312e-08,
+      "maximum_edge_change_m": 0.026109678323367018,
+      "minimum_free_unsigned_leg_distance_m": 1.5826717572053894e-05,
+      "minimum_free_ground_clearance_m": 0.4269333732128143,
+      "maximum_free_parent_offset_m": 0.2571610258133749
+    },
+    {
+      "source_frame": 63,
+      "scene_frame": 93,
+      "maximum_pin_error_m": 2.9802322387695312e-08,
+      "maximum_edge_change_m": 0.023403602086573258,
+      "minimum_free_unsigned_leg_distance_m": 0.00013270833005663007,
+      "minimum_free_ground_clearance_m": 0.4319717240333557,
+      "maximum_free_parent_offset_m": 0.24929273151900072
+    },
+    {
+      "source_frame": 64,
+      "scene_frame": 94,
+      "maximum_pin_error_m": 2.9802322387695312e-08,
+      "maximum_edge_change_m": 0.024835423045354584,
+      "minimum_free_unsigned_leg_distance_m": 0.0002665516803972423,
+      "minimum_free_ground_clearance_m": 0.4364042830467224,
+      "maximum_free_parent_offset_m": 0.2326460842431304
+    },
+    {
+      "source_frame": 65,
+      "scene_frame": 95,
+      "maximum_pin_error_m": 2.9802322387695312e-08,
+      "maximum_edge_change_m": 0.02417666591595858,
+      "minimum_free_unsigned_leg_distance_m": 0.00024976435815915465,
+      "minimum_free_ground_clearance_m": 0.436089004278183,
+      "maximum_free_parent_offset_m": 0.21024655437715545
+    },
+    {
+      "source_frame": 66,
+      "scene_frame": 96,
+      "maximum_pin_error_m": 2.9802322387695312e-08,
+      "maximum_edge_change_m": 0.023298555694382612,
+      "minimum_free_unsigned_leg_distance_m": 0.00013138061331119388,
+      "minimum_free_ground_clearance_m": 0.43178435683250427,
+      "maximum_free_parent_offset_m": 0.18223502129109115
+    },
+    {
+      "source_frame": 67,
+      "scene_frame": 97,
+      "maximum_pin_error_m": 2.9802322387695312e-08,
+      "maximum_edge_change_m": 0.02145540022562145,
+      "minimum_free_unsigned_leg_distance_m": 0.00019681506091728806,
+      "minimum_free_ground_clearance_m": 0.4237519156932831,
+      "maximum_free_parent_offset_m": 0.1859816149653244
+    },
+    {
+      "source_frame": 68,
+      "scene_frame": 98,
+      "maximum_pin_error_m": 2.9802322387695312e-08,
+      "maximum_edge_change_m": 0.023075825681795177,
+      "minimum_free_unsigned_leg_distance_m": 0.0011811163276433945,
+      "minimum_free_ground_clearance_m": 0.4057334315776825,
+      "maximum_free_parent_offset_m": 0.2053459273561135
+    },
+    {
+      "source_frame": 69,
+      "scene_frame": 99,
+      "maximum_pin_error_m": 2.9802322387695312e-08,
+      "maximum_edge_change_m": 0.023717617604491405,
+      "minimum_free_unsigned_leg_distance_m": 0.00043248754809610546,
+      "minimum_free_ground_clearance_m": 0.3842347514629364,
+      "maximum_free_parent_offset_m": 0.21912918883140506
+    },
+    {
+      "source_frame": 70,
+      "scene_frame": 100,
+      "maximum_pin_error_m": 2.9802322387695312e-08,
+      "maximum_edge_change_m": 0.02479506571630672,
+      "minimum_free_unsigned_leg_distance_m": 0.0003457328421063721,
+      "minimum_free_ground_clearance_m": 0.3656967234611511,
+      "maximum_free_parent_offset_m": 0.22348476161062303
+    },
+    {
+      "source_frame": 71,
+      "scene_frame": 101,
+      "maximum_pin_error_m": 2.9802322387695312e-08,
+      "maximum_edge_change_m": 0.02558417847668413,
+      "minimum_free_unsigned_leg_distance_m": 4.944172906107269e-05,
+      "minimum_free_ground_clearance_m": 0.3472190749645233,
+      "maximum_free_parent_offset_m": 0.2255142461512286
+    },
+    {
+      "source_frame": 72,
+      "scene_frame": 102,
+      "maximum_pin_error_m": 2.9802322387695312e-08,
+      "maximum_edge_change_m": 0.025277966986718838,
+      "minimum_free_unsigned_leg_distance_m": 0.00036037471727468073,
+      "minimum_free_ground_clearance_m": 0.3332858335971832,
+      "maximum_free_parent_offset_m": 0.22476321186609416
+    },
+    {
+      "source_frame": 73,
+      "scene_frame": 103,
+      "maximum_pin_error_m": 2.9802322387695312e-08,
+      "maximum_edge_change_m": 0.024573855542093015,
+      "minimum_free_unsigned_leg_distance_m": 5.6544133258285e-05,
+      "minimum_free_ground_clearance_m": 0.3262593698501587,
+      "maximum_free_parent_offset_m": 0.22583994875778016
+    }
+  ],
+  "images": [
+    {
+      "frame": 1,
+      "scene_frame": 31,
+      "image": "frames/0001.png"
+    },
+    {
+      "frame": 7,
+      "scene_frame": 37,
+      "image": "frames/0007.png"
+    },
+    {
+      "frame": 13,
+      "scene_frame": 43,
+      "image": "frames/0013.png"
+    },
+    {
+      "frame": 19,
+      "scene_frame": 49,
+      "image": "frames/0019.png"
+    },
+    {
+      "frame": 25,
+      "scene_frame": 55,
+      "image": "frames/0025.png"
+    },
+    {
+      "frame": 31,
+      "scene_frame": 61,
+      "image": "frames/0031.png"
+    },
+    {
+      "frame": 37,
+      "scene_frame": 67,
+      "image": "frames/0037.png"
+    },
+    {
+      "frame": 43,
+      "scene_frame": 73,
+      "image": "frames/0043.png"
+    },
+    {
+      "frame": 49,
+      "scene_frame": 79,
+      "image": "frames/0049.png"
+    },
+    {
+      "frame": 55,
+      "scene_frame": 85,
+      "image": "frames/0055.png"
+    },
+    {
+      "frame": 61,
+      "scene_frame": 91,
+      "image": "frames/0061.png"
+    },
+    {
+      "frame": 67,
+      "scene_frame": 97,
+      "image": "frames/0067.png"
+    },
+    {
+      "frame": 73,
+      "scene_frame": 103,
+      "image": "frames/0073.png"
+    }
+  ],
+  "cache_files": [
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000001_00.bphys",
+      "sha256": "b1007fcf8d6a06b9707528864ed65c27a18f2d20831d657c371ccdeed0f9503f",
+      "bytes": 3842
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000002_00.bphys",
+      "sha256": "5e52aa915a4d02a7b3c785752a86b4911c337019b90698971915ac65e2b96387",
+      "bytes": 5987
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000003_00.bphys",
+      "sha256": "a033b9df3f657798b5401a3718f015940c2fcf0d43d0ec0b083a3e07acd0fff5",
+      "bytes": 6017
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000004_00.bphys",
+      "sha256": "d7c1871bf60dd2a3b99923d8d16698d93a0112ec87fb6b6e688640c2084a3e34",
+      "bytes": 6027
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000005_00.bphys",
+      "sha256": "7b5adfa17d9783634ce6a601bc97bfc54104d277188f01debd89917ae81915f5",
+      "bytes": 5989
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000006_00.bphys",
+      "sha256": "3b3503a91aa753ba9f780a8e9394dee18e19b8c60d8cf50550ab801acc19902b",
+      "bytes": 6000
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000007_00.bphys",
+      "sha256": "3f4ad5807d183795f3025a514e9593aa699c4fc21167e73e2f1c83259f858be1",
+      "bytes": 6017
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000008_00.bphys",
+      "sha256": "e7309aef74376d656ccf093461bba7236bc848f6e2ae0dfefd36c649997e4cd5",
+      "bytes": 5996
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000009_00.bphys",
+      "sha256": "41f5977321762dc2edaf051433fc0b6b363bbb059df895fb45ccd07c6b7da2dc",
+      "bytes": 5990
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000010_00.bphys",
+      "sha256": "9ba9bac087d31c4451d277ba89018674595625e4a0b35fae7e300b4297be2012",
+      "bytes": 6017
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000011_00.bphys",
+      "sha256": "229954b06d9d772cdf9ac91438db84d8f6ec2ce78e89ed3fbdea90099d960eb1",
+      "bytes": 6017
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000012_00.bphys",
+      "sha256": "89a0b457b6abe45d3db50213c0386a218c71c81811c26e8b5a388e8481f473d7",
+      "bytes": 6008
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000013_00.bphys",
+      "sha256": "f495687681d0c3bc71493baa6b9ddc411765023a950f39f599c59160744413df",
+      "bytes": 5989
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000014_00.bphys",
+      "sha256": "0cf0ebb5be12f9a7cf385fd8a3828ae98ad98474e1514891daba87a7df9a275a",
+      "bytes": 6019
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000015_00.bphys",
+      "sha256": "575253d24cbfb6d2042ee582cfb3568513e6bcf4500b204e1ef9cb65b336b4ec",
+      "bytes": 6006
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000016_00.bphys",
+      "sha256": "27d9c68a7ccbe38ff27fd20d438527d14590f7d1522322c93d4e953019619365",
+      "bytes": 5969
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000017_00.bphys",
+      "sha256": "bc443bd72d8eb338b05688de4ea0c10c3e2f2c78bd0bb203bf64d7123fb6b28c",
+      "bytes": 5977
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000018_00.bphys",
+      "sha256": "b2a41b076f8653184834f623ae1764355011fcb4356eae45c745abc4687baedc",
+      "bytes": 5985
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000019_00.bphys",
+      "sha256": "4a3c45bdce0f34f3ea1906c4565de9146513d5c79400e66d33499748cc34d589",
+      "bytes": 5980
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000020_00.bphys",
+      "sha256": "7add25e910feada3f494e5e8027bce1d5d1381783456c820960d57e5a79d1077",
+      "bytes": 5986
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000021_00.bphys",
+      "sha256": "753ed733d3303556d0d49615bd9f01a12fa102510251dfc8779ce9a3e324dbb1",
+      "bytes": 6003
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000022_00.bphys",
+      "sha256": "a3d922e4b451786bc75d723ec0839757cf1645bdc6c3d168de5775c4ce814087",
+      "bytes": 6027
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000023_00.bphys",
+      "sha256": "76b21f067225126cb530a29e48cf44579e85990053f65fa303d01e0b4daf183e",
+      "bytes": 5991
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000024_00.bphys",
+      "sha256": "d2928f6ba46a2ce0139931d6992d77443b5cceb2627f37c76461f4e4009faf15",
+      "bytes": 5971
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000025_00.bphys",
+      "sha256": "d67b4e7e86ba9478009b406ad723943e1f3e1730be7b89aea1e810074026fe61",
+      "bytes": 6001
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000026_00.bphys",
+      "sha256": "af0f575e46a14edb5d94275d14dde7fa798d2edce745ad7c3b21e7c57509569b",
+      "bytes": 6013
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000027_00.bphys",
+      "sha256": "f94957504c574f8aa90978b23b96defcb8d8b81c4a1aa1718169b8a15ee931a3",
+      "bytes": 6020
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000028_00.bphys",
+      "sha256": "814b373c2ad18d538535b1aa1319287fa13037e97ebef81b1499d4a646fc3f98",
+      "bytes": 6003
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000029_00.bphys",
+      "sha256": "5f33cc3b8cee320ca6f9c11ea7e86c3cab5298bfca2662d60494b5d7e9b6d60c",
+      "bytes": 6004
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000030_00.bphys",
+      "sha256": "4d3cfbb9bf804ddeeb39469db91f803316b6b463b5997b89ecbfb115f97e112c",
+      "bytes": 6018
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000031_00.bphys",
+      "sha256": "7a850b58cd3e46d63740b8aaf6939ad4f700a7fd971bb611bb49cd52683a7dee",
+      "bytes": 6032
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000032_00.bphys",
+      "sha256": "d8b288179c761b75b819820cfa8deff851dcd5db43df3ea942e733dbc16fea73",
+      "bytes": 5951
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000033_00.bphys",
+      "sha256": "8a85aaf451653ff02cf15404253d4c1bdedf3231739b72c60a3adc5e76b5b842",
+      "bytes": 5989
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000034_00.bphys",
+      "sha256": "c8897d6cd2f7cc750a3e7ffb07341923445ebc7d628bb66f6204a363f49dfd52",
+      "bytes": 5999
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000035_00.bphys",
+      "sha256": "b804aa4881a35528456e036b349bd20d56942e4a103d90335408320d2c5b5e80",
+      "bytes": 5960
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000036_00.bphys",
+      "sha256": "888ae5f9d0b63effe308e2bb4f2c8bfb2a89412ad6fa2d7a3fb4f77a21ae2df9",
+      "bytes": 5942
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000037_00.bphys",
+      "sha256": "a13e0e8e0ce65cf7dd8fd389df003aca4676f3456cf462e3a349b43507552e39",
+      "bytes": 5941
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000038_00.bphys",
+      "sha256": "d92e92b5936250ff70c05ac0280db71b6ad9343519c6505a128b3282d1deac46",
+      "bytes": 5958
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000039_00.bphys",
+      "sha256": "cdfb1191da03b67be8754896ed6a8ee5160cf95769c1fe72476a940b1915a7b9",
+      "bytes": 5994
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000040_00.bphys",
+      "sha256": "cf01505d2ed3e7ab7ec4ccc5468800c4304e91eed772c68d7af7d595d9c6fbb5",
+      "bytes": 5990
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000041_00.bphys",
+      "sha256": "a778844ff5a8f88041281d3a41cc3f1f12b06b0540e6f79a2d99e8947d6fbb20",
+      "bytes": 5914
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000042_00.bphys",
+      "sha256": "d020339e4469cbc0feba78528869d2a989c946bc9c8eb80d2d678d15f112ed78",
+      "bytes": 5966
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000043_00.bphys",
+      "sha256": "0205897fe969316e77a402af1c4efa60553e7ab0814abf67ebaec6795c1976e5",
+      "bytes": 5999
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000044_00.bphys",
+      "sha256": "8c2f91ea328aa171c165ef1849a40d41320a753ac48bc20a87b73fc038eb3e6c",
+      "bytes": 5974
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000045_00.bphys",
+      "sha256": "958fa40fd086972acf78d64a54d3d431189476891e9e7165f60ce493568cbe98",
+      "bytes": 6027
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000046_00.bphys",
+      "sha256": "bb71427c7aa3613960ff67c370f8d7a6d8842c0f03f7a035ebe0df4f286d6290",
+      "bytes": 6035
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000047_00.bphys",
+      "sha256": "7d4dde9f969ee9fb8f3eb5469eb51a1001f7f77c2fe59f3d8c2366e3e45e268e",
+      "bytes": 6021
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000048_00.bphys",
+      "sha256": "5c2b610102049ca6fe0693db85edec5afbdc8c6a7d3385da00070006ab03c72c",
+      "bytes": 5978
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000049_00.bphys",
+      "sha256": "ffe4d70377dd5ef6e3cd74afde237e98e4d2ae296accdf4bc52831f2b8e67fc2",
+      "bytes": 5991
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000050_00.bphys",
+      "sha256": "e9a3bc53c1639c2465ccfa6ed38f7530916fb6e3e0a83ed918ff52af48e6596f",
+      "bytes": 5957
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000051_00.bphys",
+      "sha256": "d0b051cc7a9316767af485a7d715a65ab70a200580b42dc21098b193de8c6f8e",
+      "bytes": 5975
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000052_00.bphys",
+      "sha256": "11ddaf885341b75847e8f099bd8cf04f196b0e32febec8eb072f20dd22cd37b2",
+      "bytes": 5965
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000053_00.bphys",
+      "sha256": "301c2d33b49021bfd0e4c926511c612a5323cf99361487dc8b0522ea86db3d27",
+      "bytes": 5989
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000054_00.bphys",
+      "sha256": "826885fb38f7aa975c0674ec321f8b8d231252788e1ad80532e36c7ae6f0258c",
+      "bytes": 6025
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000055_00.bphys",
+      "sha256": "faf872ffab10ca94534453f075b1e8b98d1a3446b7d512d630a1ea15c70997d1",
+      "bytes": 5933
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000056_00.bphys",
+      "sha256": "ab3e57ecd4959ef8d621306791aee8f553838d970d7516bebfbab14c80fa43d4",
+      "bytes": 5871
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000057_00.bphys",
+      "sha256": "f209c0ba1c567b730c2d87155484942e5aceb9e0a73561f8abfc0e67d6d35a65",
+      "bytes": 5835
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000058_00.bphys",
+      "sha256": "72ff34390885bc8624104a5ef45400593ef187a81ec2392296883798bff85242",
+      "bytes": 5791
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000059_00.bphys",
+      "sha256": "0fe097a97710570a50520817314b0e79412a73b5db8b3cf6c7b84fb6552c13cf",
+      "bytes": 5845
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000060_00.bphys",
+      "sha256": "736ff965d34d196ad08035ed6aed60cfd46087389d2d45a900641f13afb140fe",
+      "bytes": 5903
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000061_00.bphys",
+      "sha256": "b1f07918740f323510325b9774bf60d80ed71631de2e933637a8aa43a7f3b662",
+      "bytes": 5988
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000062_00.bphys",
+      "sha256": "b48adad80532787f1d2a2275d0d991134cda5afb16b3cc41f5e0efb9e2c72dd4",
+      "bytes": 5974
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000063_00.bphys",
+      "sha256": "974e298cd75b2a5e4b7fb9cefc4afa5086a1523d4e3437d890dd5b7964371671",
+      "bytes": 5928
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000064_00.bphys",
+      "sha256": "a36ad630062dab8ac3a0f0b31c252da6864321808b5f8523e4b731ce6f8f2bbc",
+      "bytes": 5881
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000065_00.bphys",
+      "sha256": "3bece5948562c05c24b743b24e15e7d65eaeacc56c4263e3b77d351c7234de89",
+      "bytes": 5897
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000066_00.bphys",
+      "sha256": "017ef1a7ee9af3551cf4039dfd2c6797b0c628b711cf12555a486ef8b10ae179",
+      "bytes": 5924
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000067_00.bphys",
+      "sha256": "64f9e0d88718dea15891635c9c8c70397491e65d5e6c774615adb0aaddfb3952",
+      "bytes": 6027
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000068_00.bphys",
+      "sha256": "c26f367513182878b560d5365974d746b5bfc4b12849c60ab6eb72396df51cf9",
+      "bytes": 5963
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000069_00.bphys",
+      "sha256": "a0263a32fb2d5bf814faf154f4715cb963fd105a810470f001fdd92f6e926737",
+      "bytes": 6039
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000070_00.bphys",
+      "sha256": "96e1ee0520c67325fb09ded8fefd4f629199b46d9a03c7926b3fa3cf5b016627",
+      "bytes": 6023
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000071_00.bphys",
+      "sha256": "780d1d60cd91f34a2031789a3a7ebcdaff0179895ca982e5bb4b5ee0547da063",
+      "bytes": 5971
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000072_00.bphys",
+      "sha256": "e4da30697ce1db1f9a0b2e09cafc3a68a31fb20dd03761c3f84d84c66ba99cab",
+      "bytes": 6018
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000073_00.bphys",
+      "sha256": "fa928e74a9180c3cd829d28e349ddcaf800c03ffc3e8418c4c5428253dd9bb80",
+      "bytes": 6051
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000074_00.bphys",
+      "sha256": "b38722e1aa90547dc3b3c0015bb240134d2df0bdc231384e9fb6ca644536c0c0",
+      "bytes": 5993
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000075_00.bphys",
+      "sha256": "2d70179e5df6caa3a601252c8ff5b1a3759572cf495ed902ddf92f7fe7742e94",
+      "bytes": 6025
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000076_00.bphys",
+      "sha256": "5c6c0414436a2d87304ccbf354e8742e4e13c8627066ff438d4f9a1ac8421ea3",
+      "bytes": 6089
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000077_00.bphys",
+      "sha256": "6110151766b731f7c7c81e1d49b82920653141b25f7caa6c43007edba5b6c274",
+      "bytes": 6067
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000078_00.bphys",
+      "sha256": "46d5b2368c50cf4b92f96193d95123f85489bc7c3b16d2229478b9af18f1aad0",
+      "bytes": 6049
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000079_00.bphys",
+      "sha256": "61098dcbcb2d4b1d76e1b0a197a009ad75dca8c371dcf393b976b6916c16daf6",
+      "bytes": 6091
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000080_00.bphys",
+      "sha256": "9dd8e280b97b44833342bbb83095a856d4b8842094fcccb678b94932b0371ebe",
+      "bytes": 6087
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000081_00.bphys",
+      "sha256": "688b70795f3ec7cb0da771ad7e23ebba599f801e047a131a7e90e58d8cf0acf0",
+      "bytes": 6101
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000082_00.bphys",
+      "sha256": "4e74f1c0d56907344535c990815609d99d24059c7f7afc6db03a269692307e55",
+      "bytes": 6093
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000083_00.bphys",
+      "sha256": "afee68750665ec87b85cebbbd68077c034246fed31bc4013e2ba603818f611db",
+      "bytes": 6055
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000084_00.bphys",
+      "sha256": "f6ac6c63122918e0eb485b003fdbcaf053929d17da85d8fa95c436f7a9e17af6",
+      "bytes": 6070
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000085_00.bphys",
+      "sha256": "a755b23d854217f12be407d35b83120010aaa8eb6c4188de5f61279bc22e6f69",
+      "bytes": 6084
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000086_00.bphys",
+      "sha256": "b2259f797c7d1ea6a5fb1f5b12bf57a2651d0168ce8b202867eeb75461c98e39",
+      "bytes": 6093
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000087_00.bphys",
+      "sha256": "af5c4c03ad5d605a4b6b694a48cabda54d053a18b29280318252bf654349c06e",
+      "bytes": 6082
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000088_00.bphys",
+      "sha256": "0bbf370de83cce11d39a37e1fb2948ea5b16851bef8b7bcb699970b8804d3085",
+      "bytes": 6080
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000089_00.bphys",
+      "sha256": "3caff538ad2c939085723597da58a0c01589e38e031111dc89b57c8089ef8490",
+      "bytes": 6076
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000090_00.bphys",
+      "sha256": "8160bf658602b6ab27cd05d26efde3dc8ad1c0aeb17a64ce06e4c302cf4d112e",
+      "bytes": 6076
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000091_00.bphys",
+      "sha256": "ddcd8a256245e151ad968e8cb34e06b88e5cb3e5e146f450ed453e5da9942bc4",
+      "bytes": 6009
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000092_00.bphys",
+      "sha256": "93e7622e1aa5574109efa1bf6ef469c2b5fb6e72ab0c8ea98e5924284dd4d5de",
+      "bytes": 5991
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000093_00.bphys",
+      "sha256": "f67f9c3bc904511d616f7b92e5edb6dfecfc18e9b4645d07f9f0b217ef51e0f1",
+      "bytes": 5934
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000094_00.bphys",
+      "sha256": "2d3ddd10171ab816d4515db58d693998dadc8248c511b7bdca9a7e7ea1daf810",
+      "bytes": 5859
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000095_00.bphys",
+      "sha256": "ebebe859d5eb4a61e108811cbb5cd9a04079707f483e9330ddadd0c6140c927a",
+      "bytes": 5964
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000096_00.bphys",
+      "sha256": "4f2191e960c3c7ea5d54fcfc280de4f8cea4f8699a4f20039ec6908646bd15ac",
+      "bytes": 6047
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000097_00.bphys",
+      "sha256": "15d68b019bbbedf510701c2945f0ba4a51f09eb3e10feb3679e418ef64022d7d",
+      "bytes": 6029
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000098_00.bphys",
+      "sha256": "bd2bb1636b00564366e664ed6474f1c697373245d587b2aa22c24d733d69bafa",
+      "bytes": 6142
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000099_00.bphys",
+      "sha256": "7b070e440fb8f2f45a9b25f1aee8cebd3fe40d629c7f9756216029b211b86251",
+      "bytes": 6050
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000100_00.bphys",
+      "sha256": "13d8a73e950c0e430f99309e2fbf52006a35f9b7d28283fbb5d113c005e66836",
+      "bytes": 5978
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000101_00.bphys",
+      "sha256": "799be355bdabbcd92d2762db9ff388ef3c85e4feb0bfb255908045d244410d44",
+      "bytes": 5946
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000102_00.bphys",
+      "sha256": "305541bfe7c06ee01d33b6a5cd48c45538cf964614d000cd4aaf1234b0ed9ef7",
+      "bytes": 5945
+    },
+    {
+      "path": "blendcache_Actual-FringeSecondary\\LocalFringeFixedRest_000103_00.bphys",
+      "sha256": "6a13a8d443c9db51b6293387e96093b37d72558ca41e93b5f238e7104cd9a098",
+      "bytes": 6088
+    }
+  ],
+  "limitations": [
+    "Finite local experiment, not a new full-mount rig/gait or reset of exhausted stage budgets.",
+    "Local cropped/open leg mesh and ground only; missing nearby tail/otherleg, self/cross-feature and whole-mount collision coverage.",
+    "Unsigned vertex-to-leg distances are sampled proximity, not signed solid/triangle/swept penetration acceptance.",
+    "Input drivers are linearly interpolated integer-frame source captures, not freshly evaluated skeletal subframe trajectories.",
+    "Pin-region anatomy, settled startup, surface strain and visible response still require review; root pins alone are excluded from object collision."
+  ]
+}

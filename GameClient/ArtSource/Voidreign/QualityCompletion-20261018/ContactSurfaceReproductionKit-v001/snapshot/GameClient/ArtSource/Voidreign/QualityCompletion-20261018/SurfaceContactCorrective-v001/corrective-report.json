@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "status": "surface-contact-corrective-needs-checks",
+  "cpu_only": true,
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ContactMeshExperiment-v001\\Voidreign-CompleteHair.blend": "a1de9660c66c772cdb4cedec20ac5b1a2229a4417af46550f8167f915680c140",
+    "docs/art-templates/model-profiles/voidreign-complete-hair-motion-v003-20261018.json": "9df3ed982c0f5f571210a98d42c1e6b395b80713c139f0b7b162ad861d5cca47",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ContactMeshSurfaceCheck-v001\\surface-report.json": "f1d161b1c52cdc0cf6a78acb6794af03a2bee7372a4673e0f70825fc3faaca7d",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ContactMeshSurfaceCheck-v001\\surface-review.npz": "e8df9e74a7ddd7ddb44654989f1f5f0474d853a43350c32e0674a15163c68c85",
+    "docs/art-templates/model-profiles/voidreign-hair-surface-check-20261018.json": "f42b54b785653cd13262405b39e26a48e1fc606edeafb392b1372121e29e1abb"
+  },
+  "tool_sha256": "4695baae88482f46dc42e4bc8124ddcc3850a650eb31e16b98eadfd54764230b",
+  "profile_sha256": "71c1416bcf92acc73bd9f8f829ad1dd02d9166b2caa1c7d395907f2e9652d39a",
+  "source_sha256": "a1de9660c66c772cdb4cedec20ac5b1a2229a4417af46550f8167f915680c140",
+  "candidate_sha256": "1d349daa674c412cb0b7d5c0228be95e4b73358e9a5b7b62d38c61a0effe4606",
+  "mesh_hash": "ba2d283db0be5e8cff4cc7549f1f51916cc0a4d18213773300976b11512ececa",
+  "selected_free_vertices": 70486,
+  "projection_passes": 3,
+  "collision_margin_m": 0.002,
+  "source_uniform_world_scale": 4.35262393951416,
+  "node_count": 721,
+  "limitations": [
+    "Vertex-only instantaneous projection; no impulses, inertia, swept/self/triangle contacts or physical stability guarantee.",
+    "No source topology/UV/texture/weight change; original free/root exemption mask retained exactly.",
+    "May introduce stretch, pin/attachment conflicts or side-switching jumps; all full-duration checks and visual review remain required.",
+    "Blender procedural diagnostic; animated exchange needs a separate explicit bake/import contract."
+  ]
+}

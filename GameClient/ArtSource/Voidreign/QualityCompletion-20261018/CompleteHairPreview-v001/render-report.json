@@ -1,0 +1,38 @@
+{
+  "source": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\CompleteHair-v001\\Voidreign-CompleteHair.blend",
+  "source_sha256": "a6fa8da21fd219d96dbf26181adb98799c23114a6892cefebb629fb9c8322137",
+  "tool_sha256": "b1b4344850b9c0cb9ceaf0bf28e2012377c6a0ac41f17b61d4e1753319c2cb66",
+  "cpu_only": true,
+  "engine": "Cycles",
+  "device": "CPU",
+  "samples": 8,
+  "diagnostic": true,
+  "playback_fps": null,
+  "frames": [
+    {
+      "source_frame": 1,
+      "image": "0001.png"
+    },
+    {
+      "source_frame": 60,
+      "image": "0002.png"
+    },
+    {
+      "source_frame": 120,
+      "image": "0003.png"
+    },
+    {
+      "source_frame": 180,
+      "image": "0004.png"
+    },
+    {
+      "source_frame": 240,
+      "image": "0005.png"
+    },
+    {
+      "source_frame": 300,
+      "image": "0006.png"
+    }
+  ],
+  "scope": "Saved-source playback evidence, not a gait/runtime/collision acceptance"
+}

@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "status": "checked-source-primary-follow-review-only",
+  "cpu_only": true,
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\WalkPilot-v003\\Mount-WalkPilot.blend": "f59dc38bff697b6c2a2c84511413d2e292d9fdbb278acc69cd8df6d26a5bd123",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\FullLegFringeRoots-v001\\region-roots.npz": "6c87dc69d6bbcf1ea76f7ca12e4f860940f328782c4a374a0a33278008bdf682",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz": "0d7599c8064cb81a6e211a23731435e08939b7fb146ce2d4bed810273909a2b2",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryDomains-v001\\primary-domains.npz": "38002ef04f9ab82df4456021b3772e422328e2ecebd38bd068a344dd5e27bdb5"
+  },
+  "profile_sha256": "7000fcfd886fe11f5dda6021030599cefd9e1bff44475b60b266e411de06f7e2",
+  "tool_sha256": "de8d364f676cdff2b80f655b3867a94f54393a731e7ddcdb2e831619ed9e6255",
+  "review_source": "Actual-FringePrimaryFollow.blend",
+  "review_source_sha256": "fb38c0c4ef3a3fef78b60f8544cb07a87c276b5e1b79c617afc12ffacf9aac85",
+  "feature_vertices": 363,
+  "feature_faces": 361,
+  "context_faces": 11676,
+  "frames": 73,
+  "maximum_reopened_position_error_m": 5.960464477539063e-08,
+  "images": [
+    {
+      "frame": 1,
+      "image": "frames/0001.png"
+    },
+    {
+      "frame": 7,
+      "image": "frames/0007.png"
+    },
+    {
+      "frame": 13,
+      "image": "frames/0013.png"
+    },
+    {
+      "frame": 19,
+      "image": "frames/0019.png"
+    },
+    {
+      "frame": 25,
+      "image": "frames/0025.png"
+    },
+    {
+      "frame": 31,
+      "image": "frames/0031.png"
+    },
+    {
+      "frame": 37,
+      "image": "frames/0037.png"
+    },
+    {
+      "frame": 43,
+      "image": "frames/0043.png"
+    },
+    {
+      "frame": 49,
+      "image": "frames/0049.png"
+    },
+    {
+      "frame": 55,
+      "image": "frames/0055.png"
+    },
+    {
+      "frame": 61,
+      "image": "frames/0061.png"
+    },
+    {
+      "frame": 67,
+      "image": "frames/0067.png"
+    },
+    {
+      "frame": 73,
+      "image": "frames/0073.png"
+    }
+  ],
+  "limitations": [
+    "Exact-index baked local source copies, not a new skeleton, skin, gait or simulation.",
+    "Only source-following motion is shown; secondary dynamics/collision and anatomical root approval remain open.",
+    "Local context is cropped and camera tracks the fringe; not full-mount gait/stance acceptance.",
+    "Shape-key diagnostic cache is not a game-ready runtime rig."
+  ]
+}

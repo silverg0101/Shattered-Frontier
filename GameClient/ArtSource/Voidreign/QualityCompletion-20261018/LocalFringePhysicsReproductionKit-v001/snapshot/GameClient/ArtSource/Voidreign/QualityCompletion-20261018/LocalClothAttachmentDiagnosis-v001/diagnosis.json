@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "status": "local-attachment-feasibility-diagnostic-only",
+  "cpu_only": true,
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LocalFringeClothProof-v001\\Actual-FringeSecondary.blend": "3a8e8409d04cf1a0f4604db40ea422843700cd11345dc8075b1cf02ca6180db8",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LocalFringeClothProof-v001\\cloth-report.json": "4a1b89133af88e829ed38fe3a31df4ce76a4f7fb89c5a1a015847eb018ac0bd8",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LegFringePrimaryFollowReview-v001\\source-indexed-world-points.npz": "80f129671e2d351cb39e33076007d5a0e6486561f78f7165908be63808f54365",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LegFringeLabelCorrection-v001\\label-only-selections.npz": "dc78ba7dbd5a03bef0f0397a26435ec6bcf31b079c340aff5d035a2b1566a630",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\FullLegFringeRoots-v001\\region-roots.npz": "6c87dc69d6bbcf1ea76f7ca12e4f860940f328782c4a374a0a33278008bdf682"
+  },
+  "profile_sha256": "4d7af2778f358b077c1fe61928718d78631d34808f5fc47f7dd43729c3a1ae07",
+  "tool_sha256": "f576305267a09019e440dff300b93ae277b084a89322e64d65af945e42e33336",
+  "topology": {
+    "nodes": 202,
+    "faces": 361,
+    "edges": 560,
+    "boundary_edges": 37,
+    "nonmanifold_edges": 0,
+    "isolated_nodes": 0,
+    "euler_characteristic": 3,
+    "closed_surface": false
+  },
+  "baseline_free_vertices_below_required_gap": 0,
+  "root_contact_incompatible_edges": [],
+  "required_clearance_m": 0.003,
+  "largest_held_speeds": [
+    {
+      "canonical_node": 16822,
+      "speed_m_s": 0.7953664349760816,
+      "root_distance_m": 0.13777850715272344,
+      "baseline_body_gap_m": 0.08642593026161194
+    },
+    {
+      "canonical_node": 16947,
+      "speed_m_s": 0.7811858160754181,
+      "root_distance_m": 0.14016580593042077,
+      "baseline_body_gap_m": 0.08986324071884155
+    },
+    {
+      "canonical_node": 16720,
+      "speed_m_s": 0.7664384864105696,
+      "root_distance_m": 0.13892587691480043,
+      "baseline_body_gap_m": 0.08961775153875351
+    },
+    {
+      "canonical_node": 17294,
+      "speed_m_s": 0.7301411571642658,
+      "root_distance_m": 0.12612059191569977,
+      "baseline_body_gap_m": 0.07539302110671997
+    },
+    {
+      "canonical_node": 16819,
+      "speed_m_s": 0.7074040244119983,
+      "root_distance_m": 0.1306076710929994,
+      "baseline_body_gap_m": 0.08143416792154312
+    },
+    {
+      "canonical_node": 17176,
+      "speed_m_s": 0.6606107075781822,
+      "root_distance_m": 0.1329909280300494,
+      "baseline_body_gap_m": 0.08356036245822906
+    },
+    {
+      "canonical_node": 17183,
+      "speed_m_s": 0.6519844852918466,
+      "root_distance_m": 0.12125508985416836,
+      "baseline_body_gap_m": 0.07117364555597305
+    },
+    {
+      "canonical_node": 17702,
+      "speed_m_s": 0.6330990191542034,
+      "root_distance_m": 0.11621053829248142,
+      "baseline_body_gap_m": 0.06615357100963593
+    },
+    {
+      "canonical_node": 17330,
+      "speed_m_s": 0.5856817845110087,
+      "root_distance_m": 0.12063559804143273,
+      "baseline_body_gap_m": 0.07411983609199524
+    },
+    {
+      "canonical_node": 17644,
+      "speed_m_s": 0.522079626284536,
+      "root_distance_m": 0.10443619856474509,
+      "baseline_body_gap_m": 0.0549919418990612
+    }
+  ],
+  "limitations": [
+    "Distance-to-triangle-set is1-Lipschitz: root distance plus rest-edge length is a necessary upper bound for free clearance without stretching. This proves a local incompatibility, not total solver causation.",
+    "Baseline unsigned distances include cropped/open local source geometry, not signed solid penetration.",
+    "No simulation rebake, parameter changes, free-vertex exclusion or physical-root approval."
+  ]
+}

@@ -1,0 +1,21 @@
+00:01.828  blend            | Read blend: "C:\Projects\Shattered-Frontier\GameClient\ArtSource\ConstructionGeometryPilot-20261018\Model-v001\slope-1to1\SM_GEO01_slope_1to1_v001.blend"
+00:19.515  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\ConstructionGeometryPilot-20261018\Model-v011\BLD-SM-RoofSlopeFace-01\asset-view.png'
+Info: Saved as "SM_BLD_SM_RoofSlopeFace_01_v003.blend"
+INFO Draco mesh compression is available, use library at C:\Program Files\Blender Foundation\Blender 5.1\5.1\scripts\addons_core\io_scene_gltf2\extern_draco.dll
+23:42:57 | INFO: Starting glTF 2.0 export
+23:42:57 | INFO: Extracting primitive: SM_BLD_SM_RoofSlopeFace_01_v003_Mesh
+23:42:57 | INFO: Primitives created: 1
+23:42:57 | INFO: Finished glTF 2.0 export in 0.20035266876220703 s
+
+
+FBX export starting... 'C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\ConstructionGeometryPilot-20261018\\Model-v011\\BLD-SM-RoofSlopeFace-01\\SM_BLD_SM_RoofSlopeFace_01_v003.fbx'
+export finished in 0.0101 sec.
+Blender 5.1.1 (hash b70da489d7f4 built 2026-04-14 01:37:22)
+
+Blender quit
+
+--- STDERR ---
+C:\Projects\Shattered-Frontier\GameClient\ArtSource\ConstructionGeometryPilot-20261018\Model-v011\BLD-SM-RoofSlopeFace-01\build_material.py:28: DeprecationWarning: 'Material.use_nodes' is expected to be removed in Blender 6.0
+  mat=bpy.data.materials.new("M_stone-masonry_PBR_v002"); mat.use_nodes=True; nt=mat.node_tree; nt.nodes.clear()
+C:\Projects\Shattered-Frontier\GameClient\ArtSource\ConstructionGeometryPilot-20261018\Model-v011\BLD-SM-RoofSlopeFace-01\build_material.py:51: DeprecationWarning: 'World.use_nodes' is expected to be removed in Blender 6.0
+  scene.world.use_nodes=True; scene.world.node_tree.nodes.get("Background").inputs["Color"].default_value=(.24,.24,.24,1); scene.world.node_tree.nodes.get("Background").inputs["Strength"].default_value=.65

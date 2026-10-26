@@ -1,0 +1,27 @@
+{
+  "status": "passed",
+  "source_file": "SM_GEO01_slope_1to1_v001.blend",
+  "blender_version": "5.1.1",
+  "geometry_key": "slope-1to1",
+  "canonical_payload_sha256": "e55a54e6824119dffb929bf7de536eba786e7ce145efa732620da147cca4cdda",
+  "asset_mesh_object_count": 1,
+  "render_staging_mesh_object_count": 1,
+  "render_staging_object_count": 5,
+  "vertices": 6,
+  "polygons": 5,
+  "connected_vertex_components": 1,
+  "loose_vertex_count": 0,
+  "dimensions_m": [
+    0.5,
+    0.5,
+    0.5
+  ],
+  "expected_dimensions_m": [
+    0.5,
+    0.5,
+    0.5
+  ],
+  "maximum_axis_error_m": 0.0,
+  "staging_collection_present": true,
+  "acceptance_claim": false
+}

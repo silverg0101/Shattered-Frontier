@@ -1,0 +1,5 @@
+Concept sheet prompt:
+Stylized construction concept sheet for pale limestone rectangular window sill component, no people or text. Show a separate shallow stone sill under an empty rectangular masonry opening; show top drainage face, underside, end profile and an isolated sill block. Jambs and lintel are separate, no glass, no shutters, no enlarged projection. Neutral gray studio background, appearance reference only.
+
+Clean view prompt:
+Single isolated compact limestone window sill component, low-profile stone slab with subtle drainage top slope, flat underside and short end profile visible. One component only on neutral gray studio background; no wall, no opening, no brackets. Avoid projecting ledge; no dimensions. Stylized game asset concept.

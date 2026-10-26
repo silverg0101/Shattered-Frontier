@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "scope": "Asset-specific diagnostic reproduction of third attempt; known surface failures retained; not a repair retry or universal generator.",
+  "blender_executable": "C:/Program Files/Blender Foundation/Blender 5.1/blender.exe",
+  "blender_version": "Blender 5.1.1",
+  "inputs": {
+    "source": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RootRepair-v003/Voidreign-HairPrototype.blend",
+    "selection": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/SemanticSelection-v001/selection-report.json",
+    "attachments": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/AttachmentProposals-v001/attachment-proposals.json",
+    "motion_profile": "docs/art-templates/model-profiles/voidreign-complete-hair-motion-v003-20261018.json",
+    "surface_profile": "docs/art-templates/model-profiles/voidreign-hair-surface-check-20261018.json",
+    "exchange_profile": "docs/art-templates/model-profiles/voidreign-complete-hair-import-20261018.json",
+    "object": "geometry_0"
+  },
+  "files": [
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RootRepair-v003/Voidreign-HairPrototype.blend",
+      "role": "input",
+      "sha256": "9b3eab121765220b031e0c1394058c502009b90196013f0e10ee61492ba12a66"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/SemanticSelection-v001/selection-report.json",
+      "role": "input",
+      "sha256": "631521c4276bd0067320419c79dcdf8bd2043855047ad12a641f25144ed59d4c"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/AttachmentProposals-v001/attachment-proposals.json",
+      "role": "input",
+      "sha256": "8a6e06cf279edb306b34ec99f5573543e71ebd526cfcba6b8263ae6d46402b82"
+    },
+    {
+      "path": "docs/art-templates/model-profiles/voidreign-complete-hair-motion-v003-20261018.json",
+      "role": "profile",
+      "sha256": "9df3ed982c0f5f571210a98d42c1e6b395b80713c139f0b7b162ad861d5cca47"
+    },
+    {
+      "path": "docs/art-templates/model-profiles/voidreign-hair-surface-check-20261018.json",
+      "role": "profile",
+      "sha256": "f42b54b785653cd13262405b39e26a48e1fc606edeafb392b1372121e29e1abb"
+    },
+    {
+      "path": "docs/art-templates/model-profiles/voidreign-complete-hair-import-20261018.json",
+      "role": "profile",
+      "sha256": "2084f5aaa1bb1379443e076cd8cf32415088f1784d616cc45a05353f8ef6c5d9"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/SemanticSelection-v001/selections.npz",
+      "role": "input",
+      "sha256": "a0b36b192e083d25a9fe45604566a9202a3fc4262c40b708ac58935d81a9abf8"
+    },
+    {
+      "path": "docs/art-templates/model-profiles/voidreign-hair-selections-v003-20261018.json",
+      "role": "profile",
+      "sha256": "558f0bb861238b8150450a3495ee83fca561d3b72b979c3cd6aa92041ddd18f9"
+    },
+    {
+      "path": "tools/Build-FeatureGuides.py",
+      "role": "tool",
+      "sha256": "56dadce677bd389b489903f3ab48c15a5f0e31fb67633ce07e067065734b789d"
+    },
+    {
+      "path": "tools/Simulate-FeatureGuides.py",
+      "role": "tool",
+      "sha256": "bbb17e6310298993f45e6fbf6b6abadb8824f35969eeb4dd2dfbbe8d3ec6baab"
+    },
+    {
+      "path": "tools/Build-FeatureMotionRig.py",
+      "role": "tool",
+      "sha256": "07cc0375894c1458beffa94ba653e88fea8e69478ffb55d8367ed97bd0340310"
+    },
+    {
+      "path": "tools/Check-FeatureMotionSurfaces.py",
+      "role": "tool",
+      "sha256": "ad7cb6f80dd5c2589bc5edfbd0f90b94135c6f3542c024333e37cffb610a0f6a"
+    },
+    {
+      "path": "tools/BlenderRigImport.py",
+      "role": "tool",
+      "sha256": "8227b3e6cc8e91d6db81e5f05b8307172f0c3227a65de5e03456cbbd608d2207"
+    },
+    {
+      "path": "tools/Validate-VoidreignRigImport.py",
+      "role": "tool",
+      "sha256": "7563f72c7c1ca21da46ace5ddcaf2ae9ff318f8baf2a8e8f455511a22cc0c504"
+    },
+    {
+      "path": "tools/Render-FeatureMotion.py",
+      "role": "tool",
+      "sha256": "2a16049f55c004bc70f2a28ccfa2201cc7a4876c60550123e24b99dfb191952a"
+    },
+    {
+      "path": "tools/Run-VoidreignQuality.py",
+      "role": "tool",
+      "sha256": "424378337887cd8146e6a4b3e7c141f7c68961bcd4e8b49e927f2ac1401e4fa7"
+    }
+  ]
+}

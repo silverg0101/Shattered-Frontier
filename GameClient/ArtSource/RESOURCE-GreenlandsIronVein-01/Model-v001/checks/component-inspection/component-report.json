@@ -1,0 +1,1975 @@
+{
+  "schema_version": 1,
+  "status": "needs-review",
+  "source": "C:\\Projects\\Shattered-Frontier\\Artifacts\\Art\\GreenlandsModelBatch-20261018\\RESOURCE-GreenlandsIronVein-01\\review-v002\\RESOURCE-GreenlandsIronVein-01.blend",
+  "source_sha256": "7ebb7138a8ad8f1fb2c191db7ccf7aa4a53ffcce5a9c7df22db2ea945b6b9747",
+  "tool": "Inspect-MeshComponents.py",
+  "tool_sha256": "9b03c8f983e5ae23a83345b6fffd395ed8cd2f037453d65c45065b4db7c98bfc",
+  "blender": "5.1.1",
+  "method": "Edge connectivity plus optional exact-coincident seam links for analysis; CPU BVH sampled gaps in assembly coordinates; no geometry edits",
+  "capabilities": {
+    "disconnected_objects": true,
+    "within_mesh_islands": true,
+    "loose_vertices_edges": true,
+    "semantic_classification": false,
+    "thin_bridge_detection": false,
+    "deformed_attachment_validation": false
+  },
+  "scene_unit_scale_length": 1.0,
+  "objects": [
+    {
+      "object": "geometry_0",
+      "mesh_hash": "ab363bc7cc378415deb5c89eaf481265aeacb99fc4f5b6feae3dd686e56ae5f3",
+      "vertex_count": 227845,
+      "triangle_count": 289638,
+      "component_count": 57,
+      "raw_index_component_count": 10026,
+      "connectivity": "coincident",
+      "selection_file": "00-component-selections.npz",
+      "components": [
+        {
+          "id": "ab363bc7cc37:C0000",
+          "component_index": 0,
+          "vertices": 226647,
+          "triangles": 288874,
+          "edges": 506834,
+          "bounds_m": [
+            [
+              -0.41172176599502563,
+              -0.4968196749687195,
+              -0.22908762097358704
+            ],
+            [
+              0.4400400221347809,
+              0.45368626713752747,
+              0.25974175333976746
+            ]
+          ],
+          "centroid_m": [
+            -0.00849259365350008,
+            0.02133377455174923,
+            -0.023940062150359154
+          ],
+          "dimensions_m": [
+            0.8517618179321289,
+            0.9505059719085693,
+            0.4888293743133545
+          ],
+          "classification": "unresolved",
+          "disposition": "needs-review",
+          "role": "largest-component reference heuristic"
+        },
+        {
+          "id": "ab363bc7cc37:C0001",
+          "component_index": 1,
+          "vertices": 65,
+          "triangles": 60,
+          "edges": 119,
+          "bounds_m": [
+            [
+              0.05366937443614006,
+              -0.1745583415031433,
+              0.07895342260599136
+            ],
+            [
+              0.06549844145774841,
+              -0.1677672564983368,
+              0.08638176321983337
+            ]
+          ],
+          "centroid_m": [
+            0.06012219935655594,
+            -0.17147667706012726,
+            0.08274535089731216
+          ],
+          "dimensions_m": [
+            0.011829067021608353,
+            0.0067910850048065186,
+            0.0074283406138420105
+          ],
+          "classification": "unresolved",
+          "disposition": "needs-review",
+          "sampled_main_surface_gap_m": 0.0035430090501904488,
+          "distance_sample_count": 65,
+          "distance_note": "Minimum over sampled vertices to largest-component triangles; not exact component-to-component minimum or proof of intended attachment."
+        },
+        {
+          "id": "ab363bc7cc37:C0002",
+          "component_index": 2,
+          "vertices": 58,
+          "triangles": 46,
+          "edges": 96,
+          "bounds_m": [
+            [
+              0.2674957513809204,
+              0.15183031558990479,
+              0.0008172143716365099
+            ],
+            [
+              0.27211910486221313,
+              0.1611156016588211,
+              0.013713513500988483
+            ]
+          ],
+          "centroid_m": [
+            0.26997286081314087,
+            0.15614190697669983,
+            0.005349904764443636
+          ],
+          "dimensions_m": [
+            0.004623353481292725,
+            0.00928528606891632,
+            0.012896299362182617
+          ],
+          "classification": "unresolved",
+          "disposition": "needs-review",
+          "sampled_main_surface_gap_m": 0.002577620791271329,
+          "distance_sample_count": 58,
+          "distance_note": "Minimum over sampled vertices to largest-component triangles; not exact component-to-component minimum or proof of intended attachment."
+        },
+        {
+          "id": "ab363bc7cc37:C0003",
+          "component_index": 3,
+          "vertices": 32,
+          "triangles": 30,
+          "edges": 58,
+          "bounds_m": [
+            [
+              0.20256155729293823,
+              -0.26221251487731934,
+              -0.21133387088775635
+            ],
+            [
+              0.20756390690803528,
+              -0.25773778557777405,
+              -0.2043929100036621
+            ]
+          ],
+          "centroid_m": [
+            0.2053629457950592,
+            -0.26029008626937866,
+            -0.20838230848312378
+          ],
+          "dimensions_m": [
+            0.005002349615097046,
+            0.004474729299545288,
+            0.006940960884094238
+          ],
+          "classification": "unresolved",
+          "disposition": "needs-review",
+          "sampled_main_surface_gap_m": 0.0037954067811369896,
+          "distance_sample_count": 32,
+          "distance_note": "Minimum over sampled vertices to largest-component triangles; not exact component-to-component minimum or proof of intended attachment."
+        },
+        {
+          "id": "ab363bc7cc37:C0004",
+          "component_index": 4,
+          "vertices": 39,
+          "triangles": 26,
+          "edges": 58,
+          "bounds_m": [
+            [
+              0.19593869149684906,
+              -0.010027282871305943,
+              0.21839848160743713
+            ],
+            [
+              0.2007349729537964,
+              -0.0049795121885836124,
+              0.22365838289260864
+            ]
+          ],
+          "centroid_m": [
+            0.1982491910457611,
+            -0.007615415845066309,
+            0.22109286487102509
+          ],
+          "dimensions_m": [
+            0.004796281456947327,
+            0.00504777068272233,
+            0.005259901285171509
+          ],
+          "classification": "unresolved",
+          "disposition": "needs-review",
+          "sampled_main_surface_gap_m": 0.01306063774973154,
+          "distance_sample_count": 39,
+          "distance_note": "Minimum over sampled vertices to largest-component triangles; not exact component-to-component minimum or proof of intended attachment."
+        },
+        {
+          "id": "ab363bc7cc37:C0005",
+          "component_index": 5,
+          "vertices": 32,
+          "triangles": 26,
+          "edges": 54,
+          "bounds_m": [
+            [
+              0.27045777440071106,
+              0.02796875685453415,
+              0.019020451232790947
+            ],
+            [
+              0.27345940470695496,
+              0.035086195915937424,
+              0.032838769257068634
+            ]
+          ],
+          "centroid_m": [
+            0.2722245454788208,
+            0.030962441116571426,
+            0.02486358769237995
+          ],
+          "dimensions_m": [
+            0.0030016303062438965,
+            0.0071174390614032745,
+            0.013818318024277687
+          ],
+          "classification": "unresolved",
+          "disposition": "needs-review",
+          "sampled_main_surface_gap_m": 0.004341908730566502,
+          "distance_sample_count": 32,
+          "distance_note": "Minimum over sampled vertices to largest-component triangles; not exact component-to-component minimum or proof of intended attachment."
+        },
+        {
+          "id": "ab363bc7cc37:C0006",
+          "component_index": 6,
+          "vertices": 28,
+          "triangles": 24,
+          "edges": 48,
+          "bounds_m": [
+            [
+              0.2532110810279846,
+              0.15804991126060486,
+              0.09483489394187927
+            ],
+            [
+              0.2564159631729126,
+              0.16339373588562012,
+              0.09947763383388519
+            ]
+          ],
+          "centroid_m": [
+            0.25473931431770325,
+            0.16093619167804718,
+            0.09694971144199371
+          ],
+          "dimensions_m": [
+            0.0032048821449279785,
+            0.005343824625015259,
+            0.00464273989200592
+          ],
+          "classification": "unresolved",
+          "disposition": "needs-review",
+          "sampled_main_surface_gap_m": 0.007743779104202986,
+          "distance_sample_count": 28,
+          "distance_note": "Minimum over sampled vertices to largest-component triangles; not exact component-to-component minimum or proof of intended attachment."
+        },
+        {
+          "id": "ab363bc7cc37:C0007",
+          "component_index": 7,
+          "vertices": 29,
+          "triangles": 22,
+          "edges": 46,
+          "bounds_m": [
+            [
+              -0.053072698414325714,
+              -0.1814364194869995,
+              -0.21788348257541656
+            ],
+            [
+              -0.04688821732997894,
+              -0.17469388246536255,
+              -0.21601589024066925
+            ]
+          ],
+          "centroid_m": [
+            -0.04959533363580704,
+            -0.17751197516918182,
+            -0.21702910959720612
+          ],
+          "dimensions_m": [
+            0.006184481084346771,
+            0.006742537021636963,
+            0.0018675923347473145
+          ],
+          "classification": "unresolved",
+          "disposition": "needs-review",
+          "sampled_main_surface_gap_m": 0.0010973034659400582,
+          "distance_sample_count": 29,
+          "distance_note": "Minimum over sampled vertices to largest-component triangles; not exact component-to-component minimum or proof of intended attachment."
+        },
+        {
+          "id": "ab363bc7cc37:C0008",
+          "component_index": 8,
+          "vertices": 28,
+          "triangles": 22,
+          "edges": 46,
+          "bounds_m": [
+            [
+              -0.02664707973599434,
+              -0.31888914108276367,
+              -0.1511434018611908
+            ],
+            [
+              -0.014548149891197681,
+              -0.3163612484931946,
+              -0.1479211449623108
+            ]
+          ],
+          "centroid_m": [
+            -0.02047884277999401,
+            -0.3175713121891022,
+            -0.14952991902828217
+          ],
+          "dimensions_m": [
+            0.012098929844796658,
+            0.002527892589569092,
+            0.003222256898880005
+          ],
+          "classification": "unresolved",
+          "disposition": "needs-review",
+          "sampled_main_surface_gap_m": 0.0022651273757219315,
+          "distance_sample_count": 28,
+          "distance_note": "Minimum over sampled vertices to largest-component triangles; not exact component-to-component minimum or proof of intended attachment."
+        },
+        {
+          "id": "ab363bc7cc37:C0009",
+          "component_index": 9,
+          "vertices": 31,
+          "triangles": 20,
+          "edges": 45,
+          "bounds_m": [
+            [
+              -0.07711699604988098,
+              0.003057433059439063,
+              0.19691824913024902
+            ],
+            [
+              -0.0738518163561821,
+              0.006705623120069504,
+              0.19978059828281403
+            ]
+          ],
+          "centroid_m": [
+            -0.07542736828327179,
+            0.004917309153825045,
+            0.1984758824110031
+          ],
+          "dimensions_m": [
+            0.003265179693698883,
+            0.0036481900606304407,
+            0.0028623491525650024
+          ],
+          "classification": "unresolved",
+          "disposition": "needs-review",
+          "sampled_main_surface_gap_m": 0.004803030285984278,
+          "distance_sample_count": 31,
+          "distance_note": "Minimum over sampled vertices to largest-component triangles; not exact component-to-component minimum or proof of intended attachment."
+        },
+        {
+          "id": "ab363bc7cc37:C0010",
+          "component_index": 10,
+          "vertices": 26,
+          "triangles": 20,
+          "edges": 42,
+          "bounds_m": [
+            [
+              0.2112884819507599,
+              -0.17428171634674072,
+              0.10490340739488602
+            ],
+            [
+              0.21750745177268982,
+              -0.16912268102169037,
+              0.10870189219713211
+            ]
+          ],
+          "centroid_m": [
+            0.21480363607406616,
+            -0.17178767919540405,
+            0.10715598613023758
+          ],
+          "dimensions_m": [
+            0.006218969821929932,
+            0.005159035325050354,
+            0.0037984848022460938
+          ],
+          "classification": "unresolved",
+          "disposition": "needs-review",
+          "sampled_main_surface_gap_m": 0.003540935693308711,
+          "distance_sample_count": 26,
+          "distance_note": "Minimum over sampled vertices to largest-component triangles; not exact component-to-component minimum or proof of intended attachment."
+        },
+        {
+          "id": "ab363bc7cc37:C0011",
+          "component_index": 11,
+          "vertices": 27,
+          "triangles": 18,
+          "edges": 40,
+          "bounds_m": [
+            [
+              0.05168888345360756,
+              -0.22452117502689362,
+              0.053738072514534
+            ],
+            [
+              0.054547905921936035,
+              -0.2213916778564453,
+              0.0564521923661232
+            ]
+          ],
+          "centroid_m": [
+            0.05315777659416199,
+            -0.2232072502374649,
+            0.05512235686182976
+          ],
+          "dimensions_m": [
+            0.002859022468328476,
+            0.0031294971704483032,
+            0.002714119851589203
+          ],
+          "classification": "unresolved",
+          "disposition": "needs-review",
+          "sampled_main_surface_gap_m": 0.006755569949746132,
+          "distance_sample_count": 27,
+          "distance_note": "Minimum over sampled vertices to largest-component triangles; not exact component-to-component minimum or proof of intended attachment."
+        },
+        {
+          "id": "ab363bc7cc37:C0012",
+          "component_index": 12,
+          "vertices": 26,
+          "triangles": 18,
+          "edges": 39,
+          "bounds_m": [
+            [
+              0.25749605894088745,
+              -0.06925193965435028,
+              -0.21251200139522552
+            ],
+            [
+              0.26392102241516113,
+              -0.06370018422603607,
+              -0.21044491231441498
+            ]
+          ],
+          "centroid_m": [
+            0.2606675624847412,
+            -0.06656865030527115,
+            -0.21146327257156372
+          ],
+          "dimensions_m": [
+            0.006424963474273682,
+            0.005551755428314209,
+            0.002067089080810547
+          ],
+          "classification": "unresolved",
+          "disposition": "needs-review",
+          "sampled_main_surface_gap_m": 0.002114485949277878,
+          "distance_sample_count": 26,
+          "distance_note": "Minimum over sampled vertices to largest-component triangles; not exact component-to-component minimum or proof of intended attachment."
+        },
+        {
+          "id": "ab363bc7cc37:C0013",
+          "component_index": 13,
+          "vertices": 26,
+          "triangles": 18,
+          "edges": 39,
+          "bounds_m": [
+            [
+              0.1505715548992157,
+              0.03367340564727783,
+              -0.21220749616622925
+            ],
+            [
+              0.1549505591392517,
+              0.03827839344739914,
+              -0.2103683054447174
+            ]
+          ],
+          "centroid_m": [
+            0.1527164876461029,
+            0.03620864450931549,
+            -0.21121035516262054
+          ],
+          "dimensions_m": [
+            0.004379004240036011,
+            0.004604987800121307,
+            0.0018391907215118408
+          ],
+          "classification": "unresolved",
+          "disposition": "needs-review",
+          "sampled_main_surface_gap_m": 0.0031271404586732388,
+          "distance_sample_count": 26,
+          "distance_note": "Minimum over sampled vertices to largest-component triangles; not exact component-to-component minimum or proof of intended attachment."
+        },
+        {
+          "id": "ab363bc7cc37:C0014",
+          "component_index": 14,
+          "vertices": 26,
+          "triangles": 16,
+          "edges": 36,
+          "bounds_m": [
+            [
+              0.2846325635910034,
+              -0.11099068820476532,
+              -0.04010917246341705
+            ],
+            [
+              0.2878004014492035,
+              -0.1077556163072586,
+              -0.03793613240122795
+            ]
+          ],
+          "centroid_m": [
+            0.286126971244812,
+            -0.10955291241407394,
+            -0.03902197256684303
+          ],
+          "dimensions_m": [
+            0.0031678378582000732,
+            0.003235071897506714,
+            0.002173040062189102
+          ],
+          "classification": "unresolved",
+          "disposition": "needs-review",
+          "sampled_main_surface_gap_m": 0.00837780348956585,
+          "distance_sample_count": 26,
+          "distance_note": "Minimum over sampled vertices to largest-component triangles; not exact component-to-component minimum or proof of intended attachment."
+        },
+        {
+          "id": "ab363bc7cc37:C0015",
+          "component_index": 15,
+          "vertices": 25,
+          "triangles": 16,
+          "edges": 36,
+          "bounds_m": [
+            [
+              0.2227349877357483,
+              0.017348503693938255,
+              0.1308296173810959
+            ],
+            [
+              0.22531238198280334,
+              0.021891675889492035,
+              0.1344851553440094
+            ]
+          ],
+          "centroid_m": [
+            0.2241126447916031,
+            0.019382856786251068,
+            0.13248619437217712
+          ],
+          "dimensions_m": [
+            0.0025773942470550537,
+            0.00454317219555378,
+            0.003655537962913513
+          ],
+          "classification": "unresolved",
+          "disposition": "needs-review",
+          "sampled_main_surface_gap_m": 0.0026821105275303125,
+          "distance_sample_count": 25,
+          "distance_note": "Minimum over sampled vertices to largest-component triangles; not exact component-to-component minimum or proof of intended attachment."
+        },
+        {
+          "id": "ab363bc7cc37:C0016",
+          "component_index": 16,
+          "vertices": 24,
+          "triangles": 16,
+          "edges": 35,
+          "bounds_m": [
+            [
+              0.061050113290548325,
+              -0.2358551174402237,
+              -0.059379927814006805
+            ],
+            [
+              0.06363670527935028,
+              -0.23095032572746277,
+              -0.05597071349620819
+            ]
+          ],
+          "centroid_m": [
+            0.0625307485461235,
+            -0.2333158701658249,
+            -0.05784504488110542
+          ],
+          "dimensions_m": [
+            0.002586591988801956,
+            0.004904791712760925,
+            0.0034092143177986145
+          ],
+          "classification": "unresolved",
+          "disposition": "needs-review",
+          "sampled_main_surface_gap_m": 0.00271231634542346,
+          "distance_sample_count": 24,
+          "distance_note": "Minimum over sampled vertices to largest-component triangles; not exact component-to-component minimum or proof of intended attachment."
+        },
+        {
+          "id": "ab363bc7cc37:C0017",
+          "component_index": 17,
+          "vertices": 23,
+          "triangles": 16,
+          "edges": 35,
+          "bounds_m": [
+            [
+              0.1849038302898407,
+              -0.2653605341911316,
+              -0.21001583337783813
+            ],
+            [
+              0.1878368854522705,
+              -0.2607615888118744,
+              -0.20667600631713867
+            ]
+          ],
+          "centroid_m": [
+            0.18640752136707306,
+            -0.2628600001335144,
+            -0.2085442692041397
+          ],
+          "dimensions_m": [
+            0.0029330551624298096,
+            0.004598945379257202,
+            0.003339827060699463
+          ],
+          "classification": "unresolved",
+          "disposition": "needs-review",
+          "sampled_main_surface_gap_m": 0.0035143420100212097,
+          "distance_sample_count": 23,
+          "distance_note": "Minimum over sampled vertices to largest-component triangles; not exact component-to-component minimum or proof of intended attachment."
+        },
+        {
+          "id": "ab363bc7cc37:C0018",
+          "component_index": 18,
+          "vertices": 22,
+          "triangles": 16,
+          "edges": 34,
+          "bounds_m": [
+            [
+              -0.04100966453552246,
+              0.013700398616492748,
+              -0.21173161268234253
+            ],
+            [
+              -0.037847764790058136,
+              0.024189922958612442,
+              -0.2096688151359558
+            ]
+          ],
+          "centroid_m": [
+            -0.039702314883470535,
+            0.019932560622692108,
+            -0.2108304649591446
+          ],
+          "dimensions_m": [
+            0.003161899745464325,
+            0.010489524342119694,
+            0.0020627975463867188
+          ],
+          "classification": "unresolved",
+          "disposition": "needs-review",
+          "sampled_main_surface_gap_m": 0.001317041926085949,
+          "distance_sample_count": 22,
+          "distance_note": "Minimum over sampled vertices to largest-component triangles; not exact component-to-component minimum or proof of intended attachment."
+        },
+        {
+          "id": "ab363bc7cc37:C0019",
+          "component_index": 19,
+          "vertices": 28,
+          "triangles": 14,
+          "edges": 35,
+          "bounds_m": [
+            [
+              0.0020467881113290787,
+              -0.24037529528141022,
+              0.027228984981775284
+            ],
+            [
+              0.004042931832373142,
+              -0.23775160312652588,
+              0.030358919873833656
+            ]
+          ],
+          "centroid_m": [
+            0.0030229068361222744,
+            -0.2389831691980362,
+            0.028718065470457077
+          ],
+          "dimensions_m": [
+            0.0019961437210440636,
+            0.0026236921548843384,
+            0.0031299348920583725
+          ],
+          "classification": "unresolved",
+          "disposition": "needs-review",
+          "sampled_main_surface_gap_m": 0.0028353556990623474,
+          "distance_sample_count": 28,
+          "distance_note": "Minimum over sampled vertices to largest-component triangles; not exact component-to-component minimum or proof of intended attachment."
+        },
+        {
+          "id": "ab363bc7cc37:C0020",
+          "component_index": 20,
+          "vertices": 26,
+          "triangles": 14,
+          "edges": 34,
+          "bounds_m": [
+            [
+              0.05623495578765869,
+              -0.2230561375617981,
+              -0.03766893967986107
+            ],
+            [
+              0.05856305733323097,
+              -0.22059935331344604,
+              -0.0349850095808506
+            ]
+          ],
+          "centroid_m": [
+            0.0574076771736145,
+            -0.22172507643699646,
+            -0.0363159105181694
+          ],
+          "dimensions_m": [
+            0.002328101545572281,
+            0.0024567842483520508,
+            0.0026839300990104675
+          ],
+          "classification": "unresolved",
+          "disposition": "needs-review",
+          "sampled_main_surface_gap_m": 0.0041796304285526276,
+          "distance_sample_count": 26,
+          "distance_note": "Minimum over sampled vertices to largest-component triangles; not exact component-to-component minimum or proof of intended attachment."
+        },
+        {
+          "id": "ab363bc7cc37:C0021",
+          "component_index": 21,
+          "vertices": 25,
+          "triangles": 14,
+          "edges": 33,
+          "bounds_m": [
+            [
+              0.19840019941329956,
+              -0.010153142735362053,
+              0.17315974831581116
+            ],
+            [
+              0.2014998346567154,
+              -0.007955145090818405,
+              0.17679037153720856
+            ]
+          ],
+          "centroid_m": [
+            0.19996894896030426,
+            -0.009143884293735027,
+            0.17492078244686127
+          ],
+          "dimensions_m": [
+            0.0030996352434158325,
+            0.0021979976445436478,
+            0.0036306232213974
+          ],
+          "classification": "unresolved",
+          "disposition": "needs-review",
+          "sampled_main_surface_gap_m": 0.0024296853225678205,
+          "distance_sample_count": 25,
+          "distance_note": "Minimum over sampled vertices to largest-component triangles; not exact component-to-component minimum or proof of intended attachment."
+        },
+        {
+          "id": "ab363bc7cc37:C0022",
+          "component_index": 22,
+          "vertices": 21,
+          "triangles": 14,
+          "edges": 31,
+          "bounds_m": [
+            [
+              0.18839111924171448,
+              -0.27018654346466064,
+              -0.20473548769950867
+            ],
+            [
+              0.19220219552516937,
+              -0.2672806978225708,
+              -0.20188790559768677
+            ]
+          ],
+          "centroid_m": [
+            0.19056524336338043,
+            -0.2688482701778412,
+            -0.2034774124622345
+          ],
+          "dimensions_m": [
+            0.003811076283454895,
+            0.0029058456420898438,
+            0.0028475821018218994
+          ],
+          "classification": "unresolved",
+          "disposition": "needs-review",
+          "sampled_main_surface_gap_m": 0.007673415821045637,
+          "distance_sample_count": 21,
+          "distance_note": "Minimum over sampled vertices to largest-component triangles; not exact component-to-component minimum or proof of intended attachment."
+        },
+        {
+          "id": "ab363bc7cc37:C0023",
+          "component_index": 23,
+          "vertices": 24,
+          "triangles": 12,
+          "edges": 30,
+          "bounds_m": [
+            [
+              -0.09503526240587234,
+              -0.2993006110191345,
+              -0.2061300277709961
+            ],
+            [
+              -0.09114465862512589,
+              -0.29680049419403076,
+              -0.20377561450004578
+            ]
+          ],
+          "centroid_m": [
+            -0.092780202627182,
+            -0.2980620563030243,
+            -0.20497716963291168
+          ],
+          "dimensions_m": [
+            0.00389060378074646,
+            0.0025001168251037598,
+            0.0023544132709503174
+          ],
+          "classification": "unresolved",
+          "disposition": "needs-review",
+          "sampled_main_surface_gap_m": 0.005015343427658081,
+          "distance_sample_count": 24,
+          "distance_note": "Minimum over sampled vertices to largest-component triangles; not exact component-to-component minimum or proof of intended attachment."
+        },
+        {
+          "id": "ab363bc7cc37:C0024",
+          "component_index": 24,
+          "vertices": 21,
+          "triangles": 12,
+          "edges": 28,
+          "bounds_m": [
+            [
+              0.23892173171043396,
+              -0.2488965392112732,
+              -0.1576845943927765
+            ],
+            [
+              0.24198967218399048,
+              -0.2464190423488617,
+              -0.15482905507087708
+            ]
+          ],
+          "centroid_m": [
+            0.24028727412223816,
+            -0.24784711003303528,
+            -0.15630902349948883
+          ],
+          "dimensions_m": [
+            0.0030679404735565186,
+            0.002477496862411499,
+            0.002855539321899414
+          ],
+          "classification": "unresolved",
+          "disposition": "needs-review",
+          "sampled_main_surface_gap_m": 0.0036894017830491066,
+          "distance_sample_count": 21,
+          "distance_note": "Minimum over sampled vertices to largest-component triangles; not exact component-to-component minimum or proof of intended attachment."
+        },
+        {
+          "id": "ab363bc7cc37:C0025",
+          "component_index": 25,
+          "vertices": 20,
+          "triangles": 12,
+          "edges": 28,
+          "bounds_m": [
+            [
+              0.22009620070457458,
+              0.09886789321899414,
+              0.04042499512434006
+            ],
+            [
+              0.22264917194843292,
+              0.10101835429668427,
+              0.045280247926712036
+            ]
+          ],
+          "centroid_m": [
+            0.22134964168071747,
+            0.09995473921298981,
+            0.0424465648829937
+          ],
+          "dimensions_m": [
+            0.0025529712438583374,
+            0.0021504610776901245,
+            0.004855252802371979
+          ],
+          "classification": "unresolved",
+          "disposition": "needs-review",
+          "sampled_main_surface_gap_m": 0.0024736900813877583,
+          "distance_sample_count": 20,
+          "distance_note": "Minimum over sampled vertices to largest-component triangles; not exact component-to-component minimum or proof of intended attachment."
+        },
+        {
+          "id": "ab363bc7cc37:C0026",
+          "component_index": 26,
+          "vertices": 20,
+          "triangles": 12,
+          "edges": 28,
+          "bounds_m": [
+            [
+              0.2134246826171875,
+              0.09276609122753143,
+              0.11310599744319916
+            ],
+            [
+              0.21570852398872375,
+              0.09456503391265869,
+              0.11637580394744873
+            ]
+          ],
+          "centroid_m": [
+            0.2144673764705658,
+            0.0937410220503807,
+            0.114855095744133
+          ],
+          "dimensions_m": [
+            0.002283841371536255,
+            0.0017989426851272583,
+            0.0032698065042495728
+          ],
+          "classification": "unresolved",
+          "disposition": "needs-review",
+          "sampled_main_surface_gap_m": 0.0021716097835451365,
+          "distance_sample_count": 20,
+          "distance_note": "Minimum over sampled vertices to largest-component triangles; not exact component-to-component minimum or proof of intended attachment."
+        },
+        {
+          "id": "ab363bc7cc37:C0027",
+          "component_index": 27,
+          "vertices": 19,
+          "triangles": 12,
+          "edges": 27,
+          "bounds_m": [
+            [
+              -0.24626906216144562,
+              -0.1074843779206276,
+              0.06611883640289307
+            ],
+            [
+              -0.24125681817531586,
+              -0.10536916553974152,
+              0.06966239213943481
+            ]
+          ],
+          "centroid_m": [
+            -0.24337519705295563,
+            -0.10643906146287918,
+            0.06796932220458984
+          ],
+          "dimensions_m": [
+            0.005012243986129761,
+            0.002115212380886078,
+            0.003543555736541748
+          ],
+          "classification": "unresolved",
+          "disposition": "needs-review",
+          "sampled_main_surface_gap_m": 0.002492043422535062,
+          "distance_sample_count": 19,
+          "distance_note": "Minimum over sampled vertices to largest-component triangles; not exact component-to-component minimum or proof of intended attachment."
+        },
+        {
+          "id": "ab363bc7cc37:C0028",
+          "component_index": 28,
+          "vertices": 18,
+          "triangles": 12,
+          "edges": 26,
+          "bounds_m": [
+            [
+              0.2531629800796509,
+              -0.21170580387115479,
+              -0.21236088871955872
+            ],
+            [
+              0.25558537244796753,
+              -0.20832595229148865,
+              -0.20884788036346436
+            ]
+          ],
+          "centroid_m": [
+            0.2542295455932617,
+            -0.21033358573913574,
+            -0.21100030839443207
+          ],
+          "dimensions_m": [
+            0.0024223923683166504,
+            0.0033798515796661377,
+            0.0035130083560943604
+          ],
+          "classification": "unresolved",
+          "disposition": "needs-review",
+          "sampled_main_surface_gap_m": 0.00467409985139966,
+          "distance_sample_count": 18,
+          "distance_note": "Minimum over sampled vertices to largest-component triangles; not exact component-to-component minimum or proof of intended attachment."
+        },
+        {
+          "id": "ab363bc7cc37:C0029",
+          "component_index": 29,
+          "vertices": 16,
+          "triangles": 12,
+          "edges": 25,
+          "bounds_m": [
+            [
+              0.14224976301193237,
+              0.033741116523742676,
+              -0.21271328628063202
+            ],
+            [
+              0.14450760185718536,
+              0.03894804045557976,
+              -0.21066640317440033
+            ]
+          ],
+          "centroid_m": [
+            0.14320240914821625,
+            0.03632683306932449,
+            -0.21175360679626465
+          ],
+          "dimensions_m": [
+            0.0022578388452529907,
+            0.005206923931837082,
+            0.0020468831062316895
+          ],
+          "classification": "unresolved",
+          "disposition": "needs-review",
+          "sampled_main_surface_gap_m": 0.003307244973257184,
+          "distance_sample_count": 16,
+          "distance_note": "Minimum over sampled vertices to largest-component triangles; not exact component-to-component minimum or proof of intended attachment."
+        },
+        {
+          "id": "ab363bc7cc37:C0030",
+          "component_index": 30,
+          "vertices": 16,
+          "triangles": 12,
+          "edges": 25,
+          "bounds_m": [
+            [
+              0.07944813370704651,
+              0.10857362300157547,
+              -0.20399527251720428
+            ],
+            [
+              0.08307121694087982,
+              0.11270186305046082,
+              -0.2022686004638672
+            ]
+          ],
+          "centroid_m": [
+            0.08142773807048798,
+            0.10996907204389572,
+            -0.20322908461093903
+          ],
+          "dimensions_m": [
+            0.003623083233833313,
+            0.0041282400488853455,
+            0.0017266720533370972
+          ],
+          "classification": "unresolved",
+          "disposition": "needs-review",
+          "sampled_main_surface_gap_m": 0.0056343963369727135,
+          "distance_sample_count": 16,
+          "distance_note": "Minimum over sampled vertices to largest-component triangles; not exact component-to-component minimum or proof of intended attachment."
+        },
+        {
+          "id": "ab363bc7cc37:C0031",
+          "component_index": 31,
+          "vertices": 22,
+          "triangles": 10,
+          "edges": 26,
+          "bounds_m": [
+            [
+              0.18609806895256042,
+              -0.0003602784126996994,
+              0.22947253286838531
+            ],
+            [
+              0.1881740838289261,
+              0.0023336331360042095,
+              0.23196116089820862
+            ]
+          ],
+          "centroid_m": [
+            0.1872197538614273,
+            0.0008623350295238197,
+            0.23073293268680573
+          ],
+          "dimensions_m": [
+            0.0020760148763656616,
+            0.002693911548703909,
+            0.0024886280298233032
+          ],
+          "classification": "unresolved",
+          "disposition": "needs-review",
+          "sampled_main_surface_gap_m": 0.009823217988014221,
+          "distance_sample_count": 22,
+          "distance_note": "Minimum over sampled vertices to largest-component triangles; not exact component-to-component minimum or proof of intended attachment."
+        },
+        {
+          "id": "ab363bc7cc37:C0032",
+          "component_index": 32,
+          "vertices": 20,
+          "triangles": 10,
+          "edges": 25,
+          "bounds_m": [
+            [
+              0.09572024643421173,
+              0.03072872944176197,
+              -0.2073458433151245
+            ],
+            [
+              0.09815463423728943,
+              0.03337957710027695,
+              -0.20577691495418549
+            ]
+          ],
+          "centroid_m": [
+            0.09672687947750092,
+            0.03219398856163025,
+            -0.20666639506816864
+          ],
+          "dimensions_m": [
+            0.0024343878030776978,
+            0.0026508476585149765,
+            0.0015689283609390259
+          ],
+          "classification": "unresolved",
+          "disposition": "needs-review",
+          "sampled_main_surface_gap_m": 0.005737740080803633,
+          "distance_sample_count": 20,
+          "distance_note": "Minimum over sampled vertices to largest-component triangles; not exact component-to-component minimum or proof of intended attachment."
+        },
+        {
+          "id": "ab363bc7cc37:C0033",
+          "component_index": 33,
+          "vertices": 18,
+          "triangles": 10,
+          "edges": 24,
+          "bounds_m": [
+            [
+              0.30575770139694214,
+              -0.15416404604911804,
+              -0.1269209384918213
+            ],
+            [
+              0.3075513243675232,
+              -0.1524299830198288,
+              -0.12418754398822784
+            ]
+          ],
+          "centroid_m": [
+            0.3065924346446991,
+            -0.15331268310546875,
+            -0.12550115585327148
+          ],
+          "dimensions_m": [
+            0.0017936229705810547,
+            0.0017340630292892456,
+            0.002733394503593445
+          ],
+          "classification": "unresolved",
+          "disposition": "needs-review",
+          "sampled_main_surface_gap_m": 0.003631869563832879,
+          "distance_sample_count": 18,
+          "distance_note": "Minimum over sampled vertices to largest-component triangles; not exact component-to-component minimum or proof of intended attachment."
+        },
+        {
+          "id": "ab363bc7cc37:C0034",
+          "component_index": 34,
+          "vertices": 18,
+          "triangles": 10,
+          "edges": 24,
+          "bounds_m": [
+            [
+              0.21150396764278412,
+              -0.08514197170734406,
+              -0.21763160824775696
+            ],
+            [
+              0.21756640076637268,
+              -0.08254995942115784,
+              -0.2161247581243515
+            ]
+          ],
+          "centroid_m": [
+            0.21458350121974945,
+            -0.08390157669782639,
+            -0.21678076684474945
+          ],
+          "dimensions_m": [
+            0.006062433123588562,
+            0.0025920122861862183,
+            0.0015068501234054565
+          ],
+          "classification": "unresolved",
+          "disposition": "needs-review",
+          "sampled_main_surface_gap_m": 0.005854568909853697,
+          "distance_sample_count": 18,
+          "distance_note": "Minimum over sampled vertices to largest-component triangles; not exact component-to-component minimum or proof of intended attachment."
+        },
+        {
+          "id": "ab363bc7cc37:C0035",
+          "component_index": 35,
+          "vertices": 15,
+          "triangles": 10,
+          "edges": 22,
+          "bounds_m": [
+            [
+              0.2506024241447449,
+              -0.24460917711257935,
+              -0.11555952578783035
+            ],
+            [
+              0.2522708773612976,
+              -0.24093136191368103,
+              -0.11078439652919769
+            ]
+          ],
+          "centroid_m": [
+            0.25138136744499207,
+            -0.24264328181743622,
+            -0.11326227337121964
+          ],
+          "dimensions_m": [
+            0.0016684532165527344,
+            0.0036778151988983154,
+            0.00477512925863266
+          ],
+          "classification": "unresolved",
+          "disposition": "needs-review",
+          "sampled_main_surface_gap_m": 0.004223942290991545,
+          "distance_sample_count": 15,
+          "distance_note": "Minimum over sampled vertices to largest-component triangles; not exact component-to-component minimum or proof of intended attachment."
+        },
+        {
+          "id": "ab363bc7cc37:C0036",
+          "component_index": 36,
+          "vertices": 12,
+          "triangles": 10,
+          "edges": 20,
+          "bounds_m": [
+            [
+              0.24151727557182312,
+              -0.24487143754959106,
+              -0.1448034644126892
+            ],
+            [
+              0.24334277212619781,
+              -0.24227389693260193,
+              -0.1402568221092224
+            ]
+          ],
+          "centroid_m": [
+            0.24250225722789764,
+            -0.243583083152771,
+            -0.14288924634456635
+          ],
+          "dimensions_m": [
+            0.0018254965543746948,
+            0.0025975406169891357,
+            0.004546642303466797
+          ],
+          "classification": "unresolved",
+          "disposition": "needs-review",
+          "sampled_main_surface_gap_m": 0.0027008894830942154,
+          "distance_sample_count": 12,
+          "distance_note": "Minimum over sampled vertices to largest-component triangles; not exact component-to-component minimum or proof of intended attachment."
+        },
+        {
+          "id": "ab363bc7cc37:C0037",
+          "component_index": 37,
+          "vertices": 12,
+          "triangles": 10,
+          "edges": 20,
+          "bounds_m": [
+            [
+              -0.07178183645009995,
+              -0.32230788469314575,
+              -0.19091008603572845
+            ],
+            [
+              -0.06745564192533493,
+              -0.3203256130218506,
+              -0.1892913281917572
+            ]
+          ],
+          "centroid_m": [
+            -0.0694478303194046,
+            -0.3213435411453247,
+            -0.19019390642642975
+          ],
+          "dimensions_m": [
+            0.004326194524765015,
+            0.001982271671295166,
+            0.0016187578439712524
+          ],
+          "classification": "unresolved",
+          "disposition": "needs-review",
+          "sampled_main_surface_gap_m": 0.0018259764183312654,
+          "distance_sample_count": 12,
+          "distance_note": "Minimum over sampled vertices to largest-component triangles; not exact component-to-component minimum or proof of intended attachment."
+        },
+        {
+          "id": "ab363bc7cc37:C0038",
+          "component_index": 38,
+          "vertices": 18,
+          "triangles": 8,
+          "edges": 21,
+          "bounds_m": [
+            [
+              0.2861342430114746,
+              -0.13406482338905334,
+              -0.04249965772032738
+            ],
+            [
+              0.2888469696044922,
+              -0.12978993356227875,
+              -0.040136806666851044
+            ]
+          ],
+          "centroid_m": [
+            0.2875634431838989,
+            -0.13216908276081085,
+            -0.04134928062558174
+          ],
+          "dimensions_m": [
+            0.002712726593017578,
+            0.004274889826774597,
+            0.0023628510534763336
+          ],
+          "classification": "unresolved",
+          "disposition": "needs-review",
+          "sampled_main_surface_gap_m": 0.0032094137277454138,
+          "distance_sample_count": 18,
+          "distance_note": "Minimum over sampled vertices to largest-component triangles; not exact component-to-component minimum or proof of intended attachment."
+        },
+        {
+          "id": "ab363bc7cc37:C0039",
+          "component_index": 39,
+          "vertices": 18,
+          "triangles": 8,
+          "edges": 21,
+          "bounds_m": [
+            [
+              -0.2886975407600403,
+              0.023273993283510208,
+              0.03151487931609154
+            ],
+            [
+              -0.28627660870552063,
+              0.025888826698064804,
+              0.03391598165035248
+            ]
+          ],
+          "centroid_m": [
+            -0.2872734069824219,
+            0.02463286742568016,
+            0.03269894793629646
+          ],
+          "dimensions_m": [
+            0.0024209320545196533,
+            0.002614833414554596,
+            0.0024011023342609406
+          ],
+          "classification": "unresolved",
+          "disposition": "needs-review",
+          "sampled_main_surface_gap_m": 0.005547141190618277,
+          "distance_sample_count": 18,
+          "distance_note": "Minimum over sampled vertices to largest-component triangles; not exact component-to-component minimum or proof of intended attachment."
+        },
+        {
+          "id": "ab363bc7cc37:C0040",
+          "component_index": 40,
+          "vertices": 16,
+          "triangles": 6,
+          "edges": 17,
+          "bounds_m": [
+            [
+              -0.030757352709770203,
+              -0.28566426038742065,
+              -0.07110349088907242
+            ],
+            [
+              -0.028927966952323914,
+              -0.28388237953186035,
+              -0.06959684193134308
+            ]
+          ],
+          "centroid_m": [
+            -0.029698699712753296,
+            -0.284675657749176,
+            -0.07027483731508255
+          ],
+          "dimensions_m": [
+            0.001829385757446289,
+            0.0017818808555603027,
+            0.0015066489577293396
+          ],
+          "classification": "unresolved",
+          "disposition": "needs-review",
+          "sampled_main_surface_gap_m": 0.003758345963433385,
+          "distance_sample_count": 16,
+          "distance_note": "Minimum over sampled vertices to largest-component triangles; not exact component-to-component minimum or proof of intended attachment."
+        },
+        {
+          "id": "ab363bc7cc37:C0041",
+          "component_index": 41,
+          "vertices": 16,
+          "triangles": 6,
+          "edges": 17,
+          "bounds_m": [
+            [
+              -0.03495106101036072,
+              0.3658252954483032,
+              0.018263738602399826
+            ],
+            [
+              -0.03331761062145233,
+              0.36761951446533203,
+              0.01993231102824211
+            ]
+          ],
+          "centroid_m": [
+            -0.034356243908405304,
+            0.36682623624801636,
+            0.01912831701338291
+          ],
+          "dimensions_m": [
+            0.0016334503889083862,
+            0.0017942190170288086,
+            0.0016685724258422852
+          ],
+          "classification": "unresolved",
+          "disposition": "needs-review",
+          "sampled_main_surface_gap_m": 0.010666445828974247,
+          "distance_sample_count": 16,
+          "distance_note": "Minimum over sampled vertices to largest-component triangles; not exact component-to-component minimum or proof of intended attachment."
+        },
+        {
+          "id": "ab363bc7cc37:C0042",
+          "component_index": 42,
+          "vertices": 16,
+          "triangles": 6,
+          "edges": 17,
+          "bounds_m": [
+            [
+              -0.22941941022872925,
+              -0.18056130409240723,
+              0.019750144332647324
+            ],
+            [
+              -0.22771093249320984,
+              -0.17878350615501404,
+              0.021734172478318214
+            ]
+          ],
+          "centroid_m": [
+            -0.2285732924938202,
+            -0.17956988513469696,
+            0.020820625126361847
+          ],
+          "dimensions_m": [
+            0.0017084777355194092,
+            0.0017777979373931885,
+            0.001984028145670891
+          ],
+          "classification": "unresolved",
+          "disposition": "needs-review",
+          "sampled_main_surface_gap_m": 0.006590580102056265,
+          "distance_sample_count": 16,
+          "distance_note": "Minimum over sampled vertices to largest-component triangles; not exact component-to-component minimum or proof of intended attachment."
+        },
+        {
+          "id": "ab363bc7cc37:C0043",
+          "component_index": 43,
+          "vertices": 14,
+          "triangles": 6,
+          "edges": 16,
+          "bounds_m": [
+            [
+              0.28469011187553406,
+              -0.10911938548088074,
+              -0.0015326180728152394
+            ],
+            [
+              0.28719404339790344,
+              -0.10790307819843292,
+              0.00018625256780069321
+            ]
+          ],
+          "centroid_m": [
+            0.28583985567092896,
+            -0.10840670764446259,
+            -0.0004982112441211939
+          ],
+          "dimensions_m": [
+            0.0025039315223693848,
+            0.001216307282447815,
+            0.001718870596960187
+          ],
+          "classification": "unresolved",
+          "disposition": "needs-review",
+          "sampled_main_surface_gap_m": 0.0029303962364792824,
+          "distance_sample_count": 14,
+          "distance_note": "Minimum over sampled vertices to largest-component triangles; not exact component-to-component minimum or proof of intended attachment."
+        },
+        {
+          "id": "ab363bc7cc37:C0044",
+          "component_index": 44,
+          "vertices": 14,
+          "triangles": 6,
+          "edges": 16,
+          "bounds_m": [
+            [
+              0.23444229364395142,
+              -0.25206848978996277,
+              -0.17189890146255493
+            ],
+            [
+              0.23595622181892395,
+              -0.25063955783843994,
+              -0.1701827049255371
+            ]
+          ],
+          "centroid_m": [
+            0.2351834923028946,
+            -0.2512495815753937,
+            -0.17109116911888123
+          ],
+          "dimensions_m": [
+            0.0015139281749725342,
+            0.0014289319515228271,
+            0.0017161965370178223
+          ],
+          "classification": "unresolved",
+          "disposition": "needs-review",
+          "sampled_main_surface_gap_m": 0.004665151704102755,
+          "distance_sample_count": 14,
+          "distance_note": "Minimum over sampled vertices to largest-component triangles; not exact component-to-component minimum or proof of intended attachment."
+        },
+        {
+          "id": "ab363bc7cc37:C0045",
+          "component_index": 45,
+          "vertices": 14,
+          "triangles": 6,
+          "edges": 16,
+          "bounds_m": [
+            [
+              0.19258472323417664,
+              -0.04447530210018158,
+              0.145651176571846
+            ],
+            [
+              0.1943817138671875,
+              -0.039566703140735626,
+              0.14707762002944946
+            ]
+          ],
+          "centroid_m": [
+            0.19357429444789886,
+            -0.04117409512400627,
+            0.14636220037937164
+          ],
+          "dimensions_m": [
+            0.0017969906330108643,
+            0.004908598959445953,
+            0.0014264434576034546
+          ],
+          "classification": "unresolved",
+          "disposition": "needs-review",
+          "sampled_main_surface_gap_m": 0.0038122418336570263,
+          "distance_sample_count": 14,
+          "distance_note": "Minimum over sampled vertices to largest-component triangles; not exact component-to-component minimum or proof of intended attachment."
+        },
+        {
+          "id": "ab363bc7cc37:C0046",
+          "component_index": 46,
+          "vertices": 14,
+          "triangles": 6,
+          "edges": 16,
+          "bounds_m": [
+            [
+              0.19391541182994843,
+              -0.008257264271378517,
+              0.18738706409931183
+            ],
+            [
+              0.1961105465888977,
+              -0.005956281907856464,
+              0.1889984905719757
+            ]
+          ],
+          "centroid_m": [
+            0.19498419761657715,
+            -0.007404656615108252,
+            0.18857799470424652
+          ],
+          "dimensions_m": [
+            0.00219513475894928,
+            0.0023009823635220528,
+            0.0016114264726638794
+          ],
+          "classification": "unresolved",
+          "disposition": "needs-review",
+          "sampled_main_surface_gap_m": 0.0023259359877556562,
+          "distance_sample_count": 14,
+          "distance_note": "Minimum over sampled vertices to largest-component triangles; not exact component-to-component minimum or proof of intended attachment."
+        },
+        {
+          "id": "ab363bc7cc37:C0047",
+          "component_index": 47,
+          "vertices": 14,
+          "triangles": 6,
+          "edges": 16,
+          "bounds_m": [
+            [
+              0.16349723935127258,
+              0.26015377044677734,
+              -0.06462457031011581
+            ],
+            [
+              0.1652429699897766,
+              0.26238933205604553,
+              -0.06315766274929047
+            ]
+          ],
+          "centroid_m": [
+            0.1640930324792862,
+            0.2614346146583557,
+            -0.06379664689302444
+          ],
+          "dimensions_m": [
+            0.0017457306385040283,
+            0.0022355616092681885,
+            0.001466907560825348
+          ],
+          "classification": "unresolved",
+          "disposition": "needs-review",
+          "sampled_main_surface_gap_m": 0.002517745131626725,
+          "distance_sample_count": 14,
+          "distance_note": "Minimum over sampled vertices to largest-component triangles; not exact component-to-component minimum or proof of intended attachment."
+        },
+        {
+          "id": "ab363bc7cc37:C0048",
+          "component_index": 48,
+          "vertices": 14,
+          "triangles": 6,
+          "edges": 16,
+          "bounds_m": [
+            [
+              0.1548776626586914,
+              -0.06904366612434387,
+              -0.2090694010257721
+            ],
+            [
+              0.15643702447414398,
+              -0.06554700434207916,
+              -0.20775678753852844
+            ]
+          ],
+          "centroid_m": [
+            0.1555638462305069,
+            -0.06688642501831055,
+            -0.2083984613418579
+          ],
+          "dimensions_m": [
+            0.0015593618154525757,
+            0.0034966617822647095,
+            0.0013126134872436523
+          ],
+          "classification": "unresolved",
+          "disposition": "needs-review",
+          "sampled_main_surface_gap_m": 0.0028437303844839334,
+          "distance_sample_count": 14,
+          "distance_note": "Minimum over sampled vertices to largest-component triangles; not exact component-to-component minimum or proof of intended attachment."
+        },
+        {
+          "id": "ab363bc7cc37:C0049",
+          "component_index": 49,
+          "vertices": 14,
+          "triangles": 6,
+          "edges": 16,
+          "bounds_m": [
+            [
+              -0.23953604698181152,
+              -0.11909343302249908,
+              -0.21951264142990112
+            ],
+            [
+              -0.2376304715871811,
+              -0.11634629964828491,
+              -0.2182530015707016
+            ]
+          ],
+          "centroid_m": [
+            -0.2383018583059311,
+            -0.11751513183116913,
+            -0.2189561128616333
+          ],
+          "dimensions_m": [
+            0.0019055753946304321,
+            0.0027471333742141724,
+            0.001259639859199524
+          ],
+          "classification": "unresolved",
+          "disposition": "needs-review",
+          "sampled_main_surface_gap_m": 0.0031781825236976147,
+          "distance_sample_count": 14,
+          "distance_note": "Minimum over sampled vertices to largest-component triangles; not exact component-to-component minimum or proof of intended attachment."
+        },
+        {
+          "id": "ab363bc7cc37:C0050",
+          "component_index": 50,
+          "vertices": 12,
+          "triangles": 6,
+          "edges": 15,
+          "bounds_m": [
+            [
+              0.16665518283843994,
+              0.10104024410247803,
+              -0.20972584187984467
+            ],
+            [
+              0.17011253535747528,
+              0.10236294567584991,
+              -0.20845775306224823
+            ]
+          ],
+          "centroid_m": [
+            0.16845710575580597,
+            0.10160303860902786,
+            -0.2091655135154724
+          ],
+          "dimensions_m": [
+            0.0034573525190353394,
+            0.0013227015733718872,
+            0.0012680888175964355
+          ],
+          "classification": "unresolved",
+          "disposition": "needs-review",
+          "sampled_main_surface_gap_m": 0.0027760411612689495,
+          "distance_sample_count": 12,
+          "distance_note": "Minimum over sampled vertices to largest-component triangles; not exact component-to-component minimum or proof of intended attachment."
+        },
+        {
+          "id": "ab363bc7cc37:C0051",
+          "component_index": 51,
+          "vertices": 12,
+          "triangles": 6,
+          "edges": 15,
+          "bounds_m": [
+            [
+              0.16297848522663116,
+              -0.03693060576915741,
+              0.16452424228191376
+            ],
+            [
+              0.1648050844669342,
+              -0.035289522260427475,
+              0.16613340377807617
+            ]
+          ],
+          "centroid_m": [
+            0.16379301249980927,
+            -0.03608217462897301,
+            0.165352925658226
+          ],
+          "dimensions_m": [
+            0.0018265992403030396,
+            0.0016410835087299347,
+            0.0016091614961624146
+          ],
+          "classification": "unresolved",
+          "disposition": "needs-review",
+          "sampled_main_surface_gap_m": 0.005030373577028513,
+          "distance_sample_count": 12,
+          "distance_note": "Minimum over sampled vertices to largest-component triangles; not exact component-to-component minimum or proof of intended attachment."
+        },
+        {
+          "id": "ab363bc7cc37:C0052",
+          "component_index": 52,
+          "vertices": 12,
+          "triangles": 6,
+          "edges": 15,
+          "bounds_m": [
+            [
+              0.17623184621334076,
+              -0.028124690055847168,
+              0.16099125146865845
+            ],
+            [
+              0.17808711528778076,
+              -0.026411596685647964,
+              0.1624826192855835
+            ]
+          ],
+          "centroid_m": [
+            0.17717719078063965,
+            -0.02703578770160675,
+            0.16165930032730103
+          ],
+          "dimensions_m": [
+            0.0018552690744400024,
+            0.0017130933701992035,
+            0.0014913678169250488
+          ],
+          "classification": "unresolved",
+          "disposition": "needs-review",
+          "sampled_main_surface_gap_m": 0.002543648472055793,
+          "distance_sample_count": 12,
+          "distance_note": "Minimum over sampled vertices to largest-component triangles; not exact component-to-component minimum or proof of intended attachment."
+        },
+        {
+          "id": "ab363bc7cc37:C0053",
+          "component_index": 53,
+          "vertices": 12,
+          "triangles": 6,
+          "edges": 15,
+          "bounds_m": [
+            [
+              0.08865384012460709,
+              0.11025352776050568,
+              -0.2035711705684662
+            ],
+            [
+              0.090098075568676,
+              0.11400336772203445,
+              -0.20247066020965576
+            ]
+          ],
+          "centroid_m": [
+            0.08936718851327896,
+            0.11205460876226425,
+            -0.20306605100631714
+          ],
+          "dimensions_m": [
+            0.0014442354440689087,
+            0.003749839961528778,
+            0.0011005103588104248
+          ],
+          "classification": "unresolved",
+          "disposition": "needs-review",
+          "sampled_main_surface_gap_m": 0.003129828255623579,
+          "distance_sample_count": 12,
+          "distance_note": "Minimum over sampled vertices to largest-component triangles; not exact component-to-component minimum or proof of intended attachment."
+        },
+        {
+          "id": "ab363bc7cc37:C0054",
+          "component_index": 54,
+          "vertices": 12,
+          "triangles": 6,
+          "edges": 15,
+          "bounds_m": [
+            [
+              0.0034486977383494377,
+              -0.29569292068481445,
+              -0.12580367922782898
+            ],
+            [
+              0.006274344865232706,
+              -0.2935146689414978,
+              -0.12376861274242401
+            ]
+          ],
+          "centroid_m": [
+            0.004830432590097189,
+            -0.2944847345352173,
+            -0.12485549598932266
+          ],
+          "dimensions_m": [
+            0.0028256471268832684,
+            0.0021782517433166504,
+            0.0020350664854049683
+          ],
+          "classification": "unresolved",
+          "disposition": "needs-review",
+          "sampled_main_surface_gap_m": 0.0034417700953781605,
+          "distance_sample_count": 12,
+          "distance_note": "Minimum over sampled vertices to largest-component triangles; not exact component-to-component minimum or proof of intended attachment."
+        },
+        {
+          "id": "ab363bc7cc37:C0055",
+          "component_index": 55,
+          "vertices": 12,
+          "triangles": 4,
+          "edges": 12,
+          "bounds_m": [
+            [
+              -0.3017764687538147,
+              0.004314546473324299,
+              -0.2144652009010315
+            ],
+            [
+              -0.2991698384284973,
+              0.006527211982756853,
+              -0.21297413110733032
+            ]
+          ],
+          "centroid_m": [
+            -0.3006785213947296,
+            0.005181547254323959,
+            -0.21383154392242432
+          ],
+          "dimensions_m": [
+            0.002606630325317383,
+            0.0022126655094325542,
+            0.0014910697937011719
+          ],
+          "classification": "unresolved",
+          "disposition": "needs-review",
+          "sampled_main_surface_gap_m": 0.003117548767477274,
+          "distance_sample_count": 12,
+          "distance_note": "Minimum over sampled vertices to largest-component triangles; not exact component-to-component minimum or proof of intended attachment."
+        },
+        {
+          "id": "ab363bc7cc37:C0056",
+          "component_index": 56,
+          "vertices": 6,
+          "triangles": 2,
+          "edges": 6,
+          "bounds_m": [
+            [
+              -0.23310279846191406,
+              -0.19196701049804688,
+              0.05288887023925781
+            ],
+            [
+              -0.23310279846191406,
+              -0.19196701049804688,
+              0.05288887023925781
+            ]
+          ],
+          "centroid_m": [
+            -0.23310279846191406,
+            -0.19196701049804688,
+            0.05288887023925781
+          ],
+          "dimensions_m": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "classification": "unresolved",
+          "disposition": "needs-review",
+          "sampled_main_surface_gap_m": 0.0007094593602232635,
+          "distance_sample_count": 6,
+          "distance_note": "Minimum over sampled vertices to largest-component triangles; not exact component-to-component minimum or proof of intended attachment."
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "Largest component is a proximity reference, not an approved semantic body.",
+    "Exact coincident positions can bridge UV seams or intentional touching parts; this does not prove intended attachment.",
+    "All unclassified components remain unresolved, including intentional ornaments.",
+    "Cross-object nearest-distance and motion/export attachment correspondence need additional checks."
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "attempts": [
+    {
+      "attempt": 1,
+      "status": "failed-before-model-output",
+      "stage": "Blender scene setup",
+      "reason": "Blender 5.1.1 does not expose BLENDER_EEVEE_NEXT; preserved at Artifacts/ConstructionGeometry/mesh-exports-attempt-01-failed/run-status.json."
+    },
+    {
+      "attempt": 2,
+      "status": "failed-before-model-output",
+      "stage": "Blender scene setup",
+      "reason": "Factory empty scene had no World datablock; preserved at Artifacts/ConstructionGeometry/mesh-exports-attempt-02-failed/run-status.json."
+    },
+    {
+      "attempt": 3,
+      "status": "geometry-and-export-complete; preview-rejected",
+      "reason": "Mesh bounds and exchange reimports matched, but preview lighting clipped the clay material; source remains at Artifacts/ConstructionGeometry/mesh-exports-attempt-03."
+    },
+    {
+      "attempt": 4,
+      "status": "prototype-complete",
+      "reason": "Adjusted CPU Eevee lighting; three source files, GLB and FBX exports saved and fresh-import bounds checks passed. Evidence is in this package."
+    }
+  ],
+  "gpu_inference_or_render": false,
+  "geometry_repair_count": 0,
+  "source_reopen_checks": [
+    {
+      "attempt": 1,
+      "status": "checker-failed; assets unchanged",
+      "reason": "Initial checker counted the render-only floor as an asset mesh and used Blender user add-ons; preserved as diagnostic history."
+    },
+    {
+      "attempt": 2,
+      "status": "passed",
+      "method": "Blender 5.1.1 --background --factory-startup; one fresh-process source reopen per shape; validated canonical bounds, one connected asset mesh, no loose vertices, and named render staging objects."
+    }
+  ]
+}

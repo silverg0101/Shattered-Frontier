@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "units": "metres",
+  "source": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\WalkPilot-v003\\Mount-WalkPilot.blend",
+  "region_roots": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\FullLegFringeRoots-v001\\region-roots.npz",
+  "rest_selection": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz",
+  "semantic_selection": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LegFringeLabelCorrection-v001\\label-only-selections.npz",
+  "object": "geometry_0",
+  "primary_rig": "PRIMARY | anatomical rig pilot",
+  "support_bones": [
+    "PRI.hind.L.hip",
+    "PRI.hind.L.stifle",
+    "PRI.hind.L.hock",
+    "PRI.hind.L.fetlock"
+  ],
+  "frame_start": 1,
+  "frame_end": 73,
+  "baseline_tolerance_m": 1e-05,
+  "solver_tolerance": 1e-08,
+  "delta_reporting_floor_m": 1e-05,
+  "permissions": "One read-only local support-skin extension, not a new source/rig/gait/material candidate or budget reset.",
+  "effective_time": "Existing frozen walk and reviewed partial fringe context only; geometric roots still need anatomical review.",
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\WalkPilot-v003\\Mount-WalkPilot.blend": "f59dc38bff697b6c2a2c84511413d2e292d9fdbb278acc69cd8df6d26a5bd123",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\FullLegFringeRoots-v001\\region-roots.npz": "6c87dc69d6bbcf1ea76f7ca12e4f860940f328782c4a374a0a33278008bdf682",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz": "0d7599c8064cb81a6e211a23731435e08939b7fb146ce2d4bed810273909a2b2",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LegFringeLabelCorrection-v001\\label-only-selections.npz": "dc78ba7dbd5a03bef0f0397a26435ec6bcf31b079c340aff5d035a2b1566a630"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "status": "supports-narrow-hygiene-revision",
+  "reviewer": "independent visual_review agent plus author",
+  "evidence": [
+    "TriangleQuality-v001",
+    "TriangleBaseline-v001"
+  ],
+  "findings": [
+    "All six selected triangles have exactly two unique local positions.",
+    "All belong to main component; removal leaves10previously referenced vertices unused.",
+    "Same diagnostic counts before root repairs; inherited issue."
+  ],
+  "conditions": [
+    "Confirm collapsed through330frames before removal.",
+    "Map loop triangles to polygons explicitly.",
+    "Preserve unrelated pre-existing loose elements; fail if unsupported.",
+    "Exact retained position/UV/material/color/weight/normal correspondence, all-frame bone/sample surface and fresh exchange checks."
+  ],
+  "scope": "Geometry hygiene attempt2, separate from exhausted root-construction and rig/solver attempts. No count reset or broad topology acceptance."
+}

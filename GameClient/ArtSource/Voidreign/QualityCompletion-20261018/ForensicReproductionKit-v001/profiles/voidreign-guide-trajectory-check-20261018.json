@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "scope": "Read-only full-duration check of the existing guide bake; not surface or runtime acceptance",
+  "permissions": "Offline asset author; freeze a new profile revision for changes",
+  "effective_time": "Next fresh trajectory check only; no rebake",
+  "units": "metres, seconds; finite differences at saved frame rate",
+  "maximum_world_step_m": 0.08,
+  "surface_profile": "docs/art-templates/model-profiles/voidreign-hair-surface-check-20261018.json",
+  "surface_profile_sha256": "f42b54b785653cd13262405b39e26a48e1fc606edeafb392b1372121e29e1abb"
+}

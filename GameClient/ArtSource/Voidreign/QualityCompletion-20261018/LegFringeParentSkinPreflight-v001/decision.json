@@ -1,0 +1,11 @@
+{
+  "status": "retain-existing-primary-weights-numerical-noop-proposal",
+  "reviewer": "authoring-agent",
+  "finding": "The complete363vertex fringe and its59root/61support source vertices already use only the correct four hind.L primary bones. No vertex is unweighted in this feature. Do not infer skin weights from semantic/owner labels alone.",
+  "maximum_hypothetical_position_difference_m": 1.4381143080042802e-07,
+  "regional_edge_error_before_m": 0.0008675537097686953,
+  "regional_edge_error_after_m": 0.0008675596109007644,
+  "new_skin_authored": false,
+  "next": "Keep existing primary skin; new work is an explicit local secondary-motion adapter with deforming roots/colliders, not another primary repair or guide binding to the Tail.",
+  "budgets": "Primary3/3,walk3/3,8primarycandidates andmaterial2/3 unchanged."
+}

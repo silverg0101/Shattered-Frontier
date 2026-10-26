@@ -1,0 +1,94 @@
+{
+  "lock_id": "construction-model-queue-v011-resume-lock",
+  "created_utc": "2026-10-19T03:41:30Z",
+  "runtime": {
+    "blender_executable": "C:/Program Files/Blender Foundation/Blender 5.1/blender.exe",
+    "blender_version": "5.1.1",
+    "system_python": "3.12.10",
+    "numpy": "2.4.3",
+    "pillow": "12.2.0",
+    "render_device": "CPU",
+    "gpu_inference": "not used"
+  },
+  "generator": {
+    "path": "tools/Build-ConstructionMaterialBatchEResume.py",
+    "sha256": "587004181210702febffae05e80ef8c672a04f4ae8565503a1a4a8bbcd4d62b2",
+    "export_validator": "tools/Validate-ConstructionMaterialModel.py",
+    "export_validator_sha256": "4d5c5e7fab5b29f30da5d89998687e7ec7e196fd121b9fd890f87faa329e3f43",
+    "source_inspector": "tools/Validate-ConstructionMaterialSource.py",
+    "source_inspector_sha256": "d4dfa9c04effa1eeef711ca072c9cf23e803cc715886b7971724cbc99b6704bc"
+  },
+  "profile": {
+    "path": "docs/art-templates/model-profiles/construction-model-queue-profile-20261019-e.json",
+    "sha256": "3710fd7297f392ea454ea4346f3182b0be0784141b87bc2206f7a078ca31e960"
+  },
+  "batch_settings": {
+    "output_path": "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v011",
+    "asset_ids": [
+      "BLD-RT-RoofSlopeFace-01",
+      "BLD-SM-RoofSlopeFace-01"
+    ],
+    "attempt": "Final material attempt 3/3 for slope assets only; ornamented WT v011 attempt failed with embedded script NameError and is needs-review; no further attempt.",
+    "texture_size_px": [
+      1024,
+      1024
+    ],
+    "texture_seeds": {
+      "BLD-WT-CellFull-Ornamented-01": 1703,
+      "BLD-RT-RoofSlopeFace-01": 1707,
+      "BLD-SM-RoofSlopeFace-01": 1708
+    },
+    "render_engine": "Cycles CPU",
+    "render_resolution": [
+      1280,
+      960
+    ],
+    "cycles_samples": 24,
+    "cycles_denoise": true,
+    "normal_convention": "OpenGL tangent +Y",
+    "normal_from_height": "height metres, texel dimensions .5m x .5m cell, or .5m x sqrt(2)*.5m slope UV",
+    "preview_cameras": "ornament +Y visible; slope front angle directly exposes inclined face",
+    "ornament_master": {
+      "path": "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v009/BLD-WT-CellFull-01/Textures",
+      "files": {
+        "basecolor.png": "d01a5854675767e4c004f5fd73e04baa80195de24528807623a020a5194acac3",
+        "roughness.png": "8f468ba2fc013ba22807eaf1402a997ec0ee27382a19322894f92ca579c0e2ad",
+        "normal.png": "5d1f10da5376f55c89a30a7c17bfae5c9ed6fe4bc95c591e2f2aeb994c0fe196",
+        "height.png": "d76e1922c60cb6ad9a80dc633cd17f68b9ed0ce723ca2d9383af1e5f51ece4f5"
+      }
+    },
+    "resume_reason": "Continue assets not reached when first v011 build aborted; corrected missing embedded Blender import math."
+  },
+  "assets": [
+    {
+      "asset_id": "BLD-RT-RoofSlopeFace-01",
+      "shape": "slope-1to1",
+      "kind": "rough-timber",
+      "seed": 1705,
+      "reference_manifest": "GameClient/ArtSource/BLD-RT-RoofSlopeFace-01/References/v001/manifest.json",
+      "reference_manifest_sha256": "3c1d4462ab6909d7dfe3a21bec63dd3c5d28f7e55f713207d54bddddd205527a",
+      "selected_image": "GameClient/ArtSource/BLD-RT-RoofSlopeFace-01/References/v001/asset-view.png",
+      "selected_image_sha256": "44d32999a5158c7d7cb0a9144698175a5f9af6152d7ae413d3c482d7d8763fcb",
+      "image_batch_path": "docs/art-templates/asset-lists/construction-kit-matrix-07.md",
+      "canonical_payload": "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v001/geometry-source/slope-1to1.json",
+      "canonical_payload_sha256": "e55a54e6824119dffb929bf7de536eba786e7ce145efa732620da147cca4cdda",
+      "source_mesh_blend": "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v001/slope-1to1/SM_GEO01_slope_1to1_v001.blend",
+      "source_mesh_blend_sha256": "c90f2e47078dd00f803f947a44028185742573201b1526929dd75b314563b0ea"
+    },
+    {
+      "asset_id": "BLD-SM-RoofSlopeFace-01",
+      "shape": "slope-1to1",
+      "kind": "stone-masonry",
+      "seed": 1706,
+      "reference_manifest": "GameClient/ArtSource/BLD-SM-RoofSlopeFace-01/References/v001/manifest.json",
+      "reference_manifest_sha256": "0a965049c699f08464b9e1c17aec00cdf0b2f9e5ff842032bc23aeb650d82d34",
+      "selected_image": "GameClient/ArtSource/BLD-SM-RoofSlopeFace-01/References/v001/asset-view.png",
+      "selected_image_sha256": "c53b2b0096003e5dae60283ec4ee4706d873898363cbd55fe67a82a75b81095a",
+      "image_batch_path": "docs/art-templates/asset-lists/construction-kit-matrix-07.md",
+      "canonical_payload": "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v001/geometry-source/slope-1to1.json",
+      "canonical_payload_sha256": "e55a54e6824119dffb929bf7de536eba786e7ce145efa732620da147cca4cdda",
+      "source_mesh_blend": "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v001/slope-1to1/SM_GEO01_slope_1to1_v001.blend",
+      "source_mesh_blend_sha256": "c90f2e47078dd00f803f947a44028185742573201b1526929dd75b314563b0ea"
+    }
+  ]
+}

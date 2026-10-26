@@ -1,0 +1,23 @@
+CONCEPT SHEET — built-in image_gen, 2026-10-18.
+
+Use case: stylized-concept
+Asset type: separately indexed top-face treatment for rough-timber construction.
+Input image 1: KIT-RT rough-timber face concept, color/grain only. Preserve its warm-brown rough timber finish.
+Scene/backdrop: neutral gray technical studio.
+Subject: exactly one `cell-full` cube, proposed 0.5 m on each edge. Designate the horizontal top contact face as a weather-facing rough-timber surface: tightly fitted parallel boards with subtle grain, no gaps.
+Style/medium: realistic fantasy construction reference, rough timber tier, practical and restrained.
+Composition/framing: six coordinated orthographic views of the same cube, especially top view; show exterior, interior, ends and underside as consistent related surfaces; neutral cube contact silhouette. Target dimensions only.
+Constraints: preserve full cube envelope, six planar contacts, origin and 90-degree orientations. All boards remain flush inside the top plane. No projecting fascia, support legs, grooves that imply openings, roof shape, stone or metal. This is a surface treatment only; no geometry or gameplay change.
+Avoid: platform scene, multiple cubes, elaborate textures that alter top profile, text clutter, watermark.
+Reference: `GameClient/ArtSource/BLD-RT-CellFull-01/References/v001/concept-sheet.png`.
+
+CLEAN VIEW — built-in image_gen, 2026-10-18; input image 1 is selected concept sheet.
+
+Use case: stylized-concept
+Asset type: clean full-cell cube showing rough-timber top-face treatment.
+Input image 1 is the selected six-face sheet; preserve its rough timber palette and plank alignment on the top.
+Scene/backdrop: neutral gray.
+Subject: exactly one solid square 0.5 m target cube. The top face is the designated weather-facing surface with tight parallel timber boards.
+Composition/framing: single cube, three-quarter view from slightly above so its top and two side faces are visible; entire cube in frame with ample margin.
+Style/medium: realistic restrained fantasy construction asset, warm brown rough-sawn timber.
+Constraints: identical full-cell volume and six planar contacts; top boards remain flush within the cube. No fascia, legs, overhang, roof, extra geometry, text, environment, stone or metal. No geometry or gameplay property change.

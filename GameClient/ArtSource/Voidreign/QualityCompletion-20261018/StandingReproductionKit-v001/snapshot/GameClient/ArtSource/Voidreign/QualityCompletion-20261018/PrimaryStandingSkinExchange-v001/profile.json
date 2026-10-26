@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "source": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingSkinRepair-v001/Mount-StandingSkinRepair.blend",
+  "object": "geometry_0",
+  "frame_start": 1,
+  "frame_end": 60,
+  "fps": 30,
+  "maximum_error_m": 1e-05,
+  "input_sha256": {
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingSkinRepair-v001/Mount-StandingSkinRepair.blend": "dcd1860fc02e51f767b2ebb8700178368045609d13466463cfaac68dd1a8e96e"
+  }
+}

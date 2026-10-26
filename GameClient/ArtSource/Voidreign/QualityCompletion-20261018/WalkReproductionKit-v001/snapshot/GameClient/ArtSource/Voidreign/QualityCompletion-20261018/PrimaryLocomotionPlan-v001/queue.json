@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "asset_id": "Voidreign",
+  "source": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryOnlyCombinedFull-v001\\Voidreign-ActualSurfacePilot.blend",
+  "next_asset_task": "VR-RIG-01-local-anatomy-tack-and-sole-collar-review",
+  "items": [
+    {
+      "id": "VR-PRIMARY-01",
+      "status": "proposal-reviewed-for-pilot"
+    },
+    {
+      "id": "VR-RIG-01",
+      "status": "code-corrections-converged-shape-unrated"
+    },
+    {
+      "id": "VR-IDLE-01",
+      "status": "scoped-idle-and-exchange-pass-shape-unrated",
+      "attempt_count": 1,
+      "max_attempts": 3
+    },
+    {
+      "id": "VR-WALK-01",
+      "status": "scoped-gait-pass-skin-needs-review-v002-not-improvement",
+      "attempt_count": 2,
+      "max_attempts": 3
+    },
+    {
+      "id": "VR-RUN-01",
+      "status": "blocked-by-predecessor"
+    },
+    {
+      "id": "VR-TURN-01",
+      "status": "scoped-turn-and-exchange-pass-shape-unrated",
+      "attempt_count": 1,
+      "max_attempts": 3
+    },
+    {
+      "id": "VR-ATTACH-01",
+      "status": "23-paired-isolations-ready-no-semantic-disposition"
+    },
+    {
+      "id": "VR-SECONDARY-01",
+      "status": "blocked-by-predecessor"
+    }
+  ],
+  "primary_rig_budget": {
+    "max_attempts": 3,
+    "used": 3,
+    "scope": "New primary anatomical skeleton/skin pilot; historical hair attempt counts unchanged",
+    "status": "exhausted-no-automatic-new-repair"
+  },
+  "current_candidate": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkPilot-v001/Mount-WalkPilot.blend",
+  "current_report": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkQualityDecision-v001/decision.json",
+  "next_independent_task": "VR-ATTACH-01-review-paired-isolations",
+  "reviewed_code_corrections": {
+    "count": 3,
+    "total_primary_candidates": 6,
+    "review_paths": [
+      "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimarySkinCodeReview-v001/review.json",
+      "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimarySkinCodeReview-v002/review.json",
+      "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimarySkinCodeReview-v003/review.json"
+    ],
+    "note": "Automatic primary budget remains exhausted3/3; no reset or promotion."
+  }
+}

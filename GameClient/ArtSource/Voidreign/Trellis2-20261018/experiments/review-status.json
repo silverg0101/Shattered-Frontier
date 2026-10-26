@@ -1,0 +1,17 @@
+{
+    "status":  "complete",
+    "cases":  [
+                  {
+                      "name":  "retained-detail",
+                      "status":  "validated"
+                  },
+                  {
+                      "name":  "more-steps",
+                      "status":  "validated"
+                  },
+                  {
+                      "name":  "higher-resolution",
+                      "status":  "validated"
+                  }
+              ]
+}

@@ -1,0 +1,125 @@
+{
+  "source_input_sha256": "d67522bf160e2dbfe763a5945e651b6b5c508f32676257dac80c98b26a42aca0",
+  "tools": [
+    {
+      "sha256": "6f0cc07f08dd5631119bbd82f199760f4a542969a46e9d61aff974078be5b3b7",
+      "path": "tools/trellis2/run_pixal.py"
+    },
+    {
+      "sha256": "5f65031e8906ddb2fbe256bcff6786d6d18aef2b39d380f9570d26b00b455c0f",
+      "path": "tools/trellis2/rebake_pixal.py"
+    },
+    {
+      "sha256": "b617b258796fa3c0942a2ef560b0db986f173fc0223b3b690482a999456ff1db",
+      "path": "tools/Prepare-VoidreignTextureGuides.py"
+    },
+    {
+      "sha256": "c07f779e3a6848777d5fe21773389dc43610cba9b045556f8bea026cddd004e8",
+      "path": "tools/Project-VoidreignTextureDetails.py"
+    },
+    {
+      "sha256": "c07ee03acbf2c7224f48424e79ba9e8af759344c79ca9a3a2a97966b54499d98",
+      "path": "tools/Render-VoidreignTextureCloseups.py"
+    },
+    {
+      "sha256": "c7e1bd65bdd41b1c67749fe9c2fe4d6d7dda2a446f819fd9c2ce78568140d546",
+      "path": "tools/Review-GeneratedAsset.py"
+    },
+    {
+      "sha256": "4c23c9a0235608f4a1a2f9f912cf825702927b4bf469e4d5bee2d22116932987",
+      "path": "tools/Validate-GeneratedAsset.py"
+    },
+    {
+      "sha256": "fdcf72c8ecf1f82c9a91fe700bdd8cfe94a3d5aeb3f0e0fd637d574b44a5d494",
+      "path": "tools/Compare-GeneratedAssets.py"
+    }
+  ],
+  "regenerated_raw_mesh_sha256": "d98f70f64976e06f3a1eb3fff6b00bd6d7202246e4b43a8a51de2f4bf5932f06",
+  "scope": "Visible +X head/saddle albedo refinement only; no full-skin or production acceptance.",
+  "image_edit_tool": "built-in image_gen",
+  "original_raw_mesh_sha256": "d98f70f64976e06f3a1eb3fff6b00bd6d7202246e4b43a8a51de2f4bf5932f06",
+  "status": "reviewed-texture-pilot",
+  "files": [
+    {
+      "sha256": "4bbc7671b39e36e37801120102a7c8669c34c4fc033ee9592bd9c007843216a8",
+      "path": "FinalTextureComparison.blend"
+    },
+    {
+      "sha256": "521c142ebbc1b2000731829c557549243a258738c6b1c7da2caa2f6efc87ed10",
+      "path": "TextureResolutionComparison.blend"
+    },
+    {
+      "sha256": "04846273555a0a27712a9da98c32bf6bf8bde44f1595f5f6f6c992410d81a5b3",
+      "path": "comparison-validation.json"
+    },
+    {
+      "sha256": "9b406bf4c61399948218562d79ff9ba07528981f34319692b94d2a29936469de",
+      "path": "generation-run.json"
+    },
+    {
+      "sha256": "ecb37c6e08376f9facae26b866ffed323f1b2358602c9e5ac63fe7035df1acee",
+      "path": "bake-run.json"
+    },
+    {
+      "sha256": "f07a7dd07c1adafff269e0eb877817fc8b0b6acf8ffc6083f82500e329b08b43",
+      "path": "ProjectionInputs/prompts.json"
+    },
+    {
+      "sha256": "bff7993c418906188b7eaedcb70594900a80857925f24e74b284352ba85a4edd",
+      "path": "ProjectionInputs/Head-Edited.png"
+    },
+    {
+      "sha256": "9fef159c29e07397b98738db6d301767e6e9d47f69eb4d1889494da0679a680d",
+      "path": "ProjectionInputs/Saddle-Edited.png"
+    },
+    {
+      "sha256": "f5a5baa102990dcc6f365777b30566a0fcccf10a947a582e7b9638072475b232",
+      "path": "Pixal-2048/Voidreign.blend"
+    },
+    {
+      "sha256": "7815a0169761763fe0528fc9e08ecd9534173535be1b6f0c2b09ceaea3106627",
+      "path": "Pixal-2048/Voidreign.glb"
+    },
+    {
+      "sha256": "23754fdcb2c32e01e8f0264c5c61c6b020aef1eaf8e750877faa3d92518f43dc",
+      "path": "Pixal-2048/Voidreign.fbx"
+    },
+    {
+      "sha256": "9f637288291b95340675abcb1d126cdec71c226177edefadec633de27af1ae24",
+      "path": "Pixal-2048/validation-report.json"
+    },
+    {
+      "sha256": "4d8749c8271c754722fd3beeb957685d257cd3a4b91ec2d9641a25f2097bcd4d",
+      "path": "Pixal-4096/Voidreign.blend"
+    },
+    {
+      "sha256": "f8dbba4cc4aae1011b276f9b42abaaa42f4cd10af10218ecef51d8ab390f35ff",
+      "path": "Pixal-4096/Voidreign.glb"
+    },
+    {
+      "sha256": "fc6373f5c4360c58997c6ea0a5dbb4da25604c29de4f510148164c8aad83b980",
+      "path": "Pixal-4096/Voidreign.fbx"
+    },
+    {
+      "sha256": "918222a8af1b4393a327051f64f997342f0d37f4a2360c1919af1b59b222d688",
+      "path": "Pixal-4096/validation-report.json"
+    },
+    {
+      "sha256": "c27ad929b00520f52fb50058e0f374d69eca55d80084bc1909368c4d664fe56d",
+      "path": "Pixal-4096-HeadSaddle/Voidreign.blend"
+    },
+    {
+      "sha256": "dd7dc88baa8b7395a1f0d0fc10d431455592b7c1d2ec8f74006a4235394ad84d",
+      "path": "Pixal-4096-HeadSaddle/Voidreign.glb"
+    },
+    {
+      "sha256": "5d73f898564682b0f3d0f1d79cd554dd7a495ad4538b7cb52e63d1240168c5cf",
+      "path": "Pixal-4096-HeadSaddle/Voidreign.fbx"
+    },
+    {
+      "sha256": "d61c074e865b4825547266181c649f9293ea25dcee429c29deb015dff9c5b0b6",
+      "path": "Pixal-4096-HeadSaddle/validation-report.json"
+    }
+  ],
+  "date": "2026-10-18"
+}

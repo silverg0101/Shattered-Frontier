@@ -1,0 +1,14 @@
+{
+  "status": "verified",
+  "files": 1571,
+  "self_contained": false,
+  "manifest": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryMotionReproductionKit-v001\\manifest.json",
+  "inherited_helper": {
+    "parent_manifest": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ContactSurfaceReproductionKit-v001\\manifest.json",
+    "snapshot": "snapshot/tools/Simulate-FeatureGuides.py",
+    "sha256": "bbb17e6310298993f45e6fbf6b6abadb8824f35969eeb4dd2dfbbe8d3ec6baab"
+  },
+  "limitations": [
+    "Large inputs remain external. Parent kit supplies unchanged physics helper and historical source dependency index."
+  ]
+}

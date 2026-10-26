@@ -1,0 +1,119 @@
+{
+  "status": "passed-default-imports",
+  "cpu_only": true,
+  "blender": "5.1.1",
+  "bone_frames": [
+    1,
+    330
+  ],
+  "bone_sample_count": 330,
+  "profile_path": "C:\\Projects\\Shattered-Frontier\\docs\\art-templates\\model-profiles\\voidreign-complete-hair-import-20261018.json",
+  "profile_sha256": "2084f5aaa1bb1379443e076cd8cf32415088f1784d616cc45a05353f8ef6c5d9",
+  "mesh_sample_frames": [
+    1,
+    2,
+    31,
+    60,
+    61,
+    91,
+    120,
+    121,
+    151,
+    180,
+    181,
+    211,
+    240,
+    241,
+    271,
+    300,
+    301,
+    330
+  ],
+  "source_sha256": "c6dac5d30e1272a4fb54ceb86b7a10bcea41a079e07f1b1589c67ad234c84d0b",
+  "contract_sha256": "df09b607d7453be62cfa24b5589fe1949b2ee0a929a4362f956dfa2bb5318834",
+  "source_coincident_motion_error_m": 0.0,
+  "imports": {
+    "glb": {
+      "status": "passed",
+      "exchange_sha256": "fad67cb279093768c2d25859ffe1cf6aa6af03bc14d20daf73158d2444dc528a",
+      "restored_connectivity": {},
+      "vertices": 890343,
+      "triangles": 297125,
+      "connected_texture_sizes": [
+        [
+          4096,
+          4096
+        ],
+        [
+          4096,
+          4096
+        ]
+      ],
+      "rest_surface_error_m": 1.2121341796955676e-06,
+      "reverse_rest_surface_error_m": 1.2121341796955676e-06,
+      "max_bone_head_error_m": 1.0941958278826368e-06,
+      "worst_bone_frame": 191,
+      "max_matrix_element_error": 1.4960765838623047e-05,
+      "max_linear_transform_element_error": 1.4960765838623047e-05,
+      "linear_transform_tolerance": 0.0001,
+      "max_deformed_surface_error_m": 2.0455760655594897e-05,
+      "bone_tolerance_m": 0.005,
+      "deformed_surface_tolerance_m": 0.0001
+    },
+    "fbx-default": {
+      "status": "passed",
+      "exchange_sha256": "9c678b2471c14a549820cff12223b1b1b6812736948fb5cae8c88b35ea6436c4",
+      "restored_connectivity": {},
+      "vertices": 284772,
+      "triangles": 297125,
+      "connected_texture_sizes": [
+        [
+          4096,
+          4096
+        ],
+        [
+          4096,
+          4096
+        ]
+      ],
+      "rest_surface_error_m": 1.1281665592832724e-06,
+      "reverse_rest_surface_error_m": 1.1281665592832724e-06,
+      "max_bone_head_error_m": 1.3914844429408016e-06,
+      "worst_bone_frame": 206,
+      "max_matrix_element_error": 5.9604644775390625e-06,
+      "max_linear_transform_element_error": 5.9604644775390625e-06,
+      "linear_transform_tolerance": 0.0001,
+      "max_deformed_surface_error_m": 1.8260676303744926e-06,
+      "bone_tolerance_m": 0.005,
+      "deformed_surface_tolerance_m": 0.0001
+    },
+    "fbx-contract": {
+      "status": "passed",
+      "exchange_sha256": "9c678b2471c14a549820cff12223b1b1b6812736948fb5cae8c88b35ea6436c4",
+      "restored_connectivity": {},
+      "vertices": 284772,
+      "triangles": 297125,
+      "connected_texture_sizes": [
+        [
+          4096,
+          4096
+        ],
+        [
+          4096,
+          4096
+        ]
+      ],
+      "rest_surface_error_m": 1.1281665592832724e-06,
+      "reverse_rest_surface_error_m": 1.1281665592832724e-06,
+      "max_bone_head_error_m": 1.3914844429408016e-06,
+      "worst_bone_frame": 206,
+      "max_matrix_element_error": 5.9604644775390625e-06,
+      "max_linear_transform_element_error": 5.9604644775390625e-06,
+      "linear_transform_tolerance": 0.0001,
+      "max_deformed_surface_error_m": 1.8260676303744926e-06,
+      "bone_tolerance_m": 0.005,
+      "deformed_surface_tolerance_m": 0.0001
+    }
+  },
+  "scope": "Exchange roundtrip only; no coverage, collision, gait or engine acceptance"
+}

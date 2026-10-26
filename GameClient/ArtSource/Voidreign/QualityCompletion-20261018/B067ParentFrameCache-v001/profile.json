@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "permissions": "Offline B067 attachment-frame proposal only; no accepted-source promotion",
+  "effective_time": "This candidate, all original quality gates retained",
+  "units": "metres and source frames",
+  "source": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\CompleteMotionCache-v001\\Voidreign-ActualSurfacePilot.blend",
+  "positions_file": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\B067ParentFrameStudy-v001\\attachment-frame-points.npz",
+  "proxy_object": "SIM | actual source hair surface.001",
+  "frame_start": 1,
+  "frame_end": 330,
+  "fps": 30,
+  "maximum_reopen_error_m": 1e-05,
+  "inherited_mesh_caches": [
+    {
+      "path": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\CompleteMotionCache-v001\\Tail-actual-motion.mdd",
+      "filename": "Tail-actual-motion.mdd",
+      "object": "SIM | actual source hair surface",
+      "modifier": "Verified measured surface motion | MDD"
+    }
+  ],
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\CompleteMotionCache-v001\\Voidreign-ActualSurfacePilot.blend": "a5e69cab0f484b2180809b8f60cb61ade34e227bd75ecdecfed97a7f87ae3cb9",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\B067ParentFrameStudy-v001\\attachment-frame-points.npz": "774ba3f0595e9ff6fc0bb7c8cd5c75ba9903ac9c89cda2b9837e9a4c0220ff41",
+    "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\CompleteMotionCache-v001\\Tail-actual-motion.mdd": "41214c51a69e0d6f27085ab1c1adc08bd566feea1a039f95670b4d4dad0f14bf",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\CompleteMotionCache-v001\\Feature-actual-motion.mdd": "92f65009a6bdfbc677b24c1a767db9f294fa8e1128db66bae68545c9c9927cf1"
+  }
+}

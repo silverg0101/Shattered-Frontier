@@ -1,0 +1,67 @@
+{
+  "asset_id": "BLD-WT-SlopeCornerOuter-01",
+  "version": "v001",
+  "batch": "construction-worked-timber-corners-33",
+  "status": "image-complete historically; current structural readiness blocked",
+  "source_references": [
+    "docs/art-templates/player-construction-kit-contract.md, \u00a7\u00a73.2, 8\u20139",
+    "docs/art-templates/asset-lists/construction-kit-matrix-07.md, worked-timber corner/slope roles"
+  ],
+  "dependency": "KIT-WT faces and exact contract shape/contact masks; gameplay tier unchanged",
+  "exact_prompts": {
+    "concept_sheet": "Construction concept sheet for the outer hip corner of worked-timber 1:1 pitched roof slopes. Two adjacent roof planes meet along a convex high ridge; the seam is raised, opposite geometry of an inward valley. Show isometric, plan and cross-section, weathered timber planks and matching underside. Preserve source slope-corner envelope/contact planes on 0.5 m grid, no overhang beyond source, pale background, no labels. Appearance proposal only.",
+    "asset_view": "Isolated single worked-timber outer roof hip corner. Two pitched plank faces form a convex high ridge along their meeting seam, unmistakably a raised hip not an inward valley. Compact 90-degree roof corner object, show top and underside, orthographic three-quarter view on pale neutral background, no supports, no text, no building. Keep appearance within source slope-corner envelope; proposal only."
+  },
+  "images": [
+    {
+      "file": "concept-sheet.png",
+      "width_px": 1536,
+      "height_px": 1024,
+      "mode": "RGB",
+      "format": "PNG",
+      "sha256": "964912aa4bc67bfa04366f1fc19a7ea32b969584ebf7f8602abcdbfc37c57640"
+    },
+    {
+      "file": "asset-view.png",
+      "width_px": 1536,
+      "height_px": 1024,
+      "mode": "RGB",
+      "format": "PNG",
+      "sha256": "37367845aeba26db795b6382b428381894ecc1078a70793daf1cb58c4d804ced"
+    }
+  ],
+  "visual_review": "Hip seam is distinct, but broad wings/fascia read as extensions that may exceed the source envelope; retain as proposal, not ready for numerical/model acceptance.",
+  "compatibility": "Images are appearance proposals. Review does not establish numerical mesh, collision, contact, clearance or runtime compatibility. Cosmetic skin changes appearance only.",
+  "generation_history": [
+    {
+      "file": "exec-c53ab206-f44f-45f0-bfdd-3c20cbc331bf.png",
+      "selected": true
+    },
+    {
+      "file": "exec-a621563f-3dee-47f2-88d7-6bb1bfe58578.png",
+      "selected": true
+    }
+  ],
+  "created_utc": "2026-10-18",
+  "status_history": [
+    {
+      "date": "2026-10-18",
+      "prior_status": "image-complete; proposal; review cautions recorded",
+      "reason": "Dated buildability review added; original generation history and selected flags preserved."
+    }
+  ],
+  "current_buildability_review": {
+    "date": "2026-10-18",
+    "accepted_selected_outputs": "0/2; historical selection records preserved; none accepted as a buildable master under this review",
+    "route": "proposed canonical structural component on the named SlopeCornerOuter target; not an assembly-study job",
+    "units_grid": "metres; 0.5 m structural grid; exact solid/envelope dimensions and slope angle unresolved",
+    "frame_pivot": "BLD-01 X/Y/Z and minimum-grid-corner frame; exact pivot coordinates unresolved pending approved GEO-01 geometry",
+    "allowed_rotations": "only rotations in the approved shape allowlist; the allowlist for this target is absent",
+    "member_boundary": "one canonical slope-corner component intended; pictured roof/support members are not declared as structural members",
+    "exposed_and_mating_faces": "exposed slope faces and exact hip contact contour unresolved; end/mating faces unresolved",
+    "named_counterparts": "candidate named roles BLD-WT-RoofHipValley-01 and BLD-WT-RoofSlopeFace-01; actual contact contours and ownership unapproved",
+    "visual_finding": "Concept and clean view depict broad multi-panel hip assemblies with a raised cap and supporting members that extend beyond a demonstrated envelope. Keep as labelled style evidence only.",
+    "blocker": "No approved GEO-01 payload/manifest/hash or applicable GEO-02 hip/rotation/repeated-neighbor evidence. Existing clean view is not accepted.",
+    "geo02": "Applicable GEO-02 evidence missing; image review is not numerical/runtime acceptance."
+  }
+}

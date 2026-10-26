@@ -1,0 +1,16 @@
+{
+  "status": "rendered-source-ground-review-only",
+  "cpu_only": true,
+  "input_sha256": {
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingSkinRepair-v001/Mount-StandingSkinRepair.blend": "dcd1860fc02e51f767b2ebb8700178368045609d13466463cfaac68dd1a8e96e"
+  },
+  "tool_sha256": "37af21fe7d3c53f77979aa9adedb596f525417572c89c5e94ba02a48a51f7845",
+  "profile_sha256": "8107fb8e78ab28aeabea7c32bd48bdf5f7188409a21aa943669e9fa20cc4294b",
+  "frames": [
+    1,
+    30
+  ],
+  "limitations": [
+    "Diagnostic plane/light were not saved to source. Images do not accept contacts or materials."
+  ]
+}

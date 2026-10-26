@@ -1,0 +1,92 @@
+{
+  "status": "passed-targeted-retained-geometry-checks",
+  "source_sha256": "59e4ee6e26f46924e0ada91adda0345e7e8eb12e0fe3ddc43ad870dc68bbce3a",
+  "candidate_sha256": "6c6044a533c16fc7fad23d42c0407dde37a0252aca84f9be1bc9b9a2367364f6",
+  "profile_sha256": "934b3a980dc47f584d4ce7c8fb7452fcdc0de33ea77445f00b20ff21b92f5934",
+  "correspondence_sha256": "fae39090dcb68d7d7e30e17bb18d75bdac6ed23baf9f4ab6fc74a77fdca6bdf5",
+  "cpu_only": true,
+  "checks": [
+    {
+      "id": "retained_positions",
+      "status": "passed"
+    },
+    {
+      "id": "retained_faces",
+      "status": "passed"
+    },
+    {
+      "id": "retained_uvs",
+      "status": "passed"
+    },
+    {
+      "id": "retained_materials",
+      "status": "passed"
+    },
+    {
+      "id": "retained_weights",
+      "status": "passed"
+    },
+    {
+      "id": "retained_colors",
+      "status": "passed"
+    },
+    {
+      "id": "retained_normals",
+      "status": "passed",
+      "maximum_channel_delta": 0.0
+    },
+    {
+      "id": "connected_texture_pixels",
+      "status": "passed"
+    },
+    {
+      "id": "bone_names",
+      "status": "passed"
+    },
+    {
+      "id": "all_frame_bone_transforms",
+      "status": "passed",
+      "maximum_delta": 0.0,
+      "frames": 330
+    },
+    {
+      "id": "retained_evaluated_surfaces",
+      "status": "passed",
+      "maximum_delta_m": 0.0,
+      "frames": [
+        1,
+        2,
+        31,
+        60,
+        61,
+        91,
+        120,
+        121,
+        151,
+        180,
+        181,
+        211,
+        240,
+        241,
+        271,
+        285,
+        300,
+        315,
+        330
+      ]
+    },
+    {
+      "id": "removed_faces_exact_zero_area",
+      "status": "passed",
+      "count": 6
+    },
+    {
+      "id": "correspondence_complete",
+      "status": "passed"
+    }
+  ],
+  "limitations": [
+    "Fresh exchanges are a separate required check.",
+    "Duplicate/internal/nonmanifold geometry and inherited motion failures are not repaired by this check."
+  ]
+}

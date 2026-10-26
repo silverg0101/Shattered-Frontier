@@ -1,0 +1,24 @@
+{
+  "status": "material-projection-candidate; fresh checks and visual review required",
+  "source_sha256": "35f3f95a01387cf805444060fde95a77e17d51f5c01378529879af053894ce96",
+  "source": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\CompleteHair-v003\\Voidreign-CompleteHair.blend",
+  "mesh_hash": "f580ad6893e552958d7c1320958834ad3c7a139f941b9016c510dfd4d6a3e794",
+  "guides_sha256": "abab172d4890edc076998947a2c1bb2189c67682ddb5742f13e5c534b24082c7",
+  "edits_sha256": "06ba250494064eb7741a2c051c0d811f3e0528ece6669f8c31bd088ae16eb97e",
+  "tool_sha256": "6c0d164da659e916e8c3f76dce1a8a737b66a3a98cbcba381a88b78c77504eee",
+  "weighted_vertices": {
+    "Head-NegX": 4107,
+    "Saddle-NegX": 6694
+  },
+  "atlas_pixels_in_projection_mask": 1155238,
+  "atlas_pixels_preserved": 15621978,
+  "outside_mask_linear_pixel_delta": 0.0,
+  "unchanged_geometry_uvs": true,
+  "non_color_channel_links_preserved": true,
+  "cpu_only": true,
+  "limitations": [
+    "Unlit base color only; no new normal/roughness/metallic detail.",
+    "View registration and interpolated visibility masks require seam/hidden-surface review.",
+    "Inherited rig surface/coverage defects remain; no gait/runtime acceptance."
+  ]
+}

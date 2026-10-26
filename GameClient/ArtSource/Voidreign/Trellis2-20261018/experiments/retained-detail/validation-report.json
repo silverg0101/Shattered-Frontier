@@ -1,0 +1,73 @@
+{
+  "blend": {
+    "meshes": 1,
+    "dimensions_m": [
+      0.9329403042793274,
+      4.123582363128662,
+      2.5999999046325684
+    ],
+    "triangles": 939464,
+    "materials": [
+      "Material_0"
+    ],
+    "image_sizes": [
+      [
+        2048,
+        2048
+      ],
+      [
+        2048,
+        2048
+      ]
+    ]
+  },
+  "checks": [
+    "Fresh process reopen and render"
+  ],
+  "exports": {
+    "glb": {
+      "meshes": 1,
+      "dimensions_m": [
+        0.9329403042793274,
+        4.123582363128662,
+        2.5999999046325684
+      ],
+      "triangles": 939464,
+      "materials": [
+        "Material_0"
+      ],
+      "image_sizes": [
+        [
+          2048,
+          2048
+        ],
+        [
+          2048,
+          2048
+        ]
+      ]
+    },
+    "fbx": {
+      "meshes": 1,
+      "dimensions_m": [
+        0.9329403042793274,
+        4.12358283996582,
+        2.6000004789002276
+      ],
+      "triangles": 939464,
+      "materials": [
+        "Material_0"
+      ],
+      "image_sizes": [
+        [
+          2048,
+          2048
+        ],
+        [
+          2048,
+          2048
+        ]
+      ]
+    }
+  }
+}

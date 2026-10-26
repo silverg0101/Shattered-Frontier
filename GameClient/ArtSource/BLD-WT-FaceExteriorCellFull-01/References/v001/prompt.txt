@@ -1,0 +1,1 @@
+Concept sheet prompt: WORKED TIMBER exterior full-cell face, 0.5 m appearance-only, planed boards, all six contact orientations, repeat/stack/rotate study, neutral gray; preserve rough-timber geometry and collision. Clean prompt: one isolated worked-timber exterior full-cell square face, smooth planed boards, neutral gray, single component; same baseline envelope/contact.

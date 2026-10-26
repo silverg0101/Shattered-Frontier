@@ -1,0 +1,13 @@
+Rejected concept-sheet prompt/output `exec-94861d60-ffa4-4876-81c7-0a8b1f652d79.png` (retained as `rejected-assembly-sheet.png`):
+
+Orthographic construction art concept sheet for BLD-RT-ReturnEdgeCellFull-01. Show one rough timber full-cell corner return component in several views: front exterior face, perpendicular return face, opposite faces, top and underside, plus small isometric cube. Neutral pale background, no people, no labels, no scene. 0.5 m full cube design target; outer edges stay square and exactly within cube envelope; show a continuous material surface turning across a flush 90-degree edge, with horizontal rough-sawn timber grain and understated frontier joinery as surface detail only. Keep six contact planes and all outer dimensions unchanged; no corner post, no trim, no overhang, no bevel, no additional solids. Views consistent. This is a visual treatment proposal, not measured geometry.
+
+Selected concept-sheet prompt/output `exec-a6007ee9-391f-41cb-ab00-09c558420a04.png`:
+
+Single component only: BLD-RT-ReturnEdgeCellFull-01, a simple cube with a surface finish that turns around one 90-degree vertical edge. The cube is the only object. Create a clean orthographic concept sheet: front, side, back, top, underside and small isometric view of the same cube. Pale neutral background. Cube is nominally 0.5 m per side, straight square edges, unchanged full-cell envelope. Rough sawn horizontal timber boards wrap flush around the vertical edge from one face to its adjacent face, showing a clean continuous return. No extra cubes, no stacked assembly, no corners made from multiple pieces, no joining beam, no pegs, no silhouettes, no people, no writing. Flat contact faces. Highly legible realistic game concept art, no outer protrusions.
+
+Selected clean-view prompt/output `exec-c9ff187b-01a8-48e1-b2d9-e84c3cd1f17a.png`:
+
+Isolated single reusable rough-timber cube component, three-quarter orthographic clean view on pale gray. Asset BLD-RT-ReturnEdgeCellFull-01. One simple full-cell cube nominal 0.5 m each side. Horizontal rough-sawn plank appearance wraps around one vertical 90-degree edge, a continuous flush return. No gaps or projections at the edge, no extra blocks, no assembled corner, no people, no text, no props, no chamfer or trim. Keep exact square planar faces and cube silhouette, surface grain only. High-quality restrained realistic game concept illustration. Clean isolated complete asset view.
+
+No reference image was attached; related KIT-RT art was textual style guidance only.

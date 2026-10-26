@@ -1,0 +1,15 @@
+{
+  "source_image": "GameClient/ArtSource/BLD-SM-CellFull-01/References/v001/asset-view.png",
+  "source_sha256": "2f71373716575adc78cd1220432aeaccab2ec70ec4e19202dbb843b546b308e0",
+  "crop_xyxy": [
+    440,
+    365,
+    650,
+    480
+  ],
+  "resize_px": [
+    1024,
+    1024
+  ],
+  "usage": "selected appearance sample; source composition/background excluded"
+}

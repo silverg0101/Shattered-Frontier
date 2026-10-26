@@ -1,0 +1,3312 @@
+{
+  "schema_version": 1,
+  "status": "needs-review",
+  "trajectory_provenance": "producer-hash-verified",
+  "cpu_only": true,
+  "simulation": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\NetContactTrajectory-v001",
+  "fps": 30,
+  "frame_count": 330,
+  "guide_count": 24,
+  "maximum_world_step_m": 0.08,
+  "peak_world_step": {
+    "value": 0.15492616356027855,
+    "units": "m",
+    "frame": 210,
+    "guide": "Tail_G00",
+    "node": 11,
+    "phase": "TURN RESPONSE"
+  },
+  "peak_world_speed": {
+    "value": 4.647784906808356,
+    "units": "m/s",
+    "frame": 210,
+    "guide": "Tail_G00",
+    "node": 11,
+    "phase": "TURN RESPONSE"
+  },
+  "peak_world_acceleration": {
+    "value": 67.90998639692853,
+    "units": "m/s2",
+    "frame": 189,
+    "guide": "Tail_G04",
+    "node": 11,
+    "phase": "TURN RESPONSE"
+  },
+  "peak_body_relative_step": {
+    "value": 0.15442942270349103,
+    "units": "m",
+    "frame": 210,
+    "guide": "Tail_G00",
+    "node": 11,
+    "phase": "TURN RESPONSE"
+  },
+  "violation_count": 118,
+  "violating_frame_count": 33,
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\NetContactTrajectory-v001\\simulation-report.json": "04465b25780fad08a19c1ebc8a019d2aecaec215b14e58f88c72dbdd7202e7b6",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\NetContactTrajectory-v001\\trajectory.npz": "6225894d37a4fce373bd0916deee092027dc255a51d45e3e44ed9aaf9171d76f",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\NetContactTrajectory-v001\\guides.json": "f8f8c15cfa47fcd80ea32cf823227cc5df5d063e0baa1e4bc72de99e77701621",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\NetContactTrajectory-v001\\motion-profile.json": "9df3ed982c0f5f571210a98d42c1e6b395b80713c139f0b7b162ad861d5cca47",
+    "docs\\art-templates\\model-profiles\\voidreign-guide-trajectory-check-20261018.json": "98e5b568d375a514757e21cd5196d453d2ea4768065b699389c9492650a75b39",
+    "docs\\art-templates\\model-profiles\\voidreign-hair-surface-check-20261018.json": "f42b54b785653cd13262405b39e26a48e1fc606edeafb392b1372121e29e1abb"
+  },
+  "tool_sha256": "61ea29a5ec13c772f3c185103917004a29f2112842d2bd9dc8df81c0c4592c15",
+  "violations": [
+    {
+      "frame": 175,
+      "guide": "Tail_G00",
+      "node": 11,
+      "step_m": 0.08018440215142533,
+      "speed_m_s": 2.40553206454276,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 176,
+      "guide": "Tail_G00",
+      "node": 10,
+      "step_m": 0.08103962980853645,
+      "speed_m_s": 2.4311888942560933,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 176,
+      "guide": "Tail_G00",
+      "node": 11,
+      "step_m": 0.0830537021398069,
+      "speed_m_s": 2.491611064194207,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 177,
+      "guide": "Tail_G00",
+      "node": 10,
+      "step_m": 0.08339616214434321,
+      "speed_m_s": 2.501884864330296,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 177,
+      "guide": "Tail_G00",
+      "node": 11,
+      "step_m": 0.08551438411475946,
+      "speed_m_s": 2.565431523442784,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 178,
+      "guide": "Tail_G00",
+      "node": 9,
+      "step_m": 0.08083947622424228,
+      "speed_m_s": 2.4251842867272684,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 178,
+      "guide": "Tail_G00",
+      "node": 10,
+      "step_m": 0.08534665573535029,
+      "speed_m_s": 2.5603996720605084,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 178,
+      "guide": "Tail_G00",
+      "node": 11,
+      "step_m": 0.08757849734958528,
+      "speed_m_s": 2.6273549204875586,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 179,
+      "guide": "Tail_G00",
+      "node": 9,
+      "step_m": 0.08218738635890527,
+      "speed_m_s": 2.465621590767158,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 179,
+      "guide": "Tail_G00",
+      "node": 10,
+      "step_m": 0.08689279472285372,
+      "speed_m_s": 2.6067838416856115,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 179,
+      "guide": "Tail_G00",
+      "node": 11,
+      "step_m": 0.089248992696098,
+      "speed_m_s": 2.67746978088294,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 179,
+      "guide": "Tail_G04",
+      "node": 11,
+      "step_m": 0.0804288211954617,
+      "speed_m_s": 2.412864635863851,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 180,
+      "guide": "Tail_G00",
+      "node": 9,
+      "step_m": 0.08327204374787774,
+      "speed_m_s": 2.498161312436332,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 180,
+      "guide": "Tail_G00",
+      "node": 10,
+      "step_m": 0.08809020912188323,
+      "speed_m_s": 2.642706273656497,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 180,
+      "guide": "Tail_G00",
+      "node": 11,
+      "step_m": 0.09053046918434302,
+      "speed_m_s": 2.7159140755302906,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 180,
+      "guide": "Tail_G04",
+      "node": 10,
+      "step_m": 0.08039246323958558,
+      "speed_m_s": 2.4117738971875675,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 180,
+      "guide": "Tail_G04",
+      "node": 11,
+      "step_m": 0.08150905430304067,
+      "speed_m_s": 2.44527162909122,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 181,
+      "guide": "Tail_G00",
+      "node": 8,
+      "step_m": 0.0801123900306233,
+      "speed_m_s": 2.403371700918699,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 181,
+      "guide": "Tail_G00",
+      "node": 9,
+      "step_m": 0.08411807487782282,
+      "speed_m_s": 2.5235422463346846,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 181,
+      "guide": "Tail_G00",
+      "node": 10,
+      "step_m": 0.08895175320101488,
+      "speed_m_s": 2.6685525960304464,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 181,
+      "guide": "Tail_G00",
+      "node": 11,
+      "step_m": 0.09142687919829416,
+      "speed_m_s": 2.742806375948825,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 181,
+      "guide": "Tail_G04",
+      "node": 10,
+      "step_m": 0.08126570533229142,
+      "speed_m_s": 2.437971159968743,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 181,
+      "guide": "Tail_G04",
+      "node": 11,
+      "step_m": 0.08226661486736644,
+      "speed_m_s": 2.467998446020993,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 181,
+      "guide": "Tail_G11",
+      "node": 11,
+      "step_m": 0.08054989453073517,
+      "speed_m_s": 2.416496835922055,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 182,
+      "guide": "Tail_G00",
+      "node": 8,
+      "step_m": 0.08051568560887283,
+      "speed_m_s": 2.415470568266185,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 182,
+      "guide": "Tail_G00",
+      "node": 9,
+      "step_m": 0.08459982415937836,
+      "speed_m_s": 2.537994724781351,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 182,
+      "guide": "Tail_G00",
+      "node": 10,
+      "step_m": 0.08943368257197995,
+      "speed_m_s": 2.6830104771593986,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 182,
+      "guide": "Tail_G00",
+      "node": 11,
+      "step_m": 0.09193590929066689,
+      "speed_m_s": 2.7580772787200067,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 182,
+      "guide": "Tail_G04",
+      "node": 10,
+      "step_m": 0.08181683876588372,
+      "speed_m_s": 2.4545051629765116,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 182,
+      "guide": "Tail_G04",
+      "node": 11,
+      "step_m": 0.08269786080615589,
+      "speed_m_s": 2.4809358241846766,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 182,
+      "guide": "Tail_G11",
+      "node": 11,
+      "step_m": 0.08112291328808038,
+      "speed_m_s": 2.4336873986424115,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 183,
+      "guide": "Tail_G00",
+      "node": 8,
+      "step_m": 0.08059634232458655,
+      "speed_m_s": 2.4178902697375966,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 183,
+      "guide": "Tail_G00",
+      "node": 9,
+      "step_m": 0.08466522706477149,
+      "speed_m_s": 2.539956811943145,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 183,
+      "guide": "Tail_G00",
+      "node": 10,
+      "step_m": 0.08951413822779679,
+      "speed_m_s": 2.6854241468339035,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 183,
+      "guide": "Tail_G00",
+      "node": 11,
+      "step_m": 0.09205428286256977,
+      "speed_m_s": 2.761628485877093,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 183,
+      "guide": "Tail_G04",
+      "node": 10,
+      "step_m": 0.08201744090344346,
+      "speed_m_s": 2.4605232271033035,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 183,
+      "guide": "Tail_G04",
+      "node": 11,
+      "step_m": 0.08279422731028051,
+      "speed_m_s": 2.4838268193084154,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 183,
+      "guide": "Tail_G11",
+      "node": 11,
+      "step_m": 0.08134714757427167,
+      "speed_m_s": 2.44041442722815,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 184,
+      "guide": "Tail_G00",
+      "node": 8,
+      "step_m": 0.08031140907982046,
+      "speed_m_s": 2.4093422723946136,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 184,
+      "guide": "Tail_G00",
+      "node": 9,
+      "step_m": 0.08437645568759825,
+      "speed_m_s": 2.531293670627947,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 184,
+      "guide": "Tail_G00",
+      "node": 10,
+      "step_m": 0.08921365843375699,
+      "speed_m_s": 2.6764097530127096,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 184,
+      "guide": "Tail_G00",
+      "node": 11,
+      "step_m": 0.09178101725278648,
+      "speed_m_s": 2.7534305175835945,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 184,
+      "guide": "Tail_G04",
+      "node": 10,
+      "step_m": 0.08184131274278879,
+      "speed_m_s": 2.4552393822836636,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 184,
+      "guide": "Tail_G04",
+      "node": 11,
+      "step_m": 0.08254429000641457,
+      "speed_m_s": 2.476328700192437,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 184,
+      "guide": "Tail_G11",
+      "node": 11,
+      "step_m": 0.08120313911902971,
+      "speed_m_s": 2.436094173570891,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 185,
+      "guide": "Tail_G00",
+      "node": 9,
+      "step_m": 0.08377494486353702,
+      "speed_m_s": 2.513248345906111,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 185,
+      "guide": "Tail_G00",
+      "node": 10,
+      "step_m": 0.0885460794411294,
+      "speed_m_s": 2.6563823832338818,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 185,
+      "guide": "Tail_G00",
+      "node": 11,
+      "step_m": 0.0911126907694762,
+      "speed_m_s": 2.733380723084286,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 185,
+      "guide": "Tail_G04",
+      "node": 10,
+      "step_m": 0.08126857298700195,
+      "speed_m_s": 2.4380571896100585,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 185,
+      "guide": "Tail_G04",
+      "node": 11,
+      "step_m": 0.08193659370643712,
+      "speed_m_s": 2.4580978111931135,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 185,
+      "guide": "Tail_G11",
+      "node": 11,
+      "step_m": 0.08067896724311957,
+      "speed_m_s": 2.420369017293587,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 186,
+      "guide": "Tail_G00",
+      "node": 9,
+      "step_m": 0.08282455937627684,
+      "speed_m_s": 2.484736781288305,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 186,
+      "guide": "Tail_G00",
+      "node": 10,
+      "step_m": 0.08749635258878981,
+      "speed_m_s": 2.6248905776636944,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 186,
+      "guide": "Tail_G00",
+      "node": 11,
+      "step_m": 0.09004461278565583,
+      "speed_m_s": 2.701338383569675,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 186,
+      "guide": "Tail_G04",
+      "node": 10,
+      "step_m": 0.08028922802616197,
+      "speed_m_s": 2.408676840784859,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 186,
+      "guide": "Tail_G04",
+      "node": 11,
+      "step_m": 0.08096138871201929,
+      "speed_m_s": 2.4288416613605786,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 187,
+      "guide": "Tail_G00",
+      "node": 9,
+      "step_m": 0.08148594104246204,
+      "speed_m_s": 2.4445782312738613,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 187,
+      "guide": "Tail_G00",
+      "node": 10,
+      "step_m": 0.0860494338747014,
+      "speed_m_s": 2.5814830162410423,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 187,
+      "guide": "Tail_G00",
+      "node": 11,
+      "step_m": 0.08857376630614631,
+      "speed_m_s": 2.6572129891843894,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 188,
+      "guide": "Tail_G00",
+      "node": 10,
+      "step_m": 0.08421057000023242,
+      "speed_m_s": 2.5263171000069726,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 188,
+      "guide": "Tail_G00",
+      "node": 11,
+      "step_m": 0.08670246496874053,
+      "speed_m_s": 2.601073949062216,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 189,
+      "guide": "Tail_G00",
+      "node": 11,
+      "step_m": 0.0881835821521998,
+      "speed_m_s": 2.645507464565994,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 190,
+      "guide": "Tail_G00",
+      "node": 11,
+      "step_m": 0.0876567518277847,
+      "speed_m_s": 2.6297025548335413,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 197,
+      "guide": "Tail_G04",
+      "node": 11,
+      "step_m": 0.08100818177416186,
+      "speed_m_s": 2.4302454532248556,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 198,
+      "guide": "Tail_G04",
+      "node": 10,
+      "step_m": 0.0849706300359008,
+      "speed_m_s": 2.549118901077024,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 198,
+      "guide": "Tail_G04",
+      "node": 11,
+      "step_m": 0.10441984478425345,
+      "speed_m_s": 3.1325953435276035,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 199,
+      "guide": "Tail_G04",
+      "node": 9,
+      "step_m": 0.08501100104128242,
+      "speed_m_s": 2.550330031238473,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 199,
+      "guide": "Tail_G04",
+      "node": 10,
+      "step_m": 0.10078733076719859,
+      "speed_m_s": 3.023619923015958,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 199,
+      "guide": "Tail_G04",
+      "node": 11,
+      "step_m": 0.12207962771168276,
+      "speed_m_s": 3.662388831350483,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 200,
+      "guide": "Tail_G04",
+      "node": 9,
+      "step_m": 0.08177098273128457,
+      "speed_m_s": 2.453129481938537,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 200,
+      "guide": "Tail_G04",
+      "node": 10,
+      "step_m": 0.11509072024423612,
+      "speed_m_s": 3.4527216073270837,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 200,
+      "guide": "Tail_G04",
+      "node": 11,
+      "step_m": 0.13420856126347727,
+      "speed_m_s": 4.026256837904318,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 201,
+      "guide": "Tail_G04",
+      "node": 10,
+      "step_m": 0.12190577630992631,
+      "speed_m_s": 3.6571732892977895,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 201,
+      "guide": "Tail_G04",
+      "node": 11,
+      "step_m": 0.13629765483187284,
+      "speed_m_s": 4.088929644956185,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 202,
+      "guide": "Tail_G04",
+      "node": 10,
+      "step_m": 0.10694787172435034,
+      "speed_m_s": 3.20843615173051,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 202,
+      "guide": "Tail_G04",
+      "node": 11,
+      "step_m": 0.1263245552912405,
+      "speed_m_s": 3.7897366587372154,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 202,
+      "guide": "Tail_G11",
+      "node": 11,
+      "step_m": 0.08829013922473616,
+      "speed_m_s": 2.648704176742085,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 203,
+      "guide": "Tail_G00",
+      "node": 7,
+      "step_m": 0.08613668450426218,
+      "speed_m_s": 2.5841005351278654,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 203,
+      "guide": "Tail_G00",
+      "node": 8,
+      "step_m": 0.08409574871352977,
+      "speed_m_s": 2.522872461405893,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 203,
+      "guide": "Tail_G04",
+      "node": 11,
+      "step_m": 0.10595967375700621,
+      "speed_m_s": 3.1787902127101866,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 203,
+      "guide": "Tail_G11",
+      "node": 11,
+      "step_m": 0.09656262439661406,
+      "speed_m_s": 2.896878731898422,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 204,
+      "guide": "Tail_G00",
+      "node": 6,
+      "step_m": 0.08169823256644092,
+      "speed_m_s": 2.4509469769932277,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 204,
+      "guide": "Tail_G00",
+      "node": 7,
+      "step_m": 0.08445620918551404,
+      "speed_m_s": 2.533686275565421,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 204,
+      "guide": "Tail_G00",
+      "node": 8,
+      "step_m": 0.0829630493903462,
+      "speed_m_s": 2.488891481710386,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 204,
+      "guide": "Tail_G00",
+      "node": 9,
+      "step_m": 0.08244186216691549,
+      "speed_m_s": 2.4732558650074647,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 204,
+      "guide": "Tail_G00",
+      "node": 10,
+      "step_m": 0.08935211756946142,
+      "speed_m_s": 2.6805635270838426,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 204,
+      "guide": "Tail_G00",
+      "node": 11,
+      "step_m": 0.08727655181941221,
+      "speed_m_s": 2.618296554582366,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 204,
+      "guide": "Tail_G04",
+      "node": 11,
+      "step_m": 0.08015519072044129,
+      "speed_m_s": 2.404655721613239,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 204,
+      "guide": "Tail_G11",
+      "node": 11,
+      "step_m": 0.0954490353292896,
+      "speed_m_s": 2.863471059878688,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 205,
+      "guide": "Tail_G00",
+      "node": 8,
+      "step_m": 0.0946777687655928,
+      "speed_m_s": 2.840333062967784,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 205,
+      "guide": "Tail_G00",
+      "node": 9,
+      "step_m": 0.1028031518453062,
+      "speed_m_s": 3.0840945553591856,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 205,
+      "guide": "Tail_G00",
+      "node": 10,
+      "step_m": 0.10351090452103469,
+      "speed_m_s": 3.1053271356310406,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 205,
+      "guide": "Tail_G00",
+      "node": 11,
+      "step_m": 0.10462358961593943,
+      "speed_m_s": 3.138707688478183,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 205,
+      "guide": "Tail_G11",
+      "node": 11,
+      "step_m": 0.084595570319515,
+      "speed_m_s": 2.5378671095854504,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 206,
+      "guide": "Tail_G00",
+      "node": 7,
+      "step_m": 0.08677475687696229,
+      "speed_m_s": 2.6032427063088686,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 206,
+      "guide": "Tail_G00",
+      "node": 8,
+      "step_m": 0.09766372598238082,
+      "speed_m_s": 2.929911779471425,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 206,
+      "guide": "Tail_G00",
+      "node": 9,
+      "step_m": 0.11524211234954924,
+      "speed_m_s": 3.4572633704864772,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 206,
+      "guide": "Tail_G00",
+      "node": 10,
+      "step_m": 0.10766780332587923,
+      "speed_m_s": 3.230034099776377,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 206,
+      "guide": "Tail_G00",
+      "node": 11,
+      "step_m": 0.11991155193819818,
+      "speed_m_s": 3.5973465581459454,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 207,
+      "guide": "Tail_G00",
+      "node": 7,
+      "step_m": 0.08229894335479453,
+      "speed_m_s": 2.468968300643836,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 207,
+      "guide": "Tail_G00",
+      "node": 8,
+      "step_m": 0.10563223750458674,
+      "speed_m_s": 3.168967125137602,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 207,
+      "guide": "Tail_G00",
+      "node": 9,
+      "step_m": 0.12103738444950389,
+      "speed_m_s": 3.631121533485117,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 207,
+      "guide": "Tail_G00",
+      "node": 10,
+      "step_m": 0.11636994275358209,
+      "speed_m_s": 3.491098282607463,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 207,
+      "guide": "Tail_G00",
+      "node": 11,
+      "step_m": 0.12610514836859896,
+      "speed_m_s": 3.783154451057969,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 208,
+      "guide": "Tail_G00",
+      "node": 8,
+      "step_m": 0.09901480226603042,
+      "speed_m_s": 2.9704440679809125,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 208,
+      "guide": "Tail_G00",
+      "node": 9,
+      "step_m": 0.11752570015176318,
+      "speed_m_s": 3.5257710045528956,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 208,
+      "guide": "Tail_G00",
+      "node": 10,
+      "step_m": 0.14345095671502917,
+      "speed_m_s": 4.303528701450875,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 208,
+      "guide": "Tail_G00",
+      "node": 11,
+      "step_m": 0.12641254444346875,
+      "speed_m_s": 3.7923763333040625,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 209,
+      "guide": "Tail_G00",
+      "node": 9,
+      "step_m": 0.10993756703738448,
+      "speed_m_s": 3.2981270111215344,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 209,
+      "guide": "Tail_G00",
+      "node": 10,
+      "step_m": 0.15142081637758684,
+      "speed_m_s": 4.542624491327605,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 209,
+      "guide": "Tail_G00",
+      "node": 11,
+      "step_m": 0.14807688272457986,
+      "speed_m_s": 4.442306481737396,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 210,
+      "guide": "Tail_G00",
+      "node": 9,
+      "step_m": 0.08992872306109378,
+      "speed_m_s": 2.6978616918328138,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 210,
+      "guide": "Tail_G00",
+      "node": 10,
+      "step_m": 0.1363663641816087,
+      "speed_m_s": 4.090990925448261,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 210,
+      "guide": "Tail_G00",
+      "node": 11,
+      "step_m": 0.15492616356027855,
+      "speed_m_s": 4.647784906808356,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 211,
+      "guide": "Tail_G00",
+      "node": 10,
+      "step_m": 0.10249918540735226,
+      "speed_m_s": 3.0749755622205677,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 211,
+      "guide": "Tail_G00",
+      "node": 11,
+      "step_m": 0.15107506150179595,
+      "speed_m_s": 4.532251845053878,
+      "phase": "TURN RESPONSE"
+    },
+    {
+      "frame": 212,
+      "guide": "Tail_G00",
+      "node": 11,
+      "step_m": 0.12165337534206769,
+      "speed_m_s": 3.6496012602620307,
+      "phase": "STOP / SETTLE"
+    },
+    {
+      "frame": 213,
+      "guide": "Tail_G00",
+      "node": 11,
+      "step_m": 0.08019082795821325,
+      "speed_m_s": 2.4057248387463974,
+      "phase": "STOP / SETTLE"
+    }
+  ],
+  "per_frame": [
+    {
+      "frame": 2,
+      "phase": "SETTLED",
+      "maximum_world_step_m": 5.2821049700980325e-05,
+      "maximum_body_relative_step_m": 5.2821049700980325e-05,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 3,
+      "phase": "SETTLED",
+      "maximum_world_step_m": 4.323060826321751e-05,
+      "maximum_body_relative_step_m": 4.323060826321751e-05,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 4,
+      "phase": "SETTLED",
+      "maximum_world_step_m": 4.5604302103210347e-05,
+      "maximum_body_relative_step_m": 4.5604302103210347e-05,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 5,
+      "phase": "SETTLED",
+      "maximum_world_step_m": 5.249132585543484e-05,
+      "maximum_body_relative_step_m": 5.249132585543484e-05,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 6,
+      "phase": "SETTLED",
+      "maximum_world_step_m": 5.9935500864093454e-05,
+      "maximum_body_relative_step_m": 5.9935500864093454e-05,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 7,
+      "phase": "SETTLED",
+      "maximum_world_step_m": 6.134742189669388e-05,
+      "maximum_body_relative_step_m": 6.134742189669388e-05,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 8,
+      "phase": "SETTLED",
+      "maximum_world_step_m": 5.745172216463622e-05,
+      "maximum_body_relative_step_m": 5.745172216463622e-05,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 9,
+      "phase": "SETTLED",
+      "maximum_world_step_m": 4.884671780732664e-05,
+      "maximum_body_relative_step_m": 4.884671780732664e-05,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 10,
+      "phase": "SETTLED",
+      "maximum_world_step_m": 3.688606906999461e-05,
+      "maximum_body_relative_step_m": 3.688606906999461e-05,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 11,
+      "phase": "SETTLED",
+      "maximum_world_step_m": 2.303876141292315e-05,
+      "maximum_body_relative_step_m": 2.303876141292315e-05,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 12,
+      "phase": "SETTLED",
+      "maximum_world_step_m": 1.7516693688070923e-05,
+      "maximum_body_relative_step_m": 1.7516693688070923e-05,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 13,
+      "phase": "SETTLED",
+      "maximum_world_step_m": 1.333350041734261e-05,
+      "maximum_body_relative_step_m": 1.333350041734261e-05,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 14,
+      "phase": "SETTLED",
+      "maximum_world_step_m": 1.530952001777541e-05,
+      "maximum_body_relative_step_m": 1.530952001777541e-05,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 15,
+      "phase": "SETTLED",
+      "maximum_world_step_m": 2.227882571751795e-05,
+      "maximum_body_relative_step_m": 2.227882571751795e-05,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 16,
+      "phase": "SETTLED",
+      "maximum_world_step_m": 2.6285327343916147e-05,
+      "maximum_body_relative_step_m": 2.6285327343916147e-05,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 17,
+      "phase": "SETTLED",
+      "maximum_world_step_m": 2.6949379304613223e-05,
+      "maximum_body_relative_step_m": 2.6949379304613223e-05,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 18,
+      "phase": "SETTLED",
+      "maximum_world_step_m": 2.5146679727062945e-05,
+      "maximum_body_relative_step_m": 2.5146679727062945e-05,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 19,
+      "phase": "SETTLED",
+      "maximum_world_step_m": 2.144736818269643e-05,
+      "maximum_body_relative_step_m": 2.144736818269643e-05,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 20,
+      "phase": "SETTLED",
+      "maximum_world_step_m": 1.66775883722225e-05,
+      "maximum_body_relative_step_m": 1.66775883722225e-05,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 21,
+      "phase": "SETTLED",
+      "maximum_world_step_m": 1.143570682190858e-05,
+      "maximum_body_relative_step_m": 1.143570682190858e-05,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 22,
+      "phase": "SETTLED",
+      "maximum_world_step_m": 7.0491155380333505e-06,
+      "maximum_body_relative_step_m": 7.0491155380333505e-06,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 23,
+      "phase": "SETTLED",
+      "maximum_world_step_m": 5.919869585228026e-06,
+      "maximum_body_relative_step_m": 5.919869585228026e-06,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 24,
+      "phase": "SETTLED",
+      "maximum_world_step_m": 5.202020769991544e-06,
+      "maximum_body_relative_step_m": 5.202020769991544e-06,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 25,
+      "phase": "SETTLED",
+      "maximum_world_step_m": 6.555240816943088e-06,
+      "maximum_body_relative_step_m": 6.555240816943088e-06,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 26,
+      "phase": "SETTLED",
+      "maximum_world_step_m": 8.356403265475139e-06,
+      "maximum_body_relative_step_m": 8.356403265475139e-06,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 27,
+      "phase": "SETTLED",
+      "maximum_world_step_m": 9.3350274488326e-06,
+      "maximum_body_relative_step_m": 9.3350274488326e-06,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 28,
+      "phase": "SETTLED",
+      "maximum_world_step_m": 9.520396084017881e-06,
+      "maximum_body_relative_step_m": 9.520396084017881e-06,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 29,
+      "phase": "SETTLED",
+      "maximum_world_step_m": 9.053482504651239e-06,
+      "maximum_body_relative_step_m": 9.053482504651239e-06,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 30,
+      "phase": "SETTLED",
+      "maximum_world_step_m": 7.980027467387848e-06,
+      "maximum_body_relative_step_m": 7.980027467387848e-06,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 31,
+      "phase": "SETTLED",
+      "maximum_world_step_m": 6.5094200903950576e-06,
+      "maximum_body_relative_step_m": 6.5094200903950576e-06,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 32,
+      "phase": "WALK RESPONSE",
+      "maximum_world_step_m": 3.04471966635667e-05,
+      "maximum_body_relative_step_m": 2.7339053615966268e-05,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 33,
+      "phase": "WALK RESPONSE",
+      "maximum_world_step_m": 0.00019041698246688432,
+      "maximum_body_relative_step_m": 0.000184067370339763,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 34,
+      "phase": "WALK RESPONSE",
+      "maximum_world_step_m": 0.0004904348989808788,
+      "maximum_body_relative_step_m": 0.0004602896610499906,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 35,
+      "phase": "WALK RESPONSE",
+      "maximum_world_step_m": 0.0008502357615931053,
+      "maximum_body_relative_step_m": 0.0007760197262603246,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 36,
+      "phase": "WALK RESPONSE",
+      "maximum_world_step_m": 0.0012154677994191307,
+      "maximum_body_relative_step_m": 0.001082280921428088,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 37,
+      "phase": "WALK RESPONSE",
+      "maximum_world_step_m": 0.0016713956732117641,
+      "maximum_body_relative_step_m": 0.0013707960988504615,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 38,
+      "phase": "WALK RESPONSE",
+      "maximum_world_step_m": 0.00212589831339225,
+      "maximum_body_relative_step_m": 0.0016835539628028602,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 39,
+      "phase": "WALK RESPONSE",
+      "maximum_world_step_m": 0.0026459028653374127,
+      "maximum_body_relative_step_m": 0.0021305128778202937,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 40,
+      "phase": "WALK RESPONSE",
+      "maximum_world_step_m": 0.00345347962803461,
+      "maximum_body_relative_step_m": 0.002661592549483003,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 41,
+      "phase": "WALK RESPONSE",
+      "maximum_world_step_m": 0.004324919474563068,
+      "maximum_body_relative_step_m": 0.003209775151410176,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 42,
+      "phase": "WALK RESPONSE",
+      "maximum_world_step_m": 0.005141066493613901,
+      "maximum_body_relative_step_m": 0.003667685186481265,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 43,
+      "phase": "WALK RESPONSE",
+      "maximum_world_step_m": 0.0058740672672522596,
+      "maximum_body_relative_step_m": 0.003915507650624124,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 44,
+      "phase": "WALK RESPONSE",
+      "maximum_world_step_m": 0.0065123362021166885,
+      "maximum_body_relative_step_m": 0.0038564242568906184,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 45,
+      "phase": "WALK RESPONSE",
+      "maximum_world_step_m": 0.007251741209295992,
+      "maximum_body_relative_step_m": 0.003565312505962046,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 46,
+      "phase": "WALK RESPONSE",
+      "maximum_world_step_m": 0.008011289836089378,
+      "maximum_body_relative_step_m": 0.0032315381831846575,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 47,
+      "phase": "WALK RESPONSE",
+      "maximum_world_step_m": 0.009206081429697881,
+      "maximum_body_relative_step_m": 0.0025341382284365175,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 48,
+      "phase": "WALK RESPONSE",
+      "maximum_world_step_m": 0.010443785570528795,
+      "maximum_body_relative_step_m": 0.0028253847817242476,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 49,
+      "phase": "WALK RESPONSE",
+      "maximum_world_step_m": 0.011547547902173015,
+      "maximum_body_relative_step_m": 0.003992774348552593,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 50,
+      "phase": "WALK RESPONSE",
+      "maximum_world_step_m": 0.012621522417061054,
+      "maximum_body_relative_step_m": 0.005366567068832428,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 51,
+      "phase": "WALK RESPONSE",
+      "maximum_world_step_m": 0.01351696879418343,
+      "maximum_body_relative_step_m": 0.0062788137209973255,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 52,
+      "phase": "WALK RESPONSE",
+      "maximum_world_step_m": 0.014029447155687033,
+      "maximum_body_relative_step_m": 0.006495894789821578,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 53,
+      "phase": "WALK RESPONSE",
+      "maximum_world_step_m": 0.01469512076104787,
+      "maximum_body_relative_step_m": 0.006756640567088353,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 54,
+      "phase": "WALK RESPONSE",
+      "maximum_world_step_m": 0.015042832068325193,
+      "maximum_body_relative_step_m": 0.006414900109427311,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 55,
+      "phase": "WALK RESPONSE",
+      "maximum_world_step_m": 0.015957676544038377,
+      "maximum_body_relative_step_m": 0.005338580996907322,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 56,
+      "phase": "WALK RESPONSE",
+      "maximum_world_step_m": 0.016786689224388758,
+      "maximum_body_relative_step_m": 0.004304585755789463,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 57,
+      "phase": "WALK RESPONSE",
+      "maximum_world_step_m": 0.016796154659623412,
+      "maximum_body_relative_step_m": 0.004577487879592787,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 58,
+      "phase": "WALK RESPONSE",
+      "maximum_world_step_m": 0.016303477761110418,
+      "maximum_body_relative_step_m": 0.0065294529559079975,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 59,
+      "phase": "WALK RESPONSE",
+      "maximum_world_step_m": 0.017123544795825583,
+      "maximum_body_relative_step_m": 0.008363609203615816,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 60,
+      "phase": "WALK RESPONSE",
+      "maximum_world_step_m": 0.01741118083919875,
+      "maximum_body_relative_step_m": 0.009912336229059016,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 61,
+      "phase": "WALK RESPONSE",
+      "maximum_world_step_m": 0.017718589522354826,
+      "maximum_body_relative_step_m": 0.010401365893538498,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 62,
+      "phase": "WALK RESPONSE",
+      "maximum_world_step_m": 0.01802317871945852,
+      "maximum_body_relative_step_m": 0.010248556922292228,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 63,
+      "phase": "WALK RESPONSE",
+      "maximum_world_step_m": 0.016852356567901943,
+      "maximum_body_relative_step_m": 0.009794998517303491,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 64,
+      "phase": "WALK RESPONSE",
+      "maximum_world_step_m": 0.01710438955899704,
+      "maximum_body_relative_step_m": 0.008702614135527122,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 65,
+      "phase": "WALK RESPONSE",
+      "maximum_world_step_m": 0.018348775606462874,
+      "maximum_body_relative_step_m": 0.006807747324672212,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 66,
+      "phase": "WALK RESPONSE",
+      "maximum_world_step_m": 0.01891531726188064,
+      "maximum_body_relative_step_m": 0.005799213241726611,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 67,
+      "phase": "WALK RESPONSE",
+      "maximum_world_step_m": 0.019481346675670988,
+      "maximum_body_relative_step_m": 0.008104473574945039,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 68,
+      "phase": "WALK RESPONSE",
+      "maximum_world_step_m": 0.019971535755082027,
+      "maximum_body_relative_step_m": 0.009989498310292355,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 69,
+      "phase": "WALK RESPONSE",
+      "maximum_world_step_m": 0.01957529868914276,
+      "maximum_body_relative_step_m": 0.010899920604463858,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 70,
+      "phase": "WALK RESPONSE",
+      "maximum_world_step_m": 0.018782479643133444,
+      "maximum_body_relative_step_m": 0.011852491020744793,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 71,
+      "phase": "WALK RESPONSE",
+      "maximum_world_step_m": 0.017619441453495383,
+      "maximum_body_relative_step_m": 0.011533614190375316,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 72,
+      "phase": "WALK RESPONSE",
+      "maximum_world_step_m": 0.016091520430313904,
+      "maximum_body_relative_step_m": 0.010742555122798958,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 73,
+      "phase": "WALK RESPONSE",
+      "maximum_world_step_m": 0.015311284919513685,
+      "maximum_body_relative_step_m": 0.010626476270496777,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 74,
+      "phase": "WALK RESPONSE",
+      "maximum_world_step_m": 0.014690493934779194,
+      "maximum_body_relative_step_m": 0.009371400912918852,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 75,
+      "phase": "WALK RESPONSE",
+      "maximum_world_step_m": 0.01433381256971516,
+      "maximum_body_relative_step_m": 0.007102880908587238,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 76,
+      "phase": "WALK RESPONSE",
+      "maximum_world_step_m": 0.01257404970909283,
+      "maximum_body_relative_step_m": 0.0055869360642113565,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 77,
+      "phase": "WALK RESPONSE",
+      "maximum_world_step_m": 0.01282470096342896,
+      "maximum_body_relative_step_m": 0.0077367332308842214,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 78,
+      "phase": "WALK RESPONSE",
+      "maximum_world_step_m": 0.013368477087007233,
+      "maximum_body_relative_step_m": 0.009152223175239668,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 79,
+      "phase": "WALK RESPONSE",
+      "maximum_world_step_m": 0.013302668446233215,
+      "maximum_body_relative_step_m": 0.009710854208721073,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 80,
+      "phase": "WALK RESPONSE",
+      "maximum_world_step_m": 0.012454345930367204,
+      "maximum_body_relative_step_m": 0.009298107347150647,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 81,
+      "phase": "WALK RESPONSE",
+      "maximum_world_step_m": 0.010880289164374847,
+      "maximum_body_relative_step_m": 0.008074634529776192,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 82,
+      "phase": "WALK RESPONSE",
+      "maximum_world_step_m": 0.00772958475155681,
+      "maximum_body_relative_step_m": 0.007075336594367763,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 83,
+      "phase": "WALK RESPONSE",
+      "maximum_world_step_m": 0.00713400978867733,
+      "maximum_body_relative_step_m": 0.006146516579928615,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 84,
+      "phase": "WALK RESPONSE",
+      "maximum_world_step_m": 0.007040434656623598,
+      "maximum_body_relative_step_m": 0.00489449398727043,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 85,
+      "phase": "WALK RESPONSE",
+      "maximum_world_step_m": 0.006464637994108855,
+      "maximum_body_relative_step_m": 0.004639230031579643,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 86,
+      "phase": "WALK RESPONSE",
+      "maximum_world_step_m": 0.007495283588085671,
+      "maximum_body_relative_step_m": 0.00651864672721418,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 87,
+      "phase": "WALK RESPONSE",
+      "maximum_world_step_m": 0.007497487248941684,
+      "maximum_body_relative_step_m": 0.007010698706770398,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 88,
+      "phase": "WALK RESPONSE",
+      "maximum_world_step_m": 0.006784937582380575,
+      "maximum_body_relative_step_m": 0.00662403766215713,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 89,
+      "phase": "WALK RESPONSE",
+      "maximum_world_step_m": 0.005883446468305146,
+      "maximum_body_relative_step_m": 0.0058966686505631605,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 90,
+      "phase": "WALK RESPONSE",
+      "maximum_world_step_m": 0.004510603553540335,
+      "maximum_body_relative_step_m": 0.004680405946802903,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 91,
+      "phase": "WALK RESPONSE",
+      "maximum_world_step_m": 0.003641938415823303,
+      "maximum_body_relative_step_m": 0.0036964582248023257,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 92,
+      "phase": "RUN RESPONSE",
+      "maximum_world_step_m": 0.002888273964119668,
+      "maximum_body_relative_step_m": 0.0028903640998504585,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 93,
+      "phase": "RUN RESPONSE",
+      "maximum_world_step_m": 0.002894666892951872,
+      "maximum_body_relative_step_m": 0.0030699820601971847,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 94,
+      "phase": "RUN RESPONSE",
+      "maximum_world_step_m": 0.003111130673925409,
+      "maximum_body_relative_step_m": 0.0035332209718974754,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 95,
+      "phase": "RUN RESPONSE",
+      "maximum_world_step_m": 0.00396901934964973,
+      "maximum_body_relative_step_m": 0.004264028578634353,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 96,
+      "phase": "RUN RESPONSE",
+      "maximum_world_step_m": 0.004404280988127634,
+      "maximum_body_relative_step_m": 0.0054096732657897715,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 97,
+      "phase": "RUN RESPONSE",
+      "maximum_world_step_m": 0.004665914199651176,
+      "maximum_body_relative_step_m": 0.0067486613092424454,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 98,
+      "phase": "RUN RESPONSE",
+      "maximum_world_step_m": 0.006543372551211457,
+      "maximum_body_relative_step_m": 0.00777113015724864,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 99,
+      "phase": "RUN RESPONSE",
+      "maximum_world_step_m": 0.00871984355940216,
+      "maximum_body_relative_step_m": 0.008496154842263641,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 100,
+      "phase": "RUN RESPONSE",
+      "maximum_world_step_m": 0.011175613930013,
+      "maximum_body_relative_step_m": 0.00845994888695664,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 101,
+      "phase": "RUN RESPONSE",
+      "maximum_world_step_m": 0.012641417488962853,
+      "maximum_body_relative_step_m": 0.008253080199915832,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 102,
+      "phase": "RUN RESPONSE",
+      "maximum_world_step_m": 0.015520922517408123,
+      "maximum_body_relative_step_m": 0.007772658714870685,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 103,
+      "phase": "RUN RESPONSE",
+      "maximum_world_step_m": 0.0194159011356726,
+      "maximum_body_relative_step_m": 0.009794273168241134,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 104,
+      "phase": "RUN RESPONSE",
+      "maximum_world_step_m": 0.02286527898693263,
+      "maximum_body_relative_step_m": 0.01244766170470092,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 105,
+      "phase": "RUN RESPONSE",
+      "maximum_world_step_m": 0.025228625053498325,
+      "maximum_body_relative_step_m": 0.012615099119096581,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 106,
+      "phase": "RUN RESPONSE",
+      "maximum_world_step_m": 0.026270360264357803,
+      "maximum_body_relative_step_m": 0.009640261735769777,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 107,
+      "phase": "RUN RESPONSE",
+      "maximum_world_step_m": 0.030648080142020417,
+      "maximum_body_relative_step_m": 0.009412158293203224,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 108,
+      "phase": "RUN RESPONSE",
+      "maximum_world_step_m": 0.0354038083179278,
+      "maximum_body_relative_step_m": 0.015021660774987794,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 109,
+      "phase": "RUN RESPONSE",
+      "maximum_world_step_m": 0.03561448432149651,
+      "maximum_body_relative_step_m": 0.01848960694367757,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 110,
+      "phase": "RUN RESPONSE",
+      "maximum_world_step_m": 0.03446038541089271,
+      "maximum_body_relative_step_m": 0.02329979885094776,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 111,
+      "phase": "RUN RESPONSE",
+      "maximum_world_step_m": 0.038917940790644624,
+      "maximum_body_relative_step_m": 0.02159912000091996,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 112,
+      "phase": "RUN RESPONSE",
+      "maximum_world_step_m": 0.038979386100145036,
+      "maximum_body_relative_step_m": 0.019263715522374502,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 113,
+      "phase": "RUN RESPONSE",
+      "maximum_world_step_m": 0.04369146078597702,
+      "maximum_body_relative_step_m": 0.01493439795153777,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 114,
+      "phase": "RUN RESPONSE",
+      "maximum_world_step_m": 0.05198956972909041,
+      "maximum_body_relative_step_m": 0.02633527791995456,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 115,
+      "phase": "RUN RESPONSE",
+      "maximum_world_step_m": 0.057850888266087724,
+      "maximum_body_relative_step_m": 0.03030595768475574,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 116,
+      "phase": "RUN RESPONSE",
+      "maximum_world_step_m": 0.06008845980819542,
+      "maximum_body_relative_step_m": 0.03273341402761389,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 117,
+      "phase": "RUN RESPONSE",
+      "maximum_world_step_m": 0.05970353654246214,
+      "maximum_body_relative_step_m": 0.030771159037238108,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 118,
+      "phase": "RUN RESPONSE",
+      "maximum_world_step_m": 0.05444214971723726,
+      "maximum_body_relative_step_m": 0.020681883589968166,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 119,
+      "phase": "RUN RESPONSE",
+      "maximum_world_step_m": 0.0550366146550879,
+      "maximum_body_relative_step_m": 0.01986278921921761,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 120,
+      "phase": "RUN RESPONSE",
+      "maximum_world_step_m": 0.061824826422087344,
+      "maximum_body_relative_step_m": 0.0313498109160793,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 121,
+      "phase": "RUN RESPONSE",
+      "maximum_world_step_m": 0.05429467150842009,
+      "maximum_body_relative_step_m": 0.034482213990534236,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 122,
+      "phase": "RUN RESPONSE",
+      "maximum_world_step_m": 0.05114330610963979,
+      "maximum_body_relative_step_m": 0.03819469229974792,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 123,
+      "phase": "RUN RESPONSE",
+      "maximum_world_step_m": 0.05302096012739605,
+      "maximum_body_relative_step_m": 0.034817893864725925,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 124,
+      "phase": "RUN RESPONSE",
+      "maximum_world_step_m": 0.053790160058451005,
+      "maximum_body_relative_step_m": 0.02830338956258868,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 125,
+      "phase": "RUN RESPONSE",
+      "maximum_world_step_m": 0.05573263228941807,
+      "maximum_body_relative_step_m": 0.021140080063939894,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 126,
+      "phase": "RUN RESPONSE",
+      "maximum_world_step_m": 0.06275287060031122,
+      "maximum_body_relative_step_m": 0.03510043507540995,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 127,
+      "phase": "RUN RESPONSE",
+      "maximum_world_step_m": 0.07087318708529382,
+      "maximum_body_relative_step_m": 0.04751417093339113,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 128,
+      "phase": "RUN RESPONSE",
+      "maximum_world_step_m": 0.07099440142112269,
+      "maximum_body_relative_step_m": 0.04134622227675991,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 129,
+      "phase": "RUN RESPONSE",
+      "maximum_world_step_m": 0.06331224690728278,
+      "maximum_body_relative_step_m": 0.0415787375691154,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 130,
+      "phase": "RUN RESPONSE",
+      "maximum_world_step_m": 0.05818467622298736,
+      "maximum_body_relative_step_m": 0.0305573570241631,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 131,
+      "phase": "RUN RESPONSE",
+      "maximum_world_step_m": 0.04856611310648121,
+      "maximum_body_relative_step_m": 0.02086510212226419,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 132,
+      "phase": "RUN RESPONSE",
+      "maximum_world_step_m": 0.04957942197876991,
+      "maximum_body_relative_step_m": 0.025832154670402632,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 133,
+      "phase": "RUN RESPONSE",
+      "maximum_world_step_m": 0.04405759029033989,
+      "maximum_body_relative_step_m": 0.024184732695607013,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 134,
+      "phase": "RUN RESPONSE",
+      "maximum_world_step_m": 0.04151369756128992,
+      "maximum_body_relative_step_m": 0.029716262153528065,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 135,
+      "phase": "RUN RESPONSE",
+      "maximum_world_step_m": 0.03938805807214566,
+      "maximum_body_relative_step_m": 0.028195153856068134,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 136,
+      "phase": "RUN RESPONSE",
+      "maximum_world_step_m": 0.038283211919511034,
+      "maximum_body_relative_step_m": 0.024328449684769504,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 137,
+      "phase": "RUN RESPONSE",
+      "maximum_world_step_m": 0.038749233523585586,
+      "maximum_body_relative_step_m": 0.018722477068212277,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 138,
+      "phase": "RUN RESPONSE",
+      "maximum_world_step_m": 0.03757073600845343,
+      "maximum_body_relative_step_m": 0.021872002749686485,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 139,
+      "phase": "RUN RESPONSE",
+      "maximum_world_step_m": 0.03505798794080557,
+      "maximum_body_relative_step_m": 0.022442866982256806,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 140,
+      "phase": "RUN RESPONSE",
+      "maximum_world_step_m": 0.03502402477795965,
+      "maximum_body_relative_step_m": 0.026349208659519948,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 141,
+      "phase": "RUN RESPONSE",
+      "maximum_world_step_m": 0.034267497728995684,
+      "maximum_body_relative_step_m": 0.026271370563871826,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 142,
+      "phase": "RUN RESPONSE",
+      "maximum_world_step_m": 0.02937118067147669,
+      "maximum_body_relative_step_m": 0.020316627212105174,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 143,
+      "phase": "RUN RESPONSE",
+      "maximum_world_step_m": 0.022102104801422034,
+      "maximum_body_relative_step_m": 0.014448157672100894,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 144,
+      "phase": "RUN RESPONSE",
+      "maximum_world_step_m": 0.019825525080705387,
+      "maximum_body_relative_step_m": 0.014767857499649897,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 145,
+      "phase": "RUN RESPONSE",
+      "maximum_world_step_m": 0.019809416096816742,
+      "maximum_body_relative_step_m": 0.016861832213821946,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 146,
+      "phase": "RUN RESPONSE",
+      "maximum_world_step_m": 0.013660330842837066,
+      "maximum_body_relative_step_m": 0.012379669847513312,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 147,
+      "phase": "RUN RESPONSE",
+      "maximum_world_step_m": 0.0107543309903656,
+      "maximum_body_relative_step_m": 0.010709533826739913,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 148,
+      "phase": "RUN RESPONSE",
+      "maximum_world_step_m": 0.007978916035135003,
+      "maximum_body_relative_step_m": 0.008921253095299033,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 149,
+      "phase": "RUN RESPONSE",
+      "maximum_world_step_m": 0.007340646694870959,
+      "maximum_body_relative_step_m": 0.008115436187705365,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 150,
+      "phase": "RUN RESPONSE",
+      "maximum_world_step_m": 0.006549559867630362,
+      "maximum_body_relative_step_m": 0.0068150995547832886,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 151,
+      "phase": "RUN RESPONSE",
+      "maximum_world_step_m": 0.0073514227178244915,
+      "maximum_body_relative_step_m": 0.00732790159119019,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 152,
+      "phase": "TURN RESPONSE",
+      "maximum_world_step_m": 0.00783796977402514,
+      "maximum_body_relative_step_m": 0.007850285431450946,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 153,
+      "phase": "TURN RESPONSE",
+      "maximum_world_step_m": 0.007053682988161618,
+      "maximum_body_relative_step_m": 0.007221536190016045,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 154,
+      "phase": "TURN RESPONSE",
+      "maximum_world_step_m": 0.005802582724496895,
+      "maximum_body_relative_step_m": 0.0067901592996147,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 155,
+      "phase": "TURN RESPONSE",
+      "maximum_world_step_m": 0.004941401656446011,
+      "maximum_body_relative_step_m": 0.007069331941871871,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 156,
+      "phase": "TURN RESPONSE",
+      "maximum_world_step_m": 0.005111453122309326,
+      "maximum_body_relative_step_m": 0.007436994770207232,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 157,
+      "phase": "TURN RESPONSE",
+      "maximum_world_step_m": 0.007047021397487271,
+      "maximum_body_relative_step_m": 0.008507372004557208,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 158,
+      "phase": "TURN RESPONSE",
+      "maximum_world_step_m": 0.009438818009034981,
+      "maximum_body_relative_step_m": 0.010059237206852733,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 159,
+      "phase": "TURN RESPONSE",
+      "maximum_world_step_m": 0.012099352908169955,
+      "maximum_body_relative_step_m": 0.011347808783188121,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 160,
+      "phase": "TURN RESPONSE",
+      "maximum_world_step_m": 0.015128978291703257,
+      "maximum_body_relative_step_m": 0.012301333933733291,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 161,
+      "phase": "TURN RESPONSE",
+      "maximum_world_step_m": 0.018412270643512987,
+      "maximum_body_relative_step_m": 0.012862581024965734,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 162,
+      "phase": "TURN RESPONSE",
+      "maximum_world_step_m": 0.021709991882541038,
+      "maximum_body_relative_step_m": 0.013023083790680423,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 163,
+      "phase": "TURN RESPONSE",
+      "maximum_world_step_m": 0.02431782819122356,
+      "maximum_body_relative_step_m": 0.012791082456760002,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 164,
+      "phase": "TURN RESPONSE",
+      "maximum_world_step_m": 0.02747544752791077,
+      "maximum_body_relative_step_m": 0.012168437075779776,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 165,
+      "phase": "TURN RESPONSE",
+      "maximum_world_step_m": 0.03250691567830703,
+      "maximum_body_relative_step_m": 0.011235210300430846,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 166,
+      "phase": "TURN RESPONSE",
+      "maximum_world_step_m": 0.037507734553812816,
+      "maximum_body_relative_step_m": 0.010095144465039615,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 167,
+      "phase": "TURN RESPONSE",
+      "maximum_world_step_m": 0.043202601751856556,
+      "maximum_body_relative_step_m": 0.00882283532881844,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 168,
+      "phase": "TURN RESPONSE",
+      "maximum_world_step_m": 0.048841292060461707,
+      "maximum_body_relative_step_m": 0.008754416616827009,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 169,
+      "phase": "TURN RESPONSE",
+      "maximum_world_step_m": 0.054327748479997474,
+      "maximum_body_relative_step_m": 0.008827121453734514,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 170,
+      "phase": "TURN RESPONSE",
+      "maximum_world_step_m": 0.059578629607575144,
+      "maximum_body_relative_step_m": 0.008982589236172846,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 171,
+      "phase": "TURN RESPONSE",
+      "maximum_world_step_m": 0.06450510629865351,
+      "maximum_body_relative_step_m": 0.009258344633759116,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 172,
+      "phase": "TURN RESPONSE",
+      "maximum_world_step_m": 0.06903968952740416,
+      "maximum_body_relative_step_m": 0.009586395562483172,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 173,
+      "phase": "TURN RESPONSE",
+      "maximum_world_step_m": 0.07316947278830134,
+      "maximum_body_relative_step_m": 0.009838636684497198,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 174,
+      "phase": "TURN RESPONSE",
+      "maximum_world_step_m": 0.07688983081467292,
+      "maximum_body_relative_step_m": 0.009932020264545137,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 175,
+      "phase": "TURN RESPONSE",
+      "maximum_world_step_m": 0.08018440215142533,
+      "maximum_body_relative_step_m": 0.009847456924176903,
+      "violating_nodes": 1
+    },
+    {
+      "frame": 176,
+      "phase": "TURN RESPONSE",
+      "maximum_world_step_m": 0.0830537021398069,
+      "maximum_body_relative_step_m": 0.009572923461410306,
+      "violating_nodes": 2
+    },
+    {
+      "frame": 177,
+      "phase": "TURN RESPONSE",
+      "maximum_world_step_m": 0.08551438411475946,
+      "maximum_body_relative_step_m": 0.009069451055622756,
+      "violating_nodes": 2
+    },
+    {
+      "frame": 178,
+      "phase": "TURN RESPONSE",
+      "maximum_world_step_m": 0.08757849734958528,
+      "maximum_body_relative_step_m": 0.008300658554877003,
+      "violating_nodes": 3
+    },
+    {
+      "frame": 179,
+      "phase": "TURN RESPONSE",
+      "maximum_world_step_m": 0.089248992696098,
+      "maximum_body_relative_step_m": 0.007293566373929143,
+      "violating_nodes": 4
+    },
+    {
+      "frame": 180,
+      "phase": "TURN RESPONSE",
+      "maximum_world_step_m": 0.09053046918434302,
+      "maximum_body_relative_step_m": 0.006159343737872678,
+      "violating_nodes": 5
+    },
+    {
+      "frame": 181,
+      "phase": "TURN RESPONSE",
+      "maximum_world_step_m": 0.09142687919829416,
+      "maximum_body_relative_step_m": 0.005060122790488994,
+      "violating_nodes": 7
+    },
+    {
+      "frame": 182,
+      "phase": "TURN RESPONSE",
+      "maximum_world_step_m": 0.09193590929066689,
+      "maximum_body_relative_step_m": 0.004182322251324459,
+      "violating_nodes": 7
+    },
+    {
+      "frame": 183,
+      "phase": "TURN RESPONSE",
+      "maximum_world_step_m": 0.09205428286256977,
+      "maximum_body_relative_step_m": 0.004355188300689967,
+      "violating_nodes": 7
+    },
+    {
+      "frame": 184,
+      "phase": "TURN RESPONSE",
+      "maximum_world_step_m": 0.09178101725278648,
+      "maximum_body_relative_step_m": 0.005055737476144524,
+      "violating_nodes": 7
+    },
+    {
+      "frame": 185,
+      "phase": "TURN RESPONSE",
+      "maximum_world_step_m": 0.0911126907694762,
+      "maximum_body_relative_step_m": 0.005761742069230589,
+      "violating_nodes": 6
+    },
+    {
+      "frame": 186,
+      "phase": "TURN RESPONSE",
+      "maximum_world_step_m": 0.09004461278565583,
+      "maximum_body_relative_step_m": 0.006454712950987003,
+      "violating_nodes": 5
+    },
+    {
+      "frame": 187,
+      "phase": "TURN RESPONSE",
+      "maximum_world_step_m": 0.08857376630614631,
+      "maximum_body_relative_step_m": 0.007184737086556192,
+      "violating_nodes": 3
+    },
+    {
+      "frame": 188,
+      "phase": "TURN RESPONSE",
+      "maximum_world_step_m": 0.08670246496874053,
+      "maximum_body_relative_step_m": 0.007919690917762859,
+      "violating_nodes": 2
+    },
+    {
+      "frame": 189,
+      "phase": "TURN RESPONSE",
+      "maximum_world_step_m": 0.0881835821521998,
+      "maximum_body_relative_step_m": 0.06870394805357317,
+      "violating_nodes": 1
+    },
+    {
+      "frame": 190,
+      "phase": "TURN RESPONSE",
+      "maximum_world_step_m": 0.0876567518277847,
+      "maximum_body_relative_step_m": 0.07175709313836447,
+      "violating_nodes": 1
+    },
+    {
+      "frame": 191,
+      "phase": "TURN RESPONSE",
+      "maximum_world_step_m": 0.06960403672177777,
+      "maximum_body_relative_step_m": 0.08388999940225669,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 192,
+      "phase": "TURN RESPONSE",
+      "maximum_world_step_m": 0.0637442254713491,
+      "maximum_body_relative_step_m": 0.07043318559004974,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 193,
+      "phase": "TURN RESPONSE",
+      "maximum_world_step_m": 0.06992399415816057,
+      "maximum_body_relative_step_m": 0.06231396549211806,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 194,
+      "phase": "TURN RESPONSE",
+      "maximum_world_step_m": 0.06072623496758897,
+      "maximum_body_relative_step_m": 0.06018398128393405,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 195,
+      "phase": "TURN RESPONSE",
+      "maximum_world_step_m": 0.05513612423615243,
+      "maximum_body_relative_step_m": 0.06775746129726795,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 196,
+      "phase": "TURN RESPONSE",
+      "maximum_world_step_m": 0.06421641358081218,
+      "maximum_body_relative_step_m": 0.0694984710579094,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 197,
+      "phase": "TURN RESPONSE",
+      "maximum_world_step_m": 0.08100818177416186,
+      "maximum_body_relative_step_m": 0.07083821236666951,
+      "violating_nodes": 1
+    },
+    {
+      "frame": 198,
+      "phase": "TURN RESPONSE",
+      "maximum_world_step_m": 0.10441984478425345,
+      "maximum_body_relative_step_m": 0.07355578094004676,
+      "violating_nodes": 2
+    },
+    {
+      "frame": 199,
+      "phase": "TURN RESPONSE",
+      "maximum_world_step_m": 0.12207962771168276,
+      "maximum_body_relative_step_m": 0.09310134633968956,
+      "violating_nodes": 3
+    },
+    {
+      "frame": 200,
+      "phase": "TURN RESPONSE",
+      "maximum_world_step_m": 0.13420856126347727,
+      "maximum_body_relative_step_m": 0.10914276605353479,
+      "violating_nodes": 3
+    },
+    {
+      "frame": 201,
+      "phase": "TURN RESPONSE",
+      "maximum_world_step_m": 0.13629765483187284,
+      "maximum_body_relative_step_m": 0.11551876129081615,
+      "violating_nodes": 2
+    },
+    {
+      "frame": 202,
+      "phase": "TURN RESPONSE",
+      "maximum_world_step_m": 0.1263245552912405,
+      "maximum_body_relative_step_m": 0.11002788297786555,
+      "violating_nodes": 3
+    },
+    {
+      "frame": 203,
+      "phase": "TURN RESPONSE",
+      "maximum_world_step_m": 0.10595967375700621,
+      "maximum_body_relative_step_m": 0.09429846724300094,
+      "violating_nodes": 4
+    },
+    {
+      "frame": 204,
+      "phase": "TURN RESPONSE",
+      "maximum_world_step_m": 0.0954490353292896,
+      "maximum_body_relative_step_m": 0.08403998913552126,
+      "violating_nodes": 8
+    },
+    {
+      "frame": 205,
+      "phase": "TURN RESPONSE",
+      "maximum_world_step_m": 0.10462358961593943,
+      "maximum_body_relative_step_m": 0.09714464985633195,
+      "violating_nodes": 5
+    },
+    {
+      "frame": 206,
+      "phase": "TURN RESPONSE",
+      "maximum_world_step_m": 0.11991155193819818,
+      "maximum_body_relative_step_m": 0.11281285821977952,
+      "violating_nodes": 5
+    },
+    {
+      "frame": 207,
+      "phase": "TURN RESPONSE",
+      "maximum_world_step_m": 0.12610514836859896,
+      "maximum_body_relative_step_m": 0.1211030607985977,
+      "violating_nodes": 5
+    },
+    {
+      "frame": 208,
+      "phase": "TURN RESPONSE",
+      "maximum_world_step_m": 0.14345095671502917,
+      "maximum_body_relative_step_m": 0.14084419709795468,
+      "violating_nodes": 4
+    },
+    {
+      "frame": 209,
+      "phase": "TURN RESPONSE",
+      "maximum_world_step_m": 0.15142081637758684,
+      "maximum_body_relative_step_m": 0.14999279299279275,
+      "violating_nodes": 3
+    },
+    {
+      "frame": 210,
+      "phase": "TURN RESPONSE",
+      "maximum_world_step_m": 0.15492616356027855,
+      "maximum_body_relative_step_m": 0.15442942270349103,
+      "violating_nodes": 3
+    },
+    {
+      "frame": 211,
+      "phase": "TURN RESPONSE",
+      "maximum_world_step_m": 0.15107506150179595,
+      "maximum_body_relative_step_m": 0.1510013233651157,
+      "violating_nodes": 2
+    },
+    {
+      "frame": 212,
+      "phase": "STOP / SETTLE",
+      "maximum_world_step_m": 0.12165337534206769,
+      "maximum_body_relative_step_m": 0.12165337534206759,
+      "violating_nodes": 1
+    },
+    {
+      "frame": 213,
+      "phase": "STOP / SETTLE",
+      "maximum_world_step_m": 0.08019082795821325,
+      "maximum_body_relative_step_m": 0.08019082795821318,
+      "violating_nodes": 1
+    },
+    {
+      "frame": 214,
+      "phase": "STOP / SETTLE",
+      "maximum_world_step_m": 0.054773391974385854,
+      "maximum_body_relative_step_m": 0.05477339197438586,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 215,
+      "phase": "STOP / SETTLE",
+      "maximum_world_step_m": 0.04303212588048812,
+      "maximum_body_relative_step_m": 0.04303212588048813,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 216,
+      "phase": "STOP / SETTLE",
+      "maximum_world_step_m": 0.05137465308602976,
+      "maximum_body_relative_step_m": 0.051374653086029794,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 217,
+      "phase": "STOP / SETTLE",
+      "maximum_world_step_m": 0.04661290545518168,
+      "maximum_body_relative_step_m": 0.046612905455181604,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 218,
+      "phase": "STOP / SETTLE",
+      "maximum_world_step_m": 0.05865257130167189,
+      "maximum_body_relative_step_m": 0.05865257130167186,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 219,
+      "phase": "STOP / SETTLE",
+      "maximum_world_step_m": 0.06202947988327631,
+      "maximum_body_relative_step_m": 0.06202947988327623,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 220,
+      "phase": "STOP / SETTLE",
+      "maximum_world_step_m": 0.0627868378525032,
+      "maximum_body_relative_step_m": 0.06278683785250325,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 221,
+      "phase": "STOP / SETTLE",
+      "maximum_world_step_m": 0.0595679702414329,
+      "maximum_body_relative_step_m": 0.05956797024143282,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 222,
+      "phase": "STOP / SETTLE",
+      "maximum_world_step_m": 0.05347955638961276,
+      "maximum_body_relative_step_m": 0.053479556389612715,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 223,
+      "phase": "STOP / SETTLE",
+      "maximum_world_step_m": 0.04378611898996702,
+      "maximum_body_relative_step_m": 0.043786118989967066,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 224,
+      "phase": "STOP / SETTLE",
+      "maximum_world_step_m": 0.030756690634108956,
+      "maximum_body_relative_step_m": 0.03075669063410889,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 225,
+      "phase": "STOP / SETTLE",
+      "maximum_world_step_m": 0.025337791950326847,
+      "maximum_body_relative_step_m": 0.025337791950326802,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 226,
+      "phase": "STOP / SETTLE",
+      "maximum_world_step_m": 0.019146520493874997,
+      "maximum_body_relative_step_m": 0.019146520493874938,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 227,
+      "phase": "STOP / SETTLE",
+      "maximum_world_step_m": 0.013092468643399535,
+      "maximum_body_relative_step_m": 0.013092468643399578,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 228,
+      "phase": "STOP / SETTLE",
+      "maximum_world_step_m": 0.0167104325178482,
+      "maximum_body_relative_step_m": 0.016710432517848154,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 229,
+      "phase": "STOP / SETTLE",
+      "maximum_world_step_m": 0.020895924545552537,
+      "maximum_body_relative_step_m": 0.0208959245455526,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 230,
+      "phase": "STOP / SETTLE",
+      "maximum_world_step_m": 0.02316641796522174,
+      "maximum_body_relative_step_m": 0.02316641796522171,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 231,
+      "phase": "STOP / SETTLE",
+      "maximum_world_step_m": 0.023164091155273264,
+      "maximum_body_relative_step_m": 0.02316409115527329,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 232,
+      "phase": "STOP / SETTLE",
+      "maximum_world_step_m": 0.021090902101959824,
+      "maximum_body_relative_step_m": 0.02109090210195989,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 233,
+      "phase": "STOP / SETTLE",
+      "maximum_world_step_m": 0.01769610304359818,
+      "maximum_body_relative_step_m": 0.017696103043598102,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 234,
+      "phase": "STOP / SETTLE",
+      "maximum_world_step_m": 0.013941967513200308,
+      "maximum_body_relative_step_m": 0.01394196751320036,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 235,
+      "phase": "STOP / SETTLE",
+      "maximum_world_step_m": 0.010701026150588478,
+      "maximum_body_relative_step_m": 0.010701026150588426,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 236,
+      "phase": "STOP / SETTLE",
+      "maximum_world_step_m": 0.008840243983305988,
+      "maximum_body_relative_step_m": 0.008840243983306002,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 237,
+      "phase": "STOP / SETTLE",
+      "maximum_world_step_m": 0.006443311022779302,
+      "maximum_body_relative_step_m": 0.006443311022779288,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 238,
+      "phase": "STOP / SETTLE",
+      "maximum_world_step_m": 0.005590253258040752,
+      "maximum_body_relative_step_m": 0.005590253258040704,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 239,
+      "phase": "STOP / SETTLE",
+      "maximum_world_step_m": 0.008027496029961488,
+      "maximum_body_relative_step_m": 0.008027496029961449,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 240,
+      "phase": "STOP / SETTLE",
+      "maximum_world_step_m": 0.00966666666240751,
+      "maximum_body_relative_step_m": 0.009666666662407517,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 241,
+      "phase": "STOP / SETTLE",
+      "maximum_world_step_m": 0.010314282918655666,
+      "maximum_body_relative_step_m": 0.010314282918655654,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 242,
+      "phase": "STOP / SETTLE",
+      "maximum_world_step_m": 0.010072360457349678,
+      "maximum_body_relative_step_m": 0.010072360457349718,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 243,
+      "phase": "STOP / SETTLE",
+      "maximum_world_step_m": 0.009078203680053342,
+      "maximum_body_relative_step_m": 0.009078203680053394,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 244,
+      "phase": "STOP / SETTLE",
+      "maximum_world_step_m": 0.007522422314111275,
+      "maximum_body_relative_step_m": 0.007522422314111201,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 245,
+      "phase": "STOP / SETTLE",
+      "maximum_world_step_m": 0.005648756120254093,
+      "maximum_body_relative_step_m": 0.0056487561202541664,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 246,
+      "phase": "STOP / SETTLE",
+      "maximum_world_step_m": 0.0037045597062556087,
+      "maximum_body_relative_step_m": 0.003704559706255646,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 247,
+      "phase": "STOP / SETTLE",
+      "maximum_world_step_m": 0.0027355060358431505,
+      "maximum_body_relative_step_m": 0.002735506035843107,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 248,
+      "phase": "STOP / SETTLE",
+      "maximum_world_step_m": 0.002205809637545521,
+      "maximum_body_relative_step_m": 0.002205809637545606,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 249,
+      "phase": "STOP / SETTLE",
+      "maximum_world_step_m": 0.0023293508965986968,
+      "maximum_body_relative_step_m": 0.0023293508965987106,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 250,
+      "phase": "STOP / SETTLE",
+      "maximum_world_step_m": 0.0032018532342402385,
+      "maximum_body_relative_step_m": 0.0032018532342402164,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 251,
+      "phase": "STOP / SETTLE",
+      "maximum_world_step_m": 0.0037419833899828784,
+      "maximum_body_relative_step_m": 0.0037419833899828923,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 252,
+      "phase": "STOP / SETTLE",
+      "maximum_world_step_m": 0.003913444664342883,
+      "maximum_body_relative_step_m": 0.0039134446643427955,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 253,
+      "phase": "STOP / SETTLE",
+      "maximum_world_step_m": 0.0037517266571378237,
+      "maximum_body_relative_step_m": 0.003751726657137877,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 254,
+      "phase": "STOP / SETTLE",
+      "maximum_world_step_m": 0.0033152722438369087,
+      "maximum_body_relative_step_m": 0.0033152722438369244,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 255,
+      "phase": "STOP / SETTLE",
+      "maximum_world_step_m": 0.0026728596321532253,
+      "maximum_body_relative_step_m": 0.0026728596321532023,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 256,
+      "phase": "STOP / SETTLE",
+      "maximum_world_step_m": 0.0019046015813669517,
+      "maximum_body_relative_step_m": 0.0019046015813670668,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 257,
+      "phase": "STOP / SETTLE",
+      "maximum_world_step_m": 0.001411975519018448,
+      "maximum_body_relative_step_m": 0.0014119755190184552,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 258,
+      "phase": "STOP / SETTLE",
+      "maximum_world_step_m": 0.0010912633319407838,
+      "maximum_body_relative_step_m": 0.0010912633319408057,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 259,
+      "phase": "STOP / SETTLE",
+      "maximum_world_step_m": 0.0008134626221559032,
+      "maximum_body_relative_step_m": 0.0008134626221558845,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 260,
+      "phase": "STOP / SETTLE",
+      "maximum_world_step_m": 0.0012103814405455514,
+      "maximum_body_relative_step_m": 0.0012103814405455891,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 261,
+      "phase": "STOP / SETTLE",
+      "maximum_world_step_m": 0.0015696321332785332,
+      "maximum_body_relative_step_m": 0.0015696321332785148,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 262,
+      "phase": "STOP / SETTLE",
+      "maximum_world_step_m": 0.0017544870618456322,
+      "maximum_body_relative_step_m": 0.0017544870618456069,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 263,
+      "phase": "STOP / SETTLE",
+      "maximum_world_step_m": 0.001763791852743327,
+      "maximum_body_relative_step_m": 0.0017637918527432823,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 264,
+      "phase": "STOP / SETTLE",
+      "maximum_world_step_m": 0.0016195354480786415,
+      "maximum_body_relative_step_m": 0.0016195354480787313,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 265,
+      "phase": "STOP / SETTLE",
+      "maximum_world_step_m": 0.0013553304617417476,
+      "maximum_body_relative_step_m": 0.0013553304617416777,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 266,
+      "phase": "STOP / SETTLE",
+      "maximum_world_step_m": 0.0010114536470881427,
+      "maximum_body_relative_step_m": 0.0010114536470882728,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 267,
+      "phase": "STOP / SETTLE",
+      "maximum_world_step_m": 0.0006439443874830539,
+      "maximum_body_relative_step_m": 0.000643944387483115,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 268,
+      "phase": "STOP / SETTLE",
+      "maximum_world_step_m": 0.0005199238179097544,
+      "maximum_body_relative_step_m": 0.0005199238179096736,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 269,
+      "phase": "STOP / SETTLE",
+      "maximum_world_step_m": 0.00036936370316619237,
+      "maximum_body_relative_step_m": 0.0003693637031661852,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 270,
+      "phase": "STOP / SETTLE",
+      "maximum_world_step_m": 0.0004794467364422199,
+      "maximum_body_relative_step_m": 0.00047944673644233747,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 271,
+      "phase": "STOP / SETTLE",
+      "maximum_world_step_m": 0.0007021923000684417,
+      "maximum_body_relative_step_m": 0.0007021923000684068,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 272,
+      "phase": "RIDER CONTACT",
+      "maximum_world_step_m": 0.0008519078841804301,
+      "maximum_body_relative_step_m": 0.0008519078841804038,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 273,
+      "phase": "RIDER CONTACT",
+      "maximum_world_step_m": 0.0009235638136428663,
+      "maximum_body_relative_step_m": 0.0009235638136428829,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 274,
+      "phase": "RIDER CONTACT",
+      "maximum_world_step_m": 0.0009228344292821224,
+      "maximum_body_relative_step_m": 0.0009228344292820742,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 275,
+      "phase": "RIDER CONTACT",
+      "maximum_world_step_m": 0.0008602846726577622,
+      "maximum_body_relative_step_m": 0.0008602846726578864,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 276,
+      "phase": "RIDER CONTACT",
+      "maximum_world_step_m": 0.0007516859607836258,
+      "maximum_body_relative_step_m": 0.0007516859607836114,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 277,
+      "phase": "RIDER CONTACT",
+      "maximum_world_step_m": 0.0006141919551988597,
+      "maximum_body_relative_step_m": 0.0006141919551987733,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 278,
+      "phase": "RIDER CONTACT",
+      "maximum_world_step_m": 0.0004708610522899822,
+      "maximum_body_relative_step_m": 0.00047086105229004707,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 279,
+      "phase": "RIDER CONTACT",
+      "maximum_world_step_m": 0.0004947336470363234,
+      "maximum_body_relative_step_m": 0.0004947336470362951,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 280,
+      "phase": "RIDER CONTACT",
+      "maximum_world_step_m": 0.0005160692534456565,
+      "maximum_body_relative_step_m": 0.0005160692534456531,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 281,
+      "phase": "RIDER CONTACT",
+      "maximum_world_step_m": 0.0005345110305712485,
+      "maximum_body_relative_step_m": 0.0005345110305712364,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 282,
+      "phase": "RIDER CONTACT",
+      "maximum_world_step_m": 0.0005500559409624733,
+      "maximum_body_relative_step_m": 0.0005500559409625052,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 283,
+      "phase": "RIDER CONTACT",
+      "maximum_world_step_m": 0.0005626326093005497,
+      "maximum_body_relative_step_m": 0.000562632609300495,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 284,
+      "phase": "RIDER CONTACT",
+      "maximum_world_step_m": 0.0005723458325093538,
+      "maximum_body_relative_step_m": 0.0005723458325093897,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 285,
+      "phase": "RIDER CONTACT",
+      "maximum_world_step_m": 0.0005789217060682885,
+      "maximum_body_relative_step_m": 0.0005789217060682492,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 286,
+      "phase": "RIDER CONTACT",
+      "maximum_world_step_m": 0.000582846041277571,
+      "maximum_body_relative_step_m": 0.0005828460412776047,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 287,
+      "phase": "RIDER CONTACT",
+      "maximum_world_step_m": 0.0005838093704917171,
+      "maximum_body_relative_step_m": 0.0005838093704917117,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 288,
+      "phase": "RIDER CONTACT",
+      "maximum_world_step_m": 0.0005820557214356847,
+      "maximum_body_relative_step_m": 0.0005820557214357119,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 289,
+      "phase": "RIDER CONTACT",
+      "maximum_world_step_m": 0.0005777230440894405,
+      "maximum_body_relative_step_m": 0.0005777230440893721,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 290,
+      "phase": "RIDER CONTACT",
+      "maximum_world_step_m": 0.0005707857467736077,
+      "maximum_body_relative_step_m": 0.0005707857467736239,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 291,
+      "phase": "RIDER CONTACT",
+      "maximum_world_step_m": 0.0005613372616952962,
+      "maximum_body_relative_step_m": 0.000561337261695326,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 292,
+      "phase": "RIDER CONTACT",
+      "maximum_world_step_m": 0.017037775228682443,
+      "maximum_body_relative_step_m": 0.017037775228682432,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 293,
+      "phase": "RIDER CONTACT",
+      "maximum_world_step_m": 0.01609723653008028,
+      "maximum_body_relative_step_m": 0.016097236530080283,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 294,
+      "phase": "RIDER CONTACT",
+      "maximum_world_step_m": 0.011024400336459923,
+      "maximum_body_relative_step_m": 0.01102440033645993,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 295,
+      "phase": "RIDER CONTACT",
+      "maximum_world_step_m": 0.009342390718494898,
+      "maximum_body_relative_step_m": 0.009342390718494863,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 296,
+      "phase": "RIDER CONTACT",
+      "maximum_world_step_m": 0.008171286270946081,
+      "maximum_body_relative_step_m": 0.008171286270946078,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 297,
+      "phase": "RIDER CONTACT",
+      "maximum_world_step_m": 0.006772627127106227,
+      "maximum_body_relative_step_m": 0.0067726271271062325,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 298,
+      "phase": "RIDER CONTACT",
+      "maximum_world_step_m": 0.005657875862038658,
+      "maximum_body_relative_step_m": 0.00565787586203867,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 299,
+      "phase": "RIDER CONTACT",
+      "maximum_world_step_m": 0.005265150345444134,
+      "maximum_body_relative_step_m": 0.005265150345444133,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 300,
+      "phase": "RIDER CONTACT",
+      "maximum_world_step_m": 0.005224392240410742,
+      "maximum_body_relative_step_m": 0.005224392240410701,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 301,
+      "phase": "RIDER CONTACT",
+      "maximum_world_step_m": 0.004914471855962581,
+      "maximum_body_relative_step_m": 0.004914471855962589,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 302,
+      "phase": "RIDER CONTACT",
+      "maximum_world_step_m": 0.0051193689112119245,
+      "maximum_body_relative_step_m": 0.0051193689112119115,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 303,
+      "phase": "RIDER CONTACT",
+      "maximum_world_step_m": 0.005393672265073728,
+      "maximum_body_relative_step_m": 0.005393672265073749,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 304,
+      "phase": "RIDER CONTACT",
+      "maximum_world_step_m": 0.005380512041973304,
+      "maximum_body_relative_step_m": 0.005380512041973318,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 305,
+      "phase": "RIDER CONTACT",
+      "maximum_world_step_m": 0.005425295640953367,
+      "maximum_body_relative_step_m": 0.005425295640953374,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 306,
+      "phase": "RIDER CONTACT",
+      "maximum_world_step_m": 0.0057296380094261305,
+      "maximum_body_relative_step_m": 0.005729638009426104,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 307,
+      "phase": "RIDER CONTACT",
+      "maximum_world_step_m": 0.0070958945059013765,
+      "maximum_body_relative_step_m": 0.007095894505901402,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 308,
+      "phase": "RIDER CONTACT",
+      "maximum_world_step_m": 0.00887538355077006,
+      "maximum_body_relative_step_m": 0.008875383550770019,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 309,
+      "phase": "RIDER CONTACT",
+      "maximum_world_step_m": 0.010391959640894623,
+      "maximum_body_relative_step_m": 0.010391959640894658,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 310,
+      "phase": "RIDER CONTACT",
+      "maximum_world_step_m": 0.011893161210260173,
+      "maximum_body_relative_step_m": 0.011893161210260171,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 311,
+      "phase": "RIDER CONTACT",
+      "maximum_world_step_m": 0.012686393824845904,
+      "maximum_body_relative_step_m": 0.012686393824845928,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 312,
+      "phase": "RIDER CONTACT",
+      "maximum_world_step_m": 0.010983159677522617,
+      "maximum_body_relative_step_m": 0.010983159677522615,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 313,
+      "phase": "RIDER CONTACT",
+      "maximum_world_step_m": 0.007859363707829501,
+      "maximum_body_relative_step_m": 0.007859363707829485,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 314,
+      "phase": "RIDER CONTACT",
+      "maximum_world_step_m": 0.005966570985602004,
+      "maximum_body_relative_step_m": 0.005966570985602012,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 315,
+      "phase": "RIDER CONTACT",
+      "maximum_world_step_m": 0.006763108433458778,
+      "maximum_body_relative_step_m": 0.006763108433458768,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 316,
+      "phase": "RIDER CONTACT",
+      "maximum_world_step_m": 0.006488566656840589,
+      "maximum_body_relative_step_m": 0.00648856665684059,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 317,
+      "phase": "RIDER CONTACT",
+      "maximum_world_step_m": 0.005916670658538086,
+      "maximum_body_relative_step_m": 0.005916670658538131,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 318,
+      "phase": "RIDER CONTACT",
+      "maximum_world_step_m": 0.005248992632134211,
+      "maximum_body_relative_step_m": 0.005248992632134183,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 319,
+      "phase": "RIDER CONTACT",
+      "maximum_world_step_m": 0.0040423665136155515,
+      "maximum_body_relative_step_m": 0.004042366513615566,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 320,
+      "phase": "RIDER CONTACT",
+      "maximum_world_step_m": 0.003272394154835608,
+      "maximum_body_relative_step_m": 0.00327239415483561,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 321,
+      "phase": "RIDER CONTACT",
+      "maximum_world_step_m": 0.003237628531549372,
+      "maximum_body_relative_step_m": 0.0032376285315493356,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 322,
+      "phase": "RIDER CONTACT",
+      "maximum_world_step_m": 0.003361235375249863,
+      "maximum_body_relative_step_m": 0.0033612353752498795,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 323,
+      "phase": "RIDER CONTACT",
+      "maximum_world_step_m": 0.0034291404667812298,
+      "maximum_body_relative_step_m": 0.003429140466781236,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 324,
+      "phase": "RIDER CONTACT",
+      "maximum_world_step_m": 0.00322065542426252,
+      "maximum_body_relative_step_m": 0.0032206554242625147,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 325,
+      "phase": "RIDER CONTACT",
+      "maximum_world_step_m": 0.0026541640843888333,
+      "maximum_body_relative_step_m": 0.0026541640843888276,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 326,
+      "phase": "RIDER CONTACT",
+      "maximum_world_step_m": 0.0017831550601075496,
+      "maximum_body_relative_step_m": 0.001783155060107537,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 327,
+      "phase": "RIDER CONTACT",
+      "maximum_world_step_m": 0.0016534067982936671,
+      "maximum_body_relative_step_m": 0.0016534067982936825,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 328,
+      "phase": "RIDER CONTACT",
+      "maximum_world_step_m": 0.001605615735547588,
+      "maximum_body_relative_step_m": 0.0016056157355476084,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 329,
+      "phase": "RIDER CONTACT",
+      "maximum_world_step_m": 0.0018227217978667562,
+      "maximum_body_relative_step_m": 0.0018227217978667126,
+      "violating_nodes": 0
+    },
+    {
+      "frame": 330,
+      "phase": "RIDER CONTACT",
+      "maximum_world_step_m": 0.00240720838313867,
+      "maximum_body_relative_step_m": 0.002407208383138739,
+      "violating_nodes": 0
+    }
+  ],
+  "limitations": [
+    "No resimulation, modification or new repair attempt.",
+    "Conservative guide warning uses the surface ceiling numerically; guide failure does not itself measure surface displacement, and guide pass cannot accept surfaces.",
+    "Velocity is an interval average; acceleration is an output-frame finite difference, not substep dynamics.",
+    "Body-relative speed and acceleration are diagnostics with no acceptance threshold.",
+    "No contact, self-collision, skin, semantic, gait or runtime acceptance."
+  ]
+}

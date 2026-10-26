@@ -1,0 +1,19 @@
+diff --git a/src/layers/attentions.py b/src/layers/attentions.py
+index 4e6129d..5278fcf 100755
+--- a/src/layers/attentions.py
++++ b/src/layers/attentions.py
+@@ -4,11 +4,12 @@ import torch.nn.functional as F
+ from einops import rearrange
+ 
+ try:
+-    NATTEN_RECENT = False
+-    from natten.functional import na2d_av, na2d_qk
+-except:
+     NATTEN_RECENT = True
+     from natten import na2d
++except ImportError:
++    # Local ROCm runner injects naf_rocm.forward before model execution.
++    NATTEN_RECENT = True
++    na2d = None
+ 
+ from src.layers.rope import RoPE

@@ -1,0 +1,330 @@
+{
+  "asset_set": "GEO-01 three-shape Blender mesh prototype pilot",
+  "version": "v001",
+  "status": "prototype-subset",
+  "acceptance_claim": false,
+  "engine_ready": false,
+  "blender_version": "5.1.1",
+  "units": "meters",
+  "grid_cell_m": 0.5,
+  "source_geometry_manifest": "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v001/geometry-source/manifest.json",
+  "source_geometry_manifest_sha256": "75f79ae327c96311b0a213e7f7890588b326135057b0fa388b64f26496f6c655",
+  "source_status": "prototype-subset",
+  "shapes": {
+    "cell-full": {
+      "geometry_key": "cell-full",
+      "geometry_version": 1,
+      "status": "prototype-subset",
+      "acceptance_claim": false,
+      "canonical_payload": "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v001/geometry-source/cell-full.json",
+      "canonical_payload_sha256": "9455bd04dab9df9f4643f175c95fb17cb7e25e6248c239975a8f1280f040061a",
+      "vertices": 8,
+      "polygons": 6,
+      "triangle_count": 12,
+      "dimensions_m": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "pivot": "minimum grid corner (0,0,0)",
+      "allowed_rotations": "canonical payload contains 24 proper cell-centered cube rotations; this prototype source is identity-oriented",
+      "files": {
+        "SM_GEO01_cell_full_v001.blend": {
+          "sha256": "868b8c8897dc67d71609af02fd0597826205358c7a7aa58e874feabb85ec7407",
+          "bytes": 92632
+        },
+        "SM_GEO01_cell_full_v001.glb": {
+          "sha256": "dfcf020c333aea8efcc23ec26114fab195e4c1e38ec92d70c6c1210ec014279f",
+          "bytes": 1692
+        },
+        "SM_GEO01_cell_full_v001.fbx": {
+          "sha256": "dcc543c67b449d64bca0bf1a67c13b69fad42fac57ae93fffc7968ad81335ec8",
+          "bytes": 14732
+        },
+        "asset-view.png": {
+          "sha256": "179f252262a2ad267ebf55200faba17d8a7ffdc14744b61fcc68d3da35cb3b3c",
+          "bytes": 1252409
+        },
+        "source-reopen-check.json": {
+          "sha256": "edfe5f81622d62acfcc56f29c10343b39ae9f203316ddab1bc4488b121613897",
+          "bytes": 676
+        }
+      },
+      "checks": {
+        "glb_fresh_import": {
+          "status": "passed",
+          "mesh_object_count": 1,
+          "bounds": {
+            "min_m": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "max_m": [
+              0.5,
+              0.5,
+              0.5
+            ],
+            "dimensions_m": [
+              0.5,
+              0.5,
+              0.5
+            ]
+          },
+          "maximum_axis_error_m": 0.0,
+          "mesh_faces": 12
+        },
+        "fbx_fresh_import": {
+          "status": "passed",
+          "mesh_object_count": 1,
+          "bounds": {
+            "min_m": [
+              0.0,
+              0.0,
+              -8.146034247147327e-08
+            ],
+            "max_m": [
+              0.5,
+              0.5000000596046448,
+              0.5
+            ],
+            "dimensions_m": [
+              0.5,
+              0.5000000596046448,
+              0.5000000814603425
+            ]
+          },
+          "maximum_axis_error_m": 8.146034247147327e-08,
+          "mesh_faces": 6
+        },
+        "source_saved": true,
+        "render_saved": true,
+        "source_reopen": {
+          "status": "passed",
+          "report": "cell-full/source-reopen-check.json",
+          "report_sha256": "edfe5f81622d62acfcc56f29c10343b39ae9f203316ddab1bc4488b121613897",
+          "blender_version": "5.1.1",
+          "mesh_object_count": 1,
+          "render_staging_objects": 5,
+          "connected_vertex_components": 1,
+          "loose_vertex_count": 0,
+          "maximum_axis_error_m": 0.0
+        }
+      },
+      "generator_sha256": "e7fff4d430fcfd76db0027468286343013dbac20f4370657ebba90f23dc98092"
+    },
+    "slab-half": {
+      "geometry_key": "slab-half",
+      "geometry_version": 1,
+      "status": "prototype-subset",
+      "acceptance_claim": false,
+      "canonical_payload": "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v001/geometry-source/slab-half.json",
+      "canonical_payload_sha256": "e6236a7b600eccb0a2f558f74524e183ef57154a278938694629ed247ecfd154",
+      "vertices": 8,
+      "polygons": 6,
+      "triangle_count": 12,
+      "dimensions_m": [
+        0.5,
+        0.5,
+        0.25
+      ],
+      "pivot": "minimum grid corner (0,0,0)",
+      "allowed_rotations": "canonical payload contains 24 proper cell-centered cube rotations; this prototype source is identity-oriented",
+      "files": {
+        "SM_GEO01_slab_half_v001.blend": {
+          "sha256": "2d45a19b89150c21a195609202c8e727e0ea67c32bc8330d24063f6f769af711",
+          "bytes": 92607
+        },
+        "SM_GEO01_slab_half_v001.glb": {
+          "sha256": "8676a9b2970c94d495b899c2ef803e7046f9f1560c56a6c9d123cb2a72122db8",
+          "bytes": 1692
+        },
+        "SM_GEO01_slab_half_v001.fbx": {
+          "sha256": "7fc668cd03a6024700c3dd1d368447ba351c154d3033990576d19710cb84e9ec",
+          "bytes": 14732
+        },
+        "asset-view.png": {
+          "sha256": "7068535a85508219e9080203a85a8f1accfa3b7167c37c7f5dad395f4066f77a",
+          "bytes": 1280559
+        },
+        "source-reopen-check.json": {
+          "sha256": "9433af2e2c8454868614f149e71257125773eff7eed1ba80c43630c1e96db60c",
+          "bytes": 678
+        }
+      },
+      "checks": {
+        "glb_fresh_import": {
+          "status": "passed",
+          "mesh_object_count": 1,
+          "bounds": {
+            "min_m": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "max_m": [
+              0.5,
+              0.5,
+              0.25
+            ],
+            "dimensions_m": [
+              0.5,
+              0.5,
+              0.25
+            ]
+          },
+          "maximum_axis_error_m": 0.0,
+          "mesh_faces": 12
+        },
+        "fbx_fresh_import": {
+          "status": "passed",
+          "mesh_object_count": 1,
+          "bounds": {
+            "min_m": [
+              0.0,
+              0.0,
+              -8.146034247147327e-08
+            ],
+            "max_m": [
+              0.5,
+              0.5000000596046448,
+              0.25
+            ],
+            "dimensions_m": [
+              0.5,
+              0.5000000596046448,
+              0.25000008146034247
+            ]
+          },
+          "maximum_axis_error_m": 8.146034247147327e-08,
+          "mesh_faces": 6
+        },
+        "source_saved": true,
+        "render_saved": true,
+        "source_reopen": {
+          "status": "passed",
+          "report": "slab-half/source-reopen-check.json",
+          "report_sha256": "9433af2e2c8454868614f149e71257125773eff7eed1ba80c43630c1e96db60c",
+          "blender_version": "5.1.1",
+          "mesh_object_count": 1,
+          "render_staging_objects": 5,
+          "connected_vertex_components": 1,
+          "loose_vertex_count": 0,
+          "maximum_axis_error_m": 0.0
+        }
+      },
+      "generator_sha256": "e7fff4d430fcfd76db0027468286343013dbac20f4370657ebba90f23dc98092"
+    },
+    "slope-1to1": {
+      "geometry_key": "slope-1to1",
+      "geometry_version": 1,
+      "status": "prototype-subset",
+      "acceptance_claim": false,
+      "canonical_payload": "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v001/geometry-source/slope-1to1.json",
+      "canonical_payload_sha256": "e55a54e6824119dffb929bf7de536eba786e7ce145efa732620da147cca4cdda",
+      "vertices": 6,
+      "polygons": 5,
+      "triangle_count": 8,
+      "dimensions_m": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "pivot": "minimum grid corner (0,0,0)",
+      "allowed_rotations": "canonical payload contains 24 proper cell-centered cube rotations; this prototype source is identity-oriented",
+      "files": {
+        "SM_GEO01_slope_1to1_v001.blend": {
+          "sha256": "c90f2e47078dd00f803f947a44028185742573201b1526929dd75b314563b0ea",
+          "bytes": 92603
+        },
+        "SM_GEO01_slope_1to1_v001.glb": {
+          "sha256": "3e09b2edc00339bae508f3d9b800771466c4c7ba158fd973fd6f515259283fb3",
+          "bytes": 1524
+        },
+        "SM_GEO01_slope_1to1_v001.fbx": {
+          "sha256": "9dcf12b443b4d67e9fb1e47d0907e412cfef24e63410b238b16531a3c54cb397",
+          "bytes": 14748
+        },
+        "asset-view.png": {
+          "sha256": "abd6a24cffa979911d31e3bcf22749130464d057cdd77f4b70ef212fc1c431d0",
+          "bytes": 1232127
+        },
+        "source-reopen-check.json": {
+          "sha256": "e0f9ec834901d44d1a62b458551ba4995d5c335e9d09e28982c16d711f79ef3d",
+          "bytes": 678
+        }
+      },
+      "checks": {
+        "glb_fresh_import": {
+          "status": "passed",
+          "mesh_object_count": 1,
+          "bounds": {
+            "min_m": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "max_m": [
+              0.5,
+              0.5,
+              0.5
+            ],
+            "dimensions_m": [
+              0.5,
+              0.5,
+              0.5
+            ]
+          },
+          "maximum_axis_error_m": 0.0,
+          "mesh_faces": 8
+        },
+        "fbx_fresh_import": {
+          "status": "passed",
+          "mesh_object_count": 1,
+          "bounds": {
+            "min_m": [
+              0.0,
+              0.0,
+              -8.146034247147327e-08
+            ],
+            "max_m": [
+              0.5,
+              0.5000000596046448,
+              0.5
+            ],
+            "dimensions_m": [
+              0.5,
+              0.5000000596046448,
+              0.5000000814603425
+            ]
+          },
+          "maximum_axis_error_m": 8.146034247147327e-08,
+          "mesh_faces": 5
+        },
+        "source_saved": true,
+        "render_saved": true,
+        "source_reopen": {
+          "status": "passed",
+          "report": "slope-1to1/source-reopen-check.json",
+          "report_sha256": "e0f9ec834901d44d1a62b458551ba4995d5c335e9d09e28982c16d711f79ef3d",
+          "blender_version": "5.1.1",
+          "mesh_object_count": 1,
+          "render_staging_objects": 5,
+          "connected_vertex_components": 1,
+          "loose_vertex_count": 0,
+          "maximum_axis_error_m": 0.0
+        }
+      },
+      "generator_sha256": "e7fff4d430fcfd76db0027468286343013dbac20f4370657ebba90f23dc98092"
+    }
+  },
+  "open_gates": [
+    "GEO-01 remains prototype-subset; approved production geometry manifests and content registry IDs are absent.",
+    "Applicable full GEO-02 compatibility, seam/material binding, collision, GEO-03 engine import, and production performance gates remain open.",
+    "Neutral clay prototype only; rough-timber/stone surface treatments, UVs, LODs, collision assets and engine presentation are not included.",
+    "The Blender source and GLB/FBX files are fresh-import checked for mesh presence and canonical bounds; full semantic/engine correspondence is not certified."
+  ],
+  "attempt_history": "provenance/attempt-history.json",
+  "source_validator_sha256": "76a2f9dae343305da89ef67b8a48cfd6ce1ef4e34485afbad31e40eedaa2eabb",
+  "attempt_history_sha256": "7b85e92f56fa5bbe728b15d7624d9f1601207a0e7a93262ef1f4b2d10c31c515"
+}

@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "units": "metres",
+  "source": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingSkinCorrection-v001/Mount-StandingSkinRepair.blend",
+  "world_points": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryStandingCorrectionExchange-v001\\expected-world-points.npy",
+  "exchange_report": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryStandingCorrectionExchange-v001\\exchange-report.json",
+  "rest_selection": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz",
+  "semantic_selection": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selections.npz",
+  "sole_patches": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimarySoleProposals-v001\\sole-patches.npz",
+  "ground_height_m": 0.0,
+  "standing_start_frame": 30,
+  "standing_end_frame": 60,
+  "feet": [
+    "fore.L",
+    "fore.R",
+    "hind.L",
+    "hind.R"
+  ],
+  "limits": {
+    "seam_error_m": 1e-05,
+    "sole_edge_error_m": 1e-05,
+    "ground_penetration_m": 0.005,
+    "sole_contact_height_m": 0.005,
+    "hold_slip_m": 0.001
+  },
+  "input_sha256": {
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingSkinCorrection-v001/Mount-StandingSkinRepair.blend": "b7022a5842876d29b2c8f7f89d38f23bd2935ab9cf503b9b0bf8a90e9a7b8a30",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryStandingCorrectionExchange-v001\\expected-world-points.npy": "a145219b186757588827e0738cc7538f084b815d3205481ead549c67b8a6c15f",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryStandingCorrectionExchange-v001\\exchange-report.json": "270ca84ee99ddad2e3229aa77d1d7555a3fc158abf22af473653acc01cbe1d9b",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz": "0d7599c8064cb81a6e211a23731435e08939b7fb146ce2d4bed810273909a2b2",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selections.npz": "0b6a19f76a2cba73a42e293c29365360b53ba93be101cf8f4ca556e7a5989cc0",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimarySoleProposals-v001\\sole-patches.npz": "5b055301ae1b1349d3f85fb23e2b93985fd93f2a33e0fc1a1e4a05dbaf98614b"
+  }
+}

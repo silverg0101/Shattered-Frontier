@@ -1,0 +1,65 @@
+{
+  "assetId": "BLD-SM-RoofRidge-01",
+  "version": "v001",
+  "category": "construction kit roof ridge/eave component",
+  "created": "2026-10-18",
+  "sourceReferences": [
+    "docs/art-templates/player-construction-kit-contract.md — partial shapes and roof transitions",
+    "docs/Game-Design/Legends_Shattered_Frontier_Construction_System_Architecture_v0.1.md — §§3.1–3.2, 8–9"
+  ],
+  "definition": {
+    "geometryRef": "contract roof ridge/eave (proposal)",
+    "envelopeMeters": "per contract; not inferred",
+    "contacts": [
+      "slope mating faces",
+      "underside",
+      "exposed end"
+    ],
+    "openings": "none",
+    "materialKit": "KIT-SM",
+    "structuralMaterialProfile": "Stone masonry",
+    "cosmeticSkin": "appearance only",
+    "functionalDefinition": "none"
+  },
+  "generation": {
+    "tool": "built-in image_gen",
+    "date": "2026-10-18",
+    "model": "unavailable",
+    "seed": "unavailable",
+    "promptRecord": "prompt.txt",
+    "referenceImagesAttached": []
+  },
+  "images": [
+    {
+      "path": "concept-sheet.png",
+      "sha256": "f1bda9ef4fbd829ffb99f67b40fa9f5e1d7f87ae7ca067e25fbb2af3d046d181",
+      "width": 1536,
+      "height": 1024,
+      "pixelFormat": "RGB 24-bit",
+      "alpha": false,
+      "review": "Stone ridge sheet shows repeated ridge and end contacts; clean view isolated. Some strong bevel/rounding on the long cap; review against source envelope. Fit unvalidated."
+    },
+    {
+      "path": "asset-view.png",
+      "sha256": "3403e4c237c9ea47b1b27c4712b0ae777fd461511c5b3d622b55880bdc573778",
+      "width": 1536,
+      "height": 1024,
+      "pixelFormat": "RGB 24-bit",
+      "alpha": false,
+      "review": "Stone ridge sheet shows repeated ridge and end contacts; clean view isolated. Some strong bevel/rounding on the long cap; review against source envelope. Fit unvalidated."
+    }
+  ],
+  "review": {
+    "reviewedBy": "Codex",
+    "conceptStatus": "proposed",
+    "cleanViewStatus": "ready-for-model-test",
+    "imageStatus": "image-complete",
+    "geometryAcceptance": "not established",
+    "numericalMeshFit": "not established",
+    "runtimeCollisionSupportClearance": "not established",
+    "actionableFindings": [
+      "Stone ridge sheet shows repeated ridge and end contacts; clean view isolated. Some strong bevel/rounding on the long cap; review against source envelope. Fit unvalidated."
+    ]
+  },
+  "componentBoundary": "One separately indexed appearance role; images do not establish numerical geometry, mesh fit, collision, support or clearance."
+}

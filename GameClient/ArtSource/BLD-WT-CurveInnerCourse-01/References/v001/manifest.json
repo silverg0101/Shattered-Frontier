@@ -1,0 +1,48 @@
+{
+  "asset_id": "BLD-WT-CurveInnerCourse-01",
+  "version": "v001",
+  "batch": "construction-worked-timber-curved-faces-39",
+  "current_status": "image-complete; appearance proposal; structural readiness blocked",
+  "intended_route": "proposed flush KIT-WT appearance treatment on concave inner curved face of contract curve-quarter-r2 carrier; not a distinct inner-radius solid",
+  "carrier": {
+    "geometry_status": "contract geometry proposal; approved GEO-01 manifest/hash absent",
+    "dimensions_m": {"x": 2.0, "y": 2.0, "z": 0.5},
+    "grid_m": 0.5,
+    "axes": "local X/Y plan; Z height",
+    "origin": "minimum-grid-corner",
+    "pivot": "minimum-grid-corner carrier frame",
+    "shape": "first-quadrant quarter-annulus 1.5^2<=x^2+y^2<=2.0^2 with 0<=z<=0.5 m",
+    "allowed_rotations": "identity only until production shape allowlist is authored under BLD-01"
+  },
+  "component_boundary": "One appearance treatment on concave vertical arc face radius 1.5 m. Same quarter-annulus carrier as CurveOuterCourse role; other surfaces remain neutral. No geometry change.",
+  "exposed_faces": ["treated inner concave curved face r=1.5 m", "neutral outer convex curved face r=2.0 m", "neutral top and underside", "neutral radial end faces"],
+  "mating_faces": ["repeat interfaces at quarter-arc ends", "radial ends target BLD-WT-CurveStraightJoin-01; exact match unvalidated"],
+  "source_references": [
+    "docs/art-templates/player-construction-kit-contract.md §2 curve-quarter-r2 and §3 buildability route",
+    "docs/decisions/BLD-01-voxel-geometry-interface.md coordinate/orientation contract",
+    "docs/art-templates/asset-lists/construction-kit-matrix-07.md CurveInnerCourse role",
+    "docs/art-templates/asset-lists/construction-worked-timber-curved-faces-39.md"
+  ],
+  "appearance_references_reviewed_not_submitted": [
+    {"path": "GameClient/ArtSource/BLD-RT-CurveInnerCourse-01/References/v001/concept-sheet.png", "sha256": "81a4a4cae43df83789e05697ae9689b8cbb69d33eac4dd5733c4e8b54e6fae7c", "note": "Rough-timber appearance and existing curve illustration only; its image does not numerically confirm the contract radius."},
+    {"path": "GameClient/ArtSource/BLD-SM-CurveInnerCourse-01/References/v001/concept-sheet.png", "sha256": "1b83019c380e282b2eddbf3467881c0c2ecadd21739d04ec307189c1383e2f02", "note": "Stone masonry appearance contrast only."}
+  ],
+  "required_selected_outputs": ["concept-sheet.png", "asset-view.png"],
+  "selected_image_count": 2,
+  "additional_images": 0,
+  "generation_history": [
+    {"file": "concept-sheet.png", "source_cache_path": "C:\\Users\\grego\\.codex\\generated_images\\01a15000-e13f-7213-9ec0-df2684201405\\exec-475338c7-22c5-4243-95dc-e9ce376df18f.png", "selected": true, "metadata": {"format": "PNG", "width_px": 1536, "height_px": 1024, "pixel_format": "RGB 24bpp", "bytes": 2104813, "sha256": "42f61b49e6f86da36eb9f04a8732118d224b0d9f56714039972349ccbbbf99fb"}, "exact_prompt": "prompt.txt#Concept sheet"},
+    {"file": "asset-view.png", "source_cache_path": "C:\\Users\\grego\\.codex\\generated_images\\01a15000-e13f-7213-9ec0-df2684201405\\exec-cf5c786e-9142-4265-a645-9a7a2dd1fa41.png", "selected": true, "metadata": {"format": "PNG", "width_px": 1536, "height_px": 1024, "pixel_format": "RGB 24bpp", "bytes": 1915461, "sha256": "a89defd8ba0419bfa90751dd078ed1412534e2515cffd80acb3bd3ec7509f8fe"}, "exact_prompt": "prompt.txt#Clean view"}
+  ],
+  "visual_review": {
+    "date": "2026-10-18",
+    "concept_sheet": "Accepted for appearance proposal: inner concave face alone receives worked-timber treatment; outer face, top, underside and radial ends remain neutral; plan view shows first-quadrant 90-degree quarter-annulus with target radii 1.5 m and 2.0 m; envelope, grid, axes, identity-only rotation, named straight-join and repeat interfaces are readable. No geometry or fit inferred from image scale.",
+    "asset_view": "Accepted for appearance proposal: one intact quarter-annulus carrier, center/open quadrant unobstructed, inner face treated and remaining surfaces neutral. No extra segments or protrusions. Numerical radius, mesh fit, collision and runtime behavior remain unverified."
+  },
+  "compatibility": "GEO-01 approved manifest/hash absent; applicable GEO-02 curve repetition/rotation/contact evidence absent.",
+  "blockers": [
+    "GEO-01 approved geometry payload/manifest hash absent; shape remains contract proposal.",
+    "Applicable GEO-02 curve repetition, contact and rotation evidence absent.",
+    "CurveStraightJoin counterpart patch dimensions/phase and numerical fit unvalidated."
+  ]
+}

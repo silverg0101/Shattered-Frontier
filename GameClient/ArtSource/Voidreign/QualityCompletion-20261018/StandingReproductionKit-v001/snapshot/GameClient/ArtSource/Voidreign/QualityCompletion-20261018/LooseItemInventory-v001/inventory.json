@@ -1,0 +1,799 @@
+{
+  "schema_version": 1,
+  "asset_id": "Voidreign",
+  "scope_sha256": "0d7599c8064cb81a6e211a23731435e08939b7fb146ce2d4bed810273909a2b2",
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz": "0d7599c8064cb81a6e211a23731435e08939b7fb146ce2d4bed810273909a2b2",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryDomains-v001\\primary-domains.npz": "38002ef04f9ab82df4456021b3772e422328e2ecebd38bd068a344dd5e27bdb5"
+  },
+  "source": "PrimaryStandingSkinRepair-v001/Mount-StandingSkinRepair.blend",
+  "selected_unresolved_nonhair_vertices": 1139,
+  "items": [
+    {
+      "id": "VR-LOOSE-0d7599c806-C0018",
+      "component_id": 18,
+      "selection_key": "C0018",
+      "selected_vertices": 288,
+      "whole_component_vertices": 288,
+      "bounds_m": [
+        [
+          0.12899325788021088,
+          0.4433853030204773,
+          0.991489052772522
+        ],
+        [
+          0.20996585488319397,
+          0.5701503157615662,
+          1.031653881072998
+        ]
+      ],
+      "center_m": [
+        0.1619981825351715,
+        0.516187846660614,
+        1.0107979774475098
+      ],
+      "status": "unresolved-no-binding-or-deletion",
+      "disposition": null,
+      "owning_body_part": null,
+      "motion_representation": null,
+      "review_required": [
+        "semantic identity",
+        "actual attachment/support",
+        "whole component versus subset",
+        "intended primary/secondary ownership"
+      ]
+    },
+    {
+      "id": "VR-LOOSE-0d7599c806-C0026",
+      "component_id": 26,
+      "selection_key": "C0026",
+      "selected_vertices": 185,
+      "whole_component_vertices": 185,
+      "bounds_m": [
+        [
+          0.24720534682273865,
+          0.8287456035614014,
+          0.17507636547088623
+        ],
+        [
+          0.2850416898727417,
+          0.8626718521118164,
+          0.4966311454772949
+        ]
+      ],
+      "center_m": [
+        0.2689823806285858,
+        0.8460617661476135,
+        0.3342626094818115
+      ],
+      "status": "unresolved-no-binding-or-deletion",
+      "disposition": null,
+      "owning_body_part": null,
+      "motion_representation": null,
+      "review_required": [
+        "semantic identity",
+        "actual attachment/support",
+        "whole component versus subset",
+        "intended primary/secondary ownership"
+      ]
+    },
+    {
+      "id": "VR-LOOSE-0d7599c806-C0054",
+      "component_id": 54,
+      "selection_key": "C0054",
+      "selected_vertices": 97,
+      "whole_component_vertices": 97,
+      "bounds_m": [
+        [
+          -0.41645804047584534,
+          -0.5195621848106384,
+          1.0090155601501465
+        ],
+        [
+          -0.3713827431201935,
+          -0.46237003803253174,
+          1.2065836191177368
+        ]
+      ],
+      "center_m": [
+        -0.39109140634536743,
+        -0.49761494994163513,
+        1.0922293663024902
+      ],
+      "status": "unresolved-no-binding-or-deletion",
+      "disposition": null,
+      "owning_body_part": null,
+      "motion_representation": null,
+      "review_required": [
+        "semantic identity",
+        "actual attachment/support",
+        "whole component versus subset",
+        "intended primary/secondary ownership"
+      ]
+    },
+    {
+      "id": "VR-LOOSE-0d7599c806-C0059",
+      "component_id": 59,
+      "selection_key": "C0059",
+      "selected_vertices": 97,
+      "whole_component_vertices": 97,
+      "bounds_m": [
+        [
+          0.07360833883285522,
+          -1.001017451286316,
+          0.9068039059638977
+        ],
+        [
+          0.11262646317481995,
+          -0.9712854623794556,
+          1.14668607711792
+        ]
+      ],
+      "center_m": [
+        0.09705980122089386,
+        -0.9864917397499084,
+        1.0328259468078613
+      ],
+      "status": "unresolved-no-binding-or-deletion",
+      "disposition": null,
+      "owning_body_part": null,
+      "motion_representation": null,
+      "review_required": [
+        "semantic identity",
+        "actual attachment/support",
+        "whole component versus subset",
+        "intended primary/secondary ownership"
+      ]
+    },
+    {
+      "id": "VR-LOOSE-0d7599c806-C0074",
+      "component_id": 74,
+      "selection_key": "C0074",
+      "selected_vertices": 75,
+      "whole_component_vertices": 75,
+      "bounds_m": [
+        [
+          -0.4709487557411194,
+          -0.6706579327583313,
+          0.3215985894203186
+        ],
+        [
+          -0.42213040590286255,
+          -0.6496800184249878,
+          0.45409172773361206
+        ]
+      ],
+      "center_m": [
+        -0.452016144990921,
+        -0.6628463268280029,
+        0.3951641321182251
+      ],
+      "status": "unresolved-no-binding-or-deletion",
+      "disposition": null,
+      "owning_body_part": null,
+      "motion_representation": null,
+      "review_required": [
+        "semantic identity",
+        "actual attachment/support",
+        "whole component versus subset",
+        "intended primary/secondary ownership"
+      ]
+    },
+    {
+      "id": "VR-LOOSE-0d7599c806-C0086",
+      "component_id": 86,
+      "selection_key": "C0086",
+      "selected_vertices": 65,
+      "whole_component_vertices": 65,
+      "bounds_m": [
+        [
+          -0.19501113891601562,
+          -0.9705126285552979,
+          1.0601660013198853
+        ],
+        [
+          -0.13701529800891876,
+          -0.9210144281387329,
+          1.158879280090332
+        ]
+      ],
+      "center_m": [
+        -0.16753147542476654,
+        -0.9463857412338257,
+        1.1174174547195435
+      ],
+      "status": "unresolved-no-binding-or-deletion",
+      "disposition": null,
+      "owning_body_part": null,
+      "motion_representation": null,
+      "review_required": [
+        "semantic identity",
+        "actual attachment/support",
+        "whole component versus subset",
+        "intended primary/secondary ownership"
+      ]
+    },
+    {
+      "id": "VR-LOOSE-0d7599c806-C0102",
+      "component_id": 102,
+      "selection_key": "C0102",
+      "selected_vertices": 39,
+      "whole_component_vertices": 39,
+      "bounds_m": [
+        [
+          0.3011086881160736,
+          -0.2810562252998352,
+          0.931450605392456
+        ],
+        [
+          0.3197436034679413,
+          -0.27026471495628357,
+          1.0332489013671875
+        ]
+      ],
+      "center_m": [
+        0.31022214889526367,
+        -0.2755542993545532,
+        0.989059567451477
+      ],
+      "status": "unresolved-no-binding-or-deletion",
+      "disposition": null,
+      "owning_body_part": null,
+      "motion_representation": null,
+      "review_required": [
+        "semantic identity",
+        "actual attachment/support",
+        "whole component versus subset",
+        "intended primary/secondary ownership"
+      ]
+    },
+    {
+      "id": "VR-LOOSE-0d7599c806-C0118",
+      "component_id": 118,
+      "selection_key": "C0118",
+      "selected_vertices": 37,
+      "whole_component_vertices": 37,
+      "bounds_m": [
+        [
+          0.26376551389694214,
+          -0.437174916267395,
+          1.1502362489700317
+        ],
+        [
+          0.27740317583084106,
+          -0.4283381402492523,
+          1.229921579360962
+        ]
+      ],
+      "center_m": [
+        0.27035051584243774,
+        -0.4322689473628998,
+        1.1841398477554321
+      ],
+      "status": "unresolved-no-binding-or-deletion",
+      "disposition": null,
+      "owning_body_part": null,
+      "motion_representation": null,
+      "review_required": [
+        "semantic identity",
+        "actual attachment/support",
+        "whole component versus subset",
+        "intended primary/secondary ownership"
+      ]
+    },
+    {
+      "id": "VR-LOOSE-0d7599c806-C0132",
+      "component_id": 132,
+      "selection_key": "C0132",
+      "selected_vertices": 30,
+      "whole_component_vertices": 30,
+      "bounds_m": [
+        [
+          0.0920957624912262,
+          0.49997496604919434,
+          1.0364174842834473
+        ],
+        [
+          0.1072700023651123,
+          0.5157109498977661,
+          1.0478110313415527
+        ]
+      ],
+      "center_m": [
+        0.09952379018068314,
+        0.5077837705612183,
+        1.0419806241989136
+      ],
+      "status": "unresolved-no-binding-or-deletion",
+      "disposition": null,
+      "owning_body_part": null,
+      "motion_representation": null,
+      "review_required": [
+        "semantic identity",
+        "actual attachment/support",
+        "whole component versus subset",
+        "intended primary/secondary ownership"
+      ]
+    },
+    {
+      "id": "VR-LOOSE-0d7599c806-C0133",
+      "component_id": 133,
+      "selection_key": "C0133",
+      "selected_vertices": 28,
+      "whole_component_vertices": 28,
+      "bounds_m": [
+        [
+          0.2724587619304657,
+          -0.449367880821228,
+          1.0580072402954102
+        ],
+        [
+          0.2849777638912201,
+          -0.44053879380226135,
+          1.1230309009552002
+        ]
+      ],
+      "center_m": [
+        0.2782333493232727,
+        -0.444095641374588,
+        1.0901356935501099
+      ],
+      "status": "unresolved-no-binding-or-deletion",
+      "disposition": null,
+      "owning_body_part": null,
+      "motion_representation": null,
+      "review_required": [
+        "semantic identity",
+        "actual attachment/support",
+        "whole component versus subset",
+        "intended primary/secondary ownership"
+      ]
+    },
+    {
+      "id": "VR-LOOSE-0d7599c806-C0150",
+      "component_id": 150,
+      "selection_key": "C0150",
+      "selected_vertices": 24,
+      "whole_component_vertices": 24,
+      "bounds_m": [
+        [
+          -0.0950414389371872,
+          -0.2103792279958725,
+          1.0724551677703857
+        ],
+        [
+          -0.08655960857868195,
+          -0.1972285807132721,
+          1.0959064960479736
+        ]
+      ],
+      "center_m": [
+        -0.09097012132406235,
+        -0.2039041370153427,
+        1.0845516920089722
+      ],
+      "status": "unresolved-no-binding-or-deletion",
+      "disposition": null,
+      "owning_body_part": null,
+      "motion_representation": null,
+      "review_required": [
+        "semantic identity",
+        "actual attachment/support",
+        "whole component versus subset",
+        "intended primary/secondary ownership"
+      ]
+    },
+    {
+      "id": "VR-LOOSE-0d7599c806-C0161",
+      "component_id": 161,
+      "selection_key": "C0161",
+      "selected_vertices": 24,
+      "whole_component_vertices": 24,
+      "bounds_m": [
+        [
+          -0.40425634384155273,
+          -0.744661271572113,
+          0.6563284397125244
+        ],
+        [
+          -0.38830626010894775,
+          -0.7329441905021667,
+          0.6678827404975891
+        ]
+      ],
+      "center_m": [
+        -0.3961983919143677,
+        -0.7385625243186951,
+        0.6614181399345398
+      ],
+      "status": "unresolved-no-binding-or-deletion",
+      "disposition": null,
+      "owning_body_part": null,
+      "motion_representation": null,
+      "review_required": [
+        "semantic identity",
+        "actual attachment/support",
+        "whole component versus subset",
+        "intended primary/secondary ownership"
+      ]
+    },
+    {
+      "id": "VR-LOOSE-0d7599c806-C0158",
+      "component_id": 158,
+      "selection_key": "C0158",
+      "selected_vertices": 20,
+      "whole_component_vertices": 20,
+      "bounds_m": [
+        [
+          0.30652904510498047,
+          0.5746098756790161,
+          1.035982608795166
+        ],
+        [
+          0.31722256541252136,
+          0.586340606212616,
+          1.0619598627090454
+        ]
+      ],
+      "center_m": [
+        0.3109445869922638,
+        0.5802478194236755,
+        1.0496108531951904
+      ],
+      "status": "unresolved-no-binding-or-deletion",
+      "disposition": null,
+      "owning_body_part": null,
+      "motion_representation": null,
+      "review_required": [
+        "semantic identity",
+        "actual attachment/support",
+        "whole component versus subset",
+        "intended primary/secondary ownership"
+      ]
+    },
+    {
+      "id": "VR-LOOSE-0d7599c806-C0178",
+      "component_id": 178,
+      "selection_key": "C0178",
+      "selected_vertices": 20,
+      "whole_component_vertices": 20,
+      "bounds_m": [
+        [
+          -0.46433326601982117,
+          0.28156110644340515,
+          0.9371131658554077
+        ],
+        [
+          -0.45578980445861816,
+          0.28909194469451904,
+          0.9448494911193848
+        ]
+      ],
+      "center_m": [
+        -0.45993199944496155,
+        0.28531524538993835,
+        0.9409286379814148
+      ],
+      "status": "unresolved-no-binding-or-deletion",
+      "disposition": null,
+      "owning_body_part": null,
+      "motion_representation": null,
+      "review_required": [
+        "semantic identity",
+        "actual attachment/support",
+        "whole component versus subset",
+        "intended primary/secondary ownership"
+      ]
+    },
+    {
+      "id": "VR-LOOSE-0d7599c806-C0163",
+      "component_id": 163,
+      "selection_key": "C0163",
+      "selected_vertices": 19,
+      "whole_component_vertices": 19,
+      "bounds_m": [
+        [
+          -0.421410471200943,
+          0.5458211898803711,
+          0.048195838928222656
+        ],
+        [
+          -0.4070700407028198,
+          0.554928183555603,
+          0.06483423709869385
+        ]
+      ],
+      "center_m": [
+        -0.41516992449760437,
+        0.5495111346244812,
+        0.05528933182358742
+      ],
+      "status": "unresolved-no-binding-or-deletion",
+      "disposition": null,
+      "owning_body_part": null,
+      "motion_representation": null,
+      "review_required": [
+        "semantic identity",
+        "actual attachment/support",
+        "whole component versus subset",
+        "intended primary/secondary ownership"
+      ]
+    },
+    {
+      "id": "VR-LOOSE-0d7599c806-C0165",
+      "component_id": 165,
+      "selection_key": "C0165",
+      "selected_vertices": 18,
+      "whole_component_vertices": 18,
+      "bounds_m": [
+        [
+          -0.39387351274490356,
+          0.5588489174842834,
+          0.06492578983306885
+        ],
+        [
+          -0.3719187378883362,
+          0.5698020458221436,
+          0.08401322364807129
+        ]
+      ],
+      "center_m": [
+        -0.3837205171585083,
+        0.5637020468711853,
+        0.07273075729608536
+      ],
+      "status": "unresolved-no-binding-or-deletion",
+      "disposition": null,
+      "owning_body_part": null,
+      "motion_representation": null,
+      "review_required": [
+        "semantic identity",
+        "actual attachment/support",
+        "whole component versus subset",
+        "intended primary/secondary ownership"
+      ]
+    },
+    {
+      "id": "VR-LOOSE-0d7599c806-C0180",
+      "component_id": 180,
+      "selection_key": "C0180",
+      "selected_vertices": 18,
+      "whole_component_vertices": 18,
+      "bounds_m": [
+        [
+          0.11245491355657578,
+          0.3503308594226837,
+          1.1594587564468384
+        ],
+        [
+          0.12320335954427719,
+          0.3567410707473755,
+          1.1672533750534058
+        ]
+      ],
+      "center_m": [
+        0.11799763143062592,
+        0.3538651764392853,
+        1.1639513969421387
+      ],
+      "status": "unresolved-no-binding-or-deletion",
+      "disposition": null,
+      "owning_body_part": null,
+      "motion_representation": null,
+      "review_required": [
+        "semantic identity",
+        "actual attachment/support",
+        "whole component versus subset",
+        "intended primary/secondary ownership"
+      ]
+    },
+    {
+      "id": "VR-LOOSE-0d7599c806-C0182",
+      "component_id": 182,
+      "selection_key": "C0182",
+      "selected_vertices": 16,
+      "whole_component_vertices": 16,
+      "bounds_m": [
+        [
+          -0.37758028507232666,
+          -0.8382319808006287,
+          1.2103302478790283
+        ],
+        [
+          -0.3712631165981293,
+          -0.8239651322364807,
+          1.2318971157073975
+        ]
+      ],
+      "center_m": [
+        -0.3744852840900421,
+        -0.8315905332565308,
+        1.2216861248016357
+      ],
+      "status": "unresolved-no-binding-or-deletion",
+      "disposition": null,
+      "owning_body_part": null,
+      "motion_representation": null,
+      "review_required": [
+        "semantic identity",
+        "actual attachment/support",
+        "whole component versus subset",
+        "intended primary/secondary ownership"
+      ]
+    },
+    {
+      "id": "VR-LOOSE-0d7599c806-C0188",
+      "component_id": 188,
+      "selection_key": "C0188",
+      "selected_vertices": 13,
+      "whole_component_vertices": 13,
+      "bounds_m": [
+        [
+          -0.458387166261673,
+          -0.2001979798078537,
+          1.139642596244812
+        ],
+        [
+          -0.4467983543872833,
+          -0.19496369361877441,
+          1.1552833318710327
+        ]
+      ],
+      "center_m": [
+        -0.45310837030410767,
+        -0.19803564250469208,
+        1.149118423461914
+      ],
+      "status": "unresolved-no-binding-or-deletion",
+      "disposition": null,
+      "owning_body_part": null,
+      "motion_representation": null,
+      "review_required": [
+        "semantic identity",
+        "actual attachment/support",
+        "whole component versus subset",
+        "intended primary/secondary ownership"
+      ]
+    },
+    {
+      "id": "VR-LOOSE-0d7599c806-C0192",
+      "component_id": 192,
+      "selection_key": "C0192",
+      "selected_vertices": 10,
+      "whole_component_vertices": 10,
+      "bounds_m": [
+        [
+          -0.3035948574542999,
+          -0.7051535844802856,
+          0.24551808834075928
+        ],
+        [
+          -0.29161569476127625,
+          -0.7008650302886963,
+          0.263225793838501
+        ]
+      ],
+      "center_m": [
+        -0.2970329523086548,
+        -0.7034133672714233,
+        0.25535640120506287
+      ],
+      "status": "unresolved-no-binding-or-deletion",
+      "disposition": null,
+      "owning_body_part": null,
+      "motion_representation": null,
+      "review_required": [
+        "semantic identity",
+        "actual attachment/support",
+        "whole component versus subset",
+        "intended primary/secondary ownership"
+      ]
+    },
+    {
+      "id": "VR-LOOSE-0d7599c806-C0214",
+      "component_id": 214,
+      "selection_key": "C0214",
+      "selected_vertices": 6,
+      "whole_component_vertices": 6,
+      "bounds_m": [
+        [
+          0.34471312165260315,
+          -0.31085655093193054,
+          0.7626312375068665
+        ],
+        [
+          0.3470926284790039,
+          -0.3092386722564697,
+          0.7950407266616821
+        ]
+      ],
+      "center_m": [
+        0.34616756439208984,
+        -0.31009891629219055,
+        0.7781574726104736
+      ],
+      "status": "unresolved-no-binding-or-deletion",
+      "disposition": null,
+      "owning_body_part": null,
+      "motion_representation": null,
+      "review_required": [
+        "semantic identity",
+        "actual attachment/support",
+        "whole component versus subset",
+        "intended primary/secondary ownership"
+      ]
+    },
+    {
+      "id": "VR-LOOSE-0d7599c806-C0216",
+      "component_id": 216,
+      "selection_key": "C0216",
+      "selected_vertices": 6,
+      "whole_component_vertices": 6,
+      "bounds_m": [
+        [
+          0.137813001871109,
+          0.4680931568145752,
+          1.0235304832458496
+        ],
+        [
+          0.14604447782039642,
+          0.4800974726676941,
+          1.0287370681762695
+        ]
+      ],
+      "center_m": [
+        0.14193730056285858,
+        0.4746617376804352,
+        1.0263218879699707
+      ],
+      "status": "unresolved-no-binding-or-deletion",
+      "disposition": null,
+      "owning_body_part": null,
+      "motion_representation": null,
+      "review_required": [
+        "semantic identity",
+        "actual attachment/support",
+        "whole component versus subset",
+        "intended primary/secondary ownership"
+      ]
+    },
+    {
+      "id": "VR-LOOSE-0d7599c806-C0210",
+      "component_id": 210,
+      "selection_key": "C0210",
+      "selected_vertices": 4,
+      "whole_component_vertices": 4,
+      "bounds_m": [
+        [
+          -0.2208447903394699,
+          -0.8407770395278931,
+          0.32674747705459595
+        ],
+        [
+          -0.22076159715652466,
+          -0.8403406739234924,
+          0.32840895652770996
+        ]
+      ],
+      "center_m": [
+        -0.22080320119857788,
+        -0.8405588865280151,
+        0.32757821679115295
+      ],
+      "status": "unresolved-no-binding-or-deletion",
+      "disposition": null,
+      "owning_body_part": null,
+      "motion_representation": null,
+      "review_required": [
+        "semantic identity",
+        "actual attachment/support",
+        "whole component versus subset",
+        "intended primary/secondary ownership"
+      ]
+    }
+  ],
+  "limitations": [
+    "23unresolved components/subsets are not23deletion candidates.",
+    "This is only the unresolved disconnected nonhair subset, not all hanging tack fused to the main component."
+  ]
+}

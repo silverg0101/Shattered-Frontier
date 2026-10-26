@@ -1,0 +1,538 @@
+{
+  "schema_version": 1,
+  "status": "priority-boundary-review-incomplete",
+  "reviewer": "authoring-agent",
+  "total_patches": 65,
+  "isolated_patches_reviewed": 9,
+  "views_reviewed": 13,
+  "findings": [
+    "Mixed hair material triangles form65canonical-edge-connected patches, not one root strip.",
+    "Whole-hair cyan and mixed magenta contexts show boundaries at mane scalp/neck, strand edges/tips, tail rump and low hind-leg fringe. Mixed does not imply root, debris or permission to fill a face.",
+    "Nine priority isolates show strips/rings cut by the original selection; remaining56patches have no individual isolation review.",
+    "Low Tail boundary exposed hind-leg-supported regions, confirmed separately by FeatureSupportAdjacency-v001 and LegFringeOwnershipReview-v001."
+  ],
+  "unchanged": "All2713mixed material faces retain original shader in material attempt2/3; no material attempt3 or full coverage approval.",
+  "items": [
+    {
+      "id": "SMB-0d7599c806-a23f50cee6c9",
+      "status": "shape-context-reviewed-identity-open",
+      "faces": 578,
+      "face_key": "SMB-0d7599c806-a23f50cee6c9.faces",
+      "vertex_key": "SMB-0d7599c806-a23f50cee6c9.vertices",
+      "evidence": "HairMaterialBoundaryReview-v001/SMB-0d7599c806-a23f50cee6c9-isolation.png"
+    },
+    {
+      "id": "SMB-0d7599c806-13398d8f6fa9",
+      "status": "shape-context-reviewed-identity-open",
+      "faces": 344,
+      "face_key": "SMB-0d7599c806-13398d8f6fa9.faces",
+      "vertex_key": "SMB-0d7599c806-13398d8f6fa9.vertices",
+      "evidence": "HairMaterialBoundaryReview-v001/SMB-0d7599c806-13398d8f6fa9-isolation.png"
+    },
+    {
+      "id": "SMB-0d7599c806-c5f686eb393a",
+      "status": "shape-context-reviewed-identity-open",
+      "faces": 155,
+      "face_key": "SMB-0d7599c806-c5f686eb393a.faces",
+      "vertex_key": "SMB-0d7599c806-c5f686eb393a.vertices",
+      "evidence": "HairMaterialBoundaryReview-v001/SMB-0d7599c806-c5f686eb393a-isolation.png"
+    },
+    {
+      "id": "SMB-0d7599c806-6c0faadfb656",
+      "status": "shape-context-reviewed-identity-open",
+      "faces": 172,
+      "face_key": "SMB-0d7599c806-6c0faadfb656.faces",
+      "vertex_key": "SMB-0d7599c806-6c0faadfb656.vertices",
+      "evidence": "HairMaterialBoundaryReview-v001/SMB-0d7599c806-6c0faadfb656-isolation.png"
+    },
+    {
+      "id": "SMB-0d7599c806-9461782d30e7",
+      "status": "shape-context-reviewed-identity-open",
+      "faces": 87,
+      "face_key": "SMB-0d7599c806-9461782d30e7.faces",
+      "vertex_key": "SMB-0d7599c806-9461782d30e7.vertices",
+      "evidence": "HairMaterialBoundaryReview-v001/SMB-0d7599c806-9461782d30e7-isolation.png"
+    },
+    {
+      "id": "SMB-0d7599c806-c95bf113bd82",
+      "status": "shape-context-reviewed-identity-open",
+      "faces": 91,
+      "face_key": "SMB-0d7599c806-c95bf113bd82.faces",
+      "vertex_key": "SMB-0d7599c806-c95bf113bd82.vertices",
+      "evidence": "HairMaterialBoundaryReview-v001/SMB-0d7599c806-c95bf113bd82-isolation.png"
+    },
+    {
+      "id": "SMB-0d7599c806-fa0932e06fbb",
+      "status": "shape-context-reviewed-identity-open",
+      "faces": 74,
+      "face_key": "SMB-0d7599c806-fa0932e06fbb.faces",
+      "vertex_key": "SMB-0d7599c806-fa0932e06fbb.vertices",
+      "evidence": "HairMaterialBoundaryReview-v001/SMB-0d7599c806-fa0932e06fbb-isolation.png"
+    },
+    {
+      "id": "SMB-0d7599c806-16aa3f8d2318",
+      "status": "shape-context-reviewed-identity-open",
+      "faces": 58,
+      "face_key": "SMB-0d7599c806-16aa3f8d2318.faces",
+      "vertex_key": "SMB-0d7599c806-16aa3f8d2318.vertices",
+      "evidence": "HairMaterialBoundaryReview-v001/SMB-0d7599c806-16aa3f8d2318-isolation.png"
+    },
+    {
+      "id": "SMB-0d7599c806-f2ac3080aae7",
+      "status": "queued-context-and-identity-review",
+      "faces": 35,
+      "face_key": "SMB-0d7599c806-f2ac3080aae7.faces",
+      "vertex_key": "SMB-0d7599c806-f2ac3080aae7.vertices",
+      "evidence": null
+    },
+    {
+      "id": "SMB-0d7599c806-d0197039a013",
+      "status": "shape-context-reviewed-identity-open",
+      "faces": 61,
+      "face_key": "SMB-0d7599c806-d0197039a013.faces",
+      "vertex_key": "SMB-0d7599c806-d0197039a013.vertices",
+      "evidence": "HairMaterialBoundaryReview-v001/SMB-0d7599c806-d0197039a013-isolation.png"
+    },
+    {
+      "id": "SMB-0d7599c806-67a2125f483c",
+      "status": "queued-context-and-identity-review",
+      "faces": 40,
+      "face_key": "SMB-0d7599c806-67a2125f483c.faces",
+      "vertex_key": "SMB-0d7599c806-67a2125f483c.vertices",
+      "evidence": null
+    },
+    {
+      "id": "SMB-0d7599c806-3bf28272db22",
+      "status": "queued-context-and-identity-review",
+      "faces": 44,
+      "face_key": "SMB-0d7599c806-3bf28272db22.faces",
+      "vertex_key": "SMB-0d7599c806-3bf28272db22.vertices",
+      "evidence": null
+    },
+    {
+      "id": "SMB-0d7599c806-fcef00460074",
+      "status": "queued-context-and-identity-review",
+      "faces": 35,
+      "face_key": "SMB-0d7599c806-fcef00460074.faces",
+      "vertex_key": "SMB-0d7599c806-fcef00460074.vertices",
+      "evidence": null
+    },
+    {
+      "id": "SMB-0d7599c806-0ded486c5b5e",
+      "status": "queued-context-and-identity-review",
+      "faces": 84,
+      "face_key": "SMB-0d7599c806-0ded486c5b5e.faces",
+      "vertex_key": "SMB-0d7599c806-0ded486c5b5e.vertices",
+      "evidence": null
+    },
+    {
+      "id": "SMB-0d7599c806-d4c63dedbd5e",
+      "status": "queued-context-and-identity-review",
+      "faces": 33,
+      "face_key": "SMB-0d7599c806-d4c63dedbd5e.faces",
+      "vertex_key": "SMB-0d7599c806-d4c63dedbd5e.vertices",
+      "evidence": null
+    },
+    {
+      "id": "SMB-0d7599c806-bc5c85d932c0",
+      "status": "queued-context-and-identity-review",
+      "faces": 32,
+      "face_key": "SMB-0d7599c806-bc5c85d932c0.faces",
+      "vertex_key": "SMB-0d7599c806-bc5c85d932c0.vertices",
+      "evidence": null
+    },
+    {
+      "id": "SMB-0d7599c806-8575242048e6",
+      "status": "queued-context-and-identity-review",
+      "faces": 23,
+      "face_key": "SMB-0d7599c806-8575242048e6.faces",
+      "vertex_key": "SMB-0d7599c806-8575242048e6.vertices",
+      "evidence": null
+    },
+    {
+      "id": "SMB-0d7599c806-03ddf3586241",
+      "status": "queued-context-and-identity-review",
+      "faces": 20,
+      "face_key": "SMB-0d7599c806-03ddf3586241.faces",
+      "vertex_key": "SMB-0d7599c806-03ddf3586241.vertices",
+      "evidence": null
+    },
+    {
+      "id": "SMB-0d7599c806-b246d0d8fc50",
+      "status": "queued-context-and-identity-review",
+      "faces": 24,
+      "face_key": "SMB-0d7599c806-b246d0d8fc50.faces",
+      "vertex_key": "SMB-0d7599c806-b246d0d8fc50.vertices",
+      "evidence": null
+    },
+    {
+      "id": "SMB-0d7599c806-1a6b38bcd2ed",
+      "status": "queued-context-and-identity-review",
+      "faces": 40,
+      "face_key": "SMB-0d7599c806-1a6b38bcd2ed.faces",
+      "vertex_key": "SMB-0d7599c806-1a6b38bcd2ed.vertices",
+      "evidence": null
+    },
+    {
+      "id": "SMB-0d7599c806-214908334f85",
+      "status": "queued-context-and-identity-review",
+      "faces": 20,
+      "face_key": "SMB-0d7599c806-214908334f85.faces",
+      "vertex_key": "SMB-0d7599c806-214908334f85.vertices",
+      "evidence": null
+    },
+    {
+      "id": "SMB-0d7599c806-45e5a199970f",
+      "status": "queued-context-and-identity-review",
+      "faces": 23,
+      "face_key": "SMB-0d7599c806-45e5a199970f.faces",
+      "vertex_key": "SMB-0d7599c806-45e5a199970f.vertices",
+      "evidence": null
+    },
+    {
+      "id": "SMB-0d7599c806-ae39479acb4e",
+      "status": "queued-context-and-identity-review",
+      "faces": 36,
+      "face_key": "SMB-0d7599c806-ae39479acb4e.faces",
+      "vertex_key": "SMB-0d7599c806-ae39479acb4e.vertices",
+      "evidence": null
+    },
+    {
+      "id": "SMB-0d7599c806-496a7c339b64",
+      "status": "queued-context-and-identity-review",
+      "faces": 19,
+      "face_key": "SMB-0d7599c806-496a7c339b64.faces",
+      "vertex_key": "SMB-0d7599c806-496a7c339b64.vertices",
+      "evidence": null
+    },
+    {
+      "id": "SMB-0d7599c806-76a5b531d804",
+      "status": "queued-context-and-identity-review",
+      "faces": 23,
+      "face_key": "SMB-0d7599c806-76a5b531d804.faces",
+      "vertex_key": "SMB-0d7599c806-76a5b531d804.vertices",
+      "evidence": null
+    },
+    {
+      "id": "SMB-0d7599c806-142b88f3f5fe",
+      "status": "queued-context-and-identity-review",
+      "faces": 27,
+      "face_key": "SMB-0d7599c806-142b88f3f5fe.faces",
+      "vertex_key": "SMB-0d7599c806-142b88f3f5fe.vertices",
+      "evidence": null
+    },
+    {
+      "id": "SMB-0d7599c806-e985ed9d2776",
+      "status": "queued-context-and-identity-review",
+      "faces": 18,
+      "face_key": "SMB-0d7599c806-e985ed9d2776.faces",
+      "vertex_key": "SMB-0d7599c806-e985ed9d2776.vertices",
+      "evidence": null
+    },
+    {
+      "id": "SMB-0d7599c806-f2693581ad0a",
+      "status": "queued-context-and-identity-review",
+      "faces": 16,
+      "face_key": "SMB-0d7599c806-f2693581ad0a.faces",
+      "vertex_key": "SMB-0d7599c806-f2693581ad0a.vertices",
+      "evidence": null
+    },
+    {
+      "id": "SMB-0d7599c806-6a2d8e04a727",
+      "status": "queued-context-and-identity-review",
+      "faces": 17,
+      "face_key": "SMB-0d7599c806-6a2d8e04a727.faces",
+      "vertex_key": "SMB-0d7599c806-6a2d8e04a727.vertices",
+      "evidence": null
+    },
+    {
+      "id": "SMB-0d7599c806-4afd6188749c",
+      "status": "queued-context-and-identity-review",
+      "faces": 31,
+      "face_key": "SMB-0d7599c806-4afd6188749c.faces",
+      "vertex_key": "SMB-0d7599c806-4afd6188749c.vertices",
+      "evidence": null
+    },
+    {
+      "id": "SMB-0d7599c806-4e2fc507de64",
+      "status": "queued-context-and-identity-review",
+      "faces": 20,
+      "face_key": "SMB-0d7599c806-4e2fc507de64.faces",
+      "vertex_key": "SMB-0d7599c806-4e2fc507de64.vertices",
+      "evidence": null
+    },
+    {
+      "id": "SMB-0d7599c806-0b3644d3cead",
+      "status": "queued-context-and-identity-review",
+      "faces": 19,
+      "face_key": "SMB-0d7599c806-0b3644d3cead.faces",
+      "vertex_key": "SMB-0d7599c806-0b3644d3cead.vertices",
+      "evidence": null
+    },
+    {
+      "id": "SMB-0d7599c806-24c47ae608df",
+      "status": "queued-context-and-identity-review",
+      "faces": 18,
+      "face_key": "SMB-0d7599c806-24c47ae608df.faces",
+      "vertex_key": "SMB-0d7599c806-24c47ae608df.vertices",
+      "evidence": null
+    },
+    {
+      "id": "SMB-0d7599c806-59ee26f77533",
+      "status": "queued-context-and-identity-review",
+      "faces": 10,
+      "face_key": "SMB-0d7599c806-59ee26f77533.faces",
+      "vertex_key": "SMB-0d7599c806-59ee26f77533.vertices",
+      "evidence": null
+    },
+    {
+      "id": "SMB-0d7599c806-a21db8bf045e",
+      "status": "queued-context-and-identity-review",
+      "faces": 13,
+      "face_key": "SMB-0d7599c806-a21db8bf045e.faces",
+      "vertex_key": "SMB-0d7599c806-a21db8bf045e.vertices",
+      "evidence": null
+    },
+    {
+      "id": "SMB-0d7599c806-79496374c95e",
+      "status": "queued-context-and-identity-review",
+      "faces": 16,
+      "face_key": "SMB-0d7599c806-79496374c95e.faces",
+      "vertex_key": "SMB-0d7599c806-79496374c95e.vertices",
+      "evidence": null
+    },
+    {
+      "id": "SMB-0d7599c806-219022738900",
+      "status": "queued-context-and-identity-review",
+      "faces": 18,
+      "face_key": "SMB-0d7599c806-219022738900.faces",
+      "vertex_key": "SMB-0d7599c806-219022738900.vertices",
+      "evidence": null
+    },
+    {
+      "id": "SMB-0d7599c806-61056aa72863",
+      "status": "queued-context-and-identity-review",
+      "faces": 46,
+      "face_key": "SMB-0d7599c806-61056aa72863.faces",
+      "vertex_key": "SMB-0d7599c806-61056aa72863.vertices",
+      "evidence": null
+    },
+    {
+      "id": "SMB-0d7599c806-36e9f96b0629",
+      "status": "queued-context-and-identity-review",
+      "faces": 14,
+      "face_key": "SMB-0d7599c806-36e9f96b0629.faces",
+      "vertex_key": "SMB-0d7599c806-36e9f96b0629.vertices",
+      "evidence": null
+    },
+    {
+      "id": "SMB-0d7599c806-13afd9fd68f7",
+      "status": "queued-context-and-identity-review",
+      "faces": 15,
+      "face_key": "SMB-0d7599c806-13afd9fd68f7.faces",
+      "vertex_key": "SMB-0d7599c806-13afd9fd68f7.vertices",
+      "evidence": null
+    },
+    {
+      "id": "SMB-0d7599c806-5c255a663a65",
+      "status": "queued-context-and-identity-review",
+      "faces": 16,
+      "face_key": "SMB-0d7599c806-5c255a663a65.faces",
+      "vertex_key": "SMB-0d7599c806-5c255a663a65.vertices",
+      "evidence": null
+    },
+    {
+      "id": "SMB-0d7599c806-5f9296f0a8b7",
+      "status": "queued-context-and-identity-review",
+      "faces": 14,
+      "face_key": "SMB-0d7599c806-5f9296f0a8b7.faces",
+      "vertex_key": "SMB-0d7599c806-5f9296f0a8b7.vertices",
+      "evidence": null
+    },
+    {
+      "id": "SMB-0d7599c806-2516a986745a",
+      "status": "queued-context-and-identity-review",
+      "faces": 34,
+      "face_key": "SMB-0d7599c806-2516a986745a.faces",
+      "vertex_key": "SMB-0d7599c806-2516a986745a.vertices",
+      "evidence": null
+    },
+    {
+      "id": "SMB-0d7599c806-faf086e6bbf3",
+      "status": "queued-context-and-identity-review",
+      "faces": 14,
+      "face_key": "SMB-0d7599c806-faf086e6bbf3.faces",
+      "vertex_key": "SMB-0d7599c806-faf086e6bbf3.vertices",
+      "evidence": null
+    },
+    {
+      "id": "SMB-0d7599c806-c1177585d450",
+      "status": "queued-context-and-identity-review",
+      "faces": 26,
+      "face_key": "SMB-0d7599c806-c1177585d450.faces",
+      "vertex_key": "SMB-0d7599c806-c1177585d450.vertices",
+      "evidence": null
+    },
+    {
+      "id": "SMB-0d7599c806-da33066a6671",
+      "status": "queued-context-and-identity-review",
+      "faces": 15,
+      "face_key": "SMB-0d7599c806-da33066a6671.faces",
+      "vertex_key": "SMB-0d7599c806-da33066a6671.vertices",
+      "evidence": null
+    },
+    {
+      "id": "SMB-0d7599c806-13e30963711d",
+      "status": "queued-context-and-identity-review",
+      "faces": 10,
+      "face_key": "SMB-0d7599c806-13e30963711d.faces",
+      "vertex_key": "SMB-0d7599c806-13e30963711d.vertices",
+      "evidence": null
+    },
+    {
+      "id": "SMB-0d7599c806-19f81beb369c",
+      "status": "queued-context-and-identity-review",
+      "faces": 15,
+      "face_key": "SMB-0d7599c806-19f81beb369c.faces",
+      "vertex_key": "SMB-0d7599c806-19f81beb369c.vertices",
+      "evidence": null
+    },
+    {
+      "id": "SMB-0d7599c806-707b87545777",
+      "status": "queued-context-and-identity-review",
+      "faces": 10,
+      "face_key": "SMB-0d7599c806-707b87545777.faces",
+      "vertex_key": "SMB-0d7599c806-707b87545777.vertices",
+      "evidence": null
+    },
+    {
+      "id": "SMB-0d7599c806-1e8b223aad41",
+      "status": "queued-context-and-identity-review",
+      "faces": 12,
+      "face_key": "SMB-0d7599c806-1e8b223aad41.faces",
+      "vertex_key": "SMB-0d7599c806-1e8b223aad41.vertices",
+      "evidence": null
+    },
+    {
+      "id": "SMB-0d7599c806-f8c8ec568f04",
+      "status": "queued-context-and-identity-review",
+      "faces": 7,
+      "face_key": "SMB-0d7599c806-f8c8ec568f04.faces",
+      "vertex_key": "SMB-0d7599c806-f8c8ec568f04.vertices",
+      "evidence": null
+    },
+    {
+      "id": "SMB-0d7599c806-cb72c66025e3",
+      "status": "queued-context-and-identity-review",
+      "faces": 11,
+      "face_key": "SMB-0d7599c806-cb72c66025e3.faces",
+      "vertex_key": "SMB-0d7599c806-cb72c66025e3.vertices",
+      "evidence": null
+    },
+    {
+      "id": "SMB-0d7599c806-029db0fbd244",
+      "status": "queued-context-and-identity-review",
+      "faces": 10,
+      "face_key": "SMB-0d7599c806-029db0fbd244.faces",
+      "vertex_key": "SMB-0d7599c806-029db0fbd244.vertices",
+      "evidence": null
+    },
+    {
+      "id": "SMB-0d7599c806-c218565b2652",
+      "status": "queued-context-and-identity-review",
+      "faces": 12,
+      "face_key": "SMB-0d7599c806-c218565b2652.faces",
+      "vertex_key": "SMB-0d7599c806-c218565b2652.vertices",
+      "evidence": null
+    },
+    {
+      "id": "SMB-0d7599c806-9e8e9c14557b",
+      "status": "queued-context-and-identity-review",
+      "faces": 11,
+      "face_key": "SMB-0d7599c806-9e8e9c14557b.faces",
+      "vertex_key": "SMB-0d7599c806-9e8e9c14557b.vertices",
+      "evidence": null
+    },
+    {
+      "id": "SMB-0d7599c806-1d1b12900d1a",
+      "status": "queued-context-and-identity-review",
+      "faces": 5,
+      "face_key": "SMB-0d7599c806-1d1b12900d1a.faces",
+      "vertex_key": "SMB-0d7599c806-1d1b12900d1a.vertices",
+      "evidence": null
+    },
+    {
+      "id": "SMB-0d7599c806-1b91b1cf823d",
+      "status": "queued-context-and-identity-review",
+      "faces": 7,
+      "face_key": "SMB-0d7599c806-1b91b1cf823d.faces",
+      "vertex_key": "SMB-0d7599c806-1b91b1cf823d.vertices",
+      "evidence": null
+    },
+    {
+      "id": "SMB-0d7599c806-602d3f911217",
+      "status": "queued-context-and-identity-review",
+      "faces": 5,
+      "face_key": "SMB-0d7599c806-602d3f911217.faces",
+      "vertex_key": "SMB-0d7599c806-602d3f911217.vertices",
+      "evidence": null
+    },
+    {
+      "id": "SMB-0d7599c806-a990b4f2ab88",
+      "status": "queued-context-and-identity-review",
+      "faces": 5,
+      "face_key": "SMB-0d7599c806-a990b4f2ab88.faces",
+      "vertex_key": "SMB-0d7599c806-a990b4f2ab88.vertices",
+      "evidence": null
+    },
+    {
+      "id": "SMB-0d7599c806-411bed5eb70e",
+      "status": "queued-context-and-identity-review",
+      "faces": 5,
+      "face_key": "SMB-0d7599c806-411bed5eb70e.faces",
+      "vertex_key": "SMB-0d7599c806-411bed5eb70e.vertices",
+      "evidence": null
+    },
+    {
+      "id": "SMB-0d7599c806-c9ecd5507ca0",
+      "status": "queued-context-and-identity-review",
+      "faces": 5,
+      "face_key": "SMB-0d7599c806-c9ecd5507ca0.faces",
+      "vertex_key": "SMB-0d7599c806-c9ecd5507ca0.vertices",
+      "evidence": null
+    },
+    {
+      "id": "SMB-0d7599c806-007f90f080bd",
+      "status": "queued-context-and-identity-review",
+      "faces": 4,
+      "face_key": "SMB-0d7599c806-007f90f080bd.faces",
+      "vertex_key": "SMB-0d7599c806-007f90f080bd.vertices",
+      "evidence": null
+    },
+    {
+      "id": "SMB-0d7599c806-7d9f8b9ff8a2",
+      "status": "queued-context-and-identity-review",
+      "faces": 5,
+      "face_key": "SMB-0d7599c806-7d9f8b9ff8a2.faces",
+      "vertex_key": "SMB-0d7599c806-7d9f8b9ff8a2.vertices",
+      "evidence": null
+    },
+    {
+      "id": "SMB-0d7599c806-2ce453b2e50e",
+      "status": "queued-context-and-identity-review",
+      "faces": 3,
+      "face_key": "SMB-0d7599c806-2ce453b2e50e.faces",
+      "vertex_key": "SMB-0d7599c806-2ce453b2e50e.vertices",
+      "evidence": null
+    },
+    {
+      "id": "SMB-0d7599c806-1e925dd6eb59",
+      "status": "queued-context-and-identity-review",
+      "faces": 3,
+      "face_key": "SMB-0d7599c806-1e925dd6eb59.faces",
+      "vertex_key": "SMB-0d7599c806-1e925dd6eb59.vertices",
+      "evidence": null
+    }
+  ],
+  "next_item": "SMB-0d7599c806-f2ac3080aae7"
+}

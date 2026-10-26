@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "units": "metres",
+  "source": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkPilot-v002/Mount-WalkPilot.blend",
+  "object": "geometry_0",
+  "rig_object": "PRIMARY | anatomical rig pilot",
+  "frame_start": 1,
+  "frame_end": 73,
+  "maximum_influences": 4,
+  "baseline_tolerance_m": 1e-05,
+  "permissions": "Read-only local cause analysis; no new primary candidate or automatic budget reset",
+  "effective_time": "Exact declared edges of this clip only",
+  "edges": [
+    {
+      "id": "root-left",
+      "vertices": [
+        79011,
+        79021
+      ],
+      "transfer": {
+        "PRI.fore.L.elbow": "PRI.fore.L.shoulder",
+        "PRI.fore.L.carpus": "PRI.fore.L.shoulder",
+        "PRI.fore.L.fetlock": "PRI.fore.L.shoulder"
+      }
+    },
+    {
+      "id": "root-right",
+      "vertices": [
+        22108,
+        22111
+      ],
+      "transfer": {
+        "PRI.fore.R.elbow": "PRI.fore.R.shoulder",
+        "PRI.fore.R.carpus": "PRI.fore.R.shoulder",
+        "PRI.fore.R.fetlock": "PRI.fore.R.shoulder"
+      }
+    }
+  ],
+  "input_sha256": {
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkPilot-v002/Mount-WalkPilot.blend": "d175746ff5d44a6b8d05151200f67e1efee2798c506029991091ca379f771c35"
+  }
+}

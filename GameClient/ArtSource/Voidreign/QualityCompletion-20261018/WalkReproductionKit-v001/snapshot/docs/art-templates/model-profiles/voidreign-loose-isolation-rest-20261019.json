@@ -1,0 +1,899 @@
+{
+  "schema_version": 1,
+  "units": "metres",
+  "permissions": "CPU paired context/isolation diagnostic only; saved original source remains untouched; no classification/deletion/attachment implied",
+  "effective_time": "This immutable proposal only",
+  "coordinate_convention": {
+    "up": "+Z",
+    "forward": "-Y (head/horn)",
+    "side_names": "Geometric +X/-X until reviewed"
+  },
+  "object": "geometry_0",
+  "source": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryOnlyCombinedFull-v001\\Voidreign-ActualSurfacePilot.blend",
+  "rest_selection": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz",
+  "retention_report": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryOnlyCombinedFullRetention-v001\\validation.json",
+  "render": {
+    "resolution": 512,
+    "samples": 4,
+    "surface_color": [
+      0.36,
+      0.39,
+      0.43
+    ],
+    "landmark_radius_m": 0.025,
+    "light_position_m": [
+      -3,
+      -4,
+      6
+    ],
+    "light_watts": 1300,
+    "light_size_m": 5,
+    "target_m": [
+      0,
+      -0.05,
+      1.3
+    ],
+    "ortho_scale_m": 4.5
+  },
+  "regions": [
+    {
+      "id": "C0018",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LooseItemInventory-v001\\item-selections.npz",
+      "selection_key": "C0018",
+      "color": [
+        1.0,
+        0.19999999999999996,
+        0.19999999999999996
+      ]
+    },
+    {
+      "id": "C0026",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LooseItemInventory-v001\\item-selections.npz",
+      "selection_key": "C0026",
+      "color": [
+        1.0,
+        0.408695652173913,
+        0.19999999999999996
+      ]
+    },
+    {
+      "id": "C0054",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LooseItemInventory-v001\\item-selections.npz",
+      "selection_key": "C0054",
+      "color": [
+        1.0,
+        0.6173913043478261,
+        0.19999999999999996
+      ]
+    },
+    {
+      "id": "C0059",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LooseItemInventory-v001\\item-selections.npz",
+      "selection_key": "C0059",
+      "color": [
+        1.0,
+        0.826086956521739,
+        0.19999999999999996
+      ]
+    },
+    {
+      "id": "C0074",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LooseItemInventory-v001\\item-selections.npz",
+      "selection_key": "C0074",
+      "color": [
+        0.9652173913043478,
+        1.0,
+        0.19999999999999996
+      ]
+    },
+    {
+      "id": "C0086",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LooseItemInventory-v001\\item-selections.npz",
+      "selection_key": "C0086",
+      "color": [
+        0.7565217391304347,
+        1.0,
+        0.19999999999999996
+      ]
+    },
+    {
+      "id": "C0102",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LooseItemInventory-v001\\item-selections.npz",
+      "selection_key": "C0102",
+      "color": [
+        0.5478260869565219,
+        1.0,
+        0.19999999999999996
+      ]
+    },
+    {
+      "id": "C0118",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LooseItemInventory-v001\\item-selections.npz",
+      "selection_key": "C0118",
+      "color": [
+        0.3391304347826085,
+        1.0,
+        0.19999999999999996
+      ]
+    },
+    {
+      "id": "C0132",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LooseItemInventory-v001\\item-selections.npz",
+      "selection_key": "C0132",
+      "color": [
+        0.19999999999999996,
+        1.0,
+        0.26956521739130423
+      ]
+    },
+    {
+      "id": "C0133",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LooseItemInventory-v001\\item-selections.npz",
+      "selection_key": "C0133",
+      "color": [
+        0.19999999999999996,
+        1.0,
+        0.4782608695652175
+      ]
+    },
+    {
+      "id": "C0150",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LooseItemInventory-v001\\item-selections.npz",
+      "selection_key": "C0150",
+      "color": [
+        0.19999999999999996,
+        1.0,
+        0.6869565217391305
+      ]
+    },
+    {
+      "id": "C0161",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LooseItemInventory-v001\\item-selections.npz",
+      "selection_key": "C0161",
+      "color": [
+        0.19999999999999996,
+        1.0,
+        0.8956521739130437
+      ]
+    },
+    {
+      "id": "C0158",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LooseItemInventory-v001\\item-selections.npz",
+      "selection_key": "C0158",
+      "color": [
+        0.19999999999999996,
+        0.8956521739130437,
+        1.0
+      ]
+    },
+    {
+      "id": "C0178",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LooseItemInventory-v001\\item-selections.npz",
+      "selection_key": "C0178",
+      "color": [
+        0.19999999999999996,
+        0.6869565217391305,
+        1.0
+      ]
+    },
+    {
+      "id": "C0163",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LooseItemInventory-v001\\item-selections.npz",
+      "selection_key": "C0163",
+      "color": [
+        0.19999999999999996,
+        0.4782608695652172,
+        1.0
+      ]
+    },
+    {
+      "id": "C0165",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LooseItemInventory-v001\\item-selections.npz",
+      "selection_key": "C0165",
+      "color": [
+        0.19999999999999996,
+        0.26956521739130423,
+        1.0
+      ]
+    },
+    {
+      "id": "C0180",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LooseItemInventory-v001\\item-selections.npz",
+      "selection_key": "C0180",
+      "color": [
+        0.3391304347826085,
+        0.19999999999999996,
+        1.0
+      ]
+    },
+    {
+      "id": "C0182",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LooseItemInventory-v001\\item-selections.npz",
+      "selection_key": "C0182",
+      "color": [
+        0.5478260869565219,
+        0.19999999999999996,
+        1.0
+      ]
+    },
+    {
+      "id": "C0188",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LooseItemInventory-v001\\item-selections.npz",
+      "selection_key": "C0188",
+      "color": [
+        0.7565217391304351,
+        0.19999999999999996,
+        1.0
+      ]
+    },
+    {
+      "id": "C0192",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LooseItemInventory-v001\\item-selections.npz",
+      "selection_key": "C0192",
+      "color": [
+        0.9652173913043477,
+        0.19999999999999996,
+        1.0
+      ]
+    },
+    {
+      "id": "C0214",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LooseItemInventory-v001\\item-selections.npz",
+      "selection_key": "C0214",
+      "color": [
+        1.0,
+        0.19999999999999996,
+        0.826086956521739
+      ]
+    },
+    {
+      "id": "C0216",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LooseItemInventory-v001\\item-selections.npz",
+      "selection_key": "C0216",
+      "color": [
+        1.0,
+        0.19999999999999996,
+        0.6173913043478265
+      ]
+    },
+    {
+      "id": "C0210",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LooseItemInventory-v001\\item-selections.npz",
+      "selection_key": "C0210",
+      "color": [
+        1.0,
+        0.19999999999999996,
+        0.40869565217391257
+      ]
+    }
+  ],
+  "landmarks": [],
+  "views": [
+    {
+      "id": "C0059-context",
+      "position_m": [
+        4.097059801220894,
+        -1.9864917397499084,
+        1.6328259468078614
+      ],
+      "target_m": [
+        0.09705980122089386,
+        -0.9864917397499084,
+        1.0328259468078613
+      ],
+      "ortho_scale_m": 0.5277407765388489
+    },
+    {
+      "id": "C0059-isolated",
+      "position_m": [
+        4.097059801220894,
+        -1.9864917397499084,
+        1.6328259468078614
+      ],
+      "target_m": [
+        0.09705980122089386,
+        -0.9864917397499084,
+        1.0328259468078613
+      ],
+      "ortho_scale_m": 0.5277407765388489,
+      "isolate_regions": [
+        "C0059"
+      ]
+    },
+    {
+      "id": "C0074-context",
+      "position_m": [
+        -4.452016144990921,
+        -1.662846326828003,
+        0.9951641321182251
+      ],
+      "target_m": [
+        -0.452016144990921,
+        -0.6628463268280029,
+        0.3951641321182251
+      ],
+      "ortho_scale_m": 0.2914849042892456
+    },
+    {
+      "id": "C0074-isolated",
+      "position_m": [
+        -4.452016144990921,
+        -1.662846326828003,
+        0.9951641321182251
+      ],
+      "target_m": [
+        -0.452016144990921,
+        -0.6628463268280029,
+        0.3951641321182251
+      ],
+      "ortho_scale_m": 0.2914849042892456,
+      "isolate_regions": [
+        "C0074"
+      ]
+    },
+    {
+      "id": "C0086-context",
+      "position_m": [
+        -4.1675314754247665,
+        -1.9463857412338257,
+        1.7174174547195435
+      ],
+      "target_m": [
+        -0.16753147542476654,
+        -0.9463857412338257,
+        1.1174174547195435
+      ],
+      "ortho_scale_m": 0.21716921329498293
+    },
+    {
+      "id": "C0086-isolated",
+      "position_m": [
+        -4.1675314754247665,
+        -1.9463857412338257,
+        1.7174174547195435
+      ],
+      "target_m": [
+        -0.16753147542476654,
+        -0.9463857412338257,
+        1.1174174547195435
+      ],
+      "ortho_scale_m": 0.21716921329498293,
+      "isolate_regions": [
+        "C0086"
+      ]
+    },
+    {
+      "id": "C0102-context",
+      "position_m": [
+        4.310222148895264,
+        -1.2755542993545532,
+        1.5890595674514771
+      ],
+      "target_m": [
+        0.31022214889526367,
+        -0.2755542993545532,
+        0.989059567451477
+      ],
+      "ortho_scale_m": 0.2239562511444092
+    },
+    {
+      "id": "C0102-isolated",
+      "position_m": [
+        4.310222148895264,
+        -1.2755542993545532,
+        1.5890595674514771
+      ],
+      "target_m": [
+        0.31022214889526367,
+        -0.2755542993545532,
+        0.989059567451477
+      ],
+      "ortho_scale_m": 0.2239562511444092,
+      "isolate_regions": [
+        "C0102"
+      ]
+    },
+    {
+      "id": "C0118-context",
+      "position_m": [
+        4.270350515842438,
+        -1.4322689473628998,
+        1.7841398477554322
+      ],
+      "target_m": [
+        0.27035051584243774,
+        -0.4322689473628998,
+        1.1841398477554321
+      ],
+      "ortho_scale_m": 0.1753077268600464
+    },
+    {
+      "id": "C0118-isolated",
+      "position_m": [
+        4.270350515842438,
+        -1.4322689473628998,
+        1.7841398477554322
+      ],
+      "target_m": [
+        0.27035051584243774,
+        -0.4322689473628998,
+        1.1841398477554321
+      ],
+      "ortho_scale_m": 0.1753077268600464,
+      "isolate_regions": [
+        "C0118"
+      ]
+    },
+    {
+      "id": "C0132-context",
+      "position_m": [
+        4.099523790180683,
+        -0.49221622943878174,
+        1.6419806241989137
+      ],
+      "target_m": [
+        0.09952379018068314,
+        0.5077837705612183,
+        1.0419806241989136
+      ],
+      "ortho_scale_m": 0.15
+    },
+    {
+      "id": "C0132-isolated",
+      "position_m": [
+        4.099523790180683,
+        -0.49221622943878174,
+        1.6419806241989137
+      ],
+      "target_m": [
+        0.09952379018068314,
+        0.5077837705612183,
+        1.0419806241989136
+      ],
+      "ortho_scale_m": 0.15,
+      "isolate_regions": [
+        "C0132"
+      ]
+    },
+    {
+      "id": "C0133-context",
+      "position_m": [
+        4.278233349323273,
+        -1.444095641374588,
+        1.69013569355011
+      ],
+      "target_m": [
+        0.2782333493232727,
+        -0.444095641374588,
+        1.0901356935501099
+      ],
+      "ortho_scale_m": 0.15
+    },
+    {
+      "id": "C0133-isolated",
+      "position_m": [
+        4.278233349323273,
+        -1.444095641374588,
+        1.69013569355011
+      ],
+      "target_m": [
+        0.2782333493232727,
+        -0.444095641374588,
+        1.0901356935501099
+      ],
+      "ortho_scale_m": 0.15,
+      "isolate_regions": [
+        "C0133"
+      ]
+    },
+    {
+      "id": "C0150-context",
+      "position_m": [
+        -4.090970121324062,
+        -1.2039041370153427,
+        1.6845516920089723
+      ],
+      "target_m": [
+        -0.09097012132406235,
+        -0.2039041370153427,
+        1.0845516920089722
+      ],
+      "ortho_scale_m": 0.15
+    },
+    {
+      "id": "C0150-isolated",
+      "position_m": [
+        -4.090970121324062,
+        -1.2039041370153427,
+        1.6845516920089723
+      ],
+      "target_m": [
+        -0.09097012132406235,
+        -0.2039041370153427,
+        1.0845516920089722
+      ],
+      "ortho_scale_m": 0.15,
+      "isolate_regions": [
+        "C0150"
+      ]
+    },
+    {
+      "id": "C0161-context",
+      "position_m": [
+        -4.396198391914368,
+        -1.738562524318695,
+        1.2614181399345399
+      ],
+      "target_m": [
+        -0.3961983919143677,
+        -0.7385625243186951,
+        0.6614181399345398
+      ],
+      "ortho_scale_m": 0.15
+    },
+    {
+      "id": "C0161-isolated",
+      "position_m": [
+        -4.396198391914368,
+        -1.738562524318695,
+        1.2614181399345399
+      ],
+      "target_m": [
+        -0.3961983919143677,
+        -0.7385625243186951,
+        0.6614181399345398
+      ],
+      "ortho_scale_m": 0.15,
+      "isolate_regions": [
+        "C0161"
+      ]
+    },
+    {
+      "id": "C0158-context",
+      "position_m": [
+        4.310944586992264,
+        -0.41975218057632446,
+        1.6496108531951905
+      ],
+      "target_m": [
+        0.3109445869922638,
+        0.5802478194236755,
+        1.0496108531951904
+      ],
+      "ortho_scale_m": 0.15
+    },
+    {
+      "id": "C0158-isolated",
+      "position_m": [
+        4.310944586992264,
+        -0.41975218057632446,
+        1.6496108531951905
+      ],
+      "target_m": [
+        0.3109445869922638,
+        0.5802478194236755,
+        1.0496108531951904
+      ],
+      "ortho_scale_m": 0.15,
+      "isolate_regions": [
+        "C0158"
+      ]
+    },
+    {
+      "id": "C0178-context",
+      "position_m": [
+        -4.4599319994449615,
+        -0.7146847546100616,
+        1.5409286379814149
+      ],
+      "target_m": [
+        -0.45993199944496155,
+        0.28531524538993835,
+        0.9409286379814148
+      ],
+      "ortho_scale_m": 0.15
+    },
+    {
+      "id": "C0178-isolated",
+      "position_m": [
+        -4.4599319994449615,
+        -0.7146847546100616,
+        1.5409286379814149
+      ],
+      "target_m": [
+        -0.45993199944496155,
+        0.28531524538993835,
+        0.9409286379814148
+      ],
+      "ortho_scale_m": 0.15,
+      "isolate_regions": [
+        "C0178"
+      ]
+    },
+    {
+      "id": "C0163-context",
+      "position_m": [
+        -4.415169924497604,
+        -0.4504888653755188,
+        0.6552893318235874
+      ],
+      "target_m": [
+        -0.41516992449760437,
+        0.5495111346244812,
+        0.05528933182358742
+      ],
+      "ortho_scale_m": 0.15
+    },
+    {
+      "id": "C0163-isolated",
+      "position_m": [
+        -4.415169924497604,
+        -0.4504888653755188,
+        0.6552893318235874
+      ],
+      "target_m": [
+        -0.41516992449760437,
+        0.5495111346244812,
+        0.05528933182358742
+      ],
+      "ortho_scale_m": 0.15,
+      "isolate_regions": [
+        "C0163"
+      ]
+    },
+    {
+      "id": "C0165-context",
+      "position_m": [
+        -4.383720517158508,
+        -0.4362979531288147,
+        0.6727307572960853
+      ],
+      "target_m": [
+        -0.3837205171585083,
+        0.5637020468711853,
+        0.07273075729608536
+      ],
+      "ortho_scale_m": 0.15
+    },
+    {
+      "id": "C0165-isolated",
+      "position_m": [
+        -4.383720517158508,
+        -0.4362979531288147,
+        0.6727307572960853
+      ],
+      "target_m": [
+        -0.3837205171585083,
+        0.5637020468711853,
+        0.07273075729608536
+      ],
+      "ortho_scale_m": 0.15,
+      "isolate_regions": [
+        "C0165"
+      ]
+    },
+    {
+      "id": "C0180-context",
+      "position_m": [
+        4.117997631430626,
+        -0.6461348235607147,
+        1.7639513969421388
+      ],
+      "target_m": [
+        0.11799763143062592,
+        0.3538651764392853,
+        1.1639513969421387
+      ],
+      "ortho_scale_m": 0.15
+    },
+    {
+      "id": "C0180-isolated",
+      "position_m": [
+        4.117997631430626,
+        -0.6461348235607147,
+        1.7639513969421388
+      ],
+      "target_m": [
+        0.11799763143062592,
+        0.3538651764392853,
+        1.1639513969421387
+      ],
+      "ortho_scale_m": 0.15,
+      "isolate_regions": [
+        "C0180"
+      ]
+    },
+    {
+      "id": "C0182-context",
+      "position_m": [
+        -4.374485284090042,
+        -1.8315905332565308,
+        1.8216861248016358
+      ],
+      "target_m": [
+        -0.3744852840900421,
+        -0.8315905332565308,
+        1.2216861248016357
+      ],
+      "ortho_scale_m": 0.15
+    },
+    {
+      "id": "C0182-isolated",
+      "position_m": [
+        -4.374485284090042,
+        -1.8315905332565308,
+        1.8216861248016358
+      ],
+      "target_m": [
+        -0.3744852840900421,
+        -0.8315905332565308,
+        1.2216861248016357
+      ],
+      "ortho_scale_m": 0.15,
+      "isolate_regions": [
+        "C0182"
+      ]
+    },
+    {
+      "id": "C0188-context",
+      "position_m": [
+        -4.453108370304108,
+        -1.198035642504692,
+        1.7491184234619142
+      ],
+      "target_m": [
+        -0.45310837030410767,
+        -0.19803564250469208,
+        1.149118423461914
+      ],
+      "ortho_scale_m": 0.15
+    },
+    {
+      "id": "C0188-isolated",
+      "position_m": [
+        -4.453108370304108,
+        -1.198035642504692,
+        1.7491184234619142
+      ],
+      "target_m": [
+        -0.45310837030410767,
+        -0.19803564250469208,
+        1.149118423461914
+      ],
+      "ortho_scale_m": 0.15,
+      "isolate_regions": [
+        "C0188"
+      ]
+    },
+    {
+      "id": "C0192-context",
+      "position_m": [
+        -4.297032952308655,
+        -1.7034133672714233,
+        0.8553564012050628
+      ],
+      "target_m": [
+        -0.2970329523086548,
+        -0.7034133672714233,
+        0.25535640120506287
+      ],
+      "ortho_scale_m": 0.15
+    },
+    {
+      "id": "C0192-isolated",
+      "position_m": [
+        -4.297032952308655,
+        -1.7034133672714233,
+        0.8553564012050628
+      ],
+      "target_m": [
+        -0.2970329523086548,
+        -0.7034133672714233,
+        0.25535640120506287
+      ],
+      "ortho_scale_m": 0.15,
+      "isolate_regions": [
+        "C0192"
+      ]
+    },
+    {
+      "id": "C0214-context",
+      "position_m": [
+        4.34616756439209,
+        -1.3100989162921906,
+        1.3781574726104737
+      ],
+      "target_m": [
+        0.34616756439208984,
+        -0.31009891629219055,
+        0.7781574726104736
+      ],
+      "ortho_scale_m": 0.15
+    },
+    {
+      "id": "C0214-isolated",
+      "position_m": [
+        4.34616756439209,
+        -1.3100989162921906,
+        1.3781574726104737
+      ],
+      "target_m": [
+        0.34616756439208984,
+        -0.31009891629219055,
+        0.7781574726104736
+      ],
+      "ortho_scale_m": 0.15,
+      "isolate_regions": [
+        "C0214"
+      ]
+    },
+    {
+      "id": "C0216-context",
+      "position_m": [
+        4.141937300562859,
+        -0.5253382623195648,
+        1.6263218879699708
+      ],
+      "target_m": [
+        0.14193730056285858,
+        0.4746617376804352,
+        1.0263218879699707
+      ],
+      "ortho_scale_m": 0.15
+    },
+    {
+      "id": "C0216-isolated",
+      "position_m": [
+        4.141937300562859,
+        -0.5253382623195648,
+        1.6263218879699708
+      ],
+      "target_m": [
+        0.14193730056285858,
+        0.4746617376804352,
+        1.0263218879699707
+      ],
+      "ortho_scale_m": 0.15,
+      "isolate_regions": [
+        "C0216"
+      ]
+    },
+    {
+      "id": "C0210-context",
+      "position_m": [
+        -4.220803201198578,
+        -1.8405588865280151,
+        0.9275782167911529
+      ],
+      "target_m": [
+        -0.22080320119857788,
+        -0.8405588865280151,
+        0.32757821679115295
+      ],
+      "ortho_scale_m": 0.15
+    },
+    {
+      "id": "C0210-isolated",
+      "position_m": [
+        -4.220803201198578,
+        -1.8405588865280151,
+        0.9275782167911529
+      ],
+      "target_m": [
+        -0.22080320119857788,
+        -0.8405588865280151,
+        0.32757821679115295
+      ],
+      "ortho_scale_m": 0.15,
+      "isolate_regions": [
+        "C0210"
+      ]
+    }
+  ],
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryOnlyCombinedFull-v001\\Voidreign-ActualSurfacePilot.blend": "c507e31813fea5ea61e30f7cbf8bae37609135b549238b64ad1e61a1e42111ee",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz": "0d7599c8064cb81a6e211a23731435e08939b7fb146ce2d4bed810273909a2b2",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryOnlyCombinedFullRetention-v001\\validation.json": "fcd05cbae371af89b71bd0b9ab427bf74a48b3667abc0c454fee46e3947ea840",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LooseItemInventory-v001\\item-selections.npz": "fcd4db77cdd50ccae21e0f134e845c8bf64c3243285bcc565788f6fda33d665d"
+  }
+}

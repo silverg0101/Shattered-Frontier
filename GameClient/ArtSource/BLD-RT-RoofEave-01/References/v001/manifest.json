@@ -1,0 +1,65 @@
+{
+  "assetId": "BLD-RT-RoofEave-01",
+  "version": "v001",
+  "category": "construction kit roof ridge/eave component",
+  "created": "2026-10-18",
+  "sourceReferences": [
+    "docs/art-templates/player-construction-kit-contract.md — partial shapes and roof transitions",
+    "docs/Game-Design/Legends_Shattered_Frontier_Construction_System_Architecture_v0.1.md — §§3.1–3.2, 8–9"
+  ],
+  "definition": {
+    "geometryRef": "contract roof ridge/eave (proposal)",
+    "envelopeMeters": "per contract; not inferred",
+    "contacts": [
+      "slope mating faces",
+      "underside",
+      "exposed end"
+    ],
+    "openings": "none",
+    "materialKit": "KIT-RT",
+    "structuralMaterialProfile": "Rough timber",
+    "cosmeticSkin": "appearance only",
+    "functionalDefinition": "none"
+  },
+  "generation": {
+    "tool": "built-in image_gen",
+    "date": "2026-10-18",
+    "model": "unavailable",
+    "seed": "unavailable",
+    "promptRecord": "prompt.txt",
+    "referenceImagesAttached": []
+  },
+  "images": [
+    {
+      "path": "concept-sheet.png",
+      "sha256": "2d79a20f708e3c3bfb643837f2dc23fac5e82c5437eb9f420388a1b95c84af1a",
+      "width": 1536,
+      "height": 1024,
+      "pixelFormat": "RGB 24-bit",
+      "alpha": false,
+      "review": "Sheet shows multiple eave joins and underside details. Clean view has a substantial curved brace and may exceed the minimal eave envelope; flagged for segmentation and dimensional review."
+    },
+    {
+      "path": "asset-view.png",
+      "sha256": "283c6b3ea71be1b53707dc378b7515a6b58799910c26c5c761a9e3cb538f0f7b",
+      "width": 1536,
+      "height": 1024,
+      "pixelFormat": "RGB 24-bit",
+      "alpha": false,
+      "review": "Sheet shows multiple eave joins and underside details. Clean view has a substantial curved brace and may exceed the minimal eave envelope; flagged for segmentation and dimensional review."
+    }
+  ],
+  "review": {
+    "reviewedBy": "Codex",
+    "conceptStatus": "proposed",
+    "cleanViewStatus": "needs-segmentation",
+    "imageStatus": "image-complete",
+    "geometryAcceptance": "not established",
+    "numericalMeshFit": "not established",
+    "runtimeCollisionSupportClearance": "not established",
+    "actionableFindings": [
+      "Sheet shows multiple eave joins and underside details. Clean view has a substantial curved brace and may exceed the minimal eave envelope; flagged for segmentation and dimensional review."
+    ]
+  },
+  "componentBoundary": "One separately indexed appearance role; images do not establish numerical geometry, mesh fit, collision, support or clearance."
+}

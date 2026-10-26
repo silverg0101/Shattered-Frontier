@@ -1,0 +1,8 @@
+{
+  "status": "verified",
+  "manifest": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PoseHairMaterialReproductionKit-v001\\manifest.json",
+  "files": 99,
+  "copied_bytes": 20704019,
+  "self_contained": false,
+  "note": "Verified copied snapshots and external inputs. Final job/checkpoint bookkeeping follows frozen snapshot intentionally."
+}

@@ -1,0 +1,140 @@
+{
+  "schema_version": 1,
+  "units": "metres",
+  "permissions": "One authored full-fringe spatial proposal and support band, not motion/rig/material acceptance; root cut must be inspected.",
+  "effective_time": "This immutable proposal only",
+  "coordinate_convention": {
+    "up": "+Z",
+    "forward": "-Y (head/horn)",
+    "side_names": "Geometric +X/-X until reviewed"
+  },
+  "object": "geometry_0",
+  "source": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\WalkPilot-v003\\Mount-WalkPilot.blend",
+  "rest_selection": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz",
+  "retention_report": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\WalkRetention-v003\\validation.json",
+  "render": {
+    "resolution": 640,
+    "samples": 8,
+    "surface_color": [
+      0.36,
+      0.39,
+      0.43
+    ],
+    "landmark_radius_m": 0.025,
+    "light_position_m": [
+      -3,
+      -4,
+      6
+    ],
+    "light_watts": 1300,
+    "light_size_m": 5,
+    "target_m": [
+      0,
+      -0.05,
+      1.3
+    ],
+    "ortho_scale_m": 4.5
+  },
+  "regions": [
+    {
+      "id": "hind.L-fringe-region-proposal",
+      "minimum_m": [
+        0.2,
+        0.94,
+        0.34
+      ],
+      "maximum_m": [
+        0.46,
+        1.09,
+        0.8
+      ],
+      "exclude_semantic_labels": [
+        1,
+        2
+      ],
+      "color": [
+        0.02,
+        0.65,
+        0.8
+      ]
+    },
+    {
+      "id": "candidate-upper-support-band",
+      "minimum_m": [
+        0.2,
+        0.94,
+        0.72
+      ],
+      "maximum_m": [
+        0.46,
+        1.09,
+        0.82
+      ],
+      "exclude_semantic_labels": [
+        1,
+        2
+      ],
+      "color": [
+        0.9,
+        0.25,
+        0.02
+      ]
+    }
+  ],
+  "landmarks": [],
+  "views": [
+    {
+      "id": "fringe-context-side",
+      "position_m": [
+        3.3,
+        0.6,
+        1.1
+      ],
+      "target_m": [
+        0.33,
+        1.0,
+        0.59
+      ],
+      "ortho_scale_m": 0.85
+    },
+    {
+      "id": "fringe-context-rear",
+      "position_m": [
+        0.8,
+        4.5,
+        1.1
+      ],
+      "target_m": [
+        0.33,
+        1.0,
+        0.59
+      ],
+      "ortho_scale_m": 0.85
+    },
+    {
+      "id": "fringe-region-isolation",
+      "position_m": [
+        3.3,
+        0.6,
+        1.1
+      ],
+      "target_m": [
+        0.33,
+        1.0,
+        0.59
+      ],
+      "ortho_scale_m": 0.72,
+      "isolate_regions": [
+        "hind.L-fringe-region-proposal",
+        "candidate-upper-support-band"
+      ]
+    }
+  ],
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\WalkPilot-v003\\Mount-WalkPilot.blend": "f59dc38bff697b6c2a2c84511413d2e292d9fdbb278acc69cd8df6d26a5bd123",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\WalkRetention-v003\\validation.json": "0630516734df3c1bb11f95ae92056e353dda46c4f4328c4574e32a2e1a451e49",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz": "0d7599c8064cb81a6e211a23731435e08939b7fb146ce2d4bed810273909a2b2",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LegFringeLabelCorrection-v001\\label-only-selections.npz": "dc78ba7dbd5a03bef0f0397a26435ec6bcf31b079c340aff5d035a2b1566a630"
+  },
+  "semantic_selection": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LegFringeLabelCorrection-v001\\label-only-selections.npz"
+}

@@ -1,0 +1,106 @@
+{
+  "method": "Compare wrap-boundary pixel step against two adjacent interior steps. Height16 normalized to 8-bit-equivalent levels; normal uses angular distance in degrees. Limits are twice interior mean/p99 with explicit floors.",
+  "status": "failed",
+  "results": [
+    {
+      "seam_mean": 4.1044921875,
+      "seam_p99": 12.0,
+      "interior_mean": 0.2635091245174408,
+      "interior_p99": 1.0,
+      "map": "basecolor.png",
+      "axis": "x",
+      "units": "8bit-equivalent levels",
+      "mean_limit": 1.0,
+      "p99_limit": 4.0,
+      "status": "failed"
+    },
+    {
+      "seam_mean": 0.7965494990348816,
+      "seam_p99": 2.0,
+      "interior_mean": 0.80224609375,
+      "interior_p99": 2.0,
+      "map": "basecolor.png",
+      "axis": "y",
+      "units": "8bit-equivalent levels",
+      "mean_limit": 1.6044921875,
+      "p99_limit": 4.0,
+      "status": "passed"
+    },
+    {
+      "seam_mean": 0.20703125,
+      "seam_p99": 1.0,
+      "interior_mean": 0.36669921875,
+      "interior_p99": 2.0,
+      "map": "roughness.png",
+      "axis": "x",
+      "units": "8bit-equivalent levels",
+      "mean_limit": 1.0,
+      "p99_limit": 4.0,
+      "status": "passed"
+    },
+    {
+      "seam_mean": 0.1689453125,
+      "seam_p99": 1.0,
+      "interior_mean": 0.3251953125,
+      "interior_p99": 2.0,
+      "map": "roughness.png",
+      "axis": "y",
+      "units": "8bit-equivalent levels",
+      "mean_limit": 1.0,
+      "p99_limit": 4.0,
+      "status": "passed"
+    },
+    {
+      "seam_mean": 0.0,
+      "seam_p99": 0.0,
+      "interior_mean": 0.0,
+      "interior_p99": 0.0,
+      "map": "normal.png",
+      "axis": "x",
+      "units": "degrees",
+      "mean_limit": 0.75,
+      "p99_limit": 3.0,
+      "status": "passed"
+    },
+    {
+      "seam_mean": 0.0,
+      "seam_p99": 0.0,
+      "interior_mean": 0.0,
+      "interior_p99": 0.0,
+      "map": "normal.png",
+      "axis": "y",
+      "units": "degrees",
+      "mean_limit": 0.75,
+      "p99_limit": 3.0,
+      "status": "passed"
+    },
+    {
+      "seam_mean": 11.025344848632812,
+      "seam_p99": 32.69996643066406,
+      "interior_mean": 0.6501986980438232,
+      "interior_p99": 1.9961090087890625,
+      "map": "height.png",
+      "axis": "x",
+      "units": "8bit-equivalent levels",
+      "mean_limit": 1.3003973960876465,
+      "p99_limit": 4.0,
+      "status": "failed"
+    },
+    {
+      "seam_mean": 1.6323639154434204,
+      "seam_p99": 3.2981743812561035,
+      "interior_mean": 1.6420576572418213,
+      "interior_p99": 2.9864983558654785,
+      "map": "height.png",
+      "axis": "y",
+      "units": "8bit-equivalent levels",
+      "mean_limit": 3.2841153144836426,
+      "p99_limit": 5.972996711730957,
+      "status": "passed"
+    }
+  ],
+  "checker": {
+    "path": "tools/Check-ConstructionMaterialWrap.py",
+    "sha256": "02928b0799929927ccbc15dea9315101c50f0e252bfe8e888068027648e6af39"
+  }
+}

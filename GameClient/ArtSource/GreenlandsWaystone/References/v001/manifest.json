@@ -1,0 +1,72 @@
+{
+  "assetId": "PROP-GreenlandsWaystone-01",
+  "version": "v001",
+  "created": "2026-10-18",
+  "status": {
+    "job": "image-complete",
+    "concept": "agent-selected existing concept; not user-approved",
+    "cleanView": "ready-for-model-test",
+    "productionApproval": "not claimed"
+  },
+  "sourceReferences": [
+    "docs/dependency-map.md — optional art prototype",
+    "GameClient/ArtSource/GreenlandsWaystone/README.md — optional arrival-landmark study",
+    "docs/Game-Design/Legends_Shattered_Frontier_Vertical_Slice_Specification_v1.0.md — Arrival landmark, spawn, orientation and reconnect fallback"
+  ],
+  "references": [
+    {
+      "path": "../../Waystone-Turnaround.png",
+      "role": "unchanged existing concept master",
+      "sha256": "51D58247D35FE6477C466680F039C2E0D6439273554772FD47A829CDE785F586",
+      "packagedAs": "concept-sheet.png"
+    },
+    {
+      "path": "../../Waystone-Turnaround.prompt.txt",
+      "role": "exact original concept prompt; preserved in prompt.txt"
+    },
+    {
+      "path": "../../../../../../docs/Game-Design/concept-art/Concept.png",
+      "role": "original mood/material reference named in source README and source prompt; not modified"
+    }
+  ],
+  "generation": {
+    "tool": "built-in image_gen",
+    "model": "unavailable from generation metadata",
+    "seed": "unavailable",
+    "promptRecord": "prompt.txt",
+    "sourceImageForCleanView": "concept-sheet.png"
+  },
+  "images": [
+    {
+      "path": "concept-sheet.png",
+      "origin": "copied unchanged from existing Waystone-Turnaround.png",
+      "sha256": "51D58247D35FE6477C466680F039C2E0D6439273554772FD47A829CDE785F586",
+      "width": 1536,
+      "height": 1024,
+      "pixelFormat": "RGB 24-bit",
+      "alpha": false
+    },
+    {
+      "path": "asset-view.png",
+      "origin": "generated from concept-sheet.png using prompt.txt clean-view prompt",
+      "sha256": "F4254648F7B38460AD3D3935D9082855E2B8A1636AC8D39FEB0ED2015A92AFDA",
+      "width": 1295,
+      "height": 1214,
+      "pixelFormat": "RGB 24-bit",
+      "alpha": false
+    }
+  ],
+  "visualReview": {
+    "reviewed": true,
+    "findings": [
+      "Clean view preserves the source silhouette: tapered weathered stone shaft, stepped broad base, pointed crown, narrow upper band, and centered bronze compass medallion.",
+      "Complete object has clear margins on a neutral opaque studio background; no text, extra props, landscape, or effects.",
+      "Clean view is a useful single-object model reference. It is not geometry, texture, or production approval."
+    ],
+    "actionableDefects": []
+  },
+  "componentBoundaries": [
+    "One freestanding waystone assembly: stone marker and base with attached front compass medallion."
+  ],
+  "preservation": "Original turnaround, Blender model, exchange files, and benchmark references were left unchanged."
+}

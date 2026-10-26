@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "asset_id": "RESOURCE-GreenlandsIronVein-01",
+  "batch_id": "GreenlandsModelBatch-20261018",
+  "source_type": "Pixal3D-generated",
+  "attempt": "attempt-03",
+  "reference_manifest": "GameClient/ArtSource/RESOURCE-GreenlandsIronVein-01/References/v001/manifest.json",
+  "reference_image": "GameClient/ArtSource/RESOURCE-GreenlandsIronVein-01/References/v001/asset-view.png",
+  "reference_sha256": "6530f652638cb88e8a95112c8016c403a662a65b62092f2e90688a81677311fb",
+  "profile_path": "docs/art-templates/model-profiles/greenlands-static-prop-pixal-20261018.json",
+  "surface_profile": "docs/art-templates/model-profiles/unreal58-surface-quality-20261018.json",
+  "files": [
+    {
+      "path": "asset-review.json",
+      "bytes": 509,
+      "sha256": "f5c26bbdaeb19888d3f7f5c36d02c3a0e3743f1cf07b5e8140bd970fa6f3c2df"
+    },
+    {
+      "path": "attempt-provenance.json",
+      "bytes": 1782,
+      "sha256": "7d64e6c4c4d5d5344a1c00052743efdd5511878ffc176453747af1b5d74b205f"
+    },
+    {
+      "path": "checks/component-inspection/00-component-selections.npz",
+      "bytes": 5234140,
+      "sha256": "7a5aab2f81e5438eef4df6a5db645c259d6ac1865a5a9ae4810eda2f84d19392"
+    },
+    {
+      "path": "checks/component-inspection/component-report.json",
+      "bytes": 66301,
+      "sha256": "d28bbf14af5845fa9e2a4659f161938a2ed06c0fcfc9b485fc6cae8e758fc82e"
+    },
+    {
+      "path": "generation-run.json",
+      "bytes": 1896,
+      "sha256": "5eed32464b28946e0dd2b768bdef7a42089ab77837d44213b2437aeac127eff0"
+    },
+    {
+      "path": "input-mask.png",
+      "bytes": 6572,
+      "sha256": "1a3c462e1c576ddabf69b8a27e8fef3749764b89918a742b43d709a559f29244"
+    },
+    {
+      "path": "previews/Beauty.png",
+      "bytes": 1331847,
+      "sha256": "959cea6be044684f0a252188988813aed98bdd239f95f8fcd4660b07a434574e"
+    },
+    {
+      "path": "previews/Clay.png",
+      "bytes": 1086491,
+      "sha256": "8f7a42eb8a3538090a7519842070232a1520c7f8db5323edf7d46c380163edad"
+    },
+    {
+      "path": "previews/FreshProcess.png",
+      "bytes": 1331991,
+      "sha256": "d1c5ba5138c6db3fc5628b86b029a1f269d57a12f555bded0e7b7e19dd5343b9"
+    },
+    {
+      "path": "previews/Front.png",
+      "bytes": 923845,
+      "sha256": "ccb121b11e8f83feb9f3946ed7ff9082dc1783cca890568961c291222e6b2718"
+    },
+    {
+      "path": "previews/Rear.png",
+      "bytes": 908903,
+      "sha256": "c0ed06942ad0b40976ccd1194542ffc767c70ea8a3c513763d79beebdf8b9672"
+    },
+    {
+      "path": "previews/Side.png",
+      "bytes": 933705,
+      "sha256": "bbb9c7d1a9c3d40363293d115ddb7457eb1484233a730da04d11c4bf156cb8c9"
+    },
+    {
+      "path": "README.md",
+      "bytes": 1124,
+      "sha256": "1f307499ee641d92ff2fe012ab4061eb55e95b81f43e6ff3509eada3ed4387a0"
+    },
+    {
+      "path": "RESOURCE-GreenlandsIronVein-01.blend",
+      "bytes": 25893517,
+      "sha256": "7ebb7138a8ad8f1fb2c191db7ccf7aa4a53ffcce5a9c7df22db2ea945b6b9747"
+    },
+    {
+      "path": "RESOURCE-GreenlandsIronVein-01.fbx",
+      "bytes": 20721484,
+      "sha256": "039ca1bd334b50a2f99fd5e2b4fed0fc99bfb2fe653f93a5761dbbf111c4d485"
+    },
+    {
+      "path": "RESOURCE-GreenlandsIronVein-01.glb",
+      "bytes": 21126820,
+      "sha256": "a7c25dfcfacdb9b620d0101d6f22641e846dfc0377936241a24f8d0148cd8fcb"
+    },
+    {
+      "path": "segmentation-report.json",
+      "bytes": 1127,
+      "sha256": "b24213760f6068ceaa7c5101b1c39be41f78dec46a37a5da47ae5a116c4b0eee"
+    },
+    {
+      "path": "validation-report.json",
+      "bytes": 992756,
+      "sha256": "5849ae51a32b13132fcfc11f0ef1388b090e82ee74c2334d82014a83ab188bc2"
+    }
+  ]
+}

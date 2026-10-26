@@ -1,0 +1,46 @@
+{
+  "status": "diagnostic-experiment-needs-review",
+  "cpu_only": true,
+  "purpose": "one-diagnostic-existing-mesh-evaluation",
+  "experiment_profile_sha256": "86f42b00263a83d85878ec1c66d5db7822d1c7937cc7d8b862c2487dec90c22a",
+  "input_sha256": {
+    "tools\\Build-FeatureMotionRig.py": "07cc0375894c1458beffa94ba653e88fea8e69478ffb55d8367ed97bd0340310",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateCleanup-v001\\Voidreign-CompleteHair.blend": "6c6044a533c16fc7fad23d42c0407dde37a0252aca84f9be1bc9b9a2367364f6",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneGuideProposal-v001\\guide-report.json": "3e776c1cef3380c3a81814d67ce2ec32270bca2e7d7fbece55eefef49e70de67",
+    "docs\\art-templates\\model-profiles\\voidreign-complete-hair-motion-v003-20261018.json": "9df3ed982c0f5f571210a98d42c1e6b395b80713c139f0b7b162ad861d5cca47",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\MildOverdampingTrajectoryCheck-v001\\trajectory-check.json": "c16dcbdf681535ece6cf4cac37c28e9ea9c3cc702d2e84ec2535896c30309eae",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\MildOverdampingClearance-v001\\guide-clearance.json": "76471c7ea7a5247fd8d52c29d036540544482935108bd52e22fc17ebc8878f7a",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\GuideClearanceBaseline-v004\\guide-clearance.json": "37caa89bafadbae27cbc8476811a1da0386ff0082da645881d6a0d61b37992f9",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\MildOverdampingTrajectory-v001\\simulation-report.json": "b3e047e8c5ef38b0e31b1bfe1db1e01b0ff32a229d212d60a4920ed57719dc62",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\MildOverdampingTrajectory-v001\\trajectory.npz": "69c396bc6cdf1a0afed8cd60414fb131c7be6bb851e8d9fdf892152f32c799f0",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneGuideProposal-v001\\guides.json": "f8f8c15cfa47fcd80ea32cf823227cc5df5d063e0baa1e4bc72de99e77701621",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneGuideProposal-v001\\weight-field.npz": "e397b54127123c7ad863706d650bb780b7489a5f82bf2a3b9d74bd16eb480f91",
+    "docs\\art-templates\\model-profiles\\voidreign-hair-selections-v003-20261018.json": "558f0bb861238b8150450a3495ee83fca561d3b72b979c3cd6aa92041ddd18f9",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneAttachmentProposals-v001\\attachment-proposals.json": "0e0b6d2096722f4ffa88be6d437c1b17d10eba5999c884a5f1974e860c1c3308",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selection-report.json": "63eb535dcafe1140c5445ce46bd402cc438af979c437fbb9d7430b723aa11a08",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selections.npz": "0b6a19f76a2cba73a42e293c29365360b53ba93be101cf8f4ca556e7a5989cc0"
+  },
+  "adapted_builder_sha256": "9745b233c0f0e9f2bb024152e544bfe7eeeded74038567307928c3be1f871827",
+  "unchanged_builder_sha256": "07cc0375894c1458beffa94ba653e88fea8e69478ffb55d8367ed97bd0340310",
+  "original_simulation_status": "needs-review",
+  "failed_fixed_envelope_gate_preserved": true,
+  "maximum_fixed_penetration_m": 0.022086201445712522,
+  "open_gates": [
+    "fixed-envelope-feasibility",
+    "actual-surface-motion-and-collision",
+    "semantic-clump-ownership-and-roots",
+    "attachment",
+    "materials",
+    "stance-and-gait",
+    "exchange-reimport",
+    "runtime-and-engine"
+  ],
+  "outputs": {
+    "motion-profile.json": "9df3ed982c0f5f571210a98d42c1e6b395b80713c139f0b7b162ad861d5cca47",
+    "rig-report.json": "27c92499082455b0834f51d7c8b440f2f69f8781365c9cf32459a1a8de599598",
+    "tool-source.py": "9745b233c0f0e9f2bb024152e544bfe7eeeded74038567307928c3be1f871827",
+    "Voidreign-CompleteHair.blend": "a1de9660c66c772cdb4cedec20ac5b1a2229a4417af46550f8167f915680c140",
+    "Voidreign-CompleteHair.fbx": "974ce4aa4030123f6cc6f03ec8e36a22951461b63cb5ccb2b31e1d1cb2aceac4",
+    "Voidreign-CompleteHair.glb": "eea8fa01903aec4558785b71efa732a7c93d02a7df66ddb556e0470adefaeebc"
+  }
+}

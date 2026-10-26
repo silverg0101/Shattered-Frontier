@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "status": "passed-source-bound-UV-export-only",
+  "source": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkPilot-v003/Mount-WalkPilot.blend",
+  "source_sha256": "f59dc38bff697b6c2a2c84511413d2e292d9fdbb278acc69cd8df6d26a5bd123",
+  "input_sha256": {
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkPilot-v003/Mount-WalkPilot.blend": "f59dc38bff697b6c2a2c84511413d2e292d9fdbb278acc69cd8df6d26a5bd123",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkRetention-v003/validation.json": "0630516734df3c1bb11f95ae92056e353dda46c4f4328c4574e32a2e1a451e49"
+  },
+  "tool_sha256": "35a482a28577dd5f09880d810a1976f912c959bf4b620978490e079df100fa22",
+  "profile_sha256": "43727dfcc34a04ddc9de981f71e445543fc007fbae42a5dda1d027eed498fe92",
+  "triangles": 297119,
+  "uv_layer": "UVMap",
+  "uv_sha256": "24efc381141b2d5d1225f42d297187e6e66d96ef8fb47b7b4e8048f357b17214",
+  "uv_min": [
+    0.0,
+    0.000361025333404541
+  ],
+  "uv_max": [
+    0.9996395111083984,
+    1.0
+  ],
+  "topology_sha256": "7d6b6296ff351ca9c6608eb5dba7098738e35f8ede072a1a63eeea462357ba94",
+  "limitations": [
+    "Exact UV extraction only; no overlap/density/material/geometry/engine acceptance.",
+    "UV origin bottom-left; raster image rows require explicit vertical conversion."
+  ]
+}

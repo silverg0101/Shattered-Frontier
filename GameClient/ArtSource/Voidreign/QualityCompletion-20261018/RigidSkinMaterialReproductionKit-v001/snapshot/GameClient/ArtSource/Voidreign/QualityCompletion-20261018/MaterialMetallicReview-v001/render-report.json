@@ -1,0 +1,85 @@
+{
+  "status": "saved-source-material-closeups-needs-review",
+  "cpu_only": true,
+  "source": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\WalkPilot-v003\\Mount-WalkPilot.blend",
+  "source_sha256": "f59dc38bff697b6c2a2c84511413d2e292d9fdbb278acc69cd8df6d26a5bd123",
+  "guides_sha256": "5235467fb9a5e13c39237b48e418807825f2684e795618401191267557f1d256",
+  "tool_sha256": "d2141055f11744c6cca8b3a215061406c1b36b36621f991ece68b937f3c585cb",
+  "frame": 1,
+  "samples": 8,
+  "channel": "metallic",
+  "material": "Material_0",
+  "channel_trace": {
+    "node": "Separate Color",
+    "socket": "Blue"
+  },
+  "views": [
+    {
+      "name": "Head-Neutral",
+      "image": "previews/Detail-Head-Neutral.png",
+      "camera_matrix_world": [
+        [
+          -4.371138828673793e-08,
+          4.371138828673793e-08,
+          1.0,
+          7.0
+        ],
+        [
+          1.0,
+          1.910685676922942e-15,
+          4.371138828673793e-08,
+          -1.149999976158142
+        ],
+        [
+          0.0,
+          1.0,
+          -4.371138828673793e-08,
+          1.909999966621399
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "mirror_lights_axis": null
+    },
+    {
+      "name": "Saddle-Neutral",
+      "image": "previews/Detail-Saddle-Neutral.png",
+      "camera_matrix_world": [
+        [
+          -4.371138828673793e-08,
+          4.371138828673793e-08,
+          1.0,
+          7.0
+        ],
+        [
+          1.0,
+          1.910685676922942e-15,
+          4.371138828673793e-08,
+          -0.05000000074505806
+        ],
+        [
+          0.0,
+          1.0,
+          -4.371138828673793e-08,
+          1.5399999618530273
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "mirror_lights_axis": null
+    }
+  ],
+  "limitations": [
+    "Diagnostic cameras/lights/shader routing in memory only; source unchanged.",
+    "Opposing light positions do not constitute calibrated material or full coverage acceptance.",
+    "Channel emission previews retain source image color spaces, occlusion and camera projection; not a UV bake or normal/height derivation."
+  ]
+}

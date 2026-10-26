@@ -1,0 +1,5 @@
+00:01.875  blend            | Read blend: "C:\Projects\Shattered-Frontier\GameClient\ArtSource\ConstructionGeometryPilot-20261018\Model-v011\BLD-RT-RoofSlopeFace-01\SM_BLD_RT_RoofSlopeFace_01_v003.blend"
+{"status": "passed", "file": "SM_BLD_RT_RoofSlopeFace_01_v003.blend", "asset_id": "BLD-RT-RoofSlopeFace-01", "mesh_object_count": 1, "dimensions_m": [0.5, 0.5, 0.5], "expected_dimensions_m": [0.5, 0.5, 0.5], "max_dimension_error_m": 0.0, "position_welded_components": 1, "loose_vertices": 0, "uv0_present": true, "uv_ranges": [[0.0, 0.0, 1.0, 1.4142135381698608]], "material_images": ["basecolor.png", "normal.png", "roughness.png"], "missing_required_maps": [], "acceptance_claim": false}
+Blender 5.1.1 (hash b70da489d7f4 built 2026-04-14 01:37:22)
+
+Blender quit

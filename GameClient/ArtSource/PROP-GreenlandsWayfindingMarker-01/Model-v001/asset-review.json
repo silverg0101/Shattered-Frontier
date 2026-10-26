@@ -1,0 +1,23 @@
+{
+  "asset_name": "PROP-GreenlandsWayfindingMarker-01",
+  "mesh_objects": 1,
+  "triangles": 286209,
+  "dimensions": [
+    0.9618221521377563,
+    0.571707546710968,
+    0.6466257572174072
+  ],
+  "dimension_unit": "native normalized model units",
+  "target_height_m": null,
+  "scale_status": "unresolved; normalized output preserved",
+  "yaw_degrees": 0,
+  "materials": [
+    "Material_0"
+  ],
+  "uv_layers": [
+    1
+  ],
+  "geometry_only": false,
+  "pitch_degrees": 0,
+  "roll_degrees": 0
+}

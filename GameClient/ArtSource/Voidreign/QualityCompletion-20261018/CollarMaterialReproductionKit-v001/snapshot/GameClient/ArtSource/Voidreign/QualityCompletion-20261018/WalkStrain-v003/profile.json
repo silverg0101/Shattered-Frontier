@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "units": "metres",
+  "feature_labels": {
+    "Mane": 1,
+    "Tail": 2
+  },
+  "permissions": "Read-only full73 walk source-surface distortion measurement; no authored threshold or automatic repair",
+  "effective_time": "This frozen 73-frame walk only",
+  "source": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkPilot-v003/Mount-WalkPilot.blend",
+  "world_points": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkExchange-v003/expected-world-points.npy",
+  "producer_report": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkExchange-v003/exchange-report.json",
+  "rest_selection": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz",
+  "feature_selection": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selections.npz",
+  "input_sha256": {
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkPilot-v003/Mount-WalkPilot.blend": "f59dc38bff697b6c2a2c84511413d2e292d9fdbb278acc69cd8df6d26a5bd123",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkExchange-v003/expected-world-points.npy": "129aeeecb7a871b1ef8ef65a7e1ae6230954a0f018f76545887b1e6b700ddd3e",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkExchange-v003/exchange-report.json": "c1a9a0d8a316834c8b572b929de2d33cb69abe34555e7f29a920c09185c23bcb",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz": "0d7599c8064cb81a6e211a23731435e08939b7fb146ce2d4bed810273909a2b2",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selections.npz": "0b6a19f76a2cba73a42e293c29365360b53ba93be101cf8f4ca556e7a5989cc0"
+  }
+}

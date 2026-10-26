@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "units": "metres",
+  "capture_points": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringePrimaryFollowReview-v001/source-indexed-world-points.npz",
+  "region_roots": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/FullLegFringeRoots-v001/region-roots.npz",
+  "required_free_clearance_m": 0.003,
+  "numerical_tolerance_m": 1e-07,
+  "maximum_frames": 73,
+  "maximum_context_vertices": 11000,
+  "permissions": "Read-only partition by dominant actual limb weights. Preserve all captured source deformation, including pelvis blends; do not truncate or edit weights. Every context vertex must be dominated by a declared limb bone. No bake or source change.",
+  "effective_time": "Frozen local73frame source capture only",
+  "input_sha256": {
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringePrimaryFollowReview-v001/source-indexed-world-points.npz": "80f129671e2d351cb39e33076007d5a0e6486561f78f7165908be63808f54365",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/FullLegFringeRoots-v001/region-roots.npz": "6c87dc69d6bbcf1ea76f7ca12e4f860940f328782c4a374a0a33278008bdf682",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\WalkPilot-v003\\Mount-WalkPilot.blend": "f59dc38bff697b6c2a2c84511413d2e292d9fdbb278acc69cd8df6d26a5bd123"
+  },
+  "segment_by_primary_weights": true,
+  "primary_source": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\WalkPilot-v003\\Mount-WalkPilot.blend",
+  "source_object": "geometry_0",
+  "allowed_primary_bones": [
+    "PRI.hind.L.hip",
+    "PRI.hind.L.stifle",
+    "PRI.hind.L.hock",
+    "PRI.hind.L.fetlock"
+  ],
+  "foreign_primary_weight_tolerance": 1e-07,
+  "partition_contract": "allowed-bone-must-dominate-each-context-vertex"
+}

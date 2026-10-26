@@ -1,0 +1,140 @@
+{
+  "status": "saved-source-material-closeups-needs-review",
+  "cpu_only": true,
+  "source": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\WalkPilot-v003\\Mount-WalkPilot.blend",
+  "source_sha256": "f59dc38bff697b6c2a2c84511413d2e292d9fdbb278acc69cd8df6d26a5bd123",
+  "guides_sha256": "f0abbdf3c85741fe7e4469a246fd8fc9fc1ee4209b5c876fdd08a2c6834e8131",
+  "tool_sha256": "1b790126e75fb54e4c45ec52608a66776017f20097750a0ef892143f298b055a",
+  "frame": 1,
+  "samples": 32,
+  "views": [
+    {
+      "name": "Head-Neutral",
+      "image": "previews/Detail-Head-Neutral.png",
+      "camera_matrix_world": [
+        [
+          -4.371138828673793e-08,
+          4.371138828673793e-08,
+          1.0,
+          7.0
+        ],
+        [
+          1.0,
+          1.910685676922942e-15,
+          4.371138828673793e-08,
+          -1.149999976158142
+        ],
+        [
+          0.0,
+          1.0,
+          -4.371138828673793e-08,
+          1.909999966621399
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "mirror_lights_axis": null
+    },
+    {
+      "name": "Head-Opposing",
+      "image": "previews/Detail-Head-Opposing.png",
+      "camera_matrix_world": [
+        [
+          -4.371138828673793e-08,
+          4.371138828673793e-08,
+          1.0,
+          7.0
+        ],
+        [
+          1.0,
+          1.910685676922942e-15,
+          4.371138828673793e-08,
+          -1.149999976158142
+        ],
+        [
+          0.0,
+          1.0,
+          -4.371138828673793e-08,
+          1.909999966621399
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "mirror_lights_axis": 0
+    },
+    {
+      "name": "Saddle-Neutral",
+      "image": "previews/Detail-Saddle-Neutral.png",
+      "camera_matrix_world": [
+        [
+          -4.371138828673793e-08,
+          4.371138828673793e-08,
+          1.0,
+          7.0
+        ],
+        [
+          1.0,
+          1.910685676922942e-15,
+          4.371138828673793e-08,
+          -0.05000000074505806
+        ],
+        [
+          0.0,
+          1.0,
+          -4.371138828673793e-08,
+          1.5399999618530273
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "mirror_lights_axis": null
+    },
+    {
+      "name": "Saddle-Opposing",
+      "image": "previews/Detail-Saddle-Opposing.png",
+      "camera_matrix_world": [
+        [
+          -4.371138828673793e-08,
+          4.371138828673793e-08,
+          1.0,
+          7.0
+        ],
+        [
+          1.0,
+          1.910685676922942e-15,
+          4.371138828673793e-08,
+          -0.05000000074505806
+        ],
+        [
+          0.0,
+          1.0,
+          -4.371138828673793e-08,
+          1.5399999618530273
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "mirror_lights_axis": 0
+    }
+  ],
+  "limitations": [
+    "Diagnostic cameras/lights in memory only; source unchanged.",
+    "Opposing light positions do not constitute calibrated material or full coverage acceptance."
+  ]
+}

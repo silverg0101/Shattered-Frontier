@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "status": "anatomy-proposal-needs-review",
+  "cpu_only": true,
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\WalkPilot-v003\\Mount-WalkPilot.blend": "f59dc38bff697b6c2a2c84511413d2e292d9fdbb278acc69cd8df6d26a5bd123",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\WalkRetention-v003\\validation.json": "0630516734df3c1bb11f95ae92056e353dda46c4f4328c4574e32a2e1a451e49",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz": "0d7599c8064cb81a6e211a23731435e08939b7fb146ce2d4bed810273909a2b2",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LegFringeLabelCorrection-v001\\label-only-selections.npz": "dc78ba7dbd5a03bef0f0397a26435ec6bcf31b079c340aff5d035a2b1566a630"
+  },
+  "tool_sha256": "a4d1e4b5f319bd55ce220ef386d5ccdd08f13349911342b3ca6e11c4aff2572f",
+  "profile_sha256": "bda4066372e56e8a3e88a1036751dc1a3e86fa73a34b69f6851ac917ca884c36",
+  "vertices": 284762,
+  "triangles": 297119,
+  "regions": [
+    {
+      "id": "hind.L-fringe-region-proposal",
+      "vertices": 363,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "candidate-upper-support-band",
+      "vertices": 0,
+      "status": "geometric-proposal-needs-anatomical-review"
+    }
+  ],
+  "views": [
+    {
+      "id": "fringe-context-side",
+      "image": "fringe-context-side.png",
+      "isolate_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "fringe-context-rear",
+      "image": "fringe-context-rear.png",
+      "isolate_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "fringe-region-isolation",
+      "image": "fringe-region-isolation.png",
+      "isolate_regions": [
+        "hind.L-fringe-region-proposal",
+        "candidate-upper-support-band"
+      ],
+      "source_face_count": 398
+    }
+  ],
+  "coordinate_convention": {
+    "up": "+Z",
+    "forward": "-Y (head/horn)",
+    "side_names": "Geometric +X/-X until reviewed"
+  },
+  "landmarks": [],
+  "limitations": [
+    "Exact indexed rest diagnostic only; source rig/materials are not copied into this proposal.",
+    "Box domains can include hanging tack or miss curved anatomy; not skin weights or semantic approval.",
+    "Landmarks are authored proposals, not inferred joint centers or accepted stance."
+  ]
+}

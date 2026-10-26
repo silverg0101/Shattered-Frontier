@@ -1,0 +1,18 @@
+{
+  "status": "targeted geometry repair; reimport checks pending",
+  "source": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\HairMotion-20261018\\Voidreign-HairPrototype.blend",
+  "source_sha256": "409876de4765921fea1cba5b596069847298232f78bee2e0d5fd4809cfa5ccb3",
+  "source_mesh_hash": "cb6d4a55ea8d852da9bf1305e2fff49f1137575c5de71681afe73945586555f5",
+  "component_ids": [
+    "cb6d4a55ea8d:C0080",
+    "cb6d4a55ea8d:C0065"
+  ],
+  "reason": "User-marked unsupported fragments below head and belly; confirmed isolated in rest mesh, no visible attachment; retain originals and all other islands.",
+  "removed_vertices": 163,
+  "removed_triangles": 166,
+  "remaining_vertices": 284685,
+  "remaining_triangles": 296693,
+  "unselected_vertex_positions_unchanged": true,
+  "weight_sum_max_error": 9.059906005859375e-06,
+  "note": "Whole reviewed islands only; no welding, UV unwrap, texture edits or other component removal. Previous motion/export defects remain open."
+}

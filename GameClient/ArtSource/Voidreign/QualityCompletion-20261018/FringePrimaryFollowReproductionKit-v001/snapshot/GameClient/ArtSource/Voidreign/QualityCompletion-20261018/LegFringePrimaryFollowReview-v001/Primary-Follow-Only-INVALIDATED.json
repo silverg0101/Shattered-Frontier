@@ -1,0 +1,8 @@
+{
+  "status": "invalidated-preview-timing-only",
+  "file": "Primary-Follow-Only.gif",
+  "reason": "Composer accidentally used the last source-frame row when computing earlier intervals, producing150ms instead of about2433ms. Original render/source animation unaffected.",
+  "replacement": "Primary-Follow-Only-v002.gif",
+  "replacement_duration_ms": 2430,
+  "guard": "Composer now checks duration against source frame span within GIF10ms quantization bounds."
+}

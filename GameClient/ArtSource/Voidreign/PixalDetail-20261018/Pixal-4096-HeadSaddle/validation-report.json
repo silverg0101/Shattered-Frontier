@@ -1,0 +1,86 @@
+{
+  "blend": {
+    "meshes": 1,
+    "dimensions_m": [
+      2.830941677093506,
+      4.154635906219482,
+      2.6000001430511475
+    ],
+    "triangles": 296859,
+    "materials": [
+      "Material_0"
+    ],
+    "image_sizes": [
+      [
+        4096,
+        4096
+      ],
+      [
+        4096,
+        4096
+      ],
+      [
+        1254,
+        1254
+      ],
+      [
+        1254,
+        1254
+      ],
+      [
+        4096,
+        4096
+      ]
+    ]
+  },
+  "checks": [
+    "Fresh process reopen and render"
+  ],
+  "exports": {
+    "glb": {
+      "meshes": 1,
+      "dimensions_m": [
+        2.830942153930664,
+        4.154635906219482,
+        2.6000001430511475
+      ],
+      "triangles": 296859,
+      "materials": [
+        "Material_0"
+      ],
+      "image_sizes": [
+        [
+          4096,
+          4096
+        ],
+        [
+          4096,
+          4096
+        ]
+      ]
+    },
+    "fbx": {
+      "meshes": 1,
+      "dimensions_m": [
+        2.830941915512085,
+        4.154635429382324,
+        2.600000114140741
+      ],
+      "triangles": 296859,
+      "materials": [
+        "Material_0"
+      ],
+      "image_sizes": [
+        [
+          4096,
+          4096
+        ],
+        [
+          4096,
+          4096
+        ]
+      ]
+    }
+  },
+  "material_check": "UVs and image dependencies checked"
+}

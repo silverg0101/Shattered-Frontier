@@ -1,0 +1,20 @@
+{
+  "mesh_objects": 1,
+  "triangles": 296859,
+  "dimensions_m": [
+    2.830941677093506,
+    4.154635906219482,
+    2.5999999046325684
+  ],
+  "yaw_degrees": -112.0,
+  "inferred_full_height_m": 2.6,
+  "materials": [
+    "PBR_Material"
+  ],
+  "uv_layers": [
+    1
+  ],
+  "geometry_only": false,
+  "pitch_degrees": 0,
+  "roll_degrees": 0
+}

@@ -1,0 +1,75 @@
+{
+  "backend": "Pixal3D-mv",
+  "status": "complete",
+  "seed": 42,
+  "pipeline": "1536_cascade",
+  "steps": 25,
+  "asset_name": "StarterFemale",
+  "views": "/mnt/c/Projects/Shattered-Frontier/GameClient/ArtSource/PlayerCharacter/Starter-Female-01/Views-v003",
+  "transforms_sha256": "c4c2c1ff1bf60df63fe8222f9219a9c9b92e30a0ac7869968b4fdc160c5b6614",
+  "view_images": [
+    {
+      "file": "view00_azim000.png",
+      "sha256": "73a35fd30e9df3cd454501f271a4d200dede6d719089d737b1207a9858c0d837"
+    },
+    {
+      "file": "view01_azim090.png",
+      "sha256": "61047b428add853e5ce2e879082ff2f0a0d3c45421bc83f46b212665d565a09f"
+    },
+    {
+      "file": "view02_azim180.png",
+      "sha256": "d4b5a82ad459fb9089f98a0420b9ad2cd372e9a30e5dea0b63212a441b2020b0"
+    },
+    {
+      "file": "view03_azim270.png",
+      "sha256": "d212a6c04ff9a83b8f045dcba646f5339a5f26bad999cd7f0bef251df3869d0d"
+    }
+  ],
+  "torch": "2.14.0+rocm10.1.0",
+  "hip": "7.16.26385",
+  "gpu": "AMD Radeon RX 7900 XTX",
+  "asset_lab_root": "/home/grego/sf-asset-lab",
+  "stages": {
+    "load_seconds": 52.951,
+    "inference_seconds": 800.533,
+    "export_seconds": 92.249
+  },
+  "texture_size": 4096,
+  "decimation_target": 1000000,
+  "max_num_tokens": 131072,
+  "remesh_band": 1,
+  "remesh_project": 0,
+  "attention": "dense and sparse PyTorch SDPA; NAF shifted dilated neighborhoods via chunked PyTorch",
+  "stage": "complete",
+  "model_revision": "b0cb2e1b794cab9aa0ac38a95d794a4d9337437f",
+  "camera": {
+    "fov_degrees": [
+      20.0,
+      20.0,
+      20.0,
+      20.0
+    ],
+    "distance": [
+      3.1192,
+      3.1192,
+      3.1192,
+      3.1192
+    ],
+    "mesh_scale": 1.0
+  },
+  "raw_mesh": {
+    "vertices": 5088321,
+    "faces": 11463166
+  },
+  "effective_grid_resolution": 1536,
+  "files": {
+    "StarterFemale.raw.ply": {
+      "sha256": "b6ba7e78e7a099e4cc0a0713ce8147b2b71e2414cc9073cfe1639389a657da18",
+      "bytes": 210081234
+    },
+    "StarterFemale.glb": {
+      "sha256": "7ae55f326bede57fced39f85c53deee7c1601401c6f3742efdac4cd97811c872",
+      "bytes": 73975028
+    }
+  }
+}

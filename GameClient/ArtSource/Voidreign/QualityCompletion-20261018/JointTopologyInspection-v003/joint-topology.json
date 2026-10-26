@@ -1,0 +1,278 @@
+{
+  "schema_version": 1,
+  "status": "source-bound-joint-topology-design-evidence-only",
+  "cpu_only": true,
+  "input_sha256": {
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkPilot-v001/Mount-WalkPilot.blend": "fe004dd3c6357d9b818729e9d5d89060adb7be0eca6d930d7cc7a91369cd5456",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkRetention-v001/validation.json": "5f6c40f1371229ce05dc7af9a4c6f789a460c7e7757ddca88482815aab26d137",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/DegenerateInspection-v001/00-component-selections.npz": "0d7599c8064cb81a6e211a23731435e08939b7fb146ce2d4bed810273909a2b2",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HygieneSemanticSelection-v001/selections.npz": "0b6a19f76a2cba73a42e293c29365360b53ba93be101cf8f4ca556e7a5989cc0",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidHoofSelectionContract-v001/contract.json": "232f8bbf4f67a57c4de1ffa15be1c7d9b19553d4003f9001fa9d7f764b41ff01",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkPilot-v001/profile.json": "2bd257d49dc9bfa4016e61bfbc12d292f46f94ef9adad1081fac27e1f8842cba"
+  },
+  "contract_selection_sha256": "742c939481a7939e558d684f09346d12778451d0b481aa46367550b4665752dd",
+  "profile_sha256": "058fabb4875c39a08b0a6cc9ec4a5bc20518e07360cede2b980d06e1200c9674",
+  "tool_sha256": "e7e1c2e3447894e897064795e8a6303f889a2dd72dd702dea88e86083c4dad52",
+  "rest_world_maximum_error_m": 3.5838672978711126e-07,
+  "selections_sha256": "620f5921960540c62c8f3e54938a5dad4bb900ead9d0af6f52993257bac2bb80",
+  "feet": [
+    {
+      "id": "fore.L",
+      "core_vertices": 869,
+      "collar_vertices": 331,
+      "core_bounds_m": [
+        [
+          0.21362914144992828,
+          -0.9618337154388428,
+          0.1026301383972168
+        ],
+        [
+          0.44928303360939026,
+          -0.6859827041625977,
+          0.19990074634552002
+        ]
+      ],
+      "collar_bounds_m": [
+        [
+          0.21728843450546265,
+          -0.9117691516876221,
+          0.2000492811203003
+        ],
+        [
+          0.4488736689090729,
+          -0.6775739192962646,
+          0.2338322401046753
+        ]
+      ],
+      "canonical_membership_conflicts": 0,
+      "core_to_exterior_faces_without_collar": 1,
+      "core_collar_edges": 211,
+      "collar_exterior_edges": 206,
+      "outer_collar_reachable_from_core": 101,
+      "outer_collar_unreachable_from_core": 0,
+      "outer_collar_hop_histogram": {
+        "1": 57,
+        "2": 33,
+        "3": 7,
+        "4": 3,
+        "5": 1
+      },
+      "incident_edge_length_quantiles_m": [
+        0.0028810637404043495,
+        0.019108624532067575,
+        0.036917049087452226,
+        0.05217003369048973,
+        0.06565394707156867
+      ],
+      "incident_nonmanifold_canonical_edges": 2,
+      "rigid_bone": "PRI.fore.L.fetlock",
+      "rigid_bone_parent": "PRI.fore.L.carpus",
+      "rest_joint_head_m": [
+        0.3179999887943268,
+        -0.7649999856948853,
+        0.23000000476837157
+      ],
+      "rest_bone_tail_m": [
+        0.2840000092983246,
+        -0.8289999961853027,
+        0.11999999791383743
+      ],
+      "joint_head_nearest_core_vertex_distance_m": 0.05108666122777875,
+      "joint_head_height_above_core_top_m": 0.03009925842285155
+    },
+    {
+      "id": "fore.R",
+      "core_vertices": 1349,
+      "collar_vertices": 222,
+      "core_bounds_m": [
+        [
+          -0.4308953881263733,
+          -1.057020902633667,
+          0.08626294136047363
+        ],
+        [
+          -0.17956261336803436,
+          -0.7516728639602661,
+          0.19976866245269775
+        ]
+      ],
+      "collar_bounds_m": [
+        [
+          -0.403125524520874,
+          -0.9668174386024475,
+          0.20038509368896484
+        ],
+        [
+          -0.19245760142803192,
+          -0.7563384175300598,
+          0.23482346534729004
+        ]
+      ],
+      "canonical_membership_conflicts": 0,
+      "core_to_exterior_faces_without_collar": 1,
+      "core_collar_edges": 188,
+      "collar_exterior_edges": 152,
+      "outer_collar_reachable_from_core": 73,
+      "outer_collar_unreachable_from_core": 0,
+      "outer_collar_hop_histogram": {
+        "1": 40,
+        "2": 29,
+        "3": 4
+      },
+      "incident_edge_length_quantiles_m": [
+        0.0037098973535509626,
+        0.018358819843966947,
+        0.03471723429310064,
+        0.04995146399366049,
+        0.0763581607236627
+      ],
+      "incident_nonmanifold_canonical_edges": 10,
+      "rigid_bone": "PRI.fore.R.fetlock",
+      "rigid_bone_parent": "PRI.fore.R.carpus",
+      "rest_joint_head_m": [
+        -0.31700000166893005,
+        -0.8370000123977661,
+        0.23000000476837157
+      ],
+      "rest_bone_tail_m": [
+        -0.289000004529953,
+        -0.8899999856948853,
+        0.10000000208616257
+      ],
+      "joint_head_nearest_core_vertex_distance_m": 0.04694125736293901,
+      "joint_head_height_above_core_top_m": 0.030231342315673815
+    },
+    {
+      "id": "hind.L",
+      "core_vertices": 894,
+      "collar_vertices": 440,
+      "core_bounds_m": [
+        [
+          0.335136353969574,
+          0.5950146913528442,
+          0.049246788024902344
+        ],
+        [
+          0.5834438800811768,
+          0.8763516545295715,
+          0.13997042179107666
+        ]
+      ],
+      "collar_bounds_m": [
+        [
+          0.32933488488197327,
+          0.6493534445762634,
+          0.14000952243804932
+        ],
+        [
+          0.5781626105308533,
+          0.8690934181213379,
+          0.1734600067138672
+        ]
+      ],
+      "canonical_membership_conflicts": 0,
+      "core_to_exterior_faces_without_collar": 8,
+      "core_collar_edges": 215,
+      "collar_exterior_edges": 215,
+      "outer_collar_reachable_from_core": 97,
+      "outer_collar_unreachable_from_core": 0,
+      "outer_collar_hop_histogram": {
+        "1": 45,
+        "2": 30,
+        "3": 19,
+        "4": 3
+      },
+      "incident_edge_length_quantiles_m": [
+        0.0036282641324649713,
+        0.0180843232489434,
+        0.03633151006481723,
+        0.0534852426640315,
+        0.07353128862504918
+      ],
+      "incident_nonmanifold_canonical_edges": 17,
+      "rigid_bone": "PRI.hind.L.fetlock",
+      "rigid_bone_parent": "PRI.hind.L.hock",
+      "rest_joint_head_m": [
+        0.4480000138282776,
+        0.8119999766349792,
+        0.20000000357627867
+      ],
+      "rest_bone_tail_m": [
+        0.44999998807907104,
+        0.75,
+        0.05000000134110451
+      ],
+      "joint_head_nearest_core_vertex_distance_m": 0.06719073846786691,
+      "joint_head_height_above_core_top_m": 0.06002958178520201
+    },
+    {
+      "id": "hind.R",
+      "core_vertices": 1403,
+      "collar_vertices": 329,
+      "core_bounds_m": [
+        [
+          -0.35096997022628784,
+          0.15892663598060608,
+          0.009627819061279297
+        ],
+        [
+          -0.10216468572616577,
+          0.45527374744415283,
+          0.13988816738128662
+        ]
+      ],
+      "collar_bounds_m": [
+        [
+          -0.3165961503982544,
+          0.2443433701992035,
+          0.12805891036987305
+        ],
+        [
+          -0.13080208003520966,
+          0.48625093698501587,
+          0.1720818281173706
+        ]
+      ],
+      "canonical_membership_conflicts": 0,
+      "core_to_exterior_faces_without_collar": 0,
+      "core_collar_edges": 167,
+      "collar_exterior_edges": 210,
+      "outer_collar_reachable_from_core": 94,
+      "outer_collar_unreachable_from_core": 0,
+      "outer_collar_hop_histogram": {
+        "1": 34,
+        "2": 28,
+        "3": 27,
+        "4": 5
+      },
+      "incident_edge_length_quantiles_m": [
+        0.0034274655691488203,
+        0.018616287567341152,
+        0.03504672256968883,
+        0.05052802435474525,
+        0.0743852088376187
+      ],
+      "incident_nonmanifold_canonical_edges": 16,
+      "rigid_bone": "PRI.hind.R.fetlock",
+      "rigid_bone_parent": "PRI.hind.R.hock",
+      "rest_joint_head_m": [
+        -0.2549999952316284,
+        0.4790000021457672,
+        0.20000000357627867
+      ],
+      "rest_bone_tail_m": [
+        -0.2669999897480011,
+        0.3700000047683716,
+        0.05000000134110451
+      ],
+      "joint_head_nearest_core_vertex_distance_m": 0.06963688438060403,
+      "joint_head_height_above_core_top_m": 0.06011183619499205
+    }
+  ],
+  "limitations": [
+    "Rest topology and authored core/collar membership only; no anatomical inference, skin/rig/mesh edit or candidate-budget reset.",
+    "Hop counts measure canonical mesh graph resolution, not physical joint loops or proof retopology is sufficient.",
+    "Existing joint coordinates are authored rig landmarks, not independently established anatomy.",
+    "Multiple overlapping shells may belong to one physical hoof; neither component count nor nonmanifold edges authorize deletion."
+  ]
+}

@@ -1,0 +1,176 @@
+{
+  "schema_version": 1,
+  "status": "sole-patch-proposals-needs-review",
+  "cpu_only": true,
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz": "0d7599c8064cb81a6e211a23731435e08939b7fb146ce2d4bed810273909a2b2",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selections.npz": "0b6a19f76a2cba73a42e293c29365360b53ba93be101cf8f4ca556e7a5989cc0",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryDomains-v001\\primary-domains.npz": "38002ef04f9ab82df4456021b3772e422328e2ecebd38bd068a344dd5e27bdb5"
+  },
+  "tool_sha256": "02ec380c375581e625d837497910e3f79679c975e4b9de07817048e4a7a4875f",
+  "profile_sha256": "f1c215599ae0902868d5cdd2ce4a354120996b763d7fde559989b4a777a6b87e",
+  "ground_height_m": 0.0,
+  "feet": [
+    {
+      "id": "fore.L",
+      "owner_id": 1,
+      "candidate_patches": 12,
+      "ranked_patch_areas_m2": [
+        0.03887094158808936,
+        0.004403834832892283,
+        0.002678787260153308,
+        0.0006257997069431624,
+        0.0005423505387532868
+      ],
+      "selected_faces": 155,
+      "vertices": 125,
+      "area_m2": 0.03887094158808936,
+      "area_center_m": [
+        0.3419318686608602,
+        -0.8238641636612392,
+        0.12317806229567965
+      ],
+      "minimum_height_m": 0.1026301383972168,
+      "lower_fifth_height_m": 0.10408973693847656,
+      "area_normal": [
+        0.00599003762897965,
+        -2.3383180920433233e-05,
+        -0.03773544071134216
+      ],
+      "bounds_m": [
+        [
+          0.22476612031459808,
+          -0.9618337154388428,
+          0.1026301383972168
+        ],
+        [
+          0.44928303360939026,
+          -0.708936870098114,
+          0.14452064037322998
+        ]
+      ]
+    },
+    {
+      "id": "fore.R",
+      "owner_id": 2,
+      "candidate_patches": 19,
+      "ranked_patch_areas_m2": [
+        0.04306398343088476,
+        0.004666098364721085,
+        0.0041103882470816065,
+        0.003976691894061755,
+        0.0013399354739559786
+      ],
+      "selected_faces": 155,
+      "vertices": 123,
+      "area_m2": 0.04306398343088476,
+      "area_center_m": [
+        -0.2935339731563621,
+        -0.9119145081318311,
+        0.08857096239010019
+      ],
+      "minimum_height_m": 0.08626294136047363,
+      "lower_fifth_height_m": 0.08715593814849854,
+      "area_normal": [
+        -0.00030931599318861913,
+        0.00022258757238891036,
+        -0.04231368717552364
+      ],
+      "bounds_m": [
+        [
+          -0.4113551676273346,
+          -1.056006669998169,
+          0.08626294136047363
+        ],
+        [
+          -0.18156206607818604,
+          -0.7936973571777344,
+          0.1107245683670044
+        ]
+      ]
+    },
+    {
+      "id": "hind.L",
+      "owner_id": 3,
+      "candidate_patches": 14,
+      "ranked_patch_areas_m2": [
+        0.04431297112072749,
+        0.004563560908881029,
+        0.004006283518948754,
+        0.0007275304370222106,
+        0.0007168538572485341
+      ],
+      "selected_faces": 159,
+      "vertices": 131,
+      "area_m2": 0.04431297112072749,
+      "area_center_m": [
+        0.47146640079550217,
+        0.7269098868958263,
+        0.06105857550617636
+      ],
+      "minimum_height_m": 0.049246788024902344,
+      "lower_fifth_height_m": 0.051068007946014404,
+      "area_normal": [
+        0.0032250215353073486,
+        -0.001307231931621189,
+        -0.04329033118764869
+      ],
+      "bounds_m": [
+        [
+          0.34523212909698486,
+          0.5950146913528442,
+          0.049246788024902344
+        ],
+        [
+          0.5826900601387024,
+          0.8495373129844666,
+          0.07588982582092285
+        ]
+      ]
+    },
+    {
+      "id": "hind.R",
+      "owner_id": 4,
+      "candidate_patches": 20,
+      "ranked_patch_areas_m2": [
+        0.04629862270558209,
+        0.018119780605020157,
+        0.010855925552881061,
+        0.005794349385880957,
+        0.001067567035890688
+      ],
+      "selected_faces": 179,
+      "vertices": 140,
+      "area_m2": 0.04629862270558209,
+      "area_center_m": [
+        -0.21726434689019067,
+        0.30218961636545383,
+        0.01746991156644041
+      ],
+      "minimum_height_m": 0.009627819061279297,
+      "lower_fifth_height_m": 0.01039135456085205,
+      "area_normal": [
+        0.0026423802594166546,
+        -0.0005124586181639579,
+        -0.04535710055340325
+      ],
+      "bounds_m": [
+        [
+          -0.33729273080825806,
+          0.15892663598060608,
+          0.009627819061279297
+        ],
+        [
+          -0.10216468572616577,
+          0.42818713188171387,
+          0.02938675880432129
+        ]
+      ]
+    }
+  ],
+  "limitations": [
+    "Largest connected downward-facing patch in an authored foot domain is a proposal, not an approved sole.",
+    "Generated hoof surfaces may be irregular, open or misoriented; inspect exact faces and alternate patches.",
+    "No geometry change, bone stretch, ground contact or locomotion acceptance."
+  ]
+}

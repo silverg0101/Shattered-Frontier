@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "permissions": "Offline combined primary-only30frame validation source; no accepted-source promotion",
+  "effective_time": "This new complete actual-surface source only",
+  "units": "metres and source frames",
+  "source": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManePrimaryOnlyFull-v001\\Voidreign-ActualSurfacePilot.blend",
+  "positions_file": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\TailPrimaryOnlyPilot-v001\\positive-warmup-reference.npz",
+  "proxy_object": "SIM | actual source hair surface",
+  "frame_start": 1,
+  "frame_end": 30,
+  "fps": 30,
+  "maximum_reopen_error_m": 1e-05,
+  "disable_output_modifiers": [
+    {
+      "object": "geometry_0",
+      "modifier": "Actual surface contacts | diagnostic projection"
+    }
+  ],
+  "inherited_mesh_caches": [
+    {
+      "path": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManePrimaryOnlyFull-v001\\Settled-feature-motion.mdd",
+      "filename": "Mane-primary-motion.mdd",
+      "object": "SIM | actual source hair surface.001",
+      "modifier": "Measured settled surface | verified MDD"
+    }
+  ],
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManePrimaryOnlyFull-v001\\Voidreign-ActualSurfacePilot.blend": "da09cce3991fdbc962d918ff51648ae8d3a06b1d56b88dc2e05917e5a812cbfa",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\TailPrimaryOnlyPilot-v001\\positive-warmup-reference.npz": "58ea974e2204b1a58024b35df10c7a5e98a0be13bd4368b747e630284709793b",
+    "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManePrimaryOnlyFull-v001\\Settled-feature-motion.mdd": "e3e36686b391cfba363ec4f1c0ec46c44b2553888968e6d717628e9adab2321c"
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "status": "passed-source-bound-UV-export-only",
+  "source": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkPilot-v003/Mount-WalkPilot.blend",
+  "source_sha256": "f59dc38bff697b6c2a2c84511413d2e292d9fdbb278acc69cd8df6d26a5bd123",
+  "input_sha256": {
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkPilot-v003/Mount-WalkPilot.blend": "f59dc38bff697b6c2a2c84511413d2e292d9fdbb278acc69cd8df6d26a5bd123",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkRetention-v003/validation.json": "0630516734df3c1bb11f95ae92056e353dda46c4f4328c4574e32a2e1a451e49"
+  },
+  "tool_sha256": "66c23fb76bd7abecbbe2916cc1cd93038b04525ce0fe1959c06d635a6b90e9fc",
+  "profile_sha256": "a56bbd226fc74126c26c631741d490969837d7b6500a27603266ff95b5fe12f6",
+  "triangles": 297119,
+  "uv_layer": "UVMap",
+  "uv_sha256": "24efc381141b2d5d1225f42d297187e6e66d96ef8fb47b7b4e8048f357b17214",
+  "uv_min": [
+    0.0,
+    0.000361025333404541
+  ],
+  "uv_max": [
+    0.9996395111083984,
+    1.0
+  ],
+  "topology_sha256": "33d4bb778f26724fc173fd16a020790a009e5d8d21ede708f3c4635fd22b0751",
+  "limitations": [
+    "Exact UV extraction only; no overlap/density/material/geometry/engine acceptance.",
+    "UV origin bottom-left; raster image rows require explicit vertical conversion."
+  ],
+  "point_color_attributes": [
+    {
+      "name": "Head projection weight",
+      "array_key": "point_color_0",
+      "sha256": "ff14284b97502006c46ff84d9103078e709ac4b139e262035dd4f90c6f1817e2",
+      "domain": "POINT",
+      "data_type": "FLOAT_COLOR"
+    },
+    {
+      "name": "Saddle projection weight",
+      "array_key": "point_color_1",
+      "sha256": "84a7818d22ed889bd8db19cbc97012263cdf0bcc528d980089bbb98df897f5e2",
+      "domain": "POINT",
+      "data_type": "FLOAT_COLOR"
+    },
+    {
+      "name": "Head-NegX projection weight",
+      "array_key": "point_color_2",
+      "sha256": "0222a12190c279fc97ef7a79f313a5878cbe6370da783696673ebbfc16f82997",
+      "domain": "POINT",
+      "data_type": "FLOAT_COLOR"
+    },
+    {
+      "name": "Saddle-NegX projection weight",
+      "array_key": "point_color_3",
+      "sha256": "0bfbab581f0d56a98a54e3c68b5da3f1333d4a1d0ec29b0f55833b9df48f7788",
+      "domain": "POINT",
+      "data_type": "FLOAT_COLOR"
+    }
+  ]
+}

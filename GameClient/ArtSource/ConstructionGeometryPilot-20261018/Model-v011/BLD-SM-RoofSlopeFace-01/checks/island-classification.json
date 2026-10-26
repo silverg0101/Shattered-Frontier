@@ -1,0 +1,87 @@
+{
+  "status": "passed",
+  "classification": "One intentionally connected canonical slope carrier; no detached parts are designed. No suspected fragments were deleted.",
+  "checks": [
+    {
+      "status": "passed",
+      "file": "SM_BLD_SM_RoofSlopeFace_01_v003.blend",
+      "asset_id": "BLD-SM-RoofSlopeFace-01",
+      "mesh_object_count": 1,
+      "dimensions_m": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "expected_dimensions_m": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "max_dimension_error_m": 0.0,
+      "position_welded_components": 1,
+      "loose_vertices": 0,
+      "uv0_present": true,
+      "uv_ranges": [
+        [
+          0.0,
+          0.0,
+          1.0,
+          1.4142135381698608
+        ]
+      ],
+      "material_images": [
+        "basecolor.png",
+        "normal.png",
+        "roughness.png"
+      ],
+      "missing_required_maps": [],
+      "acceptance_claim": false
+    },
+    {
+      "status": "passed",
+      "file": "SM_BLD_SM_RoofSlopeFace_01_v003.glb",
+      "kind": "glb",
+      "blender": "5.1.1",
+      "mesh_object_count": 1,
+      "dimensions_m": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "expected_dimensions_m": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "max_dimension_error_m": 0.0,
+      "connected_components": 1,
+      "loose_vertices": 0,
+      "uv0_present": true,
+      "material_slots": 1,
+      "acceptance_claim": false
+    },
+    {
+      "status": "passed",
+      "file": "SM_BLD_SM_RoofSlopeFace_01_v003.fbx",
+      "kind": "fbx",
+      "blender": "5.1.1",
+      "mesh_object_count": 1,
+      "dimensions_m": [
+        0.5,
+        0.5000000596046448,
+        0.5000000814603354
+      ],
+      "expected_dimensions_m": [
+        0.5,
+        0.5,
+        0.5
+      ],
+      "max_dimension_error_m": 8.146033536604591e-08,
+      "connected_components": 1,
+      "loose_vertices": 0,
+      "uv0_present": true,
+      "material_slots": 1,
+      "acceptance_claim": false
+    }
+  ]
+}

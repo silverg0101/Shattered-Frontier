@@ -1,0 +1,20 @@
+{
+  "status": "passed-exact-semantic-material-assignment-only",
+  "cpu_only": true,
+  "source_sha256": "f59dc38bff697b6c2a2c84511413d2e292d9fdbb278acc69cd8df6d26a5bd123",
+  "candidate_sha256": "9f655815892fbc693e58faa99880440ed4b30aca4a023248548e084dbf28b42b",
+  "profile_sha256": "ff0426b4fcba47fcca8baffb84ad9a3eea4da8f74ae9abfb69971349178e0884",
+  "tool_sha256": "d3c8480f5723049f1f55360eac30795b3c9fb5936be16f0742487db3b60dfc5b",
+  "selected_faces": 124288,
+  "mixed_boundary_faces_retained": 2713,
+  "checks": {
+    "exact_face_assignment": true,
+    "original_slot_retained": true,
+    "declared_metallic_zero": true,
+    "base_color_and_roughness_links_retained": true
+  },
+  "limitations": [
+    "Semantic labels remain proposals; visual coverage approval is separate.",
+    "Use independent rest/weight/bind/image/animation retention checks; this checks assignment only."
+  ]
+}

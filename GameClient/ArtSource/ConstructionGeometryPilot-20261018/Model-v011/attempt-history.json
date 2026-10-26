@@ -1,0 +1,26 @@
+{
+  "batch": "construction-model-queue-revision-20261019-e",
+  "repair_policy": {
+    "initial_attempts": 1,
+    "max_repairs": 2,
+    "max_total_attempts": 3
+  },
+  "attempts": [
+    {
+      "revision": "Model-v006",
+      "attempt_number": 1,
+      "result": "initial prototype; quality review failed"
+    },
+    {
+      "revision": "Model-v010",
+      "attempt_number": 2,
+      "result": "repair 1; visual and/or wrap review failed"
+    },
+    {
+      "revision": "Model-v011",
+      "attempt_number": 3,
+      "result": "WT build NameError; RT camera hides inclined face; SM camera and wrap/metadata defects"
+    }
+  ],
+  "next_step": "Needs review/new material attempt budget. Continue only other ready backlog items."
+}

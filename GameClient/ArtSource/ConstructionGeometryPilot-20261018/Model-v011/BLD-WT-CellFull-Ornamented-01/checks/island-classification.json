@@ -1,0 +1,6 @@
+{
+  "status": "not-run",
+  "attempt_3": "Build stopped before source save/reimport.",
+  "prior_evidence": "v010 source and GLB/FBX each reported one connected component and zero loose vertices.",
+  "classification": "Canonical carrier is one intentionally connected cell-full shell. No fragment repair/removal was performed; attempt-3 topology remains open."
+}

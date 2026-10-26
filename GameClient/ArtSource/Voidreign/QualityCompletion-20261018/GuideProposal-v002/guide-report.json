@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "status": "diagnostic-rig-proposal",
+  "source_sha256": "9b3eab121765220b031e0c1394058c502009b90196013f0e10ee61492ba12a66",
+  "mesh_hash": "f580ad6893e552958d7c1320958834ad3c7a139f941b9016c510dfd4d6a3e794",
+  "object": "geometry_0",
+  "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\SemanticSelection-v001\\selection-report.json",
+  "selection_sha256": "631521c4276bd0067320419c79dcdf8bd2043855047ad12a641f25144ed59d4c",
+  "attachment_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\AttachmentProposals-v001\\attachment-proposals.json",
+  "attachment_sha256": "8a6e06cf279edb306b34ec99f5573543e71ebd526cfcba6b8263ae6d46402b82",
+  "profile_path": "docs\\art-templates\\model-profiles\\voidreign-hair-selections-v003-20261018.json",
+  "profile_sha256": "558f0bb861238b8150450a3495ee83fca561d3b72b979c3cd6aa92041ddd18f9",
+  "guide_file": "guides.json",
+  "weight_field_file": "weight-field.npz",
+  "features": [
+    {
+      "feature": "Mane",
+      "guides": 12,
+      "root_nodes": 5554,
+      "finite_root_paths": true,
+      "geometric_and_virtual_edges_distinguished": true,
+      "rooted_components": 24
+    },
+    {
+      "feature": "Tail",
+      "guides": 12,
+      "root_nodes": 263,
+      "finite_root_paths": true,
+      "geometric_and_virtual_edges_distinguished": true,
+      "rooted_components": 9
+    }
+  ],
+  "proposed_bindings_used": true,
+  "motion_profile_path": "docs\\art-templates\\model-profiles\\voidreign-complete-hair-motion-v002-20261018.json",
+  "motion_profile_sha256": "1e8d963922f645a91dbd0c1349fb55d0b00d3b0e6ad2c6d2960c8658449b8927",
+  "additional_motion_protected_vertices": 137820,
+  "required_reviews": [
+    "Semantic boundaries and protected collar patch",
+    "Proposed separate-clump attachments",
+    "Surface-path guides vs actual strand deformation",
+    "Motion/surface collision and exports"
+  ]
+}

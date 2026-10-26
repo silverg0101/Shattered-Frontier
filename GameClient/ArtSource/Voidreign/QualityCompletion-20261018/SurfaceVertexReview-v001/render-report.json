@@ -1,0 +1,505 @@
+{
+  "schema_version": 1,
+  "status": "diagnostic-vertex-patch-views-only",
+  "cpu_only": true,
+  "source": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateCleanup-v001\\Voidreign-CompleteHair.blend",
+  "source_sha256": "6c6044a533c16fc7fad23d42c0407dde37a0252aca84f9be1bc9b9a2367364f6",
+  "profile": "C:\\Projects\\Shattered-Frontier\\docs\\art-templates\\model-profiles\\voidreign-surface-vertex-review-20261018.json",
+  "profile_sha256": "ec5644fefdb279286d116e3f0b0c71b97abb4d74ea34d00db4c87d79e805313a",
+  "surface_report": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSurfaceCheck-v001\\surface-report.json",
+  "surface_report_sha256": "ba75cb37c5fd63db1e7e7e016038e42eeb783977ade74dda562f10efab8811f8",
+  "selection_report": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selection-report.json",
+  "selection_report_sha256": "63eb535dcafe1140c5445ce46bd402cc438af979c437fbb9d7430b723aa11a08",
+  "selection_file": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selections.npz",
+  "selection_file_sha256": "0b6a19f76a2cba73a42e293c29365360b53ba93be101cf8f4ca556e7a5989cc0",
+  "mesh_hash": "ba2d283db0be5e8cff4cc7549f1f51916cc0a4d18213773300976b11512ececa",
+  "assembly_root": "MOTION HARNESS | rigid horse, not gait animation",
+  "selection_to_assembly_max_delta_m": 1.98004506707681e-07,
+  "patch_radius_m": 0.06,
+  "context_pad_m": 0.1,
+  "connectivity": "Selection archive canonical_node + geometric edges only; virtual attachment edges omitted.",
+  "cases": [
+    {
+      "case_id": "horse-neck",
+      "label": "Horse neck",
+      "vertex_id": 71566,
+      "failure_frame": 315,
+      "expected_failure_world_position_m": [
+        -0.18038451671600342,
+        -2.447067975997925,
+        2.05845308303833
+      ],
+      "observed_penetration_m": 0.05118062861551104,
+      "selected_canonical_node_count": 97,
+      "selected_source_vertex_count": 247,
+      "states": [
+        {
+          "state": "rest",
+          "frame": 1,
+          "vertex_id": 71566,
+          "actual_world_position_m": [
+            -0.19631722569465637,
+            -0.8722181916236877,
+            2.170278549194336
+          ],
+          "expected_world_position_m": null,
+          "posed_world_position_error_m": null,
+          "selected_canonical_node_count": 97,
+          "selected_source_vertex_count": 247,
+          "highlighted_face_count": 260,
+          "patch_radius_m": 0.06,
+          "context_pad_m": 0.1,
+          "patch_center_world_m": [
+            -0.20080232620239258,
+            -0.8684375882148743,
+            2.151310682296753
+          ],
+          "patch_bounds_world_m": {
+            "min": [
+              -0.22482327367622013,
+              -0.9179709504958993,
+              2.1204628315665275
+            ],
+            "max": [
+              -0.1767813820199997,
+              -0.8189042824846513,
+              2.1821584125592324
+            ]
+          }
+        },
+        {
+          "state": "posed",
+          "frame": 315,
+          "vertex_id": 71566,
+          "actual_world_position_m": [
+            -0.1803845316171646,
+            -2.447067975997925,
+            2.05845308303833
+          ],
+          "expected_world_position_m": [
+            -0.18038451671600342,
+            -2.447067975997925,
+            2.05845308303833
+          ],
+          "posed_world_position_error_m": 1.4901161193847656e-08,
+          "selected_canonical_node_count": 97,
+          "selected_source_vertex_count": 247,
+          "highlighted_face_count": 260,
+          "patch_radius_m": 0.06,
+          "context_pad_m": 0.1,
+          "patch_center_world_m": [
+            -0.18753208220005035,
+            -2.400446653366089,
+            2.0925049781799316
+          ],
+          "patch_bounds_world_m": {
+            "min": [
+              -0.2649176111759095,
+              -2.4470679854471786,
+              2.0220305086088217
+            ],
+            "max": [
+              -0.11014654192174245,
+              -2.3538251534786845,
+              2.1629795616265994
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "case_id": "ground",
+      "label": "Ground",
+      "vertex_id": 266803,
+      "failure_frame": 241,
+      "expected_failure_world_position_m": [
+        2.328662633895874,
+        -1.752734661102295,
+        -0.06667494773864746
+      ],
+      "observed_penetration_m": 0.06867494434118271,
+      "selected_canonical_node_count": 30,
+      "selected_source_vertex_count": 64,
+      "states": [
+        {
+          "state": "rest",
+          "frame": 1,
+          "vertex_id": 266803,
+          "actual_world_position_m": [
+            0.505424439907074,
+            1.5398967266082764,
+            0.02283501625061035
+          ],
+          "expected_world_position_m": null,
+          "posed_world_position_error_m": null,
+          "selected_canonical_node_count": 30,
+          "selected_source_vertex_count": 64,
+          "highlighted_face_count": 67,
+          "patch_radius_m": 0.06,
+          "context_pad_m": 0.1,
+          "patch_center_world_m": [
+            0.5030100345611572,
+            1.5294092893600464,
+            0.03757930174469948
+          ],
+          "patch_bounds_world_m": {
+            "min": [
+              0.46614347424058167,
+              1.4972455284987347,
+              0.020366201486240243
+            ],
+            "max": [
+              0.5398765698735666,
+              1.5615731013435397,
+              0.05479240105819372
+            ]
+          }
+        },
+        {
+          "state": "posed",
+          "frame": 241,
+          "vertex_id": 266803,
+          "actual_world_position_m": [
+            2.328662633895874,
+            -1.7527345418930054,
+            -0.06667494773864746
+          ],
+          "expected_world_position_m": [
+            2.328662633895874,
+            -1.752734661102295,
+            -0.06667494773864746
+          ],
+          "posed_world_position_error_m": 1.1920928955078125e-07,
+          "selected_canonical_node_count": 30,
+          "selected_source_vertex_count": 64,
+          "highlighted_face_count": 67,
+          "patch_radius_m": 0.06,
+          "context_pad_m": 0.1,
+          "patch_center_world_m": [
+            2.293616771697998,
+            -1.7570602893829346,
+            -0.03304751589894295
+          ],
+          "patch_bounds_world_m": {
+            "min": [
+              2.2191695836058383,
+              -1.775878719551823,
+              -0.06667490879206639
+            ],
+            "max": [
+              2.368064174423899,
+              -1.7382419499422284,
+              0.0005798797459135585
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "render_settings": {
+    "engine": "CYCLES",
+    "device": "CPU",
+    "samples": 4,
+    "threads": 4,
+    "resolution": [
+      768,
+      640
+    ]
+  },
+  "renders": [
+    {
+      "path": "horse-neck-rest-mesh-patch-side-posX.png",
+      "case_id": "horse-neck",
+      "state": "rest",
+      "frame": 1,
+      "vertex_id": 71566,
+      "view": "side-posX",
+      "isolated_patch_only": false,
+      "depth_tested_against_full_mesh": true,
+      "camera_ortho_width_m": 0.3140346913024769,
+      "framing_pad_m": 0.1,
+      "camera_target_world_m": [
+        1.3199739612446137e-07,
+        -0.8684375882148743,
+        2.151310682296753
+      ],
+      "label": "horse-neck | REST | frame 1 | MESH + PATCH"
+    },
+    {
+      "path": "horse-neck-rest-patch-only-side-posX.png",
+      "case_id": "horse-neck",
+      "state": "rest",
+      "frame": 1,
+      "vertex_id": 71566,
+      "view": "side-posX",
+      "isolated_patch_only": true,
+      "depth_tested_against_full_mesh": false,
+      "camera_ortho_width_m": 0.3140346913024769,
+      "framing_pad_m": 0.1,
+      "camera_target_world_m": [
+        1.3199739612446137e-07,
+        -0.8684375882148743,
+        2.151310682296753
+      ],
+      "label": "horse-neck | REST | frame 1 | PATCH ONLY"
+    },
+    {
+      "path": "horse-neck-rest-mesh-patch-side-negX.png",
+      "case_id": "horse-neck",
+      "state": "rest",
+      "frame": 1,
+      "vertex_id": 71566,
+      "view": "side-negX",
+      "isolated_patch_only": false,
+      "depth_tested_against_full_mesh": true,
+      "camera_ortho_width_m": 0.31403469041139026,
+      "framing_pad_m": 0.1,
+      "camera_target_world_m": [
+        -1.3199739612446137e-07,
+        -0.868437647819519,
+        2.151310682296753
+      ],
+      "label": "horse-neck | REST | frame 1 | MESH + PATCH"
+    },
+    {
+      "path": "horse-neck-rest-patch-only-side-negX.png",
+      "case_id": "horse-neck",
+      "state": "rest",
+      "frame": 1,
+      "vertex_id": 71566,
+      "view": "side-negX",
+      "isolated_patch_only": true,
+      "depth_tested_against_full_mesh": false,
+      "camera_ortho_width_m": 0.31403469041139026,
+      "framing_pad_m": 0.1,
+      "camera_target_world_m": [
+        -1.3199739612446137e-07,
+        -0.868437647819519,
+        2.151310682296753
+      ],
+      "label": "horse-neck | REST | frame 1 | PATCH ONLY"
+    },
+    {
+      "path": "horse-neck-posed-mesh-patch-side-posX.png",
+      "case_id": "horse-neck",
+      "state": "posed",
+      "frame": 315,
+      "vertex_id": 71566,
+      "view": "side-posX",
+      "isolated_patch_only": false,
+      "depth_tested_against_full_mesh": true,
+      "camera_ortho_width_m": 0.40913881015238185,
+      "framing_pad_m": 0.1,
+      "camera_target_world_m": [
+        1.9639314530195406e-07,
+        -2.4004464149475098,
+        2.0925049781799316
+      ],
+      "label": "horse-neck | POSED | frame 315 | MESH + PATCH"
+    },
+    {
+      "path": "horse-neck-posed-patch-only-side-posX.png",
+      "case_id": "horse-neck",
+      "state": "posed",
+      "frame": 315,
+      "vertex_id": 71566,
+      "view": "side-posX",
+      "isolated_patch_only": true,
+      "depth_tested_against_full_mesh": false,
+      "camera_ortho_width_m": 0.40913881015238185,
+      "framing_pad_m": 0.1,
+      "camera_target_world_m": [
+        1.9639314530195406e-07,
+        -2.4004464149475098,
+        2.0925049781799316
+      ],
+      "label": "horse-neck | POSED | frame 315 | PATCH ONLY"
+    },
+    {
+      "path": "horse-neck-posed-mesh-patch-side-negX.png",
+      "case_id": "horse-neck",
+      "state": "posed",
+      "frame": 315,
+      "vertex_id": 71566,
+      "view": "side-negX",
+      "isolated_patch_only": false,
+      "depth_tested_against_full_mesh": true,
+      "camera_ortho_width_m": 0.4091388158852158,
+      "framing_pad_m": 0.1,
+      "camera_target_world_m": [
+        -1.9639315951280878e-07,
+        -2.400446653366089,
+        2.0925052165985107
+      ],
+      "label": "horse-neck | POSED | frame 315 | MESH + PATCH"
+    },
+    {
+      "path": "horse-neck-posed-patch-only-side-negX.png",
+      "case_id": "horse-neck",
+      "state": "posed",
+      "frame": 315,
+      "vertex_id": 71566,
+      "view": "side-negX",
+      "isolated_patch_only": true,
+      "depth_tested_against_full_mesh": false,
+      "camera_ortho_width_m": 0.4091388158852158,
+      "framing_pad_m": 0.1,
+      "camera_target_world_m": [
+        -1.9639315951280878e-07,
+        -2.400446653366089,
+        2.0925052165985107
+      ],
+      "label": "horse-neck | POSED | frame 315 | PATCH ONLY"
+    },
+    {
+      "path": "ground-rest-mesh-patch-side-posX.png",
+      "case_id": "ground",
+      "state": "rest",
+      "frame": 1,
+      "vertex_id": 266803,
+      "view": "side-posX",
+      "isolated_patch_only": false,
+      "depth_tested_against_full_mesh": true,
+      "camera_ortho_width_m": 0.28131143685709786,
+      "framing_pad_m": 0.1,
+      "camera_target_world_m": [
+        -6.520995299297283e-08,
+        1.5294092893600464,
+        0.03757932409644127
+      ],
+      "label": "ground | REST | frame 1 | MESH + PATCH"
+    },
+    {
+      "path": "ground-rest-patch-only-side-posX.png",
+      "case_id": "ground",
+      "state": "rest",
+      "frame": 1,
+      "vertex_id": 266803,
+      "view": "side-posX",
+      "isolated_patch_only": true,
+      "depth_tested_against_full_mesh": false,
+      "camera_ortho_width_m": 0.28131143685709786,
+      "framing_pad_m": 0.1,
+      "camera_target_world_m": [
+        -6.520995299297283e-08,
+        1.5294092893600464,
+        0.03757932409644127
+      ],
+      "label": "ground | REST | frame 1 | PATCH ONLY"
+    },
+    {
+      "path": "ground-rest-mesh-patch-side-negX.png",
+      "case_id": "ground",
+      "state": "rest",
+      "frame": 1,
+      "vertex_id": 266803,
+      "view": "side-negX",
+      "isolated_patch_only": false,
+      "depth_tested_against_full_mesh": true,
+      "camera_ortho_width_m": 0.28131144139636177,
+      "framing_pad_m": 0.1,
+      "camera_target_world_m": [
+        6.520996720382755e-08,
+        1.529409408569336,
+        0.03757927939295769
+      ],
+      "label": "ground | REST | frame 1 | MESH + PATCH"
+    },
+    {
+      "path": "ground-rest-patch-only-side-negX.png",
+      "case_id": "ground",
+      "state": "rest",
+      "frame": 1,
+      "vertex_id": 266803,
+      "view": "side-negX",
+      "isolated_patch_only": true,
+      "depth_tested_against_full_mesh": false,
+      "camera_ortho_width_m": 0.28131144139636177,
+      "framing_pad_m": 0.1,
+      "camera_target_world_m": [
+        6.520996720382755e-08,
+        1.529409408569336,
+        0.03757927939295769
+      ],
+      "label": "ground | REST | frame 1 | PATCH ONLY"
+    },
+    {
+      "path": "ground-posed-mesh-patch-side-posX.png",
+      "case_id": "ground",
+      "state": "posed",
+      "frame": 241,
+      "vertex_id": 266803,
+      "view": "side-posX",
+      "isolated_patch_only": false,
+      "depth_tested_against_full_mesh": true,
+      "camera_ortho_width_m": 0.3207057429525769,
+      "framing_pad_m": 0.1,
+      "camera_target_world_m": [
+        7.535900437005694e-08,
+        -1.7570604085922241,
+        -0.03304741531610489
+      ],
+      "label": "ground | POSED | frame 241 | MESH + PATCH"
+    },
+    {
+      "path": "ground-posed-patch-only-side-posX.png",
+      "case_id": "ground",
+      "state": "posed",
+      "frame": 241,
+      "vertex_id": 266803,
+      "view": "side-posX",
+      "isolated_patch_only": true,
+      "depth_tested_against_full_mesh": false,
+      "camera_ortho_width_m": 0.3207057429525769,
+      "framing_pad_m": 0.1,
+      "camera_target_world_m": [
+        7.535900437005694e-08,
+        -1.7570604085922241,
+        -0.03304741531610489
+      ],
+      "label": "ground | POSED | frame 241 | PATCH ONLY"
+    },
+    {
+      "path": "ground-posed-mesh-patch-side-negX.png",
+      "case_id": "ground",
+      "state": "posed",
+      "frame": 241,
+      "vertex_id": 266803,
+      "view": "side-negX",
+      "isolated_patch_only": false,
+      "depth_tested_against_full_mesh": true,
+      "camera_ortho_width_m": 0.32070575357864123,
+      "framing_pad_m": 0.1,
+      "camera_target_world_m": [
+        -7.535898305377486e-08,
+        -1.757060170173645,
+        -0.033047616481781006
+      ],
+      "label": "ground | POSED | frame 241 | MESH + PATCH"
+    },
+    {
+      "path": "ground-posed-patch-only-side-negX.png",
+      "case_id": "ground",
+      "state": "posed",
+      "frame": 241,
+      "vertex_id": 266803,
+      "view": "side-negX",
+      "isolated_patch_only": true,
+      "depth_tested_against_full_mesh": false,
+      "camera_ortho_width_m": 0.32070575357864123,
+      "framing_pad_m": 0.1,
+      "camera_target_world_m": [
+        -7.535898305377486e-08,
+        -1.757060170173645,
+        -0.033047616481781006
+      ],
+      "label": "ground | POSED | frame 241 | PATCH ONLY"
+    }
+  ],
+  "limitations": [
+    "Highlighted patch is a topology-local visualization around the failed vertex, not a semantic classification.",
+    "A highlighted hair, anatomy, or buried-shell appearance requires human review; no approval or deletion is implied.",
+    "Rest and posed views show the same source faces; isolated views omit surrounding mesh and do not show occlusion.",
+    "No source mesh, weights, material, rig, animation, export, or runtime data was changed or saved."
+  ]
+}

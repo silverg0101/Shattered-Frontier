@@ -1,0 +1,5 @@
+Concept sheet prompt:
+Rough timber rectangular door interface concept sheet for modular construction game, no people, no text. Show an empty door aperture with rough oak side frame and top interface only, reveal and hinge-side mounting surface visible; no door leaf, no hinges, no handle. Keep the exact opening silhouette unchanged and passage clear. Separate front/side details and one isolated frame interface component, neutral studio backdrop. Visual proposal only.
+
+Clean view prompt:
+One isolated rough oak rectangular door-frame interface component, vertical jamb strip only with reveal and flat wall contact faces, no door, hinges, hardware or full frame. Three-quarter orthographic view, neutral warm-gray background. Keep geometry simple and generic, no dimension or clearance claim; appearance-only concept.

@@ -1,0 +1,76 @@
+CONCEPT SHEET ITERATION 1 — rejected because it added an unauthorized human scale silhouette and the views/texture were not crisp enough.
+
+Use case: stylized-concept
+Asset type: separately indexed stone-masonry exterior-face treatment for player construction.
+Input image 1: stone-masonry full-cell appearance reference, palette and coursed stone character only. Preserve square shape from the written brief, not the reference's exact stone placements.
+Scene/backdrop: neutral warm-gray technical studio.
+Subject: EXACTLY ONE full solid 0.5 x 0.5 x 0.5 m cube, with designated outside wall face forward. Show the face clad in tight-cut local gray-brown masonry courses, shallow recessed mortar and restrained weathering. It remains the stone-masonry tier.
+Style/medium: realistic Greenlands architectural kit reference, hand-cut but clean coursed stone, no monumental ornament.
+Composition/framing: orthographic front/exterior face, opposite side, top, underside and two ends of the same cube, aligned at equal square scale, plus a neutral contact silhouette; outside face is the main treatment. 0.5 m dimensions are design targets only.
+Constraints: keep each stone flush to the exact cube plane, all six contacts and full solid envelope unchanged. No projections, base, moss, cracks suggesting damage, openings, timber, metal, brackets or trim. No strength or gameplay claims. This is one appearance role, not a separate shape.
+Avoid: wall assembly, waystone, pillar, second cube, irregular silhouettes, exaggerated joints, extra assets, text clutter, watermark.
+Reference: `GameClient/ArtSource/BLD-SM-CellFull-01/References/v001/asset-view.png`.
+Rejected image: `.../exec-6144b30d-3bc5-4513-b596-e3fcbf32c855.png`, SHA-256 `594CE002E809B4E29D5C6A50307A63C6306FD67A98DAA226EF8A009B007682D8`.
+
+CONCEPT SHEET ITERATION 2 — rejected for crowded block relief; exact prompt retained.
+
+Use case: stylized-concept
+Asset type: technical reference sheet for one stone-masonry full-cell exterior-face component.
+Input image 1: stone-masonry full-cell appearance; palette and stone scale only.
+Scene/backdrop: plain neutral gray.
+Subject: exactly ONE 0.5 m target full-cell cube, solid square geometry. Show only six views of this one cube: exterior front, opposite face, left end, right end, top and underside. No other object.
+Style/medium: restrained gray-brown coursed stone, shallow recessed mortar, clean square-cut face planes.
+Composition/framing: six evenly sized aligned orthographic square projections of the same cube, crisp edges; one small blank line-diagram cube with six contact faces may accompany the views. Every view must be a square face of the same full solid. No perspective scale difference. Use labels only: EXTERIOR, OPPOSITE, LEFT END, RIGHT END, TOP, UNDERSIDE, CONTACT. 0.5 m is a design target.
+Constraints: no people, human silhouettes, scale figures, rulers, doors, openings, extra asset, second cube or room. All stones flush to square envelope; full cell and six contacts unchanged. No projection outside faces, damage state, metal, timber, base, cap, ornament or gameplay claims.
+Avoid: portrait figures, images within image, crowded layout, illustration posters, decorative scenery, watermark.
+Reference: `GameClient/ArtSource/BLD-SM-CellFull-01/References/v001/asset-view.png`.
+Rejected image: `.../exec-f9b475ce-53f2-4924-bb63-7273aa4751a0.png`, SHA-256 `2FD20106A73A83646D3AFAC9A289499D2A1FDBB2014DE27E466841BBA0012305`.
+
+CLEAN VIEW ITERATION 1 — rejected because masonry blocks protruded beyond the target cube plane.
+
+Use case: stylized-concept
+Asset type: clean full-asset view for the stone-masonry exterior-face component.
+Input image 1: selected six-view sheet; preserve its gray-brown hand-cut stone courses and matte mortar; ignore sheet layout.
+Scene/backdrop: uniform neutral light gray.
+Subject: exactly one complete solid square cube target 0.5 m per edge, stone-masonry tier, with the exterior face toward camera.
+Style/medium: realistic fantasy architecture reference, modest flush-cut blocks and restrained mortar.
+Composition/framing: one cube centered in a clear three-quarter view, complete top and two side faces visible, crisp straight cube silhouette, ample margins, soft contact shadow.
+Constraints: every block and mortar line stays inside a simple full-cell cube envelope. Six planar full contacts, no base, no plinth, no trim, no protrusion, no opening, no vegetation, no second asset. Do not imply actual scale measured from image or gameplay bonuses.
+Rejected image: `.../exec-2b9d532f-1041-435c-9dd7-89a340f84c53.png`, SHA-256 `287867A78F92D9A98BAFDDCA3A6910776D0F8380F839E9A81ABA73CFBF765ADB`.
+
+CLEAN VIEW ITERATION 2 — rejected because block relief still bulged from the nominal cube planes.
+
+Use case: stylized-concept
+Asset type: corrected clean render of one stone-masonry surface appearance on a fixed cube.
+Input image 1: selected exterior material sheet is a color/course cue; ignore block relief and irregularities.
+Scene/backdrop: uniform light neutral gray.
+Subject: one precise primitive cube with equal edge lengths; intended 0.5 m per edge. Its front and side surfaces have a shallow stone-course appearance.
+Style/medium: realistic fantasy architectural material reference; flush ashlar courses with very shallow recessed mortar lines, gray-brown stone.
+Composition/framing: one cube only, three-quarter view, top and two faces, ample margins. Straight, continuous silhouette lines from corner to corner; flat square planar surfaces.
+Constraints: the cube's outer silhouette and all six planes are perfectly straight. Stone courses are ONLY texture and shallow incised seams applied to those planes; all stone surfaces terminate flush at the cube edges. No geometry protrudes at any seam or corner. No protruding, rounded, chipped, bulging or separate stones; no base, trim, bevel, opening or extra object. All dimensions are target guidance only.
+Avoid: masonry assembly, stacked masonry blocks, crenellations, uneven silhouette, rocks, cliffs, perspective distortion, labels, watermark.
+Rejected image: `.../exec-5bc509b8-c8bf-4ae8-a266-26ab2b2e50ed.png`, SHA-256 `A0BD8EE30A30E6046398A7184C7D5C69B148F9D7AB0CD1FE380E280F4E807616`.
+
+SELECTED CONCEPT SHEET — built-in image_gen, 2026-10-18.
+
+Use case: stylized-concept
+Asset type: modeling concept sheet for one stone-masonry exterior-face component, matching the supplied cube study.
+Input image 1: clean stone cube is a material and silhouette master. Preserve its flush ashlar courses, gray-brown palette, planar faces and crisp square outline.
+Scene/backdrop: neutral gray studio.
+Subject: exactly one 0.5 m target full-cell stone-masonry cube, full solid volume. Six orthographic views of the same cube: exterior, opposite, left end, right end, top and underside. Show the exterior face's ashlar pattern clearly; top and ends have consistent flush masonry treatment.
+Style/medium: realistic fantasy stonework, plain clean flush ashlar blocks, subtle recessed joints, subdued natural stone variation.
+Composition/framing: six evenly sized square projections, aligned; small neutral wireframe contact cube only. Add labels only: EXTERIOR, OPPOSITE, LEFT END, RIGHT END, TOP, UNDERSIDE, CONTACT. Measurement is a 0.5 m design target.
+Constraints: exactly one asset in multiple orthographic views, no people or scale figures. Retain the same 0.5 m cube/contact proposal as other cell-full kits. Stone blocks and mortar are within the crisp cube planes; no projections, openings, bases, bevels, damage or trim. Appearance alone does not prove geometry or change the stone-masonry gameplay profile.
+Avoid: rubble blocks, bulging seams, rounded edges, boulder silhouette, monuments, extra objects, incorrect text, watermark.
+Reference: `C:/Users/grego/.codex/generated_images/01a15000-e13f-7213-9ec0-df2684201405/exec-e3225c3c-ae8f-4272-ba8a-43a51cb44a52.png` (flush masonry material reference).
+
+SELECTED CLEAN VIEW — built-in image_gen, 2026-10-18. Input image 1 is concept-sheet.png.
+
+Use case: stylized-concept
+Asset type: separate clean full-cell view of the selected stone-masonry exterior-face component.
+Input image 1: selected six-view concept sheet is master. Match its flat ashlar courses, gray-brown palette, subtle recessed joints and square outline. Do not copy the diagram or labels.
+Scene/backdrop: uniform neutral light gray studio.
+Subject: exactly one solid full-cell cube, 0.5 m target per edge, with exterior face toward camera.
+Style/medium: restrained realistic fantasy masonry reference; straight planar courses in the same flush-cut stone style.
+Composition/framing: one cube only, three-quarter view, complete cube visible with ample margins; front and side faces and top readable, soft neutral shadow.
+Constraints: every face flat and flush within a crisp equal-edge cube silhouette. No protruding stones, rounded blocks, base, trim, extra objects, openings, damage state or gameplay/stat claim. Geometry and contacts remain a proposed full-cell target, not measured from the image.

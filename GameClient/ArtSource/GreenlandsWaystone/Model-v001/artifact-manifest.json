@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "asset_id": "PROP-GreenlandsWaystone-01",
+  "batch_id": "GreenlandsModelBatch-20261018",
+  "source_type": "reused-existing-model",
+  "source_asset": "GameClient/ArtSource/GreenlandsWaystone/GreenlandsWaystone.blend",
+  "reference_manifest": "GameClient/ArtSource/GreenlandsWaystone/References/v001/manifest.json",
+  "reference_image": "GameClient/ArtSource/GreenlandsWaystone/References/v001/asset-view.png",
+  "files": [
+    {
+      "path": "previews/Beauty.png",
+      "bytes": 590466,
+      "sha256": "f8de1401331e64871e761fff8d382ac6581f5e147d7d7cb783e4312e10a8da32"
+    },
+    {
+      "path": "previews/Turnaround.png",
+      "bytes": 2413330,
+      "sha256": "51d58247d35fe6477c466680f039c2e0d6439273554772fd47a829cde785f586"
+    },
+    {
+      "path": "PROP-GreenlandsWaystone-01.blend",
+      "bytes": 119078,
+      "sha256": "7723071ea6dc9a467e7029bb570289c599958e0dc1d7f53ba83380904bd81522"
+    },
+    {
+      "path": "PROP-GreenlandsWaystone-01.fbx",
+      "bytes": 45868,
+      "sha256": "948f45ef2312b6914b5ca98685bf58710360caffca96d60451caf689e166d40c"
+    },
+    {
+      "path": "PROP-GreenlandsWaystone-01.glb",
+      "bytes": 79604,
+      "sha256": "39acda5c0ee105afe68c5c89e2f42ba432cb110be4857c6ebab5a6a5f4c6136a"
+    },
+    {
+      "path": "README.md",
+      "bytes": 472,
+      "sha256": "0aa71e18bb2c472b3eb8a24ee49a223aaa678033767f52797702c13759bc4f7a"
+    },
+    {
+      "path": "source-asset-manifest.json",
+      "bytes": 1393,
+      "sha256": "91440bb54b47ed2208382ae99df4b03d1c5b9f335e03e54fde22c67fb58207a8"
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "schema_version": 2,
+  "samples_per_component": 128,
+  "hit_tolerance_m": 0.003,
+  "low_visibility_fraction": 0.01,
+  "units": "metres; fraction of area-stratified triangle-interior rays",
+  "permissions": "Offline read-only reviewer; fourteen directions, target-only BVH control and first-hit component IDs; no deletion approval",
+  "effective_time": "Next fresh visibility report; earlier six-view vertex report remains historical"
+}

@@ -1,0 +1,2307 @@
+{
+  "schema_version": 1,
+  "status": "source-bound-local-contact-diagnostic-only",
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\FullLegFringeRoots-v001\\region-roots.npz": "6c87dc69d6bbcf1ea76f7ca12e4f860940f328782c4a374a0a33278008bdf682",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LegFringeLabelCorrection-v001\\label-only-selections.npz": "dc78ba7dbd5a03bef0f0397a26435ec6bcf31b079c340aff5d035a2b1566a630",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/Actual-FringeSecondary.blend": "9532f525e7056b4df36c7940f0185f9c76c1db4fa608600a2976de30d2ff1e00",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/cloth-report.json": "d81b4c25b595fd749ed8e502381c3beb1ce7cb9ed2a489c82d89504d01546083",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003/simulated-points.npz": "5c8fc94b94723ddd5c67e26a50187731bf7d69a7c4a548141675601a7dd783a6"
+  },
+  "tool_sha256": "926eaf77f58d727892b88dc668b86c7c38365d7ce04e406cb18a0b62234b875e",
+  "profile_sha256": "bf1492788eda3b32f5dd7d13b4fa4a0e71c9cf01d02456f3cf446ba9c221fc74",
+  "maximum_cached_replay_error_m": 0.0,
+  "cases": [
+    {
+      "source_frame": 64,
+      "scene_frame": 94,
+      "canonical_node": 22042,
+      "unsigned_gap_m": 6.135515832284e-06,
+      "oriented_local_normal_gap_m": 6.135442212951148e-06,
+      "root_geodesic_m": 0.0110797152205912,
+      "source_body_face": 245239,
+      "point_world_m": [
+        0.30030855536460876,
+        0.16754978895187378,
+        0.5620080828666687
+      ],
+      "closest_body_point_m": [
+        0.30031344294548035,
+        0.1675524115562439,
+        0.5620107054710388
+      ]
+    },
+    {
+      "source_frame": 63,
+      "scene_frame": 93,
+      "canonical_node": 20989,
+      "unsigned_gap_m": 7.243757863761857e-06,
+      "oriented_local_normal_gap_m": 7.243709826632028e-06,
+      "root_geodesic_m": 0.013509130624065228,
+      "source_body_face": 245610,
+      "point_world_m": [
+        0.33030611276626587,
+        0.19380104541778564,
+        0.5423746705055237
+      ],
+      "closest_body_point_m": [
+        0.3303033709526062,
+        0.19379480183124542,
+        0.5423722267150879
+      ]
+    },
+    {
+      "source_frame": 67,
+      "scene_frame": 97,
+      "canonical_node": 21584,
+      "unsigned_gap_m": 1.7176307665067725e-05,
+      "oriented_local_normal_gap_m": 1.7176278454655858e-05,
+      "root_geodesic_m": 0.01830666500198705,
+      "source_body_face": 245159,
+      "point_world_m": [
+        0.29565656185150146,
+        0.03661908209323883,
+        0.5741959810256958
+      ],
+      "closest_body_point_m": [
+        0.29566535353660583,
+        0.03663325309753418,
+        0.5742000937461853
+      ]
+    },
+    {
+      "source_frame": 25,
+      "scene_frame": 55,
+      "canonical_node": 21461,
+      "unsigned_gap_m": 1.7500588000984862e-05,
+      "oriented_local_normal_gap_m": 1.7500577347728807e-05,
+      "root_geodesic_m": 0.018860926703656463,
+      "source_body_face": 245164,
+      "point_world_m": [
+        0.3536126911640167,
+        0.6550593972206116,
+        0.49381425976753235
+      ],
+      "closest_body_point_m": [
+        0.35361504554748535,
+        0.6550760269165039,
+        0.4938191771507263
+      ]
+    },
+    {
+      "source_frame": 71,
+      "scene_frame": 101,
+      "canonical_node": 21416,
+      "unsigned_gap_m": 1.8354752683080733e-05,
+      "oriented_local_normal_gap_m": 1.8354750379145912e-05,
+      "root_geodesic_m": 0.02144014052224877,
+      "source_body_face": 245167,
+      "point_world_m": [
+        0.32809212803840637,
+        -0.13031704723834991,
+        0.5062963366508484
+      ],
+      "closest_body_point_m": [
+        0.32809701561927795,
+        -0.13029950857162476,
+        0.5062986612319946
+      ]
+    },
+    {
+      "source_frame": 40,
+      "scene_frame": 70,
+      "canonical_node": 22195,
+      "unsigned_gap_m": 2.1274225218803622e-05,
+      "oriented_local_normal_gap_m": -2.127422376396737e-05,
+      "root_geodesic_m": 0.007591098093889152,
+      "source_body_face": 245613,
+      "point_world_m": [
+        0.33154240250587463,
+        0.29955339431762695,
+        0.4967983663082123
+      ],
+      "closest_body_point_m": [
+        0.3315553069114685,
+        0.2995700538158417,
+        0.4968012869358063
+      ]
+    },
+    {
+      "source_frame": 70,
+      "scene_frame": 100,
+      "canonical_node": 21416,
+      "unsigned_gap_m": 2.66165952780284e-05,
+      "oriented_local_normal_gap_m": 2.6616594500428192e-05,
+      "root_geodesic_m": 0.02144014052224877,
+      "source_body_face": 245168,
+      "point_world_m": [
+        0.3184836506843567,
+        -0.10197468847036362,
+        0.5270748138427734
+      ],
+      "closest_body_point_m": [
+        0.3184920847415924,
+        -0.10194970667362213,
+        0.5270784497261047
+      ]
+    },
+    {
+      "source_frame": 36,
+      "scene_frame": 66,
+      "canonical_node": 21097,
+      "unsigned_gap_m": 3.89823253499344e-05,
+      "oriented_local_normal_gap_m": 3.8982325060388234e-05,
+      "root_geodesic_m": 0.02589588494951199,
+      "source_body_face": 245154,
+      "point_world_m": [
+        0.3304665684700012,
+        0.30768129229545593,
+        0.4647597670555115
+      ],
+      "closest_body_point_m": [
+        0.33048948645591736,
+        0.3077124357223511,
+        0.46476471424102783
+      ]
+    },
+    {
+      "source_frame": 38,
+      "scene_frame": 68,
+      "canonical_node": 21416,
+      "unsigned_gap_m": 4.80672279081773e-05,
+      "oriented_local_normal_gap_m": -4.806722854810985e-05,
+      "root_geodesic_m": 0.02144014052224877,
+      "source_body_face": 263258,
+      "point_world_m": [
+        0.3328321874141693,
+        0.312412291765213,
+        0.48408153653144836
+      ],
+      "closest_body_point_m": [
+        0.3328777253627777,
+        0.3124237656593323,
+        0.48409178853034973
+      ]
+    },
+    {
+      "source_frame": 37,
+      "scene_frame": 67,
+      "canonical_node": 21976,
+      "unsigned_gap_m": 5.06501855852548e-05,
+      "oriented_local_normal_gap_m": 5.065017677985395e-05,
+      "root_geodesic_m": 0.014953319287412422,
+      "source_body_face": 245239,
+      "point_world_m": [
+        0.33409684896469116,
+        0.3044079840183258,
+        0.4459521174430847
+      ],
+      "closest_body_point_m": [
+        0.33413901925086975,
+        0.3044321537017822,
+        0.44596636295318604
+      ]
+    },
+    {
+      "source_frame": 39,
+      "scene_frame": 69,
+      "canonical_node": 21118,
+      "unsigned_gap_m": 5.3891679272055626e-05,
+      "oriented_local_normal_gap_m": -5.38916785117749e-05,
+      "root_geodesic_m": 0.006914494956951283,
+      "source_body_face": 263326,
+      "point_world_m": [
+        0.3652878999710083,
+        0.297448068857193,
+        0.45723190903663635
+      ],
+      "closest_body_point_m": [
+        0.3652479350566864,
+        0.297480046749115,
+        0.4572150409221649
+      ]
+    },
+    {
+      "source_frame": 24,
+      "scene_frame": 54,
+      "canonical_node": 21461,
+      "unsigned_gap_m": 5.808023706777021e-05,
+      "oriented_local_normal_gap_m": -5.808023404574314e-05,
+      "root_geodesic_m": 0.018860926703656463,
+      "source_body_face": 245164,
+      "point_world_m": [
+        0.35340386629104614,
+        0.6592075228691101,
+        0.48965245485305786
+      ],
+      "closest_body_point_m": [
+        0.3533959686756134,
+        0.6591521501541138,
+        0.4896368086338043
+      ]
+    },
+    {
+      "source_frame": 25,
+      "scene_frame": 55,
+      "canonical_node": 21118,
+      "unsigned_gap_m": 6.505371129605919e-05,
+      "oriented_local_normal_gap_m": 6.50537029760756e-05,
+      "root_geodesic_m": 0.006914494956951283,
+      "source_body_face": 263325,
+      "point_world_m": [
+        0.35289227962493896,
+        0.6657856702804565,
+        0.5030369758605957
+      ],
+      "closest_body_point_m": [
+        0.3529258370399475,
+        0.6657299399375916,
+        0.5030368566513062
+      ]
+    },
+    {
+      "source_frame": 33,
+      "scene_frame": 63,
+      "canonical_node": 21097,
+      "unsigned_gap_m": 6.525217759190127e-05,
+      "oriented_local_normal_gap_m": -6.525217722774812e-05,
+      "root_geodesic_m": 0.02589588494951199,
+      "source_body_face": 245154,
+      "point_world_m": [
+        0.30911970138549805,
+        0.39241823554039,
+        0.522065281867981
+      ],
+      "closest_body_point_m": [
+        0.30908238887786865,
+        0.39236629009246826,
+        0.5220523476600647
+      ]
+    },
+    {
+      "source_frame": 51,
+      "scene_frame": 81,
+      "canonical_node": 21600,
+      "unsigned_gap_m": 6.965101783862337e-05,
+      "oriented_local_normal_gap_m": 6.965101519895711e-05,
+      "root_geodesic_m": 0.018295913459047145,
+      "source_body_face": 245228,
+      "point_world_m": [
+        0.3108353614807129,
+        0.2530423402786255,
+        0.5156567692756653
+      ],
+      "closest_body_point_m": [
+        0.310902863740921,
+        0.25303807854652405,
+        0.5156733989715576
+      ]
+    },
+    {
+      "source_frame": 3,
+      "scene_frame": 33,
+      "canonical_node": 21543,
+      "unsigned_gap_m": 7.325266051338986e-05,
+      "oriented_local_normal_gap_m": -7.325265955415716e-05,
+      "root_geodesic_m": 0.022637794129979672,
+      "source_body_face": 245239,
+      "point_world_m": [
+        0.33661624789237976,
+        0.7446789145469666,
+        0.446593314409256
+      ],
+      "closest_body_point_m": [
+        0.3365554213523865,
+        0.744644045829773,
+        0.44657209515571594
+      ]
+    },
+    {
+      "source_frame": 5,
+      "scene_frame": 35,
+      "canonical_node": 21543,
+      "unsigned_gap_m": 7.68806494306773e-05,
+      "oriented_local_normal_gap_m": -7.688064597699551e-05,
+      "root_geodesic_m": 0.022637794129979672,
+      "source_body_face": 245154,
+      "point_world_m": [
+        0.33891546726226807,
+        0.7358484268188477,
+        0.4459717273712158
+      ],
+      "closest_body_point_m": [
+        0.33887097239494324,
+        0.7357869744300842,
+        0.44595929980278015
+      ]
+    },
+    {
+      "source_frame": 37,
+      "scene_frame": 67,
+      "canonical_node": 20832,
+      "unsigned_gap_m": 8.011788304429501e-05,
+      "oriented_local_normal_gap_m": -8.011787555062266e-05,
+      "root_geodesic_m": 0.025546280762620874,
+      "source_body_face": 245164,
+      "point_world_m": [
+        0.3578551411628723,
+        0.29060423374176025,
+        0.44400161504745483
+      ],
+      "closest_body_point_m": [
+        0.35784026980400085,
+        0.2905255854129791,
+        0.4439981281757355
+      ]
+    },
+    {
+      "source_frame": 44,
+      "scene_frame": 74,
+      "canonical_node": 21461,
+      "unsigned_gap_m": 9.534772107144818e-05,
+      "oriented_local_normal_gap_m": -9.534772613983833e-05,
+      "root_geodesic_m": 0.018860926703656463,
+      "source_body_face": 245164,
+      "point_world_m": [
+        0.35728514194488525,
+        0.26759132742881775,
+        0.4589326083660126
+      ],
+      "closest_body_point_m": [
+        0.3572691082954407,
+        0.2674979865550995,
+        0.4589215815067291
+      ]
+    },
+    {
+      "source_frame": 12,
+      "scene_frame": 42,
+      "canonical_node": 21461,
+      "unsigned_gap_m": 0.00010884660150622949,
+      "oriented_local_normal_gap_m": 0.00010884659692056431,
+      "root_geodesic_m": 0.018860926703656463,
+      "source_body_face": 245164,
+      "point_world_m": [
+        0.3544637858867645,
+        0.704894483089447,
+        0.468289852142334
+      ],
+      "closest_body_point_m": [
+        0.3544810116291046,
+        0.7050005197525024,
+        0.46830737590789795
+      ]
+    }
+  ],
+  "detail": {
+    "collider_vertices": 10416,
+    "collider_triangles": 11676,
+    "indexed_boundary_edges": 7994,
+    "nonmanifold_edges": 0,
+    "inconsistently_directed_shared_edges": 0,
+    "worst_body_source_vertices": [
+      233760,
+      233759,
+      233764
+    ],
+    "worst_body_triangle_indexed_boundary_edges": 2,
+    "worst_contact_distance_to_indexed_boundary_m": 0.0011699573708217849,
+    "worst_incident_simulation_faces": [
+      {
+        "component": "SIM | local actual fringe 1",
+        "face": 33,
+        "global_nodes": [
+          176,
+          170,
+          183
+        ],
+        "excluded_from_object_collision": false
+      },
+      {
+        "component": "SIM | local actual fringe 1",
+        "face": 34,
+        "global_nodes": [
+          153,
+          170,
+          176
+        ],
+        "excluded_from_object_collision": false
+      },
+      {
+        "component": "SIM | local actual fringe 1",
+        "face": 35,
+        "global_nodes": [
+          153,
+          152,
+          170
+        ],
+        "excluded_from_object_collision": false
+      },
+      {
+        "component": "SIM | local actual fringe 1",
+        "face": 48,
+        "global_nodes": [
+          170,
+          150,
+          167
+        ],
+        "excluded_from_object_collision": false
+      },
+      {
+        "component": "SIM | local actual fringe 1",
+        "face": 49,
+        "global_nodes": [
+          170,
+          152,
+          150
+        ],
+        "excluded_from_object_collision": false
+      },
+      {
+        "component": "SIM | local actual fringe 1",
+        "face": 50,
+        "global_nodes": [
+          167,
+          182,
+          170
+        ],
+        "excluded_from_object_collision": false
+      },
+      {
+        "component": "SIM | local actual fringe 1",
+        "face": 53,
+        "global_nodes": [
+          182,
+          183,
+          170
+        ],
+        "excluded_from_object_collision": false
+      }
+    ],
+    "held_speed_trace": [
+      {
+        "scene_frame": 2,
+        "maximum_free_speed_m_s": 0.2523136166241077,
+        "rms_free_speed_m_s": 0.07767845140695448
+      },
+      {
+        "scene_frame": 3,
+        "maximum_free_speed_m_s": 0.48714226924773646,
+        "rms_free_speed_m_s": 0.1521642708765477
+      },
+      {
+        "scene_frame": 4,
+        "maximum_free_speed_m_s": 0.37180867780110777,
+        "rms_free_speed_m_s": 0.12095114712094651
+      },
+      {
+        "scene_frame": 5,
+        "maximum_free_speed_m_s": 0.37118103797573115,
+        "rms_free_speed_m_s": 0.1208105957392448
+      },
+      {
+        "scene_frame": 6,
+        "maximum_free_speed_m_s": 0.4297845981369737,
+        "rms_free_speed_m_s": 0.1498398414529039
+      },
+      {
+        "scene_frame": 7,
+        "maximum_free_speed_m_s": 0.59740455936574,
+        "rms_free_speed_m_s": 0.18376133967702357
+      },
+      {
+        "scene_frame": 8,
+        "maximum_free_speed_m_s": 0.5784823680452394,
+        "rms_free_speed_m_s": 0.21256495265401193
+      },
+      {
+        "scene_frame": 9,
+        "maximum_free_speed_m_s": 0.8456148374751584,
+        "rms_free_speed_m_s": 0.2714246590827665
+      },
+      {
+        "scene_frame": 10,
+        "maximum_free_speed_m_s": 0.6368790750265018,
+        "rms_free_speed_m_s": 0.17777575149442168
+      },
+      {
+        "scene_frame": 11,
+        "maximum_free_speed_m_s": 0.3860547349807073,
+        "rms_free_speed_m_s": 0.12087259031707857
+      },
+      {
+        "scene_frame": 12,
+        "maximum_free_speed_m_s": 0.29569319881709466,
+        "rms_free_speed_m_s": 0.06509183284862383
+      },
+      {
+        "scene_frame": 13,
+        "maximum_free_speed_m_s": 0.41606468500287674,
+        "rms_free_speed_m_s": 0.1116428896065712
+      },
+      {
+        "scene_frame": 14,
+        "maximum_free_speed_m_s": 0.30268465843747117,
+        "rms_free_speed_m_s": 0.08178714308136525
+      },
+      {
+        "scene_frame": 15,
+        "maximum_free_speed_m_s": 0.3277917608972847,
+        "rms_free_speed_m_s": 0.10809854386056955
+      },
+      {
+        "scene_frame": 16,
+        "maximum_free_speed_m_s": 0.42908448263717525,
+        "rms_free_speed_m_s": 0.1609097472085445
+      },
+      {
+        "scene_frame": 17,
+        "maximum_free_speed_m_s": 0.5365435425847513,
+        "rms_free_speed_m_s": 0.14849897903569245
+      },
+      {
+        "scene_frame": 18,
+        "maximum_free_speed_m_s": 0.5891410964906786,
+        "rms_free_speed_m_s": 0.14903548056055885
+      },
+      {
+        "scene_frame": 19,
+        "maximum_free_speed_m_s": 0.6807234299390694,
+        "rms_free_speed_m_s": 0.1759869308509354
+      },
+      {
+        "scene_frame": 20,
+        "maximum_free_speed_m_s": 0.7574354476765028,
+        "rms_free_speed_m_s": 0.19076008944910428
+      },
+      {
+        "scene_frame": 21,
+        "maximum_free_speed_m_s": 0.6329596151009665,
+        "rms_free_speed_m_s": 0.17024745705013186
+      },
+      {
+        "scene_frame": 22,
+        "maximum_free_speed_m_s": 0.4217700142344497,
+        "rms_free_speed_m_s": 0.12863239219921108
+      },
+      {
+        "scene_frame": 23,
+        "maximum_free_speed_m_s": 0.3620702268204239,
+        "rms_free_speed_m_s": 0.10154557332082421
+      },
+      {
+        "scene_frame": 24,
+        "maximum_free_speed_m_s": 0.34564918695119995,
+        "rms_free_speed_m_s": 0.09737036978241195
+      },
+      {
+        "scene_frame": 25,
+        "maximum_free_speed_m_s": 0.41033932192605804,
+        "rms_free_speed_m_s": 0.10207406081362795
+      },
+      {
+        "scene_frame": 26,
+        "maximum_free_speed_m_s": 0.3151044402976475,
+        "rms_free_speed_m_s": 0.10416976607203658
+      },
+      {
+        "scene_frame": 27,
+        "maximum_free_speed_m_s": 0.2731172197021501,
+        "rms_free_speed_m_s": 0.08331915795336024
+      },
+      {
+        "scene_frame": 28,
+        "maximum_free_speed_m_s": 0.4331658859225122,
+        "rms_free_speed_m_s": 0.11658874332060525
+      },
+      {
+        "scene_frame": 29,
+        "maximum_free_speed_m_s": 0.46390095907515194,
+        "rms_free_speed_m_s": 0.11921722713065665
+      },
+      {
+        "scene_frame": 30,
+        "maximum_free_speed_m_s": 0.289624969663165,
+        "rms_free_speed_m_s": 0.07943346517714836
+      }
+    ],
+    "canonical_boundary_edges": 244,
+    "canonical_nonmanifold_edges": 42,
+    "maximum_canonical_seam_copy_gap_m": 0.0,
+    "worst_contact_distance_to_canonical_boundary_m": 0.010314482875206593,
+    "worst_triangle_canonical_boundary_edges": 1,
+    "rest_volume_normal_ray_probe": [
+      {
+        "component": "SIM | local actual fringe 0",
+        "vertices": 101,
+        "internal_springs_enabled": true,
+        "native_maximum_creation_length_m": 0.03999999910593033,
+        "native_maximum_diversion_rad": 0.7853981852531433,
+        "inconsistent_shared_edges": 0,
+        "free_vertices": 85,
+        "eligible_free_normal_rays": 41,
+        "reverse_free_ray_hits": 0,
+        "temporary_capped_manifold": true,
+        "temporary_capped_signed_volume_m3": 0.00029838186438549863,
+        "boundary_fan_signed_volume_m3": 0.0003014952958942468,
+        "samples": [
+          {
+            "canonical_node": 15747,
+            "root": false,
+            "normal_length": 0.9999999925494194,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.01454011257737875
+          },
+          {
+            "canonical_node": 15829,
+            "root": false,
+            "normal_length": 0.9999999813735483,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.02007143758237362
+          },
+          {
+            "canonical_node": 15870,
+            "root": false,
+            "normal_length": 0.9999999254941913,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.01283041201531887
+          },
+          {
+            "canonical_node": 15878,
+            "root": false,
+            "normal_length": 0.9999999925494194,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.026467066258192062
+          },
+          {
+            "canonical_node": 15905,
+            "root": false,
+            "normal_length": 1.0000000461004663,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.014887657947838306
+          },
+          {
+            "canonical_node": 15924,
+            "root": false,
+            "normal_length": 1.0000000379222904,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.025069652125239372
+          },
+          {
+            "canonical_node": 15946,
+            "root": false,
+            "normal_length": 1.0000000194413585,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.020314831286668777
+          },
+          {
+            "canonical_node": 15955,
+            "root": false,
+            "normal_length": 0.999999950174241,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.018111402168869972
+          },
+          {
+            "canonical_node": 16029,
+            "root": false,
+            "normal_length": 0.9999999741557982,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.021412551403045654
+          },
+          {
+            "canonical_node": 16087,
+            "root": false,
+            "normal_length": 0.9999999692663546,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.028396232053637505
+          },
+          {
+            "canonical_node": 16159,
+            "root": false,
+            "normal_length": 0.999999977648258,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.03293320909142494
+          },
+          {
+            "canonical_node": 16176,
+            "root": false,
+            "normal_length": 1.0000000037252903,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.024002380669116974
+          },
+          {
+            "canonical_node": 16178,
+            "root": false,
+            "normal_length": 1.0000000223517416,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.01733420044183731
+          },
+          {
+            "canonical_node": 16208,
+            "root": false,
+            "normal_length": 0.9999999552965154,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.03324493020772934
+          },
+          {
+            "canonical_node": 16218,
+            "root": false,
+            "normal_length": 0.9999999824212863,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.03525330126285553
+          },
+          {
+            "canonical_node": 16255,
+            "root": false,
+            "normal_length": 1.0000000074505806,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.012850319966673851
+          },
+          {
+            "canonical_node": 16286,
+            "root": false,
+            "normal_length": 0.9999999981373549,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.013832531869411469
+          },
+          {
+            "canonical_node": 16294,
+            "root": false,
+            "normal_length": 0.9999999925494194,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.017589561641216278
+          },
+          {
+            "canonical_node": 16318,
+            "root": false,
+            "normal_length": 0.9999999997089617,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.015133364126086235
+          },
+          {
+            "canonical_node": 16439,
+            "root": false,
+            "normal_length": 0.999999944120644,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.03681585565209389
+          },
+          {
+            "canonical_node": 16441,
+            "root": false,
+            "normal_length": 0.9999999962747097,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.014622015878558159
+          },
+          {
+            "canonical_node": 16460,
+            "root": false,
+            "normal_length": 1.000000021420419,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.034263819456100464
+          },
+          {
+            "canonical_node": 16478,
+            "root": false,
+            "normal_length": 1.000000029802322,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.02354724332690239
+          },
+          {
+            "canonical_node": 16540,
+            "root": false,
+            "normal_length": 0.9999999962747097,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.015209686942398548
+          },
+          {
+            "canonical_node": 16568,
+            "root": false,
+            "normal_length": 0.9999999774154273,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.0344555601477623
+          },
+          {
+            "canonical_node": 16612,
+            "root": false,
+            "normal_length": 0.9999999822284734,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.02355450764298439
+          },
+          {
+            "canonical_node": 16618,
+            "root": false,
+            "normal_length": 1.0000000093132257,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.031360965222120285
+          },
+          {
+            "canonical_node": 16697,
+            "root": false,
+            "normal_length": 0.9999999557621767,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 16699,
+            "root": false,
+            "normal_length": 1.000000011175871,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 16765,
+            "root": false,
+            "normal_length": 1.000000011175871,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.01929493248462677
+          },
+          {
+            "canonical_node": 16852,
+            "root": false,
+            "normal_length": 0.9999999552965154,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.03259679302573204
+          },
+          {
+            "canonical_node": 16885,
+            "root": false,
+            "normal_length": 0.9999999813735483,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.030112087726593018
+          },
+          {
+            "canonical_node": 16927,
+            "root": false,
+            "normal_length": 1.0000000731088194,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.02124268189072609
+          },
+          {
+            "canonical_node": 16994,
+            "root": false,
+            "normal_length": 1.0000000223517416,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 17143,
+            "root": false,
+            "normal_length": 0.9999999466817812,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.02903616428375244
+          },
+          {
+            "canonical_node": 17261,
+            "root": false,
+            "normal_length": 1.0000000055879354,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 17364,
+            "root": false,
+            "normal_length": 1.0000000251457093,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.038651905953884125
+          },
+          {
+            "canonical_node": 17395,
+            "root": false,
+            "normal_length": 1.0000000302679832,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 17435,
+            "root": false,
+            "normal_length": 0.999999988824129,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.02932642586529255
+          },
+          {
+            "canonical_node": 17463,
+            "root": false,
+            "normal_length": 1.0,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.03002193011343479
+          },
+          {
+            "canonical_node": 17482,
+            "root": false,
+            "normal_length": 1.0000000437721601,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.03985532373189926
+          },
+          {
+            "canonical_node": 17616,
+            "root": false,
+            "normal_length": 1.000000013038516,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.03873783349990845
+          },
+          {
+            "canonical_node": 17642,
+            "root": false,
+            "normal_length": 0.9999999478459345,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 17924,
+            "root": false,
+            "normal_length": 1.0000000102445483,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 17946,
+            "root": false,
+            "normal_length": 0.9999999329447724,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.036682575941085815
+          },
+          {
+            "canonical_node": 17984,
+            "root": false,
+            "normal_length": 0.9999999962747097,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 18013,
+            "root": false,
+            "normal_length": 0.9999999608844511,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.03986765071749687
+          },
+          {
+            "canonical_node": 18207,
+            "root": false,
+            "normal_length": 1.0000000149011612,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 18209,
+            "root": false,
+            "normal_length": 1.0000000372529023,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 18248,
+            "root": false,
+            "normal_length": 0.9999999850988387,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.03539805859327316
+          },
+          {
+            "canonical_node": 18356,
+            "root": false,
+            "normal_length": 0.9999999634455883,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 18398,
+            "root": false,
+            "normal_length": 1.0000000030195224,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 18440,
+            "root": false,
+            "normal_length": 1.0000000037252903,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 18618,
+            "root": false,
+            "normal_length": 0.9999999850988387,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.039814140647649765
+          },
+          {
+            "canonical_node": 18812,
+            "root": false,
+            "normal_length": 0.9999999701976772,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 19149,
+            "root": false,
+            "normal_length": 1.000000026542693,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 19366,
+            "root": false,
+            "normal_length": 0.9999999925494194,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 19465,
+            "root": false,
+            "normal_length": 1.000000059604643,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 19487,
+            "root": false,
+            "normal_length": 1.000000011175871,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 19517,
+            "root": false,
+            "normal_length": 0.9999999436549827,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 19538,
+            "root": false,
+            "normal_length": 1.000000014610123,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 19625,
+            "root": false,
+            "normal_length": 1.0000000223517416,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 19849,
+            "root": false,
+            "normal_length": 1.0000000074505806,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 20121,
+            "root": true,
+            "normal_length": 1.0000000074505806,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 20150,
+            "root": false,
+            "normal_length": 1.0000000149011612,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 20218,
+            "root": false,
+            "normal_length": 0.9999999701976772,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 20244,
+            "root": false,
+            "normal_length": 1.0000000087311491,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 20331,
+            "root": false,
+            "normal_length": 0.9999999486608417,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 20537,
+            "root": false,
+            "normal_length": 1.000000038184225,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 20659,
+            "root": false,
+            "normal_length": 0.9999999917345122,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 20665,
+            "root": false,
+            "normal_length": 1.0000000353902572,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 20696,
+            "root": false,
+            "normal_length": 0.9999999925494194,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 20913,
+            "root": true,
+            "normal_length": 0.9999999954889063,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.03958287462592125
+          },
+          {
+            "canonical_node": 20914,
+            "root": false,
+            "normal_length": 1.0000000195577738,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 20941,
+            "root": false,
+            "normal_length": 1.0000000720610815,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 21026,
+            "root": false,
+            "normal_length": 0.999999988824129,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 21095,
+            "root": false,
+            "normal_length": 0.9999999739229676,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 21117,
+            "root": false,
+            "normal_length": 0.9999999543651928,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 21196,
+            "root": true,
+            "normal_length": 0.9999999259598525,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 21255,
+            "root": true,
+            "normal_length": 1.000000059604643,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 21421,
+            "root": false,
+            "normal_length": 1.000000055879353,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 21424,
+            "root": false,
+            "normal_length": 0.9999999813735483,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 21553,
+            "root": false,
+            "normal_length": 1.000000025844201,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 21622,
+            "root": false,
+            "normal_length": 0.9999999478459345,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 21700,
+            "root": false,
+            "normal_length": 0.9999999627470963,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 21706,
+            "root": false,
+            "normal_length": 1.000000063329933,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 21737,
+            "root": true,
+            "normal_length": 0.9999999552965154,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 21738,
+            "root": true,
+            "normal_length": 1.0000000037252903,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 21801,
+            "root": true,
+            "normal_length": 1.0000000018626451,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 21896,
+            "root": true,
+            "normal_length": 0.9999999925494194,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 21919,
+            "root": false,
+            "normal_length": 1.000000059604643,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 21944,
+            "root": false,
+            "normal_length": 0.9999999646097415,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 22091,
+            "root": true,
+            "normal_length": 0.9999999573919913,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 22201,
+            "root": false,
+            "normal_length": 1.000000009080395,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 22508,
+            "root": true,
+            "normal_length": 0.9999999701976772,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 22518,
+            "root": true,
+            "normal_length": 0.9999999823630786,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 22667,
+            "root": true,
+            "normal_length": 0.9999999608844511,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 22756,
+            "root": true,
+            "normal_length": 1.0000000223517416,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 23082,
+            "root": true,
+            "normal_length": 1.0000000223517416,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 23277,
+            "root": true,
+            "normal_length": 0.9999999497085797,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 23458,
+            "root": true,
+            "normal_length": 0.9999999748542902,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          }
+        ]
+      },
+      {
+        "component": "SIM | local actual fringe 1",
+        "vertices": 65,
+        "internal_springs_enabled": true,
+        "native_maximum_creation_length_m": 0.03999999910593033,
+        "native_maximum_diversion_rad": 0.7853981852531433,
+        "inconsistent_shared_edges": 0,
+        "free_vertices": 53,
+        "eligible_free_normal_rays": 43,
+        "reverse_free_ray_hits": 0,
+        "temporary_capped_manifold": false,
+        "temporary_capped_signed_volume_m3": null,
+        "boundary_fan_signed_volume_m3": 6.729567492412838e-05,
+        "samples": [
+          {
+            "canonical_node": 16720,
+            "root": false,
+            "normal_length": 1.0000000158324835,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.01656317710876465
+          },
+          {
+            "canonical_node": 16819,
+            "root": false,
+            "normal_length": 1.0000000018626451,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.012527297250926495
+          },
+          {
+            "canonical_node": 16822,
+            "root": false,
+            "normal_length": 1.000000074040142,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.013329223729670048
+          },
+          {
+            "canonical_node": 16947,
+            "root": false,
+            "normal_length": 0.9999998882412848,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.022890057414770126
+          },
+          {
+            "canonical_node": 17159,
+            "root": false,
+            "normal_length": 1.0000000635627637,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.018826445564627647
+          },
+          {
+            "canonical_node": 17176,
+            "root": false,
+            "normal_length": 0.9999999832361935,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.012453394010663033
+          },
+          {
+            "canonical_node": 17183,
+            "root": false,
+            "normal_length": 1.000000013038516,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.01676148921251297
+          },
+          {
+            "canonical_node": 17195,
+            "root": false,
+            "normal_length": 1.0000000670552232,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.01679046079516411
+          },
+          {
+            "canonical_node": 17294,
+            "root": false,
+            "normal_length": 0.9999999681022013,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.017439723014831543
+          },
+          {
+            "canonical_node": 17330,
+            "root": false,
+            "normal_length": 1.0000000447034827,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.017947321757674217
+          },
+          {
+            "canonical_node": 17644,
+            "root": false,
+            "normal_length": 0.9999999768333507,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.020023629069328308
+          },
+          {
+            "canonical_node": 17702,
+            "root": false,
+            "normal_length": 1.0000000391155475,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.018138784915208817
+          },
+          {
+            "canonical_node": 17806,
+            "root": false,
+            "normal_length": 0.999999996740371,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.020330509170889854
+          },
+          {
+            "canonical_node": 17869,
+            "root": false,
+            "normal_length": 1.0,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.019421124830842018
+          },
+          {
+            "canonical_node": 18018,
+            "root": false,
+            "normal_length": 1.000000029802322,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.021296663209795952
+          },
+          {
+            "canonical_node": 18111,
+            "root": false,
+            "normal_length": 0.9999999265419293,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.01968740113079548
+          },
+          {
+            "canonical_node": 18166,
+            "root": false,
+            "normal_length": 1.0000000521540628,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.017750894650816917
+          },
+          {
+            "canonical_node": 18186,
+            "root": false,
+            "normal_length": 0.9999999552965154,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.0221257247030735
+          },
+          {
+            "canonical_node": 18918,
+            "root": false,
+            "normal_length": 1.0000000046566129,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.020976314321160316
+          },
+          {
+            "canonical_node": 18945,
+            "root": false,
+            "normal_length": 1.000000050058587,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.018792640417814255
+          },
+          {
+            "canonical_node": 19034,
+            "root": false,
+            "normal_length": 0.9999999552965154,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.018558204174041748
+          },
+          {
+            "canonical_node": 19076,
+            "root": false,
+            "normal_length": 0.9999999552965154,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.01651252992451191
+          },
+          {
+            "canonical_node": 19418,
+            "root": false,
+            "normal_length": 0.999999982130248,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.020750360563397408
+          },
+          {
+            "canonical_node": 19502,
+            "root": false,
+            "normal_length": 1.0000000521540628,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.023720258846879005
+          },
+          {
+            "canonical_node": 20032,
+            "root": false,
+            "normal_length": 0.9999999403953534,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.0185927115380764
+          },
+          {
+            "canonical_node": 20035,
+            "root": false,
+            "normal_length": 0.999999947049217,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.02111879363656044
+          },
+          {
+            "canonical_node": 20102,
+            "root": false,
+            "normal_length": 0.999999977648258,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.018513793125748634
+          },
+          {
+            "canonical_node": 20129,
+            "root": false,
+            "normal_length": 1.0000000502914177,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.0242592915892601
+          },
+          {
+            "canonical_node": 20132,
+            "root": false,
+            "normal_length": 0.9999999813735483,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.02199350669980049
+          },
+          {
+            "canonical_node": 20294,
+            "root": false,
+            "normal_length": 0.9999999664723868,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.01902475580573082
+          },
+          {
+            "canonical_node": 20415,
+            "root": false,
+            "normal_length": 1.000000045634805,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.018795881420373917
+          },
+          {
+            "canonical_node": 20492,
+            "root": false,
+            "normal_length": 0.999999977648258,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.0209385696798563
+          },
+          {
+            "canonical_node": 20585,
+            "root": false,
+            "normal_length": 1.0000000353902572,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.023452747613191605
+          },
+          {
+            "canonical_node": 20633,
+            "root": false,
+            "normal_length": 0.999999933876095,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.023726919665932655
+          },
+          {
+            "canonical_node": 20684,
+            "root": false,
+            "normal_length": 0.9999999403953534,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.019413147121667862
+          },
+          {
+            "canonical_node": 20832,
+            "root": false,
+            "normal_length": 1.0000000493600953,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.02084369771182537
+          },
+          {
+            "canonical_node": 20952,
+            "root": false,
+            "normal_length": 0.9999999962747097,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.023808594793081284
+          },
+          {
+            "canonical_node": 20989,
+            "root": false,
+            "normal_length": 1.000000041909515,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 21061,
+            "root": false,
+            "normal_length": 0.9999999925494194,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.024388398975133896
+          },
+          {
+            "canonical_node": 21097,
+            "root": false,
+            "normal_length": 1.0000000355066725,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 21118,
+            "root": false,
+            "normal_length": 1.0000000409781924,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.025390423834323883
+          },
+          {
+            "canonical_node": 21140,
+            "root": false,
+            "normal_length": 1.0000000645959497,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.023585371673107147
+          },
+          {
+            "canonical_node": 21320,
+            "root": true,
+            "normal_length": 0.9999999962747097,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.026684239506721497
+          },
+          {
+            "canonical_node": 21416,
+            "root": false,
+            "normal_length": 0.9999999590218058,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 21461,
+            "root": false,
+            "normal_length": 0.9999999962747097,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.023120291531085968
+          },
+          {
+            "canonical_node": 21480,
+            "root": true,
+            "normal_length": 1.0000000372529023,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.024043701589107513
+          },
+          {
+            "canonical_node": 21506,
+            "root": false,
+            "normal_length": 0.9999999254941913,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.021661754697561264
+          },
+          {
+            "canonical_node": 21543,
+            "root": false,
+            "normal_length": 0.9999999701976772,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 21584,
+            "root": false,
+            "normal_length": 1.0000000540167078,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 21600,
+            "root": false,
+            "normal_length": 0.9999999756601025,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 21933,
+            "root": false,
+            "normal_length": 1.0000000819563832,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 21976,
+            "root": false,
+            "normal_length": 1.0000000707805132,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.024914834648370743
+          },
+          {
+            "canonical_node": 21990,
+            "root": false,
+            "normal_length": 0.9999999604187898,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 21995,
+            "root": true,
+            "normal_length": 0.9999999906867743,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.021170824766159058
+          },
+          {
+            "canonical_node": 22042,
+            "root": false,
+            "normal_length": 1.0000000186264513,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 22058,
+            "root": true,
+            "normal_length": 0.9999999547217148,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.022997546941041946
+          },
+          {
+            "canonical_node": 22077,
+            "root": true,
+            "normal_length": 1.0000000149011612,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 22195,
+            "root": false,
+            "normal_length": 0.9999999403953534,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 22348,
+            "root": true,
+            "normal_length": 0.9999999775318427,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 22547,
+            "root": true,
+            "normal_length": 1.0000000454019744,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.025631213560700417
+          },
+          {
+            "canonical_node": 22629,
+            "root": true,
+            "normal_length": 0.9999999664723868,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.024733681231737137
+          },
+          {
+            "canonical_node": 22662,
+            "root": true,
+            "normal_length": 1.0000000605359656,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 22677,
+            "root": true,
+            "normal_length": 1.0000000894069632,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 22850,
+            "root": true,
+            "normal_length": 1.0000000158324835,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 23028,
+            "root": true,
+            "normal_length": 1.000000033061951,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          }
+        ]
+      },
+      {
+        "component": "SIM | local actual fringe 2",
+        "vertices": 36,
+        "internal_springs_enabled": true,
+        "native_maximum_creation_length_m": 0.03999999910593033,
+        "native_maximum_diversion_rad": 0.7853981852531433,
+        "inconsistent_shared_edges": 0,
+        "free_vertices": 27,
+        "eligible_free_normal_rays": 27,
+        "reverse_free_ray_hits": 0,
+        "temporary_capped_manifold": true,
+        "temporary_capped_signed_volume_m3": 2.7945632769317017e-05,
+        "boundary_fan_signed_volume_m3": 2.8203972014617776e-05,
+        "samples": [
+          {
+            "canonical_node": 19432,
+            "root": false,
+            "normal_length": 1.0000000204890964,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.010147454217076302
+          },
+          {
+            "canonical_node": 19477,
+            "root": false,
+            "normal_length": 0.9999999677529553,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.011595272459089756
+          },
+          {
+            "canonical_node": 19499,
+            "root": false,
+            "normal_length": 0.9999999618157737,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.011363624595105648
+          },
+          {
+            "canonical_node": 19590,
+            "root": false,
+            "normal_length": 0.9999999813735483,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.017894050106406212
+          },
+          {
+            "canonical_node": 19767,
+            "root": false,
+            "normal_length": 1.000000011175871,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.010899078100919724
+          },
+          {
+            "canonical_node": 19831,
+            "root": false,
+            "normal_length": 1.000000026193447,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.011426825076341629
+          },
+          {
+            "canonical_node": 19924,
+            "root": false,
+            "normal_length": 1.0000000372529023,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.013368841260671616
+          },
+          {
+            "canonical_node": 20074,
+            "root": false,
+            "normal_length": 1.0000000237996571,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.012425530701875687
+          },
+          {
+            "canonical_node": 20076,
+            "root": false,
+            "normal_length": 1.0000000413274384,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.016608044505119324
+          },
+          {
+            "canonical_node": 20197,
+            "root": false,
+            "normal_length": 1.0000000521540628,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.016904599964618683
+          },
+          {
+            "canonical_node": 20291,
+            "root": false,
+            "normal_length": 1.0000000223517416,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.012117145583033562
+          },
+          {
+            "canonical_node": 20450,
+            "root": false,
+            "normal_length": 0.999999988824129,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.01671554148197174
+          },
+          {
+            "canonical_node": 20657,
+            "root": false,
+            "normal_length": 1.000000006519258,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.017861487343907356
+          },
+          {
+            "canonical_node": 20728,
+            "root": false,
+            "normal_length": 0.9999999897554517,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.015522103756666183
+          },
+          {
+            "canonical_node": 21054,
+            "root": false,
+            "normal_length": 1.0000000167638061,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.020486369729042053
+          },
+          {
+            "canonical_node": 21135,
+            "root": false,
+            "normal_length": 0.9999999925494194,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.017422787845134735
+          },
+          {
+            "canonical_node": 21159,
+            "root": false,
+            "normal_length": 1.0000000204890964,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.01848212257027626
+          },
+          {
+            "canonical_node": 21182,
+            "root": false,
+            "normal_length": 0.9999999850988387,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.021590638905763626
+          },
+          {
+            "canonical_node": 21350,
+            "root": false,
+            "normal_length": 0.9999999832361935,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.01748710870742798
+          },
+          {
+            "canonical_node": 21479,
+            "root": false,
+            "normal_length": 1.0000000074505806,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.01893148571252823
+          },
+          {
+            "canonical_node": 21525,
+            "root": false,
+            "normal_length": 1.000000026542693,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.02059098146855831
+          },
+          {
+            "canonical_node": 21621,
+            "root": false,
+            "normal_length": 1.0000000232830641,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.022784918546676636
+          },
+          {
+            "canonical_node": 21912,
+            "root": false,
+            "normal_length": 0.9999999701976772,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.022383298724889755
+          },
+          {
+            "canonical_node": 21947,
+            "root": false,
+            "normal_length": 0.9999999478459345,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.022422045469284058
+          },
+          {
+            "canonical_node": 22079,
+            "root": false,
+            "normal_length": 1.000000011175871,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.02310163900256157
+          },
+          {
+            "canonical_node": 22170,
+            "root": false,
+            "normal_length": 1.0000000321306284,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.023067008703947067
+          },
+          {
+            "canonical_node": 22357,
+            "root": false,
+            "normal_length": 0.9999999422579987,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.022394508123397827
+          },
+          {
+            "canonical_node": 22660,
+            "root": true,
+            "normal_length": 0.9999999701976772,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 22830,
+            "root": true,
+            "normal_length": 1.0,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.02395259030163288
+          },
+          {
+            "canonical_node": 22919,
+            "root": true,
+            "normal_length": 1.0000000391155475,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 22961,
+            "root": true,
+            "normal_length": 1.0000000060535967,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.022961335256695747
+          },
+          {
+            "canonical_node": 23383,
+            "root": true,
+            "normal_length": 0.9999999777210176,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.024650968611240387
+          },
+          {
+            "canonical_node": 23434,
+            "root": true,
+            "normal_length": 0.9999999790452418,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 23493,
+            "root": true,
+            "normal_length": 1.000000059604643,
+            "hit": true,
+            "geometric_opposite_normal_eligible": true,
+            "distance_m": 0.024256352335214615
+          },
+          {
+            "canonical_node": 23754,
+            "root": true,
+            "normal_length": 1.0000000149011612,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          },
+          {
+            "canonical_node": 23851,
+            "root": true,
+            "normal_length": 1.0000000372529023,
+            "hit": false,
+            "geometric_opposite_normal_eligible": false,
+            "distance_m": null
+          }
+        ]
+      }
+    ],
+    "volume_probe_scope": "Zero-diversion geometric probe only. Native5.1.1 uses seeded diverted rays and target/pair filtering; these are NOT actual native spring counts or a volume guarantee.",
+    "native_source_reference": "https://github.com/blender/blender/blob/v5.1.1/source/blender/blenkernel/intern/cloth.cc#L1278-L1463"
+  },
+  "limitations": [
+    "Nearest sampled vertex/triangle gaps and oriented face-normal signs, not signed solid/triangle/swept collision acceptance.",
+    "Cropped/open source collider may have seams, holes and ambiguous closest-face normals.",
+    "No rebake, contact-exclusion expansion or tolerance changes."
+  ]
+}

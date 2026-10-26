@@ -1,0 +1,20 @@
+{
+  "status": "complete",
+  "gpu": "AMD Radeon RX 7900 XTX",
+  "torch": "2.14.0+rocm10.1.0",
+  "volume_sha256": "b8931bd8e6a5ea6bd81b3b82ab9dcb66846dd3c9527e65a2be12663f1135236f",
+  "input_mesh_sha256": "b143eaff22a67ea647258854f01189820b3a9d0a6c66a88aa984f3189411d9b8",
+  "exports": [
+    {
+      "texture_size": 2048,
+      "elapsed_seconds": 12.874,
+      "triangles": 296860
+    },
+    {
+      "texture_size": 4096,
+      "elapsed_seconds": 34.828,
+      "triangles": 296860
+    }
+  ],
+  "method": "Fresh material-volume sampling onto fixed original Pixal mesh and UVs; native export coordinate transform reversed"
+}

@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "permissions": "Offline conversion of verified final tail output",
+  "effective_time": "This frozen source only",
+  "units": "metres and frames",
+  "source": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\TailSurfaceContacts-v001\\Voidreign-SurfaceContacts.blend",
+  "positions_file": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\TailFinalOutputPoints-v001\\output-points.npz",
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\TailSurfaceContacts-v001\\Voidreign-SurfaceContacts.blend": "da5ed6b5e4f971c51c45aacac08ba27f52a05ccdfbbc6cf7fb8e434ec373d1cc",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\TailFinalOutputPoints-v001\\output-points.npz": "337b2527a8fad6b4bf91f38e897e11a719986331f1751a8b2784d2f73d2e167d"
+  },
+  "proxy_object": "SIM | actual source hair surface",
+  "frame_start": 1,
+  "frame_end": 330,
+  "fps": 30,
+  "maximum_reopen_error_m": 1e-05,
+  "disable_output_modifiers": [
+    {
+      "object": "geometry_0",
+      "modifier": "Actual surface contacts | diagnostic projection"
+    }
+  ]
+}

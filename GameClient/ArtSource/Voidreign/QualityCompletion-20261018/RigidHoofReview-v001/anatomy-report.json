@@ -1,0 +1,159 @@
+{
+  "schema_version": 1,
+  "status": "anatomy-proposal-needs-review",
+  "cpu_only": true,
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryOnlyCombinedFull-v001\\Voidreign-ActualSurfacePilot.blend": "c507e31813fea5ea61e30f7cbf8bae37609135b549238b64ad1e61a1e42111ee",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz": "0d7599c8064cb81a6e211a23731435e08939b7fb146ce2d4bed810273909a2b2",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryOnlyCombinedFullRetention-v001\\validation.json": "fcd05cbae371af89b71bd0b9ab427bf74a48b3667abc0c454fee46e3947ea840",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LooseItemInventory-v001\\item-selections.npz": "fcd4db77cdd50ccae21e0f134e845c8bf64c3243285bcc565788f6fda33d665d",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ArticulatedSkinReviewInputs-v001/worst-edge-selections.npz": "4134e3077d6f3ca0f0dd12f38e065ef024c18e5af6c47eb9431f34a2d5648e33",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidHoofProposal-v001/hoof-selections.npz": "60dc08ca6786028ddd7c7a076562c26459141e2e4f2f86b0fe744acc94b6386c"
+  },
+  "tool_sha256": "a4d1e4b5f319bd55ce220ef386d5ccdd08f13349911342b3ca6e11c4aff2572f",
+  "profile_sha256": "9f3e982eb94082544d7829c08e8d238c0aea3e212afa6e98194482a5dee26b12",
+  "vertices": 284762,
+  "triangles": 297119,
+  "regions": [
+    {
+      "id": "fore.L-core",
+      "vertices": 544,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "fore.L-legacy-missing",
+      "vertices": 325,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "fore.L-new",
+      "vertices": 53,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "fore.R-core",
+      "vertices": 1011,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "fore.R-legacy-missing",
+      "vertices": 338,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "fore.R-new",
+      "vertices": 187,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "hind.L-core",
+      "vertices": 620,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "hind.L-legacy-missing",
+      "vertices": 274,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "hind.L-new",
+      "vertices": 39,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "hind.R-core",
+      "vertices": 1403,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "hind.R-new",
+      "vertices": 53,
+      "status": "geometric-proposal-needs-anatomical-review"
+    }
+  ],
+  "views": [
+    {
+      "id": "fore.L-side",
+      "image": "fore.L-side.png",
+      "isolate_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "fore.L-below",
+      "image": "fore.L-below.png",
+      "isolate_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "fore.L-legacy-isolated",
+      "image": "fore.L-legacy-isolated.png",
+      "isolate_regions": [
+        "fore.L-legacy-missing"
+      ],
+      "source_face_count": 400
+    },
+    {
+      "id": "fore.R-side",
+      "image": "fore.R-side.png",
+      "isolate_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "fore.R-below",
+      "image": "fore.R-below.png",
+      "isolate_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "fore.R-legacy-isolated",
+      "image": "fore.R-legacy-isolated.png",
+      "isolate_regions": [
+        "fore.R-legacy-missing"
+      ],
+      "source_face_count": 468
+    },
+    {
+      "id": "hind.L-side",
+      "image": "hind.L-side.png",
+      "isolate_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "hind.L-below",
+      "image": "hind.L-below.png",
+      "isolate_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "hind.L-legacy-isolated",
+      "image": "hind.L-legacy-isolated.png",
+      "isolate_regions": [
+        "hind.L-legacy-missing"
+      ],
+      "source_face_count": 364
+    },
+    {
+      "id": "hind.R-side",
+      "image": "hind.R-side.png",
+      "isolate_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "hind.R-below",
+      "image": "hind.R-below.png",
+      "isolate_regions": [],
+      "source_face_count": 297119
+    }
+  ],
+  "coordinate_convention": {
+    "up": "+Z",
+    "forward": "-Y (head/horn)",
+    "side_names": "Geometric +X/-X until reviewed"
+  },
+  "landmarks": [],
+  "limitations": [
+    "Exact indexed rest diagnostic only; source rig/materials are not copied into this proposal.",
+    "Box domains can include hanging tack or miss curved anatomy; not skin weights or semantic approval.",
+    "Landmarks are authored proposals, not inferred joint centers or accepted stance."
+  ]
+}

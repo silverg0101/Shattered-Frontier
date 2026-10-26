@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "guide_report": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneGuideProposal-v001\\guide-report.json",
+  "surface_report": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ContactMeshSurfaceCheck-v001\\surface-report.json",
+  "retention_report": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ContactMeshRetention-v001\\validation.json",
+  "colliders": [
+    "Horse neck",
+    "Rider arm far",
+    "Environment post",
+    "Ground"
+  ],
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneGuideProposal-v001\\guide-report.json": "3e776c1cef3380c3a81814d67ce2ec32270bca2e7d7fbece55eefef49e70de67",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ContactMeshSurfaceCheck-v001\\surface-report.json": "f1d161b1c52cdc0cf6a78acb6794af03a2bee7372a4673e0f70825fc3faaca7d",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ContactMeshRetention-v001\\validation.json": "3d6b13882666229f3a35f0998214d4a2e9d09e2763d50e27cbf3f713707bbcfd"
+  }
+}

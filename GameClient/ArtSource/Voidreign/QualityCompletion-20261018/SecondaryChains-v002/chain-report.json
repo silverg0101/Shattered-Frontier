@@ -1,0 +1,251 @@
+{
+ "schema_version": 1,
+ "status": "secondary-chain-rig-needs-review",
+ "cpu_only": true,
+ "input_sha256": {
+  "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/SmoothedLegSkin-v002/Mount-ProxyHeatSkin.blend": "f110d8920289603013eac7789f3bcf92805f94dfa9aa5c5ff4dcd9582eb24413",
+  "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringeLabelCorrection-v001/label-only-selections.npz": "dc78ba7dbd5a03bef0f0397a26435ec6bcf31b079c340aff5d035a2b1566a630"
+ },
+ "tool_sha256": "88e3b87c5c497b97799579c176b9993bbf96ba4d0a7aa64f79801807b8d9fe08",
+ "profile_sha256": "342f906bb8b6bac804905cff3cff468c9560e89e9219485a95c7999d094f909b",
+ "candidate_sha256": "895b71e8c13275e47bce2be03ffe22852c42ff3b6ba3a63dea2bfd9950315805",
+ "chains": [
+  {
+   "chain": "SEC.tail.0",
+   "parent": "PRI.body.tail-base",
+   "vertices": 67177,
+   "joints_m": [
+    [
+     -0.0105,
+     0.8025,
+     1.5507
+    ],
+    [
+     -0.0214,
+     0.8472,
+     1.5727
+    ],
+    [
+     -0.0218,
+     0.9596,
+     1.5007
+    ],
+    [
+     -0.0008,
+     1.047,
+     1.4041
+    ],
+    [
+     0.0402,
+     1.1028,
+     1.2728
+    ],
+    [
+     0.0989,
+     1.1537,
+     1.1225
+    ],
+    [
+     0.1619,
+     1.238,
+     0.9516
+    ],
+    [
+     0.2556,
+     1.3553,
+     0.7788
+    ],
+    [
+     0.4403,
+     1.5754,
+     0.2832
+    ]
+   ],
+   "length_m": 1.6365312033738983
+  },
+  {
+   "chain": "SEC.mane.0",
+   "parent": "PRI.body.chest",
+   "vertices": 9740,
+   "joints_m": [
+    [
+     -0.1059,
+     -0.395,
+     1.8786
+    ],
+    [
+     -0.1182,
+     -0.3958,
+     1.9364
+    ],
+    [
+     -0.1241,
+     -0.3655,
+     1.9737
+    ],
+    [
+     -0.1273,
+     -0.1758,
+     2.1443
+    ]
+   ],
+   "length_m": 0.3626791422092833
+  },
+  {
+   "chain": "SEC.mane.1",
+   "parent": "PRI.body.neck",
+   "vertices": 11037,
+   "joints_m": [
+    [
+     0.0077,
+     -0.6282,
+     1.8269
+    ],
+    [
+     -0.0063,
+     -0.6472,
+     1.8646
+    ],
+    [
+     -0.0601,
+     -0.6942,
+     1.9659
+    ],
+    [
+     0.0013,
+     -0.894,
+     2.0625
+    ]
+   ],
+   "length_m": 0.39873830881969974
+  },
+  {
+   "chain": "SEC.mane.2",
+   "parent": "PRI.body.head",
+   "vertices": 15544,
+   "joints_m": [
+    [
+     -0.1763,
+     -0.6578,
+     2.2253
+    ],
+    [
+     -0.1558,
+     -0.6562,
+     2.2471
+    ],
+    [
+     -0.1418,
+     -0.6562,
+     2.2303
+    ],
+    [
+     -0.1098,
+     -0.5868,
+     2.3745
+    ]
+   ],
+   "length_m": 0.2149829853294798
+  },
+  {
+   "chain": "SEC.mane.3",
+   "parent": "PRI.body.neck",
+   "vertices": 8005,
+   "joints_m": [
+    [
+     -0.1728,
+     -0.98,
+     1.6871
+    ],
+    [
+     -0.2547,
+     -0.9514,
+     1.7353
+    ],
+    [
+     -0.2523,
+     -0.8857,
+     1.8637
+    ],
+    [
+     -0.3091,
+     -0.8322,
+     2.0536
+    ]
+   ],
+   "length_m": 0.44880124410079125
+  },
+  {
+   "chain": "SEC.mane.4",
+   "parent": "PRI.body.head",
+   "vertices": 13393,
+   "joints_m": [
+    [
+     -0.1483,
+     -1.1094,
+     2.2985
+    ],
+    [
+     -0.1774,
+     -1.0399,
+     2.3046
+    ],
+    [
+     -0.1678,
+     -0.9477,
+     2.2649
+    ],
+    [
+     -0.1842,
+     -0.8236,
+     2.2979
+    ]
+   ],
+   "length_m": 0.3058755528125072
+  }
+ ],
+ "chain_bones": {
+  "SEC.tail.0": [
+   "SEC.tail.0.00",
+   "SEC.tail.0.01",
+   "SEC.tail.0.02",
+   "SEC.tail.0.03",
+   "SEC.tail.0.04",
+   "SEC.tail.0.05",
+   "SEC.tail.0.06",
+   "SEC.tail.0.07"
+  ],
+  "SEC.mane.0": [
+   "SEC.mane.0.00",
+   "SEC.mane.0.01",
+   "SEC.mane.0.02"
+  ],
+  "SEC.mane.1": [
+   "SEC.mane.1.00",
+   "SEC.mane.1.01",
+   "SEC.mane.1.02"
+  ],
+  "SEC.mane.2": [
+   "SEC.mane.2.00",
+   "SEC.mane.2.01",
+   "SEC.mane.2.02"
+  ],
+  "SEC.mane.3": [
+   "SEC.mane.3.00",
+   "SEC.mane.3.01",
+   "SEC.mane.3.02"
+  ],
+  "SEC.mane.4": [
+   "SEC.mane.4.00",
+   "SEC.mane.4.01",
+   "SEC.mane.4.02"
+  ]
+ },
+ "hair_vertices": 124896,
+ "rest_pose_max_error_m": 1.1920928955078125e-07,
+ "bones_total": 46,
+ "limitations": [
+  "Chains follow clustered strand masses, not individual strands.",
+  "Leg feathering stays on leg bones."
+ ]
+}

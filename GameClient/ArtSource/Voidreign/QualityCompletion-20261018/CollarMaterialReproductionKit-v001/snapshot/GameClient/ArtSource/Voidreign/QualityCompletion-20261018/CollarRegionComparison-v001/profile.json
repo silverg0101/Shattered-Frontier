@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "units": "metres",
+  "frame_start": 1,
+  "rest_selection": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/DegenerateInspection-v001/00-component-selections.npz",
+  "sources": [
+    {
+      "id": "walk-v001",
+      "source": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkPilot-v001/Mount-WalkPilot.blend",
+      "world_points": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkExchange-v001/expected-world-points.npy",
+      "producer_report": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkExchange-v001/exchange-report.json"
+    },
+    {
+      "id": "walk-v002",
+      "source": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkPilot-v002/Mount-WalkPilot.blend",
+      "world_points": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkExchange-v002/expected-world-points.npy",
+      "producer_report": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkExchange-v002/exchange-report.json"
+    },
+    {
+      "id": "walk-v003",
+      "source": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkPilot-v003/Mount-WalkPilot.blend",
+      "world_points": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkExchange-v003/expected-world-points.npy",
+      "producer_report": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkExchange-v003/exchange-report.json"
+    }
+  ],
+  "edges": [
+    {
+      "id": "sole-cutoff",
+      "vertices": [
+        95856,
+        95857
+      ]
+    },
+    {
+      "id": "root-left",
+      "vertices": [
+        79011,
+        79021
+      ]
+    },
+    {
+      "id": "root-right",
+      "vertices": [
+        22108,
+        22111
+      ]
+    }
+  ],
+  "input_sha256": {
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/DegenerateInspection-v001/00-component-selections.npz": "0d7599c8064cb81a6e211a23731435e08939b7fb146ce2d4bed810273909a2b2",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkPilot-v001/Mount-WalkPilot.blend": "fe004dd3c6357d9b818729e9d5d89060adb7be0eca6d930d7cc7a91369cd5456",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkExchange-v001/expected-world-points.npy": "8a2cd02f5239197cd0086f92f70c467ec1e714aeb4c0b06d223a3eb507b99a3c",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkExchange-v001/exchange-report.json": "04792d6efd7282d12e90a3364e49074dec88b79494bf41085bafca6c91a834f7",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkPilot-v002/Mount-WalkPilot.blend": "d175746ff5d44a6b8d05151200f67e1efee2798c506029991091ca379f771c35",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkExchange-v002/expected-world-points.npy": "9a6b985acf9c2bdba208d71e8e0dd9e734242ea837cd283359ecbec531ac8adf",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkExchange-v002/exchange-report.json": "eb42c4d1ab72dedb9514001f859332a83e35fd6706baa4a51352eebcc44e4fa1",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkPilot-v003/Mount-WalkPilot.blend": "f59dc38bff697b6c2a2c84511413d2e292d9fdbb278acc69cd8df6d26a5bd123",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkExchange-v003/expected-world-points.npy": "129aeeecb7a871b1ef8ef65a7e1ae6230954a0f018f76545887b1e6b700ddd3e",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkExchange-v003/exchange-report.json": "c1a9a0d8a316834c8b572b929de2d33cb69abe34555e7f29a920c09185c23bcb",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkRetention-v003/changed-weight-vertices.npz": "3ce5c1c95f6c1945c3112e55ce2c1ecf97221a2966da88ee0687925ccb0d37e0",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkRetention-v003/validation.json": "0630516734df3c1bb11f95ae92056e353dda46c4f4328c4574e32a2e1a451e49"
+  },
+  "changed_weight_region": {
+    "selection": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkRetention-v003/changed-weight-vertices.npz",
+    "key": "indices",
+    "retention_report": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkRetention-v003/validation.json"
+  }
+}

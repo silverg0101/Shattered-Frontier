@@ -1,0 +1,17 @@
+{
+  "status": "targeted-geometry-hygiene-candidate; fresh comparison/import review required",
+  "source": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\OppositeDetail-v001\\Voidreign-CompleteHair.blend",
+  "source_sha256": "59e4ee6e26f46924e0ada91adda0345e7e8eb12e0fe3ddc43ad870dc68bbce3a",
+  "source_mesh_hash": "f580ad6893e552958d7c1320958834ad3c7a139f941b9016c510dfd4d6a3e794",
+  "profile_sha256": "934b3a980dc47f584d4ce7c8fb7452fcdc0de33ea77445f00b20ff21b92f5934",
+  "removed_triangles": 6,
+  "removed_vertices": 10,
+  "retained_vertices": 284762,
+  "retained_triangles": 297119,
+  "retained_geometry_uv_material_colors_weights_exact": true,
+  "maximum_retained_corner_normal_delta": 0.0,
+  "cpu_only": true,
+  "removed_faces_collapsed_frames": 330,
+  "maximum_removed_posed_area_m2": 0.0,
+  "scope": "Exact-zero-area faces and resulting unused elements only. Duplicate/hidden shells retained. Rig/root repair budgets and inherited failures unchanged."
+}

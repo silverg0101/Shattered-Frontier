@@ -1,0 +1,73 @@
+{
+  "status": "local-fixed-rest-cloth-proof-needs-review",
+  "source": "Actual-FringeSecondary.blend",
+  "source_sha256": "f3b235e8ae2cfd01781abfeac65b0083c2cd2156c16f9937172377d38940c70a",
+  "images": [
+    {
+      "frame": 1,
+      "scene_frame": 31,
+      "image": "frames/0001.png"
+    },
+    {
+      "frame": 7,
+      "scene_frame": 37,
+      "image": "frames/0007.png"
+    },
+    {
+      "frame": 13,
+      "scene_frame": 43,
+      "image": "frames/0013.png"
+    },
+    {
+      "frame": 19,
+      "scene_frame": 49,
+      "image": "frames/0019.png"
+    },
+    {
+      "frame": 25,
+      "scene_frame": 55,
+      "image": "frames/0025.png"
+    },
+    {
+      "frame": 31,
+      "scene_frame": 61,
+      "image": "frames/0031.png"
+    },
+    {
+      "frame": 37,
+      "scene_frame": 67,
+      "image": "frames/0037.png"
+    },
+    {
+      "frame": 43,
+      "scene_frame": 73,
+      "image": "frames/0043.png"
+    },
+    {
+      "frame": 49,
+      "scene_frame": 79,
+      "image": "frames/0049.png"
+    },
+    {
+      "frame": 55,
+      "scene_frame": 85,
+      "image": "frames/0055.png"
+    },
+    {
+      "frame": 61,
+      "scene_frame": 91,
+      "image": "frames/0061.png"
+    },
+    {
+      "frame": 67,
+      "scene_frame": 97,
+      "image": "frames/0067.png"
+    },
+    {
+      "frame": 73,
+      "scene_frame": 103,
+      "image": "frames/0073.png"
+    }
+  ],
+  "scope": "LOCAL SECONDARY PROOF ONLY"
+}

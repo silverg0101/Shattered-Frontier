@@ -1,0 +1,53 @@
+{
+  "status": "passed",
+  "fresh_process": true,
+  "variants": [
+    {
+      "collection": "A | Pixal-2K-controlled-bake",
+      "triangles": 296859,
+      "max_nearest_vertex_error_m": 0.0,
+      "material_images": [
+        [
+          2048,
+          2048
+        ],
+        [
+          2048,
+          2048
+        ]
+      ]
+    },
+    {
+      "collection": "B | Pixal-4096",
+      "triangles": 296859,
+      "max_nearest_vertex_error_m": 3.3717478231665154e-07,
+      "material_images": [
+        [
+          4096,
+          4096
+        ],
+        [
+          4096,
+          4096
+        ]
+      ]
+    },
+    {
+      "collection": "C | Pixal-4096-HeadSaddle",
+      "triangles": 296859,
+      "max_nearest_vertex_error_m": 3.3717478231665154e-07,
+      "material_images": [
+        [
+          4096,
+          4096
+        ],
+        [
+          4096,
+          4096
+        ]
+      ]
+    }
+  ],
+  "images_packed": true,
+  "initial_visible": "C | Pixal-4096-HeadSaddle"
+}

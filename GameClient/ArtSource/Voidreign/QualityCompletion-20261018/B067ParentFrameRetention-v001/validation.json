@@ -1,0 +1,627 @@
+{
+  "status": "passed-indexed-rest-retention-only",
+  "cpu_only": true,
+  "source": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateCleanup-v001\\Voidreign-CompleteHair.blend",
+  "source_sha256": "6c6044a533c16fc7fad23d42c0407dde37a0252aca84f9be1bc9b9a2367364f6",
+  "candidate": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\B067ParentFrameCache-v001\\Voidreign-ActualSurfacePilot.blend",
+  "candidate_sha256": "0541b577a6bb6326ecf5467b2fdfce4466e2e87ec535b0cda93abaddf3ccff35",
+  "tool_sha256": "bd64817e6a7d0b5c8796f523812fcb1a9cce4899cd9b9fc7769d91107126234a",
+  "object": "geometry_0",
+  "checks": {
+    "positions": true,
+    "faces": true,
+    "edges": true,
+    "loop_vertices": true,
+    "uv": true,
+    "colors": true,
+    "face_materials": true,
+    "smooth_flags": true,
+    "custom_normals": true,
+    "corner_normals": true,
+    "active_uv": true,
+    "material_signature": true,
+    "images": true
+  },
+  "before": {
+    "positions": {
+      "shape": [
+        284762,
+        3
+      ],
+      "dtype": "float32",
+      "sha256": "5da28deb1d9173281602dd3b42786b48c2e2b76d58c80981a9e74ca4a2dc117c"
+    },
+    "faces": {
+      "shape": [
+        297119,
+        3
+      ],
+      "dtype": "int32",
+      "sha256": "08edaa8886b4873b8be5f1c2ad9301860dc9d0c4896123d57995799778430126"
+    },
+    "edges": {
+      "shape": [
+        560733,
+        2
+      ],
+      "dtype": "int32",
+      "sha256": "887c30bdecc221e582f13743559ade80e54029b52ac3bfbc7407330906a56e37"
+    },
+    "loop_vertices": {
+      "shape": [
+        891357
+      ],
+      "dtype": "int32",
+      "sha256": "08edaa8886b4873b8be5f1c2ad9301860dc9d0c4896123d57995799778430126"
+    },
+    "uv": {
+      "UVMap": {
+        "shape": [
+          891357,
+          2
+        ],
+        "dtype": "float32",
+        "sha256": "24efc381141b2d5d1225f42d297187e6e66d96ef8fb47b7b4e8048f357b17214"
+      }
+    },
+    "colors": {
+      "Head projection weight": {
+        "domain": "POINT",
+        "data_type": "FLOAT_COLOR",
+        "data": {
+          "shape": [
+            284762,
+            4
+          ],
+          "dtype": "float32",
+          "sha256": "ff14284b97502006c46ff84d9103078e709ac4b139e262035dd4f90c6f1817e2"
+        }
+      },
+      "Saddle projection weight": {
+        "domain": "POINT",
+        "data_type": "FLOAT_COLOR",
+        "data": {
+          "shape": [
+            284762,
+            4
+          ],
+          "dtype": "float32",
+          "sha256": "84a7818d22ed889bd8db19cbc97012263cdf0bcc528d980089bbb98df897f5e2"
+        }
+      },
+      "Semantic | Mane": {
+        "domain": "POINT",
+        "data_type": "FLOAT_COLOR",
+        "data": {
+          "shape": [
+            284762,
+            4
+          ],
+          "dtype": "float32",
+          "sha256": "98a8113f988c197cb4083a86da02b95d806f41a0811a1ce16d140b84108ec7c4"
+        }
+      },
+      "Motion | Mane": {
+        "domain": "POINT",
+        "data_type": "FLOAT_COLOR",
+        "data": {
+          "shape": [
+            284762,
+            4
+          ],
+          "dtype": "float32",
+          "sha256": "113a0d8ee648ed280a78b8c4a5dd30dcb390bdfd8b76ab016865b6288b69542e"
+        }
+      },
+      "Semantic | Tail": {
+        "domain": "POINT",
+        "data_type": "FLOAT_COLOR",
+        "data": {
+          "shape": [
+            284762,
+            4
+          ],
+          "dtype": "float32",
+          "sha256": "2fc2010bcfc89f4d5e973f211c1efeae09b8184f10e7737dfcb6a03887f0f1c2"
+        }
+      },
+      "Motion | Tail": {
+        "domain": "POINT",
+        "data_type": "FLOAT_COLOR",
+        "data": {
+          "shape": [
+            284762,
+            4
+          ],
+          "dtype": "float32",
+          "sha256": "74d2b0baa53beba3fa17996b8b28ab4b474cdd87cf03d82b6930c7e9df120e24"
+        }
+      },
+      "Head-NegX projection weight": {
+        "domain": "POINT",
+        "data_type": "FLOAT_COLOR",
+        "data": {
+          "shape": [
+            284762,
+            4
+          ],
+          "dtype": "float32",
+          "sha256": "0222a12190c279fc97ef7a79f313a5878cbe6370da783696673ebbfc16f82997"
+        }
+      },
+      "Saddle-NegX projection weight": {
+        "domain": "POINT",
+        "data_type": "FLOAT_COLOR",
+        "data": {
+          "shape": [
+            284762,
+            4
+          ],
+          "dtype": "float32",
+          "sha256": "0bfbab581f0d56a98a54e3c68b5da3f1333d4a1d0ec29b0f55833b9df48f7788"
+        }
+      }
+    },
+    "face_materials": {
+      "shape": [
+        297119
+      ],
+      "dtype": "int32",
+      "sha256": "991522f3d1c7039610ae6b65aa647cc9d3be5914b78bd444c67acdfbf528558e"
+    },
+    "smooth_flags": {
+      "shape": [
+        297119
+      ],
+      "dtype": "bool",
+      "sha256": "f25a00de09a89fdc92689f9be4eafb987a0bb70e27ed09b2097f10febfec1662"
+    },
+    "custom_normals": false,
+    "corner_normals": {
+      "shape": [
+        891357,
+        3
+      ],
+      "dtype": "float32",
+      "sha256": "5d3a267ff9212606e3edc902fda253865cda4ba3a2a37206792c6a6d2665717b"
+    },
+    "active_uv": "UVMap",
+    "material_signature": "063d2268bdfbe592f188aa1977f52641ed94423ac5e301223926015e96fe05a2",
+    "images": {
+      "Image_0": {
+        "size": [
+          4096,
+          4096
+        ],
+        "source": "FILE",
+        "colorspace": "sRGB",
+        "alpha_mode": "CHANNEL_PACKED",
+        "pixels": {
+          "shape": [
+            67108864
+          ],
+          "dtype": "float32",
+          "sha256": "370b928da11c2ba324697a5930d4f04e5e859a6ec936f8b4248f18e384d3cbe6"
+        }
+      },
+      "Image_1": {
+        "size": [
+          4096,
+          4096
+        ],
+        "source": "FILE",
+        "colorspace": "Non-Color",
+        "alpha_mode": "CHANNEL_PACKED",
+        "pixels": {
+          "shape": [
+            67108864
+          ],
+          "dtype": "float32",
+          "sha256": "16eef1a00ac53edfc8d4e56b89e2295ec959d5aea1eb159c3271d4c68abcafd9"
+        }
+      },
+      "Head-Edited.png": {
+        "size": [
+          1254,
+          1254
+        ],
+        "source": "FILE",
+        "colorspace": "sRGB",
+        "alpha_mode": "STRAIGHT",
+        "pixels": {
+          "shape": [
+            6290064
+          ],
+          "dtype": "float32",
+          "sha256": "3589040fad565fce79ed8394fe259f2e308a035d89bfd388d8e66fcb30f02f89"
+        }
+      },
+      "Saddle-Edited.png": {
+        "size": [
+          1254,
+          1254
+        ],
+        "source": "FILE",
+        "colorspace": "sRGB",
+        "alpha_mode": "STRAIGHT",
+        "pixels": {
+          "shape": [
+            6290064
+          ],
+          "dtype": "float32",
+          "sha256": "3e3fa1cdd9c30154c7cca4bfba2cac7138afd99c0a75ccafac575991d9c3a16e"
+        }
+      },
+      "Voidreign-HeadSaddle-BaseColor-4K": {
+        "size": [
+          4096,
+          4096
+        ],
+        "source": "FILE",
+        "colorspace": "sRGB",
+        "alpha_mode": "STRAIGHT",
+        "pixels": {
+          "shape": [
+            67108864
+          ],
+          "dtype": "float32",
+          "sha256": "0f95a49310d6aa8873b0210d90e950269839b87310fbd6ed2ff8a207ce497513"
+        }
+      },
+      "Head-NegX.png": {
+        "size": [
+          1254,
+          1254
+        ],
+        "source": "FILE",
+        "colorspace": "sRGB",
+        "alpha_mode": "STRAIGHT",
+        "pixels": {
+          "shape": [
+            6290064
+          ],
+          "dtype": "float32",
+          "sha256": "5f73db08f59852f5df16f2d15a02d0522ed7d6a1fe4324c7e34bd8f929142c06"
+        }
+      },
+      "Saddle-NegX.png": {
+        "size": [
+          1254,
+          1254
+        ],
+        "source": "FILE",
+        "colorspace": "sRGB",
+        "alpha_mode": "STRAIGHT",
+        "pixels": {
+          "shape": [
+            6290064
+          ],
+          "dtype": "float32",
+          "sha256": "349585af7cb877ccb850f6dcc7abbe0f2b6490b2d173ab7c1e4ceb26ca2e86a6"
+        }
+      },
+      "Voidreign-Opposite-Detail-BaseColor-4K": {
+        "size": [
+          4096,
+          4096
+        ],
+        "source": "FILE",
+        "colorspace": "sRGB",
+        "alpha_mode": "STRAIGHT",
+        "pixels": {
+          "shape": [
+            67108864
+          ],
+          "dtype": "float32",
+          "sha256": "6181c759072d96ed3e2ce232af74d4c38e9379d74eba125ab81e75a6745a767a"
+        }
+      }
+    }
+  },
+  "after": {
+    "positions": {
+      "shape": [
+        284762,
+        3
+      ],
+      "dtype": "float32",
+      "sha256": "5da28deb1d9173281602dd3b42786b48c2e2b76d58c80981a9e74ca4a2dc117c"
+    },
+    "faces": {
+      "shape": [
+        297119,
+        3
+      ],
+      "dtype": "int32",
+      "sha256": "08edaa8886b4873b8be5f1c2ad9301860dc9d0c4896123d57995799778430126"
+    },
+    "edges": {
+      "shape": [
+        560733,
+        2
+      ],
+      "dtype": "int32",
+      "sha256": "887c30bdecc221e582f13743559ade80e54029b52ac3bfbc7407330906a56e37"
+    },
+    "loop_vertices": {
+      "shape": [
+        891357
+      ],
+      "dtype": "int32",
+      "sha256": "08edaa8886b4873b8be5f1c2ad9301860dc9d0c4896123d57995799778430126"
+    },
+    "uv": {
+      "UVMap": {
+        "shape": [
+          891357,
+          2
+        ],
+        "dtype": "float32",
+        "sha256": "24efc381141b2d5d1225f42d297187e6e66d96ef8fb47b7b4e8048f357b17214"
+      }
+    },
+    "colors": {
+      "Head projection weight": {
+        "domain": "POINT",
+        "data_type": "FLOAT_COLOR",
+        "data": {
+          "shape": [
+            284762,
+            4
+          ],
+          "dtype": "float32",
+          "sha256": "ff14284b97502006c46ff84d9103078e709ac4b139e262035dd4f90c6f1817e2"
+        }
+      },
+      "Saddle projection weight": {
+        "domain": "POINT",
+        "data_type": "FLOAT_COLOR",
+        "data": {
+          "shape": [
+            284762,
+            4
+          ],
+          "dtype": "float32",
+          "sha256": "84a7818d22ed889bd8db19cbc97012263cdf0bcc528d980089bbb98df897f5e2"
+        }
+      },
+      "Head-NegX projection weight": {
+        "domain": "POINT",
+        "data_type": "FLOAT_COLOR",
+        "data": {
+          "shape": [
+            284762,
+            4
+          ],
+          "dtype": "float32",
+          "sha256": "0222a12190c279fc97ef7a79f313a5878cbe6370da783696673ebbfc16f82997"
+        }
+      },
+      "Saddle-NegX projection weight": {
+        "domain": "POINT",
+        "data_type": "FLOAT_COLOR",
+        "data": {
+          "shape": [
+            284762,
+            4
+          ],
+          "dtype": "float32",
+          "sha256": "0bfbab581f0d56a98a54e3c68b5da3f1333d4a1d0ec29b0f55833b9df48f7788"
+        }
+      },
+      "Semantic | Mane": {
+        "domain": "POINT",
+        "data_type": "FLOAT_COLOR",
+        "data": {
+          "shape": [
+            284762,
+            4
+          ],
+          "dtype": "float32",
+          "sha256": "98a8113f988c197cb4083a86da02b95d806f41a0811a1ce16d140b84108ec7c4"
+        }
+      },
+      "Motion | Mane": {
+        "domain": "POINT",
+        "data_type": "FLOAT_COLOR",
+        "data": {
+          "shape": [
+            284762,
+            4
+          ],
+          "dtype": "float32",
+          "sha256": "113a0d8ee648ed280a78b8c4a5dd30dcb390bdfd8b76ab016865b6288b69542e"
+        }
+      },
+      "Semantic | Tail": {
+        "domain": "POINT",
+        "data_type": "FLOAT_COLOR",
+        "data": {
+          "shape": [
+            284762,
+            4
+          ],
+          "dtype": "float32",
+          "sha256": "2fc2010bcfc89f4d5e973f211c1efeae09b8184f10e7737dfcb6a03887f0f1c2"
+        }
+      },
+      "Motion | Tail": {
+        "domain": "POINT",
+        "data_type": "FLOAT_COLOR",
+        "data": {
+          "shape": [
+            284762,
+            4
+          ],
+          "dtype": "float32",
+          "sha256": "74d2b0baa53beba3fa17996b8b28ab4b474cdd87cf03d82b6930c7e9df120e24"
+        }
+      }
+    },
+    "face_materials": {
+      "shape": [
+        297119
+      ],
+      "dtype": "int32",
+      "sha256": "991522f3d1c7039610ae6b65aa647cc9d3be5914b78bd444c67acdfbf528558e"
+    },
+    "smooth_flags": {
+      "shape": [
+        297119
+      ],
+      "dtype": "bool",
+      "sha256": "f25a00de09a89fdc92689f9be4eafb987a0bb70e27ed09b2097f10febfec1662"
+    },
+    "custom_normals": false,
+    "corner_normals": {
+      "shape": [
+        891357,
+        3
+      ],
+      "dtype": "float32",
+      "sha256": "5d3a267ff9212606e3edc902fda253865cda4ba3a2a37206792c6a6d2665717b"
+    },
+    "active_uv": "UVMap",
+    "material_signature": "063d2268bdfbe592f188aa1977f52641ed94423ac5e301223926015e96fe05a2",
+    "images": {
+      "Image_0": {
+        "size": [
+          4096,
+          4096
+        ],
+        "source": "FILE",
+        "colorspace": "sRGB",
+        "alpha_mode": "CHANNEL_PACKED",
+        "pixels": {
+          "shape": [
+            67108864
+          ],
+          "dtype": "float32",
+          "sha256": "370b928da11c2ba324697a5930d4f04e5e859a6ec936f8b4248f18e384d3cbe6"
+        }
+      },
+      "Image_1": {
+        "size": [
+          4096,
+          4096
+        ],
+        "source": "FILE",
+        "colorspace": "Non-Color",
+        "alpha_mode": "CHANNEL_PACKED",
+        "pixels": {
+          "shape": [
+            67108864
+          ],
+          "dtype": "float32",
+          "sha256": "16eef1a00ac53edfc8d4e56b89e2295ec959d5aea1eb159c3271d4c68abcafd9"
+        }
+      },
+      "Head-Edited.png": {
+        "size": [
+          1254,
+          1254
+        ],
+        "source": "FILE",
+        "colorspace": "sRGB",
+        "alpha_mode": "STRAIGHT",
+        "pixels": {
+          "shape": [
+            6290064
+          ],
+          "dtype": "float32",
+          "sha256": "3589040fad565fce79ed8394fe259f2e308a035d89bfd388d8e66fcb30f02f89"
+        }
+      },
+      "Saddle-Edited.png": {
+        "size": [
+          1254,
+          1254
+        ],
+        "source": "FILE",
+        "colorspace": "sRGB",
+        "alpha_mode": "STRAIGHT",
+        "pixels": {
+          "shape": [
+            6290064
+          ],
+          "dtype": "float32",
+          "sha256": "3e3fa1cdd9c30154c7cca4bfba2cac7138afd99c0a75ccafac575991d9c3a16e"
+        }
+      },
+      "Voidreign-HeadSaddle-BaseColor-4K": {
+        "size": [
+          4096,
+          4096
+        ],
+        "source": "FILE",
+        "colorspace": "sRGB",
+        "alpha_mode": "STRAIGHT",
+        "pixels": {
+          "shape": [
+            67108864
+          ],
+          "dtype": "float32",
+          "sha256": "0f95a49310d6aa8873b0210d90e950269839b87310fbd6ed2ff8a207ce497513"
+        }
+      },
+      "Head-NegX.png": {
+        "size": [
+          1254,
+          1254
+        ],
+        "source": "FILE",
+        "colorspace": "sRGB",
+        "alpha_mode": "STRAIGHT",
+        "pixels": {
+          "shape": [
+            6290064
+          ],
+          "dtype": "float32",
+          "sha256": "5f73db08f59852f5df16f2d15a02d0522ed7d6a1fe4324c7e34bd8f929142c06"
+        }
+      },
+      "Saddle-NegX.png": {
+        "size": [
+          1254,
+          1254
+        ],
+        "source": "FILE",
+        "colorspace": "sRGB",
+        "alpha_mode": "STRAIGHT",
+        "pixels": {
+          "shape": [
+            6290064
+          ],
+          "dtype": "float32",
+          "sha256": "349585af7cb877ccb850f6dcc7abbe0f2b6490b2d173ab7c1e4ceb26ca2e86a6"
+        }
+      },
+      "Voidreign-Opposite-Detail-BaseColor-4K": {
+        "size": [
+          4096,
+          4096
+        ],
+        "source": "FILE",
+        "colorspace": "sRGB",
+        "alpha_mode": "STRAIGHT",
+        "pixels": {
+          "shape": [
+            67108864
+          ],
+          "dtype": "float32",
+          "sha256": "6181c759072d96ed3e2ce232af74d4c38e9379d74eba125ab81e75a6745a767a"
+        }
+      }
+    }
+  },
+  "changed_weight_vertex_count": 0,
+  "maximum_named_weight_delta": 0.0,
+  "bind_data_exact": true,
+  "source_bind_signature": "02c9718529d490463c58ed3279275d457f259bb59ff0e4277ef0a1bdc06d18b8",
+  "candidate_bind_signature": "02c9718529d490463c58ed3279275d457f259bb59ff0e4277ef0a1bdc06d18b8",
+  "limitations": [
+    "Indexed rest data only; no posed-surface, semantic or delivery acceptance.",
+    "Weights and binds are reported, not assumed unchanged or automatically accepted.",
+    "Material signature covers listed common node properties, inputs and links; not arbitrary nested groups, drivers or all shader properties."
+  ]
+}

@@ -1,0 +1,97 @@
+{
+  "asset_id": "BLD-WT-RectOpeningJamb-01",
+  "version": "v001",
+  "batch": "construction-worked-timber-openings-36",
+  "current_status": "blocked before image selection; proposed surface treatment only",
+  "source_references": [
+    "docs/art-templates/player-construction-kit-contract.md, buildability route and opening targets",
+    "docs/art-templates/asset-lists/construction-kit-matrix-07.md, RectOpening roles",
+    "docs/decisions/BLD-01-voxel-geometry-interface.md"
+  ],
+  "intended_route": "proposed exposed-surface treatment on a future approved rectangular-opening carrier; not a structural solid, assembly or attachment",
+  "frame": {
+    "units": "metres",
+    "grid_m": 0.5,
+    "axes": "BLD-01 X/Y/Z required; aperture axis assignment unresolved",
+    "origin": "minimum-grid-corner frame when an approved carrier is identified",
+    "pivot": "inherited from future carrier; no independent pivot",
+    "rotations": "inherit only the future carrier's approved allowlist",
+    "dimensions": "unresolved; none inferred from images"
+  },
+  "interface": {
+    "member_boundary": "one surface treatment on a named aperture patch; patch owner not yet approved",
+    "exposed_faces": "interior/exterior aperture reveal and applicable jamb, head or base patch; exact contours unresolved",
+    "mating_faces": "exact contact planes and contours unresolved",
+    "named_counterparts": "BLD-WT-RectOpeningJamb-01, BLD-WT-RectOpeningLintel-01, BLD-WT-RectOpeningSill-01, BLD-WT-RectOpeningThreshold-01; host aperture and door/window frame roles are unapproved",
+    "repeat_scale_phase": "unresolved"
+  },
+  "required_selected_outputs": [
+    "concept-sheet.png",
+    "asset-view.png"
+  ],
+  "selected_image_count": 0,
+  "additional_images": 0,
+  "exact_prompts": "Unavailable in the saved package/repository record for these prior calls; not reconstructed. Recovery is a provenance blocker.",
+  "attempts": [
+    {
+      "source_file": "exec-cb6ddf1f-892f-4935-a835-e2c313b16435.png",
+      "package_file": "provenance/exec-cb6ddf1f-892f-4935-a835-e2c313b16435.png",
+      "original_cache_path": "C:\\Users\\grego\\.codex\\generated_images\\01a15000-e13f-7213-9ec0-df2684201405\\exec-cb6ddf1f-892f-4935-a835-e2c313b16435.png",
+      "selected": false,
+      "sha256": "735fa5694f6b1a30ccea11eaa533437041867aca3d592d10a76e58f73bc492a2",
+      "metadata": {
+        "format": "PNG",
+        "width_px": 1536,
+        "height_px": 1024,
+        "bit_depth": 8,
+        "color_type": 2,
+        "mode": "RGB"
+      },
+      "reason": "Buildability gate failed; retained as appearance evidence outside selected-deliverable count."
+    },
+    {
+      "source_file": "exec-1e0ba0d6-7f31-4fdf-9cc0-b3b7106ec8c0.png",
+      "package_file": "provenance/exec-1e0ba0d6-7f31-4fdf-9cc0-b3b7106ec8c0.png",
+      "original_cache_path": "C:\\Users\\grego\\.codex\\generated_images\\01a15000-e13f-7213-9ec0-df2684201405\\exec-1e0ba0d6-7f31-4fdf-9cc0-b3b7106ec8c0.png",
+      "selected": false,
+      "sha256": "daadd36eb1b60ec6aa99162d28be36ef1b409ad9f627916ea9c01d028d1b8350",
+      "metadata": {
+        "format": "PNG",
+        "width_px": 1312,
+        "height_px": 1199,
+        "bit_depth": 8,
+        "color_type": 2,
+        "mode": "RGB"
+      },
+      "reason": "Buildability gate failed; retained as appearance evidence outside selected-deliverable count."
+    },
+    {
+      "source_file": "exec-4e490591-798f-4a79-906d-f692fb870549.png",
+      "package_file": "provenance/exec-4e490591-798f-4a79-906d-f692fb870549.png",
+      "original_cache_path": "C:\\Users\\grego\\.codex\\generated_images\\01a15000-e13f-7213-9ec0-df2684201405\\exec-4e490591-798f-4a79-906d-f692fb870549.png",
+      "selected": false,
+      "sha256": "69e3cfe96031061931b82330a4865464cfbe1afd6a5749a48e1f3e3e914516c8",
+      "metadata": {
+        "format": "PNG",
+        "width_px": 1024,
+        "height_px": 1536,
+        "bit_depth": 8,
+        "color_type": 2,
+        "mode": "RGB"
+      },
+      "reason": "Buildability gate failed; retained as appearance evidence outside selected-deliverable count."
+    }
+  ],
+  "visual_review": {
+    "reviewed_date": "2026-10-18",
+    "finding": "Concept depicts the whole opening/wall; first clean attempt includes a head member and is rejected; corrected pair of posts has no scale or approved host contour. Appearance evidence only."
+  },
+  "compatibility": "No numerical mesh, collision, clearance, GEO-01 or GEO-02 acceptance is established by these images.",
+  "blockers": [
+    "No approved rectangular aperture geometry, dimensions or exposed-patch mapping.",
+    "No approved contact contours for host, frame, sill, threshold, lintel or jamb seams.",
+    "No approved GEO-01 manifest/hash and no applicable GEO-02 opening/repeat/rotation evidence.",
+    "Exact prompts for previous cached attempts are not recorded in the saved repository package."
+  ],
+  "created_utc": "2026-10-18"
+}

@@ -1,0 +1,65 @@
+{
+  "assetId": "BLD-SM-RectDoorInterface-01",
+  "version": "v001",
+  "category": "construction kit / rectangular door or window interface",
+  "created": "2026-10-18",
+  "sourceReferences": [
+    "docs/art-templates/player-construction-kit-contract.md \u2014 Openings; canonical frame; required kit QA",
+    "docs/Game-Design/Legends_Shattered_Frontier_Construction_System_Architecture_v0.1.md \u2014 \u00a7\u00a73.1\u20133.2, 8\u20139",
+    "GameClient/ArtSource/BLD-SM-CellFull-01/References/v001/asset-view.png \u2014 material cue"
+  ],
+  "definition": {
+    "geometryRef": "rect-opening/v1 (proposal)",
+    "envelopeMeters": "per contract; not inferred",
+    "contacts": [
+      "wall face",
+      "aperture reveal/interface surface"
+    ],
+    "opening": "preserve exact contract aperture subtraction and functional clearances",
+    "materialKit": "KIT-SM",
+    "structuralMaterialProfile": "Stone masonry",
+    "cosmeticSkin": "appearance only",
+    "functionalDefinition": "none; door/window systems separate"
+  },
+  "generation": {
+    "tool": "built-in image_gen",
+    "date": "2026-10-18",
+    "model": "unavailable",
+    "seed": "unavailable",
+    "promptRecord": "prompt.txt",
+    "referenceImagesAttached": []
+  },
+  "images": [
+    {
+      "path": "concept-sheet.png",
+      "sha256": "438080b6cb2213f4825f8f752140e9a4bcd5d96217e0686f1deb02eeef5333c5",
+      "width": 1536,
+      "height": 1024,
+      "pixelFormat": "RGB 24-bit",
+      "alpha": false,
+      "review": "Door opening outline and reveal readable; aperture/frame dimensions and clearances unverified."
+    },
+    {
+      "path": "asset-view.png",
+      "sha256": "c45a55390f389ad3e04929dd797c91de9815ef152f35290c913887d079391761",
+      "width": 1024,
+      "height": 1536,
+      "pixelFormat": "RGB 24-bit",
+      "alpha": false,
+      "review": "Door opening outline and reveal readable; aperture/frame dimensions and clearances unverified."
+    }
+  ],
+  "review": {
+    "reviewedBy": "Codex",
+    "conceptStatus": "proposed",
+    "cleanViewStatus": "ready-for-model-test",
+    "imageStatus": "image-complete",
+    "geometryAcceptance": "not established",
+    "numericalMeshFit": "not established",
+    "runtimeCollisionSupportClearance": "not established",
+    "actionableFindings": [
+      "Door opening outline and reveal readable; aperture/frame dimensions and clearances unverified."
+    ]
+  },
+  "componentBoundary": "One separately indexed interface member/style appearance role; assembly image does not count as full frame or functional door/window. No geometry/runtime acceptance implied."
+}

@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "units": "metres-seconds-radians",
+  "permissions": "First procedural slow-walk diagnostic; parent rig remains needs-review; known secondary ground defects retained",
+  "effective_time": "This immutable gait pilot only",
+  "source": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryCollarJunction-v001/Mount-StandingSkinRepair.blend",
+  "semantic_selection": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selections.npz",
+  "sole_patches": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimarySoleProposals-v001\\sole-patches.npz",
+  "source_contact_report": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryCollarJunctionCacheCheck-v001/standing-cache-report.json",
+  "source_solver_report": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryCollarJunction-v001/weight-repair-report.json",
+  "object": "geometry_0",
+  "rig_object": "PRIMARY | anatomical rig pilot",
+  "body_root_bone": "PRI.body.pelvis",
+  "source_standing_frame": 30,
+  "assembly_base_z_m": -0.11,
+  "cycles": 2,
+  "frames_per_cycle": 36,
+  "fps": 30,
+  "stride_m": 0.45,
+  "stance_fraction": 0.65,
+  "lift_m": 0.1,
+  "body_bob_m": 0.006,
+  "swing_pitch_radians": -0.25,
+  "ground_height_m": 0.0,
+  "ground_size_m": 8.0,
+  "render_samples": 8,
+  "render_frames": [
+    10
+  ],
+  "limits": {
+    "contact_m": 0.005,
+    "slip_m": 0.001,
+    "penetration_m": 0.005,
+    "target_error_m": 0.005,
+    "bone_length_relative": 1e-05,
+    "seam_m": 1e-05,
+    "loop_m": 0.001
+  },
+  "feet": [
+    {
+      "id": "fore.L",
+      "chain": [
+        "PRI.fore.L.shoulder",
+        "PRI.fore.L.elbow",
+        "PRI.fore.L.carpus",
+        "PRI.fore.L.fetlock"
+      ],
+      "phase_offset": 0.75,
+      "nominal_ankle_y_m": -0.53
+    },
+    {
+      "id": "fore.R",
+      "chain": [
+        "PRI.fore.R.shoulder",
+        "PRI.fore.R.elbow",
+        "PRI.fore.R.carpus",
+        "PRI.fore.R.fetlock"
+      ],
+      "phase_offset": 0.25,
+      "nominal_ankle_y_m": -0.6
+    },
+    {
+      "id": "hind.L",
+      "chain": [
+        "PRI.hind.L.hip",
+        "PRI.hind.L.stifle",
+        "PRI.hind.L.hock",
+        "PRI.hind.L.fetlock"
+      ],
+      "phase_offset": 0.0,
+      "nominal_ankle_y_m": 0.66
+    },
+    {
+      "id": "hind.R",
+      "chain": [
+        "PRI.hind.R.hip",
+        "PRI.hind.R.stifle",
+        "PRI.hind.R.hock",
+        "PRI.hind.R.fetlock"
+      ],
+      "phase_offset": 0.5,
+      "nominal_ankle_y_m": 0.58
+    }
+  ],
+  "gait_reference": "https://horses.extension.org/horse-walk/",
+  "provenance": "Authored kinematic prototype; reference informs footfall order only, not stride dimensions or captured motion.",
+  "input_sha256": {
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryCollarJunction-v001/Mount-StandingSkinRepair.blend": "0ad9422d5b28cbd74f65983efba4c08f90855014e3b101d464a1fd28f58340b3",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryCollarJunctionCacheCheck-v001/standing-cache-report.json": "7bbcba87b0e9b4b747937184028429d7f779a9f5e36c622033d06cf5ea0eef70",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryCollarJunction-v001/weight-repair-report.json": "a7ef44ca6722c8100f94f49f330b8b4045de2774181b3d5b72e904932f16eb8b",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selections.npz": "0b6a19f76a2cba73a42e293c29365360b53ba93be101cf8f4ca556e7a5989cc0",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimarySoleProposals-v001\\sole-patches.npz": "5b055301ae1b1349d3f85fb23e2b93985fd93f2a33e0fc1a1e4a05dbaf98614b"
+  }
+}

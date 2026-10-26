@@ -1,0 +1,8 @@
+{
+  "status": "verified",
+  "files": 1490,
+  "self_contained": false,
+  "manifest_sha256": "e6e93c614860c3f25d50879f8debd4e1b2c189c49433f6574dce13b432ba2506",
+  "verified_utc": "2026-10-19T01:54:54.874167+00:00",
+  "command": "py -3 tools/Freeze-AssetEvidence.py --verify GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ContactSurfaceReproductionKit-v001/manifest.json"
+}

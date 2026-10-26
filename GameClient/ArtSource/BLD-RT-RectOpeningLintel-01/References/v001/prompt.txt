@@ -1,0 +1,5 @@
+Concept sheet prompt:
+Stylized asset concept sheet, rough timber rectangular opening lintel for a frontier building kit, no people or text. Show one thick horizontal rough oak lintel spanning the top of an empty rectangular opening, with separate framing assembly study and isolated lintel component plus end-grain/contact detail. Jambs and sill are separate, aperture remains unchanged, no door. Neutral studio background; visual reference only.
+
+Clean view prompt:
+Isolated clean component view of one rough oak rectangular-opening lintel only: single horizontal squared timber spanning a doorway width, show end grain and underside, no jambs, sill, door, hinges or opening scene. Three-quarter view on neutral warm gray studio background. Preserve as appearance reference with no invented dimensions or engineering claims.

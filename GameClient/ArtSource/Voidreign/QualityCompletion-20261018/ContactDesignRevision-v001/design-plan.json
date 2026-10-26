@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "status": "bounded-diagnostic-design-in-progress",
+  "authorization": "User renewed continued Voidreign fixes, reusable/mount-specific documentation separation, try to complete all work.",
+  "parent_attempts_retained": {
+    "topology_uv": 3,
+    "rig": 3,
+    "secondary_motion": 3
+  },
+  "maximum_full_trajectory_experiments": 3,
+  "slots": [
+    {
+      "slot": 1,
+      "profile": "docs\\art-templates\\model-profiles\\voidreign-net-contact-solver-design-20261018.json",
+      "output": "NetContactTrajectory-v001",
+      "result": "154.926mm peak;118nodewarnings; fixed22mm remains; not accepted"
+    },
+    {
+      "slot": 2,
+      "profile": "docs\\art-templates\\model-profiles\\voidreign-style-frequency-damping-20261018.json",
+      "output": "StyleDampingTrajectory-v001",
+      "result": "82.694mm peak;14nodewarnings; fixed22mm remains; not accepted"
+    },
+    {
+      "slot": 3,
+      "profile": "docs\\art-templates\\model-profiles\\voidreign-mild-overdamping-20261018.json",
+      "output": "MildOverdampingTrajectory-v001",
+      "result": "preregistered-not-run"
+    }
+  ],
+  "hypothesis": "A final nominal continuous-model damping ratio1.25 may reduce tail response further without weakening the style spring; compare transient lag and endSTOP recovery, not only threshold crossings.",
+  "review": "Existing /root/visual_review supports one final preregistered comparison; no further ratio search.",
+  "limits": [
+    "No acceptance-limit, root-exclusion, geometry, timing, spring, collider or raw authored-drag change.",
+    "Derived coefficient is new explicit algorithm control, not a silent override of legacy drag bound.",
+    "After slot3, no more tuning; advance semantic/representation/root-contact owning issues.",
+    "At most one experimental existing-mesh/weights evaluation if guide step checks pass and review supports it; not accepted rig or production promotion.",
+    "Fixed-envelope conflict, semantic coverage and actual-surface failures remain independent blockers."
+  ],
+  "input_sha256": {
+    "docs\\art-templates\\model-jobs\\voidreign-quality-20261018.json": "a93caf6103892049c974707c29aeb0c66b5621218e6009048e3bd17f134909b2",
+    "docs\\art-templates\\model-profiles\\voidreign-net-contact-solver-design-20261018.json": "4723f4a27de1042afc3049d08da2f194f3a544bfb7af260b816dc3543c0ee978",
+    "docs\\art-templates\\model-profiles\\voidreign-style-frequency-damping-20261018.json": "0b6c67e99751e8be329d7ebdb52c5882d46d033f2f36475f821c91d43e04c925",
+    "docs\\art-templates\\model-profiles\\voidreign-mild-overdamping-20261018.json": "80a1dc7c81b15ca7385b185d96232688f0a672297fab5b686648780713692e0c"
+  }
+}

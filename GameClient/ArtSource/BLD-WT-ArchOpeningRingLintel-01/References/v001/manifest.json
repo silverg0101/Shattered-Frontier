@@ -1,0 +1,127 @@
+{
+  "asset_id": "BLD-WT-ArchOpeningRingLintel-01",
+  "version": "v001",
+  "batch": "construction-worked-timber-arched-openings-37",
+  "current_status": "image-complete; appearance proposal; structural readiness blocked",
+  "intended_route": "proposed flush material/surface treatment on the curved crown/ring and inner reveal patches of the contract-defined arch-2m/v1 carrier; no separate arch member",
+  "carrier": {
+    "geometry_status": "geometry-proposed; contract target only",
+    "dimensions_m": {
+      "x": 2.0,
+      "y": 0.5,
+      "z": 3.0
+    },
+    "grid_m": 0.5,
+    "axes": "local X width, Y extrusion/depth, Z height",
+    "origin": "minimum-grid-corner (0,0,0)",
+    "pivot": "minimum-grid-corner carrier frame",
+    "allowed_rotations": "identity only under BLD-01 default until an authored shape allowlist exists",
+    "aperture": "outer XZ rectangle [0,2]x[0,2] plus upper semicircle center (1,2), radius 1m; opening rectangle (0.5,1.5)x[0,2] plus upper semicircle same center, radius 0.5m; extruded through Y"
+  },
+  "component_boundary": "One flush KIT-WT appearance treatment on the curved crown/ring patches from both spring points over the crown; includes front/back faces and inner curved reveal; straight jambs are excluded.",
+  "exposed_faces": "Front/back crown band and inner arch reveal. Exterior arc follows radius 1m; opening-side arc follows radius 0.5m; exact skin patch mapping remains proposed.",
+  "mating_faces": "Two treatment boundaries at spring points meet BLD-WT-ArchOpeningJamb-01. Base/threshold is excluded and separately queued.",
+  "named_counterpart_interfaces": [
+    "BLD-WT-ArchOpeningJamb-01 at both spring points",
+    "arch-2m/v1 host exposed crown/ring patches"
+  ],
+  "source_references": [
+    "docs/art-templates/player-construction-kit-contract.md, arch-2m and buildability route",
+    "docs/decisions/BLD-01-voxel-geometry-interface.md, coordinate/orientation contract",
+    "docs/art-templates/asset-lists/construction-worked-timber-arched-openings-37.md",
+    "docs/art-templates/asset-lists/construction-arched-openings-20.md"
+  ],
+  "appearance_reference_hashes": [
+    {
+      "role": "KIT-WT worked timber surface appearance; visually reviewed, not passed to image tool",
+      "path": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\BLD-WT-FaceExteriorCellFull-01\\References\\v001\\concept-sheet.png",
+      "sha256": "119d03245b624ebf86dd51a17f4ea32b37294203c671f6cf44a3fcf785c2e3a1"
+    },
+    {
+      "role": "KIT-RT arch opening appearance; visually reviewed, not passed to image tool",
+      "path": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\BLD-RT-ArchOpeningJamb-01\\References\\v001\\concept-sheet.png",
+      "sha256": "822bb84c90b806887993d3b86d4b197f2e85f74cde1642ca1d0d088e417b9add"
+    }
+  ],
+  "required_selected_outputs": [
+    "concept-sheet.png",
+    "asset-view.png"
+  ],
+  "selected_image_count": 2,
+  "additional_images": 0,
+  "exact_prompts": {
+    "concept-sheet-first-attempt": "Use case: stylized-concept\nAsset type: worked-timber arch-crown surface-treatment concept sheet for later modeling reference; output one named image, concept-sheet.png.\nPrimary request: Show the KIT-WT appearance treatment for the curved crown/ring patches of one documented arch-2m/v1 host. This is a flush surface treatment on a fixed carrier, not a separate structural arch ring member. Make the complete treated arch carrier the dominant view, with consistent front elevation, side section through Y, patch/contact diagram and design-target dimensions.\nScene/backdrop: plain light neutral studio background.\nSubject: One arch-2m/v1 carrier. Exact target envelope 2.0 m wide (local X) \u00d7 0.5 m deep (local Y) \u00d7 3.0 m tall (local Z). In local XZ, outer shape is rectangle [0,2]\u00d7[0,2] plus an upper semicircle centered (1,2), radius 1 m. Empty opening subtracts rectangle (0.5,1.5)\u00d7[0,2] plus an upper semicircle with the same center and radius 0.5 m. Extrude unchanged through Y. Minimum-grid-corner origin (0,0,0), 0.5 m grid. Keep the aperture entirely empty. Apply warm worked-timber grain flush only to the curved upper crown/ring patches from the two spring points around the semicircle; show front/back patch surfaces and the inner curved reveal. Leave straight jambs, base/threshold, door and window interface patches neutral gray. Mark seams at both spring points to the separate ArchOpeningJamb treatment. No material volume or geometry change.\nStyle/medium: precise polished game construction concept illustration; worked timber is dressed warm brown wood with controlled grain and restrained tool marks, matching a carefully finished frontier kit; no metal.\nComposition/framing: one large dominant three-quarter full carrier; smaller views show only the same carrier and treatment. Clear section through Y depth, exact contact labels and patch extent.\nLighting/mood: even neutral studio lighting with soft contact shadows.\nColor palette: warm medium brown wood against a neutral gray carrier.\nMaterials/textures: smooth dressed timber appearance; grain follows the arch curve as a surface pattern, no individual voussoir blocks, wedges, keystone or seams that imply geometry.\nText (verbatim): render only these exact target labels clearly: \u201cEnvelope target: 2.0 m \u00d7 0.5 m \u00d7 3.0 m\u201d; \u201cOpening target: 1.0 m clear width; spring line z=2.0 m\u201d; \u201cOuter radius: 1.0 m\u201d; \u201cInner radius: 0.5 m\u201d; \u201cGrid: 0.5 m\u201d; \u201cX width / Y depth / Z height\u201d; \u201cCrown treatment meets jamb at spring points\u201d. These are contract design targets, not image measurements.\nConstraints: exact arch silhouette and empty opening; the treatment stays flush and inside the existing carrier envelope; no unsupported geometry or gameplay properties.\nAvoid: separate ring parts, wedge stones, keystone, threshold board, door leaf, window, hardware, floor tiles, plinth, cutaway, extra objects, unreadable pseudo-labels, watermark.",
+    "concept-sheet-selected-repair": "Use case: precise-object-edit\nAsset type: repair of the worked-timber arch-crown surface-treatment concept sheet.\nInput image: the current ring-lintel concept sheet is the sole design master.\nPrimary request: extend the same flush KIT-WT wood appearance treatment onto the inner curved reveal surface of the upper arch, continuously from the left spring point over the crown to the right spring point. Match the existing warm wood grain and keep the straight jamb patches neutral gray.\nConstraints: preserve the exact arch silhouette, empty opening, all dimensions and labels, section/elevation views, outer/back crown treatment, contact seam markers and layout. Change only the inner curved reveal material from neutral gray to the same worked-timber appearance as the crown band, with no added thickness, geometry, seams, wedges or separate parts. Keep the clear aperture fully empty. Preserve target envelope 2.0 m \u00d7 0.5 m \u00d7 3.0 m, opening clear width 1.0 m, spring line z=2.0 m, radii 1.0 m and 0.5 m, and grid 0.5 m. Maintain the named interface to the jamb treatment at both spring points. Do not alter text other than keeping it legible.",
+    "asset-view": "Use case: precise-object-edit\nAsset type: clean asset-view.png for one KIT-WT arch-crown/ring surface treatment.\nInput image: the selected concept-sheet.png is the sole identity/master reference.\nPrimary request: derive one isolated, intact three-quarter view of the same complete arch-2m/v1 carrier with the same flush worked-timber appearance treatment on the curved crown/ring patches and inner curved reveal.\nConstraints: preserve exact arch silhouette and empty opening; 2.0 m \u00d7 0.5 m \u00d7 3.0 m target envelope, outer radius 1.0 m, opening radius 0.5 m, 1.0 m clear width, spring line z=2.0 m. Wood is a surface appearance flush with the carrier, with no added thickness. Keep both straight jamb patches, base/threshold zone and all other carrier surfaces plain neutral gray. Show exactly one complete arch carrier and no other object. Use neutral light-gray seamless studio background, even soft lighting, full silhouette with clear margins. No text, dimensions, panels, labels, detail insets, separate ring parts, wedges, keystone, extra parts, threshold, door, window, hardware, floor tiles, or scene. Do not redesign geometry or surface pattern."
+  },
+  "generation_history": [
+    {
+      "file": "provenance/exec-0b63d353-62e5-4834-af15-38ba52f6660b.png",
+      "selected": false,
+      "reason": "Inner curved reveal remained gray; this missed required surface coverage and was superseded by the selected repair.",
+      "metadata": {
+        "format": "PNG",
+        "width_px": 1536,
+        "height_px": 1024,
+        "bit_depth": 8,
+        "color_type": 2,
+        "mode": "RGB",
+        "sha256": "a1c93b871685bac6465debecda9cbb93b178694fc5ce673d1683ebc70fa48d73"
+      }
+    },
+    {
+      "file": "concept-sheet.png",
+      "source_cache_path": "C:\\Users\\grego\\.codex\\generated_images\\01a15000-e13f-7213-9ec0-df2684201405\\exec-51881e45-7214-4dda-bd90-63de5856923b.png",
+      "selected": true,
+      "metadata": {
+        "format": "PNG",
+        "width_px": 1536,
+        "height_px": 1024,
+        "bit_depth": 8,
+        "color_type": 2,
+        "mode": "RGB",
+        "sha256": "469eba0f61b0c26b2ba7cf06bc2877e81f4440232984fcd52acd0c44309053eb"
+      },
+      "repair_of": "provenance/exec-0b63d353-62e5-4834-af15-38ba52f6660b.png"
+    },
+    {
+      "file": "asset-view.png",
+      "source_cache_path": "C:\\Users\\grego\\.codex\\generated_images\\01a15000-e13f-7213-9ec0-df2684201405\\exec-cb4a8a76-acc0-4128-bc73-bb971e84f827.png",
+      "selected": true,
+      "metadata": {
+        "format": "PNG",
+        "width_px": 1536,
+        "height_px": 1024,
+        "bit_depth": 8,
+        "color_type": 2,
+        "mode": "RGB",
+        "sha256": "4c52bd866f296ff46110082739dfe79495819fe555327039f9fa699c1233c582"
+      }
+    },
+    {
+      "file": "asset-view.png",
+      "source_cache_path": "C:\\Users\\grego\\.codex\\generated_images\\01a15000-e13f-7213-9ec0-df2684201405\\exec-cb4a8a76-acc0-4128-bc73-bb971e84f827.png",
+      "selected": true,
+      "metadata": {
+        "format": "PNG",
+        "width_px": 1536,
+        "height_px": 1024,
+        "bit_depth": 8,
+        "color_type": 2,
+        "mode": "RGB",
+        "sha256": "4c52bd866f296ff46110082739dfe79495819fe555327039f9fa699c1233c582"
+      }
+    }
+  ],
+  "visual_review": {
+    "date": "2026-10-18",
+    "first_attempt": "Rejected: inner curved reveal was untreated despite being in the brief.",
+    "selected_concept": "Accepted for image package: crown/ring front and back faces plus inner curved reveal are wood; straight jambs remain neutral; opening is empty; target dimensions, radii, axes, grid and spring-point interface labels are legible. No apparent geometry protrusion.",
+    "asset_view": "Accepted after inspection: one intact arch carrier, full silhouette and empty aperture readable, crown/ring front/back and inner curved reveal match concept, straight jambs neutral. Gray carrier is a visualization only; no apparent protrusions. Image review is not numerical fit."
+  },
+  "compatibility": "No approved GEO-01 payload/hash; no applicable GEO-02 arch fit/rotation evidence; image review is not numerical mesh/runtime acceptance.",
+  "blockers": [
+    "GEO-01 approved manifest/hash absent; carrier remains a contract geometry proposal only.",
+    "Applicable GEO-02 arch/opening/rotation fit evidence absent."
+  ]
+}

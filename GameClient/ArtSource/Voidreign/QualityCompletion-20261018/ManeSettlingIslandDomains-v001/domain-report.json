@@ -1,0 +1,52 @@
+{
+  "status": "unreviewed-full-source-component-domains",
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz": "0d7599c8064cb81a6e211a23731435e08939b7fb146ce2d4bed810273909a2b2",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManeWarmupDiagnostic-v004\\warmup-report.json": "8941122de0f8aa37545d859f2c7846539b3a0ca666e269d73cd2e8078efb350e",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManeWarmupDiagnostic-v004\\held-proxy-points.npz": "77df03bb22624b98eaa6411d3b09b9ddbafc691730ff49cd85939cdfa2fa9450",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\CompleteMotionAlembic-v001\\expected-world-points.npy": "f1e12afebb725b18ce145886d71582db2eed8cd894ff6c27593171268b835a19"
+  },
+  "domains": [
+    {
+      "component_id": "ba2d283db0be:C0002",
+      "component_index": 2,
+      "source_vertices": 426,
+      "source_triangles": 516,
+      "held_peak_source_vertex": 72045,
+      "held_peak_speed_m_s": 0.11945008486509323,
+      "disposition": "needs-semantic-and-attachment-review"
+    },
+    {
+      "component_id": "ba2d283db0be:C0007",
+      "component_index": 7,
+      "source_vertices": 462,
+      "source_triangles": 404,
+      "held_peak_source_vertex": 132628,
+      "held_peak_speed_m_s": 0.12824563682079315,
+      "disposition": "needs-semantic-and-attachment-review"
+    },
+    {
+      "component_id": "ba2d283db0be:C0048",
+      "component_index": 48,
+      "source_vertices": 120,
+      "source_triangles": 122,
+      "held_peak_source_vertex": 58526,
+      "held_peak_speed_m_s": 0.10438304394483566,
+      "disposition": "needs-semantic-and-attachment-review"
+    },
+    {
+      "component_id": "ba2d283db0be:C0136",
+      "component_index": 136,
+      "source_vertices": 29,
+      "source_triangles": 20,
+      "held_peak_source_vertex": 57771,
+      "held_peak_speed_m_s": 0.10016334801912308,
+      "disposition": "needs-semantic-and-attachment-review"
+    }
+  ],
+  "recipe": "For each declared source component index, select exact component_per_vertex IDs and triangles with all three IDs in that component. Peak vertex is argmax held239->240 speed among proxy representatives in that component. Posed point comes from checked world cache frame122.",
+  "limitations": [
+    "Whole geometric islands, not approved semantic clumps or root attachments.",
+    "Static rest component IDs preserved; no selection, geometry, weights or motion modified."
+  ]
+}

@@ -1,0 +1,146 @@
+{
+  "status": "passed-with-required-fbx-import-contract",
+  "cpu_only": true,
+  "blender": "5.1.1",
+  "bone_frames": [
+    1,
+    330
+  ],
+  "bone_sample_count": 330,
+  "mesh_sample_frames": [
+    1,
+    2,
+    31,
+    60,
+    61,
+    91,
+    120,
+    121,
+    151,
+    180,
+    181,
+    211,
+    240,
+    241,
+    271,
+    300,
+    301,
+    330
+  ],
+  "source_sha256": "d2707a70df77c9a6829b99dd3b462a323844cf546ef96ee224b9e29fcda5a354",
+  "contract_sha256": "412e46387d6f01e62de311099eb5c57807aac6affbbea509f22f1a0ada6d517f",
+  "imports": {
+    "glb": {
+      "status": "passed",
+      "exchange_sha256": "aed70e90ecb590e6057797a32663b7baa215d5bcfcda2c83524eaf3cb4acccc7",
+      "restored_connectivity": {},
+      "vertices": 889968,
+      "triangles": 296693,
+      "rest_surface_error_m": 2.180463070544647e-06,
+      "max_bone_head_error_m": 1.9481808006403205e-06,
+      "worst_bone_frame": 21,
+      "max_matrix_element_error": 2.0265579223632812e-06,
+      "max_deformed_surface_error_m": 7.196176346915148e-05,
+      "bone_tolerance_m": 0.005,
+      "deformed_surface_tolerance_m": 0.0001
+    },
+    "fbx-default": {
+      "status": "failed",
+      "exchange_sha256": "635247fb8b789829261113bba10a23b3407bde4f2e055671fc8afb7ab81744ac",
+      "restored_connectivity": {},
+      "vertices": 284685,
+      "triangles": 296693,
+      "rest_surface_error_m": 1.1246181657043053e-06,
+      "max_bone_head_error_m": 0.011239848181557984,
+      "worst_bone_frame": 152,
+      "max_matrix_element_error": 0.010065615177154541,
+      "max_deformed_surface_error_m": 0.011084652524788576,
+      "bone_tolerance_m": 0.005,
+      "deformed_surface_tolerance_m": 0.0001
+    },
+    "fbx-contract": {
+      "status": "passed",
+      "exchange_sha256": "635247fb8b789829261113bba10a23b3407bde4f2e055671fc8afb7ab81744ac",
+      "restored_connectivity": {
+        "Mane_01": {
+          "imported": true,
+          "authored": false
+        },
+        "Mane_02": {
+          "imported": true,
+          "authored": false
+        },
+        "Mane_03": {
+          "imported": true,
+          "authored": false
+        },
+        "Mane_04": {
+          "imported": true,
+          "authored": false
+        },
+        "Mane_05": {
+          "imported": true,
+          "authored": false
+        },
+        "Mane_06": {
+          "imported": true,
+          "authored": false
+        },
+        "Mane_07": {
+          "imported": true,
+          "authored": false
+        },
+        "Tail_01": {
+          "imported": true,
+          "authored": false
+        },
+        "Tail_02": {
+          "imported": true,
+          "authored": false
+        },
+        "Tail_03": {
+          "imported": true,
+          "authored": false
+        },
+        "Tail_04": {
+          "imported": true,
+          "authored": false
+        },
+        "Tail_05": {
+          "imported": true,
+          "authored": false
+        },
+        "Tail_06": {
+          "imported": true,
+          "authored": false
+        },
+        "Tail_07": {
+          "imported": true,
+          "authored": false
+        },
+        "Tail_08": {
+          "imported": true,
+          "authored": false
+        },
+        "Tail_09": {
+          "imported": true,
+          "authored": false
+        },
+        "Tail_10": {
+          "imported": true,
+          "authored": false
+        }
+      },
+      "vertices": 284685,
+      "triangles": 296693,
+      "rest_surface_error_m": 1.1246181657043053e-06,
+      "max_bone_head_error_m": 3.6996915582246353e-06,
+      "worst_bone_frame": 156,
+      "max_matrix_element_error": 6.556510925292969e-06,
+      "max_deformed_surface_error_m": 2.1224185312540923e-06,
+      "bone_tolerance_m": 0.005,
+      "deformed_surface_tolerance_m": 0.0001
+    }
+  },
+  "scope": "Exchange roundtrip only; no coverage, collision, gait or engine acceptance"
+}

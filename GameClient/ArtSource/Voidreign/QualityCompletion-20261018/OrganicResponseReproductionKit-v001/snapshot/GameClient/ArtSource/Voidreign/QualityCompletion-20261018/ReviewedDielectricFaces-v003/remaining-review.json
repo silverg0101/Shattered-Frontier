@@ -1,0 +1,412 @@
+{
+  "schema_version": 1,
+  "status": "12-material-response-boundaries-open",
+  "remaining_faces": 1498,
+  "items": [
+    {
+      "id": "SMB-0d7599c806-a23f50cee6c9",
+      "faces": 578,
+      "face_key": "SMB-0d7599c806-a23f50cee6c9.faces",
+      "evidence_images": [
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-a23f50cee6c9-posX-overlay.png",
+          "sha256": "be0c23768b84f6c62d9e8cd8c2365e9922c64a483389012b3f84c79e6ffc9374"
+        },
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-a23f50cee6c9-posX-albedo.png",
+          "sha256": "f2218642b0e5b28b27ee07ca41eee46204df4f7ecef82998489cfc5473f6634f"
+        },
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-a23f50cee6c9-negX-overlay.png",
+          "sha256": "549f38d3d7b7527e3da7f101e5ce98a0a7d3b861d5a567a84d9fba04e84e06d7"
+        },
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-a23f50cee6c9-negX-albedo.png",
+          "sha256": "0fc9bfa45a439f91ce11300f3eb3401b0ffab20b2077c64b6563850041c4bb14"
+        },
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-a23f50cee6c9-isolated-overlay.png",
+          "sha256": "abc30d56ddfead78aaacb9a83a10340addf73f56452156928ad37e9a3e67518c"
+        },
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-a23f50cee6c9-isolated-albedo.png",
+          "sha256": "5b23a6f934ae66365ea32c79031d5b99e9cd49b50649ca6de00266fc5e98e0ac"
+        }
+      ],
+      "disposition": "unapproved-response-boundary",
+      "next_action": "Boundary reaches behind mane and adjacent tack. Isolated strip is not sufficient to assign every hidden face; need localized source-index selection or visible registered view."
+    },
+    {
+      "id": "SMB-0d7599c806-13398d8f6fa9",
+      "faces": 344,
+      "face_key": "SMB-0d7599c806-13398d8f6fa9.faces",
+      "evidence_images": [
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-13398d8f6fa9-posX-overlay.png",
+          "sha256": "df5c50f28d71e72dd505a63a72e045e3bd6c556647dfede1aa891a8e89603453"
+        },
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-13398d8f6fa9-posX-albedo.png",
+          "sha256": "fbc545b7f1c4a58cc98749c3bdd6915041ae60459746391ac85885c5acc0c6d7"
+        },
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-13398d8f6fa9-negX-overlay.png",
+          "sha256": "32a59832bcf7f098f9aa746af2b8845fd901ccf1bda690cc530fc294692d911a"
+        },
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-13398d8f6fa9-negX-albedo.png",
+          "sha256": "e252e4bee428ddb866142f40327021250ee09ea90323483ddf2a0897cafa239e"
+        },
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-13398d8f6fa9-isolated-overlay.png",
+          "sha256": "ed1013334539bc070ab6f0a3da15594b8a08813c9126dfa88ef217f3d1e11024"
+        },
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-13398d8f6fa9-isolated-albedo.png",
+          "sha256": "54b4d54fdc341125abf26b733da75ff7a0f2233214091d23507c232cd8aaaecc"
+        }
+      ],
+      "disposition": "unapproved-response-boundary",
+      "next_action": "Remain unknown; use registered surface/UV selection to separate intended material responses before final application."
+    },
+    {
+      "id": "SMB-0d7599c806-c5f686eb393a",
+      "faces": 155,
+      "face_key": "SMB-0d7599c806-c5f686eb393a.faces",
+      "evidence_images": [
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-c5f686eb393a-posX-overlay.png",
+          "sha256": "60707d79707ecd89c2e42ed0831b27f1b290ac006aa9ec8174f7c8aaceefa20b"
+        },
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-c5f686eb393a-posX-albedo.png",
+          "sha256": "73e507055823a7a368d62439e8ad3632debd22fc9395413112d6e0d747db364e"
+        },
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-c5f686eb393a-negX-overlay.png",
+          "sha256": "6f58df205655194f24c6eeea3f5e592c119c285673996b8947f8b666c68ff420"
+        },
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-c5f686eb393a-negX-albedo.png",
+          "sha256": "71f007c9051386b07a80879d5bcc249dc1fad6e7d0f8bf834bf6d81fa63e80c3"
+        },
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-c5f686eb393a-isolated-overlay.png",
+          "sha256": "24e45c0e985bdcc2b0563e7f998c08a523c84a7ad214f9a172658e249e46db17"
+        },
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-c5f686eb393a-isolated-albedo.png",
+          "sha256": "d6874f4ad426f15cc0daed66a5c3fb8d92aaed31282d6149e96701a016326016"
+        }
+      ],
+      "disposition": "unapproved-response-boundary",
+      "next_action": "Boundary reaches behind mane and adjacent tack. Isolated strip is not sufficient to assign every hidden face; need localized source-index selection or visible registered view."
+    },
+    {
+      "id": "SMB-0d7599c806-9461782d30e7",
+      "faces": 87,
+      "face_key": "SMB-0d7599c806-9461782d30e7.faces",
+      "evidence_images": [
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-9461782d30e7-posX-overlay.png",
+          "sha256": "db67da99d0d762e52659c233c27a6b1bacc83db5f23791a44dd4b3678505da14"
+        },
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-9461782d30e7-posX-albedo.png",
+          "sha256": "9d5e8cc7414613ab645c3603f4cf49830b333d9bf4faf680cbeae20964bffbc0"
+        },
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-9461782d30e7-negX-overlay.png",
+          "sha256": "58f0a2f519b434ac45b6a0c8d5bfde753a1c3970f70ce6982a7175917d46a1a0"
+        },
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-9461782d30e7-negX-albedo.png",
+          "sha256": "a3b406a89eebdad7a3f637a62be624aec93cff53214a255b56ee88bb2e31cef8"
+        },
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-9461782d30e7-isolated-overlay.png",
+          "sha256": "81bb69a3e6b80087ca82d666c87f75d181fc97d61f76ec2b0b93d352f10e16d5"
+        },
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-9461782d30e7-isolated-albedo.png",
+          "sha256": "eb3772b057691f55fa95e1b7fa0d371ac8dd560344e8a92c90aa00d91109f3da"
+        }
+      ],
+      "disposition": "unapproved-response-boundary",
+      "next_action": "Remain unknown; use registered surface/UV selection to separate intended material responses before final application."
+    },
+    {
+      "id": "SMB-0d7599c806-c95bf113bd82",
+      "faces": 91,
+      "face_key": "SMB-0d7599c806-c95bf113bd82.faces",
+      "evidence_images": [
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-c95bf113bd82-posX-overlay.png",
+          "sha256": "a9ebe3d00367c631d423f29cade89bce9bae415fc17ab9ba028f1b132a357058"
+        },
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-c95bf113bd82-posX-albedo.png",
+          "sha256": "45431ed50a9678026c0c3904f8bb6f00580b280bb1fd4e626d1642c7b330da0d"
+        },
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-c95bf113bd82-negX-overlay.png",
+          "sha256": "2df9799231c6574d7a1260a0d42e653378ae17fbc6d598e12add9401429c26ab"
+        },
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-c95bf113bd82-negX-albedo.png",
+          "sha256": "2633bc1bbf543b62de048c51e218884cb88dce6173825b192993948bdcd9ccbc"
+        },
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-c95bf113bd82-isolated-overlay.png",
+          "sha256": "3485a2c67e114fbe0da69776275c4a826f93c5d707cd372fbc37f43cadd12a34"
+        },
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-c95bf113bd82-isolated-albedo.png",
+          "sha256": "0977a93a65e2f76fb44aa391309ed9ae8e2c95f7fa2a48674b03471767aa08f2"
+        }
+      ],
+      "disposition": "unapproved-response-boundary",
+      "next_action": "Gold/ivory connector-like surfaces have unresolved intended bone versus hardware identity. Albedo hue and shape alone do not support forcing all faces to either metallic response; preserve unknown."
+    },
+    {
+      "id": "SMB-0d7599c806-16aa3f8d2318",
+      "faces": 58,
+      "face_key": "SMB-0d7599c806-16aa3f8d2318.faces",
+      "evidence_images": [
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-16aa3f8d2318-posX-overlay.png",
+          "sha256": "b9ac3241b65bf8d750a700adaa2af214f85fe5c713e72f315229288104c89f33"
+        },
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-16aa3f8d2318-posX-albedo.png",
+          "sha256": "72a9826929c97245a650a9ab49ef26eaf28dae4fee3f02b181e721e40a82c361"
+        },
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-16aa3f8d2318-negX-overlay.png",
+          "sha256": "cde143141bb1bd74202fbdbc798dc75f5ee7f90e8aba52523fbe4d5e70373ad6"
+        },
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-16aa3f8d2318-negX-albedo.png",
+          "sha256": "de3c3617a5e8aad2016d84c0869d339aa8615e433501508fc6eb579a66f6e569"
+        },
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-16aa3f8d2318-isolated-overlay.png",
+          "sha256": "687181e8d3a4294474f9e447d71e723c780503510127362ebca935192d81d2da"
+        },
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-16aa3f8d2318-isolated-albedo.png",
+          "sha256": "bc8b0fc5db877cd8be737fdec9b35f0e226e8c3cddee4ec93464ea6f5b2033e7"
+        }
+      ],
+      "disposition": "unapproved-response-boundary",
+      "next_action": "Gold/ivory connector-like surfaces have unresolved intended bone versus hardware identity. Albedo hue and shape alone do not support forcing all faces to either metallic response; preserve unknown."
+    },
+    {
+      "id": "SMB-0d7599c806-f2ac3080aae7",
+      "faces": 35,
+      "face_key": "SMB-0d7599c806-f2ac3080aae7.faces",
+      "evidence_images": [
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-f2ac3080aae7-posX-overlay.png",
+          "sha256": "3aa6f049621e63ab02c548cdb480e4c9288f25f464c5c82a8d6282d63c914d40"
+        },
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-f2ac3080aae7-posX-albedo.png",
+          "sha256": "f73155107b42096780c26e22f534ba25f8439c18db963364eafc8bdf7389139a"
+        },
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-f2ac3080aae7-negX-overlay.png",
+          "sha256": "8455a0bed294711279d3d00b2d1dbc100e1513c7378ae00eb7e8c0436b3fcdb5"
+        },
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-f2ac3080aae7-negX-albedo.png",
+          "sha256": "07aa29095e09aee720da7f6bd0411ae3f1ec411159811553825f6f73b2151587"
+        },
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-f2ac3080aae7-isolated-overlay.png",
+          "sha256": "2aed5f181bee93e704cebbefb8f7281523de0e36b44397c0a113cce27fe7cf0c"
+        },
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-f2ac3080aae7-isolated-albedo.png",
+          "sha256": "b076e369d0b3d8d21fc53887f04ded0819426b41710aca9eee79434354890df5"
+        }
+      ],
+      "disposition": "unapproved-response-boundary",
+      "next_action": "Remain unknown; use registered surface/UV selection to separate intended material responses before final application."
+    },
+    {
+      "id": "SMB-0d7599c806-1a6b38bcd2ed",
+      "faces": 40,
+      "face_key": "SMB-0d7599c806-1a6b38bcd2ed.faces",
+      "evidence_images": [
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-1a6b38bcd2ed-posX-overlay.png",
+          "sha256": "7ee3f6bf0526a93f5fd1f98c16c47d49327673789f6a51549f9bf28a38a592f5"
+        },
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-1a6b38bcd2ed-posX-albedo.png",
+          "sha256": "70c8c7631cdc950e874eb8df7baa30d6d0e20915a2d0480a90521ecaab0ea145"
+        },
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-1a6b38bcd2ed-negX-overlay.png",
+          "sha256": "ffa8ca95fc96241c18448576e3543478ba5b616bd98e53b29fddcc0f3a94973f"
+        },
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-1a6b38bcd2ed-negX-albedo.png",
+          "sha256": "faf439312aabb0e1048a3d89013f193987008b7712396948c31de186fdd385a0"
+        },
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-1a6b38bcd2ed-isolated-overlay.png",
+          "sha256": "4e91af2a831a37f7724e45c76096892511e6c00be21c77acf84b327423a2c286"
+        },
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-1a6b38bcd2ed-isolated-albedo.png",
+          "sha256": "96f1b651094bbb2c56b1ddf95789ab0d35b99a4f045678a72c22fe09931b8397"
+        }
+      ],
+      "disposition": "unapproved-response-boundary",
+      "next_action": "Gold/ivory connector-like surfaces have unresolved intended bone versus hardware identity. Albedo hue and shape alone do not support forcing all faces to either metallic response; preserve unknown."
+    },
+    {
+      "id": "SMB-0d7599c806-ae39479acb4e",
+      "faces": 36,
+      "face_key": "SMB-0d7599c806-ae39479acb4e.faces",
+      "evidence_images": [
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-ae39479acb4e-posX-overlay.png",
+          "sha256": "438229f298a3ef0609ea86dab6c400e4635e2fad9281fdfcf2d7d47b0ab0f780"
+        },
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-ae39479acb4e-posX-albedo.png",
+          "sha256": "1ba1e7446dd820b68a5cc21ac706ededc9bb6255e91b305650f4588ecc306c63"
+        },
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-ae39479acb4e-negX-overlay.png",
+          "sha256": "9554922ccdeea6be7e60447363e4042846991ec44dd9a2d1604444879b87464f"
+        },
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-ae39479acb4e-negX-albedo.png",
+          "sha256": "3c3bc4d4078d9ff9c9b35b6293b24e25261d4d623fc99234aa382512e8cb6d1f"
+        },
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-ae39479acb4e-isolated-overlay.png",
+          "sha256": "b75fddcf8f52734a77524a3dd42bd84bf465bc95e0f6efd83eb712a89d03bc63"
+        },
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-ae39479acb4e-isolated-albedo.png",
+          "sha256": "efd54c34a04705d11d4b91c642027764f28036fb37434015043bc45a7b2c08d5"
+        }
+      ],
+      "disposition": "unapproved-response-boundary",
+      "next_action": "Remain unknown; use registered surface/UV selection to separate intended material responses before final application."
+    },
+    {
+      "id": "SMB-0d7599c806-59ee26f77533",
+      "faces": 10,
+      "face_key": "SMB-0d7599c806-59ee26f77533.faces",
+      "evidence_images": [
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-59ee26f77533-posX-overlay.png",
+          "sha256": "07ee305a28a86f1344950a2f564f5e792a47cd6f1237ba08f92105b15392a9b0"
+        },
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-59ee26f77533-posX-albedo.png",
+          "sha256": "2c459fc010228e3b6044d3f65d40ff47788e80668c878d641c78f56a3d8f7802"
+        },
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-59ee26f77533-negX-overlay.png",
+          "sha256": "4fc28b9e40f726155c9b1e1b1b00b90a5ed36621968b3a67ba46098bea3aef4d"
+        },
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-59ee26f77533-negX-albedo.png",
+          "sha256": "cbcae5030bc578860d7aeccc6f2f0b027dc8cfb607479c0bd45730f470d3edea"
+        },
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-59ee26f77533-isolated-overlay.png",
+          "sha256": "619c589e8d1f3087b16693c6c5c79dcc33d81ab4f67c627b30f736db2f192d1e"
+        },
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-59ee26f77533-isolated-albedo.png",
+          "sha256": "526632295cb6fa615215751bcaaf26cd1052845c15bbece30c4ad64ee49f6a8e"
+        }
+      ],
+      "disposition": "unapproved-response-boundary",
+      "next_action": "Remain unknown; use registered surface/UV selection to separate intended material responses before final application."
+    },
+    {
+      "id": "SMB-0d7599c806-219022738900",
+      "faces": 18,
+      "face_key": "SMB-0d7599c806-219022738900.faces",
+      "evidence_images": [
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-219022738900-posX-overlay.png",
+          "sha256": "6959dbde995052fafd158e86d2545e30491fdbca0eb1354caf76cd4bc090e3b6"
+        },
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-219022738900-posX-albedo.png",
+          "sha256": "9702a7553f8c0831ba06444c1c91e239a459f861bd9d34eab6bb83beec5f19c7"
+        },
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-219022738900-negX-overlay.png",
+          "sha256": "b7fe38bd0d462d1da175994cee44cbf0e9b3c497d2511ac57463184026ef1846"
+        },
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-219022738900-negX-albedo.png",
+          "sha256": "b9a5000eae3b59e17716741e76cf10d1703e37a0f08622233be721040a141801"
+        },
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-219022738900-isolated-overlay.png",
+          "sha256": "1bb074e8c0e8ac11d48bfbf5e9bbefee77fd8b7581ba13246ce0a55cf9061930"
+        },
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-219022738900-isolated-albedo.png",
+          "sha256": "53a65666cf406578241eac3636c7ffaa8379dc380a18c5ff0f49ac6f76b79d48"
+        }
+      ],
+      "disposition": "unapproved-response-boundary",
+      "next_action": "Remain unknown; use registered surface/UV selection to separate intended material responses before final application."
+    },
+    {
+      "id": "SMB-0d7599c806-61056aa72863",
+      "faces": 46,
+      "face_key": "SMB-0d7599c806-61056aa72863.faces",
+      "evidence_images": [
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-61056aa72863-posX-overlay.png",
+          "sha256": "e777f43000d1f530de327881a5ded51ff4e186bff881a30471d6dfdbc1117198"
+        },
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-61056aa72863-posX-albedo.png",
+          "sha256": "c2965da817f26675ac2d93fac441e7a36c5a564b152e61749b70ef4fbfe61594"
+        },
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-61056aa72863-negX-overlay.png",
+          "sha256": "76e50b7b29e67cba975d681a9dc31a7d8ae2b27ebed97ad81d2356c38749ecc0"
+        },
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-61056aa72863-negX-albedo.png",
+          "sha256": "ec3d7de4a0c7a4e01eeba22548f30329956d464c70e239631dfb30ef3a71aabe"
+        },
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-61056aa72863-isolated-overlay.png",
+          "sha256": "9a22ed0c4c144cc953eb7004dcfdc422bd60ddcbf70658c9f3d50d930ff4a1ad"
+        },
+        {
+          "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-61056aa72863-isolated-albedo.png",
+          "sha256": "ffb48d9f0c0458d33d91be15fc945c1f7eac03ac0ef2843f1b3ae43266ae52c4"
+        }
+      ],
+      "disposition": "unapproved-response-boundary",
+      "next_action": "Remain unknown; use registered surface/UV selection to separate intended material responses before final application."
+    }
+  ],
+  "reviewed_this_run": [
+    "c95bf113bd82",
+    "16aa3f8d2318",
+    "1a6b38bcd2ed",
+    "a23f50cee6c9",
+    "c5f686eb393a",
+    "13398d8f6fa9"
+  ],
+  "note": "Prior anatomy names are proposals. 6c0faadfb656 is a rear rump/tail-root interface in current overlays, not scalp. Approval records common response only; motion selection unchanged."
+}

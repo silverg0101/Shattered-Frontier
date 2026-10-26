@@ -1,0 +1,105 @@
+{
+  "asset_id": "BLD-WT-CellFull-01",
+  "version": "v001",
+  "batch": "construction-worked-timber-cellfull-variants-41",
+  "status": "image-complete; geometry proposal; structural readiness blocked",
+  "intended_route": "KIT-WT plain appearance-only skin on proposed canonical cell-full/v1 carrier",
+  "geometry": {
+    "reference": "cell-full/v1 (contract proposal; not approved compiled geometry)",
+    "envelope_m": [0.5, 0.5, 0.5],
+    "solid": "full cube",
+    "grid_m": 0.5,
+    "axes": "construction-local X width/run, Y depth, Z up",
+    "origin_and_pivot": "minimum grid corner (0,0,0)",
+    "shown_orientation": "identity only",
+    "boundary_contacts": ["-X", "+X", "-Y", "+Y", "-Z", "+Z"],
+    "target_contact_area_per_face_m2": 0.25,
+    "openings": "none"
+  },
+  "component_boundary": "The complete full-cell cube receives a plain KIT-WT cosmetic surface treatment; no separate members or added geometry.",
+  "material_profile": "Worked timber; gameplay profile unchanged.",
+  "cosmetic_skin": "Plain warm medium-brown dressed timber with quiet natural grain and restrained flush board seams; no ornament or hardware.",
+  "source_references": [
+    {
+      "path": "docs/art-templates/player-construction-kit-contract.md, §2 cell-full and §§4, 7–8",
+      "role": "Target carrier, axes, contacts and image/buildability requirements"
+    },
+    {
+      "path": "docs/Game-Design/Legends_Shattered_Frontier_Construction_System_Architecture_v0.1.md, §3.2",
+      "role": "Worked-timber material profile reference; no gameplay property change"
+    },
+    {
+      "path": "docs/art-templates/asset-lists/construction-kit-matrix-07.md, KIT-WT cosmetic pilot",
+      "role": "Finite two-variant pilot scope"
+    },
+    {
+      "path": "GameClient/ArtSource/BLD-WT-FaceExteriorCellFull-01/References/v001/concept-sheet.png",
+      "sha256": "119d03245b624ebf86dd51a17f4ea32b37294203c671f6cf44a3fcf785c2e3a1",
+      "role": "KIT-WT grain/color appearance cue only; layout and geometry not reused"
+    },
+    {
+      "path": "GameClient/ArtSource/BLD-WT-FaceInteriorCellFull-01/References/v001/concept-sheet.png",
+      "sha256": "fc3c472d3ec07149bea9134fb49ae6aa3e05e6a227d5db0772db7756c8331926",
+      "role": "KIT-WT grain/color appearance cue only; layout and geometry not reused"
+    }
+  ],
+  "required_selected_outputs": ["concept-sheet.png", "asset-view.png"],
+  "selected_image_count": 2,
+  "additional_images": 0,
+  "exact_prompt_file": "prompt.txt",
+  "generation": {
+    "tool": "built-in image_gen",
+    "date": "2026-10-18",
+    "model": "unavailable",
+    "seed": "unavailable",
+    "reference_images_attached": {
+      "concept-sheet.png": [],
+      "asset-view.png": ["concept-sheet.png"]
+    }
+  },
+  "images": [
+    {
+      "file": "concept-sheet.png",
+      "source_cache_path": "C:\\Users\\grego\\.codex\\generated_images\\01a15000-e13f-7213-9ec0-df2684201405\\exec-49c73978-4753-4f69-963a-d66855886f89.png",
+      "width_px": 1536,
+      "height_px": 1024,
+      "format": "PNG",
+      "mode": "RGB",
+      "alpha": false,
+      "sha256": "fb2bd315ee109be96bcd0e2359533b288bc41e6f26db00bae5122bc898fa2748",
+      "status": "selected; agent-reviewed",
+      "exact_prompt_file": "prompt.txt"
+    },
+    {
+      "file": "asset-view.png",
+      "source_cache_path": "C:\\Users\\grego\\.codex\\generated_images\\01a15000-e13f-7213-9ec0-df2684201405\\exec-b7235a4d-d3b1-4a54-845a-e1d498777def.png",
+      "width_px": 1536,
+      "height_px": 1024,
+      "format": "PNG",
+      "mode": "RGB",
+      "alpha": false,
+      "sha256": "dffd5074f2ab09a62a1f46ee63a1e14db1749169a004faf236f0480e5e9da04b",
+      "status": "selected; agent-reviewed",
+      "exact_prompt_file": "prompt.txt",
+      "repair_prompt_file": "asset-view-repair-2026-10-18.txt"
+    }
+  ],
+  "visual_review": {
+    "concept_sheet": "Selected: one cube is dominant; six orthographic face views match its wood treatment; target envelope, axes, origin, identity orientation and contact dimensions are legible. Plain worked-timber appearance has no visible extra parts or apparent silhouette growth. These are visual findings only and do not prove numerical fit.",
+    "asset_view": "Selected repaired framing: one complete cube, no crop, consistent with the concept, neutral background, balanced clear margins and no added ornament or geometry. The first clean-view candidate is preserved in provenance because its top margin was too tight.",
+    "review_date": "2026-10-18",
+    "reviewer": "Codex"
+  },
+  "concept_status": "agent-selected",
+  "clean_view_status": "ready-for-model-test (image presentation only)",
+  "generation_history": [
+    {"file":"exec-49c73978-4753-4f69-963a-d66855886f89.png","selected":true,"role":"concept-sheet.png"},
+    {"file":"provenance/asset-view-tight-framing.png","source_cache_path":"C:\\Users\\grego\\.codex\\generated_images\\01a15000-e13f-7213-9ec0-df2684201405\\exec-b9d4bb32-51ac-4367-a10d-864ca5f8ef67.png","selected":false,"reason":"Clean view had too little top margin; preserved in provenance and replaced by framing repair.","metadata":{"width_px":1536,"height_px":1024,"format":"PNG","mode":"RGB","alpha":false,"sha256":"6244063144b4637fc2812125eab2e1e430b594a9572653f020cdf974a0257b07"}},
+    {"file":"exec-b7235a4d-d3b1-4a54-845a-e1d498777def.png","selected":true,"role":"reframed asset-view.png"}
+  ],
+  "compatibility": "No approved GEO-01 payload/hash or applicable GEO-02 evidence. Image review does not establish mesh, contact, collision, clearance or runtime compatibility.",
+  "resolved_blockers_history": [
+    {"date":"2026-10-18","blocker":"Clean asset-view.png required.","resolution":"Generated and visually reviewed selected clean view; first candidate preserved in provenance after framing repair."}
+  ],
+  "blockers": ["GEO-01 approved geometry manifest/hash and applicable GEO-02 compatibility evidence are absent."]
+}

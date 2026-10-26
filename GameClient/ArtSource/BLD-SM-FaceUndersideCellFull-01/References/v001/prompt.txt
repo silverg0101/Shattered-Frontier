@@ -1,0 +1,23 @@
+CONCEPT SHEET — built-in image_gen, 2026-10-18.
+
+Use case: stylized-concept
+Asset type: separately indexed stone-masonry underside face treatment.
+Input image 1: KIT-SM exterior-face style reference; preserve gray-brown flush ashlar and shallow joints.
+Scene/backdrop: neutral gray technical studio.
+Subject: exactly one full solid cell cube with 0.5 m target edges. Identify its underside face: same stone-masonry material, clean squared courses with restrained sheltered finish.
+Composition/framing: six aligned orthographic views of the same cube, underside clearly represented as its own square view; also exterior, interior, top, ends and simple contact silhouette. 0.5 m is a design target.
+Style/medium: realistic fantasy construction material reference.
+Constraints: unchanged full-cell envelope, pivot, six planar contacts and orientation. Underside appearance only; stones stay within the surface plane. No support feet, beams, plinth, recess, trim, opening, metal or timber. No geometry or gameplay changes.
+Avoid: floating component, extra block, masonry room, projections, unreadable text, watermark.
+Reference: `GameClient/ArtSource/BLD-SM-FaceExteriorCellFull-01/References/v001/concept-sheet.png`.
+
+CLEAN VIEW — built-in image_gen, 2026-10-18; input image 1 is selected concept sheet.
+
+Use case: stylized-concept
+Asset type: clean full-cell stone-masonry underside face view.
+Input image 1: selected six-view concept; preserve same gray-brown stone and shallow course style. Show underside treatment.
+Scene/backdrop: neutral gray.
+Subject: exactly one solid 0.5 m target cube of stone masonry, underside toward camera.
+Composition/framing: one complete cube, mild view from below, underside and two sides readable, no cropping, ample margins.
+Style/medium: realistic restrained fantasy masonry, flush courses and mortar, same stone-masonry tier.
+Constraints: full solid cube with unchanged envelope, six planar contacts and pivot. Underside is not a support or attachment. No supports, plinth, trim, projections, opening, extra object, text or gameplay claim. Appearance only; no numeric compatibility claim.

@@ -1,0 +1,73 @@
+{
+  "status": "complete",
+  "started_utc": "2026-10-18T16:19:06.189032+00:00",
+  "specification": {
+    "reference": "GameClient/ArtSource/Voidreign/Trellis2-20261018/Voidreign-clean.png",
+    "baseline": "GameClient/ArtSource/Voidreign/Trellis2-20261018/1024",
+    "seed": 42,
+    "texture_size": 2048,
+    "cases": [
+      {
+        "name": "retained-detail",
+        "pipeline": "1024_cascade",
+        "steps": 12,
+        "decimation_target": 1000000,
+        "question": "Does retaining more mesh detail improve the exported result?"
+      },
+      {
+        "name": "more-steps",
+        "pipeline": "1024_cascade",
+        "steps": 24,
+        "decimation_target": 300000,
+        "question": "Does doubling sampling steps improve anatomy and reference fidelity?"
+      },
+      {
+        "name": "higher-resolution",
+        "pipeline": "1536_cascade",
+        "steps": 12,
+        "decimation_target": 300000,
+        "question": "Does higher geometry resolution improve the result at the same export budget?"
+      }
+    ],
+    "review": [
+      "silhouette and horn",
+      "four separate legs and hooves",
+      "skull and eyes",
+      "ribs and saddle",
+      "mane and tail",
+      "chains and ornaments",
+      "unseen side plausibility",
+      "elapsed time and failures"
+    ],
+    "note": "Single seed screening, not a statistical ranking. The token cap may reduce requested 1536 resolution; record the effective grid. Baseline used the same input, seed, default 12 steps and 2048 texture. Different model families require their own suitable sampling settings."
+  },
+  "cases": [
+    {
+      "name": "retained-detail",
+      "pipeline": "1024_cascade",
+      "steps": 12,
+      "decimation_target": 1000000,
+      "question": "Does retaining more mesh detail improve the exported result?",
+      "status": "complete",
+      "returncode": 0
+    },
+    {
+      "name": "more-steps",
+      "pipeline": "1024_cascade",
+      "steps": 24,
+      "decimation_target": 300000,
+      "question": "Does doubling sampling steps improve anatomy and reference fidelity?",
+      "status": "complete",
+      "returncode": 0
+    },
+    {
+      "name": "higher-resolution",
+      "pipeline": "1536_cascade",
+      "steps": 12,
+      "decimation_target": 300000,
+      "question": "Does higher geometry resolution improve the result at the same export budget?",
+      "status": "complete",
+      "returncode": 0
+    }
+  ]
+}

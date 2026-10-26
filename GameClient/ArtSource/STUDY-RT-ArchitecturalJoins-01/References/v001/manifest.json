@@ -1,0 +1,68 @@
+{
+  "assetId": "STUDY-RT-ArchitecturalJoins-01",
+  "version": "v001",
+  "category": "construction assembly study (non-component)",
+  "created": "2026-10-18",
+  "sourceReferences": [
+    "docs/art-templates/player-construction-kit-contract.md — shapes, openings and construction constraints",
+    "docs/Game-Design/Legends_Shattered_Frontier_Construction_System_Architecture_v0.1.md — §§3.1–3.2, 8–9",
+    "docs/art-templates/asset-lists/construction-kit-matrix-07.md — finite component matrix"
+  ],
+  "definition": {
+    "geometryRef": "all references per contract; illustrative only",
+    "materialKit": "KIT-RT",
+    "scope": "supporting assembly study, does not count component roles",
+    "requiredChecks": [
+      "repeated",
+      "stacked",
+      "rotated",
+      "inner/outer corners",
+      "T intersections",
+      "rectangular and arched openings",
+      "roof/slope/curve transitions",
+      "cross-material seam"
+    ],
+    "acceptance": "visual study only; numerical/runtime validation explicitly excluded"
+  },
+  "generation": {
+    "tool": "built-in image_gen",
+    "date": "2026-10-18",
+    "model": "unavailable",
+    "seed": "unavailable",
+    "promptRecord": "prompt.txt",
+    "referenceImagesAttached": []
+  },
+  "images": [
+    {
+      "path": "concept-sheet.png",
+      "sha256": "6de17f7df63c2537dedac840b6d4c552110c1a9362f826de562cef8383d1a0ed",
+      "width": 1536,
+      "height": 1024,
+      "pixelFormat": "RGB 24-bit",
+      "alpha": false,
+      "review": "Sheet visibly covers repeated/stacked, 90-degree, corners/T, rectangular/arched openings, roof/curve and a timber-to-stone seam. Opening surrounds show mixed masonry and should be treated as separately labeled seam examples, not RT material. Full scene supplies assembly context. No scale, fit or runtime evidence."
+    },
+    {
+      "path": "asset-view.png",
+      "sha256": "db8de01268dadd0de91a23d090b2c4a09151b611d63923fde9faa3226ad1e46b",
+      "width": 1536,
+      "height": 1024,
+      "pixelFormat": "RGB 24-bit",
+      "alpha": false,
+      "review": "Sheet visibly covers repeated/stacked, 90-degree, corners/T, rectangular/arched openings, roof/curve and a timber-to-stone seam. Opening surrounds show mixed masonry and should be treated as separately labeled seam examples, not RT material. Full scene supplies assembly context. No scale, fit or runtime evidence."
+    }
+  ],
+  "review": {
+    "reviewedBy": "Codex",
+    "conceptStatus": "proposed",
+    "cleanViewStatus": "ready-for-model-test",
+    "imageStatus": "image-complete",
+    "geometryAcceptance": "not established",
+    "numericalMeshFit": "not established",
+    "runtimeCollisionSupportClearance": "not established",
+    "actionableFindings": [
+      "Sheet visibly covers repeated/stacked, 90-degree, corners/T, rectangular/arched openings, roof/curve and a timber-to-stone seam. Opening surrounds show mixed masonry and should be treated as separately labeled seam examples, not RT material. Full scene supplies assembly context. No scale, fit or runtime evidence."
+    ]
+  },
+  "componentBoundary": "Study only; does not substitute for individually indexed component assets or establish mesh/runtime compatibility."
+}

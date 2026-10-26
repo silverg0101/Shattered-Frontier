@@ -1,0 +1,30 @@
+{
+  "source_manifest": "GameClient/ArtSource/BLD-SM-RoofSlopeFace-01/References/v001/manifest.json",
+  "source_manifest_sha256": "0a965049c699f08464b9e1c17aec00cdf0b2f9e5ff842032bc23aeb650d82d34",
+  "source_image": "GameClient/ArtSource/BLD-SM-RoofSlopeFace-01/References/v001/asset-view.png",
+  "source_image_sha256": "c53b2b0096003e5dae60283ec4ee4706d873898363cbd55fe67a82a75b81095a",
+  "role": "appearance guidance; no reference pixels or scene lighting are projected",
+  "recipe": "stone-masonry",
+  "seed": 1706,
+  "map_size_px": [
+    1024,
+    1024
+  ],
+  "maps": [
+    "basecolor-sRGB",
+    "roughness-linear",
+    "normal-OpenGL-tangent",
+    "height-linear-16bit"
+  ],
+  "height_encoding_m": [
+    -0.0015,
+    0.0015
+  ],
+  "face_texel_density_px_per_m": {
+    "u": 2048,
+    "v": 2048
+  },
+  "height_use": "reference/export sidecar only; never applied as geometry displacement",
+  "density_reconciled_after_build": true,
+  "density_basis": "1024 UV texels per tile; slope UV V spans 1.4142 per 0.7071m inclined run, yielding 2048 px/m"
+}

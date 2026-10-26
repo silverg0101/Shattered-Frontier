@@ -1,0 +1,630 @@
+{
+  "schema_version": 1,
+  "workspace": "C:\\Projects\\Shattered-Frontier",
+  "asset_id": "Voidreign",
+  "status": "needs-review",
+  "self_contained": false,
+  "scope": "Full363vertex local fringe/support proposal and actual parent-skin verification; no-op skin rejected; exact73frame source-indexed local Blender review and13frame timing-corrected primary-only GIF. No secondary dynamics or new model skin/gait; external large base sources required.",
+  "commands": [
+    [
+      "C:/Program Files/Blender Foundation/Blender 5.1/blender.exe",
+      "--background",
+      "--factory-startup",
+      "--threads",
+      "4",
+      "--python-exit-code",
+      "1",
+      "--python",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\FullLegFringeRegion-v001\\tool-source.py",
+      "--",
+      "--profile",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\FullLegFringeRegion-v001\\profile.json",
+      "--output",
+      "<NEW_OUTPUT_FOLDER>"
+    ],
+    [
+      "C:/Program Files/Blender Foundation/Blender 5.1/blender.exe",
+      "--background",
+      "--factory-startup",
+      "--threads",
+      "4",
+      "--python-exit-code",
+      "1",
+      "--python",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LegFringeParentTrace-v001\\tool-source.py",
+      "--",
+      "--profile",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LegFringeParentTrace-v001\\profile.json",
+      "--output",
+      "<NEW_OUTPUT_FOLDER>"
+    ],
+    [
+      "C:/Program Files/Blender Foundation/Blender 5.1/blender.exe",
+      "--background",
+      "--factory-startup",
+      "--threads",
+      "4",
+      "--python-exit-code",
+      "1",
+      "--python",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LegFringeParentSkinPreflight-v001\\tool-source.py",
+      "--",
+      "--profile",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LegFringeParentSkinPreflight-v001\\profile.json",
+      "--output",
+      "<NEW_OUTPUT_FOLDER>"
+    ],
+    [
+      "C:/Program Files/Blender Foundation/Blender 5.1/blender.exe",
+      "--background",
+      "--factory-startup",
+      "--threads",
+      "4",
+      "--python-exit-code",
+      "1",
+      "--python",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LegFringePrimaryFollowReview-v001\\tool-source.py",
+      "--",
+      "--profile",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LegFringePrimaryFollowReview-v001\\profile.json",
+      "--output",
+      "<NEW_OUTPUT_FOLDER>"
+    ],
+    [
+      "py",
+      "-3",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\FullLegFringeRoots-v001\\tool-source.py",
+      "--profile",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\FullLegFringeRoots-v001\\profile.json",
+      "--output",
+      "<NEW_OUTPUT_FOLDER>"
+    ],
+    [
+      "py",
+      "-3",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LegFringePrimaryFollowReview-v001\\Primary-Follow-Only-v002.py",
+      "--report",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LegFringePrimaryFollowReview-v001\\capture-report.json",
+      "--output",
+      "<NEW_GIF_PATH>",
+      "--fps",
+      "30"
+    ]
+  ],
+  "files": [
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/FullLegFringeRegion-v001/anatomy-report.json",
+      "mode": "copy",
+      "bytes": 2464,
+      "sha256": "85f21d5637a9b0a27d7a13c45ab1b9503fb18f87cd682a85edf865a99e46e3e4",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/FullLegFringeRegion-v001/anatomy-report.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/FullLegFringeRegion-v001/fringe-context-rear.png",
+      "mode": "copy",
+      "bytes": 674973,
+      "sha256": "545ba56c45f958b5b5c97683ffd05b4dbf26e40742daad67af57a4cdf41cbd72",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/FullLegFringeRegion-v001/fringe-context-rear.png"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/FullLegFringeRegion-v001/fringe-context-side.png",
+      "mode": "copy",
+      "bytes": 627617,
+      "sha256": "af59db7efaad827844797aafae66d07337ba91f3e47291b46092c6b3a5b9463d",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/FullLegFringeRegion-v001/fringe-context-side.png"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/FullLegFringeRegion-v001/fringe-region-isolation.png",
+      "mode": "copy",
+      "bytes": 261149,
+      "sha256": "766a81f07709a1a0333c1e6d419e7f9396ed6278dce9f844644914cfdc91cc11",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/FullLegFringeRegion-v001/fringe-region-isolation.png"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/FullLegFringeRegion-v001/isolated-source-faces.npz",
+      "mode": "copy",
+      "bytes": 923,
+      "sha256": "e19b823b44e712224ae5bcac1324ec4d9b4ff3c7bddb06b15563004cd670d843",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/FullLegFringeRegion-v001/isolated-source-faces.npz"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/FullLegFringeRegion-v001/Mount-AnatomyProposal.blend",
+      "mode": "reference",
+      "bytes": 116608763,
+      "sha256": "a4482946ac68d6b66a254ec10ebcad262c5759bf077858fa57e39afd5dc4f8c2",
+      "snapshot": null
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/FullLegFringeRegion-v001/profile.json",
+      "mode": "copy",
+      "bytes": 3644,
+      "sha256": "bda4066372e56e8a3e88a1036751dc1a3e86fa73a34b69f6851ac917ca884c36",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/FullLegFringeRegion-v001/profile.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/FullLegFringeRegion-v001/region-selections.npz",
+      "mode": "copy",
+      "bytes": 1072,
+      "sha256": "da71ccd47d25894bf69fed837a5d56d7821edf80ef4e3097416d27133170a962",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/FullLegFringeRegion-v001/region-selections.npz"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/FullLegFringeRegion-v001/review.json",
+      "mode": "copy",
+      "bytes": 724,
+      "sha256": "8e177104e0ca87ce7417c4967907cb42ddfe045c12445ec7e2141cd52def7e9e",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/FullLegFringeRegion-v001/review.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/FullLegFringeRegion-v001/tool-source.py",
+      "mode": "copy",
+      "bytes": 10026,
+      "sha256": "a4d1e4b5f319bd55ce220ef386d5ccdd08f13349911342b3ca6e11c4aff2572f",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/FullLegFringeRegion-v001/tool-source.py"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/FullLegFringeRoots-v001/profile.json",
+      "mode": "copy",
+      "bytes": 1800,
+      "sha256": "2a64c62067b9c151045965e855865abf3f237f5021bb82475e658a9e980117e5",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/FullLegFringeRoots-v001/profile.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/FullLegFringeRoots-v001/region-roots.npz",
+      "mode": "copy",
+      "bytes": 6455,
+      "sha256": "6c87dc69d6bbcf1ea76f7ca12e4f860940f328782c4a374a0a33278008bdf682",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/FullLegFringeRoots-v001/region-roots.npz"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/FullLegFringeRoots-v001/roots-report.json",
+      "mode": "copy",
+      "bytes": 1997,
+      "sha256": "78e712da88aec154b117ff3dc702d57b66be3723369c362d2dab79e9bdd4aac8",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/FullLegFringeRoots-v001/roots-report.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/FullLegFringeRoots-v001/tool-source.py",
+      "mode": "copy",
+      "bytes": 4678,
+      "sha256": "bcacf6b6f6412c7b7061717bc919d0adc69549d3539376fb49a3a280feeb5f30",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/FullLegFringeRoots-v001/tool-source.py"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringeParentTrace-v001/parent-report.json",
+      "mode": "copy",
+      "bytes": 50096,
+      "sha256": "8c5405d1d7c17cd58cc71e5068e350a8b20884b1d96bf657c5858399eaa36a1f",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringeParentTrace-v001/parent-report.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringeParentTrace-v001/parent-trajectories.npz",
+      "mode": "copy",
+      "bytes": 68885,
+      "sha256": "eafcd0521e74eb852ccb04c51717e38f3c585337572309879b7bc47457c00b2e",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringeParentTrace-v001/parent-trajectories.npz"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringeParentTrace-v001/profile.json",
+      "mode": "copy",
+      "bytes": 1120,
+      "sha256": "1840863b9bd56fe0228a83e2996ab57a4d095c75df463057b1d3d2eeceed6925",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringeParentTrace-v001/profile.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringeParentTrace-v001/tool-source.py",
+      "mode": "copy",
+      "bytes": 3427,
+      "sha256": "586dc9cf75cfa3fa902d68387a859e27b58bc815c589420c5259bdbd48ca04fd",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringeParentTrace-v001/tool-source.py"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringeParentSkinPreflight-v001/decision.json",
+      "mode": "copy",
+      "bytes": 840,
+      "sha256": "7ce9a04bae0143ce82e238d413c5d9d3d3116d0b5fdc38be1739a5673fade5fa",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringeParentSkinPreflight-v001/decision.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringeParentSkinPreflight-v001/parent-skin-proposal.npz",
+      "mode": "copy",
+      "bytes": 646742,
+      "sha256": "18f4e69aae9ec2601202878cb7760be2696124b1ccd39751b491e980ab4e29d5",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringeParentSkinPreflight-v001/parent-skin-proposal.npz"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringeParentSkinPreflight-v001/preflight.json",
+      "mode": "copy",
+      "bytes": 15919,
+      "sha256": "99e0178fa1295371377deb43808328baf150dc053f896dc086fb8f812b605d93",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringeParentSkinPreflight-v001/preflight.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringeParentSkinPreflight-v001/profile.json",
+      "mode": "copy",
+      "bytes": 1957,
+      "sha256": "4dfa66124041366194544bac91aeeaf08968cc0491b6a71586bfafe00a134839",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringeParentSkinPreflight-v001/profile.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringeParentSkinPreflight-v001/tool-source.py",
+      "mode": "copy",
+      "bytes": 8299,
+      "sha256": "6ffb188ed092e9b1a024717ee72289ec82cc19d2292e273ad696e1aba53613f4",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringeParentSkinPreflight-v001/tool-source.py"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringePrimaryFollowReview-v001/Actual-FringePrimaryFollow.blend",
+      "mode": "copy",
+      "bytes": 5840513,
+      "sha256": "fb38c0c4ef3a3fef78b60f8544cb07a87c276b5e1b79c617afc12ffacf9aac85",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringePrimaryFollowReview-v001/Actual-FringePrimaryFollow.blend"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringePrimaryFollowReview-v001/capture-report.json",
+      "mode": "copy",
+      "bytes": 2667,
+      "sha256": "d612e6361711b1d5bbe8d646c00408bf9083dc7aabb1fdc15f74f1c13b00ca6e",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringePrimaryFollowReview-v001/capture-report.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringePrimaryFollowReview-v001/Primary-Follow-Only-INVALIDATED.json",
+      "mode": "copy",
+      "bytes": 470,
+      "sha256": "a8acb889e70ff6104bf83565b0558324c783ea7d08838bc1d647547bcb9fd910",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringePrimaryFollowReview-v001/Primary-Follow-Only-INVALIDATED.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringePrimaryFollowReview-v001/Primary-Follow-Only-v002.gif",
+      "mode": "copy",
+      "bytes": 1431529,
+      "sha256": "2ea4c6bb7eaa942be9bda0d7a3df8d932acef0a267272931a679cd1a9126c682",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringePrimaryFollowReview-v001/Primary-Follow-Only-v002.gif"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringePrimaryFollowReview-v001/Primary-Follow-Only-v002.json",
+      "mode": "copy",
+      "bytes": 4581,
+      "sha256": "bffdfb7de6de086b5bc1371e28ae90c75c2454db54c270fae39f01c16ca1f55f",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringePrimaryFollowReview-v001/Primary-Follow-Only-v002.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringePrimaryFollowReview-v001/Primary-Follow-Only-v002.py",
+      "mode": "copy",
+      "bytes": 2200,
+      "sha256": "afdd93e6045b4597aa15fc0a843ec39db1c42a991f87ca9c6fbda046975ea9c6",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringePrimaryFollowReview-v001/Primary-Follow-Only-v002.py"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringePrimaryFollowReview-v001/Primary-Follow-Only.gif",
+      "mode": "copy",
+      "bytes": 1431529,
+      "sha256": "b8b4fdf580bbf44e84b50ceee75f6690f17fca39c7cf02411d0163b941b62f23",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringePrimaryFollowReview-v001/Primary-Follow-Only.gif"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringePrimaryFollowReview-v001/Primary-Follow-Only.json",
+      "mode": "copy",
+      "bytes": 4569,
+      "sha256": "428cab8ddef1479d5e8894a242457cf425a9948a51be47fba162e2f695305265",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringePrimaryFollowReview-v001/Primary-Follow-Only.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringePrimaryFollowReview-v001/Primary-Follow-Only.py",
+      "mode": "copy",
+      "bytes": 2037,
+      "sha256": "1852652ec28f85ba97d1f6514c30a060d91bbee86e600ccf1d34b0b32320ce57",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringePrimaryFollowReview-v001/Primary-Follow-Only.py"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringePrimaryFollowReview-v001/profile.json",
+      "mode": "copy",
+      "bytes": 1839,
+      "sha256": "7000fcfd886fe11f5dda6021030599cefd9e1bff44475b60b266e411de06f7e2",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringePrimaryFollowReview-v001/profile.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringePrimaryFollowReview-v001/README.md",
+      "mode": "copy",
+      "bytes": 1197,
+      "sha256": "5f8fa7bda5f2308a13c266355cef25bc956f06f022a2ce80af55b1dcd43f9b59",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringePrimaryFollowReview-v001/README.md"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringePrimaryFollowReview-v001/source-indexed-world-points.npz",
+      "mode": "copy",
+      "bytes": 6095143,
+      "sha256": "80f129671e2d351cb39e33076007d5a0e6486561f78f7165908be63808f54365",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringePrimaryFollowReview-v001/source-indexed-world-points.npz"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringePrimaryFollowReview-v001/tool-source.py",
+      "mode": "copy",
+      "bytes": 8744,
+      "sha256": "de8d364f676cdff2b80f655b3867a94f54393a731e7ddcdb2e831619ed9e6255",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringePrimaryFollowReview-v001/tool-source.py"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringePrimaryFollowReview-v001/visual-review.json",
+      "mode": "copy",
+      "bytes": 1087,
+      "sha256": "08adabe2b6bd7c761044bb4674d54de45a7479a3844f2d96bd2cdfc3a2684a33",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringePrimaryFollowReview-v001/visual-review.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringePrimaryFollowReview-v001/frames/0001.png",
+      "mode": "copy",
+      "bytes": 371363,
+      "sha256": "e40f9fb0a87ba47f557eac6356dddab4691e9bfeccf130a07353d5b3e9ff211e",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringePrimaryFollowReview-v001/frames/0001.png"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringePrimaryFollowReview-v001/frames/0007.png",
+      "mode": "copy",
+      "bytes": 374317,
+      "sha256": "b633251629bf8fdf9bd25d545ce31bb01977b8c909f3dabd7fd4ecdf379e9a32",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringePrimaryFollowReview-v001/frames/0007.png"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringePrimaryFollowReview-v001/frames/0013.png",
+      "mode": "copy",
+      "bytes": 374699,
+      "sha256": "9b00167870be2069753c9329d1bc5ce473e3df72fd990e47b4b3f0f7db6488e2",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringePrimaryFollowReview-v001/frames/0013.png"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringePrimaryFollowReview-v001/frames/0019.png",
+      "mode": "copy",
+      "bytes": 372805,
+      "sha256": "df9eb1223af2c2364499ab32a26d59fb35b92765cd850890061e2d203a4e4d1c",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringePrimaryFollowReview-v001/frames/0019.png"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringePrimaryFollowReview-v001/frames/0025.png",
+      "mode": "copy",
+      "bytes": 369827,
+      "sha256": "92a6634883211565d84effce8e81fdba0524aa0571533643229cd6147debb387",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringePrimaryFollowReview-v001/frames/0025.png"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringePrimaryFollowReview-v001/frames/0031.png",
+      "mode": "copy",
+      "bytes": 369465,
+      "sha256": "1cb2749981afae3a2b1b1128102e220c3d335c0274160615cd558bcac0d619df",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringePrimaryFollowReview-v001/frames/0031.png"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringePrimaryFollowReview-v001/frames/0037.png",
+      "mode": "copy",
+      "bytes": 371407,
+      "sha256": "ba7352ef9911631baf14bde72bbdf4409dd480e9d27f6e408af1b84077c31efe",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringePrimaryFollowReview-v001/frames/0037.png"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringePrimaryFollowReview-v001/frames/0043.png",
+      "mode": "copy",
+      "bytes": 374340,
+      "sha256": "da6c0f7af03db3cb213e08bbcad798870180543e9d1f06c8fbd959d3205fe281",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringePrimaryFollowReview-v001/frames/0043.png"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringePrimaryFollowReview-v001/frames/0049.png",
+      "mode": "copy",
+      "bytes": 374750,
+      "sha256": "fb29ad55bfd4feef2da040b8a8c0f163fc68a4cbe276fd383b63133350c9f3da",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringePrimaryFollowReview-v001/frames/0049.png"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringePrimaryFollowReview-v001/frames/0055.png",
+      "mode": "copy",
+      "bytes": 372788,
+      "sha256": "fa3223a788dbff2c676b0c9a199445e40daa279f861e3387433dea0e018235d5",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringePrimaryFollowReview-v001/frames/0055.png"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringePrimaryFollowReview-v001/frames/0061.png",
+      "mode": "copy",
+      "bytes": 369818,
+      "sha256": "94b4298aa75016d27855743761e28e22fb023714feba57d6fbb7fd428fe69f2c",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringePrimaryFollowReview-v001/frames/0061.png"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringePrimaryFollowReview-v001/frames/0067.png",
+      "mode": "copy",
+      "bytes": 369515,
+      "sha256": "9cef101fbd01500782f2de6b91668e7067828fd58eea1ce381b62b7320009d9b",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringePrimaryFollowReview-v001/frames/0067.png"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringePrimaryFollowReview-v001/frames/0073.png",
+      "mode": "copy",
+      "bytes": 371367,
+      "sha256": "f8bbfcb409f1d147026d8b362606253ccc1da7cc3d67e218ee04bf38e64f5c5e",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringePrimaryFollowReview-v001/frames/0073.png"
+    },
+    {
+      "path": "tools/Prepare-FeatureRegionRoots.py",
+      "mode": "copy",
+      "bytes": 4678,
+      "sha256": "bcacf6b6f6412c7b7061717bc919d0adc69549d3539376fb49a3a280feeb5f30",
+      "snapshot": "snapshot/tools/Prepare-FeatureRegionRoots.py"
+    },
+    {
+      "path": "tools/Trace-FeatureRegionParents.py",
+      "mode": "copy",
+      "bytes": 3427,
+      "sha256": "586dc9cf75cfa3fa902d68387a859e27b58bc815c589420c5259bdbd48ca04fd",
+      "snapshot": "snapshot/tools/Trace-FeatureRegionParents.py"
+    },
+    {
+      "path": "tools/Preflight-FeatureParentSkin.py",
+      "mode": "copy",
+      "bytes": 8299,
+      "sha256": "6ffb188ed092e9b1a024717ee72289ec82cc19d2292e273ad696e1aba53613f4",
+      "snapshot": "snapshot/tools/Preflight-FeatureParentSkin.py"
+    },
+    {
+      "path": "tools/Capture-FeaturePrimaryFollowReview.py",
+      "mode": "copy",
+      "bytes": 8744,
+      "sha256": "de8d364f676cdff2b80f655b3867a94f54393a731e7ddcdb2e831619ed9e6255",
+      "snapshot": "snapshot/tools/Capture-FeaturePrimaryFollowReview.py"
+    },
+    {
+      "path": "tools/Make-AssetReviewGif.py",
+      "mode": "copy",
+      "bytes": 2200,
+      "sha256": "afdd93e6045b4597aa15fc0a843ec39db1c42a991f87ca9c6fbda046975ea9c6",
+      "snapshot": "snapshot/tools/Make-AssetReviewGif.py"
+    },
+    {
+      "path": "tools/Render-MountAnatomyAtlas.py",
+      "mode": "copy",
+      "bytes": 10026,
+      "sha256": "a4d1e4b5f319bd55ce220ef386d5ccdd08f13349911342b3ca6e11c4aff2572f",
+      "snapshot": "snapshot/tools/Render-MountAnatomyAtlas.py"
+    },
+    {
+      "path": "tools/Freeze-AssetEvidence.py",
+      "mode": "copy",
+      "bytes": 3636,
+      "sha256": "022a766de42da24a27460313b041d386c86c95c5e30573e5f661dc523872dd88",
+      "snapshot": "snapshot/tools/Freeze-AssetEvidence.py"
+    },
+    {
+      "path": "docs/dependency-map.md",
+      "mode": "copy",
+      "bytes": 96846,
+      "sha256": "e67e8b96b601b8e1596fb54e18768447067802e86116d4dc12f1f6b13224b23a",
+      "snapshot": "snapshot/docs/dependency-map.md"
+    },
+    {
+      "path": "docs/art-templates/mount-secondary-motion.md",
+      "mode": "copy",
+      "bytes": 34208,
+      "sha256": "467d23c0b19e55ae8551af5c50c60eaf06c68d720ac408747a084ee3f57396c4",
+      "snapshot": "snapshot/docs/art-templates/mount-secondary-motion.md"
+    },
+    {
+      "path": "docs/art-templates/model-job.schema.json",
+      "mode": "copy",
+      "bytes": 4334,
+      "sha256": "397519c977f2dd3afac92b79b7c790a88ad704a0735d6d1b1e1ef3d375566909",
+      "snapshot": "snapshot/docs/art-templates/model-job.schema.json"
+    },
+    {
+      "path": "docs/art-templates/model-jobs/voidreign-quality-20261018.json",
+      "mode": "copy",
+      "bytes": 42126,
+      "sha256": "79981fbf56a9e7bde3c2a9e7c546c3b7cc8e959d68b4867482dbff55d2771250",
+      "snapshot": "snapshot/docs/art-templates/model-jobs/voidreign-quality-20261018.json"
+    },
+    {
+      "path": "docs/art-templates/model-catalog.md",
+      "mode": "copy",
+      "bytes": 6334,
+      "sha256": "75df16b289bdf4ca15df19a4cb91a5868196a214a42783fc63dea20712bd4c9b",
+      "snapshot": "snapshot/docs/art-templates/model-catalog.md"
+    },
+    {
+      "path": "docs/art-templates/model-profiles/voidreign-full-leg-fringe-region-20261019.json",
+      "mode": "copy",
+      "bytes": 3644,
+      "sha256": "bda4066372e56e8a3e88a1036751dc1a3e86fa73a34b69f6851ac917ca884c36",
+      "snapshot": "snapshot/docs/art-templates/model-profiles/voidreign-full-leg-fringe-region-20261019.json"
+    },
+    {
+      "path": "docs/art-templates/model-profiles/voidreign-full-leg-fringe-roots-20261019.json",
+      "mode": "copy",
+      "bytes": 1800,
+      "sha256": "2a64c62067b9c151045965e855865abf3f237f5021bb82475e658a9e980117e5",
+      "snapshot": "snapshot/docs/art-templates/model-profiles/voidreign-full-leg-fringe-roots-20261019.json"
+    },
+    {
+      "path": "docs/art-templates/model-profiles/voidreign-leg-fringe-parent-trace-20261019.json",
+      "mode": "copy",
+      "bytes": 1120,
+      "sha256": "1840863b9bd56fe0228a83e2996ab57a4d095c75df463057b1d3d2eeceed6925",
+      "snapshot": "snapshot/docs/art-templates/model-profiles/voidreign-leg-fringe-parent-trace-20261019.json"
+    },
+    {
+      "path": "docs/art-templates/model-profiles/voidreign-leg-fringe-parent-skin-preflight-20261019.json",
+      "mode": "copy",
+      "bytes": 1957,
+      "sha256": "4dfa66124041366194544bac91aeeaf08968cc0491b6a71586bfafe00a134839",
+      "snapshot": "snapshot/docs/art-templates/model-profiles/voidreign-leg-fringe-parent-skin-preflight-20261019.json"
+    },
+    {
+      "path": "docs/art-templates/model-profiles/voidreign-leg-fringe-primary-follow-review-20261019.json",
+      "mode": "copy",
+      "bytes": 1839,
+      "sha256": "7000fcfd886fe11f5dda6021030599cefd9e1bff44475b60b266e411de06f7e2",
+      "snapshot": "snapshot/docs/art-templates/model-profiles/voidreign-leg-fringe-primary-follow-review-20261019.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/FeatureOwnershipReproductionKit-v001/manifest.json",
+      "mode": "copy",
+      "bytes": 33699,
+      "sha256": "1f2ec939c61841dc9945b625ce2b8e3fed6209237126c388dc1f21be61474e8b",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/FeatureOwnershipReproductionKit-v001/manifest.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringeLabelCorrection-v001/revision.json",
+      "mode": "copy",
+      "bytes": 2422,
+      "sha256": "22ea449a65266b9a30f448f10cbab0cbfda37646edc485810e7cf3b904140f41",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringeLabelCorrection-v001/revision.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MountProfile.md",
+      "mode": "copy",
+      "bytes": 30819,
+      "sha256": "167ac005f6969fe07c7d57889e21857da0ef32a1f160ef21a9d9dd97f3125886",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MountProfile.md"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryLocomotionPlan-v001/queue.json",
+      "mode": "copy",
+      "bytes": 2795,
+      "sha256": "62e5834fa988b0f6ee1a68e8d99b192345d2e6460c0a6ee00ab38e39cfe79132",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryLocomotionPlan-v001/queue.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkRetention-v003/validation.json",
+      "mode": "copy",
+      "bytes": 17017,
+      "sha256": "0630516734df3c1bb11f95ae92056e353dda46c4f4328c4574e32a2e1a451e49",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkRetention-v003/validation.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkPilot-v003/Mount-WalkPilot.blend",
+      "mode": "reference",
+      "bytes": 124637836,
+      "sha256": "f59dc38bff697b6c2a2c84511413d2e292d9fdbb278acc69cd8df6d26a5bd123",
+      "snapshot": null
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/DegenerateInspection-v001/00-component-selections.npz",
+      "mode": "reference",
+      "bytes": 5812171,
+      "sha256": "0d7599c8064cb81a6e211a23731435e08939b7fb146ce2d4bed810273909a2b2",
+      "snapshot": null
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringeLabelCorrection-v001/label-only-selections.npz",
+      "mode": "reference",
+      "bytes": 675274,
+      "sha256": "dc78ba7dbd5a03bef0f0397a26435ec6bcf31b079c340aff5d035a2b1566a630",
+      "snapshot": null
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryDomains-v001/primary-domains.npz",
+      "mode": "reference",
+      "bytes": 915748,
+      "sha256": "38002ef04f9ab82df4456021b3772e422328e2ecebd38bd068a344dd5e27bdb5",
+      "snapshot": null
+    }
+  ],
+  "profile_sha256": "04785c4e5527839aa08ea9686bf3a91c364dac8a8fcb4bd8e47ce2ef38a5280f",
+  "tool_sha256": "022a766de42da24a27460313b041d386c86c95c5e30573e5f661dc523872dd88"
+}

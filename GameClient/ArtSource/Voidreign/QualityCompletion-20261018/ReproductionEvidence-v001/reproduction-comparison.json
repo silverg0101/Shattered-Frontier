@@ -1,0 +1,42 @@
+{
+  "status": "reproduced-known-failures",
+  "checks": [
+    {
+      "id": "skin.protected_rigidity",
+      "original": 6.802506504755002e-07,
+      "reproduced": 6.802506504755002e-07,
+      "exact_match": true
+    },
+    {
+      "id": "skin.coincident_seams",
+      "original": 0.0,
+      "reproduced": 0.0,
+      "exact_match": true
+    },
+    {
+      "id": "motion.initial_surface_step",
+      "original": 4.8972626245813444e-05,
+      "reproduced": 4.8972626245813444e-05,
+      "exact_match": true
+    },
+    {
+      "id": "motion.maximum_surface_step",
+      "original": 0.15610156953334808,
+      "reproduced": 0.15610156953334808,
+      "exact_match": true
+    },
+    {
+      "id": "attachments.proposed_gap_increase",
+      "original": 4.370696842670441e-05,
+      "reproduced": 4.370696842670441e-05,
+      "exact_match": true
+    },
+    {
+      "id": "motion.surface_capsule_clearance",
+      "original": 0.06867494434118271,
+      "reproduced": 0.06867494434118271,
+      "exact_match": true
+    }
+  ],
+  "note": "Identical six surface measurements, not a passing model. Full local outputs remain in ignored Artifacts run path. Canonical third source and pinned lock are durable inputs."
+}

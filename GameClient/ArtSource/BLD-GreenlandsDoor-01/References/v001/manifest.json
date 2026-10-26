@@ -1,0 +1,29 @@
+{
+  "asset_id": "BLD-GreenlandsDoor-01",
+  "category": "building component / door",
+  "brief": "One proposed starter-shelter closed hinged door unit with timber frame, pale plaster infill, lower wood boards and stone threshold.",
+  "design_sources": [
+    { "path": "docs/Game-Design/Legends_Shattered_Frontier_Vertical_Slice_Specification_v1.0.md", "section": "Scope and exclusions / Housing; Content inventory", "role": "requires a door among four shelter pieces" },
+    { "path": "docs/Game-Design/Legends_Shattered_Frontier_Construction_Integration_Contracts_v0.1.md", "section": "9 Building service and domain contracts", "role": "construction ownership context" }
+  ],
+  "concept_status": "agent-selected; visual proposal, user approval not claimed",
+  "clean_view_status": "ready-for-model-test; opaque background, segmentation required if later adapter requires alpha",
+  "design_master": "concept-sheet.png",
+  "prompts": "prompt.txt (mismatch correction retained)",
+  "generation": { "tool": "built-in image_gen", "model": "unavailable", "generated_date": "2026-10-18", "seed": "unavailable" },
+  "outputs": {
+    "concept-sheet.png": { "sha256": "2F9801ABD227667650DC7A5DF48BC15D25CDB9B542B50531733ADC2181A1F7C5", "dimensions_px": [1536, 1024], "color": "RGB, opaque; PNG color type 2", "master": true },
+    "asset-view.png": { "sha256": "4825840DA30756C235E7ED1F7E4A7EABD36232E7C6E2A392D9280C1E9E1C6C10", "dimensions_px": [1536, 1024], "color": "RGB, opaque; PNG color type 2", "master": false }
+  },
+  "component_boundaries": ["One closed door leaf, attached frame and threshold only", "Excludes surrounding wall, full shelter and opening animation"],
+  "scale": "Approximate scale inferred; no doorway dimensions established here.",
+  "edits": "No pixel edits or upscaling. First clean view changed the leaf to a diagonal-braced all-wood design; second prompt returned the plaster/wood split and threshold from the selected master.",
+  "review": {
+    "reviewer": "Codex visual inspection",
+    "findings": ["Concept sheet consistently shows a closed door in a timber frame with pale plaster upper field, wood lower field, hardware and stone threshold.", "Final clean view restores those features after the first mismatch and contains one complete asset with neutral opaque background and margins."],
+    "unresolved": ["Exact hinge placement, opening direction, size and modular interface remain proposals."],
+    "image_complete": true,
+    "approval": "agent-selected; not user-approved",
+    "review_date": "2026-10-18"
+  }
+}

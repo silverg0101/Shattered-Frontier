@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "status": "UV-class-mask-authoring-data-needs-review",
+  "cpu_only": true,
+  "input_sha256": {
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/SourceUVTopology-v001/uv-report.json": "f84f5fb66327985f43c6d0db8f5a1fc3db9bdbc9ca8fc5ec361c7855e4435d85",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/SourceUVTopology-v001/uv-topology.npz": "7d6b6296ff351ca9c6608eb5dba7098738e35f8ede072a1a63eeea462357ba94",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReviewedDielectricFaces-v002/approval.json": "dde063c737db5f3a8adb01cf7d11e41fead322a7832a26d87463d4dfd4a18ba6",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReviewedDielectricFaces-v002/approved-response-faces.npz": "d99eb3ce6daeb1bfcfacfa7f75f48f9a1c1240387d6e262239655e39e065d118"
+  },
+  "profile_sha256": "29012673e8302e9cf05f0ac98ee6466dba2ca0f3003ee4f938df665bdede5b9e",
+  "tool_sha256": "7804fa0d9de01dd9beee97584b47f301d889414cb5ff77c866365be40759ae1a",
+  "resolution": 4096,
+  "triangles": 297119,
+  "approved_faces": 955,
+  "uv_degenerate_faces": 37,
+  "approved_faces_without_safe_pixel": 1,
+  "approved_faces_without_center_sample": 1,
+  "overlap_pixels": 303,
+  "class_pixel_counts": {
+    "0": 7370577,
+    "1": 21025,
+    "2": 1484,
+    "254": 303,
+    "255": 9383827
+  },
+  "class_legend": {
+    "0": "unknown mesh surface",
+    "1": "reviewed strand nonmetal",
+    "2": "reviewed bone nonmetal",
+    "254": "overlapping UV faces - unresolved",
+    "255": "unused atlas"
+  },
+  "outputs": {
+    "MaterialClassIDs.png": "c41b1dd5597c159b49115e5c5250ff42b601d85a717dee7ff8ff667d7d20ec22",
+    "ClassCoveragePreview.png": "ba409bac04c42d9203e3fc8936f902e39fc10a2ce68e564a67b07471cc50f67c",
+    "coverage.npz": "2c1169101591404f4f947f6ae33e2a7cae247253b637752b03b647d35d634487"
+  },
+  "limitations": [
+    "Pixel-center source UV coverage only; no filtered/mipped texel footprint or engine acceptance.",
+    "Unknown and overlapping pixels are not approvals. No automatic class filling, dilation, PBR map or shader edit.",
+    "Use nearest sampling for class IDs; this data PNG is not an albedo/metallic texture.",
+    "Per-pixel lack of detected overlap does not prove continuous UV topology is non-overlapping."
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "asset": "Voidreign",
+  "source_file": "Voidreign.png",
+  "source_path": "C:\\Users\\grego\\Downloads\\Voidreign.png",
+  "source_sha256": "b8b5478e46b63274b4b49d7b221b96b9aecfe35c2483818c2d14a7fcffde1efb",
+  "tool": "Blender",
+  "tool_version": "5.1.1",
+  "generated": "2026-10-18",
+  "method": "Hand-authored procedural mesh and curves, guided by supplied concept sheet; no image-to-3D service.",
+  "status": "concept prototype blockout with ornamental detail",
+  "dimensions": {
+    "width_x_m": 1.16,
+    "length_y_m": 4.0,
+    "height_z_m": 2.505,
+    "orientation": "Z up; muzzle faces -Y; ground at Z=0"
+  },
+  "mesh_objects": 78,
+  "triangle_count": 32860,
+  "materials": [
+    "Aged ivory bone",
+    "Blackened iron",
+    "Charcoal hide and leather",
+    "Ember red",
+    "Hoof iron",
+    "Neutral studio",
+    "Scale guide grey"
+  ],
+  "uv_status": "procedural geometry; no authored UV maps or textures",
+  "outputs": [
+    "Voidreign.blend",
+    "Voidreign.glb",
+    "Voidreign.fbx",
+    "previews/Beauty.png",
+    "previews/Front.png",
+    "previews/Side.png",
+    "previews/Rear.png",
+    "previews/Rider-scale.png",
+    "previews/FreshProcess.png",
+    "README.md",
+    "asset-manifest.json",
+    "validation-report.json"
+  ],
+  "assumptions": [
+    "Hidden surfaces and far-side tack inferred from the visible concept views.",
+    "Ribs are stylized external arches over the body rather than a modeled open thoracic cavity.",
+    "Scale follows the image sheet: about 17 hands at shoulder; rider is a separate seated 1.8m scale guide."
+  ],
+  "limitations": [
+    "Not production topology, rigged, animated, watertight or Unreal-validated.",
+    "Hair, tack and effects are stylized strands/curves; no transparency or PBR texture maps."
+  ],
+  "checks_executed": [
+    "Saved editable source; reopened and rendered in a fresh Blender 5.1.1 process.",
+    "Exported and reimported GLB and FBX into empty Blender scenes; both retained 166 mesh objects, five model materials, matching bounds and 36,732 triangles. See validation-report.json."
+  ]
+}

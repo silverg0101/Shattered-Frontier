@@ -1,0 +1,578 @@
+{
+  "schema_version": 1,
+  "units": "metres",
+  "permissions": "Immutable original-mesh anatomical joint pilot only; no gait/semantic/runtime acceptance",
+  "effective_time": "This candidate only",
+  "object": "geometry_0",
+  "source": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryOnlyCombinedFull-v001\\Voidreign-ActualSurfacePilot.blend",
+  "rest_selection": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz",
+  "semantic_selection": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selections.npz",
+  "domains": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryDomains-v001\\primary-domains.npz",
+  "bones": [
+    {
+      "id": "PRI.body.pelvis",
+      "head_m": [
+        0,
+        0.55,
+        1.48
+      ],
+      "tail_m": [
+        0,
+        0,
+        1.5
+      ],
+      "parent": null
+    },
+    {
+      "id": "PRI.body.spine",
+      "head_m": [
+        0,
+        0,
+        1.5
+      ],
+      "tail_m": [
+        0,
+        -0.52,
+        1.45
+      ],
+      "parent": "PRI.body.pelvis"
+    },
+    {
+      "id": "PRI.body.chest",
+      "head_m": [
+        0,
+        -0.52,
+        1.45
+      ],
+      "tail_m": [
+        0,
+        -0.68,
+        1.68
+      ],
+      "parent": "PRI.body.spine"
+    },
+    {
+      "id": "PRI.body.neck",
+      "head_m": [
+        0,
+        -0.68,
+        1.68
+      ],
+      "tail_m": [
+        0,
+        -0.87,
+        1.94
+      ],
+      "parent": "PRI.body.chest"
+    },
+    {
+      "id": "PRI.body.head",
+      "head_m": [
+        0,
+        -0.87,
+        1.94
+      ],
+      "tail_m": [
+        0,
+        -1.1,
+        2.2
+      ],
+      "parent": "PRI.body.neck"
+    },
+    {
+      "id": "PRI.body.muzzle",
+      "head_m": [
+        0,
+        -1.1,
+        2.2
+      ],
+      "tail_m": [
+        0,
+        -1.43,
+        1.91
+      ],
+      "parent": "PRI.body.head"
+    },
+    {
+      "id": "PRI.body.tail-base",
+      "head_m": [
+        0,
+        0.55,
+        1.48
+      ],
+      "tail_m": [
+        0,
+        0.92,
+        1.5
+      ],
+      "parent": "PRI.body.pelvis"
+    },
+    {
+      "id": "PRI.fore.L.shoulder",
+      "head_m": [
+        0.25,
+        -0.53,
+        1.4
+      ],
+      "tail_m": [
+        0.26,
+        -0.63,
+        1.05
+      ],
+      "parent": "PRI.body.spine"
+    },
+    {
+      "id": "PRI.fore.L.elbow",
+      "head_m": [
+        0.26,
+        -0.63,
+        1.05
+      ],
+      "tail_m": [
+        0.224,
+        -0.65,
+        0.65
+      ],
+      "parent": "PRI.fore.L.shoulder"
+    },
+    {
+      "id": "PRI.fore.L.carpus",
+      "head_m": [
+        0.224,
+        -0.65,
+        0.65
+      ],
+      "tail_m": [
+        0.318,
+        -0.765,
+        0.23
+      ],
+      "parent": "PRI.fore.L.elbow"
+    },
+    {
+      "id": "PRI.fore.L.fetlock",
+      "head_m": [
+        0.318,
+        -0.765,
+        0.23
+      ],
+      "tail_m": [
+        0.284,
+        -0.829,
+        0.12
+      ],
+      "parent": "PRI.fore.L.carpus"
+    },
+    {
+      "id": "PRI.fore.R.shoulder",
+      "head_m": [
+        -0.27,
+        -0.6,
+        1.4
+      ],
+      "tail_m": [
+        -0.28,
+        -0.7,
+        1.05
+      ],
+      "parent": "PRI.body.spine"
+    },
+    {
+      "id": "PRI.fore.R.elbow",
+      "head_m": [
+        -0.28,
+        -0.7,
+        1.05
+      ],
+      "tail_m": [
+        -0.289,
+        -0.735,
+        0.65
+      ],
+      "parent": "PRI.fore.R.shoulder"
+    },
+    {
+      "id": "PRI.fore.R.carpus",
+      "head_m": [
+        -0.289,
+        -0.735,
+        0.65
+      ],
+      "tail_m": [
+        -0.317,
+        -0.837,
+        0.23
+      ],
+      "parent": "PRI.fore.R.elbow"
+    },
+    {
+      "id": "PRI.fore.R.fetlock",
+      "head_m": [
+        -0.317,
+        -0.837,
+        0.23
+      ],
+      "tail_m": [
+        -0.289,
+        -0.89,
+        0.1
+      ],
+      "parent": "PRI.fore.R.carpus"
+    },
+    {
+      "id": "PRI.hind.L.hip",
+      "head_m": [
+        0.29,
+        0.66,
+        1.42
+      ],
+      "tail_m": [
+        0.3,
+        0.47,
+        1.0
+      ],
+      "parent": "PRI.body.pelvis"
+    },
+    {
+      "id": "PRI.hind.L.stifle",
+      "head_m": [
+        0.3,
+        0.47,
+        1.0
+      ],
+      "tail_m": [
+        0.31,
+        0.85,
+        0.61
+      ],
+      "parent": "PRI.hind.L.hip"
+    },
+    {
+      "id": "PRI.hind.L.hock",
+      "head_m": [
+        0.31,
+        0.85,
+        0.61
+      ],
+      "tail_m": [
+        0.448,
+        0.812,
+        0.2
+      ],
+      "parent": "PRI.hind.L.stifle"
+    },
+    {
+      "id": "PRI.hind.L.fetlock",
+      "head_m": [
+        0.448,
+        0.812,
+        0.2
+      ],
+      "tail_m": [
+        0.45,
+        0.75,
+        0.05
+      ],
+      "parent": "PRI.hind.L.hock"
+    },
+    {
+      "id": "PRI.hind.R.hip",
+      "head_m": [
+        -0.31,
+        0.58,
+        1.42
+      ],
+      "tail_m": [
+        -0.32,
+        0.31,
+        1.0
+      ],
+      "parent": "PRI.body.pelvis"
+    },
+    {
+      "id": "PRI.hind.R.stifle",
+      "head_m": [
+        -0.32,
+        0.31,
+        1.0
+      ],
+      "tail_m": [
+        -0.29,
+        0.59,
+        0.6
+      ],
+      "parent": "PRI.hind.R.hip"
+    },
+    {
+      "id": "PRI.hind.R.hock",
+      "head_m": [
+        -0.29,
+        0.59,
+        0.6
+      ],
+      "tail_m": [
+        -0.255,
+        0.479,
+        0.2
+      ],
+      "parent": "PRI.hind.R.stifle"
+    },
+    {
+      "id": "PRI.hind.R.fetlock",
+      "head_m": [
+        -0.255,
+        0.479,
+        0.2
+      ],
+      "tail_m": [
+        -0.267,
+        0.37,
+        0.05
+      ],
+      "parent": "PRI.hind.R.hock"
+    }
+  ],
+  "legs": [
+    {
+      "id": "fore.L",
+      "owner_id": 1,
+      "bones": [
+        "PRI.fore.L.shoulder",
+        "PRI.fore.L.elbow",
+        "PRI.fore.L.carpus",
+        "PRI.fore.L.fetlock"
+      ],
+      "root_blend_bones": [
+        "PRI.body.spine"
+      ],
+      "root_minimum_m": [
+        0.08,
+        -0.85,
+        1.08
+      ],
+      "root_maximum_m": [
+        0.55,
+        -0.25,
+        1.55
+      ]
+    },
+    {
+      "id": "fore.R",
+      "owner_id": 2,
+      "bones": [
+        "PRI.fore.R.shoulder",
+        "PRI.fore.R.elbow",
+        "PRI.fore.R.carpus",
+        "PRI.fore.R.fetlock"
+      ],
+      "root_blend_bones": [
+        "PRI.body.spine"
+      ],
+      "root_minimum_m": [
+        -0.55,
+        -0.85,
+        1.08
+      ],
+      "root_maximum_m": [
+        -0.08,
+        -0.25,
+        1.55
+      ]
+    },
+    {
+      "id": "hind.L",
+      "owner_id": 3,
+      "bones": [
+        "PRI.hind.L.hip",
+        "PRI.hind.L.stifle",
+        "PRI.hind.L.hock",
+        "PRI.hind.L.fetlock"
+      ],
+      "root_blend_bones": [
+        "PRI.body.pelvis"
+      ],
+      "root_minimum_m": [
+        0.08,
+        0.15,
+        1.08
+      ],
+      "root_maximum_m": [
+        0.55,
+        0.95,
+        1.55
+      ]
+    },
+    {
+      "id": "hind.R",
+      "owner_id": 4,
+      "bones": [
+        "PRI.hind.R.hip",
+        "PRI.hind.R.stifle",
+        "PRI.hind.R.hock",
+        "PRI.hind.R.fetlock"
+      ],
+      "root_blend_bones": [
+        "PRI.body.pelvis"
+      ],
+      "root_minimum_m": [
+        -0.55,
+        0.15,
+        1.08
+      ],
+      "root_maximum_m": [
+        -0.08,
+        0.95,
+        1.55
+      ]
+    }
+  ],
+  "body_owner_id": 5,
+  "body_bones": [
+    "PRI.body.pelvis",
+    "PRI.body.spine",
+    "PRI.body.chest",
+    "PRI.body.neck",
+    "PRI.body.head",
+    "PRI.body.muzzle"
+  ],
+  "semantic_bones": {
+    "1": [
+      "PRI.body.neck",
+      "PRI.body.head",
+      "PRI.body.muzzle"
+    ],
+    "2": [
+      "PRI.body.tail-base"
+    ]
+  },
+  "weights": {
+    "maximum_influences": 4,
+    "distance_floor_m": 0.025,
+    "distance_exponent": 2
+  },
+  "limits": {
+    "rest_correspondence_m": 1e-05
+  },
+  "frame_end": 60,
+  "fps": 30,
+  "poses": [
+    {
+      "frame": 1,
+      "id": "rest",
+      "rotations": []
+    },
+    {
+      "frame": 15,
+      "id": "fore-left-flex",
+      "rotations": [
+        {
+          "bone": "PRI.fore.L.shoulder",
+          "world_axis": [
+            1,
+            0,
+            0
+          ],
+          "angle_radians": 0.20943951023931956
+        },
+        {
+          "bone": "PRI.fore.L.elbow",
+          "world_axis": [
+            1,
+            0,
+            0
+          ],
+          "angle_radians": -0.3839724354387525
+        },
+        {
+          "bone": "PRI.fore.L.carpus",
+          "world_axis": [
+            1,
+            0,
+            0
+          ],
+          "angle_radians": 0.2617993877991494
+        }
+      ]
+    },
+    {
+      "frame": 30,
+      "id": "rest-mid",
+      "rotations": []
+    },
+    {
+      "frame": 45,
+      "id": "hind-right-neck-flex",
+      "rotations": [
+        {
+          "bone": "PRI.hind.R.hip",
+          "world_axis": [
+            1,
+            0,
+            0
+          ],
+          "angle_radians": -0.17453292519943295
+        },
+        {
+          "bone": "PRI.hind.R.stifle",
+          "world_axis": [
+            1,
+            0,
+            0
+          ],
+          "angle_radians": 0.3141592653589793
+        },
+        {
+          "bone": "PRI.hind.R.hock",
+          "world_axis": [
+            1,
+            0,
+            0
+          ],
+          "angle_radians": -0.2617993877991494
+        },
+        {
+          "bone": "PRI.body.neck",
+          "world_axis": [
+            1,
+            0,
+            0
+          ],
+          "angle_radians": 0.08726646259971647
+        }
+      ]
+    },
+    {
+      "frame": 60,
+      "id": "rest-end",
+      "rotations": []
+    }
+  ],
+  "render": {
+    "resolution": 960,
+    "samples": 8,
+    "light_position_m": [
+      -3,
+      -4,
+      6
+    ],
+    "light_watts": 1400,
+    "light_size_m": 5,
+    "target_m": [
+      0,
+      -0.05,
+      1.3
+    ],
+    "camera_position_m": [
+      5,
+      -6,
+      3.4
+    ],
+    "ortho_scale_m": 4.5
+  },
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryOnlyCombinedFull-v001\\Voidreign-ActualSurfacePilot.blend": "c507e31813fea5ea61e30f7cbf8bae37609135b549238b64ad1e61a1e42111ee",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz": "0d7599c8064cb81a6e211a23731435e08939b7fb146ce2d4bed810273909a2b2",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selections.npz": "0b6a19f76a2cba73a42e293c29365360b53ba93be101cf8f4ca556e7a5989cc0",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryDomains-v001\\primary-domains.npz": "38002ef04f9ab82df4456021b3772e422328e2ecebd38bd068a344dd5e27bdb5"
+  }
+}

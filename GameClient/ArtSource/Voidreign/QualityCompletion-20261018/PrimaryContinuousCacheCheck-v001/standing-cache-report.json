@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "status": "needs-review-full-mount-ground",
+  "cpu_only": true,
+  "input_sha256": {
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryContinuousInfluences-v001/Mount-StandingSkinRepair.blend": "aef9634f59269f81e43147f07bc786b302da92a600953adbf5388870fe0d72ba",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryContinuousExchange-v001/expected-world-points.npy": "242602cb0b86933796efb8e857915fd1d2477f1e76afd4edc95b19a6ac2fad0e",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryContinuousExchange-v001/exchange-report.json": "a27fd5c5a1e164f96fe88f9634e5ea0d178a08e348bee88f41f53887bf66f05e",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz": "0d7599c8064cb81a6e211a23731435e08939b7fb146ce2d4bed810273909a2b2",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selections.npz": "0b6a19f76a2cba73a42e293c29365360b53ba93be101cf8f4ca556e7a5989cc0",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimarySoleProposals-v001\\sole-patches.npz": "5b055301ae1b1349d3f85fb23e2b93985fd93f2a33e0fc1a1e4a05dbaf98614b"
+  },
+  "tool_sha256": "5f34f9c3629eda04af57efe13a18504420eb172933b81198c6b40fe1fc651860",
+  "profile_sha256": "a3669bf856ba16b96102ff7dfe70ce2dcb261833221d8f91a7efc0334b325f18",
+  "frames": 60,
+  "standing_frames": [
+    30,
+    60
+  ],
+  "primary_contact_checks": {
+    "seams": true,
+    "sole_rigidity": true,
+    "hold_contacts": true,
+    "hold_slip": true
+  },
+  "maximum_seam_error_m": 0.0,
+  "feet": [
+    {
+      "id": "fore.L",
+      "minimum_hold_height_m": 1.686162107716882e-07,
+      "maximum_hold_height_m": 1.686162107716882e-07,
+      "maximum_hold_slip_m": 0.0,
+      "maximum_sole_edge_change_m": 9.544605182598698e-07
+    },
+    {
+      "id": "fore.R",
+      "minimum_hold_height_m": -2.1105121049913578e-05,
+      "maximum_hold_height_m": -2.1105121049913578e-05,
+      "maximum_hold_slip_m": 0.0,
+      "maximum_sole_edge_change_m": 2.9488906286984085e-06
+    },
+    {
+      "id": "hind.L",
+      "minimum_hold_height_m": -3.502737229155173e-07,
+      "maximum_hold_height_m": -3.502737229155173e-07,
+      "maximum_hold_slip_m": 0.0,
+      "maximum_sole_edge_change_m": 1.1967908985638376e-06
+    },
+    {
+      "id": "hind.R",
+      "minimum_hold_height_m": 4.281279188944609e-07,
+      "maximum_hold_height_m": 4.281279188944609e-07,
+      "maximum_hold_slip_m": 0.0,
+      "maximum_sole_edge_change_m": 2.3899401053323333e-06
+    }
+  ],
+  "full_mount_ground": {
+    "frame": 30,
+    "vertex": 266801,
+    "semantic_label": 2,
+    "minimum_height_m": -0.089634008705616
+  },
+  "standing_ground_by_semantic_label": [
+    {
+      "semantic_label": 0,
+      "minimum_height_m": -0.04870373383164406,
+      "vertices_below_ground_limit": 106
+    },
+    {
+      "semantic_label": 1,
+      "minimum_height_m": 1.327402114868164,
+      "vertices_below_ground_limit": 0
+    },
+    {
+      "semantic_label": 2,
+      "minimum_height_m": -0.089634008705616,
+      "vertices_below_ground_limit": 252
+    }
+  ],
+  "limitations": [
+    "Planted-hold checks do not establish gait contacts or continuous self/triangle/swept collision.",
+    "Whole-mount ground penetration remains failed even when hoof contact checks pass."
+  ]
+}

@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Model asset job v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "job_id", "asset_id", "status", "owner", "reference", "profile", "quality_target", "repair_policy", "current_stage", "stages", "artifacts", "defects", "blockers", "next_action"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "job_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]+$"},
+    "asset_id": {"type": "string", "minLength": 1},
+    "status": {"enum": ["queued", "in-progress", "needs-review", "blocked", "prototype-complete", "import-candidate", "engine-validated", "deferred"]},
+    "owner": {"type": ["string", "null"]},
+    "lease_expires_utc": {"type": ["string", "null"], "format": "date-time"},
+    "reference": {
+      "type": "object", "additionalProperties": false,
+      "required": ["source_type", "manifest_path", "image_path", "sha256", "image_batch_path"],
+      "properties": {
+        "source_type": {"enum": ["catalog-package", "legacy-benchmark"]},
+        "manifest_path": {"type": "string", "minLength": 1},
+        "image_path": {"type": "string", "minLength": 1},
+        "sha256": {"$ref": "#/$defs/hash"},
+        "image_batch_path": {"type": ["string", "null"]}
+      }
+    },
+    "profile": {
+      "type": "object", "additionalProperties": false,
+      "required": ["category", "features", "path", "sha256", "approval", "source_lock_path"],
+      "properties": {
+        "category": {"enum": ["static-prop", "articulated-object", "creature", "mount", "foliage", "structural-part", "surface-treatment", "other"]},
+        "features": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+        "path": {"type": "string", "minLength": 1},
+        "sha256": {"$ref": "#/$defs/hash"},
+        "approval": {"enum": ["prototype-authored", "approved", "needs-review"]},
+        "source_lock_path": {"type": "string", "minLength": 1}
+      }
+    },
+    "quality_target": {"enum": ["prototype", "import-candidate", "engine-validated"]},
+    "repair_policy": {
+      "type": "object", "additionalProperties": false,
+      "required": ["max_attempts_per_stage", "on_exhaustion"],
+      "properties": {"max_attempts_per_stage": {"type": "integer", "minimum": 1, "maximum": 3}, "on_exhaustion": {"enum": ["needs-review", "blocked"]}}
+    },
+    "current_stage": {"enum": ["reference", "geometry", "topology_uv", "materials", "rig", "secondary_motion", "delivery", "complete"]},
+    "stages": {
+      "type": "object", "additionalProperties": false,
+      "required": ["reference", "geometry", "topology_uv", "materials", "rig", "secondary_motion", "delivery"],
+      "properties": {
+        "reference": {"$ref": "#/$defs/stage"}, "geometry": {"$ref": "#/$defs/stage"},
+        "topology_uv": {"$ref": "#/$defs/stage"}, "materials": {"$ref": "#/$defs/stage"},
+        "rig": {"$ref": "#/$defs/stage"}, "secondary_motion": {"$ref": "#/$defs/stage"}, "delivery": {"$ref": "#/$defs/stage"}
+      }
+    },
+    "artifacts": {"type": "object", "additionalProperties": {"type": "string"}},
+    "defects": {"type": "array", "items": {"type": "string"}},
+    "blockers": {"type": "array", "items": {"type": "string"}},
+    "next_action": {"type": "string", "minLength": 1}
+  },
+  "allOf": [
+    {"if": {"properties": {"status": {"const": "engine-validated"}}}, "then": {"properties": {"artifacts": {"required": ["engine_evidence"]}}}},
+    {"if": {"properties": {"reference": {"properties": {"source_type": {"const": "catalog-package"}}}}}, "then": {"properties": {"reference": {"properties": {"image_batch_path": {"type": "string", "minLength": 1}}}}}}
+  ],
+  "$defs": {
+    "hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "stage": {
+      "type": "object", "additionalProperties": false,
+      "required": ["status", "attempt_count", "attempt_paths", "check_paths", "note"],
+      "properties": {
+        "status": {"enum": ["pending", "running", "passed", "repair-required", "needs-review", "blocked", "skipped"]},
+        "attempt_count": {"type": "integer", "minimum": 0, "maximum": 3},
+        "attempt_paths": {"type": "array", "items": {"type": "string"}},
+        "check_paths": {"type": "array", "items": {"type": "string"}},
+        "note": {"type": "string"}
+      }
+    }
+  }
+}

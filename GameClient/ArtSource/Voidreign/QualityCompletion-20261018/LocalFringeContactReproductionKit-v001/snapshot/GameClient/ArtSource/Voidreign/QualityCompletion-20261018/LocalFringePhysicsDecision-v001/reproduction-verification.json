@@ -1,0 +1,9 @@
+{
+  "status": "verified",
+  "manifest": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringePhysicsReproductionKit-v001/manifest.json",
+  "manifest_sha256": "fce8d450474ce80a8f0bbb2c6c042c8d4d2eb2b2fa36ff605b1db8e40efd6dbf",
+  "files": 488,
+  "copied_bytes": 11853144,
+  "self_contained": false,
+  "command": "py -3 tools/Freeze-AssetEvidence.py --verify GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringePhysicsReproductionKit-v001/manifest.json"
+}

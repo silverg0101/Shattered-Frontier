@@ -1,0 +1,422 @@
+{
+  "schema_version": 1,
+  "units": "metres",
+  "permissions": "CPU exact-source ankle design atlas only, no candidate weights/rig/mesh changes.",
+  "effective_time": "This immutable proposal only",
+  "coordinate_convention": {
+    "up": "+Z",
+    "forward": "-Y (head/horn)",
+    "side_names": "Geometric +X/-X until reviewed"
+  },
+  "object": "geometry_0",
+  "source": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkPilot-v001/Mount-WalkPilot.blend",
+  "rest_selection": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz",
+  "retention_report": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkRetention-v001/validation.json",
+  "render": {
+    "resolution": 640,
+    "samples": 8,
+    "surface_color": [
+      0.36,
+      0.39,
+      0.43
+    ],
+    "landmark_radius_m": 0.008,
+    "light_position_m": [
+      -3,
+      -4,
+      6
+    ],
+    "light_watts": 1300,
+    "light_size_m": 5,
+    "target_m": [
+      0,
+      -0.05,
+      1.3
+    ],
+    "ortho_scale_m": 4.5,
+    "link_radius_m": 0.003
+  },
+  "regions": [
+    {
+      "id": "fore.L.context",
+      "minimum_m": [
+        0.20362914144992827,
+        -0.9718337154388428,
+        0.0926301383972168
+      ],
+      "maximum_m": [
+        0.45928303360939027,
+        -0.6675739192962646,
+        0.33383224010467527
+      ],
+      "color": [
+        0.36,
+        0.39,
+        0.43
+      ]
+    },
+    {
+      "id": "fore.L.core",
+      "selection_path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidHoofProposal-v002/hoof-selections.npz",
+      "selection_key": "fore.L.core_vertices",
+      "color": [
+        0.03,
+        0.32,
+        0.85
+      ]
+    },
+    {
+      "id": "fore.L.collar",
+      "selection_path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidHoofProposal-v002/hoof-selections.npz",
+      "selection_key": "fore.L.collar_vertices",
+      "color": [
+        1,
+        0.35,
+        0.03
+      ]
+    },
+    {
+      "id": "fore.R.context",
+      "minimum_m": [
+        -0.4408953881263733,
+        -1.067020902633667,
+        0.07626294136047364
+      ],
+      "maximum_m": [
+        -0.16956261336803435,
+        -0.7416728639602661,
+        0.33482346534729
+      ],
+      "color": [
+        0.36,
+        0.39,
+        0.43
+      ]
+    },
+    {
+      "id": "fore.R.core",
+      "selection_path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidHoofProposal-v002/hoof-selections.npz",
+      "selection_key": "fore.R.core_vertices",
+      "color": [
+        0.03,
+        0.32,
+        0.85
+      ]
+    },
+    {
+      "id": "fore.R.collar",
+      "selection_path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidHoofProposal-v002/hoof-selections.npz",
+      "selection_key": "fore.R.collar_vertices",
+      "color": [
+        1,
+        0.35,
+        0.03
+      ]
+    },
+    {
+      "id": "hind.L.context",
+      "minimum_m": [
+        0.31933488488197326,
+        0.5850146913528442,
+        0.03924678802490234
+      ],
+      "maximum_m": [
+        0.5934438800811768,
+        0.8863516545295715,
+        0.27346000671386717
+      ],
+      "color": [
+        0.36,
+        0.39,
+        0.43
+      ]
+    },
+    {
+      "id": "hind.L.core",
+      "selection_path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidHoofProposal-v002/hoof-selections.npz",
+      "selection_key": "hind.L.core_vertices",
+      "color": [
+        0.03,
+        0.32,
+        0.85
+      ]
+    },
+    {
+      "id": "hind.L.collar",
+      "selection_path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidHoofProposal-v002/hoof-selections.npz",
+      "selection_key": "hind.L.collar_vertices",
+      "color": [
+        1,
+        0.35,
+        0.03
+      ]
+    },
+    {
+      "id": "hind.R.context",
+      "minimum_m": [
+        -0.36096997022628785,
+        0.14892663598060607,
+        -0.00037218093872070333
+      ],
+      "maximum_m": [
+        -0.09216468572616578,
+        0.4962509369850159,
+        0.2720818281173706
+      ],
+      "color": [
+        0.36,
+        0.39,
+        0.43
+      ]
+    },
+    {
+      "id": "hind.R.core",
+      "selection_path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidHoofProposal-v002/hoof-selections.npz",
+      "selection_key": "hind.R.core_vertices",
+      "color": [
+        0.03,
+        0.32,
+        0.85
+      ]
+    },
+    {
+      "id": "hind.R.collar",
+      "selection_path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidHoofProposal-v002/hoof-selections.npz",
+      "selection_key": "hind.R.collar_vertices",
+      "color": [
+        1,
+        0.35,
+        0.03
+      ]
+    }
+  ],
+  "landmarks": [
+    {
+      "id": "fore.L.joint",
+      "position_m": [
+        0.3179999887943268,
+        -0.7649999856948853,
+        0.23000000476837157
+      ],
+      "color": [
+        1,
+        0.01,
+        0.05
+      ]
+    },
+    {
+      "id": "fore.L.toe",
+      "position_m": [
+        0.2840000092983246,
+        -0.8289999961853027,
+        0.11999999791383743
+      ],
+      "color": [
+        0.8,
+        0.05,
+        1
+      ]
+    },
+    {
+      "id": "fore.R.joint",
+      "position_m": [
+        -0.31700000166893005,
+        -0.8370000123977661,
+        0.23000000476837157
+      ],
+      "color": [
+        1,
+        0.01,
+        0.05
+      ]
+    },
+    {
+      "id": "fore.R.toe",
+      "position_m": [
+        -0.289000004529953,
+        -0.8899999856948853,
+        0.10000000208616257
+      ],
+      "color": [
+        0.8,
+        0.05,
+        1
+      ]
+    },
+    {
+      "id": "hind.L.joint",
+      "position_m": [
+        0.4480000138282776,
+        0.8119999766349792,
+        0.20000000357627867
+      ],
+      "color": [
+        1,
+        0.01,
+        0.05
+      ]
+    },
+    {
+      "id": "hind.L.toe",
+      "position_m": [
+        0.44999998807907104,
+        0.75,
+        0.05000000134110451
+      ],
+      "color": [
+        0.8,
+        0.05,
+        1
+      ]
+    },
+    {
+      "id": "hind.R.joint",
+      "position_m": [
+        -0.2549999952316284,
+        0.4790000021457672,
+        0.20000000357627867
+      ],
+      "color": [
+        1,
+        0.01,
+        0.05
+      ]
+    },
+    {
+      "id": "hind.R.toe",
+      "position_m": [
+        -0.2669999897480011,
+        0.3700000047683716,
+        0.05000000134110451
+      ],
+      "color": [
+        0.8,
+        0.05,
+        1
+      ]
+    }
+  ],
+  "views": [
+    {
+      "id": "fore.L-outer",
+      "position_m": [
+        1.8314560875296593,
+        -0.8197038173675537,
+        0.21323118925094603
+      ],
+      "target_m": [
+        0.33145608752965927,
+        -0.8197038173675537,
+        0.21323118925094603
+      ],
+      "ortho_scale_m": 0.3442597961425781,
+      "isolate_regions": [
+        "fore.L.context"
+      ]
+    },
+    {
+      "id": "fore.R-outer",
+      "position_m": [
+        -1.8052290007472038,
+        -0.9043468832969666,
+        0.20554320335388182
+      ],
+      "target_m": [
+        -0.3052290007472038,
+        -0.9043468832969666,
+        0.20554320335388182
+      ],
+      "ortho_scale_m": 0.3653480386734009,
+      "isolate_regions": [
+        "fore.R.context"
+      ]
+    },
+    {
+      "id": "hind.L-outer",
+      "position_m": [
+        1.956389382481575,
+        0.7356831729412079,
+        0.15635339736938475
+      ],
+      "target_m": [
+        0.456389382481575,
+        0.7356831729412079,
+        0.15635339736938475
+      ],
+      "ortho_scale_m": 0.3413369631767273,
+      "isolate_regions": [
+        "hind.L.context"
+      ]
+    },
+    {
+      "id": "hind.R-outer",
+      "position_m": [
+        -1.7265673279762268,
+        0.322588786482811,
+        0.13585482358932494
+      ],
+      "target_m": [
+        -0.2265673279762268,
+        0.322588786482811,
+        0.13585482358932494
+      ],
+      "ortho_scale_m": 0.3873243010044098,
+      "isolate_regions": [
+        "hind.R.context"
+      ]
+    }
+  ],
+  "input_sha256": {
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkPilot-v001/Mount-WalkPilot.blend": "fe004dd3c6357d9b818729e9d5d89060adb7be0eca6d930d7cc7a91369cd5456",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz": "0d7599c8064cb81a6e211a23731435e08939b7fb146ce2d4bed810273909a2b2",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkRetention-v001/validation.json": "5f6c40f1371229ce05dc7af9a4c6f789a460c7e7757ddca88482815aab26d137",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidHoofProposal-v002/hoof-selections.npz": "742c939481a7939e558d684f09346d12778451d0b481aa46367550b4665752dd",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/JointTopologyInspection-v003/joint-topology.json": "0c6c827b7c7edf0125e5e802c6593288a826442f29f5ca2877c7fcb3f8fed59d"
+  },
+  "chains": [
+    {
+      "landmarks": [
+        "fore.L.joint",
+        "fore.L.toe"
+      ],
+      "color": [
+        0.1,
+        0.9,
+        0.2
+      ]
+    },
+    {
+      "landmarks": [
+        "fore.R.joint",
+        "fore.R.toe"
+      ],
+      "color": [
+        0.1,
+        0.9,
+        0.2
+      ]
+    },
+    {
+      "landmarks": [
+        "hind.L.joint",
+        "hind.L.toe"
+      ],
+      "color": [
+        0.1,
+        0.9,
+        0.2
+      ]
+    },
+    {
+      "landmarks": [
+        "hind.R.joint",
+        "hind.R.toe"
+      ],
+      "color": [
+        0.1,
+        0.9,
+        0.2
+      ]
+    }
+  ]
+}

@@ -1,0 +1,734 @@
+{
+  "schema_version": 1,
+  "tile_pixels": 256,
+  "rows_per_sheet": 7,
+  "column_labels": [
+    "+X overlay",
+    "+X albedo",
+    "-X overlay",
+    "-X albedo",
+    "Isolated overlay",
+    "Isolated albedo"
+  ],
+  "items": [
+    {
+      "id": "SMB-0d7599c806-a23f50cee6c9",
+      "images": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-a23f50cee6c9-posX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-a23f50cee6c9-posX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-a23f50cee6c9-negX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-a23f50cee6c9-negX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-a23f50cee6c9-isolated-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-a23f50cee6c9-isolated-albedo.png"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-13398d8f6fa9",
+      "images": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-13398d8f6fa9-posX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-13398d8f6fa9-posX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-13398d8f6fa9-negX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-13398d8f6fa9-negX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-13398d8f6fa9-isolated-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-13398d8f6fa9-isolated-albedo.png"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-c5f686eb393a",
+      "images": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-c5f686eb393a-posX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-c5f686eb393a-posX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-c5f686eb393a-negX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-c5f686eb393a-negX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-c5f686eb393a-isolated-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-c5f686eb393a-isolated-albedo.png"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-6c0faadfb656",
+      "images": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-6c0faadfb656-posX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-6c0faadfb656-posX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-6c0faadfb656-negX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-6c0faadfb656-negX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-6c0faadfb656-isolated-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-6c0faadfb656-isolated-albedo.png"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-9461782d30e7",
+      "images": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-9461782d30e7-posX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-9461782d30e7-posX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-9461782d30e7-negX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-9461782d30e7-negX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-9461782d30e7-isolated-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-9461782d30e7-isolated-albedo.png"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-c95bf113bd82",
+      "images": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-c95bf113bd82-posX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-c95bf113bd82-posX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-c95bf113bd82-negX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-c95bf113bd82-negX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-c95bf113bd82-isolated-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-c95bf113bd82-isolated-albedo.png"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-fa0932e06fbb",
+      "images": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-fa0932e06fbb-posX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-fa0932e06fbb-posX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-fa0932e06fbb-negX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-fa0932e06fbb-negX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-fa0932e06fbb-isolated-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-fa0932e06fbb-isolated-albedo.png"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-16aa3f8d2318",
+      "images": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-16aa3f8d2318-posX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-16aa3f8d2318-posX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-16aa3f8d2318-negX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-16aa3f8d2318-negX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-16aa3f8d2318-isolated-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-16aa3f8d2318-isolated-albedo.png"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-f2ac3080aae7",
+      "images": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-f2ac3080aae7-posX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-f2ac3080aae7-posX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-f2ac3080aae7-negX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-f2ac3080aae7-negX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-f2ac3080aae7-isolated-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-f2ac3080aae7-isolated-albedo.png"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-d0197039a013",
+      "images": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-d0197039a013-posX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-d0197039a013-posX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-d0197039a013-negX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-d0197039a013-negX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-d0197039a013-isolated-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-d0197039a013-isolated-albedo.png"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-67a2125f483c",
+      "images": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-67a2125f483c-posX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-67a2125f483c-posX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-67a2125f483c-negX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-67a2125f483c-negX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-67a2125f483c-isolated-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-67a2125f483c-isolated-albedo.png"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-3bf28272db22",
+      "images": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-3bf28272db22-posX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-3bf28272db22-posX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-3bf28272db22-negX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-3bf28272db22-negX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-3bf28272db22-isolated-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-3bf28272db22-isolated-albedo.png"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-fcef00460074",
+      "images": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-fcef00460074-posX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-fcef00460074-posX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-fcef00460074-negX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-fcef00460074-negX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-fcef00460074-isolated-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-fcef00460074-isolated-albedo.png"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-0ded486c5b5e",
+      "images": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-0ded486c5b5e-posX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-0ded486c5b5e-posX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-0ded486c5b5e-negX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-0ded486c5b5e-negX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-0ded486c5b5e-isolated-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-0ded486c5b5e-isolated-albedo.png"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-d4c63dedbd5e",
+      "images": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-d4c63dedbd5e-posX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-d4c63dedbd5e-posX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-d4c63dedbd5e-negX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-d4c63dedbd5e-negX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-d4c63dedbd5e-isolated-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-d4c63dedbd5e-isolated-albedo.png"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-bc5c85d932c0",
+      "images": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-bc5c85d932c0-posX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-bc5c85d932c0-posX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-bc5c85d932c0-negX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-bc5c85d932c0-negX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-bc5c85d932c0-isolated-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-bc5c85d932c0-isolated-albedo.png"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-8575242048e6",
+      "images": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-8575242048e6-posX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-8575242048e6-posX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-8575242048e6-negX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-8575242048e6-negX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-8575242048e6-isolated-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-8575242048e6-isolated-albedo.png"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-03ddf3586241",
+      "images": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-03ddf3586241-posX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-03ddf3586241-posX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-03ddf3586241-negX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-03ddf3586241-negX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-03ddf3586241-isolated-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-03ddf3586241-isolated-albedo.png"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-b246d0d8fc50",
+      "images": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-b246d0d8fc50-posX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-b246d0d8fc50-posX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-b246d0d8fc50-negX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-b246d0d8fc50-negX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-b246d0d8fc50-isolated-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-b246d0d8fc50-isolated-albedo.png"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-1a6b38bcd2ed",
+      "images": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-1a6b38bcd2ed-posX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-1a6b38bcd2ed-posX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-1a6b38bcd2ed-negX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-1a6b38bcd2ed-negX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-1a6b38bcd2ed-isolated-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-1a6b38bcd2ed-isolated-albedo.png"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-214908334f85",
+      "images": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-214908334f85-posX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-214908334f85-posX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-214908334f85-negX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-214908334f85-negX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-214908334f85-isolated-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-214908334f85-isolated-albedo.png"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-45e5a199970f",
+      "images": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-45e5a199970f-posX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-45e5a199970f-posX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-45e5a199970f-negX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-45e5a199970f-negX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-45e5a199970f-isolated-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-45e5a199970f-isolated-albedo.png"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-ae39479acb4e",
+      "images": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-ae39479acb4e-posX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-ae39479acb4e-posX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-ae39479acb4e-negX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-ae39479acb4e-negX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-ae39479acb4e-isolated-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-ae39479acb4e-isolated-albedo.png"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-496a7c339b64",
+      "images": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-496a7c339b64-posX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-496a7c339b64-posX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-496a7c339b64-negX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-496a7c339b64-negX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-496a7c339b64-isolated-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-496a7c339b64-isolated-albedo.png"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-76a5b531d804",
+      "images": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-76a5b531d804-posX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-76a5b531d804-posX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-76a5b531d804-negX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-76a5b531d804-negX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-76a5b531d804-isolated-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-76a5b531d804-isolated-albedo.png"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-142b88f3f5fe",
+      "images": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-142b88f3f5fe-posX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-142b88f3f5fe-posX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-142b88f3f5fe-negX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-142b88f3f5fe-negX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-142b88f3f5fe-isolated-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-142b88f3f5fe-isolated-albedo.png"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-e985ed9d2776",
+      "images": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-e985ed9d2776-posX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-e985ed9d2776-posX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-e985ed9d2776-negX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-e985ed9d2776-negX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-e985ed9d2776-isolated-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-e985ed9d2776-isolated-albedo.png"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-f2693581ad0a",
+      "images": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-f2693581ad0a-posX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-f2693581ad0a-posX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-f2693581ad0a-negX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-f2693581ad0a-negX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-f2693581ad0a-isolated-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-f2693581ad0a-isolated-albedo.png"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-6a2d8e04a727",
+      "images": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-6a2d8e04a727-posX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-6a2d8e04a727-posX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-6a2d8e04a727-negX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-6a2d8e04a727-negX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-6a2d8e04a727-isolated-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-6a2d8e04a727-isolated-albedo.png"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-4afd6188749c",
+      "images": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-4afd6188749c-posX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-4afd6188749c-posX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-4afd6188749c-negX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-4afd6188749c-negX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-4afd6188749c-isolated-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-4afd6188749c-isolated-albedo.png"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-4e2fc507de64",
+      "images": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-4e2fc507de64-posX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-4e2fc507de64-posX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-4e2fc507de64-negX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-4e2fc507de64-negX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-4e2fc507de64-isolated-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-4e2fc507de64-isolated-albedo.png"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-0b3644d3cead",
+      "images": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-0b3644d3cead-posX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-0b3644d3cead-posX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-0b3644d3cead-negX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-0b3644d3cead-negX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-0b3644d3cead-isolated-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-0b3644d3cead-isolated-albedo.png"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-24c47ae608df",
+      "images": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-24c47ae608df-posX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-24c47ae608df-posX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-24c47ae608df-negX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-24c47ae608df-negX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-24c47ae608df-isolated-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-24c47ae608df-isolated-albedo.png"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-59ee26f77533",
+      "images": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-59ee26f77533-posX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-59ee26f77533-posX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-59ee26f77533-negX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-59ee26f77533-negX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-59ee26f77533-isolated-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-59ee26f77533-isolated-albedo.png"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-a21db8bf045e",
+      "images": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-a21db8bf045e-posX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-a21db8bf045e-posX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-a21db8bf045e-negX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-a21db8bf045e-negX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-a21db8bf045e-isolated-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-a21db8bf045e-isolated-albedo.png"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-79496374c95e",
+      "images": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-79496374c95e-posX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-79496374c95e-posX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-79496374c95e-negX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-79496374c95e-negX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-79496374c95e-isolated-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-79496374c95e-isolated-albedo.png"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-219022738900",
+      "images": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-219022738900-posX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-219022738900-posX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-219022738900-negX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-219022738900-negX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-219022738900-isolated-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-219022738900-isolated-albedo.png"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-61056aa72863",
+      "images": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-61056aa72863-posX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-61056aa72863-posX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-61056aa72863-negX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-61056aa72863-negX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-61056aa72863-isolated-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-61056aa72863-isolated-albedo.png"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-36e9f96b0629",
+      "images": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-36e9f96b0629-posX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-36e9f96b0629-posX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-36e9f96b0629-negX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-36e9f96b0629-negX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-36e9f96b0629-isolated-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-36e9f96b0629-isolated-albedo.png"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-13afd9fd68f7",
+      "images": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-13afd9fd68f7-posX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-13afd9fd68f7-posX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-13afd9fd68f7-negX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-13afd9fd68f7-negX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-13afd9fd68f7-isolated-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-13afd9fd68f7-isolated-albedo.png"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-5c255a663a65",
+      "images": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-5c255a663a65-posX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-5c255a663a65-posX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-5c255a663a65-negX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-5c255a663a65-negX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-5c255a663a65-isolated-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-5c255a663a65-isolated-albedo.png"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-5f9296f0a8b7",
+      "images": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-5f9296f0a8b7-posX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-5f9296f0a8b7-posX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-5f9296f0a8b7-negX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-5f9296f0a8b7-negX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-5f9296f0a8b7-isolated-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-5f9296f0a8b7-isolated-albedo.png"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-2516a986745a",
+      "images": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-2516a986745a-posX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-2516a986745a-posX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-2516a986745a-negX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-2516a986745a-negX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-2516a986745a-isolated-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-2516a986745a-isolated-albedo.png"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-faf086e6bbf3",
+      "images": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-faf086e6bbf3-posX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-faf086e6bbf3-posX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-faf086e6bbf3-negX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-faf086e6bbf3-negX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-faf086e6bbf3-isolated-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-faf086e6bbf3-isolated-albedo.png"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-c1177585d450",
+      "images": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-c1177585d450-posX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-c1177585d450-posX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-c1177585d450-negX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-c1177585d450-negX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-c1177585d450-isolated-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-c1177585d450-isolated-albedo.png"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-da33066a6671",
+      "images": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-da33066a6671-posX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-da33066a6671-posX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-da33066a6671-negX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-da33066a6671-negX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-da33066a6671-isolated-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-da33066a6671-isolated-albedo.png"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-13e30963711d",
+      "images": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-13e30963711d-posX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-13e30963711d-posX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-13e30963711d-negX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-13e30963711d-negX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-13e30963711d-isolated-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-13e30963711d-isolated-albedo.png"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-19f81beb369c",
+      "images": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-19f81beb369c-posX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-19f81beb369c-posX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-19f81beb369c-negX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-19f81beb369c-negX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-19f81beb369c-isolated-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-19f81beb369c-isolated-albedo.png"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-707b87545777",
+      "images": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-707b87545777-posX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-707b87545777-posX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-707b87545777-negX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-707b87545777-negX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-707b87545777-isolated-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-707b87545777-isolated-albedo.png"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-1e8b223aad41",
+      "images": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-1e8b223aad41-posX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-1e8b223aad41-posX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-1e8b223aad41-negX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-1e8b223aad41-negX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-1e8b223aad41-isolated-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-1e8b223aad41-isolated-albedo.png"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-f8c8ec568f04",
+      "images": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-f8c8ec568f04-posX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-f8c8ec568f04-posX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-f8c8ec568f04-negX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-f8c8ec568f04-negX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-f8c8ec568f04-isolated-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-f8c8ec568f04-isolated-albedo.png"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-cb72c66025e3",
+      "images": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-cb72c66025e3-posX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-cb72c66025e3-posX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-cb72c66025e3-negX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-cb72c66025e3-negX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-cb72c66025e3-isolated-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-cb72c66025e3-isolated-albedo.png"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-029db0fbd244",
+      "images": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-029db0fbd244-posX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-029db0fbd244-posX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-029db0fbd244-negX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-029db0fbd244-negX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-029db0fbd244-isolated-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-029db0fbd244-isolated-albedo.png"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-c218565b2652",
+      "images": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-c218565b2652-posX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-c218565b2652-posX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-c218565b2652-negX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-c218565b2652-negX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-c218565b2652-isolated-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-c218565b2652-isolated-albedo.png"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-9e8e9c14557b",
+      "images": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-9e8e9c14557b-posX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-9e8e9c14557b-posX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-9e8e9c14557b-negX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-9e8e9c14557b-negX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-9e8e9c14557b-isolated-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-9e8e9c14557b-isolated-albedo.png"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-1d1b12900d1a",
+      "images": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-1d1b12900d1a-posX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-1d1b12900d1a-posX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-1d1b12900d1a-negX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-1d1b12900d1a-negX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-1d1b12900d1a-isolated-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-1d1b12900d1a-isolated-albedo.png"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-1b91b1cf823d",
+      "images": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-1b91b1cf823d-posX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-1b91b1cf823d-posX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-1b91b1cf823d-negX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-1b91b1cf823d-negX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-1b91b1cf823d-isolated-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-1b91b1cf823d-isolated-albedo.png"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-602d3f911217",
+      "images": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-602d3f911217-posX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-602d3f911217-posX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-602d3f911217-negX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-602d3f911217-negX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-602d3f911217-isolated-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-602d3f911217-isolated-albedo.png"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-a990b4f2ab88",
+      "images": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-a990b4f2ab88-posX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-a990b4f2ab88-posX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-a990b4f2ab88-negX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-a990b4f2ab88-negX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-a990b4f2ab88-isolated-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-a990b4f2ab88-isolated-albedo.png"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-411bed5eb70e",
+      "images": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-411bed5eb70e-posX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-411bed5eb70e-posX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-411bed5eb70e-negX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-411bed5eb70e-negX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-411bed5eb70e-isolated-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-411bed5eb70e-isolated-albedo.png"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-c9ecd5507ca0",
+      "images": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-c9ecd5507ca0-posX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-c9ecd5507ca0-posX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-c9ecd5507ca0-negX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-c9ecd5507ca0-negX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-c9ecd5507ca0-isolated-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-c9ecd5507ca0-isolated-albedo.png"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-007f90f080bd",
+      "images": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-007f90f080bd-posX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-007f90f080bd-posX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-007f90f080bd-negX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-007f90f080bd-negX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-007f90f080bd-isolated-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-007f90f080bd-isolated-albedo.png"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-7d9f8b9ff8a2",
+      "images": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-7d9f8b9ff8a2-posX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-7d9f8b9ff8a2-posX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-7d9f8b9ff8a2-negX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-7d9f8b9ff8a2-negX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-7d9f8b9ff8a2-isolated-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-7d9f8b9ff8a2-isolated-albedo.png"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-2ce453b2e50e",
+      "images": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-2ce453b2e50e-posX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-2ce453b2e50e-posX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-2ce453b2e50e-negX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-2ce453b2e50e-negX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-2ce453b2e50e-isolated-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-2ce453b2e50e-isolated-albedo.png"
+      ]
+    },
+    {
+      "id": "SMB-0d7599c806-1e925dd6eb59",
+      "images": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-1e925dd6eb59-posX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-1e925dd6eb59-posX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-1e925dd6eb59-negX-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/SMB-0d7599c806-1e925dd6eb59-negX-albedo.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-1e925dd6eb59-isolated-overlay.png",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/SMB-0d7599c806-1e925dd6eb59-isolated-albedo.png"
+      ]
+    }
+  ],
+  "input_sha256": {
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryAlbedoReview-v001/anatomy-report.json": "f308ed50a1ddd6804edc0b110dcc5af14ce77fae8a85f76ae7f4f2c11ba35e5e",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryIsolationAlbedoReview-v001/anatomy-report.json": "0d3d60d84f04e43acd07fdd3040b18d1110e21db4431068cabc2d7ef3f2a53da"
+  }
+}

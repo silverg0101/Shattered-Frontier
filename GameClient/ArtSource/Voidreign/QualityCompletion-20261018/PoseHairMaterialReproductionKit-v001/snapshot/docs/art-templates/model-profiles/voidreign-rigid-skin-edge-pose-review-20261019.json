@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "units": "metres",
+  "source": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\WalkPilot-v001\\Mount-WalkPilot.blend",
+  "object": "geometry_0",
+  "rig_object": "PRIMARY | anatomical rig pilot",
+  "contract": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\RigidHoofSelectionContract-v001\\contract.json",
+  "frame_start": 1,
+  "frame_end": 73,
+  "baseline_tolerance_m": 1e-05,
+  "cases": [
+    {
+      "id": "v001-largest-regression",
+      "vertices": [
+        96115,
+        96146
+      ],
+      "report": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\RigidSkinPreflight-v001\\preflight.json",
+      "arrays": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\RigidSkinPreflight-v001\\proposal-arrays.npz"
+    },
+    {
+      "id": "v002-largest-regression",
+      "vertices": [
+        20644,
+        20645
+      ],
+      "report": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\RigidSkinPreflight-v002\\preflight.json",
+      "arrays": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\RigidSkinPreflight-v002\\proposal-arrays.npz"
+    },
+    {
+      "id": "v002-worst-absolute",
+      "vertices": [
+        76865,
+        76866
+      ],
+      "report": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\RigidSkinPreflight-v002\\preflight.json",
+      "arrays": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\RigidSkinPreflight-v002\\proposal-arrays.npz"
+    }
+  ],
+  "resolution": 768,
+  "samples": 16,
+  "context_radius_m": 0.14,
+  "permissions": "Exact-index temporary pose copies only; no scene saved or weight mutation, generation counts unchanged.",
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\WalkPilot-v001\\Mount-WalkPilot.blend": "fe004dd3c6357d9b818729e9d5d89060adb7be0eca6d930d7cc7a91369cd5456",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\RigidHoofSelectionContract-v001\\contract.json": "232f8bbf4f67a57c4de1ffa15be1c7d9b19553d4003f9001fa9d7f764b41ff01",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\RigidSkinPreflight-v001\\preflight.json": "e83240ab16c818553fb5d12741534d12e48c0933af485ee91c105ae17f65564e",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\RigidSkinPreflight-v001\\proposal-arrays.npz": "35f764f92fbe8834c24c0c2c977cbe6e35cf755f4549c2e75a472833234bf892",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\RigidSkinPreflight-v002\\preflight.json": "9819c531802def588c1a33906c5c7fc91e1809cde7e20d55c9c584d3f4d50e1a",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\RigidSkinPreflight-v002\\proposal-arrays.npz": "4c39c96dd85994dfd58757da7375610793e5cbe4d88a08738086e5963a25aea8",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HygieneSemanticSelection-v001/selections.npz": "0b6a19f76a2cba73a42e293c29365360b53ba93be101cf8f4ca556e7a5989cc0"
+  },
+  "context_mode": "edge-rings",
+  "edge_rings": 2,
+  "semantic_selection": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HygieneSemanticSelection-v001/selections.npz"
+}

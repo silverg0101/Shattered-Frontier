@@ -1,0 +1,15 @@
+{
+  "status": "author-reviewed-simulation-proxy-winding-correction-only",
+  "canonical_nodes_sha256": "ff05bbf9eaef9a6653ff20be5189d1babe6f23383f445968a5f5df23b606492b",
+  "evidence_sha256": "a2200c24e4c2455f6367b8ef4a229722b0895ec18f54ca70009a129c3328ec7c",
+  "findings": [
+    "Target component has consistent local adjacency but negative boundary-fan signed volume; other two components positive.",
+    "Zero eligible free normal rays,43 reverse hits of53 free vertices; this is geometric orientation evidence, not native spring count.",
+    "Temporary automatic root-cap fails manifold check for this component; do not promote cap or closed-volume claims.",
+    "Native5.1.1 internal spring construction uses inward normals and normal filtering."
+  ],
+  "operation": "Reverse only target simulation proxy triangle winding. Preserve source/display geometry, points/order, root membership, stiffness, damping, contact masks, colliders and timing.",
+  "attempt": 3,
+  "limit": 3,
+  "native_source_reference": "https://github.com/blender/blender/blob/v5.1.1/source/blender/blenkernel/intern/cloth.cc#L1278-L1463"
+}

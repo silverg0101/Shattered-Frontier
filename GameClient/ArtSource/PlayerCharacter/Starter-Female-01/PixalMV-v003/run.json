@@ -1,0 +1,40 @@
+{
+  "backend": "Pixal3D-mv",
+  "status": "started",
+  "seed": 7,
+  "pipeline": "1536_cascade",
+  "steps": 25,
+  "asset_name": "StarterFemale",
+  "views": "/mnt/c/Projects/Shattered-Frontier/GameClient/ArtSource/PlayerCharacter/Starter-Female-01/Views-v003",
+  "transforms_sha256": "c4c2c1ff1bf60df63fe8222f9219a9c9b92e30a0ac7869968b4fdc160c5b6614",
+  "view_images": [
+    {
+      "file": "view00_azim000.png",
+      "sha256": "73a35fd30e9df3cd454501f271a4d200dede6d719089d737b1207a9858c0d837"
+    },
+    {
+      "file": "view01_azim090.png",
+      "sha256": "61047b428add853e5ce2e879082ff2f0a0d3c45421bc83f46b212665d565a09f"
+    },
+    {
+      "file": "view02_azim180.png",
+      "sha256": "d4b5a82ad459fb9089f98a0420b9ad2cd372e9a30e5dea0b63212a441b2020b0"
+    },
+    {
+      "file": "view03_azim270.png",
+      "sha256": "d212a6c04ff9a83b8f045dcba646f5339a5f26bad999cd7f0bef251df3869d0d"
+    }
+  ],
+  "torch": "2.14.0+rocm10.1.0",
+  "hip": "7.16.26385",
+  "gpu": "AMD Radeon RX 7900 XTX",
+  "asset_lab_root": "/home/grego/sf-asset-lab",
+  "stages": {},
+  "texture_size": 4096,
+  "decimation_target": 1000000,
+  "max_num_tokens": 131072,
+  "remesh_band": 1,
+  "remesh_project": 0,
+  "attention": "dense and sparse PyTorch SDPA; NAF shifted dilated neighborhoods via chunked PyTorch",
+  "stage": "loading extensions and weights"
+}

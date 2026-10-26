@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "source": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairDielectricMaterial-v001\\Mount-MaterialPrototype.blend",
+  "object": "geometry_0",
+  "maximum_trace_nodes": 64,
+  "channels": [
+    "Base Color",
+    "Metallic",
+    "Roughness",
+    "Normal",
+    "Coat Weight",
+    "Coat Roughness",
+    "Emission Color",
+    "Emission Strength",
+    "Alpha"
+  ],
+  "permissions": "CPU saved-source material audit only; no material changes or GPU work",
+  "effective_time": "Frozen prototype source only",
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairDielectricMaterial-v001\\Mount-MaterialPrototype.blend": "9f655815892fbc693e58faa99880440ed4b30aca4a023248548e084dbf28b42b"
+  }
+}

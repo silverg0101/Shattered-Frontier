@@ -1,0 +1,10 @@
+{
+  "status": "local-fringe-region-proposal-reviewed-not-final-anchor-approval",
+  "reviewer": "authoring-agent",
+  "views_reviewed": 3,
+  "vertices": 363,
+  "finding": "Side and isolation show the hind-leg fringe including former Tail regions and intervening geometry. Rear context is occluded by the main tail.",
+  "empty_support_band": "The proposed z0.72to0.82support band contains zero vertices; rejected as an anchor.",
+  "replacement": "FullLegFringeRoots-v001 derives actual canonical edges crossing the reviewed spatial cut; roots still need anatomical pin-boundary approval.",
+  "scope": "Partial local secondary feasibility only; no complete whole-leg fringe inventory or material/motion acceptance."
+}

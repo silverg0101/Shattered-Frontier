@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "reviewer": "independent visual_review agent; author also inspected",
+  "status": "diagnostic-projection-only",
+  "examined": [
+    "MaterialGuides-v001/Head-NegX-BaseColor.png",
+    "MaterialGuides-v001/Saddle-NegX-BaseColor.png",
+    "MaterialEdits-v001/Head-NegX.png",
+    "MaterialEdits-v001/Saddle-NegX.png",
+    "../ModelAB-20261018/Voidreign-reference.png"
+  ],
+  "findings": [
+    "Normalized framing and major silhouettes closely aligned: ear/horn/muzzle/hair/saddle rim/straps/three skulls.",
+    "Saddle edit invents fine chain links/rivets/stitching/skull details beyond mesh resolution; color detail is not geometry.",
+    "Bright metal rims and dark recesses include painted lighting; inspect changed light direction.",
+    "Eye remains empty dark socket rather than reference red eye.",
+    "Red hair remains more saturated/extensive than reference.",
+    "Conservative facing/BVH/region masks required at thin or occluded surfaces."
+  ],
+  "required_next": [
+    "Inspect baked ordinary material from oblique/opposite views and motion.",
+    "Do not claim new normal/roughness/metallic/emission maps or full PBR acceptance."
+  ],
+  "baked_review": {
+    "reviewer": "independent visual_review agent; author also inspected",
+    "status": "localized-base-color-improvement",
+    "views": [
+      "MaterialBefore-v001",
+      "MaterialAfter-v001",
+      "MaterialOpposingLight-v001"
+    ],
+    "findings": [
+      "Bone cracks/horn wear/leather grain/trim/skull faces visibly sharper and useful.",
+      "No obvious large projection shift or background bleed in matching views.",
+      "Saddle trim transitions abruptly into original yellowish shoulder hardware.",
+      "Painted chain openings/skull detail do not repair faceted geometry.",
+      "Persistent highlights remain under opposing light; no clear separate doubled highlight seen.",
+      "Missing red eye and excessive broad red hair remain."
+    ],
+    "required_next": [
+      "Oblique views",
+      "Mask-transition closeups",
+      "Moving hair boundaries",
+      "Consistent roughness/metallic/normal treatment"
+    ]
+  }
+}

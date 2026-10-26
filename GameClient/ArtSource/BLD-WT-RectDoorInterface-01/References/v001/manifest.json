@@ -1,0 +1,42 @@
+{
+  "asset_id": "BLD-WT-RectDoorInterface-01",
+  "version": "v001",
+  "batch": "construction-worked-timber-openings-36",
+  "status": "blocked before image generation; no selected outputs",
+  "intended_route": "unresolved between exposed-surface treatment and separately defined frame/door attachment",
+  "context_only": {
+    "units": "metres",
+    "grid_m": 0.5,
+    "axes": "Construction-local X width/run, Y depth, Z up",
+    "candidate_host_origin": "minimum grid corner under contract if a canonical carrier is approved; not assigned to this undefined opening",
+    "functional_door_separation": "Functional ordinary door definition is a separate object; its object envelope must not be used to infer this host aperture."
+  },
+  "unresolved_geometry_and_interfaces": {
+    "aperture_shape_and_dimensions": "undefined; no approved rect-opening/v1 carrier contour",
+    "component_boundary": "unresolved: surface treatment versus separate attachment/object",
+    "independent_pivot": "undefined",
+    "allowed_rotations": "undefined; cannot inherit an unspecified host allowlist",
+    "exposed_faces_and_mating_faces": "undefined",
+    "candidate_counterparts": ["rectangular-opening host", "jamb/reveal", "lintel/head", "threshold/floor", "functional door frame/hinge/stop plane"],
+    "contact_contours": "undefined",
+    "collision_and_access_clearances": "undefined"
+  },
+  "source_references": [
+    "docs/art-templates/player-construction-kit-contract.md, buildability route and shape/interface rules",
+    "docs/art-templates/asset-lists/construction-kit-matrix-07.md, RectDoorInterface role",
+    "docs/art-templates/asset-lists/construction-opening-interface-19.md, baseline RT/SM appearance precedents only",
+    "docs/art-templates/asset-lists/construction-worked-timber-openings-36.md, current rectangular-opening blockers"
+  ],
+  "required_selected_outputs": ["concept-sheet.png", "asset-view.png"],
+  "selected_image_count": 0,
+  "additional_images": 0,
+  "generation": "not started: route and exact prompt are blocked",
+  "visual_review": "Not applicable; no image generated.",
+  "blockers": [
+    "No approved rectangular-opening carrier or exact aperture contour.",
+    "No approved route between a surface treatment and a separately defined attachment/frame component.",
+    "No named jamb, lintel, threshold, hinge, stop-plane, contact or access-clearance interfaces.",
+    "No approved GEO-01 manifest/hash or applicable GEO-02 opening/clearance evidence."
+  ],
+  "next_action": "Wait for the construction content owner to define the carrier, interface route, contact contours and clearances; then freeze the prompt and generate exactly the two named outputs."
+}

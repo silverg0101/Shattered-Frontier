@@ -1,0 +1,9 @@
+Concept-sheet prompt, output `exec-9f0004a8-53b1-4cbb-a3ff-69e5acc0d049.png`:
+
+Architectural concept sheet for BLD-SM-CornerInsideCellFull-01: one concave `corner-inner/v1` wedge component in stone masonry, proposed 0.5 m cell envelope, solid w<=max(u,v), union of two matching 1:1 slopes. Show two orthographic side silhouettes, concave V-shaped top profile, slope contact faces, underside, neutral occupied/empty silhouette and one isometric study. Clearly leave the upper inner volume empty; do not depict a full cube. Gray-tan coursed stone texture follows each wedge face without changing its contour. Plain light background, one component only, no corner post, no people, no text, no assembly. The shape/contact masks are visual design targets; image does not validate geometry.
+
+Clean-view prompt, output `exec-9434bc3f-c9c7-435b-9449-c027b3794087.png`:
+
+One isolated stone masonry concave corner wedge for BLD-SM-CornerInsideCellFull-01. In a 0.5 m cell envelope, proposed `corner-inner/v1` occupied solid is w<=max(u,v): an L-shaped union of two matching rising slope wedges, with a concave V-shaped top and open upper inside region. Three-quarter orthographic clean asset view on neutral background. Show complete silhouette, two masonry arms meeting at an inside corner, accurate empty region, no other pieces or scene. Gray-tan rough stone courses follow the wedges with no protruding blocks. No full cube, no post, no supports, no text or people. Geometry is only a design proposal; image review does not validate the mask.
+
+No reference image attached; related masonry components and existing `BLD-GreenlandsWallCorner-01` were inspected as style context only.

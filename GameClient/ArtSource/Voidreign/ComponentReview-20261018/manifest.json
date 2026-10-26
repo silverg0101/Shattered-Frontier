@@ -1,0 +1,75 @@
+{
+  "tools": [
+    {
+      "sha256": "9b03c8f983e5ae23a83345b6fffd395ed8cd2f037453d65c45065b4db7c98bfc",
+      "path": "tools/Inspect-MeshComponents.py"
+    },
+    {
+      "sha256": "9b73c7622baaafacfeaab70934fdd447197bcc568407a610745320b0dbdae918",
+      "path": "tools/Plot-MeshComponentReview.py"
+    },
+    {
+      "sha256": "0c07de32c379938abea4028c63b36d79a6185c37e5a7a8cd6f238f5153561293",
+      "path": "tools/Repair-MeshComponents.py"
+    },
+    {
+      "sha256": "c160aac01e0780404141ed65021065808ae3b1f4dc2f69de286898143a71da69",
+      "path": "tools/Validate-VoidreignComponentRepair.py"
+    }
+  ],
+  "status": "targeted cleanup verified; remaining asset gates need review",
+  "review": "Independent visual review inspected CPU before/after diagrams and narrow delta/UV/deformation evidence; remaining228 components unclassified.",
+  "files": [
+    {
+      "sha256": "4c6e5a392c010a796913b784d892206309f3b09c66590f2f478c9809f67e655b",
+      "path": "Component-Review.png"
+    },
+    {
+      "sha256": "6e19ec8919fbe63fa34b620422f552968f07c1ca7c8ff00a2933bbe8334d6f4f",
+      "path": "AfterDiagram/Component-Review.png"
+    },
+    {
+      "sha256": "f4cd6d36aa3b3158a74c3bafe03d66a3688ffa1d32e7d252886743d61a2bba14",
+      "path": "component-classifications.json"
+    },
+    {
+      "sha256": "ca64c8a11af1c2c40abc49d1cf7d59fd2a03ad51c67068e1611bdced2c959615",
+      "path": "Inspection-v002/component-report.json"
+    },
+    {
+      "sha256": "dbb5f370dc27cde85805521262a97f64d4f3f496a50ad65c42b3257d4e91ceac",
+      "path": "Inspection-v002/00-component-selections.npz"
+    },
+    {
+      "sha256": "dcfb228b4b15c8a4d5df21f641e11b244129594268768c5b5f658bc623ce047c",
+      "path": "CleanupInspection-v002/component-report.json"
+    },
+    {
+      "sha256": "2350d3271fcbc3f6ccdc98ab718d41424830fb5f98c6f40d0dc921cfcef24cd0",
+      "path": "CleanupInspection-v002/00-component-selections.npz"
+    },
+    {
+      "sha256": "d2707a70df77c9a6829b99dd3b462a323844cf546ef96ee224b9e29fcda5a354",
+      "path": "Cleanup-v001/Voidreign-HairPrototype.blend"
+    },
+    {
+      "sha256": "aed70e90ecb590e6057797a32663b7baa215d5bcfcda2c83524eaf3cb4acccc7",
+      "path": "Cleanup-v001/Voidreign-HairPrototype.glb"
+    },
+    {
+      "sha256": "635247fb8b789829261113bba10a23b3407bde4f2e055671fc8afb7ab81744ac",
+      "path": "Cleanup-v001/Voidreign-HairPrototype.fbx"
+    },
+    {
+      "sha256": "b90a12a3ad5e1392d39d1e90d5fa4bf414cdce2c97f1c975ec7cca1ecd5e6428",
+      "path": "Cleanup-v001/repair-report.json"
+    },
+    {
+      "sha256": "162b75db2baea0796a50200c8acb665f86424e1e7ab4b80af778909ee2d71f3b",
+      "path": "Cleanup-v001/cleanup-validation.json"
+    }
+  ],
+  "source": "GameClient/ArtSource/Voidreign/HairMotion-20261018/Voidreign-HairPrototype.blend",
+  "date": "2026-10-18",
+  "cpu_only": true
+}

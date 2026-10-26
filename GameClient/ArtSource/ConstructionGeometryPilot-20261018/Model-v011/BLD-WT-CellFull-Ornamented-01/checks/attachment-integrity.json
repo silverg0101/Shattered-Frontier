@@ -1,0 +1,8 @@
+{
+  "status": "not-applicable",
+  "reason": "Static construction part; no deformation/rig stage requested. Fresh GLB/FBX reimport is checked separately.",
+  "post_reimport_attachment_check": "not-applicable",
+  "open_gates": [
+    "assembled neighboring-part contact fit requires approved GEO-01/GEO-02 and Unreal integration"
+  ]
+}

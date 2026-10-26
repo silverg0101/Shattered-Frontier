@@ -1,0 +1,6 @@
+{
+  "status": "invalidated-diagnostic-only",
+  "reason": "Used raw object coordinates for metre radius/rest edge length despite non-unit object transform. Do not use measurements or images from this set. Source was unchanged.",
+  "replacement": "RigidSkinPoseReview-v002/pose-review.json",
+  "guard": "Replacement works in world metres and requires each selected edge curve to match frozen preflight maximum within1e-5m."
+}

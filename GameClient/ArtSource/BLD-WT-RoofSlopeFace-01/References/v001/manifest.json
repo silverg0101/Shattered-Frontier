@@ -1,0 +1,51 @@
+{
+  "asset_id": "BLD-WT-RoofSlopeFace-01",
+  "version": "v001",
+  "batch": "construction-worked-timber-roof-surfaces-38",
+  "current_status": "image-complete; appearance proposal; structural readiness blocked",
+  "intended_route": "proposed flush KIT-WT surface treatment on contract slope-1to1 carrier; no added geometry",
+  "carrier": {
+    "geometry_status": "contract design target; approved GEO-01 manifest/hash absent",
+    "dimensions_m": {"x": 0.5, "y": 0.5, "z": 0.5},
+    "grid_m": 0.5,
+    "axes": "local X run, Y depth, Z rise",
+    "origin": "minimum-grid-corner",
+    "pivot": "minimum-grid-corner carrier frame",
+    "shape": "triangular prism, solid target Z <= X (normalized w <= u); treatment plane z=x",
+    "allowed_rotations": "identity only until a production shape allowlist is authored under BLD-01"
+  },
+  "component_boundary": "One flush timber appearance treatment on the single sloped plane z=x; no board members, thickness, fascia or cap.",
+  "exposed_faces": ["treated sloped plane z=x", "untreated triangular end faces at y=0 and y=0.5", "untreated underside z=0", "untreated remaining side face"],
+  "mating_faces": ["repeated slope seam at cell boundaries", "y end interfaces to BLD-WT-RoofEnd-01", "underside/eave interface to BLD-WT-RoofEave-01", "hip/valley/ridge interfaces are named but fit unvalidated"],
+  "source_references": [
+    "docs/art-templates/player-construction-kit-contract.md §2 slope-1to1 and §3 buildability route",
+    "docs/decisions/BLD-01-voxel-geometry-interface.md coordinate/orientation contract",
+    "docs/art-templates/asset-lists/construction-worked-timber-roof-surfaces-38.md",
+    "docs/art-templates/asset-lists/construction-kit-matrix-07.md"
+  ],
+  "appearance_references_reviewed_not_submitted": [
+    {"path": "GameClient/ArtSource/BLD-WT-FaceExteriorCellFull-01/References/v001/concept-sheet.png", "sha256": "119d03245b624ebf86dd51a17f4ea32b37294203c671f6cf44a3fcf785c2e3a1"},
+    {"path": "GameClient/ArtSource/BLD-RT-RoofSlopeFace-01/References/v001/concept-sheet.png", "note": "appearance only; its dimensional shingles/frames were excluded"}
+  ],
+  "required_selected_outputs": ["concept-sheet.png", "asset-view.png"],
+  "selected_image_count": 2,
+  "additional_images": 0,
+  "prompt_record": "prompt.txt; original generation and first corrective prompts unavailable in current transcript and marked missing, not reconstructed",
+  "generation_history": [
+    {"file": "provenance/exec-25135c7e-c267-4023-8050-8b4fa8c4b127.png", "selected": false, "reason": "Initial attempt showed board-like relief/edges and lacked contact/counterpart callouts; exact original prompt could not be recovered.", "metadata": {"format": "PNG", "width_px": 1536, "height_px": 1024, "pixel_format": "RGB 24bpp", "bytes": 2237941, "sha256": "1d1f790da84fd38c12fb8492fbc95cfccdbc3e9a6838ec731991d5eb1e234d28"}},
+    {"file": "provenance/exec-07279f2f-16d7-4cfa-9883-56288b103549.png", "selected": false, "reason": "First correction retained apparent plank grooves/edges; exact prompt could not be recovered from current transcript.", "metadata": {"format": "PNG", "width_px": 1536, "height_px": 1024, "pixel_format": "RGB 24bpp", "bytes": 2194412, "sha256": "f4129c952f9ba7239c5a9c0f989c6c26de2643900ab75ae7b44230f6fa2a2d3e"}},
+    {"file": "concept-sheet.png", "source_cache_path": "C:\\Users\\grego\\.codex\\generated_images\\01a15000-e13f-7213-9ec0-df2684201405\\exec-13aeb45d-0645-444c-b0c9-00bbda2a58a4.png", "selected": true, "metadata": {"format": "PNG", "width_px": 1536, "height_px": 1024, "pixel_format": "RGB 24bpp", "bytes": 2030656, "sha256": "02517fdeb1daf84c277e73436b95d6eaccfe265f03cc268a9be5ecb6e2b5093d"}, "prompt": "prompt.txt#selected concept-sheet repair prompt"},
+    {"file": "asset-view.png", "source_cache_path": "C:\\Users\\grego\\.codex\\generated_images\\01a15000-e13f-7213-9ec0-df2684201405\\exec-1ee58026-b702-47fe-9937-8fac24144c85.png", "selected": true, "metadata": {"format": "PNG", "width_px": 1536, "height_px": 1024, "pixel_format": "RGB 24bpp", "bytes": 1910688, "sha256": "c50553c9a05fd3fea7ca5584ebb0058795deb0dadb4098b1dbbf0f618be3a048"}, "prompt": "prompt.txt#selected asset-view prompt"}
+  ],
+  "visual_review": {
+    "date": "2026-10-18",
+    "concept_sheet": "Accepted for appearance proposal: complete neutral carrier dominates; treated plane is visually flush; dimensions, shape target, axes and named y-end/underside/repeated-seam counterpart labels are readable. The treatment still reads as wood texture and border coloration in perspective, not a numerical thickness measure. Hip/valley/ridge fit is explicitly unvalidated.",
+    "asset_view": "Accepted for appearance proposal: one complete wedge in identity orientation, full silhouette and gray non-target faces visible, no separate objects or obvious projecting parts. Image review cannot establish mesh fit, exact flushness, collision or runtime compatibility."
+  },
+  "compatibility": "No approved GEO-01 manifest/hash; no applicable GEO-02 evidence for repeated seam, rotation allowlist, hip/valley/ridge fit or numerical carrier compatibility.",
+  "blockers": [
+    "GEO-01 approved geometry payload/manifest hash absent; carrier remains a contract target.",
+    "Applicable GEO-02 evidence and production shape rotation allowlist absent.",
+    "Exact prompt text for first two historical attempts is unrecoverable in current sources; attempts and hashes remain preserved."
+  ]
+}

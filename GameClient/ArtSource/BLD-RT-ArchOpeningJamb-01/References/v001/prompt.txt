@@ -1,0 +1,5 @@
+Concept sheet prompt:
+Rough timber arched-opening jamb component study for a modular fantasy construction game, no people or text. Show the side reveal of one semicircular arched opening with opening left empty and exact curve visually clear; separate spring-point side jamb from crown ring lintel as distinct parts. Include one assembled wall fragment plus one isolated curved jamb component and section view. No door, no invented dimensions, preserve arch subtraction concept.
+
+Clean view prompt:
+Single isolated rough timber arched-opening side jamb/reveal component only: one vertical spring-point jamb block joined to the lower start of a curved semicircular inner reveal, no crown ring, no lintel, no sill, no opposite jamb, no full opening. Show complete component on gray studio background, orthographic three-quarter. Preserve generic arch curve, no dimensions or geometry claim.

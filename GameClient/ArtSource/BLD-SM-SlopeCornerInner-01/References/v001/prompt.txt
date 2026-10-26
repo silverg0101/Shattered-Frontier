@@ -1,0 +1,13 @@
+Selected concept-sheet prompt/output `exec-a16dd464-dcdc-4517-a786-744d48c806f9.png`:
+
+Concept sheet for BLD-SM-SlopeCornerInner-01, a single stone masonry inside roof-valley corner wedge on proposed `corner-inner/v1` geometry. 0.5 m cell envelope; solid w<=max(u,v), union of two matching slope wedges with an open upper inner region. Show front/side orthographic silhouettes, both sloped faces, top and underside, small isometric view. Gray-tan courses follow the two slope faces. Clearly read as an L-shaped concave wedge, open above and outside; not a basin, not a full cube, no rear closure, no beams, no additional blocks. Neutral background, no text, labels, people or scene. Visual proposal only; preserve contact contour intent.
+
+Rejected clean-view prompt/output `exec-cdfce651-4768-442f-b43b-ab436bd8b8d9.png`, retained as `rejected-assembled-view.png`:
+
+One isolated stone `corner-inner/v1` slope-corner piece for BLD-SM-SlopeCornerInner-01, clean three-quarter orthographic on neutral background. L-shaped concave valley wedge with open space above and beyond; two matching sloping faces meet at the inner valley. 0.5 m cell envelope design target; solid w<=max(u,v), but do not add any walls or supports beyond the wedge. Gray-tan stone courses follow surfaces with restrained relief. Single component, no assembly, no tray/basin, no text, no people, no props. Keep the empty inner volume obvious. Visual proposal only.
+
+Selected clean-view prompt/output `exec-ae2768ad-8839-4dcc-b76b-c8e2c1f1ec01.png`:
+
+Single monolithic geometric wedge only, no masonry wall, for BLD-SM-SlopeCornerInner-01. One continuous L-shaped solid with two sloping panels meeting at an inner valley, open region above. Do not show multiple blocks, courses, stacked stones, walls, or an assembly. Apply a subtle flat stone color/texture as a material skin to its one-piece surface. Shape reference is proposed corner-inner/v1, target envelope 0.5 m cube, solid w<=max(u,v); exact mesh is not validated. Three-quarter orthographic, isolated on pale neutral ground, no text, props or people. Clearly show one small single component and its concave V outline.
+
+No reference image attached; KIT-SM material guidance was text-only.

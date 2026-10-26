@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "status": "author-reviewed-motion-owner-correction-only",
+  "reviewer": "authoring-agent",
+  "reviewed_component_ids": [
+    "FSA-0d7599c806-419f3a26806c",
+    "FSA-0d7599c806-f4e0f8a59f51",
+    "FSA-0d7599c806-79c8cc654101"
+  ],
+  "views_reviewed": 6,
+  "evidence": "LegFringeOwnershipReview-v001/anatomy-report.json",
+  "finding": "All three Tail-labelled component regions lie on one hind-leg-attached fringe, with support adjacency only to hind.L owner3 (31/9/10unique support nodes). Cyan selected regions and orange support rings were reviewed in context/isolation. They should not inherit the rump Tail motion owner.",
+  "approved_correction": "Reclassify these195vertices only to label3=hind.L.fringe-review. Complete fringe boundary/roots/rig are not approved.",
+  "not_approved": [
+    "Full physical fringe selection",
+    "New bone/root/weight bindings",
+    "Guide or simulation transfer",
+    "Material-class approval",
+    "All other hair coverage"
+  ],
+  "historical_tail_failure": "Vertex281103 remains in main Tail component FSA-0d7599c806-d97b2dfc5590, supported by body proposal; this correction does not fix the86.83mm step failure."
+}

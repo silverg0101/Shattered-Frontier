@@ -1,0 +1,69 @@
+{
+  "assetId": "BLD-WT-FaceInteriorCellFull-01",
+  "version": "v001",
+  "category": "worked timber full-cell surface",
+  "created": "2026-10-18",
+  "sourceReferences": [
+    "docs/art-templates/player-construction-kit-contract.md — full-cell geometry/contact rules",
+    "docs/art-templates/asset-lists/construction-kit-matrix-07.md — finite role matrix",
+    "docs/Game-Design/Legends_Shattered_Frontier_Construction_System_Architecture_v0.1.md — §§3.1–3.2, 8–9",
+    "GameClient/ArtSource/BLD-RT-CellFull-01/References/v001/ — geometry/style envelope reference"
+  ],
+  "definition": {
+    "geometryRef": "same accepted full-cell geometry as baseline proposal",
+    "envelopeMeters": "per contract; not inferred",
+    "contacts": [
+      "exterior",
+      "interior",
+      "top",
+      "underside",
+      "two ends"
+    ],
+    "openings": "none",
+    "materialKit": "KIT-WT",
+    "structuralMaterialProfile": "Worked timber (gameplay unchanged)",
+    "cosmeticSkin": "appearance only",
+    "functionalDefinition": "none"
+  },
+  "generation": {
+    "tool": "built-in image_gen",
+    "date": "2026-10-18",
+    "model": "unavailable",
+    "seed": "unavailable",
+    "promptRecord": "prompt.txt",
+    "referenceImagesAttached": []
+  },
+  "images": [
+    {
+      "path": "concept-sheet.png",
+      "sha256": "fc3c472d3ec07149bea9134fb49ae6aa3e05e6a227d5db0772db7756c8331926",
+      "width": 1536,
+      "height": 1024,
+      "pixelFormat": "RGB 24-bit",
+      "alpha": false,
+      "review": "Sheet shows interior face and rotation/stack studies. Clean view isolates a flat planed board panel with restrained edge joinery; no actionable visual defect. Geometry remains unvalidated."
+    },
+    {
+      "path": "asset-view.png",
+      "sha256": "5f240ae682120a885875d7150af768a1937146c382aedd135ad3f095958558d4",
+      "width": 1254,
+      "height": 1254,
+      "pixelFormat": "RGB 24-bit",
+      "alpha": false,
+      "review": "Sheet shows interior face and rotation/stack studies. Clean view isolates a flat planed board panel with restrained edge joinery; no actionable visual defect. Geometry remains unvalidated."
+    }
+  ],
+  "review": {
+    "reviewedBy": "Codex",
+    "conceptStatus": "proposed",
+    "cleanViewStatus": "ready-for-model-test",
+    "imageStatus": "image-complete",
+    "geometryAcceptance": "not established",
+    "numericalMeshFit": "not established",
+    "runtimeCollisionSupportClearance": "not established",
+    "actionableFindings": [
+      "Sheet shows interior face and rotation/stack studies. Clean view isolates a flat planed board panel with restrained edge joinery; no actionable visual defect. Geometry remains unvalidated."
+    ]
+  },
+  "componentBoundary": "One separately indexed FaceInteriorCellFull appearance role; no geometry, collision, support or clearance acceptance."
+}

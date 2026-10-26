@@ -1,0 +1,31 @@
+[
+  {
+    "repo": "microsoft/TRELLIS.2-4B",
+    "revision": "af44b45f2e35a493886929c6d786e563ec68364d",
+    "path": "/home/grego/.cache/huggingface/hub/models--microsoft--TRELLIS.2-4B/snapshots/af44b45f2e35a493886929c6d786e563ec68364d",
+    "patterns": [
+      "pipeline.json",
+      "ckpts/*dec*",
+      "ckpts/*flow*"
+    ]
+  },
+  {
+    "repo": "microsoft/TRELLIS-image-large",
+    "revision": "25e0d31ffbebe4b5a97464dd851910efc3002d96",
+    "path": "/home/grego/.cache/huggingface/hub/models--microsoft--TRELLIS-image-large/snapshots/25e0d31ffbebe4b5a97464dd851910efc3002d96",
+    "patterns": [
+      "ckpts/ss_dec_conv3d_16l8_fp16.*"
+    ]
+  },
+  {
+    "repo": "PIA-SPACE-LAB/dinov3-vitl-pretrain-lvd1689m",
+    "revision": "de90c8877a44ba5c7aa5a6a7ffd747c367c3dd6a",
+    "path": "/home/grego/.cache/huggingface/hub/models--PIA-SPACE-LAB--dinov3-vitl-pretrain-lvd1689m/snapshots/de90c8877a44ba5c7aa5a6a7ffd747c367c3dd6a",
+    "patterns": [
+      "*.json",
+      "model.safetensors",
+      "README.md"
+    ],
+    "official_weight_sha256": "dcb2e45127cccbf1601e5f42fef165eea275c8e5213197e8dcf3f48822718179"
+  }
+]

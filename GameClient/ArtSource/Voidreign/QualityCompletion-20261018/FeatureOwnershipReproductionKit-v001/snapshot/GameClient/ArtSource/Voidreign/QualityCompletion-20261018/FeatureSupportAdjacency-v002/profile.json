@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "units": "metres",
+  "rest_selection": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz",
+  "semantic_selection": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LegFringeLabelCorrection-v001\\label-only-selections.npz",
+  "domains": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryDomains-v001\\primary-domains.npz",
+  "features": [
+    {
+      "name": "Mane",
+      "label": 1,
+      "expected_support_owners": [
+        5
+      ]
+    },
+    {
+      "name": "Tail",
+      "label": 2,
+      "expected_support_owners": [
+        5
+      ]
+    },
+    {
+      "name": "hind.L.fringe-review",
+      "label": 3,
+      "expected_support_owners": [
+        3
+      ]
+    }
+  ],
+  "owner_names": {
+    "0": "unresolved or excluded semantic",
+    "1": "fore.L",
+    "2": "fore.R",
+    "3": "hind.L",
+    "4": "hind.R",
+    "5": "body-seeded proposal"
+  },
+  "permissions": "Exact topology adjacency proposals only; no relabel/material/binding change or budget use.",
+  "effective_time": "Frozen rest/semantic/primary-domain indexing only",
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz": "0d7599c8064cb81a6e211a23731435e08939b7fb146ce2d4bed810273909a2b2",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LegFringeLabelCorrection-v001\\label-only-selections.npz": "dc78ba7dbd5a03bef0f0397a26435ec6bcf31b079c340aff5d035a2b1566a630",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryDomains-v001\\primary-domains.npz": "38002ef04f9ab82df4456021b3772e422328e2ecebd38bd068a344dd5e27bdb5"
+  }
+}

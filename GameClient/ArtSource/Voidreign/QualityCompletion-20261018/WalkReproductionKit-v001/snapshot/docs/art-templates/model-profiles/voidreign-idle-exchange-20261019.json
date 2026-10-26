@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "source": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/IdlePilot-v001/Mount-IdlePilot.blend",
+  "object": "geometry_0",
+  "frame_start": 1,
+  "frame_end": 181,
+  "fps": 30,
+  "maximum_error_m": 1e-05,
+  "input_sha256": {
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/IdlePilot-v001/Mount-IdlePilot.blend": "59509512631cb3dcff1600fe456afa19138a1bc47c1f342e3313dd2e2b6dceb5"
+  }
+}

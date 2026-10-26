@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "status": "layout-proposal-not-approved-needs-pendant-ruffle-ownership",
+  "reviewer": "authoring-agent",
+  "scope": "Visual review of HindLeftAnkleLayout-v001 only; no source/weight/rig/topology change or candidate.",
+  "reviewed_images": [
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HindLeftAnkleLayoutReview-v001/hind.L-back-crossings.png",
+      "sha256": "f0b694b85278ca7a6742e558c44cf0d14d02973c4cb038f793809303e66bbde4"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HindLeftAnkleLayoutReview-v001/hind.L-back.png",
+      "sha256": "e5115d39aa5b9c95fe1122ed1fc16b8b2fdc03a927f1ff89f5108b5182a875a6"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HindLeftAnkleLayoutReview-v001/hind.L-front-crossings.png",
+      "sha256": "f48244b8a7646bcab0527b4651d2d955b330d90b3529e73a464fddb5bacfb2b2"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HindLeftAnkleLayoutReview-v001/hind.L-front.png",
+      "sha256": "dd9cce2a7d65e8b28019c3a8f5b4a718d0bb051c8920500c0d53f49e26155e4c"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HindLeftAnkleLayoutReview-v001/hind.L-inner-crossings.png",
+      "sha256": "e4227fc691b91ce9f8ad46e14eb1fd4419ee892ca0e3f0f66b2cc457c72595bf"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HindLeftAnkleLayoutReview-v001/hind.L-inner.png",
+      "sha256": "6754f60355d594c6ff8df7e35f37b9c3457785ef0e5e736556e2bd0a9029e65d"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HindLeftAnkleLayoutReview-v001/hind.L-outer-crossings.png",
+      "sha256": "19b6647b267b7cdf3342a5ef01274b74c2f271f941e384ae165726dc021d8a58"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HindLeftAnkleLayoutReview-v001/hind.L-outer.png",
+      "sha256": "c35c2df8beba642eb4a8df2297221da6a9152b3bc69357f35fcdb74685a63bb4"
+    }
+  ],
+  "command": "CUDA_VISIBLE_DEVICES=-1 blender -b --factory-startup -noaudio --python tools/Render-MountAnatomyAtlas.py -- --profile <this folder>/profile.json --output <new folder>; python -I below-joint-analysis.py <folder>",
+  "findings": [
+    "Outer crossing faces (135, magenta) form one continuous ring at the authored Z0.26 plane in all four isolated views; acceptable as a candidate OUTER boundary for further review only.",
+    "Protected core (blue) and old collar (orange) unchanged and visible; added band (yellow) correctly covers the visible ankle skin above the old low collar on outer/inner/back.",
+    "Plane growth also includes label-0 pendant/overlapping pieces: a rear tuft hanging to Z0.118 (component 62, 22 vertices, 82mm below joint) and a front ruffle of flaps lying over the hoof wall (several fragments, centroids Y-0.11..-0.145 from joint).",
+    "below-joint-band.json: 647 added-band vertices lie below the authored joint in 94 edge-connected fragments; most do not share a face with the core. These are not skin-transition evidence.",
+    "A grey hind.L fringe lobe (secondary label, excluded by allowed_semantic_labels) hangs outside the band in back/outer views, consistent with LabelCorrection-v001."
+  ],
+  "decision": "Do not derive weights or a candidate from v001. Next: source-indexed ownership review of the below-joint fragments (feather/ruffle vs shell vs skin) and exclusion via reviewed labels, not a lower plane or width sweep.",
+  "limitations": [
+    "Majority-vertex face colouring is display only.",
+    "Fragment split uses only edges among below-joint vertices; it is an inventory, not semantic segmentation.",
+    "Joint guides are projected along each view axis; authored coordinates in profile."
+  ]
+}

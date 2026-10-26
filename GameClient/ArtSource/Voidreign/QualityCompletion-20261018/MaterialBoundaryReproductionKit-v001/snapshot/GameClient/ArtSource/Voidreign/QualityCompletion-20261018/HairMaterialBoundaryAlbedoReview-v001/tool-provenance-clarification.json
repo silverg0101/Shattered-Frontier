@@ -1,0 +1,9 @@
+{
+  "status": "execution-snapshot-hash-correction-required",
+  "reported_tool_sha256": "bd3718747e6266c2bac1800128c4e6b5e7b46a63733769a527ef3bb8480775e1",
+  "execution_snapshot_sha256": "15d57d0bfa6216ac33375e79795480e30ea986f54bf8806f2871bf66a1329c05",
+  "execution_snapshot": "tool-source.py",
+  "cause": "Canonical renderer was edited while this job was already executing. The final report hashes the then-current canonical file; execution used the earlier loaded code copied at startup.",
+  "scope": "Preserve raw report. Use saved execution snapshot for replay. Geometry/UV/profile/source hashes and rendered image contents are not changed by this clarification.",
+  "follow_up": "Freeze runner before launch and bind report to execution snapshot; verify source UV assumptions before accepting these plates."
+}

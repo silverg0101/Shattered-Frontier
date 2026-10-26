@@ -1,0 +1,282 @@
+{
+ "schema_version": 1,
+ "status": "rider-clips-need-review",
+ "cpu_only": true,
+ "input_sha256": {
+  "GameClient/ArtSource/Voidreign/Rider/SK_Mannequin-skeleton.json": "b9308a61487194bd73406565752a669f72ce060e31abcc66da0840c9b7080223",
+  "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/Delivery-v003/SK_Voidreign.blend": "bc1f39b3d7dc3684f22f4d4ef2287008520fdfe1946c7f738c501682768e45b2"
+ },
+ "tool_sha256": "6588f5f96101e0b4a820a843056e97b0b1badbfd7e46d2d8bd59d7378e2d6ba8",
+ "profile_sha256": "7d2b5cd544c9155acf378c7f6d3478d698b4a449c4ac0356c6fd0363f42b4150",
+ "fbx_sha256": "ad3187673456e25fe1931fb50ae29fefd76a68916cd84a46da5283aa97ef1ca6",
+ "skeleton": "/Game/Mannequin/Character/Mesh/SK_Mannequin_Skeleton.SK_Mannequin_Skeleton",
+ "socket": {
+  "bone": "PRI.body.spine",
+  "name": "RiderSeat",
+  "relative_location_cm": [
+   0.0,
+   10.082289576530457,
+   -26.496124267578125
+  ],
+  "relative_rotation_quat_wxyz": [
+   0.04791116714477539,
+   -0.9988515973091125,
+   -0.0,
+   -0.0
+  ],
+  "seat_world_m": [
+   0.0,
+   0.07500000298023224,
+   1.663394808769226
+  ],
+  "ridge_profile": [
+   [
+    -0.425,
+    2.2133
+   ],
+   [
+    -0.375,
+    2.1832
+   ],
+   [
+    -0.325,
+    2.0681
+   ],
+   [
+    -0.275,
+    2.1154
+   ],
+   [
+    -0.225,
+    2.1173
+   ],
+   [
+    -0.175,
+    2.091
+   ],
+   [
+    -0.125,
+    2.0892
+   ],
+   [
+    -0.075,
+    2.0517
+   ],
+   [
+    -0.025,
+    1.8038
+   ],
+   [
+    0.025,
+    1.8149
+   ],
+   [
+    0.075,
+    1.6634
+   ],
+   [
+    0.125,
+    1.6823
+   ],
+   [
+    0.175,
+    1.7158
+   ],
+   [
+    0.225,
+    1.7433
+   ],
+   [
+    0.275,
+    1.7509
+   ],
+   [
+    0.325,
+    1.7488
+   ]
+  ]
+ },
+ "clips": [
+  {
+   "id": "rider.seat.idle",
+   "purpose": "Seated idle",
+   "frames": 60,
+   "loop": true,
+   "events": {},
+   "ik_target_error_m": 0.0,
+   "min_foot_height_m": 1.0069,
+   "checks": {
+    "ik_reach": true
+   },
+   "review_images": [
+    "rider.seat.idle-001.png",
+    "rider.seat.idle-030.png",
+    "rider.seat.idle-060.png"
+   ]
+  },
+  {
+   "id": "rider.seat.combat_idle",
+   "purpose": "Seated, weapon arm raised",
+   "frames": 60,
+   "loop": true,
+   "events": {},
+   "ik_target_error_m": 0.0,
+   "min_foot_height_m": 1.0069,
+   "checks": {
+    "ik_reach": true
+   },
+   "review_images": [
+    "rider.seat.combat_idle-001.png",
+    "rider.seat.combat_idle-030.png",
+    "rider.seat.combat_idle-060.png"
+   ]
+  },
+  {
+   "id": "rider.seat.move",
+   "purpose": "Riding at canter (18-frame cycle)",
+   "frames": 18,
+   "loop": true,
+   "events": {},
+   "ik_target_error_m": 0.0,
+   "min_foot_height_m": 1.0069,
+   "checks": {
+    "ik_reach": true
+   },
+   "review_images": [
+    "rider.seat.move-001.png",
+    "rider.seat.move-009.png",
+    "rider.seat.move-018.png"
+   ]
+  },
+  {
+   "id": "rider.mount",
+   "purpose": "Mount from the left side",
+   "frames": 60,
+   "loop": false,
+   "events": {},
+   "ik_target_error_m": 0.44406,
+   "min_foot_height_m": 0.0285,
+   "checks": {
+    "ik_reach": false
+   },
+   "review_images": [
+    "rider.mount-001.png",
+    "rider.mount-030.png",
+    "rider.mount-060.png"
+   ]
+  },
+  {
+   "id": "rider.dismount",
+   "purpose": "Dismount to the left side",
+   "frames": 50,
+   "loop": false,
+   "events": {},
+   "ik_target_error_m": 0.44406,
+   "min_foot_height_m": 0.0285,
+   "checks": {
+    "ik_reach": false
+   },
+   "review_images": [
+    "rider.dismount-001.png",
+    "rider.dismount-025.png",
+    "rider.dismount-050.png"
+   ]
+  },
+  {
+   "id": "rider.dismount_forced",
+   "purpose": "Thrown off (forced dismount)",
+   "frames": 40,
+   "loop": false,
+   "events": {
+    "rider_release": 8
+   },
+   "ik_target_error_m": 0.399485,
+   "min_foot_height_m": 0.0135,
+   "checks": {
+    "ik_reach": false
+   },
+   "review_images": [
+    "rider.dismount_forced-001.png",
+    "rider.dismount_forced-020.png",
+    "rider.dismount_forced-040.png"
+   ]
+  },
+  {
+   "id": "rider.melee_r",
+   "purpose": "Mounted right-arm strike",
+   "frames": 30,
+   "loop": false,
+   "events": {
+    "hit": 16
+   },
+   "ik_target_error_m": 0.227713,
+   "min_foot_height_m": 1.0069,
+   "checks": {
+    "ik_reach": false
+   },
+   "review_images": [
+    "rider.melee_r-001.png",
+    "rider.melee_r-015.png",
+    "rider.melee_r-030.png"
+   ]
+  },
+  {
+   "id": "rider.bow_fire",
+   "purpose": "Mounted bow shot to the left",
+   "frames": 40,
+   "loop": false,
+   "events": {
+    "release": 28
+   },
+   "ik_target_error_m": 0.261066,
+   "min_foot_height_m": 1.0069,
+   "checks": {
+    "ik_reach": false
+   },
+   "review_images": [
+    "rider.bow_fire-001.png",
+    "rider.bow_fire-020.png",
+    "rider.bow_fire-040.png"
+   ]
+  },
+  {
+   "id": "rider.rift_brace",
+   "purpose": "Brace low over the neck for Rift Charge",
+   "frames": 30,
+   "loop": false,
+   "events": {},
+   "ik_target_error_m": 0.139107,
+   "min_foot_height_m": 1.0069,
+   "checks": {
+    "ik_reach": false
+   },
+   "review_images": [
+    "rider.rift_brace-001.png",
+    "rider.rift_brace-015.png",
+    "rider.rift_brace-030.png"
+   ]
+  },
+  {
+   "id": "rider.recall_hold",
+   "purpose": "Crouch tight through Rift Recall",
+   "frames": 24,
+   "loop": false,
+   "events": {},
+   "ik_target_error_m": 0.070551,
+   "min_foot_height_m": 1.0069,
+   "checks": {
+    "ik_reach": false
+   },
+   "review_images": [
+    "rider.recall_hold-001.png",
+    "rider.recall_hold-012.png",
+    "rider.recall_hold-024.png"
+   ]
+  }
+ ],
+ "passed": false,
+ "limitations": [
+  "Key-pose blockouts on proxy capsules; needs animator review with the real rider mesh.",
+  "Clips are seat-socket relative; mount/dismount assume the rider detaches at clip end/start."
+ ]
+}

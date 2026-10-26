@@ -1,0 +1,49 @@
+{
+  "asset_id": "BLD-WT-JointRotatedCellFull-01",
+  "version": "v001",
+  "batch": "construction-worked-timber-joints-34",
+  "status": "historical image pair retained; appearance/study evidence only; structural route blocked",
+  "source_references": [
+    "docs/art-templates/player-construction-kit-contract.md, \u00a7\u00a73.2, 8\u20139",
+    "docs/art-templates/asset-lists/construction-kit-matrix-07.md, worked-timber joint roles"
+  ],
+  "dependency": "KIT-WT surfaces and contract cell contact boundaries; gameplay properties unchanged",
+  "exact_prompts": {
+    "concept_sheet": "Concept sheet for one worked-timber 90-degree rotated wall-cell join. Show two opaque solid full-cell modules with faces meeting at perpendicular contact planes, horizontal plank courses, one module in authored quarter-turn orientation. Include assembled isometric and top plan. No cavities, no brackets or extended beams, no text. Keep standard cell contact boundaries and appearance-only treatment.",
+    "asset_view": "Isolated clean study of one worked-timber quarter-turn wall join: two opaque wall modules meet on perpendicular faces in a 90-degree L. Show top and exterior faces; simple flush abutment with end grain visible. No extra pieces, no hollow centers, no text, pale studio background."
+  },
+  "images": [
+    {
+      "file": "concept-sheet.png",
+      "width_px": 1536,
+      "height_px": 1024,
+      "mode": "RGB",
+      "format": "PNG",
+      "sha256": "78ba0459622f481ea6037ce0ac58407fd3f9a7f9680a2a24f307b43577215936"
+    },
+    {
+      "file": "asset-view.png",
+      "width_px": 1312,
+      "height_px": 1199,
+      "mode": "RGB",
+      "format": "PNG",
+      "sha256": "b7b45c342f8942cd311d8fef8e088fecbf43738d706c3df0b4a9117033f36797"
+    }
+  ],
+  "visual_review": "L join and quarter-turn read clearly; component dimensions and exact contact masks remain unverified.",
+  "compatibility": "Visual review does not establish numerical mesh, collision, contact, clearance or runtime compatibility. Appearance only; gameplay material properties unchanged.",
+  "generation_history": [
+    {
+      "file": "exec-d9a1f282-8c2c-4a9d-8590-de8443c1ba9a.png",
+      "selected": true
+    },
+    {
+      "file": "exec-3bd280ab-0789-4179-a97b-4d84d1cc51bc.png",
+      "selected": true
+    }
+  ],
+  "current_route_review": "Possible cell-member assembly study only. Exact member origins, member boundaries, axes/pivot, named contact masks, mating faces, clearances and BLD-01 allowlisted rotation remain undefined. Preserve appearance evidence; no structural route accepted.",
+  "review_document": "review-2026-10-18.md",
+  "buildability_review_history": [{"date":"2026-10-18","prior_status":"image-complete; proposal; ready-for-model-test","finding":"Selected pair shows a quarter-turn L appearance but does not establish exact cell placement, contacts, pivot or allowed rotation. GEO-01 approved manifest/hash and applicable GEO-02 evidence remain absent."}],
+  "created_utc": "2026-10-18"
+}

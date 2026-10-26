@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "status": "bounded-diagnostic-studies-reviewed; no-model-promotion",
+  "reviewer": "existing /root/visual_review",
+  "reviewed_findings": [
+    "Exact trace replay is strong narrow reproducibility evidence, not causal force attribution.",
+    "Two single-variable studies useful; neither passed80mm and style regressed. No combined tuning run.",
+    "Sequential contact projections order dependent, not minimum impulse; added oblique reversed-order fixture.",
+    "Length-preserving rotating-axis fixture replaces the approximate endpoint test; radial spin remains outside adapter.",
+    "Coverage proposals still leave roughly49%mane/48%tail nodes above warning; do not automatically double rig or approve semantics.",
+    "Fixed22mm envelope conflict remains open.",
+    "Added full saved shapes/rest/yaw/finite assertions in clearancev004 and candidate clearance-v002; identical numeric results.",
+    "Coveragev002 binds NPZ/additional-guides hashes and renderer verifies NPZ; source and materials unchanged."
+  ],
+  "limitations": [
+    "No full coupled contact solver, approved strand ownership, actual-mesh collision fix or runtime budget yet.",
+    "Current source failures and exhausted stage attempts remain unchanged."
+  ],
+  "input_sha256": {
+    "tools/Trace-FeatureGuideMotion.py": "0db2d0d959bbb127e02b270b6d04d1bf09641f4df29938b096051623661d3870",
+    "tools/FeatureContactVelocity.py": "9d0cb141cdf8c6777676b3e8ffa108d59ee434e5e4f3d1ea2baf67d3835aafb4",
+    "tools/Study-FeatureContactVelocity.py": "d9e39736e181c9826b0b29e00e4e14f8c685d2bd65886e6108c55a2c2bd4812d",
+    "tools/Check-FeatureGuideClearance.py": "dd6a0c889d2f50669370774f23febea4347766f46ab2957df3066d70f5de1347",
+    "tools/Propose-FeatureCoverageGuides.py": "d76610203584765cd8ce89fb9d078cdf974d3fe44de2cf75a4d5bbf00d8359df",
+    "tools/Render-FeatureCoverage.py": "32a2f676243bbacb15d2b91afe89a28198eade472d03710768238836fd47b0a1",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MotionDesignStudy-v001/study-results-v002.json": "399a154b0442eea75e73ad44e340e622b22b4a4f09da8934e883f7d01f0f689e",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CoverageGuideStudy-v002/coverage-report.json": "94add1cca0a5c6ab4605136737c00b95fbf5fcbd8820a9556a8b571d93fe755c",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CoverageViews-v002/render-report.json": "804cfa5c91982bfde2ed38ecf3b9c31652dc527ad07adf9cfeec1a4e00ea95ee"
+  }
+}

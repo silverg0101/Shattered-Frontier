@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "status": "baked-actual-surface-pilot-needs-checks",
+  "cpu_only": true,
+  "source_sha256": "a1de9660c66c772cdb4cedec20ac5b1a2229a4417af46550f8167f915680c140",
+  "mesh_hash": "ba2d283db0be5e8cff4cc7549f1f51916cc0a4d18213773300976b11512ececa",
+  "profile_sha256": "7c12a0ee3f4e05968114f6f64a72efa3037cdb85f953da73d2895a0140ae5483",
+  "tool_sha256": "141c9c12070b0b99c90cbebf12841329adfc2a0a7f9c396fd4d8fc3e9de28fd6",
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ContactMeshExperiment-v001\\Voidreign-CompleteHair.blend": "a1de9660c66c772cdb4cedec20ac5b1a2229a4417af46550f8167f915680c140",
+    "docs\\art-templates\\model-profiles\\voidreign-complete-hair-motion-v003-20261018.json": "9df3ed982c0f5f571210a98d42c1e6b395b80713c139f0b7b162ad861d5cca47",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneGuideProposal-v001\\guide-report.json": "3e776c1cef3380c3a81814d67ce2ec32270bca2e7d7fbece55eefef49e70de67",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selections.npz": "0b6a19f76a2cba73a42e293c29365360b53ba93be101cf8f4ca556e7a5989cc0",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ContactMeshSurfaceCheck-v001\\surface-review.npz": "e8df9e74a7ddd7ddb44654989f1f5f0474d853a43350c32e0674a15163c68c85",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneAttachmentProposals-v001\\attachment-proposals.json": "0e0b6d2096722f4ffa88be6d437c1b17d10eba5999c884a5f1974e860c1c3308"
+  },
+  "proxy_vertices": 33233,
+  "proxy_faces": 68878,
+  "original_vertices": 284762,
+  "original_triangles": 297119,
+  "feature_labels": [
+    2
+  ],
+  "pinned_proxy_vertices": 12278,
+  "collision_excluded_vertices": 12224,
+  "frame_start": 1,
+  "frame_end": 30,
+  "baked": true,
+  "elapsed_seconds": 24.19775709998794,
+  "blender": "5.1.1",
+  "source_output_sha256": "318e021893aee8c86c2a0447ac434cb246b51524e4edecab6a603bfc1b0d39bd",
+  "limitations": [
+    "Offline Blender cloth cache and geometry-node source sampling, not an engine-compatible exchange.",
+    "Canonical simulation proxy only; original source topology, UVs and named bone weights retained.",
+    "Original free-surface collision exclusion retained; proposed clump-binding endpoints pinned, not semantically approved.",
+    "No strand self/cross-hair collision; proxy polygon contacts differ slightly from analytic capsule checks.",
+    "Source-style deformation, pin/contact conflicts and full surface checks remain required."
+  ]
+}

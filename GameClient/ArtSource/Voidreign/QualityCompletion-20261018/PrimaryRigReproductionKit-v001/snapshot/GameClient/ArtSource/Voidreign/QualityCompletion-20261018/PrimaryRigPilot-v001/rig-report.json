@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "status": "primary-rig-joint-pilot-needs-review",
+  "cpu_only": true,
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryOnlyCombinedFull-v001\\Voidreign-ActualSurfacePilot.blend": "c507e31813fea5ea61e30f7cbf8bae37609135b549238b64ad1e61a1e42111ee",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz": "0d7599c8064cb81a6e211a23731435e08939b7fb146ce2d4bed810273909a2b2",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selections.npz": "0b6a19f76a2cba73a42e293c29365360b53ba93be101cf8f4ca556e7a5989cc0",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryDomains-v001\\primary-domains.npz": "38002ef04f9ab82df4456021b3772e422328e2ecebd38bd068a344dd5e27bdb5"
+  },
+  "tool_sha256": "90db3c88604c0f8894072304f789f65778f1d3fab80af42ca524358e436b8978",
+  "profile_sha256": "51dbcf18a13a14dde3c8a0d10f1500ac60de2c5138cb0824ee0e214d95447e38",
+  "candidate_sha256": "00fba7e1c7990ee4cc24188de08f25c80f058a1f5d390c3d1b191634ebfa34d6",
+  "primary_bones": 23,
+  "original_vertex_groups_retained": 229,
+  "unweighted_vertices": 1139,
+  "rest_transform_fit_error_m": 1.987482259246276e-07,
+  "poses": [
+    {
+      "frame": 1,
+      "name": "rest",
+      "maximum_displacement_m": 6.371106519431236e-07,
+      "coincident_seam_error_m": 0.0
+    },
+    {
+      "frame": 15,
+      "name": "fore-left-flex",
+      "maximum_displacement_m": 0.07606856919995483,
+      "coincident_seam_error_m": 0.0
+    },
+    {
+      "frame": 30,
+      "name": "rest-mid",
+      "maximum_displacement_m": 6.371106519431236e-07,
+      "coincident_seam_error_m": 0.0
+    },
+    {
+      "frame": 45,
+      "name": "hind-right-neck-flex",
+      "maximum_displacement_m": 0.16475064003082585,
+      "coincident_seam_error_m": 0.0
+    },
+    {
+      "frame": 60,
+      "name": "rest-end",
+      "maximum_displacement_m": 6.371106519431236e-07,
+      "coincident_seam_error_m": 0.0
+    }
+  ],
+  "disabled_original_modifiers": [
+    {
+      "name": "Actual mesh | multi-guide secondary motion",
+      "type": "ARMATURE",
+      "viewport": true,
+      "render": true
+    },
+    {
+      "name": "Actual-surface simulated coordinates | diagnostic",
+      "type": "NODES",
+      "viewport": true,
+      "render": true
+    },
+    {
+      "name": "Actual surface contacts | diagnostic projection",
+      "type": "NODES",
+      "viewport": false,
+      "render": false
+    },
+    {
+      "name": "Actual-surface simulated coordinates | diagnostic.001",
+      "type": "NODES",
+      "viewport": true,
+      "render": true
+    }
+  ],
+  "limitations": [
+    "Authored landmarks and geodesic ownership are provisional; not gait/stance/contact/semantic acceptance.",
+    "Unresolved disconnected nonhair remains unweighted, not silently nearest-bound or deleted.",
+    "Original secondary modifiers are disabled. Articulated root targets/colliders and loose-item motion remain to be rebuilt.",
+    "No IK, locomotion transitions, skeletal export or engine validation in this joint-only pilot."
+  ]
+}

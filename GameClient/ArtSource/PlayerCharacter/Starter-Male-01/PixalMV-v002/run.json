@@ -1,0 +1,75 @@
+{
+  "backend": "Pixal3D-mv",
+  "status": "complete",
+  "seed": 42,
+  "pipeline": "1536_cascade",
+  "steps": 25,
+  "asset_name": "StarterMale",
+  "views": "/mnt/c/Projects/Shattered-Frontier/GameClient/ArtSource/PlayerCharacter/Starter-Male-01/Views-v003",
+  "transforms_sha256": "c4c2c1ff1bf60df63fe8222f9219a9c9b92e30a0ac7869968b4fdc160c5b6614",
+  "view_images": [
+    {
+      "file": "view00_azim000.png",
+      "sha256": "f378354e9e5e51c9a10b3c87d0c7e26e0600b927e52080d800960bce4fbbec93"
+    },
+    {
+      "file": "view01_azim090.png",
+      "sha256": "a8c7768df0db4a38c3b395da583c68d581264e8367421651b87bd1012c905f29"
+    },
+    {
+      "file": "view02_azim180.png",
+      "sha256": "7d72eea3d41dca1ed94108bfb186aa886b6367f3b37b3c63d8e8f6f2e4031480"
+    },
+    {
+      "file": "view03_azim270.png",
+      "sha256": "285126094fbceec8a937d53bebc9b8900f14fffc7a52a4bd19b914d531b49136"
+    }
+  ],
+  "torch": "2.14.0+rocm10.1.0",
+  "hip": "7.16.26385",
+  "gpu": "AMD Radeon RX 7900 XTX",
+  "asset_lab_root": "/home/grego/sf-asset-lab",
+  "stages": {
+    "load_seconds": 45.086,
+    "inference_seconds": 923.799,
+    "export_seconds": 104.892
+  },
+  "texture_size": 4096,
+  "decimation_target": 1000000,
+  "max_num_tokens": 131072,
+  "remesh_band": 1,
+  "remesh_project": 0,
+  "attention": "dense and sparse PyTorch SDPA; NAF shifted dilated neighborhoods via chunked PyTorch",
+  "stage": "complete",
+  "model_revision": "b0cb2e1b794cab9aa0ac38a95d794a4d9337437f",
+  "camera": {
+    "fov_degrees": [
+      20.0,
+      20.0,
+      20.0,
+      20.0
+    ],
+    "distance": [
+      3.1192,
+      3.1192,
+      3.1192,
+      3.1192
+    ],
+    "mesh_scale": 1.0
+  },
+  "raw_mesh": {
+    "vertices": 6771082,
+    "faces": 16277122
+  },
+  "effective_grid_resolution": 1536,
+  "files": {
+    "StarterMale.raw.ply": {
+      "sha256": "09e2db9c7a010e5a51df3921f20ec04862303f9eb1fad3b90fc14925d11a530d",
+      "bytes": 292855794
+    },
+    "StarterMale.glb": {
+      "sha256": "153fe6d510414a7879a29a2aa88be72881b6ca7a20de87c92747ff1a4b0154c6",
+      "bytes": 78198964
+    }
+  }
+}

@@ -1,0 +1,312 @@
+{
+  "schema_version": 1,
+  "status": "diagnostic-unclassified-no-repair",
+  "input_sha256": {
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkPilot-v002/Mount-WalkPilot.blend": "d175746ff5d44a6b8d05151200f67e1efee2798c506029991091ca379f771c35",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkStrain-v002/strain-report.json": "b21db1fccb8401e88ef39a914bf6ac9bef68c31e3c542993a42a3b78c213789a",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryDomains-v001/primary-domains.npz": "38002ef04f9ab82df4456021b3772e422328e2ecebd38bd068a344dd5e27bdb5",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HygieneSemanticSelection-v001/selections.npz": "0b6a19f76a2cba73a42e293c29365360b53ba93be101cf8f4ca556e7a5989cc0"
+  },
+  "tool_sha256": "b768f0b391203a84ec70e20c8576af2d0dc126d995ab30a4c52ac6f6b4e1a6b1",
+  "rows": [
+    {
+      "group": "all",
+      "metric": "absolute",
+      "frame": 54,
+      "vertices": [
+        {
+          "index": 22108,
+          "rest_local_m": [
+            0.17276737093925476,
+            0.02980242297053337,
+            -0.03853552043437958
+          ],
+          "world_deformed_m": [
+            -0.14632490277290344,
+            -1.4693384170532227,
+            0.9807671308517456
+          ],
+          "owner": 2,
+          "semantic_label": 0,
+          "primary_weights": {
+            "PRI.fore.R.shoulder": 0.3736031651496887,
+            "PRI.fore.R.elbow": 0.37945470213890076,
+            "PRI.body.spine": 0.14569498598575592,
+            "PRI.body.chest": 0.1012471467256546
+          }
+        },
+        {
+          "index": 22111,
+          "rest_local_m": [
+            0.18108990788459778,
+            0.031116627156734467,
+            -0.0331745371222496
+          ],
+          "world_deformed_m": [
+            -0.21598689258098602,
+            -1.551727294921875,
+            1.0508304834365845
+          ],
+          "owner": 5,
+          "semantic_label": 0,
+          "primary_weights": {
+            "PRI.body.spine": 0.47707417607307434,
+            "PRI.body.chest": 0.4045009911060333,
+            "PRI.body.neck": 0.08307669311761856,
+            "PRI.fore.R.elbow": 0.03534814715385437
+          }
+        }
+      ],
+      "weight_l1_delta": 1.4354194477200508
+    },
+    {
+      "group": "all",
+      "metric": "relative",
+      "frame": 38,
+      "vertices": [
+        {
+          "index": 95856,
+          "rest_local_m": [
+            0.0971103310585022,
+            0.11789412796497345,
+            -0.2667701244354248
+          ],
+          "world_deformed_m": [
+            0.2847977578639984,
+            -0.8298591375350952,
+            0.12405967712402344
+          ],
+          "owner": 1,
+          "semantic_label": 0,
+          "primary_weights": {
+            "PRI.fore.L.fetlock": 0.5208613872528076,
+            "PRI.fore.L.carpus": 0.4470052123069763,
+            "PRI.fore.L.elbow": 0.02450501173734665,
+            "PRI.fore.L.shoulder": 0.007628391031175852
+          }
+        },
+        {
+          "index": 95857,
+          "rest_local_m": [
+            0.09786594659090042,
+            0.11776445060968399,
+            -0.2680988609790802
+          ],
+          "world_deformed_m": [
+            0.2660723626613617,
+            -0.8557791113853455,
+            0.1132361888885498
+          ],
+          "owner": 1,
+          "semantic_label": 0,
+          "primary_weights": {
+            "PRI.fore.L.fetlock": 1.0
+          }
+        }
+      ],
+      "weight_l1_delta": 0.9582772278226912
+    },
+    {
+      "group": "Mane",
+      "metric": "absolute",
+      "frame": 48,
+      "vertices": [
+        {
+          "index": 44051,
+          "rest_local_m": [
+            0.18337583541870117,
+            0.047873370349407196,
+            0.2833561301231384
+          ],
+          "world_deformed_m": [
+            -0.15541313588619232,
+            -1.515118956565857,
+            2.431532144546509
+          ],
+          "owner": 0,
+          "semantic_label": 1,
+          "primary_weights": {
+            "PRI.body.muzzle": 0.4271073639392853,
+            "PRI.body.head": 0.4266083836555481,
+            "PRI.body.neck": 0.14597000181674957,
+            "PRI.body.chest": 0.00031423207838088274
+          }
+        },
+        {
+          "index": 44052,
+          "rest_local_m": [
+            0.18485777080059052,
+            0.0483330562710762,
+            0.28033703565597534
+          ],
+          "world_deformed_m": [
+            -0.155974343419075,
+            -1.521849274635315,
+            2.418390989303589
+          ],
+          "owner": 0,
+          "semantic_label": 1,
+          "primary_weights": {
+            "PRI.body.muzzle": 0.4271153509616852,
+            "PRI.body.head": 0.4266180694103241,
+            "PRI.body.neck": 0.14595340192317963,
+            "PRI.body.chest": 0.00031318183755502105
+          }
+        }
+      ],
+      "weight_l1_delta": 3.53229115717113e-05
+    },
+    {
+      "group": "Mane",
+      "metric": "relative",
+      "frame": 42,
+      "vertices": [
+        {
+          "index": 75934,
+          "rest_local_m": [
+            0.16407887637615204,
+            0.04835012927651405,
+            0.22968706488609314
+          ],
+          "world_deformed_m": [
+            -0.12202499806880951,
+            -1.3630199432373047,
+            2.2076966762542725
+          ],
+          "owner": 0,
+          "semantic_label": 1,
+          "primary_weights": {
+            "PRI.body.head": 0.4054625928401947,
+            "PRI.body.muzzle": 0.3753618001937866,
+            "PRI.body.neck": 0.21917559206485748
+          }
+        },
+        {
+          "index": 75936,
+          "rest_local_m": [
+            0.1637326180934906,
+            0.04827295243740082,
+            0.23031970858573914
+          ],
+          "world_deformed_m": [
+            -0.12177188694477081,
+            -1.361496925354004,
+            2.2104499340057373
+          ],
+          "owner": 0,
+          "semantic_label": 1,
+          "primary_weights": {
+            "PRI.body.head": 0.40457284450531006,
+            "PRI.body.muzzle": 0.3757345974445343,
+            "PRI.body.neck": 0.21969257295131683
+          }
+        }
+      ],
+      "weight_l1_delta": 0.0017795264720916748
+    },
+    {
+      "group": "Tail",
+      "metric": "absolute",
+      "frame": 31,
+      "vertices": [
+        {
+          "index": 233798,
+          "rest_local_m": [
+            -0.2632443904876709,
+            -0.01446632668375969,
+            -0.1763763278722763
+          ],
+          "world_deformed_m": [
+            0.3175484836101532,
+            0.525057852268219,
+            0.5559421181678772
+          ],
+          "owner": 0,
+          "semantic_label": 2,
+          "primary_weights": {
+            "PRI.hind.L.hip": 0.019776243716478348,
+            "PRI.hind.L.stifle": 0.5234713554382324,
+            "PRI.hind.L.hock": 0.44248634576797485,
+            "PRI.hind.L.fetlock": 0.01426602341234684
+          }
+        },
+        {
+          "index": 233801,
+          "rest_local_m": [
+            -0.2616714835166931,
+            -0.015408171340823174,
+            -0.1670241802930832
+          ],
+          "world_deformed_m": [
+            0.3081720769405365,
+            0.522449254989624,
+            0.5956124663352966
+          ],
+          "owner": 0,
+          "semantic_label": 2,
+          "primary_weights": {
+            "PRI.hind.L.hip": 0.02007177658379078,
+            "PRI.hind.L.stifle": 0.524239182472229,
+            "PRI.hind.L.hock": 0.44126418232917786,
+            "PRI.hind.L.fetlock": 0.014424885623157024
+          }
+        }
+      ],
+      "weight_l1_delta": 0.002444385550916195
+    },
+    {
+      "group": "Tail",
+      "metric": "relative",
+      "frame": 67,
+      "vertices": [
+        {
+          "index": 234089,
+          "rest_local_m": [
+            -0.2591344714164734,
+            -0.02695675939321518,
+            -0.1578698456287384
+          ],
+          "world_deformed_m": [
+            0.258505642414093,
+            0.09117893129587173,
+            0.6311206221580505
+          ],
+          "owner": 0,
+          "semantic_label": 2,
+          "primary_weights": {
+            "PRI.hind.L.hip": 0.02457808144390583,
+            "PRI.hind.L.stifle": 0.5247164368629456,
+            "PRI.hind.L.hock": 0.4337255656719208,
+            "PRI.hind.L.fetlock": 0.016979902982711792
+          }
+        },
+        {
+          "index": 234098,
+          "rest_local_m": [
+            -0.25808143615722656,
+            -0.026696376502513885,
+            -0.16002589464187622
+          ],
+          "world_deformed_m": [
+            0.25734129548072815,
+            0.0867002010345459,
+            0.6218964457511902
+          ],
+          "owner": 0,
+          "semantic_label": 2,
+          "primary_weights": {
+            "PRI.hind.L.hip": 0.024210119619965553,
+            "PRI.hind.L.stifle": 0.524071455001831,
+            "PRI.hind.L.hock": 0.4349293112754822,
+            "PRI.hind.L.fetlock": 0.016789091750979424
+          }
+        }
+      ],
+      "weight_l1_delta": 0.002407500520348549
+    }
+  ],
+  "limitations": [
+    "Weight differences do not alone identify a defect or approve a new skin.",
+    "Exact edge probes require local surface/joint visual review; no source changes."
+  ]
+}

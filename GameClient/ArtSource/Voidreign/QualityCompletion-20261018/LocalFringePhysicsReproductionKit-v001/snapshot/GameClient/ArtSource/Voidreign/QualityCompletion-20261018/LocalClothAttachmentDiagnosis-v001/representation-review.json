@@ -1,0 +1,32 @@
+{
+  "status": "geometry-representation-review-required",
+  "components": [
+    {
+      "nodes": 101,
+      "faces": 184,
+      "boundary_nodes": 16,
+      "all_boundary_nodes_are_pins": true,
+      "free_boundary_nodes": 0,
+      "euler": 1
+    },
+    {
+      "nodes": 65,
+      "faces": 116,
+      "boundary_nodes": 12,
+      "all_boundary_nodes_are_pins": true,
+      "free_boundary_nodes": 0,
+      "euler": 1
+    },
+    {
+      "nodes": 36,
+      "faces": 61,
+      "boundary_nodes": 9,
+      "all_boundary_nodes_are_pins": true,
+      "free_boundary_nodes": 0,
+      "euler": 1
+    }
+  ],
+  "finding": "Each component is an open shell with no free boundary edges: the only boundary is pinned at attachment. This is not a flat cloth sheet with free perimeter. Surface cloth does not explicitly preserve its enclosed cross-section.",
+  "contact_hypothesis": "Baseline free vertices all meet3mm sampled leg distance and no root/free rest-edge clearance incompatibility found; do not expand contact exclusions based on that rejected hypothesis.",
+  "next": "Review shape-preserving internal-spring/rod/cage representation. Keep components separate to prevent artificial cross-component internal springs; keep root and collision limits."
+}

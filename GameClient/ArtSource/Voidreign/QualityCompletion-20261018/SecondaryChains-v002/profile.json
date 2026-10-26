@@ -1,0 +1,41 @@
+{
+ "schema_version": 1,
+ "source": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/SmoothedLegSkin-v002/Mount-ProxyHeatSkin.blend",
+ "object": "geometry_0",
+ "rig_object": "PRIMARY | anatomical rig pilot",
+ "semantic_selection": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringeLabelCorrection-v001/label-only-selections.npz",
+ "maximum_influences": 4,
+ "smooth_iterations": 15,
+ "regions": [
+  {
+   "id": "tail",
+   "label": 2,
+   "chains": 1,
+   "bones": 8,
+   "parents": [
+    "PRI.body.tail-base",
+    "PRI.body.pelvis"
+   ],
+   "root_contact_m": 0.02,
+   "root_blend": 0.35
+  },
+  {
+   "id": "mane",
+   "label": 1,
+   "chains": 5,
+   "bones": 3,
+   "parents": [
+    "PRI.body.chest",
+    "PRI.body.neck",
+    "PRI.body.head"
+   ],
+   "root_contact_m": 0.02,
+   "root_blend": 0.3
+  }
+ ],
+ "permissions": "User-authorized production pass 2026-10-19: secondary hair chains.",
+ "input_sha256": {
+  "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/SmoothedLegSkin-v002/Mount-ProxyHeatSkin.blend": "f110d8920289603013eac7789f3bcf92805f94dfa9aa5c5ff4dcd9582eb24413",
+  "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegFringeLabelCorrection-v001/label-only-selections.npz": "dc78ba7dbd5a03bef0f0397a26435ec6bcf31b079c340aff5d035a2b1566a630"
+ }
+}

@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "permissions": "Offline author read-only measurement",
+  "effective_time": "This frozen source animation only",
+  "units": "metres, source animation frames",
+  "control_contract": "frame_start1..frame_end<=10000; maximum_rigid_fit_residual_m default0.005 bounds(0,0.02];prototype criterion not runtime policy;root_boundary_band_m default0.05 bound0.005..0.1m, analysis region not collision exemption",
+  "source": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ContactMeshExperiment-v001\\Voidreign-CompleteHair.blend",
+  "domain_archive": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\TailLocalDomains-v001\\domains.npz",
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ContactMeshExperiment-v001\\Voidreign-CompleteHair.blend": "a1de9660c66c772cdb4cedec20ac5b1a2229a4417af46550f8167f915680c140",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\TailLocalDomains-v001\\domains.npz": "7b2119a615b33873367e68094a8607acde0ceab7a6548747b69639c71bf1e156",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selections.npz": "0b6a19f76a2cba73a42e293c29365360b53ba93be101cf8f4ca556e7a5989cc0",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\TailLocalDomains-v001\\domain-report.json": "7b0a257aebb5d089e4a124138207f971391b9ddc73c88204599f4ba13a57c4e4"
+  },
+  "object": "geometry_0",
+  "assembly_root": "MOTION HARNESS | rigid horse, not gait animation",
+  "mesh_hash": "ba2d283db0be5e8cff4cc7549f1f51916cc0a4d18213773300976b11512ececa",
+  "domains": [
+    "Tail_FAILURE_02",
+    "Tail_FAILURE_03"
+  ],
+  "frame_start": 1,
+  "frame_end": 330,
+  "maximum_rigid_fit_residual_m": 0.005,
+  "selection_archive": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selections.npz",
+  "domain_report": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\TailLocalDomains-v001\\domain-report.json",
+  "root_boundary_band_m": 0.05,
+  "scope": "Root ring capture with canonical seam edges and explicit plane-band; excludes distant source seam/cap boundaries"
+}

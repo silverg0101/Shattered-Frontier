@@ -1,0 +1,9 @@
+Concept-sheet prompt/output `exec-7972de50-b17e-41cb-bef0-d9c204d81d87.png`:
+
+Concept sheet for BLD-SM-JointRotatedCellFull-01: one solid stone masonry cube component with six full-cell faces, plus separate small assembly panel with repeated closed cubes and one neighbor rotated by authored 90 degrees. Show front, side, top, underside and isometric of one same cube. Gray-tan stone courses and bed joints remain flush and align at contact planes; rotation changes course direction but not geometry. No holes, frames, extra supports, protruding blocks, people or writing. Pale neutral background. Assembly is appearance-only, not strength or fit verification.
+
+Clean-view prompt/output `exec-7bb51165-2de0-496a-afcf-3ae10a057a4a.png`:
+
+Single isolated solid stone masonry cube component for BLD-SM-JointRotatedCellFull-01. Full square 0.5 m cell, no hole and no other blocks. Three-quarter orthographic on neutral light background. Front face has horizontal coursed stone joints; adjacent side face has perpendicular course direction as if authored 90-degree grid orientation. Keep the cube closed, flush, no protruding stones, no added trim, no supports, no text or people. Gray-tan stone material, clean complete asset view. Appearance target only; actual fit remains unverified.
+
+No reference image was attached; prior KIT-SM packages were style guidance only.

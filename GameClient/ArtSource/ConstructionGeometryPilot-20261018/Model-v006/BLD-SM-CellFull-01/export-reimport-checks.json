@@ -1,0 +1,48 @@
+[
+  {
+    "status": "passed",
+    "file": "SM_BLD_SM_CellFull_01_v001.glb",
+    "kind": "glb",
+    "blender": "5.1.1",
+    "mesh_object_count": 1,
+    "dimensions_m": [
+      0.5,
+      0.5,
+      0.5
+    ],
+    "expected_dimensions_m": [
+      0.5,
+      0.5,
+      0.5
+    ],
+    "max_dimension_error_m": 0.0,
+    "connected_components": 1,
+    "loose_vertices": 0,
+    "uv0_present": true,
+    "material_slots": 1,
+    "acceptance_claim": false
+  },
+  {
+    "status": "passed",
+    "file": "SM_BLD_SM_CellFull_01_v001.fbx",
+    "kind": "fbx",
+    "blender": "5.1.1",
+    "mesh_object_count": 1,
+    "dimensions_m": [
+      0.5,
+      0.5000000596046448,
+      0.5000000814603354
+    ],
+    "expected_dimensions_m": [
+      0.5,
+      0.5,
+      0.5
+    ],
+    "max_dimension_error_m": 8.146033536604591e-08,
+    "connected_components": 1,
+    "loose_vertices": 0,
+    "uv0_present": true,
+    "material_slots": 1,
+    "acceptance_claim": false
+  }
+]

@@ -1,0 +1,2522 @@
+{
+  "status": "counterfactual-contact-set-diagnosis-only",
+  "cpu_only": true,
+  "case": "moving-tilted-capsule",
+  "saved_unresolved_contact_sets": 964,
+  "minimum_impulse_unresolved_contact_sets": 0,
+  "maximum_candidate_speed_m_s": 54.555613728090556,
+  "maximum_saved_speed_m_s": 19.452382719715374,
+  "maximum_counterfactual_speed_m_s": 19.452382719348783,
+  "contact_sets": [
+    {
+      "substep": 0,
+      "time_seconds": 0.0,
+      "guide": "Fixture_G00",
+      "node": 7,
+      "contacts": [
+        {
+          "label": "Fixture moving",
+          "normal": [
+            -0.9955396986808676,
+            0.0,
+            0.0943435654955192
+          ],
+          "collider_velocity_m_s": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "gap_m": 3.122502256758253e-17,
+          "parameter": 0.0,
+          "capsule_bottom_below_ground_envelope_m": 0.019999999999999997
+        }
+      ],
+      "start_m": [
+        0.4375,
+        0.0,
+        0.13375000000000004
+      ],
+      "prediction_m": [
+        0.4375,
+        0.0,
+        0.13357968750000004
+      ],
+      "solved_m": [
+        0.3304460301319132,
+        0.0,
+        0.10943435654955193
+      ],
+      "internal_correction_m": [
+        0.2098019193902912,
+        0.0,
+        -0.08732420075746417
+      ],
+      "summed_contact_correction_m": [
+        -0.316855889258378,
+        0.0,
+        0.06317886980701605
+      ],
+      "candidate_velocity_m_s": [
+        50.35246065366989,
+        0.0,
+        -20.9986831817914
+      ],
+      "saved_velocity_m_s": [
+        -1.5240818138731171,
+        0.0,
+        -16.082537709689408
+      ],
+      "minimum_impulse_velocity_m_s": [
+        -1.5240818138731242,
+        0.0,
+        -16.082537709689408
+      ],
+      "saved_approach_residual_m_s": 6.8833827526759706e-15,
+      "minimum_impulse_result": {
+        "status": "passed-velocity-constraints-only",
+        "algorithm": "minimum-norm-active-set",
+        "iterations": 1,
+        "active_constraints": [
+          0
+        ],
+        "maximum_approach_residual_m_s": 0.0
+      },
+      "candidate_speed_m_s": 54.555613728090556,
+      "saved_speed_m_s": 16.15459205795555,
+      "exact_speed_m_s": 16.15459205795555,
+      "maximum_internal_component_m_s": 54.53989381786636
+    },
+    {
+      "substep": 6,
+      "time_seconds": 0.0,
+      "guide": "Fixture_G00",
+      "node": 8,
+      "contacts": [
+        {
+          "label": "Fixture moving",
+          "normal": [
+            0.43177454016816,
+            0.0,
+            -0.9019815665869088
+          ],
+          "collider_velocity_m_s": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "gap_m": -0.011306391434672682,
+          "parameter": 0.0,
+          "capsule_bottom_below_ground_envelope_m": 0.019999999999999997
+        },
+        {
+          "label": "Ground",
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "collider_velocity_m_s": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "gap_m": 0.0
+        }
+      ],
+      "start_m": [
+        0.4689927651076757,
+        0.0,
+        0.02
+      ],
+      "prediction_m": [
+        0.4689326156411001,
+        0.0,
+        0.019814930555555554
+      ],
+      "solved_m": [
+        0.468295642054149,
+        0.0,
+        0.02
+      ],
+      "internal_correction_m": [
+        -0.12702713863150703,
+        0.0,
+        0.05758361753053397
+      ],
+      "summed_contact_correction_m": [
+        0.12639016504455589,
+        0.0,
+        -0.05739854808608952
+      ],
+      "candidate_velocity_m_s": [
+        -30.50094914353982,
+        0.0,
+        13.775651540661485
+      ],
+      "saved_velocity_m_s": [
+        -0.03244653375432245,
+        0.0,
+        0.0
+      ],
+      "minimum_impulse_velocity_m_s": [
+        1.0658141036401503e-14,
+        0.0,
+        -1.0658141036401503e-14
+      ],
+      "saved_approach_residual_m_s": 0.014009587191823259,
+      "minimum_impulse_result": {
+        "status": "passed-velocity-constraints-only",
+        "algorithm": "minimum-norm-active-set",
+        "iterations": 3,
+        "active_constraints": [
+          0,
+          1
+        ],
+        "maximum_approach_residual_m_s": 1.0658141036401503e-14
+      },
+      "candidate_speed_m_s": 33.46754359116503,
+      "saved_speed_m_s": 0.03244653375432245,
+      "exact_speed_m_s": 1.507288760336424e-14,
+      "maximum_internal_component_m_s": 33.472701963126745
+    },
+    {
+      "substep": 7,
+      "time_seconds": 0.0,
+      "guide": "Fixture_G00",
+      "node": 8,
+      "contacts": [
+        {
+          "label": "Fixture moving",
+          "normal": [
+            0.42925937831019034,
+            0.0,
+            -0.9031812587364447
+          ],
+          "collider_velocity_m_s": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "gap_m": -0.011424202809610536,
+          "parameter": 0.0,
+          "capsule_bottom_below_ground_envelope_m": 0.019999999999999997
+        },
+        {
+          "label": "Ground",
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "collider_velocity_m_s": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "gap_m": 0.0
+        }
+      ],
+      "start_m": [
+        0.468295642054149,
+        0.0,
+        0.02
+      ],
+      "prediction_m": [
+        0.4682100215115137,
+        0.0,
+        0.019814930555555554
+      ],
+      "solved_m": [
+        0.4680219916352761,
+        0.0,
+        0.02
+      ],
+      "internal_correction_m": [
+        -0.12655565474281494,
+        0.0,
+        0.05808720462813159
+      ],
+      "summed_contact_correction_m": [
+        0.12636762486657732,
+        0.0,
+        -0.05790213518368714
+      ],
+      "candidate_velocity_m_s": [
+        -30.393906068508052,
+        0.0,
+        13.896512444084914
+      ],
+      "saved_velocity_m_s": [
+        -0.03515404630910003,
+        0.0,
+        0.0
+      ],
+      "minimum_impulse_velocity_m_s": [
+        -1.4210854715202004e-14,
+        0.0,
+        -1.7763568394002505e-15
+      ],
+      "saved_approach_residual_m_s": 0.01509020406373192,
+      "minimum_impulse_result": {
+        "status": "passed-velocity-constraints-only",
+        "algorithm": "minimum-norm-active-set",
+        "iterations": 3,
+        "active_constraints": [
+          0,
+          1
+        ],
+        "maximum_approach_residual_m_s": 4.495770454129438e-15
+      },
+      "candidate_speed_m_s": 33.42009252246166,
+      "saved_speed_m_s": 0.03515404630910003,
+      "exact_speed_m_s": 1.432144669219779e-14,
+      "maximum_internal_component_m_s": 33.41990916086154
+    },
+    {
+      "substep": 5,
+      "time_seconds": 0.0,
+      "guide": "Fixture_G00",
+      "node": 8,
+      "contacts": [
+        {
+          "label": "Fixture moving",
+          "normal": [
+            0.4381365623382234,
+            0.0,
+            -0.8989084228899205
+          ],
+          "collider_velocity_m_s": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "gap_m": -0.011003170108467516,
+          "parameter": 0.0,
+          "capsule_bottom_below_ground_envelope_m": 0.019999999999999997
+        },
+        {
+          "label": "Ground",
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "collider_velocity_m_s": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "gap_m": 0.0
+        }
+      ],
+      "start_m": [
+        0.46930468674963316,
+        0.0,
+        0.02
+      ],
+      "prediction_m": [
+        0.4692548277440447,
+        0.0,
+        0.019814930555555554
+      ],
+      "solved_m": [
+        0.4689927651076757,
+        0.0,
+        0.02
+      ],
+      "internal_correction_m": [
+        -0.12587226542734192,
+        0.0,
+        0.05516413738408191
+      ],
+      "summed_contact_correction_m": [
+        0.1256102027909729,
+        0.0,
+        -0.05497906793963746
+      ],
+      "candidate_velocity_m_s": [
+        -30.221309863903294,
+        0.0,
+        13.19497630551299
+      ],
+      "saved_velocity_m_s": [
+        -0.025952688834869838,
+        0.0,
+        0.0
+      ],
+      "minimum_impulse_velocity_m_s": [
+        0.0,
+        0.0,
+        -5.329070518200751e-15
+      ],
+      "saved_approach_residual_m_s": 0.011370821869543463,
+      "minimum_impulse_result": {
+        "status": "passed-velocity-constraints-only",
+        "algorithm": "minimum-norm-active-set",
+        "iterations": 3,
+        "active_constraints": [
+          0,
+          1
+        ],
+        "maximum_approach_residual_m_s": 5.329070518200751e-15
+      },
+      "candidate_speed_m_s": 32.97627889245704,
+      "saved_speed_m_s": 0.025952688834869838,
+      "exact_speed_m_s": 5.329070518200751e-15,
+      "maximum_internal_component_m_s": 32.98311648724733
+    },
+    {
+      "substep": 8,
+      "time_seconds": 0.0,
+      "guide": "Fixture_G00",
+      "node": 8,
+      "contacts": [
+        {
+          "label": "Fixture moving",
+          "normal": [
+            0.4336792582154849,
+            0.0,
+            -0.901067312132488
+          ],
+          "collider_velocity_m_s": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "gap_m": -0.011216399792963263,
+          "parameter": 0.0,
+          "capsule_bottom_below_ground_envelope_m": 0.019999999999999997
+        },
+        {
+          "label": "Ground",
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "collider_velocity_m_s": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "gap_m": 0.0
+        }
+      ],
+      "start_m": [
+        0.4680219916352761,
+        0.0,
+        0.02
+      ],
+      "prediction_m": [
+        0.46792572621057754,
+        0.0,
+        0.019814930555555554
+      ],
+      "solved_m": [
+        0.46850360587948786,
+        0.0,
+        0.02
+      ],
+      "internal_correction_m": [
+        -0.1249997809578953,
+        0.0,
+        0.05566442895056643
+      ],
+      "summed_contact_correction_m": [
+        0.12557766062680562,
+        0.0,
+        -0.05547935950612199
+      ],
+      "candidate_velocity_m_s": [
+        -30.02305113182252,
+        0.0,
+        13.315046281469279
+      ],
+      "saved_velocity_m_s": [
+        -0.030036087879759046,
+        0.0,
+        0.0
+      ],
+      "minimum_impulse_velocity_m_s": [
+        2.1316282072803006e-14,
+        0.0,
+        -3.552713678800501e-15
+      ],
+      "saved_approach_residual_m_s": 0.01302602831138902,
+      "minimum_impulse_result": {
+        "status": "passed-velocity-constraints-only",
+        "algorithm": "minimum-norm-active-set",
+        "iterations": 3,
+        "active_constraints": [
+          0,
+          1
+        ],
+        "maximum_approach_residual_m_s": 3.552713678800501e-15
+      },
+      "candidate_speed_m_s": 32.84317367036411,
+      "saved_speed_m_s": 0.030036087879759046,
+      "exact_speed_m_s": 2.161031364628563e-14,
+      "maximum_internal_component_m_s": 32.84009890452636
+    },
+    {
+      "substep": 4,
+      "time_seconds": 0.0,
+      "guide": "Fixture_G00",
+      "node": 8,
+      "contacts": [
+        {
+          "label": "Fixture moving",
+          "normal": [
+            0.4409620945234744,
+            0.0,
+            -0.8975257273156412
+          ],
+          "collider_velocity_m_s": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "gap_m": -0.010866064821041434,
+          "parameter": 0.0,
+          "capsule_bottom_below_ground_envelope_m": 0.019999999999999997
+        },
+        {
+          "label": "Ground",
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "collider_velocity_m_s": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "gap_m": 0.0
+        }
+      ],
+      "start_m": [
+        0.4688162484349723,
+        0.0,
+        0.02
+      ],
+      "prediction_m": [
+        0.46875282577300237,
+        0.0,
+        0.019814930555555554
+      ],
+      "solved_m": [
+        0.46930468674963316,
+        0.0,
+        0.02
+      ],
+      "internal_correction_m": [
+        -0.12420059511431465,
+        0.0,
+        0.05306487914734059
+      ],
+      "summed_contact_correction_m": [
+        0.12475245609094544,
+        0.0,
+        -0.052879809702896144
+      ],
+      "candidate_velocity_m_s": [
+        -29.823364266308307,
+        0.0,
+        12.691154328695074
+      ],
+      "saved_velocity_m_s": [
+        -0.023318188295355632,
+        0.0,
+        0.0
+      ],
+      "minimum_impulse_velocity_m_s": [
+        1.0658141036401503e-14,
+        0.0,
+        -3.552713678800501e-15
+      ],
+      "saved_approach_residual_m_s": 0.010282437151212786,
+      "minimum_impulse_result": {
+        "status": "passed-velocity-constraints-only",
+        "algorithm": "minimum-norm-active-set",
+        "iterations": 3,
+        "active_constraints": [
+          0,
+          1
+        ],
+        "maximum_approach_residual_m_s": 3.552713678800501e-15
+      },
+      "candidate_speed_m_s": 32.41139389714165,
+      "saved_speed_m_s": 0.023318188295355632,
+      "exact_speed_m_s": 1.1234667099445444e-14,
+      "maximum_internal_component_m_s": 32.414813702976836
+    },
+    {
+      "substep": 0,
+      "time_seconds": 0.0,
+      "guide": "Fixture_G00",
+      "node": 8,
+      "contacts": [
+        {
+          "label": "Fixture moving",
+          "normal": [
+            0.32760364089019434,
+            0.0,
+            -0.9448152488584679
+          ],
+          "collider_velocity_m_s": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "gap_m": -0.015327361516808146,
+          "parameter": 0.0,
+          "capsule_bottom_below_ground_envelope_m": 0.019999999999999997
+        },
+        {
+          "label": "Ground",
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "collider_velocity_m_s": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "gap_m": 0.0
+        }
+      ],
+      "start_m": [
+        0.5,
+        0.0,
+        0.01
+      ],
+      "prediction_m": [
+        0.5,
+        0.0,
+        0.0098296875
+      ],
+      "solved_m": [
+        0.45773906465087283,
+        0.0,
+        0.02
+      ],
+      "internal_correction_m": [
+        -0.13484421004994548,
+        0.0,
+        0.0006170948215458247
+      ],
+      "summed_contact_correction_m": [
+        0.09258327470081831,
+        0.0,
+        0.009553217678454176
+      ],
+      "candidate_velocity_m_s": [
+        -32.362610411986914,
+        0.0,
+        0.10722775717099786
+      ],
+      "saved_velocity_m_s": [
+        -0.8545658433827168,
+        0.0,
+        0.0
+      ],
+      "minimum_impulse_velocity_m_s": [
+        -7.105427357601002e-15,
+        0.0,
+        1.7763568394002505e-15
+      ],
+      "saved_approach_residual_m_s": 0.2799588816725776,
+      "minimum_impulse_result": {
+        "status": "passed-velocity-constraints-only",
+        "algorithm": "minimum-norm-active-set",
+        "iterations": 3,
+        "active_constraints": [
+          0,
+          1
+        ],
+        "maximum_approach_residual_m_s": 4.00609290171027e-15
+      },
+      "candidate_speed_m_s": 32.36278805155625,
+      "saved_speed_m_s": 0.8545658433827168,
+      "exact_speed_m_s": 7.32410687763558e-15,
+      "maximum_internal_component_m_s": 32.362949295525056
+    },
+    {
+      "substep": 9,
+      "time_seconds": 0.0,
+      "guide": "Fixture_G00",
+      "node": 8,
+      "contacts": [
+        {
+          "label": "Fixture moving",
+          "normal": [
+            0.44087186758581276,
+            0.0,
+            -0.8975700509550202
+          ],
+          "collider_velocity_m_s": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "gap_m": -0.010870466416655174,
+          "parameter": 0.0,
+          "capsule_bottom_below_ground_envelope_m": 0.019999999999999997
+        },
+        {
+          "label": "Ground",
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "collider_velocity_m_s": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "gap_m": 0.0
+        }
+      ],
+      "start_m": [
+        0.46850360587948786,
+        0.0,
+        0.02
+      ],
+      "prediction_m": [
+        0.4684275148947018,
+        0.0,
+        0.019814930555555554
+      ],
+      "solved_m": [
+        0.46929470392794165,
+        0.0,
+        0.02
+      ],
+      "internal_correction_m": [
+        -0.1235026902937485,
+        0.0,
+        0.052159683236306334
+      ],
+      "summed_contact_correction_m": [
+        0.12436987932698834,
+        0.0,
+        -0.051974613791861884
+      ],
+      "candidate_velocity_m_s": [
+        -29.658907506848294,
+        0.0,
+        12.473907310046853
+      ],
+      "saved_velocity_m_s": [
+        -0.02333630437293012,
+        0.0,
+        0.0
+      ],
+      "minimum_impulse_velocity_m_s": [
+        1.0658141036401503e-14,
+        0.0,
+        8.881784197001252e-15
+      ],
+      "saved_approach_residual_m_s": 0.010288320091444671,
+      "minimum_impulse_result": {
+        "status": "passed-velocity-constraints-only",
+        "algorithm": "minimum-norm-active-set",
+        "iterations": 3,
+        "active_constraints": [
+          0,
+          1
+        ],
+        "maximum_approach_residual_m_s": 3.2731489505625865e-15
+      },
+      "candidate_speed_m_s": 32.17528800305325,
+      "saved_speed_m_s": 0.02333630437293012,
+      "exact_speed_m_s": 1.3873790429220374e-14,
+      "maximum_internal_component_m_s": 32.17570995254137
+    },
+    {
+      "substep": 3,
+      "time_seconds": 0.0,
+      "guide": "Fixture_G00",
+      "node": 8,
+      "contacts": [
+        {
+          "label": "Fixture moving",
+          "normal": [
+            0.4365318108222037,
+            0.0,
+            -0.8996888229495171
+          ],
+          "collider_velocity_m_s": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "gap_m": -0.011080366945395614,
+          "parameter": 0.0,
+          "capsule_bottom_below_ground_envelope_m": 0.019999999999999997
+        },
+        {
+          "label": "Ground",
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "collider_velocity_m_s": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "gap_m": 0.0
+        }
+      ],
+      "start_m": [
+        0.46683246483547874,
+        0.0,
+        0.02
+      ],
+      "prediction_m": [
+        0.46668717925033515,
+        0.0,
+        0.019814930555555554
+      ],
+      "solved_m": [
+        0.4688162484349723,
+        0.0,
+        0.02
+      ],
+      "internal_correction_m": [
+        -0.12202546899560804,
+        0.0,
+        0.05227126822043736
+      ],
+      "summed_contact_correction_m": [
+        0.12415453818024522,
+        0.0,
+        -0.05208619877599291
+      ],
+      "candidate_velocity_m_s": [
+        -29.320981099380393,
+        0.0,
+        12.500687706238299
+      ],
+      "saved_velocity_m_s": [
+        -0.02681862578205447,
+        0.0,
+        0.0
+      ],
+      "minimum_impulse_velocity_m_s": [
+        3.552713678800501e-15,
+        0.0,
+        -3.552713678800501e-15
+      ],
+      "saved_approach_residual_m_s": 0.011707183276403276,
+      "minimum_impulse_result": {
+        "status": "passed-velocity-constraints-only",
+        "algorithm": "minimum-norm-active-set",
+        "iterations": 3,
+        "active_constraints": [
+          0,
+          1
+        ],
+        "maximum_approach_residual_m_s": 3.552713678800501e-15
+      },
+      "candidate_speed_m_s": 31.87455294994927,
+      "saved_speed_m_s": 0.02681862578205447,
+      "exact_speed_m_s": 5.0242958677880805e-15,
+      "maximum_internal_component_m_s": 31.85994401348392
+    },
+    {
+      "substep": 23,
+      "time_seconds": 0.0,
+      "guide": "Fixture_G00",
+      "node": 8,
+      "contacts": [
+        {
+          "label": "Fixture moving",
+          "normal": [
+            0.4480181668926174,
+            0.0,
+            -0.8940244527607613
+          ],
+          "collider_velocity_m_s": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "gap_m": -0.010516988933626178,
+          "parameter": 0.0,
+          "capsule_bottom_below_ground_envelope_m": 0.019999999999999997
+        },
+        {
+          "label": "Ground",
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "collider_velocity_m_s": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "gap_m": 0.0
+        }
+      ],
+      "start_m": [
+        0.4701044670262399,
+        0.0,
+        0.02
+      ],
+      "prediction_m": [
+        0.4700745893564837,
+        0.0,
+        0.019814930555555554
+      ],
+      "solved_m": [
+        0.4700900145859886,
+        0.0,
+        0.02
+      ],
+      "internal_correction_m": [
+        -0.1228200761116541,
+        0.0,
+        0.04863845857535691
+      ],
+      "summed_contact_correction_m": [
+        0.12283550134115898,
+        0.0,
+        -0.04845338913091247
+      ],
+      "candidate_velocity_m_s": [
+        -29.483988907538475,
+        0.0,
+        11.628813391418992
+      ],
+      "saved_velocity_m_s": [
+        -0.01821008141994726,
+        0.0,
+        0.0
+      ],
+      "minimum_impulse_velocity_m_s": [
+        0.0,
+        0.0,
+        -8.881784197001252e-15
+      ],
+      "saved_approach_residual_m_s": 0.008158447296730084,
+      "minimum_impulse_result": {
+        "status": "passed-velocity-constraints-only",
+        "algorithm": "minimum-norm-active-set",
+        "iterations": 3,
+        "active_constraints": [
+          0,
+          1
+        ],
+        "maximum_approach_residual_m_s": 8.881784197001252e-15
+      },
+      "candidate_speed_m_s": 31.694398602786226,
+      "saved_speed_m_s": 0.01821008141994726,
+      "exact_speed_m_s": 8.881784197001252e-15,
+      "maximum_internal_component_m_s": 31.704055184199557
+    },
+    {
+      "substep": 22,
+      "time_seconds": 0.0,
+      "guide": "Fixture_G00",
+      "node": 8,
+      "contacts": [
+        {
+          "label": "Fixture moving",
+          "normal": [
+            0.4481472448985261,
+            0.0,
+            -0.893959756862612
+          ],
+          "collider_velocity_m_s": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "gap_m": -0.010510513045057814,
+          "parameter": 0.0,
+          "capsule_bottom_below_ground_envelope_m": 0.019999999999999997
+        },
+        {
+          "label": "Ground",
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "collider_velocity_m_s": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "gap_m": 0.0
+        }
+      ],
+      "start_m": [
+        0.47016196062848686,
+        0.0,
+        0.02
+      ],
+      "prediction_m": [
+        0.4701333530181647,
+        0.0,
+        0.019814930555555554
+      ],
+      "solved_m": [
+        0.4701044670262399,
+        0.0,
+        0.02
+      ],
+      "internal_correction_m": [
+        -0.12282165773593291,
+        0.0,
+        0.048550476592889635
+      ],
+      "summed_contact_correction_m": [
+        0.12279277174400811,
+        0.0,
+        -0.04836540714844519
+      ],
+      "candidate_velocity_m_s": [
+        -29.484063683101212,
+        0.0,
+        11.607697715626847
+      ],
+      "saved_velocity_m_s": [
+        -0.018132494486372698,
+        0.0,
+        0.0
+      ],
+      "minimum_impulse_velocity_m_s": [
+        0.0,
+        0.0,
+        -1.7763568394002505e-15
+      ],
+      "saved_approach_residual_m_s": 0.00812602744720564,
+      "minimum_impulse_result": {
+        "status": "passed-velocity-constraints-only",
+        "algorithm": "minimum-norm-active-set",
+        "iterations": 3,
+        "active_constraints": [
+          0,
+          1
+        ],
+        "maximum_approach_residual_m_s": 1.7763568394002505e-15
+      },
+      "candidate_speed_m_s": 31.686726835167697,
+      "saved_speed_m_s": 0.018132494486372698,
+      "exact_speed_m_s": 1.7763568394002505e-15,
+      "maximum_internal_component_m_s": 31.69663961773557
+    },
+    {
+      "substep": 10,
+      "time_seconds": 0.0,
+      "guide": "Fixture_G00",
+      "node": 8,
+      "contacts": [
+        {
+          "label": "Fixture moving",
+          "normal": [
+            0.44648314472275535,
+            0.0,
+            -0.8947920437053959
+          ],
+          "collider_velocity_m_s": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "gap_m": -0.010593751293636388,
+          "parameter": 0.0,
+          "capsule_bottom_below_ground_envelope_m": 0.019999999999999997
+        },
+        {
+          "label": "Ground",
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "collider_velocity_m_s": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "gap_m": 0.0
+        }
+      ],
+      "start_m": [
+        0.46929470392794165,
+        0.0,
+        0.02
+      ],
+      "prediction_m": [
+        0.4692447857265995,
+        0.0,
+        0.019814930555555554
+      ],
+      "solved_m": [
+        0.469918383080282,
+        0.0,
+        0.02
+      ],
+      "internal_correction_m": [
+        -0.12246952503443004,
+        0.0,
+        0.04926916786575168
+      ],
+      "summed_contact_correction_m": [
+        0.12314312238811254,
+        0.0,
+        -0.04908409842130724
+      ],
+      "candidate_velocity_m_s": [
+        -29.404666376585325,
+        0.0,
+        11.780183621113737
+      ],
+      "saved_velocity_m_s": [
+        -0.019132614416341155,
+        0.0,
+        0.0
+      ],
+      "minimum_impulse_velocity_m_s": [
+        -2.1316282072803006e-14,
+        0.0,
+        1.5987211554602254e-14
+      ],
+      "saved_approach_residual_m_s": 0.008542389851375924,
+      "minimum_impulse_result": {
+        "status": "passed-velocity-constraints-only",
+        "algorithm": "minimum-norm-active-set",
+        "iterations": 3,
+        "active_constraints": [
+          0,
+          1
+        ],
+        "maximum_approach_residual_m_s": 2.382259035375545e-14
+      },
+      "candidate_speed_m_s": 31.6766022620079,
+      "saved_speed_m_s": 0.019132614416341155,
+      "exact_speed_m_s": 2.6645352591003757e-14,
+      "maximum_internal_component_m_s": 31.68203217513246
+    },
+    {
+      "substep": 24,
+      "time_seconds": 0.0,
+      "guide": "Fixture_G00",
+      "node": 8,
+      "contacts": [
+        {
+          "label": "Fixture moving",
+          "normal": [
+            0.448276204330166,
+            0.0,
+            -0.8938950971066679
+          ],
+          "collider_velocity_m_s": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "gap_m": -0.010504039837625764,
+          "parameter": 0.0,
+          "capsule_bottom_below_ground_envelope_m": 0.019999999999999997
+        },
+        {
+          "label": "Ground",
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "collider_velocity_m_s": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "gap_m": 0.0
+        }
+      ],
+      "start_m": [
+        0.4700900145859886,
+        0.0,
+        0.02
+      ],
+      "prediction_m": [
+        0.4700598416300337,
+        0.0,
+        0.019814930555555554
+      ],
+      "solved_m": [
+        0.47011890932447287,
+        0.0,
+        0.02
+      ],
+      "internal_correction_m": [
+        -0.12266047539801164,
+        0.0,
+        0.048384704579516685
+      ],
+      "summed_contact_correction_m": [
+        0.12271954309245078,
+        0.0,
+        -0.048199635135072236
+      ],
+      "candidate_velocity_m_s": [
+        -29.445755604951962,
+        0.0,
+        11.567912432417337
+      ],
+      "saved_velocity_m_s": [
+        -0.018033150311510232,
+        0.0,
+        0.0
+      ],
+      "minimum_impulse_velocity_m_s": [
+        -3.552713678800501e-15,
+        0.0,
+        -1.0658141036401503e-14
+      ],
+      "saved_approach_residual_m_s": 0.008083832173759157,
+      "minimum_impulse_result": {
+        "status": "passed-velocity-constraints-only",
+        "algorithm": "minimum-norm-active-set",
+        "iterations": 3,
+        "active_constraints": [
+          0,
+          1
+        ],
+        "maximum_approach_residual_m_s": 1.0658141036401503e-14
+      },
+      "candidate_speed_m_s": 31.636515629737662,
+      "saved_speed_m_s": 0.018033150311510232,
+      "exact_speed_m_s": 1.1234667099445444e-14,
+      "maximum_internal_component_m_s": 31.646047134795957
+    },
+    {
+      "substep": 21,
+      "time_seconds": 0.0,
+      "guide": "Fixture_G00",
+      "node": 8,
+      "contacts": [
+        {
+          "label": "Fixture moving",
+          "normal": [
+            0.44866045575827906,
+            0.0,
+            -0.8937022968745093
+          ],
+          "collider_velocity_m_s": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "gap_m": -0.010484732690316297,
+          "parameter": 0.0,
+          "capsule_bottom_below_ground_envelope_m": 0.019999999999999997
+        },
+        {
+          "label": "Ground",
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "collider_velocity_m_s": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "gap_m": 0.0
+        }
+      ],
+      "start_m": [
+        0.470232823175078,
+        0.0,
+        0.02
+      ],
+      "prediction_m": [
+        0.4702057762742297,
+        0.0,
+        0.019814930555555554
+      ],
+      "solved_m": [
+        0.47016196062848686,
+        0.0,
+        0.02
+      ],
+      "internal_correction_m": [
+        -0.12261336976129607,
+        0.0,
+        0.048072266841712896
+      ],
+      "summed_contact_correction_m": [
+        0.12256955411555322,
+        0.0,
+        -0.04788719739726845
+      ],
+      "candidate_velocity_m_s": [
+        -29.43369999891464,
+        0.0,
+        11.492927375344427
+      ],
+      "saved_velocity_m_s": [
+        -0.017800472332151283,
+        0.0,
+        0.0
+      ],
+      "minimum_impulse_velocity_m_s": [
+        -3.552713678800501e-15,
+        0.0,
+        1.7763568394002505e-15
+      ],
+      "saved_approach_residual_m_s": 0.007986368029255632,
+      "minimum_impulse_result": {
+        "status": "passed-velocity-constraints-only",
+        "algorithm": "minimum-norm-active-set",
+        "iterations": 3,
+        "active_constraints": [
+          0,
+          1
+        ],
+        "maximum_approach_residual_m_s": 3.181496325750053e-15
+      },
+      "candidate_speed_m_s": 31.597944162256017,
+      "saved_speed_m_s": 0.017800472332151283,
+      "exact_speed_m_s": 3.972054645195637e-15,
+      "maximum_internal_component_m_s": 31.608083173941736
+    },
+    {
+      "substep": 25,
+      "time_seconds": 0.0,
+      "guide": "Fixture_G00",
+      "node": 8,
+      "contacts": [
+        {
+          "label": "Fixture moving",
+          "normal": [
+            0.4487369674639348,
+            0.0,
+            -0.8936638820223582
+          ],
+          "collider_velocity_m_s": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "gap_m": -0.01048088480541445,
+          "parameter": 0.0,
+          "capsule_bottom_below_ground_envelope_m": 0.019999999999999997
+        },
+        {
+          "label": "Ground",
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "collider_velocity_m_s": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "gap_m": 0.0
+        }
+      ],
+      "start_m": [
+        0.47011890932447287,
+        0.0,
+        0.02
+      ],
+      "prediction_m": [
+        0.47008941574194185,
+        0.0,
+        0.019814930555555554
+      ],
+      "solved_m": [
+        0.47017053628247296,
+        0.0,
+        0.02
+      ],
+      "internal_correction_m": [
+        -0.12242484954264812,
+        0.0,
+        0.047922559901860104
+      ],
+      "summed_contact_correction_m": [
+        0.12250597008317923,
+        0.0,
+        -0.047737490457415654
+      ],
+      "candidate_velocity_m_s": [
+        -29.389042350042992,
+        0.0,
+        11.456997709779758
+      ],
+      "saved_velocity_m_s": [
+        -0.017730679573382306,
+        0.0,
+        0.0
+      ],
+      "minimum_impulse_velocity_m_s": [
+        -2.1316282072803006e-14,
+        0.0,
+        5.329070518200751e-15
+      ],
+      "saved_approach_residual_m_s": 0.00795641138283431,
+      "minimum_impulse_result": {
+        "status": "passed-velocity-constraints-only",
+        "algorithm": "minimum-norm-active-set",
+        "iterations": 3,
+        "active_constraints": [
+          0,
+          1
+        ],
+        "maximum_approach_residual_m_s": 1.4327801621821643e-14
+      },
+      "candidate_speed_m_s": 31.543281483931235,
+      "saved_speed_m_s": 0.017730679573382306,
+      "exact_speed_m_s": 2.1972320632906738e-14,
+      "maximum_internal_component_m_s": 31.552849866625902
+    },
+    {
+      "substep": 26,
+      "time_seconds": 0.0,
+      "guide": "Fixture_G00",
+      "node": 8,
+      "contacts": [
+        {
+          "label": "Fixture moving",
+          "normal": [
+            0.44918326506783296,
+            0.0,
+            -0.8934396422719337
+          ],
+          "collider_velocity_m_s": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "gap_m": -0.010458416870145298,
+          "parameter": 0.0,
+          "capsule_bottom_below_ground_envelope_m": 0.019999999999999997
+        },
+        {
+          "label": "Ground",
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "collider_velocity_m_s": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "gap_m": 0.0
+        }
+      ],
+      "start_m": [
+        0.47017053628247296,
+        0.0,
+        0.02
+      ],
+      "prediction_m": [
+        0.47014220082454056,
+        0.0,
+        0.019814930555555554
+      ],
+      "solved_m": [
+        0.4702205806696109,
+        0.0,
+        0.02
+      ],
+      "internal_correction_m": [
+        -0.12218497447156686,
+        0.0,
+        0.04739829876076454
+      ],
+      "summed_contact_correction_m": [
+        0.12226335431663722,
+        0.0,
+        -0.0472132293163201
+      ],
+      "candidate_velocity_m_s": [
+        -29.331194383079822,
+        0.0,
+        11.331175035916823
+      ],
+      "saved_velocity_m_s": [
+        -0.017446884834617808,
+        0.0,
+        0.0
+      ],
+      "minimum_impulse_velocity_m_s": [
+        0.0,
+        0.0,
+        -1.7763568394002505e-15
+      ],
+      "saved_approach_residual_m_s": 0.007836848695276085,
+      "minimum_impulse_result": {
+        "status": "passed-velocity-constraints-only",
+        "algorithm": "minimum-norm-active-set",
+        "iterations": 3,
+        "active_constraints": [
+          0,
+          1
+        ],
+        "maximum_approach_residual_m_s": 1.7763568394002505e-15
+      },
+      "candidate_speed_m_s": 31.44383074042662,
+      "saved_speed_m_s": 0.017446884834617808,
+      "exact_speed_m_s": 1.7763568394002505e-15,
+      "maximum_internal_component_m_s": 31.453523850485357
+    },
+    {
+      "substep": 20,
+      "time_seconds": 0.0,
+      "guide": "Fixture_G00",
+      "node": 8,
+      "contacts": [
+        {
+          "label": "Fixture moving",
+          "normal": [
+            0.44929239300985363,
+            0.0,
+            -0.8933847690572518
+          ],
+          "collider_velocity_m_s": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "gap_m": -0.010452917073546768,
+          "parameter": 0.0,
+          "capsule_bottom_below_ground_envelope_m": 0.019999999999999997
+        },
+        {
+          "label": "Ground",
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "collider_velocity_m_s": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "gap_m": 0.0
+        }
+      ],
+      "start_m": [
+        0.47026969364801857,
+        0.0,
+        0.02
+      ],
+      "prediction_m": [
+        0.47024345990907157,
+        0.0,
+        0.019814930555555554
+      ],
+      "solved_m": [
+        0.470232823175078,
+        0.0,
+        0.02
+      ],
+      "internal_correction_m": [
+        -0.12222088700670583,
+        0.0,
+        0.047293944322997314
+      ],
+      "summed_contact_correction_m": [
+        0.12221025027271223,
+        0.0,
+        -0.047108874878552864
+      ],
+      "candidate_velocity_m_s": [
+        -29.33930897895668,
+        0.0,
+        11.306129970852687
+      ],
+      "saved_velocity_m_s": [
+        -0.017392391162952305,
+        0.0,
+        0.0
+      ],
+      "minimum_impulse_velocity_m_s": [
+        -1.7763568394002505e-14,
+        0.0,
+        7.105427357601002e-15
+      ],
+      "saved_approach_residual_m_s": 0.007814269045766271,
+      "minimum_impulse_result": {
+        "status": "passed-velocity-constraints-only",
+        "algorithm": "minimum-norm-active-set",
+        "iterations": 3,
+        "active_constraints": [
+          0,
+          1
+        ],
+        "maximum_approach_residual_m_s": 1.4328916731059038e-14
+      },
+      "candidate_speed_m_s": 31.44238582360603,
+      "saved_speed_m_s": 0.017392391162952305,
+      "exact_speed_m_s": 1.9131948672901813e-14,
+      "maximum_internal_component_m_s": 31.452512676782522
+    },
+    {
+      "substep": 39,
+      "time_seconds": 0.0,
+      "guide": "Fixture_G00",
+      "node": 8,
+      "contacts": [
+        {
+          "label": "Fixture moving",
+          "normal": [
+            0.4493429803157925,
+            0.0,
+            -0.8933593263860412
+          ],
+          "collider_velocity_m_s": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "gap_m": -0.010450366792913345,
+          "parameter": 0.0,
+          "capsule_bottom_below_ground_envelope_m": 0.019999999999999997
+        },
+        {
+          "label": "Ground",
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "collider_velocity_m_s": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "gap_m": 0.0
+        }
+      ],
+      "start_m": [
+        0.47023918955282684,
+        0.0,
+        0.02
+      ],
+      "prediction_m": [
+        0.47021229818720967,
+        0.0,
+        0.019814930555555554
+      ],
+      "solved_m": [
+        0.47023849907145837,
+        0.0,
+        0.02
+      ],
+      "internal_correction_m": [
+        -0.12214485990579875,
+        0.0,
+        0.04720121786627954
+      ],
+      "summed_contact_correction_m": [
+        0.12217106079004746,
+        0.0,
+        -0.04701614842183509
+      ],
+      "candidate_velocity_m_s": [
+        -29.32122030513982,
+        0.0,
+        11.283875621240421
+      ],
+      "saved_velocity_m_s": [
+        -0.01735506972613196,
+        0.0,
+        0.0
+      ],
+      "minimum_impulse_velocity_m_s": [
+        3.552713678800501e-14,
+        0.0,
+        -5.329070518200751e-15
+      ],
+      "saved_approach_residual_m_s": 0.0077983787543285206,
+      "minimum_impulse_result": {
+        "status": "passed-velocity-constraints-only",
+        "algorithm": "minimum-norm-active-set",
+        "iterations": 3,
+        "active_constraints": [
+          0,
+          1
+        ],
+        "maximum_approach_residual_m_s": 5.329070518200751e-15
+      },
+      "candidate_speed_m_s": 31.417508004585084,
+      "saved_speed_m_s": 0.01735506972613196,
+      "exact_speed_m_s": 3.592459381734991e-14,
+      "maximum_internal_component_m_s": 31.427467825475695
+    },
+    {
+      "substep": 38,
+      "time_seconds": 0.0,
+      "guide": "Fixture_G00",
+      "node": 8,
+      "contacts": [
+        {
+          "label": "Fixture moving",
+          "normal": [
+            0.4493491340430999,
+            0.0,
+            -0.8933562311501031
+          ],
+          "collider_velocity_m_s": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "gap_m": -0.01045005652783287,
+          "parameter": 0.0,
+          "capsule_bottom_below_ground_envelope_m": 0.019999999999999997
+        },
+        {
+          "label": "Ground",
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "collider_velocity_m_s": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "gap_m": 0.0
+        }
+      ],
+      "start_m": [
+        0.47024446721073454,
+        0.0,
+        0.02
+      ],
+      "prediction_m": [
+        0.47021768550517806,
+        0.0,
+        0.019814930555555554
+      ],
+      "solved_m": [
+        0.47023918955282684,
+        0.0,
+        0.02
+      ],
+      "internal_correction_m": [
+        -0.12214623816334792,
+        0.0,
+        0.04719443442087726
+      ],
+      "summed_contact_correction_m": [
+        0.1221677422109967,
+        0.0,
+        -0.04700936497643281
+      ],
+      "candidate_velocity_m_s": [
+        -29.321524768537056,
+        0.0,
+        11.282247594343874
+      ],
+      "saved_velocity_m_s": [
+        -0.017351974648332453,
+        0.0,
+        0.0
+      ],
+      "minimum_impulse_velocity_m_s": [
+        1.7763568394002505e-14,
+        0.0,
+        5.329070518200751e-15
+      ],
+      "saved_approach_residual_m_s": 0.007797094782166011,
+      "minimum_impulse_result": {
+        "status": "passed-velocity-constraints-only",
+        "algorithm": "minimum-norm-active-set",
+        "iterations": 3,
+        "active_constraints": [
+          0,
+          1
+        ],
+        "maximum_approach_residual_m_s": 0.0
+      },
+      "candidate_speed_m_s": 31.41720747507662,
+      "saved_speed_m_s": 0.017351974648332453,
+      "exact_speed_m_s": 1.854570987253821e-14,
+      "maximum_internal_component_m_s": 31.427189577421565
+    },
+    {
+      "substep": 40,
+      "time_seconds": 0.0,
+      "guide": "Fixture_G00",
+      "node": 8,
+      "contacts": [
+        {
+          "label": "Fixture moving",
+          "normal": [
+            0.4493732925089369,
+            0.0,
+            -0.8933440792772276
+          ],
+          "collider_velocity_m_s": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "gap_m": -0.010448838408684474,
+          "parameter": 0.0,
+          "capsule_bottom_below_ground_envelope_m": 0.019999999999999997
+        },
+        {
+          "label": "Ground",
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "collider_velocity_m_s": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "gap_m": 0.0
+        }
+      ],
+      "start_m": [
+        0.47023849907145837,
+        0.0,
+        0.02
+      ],
+      "prediction_m": [
+        0.4702115960945139,
+        0.0,
+        0.019814930555555554
+      ],
+      "solved_m": [
+        0.4702419003322893,
+        0.0,
+        0.02
+      ],
+      "internal_correction_m": [
+        -0.1221169962542511,
+        0.0,
+        0.047148956422279675
+      ],
+      "summed_contact_correction_m": [
+        0.12214730049202649,
+        0.0,
+        -0.04696388697783523
+      ],
+      "candidate_velocity_m_s": [
+        -29.314535815486934,
+        0.0,
+        11.271332874680455
+      ],
+      "saved_velocity_m_s": [
+        -0.01733549619363807,
+        0.0,
+        0.0
+      ],
+      "minimum_impulse_velocity_m_s": [
+        2.842170943040401e-14,
+        0.0,
+        -1.2434497875801753e-14
+      ],
+      "saved_approach_residual_m_s": 0.007790109001811282,
+      "minimum_impulse_result": {
+        "status": "passed-velocity-constraints-only",
+        "algorithm": "minimum-norm-active-set",
+        "iterations": 3,
+        "active_constraints": [
+          0,
+          1
+        ],
+        "maximum_approach_residual_m_s": 1.2434497875801753e-14
+      },
+      "candidate_speed_m_s": 31.406766067987938,
+      "saved_speed_m_s": 0.01733549619363807,
+      "exact_speed_m_s": 3.102273850532274e-14,
+      "maximum_internal_component_m_s": 31.416710335013725
+    },
+    {
+      "substep": 1,
+      "time_seconds": 0.0,
+      "guide": "Fixture_G00",
+      "node": 8,
+      "contacts": [
+        {
+          "label": "Fixture moving",
+          "normal": [
+            0.3904351720561699,
+            0.0,
+            -0.9206304233629633
+          ],
+          "collider_velocity_m_s": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "gap_m": -0.013103023786929981,
+          "parameter": 0.0,
+          "capsule_bottom_below_ground_envelope_m": 0.019999999999999997
+        },
+        {
+          "label": "Ground",
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "collider_velocity_m_s": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "gap_m": 0.0
+        }
+      ],
+      "start_m": [
+        0.45773906465087283,
+        0.0,
+        0.02
+      ],
+      "prediction_m": [
+        0.45431415154595395,
+        0.0,
+        0.019814930555555554
+      ],
+      "solved_m": [
+        0.4639276358589109,
+        0.0,
+        0.02
+      ],
+      "internal_correction_m": [
+        -0.100978708245123,
+        0.0,
+        0.03069664076671386
+      ],
+      "summed_contact_correction_m": [
+        0.11059219255807995,
+        0.0,
+        -0.030511571322269414
+      ],
+      "candidate_velocity_m_s": [
+        -25.056869124010053,
+        0.0,
+        7.32277711734466
+      ],
+      "saved_velocity_m_s": [
+        -0.11038781618585895,
+        0.0,
+        0.0
+      ],
+      "minimum_impulse_velocity_m_s": [
+        3.552713678800501e-15,
+        0.0,
+        -8.881784197001252e-16
+      ],
+      "saved_approach_residual_m_s": 0.0430992860054307,
+      "minimum_impulse_result": {
+        "status": "passed-velocity-constraints-only",
+        "algorithm": "minimum-norm-active-set",
+        "iterations": 3,
+        "active_constraints": [
+          0,
+          1
+        ],
+        "maximum_approach_residual_m_s": 8.881784197001252e-16
+      },
+      "candidate_speed_m_s": 26.104975675301343,
+      "saved_speed_m_s": 0.11038781618585895,
+      "exact_speed_m_s": 3.66205343881779e-15,
+      "maximum_internal_component_m_s": 25.32993163309263
+    },
+    {
+      "substep": 2,
+      "time_seconds": 0.0,
+      "guide": "Fixture_G00",
+      "node": 8,
+      "contacts": [
+        {
+          "label": "Fixture moving",
+          "normal": [
+            0.4182098255538615,
+            0.0,
+            -0.9083504509880582
+          ],
+          "collider_velocity_m_s": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "gap_m": -0.01192826522739104,
+          "parameter": 0.0,
+          "capsule_bottom_below_ground_envelope_m": 0.019999999999999997
+        },
+        {
+          "label": "Ground",
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "collider_velocity_m_s": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "gap_m": 0.0
+        }
+      ],
+      "start_m": [
+        0.4639276358589109,
+        0.0,
+        0.02
+      ],
+      "prediction_m": [
+        0.4635304015620698,
+        0.0,
+        0.019814930555555554
+      ],
+      "solved_m": [
+        0.46683246483547874,
+        0.0,
+        0.02
+      ],
+      "internal_correction_m": [
+        -0.11801923060205595,
+        0.0,
+        0.055081000164444185
+      ],
+      "summed_contact_correction_m": [
+        0.12132129387546488,
+        0.0,
+        -0.05489593071999974
+      ],
+      "candidate_velocity_m_s": [
+        -28.419951575735286,
+        0.0,
+        13.175023372799938
+      ],
+      "saved_velocity_m_s": [
+        -0.04759671627053514,
+        0.0,
+        0.0
+      ],
+      "minimum_impulse_velocity_m_s": [
+        -7.105427357601002e-15,
+        0.0,
+        0.0
+      ],
+      "saved_approach_residual_m_s": 0.01990541440843714,
+      "minimum_impulse_result": {
+        "status": "passed-velocity-constraints-only",
+        "algorithm": "minimum-norm-active-set",
+        "iterations": 3,
+        "active_constraints": [
+          0,
+          1
+        ],
+        "maximum_approach_residual_m_s": 2.97155953570795e-15
+      },
+      "candidate_speed_m_s": 31.325307475601306,
+      "saved_speed_m_s": 0.04759671627053514,
+      "exact_speed_m_s": 7.105427357601002e-15,
+      "maximum_internal_component_m_s": 31.257597946268447
+    },
+    {
+      "substep": 15,
+      "time_seconds": 0.0,
+      "guide": "Fixture_G00",
+      "node": 8,
+      "contacts": [
+        {
+          "label": "Fixture moving",
+          "normal": [
+            0.44669011441548423,
+            0.0,
+            -0.8946887401121585
+          ],
+          "collider_velocity_m_s": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "gap_m": -0.010583428165228528,
+          "parameter": 0.0,
+          "capsule_bottom_below_ground_envelope_m": 0.019999999999999997
+        },
+        {
+          "label": "Ground",
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "collider_velocity_m_s": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "gap_m": 0.0
+        }
+      ],
+      "start_m": [
+        0.4699726153885453,
+        0.0,
+        0.02
+      ],
+      "prediction_m": [
+        0.46993944856481873,
+        0.0,
+        0.019814930555555554
+      ],
+      "solved_m": [
+        0.4699414987035144,
+        0.0,
+        0.02
+      ],
+      "internal_correction_m": [
+        -0.1213581647205348,
+        0.0,
+        0.04519087319545968
+      ],
+      "summed_contact_correction_m": [
+        0.1213602148592305,
+        0.0,
+        -0.04500580375101523
+      ],
+      "candidate_velocity_m_s": [
+        -29.133919570622727,
+        0.0,
+        10.801392900243656
+      ],
+      "saved_velocity_m_s": [
+        -0.019164938203941197,
+        0.0,
+        0.0
+      ],
+      "minimum_impulse_velocity_m_s": [
+        0.0,
+        0.0,
+        -3.552713678800501e-15
+      ],
+      "saved_approach_residual_m_s": 0.008560788439084178,
+      "minimum_impulse_result": {
+        "status": "passed-velocity-constraints-only",
+        "algorithm": "minimum-norm-active-set",
+        "iterations": 3,
+        "active_constraints": [
+          0,
+          1
+        ],
+        "maximum_approach_residual_m_s": 3.552713678800501e-15
+      },
+      "candidate_speed_m_s": 31.07177751807817,
+      "saved_speed_m_s": 0.019164938203941197,
+      "exact_speed_m_s": 3.552713678800501e-15,
+      "maximum_internal_component_m_s": 31.079786097646544
+    },
+    {
+      "substep": 14,
+      "time_seconds": 0.0,
+      "guide": "Fixture_G00",
+      "node": 8,
+      "contacts": [
+        {
+          "label": "Fixture moving",
+          "normal": [
+            0.44696860978300257,
+            0.0,
+            -0.8945496419252819
+          ],
+          "collider_velocity_m_s": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "gap_m": -0.010569524316368702,
+          "parameter": 0.0,
+          "capsule_bottom_below_ground_envelope_m": 0.019999999999999997
+        },
+        {
+          "label": "Ground",
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "collider_velocity_m_s": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "gap_m": 0.0
+        }
+      ],
+      "start_m": [
+        0.4700971788198111,
+        0.0,
+        0.02
+      ],
+      "prediction_m": [
+        0.4700669420442318,
+        0.0,
+        0.019814930555555554
+      ],
+      "solved_m": [
+        0.4699726153885453,
+        0.0,
+        0.02
+      ],
+      "internal_correction_m": [
+        -0.12150642578555569,
+        0.0,
+        0.045331773360123034
+      ],
+      "summed_contact_correction_m": [
+        0.12141209912986921,
+        0.0,
+        -0.04514670391567859
+      ],
+      "candidate_velocity_m_s": [
+        -29.16879901467241,
+        0.0,
+        10.835208939762863
+      ],
+      "saved_velocity_m_s": [
+        -0.018986190238478175,
+        0.0,
+        0.0
+      ],
+      "minimum_impulse_velocity_m_s": [
+        1.4210854715202004e-14,
+        0.0,
+        -1.9539925233402755e-14
+      ],
+      "saved_approach_residual_m_s": 0.008486231055968204,
+      "minimum_impulse_result": {
+        "status": "passed-velocity-constraints-only",
+        "algorithm": "minimum-norm-active-set",
+        "iterations": 3,
+        "active_constraints": [
+          0,
+          1
+        ],
+        "maximum_approach_residual_m_s": 1.9539925233402755e-14
+      },
+      "candidate_speed_m_s": 31.116243165373792,
+      "saved_speed_m_s": 0.018986190238478175,
+      "exact_speed_m_s": 2.416106516409301e-14,
+      "maximum_internal_component_m_s": 31.1249384923037
+    },
+    {
+      "substep": 16,
+      "time_seconds": 0.0,
+      "guide": "Fixture_G00",
+      "node": 8,
+      "contacts": [
+        {
+          "label": "Fixture moving",
+          "normal": [
+            0.4473287693630811,
+            0.0,
+            -0.8943695947985438
+          ],
+          "collider_velocity_m_s": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "gap_m": -0.010551520908959399,
+          "parameter": 0.0,
+          "capsule_bottom_below_ground_envelope_m": 0.019999999999999997
+        },
+        {
+          "label": "Ground",
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "collider_velocity_m_s": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "gap_m": 0.0
+        }
+      ],
+      "start_m": [
+        0.4699414987035144,
+        0.0,
+        0.02
+      ],
+      "prediction_m": [
+        0.4699076483711224,
+        0.0,
+        0.019814930555555554
+      ],
+      "solved_m": [
+        0.4700128780731945,
+        0.0,
+        0.02
+      ],
+      "internal_correction_m": [
+        -0.12122032227174583,
+        0.0,
+        0.04513890481799311
+      ],
+      "summed_contact_correction_m": [
+        0.12132555197381788,
+        0.0,
+        -0.04495383537354866
+      ],
+      "candidate_velocity_m_s": [
+        -29.10100142499308,
+        0.0,
+        10.788920489651678
+      ],
+      "saved_velocity_m_s": [
+        -0.018703637084419127,
+        0.0,
+        0.0
+      ],
+      "minimum_impulse_velocity_m_s": [
+        -3.552713678800501e-15,
+        0.0,
+        8.881784197001252e-15
+      ],
+      "saved_approach_residual_m_s": 0.008366674959586894,
+      "minimum_impulse_result": {
+        "status": "passed-velocity-constraints-only",
+        "algorithm": "minimum-norm-active-set",
+        "iterations": 3,
+        "active_constraints": [
+          0,
+          1
+        ],
+        "maximum_approach_residual_m_s": 9.532828771197333e-15
+      },
+      "candidate_speed_m_s": 31.03657663579337,
+      "saved_speed_m_s": 0.018703637084419127,
+      "exact_speed_m_s": 9.565974336450906e-15,
+      "maximum_internal_component_m_s": 31.04443116190768
+    },
+    {
+      "substep": 13,
+      "time_seconds": 0.0,
+      "guide": "Fixture_G00",
+      "node": 8,
+      "contacts": [
+        {
+          "label": "Fixture moving",
+          "normal": [
+            0.44808215578454047,
+            0.0,
+            -0.8939923834504848
+          ],
+          "collider_velocity_m_s": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "gap_m": -0.010513778997502023,
+          "parameter": 0.0,
+          "capsule_bottom_below_ground_envelope_m": 0.019999999999999997
+        },
+        {
+          "label": "Ground",
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "collider_velocity_m_s": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "gap_m": 0.0
+        }
+      ],
+      "start_m": [
+        0.47022632492596156,
+        0.0,
+        0.02
+      ],
+      "prediction_m": [
+        0.47019912085610643,
+        0.0,
+        0.019814930555555554
+      ],
+      "solved_m": [
+        0.4700971788198111,
+        0.0,
+        0.02
+      ],
+      "internal_correction_m": [
+        -0.12159079557277878,
+        0.0,
+        0.04557862074462847
+      ],
+      "summed_contact_correction_m": [
+        0.12148885353648346,
+        0.0,
+        -0.04539355130018402
+      ],
+      "candidate_velocity_m_s": [
+        -29.18831991423214,
+        0.0,
+        10.894452312044166
+      ],
+      "saved_velocity_m_s": [
+        -0.018223129826704654,
+        0.0,
+        0.0
+      ],
+      "minimum_impulse_velocity_m_s": [
+        2.1316282072803006e-14,
+        0.0,
+        0.0
+      ],
+      "saved_approach_residual_m_s": 0.00816545929789138,
+      "minimum_impulse_result": {
+        "status": "passed-velocity-constraints-only",
+        "algorithm": "minimum-norm-active-set",
+        "iterations": 3,
+        "active_constraints": [
+          0,
+          1
+        ],
+        "maximum_approach_residual_m_s": 0.0
+      },
+      "candidate_speed_m_s": 31.155210007235787,
+      "saved_speed_m_s": 0.018223129826704654,
+      "exact_speed_m_s": 2.1316282072803006e-14,
+      "maximum_internal_component_m_s": 31.16465589175385
+    },
+    {
+      "substep": 17,
+      "time_seconds": 0.0,
+      "guide": "Fixture_G00",
+      "node": 8,
+      "contacts": [
+        {
+          "label": "Fixture moving",
+          "normal": [
+            0.44841771307497924,
+            0.0,
+            -0.8938241183815783
+          ],
+          "collider_velocity_m_s": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "gap_m": -0.010496932948225079,
+          "parameter": 0.0,
+          "capsule_bottom_below_ground_envelope_m": 0.019999999999999997
+        },
+        {
+          "label": "Ground",
+          "normal": [
+            0.0,
+            0.0,
+            1.0
+          ],
+          "collider_velocity_m_s": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "gap_m": 0.0
+        }
+      ],
+      "start_m": [
+        0.4700128780731945,
+        0.0,
+        0.02
+      ],
+      "prediction_m": [
+        0.46998080486539934,
+        0.0,
+        0.019814930555555554
+      ],
+      "solved_m": [
+        0.47013476064055343,
+        0.0,
+        0.02
+      ],
+      "internal_correction_m": [
+        -0.12120397846764323,
+        0.0,
+        0.04527690834089235
+      ],
+      "summed_contact_correction_m": [
+        0.12135793424279732,
+        0.0,
+        -0.045091838896447904
+      ],
+      "candidate_velocity_m_s": [
+        -29.09665240210521,
+        0.0,
+        10.822041335147498
+      ],
+      "saved_velocity_m_s": [
+        -0.017959035766228763,
+        0.0,
+        0.0
+      ],
+      "minimum_impulse_velocity_m_s": [
+        -1.0658141036401503e-14,
+        0.0,
+        5.329070518200751e-15
+      ],
+      "saved_approach_residual_m_s": 0.00805314974732406,
+      "minimum_impulse_result": {
+        "status": "passed-velocity-constraints-only",
+        "algorithm": "minimum-norm-active-set",
+        "iterations": 3,
+        "active_constraints": [
+          0,
+          1
+        ],
+        "maximum_approach_residual_m_s": 9.542550986897798e-15
+      },
+      "candidate_speed_m_s": 31.04402937230565,
+      "saved_speed_m_s": 0.017959035766228763,
+      "exact_speed_m_s": 1.1916163935586911e-14,
+      "maximum_internal_component_m_s": 31.05233006936778
+    }
+  ],
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\CoupledContactStudy-v002\\moving-tilted-capsule\\split-contact\\substeps.npz": "4c34da554660f69d91d3512057ae182750441d76879897205fbaca781564b621",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\CoupledContactStudy-v002\\design-profile.json": "d5ec23738298c24dc65132b876f686bb388e672526facc22c2810f922e37ec70",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\CoupledContactStudy-v002\\moving-tilted-capsule\\motion-profile.json": "4dc7e2673ad6618a18d90b4f79fd09f674399b3bb09390427548c1d566d56d4d",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\CoupledContactStudy-v002\\baseline-source.py": "bbb17e6310298993f45e6fbf6b6abadb8824f35969eeb4dd2dfbbe8d3ec6baab"
+  },
+  "tool_sha256": "5a9d0591ec24bfac5f90dc3ace7ce80f82d115e07682a91132a7411c7178180b",
+  "kernel_sha256": "be1e94f63074ed98c4087cb7665a111b442062ff5c17b1f7fc0eb36f4965058f",
+  "limitations": [
+    "Counterfactual velocity solve on the saved failed trajectory, not a resimulation or correction.",
+    "Feasible velocity inequalities do not prove positional/strand feasibility or acceptable energy.",
+    "Inflated capsule/ground overlap does not alone prove global infeasibility; lateral escape can exist.",
+    "Internal corrections include contact-induced structural responses; subtracting contact sum can unbalance those responses."
+  ]
+}

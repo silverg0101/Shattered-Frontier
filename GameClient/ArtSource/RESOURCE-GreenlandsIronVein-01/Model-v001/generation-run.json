@@ -1,0 +1,51 @@
+{
+  "backend": "Pixal3D",
+  "status": "complete",
+  "seed": 42,
+  "pipeline": "1024_cascade",
+  "steps": 12,
+  "asset_name": "RESOURCE-GreenlandsIronVein-01",
+  "image": "/mnt/c/Projects/Shattered-Frontier/Artifacts/Art/GreenlandsModelBatch-20261018/RESOURCE-GreenlandsIronVein-01/attempt-03/RESOURCE-GreenlandsIronVein-01.rgba.png",
+  "image_sha256": "cafe7716a57f414b1d2f014e05671fb7821d2c96b2861f32f7d33e5df290a1b8",
+  "reference_image": "/mnt/c/Projects/Shattered-Frontier/GameClient/ArtSource/RESOURCE-GreenlandsIronVein-01/References/v001/asset-view.png",
+  "reference_image_sha256": "6530f652638cb88e8a95112c8016c403a662a65b62092f2e90688a81677311fb",
+  "torch": "2.14.0+rocm10.1.0",
+  "hip": "7.16.26385",
+  "gpu": "AMD Radeon RX 7900 XTX",
+  "stages": {
+    "load_seconds": 42.6,
+    "camera_seconds": 6.635,
+    "inference_seconds": 275.251,
+    "export_seconds": 16.813
+  },
+  "texture_size": 2048,
+  "decimation_target": 300000,
+  "max_num_tokens": 49152,
+  "attention": "dense and sparse PyTorch SDPA; NAF shifted dilated neighborhoods via chunked PyTorch",
+  "stage": "complete",
+  "model_revision": "b0cb2e1b794cab9aa0ac38a95d794a4d9337437f",
+  "camera_params": {
+    "camera_angle_x": 0.7613102138590123,
+    "distance": 1.249461054801941,
+    "mesh_scale": 1.0
+  },
+  "raw_mesh": {
+    "vertices": 2976324,
+    "faces": 5961616
+  },
+  "effective_grid_resolution": 1024,
+  "files": {
+    "RESOURCE-GreenlandsIronVein-01.preprocessed.png": {
+      "sha256": "f967bf871f55905e7598759dc3a8cfa5ce9e977248dccb5f299b5ae22007b060",
+      "bytes": 817319
+    },
+    "RESOURCE-GreenlandsIronVein-01.raw.ply": {
+      "sha256": "155784c819f60822f07e8c9c03f1b8954a258159a445ba8ef540f1475bdb2b76",
+      "bytes": 113217119
+    },
+    "RESOURCE-GreenlandsIronVein-01.glb": {
+      "sha256": "6232852217124c4673d756ff2b29408f6bc8b45f696b092bead5142143dc7357",
+      "bytes": 21114452
+    }
+  }
+}

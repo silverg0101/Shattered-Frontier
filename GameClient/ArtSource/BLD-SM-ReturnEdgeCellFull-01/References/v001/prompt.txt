@@ -1,0 +1,9 @@
+Concept-sheet prompt (selected; image_gen output `exec-cc867c0a-0d27-4342-8e62-7a0776102a71.png`):
+
+Orthographic material concept sheet for one component BLD-SM-ReturnEdgeCellFull-01: a single 0.5 m nominal full-cell masonry cube, front and adjacent side faces show courses turning cleanly around one vertical 90-degree edge. Include front, side, opposite side, top, underside and one small isometric view of the same single cube. Pale neutral background. Stone blocks and mortar are flush with a simple square cube silhouette; no corner quoins, no protruding stones, no trim, no supports, no assembly, no people, no text. Gray-tan practical frontier ashlar masonry, legible stretcher-bond pattern continuous across the turn. Keep contact surfaces flat and full extent. This is surface appearance only; image is not dimension verification.
+
+Clean-view prompt (selected; image_gen output `exec-3f8b7d4b-976c-4b53-86c7-b773bc495e4d.png`):
+
+One isolated stone masonry full-cell cube component, three-quarter orthographic clean view, pale neutral background, no text or props. Asset BLD-SM-ReturnEdgeCellFull-01. Show two flat faces meeting in a crisp 90-degree vertical corner; horizontal coursed blocks continue around that edge without separate corner quoins or protrusion. Nominal design target is 0.5 m cube. Simple square silhouette, flat full contact planes, no base, no bevel, no damaged or missing stones. Gray-tan ashlar frontier masonry with restrained mortar joints and subtle texture only. Appearance reference, not measured geometry. Clean full-asset image.
+
+No reference image was attached; related KIT-SM artwork was textual style guidance only.

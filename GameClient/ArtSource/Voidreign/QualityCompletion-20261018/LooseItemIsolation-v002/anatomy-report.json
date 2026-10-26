@@ -1,0 +1,425 @@
+{
+  "schema_version": 1,
+  "status": "anatomy-proposal-needs-review",
+  "cpu_only": true,
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryOnlyCombinedFull-v001\\Voidreign-ActualSurfacePilot.blend": "c507e31813fea5ea61e30f7cbf8bae37609135b549238b64ad1e61a1e42111ee",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz": "0d7599c8064cb81a6e211a23731435e08939b7fb146ce2d4bed810273909a2b2",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryOnlyCombinedFullRetention-v001\\validation.json": "fcd05cbae371af89b71bd0b9ab427bf74a48b3667abc0c454fee46e3947ea840",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LooseItemInventory-v001\\item-selections.npz": "fcd4db77cdd50ccae21e0f134e845c8bf64c3243285bcc565788f6fda33d665d"
+  },
+  "tool_sha256": "a4d1e4b5f319bd55ce220ef386d5ccdd08f13349911342b3ca6e11c4aff2572f",
+  "profile_sha256": "40be967432b6b8d3be89ab6f68f166f7a5470f72b92e5c2d2f27cbe3aa0a74b8",
+  "vertices": 284762,
+  "triangles": 297119,
+  "regions": [
+    {
+      "id": "C0018",
+      "vertices": 288,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "C0026",
+      "vertices": 185,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "C0054",
+      "vertices": 97,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "C0059",
+      "vertices": 97,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "C0074",
+      "vertices": 75,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "C0086",
+      "vertices": 65,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "C0102",
+      "vertices": 39,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "C0118",
+      "vertices": 37,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "C0132",
+      "vertices": 30,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "C0133",
+      "vertices": 28,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "C0150",
+      "vertices": 24,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "C0161",
+      "vertices": 24,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "C0158",
+      "vertices": 20,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "C0178",
+      "vertices": 20,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "C0163",
+      "vertices": 19,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "C0165",
+      "vertices": 18,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "C0180",
+      "vertices": 18,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "C0182",
+      "vertices": 16,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "C0188",
+      "vertices": 13,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "C0192",
+      "vertices": 10,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "C0214",
+      "vertices": 6,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "C0216",
+      "vertices": 6,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "C0210",
+      "vertices": 4,
+      "status": "geometric-proposal-needs-anatomical-review"
+    }
+  ],
+  "views": [
+    {
+      "id": "C0059-context",
+      "image": "C0059-context.png",
+      "isolate_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "C0059-isolated",
+      "image": "C0059-isolated.png",
+      "isolate_regions": [
+        "C0059"
+      ],
+      "source_face_count": 92
+    },
+    {
+      "id": "C0074-context",
+      "image": "C0074-context.png",
+      "isolate_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "C0074-isolated",
+      "image": "C0074-isolated.png",
+      "isolate_regions": [
+        "C0074"
+      ],
+      "source_face_count": 72
+    },
+    {
+      "id": "C0086-context",
+      "image": "C0086-context.png",
+      "isolate_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "C0086-isolated",
+      "image": "C0086-isolated.png",
+      "isolate_regions": [
+        "C0086"
+      ],
+      "source_face_count": 52
+    },
+    {
+      "id": "C0102-context",
+      "image": "C0102-context.png",
+      "isolate_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "C0102-isolated",
+      "image": "C0102-isolated.png",
+      "isolate_regions": [
+        "C0102"
+      ],
+      "source_face_count": 38
+    },
+    {
+      "id": "C0118-context",
+      "image": "C0118-context.png",
+      "isolate_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "C0118-isolated",
+      "image": "C0118-isolated.png",
+      "isolate_regions": [
+        "C0118"
+      ],
+      "source_face_count": 30
+    },
+    {
+      "id": "C0132-context",
+      "image": "C0132-context.png",
+      "isolate_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "C0132-isolated",
+      "image": "C0132-isolated.png",
+      "isolate_regions": [
+        "C0132"
+      ],
+      "source_face_count": 22
+    },
+    {
+      "id": "C0133-context",
+      "image": "C0133-context.png",
+      "isolate_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "C0133-isolated",
+      "image": "C0133-isolated.png",
+      "isolate_regions": [
+        "C0133"
+      ],
+      "source_face_count": 22
+    },
+    {
+      "id": "C0150-context",
+      "image": "C0150-context.png",
+      "isolate_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "C0150-isolated",
+      "image": "C0150-isolated.png",
+      "isolate_regions": [
+        "C0150"
+      ],
+      "source_face_count": 16
+    },
+    {
+      "id": "C0161-context",
+      "image": "C0161-context.png",
+      "isolate_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "C0161-isolated",
+      "image": "C0161-isolated.png",
+      "isolate_regions": [
+        "C0161"
+      ],
+      "source_face_count": 12
+    },
+    {
+      "id": "C0158-context",
+      "image": "C0158-context.png",
+      "isolate_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "C0158-isolated",
+      "image": "C0158-isolated.png",
+      "isolate_regions": [
+        "C0158"
+      ],
+      "source_face_count": 14
+    },
+    {
+      "id": "C0178-context",
+      "image": "C0178-context.png",
+      "isolate_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "C0178-isolated",
+      "image": "C0178-isolated.png",
+      "isolate_regions": [
+        "C0178"
+      ],
+      "source_face_count": 8
+    },
+    {
+      "id": "C0163-context",
+      "image": "C0163-context.png",
+      "isolate_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "C0163-isolated",
+      "image": "C0163-isolated.png",
+      "isolate_regions": [
+        "C0163"
+      ],
+      "source_face_count": 12
+    },
+    {
+      "id": "C0165-context",
+      "image": "C0165-context.png",
+      "isolate_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "C0165-isolated",
+      "image": "C0165-isolated.png",
+      "isolate_regions": [
+        "C0165"
+      ],
+      "source_face_count": 12
+    },
+    {
+      "id": "C0180-context",
+      "image": "C0180-context.png",
+      "isolate_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "C0180-isolated",
+      "image": "C0180-isolated.png",
+      "isolate_regions": [
+        "C0180"
+      ],
+      "source_face_count": 8
+    },
+    {
+      "id": "C0182-context",
+      "image": "C0182-context.png",
+      "isolate_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "C0182-isolated",
+      "image": "C0182-isolated.png",
+      "isolate_regions": [
+        "C0182"
+      ],
+      "source_face_count": 8
+    },
+    {
+      "id": "C0188-context",
+      "image": "C0188-context.png",
+      "isolate_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "C0188-isolated",
+      "image": "C0188-isolated.png",
+      "isolate_regions": [
+        "C0188"
+      ],
+      "source_face_count": 8
+    },
+    {
+      "id": "C0192-context",
+      "image": "C0192-context.png",
+      "isolate_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "C0192-isolated",
+      "image": "C0192-isolated.png",
+      "isolate_regions": [
+        "C0192"
+      ],
+      "source_face_count": 8
+    },
+    {
+      "id": "C0214-context",
+      "image": "C0214-context.png",
+      "isolate_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "C0214-isolated",
+      "image": "C0214-isolated.png",
+      "isolate_regions": [
+        "C0214"
+      ],
+      "source_face_count": 2
+    },
+    {
+      "id": "C0216-context",
+      "image": "C0216-context.png",
+      "isolate_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "C0216-isolated",
+      "image": "C0216-isolated.png",
+      "isolate_regions": [
+        "C0216"
+      ],
+      "source_face_count": 2
+    },
+    {
+      "id": "C0210-context",
+      "image": "C0210-context.png",
+      "isolate_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "C0210-isolated",
+      "image": "C0210-isolated.png",
+      "isolate_regions": [
+        "C0210"
+      ],
+      "source_face_count": 4
+    }
+  ],
+  "coordinate_convention": {
+    "up": "+Z",
+    "forward": "-Y (head/horn)",
+    "side_names": "Geometric +X/-X until reviewed"
+  },
+  "landmarks": [],
+  "limitations": [
+    "Exact indexed rest diagnostic only; source rig/materials are not copied into this proposal.",
+    "Box domains can include hanging tack or miss curved anatomy; not skin weights or semantic approval.",
+    "Landmarks are authored proposals, not inferred joint centers or accepted stance."
+  ]
+}

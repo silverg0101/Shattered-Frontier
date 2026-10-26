@@ -1,0 +1,48 @@
+{
+  "asset_id": "BLD-WT-CellFull-01",
+  "method": "mean absolute adjacent-edge pixel step compared to mean interior neighbor step; exploratory only",
+  "acceptance_threshold": "not defined",
+  "status": "needs-review",
+  "maps": [
+    {
+      "map": "basecolor.png",
+      "x_seam_mean_abs": 0.7236328125,
+      "x_interior_neighbor_mean_abs": 0.5652642223647768,
+      "x_seam_to_interior_ratio": 1.2801673692926998,
+      "y_seam_mean_abs": 0.030598958333333332,
+      "y_interior_neighbor_mean_abs": 0.03927314984522646,
+      "y_seam_to_interior_ratio": 0.7791317593297791,
+      "status": "needs-review; no accepted tolerance"
+    },
+    {
+      "map": "height.png",
+      "x_seam_mean_abs": 1.4921875,
+      "x_interior_neighbor_mean_abs": 1.1609657563538611,
+      "x_seam_to_interior_ratio": 1.2852984610729403,
+      "y_seam_mean_abs": 0.0751953125,
+      "y_interior_neighbor_mean_abs": 0.07361066562805474,
+      "y_seam_to_interior_ratio": 1.0215274085409345,
+      "status": "needs-review; no accepted tolerance"
+    },
+    {
+      "map": "normal.png",
+      "x_seam_mean_abs": 0.5579427083333334,
+      "x_interior_neighbor_mean_abs": 0.7045320900537635,
+      "x_seam_to_interior_ratio": 0.7919337049512624,
+      "y_seam_mean_abs": 0.016927083333333332,
+      "y_interior_neighbor_mean_abs": 0.019689078282828284,
+      "y_seam_to_interior_ratio": 0.8597194388777554,
+      "status": "needs-review; no accepted tolerance"
+    },
+    {
+      "map": "roughness.png",
+      "x_seam_mean_abs": 0.7177734375,
+      "x_interior_neighbor_mean_abs": 0.5879125809506354,
+      "x_seam_to_interior_ratio": 1.2208846361807462,
+      "y_seam_mean_abs": 0.0341796875,
+      "y_interior_neighbor_mean_abs": 0.036270275843108504,
+      "y_seam_to_interior_ratio": 0.9423608369522306,
+      "status": "needs-review; no accepted tolerance"
+    }
+  ]
+}

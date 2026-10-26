@@ -1,0 +1,9 @@
+Concept-sheet prompt/output `exec-aac8e0b0-cce7-48ae-b40b-9a33eb1ae292.png`:
+
+Concept sheet for BLD-RT-JointStackCellFull-01: reusable rough-timber full-cell stacked-joint surface treatment plus a small assembly study. Show one isolated 0.5m cube component in orthographic views, then separate panel with repeated horizontal row, two stacked courses, and 90-degree rotated course, all sharing flat six contact planes. Use a clear visual separator between single component and assembly demonstration. Rough-sawn warm frontier timber; joints align at cell boundaries and stay inside 0.5m envelope. Do not imply structural strength. No people, words, invented hardware, supports or decorative overhangs. Pale neutral background. Concept only; actual fit unverified.
+
+Clean-view prompt/output `exec-9c9fd03e-61d1-445f-a7e1-75a819530810.png`:
+
+Single isolated rough-timber full-cell joint component for BLD-RT-JointStackCellFull-01. One plain 0.5m cube with flat square faces; show simple aligned horizontal board seams that visually continue across top and sides, no interlocking or protruding joinery, no extra cubes. Three-quarter orthographic clean view on neutral background. Warm rough-sawn timber material. The joint is surface pattern only, all contact planes remain flush. No text, people, props, or scene. Image is not a structural or geometry verification.
+
+No reference image attached; prior KIT-RT materials were text style context only.

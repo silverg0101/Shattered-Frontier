@@ -1,0 +1,5 @@
+Concept-sheet prompt (exact):
+Construction concept sheet, one cubic 90-degree outside wall corner in worked timber, convex projecting corner with two perpendicular flush plank faces. Stacked horizontal oak courses visibly interlock at corner; show isometric view and front/top orthographic detail, pale background, no text. Preserve the corner-outer shape, contacts, clearances and voxel envelope; appearance only, no new properties. Concept proposal.
+
+Clean asset-view prompt (exact):
+Isolated worked-timber outside corner component, convex 90-degree projecting corner, interlocking horizontal plank courses with flush end-grain joints, two exterior faces and top visible, clean three-quarter orthographic product view, pale background, no labels, no extra elements. Preserve the named corner-outer proposal.

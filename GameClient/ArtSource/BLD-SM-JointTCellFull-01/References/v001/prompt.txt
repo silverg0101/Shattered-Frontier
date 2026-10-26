@@ -1,0 +1,17 @@
+Concept-sheet prompt/output `exec-6f759767-6afb-49ea-a3c8-032e45626c0e.png`:
+
+Concept sheet for BLD-SM-JointTCellFull-01. Show one isolated full-cell stone cube and a separate simple T-intersection assembly of three solid cubes meeting by flat full contact faces: two cells in a straight run with one branch cell joining the midpoint at 90 degrees. 0.5m nominal grid, no arbitrary rotations, no openings or structural hardware. Gray-tan coursed stone, clear seam lines and contact surfaces. Include top/front/isometric assembly views plus separate single component. No people, text, scenery, no extra protruding parts. Appearance study only, not geometry or support validation.
+
+Rejected clean-view prompt/output `exec-ff1cfe07-bb36-4430-87b0-8d169d45ccb6.png`:
+
+Single isolated stone masonry full-cell module for BLD-SM-JointTCellFull-01, one solid 0.5m cube, three-quarter orthographic clean component view. Gray-tan coursed stone, flat contact faces and simple silhouette. No T assembly in this image, no other blocks, no protrusions, no base, no people or text. Neutral background. This is the single reusable source component for a separately illustrated T-joint study; image does not establish fit.
+
+Rejected follow-up prompt/output `exec-26d8ac0c-021d-4abe-be8e-2058b29e8cb3.png`:
+
+One plain smooth-faced stone masonry full-cell cube, single solid object, for BLD-SM-JointTCellFull-01. Three-quarter orthographic. 0.5m design target, flat planar faces and square edges; fine shallow mortar lines painted into the surface, absolutely no protruding blocks, no irregular silhouette, no extra stones, no separate assembly. Pale neutral background, no text or people. One component only. This cube is used as the material component in the separately illustrated T intersection; image does not establish geometry.
+
+Selected corrected clean-view prompt/output `exec-e10ec405-abd0-41fe-a9f0-c9e3c2ee577d.png`:
+
+One monolithic rectangular stone cube, one object only, no stacked layers, no masonry courses, no lines dividing the cube, for BLD-SM-JointTCellFull-01. Three-quarter clean view, target one 0.5m full cell, pale neutral background. Simple perfect cube with uninterrupted flat faces and square edges. Apply subtle gray-tan stone surface texture only. Do not show wall, column, pedestal, blocks, seam, joints, extra geometry, text or people. This isolated cube is the component reference; the T intersection is shown separately in the concept sheet.
+
+No reference image attached; earlier KIT-SM full-cell imagery was the style cue only.

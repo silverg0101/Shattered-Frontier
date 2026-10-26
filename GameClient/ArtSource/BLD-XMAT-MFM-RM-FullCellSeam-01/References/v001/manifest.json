@@ -1,0 +1,61 @@
+{
+  "assetId": "BLD-XMAT-MFM-RM-FullCellSeam-01",
+  "version": "v001",
+  "category": "named cross-kit full-cell material seam",
+  "created": "2026-10-18",
+  "sourceReferences": [
+    "docs/art-templates/asset-lists/construction-kit-matrix-07.md — named cross-kit interfaces",
+    "docs/Game-Design/Legends_Shattered_Frontier_Construction_System_Architecture_v0.1.md — §§3.1–3.2, 8–9"
+  ],
+  "definition": {
+    "geometryRef": "full-cell shared contact plane (proposal)",
+    "sourceKits": [
+      "MFM",
+      "RM"
+    ],
+    "contact": "flush full-cell interface; dimensions per source contract, not inferred",
+    "cosmeticOnly": true,
+    "gameplayTierProperties": "remain those of each source material kit"
+  },
+  "generation": {
+    "tool": "built-in image_gen",
+    "date": "2026-10-18",
+    "model": "unavailable",
+    "seed": "unavailable",
+    "promptRecord": "prompt.txt",
+    "referenceImagesAttached": []
+  },
+  "images": [
+    {
+      "path": "concept-sheet.png",
+      "sha256": "ec922ac9212ed6a2db397d7c7149a9fced2e45a2181b1ed4d22fa5f525aa0654",
+      "width": 1536,
+      "height": 1024,
+      "pixelFormat": "RGB 24-bit",
+      "alpha": false,
+      "review": "Metal framing confined to MFM side and reinforced masonry side readable. Some rebar extends above masonry and metal hardware looks like a connector; treat as visual only and do not imply properties. Contact fits unverified."
+    },
+    {
+      "path": "asset-view.png",
+      "sha256": "4e03db0128fe8e0b3a7cc0777d8130db5dc6ff1c1b5be1ab9cb04fa1593e6f27",
+      "width": 1536,
+      "height": 1024,
+      "pixelFormat": "RGB 24-bit",
+      "alpha": false,
+      "review": "Metal framing confined to MFM side and reinforced masonry side readable. Some rebar extends above masonry and metal hardware looks like a connector; treat as visual only and do not imply properties. Contact fits unverified."
+    }
+  ],
+  "review": {
+    "reviewedBy": "Codex",
+    "conceptStatus": "proposed",
+    "cleanViewStatus": "ready-for-model-test",
+    "imageStatus": "image-complete",
+    "geometryAcceptance": "not established",
+    "numericalMeshFit": "not established",
+    "runtimeCollisionSupportClearance": "not established",
+    "actionableFindings": [
+      "Metal framing confined to MFM side and reinforced masonry side readable. Some rebar extends above masonry and metal hardware looks like a connector; treat as visual only and do not imply properties. Contact fits unverified."
+    ]
+  },
+  "componentBoundary": "Named contact-interface subassembly; does not blend source materials or gameplay profiles. No numerical or runtime acceptance."
+}

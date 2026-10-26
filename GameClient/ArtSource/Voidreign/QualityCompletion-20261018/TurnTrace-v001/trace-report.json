@@ -1,0 +1,955 @@
+{
+  "schema_version": 1,
+  "status": "exact-replay-diagnosis-only",
+  "cpu_only": true,
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\Simulation-v003\\simulation-report.json": "5145baa3fdd4b8e1f981717e73e411692cf73bf1e9738c2e82b531941bfe0935",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\Simulation-v003\\tool-source.py": "bbb17e6310298993f45e6fbf6b6abadb8824f35969eeb4dd2dfbbe8d3ec6baab",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\Simulation-v003\\guides.json": "f8f8c15cfa47fcd80ea32cf823227cc5df5d063e0baa1e4bc72de99e77701621",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\Simulation-v003\\motion-profile.json": "9df3ed982c0f5f571210a98d42c1e6b395b80713c139f0b7b162ad861d5cca47",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\Simulation-v003\\trajectory.npz": "18b5171e372db733ae4155ebcac1e2ed87a1202d5cb89235efa23db022f04530",
+    "docs\\art-templates\\model-profiles\\voidreign-turn-trace-20261018.json": "8ead5cdc28af6cc10ce4f2150f6ea0f389038e663a736e3cebcfa714bcbb7f09"
+  },
+  "tool_sha256": "0db2d0d959bbb127e02b270b6d04d1bf09641f4df29938b096051623661d3870",
+  "exact_replay": {
+    "points": true,
+    "root_transforms": true,
+    "rest": true,
+    "counts": true
+  },
+  "guides": [
+    "Tail_G00",
+    "Tail_G04",
+    "Tail_G11"
+  ],
+  "start_seconds": 5.5,
+  "stop_seconds": 7.2,
+  "records": 14267,
+  "event_names": [
+    "start",
+    "prediction",
+    "structural",
+    "capsule:Horse body",
+    "capsule:Horse neck",
+    "capsule:Rider torso",
+    "capsule:Rider head",
+    "capsule:Rider thigh near",
+    "capsule:Rider shin near",
+    "capsule:Rider thigh far",
+    "capsule:Rider shin far",
+    "capsule:Rider upper arm",
+    "capsule:Rider forearm",
+    "capsule:Rider arm far",
+    "capsule:Rider hand probe",
+    "capsule:Environment post",
+    "ground",
+    "pin",
+    "end"
+  ],
+  "event_statistics": {
+    "start": {
+      "observations": 409,
+      "maximum_correction_m": 0.0,
+      "sum_node_displacement_m": 0.0
+    },
+    "prediction": {
+      "observations": 409,
+      "maximum_correction_m": 0.019843917708080094,
+      "sum_node_displacement_m": 80.85218309233255
+    },
+    "structural": {
+      "observations": 8180,
+      "maximum_correction_m": 0.002107826504724963,
+      "sum_node_displacement_m": 2.773211335340287
+    },
+    "capsule:Horse body": {
+      "observations": 8180,
+      "maximum_correction_m": 0.0,
+      "sum_node_displacement_m": 0.0
+    },
+    "capsule:Horse neck": {
+      "observations": 8180,
+      "maximum_correction_m": 0.0,
+      "sum_node_displacement_m": 0.0
+    },
+    "capsule:Rider torso": {
+      "observations": 8180,
+      "maximum_correction_m": 0.0,
+      "sum_node_displacement_m": 0.0
+    },
+    "capsule:Rider head": {
+      "observations": 8180,
+      "maximum_correction_m": 0.0,
+      "sum_node_displacement_m": 0.0
+    },
+    "capsule:Rider thigh near": {
+      "observations": 8180,
+      "maximum_correction_m": 0.0,
+      "sum_node_displacement_m": 0.0
+    },
+    "capsule:Rider shin near": {
+      "observations": 8180,
+      "maximum_correction_m": 0.0,
+      "sum_node_displacement_m": 0.0
+    },
+    "capsule:Rider thigh far": {
+      "observations": 8180,
+      "maximum_correction_m": 0.0,
+      "sum_node_displacement_m": 0.0
+    },
+    "capsule:Rider shin far": {
+      "observations": 8180,
+      "maximum_correction_m": 0.0,
+      "sum_node_displacement_m": 0.0
+    },
+    "capsule:Rider upper arm": {
+      "observations": 8180,
+      "maximum_correction_m": 0.0,
+      "sum_node_displacement_m": 0.0
+    },
+    "capsule:Rider forearm": {
+      "observations": 8180,
+      "maximum_correction_m": 0.0,
+      "sum_node_displacement_m": 0.0
+    },
+    "capsule:Rider arm far": {
+      "observations": 8180,
+      "maximum_correction_m": 0.0,
+      "sum_node_displacement_m": 0.0
+    },
+    "capsule:Rider hand probe": {
+      "observations": 8180,
+      "maximum_correction_m": 0.0,
+      "sum_node_displacement_m": 0.0
+    },
+    "capsule:Environment post": {
+      "observations": 8180,
+      "maximum_correction_m": 0.007531979816655465,
+      "sum_node_displacement_m": 0.6712761294539242
+    },
+    "ground": {
+      "observations": 8180,
+      "maximum_correction_m": 0.003953465846086135,
+      "sum_node_displacement_m": 0.16707911583013418
+    },
+    "pin": {
+      "observations": 8180,
+      "maximum_correction_m": 0.0,
+      "sum_node_displacement_m": 0.0
+    },
+    "end": {
+      "observations": 409,
+      "maximum_correction_m": 0.0,
+      "sum_node_displacement_m": 0.0
+    }
+  },
+  "largest_events": [
+    {
+      "time_seconds": 6.954166666666667,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.019843917708080094,
+      "guide": "Tail_G00",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.95,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.0197495757650555,
+      "guide": "Tail_G00",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.945833333333334,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.019663429085751784,
+      "guide": "Tail_G00",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.941666666666666,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.01957635778158283,
+      "guide": "Tail_G00",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.970833333333333,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.019556321291732046,
+      "guide": "Tail_G00",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.975,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.01952786347685028,
+      "guide": "Tail_G00",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.9375,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.019473403460778933,
+      "guide": "Tail_G00",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.966666666666667,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.019400092250014135,
+      "guide": "Tail_G00",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.933333333333334,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.019340122250357306,
+      "guide": "Tail_G00",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.979166666666667,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.019319064705570675,
+      "guide": "Tail_G00",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.929166666666666,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.01916650485965999,
+      "guide": "Tail_G00",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.9625,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.019140167728377754,
+      "guide": "Tail_G00",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.958333333333333,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.019075594938423802,
+      "guide": "Tail_G00",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.983333333333333,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.019028083490220872,
+      "guide": "Tail_G00",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.916666666666667,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.01898716560097162,
+      "guide": "Tail_G00",
+      "node": 10
+    },
+    {
+      "time_seconds": 6.9125,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.018980277554995952,
+      "guide": "Tail_G00",
+      "node": 10
+    },
+    {
+      "time_seconds": 6.920833333333333,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.01895397184655397,
+      "guide": "Tail_G00",
+      "node": 10
+    },
+    {
+      "time_seconds": 6.925,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.01894828031517395,
+      "guide": "Tail_G00",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.908333333333333,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.018932326737210563,
+      "guide": "Tail_G00",
+      "node": 10
+    },
+    {
+      "time_seconds": 6.904166666666667,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.018844480448778067,
+      "guide": "Tail_G00",
+      "node": 10
+    },
+    {
+      "time_seconds": 6.9875,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.018742322537345646,
+      "guide": "Tail_G00",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.9,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.018719237754329227,
+      "guide": "Tail_G00",
+      "node": 10
+    },
+    {
+      "time_seconds": 6.895833333333333,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.01855814261999519,
+      "guide": "Tail_G00",
+      "node": 10
+    },
+    {
+      "time_seconds": 6.991666666666666,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.01848852734275806,
+      "guide": "Tail_G00",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.891666666666667,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.018357405547956396,
+      "guide": "Tail_G00",
+      "node": 10
+    },
+    {
+      "time_seconds": 6.995833333333334,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.018224648562640104,
+      "guide": "Tail_G00",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.8875,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.018104094595862236,
+      "guide": "Tail_G00",
+      "node": 10
+    },
+    {
+      "time_seconds": 7.0,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.01789219658372056,
+      "guide": "Tail_G00",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.883333333333334,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.01778004596513802,
+      "guide": "Tail_G00",
+      "node": 10
+    },
+    {
+      "time_seconds": 7.004166666666666,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.017464215424161583,
+      "guide": "Tail_G00",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.879166666666666,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.0173758157668211,
+      "guide": "Tail_G00",
+      "node": 10
+    },
+    {
+      "time_seconds": 6.645833333333333,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.01714399559016954,
+      "guide": "Tail_G04",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.641666666666667,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.01714338255204577,
+      "guide": "Tail_G04",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.65,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.017122561860026503,
+      "guide": "Tail_G04",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.6375,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.017118195163063257,
+      "guide": "Tail_G04",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.654166666666667,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.017080778889617353,
+      "guide": "Tail_G04",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.633333333333334,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.01706770576717331,
+      "guide": "Tail_G04",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.658333333333333,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.017018514137710026,
+      "guide": "Tail_G04",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.629166666666666,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.016996471858195424,
+      "guide": "Tail_G04",
+      "node": 11
+    },
+    {
+      "time_seconds": 7.008333333333334,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.01695015503203155,
+      "guide": "Tail_G00",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.6625,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.016933909886061266,
+      "guide": "Tail_G04",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.625,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.01691568871985139,
+      "guide": "Tail_G04",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.875,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.016907181770072815,
+      "guide": "Tail_G00",
+      "node": 10
+    },
+    {
+      "time_seconds": 6.620833333333334,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.016839177772056547,
+      "guide": "Tail_G04",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.666666666666667,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.01682437064195369,
+      "guide": "Tail_G04",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.616666666666666,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.01677330773309702,
+      "guide": "Tail_G04",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.6125,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.016706068359940606,
+      "guide": "Tail_G04",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.670833333333333,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.016688236615813364,
+      "guide": "Tail_G04",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.608333333333333,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.01660828829720443,
+      "guide": "Tail_G04",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.675,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.01652597732765325,
+      "guide": "Tail_G04",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.604166666666667,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.01645315114806331,
+      "guide": "Tail_G04",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.870833333333334,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.016410876619090128,
+      "guide": "Tail_G00",
+      "node": 10
+    },
+    {
+      "time_seconds": 7.0125,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.016374250320133295,
+      "guide": "Tail_G00",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.8625,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.016357141576561658,
+      "guide": "Tail_G00",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.679166666666666,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.016339120327286006,
+      "guide": "Tail_G04",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.858333333333333,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.016327512118465073,
+      "guide": "Tail_G00",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.866666666666666,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.016326884391220743,
+      "guide": "Tail_G00",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.854166666666667,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.01624858324010566,
+      "guide": "Tail_G00",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.6,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.01623522349400525,
+      "guide": "Tail_G04",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.85,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.016131404791576768,
+      "guide": "Tail_G00",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.683333333333334,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.01612677792403827,
+      "guide": "Tail_G04",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.845833333333333,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.01598642612860315,
+      "guide": "Tail_G00",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.595833333333333,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.015969219090935204,
+      "guide": "Tail_G04",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.6875,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.015883445413726844,
+      "guide": "Tail_G04",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.841666666666667,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.015826099560200552,
+      "guide": "Tail_G00",
+      "node": 11
+    },
+    {
+      "time_seconds": 7.016666666666667,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.01575789173661007,
+      "guide": "Tail_G00",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.591666666666667,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.015676541400192374,
+      "guide": "Tail_G04",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.8375,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.015670176850025492,
+      "guide": "Tail_G00",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.691666666666666,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.015602365477605155,
+      "guide": "Tail_G04",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.833333333333333,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.015544601805548137,
+      "guide": "Tail_G00",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.829166666666667,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.015467367967268376,
+      "guide": "Tail_G00",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.820833333333334,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.015443607986254283,
+      "guide": "Tail_G00",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.825,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.015442051947972702,
+      "guide": "Tail_G00",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.816666666666666,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.015420173031319592,
+      "guide": "Tail_G00",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.5875,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.015375350639676813,
+      "guide": "Tail_G04",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.8125,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.015314848893174336,
+      "guide": "Tail_G00",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.695833333333334,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.015282556795176226,
+      "guide": "Tail_G04",
+      "node": 11
+    },
+    {
+      "time_seconds": 7.020833333333333,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.015116799661913247,
+      "guide": "Tail_G00",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.808333333333334,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.01510641002148019,
+      "guide": "Tail_G00",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.583333333333333,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.015077521190501816,
+      "guide": "Tail_G04",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.7,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.01493294227908066,
+      "guide": "Tail_G04",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.804166666666666,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.014841608276848571,
+      "guide": "Tail_G00",
+      "node": 9
+    },
+    {
+      "time_seconds": 6.579166666666667,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.01478940069312194,
+      "guide": "Tail_G04",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.704166666666667,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.014569940539059792,
+      "guide": "Tail_G04",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.575,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.014513946277812172,
+      "guide": "Tail_G04",
+      "node": 11
+    },
+    {
+      "time_seconds": 7.025,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.014466084865473293,
+      "guide": "Tail_G00",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.8,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.014458470183274192,
+      "guide": "Tail_G00",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.570833333333334,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.014252956066758476,
+      "guide": "Tail_G04",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.708333333333333,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.014209389360428365,
+      "guide": "Tail_G04",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.795833333333333,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.014053785133511958,
+      "guide": "Tail_G00",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.566666666666666,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.014007885707034894,
+      "guide": "Tail_G04",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.7125,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.013858166543944945,
+      "guide": "Tail_G04",
+      "node": 11
+    },
+    {
+      "time_seconds": 7.029166666666667,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.013821992380709936,
+      "guide": "Tail_G00",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.5625,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.013777052428821993,
+      "guide": "Tail_G04",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.791666666666667,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.01360331783753642,
+      "guide": "Tail_G00",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.558333333333334,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.013550217458218161,
+      "guide": "Tail_G04",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.716666666666667,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.013512511304548138,
+      "guide": "Tail_G04",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.554166666666666,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.013315994830815402,
+      "guide": "Tail_G04",
+      "node": 11
+    },
+    {
+      "time_seconds": 6.7875,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.013260467988044738,
+      "guide": "Tail_G00",
+      "node": 9
+    },
+    {
+      "time_seconds": 7.033333333333333,
+      "event": "prediction",
+      "iteration": -1,
+      "correction_m": 0.013194479185460605,
+      "guide": "Tail_G00",
+      "node": 11
+    }
+  ],
+  "limitations": [
+    "No physics or settings change; not a new repair attempt.",
+    "Stage deltas are observational displacement contributions, not independent forces, energy or a unique causal attribution.",
+    "Structural combines length and bend constraints; prediction combines inertia, drag, spring and external acceleration.",
+    "Current trajectory is exactly reproduced from frozen code/config/guides; missing original producer attestation remains historical.",
+    "Selected guide/time window only; no surface, contact correctness, gait or runtime acceptance."
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "status": "inherited-surface-failures-confirmed-on-cleaned-source",
+  "checks": [
+    {
+      "id": "skin.protected_rigidity",
+      "before": 6.802506504755002e-07,
+      "after": 6.802506504755002e-07,
+      "difference": 0.0
+    },
+    {
+      "id": "skin.coincident_seams",
+      "before": 0.0,
+      "after": 0.0,
+      "difference": 0.0
+    },
+    {
+      "id": "motion.initial_surface_step",
+      "before": 4.8972626245813444e-05,
+      "after": 4.8972626245813444e-05,
+      "difference": 0.0
+    },
+    {
+      "id": "motion.maximum_surface_step",
+      "before": 0.15610156953334808,
+      "after": 0.15610156953334808,
+      "difference": 0.0
+    },
+    {
+      "id": "attachments.proposed_gap_increase",
+      "before": 4.370696842670441e-05,
+      "after": 4.370696842670441e-05,
+      "difference": 0.0
+    },
+    {
+      "id": "motion.surface_capsule_clearance",
+      "before": 0.06867494434118271,
+      "after": 0.06867494434118271,
+      "difference": 0.0
+    }
+  ]
+}

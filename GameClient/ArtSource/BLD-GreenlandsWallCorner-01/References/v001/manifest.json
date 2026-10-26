@@ -1,0 +1,29 @@
+{
+  "asset_id": "BLD-GreenlandsWallCorner-01",
+  "category": "building component",
+  "brief": "Proposed short timber-and-stone wall corner module: two low wall runs joined at a right angle.",
+  "design_sources": [
+    { "path": "docs/e1-implementation-packet.md", "section": "Greenlands fixture and acceptance cards / E1-B", "role": "calls for a solid wall/corner and camera recovery" },
+    { "path": "docs/Game-Design/concept-art/Concept.png", "role": "optional style reference; not geometry or requirements" }
+  ],
+  "concept_status": "agent-selected; proposal, user approval not claimed",
+  "clean_view_status": "ready-for-model-test; opaque background, segmentation required if later adapter requires alpha",
+  "design_master": "concept-sheet.png",
+  "prompts": "prompt.txt (three clean-view attempts retained)",
+  "generation": { "tool": "built-in image_gen", "model": "unavailable", "generated_date": "2026-10-18", "seed": "unavailable" },
+  "outputs": {
+    "concept-sheet.png": { "sha256": "8544A620754F0736355A14B555B825820E5C738FD7C3F95F43253B3F79704E41", "dimensions_px": [1536, 1024], "color": "RGB, opaque; PNG color type 2", "master": true },
+    "asset-view.png": { "sha256": "84992EFE3B52966D506F41C94BDB15CEB5BC582FBBA8C4ACE80EF84379F4F68C", "dimensions_px": [1536, 1024], "color": "RGB, opaque; PNG color type 2", "master": false }
+  },
+  "component_boundaries": ["One L-shaped corner module with two wall runs", "Excludes complete building, floor, roof, gate and adjacent modules"],
+  "scale": "Approximate scale inferred; no dimension is established by the design source.",
+  "edits": "No pixel edits or upscaling. First two clean views incorrectly flattened the corner to a straight wall; third prompt corrected the view and was visually checked.",
+  "review": {
+    "reviewer": "Codex visual inspection",
+    "findings": ["Concept sheet consistently shows the same L-shaped corner from multiple angles.", "First two clean views omitted the return and were rejected.", "Final clean view visibly shows two perpendicular runs and a joined corner post, complete footing and ample margins.", "Materials and construction remain consistent between selected sheet and final view.", "Neutral opaque background; no alpha supplied."],
+    "unresolved": ["Exact scale and structural joinery remain inferred proposals."],
+    "image_complete": true,
+    "approval": "agent-selected; not user-approved",
+    "review_date": "2026-10-18"
+  }
+}

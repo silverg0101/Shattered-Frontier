@@ -1,0 +1,47 @@
+{
+  "status": "passed-color-only-invariants; visual/material acceptance open",
+  "source_sha256": "35f3f95a01387cf805444060fde95a77e17d51f5c01378529879af053894ce96",
+  "candidate_sha256": "59e4ee6e26f46924e0ada91adda0345e7e8eb12e0fe3ddc43ad870dc68bbce3a",
+  "mask_sha256": "8acdf8e9b2afe1d9482a82fe650f2e6faf34ece6b2fb0ce0bf36d1e2bed76228",
+  "cpu_only": true,
+  "checks": [
+    {
+      "id": "geometry_uv_weights_exact",
+      "passed": true
+    },
+    {
+      "id": "non_color_images_exact",
+      "passed": true
+    },
+    {
+      "id": "bone_names_exact",
+      "passed": true
+    },
+    {
+      "id": "bone_transforms_330frames",
+      "passed": true,
+      "maximum_delta": 0.0
+    },
+    {
+      "id": "evaluated_surfaces_19frames",
+      "passed": true,
+      "maximum_delta_m": 0.0
+    },
+    {
+      "id": "unpainted_atlas_preservation",
+      "passed": true,
+      "maximum_channel_delta": 0.0,
+      "tolerance": 0.0039225686274509805,
+      "tested_pixels": 15408793,
+      "boundary_exclusion_pixels": 1
+    },
+    {
+      "id": "nonempty_color_refinement",
+      "passed": true,
+      "changed_pixels": 913534
+    }
+  ],
+  "limitations": [
+    "Does not accept generated detail registration, PBR realism or inherited motion/collision defects."
+  ]
+}

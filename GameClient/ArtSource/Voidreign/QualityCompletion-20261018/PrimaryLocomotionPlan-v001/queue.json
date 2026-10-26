@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "asset_id": "Voidreign",
+  "source": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryOnlyCombinedFull-v001\\Voidreign-ActualSurfacePilot.blend",
+  "next_asset_task": "VR-RIG-01-authored-ankle-band-layout",
+  "items": [
+    {
+      "id": "VR-PRIMARY-01",
+      "status": "proposal-reviewed-for-pilot"
+    },
+    {
+      "id": "VR-RIG-01",
+      "status": "joint-topology-design-reviewed-source-indexed-ankle-layout-next"
+    },
+    {
+      "id": "VR-IDLE-01",
+      "status": "scoped-idle-and-exchange-pass-shape-unrated",
+      "attempt_count": 1,
+      "max_attempts": 3
+    },
+    {
+      "id": "VR-WALK-01",
+      "status": "needs-review-budget3of3-local-collar-fix-not-accepted",
+      "attempt_count": 3,
+      "max_attempts": 3
+    },
+    {
+      "id": "VR-RUN-01",
+      "status": "blocked-by-predecessor"
+    },
+    {
+      "id": "VR-TURN-01",
+      "status": "scoped-turn-and-exchange-pass-shape-unrated",
+      "attempt_count": 1,
+      "max_attempts": 3
+    },
+    {
+      "id": "VR-ATTACH-01",
+      "status": "23-paired-isolations-ready-no-semantic-disposition"
+    },
+    {
+      "id": "VR-SECONDARY-01",
+      "status": "blocked-by-predecessor"
+    },
+    {
+      "id": "VR-MAT-01",
+      "status": "material2of3-1215response-faces-approved12boundaries-open"
+    },
+    {
+      "id": "VR-SEM-01",
+      "status": "local-secondary3of3-exhausted-needs-representation-review"
+    }
+  ],
+  "primary_rig_budget": {
+    "max_attempts": 3,
+    "used": 3,
+    "scope": "New primary anatomical skeleton/skin pilot; historical hair attempt counts unchanged",
+    "status": "exhausted-no-automatic-new-repair"
+  },
+  "current_candidate": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkPilot-v003/Mount-WalkPilot.blend",
+  "current_report": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/JointTransitionDesign-v001/design.json",
+  "next_independent_task": "VR-SEM-01-reviewed-local-secondary-root-and-deforming-collider-adapter",
+  "reviewed_code_corrections": {
+    "count": 4,
+    "total_primary_candidates": 8,
+    "review_paths": [
+      "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimarySkinCodeReview-v001/review.json",
+      "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimarySkinCodeReview-v002/review.json",
+      "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimarySkinCodeReview-v003/review.json",
+      "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimarySkinCodeReview-v004/review.json"
+    ],
+    "note": "Automatic primary budget remains exhausted3/3; no reset or promotion."
+  },
+  "local_fringe_physics": {
+    "scope": "Local primary-driven actual surface feasibility only, not full-mount rig/gait or old hair retry",
+    "attempt_count": 3,
+    "maximum_attempts": 3,
+    "status": "exhausted-needs-representation-review-no-promotion",
+    "attempt_paths": [
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LocalFringeClothProof-v001",
+      "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LocalFringeClothProof-v002",
+      "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeClothProof-v003"
+    ],
+    "global_budgets_reset": false,
+    "decision": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LocalFringePhysicsDecision-v001\\decision.json",
+    "contact_topology_decision": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeContactInspection-v003/diagnosis-decision.json",
+    "active_profile": "docs/art-templates/model-profiles/voidreign-local-fringe-winding-proof-20261019.json",
+    "final_decision": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringePhysicsDecision-v002/decision.json"
+  },
+  "material_boundaries": {
+    "status": "955-response-approved-1758mixed-open-source-unchanged",
+    "review": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryReview-v003/review.json",
+    "next_item": "SMB-0d7599c806-c95bf113bd82",
+    "material_attempts_used": 2,
+    "material_attempts_limit": 3,
+    "response_approval": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReviewedDielectricFaces-v002/approval.json",
+    "raw_channel_diagnosis": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PixalVolumeChannelAudit-v001/decision.json",
+    "uv_mask_review": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialMaskResolutionReview-v002/comparison.json",
+    "next_action": "Measure retained head/saddle projection UVallocation, then author unresolved16interfaces andfullclass masks;955constant responsesusefacefallback."
+  }
+}

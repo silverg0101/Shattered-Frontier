@@ -1,0 +1,13 @@
+Rejected initial concept-sheet output `exec-891f6a57-d727-48e0-a2f9-543736c0b216.png`, retained as `rejected-mixed-forms-sheet.png`:
+
+Orthographic concept sheet for one rough-timber convex outer slope-corner component BLD-RT-SlopeCornerOuter-01. Proposed `corner-outer/v1` geometry, 0.5 m cell envelope, solid w<=min(u,v), convex 1:1 slope wedge. Show front and side silhouettes, both slope contact faces, top, underside and isometric; no assembly. Rough-sawn timber surface follows the wedge, no supports or protrusions. Neutral background, no text or people. Exact mask remains a proposal; image cannot establish fit.
+
+Selected corrected concept-sheet output `exec-78bf291c-ccc5-499e-879c-f34a3872dc55.png`:
+
+A single low four-sided pyramidal timber corner wedge component only, consistent shape in every view, for BLD-RT-SlopeCornerOuter-01. It is the convex corner-outer/v1 solid w<=min(u,v), a 0.5m cell-envelope shape with a square base and rising 1:1 convex corner ridge surfaces. Show one isometric object plus three orthographic views of that exact same object; no V-shaped inside corner and no separate triangular blocks. Rough-sawn timber surface pattern. Plain neutral background, no labels, no people, no other objects, no supports or roof assembly. Keep one clear coherent silhouette. The shape is proposed and not dimensionally validated.
+
+Selected clean-view output `exec-10018c62-cd1c-4760-9565-6df56a216286.png`:
+
+Isolated single low square-based pyramidal rough-timber wedge, three-quarter view, for BLD-RT-SlopeCornerOuter-01. This represents convex corner-outer/v1: proposed 0.5 m cell envelope, occupied solid w<=min(u,v), four triangular 1:1 slopes rise to a convex peak. One object, no extra pieces, no roof assembly, no V-shaped valley, no support, no text or people. Pale neutral background. Flush rough timber surface on the shape, crisp simple silhouette. Visual target only, not geometric verification.
+
+No reference image attached; related timber component images were textual style context only.

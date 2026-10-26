@@ -1,0 +1,710 @@
+{
+  "status": "diagnostic-rig-candidate; visual/surface/import checks required",
+  "cpu_only": true,
+  "source_sha256": "9b3eab121765220b031e0c1394058c502009b90196013f0e10ee61492ba12a66",
+  "source_mesh_hash": "f580ad6893e552958d7c1320958834ad3c7a139f941b9016c510dfd4d6a3e794",
+  "source": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\RootRepair-v003\\Voidreign-HairPrototype.blend",
+  "guide_report_sha256": "c81296acc894f38262b0218839a6d45aff3793c3169e90d86550649f0e8f0099",
+  "simulation_report_sha256": "082d44268138c8876a5e679391dda4d381764a82f13766c97875df2d7d6c7093",
+  "config_sha256": "9df3ed982c0f5f571210a98d42c1e6b395b80713c139f0b7b162ad861d5cca47",
+  "tool_sha256": "07cc0375894c1458beffa94ba653e88fea8e69478ffb55d8367ed97bd0340310",
+  "guides": 24,
+  "bones": 229,
+  "features": [
+    {
+      "feature": "Mane",
+      "semantic_vertices": 57722,
+      "moving_vertices": 45110,
+      "protected_or_anchored_vertices": 12612
+    },
+    {
+      "feature": "Tail",
+      "semantic_vertices": 67372,
+      "moving_vertices": 53294,
+      "protected_or_anchored_vertices": 14078
+    }
+  ],
+  "vertices": 284772,
+  "triangles": 297125,
+  "rest_geometry_unchanged": true,
+  "max_weight_sum_error": 7.450580596923828e-08,
+  "maximum_bone_influences": 4,
+  "protected_vertices": 154394,
+  "protected_motion_weight_max": 0.0,
+  "max_source_bone_head_to_simulation_error_m": 7.158763497748562e-07,
+  "maximum_frame_rotation_step_rad": 0.6593992710113525,
+  "orientation_method": "Temporal parallel transport initialized from authored rest roll; no world-up roll resets",
+  "attachment_root_weights": [
+    {
+      "id": "Mane:B000",
+      "status": "diagnostic-coherent-root",
+      "vertices": 57
+    },
+    {
+      "id": "Mane:B001",
+      "status": "diagnostic-coherent-root",
+      "vertices": 0
+    },
+    {
+      "id": "Mane:B002",
+      "status": "diagnostic-coherent-root",
+      "vertices": 46
+    },
+    {
+      "id": "Mane:B003",
+      "status": "diagnostic-coherent-root",
+      "vertices": 44
+    },
+    {
+      "id": "Mane:B004",
+      "status": "diagnostic-coherent-root",
+      "vertices": 205
+    },
+    {
+      "id": "Mane:B005",
+      "status": "diagnostic-coherent-root",
+      "vertices": 159
+    },
+    {
+      "id": "Mane:B006",
+      "status": "diagnostic-coherent-root",
+      "vertices": 184
+    },
+    {
+      "id": "Mane:B007",
+      "status": "diagnostic-coherent-root",
+      "vertices": 64
+    },
+    {
+      "id": "Mane:B008",
+      "status": "diagnostic-coherent-root",
+      "vertices": 0
+    },
+    {
+      "id": "Mane:B009",
+      "status": "diagnostic-coherent-root",
+      "vertices": 35
+    },
+    {
+      "id": "Mane:B010",
+      "status": "diagnostic-coherent-root",
+      "vertices": 0
+    },
+    {
+      "id": "Mane:B011",
+      "status": "diagnostic-coherent-root",
+      "vertices": 144
+    },
+    {
+      "id": "Mane:B012",
+      "status": "diagnostic-coherent-root",
+      "vertices": 28
+    },
+    {
+      "id": "Mane:B013",
+      "status": "diagnostic-coherent-root",
+      "vertices": 58
+    },
+    {
+      "id": "Mane:B014",
+      "status": "diagnostic-coherent-root",
+      "vertices": 90
+    },
+    {
+      "id": "Mane:B015",
+      "status": "diagnostic-coherent-root",
+      "vertices": 45
+    },
+    {
+      "id": "Mane:B016",
+      "status": "diagnostic-coherent-root",
+      "vertices": 39
+    },
+    {
+      "id": "Mane:B017",
+      "status": "diagnostic-coherent-root",
+      "vertices": 55
+    },
+    {
+      "id": "Mane:B018",
+      "status": "diagnostic-coherent-root",
+      "vertices": 78
+    },
+    {
+      "id": "Mane:B019",
+      "status": "diagnostic-coherent-root",
+      "vertices": 25
+    },
+    {
+      "id": "Mane:B020",
+      "status": "diagnostic-coherent-root",
+      "vertices": 18
+    },
+    {
+      "id": "Mane:B021",
+      "status": "diagnostic-coherent-root",
+      "vertices": 108
+    },
+    {
+      "id": "Mane:B022",
+      "status": "diagnostic-coherent-root",
+      "vertices": 22
+    },
+    {
+      "id": "Mane:B023",
+      "status": "diagnostic-coherent-root",
+      "vertices": 0
+    },
+    {
+      "id": "Mane:B024",
+      "status": "diagnostic-coherent-root",
+      "vertices": 44
+    },
+    {
+      "id": "Mane:B025",
+      "status": "diagnostic-coherent-root",
+      "vertices": 37
+    },
+    {
+      "id": "Mane:B026",
+      "status": "diagnostic-coherent-root",
+      "vertices": 26
+    },
+    {
+      "id": "Mane:B027",
+      "status": "diagnostic-coherent-root",
+      "vertices": 44
+    },
+    {
+      "id": "Mane:B028",
+      "status": "diagnostic-coherent-root",
+      "vertices": 0
+    },
+    {
+      "id": "Mane:B029",
+      "status": "diagnostic-coherent-root",
+      "vertices": 58
+    },
+    {
+      "id": "Mane:B030",
+      "status": "diagnostic-coherent-root",
+      "vertices": 27
+    },
+    {
+      "id": "Mane:B031",
+      "status": "diagnostic-coherent-root",
+      "vertices": 26
+    },
+    {
+      "id": "Mane:B032",
+      "status": "diagnostic-coherent-root",
+      "vertices": 47
+    },
+    {
+      "id": "Mane:B033",
+      "status": "diagnostic-coherent-root",
+      "vertices": 130
+    },
+    {
+      "id": "Mane:B034",
+      "status": "diagnostic-coherent-root",
+      "vertices": 6
+    },
+    {
+      "id": "Mane:B035",
+      "status": "diagnostic-coherent-root",
+      "vertices": 13
+    },
+    {
+      "id": "Mane:B036",
+      "status": "diagnostic-coherent-root",
+      "vertices": 74
+    },
+    {
+      "id": "Mane:B037",
+      "status": "diagnostic-coherent-root",
+      "vertices": 42
+    },
+    {
+      "id": "Mane:B038",
+      "status": "diagnostic-coherent-root",
+      "vertices": 18
+    },
+    {
+      "id": "Mane:B039",
+      "status": "diagnostic-coherent-root",
+      "vertices": 14
+    },
+    {
+      "id": "Mane:B040",
+      "status": "diagnostic-coherent-root",
+      "vertices": 16
+    },
+    {
+      "id": "Mane:B041",
+      "status": "diagnostic-coherent-root",
+      "vertices": 35
+    },
+    {
+      "id": "Mane:B042",
+      "status": "diagnostic-coherent-root",
+      "vertices": 23
+    },
+    {
+      "id": "Mane:B043",
+      "status": "diagnostic-coherent-root",
+      "vertices": 50
+    },
+    {
+      "id": "Mane:B044",
+      "status": "diagnostic-coherent-root",
+      "vertices": 52
+    },
+    {
+      "id": "Mane:B045",
+      "status": "diagnostic-coherent-root",
+      "vertices": 12
+    },
+    {
+      "id": "Mane:B046",
+      "status": "diagnostic-coherent-root",
+      "vertices": 8
+    },
+    {
+      "id": "Mane:B047",
+      "status": "diagnostic-coherent-root",
+      "vertices": 7
+    },
+    {
+      "id": "Mane:B048",
+      "status": "diagnostic-coherent-root",
+      "vertices": 44
+    },
+    {
+      "id": "Mane:B049",
+      "status": "diagnostic-coherent-root",
+      "vertices": 104
+    },
+    {
+      "id": "Mane:B050",
+      "status": "diagnostic-coherent-root",
+      "vertices": 14
+    },
+    {
+      "id": "Mane:B051",
+      "status": "diagnostic-coherent-root",
+      "vertices": 32
+    },
+    {
+      "id": "Mane:B052",
+      "status": "diagnostic-coherent-root",
+      "vertices": 20
+    },
+    {
+      "id": "Mane:B053",
+      "status": "diagnostic-coherent-root",
+      "vertices": 14
+    },
+    {
+      "id": "Mane:B054",
+      "status": "diagnostic-coherent-root",
+      "vertices": 32
+    },
+    {
+      "id": "Mane:B055",
+      "status": "diagnostic-coherent-root",
+      "vertices": 16
+    },
+    {
+      "id": "Mane:B056",
+      "status": "diagnostic-coherent-root",
+      "vertices": 14
+    },
+    {
+      "id": "Mane:B057",
+      "status": "diagnostic-coherent-root",
+      "vertices": 53
+    },
+    {
+      "id": "Mane:B058",
+      "status": "diagnostic-coherent-root",
+      "vertices": 51
+    },
+    {
+      "id": "Mane:B059",
+      "status": "diagnostic-coherent-root",
+      "vertices": 66
+    },
+    {
+      "id": "Mane:B060",
+      "status": "diagnostic-coherent-root",
+      "vertices": 31
+    },
+    {
+      "id": "Mane:B061",
+      "status": "diagnostic-coherent-root",
+      "vertices": 36
+    },
+    {
+      "id": "Mane:B062",
+      "status": "diagnostic-coherent-root",
+      "vertices": 20
+    },
+    {
+      "id": "Mane:B063",
+      "status": "diagnostic-coherent-root",
+      "vertices": 0
+    },
+    {
+      "id": "Mane:B064",
+      "status": "diagnostic-coherent-root",
+      "vertices": 23
+    },
+    {
+      "id": "Mane:B065",
+      "status": "diagnostic-coherent-root",
+      "vertices": 0
+    },
+    {
+      "id": "Mane:B066",
+      "status": "diagnostic-coherent-root",
+      "vertices": 41
+    },
+    {
+      "id": "Mane:B067",
+      "status": "diagnostic-coherent-root",
+      "vertices": 20
+    },
+    {
+      "id": "Mane:B068",
+      "status": "diagnostic-coherent-root",
+      "vertices": 24
+    },
+    {
+      "id": "Mane:B069",
+      "status": "diagnostic-coherent-root",
+      "vertices": 31
+    },
+    {
+      "id": "Mane:B070",
+      "status": "diagnostic-coherent-root",
+      "vertices": 65
+    },
+    {
+      "id": "Mane:B071",
+      "status": "diagnostic-coherent-root",
+      "vertices": 29
+    },
+    {
+      "id": "Mane:B072",
+      "status": "diagnostic-coherent-root",
+      "vertices": 36
+    },
+    {
+      "id": "Mane:B073",
+      "status": "diagnostic-coherent-root",
+      "vertices": 29
+    },
+    {
+      "id": "Mane:B074",
+      "status": "diagnostic-coherent-root",
+      "vertices": 24
+    },
+    {
+      "id": "Mane:B075",
+      "status": "diagnostic-coherent-root",
+      "vertices": 21
+    },
+    {
+      "id": "Mane:B076",
+      "status": "diagnostic-coherent-root",
+      "vertices": 12
+    },
+    {
+      "id": "Mane:B077",
+      "status": "diagnostic-coherent-root",
+      "vertices": 0
+    },
+    {
+      "id": "Mane:B078",
+      "status": "diagnostic-coherent-root",
+      "vertices": 10
+    },
+    {
+      "id": "Mane:B079",
+      "status": "diagnostic-coherent-root",
+      "vertices": 45
+    },
+    {
+      "id": "Mane:B080",
+      "status": "diagnostic-coherent-root",
+      "vertices": 16
+    },
+    {
+      "id": "Mane:B081",
+      "status": "diagnostic-coherent-root",
+      "vertices": 21
+    },
+    {
+      "id": "Mane:B082",
+      "status": "diagnostic-coherent-root",
+      "vertices": 29
+    },
+    {
+      "id": "Mane:B083",
+      "status": "diagnostic-coherent-root",
+      "vertices": 6
+    },
+    {
+      "id": "Mane:B084",
+      "status": "diagnostic-coherent-root",
+      "vertices": 6
+    },
+    {
+      "id": "Mane:B085",
+      "status": "diagnostic-coherent-root",
+      "vertices": 24
+    },
+    {
+      "id": "Mane:B086",
+      "status": "diagnostic-coherent-root",
+      "vertices": 39
+    },
+    {
+      "id": "Mane:B087",
+      "status": "diagnostic-coherent-root",
+      "vertices": 0
+    },
+    {
+      "id": "Mane:B088",
+      "status": "diagnostic-coherent-root",
+      "vertices": 0
+    },
+    {
+      "id": "Tail:B000",
+      "status": "diagnostic-coherent-root",
+      "vertices": 14
+    },
+    {
+      "id": "Tail:B001",
+      "status": "diagnostic-coherent-root",
+      "vertices": 58
+    },
+    {
+      "id": "Tail:B002",
+      "status": "diagnostic-coherent-root",
+      "vertices": 52
+    },
+    {
+      "id": "Tail:B003",
+      "status": "diagnostic-coherent-root",
+      "vertices": 26
+    },
+    {
+      "id": "Tail:B004",
+      "status": "diagnostic-coherent-root",
+      "vertices": 53
+    },
+    {
+      "id": "Tail:B005",
+      "status": "diagnostic-coherent-root",
+      "vertices": 26
+    },
+    {
+      "id": "Tail:B006",
+      "status": "diagnostic-coherent-root",
+      "vertices": 43
+    },
+    {
+      "id": "Tail:B007",
+      "status": "diagnostic-coherent-root",
+      "vertices": 72
+    },
+    {
+      "id": "Tail:B008",
+      "status": "diagnostic-coherent-root",
+      "vertices": 38
+    },
+    {
+      "id": "Tail:B009",
+      "status": "diagnostic-coherent-root",
+      "vertices": 143
+    },
+    {
+      "id": "Tail:B010",
+      "status": "diagnostic-coherent-root",
+      "vertices": 31
+    },
+    {
+      "id": "Tail:B011",
+      "status": "diagnostic-coherent-root",
+      "vertices": 61
+    },
+    {
+      "id": "Tail:B012",
+      "status": "diagnostic-coherent-root",
+      "vertices": 63
+    },
+    {
+      "id": "Tail:B013",
+      "status": "diagnostic-coherent-root",
+      "vertices": 37
+    },
+    {
+      "id": "Tail:B014",
+      "status": "diagnostic-coherent-root",
+      "vertices": 58
+    },
+    {
+      "id": "Tail:B015",
+      "status": "diagnostic-coherent-root",
+      "vertices": 74
+    },
+    {
+      "id": "Tail:B016",
+      "status": "diagnostic-coherent-root",
+      "vertices": 33
+    },
+    {
+      "id": "Tail:B017",
+      "status": "diagnostic-coherent-root",
+      "vertices": 46
+    },
+    {
+      "id": "Tail:B018",
+      "status": "diagnostic-coherent-root",
+      "vertices": 0
+    },
+    {
+      "id": "Tail:B019",
+      "status": "diagnostic-coherent-root",
+      "vertices": 27
+    },
+    {
+      "id": "Tail:B020",
+      "status": "diagnostic-coherent-root",
+      "vertices": 89
+    },
+    {
+      "id": "Tail:B021",
+      "status": "diagnostic-coherent-root",
+      "vertices": 48
+    },
+    {
+      "id": "Tail:B022",
+      "status": "diagnostic-coherent-root",
+      "vertices": 12
+    },
+    {
+      "id": "Tail:B023",
+      "status": "diagnostic-coherent-root",
+      "vertices": 29
+    },
+    {
+      "id": "Tail:B024",
+      "status": "diagnostic-coherent-root",
+      "vertices": 0
+    },
+    {
+      "id": "Tail:B025",
+      "status": "diagnostic-coherent-root",
+      "vertices": 13
+    },
+    {
+      "id": "Tail:B026",
+      "status": "diagnostic-coherent-root",
+      "vertices": 0
+    },
+    {
+      "id": "Tail:B027",
+      "status": "diagnostic-coherent-root",
+      "vertices": 16
+    },
+    {
+      "id": "Tail:B028",
+      "status": "diagnostic-coherent-root",
+      "vertices": 0
+    },
+    {
+      "id": "Tail:B029",
+      "status": "diagnostic-coherent-root",
+      "vertices": 29
+    },
+    {
+      "id": "Tail:B030",
+      "status": "diagnostic-coherent-root",
+      "vertices": 33
+    },
+    {
+      "id": "Tail:B031",
+      "status": "diagnostic-coherent-root",
+      "vertices": 0
+    },
+    {
+      "id": "Tail:B032",
+      "status": "diagnostic-coherent-root",
+      "vertices": 0
+    },
+    {
+      "id": "Tail:B033",
+      "status": "diagnostic-coherent-root",
+      "vertices": 0
+    },
+    {
+      "id": "Tail:B034",
+      "status": "diagnostic-coherent-root",
+      "vertices": 0
+    },
+    {
+      "id": "Tail:B035",
+      "status": "diagnostic-coherent-root",
+      "vertices": 16
+    },
+    {
+      "id": "Tail:B036",
+      "status": "diagnostic-coherent-root",
+      "vertices": 18
+    },
+    {
+      "id": "Tail:B037",
+      "status": "diagnostic-coherent-root",
+      "vertices": 38
+    },
+    {
+      "id": "Tail:B038",
+      "status": "diagnostic-coherent-root",
+      "vertices": 21
+    },
+    {
+      "id": "Tail:B039",
+      "status": "diagnostic-coherent-root",
+      "vertices": 33
+    },
+    {
+      "id": "Tail:B040",
+      "status": "diagnostic-coherent-root",
+      "vertices": 20
+    },
+    {
+      "id": "Tail:B041",
+      "status": "diagnostic-coherent-root",
+      "vertices": 0
+    },
+    {
+      "id": "Tail:B042",
+      "status": "diagnostic-coherent-root",
+      "vertices": 6
+    },
+    {
+      "id": "Tail:B043",
+      "status": "diagnostic-coherent-root",
+      "vertices": 0
+    }
+  ],
+  "hierarchy": "Flat deform joints parented to StaticBody; explicit logical chains in armature metadata and guides.json",
+  "limitations": [
+    "Existing isolated-clump binding proposals are not final attachment acceptance.",
+    "Rigid horse harness; legs static. Offline motion, no engine simulation.",
+    "Particle contacts do not establish deformed-surface clearance."
+  ]
+}

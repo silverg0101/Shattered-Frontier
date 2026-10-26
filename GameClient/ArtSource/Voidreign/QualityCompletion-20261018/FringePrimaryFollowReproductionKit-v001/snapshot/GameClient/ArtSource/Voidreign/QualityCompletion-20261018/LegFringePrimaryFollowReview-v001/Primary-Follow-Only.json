@@ -1,0 +1,94 @@
+{
+  "status": "sampled-review-gif-not-motion-acceptance",
+  "report": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LegFringePrimaryFollowReview-v001\\capture-report.json",
+  "report_sha256": "d612e6361711b1d5bbe8d646c00408bf9083dc7aabb1fdc15f74f1c13b00ca6e",
+  "tool_sha256": "1852652ec28f85ba97d1f6514c30a060d91bbee86e600ccf1d34b0b32320ce57",
+  "fps": 30,
+  "inputs": [
+    {
+      "frame": 1,
+      "path": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LegFringePrimaryFollowReview-v001\\frames\\0001.png",
+      "sha256": "e40f9fb0a87ba47f557eac6356dddab4691e9bfeccf130a07353d5b3e9ff211e"
+    },
+    {
+      "frame": 7,
+      "path": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LegFringePrimaryFollowReview-v001\\frames\\0007.png",
+      "sha256": "b633251629bf8fdf9bd25d545ce31bb01977b8c909f3dabd7fd4ecdf379e9a32"
+    },
+    {
+      "frame": 13,
+      "path": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LegFringePrimaryFollowReview-v001\\frames\\0013.png",
+      "sha256": "9b00167870be2069753c9329d1bc5ce473e3df72fd990e47b4b3f0f7db6488e2"
+    },
+    {
+      "frame": 19,
+      "path": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LegFringePrimaryFollowReview-v001\\frames\\0019.png",
+      "sha256": "df9eb1223af2c2364499ab32a26d59fb35b92765cd850890061e2d203a4e4d1c"
+    },
+    {
+      "frame": 25,
+      "path": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LegFringePrimaryFollowReview-v001\\frames\\0025.png",
+      "sha256": "92a6634883211565d84effce8e81fdba0524aa0571533643229cd6147debb387"
+    },
+    {
+      "frame": 31,
+      "path": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LegFringePrimaryFollowReview-v001\\frames\\0031.png",
+      "sha256": "1cb2749981afae3a2b1b1128102e220c3d335c0274160615cd558bcac0d619df"
+    },
+    {
+      "frame": 37,
+      "path": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LegFringePrimaryFollowReview-v001\\frames\\0037.png",
+      "sha256": "ba7352ef9911631baf14bde72bbdf4409dd480e9d27f6e408af1b84077c31efe"
+    },
+    {
+      "frame": 43,
+      "path": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LegFringePrimaryFollowReview-v001\\frames\\0043.png",
+      "sha256": "da6c0f7af03db3cb213e08bbcad798870180543e9d1f06c8fbd959d3205fe281"
+    },
+    {
+      "frame": 49,
+      "path": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LegFringePrimaryFollowReview-v001\\frames\\0049.png",
+      "sha256": "fb29ad55bfd4feef2da040b8a8c0f163fc68a4cbe276fd383b63133350c9f3da"
+    },
+    {
+      "frame": 55,
+      "path": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LegFringePrimaryFollowReview-v001\\frames\\0055.png",
+      "sha256": "fa3223a788dbff2c676b0c9a199445e40daa279f861e3387433dea0e018235d5"
+    },
+    {
+      "frame": 61,
+      "path": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LegFringePrimaryFollowReview-v001\\frames\\0061.png",
+      "sha256": "94b4298aa75016d27855743761e28e22fb023714feba57d6fbb7fd428fe69f2c"
+    },
+    {
+      "frame": 67,
+      "path": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LegFringePrimaryFollowReview-v001\\frames\\0067.png",
+      "sha256": "9cef101fbd01500782f2de6b91668e7067828fd58eea1ce381b62b7320009d9b"
+    },
+    {
+      "frame": 73,
+      "path": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LegFringePrimaryFollowReview-v001\\frames\\0073.png",
+      "sha256": "f8bbfcb409f1d147026d8b362606253ccc1da7cc3d67e218ee04bf38e64f5c5e"
+    }
+  ],
+  "durations_ms": [
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    30
+  ],
+  "gif_sha256": "b8b4fdf580bbf44e84b50ceee75f6690f17fca39c7cf02411d0163b941b62f23",
+  "limitations": [
+    "Sampled display preview with GIF10ms timing quantization, not an all-frame physics/clip check.",
+    "Scope and acceptance limits are inherited from the capture report."
+  ]
+}

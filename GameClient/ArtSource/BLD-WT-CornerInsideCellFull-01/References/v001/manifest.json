@@ -1,0 +1,72 @@
+{
+  "asset_id": "BLD-WT-CornerInsideCellFull-01",
+  "version": "v001",
+  "batch": "construction-worked-timber-corners-33",
+  "status": "image-complete historically; current structural readiness blocked",
+  "source_references": [
+    "docs/art-templates/player-construction-kit-contract.md, \u00a7\u00a73.2, 8\u20139",
+    "docs/art-templates/asset-lists/construction-kit-matrix-07.md, worked-timber corner/slope roles"
+  ],
+  "dependency": "KIT-WT faces and exact contract shape/contact masks; gameplay tier unchanged",
+  "exact_prompts": {
+    "concept_sheet": "Construction concept sheet, one cubic 90-degree inside wall corner in worked timber, a true concave L-shaped join with two perpendicular flush faces; show stacked horizontal oak planks around corner, orthographic front and top details beside isometric view, pale background, no text. Keep existing corner-inner shape envelope, contacts and clearance; no new gameplay properties. Concept proposal.",
+    "asset_view": "View from inside a room into a concave 90-degree interior corner made by two worked-timber plank walls. The corner apex recedes away from camera; both inside faces create a clear inward V, not a projecting exterior point. Show one L-shaped corner segment with joined horizontal plank ends, no extra trim, pale neutral studio setting, no text."
+  },
+  "images": [
+    {
+      "file": "concept-sheet.png",
+      "width_px": 1536,
+      "height_px": 1024,
+      "mode": "RGB",
+      "format": "PNG",
+      "sha256": "ef42e40deb10a41d6b576a73cdac91cb8572c0a25059d47d7e797e10d9d9aae4"
+    },
+    {
+      "file": "asset-view.png",
+      "width_px": 1312,
+      "height_px": 1199,
+      "mode": "RGB",
+      "format": "PNG",
+      "sha256": "703a1fa92f7ab97684578252eb9f544c2581b89b52c921166d86d74c04654d80"
+    }
+  ],
+  "visual_review": "Interior faces clearly read concave in clean view; concept sheet lower plan detail may appear geometrically inconsistent. Appearance proposal only; verify exact mask/contact in model stage.",
+  "compatibility": "Images are appearance proposals. Review does not establish numerical mesh, collision, contact, clearance or runtime compatibility. Cosmetic skin changes appearance only.",
+  "generation_history": [
+    {
+      "file": "exec-2f6631e4-50a6-410e-95bc-a1ef0fa8c175.png",
+      "selected": true
+    },
+    {
+      "file": "exec-c791a7df-6fba-4685-9a19-c4e133a1cf33.png",
+      "selected": true
+    },
+    {
+      "file": "exec-2be82f1d-a913-4128-b649-65e858d00140.png",
+      "selected": false,
+      "reason": "Incorrect geometry/read; superseded by selected revision."
+    }
+  ],
+  "created_utc": "2026-10-18",
+  "status_history": [
+    {
+      "date": "2026-10-18",
+      "prior_status": "image-complete; proposal; review cautions recorded",
+      "reason": "Dated buildability review added; original generation history and selected flags preserved."
+    }
+  ],
+  "current_buildability_review": {
+    "date": "2026-10-18",
+    "accepted_selected_outputs": "0/2; historical selection records preserved; none accepted as a buildable master under this review",
+    "route": "proposed material/surface treatment on two orthogonal exposed cell-full patches; not a member assembly and not sloped corner-inner",
+    "units_grid": "metres; 0.5 m structural grid; exact span, depth and patch dimensions unresolved; no scale is recoverable",
+    "frame_pivot": "BLD-01 X/Y/Z frame; minimum-grid-corner frame belongs to the approved host carrier; axis-to-face mapping unresolved; no independent pivot",
+    "allowed_rotations": "inherit only an approved host cell-full allowlist; exact allowlist not accepted for this art mapping",
+    "member_boundary": "one surface treatment across two orthogonal patches; no structural members declared",
+    "exposed_and_mating_faces": "two adjacent inside/exposed patches; end faces, exact patch contours and contact plane unresolved",
+    "named_counterparts": "candidate style references BLD-WT-FaceInteriorCellFull-01 and BLD-WT-FaceExteriorCellFull-01; neither defines the corner contour, end treatment or seam connection",
+    "visual_finding": "The 90-degree room-corner images preserve useful worked-timber appearance. The concept sheet depicts joined wall faces; the clean view is a room/wall scene with floor, not one isolated treatment.",
+    "blocker": "No approved geometry/interface definition, GEO-01 manifest/hash or applicable GEO-02 corner/repeat/rotation evidence. Structural readiness blocked.",
+    "geo02": "Applicable GEO-02 evidence missing; image review is not numerical/runtime acceptance."
+  }
+}

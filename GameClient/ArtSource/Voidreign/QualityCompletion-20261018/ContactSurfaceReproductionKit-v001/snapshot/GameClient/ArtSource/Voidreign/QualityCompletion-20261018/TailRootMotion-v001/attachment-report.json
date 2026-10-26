@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "status": "needs-review-nonrigid-attachment",
+  "cpu_only": true,
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ContactMeshExperiment-v001\\Voidreign-CompleteHair.blend": "a1de9660c66c772cdb4cedec20ac5b1a2229a4417af46550f8167f915680c140",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\TailLocalDomains-v001\\domains.npz": "7b2119a615b33873367e68094a8607acde0ceab7a6548747b69639c71bf1e156",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selections.npz": "0b6a19f76a2cba73a42e293c29365360b53ba93be101cf8f4ca556e7a5989cc0",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\TailLocalDomains-v001\\domain-report.json": "7b0a257aebb5d089e4a124138207f971391b9ddc73c88204599f4ba13a57c4e4"
+  },
+  "tool_sha256": "b236c9eddb3f9018cbaf891e9398e073e27ce4b4724233ecb414b4e6417fc65a",
+  "source_sha256": "a1de9660c66c772cdb4cedec20ac5b1a2229a4417af46550f8167f915680c140",
+  "mesh_hash": "ba2d283db0be5e8cff4cc7549f1f51916cc0a4d18213773300976b11512ececa",
+  "domains": [
+    {
+      "name": "Tail_FAILURE_02",
+      "vertices": [
+        246816,
+        228966,
+        246815,
+        228967,
+        246867,
+        229009,
+        271148,
+        229010,
+        271156,
+        271142,
+        279070,
+        279081
+      ],
+      "rest_center_m": [
+        0.13088594631162564,
+        1.466468388350343,
+        0.9878249492136177
+      ],
+      "rest_singular_values_m": [
+        0.06679674589967498,
+        0.053974247825885065,
+        0.02576440389343506
+      ],
+      "geometric_boundary_vertices": 12,
+      "omitted_boundary_vertices": 0,
+      "root_boundary_band_m": 0.05,
+      "method": "Canonical seam-aware triangle boundary restricted to the authored cut-plane band"
+    },
+    {
+      "name": "Tail_FAILURE_03",
+      "vertices": [
+        266696,
+        266831,
+        266689,
+        266830,
+        266690,
+        273912,
+        267750,
+        273897,
+        267777,
+        273197,
+        273202,
+        267776
+      ],
+      "rest_center_m": [
+        0.37747706791876584,
+        1.3069127871549304,
+        0.5671562360825865
+      ],
+      "rest_singular_values_m": [
+        0.08530621400072436,
+        0.06819740204755763,
+        0.02918312812683808
+      ],
+      "geometric_boundary_vertices": 12,
+      "omitted_boundary_vertices": 0,
+      "root_boundary_band_m": 0.05,
+      "method": "Canonical seam-aware triangle boundary restricted to the authored cut-plane band"
+    }
+  ],
+  "maximum_rigid_fit_residual_m": 0.005,
+  "measured_maximum_residual_m": [
+    0.08386534507988425,
+    0.014321226559088707
+  ],
+  "worst_frames": [
+    187,
+    188
+  ],
+  "motion_sha256": "a2f245c54956ce6630df6d3607f00876c234f3acd69d43ff0032f60e11d043f4",
+  "limitations": [
+    "Unreviewed domain boundaries may include seams, distal caps, holes or branches rather than an anatomical root ring.",
+    "A rigid fit does not accept root ownership, local-guide shape, handoff weights, physical response or runtime playback.",
+    "Fixed source rest geometry and source animation only; no source, bone, weight, geometry or collision changes."
+  ]
+}

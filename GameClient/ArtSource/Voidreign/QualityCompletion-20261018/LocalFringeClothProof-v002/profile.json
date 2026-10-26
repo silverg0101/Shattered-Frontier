@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "scope": "local-primary-driven-fixed-rest-cloth-proof",
+  "attempt_index": 2,
+  "maximum_local_attempts": 3,
+  "source": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LegFringePrimaryFollowReview-v001\\Actual-FringePrimaryFollow.blend",
+  "capture_report": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LegFringePrimaryFollowReview-v001\\capture-report.json",
+  "capture_points": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LegFringePrimaryFollowReview-v001\\source-indexed-world-points.npz",
+  "semantic_selection": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LegFringeLabelCorrection-v001\\label-only-selections.npz",
+  "region_roots": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\FullLegFringeRoots-v001\\region-roots.npz",
+  "root_review": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\FullLegFringeRoots-v001\\local-physics-review.json",
+  "warmup_frames": 30,
+  "fps": 30,
+  "render_stride": 6,
+  "render_samples": 8,
+  "gravity_m_s2": 9.81,
+  "ground_height_m": 0.005,
+  "collider_thickness_m": 0.003,
+  "replay_tolerance_m": 1e-05,
+  "cloth_settings": {
+    "quality": 8,
+    "mass": 0.00025,
+    "air_damping": 2.0,
+    "tension_stiffness": 12.0,
+    "compression_stiffness": 12.0,
+    "shear_stiffness": 5.0,
+    "bending_stiffness": 0.1,
+    "tension_damping": 5.0,
+    "compression_damping": 5.0,
+    "shear_damping": 5.0,
+    "bending_damping": 0.1,
+    "pin_stiffness": 1.0
+  },
+  "collision_settings": {
+    "distance_min": 0.003,
+    "friction": 5.0,
+    "collision_quality": 4
+  },
+  "units": {
+    "distance": "metres",
+    "time": "seconds",
+    "mass": "kg per simulation vertex",
+    "stiffness_damping_quality": "Blender native settings, not claimed SI stiffness"
+  },
+  "permissions": "Second local proof changes representation: isolated shell components with internal volume springs; all original root/contact/outer-cloth settings unchanged. No global stage budget reset.",
+  "effective_time": "This frozen local point-driver and cropped collider diagnostic only",
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LegFringePrimaryFollowReview-v001\\Actual-FringePrimaryFollow.blend": "fb38c0c4ef3a3fef78b60f8544cb07a87c276b5e1b79c617afc12ffacf9aac85",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LegFringePrimaryFollowReview-v001\\capture-report.json": "d612e6361711b1d5bbe8d646c00408bf9083dc7aabb1fdc15f74f1c13b00ca6e",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LegFringePrimaryFollowReview-v001\\source-indexed-world-points.npz": "80f129671e2d351cb39e33076007d5a0e6486561f78f7165908be63808f54365",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LegFringeLabelCorrection-v001\\label-only-selections.npz": "dc78ba7dbd5a03bef0f0397a26435ec6bcf31b079c340aff5d035a2b1566a630",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\FullLegFringeRoots-v001\\region-roots.npz": "6c87dc69d6bbcf1ea76f7ca12e4f860940f328782c4a374a0a33278008bdf682",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\FullLegFringeRoots-v001\\local-physics-review.json": "fa962ab38a2ca17e8a82bca77d13308e741ea64d9b0e9782d3693e8fa86a3002"
+  },
+  "split_components": true,
+  "internal_springs": {
+    "internal_spring_normal_check": true,
+    "internal_spring_max_length": 0.04,
+    "internal_spring_max_diversion": 0.7853981633974483,
+    "internal_tension_stiffness": 15.0,
+    "internal_compression_stiffness": 15.0
+  }
+}

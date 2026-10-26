@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "parent_selection": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selections.npz",
+  "change_selection": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\FeatureSupportAdjacency-v001\\support-selections.npz",
+  "review": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LegFringeOwnershipReview-v001\\review.json",
+  "declared_labels": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "label_definitions": {
+    "0": "Nonfeature/unclassified original",
+    "1": "Mane legacy proposal",
+    "2": "Tail legacy proposal minus reviewed leg regions",
+    "3": "hind.L.fringe-review: partial physical feature, intended primary support hind.L; roots/motion unbuilt"
+  },
+  "changes": [
+    {
+      "id": "FSA-0d7599c806-419f3a26806c",
+      "vertex_key": "FSA-0d7599c806-419f3a26806c.vertices",
+      "expected_vertices": 89,
+      "original_label": 2,
+      "new_label": 3
+    },
+    {
+      "id": "FSA-0d7599c806-f4e0f8a59f51",
+      "vertex_key": "FSA-0d7599c806-f4e0f8a59f51.vertices",
+      "expected_vertices": 61,
+      "original_label": 2,
+      "new_label": 3
+    },
+    {
+      "id": "FSA-0d7599c806-79c8cc654101",
+      "vertex_key": "FSA-0d7599c806-79c8cc654101.vertices",
+      "expected_vertices": 45,
+      "original_label": 2,
+      "new_label": 3
+    }
+  ],
+  "permissions": "Author-reviewed exact ownership correction only, no new spatial cut or skin/gait/material candidate. Preserve old three-cut selection history; derived motion invalidated.",
+  "effective_time": "New label-only proposal, never silently substitute for old generated caches.",
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selections.npz": "0b6a19f76a2cba73a42e293c29365360b53ba93be101cf8f4ca556e7a5989cc0",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\FeatureSupportAdjacency-v001\\support-selections.npz": "249c7f80d4e46ccc76c78407e2c62fcfa53aef7bca47edbba2f7899804d63637",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LegFringeOwnershipReview-v001\\review.json": "bd814cfb11ee7fbbb9b0b59d3a0a322034f1b2a8285243cdb06a80a98d50e4b4"
+  }
+}

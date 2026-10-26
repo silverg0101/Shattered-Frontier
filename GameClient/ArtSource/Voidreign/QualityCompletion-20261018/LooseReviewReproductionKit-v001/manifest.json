@@ -1,0 +1,291 @@
+{
+  "schema_version": 1,
+  "workspace": "C:\\Projects\\Shattered-Frontier",
+  "asset_id": "Voidreign",
+  "status": "needs-review",
+  "self_contained": false,
+  "scope": "Incremental disconnected support and local articulated skin review; parent WalkReproductionKit owns earlier code/profile/caches. No semantic or model acceptance.",
+  "commands": [
+    [
+      "C:/Program Files/Blender Foundation/Blender 5.1/blender.exe",
+      "--background",
+      "--factory-startup",
+      "--threads",
+      "4",
+      "--python-exit-code",
+      "1",
+      "--python",
+      "tools/Inspect-DetachedAssetSupports.py",
+      "--",
+      "--profile",
+      "docs/art-templates/model-profiles/voidreign-loose-supports-20261019.json",
+      "--output",
+      "<NEW_OUTPUT_FOLDER>"
+    ],
+    [
+      "C:/Program Files/Blender Foundation/Blender 5.1/blender.exe",
+      "--background",
+      "--factory-startup",
+      "--threads",
+      "4",
+      "--python-exit-code",
+      "1",
+      "--python",
+      "tools/Render-MountAnatomyAtlas.py",
+      "--",
+      "--profile",
+      "docs/art-templates/model-profiles/voidreign-articulated-skin-review-20261019.json",
+      "--output",
+      "<NEW_OUTPUT_FOLDER>"
+    ]
+  ],
+  "files": [
+    {
+      "path": "Artifacts/Art/Voidreign/blender-session-cleanup-20261019-v001.json",
+      "mode": "copy",
+      "bytes": 589,
+      "sha256": "6cda01dd4f91d05ff4f75af8a9f4c4980c1cabc348d1e47dbe73f83ff69628c4",
+      "snapshot": "snapshot/Artifacts/Art/Voidreign/blender-session-cleanup-20261019-v001.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/HairMotion-20261018/Voidreign-HairPrototype-UnsavedReview-20261019-v001.blend",
+      "mode": "reference",
+      "bytes": 79555545,
+      "sha256": "f5bc67d5e639c0fd4327d734a88d49ed975b99c24207c1c02096ed3f94dc9695",
+      "snapshot": null
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ArticulatedSkinReview-v001/Mount-AnatomyProposal.blend",
+      "mode": "reference",
+      "bytes": 105046673,
+      "sha256": "be53d89a7a1a0d983dac40781a26235f9f365bf8692aaea1f1cf1c240372d258",
+      "snapshot": null
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ArticulatedSkinReview-v001/anatomy-report.json",
+      "mode": "copy",
+      "bytes": 3158,
+      "sha256": "4e53fc2cdf22b07df8d4df524ea27640b7940b124203a7ae0f586d8dab212a27",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ArticulatedSkinReview-v001/anatomy-report.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ArticulatedSkinReview-v001/profile.json",
+      "mode": "copy",
+      "bytes": 5033,
+      "sha256": "efd90a4e22c1421498f7ca07650e4707489d5f8050e8035e552b9030d989982d",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ArticulatedSkinReview-v001/profile.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ArticulatedSkinReview-v001/region-selections.npz",
+      "mode": "reference",
+      "bytes": 635,
+      "sha256": "4134e3077d6f3ca0f0dd12f38e065ef024c18e5af6c47eb9431f34a2d5648e33",
+      "snapshot": null
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ArticulatedSkinReview-v001/tool-source.py",
+      "mode": "copy",
+      "bytes": 10026,
+      "sha256": "a4d1e4b5f319bd55ce220ef386d5ccdd08f13349911342b3ca6e11c4aff2572f",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ArticulatedSkinReview-v001/tool-source.py"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ArticulatedSkinReview-v001/visual-review.json",
+      "mode": "copy",
+      "bytes": 936,
+      "sha256": "bf2e8e00462c89c7b18d4e1a5ef77a811587829cb8a499e8564e809f4cb40f0e",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ArticulatedSkinReview-v001/visual-review.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ArticulatedSkinReview-v001/walk1-absolute-front.png",
+      "mode": "copy",
+      "bytes": 746062,
+      "sha256": "80e6d905f8ec7d0e51b82f97534bb3acacfd8363764c592e8b4f8a9a8003a6a0",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ArticulatedSkinReview-v001/walk1-absolute-front.png"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ArticulatedSkinReview-v001/walk1-absolute-side.png",
+      "mode": "copy",
+      "bytes": 658330,
+      "sha256": "c12b44c412a5babf0ade39118eaef9b4fbfa4d27914b2f59671839f2a09a53d5",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ArticulatedSkinReview-v001/walk1-absolute-side.png"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ArticulatedSkinReview-v001/walk2-absolute-front.png",
+      "mode": "copy",
+      "bytes": 763448,
+      "sha256": "705457ab6725c160f68ae4b2316cb6598c138ee186e22dfd221b38679dfe95c5",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ArticulatedSkinReview-v001/walk2-absolute-front.png"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ArticulatedSkinReview-v001/walk2-absolute-side.png",
+      "mode": "copy",
+      "bytes": 686464,
+      "sha256": "31158c8de10c8e3674990684092f95940a1867d64272cf792c7d76cc0e3e69a5",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ArticulatedSkinReview-v001/walk2-absolute-side.png"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ArticulatedSkinReview-v001/walk2-sole-front.png",
+      "mode": "copy",
+      "bytes": 459832,
+      "sha256": "056a09325676f9d655046de045179fae949b21d722ebb0437ee32b5f053ffb89",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ArticulatedSkinReview-v001/walk2-sole-front.png"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ArticulatedSkinReview-v001/walk2-sole-side.png",
+      "mode": "copy",
+      "bytes": 446144,
+      "sha256": "9138a9c8c4456dacfcaa663b48eb310ab1ec78d2b44cd7b55e98a0aa143dc70c",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ArticulatedSkinReview-v001/walk2-sole-side.png"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ArticulatedSkinReviewInputs-v001/worst-edge-selections.npz",
+      "mode": "reference",
+      "bytes": 635,
+      "sha256": "4134e3077d6f3ca0f0dd12f38e065ef024c18e5af6c47eb9431f34a2d5648e33",
+      "snapshot": null
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/DegenerateInspection-v001/00-component-selections.npz",
+      "mode": "reference",
+      "bytes": 5812171,
+      "sha256": "0d7599c8064cb81a6e211a23731435e08939b7fb146ce2d4bed810273909a2b2",
+      "snapshot": null
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HygieneSemanticSelection-v001/selections.npz",
+      "mode": "reference",
+      "bytes": 5506471,
+      "sha256": "0b6a19f76a2cba73a42e293c29365360b53ba93be101cf8f4ca556e7a5989cc0",
+      "snapshot": null
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemInventory-v001/inventory.json",
+      "mode": "copy",
+      "bytes": 22030,
+      "sha256": "4cda0c117ca27be89c9a687a21514e6b20685174ebdbc226833964b04c83228f",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemInventory-v001/inventory.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemInventory-v001/item-selections.npz",
+      "mode": "reference",
+      "bytes": 6410,
+      "sha256": "fcd4db77cdd50ccae21e0f134e845c8bf64c3243285bcc565788f6fda33d665d",
+      "snapshot": null
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemSemanticReview-v002/review.json",
+      "mode": "copy",
+      "bytes": 23189,
+      "sha256": "1118fc488ad9599523ed295adffb353b8be2a78f4fe7fb849e901e4dd771ccd5",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemSemanticReview-v002/review.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemSupports-v001/profile.json",
+      "mode": "copy",
+      "bytes": 1914,
+      "sha256": "e97217da11a902f1c56fd1bb927f46e85a1f09029651482428022ceabf07cdf6",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemSupports-v001/profile.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemSupports-v001/support-report.json",
+      "mode": "copy",
+      "bytes": 18195,
+      "sha256": "10b6b92096746fe38d7a5d262fa86b105a04c523006ef7f510341094b87387f7",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemSupports-v001/support-report.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemSupports-v001/tool-source.py",
+      "mode": "copy",
+      "bytes": 4141,
+      "sha256": "9dd5f67e127b9a691f49e4398b6ead9e39ba1606b23b4445571bc22a4a1e1074",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemSupports-v001/tool-source.py"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryDomains-v001/primary-domains.npz",
+      "mode": "reference",
+      "bytes": 915748,
+      "sha256": "38002ef04f9ab82df4456021b3772e422328e2ecebd38bd068a344dd5e27bdb5",
+      "snapshot": null
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryOnlyCombinedFull-v001/Voidreign-ActualSurfacePilot.blend",
+      "mode": "reference",
+      "bytes": 122084310,
+      "sha256": "c507e31813fea5ea61e30f7cbf8bae37609135b549238b64ad1e61a1e42111ee",
+      "snapshot": null
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryOnlyCombinedFullRetention-v001/validation.json",
+      "mode": "copy",
+      "bytes": 17042,
+      "sha256": "fcd05cbae371af89b71bd0b9ab427bf74a48b3667abc0c454fee46e3947ea840",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryOnlyCombinedFullRetention-v001/validation.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkReproductionKit-v001/manifest.json",
+      "mode": "copy",
+      "bytes": 91581,
+      "sha256": "91258d8058b173fa37a5bd1d4eecb88cffc3070c97a330f3c6432b55ebfb7dec",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkReproductionKit-v001/manifest.json"
+    },
+    {
+      "path": "docs/art-templates/model-jobs/voidreign-quality-20261018.json",
+      "mode": "copy",
+      "bytes": 32380,
+      "sha256": "a995f04316008505c984e631a60fd6309e5da5f718d1bb6a4c22e4135a011abe",
+      "snapshot": "snapshot/docs/art-templates/model-jobs/voidreign-quality-20261018.json"
+    },
+    {
+      "path": "docs/art-templates/model-profiles/voidreign-articulated-skin-review-20261019.json",
+      "mode": "copy",
+      "bytes": 5033,
+      "sha256": "efd90a4e22c1421498f7ca07650e4707489d5f8050e8035e552b9030d989982d",
+      "snapshot": "snapshot/docs/art-templates/model-profiles/voidreign-articulated-skin-review-20261019.json"
+    },
+    {
+      "path": "docs/art-templates/model-profiles/voidreign-loose-supports-20261019.json",
+      "mode": "copy",
+      "bytes": 1914,
+      "sha256": "e97217da11a902f1c56fd1bb927f46e85a1f09029651482428022ceabf07cdf6",
+      "snapshot": "snapshot/docs/art-templates/model-profiles/voidreign-loose-supports-20261019.json"
+    },
+    {
+      "path": "docs/art-templates/mount-primary-motion.md",
+      "mode": "copy",
+      "bytes": 13480,
+      "sha256": "5c313096a3df8367f0846762d85f9fa04c74f9c82858ce24515f8e00428695ba",
+      "snapshot": "snapshot/docs/art-templates/mount-primary-motion.md"
+    },
+    {
+      "path": "docs/dependency-map.md",
+      "mode": "copy",
+      "bytes": 89511,
+      "sha256": "c61c4d2b96826d25dabd2c033a7e3f4cfe4843f3d7d4a659e21c7850c3aa3314",
+      "snapshot": "snapshot/docs/dependency-map.md"
+    },
+    {
+      "path": "tools/Freeze-AssetEvidence.py",
+      "mode": "copy",
+      "bytes": 3636,
+      "sha256": "022a766de42da24a27460313b041d386c86c95c5e30573e5f661dc523872dd88",
+      "snapshot": "snapshot/tools/Freeze-AssetEvidence.py"
+    },
+    {
+      "path": "tools/Inspect-DetachedAssetSupports.py",
+      "mode": "copy",
+      "bytes": 4141,
+      "sha256": "9dd5f67e127b9a691f49e4398b6ead9e39ba1606b23b4445571bc22a4a1e1074",
+      "snapshot": "snapshot/tools/Inspect-DetachedAssetSupports.py"
+    },
+    {
+      "path": "tools/Render-MountAnatomyAtlas.py",
+      "mode": "copy",
+      "bytes": 10026,
+      "sha256": "a4d1e4b5f319bd55ce220ef386d5ccdd08f13349911342b3ca6e11c4aff2572f",
+      "snapshot": "snapshot/tools/Render-MountAnatomyAtlas.py"
+    }
+  ],
+  "profile_sha256": "e3a4738660d52f879d7f3add3e1751411482029ba2d5feb61129f232055e2222",
+  "tool_sha256": "022a766de42da24a27460313b041d386c86c95c5e30573e5f661dc523872dd88"
+}

@@ -1,0 +1,18 @@
+{
+  "status": "passed",
+  "fresh_process": true,
+  "collections": [
+    "A | Pixal3D-original-textures",
+    "B | Pixal3D-HunyuanPaint"
+  ],
+  "triangles": [
+    296859,
+    296859
+  ],
+  "bidirectional_nearest_vertex_max_error_m": [
+    5.462856051963172e-07,
+    5.462856051963172e-07
+  ],
+  "images_packed": true,
+  "visual_acceptance": false
+}

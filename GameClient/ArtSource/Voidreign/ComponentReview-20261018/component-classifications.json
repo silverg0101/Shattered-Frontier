@@ -1,0 +1,30 @@
+{
+  "remaining_unclassified": 228,
+  "connectivity": "exact-coincident analysis, not asset welding",
+  "components": [
+    {
+      "classification": "unexpected-detached",
+      "location": "below head",
+      "disposition": "removed-in-cleanup-candidate",
+      "triangles": 74,
+      "reason": "User-marked region; isolated in rest geometry and visually unsupported. Original retained; no blanket deletion.",
+      "sampled_main_surface_gap_m": 0.06285105645656586,
+      "evidence": "Component-Review.png",
+      "revision": "Cleanup-v001",
+      "component_id": "cb6d4a55ea8d:C0080"
+    },
+    {
+      "classification": "unexpected-detached",
+      "location": "below body",
+      "disposition": "removed-in-cleanup-candidate",
+      "triangles": 92,
+      "reason": "User-marked region; isolated in rest geometry and visually unsupported. Original retained; no blanket deletion.",
+      "sampled_main_surface_gap_m": 0.04684990644454956,
+      "evidence": "Component-Review.png",
+      "revision": "Cleanup-v001",
+      "component_id": "cb6d4a55ea8d:C0065"
+    }
+  ],
+  "attachment_acceptance": "Not established for other components or deformed surfaces.",
+  "source_mesh_hash": "cb6d4a55ea8d852da9bf1305e2fff49f1137575c5de71681afe73945586555f5"
+}

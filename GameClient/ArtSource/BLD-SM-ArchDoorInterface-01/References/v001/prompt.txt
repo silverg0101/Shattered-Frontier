@@ -1,0 +1,5 @@
+Concept sheet prompt:
+Stone masonry arched door-interface concept sheet for a modular building game, no people or text. Empty semicircular opening with pale limestone reveal and flat frame-contact surfaces at spring points; no door leaf, grille, hardware or infill. Preserve exact empty arch silhouette; include front elevation, side reveal section, and one isolated interface member. Neutral gray studio backdrop, proposal only, no dimensions.
+
+Clean view prompt:
+One isolated pale limestone arched-door frame interface member: straight vertical stone jamb for lower portion of a semicircular opening, with shallow flat door-stop rebate on aperture-facing side and plain wall-contact side. No curve ring, other jamb, full opening, door leaf, or hardware. Neutral gray background. Do not modify aperture geometry; no dimensions or behavior implied.

@@ -1,0 +1,345 @@
+{
+  "schema_version": 1,
+  "blender": "5.1.1",
+  "assets": {
+    "RESOURCE-GreenlandsOakNode-01": {
+      "source": "GameClient/ArtSource/RESOURCE-GreenlandsOakNode-01/Model-v001/RESOURCE-GreenlandsOakNode-01.blend",
+      "source_sha256": "8c87e8090f0a3b3ff2c7589aeeed5da9ae52ef9cc044101826e3542003bca05b",
+      "materials": [
+        {
+          "material": "Material_0",
+          "base_color_inputs": [
+            {
+              "image": "Image_0",
+              "colorspace": "sRGB",
+              "size": [
+                2048,
+                2048
+              ],
+              "channel": "Color"
+            }
+          ],
+          "roughness_inputs": [
+            {
+              "image": "Image_1",
+              "colorspace": "Non-Color",
+              "size": [
+                2048,
+                2048
+              ],
+              "channel": "Green"
+            }
+          ],
+          "metallic_inputs": [
+            {
+              "image": "Image_1",
+              "colorspace": "Non-Color",
+              "size": [
+                2048,
+                2048
+              ],
+              "channel": "Blue"
+            }
+          ],
+          "images": [
+            {
+              "image": "Image_0",
+              "size": [
+                2048,
+                2048
+              ],
+              "colorspace": "sRGB",
+              "channel_stats": [
+                {
+                  "channel": "R",
+                  "min": 0.0,
+                  "max": 0.917647123336792,
+                  "mean": 0.4885986826986439,
+                  "nonzero": 4194303
+                },
+                {
+                  "channel": "G",
+                  "min": 0.0,
+                  "max": 0.9098039865493774,
+                  "mean": 0.5740677583694378,
+                  "nonzero": 4194303
+                },
+                {
+                  "channel": "B",
+                  "min": 0.0,
+                  "max": 0.9294118285179138,
+                  "mean": 0.3709959763623729,
+                  "nonzero": 4194303
+                }
+              ]
+            },
+            {
+              "image": "Image_1",
+              "size": [
+                2048,
+                2048
+              ],
+              "colorspace": "Non-Color",
+              "channel_stats": [
+                {
+                  "channel": "R",
+                  "min": 0.0,
+                  "max": 0.0,
+                  "mean": 0.0,
+                  "nonzero": 0
+                },
+                {
+                  "channel": "G",
+                  "min": 0.0,
+                  "max": 0.572549045085907,
+                  "mean": 0.5492957196818935,
+                  "nonzero": 4194303
+                },
+                {
+                  "channel": "B",
+                  "min": 0.0,
+                  "max": 0.0,
+                  "mean": 0.0,
+                  "nonzero": 0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "material": "Studio grey",
+          "base_color_inputs": [],
+          "roughness_inputs": [],
+          "metallic_inputs": [],
+          "images": []
+        }
+      ]
+    },
+    "RESOURCE-GreenlandsIronVein-01": {
+      "source": "GameClient/ArtSource/RESOURCE-GreenlandsIronVein-01/Model-v001/RESOURCE-GreenlandsIronVein-01.blend",
+      "source_sha256": "7ebb7138a8ad8f1fb2c191db7ccf7aa4a53ffcce5a9c7df22db2ea945b6b9747",
+      "materials": [
+        {
+          "material": "Material_0",
+          "base_color_inputs": [
+            {
+              "image": "Image_0",
+              "colorspace": "sRGB",
+              "size": [
+                2048,
+                2048
+              ],
+              "channel": "Color"
+            }
+          ],
+          "roughness_inputs": [
+            {
+              "image": "Image_1",
+              "colorspace": "Non-Color",
+              "size": [
+                2048,
+                2048
+              ],
+              "channel": "Green"
+            }
+          ],
+          "metallic_inputs": [
+            {
+              "image": "Image_1",
+              "colorspace": "Non-Color",
+              "size": [
+                2048,
+                2048
+              ],
+              "channel": "Blue"
+            }
+          ],
+          "images": [
+            {
+              "image": "Image_1",
+              "size": [
+                2048,
+                2048
+              ],
+              "colorspace": "Non-Color",
+              "channel_stats": [
+                {
+                  "channel": "R",
+                  "min": 0.0,
+                  "max": 0.0,
+                  "mean": 0.0,
+                  "nonzero": 0
+                },
+                {
+                  "channel": "G",
+                  "min": 0.0,
+                  "max": 1.0,
+                  "mean": 0.9188214811129016,
+                  "nonzero": 4194060
+                },
+                {
+                  "channel": "B",
+                  "min": 0.0,
+                  "max": 0.0,
+                  "mean": 0.0,
+                  "nonzero": 0
+                }
+              ]
+            },
+            {
+              "image": "Image_0",
+              "size": [
+                2048,
+                2048
+              ],
+              "colorspace": "sRGB",
+              "channel_stats": [
+                {
+                  "channel": "R",
+                  "min": 0.0,
+                  "max": 0.9725490808486938,
+                  "mean": 0.4353422446941142,
+                  "nonzero": 4194061
+                },
+                {
+                  "channel": "G",
+                  "min": 0.0,
+                  "max": 0.9843137860298157,
+                  "mean": 0.38638151488098016,
+                  "nonzero": 4194061
+                },
+                {
+                  "channel": "B",
+                  "min": 0.0,
+                  "max": 0.9843137860298157,
+                  "mean": 0.345483862282157,
+                  "nonzero": 4194061
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "material": "Studio grey",
+          "base_color_inputs": [],
+          "roughness_inputs": [],
+          "metallic_inputs": [],
+          "images": []
+        }
+      ]
+    },
+    "PROP-GreenlandsWayfindingMarker-01": {
+      "source": "GameClient/ArtSource/PROP-GreenlandsWayfindingMarker-01/Model-v001/PROP-GreenlandsWayfindingMarker-01.blend",
+      "source_sha256": "03c9a992b2bc957cb916d078a7fa1f0ffda068ad0cb00ca0f6cd0db944648f56",
+      "materials": [
+        {
+          "material": "Material_0",
+          "base_color_inputs": [
+            {
+              "image": "Image_0",
+              "colorspace": "sRGB",
+              "size": [
+                2048,
+                2048
+              ],
+              "channel": "Color"
+            }
+          ],
+          "roughness_inputs": [
+            {
+              "image": "Image_1",
+              "colorspace": "Non-Color",
+              "size": [
+                2048,
+                2048
+              ],
+              "channel": "Green"
+            }
+          ],
+          "metallic_inputs": [
+            {
+              "image": "Image_1",
+              "colorspace": "Non-Color",
+              "size": [
+                2048,
+                2048
+              ],
+              "channel": "Blue"
+            }
+          ],
+          "images": [
+            {
+              "image": "Image_0",
+              "size": [
+                2048,
+                2048
+              ],
+              "colorspace": "sRGB",
+              "channel_stats": [
+                {
+                  "channel": "R",
+                  "min": 0.003921568859368563,
+                  "max": 0.6980392336845398,
+                  "mean": 0.33819281361553066,
+                  "nonzero": 4194304
+                },
+                {
+                  "channel": "G",
+                  "min": 0.0,
+                  "max": 0.6313725709915161,
+                  "mean": 0.29801626898274913,
+                  "nonzero": 4194234
+                },
+                {
+                  "channel": "B",
+                  "min": 0.0,
+                  "max": 0.5490196347236633,
+                  "mean": 0.2619340969347276,
+                  "nonzero": 4193587
+                }
+              ]
+            },
+            {
+              "image": "Image_1",
+              "size": [
+                2048,
+                2048
+              ],
+              "colorspace": "Non-Color",
+              "channel_stats": [
+                {
+                  "channel": "R",
+                  "min": 0.0,
+                  "max": 0.0,
+                  "mean": 0.0,
+                  "nonzero": 0
+                },
+                {
+                  "channel": "G",
+                  "min": 0.8862745761871338,
+                  "max": 0.9294118285179138,
+                  "mean": 0.8929380487696363,
+                  "nonzero": 4194304
+                },
+                {
+                  "channel": "B",
+                  "min": 0.0,
+                  "max": 0.0,
+                  "mean": 0.0,
+                  "nonzero": 0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "material": "Studio grey",
+          "base_color_inputs": [],
+          "roughness_inputs": [],
+          "metallic_inputs": [],
+          "images": []
+        }
+      ]
+    }
+  }
+}

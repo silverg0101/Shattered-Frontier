@@ -1,0 +1,203 @@
+{
+  "schema_version": 1,
+  "status": "material-channel-audit-unrated",
+  "cpu_only": true,
+  "input_sha256": {
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkPilot-v003/Mount-WalkPilot.blend": "f59dc38bff697b6c2a2c84511413d2e292d9fdbb278acc69cd8df6d26a5bd123"
+  },
+  "profile_sha256": "a805fef3a72d3d5d390e86976a5f1495178111014a145c5c53d02e7596193b5c",
+  "tool_sha256": "7536199e21cbb14c255858e752f753dbaaa9c45a115a9aa5df97cd2a46d394b7",
+  "object": "geometry_0",
+  "material_slots": [
+    {
+      "slot": 0,
+      "name": "Material_0",
+      "use_nodes": true,
+      "shaders": [
+        {
+          "name": "Principled BSDF",
+          "reaches_active_surface": true,
+          "channels": {
+            "Base Color": {
+              "linked": true,
+              "default": [
+                0.800000011920929,
+                0.800000011920929,
+                0.800000011920929,
+                1.0
+              ],
+              "upstream_types": [
+                "TEX_IMAGE"
+              ],
+              "connections": [
+                {
+                  "from_node": "Image Texture.007",
+                  "from_socket": "Color",
+                  "to_node": "Principled BSDF",
+                  "to_socket": "Base Color"
+                }
+              ],
+              "images": [
+                {
+                  "name": "Voidreign-Opposite-Detail-BaseColor-4K",
+                  "size": [
+                    4096,
+                    4096
+                  ],
+                  "colorspace": "sRGB",
+                  "source": "FILE",
+                  "packed": true,
+                  "filepath": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\OppositeDetail-v001\\textures\\BaseColor-4K.png",
+                  "external_exists": true,
+                  "content_sha256": "1023bcd5121c571e5bf94781a4304feb8717baeee1897ebf75bd7a67d93ebde1"
+                }
+              ],
+              "group_trace_incomplete": false
+            },
+            "Metallic": {
+              "linked": true,
+              "default": 0.0,
+              "upstream_types": [
+                "SEPARATE_COLOR",
+                "TEX_IMAGE"
+              ],
+              "connections": [
+                {
+                  "from_node": "Separate Color",
+                  "from_socket": "Blue",
+                  "to_node": "Principled BSDF",
+                  "to_socket": "Metallic"
+                },
+                {
+                  "from_node": "Image Texture.001",
+                  "from_socket": "Color",
+                  "to_node": "Separate Color",
+                  "to_socket": "Color"
+                }
+              ],
+              "images": [
+                {
+                  "name": "Image_1",
+                  "size": [
+                    4096,
+                    4096
+                  ],
+                  "colorspace": "Non-Color",
+                  "source": "FILE",
+                  "packed": true,
+                  "filepath": "",
+                  "external_exists": false,
+                  "content_sha256": "745a838cb21b48abe76623a084696f00f16ef320a2ecb3f6ac86417aa5aaa407"
+                }
+              ],
+              "group_trace_incomplete": false
+            },
+            "Roughness": {
+              "linked": true,
+              "default": 0.5,
+              "upstream_types": [
+                "SEPARATE_COLOR",
+                "TEX_IMAGE"
+              ],
+              "connections": [
+                {
+                  "from_node": "Separate Color",
+                  "from_socket": "Green",
+                  "to_node": "Principled BSDF",
+                  "to_socket": "Roughness"
+                },
+                {
+                  "from_node": "Image Texture.001",
+                  "from_socket": "Color",
+                  "to_node": "Separate Color",
+                  "to_socket": "Color"
+                }
+              ],
+              "images": [
+                {
+                  "name": "Image_1",
+                  "size": [
+                    4096,
+                    4096
+                  ],
+                  "colorspace": "Non-Color",
+                  "source": "FILE",
+                  "packed": true,
+                  "filepath": "",
+                  "external_exists": false,
+                  "content_sha256": "745a838cb21b48abe76623a084696f00f16ef320a2ecb3f6ac86417aa5aaa407"
+                }
+              ],
+              "group_trace_incomplete": false
+            },
+            "Normal": {
+              "linked": false,
+              "default": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "upstream_types": [],
+              "connections": [],
+              "images": [],
+              "group_trace_incomplete": false
+            },
+            "Coat Weight": {
+              "linked": false,
+              "default": 0.0,
+              "upstream_types": [],
+              "connections": [],
+              "images": [],
+              "group_trace_incomplete": false
+            },
+            "Coat Roughness": {
+              "linked": false,
+              "default": 0.029999999329447746,
+              "upstream_types": [],
+              "connections": [],
+              "images": [],
+              "group_trace_incomplete": false
+            },
+            "Emission Color": {
+              "linked": false,
+              "default": [
+                1.0,
+                1.0,
+                1.0,
+                1.0
+              ],
+              "upstream_types": [],
+              "connections": [],
+              "images": [],
+              "group_trace_incomplete": false
+            },
+            "Emission Strength": {
+              "linked": false,
+              "default": 0.0,
+              "upstream_types": [],
+              "connections": [],
+              "images": [],
+              "group_trace_incomplete": false
+            },
+            "Alpha": {
+              "linked": false,
+              "default": 1.0,
+              "upstream_types": [],
+              "connections": [],
+              "images": [],
+              "group_trace_incomplete": false
+            }
+          }
+        }
+      ],
+      "active_outputs": [
+        "Material Output"
+      ]
+    }
+  ],
+  "limitations": [
+    "Node connectivity and image dimensions do not prove appearance, physical accuracy or detail quality.",
+    "Groups are marked incomplete rather than silently treated as traced.",
+    "No UV/semantic coverage, texture repaint, normal synthesis, material or source changes."
+  ]
+}

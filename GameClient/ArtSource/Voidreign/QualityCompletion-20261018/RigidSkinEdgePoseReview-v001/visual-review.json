@@ -1,0 +1,18 @@
+{
+  "status": "reviewed-boundary-distortion-confirmed-not-anatomical-approval",
+  "reviewer": "authoring-agent",
+  "views_reviewed": 9,
+  "context_views": "RigidSkinPoseReview-v002, nine images reviewed",
+  "findings": [
+    "Two-ring canonical topology isolates the actual measured faces and exposes the red measured edges. Whole-foot context otherwise occludes some edges.",
+    "Both new regression cases cross core/collar boundaries; rest edges14.748mm and21.221mm run across coarse triangles. Keeping one endpoint rigid while adjacent collar moves changes those triangles appreciably.",
+    "Worst remaining harmonic edge76865/76866 crosses collar/exterior; rest40.651mm, proposed change15.650mm, independently confirming the outer boundary remains a problem.",
+    "Isolation reveals sparse joint geometry and overlapping shells in broader context. This supports reviewing physical ankle bands/topology, not assuming a numerical smoothing solve supplies joint anatomy."
+  ],
+  "limitations": [
+    "Majority face colors do not classify the whole face as an approved physical part.",
+    "Camera follows the local patch and its normal per pose; these are diagnostic views, not fixed-camera silhouette comparisons.",
+    "No new skin/gait or topology repair authored. Rig and walk exhausted budgets unchanged."
+  ],
+  "next": "Review a source-indexed anatomical ankle transition and joint topology design, including whether retopology is required; no width sweep or new automatic walk."
+}
