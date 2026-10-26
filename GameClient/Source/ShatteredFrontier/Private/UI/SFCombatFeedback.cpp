@@ -7,6 +7,7 @@
 #include "GameFramework/Character.h"
 #include "GameFramework/PlayerController.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "Widgets/SWidget.h"
 
 void USFCombatDamageWidget::ApplyKitStyle()
 {
@@ -45,8 +46,10 @@ void USFCombatDamageWidget::Present(int32 Damage, bool bCritical)
 
 FVector2D USFCombatDamageWidget::MeasureVisualSize()
 {
-    TakeWidget();
-    ForceLayoutPrepass();
+    // UMG caches Slate widgets weakly. Retain the tree during measurement even before
+    // a viewport owns it, so offscreen widgets and automation measure real glyph bounds.
+    const TSharedRef<SWidget> MeasuredWidget = TakeWidget();
+    MeasuredWidget->SlatePrepass();
     FVector2D TextShadowPadding = FVector2D::ZeroVector;
     for (const UTextBlock* Text : {DamageText.Get(), CriticalNumber.Get(), CriticalText.Get()})
     {
@@ -56,7 +59,7 @@ FVector2D USFCombatDamageWidget::MeasureVisualSize()
         TextShadowPadding.X = FMath::Max(TextShadowPadding.X, FMath::Abs(Shadow.X) + Outline);
         TextShadowPadding.Y = FMath::Max(TextShadowPadding.Y, FMath::Abs(Shadow.Y) + Outline);
     }
-    return GetDesiredSize() + 2 * TextShadowPadding;
+    return MeasuredWidget->GetDesiredSize() + 2 * TextShadowPadding;
 }
 
 float FSFCombatDamageLayout::PopScale(float Age, bool bCritical)

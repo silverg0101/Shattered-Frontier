@@ -54,6 +54,7 @@ bool FSFCombatFeedbackBurstTest::RunTest(const FString& Parameters)
         Widget->ApplyKitStyle(); // Same production initialization; this editor-only widget has no player context.
         Widget->Present(Hit.Damage, Hit.bCritical);
         Hit.Size = Widget->MeasureVisualSize();
+        TestTrue(TEXT("Unattached real widget has measurable glyph bounds"), Hit.Size.X > 2 && Hit.Size.Y > 2);
         TestNotNull(TEXT("Actual project numeral font loaded"), Widget->DamageText->GetFont().FontObject.Get());
         TestNotEqual(TEXT("Numeral uses the project font rather than UMG default"), Widget->DamageText->GetFont().FontObject.Get(), GetDefault<UTextBlock>()->GetFont().FontObject.Get());
         TestTrue(TEXT("Measured widget includes text shadow bounds"), Hit.Size.X > Widget->GetDesiredSize().X && Hit.Size.Y > Widget->GetDesiredSize().Y);
