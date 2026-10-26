@@ -4,7 +4,7 @@
 - **Owner of next step:** agent
 - **Worktree:** C:\Projects\SF-lane-b
 - **Branch:** codex/runtime-existing-store-update
-- **State:** prepared; no live update, image build or deletion authorized yet
+- **State:** dbe514e7 images built and profiles sealed; live apply awaits owner approval
 
 ## Blocker and bounded exit
 
@@ -32,6 +32,23 @@ Candidate completed ff59 build-input cache only: `8muqtnxlm3y60x3yxp3f05bcd` (HT
 
 Ignored evidence: `Artifacts/runtime-update-cache.jsonl`, `Artifacts/runtime-update-unused-sf-images.json`. Frozen `Artifacts/PackagedServer/Matching-ff59b35d-20261025-175956` remains unchanged; its source branch `codex/game-package-ff59b35d@a13248f5` is preserved.
 
+## dbe514e7 images built and profiles sealed (2026-10-26, owner-approved; not applied)
+
+Docker free before build 64,095,039,488 (gate 13,969,278,976); 44,109,299,712 after. Services release built from a tracked snapshot at `dbe514e7` with `Build-PlayableServiceRelease.ps1` (107 files, `SERVICE_RELEASE_READY`), staged at `/srv/steam/steamhome/sf-release-candidates/dbe514e7b8e37a53a9a7ca41e0727c5ed14848f9/services`. Both images built on the steam account from binary-stdin tar streams with `--owner=0 --group=0 --numeric-owner` (matching ff59's root-owned layers), `SF_REVISION=<full revision>`:
+
+| Image | ID | Verification |
+| --- | --- | --- |
+| `shattered-frontier-game:dbe514e7…` | `sha256:8dc672a2774804eb4b047a33db8ff69137accd7ff7a2a5f88d2726f10f8c0470` | revision/engine `396c9f05…`/playable-runtime=1 labels; all 69 LinuxServer manifest hashes pass inside the image as UID 998; ldd 0 missing; entrypoints/executable root 0755 |
+| `shattered-frontier-services:dbe514e7…` | `sha256:c18de9829ab82f83f859d4f6eceaf852df993e6ea9235578e5299164ebe79391` | revision label; 107-line `SHA256SUMS` passes in build and in a run |
+
+A first build pair streamed with Windows/steam UIDs (`929ce987…`, `9d663fa3…`) is superseded and now untagged; not deleted.
+
+Sealed (0444 files, 0555 dirs, steam-owned) in `…/dbe514e7b8e37a53a9a7ca41e0727c5ed14848f9/sealed/`: `profile.final.json` `f0ab8f31…` (new), `rollback.profile.json` `cd31eb73…` (byte-identical to the installed `/srv/shattered-frontier/releases/playable-ff59…/profile.final.json`), `Runtime/playable-runtime.py` `d072d65f…` (same as 7b's), `release-identity.json`, `SHA256SUMS`. Both profiles pass the tool's `validate()`; only revision/game/services differ. All four referenced images exist with expected labels. The root-owned install into `/srv/shattered-frontier/releases/playable-dbe514e7…/` needs the sudo operator at apply time.
+
+Contract note: `dbe514e7` includes `9711c2c7` (gathering skill locks in progression JSONB), so the 7b same-store ff59 rollback limit applies: run the read-only rollback guard before any ff59 restart after the new profile writes. The only schema change (`identity.character_create_requests`) is outside the five playable schemas.
+
+Live check after: game/gameplay/ledger/database still running `3c6bf45e…`/`8d10c43f…`/`8d10c43f…`/postgres, started 2026-10-25 23:06 UTC, 0 restarts; game and database healthy.
+
 ## Next
 
-Once the owner approves the image build, build the dbe514e7 image and seal both new/rollback profiles. Only after owner approval apply the documented existing-store update; verify identity/health and resume the mandatory native personal-corpse → Alpha bag → ground drop → rendered Beta/native-F pickup → SQL/privacy → controlled restart acceptance. Current ff59 remains live; do not restart or modify its data during preparation.
+Owner approval to apply. Then the sudo operator installs `sealed/` root-owned, reverifies hashes, and runs the existing-store `verify`/`check`/`stop`/`start`/`verify` sequence; resume native corpse → bag → drop → Beta pickup → SQL/privacy → restart acceptance.
