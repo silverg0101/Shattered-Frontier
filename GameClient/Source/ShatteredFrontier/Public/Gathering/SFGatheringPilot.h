@@ -18,6 +18,7 @@ class UStaticMeshComponent;
 class UTextRenderComponent;
 class UInstancedStaticMeshComponent;
 class USFGatheringPilotComponent;
+class USFSpeciesFelling;
 class FSFInventoryLedgerClient;
 class USFBackpackComponent;
 struct FSFStationRecipe;
@@ -185,6 +186,12 @@ public:
     // Dev capture only (no effect in shipping/test builds): force the stage shown.
     UFUNCTION(BlueprintCallable, Category="Gathering Presentation")
     void DevPreviewGrowthStage(FName Stage);
+    // Dev capture only: show the felling art for this many hits taken (Capacity or more = the fall). Local, cosmetic.
+    UFUNCTION(BlueprintCallable, Category="Gathering Presentation")
+    void DevPreviewFelling(int32 HitsTaken);
+    // Dev capture only: newest scar point, the way the tree will fall, and the mesh height (world cm); zeros without felling art.
+    UFUNCTION(BlueprintCallable, Category="Gathering Presentation")
+    void DevFellingInfo(FVector& NotchPoint,FVector& FallDirection,float& HeightCm) const;
     UFUNCTION(BlueprintPure, Category="Gathering Presentation")
     FSFGatheringPilotPresentation GetPresentationState() const;
     // Apply current appearance, including late join. May repeat; do not play reward effects here.
@@ -241,6 +248,8 @@ private:
     // Client view of the tree or rock this node replaced: the map dressing's own mesh, never the shared harvest art.
     void ShowDressingMesh(const UInstancedStaticMeshComponent* From,const FTransform& At);
     UPROPERTY() TObjectPtr<UStaticMeshComponent> SpeciesView;
+    // Cut scars, the fall or crumble and the stump for whatever mesh SpeciesView shows (client only).
+    UPROPERTY() TObjectPtr<USFSpeciesFelling> Felling;
     FTransform SpeciesBase;
     TSharedPtr<FSFGameplayServicesClient> ServiceClient;
     uint64 ServiceSnapshotSerial = 0; // Invalidates older GetNode replies after a newer read or harvest receipt.

@@ -53,6 +53,8 @@ def _stable_fraction(text):
 
 
 _GLASS = {}
+_FRONT = {}   # mesh name -> Blender-space socket per entry
+_OUTWARD = {}   # mesh name -> mesh-space unit outward direction per glass_sockets() entry (buildings only)
 
 
 def _lantern(slot):   # lantern and street-lamp glass only: a window's light is its emissive (WP6i review r4 fix 5)
@@ -100,6 +102,8 @@ def glass_sockets(mesh, u, sockets=None):
             if mid in glow:
                 boxes += pieces(piece)
     out = []
+    outward = []
+    front = []
     if street:
         merged = []
         for b in boxes:   # union boxes whose gap is under 60 cm into one chamber
@@ -133,22 +137,42 @@ def glass_sockets(mesh, u, sockets=None):
             # outward slope glowed; outward of the pane (r10 try) the pane shadowed the wall; 1.75 cm under the bottom plate (r10)
             # the plate glowed and shadowed the wall above it. Below and just outside the plate every iron face is >= 17 cm away.
             a = max(range(2), key=lambda i: abs(c[i] - centre[i]) / half[i])   # the horizontal axis the lantern overhangs on
-            c[a] += PLATE_CLEAR if c[a] >= centre[a] else -PLATE_CLEAR
+            sign = 1. if c[a] >= centre[a] else -1.
+            c[a] += sign * PLATE_CLEAR
             c[2] -= PLATE_DROP
             out.append(c)
+            outward.append((sign if a == 0 else 0., sign if a == 1 else 0., 0.))
+            front.append(p)   # Blender-space socket, for door_index()
     pool.free_all_meshes()
+    _OUTWARD[name] = outward
+    _FRONT[name] = front
     _GLASS[name] = out
     return out
 
 
+def door_index(points):
+    """Index of the front-door lantern among a building's sockets (Blender metres, front = -Y): the one on the front face
+    (lowest Y, within 0.4 m of it) nearest the building's centre line, where the door sits. None for no sockets."""
+    if not points:
+        return None
+    front_y = min(p[1] for p in points)
+    return min((i for i, p in enumerate(points) if p[1] <= front_y + .4), key=lambda i: abs(points[i][0]))
+
+
 def _mesh_sockets(actor, sockets, u):
+    """[(world position, world outward direction or None, is the front-door lantern)] for every socket of the actor."""
     found = []
     for component in actor.get_components_by_class(u.StaticMeshComponent):
         mesh = component.get_editor_property('static_mesh')
         if mesh and mesh.get_name() in sockets:
             # Component local transform covers per-building mesh offsets; static mesh actors are the common case.
-            for xyz in glass_sockets(mesh, u, sockets):
-                found.append(u.MathLibrary.transform_location(component.get_world_transform(), u.Vector(*xyz)))
+            name = mesh.get_name()
+            for i, xyz in enumerate(glass_sockets(mesh, u, sockets)):
+                tf = component.get_world_transform()
+                out = _OUTWARD.get(name)
+                direction = u.MathLibrary.transform_direction(tf, u.Vector(*out[i])) if out else None
+                door = bool(out) and i == door_index(_FRONT[name])
+                found.append((u.MathLibrary.transform_location(tf, u.Vector(*xyz)), direction, door))
     return found
 
 
@@ -198,6 +222,31 @@ def _point_light(subsystem, position, cfg, material, label, owner, u):
     return actor
 
 
+def _door_light(subsystem, position, direction, cfg, label, owner, u):
+    """The front-door lantern lights its house front. A shadowless spot aimed out of the wall (its cone stays on the street
+    side, so nothing leaks into the rooms behind the wall) and tilted down onto the step and the cobbles. Steady, ungated:
+    the owner wants shaded fronts lit at any hour (2026-10-26)."""
+    aim = u.Vector(direction.x, direction.y, 0)
+    aim = aim / aim.length() if aim.length() else u.Vector(0, 1, 0)
+    rotation = u.MathLibrary.make_rot_from_x(u.Vector(aim.x, aim.y, -math.tan(math.radians(cfg['door_light_tilt_deg']))))
+    actor = subsystem.spawn_actor_from_class(u.SpotLight, position, rotation)
+    actor.set_actor_label(label)
+    actor.set_folder_path('VFX/StreetLamp')
+    light = actor.get_component_by_class(u.SpotLightComponent)
+    light.set_editor_property('mobility', u.ComponentMobility.MOVABLE)
+    light.set_editor_property('intensity_units', u.LightUnits.CANDELAS)
+    light.set_editor_property('intensity', cfg['door_light_intensity'])
+    light.set_editor_property('attenuation_radius', cfg['door_light_radius'] * 100)
+    light.set_editor_property('source_radius', 6.)
+    light.set_editor_property('inner_cone_angle', cfg['door_light_inner_cone_deg'])
+    light.set_editor_property('outer_cone_angle', cfg['door_light_outer_cone_deg'])
+    light.set_editor_property('light_color', u.Color(r=255, g=150, b=65, a=255))
+    light.set_editor_property('cast_shadows', False)
+    light.set_editor_property('max_draw_distance', cfg['door_light_draw_m'] * 100)
+    actor.attach_to_actor(owner, '', u.AttachmentRule.KEEP_WORLD, u.AttachmentRule.KEEP_WORLD, u.AttachmentRule.KEEP_WORLD, False)
+    return actor
+
+
 def apply(world=None, save=False):
     """Dress all recognized lamp-glass sockets in the open Silverbrook level.
 
@@ -218,7 +267,7 @@ def apply(world=None, save=False):
             continue
         positions = _mesh_sockets(actor, sockets, u)
         if positions:
-            targets.extend((label, i, p, actor) for i, p in enumerate(positions))
+            targets.extend((label, i, p[0], actor, p[1], p[2]) for i, p in enumerate(positions))
         elif label.startswith('StreetLamp_') or 'Lantern' in label:   # building meshes may have no lantern glass at all
             unmatched.append(label)
     assert targets, 'No lamp glass found: run the Silverbrook builder/import first'
@@ -264,7 +313,7 @@ def apply(world=None, save=False):
         if isinstance(mi, u.MaterialInstanceConstant) and mi.get_name() == 'MI_SB_LanternGlow':   # the kit lantern pane (gate_windows' ALWAYS_LIT list holds vendor signs, no lanterns)
             mel.set_material_instance_vector_parameter_value(mi, 'Emission', u.LinearColor(*cfg['flame_colour'], 1))
             mel.set_material_instance_scalar_parameter_value(mi, 'EmissionStrength', cfg['glass_emission_strength'])
-            mel.set_material_instance_scalar_parameter_value(mi, 'Gate', 1. if cfg['lit'] == 'time-of-day' else 0.)
+            mel.set_material_instance_scalar_parameter_value(mi, 'Gate', 1. if cfg['lit'] == 'time-of-day' and cfg['door_lantern_lit'] == 'time-of-day' else 0.)
             mel.set_material_instance_scalar_parameter_value(mi, 'GlowScale', 1.)   # the window scale (gate_windows) is not for the pane
             assert u.EditorAssetLibrary.save_loaded_asset(mi); lanterns.append(mi.get_name())
     assert lanterns, 'no building lantern glow instances under ' + LANTERN_MATS
@@ -281,8 +330,9 @@ def apply(world=None, save=False):
     cards = {key: _component(host, key, plane, mats['M_Lamp' + key], u)
              for key in ('Flame', 'Halo', 'Smoke')}
     cards['Fireflies'] = _component(host, 'Fireflies', plane, mats['M_LampFirefly'], u)
-    counts = {'sockets': 0, 'lights': 0, 'fireflies': 0}
-    for label, index, pos, owner in targets:
+    counts = {'sockets': 0, 'lights': 0, 'fireflies': 0, 'door_lights': 0}
+    doors = 0
+    for label, index, pos, owner, direction, door in targets:
         key = f'{label}:{index}'
         yaw = _stable_fraction(key + ':yaw') * 180
         vertical = u.Rotator(pitch=90, yaw=yaw, roll=0)
@@ -293,8 +343,12 @@ def apply(world=None, save=False):
             _instance(cards['Halo'], pos, vertical, u.Vector(.26, .26, 1), u)
             _instance(cards['Halo'], pos, u.Rotator(pitch=90, yaw=yaw + 90, roll=0), u.Vector(.26, .26, 1), u)
             _instance(cards['Smoke'], high, vertical, u.Vector(.16, .25, 1), u)
-        _point_light(subsystem, pos, cfg, mats['M_LampLightFunction'],
-                     PREFIX + f'Light_{label}_{index}', owner, u)
+        if door and direction is not None and doors < cfg['door_light_max_count']:
+            _door_light(subsystem, pos, direction, cfg, PREFIX + f'DoorLight_{label}_{index}', owner, u)
+            doors += 1
+        else:
+            _point_light(subsystem, pos, cfg, mats['M_LampLightFunction'],
+                         PREFIX + f'Light_{label}_{index}', owner, u)
         counts['sockets'] += 1; counts['lights'] += 1
         if _stable_fraction(key + ':fireflies') < cfg['firefly_chance']:
             count = 1 + int(_stable_fraction(key + ':count') * cfg['firefly_count'])
@@ -306,6 +360,7 @@ def apply(world=None, save=False):
                 _instance(cards['Fireflies'], fly, vertical, u.Vector(.018, .018, 1), u)
                 _instance(cards['Fireflies'], fly, u.Rotator(pitch=90, yaw=yaw + 90, roll=0), u.Vector(.018, .018, 1), u)
                 counts['fireflies'] += 1
+    counts['door_lights'] = doors
     if save:
         assert u.get_editor_subsystem(u.LevelEditorSubsystem).save_current_level()
     print('LAMP_FX', json.dumps(counts, sort_keys=True))

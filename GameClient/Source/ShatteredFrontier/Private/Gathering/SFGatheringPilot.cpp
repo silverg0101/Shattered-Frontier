@@ -1,6 +1,7 @@
 #include "Gathering/SFGatheringPilot.h"
 #include "Characters/SFE1Character.h"
 #include "Gathering/SFHarvestFallingTree.h"
+#include "Gathering/SFSpeciesFelling.h"
 #include "Inventory/SFInventoryLedgerClient.h"
 #include "Engine/NetConnection.h"
 #include "Misc/Guid.h"
@@ -292,6 +293,9 @@ void ASFGatheringPilotNode::ShowDressingMesh(const UInstancedStaticMeshComponent
     for (int32 I=0;I<From->GetNumMaterials();++I) { SpeciesView->SetMaterial(I,From->GetMaterial(I)); }
     SpeciesView->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     SpeciesView->RegisterComponent(); SpeciesBase=At; SpeciesView->SetWorldTransform(At);
+    // Any mesh can be felled the same way: scars on its own surface, then it topples (trees) or crumbles (rocks).
+    Felling=NewObject<USFSpeciesFelling>(this,TEXT("SpeciesFelling")); Felling->RegisterComponent();
+    if (!Felling->Bind(SpeciesView,At,Kind==ESFGatheringPilotKind::Oak)) { Felling->DestroyComponent(); Felling=nullptr; }
 }
 
 void ASFGatheringPilotNode::RestoreDressing()
@@ -301,6 +305,7 @@ void ASFGatheringPilotNode::RestoreDressing()
         if (UInstancedStaticMeshComponent* C=D.Key.Get()) { C->AddInstance(D.Value,true); }
     }
     ClearedDressing.Reset(); ClearedDressingAt.Reset();
+    if (Felling) { Felling->DestroyComponent(); Felling=nullptr; }
     if (SpeciesView) { SpeciesView->DestroyComponent(); SpeciesView=nullptr; }
     if (HarvestVisuals) { HarvestVisuals->SetSuppressed(false); }
 }
@@ -467,13 +472,29 @@ void ASFGatheringPilotNode::DevPreviewGrowthStage(FName Stage)
 #endif
 }
 
+void ASFGatheringPilotNode::DevPreviewFelling(int32 HitsTaken)
+{
+#if !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    if (!Felling) { return; }
+    const int32 Capacity=FMath::Max(State.Capacity,3);
+    Felling->Update(HitsTaken,Capacity,HitsTaken>=Capacity,State.Generation,GetDefault<USFGatheringGrowthSettings>()->ScaleFor(Kind,State.GrowthStage));
+#endif
+}
+
+void ASFGatheringPilotNode::DevFellingInfo(FVector& NotchPoint,FVector& FallDirection,float& HeightCm) const
+{
+    NotchPoint=Felling ? Felling->GetLastNotchPoint() : FVector::ZeroVector;
+    FallDirection=Felling ? Felling->GetFallDirection() : FVector::ZeroVector;
+    HeightCm=Felling ? Felling->GetHeightCm() : 0.f;
+}
+
 void ASFGatheringPilotNode::ApplyGrowthVisual()
 {
     if (IsRefinery()) { return; }
     const float Scale=GetDefault<USFGatheringGrowthSettings>()->ScaleFor(Kind,State.GrowthStage);
     Mesh->SetRelativeScale3D(FVector(0.7,0.7,1.4)*Scale);
     if (HarvestVisuals) { HarvestVisuals->SetGrowthScale(Scale); }
-    if (SpeciesView) { FTransform T=SpeciesBase; T.SetScale3D(T.GetScale3D()*Scale); SpeciesView->SetWorldTransform(T); }
+    if (SpeciesView&&!(Felling&&Felling->IsPlaying())) { FTransform T=SpeciesBase; T.SetScale3D(T.GetScale3D()*Scale); SpeciesView->SetWorldTransform(T); }
 }
 
 void ASFGatheringPilotNode::Recover()
@@ -675,7 +696,15 @@ void ASFGatheringPilotNode::OnRep_State()
         HarvestVisuals->ApplyState(State.Cuts,State.Charges==0,State.Generation,State.FallingTree);
         Mesh->SetVisibility(false); if (Label) { Label->SetVisibility(false); }
     }
-    if (SpeciesView) { Mesh->SetVisibility(false); if (Label) { Label->SetVisibility(false); } SpeciesView->SetVisibility(State.Charges>0); }
+    if (SpeciesView)
+    {
+        Mesh->SetVisibility(false); if (Label) { Label->SetVisibility(false); }
+        // Hits taken are only knowable on a fully grown node: a regrowing one holds fewer charges without having been cut.
+        const float Scale=GetDefault<USFGatheringGrowthSettings>()->ScaleFor(Kind,State.GrowthStage);
+        const bool bFelled=State.Capacity>0&&State.Charges<=0;
+        if (!Felling||!Felling->Update(Scale>=0.999f ? FMath::Max(0,State.Capacity-State.Charges) : 0,State.Capacity,bFelled,State.Generation,Scale))
+        { SpeciesView->SetVisibility(State.Charges>0); }
+    }
     ApplyGrowthVisual();
     if (IsRefinery())
     {
