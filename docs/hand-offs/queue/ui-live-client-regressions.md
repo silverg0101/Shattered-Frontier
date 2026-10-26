@@ -2,7 +2,7 @@
 
 - **Area:** ui
 - **Owner of the next step:** agent (root orchestrator)
-- **Updated:** 2026-10-25
+- **Updated:** 2026-10-26
 - **Worktree:** C:\Projects\SF-lane-b
 
 ## Goal
@@ -23,7 +23,7 @@ Fix the owner-reported packaged-client regressions, review the resulting behavio
 | Drag into/out of hotbar broken | Catalogue/bag shortcut assignment, swap and deliberate removal regression passed. Native packaged drag pending. |
 | MetaHuman avatar instead of Unreal mannequin | Existing 1,181-file assembly cache hash verified; client-only cook contract passed; Orlando spawned in Editor. Packaged closure/animation/review pending. |
 | Gathering skill Raise/Hold/Lower controls | Real caps confirmed; unsupported service controls hidden/guarded; combined tests passed. Durable six-skill support remains a production gap. |
-| Two-player public ground loot and persistence | Pending; required sequence below has not passed. |
+| Two-player public ground loot and persistence | Now the automated netcheck `loot-handoff` (`pwsh tools/Test-CombatPilot.ps1 -Clients 2 -Services -LootHandoffNetcheck`). Passed 2026-10-26 in lane e (94 s): alpha took 2 boar hides from its own corpse and dropped them, beta collected them with the shared action and no window, ledger `alphaHide=0, betaHide=2`, one drop and one take receipt, corpse eligible to alpha only, ground empty; unchanged after a server restart and reconnect of both clients. Editor/headless with the local PostgreSQL and hosts; a manual owner playtest on packages is optional, not a gate. |
 
 ## Evidence
 

@@ -195,7 +195,8 @@ bool FSFLootWorkflowNetcheck::HasPersonalSource(UWorld* World)
 
 void FSFLootWorkflowNetcheck::Tick(USFLootComponent& Loot)
 {
-    if (!FParse::Param(FCommandLine::Get(), TEXT("LootWorkflowNetcheck"))) return;
+    const bool bHandoff = FParse::Param(FCommandLine::Get(), TEXT("LootHandoffNetcheck"));
+    if (!bHandoff && !FParse::Param(FCommandLine::Get(), TEXT("LootWorkflowNetcheck"))) return;
     auto* Player = Cast<ASFPlayerController>(Loot.GetOwner());
     auto* Pawn = Player ? Cast<ASFE1Character>(Player->GetPawn()) : nullptr;
     if (!Pawn || !Player->GetWorld()) return;
@@ -251,7 +252,7 @@ void FSFLootWorkflowNetcheck::Tick(USFLootComponent& Loot)
             if (auto* Other = Cast<ASFE1Character>(Observer->GetPawn())) Other->GetCharacterMovement()->DisableMovement();
             Victim->ReceivePilotDamage(Pawn, 1000000);
             UE_LOG(LogTemp, Display, TEXT("LOOT_WORKFLOW_DEFEAT Creature=%s Dead=%d"), *Creature, Victim->Health() <= 0);
-            ++State.Stage; State.bSeenCorpse = false;
+            State.Stage = bHandoff ? 99 : State.Stage + 1; State.bSeenCorpse = false; // Handoff: one boar.
         }
         else if (State.Stage == 1 || State.Stage == 3)
         {
@@ -263,6 +264,7 @@ void FSFLootWorkflowNetcheck::Tick(USFLootComponent& Loot)
         return;
     }
     if (!Player->IsLocalController()) return;
+    if (bHandoff) { TickHandoffClient(Loot); return; }
     FString Role; FParse::Value(FCommandLine::Get(), TEXT("LootWorkflowRole="), Role);
     FString GroundBarrier; FParse::Value(FCommandLine::Get(), TEXT("LootWorkflowGroundSeen="), GroundBarrier);
     if (Role == TEXT("Observer"))

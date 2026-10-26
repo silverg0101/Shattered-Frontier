@@ -15,6 +15,7 @@ param(
     [switch]$LootWorkflowNetcheck,
     [switch]$LootWorkflowCursorProbe,
     [switch]$LootWorkflowCapturePair,
+    [switch]$LootHandoffNetcheck,
     [ValidateSet('Release','Resurrection')][string]$DeathResolution = 'Release',
     [switch]$RestartMidDeath,
     [switch]$TargetScenario,
@@ -39,6 +40,8 @@ if ($LootWorkflowNetcheck -and (-not $Services -or $Clients -ne 2 -or
     $PartyScenario -or $PartyXpScenario -or $TargetScenario -or $SpawnOnly)) {
     throw 'LootWorkflowNetcheck requires Silverbrook, two clients, Gameplay Services and no other scenario.'
 }
+if ($LootHandoffNetcheck -and (-not $Services -or $Clients -ne 2 -or $LootWorkflowNetcheck -or
+    $Map -ne '/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook')) { throw 'LootHandoffNetcheck requires Silverbrook, two clients and Gameplay Services.' }
 if ($Services -and $TargetScenario) { throw 'Services ledger assertion requires the combat reward scenario.' }
 if ($GreenlandsRepairNetcheck -and (-not $Services -or $Clients -ne 2 -or
     $Map -ne '/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook' -or $GreenlandsDeathNetcheck -or
@@ -90,7 +93,8 @@ $null = New-Item -ItemType Directory -Path $root
 if ($Services) { . (Join-Path $PSScriptRoot 'InventoryLedgerHostFixture.ps1') }
 $fx = @{}
 $owned = [Collections.Generic.List[Diagnostics.Process]]::new()
-$scope = if ($LootWorkflowNetcheck) { 'Two-client actual boar/wolf defeat, personal corpse privacy, native inventory transfers and WorldMesh ground pickup' }
+$scope = if ($LootHandoffNetcheck) { 'Two-client corpse take, deliberate drop, other-player ground pickup, privacy and server restart' }
+    elseif ($LootWorkflowNetcheck) { 'Two-client actual boar/wolf defeat, personal corpse privacy, native inventory transfers and WorldMesh ground pickup' }
     elseif ($GreenlandsStatusNetcheck) { 'Greenlands two-client typed status replication and Purify' }
     elseif ($GreenlandsAbilityNetcheck) { 'Greenlands two-client starter kit and equipped bow requirement' }
     elseif ($AttributeSnapshotNetcheck) { 'Greenlands two-client authoritative attribute restore and combat' }
@@ -212,7 +216,7 @@ try {
         }
     }
     $url = $result.map
-    $scenarioArg = if ($LootWorkflowNetcheck) { '-LootWorkflowNetcheck' } elseif ($GreenlandsRepairNetcheck) { '-GreenlandsRepairNetcheck' } elseif ($GreenlandsArcherNetcheck) { '-GreenlandsArcherNetcheck' } elseif ($GreenlandsStatusNetcheck -or $GreenlandsAbilityNetcheck) { '-GreenlandsAbilityNetcheck' } elseif ($GreenlandsUnstuckNetcheck) { '-GreenlandsUnstuckNetcheck' } elseif ($GreenlandsDeathNetcheck) { '-GreenlandsDeathNetcheck' } elseif ($PartyScenario) { '-PartyScenario' } elseif ($Clients -gt 1) { '-CombatGroupScenario' } elseif ($TargetScenario) { '-CombatTargetScenario' } else { '-CombatPilotScenario' }
+    $scenarioArg = if ($LootHandoffNetcheck) { '-LootHandoffNetcheck' } elseif ($LootWorkflowNetcheck) { '-LootWorkflowNetcheck' } elseif ($GreenlandsRepairNetcheck) { '-GreenlandsRepairNetcheck' } elseif ($GreenlandsArcherNetcheck) { '-GreenlandsArcherNetcheck' } elseif ($GreenlandsStatusNetcheck -or $GreenlandsAbilityNetcheck) { '-GreenlandsAbilityNetcheck' } elseif ($GreenlandsUnstuckNetcheck) { '-GreenlandsUnstuckNetcheck' } elseif ($GreenlandsDeathNetcheck) { '-GreenlandsDeathNetcheck' } elseif ($PartyScenario) { '-PartyScenario' } elseif ($Clients -gt 1) { '-CombatGroupScenario' } elseif ($TargetScenario) { '-CombatTargetScenario' } else { '-CombatPilotScenario' }
     $serverFlags = @('-server',('-port='+$Port),'-multihome=127.0.0.1',$scenarioArg)
     if ($GreenlandsStatusNetcheck) { $serverFlags += '-GreenlandsStatusNetcheck' }
     if ($GreenlandsDeathNetcheck) { $serverFlags += "-DeathResolution=$DeathResolution" }
@@ -232,6 +236,47 @@ try {
         $serverEnv = @{ SF_INVENTORY_LEDGER_TOKEN=$fx.token; SF_GAMEPLAY_TOKEN=$gameplayToken }
         Invoke-WithEnv $serverEnv { $script:server = Start-Owned 'server' $url $serverFlags }
     } else { $server = Start-Owned 'server' $url $serverFlags }
+    if ($LootHandoffNetcheck) {
+        $names = @('Alpha','Beta')
+        function Get-HandoffClient([string]$Name) { @($owned | Where-Object Id -eq (@($result.runs | Where-Object name -eq $Name)[0].pid))[0] }
+        foreach ($role in 1..2) { $null = Start-Owned "client$role" ("127.0.0.1:$Port`?SFDevCharacter=$($names[$role-1].ToLower())") @('-game','-LootHandoffNetcheck',"-LootHandoffRole=$($names[$role-1])") }
+        Wait-Log (Get-HandoffClient 'client1') 'client1' 'LOOT_HANDOFF_ALPHA_DROPPED Item=item/boar_hide Quantity=\d+ Bag=\d+ Ground=1' 180
+        Wait-Log (Get-HandoffClient 'client2') 'client2' 'LOOT_HANDOFF_BETA_COLLECTED Item=item/boar_hide Quantity=\d+ Widget=0' 90
+        Start-Sleep -Seconds 3 # Let a duplicate credit or reappearing source surface before the snapshot.
+        $drop = [regex]::Match((Get-Content (Join-Path $root 'client1.log') -Raw),'LOOT_HANDOFF_ALPHA_DROPPED Item=item/boar_hide Quantity=(\d+) Bag=(\d+)')
+        $collected = [regex]::Match((Get-Content (Join-Path $root 'client2.log') -Raw),'LOOT_HANDOFF_BETA_COLLECTED Item=item/boar_hide Quantity=(\d+)')
+        $quantity = [int]$drop.Groups[1].Value; $alphaBefore = [int]$drop.Groups[2].Value
+        if ($quantity -lt 1 -or [int]$collected.Groups[1].Value -ne $quantity) { throw "Beta collected $($collected.Groups[1].Value), alpha dropped $quantity." }
+        # Authoritative state: bags through InventoryLedger.Host, receipts and source metadata in PostgreSQL.
+        function Get-HandoffState {
+            $alpha = Get-LedgerView $fx 'ctn_dev_alpha'; $beta = Get-LedgerView $fx 'ctn_dev_beta'
+            $query = @"
+SELECT (SELECT count(*) FROM inventory.operation_receipts WHERE operation_id LIKE '%loot-drop:%' AND fingerprint LIKE '%"actorId":"chr_dev_alpha"%')||'|'||
+ (SELECT count(*) FROM inventory.operation_receipts WHERE operation_id LIKE '%loot-take:%' AND fingerprint LIKE '%"actorId":"chr_dev_beta"%')||'|'||
+ (SELECT count(*) FROM inventory.operation_receipts WHERE operation_id LIKE 'world-loot-source/v1:%' AND fingerprint LIKE '%"Ground":false%' AND fingerprint LIKE '%chr_dev_alpha%')||'|'||
+ (SELECT count(*) FROM inventory.operation_receipts WHERE operation_id LIKE 'world-loot-source/v1:%' AND fingerprint LIKE '%"Ground":false%' AND fingerprint LIKE '%chr_dev_beta%')||'|'||
+ (SELECT coalesce(sum(e.quantity),0) FROM inventory.entries e JOIN inventory.operation_receipts r ON r.operation_id='world-loot-source/v1:'||e.container_id WHERE r.fingerprint LIKE '%"Ground":true%')
+"@
+            $sql = Invoke-LedgerSql $fx $query $fx.db
+            "alphaHide=$([int]$alpha.items['item/boar_hide'])|betaHide=$([int]$beta.items['item/boar_hide'])|$sql"
+        }
+        $expected = "alphaHide=$alphaBefore|betaHide=$quantity|1|1|1|0|0"
+        $before = Get-HandoffState
+        if ($before -ne $expected) { throw "Handoff ledger state $before, expected $expected (alpha drops|beta takes|alpha corpses|beta corpses|ground left)." }
+        foreach ($run in $result.runs) { if ((Get-Content $run.log -Raw) -match 'LOOT_HANDOFF_FAIL|Fatal error:|Assertion failed:') { throw "Handoff failure in $($run.name)." } }
+        foreach ($p in @($owned | Where-Object { $_.Id -in @($result.runs.pid) })) { if (-not $p.HasExited) { Stop-Process -Id $p.Id -Force; $p.WaitForExit() } }
+        # Restart only the server and clients; PostgreSQL and both hosts keep running.
+        Invoke-WithEnv $serverEnv { $script:server = Start-Owned 'server2' $url ($serverFlags | Where-Object { $_ -ne '-LootHandoffNetcheck' }) }
+        Wait-Log $server 'server2' 'IpNetDriver listening on port' 120
+        foreach ($role in 1..2) { $null = Start-Owned "client$role-rejoin" ("127.0.0.1:$Port`?SFDevCharacter=$($names[$role-1].ToLower())") @('-game','-LootHandoffNetcheck','-LootHandoffRestore',"-LootHandoffRole=$($names[$role-1])") }
+        Wait-Log (Get-HandoffClient 'client1-rejoin') 'client1-rejoin' "LOOT_HANDOFF_RESTORED Role=Alpha Item=item/boar_hide Count=$alphaBefore Ground=0" 120
+        Wait-Log (Get-HandoffClient 'client2-rejoin') 'client2-rejoin' "LOOT_HANDOFF_RESTORED Role=Beta Item=item/boar_hide Count=$quantity Ground=0 Personal=0" 120
+        $after = Get-HandoffState
+        if ($after -ne $before) { throw "Handoff state changed across restart: $before -> $after" }
+        foreach ($name in @('server2','client1-rejoin','client2-rejoin')) { if ((Get-Content (Join-Path $root "$name.log") -Raw) -match 'LOOT_HANDOFF_FAIL|Fatal error:|Assertion failed:') { throw "Handoff failure in $name." } }
+        $result.status='Passed'; $result.quantity=$quantity; $result.ledger=$after
+        return
+    }
     if ($LootWorkflowNetcheck) {
         $barrier = Join-Path $root 'loot-driver-complete.barrier'
         $groundBarrier = Join-Path $root 'loot-observer-ground.barrier'
@@ -516,7 +561,7 @@ INSERT INTO exchange.wallets(owner_id,balance) VALUES ('chr_dev_alpha',5000),('c
             foreach ($p in @($owned | Where-Object { $_.Id -in @($server.Id,(@($result.runs | Where-Object name -eq 'client1')[0].pid),(@($result.runs | Where-Object name -eq 'client2')[0].pid)) })) {
                 if (-not $p.HasExited) { Stop-Process -Id $p.Id -Force; $p.WaitForExit() }
             }
-            Invoke-WithEnv $serverEnv { $script:server = Start-Owned 'server2' $url $serverFlags }
+        Invoke-WithEnv $serverEnv { $script:server = Start-Owned 'server2' $url $serverFlags }
             Wait-Log $server 'server2' 'COMBAT_PILOT_READY Boars=10'
             for ($role = 1; $role -le 2; $role++) {
                 $identity = $names[$role - 1]
