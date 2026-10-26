@@ -78,6 +78,11 @@ public:
     UFUNCTION(Client, Reliable) void ClientUnstuckDisplacement(uint32 NoticeSequence, FVector Destination);
     UFUNCTION(Server, Reliable) void ServerConfirmUnstuckDisplacement(uint32 NoticeSequence);
     UFUNCTION(Exec) void SFReleaseSpirit();
+    void RequestNormalRespawn();
+    bool IsRespawnSubmissionPending() const { return bRespawnSubmissionPending; }
+    UFUNCTION(Server, Reliable) void ServerRequestNormalRespawn();
+    UFUNCTION(Client, Reliable) void ClientNormalRespawnResult(bool bAccepted);
+    bool bRespawnSubmissionPending = false;
     UFUNCTION(Server, Reliable) void ServerRequestSpiritRelease();
     UFUNCTION(Exec) void SFAcceptResurrection();
     UFUNCTION(Server, Reliable) void ServerAcceptResurrection(uint32 OfferId, const FString& DeathEventId);
@@ -112,6 +117,7 @@ public:
 #endif
     UFUNCTION(Server, Reliable) void ServerSelectCombatTarget(AActor* Target);
     UFUNCTION(Client, Unreliable) void ClientPilotHit(const FString& Message);
+    UFUNCTION(Client, Unreliable) void ClientCombatDamage(AActor* Receiver, FVector Anchor, int32 Damage, bool bCritical);
     FString GetPilotMessage() const;
     void ToggleInventoryPanel();
     void OpenInventoryPanel();

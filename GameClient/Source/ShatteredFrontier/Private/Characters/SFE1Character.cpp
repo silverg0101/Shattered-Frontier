@@ -2439,6 +2439,10 @@ void ASFE1Character::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 {
     Super::GetLifetimeReplicatedProps(OutLifetimeProps);
     DOREPLIFETIME(ASFE1Character, PilotHealth);
+    DOREPLIFETIME_CONDITION(ASFE1Character, RespawnReadyAt, COND_OwnerOnly);
+    DOREPLIFETIME_CONDITION(ASFE1Character, bRespawnRequestAccepted, COND_OwnerOnly);
+    DOREPLIFETIME_CONDITION(ASFE1Character, RespawnDelay, COND_OwnerOnly);
+    DOREPLIFETIME_CONDITION(ASFE1Character, DefeatCause, COND_OwnerOnly);
     DOREPLIFETIME_CONDITION(ASFE1Character, CombatAbsorbRemaining, COND_OwnerOnly);
     DOREPLIFETIME_CONDITION(ASFE1Character, CombatArchetype, COND_OwnerOnly);
     DOREPLIFETIME_CONDITION(ASFE1Character, ResurrectionOfferId, COND_OwnerOnly);
@@ -2511,6 +2515,7 @@ void ASFE1Character::CombatSetHealth(int32 Value)
         if (Value < PilotHealth && Casting) { Casting->NotifyDamage(); }
         if (Value < PilotHealth) { InterruptCombatAbilityCast(); }
         PilotHealth = Value;
+        if (Value > 0) { RespawnReadyAt = -1; RespawnDelay = 0; DefeatCause.Empty(); bRespawnRequestAccepted = false; }
         if (Value <= 0)
         {
             if (StatusEffects) StatusEffects->ClearAll();
@@ -2974,4 +2979,20 @@ void ASFE1Character::Interact()
     {
         PlayerController->InteractWithSelectedTarget();
     }
+}
+
+void ASFE1Character::SetDefeatPresentation(double ReadyAt, float Delay, const FString& Cause)
+{
+    if (!HasAuthority() || CombatHealth() > 0 || !FMath::IsFinite(ReadyAt)) return;
+    RespawnReadyAt = ReadyAt;
+    RespawnDelay = FMath::Max(0.f, Delay);
+    if (!Cause.IsEmpty()) DefeatCause = Cause;
+    ForceNetUpdate();
+}
+
+void ASFE1Character::SetRespawnRequestAccepted(bool bAccepted)
+{
+    if (!HasAuthority()) return;
+    bRespawnRequestAccepted = bAccepted && CombatHealth() <= 0;
+    ForceNetUpdate();
 }

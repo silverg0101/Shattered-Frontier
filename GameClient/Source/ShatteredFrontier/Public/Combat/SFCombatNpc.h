@@ -32,7 +32,7 @@ public:
         ESFNpcFixtureFlags InFixtureFlags = ESFNpcFixtureFlags::None);
     bool ConfigureCreature(const FString& DefinitionId);
     static bool ResolveCreatureLoot(const FString& DefinitionId, FString& TableId, bool& bSingleDrop);
-    void ReceivePilotDamage(ASFE1Character* Attacker, int32 Damage, double AbilityThreatMultiplier = 1.0);
+    void ReceivePilotDamage(ASFE1Character* Attacker, int32 Damage, double AbilityThreatMultiplier = 1.0, bool bCritical = false);
     bool HasThreatOn(ASFE1Character* Character) const;
     void ReceivePilotHealingThreat(ASFE1Character* Healer, ASFE1Character* Subject, double Amount);
     void ReceivePilotDodge(ASFE1Character* Attacker);
@@ -52,6 +52,7 @@ public:
     /** Stable for this actor spawn; unique even when another world reuses the sequence key. */
     FString DeathId() const { return SpawnSequenceId() + TEXT(":") + SpawnInstanceId.ToString(EGuidFormats::Digits); }
     int32 Health() const { return CurrentHealth; }
+    FString DisplayName() const;
     int32 MaximumHealth() const { return MaximumHealthValue; }
     void CompleteNpcMend(float HealthFraction);
     USFCastingComponent* GetCasting() const { return Casting; }

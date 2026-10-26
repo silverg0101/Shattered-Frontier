@@ -1,4 +1,5 @@
 #include "Combat/SFCombatPilot.h"
+#include "UI/SFCombatFeedback.h"
 #include "Combat/SFCastingComponent.h"
 #include "Combat/SFCombatEnergy.h"
 #include "Combat/SFStarterAbilities.h"
@@ -500,10 +501,20 @@ void ASFCombatNpc::EnterEvade()
     ForceNetUpdate();
 }
 
+FString ASFCombatNpc::DisplayName() const
+{
+ FString Name = CreatureId;
+ int32 Slash; if (Name.FindLastChar(TEXT('/'), Slash)) Name = Name.Mid(Slash + 1);
+ Name.ReplaceInline(TEXT("_"), TEXT(" "));
+ TArray<FString> Words; Name.ParseIntoArray(Words, TEXT(" "));
+ for (FString& Word : Words) Word = Word.Left(1).ToUpper() + Word.Mid(1);
+ return FString::Join(Words, TEXT(" "));
+}
+
 void ASFCombatNpc::OnRep_Health()
 {
     if (!Label) { return; }
-    const FString Name = CreatureId.RightChop(4).Replace(TEXT("_"), TEXT(" "));
+    const FString Name = DisplayName();
     Label->SetText(FText::FromString(FString::Printf(TEXT("%s L%d  %d HP"), *Name,
         SFCombatPart6::Npc(CreatureId).Level, CurrentHealth)));
     Label->SetTextRenderColor(CurrentHealth > 0 ? FColor::Yellow : FColor::Red);
@@ -617,7 +628,7 @@ float ASFCombatNpc::TakeDamage(float DamageAmount, const FDamageEvent& DamageEve
     return 0; // Engine damage cannot bypass the same immunity as resolved combat hits.
 }
 
-void ASFCombatNpc::ReceivePilotDamage(ASFE1Character* Attacker, int32 Damage, double AbilityThreatMultiplier)
+void ASFCombatNpc::ReceivePilotDamage(ASFE1Character* Attacker, int32 Damage, double AbilityThreatMultiplier, bool bCritical)
 {
     if (ActorHasTag(OutOfPlaceNpcTag))
     {
@@ -635,7 +646,10 @@ void ASFCombatNpc::ReceivePilotDamage(ASFE1Character* Attacker, int32 Damage, do
         ThreatActors.Add(AttackerId, Attacker);
         DamageAttackers.Add(AttackerId);
     }
+    const FVector DamageAnchor = USFCombatFeedbackSubsystem::HeadAnchor(this);
     CurrentHealth = SFCombatPilotRules::RemainingHealth(CurrentHealth, Damage);
+    if (ASFPlayerController* PC = Cast<ASFPlayerController>(Attacker->GetController()))
+        PC->ClientCombatDamage(CurrentHealth > 0 ? this : nullptr, DamageAnchor, EffectiveDamage, bCritical);
     if (CurrentHealth == 0 && StatusEffects) StatusEffects->ClearAll();
     if (CurrentHealth == 0 && Casting) { Casting->CancelNpcCast(); }
     else if (Casting) { Casting->NotifyDamage(); }
@@ -2238,7 +2252,7 @@ void ASFGameMode::ApplyStarterWeakPoison(ASFE1Character* Source, ASFCombatNpc* V
             CurrentTick.Armor = Target->CombatArmor();
             CurrentTick.Resistance = Target->CombatResistance();
             const auto Hit = Mode->ResolveCombatAttack(Caster.Get(), CurrentTick);
-            if (Hit.Damage > 0) Target->ReceivePilotDamage(Caster.Get(), Hit.Damage);
+            if (Hit.Damage > 0) Target->ReceivePilotDamage(Caster.Get(), Hit.Damage, 1.0, (Hit.Outcome == SFCombatResolution::EOutcome::Crit || Hit.Outcome == SFCombatResolution::EOutcome::CritBlock));
         });
 }
 
@@ -2584,7 +2598,7 @@ void ASFGameMode::TryPlayerCombatAbility(ASFE1Character* Attacker, FName Ability
                     CurrentTick.Armor = Victim->CombatArmor();
                     CurrentTick.Resistance = Victim->CombatResistance();
                     const auto Result = Mode->ResolveCombatAttack(Source.Get(), CurrentTick);
-                    if (Result.Damage > 0) Victim->ReceivePilotDamage(Source.Get(), Result.Damage);
+                    if (Result.Damage > 0) Victim->ReceivePilotDamage(Source.Get(), Result.Damage, 1.0, (Result.Outcome == SFCombatResolution::EOutcome::Crit || Result.Outcome == SFCombatResolution::EOutcome::CritBlock));
                 });
             continue;
         }
@@ -2600,7 +2614,7 @@ void ASFGameMode::TryPlayerCombatAbility(ASFE1Character* Attacker, FName Ability
             bRecordedPractice = true;
         }
         if (Result.Damage > 0) Boar->ReceivePilotDamage(Attacker, Result.Damage,
-            AbilityId == TEXT("shield_bash") ? 1.5 : 1.0);
+            AbilityId == TEXT("shield_bash") ? 1.5 : 1.0, (Result.Outcome == SFCombatResolution::EOutcome::Crit || Result.Outcome == SFCombatResolution::EOutcome::CritBlock));
         else Boar->ReceivePilotDodge(Attacker);
         if (Result.Damage > 0 && Ability->Effect == EEffect::SlowHit)
         {
@@ -2718,7 +2732,7 @@ void ASFGameMode::TryPlayerAttack(ASFE1Character* Attacker, AActor* SelectedTarg
         Result.Outcome == SFCombatResolution::EOutcome::Dodge ? 1 : 0, Best->Health(),
         Attack.bFrontArc ? 1 : 0, FixtureDraw); }
     if (Result.Damage <= 0) { Best->ReceivePilotDodge(Attacker); return; }
-    Best->ReceivePilotDamage(Attacker, Result.Damage);
+    Best->ReceivePilotDamage(Attacker, Result.Damage, 1.0, (Result.Outcome == SFCombatResolution::EOutcome::Crit || Result.Outcome == SFCombatResolution::EOutcome::CritBlock));
     if (bPart6 && Attacker->TryPoisonProc(Now))
     {
         auto Stats = Attacker->CombatStats(CapturedSettings->CritBase, CapturedSettings->SkillDamageFloor,
@@ -2826,7 +2840,7 @@ void ASFGameMode::TryBoarAttack(ASFCombatNpc* Boar, ASFE1Character* Victim)
     const auto Result = ResolveCombatAttack(Boar, Attack);
     RecordIncomingCombatPractice(Boar, Victim, Attack, Result);
     if (Result.Absorbed > 0) { Victim->ConsumeCombatAbsorb(Result.Absorbed); }
-    if (Result.Damage > 0) { HitPlayer(Boar, Victim, Result.Damage, true); }
+    if (Result.Damage > 0) { HitPlayer(Boar, Victim, Result.Damage, true, false, (Result.Outcome == SFCombatResolution::EOutcome::Crit || Result.Outcome == SFCombatResolution::EOutcome::CritBlock)); }
 }
 
 void ASFGameMode::ApplyFallDamage(ASFE1Character* Victim, float ImpactSpeedMps)
@@ -2841,7 +2855,7 @@ void ASFGameMode::ApplyFallDamage(ASFE1Character* Victim, float ImpactSpeedMps)
 }
 
 void ASFGameMode::HitPlayer(AActor* Source, ASFE1Character* Victim, int32 Damage, bool bIgnoreArmor,
-    bool bLethalRetaliation)
+    bool bLethalRetaliation, bool bCritical)
 {
     if (!IsValid(Victim) || !Victim->HasAuthority() || Victim->CombatHealth() <= 0 ||
         USFCharacterSessionComponent::IsRestoring(Victim->GetController())) return;
@@ -2855,8 +2869,11 @@ void ASFGameMode::HitPlayer(AActor* Source, ASFE1Character* Victim, int32 Damage
         Damage = FMath::Max(1, FMath::RoundToInt(Damage * Victim->DamageTakenMultiplier(Victim->GetWorld()->GetTimeSeconds())));
     }
     Victim->InterruptCombatAbilityCast();
+    const int32 EffectiveDamage = FMath::Min(Victim->CombatHealth(), Damage);
+    const FVector DamageAnchor = USFCombatFeedbackSubsystem::HeadAnchor(Victim);
     Victim->CombatSetHealth(SFCombatPilotRules::RemainingHealth(Victim->CombatHealth(), Damage));
-    if (ASFPlayerController* PC = Cast<ASFPlayerController>(Victim->GetController())) { PC->ClientPilotHit(TEXT("Hit")); }
+    if (ASFPlayerController* PC = Cast<ASFPlayerController>(Victim->GetController()))
+        PC->ClientCombatDamage(Victim->CombatHealth() > 0 ? Victim : nullptr, DamageAnchor, EffectiveDamage, bCritical);
     if (!Victim->GetCombatTarget() && Victim->CombatHealth() > 0) { Victim->SetCombatTarget(Source); }
     UE_LOG(LogTemp, Display, TEXT("COMBAT_PILOT_PLAYER_HIT HP=%d By=%s"), Victim->CombatHealth(), *GetNameSafe(Source));
     if (Victim->CombatHealth() == 0)
@@ -2865,6 +2882,8 @@ void ASFGameMode::HitPlayer(AActor* Source, ASFE1Character* Victim, int32 Damage
         UE_LOG(LogTemp, Display, TEXT("COMBAT_PILOT_PLAYER_DEAD Pawn=%s"), *Victim->GetName());
         ASFGameMode* Mode = Victim->GetWorld()->GetAuthGameMode<ASFGameMode>();
         if (!Mode || !Mode->bPilotActive) { return; }
+        const ASFCombatNpc* DamageNpc = Cast<ASFCombatNpc>(Source);
+        Victim->SetDefeatPresentation(-1, 0, DamageNpc ? DamageNpc->DisplayName() : Source ? Source->GetName() : TEXT("a fall"));
         const auto Weak = TWeakObjectPtr<ASFE1Character>(Victim);
         ASFPlayerController* Controller = Cast<ASFPlayerController>(Victim->GetController());
         USFBackpackComponent* Pack = Controller ? USFBackpackComponent::FindOrCreate(Controller) : nullptr;
@@ -2912,9 +2931,14 @@ void ASFGameMode::HitPlayer(AActor* Source, ASFE1Character* Victim, int32 Damage
         }
         else
         {
-            FTimerHandle Timer;
-            Mode->GetWorldTimerManager().SetTimer(Timer, FTimerDelegate::CreateWeakLambda(Mode,
-                [Mode, Weak]() { Mode->RespawnPlayer(Weak); }), Mode->CapturedSettings->PlayerRespawnDelaySeconds, false);
+            Victim->SetDefeatPresentation(Mode->GetWorld()->GetTimeSeconds() + Mode->CapturedSettings->PlayerRespawnDelaySeconds,
+                Mode->CapturedSettings->PlayerRespawnDelaySeconds);
+            if (!SFNpcZoneContent::IsProductionMap(Mode->GetWorld()))
+            {
+                FTimerHandle Timer;
+                Mode->GetWorldTimerManager().SetTimer(Timer, FTimerDelegate::CreateWeakLambda(Mode,
+                    [Mode, Weak]() { Mode->RespawnPlayer(Weak); }), Mode->CapturedSettings->PlayerRespawnDelaySeconds, false);
+            }
         }
     }
 }
@@ -2951,6 +2975,23 @@ bool ASFGameMode::AcceptResurrection(ASFE1Character* Player, uint32 OfferId, con
         Player->CombatMaximumHealth(), CapturedSettings->PlayerResFraction)) return false;
     UE_LOG(LogTemp, Display, TEXT("RES_ACCEPT_SERVER_ACCEPTED Pawn=%s Offer=%u HP=%d"),
         *Player->GetName(), OfferId, Player->CombatHealth());
+    return true;
+}
+
+bool ASFGameMode::RequestNormalRespawn(ASFE1Character* Player)
+{
+    if (!HasAuthority() || !bPilotActive || !CapturedSettings || !IsValid(Player) ||
+        Player->GetWorld() != GetWorld() || !Player->HasAuthority() || !Player->GetController() ||
+        Player->CombatHealth() != 0 || Player->IsRespawnRequestAccepted() || RespawnPoints.IsEmpty() ||
+        PlayerRespawnInFlight.Contains(Player) || Player->GetRespawnReadyAt() < 0 ||
+        GetWorld()->GetTimeSeconds() < Player->GetRespawnReadyAt()) return false;
+    if (PlayerDeathEvents.Contains(Player))
+    {
+        USFBackpackComponent* Pack = Player->GetController()->FindComponentByClass<USFBackpackComponent>();
+        if (!Pack || !USFBackpackComponent::Services() || PendingDeathReports.Contains(Pack->GetCharacterId())) return false;
+    }
+    Player->SetRespawnRequestAccepted(true);
+    RespawnPlayer(Player, -1, false, true);
     return true;
 }
 
@@ -3037,6 +3078,7 @@ void ASFGameMode::ReportPlayerDeath(TWeakObjectPtr<ASFE1Character> Player, const
         { Mode->PlayerDeathEvents.Remove(Player); Mode->PlayerDeathRespawnPoints.Remove(Player); return; }
         if (Mode->PlayerDeathEvents.FindRef(Player) != Request.DeathEventId) return;
         const int64 RemainingMs = FMath::Max<int64>(0, Reply.RespawnAtUnixMs - UnixNowMs());
+        Player->SetDefeatPresentation(Mode->GetWorld()->GetTimeSeconds() + RemainingMs / 1000.0, Request.RespawnDelayMs / 1000.f);
         UE_LOG(LogTemp, Display, TEXT("COMBAT_DEATH_RECORDED Character=%s Event=%s RemainingMs=%lld"), *Request.CharacterId, *Request.DeathEventId, RemainingMs);
         if (AController* Controller = Player->GetController())
             if (USFBackpackComponent* Backpack = Controller->FindComponentByClass<USFBackpackComponent>())
@@ -3050,9 +3092,13 @@ void ASFGameMode::ReportPlayerDeath(TWeakObjectPtr<ASFE1Character> Player, const
             UE_LOG(LogTemp, Display, TEXT("COMBAT_DEATH_FIXTURE_OFFER Event=%s Offer=%u"),
                 *Request.DeathEventId, Player->GetResurrectionOfferId());
         }
-        FTimerHandle Timer;
-        Mode->GetWorldTimerManager().SetTimer(Timer, FTimerDelegate::CreateWeakLambda(Mode,
-            [WeakMode, Player]() { if (ASFGameMode* M = WeakMode.Get()) M->RespawnPlayer(Player); }), FMath::Max(0.01, RemainingMs / 1000.0), false);
+        // Production stays dead after eligibility unlocks, until an owner request or a legitimate revival.
+        if (!SFNpcZoneContent::IsProductionMap(Mode->GetWorld()))
+        {
+            FTimerHandle Timer;
+            Mode->GetWorldTimerManager().SetTimer(Timer, FTimerDelegate::CreateWeakLambda(Mode,
+                [WeakMode, Player]() { if (ASFGameMode* M = WeakMode.Get()) M->RespawnPlayer(Player); }), FMath::Max(0.01, RemainingMs / 1000.0), false);
+        }
     });
 }
 
@@ -3074,22 +3120,28 @@ void ASFGameMode::RestoreDeadPlayer(ASFE1Character* Player, const FSFGameplayRes
     Player->CombatSetHealth(0); Player->GetCharacterMovement()->DisableMovement();
     PlayerDeathEvents.Add(Weak, State.DeathEventId); PlayerDeathRespawnPoints.Add(Weak, State.RespawnPosition);
     const int64 RemainingMs = FMath::Max<int64>(0, State.RespawnAtUnixMs - UnixNowMs());
+    Player->SetDefeatPresentation(GetWorld()->GetTimeSeconds() + RemainingMs / 1000.0, RemainingMs / 1000.f);
     FString Resolution;
     FParse::Value(FCommandLine::Get(), TEXT("DeathResolution="), Resolution);
     if (FParse::Param(FCommandLine::Get(), TEXT("GreenlandsDeathNetcheck")) &&
         Resolution == TEXT("Resurrection") && RemainingMs > 0)
     { Player->BeginResurrectionOffer(GetWorld()->GetTimeSeconds() + RemainingMs / 1000.0, State.DeathEventId); }
-    FTimerHandle Timer;
-    GetWorldTimerManager().SetTimer(Timer, FTimerDelegate::CreateWeakLambda(this,
-        [WeakMode = TWeakObjectPtr<ASFGameMode>(this), Weak]() { if (ASFGameMode* M = WeakMode.Get()) M->RespawnPlayer(Weak); }), FMath::Max(0.01, RemainingMs / 1000.0), false);
+    if (!SFNpcZoneContent::IsProductionMap(GetWorld()))
+    {
+        FTimerHandle Timer;
+        GetWorldTimerManager().SetTimer(Timer, FTimerDelegate::CreateWeakLambda(this,
+            [WeakMode = TWeakObjectPtr<ASFGameMode>(this), Weak]() { if (ASFGameMode* M = WeakMode.Get()) M->RespawnPlayer(Weak); }), FMath::Max(0.01, RemainingMs / 1000.0), false);
+    }
     UE_LOG(LogTemp, Display, TEXT("COMBAT_DEATH_RESTORED Event=%s RemainingMs=%lld"), *State.DeathEventId, RemainingMs);
 }
 
-void ASFGameMode::RespawnPlayer(TWeakObjectPtr<ASFE1Character> Player, int32 RestoredHealth, bool bAtDeathPosition)
+void ASFGameMode::RespawnPlayer(TWeakObjectPtr<ASFE1Character> Player, int32 RestoredHealth, bool bAtDeathPosition, bool bPlayerRequest)
 {
     if (!Player.IsValid())
     { PlayerDeathEvents.Remove(Player); PlayerDeathRespawnPoints.Remove(Player); PlayerRespawnInFlight.Remove(Player); return; }
     if (!bPilotActive || Player->CombatHealth() != 0 || RespawnPoints.IsEmpty()) { return; }
+    // Defense in depth: no old normal-respawn callback can bypass explicit owner intent in production.
+    if (SFNpcZoneContent::IsProductionMap(GetWorld()) && RestoredHealth < 0 && !bPlayerRequest) return;
     const FVector Nearest = PlayerDeathRespawnPoints.Contains(Player) ? PlayerDeathRespawnPoints.FindRef(Player) : ChooseRespawnPoint(Player->GetActorLocation());
     if (const FString* EventId = PlayerDeathEvents.Find(Player))
     {
@@ -3100,7 +3152,7 @@ void ASFGameMode::RespawnPlayer(TWeakObjectPtr<ASFE1Character> Player, int32 Res
         FSFGameplayRequest Clear; Clear.Rpc = ESFGameplayRpc::ClearDeath; Clear.CharacterId = Pack->GetCharacterId(); Clear.DeathEventId = *EventId;
         Clear.bResurrectAtDeathPosition = bAtDeathPosition;
         PlayerRespawnInFlight.Add(Player);
-        USFBackpackComponent::Services()->Call(Clear, [WeakMode = TWeakObjectPtr<ASFGameMode>(this), Player, Clear, RestoredHealth, bAtDeathPosition](const FSFGameplayResponse& Reply)
+        USFBackpackComponent::Services()->Call(Clear, [WeakMode = TWeakObjectPtr<ASFGameMode>(this), Player, Clear, RestoredHealth, bAtDeathPosition, bPlayerRequest](const FSFGameplayResponse& Reply)
         {
             ASFGameMode* Mode = WeakMode.Get(); if (!Mode) return;
             Mode->PlayerRespawnInFlight.Remove(Player);
@@ -3108,14 +3160,22 @@ void ASFGameMode::RespawnPlayer(TWeakObjectPtr<ASFE1Character> Player, int32 Res
             if (Reply.Status == ESFGameplayStatus::Ok && !Reply.bIsDead)
             {
                 Mode->PlayerDeathEvents.Remove(Player);
-                Mode->RespawnPlayer(Player, RestoredHealth, bAtDeathPosition);
+                Mode->RespawnPlayer(Player, RestoredHealth, bAtDeathPosition, bPlayerRequest);
                 UE_LOG(LogTemp, Display, TEXT("COMBAT_DEATH_RESOLVED Event=%s HP=%d Mode=%s X=%.0f Y=%.0f"),
                     *Clear.DeathEventId, Player->CombatHealth(),
-                    RestoredHealth < 0 ? TEXT("Automatic") : bAtDeathPosition ? TEXT("Resurrection") : TEXT("Release"),
+                    RestoredHealth < 0 ? (bPlayerRequest ? TEXT("Requested") : TEXT("Automatic")) : bAtDeathPosition ? TEXT("Resurrection") : TEXT("Release"),
                     Player->GetActorLocation().X, Player->GetActorLocation().Y);
             }
             else
             {
+                if (bPlayerRequest)
+                {
+                    Player->SetRespawnRequestAccepted(false);
+                    if (ASFPlayerController* PC = Cast<ASFPlayerController>(Player->GetController()))
+                        PC->ClientNormalRespawnResult(false);
+                    UE_LOG(LogTemp, Warning, TEXT("COMBAT_RESPAWN_REQUEST_REJECTED Character=%s Code=%d"), *Clear.CharacterId, Reply.GrpcCode);
+                    return;
+                }
                 UE_LOG(LogTemp, Warning, TEXT("COMBAT_DEATH_CLEAR_RETRY Character=%s Code=%d"), *Clear.CharacterId, Reply.GrpcCode);
                 FTimerHandle Retry; Mode->GetWorldTimerManager().SetTimer(Retry, FTimerDelegate::CreateWeakLambda(Mode,
                     [WeakMode, Player, RestoredHealth, bAtDeathPosition]() { if (ASFGameMode* M = WeakMode.Get()) M->RespawnPlayer(Player, RestoredHealth, bAtDeathPosition); }), 3.0f, false);

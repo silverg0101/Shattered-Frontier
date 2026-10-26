@@ -1,4 +1,5 @@
 #include "Construction/SFConstructionNetwork.h"
+#include "Characters/SFE1VitalsHud.h"
 #include "Creatures/SFRestAreaVolume.h"
 #include "Exchange/SFExchangeWidgets.h"
 #include "Framework/SFPlayerController.h"
@@ -1465,6 +1466,8 @@ void ASFPlayerController::ToggleGatheringSkillsPanel()
 
 void ASFPlayerController::HandleEscape()
 {
+    if (GetWorld()) if (USFE1VitalsHudSubsystem* Vitals = GetWorld()->GetSubsystem<USFE1VitalsHudSubsystem>())
+        if (Vitals->CloseNotice()) return;
     if (IsDialogueOpen()) { CloseDialogue(); return; }
     if (CloseSettingsPanel()) { return; }
     // The build catalogue is a window too: while it is the newest, Esc cancels a pending line start, then leaves build mode (which closes it).
@@ -2833,7 +2836,19 @@ void ASFPlayerController::SFUi(const FString& Screen)
     else if (Screen.Equals(TEXT("journal"), ESearchCase::IgnoreCase) || Screen.Equals(TEXT("board"), ESearchCase::IgnoreCase)) { USFQuestBoardPanel::OpenForCapture(this, Screen.ToLower()); }
 #if !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     else if (Screen.Equals(TEXT("skills"), ESearchCase::IgnoreCase)) { ToggleGatheringSkillsPanel(); }
-    else if (Screen.Equals(TEXT("defeated"), ESearchCase::IgnoreCase)) { if (USFE1VitalsHudSubsystem* Vitals = GetWorld() ? GetWorld()->GetSubsystem<USFE1VitalsHudSubsystem>() : nullptr) { Vitals->StageDefeat(); } }
+    else if (Screen.StartsWith(TEXT("defeated"), ESearchCase::IgnoreCase))
+    {
+        if (USFE1VitalsHudSubsystem* Vitals = GetWorld() ? GetWorld()->GetSubsystem<USFE1VitalsHudSubsystem>() : nullptr)
+        {
+            if (Screen == TEXT("defeated-waiting")) Vitals->StageDefeat(43);
+            else if (Screen == TEXT("defeated-ready")) Vitals->StageDefeat(0);
+            else if (Screen == TEXT("defeated-pending")) Vitals->StageDefeat(0, true);
+            else if (Screen == TEXT("defeated-close")) Vitals->CloseNotice();
+            else if (Screen == TEXT("defeated-open")) Vitals->ReopenNotice();
+            else if (Screen == TEXT("defeated-clear")) Vitals->ClearStagedDefeat();
+            else Vitals->StageDefeat();
+        }
+    }
     else if (Screen.Equals(TEXT("target"), ESearchCase::IgnoreCase))
     {
         ASFCombatNpc* NearestBoar = nullptr;

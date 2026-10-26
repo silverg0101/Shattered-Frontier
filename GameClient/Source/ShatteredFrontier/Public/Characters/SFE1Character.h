@@ -34,6 +34,14 @@ public:
     virtual void Landed(const FHitResult& Hit) override;
     virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
     void CombatSetHealth(int32 Value);
+    // Owner-only presentation authored from the same service deadline used by the zone server.
+    void SetDefeatPresentation(double ReadyAt, float Delay, const FString& Cause = FString());
+    double GetRespawnReadyAt() const { return RespawnReadyAt; }
+    bool IsRespawnRequestAccepted() const { return bRespawnRequestAccepted; }
+    void SetRespawnRequestAccepted(bool bAccepted);
+    float GetRespawnDelay() const { return RespawnDelay; }
+    const FString& GetDefeatCause() const { return DefeatCause; }
+
     void CombatMarkHostile(); // server only; sandbox and Silverbrook combat clock
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     void SetGreenlandsNetcheckStage(int32 Stage, int32 LeadSlot, int32 MateSlot, bool bKill);
@@ -171,6 +179,10 @@ private:
     int32 CombatHealthMaximum = 500;
     int64 CombatSnapshotRevision = -1;
     bool bHasCombatSnapshot = false;
+    UPROPERTY(Replicated) bool bRespawnRequestAccepted = false;
+    UPROPERTY(Replicated) double RespawnReadyAt = -1;
+    UPROPERTY(Replicated) float RespawnDelay = 0;
+    UPROPERTY(Replicated) FString DefeatCause;
     UPROPERTY(Replicated) FString CombatArchetype;
     SFCombatPart6::FStats CombatAttributes;
     TMap<FString, int32> CombatSkills;

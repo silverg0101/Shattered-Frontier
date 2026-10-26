@@ -15,3 +15,23 @@ void ASFPlayerController::ServerRequestSpiritRelease_Implementation()
     if (ASFGameMode* Mode = GetWorld()->GetAuthGameMode<ASFGameMode>())
     { Mode->ReleaseSpirit(OwnedCharacter); }
 }
+
+void ASFPlayerController::RequestNormalRespawn()
+{
+    if (!IsLocalController() || bRespawnSubmissionPending) return;
+    bRespawnSubmissionPending = true;
+    ServerRequestNormalRespawn();
+}
+
+void ASFPlayerController::ServerRequestNormalRespawn_Implementation()
+{
+    ASFE1Character* Hero = Cast<ASFE1Character>(GetPawn());
+    ASFGameMode* Mode = GetWorld() ? GetWorld()->GetAuthGameMode<ASFGameMode>() : nullptr;
+    const bool bAccepted = HasAuthority() && Hero && Hero->GetController() == this && Mode && Mode->RequestNormalRespawn(Hero);
+    ClientNormalRespawnResult(bAccepted);
+}
+
+void ASFPlayerController::ClientNormalRespawnResult_Implementation(bool bAccepted)
+{
+    bRespawnSubmissionPending = false;
+}
