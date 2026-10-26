@@ -24,6 +24,8 @@ New frozen package (2026-10-26, revision `dbe514e7b8e37a53a9a7ca41e0727c5ed14848
 
 Measured LinuxDockerContext: 72 files/3,224,684,658 bytes, GNU tar stream 3,224,770,560 bytes (manifest `4774f14b…`). Gate `3*3,224,770,560 + 4GiB = 13,969,278,976`; against the last measured 11,379,589,120 free it is short 2,589,689,856. Remeasure host free bytes before any build.
 
+Disk gate met (2026-10-26): the owner had steam-server cleaned (Windrose, Icarus, the monitoring stack, old sf diag/native containers, `~/int03`, and an unused build-cache prune of 7.5 GB). Docker root now has 64,139,177,984 bytes free, well above the 13,969,278,976 gate. The ff59 build-cache candidates below were covered by that prune. Protected images and containers were kept.
+
 Protect active game `3c6bf45ef93866b67be30aa35b8ca4f9c0c84da68f1d00b9b9fbbb7b62350b19`, active services `8d10c43fc5129028bce13987992efe52109cce514b92557ca52d948c3223fde2`, old E1 rollback `42b382b6e3d581388be3bc8341a10ba7ff08876e9b0788457f71cb8e53d6f0ce`, PostgreSQL, every referenced image and all unrelated Forge/games/monitoring resources.
 
 Candidate completed ff59 build-input cache only: `8muqtnxlm3y60x3yxp3f05bcd` (HTTP buildkit-session input,22:41:13UTC) and `zx4ymgw66qotsxiofvopj34zn` (`copy /context /`,22:43:18UTC). Both are nonshared/reclaimable, displayed3.224GB each, matching this task's owned ff59 binary-stdin build and72-file context. Proposal: review these exact records for selective removal before the next build; never broad prune. Their displayed size is an estimate; remeasure free bytes after any separately authorized removal. Active image layers are not candidates. Seven superseded service images are unreferenced but share base layers and do not establish sufficient recoverable space; no image removal proposed. The older `int03-0b` image lacks this task's provenance and is excluded.
@@ -32,4 +34,4 @@ Ignored evidence: `Artifacts/runtime-update-cache.jsonl`, `Artifacts/runtime-upd
 
 ## Next
 
-Review this candidate, free space for the dbe514e7 disk gate, build its image and seal both new/rollback profiles. Only after owner approval apply the documented existing-store update; verify identity/health and resume the mandatory native personal-corpse → Alpha bag → ground drop → rendered Beta/native-F pickup → SQL/privacy → controlled restart acceptance. Current ff59 remains live; do not restart or modify its data during preparation.
+Once the owner approves the image build, build the dbe514e7 image and seal both new/rollback profiles. Only after owner approval apply the documented existing-store update; verify identity/health and resume the mandatory native personal-corpse → Alpha bag → ground drop → rendered Beta/native-F pickup → SQL/privacy → controlled restart acceptance. Current ff59 remains live; do not restart or modify its data during preparation.
