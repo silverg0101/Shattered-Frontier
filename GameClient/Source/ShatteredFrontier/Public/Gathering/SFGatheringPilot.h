@@ -238,6 +238,10 @@ private:
     // The dressing instances this node replaced on this machine; they return when the node goes away or moves.
     TArray<TPair<TWeakObjectPtr<UInstancedStaticMeshComponent>,FTransform>> ClearedDressing;
     void RestoreDressing();
+    // Client view of the tree or rock this node replaced: the map dressing's own mesh, never the shared harvest art.
+    void ShowDressingMesh(const UInstancedStaticMeshComponent* From,const FTransform& At);
+    UPROPERTY() TObjectPtr<UStaticMeshComponent> SpeciesView;
+    FTransform SpeciesBase;
     TSharedPtr<FSFGameplayServicesClient> ServiceClient;
     uint64 ServiceSnapshotSerial = 0; // Invalidates older GetNode replies after a newer read or harvest receipt.
     bool bServiceStateReady = false;

@@ -19,6 +19,7 @@ sys.path.insert(0, str(ROOT.parent / 'Silverbrook'))
 sys.path.insert(0, str(ROOT.parent))  # backdrop.py
 import importlib, place_parts; importlib.reload(place_parts)  # noqa: E402  (fresh part reports in an open editor)
 import place_props; importlib.reload(place_props)  # noqa: E402
+import water_fx; importlib.reload(water_fx)  # noqa: E402  (underwater post-process volumes)
 import townsfolk_lanes; importlib.reload(townsfolk_lanes)  # noqa: E402  (townsfolk footway ZoneGraph shapes)
 import townsfolk_smartobjects; importlib.reload(townsfolk_smartobjects)  # noqa: E402  (townsfolk doors, stalls, benches)
 import importlib, validate_layout, validate_region, region_heightfield, heightfield, dress_zone, pcg_dressing  # an open editor
@@ -36,7 +37,7 @@ BACKDROP = '/Game/Frontier/Environment/Greenlands/Terrain/SM_Silverbrook_Backdro
 CUBE = u.load_asset('/Engine/BasicShapes/Cube')
 PLANE = u.load_asset('/Engine/BasicShapes/Plane')
 NATURE_MATS = '/Game/Frontier/Environment/Greenlands/Nature/Materials'  # NatureFamilies/import_ground.py
-REAL = {'Ground': 'MI_GN_Ground', 'Road': 'MI_GN_Road', 'Trail': 'MI_GN_Trail', 'River': 'MI_GN_River'}
+REAL = {'Ground': 'MI_GN_Ground', 'Road': 'MI_GN_Road', 'Trail': 'MI_GN_Trail', 'River': 'MI_GN_River', 'Pond': 'MI_GN_Pond'}
 SLOPE_FLAT_DEG, SLOPE_ROCK_DEG = 20.0, 40.0  # terrain vertex colour R: 0 at or below the first slope, 1 at or above the second (M_GN_Ground shows bedrock past the midpoint)
 COLOURS = {'Wall': (0.42, 0.42, 0.45), 'Civic': (0.82, 0.80, 0.72),
            'House': (0.62, 0.42, 0.28), 'Plot': (0.62, 0.54, 0.26), 'Field': (0.42, 0.48, 0.14),
@@ -95,7 +96,7 @@ def _box(label, x, y, w, d, h, mat, z0, yaw, collide, folder, ground, pitch=0.0)
         h += 1
     elif ground == 'centre':
         z0 += HF.at(x, y)
-    water = mat == 'River'
+    water = mat in ('River', 'Pond')  # Pond: still water (basins, the sea), no flow
     a = actors.spawn_actor_from_class(u.StaticMeshActor, u.Vector(x * 100, y * 100, (z0 + (h if water else h / 2)) * 100), u.Rotator(roll=0, pitch=pitch, yaw=yaw))
     a.static_mesh_component.set_static_mesh(PLANE if water else CUBE)
     a.set_actor_scale3d(u.Vector(w, d, 1 if water else h))
@@ -123,6 +124,10 @@ def _water(label, x, y, w, d, top, yaw=0.0, pitch=0.0):
     a.set_editor_property('water_volume', True)
     a.set_actor_label(f'{label}_Swim'); a.set_folder_path('Water/Swim')
     counts['Swim'] = counts.get('Swim', 0) + 1
+    # Under the surface the camera sees a green-blue grade: a bounded post-process volume on the same box.
+    water_fx.underwater_volume(actors, label, u.Vector(x * 100, y * 100, (top - WATER_DEPTH / 2) * 100), u.Vector(w / 2, d / 2, WATER_DEPTH / 2),
+                               u.Rotator(roll=0, pitch=pitch, yaw=yaw))
+    counts['Underwater'] = counts.get('Underwater', 0) + 1
     return a
 
 
@@ -394,7 +399,7 @@ for w in WATERS:
 for b in BASINS:  # one flat surface at the basin level; the shore terrain hides what lies outside the polygon
     xs, ys = [q[0] for q in b['polygon']], [q[1] for q in b['polygon']]
     bx0, by0, bw, bd = (min(xs) + max(xs)) / 2, (min(ys) + max(ys)) / 2, max(xs) - min(xs), max(ys) - min(ys)
-    box(b['name'].replace(' ', ''), bx0, by0, bw, bd, 0.1, 'River', z0=b['level'] - 0.1, collide=False, folder='Water', ground=None)
+    box(b['name'].replace(' ', ''), bx0, by0, bw, bd, 0.1, 'Pond', z0=b['level'] - 0.1, collide=False, folder='Water', ground=None)
     pending.append(lambda n=b['name'].replace(' ', ''), g=(bx0, by0, bw, bd, b['level']): _water(n, *g))  # shore above the level stays dry
 # Roads and trails are not geometry: the carved heightfield is the surface and M_GN_Ground paints them (terrain vertex colours G, B below).
 
@@ -462,6 +467,7 @@ for cx_ in crossings(L):
                                                    u.Rotator(roll=0, pitch=0, yaw=yaw + ABUT_YAW[side]))
                 b_.static_mesh_component.set_static_mesh(RIVER_BRIDGE['abutment'])
                 b_.set_actor_label(f'Abutment_{n.replace(" ", "")}_{"AB"[side > 0]}'); b_.set_folder_path('Bridges')
+                water_fx.abutment_earth(b_, water_fx.approach_paving())  # the earth fill between the wing walls continues the deck paving, not bright grass
             kit_placed.add(n); counts['BridgeKit'] = counts.get('BridgeKit', 0) + 1
             counts['BridgeSpans'] = counts.get('BridgeSpans', []) + [run]
             return
@@ -873,7 +879,7 @@ mountains.static_mesh_component.set_static_mesh(backdrop_mesh)
 mountains.static_mesh_component.set_material(0, M['Rock'])
 mountains.static_mesh_component.set_collision_profile_name('NoCollision')
 mountains.set_actor_label('Backdrop'); mountains.set_folder_path('Ground')
-_box('Sea', 0, 0, 2 * ext, 2 * ext, 0.1, 'River', SEA - 0.1, 0, False, 'Water', None)
+_box('Sea', 0, 0, 2 * ext, 2 * ext, 0.1, 'Pond', SEA - 0.1, 0, False, 'Water', None)
 _water('Sea', 0, 0, 2 * ext, 2 * ext, SEA)
 
 for spawn in pending:

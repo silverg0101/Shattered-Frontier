@@ -210,7 +210,14 @@ void USFHarvestPresentation::EndPlay(const EEndPlayReason::Type Reason)
     Runtime.Reset(); Super::EndPlay(Reason);
 }
 
-bool USFHarvestPresentation::IsReady() const { return Runtime.IsValid(); }
+bool USFHarvestPresentation::IsReady() const { return Runtime.IsValid()&&!bSuppressed; }
+
+void USFHarvestPresentation::SetSuppressed(bool bOn)
+{
+    bSuppressed=bOn;
+    if (Surface) { Surface->SetVisibility(!bOn); }
+    for (UStaticMeshComponent* Part:CrownParts) { if (Part) { Part->SetVisibility(!bOn); } }
+}
 
 bool USFHarvestPresentation::TraceSurface(const FVector& Origin,const FVector& Direction,FVector& Point,FVector& Normal) const
 {

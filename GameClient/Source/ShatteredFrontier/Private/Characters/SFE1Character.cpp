@@ -9,6 +9,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "Engine/StaticMesh.h"
 #include "Animation/AnimInstance.h"
+#include "Animation/AnimSequence.h"
 #include "Engine/SkeletalMesh.h"
 #include "Materials/MaterialInterface.h"
 #if SF_WITH_MUTABLE
@@ -111,6 +112,7 @@ ASFE1Character::ASFE1Character(const FObjectInitializer& ObjectInitializer)
         static ConstructorHelpers::FClassFinder<UAnimInstance> Locomotion(TEXT("/Game/Mannequin/Animations/ThirdPerson_AnimBP"));
         GetMesh()->SetSkeletalMeshAsset(Body.Object);
         GetMesh()->SetAnimInstanceClass(Locomotion.Class);
+        LocomotionAnim = Locomotion.Class;
         MetaHumanRetargeter = TSoftObjectPtr<UIKRetargeter>(FSoftObjectPath(TEXT("/Game/Frontier/Characters/Player/Retarget/RTG_SF_MannequinToMetaHuman.RTG_SF_MannequinToMetaHuman")));
         Outfit = TSoftObjectPtr<UObject>(FSoftObjectPath(TEXT("/Game/Frontier/Characters/Player/Outfit/CO_PlayerOutfit.CO_PlayerOutfit")));
         OutfitFemale = TSoftObjectPtr<UObject>(FSoftObjectPath(TEXT("/Game/Frontier/Characters/Player/Outfit/CO_PlayerOutfit_F.CO_PlayerOutfit_F")));
@@ -933,9 +935,9 @@ void ASFE1Character::TickSwimScenario()
     if (Now >= NextSwimSampleAt)
     {
         NextSwimSampleAt = Now + 0.5;
-        UE_LOG(LogTemp, Display, TEXT("SWIM_SAMPLE Role=%s Stage=%d X=%.0f Mode=%d Speed=%.0f"),
+        UE_LOG(LogTemp, Display, TEXT("SWIM_SAMPLE Role=%s Stage=%d X=%.0f Mode=%d Speed=%.0f Pose=%d"),
             *ScenarioRole, SwimScenarioStage, Watched->GetActorLocation().X,
-            int32(Watched->GetCharacterMovement()->MovementMode), Watched->GetVelocity().Size2D());
+            int32(Watched->GetCharacterMovement()->MovementMode), Watched->GetVelocity().Size2D(), Watched->IsSwimPoseActive() ? 1 : 0);
     }
     if (ScenarioRole != TEXT("Driver") || SwimScenarioStage >= 3) { return; }
     if (SwimScenarioStage == 0 && GetCharacterMovement()->IsSwimming()) { SwimScenarioStage = 1; }
@@ -1237,10 +1239,10 @@ void ASFE1Character::TickGreenlandsEnvironmentScenario()
     if (Now >= NextSwimSampleAt)
     {
         NextSwimSampleAt = Now + 0.25;
-        UE_LOG(LogTemp, Display, TEXT("GREENLANDS_ENV_SAMPLE Role=%s HP=%d X=%.0f Y=%.0f Z=%.0f Mode=%d Speed=%.0f"),
+        UE_LOG(LogTemp, Display, TEXT("GREENLANDS_ENV_SAMPLE Role=%s HP=%d X=%.0f Y=%.0f Z=%.0f Mode=%d Speed=%.0f Pose=%d"),
             *ScenarioRole, Watched->CombatHealth(), Watched->GetActorLocation().X, Watched->GetActorLocation().Y,
             Watched->GetActorLocation().Z, int32(Watched->GetCharacterMovement()->MovementMode),
-            Watched->GetVelocity().Size2D());
+            Watched->GetVelocity().Size2D(), Watched->IsSwimPoseActive() ? 1 : 0);
     }
     if (ScenarioRole != TEXT("Driver") || SwimScenarioStage >= 2) { return; }
     if (SwimScenarioStage == 1 && GetActorLocation().X <= 51500.0 &&
@@ -1513,9 +1515,35 @@ void ASFE1Character::SetMouseCaptured(bool bCaptured)
     { FInputModeGameAndUI Mode; Mode.SetHideCursorDuringCapture(false); Mode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock); PC->SetInputMode(Mode); }
 }
 
+void ASFE1Character::UpdateSwimPose()
+{
+    // Visual only (no server mesh). The swim flag is CharacterMovement's own mode, replicated to every client.
+    if (GetNetMode() == NM_DedicatedServer || !GetMesh() || !LocomotionAnim) { return; }
+    bool bWant = GetCharacterMovement()->IsSwimming();
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    if (FParse::Param(FCommandLine::Get(), TEXT("NoSwimPose"))) { bWant = false; }  // evidence only: the walking look before this change
+#endif
+    if (bWant == bSwimPose) { return; }
+    if (bWant)
+    {
+        if (!SwimClip) { SwimClip = LoadObject<UAnimSequence>(nullptr, TEXT("/Game/Frontier/Characters/Player/Anim/AS_SF_Swim.AS_SF_Swim")); }
+        if (!SwimClip) { UE_LOG(LogTemp, Warning, TEXT("SWIM_CLIP_MISSING (run tools/Build-SwimAnim.py)")); bSwimPose = true; return; }
+        GetMesh()->SetAnimationMode(EAnimationMode::AnimationSingleNode);
+        GetMesh()->PlayAnimation(SwimClip, true);
+    }
+    else if (SwimClip)
+    {
+        GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
+        GetMesh()->SetAnimInstanceClass(LocomotionAnim);
+    }
+    bSwimPose = bWant;
+    UE_LOG(LogTemp, Display, TEXT("SWIM_POSE Active=%d Clip=%d"), bWant ? 1 : 0, SwimClip ? 1 : 0);
+}
+
 void ASFE1Character::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
+    UpdateSwimPose();
     if (HasAuthority()) { TickEnergy(); }
     if (IsLocallyControlled()) { RefreshHeldItem(); }
     const FString CombatMap = GetWorld()->GetOutermost()->GetName();

@@ -1,12 +1,12 @@
 """Silverbrook ground, road and river materials (full editor; run with tools/Run-InEditor.py).
 
-py -3 tools/Run-InEditor.py GameClient/ArtSource/Greenlands/NatureFamilies/import_ground.py
+py -3 tools/Run-InEditor.py GameClient/ArtSource/Greenlands/NatureFamilies/import_ground.py [--water-only]
 
 Reuses the textures import_terrain.py imported; run that first. Writes /Game/Frontier/Environment/Greenlands/Nature/Materials:
   M_GN_Ground  -> MI_GN_Ground  forest floor (+ moss patches from a mask) blended to triplanar bedrock by vertex colour R (slope),
                                 world-space macro noise on top; build_silverbrook.py paints the colour from the terrain slope.
   M_GN_Surface -> MI_GN_Road, MI_GN_Trail  flat, world-aligned road and trail strips with macro noise.
-  M_GN_River   -> MI_GN_River   Single Layer Water, two panning normal layers.
+  M_GN_River   -> MI_GN_River (flowing), MI_GN_Pond (still)  Single Layer Water: flow-aligned ripples, depth colour, shoreline and streak foam.
 Values below are material defaults; MI_* instances override them.
 """
 import sys
@@ -278,36 +278,80 @@ def surface():
 
 
 def river():
+    """M_GN_River: Single Layer Water. Flow runs along the strip's local X (build_silverbrook lays each strip along its polyline, downstream),
+    ripples advect with FlowCmPerSec + RippleCmPerSec; depth colour from the scene depth below the surface plus the SLW absorption;
+    shoreline foam where that depth is under ShoreCm, faint streak foam in the current. Instances: MI_GN_River (flows), MI_GN_Pond (still)."""
     m = master('M_GN_River'); g = G(m)
     m.set_editor_property('shading_model', u.MaterialShadingModel.MSM_SINGLE_LAYER_WATER)
-    xy = g.mask(node(m, u.MaterialExpressionWorldPosition, -1400, 0), True, True, False, -1250, 0)
-    time = node(m, u.MaterialExpressionTime, -1250, 200)
+    m.set_editor_property('two_sided', True)  # seen from below the surface it still renders (the underwater tint is a post-process volume)
+    c1 = lambda v, x, y: node(m, u.MaterialExpressionConstant, x, y, r=v)
+    wp = node(m, u.MaterialExpressionWorldPosition, -2400, 0); xy = g.mask(wp, True, True, False, -2250, 0)
+    time = node(m, u.MaterialExpressionTime, -2250, 200)
+    # Flow axes: the strip's local X in world space (yaw only), and the axis across it.
+    ax = node(m, u.MaterialExpressionTransform, -2250, 350, transform_source_type=u.MaterialVectorCoordTransformSource.TRANSFORMSOURCE_LOCAL,
+              transform_type=u.MaterialVectorCoordTransform.TRANSFORM_WORLD)
+    link(node(m, u.MaterialExpressionConstant3Vector, -2450, 350, constant=u.LinearColor(1, 0, 0, 0)), '', ax, '')
+    axn = node(m, u.MaterialExpressionNormalize, -2000, 350); link(g.mask(ax, True, True, False, -2120, 350), '', axn, 'VectorInput')
+    perp = node(m, u.MaterialExpressionAppendVector, -1850, 450)
+    link(g.mul(g.mask(axn, False, True, False, -2000, 450), c1(-1.0, -2000, 520), -1930, 450), '', perp, 'A')
+    link(g.mask(axn, True, False, False, -1930, 560), '', perp, 'B')
+    along = g.op(u.MaterialExpressionDotProduct, xy, axn, -1700, 300)
+    across = g.op(u.MaterialExpressionDotProduct, xy, perp, -1700, 450)
+    drift = g.op(u.MaterialExpressionAdd, g.sc('FlowCmPerSec', 70.0, -1700, 560), g.sc('RippleCmPerSec', 8.0, -1700, 620), -1500, 560)
     wn = tex('/Engine/Functions/Engine_MaterialFunctions02/ExampleContent/Textures/water_n')
     layers = []
-    for i, (tile, vx, vy) in enumerate(((260, 0.020, 0.012), (170, -0.013, 0.026))):  # two scales drifting along the flow and across it
-        t = g.sc(f'TileCm{i}', tile, -1250, 400 + i * 400); uv = g.uv(xy, t, -1100, 400 + i * 400)
-        pan = node(m, u.MaterialExpressionPanner, -950, 400 + i * 400, speed_x=vx, speed_y=vy)
-        link(uv, '', pan, 'Coordinate'); link(time, '', pan, 'Time')
-        layers.append(g.smp(f'Normal{i}', wn, S.SAMPLERTYPE_NORMAL, pan, -700, 400 + i * 400))
-    s = g.op(u.MaterialExpressionAdd, layers[0], layers[1], -450, 500, ao="RGB", bo="RGB")  # ponytail: plain sum of two unpacked normals, renormalised; fine for water ripples
-    blend = node(m, u.MaterialExpressionNormalize, -300, 500); link(s, "", blend, "VectorInput")
-    nrm = g.mul(blend, g.vec('NormalStrength', (1, 1, 1), -200, 700), -100, 500)
-    scatter = g.vec('Scatter', (0.02, 0.07, 0.06), -400, 0)
-    mel.connect_material_property(scatter, '', u.MaterialProperty.MP_BASE_COLOR); mel.connect_material_property(nrm, '', u.MaterialProperty.MP_NORMAL)
-    mel.connect_material_property(g.sc('Roughness', 0.08, -400, 150), '', u.MaterialProperty.MP_ROUGHNESS)
+    for i, (tile, mult, cross) in enumerate(((260, 1.0, 0.0), (170, 0.62, 5.0))):  # two scales: the second lags and drifts across
+        a = g.op(u.MaterialExpressionSubtract, along, g.mul(g.mul(drift, time, -1400, 700 + i * 300), c1(mult, -1400, 800 + i * 300), -1250, 700 + i * 300), -1100, 700 + i * 300)
+        c = g.op(u.MaterialExpressionAdd, across, g.mul(time, c1(cross, -1250, 900 + i * 300), -1100, 900 + i * 300), -950, 900 + i * 300)
+        uv = node(m, u.MaterialExpressionAppendVector, -800, 800 + i * 300); link(a, '', uv, 'A'); link(c, '', uv, 'B')
+        layers.append(g.smp(f'Normal{i}', wn, S.SAMPLERTYPE_NORMAL, g.uv(uv, g.sc(f'TileCm{i}', tile, -800, 700 + i * 300), -650, 800 + i * 300), -500, 800 + i * 300))
+    s = g.op(u.MaterialExpressionAdd, layers[0], layers[1], -300, 900, ao="RGB", bo="RGB")  # ponytail: plain sum of two unpacked normals, renormalised; fine for water ripples
+    sxy = g.mul(g.mask(s, True, True, False, -200, 900), g.sc('NormalStrength', 1.0, -200, 1000), -50, 900)
+    nrm = node(m, u.MaterialExpressionNormalize, 150, 900); nv = node(m, u.MaterialExpressionAppendVector, 0, 950)
+    link(sxy, '', nv, 'A'); link(g.mask(s, False, False, True, -200, 1050), '', nv, 'B'); link(nv, '', nrm, 'VectorInput')
+    # Depth below the surface (cm), from the scene behind the water: shoreline foam and depth tint.
+    dd = node(m, u.MaterialExpressionMax, 0, 1300)
+    link(g.op(u.MaterialExpressionSubtract, node(m, u.MaterialExpressionSceneDepthWithoutWater, -200, 1300), node(m, u.MaterialExpressionPixelDepth, -200, 1400), -50, 1300), '', dd, 'A')
+    link(c1(0.0, -50, 1400), '', dd, 'B')
+    sat = node(m, u.MaterialExpressionSaturate, 250, 1300); link(g.op(u.MaterialExpressionDivide, dd, g.sc('ShoreCm', 28.0, 150, 1400), 100, 1300), '', sat, '')
+    shore = node(m, u.MaterialExpressionOneMinus, 400, 1300); link(sat, '', shore, '')
+    shp = node(m, u.MaterialExpressionPower, 550, 1300, const_exponent=1.6); link(shore, '', shp, 'Base')
+    uvfx = node(m, u.MaterialExpressionAppendVector, -150, 1500)  # flow-advected position for the foam noise
+    link(g.op(u.MaterialExpressionSubtract, along, g.mul(drift, time, -300, 1550), -250, 1500), '', uvfx, 'A'); link(across, '', uvfx, 'B')
+    p3 = node(m, u.MaterialExpressionAppendVector, 0, 1500); link(uvfx, '', p3, 'A'); link(c1(0.0, -150, 1600), '', p3, 'B')
+    nz = node(m, u.MaterialExpressionNoise, 150, 1500, noise_function=u.NoiseFunction.NOISEFUNCTION_SIMPLEX_TEX, scale=0.035, levels=3, output_min=0.0, output_max=1.0, quality=2, turbulence=False)
+    link(p3, '', nz, 'World Position')
+    edge = g.op(u.MaterialExpressionMultiply, shp, g.op(u.MaterialExpressionAdd, g.mul(nz, c1(1.3, 300, 1600), 350, 1500), c1(0.5, 350, 1600), 450, 1500), 700, 1500)
+    p3b = node(m, u.MaterialExpressionAppendVector, 0, 1750)  # stretched along the flow: streaks
+    link(g.mul(uvfx, node(m, u.MaterialExpressionConstant2Vector, -150, 1750, r=0.22, g=1.6), -50, 1750), '', p3b, 'A'); link(c1(0.0, -150, 1850), '', p3b, 'B')
+    nz2 = node(m, u.MaterialExpressionNoise, 150, 1750, noise_function=u.NoiseFunction.NOISEFUNCTION_SIMPLEX_TEX, scale=0.05, levels=2, output_min=0.0, output_max=1.0, quality=2, turbulence=False)
+    link(p3b, '', nz2, 'World Position')
+    streak = g.mul(g.mul(g.op(u.MaterialExpressionSubtract, nz2, c1(0.78, 300, 1800), 450, 1750), c1(6.0, 450, 1850), 600, 1750), g.sc('StreakFoam', 0.06, 600, 1850), 750, 1750)
+    foam = node(m, u.MaterialExpressionSaturate, 900, 1600)
+    link(g.op(u.MaterialExpressionAdd, g.op(u.MaterialExpressionSubtract, edge, c1(0.35, 800, 1500), 850, 1500), streak, 900, 1500), '', foam, '')
+    depth01 = node(m, u.MaterialExpressionSaturate, 400, 1000); link(g.op(u.MaterialExpressionDivide, dd, g.sc('DeepCm', 140.0, 300, 1100), 350, 1000), '', depth01, '')
+    water_col = g.lerp(g.vec('ShallowColor', (0.10, 0.17, 0.10), 400, 700), g.vec('DeepColor', (0.006, 0.035, 0.055), 400, 780), depth01, 600, 750, 'RGB', 'RGB')
+    base = g.lerp(water_col, g.vec('FoamColor', (0.8, 0.82, 0.8), 600, 850), foam, 800, 800, '', 'RGB')
+    mel.connect_material_property(base, '', u.MaterialProperty.MP_BASE_COLOR); mel.connect_material_property(nrm, '', u.MaterialProperty.MP_NORMAL)
+    mel.connect_material_property(g.lerp(g.sc('Roughness', 0.07, 700, 950), g.sc('FoamRoughness', 0.6, 700, 1000), foam, 900, 950), '', u.MaterialProperty.MP_ROUGHNESS)
     mel.connect_material_property(g.sc('Specular', 0.5, -400, 220), '', u.MaterialProperty.MP_SPECULAR)
     for e in mel.get_material_expressions(m):  # delete_all_material_expressions leaves output nodes behind; an unlinked one fails the compile
         if isinstance(e, u.MaterialExpressionSingleLayerWaterMaterialOutput): mel.delete_material_expression(m, e)
-    out = node(m, u.MaterialExpressionSingleLayerWaterMaterialOutput, 300, 0)
-    link(g.vec('ScatteringCoefficients', (0.01, 0.04, 0.03), 0, 0), '', out, 'ScatteringCoefficients')
-    link(g.vec('AbsorptionCoefficients', (0.25, 0.08, 0.06), 0, 100), '', out, 'AbsorptionCoefficients')
+    out = node(m, u.MaterialExpressionSingleLayerWaterMaterialOutput, 1000, 0)
+    link(g.vec('ScatteringCoefficients', (0.004, 0.012, 0.012), 700, 0), '', out, 'ScatteringCoefficients')
+    link(g.vec('AbsorptionCoefficients', (0.085, 0.022, 0.012), 700, 100), '', out, 'AbsorptionCoefficients')
     mel.recompile_material(m); eal.save_loaded_asset(m)
     mi = instance('MI_GN_River', m); eal.save_loaded_asset(mi)
+    mp = instance('MI_GN_Pond', m)
+    mel.set_material_instance_scalar_parameter_value(mp, 'FlowCmPerSec', 0.0); mel.set_material_instance_scalar_parameter_value(mp, 'RippleCmPerSec', 10.0)
+    mel.set_material_instance_scalar_parameter_value(mp, 'StreakFoam', 0.0)
+    mel.set_material_instance_vector_parameter_value(mp, 'ShallowColor', u.LinearColor(0.08, 0.20, 0.17, 1)); eal.save_loaded_asset(mp)
 
 
 def instance(name, parent):
     mi = new(name, u.MaterialInstanceConstant, u.MaterialInstanceConstantFactoryNew()); mel.set_material_instance_parent(mi, parent); return mi
 
 
-ground(); surface(); river()
-print('GROUND_IMPORT', [f'{LIB}/Materials/{n}' for n in ('MI_GN_Ground', 'MI_GN_Road', 'MI_GN_Trail', 'MI_GN_River')])
+if '--water-only' in u.SystemLibrary.get_command_line() or '--water-only' in sys.argv: river()  # leaves the ground and road materials untouched
+else: ground(); surface(); river()
+print('GROUND_IMPORT', [f'{LIB}/Materials/{n}' for n in ('MI_GN_Ground', 'MI_GN_Road', 'MI_GN_Trail', 'MI_GN_River', 'MI_GN_Pond')])

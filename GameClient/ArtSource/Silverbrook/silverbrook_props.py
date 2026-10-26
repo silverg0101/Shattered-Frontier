@@ -223,8 +223,11 @@ def _cobble(L,c,x,y,extra=2.0,ramp=5.0):
             best=max(best,min(1.,max(0.,1-(math.hypot(x-a[0]-dx*t,y-a[1]-dy*t)-w/2-extra)/ramp)))
     return best
 
+def _wet(A):
+    sys.path.insert(0,str(ROOT.parent/'Greenlands'));import water_fx;return water_fx.wet_fn(A)   # nothing stands in a river, brook, basin or the sea
+
 def dress_verge(L,c):
-    world=_world();v=c['verge'];A=_actors();pp,rects=_obstacles(A)
+    world=_world();v=c['verge'];A=_actors();pp,rects=_obstacles(A);wet=_wet(A)
     meshes=[_asset(f'/Game/Frontier/Environment/Greenlands/Nature/Meshes/{n}') for n in v['meshes']];meshes=[m for m in meshes if m]
     for path in eal.list_assets(LIB+'/Foliage',recursive=False,include_folder=False):  # also clears types dropped from the list
         ft=u.load_asset(path)
@@ -245,7 +248,7 @@ def dress_verge(L,c):
                 px,py=x-side*uy*d+(_h(key+'j')-.5)*step*ux,y+side*ux*d+(_h(key+'j')-.5)*step*uy
                 if not pp._free((px*100-30,py*100-30,px*100+30,py*100+30),rects):continue
                 z=pp._ground(world,px*100,py*100,0)
-                if z is None:continue
+                if z is None or wet(px*100,py*100,z):continue
                 ft,tx=types[int(_h(key+'t')*len(types))%len(types)]
                 if 'Pebble' in ft.get_name() and _cobble(L,c,px,py)>=.5:continue   # WP6i review fix 8: field stones stay off the carriageway
                 s=lo+(hi-lo)*_h(key+'s')
@@ -256,7 +259,7 @@ def dress_verge(L,c):
     print('VERGE_INSTANCES',total);return total
 
 def dress_props(L,c):
-    world=_world();A=_actors();pp,rects=_obstacles(A);placed={}
+    world=_world();A=_actors();pp,rects=_obstacles(A);placed={};wet=_wet(A)
     for rule in c['props']:
         mesh=_asset(rule.get('fab')) or (None if rule.get('optional_only') else _asset(rule['asset']))
         if not mesh:print('PROP_SKIPPED',rule['id']);continue
@@ -272,7 +275,7 @@ def dress_props(L,c):
                     px,py=(x-side*uy*d)*100,(y+side*ux*d)*100
                     if not pp._free((px-clr-50,py-clr-50,px+clr+50,py+clr+50),rects):continue
                     z=pp._ground(world,px,py,0)
-                    if z is None:continue
+                    if z is None or wet(px,py,z):continue
                     to_road=math.degrees(math.atan2(side*ux,-side*uy))   # direction from the prop toward the street centre
                     yaw={'road':to_road-90,'along':math.degrees(math.atan2(uy,ux))-90,'random':_h(key+'y')*360}[rule['face']]  # mesh front is +Y (FBX flip)
                     s=slo+(shi-slo)*_h(key+'s')
@@ -298,7 +301,7 @@ def _has_frontage(fronts,x,y,ux,uy,side,along=1200,depth=1800):
 
 def dress_street_groups(L,c):
     """Small, mixed Frontier prop groups just outside the walkable road."""
-    A=_actors();world=_world();pp,rects=_obstacles(A)
+    A=_actors();world=_world();pp,rects=_obstacles(A);wet=_wet(A)
     import pcg_dressing
     _,terrain=pcg_dressing._terrain()
     g=c['street_groups'];step=val(g['spacing_m']);offset=val(g['offset_m']);clear=val(g['clear_m'])*100
@@ -328,7 +331,7 @@ def dress_street_groups(L,c):
                 box=(px-clear,py-clear,px+clear,py+clear)
                 if not pp._free(box,rects):continue
                 hit=terrain.static_mesh_component.line_trace_component(u.Vector(px,py,100000),u.Vector(px,py,-100000),True,False)
-                if not hit:continue
+                if not hit or wet(px,py,hit[0].z):continue
                 z=hit[0].z
                 yaw=math.degrees(math.atan2(uy,ux))-90
                 label=f'StreetGroup_{road.replace(" ", "")}_{k:03d}_{"L" if side>0 else "R"}'
@@ -343,7 +346,7 @@ def dress_street_groups(L,c):
                     sbox=(sx-30,sy-30,sx+30,sy+30)
                     if not pp._free(sbox,rects):continue
                     hit=terrain.static_mesh_component.line_trace_component(u.Vector(sx,sy,100000),u.Vector(sx,sy,-100000),True,False)
-                    if not hit:continue
+                    if not hit or wet(sx,sy,hit[0].z):continue
                     s=A.spawn_actor_from_class(u.StaticMeshActor,u.Vector(sx,sy,hit[0].z),u.Rotator(yaw=yaw+_h(key+'y'+str(j))*360))
                     s.static_mesh_component.set_static_mesh(m2)
                     s.set_actor_label(f'{label}_{j}');s.set_folder_path('Silverbrook/Dressing');s.tags=[TAG]

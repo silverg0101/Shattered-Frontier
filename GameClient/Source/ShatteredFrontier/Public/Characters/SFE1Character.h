@@ -142,6 +142,7 @@ public:
     // FaceId is an id from USFE1Settings::PlayerFaceIds, mapped to the fixed path FaceClassPath gives (clients never pick a class).
     // Server-set: the character creator will call SetFaceId from the player's saved appearance (persistence and the creator packet
     // are a later step); today only the SFFace dev command and SFCrowdTest do.
+    UFUNCTION(BlueprintPure, Category="Movement") bool IsSwimPoseActive() const { return bSwimPose; }  // true while the mesh plays the swim clip (tools/Test-SwimPose.ps1)
     FName GetFaceId() const { return FaceId; }
     void SetFaceId(FName NewFaceId);  // authority only; an id not in PlayerFaceIds is logged and the old face kept
     static bool IsAllowedFaceId(FName Id);
@@ -290,6 +291,11 @@ private:
     double NextRestRegenSampleAt = 0;
     double NextFallSampleAt = 0;
     double NextSwimSampleAt = 0;
+    // Swim pose: while CharacterMovement swims (replicated mode, so remote proxies too) the mesh loops SwimClip, then returns to the locomotion AnimBP.
+    UPROPERTY(Transient) TObjectPtr<class UAnimSequence> SwimClip;
+    UPROPERTY(Transient) TSubclassOf<class UAnimInstance> LocomotionAnim;
+    bool bSwimPose = false;
+    void UpdateSwimPose();
     int32 SwimScenarioStage = 0;
     int32 CrouchScenarioStage = 0;
     double CrouchScenarioStartAt = -1;

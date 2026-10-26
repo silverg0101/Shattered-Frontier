@@ -2048,5 +2048,28 @@
         "file": "Textures/sb_straw_face_Displacement.jpg"
       }
     ]
+  },
+  {
+    "asset": "sb_straw_side",
+    "license": "self-made (procedural, PropHayBales/make_straw_side.py)",
+    "physical_size_metres": [
+      0.6,
+      0.6
+    ],
+    "note": "straw lying along u in layered flakes, tileable; normal and roughness derived from the generated height map",
+    "files": [
+      {
+        "file": "Textures/sb_straw_side_Diffuse.jpg"
+      },
+      {
+        "file": "Textures/sb_straw_side_nor_gl.jpg"
+      },
+      {
+        "file": "Textures/sb_straw_side_Rough.jpg"
+      },
+      {
+        "file": "Textures/sb_straw_side_Displacement.jpg"
+      }
+    ]
   }
 ]

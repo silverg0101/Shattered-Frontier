@@ -61,6 +61,8 @@ public:
     virtual void EndPlay(const EEndPlayReason::Type Reason) override;
     virtual void TickComponent(float Delta, ELevelTick Type, FActorComponentTickFunction* Function) override;
     bool IsReady() const;
+    // The node shows the tree it replaced (its map dressing mesh), so the shared harvest art stays hidden and cutting is plain.
+    void SetSuppressed(bool bOn);
     bool TraceSurface(const FVector& Origin,const FVector& Direction,FVector& Point,FVector& Normal) const;
     bool PrepareCut(const FVector& Eye,const FVector& RequestedPoint,const APawn* Interactor,
         double ReachCm,const UPrimitiveComponent* TargetProxy,FSFHarvestVisualCut& Cut) const;
@@ -85,6 +87,7 @@ private:
     UPROPERTY() TObjectPtr<UBoxComponent> StumpCollision;
     UPROPERTY() TObjectPtr<USFHarvestImpactAudio> ImpactAudio;
     UPROPERTY() TObjectPtr<UStaticMesh> Source;
+    bool bSuppressed=false;
     UPROPERTY() TObjectPtr<UProceduralMeshComponent> Surface;
     UPROPERTY() TArray<TObjectPtr<UStaticMeshComponent>> CrownParts;
     UPROPERTY() TArray<TObjectPtr<UStaticMesh>> FragmentMeshes;

@@ -260,6 +260,7 @@ void ASFGatheringPilotNode::ClearDressingAtPlacement()
     RestoreDressing();
     ClearedDressingAt=GetActorLocation();
     const FVector At=GetActorLocation()-FVector(0,0,70); const FSphere Near(At,400);
+    const UInstancedStaticMeshComponent* Tallest=nullptr; FTransform TallestAt; double TallestZ=0;  // the tree or rock, not the ferns around it
     for (TObjectIterator<UInstancedStaticMeshComponent> It; It; ++It)
     {
         if (It->GetWorld()!=GetWorld() || !It->Bounds.GetSphere().Intersects(Near)) { continue; }
@@ -269,8 +270,28 @@ void ASFGatheringPilotNode::ClearDressingAtPlacement()
             FTransform T; It->GetInstanceTransform(I,T,true);
             if (FVector::Dist2D(T.GetLocation(),At)<100) { Rooted.Add(I); ClearedDressing.Add({*It,T}); }
         }
-        if (!Rooted.IsEmpty()) { It->RemoveInstances(Rooted); }
+        if (Rooted.IsEmpty()) { continue; }
+        if (It->GetStaticMesh() && It->GetStaticMesh()->GetBounds().BoxExtent.Z>TallestZ)
+        { Tallest=*It; TallestAt=ClearedDressing.Last().Value; TallestZ=It->GetStaticMesh()->GetBounds().BoxExtent.Z; }
+        It->RemoveInstances(Rooted);
     }
+    if (Tallest) { ShowDressingMesh(Tallest,TallestAt); }
+}
+
+void ASFGatheringPilotNode::ShowDressingMesh(const UInstancedStaticMeshComponent* From,const FTransform& At)
+{
+    // Pines, young broadleaf and boulders share the oak and rock harvest art's gather rules, not its looks (owner report 2026-10-26).
+    if (SpeciesView || !From || !From->GetStaticMesh() || !HarvestVisuals) { return; }
+#if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
+    if (FParse::Param(FCommandLine::Get(),TEXT("HarvestArtShared"))) { return; }  // evidence only: the look before this change
+#endif
+    HarvestVisuals->SetSuppressed(true);
+    if (GetNetMode()==NM_DedicatedServer) { return; }
+    SpeciesView=NewObject<UStaticMeshComponent>(this,TEXT("DressingSpecies"));
+    SpeciesView->SetStaticMesh(From->GetStaticMesh());
+    for (int32 I=0;I<From->GetNumMaterials();++I) { SpeciesView->SetMaterial(I,From->GetMaterial(I)); }
+    SpeciesView->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    SpeciesView->RegisterComponent(); SpeciesBase=At; SpeciesView->SetWorldTransform(At);
 }
 
 void ASFGatheringPilotNode::RestoreDressing()
@@ -280,6 +301,8 @@ void ASFGatheringPilotNode::RestoreDressing()
         if (UInstancedStaticMeshComponent* C=D.Key.Get()) { C->AddInstance(D.Value,true); }
     }
     ClearedDressing.Reset(); ClearedDressingAt.Reset();
+    if (SpeciesView) { SpeciesView->DestroyComponent(); SpeciesView=nullptr; }
+    if (HarvestVisuals) { HarvestVisuals->SetSuppressed(false); }
 }
 
 bool ASFGatheringPilotNode::CanStreamOut() const
@@ -450,6 +473,7 @@ void ASFGatheringPilotNode::ApplyGrowthVisual()
     const float Scale=GetDefault<USFGatheringGrowthSettings>()->ScaleFor(Kind,State.GrowthStage);
     Mesh->SetRelativeScale3D(FVector(0.7,0.7,1.4)*Scale);
     if (HarvestVisuals) { HarvestVisuals->SetGrowthScale(Scale); }
+    if (SpeciesView) { FTransform T=SpeciesBase; T.SetScale3D(T.GetScale3D()*Scale); SpeciesView->SetWorldTransform(T); }
 }
 
 void ASFGatheringPilotNode::Recover()
@@ -651,6 +675,7 @@ void ASFGatheringPilotNode::OnRep_State()
         HarvestVisuals->ApplyState(State.Cuts,State.Charges==0,State.Generation,State.FallingTree);
         Mesh->SetVisibility(false); if (Label) { Label->SetVisibility(false); }
     }
+    if (SpeciesView) { Mesh->SetVisibility(false); if (Label) { Label->SetVisibility(false); } SpeciesView->SetVisibility(State.Charges>0); }
     ApplyGrowthVisual();
     if (IsRefinery())
     {

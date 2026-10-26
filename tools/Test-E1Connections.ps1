@@ -821,13 +821,13 @@ try {
         foreach ($role in @('Driver','Observer')) {
             $path = Join-Path $logs ('Client' + $(if ($role -eq 'Driver') { '1' } else { '2' }) + '.log')
             Wait-Log $path "SWIM_SAMPLE Role=$role .*Mode=4"
-            $samples = @(Select-String -LiteralPath $path -Pattern "SWIM_SAMPLE Role=$role Stage=\d+ X=([-\d.]+) Mode=(\d+) Speed=([\d.]+)" | ForEach-Object {
+            $samples = @(Select-String -LiteralPath $path -Pattern "SWIM_SAMPLE Role=$role Stage=\d+ X=([-\d.]+) Mode=(\d+) Speed=([\d.]+) Pose=(\d)" | ForEach-Object {
                 $g = $_.Matches[0].Groups
                 [pscustomobject]@{ X=[double]::Parse($g[1].Value,[Globalization.CultureInfo]::InvariantCulture); Mode=[int]$g[2].Value;
-                    Speed=[double]::Parse($g[3].Value,[Globalization.CultureInfo]::InvariantCulture) }
+                    Speed=[double]::Parse($g[3].Value,[Globalization.CultureInfo]::InvariantCulture); Pose=[int]$g[4].Value }
             })
             $walk = @($samples | Where-Object { $_.Mode -eq 1 -and $_.X -lt 500 } | Select-Object -First 1)
-            $swim = @($samples | Where-Object { $_.Mode -eq 4 -and $_.X -gt 1600 -and $_.X -lt 2200 -and $_.Speed -ge 290 -and $_.Speed -le 310 } | Select-Object -First 1)
+            $swim = @($samples | Where-Object { $_.Mode -eq 4 -and $_.Pose -eq 1 -and $_.X -gt 1600 -and $_.X -lt 2200 -and $_.Speed -ge 290 -and $_.Speed -le 310 } | Select-Object -First 1)
             $returned = @($samples | Where-Object { $_.Mode -eq 1 -and $_.X -gt 500 -and $_.X -lt 1000 } | Select-Object -Last 1)
             if ($walk.Count -ne 1 -or $swim.Count -ne 1 -or $returned.Count -ne 1) {
                 throw "$role missed walk-to-swim-to-walk, or the 3 m/s swim cap"
@@ -853,18 +853,18 @@ try {
         Wait-Log $serverLog "COMBAT_PILOT_PLAYER_HIT HP=$($before-$damage) By=None"
         foreach ($role in @('Driver','Observer')) {
             $path = Join-Path $logs ('Client' + $(if ($role -eq 'Driver') { '1' } else { '2' }) + '.log')
-            $samples = @(Select-String -LiteralPath $path -Pattern "GREENLANDS_ENV_SAMPLE Role=$role HP=(\d+) X=([-\d.]+) Y=([-\d.]+) Z=([-\d.]+) Mode=(\d+) Speed=([\d.]+)" | ForEach-Object {
+            $samples = @(Select-String -LiteralPath $path -Pattern "GREENLANDS_ENV_SAMPLE Role=$role HP=(\d+) X=([-\d.]+) Y=([-\d.]+) Z=([-\d.]+) Mode=(\d+) Speed=([\d.]+) Pose=(\d)" | ForEach-Object {
                 $m = $_.Matches[0].Groups
                 [pscustomobject]@{ HP=[int]$m[1].Value; X=[double]::Parse($m[2].Value,[Globalization.CultureInfo]::InvariantCulture);
                     Z=[double]::Parse($m[4].Value,[Globalization.CultureInfo]::InvariantCulture); Mode=[int]$m[5].Value;
-                    Speed=[double]::Parse($m[6].Value,[Globalization.CultureInfo]::InvariantCulture) }
+                    Speed=[double]::Parse($m[6].Value,[Globalization.CultureInfo]::InvariantCulture); Pose=[int]$m[7].Value }
             })
             $raised = @($samples | Where-Object { $_.HP -eq $before -and $_.X -gt 50000 -and $_.X -lt 52000 -and $_.Z -gt 3500 })
             $landed = @($samples | Where-Object { $_.HP -eq ($before-$damage) -and $_.X -gt 50000 -and $_.X -lt 53000 -and $_.Z -lt 2700 -and $_.Mode -eq 1 })
-            $swimming = @($samples | Where-Object { $_.Mode -eq 4 -and $_.X -gt 54500 -and $_.X -lt 56500 -and $_.Speed -ge 285 -and $_.Speed -le 315 })
+            $swimming = @($samples | Where-Object { $_.Mode -eq 4 -and $_.Pose -eq 1 -and $_.X -gt 54500 -and $_.X -lt 56500 -and $_.Speed -ge 285 -and $_.Speed -le 315 })
             $returned = @($samples | Where-Object { $_.Mode -eq 1 -and $_.X -le 51500 } | Select-Object -Last 1)
             if ($raised.Count -eq 0 -or $landed.Count -eq 0 -or $swimming.Count -eq 0 -or $returned.Count -eq 0) {
-                throw "$role missed the fall, replicated damage, 3.0 m/s swimming or dry-land return"
+                throw "$role missed the fall, replicated damage, 3.0 m/s swimming with the swim pose engaged, or dry-land return"
             }
         }
         Write-Output "PASS: Silverbrook fall $impact m/s caused expected $damage damage; both clients saw 3.0 m/s swimming in Eastwood Pond and dry-land return. Logs: $logs"

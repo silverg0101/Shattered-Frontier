@@ -16,31 +16,32 @@
   "method": "procedural original geometry (concept interpretation, not image reconstruction)",
   "units": "metres, Z up, front -Y, origin ground centre",
   "bounds_m": [
-    2.356,
-    1.046,
-    1.533
+    2.18,
+    0.851,
+    1.152
   ],
   "meshes": {
     "SM_SBPropHayBales_Bales": {
-      "triangles": 84,
+      "triangles": 26208,
       "materials": [
-        "SB_PropHayBales_Straw"
+        "SB_PropHayBales_Straw",
+        "SB_PropHayBales_StrawSide"
       ]
     },
     "SM_SBPropHayBales_Twine": {
-      "triangles": 672,
+      "triangles": 4608,
       "materials": [
         "SB_PropHayBales_Twine"
       ]
     },
     "SM_SBPropHayBales_Stalks": {
-      "triangles": 11880,
+      "triangles": 7800,
       "materials": [
-        "SB_PropHayBales_Straw"
+        "SB_PropHayBales_StrawSide"
       ]
     }
   },
-  "triangles": 12636,
+  "triangles": 38616,
   "materials": [
     {
       "name": "SB_PropHayBales_Straw",
@@ -55,11 +56,23 @@
       "metal": false
     },
     {
+      "name": "SB_PropHayBales_StrawSide",
+      "scan": "sb_straw_side",
+      "dark": [
+        0.55,
+        0.46,
+        0.32
+      ],
+      "lichen": null,
+      "normal": 1.6,
+      "metal": false
+    },
+    {
       "name": "SB_PropHayBales_Twine",
       "colour": [
-        0.3,
-        0.22,
-        0.12
+        0.12,
+        0.08,
+        0.04
       ],
       "roughness": 0.9,
       "metallic": 0,
@@ -70,14 +83,14 @@
   "sources": "../materials-provenance.json (CC0 Poly Haven scans)",
   "unreal_mesh": "SM_SilverbrookPropHayBales",
   "slot_m": [
-    2.4,
-    1.1,
-    1.6
+    2.2,
+    0.9,
+    1.2
   ],
   "placement": {
     "footprint_m": [
-      2.4,
-      1.1
+      2.2,
+      0.9
     ],
     "front": "-Y",
     "ground_contact": true,
