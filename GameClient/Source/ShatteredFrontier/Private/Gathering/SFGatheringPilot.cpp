@@ -697,7 +697,16 @@ void USFGatheringPilotComponent::BeginPlay()
             Backpack=USFBackpackComponent::FindOrCreate(Cast<APlayerController>(GetOwner()));
             if (!Backpack.IsValid()) { bEnabled=false; }  // fail closed: an enabled ledger never falls back to session-only grants
         }
+        CaptureSkillLockSupport();
     }
+}
+
+void USFGatheringPilotComponent::CaptureSkillLockSupport()
+{
+    // Configuration chooses the adapter at admission, never connection health or restore readiness.
+    bSessionSkillLocksSupported=bEnabled && IsAuthoritativePilotWorld()
+        && !GetDefault<USFInventoryLedgerSettings>()->bEnabled
+        && !GetDefault<USFGameplayServicesSettings>()->bEnabled;
 }
 
 void USFGatheringPilotComponent::EndPlay(const EEndPlayReason::Type Reason)
@@ -715,6 +724,7 @@ void USFGatheringPilotComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProp
     DOREPLIFETIME_CONDITION(USFGatheringPilotComponent,RestedMinutes,COND_OwnerOnly);
     DOREPLIFETIME_CONDITION(USFGatheringPilotComponent,SkillLockReadyAt,COND_OwnerOnly);
     DOREPLIFETIME_CONDITION(USFGatheringPilotComponent,bEnabled,COND_OwnerOnly);
+    DOREPLIFETIME_CONDITION(USFGatheringPilotComponent,bSessionSkillLocksSupported,COND_OwnerOnly);
     DOREPLIFETIME_CONDITION(USFGatheringPilotComponent,bPrimaryRole,COND_OwnerOnly);
     DOREPLIFETIME_CONDITION(USFGatheringPilotComponent,bRoleAssigned,COND_OwnerOnly);
     DOREPLIFETIME_CONDITION(USFGatheringPilotComponent,StationRecipes,COND_OwnerOnly);
@@ -742,7 +752,7 @@ bool USFGatheringPilotComponent::IsSkillLockReady(ESFGatheringSkill Skill) const
 bool USFGatheringPilotComponent::RequestSkillLock(ESFGatheringSkill Skill,ESFGatheringSkillLock Lock)
 {
     const auto* PC=Cast<APlayerController>(GetOwner());
-    if (bEnabled&&PC&&PC->IsLocalController()&&uint8(Skill)<6&&uint8(Lock)<=uint8(ESFGatheringSkillLock::Locked)
+    if (SupportsSkillLocks()&&PC&&PC->IsLocalController()&&uint8(Skill)<6&&uint8(Lock)<=uint8(ESFGatheringSkillLock::Locked)
         &&!IsSkillLockChangePending(Skill)&&IsSkillLockReady(Skill)&&GetSkillLockCooldownRemaining(Skill)<=0)
     { SkillLockPending[int32(Skill)]=true; ServerChangeSkillLock(Skill,Lock); return true; }
     return false;
@@ -761,7 +771,7 @@ void USFGatheringPilotComponent::ClientSkillLockTiming_Implementation(ESFGatheri
 void USFGatheringPilotComponent::ServerChangeSkillLock_Implementation(ESFGatheringSkill Skill,ESFGatheringSkillLock Lock)
 {
     const int32 Index=int32(Skill);
-    if (!bEnabled||!IsAuthoritativePilotWorld()||!CapturedProgressionSettings
+    if (!SupportsSkillLocks()||!IsAuthoritativePilotWorld()||!CapturedProgressionSettings
         ||uint8(Skill)>=6||uint8(Lock)>uint8(ESFGatheringSkillLock::Locked)
         ||!Skills.Locks.IsValidIndex(Index)||!SkillLockReadyAt.IsValidIndex(Index)) { return; }
     const double Now=GetWorld()->GetTimeSeconds();

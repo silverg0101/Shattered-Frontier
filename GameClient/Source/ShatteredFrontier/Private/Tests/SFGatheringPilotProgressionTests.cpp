@@ -10,6 +10,67 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Inventory/SFInventory.h"
+#include "Inventory/SFInventoryLedgerClient.h"
+#include "Gathering/SFGatheringSkillsPanel.h"
+#include "UI/SFUiWidgets.h"
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFGatheringSkillCapabilityTest,
+    "ShatteredFrontier.Gathering.Pilot.SkillLockCapability",EAutomationTestFlags::EditorContext|EAutomationTestFlags::EngineFilter)
+
+bool FSFGatheringSkillCapabilityTest::RunTest(const FString& Parameters)
+{
+    TGuardValue<bool> LedgerMode(GetMutableDefault<USFInventoryLedgerSettings>()->bEnabled,false);
+    TGuardValue<bool> ServicesMode(GetMutableDefault<USFGameplayServicesSettings>()->bEnabled,false);
+    FTestWorldWrapper Fixture;
+    if (!Fixture.CreateTestWorld(EWorldType::GameRPC)||!Fixture.BeginPlayInTestWorld()) { return false; }
+    auto* World=Fixture.GetTestWorld(); World->GetWorldSettings()->NotifyBeginPlay();
+    auto* PC=World->SpawnActor<ASFPlayerController>();
+    auto* Gather=PC ? PC->FindComponentByClass<USFGatheringPilotComponent>() : nullptr;
+    if (!TestNotNull(TEXT("Gathering fixture"),Gather)) { return false; }
+    const TSubclassOf<USFGatheringSkillsPanel> PanelClass=LoadClass<USFGatheringSkillsPanel>(nullptr,USFGatheringSkillsPanel::AssetPath);
+    auto* Panel=PanelClass ? CreateWidget<USFGatheringSkillsPanel>(World,PanelClass) : nullptr;
+    if (!TestNotNull(TEXT("Actual Gathering Skills WBP"),Panel)) { return false; }
+    const auto CheckButtons=[&](bool bSupported)
+    {
+        Panel->Configure(Gather);
+        for (int32 Row=0;Row<USFGatheringSkillsPanel::RowCount;++Row)
+        {
+            auto* Button=Cast<USFButtonWidget>(Panel->GetWidgetFromName(*FString::Printf(TEXT("Skill%dLock"),Row)));
+            if (!TestNotNull(TEXT("Skill preference button"),Button)) { continue; }
+            TestEqual(TEXT("Visibility follows captured capability"),Button->GetVisibility(),bSupported ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+            TestEqual(TEXT("Unsupported button cannot activate"),Button->IsButtonEnabled(),bSupported);
+        }
+    };
+    Gather->bEnabled=true;
+    Gather->CaptureSkillLockSupport();
+    TestFalse(TEXT("Unadmitted offline world has no capability"),Gather->SupportsSkillLocks());
+    CheckButtons(false);
+    Gather->bTestWorldAdmission=true;
+    Gather->CaptureSkillLockSupport();
+    TestTrue(TEXT("Explicitly admitted offline adapter supports preferences"),Gather->SupportsSkillLocks());
+    CheckButtons(true);
+    Gather->bEnabled=false;
+    CheckButtons(false);
+    Gather->bEnabled=true;
+    GetMutableDefault<USFGameplayServicesSettings>()->bEnabled=true;
+    Gather->CaptureSkillLockSupport();
+    TestFalse(TEXT("Service session has no preference protocol"),Gather->SupportsSkillLocks());
+    CheckButtons(false);
+    TestFalse(TEXT("Service request cannot send a local preference"),Gather->RequestSkillLock(ESFGatheringSkill::Logging,ESFGatheringSkillLock::Locked));
+    Gather->ServerChangeSkillLock_Implementation(ESFGatheringSkill::Logging,ESFGatheringSkillLock::Locked);
+    TestEqual(TEXT("Service endpoint refuses local-only lock"),Gather->Skills.Locks[1],ESFGatheringSkillLock::Up);
+    GetMutableDefault<USFGameplayServicesSettings>()->bEnabled=false;
+    TestFalse(TEXT("Later configuration or service outage cannot grant session capability"),Gather->SupportsSkillLocks());
+    CheckButtons(false);
+    GetMutableDefault<USFInventoryLedgerSettings>()->bEnabled=true;
+    Gather->CaptureSkillLockSupport();
+    TestFalse(TEXT("Ledger-backed progression also hides local-only preferences"),Gather->SupportsSkillLocks());
+    CheckButtons(false);
+    Panel->Configure(nullptr);
+    auto* FirstButton=Cast<USFButtonWidget>(Panel->GetWidgetFromName(TEXT("Skill0Lock")));
+    TestTrue(TEXT("Unbound panel fails closed"),FirstButton && FirstButton->GetVisibility()==ESlateVisibility::Collapsed && !FirstButton->IsButtonEnabled());
+    return true;
+}
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFGatheringPilotProgressionTest,
     "ShatteredFrontier.Gathering.Pilot.Progression",EAutomationTestFlags::EditorContext|EAutomationTestFlags::EngineFilter)
@@ -27,6 +88,7 @@ bool FSFGatheringPilotProgressionTest::RunTest(const FString& Parameters)
     auto* Gather=PC->FindComponentByClass<USFGatheringPilotComponent>(); auto* Bag=PC->FindComponentByClass<USFInventoryComponent>();
     if (!Gather||!Bag) { return false; }
     Gather->bEnabled=true; Gather->bTestWorldAdmission=true;
+    Gather->bSessionSkillLocksSupported=true; // Explicitly admitted session-adapter fixture.
     Gather->CapturedSettings=DuplicateObject<USFGatheringPilotSettings>(GetDefault<USFGatheringPilotSettings>(),Gather);
     Gather->CapturedSettings->HarvestSeconds=0.5f;
     Gather->ProgressionSession.TestRoll=0;

@@ -1,36 +1,22 @@
 # Match gathering skill controls to the actual progression rules
 
 - **Area:** ui
-- **Owner of the next step:** agent (root triage)
 - **Updated:** 2026-10-25
-- **Worktree:** C:\Projects\SF-lane-b
+- **Worktree:** C:\Projects\SF-lane-a
+- **Branch:** codex/gathering-capability-visibility
 
-## Goal
+## Goal and rule
 
-The skills page exposes Raise/Hold/Lower only when the designed gathering progression rules require them.
+Expose Raise/Hold/Lower only when the active progression adapter implements them. Skills Mastery v1 sections 1 and 6 specify 7,200 global points, 4,000 gathering-track points and 900 default / 1,000 specialized individual points (display 720.0 / 400.0 / 90.0 / 100.0). Six gathering skills cannot all reach maximum. Lower donates a point only when another skill gains at the shared cap; it never decays automatically. No caps or skill values changed.
 
-## State
+## Implemented
 
-Owner questions why gathering skills need Hold/Lower if every gathering skill may reach maximum. No rule conclusion has been established yet; do not invent a total skill cap.
+`SFGatheringPilot` captures session preference support on server admission from the configured progression mode: both InventoryLedger and Gameplay Services must be disabled. The owner-only replicated capability defaults false and never follows connection health or restore readiness. The panel collapses and disables unsupported controls, including while unbound; request and server endpoints reject unsupported changes. An explicitly admitted local adapter retains its controls with a plain-language tooltip. Owner WBP layout is unchanged.
 
-## Evidence
+## Production gap
 
-Owner report in the live-client session. Parent: `ui-live-client-regressions.md`. Relevant progression/design sources are indexed in the gameplay dependency area.
+`BackendServices/Progression/Progression.cs` still counts only Logging + Mining for gathering and has no durable lock/donor protocol. Full six-skill track/global accounting, individual specialization caps and durable preference/donor integration remain production work. This change makes the current service UI honest; it does not implement those systems or alter the canonical design. Parent tracking: `ui-live-client-regressions.md` (root-owned).
 
-## Blocked on
+## Validation and next step
 
-Rule check and a worker slot, not a request for broad game-design changes.
-
-## Next step
-
-Read the gathering progression rule and actual service enforcement. If skills can all reach maximum, remove the irrelevant controls for gathering while preserving any separately designed capped skill categories; otherwise explain the cap with precise references before changing behavior.
-
-## Rules for this task
-
-No invented cap, skill decay or balance values. Keep layout in Widget Blueprints, logic in C++, and test the exact gathering path. Record any genuine design contradiction for the owner.
-
-## Outcome
-
-Rule check complete; no UI text or behavior changed. The design has a 4,000-point gathering-track cap and allows a lowered skill to donate one point only when another gathering skill gains at the shared cap; lowering never decays automatically. The UI's Raising/Held/Lowering states represent those gain preferences, so they are meaningful in the local progression adapter.
-
-Production enforcement is incomplete: `BackendServices/Progression/Progression.cs` currently caps gathering using only Logging + Mining, and this gain path has no lock/donor handling. Do not add player-facing help that implies these controls govern production progression until that service path is reconciled. The local adapter's exact semantics are in `SFGatheringProgression.cpp`; design caps and lock rule are in `Legends_Shattered_Frontier_Character_Skills_Mastery_v1.0.md` §§1 and 6. The four visible rows total at most 3,600 unspecialized points, but Farming and Hunting are also gathering skills and count against the designed track cap.
+`git diff --check` passed. Added `ShatteredFrontier.Gathering.Pilot.SkillLockCapability` using the actual WBP: unadmitted fixture hidden; admitted local adapter shown; configured service and ledger modes hidden/disabled; no capability fallback after settings/availability change; server refusal; unbound hidden. Existing `ShatteredFrontier.Gathering.Pilot.Progression` preference checks and progression donor tests remain. Build/targeted automation await the shared UE lease; no runtime pass or visual acceptance claimed.

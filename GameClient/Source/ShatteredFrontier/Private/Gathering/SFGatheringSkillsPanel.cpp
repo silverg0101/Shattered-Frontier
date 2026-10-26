@@ -90,7 +90,7 @@ void USFGatheringSkillsPanel::NativeTick(const FGeometry& MyGeometry, float InDe
 
 void USFGatheringSkillsPanel::HandleLock(USFButtonWidget* Source)
 {
-    if (!Pilot || !Pilot->IsEnabled()) { return; }
+    if (!Pilot || !Pilot->SupportsSkillLocks()) { return; }
     for (int32 Row = 0; Row < RowCount; ++Row)
     {
         if (LockButtons[Row] != Source) { continue; }
@@ -103,6 +103,14 @@ void USFGatheringSkillsPanel::HandleLock(USFButtonWidget* Source)
 
 void USFGatheringSkillsPanel::Refresh()
 {
+    const bool bSupportsLocks = Pilot && Pilot->SupportsSkillLocks();
+    for (USFButtonWidget* Button : LockButtons)
+    {
+        if (!Button) { continue; }
+        Button->SetVisibility(bSupportsLocks ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+        Button->SetButtonEnabled(bSupportsLocks);
+        Button->SetToolTipText(bSupportsLocks ? FText::FromString(TEXT("Raise allows skill gains. Hold stops gains. Lower allows this skill to give a point to another gathering skill only at the shared cap; it never decreases on its own.")) : FText::GetEmpty());
+    }
     if (!Pilot || !Pilot->IsEnabled()) { return; }
     const FSFGatheringSkillSnapshot& Snapshot = Pilot->GetSkillSnapshot();
     for (int32 Row = 0; Row < RowCount; ++Row)
@@ -113,7 +121,7 @@ void USFGatheringSkillsPanel::Refresh()
         if (Bars[Row]) { Bars[Row]->SetPercent(FMath::Clamp(Tenths / 1000.f, 0.f, 1.f)); }
         if (Points[Row]) { Points[Row]->SetText(FText::FromString(FString::Printf(TEXT("%s / %s"), *FText::AsNumber(Tenths).ToString(), *FText::AsNumber(1000).ToString()))); }
         if (NextTexts[Row]) { NextTexts[Row]->SetText(FText::FromString(NextUnlockText(Skill, Tenths))); }
-        if (!LockButtons[Row]) { continue; }
+        if (!LockButtons[Row] || !bSupportsLocks) { continue; }
         const ESFGatheringSkillLock Lock = Snapshot.Locks.IsValidIndex(int32(Skill)) ? Snapshot.Locks[int32(Skill)] : ESFGatheringSkillLock::Up;
         const float Cooldown = FMath::Max(0.f, Pilot->GetSkillLockCooldownRemaining(Skill));
         const bool bPending = Pilot->IsSkillLockChangePending(Skill) || (!Pilot->IsSkillLockReady(Skill) && Cooldown <= 0);

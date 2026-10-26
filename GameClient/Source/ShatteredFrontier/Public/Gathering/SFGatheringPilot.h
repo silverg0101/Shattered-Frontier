@@ -329,6 +329,8 @@ public:
     // Read-only views for the gathering HUD (ring, toast, recipe panel).
     const FSFGatheringPilotFeedback& GetFeedback() const { return Feedback; }
     ASFGatheringPilotNode* FindAimedNode(const FVector& Start, const FVector& Direction) const { return FindNode(Start, Direction); }
+    // Server-captured adapter capability, owner-replicated; independent of service availability.
+    bool SupportsSkillLocks() const { return bEnabled && bSessionSkillLocksSupported; }
     bool RequestSkillLock(ESFGatheringSkill Skill,ESFGatheringSkillLock Lock);
     float GetSkillLockCooldownRemaining(ESFGatheringSkill Skill) const;
     bool IsSkillLockReady(ESFGatheringSkill Skill) const;
@@ -369,6 +371,7 @@ private:
     friend class FSFGatheringPilotSurfaceProtocolTest;
     friend class FSFGatheringPilotProgressionTest;
     friend class FSFGatheringPilotLedgerTest;
+    friend class FSFGatheringSkillCapabilityTest;
     friend class FSFEquipmentValidationTest;
     friend class FSFEquipmentLedgerTest;
     friend class FSFGatheringPilotServiceTest;
@@ -384,6 +387,7 @@ private:
     UFUNCTION(Server, Reliable) void ServerSelectRecipe(ESFGatheringPilotKind Station, const FString& RecipeId);
     const FSFStationRecipe* ActiveStationRecipe(ESFGatheringPilotKind Station) const;
     void BeginCraftCommit();
+    void CaptureSkillLockSupport();
     UFUNCTION(Server, Reliable) void ServerChangeSkillLock(ESFGatheringSkill Skill,ESFGatheringSkillLock Lock);
     UFUNCTION(Client, Reliable) void ClientSkillLockTiming(ESFGatheringSkill Skill,float RemainingSeconds);
     UFUNCTION() void OnRep_Feedback();
@@ -445,6 +449,7 @@ private:
     uint32 WaitingOperation = 0;
     uint32 WaitingRevision = 0;
     TWeakObjectPtr<ASFGatheringPilotNode> WaitingNode;
+    UPROPERTY(Replicated) bool bSessionSkillLocksSupported = false;
     UPROPERTY(Replicated) bool bEnabled = false;
     UPROPERTY(Replicated) bool bPrimaryRole = false;
     UPROPERTY(Replicated) bool bRoleAssigned = false;
