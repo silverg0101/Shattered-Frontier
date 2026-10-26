@@ -102,7 +102,9 @@ ASFE1Character::ASFE1Character(const FObjectInitializer& ObjectInitializer)
     HeldItem->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     HeldItem->SetHiddenInGame(true);
     // Grip for the tool meshes of tools/Import-HandTools.py (grip at the origin, haft along +Z, head toward +X) on the MetaHuman hand_r.
-    HeldItemGrip = FTransform(FRotator(0, 0, 0), FVector(0, 0, 0));
+    // Hand tools are modelled grip at the origin, haft +Z, head +X (ArtSource/HandTools). On the MetaHuman hand_r the fingers run
+    // along -X, the thumb along -Y and the palm faces +Z: the haft follows the thumb through the palm, the head points down the fingers.
+    HeldItemGrip = FTransform(FMatrix(FVector(-1, 0, 0), FVector(0, 0, -1), FVector(0, -1, 0), FVector::ZeroVector).Rotator(), FVector(-9, 0, 3));
     if (!IsRunningDedicatedServer())
     {
         static ConstructorHelpers::FObjectFinder<USkeletalMesh> Body(TEXT("/Game/Mannequin/Character/Mesh/SK_Mannequin.SK_Mannequin"));
@@ -149,6 +151,9 @@ void ASFE1Character::BeginPlay()
     GetCharacterMovement()->GravityScale = GetDefault<USFE1Settings>()->GravityMetresPerSecondSquared * 100.0f / -WorldGravity;
     if (HasAuthority() && GetWorld()->GetOutermost()->GetName() == TEXT("/Game/Frontier/Maps/Sandbox/SB_TravelMount"))
     { CombatSetHealth(GetDefault<USFCombatPilotSettings>()->PlayerHealth); }
+    // A new character is alive: 0 health reads as dead (no equip, harvest or quest steps), and only the combat pilot's
+    // RestartCombat or a restored snapshot sets it otherwise; a world without the combat pilot left players "dead".
+    if (HasAuthority() && PilotHealth <= 0) { CombatSetHealth(CombatMaximumHealth()); }
     if (GetWorld()->GetOutermost()->GetName() == TEXT("/Game/Frontier/Maps/Sandbox/SB_Backpedal"))
     {
         bUseControllerRotationYaw = true;
