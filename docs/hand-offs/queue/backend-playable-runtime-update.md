@@ -4,7 +4,7 @@
 - **Owner of next step:** agent
 - **Worktree:** C:\Projects\SF-lane-b
 - **Branch:** codex/runtime-existing-store-update
-- **State:** dbe514e7 images built and profiles sealed; live apply awaits owner approval
+- **State:** dbe514e7 applied to the live LAN server (2026-10-26); native loot acceptance next
 
 ## Blocker and bounded exit
 
@@ -49,6 +49,16 @@ Contract note: `dbe514e7` includes `9711c2c7` (gathering skill locks in progress
 
 Live check after: game/gameplay/ledger/database still running `3c6bf45e…`/`8d10c43f…`/`8d10c43f…`/postgres, started 2026-10-25 23:06 UTC, 0 restarts; game and database healthy.
 
+## dbe514e7 applied live (2026-10-26, owner-approved)
+
+Backup: `pg_dump -Fc` of `sf_playable` from the running database container, root 0600 at `/srv/shattered-frontier/backups/sf_playable-pre-dbe514e7-20261026T134612Z.dump` (109,425 bytes, sha256 `961ed809…`, 52 table-data entries). Install: sealed files root-owned (0644 files, Runtime 0750, tool 0755, as ff59) at `/srv/shattered-frontier/releases/playable-dbe514e7b8e37a53a9a7ca41e0727c5ed14848f9/`; `sha256sum -c SHA256SUMS` OK for all 4 installed copies.
+
+Guards passed: old profile `cd31eb73…` equals installed ff59 and `rollback.profile.json`; both tools `d072d65f…`; root-owned, non-writable release files, secrets 0600; profiles differ only in revision/game/services; running game/gameplay/ledger were `3c6bf45e…`/`8d10c43f…` labelled ff59, game and database healthy, database `postgres:18.6@sha256:edb0c08d…` bound `192.168.50.133:17777/udp`; new images labelled dbe514e7 with engine `396c9f05…` and playable-runtime=1; Docker free 44,109,180,928 bytes.
+
+Switch (sudo -n, fail-fast): OLD verify 0, NEW check 0, OLD stop 0, NEW start 0 (one probe retry printed `PLAYABLE_HOSTS_REFUSED` before passing), NEW verify 0. No rollback. Note: piping the script into `sudo bash -s` lets `docker compose run` swallow stdin after the first step; run it from a file with `</dev/null`.
+
+After: game `sha256:8dc672a2…` healthy, gameplay/ledger `sha256:c18de982…`, all labelled dbe514e7, 0 restarts, started 13:47 UTC; database healthy; `docker-proxy` on 192.168.50.133:17777/udp. First-minute logs: game only read-only `Engine/Saved` create-dir warnings and two missing StaticMesh warnings (`SM_LogStack`, `SM_PH_wooden_crate_01_00`), NPC spawns ran; services only the startup `libgssapi_krb5.so.2` notice, probes passed, receipt outbox pending 0. Gameplay/loot not tested.
+
 ## Next
 
-Owner approval to apply. Then the sudo operator installs `sealed/` root-owned, reverifies hashes, and runs the existing-store `verify`/`check`/`stop`/`start`/`verify` sequence; resume native corpse → bag → drop → Beta pickup → SQL/privacy → restart acceptance.
+Native loot acceptance.
