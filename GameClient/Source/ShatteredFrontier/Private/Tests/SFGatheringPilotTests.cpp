@@ -34,6 +34,7 @@ bool FSFGatheringPilotAuthorityTest::RunTest(const FString& Parameters)
     auto* OtherPawn=World->SpawnActor<ASFE1Character>(FVector(0,100,100),FRotator::ZeroRotator,Spawn);
     if (!PC || !Other || !Pawn || !OtherPawn) { return false; }
     PC->Possess(Pawn); Other->Possess(OtherPawn);
+    Pawn->CombatSetHealth(Pawn->CombatMaximumHealth()); OtherPawn->CombatSetHealth(OtherPawn->CombatMaximumHealth());
     Pawn->GetCharacterMovement()->SetMovementMode(MOVE_None); OtherPawn->GetCharacterMovement()->SetMovementMode(MOVE_None);
     Pawn->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     OtherPawn->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -164,6 +165,17 @@ bool FSFGatheringPilotAuthorityTest::RunTest(const FString& Parameters)
     TestEqual(TEXT("Forge creates exactly one design-authored ingot"),SFInventoryTransactions::GetItemQuantity(Inventory,IngotItem),int64(1));
     Gather->ServerGatheringAction_Implementation(Forge,1,12);
     TestEqual(TEXT("Forge cannot craft from nothing"),Gather->Feedback.Result,ESFGatheringPilotResult::MissingMaterials);
+    FSFItemQuantity OneIngot; OneIngot.Item=IngotItem; OneIngot.Quantity=1;
+    TestEqual(TEXT("Prepare dead-writer ingredient"),SFInventoryTransactions::ExchangeInventoryItems(Inventory,{OneIngot},{OneOre}),ESFInventoryResult::Success);
+    Pawn->CombatSetHealth(0);
+    Gather->ServerGatheringAction_Implementation(Forge,1,13); Tick(12);
+    TestEqual(TEXT("Dead pawn cannot start a craft after notice dismissal"),Gather->Feedback.Result,ESFGatheringPilotResult::InvalidContext);
+    TestEqual(TEXT("Dead craft preserves ingredient"),SFInventoryTransactions::GetItemQuantity(Inventory,OreItem),int64(1));
+    TestEqual(TEXT("Dead craft preserves station revision"),Forge->State.Revision,uint32(1));
+    Pawn->CombatSetHealth(Pawn->CombatMaximumHealth());
+    Gather->ServerGatheringAction_Implementation(Forge,1,14); Tick(12);
+    TestEqual(TEXT("Revived pawn may craft again"),Gather->Feedback.Result,ESFGatheringPilotResult::Refined);
+    TestEqual(TEXT("Revived craft consumes ingredient once"),SFInventoryTransactions::GetItemQuantity(Inventory,OreItem),int64(0));
     return true;
 }
 
@@ -181,7 +193,7 @@ bool FSFGatheringPilotToolTest::RunTest(const FString& Parameters)
     auto* Pawn=World->SpawnActor<ASFE1Character>(FVector(0,0,100),FRotator::ZeroRotator,Spawn);
     auto* Wood=World->SpawnActor<ASFGatheringPilotNode>(FVector(200,0,100),FRotator::ZeroRotator,Spawn);
     if (!PC || !Pawn || !Wood) { return false; }
-    PC->Possess(Pawn); Pawn->GetCharacterMovement()->SetMovementMode(MOVE_None);
+    PC->Possess(Pawn); Pawn->CombatSetHealth(Pawn->CombatMaximumHealth()); Pawn->GetCharacterMovement()->SetMovementMode(MOVE_None);
     auto* Gather=PC->FindComponentByClass<USFGatheringPilotComponent>();
     auto* Bag=PC->FindComponentByClass<USFInventoryComponent>(); if (!Gather || !Bag) { return false; }
     Gather->CapturedSettings=DuplicateObject<USFGatheringPilotSettings>(GetDefault<USFGatheringPilotSettings>(),Gather);
@@ -251,7 +263,7 @@ bool FSFGatheringPilotLifecycleTest::RunTest(const FString& Parameters)
     auto* Pawn=World->SpawnActor<ASFE1Character>(FVector(0,0,100),FRotator::ZeroRotator,Spawn);
     auto* Wood=World->SpawnActor<ASFGatheringPilotNode>(FVector(200,0,100),FRotator::ZeroRotator,Spawn);
     if (!PC || !Pawn || !Wood) { return false; }
-    PC->Possess(Pawn); Pawn->GetCharacterMovement()->SetMovementMode(MOVE_None);
+    PC->Possess(Pawn); Pawn->CombatSetHealth(Pawn->CombatMaximumHealth()); Pawn->GetCharacterMovement()->SetMovementMode(MOVE_None);
     Pawn->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     auto* Gather=PC->FindComponentByClass<USFGatheringPilotComponent>();
     auto* Bag=PC->FindComponentByClass<USFInventoryComponent>(); if (!Gather || !Bag) { return false; }
@@ -379,7 +391,7 @@ bool FSFGatheringPilotLedgerTest::RunTest(const FString& Parameters)
     auto* Pawn=World->SpawnActor<ASFE1Character>(FVector(0,0,100),FRotator::ZeroRotator,Spawn);
     auto* Wood=World->SpawnActor<ASFGatheringPilotNode>(FVector(200,0,100),FRotator::ZeroRotator,Spawn);
     if (!PC || !Pawn || !Wood) { return false; }
-    PC->Possess(Pawn); Pawn->GetCharacterMovement()->SetMovementMode(MOVE_None);
+    PC->Possess(Pawn); Pawn->CombatSetHealth(Pawn->CombatMaximumHealth()); Pawn->GetCharacterMovement()->SetMovementMode(MOVE_None);
     auto* Gather=PC->FindComponentByClass<USFGatheringPilotComponent>();
     auto* Bag=PC->FindComponentByClass<USFInventoryComponent>(); if (!Gather || !Bag) { return false; }
     Gather->CapturedSettings=DuplicateObject<USFGatheringPilotSettings>(GetDefault<USFGatheringPilotSettings>(),Gather);
@@ -669,7 +681,7 @@ bool FSFGatheringPilotServiceTest::RunTest(const FString& Parameters)
         World->GetTimerManager().GetTimerRemaining(Iron->ServiceRefreshTimer)>0.05f &&
         World->GetTimerManager().GetTimerRemaining(Iron->ServiceRefreshTimer)<2.f);
     TimedSnapshot.NodeNextTransitionUnixMs=0; Iron->ApplyServiceSnapshot(TimedSnapshot);
-    PC->Possess(Pawn); Pawn->GetCharacterMovement()->SetMovementMode(MOVE_None);
+    PC->Possess(Pawn); Pawn->CombatSetHealth(Pawn->CombatMaximumHealth()); Pawn->GetCharacterMovement()->SetMovementMode(MOVE_None);
     auto* Gather=PC->FindComponentByClass<USFGatheringPilotComponent>();
     if (!Gather) { return false; }
     Gather->CapturedSettings=DuplicateObject<USFGatheringPilotSettings>(GetDefault<USFGatheringPilotSettings>(),Gather);

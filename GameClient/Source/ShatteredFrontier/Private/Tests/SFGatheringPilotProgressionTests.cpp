@@ -109,7 +109,8 @@ bool FSFGatheringPilotProgressionTest::RunTest(const FString& Parameters)
     FActorSpawnParameters Spawn; Spawn.SpawnCollisionHandlingOverride=ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
     auto* Pawn=World->SpawnActor<ASFE1Character>(FVector(0,0,100),FRotator::ZeroRotator,Spawn);
     if (!PC||!Pawn) { return false; }
-    PC->Possess(Pawn); Pawn->GetCharacterMovement()->SetMovementMode(MOVE_None); Pawn->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    PC->Possess(Pawn); Pawn->CombatSetHealth(Pawn->CombatMaximumHealth());
+    Pawn->GetCharacterMovement()->SetMovementMode(MOVE_None); Pawn->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     auto* Gather=PC->FindComponentByClass<USFGatheringPilotComponent>(); auto* Bag=PC->FindComponentByClass<USFInventoryComponent>();
     if (!Gather||!Bag) { return false; }
     Gather->bEnabled=true; Gather->bTestWorldAdmission=true;

@@ -77,9 +77,17 @@
 #include "Services/SFBackpackComponent.h"
 #include "Services/SFCharacterSession.h"
 #include "Services/SFGameplayServicesClient.h"
+#include "Characters/SFE1Character.h"
 
 namespace
 {
+bool HasLivingOwnedPawn(const ASFPlayerController* Controller)
+{
+    const auto* Pawn=IsValid(Controller) ? Cast<ASFE1Character>(Controller->GetPawn()) : nullptr;
+    return IsValid(Pawn) && Pawn->HasAuthority() && Pawn->GetController()==Controller
+        && Pawn->GetOwner()==Controller && Pawn->CombatHealth()>0 && !Pawn->IsActorBeingDestroyed();
+}
+
 const TCHAR* PlacementResultText(ESFConstructionNetworkResult Result)
 {
     switch (Result)
@@ -537,8 +545,7 @@ ESFConstructionNetworkResult ASFConstructionNetworkState::ValidateEditContext(AS
 #endif
     if (!ClaimId.IsEmpty() && !Mode->IsHousingActive() && !bUnclaimedFallback) { return ESFConstructionNetworkResult::ServiceUnavailable; }
     const APawn* Pawn = Controller->GetPawn();
-    if (!IsValid(Pawn) || !Pawn->HasAuthority() || Pawn->GetController() != Controller || Pawn->GetOwner() != Controller
-        || Pawn->GetWorld() != GetWorld() || Pawn->IsActorBeingDestroyed()) { return ESFConstructionNetworkResult::InvalidContext; }
+    if (!HasLivingOwnedPawn(Controller) || Pawn->GetWorld() != GetWorld()) { return ESFConstructionNetworkResult::InvalidContext; }
     if (ExpectedRevision != Snapshot.Revision) { return ESFConstructionNetworkResult::Stale; }
     if (Snapshot.Revision==MAX_uint64) { return ESFConstructionNetworkResult::InvalidContext; }
     if (Snapshot.Revision > 0 && !HasCurrentCollision()) { return ESFConstructionNetworkResult::ProjectionFailed; }
@@ -1126,6 +1133,7 @@ void ASFGameMode::LoadClaims()
 
 void ASFGameMode::ClaimPlot(ASFPlayerController* Controller, const FString& ClaimId, TFunction<void(ESFConstructionNetworkResult)> Done)
 {
+    if (!HasLivingOwnedPawn(Controller)) { Done(ESFConstructionNetworkResult::InvalidContext); return; }
     USFBackpackComponent* Pack=USFBackpackComponent::FindOrCreate(Controller);
     FClaimPlot* Plot=FindPlot(ClaimId);
     if (!IsHousingActive() || !Pack || !Plot || !Plot->bLoaded) { Done(ESFConstructionNetworkResult::ServiceUnavailable); return; }
@@ -1146,6 +1154,7 @@ void ASFGameMode::ClaimPlot(ASFPlayerController* Controller, const FString& Clai
 
 void ASFGameMode::GrantBuild(ASFPlayerController* Controller, const FString& ClaimId, const FString& TargetCharacterId, TFunction<void(ESFConstructionNetworkResult)> Done)
 {
+    if (!HasLivingOwnedPawn(Controller)) { Done(ESFConstructionNetworkResult::InvalidContext); return; }
     USFBackpackComponent* Pack=USFBackpackComponent::FindOrCreate(Controller);
     FClaimPlot* Plot=FindPlot(ClaimId);
     if (!IsHousingActive() || !Pack || !Plot || !Plot->bClaimed || TargetCharacterId.IsEmpty()) { Done(ESFConstructionNetworkResult::ServiceUnavailable); return; }
@@ -1170,6 +1179,7 @@ void ASFGameMode::CommitHousing(ASFPlayerController* Controller, const FString& 
     TWeakObjectPtr<ASFGameMode> Weak(this);
     TWeakObjectPtr<ASFPlayerController> WeakController(Controller);
     FClaimPlot* Target=FindPlot(ClaimId);
+    if (!HasLivingOwnedPawn(Controller)) { Done(ESFConstructionNetworkResult::InvalidContext,FString()); return; }
     if (!Target || !Target->bLoaded) { Done(ESFConstructionNetworkResult::ServiceUnavailable,FString()); return; }
     // The first placement on an unclaimed plot claims it for the builder; on someone else's claim the service decides.
     auto Commit=[Weak,WeakController,ClaimId,Cell,bRemove,Shape,Rotation,Done](ESFConstructionNetworkResult ClaimResult)
@@ -1180,6 +1190,7 @@ void ASFGameMode::CommitHousing(ASFPlayerController* Controller, const FString& 
         const FString* Existing=Plot ? Plot->Structures.Find(Cell) : nullptr;
         // ponytail: every pilot shape is a wall piece and costs the shipped wall bundle; per-shape content follows BLD-01 pieces.
         const FSFStationRecipe* Cost=SFStationRecipes::Find(TEXT("recipe/wall_material_bundle"));
+        if (!HasLivingOwnedPawn(WeakController.Get())) { Done(ESFConstructionNetworkResult::InvalidContext,FString()); return; }
         if (ClaimResult==ESFConstructionNetworkResult::ServiceUnavailable) { Done(ClaimResult,FString()); return; }
         if (!Plot || !Plot->bClaimed || !Pack || !Cost || (bRemove && !Existing)) { Done(ESFConstructionNetworkResult::ServiceUnavailable,FString()); return; }
         const FString Operation=(bRemove ? TEXT("remove/") : TEXT("place/"))+FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphensLower);
@@ -1199,10 +1210,10 @@ void ASFGameMode::CommitHousing(ASFPlayerController* Controller, const FString& 
         }
         TSharedRef<FSFGameplayResponse> Receipt=MakeShared<FSFGameplayResponse>();
         FSFBackpackMutation Mutation; Mutation.Label=bRemove ? TEXT("housing_remove") : TEXT("housing_place"); Mutation.OperationId=Operation;
-        Mutation.Run=[Weak,Receipt,ClaimId,Cell,bRemove,Shape,Rotation,Structure,Material,WeakPack=TWeakObjectPtr<USFBackpackComponent>(Pack)](const FString& Op,int64 Expected,TFunction<void(ESFBackpackOutcome,int64)> Report)
+        Mutation.Run=[Weak,WeakController,Receipt,ClaimId,Cell,bRemove,Shape,Rotation,Structure,Material,WeakPack=TWeakObjectPtr<USFBackpackComponent>(Pack)](const FString& Op,int64 Expected,TFunction<void(ESFBackpackOutcome,int64)> Report)
         {
             ASFGameMode* Mode=Weak.Get(); FClaimPlot* Current=Mode ? Mode->FindPlot(ClaimId) : nullptr; USFBackpackComponent* Owner=WeakPack.Get();
-            if (!Current || !Owner) { Report(ESFBackpackOutcome::Unavailable,-1); return; }
+            if (!Current || !Owner || !HasLivingOwnedPawn(WeakController.Get())) { Report(ESFBackpackOutcome::Rejected,-1); return; }
             FSFGameplayRequest Q; Q.Rpc=bRemove ? ESFGameplayRpc::Remove : ESFGameplayRpc::Place; Q.OperationId=Op; Q.ClaimId=ClaimId;
             Q.CharacterId=Owner->GetCharacterId(); Q.ExpectedPermissionRevision=Current->PermissionRevision; Q.ExpectedStructureRevision=Current->StructureRevision;
             Q.StructureId=Structure; Q.Cell=Cell; Q.ContentId=TEXT("piece/wall"); Q.MaterialId=Material.DefinitionId; Q.MaterialQuantity=Material.Quantity;

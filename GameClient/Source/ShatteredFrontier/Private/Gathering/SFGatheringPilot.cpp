@@ -905,8 +905,8 @@ bool USFGatheringPilotComponent::MeetsSkillRequirement(const ASFGatheringPilotNo
 
 ESFGatheringPilotResult USFGatheringPilotComponent::ValidateTarget(const ASFGatheringPilotNode* Node) const
 {
-    const auto* PC=Cast<APlayerController>(GetOwner()); const APawn* Pawn=PC ? PC->GetPawn() : nullptr;
-    if (!bEnabled || !CapturedSettings || !Pawn || Pawn->GetController()!=PC || Pawn->IsActorBeingDestroyed())
+    const auto* PC=Cast<APlayerController>(GetOwner()); const auto* Pawn=PC ? Cast<ASFE1Character>(PC->GetPawn()) : nullptr;
+    if (!bEnabled || !CapturedSettings || !Pawn || Pawn->CombatHealth()<=0 || Pawn->GetController()!=PC || Pawn->IsActorBeingDestroyed())
     { return ESFGatheringPilotResult::InvalidContext; }
     if (!IsValid(Node) || Node->IsActorBeingDestroyed() || Node->GetWorld()!=GetWorld()) { return ESFGatheringPilotResult::InvalidTarget; }
     if (Pawn->GetActorLocation().ContainsNaN() || Node->GetActorLocation().ContainsNaN() || Pawn->GetPawnViewLocation().ContainsNaN())
@@ -1496,7 +1496,8 @@ void USFGatheringPilotComponent::BeginLedgerCommit()
     Mutation.Run=[Weak,Item,Quantity,Causation,IntentBytes,IntentDigest](const FString& Op,int64 Expected,TFunction<void(ESFBackpackOutcome,int64)> Report)
     {
         USFGatheringPilotComponent* Self=Weak.Get(); USFBackpackComponent* Owner=Self ? Self->Backpack.Get() : nullptr;
-        if (!Owner) { Report(ESFBackpackOutcome::Unavailable,-1); return; }
+        if (!Owner || Self->ValidateTarget(Self->Feedback.Node)!=ESFGatheringPilotResult::None)
+        { Report(ESFBackpackOutcome::Rejected,-1); return; }
         FSFLedgerRequest Grant; Grant.Rpc=ESFLedgerRpc::Grant; Grant.OperationId=Op; Grant.ContainerId=Owner->GetContainerId();
         Grant.ExpectedRevision=Expected; Grant.DefinitionId=Item; Grant.Quantity=Quantity;
         Grant.Source=TEXT("gathering"); Grant.CausationId=Causation;
@@ -1659,7 +1660,8 @@ void USFGatheringPilotComponent::BeginCraftCommit()
     Mutation.Run=[Weak,RecipeId,InputGrades,Changes,Discovered](const FString& Op,int64 Expected,TFunction<void(ESFBackpackOutcome,int64)> Report)
     {
         USFGatheringPilotComponent* Self=Weak.Get(); USFBackpackComponent* Owner=Self ? Self->Backpack.Get() : nullptr;
-        if (!Owner) { Report(ESFBackpackOutcome::Unavailable,-1); return; }
+        if (!Owner || Self->ValidateTarget(Self->Feedback.Node)!=ESFGatheringPilotResult::None)
+        { Report(ESFBackpackOutcome::Rejected,-1); return; }
         FSFGameplayRequest Craft; Craft.Rpc=ESFGameplayRpc::Craft; Craft.OperationId=Op; Craft.CharacterId=Owner->GetCharacterId();
         Craft.ContainerId=Owner->GetContainerId(); Craft.RecipeId=RecipeId; Craft.ExpectedContainerRevision=Expected; Craft.Count=1;
         Craft.InputGrades=InputGrades;

@@ -2,6 +2,8 @@
 
 #include "Misc/AutomationTest.h"
 #include "Framework/SFPlayerController.h"
+#include "Framework/SFGameMode.h"
+#include "Characters/SFE1Character.h"
 #include "Construction/SFConstructionNetwork.h"
 #include "Construction/SFConstructionGeometry.h"
 #include "Serialization/BitReader.h"
@@ -10,6 +12,7 @@
 #include "Serialization/MemoryWriter.h"
 #include "Tests/AutomationCommon.h"
 #include "Construction/SFConstructionSandboxPalette.h"
+#include "GameFramework/WorldSettings.h"
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFConstructionNetworkBatchSnapshotTest,
     "ShatteredFrontier.Construction.Network.BatchSnapshot",
@@ -57,6 +60,39 @@ bool FSFConstructionNetworkBatchSnapshotTest::RunTest(const FString& Parameters)
     FBitWriter ZeroRevision(4096,true);
     TestFalse(TEXT("Nonempty revision zero rejects"),Source.NetSerialize(ZeroRevision,nullptr,bSuccess));
     TestFalse(TEXT("Revision zero failure does not claim success"),bSuccess);
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFConstructionDeadWriterTest,
+    "ShatteredFrontier.Construction.Network.DeadWriterAdmission",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+
+bool FSFConstructionDeadWriterTest::RunTest(const FString& Parameters)
+{
+    FTestWorldWrapper Fixture;
+    if (!Fixture.CreateTestWorld(EWorldType::Game)) { return false; }
+    auto* World=Fixture.GetTestWorld();
+    World->GetWorldSettings()->DefaultGameMode=ASFGameMode::StaticClass();
+    if (!World->SetGameMode(FURL()) || !Fixture.BeginPlayInTestWorld()) { return false; }
+    World->GetWorldSettings()->NotifyBeginPlay();
+    auto* Mode=World->GetAuthGameMode<ASFGameMode>();
+    auto* Controller=World->SpawnActor<ASFPlayerController>();
+    auto* Pawn=World->SpawnActor<ASFE1Character>();
+    if (!Mode || !Controller || !Pawn) { return false; }
+    Controller->Possess(Pawn);
+    Pawn->CombatSetHealth(0);
+    ESFConstructionNetworkResult Result=ESFConstructionNetworkResult::Accepted;
+    Mode->ClaimPlot(Controller,TEXT("plot/missing"),[&Result](ESFConstructionNetworkResult Value) { Result=Value; });
+    TestEqual(TEXT("Dead pawn cannot claim"),Result,ESFConstructionNetworkResult::InvalidContext);
+    Mode->GrantBuild(Controller,TEXT("plot/missing"),TEXT("chr_dev_other"),[&Result](ESFConstructionNetworkResult Value) { Result=Value; });
+    TestEqual(TEXT("Dead pawn cannot grant build rights"),Result,ESFConstructionNetworkResult::InvalidContext);
+    Mode->CommitHousing(Controller,TEXT("plot/missing"),FIntVector::ZeroValue,false,0,0,
+        [&Result](ESFConstructionNetworkResult Value,const FString&) { Result=Value; });
+    TestEqual(TEXT("Dead pawn cannot enter paid construction"),Result,ESFConstructionNetworkResult::InvalidContext);
+    Pawn->CombatSetHealth(Pawn->CombatMaximumHealth());
+    Mode->CommitHousing(Controller,TEXT("plot/missing"),FIntVector::ZeroValue,false,0,0,
+        [&Result](ESFConstructionNetworkResult Value,const FString&) { Result=Value; });
+    TestEqual(TEXT("Revived pawn clears death gate and reaches missing plot"),Result,ESFConstructionNetworkResult::ServiceUnavailable);
     return true;
 }
 
