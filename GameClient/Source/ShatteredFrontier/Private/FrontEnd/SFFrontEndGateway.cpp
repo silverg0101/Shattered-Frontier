@@ -66,7 +66,7 @@ class FUnrealIdentityHttp final : public ISFIdentityHttp
 public:
     explicit FUnrealIdentityHttp(FString InBaseUrl) : BaseUrl(MoveTemp(InBaseUrl)) {}
     void Send(const FString& Verb, const FString& Path, const FString& Body, const FString& Bearer,
-        TFunction<void(FSFIdentityHttpReply)> Done) override
+        TFunction<void(FSFIdentityHttpReply)> Done, const FString& IdempotencyKey) override
     {
         if (BaseUrl.IsEmpty()) { Done({}); return; }
         TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request = FHttpModule::Get().CreateRequest();
@@ -74,7 +74,8 @@ public:
         Request->SetVerb(Verb);
         Request->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
         if (!Bearer.IsEmpty()) { Request->SetHeader(TEXT("Authorization"), TEXT("Bearer ") + Bearer); }
-        if (Verb == TEXT("POST") || Verb == TEXT("DELETE")) { Request->SetHeader(TEXT("Idempotency-Key"), FGuid::NewGuid().ToString(EGuidFormats::Digits)); }
+        if (Verb == TEXT("POST") || Verb == TEXT("DELETE"))
+        { Request->SetHeader(TEXT("Idempotency-Key"), IdempotencyKey.IsEmpty() ? FGuid::NewGuid().ToString(EGuidFormats::Digits) : IdempotencyKey); }
         if (!Body.IsEmpty()) { Request->SetContentAsString(Body); }
         Request->SetTimeout(5.f);
         TSharedRef<TFunction<void(FSFIdentityHttpReply)>> Completion = MakeShared<TFunction<void(FSFIdentityHttpReply)>>(MoveTemp(Done));
@@ -118,6 +119,7 @@ public:
                         if (!Successful(Final) || !Result.IsValid() || !Result->TryGetStringField(TEXT("session_token"), Token) || Token.IsEmpty())
                         { Done(false, {}, Failure(Final)); return; }
                         Self->SessionToken = MoveTemp(Token);
+                        Self->ClearPendingCreate();
                         Done(true, Account.ToLower(), {});
                     });
             });
@@ -126,6 +128,7 @@ public:
     {
         if (!SessionToken.IsEmpty()) { Http->Send(TEXT("POST"), TEXT("/v1/sessions/logout"), TEXT("{}"), SessionToken, [](FSFIdentityHttpReply) {}); }
         SessionToken.Reset();
+        ClearPendingCreate();
     }
     void ListCharacters(TFunction<void(bool, const TArray<FSFCharacterSummary>&, const FString&)> Done) override
     {
@@ -150,17 +153,39 @@ public:
         { Done(false, {}, SessionToken.IsEmpty() ? TEXT("Sign in first.") : Error.IsEmpty() ? TEXT("Invalid appearance.") : Error); return; }
         TSharedRef<FJsonObject> Payload = MakeShared<FJsonObject>();
         Payload->SetStringField(TEXT("realm_id"), TEXT("greenlands")); Payload->SetStringField(TEXT("name"), Name);
-        Payload->SetStringField(TEXT("appearance_v2_base64"), FBase64::Encode(Packet));
+        const FString EncodedAppearance = FBase64::Encode(Packet);
+        Payload->SetStringField(TEXT("appearance_v2_base64"), EncodedAppearance);
         Payload->SetStringField(TEXT("archetype_id"), ArchetypeId);
-        Http->Send(TEXT("POST"), TEXT("/v1/characters"), Encode(Payload), SessionToken,
-            [Done = MoveTemp(Done)](FSFIdentityHttpReply Reply) mutable
+        const FString Body = Encode(Payload);
+        // The validated name and archetype cannot contain '|'; the packed appearance is base64.
+        const FString Signature = Name + TEXT("|") + EncodedAppearance + TEXT("|") + ArchetypeId;
+        if (PendingCreateSignature != Signature || PendingCreateSession != SessionToken || PendingCreateKey.IsEmpty())
+        {
+            ClearPendingCreate();
+            PendingCreateSignature = Signature;
+            PendingCreateSession = SessionToken;
+            PendingCreateKey = FGuid::NewGuid().ToString(EGuidFormats::Digits);
+        }
+        const uint64 OperationGeneration = CreateGeneration;
+        const FString OperationSession = SessionToken;
+        const FString OperationKey = PendingCreateKey;
+        Http->Send(TEXT("POST"), TEXT("/v1/characters"), Body, SessionToken,
+            [Self = AsShared(), OperationGeneration, OperationSession, Done = MoveTemp(Done)](FSFIdentityHttpReply Reply) mutable
             {
+                if (Self->CreateGeneration != OperationGeneration || Self->SessionToken != OperationSession) { return; }
                 const TSharedPtr<FJsonObject> Json = Decode(Reply.Body);
                 FString Id;
                 if (!Successful(Reply) || !Json.IsValid() || !Json->TryGetStringField(TEXT("character_id"), Id) || Id.IsEmpty())
-                { Done(false, {}, Failure(Reply)); return; }
+                {
+                    // No response, a server error, or an unusable success may have committed the create.
+                    const bool bDefinitive = Reply.Status >= 400 && Reply.Status < 500 && Reply.Status != 408 && Reply.Status != 429;
+                    if (bDefinitive) { Self->ClearPendingCreate(); }
+                    Done(false, {}, Failure(Reply));
+                    return;
+                }
+                Self->ClearPendingCreate();
                 Done(true, Character(*Json), {});
-            });
+            }, OperationKey);
     }
     void DeleteCharacter(const FString& Id, TFunction<void(bool, const FString&)> Done) override
     {
@@ -184,8 +209,17 @@ public:
             });
     }
 private:
+    void ClearPendingCreate()
+    {
+        PendingCreateSignature.Reset(); PendingCreateSession.Reset(); PendingCreateKey.Reset();
+        ++CreateGeneration;
+    }
     TSharedRef<ISFIdentityHttp> Http;
     FString SessionToken;
+    FString PendingCreateSignature;
+    FString PendingCreateSession;
+    FString PendingCreateKey;
+    uint64 CreateGeneration = 0;
 };
 }
 

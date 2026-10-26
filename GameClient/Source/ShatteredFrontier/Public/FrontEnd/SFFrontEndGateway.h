@@ -14,7 +14,7 @@ class SHATTEREDFRONTIER_API ISFIdentityHttp
 public:
     virtual ~ISFIdentityHttp() = default;
     virtual void Send(const FString& Verb, const FString& Path, const FString& Body, const FString& Bearer,
-        TFunction<void(FSFIdentityHttpReply)> Done) = 0;
+        TFunction<void(FSFIdentityHttpReply)> Done, const FString& IdempotencyKey = {}) = 0;
 };
 
 SHATTEREDFRONTIER_API TSharedRef<ISFIdentityHttp> SFMakeIdentityHttp(const FString& BaseUrl);

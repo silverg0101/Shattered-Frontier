@@ -235,12 +235,21 @@ public:
     TArray<FString> Paths;
     TArray<FString> Bodies;
     TArray<FString> Bearers;
+    TArray<FString> IdempotencyKeys;
+    TArray<TFunction<void(FSFIdentityHttpReply)>> Pending;
+    bool bDefer = false;
     void Send(const FString&, const FString& Path, const FString& Body, const FString& Bearer,
-        TFunction<void(FSFIdentityHttpReply)> Done) override
+        TFunction<void(FSFIdentityHttpReply)> Done, const FString& IdempotencyKey) override
     {
-        Paths.Add(Path); Bodies.Add(Body); Bearers.Add(Bearer);
+        Paths.Add(Path); Bodies.Add(Body); Bearers.Add(Bearer); IdempotencyKeys.Add(IdempotencyKey);
+        if (bDefer) { Pending.Add(MoveTemp(Done)); return; }
         FSFIdentityHttpReply Reply;
         if (!Replies.IsEmpty()) { Reply = Replies[0]; Replies.RemoveAt(0); }
+        Done(MoveTemp(Reply));
+    }
+    void Complete(int32 Index, FSFIdentityHttpReply Reply)
+    {
+        auto Done = MoveTemp(Pending[Index]); Pending.RemoveAt(Index);
         Done(MoveTemp(Reply));
     }
 };
@@ -284,6 +293,66 @@ bool FSFFrontEndGatewayTest::RunTest(const FString& Parameters)
     Identity->EnterWorld(Made, [&](bool bOk, const FString&, const FString&) { Ok = bOk; });
     TestFalse(TEXT("Expired ticket response does not travel"), Ok);
     Identity->SignOut();
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFFrontEndGatewayRetryTest, "ShatteredFrontier.FrontEnd.GatewayRetry", EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+bool FSFFrontEndGatewayRetryTest::RunTest(const FString& Parameters)
+{
+    TSharedRef<FFakeIdentityHttp> Http = MakeShared<FFakeIdentityHttp>();
+    TSharedRef<ISFFrontEndIdentity> Identity = SFMakeGatewayIdentity(Http);
+    Http->Replies = {{200, TEXT("{\"login_id\":\"login_1\"}")}, {200, TEXT("{\"session_token\":\"session_a\"}")}};
+    Identity->SignIn(TEXT("alice"), TEXT("private-password"), [](bool, const FString&, const FString&) {});
+    const FSFAppearance Look;
+    Http->Replies = {{0, {}}, {503, TEXT("{\"reason\":\"UNAVAILABLE\"}")}};
+    Identity->CreateCharacter(TEXT("Mira"), Look, [](bool, const FSFCharacterSummary&, const FString&) {});
+    const FString First = Http->IdempotencyKeys.Last();
+    TestFalse(TEXT("Create carries an explicit key"), First.IsEmpty());
+    Identity->CreateCharacter(TEXT("Mira"), Look, [](bool, const FSFCharacterSummary&, const FString&) {});
+    TestEqual(TEXT("Unknown and server failure reuse the create key"), Http->IdempotencyKeys.Last(), First);
+    Http->Replies = {{201, TEXT("{invalid-json")}};
+    Identity->CreateCharacter(TEXT("Mira"), Look, [](bool, const FSFCharacterSummary&, const FString&) {});
+    TestEqual(TEXT("Unusable success keeps the create key"), Http->IdempotencyKeys.Last(), First);
+    Http->Replies = {{408, TEXT("{\"reason\":\"TIMEOUT\"}")}};
+    Identity->CreateCharacter(TEXT("Mira"), Look, [](bool, const FSFCharacterSummary&, const FString&) {});
+    TestEqual(TEXT("Request timeout keeps the create key"), Http->IdempotencyKeys.Last(), First);
+    Identity->CreateCharacter(TEXT("Nira"), Look, [](bool, const FSFCharacterSummary&, const FString&) {});
+    const FString Changed = Http->IdempotencyKeys.Last();
+    TestNotEqual(TEXT("Changed name starts another operation"), Changed, First);
+    Http->Replies = {{201, TEXT("{\"character_id\":\"chr_1\",\"name\":\"Nira\"}")}};
+    Identity->CreateCharacter(TEXT("Nira"), Look, [](bool, const FSFCharacterSummary&, const FString&) {});
+    TestEqual(TEXT("Successful retry uses the pending key"), Http->IdempotencyKeys.Last(), Changed);
+    Http->Replies = {{409, TEXT("{\"reason\":\"NAME_TAKEN\"}")}};
+    Identity->CreateCharacter(TEXT("Nira"), Look, [](bool, const FSFCharacterSummary&, const FString&) {});
+    TestNotEqual(TEXT("Success clears the pending operation"), Http->IdempotencyKeys.Last(), Changed);
+    const FString Definitive = Http->IdempotencyKeys.Last();
+    Identity->CreateCharacter(TEXT("Nira"), Look, [](bool, const FSFCharacterSummary&, const FString&) {});
+    TestNotEqual(TEXT("Definitive 409 clears the pending operation"), Http->IdempotencyKeys.Last(), Definitive);
+    Http->bDefer = true;
+    bool bOldCalled = false;
+    Identity->CreateCharacter(TEXT("Lara"), Look, [&bOldCalled](bool, const FSFCharacterSummary&, const FString&) { bOldCalled = true; });
+    const FString OldKey = Http->IdempotencyKeys.Last();
+    Identity->CreateCharacter(TEXT("Tara"), Look, [](bool, const FSFCharacterSummary&, const FString&) {});
+    const FString CurrentKey = Http->IdempotencyKeys.Last();
+    Http->Complete(0, {201, TEXT("{\"character_id\":\"chr_old\",\"name\":\"Lara\"}")});
+    TestFalse(TEXT("Late callback for changed payload ignored"), bOldCalled);
+    Http->Complete(0, {0, {}});
+    Http->bDefer = false;
+    Identity->CreateCharacter(TEXT("Tara"), Look, [](bool, const FSFCharacterSummary&, const FString&) {});
+    TestEqual(TEXT("Current operation keeps key after ambiguous callback"), Http->IdempotencyKeys.Last(), CurrentKey);
+    TestNotEqual(TEXT("Changed payload key differs from old operation"), CurrentKey, OldKey);
+    Http->bDefer = true;
+    bool bPriorSessionCalled = false;
+    Identity->CreateCharacter(TEXT("Vara"), Look, [&bPriorSessionCalled](bool, const FSFCharacterSummary&, const FString&) { bPriorSessionCalled = true; });
+    const FString PriorSessionKey = Http->IdempotencyKeys.Last();
+    Http->bDefer = false;
+    Identity->SignOut();
+    Http->Replies = {{200, TEXT("{\"login_id\":\"login_2\"}")}, {200, TEXT("{\"session_token\":\"session_b\"}")}};
+    Identity->SignIn(TEXT("bob"), TEXT("private-password"), [](bool, const FString&, const FString&) {});
+    Http->Complete(0, {201, TEXT("{\"character_id\":\"chr_prior\",\"name\":\"Vara\"}")});
+    TestFalse(TEXT("Late callback from prior identity ignored"), bPriorSessionCalled);
+    Identity->CreateCharacter(TEXT("Vara"), Look, [](bool, const FSFCharacterSummary&, const FString&) {});
+    TestNotEqual(TEXT("New identity gets a fresh create key"), Http->IdempotencyKeys.Last(), PriorSessionKey);
     return true;
 }
 
