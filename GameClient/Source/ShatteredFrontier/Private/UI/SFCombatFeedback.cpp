@@ -47,16 +47,16 @@ FVector2D USFCombatDamageWidget::MeasureVisualSize()
 {
     TakeWidget();
     ForceLayoutPrepass();
-    FVector2D Padding = FVector2D::ZeroVector;
+    FVector2D TextShadowPadding = FVector2D::ZeroVector;
     for (const UTextBlock* Text : {DamageText.Get(), CriticalNumber.Get(), CriticalText.Get()})
     {
         if (!Text || Text->GetVisibility() == ESlateVisibility::Collapsed) continue;
         const FVector2D Shadow = Text->GetShadowOffset();
         const int32 Outline = Text->GetFont().OutlineSettings.OutlineSize;
-        Padding.X = FMath::Max(Padding.X, FMath::Abs(Shadow.X) + Outline);
-        Padding.Y = FMath::Max(Padding.Y, FMath::Abs(Shadow.Y) + Outline);
+        TextShadowPadding.X = FMath::Max(TextShadowPadding.X, FMath::Abs(Shadow.X) + Outline);
+        TextShadowPadding.Y = FMath::Max(TextShadowPadding.Y, FMath::Abs(Shadow.Y) + Outline);
     }
-    return GetDesiredSize() + 2 * Padding;
+    return GetDesiredSize() + 2 * TextShadowPadding;
 }
 
 float FSFCombatDamageLayout::PopScale(float Age, bool bCritical)
