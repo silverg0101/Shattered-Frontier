@@ -20,6 +20,7 @@ namespace
 constexpr ESFConstructionPaletteAction TileActions[USFConstructionSandboxPalette::TileCount] =
     {ESFConstructionPaletteAction::Slab, ESFConstructionPaletteAction::Cube, ESFConstructionPaletteAction::Door, ESFConstructionPaletteAction::Slope};
 const TCHAR* const TileIconStems[USFConstructionSandboxPalette::TileCount] = {TEXT("timber_floor"), TEXT("timber_wall"), TEXT("wooden_door"), TEXT("timber_roof")};
+const TCHAR* const TileShortcutIds[USFConstructionSandboxPalette::TileCount] = {TEXT("build/foundation"), TEXT("build/wall"), TEXT("build/door"), TEXT("build/roof")};
 }
 
 USFConstructionSandboxPalette* USFConstructionSandboxPalette::Create(APlayerController* Owner)
@@ -85,6 +86,7 @@ void USFConstructionSandboxPalette::NativeOnInitialized()
             Cell->SetKeyText(FText::GetEmpty());
             Cell->SetCaption(FText::FromString(TileLabel(Tile)));
             Cell->SetCount(0);
+            Cell->SetShortcutDragPayload(TileShortcutIds[Tile]);
             Cell->OnClicked.AddDynamic(this, &USFConstructionSandboxPalette::HandleTileClicked);
             Cells.Add(Cell);
         }

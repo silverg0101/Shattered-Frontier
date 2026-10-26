@@ -258,7 +258,7 @@ public:
     FSoftObjectPath Item;   // a bag item (its definition)
     FName ItemSlot;         // that item's equip slot
     FName FromEquipSlot;    // set when the drag left an equipped paper-doll slot
-    int32 FromHotbar = INDEX_NONE;  // set when the drag left a hotbar slot (windows ignore it; off the bar it clears the slot)
+    int32 FromHotbar = INDEX_NONE;  // set when the drag left a hotbar slot; hotbar drop swaps, deliberate world release clears
     FString DefinitionId, InstanceId;
     int32 Quantity = 0;
     bool bFromLoot = false, bFromInventory = false;
@@ -267,14 +267,15 @@ public:
     UPROPERTY(Transient) TObjectPtr<class USFWorldDropTarget> WorldDropTarget;
 };
 
-// Input-only viewport surface behind the HUD/windows, present only during a bag
-// drag. A rejected UI drop keeps its UI hit path and never reaches this sibling.
+// Input-only viewport surface behind the HUD/windows, present during bag and hotbar drags.
+// Only a deliberate world release changes the source; cancellation and rejected UI drops preserve it.
 UCLASS(Transient)
 class SHATTEREDFRONTIER_API USFWorldDropTarget : public UUserWidget
 {
     GENERATED_BODY()
     friend class FSFLootWorkflowNetcheck;
     friend class FSFLootWorldReleaseTest;
+    friend class FSFConstructionHotbarRegressionTest;
 public:
     void Configure(USFItemDragOperation* InOperation) { Operation = InOperation; }
     void Cancel() { Operation.Reset(); RemoveFromParent(); }
@@ -295,6 +296,7 @@ class SHATTEREDFRONTIER_API USFSlotWidget : public USFSelectableWidget
     GENERATED_BODY()
     friend class FSFLootWorkflowNetcheck;
     friend class FSFLootWorldReleaseTest;
+    friend class FSFConstructionHotbarRegressionTest;
 public:
     // The one size of every box a player drags an item into or out of (bag grids, paper doll, trade / market / reward slots, the
     // hotbar), in kit art px: windows show art at 0.5, so 72 px on screen; the HUD hotbar is authored at half (also 72 px).
@@ -307,12 +309,16 @@ public:
     UFUNCTION(BlueprintCallable, Category = "SF UI") void SetCount(int32 Count);
     UFUNCTION(BlueprintPure, Category = "SF UI") FText GetCountText() const;
     UFUNCTION(BlueprintPure, Category = "SF UI") bool HasIcon() const;
-    // Drag payload, set by the owning window each refresh; clear both to make the slot not draggable.
-    void SetDragPayload(const FSoftObjectPath& Item, FName ItemSlot, FName FromEquipSlot) { DragItem = Item; DragItemSlot = ItemSlot; DragFromEquipSlot = FromEquipSlot; }
+    // Drag payload, set by the owning slot/window each refresh; an empty payload is not draggable.
+    void SetDragPayload(const FSoftObjectPath& Item, FName ItemSlot, FName FromEquipSlot)
+    { DragItem = Item; DragItemSlot = ItemSlot; DragFromEquipSlot = FromEquipSlot; DragDefinitionId.Reset(); DragQuantity = 0; DragInstanceId.Reset(); DragFromHotbar = INDEX_NONE; bDragFromInventory = false; bDragFromLoot = false; }
     void SetInventoryDragPayload(const FString& Id, int32 Count, const FString& Copy, bool bExternal)
-    { DragDefinitionId = Id; DragQuantity = Count; DragInstanceId = Copy; bDragFromLoot = bExternal; bDragFromInventory = true; }
-    void SetHotbarDrag(int32 Index) { DragFromHotbar = Index; }  // INDEX_NONE: an empty hotbar slot, not draggable
-    bool CanDrag() const { return !DragItem.IsNull() || !DragFromEquipSlot.IsNone() || DragFromHotbar != INDEX_NONE; }
+    { DragDefinitionId = Id; DragQuantity = Count; DragInstanceId = Copy; DragFromHotbar = INDEX_NONE; bDragFromLoot = bExternal; bDragFromInventory = true; }
+    void SetShortcutDragPayload(const FString& Id)
+    { DragItem = FSoftObjectPath(); DragItemSlot = NAME_None; DragFromEquipSlot = NAME_None; DragDefinitionId = Id; DragQuantity = 0; DragInstanceId.Reset(); bDragFromLoot = false; bDragFromInventory = false; DragFromHotbar = INDEX_NONE; }
+    void SetHotbarDrag(int32 Index)
+    { DragItem = FSoftObjectPath(); DragItemSlot = NAME_None; DragFromEquipSlot = NAME_None; DragFromHotbar = Index; DragDefinitionId.Reset(); DragQuantity = 0; DragInstanceId.Reset(); bDragFromInventory = false; bDragFromLoot = false; }  // INDEX_NONE: empty, not draggable
+    bool CanDrag() const { return !DragItem.IsNull() || !DragFromEquipSlot.IsNone() || DragFromHotbar != INDEX_NONE || !DragDefinitionId.IsEmpty(); }
     UPROPERTY(BlueprintAssignable, Category = "SF") FSFUiSelectableClicked OnDoubleClicked;
     // The ghost art of an empty paper-doll slot (per instance in the Designer); applied to Ghost.
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "SF Style") FSlateBrush GhostBrush;

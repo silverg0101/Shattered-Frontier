@@ -355,7 +355,7 @@ void USFSlotWidget::NativeOnDragDetected(const FGeometry& InGeometry, const FPoi
     Operation->Item = DragItem; Operation->ItemSlot = DragItemSlot; Operation->FromEquipSlot = DragFromEquipSlot; Operation->FromHotbar = DragFromHotbar;
     Operation->DefinitionId = DragDefinitionId; Operation->InstanceId = DragInstanceId; Operation->Quantity = DragQuantity;
     Operation->bFromLoot = bDragFromLoot; Operation->bFromInventory = bDragFromInventory;
-    if (bDragFromInventory && !bDragFromLoot && GetOwningPlayer())
+    if (((bDragFromInventory && !bDragFromLoot) || DragFromHotbar != INDEX_NONE) && GetOwningPlayer())
     {
         Operation->WorldDropTarget = CreateWidget<USFWorldDropTarget>(GetOwningPlayer());
         Operation->WorldDropTarget->Configure(Operation);
@@ -373,15 +373,12 @@ void USFSlotWidget::NativeOnDragDetected(const FGeometry& InGeometry, const FPoi
     OutOperation = Operation;
 }
 
-// A hotbar slot dragged off the bar (nothing took the drop) is cleared.
 void USFSlotWidget::NativeOnDragCancelled(const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
 {
     Super::NativeOnDragCancelled(InDragDropEvent, InOperation);
     // Cancellation (Escape, invalid UI target, focus loss) never debits a bag.
     if (auto* Drag = Cast<USFItemDragOperation>(InOperation))
         if (Drag->WorldDropTarget) Drag->WorldDropTarget->Cancel();
-    if (DragFromHotbar == INDEX_NONE) { return; }
-    if (USFHudHotbarWidget* Bar = GetTypedOuter<USFHudHotbarWidget>()) { Bar->Assign(DragFromHotbar, FString()); }
 }
 
 void USFItemDragOperation::Drop_Implementation(const FPointerEvent& PointerEvent)
@@ -405,12 +402,23 @@ bool USFWorldDropTarget::NativeOnDrop(const FGeometry& Geometry, const FDragDrop
 {
     auto* Drag = Cast<USFItemDragOperation>(InOperation);
     auto* Player = Cast<ASFPlayerController>(GetOwningPlayer());
-    if (!Drag || Drag != Operation.Get() || !Drag->bFromInventory || Drag->bFromLoot || Drag->Quantity <= 0 ||
+    const bool bInventoryDrop = Drag && Drag->bFromInventory && !Drag->bFromLoot && Drag->Quantity > 0;
+    const bool bHotbarRemoval = Drag && Drag->FromHotbar != INDEX_NONE;
+    if (!Drag || Drag != Operation.Get() || !Player || (!bInventoryDrop && !bHotbarRemoval) ||
         Event.GetEffectingButton() != EKeys::LeftMouseButton || Event.IsMouseButtonDown(EKeys::LeftMouseButton) ||
         !Geometry.IsUnderLocation(Event.GetScreenSpacePosition())) return false;
     if (Player)
         for (UUserWidget* Window : Player->GetWindowStack()->GetOrder())
             if (Window && Window->GetCachedGeometry().IsUnderLocation(Event.GetScreenSpacePosition())) return false;
+    if (bHotbarRemoval)
+    {
+        if (USFHudWidget* Hud = Player->GetHudWidget(); Hud && Hud->Hotbar)
+        {
+            Hud->Hotbar->Assign(Drag->FromHotbar, FString());
+            Operation.Reset(); RemoveFromParent(); return true;
+        }
+        return false;
+    }
     if (auto* Loot = USFLootComponent::Find(Player))
     {
         Loot->RequestDrop(Drag->DefinitionId, Drag->Quantity, Drag->InstanceId);
