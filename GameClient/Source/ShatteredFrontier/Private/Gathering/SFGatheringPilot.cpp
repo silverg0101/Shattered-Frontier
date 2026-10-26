@@ -704,9 +704,10 @@ void USFGatheringPilotComponent::BeginPlay()
 void USFGatheringPilotComponent::CaptureSkillLockSupport()
 {
     // Configuration chooses the adapter at admission, never connection health or restore readiness.
+    bDurableSkillLocksMode=bEnabled && GetDefault<USFGameplayServicesSettings>()->bEnabled;
     bSessionSkillLocksSupported=bEnabled && IsAuthoritativePilotWorld()
         && !GetDefault<USFInventoryLedgerSettings>()->bEnabled
-        && !GetDefault<USFGameplayServicesSettings>()->bEnabled;
+        && !bDurableSkillLocksMode;
 }
 
 void USFGatheringPilotComponent::EndPlay(const EEndPlayReason::Type Reason)
@@ -768,12 +769,109 @@ void USFGatheringPilotComponent::ClientSkillLockTiming_Implementation(ESFGatheri
     SkillLockPending[int32(Skill)]=false;
 }
 
+namespace
+{
+bool ParseServiceSkillLock(const FString& Name, ESFGatheringSkillLock& Out)
+{
+    if (Name==TEXT("up")) { Out=ESFGatheringSkillLock::Up; return true; }
+    if (Name==TEXT("down")) { Out=ESFGatheringSkillLock::Down; return true; }
+    if (Name==TEXT("locked")) { Out=ESFGatheringSkillLock::Locked; return true; }
+    return false;
+}
+
+int64 CurrentUnixMs()
+{
+    const FDateTime Now=FDateTime::UtcNow();
+    return Now.ToUnixTimestamp()*1000+Now.GetMillisecond();
+}
+}
+
+void USFGatheringPilotComponent::RestoreSkillLocks(const TMap<FString,FString>& ServiceLocks,
+    const TMap<FString,int64>& ReadyAtUnixMs, bool bAuthoritative)
+{
+    if (!GetOwner()||!GetOwner()->HasAuthority()||!bDurableSkillLocksMode||!GetWorld()) { return; }
+    // A new host must send the complete six-skill snapshot. Missing or malformed data never enables controls.
+    TArray<ESFGatheringSkillLock> Parsed;
+    TArray<double> Deadlines;
+    const int64 NowMs=CurrentUnixMs();
+    const double WorldNow=GetWorld()->GetTimeSeconds();
+    for (int32 Index=0; Index<6 && bAuthoritative; ++Index)
+    {
+        const FString Id=TEXT("skill/")+FString(FSFGatheringProgressionSession::SkillName(ESFGatheringSkill(Index))).ToLower();
+        const FString* Name=ServiceLocks.Find(Id);
+        const int64* Ready=ReadyAtUnixMs.Find(Id);
+        ESFGatheringSkillLock Lock;
+        if (!Name||!Ready||!ParseServiceSkillLock(*Name,Lock)||*Ready<0||*Ready>NowMs+60000)
+        { bAuthoritative=false; break; }
+        Parsed.Add(Lock);
+        Deadlines.Add(WorldNow+FMath::Max(0.0,double(*Ready-NowMs)/1000.0));
+    }
+    bSessionSkillLocksSupported=bAuthoritative && Parsed.Num()==6;
+    if (bSessionSkillLocksSupported)
+    {
+        Skills.Locks=MoveTemp(Parsed);
+        SkillLockReadyAt=MoveTemp(Deadlines);
+        for (int32 Index=0; Index<6; ++Index)
+        {
+            if (!ServerSkillLockPending[Index])
+            { ClientSkillLockTiming(ESFGatheringSkill(Index),float(FMath::Max(0.0,SkillLockReadyAt[Index]-WorldNow))); }
+        }
+    }
+    GetOwner()->ForceNetUpdate();
+}
+
+void USFGatheringPilotComponent::ApplyDurableSkillLockAck(ESFGatheringSkill Skill,
+    ESFGatheringSkillLock Lock, int64 ReadyAtUnixMs)
+{
+    const int32 Index=int32(Skill);
+    if (!GetOwner()||!GetOwner()->HasAuthority()||!SupportsSkillLocks()||!bDurableSkillLocksMode
+        ||!Skills.Locks.IsValidIndex(Index)||!ServerSkillLockPending.IsValidIndex(Index)
+        ||!ServerSkillLockPending[Index]
+        ||ReadyAtUnixMs<0||ReadyAtUnixMs>CurrentUnixMs()+60000)
+    { RejectDurableSkillLock(Skill); return; }
+    const double Remaining=FMath::Max(0.0,double(ReadyAtUnixMs-CurrentUnixMs())/1000.0);
+    Skills.Locks[Index]=Lock;
+    SkillLockReadyAt[Index]=GetWorld()->GetTimeSeconds()+Remaining;
+    ServerSkillLockPending[Index]=false;
+    SkillLockReadyNotifications|=uint8(1<<Index);
+    ClientSkillLockTiming(Skill,float(Remaining));
+    GetOwner()->ForceNetUpdate();
+}
+
+void USFGatheringPilotComponent::RejectDurableSkillLock(ESFGatheringSkill Skill)
+{
+    const int32 Index=int32(Skill);
+    if (!ServerSkillLockPending.IsValidIndex(Index)) { return; }
+    ServerSkillLockPending[Index]=false;
+    ClientSkillLockTiming(Skill,GetSkillLockCooldownRemaining(Skill));
+}
+
 void USFGatheringPilotComponent::ServerChangeSkillLock_Implementation(ESFGatheringSkill Skill,ESFGatheringSkillLock Lock)
 {
     const int32 Index=int32(Skill);
-    if (!SupportsSkillLocks()||!IsAuthoritativePilotWorld()||!CapturedProgressionSettings
-        ||uint8(Skill)>=6||uint8(Lock)>uint8(ESFGatheringSkillLock::Locked)
-        ||!Skills.Locks.IsValidIndex(Index)||!SkillLockReadyAt.IsValidIndex(Index)) { return; }
+    if (uint8(Skill)>=6||uint8(Lock)>uint8(ESFGatheringSkillLock::Locked)) { return; }
+    if (!SupportsSkillLocks()||!IsAuthoritativePilotWorld()
+        ||!Skills.Locks.IsValidIndex(Index)||!SkillLockReadyAt.IsValidIndex(Index))
+    { ClientSkillLockTiming(Skill,0); return; }
+    if (bDurableSkillLocksMode)
+    {
+        auto* PC=Cast<APlayerController>(GetOwner());
+        auto* Pack=PC ? PC->FindComponentByClass<USFBackpackComponent>() : nullptr;
+        auto* Session=PC ? PC->FindComponentByClass<USFCharacterSessionComponent>() : nullptr;
+        auto* Quest=PC ? PC->FindComponentByClass<USFQuestPilotComponent>() : nullptr;
+        if (!PC||!Pack||!Session||!Quest||!USFBackpackComponent::Services()
+            ||(!Pack->HasVerifiedIdentity()&&!Pack->HasDevIdentity())
+            ||Session->RestoredCharacterId().IsEmpty()||Session->RestoredCharacterId()!=Pack->GetCharacterId()
+            ||USFCharacterSessionComponent::IsRestoring(PC)||USFCharacterSessionComponent::IsLinkdead(PC)
+            ||ServerSkillLockPending[Index])
+        { RejectDurableSkillLock(Skill); return; }
+        if (Skills.Locks[Index]==Lock||GetSkillLockCooldownRemaining(Skill)>0)
+        { ClientSkillLockTiming(Skill,GetSkillLockCooldownRemaining(Skill)); return; }
+        ServerSkillLockPending[Index]=true;
+        if (!Quest->QueueGatheringSkillLock(Skill,Lock)) { RejectDurableSkillLock(Skill); }
+        return;
+    }
+    if (!CapturedProgressionSettings) { ClientSkillLockTiming(Skill,0); return; }
     const double Now=GetWorld()->GetTimeSeconds();
     #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     if (FParse::Param(FCommandLine::Get(),TEXT("GatheringSkillChoicesTrace")))

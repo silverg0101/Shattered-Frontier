@@ -101,6 +101,13 @@ class Progression final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::progression::v1::EndSessionReply>> PrepareAsyncEndSession(::grpc::ClientContext* context, const ::sf::progression::v1::EndSessionRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::progression::v1::EndSessionReply>>(PrepareAsyncEndSessionRaw(context, request, cq));
     }
+    virtual ::grpc::Status ChangeSkillLock(::grpc::ClientContext* context, const ::sf::progression::v1::ChangeSkillLockRequest& request, ::sf::progression::v1::ChangeSkillLockReply* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::progression::v1::ChangeSkillLockReply>> AsyncChangeSkillLock(::grpc::ClientContext* context, const ::sf::progression::v1::ChangeSkillLockRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::progression::v1::ChangeSkillLockReply>>(AsyncChangeSkillLockRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::progression::v1::ChangeSkillLockReply>> PrepareAsyncChangeSkillLock(::grpc::ClientContext* context, const ::sf::progression::v1::ChangeSkillLockRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::sf::progression::v1::ChangeSkillLockReply>>(PrepareAsyncChangeSkillLockRaw(context, request, cq));
+    }
     class async_interface {
      public:
       virtual ~async_interface() {}
@@ -122,6 +129,8 @@ class Progression final {
       virtual void LearnRecipe(::grpc::ClientContext* context, const ::sf::progression::v1::LearnRecipeRequest* request, ::sf::progression::v1::LearnRecipeReply* response, ::grpc::ClientUnaryReactor* reactor) = 0;
       virtual void EndSession(::grpc::ClientContext* context, const ::sf::progression::v1::EndSessionRequest* request, ::sf::progression::v1::EndSessionReply* response, std::function<void(::grpc::Status)>) = 0;
       virtual void EndSession(::grpc::ClientContext* context, const ::sf::progression::v1::EndSessionRequest* request, ::sf::progression::v1::EndSessionReply* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      virtual void ChangeSkillLock(::grpc::ClientContext* context, const ::sf::progression::v1::ChangeSkillLockRequest* request, ::sf::progression::v1::ChangeSkillLockReply* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void ChangeSkillLock(::grpc::ClientContext* context, const ::sf::progression::v1::ChangeSkillLockRequest* request, ::sf::progression::v1::ChangeSkillLockReply* response, ::grpc::ClientUnaryReactor* reactor) = 0;
     };
     typedef class async_interface experimental_async_interface;
     virtual class async_interface* async() { return nullptr; }
@@ -145,6 +154,8 @@ class Progression final {
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::progression::v1::LearnRecipeReply>* PrepareAsyncLearnRecipeRaw(::grpc::ClientContext* context, const ::sf::progression::v1::LearnRecipeRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::progression::v1::EndSessionReply>* AsyncEndSessionRaw(::grpc::ClientContext* context, const ::sf::progression::v1::EndSessionRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::progression::v1::EndSessionReply>* PrepareAsyncEndSessionRaw(::grpc::ClientContext* context, const ::sf::progression::v1::EndSessionRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::progression::v1::ChangeSkillLockReply>* AsyncChangeSkillLockRaw(::grpc::ClientContext* context, const ::sf::progression::v1::ChangeSkillLockRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::sf::progression::v1::ChangeSkillLockReply>* PrepareAsyncChangeSkillLockRaw(::grpc::ClientContext* context, const ::sf::progression::v1::ChangeSkillLockRequest& request, ::grpc::CompletionQueue* cq) = 0;
   };
   class Stub final : public StubInterface {
    public:
@@ -212,6 +223,13 @@ class Progression final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::progression::v1::EndSessionReply>> PrepareAsyncEndSession(::grpc::ClientContext* context, const ::sf::progression::v1::EndSessionRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::progression::v1::EndSessionReply>>(PrepareAsyncEndSessionRaw(context, request, cq));
     }
+    ::grpc::Status ChangeSkillLock(::grpc::ClientContext* context, const ::sf::progression::v1::ChangeSkillLockRequest& request, ::sf::progression::v1::ChangeSkillLockReply* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::progression::v1::ChangeSkillLockReply>> AsyncChangeSkillLock(::grpc::ClientContext* context, const ::sf::progression::v1::ChangeSkillLockRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::progression::v1::ChangeSkillLockReply>>(AsyncChangeSkillLockRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::progression::v1::ChangeSkillLockReply>> PrepareAsyncChangeSkillLock(::grpc::ClientContext* context, const ::sf::progression::v1::ChangeSkillLockRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::sf::progression::v1::ChangeSkillLockReply>>(PrepareAsyncChangeSkillLockRaw(context, request, cq));
+    }
     class async final :
       public StubInterface::async_interface {
      public:
@@ -233,6 +251,8 @@ class Progression final {
       void LearnRecipe(::grpc::ClientContext* context, const ::sf::progression::v1::LearnRecipeRequest* request, ::sf::progression::v1::LearnRecipeReply* response, ::grpc::ClientUnaryReactor* reactor) override;
       void EndSession(::grpc::ClientContext* context, const ::sf::progression::v1::EndSessionRequest* request, ::sf::progression::v1::EndSessionReply* response, std::function<void(::grpc::Status)>) override;
       void EndSession(::grpc::ClientContext* context, const ::sf::progression::v1::EndSessionRequest* request, ::sf::progression::v1::EndSessionReply* response, ::grpc::ClientUnaryReactor* reactor) override;
+      void ChangeSkillLock(::grpc::ClientContext* context, const ::sf::progression::v1::ChangeSkillLockRequest* request, ::sf::progression::v1::ChangeSkillLockReply* response, std::function<void(::grpc::Status)>) override;
+      void ChangeSkillLock(::grpc::ClientContext* context, const ::sf::progression::v1::ChangeSkillLockRequest* request, ::sf::progression::v1::ChangeSkillLockReply* response, ::grpc::ClientUnaryReactor* reactor) override;
      private:
       friend class Stub;
       explicit async(Stub* stub): stub_(stub) { }
@@ -262,6 +282,8 @@ class Progression final {
     ::grpc::ClientAsyncResponseReader< ::sf::progression::v1::LearnRecipeReply>* PrepareAsyncLearnRecipeRaw(::grpc::ClientContext* context, const ::sf::progression::v1::LearnRecipeRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::sf::progression::v1::EndSessionReply>* AsyncEndSessionRaw(::grpc::ClientContext* context, const ::sf::progression::v1::EndSessionRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::sf::progression::v1::EndSessionReply>* PrepareAsyncEndSessionRaw(::grpc::ClientContext* context, const ::sf::progression::v1::EndSessionRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::sf::progression::v1::ChangeSkillLockReply>* AsyncChangeSkillLockRaw(::grpc::ClientContext* context, const ::sf::progression::v1::ChangeSkillLockRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::sf::progression::v1::ChangeSkillLockReply>* PrepareAsyncChangeSkillLockRaw(::grpc::ClientContext* context, const ::sf::progression::v1::ChangeSkillLockRequest& request, ::grpc::CompletionQueue* cq) override;
     const ::grpc::internal::RpcMethod rpcmethod_CreateCharacter_;
     const ::grpc::internal::RpcMethod rpcmethod_ApplyReceipt_;
     const ::grpc::internal::RpcMethod rpcmethod_GetCharacterState_;
@@ -271,6 +293,7 @@ class Progression final {
     const ::grpc::internal::RpcMethod rpcmethod_ClearDeath_;
     const ::grpc::internal::RpcMethod rpcmethod_LearnRecipe_;
     const ::grpc::internal::RpcMethod rpcmethod_EndSession_;
+    const ::grpc::internal::RpcMethod rpcmethod_ChangeSkillLock_;
   };
   static std::unique_ptr<Stub> NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
 
@@ -287,6 +310,7 @@ class Progression final {
     virtual ::grpc::Status ClearDeath(::grpc::ServerContext* context, const ::sf::progression::v1::ClearDeathRequest* request, ::sf::progression::v1::DeathState* response);
     virtual ::grpc::Status LearnRecipe(::grpc::ServerContext* context, const ::sf::progression::v1::LearnRecipeRequest* request, ::sf::progression::v1::LearnRecipeReply* response);
     virtual ::grpc::Status EndSession(::grpc::ServerContext* context, const ::sf::progression::v1::EndSessionRequest* request, ::sf::progression::v1::EndSessionReply* response);
+    virtual ::grpc::Status ChangeSkillLock(::grpc::ServerContext* context, const ::sf::progression::v1::ChangeSkillLockRequest* request, ::sf::progression::v1::ChangeSkillLockReply* response);
   };
   template <class BaseClass>
   class WithAsyncMethod_CreateCharacter : public BaseClass {
@@ -468,7 +492,27 @@ class Progression final {
       ::grpc::Service::RequestAsyncUnary(8, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
-  typedef WithAsyncMethod_CreateCharacter<WithAsyncMethod_ApplyReceipt<WithAsyncMethod_GetCharacterState<WithAsyncMethod_SavePosition<WithAsyncMethod_CommitUnstuck<WithAsyncMethod_ReportDeath<WithAsyncMethod_ClearDeath<WithAsyncMethod_LearnRecipe<WithAsyncMethod_EndSession<Service > > > > > > > > > AsyncService;
+  template <class BaseClass>
+  class WithAsyncMethod_ChangeSkillLock : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithAsyncMethod_ChangeSkillLock() {
+      ::grpc::Service::MarkMethodAsync(9);
+    }
+    ~WithAsyncMethod_ChangeSkillLock() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ChangeSkillLock(::grpc::ServerContext* /*context*/, const ::sf::progression::v1::ChangeSkillLockRequest* /*request*/, ::sf::progression::v1::ChangeSkillLockReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestChangeSkillLock(::grpc::ServerContext* context, ::sf::progression::v1::ChangeSkillLockRequest* request, ::grpc::ServerAsyncResponseWriter< ::sf::progression::v1::ChangeSkillLockReply>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(9, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  typedef WithAsyncMethod_CreateCharacter<WithAsyncMethod_ApplyReceipt<WithAsyncMethod_GetCharacterState<WithAsyncMethod_SavePosition<WithAsyncMethod_CommitUnstuck<WithAsyncMethod_ReportDeath<WithAsyncMethod_ClearDeath<WithAsyncMethod_LearnRecipe<WithAsyncMethod_EndSession<WithAsyncMethod_ChangeSkillLock<Service > > > > > > > > > > AsyncService;
   template <class BaseClass>
   class WithCallbackMethod_CreateCharacter : public BaseClass {
    private:
@@ -712,7 +756,34 @@ class Progression final {
     virtual ::grpc::ServerUnaryReactor* EndSession(
       ::grpc::CallbackServerContext* /*context*/, const ::sf::progression::v1::EndSessionRequest* /*request*/, ::sf::progression::v1::EndSessionReply* /*response*/)  { return nullptr; }
   };
-  typedef WithCallbackMethod_CreateCharacter<WithCallbackMethod_ApplyReceipt<WithCallbackMethod_GetCharacterState<WithCallbackMethod_SavePosition<WithCallbackMethod_CommitUnstuck<WithCallbackMethod_ReportDeath<WithCallbackMethod_ClearDeath<WithCallbackMethod_LearnRecipe<WithCallbackMethod_EndSession<Service > > > > > > > > > CallbackService;
+  template <class BaseClass>
+  class WithCallbackMethod_ChangeSkillLock : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithCallbackMethod_ChangeSkillLock() {
+      ::grpc::Service::MarkMethodCallback(9,
+          new ::grpc::internal::CallbackUnaryHandler< ::sf::progression::v1::ChangeSkillLockRequest, ::sf::progression::v1::ChangeSkillLockReply>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::sf::progression::v1::ChangeSkillLockRequest* request, ::sf::progression::v1::ChangeSkillLockReply* response) { return this->ChangeSkillLock(context, request, response); }));}
+    void SetMessageAllocatorFor_ChangeSkillLock(
+        ::grpc::MessageAllocator< ::sf::progression::v1::ChangeSkillLockRequest, ::sf::progression::v1::ChangeSkillLockReply>* allocator) {
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(9);
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::sf::progression::v1::ChangeSkillLockRequest, ::sf::progression::v1::ChangeSkillLockReply>*>(handler)
+              ->SetMessageAllocator(allocator);
+    }
+    ~WithCallbackMethod_ChangeSkillLock() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ChangeSkillLock(::grpc::ServerContext* /*context*/, const ::sf::progression::v1::ChangeSkillLockRequest* /*request*/, ::sf::progression::v1::ChangeSkillLockReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* ChangeSkillLock(
+      ::grpc::CallbackServerContext* /*context*/, const ::sf::progression::v1::ChangeSkillLockRequest* /*request*/, ::sf::progression::v1::ChangeSkillLockReply* /*response*/)  { return nullptr; }
+  };
+  typedef WithCallbackMethod_CreateCharacter<WithCallbackMethod_ApplyReceipt<WithCallbackMethod_GetCharacterState<WithCallbackMethod_SavePosition<WithCallbackMethod_CommitUnstuck<WithCallbackMethod_ReportDeath<WithCallbackMethod_ClearDeath<WithCallbackMethod_LearnRecipe<WithCallbackMethod_EndSession<WithCallbackMethod_ChangeSkillLock<Service > > > > > > > > > > CallbackService;
   typedef CallbackService ExperimentalCallbackService;
   template <class BaseClass>
   class WithGenericMethod_CreateCharacter : public BaseClass {
@@ -863,6 +934,23 @@ class Progression final {
     }
     // disable synchronous version of this method
     ::grpc::Status EndSession(::grpc::ServerContext* /*context*/, const ::sf::progression::v1::EndSessionRequest* /*request*/, ::sf::progression::v1::EndSessionReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_ChangeSkillLock : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithGenericMethod_ChangeSkillLock() {
+      ::grpc::Service::MarkMethodGeneric(9);
+    }
+    ~WithGenericMethod_ChangeSkillLock() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ChangeSkillLock(::grpc::ServerContext* /*context*/, const ::sf::progression::v1::ChangeSkillLockRequest* /*request*/, ::sf::progression::v1::ChangeSkillLockReply* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -1045,6 +1133,26 @@ class Progression final {
     }
     void RequestEndSession(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
       ::grpc::Service::RequestAsyncUnary(8, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithRawMethod_ChangeSkillLock : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawMethod_ChangeSkillLock() {
+      ::grpc::Service::MarkMethodRaw(9);
+    }
+    ~WithRawMethod_ChangeSkillLock() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ChangeSkillLock(::grpc::ServerContext* /*context*/, const ::sf::progression::v1::ChangeSkillLockRequest* /*request*/, ::sf::progression::v1::ChangeSkillLockReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestChangeSkillLock(::grpc::ServerContext* context, ::grpc::ByteBuffer* request, ::grpc::ServerAsyncResponseWriter< ::grpc::ByteBuffer>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(9, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
   template <class BaseClass>
@@ -1243,6 +1351,28 @@ class Progression final {
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
     virtual ::grpc::ServerUnaryReactor* EndSession(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
+  };
+  template <class BaseClass>
+  class WithRawCallbackMethod_ChangeSkillLock : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithRawCallbackMethod_ChangeSkillLock() {
+      ::grpc::Service::MarkMethodRawCallback(9,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+                   ::grpc::CallbackServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->ChangeSkillLock(context, request, response); }));
+    }
+    ~WithRawCallbackMethod_ChangeSkillLock() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status ChangeSkillLock(::grpc::ServerContext* /*context*/, const ::sf::progression::v1::ChangeSkillLockRequest* /*request*/, ::sf::progression::v1::ChangeSkillLockReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    virtual ::grpc::ServerUnaryReactor* ChangeSkillLock(
       ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)  { return nullptr; }
   };
   template <class BaseClass>
@@ -1488,9 +1618,36 @@ class Progression final {
     // replace default version of method with streamed unary
     virtual ::grpc::Status StreamedEndSession(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::sf::progression::v1::EndSessionRequest,::sf::progression::v1::EndSessionReply>* server_unary_streamer) = 0;
   };
-  typedef WithStreamedUnaryMethod_CreateCharacter<WithStreamedUnaryMethod_ApplyReceipt<WithStreamedUnaryMethod_GetCharacterState<WithStreamedUnaryMethod_SavePosition<WithStreamedUnaryMethod_CommitUnstuck<WithStreamedUnaryMethod_ReportDeath<WithStreamedUnaryMethod_ClearDeath<WithStreamedUnaryMethod_LearnRecipe<WithStreamedUnaryMethod_EndSession<Service > > > > > > > > > StreamedUnaryService;
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_ChangeSkillLock : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
+   public:
+    WithStreamedUnaryMethod_ChangeSkillLock() {
+      ::grpc::Service::MarkMethodStreamed(9,
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::sf::progression::v1::ChangeSkillLockRequest, ::sf::progression::v1::ChangeSkillLockReply>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::sf::progression::v1::ChangeSkillLockRequest, ::sf::progression::v1::ChangeSkillLockReply>* streamer) {
+                       return this->StreamedChangeSkillLock(context,
+                         streamer);
+                  }));
+    }
+    ~WithStreamedUnaryMethod_ChangeSkillLock() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status ChangeSkillLock(::grpc::ServerContext* /*context*/, const ::sf::progression::v1::ChangeSkillLockRequest* /*request*/, ::sf::progression::v1::ChangeSkillLockReply* /*response*/) override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status StreamedChangeSkillLock(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::sf::progression::v1::ChangeSkillLockRequest,::sf::progression::v1::ChangeSkillLockReply>* server_unary_streamer) = 0;
+  };
+  typedef WithStreamedUnaryMethod_CreateCharacter<WithStreamedUnaryMethod_ApplyReceipt<WithStreamedUnaryMethod_GetCharacterState<WithStreamedUnaryMethod_SavePosition<WithStreamedUnaryMethod_CommitUnstuck<WithStreamedUnaryMethod_ReportDeath<WithStreamedUnaryMethod_ClearDeath<WithStreamedUnaryMethod_LearnRecipe<WithStreamedUnaryMethod_EndSession<WithStreamedUnaryMethod_ChangeSkillLock<Service > > > > > > > > > > StreamedUnaryService;
   typedef Service SplitStreamedService;
-  typedef WithStreamedUnaryMethod_CreateCharacter<WithStreamedUnaryMethod_ApplyReceipt<WithStreamedUnaryMethod_GetCharacterState<WithStreamedUnaryMethod_SavePosition<WithStreamedUnaryMethod_CommitUnstuck<WithStreamedUnaryMethod_ReportDeath<WithStreamedUnaryMethod_ClearDeath<WithStreamedUnaryMethod_LearnRecipe<WithStreamedUnaryMethod_EndSession<Service > > > > > > > > > StreamedService;
+  typedef WithStreamedUnaryMethod_CreateCharacter<WithStreamedUnaryMethod_ApplyReceipt<WithStreamedUnaryMethod_GetCharacterState<WithStreamedUnaryMethod_SavePosition<WithStreamedUnaryMethod_CommitUnstuck<WithStreamedUnaryMethod_ReportDeath<WithStreamedUnaryMethod_ClearDeath<WithStreamedUnaryMethod_LearnRecipe<WithStreamedUnaryMethod_EndSession<WithStreamedUnaryMethod_ChangeSkillLock<Service > > > > > > > > > > StreamedService;
 };
 
 }  // namespace v1

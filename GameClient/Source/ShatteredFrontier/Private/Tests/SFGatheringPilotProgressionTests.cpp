@@ -38,7 +38,9 @@ bool FSFGatheringSkillCapabilityTest::RunTest(const FString& Parameters)
             auto* Button=Cast<USFButtonWidget>(Panel->GetWidgetFromName(*FString::Printf(TEXT("Skill%dLock"),Row)));
             if (!TestNotNull(TEXT("Skill preference button"),Button)) { continue; }
             TestEqual(TEXT("Visibility follows captured capability"),Button->GetVisibility(),bSupported ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
-            TestEqual(TEXT("Unsupported button cannot activate"),Button->IsButtonEnabled(),bSupported);
+            const bool bExpectedEnabled=bSupported &&
+                Gather->GetSkillLockCooldownRemaining(USFGatheringSkillsPanel::Rows[Row])<=0.f;
+            TestEqual(TEXT("Button follows capability and restored cooldown"),Button->IsButtonEnabled(),bExpectedEnabled);
         }
     };
     Gather->bEnabled=true;
@@ -54,13 +56,36 @@ bool FSFGatheringSkillCapabilityTest::RunTest(const FString& Parameters)
     Gather->bEnabled=true;
     GetMutableDefault<USFGameplayServicesSettings>()->bEnabled=true;
     Gather->CaptureSkillLockSupport();
-    TestFalse(TEXT("Service session has no preference protocol"),Gather->SupportsSkillLocks());
+    TestFalse(TEXT("Old service host has no durable preference capability"),Gather->SupportsSkillLocks());
     CheckButtons(false);
     TestFalse(TEXT("Service request cannot send a local preference"),Gather->RequestSkillLock(ESFGatheringSkill::Logging,ESFGatheringSkillLock::Locked));
     Gather->ServerChangeSkillLock_Implementation(ESFGatheringSkill::Logging,ESFGatheringSkillLock::Locked);
-    TestEqual(TEXT("Service endpoint refuses local-only lock"),Gather->Skills.Locks[1],ESFGatheringSkillLock::Up);
+    TestEqual(TEXT("Old host cannot change a lock"),Gather->Skills.Locks[1],ESFGatheringSkillLock::Up);
     GetMutableDefault<USFGameplayServicesSettings>()->bEnabled=false;
     TestFalse(TEXT("Later configuration or service outage cannot grant session capability"),Gather->SupportsSkillLocks());
+    CheckButtons(false);
+    TMap<FString,FString> DurableLocks;
+    TMap<FString,int64> ReadyAt;
+    for (int32 Index=0; Index<6; ++Index)
+    {
+        const FString Id=TEXT("skill/")+FString(FSFGatheringProgressionSession::SkillName(ESFGatheringSkill(Index))).ToLower();
+        DurableLocks.Add(Id,Index==int32(ESFGatheringSkill::Logging) ? TEXT("down") :
+            Index==int32(ESFGatheringSkill::Mining) ? TEXT("locked") : TEXT("up"));
+        ReadyAt.Add(Id,0);
+    }
+    const FDateTime ClockNow=FDateTime::UtcNow();
+    ReadyAt.FindOrAdd(TEXT("skill/logging"))=ClockNow.ToUnixTimestamp()*1000+ClockNow.GetMillisecond()+5000;
+    Gather->RestoreSkillLocks(DurableLocks,ReadyAt,true);
+    TestTrue(TEXT("Explicit complete new-host snapshot admits durable locks"),Gather->SupportsSkillLocks());
+    TestEqual(TEXT("Server lock snapshot applied"),Gather->Skills.Locks[int32(ESFGatheringSkill::Logging)],ESFGatheringSkillLock::Down);
+    TestEqual(TEXT("Locked mode round-trips"),Gather->Skills.Locks[int32(ESFGatheringSkill::Mining)],ESFGatheringSkillLock::Locked);
+    TestEqual(TEXT("Up mode round-trips"),Gather->Skills.Locks[int32(ESFGatheringSkill::Herbalism)],ESFGatheringSkillLock::Up);
+    TestTrue(TEXT("Persisted server deadline survives restore"),
+        Gather->GetSkillLockCooldownRemaining(ESFGatheringSkill::Logging)>3.f);
+    CheckButtons(true);
+    ReadyAt.Remove(TEXT("skill/fishing"));
+    Gather->RestoreSkillLocks(DurableLocks,ReadyAt,true);
+    TestFalse(TEXT("Incomplete host snapshot fails closed"),Gather->SupportsSkillLocks());
     CheckButtons(false);
     GetMutableDefault<USFInventoryLedgerSettings>()->bEnabled=true;
     Gather->CaptureSkillLockSupport();

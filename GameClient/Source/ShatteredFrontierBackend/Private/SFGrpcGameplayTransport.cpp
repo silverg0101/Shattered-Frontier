@@ -434,6 +434,9 @@ void FSFGrpcGameplayTransport::Send(const FSFGameplayRequest& Q, float DeadlineS
             Out.ProgressionRevision = R.progression_revision(); Out.bQuestAccepted = R.quest_accepted(); Out.ActiveStepId = FromUtf8(R.active_step_id());
             Out.RestedMinutes = R.rested_minutes();
             for (const auto& Skill : R.skills()) { Out.Skills.Add(FromUtf8(Skill.first), Skill.second); }
+            Out.bGatheringSkillLocksAuthoritative = R.gathering_skill_locks_authoritative();
+            for (const auto& Lock : R.gathering_skill_locks()) { Out.GatheringSkillLocks.Add(FromUtf8(Lock.first), FromUtf8(Lock.second)); }
+            for (const auto& Ready : R.gathering_skill_lock_ready_at_unix_ms()) { Out.GatheringSkillLockReadyAtUnixMs.Add(FromUtf8(Ready.first), Ready.second); }
             Out.bQuestCompleted = R.quest_completed(); Out.QuestRevision = R.quest_revision(); Out.QuestReason = FromUtf8(R.quest_reason());
             for (const auto& Bundle : R.reward_bundle_ids()) { Out.RewardBundleIds.Add(FromUtf8(Bundle)); }
             for (const auto& Item : R.granted_items()) { Out.GrantedItems.FindOrAdd(FromUtf8(Item.definition_id())) += Item.quantity(); }
@@ -477,6 +480,9 @@ void FSFGrpcGameplayTransport::Send(const FSFGameplayRequest& Q, float DeadlineS
             Out.ActiveStepId = FromUtf8(R.active_step_id()); Out.bQuestCompleted = R.quest_completed();
             for (const auto& Skill : R.skills()) { Out.Skills.Add(FromUtf8(Skill.first), Skill.second); }
             for (const auto& Skill : R.gathering_skills()) { Out.Skills.Add(FromUtf8(Skill.first), Skill.second); }
+            Out.bGatheringSkillLocksAuthoritative = R.gathering_skill_locks_authoritative();
+            for (const auto& Lock : R.gathering_skill_locks()) { Out.GatheringSkillLocks.Add(FromUtf8(Lock.first), FromUtf8(Lock.second)); }
+            for (const auto& Ready : R.gathering_skill_lock_ready_at_unix_ms()) { Out.GatheringSkillLockReadyAtUnixMs.Add(FromUtf8(Ready.first), Ready.second); }
             for (const auto& Known : R.known_recipes()) { Out.KnownRecipes.Add(FromUtf8(Known.recipe_id())); }
             for (const auto& Count : R.objective_counts()) { Out.ObjectiveCounts.Add(FromUtf8(Count.first), Count.second); }
             for (const auto& Quest : R.quests())
@@ -492,6 +498,23 @@ void FSFGrpcGameplayTransport::Send(const FSFGameplayRequest& Q, float DeadlineS
             if (R.has_death()) { CopyDeath(R.death(), Out); }
         };
         Start(Call, [&](grpc::ClientContext* C) { return Channel->Progression->AsyncGetCharacterState(C, M, &Channel->Queue); });
+        break;
+    }
+    case ESFGameplayRpc::ChangeSkillLock:
+    {
+        sf::progression::v1::ChangeSkillLockRequest M;
+        M.set_operation_id(Utf8(Q.OperationId)); M.set_character_id(Utf8(Q.CharacterId));
+        M.set_expected_progression_revision(Q.ExpectedProgressionRevision);
+        M.set_skill_id(Utf8(Q.SkillId)); M.set_lock(Utf8(Q.SkillLock));
+        auto* Call = new TCall<sf::progression::v1::ChangeSkillLockReply>();
+        Call->Copy = [](const sf::progression::v1::ChangeSkillLockReply& R, FSFGameplayResponse& Out)
+        {
+            Out.ProgressionRevision = R.progression_revision();
+            Out.SkillId = FromUtf8(R.skill_id()); Out.SkillLock = FromUtf8(R.lock());
+            Out.SkillLockReadyAtUnixMs = R.ready_at_unix_ms();
+            Out.bGatheringSkillLocksAuthoritative = true;
+        };
+        Start(Call, [&](grpc::ClientContext* C) { return Channel->Progression->AsyncChangeSkillLock(C, M, &Channel->Queue); });
         break;
     }
     case ESFGameplayRpc::LearnRecipe:

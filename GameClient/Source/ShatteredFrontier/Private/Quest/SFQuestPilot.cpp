@@ -20,6 +20,7 @@
 #include "Services/SFCharacterSession.h"
 #include "Services/SFGameplayServicesClient.h"
 #include "Gathering/SFStationRecipes.h"
+#include "Gathering/SFGatheringPilot.h"
 #include "Combat/SFCombatPilot.h"
 #include "Construction/SFConstructionGeometry.h"
 #include "Construction/SFConstructionNetwork.h"
@@ -530,6 +531,40 @@ void USFQuestPilotComponent::RecordCombatPractice(const FString& SkillId, int32 
     PumpServices();
 }
 
+namespace
+{
+bool HasCurrentProgressionOwner(AActor* Owner, const FString& CharacterId)
+{
+    auto* Pack=Owner ? Owner->FindComponentByClass<USFBackpackComponent>() : nullptr;
+    auto* Session=Owner ? Owner->FindComponentByClass<USFCharacterSessionComponent>() : nullptr;
+    return Pack && Session && !CharacterId.IsEmpty() && Pack->GetCharacterId()==CharacterId
+        && Session->RestoredCharacterId()==CharacterId
+        && !USFCharacterSessionComponent::IsRestoring(Owner)
+        && !USFCharacterSessionComponent::IsLinkdead(Owner);
+}
+}
+
+bool USFQuestPilotComponent::QueueGatheringSkillLock(ESFGatheringSkill Skill, ESFGatheringSkillLock Lock)
+{
+    auto* Pack=GetOwner() ? GetOwner()->FindComponentByClass<USFBackpackComponent>() : nullptr;
+    auto* Session=GetOwner() ? GetOwner()->FindComponentByClass<USFCharacterSessionComponent>() : nullptr;
+    if (!GetOwner()||!GetOwner()->HasAuthority()||!bRestored||uint8(Skill)>=6
+        ||uint8(Lock)>uint8(ESFGatheringSkillLock::Locked)||ServiceQueue.Num()>=16
+        ||!USFBackpackComponent::Services()||!Pack||!Session
+        ||!HasCurrentProgressionOwner(GetOwner(),Session->RestoredCharacterId()))
+    { return false; }
+    FServiceEvent& Event=ServiceQueue.AddDefaulted_GetRef();
+    Event.ReceiptKind=TEXT("skill_lock");
+    Event.OperationId=TEXT("skill-lock/")+FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphensLower);
+    Event.SkillId=TEXT("skill/")+FString(FSFGatheringProgressionSession::SkillName(Skill)).ToLower();
+    Event.SkillLock=Lock==ESFGatheringSkillLock::Down ? TEXT("down") :
+        Lock==ESFGatheringSkillLock::Locked ? TEXT("locked") : TEXT("up");
+    Event.ChoiceSkill=Skill; Event.ChoiceLock=Lock;
+    Event.VerifiedCharacterId=Session->RestoredCharacterId();
+    PumpServices();
+    return true;
+}
+
 void USFQuestPilotComponent::PumpServices()
 {
     auto* PC = Cast<APlayerController>(GetOwner());
@@ -542,6 +577,7 @@ void USFQuestPilotComponent::PumpServices()
     if (!Event.QuestId.IsEmpty() && !bLifecycle && (!Entry || Entry->Progress.IsComplete(*Entry->Quest)) && Event.ReceiptKind == TEXT("quest"))
     { ServiceQueue.RemoveAt(0); PumpServices(); return; }
     bServiceBusy = true;
+    if (Event.ReceiptKind==TEXT("skill_lock")) { PumpSkillLockService(Event); return; }
     // Receipt kinds: harvest, craft and defeat carry a progression payload; the rest are quest evidence only.
     FSFGameplayRequest Q; Q.Rpc = ESFGameplayRpc::ApplyReceipt; Q.OperationId = Event.OperationId; Q.CharacterId = Pack->GetCharacterId();
     Q.Kind = Event.ReceiptKind; Q.ExpectedProgressionRevision = ProgressionRevision; Q.ExpectedQuestRevision = Entry ? Entry->Revision : 0;
@@ -580,7 +616,12 @@ void USFQuestPilotComponent::PumpServices()
             if (R.bProgressionApplied)
             {
                 if (auto* Pilot = Self->GetOwner()->FindComponentByClass<USFGatheringPilotComponent>())
-                { Pilot->RestoreLevel(R.Level); Pilot->RestoreRestedMinutes(R.RestedMinutes); }
+                {
+                    Pilot->RestoreLevel(R.Level); Pilot->RestoreRestedMinutes(R.RestedMinutes);
+                    Pilot->RestoreSkills(R.Skills);
+                    Pilot->RestoreSkillLocks(R.GatheringSkillLocks,R.GatheringSkillLockReadyAtUnixMs,
+                        R.bGatheringSkillLocksAuthoritative);
+                }
             }
             if (Event.ReceiptKind == TEXT("defeat"))
             {
@@ -648,7 +689,12 @@ void USFQuestPilotComponent::PumpServices()
                     RestoreCombatAttributes(Again->GetOwner(), State);
                     Again->ProgressionRevision = State.ProgressionRevision;
                     if (auto* Pilot = Again->GetOwner()->FindComponentByClass<USFGatheringPilotComponent>())
-                    { Pilot->RestoreLevel(State.Level); Pilot->RestoreRestedMinutes(State.RestedMinutes); }
+                    {
+                        Pilot->RestoreLevel(State.Level); Pilot->RestoreRestedMinutes(State.RestedMinutes);
+                        Pilot->RestoreSkills(State.Skills);
+                        Pilot->RestoreSkillLocks(State.GatheringSkillLocks,State.GatheringSkillLockReadyAtUnixMs,
+                            State.bGatheringSkillLocksAuthoritative);
+                    }
                     for (const FSFGameplayResponse::FQuestState& Row : State.Quests)
                     { if (FEntry* Stale = Again->Find(Row.QuestId); Stale && Row.QuestId == Event.QuestId) { Stale->Revision = Row.Revision; } }
                 }
@@ -670,6 +716,104 @@ void USFQuestPilotComponent::PumpServices()
     });
 }
 
+void USFQuestPilotComponent::PumpSkillLockService(const FServiceEvent& Event)
+{
+    auto* Pack=GetOwner() ? GetOwner()->FindComponentByClass<USFBackpackComponent>() : nullptr;
+    auto* Session=GetOwner() ? GetOwner()->FindComponentByClass<USFCharacterSessionComponent>() : nullptr;
+    auto Services=USFBackpackComponent::Services();
+    if (!Pack||!Session||!Services||!HasCurrentProgressionOwner(GetOwner(),Event.VerifiedCharacterId))
+    {
+        if (auto* Pilot=GetOwner() ? GetOwner()->FindComponentByClass<USFGatheringPilotComponent>() : nullptr)
+        { Pilot->RejectDurableSkillLock(Event.ChoiceSkill); }
+        ServiceQueue.RemoveAt(0); bServiceBusy=false; PumpServices(); return;
+    }
+    FSFGameplayRequest Q; Q.Rpc=ESFGameplayRpc::ChangeSkillLock;
+    Q.OperationId=Event.OperationId; Q.CharacterId=Event.VerifiedCharacterId;
+    Q.ExpectedProgressionRevision=ProgressionRevision;
+    Q.SkillId=Event.SkillId; Q.SkillLock=Event.SkillLock;
+    Services->Call(Q,[Weak=TWeakObjectPtr<USFQuestPilotComponent>(this),Event](const FSFGameplayResponse& R)
+    {
+        USFQuestPilotComponent* Self=Weak.Get();
+        if (!Self||Self->ServiceQueue.IsEmpty()||Self->ServiceQueue[0].OperationId!=Event.OperationId) { return; }
+        if (!HasCurrentProgressionOwner(Self->GetOwner(),Event.VerifiedCharacterId))
+        {
+            if (auto* StalePilot=Self->GetOwner() ? Self->GetOwner()->FindComponentByClass<USFGatheringPilotComponent>() : nullptr)
+            { StalePilot->RejectDurableSkillLock(Event.ChoiceSkill); }
+            Self->ServiceQueue.RemoveAt(0); Self->bServiceBusy=false; Self->PumpServices(); return;
+        }
+        auto* Pilot=Self->GetOwner()->FindComponentByClass<USFGatheringPilotComponent>();
+        if (R.Status==ESFGameplayStatus::Ok && R.ProgressionRevision>0 &&
+            R.SkillId==Event.SkillId && R.SkillLock==Event.SkillLock)
+        {
+            Self->ProgressionRevision=R.ProgressionRevision;
+            if (Pilot) { Pilot->ApplyDurableSkillLockAck(Event.ChoiceSkill,Event.ChoiceLock,R.SkillLockReadyAtUnixMs); }
+            Self->ServiceQueue.RemoveAt(0); Self->bServiceBusy=false; Self->PumpServices(); return;
+        }
+        // An ambiguous timeout or stale CAS must be read back before the owner can retry.
+        auto* CurrentPack=Self->GetOwner()->FindComponentByClass<USFBackpackComponent>();
+        auto CurrentServices=USFBackpackComponent::Services();
+        if (!CurrentPack||!CurrentServices)
+        {
+            if (Pilot) { Pilot->RejectDurableSkillLock(Event.ChoiceSkill); }
+            Self->ServiceQueue.RemoveAt(0); Self->bServiceBusy=false; Self->PumpServices(); return;
+        }
+        FSFGameplayRequest Get; Get.Rpc=ESFGameplayRpc::GetCharacterState;
+        if (CurrentPack->GetCharacterId()!=Event.VerifiedCharacterId)
+        {
+            if (Pilot) { Pilot->RejectDurableSkillLock(Event.ChoiceSkill); }
+            Self->ServiceQueue.RemoveAt(0); Self->bServiceBusy=false; Self->PumpServices(); return;
+        }
+        Get.CharacterId=Event.VerifiedCharacterId;
+        CurrentServices->Call(Get,[Weak,Event](const FSFGameplayResponse& State)
+        {
+            USFQuestPilotComponent* Again=Weak.Get();
+            if (!Again||Again->ServiceQueue.IsEmpty()||Again->ServiceQueue[0].OperationId!=Event.OperationId) { return; }
+            if (!HasCurrentProgressionOwner(Again->GetOwner(),Event.VerifiedCharacterId))
+            {
+                if (auto* StalePilot=Again->GetOwner() ? Again->GetOwner()->FindComponentByClass<USFGatheringPilotComponent>() : nullptr)
+                { StalePilot->RejectDurableSkillLock(Event.ChoiceSkill); }
+                Again->ServiceQueue.RemoveAt(0); Again->bServiceBusy=false; Again->PumpServices(); return;
+            }
+            auto* CurrentPilot=Again->GetOwner()->FindComponentByClass<USFGatheringPilotComponent>();
+            if (State.Status==ESFGameplayStatus::Ok && State.ProgressionRevision<Again->ProgressionRevision)
+            {
+                if (!Event.bRetried)
+                {
+                    FServiceEvent Retry=Event; Retry.bRetried=true;
+                    Again->ServiceQueue[0]=Retry; Again->PumpSkillLockService(Retry); return;
+                }
+                if (CurrentPilot) { CurrentPilot->RejectDurableSkillLock(Event.ChoiceSkill); }
+                Again->ServiceQueue.RemoveAt(0); Again->bServiceBusy=false; Again->PumpServices(); return;
+            }
+            if (State.Status==ESFGameplayStatus::Ok)
+            {
+                Again->ProgressionRevision=State.ProgressionRevision;
+                if (CurrentPilot)
+                {
+                    CurrentPilot->RestoreSkills(State.Skills);
+                    CurrentPilot->RestoreSkillLocks(State.GatheringSkillLocks,
+                        State.GatheringSkillLockReadyAtUnixMs,State.bGatheringSkillLocksAuthoritative);
+                }
+                const FString* Stored=State.GatheringSkillLocks.Find(Event.SkillId);
+                const int64* Ready=State.GatheringSkillLockReadyAtUnixMs.Find(Event.SkillId);
+                if (CurrentPilot && State.bGatheringSkillLocksAuthoritative && Stored && Ready && *Stored==Event.SkillLock)
+                {
+                    CurrentPilot->ApplyDurableSkillLockAck(Event.ChoiceSkill,Event.ChoiceLock,*Ready);
+                    Again->ServiceQueue.RemoveAt(0); Again->bServiceBusy=false; Again->PumpServices(); return;
+                }
+                if (State.bGatheringSkillLocksAuthoritative && !Event.bRetried)
+                {
+                    FServiceEvent Retry=Event; Retry.bRetried=true;
+                    Again->ServiceQueue[0]=Retry;
+                    Again->PumpSkillLockService(Retry); return;
+                }
+            }
+            if (CurrentPilot) { CurrentPilot->RejectDurableSkillLock(Event.ChoiceSkill); }
+            Again->ServiceQueue.RemoveAt(0); Again->bServiceBusy=false; Again->PumpServices();
+        });
+    });
+}
+
 void USFQuestPilotComponent::RequestRefresh(float DelaySeconds)
 {
     if (!USFBackpackComponent::Services()) { return; }
@@ -684,18 +828,26 @@ void USFQuestPilotComponent::Refresh()
     if (bRefreshBusy || !Pack || !USFBackpackComponent::Services()) { return; }
     bRefreshBusy = true;
     FSFGameplayRequest Get; Get.Rpc = ESFGameplayRpc::GetCharacterState; Get.CharacterId = Pack->GetCharacterId();
-    USFBackpackComponent::Services()->Call(Get, [Weak = TWeakObjectPtr<USFQuestPilotComponent>(this)](const FSFGameplayResponse& State)
+    USFBackpackComponent::Services()->Call(Get, [Weak = TWeakObjectPtr<USFQuestPilotComponent>(this),
+        CharacterId=Get.CharacterId](const FSFGameplayResponse& State)
     {
         USFQuestPilotComponent* Self = Weak.Get();
         if (!Self) { return; }
         Self->bRefreshBusy = false;
         // Evidence still in flight would be undone by an older read; its reply corrects the mirror itself.
-        if (State.Status == ESFGameplayStatus::Ok && !Self->HasPendingServiceWork())
+        if (State.Status == ESFGameplayStatus::Ok && !Self->HasPendingServiceWork()
+            && State.ProgressionRevision >= Self->ProgressionRevision
+            && HasCurrentProgressionOwner(Self->GetOwner(),CharacterId))
         {
             RestoreCombatAttributes(Self->GetOwner(), State);
             Self->Restore(State.Quests, State.ProgressionRevision);
             if (auto* Gathering = Self->GetOwner()->FindComponentByClass<USFGatheringPilotComponent>())
-            { Gathering->RestoreSkills(State.Skills); Gathering->RestoreLevel(State.Level); Gathering->RestoreRestedMinutes(State.RestedMinutes); }
+            {
+                Gathering->RestoreSkills(State.Skills);
+                Gathering->RestoreSkillLocks(State.GatheringSkillLocks,State.GatheringSkillLockReadyAtUnixMs,
+                    State.bGatheringSkillLocksAuthoritative);
+                Gathering->RestoreLevel(State.Level); Gathering->RestoreRestedMinutes(State.RestedMinutes);
+            }
         }
     });
 }

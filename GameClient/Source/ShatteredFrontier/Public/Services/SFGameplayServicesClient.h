@@ -53,7 +53,7 @@ enum class ESFGameplayRpc : uint8 { GrantDefeatReward, CreateSharedDefeatDrop, C
     ExchangeWallet, QuoteRepair, RepairGear, OfferTrade, AcceptTrade, CancelTrade, ListItem, BuyListing, CancelListing, ListListings,
     GetGatheringNode, ListGatheringZoneNodes, HarvestGatheringNode, AdvanceWorldSlots,
     GroupCreate, GroupJoin, GroupLeave, GroupKick, GroupPromote, GroupAssistant, GroupGet,
-    CreateCorpseLoot, ListLootSources, OpenLootSource, TakeLoot, DropLoot };
+    CreateCorpseLoot, ListLootSources, OpenLootSource, TakeLoot, DropLoot, ChangeSkillLock };
 
 // Exchange request fields (each RPC reads only its own). Amounts are whole gold, as in the proto.
 struct FSFExchangeDelivery { FString EscrowId, DestinationId, ItemId; int64 Quantity = 0; };
@@ -103,7 +103,7 @@ struct FSFGameplayRequest
     FString Kind;                 // gather | craft | defeat | quest
     int64 ExpectedProgressionRevision = 0, ExpectedQuestRevision = 0;
     bool bSessionEnd = false, bInRestArea = false;
-    FString SkillId; int32 Difficulty = 0; double ActionSeconds = 0; uint64 ContextHash = 0; bool bSuccess = true;
+    FString SkillId, SkillLock; int32 Difficulty = 0; double ActionSeconds = 0; uint64 ContextHash = 0; bool bSuccess = true;
     bool bXpEligible = false;
     int32 EnemyLevel = 0; double EnemyTierMultiplier = 0; int32 PartySize = 0; int32 ReferencePartyLevel = 0;
     bool bHasQuest = false;
@@ -154,6 +154,11 @@ struct FSFGameplayResponse
     double RestedMinutes = 0;
     int64 AppearanceRevision = 0;  // CreateCharacter
     FString ActiveStepId; TArray<FString> RewardBundleIds; TMap<FString, int32> Skills;
+    // New-host snapshot marker is explicit; an older host decodes false and exposes no durable controls.
+    bool bGatheringSkillLocksAuthoritative = false;
+    TMap<FString, FString> GatheringSkillLocks;
+    TMap<FString, int64> GatheringSkillLockReadyAtUnixMs;
+    FString SkillId, SkillLock; int64 SkillLockReadyAtUnixMs = 0; // ChangeSkillLock acknowledgement
     TMap<FString, int64> GrantedItems;  // the quest payout lines committed with this receipt
     TMap<FString, int32> ObjectiveCounts;  // GetCharacterState: the active step's counts by objective key
     FString QuestReason;  // ApplyReceipt: why quest evidence (or an accept/abandon) was not accepted

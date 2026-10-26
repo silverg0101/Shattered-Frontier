@@ -34,6 +34,7 @@ static const char* Progression_method_names[] = {
   "/sf.progression.v1.Progression/ClearDeath",
   "/sf.progression.v1.Progression/LearnRecipe",
   "/sf.progression.v1.Progression/EndSession",
+  "/sf.progression.v1.Progression/ChangeSkillLock",
 };
 
 std::unique_ptr< Progression::Stub> Progression::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
@@ -52,6 +53,7 @@ Progression::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channe
   , rpcmethod_ClearDeath_(Progression_method_names[6], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_LearnRecipe_(Progression_method_names[7], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_EndSession_(Progression_method_names[8], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_ChangeSkillLock_(Progression_method_names[9], options.suffix_for_stats(),::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   {}
 
 ::grpc::Status Progression::Stub::CreateCharacter(::grpc::ClientContext* context, const ::sf::progression::v1::CreateCharacterRequest& request, ::sf::progression::v1::CreateCharacterReply* response) {
@@ -261,6 +263,29 @@ void Progression::Stub::async::EndSession(::grpc::ClientContext* context, const 
   return result;
 }
 
+::grpc::Status Progression::Stub::ChangeSkillLock(::grpc::ClientContext* context, const ::sf::progression::v1::ChangeSkillLockRequest& request, ::sf::progression::v1::ChangeSkillLockReply* response) {
+  return ::grpc::internal::BlockingUnaryCall< ::sf::progression::v1::ChangeSkillLockRequest, ::sf::progression::v1::ChangeSkillLockReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), rpcmethod_ChangeSkillLock_, context, request, response);
+}
+
+void Progression::Stub::async::ChangeSkillLock(::grpc::ClientContext* context, const ::sf::progression::v1::ChangeSkillLockRequest* request, ::sf::progression::v1::ChangeSkillLockReply* response, std::function<void(::grpc::Status)> f) {
+  ::grpc::internal::CallbackUnaryCall< ::sf::progression::v1::ChangeSkillLockRequest, ::sf::progression::v1::ChangeSkillLockReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_ChangeSkillLock_, context, request, response, std::move(f));
+}
+
+void Progression::Stub::async::ChangeSkillLock(::grpc::ClientContext* context, const ::sf::progression::v1::ChangeSkillLockRequest* request, ::sf::progression::v1::ChangeSkillLockReply* response, ::grpc::ClientUnaryReactor* reactor) {
+  ::grpc::internal::ClientCallbackUnaryFactory::Create< ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(stub_->channel_.get(), stub_->rpcmethod_ChangeSkillLock_, context, request, response, reactor);
+}
+
+::grpc::ClientAsyncResponseReader< ::sf::progression::v1::ChangeSkillLockReply>* Progression::Stub::PrepareAsyncChangeSkillLockRaw(::grpc::ClientContext* context, const ::sf::progression::v1::ChangeSkillLockRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderHelper::Create< ::sf::progression::v1::ChangeSkillLockReply, ::sf::progression::v1::ChangeSkillLockRequest, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(channel_.get(), cq, rpcmethod_ChangeSkillLock_, context, request);
+}
+
+::grpc::ClientAsyncResponseReader< ::sf::progression::v1::ChangeSkillLockReply>* Progression::Stub::AsyncChangeSkillLockRaw(::grpc::ClientContext* context, const ::sf::progression::v1::ChangeSkillLockRequest& request, ::grpc::CompletionQueue* cq) {
+  auto* result =
+    this->PrepareAsyncChangeSkillLockRaw(context, request, cq);
+  result->StartCall();
+  return result;
+}
+
 Progression::Service::Service() {
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       Progression_method_names[0],
@@ -352,6 +377,16 @@ Progression::Service::Service() {
              ::sf::progression::v1::EndSessionReply* resp) {
                return service->EndSession(ctx, req, resp);
              }, this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      Progression_method_names[9],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< Progression::Service, ::sf::progression::v1::ChangeSkillLockRequest, ::sf::progression::v1::ChangeSkillLockReply, ::grpc::protobuf::MessageLite, ::grpc::protobuf::MessageLite>(
+          [](Progression::Service* service,
+             ::grpc::ServerContext* ctx,
+             const ::sf::progression::v1::ChangeSkillLockRequest* req,
+             ::sf::progression::v1::ChangeSkillLockReply* resp) {
+               return service->ChangeSkillLock(ctx, req, resp);
+             }, this)));
 }
 
 Progression::Service::~Service() {
@@ -414,6 +449,13 @@ Progression::Service::~Service() {
 }
 
 ::grpc::Status Progression::Service::EndSession(::grpc::ServerContext* context, const ::sf::progression::v1::EndSessionRequest* request, ::sf::progression::v1::EndSessionReply* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status Progression::Service::ChangeSkillLock(::grpc::ServerContext* context, const ::sf::progression::v1::ChangeSkillLockRequest* request, ::sf::progression::v1::ChangeSkillLockReply* response) {
   (void) context;
   (void) request;
   (void) response;

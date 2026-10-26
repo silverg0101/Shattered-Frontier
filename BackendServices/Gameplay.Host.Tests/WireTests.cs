@@ -1003,16 +1003,24 @@ else if (mode == "progression")
     lockRequest.Lock = "locked";
     Code(() => client.ChangeSkillLock(lockRequest, headers, deadline: Deadline()), StatusCode.FailedPrecondition);
     lockRequest.Lock = "down";
+    var lockedRequest = new ProgressPb.ChangeSkillLockRequest { OperationId = "lock/wire/locked-1", CharacterId = "chr_lock_wire",
+        ExpectedProgressionRevision = lockReply.ProgressionRevision, SkillId = "skill/mining", Lock = "locked" };
+    var lockedReply = client.ChangeSkillLock(lockedRequest, headers, deadline: Deadline());
+    Check(lockedReply.ProgressionRevision == lockReply.ProgressionRevision + 1 && lockedReply.Lock == "locked" &&
+        lockedReply.SkillId == "skill/mining", "Locked skill choice did not round-trip through the service.");
     var lockPractice = client.ApplyReceipt(new ProgressPb.ApplyReceiptRequest { SourceReceiptId = "lock/wire/practice-1",
-        CharacterId = "chr_lock_wire", Kind = "gather", ExpectedProgressionRevision = lockReply.ProgressionRevision,
+        CharacterId = "chr_lock_wire", Kind = "gather", ExpectedProgressionRevision = lockedReply.ProgressionRevision,
         Payload = new ProgressPb.ActionPayload { SkillId = "skill/logging", Difficulty = 25,
             ActionSeconds = 6, Success = true } }, headers, deadline: Deadline());
     Check(lockPractice.SkillGain == 0 && lockPractice.GatheringSkillLocksAuthoritative &&
         lockPractice.GatheringSkillLocks["skill/logging"] == "down" &&
+        lockPractice.GatheringSkillLocks["skill/mining"] == "locked" &&
+        lockPractice.GatheringSkillLocks["skill/herbalism"] == "up" &&
         lockPractice.GatheringSkillLockReadyAtUnixMs["skill/logging"] == lockReply.ReadyAtUnixMs,
         "Gathering lock did not govern service practice or receipt view.");
     var lockState = client.GetCharacterState(new ProgressPb.GetCharacterStateRequest { CharacterId = "chr_lock_wire" }, headers, deadline: Deadline());
     Check(lockState.GatheringSkillLocksAuthoritative && lockState.GatheringSkillLocks["skill/logging"] == "down" &&
+        lockState.GatheringSkillLocks["skill/mining"] == "locked" && lockState.GatheringSkillLocks["skill/herbalism"] == "up" &&
         lockState.GatheringSkillLockReadyAtUnixMs["skill/logging"] == lockReply.ReadyAtUnixMs,
         "Gathering lock state missing after service restore.");
     var request = new ProgressPb.ApplyReceiptRequest

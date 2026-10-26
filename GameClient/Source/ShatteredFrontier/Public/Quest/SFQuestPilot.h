@@ -4,6 +4,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Engine/DeveloperSettings.h"
 #include "Services/SFGameplayServicesClient.h"
+#include "Gathering/SFGatheringProgression.h"
 #include "Subsystems/WorldSubsystem.h"
 #include "SFQuestPilot.generated.h"
 
@@ -140,6 +141,8 @@ public:
     /** Server, INT-05 restore and refresh: the Progression quest rows replace session progress. */
     void Restore(const TArray<FSFGameplayResponse::FQuestState>& Rows, int64 InProgressionRevision);
     bool HasPendingServiceWork() const { return bServiceBusy || !ServiceQueue.IsEmpty(); }
+    // Server: serialize a durable lock choice with progression receipts and their revision mirror.
+    bool QueueGatheringSkillLock(ESFGatheringSkill Skill, ESFGatheringSkillLock Lock);
 
     // Client requests. SourceId is the board ("board/<city>") or the giver NPC ("npc/<dialogue stem>") the player stands at.
     UFUNCTION(Server, Reliable) void ServerAcceptQuest(const FString& QuestId, const FString& SourceId);
@@ -185,9 +188,13 @@ private:
     // INT-04: with gameplay services on, progress is Progression.ApplyReceipt replies only, one call at a time.
     struct FServiceEvent { FString ReceiptKind, QuestKind, QuestId, TargetId, NodeId, OperationId; bool bRetried = false;
         int32 EligiblePartySize = 1; int32 ReferencePartyLevel = 0;
-        FString SkillId; int32 Difficulty = 0, EnemyLevel = 0; double ActionSeconds = 0;
-        uint64 ContextHash = 0; bool bSuccess = true; };
+        FString SkillId, SkillLock; int32 Difficulty = 0, EnemyLevel = 0; double ActionSeconds = 0;
+        uint64 ContextHash = 0; bool bSuccess = true;
+        ESFGatheringSkill ChoiceSkill = ESFGatheringSkill::Mining;
+        ESFGatheringSkillLock ChoiceLock = ESFGatheringSkillLock::Up;
+        FString VerifiedCharacterId; };
     void PumpServices();
+    void PumpSkillLockService(const FServiceEvent& Event);
     TArray<FServiceEvent> ServiceQueue;
     bool bServiceBusy = false, bRefreshBusy = false, bRestored = false;
     int64 ProgressionRevision = 0, LastOccurredMs = 0;

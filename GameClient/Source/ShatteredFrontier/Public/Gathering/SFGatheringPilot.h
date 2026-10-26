@@ -317,6 +317,11 @@ public:
     const FSFGatheringSkillSnapshot& GetSkillSnapshot() const { return Skills; }
     // Server, INT-05 restore: Progression skill values ("skill/<name>", tenths) replace the session values.
     void RestoreSkills(const TMap<FString, int32>& ServiceSkills);
+    // Server-only service snapshot. The capability flag is required: old hosts leave the controls hidden.
+    void RestoreSkillLocks(const TMap<FString, FString>& ServiceLocks,
+        const TMap<FString, int64>& ReadyAtUnixMs, bool bAuthoritative);
+    void ApplyDurableSkillLockAck(ESFGatheringSkill Skill, ESFGatheringSkillLock Lock, int64 ReadyAtUnixMs);
+    void RejectDurableSkillLock(ESFGatheringSkill Skill);
     // Server, INT-05 restore: the Progression character level (derived from lifetime XP by progression-service); owner-replicated for the HUD badge.
     void RestoreLevel(int32 ServiceLevel);
     int32 GetCharacterLevel() const { return CharacterLevel; }
@@ -433,6 +438,7 @@ private:
     UPROPERTY(Replicated) TArray<double> SkillLockReadyAt = {0,0,0,0,0,0};
     TArray<double> LocalSkillLockReadyAt = {0,0,0,0,0,0};
     TArray<bool> SkillLockPending = {false,false,false,false,false,false};
+    TArray<bool> ServerSkillLockPending = {false,false,false,false,false,false};
     TArray<bool> LocalSkillLockReady = {true,true,true,true,true,true};
     uint8 SkillLockReadyNotifications=0;
     FSFGatheringProgressionSession ProgressionSession;
@@ -450,6 +456,7 @@ private:
     uint32 WaitingRevision = 0;
     TWeakObjectPtr<ASFGatheringPilotNode> WaitingNode;
     UPROPERTY(Replicated) bool bSessionSkillLocksSupported = false;
+    bool bDurableSkillLocksMode = false; // admission-captured, never inferred from service availability
     UPROPERTY(Replicated) bool bEnabled = false;
     UPROPERTY(Replicated) bool bPrimaryRole = false;
     UPROPERTY(Replicated) bool bRoleAssigned = false;
