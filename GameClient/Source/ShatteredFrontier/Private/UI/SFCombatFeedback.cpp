@@ -49,7 +49,7 @@ FVector2D USFCombatDamageWidget::MeasureVisualSize()
     // UMG caches Slate widgets weakly. Retain the tree during measurement even before
     // a viewport owns it, so offscreen widgets and automation measure real glyph bounds.
     const TSharedRef<SWidget> MeasuredWidget = TakeWidget();
-    MeasuredWidget->SlatePrepass();
+    ForceLayoutPrepass();
     FVector2D TextShadowPadding = FVector2D::ZeroVector;
     for (const UTextBlock* Text : {DamageText.Get(), CriticalNumber.Get(), CriticalText.Get()})
     {
