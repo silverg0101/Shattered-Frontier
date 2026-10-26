@@ -110,6 +110,8 @@ public:
     // Layout edits (drag and drop); each saves the character's layout.
     void Assign(int32 Index, const FString& Id);
     void SwapSlots(int32 A, int32 B);
+    // Shared drop policy used by NativeOnDrop; inventory drops only change the shortcut, never inventory contents.
+    bool ApplyDropToSlot(int32 Index, const USFItemDragOperation& Drag);
     // Loads Character's saved layout, else the default. Present loads the owning player's on first use.
     void LoadLayout(const FString& Character);
     const TArray<FString>& GetLayout() const { return Layout; }

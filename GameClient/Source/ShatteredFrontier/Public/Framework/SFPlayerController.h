@@ -54,6 +54,7 @@ class SHATTEREDFRONTIER_API ASFPlayerController : public APlayerController
 {
     GENERATED_BODY()
     friend class FSFLootWorkflowNetcheck;
+    friend class FSFConstructionHotbarRegressionTest;
 public:
     int32 PartyMemberCount() const { return PartyView.Num(); }
     ASFPlayerController();
