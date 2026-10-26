@@ -2,7 +2,7 @@
 
 - **Area:** backend
 - **Owner of next step:** agent
-- **Worktree:** C:\Projects\SF-lane-e
+- **Worktree:** C:\Projects\SF-lane-b
 - **Branch:** codex/runtime-existing-store-update
 - **State:** prepared; no live update, image build or deletion authorized yet
 
@@ -18,7 +18,11 @@ Focused POSIX test `test_existing_start_changes_release_without_reinitializing_o
 
 ## Disk evidence and cleanup proposal — no deletion performed
 
-Read-only host inventory: Docker root `/var/lib/docker` on `/` has11,379,589,120 bytes available. Existing game LV has81,488,478,208 bytes, which does not increase Docker capacity. Previous context3,223,664,640 bytes required `3*context + 4GiB = 13,965,961,216`, currently short2,586,372,096. New MetaHuman package size is not yet known: recompute from its actual verified context before any build.
+Read-only host inventory: Docker root `/var/lib/docker` on `/` has11,379,589,120 bytes available. Existing game LV has81,488,478,208 bytes, which does not increase Docker capacity. Previous context3,223,664,640 bytes required `3*context + 4GiB = 13,965,961,216`, currently short2,586,372,096.
+
+New frozen package (2026-10-26, revision `dbe514e7b8e37a53a9a7ca41e0727c5ed14848f9`, engine `396c9f05`): `C:\Projects\SF-lane-b\Artifacts\PackagedServer\Matching-dbe514e7-20261026-092133`, ff59 layout and checks. LinuxServer archive 69 files/3,224,681,568 bytes (manifest `c67f01f1…`, ELF `22abb3bc…`); Win64Client archive 79/6,026,503,448 (manifest `68326ba1…`, exe `87ae1a87…`); both carry all 28 content + 3 RuntimeData JSON, the 8 world meshes, outline material, redirect and r.CustomDepth=3. Local probe: both checksum 1737972550, client welcomed, server join/possession; manifests reverified after. Client cooked with `Get-ClientCookContract.ps1` CookDirs: all 9 face BPs, retarget and both outfits present, 1185 of 1186 source avatar packages cooked (the one left is an editor-only MaterialFunction), no cook load failures; server has 0 avatar packages (`metahuman-closure.json`). Stage files are hardlinks of Archive; LinuxDockerContext `package/` hardlinks LinuxServer/Archive.
+
+Measured LinuxDockerContext: 72 files/3,224,684,658 bytes, GNU tar stream 3,224,770,560 bytes (manifest `4774f14b…`). Gate `3*3,224,770,560 + 4GiB = 13,969,278,976`; against the last measured 11,379,589,120 free it is short 2,589,689,856. Remeasure host free bytes before any build.
 
 Protect active game `3c6bf45ef93866b67be30aa35b8ca4f9c0c84da68f1d00b9b9fbbb7b62350b19`, active services `8d10c43fc5129028bce13987992efe52109cce514b92557ca52d948c3223fde2`, old E1 rollback `42b382b6e3d581388be3bc8341a10ba7ff08876e9b0788457f71cb8e53d6f0ce`, PostgreSQL, every referenced image and all unrelated Forge/games/monitoring resources.
 
@@ -28,4 +32,4 @@ Ignored evidence: `Artifacts/runtime-update-cache.jsonl`, `Artifacts/runtime-upd
 
 ## Next
 
-Review this candidate, freeze the matching release, measure its actual context, resolve the exact disk gate and seal both new/rollback profiles. Only after owner approval apply the documented existing-store update; verify identity/health and resume the mandatory native personal-corpse → Alpha bag → ground drop → rendered Beta/native-F pickup → SQL/privacy → controlled restart acceptance. Current ff59 remains live; do not restart or modify its data during preparation.
+Review this candidate, free space for the dbe514e7 disk gate, build its image and seal both new/rollback profiles. Only after owner approval apply the documented existing-store update; verify identity/health and resume the mandatory native personal-corpse → Alpha bag → ground drop → rendered Beta/native-F pickup → SQL/privacy → controlled restart acceptance. Current ff59 remains live; do not restart or modify its data during preparation.
