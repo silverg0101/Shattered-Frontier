@@ -1,6 +1,6 @@
 # Silverbrook LAN development release candidate
 
-This is the bounded replacement for the old E1 image, not production authentication or a successful deployment. Preserve `/srv/shattered-frontier/runtime` and the old image until the replacement passes. Ordinary `steam` can build immutable images and stage files under its home; the protected runtime and its private profile require an authorized operator. `sudo -n` currently refuses access. Do not use Docker privileges to bypass that gate.
+This is the LAN development rollout contract. Frozen ff59 is deployed; its native loot acceptance is pending as recorded in the named runtime hand-off. Preserve `/srv/shattered-frontier/runtime` and the old E1 image. Ordinary `steam` can build immutable images and stage files under its home; protected runtime changes require the existing authorized operator. Verify current sudo access rather than assuming it; never use Docker privileges to bypass it.
 
 ## Release closure
 
@@ -52,6 +52,26 @@ python3 RELEASE/Runtime/playable-runtime.py PROFILE.json verify
 `prepare` is new-directory-only and creates stable private credentials plus correctly owned data/Saved/home children. `check` verifies image provenance and quiet Compose syntax without starting containers. `init` starts PostgreSQL, bootstraps once, starts both hosts, requires authenticated and denied-bearer probes, then starts the game. Later `start` uses verification instead of bootstrap. No command bypasses protected host permissions. Do not change Forge, other games, router/firewall, disks or security policy.
 
 An unpublished service-only rehearsal uses `mode=services-check`, project `sf-playable-check-<12 hex>`, no game image, and a new root under the verified canonical home `/srv/steam/steamhome/sf-release-candidates/` (`/home/steam` itself is a symlink, so it is refused as a runtime root). It uses a disposable named PostgreSQL volume, publishes no ports, and isolates its namespace from external networking. The same `prepare`, `check`, `init`, `verify`, `stop`, `start` actions prove host/role/restart contracts without touching the protected runtime. `cleanup` can remove only this check project's containers and volume; LAN data never has that action.
+
+## Updating the existing playable database
+
+Use the existing `start` action for a compatible release, never `prepare`, `init` or `cleanup`. `prepare` refuses an existing root; `init` refuses nonempty data. `start` loads the same `secrets.json`, runs `playable-verify` rather than initialization and recreates the service/game containers against the same database namespace. This retains PostgreSQL, Saved/home and bearer/replay credentials. Generated `compose.private.json` is replaceable runtime output; the sealed public profiles remain in separate immutable root-owned release directories.
+
+Before a maintenance window, seal the new full revision, matching immutable image IDs/package hashes, runtime tool and public profile; retain the previous sealed profile/tool/image IDs for rollback. Compare old/new profiles: mode, project, root, bind, PostgreSQL digest and resource settings must be unchanged for this bounded path; only frozen revision and game/services image IDs change. Compare exported schema/migration/proto and backend inputs against the deployed release. Changed schema/security/data contracts require separate reviewed migration/backup acceptance; this path performs no migration. A source-wide revision change alone does not establish compatible schema inputs.
+
+Immediately before mutation, require actual running game/ledger/gameplay image IDs and revision labels to equal the expected current sealed profile; verify database image/digest, approved UDP binding and healthy existing project. Refuse a stale current profile or unexpected container state. Verify new image labels against the new full revision, pinned engine and playable-entrypoint labels; never use tags as identities. Verify protected root/files ownership and sealed profile/tool hashes without printing private contents. Measure Docker-root free bytes against the actual new context's conservative peak plus margin; no broad cleanup. Announce the client maintenance window and drain/disconnect owned test clients before stopping.
+
+With final absolute root-owned `OLD_TOOL`, `OLD_PROFILE`, `NEW_TOOL`, `NEW_PROFILE` substituted and all guards passed:
+
+```sh
+python3 "$OLD_TOOL" "$OLD_PROFILE" verify
+python3 "$NEW_TOOL" "$NEW_PROFILE" check
+python3 "$OLD_TOOL" "$OLD_PROFILE" stop
+python3 "$NEW_TOOL" "$NEW_PROFILE" start
+python3 "$NEW_TOOL" "$NEW_PROFILE" verify
+```
+
+Run fail-fast and retain each exit status. New `start` verifies the nonempty store using the new immutable migration tool before starting hosts/game; if verification/start/health fails, stop the new profile if needed and run `OLD_TOOL OLD_PROFILE start`, then `verify`. This is the existing-playable release rollback, preserving the same database and credentials; it is distinct from the older E1 rollback below. Keep both profiles/images and existing data. No automatic rollback across a schema migration is permitted. After successful switch, independently inspect running image IDs/labels/health/ports, then perform matching-client and SQL persistence acceptance; a startup test is insufficient.
 
 Acceptance requires both service authenticated probes, all expected store version gates and least-privilege checks; Silverbrook NPC/gathering startup; two distinct matching-client possessions; an actual server-authoritative corpse open/take and deliberate ground drop/pickup with observer privacy; SQL receipt/item read-back; and restart/reconnect retaining the same state. Record actual observations and failures. Reuse focused local evidence only where its inputs match; it does not replace remote acceptance.
 
