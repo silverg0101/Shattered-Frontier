@@ -31,4 +31,6 @@ No invented cap, skill decay or balance values. Keep layout in Widget Blueprints
 
 ## Outcome
 
-Open.
+Rule check complete; no UI text or behavior changed. The design has a 4,000-point gathering-track cap and allows a lowered skill to donate one point only when another gathering skill gains at the shared cap; lowering never decays automatically. The UI's Raising/Held/Lowering states represent those gain preferences, so they are meaningful in the local progression adapter.
+
+Production enforcement is incomplete: `BackendServices/Progression/Progression.cs` currently caps gathering using only Logging + Mining, and this gain path has no lock/donor handling. Do not add player-facing help that implies these controls govern production progression until that service path is reconciled. The local adapter's exact semantics are in `SFGatheringProgression.cpp`; design caps and lock rule are in `Legends_Shattered_Frontier_Character_Skills_Mastery_v1.0.md` §§1 and 6. The four visible rows total at most 3,600 unspecialized points, but Farming and Hunting are also gathering skills and count against the designed track cap.
