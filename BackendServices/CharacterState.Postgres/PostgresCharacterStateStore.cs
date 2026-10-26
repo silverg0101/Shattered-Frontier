@@ -462,6 +462,41 @@ public sealed class PostgresCharacterStateStore(string connectionString)
         });
     }
 
+    public VersionedResult<SkillLockChangeResult> ChangeSkillLock(string operationId, string characterId,
+        long expectedRevision, string skillId, string desiredLock, TimeProvider clock, ProgressionSettings? settings = null)
+    {
+        if (string.IsNullOrWhiteSpace(operationId) || string.IsNullOrWhiteSpace(characterId) ||
+            string.IsNullOrWhiteSpace(skillId) || desiredLock is not ("up" or "down" or "locked"))
+            throw new ArgumentException("Skill lock identity and state required.");
+        return Transaction((c, t) =>
+        {
+            LockCharacter(c, t, characterId);
+            string hash = Fingerprint(new { kind = "skill_lock", characterId, skillId, desiredLock });
+            var replay = Replay<SkillLockChangeResult>(c, t, "progression", characterId, operationId, hash);
+            if (replay is not null) return replay;
+            long revision;
+            ProgressionSnapshot snapshot;
+            using (var cmd = Command(c, t, "SELECT revision,state::text FROM character_state.progression WHERE character_id=$1 FOR UPDATE", characterId))
+            using (var row = cmd.ExecuteReader())
+            {
+                if (!row.Read()) throw new CharacterStoreRejectedException("Character progression is missing.");
+                revision = row.GetInt64(0);
+                snapshot = JsonSerializer.Deserialize<ProgressionSnapshot>(row.GetString(1)) ??
+                    throw new CharacterStoreRejectedException("Invalid stored progression state.");
+            }
+            if (expectedRevision != revision) throw new CharacterStoreRejectedException("Stale progression revision.");
+            var model = new CharacterProgression(characterId, clock, () => .5, settings, snapshot: snapshot);
+            var changed = model.ChangeSkillLock(skillId, desiredLock);
+            using (var update = Command(c, t,
+                "UPDATE character_state.progression SET revision=$1,state=$2::jsonb WHERE character_id=$3 AND revision=$4",
+                revision + 1, JsonSerializer.Serialize(model.Snapshot()), characterId, revision))
+                if (update.ExecuteNonQuery() != 1) throw new CharacterStoreRejectedException("Stale progression revision.");
+            var result = new VersionedResult<SkillLockChangeResult>(revision + 1, changed);
+            Receipt(c, t, "progression", characterId, operationId, hash, result);
+            return result;
+        });
+    }
+
     public VersionedResult<ProgressResult> AcceptQuest(QuestDefinition quest, string characterId, DateTimeOffset acceptedAt, string operationId, IReadOnlyList<QuestDefinition> prerequisites)
     {
         if (string.IsNullOrWhiteSpace(characterId) || string.IsNullOrWhiteSpace(operationId)) throw new ArgumentException("Character and operation ID required.");

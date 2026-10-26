@@ -33,6 +33,19 @@ internal sealed class ProgressionGrpcService(PostgresCharacterStateStore store, 
             return new Pb.EndSessionReply { ProgressionRevision = result.Revision, RestedMinutes = result.Result.RestedMinutes };
         });
 
+    public override Task<Pb.ChangeSkillLockReply> ChangeSkillLock(Pb.ChangeSkillLockRequest request, ServerCallContext context) =>
+        GrpcRun.Call(context, () =>
+        {
+            // Only the authenticated zone server can call this host. It must supply the
+            // verified character ID of the controller that requested the change.
+            var result = store.ChangeSkillLock(request.OperationId, request.CharacterId,
+                request.ExpectedProgressionRevision, request.SkillId, request.Lock,
+                TimeProvider.System, progressionSettings);
+            return new Pb.ChangeSkillLockReply { ProgressionRevision = result.Revision,
+                SkillId = result.Result.SkillId, Lock = result.Result.Lock,
+                ReadyAtUnixMs = result.Result.ReadyAtUnixMs };
+        });
+
     public override Task<Pb.CreateCharacterReply> CreateCharacter(Pb.CreateCharacterRequest request, ServerCallContext context) =>
         GrpcRun.Call(context, () =>
         {
@@ -187,8 +200,18 @@ internal sealed class ProgressionGrpcService(PostgresCharacterStateStore store, 
                     reply.ActiveStepId = done.Result.ActiveStepId ?? "";
                     reply.QuestCompleted = done.Result.Completed;
                     reply.QuestRevision = done.Revision;
+                    var currentForQuest = store.ReadProgression(request.CharacterId)?.Result;
+                    if (currentForQuest is not null)
+                    {
+                        var locks = new CharacterProgression(request.CharacterId, TimeProvider.System, () => .5,
+                            snapshot: currentForQuest);
+                        foreach (var (id, value) in locks.SkillLocks) reply.GatheringSkillLocks.Add(id, value);
+                        foreach (var (id, value) in locks.SkillLockReadyAtUnixMs)
+                            reply.GatheringSkillLockReadyAtUnixMs.Add(id, value);
+                        reply.GatheringSkillLocksAuthoritative = true;
+                    }
                     reply.CombatAttributes = WireCombat(
-                        store.ReadProgression(request.CharacterId)?.Result.CombatIdentity ?? CombatTuning.StarterIdentity,
+                        currentForQuest?.CombatIdentity ?? CombatTuning.StarterIdentity,
                         reply.Level);
                     return reply;
                 }
@@ -216,7 +239,14 @@ internal sealed class ProgressionGrpcService(PostgresCharacterStateStore store, 
             }
             var current = store.ReadProgression(request.CharacterId)?.Result;
             if (current is not null)
+            {
                 foreach (var (id, value) in current.Skills) reply.Skills.Add(id, value);
+                var locks = new CharacterProgression(request.CharacterId, TimeProvider.System, () => .5,
+                    snapshot: current);
+                foreach (var (id, value) in locks.SkillLocks) reply.GatheringSkillLocks.Add(id, value);
+                foreach (var (id, value) in locks.SkillLockReadyAtUnixMs) reply.GatheringSkillLockReadyAtUnixMs.Add(id, value);
+                reply.GatheringSkillLocksAuthoritative = true;
+            }
             var combat = current?.CombatIdentity ?? CombatTuning.StarterIdentity;
             reply.CombatAttributes = WireCombat(combat, reply.Level);
             return reply;
@@ -254,10 +284,16 @@ internal sealed class ProgressionGrpcService(PostgresCharacterStateStore store, 
             state.CombatAttributes = WireCombat(progression?.Result.CombatIdentity ?? CombatTuning.StarterIdentity, state.Level);
             if (progression is not null)
             {
+                var locks = new CharacterProgression(request.CharacterId, TimeProvider.System, () => .5,
+                    snapshot: progression.Result);
+                foreach (var (id, value) in locks.SkillLocks) state.GatheringSkillLocks.Add(id, value);
+                foreach (var (id, value) in locks.SkillLockReadyAtUnixMs) state.GatheringSkillLockReadyAtUnixMs.Add(id, value);
+                state.GatheringSkillLocksAuthoritative = true;
                 foreach (var (id, value) in progression.Result.Skills)
                 {
                     state.Skills.Add(id, value);
-                    if (id is "skill/logging" or "skill/mining") state.GatheringSkills.Add(id, value);
+                    if (ProgressionRules.GatheringTrackSkills.Contains(id, StringComparer.Ordinal))
+                        state.GatheringSkills.Add(id, value);
                 }
                 state.KnownRecipes.AddRange((progression.Result.KnownRecipes ?? []).Select(k => new Pb.KnownRecipe
                 {

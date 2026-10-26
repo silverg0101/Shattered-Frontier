@@ -42,6 +42,22 @@ switch (args[0])
         Check(combatGain.Result.SkillGain == 1 && combatGain.Revision == 2 &&
             store.ReadProgression("character-combat-new")?.Result.Skills[ProgressionRules.Swordsmanship] == 101,
             "combat skill gain commits atomically to CharacterState");
+        Check(store.EnsureCombatIdentity("character-skill-lock", combatTuning).Revision == 1,
+            "lock test character has durable progression identity");
+        var lockChanged = store.ChangeSkillLock("lock-down-1", "character-skill-lock", 1,
+            ProgressionRules.Logging, "down", new FixedClock(1_000_000));
+        Check(lockChanged.Revision == 2 && lockChanged.Result.ReadyAtUnixMs == 1_005_000 &&
+            store.ReadProgression("character-skill-lock")?.Result.SkillLocks?[ProgressionRules.Logging] == "down",
+            "skill lock and five-second deadline commit with revision");
+        Check(store.ChangeSkillLock("lock-down-1", "character-skill-lock", 1,
+            ProgressionRules.Logging, "down", new FixedClock(1_001_000)) == lockChanged,
+            "lock operation replays its original receipt despite stale expected revision");
+        try { store.ChangeSkillLock("lock-down-1", "character-skill-lock", 1,
+            ProgressionRules.Logging, "locked", new FixedClock(1_001_000)); throw new Exception("changed lock payload accepted"); }
+        catch (CharacterStoreRejectedException) { Console.WriteLine("PASS lock operation payload conflict refused"); }
+        try { store.ChangeSkillLock("lock-up-early", "character-skill-lock", 2,
+            ProgressionRules.Logging, "up", new FixedClock(1_004_999)); throw new Exception("early lock change accepted"); }
+        catch (InvalidOperationException) { Console.WriteLine("PASS durable lock cooldown refuses early change"); }
         Check(store.EnsureCombatIdentity("character-combat-created-mage", combatTuning, creationArchetype: "mage")
             is { Result.CombatIdentity: { Archetype: "mage", Base.Intelligence: 40, Base.Wisdom: 20 } },
             "creation stores the server-derived Mage allocation");
@@ -156,6 +172,16 @@ switch (args[0])
         Check(store.PendingRewardQuests("character-3").Contains("quest/two") && !store.PendingRewardQuests("character-2").Contains("quest/two"), "pending reward quests listed");
         break;
     case "restart":
+        Check(store.ReadProgression("character-skill-lock")?.Result.SkillLocks?[ProgressionRules.Logging] == "down" &&
+            store.ChangeSkillLock("lock-down-1", "character-skill-lock", 1, ProgressionRules.Logging,
+                "down", new FixedClock(1_002_000)).Revision == 2,
+            "skill lock state and receipt survive database restart");
+        try { store.ChangeSkillLock("lock-up-after-restart-early", "character-skill-lock", 2,
+            ProgressionRules.Logging, "up", new FixedClock(1_004_999)); throw new Exception("restart lost lock deadline"); }
+        catch (InvalidOperationException) { Console.WriteLine("PASS lock deadline survives database restart"); }
+        Check(store.ChangeSkillLock("lock-up-2", "character-skill-lock", 2,
+            ProgressionRules.Logging, "up", new FixedClock(1_005_000)).Revision == 3,
+            "lock changes after durable deadline");
         Check(store.ReadProgression("character-combat-legacy")?.Result.CombatIdentity == new CombatAttributeTuning().StarterIdentity,
             "migrated combat identity survives restart");
         Check(store.ReadProgression("character-combat-new")?.Result.CombatIdentity?.Archetype == "fighter" &&

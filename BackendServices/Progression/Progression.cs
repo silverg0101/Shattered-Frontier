@@ -7,6 +7,9 @@ public static class ProgressionRules
     public const int GlobalSkillCap = 7200, TrackSkillCap = 4000;
     public const string Logging = "skill/logging", Mining = "skill/mining", Smithing = "skill/smithing",
         Carpentry = "skill/carpentry", Leatherworking = "skill/leatherworking";
+    public const string Farming = "skill/farming", Herbalism = "skill/herbalism",
+        Fishing = "skill/fishing", Hunting = "skill/hunting";
+    public static readonly string[] GatheringTrackSkills = [Mining, Logging, Farming, Herbalism, Fishing, Hunting];
     public const string Swordsmanship = "skill/swordsmanship", Axes = "skill/axes", Maces = "skill/maces",
         Polearms = "skill/polearms", Daggers = "skill/daggers", Archery = "skill/archery",
         Unarmed = "skill/unarmed", ShieldDefense = "skill/shield_defense", Tactics = "skill/tactics",
@@ -61,7 +64,7 @@ public sealed record ProgressionSettings(
     int KillsPerLevel = 150, double AdditionalPartyShare = .2,
     int CombatRepeatThreshold = 400, int TrivialDifficultyDelta = -150, int ImpossibleDifficultyDelta = 250,
     int DifficultyOptimum = 25, double DifficultySigma = 100, double FailureGainFactor = .5,
-    int GrayLevelDelta = -10)
+    int GrayLevelDelta = -10, int SkillLockChangeCooldownSeconds = 5)
 {
     public void Validate()
     {
@@ -76,7 +79,8 @@ public sealed record ProgressionSettings(
             CombatRepeatThreshold is < 1 or > 2000 || TrivialDifficultyDelta is < -500 or > 0 ||
             ImpossibleDifficultyDelta is < 0 or > 500 || DifficultyOptimum is < -100 or > 150 ||
             !double.IsFinite(DifficultySigma) || DifficultySigma is < 10 or > 300 ||
-            !double.IsFinite(FailureGainFactor) || FailureGainFactor is < 0 or > 1 || GrayLevelDelta is < -30 or > -1)
+            !double.IsFinite(FailureGainFactor) || FailureGainFactor is < 0 or > 1 || GrayLevelDelta is < -30 or > -1 ||
+            SkillLockChangeCooldownSeconds is < 5 or > 60)
             throw new ArgumentOutOfRangeException(nameof(ProgressionSettings));
     }
 }
@@ -91,7 +95,10 @@ public sealed record ProgressionSnapshot(long LifetimeXp, Dictionary<string, int
     Dictionary<string, long[]> ActiveMinutes, PracticeSnapshot[] Practices, GainSnapshot[] Gains,
     KnownRecipe[]? KnownRecipes = null, double RestedMinutes = 0,
     DateTimeOffset? LastSessionEndAt = null, bool EndedInRestArea = false, long? LastRestedActiveMinute = null,
-    CombatIdentity? CombatIdentity = null);
+    CombatIdentity? CombatIdentity = null,
+    Dictionary<string, string>? SkillLocks = null,
+    Dictionary<string, long>? SkillLockReadyAtUnixMs = null);
+public sealed record SkillLockChangeResult(string SkillId, string Lock, long ReadyAtUnixMs);
 public sealed record KnownRecipe(string RecipeId, string Source, DateTimeOffset LearnedAt);
 public sealed record PracticeSnapshot(DateTimeOffset At, string Skill, ulong Context);
 public sealed record GainSnapshot(DateTimeOffset At, string Skill);
@@ -102,6 +109,10 @@ public sealed class CharacterProgression
     private readonly Dictionary<string, int> skills = new(StringComparer.Ordinal)
         { [ProgressionRules.Logging] = 0, [ProgressionRules.Mining] = 0, [ProgressionRules.Smithing] = 0,
             [ProgressionRules.Carpentry] = 0, [ProgressionRules.Leatherworking] = 0 };
+    private readonly Dictionary<string, string> skillLocks = ProgressionRules.GatheringTrackSkills
+        .ToDictionary(id => id, _ => "up", StringComparer.Ordinal);
+    private readonly Dictionary<string, long> skillLockReadyAtUnixMs = ProgressionRules.GatheringTrackSkills
+        .ToDictionary(id => id, _ => 0L, StringComparer.Ordinal);
     private readonly List<KnownRecipe> knownRecipes = [];
     private readonly Dictionary<string, HashSet<long>> activeMinutes = new(StringComparer.Ordinal);
     private readonly List<(DateTimeOffset At, string Skill, ulong Context)> practices = [];
@@ -117,6 +128,8 @@ public sealed class CharacterProgression
     public bool EndedInRestArea { get; private set; }
     public long? LastRestedActiveMinute { get; private set; }
     public IReadOnlyDictionary<string, int> Skills => skills;
+    public IReadOnlyDictionary<string, string> SkillLocks => skillLocks;
+    public IReadOnlyDictionary<string, long> SkillLockReadyAtUnixMs => skillLockReadyAtUnixMs;
     public CombatIdentity CombatIdentity { get; }
 
     public CharacterProgression(string characterId, TimeProvider clock, Func<double> roll, ProgressionSettings? settings = null,
@@ -125,6 +138,7 @@ public sealed class CharacterProgression
         if (string.IsNullOrWhiteSpace(characterId) || clock is null || roll is null || initialXp < 0) throw new ArgumentException("Invalid progression initialization");
         CharacterId = characterId; this.clock = clock; this.roll = roll; this.settings = snapshot?.Settings ?? settings ?? new(); this.settings.Validate();
         foreach (var id in ProgressionRules.CombatSkills) skills[id] = 0;
+        foreach (var id in ProgressionRules.GatheringTrackSkills) skills[id] = 0;
         CombatIdentity = snapshot?.CombatIdentity ?? new CombatAttributeTuning().StarterIdentity;
         if (initialSkills is not null)
             foreach (var (id, value) in initialSkills)
@@ -154,6 +168,20 @@ public sealed class CharacterProgression
             LastRestedActiveMinute = snapshot.LastRestedActiveMinute;
             knownRecipes.AddRange(snapshot.KnownRecipes ?? []);
             foreach (var id in snapshot.Receipts) receipts.Add(id);
+            if (snapshot.SkillLocks is not null)
+                foreach (var (id, value) in snapshot.SkillLocks)
+                {
+                    if (!skillLocks.ContainsKey(id) || value is not ("up" or "down" or "locked"))
+                        throw new ArgumentException("Invalid progression snapshot skill lock.");
+                    skillLocks[id] = value;
+                }
+            if (snapshot.SkillLockReadyAtUnixMs is not null)
+                foreach (var (id, value) in snapshot.SkillLockReadyAtUnixMs)
+                {
+                    if (!skillLockReadyAtUnixMs.ContainsKey(id) || value < 0)
+                        throw new ArgumentException("Invalid progression snapshot skill lock deadline.");
+                    skillLockReadyAtUnixMs[id] = value;
+                }
             foreach (var (id, minutes) in snapshot.ActiveMinutes) activeMinutes.Add(id, new HashSet<long>(minutes));
             practices.AddRange(snapshot.Practices.Select(p => (p.At, p.Skill, p.Context)));
             gains.AddRange(snapshot.Gains.Select(g => (g.At, g.Skill)));
@@ -164,7 +192,21 @@ public sealed class CharacterProgression
         activeMinutes.ToDictionary(p => p.Key, p => p.Value.ToArray(), StringComparer.Ordinal),
         practices.Select(p => new PracticeSnapshot(p.At, p.Skill, p.Context)).ToArray(),
         gains.Select(g => new GainSnapshot(g.At, g.Skill)).ToArray(), knownRecipes.ToArray(),
-        RestedMinutes, LastSessionEndAt, EndedInRestArea, LastRestedActiveMinute, CombatIdentity);
+        RestedMinutes, LastSessionEndAt, EndedInRestArea, LastRestedActiveMinute, CombatIdentity,
+        new(skillLocks, StringComparer.Ordinal), new(skillLockReadyAtUnixMs, StringComparer.Ordinal));
+
+    public SkillLockChangeResult ChangeSkillLock(string skillId, string desiredLock)
+    {
+        if (!skillLocks.ContainsKey(skillId) || desiredLock is not ("up" or "down" or "locked"))
+            throw new ArgumentException("Invalid gathering skill lock request.");
+        if (skillLocks[skillId] == desiredLock) throw new InvalidOperationException("Skill lock is already set.");
+        long now = clock.GetUtcNow().ToUnixTimeMilliseconds();
+        if (now < skillLockReadyAtUnixMs[skillId]) throw new InvalidOperationException("Skill lock cooldown is active.");
+        skillLocks[skillId] = desiredLock;
+        long ready = checked(now + 1000L * settings.SkillLockChangeCooldownSeconds);
+        skillLockReadyAtUnixMs[skillId] = ready;
+        return new(skillId, desiredLock, ready);
+    }
 
     public bool BeginSession()
     {
@@ -236,6 +278,7 @@ public sealed class CharacterProgression
             double fatigue = ProgressionRules.Fatigue(minutes.Count, settings);
             int value = skills[id];
             if (value < ProgressionRules.UnspecializedCap &&
+                (receipt.Kind != ReceiptKind.GatheringHarvest || skillLocks[id] == "up") &&
                 (receipt.Kind != ReceiptKind.CombatPractice || receipt.EnemyLevel - Level > settings.GrayLevelDelta))
             {
                 chance = ProgressionRules.GainChance(value, receipt.Difficulty, receipt.ActionSeconds, receipt.Success,
@@ -244,12 +287,29 @@ public sealed class CharacterProgression
                 double sample = chance > 0 ? roll() : 1;
                 if (chance > 0 && (!double.IsFinite(sample) || sample < 0 || sample >= 1))
                     throw new InvalidOperationException("Roll must be in [0, 1)");
-                if (sample < chance && hourGains < ProgressionRules.HourlyGainLimit(value, settings) &&
-                    skills.Values.Sum() < ProgressionRules.GlobalSkillCap &&
-                    (receipt.Kind == ReceiptKind.CraftConvert ? value : receipt.Kind == ReceiptKind.CombatPractice ?
-                        id == ProgressionRules.Stealth ? value : ProgressionRules.CombatTrackSkills.Sum(k => skills[k]) :
-                        skills[ProgressionRules.Logging] + skills[ProgressionRules.Mining]) < ProgressionRules.TrackSkillCap)
-                { skills[id]++; gains.Add((now, id)); gain = 1; }
+                if (sample < chance && hourGains < ProgressionRules.HourlyGainLimit(value, settings))
+                {
+                    bool needGlobal = skills.Values.Sum() + 1 > ProgressionRules.GlobalSkillCap;
+                    bool needGatheringTrack = receipt.Kind == ReceiptKind.GatheringHarvest &&
+                        ProgressionRules.GatheringTrackSkills.Sum(k => skills[k]) + 1 > ProgressionRules.TrackSkillCap;
+                    string? donor = null;
+                    if (needGlobal || needGatheringTrack)
+                    {
+                        // This slice exposes player-controlled locks for gathering only. Every eligible
+                        // donor is a gathering skill; a same-track donor satisfies both caps.
+                        donor = ProgressionRules.GatheringTrackSkills.Where(k => k != id &&
+                                skillLocks[k] == "down" && skills[k] > 0)
+                            .OrderByDescending(k => skills[k]).ThenBy(k => k, StringComparer.Ordinal).FirstOrDefault();
+                    }
+                    bool otherTrackFits = receipt.Kind == ReceiptKind.CraftConvert ? value < ProgressionRules.TrackSkillCap :
+                        receipt.Kind != ReceiptKind.CombatPractice ||
+                        (id == ProgressionRules.Stealth ? value : ProgressionRules.CombatTrackSkills.Sum(k => skills[k])) < ProgressionRules.TrackSkillCap;
+                    if ((!needGlobal && !needGatheringTrack || donor is not null) && otherTrackFits)
+                    {
+                        if (donor is not null) skills[donor]--;
+                        skills[id]++; gains.Add((now, id)); gain = 1;
+                    }
+                }
             }
             double weight = Math.Clamp(receipt.ActionSeconds / settings.AttemptWeightSeconds, .2, 3);
             xp = receipt.Kind == ReceiptKind.CombatPractice ? 0 : (int)Math.Round(Math.Round(ProgressionRules.XpToNext(Level) / 12d, MidpointRounding.AwayFromZero) * .012 * weight *

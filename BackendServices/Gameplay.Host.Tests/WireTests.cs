@@ -563,6 +563,11 @@ if (mode.EndsWith("-replay", StringComparison.Ordinal))
     }
     else if (mode == "progression-replay")
     {
+        var lockState = new ProgressPb.Progression.ProgressionClient(channel).GetCharacterState(
+            new ProgressPb.GetCharacterStateRequest { CharacterId = "chr_lock_wire" }, headers, deadline: Deadline());
+        Check(lockState.GatheringSkillLocksAuthoritative && lockState.GatheringSkillLocks["skill/logging"] == "down" &&
+            lockState.GatheringSkillLockReadyAtUnixMs["skill/logging"] > 0,
+            "Gathering lock state missing after host and database restart.");
         var result = new ProgressPb.Progression.ProgressionClient(channel).ApplyReceipt(new ProgressPb.ApplyReceiptRequest
         {
             SourceReceiptId = "harvest/test-oak", Kind = "gather", CharacterId = "chr_progression",
@@ -980,6 +985,36 @@ else if (mode == "progression")
     new InventoryLedger(new PostgresInventoryLedgerStore(connection)).CreateContainer(
         new ContainerSpec("ctn_progression", OwnerKind.Character, "chr_progression", ContainerKind.Backpack, 100));
     var client = new ProgressPb.Progression.ProgressionClient(channel);
+    var lockInitial = client.GetCharacterState(new ProgressPb.GetCharacterStateRequest { CharacterId = "chr_lock_wire" }, headers, deadline: Deadline());
+    Check(lockInitial.GatheringSkillLocksAuthoritative && lockInitial.GatheringSkillLocks.Count == 6 &&
+        lockInitial.GatheringSkillLocks["skill/logging"] == "up", "Gathering lock capability or default state missing.");
+    var lockRequest = new ProgressPb.ChangeSkillLockRequest { OperationId = "lock/wire/down-1", CharacterId = "chr_lock_wire",
+        ExpectedProgressionRevision = lockInitial.ProgressionRevision, SkillId = "skill/logging", Lock = "down" };
+    Code(() => client.ChangeSkillLock(lockRequest, bad, deadline: Deadline()), StatusCode.Unauthenticated);
+    var invalidLock = lockRequest.Clone(); invalidLock.OperationId = "lock/wire/invalid"; invalidLock.SkillId = "skill/smithing";
+    Code(() => client.ChangeSkillLock(invalidLock, headers, deadline: Deadline()), StatusCode.InvalidArgument);
+    var missingOwner = lockRequest.Clone(); missingOwner.OperationId = "lock/wire/missing"; missingOwner.CharacterId = "chr_lock_missing";
+    Code(() => client.ChangeSkillLock(missingOwner, headers, deadline: Deadline()), StatusCode.FailedPrecondition);
+    var lockReply = client.ChangeSkillLock(lockRequest, headers, deadline: Deadline());
+    Check(lockReply.ProgressionRevision == lockInitial.ProgressionRevision + 1 &&
+        lockReply.ReadyAtUnixMs > DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() &&
+        client.ChangeSkillLock(lockRequest, headers, deadline: Deadline()).Equals(lockReply),
+        "Gathering lock mutation or idempotent reply missing.");
+    lockRequest.Lock = "locked";
+    Code(() => client.ChangeSkillLock(lockRequest, headers, deadline: Deadline()), StatusCode.FailedPrecondition);
+    lockRequest.Lock = "down";
+    var lockPractice = client.ApplyReceipt(new ProgressPb.ApplyReceiptRequest { SourceReceiptId = "lock/wire/practice-1",
+        CharacterId = "chr_lock_wire", Kind = "gather", ExpectedProgressionRevision = lockReply.ProgressionRevision,
+        Payload = new ProgressPb.ActionPayload { SkillId = "skill/logging", Difficulty = 25,
+            ActionSeconds = 6, Success = true } }, headers, deadline: Deadline());
+    Check(lockPractice.SkillGain == 0 && lockPractice.GatheringSkillLocksAuthoritative &&
+        lockPractice.GatheringSkillLocks["skill/logging"] == "down" &&
+        lockPractice.GatheringSkillLockReadyAtUnixMs["skill/logging"] == lockReply.ReadyAtUnixMs,
+        "Gathering lock did not govern service practice or receipt view.");
+    var lockState = client.GetCharacterState(new ProgressPb.GetCharacterStateRequest { CharacterId = "chr_lock_wire" }, headers, deadline: Deadline());
+    Check(lockState.GatheringSkillLocksAuthoritative && lockState.GatheringSkillLocks["skill/logging"] == "down" &&
+        lockState.GatheringSkillLockReadyAtUnixMs["skill/logging"] == lockReply.ReadyAtUnixMs,
+        "Gathering lock state missing after service restore.");
     var request = new ProgressPb.ApplyReceiptRequest
     {
         SourceReceiptId = "harvest/test-oak", Kind = "gather", CharacterId = "chr_progression",

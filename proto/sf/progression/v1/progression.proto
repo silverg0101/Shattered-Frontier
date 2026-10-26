@@ -12,6 +12,22 @@ service Progression {
   rpc ClearDeath(ClearDeathRequest) returns (DeathState);
   rpc LearnRecipe(LearnRecipeRequest) returns (LearnRecipeReply);
   rpc EndSession(EndSessionRequest) returns (EndSessionReply);
+  rpc ChangeSkillLock(ChangeSkillLockRequest) returns (ChangeSkillLockReply);
+}
+// Trusted zone-server mutation. The server verifies that its requesting controller
+// owns character_id before calling this route.
+message ChangeSkillLockRequest {
+  string operation_id = 1;
+  string character_id = 2;
+  int64 expected_progression_revision = 3;
+  string skill_id = 4;
+  string lock = 5; // up | down | locked
+}
+message ChangeSkillLockReply {
+  int64 progression_revision = 1;
+  string skill_id = 2;
+  string lock = 3;
+  int64 ready_at_unix_ms = 4;
 }
 message EndSessionRequest {
   string operation_id = 1;
@@ -91,6 +107,9 @@ message ApplyReceiptReply {
   double rested_minutes = 13;
   CombatAttributes combat_attributes = 14;
   map<string, int32> skills = 15; // Effective current values after this receipt.
+  map<string, string> gathering_skill_locks = 16;
+  map<string, int64> gathering_skill_lock_ready_at_unix_ms = 17;
+  bool gathering_skill_locks_authoritative = 18;
 }
 message CombatAttributes {
   string archetype = 1;
@@ -164,6 +183,9 @@ message CharacterStateReply {
   DeathState death = 16;
   double rested_minutes = 17;
   CombatAttributes combat_attributes = 18;
+  map<string, string> gathering_skill_locks = 19;
+  map<string, int64> gathering_skill_lock_ready_at_unix_ms = 20;
+  bool gathering_skill_locks_authoritative = 21;
 }
 message QuestState {
   string quest_id = 1;

@@ -115,6 +115,53 @@ Check(carpentry.Applied && progress.Skills.ContainsKey(ProgressionRules.Carpentr
     progress.Skills.ContainsKey(ProgressionRules.Leatherworking), "crafting skill registry");
 var nearCap = new CharacterProgression("chr_cap", clock, () => 0, initialSkills: new Dictionary<string, int> { [ProgressionRules.Mining] = 900 });
 Check(nearCap.Apply(new("cap", "chr_cap", ReceiptKind.GatheringHarvest, true, ProgressionRules.Mining, 925)).SkillGain == 0, "unspecialized cap");
+var lockClock = new ManualClock();
+var legacySkills = progress.Snapshot() with { SkillLocks = null, SkillLockReadyAtUnixMs = null };
+var legacyLocks = new CharacterProgression("chr_test", lockClock, () => 0, snapshot: legacySkills);
+Check(ProgressionRules.GatheringTrackSkills.Length == 6 &&
+    ProgressionRules.GatheringTrackSkills.All(id => legacyLocks.Skills.ContainsKey(id) && legacyLocks.SkillLocks[id] == "up"),
+    "legacy snapshot restores six default-up gathering skills");
+var held = new CharacterProgression("chr_held", lockClock, () => 0);
+var heldChange = held.ChangeSkillLock(ProgressionRules.Logging, "locked");
+Check(heldChange.ReadyAtUnixMs == lockClock.GetUtcNow().ToUnixTimeMilliseconds() + 5000 &&
+    held.Apply(new("held-practice", "chr_held", ReceiptKind.GatheringHarvest, true,
+        ProgressionRules.Logging, 25)).SkillGain == 0, "locked harvest records practice without a skill gain");
+var restoredHeld = new CharacterProgression("chr_held", lockClock, () => 0, snapshot: held.Snapshot());
+Check(restoredHeld.SkillLocks[ProgressionRules.Logging] == "locked" &&
+    restoredHeld.SkillLockReadyAtUnixMs[ProgressionRules.Logging] == heldChange.ReadyAtUnixMs,
+    "lock and cooldown survive snapshot restart");
+try { restoredHeld.ChangeSkillLock(ProgressionRules.Logging, "up"); throw new Exception("cooldown accepted early"); }
+catch (InvalidOperationException) { Console.WriteLine("PASS lock cooldown blocks early change"); }
+lockClock.Advance(TimeSpan.FromSeconds(5));
+Check(restoredHeld.ChangeSkillLock(ProgressionRules.Logging, "up").Lock == "up", "lock change allowed at deadline");
+try { restoredHeld.ChangeSkillLock(ProgressionRules.Smithing, "down"); throw new Exception("non-gathering lock accepted"); }
+catch (ArgumentException) { Console.WriteLine("PASS non-gathering lock refused"); }
+var trackSkills = new Dictionary<string, int> {
+    [ProgressionRules.Logging] = 799, [ProgressionRules.Mining] = 1,
+    [ProgressionRules.Farming] = 800, [ProgressionRules.Herbalism] = 800,
+    [ProgressionRules.Fishing] = 800, [ProgressionRules.Hunting] = 800 };
+var trackCapped = new CharacterProgression("chr_track", lockClock, () => 0, initialSkills: trackSkills);
+var blockedTrack = new CharacterProgression("chr_track_blocked", lockClock, () => 0, initialSkills: trackSkills);
+Check(blockedTrack.Apply(new("track-blocked", "chr_track_blocked", ReceiptKind.GatheringHarvest, true,
+    ProgressionRules.Logging, 824)).SkillGain == 0 && blockedTrack.Skills[ProgressionRules.Logging] == 799,
+    "track cap refuses gain without a down donor");
+trackCapped.ChangeSkillLock(ProgressionRules.Farming, "down");
+trackCapped.ChangeSkillLock(ProgressionRules.Herbalism, "down");
+Check(trackCapped.Apply(new("track-practice", "chr_track", ReceiptKind.GatheringHarvest, true,
+    ProgressionRules.Logging, 824)).SkillGain == 1 &&
+    trackCapped.Skills[ProgressionRules.Farming] == 799 && trackCapped.Skills[ProgressionRules.Herbalism] == 800 &&
+    ProgressionRules.GatheringTrackSkills.Sum(id => trackCapped.Skills[id]) == 4000,
+    "six-skill track cap transfers one point from lexicographically first tied down donor");
+var globalSkills = new Dictionary<string, int> {
+    [ProgressionRules.Smithing] = 900, [ProgressionRules.Carpentry] = 900,
+    [ProgressionRules.Leatherworking] = 900, [ProgressionRules.Swordsmanship] = 900,
+    [ProgressionRules.Axes] = 900, [ProgressionRules.Maces] = 900,
+    [ProgressionRules.Polearms] = 900, [ProgressionRules.Farming] = 900 };
+var globalCapped = new CharacterProgression("chr_global", lockClock, () => 0, initialSkills: globalSkills);
+globalCapped.ChangeSkillLock(ProgressionRules.Farming, "down");
+Check(globalCapped.Apply(new("global-practice", "chr_global", ReceiptKind.GatheringHarvest, true,
+    ProgressionRules.Mining, 25)).SkillGain == 1 && globalCapped.Skills.Values.Sum() == 7200 &&
+    globalCapped.Skills[ProgressionRules.Farming] == 899, "global cap uses down gathering donor atomically");
 var level = new CharacterProgression("chr_level", clock, () => 0, initialXp: CharacterProgression.TotalFor(2) - 1);
 Check(level.Level == 1, "level lower boundary");
 Check(level.Apply(new("kill", "chr_level", ReceiptKind.EnemyDefeat, true, EnemyLevel: 1)).Level == 2, "enemy defeat levels up");
