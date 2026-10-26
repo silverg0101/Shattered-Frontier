@@ -1,0 +1,1356 @@
+{
+  "schema_version": 1,
+  "status": "parent-support-trace-needs-review",
+  "cpu_only": true,
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\WalkPilot-v003\\Mount-WalkPilot.blend": "f59dc38bff697b6c2a2c84511413d2e292d9fdbb278acc69cd8df6d26a5bd123",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\FullLegFringeRoots-v001\\region-roots.npz": "6c87dc69d6bbcf1ea76f7ca12e4f860940f328782c4a374a0a33278008bdf682"
+  },
+  "tool_sha256": "586dc9cf75cfa3fa902d68387a859e27b58bc815c589420c5259bdbd48ca04fd",
+  "profile_sha256": "1840863b9bd56fe0228a83e2996ab57a4d095c75df463057b1d3d2eeceed6925",
+  "frames": 73,
+  "maximum_step_m": 0.0571326341304251,
+  "roles": [
+    {
+      "role": "roots",
+      "vertices": 59,
+      "unweighted_primary_vertices": 0,
+      "foreign_primary_vertices": 0,
+      "weights": [
+        {
+          "vertex": 196444,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.4336727559566498,
+            "PRI.hind.L.stifle": 0.5235891342163086,
+            "PRI.hind.L.fetlock": 0.0174271110445261,
+            "PRI.hind.L.hip": 0.025311017408967018
+          },
+          "primary_weight_sum": 1.0000000186264515,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 196445,
+          "primary_weights": {
+            "PRI.hind.L.hip": 0.02580958418548107,
+            "PRI.hind.L.stifle": 0.5249468684196472,
+            "PRI.hind.L.hock": 0.4315774142742157,
+            "PRI.hind.L.fetlock": 0.01766614243388176
+          },
+          "primary_weight_sum": 1.0000000093132257,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 219288,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.4277743697166443,
+            "PRI.hind.L.stifle": 0.526491641998291,
+            "PRI.hind.L.fetlock": 0.018446728587150574,
+            "PRI.hind.L.hip": 0.02728722244501114
+          },
+          "primary_weight_sum": 0.999999962747097,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 219290,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.42754560708999634,
+            "PRI.hind.L.stifle": 0.527725875377655,
+            "PRI.hind.L.fetlock": 0.01806563325226307,
+            "PRI.hind.L.hip": 0.026662899181246758
+          },
+          "primary_weight_sum": 1.0000000149011612,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 219292,
+          "primary_weights": {
+            "PRI.hind.L.hip": 0.02580958418548107,
+            "PRI.hind.L.stifle": 0.5249468684196472,
+            "PRI.hind.L.hock": 0.4315774142742157,
+            "PRI.hind.L.fetlock": 0.01766614243388176
+          },
+          "primary_weight_sum": 1.0000000093132257,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 219303,
+          "primary_weights": {
+            "PRI.hind.L.hip": 0.02580958418548107,
+            "PRI.hind.L.stifle": 0.5249468684196472,
+            "PRI.hind.L.hock": 0.4315774142742157,
+            "PRI.hind.L.fetlock": 0.01766614243388176
+          },
+          "primary_weight_sum": 1.0000000093132257,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 219304,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.42754560708999634,
+            "PRI.hind.L.stifle": 0.527725875377655,
+            "PRI.hind.L.fetlock": 0.01806563325226307,
+            "PRI.hind.L.hip": 0.026662899181246758
+          },
+          "primary_weight_sum": 1.0000000149011612,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 233433,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.43967485427856445,
+            "PRI.hind.L.stifle": 0.5262478590011597,
+            "PRI.hind.L.fetlock": 0.014251260086894035,
+            "PRI.hind.L.hip": 0.019826041534543037
+          },
+          "primary_weight_sum": 1.0000000149011612,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 233435,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.4419914782047272,
+            "PRI.hind.L.stifle": 0.5244185924530029,
+            "PRI.hind.L.fetlock": 0.014090267941355705,
+            "PRI.hind.L.hip": 0.019499672576785088
+          },
+          "primary_weight_sum": 1.000000011175871,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 233441,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.44281360507011414,
+            "PRI.hind.L.stifle": 0.5238803625106812,
+            "PRI.hind.L.fetlock": 0.013991227373480797,
+            "PRI.hind.L.hip": 0.01931477151811123
+          },
+          "primary_weight_sum": 0.9999999664723873,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 233443,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.4430069029331207,
+            "PRI.hind.L.stifle": 0.5234854817390442,
+            "PRI.hind.L.fetlock": 0.014069290831685066,
+            "PRI.hind.L.hip": 0.019438352435827255
+          },
+          "primary_weight_sum": 1.0000000279396772,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 233712,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.44346052408218384,
+            "PRI.hind.L.stifle": 0.5230371952056885,
+            "PRI.hind.L.fetlock": 0.014071892015635967,
+            "PRI.hind.L.hip": 0.01943041756749153
+          },
+          "primary_weight_sum": 1.0000000288709998,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 233713,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.44327545166015625,
+            "PRI.hind.L.stifle": 0.5231803059577942,
+            "PRI.hind.L.fetlock": 0.014085863716900349,
+            "PRI.hind.L.hip": 0.019458383321762085
+          },
+          "primary_weight_sum": 1.0000000046566129,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 233714,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.44365277886390686,
+            "PRI.hind.L.stifle": 0.522840142250061,
+            "PRI.hind.L.fetlock": 0.014075676910579205,
+            "PRI.hind.L.hip": 0.019431399181485176
+          },
+          "primary_weight_sum": 0.9999999972060323,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 233759,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.44365277886390686,
+            "PRI.hind.L.stifle": 0.522840142250061,
+            "PRI.hind.L.fetlock": 0.014075676910579205,
+            "PRI.hind.L.hip": 0.019431399181485176
+          },
+          "primary_weight_sum": 0.9999999972060323,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 233760,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.44362306594848633,
+            "PRI.hind.L.stifle": 0.5227495431900024,
+            "PRI.hind.L.fetlock": 0.014120947569608688,
+            "PRI.hind.L.hip": 0.01950646936893463
+          },
+          "primary_weight_sum": 1.000000026077032,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 233767,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.4439046382904053,
+            "PRI.hind.L.stifle": 0.5224205851554871,
+            "PRI.hind.L.fetlock": 0.014141837134957314,
+            "PRI.hind.L.hip": 0.019532926380634308
+          },
+          "primary_weight_sum": 0.999999986961484,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 233769,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.44377464056015015,
+            "PRI.hind.L.stifle": 0.5221384763717651,
+            "PRI.hind.L.fetlock": 0.01429677288979292,
+            "PRI.hind.L.hip": 0.019790111109614372
+          },
+          "primary_weight_sum": 1.0000000009313226,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 233778,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.44256532192230225,
+            "PRI.hind.L.stifle": 0.5220813751220703,
+            "PRI.hind.L.fetlock": 0.014763795770704746,
+            "PRI.hind.L.hip": 0.020589524880051613
+          },
+          "primary_weight_sum": 1.000000017695129,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 233807,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.44256532192230225,
+            "PRI.hind.L.stifle": 0.5220813751220703,
+            "PRI.hind.L.fetlock": 0.014763795770704746,
+            "PRI.hind.L.hip": 0.020589524880051613
+          },
+          "primary_weight_sum": 1.000000017695129,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 233808,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.4402340054512024,
+            "PRI.hind.L.stifle": 0.5232723951339722,
+            "PRI.hind.L.fetlock": 0.015167864970862865,
+            "PRI.hind.L.hip": 0.021325774490833282
+          },
+          "primary_weight_sum": 1.0000000400468707,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 233824,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.4402340054512024,
+            "PRI.hind.L.stifle": 0.5232723951339722,
+            "PRI.hind.L.fetlock": 0.015167864970862865,
+            "PRI.hind.L.hip": 0.021325774490833282
+          },
+          "primary_weight_sum": 1.0000000400468707,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 233865,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.44281360507011414,
+            "PRI.hind.L.stifle": 0.5238803625106812,
+            "PRI.hind.L.fetlock": 0.013991227373480797,
+            "PRI.hind.L.hip": 0.01931477151811123
+          },
+          "primary_weight_sum": 0.9999999664723873,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 233867,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.4430069029331207,
+            "PRI.hind.L.stifle": 0.5234854817390442,
+            "PRI.hind.L.fetlock": 0.014069290831685066,
+            "PRI.hind.L.hip": 0.019438352435827255
+          },
+          "primary_weight_sum": 1.0000000279396772,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 233869,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.44312626123428345,
+            "PRI.hind.L.stifle": 0.5233054757118225,
+            "PRI.hind.L.fetlock": 0.014093427918851376,
+            "PRI.hind.L.hip": 0.01947486400604248
+          },
+          "primary_weight_sum": 1.0000000288709998,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 233870,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.44327545166015625,
+            "PRI.hind.L.stifle": 0.5231803059577942,
+            "PRI.hind.L.fetlock": 0.014085863716900349,
+            "PRI.hind.L.hip": 0.019458383321762085
+          },
+          "primary_weight_sum": 1.0000000046566129,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 234032,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.4382595121860504,
+            "PRI.hind.L.stifle": 0.5228460431098938,
+            "PRI.hind.L.fetlock": 0.016046741977334023,
+            "PRI.hind.L.hip": 0.022847743704915047
+          },
+          "primary_weight_sum": 1.0000000409781933,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 234033,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.43475791811943054,
+            "PRI.hind.L.stifle": 0.5251904129981995,
+            "PRI.hind.L.fetlock": 0.01642957702279091,
+            "PRI.hind.L.hip": 0.02362210676074028
+          },
+          "primary_weight_sum": 1.0000000149011612,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 234037,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.43614819645881653,
+            "PRI.hind.L.stifle": 0.5231142044067383,
+            "PRI.hind.L.fetlock": 0.016711046919226646,
+            "PRI.hind.L.hip": 0.024026570841670036
+          },
+          "primary_weight_sum": 1.0000000186264515,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 234048,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.43577149510383606,
+            "PRI.hind.L.stifle": 0.5227275490760803,
+            "PRI.hind.L.fetlock": 0.016995925456285477,
+            "PRI.hind.L.hip": 0.02450506202876568
+          },
+          "primary_weight_sum": 1.0000000316649675,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 234062,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.4336727559566498,
+            "PRI.hind.L.stifle": 0.5235891342163086,
+            "PRI.hind.L.fetlock": 0.0174271110445261,
+            "PRI.hind.L.hip": 0.025311017408967018
+          },
+          "primary_weight_sum": 1.0000000186264515,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 234071,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.43475791811943054,
+            "PRI.hind.L.stifle": 0.5251904129981995,
+            "PRI.hind.L.fetlock": 0.01642957702279091,
+            "PRI.hind.L.hip": 0.02362210676074028
+          },
+          "primary_weight_sum": 1.0000000149011612,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 234081,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.43475791811943054,
+            "PRI.hind.L.stifle": 0.5251904129981995,
+            "PRI.hind.L.fetlock": 0.01642957702279091,
+            "PRI.hind.L.hip": 0.02362210676074028
+          },
+          "primary_weight_sum": 1.0000000149011612,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 234088,
+          "primary_weights": {
+            "PRI.hind.L.hip": 0.02483624406158924,
+            "PRI.hind.L.stifle": 0.5263863801956177,
+            "PRI.hind.L.hock": 0.43169453740119934,
+            "PRI.hind.L.fetlock": 0.01708286628127098
+          },
+          "primary_weight_sum": 1.0000000279396772,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 234095,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.42754560708999634,
+            "PRI.hind.L.stifle": 0.527725875377655,
+            "PRI.hind.L.fetlock": 0.01806563325226307,
+            "PRI.hind.L.hip": 0.026662899181246758
+          },
+          "primary_weight_sum": 1.0000000149011612,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 234108,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.43892914056777954,
+            "PRI.hind.L.stifle": 0.5262069702148438,
+            "PRI.hind.L.fetlock": 0.014539126306772232,
+            "PRI.hind.L.hip": 0.020324790850281715
+          },
+          "primary_weight_sum": 1.0000000279396772,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 234109,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.4388132393360138,
+            "PRI.hind.L.stifle": 0.5256111025810242,
+            "PRI.hind.L.fetlock": 0.014805183745920658,
+            "PRI.hind.L.hip": 0.020770492032170296
+          },
+          "primary_weight_sum": 1.000000017695129,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 234113,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.43967485427856445,
+            "PRI.hind.L.stifle": 0.5262478590011597,
+            "PRI.hind.L.fetlock": 0.014251260086894035,
+            "PRI.hind.L.hip": 0.019826041534543037
+          },
+          "primary_weight_sum": 1.0000000149011612,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 234131,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.4381371736526489,
+            "PRI.hind.L.stifle": 0.5252219438552856,
+            "PRI.hind.L.fetlock": 0.015198091976344585,
+            "PRI.hind.L.hip": 0.021442770957946777
+          },
+          "primary_weight_sum": 0.9999999804422259,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 234133,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.4402340054512024,
+            "PRI.hind.L.stifle": 0.5232723951339722,
+            "PRI.hind.L.fetlock": 0.015167864970862865,
+            "PRI.hind.L.hip": 0.021325774490833282
+          },
+          "primary_weight_sum": 1.0000000400468707,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 234161,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.4870148301124573,
+            "PRI.hind.L.stifle": 0.4870177209377289,
+            "PRI.hind.L.fetlock": 0.015605674125254154,
+            "PRI.hind.L.hip": 0.010361750610172749
+          },
+          "primary_weight_sum": 0.9999999757856131,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 234162,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.48701396584510803,
+            "PRI.hind.L.stifle": 0.4870178997516632,
+            "PRI.hind.L.fetlock": 0.01560251135379076,
+            "PRI.hind.L.hip": 0.010365624912083149
+          },
+          "primary_weight_sum": 1.0000000018626451,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 234173,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.4870268404483795,
+            "PRI.hind.L.stifle": 0.487030565738678,
+            "PRI.hind.L.fetlock": 0.01558605208992958,
+            "PRI.hind.L.hip": 0.010356561280786991
+          },
+          "primary_weight_sum": 1.000000019557774,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 251991,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.4870148301124573,
+            "PRI.hind.L.stifle": 0.4870177209377289,
+            "PRI.hind.L.fetlock": 0.015605674125254154,
+            "PRI.hind.L.hip": 0.010361750610172749
+          },
+          "primary_weight_sum": 0.9999999757856131,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 251993,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.48696067929267883,
+            "PRI.hind.L.stifle": 0.4869628846645355,
+            "PRI.hind.L.fetlock": 0.015671871602535248,
+            "PRI.hind.L.hip": 0.010404568165540695
+          },
+          "primary_weight_sum": 1.0000000037252903,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 251995,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.48674672842025757,
+            "PRI.hind.L.stifle": 0.4867476224899292,
+            "PRI.hind.L.fetlock": 0.01591855101287365,
+            "PRI.hind.L.hip": 0.01058707945048809
+          },
+          "primary_weight_sum": 0.9999999813735485,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 252026,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.48674672842025757,
+            "PRI.hind.L.stifle": 0.4867476224899292,
+            "PRI.hind.L.fetlock": 0.01591855101287365,
+            "PRI.hind.L.hip": 0.01058707945048809
+          },
+          "primary_weight_sum": 0.9999999813735485,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 252027,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.48669084906578064,
+            "PRI.hind.L.stifle": 0.4866918623447418,
+            "PRI.hind.L.fetlock": 0.015985939651727676,
+            "PRI.hind.L.hip": 0.010631328448653221
+          },
+          "primary_weight_sum": 0.9999999795109034,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 252028,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.4863146245479584,
+            "PRI.hind.L.stifle": 0.48631519079208374,
+            "PRI.hind.L.fetlock": 0.016429034993052483,
+            "PRI.hind.L.hip": 0.01094117108732462
+          },
+          "primary_weight_sum": 1.0000000214204192,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 252041,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.4863146245479584,
+            "PRI.hind.L.stifle": 0.48631519079208374,
+            "PRI.hind.L.fetlock": 0.016429034993052483,
+            "PRI.hind.L.hip": 0.01094117108732462
+          },
+          "primary_weight_sum": 1.0000000214204192,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 252070,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.48689165711402893,
+            "PRI.hind.L.stifle": 0.4868934154510498,
+            "PRI.hind.L.fetlock": 0.015744343400001526,
+            "PRI.hind.L.hip": 0.01047059241682291
+          },
+          "primary_weight_sum": 1.0000000083819032,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 252071,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.4867487847805023,
+            "PRI.hind.L.stifle": 0.4867498576641083,
+            "PRI.hind.L.fetlock": 0.015916787087917328,
+            "PRI.hind.L.hip": 0.010584568604826927
+          },
+          "primary_weight_sum": 0.9999999981373549,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 252074,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.48669084906578064,
+            "PRI.hind.L.stifle": 0.4866918623447418,
+            "PRI.hind.L.fetlock": 0.015985939651727676,
+            "PRI.hind.L.hip": 0.010631328448653221
+          },
+          "primary_weight_sum": 0.9999999795109034,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 252075,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.4863146245479584,
+            "PRI.hind.L.stifle": 0.48631519079208374,
+            "PRI.hind.L.fetlock": 0.016429034993052483,
+            "PRI.hind.L.hip": 0.01094117108732462
+          },
+          "primary_weight_sum": 1.0000000214204192,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 252080,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.4870268404483795,
+            "PRI.hind.L.stifle": 0.487030565738678,
+            "PRI.hind.L.fetlock": 0.01558605208992958,
+            "PRI.hind.L.hip": 0.010356561280786991
+          },
+          "primary_weight_sum": 1.000000019557774,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 252082,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.48701468110084534,
+            "PRI.hind.L.stifle": 0.48701831698417664,
+            "PRI.hind.L.fetlock": 0.015599514357745647,
+            "PRI.hind.L.hip": 0.010367507115006447
+          },
+          "primary_weight_sum": 1.000000019557774,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 252085,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.4869977831840515,
+            "PRI.hind.L.stifle": 0.4870009422302246,
+            "PRI.hind.L.fetlock": 0.015619014389812946,
+            "PRI.hind.L.hip": 0.010382263921201229
+          },
+          "primary_weight_sum": 1.0000000037252903,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 252086,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.4869977533817291,
+            "PRI.hind.L.stifle": 0.48699951171875,
+            "PRI.hind.L.fetlock": 0.015614126808941364,
+            "PRI.hind.L.hip": 0.010388613678514957
+          },
+          "primary_weight_sum": 1.0000000055879354,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 252103,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.48689165711402893,
+            "PRI.hind.L.stifle": 0.4868934154510498,
+            "PRI.hind.L.fetlock": 0.015744343400001526,
+            "PRI.hind.L.hip": 0.01047059241682291
+          },
+          "primary_weight_sum": 1.0000000083819032,
+          "foreign_primary_weights": {}
+        }
+      ]
+    },
+    {
+      "role": "supports",
+      "vertices": 61,
+      "unweighted_primary_vertices": 0,
+      "foreign_primary_vertices": 0,
+      "weights": [
+        {
+          "vertex": 196442,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.43640241026878357,
+            "PRI.hind.L.stifle": 0.5201123952865601,
+            "PRI.hind.L.fetlock": 0.0177813358604908,
+            "PRI.hind.L.hip": 0.025703854858875275
+          },
+          "primary_weight_sum": 0.9999999962747097,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 196443,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.42901015281677246,
+            "PRI.hind.L.stifle": 0.5244244337081909,
+            "PRI.hind.L.fetlock": 0.01878790743649006,
+            "PRI.hind.L.hip": 0.027777493000030518
+          },
+          "primary_weight_sum": 0.999999986961484,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 219286,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.422611266374588,
+            "PRI.hind.L.stifle": 0.5282696485519409,
+            "PRI.hind.L.fetlock": 0.019613370299339294,
+            "PRI.hind.L.hip": 0.029505718499422073
+          },
+          "primary_weight_sum": 1.0000000037252903,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 219287,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.42901015281677246,
+            "PRI.hind.L.stifle": 0.5244244337081909,
+            "PRI.hind.L.fetlock": 0.01878790743649006,
+            "PRI.hind.L.hip": 0.027777493000030518
+          },
+          "primary_weight_sum": 0.999999986961484,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 219291,
+          "primary_weights": {
+            "PRI.hind.L.stifle": 0.5337725877761841,
+            "PRI.hind.L.hock": 0.4158613979816437,
+            "PRI.hind.L.fetlock": 0.01996202953159809,
+            "PRI.hind.L.hip": 0.03040396422147751
+          },
+          "primary_weight_sum": 0.9999999795109034,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 233430,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.43646806478500366,
+            "PRI.hind.L.stifle": 0.5301396250724792,
+            "PRI.hind.L.fetlock": 0.013966623693704605,
+            "PRI.hind.L.hip": 0.019425712525844574
+          },
+          "primary_weight_sum": 1.000000026077032,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 233432,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.4368569552898407,
+            "PRI.hind.L.stifle": 0.5284579396247864,
+            "PRI.hind.L.fetlock": 0.014452291652560234,
+            "PRI.hind.L.hip": 0.0202327948063612
+          },
+          "primary_weight_sum": 0.9999999813735485,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 233434,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.44178324937820435,
+            "PRI.hind.L.stifle": 0.5253751277923584,
+            "PRI.hind.L.fetlock": 0.013806544244289398,
+            "PRI.hind.L.hip": 0.01903507672250271
+          },
+          "primary_weight_sum": 0.9999999981373549,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 233715,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.4436659514904022,
+            "PRI.hind.L.stifle": 0.5229266881942749,
+            "PRI.hind.L.fetlock": 0.014038077555596828,
+            "PRI.hind.L.hip": 0.019369307905435562
+          },
+          "primary_weight_sum": 1.0000000251457095,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 233722,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.4434199035167694,
+            "PRI.hind.L.stifle": 0.5231558680534363,
+            "PRI.hind.L.fetlock": 0.014041922986507416,
+            "PRI.hind.L.hip": 0.01938227377831936
+          },
+          "primary_weight_sum": 0.9999999683350325,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 233724,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.4441162347793579,
+            "PRI.hind.L.stifle": 0.5226001739501953,
+            "PRI.hind.L.fetlock": 0.013995826244354248,
+            "PRI.hind.L.hip": 0.01928778924047947
+          },
+          "primary_weight_sum": 1.000000024214387,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 233732,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.44458553194999695,
+            "PRI.hind.L.stifle": 0.5220253467559814,
+            "PRI.hind.L.fetlock": 0.014040719717741013,
+            "PRI.hind.L.hip": 0.01934843137860298
+          },
+          "primary_weight_sum": 1.0000000298023224,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 233736,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.4470263421535492,
+            "PRI.hind.L.stifle": 0.5197857618331909,
+            "PRI.hind.L.fetlock": 0.013990871608257294,
+            "PRI.hind.L.hip": 0.01919705979526043
+          },
+          "primary_weight_sum": 1.0000000353902578,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 233764,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.44458553194999695,
+            "PRI.hind.L.stifle": 0.5220253467559814,
+            "PRI.hind.L.fetlock": 0.014040719717741013,
+            "PRI.hind.L.hip": 0.01934843137860298
+          },
+          "primary_weight_sum": 1.0000000298023224,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 233770,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.4470263421535492,
+            "PRI.hind.L.stifle": 0.5197857618331909,
+            "PRI.hind.L.fetlock": 0.013990871608257294,
+            "PRI.hind.L.hip": 0.01919705979526043
+          },
+          "primary_weight_sum": 1.0000000353902578,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 233771,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.44623714685440063,
+            "PRI.hind.L.stifle": 0.5194709300994873,
+            "PRI.hind.L.fetlock": 0.014403675682842731,
+            "PRI.hind.L.hip": 0.0198882557451725
+          },
+          "primary_weight_sum": 1.0000000083819032,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 233774,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.44273051619529724,
+            "PRI.hind.L.stifle": 0.5208441615104675,
+            "PRI.hind.L.fetlock": 0.015175212174654007,
+            "PRI.hind.L.hip": 0.02125009149312973
+          },
+          "primary_weight_sum": 0.9999999813735485,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 233812,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.44273051619529724,
+            "PRI.hind.L.stifle": 0.5208441615104675,
+            "PRI.hind.L.fetlock": 0.015175212174654007,
+            "PRI.hind.L.hip": 0.02125009149312973
+          },
+          "primary_weight_sum": 0.9999999813735485,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 233822,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.44273051619529724,
+            "PRI.hind.L.stifle": 0.5208441615104675,
+            "PRI.hind.L.fetlock": 0.015175212174654007,
+            "PRI.hind.L.hip": 0.02125009149312973
+          },
+          "primary_weight_sum": 0.9999999813735485,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 233823,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.43936818838119507,
+            "PRI.hind.L.stifle": 0.5232682228088379,
+            "PRI.hind.L.fetlock": 0.015485051088035107,
+            "PRI.hind.L.hip": 0.021878557279706
+          },
+          "primary_weight_sum": 1.000000019557774,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 233864,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.4435933828353882,
+            "PRI.hind.L.stifle": 0.5232452750205994,
+            "PRI.hind.L.fetlock": 0.013944259844720364,
+            "PRI.hind.L.hip": 0.01921708509325981
+          },
+          "primary_weight_sum": 1.0000000027939677,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 233866,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.4439830780029297,
+            "PRI.hind.L.stifle": 0.5233014822006226,
+            "PRI.hind.L.fetlock": 0.013779552653431892,
+            "PRI.hind.L.hip": 0.01893591322004795
+          },
+          "primary_weight_sum": 1.000000026077032,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 233868,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.4434199035167694,
+            "PRI.hind.L.stifle": 0.5231558680534363,
+            "PRI.hind.L.fetlock": 0.014041922986507416,
+            "PRI.hind.L.hip": 0.01938227377831936
+          },
+          "primary_weight_sum": 0.9999999683350325,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 233872,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.44178324937820435,
+            "PRI.hind.L.stifle": 0.5253751277923584,
+            "PRI.hind.L.fetlock": 0.013806544244289398,
+            "PRI.hind.L.hip": 0.01903507672250271
+          },
+          "primary_weight_sum": 0.9999999981373549,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 234034,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.43936818838119507,
+            "PRI.hind.L.stifle": 0.5232682228088379,
+            "PRI.hind.L.fetlock": 0.015485051088035107,
+            "PRI.hind.L.hip": 0.021878557279706
+          },
+          "primary_weight_sum": 1.000000019557774,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 234036,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.44152358174324036,
+            "PRI.hind.L.stifle": 0.5211687684059143,
+            "PRI.hind.L.fetlock": 0.015495124273002148,
+            "PRI.hind.L.hip": 0.021812520921230316
+          },
+          "primary_weight_sum": 0.9999999953433871,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 234041,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.4406715929508209,
+            "PRI.hind.L.stifle": 0.5208232998847961,
+            "PRI.hind.L.fetlock": 0.01593960076570511,
+            "PRI.hind.L.hip": 0.022565465420484543
+          },
+          "primary_weight_sum": 0.9999999590218067,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 234046,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.44273051619529724,
+            "PRI.hind.L.stifle": 0.5208441615104675,
+            "PRI.hind.L.fetlock": 0.015175212174654007,
+            "PRI.hind.L.hip": 0.02125009149312973
+          },
+          "primary_weight_sum": 0.9999999813735485,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 234050,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.4427034258842468,
+            "PRI.hind.L.stifle": 0.5179930925369263,
+            "PRI.hind.L.fetlock": 0.016292754560709,
+            "PRI.hind.L.hip": 0.023010708391666412
+          },
+          "primary_weight_sum": 0.9999999813735485,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 234054,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.43640241026878357,
+            "PRI.hind.L.stifle": 0.5201123952865601,
+            "PRI.hind.L.fetlock": 0.0177813358604908,
+            "PRI.hind.L.hip": 0.025703854858875275
+          },
+          "primary_weight_sum": 0.9999999962747097,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 234072,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.43423429131507874,
+            "PRI.hind.L.stifle": 0.5275407433509827,
+            "PRI.hind.L.fetlock": 0.015742965042591095,
+            "PRI.hind.L.hip": 0.022481977939605713
+          },
+          "primary_weight_sum": 0.9999999776482582,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 234073,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.43936818838119507,
+            "PRI.hind.L.stifle": 0.5232682228088379,
+            "PRI.hind.L.fetlock": 0.015485051088035107,
+            "PRI.hind.L.hip": 0.021878557279706
+          },
+          "primary_weight_sum": 1.000000019557774,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 234082,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.4274708032608032,
+            "PRI.hind.L.stifle": 0.5307259559631348,
+            "PRI.hind.L.fetlock": 0.01698344759643078,
+            "PRI.hind.L.hip": 0.024819787591695786
+          },
+          "primary_weight_sum": 0.9999999944120646,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 234083,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.43423429131507874,
+            "PRI.hind.L.stifle": 0.5275407433509827,
+            "PRI.hind.L.fetlock": 0.015742965042591095,
+            "PRI.hind.L.hip": 0.022481977939605713
+          },
+          "primary_weight_sum": 0.9999999776482582,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 234087,
+          "primary_weights": {
+            "PRI.hind.L.stifle": 0.5337725877761841,
+            "PRI.hind.L.hock": 0.4158613979816437,
+            "PRI.hind.L.fetlock": 0.01996202953159809,
+            "PRI.hind.L.hip": 0.03040396422147751
+          },
+          "primary_weight_sum": 0.9999999795109034,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 234097,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.422611266374588,
+            "PRI.hind.L.stifle": 0.5282696485519409,
+            "PRI.hind.L.fetlock": 0.019613370299339294,
+            "PRI.hind.L.hip": 0.029505718499422073
+          },
+          "primary_weight_sum": 1.0000000037252903,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 234114,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.4350736737251282,
+            "PRI.hind.L.stifle": 0.5285847783088684,
+            "PRI.hind.L.fetlock": 0.01505258772522211,
+            "PRI.hind.L.hip": 0.02128896862268448
+          },
+          "primary_weight_sum": 1.0000000083819032,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 234115,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.4368569552898407,
+            "PRI.hind.L.stifle": 0.5284579396247864,
+            "PRI.hind.L.fetlock": 0.014452291652560234,
+            "PRI.hind.L.hip": 0.0202327948063612
+          },
+          "primary_weight_sum": 0.9999999813735485,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 234132,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.43936818838119507,
+            "PRI.hind.L.stifle": 0.5232682228088379,
+            "PRI.hind.L.fetlock": 0.015485051088035107,
+            "PRI.hind.L.hip": 0.021878557279706
+          },
+          "primary_weight_sum": 1.000000019557774,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 234155,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.4878534972667694,
+            "PRI.hind.L.stifle": 0.4878534972667694,
+            "PRI.hind.L.fetlock": 0.014784976840019226,
+            "PRI.hind.L.hip": 0.009508012793958187
+          },
+          "primary_weight_sum": 0.9999999841675162,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 234156,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.4871111810207367,
+            "PRI.hind.L.stifle": 0.4871111810207367,
+            "PRI.hind.L.fetlock": 0.015268653631210327,
+            "PRI.hind.L.hip": 0.010508984327316284
+          },
+          "primary_weight_sum": 1.0,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 234159,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.4871402680873871,
+            "PRI.hind.L.stifle": 0.48714184761047363,
+            "PRI.hind.L.fetlock": 0.015473615378141403,
+            "PRI.hind.L.hip": 0.010244268923997879
+          },
+          "primary_weight_sum": 1.0,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 234160,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.487120658159256,
+            "PRI.hind.L.stifle": 0.48712289333343506,
+            "PRI.hind.L.fetlock": 0.01547879446297884,
+            "PRI.hind.L.hip": 0.010277661494910717
+          },
+          "primary_weight_sum": 1.0000000074505806,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 234175,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.48709994554519653,
+            "PRI.hind.L.stifle": 0.48710206151008606,
+            "PRI.hind.L.fetlock": 0.015495279803872108,
+            "PRI.hind.L.hip": 0.010302732698619366
+          },
+          "primary_weight_sum": 1.000000019557774,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 234178,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.4872375428676605,
+            "PRI.hind.L.stifle": 0.48723816871643066,
+            "PRI.hind.L.fetlock": 0.015298611484467983,
+            "PRI.hind.L.hip": 0.01022565457969904
+          },
+          "primary_weight_sum": 0.9999999776482582,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 234185,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.4871111810207367,
+            "PRI.hind.L.stifle": 0.4871111810207367,
+            "PRI.hind.L.fetlock": 0.015268653631210327,
+            "PRI.hind.L.hip": 0.010508984327316284
+          },
+          "primary_weight_sum": 1.0,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 251994,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.4871402680873871,
+            "PRI.hind.L.stifle": 0.48714184761047363,
+            "PRI.hind.L.fetlock": 0.015473615378141403,
+            "PRI.hind.L.hip": 0.010244268923997879
+          },
+          "primary_weight_sum": 1.0,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 251996,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.4878534972667694,
+            "PRI.hind.L.stifle": 0.4878534972667694,
+            "PRI.hind.L.fetlock": 0.014784976840019226,
+            "PRI.hind.L.hip": 0.009508012793958187
+          },
+          "primary_weight_sum": 0.9999999841675162,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 251997,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.4871111810207367,
+            "PRI.hind.L.stifle": 0.4871111810207367,
+            "PRI.hind.L.fetlock": 0.015268653631210327,
+            "PRI.hind.L.hip": 0.010508984327316284
+          },
+          "primary_weight_sum": 1.0,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 252029,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.4851169288158417,
+            "PRI.hind.L.stifle": 0.4851169288158417,
+            "PRI.hind.L.fetlock": 0.017776692286133766,
+            "PRI.hind.L.hip": 0.011989425867795944
+          },
+          "primary_weight_sum": 0.9999999757856131,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 252030,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.4871111810207367,
+            "PRI.hind.L.stifle": 0.4871111810207367,
+            "PRI.hind.L.fetlock": 0.015268653631210327,
+            "PRI.hind.L.hip": 0.010508984327316284
+          },
+          "primary_weight_sum": 1.0,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 252039,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.48645856976509094,
+            "PRI.hind.L.stifle": 0.48645856976509094,
+            "PRI.hind.L.fetlock": 0.016312208026647568,
+            "PRI.hind.L.hip": 0.010770662687718868
+          },
+          "primary_weight_sum": 1.0000000102445483,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 252040,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.4851169288158417,
+            "PRI.hind.L.stifle": 0.4851169288158417,
+            "PRI.hind.L.fetlock": 0.017776692286133766,
+            "PRI.hind.L.hip": 0.011989425867795944
+          },
+          "primary_weight_sum": 0.9999999757856131,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 252042,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.48657652735710144,
+            "PRI.hind.L.stifle": 0.48657718300819397,
+            "PRI.hind.L.fetlock": 0.016128484159708023,
+            "PRI.hind.L.hip": 0.010717809200286865
+          },
+          "primary_weight_sum": 1.0000000037252903,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 252043,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.48686057329177856,
+            "PRI.hind.L.stifle": 0.4868614375591278,
+            "PRI.hind.L.fetlock": 0.01577898859977722,
+            "PRI.hind.L.hip": 0.010498994961380959
+          },
+          "primary_weight_sum": 0.9999999944120646,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 252072,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.48686057329177856,
+            "PRI.hind.L.stifle": 0.4868614375591278,
+            "PRI.hind.L.fetlock": 0.01577898859977722,
+            "PRI.hind.L.hip": 0.010498994961380959
+          },
+          "primary_weight_sum": 0.9999999944120646,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 252073,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.48657652735710144,
+            "PRI.hind.L.stifle": 0.48657718300819397,
+            "PRI.hind.L.fetlock": 0.016128484159708023,
+            "PRI.hind.L.hip": 0.010717809200286865
+          },
+          "primary_weight_sum": 1.0000000037252903,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 252084,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.48709994554519653,
+            "PRI.hind.L.stifle": 0.48710206151008606,
+            "PRI.hind.L.fetlock": 0.015495279803872108,
+            "PRI.hind.L.hip": 0.010302732698619366
+          },
+          "primary_weight_sum": 1.000000019557774,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 252087,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.4872375428676605,
+            "PRI.hind.L.stifle": 0.48723816871643066,
+            "PRI.hind.L.fetlock": 0.015298611484467983,
+            "PRI.hind.L.hip": 0.01022565457969904
+          },
+          "primary_weight_sum": 0.9999999776482582,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 252090,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.48686057329177856,
+            "PRI.hind.L.stifle": 0.4868614375591278,
+            "PRI.hind.L.fetlock": 0.01577898859977722,
+            "PRI.hind.L.hip": 0.010498994961380959
+          },
+          "primary_weight_sum": 0.9999999944120646,
+          "foreign_primary_weights": {}
+        },
+        {
+          "vertex": 252092,
+          "primary_weights": {
+            "PRI.hind.L.hock": 0.48645856976509094,
+            "PRI.hind.L.stifle": 0.48645856976509094,
+            "PRI.hind.L.fetlock": 0.016312208026647568,
+            "PRI.hind.L.hip": 0.010770662687718868
+          },
+          "primary_weight_sum": 1.0000000102445483,
+          "foreign_primary_weights": {}
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "Source evaluated trajectories, not corrected bindings or simulation acceptance.",
+    "Candidate root region/cut is still authored anatomy; exact topology alone is insufficient.",
+    "Unknown/unweighted/foreign support needs review before constructing a driver; no nearest-bone assignment."
+  ]
+}

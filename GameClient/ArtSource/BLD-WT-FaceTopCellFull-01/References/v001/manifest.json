@@ -1,0 +1,69 @@
+{
+  "assetId": "BLD-WT-FaceTopCellFull-01",
+  "version": "v001",
+  "category": "worked timber full-cell surface",
+  "created": "2026-10-18",
+  "sourceReferences": [
+    "docs/art-templates/player-construction-kit-contract.md — full-cell geometry/contact rules",
+    "docs/art-templates/asset-lists/construction-kit-matrix-07.md — finite role matrix",
+    "docs/Game-Design/Legends_Shattered_Frontier_Construction_System_Architecture_v0.1.md — §§3.1–3.2, 8–9",
+    "GameClient/ArtSource/BLD-RT-CellFull-01/References/v001/ — geometry/style envelope reference"
+  ],
+  "definition": {
+    "geometryRef": "same accepted full-cell geometry as baseline proposal",
+    "envelopeMeters": "per contract; not inferred",
+    "contacts": [
+      "exterior",
+      "interior",
+      "top",
+      "underside",
+      "two ends"
+    ],
+    "openings": "none",
+    "materialKit": "KIT-WT",
+    "structuralMaterialProfile": "Worked timber (gameplay unchanged)",
+    "cosmeticSkin": "appearance only",
+    "functionalDefinition": "none"
+  },
+  "generation": {
+    "tool": "built-in image_gen",
+    "date": "2026-10-18",
+    "model": "unavailable",
+    "seed": "unavailable",
+    "promptRecord": "prompt.txt",
+    "referenceImagesAttached": []
+  },
+  "images": [
+    {
+      "path": "concept-sheet.png",
+      "sha256": "15afbbf715c75c1f8445e1607889e719f8af936edd438fb978a97d043d31212d",
+      "width": 1536,
+      "height": 1024,
+      "pixelFormat": "RGB 24-bit",
+      "alpha": false,
+      "review": "The first sheet incorrectly included pale masonry/support geometry and was superseded. Selected sheet is all worked timber with top/edge/underside/contact views and a small stack. Clean view isolates a flat square top face."
+    },
+    {
+      "path": "asset-view.png",
+      "sha256": "be4ea1c75e7c0c198543881d3f0e286b6d3f9eaeb2acd43720d77f17714b559f",
+      "width": 1536,
+      "height": 1024,
+      "pixelFormat": "RGB 24-bit",
+      "alpha": false,
+      "review": "The first sheet incorrectly included pale masonry/support geometry and was superseded. Selected sheet is all worked timber with top/edge/underside/contact views and a small stack. Clean view isolates a flat square top face."
+    }
+  ],
+  "review": {
+    "reviewedBy": "Codex",
+    "conceptStatus": "proposed",
+    "cleanViewStatus": "ready-for-model-test",
+    "imageStatus": "image-complete",
+    "geometryAcceptance": "not established",
+    "numericalMeshFit": "not established",
+    "runtimeCollisionSupportClearance": "not established",
+    "actionableFindings": [
+      "The first sheet incorrectly included pale masonry/support geometry and was superseded. Selected sheet is all worked timber with top/edge/underside/contact views and a small stack. Clean view isolates a flat square top face."
+    ]
+  },
+  "componentBoundary": "One separately indexed FaceTopCellFull appearance role; no geometry, collision, support or clearance acceptance."
+}

@@ -1,0 +1,18 @@
+{
+  "status": "correspondence-comparison; semantic approval unchanged",
+  "fields": {
+    "labels": {
+      "equal": true,
+      "differences": 0
+    },
+    "explicit_protected": {
+      "equal": true,
+      "differences": 0
+    },
+    "root_nodes": {
+      "equal": true,
+      "differences": 0
+    }
+  },
+  "scope": "Same authored cuts recomputed against new source/mesh hash. New node IDs/edges/root distances are fresh; never reuse old canonical indices."
+}

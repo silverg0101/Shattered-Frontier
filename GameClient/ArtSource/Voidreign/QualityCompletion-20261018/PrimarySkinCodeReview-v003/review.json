@@ -1,0 +1,13 @@
+{
+  "status": "agent-code-review-complete-for-continuous-influence-reduction",
+  "cause": "Walk worst edges79011/79021 and23118/23119 show finite bone support swaps after hard top4 pruning; converged harmonic solve alone cannot prevent this discontinuity.",
+  "change": "Subtract the fifth-largest weight from all weights, clamp and normalize. At most4positive influences; rank-crossing weights approach zero continuously. Assert nonzero residual mass; tied support needs authored review. Fixed soles, band, solver and numerical check limits unchanged.",
+  "automatic_budget": {
+    "limit": 3,
+    "used": 3,
+    "status": "needs-review-not-reset"
+  },
+  "authored_diagnostic_corrections": 3,
+  "total_primary_candidates": 6,
+  "promotion": "None; code correction is diagnostic and source/shape/contact checks remain required."
+}

@@ -1,0 +1,69 @@
+{
+  "assetId": "BLD-WT-FaceExteriorCellFull-01",
+  "version": "v001",
+  "category": "worked timber full-cell surface",
+  "created": "2026-10-18",
+  "sourceReferences": [
+    "docs/art-templates/player-construction-kit-contract.md — full-cell geometry/contact rules",
+    "docs/art-templates/asset-lists/construction-kit-matrix-07.md — finite role matrix",
+    "docs/Game-Design/Legends_Shattered_Frontier_Construction_System_Architecture_v0.1.md — §§3.1–3.2, 8–9",
+    "GameClient/ArtSource/BLD-RT-CellFull-01/References/v001/ — geometry/style envelope reference"
+  ],
+  "definition": {
+    "geometryRef": "same accepted full-cell geometry as baseline proposal",
+    "envelopeMeters": "per contract; not inferred",
+    "contacts": [
+      "exterior",
+      "interior",
+      "top",
+      "underside",
+      "two ends"
+    ],
+    "openings": "none",
+    "materialKit": "KIT-WT",
+    "structuralMaterialProfile": "Worked timber (gameplay unchanged)",
+    "cosmeticSkin": "appearance only",
+    "functionalDefinition": "none"
+  },
+  "generation": {
+    "tool": "built-in image_gen",
+    "date": "2026-10-18",
+    "model": "unavailable",
+    "seed": "unavailable",
+    "promptRecord": "prompt.txt",
+    "referenceImagesAttached": []
+  },
+  "images": [
+    {
+      "path": "concept-sheet.png",
+      "sha256": "119d03245b624ebf86dd51a17f4ea32b37294203c671f6cf44a3fcf785c2e3a1",
+      "width": 1536,
+      "height": 1024,
+      "pixelFormat": "RGB 24-bit",
+      "alpha": false,
+      "review": "Sheet shows six face orientations and repeated/stacked/rotated contacts; clean view is a single flush planed exterior face. Geometry remains proposal; dimensions/contact/collision not established."
+    },
+    {
+      "path": "asset-view.png",
+      "sha256": "d46f5625bcc9d93e83a29caa82120789b1aae1505eebcf99e9cf89eac31b1949",
+      "width": 1295,
+      "height": 1214,
+      "pixelFormat": "RGB 24-bit",
+      "alpha": false,
+      "review": "Sheet shows six face orientations and repeated/stacked/rotated contacts; clean view is a single flush planed exterior face. Geometry remains proposal; dimensions/contact/collision not established."
+    }
+  ],
+  "review": {
+    "reviewedBy": "Codex",
+    "conceptStatus": "proposed",
+    "cleanViewStatus": "ready-for-model-test",
+    "imageStatus": "image-complete",
+    "geometryAcceptance": "not established",
+    "numericalMeshFit": "not established",
+    "runtimeCollisionSupportClearance": "not established",
+    "actionableFindings": [
+      "Sheet shows six face orientations and repeated/stacked/rotated contacts; clean view is a single flush planed exterior face. Geometry remains proposal; dimensions/contact/collision not established."
+    ]
+  },
+  "componentBoundary": "One separately indexed FaceExteriorCellFull appearance role; no geometry, collision, support or clearance acceptance."
+}

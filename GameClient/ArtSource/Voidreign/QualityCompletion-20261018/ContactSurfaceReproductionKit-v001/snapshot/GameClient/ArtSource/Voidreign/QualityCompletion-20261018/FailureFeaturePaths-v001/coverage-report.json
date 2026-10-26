@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "status": "failure-targeted-proposals-only",
+  "cpu_only": true,
+  "source_sha256": "6c6044a533c16fc7fad23d42c0407dde37a0252aca84f9be1bc9b9a2367364f6",
+  "failure_source_sha256": "a1de9660c66c772cdb4cedec20ac5b1a2229a4417af46550f8167f915680c140",
+  "mesh_hash": "ba2d283db0be5e8cff4cc7549f1f51916cc0a4d18213773300976b11512ececa",
+  "additions": 4,
+  "witnesses": [
+    {
+      "collider": "Horse neck",
+      "failure_vertex": 37318,
+      "failure_frame": 181,
+      "maximum_penetration_m": 0.04297605637369564,
+      "canonical_node": 133190,
+      "rest_position_m": [
+        -0.21742725372314453,
+        -0.9821817874908447,
+        1.973954439163208
+      ],
+      "original_nearest_guide_m": 0.06451507827026147,
+      "proposed_path": "Mane_FAILURE_00"
+    },
+    {
+      "collider": "Rider arm far",
+      "failure_vertex": 118416,
+      "failure_frame": 211,
+      "maximum_penetration_m": 0.06630959143620661,
+      "canonical_node": 89188,
+      "rest_position_m": [
+        -0.2570383548736572,
+        -0.38617217540740967,
+        2.202147960662842
+      ],
+      "original_nearest_guide_m": 0.14749350240633344,
+      "proposed_path": "Mane_FAILURE_01"
+    },
+    {
+      "collider": "Environment post",
+      "failure_vertex": 246783,
+      "failure_frame": 211,
+      "maximum_penetration_m": 0.06719650989942494,
+      "canonical_node": 1267,
+      "rest_position_m": [
+        0.1742466688156128,
+        1.6978965997695923,
+        0.8601651191711426
+      ],
+      "original_nearest_guide_m": 0.30929278067668037,
+      "proposed_path": "Tail_FAILURE_02"
+    },
+    {
+      "collider": "Ground",
+      "failure_vertex": 266801,
+      "failure_frame": 271,
+      "maximum_penetration_m": 0.05996432527899742,
+      "canonical_node": 1260,
+      "rest_position_m": [
+        0.5300779342651367,
+        1.5547512769699097,
+        0.020366191864013672
+      ],
+      "original_nearest_guide_m": 0.24684682432506766,
+      "proposed_path": "Tail_FAILURE_03"
+    }
+  ],
+  "coverage_file_sha256": "802cfe78cca8b5f790303154c52fe27c15f3a2de6bb38fe3faed240e6b3823ee",
+  "additional_guides_sha256": "40af3c9d2bc8c363bb0d946fcc5fed3ab16244e063b409db695a714e9b184a6c",
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneGuideProposal-v001\\guide-report.json": "3e776c1cef3380c3a81814d67ce2ec32270bca2e7d7fbece55eefef49e70de67",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ContactMeshSurfaceCheck-v001\\surface-report.json": "f1d161b1c52cdc0cf6a78acb6794af03a2bee7372a4673e0f70825fc3faaca7d",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ContactMeshRetention-v001\\validation.json": "3d6b13882666229f3a35f0998214d4a2e9d09e2763d50e27cbf3f713707bbcfd",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selection-report.json": "63eb535dcafe1140c5445ce46bd402cc438af979c437fbb9d7430b723aa11a08",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneAttachmentProposals-v001\\attachment-proposals.json": "0e0b6d2096722f4ffa88be6d437c1b17d10eba5999c884a5f1974e860c1c3308",
+    "docs\\art-templates\\model-profiles\\voidreign-hair-selections-v003-20261018.json": "558f0bb861238b8150450a3495ee83fca561d3b72b979c3cd6aa92041ddd18f9",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selections.npz": "0b6a19f76a2cba73a42e293c29365360b53ba93be101cf8f4ca556e7a5989cc0",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneGuideProposal-v001\\weight-field.npz": "e397b54127123c7ad863706d650bb780b7489a5f82bf2a3b9d74bd16eb480f91",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneGuideProposal-v001\\guides.json": "f8f8c15cfa47fcd80ea32cf823227cc5df5d063e0baa1e4bc72de99e77701621",
+    "docs\\art-templates\\model-profiles\\voidreign-failure-feature-paths-20261018.json": "43251432f93d8b5e193a8fc2208c9b58f838bae1acf7cc0c7a011ba65a56c0e5"
+  },
+  "limitations": [
+    "Paths terminate at measured vertices and are not necessarily complete clumps or centerlines.",
+    "Paths may follow folded/hidden surfaces or virtual proposal edges; semantic/root review required.",
+    "No source, selection, guide, weight, animation, collision limit or runtime-budget change."
+  ]
+}

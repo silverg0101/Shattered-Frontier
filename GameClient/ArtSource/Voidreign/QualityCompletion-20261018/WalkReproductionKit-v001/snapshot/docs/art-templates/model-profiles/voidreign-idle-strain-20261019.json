@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "units": "metres",
+  "feature_labels": {
+    "Mane": 1,
+    "Tail": 2
+  },
+  "permissions": "Read-only full181 idle surface measurement; no acceptance threshold",
+  "effective_time": "This frozen idle clip only",
+  "source": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/IdlePilot-v001/Mount-IdlePilot.blend",
+  "world_points": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/IdleExchange-v001/expected-world-points.npy",
+  "producer_report": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/IdleExchange-v001/exchange-report.json",
+  "rest_selection": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz",
+  "feature_selection": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selections.npz",
+  "input_sha256": {
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/IdlePilot-v001/Mount-IdlePilot.blend": "59509512631cb3dcff1600fe456afa19138a1bc47c1f342e3313dd2e2b6dceb5",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/IdleExchange-v001/expected-world-points.npy": "911c6564b536658a1df0359e96331a261e9230a8585048797cc241bbdb4f04a7",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/IdleExchange-v001/exchange-report.json": "5b492b9499239451c57043c3b6e017693986b7302a81668a5f21c659dde04b75",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz": "0d7599c8064cb81a6e211a23731435e08939b7fb146ce2d4bed810273909a2b2",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selections.npz": "0b6a19f76a2cba73a42e293c29365360b53ba93be101cf8f4ca556e7a5989cc0"
+  }
+}

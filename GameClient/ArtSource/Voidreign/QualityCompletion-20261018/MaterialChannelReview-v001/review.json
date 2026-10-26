@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "status": "channel-diagnostics-reviewed-material-repair-required",
+  "source": "WalkPilot-v003/Mount-WalkPilot.blend",
+  "source_sha256": "f59dc38bff697b6c2a2c84511413d2e292d9fdbb278acc69cd8df6d26a5bd123",
+  "views_reviewed": 6,
+  "evidence": [
+    "MaterialBaseColorReview-v001/render-report.json",
+    "MaterialRoughnessReview-v001/render-report.json",
+    "MaterialMetallicReview-v001/render-report.json",
+    "MaterialChannelAudit-v003/material-audit.json"
+  ],
+  "findings": [
+    "Head/saddle albedo retains painted highlights/shadows when routed to unit emission; eye is red color rather than authored emission.",
+    "Metallic camera views are effectively white across bone/leather/hair/hardware. Decoded Blue channel mean0.997903; only0.0002146percent of all pixels are below0.95.",
+    "Roughness Green mean0.844575 and max0.886275. Camera views show little material-class separation. Whole-image statistics include unused UV space.",
+    "No normal input; fine saddle stitching/metal relief remains largely painted or coarse fused geometry. Raising albedo resolution cannot supply those channels or physical relief."
+  ],
+  "limitations": [
+    "Two closeups on one side only; not full UV or semantic coverage.",
+    "Display previews are not scalar measurements; numerical facts come from decoded Non-Color image statistics.",
+    "No repaint, model/material/source changes or GPU job."
+  ],
+  "next": "Review source-indexed or UV masks for bone/leather/hair/metal/eye; create separate nonmetal/metal responses and independently authored relief/emission as required. Recheck unlit channels, both sides, seams and neutral lighting before accepting."
+}

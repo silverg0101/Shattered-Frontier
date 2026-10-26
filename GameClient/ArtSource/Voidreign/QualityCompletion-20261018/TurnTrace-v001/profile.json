@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "scope": "Read-only observation replay around tail turn/stop; no solver correction",
+  "permissions": "Offline author; pin a new profile to change observation scope",
+  "effective_time": "Next diagnostic replay only",
+  "units": "metres, seconds; producer yaw is radians",
+  "solver_sha256": "bbb17e6310298993f45e6fbf6b6abadb8824f35969eeb4dd2dfbbe8d3ec6baab",
+  "start_seconds": 5.5,
+  "stop_seconds": 7.2,
+  "maximum_records": 250000,
+  "guides": [
+    "Tail_G00",
+    "Tail_G04",
+    "Tail_G11"
+  ]
+}

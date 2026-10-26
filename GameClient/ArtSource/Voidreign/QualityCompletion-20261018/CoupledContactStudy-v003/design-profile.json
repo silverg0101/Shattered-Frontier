@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "scope": "Experimental split-contact design, no mesh/rig acceptance",
+  "permissions": "Offline author; preserve exhausted historical stages and review design before delivery",
+  "effective_time": "This new diagnostic design only",
+  "units": "metres, seconds, velocities m/s; zero restitution and friction",
+  "frozen_solver_sha256": "bbb17e6310298993f45e6fbf6b6abadb8824f35969eeb4dd2dfbbe8d3ec6baab",
+  "surface_profile": "docs/art-templates/model-profiles/voidreign-hair-surface-check-20261018.json",
+  "surface_profile_sha256": "f42b54b785653cd13262405b39e26a48e1fc606edeafb392b1372121e29e1abb",
+  "active_contact_margin_m": 1e-07,
+  "velocity_settings": {
+    "iterations": 32,
+    "tolerance_m_s": 1e-08
+  },
+  "velocity_algorithm": "minimum-norm-active-set",
+  "record_substeps": true
+}

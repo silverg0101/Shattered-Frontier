@@ -1,0 +1,29 @@
+{
+  "asset_id": "BLD-GreenlandsWindowPanel-01",
+  "category": "building component / window wall panel",
+  "brief": "Proposed optional shelter wall-panel variation with one glazed window and simple shutters; not part of the vertical-slice minimum list.",
+  "design_sources": [
+    { "path": "docs/Game-Design/Legends_Shattered_Frontier_Vertical_Slice_Specification_v1.0.md", "section": "Scope and exclusions / Housing; Content inventory", "role": "shelter and presentation context; does not require a window module" },
+    { "path": "GameClient/ArtSource/BLD-GreenlandsWallPanel-01/References/v001/asset-view.png", "sha256": "2383D1B5E3C822D3B5CA3949CF131980EC8106BD81F172988B10EBE043617E7D", "role": "visual style reference" }
+  ],
+  "concept_status": "agent-selected; proposed variant, user approval not claimed",
+  "clean_view_status": "ready-for-model-test; opaque background, segmentation required if later adapter requires alpha",
+  "design_master": "concept-sheet.png",
+  "prompts": "prompt.txt",
+  "generation": { "tool": "built-in image_gen", "model": "unavailable", "generated_date": "2026-10-18", "seed": "unavailable" },
+  "outputs": {
+    "concept-sheet.png": { "sha256": "FFB0D485E985C20923887E2F9B80BFFDE9E6C5FCD2DC16B1A60BC64B2AE065E9", "dimensions_px": [1536, 1024], "color": "RGB, opaque; PNG color type 2", "master": true },
+    "asset-view.png": { "sha256": "D2D95769DF580FCA53AD55AB813B0CA2915FDD8B8D5B2CD2ADE2EB5C98173BAD", "dimensions_px": [1536, 1024], "color": "RGB, opaque; PNG color type 2", "master": false }
+  },
+  "component_boundaries": ["One straight wall panel with one window/shutters", "Excludes corner, door, full building and furnishing"],
+  "scale": "Approximate; exact dimensions and modular interfaces are unspecified.",
+  "edits": "No pixel edits or upscaling; clean view derived from selected concept sheet.",
+  "review": {
+    "reviewer": "Codex visual inspection",
+    "findings": ["Concept sheet maintains one framed wall panel with one centered glazed opening across views.", "Clean view contains one complete panel, readable glazing, full silhouette and neutral opaque background.", "Materials and window/shutter arrangement agree between sheet and clean view."],
+    "unresolved": ["This module is an optional visual proposal and is not required for current vertical-slice scope."],
+    "image_complete": true,
+    "approval": "agent-selected; not user-approved",
+    "review_date": "2026-10-18"
+  }
+}

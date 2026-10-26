@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "status": "anatomy-proposal-needs-review",
+  "cpu_only": true,
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\WalkPilot-v003\\Mount-WalkPilot.blend": "f59dc38bff697b6c2a2c84511413d2e292d9fdbb278acc69cd8df6d26a5bd123",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\WalkRetention-v003\\validation.json": "0630516734df3c1bb11f95ae92056e353dda46c4f4328c4574e32a2e1a451e49",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz": "0d7599c8064cb81a6e211a23731435e08939b7fb146ce2d4bed810273909a2b2",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LegFringeOwnershipReviewInputs-v001\\selections.npz": "39e2d1c8be313743147e3e6ea27fa0f56f4722d447cdb3bd7569ddc359aa5077"
+  },
+  "tool_sha256": "a4d1e4b5f319bd55ce220ef386d5ccdd08f13349911342b3ca6e11c4aff2572f",
+  "profile_sha256": "1585de6d469586d6473878ab28c29bb4d5a7e0a3ca238a099d9bf9d86a487ed5",
+  "vertices": 284762,
+  "triangles": 297119,
+  "regions": [
+    {
+      "id": "FSA-0d7599c806-419f3a26806c-feature",
+      "vertices": 89,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "FSA-0d7599c806-419f3a26806c-support",
+      "vertices": 74,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "FSA-0d7599c806-f4e0f8a59f51-feature",
+      "vertices": 61,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "FSA-0d7599c806-f4e0f8a59f51-support",
+      "vertices": 32,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "FSA-0d7599c806-79c8cc654101-feature",
+      "vertices": 45,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "FSA-0d7599c806-79c8cc654101-support",
+      "vertices": 31,
+      "status": "geometric-proposal-needs-anatomical-review"
+    }
+  ],
+  "views": [
+    {
+      "id": "FSA-0d7599c806-419f3a26806c-context",
+      "image": "FSA-0d7599c806-419f3a26806c-context.png",
+      "isolate_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "FSA-0d7599c806-419f3a26806c-feature-support",
+      "image": "FSA-0d7599c806-419f3a26806c-feature-support.png",
+      "isolate_regions": [
+        "FSA-0d7599c806-419f3a26806c-feature",
+        "FSA-0d7599c806-419f3a26806c-support"
+      ],
+      "source_face_count": 124
+    },
+    {
+      "id": "FSA-0d7599c806-f4e0f8a59f51-context",
+      "image": "FSA-0d7599c806-f4e0f8a59f51-context.png",
+      "isolate_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "FSA-0d7599c806-f4e0f8a59f51-feature-support",
+      "image": "FSA-0d7599c806-f4e0f8a59f51-feature-support.png",
+      "isolate_regions": [
+        "FSA-0d7599c806-f4e0f8a59f51-feature",
+        "FSA-0d7599c806-f4e0f8a59f51-support"
+      ],
+      "source_face_count": 68
+    },
+    {
+      "id": "FSA-0d7599c806-79c8cc654101-context",
+      "image": "FSA-0d7599c806-79c8cc654101-context.png",
+      "isolate_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "FSA-0d7599c806-79c8cc654101-feature-support",
+      "image": "FSA-0d7599c806-79c8cc654101-feature-support.png",
+      "isolate_regions": [
+        "FSA-0d7599c806-79c8cc654101-feature",
+        "FSA-0d7599c806-79c8cc654101-support"
+      ],
+      "source_face_count": 57
+    }
+  ],
+  "coordinate_convention": {
+    "up": "+Z",
+    "forward": "-Y (head/horn)",
+    "side_names": "Geometric +X/-X until reviewed"
+  },
+  "landmarks": [],
+  "limitations": [
+    "Exact indexed rest diagnostic only; source rig/materials are not copied into this proposal.",
+    "Box domains can include hanging tack or miss curved anatomy; not skin weights or semantic approval.",
+    "Landmarks are authored proposals, not inferred joint centers or accepted stance."
+  ]
+}

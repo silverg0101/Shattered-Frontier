@@ -1,0 +1,14 @@
+CONCEPT SHEET — built-in image_gen, 2026-10-18; source image references attached by local paths
+Create a polished visual concept sheet for one small assembled Greenlands starter shelter. Use the four attached images as exact component design references: combine the timber-and-stone foundation platform, timber/plaster wall panel, closed plaster-and-wood door with frame/stone threshold, and pitched shingle roof. Preserve their established silhouettes, material colors, fastener language and proportions as closely as possible. This is one assembled compact single-story shelter using these pieces, not a new component kit; show front, side, rear and three-quarter views, same doors/walls/roof each view. No extra window, chimney, porch, props, people, terrain scene, labels or text. Plain neutral studio background and even soft lighting. The assembled building is an intermediate visual study and does not establish exact modular dimensions or gameplay rules.
+
+Referenced source files:
+- `GameClient/ArtSource/BLD-GreenlandsFoundation-01/References/v001/asset-view.png`
+- `GameClient/ArtSource/BLD-GreenlandsWallPanel-01/References/v001/asset-view.png`
+- `GameClient/ArtSource/BLD-GreenlandsDoor-01/References/v001/asset-view.png`
+- `GameClient/ArtSource/BLD-GreenlandsRoof-01/References/v001/asset-view.png`
+
+CLEAN VIEW ATTEMPT 1 — built-in image_gen edit using selected concept sheet, 2026-10-18
+Use the attached assembled shelter concept sheet as master. Preserve the same compact single-story timber-and-stone starter shelter, same roof silhouette, wall/door proportions, materials and openings. Output exactly one complete assembled building in clean three-quarter view on plain neutral light gray studio background. No multi-view sheet, collage, labels, people, terrain, vegetation, other buildings or extra props. Full roof, foundation and walls visible with ample margins; neutral even light and soft contact shadow. Do not add unreferenced windows, chimney, porch or ornament.
+
+CLEAN VIEW ATTEMPT 2 — correction; source file was the selected sheet and the prior clean view was rejected for introducing fur/bristle roofing
+Edit the attached assembled shelter concept sheet into one clean full-asset view. Use the sheet only as design master. The building is a compact timber-and-plaster cottage on the square timber-and-stone foundation, with the plain timber-and-plaster door and ordinary weathered wood-shingle pitched roof shown in the sheet. Absolutely NO fur, bristles, thorns, animal material, thatch or organic spikes. Preserve exact architectural style and materials. Output one complete small single-story shelter in three-quarter view, isolated against neutral light gray studio background, no panels, people, terrain scene, extra props, labels or text. Full roof, foundation and walls visible with ample margins, even neutral light.

@@ -1,0 +1,19 @@
+{
+  "assetId":"BLD-SM-FaceInteriorCellFull-01",
+  "version":"v001",
+  "category":"construction material kit / interior face appearance role",
+  "created":"2026-10-18",
+  "sourceReferences":[
+    "docs/art-templates/player-construction-kit-contract.md — canonical frame; Main faces; separate shape/material/skin identity",
+    "docs/Game-Design/Legends_Shattered_Frontier_Construction_System_Architecture_v0.1.md — §§3.1–3.2, 8–9",
+    "GameClient/ArtSource/BLD-SM-FaceExteriorCellFull-01/References/v001/concept-sheet.png — stone-masonry appearance cue"
+  ],
+  "definition":{"geometryRef":"cell-full/v1 (proposal; not accepted runtime mask)","envelopeMeters":[0.5,0.5,0.5],"solid":"full normalized cube","axes":"construction-local X length, Y depth, Z up","pivot":"minimum grid corner","boundaryContacts":["-X","+X","-Y","+Y","-Z","+Z"],"orientation":"grid-aligned; authored 90-degree rotations/mirrors only","materialKit":"KIT-SM","structuralMaterialProfile":"Stone masonry; unchanged","cosmeticSkin":"plainer sheltered gray-brown stone courses with subtle mortar","functionalDefinition":"none"},
+  "generation":{"tool":"built-in image_gen","date":"2026-10-18","model":"unavailable","seed":"unavailable","promptRecord":"prompt.txt","conceptInput":"GameClient/ArtSource/BLD-SM-FaceExteriorCellFull-01/References/v001/concept-sheet.png","cleanViewInput":"concept-sheet.png"},
+  "images":[
+    {"path":"concept-sheet.png","sha256":"E3469E40F1D53DC3B01CE43BA1C662B2208F7B6C6CAB0B0E081585043294858E","width":1536,"height":1024,"pixelFormat":"RGB 24-bit","alpha":false,"review":"Six square orthographic views, labeled interior/exterior/end/top/underside with a blank contact cube. The interior is slightly more even while retaining the same stone course style. Target dimensions are not pixel measurements."},
+    {"path":"asset-view.png","sha256":"4BE2D841776E3190701673FF1726DBD781627B03310CFF6FD904ACDFDE150322","width":1536,"height":1024,"pixelFormat":"RGB 24-bit","alpha":false,"review":"One complete cube, neutral background, interior face forward and exterior face side visible. Flush-looking masonry courses, no extra scene elements."}
+  ],
+  "review":{"reviewedBy":"Codex","conceptStatus":"proposed","cleanViewStatus":"ready-for-model-test","geometryAcceptance":"not established","numericalMeshFit":"not established","runtimeCollisionSupportClearance":"not established","actionableFindings":["The two appearances are a style distinction only; preserve the same structural material profile.","Check actual contact planes and surface extent numerically in deterministic geometry work later."]},
+  "componentBoundary":"Interior-face appearance role only; not a new geometry shape, premium tier, or complete KIT-SM."
+}

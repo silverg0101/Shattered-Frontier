@@ -1,0 +1,340 @@
+{
+  "schema_version": 1,
+  "status": "source-bound-UV-resolution-diagnosis-only",
+  "input_sha256": {
+    "docs/art-templates/model-profiles/voidreign-reviewed-dielectric-face-approval-v003-20261019.json": "e868710c759cb89ba1d4466803725cb053d494fdb671580ec79fb3124609ff21",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/SourceUVTopology-v001/uv-topology.npz": "7d6b6296ff351ca9c6608eb5dba7098738e35f8ede072a1a63eeea462357ba94",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/DegenerateInspection-v001/00-component-selections.npz": "0d7599c8064cb81a6e211a23731435e08939b7fb146ce2d4bed810273909a2b2",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReviewedMaterialMask2K-v002/mask-report.json": "2f24d96de29bd5b1357d84fefd327f8a55bebd132092fd212a3d6f24c913c4dc",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReviewedMaterialMask4K-v002/mask-report.json": "9eb9a4463fa5651e373add385a8f5012f9aa2e7eaf853356234c691d482fca6a"
+  },
+  "profile_sha256": "ffc5f9aed279b16aa4a685ae356e4537894041a8c38a408c4e5f7a5063b2b37e",
+  "tool_sha256": "c265f52b838ffd19d02c0f14044ac67c9da7c4e7e78052f8bcc5dc850da44e2c",
+  "comparisons": [
+    {
+      "resolution": 2048,
+      "approved_faces_without_safe_pixel": 32,
+      "approved_faces_with_conflicted_samples": 0,
+      "overlap_pixels": 78,
+      "all_overlap_candidate_faces": 746,
+      "extra_triangle_sample_hits": 1416,
+      "class_pixel_counts": {
+        "0": 1840280,
+        "1": 5283,
+        "2": 365,
+        "3": 2199,
+        "254": 78,
+        "255": 2346099
+      },
+      "missing_cases": [
+        {
+          "source_face": 19170,
+          "patch": "SMB-0d7599c806-411bed5eb70e",
+          "uv_area_pixels": 1.232405185699463,
+          "source_rest_surface_area_m2": 2.505738302716054e-05
+        },
+        {
+          "source_face": 40981,
+          "patch": "SMB-0d7599c806-45e5a199970f",
+          "uv_area_pixels": 1.1075234971940517,
+          "source_rest_surface_area_m2": 2.2446307411883026e-05
+        },
+        {
+          "source_face": 42886,
+          "patch": "SMB-0d7599c806-1e8b223aad41",
+          "uv_area_pixels": 0.7406682521104813,
+          "source_rest_surface_area_m2": 1.676034116826486e-05
+        },
+        {
+          "source_face": 45524,
+          "patch": "SMB-0d7599c806-2516a986745a",
+          "uv_area_pixels": 0.43128153681755066,
+          "source_rest_surface_area_m2": 1.4730062503076624e-05
+        },
+        {
+          "source_face": 45531,
+          "patch": "SMB-0d7599c806-2516a986745a",
+          "uv_area_pixels": 0.2798653393983841,
+          "source_rest_surface_area_m2": 1.0055137863673735e-05
+        },
+        {
+          "source_face": 46278,
+          "patch": "SMB-0d7599c806-0ded486c5b5e",
+          "uv_area_pixels": 0.6716398298740387,
+          "source_rest_surface_area_m2": 1.7860504158306867e-05
+        },
+        {
+          "source_face": 46315,
+          "patch": "SMB-0d7599c806-0ded486c5b5e",
+          "uv_area_pixels": 0.5081108212471008,
+          "source_rest_surface_area_m2": 9.781221706361976e-06
+        },
+        {
+          "source_face": 46323,
+          "patch": "SMB-0d7599c806-0ded486c5b5e",
+          "uv_area_pixels": 1.144498847424984,
+          "source_rest_surface_area_m2": 2.2032447304809466e-05
+        },
+        {
+          "source_face": 73735,
+          "patch": "SMB-0d7599c806-4afd6188749c",
+          "uv_area_pixels": 1.0739065930247307,
+          "source_rest_surface_area_m2": 2.4834789655869827e-05
+        },
+        {
+          "source_face": 91160,
+          "patch": "SMB-0d7599c806-0ded486c5b5e",
+          "uv_area_pixels": 0.5551116988062859,
+          "source_rest_surface_area_m2": 1.2653279554797336e-05
+        },
+        {
+          "source_face": 91161,
+          "patch": "SMB-0d7599c806-0ded486c5b5e",
+          "uv_area_pixels": 0.4277426153421402,
+          "source_rest_surface_area_m2": 9.750777280714829e-06
+        },
+        {
+          "source_face": 91202,
+          "patch": "SMB-0d7599c806-0ded486c5b5e",
+          "uv_area_pixels": 0.562828179448843,
+          "source_rest_surface_area_m2": 1.4479053788818419e-05
+        },
+        {
+          "source_face": 91209,
+          "patch": "SMB-0d7599c806-0ded486c5b5e",
+          "uv_area_pixels": 0.948814133182168,
+          "source_rest_surface_area_m2": 2.1552248654188588e-05
+        },
+        {
+          "source_face": 118280,
+          "patch": "SMB-0d7599c806-0ded486c5b5e",
+          "uv_area_pixels": 1.2756070420145988,
+          "source_rest_surface_area_m2": 3.416790787014179e-05
+        },
+        {
+          "source_face": 119667,
+          "patch": "SMB-0d7599c806-0ded486c5b5e",
+          "uv_area_pixels": 0.8114280626177788,
+          "source_rest_surface_area_m2": 9.456975021748804e-06
+        },
+        {
+          "source_face": 119671,
+          "patch": "SMB-0d7599c806-0ded486c5b5e",
+          "uv_area_pixels": 0.09744194895029068,
+          "source_rest_surface_area_m2": 6.577628482773434e-06
+        },
+        {
+          "source_face": 119675,
+          "patch": "SMB-0d7599c806-0ded486c5b5e",
+          "uv_area_pixels": 0.9677207469940186,
+          "source_rest_surface_area_m2": 2.0986391973565333e-05
+        },
+        {
+          "source_face": 119676,
+          "patch": "SMB-0d7599c806-0ded486c5b5e",
+          "uv_area_pixels": 0.3461424186825752,
+          "source_rest_surface_area_m2": 1.0960013241856359e-05
+        },
+        {
+          "source_face": 119726,
+          "patch": "SMB-0d7599c806-0ded486c5b5e",
+          "uv_area_pixels": 0.17320413887500763,
+          "source_rest_surface_area_m2": 3.2026239296101267e-06
+        },
+        {
+          "source_face": 119743,
+          "patch": "SMB-0d7599c806-0ded486c5b5e",
+          "uv_area_pixels": 0.533391434699297,
+          "source_rest_surface_area_m2": 8.443723345408216e-06
+        },
+        {
+          "source_face": 119749,
+          "patch": "SMB-0d7599c806-0ded486c5b5e",
+          "uv_area_pixels": 0.9539301693439484,
+          "source_rest_surface_area_m2": 1.051610797730973e-05
+        },
+        {
+          "source_face": 120253,
+          "patch": "SMB-0d7599c806-bc5c85d932c0",
+          "uv_area_pixels": 0.8944359496235847,
+          "source_rest_surface_area_m2": 1.9753755623241886e-05
+        },
+        {
+          "source_face": 120759,
+          "patch": "SMB-0d7599c806-1b91b1cf823d",
+          "uv_area_pixels": 0.5139587894082069,
+          "source_rest_surface_area_m2": 9.283819963457063e-06
+        },
+        {
+          "source_face": 120821,
+          "patch": "SMB-0d7599c806-0ded486c5b5e",
+          "uv_area_pixels": 1.081885240972042,
+          "source_rest_surface_area_m2": 1.9638788216980174e-05
+        },
+        {
+          "source_face": 120822,
+          "patch": "SMB-0d7599c806-0ded486c5b5e",
+          "uv_area_pixels": 1.0049352198839188,
+          "source_rest_surface_area_m2": 1.824384344217833e-05
+        },
+        {
+          "source_face": 146692,
+          "patch": "SMB-0d7599c806-da33066a6671",
+          "uv_area_pixels": 1.0763220340013504,
+          "source_rest_surface_area_m2": 1.855531991168391e-05
+        },
+        {
+          "source_face": 212876,
+          "patch": "SMB-0d7599c806-c1177585d450",
+          "uv_area_pixels": 1.0426519960165024,
+          "source_rest_surface_area_m2": 2.0157884137006477e-05
+        },
+        {
+          "source_face": 212889,
+          "patch": "SMB-0d7599c806-c1177585d450",
+          "uv_area_pixels": 1.383547268807888,
+          "source_rest_surface_area_m2": 2.6657589842216112e-05
+        },
+        {
+          "source_face": 213163,
+          "patch": "SMB-0d7599c806-c1177585d450",
+          "uv_area_pixels": 0.6037476006895304,
+          "source_rest_surface_area_m2": 2.1387982997111976e-05
+        },
+        {
+          "source_face": 213867,
+          "patch": "SMB-0d7599c806-6c0faadfb656",
+          "uv_area_pixels": 0.7073949053883553,
+          "source_rest_surface_area_m2": 1.560007149237208e-05
+        },
+        {
+          "source_face": 227431,
+          "patch": "SMB-0d7599c806-6c0faadfb656",
+          "uv_area_pixels": 0.8119779713451862,
+          "source_rest_surface_area_m2": 2.4316976123373024e-05
+        },
+        {
+          "source_face": 245484,
+          "patch": "SMB-0d7599c806-496a7c339b64",
+          "uv_area_pixels": 5.315184943377972,
+          "source_rest_surface_area_m2": 0.00011130224447697401
+        }
+      ]
+    },
+    {
+      "resolution": 4096,
+      "approved_faces_without_safe_pixel": 2,
+      "approved_faces_with_conflicted_samples": 0,
+      "overlap_pixels": 303,
+      "all_overlap_candidate_faces": 991,
+      "extra_triangle_sample_hits": 5065,
+      "class_pixel_counts": {
+        "0": 7361521,
+        "1": 21226,
+        "2": 1484,
+        "3": 8855,
+        "254": 303,
+        "255": 9383827
+      },
+      "missing_cases": [
+        {
+          "source_face": 45532,
+          "patch": "SMB-0d7599c806-2516a986745a",
+          "uv_area_pixels": 1.0570273399353027,
+          "source_rest_surface_area_m2": 1.007699393085204e-05
+        },
+        {
+          "source_face": 119671,
+          "patch": "SMB-0d7599c806-0ded486c5b5e",
+          "uv_area_pixels": 0.3897677958011627,
+          "source_rest_surface_area_m2": 6.577628482773434e-06
+        }
+      ]
+    }
+  ],
+  "uv_degenerate_source_faces": [
+    14036,
+    19068,
+    53987,
+    54000,
+    63116,
+    66532,
+    66533,
+    66534,
+    66535,
+    70246,
+    73685,
+    78224,
+    92306,
+    94661,
+    112186,
+    114098,
+    117164,
+    119640,
+    121661,
+    125665,
+    125666,
+    130118,
+    135901,
+    136997,
+    136998,
+    137006,
+    157272,
+    200126,
+    228184,
+    231400,
+    233817,
+    233818,
+    233819,
+    233820,
+    235607,
+    252906,
+    275887
+  ],
+  "uv_degenerate_faces_have_nonzero_rest_surface_area": true,
+  "uv_degenerate_rest_area_m2": [
+    2.2120686935522826e-06,
+    1.5913245761112194e-06,
+    1.0983663969454938e-06,
+    2.174511791963596e-06,
+    1.7586887679499341e-06,
+    3.6903554700984387e-07,
+    3.6903554700984387e-07,
+    3.6903554700984387e-07,
+    3.6903554700984387e-07,
+    1.053863343258854e-06,
+    6.300271024883841e-07,
+    1.602132556399738e-06,
+    1.712571929601836e-06,
+    3.1711735459794e-07,
+    6.985234222156578e-07,
+    8.66428933932184e-07,
+    2.13960242945177e-06,
+    4.952923973178258e-07,
+    1.3090314041619422e-06,
+    1.5472980976483086e-06,
+    1.5472980976483086e-06,
+    1.084361656467081e-06,
+    2.100819301631418e-06,
+    1.1482650279504014e-06,
+    1.1482650279504014e-06,
+    1.7409731754014501e-06,
+    2.1238563476799754e-06,
+    1.7019057167999563e-06,
+    1.0947679811579292e-06,
+    5.989390388094762e-07,
+    5.739905262203138e-08,
+    3.422691108312392e-08,
+    6.233493365925824e-08,
+    4.169235623407985e-08,
+    1.8273779005539836e-06,
+    2.1156270122446585e-06,
+    9.091131119021156e-07
+  ],
+  "limitations": [
+    "Sampled pixel-center coverage, not filtered/mipped coverage or material/engine acceptance.",
+    "UV reuse/overlap is not automatically an error or permission to reunwrap/delete geometry.",
+    "Exact face-level material responses remain available for wholly approved subpixel faces.",
+    "Class IDs0/254/255 are unknown/overlap/unused, never PBR scalar values."
+  ]
+}

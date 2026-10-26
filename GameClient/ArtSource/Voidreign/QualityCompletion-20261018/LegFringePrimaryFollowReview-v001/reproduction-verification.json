@@ -1,0 +1,8 @@
+{
+  "status": "verified",
+  "manifest": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\FringePrimaryFollowReproductionKit-v001\\manifest.json",
+  "files": 76,
+  "copied_bytes": 22381343,
+  "self_contained": false,
+  "note": "Copied snapshots/external inputs verified. Final job/checkpoint bookkeeping follows frozen snapshots intentionally."
+}

@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "status": "two-read-only-proposals-complete-neither-promoted",
+  "scope": "Reviewed rigid-core contract, existing WalkPilot-v001 only",
+  "comparisons": [
+    {
+      "id": "v001",
+      "method": "linear-geodesic",
+      "report": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\RigidSkinPreflight-v001\\preflight.json",
+      "changed_vertices": 1654,
+      "edges": 4235,
+      "baseline_maximum_m": 0.02758547788399797,
+      "proposed_maximum_m": 0.019177602319442245,
+      "regressed_edges": 1636,
+      "largest_increase_m": 0.0070798565735537555,
+      "baseline_position_error_m": 4.420360458272973e-07
+    },
+    {
+      "id": "v002",
+      "method": "harmonic-dirichlet",
+      "report": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\RigidSkinPreflight-v002\\preflight.json",
+      "changed_vertices": 1654,
+      "edges": 4235,
+      "baseline_maximum_m": 0.02758547788399797,
+      "proposed_maximum_m": 0.01564967385517822,
+      "regressed_edges": 1504,
+      "largest_increase_m": 0.008052570722077435,
+      "baseline_position_error_m": 4.420360458272973e-07
+    }
+  ],
+  "finding": "Core constraints prevent the earlier rigid-shell regression, but both transition constructions redistribute stretching into collars. Harmonic convergence and lower maximum do not establish shape quality.",
+  "next": "Inspect anatomical collar/ankle faces and worst poses before a separately reviewed skin design; no parameter sweep or new automatic walk. Body/shoulder design remains independently open.",
+  "candidate_accounting": {
+    "read_only_proposals": 2,
+    "new_primary_candidates": 0,
+    "total_primary_candidates": 8,
+    "automatic_primary_used": 3,
+    "automatic_primary_limit": 3,
+    "automatic_walk_used": 3,
+    "automatic_walk_limit": 3
+  },
+  "promotion": "None; original source and visible v003 diagnostic remain unchanged."
+}

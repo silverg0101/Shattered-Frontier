@@ -1,0 +1,274 @@
+{
+  "schema_version": 1,
+  "status": "passed-scoped-standing-pilot-needs-review",
+  "cpu_only": true,
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryRigPilot-v001\\Mount-PrimaryRigPilot.blend": "00fba7e1c7990ee4cc24188de08f25c80f058a1f5d390c3d1b191634ebfa34d6",
+    "docs\\art-templates\\model-profiles\\voidreign-primary-rig-pilot-20261019.json": "51dbcf18a13a14dde3c8a0d10f1500ac60de2c5138cb0824ee0e214d95447e38",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimarySoleProposals-v001\\sole-patches.npz": "5b055301ae1b1349d3f85fb23e2b93985fd93f2a33e0fc1a1e4a05dbaf98614b",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimarySoleProposals-v001\\sole-report.json": "c40c5da18a99fd1fe9764d0e7d5f64c5ae7dd4336f26716f1b2b76550f853b76",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz": "0d7599c8064cb81a6e211a23731435e08939b7fb146ce2d4bed810273909a2b2",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selections.npz": "0b6a19f76a2cba73a42e293c29365360b53ba93be101cf8f4ca556e7a5989cc0",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryDomains-v001\\primary-domains.npz": "38002ef04f9ab82df4456021b3772e422328e2ecebd38bd068a344dd5e27bdb5"
+  },
+  "tool_sha256": "ee0b919866e774268d68559c48360ab50a6a1d918b346af3c4b30f6f967cb2cd",
+  "profile_sha256": "8f0913a04cc146f8dfebc67e52bc7661ec85ddd0469530bf1d06eb99c43e4307",
+  "candidate_sha256": "0f22f6f488ecd4634bbab6a46171924d6e817cc9dd37ba5e4de4b88f40606844",
+  "checks": {
+    "neutral_rest": true,
+    "sole_contacts": true,
+    "foot_targets": true,
+    "no_bone_stretch": true,
+    "seams": true
+  },
+  "poses": [
+    {
+      "frame": 1,
+      "feet": [
+        {
+          "id": "fore.L",
+          "minimum_sole_height_m": 0.10263017582268885,
+          "lower_fifth_height_m": 0.10408976615349275,
+          "near_ground_vertices": 0,
+          "endpoint_error_m": 1.4901161193847656e-08
+        },
+        {
+          "id": "fore.R",
+          "minimum_sole_height_m": 0.0862629691477248,
+          "lower_fifth_height_m": 0.08715592400353149,
+          "near_ground_vertices": 0,
+          "endpoint_error_m": 1.4901161193847656e-08
+        },
+        {
+          "id": "hind.L",
+          "minimum_sole_height_m": 0.04924681387926566,
+          "lower_fifth_height_m": 0.05106805883504395,
+          "near_ground_vertices": 0,
+          "endpoint_error_m": 1.2731557704981462e-07
+        },
+        {
+          "id": "hind.R",
+          "minimum_sole_height_m": 0.009627990774991657,
+          "lower_fifth_height_m": 0.010391382983201414,
+          "near_ground_vertices": 0,
+          "endpoint_error_m": 1.2013700229374393e-07
+        }
+      ],
+      "maximum_bone_length_relative_change": 5.723121805356612e-07,
+      "coincident_seam_error_m": 0.0,
+      "overall_minimum_height_m": 1.6871973596011003e-07,
+      "maximum_rest_displacement_m": 6.371106519431236e-07
+    },
+    {
+      "frame": 30,
+      "feet": [
+        {
+          "id": "fore.L",
+          "minimum_sole_height_m": 1.6861621743302635e-07,
+          "lower_fifth_height_m": 0.001459758947021328,
+          "near_ground_vertices": 25,
+          "endpoint_error_m": 4.835421067353473e-07
+        },
+        {
+          "id": "fore.R",
+          "minimum_sole_height_m": -2.1105120822761947e-05,
+          "lower_fifth_height_m": 0.0008719664814555994,
+          "near_ground_vertices": 101,
+          "endpoint_error_m": 2.1622344827869496e-05
+        },
+        {
+          "id": "hind.L",
+          "minimum_sole_height_m": -3.5027373601614897e-07,
+          "lower_fifth_height_m": 0.0018208946820422733,
+          "near_ground_vertices": 18,
+          "endpoint_error_m": 4.989108157987358e-07
+        },
+        {
+          "id": "hind.R",
+          "minimum_sole_height_m": 4.281279231133084e-07,
+          "lower_fifth_height_m": 0.0007638203361328699,
+          "near_ground_vertices": 32,
+          "endpoint_error_m": 8.024520884654677e-08
+        }
+      ],
+      "maximum_bone_length_relative_change": 5.93628892708864e-07,
+      "coincident_seam_error_m": 0.0,
+      "overall_minimum_height_m": -0.08963401055637954,
+      "maximum_rest_displacement_m": 0.14899688792980464
+    },
+    {
+      "frame": 60,
+      "feet": [
+        {
+          "id": "fore.L",
+          "minimum_sole_height_m": 1.6861621743302635e-07,
+          "lower_fifth_height_m": 0.001459758947021328,
+          "near_ground_vertices": 25,
+          "endpoint_error_m": 4.835421067353473e-07
+        },
+        {
+          "id": "fore.R",
+          "minimum_sole_height_m": -2.1105120822761947e-05,
+          "lower_fifth_height_m": 0.0008719664814555994,
+          "near_ground_vertices": 101,
+          "endpoint_error_m": 2.1622344827869496e-05
+        },
+        {
+          "id": "hind.L",
+          "minimum_sole_height_m": -3.5027373601614897e-07,
+          "lower_fifth_height_m": 0.0018208946820422733,
+          "near_ground_vertices": 18,
+          "endpoint_error_m": 4.989108157987358e-07
+        },
+        {
+          "id": "hind.R",
+          "minimum_sole_height_m": 4.281279231133084e-07,
+          "lower_fifth_height_m": 0.0007638203361328699,
+          "near_ground_vertices": 32,
+          "endpoint_error_m": 8.024520884654677e-08
+        }
+      ],
+      "maximum_bone_length_relative_change": 5.93628892708864e-07,
+      "coincident_seam_error_m": 0.0,
+      "overall_minimum_height_m": -0.08963401055637954,
+      "maximum_rest_displacement_m": 0.14899688792980464
+    }
+  ],
+  "pole_calibration": [
+    {
+      "id": "fore.L",
+      "candidates": [
+        {
+          "angle_radians": 0,
+          "squared_joint_error_m2": 0.017425406719334235
+        },
+        {
+          "angle_radians": 1.5707963267948966,
+          "squared_joint_error_m2": 0.025903523878176182
+        },
+        {
+          "angle_radians": 3.141592653589793,
+          "squared_joint_error_m2": 0.00914810112760489
+        },
+        {
+          "angle_radians": -1.5707963267948966,
+          "squared_joint_error_m2": 0.0006699818935358426
+        }
+      ],
+      "selected_angle_radians": -1.5707963267948966,
+      "pole_m": [
+        0.01979362964630127,
+        -1.277177095413208,
+        1.1660282611846924
+      ]
+    },
+    {
+      "id": "fore.R",
+      "candidates": [
+        {
+          "angle_radians": 0,
+          "squared_joint_error_m2": 0.0021738855288273573
+        },
+        {
+          "angle_radians": 1.5707963267948966,
+          "squared_joint_error_m2": 0.0048945587555337955
+        },
+        {
+          "angle_radians": 3.141592653589793,
+          "squared_joint_error_m2": 0.0027370758387628147
+        },
+        {
+          "angle_radians": -1.5707963267948966,
+          "squared_joint_error_m2": 1.640342869291267e-05
+        }
+      ],
+      "selected_angle_radians": -1.5707963267948966,
+      "pole_m": [
+        -0.17611131072044373,
+        -1.3792686462402344,
+        1.1834217309951782
+      ]
+    },
+    {
+      "id": "hind.L",
+      "candidates": [
+        {
+          "angle_radians": 0,
+          "squared_joint_error_m2": 0.17120603410897606
+        },
+        {
+          "angle_radians": 1.5707963267948966,
+          "squared_joint_error_m2": 0.29523834570695695
+        },
+        {
+          "angle_radians": 3.141592653589793,
+          "squared_joint_error_m2": 0.12713817568155616
+        },
+        {
+          "angle_radians": -1.5707963267948966,
+          "squared_joint_error_m2": 0.0031057408779988638
+        }
+      ],
+      "selected_angle_radians": -1.5707963267948966,
+      "pole_m": [
+        0.18548734486103058,
+        -0.21329668164253235,
+        0.9000376462936401
+      ]
+    },
+    {
+      "id": "hind.R",
+      "candidates": [
+        {
+          "angle_radians": 0,
+          "squared_joint_error_m2": 0.14279034087693288
+        },
+        {
+          "angle_radians": 1.5707963267948966,
+          "squared_joint_error_m2": 0.24630782278875007
+        },
+        {
+          "angle_radians": 3.141592653589793,
+          "squared_joint_error_m2": 0.10579116628854046
+        },
+        {
+          "angle_radians": -1.5707963267948966,
+          "squared_joint_error_m2": 0.002273603932329893
+        }
+      ],
+      "selected_angle_radians": -1.5707963267948966,
+      "pole_m": [
+        -0.408114492893219,
+        -0.38237982988357544,
+        1.0533477067947388
+      ]
+    }
+  ],
+  "hoof_weight_changes": [
+    {
+      "id": "fore.L",
+      "modified_vertices": 1256,
+      "rigid_sole_vertices": 125
+    },
+    {
+      "id": "fore.R",
+      "modified_vertices": 1436,
+      "rigid_sole_vertices": 123
+    },
+    {
+      "id": "hind.L",
+      "modified_vertices": 1577,
+      "rigid_sole_vertices": 131
+    },
+    {
+      "id": "hind.R",
+      "modified_vertices": 1656,
+      "rigid_sole_vertices": 140
+    }
+  ],
+  "limitations": [
+    "Source-bound sole proposals and standing pose still require visual/anatomical review.",
+    "Overall mesh minimum includes hair/tack; no full-mount ground/triangle/self collision acceptance.",
+    "Rest-to-stand transition is not a planted gait. No idle/walk/run/turn, rider, skeletal export or engine acceptance."
+  ]
+}

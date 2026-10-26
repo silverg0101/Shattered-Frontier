@@ -1,0 +1,128 @@
+{
+  "schema_version": 1,
+  "source": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\CompleteHair-v003\\Voidreign-CompleteHair.blend",
+  "source_sha256": "35f3f95a01387cf805444060fde95a77e17d51f5c01378529879af053894ce96",
+  "mesh_hash": "f580ad6893e552958d7c1320958834ad3c7a139f941b9016c510dfd4d6a3e794",
+  "object": "geometry_0",
+  "profile_sha256": "9b1bcc035e0572b41345b3cbc11dfe15326b09b411d86a56b366ad90fec56f10",
+  "resolution": 1024,
+  "cpu_only": true,
+  "color_space": "sRGB display PNG; unlit base color",
+  "pose": "REST; frame1 assembly transform",
+  "views": [
+    {
+      "name": "Head-NegX",
+      "target_m": [
+        0,
+        -1.15,
+        2.02
+      ],
+      "camera_offset_m": [
+        -7,
+        0,
+        0
+      ],
+      "scale_m": 1.65,
+      "region_bounds_m": [
+        [
+          -2,
+          2
+        ],
+        [
+          -3,
+          -0.6
+        ],
+        [
+          1.45,
+          4
+        ]
+      ],
+      "region_feather_m": 0.18,
+      "image": "Head-NegX-BaseColor.png",
+      "image_sha256": "7dbdec939c4527bb298877fd41aa0e3ca03786e576ffae646c3c89e3e632ff75",
+      "camera_matrix_world": [
+        [
+          -4.371138828673793e-08,
+          -4.371138828673793e-08,
+          -1.0,
+          -7.0
+        ],
+        [
+          -1.0,
+          1.910685676922942e-15,
+          4.371138828673793e-08,
+          -1.149999976158142
+        ],
+        [
+          0.0,
+          1.0,
+          -4.371138828673793e-08,
+          2.0199999809265137
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ]
+    },
+    {
+      "name": "Saddle-NegX",
+      "target_m": [
+        0,
+        -0.05,
+        1.65
+      ],
+      "camera_offset_m": [
+        -7,
+        0,
+        0
+      ],
+      "scale_m": 1.35,
+      "region_bounds_m": [
+        [
+          -2,
+          2
+        ],
+        [
+          -0.7,
+          0.9
+        ],
+        [
+          0.88,
+          2.18
+        ]
+      ],
+      "region_feather_m": 0.15,
+      "image": "Saddle-NegX-BaseColor.png",
+      "image_sha256": "5fd93a7d1bcb70829bf5d5c68024ba026f0d201dce1e6a6065712afcb1892426",
+      "camera_matrix_world": [
+        [
+          -4.371138828673793e-08,
+          -4.371138828673793e-08,
+          -1.0,
+          -7.0
+        ],
+        [
+          -1.0,
+          1.910685676922942e-15,
+          4.371138828673793e-08,
+          -0.05000000074505806
+        ],
+        [
+          0.0,
+          1.0,
+          -4.371138828673793e-08,
+          1.649999976158142
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ]
+    }
+  ]
+}

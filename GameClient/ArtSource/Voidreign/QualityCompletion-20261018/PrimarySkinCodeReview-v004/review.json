@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "status": "agent-code-review-complete-hoof-margin-discontinuity",
+  "source_evidence": [
+    "WalkEdgeReview-v002/edge-review.json",
+    "PrimaryContinuousInfluences-v001/weight-repair.npz",
+    "SoleCollarReview-v001/anatomy-report.json"
+  ],
+  "cause": "Vertices95856/95857 were not changed by the harmonic repair. Their outside-sole-bounds Y distances are15.28764mm and12.44968mm. A binary15mm XY margin abruptly assigns rigid hoof weights only to the latter.",
+  "change": "Optional continuous-margin fades hoof rigidity within the same existing XY margin; multiply existing Z collar blend. Exact sole vertices still override to1. No bounds, contact, influence, solver or acceptance limits widened.",
+  "automatic_primary_budget": {
+    "limit": 3,
+    "used": 3,
+    "reset": false
+  },
+  "previous_total_primary_candidates": 6,
+  "new_outputs": "Authored standing-collar source and propagated root-repair source are separate new candidates; account for each. No automatic profile sweep.",
+  "promotion": "None; source/contact/shape checks remain required."
+}

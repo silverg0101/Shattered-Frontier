@@ -1,0 +1,22 @@
+{
+  "source": "/mnt/c/Projects/Shattered-Frontier/GameClient/ArtSource/PlayerCharacter/Starter-Male-01/Views-v003/cells/view03_azim270.png",
+  "source_sha256": "253ed741cc232cdae3238e3694617819ae795a7d01a8e3994f57d1e66fb9abad",
+  "output": "/mnt/c/Projects/Shattered-Frontier/GameClient/ArtSource/PlayerCharacter/Starter-Male-01/Views-v003/view03_azim270.png",
+  "output_sha256": "285126094fbceec8a937d53bebc9b8900f14fffc7a52a4bd19b914d531b49136",
+  "mask_preview": "/mnt/c/Projects/Shattered-Frontier/GameClient/ArtSource/PlayerCharacter/Starter-Male-01/Views-v003/view03_azim270.mask.png",
+  "mask_preview_sha256": "6b96eaf6c86c09c05eae9164450b4c9a21eb6fa6b78b194a9538fe081319e9bd",
+  "dimensions_px": [
+    1024,
+    1024
+  ],
+  "method": "border-connected fixed-range RGB flood fill; Gaussian alpha edge 0.8px",
+  "tolerance_rgb": 12,
+  "foreground_fraction": 0.129377,
+  "foreground_bounds_px": [
+    386,
+    14,
+    653,
+    998
+  ],
+  "review_status": "needs-review"
+}

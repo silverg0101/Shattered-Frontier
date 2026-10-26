@@ -1,0 +1,45 @@
+{
+  "asset_ids": [
+    "BLD-RT-CellFull-01",
+    "BLD-SM-CellFull-01",
+    "BLD-WT-CellFull-01"
+  ],
+  "policy": "one initial attempt plus at most two repairs per failed stage",
+  "stage": "materials",
+  "status": "needs-review; attempt cap exhausted",
+  "attempts": [
+    {
+      "attempt": 1,
+      "version": "Model-v007",
+      "result": "needs-review",
+      "findings": [
+        "false block-course segmentation on timber",
+        "weak/flat stone material",
+        "map edge discontinuities"
+      ],
+      "checks": "fresh GLB/FBX checks passed"
+    },
+    {
+      "attempt": 2,
+      "version": "Model-v008",
+      "result": "needs-review",
+      "findings": [
+        "timber too smooth",
+        "stone courses too uniform",
+        "wrap tolerance unsigned"
+      ],
+      "checks": "fresh source and GLB/FBX checks passed"
+    },
+    {
+      "attempt": 3,
+      "version": "Model-v009",
+      "result": "failed",
+      "findings": [
+        "generated Blender script IndentationError at normal-map node line 30",
+        "Blender returned code 0 despite traceback",
+        "no asset-view, .blend, GLB, or FBX created"
+      ],
+      "checks": "attempt failure reports in each asset checks folder"
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+diff --git a/pixal3d/modules/sparse/attention/full_attn.py b/pixal3d/modules/sparse/attention/full_attn.py
+index 363c048..8455693 100644
+--- a/pixal3d/modules/sparse/attention/full_attn.py
++++ b/pixal3d/modules/sparse/attention/full_attn.py
+@@ -81,6 +81,7 @@ def sparse_scaled_dot_product_attention(q: torch.Tensor, k: VarLenTensor, v: Var
+     ...
+ 
+ def sparse_scaled_dot_product_attention(*args, **kwargs):
++    global flash_attn
+     arg_names_dict = {
+         1: ['qkv'],
+         2: ['q', 'kv'],
+diff --git a/pixal3d/modules/sparse/attention/windowed_attn.py b/pixal3d/modules/sparse/attention/windowed_attn.py
+index 675aa08..8560e95 100644
+--- a/pixal3d/modules/sparse/attention/windowed_attn.py
++++ b/pixal3d/modules/sparse/attention/windowed_attn.py
+@@ -76,6 +76,7 @@ def sparse_windowed_scaled_dot_product_self_attention(
+     window_size: int,
+     shift_window: Tuple[int, int, int] = (0, 0, 0)
+ ) -> SparseTensor:
++    global flash_attn
+     """
+     Apply windowed scaled dot product self attention to a sparse tensor.
+ 
+@@ -138,6 +139,7 @@ def sparse_windowed_scaled_dot_product_cross_attention(
+     q_shift_window: Tuple[int, int, int] = (0, 0, 0),
+     kv_shift_window: Tuple[int, int, int] = (0, 0, 0),
+ ) -> SparseTensor:
++    global flash_attn
+     """
+     Apply windowed scaled dot product cross attention to two sparse tensors.

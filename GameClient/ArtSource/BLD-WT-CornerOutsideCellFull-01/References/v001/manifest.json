@@ -1,0 +1,67 @@
+{
+  "asset_id": "BLD-WT-CornerOutsideCellFull-01",
+  "version": "v001",
+  "batch": "construction-worked-timber-corners-33",
+  "status": "image-complete historically; current structural readiness blocked",
+  "source_references": [
+    "docs/art-templates/player-construction-kit-contract.md, \u00a7\u00a73.2, 8\u20139",
+    "docs/art-templates/asset-lists/construction-kit-matrix-07.md, worked-timber corner/slope roles"
+  ],
+  "dependency": "KIT-WT faces and exact contract shape/contact masks; gameplay tier unchanged",
+  "exact_prompts": {
+    "concept_sheet": "Construction concept sheet, one cubic 90-degree outside wall corner in worked timber, convex projecting corner with two perpendicular flush plank faces. Stacked horizontal oak courses visibly interlock at corner; show isometric view and front/top orthographic detail, pale background, no text. Preserve the corner-outer shape, contacts, clearances and voxel envelope; appearance only, no new properties. Concept proposal.",
+    "asset_view": "Isolated worked-timber outside corner component, convex 90-degree projecting corner, interlocking horizontal plank courses with flush end-grain joints, two exterior faces and top visible, clean three-quarter orthographic product view, pale background, no labels, no extra elements. Preserve the named corner-outer proposal."
+  },
+  "images": [
+    {
+      "file": "concept-sheet.png",
+      "width_px": 1536,
+      "height_px": 1024,
+      "mode": "RGB",
+      "format": "PNG",
+      "sha256": "47d2c11ec04d68bb860d3f13c3d789f9ad1fbaa711717c50bc78be5731395d7b"
+    },
+    {
+      "file": "asset-view.png",
+      "width_px": 1312,
+      "height_px": 1199,
+      "mode": "RGB",
+      "format": "PNG",
+      "sha256": "f25a1f6772a9e41d8e10f60e445c4c756cb4c88010bdbc9821987fb9eaf1a76f"
+    }
+  ],
+  "visual_review": "Convex corner and alternating end-grain joints are legible; component extent and contact masks remain unverified.",
+  "compatibility": "Images are appearance proposals. Review does not establish numerical mesh, collision, contact, clearance or runtime compatibility. Cosmetic skin changes appearance only.",
+  "generation_history": [
+    {
+      "file": "exec-359d49fc-687b-4179-aaab-a1d52e8ce1b4.png",
+      "selected": true
+    },
+    {
+      "file": "exec-275e21b3-25fe-48b3-8bd1-476afd26cdf7.png",
+      "selected": true
+    }
+  ],
+  "created_utc": "2026-10-18",
+  "status_history": [
+    {
+      "date": "2026-10-18",
+      "prior_status": "image-complete; proposal; review cautions recorded",
+      "reason": "Dated buildability review added; original generation history and selected flags preserved."
+    }
+  ],
+  "current_buildability_review": {
+    "date": "2026-10-18",
+    "accepted_selected_outputs": "0/2; historical selection records preserved; none accepted as a buildable master under this review",
+    "route": "proposed material/surface treatment on two orthogonal exposed cell-full patches; not a member assembly and not sloped corner-outer",
+    "units_grid": "metres; 0.5 m structural grid; exact span, depth and patch dimensions unresolved; no scale is recoverable",
+    "frame_pivot": "BLD-01 X/Y/Z frame; minimum-grid-corner frame belongs to the approved host carrier; axis-to-face mapping unresolved; no independent pivot",
+    "allowed_rotations": "inherit only an approved host cell-full allowlist; exact allowlist not accepted for this art mapping",
+    "member_boundary": "intended one surface treatment across two orthogonal patches; depicted end blocks are unapproved and cannot define members",
+    "exposed_and_mating_faces": "two adjacent outside/exposed patches; exposed end faces, contact plane and contours unresolved",
+    "named_counterparts": "candidate style references BLD-WT-FaceExteriorCellFull-01 and BLD-WT-FaceInteriorCellFull-01; no approved corner interface",
+    "visual_finding": "Images provide useful worked-timber appearance. Concept and clean views show alternating end blocks/interlocking crossings that imply structural members, but no member boundaries or connection definition is approved.",
+    "blocker": "No approved geometry/interface definition, GEO-01 manifest/hash or applicable GEO-02 corner/repeat/rotation evidence. Structural readiness blocked.",
+    "geo02": "Applicable GEO-02 evidence missing; image review is not numerical/runtime acceptance."
+  }
+}

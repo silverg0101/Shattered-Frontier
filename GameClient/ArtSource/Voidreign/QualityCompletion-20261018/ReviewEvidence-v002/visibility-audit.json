@@ -1,0 +1,18 @@
+{
+  "reviewer": "independent visual_review agent",
+  "scope": "v001 detector audit plus author v002 follow-up",
+  "findings": [
+    "Coordinate/ray setup consistent with metre-scaled inventory.",
+    "v001 indexed-vertex samples risk edge misses and duplicate coverage.",
+    "v001 nearby covering shell could count visible without first-hit component identity.",
+    "v002 adds area-stratified triangle interiors,14directions,target-only BVH controls and first-hit component IDs.",
+    "v002:180 low-rest-visibility candidates,18control-miss components unresolved,21other visible candidates.",
+    "C0001/C0004 visible controls pass; C0005/C0012/C0018/C0020/C0025/C0026 have all1792target-only hits but no full-mesh first-hit exposure.",
+    "No mass deletion or physical containment proof; check isolated/section and relevant deformations."
+  ],
+  "limits": [
+    "Opaque geometry rays do not evaluate material alpha/backface behavior.",
+    "Sampled visibility does not prove unwanted geometry.",
+    "Original194/219 is historical six-view sampling result, not defect count."
+  ]
+}

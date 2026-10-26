@@ -1,0 +1,5 @@
+Concept-sheet prompt (exact):
+Construction design concept sheet on a pale gray background. Depict ONE single modular wall cell, exactly a 1:1:1 cube. The cube is made of worked timber planks with flush corners and no protrusions. Highlight only its right exposed side: show end-grain plank cross sections flush with the side plane. Add two small flat orthographic panels at right: front elevation and exposed-end elevation. Keep every drawing inside the cube silhouette. Solid opaque timber throughout; no openings, no extra blocks, no frame pieces, no separate beams, no text, no labels, no masonry. Consistent square proportions, restrained weathered oak, clear construction-design illustration.
+
+Clean asset-view prompt (exact):
+Isolated single cubic worked-timber construction cell. Show a flush exposed end at the right plane with clear end-grain plank sections, adjoining weathered plank face, top surface. Exact compact cube silhouette on a 0.5 m grid; no extra objects, no label, no protrusions. Three-quarter orthographic product render on pale studio background.

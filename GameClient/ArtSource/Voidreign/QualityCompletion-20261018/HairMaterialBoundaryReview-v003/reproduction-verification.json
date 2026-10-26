@@ -1,0 +1,8 @@
+{
+  "status": "verified",
+  "manifest": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialBoundaryReproductionKit-v001/manifest.json",
+  "manifest_sha256": "3f9a04ea86aa81fe21e67f45275dc03999b48a1c60e28fdc05b5d05b8b13ace0",
+  "files": 449,
+  "copied_bytes": 148034597,
+  "self_contained": false
+}

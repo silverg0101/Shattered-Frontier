@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "fps": 30,
+  "coordinate_space": "canonical-proxy-local-metres",
+  "permissions": "Read-only held source-island decomposition; no physics or geometry repair",
+  "effective_time": "Frozen held239/240 only",
+  "units": "metres,seconds,radians",
+  "held_points": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManeWarmupDiagnostic-v005\\held-proxy-points.npz",
+  "held_report": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManeWarmupDiagnostic-v005\\warmup-report.json",
+  "source_components": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz",
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManeWarmupDiagnostic-v005\\held-proxy-points.npz": "77df03bb22624b98eaa6411d3b09b9ddbafc691730ff49cd85939cdfa2fa9450",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManeWarmupDiagnostic-v005\\warmup-report.json": "744fc55c99751994bd253e5481c5783416dfe0f4e56e000c386a9716e43531a5",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz": "0d7599c8064cb81a6e211a23731435e08939b7fb146ce2d4bed810273909a2b2"
+  }
+}

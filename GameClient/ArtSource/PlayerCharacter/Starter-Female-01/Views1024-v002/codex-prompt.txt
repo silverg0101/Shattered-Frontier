@@ -1,0 +1,18 @@
+The attached image is the approved FRONT view of a game character (a realistic young woman frontier adventurer). Using your image generation tool, generate three SEPARATE new images of exactly the same character and save each as a PNG at exactly these paths (relative to the current directory):
+1. GameClient/ArtSource/PlayerCharacter/Starter-Female-01/Views1024-v002/raw/left.png - LEFT SIDE profile view: the character's left side faces the camera; the character faces image-left.
+2. GameClient/ArtSource/PlayerCharacter/Starter-Female-01/Views1024-v002/raw/back.png - BACK view: the character faces directly away from the camera.
+3. GameClient/ArtSource/PlayerCharacter/Starter-Female-01/Views1024-v002/raw/right.png - RIGHT SIDE profile view: the character's right side faces the camera; the character faces image-right.
+Do not create a front image; the front already exists.
+
+Rules for all three images:
+- Each image is a single 1024x1024 square with one figure. Not a sheet, not a grid, no collage.
+- Exactly the same character as the attached front view: identical face, hair, outfit, materials, colors, wear, proportions, pose and scale, as if a camera orbits a statue. Invent only what is hidden from the front (the back of the garments and hair) in the same style and materials.
+- Full body, centered, filling about 90% of the image height, feet at the same height as in the front image, small margin on all sides, whole body in frame.
+- Pose: the same neutral A-pose as the front image (arms angled slightly away from the body, hands open with fingers slightly apart, legs straight and shoulder-width apart). In the side views keep the arms angled away from the torso so they do not overlap it.
+- Orthographic camera at chest height, no perspective distortion.
+- Flat even neutral studio lighting, no cast shadows, no rim light, no ground shadow, no floor.
+- TRANSPARENT BACKGROUND: each output must be a true RGBA PNG with a real alpha channel, the figure cut out cleanly on a fully transparent background (alpha 0 everywhere outside the figure, including all four corners). No floor, no shadow, no contact shadow, no backdrop, no grey or white halo around the edges, no text, labels or borders. Request transparent output from the image tool (background: transparent). Do not fake transparency with a flat colour or a checkerboard. After saving, verify each file has an alpha channel with corner alpha 0 and report it; if a file is opaque, regenerate it.
+
+Design (must match the front image exactly, left/right are the CHARACTER's own sides): long brown hair pulled back in a single thick braid that falls over the character's RIGHT shoulder down her front to the chest, loose wisps at the face, freckled skin; a green wool hood/scarf draped around the neck and shoulders with a round metal clasp on the character's LEFT shoulder strap area; cream linen blouse with sleeves rolled to the elbow; a laced brown leather corset-style jerkin with crossing leather straps over the chest and a wide buckled belt plus a second slanting belt at the waist; a tattered green skirt-cloth with embroidered tan trim and frayed hem draped over the hips and thighs, longer on the character's RIGHT leg, over worn dark brown leather trousers; wide laced leather bracers on both forearms; knee-high scuffed brown leather boots with folded cuffs. Muted earthy palette, used and dusty, no weapons, no glowing parts.
+
+Do nothing else: do not edit, create or delete any other file. When the three files exist, print their paths and pixel sizes.

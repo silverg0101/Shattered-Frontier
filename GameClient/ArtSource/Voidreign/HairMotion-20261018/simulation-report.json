@@ -1,0 +1,4014 @@
+{
+  "status": "baked prototype",
+  "blender": "5.1.1",
+  "source_sha256": "c27ad929b00520f52fb50058e0f374d69eca55d80084bc1909368c4d664fe56d",
+  "config": {
+    "version": 1,
+    "fps": 30,
+    "duration_seconds": 11,
+    "substeps": 6,
+    "constraint_iterations": 8,
+    "gravity_m_s2": 9.81,
+    "drag_per_second": 2.8,
+    "shape_spring_per_second_squared": 32.0,
+    "bend_stiffness": 0.35,
+    "collision_radius_m": 0.025,
+    "wind_acceleration_m_s2": 0.8,
+    "render_stride_frames": 3,
+    "permissions": "Offline asset-author settings only; not a live gameplay or server control.",
+    "effective_time": "Applied when rebuilding a new prototype; saved animation does not change until rebaked."
+  },
+  "frames": 330,
+  "bones": 20,
+  "contacts": {
+    "Horse": 1646,
+    "Rider": 1089,
+    "Environment": 39,
+    "Ground": 1446
+  },
+  "max_root_error_m": 0.0,
+  "max_relative_segment_error": 0.04307099574695461,
+  "metrics": [
+    {
+      "frame": 1,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.024174975619298378
+    },
+    {
+      "frame": 1,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.004361867221860161
+    },
+    {
+      "frame": 2,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.04307099574695461
+    },
+    {
+      "frame": 2,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.005959258578452475
+    },
+    {
+      "frame": 3,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.023586125691093196
+    },
+    {
+      "frame": 3,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.003998535418024307
+    },
+    {
+      "frame": 4,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.021011823213951564
+    },
+    {
+      "frame": 4,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002658390721129056
+    },
+    {
+      "frame": 5,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.020083531712767666
+    },
+    {
+      "frame": 5,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.005896109076323652
+    },
+    {
+      "frame": 6,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.024148191546710773
+    },
+    {
+      "frame": 6,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.004711218218337976
+    },
+    {
+      "frame": 7,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.016933677172133565
+    },
+    {
+      "frame": 7,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.004756029294033404
+    },
+    {
+      "frame": 8,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.011384590633912728
+    },
+    {
+      "frame": 8,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002374946300304881
+    },
+    {
+      "frame": 9,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.00831288968646371
+    },
+    {
+      "frame": 9,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0025429686672886476
+    },
+    {
+      "frame": 10,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0057242548101754664
+    },
+    {
+      "frame": 10,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0027318466290845445
+    },
+    {
+      "frame": 11,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002749250612952059
+    },
+    {
+      "frame": 11,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002235752966821658
+    },
+    {
+      "frame": 12,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0020988579639893423
+    },
+    {
+      "frame": 12,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0016657461687434871
+    },
+    {
+      "frame": 13,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.005647445088584169
+    },
+    {
+      "frame": 13,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002361733045658676
+    },
+    {
+      "frame": 14,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.007029037589970644
+    },
+    {
+      "frame": 14,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002639381495603166
+    },
+    {
+      "frame": 15,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.007152189556091315
+    },
+    {
+      "frame": 15,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.004442475432237192
+    },
+    {
+      "frame": 16,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.00772770693473368
+    },
+    {
+      "frame": 16,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.004859265628066378
+    },
+    {
+      "frame": 17,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.006508623931248625
+    },
+    {
+      "frame": 17,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.00542139953688614
+    },
+    {
+      "frame": 18,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.004606015528932694
+    },
+    {
+      "frame": 18,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.004849024635416477
+    },
+    {
+      "frame": 19,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.003609814795641375
+    },
+    {
+      "frame": 19,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.003924617271064523
+    },
+    {
+      "frame": 20,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.004241904492290782
+    },
+    {
+      "frame": 20,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0035310050771197865
+    },
+    {
+      "frame": 21,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.006034432145112012
+    },
+    {
+      "frame": 21,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.003477383439596693
+    },
+    {
+      "frame": 22,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.006811754908677692
+    },
+    {
+      "frame": 22,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0032698802456769815
+    },
+    {
+      "frame": 23,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.008967893371935931
+    },
+    {
+      "frame": 23,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.003003931917466396
+    },
+    {
+      "frame": 24,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0067586971712656485
+    },
+    {
+      "frame": 24,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0032502942793162237
+    },
+    {
+      "frame": 25,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.005869310127563088
+    },
+    {
+      "frame": 25,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0035398220859399476
+    },
+    {
+      "frame": 26,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0054017615489900805
+    },
+    {
+      "frame": 26,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.004067601219329475
+    },
+    {
+      "frame": 27,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0056132228643632764
+    },
+    {
+      "frame": 27,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0036196410895943387
+    },
+    {
+      "frame": 28,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.004824117603939637
+    },
+    {
+      "frame": 28,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0032377907783420756
+    },
+    {
+      "frame": 29,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.005436910124940075
+    },
+    {
+      "frame": 29,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0036557772286220924
+    },
+    {
+      "frame": 30,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.004862251587219646
+    },
+    {
+      "frame": 30,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0028165134205853093
+    },
+    {
+      "frame": 31,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.005291768346559866
+    },
+    {
+      "frame": 31,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0030673773845912855
+    },
+    {
+      "frame": 32,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.006134593117844922
+    },
+    {
+      "frame": 32,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002745057943357887
+    },
+    {
+      "frame": 33,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.004627839240339604
+    },
+    {
+      "frame": 33,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002521554391379466
+    },
+    {
+      "frame": 34,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0036524495782432886
+    },
+    {
+      "frame": 34,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0019233428496862048
+    },
+    {
+      "frame": 35,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002345807124602528
+    },
+    {
+      "frame": 35,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002644064507042021
+    },
+    {
+      "frame": 36,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0031122461939474544
+    },
+    {
+      "frame": 36,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0023172003376275008
+    },
+    {
+      "frame": 37,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.003286068983721968
+    },
+    {
+      "frame": 37,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0014051119587996652
+    },
+    {
+      "frame": 38,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.003936917450098498
+    },
+    {
+      "frame": 38,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.001202769416686289
+    },
+    {
+      "frame": 39,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0038452193349540753
+    },
+    {
+      "frame": 39,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.001423098976405468
+    },
+    {
+      "frame": 40,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0037728083014763047
+    },
+    {
+      "frame": 40,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0017771449737974399
+    },
+    {
+      "frame": 41,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002394793569584941
+    },
+    {
+      "frame": 41,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.001739634998279116
+    },
+    {
+      "frame": 42,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.00222080548279302
+    },
+    {
+      "frame": 42,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.001544784356619533
+    },
+    {
+      "frame": 43,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002110053928171318
+    },
+    {
+      "frame": 43,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0018231902081117246
+    },
+    {
+      "frame": 44,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0020371709753959077
+    },
+    {
+      "frame": 44,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002025014374733125
+    },
+    {
+      "frame": 45,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.00246482783608859
+    },
+    {
+      "frame": 45,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0021004768021657405
+    },
+    {
+      "frame": 46,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0027228797126939153
+    },
+    {
+      "frame": 46,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002299751593379029
+    },
+    {
+      "frame": 47,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002425817259584351
+    },
+    {
+      "frame": 47,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.00243263405817129
+    },
+    {
+      "frame": 48,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.001912376147559014
+    },
+    {
+      "frame": 48,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0021067841788091624
+    },
+    {
+      "frame": 49,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0016975658954825334
+    },
+    {
+      "frame": 49,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0017276653545739151
+    },
+    {
+      "frame": 50,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0017427291161815628
+    },
+    {
+      "frame": 50,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0018841434007882407
+    },
+    {
+      "frame": 51,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0017654816046450694
+    },
+    {
+      "frame": 51,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0022476946597084213
+    },
+    {
+      "frame": 52,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0026260361217480543
+    },
+    {
+      "frame": 52,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0023552692066434178
+    },
+    {
+      "frame": 53,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0029873252008414397
+    },
+    {
+      "frame": 53,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002150946475695803
+    },
+    {
+      "frame": 54,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002584174627303648
+    },
+    {
+      "frame": 54,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0017643543492950053
+    },
+    {
+      "frame": 55,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0028029591010614308
+    },
+    {
+      "frame": 55,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.001538252781407512
+    },
+    {
+      "frame": 56,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0021747792981405834
+    },
+    {
+      "frame": 56,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0021645630711815134
+    },
+    {
+      "frame": 57,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.00198307529509556
+    },
+    {
+      "frame": 57,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002904801885324604
+    },
+    {
+      "frame": 58,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0022898704085987376
+    },
+    {
+      "frame": 58,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.003068953218329451
+    },
+    {
+      "frame": 59,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0023694049172087173
+    },
+    {
+      "frame": 59,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002748549069767403
+    },
+    {
+      "frame": 60,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0022551957625869257
+    },
+    {
+      "frame": 60,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002455995127799593
+    },
+    {
+      "frame": 61,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0020361365231083006
+    },
+    {
+      "frame": 61,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0027430574506581706
+    },
+    {
+      "frame": 62,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0018352199852924578
+    },
+    {
+      "frame": 62,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0030088176457914173
+    },
+    {
+      "frame": 63,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0018927729970958929
+    },
+    {
+      "frame": 63,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.003346338686989636
+    },
+    {
+      "frame": 64,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002265188449039446
+    },
+    {
+      "frame": 64,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0032548616165644084
+    },
+    {
+      "frame": 65,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0025687426350011755
+    },
+    {
+      "frame": 65,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0027873818481904955
+    },
+    {
+      "frame": 66,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002714611460336025
+    },
+    {
+      "frame": 66,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002542041034467424
+    },
+    {
+      "frame": 67,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002621664089912601
+    },
+    {
+      "frame": 67,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0022943012463334522
+    },
+    {
+      "frame": 68,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0023074298693284145
+    },
+    {
+      "frame": 68,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002215142501258427
+    },
+    {
+      "frame": 69,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0019204063696283136
+    },
+    {
+      "frame": 69,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0022681362285974505
+    },
+    {
+      "frame": 70,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0016416742531812911
+    },
+    {
+      "frame": 70,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0022913046911967605
+    },
+    {
+      "frame": 71,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.001858702489561992
+    },
+    {
+      "frame": 71,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0022535450177784133
+    },
+    {
+      "frame": 72,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0019674435785319577
+    },
+    {
+      "frame": 72,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002169462802131261
+    },
+    {
+      "frame": 73,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0019665830689969965
+    },
+    {
+      "frame": 73,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002106309765333547
+    },
+    {
+      "frame": 74,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0019314832066044119
+    },
+    {
+      "frame": 74,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002077724444222606
+    },
+    {
+      "frame": 75,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.001896076633729482
+    },
+    {
+      "frame": 75,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0020154467385230523
+    },
+    {
+      "frame": 76,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0018596964741739441
+    },
+    {
+      "frame": 76,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0018658917486995552
+    },
+    {
+      "frame": 77,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0018413038222862
+    },
+    {
+      "frame": 77,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0016613674783612087
+    },
+    {
+      "frame": 78,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0018677794213530774
+    },
+    {
+      "frame": 78,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0014888182449857013
+    },
+    {
+      "frame": 79,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0019296345788986091
+    },
+    {
+      "frame": 79,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0014156702828935774
+    },
+    {
+      "frame": 80,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0019913984407113894
+    },
+    {
+      "frame": 80,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0017717232623633006
+    },
+    {
+      "frame": 81,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0020309432206895295
+    },
+    {
+      "frame": 81,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0027093890579306112
+    },
+    {
+      "frame": 82,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002047857540369291
+    },
+    {
+      "frame": 82,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0031918607218111017
+    },
+    {
+      "frame": 83,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002047028714335486
+    },
+    {
+      "frame": 83,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0028643377470565223
+    },
+    {
+      "frame": 84,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002031624690175926
+    },
+    {
+      "frame": 84,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0025431832256492815
+    },
+    {
+      "frame": 85,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.001995855759349796
+    },
+    {
+      "frame": 85,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0027511179045329737
+    },
+    {
+      "frame": 86,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002142562774899437
+    },
+    {
+      "frame": 86,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0031270616485361558
+    },
+    {
+      "frame": 87,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0023175209995371926
+    },
+    {
+      "frame": 87,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002928235423336867
+    },
+    {
+      "frame": 88,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002414397473038399
+    },
+    {
+      "frame": 88,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002179679422468217
+    },
+    {
+      "frame": 89,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002436824452437314
+    },
+    {
+      "frame": 89,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002283601686061121
+    },
+    {
+      "frame": 90,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0023797985328142257
+    },
+    {
+      "frame": 90,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0023337932105912396
+    },
+    {
+      "frame": 91,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.005018500610245558
+    },
+    {
+      "frame": 91,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.015937535401258862
+    },
+    {
+      "frame": 92,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.00635095127140306
+    },
+    {
+      "frame": 92,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.006683581837059638
+    },
+    {
+      "frame": 93,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.010237139632554682
+    },
+    {
+      "frame": 93,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.004497780481521163
+    },
+    {
+      "frame": 94,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0061594852797102195
+    },
+    {
+      "frame": 94,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0029874166696681748
+    },
+    {
+      "frame": 95,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.006470077804187291
+    },
+    {
+      "frame": 95,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.003744175370867797
+    },
+    {
+      "frame": 96,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.007313202751793257
+    },
+    {
+      "frame": 96,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.003834731798585622
+    },
+    {
+      "frame": 97,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.004888588923588788
+    },
+    {
+      "frame": 97,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002275460709434185
+    },
+    {
+      "frame": 98,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0053715622416889985
+    },
+    {
+      "frame": 98,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.005829281880462833
+    },
+    {
+      "frame": 99,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.00557480795551335
+    },
+    {
+      "frame": 99,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.003417710399162832
+    },
+    {
+      "frame": 100,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.009688100275337286
+    },
+    {
+      "frame": 100,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.004415043425087362
+    },
+    {
+      "frame": 101,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.011535962908319819
+    },
+    {
+      "frame": 101,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.003940075260009612
+    },
+    {
+      "frame": 102,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.011252966248929352
+    },
+    {
+      "frame": 102,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.003537707126396117
+    },
+    {
+      "frame": 103,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.007116025727168074
+    },
+    {
+      "frame": 103,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0034858647622206806
+    },
+    {
+      "frame": 104,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.005005310701494459
+    },
+    {
+      "frame": 104,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.003016486321016365
+    },
+    {
+      "frame": 105,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.004212130284370286
+    },
+    {
+      "frame": 105,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0016963462042243194
+    },
+    {
+      "frame": 106,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.005029178228821873
+    },
+    {
+      "frame": 106,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0021216946986752916
+    },
+    {
+      "frame": 107,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.006436870278691664
+    },
+    {
+      "frame": 107,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002056551619971536
+    },
+    {
+      "frame": 108,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.006313299968509156
+    },
+    {
+      "frame": 108,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002512521622921593
+    },
+    {
+      "frame": 109,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.007075375568730724
+    },
+    {
+      "frame": 109,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0023726875123353253
+    },
+    {
+      "frame": 110,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.007362635311822796
+    },
+    {
+      "frame": 110,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.001961358999262197
+    },
+    {
+      "frame": 111,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.006687986205582641
+    },
+    {
+      "frame": 111,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0026651219984907826
+    },
+    {
+      "frame": 112,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.007992713432154908
+    },
+    {
+      "frame": 112,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0033697891690804838
+    },
+    {
+      "frame": 113,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.009378075911104844
+    },
+    {
+      "frame": 113,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002878038035585506
+    },
+    {
+      "frame": 114,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.011251093834158343
+    },
+    {
+      "frame": 114,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002996300643161476
+    },
+    {
+      "frame": 115,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.007515256927217218
+    },
+    {
+      "frame": 115,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0031887233126020043
+    },
+    {
+      "frame": 116,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.007569696779182067
+    },
+    {
+      "frame": 116,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0030506635702169937
+    },
+    {
+      "frame": 117,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.005196635000433547
+    },
+    {
+      "frame": 117,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0016754481672822674
+    },
+    {
+      "frame": 118,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.005190004538605297
+    },
+    {
+      "frame": 118,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0015416880892102913
+    },
+    {
+      "frame": 119,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.005709016716722415
+    },
+    {
+      "frame": 119,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002134926191841746
+    },
+    {
+      "frame": 120,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.005868142452120084
+    },
+    {
+      "frame": 120,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.001995450243874819
+    },
+    {
+      "frame": 121,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.009457659935310003
+    },
+    {
+      "frame": 121,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.006028439595565205
+    },
+    {
+      "frame": 122,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.00876359554423689
+    },
+    {
+      "frame": 122,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.007395173381595566
+    },
+    {
+      "frame": 123,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.006688728010947109
+    },
+    {
+      "frame": 123,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.007804396616917897
+    },
+    {
+      "frame": 124,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.005551120210700589
+    },
+    {
+      "frame": 124,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.005664933144613249
+    },
+    {
+      "frame": 125,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.008903569826970603
+    },
+    {
+      "frame": 125,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.004250972235837702
+    },
+    {
+      "frame": 126,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.010754886356066251
+    },
+    {
+      "frame": 126,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0035255383990375755
+    },
+    {
+      "frame": 127,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.009658817183679114
+    },
+    {
+      "frame": 127,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.003318985755854431
+    },
+    {
+      "frame": 128,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.007163380923269624
+    },
+    {
+      "frame": 128,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0027333070967519024
+    },
+    {
+      "frame": 129,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.005459212289088411
+    },
+    {
+      "frame": 129,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.003022354013981321
+    },
+    {
+      "frame": 130,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.00422063963287056
+    },
+    {
+      "frame": 130,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.001850511824136536
+    },
+    {
+      "frame": 131,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.003036679852856272
+    },
+    {
+      "frame": 131,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0025296913009600352
+    },
+    {
+      "frame": 132,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.004218777955431463
+    },
+    {
+      "frame": 132,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0031886159888656618
+    },
+    {
+      "frame": 133,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.005653742099145154
+    },
+    {
+      "frame": 133,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0037774430814139226
+    },
+    {
+      "frame": 134,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0037835563985479936
+    },
+    {
+      "frame": 134,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0028757572484332528
+    },
+    {
+      "frame": 135,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0038702444105833678
+    },
+    {
+      "frame": 135,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002798189204781698
+    },
+    {
+      "frame": 136,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.003447265707977376
+    },
+    {
+      "frame": 136,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002748646197162641
+    },
+    {
+      "frame": 137,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.004737913075710143
+    },
+    {
+      "frame": 137,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.004243172795847405
+    },
+    {
+      "frame": 138,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.007354000143489081
+    },
+    {
+      "frame": 138,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002932754245747571
+    },
+    {
+      "frame": 139,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.010031146422870618
+    },
+    {
+      "frame": 139,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.003563794511326046
+    },
+    {
+      "frame": 140,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.010000984044762795
+    },
+    {
+      "frame": 140,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.00245003529572152
+    },
+    {
+      "frame": 141,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.006858217640041575
+    },
+    {
+      "frame": 141,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0021399288774275327
+    },
+    {
+      "frame": 142,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.006037577113466197
+    },
+    {
+      "frame": 142,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0012749439657790962
+    },
+    {
+      "frame": 143,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0034717560026642502
+    },
+    {
+      "frame": 143,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002427901949926037
+    },
+    {
+      "frame": 144,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.006956062582121225
+    },
+    {
+      "frame": 144,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.003357024541386311
+    },
+    {
+      "frame": 145,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.005624804414803286
+    },
+    {
+      "frame": 145,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.00436944419827312
+    },
+    {
+      "frame": 146,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.004898272090633871
+    },
+    {
+      "frame": 146,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.003508564625340327
+    },
+    {
+      "frame": 147,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.004373816383101969
+    },
+    {
+      "frame": 147,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.006122546770713555
+    },
+    {
+      "frame": 148,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.006037994947187597
+    },
+    {
+      "frame": 148,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.006211772551793393
+    },
+    {
+      "frame": 149,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0070101149612435965
+    },
+    {
+      "frame": 149,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.005936023646660349
+    },
+    {
+      "frame": 150,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.005413476245876625
+    },
+    {
+      "frame": 150,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.004320828307398994
+    },
+    {
+      "frame": 151,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0198738810204373
+    },
+    {
+      "frame": 151,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.022831756411107573
+    },
+    {
+      "frame": 152,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.013373680138163424
+    },
+    {
+      "frame": 152,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.031632187045426585
+    },
+    {
+      "frame": 153,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.008017348935008828
+    },
+    {
+      "frame": 153,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.014582996960558203
+    },
+    {
+      "frame": 154,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0032995934529929105
+    },
+    {
+      "frame": 154,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.014028407422999933
+    },
+    {
+      "frame": 155,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0027934023488807025
+    },
+    {
+      "frame": 155,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.012751394396246285
+    },
+    {
+      "frame": 156,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.003941334834744792
+    },
+    {
+      "frame": 156,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0054544550430912775
+    },
+    {
+      "frame": 157,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0023622730559305083
+    },
+    {
+      "frame": 157,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0035051174917466454
+    },
+    {
+      "frame": 158,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0029085848911334367
+    },
+    {
+      "frame": 158,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.004878045772035211
+    },
+    {
+      "frame": 159,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0030990261762851024
+    },
+    {
+      "frame": 159,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.008258191977756235
+    },
+    {
+      "frame": 160,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0033629715079570577
+    },
+    {
+      "frame": 160,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.00890144367063117
+    },
+    {
+      "frame": 161,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0019263761246290922
+    },
+    {
+      "frame": 161,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.005252752084676793
+    },
+    {
+      "frame": 162,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0020066846587720732
+    },
+    {
+      "frame": 162,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.007455565823058841
+    },
+    {
+      "frame": 163,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0029478837927088275
+    },
+    {
+      "frame": 163,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.006398999236866931
+    },
+    {
+      "frame": 164,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.004018650809531676
+    },
+    {
+      "frame": 164,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.004486977431739314
+    },
+    {
+      "frame": 165,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.004965898014187564
+    },
+    {
+      "frame": 165,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.004845936700195397
+    },
+    {
+      "frame": 166,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.005675857715122579
+    },
+    {
+      "frame": 166,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.006027170826385264
+    },
+    {
+      "frame": 167,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.004931991232977273
+    },
+    {
+      "frame": 167,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.005907751586694543
+    },
+    {
+      "frame": 168,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0031696268181342635
+    },
+    {
+      "frame": 168,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.00564015628140857
+    },
+    {
+      "frame": 169,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.003247354884062137
+    },
+    {
+      "frame": 169,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0046118677498716565
+    },
+    {
+      "frame": 170,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0028881600146299924
+    },
+    {
+      "frame": 170,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0030344651482792084
+    },
+    {
+      "frame": 171,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0037687428874531026
+    },
+    {
+      "frame": 171,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0018866951474301175
+    },
+    {
+      "frame": 172,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0041067867065347485
+    },
+    {
+      "frame": 172,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.00215271150284968
+    },
+    {
+      "frame": 173,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0039722935858585995
+    },
+    {
+      "frame": 173,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0024300590844950065
+    },
+    {
+      "frame": 174,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0030609764842410847
+    },
+    {
+      "frame": 174,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0025917801417152386
+    },
+    {
+      "frame": 175,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.00224944586859821
+    },
+    {
+      "frame": 175,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0024599828813597346
+    },
+    {
+      "frame": 176,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0019485312706555291
+    },
+    {
+      "frame": 176,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.001863864311090202
+    },
+    {
+      "frame": 177,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002074025994544204
+    },
+    {
+      "frame": 177,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.00125822783386087
+    },
+    {
+      "frame": 178,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0020850195883905798
+    },
+    {
+      "frame": 178,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0014895556135484656
+    },
+    {
+      "frame": 179,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0019780167709049223
+    },
+    {
+      "frame": 179,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0019473981299841236
+    },
+    {
+      "frame": 180,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.001744568938090163
+    },
+    {
+      "frame": 180,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002038393177756892
+    },
+    {
+      "frame": 181,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0015044622143218778
+    },
+    {
+      "frame": 181,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.001992204497775263
+    },
+    {
+      "frame": 182,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0013144174144783527
+    },
+    {
+      "frame": 182,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.001894939241360749
+    },
+    {
+      "frame": 183,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.001255859127130332
+    },
+    {
+      "frame": 183,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0020554789077618096
+    },
+    {
+      "frame": 184,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0012204247928588874
+    },
+    {
+      "frame": 184,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0019385635647610755
+    },
+    {
+      "frame": 185,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.001219054966578259
+    },
+    {
+      "frame": 185,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002157137103062867
+    },
+    {
+      "frame": 186,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0014808316967216406
+    },
+    {
+      "frame": 186,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002460270648222407
+    },
+    {
+      "frame": 187,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.001700204150737905
+    },
+    {
+      "frame": 187,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.00260452299456837
+    },
+    {
+      "frame": 188,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0017569802737888995
+    },
+    {
+      "frame": 188,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0029027618165884395
+    },
+    {
+      "frame": 189,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0016578431166158758
+    },
+    {
+      "frame": 189,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0030647511467742916
+    },
+    {
+      "frame": 190,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0015018663621306771
+    },
+    {
+      "frame": 190,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0029104624454794337
+    },
+    {
+      "frame": 191,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0015067985447547727
+    },
+    {
+      "frame": 191,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002621928446015165
+    },
+    {
+      "frame": 192,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0018340772831315633
+    },
+    {
+      "frame": 192,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0023411152464207774
+    },
+    {
+      "frame": 193,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0021711241482955668
+    },
+    {
+      "frame": 193,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002104270502535588
+    },
+    {
+      "frame": 194,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002358636567827199
+    },
+    {
+      "frame": 194,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0019112624800639022
+    },
+    {
+      "frame": 195,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0024940359563130343
+    },
+    {
+      "frame": 195,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.001790806452733995
+    },
+    {
+      "frame": 196,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002575291874989949
+    },
+    {
+      "frame": 196,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0017697925479749355
+    },
+    {
+      "frame": 197,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0025346252716906825
+    },
+    {
+      "frame": 197,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0017765306474331055
+    },
+    {
+      "frame": 198,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0024353143722095627
+    },
+    {
+      "frame": 198,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0018723492321953694
+    },
+    {
+      "frame": 199,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.00235439473785215
+    },
+    {
+      "frame": 199,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.00198494274600558
+    },
+    {
+      "frame": 200,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002294140629917507
+    },
+    {
+      "frame": 200,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002060187730720142
+    },
+    {
+      "frame": 201,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0023010212345293546
+    },
+    {
+      "frame": 201,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0020937263624329905
+    },
+    {
+      "frame": 202,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0023292994628651975
+    },
+    {
+      "frame": 202,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002118167989899611
+    },
+    {
+      "frame": 203,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0024187723511821524
+    },
+    {
+      "frame": 203,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0021604103120789198
+    },
+    {
+      "frame": 204,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0022376675323458883
+    },
+    {
+      "frame": 204,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0022157634168458173
+    },
+    {
+      "frame": 205,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002025683803325018
+    },
+    {
+      "frame": 205,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002263271370166464
+    },
+    {
+      "frame": 206,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0018989246318548147
+    },
+    {
+      "frame": 206,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002306812851352924
+    },
+    {
+      "frame": 207,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002334321517911908
+    },
+    {
+      "frame": 207,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002332340251984366
+    },
+    {
+      "frame": 208,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002698646417916395
+    },
+    {
+      "frame": 208,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002333286510886712
+    },
+    {
+      "frame": 209,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0026649746325531076
+    },
+    {
+      "frame": 209,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0023300918656526948
+    },
+    {
+      "frame": 210,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0026260943058318276
+    },
+    {
+      "frame": 210,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002330980268741345
+    },
+    {
+      "frame": 211,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002585903543012469
+    },
+    {
+      "frame": 211,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.001330318545554432
+    },
+    {
+      "frame": 212,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0023131613724720612
+    },
+    {
+      "frame": 212,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0016473166854836796
+    },
+    {
+      "frame": 213,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0022473480099287624
+    },
+    {
+      "frame": 213,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002178637144142459
+    },
+    {
+      "frame": 214,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002273288809796936
+    },
+    {
+      "frame": 214,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0022493371165558385
+    },
+    {
+      "frame": 215,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0024187858460862355
+    },
+    {
+      "frame": 215,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0019562846555114533
+    },
+    {
+      "frame": 216,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0024716226244914097
+    },
+    {
+      "frame": 216,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0019974367781677715
+    },
+    {
+      "frame": 217,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002489237582921744
+    },
+    {
+      "frame": 217,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002358640743431173
+    },
+    {
+      "frame": 218,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002507379694544065
+    },
+    {
+      "frame": 218,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0015477268369860075
+    },
+    {
+      "frame": 219,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002468797779765275
+    },
+    {
+      "frame": 219,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002046777798646704
+    },
+    {
+      "frame": 220,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0023581152633840308
+    },
+    {
+      "frame": 220,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0020449483004916225
+    },
+    {
+      "frame": 221,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002460490098453727
+    },
+    {
+      "frame": 221,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.001986261528442279
+    },
+    {
+      "frame": 222,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0026041914667043198
+    },
+    {
+      "frame": 222,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.001857995890391484
+    },
+    {
+      "frame": 223,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0026120599944705614
+    },
+    {
+      "frame": 223,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0018170786572810904
+    },
+    {
+      "frame": 224,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0025655080252453555
+    },
+    {
+      "frame": 224,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0018986917832446437
+    },
+    {
+      "frame": 225,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0025087425077430225
+    },
+    {
+      "frame": 225,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0019336610207248972
+    },
+    {
+      "frame": 226,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.00240285710557564
+    },
+    {
+      "frame": 226,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0019306985697103984
+    },
+    {
+      "frame": 227,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002259675985094578
+    },
+    {
+      "frame": 227,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0018962963492322737
+    },
+    {
+      "frame": 228,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002153833793968385
+    },
+    {
+      "frame": 228,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0018593452364569218
+    },
+    {
+      "frame": 229,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002098270736724084
+    },
+    {
+      "frame": 229,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0018252865175375499
+    },
+    {
+      "frame": 230,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0020679346525427356
+    },
+    {
+      "frame": 230,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.001988648850129948
+    },
+    {
+      "frame": 231,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002077743394492515
+    },
+    {
+      "frame": 231,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0020633140758468116
+    },
+    {
+      "frame": 232,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.00200176254628337
+    },
+    {
+      "frame": 232,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002057469522853239
+    },
+    {
+      "frame": 233,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.001923966752573003
+    },
+    {
+      "frame": 233,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002059757716542876
+    },
+    {
+      "frame": 234,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.001965588182468725
+    },
+    {
+      "frame": 234,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002095617935502281
+    },
+    {
+      "frame": 235,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0019495007365266659
+    },
+    {
+      "frame": 235,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002079013368858851
+    },
+    {
+      "frame": 236,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0019086131482541902
+    },
+    {
+      "frame": 236,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0019867814833207653
+    },
+    {
+      "frame": 237,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0018917603324850596
+    },
+    {
+      "frame": 237,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0018773799177322914
+    },
+    {
+      "frame": 238,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.001886562476969722
+    },
+    {
+      "frame": 238,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0018395030176830973
+    },
+    {
+      "frame": 239,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0018570662803050197
+    },
+    {
+      "frame": 239,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0018508670017203244
+    },
+    {
+      "frame": 240,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0018029406655710734
+    },
+    {
+      "frame": 240,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0018524260660395253
+    },
+    {
+      "frame": 241,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.001754661545648739
+    },
+    {
+      "frame": 241,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0018410034704511302
+    },
+    {
+      "frame": 242,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0017313426766449869
+    },
+    {
+      "frame": 242,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0018352492721511737
+    },
+    {
+      "frame": 243,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0017244996347371977
+    },
+    {
+      "frame": 243,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0018359830899465912
+    },
+    {
+      "frame": 244,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0017183439663461808
+    },
+    {
+      "frame": 244,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.001839165039822288
+    },
+    {
+      "frame": 245,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.001708366707388942
+    },
+    {
+      "frame": 245,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0018598676572295636
+    },
+    {
+      "frame": 246,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.001699656029869434
+    },
+    {
+      "frame": 246,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.001875736334455258
+    },
+    {
+      "frame": 247,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0016950387841490056
+    },
+    {
+      "frame": 247,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0018859822783583446
+    },
+    {
+      "frame": 248,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0016909838136012212
+    },
+    {
+      "frame": 248,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0019397057469077161
+    },
+    {
+      "frame": 249,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0016839238403965062
+    },
+    {
+      "frame": 249,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0019840521344307582
+    },
+    {
+      "frame": 250,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.001675542579226752
+    },
+    {
+      "frame": 250,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002013031085234429
+    },
+    {
+      "frame": 251,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0016700597516665638
+    },
+    {
+      "frame": 251,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002037063157015462
+    },
+    {
+      "frame": 252,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.001668599060511644
+    },
+    {
+      "frame": 252,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.00207162972535313
+    },
+    {
+      "frame": 253,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0016682750484577902
+    },
+    {
+      "frame": 253,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0021211114346051385
+    },
+    {
+      "frame": 254,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0016659926103814726
+    },
+    {
+      "frame": 254,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0021746678524046104
+    },
+    {
+      "frame": 255,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0016613398758564824
+    },
+    {
+      "frame": 255,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002218344266717409
+    },
+    {
+      "frame": 256,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0016557320949250887
+    },
+    {
+      "frame": 256,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0022490320684216414
+    },
+    {
+      "frame": 257,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0016502135304456989
+    },
+    {
+      "frame": 257,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002275345487733338
+    },
+    {
+      "frame": 258,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0016449404394935918
+    },
+    {
+      "frame": 258,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002306192600224355
+    },
+    {
+      "frame": 259,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.00164020781157026
+    },
+    {
+      "frame": 259,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0023409691012299394
+    },
+    {
+      "frame": 260,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0016370133127481257
+    },
+    {
+      "frame": 260,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002371611826257114
+    },
+    {
+      "frame": 261,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0016363724822383574
+    },
+    {
+      "frame": 261,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002392183771066536
+    },
+    {
+      "frame": 262,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0016384562403495284
+    },
+    {
+      "frame": 262,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002404232966238151
+    },
+    {
+      "frame": 263,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.00164266102302979
+    },
+    {
+      "frame": 263,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002413046844120137
+    },
+    {
+      "frame": 264,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0016483785090606329
+    },
+    {
+      "frame": 264,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002420933669614378
+    },
+    {
+      "frame": 265,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.001655486261367578
+    },
+    {
+      "frame": 265,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0024256638364545946
+    },
+    {
+      "frame": 266,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0016641567985948846
+    },
+    {
+      "frame": 266,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0024244600766651914
+    },
+    {
+      "frame": 267,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0016744388528679988
+    },
+    {
+      "frame": 267,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0024176295754485544
+    },
+    {
+      "frame": 268,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.001686140348214904
+    },
+    {
+      "frame": 268,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002407851608873024
+    },
+    {
+      "frame": 269,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0016990097182139063
+    },
+    {
+      "frame": 269,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002396947788688264
+    },
+    {
+      "frame": 270,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.00171289340983094
+    },
+    {
+      "frame": 270,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0023842303452279445
+    },
+    {
+      "frame": 271,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0017311713958649833
+    },
+    {
+      "frame": 271,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0023677081265720545
+    },
+    {
+      "frame": 272,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0017497359106672938
+    },
+    {
+      "frame": 272,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002346079178610294
+    },
+    {
+      "frame": 273,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0017686886234731247
+    },
+    {
+      "frame": 273,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002319317010550881
+    },
+    {
+      "frame": 274,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0017882369508419593
+    },
+    {
+      "frame": 274,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0022878315149366113
+    },
+    {
+      "frame": 275,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0018085405793133447
+    },
+    {
+      "frame": 275,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0022517187184381005
+    },
+    {
+      "frame": 276,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0018296626148961437
+    },
+    {
+      "frame": 276,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002210825817008377
+    },
+    {
+      "frame": 277,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.001851466588595585
+    },
+    {
+      "frame": 277,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0021653672160293347
+    },
+    {
+      "frame": 278,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0018735187924625585
+    },
+    {
+      "frame": 278,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002116244027326575
+    },
+    {
+      "frame": 279,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.001895100763154911
+    },
+    {
+      "frame": 279,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0020648166295424986
+    },
+    {
+      "frame": 280,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0019153412715191553
+    },
+    {
+      "frame": 280,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002012471719246234
+    },
+    {
+      "frame": 281,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.00193338987004954
+    },
+    {
+      "frame": 281,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.001960278947094052
+    },
+    {
+      "frame": 282,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0019485656580748856
+    },
+    {
+      "frame": 282,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0019090773785064297
+    },
+    {
+      "frame": 283,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.001960456283052636
+    },
+    {
+      "frame": 283,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.001859446629557615
+    },
+    {
+      "frame": 284,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.001968947352746664
+    },
+    {
+      "frame": 284,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0018560185250857675
+    },
+    {
+      "frame": 285,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.001974164567018377
+    },
+    {
+      "frame": 285,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.001860763702150492
+    },
+    {
+      "frame": 286,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0019763479446375243
+    },
+    {
+      "frame": 286,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.001865412854330617
+    },
+    {
+      "frame": 287,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0019759459981281147
+    },
+    {
+      "frame": 287,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0018699739116312397
+    },
+    {
+      "frame": 288,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0019777317000206907
+    },
+    {
+      "frame": 288,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.001874375946972484
+    },
+    {
+      "frame": 289,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0019774687878737485
+    },
+    {
+      "frame": 289,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0018785564328489546
+    },
+    {
+      "frame": 290,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.001975025056057955
+    },
+    {
+      "frame": 290,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0018824977494201756
+    },
+    {
+      "frame": 291,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0019702672394992238
+    },
+    {
+      "frame": 291,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0018863457419012741
+    },
+    {
+      "frame": 292,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0019631189861764042
+    },
+    {
+      "frame": 292,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0018901704456699697
+    },
+    {
+      "frame": 293,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0022078339597262353
+    },
+    {
+      "frame": 293,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0018940036796567528
+    },
+    {
+      "frame": 294,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0024084009769009818
+    },
+    {
+      "frame": 294,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0018977996547431264
+    },
+    {
+      "frame": 295,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002393252990702921
+    },
+    {
+      "frame": 295,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.001901477594900336
+    },
+    {
+      "frame": 296,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0024695892729678093
+    },
+    {
+      "frame": 296,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0019049628445046984
+    },
+    {
+      "frame": 297,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002334988777306757
+    },
+    {
+      "frame": 297,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.00190823120953032
+    },
+    {
+      "frame": 298,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002284334635229923
+    },
+    {
+      "frame": 298,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0019113162406911854
+    },
+    {
+      "frame": 299,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0022758930648199005
+    },
+    {
+      "frame": 299,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0019142646075628322
+    },
+    {
+      "frame": 300,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0023196568685592833
+    },
+    {
+      "frame": 300,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0019170751519433926
+    },
+    {
+      "frame": 301,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002318621945070598
+    },
+    {
+      "frame": 301,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0019196766473792426
+    },
+    {
+      "frame": 302,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0023382675353065263
+    },
+    {
+      "frame": 302,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0019219616796779526
+    },
+    {
+      "frame": 303,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0023330506552941
+    },
+    {
+      "frame": 303,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0019238426311544155
+    },
+    {
+      "frame": 304,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002307667217845255
+    },
+    {
+      "frame": 304,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0019252859459271132
+    },
+    {
+      "frame": 305,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0022846933906806033
+    },
+    {
+      "frame": 305,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.001926309488464062
+    },
+    {
+      "frame": 306,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0022903837817451755
+    },
+    {
+      "frame": 306,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0019269576318589055
+    },
+    {
+      "frame": 307,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0023313334948880104
+    },
+    {
+      "frame": 307,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0019272755414786458
+    },
+    {
+      "frame": 308,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0023804450930222654
+    },
+    {
+      "frame": 308,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.001927294485388975
+    },
+    {
+      "frame": 309,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0024204734095989444
+    },
+    {
+      "frame": 309,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0019270291738119338
+    },
+    {
+      "frame": 310,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0024408977642553786
+    },
+    {
+      "frame": 310,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0019264825185891787
+    },
+    {
+      "frame": 311,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0024251343934245106
+    },
+    {
+      "frame": 311,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.00192565184439486
+    },
+    {
+      "frame": 312,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0023705262564408525
+    },
+    {
+      "frame": 312,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0019245325803501911
+    },
+    {
+      "frame": 313,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002299840411469134
+    },
+    {
+      "frame": 313,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0019231198511593384
+    },
+    {
+      "frame": 314,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0022409313398856767
+    },
+    {
+      "frame": 314,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0019214115061271242
+    },
+    {
+      "frame": 315,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0022036791097208575
+    },
+    {
+      "frame": 315,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0019194143811106512
+    },
+    {
+      "frame": 316,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002190170185232043
+    },
+    {
+      "frame": 316,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0019171505063414473
+    },
+    {
+      "frame": 317,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002190330310739119
+    },
+    {
+      "frame": 317,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.001914657372875106
+    },
+    {
+      "frame": 318,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002189028859264086
+    },
+    {
+      "frame": 318,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0019119797751350198
+    },
+    {
+      "frame": 319,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002179434007435921
+    },
+    {
+      "frame": 319,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.001909157232492631
+    },
+    {
+      "frame": 320,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0021628507605786496
+    },
+    {
+      "frame": 320,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0019062144552409732
+    },
+    {
+      "frame": 321,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002143298194796417
+    },
+    {
+      "frame": 321,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0019031599044345704
+    },
+    {
+      "frame": 322,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0021244292824242894
+    },
+    {
+      "frame": 322,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0018999918741895439
+    },
+    {
+      "frame": 323,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002108402672552412
+    },
+    {
+      "frame": 323,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0018967074507341142
+    },
+    {
+      "frame": 324,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002094304409730796
+    },
+    {
+      "frame": 324,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0018933095131077327
+    },
+    {
+      "frame": 325,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0020781861011771596
+    },
+    {
+      "frame": 325,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0018898094797535903
+    },
+    {
+      "frame": 326,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.002055980648526301
+    },
+    {
+      "frame": 326,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0018862262526219142
+    },
+    {
+      "frame": 327,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0020266092460998753
+    },
+    {
+      "frame": 327,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0018825831873575671
+    },
+    {
+      "frame": 328,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.001992523997262685
+    },
+    {
+      "frame": 328,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.001878904863102271
+    },
+    {
+      "frame": 329,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0019579673290190946
+    },
+    {
+      "frame": 329,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0018752047357764035
+    },
+    {
+      "frame": 330,
+      "section": "Mane",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0019268328636075083
+    },
+    {
+      "frame": 330,
+      "section": "Tail",
+      "root_error_m": 0.0,
+      "max_relative_segment_error": 0.0018715017693636815
+    }
+  ],
+  "limitations": [
+    "Rigid motion harness does not animate horse legs.",
+    "Selected actual mane/tail regions move; fused geometry and feathered boundaries require cleanup. Remaining hair stays static.",
+    "Point/capsule and ground collision, no self-collision or triangle-mesh environment collision.",
+    "Collision radius approximates clump thickness; segment interiors and rendered strands need visual review.",
+    "Rider is a simplified seated proxy; no saddle/reins rig.",
+    "Baked offline animation, not Unreal runtime simulation."
+  ],
+  "skin": {
+    "Mane": {
+      "weighted_vertices": 25091,
+      "fully_weighted_vertices": 12130
+    },
+    "Tail": {
+      "weighted_vertices": 39924,
+      "fully_weighted_vertices": 13104
+    },
+    "original_vertices": 284848,
+    "original_triangles": 296859,
+    "method": "Original mesh retained intact; spatially feathered weights; all remaining vertices use StaticBody"
+  }
+}

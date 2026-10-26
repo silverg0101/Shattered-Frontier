@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "status": "local-target-improved-full-hoof-fix-not-accepted",
+  "original_edge_maximum_m": 0.027081,
+  "corrected_edge_maximum_m": 0.004058,
+  "region_edges": 2153,
+  "changed_weight_vertices": 785,
+  "region_maximum_before_m": 0.02758545504851126,
+  "region_maximum_after_m": 0.020941154137823468,
+  "regressions": {
+    "reference": "walk-v001",
+    "source": "walk-v003",
+    "reporting_floor_m": 1e-05,
+    "edges_increased_above_reporting_floor": 1433,
+    "edges_decreased_above_reporting_floor": 683,
+    "maximum_increase_m": 0.020604743714786405,
+    "maximum_increase_edge": [
+      95819,
+      95820
+    ],
+    "reference_error_at_maximum_increase_m": 1.2277060018606178e-07,
+    "candidate_error_at_maximum_increase_m": 0.02060486648538659
+  },
+  "reason": "Continuous XY fade changes previously rigid hoof-shell weights. A single repaired edge and a lower regional maximum cannot hide new stretching elsewhere. Anatomical hoof selection is required before another correction.",
+  "unchanged": [
+    "contact limits",
+    "sole anchors",
+    "geometry/UV/materials",
+    "skeleton binds"
+  ],
+  "automatic_primary_budget": {
+    "limit": 3,
+    "used": 3,
+    "reset": false
+  },
+  "walk_stage_budget": {
+    "limit": 3,
+    "used": 3
+  },
+  "reviewed_code_corrections": 4,
+  "total_primary_candidates": 8,
+  "promotion": "None; source remains prototype, no automatic fourth walk or new weight sweep."
+}

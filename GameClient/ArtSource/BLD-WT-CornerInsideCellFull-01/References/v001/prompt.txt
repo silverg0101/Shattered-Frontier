@@ -1,0 +1,5 @@
+Concept-sheet prompt (exact):
+Construction concept sheet, one cubic 90-degree inside wall corner in worked timber, a true concave L-shaped join with two perpendicular flush faces; show stacked horizontal oak planks around corner, orthographic front and top details beside isometric view, pale background, no text. Keep existing corner-inner shape envelope, contacts and clearance; no new gameplay properties. Concept proposal.
+
+Clean asset-view prompt (exact):
+View from inside a room into a concave 90-degree interior corner made by two worked-timber plank walls. The corner apex recedes away from camera; both inside faces create a clear inward V, not a projecting exterior point. Show one L-shaped corner segment with joined horizontal plank ends, no extra trim, pale neutral studio setting, no text.

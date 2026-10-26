@@ -1,0 +1,31 @@
+{
+  "status": "local-cloth-branch-exhausted-needs-representation-review",
+  "attempts_used": 3,
+  "attempt_limit": 3,
+  "promotion": false,
+  "global_budgets_reset": false,
+  "source_unchanged": true,
+  "results": {
+    "held_final_free_speed_m_s": 0.289624969663165,
+    "maximum_free_step_m": 0.07191700960696927,
+    "maximum_reopened_replay_error_m": 0.0,
+    "maximum_pin_error_m": 2.9802322387695312e-08,
+    "winding_corrections": [
+      {
+        "component": 1,
+        "canonical_nodes_sha256": "ff05bbf9eaef9a6653ff20be5189d1babe6f23383f445968a5f5df23b606492b",
+        "evidence_path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeRestVolumeInspection-v003/contacts.json"
+      }
+    ]
+  },
+  "maximum_edge_change_m": 0.02259143095136537,
+  "minimum_unsigned_leg_gap_m": 6.135515832284e-06,
+  "findings": [
+    "Reviewed component1 orientation correction verified: eligible free normal rays0to43, reverse43to0, fan volume negative to positive, other components unchanged.",
+    "Held speed improves0.440to0.290m/s but startup is not accepted; maximum free step worsens67.859to71.917mm.",
+    "Edge deformation22.591mm and sampled proximity6.14micrometres remain. Exact root/source sampling/reopened replay does not approve physics.",
+    "Whole-context and anatomical convex collider alternatives both intrude into source fringe; neither installed.",
+    "No local fourth bake. A new representation requires an explicit reviewed design/stage decision rather than resetting this counter."
+  ],
+  "next": "Advance independent main Tail actual-surface failure localization and pending semantic/material/primary tasks. For this fringe, retain correct primary follow and design a shape-preserving representation/contact proxy with reviewed anatomy before any new stage."
+}

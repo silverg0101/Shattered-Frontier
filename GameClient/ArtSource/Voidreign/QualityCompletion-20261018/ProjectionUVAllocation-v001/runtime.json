@@ -1,0 +1,7 @@
+{
+  "python": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+  "numpy": "2.4.3",
+  "pillow": "12.2.0",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "source_export_runtime": "Blender 5.1.1; CPU 4 threads; see projection-uv-topology-v001.log"
+}

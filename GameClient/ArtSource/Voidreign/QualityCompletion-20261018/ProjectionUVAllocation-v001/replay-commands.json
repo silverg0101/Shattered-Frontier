@@ -1,0 +1,8 @@
+{
+  "scope": "Correctly spaced shell arguments supplement the frozen kit prose; no evidence change.",
+  "commands": [
+    "& 'C:/Program Files/Blender Foundation/Blender 5.1/blender.exe' --background --factory-startup --threads 4 --python-exit-code 1 --python GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ProjectionUVTopology-v001/tool-source.py -- --profile GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ProjectionUVTopology-v001/profile.json --output <NEW_EXPORT_FOLDER>",
+    "py -3 GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ProjectionUVAllocation-v001/tool-source.py --profile GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ProjectionUVAllocation-v001/profile.json --output <NEW_MEASUREMENT_FOLDER>"
+  ],
+  "note": "Use workspace cwd and new empty output paths. Measurement profile pins the original exported evidence and raster inputs; intentionally updating inputs requires a new profile with all matching hashes."
+}

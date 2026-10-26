@@ -1,0 +1,28 @@
+{
+ "schema_version": 1,
+ "asset_name": "SK_Voidreign",
+ "library": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ClipLibrary-v003/Voidreign-ClipLibrary.blend",
+ "clips_report": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ClipLibrary-v003/clips.json",
+ "object": "geometry_0",
+ "root_bone": "root",
+ "root_bone_length_m": 0.3,
+ "dielectric_override": 0.0,
+ "reimport_tolerance_m": 0.001,
+ "permissions": "User-authorized production delivery 2026-10-19; materials attempt 3/3 = dielectric override of invalid uniform metallic map.",
+ "input_sha256": {
+  "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ClipLibrary-v003/Voidreign-ClipLibrary.blend": "e6097f6e2f84d384887ed0ae140692a843b6ec093b28303b04a410df291ae990",
+  "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ClipLibrary-v003/clips.json": "b88b466f264cb961b94148d78b6f72641d47231b753e7de4397312a5866c20ab"
+ },
+ "extra_bones": [
+  {
+   "name": "RiderSeat",
+   "parent": "PRI.body.spine",
+   "head_world_m": [
+    0.0,
+    0.07500000298023224,
+    1.663394808769226
+   ],
+   "length_m": 0.15
+  }
+ ]
+}

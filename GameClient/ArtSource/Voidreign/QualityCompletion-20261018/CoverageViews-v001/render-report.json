@@ -1,0 +1,29 @@
+{
+  "status": "rest-point-coverage-views-only",
+  "cpu_only": true,
+  "source_sha256": "6c6044a533c16fc7fad23d42c0407dde37a0252aca84f9be1bc9b9a2367364f6",
+  "mesh_hash": "ba2d283db0be5e8cff4cc7549f1f51916cc0a4d18213773300976b11512ececa",
+  "coverage_sha256": "a74123b9144d44a360f8e5a891df5733d8914226a26c3c9149437578e4ee6123",
+  "tool_sha256": "55f5403f002893e1fd7f20d4016e80005d928d55fd4583ff2412c05e20d1cbff",
+  "renders": [
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\CoverageViews-v001\\original-side-posX.png",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\CoverageViews-v001\\original-side-negX.png",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\CoverageViews-v001\\original-rear.png",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\CoverageViews-v001\\proposed-side-posX.png",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\CoverageViews-v001\\proposed-side-negX.png",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\CoverageViews-v001\\proposed-rear.png"
+  ],
+  "legend": {
+    "gray": "outside selected features",
+    "blue": "protected or existing excluded root band",
+    "green": "distance<=50mm",
+    "amber": "50-100mm",
+    "red": "100-200mm",
+    "magenta": ">200mm"
+  },
+  "limitations": [
+    "Depth-tested rest point distance only; not a rendered motion/collision pass or semantic/guide path approval.",
+    "Diagnostic materials replace source materials in memory only; source file is not saved.",
+    "No guide curves drawn; color shows point-to-nearest-segment distances."
+  ]
+}

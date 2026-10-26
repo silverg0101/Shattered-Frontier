@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "asset_id": "Voidreign",
+  "source": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryOnlyCombinedFull-v001\\Voidreign-ActualSurfacePilot.blend",
+  "next_asset_task": "VR-RIG-01-authored-boundary-code-review",
+  "items": [
+    {
+      "id": "VR-PRIMARY-01",
+      "status": "proposal-reviewed-for-pilot"
+    },
+    {
+      "id": "VR-RIG-01",
+      "status": "needs-review-skin-boundary-and-solver"
+    },
+    {
+      "id": "VR-IDLE-01",
+      "status": "blocked-by-predecessor"
+    },
+    {
+      "id": "VR-WALK-01",
+      "status": "blocked-by-predecessor"
+    },
+    {
+      "id": "VR-RUN-01",
+      "status": "blocked-by-predecessor"
+    },
+    {
+      "id": "VR-TURN-01",
+      "status": "blocked-by-predecessor"
+    },
+    {
+      "id": "VR-ATTACH-01",
+      "status": "in-progress-disconnected-subset-inventoried"
+    },
+    {
+      "id": "VR-SECONDARY-01",
+      "status": "blocked-by-predecessor"
+    }
+  ],
+  "primary_rig_budget": {
+    "max_attempts": 3,
+    "used": 3,
+    "scope": "New primary anatomical skeleton/skin pilot; historical hair attempt counts unchanged",
+    "status": "exhausted-no-automatic-new-repair"
+  },
+  "current_candidate": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryStandingSkinRepair-v001\\Mount-StandingSkinRepair.blend",
+  "current_report": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimarySkinBoundaryReview-v001\\review.json",
+  "next_independent_task": "VR-ATTACH-01-isolated-item-review"
+}

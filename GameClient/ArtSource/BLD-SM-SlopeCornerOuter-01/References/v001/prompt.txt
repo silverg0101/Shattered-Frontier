@@ -1,0 +1,13 @@
+Rejected first concept output `exec-0e222f3d-e4c3-497e-afaa-412f42827693.png`, retained as `rejected-hollow-views-sheet.png`:
+
+No-text orthographic concept sheet for BLD-SM-SlopeCornerOuter-01. One convex corner-outer/v1 stone wedge, 0.5 m cell envelope proposal, solid w<=min(u,v), low square-based pyramidal mass with four 1:1 slope faces meeting at a convex peak. Show three orthographic views, top, underside and one isometric of the same single object. Gray-tan flush stone appearance, subtle texture, no extra blocks, no assembly, no corner post, no people, no labels or props. Preserve conceptual boundaries, not numerical geometry.
+
+Selected corrected concept output `exec-30a78988-a79c-4920-b654-3a5599a14ad7.png`:
+
+One component, same view repeated consistently: a low square-based pyramidal stone corner wedge representing proposed corner-outer/v1, solid w<=min(u,v), 0.5 m envelope target. Concept sheet has three orthographic elevations plus one isometric of that exact single closed solid; no hollow underside, no open cavity, no wall or assembly. Gray-tan flat stone surface with subtle coursing, all detail within silhouette. No labels or words, no background scene. Keep the same pyramid silhouette in every view. This is a visual proposal, not geometric verification.
+
+Selected clean-view output `exec-91ce5ed1-5245-4971-84cf-141d8ec01ed0.png`:
+
+Single isolated low square-based pyramidal stone corner wedge, three-quarter clean asset view for BLD-SM-SlopeCornerOuter-01. Represents proposed corner-outer/v1: 0.5 m cell envelope and solid w<=min(u,v), four low 1:1 slopes meet at a convex ridge/peak. Simple coherent solid, no hollow underside, no cavity, no hollow box, no separate pieces, no assembly, no wall, no base plinth, no people or text. Gray-tan masonry skin as a restrained flush surface texture. Pale neutral ground. Image is a style study only; exact geometry not validated.
+
+No reference image attached; related KIT-SM components were textual style cues only.

@@ -1,0 +1,8 @@
+{
+  "status": "verified",
+  "manifest": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\FeatureOwnershipReproductionKit-v001\\manifest.json",
+  "files": 80,
+  "copied_bytes": 10866172,
+  "self_contained": false,
+  "note": "Copied snapshots and external inputs verified. Final checkpoint/job bookkeeping follows frozen snapshot intentionally."
+}

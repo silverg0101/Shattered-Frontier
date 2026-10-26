@@ -1,0 +1,5 @@
+Concept sheet prompt:
+Stylized-concept architectural game asset sheet, old-world frontier construction, no people, no text. Rough timber full-cell wall-to-floor junction: plain vertical rough oak wall module meets one perpendicular horizontal floor module at a flush 90-degree seam, no visible protruding joists, no floor overhang, no support bracket. Show a small clean junction assembly and an isolated wall-floor interface module with top, side and front views on warm gray neutral background. Match handcrafted rough timber reference appearance, keep contacts legible. Concept only, no engineering claims.
+
+Clean view prompt:
+Stylized concept game asset, no people, no text. Isolated clean full-asset orthographic three-quarter view of one rough timber wall-to-floor junction module: a single plain vertical rough oak full-cell wall meeting a single horizontal floor panel at a flush 90-degree seam. No extra floor overhang, no visible protruding joists, no braces. Neutral warm gray studio background, handcrafted rough timber appearance, simple readable contact planes. Visual reference only, not dimensionally validated.

@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "units": "metres",
+  "source": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\WalkPilot-v003\\Mount-WalkPilot.blend",
+  "region_roots": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\FullLegFringeRoots-v001\\region-roots.npz",
+  "object": "geometry_0",
+  "primary_rig": "PRIMARY | anatomical rig pilot",
+  "allowed_support_bones": [
+    "PRI.hind.L.hip",
+    "PRI.hind.L.stifle",
+    "PRI.hind.L.hock",
+    "PRI.hind.L.fetlock"
+  ],
+  "frame_start": 1,
+  "frame_end": 73,
+  "permissions": "Read-only support weights and actual existing walk trajectories. No source or skin candidate.",
+  "effective_time": "Frozen source and local geometric root proposal only",
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\WalkPilot-v003\\Mount-WalkPilot.blend": "f59dc38bff697b6c2a2c84511413d2e292d9fdbb278acc69cd8df6d26a5bd123",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\FullLegFringeRoots-v001\\region-roots.npz": "6c87dc69d6bbcf1ea76f7ca12e4f860940f328782c4a374a0a33278008bdf682"
+  }
+}

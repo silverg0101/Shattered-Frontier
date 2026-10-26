@@ -1,0 +1,9 @@
+Concept-sheet prompt (selected; image_gen output `exec-51766c18-2490-4bf3-b3d1-9a905315bb0c.png`):
+
+Concept sheet for construction material appearance role BLD-SM-EndExposedCellFull-01, single stone masonry full-cell cube concept, 0.5 m cube design target. Show orthographic front/back end faces, both side faces, top and underside as separate square views plus one small isometric image. All planes flush, perfectly consistent cube envelope; stones are flat-face coursed masonry set flush with no projecting stones, no corner quoins, no trim. Exposed end faces show distinct cut stone ends and bed joints matching the restrained gray-tan stone masonry style. Pale neutral background, no people, no props, no additional scene, no text, no geometry variants. Realistic stylized game concept art with clear edge boundaries. Texture and mortar remain within the planar envelope; image dimensions are not measured geometry.
+
+Clean-view prompt (selected; image_gen output `exec-d2f8d5af-71a2-4693-8f4b-175c13a1bb18.png`):
+
+One isolated square masonry construction cube in three-quarter orthographic view, centered on a neutral pale background, for BLD-SM-EndExposedCellFull-01. Full-cell nominal design target 0.5 x 0.5 x 0.5 m. Clearly show a flush coursed stone end face on the front and an adjoining stone course side face. Flat planar faces, right-angle cube, no quoins, no protrusions, no broken stones, no trim, no extra base, no props or scenery. Medium gray-tan block masonry with fine mortar joints, consistent with practical frontier architecture. Surface details remain contained within the exact cube silhouette. No text. Clean full-asset concept view, no assembly.
+
+No reference image was attached; related KIT-SM art was a textual style cue only.

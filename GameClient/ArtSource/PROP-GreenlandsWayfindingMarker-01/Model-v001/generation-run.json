@@ -1,0 +1,51 @@
+{
+  "backend": "Pixal3D",
+  "status": "complete",
+  "seed": 42,
+  "pipeline": "1024_cascade",
+  "steps": 12,
+  "asset_name": "PROP-GreenlandsWayfindingMarker-01",
+  "image": "/mnt/c/Projects/Shattered-Frontier/Artifacts/Art/GreenlandsModelBatch-20261018/PROP-GreenlandsWayfindingMarker-01/attempt-03/PROP-GreenlandsWayfindingMarker-01.rgba.png",
+  "image_sha256": "04fc96efccdae4e48ded8d86bbf12d5168488b80ab2d18ba8a37b3270eae5a5d",
+  "reference_image": "/mnt/c/Projects/Shattered-Frontier/GameClient/ArtSource/PROP-GreenlandsWayfindingMarker-01/References/v001/asset-view.png",
+  "reference_image_sha256": "46410437aebd82f433db2adfc14667c7287ddcefd7cffd3b1ace0aec4b0ac182",
+  "torch": "2.14.0+rocm10.1.0",
+  "hip": "7.16.26385",
+  "gpu": "AMD Radeon RX 7900 XTX",
+  "stages": {
+    "load_seconds": 41.026,
+    "camera_seconds": 6.081,
+    "inference_seconds": 199.947,
+    "export_seconds": 18.449
+  },
+  "texture_size": 2048,
+  "decimation_target": 300000,
+  "max_num_tokens": 49152,
+  "attention": "dense and sparse PyTorch SDPA; NAF shifted dilated neighborhoods via chunked PyTorch",
+  "stage": "complete",
+  "model_revision": "b0cb2e1b794cab9aa0ac38a95d794a4d9337437f",
+  "camera_params": {
+    "camera_angle_x": 0.5146756649108172,
+    "distance": 1.8998910188674927,
+    "mesh_scale": 1.0
+  },
+  "raw_mesh": {
+    "vertices": 916082,
+    "faces": 1845730
+  },
+  "effective_grid_resolution": 1024,
+  "files": {
+    "PROP-GreenlandsWayfindingMarker-01.preprocessed.png": {
+      "sha256": "c3ebb78956b9a471c07c96c226dc1d2606682d2c7d71db23cba19e8eb6a3bdad",
+      "bytes": 286848
+    },
+    "PROP-GreenlandsWayfindingMarker-01.raw.ply": {
+      "sha256": "716f10bc4cecef736f173dd3248aaafe54dd004ee49d748da6fff1e7e344ce53",
+      "bytes": 34987696
+    },
+    "PROP-GreenlandsWayfindingMarker-01.glb": {
+      "sha256": "a03ef328211dbf8d4beb67a9205a0878c85c7d46ee380e3cd55ea3fe8751adb2",
+      "bytes": 16910320
+    }
+  }
+}

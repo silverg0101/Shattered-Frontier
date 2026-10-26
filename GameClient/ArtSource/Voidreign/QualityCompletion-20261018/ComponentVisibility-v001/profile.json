@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "samples_per_component": 128,
+  "hit_tolerance_m": 0.003,
+  "low_visibility_fraction": 0.01,
+  "units": "metres; indexed-vertex fraction",
+  "permissions": "Offline read-only reviewer; new pinned revision required to change sampling",
+  "effective_time": "Next fresh visibility report; never automatic deletion or semantic acceptance"
+}

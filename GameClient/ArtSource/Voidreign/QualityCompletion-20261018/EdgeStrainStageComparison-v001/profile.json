@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "object": "geometry_0",
+  "mesh_hash": "ba2d283db0be5e8cff4cc7549f1f51916cc0a4d18213773300976b11512ececa",
+  "sources": [
+    {
+      "id": "guide-only",
+      "path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ContactMeshExperiment-v001\\Voidreign-CompleteHair.blend"
+    },
+    {
+      "id": "tail-cloth",
+      "path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ActualTailCloth-v001\\Voidreign-ActualSurfacePilot.blend"
+    },
+    {
+      "id": "tail-corrective",
+      "path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\TailSurfaceContacts-v001\\Voidreign-SurfaceContacts.blend"
+    },
+    {
+      "id": "mane-cloth",
+      "path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManeClothSettledFull-v001\\Voidreign-ActualSurfacePilot.blend"
+    },
+    {
+      "id": "mane-corrective",
+      "path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManeSurfaceContacts-v001\\Voidreign-SurfaceContacts.blend"
+    },
+    {
+      "id": "final-cache",
+      "path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\CompleteMotionCache-v001\\Voidreign-ActualSurfacePilot.blend"
+    }
+  ],
+  "cases": [
+    {
+      "id": "Mane-relative",
+      "edge": [
+        71566,
+        71578
+      ],
+      "frame": 120
+    },
+    {
+      "id": "Mane-absolute",
+      "edge": [
+        9095,
+        9114
+      ],
+      "frame": 124
+    },
+    {
+      "id": "Tail-relative",
+      "edge": [
+        263709,
+        263710
+      ],
+      "frame": 185
+    },
+    {
+      "id": "Tail-absolute",
+      "edge": [
+        246779,
+        246783
+      ],
+      "frame": 268
+    }
+  ],
+  "units": "metres",
+  "permissions": "CPU read-only owning-stage diagnosis; no source or mask changes",
+  "effective_time": "Frozen source cases only",
+  "rest_selection": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz",
+  "free_surface_review": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ContactMeshSurfaceCheck-v001\\surface-review.npz",
+  "weight_field": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneGuideProposal-v001\\weight-field.npz",
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ContactMeshExperiment-v001\\Voidreign-CompleteHair.blend": "a1de9660c66c772cdb4cedec20ac5b1a2229a4417af46550f8167f915680c140",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ActualTailCloth-v001\\Voidreign-ActualSurfacePilot.blend": "83f2b5117eb62a05c2097cba0443350616e631ecc3d9e8cc98e0690e85077d28",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\TailSurfaceContacts-v001\\Voidreign-SurfaceContacts.blend": "da5ed6b5e4f971c51c45aacac08ba27f52a05ccdfbbc6cf7fb8e434ec373d1cc",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManeClothSettledFull-v001\\Voidreign-ActualSurfacePilot.blend": "3993764fc40cc42baabb07be05f1014831bff83706e68bdd7574643be9625dd8",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManeSurfaceContacts-v001\\Voidreign-SurfaceContacts.blend": "b69e4ceeefbf0a4fcffa7faa6f114d76b94d37cb807ac92f8dd7ae971c925055",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\CompleteMotionCache-v001\\Voidreign-ActualSurfacePilot.blend": "a5e69cab0f484b2180809b8f60cb61ade34e227bd75ecdecfed97a7f87ae3cb9",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManeClothSettledFull-v001\\Settled-feature-motion.mdd": "9600f29031b5b43b0f285ec56de60f7b3ba8ffdf2beb0ecab80da0ea8432ec52",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\CompleteMotionCache-v001\\Feature-actual-motion.mdd": "92f65009a6bdfbc677b24c1a767db9f294fa8e1128db66bae68545c9c9927cf1",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\CompleteMotionCache-v001\\Tail-actual-motion.mdd": "41214c51a69e0d6f27085ab1c1adc08bd566feea1a039f95670b4d4dad0f14bf",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ActualTailCloth-v001\\blendcache_Voidreign-ActualSurfacePilot\\ActualSurfacePilot_000120_00.bphys": "b3b0fbb1aae402beb827b17244bc3054bb54cf44d84dcb054e98ca969a6e5507",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ActualTailCloth-v001\\blendcache_Voidreign-ActualSurfacePilot\\ActualSurfacePilot_000124_00.bphys": "6181348326a4ef313e229c465d72946737ef7a81b8b80fb157abed5a862de898",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ActualTailCloth-v001\\blendcache_Voidreign-ActualSurfacePilot\\ActualSurfacePilot_000185_00.bphys": "2272c647dd52f9464ccdc4e0104f81c8aaa6e8a8f4e86ab0df50a51be0309347",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ActualTailCloth-v001\\blendcache_Voidreign-ActualSurfacePilot\\ActualSurfacePilot_000268_00.bphys": "fcd68386d5acfc081d9ff7fb9e1c464ec48694fba24e61f2852723407c008471",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\TailSurfaceContacts-v001\\blendcache_Voidreign-SurfaceContacts\\ActualSurfacePilot_000120_00.bphys": "b3b0fbb1aae402beb827b17244bc3054bb54cf44d84dcb054e98ca969a6e5507",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\TailSurfaceContacts-v001\\blendcache_Voidreign-SurfaceContacts\\ActualSurfacePilot_000124_00.bphys": "6181348326a4ef313e229c465d72946737ef7a81b8b80fb157abed5a862de898",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\TailSurfaceContacts-v001\\blendcache_Voidreign-SurfaceContacts\\ActualSurfacePilot_000185_00.bphys": "2272c647dd52f9464ccdc4e0104f81c8aaa6e8a8f4e86ab0df50a51be0309347",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\TailSurfaceContacts-v001\\blendcache_Voidreign-SurfaceContacts\\ActualSurfacePilot_000268_00.bphys": "fcd68386d5acfc081d9ff7fb9e1c464ec48694fba24e61f2852723407c008471",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManeClothSettledFull-v001\\blendcache_Voidreign-ActualSurfacePilot\\ActualSurfacePilot_000120_00.bphys": "b3b0fbb1aae402beb827b17244bc3054bb54cf44d84dcb054e98ca969a6e5507",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManeClothSettledFull-v001\\blendcache_Voidreign-ActualSurfacePilot\\ActualSurfacePilot_000124_00.bphys": "6181348326a4ef313e229c465d72946737ef7a81b8b80fb157abed5a862de898",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManeClothSettledFull-v001\\blendcache_Voidreign-ActualSurfacePilot\\ActualSurfacePilot_000185_00.bphys": "2272c647dd52f9464ccdc4e0104f81c8aaa6e8a8f4e86ab0df50a51be0309347",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManeClothSettledFull-v001\\blendcache_Voidreign-ActualSurfacePilot\\ActualSurfacePilot_000268_00.bphys": "fcd68386d5acfc081d9ff7fb9e1c464ec48694fba24e61f2852723407c008471",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManeSurfaceContacts-v001\\blendcache_Voidreign-SurfaceContacts\\ActualSurfacePilot_000120_00.bphys": "b3b0fbb1aae402beb827b17244bc3054bb54cf44d84dcb054e98ca969a6e5507",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManeSurfaceContacts-v001\\blendcache_Voidreign-SurfaceContacts\\ActualSurfacePilot_000124_00.bphys": "6181348326a4ef313e229c465d72946737ef7a81b8b80fb157abed5a862de898",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManeSurfaceContacts-v001\\blendcache_Voidreign-SurfaceContacts\\ActualSurfacePilot_000185_00.bphys": "2272c647dd52f9464ccdc4e0104f81c8aaa6e8a8f4e86ab0df50a51be0309347",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManeSurfaceContacts-v001\\blendcache_Voidreign-SurfaceContacts\\ActualSurfacePilot_000268_00.bphys": "fcd68386d5acfc081d9ff7fb9e1c464ec48694fba24e61f2852723407c008471",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz": "0d7599c8064cb81a6e211a23731435e08939b7fb146ce2d4bed810273909a2b2",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ContactMeshSurfaceCheck-v001\\surface-review.npz": "e8df9e74a7ddd7ddb44654989f1f5f0474d853a43350c32e0674a15163c68c85",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneGuideProposal-v001\\weight-field.npz": "e397b54127123c7ad863706d650bb780b7489a5f82bf2a3b9d74bd16eb480f91"
+  }
+}

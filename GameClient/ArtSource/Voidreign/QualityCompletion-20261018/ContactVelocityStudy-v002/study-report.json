@@ -1,0 +1,310 @@
+{
+  "schema_version": 1,
+  "status": "passed-isolated-velocity-fixtures-only",
+  "cpu_only": true,
+  "fixture_count": 15,
+  "results": [
+    {
+      "name": "no-contact-preserves-motion",
+      "candidate_m_s": [
+        1.0,
+        2.0,
+        3.0
+      ],
+      "resolved_m_s": [
+        1.0,
+        2.0,
+        3.0
+      ],
+      "expected_m_s": [
+        1.0,
+        2.0,
+        3.0
+      ],
+      "maximum_absolute_error_m_s": 0.0,
+      "passed": true,
+      "status": "passed-velocity-constraints-only",
+      "iterations": 1,
+      "maximum_approach_residual_m_s": 0.0
+    },
+    {
+      "name": "static-plane-rest",
+      "candidate_m_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "resolved_m_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected_m_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "maximum_absolute_error_m_s": 0.0,
+      "passed": true,
+      "status": "passed-velocity-constraints-only",
+      "iterations": 1,
+      "maximum_approach_residual_m_s": -0.0
+    },
+    {
+      "name": "static-plane-gravity-approach",
+      "candidate_m_s": [
+        0.0,
+        0.0,
+        -1.0
+      ],
+      "resolved_m_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected_m_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "maximum_absolute_error_m_s": 0.0,
+      "passed": true,
+      "status": "passed-velocity-constraints-only",
+      "iterations": 1,
+      "maximum_approach_residual_m_s": -0.0
+    },
+    {
+      "name": "static-plane-frictionless-slide",
+      "candidate_m_s": [
+        2.0,
+        3.0,
+        -1.0
+      ],
+      "resolved_m_s": [
+        2.0,
+        3.0,
+        0.0
+      ],
+      "expected_m_s": [
+        2.0,
+        3.0,
+        0.0
+      ],
+      "maximum_absolute_error_m_s": 0.0,
+      "passed": true,
+      "status": "passed-velocity-constraints-only",
+      "iterations": 1,
+      "maximum_approach_residual_m_s": -0.0
+    },
+    {
+      "name": "separating-normal-kept",
+      "candidate_m_s": [
+        2.0,
+        0.0,
+        1.0
+      ],
+      "resolved_m_s": [
+        2.0,
+        0.0,
+        1.0
+      ],
+      "expected_m_s": [
+        2.0,
+        0.0,
+        1.0
+      ],
+      "maximum_absolute_error_m_s": 0.0,
+      "passed": true,
+      "status": "passed-velocity-constraints-only",
+      "iterations": 1,
+      "maximum_approach_residual_m_s": 0.0
+    },
+    {
+      "name": "initial-penetration-no-launch",
+      "candidate_m_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "resolved_m_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "expected_m_s": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "maximum_absolute_error_m_s": 0.0,
+      "passed": true,
+      "status": "passed-velocity-constraints-only",
+      "iterations": 1,
+      "maximum_approach_residual_m_s": -0.0,
+      "baseline_verlet_inferred_m_s": [
+        0.0,
+        0.0,
+        4.8
+      ],
+      "summed_contact_correction_m": [
+        0.0,
+        0.0,
+        0.02
+      ]
+    },
+    {
+      "name": "capsule-flank-normal-slide",
+      "candidate_m_s": [
+        -2.0,
+        3.0,
+        1.0
+      ],
+      "resolved_m_s": [
+        0.0,
+        3.0,
+        1.0
+      ],
+      "expected_m_s": [
+        0.0,
+        3.0,
+        1.0
+      ],
+      "maximum_absolute_error_m_s": 0.0,
+      "passed": true,
+      "status": "passed-velocity-constraints-only",
+      "iterations": 1,
+      "maximum_approach_residual_m_s": -0.0
+    },
+    {
+      "name": "capsule-endcap-normal-slide",
+      "candidate_m_s": [
+        2.0,
+        -3.0,
+        1.0
+      ],
+      "resolved_m_s": [
+        2.0,
+        0.0,
+        1.0
+      ],
+      "expected_m_s": [
+        2.0,
+        0.0,
+        1.0
+      ],
+      "maximum_absolute_error_m_s": 0.0,
+      "passed": true,
+      "status": "passed-velocity-constraints-only",
+      "iterations": 1,
+      "maximum_approach_residual_m_s": -0.0
+    },
+    {
+      "name": "moving-plane-relative-normal",
+      "candidate_m_s": [
+        2.0,
+        0.0,
+        -1.0
+      ],
+      "resolved_m_s": [
+        2.0,
+        0.0,
+        3.0
+      ],
+      "expected_m_s": [
+        2.0,
+        0.0,
+        3.0
+      ],
+      "maximum_absolute_error_m_s": 0.0,
+      "passed": true,
+      "status": "passed-velocity-constraints-only",
+      "iterations": 1,
+      "maximum_approach_residual_m_s": -0.0
+    },
+    {
+      "name": "two-static-contact-corner",
+      "candidate_m_s": [
+        -2.0,
+        3.0,
+        -1.0
+      ],
+      "resolved_m_s": [
+        0.0,
+        3.0,
+        0.0
+      ],
+      "expected_m_s": [
+        0.0,
+        3.0,
+        0.0
+      ],
+      "maximum_absolute_error_m_s": 0.0,
+      "passed": true,
+      "status": "passed-velocity-constraints-only",
+      "iterations": 1,
+      "maximum_approach_residual_m_s": -0.0
+    },
+    {
+      "name": "contradictory-moving-walls-reported",
+      "passed": true,
+      "status": "unresolved-velocity-constraints",
+      "iterations": 32,
+      "maximum_approach_residual_m_s": 2.0
+    },
+    {
+      "name": "translating-capsule-fixed-material-parameter",
+      "velocity_m_s": [
+        2.0,
+        0.0,
+        0.0
+      ],
+      "passed": true
+    },
+    {
+      "name": "rotating-axis-fixed-material-parameter",
+      "velocity_m_s": [
+        0.5999900000499999,
+        0.0,
+        -0.0029999750000841985
+      ],
+      "endpoint_length_m": 1.0,
+      "expected_m_s": [
+        0.5999900000499999,
+        0.0,
+        -0.0029999750000841985
+      ],
+      "passed": true
+    },
+    {
+      "name": "oblique-contact-order-dependence-exposed",
+      "forward_m_s": [
+        0.4999999999999999,
+        -0.5000000000000001,
+        0.0
+      ],
+      "reverse_m_s": [
+        0.0,
+        -2.220446049250313e-16,
+        0.0
+      ],
+      "passed": true,
+      "meaning": "Both feasible, different impulses; candidate is not a nearest-velocity solver."
+    },
+    {
+      "name": "undefined-axis-contact-normal-rejected",
+      "passed": true
+    }
+  ],
+  "profile_sha256": "cb9d67d0afcff58b6d2a4332baa80f87dfef19956ee31b2b7627816c6bca5bed",
+  "tool_sha256": "d9e39736e181c9826b0b29e00e4e14f8c685d2bd65886e6108c55a2c2bd4812d",
+  "solver_sha256": "9d0cb141cdf8c6777676b3e8ffa108d59ee434e5e4f3d1ea2baf67d3835aafb4",
+  "limitations": [
+    "Analytic velocity projection only, not an actual-mesh or complete strand simulation.",
+    "No position constraint solve, active-set discovery, pinned-root feasibility, substep release, swept/finite-width/self collision.",
+    "Capsule normals supplied analytically; degenerate normal rejected, not auto-repaired.",
+    "Material velocity adapter covers axis endpoints, not radial material spin on thick rotating capsules.",
+    "Removing depenetration contribution does not prevent internal-constraint energy or guarantee stable coupled motion.",
+    "Sequential normal projections are contact-order dependent and do not guarantee minimum impulse; oblique fixture exposes this.",
+    "Existing model attempts, surface limits, saved mesh and animation unchanged."
+  ]
+}

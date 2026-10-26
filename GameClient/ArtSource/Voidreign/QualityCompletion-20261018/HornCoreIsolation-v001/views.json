@@ -1,0 +1,210 @@
+{
+  "source": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\RootRepair-v003\\Voidreign-HairPrototype.blend",
+  "source_sha256": "9b3eab121765220b031e0c1394058c502009b90196013f0e10ee61492ba12a66",
+  "tool_sha256": "ace6a1cd63fce4929616fd74b0c4df77cc1cd4b613ed666b9aece5b89b40163a",
+  "object": "geometry_0",
+  "blender": "5.1.1",
+  "cpu_only": true,
+  "engine": "Cycles",
+  "device": "CPU",
+  "samples": 4,
+  "rest_pose": true,
+  "attributes": [],
+  "views": [
+    {
+      "variant": "materials",
+      "view": "side-negX",
+      "image": "materials-side-negX.png",
+      "camera_world": [
+        [
+          -4.371138828673793e-08,
+          -4.371138828673793e-08,
+          -1.0,
+          -2.4173662662506104
+        ],
+        [
+          -1.0,
+          1.910685676922942e-15,
+          4.371138828673793e-08,
+          -1.5485961437225342
+        ],
+        [
+          0.0,
+          1.0,
+          -4.371138828673793e-08,
+          2.2124524116516113
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "ortho_scale": 0.8591535687446594
+    },
+    {
+      "variant": "materials",
+      "view": "top",
+      "image": "materials-top.png",
+      "camera_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -0.11606186628341675
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -1.5485961437225342
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          4.51375675201416
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "ortho_scale": 0.8591535687446594
+    },
+    {
+      "variant": "depth-tested-component",
+      "view": "side-negX",
+      "image": "depth-tested-component-side-negX.png",
+      "camera_world": [
+        [
+          -4.371138828673793e-08,
+          -4.371138828673793e-08,
+          -1.0,
+          -2.4173662662506104
+        ],
+        [
+          -1.0,
+          1.910685676922942e-15,
+          4.371138828673793e-08,
+          -1.5485961437225342
+        ],
+        [
+          0.0,
+          1.0,
+          -4.371138828673793e-08,
+          2.2124524116516113
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "ortho_scale": 0.8591535687446594
+    },
+    {
+      "variant": "depth-tested-component",
+      "view": "top",
+      "image": "depth-tested-component-top.png",
+      "camera_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -0.11606186628341675
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -1.5485961437225342
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          4.51375675201416
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "ortho_scale": 0.8591535687446594
+    },
+    {
+      "variant": "isolated-component",
+      "view": "side-negX",
+      "image": "isolated-component-side-negX.png",
+      "camera_world": [
+        [
+          -4.371138828673793e-08,
+          -4.371138828673793e-08,
+          -1.0,
+          -2.4173662662506104
+        ],
+        [
+          -1.0,
+          1.910685676922942e-15,
+          4.371138828673793e-08,
+          -1.5485961437225342
+        ],
+        [
+          0.0,
+          1.0,
+          -4.371138828673793e-08,
+          2.2124524116516113
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "ortho_scale": 0.8591535687446594
+    },
+    {
+      "variant": "isolated-component",
+      "view": "top",
+      "image": "isolated-component-top.png",
+      "camera_world": [
+        [
+          1.0,
+          0.0,
+          0.0,
+          -0.11606186628341675
+        ],
+        [
+          0.0,
+          1.0,
+          0.0,
+          -1.5485961437225342
+        ],
+        [
+          0.0,
+          0.0,
+          1.0,
+          4.51375675201416
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "ortho_scale": 0.8591535687446594
+    }
+  ],
+  "component_set_sha256": null,
+  "isolated_selected": true,
+  "scope": "Inspection renders only; no source edits or semantic acceptance"
+}

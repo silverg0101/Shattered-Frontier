@@ -1,0 +1,18 @@
+{
+  "status": "local-skin-review-no-new-correction",
+  "viewed": [
+    "walk1-absolute-side",
+    "walk1-absolute-front",
+    "walk2-absolute-side",
+    "walk2-absolute-front",
+    "walk2-sole-side",
+    "walk2-sole-front"
+  ],
+  "observations": [
+    "Walk2 absolute worst edge is on the upper forelimb/body surface beneath overlapping harness geometry; it cannot be dismissed as a loose ornament.",
+    "Walk1 worst edge is heavily occluded by hanging/fused geometry in both rest context views.",
+    "The sole edge is occluded in these side/front views; an underside/local isolated patch is still needed."
+  ],
+  "next_review": "Read-only per-bone deformation contribution analysis at exact edges and local sole underside inspection. Investigate distal elbow/carpus influence leaking into the proximal body blend; do not apply an unreviewed remap or repeat a parameter sweep.",
+  "no_new_primary_candidate": true
+}

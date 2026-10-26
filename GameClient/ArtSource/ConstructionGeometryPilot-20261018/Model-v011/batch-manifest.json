@@ -1,0 +1,329 @@
+{
+  "batch": "construction-model-queue-revision-20261019-e",
+  "status": "needs-review",
+  "batch_size": 3,
+  "acceptance_claim": false,
+  "engine_ready": false,
+  "runtime": "Blender 5.1.1; Cycles CPU; no GPU inference/render",
+  "source_locks": [
+    "Model-v011-source-lock.json",
+    "Model-v011-resume-source-lock.json",
+    "Model-v011-sm-continuation-source-lock.json"
+  ],
+  "assets": [
+    {
+      "asset_id": "BLD-WT-CellFull-Ornamented-01",
+      "job_record": "docs/art-templates/model-jobs/construction-wt-ornamented-material-20261019.json",
+      "output": "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v011/BLD-WT-CellFull-Ornamented-01",
+      "status": "needs-review",
+      "attempt": "3/3",
+      "acceptance_claim": false,
+      "checks": {
+        "maps_generated": true,
+        "build_completed": false,
+        "fresh_source_reopen": false,
+        "fresh_glb_import": false,
+        "fresh_fbx_import": false,
+        "island_loose_vertex_check": false,
+        "texture_wrap": "passed",
+        "reference_visual_review": "failed",
+        "unreal_5_8": "open",
+        "GEO_01": "open",
+        "GEO_02": "open"
+      },
+      "files": {
+        "blender-build.log": {
+          "sha256": "30b04f4919c9a4c54a7efc5b1dfb8d7f325d470190d737fad214c565cb3b3220",
+          "bytes": 672
+        },
+        "build_material.py": {
+          "sha256": "c73c016b1e6192fc29b3883ed3bcb60052f7de86522d98ddde1c1fa0cffa5e43",
+          "bytes": 6025
+        },
+        "texture-source.json": {
+          "sha256": "cb1ef60b00787529726dad0e072a67b28458ffec5e051046e97d9ff88581fcca",
+          "bytes": 945
+        },
+        "checks/attachment-integrity.json": {
+          "sha256": "29b1b513c453f0071ee2fe507522be1e3d06add95b0e515214398a5d2dca0028",
+          "bytes": 341
+        },
+        "checks/island-classification.json": {
+          "sha256": "be77975b5505e1eafb40fad71ee4f4f59303236e0d8ceafaa3e8e8b1b3feff41",
+          "bytes": 367
+        },
+        "checks/texture-wrap.json": {
+          "sha256": "fd85bf773c30224cbbab4ee46f1365f89b2364c595b779d86014cea187cce132",
+          "bytes": 2993
+        },
+        "Textures/basecolor-ornament-back.png": {
+          "sha256": "2c7bb25901a27a003892f7d38a139d0e7538febfeccb99f3b11cb87129e848f7",
+          "bytes": 251193
+        },
+        "Textures/basecolor-ornament-front.png": {
+          "sha256": "0dcace7845db556b08e53d57bbec7290f2c95367f9854b5d97d0c0bf6209f2c7",
+          "bytes": 267564
+        },
+        "Textures/basecolor.png": {
+          "sha256": "d01a5854675767e4c004f5fd73e04baa80195de24528807623a020a5194acac3",
+          "bytes": 261339
+        },
+        "Textures/height.png": {
+          "sha256": "8f9d542d057dc735f22babff5ca4f3124a4c4a49c7adf461c1cac3e1beaeca6b",
+          "bytes": 1541557
+        },
+        "Textures/normal.png": {
+          "sha256": "ab966138356ba1902b889e505c4945b54aa1eb17c9bac29c0ddb8935b969ad1c",
+          "bytes": 567347
+        },
+        "Textures/roughness.png": {
+          "sha256": "8750ff9fd31da39931d68c8ca6b448adc53233b4bb1a1840c49ff33a1cd0cbe3",
+          "bytes": 218161
+        }
+      },
+      "blockers": [
+        "Material-stage attempt cap 3/3 exhausted; new attempt budget required.",
+        "Approved GEO-01 manifest/hash is absent.",
+        "Applicable GEO-02 compatibility/assembly evidence is absent.",
+        "Unreal 5.8 import/material/normal, collision/LOD, assembled contacts and performance remain open."
+      ]
+    },
+    {
+      "asset_id": "BLD-RT-RoofSlopeFace-01",
+      "job_record": "docs/art-templates/model-jobs/construction-rt-roofslope-material-20261019.json",
+      "output": "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v011/BLD-RT-RoofSlopeFace-01",
+      "status": "needs-review",
+      "attempt": "3/3",
+      "acceptance_claim": false,
+      "checks": {
+        "maps_generated": true,
+        "build_completed": true,
+        "fresh_source_reopen": true,
+        "fresh_glb_import": true,
+        "fresh_fbx_import": true,
+        "island_loose_vertex_check": true,
+        "texture_wrap": "passed",
+        "reference_visual_review": "failed",
+        "unreal_5_8": "open",
+        "GEO_01": "open",
+        "GEO_02": "open"
+      },
+      "files": {
+        "asset-view.png": {
+          "sha256": "c98e760ed619c56308bbd2270f263a940242ddcfd4fe0695bc67c90f8e4ddeeb",
+          "bytes": 1154324
+        },
+        "blender-build.log": {
+          "sha256": "a2c6f4a27fe344641aeb64347c93bd25a3ea3fed7e48a0dac4ddf1b547a9d781",
+          "bytes": 1902
+        },
+        "build_material.py": {
+          "sha256": "eb0637ecf59a2a8023c9c85f6689eafc20aee49a4afc551088d09fbd48436163",
+          "bytes": 5931
+        },
+        "SM_BLD_RT_RoofSlopeFace_01_v003.blend": {
+          "sha256": "e341a7330629ec2909eb238dcd6d8813753e0386eb4ecbead36d551e56805a2c",
+          "bytes": 1309611
+        },
+        "SM_BLD_RT_RoofSlopeFace_01_v003.fbx": {
+          "sha256": "34621c7eca31083969e2a5275ad0c88e385f021d418be29a85a753eff8b8f5cd",
+          "bytes": 21356
+        },
+        "SM_BLD_RT_RoofSlopeFace_01_v003.glb": {
+          "sha256": "9ddfcc44c42d704ca628fdf95520fe5821be9efde50a407e2ef502b6ea85c848",
+          "bytes": 1425928
+        },
+        "texture-source.json": {
+          "sha256": "17cb9bfd4ba9fd98dc173f41b92251c13c35e1f869d95b70029badc3929cb5c7",
+          "bytes": 1079
+        },
+        "checks/attachment-integrity.json": {
+          "sha256": "29b1b513c453f0071ee2fe507522be1e3d06add95b0e515214398a5d2dca0028",
+          "bytes": 341
+        },
+        "checks/fbx-import.json": {
+          "sha256": "8bc5c7d0e99c82ff773532e214ba1ca8666432bb5d4295629bdce0cfe1b89e16",
+          "bytes": 480
+        },
+        "checks/fbx-import.log": {
+          "sha256": "fa1d157649b3d153c092670b7d7d90e52897cad4c9aae1a9a18401ebfcb6bc61",
+          "bytes": 494
+        },
+        "checks/glb-import.json": {
+          "sha256": "7adc255ba0315123727d3389997c3c7cfec2e53bce7d3dec5cd1db4f44443935",
+          "bytes": 432
+        },
+        "checks/glb-import.log": {
+          "sha256": "54ac1c2cfc19d50c82d67d0f432f99af94d1dfb0a3c694fddfe798bb2817469f",
+          "bytes": 619
+        },
+        "checks/island-classification.json": {
+          "sha256": "7d1ec200859d5671b1c7b6cb9d1ccb8fd704fefa11e8b880595e2cd790782e90",
+          "bytes": 2074
+        },
+        "checks/source-open.json": {
+          "sha256": "a9a3bc7929d4370508856a58349d36029c8330bcfbd660691da508929c0f8c2a",
+          "bytes": 641
+        },
+        "checks/source-open.log": {
+          "sha256": "6c59ccda37168bfbd14dfd919dc0e372b1a4a5269b2b4c141c57be01287d8b27",
+          "bytes": 773
+        },
+        "checks/texture-density-reconciliation.json": {
+          "sha256": "e741d314e90c9685bed2efc69b8d974d7f2292a451faf9a7db39d03b346a3bad",
+          "bytes": 429
+        },
+        "checks/texture-wrap.json": {
+          "sha256": "05b3eeb86d9584a75043ccf79c90c58749cc90da582e1a614dded90c147cbd83",
+          "bytes": 3008
+        },
+        "Textures/basecolor.png": {
+          "sha256": "2ef755c609257fe03af07c19d2bf3a9cdcf12b3756d7d3824141b66ddaa3dca1",
+          "bytes": 266883
+        },
+        "Textures/height.png": {
+          "sha256": "aeef0e88ebec8260e593accdc358c244c2462c1b1b4c8c8d3f312368bdfb6bcd",
+          "bytes": 1537209
+        },
+        "Textures/normal.png": {
+          "sha256": "eb40cd9980d46c79656e97c218af3efadea8f5fa1002ed23092f3e4ab929dc49",
+          "bytes": 718207
+        },
+        "Textures/roughness.png": {
+          "sha256": "681d50cb755541d5c43870ad99d6b198b99a85db4e59a4db5a393fb78822242a",
+          "bytes": 229848
+        }
+      },
+      "blockers": [
+        "Material-stage attempt cap 3/3 exhausted; new attempt budget required.",
+        "Approved GEO-01 manifest/hash is absent.",
+        "Applicable GEO-02 compatibility/assembly evidence is absent.",
+        "Unreal 5.8 import/material/normal, collision/LOD, assembled contacts and performance remain open."
+      ]
+    },
+    {
+      "asset_id": "BLD-SM-RoofSlopeFace-01",
+      "job_record": "docs/art-templates/model-jobs/construction-sm-roofslope-material-20261019.json",
+      "output": "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v011/BLD-SM-RoofSlopeFace-01",
+      "status": "needs-review",
+      "attempt": "3/3",
+      "acceptance_claim": false,
+      "checks": {
+        "maps_generated": true,
+        "build_completed": true,
+        "fresh_source_reopen": true,
+        "fresh_glb_import": true,
+        "fresh_fbx_import": true,
+        "island_loose_vertex_check": true,
+        "texture_wrap": "failed",
+        "reference_visual_review": "failed",
+        "unreal_5_8": "open",
+        "GEO_01": "open",
+        "GEO_02": "open",
+        "density_metadata": "corrected; original mismatch retained in reconciliation evidence"
+      },
+      "files": {
+        "asset-view.png": {
+          "sha256": "4e00db333d248bef93e17337cfbb0d88e17da1d201be42bf0e6f68a314ee8530",
+          "bytes": 1054529
+        },
+        "blender-build.log": {
+          "sha256": "4fea98842526986395a6e52cc51c808a0ebb0e29e77c274edb5514122040cf14",
+          "bytes": 1903
+        },
+        "build_material.py": {
+          "sha256": "b4d6ce535d5463e57a73c2f86775d843ca8e15a6304e846cb1f0fea9c9c24df0",
+          "bytes": 5936
+        },
+        "SM_BLD_SM_RoofSlopeFace_01_v003.blend": {
+          "sha256": "f4f3609a4b70947be2e3cf3288df7513b72efe80cb85e44f89c9ebc9f4cc09fb",
+          "bytes": 790996
+        },
+        "SM_BLD_SM_RoofSlopeFace_01_v003.fbx": {
+          "sha256": "27eaf00818b2989dd296f7f90b8954d3bf7ae65ccd7f10fc004f05cc0ccd7ae7",
+          "bytes": 21372
+        },
+        "SM_BLD_SM_RoofSlopeFace_01_v003.glb": {
+          "sha256": "31ac5166e9b4a3b92e11ae692e1f13540ee18e0db4730f39876eb24e5f2675e6",
+          "bytes": 913100
+        },
+        "texture-source.json": {
+          "sha256": "92bfd5ae1d8e531b09dd8a21e6064f27f8925d4cb9a568556142075294a9e038",
+          "bytes": 1080
+        },
+        "checks/attachment-integrity.json": {
+          "sha256": "29b1b513c453f0071ee2fe507522be1e3d06add95b0e515214398a5d2dca0028",
+          "bytes": 341
+        },
+        "checks/fbx-import.json": {
+          "sha256": "43ae3ec597f456c428aca8a286131746594ffcabd4967e63a1e7ad2219ccc3ee",
+          "bytes": 480
+        },
+        "checks/fbx-import.log": {
+          "sha256": "885f9f3eb9dac9b0b35ffb6d0493e428361f2d9ea8304f62eb2148bf153a82a2",
+          "bytes": 494
+        },
+        "checks/glb-import.json": {
+          "sha256": "45e44b4bfe4c34fa6bac257ee80d71174aa87cb730b92fd1498bf42e53dba2e8",
+          "bytes": 432
+        },
+        "checks/glb-import.log": {
+          "sha256": "d75967d8dba5317e556925ada761349ccd245079656b005a59295e03bd9fdd09",
+          "bytes": 619
+        },
+        "checks/island-classification.json": {
+          "sha256": "3685b57f8b7b90d5178d8fb3698a33653ee55e69e3f289a8b25c3c2bc0167e99",
+          "bytes": 2074
+        },
+        "checks/source-open.json": {
+          "sha256": "ff3278c083fe27a36dc50e4e702c68bf814f32ecb1cbc12ef013e9a14071c01f",
+          "bytes": 641
+        },
+        "checks/source-open.log": {
+          "sha256": "58805eb434181e0f0f0d8c6ddab4d4d5c8e493e98e24b4786fe6a64e1085907e",
+          "bytes": 773
+        },
+        "checks/texture-density-reconciliation.json": {
+          "sha256": "e741d314e90c9685bed2efc69b8d974d7f2292a451faf9a7db39d03b346a3bad",
+          "bytes": 429
+        },
+        "checks/texture-wrap.json": {
+          "sha256": "a24e2a7f4e63037a8880072c2dee60a4e8cbcbd4af65688aa6c65c364b76d518",
+          "bytes": 2986
+        },
+        "Textures/basecolor.png": {
+          "sha256": "5397824fb49f67cd62b4e45322462a753475c10760a366e047468c1b20b25496",
+          "bytes": 256808
+        },
+        "Textures/height.png": {
+          "sha256": "e52d1af9ac4a6a590d156fca6904b9bbc91d5380658e88cfe85f8962093cc609",
+          "bytes": 1434461
+        },
+        "Textures/normal.png": {
+          "sha256": "71beca0f8ff79b76e125282b49d9e7d06315e47d1d70bb1f2ceda489d9a3b9d6",
+          "bytes": 211553
+        },
+        "Textures/roughness.png": {
+          "sha256": "a0ae87fb9188024cde9dd49a4180955b261189da78b33a01b34c4d541d6c5492",
+          "bytes": 228237
+        }
+      },
+      "blockers": [
+        "Material-stage attempt cap 3/3 exhausted; new attempt budget required.",
+        "Approved GEO-01 manifest/hash is absent.",
+        "Applicable GEO-02 compatibility/assembly evidence is absent."
+      ]
+    }
+  ],
+  "review": "review-notes-gpt-6.1-sol.md",
+  "attempt_history": "attempt-history.json",
+  "production_gates": [
+    "approved GEO-01",
+    "applicable GEO-02",
+    "Unreal 5.8 material/normal/import",
+    "collision/LOD",
+    "assembled contacts",
+    "platform performance"
+  ],
+  "completed_assets": 0
+}

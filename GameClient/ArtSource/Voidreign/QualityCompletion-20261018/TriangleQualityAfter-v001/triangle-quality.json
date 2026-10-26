@@ -1,0 +1,4415 @@
+{
+  "schema_version": 1,
+  "status": "needs-review",
+  "source_sha256": "6c6044a533c16fc7fad23d42c0407dde37a0252aca84f9be1bc9b9a2367364f6",
+  "mesh_hash": "ba2d283db0be5e8cff4cc7549f1f51916cc0a4d18213773300976b11512ececa",
+  "object": "geometry_0",
+  "cpu_only": true,
+  "inspection_sha256": "008dd401251cd2388ab5e5472632bd81213e4b3c9d8f38ae1400fb4b756f1f26",
+  "selection_sha256": "0d7599c8064cb81a6e211a23731435e08939b7fb146ce2d4bed810273909a2b2",
+  "profile_sha256": "e7626b4abef92ae7d198a4e6b9104f8b8a408a80970b66633b70665f02d26fec",
+  "triangles": 297119,
+  "counts": {
+    "zero_area": 0,
+    "small_area": 0,
+    "low_altitude": 0,
+    "high_aspect": 1,
+    "duplicate_position_faces": 2254,
+    "collapsed_position_edge": 0
+  },
+  "boundary_position_edges": 1,
+  "nonmanifold_position_edges": 3552,
+  "components": [
+    {
+      "component_id": "ba2d283db0be:C0000",
+      "component_index": 0,
+      "triangles": 279617,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 1,
+        "duplicate_position_faces": 1999,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 3.1711796952698013e-07,
+      "minimum_altitude_m": 3.0230739771881265e-05,
+      "maximum_aspect_ratio": 1185.2578214961434,
+      "boundary_position_edges": 1,
+      "nonmanifold_position_edges": 3244,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0001",
+      "component_index": 1,
+      "triangles": 806,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.3130532465941999e-05,
+      "minimum_altitude_m": 0.0018732292810221425,
+      "maximum_aspect_ratio": 14.622855774657433,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0002",
+      "component_index": 2,
+      "triangles": 516,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 7.69434002538369e-06,
+      "minimum_altitude_m": 0.001864672884309089,
+      "maximum_aspect_ratio": 14.795179802067844,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0003",
+      "component_index": 3,
+      "triangles": 500,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 22,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 6.427863098421029e-06,
+      "minimum_altitude_m": 0.0012225166019182924,
+      "maximum_aspect_ratio": 17.75573169664166,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 32,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0004",
+      "component_index": 4,
+      "triangles": 450,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.6026148236995096e-05,
+      "minimum_altitude_m": 0.0013465174415260848,
+      "maximum_aspect_ratio": 28.003026940329683,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0005",
+      "component_index": 5,
+      "triangles": 438,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 2.597843559591974e-05,
+      "minimum_altitude_m": 0.002154273491109622,
+      "maximum_aspect_ratio": 14.88930467524528,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0006",
+      "component_index": 6,
+      "triangles": 430,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 7.193781792746755e-06,
+      "minimum_altitude_m": 0.0005199806139671893,
+      "maximum_aspect_ratio": 53.21241274474073,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0007",
+      "component_index": 7,
+      "triangles": 404,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 8,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 6.798995654626562e-06,
+      "minimum_altitude_m": 0.0016957036958421302,
+      "maximum_aspect_ratio": 17.894107037382266,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 10,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0008",
+      "component_index": 8,
+      "triangles": 386,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 6,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.035316989554399e-05,
+      "minimum_altitude_m": 0.0023017222020247116,
+      "maximum_aspect_ratio": 14.492699716229502,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 3,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0009",
+      "component_index": 9,
+      "triangles": 358,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.6061869285021394e-05,
+      "minimum_altitude_m": 0.0018241477792636115,
+      "maximum_aspect_ratio": 12.13787340852037,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0010",
+      "component_index": 10,
+      "triangles": 330,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 5,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.2589637993868143e-05,
+      "minimum_altitude_m": 0.0024921075484176636,
+      "maximum_aspect_ratio": 11.511510820686512,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 4,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0011",
+      "component_index": 11,
+      "triangles": 314,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 6,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 5.5653397204990405e-06,
+      "minimum_altitude_m": 0.0010773018737546423,
+      "maximum_aspect_ratio": 15.56124666186877,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 8,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0012",
+      "component_index": 12,
+      "triangles": 314,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 4,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 7.062268515565521e-06,
+      "minimum_altitude_m": 0.0010621155395786743,
+      "maximum_aspect_ratio": 19.46804728978081,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 13,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0013",
+      "component_index": 13,
+      "triangles": 290,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 8,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 6.300538598779207e-06,
+      "minimum_altitude_m": 0.00127996486681517,
+      "maximum_aspect_ratio": 28.69271425881591,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 7,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0014",
+      "component_index": 14,
+      "triangles": 288,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.584811051426718e-05,
+      "minimum_altitude_m": 0.003130372770289402,
+      "maximum_aspect_ratio": 13.1732843040199,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0015",
+      "component_index": 15,
+      "triangles": 276,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.7919016186527256e-05,
+      "minimum_altitude_m": 0.0021165523657828674,
+      "maximum_aspect_ratio": 22.332087268841537,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0016",
+      "component_index": 16,
+      "triangles": 258,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 2.340798626328064e-05,
+      "minimum_altitude_m": 0.003588790172855249,
+      "maximum_aspect_ratio": 10.07360296945155,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0017",
+      "component_index": 17,
+      "triangles": 252,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.4780212992092509e-05,
+      "minimum_altitude_m": 0.0018837149372186398,
+      "maximum_aspect_ratio": 12.928236475792652,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0018",
+      "component_index": 18,
+      "triangles": 242,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 8,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 4.1419690106080845e-06,
+      "minimum_altitude_m": 0.0005252189278701868,
+      "maximum_aspect_ratio": 30.030053317000856,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 15,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0019",
+      "component_index": 19,
+      "triangles": 230,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 14,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 3.718966517124204e-06,
+      "minimum_altitude_m": 0.0005101918609075456,
+      "maximum_aspect_ratio": 28.574932417039058,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 12,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0020",
+      "component_index": 20,
+      "triangles": 218,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.1166085428857244e-05,
+      "minimum_altitude_m": 0.002642628913453005,
+      "maximum_aspect_ratio": 15.371721537451524,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0021",
+      "component_index": 21,
+      "triangles": 210,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.5044575462625093e-05,
+      "minimum_altitude_m": 0.001846150926640491,
+      "maximum_aspect_ratio": 12.579666234053999,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0022",
+      "component_index": 22,
+      "triangles": 202,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.8260409872640254e-05,
+      "minimum_altitude_m": 0.003454647877998372,
+      "maximum_aspect_ratio": 9.301131332314617,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0023",
+      "component_index": 23,
+      "triangles": 196,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 8,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 6.321772867986769e-06,
+      "minimum_altitude_m": 0.001905003638496514,
+      "maximum_aspect_ratio": 6.212279983893646,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 11,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0024",
+      "component_index": 24,
+      "triangles": 196,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.6802570927851107e-05,
+      "minimum_altitude_m": 0.0015593944100241273,
+      "maximum_aspect_ratio": 24.440535098519437,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0025",
+      "component_index": 25,
+      "triangles": 196,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 3.077651249977479e-05,
+      "minimum_altitude_m": 0.004162368967038381,
+      "maximum_aspect_ratio": 4.7320230253134214,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0026",
+      "component_index": 26,
+      "triangles": 186,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.1864249443053337e-05,
+      "minimum_altitude_m": 0.002339629253110742,
+      "maximum_aspect_ratio": 14.82966808502443,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0027",
+      "component_index": 27,
+      "triangles": 184,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 4.886821494932513e-05,
+      "minimum_altitude_m": 0.007166864234857585,
+      "maximum_aspect_ratio": 3.5004671626192545,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0028",
+      "component_index": 28,
+      "triangles": 182,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 5.0633454996370565e-05,
+      "minimum_altitude_m": 0.006529011642114081,
+      "maximum_aspect_ratio": 3.9247173691387944,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0029",
+      "component_index": 29,
+      "triangles": 176,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 4,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.433262073448666e-05,
+      "minimum_altitude_m": 0.0023990954503766357,
+      "maximum_aspect_ratio": 12.622206482178342,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 2,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0030",
+      "component_index": 30,
+      "triangles": 176,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 3.7481937119722394e-05,
+      "minimum_altitude_m": 0.005452458075650186,
+      "maximum_aspect_ratio": 4.5814354907801365,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0031",
+      "component_index": 31,
+      "triangles": 174,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 4.681729276622086e-05,
+      "minimum_altitude_m": 0.0061471853278195696,
+      "maximum_aspect_ratio": 4.01418392106071,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0032",
+      "component_index": 32,
+      "triangles": 170,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 5.803352612557238e-05,
+      "minimum_altitude_m": 0.007116051781166458,
+      "maximum_aspect_ratio": 3.1188846848918734,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0033",
+      "component_index": 33,
+      "triangles": 166,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.6992563795263137e-05,
+      "minimum_altitude_m": 0.003497342294116238,
+      "maximum_aspect_ratio": 9.920210985734068,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0034",
+      "component_index": 34,
+      "triangles": 166,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 5.7088872042795186e-05,
+      "minimum_altitude_m": 0.007204304983529374,
+      "maximum_aspect_ratio": 3.8684952805321777,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0035",
+      "component_index": 35,
+      "triangles": 162,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 10,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 7.333719923768713e-06,
+      "minimum_altitude_m": 0.001301683681691135,
+      "maximum_aspect_ratio": 10.310406852323913,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 12,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0036",
+      "component_index": 36,
+      "triangles": 156,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 2,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.1785974823632059e-05,
+      "minimum_altitude_m": 0.0029458210317417446,
+      "maximum_aspect_ratio": 5.38347476445631,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 4,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0037",
+      "component_index": 37,
+      "triangles": 156,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.0378460274136653e-05,
+      "minimum_altitude_m": 0.002080282967583214,
+      "maximum_aspect_ratio": 15.559837754276352,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 2,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0038",
+      "component_index": 38,
+      "triangles": 154,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 2.22083201781485e-05,
+      "minimum_altitude_m": 0.0017863561961735973,
+      "maximum_aspect_ratio": 21.10021554764471,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0039",
+      "component_index": 39,
+      "triangles": 150,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 2,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 3.694807926492588e-06,
+      "minimum_altitude_m": 0.0007976252152008313,
+      "maximum_aspect_ratio": 11.615131010565792,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 5,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0040",
+      "component_index": 40,
+      "triangles": 144,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 5.384122038576295e-06,
+      "minimum_altitude_m": 0.0008127919642609489,
+      "maximum_aspect_ratio": 16.299943098817668,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0041",
+      "component_index": 41,
+      "triangles": 144,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 4,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 9.189122565321895e-06,
+      "minimum_altitude_m": 0.0017687243378414052,
+      "maximum_aspect_ratio": 12.845535376300093,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 4,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0042",
+      "component_index": 42,
+      "triangles": 142,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 4,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 5.856545411052902e-06,
+      "minimum_altitude_m": 0.001671428424136659,
+      "maximum_aspect_ratio": 10.062150035415037,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 13,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0043",
+      "component_index": 43,
+      "triangles": 132,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 2,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 5.688437691268419e-06,
+      "minimum_altitude_m": 0.0015714137985270804,
+      "maximum_aspect_ratio": 9.259247837243912,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 2,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0044",
+      "component_index": 44,
+      "triangles": 130,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.854530412078083e-05,
+      "minimum_altitude_m": 0.0022993944863809023,
+      "maximum_aspect_ratio": 12.851389999536234,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0045",
+      "component_index": 45,
+      "triangles": 128,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 6,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 6.297142641673724e-06,
+      "minimum_altitude_m": 0.0012938886075560068,
+      "maximum_aspect_ratio": 10.956344986201973,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 4,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0046",
+      "component_index": 46,
+      "triangles": 128,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 8.824792734661284e-06,
+      "minimum_altitude_m": 0.0009035349891361397,
+      "maximum_aspect_ratio": 25.022974984938752,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 1,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0047",
+      "component_index": 47,
+      "triangles": 128,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.8322417822087548e-05,
+      "minimum_altitude_m": 0.0019391136776482553,
+      "maximum_aspect_ratio": 10.20181454003226,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0048",
+      "component_index": 48,
+      "triangles": 122,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.1951631581796158e-05,
+      "minimum_altitude_m": 0.001882030655382028,
+      "maximum_aspect_ratio": 11.466951500251549,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0049",
+      "component_index": 49,
+      "triangles": 122,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 8.771658118763295e-06,
+      "minimum_altitude_m": 0.00277014473902962,
+      "maximum_aspect_ratio": 10.932623340993267,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0050",
+      "component_index": 50,
+      "triangles": 120,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.7199734066853224e-05,
+      "minimum_altitude_m": 0.0034205684891185323,
+      "maximum_aspect_ratio": 7.496152648716115,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0051",
+      "component_index": 51,
+      "triangles": 116,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 8.831247041573515e-06,
+      "minimum_altitude_m": 0.001586815353229636,
+      "maximum_aspect_ratio": 15.438427997219563,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0052",
+      "component_index": 52,
+      "triangles": 114,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 4,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.0254339842840992e-05,
+      "minimum_altitude_m": 0.0019903278634011722,
+      "maximum_aspect_ratio": 7.491179423012402,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 3,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0053",
+      "component_index": 53,
+      "triangles": 112,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 2,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.2610401049011767e-05,
+      "minimum_altitude_m": 0.0031052544448483418,
+      "maximum_aspect_ratio": 7.881833766886552,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 1,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0054",
+      "component_index": 54,
+      "triangles": 108,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.813798848582875e-05,
+      "minimum_altitude_m": 0.002561859440636592,
+      "maximum_aspect_ratio": 14.119188788745555,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0055",
+      "component_index": 55,
+      "triangles": 106,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.070066627739154e-05,
+      "minimum_altitude_m": 0.0012514250534396312,
+      "maximum_aspect_ratio": 15.5867720741051,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0056",
+      "component_index": 56,
+      "triangles": 106,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 6.916773707807187e-06,
+      "minimum_altitude_m": 0.001835143512065702,
+      "maximum_aspect_ratio": 8.87532909731836,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 5,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0057",
+      "component_index": 57,
+      "triangles": 106,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 6.867843289592141e-06,
+      "minimum_altitude_m": 0.0017528938908872413,
+      "maximum_aspect_ratio": 8.867604273320879,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 1,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0058",
+      "component_index": 58,
+      "triangles": 102,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 6,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 8.183858068688099e-06,
+      "minimum_altitude_m": 0.0017550908054831417,
+      "maximum_aspect_ratio": 7.100163257626965,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 5,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0059",
+      "component_index": 59,
+      "triangles": 92,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.5128682277687186e-05,
+      "minimum_altitude_m": 0.004082595347153106,
+      "maximum_aspect_ratio": 10.633586172930107,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0060",
+      "component_index": 60,
+      "triangles": 92,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 3.950857409160235e-05,
+      "minimum_altitude_m": 0.004677278242108085,
+      "maximum_aspect_ratio": 4.190604035468777,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0061",
+      "component_index": 61,
+      "triangles": 90,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 2,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 5.266312013865078e-06,
+      "minimum_altitude_m": 0.0015267259010900522,
+      "maximum_aspect_ratio": 11.134888779691405,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 9,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0062",
+      "component_index": 62,
+      "triangles": 88,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.7781208064995847e-05,
+      "minimum_altitude_m": 0.003125012464292576,
+      "maximum_aspect_ratio": 11.87823809572908,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0063",
+      "component_index": 63,
+      "triangles": 86,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.1429514256050204e-05,
+      "minimum_altitude_m": 0.002399437350598228,
+      "maximum_aspect_ratio": 7.605952893287446,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0064",
+      "component_index": 64,
+      "triangles": 84,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 4,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 8.96460955118785e-06,
+      "minimum_altitude_m": 0.00232537378305022,
+      "maximum_aspect_ratio": 6.325748749785325,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 6,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0065",
+      "component_index": 65,
+      "triangles": 84,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 8.200358468353482e-06,
+      "minimum_altitude_m": 0.0019429727401972965,
+      "maximum_aspect_ratio": 12.262917405058314,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0066",
+      "component_index": 66,
+      "triangles": 82,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 2,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.0430108229390541e-05,
+      "minimum_altitude_m": 0.001638843821727345,
+      "maximum_aspect_ratio": 8.920134477951615,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 3,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0067",
+      "component_index": 67,
+      "triangles": 82,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 4.6066856834633067e-05,
+      "minimum_altitude_m": 0.0061516914529307,
+      "maximum_aspect_ratio": 3.228305110534387,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0068",
+      "component_index": 68,
+      "triangles": 80,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 2,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 3.741569991749577e-06,
+      "minimum_altitude_m": 0.0013868228896016294,
+      "maximum_aspect_ratio": 10.630420851703242,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 7,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0069",
+      "component_index": 69,
+      "triangles": 78,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 7.4588621075271405e-06,
+      "minimum_altitude_m": 0.0014807142322748328,
+      "maximum_aspect_ratio": 6.803933692760655,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 3,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0070",
+      "component_index": 70,
+      "triangles": 78,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 2.0501085323042132e-05,
+      "minimum_altitude_m": 0.002816517956011157,
+      "maximum_aspect_ratio": 9.717825288968202,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0071",
+      "component_index": 71,
+      "triangles": 76,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.6686119986408788e-05,
+      "minimum_altitude_m": 0.003168984005609904,
+      "maximum_aspect_ratio": 6.242841982517679,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0072",
+      "component_index": 72,
+      "triangles": 74,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.1971354363917227e-05,
+      "minimum_altitude_m": 0.0031268464598824728,
+      "maximum_aspect_ratio": 11.353845797285146,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0073",
+      "component_index": 73,
+      "triangles": 74,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.485775739699631e-05,
+      "minimum_altitude_m": 0.00216077648409672,
+      "maximum_aspect_ratio": 20.457153173926876,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0074",
+      "component_index": 74,
+      "triangles": 72,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.8821567104963763e-05,
+      "minimum_altitude_m": 0.0031743430990767976,
+      "maximum_aspect_ratio": 9.6340632624153,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0075",
+      "component_index": 75,
+      "triangles": 68,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 6,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 5.994369239578623e-06,
+      "minimum_altitude_m": 0.002122938514228866,
+      "maximum_aspect_ratio": 7.985288092637058,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 6,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0076",
+      "component_index": 76,
+      "triangles": 68,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 2.3450855343177194e-05,
+      "minimum_altitude_m": 0.003179211303394351,
+      "maximum_aspect_ratio": 10.164859324521652,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0077",
+      "component_index": 77,
+      "triangles": 68,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 2.3329501386013145e-05,
+      "minimum_altitude_m": 0.0031459153959668956,
+      "maximum_aspect_ratio": 5.272638909958055,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0078",
+      "component_index": 78,
+      "triangles": 64,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 7.893033641477838e-06,
+      "minimum_altitude_m": 0.0017474666756797461,
+      "maximum_aspect_ratio": 10.20340184459233,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 3,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0079",
+      "component_index": 79,
+      "triangles": 64,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 2.8654792692198783e-06,
+      "minimum_altitude_m": 0.00035105055357515717,
+      "maximum_aspect_ratio": 46.5037464491496,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 5,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0080",
+      "component_index": 80,
+      "triangles": 60,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 10,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.8365494974090955e-05,
+      "minimum_altitude_m": 0.0019284140971497442,
+      "maximum_aspect_ratio": 17.362917113924187,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 8,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0081",
+      "component_index": 81,
+      "triangles": 60,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.1684321518866171e-05,
+      "minimum_altitude_m": 0.0017615340274449456,
+      "maximum_aspect_ratio": 8.087955002318663,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0082",
+      "component_index": 82,
+      "triangles": 60,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 2,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 7.316569994751579e-06,
+      "minimum_altitude_m": 0.001365921989922262,
+      "maximum_aspect_ratio": 11.154557501791148,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 3,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0083",
+      "component_index": 83,
+      "triangles": 58,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 2.0183093034163476e-05,
+      "minimum_altitude_m": 0.003407334751062373,
+      "maximum_aspect_ratio": 12.182068369376589,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0084",
+      "component_index": 84,
+      "triangles": 56,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.697471638729688e-05,
+      "minimum_altitude_m": 0.004203729023165596,
+      "maximum_aspect_ratio": 11.513485337716235,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0085",
+      "component_index": 85,
+      "triangles": 52,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 8.253677873082565e-06,
+      "minimum_altitude_m": 0.002320084211452015,
+      "maximum_aspect_ratio": 9.865487463330162,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0086",
+      "component_index": 86,
+      "triangles": 52,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.7551816429398905e-05,
+      "minimum_altitude_m": 0.0027846537362828136,
+      "maximum_aspect_ratio": 12.57626745241419,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0087",
+      "component_index": 87,
+      "triangles": 52,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 8.307751682966671e-06,
+      "minimum_altitude_m": 0.002562308256377622,
+      "maximum_aspect_ratio": 7.600879067657803,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0088",
+      "component_index": 88,
+      "triangles": 50,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 2.0230562561877275e-05,
+      "minimum_altitude_m": 0.004060167208191534,
+      "maximum_aspect_ratio": 7.827712140473525,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0089",
+      "component_index": 89,
+      "triangles": 50,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.1418471790456496e-05,
+      "minimum_altitude_m": 0.0015340971586714394,
+      "maximum_aspect_ratio": 10.286834407943386,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 2,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0090",
+      "component_index": 90,
+      "triangles": 50,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 3.0088278135198027e-05,
+      "minimum_altitude_m": 0.0031415123919497144,
+      "maximum_aspect_ratio": 11.691702335603248,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0091",
+      "component_index": 91,
+      "triangles": 50,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 7.42230597783333e-06,
+      "minimum_altitude_m": 0.0022630894962710735,
+      "maximum_aspect_ratio": 4.192096301007183,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0092",
+      "component_index": 92,
+      "triangles": 50,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 4,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 9.552321563579974e-06,
+      "minimum_altitude_m": 0.002152947155893704,
+      "maximum_aspect_ratio": 7.3617034238391055,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 3,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0093",
+      "component_index": 93,
+      "triangles": 48,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 4,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.1141443897712906e-05,
+      "minimum_altitude_m": 0.002652627715036367,
+      "maximum_aspect_ratio": 5.410184475392541,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 2,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0094",
+      "component_index": 94,
+      "triangles": 46,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 2,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 5.807642440258099e-06,
+      "minimum_altitude_m": 0.0020491250033463325,
+      "maximum_aspect_ratio": 7.589602636054339,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 2,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0095",
+      "component_index": 95,
+      "triangles": 44,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 2,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.2012083433696427e-05,
+      "minimum_altitude_m": 0.0021466949906121897,
+      "maximum_aspect_ratio": 7.037557558951711,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 3,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0096",
+      "component_index": 96,
+      "triangles": 44,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 2,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 3.8019312799858697e-06,
+      "minimum_altitude_m": 0.0005347970085720359,
+      "maximum_aspect_ratio": 26.586203196153065,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 2,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0097",
+      "component_index": 97,
+      "triangles": 44,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.8177514503618497e-05,
+      "minimum_altitude_m": 0.001958011657131043,
+      "maximum_aspect_ratio": 12.563910619611615,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0098",
+      "component_index": 98,
+      "triangles": 42,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 8,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 5.916609051044223e-06,
+      "minimum_altitude_m": 0.0017864721846567188,
+      "maximum_aspect_ratio": 4.616628273083761,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 12,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0099",
+      "component_index": 99,
+      "triangles": 42,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 2.2910994917127643e-05,
+      "minimum_altitude_m": 0.0034560295314781395,
+      "maximum_aspect_ratio": 7.068558434732403,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0100",
+      "component_index": 100,
+      "triangles": 40,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.8737097104078003e-05,
+      "minimum_altitude_m": 0.003975103147617463,
+      "maximum_aspect_ratio": 7.2845874327953135,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0101",
+      "component_index": 101,
+      "triangles": 38,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 7.113053464755149e-06,
+      "minimum_altitude_m": 0.002654492077830629,
+      "maximum_aspect_ratio": 3.339812944779024,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 1,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0102",
+      "component_index": 102,
+      "triangles": 38,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 2.669572663549456e-05,
+      "minimum_altitude_m": 0.003495174394209013,
+      "maximum_aspect_ratio": 13.907836468206785,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0103",
+      "component_index": 103,
+      "triangles": 36,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 9.805951715217944e-06,
+      "minimum_altitude_m": 0.002240688397341076,
+      "maximum_aspect_ratio": 5.377438420223821,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 1,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0104",
+      "component_index": 104,
+      "triangles": 34,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.918418859313285e-05,
+      "minimum_altitude_m": 0.003392935250669087,
+      "maximum_aspect_ratio": 4.892221778272868,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0105",
+      "component_index": 105,
+      "triangles": 32,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 4.698687879129524e-06,
+      "minimum_altitude_m": 0.0007184739759520549,
+      "maximum_aspect_ratio": 18.2047411667075,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0106",
+      "component_index": 106,
+      "triangles": 32,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.4737817747941535e-05,
+      "minimum_altitude_m": 0.0034817253978160355,
+      "maximum_aspect_ratio": 12.687014750037493,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0107",
+      "component_index": 107,
+      "triangles": 32,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.3118469749935096e-05,
+      "minimum_altitude_m": 0.0026251173889342803,
+      "maximum_aspect_ratio": 7.002735927597408,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 1,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0108",
+      "component_index": 108,
+      "triangles": 32,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.5770388700941964e-05,
+      "minimum_altitude_m": 0.003778695294163482,
+      "maximum_aspect_ratio": 7.148291877590478,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0109",
+      "component_index": 109,
+      "triangles": 32,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 2,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 8.737538170662735e-06,
+      "minimum_altitude_m": 0.0021425180984730036,
+      "maximum_aspect_ratio": 5.809056142206766,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 3,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0110",
+      "component_index": 110,
+      "triangles": 32,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 7.513821048390807e-06,
+      "minimum_altitude_m": 0.0018542201247176305,
+      "maximum_aspect_ratio": 8.73067148199362,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 3,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0111",
+      "component_index": 111,
+      "triangles": 30,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 6,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 9.011041392617826e-06,
+      "minimum_altitude_m": 0.0023825534777980775,
+      "maximum_aspect_ratio": 5.134891715196455,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 5,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0112",
+      "component_index": 112,
+      "triangles": 30,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.7293007231886932e-05,
+      "minimum_altitude_m": 0.0032999205199283994,
+      "maximum_aspect_ratio": 4.259901157182881,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0113",
+      "component_index": 113,
+      "triangles": 30,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 4,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.6934515742763875e-05,
+      "minimum_altitude_m": 0.0032087456908696096,
+      "maximum_aspect_ratio": 3.876079111486703,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 1,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0114",
+      "component_index": 114,
+      "triangles": 30,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 2,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 6.618633032284529e-06,
+      "minimum_altitude_m": 0.0019017694467756334,
+      "maximum_aspect_ratio": 8.274007683540733,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 2,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0115",
+      "component_index": 115,
+      "triangles": 30,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 2.064307405790186e-05,
+      "minimum_altitude_m": 0.0026768107279607177,
+      "maximum_aspect_ratio": 9.498548418990223,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0116",
+      "component_index": 116,
+      "triangles": 30,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 2.4469381609528474e-05,
+      "minimum_altitude_m": 0.0021423425603105837,
+      "maximum_aspect_ratio": 21.704550761133266,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0117",
+      "component_index": 117,
+      "triangles": 30,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.1036928544521089e-05,
+      "minimum_altitude_m": 0.00353177537594599,
+      "maximum_aspect_ratio": 7.382851319589977,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0118",
+      "component_index": 118,
+      "triangles": 30,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.3198383112696076e-05,
+      "minimum_altitude_m": 0.0024866997062563847,
+      "maximum_aspect_ratio": 12.005724143990566,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0119",
+      "component_index": 119,
+      "triangles": 30,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 8.483881884333574e-06,
+      "minimum_altitude_m": 0.0016996951386493223,
+      "maximum_aspect_ratio": 5.873304868936874,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 1,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0120",
+      "component_index": 120,
+      "triangles": 30,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.1500616543651584e-05,
+      "minimum_altitude_m": 0.0026668610973945178,
+      "maximum_aspect_ratio": 6.263834157288187,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0121",
+      "component_index": 121,
+      "triangles": 30,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.80354653164375e-05,
+      "minimum_altitude_m": 0.0038090318632021257,
+      "maximum_aspect_ratio": 8.648621283715622,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0122",
+      "component_index": 122,
+      "triangles": 28,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.9728476230760506e-05,
+      "minimum_altitude_m": 0.0034551580493773345,
+      "maximum_aspect_ratio": 6.172040202263946,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0123",
+      "component_index": 123,
+      "triangles": 26,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 2,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.2231053880152939e-05,
+      "minimum_altitude_m": 0.0031315692985062417,
+      "maximum_aspect_ratio": 5.968405772724999,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 2,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0124",
+      "component_index": 124,
+      "triangles": 26,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.3840870312649686e-05,
+      "minimum_altitude_m": 0.003275097508730322,
+      "maximum_aspect_ratio": 4.817205489167404,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0125",
+      "component_index": 125,
+      "triangles": 26,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 2.8563970131319964e-05,
+      "minimum_altitude_m": 0.0024979017324282776,
+      "maximum_aspect_ratio": 9.15583310247412,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0126",
+      "component_index": 126,
+      "triangles": 24,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.2627310418406337e-05,
+      "minimum_altitude_m": 0.0033112637058698158,
+      "maximum_aspect_ratio": 7.47589456241864,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0127",
+      "component_index": 127,
+      "triangles": 24,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.5027251687995126e-05,
+      "minimum_altitude_m": 0.0036043481905105833,
+      "maximum_aspect_ratio": 5.911771807925843,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0128",
+      "component_index": 128,
+      "triangles": 24,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 2.1672841199342356e-05,
+      "minimum_altitude_m": 0.003284293363002291,
+      "maximum_aspect_ratio": 7.362245964749213,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0129",
+      "component_index": 129,
+      "triangles": 24,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.2362399479942516e-05,
+      "minimum_altitude_m": 0.0031099014977402405,
+      "maximum_aspect_ratio": 6.21901887137249,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0130",
+      "component_index": 130,
+      "triangles": 22,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 2,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.7271674176532456e-05,
+      "minimum_altitude_m": 0.004275489835246824,
+      "maximum_aspect_ratio": 3.5168919385011517,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 2,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0131",
+      "component_index": 131,
+      "triangles": 22,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.10483048943416e-05,
+      "minimum_altitude_m": 0.0027365933546339817,
+      "maximum_aspect_ratio": 6.2099528385920735,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0132",
+      "component_index": 132,
+      "triangles": 22,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.0200111863351898e-05,
+      "minimum_altitude_m": 0.00207859353217579,
+      "maximum_aspect_ratio": 5.5078927711700585,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 3,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0133",
+      "component_index": 133,
+      "triangles": 22,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 3.2687240507814606e-05,
+      "minimum_altitude_m": 0.0032864020770888487,
+      "maximum_aspect_ratio": 9.481609437919918,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0134",
+      "component_index": 134,
+      "triangles": 20,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.3081726123527345e-05,
+      "minimum_altitude_m": 0.0022520268045909805,
+      "maximum_aspect_ratio": 7.739166663896057,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0135",
+      "component_index": 135,
+      "triangles": 20,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.4001031124435779e-05,
+      "minimum_altitude_m": 0.0037222958397684254,
+      "maximum_aspect_ratio": 5.083086306843041,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0136",
+      "component_index": 136,
+      "triangles": 20,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.8723293606775025e-05,
+      "minimum_altitude_m": 0.004224579287287001,
+      "maximum_aspect_ratio": 4.731577187945027,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0137",
+      "component_index": 137,
+      "triangles": 20,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 2.1750870054506635e-05,
+      "minimum_altitude_m": 0.0024669671759889053,
+      "maximum_aspect_ratio": 7.23554837214402,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0138",
+      "component_index": 138,
+      "triangles": 20,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 5.787385986283309e-06,
+      "minimum_altitude_m": 0.002182215579603857,
+      "maximum_aspect_ratio": 6.036262417858232,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0139",
+      "component_index": 139,
+      "triangles": 20,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.9756548835317852e-05,
+      "minimum_altitude_m": 0.0029918400529541176,
+      "maximum_aspect_ratio": 6.895221260479295,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0140",
+      "component_index": 140,
+      "triangles": 20,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 2,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.2168716500654156e-05,
+      "minimum_altitude_m": 0.0010152185364596166,
+      "maximum_aspect_ratio": 23.613245992446984,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 2,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0141",
+      "component_index": 141,
+      "triangles": 20,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 2.5718180456404492e-05,
+      "minimum_altitude_m": 0.0038562040060866926,
+      "maximum_aspect_ratio": 5.503900029557793,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0142",
+      "component_index": 142,
+      "triangles": 20,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 2.3735770201249426e-05,
+      "minimum_altitude_m": 0.0036587745467546733,
+      "maximum_aspect_ratio": 5.0423887758401795,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0143",
+      "component_index": 143,
+      "triangles": 20,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.9859005574619746e-05,
+      "minimum_altitude_m": 0.0016676188639012106,
+      "maximum_aspect_ratio": 14.282160032019858,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0144",
+      "component_index": 144,
+      "triangles": 20,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.4544968563425953e-05,
+      "minimum_altitude_m": 0.002102990976159956,
+      "maximum_aspect_ratio": 9.339682783866087,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0145",
+      "component_index": 145,
+      "triangles": 18,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 6,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.2895733364402032e-05,
+      "minimum_altitude_m": 0.003261152716599077,
+      "maximum_aspect_ratio": 3.6912070773144974,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 2,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0146",
+      "component_index": 146,
+      "triangles": 18,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 7.865219670246042e-06,
+      "minimum_altitude_m": 0.0019148811230632818,
+      "maximum_aspect_ratio": 6.783189919292874,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 1,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0147",
+      "component_index": 147,
+      "triangles": 18,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 2.130019360736496e-05,
+      "minimum_altitude_m": 0.004355227931279822,
+      "maximum_aspect_ratio": 7.264475749646403,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0148",
+      "component_index": 148,
+      "triangles": 16,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 2,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.98647851616549e-05,
+      "minimum_altitude_m": 0.003310974742324424,
+      "maximum_aspect_ratio": 7.604023802904453,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 2,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0149",
+      "component_index": 149,
+      "triangles": 16,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.5348329518530246e-05,
+      "minimum_altitude_m": 0.0032205000482822994,
+      "maximum_aspect_ratio": 4.7105294342790565,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0150",
+      "component_index": 150,
+      "triangles": 16,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.3992260163827184e-05,
+      "minimum_altitude_m": 0.0036899911090064494,
+      "maximum_aspect_ratio": 3.470142519003441,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0151",
+      "component_index": 151,
+      "triangles": 16,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.8897360131180843e-05,
+      "minimum_altitude_m": 0.003849523048189114,
+      "maximum_aspect_ratio": 3.008925940428803,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0152",
+      "component_index": 152,
+      "triangles": 16,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 2,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.3228557793054734e-05,
+      "minimum_altitude_m": 0.002168002386057074,
+      "maximum_aspect_ratio": 5.628892867631415,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 2,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0153",
+      "component_index": 153,
+      "triangles": 16,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.9440265451187033e-05,
+      "minimum_altitude_m": 0.0033397472159134643,
+      "maximum_aspect_ratio": 5.8663224597897194,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0154",
+      "component_index": 154,
+      "triangles": 16,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 2.119381221600527e-05,
+      "minimum_altitude_m": 0.0028443915921584923,
+      "maximum_aspect_ratio": 7.377374558378452,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0155",
+      "component_index": 155,
+      "triangles": 16,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.3092497527080408e-05,
+      "minimum_altitude_m": 0.0019704637951859965,
+      "maximum_aspect_ratio": 11.573829617030478,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 1,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0156",
+      "component_index": 156,
+      "triangles": 16,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.9893807102168137e-05,
+      "minimum_altitude_m": 0.00397160845602367,
+      "maximum_aspect_ratio": 3.2348984539947483,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0157",
+      "component_index": 157,
+      "triangles": 14,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 2,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 9.883395465997267e-06,
+      "minimum_altitude_m": 0.0020475975948989803,
+      "maximum_aspect_ratio": 5.290484421806701,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 3,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0158",
+      "component_index": 158,
+      "triangles": 14,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 2.6125237134643117e-05,
+      "minimum_altitude_m": 0.0030856681007900544,
+      "maximum_aspect_ratio": 5.487718368180343,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0159",
+      "component_index": 159,
+      "triangles": 14,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 2.614416843581974e-05,
+      "minimum_altitude_m": 0.0027576251988414963,
+      "maximum_aspect_ratio": 8.252757883691334,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0160",
+      "component_index": 160,
+      "triangles": 14,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.4324391395578413e-05,
+      "minimum_altitude_m": 0.0030651307332885285,
+      "maximum_aspect_ratio": 3.8541565401056914,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0161",
+      "component_index": 161,
+      "triangles": 12,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.9738251662860235e-05,
+      "minimum_altitude_m": 0.0038185683931449576,
+      "maximum_aspect_ratio": 3.9169898034264263,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0162",
+      "component_index": 162,
+      "triangles": 12,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 2,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.2296506821918268e-05,
+      "minimum_altitude_m": 0.0032401140404979445,
+      "maximum_aspect_ratio": 4.043775174965679,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 1,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0163",
+      "component_index": 163,
+      "triangles": 12,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.389232431436374e-05,
+      "minimum_altitude_m": 0.004133670206736016,
+      "maximum_aspect_ratio": 3.547822098283541,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0164",
+      "component_index": 164,
+      "triangles": 12,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.823878500198612e-05,
+      "minimum_altitude_m": 0.003202281750205117,
+      "maximum_aspect_ratio": 4.5385884459097126,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0165",
+      "component_index": 165,
+      "triangles": 12,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.4919060336516127e-05,
+      "minimum_altitude_m": 0.0035030244345856873,
+      "maximum_aspect_ratio": 4.2837063543212155,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0166",
+      "component_index": 166,
+      "triangles": 12,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 2,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.0475803041857804e-05,
+      "minimum_altitude_m": 0.002393093661444723,
+      "maximum_aspect_ratio": 6.692030134626696,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 1,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0167",
+      "component_index": 167,
+      "triangles": 12,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 9.556356550266706e-06,
+      "minimum_altitude_m": 0.0023405744369437245,
+      "maximum_aspect_ratio": 3.7332471392620747,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0168",
+      "component_index": 168,
+      "triangles": 10,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 2,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.3888379041651237e-05,
+      "minimum_altitude_m": 0.0018656287197688275,
+      "maximum_aspect_ratio": 9.878938907426217,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 2,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0169",
+      "component_index": 169,
+      "triangles": 10,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 2.095677291331926e-05,
+      "minimum_altitude_m": 0.0037505517874511602,
+      "maximum_aspect_ratio": 3.2833053418424196,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0170",
+      "component_index": 170,
+      "triangles": 10,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.137874940872242e-05,
+      "minimum_altitude_m": 0.0023322741555009434,
+      "maximum_aspect_ratio": 6.489215119344656,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0171",
+      "component_index": 171,
+      "triangles": 10,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.7145656982917192e-05,
+      "minimum_altitude_m": 0.00408481129984343,
+      "maximum_aspect_ratio": 3.0292677263603567,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0172",
+      "component_index": 172,
+      "triangles": 10,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.3394896596440732e-05,
+      "minimum_altitude_m": 0.0012547111641842265,
+      "maximum_aspect_ratio": 17.016954454111133,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 1,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0173",
+      "component_index": 173,
+      "triangles": 10,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 5.719689033574055e-06,
+      "minimum_altitude_m": 0.0017386564833145556,
+      "maximum_aspect_ratio": 4.340384544172242,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0174",
+      "component_index": 174,
+      "triangles": 10,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.3047108433701012e-05,
+      "minimum_altitude_m": 0.0027236290272739196,
+      "maximum_aspect_ratio": 3.5176154437717417,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0175",
+      "component_index": 175,
+      "triangles": 10,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 2.3842688981790057e-05,
+      "minimum_altitude_m": 0.004397170485042561,
+      "maximum_aspect_ratio": 5.011436732414051,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0176",
+      "component_index": 176,
+      "triangles": 8,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 4,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.3798316578926457e-05,
+      "minimum_altitude_m": 0.002935721795093965,
+      "maximum_aspect_ratio": 3.202036708024305,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 3,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0177",
+      "component_index": 177,
+      "triangles": 8,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 2,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 3.157830546563536e-05,
+      "minimum_altitude_m": 0.002941732443072865,
+      "maximum_aspect_ratio": 9.078073330032437,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 1,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0178",
+      "component_index": 178,
+      "triangles": 8,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.480791215880202e-05,
+      "minimum_altitude_m": 0.0038810012753354604,
+      "maximum_aspect_ratio": 2.0255424301085627,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0179",
+      "component_index": 179,
+      "triangles": 8,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 2.085122790835817e-05,
+      "minimum_altitude_m": 0.004846614884437761,
+      "maximum_aspect_ratio": 2.344594882515321,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0180",
+      "component_index": 180,
+      "triangles": 8,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.3830584463991019e-05,
+      "minimum_altitude_m": 0.004284663830644622,
+      "maximum_aspect_ratio": 2.2731581652023682,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0181",
+      "component_index": 181,
+      "triangles": 8,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 2.508214514752143e-05,
+      "minimum_altitude_m": 0.004935320246121813,
+      "maximum_aspect_ratio": 2.155143290729853,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0182",
+      "component_index": 182,
+      "triangles": 8,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 2.0748867968442452e-05,
+      "minimum_altitude_m": 0.0034149906134498843,
+      "maximum_aspect_ratio": 5.413649406787135,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0183",
+      "component_index": 183,
+      "triangles": 8,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 2.978648823628178e-05,
+      "minimum_altitude_m": 0.0030874827017531503,
+      "maximum_aspect_ratio": 6.249427489190561,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0184",
+      "component_index": 184,
+      "triangles": 8,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.0349961238324928e-05,
+      "minimum_altitude_m": 0.0016567468918821401,
+      "maximum_aspect_ratio": 8.279829593717114,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0185",
+      "component_index": 185,
+      "triangles": 8,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 2.6024848544356257e-05,
+      "minimum_altitude_m": 0.0027043734161470664,
+      "maximum_aspect_ratio": 7.11680211056906,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0186",
+      "component_index": 186,
+      "triangles": 8,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 2.072573212404167e-05,
+      "minimum_altitude_m": 0.00488150582640835,
+      "maximum_aspect_ratio": 2.3767368762216203,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0187",
+      "component_index": 187,
+      "triangles": 8,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.9700700063834737e-05,
+      "minimum_altitude_m": 0.0035192955630773837,
+      "maximum_aspect_ratio": 6.2609463726541845,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0188",
+      "component_index": 188,
+      "triangles": 8,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.7445159677167166e-05,
+      "minimum_altitude_m": 0.003189989715665028,
+      "maximum_aspect_ratio": 3.428675457520957,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0189",
+      "component_index": 189,
+      "triangles": 8,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.4684336339392925e-05,
+      "minimum_altitude_m": 0.0017714018921900136,
+      "maximum_aspect_ratio": 9.35944530016252,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0190",
+      "component_index": 190,
+      "triangles": 8,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.3468553200844232e-05,
+      "minimum_altitude_m": 0.0036108031839170557,
+      "maximum_aspect_ratio": 6.575679951044968,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0191",
+      "component_index": 191,
+      "triangles": 8,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 3.020944565190984e-05,
+      "minimum_altitude_m": 0.002931317814650589,
+      "maximum_aspect_ratio": 7.0314830936738515,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0192",
+      "component_index": 192,
+      "triangles": 8,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.685319667406992e-05,
+      "minimum_altitude_m": 0.002953484196245473,
+      "maximum_aspect_ratio": 3.8640521752509667,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0193",
+      "component_index": 193,
+      "triangles": 6,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 2,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 2.136254213821093e-05,
+      "minimum_altitude_m": 0.003581515401635644,
+      "maximum_aspect_ratio": 3.330805566982731,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 1,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0194",
+      "component_index": 194,
+      "triangles": 6,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.1666784199881232e-05,
+      "minimum_altitude_m": 0.0036296166354742652,
+      "maximum_aspect_ratio": 2.924537925326242,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0195",
+      "component_index": 195,
+      "triangles": 6,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.6486548478973e-05,
+      "minimum_altitude_m": 0.0033590365906544612,
+      "maximum_aspect_ratio": 4.410348083790208,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0196",
+      "component_index": 196,
+      "triangles": 6,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.3407062268808017e-05,
+      "minimum_altitude_m": 0.0035776895850195924,
+      "maximum_aspect_ratio": 2.5489666727836524,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0197",
+      "component_index": 197,
+      "triangles": 6,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.5352863350880287e-05,
+      "minimum_altitude_m": 0.0032043032213820762,
+      "maximum_aspect_ratio": 4.377694190352428,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0198",
+      "component_index": 198,
+      "triangles": 6,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.964516012967698e-05,
+      "minimum_altitude_m": 0.0050110184484375144,
+      "maximum_aspect_ratio": 3.2012730062408843,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0199",
+      "component_index": 199,
+      "triangles": 6,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 2.2731845732226696e-05,
+      "minimum_altitude_m": 0.0033106549678775005,
+      "maximum_aspect_ratio": 4.2484514837741045,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0200",
+      "component_index": 200,
+      "triangles": 6,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 2.66370063994542e-05,
+      "minimum_altitude_m": 0.003335371079077077,
+      "maximum_aspect_ratio": 4.788804342845275,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0201",
+      "component_index": 201,
+      "triangles": 6,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 5.98939015329036e-07,
+      "minimum_altitude_m": 0.00023479724578341968,
+      "maximum_aspect_ratio": 21.72834275390967,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0202",
+      "component_index": 202,
+      "triangles": 6,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.4568027959784063e-05,
+      "minimum_altitude_m": 0.0037182148384476477,
+      "maximum_aspect_ratio": 2.6490775646115217,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0203",
+      "component_index": 203,
+      "triangles": 4,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 4,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 4.279617675721129e-05,
+      "minimum_altitude_m": 0.005265799954978688,
+      "maximum_aspect_ratio": 3.086784105582226,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 1,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0204",
+      "component_index": 204,
+      "triangles": 4,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.0549640551273756e-05,
+      "minimum_altitude_m": 0.0030051635843493254,
+      "maximum_aspect_ratio": 3.7932609428060298,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0205",
+      "component_index": 205,
+      "triangles": 4,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 4,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.2201777520695987e-05,
+      "minimum_altitude_m": 0.003513113010920447,
+      "maximum_aspect_ratio": 2.2438151587694524,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 1,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0206",
+      "component_index": 206,
+      "triangles": 4,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.6723765825653214e-05,
+      "minimum_altitude_m": 0.003471073818640127,
+      "maximum_aspect_ratio": 3.118355553610067,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0207",
+      "component_index": 207,
+      "triangles": 4,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 3.514418020800952e-05,
+      "minimum_altitude_m": 0.003448304929601491,
+      "maximum_aspect_ratio": 5.911151453466628,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0208",
+      "component_index": 208,
+      "triangles": 4,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 3.422691076321184e-08,
+      "minimum_altitude_m": 0.00014143945129419617,
+      "maximum_aspect_ratio": 4.168169022175201,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0209",
+      "component_index": 209,
+      "triangles": 4,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.6459152000302867e-05,
+      "minimum_altitude_m": 0.0032593368017473697,
+      "maximum_aspect_ratio": 3.587352962832118,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0210",
+      "component_index": 210,
+      "triangles": 4,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 0,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 3.690355425231878e-07,
+      "minimum_altitude_m": 0.00042915098358463203,
+      "maximum_aspect_ratio": 4.007540934605047,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0211",
+      "component_index": 211,
+      "triangles": 2,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 2,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 2.8077242725635058e-05,
+      "minimum_altitude_m": 0.005637152366221439,
+      "maximum_aspect_ratio": 1.7671153733679545,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0212",
+      "component_index": 212,
+      "triangles": 2,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 2,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 4.2956720379595e-05,
+      "minimum_altitude_m": 0.006750573095182034,
+      "maximum_aspect_ratio": 1.8852972071531182,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0213",
+      "component_index": 213,
+      "triangles": 2,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 2,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 2.8939143769131334e-05,
+      "minimum_altitude_m": 0.005484871391435256,
+      "maximum_aspect_ratio": 1.9239012443979047,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0214",
+      "component_index": 214,
+      "triangles": 2,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 2,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 2.403882052032998e-05,
+      "minimum_altitude_m": 0.0014791607017526844,
+      "maximum_aspect_ratio": 21.974167497796547,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0215",
+      "component_index": 215,
+      "triangles": 2,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 2,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 2.044613931130694e-05,
+      "minimum_altitude_m": 0.0029073730448388193,
+      "maximum_aspect_ratio": 4.837709568203652,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0216",
+      "component_index": 216,
+      "triangles": 2,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 2,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 3.862207115219915e-05,
+      "minimum_altitude_m": 0.005634497046574095,
+      "maximum_aspect_ratio": 2.433073586815397,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0217",
+      "component_index": 217,
+      "triangles": 2,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 2,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 1.5430666234472142e-05,
+      "minimum_altitude_m": 0.0031317205049469945,
+      "maximum_aspect_ratio": 3.146651755063329,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    },
+    {
+      "component_id": "ba2d283db0be:C0218",
+      "component_index": 218,
+      "triangles": 2,
+      "flags": {
+        "zero_area": 0,
+        "small_area": 0,
+        "low_altitude": 0,
+        "high_aspect": 0,
+        "duplicate_position_faces": 2,
+        "collapsed_position_edge": 0
+      },
+      "minimum_area_m2": 3.458330407660623e-05,
+      "minimum_altitude_m": 0.004983948430660312,
+      "maximum_aspect_ratio": 2.784513956144838,
+      "boundary_position_edges": 0,
+      "nonmanifold_position_edges": 0,
+      "visibility_candidate": null,
+      "visibility_control_misses": 0
+    }
+  ],
+  "thresholds": {
+    "minimum_area_m2": 1e-12,
+    "minimum_altitude_m": 1e-05,
+    "maximum_aspect_ratio": 1000.0
+  },
+  "limitations": [
+    "Exact coincident positions only; no tolerance welding or topology changes.",
+    "Tiny/elongated or duplicated faces can be intentional; semantic review remains required.",
+    "Boundary/nonmanifold edges are diagnostics, not an automatic watertightness requirement for hair/tack.",
+    "No self-intersection, physical containment, UV overlap or deletion approval."
+  ]
+}

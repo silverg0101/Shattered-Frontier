@@ -1,0 +1,7 @@
+23:44:01 | INFO: Data are loaded, start creating Blender stuff
+23:44:01 | INFO: Blender create Mesh node SM_BLD_SM_RoofSlopeFace_01_v003_Mesh
+23:44:01 | INFO: glTF import finished in 0.01s
+{"status": "passed", "file": "SM_BLD_SM_RoofSlopeFace_01_v003.glb", "kind": "glb", "blender": "5.1.1", "mesh_object_count": 1, "dimensions_m": [0.5, 0.5, 0.5], "expected_dimensions_m": [0.5, 0.5, 0.5], "max_dimension_error_m": 0.0, "connected_components": 1, "loose_vertices": 0, "uv0_present": true, "material_slots": 1, "acceptance_claim": false}
+Blender 5.1.1 (hash b70da489d7f4 built 2026-04-14 01:37:22)
+
+Blender quit

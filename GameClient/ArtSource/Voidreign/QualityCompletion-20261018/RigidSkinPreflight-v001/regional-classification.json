@@ -1,0 +1,432 @@
+{
+  "status": "regional-cause-classification-unrated",
+  "source_report": "preflight.json",
+  "categories": {
+    "collar/core": {
+      "edges": 957,
+      "baseline_maximum_m": 0.017706707202369665,
+      "proposed_maximum_m": 0.009261335971857701,
+      "regressed_above_reporting_floor": 64
+    },
+    "core/core": {
+      "edges": 676,
+      "baseline_maximum_m": 0.02758547788399797,
+      "proposed_maximum_m": 3.238021164392313e-08,
+      "regressed_above_reporting_floor": 0
+    },
+    "collar/collar": {
+      "edges": 1638,
+      "baseline_maximum_m": 0.016605904636810928,
+      "proposed_maximum_m": 0.015638629656559735,
+      "regressed_above_reporting_floor": 721
+    },
+    "collar/outside": {
+      "edges": 964,
+      "baseline_maximum_m": 0.016916671507445472,
+      "proposed_maximum_m": 0.019177602319442245,
+      "regressed_above_reporting_floor": 851
+    }
+  },
+  "largest_regressions": [
+    {
+      "vertices": [
+        96115,
+        96146
+      ],
+      "baseline_m": 0.00045716940275135516,
+      "proposed_m": 0.007537025976305111,
+      "increase_m": 0.0070798565735537555,
+      "endpoint_roles": [
+        [
+          "fore.L",
+          "core"
+        ],
+        [
+          "fore.L",
+          "collar"
+        ]
+      ],
+      "rest_length_m": 0.014748072251677513
+    },
+    {
+      "vertices": [
+        96035,
+        96037
+      ],
+      "baseline_m": 0.0005620426780813086,
+      "proposed_m": 0.007556597786140975,
+      "increase_m": 0.006994555108059667,
+      "endpoint_roles": [
+        [
+          "fore.L",
+          "core"
+        ],
+        [
+          "fore.L",
+          "collar"
+        ]
+      ],
+      "rest_length_m": 0.013890358619391918
+    },
+    {
+      "vertices": [
+        96111,
+        96114
+      ],
+      "baseline_m": 0.0005620426780813086,
+      "proposed_m": 0.007556597786140975,
+      "increase_m": 0.006994555108059667,
+      "endpoint_roles": [
+        [
+          "fore.L",
+          "core"
+        ],
+        [
+          "fore.L",
+          "collar"
+        ]
+      ],
+      "rest_length_m": 0.013890358619391918
+    },
+    {
+      "vertices": [
+        20648,
+        20649
+      ],
+      "baseline_m": 0.0006692003419469239,
+      "proposed_m": 0.007226056431916032,
+      "increase_m": 0.006556856089969108,
+      "endpoint_roles": [
+        [
+          "fore.R",
+          "collar"
+        ],
+        [
+          "outside",
+          "outside"
+        ]
+      ],
+      "rest_length_m": 0.028706444427371025
+    },
+    {
+      "vertices": [
+        16750,
+        16761
+      ],
+      "baseline_m": 0.0006692003419469239,
+      "proposed_m": 0.007226056431916032,
+      "increase_m": 0.006556856089969108,
+      "endpoint_roles": [
+        [
+          "outside",
+          "outside"
+        ],
+        [
+          "fore.R",
+          "collar"
+        ]
+      ],
+      "rest_length_m": 0.028706444427371025
+    },
+    {
+      "vertices": [
+        96115,
+        96147
+      ],
+      "baseline_m": 0.0004776504467293042,
+      "proposed_m": 0.006749826608572516,
+      "increase_m": 0.0062721761618432115,
+      "endpoint_roles": [
+        [
+          "fore.L",
+          "core"
+        ],
+        [
+          "fore.L",
+          "collar"
+        ]
+      ],
+      "rest_length_m": 0.011436660774052143
+    },
+    {
+      "vertices": [
+        96637,
+        96640
+      ],
+      "baseline_m": 0.0004776504467293042,
+      "proposed_m": 0.006749826608572516,
+      "increase_m": 0.0062721761618432115,
+      "endpoint_roles": [
+        [
+          "fore.L",
+          "collar"
+        ],
+        [
+          "fore.L",
+          "core"
+        ]
+      ],
+      "rest_length_m": 0.011436660774052143
+    },
+    {
+      "vertices": [
+        96107,
+        96114
+      ],
+      "baseline_m": 0.0007654340201128235,
+      "proposed_m": 0.006853872642714663,
+      "increase_m": 0.00608843862260184,
+      "endpoint_roles": [
+        [
+          "fore.L",
+          "core"
+        ],
+        [
+          "fore.L",
+          "collar"
+        ]
+      ],
+      "rest_length_m": 0.023485399782657623
+    },
+    {
+      "vertices": [
+        20644,
+        20645
+      ],
+      "baseline_m": 0.0009663468605805199,
+      "proposed_m": 0.006934358756471526,
+      "increase_m": 0.005968011895891006,
+      "endpoint_roles": [
+        [
+          "fore.R",
+          "collar"
+        ],
+        [
+          "fore.R",
+          "core"
+        ]
+      ],
+      "rest_length_m": 0.021221015602350235
+    },
+    {
+      "vertices": [
+        118817,
+        118819
+      ],
+      "baseline_m": 0.0003910778334072808,
+      "proposed_m": 0.006065764230235915,
+      "increase_m": 0.005674686396828634,
+      "endpoint_roles": [
+        [
+          "fore.L",
+          "collar"
+        ],
+        [
+          "fore.L",
+          "core"
+        ]
+      ],
+      "rest_length_m": 0.011862021870911121
+    },
+    {
+      "vertices": [
+        96036,
+        96040
+      ],
+      "baseline_m": 0.0003910778334072808,
+      "proposed_m": 0.006065764230235915,
+      "increase_m": 0.005674686396828634,
+      "endpoint_roles": [
+        [
+          "fore.L",
+          "collar"
+        ],
+        [
+          "fore.L",
+          "core"
+        ]
+      ],
+      "rest_length_m": 0.011862021870911121
+    },
+    {
+      "vertices": [
+        59729,
+        59730
+      ],
+      "baseline_m": 0.0012613916530739636,
+      "proposed_m": 0.006579038265678325,
+      "increase_m": 0.005317646612604362,
+      "endpoint_roles": [
+        [
+          "fore.R",
+          "core"
+        ],
+        [
+          "fore.R",
+          "collar"
+        ]
+      ],
+      "rest_length_m": 0.03053377754986286
+    },
+    {
+      "vertices": [
+        96052,
+        96053
+      ],
+      "baseline_m": 0.0006279081519563329,
+      "proposed_m": 0.005905836564361472,
+      "increase_m": 0.005277928412405139,
+      "endpoint_roles": [
+        [
+          "fore.L",
+          "collar"
+        ],
+        [
+          "fore.L",
+          "core"
+        ]
+      ],
+      "rest_length_m": 0.019562125205993652
+    },
+    {
+      "vertices": [
+        96050,
+        96053
+      ],
+      "baseline_m": 0.0005068188415299699,
+      "proposed_m": 0.005778712504797966,
+      "increase_m": 0.005271893663267996,
+      "endpoint_roles": [
+        [
+          "fore.L",
+          "collar"
+        ],
+        [
+          "fore.L",
+          "core"
+        ]
+      ],
+      "rest_length_m": 0.02302437834441662
+    },
+    {
+      "vertices": [
+        95873,
+        95875
+      ],
+      "baseline_m": 0.0005068188415299699,
+      "proposed_m": 0.005778712504797966,
+      "increase_m": 0.005271893663267996,
+      "endpoint_roles": [
+        [
+          "fore.L",
+          "core"
+        ],
+        [
+          "fore.L",
+          "collar"
+        ]
+      ],
+      "rest_length_m": 0.02302437834441662
+    },
+    {
+      "vertices": [
+        20644,
+        20649
+      ],
+      "baseline_m": 0.00023929779440503077,
+      "proposed_m": 0.005361750923437509,
+      "increase_m": 0.005122453129032478,
+      "endpoint_roles": [
+        [
+          "fore.R",
+          "collar"
+        ],
+        [
+          "outside",
+          "outside"
+        ]
+      ],
+      "rest_length_m": 0.02119704894721508
+    },
+    {
+      "vertices": [
+        96036,
+        96038
+      ],
+      "baseline_m": 0.0004447796518638209,
+      "proposed_m": 0.0051349112502923604,
+      "increase_m": 0.0046901315984285395,
+      "endpoint_roles": [
+        [
+          "fore.L",
+          "collar"
+        ],
+        [
+          "fore.L",
+          "collar"
+        ]
+      ],
+      "rest_length_m": 0.009778328239917755
+    },
+    {
+      "vertices": [
+        118816,
+        118817
+      ],
+      "baseline_m": 0.0004447796518638209,
+      "proposed_m": 0.0051349112502923604,
+      "increase_m": 0.0046901315984285395,
+      "endpoint_roles": [
+        [
+          "fore.L",
+          "collar"
+        ],
+        [
+          "fore.L",
+          "collar"
+        ]
+      ],
+      "rest_length_m": 0.009778328239917755
+    },
+    {
+      "vertices": [
+        96292,
+        96296
+      ],
+      "baseline_m": 0.0003721412396631499,
+      "proposed_m": 0.005061853189852285,
+      "increase_m": 0.004689711950189135,
+      "endpoint_roles": [
+        [
+          "fore.L",
+          "collar"
+        ],
+        [
+          "fore.L",
+          "core"
+        ]
+      ],
+      "rest_length_m": 0.032339632511138916
+    },
+    {
+      "vertices": [
+        96052,
+        96058
+      ],
+      "baseline_m": 0.0003721412396631499,
+      "proposed_m": 0.005061853189852285,
+      "increase_m": 0.004689711950189135,
+      "endpoint_roles": [
+        [
+          "fore.L",
+          "collar"
+        ],
+        [
+          "fore.L",
+          "core"
+        ]
+      ],
+      "rest_length_m": 0.032339632511138916
+    }
+  ]
+}

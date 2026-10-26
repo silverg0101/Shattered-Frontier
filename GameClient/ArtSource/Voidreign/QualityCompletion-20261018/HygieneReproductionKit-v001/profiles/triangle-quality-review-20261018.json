@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "thresholds": {
+    "minimum_area_m2": 1e-12,
+    "minimum_altitude_m": 0.00001,
+    "maximum_aspect_ratio": 1000.0
+  },
+  "units": "square metres, metres, dimensionless longest-edge/altitude ratio",
+  "permissions": "Offline reviewer; these are diagnostic candidate thresholds, not approved engine budgets or automatic repair rules",
+  "effective_time": "Next fresh report; use a new pinned profile revision for changes"
+}

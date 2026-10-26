@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "status": "projection-UV-allocation-measurement-only",
+  "cpu_only": true,
+  "input_sha256": {
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ProjectionUVTopology-v001/uv-report.json": "b5c8a455c7e47ee794ca4a302eebde3892a116e0a98e329cb45ded32b5e7c53f",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ProjectionUVTopology-v001/uv-topology.npz": "33d4bb778f26724fc173fd16a020790a009e5d8d21ede708f3c4635fd22b0751",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/SourceUVTopology-v001/uv-topology.npz": "7d6b6296ff351ca9c6608eb5dba7098738e35f8ede072a1a63eeea462357ba94",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReviewedMaterialMask2K-v001/mask-report.json": "6ce18751d7ba6b8a5e1d5d8235978994ec4a5b251edce27ae94a40ddc130cbb2",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReviewedMaterialMask4K-v001/mask-report.json": "beb7abebc6b8ab4cafca0eda8dd144474e5250d83df239ee592e0098e4a795b3"
+  },
+  "tool_sha256": "330695e62e4e2318cabe83f99967f6285663a1053b3144606a00085a893d1d2e",
+  "profile_sha256": "d92d5d214b8bedc8353cf684a7edd1da40b91cf9f5ee535b01263e76a73b57fa",
+  "exact_baseline_topology_bridge": true,
+  "measurements": [
+    {
+      "resolution": 2048,
+      "safe_mesh_pixel_centers": 1848127,
+      "excluded_overlap_pixels": 78,
+      "preview": "ProjectionCoverage-2048.png",
+      "preview_sha256": "2c8a905d3e792654b7093fe1eba4c6dbcacbe99b2de250c895e8dbdc0fa5950e",
+      "regions": [
+        {
+          "name": "Head edit projection union",
+          "support_pixel_centers": 124081,
+          "weight_equivalent_pixels": 60137.08368975224,
+          "weight_equivalent_square_side_pixels": 245.22863554192082,
+          "pixels_at_least_half_weight": 58106,
+          "pixels_at_least_099_weight": 29208
+        },
+        {
+          "name": "Saddle edit projection union",
+          "support_pixel_centers": 224780,
+          "weight_equivalent_pixels": 111289.4382091781,
+          "weight_equivalent_square_side_pixels": 333.6007167396049,
+          "pixels_at_least_half_weight": 108487,
+          "pixels_at_least_099_weight": 55063
+        }
+      ]
+    },
+    {
+      "resolution": 4096,
+      "safe_mesh_pixel_centers": 7393086,
+      "excluded_overlap_pixels": 303,
+      "preview": "ProjectionCoverage-4096.png",
+      "preview_sha256": "205a78a0884bd4b96e3cba3abc7bf78e97fbe2383082369301af9c274d26cb5a",
+      "regions": [
+        {
+          "name": "Head edit projection union",
+          "support_pixel_centers": 496140,
+          "weight_equivalent_pixels": 240624.40769843452,
+          "weight_equivalent_square_side_pixels": 490.5348180286844,
+          "pixels_at_least_half_weight": 232430,
+          "pixels_at_least_099_weight": 116906
+        },
+        {
+          "name": "Saddle edit projection union",
+          "support_pixel_centers": 899666,
+          "weight_equivalent_pixels": 445468.9181011759,
+          "weight_equivalent_square_side_pixels": 667.4345796414626,
+          "pixels_at_least_half_weight": 434314,
+          "pixels_at_least_099_weight": 220285
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "Existing edit projections are not semantic head/saddle material masks or full anatomical coverage.",
+    "Region diagnostic combines vertex weights by maximum before interpolation; not the actual ordered projection composite or final bake alpha.",
+    "Pixel centers exclude overlaps, filtering, mipmapping and bake dilation.",
+    "Square-side statistic is only sqrt(weight sum), not contiguous resolution, texel density per metre or an acceptance threshold.",
+    "No geometry/UV/material edits, repair-budget reset or model/engine acceptance."
+  ]
+}

@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "status": "skin-candidate-needs-review",
+  "cpu_only": true,
+  "input_sha256": {
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkPilot-v003/Mount-WalkPilot.blend": "f59dc38bff697b6c2a2c84511413d2e292d9fdbb278acc69cd8df6d26a5bd123",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/DegenerateInspection-v001/00-component-selections.npz": "0d7599c8064cb81a6e211a23731435e08939b7fb146ce2d4bed810273909a2b2",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HygieneSemanticSelection-v001/selections.npz": "0b6a19f76a2cba73a42e293c29365360b53ba93be101cf8f4ca556e7a5989cc0",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidHoofProposal-v002/hoof-selections.npz": "742c939481a7939e558d684f09346d12778451d0b481aa46367550b4665752dd"
+  },
+  "tool_sha256": "79b7decf950dff6a512c74c41962f454fad89476dd6ee39826880779362de3c2",
+  "profile_sha256": "29c65fa3f19b8c05c826d00074f265a8b6a90c90e0b0a4f6583ae39e3df33eca",
+  "candidate_sha256": "4c4230b3928d557aa45bd12a631705872a41c9eb5f15596228ecab358467c68b",
+  "reweighted_vertices": 158532,
+  "hair_root_pairs": 3028,
+  "rest_selection_max_offset_m": 2.3040972352027893,
+  "fallback_vertices": 626,
+  "proxy_faces": 8578,
+  "unweighted_proxy_vertices": 120,
+  "max_transfer_distance_m": 0.054900042712688446,
+  "heat_seconds": 0.20536398887634277,
+  "baseline": {
+    "all": {
+      "max_rel": 6.842327396523709,
+      "max_abs_m": 0.015021103882992841,
+      "worst_p99_rel": 0.1957738212534789,
+      "worst_frame": 32
+    },
+    "body": {
+      "max_rel": 6.842327396523709,
+      "max_abs_m": 0.015021103882992841,
+      "worst_p99_rel": 0.27370864309307785,
+      "worst_frame": 33
+    },
+    "Mane": {
+      "max_rel": 0.00016460774139072113,
+      "max_abs_m": 1.4085388924797368e-07,
+      "worst_p99_rel": 4.5464773674532273e-05,
+      "worst_frame": 59
+    },
+    "Tail": {
+      "max_rel": 0.01764462353510268,
+      "max_abs_m": 0.00014575487906604012,
+      "worst_p99_rel": 3.0438196164539326e-05,
+      "worst_frame": 73
+    },
+    "core_max_edge_change_m": 0.00481116478888177,
+    "seam_gap_m": 0.0,
+    "hair_root_gap_change_m": 0.0004117414581042162
+  },
+  "candidate": {
+    "all": {
+      "max_rel": 49.041646783108355,
+      "max_abs_m": 0.060634372953414804,
+      "worst_p99_rel": 3.0985932362744513,
+      "worst_frame": 50
+    },
+    "body": {
+      "max_rel": 49.041646783108355,
+      "max_abs_m": 0.060634372953414804,
+      "worst_p99_rel": 5.373618603572035,
+      "worst_frame": 69
+    },
+    "Mane": {
+      "max_rel": 0.00016460774139072113,
+      "max_abs_m": 1.4085388924797368e-07,
+      "worst_p99_rel": 4.5464773674532273e-05,
+      "worst_frame": 59
+    },
+    "Tail": {
+      "max_rel": 0.01764462353510268,
+      "max_abs_m": 0.00014575487906604012,
+      "worst_p99_rel": 3.0438196164539326e-05,
+      "worst_frame": 73
+    },
+    "core_max_edge_change_m": 8.714233254002862e-08,
+    "seam_gap_m": 0.0,
+    "hair_root_gap_change_m": 0.023333891980707514
+  },
+  "limitations": [
+    "Same frozen clip and bone motion; skin only. Hair/feature groups and contact solvers untouched.",
+    "Edge strain is a distortion measure, not visual or anatomical approval."
+  ]
+}

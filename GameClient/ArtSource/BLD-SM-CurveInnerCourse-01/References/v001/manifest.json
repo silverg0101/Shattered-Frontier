@@ -1,0 +1,67 @@
+{
+  "assetId": "BLD-SM-CurveInnerCourse-01",
+  "version": "v001",
+  "category": "construction curved wall course",
+  "created": "2026-10-18",
+  "sourceReferences": [
+    "docs/art-templates/player-construction-kit-contract.md — curve-quarter-r2; curved partial shapes",
+    "docs/Game-Design/Legends_Shattered_Frontier_Construction_System_Architecture_v0.1.md — §§3.1–3.2, 8–9"
+  ],
+  "definition": {
+    "geometryRef": "curve-quarter-r2 (proposal)",
+    "envelopeMeters": "per contract; do not infer from image",
+    "contacts": [
+      "concave interior",
+      "convex exterior",
+      "top",
+      "underside",
+      "two arc ends"
+    ],
+    "openings": "none",
+    "materialKit": "KIT-SM",
+    "structuralMaterialProfile": "Stone masonry",
+    "cosmeticSkin": "appearance only",
+    "functionalDefinition": "none"
+  },
+  "generation": {
+    "tool": "built-in image_gen",
+    "date": "2026-10-18",
+    "model": "unavailable",
+    "seed": "unavailable",
+    "promptRecord": "prompt.txt",
+    "referenceImagesAttached": []
+  },
+  "images": [
+    {
+      "path": "concept-sheet.png",
+      "sha256": "1b83019c380e282b2eddbf3467881c0c2ecadd21739d04ec307189c1383e2f02",
+      "width": 1536,
+      "height": 1024,
+      "pixelFormat": "RGB 24-bit",
+      "alpha": false,
+      "review": "Masonry sheet shows inner curved courses, end contacts and stacked arc studies; clean view shows one connected masonry arc segment. Radius and modular segmentation require numerical review."
+    },
+    {
+      "path": "asset-view.png",
+      "sha256": "6ca997712dff42fab1210696c3f45dc7db4d3dcb7a064f83c5ddba2275349d3a",
+      "width": 1536,
+      "height": 1024,
+      "pixelFormat": "RGB 24-bit",
+      "alpha": false,
+      "review": "Masonry sheet shows inner curved courses, end contacts and stacked arc studies; clean view shows one connected masonry arc segment. Radius and modular segmentation require numerical review."
+    }
+  ],
+  "review": {
+    "reviewedBy": "Codex",
+    "conceptStatus": "proposed",
+    "cleanViewStatus": "ready-for-model-test",
+    "imageStatus": "image-complete",
+    "geometryAcceptance": "not established",
+    "numericalMeshFit": "not established",
+    "runtimeCollisionSupportClearance": "not established",
+    "actionableFindings": [
+      "Masonry sheet shows inner curved courses, end contacts and stacked arc studies; clean view shows one connected masonry arc segment. Radius and modular segmentation require numerical review."
+    ]
+  },
+  "componentBoundary": "One reusable curved course role per kit. Appearance only; image review does not establish radii, segment count, mesh fit, collision, support or navigation."
+}

@@ -1,0 +1,86 @@
+{
+  "asset_id": "BLD-WT-JointStackCellFull-01",
+  "version": "v001",
+  "batch": "construction-worked-timber-joints-34",
+  "status": "image-complete; explicit two-cell assembly study; structural readiness blocked",
+  "source_references": [
+    "docs/art-templates/player-construction-kit-contract.md, \u00a7\u00a73.2, 8\u20139",
+    "docs/art-templates/asset-lists/construction-kit-matrix-07.md, worked-timber joint roles"
+  ],
+  "dependency": "KIT-WT surfaces and contract cell contact boundaries; gameplay properties unchanged",
+  "exact_prompts": {
+    "concept_sheet": "Concept sheet for worked-timber stacked wall-cell join: two SOLID opaque full-cell modules touching top-to-bottom at one flat contact plane. Show only exterior rendered plank faces; no hollow cavities, no framing cutaways, no openings, no exploded separation. One straight vertical stack, seam at exact cell boundary, small elevation and side contact detail. Neutral gray background, no labels, appearance only, geometry proposal.",
+    "asset_view": "Isolated clean product view of two solid worked-timber cells stacked vertically, one clear horizontal face-contact seam between them, same square module footprint, flush aligned planks, pale gray studio background, no text, no cavities or surrounding structure.",
+    "concept_sheet_revision_2026_10_18": "See prompt-revision-2026-10-18.txt; exact text retained there."
+  },
+  "images": [
+    {
+      "file": "concept-sheet.png",
+      "width_px": 1536,
+      "height_px": 1024,
+      "mode": "RGB",
+      "format": "PNG",
+      "sha256": "36c32721190a2c43577f66240dfe9fe15f07dd41f1a4d73ec500e65ce83e23ff"
+    },
+    {
+      "file": "asset-view.png",
+      "width_px": 1254,
+      "height_px": 1254,
+      "mode": "RGB",
+      "format": "PNG",
+      "sha256": "3a676701981ea4bcc11e737f49eb54f836c1074259eb89399ae0e282198e9c47"
+    }
+  ],
+  "visual_review": "Revised sheet clearly labels two stacked 0.5 m cell-full cubes, the combined 0.5 x 0.5 x 1.0 m envelope, origins, axes, top/bottom contact plane, 0.25 m2 target area and orthographic sections. Labels are legible. The image does not prove geometry or runtime fit.",
+  "compatibility": "Visual review does not establish numerical mesh, collision, contact, clearance or runtime compatibility. Appearance only; gameplay material properties unchanged.",
+  "generation_history": [
+    {
+      "file": "exec-b718eac9-2f32-4071-a608-26b3f75f4a0d.png",
+      "selected": false,
+      "reason": "Superseded selected concept sheet; preserved as provenance after buildability annotation."
+    },
+    {
+      "file": "exec-f86c3375-5c53-45c1-a319-7257a59e3f2c.png",
+      "selected": true
+    },
+    {
+      "file": "exec-b9e72610-fa09-4e59-8940-586cddc7c5d0.png",
+      "selected": false,
+      "reason": "Hollow unsupported construction; superseded."
+    },
+    {
+      "file": "exec-d820da59-449c-47ff-9fb0-a00e8fbd10b2.png",
+      "selected": true,
+      "role": "Revised concept with scale, member origins, axes, contact and section annotations."
+    }
+  ],
+  "historical_selected_revisions": [
+    {
+      "file": "provenance/concept-sheet-prebuildability-review.png",
+      "selected_before_review": true,
+      "reason": "Preserved prior selected concept when adding buildability callouts."
+    }
+  ],
+  "current_route_review": "Explicit cell-member assembly study only; reusable joint component coverage remains open. GEO-01 approved geometry manifest/hash and applicable GEO-02 evidence are absent.",
+  "review_document": "review-2026-10-18.md",
+  "assembly_study_route": {
+    "units": "meters",
+    "grid": "0.5 m; proposed contract cell-full target",
+    "axes_and_pivot": "Local X width, Y depth, Z height; identity orientation; origin at each member's minimum corner",
+    "members": [
+      {"role": "A", "shape": "cell-full", "origin_m": [0, 0, 0]},
+      {"role": "B", "shape": "cell-full", "origin_m": [0, 0, 0.5]}
+    ],
+    "rotation": "Identity only in this study; no additional allowed rotations inferred",
+    "interface": "A top to B bottom at z=0.5 m; x=0..0.5, y=0..0.5; target area 0.25 m2",
+    "component_coverage": "Not established; image study only"
+  },
+  "buildability_review_history": [
+    {
+      "date": "2026-10-18",
+      "prior_status": "image-complete; proposal; ready-for-model-test",
+      "finding": "Prior selected concept omitted scale, member origins, axes and contact dimensions. Revised concept adds explicit two-cell study callouts; prior selected image is preserved in provenance. Geometry approval and runtime evidence remain absent."
+    }
+  ],
+  "created_utc": "2026-10-18"
+}

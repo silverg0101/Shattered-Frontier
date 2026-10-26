@@ -1,0 +1,5 @@
+Concept sheet prompt:
+Stylized-concept architectural game asset sheet for a frontier crafting game, no people or text. Stone masonry four-way cross junction: four perpendicular full-cell walls of pale weathered limestone blocks meet on a square grid, clear four arm plus intersection. Show assembly at left and isolated clean full component at right, with top/side/front construction views, neutral warm gray background. Restrained mortar seams, no added buttresses, no loose rubble, no openings. This is visual reference only, not dimensional or runtime validation.
+
+Clean view prompt:
+Isolated full-asset three-quarter orthographic concept of one four-way cross-junction for a block masonry wall kit. The plan shape must be a plus sign, with four equal straight wall arms extending north south east west from a single square intersection; no corner, no L shape. Pale limestone courses and restrained mortar joints. Show the complete single plus-shaped module, clean neutral background, no text and no extra supports. Concept visual only.

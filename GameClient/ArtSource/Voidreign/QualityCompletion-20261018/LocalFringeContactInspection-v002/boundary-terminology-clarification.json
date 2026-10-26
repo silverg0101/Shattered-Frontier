@@ -1,0 +1,4 @@
+{
+  "status": "clarification-not-physics-invalidation",
+  "note": "The original cropped-boundary field measures raw indexed boundaries, including UV seams. Use v003 canonical source-node topology to distinguish them. Cache replay and measured distances remain valid."
+}

@@ -1,0 +1,30 @@
+{
+  "batch": "construction-surface-materials-20261018",
+  "attempts": [
+    {
+      "output": "Model-v002",
+      "status": "failed",
+      "blocker": "Blender 5.1.1 ShaderNodeTexImage has no color_space attribute; build stopped before exports."
+    },
+    {
+      "output": "Model-v003",
+      "status": "failed",
+      "blocker": "Blender 5.1.1 does not expose BLENDER_EEVEE_NEXT; build stopped before render/export."
+    },
+    {
+      "output": "Model-v004",
+      "status": "superseded",
+      "finding": "Initial procedural patterns were too soft and flat for useful wood/stone appearance review."
+    },
+    {
+      "output": "Model-v005",
+      "status": "superseded",
+      "finding": "Higher contrast and bump improved visibility, but procedural patterns still looked synthetic."
+    },
+    {
+      "output": "Model-v006",
+      "status": "completed_with_open_quality_gates",
+      "finding": "Six reference-guided material studies rendered and exported. Source crops show perspective-lighting artifacts and repetition; keep production acceptance open."
+    }
+  ]
+}

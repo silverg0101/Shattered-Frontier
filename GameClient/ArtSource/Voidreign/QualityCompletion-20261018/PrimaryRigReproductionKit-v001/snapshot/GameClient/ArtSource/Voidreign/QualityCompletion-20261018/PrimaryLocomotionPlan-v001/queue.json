@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "asset_id": "Voidreign",
+  "source": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryOnlyCombinedFull-v001\\Voidreign-ActualSurfacePilot.blend",
+  "next_asset_task": "VR-RIG-01",
+  "items": [
+    {
+      "id": "VR-PRIMARY-01",
+      "status": "proposal-reviewed-for-pilot"
+    },
+    {
+      "id": "VR-RIG-01",
+      "status": "pilot-built-needs-standing-contact-review"
+    },
+    {
+      "id": "VR-IDLE-01",
+      "status": "blocked-by-predecessor"
+    },
+    {
+      "id": "VR-WALK-01",
+      "status": "blocked-by-predecessor"
+    },
+    {
+      "id": "VR-RUN-01",
+      "status": "blocked-by-predecessor"
+    },
+    {
+      "id": "VR-TURN-01",
+      "status": "blocked-by-predecessor"
+    },
+    {
+      "id": "VR-ATTACH-01",
+      "status": "blocked-by-predecessor"
+    },
+    {
+      "id": "VR-SECONDARY-01",
+      "status": "blocked-by-predecessor"
+    }
+  ],
+  "primary_rig_budget": {
+    "max_attempts": 3,
+    "used": 1,
+    "scope": "New primary anatomical skeleton/skin pilot; historical hair attempt counts unchanged"
+  },
+  "current_candidate": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryRigPilot-v001\\Mount-PrimaryRigPilot.blend",
+  "current_report": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryRigPilot-v001\\rig-report.json"
+}

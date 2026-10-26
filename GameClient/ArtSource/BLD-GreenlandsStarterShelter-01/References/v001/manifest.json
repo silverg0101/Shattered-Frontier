@@ -1,0 +1,32 @@
+{
+  "asset_id": "BLD-GreenlandsStarterShelter-01",
+  "category": "building / assembled starter shelter",
+  "brief": "Intermediate assembled visual study combining four separately indexed Basic component concepts; proposed shelter, not an approved gameplay building.",
+  "design_sources": [
+    { "path": "docs/Game-Design/Legends_Shattered_Frontier_Vertical_Slice_Specification_v1.0.md", "section": "Scope and exclusions / Housing; Content inventory", "role": "minimum content requires a recognizable shelter from foundation, wall, door and roof" },
+    { "path": "GameClient/ArtSource/BLD-GreenlandsFoundation-01/References/v001/asset-view.png", "sha256": "8EAB335AAFD34DCF80831D6309CCCA17C21409485534CD6DB70149A9374BFCEF", "role": "reused component reference" },
+    { "path": "GameClient/ArtSource/BLD-GreenlandsWallPanel-01/References/v001/asset-view.png", "sha256": "2383D1B5E3C822D3B5CA3949CF131980EC8106BD81F172988B10EBE043617E7D", "role": "reused component reference" },
+    { "path": "GameClient/ArtSource/BLD-GreenlandsDoor-01/References/v001/asset-view.png", "sha256": "4825840DA30756C235E7ED1F7E4A7EABD36232E7C6E2A392D9280C1E9E1C6C10", "role": "reused component reference" },
+    { "path": "GameClient/ArtSource/BLD-GreenlandsRoof-01/References/v001/asset-view.png", "sha256": "612B7F6A63211CB50ECB780A1872A5BF015238254CF3EF9E13885BC5E5DC3A25", "role": "reused component reference" }
+  ],
+  "concept_status": "agent-selected; proposed assembly, user approval not claimed",
+  "clean_view_status": "ready-for-model-test; opaque background, segmentation required if later adapter requires alpha",
+  "design_master": "concept-sheet.png",
+  "prompts": "prompt.txt; first clean view rejected and correction documented",
+  "generation": { "tool": "built-in image_gen", "model": "unavailable", "generated_date": "2026-10-18", "seed": "unavailable" },
+  "outputs": {
+    "concept-sheet.png": { "sha256": "5F8A58F9CF6EE224A53DCFDC329403003BC5AAB6D147CBDB48A2E3383693A2A8", "dimensions_px": [1536, 1024], "color": "RGB, opaque; PNG color type 2", "master": true },
+    "asset-view.png": { "sha256": "3B4D7EEEC7BB6F414EDBFF7830AB087AB76D2B61BA11F830312CCD2E2C35FF8A", "dimensions_px": [1536, 1024], "color": "RGB, opaque; PNG color type 2", "master": false }
+  },
+  "component_boundaries": ["One assembled shelter as an intermediate appearance study", "Does not replace separate foundation, wall, door or roof asset packages", "No window, chimney or other untracked component"],
+  "scale": "Approximate; no building or module dimensions specified.",
+  "edits": "No pixel edits or upscaling. First clean view introduced fur/bristle roofing and was rejected; second view corrected to ordinary shingles and timber/plaster construction.",
+  "review": {
+    "reviewer": "Codex visual inspection",
+    "findings": ["Sheet consistently assembles recognizable foundation, wall, door and shingle roof forms from the referenced Basic designs.", "First clean view was inconsistent and rejected.", "Final clean view contains one complete small shelter on a neutral opaque background with ample margins; no animal/fur roofing, people or extra environment."],
+    "unresolved": ["The image does not validate modular dimensions, structural interfaces, placement or runtime assembly."],
+    "image_complete": true,
+    "approval": "agent-selected; not user-approved",
+    "review_date": "2026-10-18"
+  }
+}

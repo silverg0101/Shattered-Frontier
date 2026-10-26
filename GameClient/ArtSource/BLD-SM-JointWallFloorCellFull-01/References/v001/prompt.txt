@@ -1,0 +1,5 @@
+Concept sheet prompt:
+Stylized-concept architectural game asset sheet, old-world frontier construction, no people, no text. Stone masonry full-cell wall-to-floor junction: pale limestone block wall meets one perpendicular flat stone floor slab at a flush 90-degree seam. No buttress, no overhang, no support rule implication. Show small assembly plus front/side/top views on neutral warm gray background; restrained mortar lines, clean modular contacts. Visual reference only, not numerical mesh validation.
+
+Clean view prompt:
+Stylized concept game asset, no people, no text. Isolated clean full-asset orthographic three-quarter view of one pale limestone masonry wall-to-floor junction: single block wall meeting a single flat stone floor slab at a flush 90-degree seam, clearly visible masonry joints and horizontal contact plane, neutral warm gray studio background. One component only. No buttress, no separate props, no overhang or extra support. Visual reference only, not dimensionally validated.

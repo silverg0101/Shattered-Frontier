@@ -1,0 +1,20 @@
+diff --git a/triposg/inference_utils.py b/triposg/inference_utils.py
+index 6ce292b..970c227 100755
+--- a/triposg/inference_utils.py
++++ b/triposg/inference_utils.py
+@@ -4,7 +4,6 @@ import torch.nn as nn
+ import scipy.ndimage
+ from skimage import measure
+ from einops import repeat
+-from diso import DiffDMC
+ import torch.nn.functional as F
+ 
+ from triposg.utils.typing import *
+@@ -463,6 +462,7 @@ def flash_extract_geometry(
+     grid_logits = grid_logits[0]
+     try:
+         print("final grids shape = ", grid_logits.shape)
++        from diso import DiffDMC
+         dmc = DiffDMC(dtype=torch.float32).to(grid_logits.device)
+         sdf = -grid_logits / octree_resolution
+         sdf = sdf.to(torch.float32).contiguous()

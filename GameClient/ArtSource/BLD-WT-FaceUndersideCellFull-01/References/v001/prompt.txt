@@ -1,0 +1,1 @@
+Selected sheet prompt: flat wood-only underside face skin, no framing/ribs/support beams/projections, square full-cell flush planed boards, zero-protrusion edge cross-section, fixed contact/collision. Clean prompt: one isolated flat worked-timber underside square panel, smooth boards, neutral gray, no framing/projections/assembly; exact baseline contact envelope.

@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "samples_per_component": 128,
+  "hit_tolerance_m": 0.003,
+  "low_visibility_fraction": 0.01,
+  "units": "metres; fraction of area-stratified triangle-interior rays",
+  "permissions": "Offline read-only review of source component122 only against full posed mesh BVH; no deletion/visibility completeness claim",
+  "effective_time": "Next fresh visibility report; earlier six-view vertex report remains historical",
+  "component_indices": [
+    122
+  ]
+}

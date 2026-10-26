@@ -1,0 +1,5 @@
+Concept sheet prompt:
+Rough timber wall-to-ceiling junction; vertical oak wall meets perpendicular horizontal ceiling at a flush right angle; assembly and clean component views, no projecting joists or brackets.
+
+Clean view prompt:
+Single rough oak wall-to-ceiling joint, flush contact, no bracket or projection.

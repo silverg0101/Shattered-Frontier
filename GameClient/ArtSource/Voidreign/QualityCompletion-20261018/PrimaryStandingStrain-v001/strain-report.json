@@ -1,0 +1,152 @@
+{
+  "schema_version": 1,
+  "status": "surface-strain-diagnostic-unrated",
+  "cpu_only": true,
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryStandingExchange-v001\\expected-world-points.npy": "7322aa09dfa50d1a087686b332910512a4023fd14c5c7aadc34a38d60b4e1f4b",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryStandingExchange-v001\\exchange-report.json": "4da2fceffd3488db01729f477a22e6e9d14ed4062fdc1430935c95549cd39cc3",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz": "0d7599c8064cb81a6e211a23731435e08939b7fb146ce2d4bed810273909a2b2",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selections.npz": "0b6a19f76a2cba73a42e293c29365360b53ba93be101cf8f4ca556e7a5989cc0",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingPilot-v001/Mount-StandingPilot.blend": "0f22f6f488ecd4634bbab6a46171924d6e817cc9dd37ba5e4de4b88f40606844"
+  },
+  "tool_sha256": "c0df26d4efe6ad4999a36e8f5b73c85ea63e4965233ed7c3fe8b2b73f8bd5039",
+  "profile_sha256": "31d16a28750bf158e36c2f9d60c8f6a85938c1e2d6a570c7ef7fb0d27b44a002",
+  "frames": 60,
+  "source_clip_frames": 60,
+  "tested_frames": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40,
+    41,
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49,
+    50,
+    51,
+    52,
+    53,
+    54,
+    55,
+    56,
+    57,
+    58,
+    59,
+    60
+  ],
+  "representation": "Unique indexed source edges; seam-split edges remain independently counted.",
+  "zero_rest_length_edges": 0,
+  "zero_rest_area_faces": 0,
+  "groups": {
+    "all": {
+      "indexed_edges": 560733,
+      "triangles": 297119,
+      "maximum_relative_edge_change": 18.897827412679586,
+      "maximum_absolute_edge_change_m": 0.10309025958849163,
+      "worst_frame_edge_p99_relative_change": 0.16697420597303472,
+      "worst_frame_area_p99_relative_change": 0.46711503939259974,
+      "worst_frame_area_weighted_mean_relative_change": 0.026122979971007435,
+      "maximum_relative_change_frame": 30,
+      "maximum_relative_change_edge": [
+        61502,
+        61503
+      ],
+      "worst_relative_rest_length_m": 0.004873502125659721,
+      "maximum_absolute_change_frame": 30,
+      "maximum_absolute_change_edge": [
+        143854,
+        143859
+      ],
+      "worst_absolute_rest_length_m": 0.02464866798781421
+    },
+    "Mane": {
+      "indexed_edges": 107623,
+      "triangles": 55410,
+      "maximum_relative_edge_change": 0.00021890132298905818,
+      "maximum_absolute_edge_change_m": 8.52349797792265e-07,
+      "worst_frame_edge_p99_relative_change": 6.155397429905758e-05,
+      "worst_frame_area_p99_relative_change": 9.870091243096765e-05,
+      "worst_frame_area_weighted_mean_relative_change": 1.0775105271150013e-05,
+      "maximum_relative_change_frame": 12,
+      "maximum_relative_change_edge": [
+        15851,
+        15852
+      ],
+      "worst_relative_rest_length_m": 0.003212760565881874,
+      "maximum_absolute_change_frame": 25,
+      "maximum_absolute_change_edge": [
+        116393,
+        116397
+      ],
+      "worst_absolute_rest_length_m": 0.013618106553649333
+    },
+    "Tail": {
+      "indexed_edges": 131259,
+      "triangles": 68878,
+      "maximum_relative_edge_change": 0.0003583501601655243,
+      "maximum_absolute_edge_change_m": 7.099097428381329e-07,
+      "worst_frame_edge_p99_relative_change": 3.09422183221792e-05,
+      "worst_frame_area_p99_relative_change": 5.1210975867981244e-05,
+      "worst_frame_area_weighted_mean_relative_change": 7.510189397611374e-06,
+      "maximum_relative_change_frame": 5,
+      "maximum_relative_change_edge": [
+        222641,
+        222642
+      ],
+      "worst_relative_rest_length_m": 0.00033958603287131283,
+      "maximum_absolute_change_frame": 15,
+      "maximum_absolute_change_edge": [
+        279530,
+        279533
+      ],
+      "worst_absolute_rest_length_m": 0.03229059608320398
+    }
+  },
+  "limitations": [
+    "No authored strain/style thresholds; this report cannot pass or fail material or model acceptance.",
+    "Relative maxima can be dominated by tiny rest edges; absolute change, baseline lengths and quantiles are retained.",
+    "Rotations and translations cancel in lengths/areas, but bending can alter triangle area in coarse meshes.",
+    "Metadata/UV retention and contact passes do not imply acceptable deformed texture or surface shape."
+  ]
+}

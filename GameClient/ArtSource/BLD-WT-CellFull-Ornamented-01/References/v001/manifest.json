@@ -1,0 +1,84 @@
+{
+  "asset_id": "BLD-WT-CellFull-Ornamented-01",
+  "version": "v001",
+  "batch": "construction-worked-timber-cellfull-variants-41",
+  "status": "image-complete; appearance-only variant; structural readiness blocked",
+  "variant_of": "BLD-WT-CellFull-01 v001",
+  "intended_route": "KIT-WT flat cosmetic skin variant on the same proposed canonical cell-full/v1 carrier and worked-timber material profile as the plain master",
+  "geometry": {
+    "reference": "cell-full/v1 (shared contract proposal; not approved compiled geometry)",
+    "envelope_m": [0.5, 0.5, 0.5],
+    "solid": "full cube, identical to plain master",
+    "grid_m": 0.5,
+    "axes": "construction-local X width/run, Y depth, Z up",
+    "origin_and_pivot": "minimum grid corner (0,0,0)",
+    "shown_orientation": "identity only",
+    "boundary_contacts": ["-X", "+X", "-Y", "+Y", "-Z", "+Z"],
+    "target_contact_area_per_face_m2": 0.25,
+    "openings": "none"
+  },
+  "component_boundary": "Same full-cell cube and skin boundary as BLD-WT-CellFull-01; flat color-only stained motif on +Y exterior and quiet matching border on -Y interior; no separate parts, relief or geometry change.",
+  "material_profile": "Worked timber; identical gameplay profile to the plain master.",
+  "cosmetic_skin": "Plain master's warm worked-timber grain and board seams with a restrained flat geometric stain motif on +Y and matching border on -Y; other four faces retain the plain treatment.",
+  "source_references": [
+    {"path":"docs/art-templates/player-construction-kit-contract.md, §2 cell-full and §§4, 7–8","role":"Shared target geometry, skin invariants and cosmetic pilot requirement"},
+    {"path":"docs/Game-Design/Legends_Shattered_Frontier_Construction_System_Architecture_v0.1.md, §3.2","role":"Worked-timber material profile reference; gameplay values unchanged"},
+    {"path":"docs/art-templates/asset-lists/construction-worked-timber-cellfull-variants-41.md","role":"Finite paired variant brief"},
+    {"path":"GameClient/ArtSource/BLD-WT-CellFull-01/References/v001/concept-sheet.png","sha256":"fb2bd315ee109be96bcd0e2359533b288bc41e6f26db00bae5122bc898fa2748","role":"Selected plain identity and geometry-target reference; no numerical authority"},
+    {"path":"GameClient/ArtSource/BLD-WT-CellFull-01/References/v001/asset-view.png","sha256":"dffd5074f2ab09a62a1f46ee63a1e14db1749169a004faf236f0480e5e9da04b","role":"Selected plain appearance reference"}
+  ],
+  "required_selected_outputs": ["concept-sheet.png", "asset-view.png"],
+  "selected_image_count": 2,
+  "additional_images": 0,
+  "exact_prompt_file": "prompt.txt",
+  "generation": {
+    "tool": "built-in image_gen",
+    "date": "2026-10-18",
+    "model": "unavailable",
+    "seed": "unavailable",
+    "reference_images_attached": {
+      "concept-sheet.png": ["../../../BLD-WT-CellFull-01/References/v001/concept-sheet.png"],
+      "asset-view.png": ["concept-sheet.png"]
+    }
+  },
+  "images": [
+    {
+      "file": "concept-sheet.png",
+      "source_cache_path": "C:\\Users\\grego\\.codex\\generated_images\\01a15000-e13f-7213-9ec0-df2684201405\\exec-0dd649ea-a438-471b-aad8-e19d9dbc3307.png",
+      "width_px": 1536,
+      "height_px": 1024,
+      "format": "PNG",
+      "mode": "RGB",
+      "alpha": false,
+      "sha256": "1d74d1779a96d2deca64b9fcfcd91ec6854a5ba65bde089a8a0bc15d968a5585",
+      "status": "selected; agent-reviewed",
+      "exact_prompt_file": "prompt.txt"
+    },
+    {
+      "file": "asset-view.png",
+      "source_cache_path": "C:\\Users\\grego\\.codex\\generated_images\\01a15000-e13f-7213-9ec0-df2684201405\\exec-65243c34-3e0e-45f8-b3fb-f587dd72dfee.png",
+      "width_px": 1312,
+      "height_px": 1199,
+      "format": "PNG",
+      "mode": "RGB",
+      "alpha": false,
+      "sha256": "3869abbf9b7705415e388016f5dd544f6535d4aa4f511057d49b84d438e4822e",
+      "status": "selected; agent-reviewed",
+      "exact_prompt_file": "prompt.txt"
+    }
+  ],
+  "concept_status": "agent-selected",
+  "clean_view_status": "ready-for-model-test (image presentation only)",
+  "visual_review": {
+    "date": "2026-10-18",
+    "reviewer": "Codex",
+    "concept_sheet": "Selected: complete cube dominates; all six orthographic faces retain the same target envelope and contact diagram as the plain master. Flat dark-stain diamond motif appears on +Y exterior and matching flat border on -Y interior; remaining faces retain plain appearance. Motif stays within face area without apparent relief or silhouette growth. Labels and contact diagram are legible; numerical fit is not established.",
+    "asset_view": "Selected: exactly one intact full cube, complete silhouette with clear margins, +Y stained motif visible, top and plain end match the concept, neutral uniform background. No added part or apparent geometry growth. Image review does not establish numerical fit."
+  },
+  "compatibility": "Same geometry proposal and profile as BLD-WT-CellFull-01. No approved GEO-01 payload/hash or applicable GEO-02 evidence; images do not establish mesh, contact, collision, clearance or runtime compatibility.",
+  "blockers": ["GEO-01 approved geometry manifest/hash and applicable GEO-02 compatibility evidence are absent."],
+  "generation_history": [
+    {"file":"exec-0dd649ea-a438-471b-aad8-e19d9dbc3307.png","selected":true,"role":"concept-sheet.png"},
+    {"file":"exec-65243c34-3e0e-45f8-b3fb-f587dd72dfee.png","selected":true,"role":"asset-view.png"}
+  ]
+}

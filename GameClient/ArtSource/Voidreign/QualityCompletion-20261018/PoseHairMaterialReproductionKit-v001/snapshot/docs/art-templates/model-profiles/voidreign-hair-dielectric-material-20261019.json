@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "source": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\WalkPilot-v003\\Mount-WalkPilot.blend",
+  "selection": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selections.npz",
+  "object": "geometry_0",
+  "semantic_labels": [
+    1,
+    2
+  ],
+  "original_material": "Material_0",
+  "new_material": "Voidreign | Hair dielectric prototype",
+  "shader_node": "Principled BSDF",
+  "metallic": 0,
+  "permissions": "One material prototype within remaining3attempt material budget; preserve original slot and wholly unselected/mixed faces. No geometry/rig/gait changes or GPU use.",
+  "effective_time": "Frozen source and semantic proposal only; visual review required.",
+  "control": {
+    "name": "Hair metallic response",
+    "type": "number",
+    "unit": "unit interval",
+    "default": 0,
+    "minimum": 0,
+    "maximum": 0,
+    "scope": "Dielectric hair prototype, hardware excluded"
+  },
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\WalkPilot-v003\\Mount-WalkPilot.blend": "f59dc38bff697b6c2a2c84511413d2e292d9fdbb278acc69cd8df6d26a5bd123",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selections.npz": "0b6a19f76a2cba73a42e293c29365360b53ba93be101cf8f4ca556e7a5989cc0"
+  }
+}

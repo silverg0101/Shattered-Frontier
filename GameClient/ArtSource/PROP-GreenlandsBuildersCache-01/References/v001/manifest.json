@@ -1,0 +1,29 @@
+{
+  "asset_id": "PROP-GreenlandsBuildersCache-01",
+  "category": "prop / construction cache",
+  "brief": "Proposed standalone timber Builder's Cache container with hinged lid and physical hasp; appearance only, with no capacity or access/security behavior implied.",
+  "design_sources": [
+    { "path": "docs/Game-Design/Crafting/Legends_Shattered_Frontier_Crafting_Recipes_Workshops_and_Learning_v1.0.md", "section": "9.2 Builder's Cache", "role": "names a construction-material container" },
+    { "path": "docs/Game-Design/Legends_Shattered_Frontier_Construction_Integration_Contracts_v0.1.md", "section": "2 Container extension; 9 Building service and domain contracts", "role": "container/building-service context; visual image defines no contract" }
+  ],
+  "concept_status": "agent-selected; proposed physical interpretation, user approval not claimed",
+  "clean_view_status": "ready-for-model-test; opaque background, segmentation required if later adapter requires alpha",
+  "design_master": "concept-sheet.png",
+  "prompts": "prompt.txt (stone-plinth mismatch correction retained)",
+  "generation": { "tool": "built-in image_gen", "model": "unavailable", "generated_date": "2026-10-18", "seed": "unavailable" },
+  "outputs": {
+    "concept-sheet.png": { "sha256": "92CDCA029F2CFB4B8CE9CAD992D41841FCBA0E69D935D6165ADC1D5CD7DC96D0", "dimensions_px": [1536, 1024], "color": "RGB, opaque; PNG color type 2", "master": true },
+    "asset-view.png": { "sha256": "269FECFAAB7B5306049C0C2CEB9385A9D9422088D8DFDE616DAD11168B97AF09", "dimensions_px": [1536, 1024], "color": "RGB, opaque; PNG color type 2", "master": false }
+  },
+  "component_boundaries": ["One chest only", "Excludes surrounding building, materials inside, inventory interface, capacity and actual security permissions"],
+  "scale": "Approximate waist-high proportion inferred; no measurements specified.",
+  "edits": "No pixel edits or upscaling. Initial clean view introduced a stone plinth; correction returned a standalone chest on short wooden feet matching the concept sheet.",
+  "review": {
+    "reviewer": "Codex visual inspection",
+    "findings": ["Concept sheet shows one coherent timber chest across closed/open and orthographic/detail views.", "Clean view contains one standalone closed chest with short wooden feet, no stone plinth, full silhouette and neutral opaque background.", "Metal straps and padlock are physical visual details only; no game-security claim is made."],
+    "unresolved": ["Exact size, storage capacity, security and access rules are outside the art brief."],
+    "image_complete": true,
+    "approval": "agent-selected; not user-approved",
+    "review_date": "2026-10-18"
+  }
+}

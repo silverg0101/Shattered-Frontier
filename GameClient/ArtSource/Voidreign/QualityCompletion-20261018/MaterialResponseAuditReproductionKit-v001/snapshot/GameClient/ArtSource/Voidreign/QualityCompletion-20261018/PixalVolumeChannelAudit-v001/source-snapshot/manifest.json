@@ -1,0 +1,10 @@
+[
+  {
+    "path": "pixal3d/representations/mesh/base.py",
+    "sha256": "b3f91a0c59f2614271773b2fe3c5dcf3b66332a006366265b93456de7fb5eb4d"
+  },
+  {
+    "path": "pixal3d/pipelines/pixal3d_image_to_3d.py",
+    "sha256": "3f4c70d25159f8cd204c951e56287cf7b1c2c0f70749318eaa2e7b7a43839db8"
+  }
+]

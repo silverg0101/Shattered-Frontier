@@ -1,0 +1,5 @@
+Concept sheet prompt:
+Stylized construction concept asset sheet for pale limestone masonry player building kit, no people, no writing. Rectangular opening jamb/reveal component: show empty rectangular wall aperture with paired stone side reveals, aperture remains open and unchanged, lintel and sill separate components, plus one isolated side jamb block and a depth section. Restrained course joints, neutral studio background. No door, no invented aperture dimensions; appearance reference only.
+
+Clean view prompt:
+Single isolated clean full-asset image of one limestone rectangular window/door opening jamb block component only. A narrow vertical stone reveal/jamb with flat wall contact plane, no lintel, no sill, no opposite jamb, no entire framed opening. Three-quarter orthographic view, pale stone and restrained joints, neutral background. Do not invent dimensions; reference concept only.

@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "asset_id": "Voidreign",
+  "source": "CompleteMotionCache-v001/Voidreign-ActualSurfacePilot.blend",
+  "source_sha256": "a5e69cab0f484b2180809b8f60cb61ade34e227bd75ecdecfed97a7f87ae3cb9",
+  "scope": "Finite source-bound attachment followup; geometry IDs do not transfer to another mesh",
+  "repair_policy": "Parent secondary_motion count remains3of3; no source promotion, automatic semantic approval or response parameter search. New diagnostic designs need a finite recorded contract.",
+  "items": [
+    {
+      "id": "Voidreign:ba2d283db0be:C0122",
+      "component_index": 122,
+      "proxy_points": 16,
+      "pinned_points": 0,
+      "sewing_link_count": 1,
+      "held_peak_m_s": 0.30106614284532257,
+      "rigid_explained_squared_motion_fraction": 0.9999632488834722,
+      "remaining_shape_peak_m_s": 0.003223380292603093,
+      "rest_shape_best_rigid_peak_m": 0.07777147086652828,
+      "status": "proposal-needs-review",
+      "next_action": "Retain B067 frame-follow only as an unapproved control. Primary-only original-rest pilot already settles without it; reassess this component on the corrected full clip before any rigid classification."
+    },
+    {
+      "id": "Voidreign:ba2d283db0be:C0007",
+      "component_index": 7,
+      "proxy_points": 189,
+      "pinned_points": 0,
+      "sewing_link_count": 1,
+      "held_peak_m_s": 0.12824563137974812,
+      "rigid_explained_squared_motion_fraction": 0.9985120920836604,
+      "remaining_shape_peak_m_s": 0.011140163109440642,
+      "rest_shape_best_rigid_peak_m": 0.06470972429736765,
+      "status": "ready-for-bounded-diagnostic",
+      "next_action": "Preregister an isolated attachment-orientation/root-collar constraint fixture before any material-response tuning; retain flexible shape and original masks."
+    },
+    {
+      "id": "Voidreign:ba2d283db0be:C0002",
+      "component_index": 2,
+      "proxy_points": 260,
+      "pinned_points": 6,
+      "sewing_link_count": 2,
+      "held_peak_m_s": 0.11945009184909239,
+      "rigid_explained_squared_motion_fraction": 0.5319158072497626,
+      "remaining_shape_peak_m_s": 0.06166385870566726,
+      "rest_shape_best_rigid_peak_m": 0.1542653829659224,
+      "status": "ready-for-bounded-diagnostic",
+      "next_action": "Six pin points are stationary and non-collinear; inspect real bending/rest-shape distortion in an isolated response/strain diagnostic. Do not relabel as detached."
+    },
+    {
+      "id": "Voidreign:ba2d283db0be:C0048",
+      "component_index": 48,
+      "proxy_points": 63,
+      "pinned_points": 0,
+      "sewing_link_count": 2,
+      "held_peak_m_s": 0.10438305056903903,
+      "rigid_explained_squared_motion_fraction": 0.9988934821226633,
+      "remaining_shape_peak_m_s": 0.004167094602967655,
+      "rest_shape_best_rigid_peak_m": 0.044619877718956535,
+      "status": "ready-for-bounded-diagnostic",
+      "next_action": "Review the two-link attachment chain and root support; avoid independent projection or rigidifying the entire flexible clump."
+    },
+    {
+      "id": "Voidreign:ba2d283db0be:C0136",
+      "component_index": 136,
+      "proxy_points": 12,
+      "pinned_points": 0,
+      "sewing_link_count": 1,
+      "held_peak_m_s": 0.10016334341604982,
+      "rigid_explained_squared_motion_fraction": 0.9999969714012298,
+      "remaining_shape_peak_m_s": 0.00012827675335720868,
+      "rest_shape_best_rigid_peak_m": 0.007865512583850676,
+      "status": "ready-for-bounded-diagnostic",
+      "next_action": "Review micro-fragment purpose and root frame; one link permits rotation. Do not delete because it was hidden at rest."
+    }
+  ],
+  "current_priority": "DeformationInputRepair-v001: remove inherited secondary skin from cloth goals/rest before any further root-orientation or damping study."
+}

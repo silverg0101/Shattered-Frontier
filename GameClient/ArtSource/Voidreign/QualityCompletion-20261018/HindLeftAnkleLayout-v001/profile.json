@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "units": "metres",
+  "rest_selection": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/DegenerateInspection-v001/00-component-selections.npz",
+  "semantic_selection": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HygieneSemanticSelection-v001/selections.npz",
+  "domains": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryDomains-v001/primary-domains.npz",
+  "contract": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidHoofSelectionContract-v001/contract.json",
+  "joint_inspection": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/JointTopologyInspection-v003/joint-topology.json",
+  "feet": [
+    {
+      "id": "hind.L",
+      "owner_id": 3,
+      "allowed_semantic_labels": [
+        0
+      ],
+      "outer_plane_origin_m": [
+        0.448,
+        0.812,
+        0.26
+      ],
+      "outer_plane_normal": [
+        0,
+        0,
+        1
+      ]
+    }
+  ],
+  "permissions": "One explicit source-indexed ankle layout proposal, no weights/mesh/rig/candidate or stage reset.",
+  "plane_basis": "Authored display/layout pilot boundary6cm above current fetlock to include visible ankle above the old low collar; needs source-indexed inner/back review, not approved anatomy or a width sweep.",
+  "input_sha256": {
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/DegenerateInspection-v001/00-component-selections.npz": "0d7599c8064cb81a6e211a23731435e08939b7fb146ce2d4bed810273909a2b2",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HygieneSemanticSelection-v001/selections.npz": "0b6a19f76a2cba73a42e293c29365360b53ba93be101cf8f4ca556e7a5989cc0",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryDomains-v001/primary-domains.npz": "38002ef04f9ab82df4456021b3772e422328e2ecebd38bd068a344dd5e27bdb5",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidHoofSelectionContract-v001/contract.json": "232f8bbf4f67a57c4de1ffa15be1c7d9b19553d4003f9001fa9d7f764b41ff01",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/JointTopologyInspection-v003/joint-topology.json": "0c6c827b7c7edf0125e5e802c6593288a826442f29f5ca2877c7fcb3f8fed59d"
+  }
+}

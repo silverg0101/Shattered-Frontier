@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "asset_id": "Voidreign",
+  "source": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryOnlyCombinedFull-v001\\Voidreign-ActualSurfacePilot.blend",
+  "next_asset_task": "VR-RIG-01-anatomical-ankle-and-joint-topology-design-review",
+  "items": [
+    {
+      "id": "VR-PRIMARY-01",
+      "status": "proposal-reviewed-for-pilot"
+    },
+    {
+      "id": "VR-RIG-01",
+      "status": "two-read-only-core-preserving-collar-proposals-not-promoted-anatomical-review-next"
+    },
+    {
+      "id": "VR-IDLE-01",
+      "status": "scoped-idle-and-exchange-pass-shape-unrated",
+      "attempt_count": 1,
+      "max_attempts": 3
+    },
+    {
+      "id": "VR-WALK-01",
+      "status": "needs-review-budget3of3-local-collar-fix-not-accepted",
+      "attempt_count": 3,
+      "max_attempts": 3
+    },
+    {
+      "id": "VR-RUN-01",
+      "status": "blocked-by-predecessor"
+    },
+    {
+      "id": "VR-TURN-01",
+      "status": "scoped-turn-and-exchange-pass-shape-unrated",
+      "attempt_count": 1,
+      "max_attempts": 3
+    },
+    {
+      "id": "VR-ATTACH-01",
+      "status": "23-paired-isolations-ready-no-semantic-disposition"
+    },
+    {
+      "id": "VR-SECONDARY-01",
+      "status": "blocked-by-predecessor"
+    },
+    {
+      "id": "VR-MAT-01",
+      "status": "hair-material-prototype2of3-65boundary-patches9isolates-reviewed-other-masks-open"
+    },
+    {
+      "id": "VR-SEM-01",
+      "status": "195vertex-leg-owner-correction-saved-derived-motion-invalid-full-fringe-review-next"
+    }
+  ],
+  "primary_rig_budget": {
+    "max_attempts": 3,
+    "used": 3,
+    "scope": "New primary anatomical skeleton/skin pilot; historical hair attempt counts unchanged",
+    "status": "exhausted-no-automatic-new-repair"
+  },
+  "current_candidate": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkPilot-v003/Mount-WalkPilot.blend",
+  "current_report": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CollarQualityDecision-v001/decision.json",
+  "next_independent_task": "VR-SEM-01-full-hind-leg-fringe-selection-and-explicit-primary-support-adapter",
+  "reviewed_code_corrections": {
+    "count": 4,
+    "total_primary_candidates": 8,
+    "review_paths": [
+      "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimarySkinCodeReview-v001/review.json",
+      "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimarySkinCodeReview-v002/review.json",
+      "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimarySkinCodeReview-v003/review.json",
+      "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimarySkinCodeReview-v004/review.json"
+    ],
+    "note": "Automatic primary budget remains exhausted3/3; no reset or promotion."
+  }
+}

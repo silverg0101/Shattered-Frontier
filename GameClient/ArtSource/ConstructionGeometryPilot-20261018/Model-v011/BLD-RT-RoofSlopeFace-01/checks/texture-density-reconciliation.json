@@ -1,0 +1,13 @@
+{
+  "original_recorded_density_px_per_m": {
+    "u": 2048,
+    "v": 1448.155
+  },
+  "corrected_density_px_per_m": {
+    "u": 2048,
+    "v": 2048
+  },
+  "reason": "Slope-aware UV V spans 1.4142 across the 0.7071m inclined face. The pre-build profile/output metadata used 1448.155 for V and did not account for the UV span.",
+  "maps_or_mesh_changed": false,
+  "status": "corrected; provenance defect retained here"
+}

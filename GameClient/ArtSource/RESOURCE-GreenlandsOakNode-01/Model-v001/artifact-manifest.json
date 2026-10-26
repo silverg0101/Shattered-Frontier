@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "asset_id": "RESOURCE-GreenlandsOakNode-01",
+  "batch_id": "GreenlandsModelBatch-20261018",
+  "source_type": "Pixal3D-generated",
+  "attempt": "attempt-03",
+  "reference_manifest": "GameClient/ArtSource/RESOURCE-GreenlandsOakNode-01/References/v001/manifest.json",
+  "reference_image": "GameClient/ArtSource/RESOURCE-GreenlandsOakNode-01/References/v001/asset-view.png",
+  "reference_sha256": "607f11a55e388d1d6055c83348f20d2f063baa4917c38c0d99a99a580a69107e",
+  "profile_path": "docs/art-templates/model-profiles/greenlands-foliage-pixal-20261018.json",
+  "surface_profile": "docs/art-templates/model-profiles/unreal58-surface-quality-20261018.json",
+  "files": [
+    {
+      "path": "asset-review.json",
+      "bytes": 508,
+      "sha256": "37129cf4718753c036f1e3486a52908262b47b41fc0079f485d3d21a51607bff"
+    },
+    {
+      "path": "attempt-provenance.json",
+      "bytes": 1774,
+      "sha256": "3658172b37f45894130a1ca7599ac68b3e3901e99f169e1d887358db6432ede6"
+    },
+    {
+      "path": "checks/component-inspection/00-component-selections.npz",
+      "bytes": 5903967,
+      "sha256": "dce4492bf8618c1b01745b6cc8316e8c9bd865551390c060dab0a99ed593a542"
+    },
+    {
+      "path": "checks/component-inspection/component-report.json",
+      "bytes": 146890,
+      "sha256": "0467f316d76ca89b66506c4cc9d77c96429476074c865dea0beca154c0d21c95"
+    },
+    {
+      "path": "generation-run.json",
+      "bytes": 1892,
+      "sha256": "e039f9b7d5068eccca231d0d32cd3a571722c4ebc7118c822b9b23858fdb4685"
+    },
+    {
+      "path": "input-mask.png",
+      "bytes": 13753,
+      "sha256": "47aa02e2b1b5534d7a5d05b1d19c055e5d84e207e0a2e0cc143b375052caa21d"
+    },
+    {
+      "path": "previews/Beauty.png",
+      "bytes": 1439021,
+      "sha256": "02c6e4aafa4c0056cd3e984c62ec7f0c9d5b99ee91c0793b43a1244ee0509def"
+    },
+    {
+      "path": "previews/Clay.png",
+      "bytes": 1248799,
+      "sha256": "e32abea1d88e3d06a5a5d9e8de10d9bdf35501779f6fd45a0505a51d74505d41"
+    },
+    {
+      "path": "previews/FreshProcess.png",
+      "bytes": 1439163,
+      "sha256": "552a988833b5d4b2ecd8fb6362f086f069b8d7b784ef52237e582c61a9893738"
+    },
+    {
+      "path": "previews/Front.png",
+      "bytes": 1065803,
+      "sha256": "23b2fbfb9a931bb31b9c60dab9065bcec4143851fe02837fdd71d992bc3fc837"
+    },
+    {
+      "path": "previews/Rear.png",
+      "bytes": 1056623,
+      "sha256": "3ff8f68b84743c00403804473528ebe19c27d7b60541606264d5891b80301834"
+    },
+    {
+      "path": "previews/Side.png",
+      "bytes": 1062897,
+      "sha256": "26b0d18aedd9666ffee9ecef3ec1aaf50d8c8419c688f8db090004d604e1447c"
+    },
+    {
+      "path": "README.md",
+      "bytes": 1121,
+      "sha256": "8b305da8fdc3288d6ba622525fd7302da31565e5a15150bbc36f6d645602dabf"
+    },
+    {
+      "path": "RESOURCE-GreenlandsOakNode-01.blend",
+      "bytes": 28012284,
+      "sha256": "8c87e8090f0a3b3ff2c7589aeeed5da9ae52ef9cc044101826e3542003bca05b"
+    },
+    {
+      "path": "RESOURCE-GreenlandsOakNode-01.fbx",
+      "bytes": 25127244,
+      "sha256": "d96358c205505454a89e8dfc2430f00c836b00898b292aba7206737cf4066b1f"
+    },
+    {
+      "path": "RESOURCE-GreenlandsOakNode-01.glb",
+      "bytes": 26710524,
+      "sha256": "da61e602f99015be9e3caca2900b179ff7176439a08e7ec08bd89f01e7126dd2"
+    },
+    {
+      "path": "segmentation-report.json",
+      "bytes": 1122,
+      "sha256": "bdcd5d49d78be1bfb4e73e80a0bf068e2f303bb46a2da2f4da0e656d15b0de68"
+    },
+    {
+      "path": "validation-report.json",
+      "bytes": 992124,
+      "sha256": "e617a75d4629c369d061ecfec8a6e326adda87f02b62db7d7fc099dc0e9ed8d2"
+    }
+  ]
+}

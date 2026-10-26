@@ -1,0 +1,73 @@
+{
+  "assetId": "BLD-RT-JointWallCeilingCellFull-01",
+  "version": "v001",
+  "category": "construction kit / structural joint concept",
+  "created": "2026-10-18",
+  "sourceReferences": [
+    "docs/art-templates/player-construction-kit-contract.md \u2014 Structural joints; canonical frame; required kit QA",
+    "docs/Game-Design/Legends_Shattered_Frontier_Construction_System_Architecture_v0.1.md \u2014 \u00a7\u00a73.1\u20133.2, 8\u20139",
+    "GameClient/ArtSource/BLD-RT-CellFull-01/References/v001/asset-view.png \u2014 material style"
+  ],
+  "definition": {
+    "geometryRef": "cell-full/v1 (proposal)",
+    "envelopeMeters": [
+      0.5,
+      0.5,
+      0.5
+    ],
+    "contacts": [
+      "-X",
+      "+X",
+      "-Y",
+      "+Y",
+      "-Z",
+      "+Z"
+    ],
+    "orientation": "grid-aligned orthogonal only",
+    "materialKit": "KIT-RT",
+    "structuralMaterialProfile": "Rough timber",
+    "cosmeticSkin": "appearance only",
+    "functionalDefinition": "none"
+  },
+  "generation": {
+    "tool": "built-in image_gen",
+    "date": "2026-10-18",
+    "model": "unavailable",
+    "seed": "unavailable",
+    "promptRecord": "prompt.txt",
+    "referenceImagesAttached": []
+  },
+  "images": [
+    {
+      "path": "concept-sheet.png",
+      "sha256": "f1f077791fd9f9d3846c4cf1eb0083bc2cd13a43677ef81f4c02d60172adf37c",
+      "width": 1536,
+      "height": 1024,
+      "pixelFormat": "RGB 24-bit",
+      "alpha": false,
+      "review": "Visible broad panel scale and atypical floating isolation in the sheet; use as appearance reference only. Clearances and module size unresolved."
+    },
+    {
+      "path": "asset-view.png",
+      "sha256": "2f28fdfa23bab5b76382437d92aa4423bed5eedcb552273ac497e3a4cd172e22",
+      "width": 1312,
+      "height": 1199,
+      "pixelFormat": "RGB 24-bit",
+      "alpha": false,
+      "review": "Visible broad panel scale and atypical floating isolation in the sheet; use as appearance reference only. Clearances and module size unresolved."
+    }
+  ],
+  "review": {
+    "reviewedBy": "Codex",
+    "conceptStatus": "proposed",
+    "cleanViewStatus": "ready-for-model-test",
+    "imageStatus": "image-complete",
+    "geometryAcceptance": "not established",
+    "numericalMeshFit": "not established",
+    "runtimeCollisionSupportClearance": "not established",
+    "actionableFindings": [
+      "Visible broad panel scale and atypical floating isolation in the sheet; use as appearance reference only. Clearances and module size unresolved."
+    ]
+  },
+  "componentBoundary": "One separately indexed structural joint appearance role. Assembly and isolation illustrations do not validate dimensions, support, collision or clearance."
+}

@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "object": "geometry_0",
+  "frames": [
+    1,
+    122,
+    299
+  ],
+  "units": "metres in WORLD; rest component IDs",
+  "permissions": "Offline CPU cached source inspection only",
+  "effective_time": "Finite saved poses only",
+  "source": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\CompleteMotionCache-v001\\Voidreign-ActualSurfacePilot.blend",
+  "inspection": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\component-report.json",
+  "points": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\CompleteMotionAlembic-v001\\expected-world-points.npy",
+  "producer_report": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\CompleteMotionAlembic-v001\\exchange-report.json",
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\CompleteMotionCache-v001\\Voidreign-ActualSurfacePilot.blend": "a5e69cab0f484b2180809b8f60cb61ade34e227bd75ecdecfed97a7f87ae3cb9",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\component-report.json": "008dd401251cd2388ab5e5472632bd81213e4b3c9d8f38ae1400fb4b756f1f26",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\CompleteMotionAlembic-v001\\expected-world-points.npy": "f1e12afebb725b18ce145886d71582db2eed8cd894ff6c27593171268b835a19",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\CompleteMotionAlembic-v001\\exchange-report.json": "cf9debcf66e7b1351d8f5ad8c2a0ec311597cfbdb7d963cdaf0c03566f4640b7",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz": "0d7599c8064cb81a6e211a23731435e08939b7fb146ce2d4bed810273909a2b2"
+  }
+}

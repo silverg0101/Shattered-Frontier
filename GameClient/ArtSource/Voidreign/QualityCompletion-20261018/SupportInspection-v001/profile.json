@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "object": "geometry_0",
+  "mesh_hash": "f580ad6893e552958d7c1320958834ad3c7a139f941b9016c510dfd4d6a3e794",
+  "ground_height_m": 0.0,
+  "contact_tolerance_m": 0.01,
+  "scope": "Offline authored hoof candidate bounds, not approved sole selections. No geometry edits.",
+  "support_regions": [
+    {
+      "name": "front-near",
+      "bounds_m": [
+        [
+          0.15,
+          0.5
+        ],
+        [
+          -1.15,
+          -0.6
+        ],
+        [
+          -0.1,
+          0.35
+        ]
+      ],
+      "permitted_components": [
+        0
+      ]
+    },
+    {
+      "name": "front-far",
+      "bounds_m": [
+        [
+          -0.5,
+          -0.15
+        ],
+        [
+          -1.15,
+          -0.6
+        ],
+        [
+          -0.1,
+          0.35
+        ]
+      ],
+      "permitted_components": [
+        0
+      ]
+    },
+    {
+      "name": "rear-near",
+      "bounds_m": [
+        [
+          0.1,
+          0.48
+        ],
+        [
+          0.55,
+          1.1
+        ],
+        [
+          -0.1,
+          0.35
+        ]
+      ],
+      "permitted_components": [
+        0
+      ]
+    },
+    {
+      "name": "rear-far",
+      "bounds_m": [
+        [
+          -0.5,
+          -0.1
+        ],
+        [
+          0.1,
+          0.65
+        ],
+        [
+          -0.1,
+          0.35
+        ]
+      ],
+      "permitted_components": [
+        0
+      ]
+    }
+  ]
+}

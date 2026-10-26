@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "units": "metres",
+  "source": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\WalkPilot-v001\\Mount-WalkPilot.blend",
+  "contract": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\RigidHoofSelectionContract-v001\\contract.json",
+  "semantic_selection": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selections.npz",
+  "object": "geometry_0",
+  "rig_object": "PRIMARY | anatomical rig pilot",
+  "frame_start": 1,
+  "frame_end": 73,
+  "maximum_influences": 4,
+  "baseline_tolerance_m": 1e-05,
+  "delta_reporting_floor_m": 1e-05,
+  "permissions": "Read-only numerical proposal. No authored skin or new gait; exhausted generation budgets retained.",
+  "effective_time": "Declared frozen 73-frame walk only",
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\WalkPilot-v001\\Mount-WalkPilot.blend": "fe004dd3c6357d9b818729e9d5d89060adb7be0eca6d930d7cc7a91369cd5456",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\RigidHoofSelectionContract-v001\\contract.json": "232f8bbf4f67a57c4de1ffa15be1c7d9b19553d4003f9001fa9d7f764b41ff01",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selections.npz": "0b6a19f76a2cba73a42e293c29365360b53ba93be101cf8f4ca556e7a5989cc0"
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "status": "needs-authored-skin-boundary-review",
+  "records": [
+    {
+      "source_edge": [
+        143854,
+        143859
+      ],
+      "rest_length_m": 0.024648668244481087,
+      "source_points_m": [
+        [
+          -0.04646189510822296,
+          0.31332531571388245,
+          1.0561819076538086
+        ],
+        [
+          -0.06977640092372894,
+          0.3054598569869995,
+          1.054724097251892
+        ]
+      ],
+      "owner_ids": [
+        5,
+        4
+      ],
+      "standing_original_error_m": 0.10309025645256042,
+      "standing_band_repair_error_m": 0.0010107960551977158
+    },
+    {
+      "source_edge": [
+        163795,
+        163796
+      ],
+      "rest_length_m": 0.014545419253408909,
+      "source_points_m": [
+        [
+          -0.09641122817993164,
+          0.16206222772598267,
+          1.0796834230422974
+        ],
+        [
+          -0.10904746502637863,
+          0.1562405824661255,
+          1.0839264392852783
+        ]
+      ],
+      "owner_ids": [
+        5,
+        5
+      ],
+      "standing_original_error_m": 0.07109041512012482,
+      "standing_band_repair_error_m": 0.07109041512012482
+    }
+  ],
+  "remaining_cause": "Same-owner body vertices straddle the binary hind.R root eligibility volume minimum Z1.08m. The first harmonic band covers ownership changes, not eligibility-volume changes.",
+  "numerical_issue": "Jacobi512iterations ended at maximum update0.00018511 versus0.00001 tolerance; record nonconvergence.",
+  "proposed_next_design": [
+    "Cover both ownership and root-eligibility boundary edges; verify both source pairs belong to the band before producing another candidate.",
+    "Use a convergent pinned-boundary linear solve with declared residual gate instead of increasing physical damping or relaxing shape/contact limits.",
+    "Recheck all60world frames: contacts/sole rigidity/slip/seams, full-source strain and geometry/UV retention."
+  ],
+  "automatic_primary_attempt_budget": {
+    "limit": 3,
+    "used": 3,
+    "status": "needs-review"
+  },
+  "limits_relaxed": false
+}

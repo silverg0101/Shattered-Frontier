@@ -1,0 +1,11 @@
+{
+  "status": "coverage-preview-inspected-authoring-data-only",
+  "image": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReviewedMaterialMask4K-v001/ClassCoveragePreview.png",
+  "image_sha256": "ba409bac04c42d9203e3fc8936f902e39fc10a2ce68e564a67b07471cc50f67c",
+  "observations": [
+    "Sparse cyan reviewed strand and pale bone patches are visible within grey unknown surface islands. Blank atlas stays dark; overlap code remains unresolved.",
+    "No source material is changed and this PNG is not a finished skin or a scalar PBR map."
+  ],
+  "sampled_atlas_occupancy_fraction": 0.4406803250312805,
+  "occupancy_scope": "Pixel-center mesh coverage, not packing efficiency, filtering or material-quality acceptance."
+}

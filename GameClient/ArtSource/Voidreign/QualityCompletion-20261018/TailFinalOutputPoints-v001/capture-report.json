@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "status": "captured-source-bound-feature-output",
+  "cpu_only": true,
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\TailSurfaceContacts-v001\\Voidreign-SurfaceContacts.blend": "da5ed6b5e4f971c51c45aacac08ba27f52a05ccdfbbc6cf7fb8e434ec373d1cc"
+  },
+  "tool_sha256": "faa4969ddc238e3dfd399b12c5855e9ccee1cd2ebea65b605f15184f2d3ed66f",
+  "positions_sha256": "337b2527a8fad6b4bf91f38e897e11a719986331f1751a8b2784d2f73d2e167d",
+  "proxy_vertices": 33233,
+  "frames": 330,
+  "maximum_world_roundtrip_error_m": 5.387605597206857e-07,
+  "limitations": [
+    "Exact source-index output capture; not a new physical, semantic, runtime or exchange acceptance."
+  ]
+}

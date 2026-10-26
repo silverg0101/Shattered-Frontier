@@ -1,0 +1,22 @@
+{
+  "source": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\RESOURCE-GreenlandsIronVein-01\\References\\v001\\asset-view.png",
+  "source_sha256": "6530f652638cb88e8a95112c8016c403a662a65b62092f2e90688a81677311fb",
+  "output": "C:\\Projects\\Shattered-Frontier\\Artifacts\\Art\\GreenlandsModelBatch-20261018\\RESOURCE-GreenlandsIronVein-01\\attempt-03\\RESOURCE-GreenlandsIronVein-01.rgba.png",
+  "output_sha256": "cafe7716a57f414b1d2f014e05671fb7821d2c96b2861f32f7d33e5df290a1b8",
+  "mask_preview": "C:\\Projects\\Shattered-Frontier\\Artifacts\\Art\\GreenlandsModelBatch-20261018\\RESOURCE-GreenlandsIronVein-01\\attempt-03\\RESOURCE-GreenlandsIronVein-01.rgba.mask.png",
+  "mask_preview_sha256": "1a3c462e1c576ddabf69b8a27e8fef3749764b89918a742b43d709a559f29244",
+  "dimensions_px": [
+    1536,
+    1024
+  ],
+  "method": "border-connected fixed-range RGB flood fill; 5-iteration GrabCut trimap cleanup; Gaussian alpha edge 0.8px",
+  "tolerance_rgb": 12,
+  "foreground_fraction": 0.476987,
+  "foreground_bounds_px": [
+    50,
+    74,
+    1358,
+    944
+  ],
+  "review_status": "needs-review"
+}

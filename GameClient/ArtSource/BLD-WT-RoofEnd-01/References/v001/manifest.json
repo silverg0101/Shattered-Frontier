@@ -1,0 +1,48 @@
+{
+  "asset_id": "BLD-WT-RoofEnd-01",
+  "version": "v001",
+  "batch": "construction-worked-timber-roof-surfaces-38",
+  "current_status": "image-complete; appearance proposal; structural readiness blocked",
+  "intended_route": "proposed flush KIT-WT appearance treatment on triangular y-end faces of contract slope-1to1 carrier; no end cap or added geometry",
+  "carrier": {
+    "geometry_status": "contract design target; approved GEO-01 manifest/hash absent",
+    "dimensions_m": {"x": 0.5, "y": 0.5, "z": 0.5},
+    "grid_m": 0.5,
+    "axes": "local X run, Y depth, Z rise",
+    "origin": "minimum-grid-corner",
+    "pivot": "minimum-grid-corner carrier frame",
+    "shape": "triangular prism with XZ section 0<=z<=x<=0.5; vertices (0,0), (0.5,0), (0.5,0.5); sloped boundary z=x",
+    "allowed_rotations": "identity only until production shape allowlist is authored under BLD-01"
+  },
+  "component_boundary": "One appearance treatment on two exposed triangular end faces y=0 and y=0.5 only; no cap volume. Interior at y=0.25 remains untreated.",
+  "exposed_faces": ["treated end triangle y=0", "treated end triangle y=0.5", "untreated slope z=x", "untreated underside z=0", "untreated remaining carrier face"],
+  "mating_faces": ["slope interface to BLD-WT-RoofSlopeFace-01", "repeat end-face boundary; exact treatment phase unvalidated"],
+  "source_references": [
+    "docs/art-templates/player-construction-kit-contract.md §2 slope-1to1 and §3 buildability route",
+    "docs/decisions/BLD-01-voxel-geometry-interface.md coordinate/orientation contract",
+    "docs/art-templates/asset-lists/construction-worked-timber-roof-surfaces-38.md",
+    "docs/art-templates/asset-lists/construction-kit-matrix-07.md"
+  ],
+  "required_selected_outputs": ["concept-sheet.png", "asset-view.png"],
+  "selected_image_count": 2,
+  "additional_images": 0,
+  "generation_history": [
+    {"file": "provenance/exec-a3a9f644-e7a8-487d-82fb-58878388e313.png", "selected": false, "reason": "Mirrored the required triangular section; the diagonal descended from left to right and represented the wrong shape.", "metadata": {"format": "PNG", "width_px": 1536, "height_px": 1024, "pixel_format": "RGB 24bpp", "bytes": 1925259, "sha256": "151a2b236d72a7b684bfc9903ea1b22b7a7765c1ef02bbe896dcf0e111d8acdd"}},
+    {"file": "provenance/exec-b64bde62-4a80-49e5-8b0c-c88090d0f8d8.png", "selected": false, "reason": "Corrected section orientation but placed end treatment at mid-depth; rejected.", "metadata": {"format": "PNG", "width_px": 1536, "height_px": 1024, "pixel_format": "RGB 24bpp", "bytes": 1905170, "sha256": "a3f09a4307ef6cb3ecd536c09c65d95d035f8e3a637b374819eee44eecd41f09"}},
+    {"file": "provenance/exec-52b09c70-f298-45a4-a336-467024432069.png", "selected": false, "reason": "Section treatment was removed but obsolete caption still claimed an end-treatment boundary at the interior section.", "metadata": {"format": "PNG", "width_px": 1536, "height_px": 1024, "pixel_format": "RGB 24bpp", "bytes": 1826356, "sha256": "ebf7b62a7bce1e8a4d28d3b6707864b7413585e568865fee153534821ada171e"}},
+    {"file": "provenance/exec-acfad4ca-eb12-4b6e-9926-cfe5749eca85.png", "selected": false, "reason": "The lower-left triangular panel was mislabeled as the gray slope face, conflating the end face and slope surface.", "metadata": {"format": "PNG", "width_px": 1536, "height_px": 1024, "pixel_format": "RGB 24bpp", "bytes": 1753507, "sha256": "9d45c2cea339ea1dce554b57f93a0c8f8cd1232ffac3f3f002275284e7633115"}},
+    {"file": "concept-sheet.png", "source_cache_path": "C:\\Users\\grego\\.codex\\generated_images\\01a15000-e13f-7213-9ec0-df2684201405\\exec-084701f1-8713-4df9-a6d5-80ba96a934f0.png", "selected": true, "metadata": {"format": "PNG", "width_px": 1536, "height_px": 1024, "pixel_format": "RGB 24bpp", "bytes": 1702126, "sha256": "a444b9e2ac1faf4c72e7b708999a1f3f87da77b6e33c2e14f11eaa6cd928862f"}, "exact_prompt": "prompt.txt#1"},
+    {"file": "asset-view.png", "source_cache_path": "C:\\Users\\grego\\.codex\\generated_images\\01a15000-e13f-7213-9ec0-df2684201405\\exec-7700ed15-ad14-4c06-a99e-4935a5039f00.png", "selected": true, "metadata": {"format": "PNG", "width_px": 1536, "height_px": 1024, "pixel_format": "RGB 24bpp", "bytes": 1573652, "sha256": "bcfd26f192e152530e2eecec27a4cd95b98e0a10672474c98bfb4b323d5a07e6"}, "exact_prompt": "prompt.txt#6"}
+  ],
+  "visual_review": {
+    "date": "2026-10-18",
+    "concept_sheet": "Accepted for appearance proposal after four repairs: required triangle is oriented z<=x with its vertical edge at x=0.5; timber is limited to y=0 and y=0.5 end faces; y=0.25 interior section is all gray; the slope z=x is shown separately in gray; envelope, units, axes, identity orientation, named slope interface and unvalidated-fit note are readable. No fit inference is made from drawing scale.",
+    "asset_view": "Accepted for appearance proposal: one complete wedge in identity orientation; a timber-treated triangular end is dominant, opposite end is visible at the far side, and slope/underside remain gray. No extra components or obvious cap volume. Image review does not prove numeric boundaries or runtime compatibility."
+  },
+  "compatibility": "No approved GEO-01 manifest/hash; no applicable GEO-02 end-face/repeat/seam evidence.",
+  "blockers": [
+    "GEO-01 approved geometry payload/manifest hash absent; carrier remains a contract target.",
+    "Applicable GEO-02 evidence and production shape rotation allowlist absent.",
+    "Slope/end material phase and seam fit are unvalidated."
+  ]
+}

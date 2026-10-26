@@ -1,0 +1,20 @@
+{
+  "source_manifest": "GameClient/ArtSource/BLD-WT-CellFull-01/References/v001/manifest.json",
+  "source_manifest_sha256": "fa126d04c34efa43bdffb6f006668e7ec1caaef96dc4d40be1b29b03077961e6",
+  "source_image": "GameClient/ArtSource/BLD-WT-CellFull-01/References/v001/asset-view.png",
+  "source_image_sha256": "dffd5074f2ab09a62a1f46ee63a1e14db1749169a004faf236f0480e5e9da04b",
+  "role": "appearance guidance; no reference pixels or scene lighting are projected",
+  "recipe": "worked-timber",
+  "seed": 1703,
+  "map_size_px": [
+    1024,
+    1024
+  ],
+  "maps": [
+    "basecolor-sRGB",
+    "roughness-linear",
+    "normal-OpenGL-tangent",
+    "height-linear"
+  ],
+  "height_use": "reference/export sidecar only; not applied as geometry displacement"
+}

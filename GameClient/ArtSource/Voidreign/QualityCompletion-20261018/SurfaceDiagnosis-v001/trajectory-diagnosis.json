@@ -1,0 +1,10 @@
+{
+  "scope": "Read-only full-duration trajectory diagnosis; does not change historical particle pass or run another repair.",
+  "maximum_body_local_particle_step_m": 0.1544712036844025,
+  "frame": 210,
+  "guide": "Tail_G00",
+  "node": 11,
+  "surface_limit_reference_m": 0.08,
+  "tail_G00_frame210_node10_step_m": 0.1356874636815356,
+  "lesson": "Current particle status checks startup, roots and segment stretch but lacks a full-duration step limit; add that gate in a reviewed future profile. Actual surface step gate already catches this failure."
+}

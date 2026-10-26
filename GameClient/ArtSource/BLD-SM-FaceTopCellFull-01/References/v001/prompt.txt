@@ -1,0 +1,36 @@
+CONCEPT SHEET — built-in image_gen, 2026-10-18.
+
+Use case: stylized-concept
+Asset type: separately indexed top-face treatment for the stone-masonry kit.
+Input image 1: selected KIT-SM exterior-face sheet; preserve its gray-brown flush ashlar course style and modest mortar.
+Scene/backdrop: neutral gray studio.
+Subject: one full solid cube on the proposed 0.5 m cell, with its top face designated as a load-contact/surface plane. Show six orthographic views of the same cube; emphasize the top face and include exterior/interior, ends and underside.
+Style/medium: realistic fantasy construction reference, squared stone courses with shallow recessed seams, same stone-masonry tier.
+Composition/framing: aligned square views; top is clearly shown with orderly flush courses; include simple neutral contact silhouette. Intended dimensions only.
+Constraints: exact cell-full envelope, six contacts and pivot unchanged. Top stones remain flush to the cube boundary. No cap, parapet, coping overhang, metal, timber, damage or gameplay claim; no extra geometry or separate asset.
+Avoid: stone slab projecting beyond sides, irregular silhouette, building scene, scale figure, text clutter, watermark.
+Reference: `GameClient/ArtSource/BLD-SM-FaceExteriorCellFull-01/References/v001/concept-sheet.png`.
+
+CLEAN VIEW ITERATION 1 — rejected because it overemphasized protruding masonry relief.
+
+Use case: stylized-concept
+Asset type: clean stone-masonry full-cell view emphasizing its top face.
+Input image 1: selected six-view sheet; preserve flush gray-brown top courses and same material style.
+Scene/backdrop: neutral gray.
+Subject: exactly one solid equal-edge 0.5 m target cube with a flat top-face stone course treatment.
+Composition/framing: isolated cube from slightly above, complete silhouette, top plus two sides visible, ample margins and soft shadow.
+Style/medium: realistic restrained fantasy masonry, flush ashlar courses.
+Constraints: exact full-cell target envelope and six planar contacts; no cap, overhang, parapet, trim, projection or second object. Appearance does not change the Stone masonry structural tier. No gameplay or measured dimension claims.
+Rejected output: `C:/Users/grego/.codex/generated_images/01a15000-e13f-7213-9ec0-df2684201405/exec-86da1eaf-a1fe-4d11-a0ce-38061aee6e5f.png`, SHA-256 `994949E4E4C3B1DCE61D131675E14A807B0CAF6C55FCB61F1422E085C01CB697`.
+
+CLEAN VIEW ITERATION 2 — selected, built-in image_gen, 2026-10-18. Input image 1 is the selected concept sheet.
+
+Use case: stylized-concept
+Asset type: corrected clean asset view of a cube with flush stone-masonry top treatment.
+Input image 1: selected sheet for color and course rhythm only; explicitly disregard raised-looking block edges in its illustrations.
+Scene/backdrop: uniform neutral gray.
+Subject: exactly one perfect, solid, equal-edge cube. Flat, straight top and side planes, 0.5 m target edges. Stone masonry is an applied visual treatment.
+Style/medium: subdued gray-brown ashlar with thin recessed joint lines and low-contrast natural stone texture.
+Composition/framing: one cube in three-quarter view from above, full silhouette, flat square top plus two sides visible, ample margins.
+Constraints: no individual stones stand proud of the surface. Course boundaries are shallow incised lines entirely within perfectly flat cube planes. The outline is six continuous straight edges with square corners and no silhouette break. No trim, cap, coping, extra object, masonry stack, damage, or geometry extension. Do not imply numerical fit or gameplay bonus.
+Avoid: raised bricks, protruding blocks, irregular silhouette, rounded or beveled cube, perspective scale distortions, labels, watermark.

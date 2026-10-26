@@ -1,0 +1,30 @@
+{
+  "asset_id": "PROP-GreenlandsWayfindingMarker-01",
+  "category": "prop",
+  "brief": "Proposed small freestanding wood trail marker with a single carved notch and broad timber foot; not a gameplay beacon or signage system.",
+  "design_sources": [
+    { "path": "docs/e1-implementation-packet.md", "section": "Greenlands fixture and acceptance cards / E1-B", "role": "calls for a stable landmark and clear return navigation" },
+    { "path": "GameClient/ArtSource/GreenlandsWaystone/README.md", "role": "records existing landmark artwork, reused and not regenerated" },
+    { "path": "docs/Game-Design/concept-art/Concept.png", "role": "optional style reference; not prop requirements" }
+  ],
+  "concept_status": "agent-selected; proposal, user approval not claimed",
+  "clean_view_status": "ready-for-model-test; opaque background, segmentation required if later adapter requires alpha",
+  "design_master": "concept-sheet.png",
+  "prompts": "prompt.txt (clean-view correction retained)",
+  "generation": { "tool": "built-in image_gen", "model": "unavailable", "generated_date": "2026-10-18", "seed": "unavailable" },
+  "outputs": {
+    "concept-sheet.png": { "sha256": "4D612459CDD3407BA2FBDA14F89E50E6E2866F4FB6528375933FD7016DEC2B6B", "dimensions_px": [1536, 1024], "color": "RGB, opaque; PNG color type 2", "master": true },
+    "asset-view.png": { "sha256": "46410437AEBD82F433DB2ADFC14667C7287DDCEFD7CFFD3B1ACE0AEC4B0AC182", "dimensions_px": [1536, 1024], "color": "RGB, opaque; PNG color type 2", "master": false }
+  },
+  "component_boundaries": ["One marker post and attached timber base", "Excludes the existing Greenlands Waystone, paths, signage, writing and navigation mechanics"],
+  "scale": "Approximate scale inferred; no dimension is established by the design source.",
+  "edits": "No pixel edits or upscaling. First clean view changed the timber base to stone; second prompt corrected it against the selected sheet.",
+  "review": {
+    "reviewer": "Codex visual inspection",
+    "findings": ["Sheet views consistently depict a single upright notched timber post with a flared joined-timber foot.", "Initial clean view incorrectly substituted a stone foot and was rejected.", "Final clean view has a matching timber foot, top notch, complete silhouette and neutral opaque background.", "No text, insignia or unrelated objects present."],
+    "unresolved": ["The notch suggests direction visually but orientation/function is intentionally unspecified; scale is approximate."],
+    "image_complete": true,
+    "approval": "agent-selected; not user-approved",
+    "review_date": "2026-10-18"
+  }
+}

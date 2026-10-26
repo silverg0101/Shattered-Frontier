@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "purpose": "one-diagnostic-existing-mesh-evaluation",
+  "maximum_evaluations": 1,
+  "parent_attempts_retained": {
+    "topology_uv": 3,
+    "rig": 3,
+    "secondary_motion": 3
+  },
+  "paths": {
+    "builder": "tools/Build-FeatureMotionRig.py",
+    "source": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateCleanup-v001\\Voidreign-CompleteHair.blend",
+    "guide_report": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneGuideProposal-v001\\guide-report.json",
+    "simulation": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\MildOverdampingTrajectory-v001",
+    "config": "docs/art-templates/model-profiles/voidreign-complete-hair-motion-v003-20261018.json",
+    "trajectory_check": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\MildOverdampingTrajectoryCheck-v001\\trajectory-check.json",
+    "clearance": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\MildOverdampingClearance-v001\\guide-clearance.json",
+    "baseline_clearance": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\GuideClearanceBaseline-v004\\guide-clearance.json",
+    "output": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ContactMeshExperiment-v001",
+    "adapter_output": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ContactMeshExperimentAdapter-v001"
+  },
+  "open_gates": [
+    "fixed-envelope-feasibility",
+    "actual-surface-motion-and-collision",
+    "semantic-clump-ownership-and-roots",
+    "attachment",
+    "materials",
+    "stance-and-gait",
+    "exchange-reimport",
+    "runtime-and-engine"
+  ],
+  "input_sha256": {
+    "tools\\Build-FeatureMotionRig.py": "07cc0375894c1458beffa94ba653e88fea8e69478ffb55d8367ed97bd0340310",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateCleanup-v001\\Voidreign-CompleteHair.blend": "6c6044a533c16fc7fad23d42c0407dde37a0252aca84f9be1bc9b9a2367364f6",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneGuideProposal-v001\\guide-report.json": "3e776c1cef3380c3a81814d67ce2ec32270bca2e7d7fbece55eefef49e70de67",
+    "docs\\art-templates\\model-profiles\\voidreign-complete-hair-motion-v003-20261018.json": "9df3ed982c0f5f571210a98d42c1e6b395b80713c139f0b7b162ad861d5cca47",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\MildOverdampingTrajectoryCheck-v001\\trajectory-check.json": "c16dcbdf681535ece6cf4cac37c28e9ea9c3cc702d2e84ec2535896c30309eae",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\MildOverdampingClearance-v001\\guide-clearance.json": "76471c7ea7a5247fd8d52c29d036540544482935108bd52e22fc17ebc8878f7a",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\GuideClearanceBaseline-v004\\guide-clearance.json": "37caa89bafadbae27cbc8476811a1da0386ff0082da645881d6a0d61b37992f9",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\MildOverdampingTrajectory-v001\\simulation-report.json": "b3e047e8c5ef38b0e31b1bfe1db1e01b0ff32a229d212d60a4920ed57719dc62",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\MildOverdampingTrajectory-v001\\trajectory.npz": "69c396bc6cdf1a0afed8cd60414fb131c7be6bb851e8d9fdf892152f32c799f0",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneGuideProposal-v001\\guides.json": "f8f8c15cfa47fcd80ea32cf823227cc5df5d063e0baa1e4bc72de99e77701621",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneGuideProposal-v001\\weight-field.npz": "e397b54127123c7ad863706d650bb780b7489a5f82bf2a3b9d74bd16eb480f91",
+    "docs\\art-templates\\model-profiles\\voidreign-hair-selections-v003-20261018.json": "558f0bb861238b8150450a3495ee83fca561d3b72b979c3cd6aa92041ddd18f9",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneAttachmentProposals-v001\\attachment-proposals.json": "0e0b6d2096722f4ffa88be6d437c1b17d10eba5999c884a5f1974e860c1c3308",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selection-report.json": "63eb535dcafe1140c5445ce46bd402cc438af979c437fbb9d7430b723aa11a08",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selections.npz": "0b6a19f76a2cba73a42e293c29365360b53ba93be101cf8f4ca556e7a5989cc0"
+  },
+  "post_bake_checks_required": [
+    "retained-rest-positions-topology-UV-colors-normals-images-and-materials",
+    "report-regenerated-weight-and-bind-changes-versus-source",
+    "all-frame-actual-surface-checks",
+    "saved-source-visual-review",
+    "fresh-exchange-reimport"
+  ]
+}

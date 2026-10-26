@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "guides_sha256": "abab172d4890edc076998947a2c1bb2189c67682ddb5742f13e5c534b24082c7",
+  "assembly_root": "MOTION HARNESS | rigid horse, not gait animation",
+  "views": [
+    {
+      "name": "Head-NegX",
+      "image": "Head-NegX.png",
+      "sha256": "285ebba46cb1567fe352d491b9c19055abaf2761afcd0ddd69fe430dc43f69c8"
+    },
+    {
+      "name": "Saddle-NegX",
+      "image": "Saddle-NegX.png",
+      "sha256": "4560fb109594438d44f6f426bb70779afcaab3298e7a393b59b750907e998026"
+    }
+  ]
+}

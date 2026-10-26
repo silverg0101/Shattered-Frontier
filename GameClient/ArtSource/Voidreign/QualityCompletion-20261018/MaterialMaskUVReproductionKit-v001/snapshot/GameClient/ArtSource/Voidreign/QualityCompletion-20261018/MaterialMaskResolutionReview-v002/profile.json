@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "uv_topology": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/SourceUVTopology-v001/uv-topology.npz",
+  "rest_selection": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/DegenerateInspection-v001/00-component-selections.npz",
+  "approval_profile": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReviewedDielectricFaces-v002/profile.json",
+  "mask_reports": [
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReviewedMaterialMask2K-v001/mask-report.json",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReviewedMaterialMask4K-v001/mask-report.json"
+  ],
+  "input_sha256": {
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/SourceUVTopology-v001/uv-topology.npz": "7d6b6296ff351ca9c6608eb5dba7098738e35f8ede072a1a63eeea462357ba94",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/DegenerateInspection-v001/00-component-selections.npz": "0d7599c8064cb81a6e211a23731435e08939b7fb146ce2d4bed810273909a2b2",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReviewedDielectricFaces-v002/profile.json": "b2bc9721e444493f5bdafbee8277f75043122fa0da67d22e2e6d8054cf1900da",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReviewedMaterialMask2K-v001/mask-report.json": "6ce18751d7ba6b8a5e1d5d8235978994ec4a5b251edce27ae94a40ddc130cbb2",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReviewedMaterialMask4K-v001/mask-report.json": "beb7abebc6b8ab4cafca0eda8dd144474e5250d83df239ee592e0098e4a795b3"
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "assetId": "BLD-SM-ArchOpeningJamb-01",
+  "version": "v001",
+  "category": "construction kit / arched opening component appearance",
+  "created": "2026-10-18",
+  "sourceReferences": [
+    "docs/art-templates/player-construction-kit-contract.md \u2014 Openings; canonical frame; required kit QA",
+    "docs/Game-Design/Legends_Shattered_Frontier_Construction_System_Architecture_v0.1.md \u2014 \u00a7\u00a73.1\u20133.2, 8\u20139",
+    "GameClient/ArtSource/BLD-SM-CellFull-01/References/v001/asset-view.png \u2014 material cue"
+  ],
+  "definition": {
+    "geometryRef": "arch-2m/v1 (proposal)",
+    "envelopeMeters": "per contract; not inferred",
+    "contacts": [
+      "wall face",
+      "arch reveal",
+      "spring-point/ring joint"
+    ],
+    "opening": "preserve exact contract arch subtraction and clearances",
+    "materialKit": "KIT-SM",
+    "structuralMaterialProfile": "Stone masonry",
+    "cosmeticSkin": "appearance only",
+    "functionalDefinition": "none"
+  },
+  "generation": {
+    "tool": "built-in image_gen",
+    "date": "2026-10-18",
+    "model": "unavailable",
+    "seed": "unavailable",
+    "promptRecord": "prompt.txt",
+    "referenceImagesAttached": []
+  },
+  "images": [
+    {
+      "path": "concept-sheet.png",
+      "sha256": "46471818af7837a4570ff647085dc7e4d10a859f3b718bb70fed094a4152ab40",
+      "width": 1536,
+      "height": 1024,
+      "pixelFormat": "RGB 24-bit",
+      "alpha": false,
+      "review": "Arch jamb study shows block/curve interface; top crop and custom radius are illustrative; no fit acceptance."
+    },
+    {
+      "path": "asset-view.png",
+      "sha256": "2c9319c5106dd09949aa8189671f75233076938ac6745a3b90302fa9fd4acda3",
+      "width": 1312,
+      "height": 1199,
+      "pixelFormat": "RGB 24-bit",
+      "alpha": false,
+      "review": "Arch jamb study shows block/curve interface; top crop and custom radius are illustrative; no fit acceptance."
+    }
+  ],
+  "review": {
+    "reviewedBy": "Codex",
+    "conceptStatus": "proposed",
+    "cleanViewStatus": "ready-for-model-test",
+    "imageStatus": "image-complete",
+    "geometryAcceptance": "not established",
+    "numericalMeshFit": "not established",
+    "runtimeCollisionSupportClearance": "not established",
+    "actionableFindings": [
+      "Arch jamb study shows block/curve interface; top crop and custom radius are illustrative; no fit acceptance."
+    ]
+  },
+  "componentBoundary": "One separately indexed arched opening jamb or ring-lintel role. Assembly images do not establish radius, opening boundary, component contact fit or structural support."
+}

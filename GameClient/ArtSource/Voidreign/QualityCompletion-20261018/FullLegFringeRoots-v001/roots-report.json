@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "status": "geometric-region-roots-proposal-needs-review",
+  "cpu_only": true,
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz": "0d7599c8064cb81a6e211a23731435e08939b7fb146ce2d4bed810273909a2b2",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LegFringeLabelCorrection-v001\\label-only-selections.npz": "dc78ba7dbd5a03bef0f0397a26435ec6bcf31b079c340aff5d035a2b1566a630",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryDomains-v001\\primary-domains.npz": "38002ef04f9ab82df4456021b3772e422328e2ecebd38bd068a344dd5e27bdb5",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\FullLegFringeRegion-v001\\region-selections.npz": "da71ccd47d25894bf69fed837a5d56d7821edf80ef4e3097416d27133170a962"
+  },
+  "tool_sha256": "bcacf6b6f6412c7b7061717bc919d0adc69549d3539376fb49a3a280feeb5f30",
+  "profile_sha256": "2a64c62067b9c151045965e855865abf3f237f5021bb82475e658a9e980117e5",
+  "feature": "hind.L.fringe-review",
+  "vertices": 363,
+  "canonical_nodes": 202,
+  "full_faces": 361,
+  "boundary_faces": 72,
+  "root_nodes": 37,
+  "support_nodes": 33,
+  "rootless_nodes": 0,
+  "maximum_geodesic_distance_m": 0.18595782123737548,
+  "support_owner_node_counts": {
+    "3": 33
+  },
+  "root_bounds_m": [
+    [
+      0.2469426989555359,
+      0.9403162598609924,
+      0.5007386207580566
+    ],
+    [
+      0.3790455758571625,
+      0.9648832082748413,
+      0.6637529134750366
+    ]
+  ],
+  "limitations": [
+    "Geometric support is exact but spatial cut and anatomical anchor still require review.",
+    "No semantic relabel, bone binding, source edit or simulation.",
+    "Boundary-crossing faces remain in source; local full-face isolation is not a separated production mesh.",
+    "Root distance applies only to this local feature proposal, not a replacement global weight field."
+  ]
+}

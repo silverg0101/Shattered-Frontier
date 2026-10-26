@@ -1,0 +1,25 @@
+{
+ "schema_version": 1,
+ "status": "orm-baked-needs-visual-review",
+ "cpu_only": true,
+ "input_sha256": {
+  "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/Delivery-v002/SK_Voidreign.blend": "1b17fcc4134f8e4b738769cd05daf80625e35d307dfb33ef526a52b9c24ec58f",
+  "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/Delivery-v002/SK_Voidreign.fbm/BaseColor-4K.png": "1023bcd5121c571e5bf94781a4304feb8717baeee1897ebf75bd7a67d93ebde1"
+ },
+ "tool_sha256": "0f365f25a3c3fd127b1719a1ea7875dbf7071202e2594827bb9c5e14b84e81ef",
+ "profile_sha256": "ba81609ee940148ee5905b601b19903d4add300f935b3944f7573f557a64e43f",
+ "orm_sha256": "25b438a5ebb811b4a6b064c25b36561db4a9ddd8996a0ce3c289d1700b129d5a",
+ "resolution": 2048,
+ "ao_mean": 0.3577640652656555,
+ "ao_p05": 0.0,
+ "roughness_mean": 0.7665544748306274,
+ "roughness_band_coverage": {
+  "red_fur": 0.3322257995605469,
+  "bone_ivory": 0.016353845596313477,
+  "deep_dark": 0.02371525764465332
+ },
+ "limitations": [
+  "Roughness is an albedo-derived classification, not authored material masks.",
+  "AO baked in rest pose; no normal map."
+ ]
+}

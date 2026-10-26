@@ -1,0 +1,13 @@
+{
+  "status": "read-only-assumption-corrected",
+  "logs": [
+    "Artifacts/Art/Voidreign/local-segmented-collider-preflight-v001.log",
+    "Artifacts/Art/Voidreign/local-segmented-collider-preflight-v002.log",
+    "Artifacts/Art/Voidreign/local-segmented-collider-preflight-v003.log"
+  ],
+  "findings": [
+    "The first limb-only partition contract rejected genuine pelvis influence8.18% atsource174349.",
+    "Dominant-limb-only contract also rejectedsource196348, where pelvis0.367 exceedsstifle0.357 and spine0.083 contributes.",
+    "Explicit proposed partition adds observed pelvis/spine groups; it retains every captured source deformation influence and still rejects collider fit. No source rebind or contact-limit relaxation."
+  ]
+}

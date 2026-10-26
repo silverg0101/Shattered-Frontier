@@ -1,0 +1,16 @@
+{
+  "argv": [
+    "wsl.exe",
+    "-d",
+    "Ubuntu",
+    "--",
+    "/home/grego/sf-asset-lab/env-pixal/bin/python",
+    "/mnt/c/Projects/Shattered-Frontier/tools/trellis2/audit_pixal_volume.py",
+    "--volume",
+    "/mnt/c/Projects/Shattered-Frontier/Artifacts/Art/Voidreign/pixal-detail-20261018/generated/material-volume.pt",
+    "--source-root",
+    "/home/grego/sf-asset-lab/sources/Pixal3D",
+    "--output",
+    "<new output folder>"
+  ]
+}

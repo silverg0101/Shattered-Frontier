@@ -1,0 +1,29 @@
+{
+  "asset_id": "WEAPON-GreenlandsStarterMelee-01",
+  "category": "weapon",
+  "brief": "Proposed plain one-handed iron sword as the starter weapon concept; identity is inferred and not gameplay-approved.",
+  "design_sources": [
+    { "path": "docs/Game-Design/Legends_Shattered_Frontier_Vertical_Slice_Specification_v1.0.md", "section": "Scope and exclusions / Combat; Content inventory", "role": "requires a starter weapon/attack" },
+    { "path": "docs/Game-Design/Legends_Shattered_Frontier_Combat_System_v0.1.md", "section": "Creature-tier rule", "role": "combat context only; does not specify this weapon" }
+  ],
+  "concept_status": "agent-selected; proposed weapon identity, user approval not claimed",
+  "clean_view_status": "ready-for-model-test; opaque background, segmentation required if later adapter requires alpha",
+  "design_master": "concept-sheet.png",
+  "prompts": "prompt.txt (crossguard correction retained)",
+  "generation": { "tool": "built-in image_gen", "model": "unavailable", "generated_date": "2026-10-18", "seed": "unavailable" },
+  "outputs": {
+    "concept-sheet.png": { "sha256": "CB104EAB3A20D3C727E2B1EB9AE2E18F07849F650DCA33C15D4AC3EEEB149156", "dimensions_px": [1536, 1024], "color": "RGB, opaque; PNG color type 2", "master": true },
+    "asset-view.png": { "sha256": "BF91147E42209F47334C8497E8FBCAA8DDC84429129D70368B0951CA62E50454", "dimensions_px": [1536, 1024], "color": "RGB, opaque; PNG color type 2", "master": false }
+  },
+  "component_boundaries": ["One sword only", "Excludes wielder, scabbard, combat animation, damage/balance and effects"],
+  "scale": "Approximate hand-scale inferred; no weapon dimensions or ratings specified.",
+  "edits": "No pixel edits or upscaling. First clean view changed the crossguard; second prompt restored the curved quillons from the selected sheet.",
+  "review": {
+    "reviewer": "Codex visual inspection",
+    "findings": ["Concept sheet keeps blade, guard, grip and pommel visually consistent in its main views and details.", "Final clean view shows one full sword with complete silhouette and margins; the curved guard, wrap, blade and faceted pommel match the selected master.", "Neutral opaque background with controlled highlights."],
+    "unresolved": ["Weapon type, exact dimensions, stats, materials and intended animation remain proposals."],
+    "image_complete": true,
+    "approval": "agent-selected; not user-approved",
+    "review_date": "2026-10-18"
+  }
+}

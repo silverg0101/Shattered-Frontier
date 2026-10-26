@@ -1,0 +1,5 @@
+Concept-sheet prompt (exact):
+Construction design concept sheet: one 0.5 m cubic worked-timber wall cell, front face meets a short return across one vertical corner, all surfaces flush within the exact cube envelope. Show three-quarter cube plus two orthographic face views; the plank cladding wraps the edge cleanly with a simple interlocking board return, no trim extending beyond cell. Solid weathered oak, pale neutral background, no labels/text, no extra parts, no masonry. Image-concept proposal only; dimensions inherited from cell.
+
+Clean asset-view prompt (exact):
+Isolated single cubic wall cell, made of horizontal worked-timber planks. Clearly show an L-shaped corner return: the front planks visibly wrap 90 degrees onto the right side, with a sharp vertical seam at the corner; both faces meet flush, no corner post or protruding trim. Top and two faces visible, exact cubic silhouette, pale gray studio backdrop, no text.

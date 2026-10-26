@@ -1,0 +1,1100 @@
+{
+  "status": "one-to-one-component-correspondence; no semantic promotion",
+  "components": [
+    {
+      "new_component_id": "ba2d283db0be:C0000",
+      "source_component_id": "f580ad6893e5:C0000",
+      "vertices": 266162
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0001",
+      "source_component_id": "f580ad6893e5:C0001",
+      "vertices": 755
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0004",
+      "source_component_id": "f580ad6893e5:C0004",
+      "vertices": 448
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0005",
+      "source_component_id": "f580ad6893e5:C0005",
+      "vertices": 350
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0012",
+      "source_component_id": "f580ad6893e5:C0012",
+      "vertices": 300
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0018",
+      "source_component_id": "f580ad6893e5:C0018",
+      "vertices": 288
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0020",
+      "source_component_id": "f580ad6893e5:C0020",
+      "vertices": 212
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0025",
+      "source_component_id": "f580ad6893e5:C0025",
+      "vertices": 156
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0026",
+      "source_component_id": "f580ad6893e5:C0026",
+      "vertices": 185
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0027",
+      "source_component_id": "f580ad6893e5:C0027",
+      "vertices": 151
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0028",
+      "source_component_id": "f580ad6893e5:C0028",
+      "vertices": 151
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0030",
+      "source_component_id": "f580ad6893e5:C0030",
+      "vertices": 131
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0031",
+      "source_component_id": "f580ad6893e5:C0031",
+      "vertices": 144
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0032",
+      "source_component_id": "f580ad6893e5:C0032",
+      "vertices": 135
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0034",
+      "source_component_id": "f580ad6893e5:C0034",
+      "vertices": 141
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0035",
+      "source_component_id": "f580ad6893e5:C0035",
+      "vertices": 186
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0037",
+      "source_component_id": "f580ad6893e5:C0037",
+      "vertices": 159
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0038",
+      "source_component_id": "f580ad6893e5:C0038",
+      "vertices": 145
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0047",
+      "source_component_id": "f580ad6893e5:C0047",
+      "vertices": 124
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0054",
+      "source_component_id": "f580ad6893e5:C0054",
+      "vertices": 97
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0055",
+      "source_component_id": "f580ad6893e5:C0055",
+      "vertices": 112
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0059",
+      "source_component_id": "f580ad6893e5:C0059",
+      "vertices": 97
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0060",
+      "source_component_id": "f580ad6893e5:C0060",
+      "vertices": 86
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0063",
+      "source_component_id": "f580ad6893e5:C0063",
+      "vertices": 79
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0064",
+      "source_component_id": "f580ad6893e5:C0064",
+      "vertices": 117
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0067",
+      "source_component_id": "f580ad6893e5:C0067",
+      "vertices": 78
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0068",
+      "source_component_id": "f580ad6893e5:C0068",
+      "vertices": 87
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0070",
+      "source_component_id": "f580ad6893e5:C0070",
+      "vertices": 79
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0072",
+      "source_component_id": "f580ad6893e5:C0072",
+      "vertices": 74
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0074",
+      "source_component_id": "f580ad6893e5:C0074",
+      "vertices": 75
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0075",
+      "source_component_id": "f580ad6893e5:C0075",
+      "vertices": 97
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0077",
+      "source_component_id": "f580ad6893e5:C0077",
+      "vertices": 58
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0083",
+      "source_component_id": "f580ad6893e5:C0083",
+      "vertices": 62
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0084",
+      "source_component_id": "f580ad6893e5:C0084",
+      "vertices": 63
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0086",
+      "source_component_id": "f580ad6893e5:C0086",
+      "vertices": 65
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0093",
+      "source_component_id": "f580ad6893e5:C0093",
+      "vertices": 57
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0095",
+      "source_component_id": "f580ad6893e5:C0095",
+      "vertices": 64
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0097",
+      "source_component_id": "f580ad6893e5:C0097",
+      "vertices": 47
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0098",
+      "source_component_id": "f580ad6893e5:C0098",
+      "vertices": 75
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0102",
+      "source_component_id": "f580ad6893e5:C0102",
+      "vertices": 39
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0105",
+      "source_component_id": "f580ad6893e5:C0105",
+      "vertices": 44
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0106",
+      "source_component_id": "f580ad6893e5:C0106",
+      "vertices": 42
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0113",
+      "source_component_id": "f580ad6893e5:C0113",
+      "vertices": 46
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0114",
+      "source_component_id": "f580ad6893e5:C0114",
+      "vertices": 43
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0116",
+      "source_component_id": "f580ad6893e5:C0116",
+      "vertices": 37
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0118",
+      "source_component_id": "f580ad6893e5:C0118",
+      "vertices": 37
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0121",
+      "source_component_id": "f580ad6893e5:C0121",
+      "vertices": 30
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0123",
+      "source_component_id": "f580ad6893e5:C0123",
+      "vertices": 45
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0127",
+      "source_component_id": "f580ad6893e5:C0127",
+      "vertices": 31
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0130",
+      "source_component_id": "f580ad6893e5:C0130",
+      "vertices": 37
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0132",
+      "source_component_id": "f580ad6893e5:C0132",
+      "vertices": 30
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0133",
+      "source_component_id": "f580ad6893e5:C0133",
+      "vertices": 28
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0142",
+      "source_component_id": "f580ad6893e5:C0142",
+      "vertices": 24
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0143",
+      "source_component_id": "f580ad6893e5:C0143",
+      "vertices": 24
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0147",
+      "source_component_id": "f580ad6893e5:C0147",
+      "vertices": 26
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0150",
+      "source_component_id": "f580ad6893e5:C0150",
+      "vertices": 24
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0151",
+      "source_component_id": "f580ad6893e5:C0151",
+      "vertices": 23
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0158",
+      "source_component_id": "f580ad6893e5:C0158",
+      "vertices": 20
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0160",
+      "source_component_id": "f580ad6893e5:C0160",
+      "vertices": 14
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0161",
+      "source_component_id": "f580ad6893e5:C0161",
+      "vertices": 24
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0163",
+      "source_component_id": "f580ad6893e5:C0163",
+      "vertices": 19
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0165",
+      "source_component_id": "f580ad6893e5:C0165",
+      "vertices": 18
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0167",
+      "source_component_id": "f580ad6893e5:C0167",
+      "vertices": 17
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0171",
+      "source_component_id": "f580ad6893e5:C0171",
+      "vertices": 16
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0174",
+      "source_component_id": "f580ad6893e5:C0174",
+      "vertices": 12
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0176",
+      "source_component_id": "f580ad6893e5:C0176",
+      "vertices": 24
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0177",
+      "source_component_id": "f580ad6893e5:C0177",
+      "vertices": 20
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0178",
+      "source_component_id": "f580ad6893e5:C0178",
+      "vertices": 20
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0179",
+      "source_component_id": "f580ad6893e5:C0179",
+      "vertices": 18
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0180",
+      "source_component_id": "f580ad6893e5:C0180",
+      "vertices": 18
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0181",
+      "source_component_id": "f580ad6893e5:C0181",
+      "vertices": 18
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0182",
+      "source_component_id": "f580ad6893e5:C0182",
+      "vertices": 16
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0185",
+      "source_component_id": "f580ad6893e5:C0185",
+      "vertices": 14
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0186",
+      "source_component_id": "f580ad6893e5:C0186",
+      "vertices": 13
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0188",
+      "source_component_id": "f580ad6893e5:C0188",
+      "vertices": 13
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0189",
+      "source_component_id": "f580ad6893e5:C0189",
+      "vertices": 13
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0192",
+      "source_component_id": "f580ad6893e5:C0192",
+      "vertices": 10
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0199",
+      "source_component_id": "f580ad6893e5:C0199",
+      "vertices": 12
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0201",
+      "source_component_id": "f580ad6893e5:C0201",
+      "vertices": 12
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0204",
+      "source_component_id": "f580ad6893e5:C0204",
+      "vertices": 12
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0205",
+      "source_component_id": "f580ad6893e5:C0205",
+      "vertices": 12
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0206",
+      "source_component_id": "f580ad6893e5:C0206",
+      "vertices": 12
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0210",
+      "source_component_id": "f580ad6893e5:C0210",
+      "vertices": 4
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0214",
+      "source_component_id": "f580ad6893e5:C0214",
+      "vertices": 6
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0215",
+      "source_component_id": "f580ad6893e5:C0215",
+      "vertices": 6
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0216",
+      "source_component_id": "f580ad6893e5:C0216",
+      "vertices": 6
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0002",
+      "source_component_id": "f580ad6893e5:C0002",
+      "vertices": 426
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0003",
+      "source_component_id": "f580ad6893e5:C0003",
+      "vertices": 620
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0006",
+      "source_component_id": "f580ad6893e5:C0006",
+      "vertices": 378
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0007",
+      "source_component_id": "f580ad6893e5:C0007",
+      "vertices": 462
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0008",
+      "source_component_id": "f580ad6893e5:C0008",
+      "vertices": 415
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0009",
+      "source_component_id": "f580ad6893e5:C0009",
+      "vertices": 307
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0010",
+      "source_component_id": "f580ad6893e5:C0010",
+      "vertices": 285
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0011",
+      "source_component_id": "f580ad6893e5:C0011",
+      "vertices": 347
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0013",
+      "source_component_id": "f580ad6893e5:C0013",
+      "vertices": 330
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0014",
+      "source_component_id": "f580ad6893e5:C0014",
+      "vertices": 260
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0015",
+      "source_component_id": "f580ad6893e5:C0015",
+      "vertices": 256
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0016",
+      "source_component_id": "f580ad6893e5:C0016",
+      "vertices": 218
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0017",
+      "source_component_id": "f580ad6893e5:C0017",
+      "vertices": 228
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0019",
+      "source_component_id": "f580ad6893e5:C0019",
+      "vertices": 312
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0021",
+      "source_component_id": "f580ad6893e5:C0021",
+      "vertices": 199
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0022",
+      "source_component_id": "f580ad6893e5:C0022",
+      "vertices": 172
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0023",
+      "source_component_id": "f580ad6893e5:C0023",
+      "vertices": 248
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0024",
+      "source_component_id": "f580ad6893e5:C0024",
+      "vertices": 187
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0029",
+      "source_component_id": "f580ad6893e5:C0029",
+      "vertices": 215
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0033",
+      "source_component_id": "f580ad6893e5:C0033",
+      "vertices": 151
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0036",
+      "source_component_id": "f580ad6893e5:C0036",
+      "vertices": 191
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0039",
+      "source_component_id": "f580ad6893e5:C0039",
+      "vertices": 145
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0040",
+      "source_component_id": "f580ad6893e5:C0040",
+      "vertices": 159
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0041",
+      "source_component_id": "f580ad6893e5:C0041",
+      "vertices": 156
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0042",
+      "source_component_id": "f580ad6893e5:C0042",
+      "vertices": 162
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0043",
+      "source_component_id": "f580ad6893e5:C0043",
+      "vertices": 161
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0044",
+      "source_component_id": "f580ad6893e5:C0044",
+      "vertices": 126
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0045",
+      "source_component_id": "f580ad6893e5:C0045",
+      "vertices": 153
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0046",
+      "source_component_id": "f580ad6893e5:C0046",
+      "vertices": 138
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0048",
+      "source_component_id": "f580ad6893e5:C0048",
+      "vertices": 120
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0049",
+      "source_component_id": "f580ad6893e5:C0049",
+      "vertices": 101
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0050",
+      "source_component_id": "f580ad6893e5:C0050",
+      "vertices": 109
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0051",
+      "source_component_id": "f580ad6893e5:C0051",
+      "vertices": 138
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0052",
+      "source_component_id": "f580ad6893e5:C0052",
+      "vertices": 151
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0053",
+      "source_component_id": "f580ad6893e5:C0053",
+      "vertices": 128
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0056",
+      "source_component_id": "f580ad6893e5:C0056",
+      "vertices": 108
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0057",
+      "source_component_id": "f580ad6893e5:C0057",
+      "vertices": 107
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0058",
+      "source_component_id": "f580ad6893e5:C0058",
+      "vertices": 119
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0061",
+      "source_component_id": "f580ad6893e5:C0061",
+      "vertices": 108
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0062",
+      "source_component_id": "f580ad6893e5:C0062",
+      "vertices": 94
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0065",
+      "source_component_id": "f580ad6893e5:C0065",
+      "vertices": 93
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0066",
+      "source_component_id": "f580ad6893e5:C0066",
+      "vertices": 102
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0069",
+      "source_component_id": "f580ad6893e5:C0069",
+      "vertices": 111
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0071",
+      "source_component_id": "f580ad6893e5:C0071",
+      "vertices": 84
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0073",
+      "source_component_id": "f580ad6893e5:C0073",
+      "vertices": 70
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0076",
+      "source_component_id": "f580ad6893e5:C0076",
+      "vertices": 72
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0078",
+      "source_component_id": "f580ad6893e5:C0078",
+      "vertices": 64
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0079",
+      "source_component_id": "f580ad6893e5:C0079",
+      "vertices": 58
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0080",
+      "source_component_id": "f580ad6893e5:C0080",
+      "vertices": 77
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0081",
+      "source_component_id": "f580ad6893e5:C0081",
+      "vertices": 76
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0082",
+      "source_component_id": "f580ad6893e5:C0082",
+      "vertices": 72
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0085",
+      "source_component_id": "f580ad6893e5:C0085",
+      "vertices": 67
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0087",
+      "source_component_id": "f580ad6893e5:C0087",
+      "vertices": 57
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0088",
+      "source_component_id": "f580ad6893e5:C0088",
+      "vertices": 59
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0089",
+      "source_component_id": "f580ad6893e5:C0089",
+      "vertices": 56
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0090",
+      "source_component_id": "f580ad6893e5:C0090",
+      "vertices": 56
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0091",
+      "source_component_id": "f580ad6893e5:C0091",
+      "vertices": 55
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0092",
+      "source_component_id": "f580ad6893e5:C0092",
+      "vertices": 46
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0094",
+      "source_component_id": "f580ad6893e5:C0094",
+      "vertices": 52
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0096",
+      "source_component_id": "f580ad6893e5:C0096",
+      "vertices": 53
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0099",
+      "source_component_id": "f580ad6893e5:C0099",
+      "vertices": 47
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0100",
+      "source_component_id": "f580ad6893e5:C0100",
+      "vertices": 50
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0101",
+      "source_component_id": "f580ad6893e5:C0101",
+      "vertices": 55
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0103",
+      "source_component_id": "f580ad6893e5:C0103",
+      "vertices": 46
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0104",
+      "source_component_id": "f580ad6893e5:C0104",
+      "vertices": 39
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0107",
+      "source_component_id": "f580ad6893e5:C0107",
+      "vertices": 42
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0108",
+      "source_component_id": "f580ad6893e5:C0108",
+      "vertices": 40
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0109",
+      "source_component_id": "f580ad6893e5:C0109",
+      "vertices": 39
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0110",
+      "source_component_id": "f580ad6893e5:C0110",
+      "vertices": 28
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0111",
+      "source_component_id": "f580ad6893e5:C0111",
+      "vertices": 66
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0112",
+      "source_component_id": "f580ad6893e5:C0112",
+      "vertices": 50
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0115",
+      "source_component_id": "f580ad6893e5:C0115",
+      "vertices": 42
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0117",
+      "source_component_id": "f580ad6893e5:C0117",
+      "vertices": 37
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0119",
+      "source_component_id": "f580ad6893e5:C0119",
+      "vertices": 34
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0120",
+      "source_component_id": "f580ad6893e5:C0120",
+      "vertices": 31
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0122",
+      "source_component_id": "f580ad6893e5:C0122",
+      "vertices": 33
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0124",
+      "source_component_id": "f580ad6893e5:C0124",
+      "vertices": 29
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0125",
+      "source_component_id": "f580ad6893e5:C0125",
+      "vertices": 28
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0126",
+      "source_component_id": "f580ad6893e5:C0126",
+      "vertices": 37
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0128",
+      "source_component_id": "f580ad6893e5:C0128",
+      "vertices": 30
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0129",
+      "source_component_id": "f580ad6893e5:C0129",
+      "vertices": 26
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0131",
+      "source_component_id": "f580ad6893e5:C0131",
+      "vertices": 30
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0134",
+      "source_component_id": "f580ad6893e5:C0134",
+      "vertices": 33
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0135",
+      "source_component_id": "f580ad6893e5:C0135",
+      "vertices": 33
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0136",
+      "source_component_id": "f580ad6893e5:C0136",
+      "vertices": 29
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0137",
+      "source_component_id": "f580ad6893e5:C0137",
+      "vertices": 29
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0138",
+      "source_component_id": "f580ad6893e5:C0138",
+      "vertices": 29
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0139",
+      "source_component_id": "f580ad6893e5:C0139",
+      "vertices": 28
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0140",
+      "source_component_id": "f580ad6893e5:C0140",
+      "vertices": 28
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0141",
+      "source_component_id": "f580ad6893e5:C0141",
+      "vertices": 26
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0144",
+      "source_component_id": "f580ad6893e5:C0144",
+      "vertices": 23
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0145",
+      "source_component_id": "f580ad6893e5:C0145",
+      "vertices": 32
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0146",
+      "source_component_id": "f580ad6893e5:C0146",
+      "vertices": 29
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0148",
+      "source_component_id": "f580ad6893e5:C0148",
+      "vertices": 28
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0149",
+      "source_component_id": "f580ad6893e5:C0149",
+      "vertices": 25
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0152",
+      "source_component_id": "f580ad6893e5:C0152",
+      "vertices": 23
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0153",
+      "source_component_id": "f580ad6893e5:C0153",
+      "vertices": 22
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0154",
+      "source_component_id": "f580ad6893e5:C0154",
+      "vertices": 20
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0155",
+      "source_component_id": "f580ad6893e5:C0155",
+      "vertices": 18
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0156",
+      "source_component_id": "f580ad6893e5:C0156",
+      "vertices": 16
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0157",
+      "source_component_id": "f580ad6893e5:C0157",
+      "vertices": 32
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0159",
+      "source_component_id": "f580ad6893e5:C0159",
+      "vertices": 15
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0162",
+      "source_component_id": "f580ad6893e5:C0162",
+      "vertices": 21
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0164",
+      "source_component_id": "f580ad6893e5:C0164",
+      "vertices": 18
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0166",
+      "source_component_id": "f580ad6893e5:C0166",
+      "vertices": 18
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0168",
+      "source_component_id": "f580ad6893e5:C0168",
+      "vertices": 20
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0169",
+      "source_component_id": "f580ad6893e5:C0169",
+      "vertices": 18
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0170",
+      "source_component_id": "f580ad6893e5:C0170",
+      "vertices": 17
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0172",
+      "source_component_id": "f580ad6893e5:C0172",
+      "vertices": 14
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0173",
+      "source_component_id": "f580ad6893e5:C0173",
+      "vertices": 14
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0175",
+      "source_component_id": "f580ad6893e5:C0175",
+      "vertices": 12
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0183",
+      "source_component_id": "f580ad6893e5:C0183",
+      "vertices": 16
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0184",
+      "source_component_id": "f580ad6893e5:C0184",
+      "vertices": 16
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0187",
+      "source_component_id": "f580ad6893e5:C0187",
+      "vertices": 13
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0190",
+      "source_component_id": "f580ad6893e5:C0190",
+      "vertices": 13
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0191",
+      "source_component_id": "f580ad6893e5:C0191",
+      "vertices": 10
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0193",
+      "source_component_id": "f580ad6893e5:C0193",
+      "vertices": 16
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0194",
+      "source_component_id": "f580ad6893e5:C0194",
+      "vertices": 16
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0195",
+      "source_component_id": "f580ad6893e5:C0195",
+      "vertices": 14
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0196",
+      "source_component_id": "f580ad6893e5:C0196",
+      "vertices": 14
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0197",
+      "source_component_id": "f580ad6893e5:C0197",
+      "vertices": 14
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0198",
+      "source_component_id": "f580ad6893e5:C0198",
+      "vertices": 14
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0200",
+      "source_component_id": "f580ad6893e5:C0200",
+      "vertices": 12
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0202",
+      "source_component_id": "f580ad6893e5:C0202",
+      "vertices": 9
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0203",
+      "source_component_id": "f580ad6893e5:C0203",
+      "vertices": 12
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0207",
+      "source_component_id": "f580ad6893e5:C0207",
+      "vertices": 8
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0208",
+      "source_component_id": "f580ad6893e5:C0208",
+      "vertices": 8
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0209",
+      "source_component_id": "f580ad6893e5:C0209",
+      "vertices": 7
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0211",
+      "source_component_id": "f580ad6893e5:C0211",
+      "vertices": 6
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0212",
+      "source_component_id": "f580ad6893e5:C0212",
+      "vertices": 6
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0213",
+      "source_component_id": "f580ad6893e5:C0213",
+      "vertices": 6
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0217",
+      "source_component_id": "f580ad6893e5:C0217",
+      "vertices": 6
+    },
+    {
+      "new_component_id": "ba2d283db0be:C0218",
+      "source_component_id": "f580ad6893e5:C0218",
+      "vertices": 6
+    }
+  ]
+}

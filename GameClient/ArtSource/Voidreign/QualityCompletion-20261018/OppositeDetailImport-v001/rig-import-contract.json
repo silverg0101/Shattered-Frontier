@@ -1,0 +1,928 @@
+{
+  "schema_version": 1,
+  "source": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\OppositeDetail-v001\\Voidreign-CompleteHair.blend",
+  "source_sha256": "59e4ee6e26f46924e0ada91adda0345e7e8eb12e0fe3ddc43ad870dc68bbce3a",
+  "exchange_sha256": "546866a948d9a66bff225d131e0750e8ba47a15e1fe99b2ffadac9c0ba213e17",
+  "blender": "5.1.1",
+  "fps": 30,
+  "fps_base": 1.0,
+  "armature": "RIG | complete feature guides",
+  "bones": {
+    "StaticBody": {
+      "parent": null,
+      "connected": false
+    },
+    "Mane_G00_00": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G00_01": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G00_02": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G00_03": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G00_04": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G00_05": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G00_06": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G00_07": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G01_00": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G01_01": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G01_02": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G01_03": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G01_04": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G01_05": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G01_06": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G01_07": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G02_00": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G02_01": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G02_02": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G02_03": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G02_04": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G02_05": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G02_06": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G02_07": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G03_00": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G03_01": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G03_02": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G03_03": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G03_04": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G03_05": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G03_06": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G03_07": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G04_00": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G04_01": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G04_02": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G04_03": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G04_04": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G04_05": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G04_06": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G04_07": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G05_00": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G05_01": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G05_02": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G05_03": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G05_04": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G05_05": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G05_06": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G05_07": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G06_00": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G06_01": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G06_02": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G06_03": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G06_04": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G06_05": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G06_06": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G06_07": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G07_00": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G07_01": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G07_02": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G07_03": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G07_04": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G07_05": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G07_06": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G07_07": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G08_00": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G08_01": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G08_02": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G08_03": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G08_04": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G08_05": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G08_06": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G08_07": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G09_00": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G09_01": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G09_02": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G09_03": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G09_04": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G09_05": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G09_06": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G09_07": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G10_00": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G10_01": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G10_02": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G10_03": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G10_04": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G10_05": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G10_06": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G10_07": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G11_00": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G11_01": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G11_02": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G11_03": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G11_04": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G11_05": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G11_06": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Mane_G11_07": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G00_00": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G00_01": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G00_02": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G00_03": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G00_04": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G00_05": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G00_06": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G00_07": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G00_08": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G00_09": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G00_10": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G01_00": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G01_01": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G01_02": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G01_03": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G01_04": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G01_05": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G01_06": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G01_07": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G01_08": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G01_09": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G01_10": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G02_00": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G02_01": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G02_02": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G02_03": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G02_04": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G02_05": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G02_06": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G02_07": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G02_08": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G02_09": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G02_10": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G03_00": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G03_01": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G03_02": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G03_03": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G03_04": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G03_05": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G03_06": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G03_07": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G03_08": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G03_09": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G03_10": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G04_00": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G04_01": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G04_02": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G04_03": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G04_04": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G04_05": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G04_06": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G04_07": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G04_08": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G04_09": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G04_10": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G05_00": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G05_01": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G05_02": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G05_03": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G05_04": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G05_05": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G05_06": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G05_07": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G05_08": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G05_09": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G05_10": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G06_00": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G06_01": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G06_02": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G06_03": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G06_04": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G06_05": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G06_06": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G06_07": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G06_08": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G06_09": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G06_10": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G07_00": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G07_01": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G07_02": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G07_03": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G07_04": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G07_05": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G07_06": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G07_07": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G07_08": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G07_09": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G07_10": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G08_00": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G08_01": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G08_02": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G08_03": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G08_04": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G08_05": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G08_06": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G08_07": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G08_08": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G08_09": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G08_10": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G09_00": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G09_01": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G09_02": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G09_03": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G09_04": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G09_05": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G09_06": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G09_07": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G09_08": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G09_09": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G09_10": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G10_00": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G10_01": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G10_02": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G10_03": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G10_04": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G10_05": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G10_06": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G10_07": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G10_08": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G10_09": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G10_10": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G11_00": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G11_01": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G11_02": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G11_03": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G11_04": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G11_05": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G11_06": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G11_07": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G11_08": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G11_09": {
+      "parent": "StaticBody",
+      "connected": false
+    },
+    "Tail_G11_10": {
+      "parent": "StaticBody",
+      "connected": false
+    }
+  }
+}

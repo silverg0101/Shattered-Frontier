@@ -1,0 +1,14 @@
+{
+  "failed_runs": [
+    "JointTopologyInspectionFailure-v001",
+    "JointTopologyInspectionFailure-v002"
+  ],
+  "cause": "Saved walk assembly has declared -0.11mZ offset; initial rest-coordinate assertion correctly rejected direct comparison.",
+  "correction": "Apply inverse declared assembly offset at frame1, then assert full indexed mesh rest correspondence within unchanged tolerance.",
+  "earlier_atlases": {
+    "v001": "True3D landmarks are occluded by hoof surfaces; topology overlays retained.",
+    "v002": "Orthographic projected guides expose joints, but unrelated foot markers can overlap some views.",
+    "v003": "Per-view visible_landmarks shows only the intended foot; four final images inspected."
+  },
+  "source_modified": false
+}

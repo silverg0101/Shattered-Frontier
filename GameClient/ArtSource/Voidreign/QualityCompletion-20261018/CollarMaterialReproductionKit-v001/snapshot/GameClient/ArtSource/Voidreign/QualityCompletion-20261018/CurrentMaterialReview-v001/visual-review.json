@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "status": "material-closeups-reviewed-not-accepted",
+  "viewed": [
+    "Head-Neutral",
+    "Head-Opposing",
+    "Saddle-Neutral",
+    "Saddle-Opposing"
+  ],
+  "observations": [
+    "Head ivory, dark mane and saddle stitching remain recognizable in the current source.",
+    "Changing light positions strongly changes brightness. Existing projected albedo includes painted shading/detail; paired renders alone cannot measure or remove it.",
+    "Eye cavity is red but its source shader has zero emission strength. This does not implement independent eye glow.",
+    "Some saddle chain/trim detail remains painted over fused geometry; no normal map supplies fine relief."
+  ],
+  "limitations": [
+    "Positions are reversed, not a calibrated matched-illuminance experiment.",
+    "Side+X closeups only; no new opposite-side, unlit or channel renders in this attempt.",
+    "No image/texture/material/source changes or quality promotion."
+  ],
+  "next": "Author explicit material-class/eye masks and a declared relief/effects requirement before a new material correction."
+}

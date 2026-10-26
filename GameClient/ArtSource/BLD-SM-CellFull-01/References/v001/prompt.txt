@@ -1,0 +1,38 @@
+CONCEPT SHEET — built-in image_gen, 2026-10-18.
+
+Use case: stylized-concept
+Asset type: full-cell reusable construction block, stone-masonry kit concept sheet.
+Input image 1 is a style/material cue only: weathered gray-brown local stone and restrained moss. Ignore the tall waystone silhouette, ornament, scale, geometry, joints and composition.
+Scene/backdrop: uniform neutral warm-gray studio background.
+Subject: exactly one solid full cube, intended 0.5 x 0.5 x 0.5 m cell, made of modest coursed stone masonry. Six equal square faces, full solid volume, sharp straight cube outline.
+Style/medium: realistic fantasy architectural reference, restrained hand-cut fieldstone courses, pale gray-brown Greenlands stone, subtle mortar seams, low ornament.
+Composition/framing: technical reference sheet with six orthographic square face views of the same cube: exterior, interior, top, underside, and two exposed ends; plus one neutral wireframe cube and contact-face silhouette. Identical square proportions and aligned scale. The stated dimensions are design targets, not measurements from pixels.
+Materials/textures: all six faces use coherent course scale and stone language; subtle difference between exterior and interior finish while keeping every face planar.
+Constraints: geometry is exactly the same full-cell envelope and six planar contacts as the rough-timber reference. No cracks suggesting damage, no moss, no medallion, no tall silhouette, no arches or openings, no protruding blocks or trim, no metal, no extra parts. Stone appearance does not change gameplay values beyond the existing stone-masonry tier.
+Avoid: wall section, monument, pillar, environment, perspective mismatch, text beyond exterior/interior/top/underside/end A/end B/0.5 m target, watermark.
+Reference image: `GameClient/ArtSource/GreenlandsWaystone/Waystone-Turnaround.png`, material cue only.
+
+CLEAN ASSET VIEW — initial generation rejected for protruding course stones.
+
+Use case: stylized-concept
+Asset type: clean full-asset view for one reusable stone-masonry construction component.
+Input image 1 is the selected stone material concept sheet; preserve its restrained gray-brown hand-cut stone and mortar appearance only. Ignore the sheet and labels.
+Scene/backdrop: uniform light neutral gray studio.
+Subject: exactly one solid full cube, a proposed 0.5 x 0.5 x 0.5 m stone-masonry cell, full solid volume, equal edge lengths, square planar faces.
+Style/medium: realistic fantasy architectural game asset, modest coursed local stone, neat mortar joints, restrained weathering.
+Composition/framing: one complete isolated cube in clear three-quarter view, top and two sides visible, ample margins, soft neutral contact shadow. Crisp silhouette.
+Constraints: keep all courses and stones strictly within the square cube envelope; no larger base, projecting trim, holes or additional props. This is only the stone appearance on the same geometry/contact frame as rough timber, not a gameplay upgrade claim. No floor slab, text or scenery.
+Initial image: `C:/Users/grego/.codex/generated_images/01a15000-e13f-7213-9ec0-df2684201405/exec-9da232bf-2c8e-4d06-a80b-05f5f3d805c0.png`; SHA-256 `5A1AC89952BA4AC1A624AC5729F35533F973AAD67893DAA995466241406A5B4A`.
+Review: rejected; irregular edge stones projected beyond the intended clean cube envelope.
+
+CLEAN ASSET VIEW — selected correction, built-in image_gen, 2026-10-18. Input image 1 is the concept-sheet material cue.
+
+Use case: stylized-concept
+Asset type: corrected clean full-asset view for a reusable stone-masonry construction cube.
+Input image 1: concept sheet supplies only gray-brown stone color and course scale; do not copy irregular outlines from stones in that sheet.
+Scene/backdrop: plain uniform light gray.
+Subject: exactly one mathematically simple full cube, equal 0.5 m target edge lengths, solid full-cell volume.
+Style/medium: restrained hand-cut masonry appearance. Thin recessed mortar lines and shallow stone-face variation may be visible as surface texture.
+Composition/framing: one isolated cube, straight crisp uninterrupted square silhouette and planar faces, three-quarter view, top and two side faces visible, ample margins.
+Constraints: EVERY stone block and mortar groove is flush within the same perfectly straight outer cube planes. No stone overlaps a face boundary, no projecting or rounded corner blocks, no chipped edges, no uneven courses breaking the silhouette, no bevels, no base, no extra pieces. Appearance only; geometry/profile/contacts unchanged.
+Avoid: jagged silhouette, stepped corners, protruding stones, sculptural boulder, environment, labels, watermark.

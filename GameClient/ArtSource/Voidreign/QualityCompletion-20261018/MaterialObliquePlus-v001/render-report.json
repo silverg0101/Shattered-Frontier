@@ -1,0 +1,22 @@
+{
+  "source": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\OppositeDetail-v001\\Voidreign-CompleteHair.blend",
+  "source_sha256": "59e4ee6e26f46924e0ada91adda0345e7e8eb12e0fe3ddc43ad870dc68bbce3a",
+  "guides_sha256": "abab172d4890edc076998947a2c1bb2189c67682ddb5742f13e5c534b24082c7",
+  "opposing_light": false,
+  "yaw_degrees": 30.0,
+  "cpu_only": true,
+  "pose": "REST",
+  "frames": [
+    {
+      "view": "Head-NegX",
+      "image": "Head-NegX.png",
+      "sha256": "4634308c8f0ead797b4a3465d684529ec82374f81ae6afd7f2975f6130120c7b"
+    },
+    {
+      "view": "Saddle-NegX",
+      "image": "Saddle-NegX.png",
+      "sha256": "63db145b32de4836faa86368802131a44cb03dd1555387edd6785ebf5b98c34a"
+    }
+  ],
+  "scope": "Material appearance inspection only; inherited geometry/motion defects remain"
+}

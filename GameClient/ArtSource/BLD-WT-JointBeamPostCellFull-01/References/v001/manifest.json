@@ -1,0 +1,71 @@
+{
+  "asset_id": "BLD-WT-JointBeamPostCellFull-01",
+  "version": "v001",
+  "batch": "construction-worked-timber-interfaces-35",
+  "source_references": [
+    "docs/art-templates/player-construction-kit-contract.md §§3.2, 8–9",
+    "docs/art-templates/asset-lists/construction-kit-matrix-07.md named worked-timber interface role"
+  ],
+  "dependency": "KIT-WT appearance and source geometry/contact/clearance definitions; gameplay tier unchanged",
+  "exact_prompts": {
+    "concept_sheet": "Worked-timber beam-to-post joint concept sheet: one horizontal timber beam ends at a vertical post with a visible fitted mortise-and-tenon style seat, all within the documented cell contact envelopes. Show front, side, top and isometric details; wood only, no added brackets or hardware, no text. Structural appearance proposal only; no load capacity inferred.",
+    "asset_view": "Isolated clean product study: a vertical worked-oak post and a short horizontal beam ending flush into a notched seat on the post. Show only the immediate joint, beam extends just a short distance, post square section, no extra pieces, no brackets, no text, light background. Concept appearance only."
+  },
+  "images": [
+    {
+      "file": "concept-sheet.png",
+      "width_px": 1536,
+      "height_px": 1024,
+      "mode": "RGB",
+      "format": "PNG",
+      "sha256": "2c5a15c1290c7d102efd9a46182b21b8bc478998475d58ad83c36708bbd50e14"
+    },
+    {
+      "file": "asset-view.png",
+      "width_px": 1145,
+      "height_px": 1374,
+      "mode": "RGB",
+      "format": "PNG",
+      "sha256": "3a918f455d33d53880b2520ee5a92bd22cd086447d30934fc99ecf0a4fed2b4d"
+    }
+  ],
+  "visual_review": "Beam still extends substantially beyond compact module envelope; retain as a join-detail proposal with clear fit issue, do not approve for modeling without re-mapping to source shape.",
+  "compatibility": "Visual review does not establish numerical mesh, collision, contact, clearance, support or runtime compatibility. Gameplay material properties are unchanged.",
+  "generation_history": [
+    {
+      "file": "exec-5968bd1b-124d-49cb-9c69-ed0a4289129c.png",
+      "selected": true
+    },
+    {
+      "file": "exec-d1707e82-9166-4d91-8b6d-13c4eb9c3bc4.png",
+      "selected": true
+    }
+  ],
+  "created_utc": "2026-10-18",
+  "historical_status_2026_10_18_before_buildability_review": "image-complete; proposal; visual cautions recorded",
+  "status": "appearance/style evidence only; structural route blocked",
+  "current_route_review": {
+    "date": "2026-10-18",
+    "route": "Blocked; no approved canonical-component, exposed-treatment or attachment mapping. Existing images are join-detail/style evidence only.",
+    "units": "metres assumed for eventual construction frame; image scale is not evidence",
+    "grid_m": 0.5,
+    "axes_pivot": "not assigned to image members; any future cell-full member would require approved minimum-grid-corner frame and authored rotation allowlist",
+    "member_boundaries": "unresolved; do not infer from planks/panels",
+    "exposed_mating_faces": "Concept sheet depicts mortise/tenon notches and an extended beam; clean view has a post and beam extending beyond the frame. No contract shape mapping, member boundaries, scale, dimensions, end/contact definitions, axes/pivots, rotations or clearances. Prior review already cautioned that beam extent exceeds a compact module envelope.",
+    "named_counterparts": "No approved counterpart mapping. Do not infer a post, beam, notch, gameplay tier, attachment or indivisible prefab from the image.",
+    "visual_finding": "Concept sheet depicts mortise/tenon notches and an extended beam; clean view has a post and beam extending beyond the frame. No contract shape mapping, member boundaries, scale, dimensions, end/contact definitions, axes/pivots, rotations or clearances. Prior review already cautioned that beam extent exceeds a compact module envelope.",
+    "reason": "Preserve two selected images as style/detail evidence; block structural readiness pending an approved member or attachment definition."
+  },
+  "buildability_review_history": [
+    {
+      "date": "2026-10-18",
+      "previous_status": "image-complete; proposal; visual cautions recorded",
+      "current_status": "appearance/style evidence only; structural route blocked",
+      "route": "Blocked; no approved canonical-component, exposed-treatment or attachment mapping. Existing images are join-detail/style evidence only.",
+      "selected_images": "Preserved exactly two historical selected images; no replacement generated.",
+      "finding": "Concept sheet depicts mortise/tenon notches and an extended beam; clean view has a post and beam extending beyond the frame. No contract shape mapping, member boundaries, scale, dimensions, end/contact definitions, axes/pivots, rotations or clearances. Prior review already cautioned that beam extent exceeds a compact module envelope.",
+      "counterparts": "No approved counterpart mapping. Do not infer a post, beam, notch, gameplay tier, attachment or indivisible prefab from the image.",
+      "next_action": "Preserve two selected images as style/detail evidence; block structural readiness pending an approved member or attachment definition."
+    }
+  ]
+}

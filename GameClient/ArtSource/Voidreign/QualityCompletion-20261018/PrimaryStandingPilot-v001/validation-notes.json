@@ -1,0 +1,12 @@
+{
+  "initial_validation_failure": "Source path dictionary key differed only by slash spelling from producer input_sha256; no output folders created.",
+  "preserved_profiles": [
+    "voidreign-standing-cache-check-20261019.json",
+    "voidreign-standing-strain-20261019.json"
+  ],
+  "corrected_profiles": [
+    "voidreign-standing-cache-check-v002-20261019.json",
+    "voidreign-standing-strain-v002-20261019.json"
+  ],
+  "acceptance_limits_changed": false
+}

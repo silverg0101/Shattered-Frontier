@@ -1,0 +1,457 @@
+{
+  "status": "needs-review",
+  "started_utc": "2026-10-18T21:28:50.699563+00:00",
+  "scope": "CPU diagnostic reproduction; no semantic or engine acceptance",
+  "python": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "blender": "Blender 5.1.1",
+  "lock_sha256": "39d590b40c5a1b7383d38412169e40c8e147c1b963d4302b9ddc198e426798ab",
+  "stages": [
+    {
+      "stage": "guides",
+      "command": [
+        "C:\\Users\\grego\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "C:\\Projects\\Shattered-Frontier\\tools\\Build-FeatureGuides.py",
+        "--selection",
+        "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\SemanticSelection-v001\\selection-report.json",
+        "--attachments",
+        "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\AttachmentProposals-v001\\attachment-proposals.json",
+        "--motion-profile",
+        "C:\\Projects\\Shattered-Frontier\\docs\\art-templates\\model-profiles\\voidreign-complete-hair-motion-v003-20261018.json",
+        "--allow-proposed-bindings",
+        "--output",
+        "C:\\Projects\\Shattered-Frontier\\Artifacts\\Art\\Voidreign\\quality-completion-20261018\\Reproduction-v001\\Guides"
+      ],
+      "log": "guides.log",
+      "status": "completed",
+      "exit_code": 0
+    },
+    {
+      "stage": "simulation",
+      "command": [
+        "C:\\Users\\grego\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+        "C:\\Projects\\Shattered-Frontier\\tools\\Simulate-FeatureGuides.py",
+        "--guides",
+        "C:\\Projects\\Shattered-Frontier\\Artifacts\\Art\\Voidreign\\quality-completion-20261018\\Reproduction-v001\\Guides\\guides.json",
+        "--config",
+        "C:\\Projects\\Shattered-Frontier\\docs\\art-templates\\model-profiles\\voidreign-complete-hair-motion-v003-20261018.json",
+        "--output",
+        "C:\\Projects\\Shattered-Frontier\\Artifacts\\Art\\Voidreign\\quality-completion-20261018\\Reproduction-v001\\Simulation"
+      ],
+      "log": "simulation.log",
+      "status": "completed",
+      "exit_code": 0
+    },
+    {
+      "stage": "rig",
+      "command": [
+        "C:\\Program Files\\Blender Foundation\\Blender 5.1\\blender.exe",
+        "--background",
+        "--factory-startup",
+        "--threads",
+        "4",
+        "--python-exit-code",
+        "1",
+        "--python",
+        "C:\\Projects\\Shattered-Frontier\\tools\\Build-FeatureMotionRig.py",
+        "--",
+        "--source",
+        "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\RootRepair-v003\\Voidreign-HairPrototype.blend",
+        "--guide-report",
+        "C:\\Projects\\Shattered-Frontier\\Artifacts\\Art\\Voidreign\\quality-completion-20261018\\Reproduction-v001\\Guides\\guide-report.json",
+        "--simulation",
+        "C:\\Projects\\Shattered-Frontier\\Artifacts\\Art\\Voidreign\\quality-completion-20261018\\Reproduction-v001\\Simulation",
+        "--config",
+        "C:\\Projects\\Shattered-Frontier\\docs\\art-templates\\model-profiles\\voidreign-complete-hair-motion-v003-20261018.json",
+        "--output",
+        "C:\\Projects\\Shattered-Frontier\\Artifacts\\Art\\Voidreign\\quality-completion-20261018\\Reproduction-v001\\Rig"
+      ],
+      "log": "rig.log",
+      "status": "completed",
+      "exit_code": 0
+    },
+    {
+      "stage": "surfaces",
+      "command": [
+        "C:\\Program Files\\Blender Foundation\\Blender 5.1\\blender.exe",
+        "--background",
+        "--factory-startup",
+        "--threads",
+        "4",
+        "--python-exit-code",
+        "1",
+        "--python",
+        "C:\\Projects\\Shattered-Frontier\\tools\\Check-FeatureMotionSurfaces.py",
+        "--",
+        "--source",
+        "C:\\Projects\\Shattered-Frontier\\Artifacts\\Art\\Voidreign\\quality-completion-20261018\\Reproduction-v001\\Rig\\Voidreign-CompleteHair.blend",
+        "--guide-report",
+        "C:\\Projects\\Shattered-Frontier\\Artifacts\\Art\\Voidreign\\quality-completion-20261018\\Reproduction-v001\\Guides\\guide-report.json",
+        "--config",
+        "C:\\Projects\\Shattered-Frontier\\docs\\art-templates\\model-profiles\\voidreign-complete-hair-motion-v003-20261018.json",
+        "--profile",
+        "C:\\Projects\\Shattered-Frontier\\docs\\art-templates\\model-profiles\\voidreign-hair-surface-check-20261018.json",
+        "--output",
+        "C:\\Projects\\Shattered-Frontier\\Artifacts\\Art\\Voidreign\\quality-completion-20261018\\Reproduction-v001\\Surfaces"
+      ],
+      "log": "surfaces.log",
+      "status": "completed",
+      "exit_code": 0
+    },
+    {
+      "stage": "import-contract",
+      "command": [
+        "C:\\Program Files\\Blender Foundation\\Blender 5.1\\blender.exe",
+        "--background",
+        "--factory-startup",
+        "--threads",
+        "4",
+        "--python-exit-code",
+        "1",
+        "--python",
+        "C:\\Projects\\Shattered-Frontier\\tools\\BlenderRigImport.py",
+        "--",
+        "capture",
+        "--source",
+        "C:\\Projects\\Shattered-Frontier\\Artifacts\\Art\\Voidreign\\quality-completion-20261018\\Reproduction-v001\\Rig\\Voidreign-CompleteHair.blend",
+        "--exchange",
+        "C:\\Projects\\Shattered-Frontier\\Artifacts\\Art\\Voidreign\\quality-completion-20261018\\Reproduction-v001\\Rig\\Voidreign-CompleteHair.fbx",
+        "--armature",
+        "RIG | complete feature guides",
+        "--output",
+        "C:\\Projects\\Shattered-Frontier\\Artifacts\\Art\\Voidreign\\quality-completion-20261018\\Reproduction-v001\\Imports\\rig-import-contract.json"
+      ],
+      "log": "import-contract.log",
+      "status": "completed",
+      "exit_code": 0
+    },
+    {
+      "stage": "exchange",
+      "command": [
+        "C:\\Program Files\\Blender Foundation\\Blender 5.1\\blender.exe",
+        "--background",
+        "--factory-startup",
+        "--threads",
+        "4",
+        "--python-exit-code",
+        "1",
+        "--python",
+        "C:\\Projects\\Shattered-Frontier\\tools\\Validate-VoidreignRigImport.py",
+        "--",
+        "--folder",
+        "C:\\Projects\\Shattered-Frontier\\Artifacts\\Art\\Voidreign\\quality-completion-20261018\\Reproduction-v001\\Rig",
+        "--output",
+        "C:\\Projects\\Shattered-Frontier\\Artifacts\\Art\\Voidreign\\quality-completion-20261018\\Reproduction-v001\\Imports",
+        "--name",
+        "Voidreign-CompleteHair",
+        "--profile",
+        "C:\\Projects\\Shattered-Frontier\\docs\\art-templates\\model-profiles\\voidreign-complete-hair-import-20261018.json"
+      ],
+      "log": "exchange.log",
+      "status": "completed",
+      "exit_code": 0
+    },
+    {
+      "stage": "render-diagnostic",
+      "command": [
+        "C:\\Program Files\\Blender Foundation\\Blender 5.1\\blender.exe",
+        "--background",
+        "--factory-startup",
+        "--threads",
+        "4",
+        "--python-exit-code",
+        "1",
+        "--python",
+        "C:\\Projects\\Shattered-Frontier\\tools\\Render-FeatureMotion.py",
+        "--",
+        "--source",
+        "C:\\Projects\\Shattered-Frontier\\Artifacts\\Art\\Voidreign\\quality-completion-20261018\\Reproduction-v001\\Rig\\Voidreign-CompleteHair.blend",
+        "--object",
+        "geometry_0",
+        "--output",
+        "C:\\Projects\\Shattered-Frontier\\Artifacts\\Art\\Voidreign\\quality-completion-20261018\\Reproduction-v001\\Diagnostic",
+        "--frame",
+        "1",
+        "--frame",
+        "60",
+        "--frame",
+        "120",
+        "--frame",
+        "180",
+        "--frame",
+        "240",
+        "--frame",
+        "300",
+        "--diagnostic"
+      ],
+      "log": "render-diagnostic.log",
+      "status": "completed",
+      "exit_code": 0
+    },
+    {
+      "stage": "render-material",
+      "command": [
+        "C:\\Program Files\\Blender Foundation\\Blender 5.1\\blender.exe",
+        "--background",
+        "--factory-startup",
+        "--threads",
+        "4",
+        "--python-exit-code",
+        "1",
+        "--python",
+        "C:\\Projects\\Shattered-Frontier\\tools\\Render-FeatureMotion.py",
+        "--",
+        "--source",
+        "C:\\Projects\\Shattered-Frontier\\Artifacts\\Art\\Voidreign\\quality-completion-20261018\\Reproduction-v001\\Rig\\Voidreign-CompleteHair.blend",
+        "--object",
+        "geometry_0",
+        "--output",
+        "C:\\Projects\\Shattered-Frontier\\Artifacts\\Art\\Voidreign\\quality-completion-20261018\\Reproduction-v001\\Material",
+        "--frame",
+        "1",
+        "--frame",
+        "60",
+        "--frame",
+        "120",
+        "--frame",
+        "180",
+        "--frame",
+        "240",
+        "--frame",
+        "300"
+      ],
+      "log": "render-material.log",
+      "status": "completed",
+      "exit_code": 0
+    }
+  ],
+  "surface_status": "needs-review",
+  "exchange_status": "passed-default-imports",
+  "finished_utc": "2026-10-18T21:31:46.770960+00:00",
+  "outputs": [
+    {
+      "path": "Diagnostic\\0001.png",
+      "sha256": "66e0e33cdbb8a875b91ca7f6cf3702160c7eafb113859eb53698fe5aaeb0bc8a"
+    },
+    {
+      "path": "Diagnostic\\0002.png",
+      "sha256": "3c0a0c076a17983a9f6e9cee4b60f38d85422c9373ebe8f661d6d6d6ac7a81e5"
+    },
+    {
+      "path": "Diagnostic\\0003.png",
+      "sha256": "a862582231337343a36fe294c0667fc034e557857b446ee75df5be93d407706d"
+    },
+    {
+      "path": "Diagnostic\\0004.png",
+      "sha256": "3d8c43c778876073024c22e7e28a9cbe1f6cb0f0a47843250c6a3244b94c95db"
+    },
+    {
+      "path": "Diagnostic\\0005.png",
+      "sha256": "4350f1d70b666625de4ee40b0fc59a037a344bd8b6276452f947f5c8fc6e0e6c"
+    },
+    {
+      "path": "Diagnostic\\0006.png",
+      "sha256": "231fcc246c42a61f49ceb6b564b1848f09d39ddd6e3f99c783507dab33d10c57"
+    },
+    {
+      "path": "Diagnostic\\render-report.json",
+      "sha256": "b7722bf67d688890cbd86ac353e679cc4967a34b6189e531468b0df31e3cf1f5"
+    },
+    {
+      "path": "exchange.log",
+      "sha256": "8cc4637b2b21492ce08b5f0ea47dcf3307518c1cab1e47ce4b96b745c49c7103"
+    },
+    {
+      "path": "Guides\\guide-report.json",
+      "sha256": "c81296acc894f38262b0218839a6d45aff3793c3169e90d86550649f0e8f0099"
+    },
+    {
+      "path": "Guides\\guides.json",
+      "sha256": "f8f8c15cfa47fcd80ea32cf823227cc5df5d063e0baa1e4bc72de99e77701621"
+    },
+    {
+      "path": "Guides\\motion-profile.json",
+      "sha256": "9df3ed982c0f5f571210a98d42c1e6b395b80713c139f0b7b162ad861d5cca47"
+    },
+    {
+      "path": "Guides\\tool-source.py",
+      "sha256": "56dadce677bd389b489903f3ab48c15a5f0e31fb67633ce07e067065734b789d"
+    },
+    {
+      "path": "Guides\\weight-field.npz",
+      "sha256": "9ed4e4972047c53c56568925d475fd8db45f58c1d737e626246078390445321c"
+    },
+    {
+      "path": "guides.log",
+      "sha256": "e0ce5dfffe3fcd9e08f5422b522a707a774f4f3ddba3990d3a2f5fc999a489d4"
+    },
+    {
+      "path": "import-contract.log",
+      "sha256": "c4e8d47f57e3862a786b902baec7c908d7446bbfd7784f6930c0b1597c51ad7d"
+    },
+    {
+      "path": "Imports\\rig-import-contract.json",
+      "sha256": "df09b607d7453be62cfa24b5589fe1949b2ee0a929a4362f956dfa2bb5318834"
+    },
+    {
+      "path": "Imports\\validation.json",
+      "sha256": "0c9dc8f8a47161d408cad28bb09d5e7cf4f38e5661662dcd896598e0622f7300"
+    },
+    {
+      "path": "Imports\\Voidreign-FBX-Reimport.blend",
+      "sha256": "3935b3fc93dc997a414bf2365aada560fda40ad8d0446a44f4ad9deb82f7078b"
+    },
+    {
+      "path": "Inputs\\docs\\art-templates\\model-profiles\\voidreign-complete-hair-import-20261018.json",
+      "sha256": "2084f5aaa1bb1379443e076cd8cf32415088f1784d616cc45a05353f8ef6c5d9"
+    },
+    {
+      "path": "Inputs\\docs\\art-templates\\model-profiles\\voidreign-complete-hair-motion-v003-20261018.json",
+      "sha256": "9df3ed982c0f5f571210a98d42c1e6b395b80713c139f0b7b162ad861d5cca47"
+    },
+    {
+      "path": "Inputs\\docs\\art-templates\\model-profiles\\voidreign-hair-selections-v003-20261018.json",
+      "sha256": "558f0bb861238b8150450a3495ee83fca561d3b72b979c3cd6aa92041ddd18f9"
+    },
+    {
+      "path": "Inputs\\docs\\art-templates\\model-profiles\\voidreign-hair-surface-check-20261018.json",
+      "sha256": "f42b54b785653cd13262405b39e26a48e1fc606edeafb392b1372121e29e1abb"
+    },
+    {
+      "path": "Inputs\\tools\\BlenderRigImport.py",
+      "sha256": "8227b3e6cc8e91d6db81e5f05b8307172f0c3227a65de5e03456cbbd608d2207"
+    },
+    {
+      "path": "Inputs\\tools\\Build-FeatureGuides.py",
+      "sha256": "56dadce677bd389b489903f3ab48c15a5f0e31fb67633ce07e067065734b789d"
+    },
+    {
+      "path": "Inputs\\tools\\Build-FeatureMotionRig.py",
+      "sha256": "07cc0375894c1458beffa94ba653e88fea8e69478ffb55d8367ed97bd0340310"
+    },
+    {
+      "path": "Inputs\\tools\\Check-FeatureMotionSurfaces.py",
+      "sha256": "ad7cb6f80dd5c2589bc5edfbd0f90b94135c6f3542c024333e37cffb610a0f6a"
+    },
+    {
+      "path": "Inputs\\tools\\Render-FeatureMotion.py",
+      "sha256": "2a16049f55c004bc70f2a28ccfa2201cc7a4876c60550123e24b99dfb191952a"
+    },
+    {
+      "path": "Inputs\\tools\\Run-VoidreignQuality.py",
+      "sha256": "424378337887cd8146e6a4b3e7c141f7c68961bcd4e8b49e927f2ac1401e4fa7"
+    },
+    {
+      "path": "Inputs\\tools\\Simulate-FeatureGuides.py",
+      "sha256": "bbb17e6310298993f45e6fbf6b6abadb8824f35969eeb4dd2dfbbe8d3ec6baab"
+    },
+    {
+      "path": "Inputs\\tools\\Validate-VoidreignRigImport.py",
+      "sha256": "7563f72c7c1ca21da46ace5ddcaf2ae9ff318f8baf2a8e8f455511a22cc0c504"
+    },
+    {
+      "path": "Material\\0001.png",
+      "sha256": "dc6ec0d87d3d55f5b91b3d9dcb251bc6f85727d4ccb86265f38f4e5d74190733"
+    },
+    {
+      "path": "Material\\0002.png",
+      "sha256": "635ea8bd0fd99eaaf6f4037198e04a575014342fe91c49d0c00a943d9675f9f4"
+    },
+    {
+      "path": "Material\\0003.png",
+      "sha256": "391f5750e7ab715643152703127aa4f16dcfc6abd40625c4697b01b31a1f8f8a"
+    },
+    {
+      "path": "Material\\0004.png",
+      "sha256": "06bef93b260db82aa93ab40d973d843a6efbcc5fa4a823cbeea29e9e3c37b2fb"
+    },
+    {
+      "path": "Material\\0005.png",
+      "sha256": "0991ca73062e6f185466e25d54dee1dd133e6cdb244ee1cc59efb2b04c9b6692"
+    },
+    {
+      "path": "Material\\0006.png",
+      "sha256": "fbfd3d152d9fd50c3bccf54296e9313be49d40b15cb7b5eff811d372658226e9"
+    },
+    {
+      "path": "Material\\render-report.json",
+      "sha256": "ffff6073557f070cfa356af8c62574a02ab997ec52e0db579c27727f6cc9b58e"
+    },
+    {
+      "path": "render-diagnostic.log",
+      "sha256": "a4e7f098fa261a1cdd1c2c4fbbc9674a6a3abb5ec6ff6be7a4c110e64ef15c0f"
+    },
+    {
+      "path": "render-material.log",
+      "sha256": "f8846d9666aed2a4ff8c301deb7b211c5414055731cc0eebf513f97601289517"
+    },
+    {
+      "path": "reproduction-lock.json",
+      "sha256": "39d590b40c5a1b7383d38412169e40c8e147c1b963d4302b9ddc198e426798ab"
+    },
+    {
+      "path": "Rig\\motion-profile.json",
+      "sha256": "9df3ed982c0f5f571210a98d42c1e6b395b80713c139f0b7b162ad861d5cca47"
+    },
+    {
+      "path": "Rig\\rig-report.json",
+      "sha256": "b7a16e404d9c660b74eda3e081c362760fe0d92dfe73c90658c5dd67365bfbf1"
+    },
+    {
+      "path": "Rig\\tool-source.py",
+      "sha256": "07cc0375894c1458beffa94ba653e88fea8e69478ffb55d8367ed97bd0340310"
+    },
+    {
+      "path": "Rig\\Voidreign-CompleteHair.blend",
+      "sha256": "c6dac5d30e1272a4fb54ceb86b7a10bcea41a079e07f1b1589c67ad234c84d0b"
+    },
+    {
+      "path": "Rig\\Voidreign-CompleteHair.fbx",
+      "sha256": "9c678b2471c14a549820cff12223b1b1b6812736948fb5cae8c88b35ea6436c4"
+    },
+    {
+      "path": "Rig\\Voidreign-CompleteHair.glb",
+      "sha256": "fad67cb279093768c2d25859ffe1cf6aa6af03bc14d20daf73158d2444dc528a"
+    },
+    {
+      "path": "rig.log",
+      "sha256": "f1ad53393b8ad3a552645230767543f57f489553400961dd7f232439669332b8"
+    },
+    {
+      "path": "Simulation\\guides.json",
+      "sha256": "f8f8c15cfa47fcd80ea32cf823227cc5df5d063e0baa1e4bc72de99e77701621"
+    },
+    {
+      "path": "Simulation\\motion-profile.json",
+      "sha256": "9df3ed982c0f5f571210a98d42c1e6b395b80713c139f0b7b162ad861d5cca47"
+    },
+    {
+      "path": "Simulation\\simulation-report.json",
+      "sha256": "082d44268138c8876a5e679391dda4d381764a82f13766c97875df2d7d6c7093"
+    },
+    {
+      "path": "Simulation\\tool-source.py",
+      "sha256": "bbb17e6310298993f45e6fbf6b6abadb8824f35969eeb4dd2dfbbe8d3ec6baab"
+    },
+    {
+      "path": "Simulation\\trajectory.npz",
+      "sha256": "18b5171e372db733ae4155ebcac1e2ed87a1202d5cb89235efa23db022f04530"
+    },
+    {
+      "path": "simulation.log",
+      "sha256": "81c3ab9d5e78d17c146b5cb81f69168773cf4dbed7f7022fa83b689aafa0c8d3"
+    },
+    {
+      "path": "Surfaces\\surface-report.json",
+      "sha256": "1631016957057b263c06a57dc6ee501ea9bda258029c6782f1bd85bdd5b950f5"
+    },
+    {
+      "path": "Surfaces\\surface-review.npz",
+      "sha256": "c7cb30df4726e80f512c0dc7a2d9198a2d6af670a78428b0c1d29a4ec67401e5"
+    },
+    {
+      "path": "surfaces.log",
+      "sha256": "ce63734c8784abeadc5b3a0dc3199950604cbfafcbd1c3e0d79dd3e5a18e774c"
+    }
+  ]
+}

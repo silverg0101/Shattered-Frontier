@@ -1,0 +1,100 @@
+{
+  "lock_id": "construction-material-v008-lock",
+  "created_utc": "2026-10-19T03:30:00Z",
+  "runtime": {
+    "blender_executable": "C:/Program Files/Blender Foundation/Blender 5.1/blender.exe",
+    "blender_version": "5.1.1",
+    "system_python": "3.12.10",
+    "pillow": "12.2.0",
+    "numpy": "2.4.3",
+    "render_device": "CPU",
+    "gpu_inference": "not used"
+  },
+  "generator": {
+    "path": "tools/Build-ConstructionMaterialBatch.py",
+    "sha256": "940f29b3d07c3951101ce4d6487189f518f4a86933b1470271eeb9a42485c7bb",
+    "validator_path": "tools/Validate-ConstructionMaterialModel.py",
+    "validator_sha256": "4d5c5e7fab5b29f30da5d89998687e7ec7e196fd121b9fd890f87faa329e3f43"
+  },
+  "profile": {
+    "path": "docs/art-templates/model-profiles/construction-material-prototype-20261019-b.json",
+    "sha256": "e701c856631b15a7cab7646a6667be6ddace99d6d1a12ee9baf8b66bcf421ccc"
+  },
+  "batch_settings": {
+    "output_path": "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v008",
+    "asset_ids": [
+      "BLD-RT-CellFull-01",
+      "BLD-SM-CellFull-01",
+      "BLD-WT-CellFull-01"
+    ],
+    "attempt": "materials-stage repair attempt 1 (stage attempt 2 total); correct directional timber treatment and tile seam defects",
+    "texture_size_px": [
+      1024,
+      1024
+    ],
+    "texture_seeds": {
+      "BLD-RT-CellFull-01": 1701,
+      "BLD-SM-CellFull-01": 1702,
+      "BLD-WT-CellFull-01": 1703
+    },
+    "render_engine": "Cycles CPU",
+    "render_resolution": [
+      1280,
+      960
+    ],
+    "cycles_samples": 24,
+    "cycles_denoise": true,
+    "normal_convention": "OpenGL tangent +Y",
+    "maps": [
+      "basecolor sRGB",
+      "roughness linear",
+      "normal tangent OpenGL +Y",
+      "height linear sidecar"
+    ]
+  },
+  "assets": [
+    {
+      "asset_id": "BLD-RT-CellFull-01",
+      "reference_manifest": "GameClient/ArtSource/BLD-RT-CellFull-01/References/v001/manifest.json",
+      "reference_manifest_sha256": "ecb23f4eb4b2ccee64426f0cd0608510a20febacf72a54d68f93a591b51e0056",
+      "selected_image": "GameClient/ArtSource/BLD-RT-CellFull-01/References/v001/asset-view.png",
+      "selected_image_sha256": "c4193eb158e2c5f919312afc638dc0778259314502a248b9cdbedca995ae533f",
+      "image_batch_path": "docs/art-templates/asset-lists/construction-kit-matrix-07.md",
+      "geometry_key": "cell-full",
+      "canonical_payload": "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v001/geometry-source/cell-full.json",
+      "canonical_payload_sha256": "9455bd04dab9df9f4643f175c95fb17cb7e25e6248c239975a8f1280f040061a",
+      "source_mesh_blend": "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v001/cell-full/SM_GEO01_cell_full_v001.blend",
+      "source_mesh_blend_sha256": "868b8c8897dc67d71609af02fd0597826205358c7a7aa58e874feabb85ec7407"
+    },
+    {
+      "asset_id": "BLD-SM-CellFull-01",
+      "reference_manifest": "GameClient/ArtSource/BLD-SM-CellFull-01/References/v001/manifest.json",
+      "reference_manifest_sha256": "b1bb9b2c8c8adbc7f0d50feba0bcc61fe5b07557a29792824890f1fa00bc5111",
+      "selected_image": "GameClient/ArtSource/BLD-SM-CellFull-01/References/v001/asset-view.png",
+      "selected_image_sha256": "2f71373716575adc78cd1220432aeaccab2ec70ec4e19202dbb843b546b308e0",
+      "image_batch_path": "docs/art-templates/asset-lists/construction-kit-matrix-07.md",
+      "geometry_key": "cell-full",
+      "canonical_payload": "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v001/geometry-source/cell-full.json",
+      "canonical_payload_sha256": "9455bd04dab9df9f4643f175c95fb17cb7e25e6248c239975a8f1280f040061a",
+      "source_mesh_blend": "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v001/cell-full/SM_GEO01_cell_full_v001.blend",
+      "source_mesh_blend_sha256": "868b8c8897dc67d71609af02fd0597826205358c7a7aa58e874feabb85ec7407"
+    },
+    {
+      "asset_id": "BLD-WT-CellFull-01",
+      "reference_manifest": "GameClient/ArtSource/BLD-WT-CellFull-01/References/v001/manifest.json",
+      "reference_manifest_sha256": "fa126d04c34efa43bdffb6f006668e7ec1caaef96dc4d40be1b29b03077961e6",
+      "selected_image": "GameClient/ArtSource/BLD-WT-CellFull-01/References/v001/asset-view.png",
+      "selected_image_sha256": "dffd5074f2ab09a62a1f46ee63a1e14db1749169a004faf236f0480e5e9da04b",
+      "image_batch_path": "docs/art-templates/asset-lists/construction-worked-timber-cellfull-variants-41.md",
+      "geometry_key": "cell-full",
+      "canonical_payload": "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v001/geometry-source/cell-full.json",
+      "canonical_payload_sha256": "9455bd04dab9df9f4643f175c95fb17cb7e25e6248c239975a8f1280f040061a",
+      "source_mesh_blend": "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v001/cell-full/SM_GEO01_cell_full_v001.blend",
+      "source_mesh_blend_sha256": "868b8c8897dc67d71609af02fd0597826205358c7a7aa58e874feabb85ec7407"
+    }
+  ],
+  "source_inspector": {
+    "path": "tools/Validate-ConstructionMaterialSource.py",
+    "sha256": "d4dfa9c04effa1eeef711ca072c9cf23e803cc715886b7971724cbc99b6704bc"
+  }
+}

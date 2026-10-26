@@ -1,0 +1,9 @@
+{
+  "status": "verified",
+  "files": 78,
+  "self_contained": false,
+  "manifest": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryRigReproductionKit-v001\\manifest.json",
+  "limitations": [
+    "Large sources external; parent corrected-motion kit indexes historical dependencies. Per-attempt tool-source.py snapshots preserve earlier atlas revisions."
+  ]
+}

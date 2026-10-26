@@ -1,0 +1,9 @@
+Concept sheet, output `exec-8ccde613-1dbb-44c1-a7b2-ade78ae1d3b2.png`:
+
+Orthographic art sheet for BLD-RT-EndCapCellFull-01, appearance-only end-cap treatment on one existing rough-timber `cell-full/v1` solid 0.5 m cube. Show both exposed end faces, opposite ends, side faces, top, underside and one isometric cube view. End-grain/cap grain is flush in the same square plane, like a cut board end; no separate cap part, no plug, no edging, no projecting joinery. Rough-sawn frontier timber matching warm brown baseline. Keep the cube exact in silhouette and six contacts. Neutral pale background, no people/text/scenery. Concept target only; image does not verify geometry.
+
+Clean view, output `exec-7921a29a-a961-4712-bd70-54ca28bf3c5c.png`:
+
+Single isolated rough timber cube on pale background for BLD-RT-EndCapCellFull-01. Three-quarter orthographic clean asset view. Simple exact full cube design target 0.5 m per side; one exposed end face clearly shows flush circular end-grain. Rough-sawn plank side and flat top. No separate cap, no cap plate, no projections, no bevel, no extra objects, no scenery, no people, no text. Maintain square planar boundaries and six flat contacts; texture only. Appearance proposal, not geometry validation.
+
+No reference image attached; rough-timber cell and end-face packages served as textual style guidance only.

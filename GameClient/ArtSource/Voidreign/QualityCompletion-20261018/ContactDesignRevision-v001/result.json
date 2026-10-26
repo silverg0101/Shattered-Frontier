@@ -1,0 +1,27 @@
+{
+  "status": "three-guide-design-slots-complete;one-mesh-evaluation-pending",
+  "parent_attempts_retained": {
+    "topology_uv": 3,
+    "rig": 3,
+    "secondary_motion": 3
+  },
+  "slots": [
+    {
+      "output": "NetContactTrajectory-v001",
+      "peak_step_mm": 154.926,
+      "warning_count": 118
+    },
+    {
+      "output": "StyleDampingTrajectory-v001",
+      "peak_step_mm": 82.694,
+      "warning_count": 14
+    },
+    {
+      "output": "MildOverdampingTrajectory-v001",
+      "peak_step_mm": 79.00007806104188,
+      "warning_count": 0
+    }
+  ],
+  "remaining_fixed_envelope_overlap_mm": 22.086201445712522,
+  "no_more_parameter_search": true
+}

@@ -1,0 +1,30 @@
+{
+  "source": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManeSurfaceContacts-v001\\Voidreign-SurfaceContacts.blend",
+  "source_sha256": "b69e4ceeefbf0a4fcffa7faa6f114d76b94d37cb807ac92f8dd7ae971c925055",
+  "tool_sha256": "2a16049f55c004bc70f2a28ccfa2201cc7a4876c60550123e24b99dfb191952a",
+  "cpu_only": true,
+  "engine": "Cycles",
+  "device": "CPU",
+  "samples": 4,
+  "diagnostic": true,
+  "playback_fps": null,
+  "frames": [
+    {
+      "source_frame": 1,
+      "image": "0001.png"
+    },
+    {
+      "source_frame": 122,
+      "image": "0002.png"
+    },
+    {
+      "source_frame": 193,
+      "image": "0003.png"
+    },
+    {
+      "source_frame": 299,
+      "image": "0004.png"
+    }
+  ],
+  "scope": "Saved-source playback evidence, not a gait/runtime/collision acceptance"
+}

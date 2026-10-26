@@ -1,0 +1,9 @@
+{
+  "status": "complete",
+  "weighted_vertices": {
+    "Head": 5862,
+    "Saddle": 8958
+  },
+  "method": "Fixed camera projection, spatial/normal feather and BVH visibility; EMIT bake into existing UVs",
+  "scope": "Visible +X side of head and saddle only; albedo only; opposite/hidden surfaces retained"
+}

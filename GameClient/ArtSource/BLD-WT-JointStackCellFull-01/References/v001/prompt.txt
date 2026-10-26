@@ -1,0 +1,5 @@
+Concept-sheet prompt (exact):
+Concept sheet for worked-timber stacked wall-cell join: two SOLID opaque full-cell modules touching top-to-bottom at one flat contact plane. Show only exterior rendered plank faces; no hollow cavities, no framing cutaways, no openings, no exploded separation. One straight vertical stack, seam at exact cell boundary, small elevation and side contact detail. Neutral gray background, no labels, appearance only, geometry proposal.
+
+Clean asset-view prompt (exact):
+Isolated clean product view of two solid worked-timber cells stacked vertically, one clear horizontal face-contact seam between them, same square module footprint, flush aligned planks, pale gray studio background, no text, no cavities or surrounding structure.

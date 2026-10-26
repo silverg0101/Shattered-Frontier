@@ -1,0 +1,80 @@
+{
+  "source": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\RootRepair-v003\\Voidreign-HairPrototype.blend",
+  "source_sha256": "9b3eab121765220b031e0c1394058c502009b90196013f0e10ee61492ba12a66",
+  "tool_sha256": "68e82699986c27900731a6754221e3328489618e77260fef2ce1fd8aea671764",
+  "object": "geometry_0",
+  "blender": "5.1.1",
+  "cpu_only": true,
+  "engine": "Cycles",
+  "device": "CPU",
+  "samples": 8,
+  "rest_pose": true,
+  "attributes": [],
+  "views": [
+    {
+      "variant": "materials",
+      "view": "side-posX",
+      "image": "materials-side-posX.png",
+      "camera_world": [
+        [
+          -4.371138828673793e-08,
+          4.371138828673793e-08,
+          1.0,
+          1.2280069589614868
+        ],
+        [
+          1.0,
+          1.910685676922942e-15,
+          4.371138828673793e-08,
+          -1.0829561948776245
+        ],
+        [
+          0.0,
+          1.0,
+          -4.371138828673793e-08,
+          2.2365710735321045
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "ortho_scale": 0.5600000023841858
+    },
+    {
+      "variant": "depth-tested-component",
+      "view": "side-posX",
+      "image": "depth-tested-component-side-posX.png",
+      "camera_world": [
+        [
+          -4.371138828673793e-08,
+          4.371138828673793e-08,
+          1.0,
+          1.2280069589614868
+        ],
+        [
+          1.0,
+          1.910685676922942e-15,
+          4.371138828673793e-08,
+          -1.0829561948776245
+        ],
+        [
+          0.0,
+          1.0,
+          -4.371138828673793e-08,
+          2.2365710735321045
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "ortho_scale": 0.5600000023841858
+    }
+  ],
+  "scope": "Inspection renders only; no source edits or semantic acceptance"
+}

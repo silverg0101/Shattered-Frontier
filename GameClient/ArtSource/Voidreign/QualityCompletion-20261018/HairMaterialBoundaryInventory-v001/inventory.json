@@ -1,0 +1,1688 @@
+{
+  "schema_version": 1,
+  "status": "semantic-material-boundary-inventory-needs-review",
+  "units": "metres",
+  "cpu_only": true,
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz": "0d7599c8064cb81a6e211a23731435e08939b7fb146ce2d4bed810273909a2b2",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selections.npz": "0b6a19f76a2cba73a42e293c29365360b53ba93be101cf8f4ca556e7a5989cc0"
+  },
+  "profile_sha256": "bbb58ae3d0816a977ea4eecf975820482e9e26e000fa52fad55e96dfa9b35dc6",
+  "tool_sha256": "d81478fe7dc65a5ba52269707ca8a62965bf54c3a3d6a7c7c93e5b4ef0e1f86b",
+  "whole_selected_faces": 124288,
+  "mixed_faces": 2713,
+  "patches": 65,
+  "feature_summaries": [
+    {
+      "label": 1,
+      "name": "Mane",
+      "mixed_faces": 2194,
+      "bounds_m": [
+        [
+          -0.4097486734390259,
+          -1.1967687606811523,
+          1.4054999351501465
+        ],
+        [
+          0.20554423332214355,
+          0.08030789345502853,
+          2.6000001430511475
+        ]
+      ],
+      "face_key": "label-1.faces",
+      "vertex_key": "label-1.vertices"
+    },
+    {
+      "label": 2,
+      "name": "Tail",
+      "mixed_faces": 519,
+      "bounds_m": [
+        [
+          -0.1976678967475891,
+          0.6426119804382324,
+          0.3596665859222412
+        ],
+        [
+          0.4254538416862488,
+          1.2932523488998413,
+          1.7349623441696167
+        ]
+      ],
+      "face_key": "label-2.faces",
+      "vertex_key": "label-2.vertices"
+    }
+  ],
+  "items": [
+    {
+      "id": "SMB-0d7599c806-a23f50cee6c9",
+      "status": "unreviewed-keep-existing-material",
+      "faces": 578,
+      "vertices": 809,
+      "labels": [
+        0,
+        1
+      ],
+      "area_m2": 0.1169456018081466,
+      "bounds_m": [
+        [
+          -0.31900984048843384,
+          -1.0806313753128052,
+          1.5620900392532349
+        ],
+        [
+          0.20554423332214355,
+          -0.07945019751787186,
+          1.9477615356445312
+        ]
+      ],
+      "face_key": "SMB-0d7599c806-a23f50cee6c9.faces",
+      "vertex_key": "SMB-0d7599c806-a23f50cee6c9.vertices"
+    },
+    {
+      "id": "SMB-0d7599c806-13398d8f6fa9",
+      "status": "unreviewed-keep-existing-material",
+      "faces": 344,
+      "vertices": 486,
+      "labels": [
+        0,
+        1
+      ],
+      "area_m2": 0.05678384852631693,
+      "bounds_m": [
+        [
+          -0.30703336000442505,
+          -1.1967687606811523,
+          1.9259461164474487
+        ],
+        [
+          0.011770427227020264,
+          -1.0807292461395264,
+          2.4909634590148926
+        ]
+      ],
+      "face_key": "SMB-0d7599c806-13398d8f6fa9.faces",
+      "vertex_key": "SMB-0d7599c806-13398d8f6fa9.vertices"
+    },
+    {
+      "id": "SMB-0d7599c806-c5f686eb393a",
+      "status": "unreviewed-keep-existing-material",
+      "faces": 155,
+      "vertices": 193,
+      "labels": [
+        0,
+        1
+      ],
+      "area_m2": 0.05361509283348084,
+      "bounds_m": [
+        [
+          -0.28937432169914246,
+          -1.0669199228286743,
+          1.547194242477417
+        ],
+        [
+          0.07311934232711792,
+          -0.5297243595123291,
+          1.9573918581008911
+        ]
+      ],
+      "face_key": "SMB-0d7599c806-c5f686eb393a.faces",
+      "vertex_key": "SMB-0d7599c806-c5f686eb393a.vertices"
+    },
+    {
+      "id": "SMB-0d7599c806-6c0faadfb656",
+      "status": "unreviewed-keep-existing-material",
+      "faces": 172,
+      "vertices": 242,
+      "labels": [
+        0,
+        2
+      ],
+      "area_m2": 0.0354176898075328,
+      "bounds_m": [
+        [
+          -0.10189923644065857,
+          0.6576631665229797,
+          1.213390588760376
+        ],
+        [
+          0.171799898147583,
+          0.8748725652694702,
+          1.6992874145507812
+        ]
+      ],
+      "face_key": "SMB-0d7599c806-6c0faadfb656.faces",
+      "vertex_key": "SMB-0d7599c806-6c0faadfb656.vertices"
+    },
+    {
+      "id": "SMB-0d7599c806-9461782d30e7",
+      "status": "unreviewed-keep-existing-material",
+      "faces": 87,
+      "vertices": 123,
+      "labels": [
+        0,
+        1
+      ],
+      "area_m2": 0.02367453000101385,
+      "bounds_m": [
+        [
+          -0.22866538166999817,
+          -1.1742653846740723,
+          1.952883005142212
+        ],
+        [
+          -0.003761202096939087,
+          -1.0782217979431152,
+          2.2947545051574707
+        ]
+      ],
+      "face_key": "SMB-0d7599c806-9461782d30e7.faces",
+      "vertex_key": "SMB-0d7599c806-9461782d30e7.vertices"
+    },
+    {
+      "id": "SMB-0d7599c806-c95bf113bd82",
+      "status": "unreviewed-keep-existing-material",
+      "faces": 91,
+      "vertices": 126,
+      "labels": [
+        0,
+        1
+      ],
+      "area_m2": 0.014289666840809238,
+      "bounds_m": [
+        [
+          -0.09531760215759277,
+          -1.080775499343872,
+          1.4054999351501465
+        ],
+        [
+          0.1632397472858429,
+          -1.0093008279800415,
+          1.5227476358413696
+        ]
+      ],
+      "face_key": "SMB-0d7599c806-c95bf113bd82.faces",
+      "vertex_key": "SMB-0d7599c806-c95bf113bd82.vertices"
+    },
+    {
+      "id": "SMB-0d7599c806-fa0932e06fbb",
+      "status": "unreviewed-keep-existing-material",
+      "faces": 74,
+      "vertices": 106,
+      "labels": [
+        0,
+        1
+      ],
+      "area_m2": 0.013671128513945528,
+      "bounds_m": [
+        [
+          -0.017677992582321167,
+          -1.0126975774765015,
+          1.7476329803466797
+        ],
+        [
+          0.04650089144706726,
+          -0.8666105270385742,
+          1.9375507831573486
+        ]
+      ],
+      "face_key": "SMB-0d7599c806-fa0932e06fbb.faces",
+      "vertex_key": "SMB-0d7599c806-fa0932e06fbb.vertices"
+    },
+    {
+      "id": "SMB-0d7599c806-16aa3f8d2318",
+      "status": "unreviewed-keep-existing-material",
+      "faces": 58,
+      "vertices": 80,
+      "labels": [
+        0,
+        1
+      ],
+      "area_m2": 0.01254112663225809,
+      "bounds_m": [
+        [
+          -0.32842037081718445,
+          -1.0570396184921265,
+          1.4190623760223389
+        ],
+        [
+          -0.1813422590494156,
+          -1.0018209218978882,
+          1.6012928485870361
+        ]
+      ],
+      "face_key": "SMB-0d7599c806-16aa3f8d2318.faces",
+      "vertex_key": "SMB-0d7599c806-16aa3f8d2318.vertices"
+    },
+    {
+      "id": "SMB-0d7599c806-f2ac3080aae7",
+      "status": "unreviewed-keep-existing-material",
+      "faces": 35,
+      "vertices": 39,
+      "labels": [
+        0,
+        1
+      ],
+      "area_m2": 0.011294640389942696,
+      "bounds_m": [
+        [
+          -0.08469224721193314,
+          -0.42541763186454773,
+          1.845812201499939
+        ],
+        [
+          0.1737261414527893,
+          -0.31650763750076294,
+          1.8799371719360352
+        ]
+      ],
+      "face_key": "SMB-0d7599c806-f2ac3080aae7.faces",
+      "vertex_key": "SMB-0d7599c806-f2ac3080aae7.vertices"
+    },
+    {
+      "id": "SMB-0d7599c806-d0197039a013",
+      "status": "unreviewed-keep-existing-material",
+      "faces": 61,
+      "vertices": 82,
+      "labels": [
+        0,
+        2
+      ],
+      "area_m2": 0.010575456703259455,
+      "bounds_m": [
+        [
+          0.296758770942688,
+          0.9491141438484192,
+          0.3596665859222412
+        ],
+        [
+          0.4254538416862488,
+          1.0485663414001465,
+          0.6330096125602722
+        ]
+      ],
+      "face_key": "SMB-0d7599c806-d0197039a013.faces",
+      "vertex_key": "SMB-0d7599c806-d0197039a013.vertices"
+    },
+    {
+      "id": "SMB-0d7599c806-67a2125f483c",
+      "status": "unreviewed-keep-existing-material",
+      "faces": 40,
+      "vertices": 54,
+      "labels": [
+        0,
+        1
+      ],
+      "area_m2": 0.009801122819371028,
+      "bounds_m": [
+        [
+          -0.03698861598968506,
+          -1.1904798746109009,
+          2.2426133155822754
+        ],
+        [
+          0.08820900321006775,
+          -1.1344716548919678,
+          2.392460823059082
+        ]
+      ],
+      "face_key": "SMB-0d7599c806-67a2125f483c.faces",
+      "vertex_key": "SMB-0d7599c806-67a2125f483c.vertices"
+    },
+    {
+      "id": "SMB-0d7599c806-3bf28272db22",
+      "status": "unreviewed-keep-existing-material",
+      "faces": 44,
+      "vertices": 61,
+      "labels": [
+        0,
+        1
+      ],
+      "area_m2": 0.009629217309041331,
+      "bounds_m": [
+        [
+          -0.29550111293792725,
+          -1.0154197216033936,
+          1.5368540287017822
+        ],
+        [
+          -0.1698913723230362,
+          -0.9032604098320007,
+          1.648687481880188
+        ]
+      ],
+      "face_key": "SMB-0d7599c806-3bf28272db22.faces",
+      "vertex_key": "SMB-0d7599c806-3bf28272db22.vertices"
+    },
+    {
+      "id": "SMB-0d7599c806-fcef00460074",
+      "status": "unreviewed-keep-existing-material",
+      "faces": 35,
+      "vertices": 47,
+      "labels": [
+        0,
+        1
+      ],
+      "area_m2": 0.0076925047610567334,
+      "bounds_m": [
+        [
+          -0.24946166574954987,
+          -0.9821838140487671,
+          1.5323235988616943
+        ],
+        [
+          -0.1524152010679245,
+          -0.9170876145362854,
+          1.6439213752746582
+        ]
+      ],
+      "face_key": "SMB-0d7599c806-fcef00460074.faces",
+      "vertex_key": "SMB-0d7599c806-fcef00460074.vertices"
+    },
+    {
+      "id": "SMB-0d7599c806-0ded486c5b5e",
+      "status": "unreviewed-keep-existing-material",
+      "faces": 84,
+      "vertices": 137,
+      "labels": [
+        0,
+        1
+      ],
+      "area_m2": 0.005562705669969513,
+      "bounds_m": [
+        [
+          -0.030155569314956665,
+          -0.7156908512115479,
+          1.7488371133804321
+        ],
+        [
+          0.06123600900173187,
+          -0.5875117778778076,
+          1.8376364707946777
+        ]
+      ],
+      "face_key": "SMB-0d7599c806-0ded486c5b5e.faces",
+      "vertex_key": "SMB-0d7599c806-0ded486c5b5e.vertices"
+    },
+    {
+      "id": "SMB-0d7599c806-d4c63dedbd5e",
+      "status": "unreviewed-keep-existing-material",
+      "faces": 33,
+      "vertices": 41,
+      "labels": [
+        0,
+        1
+      ],
+      "area_m2": 0.004979112085253373,
+      "bounds_m": [
+        [
+          0.06110793352127075,
+          -1.0727667808532715,
+          1.4313559532165527
+        ],
+        [
+          0.1554221510887146,
+          -1.019963026046753,
+          1.491628646850586
+        ]
+      ],
+      "face_key": "SMB-0d7599c806-d4c63dedbd5e.faces",
+      "vertex_key": "SMB-0d7599c806-d4c63dedbd5e.vertices"
+    },
+    {
+      "id": "SMB-0d7599c806-bc5c85d932c0",
+      "status": "unreviewed-keep-existing-material",
+      "faces": 32,
+      "vertices": 44,
+      "labels": [
+        0,
+        1
+      ],
+      "area_m2": 0.004800092635321186,
+      "bounds_m": [
+        [
+          -0.11653327941894531,
+          -0.5350606441497803,
+          1.8614147901535034
+        ],
+        [
+          -0.07310488820075989,
+          -0.4323740005493164,
+          1.9186112880706787
+        ]
+      ],
+      "face_key": "SMB-0d7599c806-bc5c85d932c0.faces",
+      "vertex_key": "SMB-0d7599c806-bc5c85d932c0.vertices"
+    },
+    {
+      "id": "SMB-0d7599c806-8575242048e6",
+      "status": "unreviewed-keep-existing-material",
+      "faces": 23,
+      "vertices": 33,
+      "labels": [
+        0,
+        2
+      ],
+      "area_m2": 0.004461245774416428,
+      "bounds_m": [
+        [
+          -0.1964225172996521,
+          0.7969624996185303,
+          1.3365875482559204
+        ],
+        [
+          -0.15964362025260925,
+          0.8418668508529663,
+          1.4861149787902832
+        ]
+      ],
+      "face_key": "SMB-0d7599c806-8575242048e6.faces",
+      "vertex_key": "SMB-0d7599c806-8575242048e6.vertices"
+    },
+    {
+      "id": "SMB-0d7599c806-03ddf3586241",
+      "status": "unreviewed-keep-existing-material",
+      "faces": 20,
+      "vertices": 34,
+      "labels": [
+        0,
+        2
+      ],
+      "area_m2": 0.004343230605247419,
+      "bounds_m": [
+        [
+          0.02362114191055298,
+          0.8280349969863892,
+          1.3055334091186523
+        ],
+        [
+          0.07054178416728973,
+          0.8601893782615662,
+          1.4164878129959106
+        ]
+      ],
+      "face_key": "SMB-0d7599c806-03ddf3586241.faces",
+      "vertex_key": "SMB-0d7599c806-03ddf3586241.vertices"
+    },
+    {
+      "id": "SMB-0d7599c806-b246d0d8fc50",
+      "status": "unreviewed-keep-existing-material",
+      "faces": 24,
+      "vertices": 34,
+      "labels": [
+        0,
+        2
+      ],
+      "area_m2": 0.004307820669685238,
+      "bounds_m": [
+        [
+          0.07811373472213745,
+          0.7880290150642395,
+          1.3591545820236206
+        ],
+        [
+          0.10792787373065948,
+          0.832970142364502,
+          1.513617753982544
+        ]
+      ],
+      "face_key": "SMB-0d7599c806-b246d0d8fc50.faces",
+      "vertex_key": "SMB-0d7599c806-b246d0d8fc50.vertices"
+    },
+    {
+      "id": "SMB-0d7599c806-1a6b38bcd2ed",
+      "status": "unreviewed-keep-existing-material",
+      "faces": 40,
+      "vertices": 60,
+      "labels": [
+        0,
+        1
+      ],
+      "area_m2": 0.004241648795842784,
+      "bounds_m": [
+        [
+          -0.3460063636302948,
+          -1.1033507585525513,
+          1.4244012832641602
+        ],
+        [
+          -0.27098745107650757,
+          -1.0249102115631104,
+          1.4876095056533813
+        ]
+      ],
+      "face_key": "SMB-0d7599c806-1a6b38bcd2ed.faces",
+      "vertex_key": "SMB-0d7599c806-1a6b38bcd2ed.vertices"
+    },
+    {
+      "id": "SMB-0d7599c806-214908334f85",
+      "status": "unreviewed-keep-existing-material",
+      "faces": 20,
+      "vertices": 30,
+      "labels": [
+        0,
+        2
+      ],
+      "area_m2": 0.0035071025681332017,
+      "bounds_m": [
+        [
+          -0.1976678967475891,
+          0.6900145411491394,
+          1.5755091905593872
+        ],
+        [
+          -0.15556690096855164,
+          0.7548063397407532,
+          1.6545284986495972
+        ]
+      ],
+      "face_key": "SMB-0d7599c806-214908334f85.faces",
+      "vertex_key": "SMB-0d7599c806-214908334f85.vertices"
+    },
+    {
+      "id": "SMB-0d7599c806-45e5a199970f",
+      "status": "unreviewed-keep-existing-material",
+      "faces": 23,
+      "vertices": 27,
+      "labels": [
+        0,
+        1
+      ],
+      "area_m2": 0.0033152708138760767,
+      "bounds_m": [
+        [
+          -0.22739776968955994,
+          -1.1395262479782104,
+          1.7076821327209473
+        ],
+        [
+          -0.16657361388206482,
+          -1.1249382495880127,
+          1.8382296562194824
+        ]
+      ],
+      "face_key": "SMB-0d7599c806-45e5a199970f.faces",
+      "vertex_key": "SMB-0d7599c806-45e5a199970f.vertices"
+    },
+    {
+      "id": "SMB-0d7599c806-ae39479acb4e",
+      "status": "unreviewed-keep-existing-material",
+      "faces": 36,
+      "vertices": 56,
+      "labels": [
+        0,
+        1
+      ],
+      "area_m2": 0.003152586532406308,
+      "bounds_m": [
+        [
+          0.10807809233665466,
+          -0.6074427366256714,
+          1.8225862979888916
+        ],
+        [
+          0.1536232978105545,
+          -0.5331212282180786,
+          1.8749206066131592
+        ]
+      ],
+      "face_key": "SMB-0d7599c806-ae39479acb4e.faces",
+      "vertex_key": "SMB-0d7599c806-ae39479acb4e.vertices"
+    },
+    {
+      "id": "SMB-0d7599c806-496a7c339b64",
+      "status": "unreviewed-keep-existing-material",
+      "faces": 19,
+      "vertices": 29,
+      "labels": [
+        0,
+        2
+      ],
+      "area_m2": 0.0030966399196103033,
+      "bounds_m": [
+        [
+          0.2405007779598236,
+          0.9330732226371765,
+          0.5898684859275818
+        ],
+        [
+          0.2782869338989258,
+          0.9953120946884155,
+          0.6709479093551636
+        ]
+      ],
+      "face_key": "SMB-0d7599c806-496a7c339b64.faces",
+      "vertex_key": "SMB-0d7599c806-496a7c339b64.vertices"
+    },
+    {
+      "id": "SMB-0d7599c806-76a5b531d804",
+      "status": "unreviewed-keep-existing-material",
+      "faces": 23,
+      "vertices": 33,
+      "labels": [
+        0,
+        1
+      ],
+      "area_m2": 0.0028555335391188836,
+      "bounds_m": [
+        [
+          -0.021627727895975113,
+          -0.15625636279582977,
+          1.8175950050354004
+        ],
+        [
+          0.04081013426184654,
+          -0.029827097430825233,
+          1.8538851737976074
+        ]
+      ],
+      "face_key": "SMB-0d7599c806-76a5b531d804.faces",
+      "vertex_key": "SMB-0d7599c806-76a5b531d804.vertices"
+    },
+    {
+      "id": "SMB-0d7599c806-142b88f3f5fe",
+      "status": "unreviewed-keep-existing-material",
+      "faces": 27,
+      "vertices": 41,
+      "labels": [
+        0,
+        2
+      ],
+      "area_m2": 0.002710627427486755,
+      "bounds_m": [
+        [
+          -0.036362677812576294,
+          1.2126402854919434,
+          1.5251743793487549
+        ],
+        [
+          0.003981471061706543,
+          1.2932523488998413,
+          1.6202524900436401
+        ]
+      ],
+      "face_key": "SMB-0d7599c806-142b88f3f5fe.faces",
+      "vertex_key": "SMB-0d7599c806-142b88f3f5fe.vertices"
+    },
+    {
+      "id": "SMB-0d7599c806-e985ed9d2776",
+      "status": "unreviewed-keep-existing-material",
+      "faces": 18,
+      "vertices": 28,
+      "labels": [
+        0,
+        2
+      ],
+      "area_m2": 0.0025402010299504113,
+      "bounds_m": [
+        [
+          0.3321194648742676,
+          0.9624342322349548,
+          0.45102357864379883
+        ],
+        [
+          0.4017651379108429,
+          0.9983312487602234,
+          0.5245817303657532
+        ]
+      ],
+      "face_key": "SMB-0d7599c806-e985ed9d2776.faces",
+      "vertex_key": "SMB-0d7599c806-e985ed9d2776.vertices"
+    },
+    {
+      "id": "SMB-0d7599c806-f2693581ad0a",
+      "status": "unreviewed-keep-existing-material",
+      "faces": 16,
+      "vertices": 26,
+      "labels": [
+        0,
+        2
+      ],
+      "area_m2": 0.0024173862070583944,
+      "bounds_m": [
+        [
+          -0.16695284843444824,
+          0.6426119804382324,
+          1.707320213317871
+        ],
+        [
+          -0.13823500275611877,
+          0.7179354429244995,
+          1.7349623441696167
+        ]
+      ],
+      "face_key": "SMB-0d7599c806-f2693581ad0a.faces",
+      "vertex_key": "SMB-0d7599c806-f2693581ad0a.vertices"
+    },
+    {
+      "id": "SMB-0d7599c806-6a2d8e04a727",
+      "status": "unreviewed-keep-existing-material",
+      "faces": 17,
+      "vertices": 32,
+      "labels": [
+        0,
+        1
+      ],
+      "area_m2": 0.0023307447916204815,
+      "bounds_m": [
+        [
+          -0.19183628261089325,
+          -1.1399701833724976,
+          1.51442289352417
+        ],
+        [
+          -0.16628584265708923,
+          -1.1221303939819336,
+          1.5995700359344482
+        ]
+      ],
+      "face_key": "SMB-0d7599c806-6a2d8e04a727.faces",
+      "vertex_key": "SMB-0d7599c806-6a2d8e04a727.vertices"
+    },
+    {
+      "id": "SMB-0d7599c806-4afd6188749c",
+      "status": "unreviewed-keep-existing-material",
+      "faces": 31,
+      "vertices": 52,
+      "labels": [
+        0,
+        1
+      ],
+      "area_m2": 0.0022924835712083117,
+      "bounds_m": [
+        [
+          -0.31166842579841614,
+          -0.8983667492866516,
+          1.6060093641281128
+        ],
+        [
+          -0.28166165947914124,
+          -0.853825569152832,
+          1.6812821626663208
+        ]
+      ],
+      "face_key": "SMB-0d7599c806-4afd6188749c.faces",
+      "vertex_key": "SMB-0d7599c806-4afd6188749c.vertices"
+    },
+    {
+      "id": "SMB-0d7599c806-4e2fc507de64",
+      "status": "unreviewed-keep-existing-material",
+      "faces": 20,
+      "vertices": 30,
+      "labels": [
+        0,
+        1
+      ],
+      "area_m2": 0.0022119587962485085,
+      "bounds_m": [
+        [
+          -0.4097486734390259,
+          -0.658230185508728,
+          1.7695505619049072
+        ],
+        [
+          -0.36318713426589966,
+          -0.6213701367378235,
+          1.8262343406677246
+        ]
+      ],
+      "face_key": "SMB-0d7599c806-4e2fc507de64.faces",
+      "vertex_key": "SMB-0d7599c806-4e2fc507de64.vertices"
+    },
+    {
+      "id": "SMB-0d7599c806-0b3644d3cead",
+      "status": "unreviewed-keep-existing-material",
+      "faces": 19,
+      "vertices": 29,
+      "labels": [
+        0,
+        1
+      ],
+      "area_m2": 0.001979258346392156,
+      "bounds_m": [
+        [
+          -0.1698913723230362,
+          -1.0286908149719238,
+          1.5287054777145386
+        ],
+        [
+          -0.11143964529037476,
+          -1.0079575777053833,
+          1.5788586139678955
+        ]
+      ],
+      "face_key": "SMB-0d7599c806-0b3644d3cead.faces",
+      "vertex_key": "SMB-0d7599c806-0b3644d3cead.vertices"
+    },
+    {
+      "id": "SMB-0d7599c806-24c47ae608df",
+      "status": "unreviewed-keep-existing-material",
+      "faces": 18,
+      "vertices": 30,
+      "labels": [
+        0,
+        2
+      ],
+      "area_m2": 0.001853661763741204,
+      "bounds_m": [
+        [
+          -0.0869084894657135,
+          0.6451461911201477,
+          1.7036420106887817
+        ],
+        [
+          -0.06733149290084839,
+          0.717028021812439,
+          1.7299444675445557
+        ]
+      ],
+      "face_key": "SMB-0d7599c806-24c47ae608df.faces",
+      "vertex_key": "SMB-0d7599c806-24c47ae608df.vertices"
+    },
+    {
+      "id": "SMB-0d7599c806-59ee26f77533",
+      "status": "unreviewed-keep-existing-material",
+      "faces": 10,
+      "vertices": 14,
+      "labels": [
+        0,
+        1
+      ],
+      "area_m2": 0.0017559887358549863,
+      "bounds_m": [
+        [
+          0.1800422966480255,
+          -0.8825477361679077,
+          1.6391534805297852
+        ],
+        [
+          0.19427897036075592,
+          -0.766649603843689,
+          1.7185659408569336
+        ]
+      ],
+      "face_key": "SMB-0d7599c806-59ee26f77533.faces",
+      "vertex_key": "SMB-0d7599c806-59ee26f77533.vertices"
+    },
+    {
+      "id": "SMB-0d7599c806-a21db8bf045e",
+      "status": "unreviewed-keep-existing-material",
+      "faces": 13,
+      "vertices": 21,
+      "labels": [
+        0,
+        2
+      ],
+      "area_m2": 0.001741012681534418,
+      "bounds_m": [
+        [
+          0.030846059322357178,
+          0.8341978788375854,
+          1.3333414793014526
+        ],
+        [
+          0.058697283267974854,
+          0.8554524183273315,
+          1.4096858501434326
+        ]
+      ],
+      "face_key": "SMB-0d7599c806-a21db8bf045e.faces",
+      "vertex_key": "SMB-0d7599c806-a21db8bf045e.vertices"
+    },
+    {
+      "id": "SMB-0d7599c806-79496374c95e",
+      "status": "unreviewed-keep-existing-material",
+      "faces": 16,
+      "vertices": 25,
+      "labels": [
+        0,
+        1
+      ],
+      "area_m2": 0.0017152564384956318,
+      "bounds_m": [
+        [
+          -0.22557274997234344,
+          -1.091238260269165,
+          2.5201144218444824
+        ],
+        [
+          -0.2060239464044571,
+          -1.0176267623901367,
+          2.549497127532959
+        ]
+      ],
+      "face_key": "SMB-0d7599c806-79496374c95e.faces",
+      "vertex_key": "SMB-0d7599c806-79496374c95e.vertices"
+    },
+    {
+      "id": "SMB-0d7599c806-219022738900",
+      "status": "unreviewed-keep-existing-material",
+      "faces": 18,
+      "vertices": 32,
+      "labels": [
+        0,
+        1
+      ],
+      "area_m2": 0.0016450196695307147,
+      "bounds_m": [
+        [
+          0.016699716448783875,
+          -0.6079639792442322,
+          1.8265058994293213
+        ],
+        [
+          0.05942487716674805,
+          -0.5555548071861267,
+          1.8541592359542847
+        ]
+      ],
+      "face_key": "SMB-0d7599c806-219022738900.faces",
+      "vertex_key": "SMB-0d7599c806-219022738900.vertices"
+    },
+    {
+      "id": "SMB-0d7599c806-61056aa72863",
+      "status": "unreviewed-keep-existing-material",
+      "faces": 46,
+      "vertices": 70,
+      "labels": [
+        0,
+        1
+      ],
+      "area_m2": 0.0015167022313745697,
+      "bounds_m": [
+        [
+          -0.08476035296916962,
+          -0.5752377510070801,
+          1.8455514907836914
+        ],
+        [
+          -0.02697211503982544,
+          -0.5224456191062927,
+          1.8754523992538452
+        ]
+      ],
+      "face_key": "SMB-0d7599c806-61056aa72863.faces",
+      "vertex_key": "SMB-0d7599c806-61056aa72863.vertices"
+    },
+    {
+      "id": "SMB-0d7599c806-36e9f96b0629",
+      "status": "unreviewed-keep-existing-material",
+      "faces": 14,
+      "vertices": 24,
+      "labels": [
+        0,
+        1
+      ],
+      "area_m2": 0.0013458843482718188,
+      "bounds_m": [
+        [
+          -0.20732855796813965,
+          0.03629685193300247,
+          1.8890284299850464
+        ],
+        [
+          -0.16715939342975616,
+          0.08030789345502853,
+          1.9093685150146484
+        ]
+      ],
+      "face_key": "SMB-0d7599c806-36e9f96b0629.faces",
+      "vertex_key": "SMB-0d7599c806-36e9f96b0629.vertices"
+    },
+    {
+      "id": "SMB-0d7599c806-13afd9fd68f7",
+      "status": "unreviewed-keep-existing-material",
+      "faces": 15,
+      "vertices": 23,
+      "labels": [
+        0,
+        2
+      ],
+      "area_m2": 0.0012658435324133105,
+      "bounds_m": [
+        [
+          -0.07101395726203918,
+          0.6994803547859192,
+          1.599170446395874
+        ],
+        [
+          -0.05400189757347107,
+          0.7433563470840454,
+          1.6360105276107788
+        ]
+      ],
+      "face_key": "SMB-0d7599c806-13afd9fd68f7.faces",
+      "vertex_key": "SMB-0d7599c806-13afd9fd68f7.vertices"
+    },
+    {
+      "id": "SMB-0d7599c806-5c255a663a65",
+      "status": "unreviewed-keep-existing-material",
+      "faces": 16,
+      "vertices": 27,
+      "labels": [
+        0,
+        2
+      ],
+      "area_m2": 0.0010753286448091758,
+      "bounds_m": [
+        [
+          -0.03130325675010681,
+          0.7074320316314697,
+          1.5962488651275635
+        ],
+        [
+          -0.008513063192367554,
+          0.7476765513420105,
+          1.6221673488616943
+        ]
+      ],
+      "face_key": "SMB-0d7599c806-5c255a663a65.faces",
+      "vertex_key": "SMB-0d7599c806-5c255a663a65.vertices"
+    },
+    {
+      "id": "SMB-0d7599c806-5f9296f0a8b7",
+      "status": "unreviewed-keep-existing-material",
+      "faces": 14,
+      "vertices": 22,
+      "labels": [
+        0,
+        1
+      ],
+      "area_m2": 0.0010561718371531917,
+      "bounds_m": [
+        [
+          -0.2393457293510437,
+          -1.089948296546936,
+          1.4477901458740234
+        ],
+        [
+          -0.2183641642332077,
+          -1.0645450353622437,
+          1.4806678295135498
+        ]
+      ],
+      "face_key": "SMB-0d7599c806-5f9296f0a8b7.faces",
+      "vertex_key": "SMB-0d7599c806-5f9296f0a8b7.vertices"
+    },
+    {
+      "id": "SMB-0d7599c806-2516a986745a",
+      "status": "unreviewed-keep-existing-material",
+      "faces": 34,
+      "vertices": 62,
+      "labels": [
+        0,
+        1
+      ],
+      "area_m2": 0.0010512248229957186,
+      "bounds_m": [
+        [
+          -0.005889445543289185,
+          -1.174816370010376,
+          2.2850899696350098
+        ],
+        [
+          0.02195301651954651,
+          -1.1467715501785278,
+          2.317171096801758
+        ]
+      ],
+      "face_key": "SMB-0d7599c806-2516a986745a.faces",
+      "vertex_key": "SMB-0d7599c806-2516a986745a.vertices"
+    },
+    {
+      "id": "SMB-0d7599c806-faf086e6bbf3",
+      "status": "unreviewed-keep-existing-material",
+      "faces": 14,
+      "vertices": 20,
+      "labels": [
+        0,
+        1
+      ],
+      "area_m2": 0.0010348470508545666,
+      "bounds_m": [
+        [
+          -0.1737113744020462,
+          -0.9271928071975708,
+          2.572603225708008
+        ],
+        [
+          -0.15259014070034027,
+          -0.8644795417785645,
+          2.6000001430511475
+        ]
+      ],
+      "face_key": "SMB-0d7599c806-faf086e6bbf3.faces",
+      "vertex_key": "SMB-0d7599c806-faf086e6bbf3.vertices"
+    },
+    {
+      "id": "SMB-0d7599c806-c1177585d450",
+      "status": "unreviewed-keep-existing-material",
+      "faces": 26,
+      "vertices": 38,
+      "labels": [
+        0,
+        2
+      ],
+      "area_m2": 0.0009805578533043596,
+      "bounds_m": [
+        [
+          -0.08949854969978333,
+          0.6986331939697266,
+          1.6045160293579102
+        ],
+        [
+          -0.07915157079696655,
+          0.7388003468513489,
+          1.6514111757278442
+        ]
+      ],
+      "face_key": "SMB-0d7599c806-c1177585d450.faces",
+      "vertex_key": "SMB-0d7599c806-c1177585d450.vertices"
+    },
+    {
+      "id": "SMB-0d7599c806-da33066a6671",
+      "status": "unreviewed-keep-existing-material",
+      "faces": 15,
+      "vertices": 21,
+      "labels": [
+        0,
+        1
+      ],
+      "area_m2": 0.0008300451699746147,
+      "bounds_m": [
+        [
+          -0.17091739177703857,
+          -0.2198135405778885,
+          1.8148176670074463
+        ],
+        [
+          -0.15682056546211243,
+          -0.16884486377239227,
+          1.8364702463150024
+        ]
+      ],
+      "face_key": "SMB-0d7599c806-da33066a6671.faces",
+      "vertex_key": "SMB-0d7599c806-da33066a6671.vertices"
+    },
+    {
+      "id": "SMB-0d7599c806-13e30963711d",
+      "status": "unreviewed-keep-existing-material",
+      "faces": 10,
+      "vertices": 18,
+      "labels": [
+        0,
+        2
+      ],
+      "area_m2": 0.0008297710307033999,
+      "bounds_m": [
+        [
+          -0.1840393841266632,
+          0.8206788897514343,
+          1.368098258972168
+        ],
+        [
+          -0.1669723391532898,
+          0.8330490589141846,
+          1.4224518537521362
+        ]
+      ],
+      "face_key": "SMB-0d7599c806-13e30963711d.faces",
+      "vertex_key": "SMB-0d7599c806-13e30963711d.vertices"
+    },
+    {
+      "id": "SMB-0d7599c806-19f81beb369c",
+      "status": "unreviewed-keep-existing-material",
+      "faces": 15,
+      "vertices": 24,
+      "labels": [
+        0,
+        1
+      ],
+      "area_m2": 0.0007689257126878735,
+      "bounds_m": [
+        [
+          -0.0933886170387268,
+          -0.2454500049352646,
+          1.8217384815216064
+        ],
+        [
+          -0.08394235372543335,
+          -0.2036515325307846,
+          1.8449288606643677
+        ]
+      ],
+      "face_key": "SMB-0d7599c806-19f81beb369c.faces",
+      "vertex_key": "SMB-0d7599c806-19f81beb369c.vertices"
+    },
+    {
+      "id": "SMB-0d7599c806-707b87545777",
+      "status": "unreviewed-keep-existing-material",
+      "faces": 10,
+      "vertices": 16,
+      "labels": [
+        0,
+        1
+      ],
+      "area_m2": 0.0007632310247781137,
+      "bounds_m": [
+        [
+          -0.2331843227148056,
+          -0.48878929018974304,
+          1.8615270853042603
+        ],
+        [
+          -0.21053637564182281,
+          -0.47080495953559875,
+          1.902841329574585
+        ]
+      ],
+      "face_key": "SMB-0d7599c806-707b87545777.faces",
+      "vertex_key": "SMB-0d7599c806-707b87545777.vertices"
+    },
+    {
+      "id": "SMB-0d7599c806-1e8b223aad41",
+      "status": "unreviewed-keep-existing-material",
+      "faces": 12,
+      "vertices": 22,
+      "labels": [
+        0,
+        1
+      ],
+      "area_m2": 0.000609550512917141,
+      "bounds_m": [
+        [
+          -0.0885477364063263,
+          -1.144118309020996,
+          1.9049603939056396
+        ],
+        [
+          -0.0532744824886322,
+          -1.1338558197021484,
+          1.9229087829589844
+        ]
+      ],
+      "face_key": "SMB-0d7599c806-1e8b223aad41.faces",
+      "vertex_key": "SMB-0d7599c806-1e8b223aad41.vertices"
+    },
+    {
+      "id": "SMB-0d7599c806-f8c8ec568f04",
+      "status": "unreviewed-keep-existing-material",
+      "faces": 7,
+      "vertices": 15,
+      "labels": [
+        0,
+        1
+      ],
+      "area_m2": 0.0005959945655161705,
+      "bounds_m": [
+        [
+          -0.06455042958259583,
+          -1.1251407861709595,
+          2.203413963317871
+        ],
+        [
+          -0.047141045331954956,
+          -1.087559461593628,
+          2.2233521938323975
+        ]
+      ],
+      "face_key": "SMB-0d7599c806-f8c8ec568f04.faces",
+      "vertex_key": "SMB-0d7599c806-f8c8ec568f04.vertices"
+    },
+    {
+      "id": "SMB-0d7599c806-cb72c66025e3",
+      "status": "unreviewed-keep-existing-material",
+      "faces": 11,
+      "vertices": 19,
+      "labels": [
+        0,
+        1
+      ],
+      "area_m2": 0.000560002304759791,
+      "bounds_m": [
+        [
+          -0.1243712306022644,
+          -1.177896499633789,
+          2.305093765258789
+        ],
+        [
+          -0.11143392324447632,
+          -1.1575672626495361,
+          2.332118511199951
+        ]
+      ],
+      "face_key": "SMB-0d7599c806-cb72c66025e3.faces",
+      "vertex_key": "SMB-0d7599c806-cb72c66025e3.vertices"
+    },
+    {
+      "id": "SMB-0d7599c806-029db0fbd244",
+      "status": "unreviewed-keep-existing-material",
+      "faces": 10,
+      "vertices": 21,
+      "labels": [
+        0,
+        2
+      ],
+      "area_m2": 0.0005587075206188385,
+      "bounds_m": [
+        [
+          -0.09441375732421875,
+          0.6847320199012756,
+          1.6672784090042114
+        ],
+        [
+          -0.07863995432853699,
+          0.7253187894821167,
+          1.6780768632888794
+        ]
+      ],
+      "face_key": "SMB-0d7599c806-029db0fbd244.faces",
+      "vertex_key": "SMB-0d7599c806-029db0fbd244.vertices"
+    },
+    {
+      "id": "SMB-0d7599c806-c218565b2652",
+      "status": "unreviewed-keep-existing-material",
+      "faces": 12,
+      "vertices": 20,
+      "labels": [
+        0,
+        1
+      ],
+      "area_m2": 0.0004939262754004546,
+      "bounds_m": [
+        [
+          -0.2695198655128479,
+          -1.12618088722229,
+          2.2113442420959473
+        ],
+        [
+          -0.24964585900306702,
+          -1.1040810346603394,
+          2.235281229019165
+        ]
+      ],
+      "face_key": "SMB-0d7599c806-c218565b2652.faces",
+      "vertex_key": "SMB-0d7599c806-c218565b2652.vertices"
+    },
+    {
+      "id": "SMB-0d7599c806-9e8e9c14557b",
+      "status": "unreviewed-keep-existing-material",
+      "faces": 11,
+      "vertices": 17,
+      "labels": [
+        0,
+        2
+      ],
+      "area_m2": 0.0004498973032083995,
+      "bounds_m": [
+        [
+          -0.18317875266075134,
+          0.7113627195358276,
+          1.5977154970169067
+        ],
+        [
+          -0.1707535982131958,
+          0.739933967590332,
+          1.6328996419906616
+        ]
+      ],
+      "face_key": "SMB-0d7599c806-9e8e9c14557b.faces",
+      "vertex_key": "SMB-0d7599c806-9e8e9c14557b.vertices"
+    },
+    {
+      "id": "SMB-0d7599c806-1d1b12900d1a",
+      "status": "unreviewed-keep-existing-material",
+      "faces": 5,
+      "vertices": 6,
+      "labels": [
+        0,
+        1
+      ],
+      "area_m2": 0.00032257514702185657,
+      "bounds_m": [
+        [
+          -0.1877242773771286,
+          -1.1226606369018555,
+          1.4794745445251465
+        ],
+        [
+          -0.17613346874713898,
+          -1.1097748279571533,
+          1.51442289352417
+        ]
+      ],
+      "face_key": "SMB-0d7599c806-1d1b12900d1a.faces",
+      "vertex_key": "SMB-0d7599c806-1d1b12900d1a.vertices"
+    },
+    {
+      "id": "SMB-0d7599c806-1b91b1cf823d",
+      "status": "unreviewed-keep-existing-material",
+      "faces": 7,
+      "vertices": 11,
+      "labels": [
+        0,
+        1
+      ],
+      "area_m2": 0.00021716241524092202,
+      "bounds_m": [
+        [
+          0.04488447308540344,
+          -0.6818781495094299,
+          1.7788989543914795
+        ],
+        [
+          0.05444030463695526,
+          -0.6719272136688232,
+          1.7955875396728516
+        ]
+      ],
+      "face_key": "SMB-0d7599c806-1b91b1cf823d.faces",
+      "vertex_key": "SMB-0d7599c806-1b91b1cf823d.vertices"
+    },
+    {
+      "id": "SMB-0d7599c806-602d3f911217",
+      "status": "unreviewed-keep-existing-material",
+      "faces": 5,
+      "vertices": 9,
+      "labels": [
+        0,
+        1
+      ],
+      "area_m2": 0.000195076059924494,
+      "bounds_m": [
+        [
+          0.05855977535247803,
+          -0.7260814309120178,
+          1.7387757301330566
+        ],
+        [
+          0.06710809469223022,
+          -0.7150416374206543,
+          1.7558289766311646
+        ]
+      ],
+      "face_key": "SMB-0d7599c806-602d3f911217.faces",
+      "vertex_key": "SMB-0d7599c806-602d3f911217.vertices"
+    },
+    {
+      "id": "SMB-0d7599c806-a990b4f2ab88",
+      "status": "unreviewed-keep-existing-material",
+      "faces": 5,
+      "vertices": 9,
+      "labels": [
+        0,
+        1
+      ],
+      "area_m2": 0.00019400887376671625,
+      "bounds_m": [
+        [
+          -0.3642908036708832,
+          -1.0316606760025024,
+          1.446996808052063
+        ],
+        [
+          -0.35034385323524475,
+          -1.0229696035385132,
+          1.4617855548858643
+        ]
+      ],
+      "face_key": "SMB-0d7599c806-a990b4f2ab88.faces",
+      "vertex_key": "SMB-0d7599c806-a990b4f2ab88.vertices"
+    },
+    {
+      "id": "SMB-0d7599c806-411bed5eb70e",
+      "status": "unreviewed-keep-existing-material",
+      "faces": 5,
+      "vertices": 9,
+      "labels": [
+        0,
+        1
+      ],
+      "area_m2": 0.00019009301383467913,
+      "bounds_m": [
+        [
+          -0.3040338158607483,
+          -0.7612060308456421,
+          1.720524787902832
+        ],
+        [
+          -0.29074493050575256,
+          -0.7382128834724426,
+          1.736336350440979
+        ]
+      ],
+      "face_key": "SMB-0d7599c806-411bed5eb70e.faces",
+      "vertex_key": "SMB-0d7599c806-411bed5eb70e.vertices"
+    },
+    {
+      "id": "SMB-0d7599c806-c9ecd5507ca0",
+      "status": "unreviewed-keep-existing-material",
+      "faces": 5,
+      "vertices": 11,
+      "labels": [
+        0,
+        1
+      ],
+      "area_m2": 0.00017362599652918622,
+      "bounds_m": [
+        [
+          -0.4088350236415863,
+          -0.6288526058197021,
+          1.8060616254806519
+        ],
+        [
+          -0.3915860056877136,
+          -0.622477114200592,
+          1.8166979551315308
+        ]
+      ],
+      "face_key": "SMB-0d7599c806-c9ecd5507ca0.faces",
+      "vertex_key": "SMB-0d7599c806-c9ecd5507ca0.vertices"
+    },
+    {
+      "id": "SMB-0d7599c806-007f90f080bd",
+      "status": "unreviewed-keep-existing-material",
+      "faces": 4,
+      "vertices": 12,
+      "labels": [
+        0,
+        1
+      ],
+      "area_m2": 0.00013187383123605955,
+      "bounds_m": [
+        [
+          -0.19493089616298676,
+          -1.1700278520584106,
+          2.3310093879699707
+        ],
+        [
+          -0.18550336360931396,
+          -1.1593430042266846,
+          2.3420958518981934
+        ]
+      ],
+      "face_key": "SMB-0d7599c806-007f90f080bd.faces",
+      "vertex_key": "SMB-0d7599c806-007f90f080bd.vertices"
+    },
+    {
+      "id": "SMB-0d7599c806-7d9f8b9ff8a2",
+      "status": "unreviewed-keep-existing-material",
+      "faces": 5,
+      "vertices": 9,
+      "labels": [
+        0,
+        1
+      ],
+      "area_m2": 0.00011021315388036922,
+      "bounds_m": [
+        [
+          -0.26341232657432556,
+          -1.1075743436813354,
+          2.1707730293273926
+        ],
+        [
+          -0.25781509280204773,
+          -1.1000779867172241,
+          2.1807878017425537
+        ]
+      ],
+      "face_key": "SMB-0d7599c806-7d9f8b9ff8a2.faces",
+      "vertex_key": "SMB-0d7599c806-7d9f8b9ff8a2.vertices"
+    },
+    {
+      "id": "SMB-0d7599c806-2ce453b2e50e",
+      "status": "unreviewed-keep-existing-material",
+      "faces": 3,
+      "vertices": 9,
+      "labels": [
+        0,
+        1
+      ],
+      "area_m2": 8.875829942722953e-05,
+      "bounds_m": [
+        [
+          -0.1939154416322708,
+          -1.1757515668869019,
+          2.344352960586548
+        ],
+        [
+          -0.18550488352775574,
+          -1.1670222282409668,
+          2.35052490234375
+        ]
+      ],
+      "face_key": "SMB-0d7599c806-2ce453b2e50e.faces",
+      "vertex_key": "SMB-0d7599c806-2ce453b2e50e.vertices"
+    },
+    {
+      "id": "SMB-0d7599c806-1e925dd6eb59",
+      "status": "unreviewed-keep-existing-material",
+      "faces": 3,
+      "vertices": 9,
+      "labels": [
+        0,
+        1
+      ],
+      "area_m2": 7.055810473055151e-05,
+      "bounds_m": [
+        [
+          -0.12948718667030334,
+          -0.45884430408477783,
+          1.8797895908355713
+        ],
+        [
+          -0.12220747023820877,
+          -0.4531281888484955,
+          1.8873512744903564
+        ]
+      ],
+      "face_key": "SMB-0d7599c806-1e925dd6eb59.faces",
+      "vertex_key": "SMB-0d7599c806-1e925dd6eb59.vertices"
+    }
+  ],
+  "limitations": [
+    "Canonical-edge connectivity is topology, not material or physical attachment ownership.",
+    "All patches retained; area sorting is review priority, not removal/filtering.",
+    "One mixed face may contain several features; summed per-feature counts can overlap.",
+    "Stable IDs bind exact source indexing; changed topology requires a new inventory/correspondence."
+  ]
+}

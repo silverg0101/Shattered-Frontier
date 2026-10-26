@@ -1,0 +1,18 @@
+{
+  "status": "passed-additive-approval-and-exact-coverage-reuse-only",
+  "prior_approved_faces": 955,
+  "current_approved_faces": 1215,
+  "added_faces": 260,
+  "prior_approvals_unchanged": true,
+  "coverage_checks": [
+    {
+      "resolution": "2K",
+      "exact_cached_coverage_retained": true
+    },
+    {
+      "resolution": "4K",
+      "exact_cached_coverage_retained": true
+    }
+  ],
+  "scope": "No shader/UV/geometry/motion edit; material attempt2/3 unchanged."
+}

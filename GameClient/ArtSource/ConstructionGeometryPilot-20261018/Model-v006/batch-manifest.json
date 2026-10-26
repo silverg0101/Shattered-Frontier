@@ -1,0 +1,469 @@
+{
+  "batch": "construction-surface-materials-20261018",
+  "status": "prototype-subset",
+  "acceptance_claim": false,
+  "engine_ready": false,
+  "blender_version": "5.1.1",
+  "geometry_authority": "canonical payloads copied from Model-v001; shape envelope unchanged",
+  "texture_size_px": [
+    1024,
+    1024
+  ],
+  "maps": [
+    "basecolor",
+    "roughness",
+    "height"
+  ],
+  "assets": [
+    {
+      "asset_id": "BLD-RT-CellFull-01",
+      "geometry_key": "cell-full",
+      "skin": "rough-timber",
+      "reference_image": "GameClient/ArtSource/BLD-RT-CellFull-01/References/v001/asset-view.png",
+      "reference_sha256": "c4193eb158e2c5f919312afc638dc0778259314502a248b9cdbedca995ae533f",
+      "reference_role": "appearance guidance only; never projected as texture",
+      "output": "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v006/BLD-RT-CellFull-01",
+      "files": {
+        "asset-view.png": {
+          "sha256": "a37c78b6e274c1138c76e3dd3fdfb9e4cda96b529386936146e88fd366c6b14e",
+          "bytes": 1752759
+        },
+        "build_material.py": {
+          "sha256": "f2b19e1055e77cda43fa990ab04922d5a1f07de3d822d0724f5a9b45be33222a",
+          "bytes": 3682
+        },
+        "export-reimport-checks.json": {
+          "sha256": "4b4a0b9720c111ae625882d66605a8d485a4fba47fb16f1a116422273710d59b",
+          "bytes": 1001
+        },
+        "SM_BLD_RT_CellFull_01_v001.blend": {
+          "sha256": "caeb59f0829cf3f7efdc378a734e551d2ab90f44e022cc47f2a51f49b961e89a",
+          "bytes": 1588199
+        },
+        "SM_BLD_RT_CellFull_01_v001.fbx": {
+          "sha256": "ef89238d0fa4587315c97eeae24d18cda3b24c922d9984a5ff1c981f737dde1e",
+          "bytes": 20140
+        },
+        "SM_BLD_RT_CellFull_01_v001.glb": {
+          "sha256": "6a04e9810af6b6d57a56253293147ec7889c30cc9dbf8e1142bde459b10caf53",
+          "bytes": 1511996
+        },
+        "texture-source.json": {
+          "sha256": "5eea740fee28d7f5207ba1c8a213b53d0ede23041cd5633c955fa1b532b8dc43",
+          "bytes": 376
+        },
+        "Textures/basecolor.png": {
+          "sha256": "3e1bdcd65c75a6a4124f61c88a623068c54f3694e9417fcfb2540130b2791805",
+          "bytes": 1128426
+        },
+        "Textures/height.png": {
+          "sha256": "6c396f1f387b6e1163daffb01eacaad6594790fa9203939687b23d4f03770611",
+          "bytes": 365115
+        },
+        "Textures/roughness.png": {
+          "sha256": "f42829a611a5fd4d01dc532a5fd9a96f7b3ef5721000ed29909ce01b0b025aa5",
+          "bytes": 3158
+        }
+      },
+      "checks": {
+        "saved_blend": true,
+        "glb_exported": true,
+        "fbx_exported": true,
+        "render_saved": true,
+        "UV0_assigned": true,
+        "basecolor_roughness_height_maps_saved": true,
+        "fresh_glb_import": "passed",
+        "fresh_fbx_import": "passed",
+        "dimensions_m": [
+          0.5,
+          0.5,
+          0.5
+        ],
+        "connected_components": 1,
+        "loose_vertices": 0
+      },
+      "open_gates": [
+        "fresh export reimport checks",
+        "UE import and material validation",
+        "seam repetition review in assembled construction",
+        "LOD/collision/performance evidence"
+      ],
+      "status": "prototype-subset; acceptance_claim=false"
+    },
+    {
+      "asset_id": "BLD-SM-CellFull-01",
+      "geometry_key": "cell-full",
+      "skin": "stone-masonry",
+      "reference_image": "GameClient/ArtSource/BLD-SM-CellFull-01/References/v001/asset-view.png",
+      "reference_sha256": "2f71373716575adc78cd1220432aeaccab2ec70ec4e19202dbb843b546b308e0",
+      "reference_role": "appearance guidance only; never projected as texture",
+      "output": "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v006/BLD-SM-CellFull-01",
+      "files": {
+        "asset-view.png": {
+          "sha256": "111dabc871aa2cfed424967583c94f6ddfece7ba123ab832fd78a989326121e9",
+          "bytes": 1707474
+        },
+        "build_material.py": {
+          "sha256": "75c2e9d3a5b4f5806f72afae8b7f4bd371f080769e3df398ca500cb231bbc756",
+          "bytes": 3684
+        },
+        "export-reimport-checks.json": {
+          "sha256": "fdb452b5d7e772fe170326fcd1485bfc3cc2bffe4ac606fc5c169d8dbd71a298",
+          "bytes": 1001
+        },
+        "SM_BLD_SM_CellFull_01_v001.blend": {
+          "sha256": "427cc0c750fdebeba60a6ba28b44c87403db8023066adb750436d09c3831bb9f",
+          "bytes": 1423087
+        },
+        "SM_BLD_SM_CellFull_01_v001.fbx": {
+          "sha256": "98a534cb022b63ec4844f386b99b4c007a17f742550d896dc34d6dfd0eaef1f6",
+          "bytes": 20140
+        },
+        "SM_BLD_SM_CellFull_01_v001.glb": {
+          "sha256": "18104572051e3a15fce83f85d56dbf3c5dc379fca550db0eded95e7293b29195",
+          "bytes": 1346228
+        },
+        "texture-source.json": {
+          "sha256": "617e385caf30fb927db992fd930c09e6091482e3d7adf2fe56dc89ccf765eae2",
+          "bytes": 376
+        },
+        "Textures/basecolor.png": {
+          "sha256": "03cd6996b5761d7f2dfb7a28e05fd33c607a9957e38ed7fa9352705201ca99dd",
+          "bytes": 992419
+        },
+        "Textures/height.png": {
+          "sha256": "d12811d9941d11b73f30c1643fa3d670aa4ff5376ed88ca70a382ab083aec5c8",
+          "bytes": 335355
+        },
+        "Textures/roughness.png": {
+          "sha256": "aed8833c71df7e1aa1a0496e5f75329a41e357860a8859f69652de806f5f2482",
+          "bytes": 3158
+        }
+      },
+      "checks": {
+        "saved_blend": true,
+        "glb_exported": true,
+        "fbx_exported": true,
+        "render_saved": true,
+        "UV0_assigned": true,
+        "basecolor_roughness_height_maps_saved": true,
+        "fresh_glb_import": "passed",
+        "fresh_fbx_import": "passed",
+        "dimensions_m": [
+          0.5,
+          0.5,
+          0.5
+        ],
+        "connected_components": 1,
+        "loose_vertices": 0
+      },
+      "open_gates": [
+        "fresh export reimport checks",
+        "UE import and material validation",
+        "seam repetition review in assembled construction",
+        "LOD/collision/performance evidence"
+      ],
+      "status": "prototype-subset; acceptance_claim=false"
+    },
+    {
+      "asset_id": "BLD-WT-CellFull-01",
+      "geometry_key": "cell-full",
+      "skin": "worked-timber",
+      "reference_image": "GameClient/ArtSource/BLD-WT-CellFull-01/References/v001/asset-view.png",
+      "reference_sha256": "dffd5074f2ab09a62a1f46ee63a1e14db1749169a004faf236f0480e5e9da04b",
+      "reference_role": "appearance guidance only; never projected as texture",
+      "output": "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v006/BLD-WT-CellFull-01",
+      "files": {
+        "asset-view.png": {
+          "sha256": "8b1b12ab368a61b6a129d5f4f24afdfb79542247b400cde0cc4e6363b55328a6",
+          "bytes": 1500360
+        },
+        "build_material.py": {
+          "sha256": "575438168bc500127a2bff0d3768974070c9574a5f21adc72f383bf6e7696aac",
+          "bytes": 3684
+        },
+        "export-reimport-checks.json": {
+          "sha256": "9402c0695f1028a129105e8c263f75ccce8b1a1c6060c82699d2f092ca5562b8",
+          "bytes": 1001
+        },
+        "SM_BLD_WT_CellFull_01_v001.blend": {
+          "sha256": "06c248872d86832f6f5d486c28c780fd38c77a5f85a926d6c90ca2dc3d7a8012",
+          "bytes": 971181
+        },
+        "SM_BLD_WT_CellFull_01_v001.fbx": {
+          "sha256": "adfbd033407c1105a85651232b0ce81a1a009d26074f92230343cef7a256e10a",
+          "bytes": 20140
+        },
+        "SM_BLD_WT_CellFull_01_v001.glb": {
+          "sha256": "1e81e0b6067e7a74318a02c923231e571e64c318b8b63df3b311e3d093c7ec2c",
+          "bytes": 895000
+        },
+        "texture-source.json": {
+          "sha256": "b9850cf33de85b759a366583f8eb4a1e24808e3fb4d8a04c70727641ac6b99d3",
+          "bytes": 376
+        },
+        "Textures/basecolor.png": {
+          "sha256": "7dfe201625143bbb7ed07fbf97d0371c251839a45a87626110a4bff05d6e6e01",
+          "bytes": 661272
+        },
+        "Textures/height.png": {
+          "sha256": "647bd14cbc17621225ae0ce4427d1fcf82d1cf8861eebfd93fc7c0d1a2284c9f",
+          "bytes": 215274
+        },
+        "Textures/roughness.png": {
+          "sha256": "f42829a611a5fd4d01dc532a5fd9a96f7b3ef5721000ed29909ce01b0b025aa5",
+          "bytes": 3158
+        }
+      },
+      "checks": {
+        "saved_blend": true,
+        "glb_exported": true,
+        "fbx_exported": true,
+        "render_saved": true,
+        "UV0_assigned": true,
+        "basecolor_roughness_height_maps_saved": true,
+        "fresh_glb_import": "passed",
+        "fresh_fbx_import": "passed",
+        "dimensions_m": [
+          0.5,
+          0.5,
+          0.5
+        ],
+        "connected_components": 1,
+        "loose_vertices": 0
+      },
+      "open_gates": [
+        "fresh export reimport checks",
+        "UE import and material validation",
+        "seam repetition review in assembled construction",
+        "LOD/collision/performance evidence"
+      ],
+      "status": "prototype-subset; acceptance_claim=false"
+    },
+    {
+      "asset_id": "BLD-WT-CellFull-Ornamented-01",
+      "geometry_key": "cell-full",
+      "skin": "worked-timber-ornamented",
+      "reference_image": "GameClient/ArtSource/BLD-WT-CellFull-Ornamented-01/References/v001/asset-view.png",
+      "reference_sha256": "3869abbf9b7705415e388016f5dd544f6535d4aa4f511057d49b84d438e4822e",
+      "reference_role": "appearance guidance only; never projected as texture",
+      "output": "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v006/BLD-WT-CellFull-Ornamented-01",
+      "files": {
+        "asset-view.png": {
+          "sha256": "77df9704112969d11d59f2efe8d556cb5b5ae01f4675c5084b60140172c6dfd4",
+          "bytes": 1480651
+        },
+        "build_material.py": {
+          "sha256": "37d0c267fdbea1df6bf06c52aa78087ed29035133d8299fabce8fd305b2f0e3a",
+          "bytes": 3772
+        },
+        "export-reimport-checks.json": {
+          "sha256": "0c5393fed09022d8458ebee663319ac236b32176dc82ac050be799def117cee5",
+          "bytes": 1023
+        },
+        "SM_BLD_WT_CellFull_Ornamented_01_v001.blend": {
+          "sha256": "a35f8df7aad940966b1979419952d80712aac00eb15fbd0a4e639a458c28989a",
+          "bytes": 946121
+        },
+        "SM_BLD_WT_CellFull_Ornamented_01_v001.fbx": {
+          "sha256": "d102942a0c7fdeed7ba7fd53121729640311972e494ddcc2b5517c87bf8d29c7",
+          "bytes": 20268
+        },
+        "SM_BLD_WT_CellFull_Ornamented_01_v001.glb": {
+          "sha256": "098664c452d6ef18354143f77e24d121654d66d7c3e6a42695aaeb1b6e950e1b",
+          "bytes": 869892
+        },
+        "texture-source.json": {
+          "sha256": "76a7157ab133077271f608760c5958f083311fdbcc301b014ce5b6bdad406362",
+          "bytes": 387
+        },
+        "Textures/basecolor.png": {
+          "sha256": "d2c37d9faa393f886d7acf6128e080e4cb16139083d7956ee5960eca09a7a879",
+          "bytes": 638199
+        },
+        "Textures/height.png": {
+          "sha256": "f66a561d55a2760036bbd8748af918e0a851228eecbf48f5d3e9e2644daebe4c",
+          "bytes": 213207
+        },
+        "Textures/roughness.png": {
+          "sha256": "f42829a611a5fd4d01dc532a5fd9a96f7b3ef5721000ed29909ce01b0b025aa5",
+          "bytes": 3158
+        }
+      },
+      "checks": {
+        "saved_blend": true,
+        "glb_exported": true,
+        "fbx_exported": true,
+        "render_saved": true,
+        "UV0_assigned": true,
+        "basecolor_roughness_height_maps_saved": true,
+        "fresh_glb_import": "passed",
+        "fresh_fbx_import": "passed",
+        "dimensions_m": [
+          0.5,
+          0.5,
+          0.5
+        ],
+        "connected_components": 1,
+        "loose_vertices": 0
+      },
+      "open_gates": [
+        "fresh export reimport checks",
+        "UE import and material validation",
+        "seam repetition review in assembled construction",
+        "LOD/collision/performance evidence"
+      ],
+      "status": "prototype-subset; acceptance_claim=false"
+    },
+    {
+      "asset_id": "BLD-RT-RoofSlopeFace-01",
+      "geometry_key": "slope-1to1",
+      "skin": "rough-timber",
+      "reference_image": "GameClient/ArtSource/BLD-RT-RoofSlopeFace-01/References/v001/asset-view.png",
+      "reference_sha256": "44d32999a5158c7d7cb0a9144698175a5f9af6152d7ae413d3c482d7d8763fcb",
+      "reference_role": "appearance guidance only; never projected as texture",
+      "output": "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v006/BLD-RT-RoofSlopeFace-01",
+      "files": {
+        "asset-view.png": {
+          "sha256": "91ba3ce3faf39cfc1a605b06bad5cfef999d30178f7d4922b5c912bf89162c84",
+          "bytes": 1334985
+        },
+        "build_material.py": {
+          "sha256": "92b2f505212b5a8c0eef471dc5538d2a34037cf77256963406ed04e4f09d6b39",
+          "bytes": 3714
+        },
+        "export-reimport-checks.json": {
+          "sha256": "dc2844c837f101e58e2a0a39dafe925e7b41e9e93518940867e8bc8652c577ab",
+          "bytes": 1011
+        },
+        "SM_BLD_RT_RoofSlopeFace_01_v001.blend": {
+          "sha256": "6e473ce16a38a315339be3ce57a60a28b0cc84b1ddb1800271ab44491c09e6f9",
+          "bytes": 1105932
+        },
+        "SM_BLD_RT_RoofSlopeFace_01_v001.fbx": {
+          "sha256": "c750247b2f5bafe69f22c026198f6a376a888ab373316958a3dcf0401185313c",
+          "bytes": 20188
+        },
+        "SM_BLD_RT_RoofSlopeFace_01_v001.glb": {
+          "sha256": "45fa609472194b05a5cf1a536db9614c94623ef63cc0ea65663ca9e051e394b6",
+          "bytes": 1029436
+        },
+        "texture-source.json": {
+          "sha256": "e430eb6b5178a9f22e2dbc675115c8b8040a25caad2b842cbcb85885bee47640",
+          "bytes": 381
+        },
+        "Textures/basecolor.png": {
+          "sha256": "f8b3d7dd32ef0d237b41e33af824a28bc3a6a9841b029f3a26658066052129e0",
+          "bytes": 769292
+        },
+        "Textures/height.png": {
+          "sha256": "030d3b9e11eaa8a6946b1a2cf6c4710a6075d4b395af2a133d85a857a476337f",
+          "bytes": 241900
+        },
+        "Textures/roughness.png": {
+          "sha256": "f42829a611a5fd4d01dc532a5fd9a96f7b3ef5721000ed29909ce01b0b025aa5",
+          "bytes": 3158
+        }
+      },
+      "checks": {
+        "saved_blend": true,
+        "glb_exported": true,
+        "fbx_exported": true,
+        "render_saved": true,
+        "UV0_assigned": true,
+        "basecolor_roughness_height_maps_saved": true,
+        "fresh_glb_import": "passed",
+        "fresh_fbx_import": "passed",
+        "dimensions_m": [
+          0.5,
+          0.5,
+          0.5
+        ],
+        "connected_components": 1,
+        "loose_vertices": 0
+      },
+      "open_gates": [
+        "fresh export reimport checks",
+        "UE import and material validation",
+        "seam repetition review in assembled construction",
+        "LOD/collision/performance evidence"
+      ],
+      "status": "prototype-subset; acceptance_claim=false"
+    },
+    {
+      "asset_id": "BLD-SM-RoofSlopeFace-01",
+      "geometry_key": "slope-1to1",
+      "skin": "stone-masonry",
+      "reference_image": "GameClient/ArtSource/BLD-SM-RoofSlopeFace-01/References/v001/asset-view.png",
+      "reference_sha256": "c53b2b0096003e5dae60283ec4ee4706d873898363cbd55fe67a82a75b81095a",
+      "reference_role": "appearance guidance only; never projected as texture",
+      "output": "GameClient/ArtSource/ConstructionGeometryPilot-20261018/Model-v006/BLD-SM-RoofSlopeFace-01",
+      "files": {
+        "asset-view.png": {
+          "sha256": "9fc5643e49f2b30ece5059e43e5d54be9f0b2d2697d5babf6e0ac0b450e80f93",
+          "bytes": 1372717
+        },
+        "build_material.py": {
+          "sha256": "d266ff58ae268baac3ff7633a0adc8276077c0d9cde74177c3f40bd97448bd3e",
+          "bytes": 3716
+        },
+        "export-reimport-checks.json": {
+          "sha256": "d3159449849fbd691c1c9382eaee4ef4bcfc7dea4dbd585ab100c7f15bfcd6e7",
+          "bytes": 1011
+        },
+        "SM_BLD_SM_RoofSlopeFace_01_v001.blend": {
+          "sha256": "51b100affd680473fc9f41ee7c0d91a1962ec3065ca00b5b14ac88056a54dbde",
+          "bytes": 1121224
+        },
+        "SM_BLD_SM_RoofSlopeFace_01_v001.fbx": {
+          "sha256": "83ca5839d298e5fc082f1aeb4738defd84592e6806cc9b7217e3941d8e06f91f",
+          "bytes": 20188
+        },
+        "SM_BLD_SM_RoofSlopeFace_01_v001.glb": {
+          "sha256": "c1326bed2f4ca50cf11f0be719b2f8105f18b649ceafa9768801554efa3cf003",
+          "bytes": 1044660
+        },
+        "texture-source.json": {
+          "sha256": "38a792e0e76ed1e6a342e44accd35abee9fcec3e347558c469e2916b7e8203d0",
+          "bytes": 381
+        },
+        "Textures/basecolor.png": {
+          "sha256": "2335a58634ad5c27eb89d07ec8c86bf047bb20afa3b0c36f1d00fc8b1a4b4b68",
+          "bytes": 768345
+        },
+        "Textures/height.png": {
+          "sha256": "1a3ca46485e70f4190a8467f843edc35d1dfa4990ef25fe36dd922fd0d030fd7",
+          "bytes": 258063
+        },
+        "Textures/roughness.png": {
+          "sha256": "aed8833c71df7e1aa1a0496e5f75329a41e357860a8859f69652de806f5f2482",
+          "bytes": 3158
+        }
+      },
+      "checks": {
+        "saved_blend": true,
+        "glb_exported": true,
+        "fbx_exported": true,
+        "render_saved": true,
+        "UV0_assigned": true,
+        "basecolor_roughness_height_maps_saved": true,
+        "fresh_glb_import": "passed",
+        "fresh_fbx_import": "passed",
+        "dimensions_m": [
+          0.5,
+          0.5,
+          0.5
+        ],
+        "connected_components": 1,
+        "loose_vertices": 0
+      },
+      "open_gates": [
+        "fresh export reimport checks",
+        "UE import and material validation",
+        "seam repetition review in assembled construction",
+        "LOD/collision/performance evidence"
+      ],
+      "status": "prototype-subset; acceptance_claim=false"
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+Concept sheet, output `exec-06a7f7d1-2df3-407a-8092-ba0ccdff400e.png`:
+
+Construction kit concept sheet for BLD-RT-CornerInsideCellFull-01. One concave inner-corner wedge geometry only, not a cube: use the proposed normalized `corner-inner/v1` shape inside a 0.5 x 0.5 x 0.5 m cell envelope, occupied solid is w <= max(u,v), union of two matching 1:1 slope wedges, with a concave V-shaped upper profile and empty volume above it. Show front orthographic silhouette, both sloped contact faces, top, underside, one isometric view, and a neutral wire silhouette with the empty region clearly visible. Rough-sawn frontier timber skin, flush grain/planks, no overhangs, no beams added, no supports. Plain neutral background, no text, no people, no other blocks. Preserve wedge contact contours and envelope. Image is a visual proposal, not verified geometry.
+
+Clean-view prompt, output `exec-c040bf59-aa78-44aa-b131-aebc4b3c8996.png`:
+
+Single isolated `corner-inner/v1` construction shape for BLD-RT-CornerInsideCellFull-01. Concave inner wedge only: a 0.5 m cube envelope with occupied solid w <= max(u,v), two 1:1 slope surfaces forming a concave V-shaped top and open empty volume above. Rough-timber surface. Three-quarter orthographic, plain background, show complete silhouette and the V-shaped top clearly. No other objects, no paired pieces, no scene, no text, no supports. Preserve the proposed wedge boundary within the cube envelope; do not render as a full cube or a separate corner post. This is a visual design target, not geometry validation.
+
+No reference image attached; related timber components and existing `BLD-GreenlandsWallCorner-01` were inspected as visual style context only, not geometry authority.

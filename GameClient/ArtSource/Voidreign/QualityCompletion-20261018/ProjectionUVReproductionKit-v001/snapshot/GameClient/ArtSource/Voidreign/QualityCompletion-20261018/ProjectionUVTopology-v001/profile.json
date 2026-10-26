@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "source": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkPilot-v003/Mount-WalkPilot.blend",
+  "retention": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkRetention-v003/validation.json",
+  "object": "geometry_0",
+  "uv_layer": "UVMap",
+  "permissions": "CPU read-only exact retained UV/face extraction, no source/material attempt.",
+  "input_sha256": {
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkPilot-v003/Mount-WalkPilot.blend": "f59dc38bff697b6c2a2c84511413d2e292d9fdbb278acc69cd8df6d26a5bd123",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkRetention-v003/validation.json": "0630516734df3c1bb11f95ae92056e353dda46c4f4328c4574e32a2e1a451e49"
+  },
+  "point_color_attributes": [
+    "Head projection weight",
+    "Saddle projection weight",
+    "Head-NegX projection weight",
+    "Saddle-NegX projection weight"
+  ]
+}

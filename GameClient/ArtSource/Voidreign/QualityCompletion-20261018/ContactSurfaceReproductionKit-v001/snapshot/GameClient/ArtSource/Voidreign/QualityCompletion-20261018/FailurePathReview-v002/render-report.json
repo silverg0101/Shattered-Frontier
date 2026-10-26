@@ -1,0 +1,943 @@
+{
+  "schema_version": 1,
+  "status": "unreviewed-guide-path-visualization",
+  "cpu_only": true,
+  "source": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateCleanup-v001\\Voidreign-CompleteHair.blend",
+  "source_sha256": "6c6044a533c16fc7fad23d42c0407dde37a0252aca84f9be1bc9b9a2367364f6",
+  "tool": "C:\\Projects\\Shattered-Frontier\\tools\\Render-FeatureGuidePaths.py",
+  "tool_sha256": "229060c47f3e06b7d16a3902b37a1a8cf8ce4b4acc042ec0390bac0354157309",
+  "mesh_hash": "ba2d283db0be5e8cff4cc7549f1f51916cc0a4d18213773300976b11512ececa",
+  "guide_report": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneGuideProposal-v001\\guide-report.json",
+  "guide_report_sha256": "3e776c1cef3380c3a81814d67ce2ec32270bca2e7d7fbece55eefef49e70de67",
+  "coverage_bound_guide_report_sha256": "3e776c1cef3380c3a81814d67ce2ec32270bca2e7d7fbece55eefef49e70de67",
+  "coverage_report": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\FailureFeaturePaths-v001\\coverage-report.json",
+  "coverage_report_sha256": "1af7e79793fd8b1407c4b1b524d21d9ce4258c859558bbc3f94b557ce698dbd6",
+  "additional_guides": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\FailureFeaturePaths-v001\\additional-guides.json",
+  "additional_guides_sha256": "40af3c9d2bc8c363bb0d946fcc5fed3ab16244e063b409db695a714e9b184a6c",
+  "coverage_file_sha256": "802cfe78cca8b5f790303154c52fe27c15f3a2de6bb38fe3faed240e6b3823ee",
+  "selection_report": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selection-report.json",
+  "selection_report_sha256": "63eb535dcafe1140c5445ce46bd402cc438af979c437fbb9d7430b723aa11a08",
+  "selection_file": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selections.npz",
+  "selection_file_sha256": "0b6a19f76a2cba73a42e293c29365360b53ba93be101cf8f4ca556e7a5989cc0",
+  "selection_to_assembly_max_delta_m": 1.98004506707681e-07,
+  "assembly_root": "MOTION HARNESS | rigid horse, not gait animation",
+  "assembly_root_world_matrix": [
+    [
+      1.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    [
+      0.0,
+      1.0,
+      0.0,
+      0.0
+    ],
+    [
+      0.0,
+      0.0,
+      1.0,
+      0.0
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "assembly_root_scale": [
+    1.0,
+    1.0,
+    1.0
+  ],
+  "unit_scale": 1.0,
+  "guides": [
+    {
+      "name": "Mane_FAILURE_00",
+      "feature": "Mane",
+      "root_node": 137316,
+      "status": "unreviewed-failure-path-proposal",
+      "source_path_nodes": [
+        137316,
+        137039,
+        136517,
+        135620,
+        134639,
+        134044,
+        133415,
+        133190
+      ],
+      "virtual_edges_in_path": []
+    },
+    {
+      "name": "Mane_FAILURE_01",
+      "feature": "Mane",
+      "root_node": 109560,
+      "status": "unreviewed-failure-path-proposal",
+      "source_path_nodes": [
+        109560,
+        107846,
+        106349,
+        105377,
+        104816,
+        104913,
+        105556,
+        105692,
+        106352,
+        107087,
+        107007,
+        106763,
+        106189,
+        106028,
+        106118,
+        106998,
+        107280,
+        107369,
+        108377,
+        108556,
+        109097,
+        109593,
+        110081,
+        110555,
+        111350,
+        111509,
+        112164,
+        113266,
+        113358,
+        112989,
+        112523,
+        112247,
+        112542,
+        111584,
+        109844,
+        107899,
+        107449,
+        105976,
+        103798,
+        102601,
+        100107,
+        96368,
+        94213,
+        91544,
+        90806,
+        90147,
+        90034,
+        89188
+      ],
+      "virtual_edges_in_path": [
+        [
+          91544,
+          90806
+        ]
+      ]
+    },
+    {
+      "name": "Tail_FAILURE_02",
+      "feature": "Tail",
+      "root_node": 29002,
+      "status": "unreviewed-failure-path-proposal",
+      "source_path_nodes": [
+        29002,
+        28127,
+        26896,
+        26014,
+        26011,
+        25608,
+        25090,
+        24170,
+        24006,
+        23773,
+        22506,
+        22437,
+        22087,
+        21512,
+        21023,
+        20394,
+        19982,
+        19554,
+        19115,
+        18850,
+        18566,
+        18431,
+        17419,
+        16953,
+        16606,
+        16190,
+        15557,
+        14187,
+        13299,
+        12302,
+        11583,
+        11116,
+        10452,
+        9502,
+        8763,
+        7995,
+        7398,
+        6585,
+        5791,
+        5356,
+        4896,
+        4535,
+        4236,
+        3601,
+        3104,
+        2760,
+        2146,
+        1765,
+        1494,
+        1267
+      ],
+      "virtual_edges_in_path": []
+    },
+    {
+      "name": "Tail_FAILURE_03",
+      "feature": "Tail",
+      "root_node": 25748,
+      "status": "unreviewed-failure-path-proposal",
+      "source_path_nodes": [
+        25748,
+        24585,
+        23698,
+        22423,
+        20497,
+        20330,
+        19296,
+        18733,
+        17170,
+        15519,
+        14293,
+        13605,
+        12906,
+        11938,
+        10981,
+        10483,
+        9742,
+        9244,
+        8944,
+        8777,
+        8620,
+        8275,
+        8050,
+        8047,
+        7619,
+        7220,
+        7065,
+        6833,
+        6683,
+        6256,
+        5965,
+        5705,
+        5397,
+        5057,
+        4847,
+        4787,
+        4631,
+        4210,
+        3658,
+        3350,
+        3103,
+        2889,
+        2651,
+        2546,
+        2499,
+        2279,
+        1942,
+        1722,
+        1588,
+        1375,
+        1260
+      ],
+      "virtual_edges_in_path": []
+    }
+  ],
+  "render_settings": {
+    "engine": "CYCLES",
+    "device": "CPU",
+    "samples": 4,
+    "threads": 4,
+    "resolution": [
+      768,
+      640
+    ]
+  },
+  "per_guide": true,
+  "lighting": {
+    "world_color_linear": [
+      0.18,
+      0.18,
+      0.18
+    ],
+    "world_strength": 0.45,
+    "area_lights": [
+      "Review key | area",
+      "Review fill | area",
+      "Review rim | area"
+    ],
+    "area_light_energy_scales_w_at_3m_extent": [
+      36.0,
+      18.0,
+      28.0
+    ],
+    "material": "Neutral diffuse clay override; source materials untouched"
+  },
+  "renders": [
+    {
+      "guide_names": [
+        "Mane_FAILURE_00"
+      ],
+      "view": "side-posX",
+      "framing_pad_m": 0.14149917654444305,
+      "orthographic_width_m": 0.41867295083927203,
+      "projected_guide_bounds_m": {
+        "min": [
+          -1.1178563757371833,
+          1.95581637890288
+        ],
+        "max": [
+          -0.9821817779867974,
+          1.9903575103984623
+        ]
+      },
+      "target_world_m": [
+        1.3214415162110527e-07,
+        -1.0500190258026123,
+        1.973086953163147
+      ],
+      "path": "Mane_FAILURE_00-rest-side-posX.png",
+      "isolated_guide_only": false,
+      "depth_tested_against_mesh": true,
+      "label": "REST | Mane_FAILURE_00"
+    },
+    {
+      "guide_names": [
+        "Mane_FAILURE_00"
+      ],
+      "view": "side-posX",
+      "framing_pad_m": 0.14149917654444305,
+      "orthographic_width_m": 0.41867295083927203,
+      "projected_guide_bounds_m": {
+        "min": [
+          -1.1178563757371833,
+          1.95581637890288
+        ],
+        "max": [
+          -0.9821817779867974,
+          1.9903575103984623
+        ]
+      },
+      "target_world_m": [
+        1.3214415162110527e-07,
+        -1.0500190258026123,
+        1.973086953163147
+      ],
+      "path": "Mane_FAILURE_00-isolated-side-posX.png",
+      "isolated_guide_only": true,
+      "depth_tested_against_mesh": false,
+      "label": "ISOLATED ONLY | Mane_FAILURE_00"
+    },
+    {
+      "guide_names": [
+        "Mane_FAILURE_00"
+      ],
+      "view": "side-negX",
+      "framing_pad_m": 0.14149917654444305,
+      "orthographic_width_m": 0.4186729470041496,
+      "projected_guide_bounds_m": {
+        "min": [
+          0.982181796994892,
+          1.955816397357492
+        ],
+        "max": [
+          1.1178563909101555,
+          1.9903575259937456
+        ]
+      },
+      "target_world_m": [
+        -1.3214416583195998e-07,
+        -1.0500191450119019,
+        1.973086953163147
+      ],
+      "path": "Mane_FAILURE_00-rest-side-negX.png",
+      "isolated_guide_only": false,
+      "depth_tested_against_mesh": true,
+      "label": "REST | Mane_FAILURE_00"
+    },
+    {
+      "guide_names": [
+        "Mane_FAILURE_00"
+      ],
+      "view": "side-negX",
+      "framing_pad_m": 0.14149917654444305,
+      "orthographic_width_m": 0.4186729470041496,
+      "projected_guide_bounds_m": {
+        "min": [
+          0.982181796994892,
+          1.955816397357492
+        ],
+        "max": [
+          1.1178563909101555,
+          1.9903575259937456
+        ]
+      },
+      "target_world_m": [
+        -1.3214416583195998e-07,
+        -1.0500191450119019,
+        1.973086953163147
+      ],
+      "path": "Mane_FAILURE_00-isolated-side-negX.png",
+      "isolated_guide_only": true,
+      "depth_tested_against_mesh": false,
+      "label": "ISOLATED ONLY | Mane_FAILURE_00"
+    },
+    {
+      "guide_names": [
+        "Mane_FAILURE_00"
+      ],
+      "view": "rear",
+      "framing_pad_m": 0.14149917654444305,
+      "orthographic_width_m": 0.38104737576652875,
+      "projected_guide_bounds_m": {
+        "min": [
+          0.17355886293447043,
+          1.9558162815522877
+        ],
+        "max": [
+          0.2174275517819808,
+          1.9903574082688422
+        ]
+      },
+      "target_world_m": [
+        -0.1954929083585739,
+        1.4896392031005234e-07,
+        1.9730868339538574
+      ],
+      "path": "Mane_FAILURE_00-rest-rear.png",
+      "isolated_guide_only": false,
+      "depth_tested_against_mesh": true,
+      "label": "REST | Mane_FAILURE_00"
+    },
+    {
+      "guide_names": [
+        "Mane_FAILURE_00"
+      ],
+      "view": "rear",
+      "framing_pad_m": 0.14149917654444305,
+      "orthographic_width_m": 0.38104737576652875,
+      "projected_guide_bounds_m": {
+        "min": [
+          0.17355886293447043,
+          1.9558162815522877
+        ],
+        "max": [
+          0.2174275517819808,
+          1.9903574082688422
+        ]
+      },
+      "target_world_m": [
+        -0.1954929083585739,
+        1.4896392031005234e-07,
+        1.9730868339538574
+      ],
+      "path": "Mane_FAILURE_00-isolated-rear.png",
+      "isolated_guide_only": true,
+      "depth_tested_against_mesh": false,
+      "label": "ISOLATED ONLY | Mane_FAILURE_00"
+    },
+    {
+      "guide_names": [
+        "Mane_FAILURE_01"
+      ],
+      "view": "side-posX",
+      "framing_pad_m": 0.14149917654444305,
+      "orthographic_width_m": 0.6316475016105673,
+      "projected_guide_bounds_m": {
+        "min": [
+          -0.7348213126935876,
+          2.2021479494273377
+        ],
+        "max": [
+          -0.3861721641719065,
+          2.399644604361414
+        ]
+      },
+      "target_world_m": [
+        1.2507545932294306e-07,
+        -0.5604967474937439,
+        2.300896167755127
+      ],
+      "path": "Mane_FAILURE_01-rest-side-posX.png",
+      "isolated_guide_only": false,
+      "depth_tested_against_mesh": true,
+      "label": "REST | Mane_FAILURE_01"
+    },
+    {
+      "guide_names": [
+        "Mane_FAILURE_01"
+      ],
+      "view": "side-posX",
+      "framing_pad_m": 0.14149917654444305,
+      "orthographic_width_m": 0.6316475016105673,
+      "projected_guide_bounds_m": {
+        "min": [
+          -0.7348213126935876,
+          2.2021479494273377
+        ],
+        "max": [
+          -0.3861721641719065,
+          2.399644604361414
+        ]
+      },
+      "target_world_m": [
+        1.2507545932294306e-07,
+        -0.5604967474937439,
+        2.300896167755127
+      ],
+      "path": "Mane_FAILURE_01-isolated-side-posX.png",
+      "isolated_guide_only": true,
+      "depth_tested_against_mesh": false,
+      "label": "ISOLATED ONLY | Mane_FAILURE_01"
+    },
+    {
+      "guide_names": [
+        "Mane_FAILURE_01"
+      ],
+      "view": "side-negX",
+      "framing_pad_m": 0.14149917654444305,
+      "orthographic_width_m": 0.6316474929125419,
+      "projected_guide_bounds_m": {
+        "min": [
+          0.38617218664291286,
+          2.202147971898344
+        ],
+        "max": [
+          0.7348213264665686,
+          2.3996446221705656
+        ]
+      },
+      "target_world_m": [
+        -1.2507547353379778e-07,
+        -0.5604967474937439,
+        2.300896406173706
+      ],
+      "path": "Mane_FAILURE_01-rest-side-negX.png",
+      "isolated_guide_only": false,
+      "depth_tested_against_mesh": true,
+      "label": "REST | Mane_FAILURE_01"
+    },
+    {
+      "guide_names": [
+        "Mane_FAILURE_01"
+      ],
+      "view": "side-negX",
+      "framing_pad_m": 0.14149917654444305,
+      "orthographic_width_m": 0.6316474929125419,
+      "projected_guide_bounds_m": {
+        "min": [
+          0.38617218664291286,
+          2.202147971898344
+        ],
+        "max": [
+          0.7348213264665686,
+          2.3996446221705656
+        ]
+      },
+      "target_world_m": [
+        -1.2507547353379778e-07,
+        -0.5604967474937439,
+        2.300896406173706
+      ],
+      "path": "Mane_FAILURE_01-isolated-side-negX.png",
+      "isolated_guide_only": true,
+      "depth_tested_against_mesh": false,
+      "label": "ISOLATED ONLY | Mane_FAILURE_01"
+    },
+    {
+      "guide_names": [
+        "Mane_FAILURE_01"
+      ],
+      "view": "rear",
+      "framing_pad_m": 0.14149917654444305,
+      "orthographic_width_m": 0.5765939913192918,
+      "projected_guide_bounds_m": {
+        "min": [
+          0.08910302273045545,
+          2.2021478926959404
+        ],
+        "max": [
+          0.27443052247198807,
+          2.399644532373131
+        ]
+      },
+      "target_world_m": [
+        -0.18176643550395966,
+        1.737128343393124e-07,
+        2.300896167755127
+      ],
+      "path": "Mane_FAILURE_01-rest-rear.png",
+      "isolated_guide_only": false,
+      "depth_tested_against_mesh": true,
+      "label": "REST | Mane_FAILURE_01"
+    },
+    {
+      "guide_names": [
+        "Mane_FAILURE_01"
+      ],
+      "view": "rear",
+      "framing_pad_m": 0.14149917654444305,
+      "orthographic_width_m": 0.5765939913192918,
+      "projected_guide_bounds_m": {
+        "min": [
+          0.08910302273045545,
+          2.2021478926959404
+        ],
+        "max": [
+          0.27443052247198807,
+          2.399644532373131
+        ]
+      },
+      "target_world_m": [
+        -0.18176643550395966,
+        1.737128343393124e-07,
+        2.300896167755127
+      ],
+      "path": "Mane_FAILURE_01-isolated-rear.png",
+      "isolated_guide_only": true,
+      "depth_tested_against_mesh": false,
+      "label": "ISOLATED ONLY | Mane_FAILURE_01"
+    },
+    {
+      "guide_names": [
+        "Tail_FAILURE_02"
+      ],
+      "view": "side-posX",
+      "framing_pad_m": 0.2523750155224376,
+      "orthographic_width_m": 1.2258215039661255,
+      "projected_guide_bounds_m": {
+        "min": [
+          0.9768251192317786,
+          0.8601651267877092
+        ],
+        "max": [
+          1.697896592153029,
+          1.2207570060228528
+        ]
+      },
+      "target_world_m": [
+        -1.2977903196542684e-08,
+        1.3373608589172363,
+        1.0404610633850098
+      ],
+      "path": "Tail_FAILURE_02-rest-side-posX.png",
+      "isolated_guide_only": false,
+      "depth_tested_against_mesh": true,
+      "label": "REST | Tail_FAILURE_02"
+    },
+    {
+      "guide_names": [
+        "Tail_FAILURE_02"
+      ],
+      "view": "side-posX",
+      "framing_pad_m": 0.2523750155224376,
+      "orthographic_width_m": 1.2258215039661255,
+      "projected_guide_bounds_m": {
+        "min": [
+          0.9768251192317786,
+          0.8601651267877092
+        ],
+        "max": [
+          1.697896592153029,
+          1.2207570060228528
+        ]
+      },
+      "target_world_m": [
+        -1.2977903196542684e-08,
+        1.3373608589172363,
+        1.0404610633850098
+      ],
+      "path": "Tail_FAILURE_02-isolated-side-posX.png",
+      "isolated_guide_only": true,
+      "depth_tested_against_mesh": false,
+      "label": "ISOLATED ONLY | Tail_FAILURE_02"
+    },
+    {
+      "guide_names": [
+        "Tail_FAILURE_02"
+      ],
+      "view": "side-negX",
+      "framing_pad_m": 0.25237502167086073,
+      "orthographic_width_m": 1.225821533829895,
+      "projected_guide_bounds_m": {
+        "min": [
+          -1.6978966073861557,
+          0.8601651115545824
+        ],
+        "max": [
+          -0.9768251168979821,
+          1.2207570091749051
+        ]
+      },
+      "target_world_m": [
+        1.2977903196542684e-08,
+        1.3373608589172363,
+        1.0404610633850098
+      ],
+      "path": "Tail_FAILURE_02-rest-side-negX.png",
+      "isolated_guide_only": false,
+      "depth_tested_against_mesh": true,
+      "label": "REST | Tail_FAILURE_02"
+    },
+    {
+      "guide_names": [
+        "Tail_FAILURE_02"
+      ],
+      "view": "side-negX",
+      "framing_pad_m": 0.25237502167086073,
+      "orthographic_width_m": 1.225821533829895,
+      "projected_guide_bounds_m": {
+        "min": [
+          -1.6978966073861557,
+          0.8601651115545824
+        ],
+        "max": [
+          -0.9768251168979821,
+          1.2207570091749051
+        ]
+      },
+      "target_world_m": [
+        1.2977903196542684e-08,
+        1.3373608589172363,
+        1.0404610633850098
+      ],
+      "path": "Tail_FAILURE_02-isolated-side-negX.png",
+      "isolated_guide_only": true,
+      "depth_tested_against_mesh": false,
+      "label": "ISOLATED ONLY | Tail_FAILURE_02"
+    },
+    {
+      "guide_names": [
+        "Tail_FAILURE_02"
+      ],
+      "view": "rear",
+      "framing_pad_m": 0.14149917654444305,
+      "orthographic_width_m": 0.7723081975903153,
+      "projected_guide_bounds_m": {
+        "min": [
+          -0.174246538934284,
+          0.8601652736692955
+        ],
+        "max": [
+          0.04304706387982549,
+          1.2207570852390055
+        ]
+      },
+      "target_world_m": [
+        0.06559989601373672,
+        7.855263817191371e-08,
+        1.0404611825942993
+      ],
+      "path": "Tail_FAILURE_02-rest-rear.png",
+      "isolated_guide_only": false,
+      "depth_tested_against_mesh": true,
+      "label": "REST | Tail_FAILURE_02"
+    },
+    {
+      "guide_names": [
+        "Tail_FAILURE_02"
+      ],
+      "view": "rear",
+      "framing_pad_m": 0.14149917654444305,
+      "orthographic_width_m": 0.7723081975903153,
+      "projected_guide_bounds_m": {
+        "min": [
+          -0.174246538934284,
+          0.8601652736692955
+        ],
+        "max": [
+          0.04304706387982549,
+          1.2207570852390055
+        ]
+      },
+      "target_world_m": [
+        0.06559989601373672,
+        7.855263817191371e-08,
+        1.0404611825942993
+      ],
+      "path": "Tail_FAILURE_02-isolated-rear.png",
+      "isolated_guide_only": true,
+      "depth_tested_against_mesh": false,
+      "label": "ISOLATED ONLY | Tail_FAILURE_02"
+    },
+    {
+      "guide_names": [
+        "Tail_FAILURE_03"
+      ],
+      "view": "side-posX",
+      "framing_pad_m": 0.39871714693167665,
+      "orthographic_width_m": 2.323951370687487,
+      "projected_guide_bounds_m": {
+        "min": [
+          0.9674681964884639,
+          0.020366215034458207
+        ],
+        "max": [
+          1.554751253799468,
+          1.1595580634106772
+        ]
+      },
+      "target_world_m": [
+        -2.9336794327150528e-08,
+        1.261109709739685,
+        0.5899621248245239
+      ],
+      "path": "Tail_FAILURE_03-rest-side-posX.png",
+      "isolated_guide_only": false,
+      "depth_tested_against_mesh": true,
+      "label": "REST | Tail_FAILURE_03"
+    },
+    {
+      "guide_names": [
+        "Tail_FAILURE_03"
+      ],
+      "view": "side-posX",
+      "framing_pad_m": 0.39871714693167665,
+      "orthographic_width_m": 2.323951370687487,
+      "projected_guide_bounds_m": {
+        "min": [
+          0.9674681964884639,
+          0.020366215034458207
+        ],
+        "max": [
+          1.554751253799468,
+          1.1595580634106772
+        ]
+      },
+      "target_world_m": [
+        -2.9336794327150528e-08,
+        1.261109709739685,
+        0.5899621248245239
+      ],
+      "path": "Tail_FAILURE_03-isolated-side-posX.png",
+      "isolated_guide_only": true,
+      "depth_tested_against_mesh": false,
+      "label": "ISOLATED ONLY | Tail_FAILURE_03"
+    },
+    {
+      "guide_names": [
+        "Tail_FAILURE_03"
+      ],
+      "view": "side-negX",
+      "framing_pad_m": 0.39871715921303685,
+      "orthographic_width_m": 2.323951442270272,
+      "projected_guide_bounds_m": {
+        "min": [
+          -1.5547513001403512,
+          0.020366168693575076
+        ],
+        "max": [
+          -0.9674682077397465,
+          1.1595580521593947
+        ]
+      },
+      "target_world_m": [
+        2.9336794327150528e-08,
+        1.261109709739685,
+        0.5899621248245239
+      ],
+      "path": "Tail_FAILURE_03-rest-side-negX.png",
+      "isolated_guide_only": false,
+      "depth_tested_against_mesh": true,
+      "label": "REST | Tail_FAILURE_03"
+    },
+    {
+      "guide_names": [
+        "Tail_FAILURE_03"
+      ],
+      "view": "side-negX",
+      "framing_pad_m": 0.39871715921303685,
+      "orthographic_width_m": 2.323951442270272,
+      "projected_guide_bounds_m": {
+        "min": [
+          -1.5547513001403512,
+          0.020366168693575076
+        ],
+        "max": [
+          -0.9674682077397465,
+          1.1595580521593947
+        ]
+      },
+      "target_world_m": [
+        2.9336794327150528e-08,
+        1.261109709739685,
+        0.5899621248245239
+      ],
+      "path": "Tail_FAILURE_03-isolated-side-negX.png",
+      "isolated_guide_only": true,
+      "depth_tested_against_mesh": false,
+      "label": "ISOLATED ONLY | Tail_FAILURE_03"
+    },
+    {
+      "guide_names": [
+        "Tail_FAILURE_03"
+      ],
+      "view": "rear",
+      "framing_pad_m": 0.3987171163415822,
+      "orthographic_width_m": 2.323951192390936,
+      "projected_guide_bounds_m": {
+        "min": [
+          -0.5300779311899273,
+          0.02036638928401402
+        ],
+        "max": [
+          -0.12869950011396725,
+          1.1595581502599632
+        ]
+      },
+      "target_world_m": [
+        0.3293887972831726,
+        4.454091140360106e-08,
+        0.5899621844291687
+      ],
+      "path": "Tail_FAILURE_03-rest-rear.png",
+      "isolated_guide_only": false,
+      "depth_tested_against_mesh": true,
+      "label": "REST | Tail_FAILURE_03"
+    },
+    {
+      "guide_names": [
+        "Tail_FAILURE_03"
+      ],
+      "view": "rear",
+      "framing_pad_m": 0.3987171163415822,
+      "orthographic_width_m": 2.323951192390936,
+      "projected_guide_bounds_m": {
+        "min": [
+          -0.5300779311899273,
+          0.02036638928401402
+        ],
+        "max": [
+          -0.12869950011396725,
+          1.1595581502599632
+        ]
+      },
+      "target_world_m": [
+        0.3293887972831726,
+        4.454091140360106e-08,
+        0.5899621844291687
+      ],
+      "path": "Tail_FAILURE_03-isolated-rear.png",
+      "isolated_guide_only": true,
+      "depth_tested_against_mesh": false,
+      "label": "ISOLATED ONLY | Tail_FAILURE_03"
+    }
+  ],
+  "limitations": [
+    "Added guides are unreviewed proposals; these images do not approve clump identity, semantic attachment, or root suitability.",
+    "Rest-mesh views are depth-tested; isolated-guide views intentionally omit the mesh and do not show occlusion.",
+    "Curves are centerlines with a diagnostic display thickness, not authored strand width or skin representation.",
+    "No motion, deformation, collision, material, export/reimport, or runtime acceptance is established.",
+    "Source blend was opened read-only; materials and diagnostic objects existed only in memory."
+  ]
+}

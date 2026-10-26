@@ -1,0 +1,1051 @@
+{
+  "schema_version": 1,
+  "workspace": "C:\\Projects\\Shattered-Frontier",
+  "asset_id": "Voidreign",
+  "status": "needs-review",
+  "self_contained": false,
+  "scope": "Reviewed hoof margin experiment and regional rejection; current 4K shader audit/lighting closeups. Source remains prototype; external large inputs and parent kits required.",
+  "commands": [
+    [
+      "C:/Program Files/Blender Foundation/Blender 5.1/blender.exe",
+      "--background",
+      "--factory-startup",
+      "--threads",
+      "4",
+      "--python-exit-code",
+      "1",
+      "--python",
+      "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingCollarCorrection-v001/tool-source.py",
+      "--",
+      "--profile",
+      "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingCollarCorrection-v001/profile.json",
+      "--output",
+      "<NEW_OUTPUT_FOLDER>"
+    ],
+    [
+      "C:/Program Files/Blender Foundation/Blender 5.1/blender.exe",
+      "--background",
+      "--factory-startup",
+      "--threads",
+      "4",
+      "--python-exit-code",
+      "1",
+      "--python",
+      "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryCollarJunction-v001/tool-source.py",
+      "--",
+      "--profile",
+      "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryCollarJunction-v001/profile.json",
+      "--output",
+      "<NEW_OUTPUT_FOLDER>"
+    ],
+    [
+      "C:/Program Files/Blender Foundation/Blender 5.1/blender.exe",
+      "--background",
+      "--factory-startup",
+      "--threads",
+      "4",
+      "--python-exit-code",
+      "1",
+      "--python",
+      "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkPilot-v003/tool-source.py",
+      "--",
+      "--profile",
+      "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkPilot-v003/profile.json",
+      "--output",
+      "<NEW_OUTPUT_FOLDER>"
+    ],
+    [
+      "C:/Program Files/Blender Foundation/Blender 5.1/blender.exe",
+      "--background",
+      "--factory-startup",
+      "--threads",
+      "4",
+      "--python-exit-code",
+      "1",
+      "--python",
+      "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkExchange-v003/tool-source.py",
+      "--",
+      "--profile",
+      "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkExchange-v003/profile.json",
+      "--output",
+      "<NEW_OUTPUT_FOLDER>"
+    ],
+    [
+      "C:/Program Files/Blender Foundation/Blender 5.1/blender.exe",
+      "--background",
+      "--factory-startup",
+      "--threads",
+      "4",
+      "--python-exit-code",
+      "1",
+      "--python",
+      "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialChannelAudit-v002/tool-source.py",
+      "--",
+      "--profile",
+      "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialChannelAudit-v002/profile.json",
+      "--output",
+      "<NEW_OUTPUT_FOLDER>"
+    ],
+    [
+      "py",
+      "-3",
+      "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkStrain-v003/tool-source.py",
+      "--profile",
+      "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkStrain-v003/profile.json",
+      "--output",
+      "<NEW_OUTPUT_FOLDER>"
+    ],
+    [
+      "py",
+      "-3",
+      "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CollarRegionComparison-v002/tool-source.py",
+      "--profile",
+      "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CollarRegionComparison-v002/profile.json",
+      "--output",
+      "<NEW_OUTPUT_FOLDER>"
+    ],
+    [
+      "C:/Program Files/Blender Foundation/Blender 5.1/blender.exe",
+      "--background",
+      "--factory-startup",
+      "--threads",
+      "4",
+      "--python-exit-code",
+      "1",
+      "--python",
+      "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CurrentMaterialReview-v001/tool-source.py",
+      "--",
+      "--source",
+      "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkPilot-v003/Mount-WalkPilot.blend",
+      "--output",
+      "<NEW_OUTPUT_FOLDER>",
+      "--guides",
+      "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CurrentMaterialReview-v001/guides.json",
+      "--frame",
+      "1",
+      "--samples",
+      "32"
+    ]
+  ],
+  "files": [
+    {
+      "path": "Artifacts/Art/Voidreign/quality-completion-20261018/WORK.md",
+      "mode": "copy",
+      "bytes": 5267,
+      "sha256": "f80378ece34e7e345c28e8d2687fa2259305118b2c47600563ae17c861317f34",
+      "snapshot": "snapshot/Artifacts/Art/Voidreign/quality-completion-20261018/WORK.md"
+    },
+    {
+      "path": "Artifacts/Art/Voidreign/walk-retention-v003-corrected-cli.log",
+      "mode": "copy",
+      "bytes": 1055,
+      "sha256": "687472b4ffba9f2b05b0ebe6b8b395a3b25c6af1f3ac811b9134ac9fe245e6e3",
+      "snapshot": "snapshot/Artifacts/Art/Voidreign/walk-retention-v003-corrected-cli.log"
+    },
+    {
+      "path": "Artifacts/Art/Voidreign/walk-retention-v003.log",
+      "mode": "copy",
+      "bytes": 244,
+      "sha256": "294c4117f0a0ff564a945f3f5cd32e31b55098bc744b6e2c672906a32389d568",
+      "snapshot": "snapshot/Artifacts/Art/Voidreign/walk-retention-v003.log"
+    },
+    {
+      "path": "Artifacts/Art/Voidreign/walk-review-launch-v003.json",
+      "mode": "copy",
+      "bytes": 514,
+      "sha256": "cc3d115a1d025dff890fad1755b09fade755defedf7dd7ce102af4028cd923d1",
+      "snapshot": "snapshot/Artifacts/Art/Voidreign/walk-review-launch-v003.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ArticulatedSkinReviewInputs-v001/worst-edge-selections.npz",
+      "mode": "reference",
+      "bytes": 635,
+      "sha256": "4134e3077d6f3ca0f0dd12f38e065ef024c18e5af6c47eb9431f34a2d5648e33",
+      "snapshot": null
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CollarEdgeComparison-v001/edge-comparison.json",
+      "mode": "copy",
+      "bytes": 99526,
+      "sha256": "bc91d0995519020e2d6318325c34b99a0219b7abc06584256bceb89f318e536e",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CollarEdgeComparison-v001/edge-comparison.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CollarEdgeComparison-v001/profile.json",
+      "mode": "copy",
+      "bytes": 3564,
+      "sha256": "3945b193ecf56dfc5879fdef723861d8a41dfdc95a54ff57c3387ee48496bd1a",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CollarEdgeComparison-v001/profile.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CollarEdgeComparison-v001/tool-source.py",
+      "mode": "copy",
+      "bytes": 2971,
+      "sha256": "0096f07e090dd30e0d6555d31788a9a6f4059ccacc9318e49d5c30ffb34ae6aa",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CollarEdgeComparison-v001/tool-source.py"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CollarQualityDecision-v001/decision.json",
+      "mode": "copy",
+      "bytes": 1487,
+      "sha256": "d63eba1dd7813b2ec74a77b483c0fa10c1778680b148565ae94fa5ec6fed90f2",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CollarQualityDecision-v001/decision.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CollarRegionComparison-v001/edge-comparison.json",
+      "mode": "copy",
+      "bytes": 149051,
+      "sha256": "48d2ffdc47eedf9b4ffecbce0d636dc370a0451f1f677fbc6261db4d58ee7629",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CollarRegionComparison-v001/edge-comparison.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CollarRegionComparison-v001/profile.json",
+      "mode": "copy",
+      "bytes": 4219,
+      "sha256": "9d2bf5aad96ad4791f93942fae76e1e5e3f685aebad82f7d9052a51af2c2707d",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CollarRegionComparison-v001/profile.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CollarRegionComparison-v001/tool-source.py",
+      "mode": "copy",
+      "bytes": 5119,
+      "sha256": "cdcd6c64e38fbf637a7b4bbd5b27cbc786635d79829dcadc94004fd54a86a9f0",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CollarRegionComparison-v001/tool-source.py"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CollarRegionComparison-v002/edge-comparison.json",
+      "mode": "copy",
+      "bytes": 150136,
+      "sha256": "882151482dcf178f648392fc6301ec2a0dc7b4adb8969d4e0b59e44270180513",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CollarRegionComparison-v002/edge-comparison.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CollarRegionComparison-v002/profile.json",
+      "mode": "copy",
+      "bytes": 4256,
+      "sha256": "791209840ec3ea95fdd0e8a2433e84acfa4348606751149d586bc8d728bbc8ca",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CollarRegionComparison-v002/profile.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CollarRegionComparison-v002/tool-source.py",
+      "mode": "copy",
+      "bytes": 6125,
+      "sha256": "5f912032dd558e6303d0c9280ea37551a988c3192a595e2fb99db8ed452cfc8a",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CollarRegionComparison-v002/tool-source.py"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CurrentMaterialReview-v001/guides.json",
+      "mode": "copy",
+      "bytes": 2401,
+      "sha256": "f0abbdf3c85741fe7e4469a246fd8fc9fc1ee4209b5c876fdd08a2c6834e8131",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CurrentMaterialReview-v001/guides.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CurrentMaterialReview-v001/previews/Detail-Head-Neutral.png",
+      "mode": "copy",
+      "bytes": 1141625,
+      "sha256": "7094773b2c4bee457345f3a4f85bd677394f4cadedc5f1c2e30b609b6e6717b5",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CurrentMaterialReview-v001/previews/Detail-Head-Neutral.png"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CurrentMaterialReview-v001/previews/Detail-Head-Opposing.png",
+      "mode": "copy",
+      "bytes": 1309234,
+      "sha256": "61ef2c12315ab780519b75e3c70d0aaad2415c6cc6e372145be8d29105992a28",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CurrentMaterialReview-v001/previews/Detail-Head-Opposing.png"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CurrentMaterialReview-v001/previews/Detail-Saddle-Neutral.png",
+      "mode": "copy",
+      "bytes": 1344222,
+      "sha256": "038c7e8ab8ec65fdf30d5566edac63c9b6041eb74c70fd93143360eaca456e84",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CurrentMaterialReview-v001/previews/Detail-Saddle-Neutral.png"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CurrentMaterialReview-v001/previews/Detail-Saddle-Opposing.png",
+      "mode": "copy",
+      "bytes": 1604042,
+      "sha256": "0a1cea1760e371c9af7a7a23d3e0295bd83f7edf72e2600e8253dc1d8ebd3a84",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CurrentMaterialReview-v001/previews/Detail-Saddle-Opposing.png"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CurrentMaterialReview-v001/render-report.json",
+      "mode": "copy",
+      "bytes": 3305,
+      "sha256": "64a831430794197f2fce7467c15144fb6e12726391a4e06544afe311fc619312",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CurrentMaterialReview-v001/render-report.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CurrentMaterialReview-v001/tool-source.py",
+      "mode": "copy",
+      "bytes": 3572,
+      "sha256": "1b790126e75fb54e4c45ec52608a66776017f20097750a0ef892143f298b055a",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CurrentMaterialReview-v001/tool-source.py"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CurrentMaterialReview-v001/visual-review.json",
+      "mode": "copy",
+      "bytes": 1121,
+      "sha256": "cf86b0a72e553896a147ed128b16f0dbf8bfd20925f483f0a1c57845a8326ae3",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CurrentMaterialReview-v001/visual-review.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/DegenerateInspection-v001/00-component-selections.npz",
+      "mode": "reference",
+      "bytes": 5812171,
+      "sha256": "0d7599c8064cb81a6e211a23731435e08939b7fb146ce2d4bed810273909a2b2",
+      "snapshot": null
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HygieneSemanticSelection-v001/selections.npz",
+      "mode": "reference",
+      "bytes": 5506471,
+      "sha256": "0b6a19f76a2cba73a42e293c29365360b53ba93be101cf8f4ca556e7a5989cc0",
+      "snapshot": null
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseItemInventory-v001/item-selections.npz",
+      "mode": "reference",
+      "bytes": 6410,
+      "sha256": "fcd4db77cdd50ccae21e0f134e845c8bf64c3243285bcc565788f6fda33d665d",
+      "snapshot": null
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseReviewReproductionKit-v001/manifest.json",
+      "mode": "copy",
+      "bytes": 13622,
+      "sha256": "3cd817e432384ce706ba7baf609c705a6c975e712622698bb6263d8b7d314aa6",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LooseReviewReproductionKit-v001/manifest.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialChannelAudit-v001/material-audit.json",
+      "mode": "copy",
+      "bytes": 5243,
+      "sha256": "d3c79108745fe04f26e24e3f0febffc9d4ecafe810b57513e40a31f69c00984f",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialChannelAudit-v001/material-audit.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialChannelAudit-v001/profile.json",
+      "mode": "copy",
+      "bytes": 735,
+      "sha256": "a805fef3a72d3d5d390e86976a5f1495178111014a145c5c53d02e7596193b5c",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialChannelAudit-v001/profile.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialChannelAudit-v001/tool-source.py",
+      "mode": "copy",
+      "bytes": 3717,
+      "sha256": "55084f92843c7c4808ecf60b14d0ec15941ee4efe3aa07821681ee752804e63a",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialChannelAudit-v001/tool-source.py"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialChannelAudit-v002/README.md",
+      "mode": "copy",
+      "bytes": 1247,
+      "sha256": "85252cc25f3defe54098605706d40012e43c65715062c312fc560a850b9a1865",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialChannelAudit-v002/README.md"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialChannelAudit-v002/material-audit.json",
+      "mode": "copy",
+      "bytes": 6824,
+      "sha256": "3d6a6959b81b625123705affd99f92e751522da83c207b3a661173fe71ec4dde",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialChannelAudit-v002/material-audit.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialChannelAudit-v002/profile.json",
+      "mode": "copy",
+      "bytes": 735,
+      "sha256": "a805fef3a72d3d5d390e86976a5f1495178111014a145c5c53d02e7596193b5c",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialChannelAudit-v002/profile.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialChannelAudit-v002/tool-source.py",
+      "mode": "copy",
+      "bytes": 4689,
+      "sha256": "7536199e21cbb14c255858e752f753dbaaa9c45a115a9aa5df97cd2a46d394b7",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialChannelAudit-v002/tool-source.py"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MountProfile.md",
+      "mode": "copy",
+      "bytes": 26864,
+      "sha256": "040799237739e7c3a142ffadb9bd653ef7442b1afcbb987aa57af084368e3ffd",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MountProfile.md"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryCollarJunction-v001/Mount-StandingSkinRepair.blend",
+      "mode": "reference",
+      "bytes": 124583834,
+      "sha256": "0ad9422d5b28cbd74f65983efba4c08f90855014e3b101d464a1fd28f58340b3",
+      "snapshot": null
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryCollarJunction-v001/profile.json",
+      "mode": "copy",
+      "bytes": 3199,
+      "sha256": "35169b71b60aaac35a132672439300829abd14c869f80264111d10e8cc416195",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryCollarJunction-v001/profile.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryCollarJunction-v001/tool-source.py",
+      "mode": "copy",
+      "bytes": 9859,
+      "sha256": "2cd4623696226260bed71a303ad1e7f1bdb5bb8cbefbbfa6954d1f7c479ebb64",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryCollarJunction-v001/tool-source.py"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryCollarJunction-v001/weight-repair-report.json",
+      "mode": "copy",
+      "bytes": 5910,
+      "sha256": "a7ef44ca6722c8100f94f49f330b8b4045de2774181b3d5b72e904932f16eb8b",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryCollarJunction-v001/weight-repair-report.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryCollarJunction-v001/weight-repair.npz",
+      "mode": "reference",
+      "bytes": 3701041,
+      "sha256": "058ad9c358fa7d13043074fcb6f2fe8d788f405a41a5fb73caba6652e80b80a6",
+      "snapshot": null
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryCollarJunctionCacheCheck-v001/profile.json",
+      "mode": "copy",
+      "bytes": 2376,
+      "sha256": "184198b91282346f48888fe4c5e9dc981fc8bedd3d7a1bebe8650899829be4de",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryCollarJunctionCacheCheck-v001/profile.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryCollarJunctionCacheCheck-v001/standing-cache-report.json",
+      "mode": "copy",
+      "bytes": 3463,
+      "sha256": "7bbcba87b0e9b4b747937184028429d7f779a9f5e36c622033d06cf5ea0eef70",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryCollarJunctionCacheCheck-v001/standing-cache-report.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryCollarJunctionCacheCheck-v001/tool-source.py",
+      "mode": "copy",
+      "bytes": 4791,
+      "sha256": "5f34f9c3629eda04af57efe13a18504420eb172933b81198c6b40fe1fc651860",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryCollarJunctionCacheCheck-v001/tool-source.py"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryCollarJunctionExchange-v001/FeatureMotion-Reimport.blend",
+      "mode": "reference",
+      "bytes": 11061758,
+      "sha256": "6400f5b2bcf09533d29fe7b197bc4ddffa46db1fb34522c3831556fa2fc78822",
+      "snapshot": null
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryCollarJunctionExchange-v001/FeatureMotion.abc",
+      "mode": "reference",
+      "bytes": 438619269,
+      "sha256": "1cc3763a6b14edb865929157003a9724b59ee602e738cdc33fa280a7380c9a07",
+      "snapshot": null
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryCollarJunctionExchange-v001/exchange-report.json",
+      "mode": "copy",
+      "bytes": 2781,
+      "sha256": "81d918af80881c6f8ead0adce8d613e7cf41f7e25f7c6ea5be269e43248747fe",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryCollarJunctionExchange-v001/exchange-report.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryCollarJunctionExchange-v001/expected-world-points.npy",
+      "mode": "reference",
+      "bytes": 205028768,
+      "sha256": "c8af7c1b9347526371d043820285b323f3bdbbbc470c8f6de621618ff54fbf87",
+      "snapshot": null
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryCollarJunctionExchange-v001/profile.json",
+      "mode": "copy",
+      "bytes": 490,
+      "sha256": "21f4841665bf2229dc9ebaa48512da793ff63c1b7168e955daa6db424efc8f35",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryCollarJunctionExchange-v001/profile.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryCollarJunctionExchange-v001/tool-source.py",
+      "mode": "copy",
+      "bytes": 4697,
+      "sha256": "d7856961d1acd80654c13564dc473ffaeba5acb0ca64fa61c3c180362a318d46",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryCollarJunctionExchange-v001/tool-source.py"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryDomains-v001/primary-domains.npz",
+      "mode": "reference",
+      "bytes": 915748,
+      "sha256": "38002ef04f9ab82df4456021b3772e422328e2ecebd38bd068a344dd5e27bdb5",
+      "snapshot": null
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryLocomotionPlan-v001/queue.json",
+      "mode": "copy",
+      "bytes": 2573,
+      "sha256": "e90bd28e75bcd33df0522dcca319179c6b653dafa44196e2b9f903f6c6e15877",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryLocomotionPlan-v001/queue.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryOnlyCombinedFull-v001/Voidreign-ActualSurfacePilot.blend",
+      "mode": "reference",
+      "bytes": 122084310,
+      "sha256": "c507e31813fea5ea61e30f7cbf8bae37609135b549238b64ad1e61a1e42111ee",
+      "snapshot": null
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryOnlyCombinedFullRetention-v001/validation.json",
+      "mode": "copy",
+      "bytes": 17042,
+      "sha256": "fcd05cbae371af89b71bd0b9ab427bf74a48b3667abc0c454fee46e3947ea840",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryOnlyCombinedFullRetention-v001/validation.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryRigPilot-v001/Mount-PrimaryRigPilot.blend",
+      "mode": "reference",
+      "bytes": 124544695,
+      "sha256": "00fba7e1c7990ee4cc24188de08f25c80f058a1f5d390c3d1b191634ebfa34d6",
+      "snapshot": null
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimarySkinCodeReview-v004/review.json",
+      "mode": "copy",
+      "bytes": 1111,
+      "sha256": "e5d887443dd92afd4653857f37b1de5bb9abc4d024240320c4b4f14046dcde8f",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimarySkinCodeReview-v004/review.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimarySoleProposals-v001/sole-patches.npz",
+      "mode": "reference",
+      "bytes": 3746,
+      "sha256": "5b055301ae1b1349d3f85fb23e2b93985fd93f2a33e0fc1a1e4a05dbaf98614b",
+      "snapshot": null
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimarySoleProposals-v001/sole-report.json",
+      "mode": "copy",
+      "bytes": 5243,
+      "sha256": "c40c5da18a99fd1fe9764d0e7d5f64c5ae7dd4336f26716f1b2b76550f853b76",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimarySoleProposals-v001/sole-report.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingCollarCorrection-v001/Mount-StandingPilot.blend",
+      "mode": "reference",
+      "bytes": 124494480,
+      "sha256": "f4e5f2e90a06c90c1b167cfccbaa9218870c3ff3184e4e1c3db7cdcdf123ac84",
+      "snapshot": null
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingCollarCorrection-v001/pose-1.png",
+      "mode": "copy",
+      "bytes": 772355,
+      "sha256": "40a762f95fd238b8966856ad7074c376df3f47a6fbef037ab3e4226b193b71bc",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingCollarCorrection-v001/pose-1.png"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingCollarCorrection-v001/pose-30.png",
+      "mode": "copy",
+      "bytes": 766960,
+      "sha256": "f5a45dcf2f1084d0ee3419f0a83a76ab1d6e9302c2e274ea287d6382c01101e6",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingCollarCorrection-v001/pose-30.png"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingCollarCorrection-v001/pose-60.png",
+      "mode": "copy",
+      "bytes": 766960,
+      "sha256": "42577293273830211dbcebd045bce2d055ed5b275278393acabada674fea7b49",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingCollarCorrection-v001/pose-60.png"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingCollarCorrection-v001/profile.json",
+      "mode": "copy",
+      "bytes": 4327,
+      "sha256": "6c91d008cb44ce50e6aff4a7d9408b90cbb5475c374a9e8f1c8ffaa4deff645e",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingCollarCorrection-v001/profile.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingCollarCorrection-v001/standing-report.json",
+      "mode": "copy",
+      "bytes": 9582,
+      "sha256": "ded0fc809df7793a102e7120c67d3c9b1f494ade23d06ff3fe7853d66572e11c",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingCollarCorrection-v001/standing-report.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingCollarCorrection-v001/tool-source.py",
+      "mode": "copy",
+      "bytes": 10164,
+      "sha256": "86f7511fd8d7fcda30010b0fcb6ac53f9b8bcff60d3a9accbe57906e4176ee11",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryStandingCollarCorrection-v001/tool-source.py"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/SoleCollarReview-v001/Mount-AnatomyProposal.blend",
+      "mode": "reference",
+      "bytes": 105047978,
+      "sha256": "0c0d4707c2e250146750e13b4254f947c0bc156758a3d80e06ab97b641a9f6ae",
+      "snapshot": null
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/SoleCollarReview-v001/anatomy-report.json",
+      "mode": "copy",
+      "bytes": 2731,
+      "sha256": "4f2c3c97e4547e768405be18f62f1ebfcc126d22b034e70c791566f746690d99",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/SoleCollarReview-v001/anatomy-report.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/SoleCollarReview-v001/edge-isolated.png",
+      "mode": "copy",
+      "bytes": 244685,
+      "sha256": "0df1e669c5b740a582247e1abf36f9754e0e9b5837279860806fb44667ad6ee0",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/SoleCollarReview-v001/edge-isolated.png"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/SoleCollarReview-v001/isolated-source-faces.npz",
+      "mode": "reference",
+      "bytes": 229,
+      "sha256": "9d2dea2edd00fb1c8371ee6363d7908ea693e7ae637ca43c22c60571dcb66a32",
+      "snapshot": null
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/SoleCollarReview-v001/profile.json",
+      "mode": "copy",
+      "bytes": 4097,
+      "sha256": "3ccedc8f1bf2c41ee9b2cf504e785493790ab1f7723ff360b4d388c87e32cc4f",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/SoleCollarReview-v001/profile.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/SoleCollarReview-v001/region-selections.npz",
+      "mode": "reference",
+      "bytes": 655,
+      "sha256": "6af1b03b886019b00a0478d54a0b2445f747211f97680b305697ed975a6d1ac6",
+      "snapshot": null
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/SoleCollarReview-v001/tool-source.py",
+      "mode": "copy",
+      "bytes": 10026,
+      "sha256": "a4d1e4b5f319bd55ce220ef386d5ccdd08f13349911342b3ca6e11c4aff2572f",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/SoleCollarReview-v001/tool-source.py"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/SoleCollarReview-v001/underside-front.png",
+      "mode": "copy",
+      "bytes": 651481,
+      "sha256": "7dfdf4454fa5709c46f383a7536de2bd69564355c20f8296067fb5e1cbc064c2",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/SoleCollarReview-v001/underside-front.png"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/SoleCollarReview-v001/underside.png",
+      "mode": "copy",
+      "bytes": 795855,
+      "sha256": "b6fbc775d90e13e1ff03cbf5aac4d993b4203a2fbc3fa7bba48c77f222cbfe8d",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/SoleCollarReview-v001/underside.png"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkExchange-v001/exchange-report.json",
+      "mode": "copy",
+      "bytes": 3022,
+      "sha256": "04792d6efd7282d12e90a3364e49074dec88b79494bf41085bafca6c91a834f7",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkExchange-v001/exchange-report.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkExchange-v001/expected-world-points.npy",
+      "mode": "reference",
+      "bytes": 249451640,
+      "sha256": "8a2cd02f5239197cd0086f92f70c467ec1e714aeb4c0b06d223a3eb507b99a3c",
+      "snapshot": null
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkExchange-v002/exchange-report.json",
+      "mode": "copy",
+      "bytes": 3022,
+      "sha256": "eb42c4d1ab72dedb9514001f859332a83e35fd6706baa4a51352eebcc44e4fa1",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkExchange-v002/exchange-report.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkExchange-v002/expected-world-points.npy",
+      "mode": "reference",
+      "bytes": 249451640,
+      "sha256": "9a6b985acf9c2bdba208d71e8e0dd9e734242ea837cd283359ecbec531ac8adf",
+      "snapshot": null
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkExchange-v003/FeatureMotion-Reimport.blend",
+      "mode": "reference",
+      "bytes": 11058221,
+      "sha256": "f0fd92748ca952d8871993ad184a7841f93926cf8aa39551ffe574c9d2802229",
+      "snapshot": null
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkExchange-v003/FeatureMotion.abc",
+      "mode": "reference",
+      "bytes": 1045514547,
+      "sha256": "09cda750eb672538cb595413a665b99614d025a3c7b79f77881fc519c495bdf5",
+      "snapshot": null
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkExchange-v003/exchange-report.json",
+      "mode": "copy",
+      "bytes": 3022,
+      "sha256": "c1a9a0d8a316834c8b572b929de2d33cb69abe34555e7f29a920c09185c23bcb",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkExchange-v003/exchange-report.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkExchange-v003/expected-world-points.npy",
+      "mode": "reference",
+      "bytes": 249451640,
+      "sha256": "129aeeecb7a871b1ef8ef65a7e1ae6230954a0f018f76545887b1e6b700ddd3e",
+      "snapshot": null
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkExchange-v003/profile.json",
+      "mode": "copy",
+      "bytes": 448,
+      "sha256": "a7e8a0bae665b9d5454c4c5c9f33898e5967e399925f51d891c6a67d35c4a41f",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkExchange-v003/profile.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkExchange-v003/tool-source.py",
+      "mode": "copy",
+      "bytes": 4697,
+      "sha256": "d7856961d1acd80654c13564dc473ffaeba5acb0ca64fa61c3c180362a318d46",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkExchange-v003/tool-source.py"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkPilot-v001/Mount-WalkPilot.blend",
+      "mode": "reference",
+      "bytes": 124628732,
+      "sha256": "fe004dd3c6357d9b818729e9d5d89060adb7be0eca6d930d7cc7a91369cd5456",
+      "snapshot": null
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkPilot-v002/Mount-WalkPilot.blend",
+      "mode": "reference",
+      "bytes": 124642824,
+      "sha256": "d175746ff5d44a6b8d05151200f67e1efee2798c506029991091ca379f771c35",
+      "snapshot": null
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkPilot-v003/Mount-WalkPilot.blend",
+      "mode": "reference",
+      "bytes": 124637836,
+      "sha256": "f59dc38bff697b6c2a2c84511413d2e292d9fdbb278acc69cd8df6d26a5bd123",
+      "snapshot": null
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkPilot-v003/README.md",
+      "mode": "copy",
+      "bytes": 1709,
+      "sha256": "dbc104649d2d53a06559e5e43f4e4c3f8b9edfa06c7c3b121647ff2c4341459c",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkPilot-v003/README.md"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkPilot-v003/foot-plan.json",
+      "mode": "copy",
+      "bytes": 86897,
+      "sha256": "592ca44cafe8160e51df1a760f807e632722a417844c5a5aab4c0220ffdee1be",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkPilot-v003/foot-plan.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkPilot-v003/frame-10.png",
+      "mode": "copy",
+      "bytes": 949745,
+      "sha256": "7ff6191dbbc4f3cbd852f477279786d3f52500dd972b6ac4a4a8692e9e9f10cb",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkPilot-v003/frame-10.png"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkPilot-v003/profile.json",
+      "mode": "copy",
+      "bytes": 3791,
+      "sha256": "726434baf85325b305cc784291889986124e1b075a18737829e4564728248299",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkPilot-v003/profile.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkPilot-v003/tool-source.py",
+      "mode": "copy",
+      "bytes": 12110,
+      "sha256": "5eb0a71c5aeefe85eb7d6fbd55c8ae2ab379d6a4a9733e6a55522f883239db6a",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkPilot-v003/tool-source.py"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkPilot-v003/walk-report.json",
+      "mode": "copy",
+      "bytes": 66044,
+      "sha256": "ec0c171a2538d54fd2b1e733cb7e9ab387a5e271ba784c4afb6a6499b502f7f2",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkPilot-v003/walk-report.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkReproductionKit-v001/manifest.json",
+      "mode": "copy",
+      "bytes": 91581,
+      "sha256": "91258d8058b173fa37a5bd1d4eecb88cffc3070c97a330f3c6432b55ebfb7dec",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkReproductionKit-v001/manifest.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkRetention-v003/changed-weight-vertices.npz",
+      "mode": "reference",
+      "bytes": 1515,
+      "sha256": "3ce5c1c95f6c1945c3112e55ce2c1ecf97221a2966da88ee0687925ccb0d37e0",
+      "snapshot": null
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkRetention-v003/tool-source.py",
+      "mode": "copy",
+      "bytes": 6955,
+      "sha256": "bd64817e6a7d0b5c8796f523812fcb1a9cce4899cd9b9fc7769d91107126234a",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkRetention-v003/tool-source.py"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkRetention-v003/validation.json",
+      "mode": "copy",
+      "bytes": 17017,
+      "sha256": "0630516734df3c1bb11f95ae92056e353dda46c4f4328c4574e32a2e1a451e49",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkRetention-v003/validation.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkStrain-v003/profile.json",
+      "mode": "copy",
+      "bytes": 1848,
+      "sha256": "d8919dc01af7832e6bc8613c25eb31a4a56bcff7df96fe9d7bc139cb0ac33126",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkStrain-v003/profile.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkStrain-v003/strain-curves.json",
+      "mode": "copy",
+      "bytes": 46760,
+      "sha256": "3e685d1407d59612046f1db40907050f455e7e96029a5f164b15632a47fddbf1",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkStrain-v003/strain-curves.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkStrain-v003/strain-report.json",
+      "mode": "copy",
+      "bytes": 4975,
+      "sha256": "da92bb699d31036f6643fbb962f8436c5859268fdd46341bb8fcd6175f8b9073",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkStrain-v003/strain-report.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkStrain-v003/tool-source.py",
+      "mode": "copy",
+      "bytes": 6873,
+      "sha256": "c0df26d4efe6ad4999a36e8f5b73c85ea63e4965233ed7c3fe8b2b73f8bd5039",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkStrain-v003/tool-source.py"
+    },
+    {
+      "path": "docs/art-templates/model-catalog.md",
+      "mode": "copy",
+      "bytes": 4489,
+      "sha256": "32a72cd98bc3a1d1e6e3dd7885616d0030553d7815ff131a5e30c2cb498dceb1",
+      "snapshot": "snapshot/docs/art-templates/model-catalog.md"
+    },
+    {
+      "path": "docs/art-templates/model-jobs/voidreign-quality-20261018.json",
+      "mode": "copy",
+      "bytes": 34363,
+      "sha256": "cd3d166f6c7f03e759cf1f132e9dda2d34496decdf6df8bd2fc60f4b300802ce",
+      "snapshot": "snapshot/docs/art-templates/model-jobs/voidreign-quality-20261018.json"
+    },
+    {
+      "path": "docs/art-templates/model-production-gates.md",
+      "mode": "copy",
+      "bytes": 27769,
+      "sha256": "044bc5e1611c052208308f2f0db9dd0c2edaec519fa0b40386a33c83d1eb64a8",
+      "snapshot": "snapshot/docs/art-templates/model-production-gates.md"
+    },
+    {
+      "path": "docs/art-templates/model-profiles/voidreign-collar-edge-comparison-20261019.json",
+      "mode": "copy",
+      "bytes": 3564,
+      "sha256": "3945b193ecf56dfc5879fdef723861d8a41dfdc95a54ff57c3387ee48496bd1a",
+      "snapshot": "snapshot/docs/art-templates/model-profiles/voidreign-collar-edge-comparison-20261019.json"
+    },
+    {
+      "path": "docs/art-templates/model-profiles/voidreign-collar-junction-cache-check-20261019.json",
+      "mode": "copy",
+      "bytes": 2376,
+      "sha256": "184198b91282346f48888fe4c5e9dc981fc8bedd3d7a1bebe8650899829be4de",
+      "snapshot": "snapshot/docs/art-templates/model-profiles/voidreign-collar-junction-cache-check-20261019.json"
+    },
+    {
+      "path": "docs/art-templates/model-profiles/voidreign-collar-junction-exchange-20261019.json",
+      "mode": "copy",
+      "bytes": 490,
+      "sha256": "21f4841665bf2229dc9ebaa48512da793ff63c1b7168e955daa6db424efc8f35",
+      "snapshot": "snapshot/docs/art-templates/model-profiles/voidreign-collar-junction-exchange-20261019.json"
+    },
+    {
+      "path": "docs/art-templates/model-profiles/voidreign-collar-junction-propagation-20261019.json",
+      "mode": "copy",
+      "bytes": 3199,
+      "sha256": "35169b71b60aaac35a132672439300829abd14c869f80264111d10e8cc416195",
+      "snapshot": "snapshot/docs/art-templates/model-profiles/voidreign-collar-junction-propagation-20261019.json"
+    },
+    {
+      "path": "docs/art-templates/model-profiles/voidreign-collar-region-comparison-20261019.json",
+      "mode": "copy",
+      "bytes": 4219,
+      "sha256": "9d2bf5aad96ad4791f93942fae76e1e5e3f685aebad82f7d9052a51af2c2707d",
+      "snapshot": "snapshot/docs/art-templates/model-profiles/voidreign-collar-region-comparison-20261019.json"
+    },
+    {
+      "path": "docs/art-templates/model-profiles/voidreign-collar-region-regressions-20261019.json",
+      "mode": "copy",
+      "bytes": 4256,
+      "sha256": "791209840ec3ea95fdd0e8a2433e84acfa4348606751149d586bc8d728bbc8ca",
+      "snapshot": "snapshot/docs/art-templates/model-profiles/voidreign-collar-region-regressions-20261019.json"
+    },
+    {
+      "path": "docs/art-templates/model-profiles/voidreign-current-material-views-20261019.json",
+      "mode": "copy",
+      "bytes": 2401,
+      "sha256": "f0abbdf3c85741fe7e4469a246fd8fc9fc1ee4209b5c876fdd08a2c6834e8131",
+      "snapshot": "snapshot/docs/art-templates/model-profiles/voidreign-current-material-views-20261019.json"
+    },
+    {
+      "path": "docs/art-templates/model-profiles/voidreign-material-audit-20261019.json",
+      "mode": "copy",
+      "bytes": 735,
+      "sha256": "a805fef3a72d3d5d390e86976a5f1495178111014a145c5c53d02e7596193b5c",
+      "snapshot": "snapshot/docs/art-templates/model-profiles/voidreign-material-audit-20261019.json"
+    },
+    {
+      "path": "docs/art-templates/model-profiles/voidreign-primary-rig-pilot-20261019.json",
+      "mode": "copy",
+      "bytes": 11326,
+      "sha256": "51dbcf18a13a14dde3c8a0d10f1500ac60de2c5138cb0824ee0e214d95447e38",
+      "snapshot": "snapshot/docs/art-templates/model-profiles/voidreign-primary-rig-pilot-20261019.json"
+    },
+    {
+      "path": "docs/art-templates/model-profiles/voidreign-sole-collar-review-20261019.json",
+      "mode": "copy",
+      "bytes": 4097,
+      "sha256": "3ccedc8f1bf2c41ee9b2cf504e785493790ab1f7723ff360b4d388c87e32cc4f",
+      "snapshot": "snapshot/docs/art-templates/model-profiles/voidreign-sole-collar-review-20261019.json"
+    },
+    {
+      "path": "docs/art-templates/model-profiles/voidreign-standing-collar-correction-20261019.json",
+      "mode": "copy",
+      "bytes": 4327,
+      "sha256": "6c91d008cb44ce50e6aff4a7d9408b90cbb5475c374a9e8f1c8ffaa4deff645e",
+      "snapshot": "snapshot/docs/art-templates/model-profiles/voidreign-standing-collar-correction-20261019.json"
+    },
+    {
+      "path": "docs/art-templates/model-profiles/voidreign-walk-collar-corrected-20261019.json",
+      "mode": "copy",
+      "bytes": 3791,
+      "sha256": "726434baf85325b305cc784291889986124e1b075a18737829e4564728248299",
+      "snapshot": "snapshot/docs/art-templates/model-profiles/voidreign-walk-collar-corrected-20261019.json"
+    },
+    {
+      "path": "docs/art-templates/model-profiles/voidreign-walk3-exchange-20261019.json",
+      "mode": "copy",
+      "bytes": 448,
+      "sha256": "a7e8a0bae665b9d5454c4c5c9f33898e5967e399925f51d891c6a67d35c4a41f",
+      "snapshot": "snapshot/docs/art-templates/model-profiles/voidreign-walk3-exchange-20261019.json"
+    },
+    {
+      "path": "docs/art-templates/model-profiles/voidreign-walk3-strain-20261019.json",
+      "mode": "copy",
+      "bytes": 1848,
+      "sha256": "d8919dc01af7832e6bc8613c25eb31a4a56bcff7df96fe9d7bc139cb0ac33126",
+      "snapshot": "snapshot/docs/art-templates/model-profiles/voidreign-walk3-strain-20261019.json"
+    },
+    {
+      "path": "docs/art-templates/mount-primary-motion.md",
+      "mode": "copy",
+      "bytes": 16969,
+      "sha256": "c6c7427b49298c01dc514b5baf5cfa349777ed102703a58d6a7f13d0b290cc56",
+      "snapshot": "snapshot/docs/art-templates/mount-primary-motion.md"
+    },
+    {
+      "path": "docs/dependency-map.md",
+      "mode": "copy",
+      "bytes": 91733,
+      "sha256": "1921e5cbad2fdb67d7b629cff510d6fef29a8f12148ea6c210aaaf8578815bf7",
+      "snapshot": "snapshot/docs/dependency-map.md"
+    },
+    {
+      "path": "tools/Analyze-AssetSurfaceStrain.py",
+      "mode": "copy",
+      "bytes": 6873,
+      "sha256": "c0df26d4efe6ad4999a36e8f5b73c85ea63e4965233ed7c3fe8b2b73f8bd5039",
+      "snapshot": "snapshot/tools/Analyze-AssetSurfaceStrain.py"
+    },
+    {
+      "path": "tools/Audit-AssetMaterialChannels.py",
+      "mode": "copy",
+      "bytes": 4689,
+      "sha256": "7536199e21cbb14c255858e752f753dbaaa9c45a115a9aa5df97cd2a46d394b7",
+      "snapshot": "snapshot/tools/Audit-AssetMaterialChannels.py"
+    },
+    {
+      "path": "tools/Build-MountStandingPilot.py",
+      "mode": "copy",
+      "bytes": 10164,
+      "sha256": "86f7511fd8d7fcda30010b0fcb6ac53f9b8bcff60d3a9accbe57906e4176ee11",
+      "snapshot": "snapshot/tools/Build-MountStandingPilot.py"
+    },
+    {
+      "path": "tools/Build-MountWalkPilot.py",
+      "mode": "copy",
+      "bytes": 12110,
+      "sha256": "5eb0a71c5aeefe85eb7d6fbd55c8ae2ab379d6a4a9733e6a55522f883239db6a",
+      "snapshot": "snapshot/tools/Build-MountWalkPilot.py"
+    },
+    {
+      "path": "tools/Check-AssetRigRetention.py",
+      "mode": "copy",
+      "bytes": 6955,
+      "sha256": "bd64817e6a7d0b5c8796f523812fcb1a9cce4899cd9b9fc7769d91107126234a",
+      "snapshot": "snapshot/tools/Check-AssetRigRetention.py"
+    },
+    {
+      "path": "tools/Check-MountStandingCache.py",
+      "mode": "copy",
+      "bytes": 4791,
+      "sha256": "5f34f9c3629eda04af57efe13a18504420eb172933b81198c6b40fe1fc651860",
+      "snapshot": "snapshot/tools/Check-MountStandingCache.py"
+    },
+    {
+      "path": "tools/Compare-CheckedAssetEdgeCaches.py",
+      "mode": "copy",
+      "bytes": 6125,
+      "sha256": "5f912032dd558e6303d0c9280ea37551a988c3192a595e2fb99db8ed452cfc8a",
+      "snapshot": "snapshot/tools/Compare-CheckedAssetEdgeCaches.py"
+    },
+    {
+      "path": "tools/Export-CheckedMotionAlembic.py",
+      "mode": "copy",
+      "bytes": 4697,
+      "sha256": "d7856961d1acd80654c13564dc473ffaeba5acb0ca64fa61c3c180362a318d46",
+      "snapshot": "snapshot/tools/Export-CheckedMotionAlembic.py"
+    },
+    {
+      "path": "tools/Freeze-AssetEvidence.py",
+      "mode": "copy",
+      "bytes": 3636,
+      "sha256": "022a766de42da24a27460313b041d386c86c95c5e30573e5f661dc523872dd88",
+      "snapshot": "snapshot/tools/Freeze-AssetEvidence.py"
+    },
+    {
+      "path": "tools/Render-MountAnatomyAtlas.py",
+      "mode": "copy",
+      "bytes": 10026,
+      "sha256": "a4d1e4b5f319bd55ce220ef386d5ccdd08f13349911342b3ca6e11c4aff2572f",
+      "snapshot": "snapshot/tools/Render-MountAnatomyAtlas.py"
+    },
+    {
+      "path": "tools/Render-VoidreignTextureCloseups.py",
+      "mode": "copy",
+      "bytes": 3572,
+      "sha256": "1b790126e75fb54e4c45ec52608a66776017f20097750a0ef892143f298b055a",
+      "snapshot": "snapshot/tools/Render-VoidreignTextureCloseups.py"
+    },
+    {
+      "path": "tools/Repair-MountRootWeights.py",
+      "mode": "copy",
+      "bytes": 9859,
+      "sha256": "2cd4623696226260bed71a303ad1e7f1bdb5bb8cbefbbfa6954d1f7c479ebb64",
+      "snapshot": "snapshot/tools/Repair-MountRootWeights.py"
+    }
+  ],
+  "profile_sha256": "a171f6d90ed84bbc1329be15da9841fc0a4165bda039f7b86afe23ce0dde810f",
+  "tool_sha256": "022a766de42da24a27460313b041d386c86c95c5e30573e5f661dc523872dd88"
+}

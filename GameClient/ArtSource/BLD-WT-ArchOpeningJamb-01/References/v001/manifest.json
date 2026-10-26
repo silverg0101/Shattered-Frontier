@@ -1,0 +1,99 @@
+{
+  "asset_id": "BLD-WT-ArchOpeningJamb-01",
+  "version": "v001",
+  "batch": "construction-worked-timber-arched-openings-37",
+  "current_status": "image-complete; appearance proposal; structural readiness blocked",
+  "intended_route": "proposed appearance-only surface treatment on contract-defined arch-2m/v1 carrier",
+  "carrier": {
+    "geometry_status": "geometry-proposed; contract target only",
+    "dimensions_m": {
+      "x": 2.0,
+      "y": 0.5,
+      "z": 3.0
+    },
+    "grid_m": 0.5,
+    "axes": "local X width, Y extrusion/depth, Z height",
+    "origin": "minimum-grid-corner (0,0,0)",
+    "pivot": "minimum-grid-corner carrier frame",
+    "allowed_rotations": "identity only under BLD-01 default until an authored shape allowlist exists",
+    "aperture": "XZ outer rectangle [0,2]x[0,2] plus upper semicircle center (1,2), radius 1m; subtract opening rectangle (0.5,1.5)x[0,2] plus upper semicircle same center, radius 0.5m; through Y"
+  },
+  "component_boundary": "One flush KIT-WT treatment on the two vertical jamb/reveal patches from z=0 to spring points z=2; no extra member or thickness.",
+  "exposed_faces": "Front/back jamb patches and reveal patches; exact carrier patch mapping remains proposed.",
+  "mating_faces": "Patch boundary at z=2 to BLD-WT-ArchOpeningRingLintel-01; base boundary at z=0 to blocked BLD-WT-ArchOpeningThreshold-01; no new contact geometry.",
+  "source_references": [
+    "docs/art-templates/player-construction-kit-contract.md, arch-2m and buildability route",
+    "docs/decisions/BLD-01-voxel-geometry-interface.md, coordinate/orientation contract",
+    "docs/art-templates/asset-lists/construction-worked-timber-arched-openings-37.md",
+    "GameClient/ArtSource/BLD-WT-FaceExteriorCellFull-01/References/v001/concept-sheet.png",
+    "GameClient/ArtSource/BLD-RT-ArchOpeningJamb-01/References/v001/concept-sheet.png"
+  ],
+  "reference_image_hashes": {
+    "KIT-WT surface reference": {
+      "path": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\BLD-WT-FaceExteriorCellFull-01\\References\\v001\\concept-sheet.png",
+      "sha256": "119d03245b624ebf86dd51a17f4ea32b37294203c671f6cf44a3fcf785c2e3a1"
+    },
+    "KIT-RT arch appearance reference": {
+      "path": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\BLD-RT-ArchOpeningJamb-01\\References\\v001\\concept-sheet.png",
+      "sha256": "822bb84c90b806887993d3b86d4b197f2e85f74cde1642ca1d0d088e417b9add"
+    }
+  },
+  "required_selected_outputs": [
+    "concept-sheet.png",
+    "asset-view.png"
+  ],
+  "selected_image_count": 2,
+  "additional_images": 0,
+  "exact_prompts": {
+    "concept-sheet-rejected-first-attempt": "Use case: stylized-concept\nAsset type: worked-timber architectural material surface-treatment concept sheet for later modeling reference; output only concept-sheet.png.\nPrimary request: Show the KIT-WT appearance treatment for the two vertical jamb and inner-reveal patches of one documented arch-2m/v1 host. This is a surface treatment on a fixed carrier, not new geometry. Work from the target definition below and use supplied images only for appearance guidance. Make the complete treated arch carrier the dominant view; include useful orthographic and section views, patch/contact diagram, and the exact design-target dimensions.\nInput images: Image 1 is KIT-WT worked-timber finish reference; use its warm dressed wood grain and restrained joinery appearance only. Image 2 is a prior KIT-RT arch-jamb appearance study; use only as an arch-opening visual reference, not as authority for extra members or dimensions.\nScene/backdrop: plain light neutral studio background.\nSubject: One arch-2m/v1 carrier. Exact target envelope 2.0 m wide (local X) \u00d7 0.5 m deep (local Y) \u00d7 3.0 m tall (local Z). At local XZ: outer shape is rectangle [0,2]\u00d7[0,2] plus an upper semicircle centered (1,2) with radius 1 m. Empty opening subtracts rectangle (0.5,1.5)\u00d7[0,2] plus an upper semicircle with the same center and radius 0.5 m. Extrude unchanged through Y. Minimum-grid-corner origin (0,0,0), 0.5 m grid. Show the exact clear opening empty. Apply worked-timber appearance only to the two straight vertical jamb/reveal patches from z=0 to the spring points at z=2; leave crown/ring, threshold, door and window interface surfaces neutral gray so the treatment boundary is visible. Mark the two spring-point seam contacts to the separate arch ring-lintel treatment and the base boundary to the separately tracked threshold role.\nStyle/medium: precise polished game construction concept illustration, believable worked timber; smooth dressed beams, warm medium-brown wood, natural grain, no metal reinforcement.\nComposition/framing: dominant complete treated arch carrier; include orthographic front, side-section through Y, and small patch/contact details. All views must be the same exact arch and material treatment.\nLighting/mood: even neutral studio light.\nColor palette: warm worked oak and neutral gray carrier.\nMaterials/textures: clean cut edges, vertical grain on jamb treatment, subtle tool marks.\nText (verbatim): exact labels only: \u201cEnvelope target: 2.0 m \u00d7 0.5 m \u00d7 3.0 m\u201d; \u201cOpening target: 1.0 m clear width; spring line z=2.0 m\u201d; \u201cGrid: 0.5 m\u201d; \u201cX width / Y depth / Z height\u201d; \u201cJamb-to-ring seam: z=2.0 m\u201d. These are design targets, not image measurements.\nConstraints: no geometry change, no added thickness or protrusions, no new gameplay properties.\nAvoid: door leaf, window, hardware, tile, plaster, captions, logos, watermark.",
+    "concept-sheet-selected-repair": "Use case: precise-object-edit\nAsset type: replacement worked-timber arched-opening material-treatment concept sheet; output one image, concept-sheet.png.\nInput image: the current jamb concept sheet is the sole design reference.\nPrimary request: repair the material treatment so it is a flush appearance layer on the fixed arch-2m/v1 carrier. Preserve the exact arch silhouette, empty opening, overall composition, dimensional labels, orthographic views, section, and contact callouts. Change only the depicted KIT-WT jamb treatment and neutral host representation.\nConstraints: the wood appearance must be painted/grained flush on the two straight jamb and reveal patches only, with zero added thickness and no silhouette change. Remove all block-like jamb overlays, end caps, joints, tabs, slots, cutouts, separate voussoirs, timber frame members, and threshold board. Render the rest of the arch carrier as a simple uninterrupted neutral-gray solid with no invented construction seams. Keep the arch ring/crown, threshold zone, door and window interfaces neutral gray. Preserve the exact 2.0 m \u00d7 0.5 m \u00d7 3.0 m outer envelope; local X width, Y depth, Z height; 0.5 m grid; 1.0 m clear width; spring line z=2.0 m. Add clearly legible exact labels for outer radius 1.0 m and inner opening radius 0.5 m if space allows. Keep the jamb-to-ring treatment seam at both spring points. Do not add dimensions or geometry beyond these stated contract targets.\nAvoid: wooden members, separate solid assets, recesses, protrusions, extra objects, floor tile, door/window, hardware, pseudo-text, watermark.",
+    "asset-view": "Use case: precise-object-edit\nAsset type: clean asset-view.png for one KIT-WT arch-2m jamb surface treatment.\nInput image: the selected concept-sheet.png is the sole identity/master reference.\nPrimary request: derive one isolated, intact three-quarter view of the same complete arch-2m/v1 carrier with the same flush worked-timber appearance treatment on the two vertical jamb/reveal patches.\nConstraints: preserve exact outer profile and empty opening from the master; 2.0 m \u00d7 0.5 m \u00d7 3.0 m target envelope, 1.0 m clear width, spring line z=2.0 m, arch outer radius 1.0 m and inner radius 0.5 m. Wood is a surface appearance flush with the carrier, with no added thickness. Keep all other carrier surfaces plain neutral gray. Show exactly one complete arch carrier and no other object. Use a neutral light-gray seamless studio background, even soft lighting, full silhouette with clear margins. No text, dimensions, panels, labels, detail insets, extra parts, threshold, door, window, hardware, floor tiles, or scene. Do not redesign any geometry or the surface pattern."
+  },
+  "generation_history": [
+    {
+      "file": "provenance/exec-bdb18889-5bbf-4e4f-9e24-e83866af40d3.png",
+      "selected": false,
+      "reason": "Generated jamb as raised/block-like members with unapproved joints and tabs; retained as rejected provenance."
+    },
+    {
+      "file": "concept-sheet.png",
+      "source_cache_path": "C:\\Users\\grego\\.codex\\generated_images\\01a15000-e13f-7213-9ec0-df2684201405\\exec-3e494c3e-2615-4ea2-a86b-41d8df56024e.png",
+      "selected": true,
+      "metadata": {
+        "format": "PNG",
+        "width_px": 1536,
+        "height_px": 1024,
+        "bit_depth": 8,
+        "color_type": 2,
+        "mode": "RGB",
+        "sha256": "c26160707b7125bb6f5790a6b75e76b1601f2cda946ac2dac37820d7ed4940ac"
+      },
+      "repair_of": "provenance/exec-bdb18889-5bbf-4e4f-9e24-e83866af40d3.png"
+    },
+    {
+      "file": "asset-view.png",
+      "source_cache_path": "C:\\Users\\grego\\.codex\\generated_images\\01a15000-e13f-7213-9ec0-df2684201405\\exec-0f4bcbac-2980-440a-ba50-aa9b07d75f3c.png",
+      "selected": true,
+      "metadata": {
+        "format": "PNG",
+        "width_px": 1536,
+        "height_px": 1024,
+        "bit_depth": 8,
+        "color_type": 2,
+        "mode": "RGB",
+        "sha256": "57fa884e9fef1b77abe6782049f9767aa8b82fe3bf1aa889341e162099d7326f"
+      }
+    }
+  ],
+  "visual_review": {
+    "date": "2026-10-18",
+    "first_attempt": "Rejected: visible added jamb blocks, cap/join geometry and unapproved host seams.",
+    "selected_concept": "Accepted as appearance concept only: exact target envelope/opening/grid/radii labels legible; jamb finish appears flush on simple neutral carrier; no apparent silhouette protrusion. Numerical fit not established.",
+    "asset_view": "Accepted after image inspection: one intact carrier in neutral studio, full silhouette visible, same flush jamb treatment, no labels or separate scene objects, no apparent protrusion beyond the carrier outline. Visual review is not numerical fit."
+  },
+  "compatibility": "No approved GEO-01 payload/hash; no applicable GEO-02 arch fit/rotation evidence; image is not geometry/runtime acceptance.",
+  "blockers": [
+    "GEO-01 approved manifest/hash absent; carrier remains a contract geometry proposal.",
+    "Applicable GEO-02 arch/opening/rotation fit evidence absent."
+  ]
+}

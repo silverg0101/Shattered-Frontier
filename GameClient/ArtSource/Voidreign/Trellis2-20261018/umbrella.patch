@@ -1,0 +1,18 @@
+diff --git a/forks/CuMesh-rocm b/forks/CuMesh-rocm
+--- a/forks/CuMesh-rocm
++++ b/forks/CuMesh-rocm
+@@ -1 +1 @@
+-Subproject commit d1d1e20ccb4ce8e7334bfb3d79b665ffe6430049
++Subproject commit d1d1e20ccb4ce8e7334bfb3d79b665ffe6430049-dirty
+diff --git a/forks/FlexGEMM-rocm b/forks/FlexGEMM-rocm
+--- a/forks/FlexGEMM-rocm
++++ b/forks/FlexGEMM-rocm
+@@ -1 +1 @@
+-Subproject commit bbfbce0c40cd8a886fc9cee8c62d7f218fb5bdd3
++Subproject commit bbfbce0c40cd8a886fc9cee8c62d7f218fb5bdd3-dirty
+diff --git a/forks/TRELLIS2-rocm b/forks/TRELLIS2-rocm
+--- a/forks/TRELLIS2-rocm
++++ b/forks/TRELLIS2-rocm
+@@ -1 +1 @@
+-Subproject commit 48b20f617188c1f942d054625e869b71f72b21c8
++Subproject commit 48b20f617188c1f942d054625e869b71f72b21c8-dirty

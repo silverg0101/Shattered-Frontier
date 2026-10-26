@@ -1,0 +1,13 @@
+{
+  "cases": [
+    "TRELLIS2-12steps",
+    "TRELLIS2-24steps",
+    "Hunyuan3D-2.1",
+    "TripoSG",
+    "Pixal3D-Aligned",
+    "Hunyuan3D-2.1-Painted"
+  ],
+  "selected_pixal_alignment": "yaw -112 degrees",
+  "status": "complete",
+  "comparison": "Comparison.blend"
+}

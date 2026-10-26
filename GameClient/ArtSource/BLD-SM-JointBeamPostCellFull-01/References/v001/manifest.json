@@ -1,0 +1,73 @@
+{
+  "assetId": "BLD-SM-JointBeamPostCellFull-01",
+  "version": "v001",
+  "category": "construction kit / structural joint concept",
+  "created": "2026-10-18",
+  "sourceReferences": [
+    "docs/art-templates/player-construction-kit-contract.md \u2014 Structural joints; canonical frame; required kit QA",
+    "docs/Game-Design/Legends_Shattered_Frontier_Construction_System_Architecture_v0.1.md \u2014 \u00a7\u00a73.1\u20133.2, 8\u20139",
+    "GameClient/ArtSource/BLD-SM-CellFull-01/References/v001/asset-view.png \u2014 material style"
+  ],
+  "definition": {
+    "geometryRef": "cell-full/v1 (proposal)",
+    "envelopeMeters": [
+      0.5,
+      0.5,
+      0.5
+    ],
+    "contacts": [
+      "-X",
+      "+X",
+      "-Y",
+      "+Y",
+      "-Z",
+      "+Z"
+    ],
+    "orientation": "grid-aligned orthogonal only",
+    "materialKit": "KIT-SM",
+    "structuralMaterialProfile": "Stone masonry",
+    "cosmeticSkin": "appearance only",
+    "functionalDefinition": "none"
+  },
+  "generation": {
+    "tool": "built-in image_gen",
+    "date": "2026-10-18",
+    "model": "unavailable",
+    "seed": "unavailable",
+    "promptRecord": "prompt.txt",
+    "referenceImagesAttached": []
+  },
+  "images": [
+    {
+      "path": "concept-sheet.png",
+      "sha256": "eb6eec5fef1650595fb94149bdbf211de09b876c0ccc9f91dc6a5d193763d759",
+      "width": 1536,
+      "height": 1024,
+      "pixelFormat": "RGB 24-bit",
+      "alpha": false,
+      "review": "Readable T relationship; band may extend outside nominal contact envelope. Treat tie as cosmetic proposal only; no load rating/fit established."
+    },
+    {
+      "path": "asset-view.png",
+      "sha256": "99e3c7d46e4229227e28414d07e0b2b39973db44e5bda214cda9642015061a6b",
+      "width": 1374,
+      "height": 1145,
+      "pixelFormat": "RGB 24-bit",
+      "alpha": false,
+      "review": "Readable T relationship; band may extend outside nominal contact envelope. Treat tie as cosmetic proposal only; no load rating/fit established."
+    }
+  ],
+  "review": {
+    "reviewedBy": "Codex",
+    "conceptStatus": "proposed",
+    "cleanViewStatus": "ready-for-model-test",
+    "imageStatus": "image-complete",
+    "geometryAcceptance": "not established",
+    "numericalMeshFit": "not established",
+    "runtimeCollisionSupportClearance": "not established",
+    "actionableFindings": [
+      "Readable T relationship; band may extend outside nominal contact envelope. Treat tie as cosmetic proposal only; no load rating/fit established."
+    ]
+  },
+  "componentBoundary": "One separately indexed structural joint appearance role. Assembly and isolation illustrations do not validate dimensions, support, collision or clearance."
+}

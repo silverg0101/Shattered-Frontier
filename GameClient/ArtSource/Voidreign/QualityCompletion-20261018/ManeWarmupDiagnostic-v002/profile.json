@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "source": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManeClothSettledFull-v001\\Voidreign-ActualSurfacePilot.blend",
+  "producer_report": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManeClothSettledFull-v001\\pilot-report.json",
+  "proxy_object": "SIM | actual source hair surface.001",
+  "object": "geometry_0",
+  "index_attribute": "SurfaceSimIndex.001",
+  "selection_attribute": "SurfaceSimSelected.001",
+  "held_frames": 240,
+  "top_count": 12,
+  "units": "metres,seconds",
+  "permissions": "Read-only frozen warmup diagnosis",
+  "effective_time": "This source/cache only",
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManeClothSettledFull-v001\\Voidreign-ActualSurfacePilot.blend": "3993764fc40cc42baabb07be05f1014831bff83706e68bdd7574643be9625dd8",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManeClothSettledFull-v001\\pilot-report.json": "8a73ada7f69ae5a77400c77f726f477584dc332ad0ce9b45ab18d751f9d28af7",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManeClothSettledFull-v001\\blendcache_Voidreign-ActualSurfacePilot\\ActualManeSurface_000239_00.bphys": "7120ce3699ed87e496297643a1c9ce9b0a3c9b5b87fb76c7e54fec38ba6739cc",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManeClothSettledFull-v001\\blendcache_Voidreign-ActualSurfacePilot\\ActualManeSurface_000240_00.bphys": "f7c34b5221dcebd59ee63d6e6a0947faf4499f37340df917fc7aa369f184c14a"
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "asset_id": "RESOURCE-GreenlandsOakNode-01",
+  "category": "resource prop / tree",
+  "brief": "One common oak logging node with a mature trunk and broad natural canopy; appearance is a proposal, while oak_log is listed as a common logging resource.",
+  "design_sources": [
+    { "path": "docs/Game-Design/Legends_Shattered_Frontier_Vertical_Slice_Specification_v1.0.md", "section": "Scope and exclusions / Gathering; Content inventory", "role": "requires distinguishable wood resource opportunities" },
+    { "path": "docs/Game-Design/Crafting/Legends_Shattered_Frontier_Crafting_Gathering_and_Resources_v1.0.md", "section": "1.4 Catalogue; 2.1 gathering_node definition", "role": "lists common oak_log and node concept" },
+    { "path": "docs/Game-Design/concept-art/Concept.png", "role": "optional style reference" }
+  ],
+  "concept_status": "agent-selected; visual proposal, user approval not claimed",
+  "clean_view_status": "ready-for-model-test; opaque background, segmentation required if later adapter requires alpha",
+  "design_master": "concept-sheet.png",
+  "prompts": "prompt.txt",
+  "generation": { "tool": "built-in image_gen", "model": "unavailable", "generated_date": "2026-10-18", "seed": "unavailable" },
+  "outputs": {
+    "concept-sheet.png": { "sha256": "63395E3A58A753F2E528CE70490598527B6DFD4266258286298AB8D522DEEAD7", "dimensions_px": [1536, 1024], "color": "RGB, opaque; PNG color type 2", "master": true },
+    "asset-view.png": { "sha256": "607F11A55E388D1D6055C83348F20D2F063BAA4917C38C0D99A99A580A69107E", "dimensions_px": [1536, 1024], "color": "RGB, opaque; PNG color type 2", "master": false }
+  },
+  "component_boundaries": ["One tree only", "Excludes forest, separate stump, tools, harvested logs and gameplay harvesting state"],
+  "scale": "Approximate scale inferred; no dimensions established by the design source.",
+  "edits": "No pixel edits or upscaling; clean view generated as a separate interpretation of the selected concept sheet.",
+  "review": {
+    "reviewer": "Codex visual inspection",
+    "findings": ["Sheet panels show a consistent mature broad-canopy oak and readable trunk.", "Clean view shows one complete tree with margins, visible base and no unrelated assets.", "Natural color and form remain consistent between sheet and clean view; background is opaque neutral gray."],
+    "unresolved": ["Botanical species, exact size and harvestable branch requirements are visual proposals; no extra harvesting states are implied."],
+    "image_complete": true,
+    "approval": "agent-selected; not user-approved",
+    "review_date": "2026-10-18"
+  }
+}

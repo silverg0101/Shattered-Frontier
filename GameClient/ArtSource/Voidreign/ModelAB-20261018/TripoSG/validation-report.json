@@ -1,0 +1,47 @@
+{
+  "blend": {
+    "meshes": 1,
+    "dimensions_m": [
+      0.8059080839157104,
+      4.287450313568115,
+      2.5999999046325684
+    ],
+    "triangles": 299920,
+    "materials": [
+      "Geometry review grey"
+    ],
+    "image_sizes": []
+  },
+  "checks": [
+    "Fresh process reopen and render"
+  ],
+  "exports": {
+    "glb": {
+      "meshes": 1,
+      "dimensions_m": [
+        0.8059085607528687,
+        4.287450790405273,
+        2.5999999046325684
+      ],
+      "triangles": 299920,
+      "materials": [
+        "Geometry review grey"
+      ],
+      "image_sizes": []
+    },
+    "fbx": {
+      "meshes": 1,
+      "dimensions_m": [
+        0.8059083223342896,
+        4.287450313568115,
+        2.599999922364333
+      ],
+      "triangles": 299920,
+      "materials": [
+        "Geometry review grey"
+      ],
+      "image_sizes": []
+    }
+  },
+  "material_check": "geometry only; UVs/textures not required or validated"
+}

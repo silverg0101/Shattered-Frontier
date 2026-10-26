@@ -1,0 +1,13 @@
+{
+  "status": "agent-code-review-complete-for-semantic-junction-coverage",
+  "cause": "Edge234104/234111 crosses Tail semantic and hind.L primary ownership; semantic2point nearhock cannot use abrupt pelvis-only binding next to leg skin.",
+  "change": "Include semantic policy junctions in the same bounded harmonic blend. Pin exact sole vertices as Dirichlet anchors. No contact/shape/iteration/influence limits relaxed.",
+  "automatic_budget": {
+    "limit": 3,
+    "used": 3,
+    "status": "needs-review-not-reset"
+  },
+  "authored_diagnostic_corrections": 2,
+  "total_primary_candidates": 5,
+  "promotion": "None; anatomical and parent review gates remain explicit."
+}

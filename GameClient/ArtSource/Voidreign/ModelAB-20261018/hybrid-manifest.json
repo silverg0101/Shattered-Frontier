@@ -1,0 +1,79 @@
+{
+  "files": [
+    {
+      "sha256": "81099d2fa00d1e7983952e1fe73a7ffff9b328bdd2775611f9ed5a6e157b79d5",
+      "path": "Pixal-vs-HunyuanPaint.blend"
+    },
+    {
+      "sha256": "08556d81471be5e0b90fa8c09ef30478d3753daaef9eabf1aa59ce16606c9486",
+      "path": "hybrid-comparison-validation.json"
+    },
+    {
+      "sha256": "eaf2539c5df8a157422b7a3ce28a2ebdcd15ea0c8037beac94fbcfecd47205b1",
+      "path": "Pixal3D-HunyuanPaint/Voidreign.blend"
+    },
+    {
+      "sha256": "b2981711abc773069929b59101d658c6402daed3e993def7bc89dea836e3c53a",
+      "path": "Pixal3D-HunyuanPaint/Voidreign.glb"
+    },
+    {
+      "sha256": "612f5c4808062bae753506cd275014abded22c9a91bc8379a84bea9aaca51edd",
+      "path": "Pixal3D-HunyuanPaint/Voidreign.fbx"
+    },
+    {
+      "sha256": "3f20bceeb716eedbc9855fd70406de21137299a6bd01105890827b03478aa359",
+      "path": "Pixal3D-HunyuanPaint/run.json"
+    },
+    {
+      "sha256": "9493747fdc353287f10c74983268d8cda6435463bca210c851b37c2fc24efd97",
+      "path": "Pixal3D-HunyuanPaint/validation-report.json"
+    }
+  ],
+  "date": "2026-10-18",
+  "visual_acceptance": false,
+  "painting": "Hunyuan3D-2.1",
+  "finding": "Severe white/red/gray mottling; prefer original Pixal textures.",
+  "input": {
+    "backend": "Hunyuan3D-2.1 paint",
+    "status": "complete",
+    "image": "/mnt/c/Projects/Shattered-Frontier/GameClient/ArtSource/Voidreign/Trellis2-20261018/Voidreign-clean.png",
+    "image_sha256": "d67522bf160e2dbfe763a5945e651b6b5c508f32676257dac80c98b26a42aca0",
+    "input_mesh": "/mnt/c/Projects/Shattered-Frontier/Artifacts/Art/Voidreign/model-ab-20261018/pixal-01/Voidreign.glb",
+    "input_mesh_sha256": "b143eaff22a67ea647258854f01189820b3a9d0a6c66a88aa984f3189411d9b8",
+    "seed": 0,
+    "shape_seed": 42,
+    "steps": 15,
+    "guidance_scale": 3.0,
+    "scheduler": "UniPCMultistepScheduler",
+    "seed_note": "Upstream multiview helper explicitly seeds its texture diffusion with zero.",
+    "views": 6,
+    "multiview_resolution": 256,
+    "render_size": 1024,
+    "texture_size": 2048,
+    "rasterizer": "community pure PyTorch ROCm",
+    "use_remesh": false,
+    "shape_backend": "Pixal3D",
+    "reuse_uv": true,
+    "geometry_note": "Painting retains the input triangles; UV unwrapping may split vertices.",
+    "stage": "complete",
+    "torch": "2.14.0+rocm10.1.0",
+    "hip": "7.16.26385",
+    "gpu": "AMD Radeon RX 7900 XTX",
+    "dino_revision": "611a9d42f2335e0f921f1e313ad3c1b7178d206d",
+    "vae_attention": "Diffusers classic attention; avoids failing ROCm fused VAE head-dimension path",
+    "input_triangles": 296860,
+    "elapsed_seconds": 56.886,
+    "outputs": {
+      "obj": "/mnt/c/Projects/Shattered-Frontier/Artifacts/Art/Voidreign/model-ab-20261018/pixal-hunyuan-paint-02/Voidreign_textured.obj",
+      "glb": "/mnt/c/Projects/Shattered-Frontier/Artifacts/Art/Voidreign/model-ab-20261018/pixal-hunyuan-paint-02/Voidreign_textured.glb",
+      "maps": {
+        "albedo": "/mnt/c/Projects/Shattered-Frontier/Artifacts/Art/Voidreign/model-ab-20261018/pixal-hunyuan-paint-02/Voidreign_textured.jpg",
+        "metallic": "/mnt/c/Projects/Shattered-Frontier/Artifacts/Art/Voidreign/model-ab-20261018/pixal-hunyuan-paint-02/Voidreign_textured_metallic.jpg",
+        "roughness": "/mnt/c/Projects/Shattered-Frontier/Artifacts/Art/Voidreign/model-ab-20261018/pixal-hunyuan-paint-02/Voidreign_textured_roughness.jpg"
+      },
+      "elapsed": 59.092891693115234
+    }
+  },
+  "shape": "Pixal3D",
+  "runner_sha256": "048d76f649912b57b2063a67517ab246d601cfb8821b4b04f2d70bc7498d7188"
+}

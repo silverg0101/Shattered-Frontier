@@ -1,0 +1,7 @@
+{
+  "status": "verified",
+  "files": 242,
+  "self_contained": false,
+  "manifest": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkReproductionKit-v001/manifest.json",
+  "note": "Explicit code/profile/report snapshots plus external large inputs; parent StandingReproductionKit manifest retains earlier closure. Final bookkeeping after freeze is intentionally outside the immutable kit."
+}

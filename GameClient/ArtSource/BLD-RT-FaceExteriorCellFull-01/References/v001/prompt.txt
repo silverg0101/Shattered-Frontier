@@ -1,0 +1,23 @@
+CONCEPT SHEET — built-in image_gen, 2026-10-18.
+
+Use case: stylized-concept
+Asset type: separately indexed exterior-face treatment reference for player construction.
+Input image 1: rough-timber full-cell selected image, material and color cue only. Keep geometry from this prompt.
+Scene/backdrop: clean neutral warm-gray studio.
+Subject: one full solid 0.5 x 0.5 x 0.5 m cell cube, with its designated outside wall face shown forward. A rough-timber exterior surface treatment: dark warm-brown horizontal rough-sawn boards, restrained grain and flush pegged joinery.
+Style/medium: realistic fantasy architectural kit, early Greenlands timber craftsmanship.
+Composition/framing: modeling concept sheet with front/outside view, opposite side and top orthographic views plus a neutral exact square cube/contact silhouette. Mark the outside face as the one intended treatment. Show clean straight edges and full-cell footprint; dimension is a design target.
+Constraints: all surface details strictly inside the fixed cube envelope; full solid cube remains, all six boundary contact faces remain planar. No posts projecting beyond the cube, no stone, no metal, no openings, no trim overhang, no damage or gameplay claims. This is one face-role appearance reference, not a separate physical voxel or new geometry definition.
+Avoid: wall panel, framed cavity, scene, furniture, extra assets, free rotation, bevel enlargement, inaccurate labels, watermark.
+Reference: `GameClient/ArtSource/BLD-RT-CellFull-01/References/v001/asset-view.png` (appearance only).
+
+CLEAN ASSET VIEW — built-in image_gen, 2026-10-18. Input image 1 is the selected concept sheet.
+
+Use case: stylized-concept
+Asset type: clean full-asset view for the separately indexed rough-timber exterior-face component.
+Input image 1: selected exterior face concept sheet; preserve the main front-face finish and brown grain, ignore labels and sheet layout.
+Scene/backdrop: uniform neutral light-gray studio.
+Subject: exactly one solid 0.5 m full-cell cube with rough-timber exterior treatment on the main outward-facing side.
+Style/medium: realistic game-asset reference, dark warm-brown rough-sawn boards and flush pegs, consistent timber kit.
+Composition/framing: single complete cube, mild three-quarter view, designated exterior face largest and facing camera; top and one side visible, ample margins, soft neutral shadow.
+Constraints: solid full cube, equal edges, all details and joinery flush inside the 0.5 m target envelope; no frame or projecting posts. No other assets, scene, floor slab, openings, metal or stone. No gameplay claim; material tier is still rough timber and geometry remains proposed.

@@ -1,0 +1,7 @@
+{
+  "status": "verified",
+  "files": 131,
+  "self_contained": false,
+  "manifest": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CollarMaterialReproductionKit-v001/manifest.json",
+  "note": "External large inputs required. Final bookkeeping after freeze is intentionally outside immutable snapshots."
+}

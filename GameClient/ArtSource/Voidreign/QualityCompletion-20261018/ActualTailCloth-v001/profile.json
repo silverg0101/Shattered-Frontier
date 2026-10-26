@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "scope": "finite-actual-surface-cloth-diagnostic",
+  "permissions": "Offline CPU diagnostic author; no delivered source promotion",
+  "effective_time": "This single frozen surface pilot; prior failed attempts retained",
+  "units": "metres, seconds; Blender cloth parameters use recorded RNA meanings, not guide solver units",
+  "control_contract": "One full330frame actual-tail surface design evaluation after first30frame retention/startup/attachment checks. Frozen cloth response/colliders/limits; no parameter search. Initial overlap and final actual-surface correction remain independent checks.",
+  "source": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ContactMeshExperiment-v001\\Voidreign-CompleteHair.blend",
+  "motion_profile": "docs/art-templates/model-profiles/voidreign-complete-hair-motion-v003-20261018.json",
+  "guide_report": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneGuideProposal-v001\\guide-report.json",
+  "selection_archive": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selections.npz",
+  "surface_review": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ContactMeshSurfaceCheck-v001\\surface-review.npz",
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ContactMeshExperiment-v001\\Voidreign-CompleteHair.blend": "a1de9660c66c772cdb4cedec20ac5b1a2229a4417af46550f8167f915680c140",
+    "docs\\art-templates\\model-profiles\\voidreign-complete-hair-motion-v003-20261018.json": "9df3ed982c0f5f571210a98d42c1e6b395b80713c139f0b7b162ad861d5cca47",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneGuideProposal-v001\\guide-report.json": "3e776c1cef3380c3a81814d67ce2ec32270bca2e7d7fbece55eefef49e70de67",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selections.npz": "0b6a19f76a2cba73a42e293c29365360b53ba93be101cf8f4ca556e7a5989cc0",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ContactMeshSurfaceCheck-v001\\surface-review.npz": "e8df9e74a7ddd7ddb44654989f1f5f0474d853a43350c32e0674a15163c68c85",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneAttachmentProposals-v001\\attachment-proposals.json": "0e0b6d2096722f4ffa88be6d437c1b17d10eba5999c884a5f1974e860c1c3308"
+  },
+  "assembly_root": "MOTION HARNESS | rigid horse, not gait animation",
+  "frame_start": 1,
+  "frame_end": 330,
+  "feature_labels": [
+    2
+  ],
+  "cloth_settings": {
+    "quality": 8,
+    "mass": 0.03,
+    "air_damping": 5.0,
+    "tension_stiffness": 80.0,
+    "compression_stiffness": 80.0,
+    "shear_stiffness": 50.0,
+    "bending_stiffness": 2.0,
+    "tension_damping": 5.0,
+    "compression_damping": 5.0,
+    "shear_damping": 5.0,
+    "bending_damping": 2.0,
+    "pin_stiffness": 1.0
+  },
+  "collision_settings": {
+    "distance_min": 0.003,
+    "friction": 0.0,
+    "collision_quality": 6
+  },
+  "collider_thickness_outer_m": 0.002
+}

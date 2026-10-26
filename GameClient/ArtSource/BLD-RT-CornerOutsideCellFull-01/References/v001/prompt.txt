@@ -1,0 +1,9 @@
+Concept sheet, output `exec-0a1a685e-72ec-4105-b7e0-d6bab94fc67c.png`:
+
+Orthographic concept sheet for reusable component BLD-RT-CornerOutsideCellFull-01. Geometry proposal is `corner-outer/v1` inside a 0.5 m cube envelope: solid occupies w <= min(u,v), a convex 1:1 slope corner wedge. Show orthographic front, both slope contact directions, top, underside, neutral silhouette with occupied solid clear, and one small isometric view. Rough timber appearance, rough-sawn grain kept within wedge surfaces. Plain neutral ground. Do not make a full cube, do not add a post or support, no extra pieces, no people, no text, no scene. Preserve the convex wedge boundaries and contact contours. This image is conceptual and cannot validate masks or dimensions.
+
+Clean-view prompt, output `exec-a283cc2f-fce2-4a8d-8e58-0595b2a84179.png`:
+
+Single isolated rough-timber `corner-outer/v1` convex corner wedge for BLD-RT-CornerOutsideCellFull-01, three-quarter orthographic clean asset image on neutral background. Proposed 0.5 m cell envelope, occupied solid w<=min(u,v), two perpendicular 1:1 sloping planes meet at a convex ridge and retain their matching contact contours. Do not render a cube, a support bracket, a separate beam, or multiple pieces. Rough timber grain only on the wedge faces, no protrusions. Plain background, no people, text or other objects. Visual proposal only; actual mask fit is not established.
+
+No reference image attached; related timber components and existing `BLD-GreenlandsWallCorner-01` were inspected as visual style context only.

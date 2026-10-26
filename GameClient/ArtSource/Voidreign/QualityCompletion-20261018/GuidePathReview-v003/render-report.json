@@ -1,0 +1,504 @@
+{
+  "schema_version": 1,
+  "status": "unreviewed-guide-path-visualization",
+  "cpu_only": true,
+  "source": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateCleanup-v001\\Voidreign-CompleteHair.blend",
+  "source_sha256": "6c6044a533c16fc7fad23d42c0407dde37a0252aca84f9be1bc9b9a2367364f6",
+  "tool": "C:\\Projects\\Shattered-Frontier\\tools\\Render-FeatureGuidePaths.py",
+  "tool_sha256": "cb4243e60e1daab2b9b84a3dd3567472c9a6594201e7a8c672e042168301e7a0",
+  "mesh_hash": "ba2d283db0be5e8cff4cc7549f1f51916cc0a4d18213773300976b11512ececa",
+  "guide_report": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneGuideProposal-v001\\guide-report.json",
+  "guide_report_sha256": "3e776c1cef3380c3a81814d67ce2ec32270bca2e7d7fbece55eefef49e70de67",
+  "coverage_bound_guide_report_sha256": "3e776c1cef3380c3a81814d67ce2ec32270bca2e7d7fbece55eefef49e70de67",
+  "coverage_report": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\CoverageGuideStudy-v002\\coverage-report.json",
+  "coverage_report_sha256": "94add1cca0a5c6ab4605136737c00b95fbf5fcbd8820a9556a8b571d93fe755c",
+  "additional_guides": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\CoverageGuideStudy-v002\\additional-guides.json",
+  "additional_guides_sha256": "3d25841d2be20fc642f8d922497a1144698a8c4bc83078c099d45277afd10ef9",
+  "coverage_file_sha256": "a9dd01dfb9caed71b2ae173b0f64ba29131fc048cb7d1711bd67170870dfeaf4",
+  "selection_report": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selection-report.json",
+  "selection_report_sha256": "63eb535dcafe1140c5445ce46bd402cc438af979c437fbb9d7430b723aa11a08",
+  "selection_file": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selections.npz",
+  "selection_file_sha256": "0b6a19f76a2cba73a42e293c29365360b53ba93be101cf8f4ca556e7a5989cc0",
+  "selection_to_assembly_max_delta_m": 1.98004506707681e-07,
+  "assembly_root": "MOTION HARNESS | rigid horse, not gait animation",
+  "assembly_root_world_matrix": [
+    [
+      1.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    [
+      0.0,
+      1.0,
+      0.0,
+      0.0
+    ],
+    [
+      0.0,
+      0.0,
+      1.0,
+      0.0
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "assembly_root_scale": [
+    1.0,
+    1.0,
+    1.0
+  ],
+  "unit_scale": 1.0,
+  "guides": [
+    {
+      "name": "Mane_COVERAGE_00",
+      "feature": "Mane",
+      "root_node": 137722,
+      "status": "unreviewed-coverage-proposal",
+      "source_path_nodes": [
+        137722,
+        137212,
+        136699,
+        136118,
+        135281,
+        134169,
+        134173,
+        135826,
+        136709,
+        137056
+      ],
+      "virtual_edges_in_path": [
+        [
+          134169,
+          134173
+        ]
+      ]
+    },
+    {
+      "name": "Tail_COVERAGE_00",
+      "feature": "Tail",
+      "root_node": 29002,
+      "status": "unreviewed-coverage-proposal",
+      "source_path_nodes": [
+        29002,
+        28127,
+        26896,
+        26014,
+        26011,
+        25608,
+        25090,
+        24170,
+        24006,
+        23773,
+        22506,
+        22437,
+        22087,
+        21512,
+        21023,
+        20394,
+        19982,
+        19554,
+        19115,
+        18850,
+        18566,
+        18431,
+        17419,
+        16953,
+        16606,
+        16190,
+        15557,
+        14187,
+        13299,
+        12302,
+        11583,
+        11116,
+        10452,
+        9502,
+        8763,
+        7995,
+        7398,
+        6585,
+        5791,
+        5356,
+        4896,
+        4535,
+        3956,
+        3175,
+        2770,
+        2467,
+        1952,
+        1634,
+        1343,
+        1192
+      ],
+      "virtual_edges_in_path": []
+    }
+  ],
+  "render_settings": {
+    "engine": "CYCLES",
+    "device": "CPU",
+    "samples": 4,
+    "threads": 4,
+    "resolution": [
+      768,
+      640
+    ]
+  },
+  "per_guide": true,
+  "lighting": {
+    "world_color_linear": [
+      0.18,
+      0.18,
+      0.18
+    ],
+    "world_strength": 0.45,
+    "area_lights": [
+      "Review key | area",
+      "Review fill | area",
+      "Review rim | area"
+    ],
+    "area_light_energy_scales_w_at_3m_extent": [
+      36.0,
+      18.0,
+      28.0
+    ],
+    "material": "Neutral diffuse clay override; source materials untouched"
+  },
+  "renders": [
+    {
+      "guide_names": [
+        "Mane_COVERAGE_00"
+      ],
+      "view": "side-posX",
+      "framing_pad_m": 0.14149917654444305,
+      "orthographic_width_m": 0.3783507635095703,
+      "projected_guide_bounds_m": {
+        "min": [
+          -1.1556705187958491,
+          2.35470342115913
+        ],
+        "max": [
+          -1.060318108375165,
+          2.377878661312024
+        ]
+      },
+      "target_world_m": [
+        1.5186583368631545e-07,
+        -1.1079943180084229,
+        2.366291046142578
+      ],
+      "path": "Mane_COVERAGE_00-rest-side-posX.png",
+      "isolated_guide_only": false,
+      "depth_tested_against_mesh": true,
+      "label": "REST | Mane_COVERAGE_00"
+    },
+    {
+      "guide_names": [
+        "Mane_COVERAGE_00"
+      ],
+      "view": "side-posX",
+      "framing_pad_m": 0.14149917654444305,
+      "orthographic_width_m": 0.3783507635095703,
+      "projected_guide_bounds_m": {
+        "min": [
+          -1.1556705187958491,
+          2.35470342115913
+        ],
+        "max": [
+          -1.060318108375165,
+          2.377878661312024
+        ]
+      },
+      "target_world_m": [
+        1.5186583368631545e-07,
+        -1.1079943180084229,
+        2.366291046142578
+      ],
+      "path": "Mane_COVERAGE_00-isolated-side-posX.png",
+      "isolated_guide_only": true,
+      "depth_tested_against_mesh": false,
+      "label": "ISOLATED ONLY | Mane_COVERAGE_00"
+    },
+    {
+      "guide_names": [
+        "Mane_COVERAGE_00"
+      ],
+      "view": "side-negX",
+      "framing_pad_m": 0.14149917654444305,
+      "orthographic_width_m": 0.3783507652084851,
+      "projected_guide_bounds_m": {
+        "min": [
+          1.0603181163715392,
+          2.3547034315630335
+        ],
+        "max": [
+          1.1556705284911382,
+          2.377878670536116
+        ]
+      },
+      "target_world_m": [
+        -1.5186583368631545e-07,
+        -1.1079943180084229,
+        2.366291046142578
+      ],
+      "path": "Mane_COVERAGE_00-rest-side-negX.png",
+      "isolated_guide_only": false,
+      "depth_tested_against_mesh": true,
+      "label": "REST | Mane_COVERAGE_00"
+    },
+    {
+      "guide_names": [
+        "Mane_COVERAGE_00"
+      ],
+      "view": "side-negX",
+      "framing_pad_m": 0.14149917654444305,
+      "orthographic_width_m": 0.3783507652084851,
+      "projected_guide_bounds_m": {
+        "min": [
+          1.0603181163715392,
+          2.3547034315630335
+        ],
+        "max": [
+          1.1556705284911382,
+          2.377878670536116
+        ]
+      },
+      "target_world_m": [
+        -1.5186583368631545e-07,
+        -1.1079943180084229,
+        2.366291046142578
+      ],
+      "path": "Mane_COVERAGE_00-isolated-side-negX.png",
+      "isolated_guide_only": true,
+      "depth_tested_against_mesh": false,
+      "label": "ISOLATED ONLY | Mane_COVERAGE_00"
+    },
+    {
+      "guide_names": [
+        "Mane_COVERAGE_00"
+      ],
+      "view": "rear",
+      "framing_pad_m": 0.14149917654444305,
+      "orthographic_width_m": 0.36740831573071114,
+      "projected_guide_bounds_m": {
+        "min": [
+          0.09146821576692332,
+          2.354703322991748
+        ],
+        "max": [
+          0.11900713832048382,
+          2.377878566345121
+        ]
+      },
+      "target_world_m": [
+        -0.10523732006549835,
+        1.7865001211703202e-07,
+        2.366291046142578
+      ],
+      "path": "Mane_COVERAGE_00-rest-rear.png",
+      "isolated_guide_only": false,
+      "depth_tested_against_mesh": true,
+      "label": "REST | Mane_COVERAGE_00"
+    },
+    {
+      "guide_names": [
+        "Mane_COVERAGE_00"
+      ],
+      "view": "rear",
+      "framing_pad_m": 0.14149917654444305,
+      "orthographic_width_m": 0.36740831573071114,
+      "projected_guide_bounds_m": {
+        "min": [
+          0.09146821576692332,
+          2.354703322991748
+        ],
+        "max": [
+          0.11900713832048382,
+          2.377878566345121
+        ]
+      },
+      "target_world_m": [
+        -0.10523732006549835,
+        1.7865001211703202e-07,
+        2.366291046142578
+      ],
+      "path": "Mane_COVERAGE_00-isolated-rear.png",
+      "isolated_guide_only": true,
+      "depth_tested_against_mesh": false,
+      "label": "ISOLATED ONLY | Mane_COVERAGE_00"
+    },
+    {
+      "guide_names": [
+        "Tail_COVERAGE_00"
+      ],
+      "view": "side-posX",
+      "framing_pad_m": 0.2550563601646999,
+      "orthographic_width_m": 1.238845177942828,
+      "projected_guide_bounds_m": {
+        "min": [
+          0.9768251192317786,
+          0.8689296324748647
+        ],
+        "max": [
+          1.705557576845207,
+          1.2209830268525157
+        ]
+      },
+      "target_world_m": [
+        -1.2948841998650096e-08,
+        1.341191291809082,
+        1.0449563264846802
+      ],
+      "path": "Tail_COVERAGE_00-rest-side-posX.png",
+      "isolated_guide_only": false,
+      "depth_tested_against_mesh": true,
+      "label": "REST | Tail_COVERAGE_00"
+    },
+    {
+      "guide_names": [
+        "Tail_COVERAGE_00"
+      ],
+      "view": "side-posX",
+      "framing_pad_m": 0.2550563601646999,
+      "orthographic_width_m": 1.238845177942828,
+      "projected_guide_bounds_m": {
+        "min": [
+          0.9768251192317786,
+          0.8689296324748647
+        ],
+        "max": [
+          1.705557576845207,
+          1.2209830268525157
+        ]
+      },
+      "target_world_m": [
+        -1.2948841998650096e-08,
+        1.341191291809082,
+        1.0449563264846802
+      ],
+      "path": "Tail_COVERAGE_00-isolated-side-posX.png",
+      "isolated_guide_only": true,
+      "depth_tested_against_mesh": false,
+      "label": "ISOLATED ONLY | Tail_COVERAGE_00"
+    },
+    {
+      "guide_names": [
+        "Tail_COVERAGE_00"
+      ],
+      "view": "side-negX",
+      "framing_pad_m": 0.2550563665236851,
+      "orthographic_width_m": 1.2388452088293276,
+      "projected_guide_bounds_m": {
+        "min": [
+          -1.7055575926799396,
+          0.868929616640132
+        ],
+        "max": [
+          -0.9768251168979821,
+          1.2209830299712188
+        ]
+      },
+      "target_world_m": [
+        1.2948849104077453e-08,
+        1.3411914110183716,
+        1.0449563264846802
+      ],
+      "path": "Tail_COVERAGE_00-rest-side-negX.png",
+      "isolated_guide_only": false,
+      "depth_tested_against_mesh": true,
+      "label": "REST | Tail_COVERAGE_00"
+    },
+    {
+      "guide_names": [
+        "Tail_COVERAGE_00"
+      ],
+      "view": "side-negX",
+      "framing_pad_m": 0.2550563665236851,
+      "orthographic_width_m": 1.2388452088293276,
+      "projected_guide_bounds_m": {
+        "min": [
+          -1.7055575926799396,
+          0.868929616640132
+        ],
+        "max": [
+          -0.9768251168979821,
+          1.2209830299712188
+        ]
+      },
+      "target_world_m": [
+        1.2948849104077453e-08,
+        1.3411914110183716,
+        1.0449563264846802
+      ],
+      "path": "Tail_COVERAGE_00-isolated-side-negX.png",
+      "isolated_guide_only": true,
+      "depth_tested_against_mesh": false,
+      "label": "ISOLATED ONLY | Tail_COVERAGE_00"
+    },
+    {
+      "guide_names": [
+        "Tail_COVERAGE_00"
+      ],
+      "view": "rear",
+      "framing_pad_m": 0.14149917654444305,
+      "orthographic_width_m": 0.7620620142578485,
+      "projected_guide_bounds_m": {
+        "min": [
+          -0.1811281024664595,
+          0.8689297806731169
+        ],
+        "max": [
+          0.043148943140238316,
+          1.2209831061324379
+        ]
+      },
+      "target_world_m": [
+        0.06898973882198334,
+        7.889202180422217e-08,
+        1.0449564456939697
+      ],
+      "path": "Tail_COVERAGE_00-rest-rear.png",
+      "isolated_guide_only": false,
+      "depth_tested_against_mesh": true,
+      "label": "REST | Tail_COVERAGE_00"
+    },
+    {
+      "guide_names": [
+        "Tail_COVERAGE_00"
+      ],
+      "view": "rear",
+      "framing_pad_m": 0.14149917654444305,
+      "orthographic_width_m": 0.7620620142578485,
+      "projected_guide_bounds_m": {
+        "min": [
+          -0.1811281024664595,
+          0.8689297806731169
+        ],
+        "max": [
+          0.043148943140238316,
+          1.2209831061324379
+        ]
+      },
+      "target_world_m": [
+        0.06898973882198334,
+        7.889202180422217e-08,
+        1.0449564456939697
+      ],
+      "path": "Tail_COVERAGE_00-isolated-rear.png",
+      "isolated_guide_only": true,
+      "depth_tested_against_mesh": false,
+      "label": "ISOLATED ONLY | Tail_COVERAGE_00"
+    }
+  ],
+  "limitations": [
+    "Added guides are unreviewed proposals; these images do not approve clump identity, semantic attachment, or root suitability.",
+    "Rest-mesh views are depth-tested; isolated-guide views intentionally omit the mesh and do not show occlusion.",
+    "Curves are centerlines with a diagnostic display thickness, not authored strand width or skin representation.",
+    "No motion, deformation, collision, material, export/reimport, or runtime acceptance is established.",
+    "Source blend was opened read-only; materials and diagnostic objects existed only in memory."
+  ]
+}

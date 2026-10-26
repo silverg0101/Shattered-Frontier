@@ -1,0 +1,22 @@
+{
+  "asset_id": "BLD-WT-CellFull-01",
+  "attempt": 3,
+  "status": "failed",
+  "return_code_reported_by_blender": 0,
+  "exception": "IndentationError: unexpected indent in generated build_material.py at normal-map node line 30",
+  "observed_outputs": [
+    "build_material.py",
+    "texture-source.json",
+    "Textures/basecolor.png",
+    "Textures/height.png",
+    "Textures/normal.png",
+    "Textures/roughness.png"
+  ],
+  "required_missing": [
+    "asset-view.png",
+    "editable .blend",
+    "GLB",
+    "FBX"
+  ],
+  "acceptance_claim": false
+}

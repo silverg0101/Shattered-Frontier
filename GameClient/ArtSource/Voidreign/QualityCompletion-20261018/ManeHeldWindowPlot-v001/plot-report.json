@@ -1,0 +1,12 @@
+﻿{
+    "input_sha256":  "f6523da3e446a06125898f2c12724d629650cc05c30214857dbaf9302cba93d5",
+    "tool_sha256":  "39e723848c1229856fdee200cbed51e6589db34a9e80704086a40876cf7f7a3c",
+    "shell_version":  "5.1.26100.9711",
+    "cpu_only":  true,
+    "status":  "plotted-frozen-held-curves-only",
+    "image_sha256":  "95ffa94b930397c09c97c19b95bc838f79e5c5d66b8dac72470b02eddcfc9b06",
+    "limitations":  [
+                        "Finite cached samples only; neither a new simulation nor damping identification or acceptance."
+                    ],
+    "renderer":  "Windows .NET Framework Charting"
+}

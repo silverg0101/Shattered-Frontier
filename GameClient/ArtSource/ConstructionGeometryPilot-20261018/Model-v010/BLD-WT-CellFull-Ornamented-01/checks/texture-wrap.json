@@ -1,0 +1,139 @@
+{
+  "asset_id": "BLD-WT-CellFull-Ornamented-01",
+  "status": "needs-review",
+  "method": "periodic wrap adjacent-pixel step vs interior neighbor steps; map-normal comparison in degrees",
+  "records": [
+    {
+      "map": "basecolor-ornament-back.png",
+      "axis": "x",
+      "seam_mean": 1.0875650644302368,
+      "interior_mean": 0.702041506767273,
+      "seam_p99": 3.0,
+      "interior_p99": 3.0,
+      "mean_limit": 1.0530622601509094,
+      "p99_limit": 4.5,
+      "status": "failed"
+    },
+    {
+      "map": "basecolor-ornament-back.png",
+      "axis": "y",
+      "seam_mean": 0.01790364645421505,
+      "interior_mean": 0.12585818767547607,
+      "seam_p99": 1.0,
+      "interior_p99": 1.0,
+      "mean_limit": 0.75,
+      "p99_limit": 3,
+      "status": "passed"
+    },
+    {
+      "map": "basecolor-ornament-front.png",
+      "axis": "x",
+      "seam_mean": 1.4664713144302368,
+      "interior_mean": 0.8785081505775452,
+      "seam_p99": 3.0,
+      "interior_p99": 3.0,
+      "mean_limit": 1.3177622258663177,
+      "p99_limit": 4.5,
+      "status": "failed"
+    },
+    {
+      "map": "basecolor-ornament-front.png",
+      "axis": "y",
+      "seam_mean": 0.02408854104578495,
+      "interior_mean": 0.28925979137420654,
+      "seam_p99": 1.0,
+      "interior_p99": 1.0,
+      "mean_limit": 0.75,
+      "p99_limit": 3,
+      "status": "passed"
+    },
+    {
+      "map": "basecolor.png",
+      "axis": "x",
+      "seam_mean": 1.4664713144302368,
+      "interior_mean": 0.6768341660499573,
+      "seam_p99": 3.0,
+      "interior_p99": 3.0,
+      "mean_limit": 1.015251249074936,
+      "p99_limit": 4.5,
+      "status": "failed"
+    },
+    {
+      "map": "basecolor.png",
+      "axis": "y",
+      "seam_mean": 0.02408854104578495,
+      "interior_mean": 0.07817082107067108,
+      "seam_p99": 1.0,
+      "interior_p99": 1.0,
+      "mean_limit": 0.75,
+      "p99_limit": 3,
+      "status": "passed"
+    },
+    {
+      "map": "height.png",
+      "axis": "x",
+      "seam_mean": 2974.5908203125,
+      "interior_mean": 1375.725341796875,
+      "seam_p99": 4121.080078125,
+      "interior_p99": 3922.0,
+      "mean_limit": 2063.5880126953125,
+      "p99_limit": 5883.0,
+      "status": "failed"
+    },
+    {
+      "map": "height.png",
+      "axis": "y",
+      "seam_mean": 48.83203125,
+      "interior_mean": 159.39796447753906,
+      "seam_p99": 267.0799865722656,
+      "interior_p99": 957.0,
+      "mean_limit": 239.0969467163086,
+      "p99_limit": 1435.5,
+      "status": "passed"
+    },
+    {
+      "map": "normal.png",
+      "axis": "x",
+      "seam_mean": 2.7420644760131836,
+      "interior_mean": 2.2462005615234375,
+      "seam_p99": 5.79425048828125,
+      "interior_p99": 6.332056045532227,
+      "mean_limit": 3.3693008422851562,
+      "p99_limit": 9.49808406829834,
+      "status": "passed"
+    },
+    {
+      "map": "normal.png",
+      "axis": "y",
+      "seam_mean": 0.2604197859764099,
+      "interior_mean": 0.3722172975540161,
+      "seam_p99": 1.0408871173858643,
+      "interior_p99": 1.4320381879806519,
+      "mean_limit": 0.5583259463310242,
+      "p99_limit": 2.148057281970978,
+      "status": "passed"
+    },
+    {
+      "map": "roughness.png",
+      "axis": "x",
+      "seam_mean": 2.779296875,
+      "interior_mean": 1.4865953922271729,
+      "seam_p99": 5.0,
+      "interior_p99": 5.0,
+      "mean_limit": 2.2298930883407593,
+      "p99_limit": 7.5,
+      "status": "failed"
+    },
+    {
+      "map": "roughness.png",
+      "axis": "y",
+      "seam_mean": 0.0966796875,
+      "interior_mean": 0.3362267315387726,
+      "seam_p99": 1.0,
+      "interior_p99": 2.0,
+      "mean_limit": 0.75,
+      "p99_limit": 3.0,
+      "status": "passed"
+    }
+  ]
+}

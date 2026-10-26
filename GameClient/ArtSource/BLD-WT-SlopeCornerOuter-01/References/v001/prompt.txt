@@ -1,0 +1,5 @@
+Concept-sheet prompt (exact):
+Construction concept sheet for the outer hip corner of worked-timber 1:1 pitched roof slopes. Two adjacent roof planes meet along a convex high ridge; the seam is raised, opposite geometry of an inward valley. Show isometric, plan and cross-section, weathered timber planks and matching underside. Preserve source slope-corner envelope/contact planes on 0.5 m grid, no overhang beyond source, pale background, no labels. Appearance proposal only.
+
+Clean asset-view prompt (exact):
+Isolated single worked-timber outer roof hip corner. Two pitched plank faces form a convex high ridge along their meeting seam, unmistakably a raised hip not an inward valley. Compact 90-degree roof corner object, show top and underside, orthographic three-quarter view on pale neutral background, no supports, no text, no building. Keep appearance within source slope-corner envelope; proposal only.

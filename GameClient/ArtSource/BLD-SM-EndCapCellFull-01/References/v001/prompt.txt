@@ -1,0 +1,9 @@
+Concept sheet, output `exec-5f2d91cd-39ea-49d8-a680-3a1c18ab5326.png`:
+
+Orthographic concept sheet for BLD-SM-EndCapCellFull-01, appearance-only treatment on the two exposed ends of one full `cell-full/v1` stone masonry cube, design target 0.5 m per side. Show front/back end faces, two side faces, top, underside, and one isometric cube. Cut-stone end faces and bed joints align with the coursed gray-tan masonry skin; face plane is flush and square. No separate cap stone, no raised coping, no quoins, no protrusions, no people, text, or scene. Neutral background, restrained realistic game art. Preserve six contact planes and cube envelope; art is not measured geometry.
+
+Clean view, output `exec-ddbf7734-678d-48df-9343-3d5260682b05.png`:
+
+Clean isolated stone masonry full-cell cube for BLD-SM-EndCapCellFull-01, three-quarter orthographic, pale neutral backdrop. Simple square 0.5 m cube design target, one visible flush end face made of cut coursed stone and adjoining side face of matching masonry. No separate cap stone, no cap plate, no top coping, no overhangs, no base, no scene, no text, no people. Keep square plane boundaries and cube silhouette; surface detail only. Restrained gray-tan frontier stone style, one object, complete clean asset view. Image is not geometry validation.
+
+No reference image attached; KIT-SM cell and exposed-end packages served as textual style guidance only.

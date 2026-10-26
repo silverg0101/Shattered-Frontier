@@ -1,0 +1,30 @@
+{
+  "asset_id": "BLD-GreenlandsWallPanel-01",
+  "category": "building component / wall panel",
+  "brief": "One proposed rectangular starter shelter wall panel with timber frame, plaster infill and stone sill.",
+  "design_sources": [
+    { "path": "docs/Game-Design/Legends_Shattered_Frontier_Vertical_Slice_Specification_v1.0.md", "section": "Scope and exclusions / Housing; Content inventory", "role": "requires wall among four shelter pieces" },
+    { "path": "docs/Game-Design/Legends_Shattered_Frontier_Construction_Integration_Contracts_v0.1.md", "section": "9 Building service and domain contracts", "role": "construction ownership context" },
+    { "path": "GameClient/ArtSource/BLD-GreenlandsWallCorner-01/References/v001/concept-sheet.png", "role": "visual style reference for proposed starter family" }
+  ],
+  "concept_status": "agent-selected; visual proposal, user approval not claimed",
+  "clean_view_status": "ready-for-model-test; opaque background, segmentation required if later adapter requires alpha",
+  "design_master": "concept-sheet.png",
+  "prompts": "prompt.txt",
+  "generation": { "tool": "built-in image_gen", "model": "unavailable", "generated_date": "2026-10-18", "seed": "unavailable" },
+  "outputs": {
+    "concept-sheet.png": { "sha256": "614EFB5944F99C1E2D1941D2AE02496288401732B4FFB58120C02E6740439A5B", "dimensions_px": [1536, 1024], "color": "RGB, opaque; PNG color type 2", "master": true },
+    "asset-view.png": { "sha256": "2383D1B5E3C822D3B5CA3949CF131980EC8106BD81F172988B10EBE043617E7D", "dimensions_px": [1536, 1024], "color": "RGB, opaque; PNG color type 2", "master": false }
+  },
+  "component_boundaries": ["One straight wall panel only", "Excludes return corner, door, roof, full building and terrain"],
+  "scale": "Approximate scale inferred; exact dimensions and modular interfaces remain unspecified.",
+  "edits": "No pixel edits or upscaling; clean view generated as a separate interpretation of the selected sheet.",
+  "review": {
+    "reviewer": "Codex visual inspection",
+    "findings": ["Concept sheet views consistently show one framed rectangular panel with plaster infill and low stone sill.", "Clean view is one complete panel with visible frame depth, neutral opaque background and ample margins.", "Materials and silhouette agree between sheet and clean view."],
+    "unresolved": ["Exact connection geometry and dimensions remain a construction-content decision."],
+    "image_complete": true,
+    "approval": "agent-selected; not user-approved",
+    "review_date": "2026-10-18"
+  }
+}

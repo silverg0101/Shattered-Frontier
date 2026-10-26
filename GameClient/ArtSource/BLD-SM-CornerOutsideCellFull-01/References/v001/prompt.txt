@@ -1,0 +1,9 @@
+Concept-sheet prompt, output `exec-1120d9e0-f8e7-422b-bfa2-9e95b32e7d13.png`:
+
+Orthographic construction asset concept sheet BLD-SM-CornerOutsideCellFull-01. A single convex `corner-outer/v1` wedge in a 0.5 m cell envelope, proposed occupied solid w<=min(u,v), creating a convex 1:1 sloped outside corner. Show front/side silhouettes, two sloped contact surfaces, top and underside views, neutral occupied-solid silhouette, and one isometric view. Gray-tan stone masonry coursing follows the wedge with flush surface appearance. Plain background, no complete cube, no blocks around it, no wall assembly, no post/support, no people or text. Keep all geometry inside the envelope, preserve wedge contacts. Visual target only, not dimensional or runtime validation.
+
+Clean-view prompt, output `exec-a365c4a9-f525-43b4-bfec-d9fdb3182f3c.png`:
+
+One isolated stone masonry convex corner wedge for BLD-SM-CornerOutsideCellFull-01, three-quarter orthographic clean concept view. Proposed `corner-outer/v1` shape: within a 0.5 m cell envelope, solid w<=min(u,v), two 1:1 slope faces meet along a convex ridge; show a single low convex hip-like wedge with a triangular/prismatic mass, not a cube and not a cap assembled from many blocks. Gray-tan stone texture is flush to the silhouette. Plain neutral ground, no extra objects, no text, no scene, no supports. Preserve the proposed wedge envelope and mating surfaces. Image does not validate the authored mask.
+
+No reference image attached; related masonry components and existing `BLD-GreenlandsWallCorner-01` were inspected as style context only.

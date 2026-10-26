@@ -1,0 +1,18 @@
+{
+  "source": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManeClothSettledCache-v001\\Voidreign-ActualSurfacePilot.blend",
+  "source_sha256": "569ba835a0eb275250d3be1dea94ea5b1be4a0349058901fcde6473df7553725",
+  "tool_sha256": "2a16049f55c004bc70f2a28ccfa2201cc7a4876c60550123e24b99dfb191952a",
+  "cpu_only": true,
+  "engine": "Cycles",
+  "device": "CPU",
+  "samples": 4,
+  "diagnostic": true,
+  "playback_fps": null,
+  "frames": [
+    {
+      "source_frame": 15,
+      "image": "0001.png"
+    }
+  ],
+  "scope": "Saved-source playback evidence, not a gait/runtime/collision acceptance"
+}

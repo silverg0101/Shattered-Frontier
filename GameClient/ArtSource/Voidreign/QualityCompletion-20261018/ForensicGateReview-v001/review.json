@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "status": "narrow-read-only-conclusions-supported; asset-needs-review",
+  "reviewer": "existing /root/visual_review",
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\CoincidentFaceReview-v001\\face-group-report.json": "3f4483d9e7396c311642b32298b517dec17c8e4b7cec5bd28ebb81b2a38b75fe",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\TrajectoryCheck-v002\\trajectory-check.json": "e2788c7c2260426dfce99da41aaee8ee4091ac6370925608d79ea0581b537535",
+    "tools\\Inspect-CoincidentFaceGroups.py": "02b52b46e925e2dc008d8246c74d9dd37d681b82e34b0cd1717a28cfbd76c8a9",
+    "tools\\Check-FeatureTrajectory.py": "59d2cdf56481e02903891cafe3aa7b3e6e94de8f5dad59fa3c3478f5c1aeebd8"
+  },
+  "findings": [
+    "No blocking math error found in grouping, corner comparison, trajectory masking, inverse Z rotation or frame offsets.",
+    "118 node-step warnings across33frames are not measured surface failures or proof of solver instability.",
+    "Zero redundant candidates under inspected signature; arbitrary attributes, edge semantics and all shader dependencies are not covered.",
+    "Current NPZ fingerprint is not historical producer attestation; radians/metres are producer-contract assumptions.",
+    "Backface culling makes opposite-facing removal potentially visible. Preserve faces. No new bake, deletion or production approval."
+  ]
+}

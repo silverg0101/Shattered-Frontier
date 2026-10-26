@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "units": "metres-seconds-radians",
+  "source": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryContinuousInfluences-v001/Mount-StandingSkinRepair.blend",
+  "object": "geometry_0",
+  "rig_object": "PRIMARY | anatomical rig pilot",
+  "body_root_bone": "PRI.body.pelvis",
+  "semantic_selection": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selections.npz",
+  "sole_patches": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimarySoleProposals-v001\\sole-patches.npz",
+  "source_contact_report": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryContinuousCacheCheck-v001/standing-cache-report.json",
+  "limits": {
+    "contact_m": 0.005,
+    "slip_m": 0.001,
+    "penetration_m": 0.005,
+    "target_error_m": 0.005,
+    "bone_length_relative": 1e-05,
+    "seam_m": 1e-05,
+    "loop_m": 0.001
+  },
+  "ground_height_m": 0.0,
+  "render_samples": 8,
+  "standing_frame": 30,
+  "cycles": 2,
+  "frames_per_cycle": 90,
+  "fps": 30,
+  "body_bob_m": 0.003,
+  "render_frames": [
+    23
+  ],
+  "control_objects": [
+    "FOOT TARGET | fore.L",
+    "FOOT POLE | fore.L",
+    "FOOT TARGET | fore.R",
+    "FOOT POLE | fore.R",
+    "FOOT TARGET | hind.L",
+    "FOOT POLE | hind.L",
+    "FOOT TARGET | hind.R",
+    "FOOT POLE | hind.R"
+  ],
+  "feet": [
+    "fore.L",
+    "fore.R",
+    "hind.L",
+    "hind.R"
+  ],
+  "rotations": [
+    {
+      "bone": "PRI.body.neck",
+      "axis": [
+        1,
+        0,
+        0
+      ],
+      "amplitude_radians": 0.015,
+      "frequency": 1,
+      "phase_radians": 0
+    },
+    {
+      "bone": "PRI.body.head",
+      "axis": [
+        0,
+        1,
+        0
+      ],
+      "amplitude_radians": 0.012,
+      "frequency": 1,
+      "phase_radians": 1.5707963267948966
+    }
+  ],
+  "permissions": "Authored diagnostic idle; same contact and weight limits; source remains prototype",
+  "effective_time": "This frozen clip only",
+  "input_sha256": {
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryContinuousInfluences-v001/Mount-StandingSkinRepair.blend": "aef9634f59269f81e43147f07bc786b302da92a600953adbf5388870fe0d72ba",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selections.npz": "0b6a19f76a2cba73a42e293c29365360b53ba93be101cf8f4ca556e7a5989cc0",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimarySoleProposals-v001\\sole-patches.npz": "5b055301ae1b1349d3f85fb23e2b93985fd93f2a33e0fc1a1e4a05dbaf98614b",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryContinuousCacheCheck-v001/standing-cache-report.json": "a7967811606e90afd9b8a7300d72706452627eb82e6ce62d3c22296ae5191f4c"
+  }
+}

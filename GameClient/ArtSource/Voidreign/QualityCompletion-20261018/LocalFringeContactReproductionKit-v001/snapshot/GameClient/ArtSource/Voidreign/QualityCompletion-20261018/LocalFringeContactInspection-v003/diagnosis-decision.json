@@ -1,0 +1,13 @@
+{
+  "status": "collider-and-representation-design-required-no-new-bake",
+  "findings": [
+    "All seven simulation faces incident to worst canonical node22042 remain eligible for object collision; root-mask exclusion does not explain this contact.",
+    "Raw indexed boundary gap0.356mm is not evidence of a cropped hole. Canonical source seam copies coincide exactly; actual canonical boundary is11.912mm from contact.",
+    "Canonical collider has244 boundary edges and42 nonmanifold edges; it is not a closed solid. Raw indexed topology has7994 boundary edges, largely seams. No unique causal diagnosis follows from these counts.",
+    "Held free RMS speed rises from0.09417 to0.14041m/s overframes26to30; extending the same warmup cannot be assumed to settle it.",
+    "Saved-source replay remains exact. No rebake, modified skin, mask, tolerance or attempt counter."
+  ],
+  "next": "Review closed deforming leg proxy against baseline root/free clearance and actual pose extrema. Inspect shell internal spring eligibility and shape retention before the reserved final local proof. Keep this evidence distinct from full-model articulated hair acceptance.",
+  "local_attempts_used": 2,
+  "local_attempts_limit": 3
+}

@@ -1,0 +1,677 @@
+{
+  "schema_version": 1,
+  "units": "metres",
+  "permissions": "CPU diagnostic rest atlas; no source edits, skinning or acceptance",
+  "effective_time": "This immutable proposal only",
+  "coordinate_convention": {
+    "up": "+Z",
+    "forward": "-Y (head/horn)",
+    "side_names": "Authored +X=L, -X=R for proposed forward -Y; inspect before skinning"
+  },
+  "object": "geometry_0",
+  "source": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryOnlyCombinedFull-v001\\Voidreign-ActualSurfacePilot.blend",
+  "rest_selection": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz",
+  "retention_report": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryOnlyCombinedFullRetention-v001\\validation.json",
+  "render": {
+    "resolution": 960,
+    "samples": 16,
+    "surface_color": [
+      0.36,
+      0.39,
+      0.43
+    ],
+    "landmark_radius_m": 0.035,
+    "light_position_m": [
+      -3,
+      -4,
+      6
+    ],
+    "light_watts": 1300,
+    "light_size_m": 5,
+    "target_m": [
+      0,
+      -0.05,
+      1.3
+    ],
+    "ortho_scale_m": 4.5,
+    "link_radius_m": 0.012
+  },
+  "regions": [
+    {
+      "id": "fore.L.lower-domain",
+      "minimum_m": [
+        0.08,
+        -1.12,
+        0
+      ],
+      "maximum_m": [
+        0.6,
+        -0.25,
+        1.17
+      ],
+      "color": [
+        0.2,
+        0.75,
+        1.0
+      ],
+      "exclude_semantic_labels": [
+        1,
+        2
+      ],
+      "status": "box-proposal-may-include-tack"
+    },
+    {
+      "id": "fore.R.lower-domain",
+      "minimum_m": [
+        -0.6,
+        -1.12,
+        0
+      ],
+      "maximum_m": [
+        -0.08,
+        -0.25,
+        1.17
+      ],
+      "color": [
+        0.2,
+        0.45,
+        1.0
+      ],
+      "exclude_semantic_labels": [
+        1,
+        2
+      ],
+      "status": "box-proposal-may-include-tack"
+    },
+    {
+      "id": "hind.L.lower-domain",
+      "minimum_m": [
+        0.08,
+        0.2,
+        0
+      ],
+      "maximum_m": [
+        0.6,
+        1.12,
+        1.17
+      ],
+      "color": [
+        1.0,
+        0.65,
+        0.1
+      ],
+      "exclude_semantic_labels": [
+        1,
+        2
+      ],
+      "status": "box-proposal-may-include-tack"
+    },
+    {
+      "id": "hind.R.lower-domain",
+      "minimum_m": [
+        -0.6,
+        0.2,
+        0
+      ],
+      "maximum_m": [
+        -0.08,
+        1.12,
+        1.17
+      ],
+      "color": [
+        1.0,
+        0.28,
+        0.1
+      ],
+      "exclude_semantic_labels": [
+        1,
+        2
+      ],
+      "status": "box-proposal-may-include-tack"
+    }
+  ],
+  "landmarks": [
+    {
+      "id": "fore.L.shoulder",
+      "position_m": [
+        0.25,
+        -0.53,
+        1.4
+      ],
+      "color": [
+        0.2,
+        0.75,
+        1.0
+      ],
+      "status": "authored-proposal"
+    },
+    {
+      "id": "fore.L.elbow",
+      "position_m": [
+        0.26,
+        -0.63,
+        1.05
+      ],
+      "color": [
+        0.2,
+        0.75,
+        1.0
+      ],
+      "status": "authored-proposal"
+    },
+    {
+      "id": "fore.L.carpus",
+      "position_m": [
+        0.224,
+        -0.65,
+        0.65
+      ],
+      "color": [
+        0.2,
+        0.75,
+        1.0
+      ],
+      "status": "authored-proposal"
+    },
+    {
+      "id": "fore.L.fetlock",
+      "position_m": [
+        0.318,
+        -0.765,
+        0.23
+      ],
+      "color": [
+        0.2,
+        0.75,
+        1.0
+      ],
+      "status": "authored-proposal"
+    },
+    {
+      "id": "fore.L.hoof",
+      "position_m": [
+        0.284,
+        -0.829,
+        0.12
+      ],
+      "color": [
+        0.2,
+        0.75,
+        1.0
+      ],
+      "status": "authored-proposal"
+    },
+    {
+      "id": "fore.R.shoulder",
+      "position_m": [
+        -0.27,
+        -0.6,
+        1.4
+      ],
+      "color": [
+        0.2,
+        0.45,
+        1.0
+      ],
+      "status": "authored-proposal"
+    },
+    {
+      "id": "fore.R.elbow",
+      "position_m": [
+        -0.28,
+        -0.7,
+        1.05
+      ],
+      "color": [
+        0.2,
+        0.45,
+        1.0
+      ],
+      "status": "authored-proposal"
+    },
+    {
+      "id": "fore.R.carpus",
+      "position_m": [
+        -0.289,
+        -0.735,
+        0.65
+      ],
+      "color": [
+        0.2,
+        0.45,
+        1.0
+      ],
+      "status": "authored-proposal"
+    },
+    {
+      "id": "fore.R.fetlock",
+      "position_m": [
+        -0.317,
+        -0.837,
+        0.23
+      ],
+      "color": [
+        0.2,
+        0.45,
+        1.0
+      ],
+      "status": "authored-proposal"
+    },
+    {
+      "id": "fore.R.hoof",
+      "position_m": [
+        -0.289,
+        -0.89,
+        0.1
+      ],
+      "color": [
+        0.2,
+        0.45,
+        1.0
+      ],
+      "status": "authored-proposal"
+    },
+    {
+      "id": "hind.L.hip",
+      "position_m": [
+        0.29,
+        0.66,
+        1.42
+      ],
+      "color": [
+        1.0,
+        0.65,
+        0.1
+      ],
+      "status": "authored-proposal"
+    },
+    {
+      "id": "hind.L.stifle",
+      "position_m": [
+        0.3,
+        0.47,
+        1.0
+      ],
+      "color": [
+        1.0,
+        0.65,
+        0.1
+      ],
+      "status": "authored-proposal"
+    },
+    {
+      "id": "hind.L.hock",
+      "position_m": [
+        0.31,
+        0.85,
+        0.61
+      ],
+      "color": [
+        1.0,
+        0.65,
+        0.1
+      ],
+      "status": "authored-proposal"
+    },
+    {
+      "id": "hind.L.fetlock",
+      "position_m": [
+        0.448,
+        0.812,
+        0.2
+      ],
+      "color": [
+        1.0,
+        0.65,
+        0.1
+      ],
+      "status": "authored-proposal"
+    },
+    {
+      "id": "hind.L.hoof",
+      "position_m": [
+        0.45,
+        0.75,
+        0.05
+      ],
+      "color": [
+        1.0,
+        0.65,
+        0.1
+      ],
+      "status": "authored-proposal"
+    },
+    {
+      "id": "hind.R.hip",
+      "position_m": [
+        -0.31,
+        0.58,
+        1.42
+      ],
+      "color": [
+        1.0,
+        0.28,
+        0.1
+      ],
+      "status": "authored-proposal"
+    },
+    {
+      "id": "hind.R.stifle",
+      "position_m": [
+        -0.32,
+        0.31,
+        1.0
+      ],
+      "color": [
+        1.0,
+        0.28,
+        0.1
+      ],
+      "status": "authored-proposal"
+    },
+    {
+      "id": "hind.R.hock",
+      "position_m": [
+        -0.29,
+        0.59,
+        0.6
+      ],
+      "color": [
+        1.0,
+        0.28,
+        0.1
+      ],
+      "status": "authored-proposal"
+    },
+    {
+      "id": "hind.R.fetlock",
+      "position_m": [
+        -0.255,
+        0.479,
+        0.2
+      ],
+      "color": [
+        1.0,
+        0.28,
+        0.1
+      ],
+      "status": "authored-proposal"
+    },
+    {
+      "id": "hind.R.hoof",
+      "position_m": [
+        -0.267,
+        0.37,
+        0.05
+      ],
+      "color": [
+        1.0,
+        0.28,
+        0.1
+      ],
+      "status": "authored-proposal"
+    },
+    {
+      "id": "pelvis",
+      "position_m": [
+        0,
+        0.55,
+        1.48
+      ],
+      "color": [
+        0.6,
+        1.0,
+        0.3
+      ],
+      "status": "authored-proposal"
+    },
+    {
+      "id": "spine",
+      "position_m": [
+        0,
+        0,
+        1.5
+      ],
+      "color": [
+        0.6,
+        1.0,
+        0.3
+      ],
+      "status": "authored-proposal"
+    },
+    {
+      "id": "chest",
+      "position_m": [
+        0,
+        -0.52,
+        1.45
+      ],
+      "color": [
+        0.6,
+        1.0,
+        0.3
+      ],
+      "status": "authored-proposal"
+    },
+    {
+      "id": "neck.base",
+      "position_m": [
+        0,
+        -0.68,
+        1.68
+      ],
+      "color": [
+        0.6,
+        1.0,
+        0.3
+      ],
+      "status": "authored-proposal"
+    },
+    {
+      "id": "neck.mid",
+      "position_m": [
+        0,
+        -0.87,
+        1.94
+      ],
+      "color": [
+        0.6,
+        1.0,
+        0.3
+      ],
+      "status": "authored-proposal"
+    },
+    {
+      "id": "head",
+      "position_m": [
+        0,
+        -1.1,
+        2.2
+      ],
+      "color": [
+        0.6,
+        1.0,
+        0.3
+      ],
+      "status": "authored-proposal"
+    },
+    {
+      "id": "muzzle",
+      "position_m": [
+        0,
+        -1.43,
+        1.91
+      ],
+      "color": [
+        0.6,
+        1.0,
+        0.3
+      ],
+      "status": "authored-proposal"
+    }
+  ],
+  "views": [
+    {
+      "id": "side-plus-x",
+      "position_m": [
+        6,
+        -0.05,
+        1.3
+      ]
+    },
+    {
+      "id": "side-minus-x",
+      "position_m": [
+        -6,
+        -0.05,
+        1.3
+      ]
+    },
+    {
+      "id": "front",
+      "position_m": [
+        0,
+        -6,
+        1.3
+      ]
+    },
+    {
+      "id": "rear",
+      "position_m": [
+        0,
+        6,
+        1.3
+      ]
+    },
+    {
+      "id": "top",
+      "position_m": [
+        0,
+        -0.05,
+        7
+      ]
+    },
+    {
+      "id": "three-quarter",
+      "position_m": [
+        5,
+        -6,
+        3.6
+      ]
+    },
+    {
+      "id": "fore-close-plus-x",
+      "position_m": [
+        5,
+        -0.72,
+        0.7
+      ],
+      "target_m": [
+        0,
+        -0.72,
+        0.7
+      ],
+      "ortho_scale_m": 1.65
+    },
+    {
+      "id": "hind-close-minus-x",
+      "position_m": [
+        -5,
+        0.6,
+        0.72
+      ],
+      "target_m": [
+        0,
+        0.6,
+        0.72
+      ],
+      "ortho_scale_m": 1.7
+    }
+  ],
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryOnlyCombinedFull-v001\\Voidreign-ActualSurfacePilot.blend": "c507e31813fea5ea61e30f7cbf8bae37609135b549238b64ad1e61a1e42111ee",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz": "0d7599c8064cb81a6e211a23731435e08939b7fb146ce2d4bed810273909a2b2",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryOnlyCombinedFullRetention-v001\\validation.json": "fcd05cbae371af89b71bd0b9ab427bf74a48b3667abc0c454fee46e3947ea840",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selections.npz": "0b6a19f76a2cba73a42e293c29365360b53ba93be101cf8f4ca556e7a5989cc0"
+  },
+  "semantic_selection": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selections.npz",
+  "chains": [
+    {
+      "id": "fore.L",
+      "landmarks": [
+        "fore.L.shoulder",
+        "fore.L.elbow",
+        "fore.L.carpus",
+        "fore.L.fetlock",
+        "fore.L.hoof"
+      ],
+      "color": [
+        0.2,
+        0.75,
+        1.0
+      ]
+    },
+    {
+      "id": "fore.R",
+      "landmarks": [
+        "fore.R.shoulder",
+        "fore.R.elbow",
+        "fore.R.carpus",
+        "fore.R.fetlock",
+        "fore.R.hoof"
+      ],
+      "color": [
+        0.2,
+        0.45,
+        1.0
+      ]
+    },
+    {
+      "id": "hind.L",
+      "landmarks": [
+        "hind.L.hip",
+        "hind.L.stifle",
+        "hind.L.hock",
+        "hind.L.fetlock",
+        "hind.L.hoof"
+      ],
+      "color": [
+        1.0,
+        0.65,
+        0.1
+      ]
+    },
+    {
+      "id": "hind.R",
+      "landmarks": [
+        "hind.R.hip",
+        "hind.R.stifle",
+        "hind.R.hock",
+        "hind.R.fetlock",
+        "hind.R.hoof"
+      ],
+      "color": [
+        1.0,
+        0.28,
+        0.1
+      ]
+    },
+    {
+      "id": "body",
+      "landmarks": [
+        "pelvis",
+        "spine",
+        "chest",
+        "neck.base",
+        "neck.mid",
+        "head",
+        "muzzle"
+      ],
+      "color": [
+        0.6,
+        1.0,
+        0.3
+      ]
+    }
+  ]
+}

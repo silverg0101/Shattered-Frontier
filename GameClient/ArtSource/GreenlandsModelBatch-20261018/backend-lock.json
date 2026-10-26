@@ -1,0 +1,153 @@
+{
+  "shared_runtime": "software-lock.json",
+  "environments": {
+    "hunyuan": {
+      "torch": "2.14.0+rocm10.1.0",
+      "torch_file": "/home/grego/sf-asset-lab/venv-current/lib/python3.12/site-packages/torch/__init__.py",
+      "hip": "7.16.26385",
+      "transformers": "4.46.3",
+      "diffusers": "0.30.0",
+      "python": "/home/grego/sf-asset-lab/env-hunyuan/bin/python",
+      "base_site_packages_reused_read_only": "/home/grego/sf-asset-lab/venv-current/lib/python3.12/site-packages"
+    },
+    "tripo": {
+      "torch": "2.14.0+rocm10.1.0",
+      "torch_file": "/home/grego/sf-asset-lab/venv-current/lib/python3.12/site-packages/torch/__init__.py",
+      "hip": "7.16.26385",
+      "transformers": "4.48.3",
+      "diffusers": "0.32.2",
+      "python": "/home/grego/sf-asset-lab/env-tripo/bin/python",
+      "base_site_packages_reused_read_only": "/home/grego/sf-asset-lab/venv-current/lib/python3.12/site-packages"
+    },
+    "pixal": {
+      "torch": "2.14.0+rocm10.1.0",
+      "torch_file": "/home/grego/sf-asset-lab/venv-current/lib/python3.12/site-packages/torch/__init__.py",
+      "hip": "7.16.26385",
+      "transformers": "4.57.3",
+      "diffusers": "0.37.1",
+      "python": "/home/grego/sf-asset-lab/env-pixal/bin/python",
+      "base_site_packages_reused_read_only": "/home/grego/sf-asset-lab/venv-current/lib/python3.12/site-packages"
+    }
+  },
+  "sources": {
+    "hunyuan3d-2.1": {
+      "path": "/home/grego/sf-asset-lab/sources/hunyuan3d-2.1",
+      "revision": "82920d643c0dc2f7bfd7255f45f62d386edfe60c",
+      "remote": "https://github.com/Tencent-Hunyuan/Hunyuan3D-2.1.git",
+      "patch_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "TripoSG": {
+      "path": "/home/grego/sf-asset-lab/sources/TripoSG",
+      "revision": "fc5c40990181e2a756c4e0b1c2f4d6b5202faf8c",
+      "remote": "https://github.com/VAST-AI-Research/TripoSG.git",
+      "patch_sha256": "b139f38b36cefe8a2e9838f94ba18e4525979570553cc333817800a9bfa4d324"
+    },
+    "Pixal3D": {
+      "path": "/home/grego/sf-asset-lab/sources/Pixal3D",
+      "revision": "f7cf38429b0bd264f1995f0f8743a88b1c728b94",
+      "remote": "https://github.com/TencentARC/Pixal3D.git",
+      "patch_sha256": "f8aa05d1b3b2773528d973a253ba17fcfe91d5c6330d8960a2a1681f6798b9de"
+    },
+    "NAF": {
+      "path": "/home/grego/sf-asset-lab/sources/NAF",
+      "revision": "37f2dfc180f2de53d98bd601109c0da0dd6b0f43",
+      "remote": "https://github.com/valeoai/NAF.git",
+      "patch_sha256": "4f817b8cf34082d6c07f4cc5b2aaf792d35ebec31b9da42956e9c76cc774bd3a"
+    },
+    "MoGe": {
+      "path": "/home/grego/sf-asset-lab/sources/MoGe",
+      "revision": "74fbce054ebed49800de42d0ad0e83495065719a",
+      "remote": "https://github.com/microsoft/MoGe.git",
+      "patch_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "hunyuan-rocm": {
+      "path": "/home/grego/sf-asset-lab/sources/hunyuan-rocm",
+      "revision": "6f4b63bd6419406f40291bca23a7c849bcaae2a3",
+      "remote": "https://github.com/VladimirTalyzin/hunyuan3d-2.1-mac-rocm.git",
+      "patch_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "models": [
+    {
+      "name": "NAF",
+      "url": "https://github.com/valeoai/NAF/releases/download/model/naf_release.pth",
+      "status": "complete",
+      "path": "/home/grego/sf-asset-lab/challengers/NAF.pth",
+      "bytes": 2664431,
+      "sha256": "c096c1ab2217a5c3ac136365f721685e2201379cb69d509cfb0261183847c98f"
+    },
+    {
+      "name": "RealESRGAN_x4plus",
+      "url": "https://github.com/xinntao/Real-ESRGAN/releases/download/v0.1.0/RealESRGAN_x4plus.pth",
+      "status": "complete",
+      "path": "/home/grego/sf-asset-lab/challengers/RealESRGAN_x4plus.pth",
+      "bytes": 67040989,
+      "sha256": "4fa0d38905f75ac06eb49a7951b426670021be3018265fd191d2125df9d682f1"
+    },
+    {
+      "repo": "Ruicheng/moge-2-vitl",
+      "status": "complete",
+      "revision": "39c4d5e957afe587e04eec59dc2bcc3be5ecd968",
+      "patterns": null,
+      "excluded": [],
+      "expected_bytes": 1305032243,
+      "path": "/home/grego/.cache/huggingface/hub/models--Ruicheng--moge-2-vitl/snapshots/39c4d5e957afe587e04eec59dc2bcc3be5ecd968"
+    },
+    {
+      "repo": "TencentARC/Pixal3D",
+      "status": "complete",
+      "revision": "b0cb2e1b794cab9aa0ac38a95d794a4d9337437f",
+      "patterns": [
+        "pipeline.json",
+        "ckpts/*",
+        "LICENSE",
+        "NOTICE",
+        "README.md"
+      ],
+      "excluded": [
+        "*_mv.*"
+      ],
+      "expected_bytes": 24044887260,
+      "path": "/home/grego/.cache/huggingface/hub/models--TencentARC--Pixal3D/snapshots/b0cb2e1b794cab9aa0ac38a95d794a4d9337437f"
+    },
+    {
+      "repo": "VAST-AI/TripoSG",
+      "status": "complete",
+      "revision": "2c1c516d22d58db486a058d98d31bb6177344e06",
+      "expected_bytes": 7946494238,
+      "path": "/home/grego/.cache/huggingface/hub/models--VAST-AI--TripoSG/snapshots/2c1c516d22d58db486a058d98d31bb6177344e06"
+    },
+    {
+      "repo": "facebook/dinov2-giant",
+      "status": "complete",
+      "revision": "611a9d42f2335e0f921f1e313ad3c1b7178d206d",
+      "patterns": [
+        "config.json",
+        "preprocessor_config.json",
+        "model.safetensors",
+        "README.md"
+      ],
+      "excluded": [],
+      "expected_bytes": 4546009449,
+      "path": "/home/grego/.cache/huggingface/hub/models--facebook--dinov2-giant/snapshots/611a9d42f2335e0f921f1e313ad3c1b7178d206d"
+    },
+    {
+      "repo": "tencent/Hunyuan3D-2.1",
+      "status": "complete",
+      "revision": "0b94677654c57bb9a6b6845cd7b704ccf551d327",
+      "expected_bytes": 14909683275,
+      "path": "/home/grego/.cache/huggingface/hub/models--tencent--Hunyuan3D-2.1/snapshots/0b94677654c57bb9a6b6845cd7b704ccf551d327"
+    }
+  ],
+  "numerical_compatibility": {
+    "naf_neighborhood_cpu_max_error": 3.5762786865234375E-07,
+    "NAF_weights_loaded": true,
+    "Pixal_feature_import": true,
+    "MoGe2_import": true
+  },
+  "system_library": "libopengl0:amd64\t1.7.0-1build1",
+  "cpu_inpaint_extension": {
+    "path": "/home/grego/sf-asset-lab/sources/hunyuan3d-2.1/hy3dpaint/DifferentiableRenderer/mesh_inpaint_processor.cpython-312-x86_64-linux-gnu.so",
+    "sha256": "a2637d3131e0731740a2cad0c6b24ef74b1086a1d674e21dbec5e27b03f769fd"
+  }
+}

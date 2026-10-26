@@ -1,0 +1,23 @@
+{
+  "inputs": [
+    {
+      "path": "/mnt/c/Projects/Shattered-Frontier/GameClient/ArtSource/PlayerCharacter/Starter-Male-01/Views1024-v003/raw/front.png",
+      "sha256": "e4ebdd7d5ed7b8eeb73a25221c888f67a10793d216eacfa07fea4082148af1ce"
+    },
+    {
+      "path": "/mnt/c/Projects/Shattered-Frontier/GameClient/ArtSource/PlayerCharacter/Starter-Male-01/Views1024-v003/raw/left.png",
+      "sha256": "2ee8e51f05ac8e613c0858ee679d71a77e260ad664084031f94141449e4fb5df"
+    },
+    {
+      "path": "/mnt/c/Projects/Shattered-Frontier/GameClient/ArtSource/PlayerCharacter/Starter-Male-01/Views1024-v003/raw/back.png",
+      "sha256": "a34d9dd32a6ccf3c1e130117db345baf3d5144274d688ee30c8e81cdd1f7efcf"
+    },
+    {
+      "path": "/mnt/c/Projects/Shattered-Frontier/GameClient/ArtSource/PlayerCharacter/Starter-Male-01/Views1024-v003/raw/right.png",
+      "sha256": "007a152e18e028becf9f84488125c53d192cd0057e1118e594dd26fe06aa6b36"
+    }
+  ],
+  "view_px": 1024,
+  "transforms_source": "/home/grego/sf-asset-lab/sources/Pixal3D/assets/mv_images/example/transforms.json",
+  "review_status": "needs-review"
+}

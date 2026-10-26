@@ -1,0 +1,196 @@
+{
+  "schema_version": 1,
+  "status": "unreviewed-guide-path-visualization",
+  "cpu_only": true,
+  "source": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateCleanup-v001\\Voidreign-CompleteHair.blend",
+  "source_sha256": "6c6044a533c16fc7fad23d42c0407dde37a0252aca84f9be1bc9b9a2367364f6",
+  "tool": "C:\\Projects\\Shattered-Frontier\\tools\\Render-FeatureGuidePaths.py",
+  "tool_sha256": "6b125bbd9d314789ba2d5bbee4ec1ce20fe92bd8816565e1eb9329ffab37c0b7",
+  "mesh_hash": "ba2d283db0be5e8cff4cc7549f1f51916cc0a4d18213773300976b11512ececa",
+  "guide_report": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneGuideProposal-v001\\guide-report.json",
+  "guide_report_sha256": "3e776c1cef3380c3a81814d67ce2ec32270bca2e7d7fbece55eefef49e70de67",
+  "coverage_bound_guide_report_sha256": "3e776c1cef3380c3a81814d67ce2ec32270bca2e7d7fbece55eefef49e70de67",
+  "coverage_report": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\CoverageGuideStudy-v002\\coverage-report.json",
+  "coverage_report_sha256": "94add1cca0a5c6ab4605136737c00b95fbf5fcbd8820a9556a8b571d93fe755c",
+  "additional_guides": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\CoverageGuideStudy-v002\\additional-guides.json",
+  "additional_guides_sha256": "3d25841d2be20fc642f8d922497a1144698a8c4bc83078c099d45277afd10ef9",
+  "coverage_file_sha256": "a9dd01dfb9caed71b2ae173b0f64ba29131fc048cb7d1711bd67170870dfeaf4",
+  "selection_report": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selection-report.json",
+  "selection_report_sha256": "63eb535dcafe1140c5445ce46bd402cc438af979c437fbb9d7430b723aa11a08",
+  "selection_file": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selections.npz",
+  "selection_file_sha256": "0b6a19f76a2cba73a42e293c29365360b53ba93be101cf8f4ca556e7a5989cc0",
+  "selection_to_assembly_max_delta_m": 1.98004506707681e-07,
+  "assembly_root": "MOTION HARNESS | rigid horse, not gait animation",
+  "assembly_root_world_matrix": [
+    [
+      1.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    [
+      0.0,
+      1.0,
+      0.0,
+      0.0
+    ],
+    [
+      0.0,
+      0.0,
+      1.0,
+      0.0
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "assembly_root_scale": [
+    1.0,
+    1.0,
+    1.0
+  ],
+  "unit_scale": 1.0,
+  "guides": [
+    {
+      "name": "Mane_COVERAGE_00",
+      "feature": "Mane",
+      "root_node": 137722,
+      "status": "unreviewed-coverage-proposal",
+      "source_path_nodes": [
+        137722,
+        137212,
+        136699,
+        136118,
+        135281,
+        134169,
+        134173,
+        135826,
+        136709,
+        137056
+      ],
+      "virtual_edges_in_path": [
+        [
+          134169,
+          134173
+        ]
+      ]
+    },
+    {
+      "name": "Tail_COVERAGE_00",
+      "feature": "Tail",
+      "root_node": 29002,
+      "status": "unreviewed-coverage-proposal",
+      "source_path_nodes": [
+        29002,
+        28127,
+        26896,
+        26014,
+        26011,
+        25608,
+        25090,
+        24170,
+        24006,
+        23773,
+        22506,
+        22437,
+        22087,
+        21512,
+        21023,
+        20394,
+        19982,
+        19554,
+        19115,
+        18850,
+        18566,
+        18431,
+        17419,
+        16953,
+        16606,
+        16190,
+        15557,
+        14187,
+        13299,
+        12302,
+        11583,
+        11116,
+        10452,
+        9502,
+        8763,
+        7995,
+        7398,
+        6585,
+        5791,
+        5356,
+        4896,
+        4535,
+        3956,
+        3175,
+        2770,
+        2467,
+        1952,
+        1634,
+        1343,
+        1192
+      ],
+      "virtual_edges_in_path": []
+    }
+  ],
+  "render_settings": {
+    "engine": "CYCLES",
+    "device": "CPU",
+    "samples": 4,
+    "threads": 4,
+    "resolution": [
+      768,
+      640
+    ]
+  },
+  "renders": [
+    {
+      "path": "rest-side-posX.png",
+      "view": "side-posX",
+      "isolated_guide_only": false,
+      "depth_tested_against_mesh": true
+    },
+    {
+      "path": "isolated-side-posX.png",
+      "view": "side-posX",
+      "isolated_guide_only": true,
+      "depth_tested_against_mesh": false
+    },
+    {
+      "path": "rest-side-negX.png",
+      "view": "side-negX",
+      "isolated_guide_only": false,
+      "depth_tested_against_mesh": true
+    },
+    {
+      "path": "isolated-side-negX.png",
+      "view": "side-negX",
+      "isolated_guide_only": true,
+      "depth_tested_against_mesh": false
+    },
+    {
+      "path": "rest-rear.png",
+      "view": "rear",
+      "isolated_guide_only": false,
+      "depth_tested_against_mesh": true
+    },
+    {
+      "path": "isolated-rear.png",
+      "view": "rear",
+      "isolated_guide_only": true,
+      "depth_tested_against_mesh": false
+    }
+  ],
+  "limitations": [
+    "Added guides are unreviewed proposals; these images do not approve clump identity, semantic attachment, or root suitability.",
+    "Rest-mesh views are depth-tested; isolated-guide views intentionally omit the mesh and do not show occlusion.",
+    "Curves are centerlines with a diagnostic display thickness, not authored strand width or skin representation.",
+    "No motion, deformation, collision, material, export/reimport, or runtime acceptance is established.",
+    "Source blend was opened read-only; materials and diagnostic objects existed only in memory."
+  ]
+}

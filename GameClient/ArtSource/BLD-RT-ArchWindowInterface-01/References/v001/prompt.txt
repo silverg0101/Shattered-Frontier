@@ -1,0 +1,5 @@
+Concept sheet prompt:
+Rough timber arched window interface concept sheet for a modular building game, no people or text. Show an empty semicircular arch aperture with an oak reveal contact surface and a shallow inner window-frame rebate; no glass, shutter, grille or infill. Preserve the arch silhouette and clear aperture. Include front, side reveal section and one isolated frame-interface member; all materials rough timber only. Appearance proposal, no dimensions or runtime claims.
+
+Clean view prompt:
+Single isolated rough oak arched-window frame interface member only: a straight lower-aperture vertical jamb strip with a shallow inward rebate contact for a future frame; no glass, no shutter, no infill, no whole arch or opening, no curved ring and no sill. One component, neutral gray studio. Preserve appearance-only concept, no dimensions.

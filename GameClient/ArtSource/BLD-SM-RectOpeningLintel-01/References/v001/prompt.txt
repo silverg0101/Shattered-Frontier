@@ -1,0 +1,5 @@
+Concept sheet prompt:
+Stylized asset concept sheet for a pale stone masonry rectangular opening lintel, no people or text. Show a single horizontal limestone lintel spanning the top of a visibly empty rectangle, with separate opening assembly study and isolated stone lintel component; show underside and bearing ends. Jambs and sill are separate, aperture unchanged, no door. Restrained masonry seams, neutral studio background, visual reference only.
+
+Clean view prompt:
+Single isolated limestone masonry rectangular-opening lintel component only, horizontal long stone beam with flat underside and visible bearing ends, no jambs, no sill, no opening scene, no decoration. Three-quarter view on neutral warm gray background; concept appearance only, no invented dimensions or structural claims.

@@ -1,0 +1,30 @@
+{
+  "asset_id": "TERR-GreenlandsArrivalPatch-01",
+  "category": "terrain patch",
+  "brief": "Proposed bounded Greenlands arrival ground patch with packed soil, short grass, modest rise and stable landing shelf; not a biome or runtime terrain system.",
+  "design_sources": [
+    { "path": "docs/e1-implementation-packet.md", "section": "Greenlands fixture and acceptance cards / E1-B", "role": "requires traversable surface change and safe jump/landing area" },
+    { "path": "docs/evidence/e1-foundation.md", "section": "Camera collision", "role": "records current graybox and visual-review limitation" },
+    { "path": "docs/Game-Design/concept-art/Concept.png", "role": "optional style reference; not geometry or requirements" }
+  ],
+  "concept_status": "agent-selected; user approval not claimed",
+  "clean_view_status": "ready-for-model-test; opaque background, segmentation required if later adapter requires alpha",
+  "design_master": "concept-sheet.png",
+  "prompts": "prompt.txt",
+  "generation": { "tool": "built-in image_gen", "model": "unavailable", "generated_date": "2026-10-18", "seed": "unavailable" },
+  "outputs": {
+    "concept-sheet.png": { "sha256": "10E2391D0A75A92FC90F3615853BDA7ADE43304518EE21BACCABA8FCF4D9F426", "dimensions_px": [1536, 1024], "color": "RGB, opaque; PNG color type 2", "master": true },
+    "asset-view.png": { "sha256": "70CFAFD90AC00967E8E86C327AB4328E61845AA15E7D058A2320AE761685AB4C", "dimensions_px": [1536, 1024], "color": "RGB, opaque; PNG color type 2", "master": false }
+  },
+  "component_boundaries": ["One finite patch only", "Excludes waystone, wall module, trail marker, detached vegetation and scenic landscape"],
+  "scale": "Approximate scale inferred; no dimension is established by the design source.",
+  "edits": "No pixel edits or upscaling. Asset view was generated as a separate reinterpretation from the selected sheet.",
+  "review": {
+    "reviewer": "Codex visual inspection",
+    "findings": ["Concept views show a consistent low grassy rise and broad soil clearing.", "Separate clean view contains exactly one full patch with margins and neutral opaque background.", "Silhouette and contact edge read clearly; no obvious crops or detached unrelated objects.", "Background is not transparent; alpha segmentation remains needed for an alpha-required adapter.", "Geometry, walkability and exact scale remain visual proposals and require later modeling/runtime review."],
+    "unresolved": ["The sheet layout includes panel divisions; acceptable for concept review only."],
+    "image_complete": true,
+    "approval": "agent-selected; not user-approved",
+    "review_date": "2026-10-18"
+  }
+}

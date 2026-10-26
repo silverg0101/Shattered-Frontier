@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "status": "surface-strain-diagnostic-unrated",
+  "cpu_only": true,
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\CompleteMotionCache-v001\\Voidreign-ActualSurfacePilot.blend": "a5e69cab0f484b2180809b8f60cb61ade34e227bd75ecdecfed97a7f87ae3cb9",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\CompleteMotionAlembic-v001\\expected-world-points.npy": "f1e12afebb725b18ce145886d71582db2eed8cd894ff6c27593171268b835a19",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\CompleteMotionAlembic-v001\\exchange-report.json": "cf9debcf66e7b1351d8f5ad8c2a0ec311597cfbdb7d963cdaf0c03566f4640b7",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz": "0d7599c8064cb81a6e211a23731435e08939b7fb146ce2d4bed810273909a2b2",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selections.npz": "0b6a19f76a2cba73a42e293c29365360b53ba93be101cf8f4ca556e7a5989cc0"
+  },
+  "tool_sha256": "9796eb2b70bff52a0198209abb25a210795d670eae758b2e16f7eef270567093",
+  "profile_sha256": "e9d46d46dffe09fb206fb02473e3b9e7dfaaa6b19d3e600f1498d7539e9710bc",
+  "frames": 330,
+  "representation": "Unique indexed source edges; seam-split edges remain independently counted.",
+  "zero_rest_length_edges": 0,
+  "zero_rest_area_faces": 0,
+  "groups": {
+    "all": {
+      "indexed_edges": 560733,
+      "triangles": 297119,
+      "maximum_relative_edge_change": 55.15864543923816,
+      "maximum_absolute_edge_change_m": 0.39349996409721116,
+      "worst_frame_edge_p99_relative_change": 3.2606070771338813,
+      "worst_frame_area_p99_relative_change": 5.311727565556228,
+      "worst_frame_area_weighted_mean_relative_change": 0.20533598467028158,
+      "maximum_relative_change_frame": 185,
+      "maximum_relative_change_edge": [
+        263709,
+        263710
+      ],
+      "worst_relative_rest_length_m": 0.00423977355147666,
+      "maximum_absolute_change_frame": 268,
+      "maximum_absolute_change_edge": [
+        246779,
+        246783
+      ],
+      "worst_absolute_rest_length_m": 0.024357821309150287
+    },
+    "Mane": {
+      "indexed_edges": 107623,
+      "triangles": 55410,
+      "maximum_relative_edge_change": 44.00009322911446,
+      "maximum_absolute_edge_change_m": 0.3908562273124803,
+      "worst_frame_edge_p99_relative_change": 7.3300325905385115,
+      "worst_frame_area_p99_relative_change": 11.695774361778744,
+      "worst_frame_area_weighted_mean_relative_change": 0.7144918921794241,
+      "maximum_relative_change_frame": 120,
+      "maximum_relative_change_edge": [
+        71566,
+        71578
+      ],
+      "worst_relative_rest_length_m": 0.0044136475866179,
+      "maximum_absolute_change_frame": 124,
+      "maximum_absolute_change_edge": [
+        9095,
+        9114
+      ],
+      "worst_absolute_rest_length_m": 0.020529658772692926
+    },
+    "Tail": {
+      "indexed_edges": 131259,
+      "triangles": 68878,
+      "maximum_relative_edge_change": 55.15864543923816,
+      "maximum_absolute_edge_change_m": 0.39349996409721116,
+      "worst_frame_edge_p99_relative_change": 7.534358290732448,
+      "worst_frame_area_p99_relative_change": 12.432350816913067,
+      "worst_frame_area_weighted_mean_relative_change": 0.6058508194751071,
+      "maximum_relative_change_frame": 185,
+      "maximum_relative_change_edge": [
+        263709,
+        263710
+      ],
+      "worst_relative_rest_length_m": 0.00423977355147666,
+      "maximum_absolute_change_frame": 268,
+      "maximum_absolute_change_edge": [
+        246779,
+        246783
+      ],
+      "worst_absolute_rest_length_m": 0.024357821309150287
+    }
+  },
+  "limitations": [
+    "No authored strain/style thresholds; this report cannot pass or fail material or model acceptance.",
+    "Relative maxima can be dominated by tiny rest edges; absolute change, baseline lengths and quantiles are retained.",
+    "Rotations and translations cancel in lengths/areas, but bending can alter triangle area in coarse meshes.",
+    "Metadata/UV retention and contact passes do not imply acceptable deformed texture or surface shape."
+  ]
+}

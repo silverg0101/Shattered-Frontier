@@ -1,0 +1,69 @@
+{
+  "assetId": "BLD-WT-FaceUndersideCellFull-01",
+  "version": "v001",
+  "category": "worked timber full-cell surface",
+  "created": "2026-10-18",
+  "sourceReferences": [
+    "docs/art-templates/player-construction-kit-contract.md — full-cell geometry/contact rules",
+    "docs/art-templates/asset-lists/construction-kit-matrix-07.md — finite role matrix",
+    "docs/Game-Design/Legends_Shattered_Frontier_Construction_System_Architecture_v0.1.md — §§3.1–3.2, 8–9",
+    "GameClient/ArtSource/BLD-RT-CellFull-01/References/v001/ — geometry/style envelope reference"
+  ],
+  "definition": {
+    "geometryRef": "same accepted full-cell geometry as baseline proposal",
+    "envelopeMeters": "per contract; not inferred",
+    "contacts": [
+      "exterior",
+      "interior",
+      "top",
+      "underside",
+      "two ends"
+    ],
+    "openings": "none",
+    "materialKit": "KIT-WT",
+    "structuralMaterialProfile": "Worked timber (gameplay unchanged)",
+    "cosmeticSkin": "appearance only",
+    "functionalDefinition": "none"
+  },
+  "generation": {
+    "tool": "built-in image_gen",
+    "date": "2026-10-18",
+    "model": "unavailable",
+    "seed": "unavailable",
+    "promptRecord": "prompt.txt",
+    "referenceImagesAttached": []
+  },
+  "images": [
+    {
+      "path": "concept-sheet.png",
+      "sha256": "672fbbf386e7f77fbaf5cfba7e82b3b44d67f27d0a7f21d83c57703420d50e56",
+      "width": 1536,
+      "height": 1024,
+      "pixelFormat": "RGB 24-bit",
+      "alpha": false,
+      "review": "The first sheet added ribs/beams beyond the envelope and was superseded. Selected flat-surface study shows flush board underside and zero-projection edge; clean view is a single flat board surface. Collision/contact compatibility remains unverified."
+    },
+    {
+      "path": "asset-view.png",
+      "sha256": "19fbd08b8de46edcde53e83bf74bccf78c38a8c2474e6e945e4f3e9370cdec40",
+      "width": 1254,
+      "height": 1254,
+      "pixelFormat": "RGB 24-bit",
+      "alpha": false,
+      "review": "The first sheet added ribs/beams beyond the envelope and was superseded. Selected flat-surface study shows flush board underside and zero-projection edge; clean view is a single flat board surface. Collision/contact compatibility remains unverified."
+    }
+  ],
+  "review": {
+    "reviewedBy": "Codex",
+    "conceptStatus": "proposed",
+    "cleanViewStatus": "ready-for-model-test",
+    "imageStatus": "image-complete",
+    "geometryAcceptance": "not established",
+    "numericalMeshFit": "not established",
+    "runtimeCollisionSupportClearance": "not established",
+    "actionableFindings": [
+      "The first sheet added ribs/beams beyond the envelope and was superseded. Selected flat-surface study shows flush board underside and zero-projection edge; clean view is a single flat board surface. Collision/contact compatibility remains unverified."
+    ]
+  },
+  "componentBoundary": "One separately indexed FaceUndersideCellFull appearance role; no geometry, collision, support or clearance acceptance."
+}

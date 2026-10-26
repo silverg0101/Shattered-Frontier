@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "source": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkPilot-v003/Mount-WalkPilot.blend",
+  "object": "geometry_0",
+  "maximum_trace_nodes": 64,
+  "channels": [
+    "Base Color",
+    "Metallic",
+    "Roughness",
+    "Normal",
+    "Coat Weight",
+    "Coat Roughness",
+    "Emission Color",
+    "Emission Strength",
+    "Alpha"
+  ],
+  "permissions": "CPU saved-source material audit only; no material changes or GPU work",
+  "effective_time": "Frozen prototype source only",
+  "input_sha256": {
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkPilot-v003/Mount-WalkPilot.blend": "f59dc38bff697b6c2a2c84511413d2e292d9fdbb278acc69cd8df6d26a5bd123"
+  },
+  "pixel_statistics_images": [
+    "Image_1"
+  ]
+}

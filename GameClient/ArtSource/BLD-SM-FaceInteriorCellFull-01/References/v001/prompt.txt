@@ -1,0 +1,23 @@
+CONCEPT SHEET — built-in image_gen, 2026-10-18.
+
+Use case: stylized-concept
+Asset type: separately indexed stone-masonry interior-face treatment.
+Input image 1: selected stone-masonry exterior-face concept; palette/course character only. Keep the same KIT-SM visual identity, with a plainer sheltered interior finish.
+Scene/backdrop: neutral gray studio.
+Subject: exactly ONE solid full-cell cube, 0.5 m target edges, with the interior face identified and shown front. Six square orthographic views of that same cube: interior, exterior opposite, ends, top, underside, plus a blank contact silhouette.
+Style/medium: realistic fantasy architecture; gray-brown local stone courses, interior face somewhat more even and less weathered than exterior but still the same stone-masonry tier and cut-stone material.
+Composition/framing: six evenly sized aligned square face views, same scale and crisp silhouette. Labels only INTERIOR, EXTERIOR, END A, END B, TOP, UNDERSIDE, CONTACT; dimensions are design targets.
+Constraints: preserve the exact proposed solid cell-full envelope, six planar contacts, pivot, orientations, openings and clearances. Surface finish is appearance only. No geometry extension, projecting blocks, arches, damage, metal, timber, floor, separate props, or strength/gameplay claims.
+Avoid: polished marble or premium tier appearance, second cube, wall scene, scale figure, perspective distortion, text clutter, watermark.
+Reference: `GameClient/ArtSource/BLD-SM-FaceExteriorCellFull-01/References/v001/concept-sheet.png`.
+
+CLEAN ASSET VIEW — built-in image_gen, 2026-10-18. Input image 1 is the selected concept sheet.
+
+Use case: stylized-concept
+Asset type: clean single-asset view of the stone-masonry interior-face component.
+Input image 1: selected six-view concept; preserve the more even sheltered INTERIOR surface and same gray-brown stone kit. Do not repeat the sheet.
+Scene/backdrop: neutral gray studio.
+Subject: exactly one full solid cube with equal 0.5 m target edges, interior face toward camera.
+Style/medium: realistic fantasy masonry, modest squared local stones, subdued color, shallow mortar seams.
+Composition/framing: complete cube only, three-quarter view, face forward and one exterior side visible, top clear, ample margins, soft neutral shadow.
+Constraints: retain crisp straight cube silhouette, planar faces, same full-cell envelope, pivot, contacts and geometry proposal. Keep masonry appearance flush; no raised stone, trim, base, openings, extra props, people, damage or gameplay claim.

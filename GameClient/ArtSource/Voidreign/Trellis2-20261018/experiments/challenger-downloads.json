@@ -1,0 +1,404 @@
+{
+  "status": "verified",
+  "downloads": [
+    {
+      "name": "NAF",
+      "url": "https://github.com/valeoai/NAF/releases/download/model/naf_release.pth",
+      "status": "complete",
+      "path": "/home/grego/sf-asset-lab/challengers/NAF.pth",
+      "bytes": 2664431,
+      "sha256": "c096c1ab2217a5c3ac136365f721685e2201379cb69d509cfb0261183847c98f"
+    },
+    {
+      "name": "RealESRGAN_x4plus",
+      "url": "https://github.com/xinntao/Real-ESRGAN/releases/download/v0.1.0/RealESRGAN_x4plus.pth",
+      "status": "complete",
+      "path": "/home/grego/sf-asset-lab/challengers/RealESRGAN_x4plus.pth",
+      "bytes": 67040989,
+      "sha256": "4fa0d38905f75ac06eb49a7951b426670021be3018265fd191d2125df9d682f1"
+    },
+    {
+      "repo": "Ruicheng/moge-2-vitl",
+      "status": "complete",
+      "revision": "39c4d5e957afe587e04eec59dc2bcc3be5ecd968",
+      "patterns": null,
+      "excluded": [],
+      "expected_bytes": 1305032243,
+      "path": "/home/grego/.cache/huggingface/hub/models--Ruicheng--moge-2-vitl/snapshots/39c4d5e957afe587e04eec59dc2bcc3be5ecd968"
+    },
+    {
+      "repo": "TencentARC/Pixal3D",
+      "status": "complete",
+      "revision": "b0cb2e1b794cab9aa0ac38a95d794a4d9337437f",
+      "patterns": [
+        "pipeline.json",
+        "ckpts/*",
+        "LICENSE",
+        "NOTICE",
+        "README.md"
+      ],
+      "excluded": [
+        "*_mv.*"
+      ],
+      "expected_bytes": 24044887260,
+      "path": "/home/grego/.cache/huggingface/hub/models--TencentARC--Pixal3D/snapshots/b0cb2e1b794cab9aa0ac38a95d794a4d9337437f"
+    },
+    {
+      "repo": "VAST-AI/TripoSG",
+      "status": "complete",
+      "revision": "2c1c516d22d58db486a058d98d31bb6177344e06",
+      "expected_bytes": 7946494238,
+      "path": "/home/grego/.cache/huggingface/hub/models--VAST-AI--TripoSG/snapshots/2c1c516d22d58db486a058d98d31bb6177344e06"
+    },
+    {
+      "repo": "tencent/Hunyuan3D-2.1",
+      "status": "complete",
+      "revision": "0b94677654c57bb9a6b6845cd7b704ccf551d327",
+      "expected_bytes": 14909683275,
+      "path": "/home/grego/.cache/huggingface/hub/models--tencent--Hunyuan3D-2.1/snapshots/0b94677654c57bb9a6b6845cd7b704ccf551d327"
+    }
+  ],
+  "files": [
+    {
+      "path": "/home/grego/sf-asset-lab/challengers/NAF.pth",
+      "bytes": 2664431,
+      "status": "sha256_verified",
+      "sha256": "c096c1ab2217a5c3ac136365f721685e2201379cb69d509cfb0261183847c98f"
+    },
+    {
+      "path": "/home/grego/sf-asset-lab/challengers/RealESRGAN_x4plus.pth",
+      "bytes": 67040989,
+      "status": "sha256_verified",
+      "sha256": "4fa0d38905f75ac06eb49a7951b426670021be3018265fd191d2125df9d682f1"
+    },
+    {
+      "path": "/home/grego/.cache/huggingface/hub/models--Ruicheng--moge-2-vitl/snapshots/39c4d5e957afe587e04eec59dc2bcc3be5ecd968/.gitattributes",
+      "bytes": 1519,
+      "status": "size_verified"
+    },
+    {
+      "path": "/home/grego/.cache/huggingface/hub/models--Ruicheng--moge-2-vitl/snapshots/39c4d5e957afe587e04eec59dc2bcc3be5ecd968/README.md",
+      "bytes": 24,
+      "status": "size_verified"
+    },
+    {
+      "path": "/home/grego/.cache/huggingface/hub/models--Ruicheng--moge-2-vitl/snapshots/39c4d5e957afe587e04eec59dc2bcc3be5ecd968/model.pt",
+      "bytes": 1305030700,
+      "status": "sha256_verified",
+      "sha256": "3eefd4abb2102f38f12b2d1992e5ff15e4923e5431c67dd494afe157e0111cd5"
+    },
+    {
+      "path": "/home/grego/.cache/huggingface/hub/models--TencentARC--Pixal3D/snapshots/b0cb2e1b794cab9aa0ac38a95d794a4d9337437f/LICENSE",
+      "bytes": 1064,
+      "status": "size_verified"
+    },
+    {
+      "path": "/home/grego/.cache/huggingface/hub/models--TencentARC--Pixal3D/snapshots/b0cb2e1b794cab9aa0ac38a95d794a4d9337437f/NOTICE",
+      "bytes": 12527,
+      "status": "size_verified"
+    },
+    {
+      "path": "/home/grego/.cache/huggingface/hub/models--TencentARC--Pixal3D/snapshots/b0cb2e1b794cab9aa0ac38a95d794a4d9337437f/README.md",
+      "bytes": 13251,
+      "status": "size_verified"
+    },
+    {
+      "path": "/home/grego/.cache/huggingface/hub/models--TencentARC--Pixal3D/snapshots/b0cb2e1b794cab9aa0ac38a95d794a4d9337437f/ckpts/shape_dec_next_dc_f16c32_fp16.json",
+      "bytes": 678,
+      "status": "size_verified"
+    },
+    {
+      "path": "/home/grego/.cache/huggingface/hub/models--TencentARC--Pixal3D/snapshots/b0cb2e1b794cab9aa0ac38a95d794a4d9337437f/ckpts/shape_dec_next_dc_f16c32_fp16.safetensors",
+      "bytes": 948490494,
+      "status": "sha256_verified",
+      "sha256": "e3b718d3e43e4f8780e9a24ac6fff231811a67e3b058e336e10fe654c911d581"
+    },
+    {
+      "path": "/home/grego/.cache/huggingface/hub/models--TencentARC--Pixal3D/snapshots/b0cb2e1b794cab9aa0ac38a95d794a4d9337437f/ckpts/slat_flow_img2shape_dit_1_3B_1024_bf16.json",
+      "bytes": 535,
+      "status": "size_verified"
+    },
+    {
+      "path": "/home/grego/.cache/huggingface/hub/models--TencentARC--Pixal3D/snapshots/b0cb2e1b794cab9aa0ac38a95d794a4d9337437f/ckpts/slat_flow_img2shape_dit_1_3B_1024_bf16.safetensors",
+      "bytes": 5546764048,
+      "status": "sha256_verified",
+      "sha256": "3e6d1df0e62bc5bc863320d1d63d6b996235eef4abb8b851e878c88f316369f1"
+    },
+    {
+      "path": "/home/grego/.cache/huggingface/hub/models--TencentARC--Pixal3D/snapshots/b0cb2e1b794cab9aa0ac38a95d794a4d9337437f/ckpts/slat_flow_img2shape_dit_1_3B_512_bf16.json",
+      "bytes": 535,
+      "status": "size_verified"
+    },
+    {
+      "path": "/home/grego/.cache/huggingface/hub/models--TencentARC--Pixal3D/snapshots/b0cb2e1b794cab9aa0ac38a95d794a4d9337437f/ckpts/slat_flow_img2shape_dit_1_3B_512_bf16.safetensors",
+      "bytes": 5546764048,
+      "status": "sha256_verified",
+      "sha256": "63569838c1da93f010e2fa805b202ecf802cc758830230abac202a81b70e5b45"
+    },
+    {
+      "path": "/home/grego/.cache/huggingface/hub/models--TencentARC--Pixal3D/snapshots/b0cb2e1b794cab9aa0ac38a95d794a4d9337437f/ckpts/slat_flow_imgshape2tex_dit_1_3B_1024_bf16.json",
+      "bytes": 535,
+      "status": "size_verified"
+    },
+    {
+      "path": "/home/grego/.cache/huggingface/hub/models--TencentARC--Pixal3D/snapshots/b0cb2e1b794cab9aa0ac38a95d794a4d9337437f/ckpts/slat_flow_imgshape2tex_dit_1_3B_1024_bf16.safetensors",
+      "bytes": 5546960656,
+      "status": "sha256_verified",
+      "sha256": "65df179ad02f9e92bc18335d7861fadd95f268e6249217352468dd83cb79d1d0"
+    },
+    {
+      "path": "/home/grego/.cache/huggingface/hub/models--TencentARC--Pixal3D/snapshots/b0cb2e1b794cab9aa0ac38a95d794a4d9337437f/ckpts/ss_dec_conv3d_16l8_fp16.json",
+      "bytes": 245,
+      "status": "size_verified"
+    },
+    {
+      "path": "/home/grego/.cache/huggingface/hub/models--TencentARC--Pixal3D/snapshots/b0cb2e1b794cab9aa0ac38a95d794a4d9337437f/ckpts/ss_dec_conv3d_16l8_fp16.safetensors",
+      "bytes": 147591972,
+      "status": "sha256_verified",
+      "sha256": "1c76d4a40519aa2d711cc263a8404105231ac26db31d946bed48b84fee79009a"
+    },
+    {
+      "path": "/home/grego/.cache/huggingface/hub/models--TencentARC--Pixal3D/snapshots/b0cb2e1b794cab9aa0ac38a95d794a4d9337437f/ckpts/ss_flow_img_dit_1_3B_64_bf16.json",
+      "bytes": 503,
+      "status": "size_verified"
+    },
+    {
+      "path": "/home/grego/.cache/huggingface/hub/models--TencentARC--Pixal3D/snapshots/b0cb2e1b794cab9aa0ac38a95d794a4d9337437f/ckpts/ss_flow_img_dit_1_3B_64_bf16.safetensors",
+      "bytes": 5359822584,
+      "status": "sha256_verified",
+      "sha256": "6d0147bb347eb61fa81c304cc68c7fd69d447e91870357a549b47e1d0fd77242"
+    },
+    {
+      "path": "/home/grego/.cache/huggingface/hub/models--TencentARC--Pixal3D/snapshots/b0cb2e1b794cab9aa0ac38a95d794a4d9337437f/ckpts/tex_dec_next_dc_f16c32_fp16.json",
+      "bytes": 705,
+      "status": "size_verified"
+    },
+    {
+      "path": "/home/grego/.cache/huggingface/hub/models--TencentARC--Pixal3D/snapshots/b0cb2e1b794cab9aa0ac38a95d794a4d9337437f/ckpts/tex_dec_next_dc_f16c32_fp16.safetensors",
+      "bytes": 948458812,
+      "status": "sha256_verified",
+      "sha256": "97ea69addea2ecd9312910f5f548234665eef51c088386180b7cd5b258645e3c"
+    },
+    {
+      "path": "/home/grego/.cache/huggingface/hub/models--TencentARC--Pixal3D/snapshots/b0cb2e1b794cab9aa0ac38a95d794a4d9337437f/pipeline.json",
+      "bytes": 4068,
+      "status": "size_verified"
+    },
+    {
+      "path": "/home/grego/.cache/huggingface/hub/models--VAST-AI--TripoSG/snapshots/2c1c516d22d58db486a058d98d31bb6177344e06/.gitattributes",
+      "bytes": 1564,
+      "status": "size_verified"
+    },
+    {
+      "path": "/home/grego/.cache/huggingface/hub/models--VAST-AI--TripoSG/snapshots/2c1c516d22d58db486a058d98d31bb6177344e06/README.md",
+      "bytes": 1465,
+      "status": "size_verified"
+    },
+    {
+      "path": "/home/grego/.cache/huggingface/hub/models--VAST-AI--TripoSG/snapshots/2c1c516d22d58db486a058d98d31bb6177344e06/feature_extractor_dinov2/preprocessor_config.json",
+      "bytes": 436,
+      "status": "size_verified"
+    },
+    {
+      "path": "/home/grego/.cache/huggingface/hub/models--VAST-AI--TripoSG/snapshots/2c1c516d22d58db486a058d98d31bb6177344e06/image_encoder_dinov2/config.json",
+      "bytes": 1104,
+      "status": "size_verified"
+    },
+    {
+      "path": "/home/grego/.cache/huggingface/hub/models--VAST-AI--TripoSG/snapshots/2c1c516d22d58db486a058d98d31bb6177344e06/image_encoder_dinov2/model.safetensors",
+      "bytes": 1217522888,
+      "status": "sha256_verified",
+      "sha256": "399fba97a95f22c36834418bc69373364a99af3a1153da1c0fb31db567c92e23"
+    },
+    {
+      "path": "/home/grego/.cache/huggingface/hub/models--VAST-AI--TripoSG/snapshots/2c1c516d22d58db486a058d98d31bb6177344e06/model_index.json",
+      "bytes": 525,
+      "status": "size_verified"
+    },
+    {
+      "path": "/home/grego/.cache/huggingface/hub/models--VAST-AI--TripoSG/snapshots/2c1c516d22d58db486a058d98d31bb6177344e06/scheduler/scheduler_config.json",
+      "bytes": 158,
+      "status": "size_verified"
+    },
+    {
+      "path": "/home/grego/.cache/huggingface/hub/models--VAST-AI--TripoSG/snapshots/2c1c516d22d58db486a058d98d31bb6177344e06/transformer/config.json",
+      "bytes": 191,
+      "status": "size_verified"
+    },
+    {
+      "path": "/home/grego/.cache/huggingface/hub/models--VAST-AI--TripoSG/snapshots/2c1c516d22d58db486a058d98d31bb6177344e06/transformer/diffusion_pytorch_model.safetensors",
+      "bytes": 5758280104,
+      "status": "sha256_verified",
+      "sha256": "9192b5923f7b605b394192809aa2ceb73bf0f4009674d8e3b999b45bb97d4bf2"
+    },
+    {
+      "path": "/home/grego/.cache/huggingface/hub/models--VAST-AI--TripoSG/snapshots/2c1c516d22d58db486a058d98d31bb6177344e06/vae/config.json",
+      "bytes": 335,
+      "status": "size_verified"
+    },
+    {
+      "path": "/home/grego/.cache/huggingface/hub/models--VAST-AI--TripoSG/snapshots/2c1c516d22d58db486a058d98d31bb6177344e06/vae/diffusion_pytorch_model.safetensors",
+      "bytes": 970685468,
+      "status": "sha256_verified",
+      "sha256": "a2e667c24927a5a35e5f19fcb4c75890e9399aa966b6db8131d7df733a750c8b"
+    },
+    {
+      "path": "/home/grego/.cache/huggingface/hub/models--tencent--Hunyuan3D-2.1/snapshots/0b94677654c57bb9a6b6845cd7b704ccf551d327/.gitattributes",
+      "bytes": 1519,
+      "status": "size_verified"
+    },
+    {
+      "path": "/home/grego/.cache/huggingface/hub/models--tencent--Hunyuan3D-2.1/snapshots/0b94677654c57bb9a6b6845cd7b704ccf551d327/LICENSE",
+      "bytes": 17915,
+      "status": "size_verified"
+    },
+    {
+      "path": "/home/grego/.cache/huggingface/hub/models--tencent--Hunyuan3D-2.1/snapshots/0b94677654c57bb9a6b6845cd7b704ccf551d327/Notice.txt",
+      "bytes": 16644,
+      "status": "size_verified"
+    },
+    {
+      "path": "/home/grego/.cache/huggingface/hub/models--tencent--Hunyuan3D-2.1/snapshots/0b94677654c57bb9a6b6845cd7b704ccf551d327/README.md",
+      "bytes": 3998,
+      "status": "size_verified"
+    },
+    {
+      "path": "/home/grego/.cache/huggingface/hub/models--tencent--Hunyuan3D-2.1/snapshots/0b94677654c57bb9a6b6845cd7b704ccf551d327/demo.py",
+      "bytes": 1490,
+      "status": "size_verified"
+    },
+    {
+      "path": "/home/grego/.cache/huggingface/hub/models--tencent--Hunyuan3D-2.1/snapshots/0b94677654c57bb9a6b6845cd7b704ccf551d327/hunyuan3d-dit-v2-1/config.yaml",
+      "bytes": 2078,
+      "status": "size_verified"
+    },
+    {
+      "path": "/home/grego/.cache/huggingface/hub/models--tencent--Hunyuan3D-2.1/snapshots/0b94677654c57bb9a6b6845cd7b704ccf551d327/hunyuan3d-dit-v2-1/model.fp16.ckpt",
+      "bytes": 7366389768,
+      "status": "sha256_verified",
+      "sha256": "6b519fc7242f78e9b5f47ea4d55668fe3d944a2d27332f4ca68d29a6ff603f5e"
+    },
+    {
+      "path": "/home/grego/.cache/huggingface/hub/models--tencent--Hunyuan3D-2.1/snapshots/0b94677654c57bb9a6b6845cd7b704ccf551d327/hunyuan3d-paintpbr-v2-1/README.md",
+      "bytes": 1801,
+      "status": "size_verified"
+    },
+    {
+      "path": "/home/grego/.cache/huggingface/hub/models--tencent--Hunyuan3D-2.1/snapshots/0b94677654c57bb9a6b6845cd7b704ccf551d327/hunyuan3d-paintpbr-v2-1/feature_extractor/preprocessor_config.json",
+      "bytes": 342,
+      "status": "size_verified"
+    },
+    {
+      "path": "/home/grego/.cache/huggingface/hub/models--tencent--Hunyuan3D-2.1/snapshots/0b94677654c57bb9a6b6845cd7b704ccf551d327/hunyuan3d-paintpbr-v2-1/image_encoder/config.json",
+      "bytes": 554,
+      "status": "size_verified"
+    },
+    {
+      "path": "/home/grego/.cache/huggingface/hub/models--tencent--Hunyuan3D-2.1/snapshots/0b94677654c57bb9a6b6845cd7b704ccf551d327/hunyuan3d-paintpbr-v2-1/image_encoder/model.safetensors",
+      "bytes": 1264217240,
+      "status": "sha256_verified",
+      "sha256": "ae616c24393dd1854372b0639e5541666f7521cbe219669255e865cb7f89466a"
+    },
+    {
+      "path": "/home/grego/.cache/huggingface/hub/models--tencent--Hunyuan3D-2.1/snapshots/0b94677654c57bb9a6b6845cd7b704ccf551d327/hunyuan3d-paintpbr-v2-1/model_index.json",
+      "bytes": 617,
+      "status": "size_verified"
+    },
+    {
+      "path": "/home/grego/.cache/huggingface/hub/models--tencent--Hunyuan3D-2.1/snapshots/0b94677654c57bb9a6b6845cd7b704ccf551d327/hunyuan3d-paintpbr-v2-1/scheduler/scheduler_config.json",
+      "bytes": 387,
+      "status": "size_verified"
+    },
+    {
+      "path": "/home/grego/.cache/huggingface/hub/models--tencent--Hunyuan3D-2.1/snapshots/0b94677654c57bb9a6b6845cd7b704ccf551d327/hunyuan3d-paintpbr-v2-1/text_encoder/config.json",
+      "bytes": 613,
+      "status": "size_verified"
+    },
+    {
+      "path": "/home/grego/.cache/huggingface/hub/models--tencent--Hunyuan3D-2.1/snapshots/0b94677654c57bb9a6b6845cd7b704ccf551d327/hunyuan3d-paintpbr-v2-1/text_encoder/pytorch_model.bin",
+      "bytes": 1361671895,
+      "status": "sha256_verified",
+      "sha256": "c3e254d7b61353497ea0be2c4013df4ea8f739ee88cffa0ba58cd085459ed565"
+    },
+    {
+      "path": "/home/grego/.cache/huggingface/hub/models--tencent--Hunyuan3D-2.1/snapshots/0b94677654c57bb9a6b6845cd7b704ccf551d327/hunyuan3d-paintpbr-v2-1/tokenizer/merges.txt",
+      "bytes": 524619,
+      "status": "size_verified"
+    },
+    {
+      "path": "/home/grego/.cache/huggingface/hub/models--tencent--Hunyuan3D-2.1/snapshots/0b94677654c57bb9a6b6845cd7b704ccf551d327/hunyuan3d-paintpbr-v2-1/tokenizer/special_tokens_map.json",
+      "bytes": 460,
+      "status": "size_verified"
+    },
+    {
+      "path": "/home/grego/.cache/huggingface/hub/models--tencent--Hunyuan3D-2.1/snapshots/0b94677654c57bb9a6b6845cd7b704ccf551d327/hunyuan3d-paintpbr-v2-1/tokenizer/tokenizer_config.json",
+      "bytes": 807,
+      "status": "size_verified"
+    },
+    {
+      "path": "/home/grego/.cache/huggingface/hub/models--tencent--Hunyuan3D-2.1/snapshots/0b94677654c57bb9a6b6845cd7b704ccf551d327/hunyuan3d-paintpbr-v2-1/tokenizer/vocab.json",
+      "bytes": 1059962,
+      "status": "size_verified"
+    },
+    {
+      "path": "/home/grego/.cache/huggingface/hub/models--tencent--Hunyuan3D-2.1/snapshots/0b94677654c57bb9a6b6845cd7b704ccf551d327/hunyuan3d-paintpbr-v2-1/unet/attn_processor.py",
+      "bytes": 35104,
+      "status": "size_verified"
+    },
+    {
+      "path": "/home/grego/.cache/huggingface/hub/models--tencent--Hunyuan3D-2.1/snapshots/0b94677654c57bb9a6b6845cd7b704ccf551d327/hunyuan3d-paintpbr-v2-1/unet/config.json",
+      "bytes": 911,
+      "status": "size_verified"
+    },
+    {
+      "path": "/home/grego/.cache/huggingface/hub/models--tencent--Hunyuan3D-2.1/snapshots/0b94677654c57bb9a6b6845cd7b704ccf551d327/hunyuan3d-paintpbr-v2-1/unet/diffusion_pytorch_model.bin",
+      "bytes": 3925293863,
+      "status": "sha256_verified",
+      "sha256": "675a1b5cd0098b2002637c443946529c03c5cd54427f40245263350feb3dd5b8"
+    },
+    {
+      "path": "/home/grego/.cache/huggingface/hub/models--tencent--Hunyuan3D-2.1/snapshots/0b94677654c57bb9a6b6845cd7b704ccf551d327/hunyuan3d-paintpbr-v2-1/unet/model.py",
+      "bytes": 25514,
+      "status": "size_verified"
+    },
+    {
+      "path": "/home/grego/.cache/huggingface/hub/models--tencent--Hunyuan3D-2.1/snapshots/0b94677654c57bb9a6b6845cd7b704ccf551d327/hunyuan3d-paintpbr-v2-1/unet/modules.py",
+      "bytes": 45181,
+      "status": "size_verified"
+    },
+    {
+      "path": "/home/grego/.cache/huggingface/hub/models--tencent--Hunyuan3D-2.1/snapshots/0b94677654c57bb9a6b6845cd7b704ccf551d327/hunyuan3d-paintpbr-v2-1/vae/config.json",
+      "bytes": 553,
+      "status": "size_verified"
+    },
+    {
+      "path": "/home/grego/.cache/huggingface/hub/models--tencent--Hunyuan3D-2.1/snapshots/0b94677654c57bb9a6b6845cd7b704ccf551d327/hunyuan3d-paintpbr-v2-1/vae/diffusion_pytorch_model.bin",
+      "bytes": 334707217,
+      "status": "sha256_verified",
+      "sha256": "1b4889b6b1d4ce7ae320a02dedaeff1780ad77d415ea0d744b476155c6377ddc"
+    },
+    {
+      "path": "/home/grego/.cache/huggingface/hub/models--tencent--Hunyuan3D-2.1/snapshots/0b94677654c57bb9a6b6845cd7b704ccf551d327/hunyuan3d-vae-v2-1/config.yaml",
+      "bytes": 409,
+      "status": "size_verified"
+    },
+    {
+      "path": "/home/grego/.cache/huggingface/hub/models--tencent--Hunyuan3D-2.1/snapshots/0b94677654c57bb9a6b6845cd7b704ccf551d327/hunyuan3d-vae-v2-1/model.fp16.ckpt",
+      "bytes": 655648152,
+      "status": "sha256_verified",
+      "sha256": "5cbe97f25e6e7abd4bccc80ab07524ec0c86d24118486a9ba49bb5dfb070288a"
+    },
+    {
+      "path": "/home/grego/.cache/huggingface/hub/models--tencent--Hunyuan3D-2.1/snapshots/0b94677654c57bb9a6b6845cd7b704ccf551d327/hy3dpaint/textureGenPipeline.py",
+      "bytes": 8126,
+      "status": "size_verified"
+    },
+    {
+      "path": "/home/grego/.cache/huggingface/hub/models--tencent--Hunyuan3D-2.1/snapshots/0b94677654c57bb9a6b6845cd7b704ccf551d327/hy3dpaint/utils/multiview_utils.py",
+      "bytes": 5536,
+      "status": "size_verified"
+    }
+  ],
+  "total_bytes": 48275802436,
+  "note": "Hub LFS files checked against SHA-256 metadata at the pinned revision; other Hub files checked for size. Auxiliary files checked against hashes recorded at download."
+}

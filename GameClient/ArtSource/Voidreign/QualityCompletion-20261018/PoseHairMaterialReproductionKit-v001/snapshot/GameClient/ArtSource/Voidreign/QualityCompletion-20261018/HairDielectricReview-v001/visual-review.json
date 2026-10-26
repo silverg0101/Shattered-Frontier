@@ -1,0 +1,15 @@
+{
+  "status": "visible-hair-response-improvement-prototype-needs-coverage-review",
+  "reviewer": "authoring-agent",
+  "source_comparison": "CurrentMaterialReview-v001 head/saddle neutral, same camera and32samples",
+  "views_reviewed": 5,
+  "additional_views": "../HairDielectricBodyReview-v001/render-report.json",
+  "findings": [
+    "Mane response is less metallic and more existing albedo/strand detail is visible in matched head view. Saddle/bone remain in original material.",
+    "Both-side and rear candidate views show mane/tail response and continued painted lighting/red variation. These views are not paired baseline views.",
+    "124288 wholly selected faces changed,2713mixed boundary faces deliberately retain original material. Full semantic coverage remains unapproved.",
+    "Other dielectrics remain in the original almost-uniform metallic response; this is one bounded correction, not completed PBR or a finished model."
+  ],
+  "next": "Review mixed root boundaries and remaining semantic masks for bone/leather/hardware/eyes before material attempt3; retain independent geometry/rig/collision blockers.",
+  "candidate_accounting": "Material attempt2/3; zero new primary/gait candidates."
+}

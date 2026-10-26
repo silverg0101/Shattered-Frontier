@@ -1,0 +1,58 @@
+{
+ "schema_version": 1,
+ "source": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/Delivery-v002/SK_Voidreign.blend",
+ "object": "geometry_0",
+ "base_color": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/Delivery-v002/SK_Voidreign.fbm/BaseColor-4K.png",
+ "uv_layer": "UVMap",
+ "resolution": 2048,
+ "ao_samples": 32,
+ "bake_margin_px": 8,
+ "metallic": 0.0,
+ "roughness": {
+  "default": 0.75,
+  "bands": [
+   {
+    "name": "red_fur",
+    "where": {
+     "saturation": [
+      0.5,
+      1
+     ],
+     "value": [
+      0.15,
+      1
+     ]
+    },
+    "roughness": 0.8
+   },
+   {
+    "name": "bone_ivory",
+    "where": {
+     "saturation": [
+      0,
+      0.35
+     ],
+     "value": [
+      0.45,
+      1
+     ]
+    },
+    "roughness": 0.5
+   },
+   {
+    "name": "deep_dark",
+    "where": {
+     "value": [
+      0,
+      0.08
+     ]
+    },
+    "roughness": 0.92
+   }
+  ]
+ },
+ "input_sha256": {
+  "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/Delivery-v002/SK_Voidreign.blend": "1b17fcc4134f8e4b738769cd05daf80625e35d307dfb33ef526a52b9c24ec58f",
+  "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/Delivery-v002/SK_Voidreign.fbm/BaseColor-4K.png": "1023bcd5121c571e5bf94781a4304feb8717baeee1897ebf75bd7a67d93ebde1"
+ }
+}

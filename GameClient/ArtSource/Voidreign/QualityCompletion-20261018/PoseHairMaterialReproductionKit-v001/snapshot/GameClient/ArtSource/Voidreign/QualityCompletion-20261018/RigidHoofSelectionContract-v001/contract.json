@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "status": "author-reviewed-selection-for-weight-proposal-only",
+  "reviewer": "authoring-agent",
+  "approval_scope": "Prototype anatomical rigid-core selection only; no weight, pose, whole-hoof, runtime or production acceptance.",
+  "selection": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidHoofProposal-v002/hoof-selections.npz",
+  "selection_sha256": "742c939481a7939e558d684f09346d12778451d0b481aa46367550b4665752dd",
+  "rest_selection": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz",
+  "rest_selection_sha256": "0d7599c8064cb81a6e211a23731435e08939b7fb146ce2d4bed810273909a2b2",
+  "feet": [
+    {
+      "id": "fore.L",
+      "rigid_bone": "PRI.fore.L.fetlock",
+      "core_key": "fore.L.core_vertices",
+      "collar_key": "fore.L.collar_vertices",
+      "collar_blend_key": "fore.L.collar_blend",
+      "expected_core_vertices": 869,
+      "protected_legacy_vertices": 816,
+      "geodesic_collar_m": 0.04
+    },
+    {
+      "id": "fore.R",
+      "rigid_bone": "PRI.fore.R.fetlock",
+      "core_key": "fore.R.core_vertices",
+      "collar_key": "fore.R.collar_vertices",
+      "collar_blend_key": "fore.R.collar_blend",
+      "expected_core_vertices": 1349,
+      "protected_legacy_vertices": 1162,
+      "geodesic_collar_m": 0.04
+    },
+    {
+      "id": "hind.L",
+      "rigid_bone": "PRI.hind.L.fetlock",
+      "core_key": "hind.L.core_vertices",
+      "collar_key": "hind.L.collar_vertices",
+      "collar_blend_key": "hind.L.collar_blend",
+      "expected_core_vertices": 894,
+      "protected_legacy_vertices": 855,
+      "geodesic_collar_m": 0.04
+    },
+    {
+      "id": "hind.R",
+      "rigid_bone": "PRI.hind.R.fetlock",
+      "core_key": "hind.R.core_vertices",
+      "collar_key": "hind.R.collar_vertices",
+      "collar_blend_key": "hind.R.collar_blend",
+      "expected_core_vertices": 1403,
+      "protected_legacy_vertices": 1350,
+      "geodesic_collar_m": 0.04
+    }
+  ],
+  "required_future_checks": [
+    "Exact original sole and legacy rigid-core membership retained",
+    "Proposed core weights1 on declared rigid bone; maximum4 influences",
+    "Complete changed-region and boundary deformation comparisons, not only the original cutoff edge",
+    "Source geometry/UV/material/binds retained",
+    "Source contact/seams/loops and whole-mount ground remain separate gates"
+  ],
+  "review_findings": [
+    "Sole-only connectivity excludes visible physical hoof-shell surfaces on three feet; rejected as a complete core selection.",
+    "Preserved legacy shell plus sole-connected core reviewed in four side contexts. Multiple source shells can represent one rigid physical part.",
+    "Newly included heel-edge geometry remains a proposed selection; dynamic collar still needs a full-motion skin preflight."
+  ],
+  "candidate_accounting": "No source weights or mesh changed; primary candidates remain8, four reviewed code corrections; primary and walk automatic budgets stay3/3. Any later authored skin candidate must be separately recorded and reviewed, not treated as a hidden fourth automatic walk."
+}

@@ -1,0 +1,63 @@
+{
+  "source_sha256": "c27ad929b00520f52fb50058e0f374d69eca55d80084bc1909368c4d664fe56d",
+  "retained_history": "Artifacts/Art/Voidreign/hair-prototype-20261018",
+  "scope": "Selected original mane/tail mesh regions; offline bake; rigid horse harness, not full gait or engine runtime.",
+  "checks": "Source and GLB passed scoped checks; FBX pose deviation5.86mm exceeds5mm prototype check.",
+  "tools": [
+    {
+      "path": "tools/Create-VoidreignHairPrototype.py",
+      "sha256": "241d26bf5fe188bd369d860c27bd3a89e6ef9aee96a34339c2d3a7cde47c06fc"
+    },
+    {
+      "path": "tools/Validate-VoidreignHairPrototype.py",
+      "sha256": "01535ec1bc2506fd09d39592c92567493f8b9e54417d7da96ce86a5f9a43cf1a"
+    },
+    {
+      "path": "tools/Render-VoidreignHairMotion.py",
+      "sha256": "326232c4ed3655e408d7f40d3aafbc3f98f553a5ecf2d02b0022459f0f82b9d0"
+    },
+    {
+      "path": "tools/voidreign-hair-prototype.json",
+      "sha256": "825c6180ed8665d5b07cd1cd0d485d8a4e7665774825b1bea31d6294aed92f71"
+    }
+  ],
+  "date": "2026-10-18",
+  "review": "Independent visual review inspected masks/normal renders and pipeline document; partial coverage and surface-clearance remain open. Footer contrast corrected.",
+  "job": "docs/art-templates/model-jobs/voidreign-motion-20261018.json",
+  "status": "actual-mesh prototype; FBX needs-review",
+  "source": "GameClient/ArtSource/Voidreign/PixalDetail-20261018/Pixal-4096-HeadSaddle/Voidreign.blend",
+  "files": [
+    {
+      "path": "Voidreign-HairPrototype.blend",
+      "sha256": "409876de4765921fea1cba5b596069847298232f78bee2e0d5fd4809cfa5ccb3"
+    },
+    {
+      "path": "Voidreign-HairPrototype.glb",
+      "sha256": "2d42835f807ea9e1c18cf8fe6866038834a10a471e9d55f22cfdcf7c8ff88422"
+    },
+    {
+      "path": "Voidreign-HairPrototype.fbx",
+      "sha256": "f5b068d87465f6338a13307bd262f65dd4be6c0b63ff09645f5b18fc889d2724"
+    },
+    {
+      "path": "Hair-Motion-Diagnostic.mp4",
+      "sha256": "f6c5869c61d7d0e0c6950746e317ca8d980fe13c113e78fb3204577173ebd684"
+    },
+    {
+      "path": "simulation-report.json",
+      "sha256": "ea967d6d40a88c0fbad567de9c897ed17e2b1a15899e7c4ce5bd502a38851cd2"
+    },
+    {
+      "path": "simulation-trajectory.json",
+      "sha256": "ec96987ba26c005ff948cc2470db8a2a6c455f0653d7a6b36d0b673270cd4dc2"
+    },
+    {
+      "path": "validation-report.json",
+      "sha256": "f1935577f079cb9dac2af33909eaf8542f6ac3413f030c25ca9fce1310f3aed8"
+    },
+    {
+      "path": "config.json",
+      "sha256": "e130118a8e756434256b3385afe7c2b44cd8e25dc0c8e271fa5d1d016e32bea7"
+    }
+  ]
+}

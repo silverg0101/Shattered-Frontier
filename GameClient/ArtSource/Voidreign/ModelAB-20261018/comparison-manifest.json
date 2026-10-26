@@ -1,0 +1,339 @@
+{
+  "status": "reviewed-prototypes",
+  "input_sha256": "d67522bf160e2dbfe763a5945e651b6b5c508f32676257dac80c98b26a42aca0",
+  "comparison_sha256": "b8bd1172ffae6a825ef2e41f1606e6174f60b812ceb57d6ba5287b0cf4fafdf2",
+  "visual_acceptance": "No candidate is production ready; Hunyuan painting is visually unusable.",
+  "attempts": [
+    "hunyuan-01",
+    "tripo-01",
+    "tripo-02",
+    "pixal-01",
+    "hunyuan-paint-01",
+    "hunyuan-paint-02",
+    "hunyuan-paint-03",
+    "hunyuan-paint-04"
+  ],
+  "variants": [
+    {
+      "files": [
+        {
+          "path": "TRELLIS2-12steps/Voidreign.blend",
+          "sha256": "198b1a27ea9fd883e8c49418b041812f16aa960133c0da1da8e62117c273a97b"
+        },
+        {
+          "path": "TRELLIS2-12steps/Voidreign.glb",
+          "sha256": "057152c5539716ecb3d39a943650b4e207725d4893dd3bf16b45c7a35cdd6387"
+        },
+        {
+          "path": "TRELLIS2-12steps/Voidreign.fbx",
+          "sha256": "0d1369718ec3da9f8cdd9d59c0b51c03c6814fdf90af9b5339e797f87f5c5dbb"
+        },
+        {
+          "path": "TRELLIS2-12steps/asset-review.json",
+          "sha256": "fb8876f680bc62bef4521160291ac1d9ae12682f26561b824c165613002ac787"
+        },
+        {
+          "path": "TRELLIS2-12steps/validation-report.json",
+          "sha256": "9b6889556100f6b83c65aa80ee21a4f4b357de13444d9b98ae1fc166674340ff"
+        }
+      ],
+      "review": {
+        "mesh_objects": 1,
+        "triangles": 295394,
+        "dimensions_m": [
+          0.9309682250022888,
+          4.122130870819092,
+          2.6000001430511475
+        ],
+        "yaw_degrees": 0,
+        "inferred_full_height_m": 2.6,
+        "materials": [
+          "Material_0"
+        ],
+        "uv_layers": [
+          1
+        ]
+      },
+      "variant": "TRELLIS2-12steps"
+    },
+    {
+      "files": [
+        {
+          "path": "TRELLIS2-24steps/Voidreign.blend",
+          "sha256": "36457d9e6963a53b0fff9d5545e3360caf2577edb76201f5dad57b8803d5fbd3"
+        },
+        {
+          "path": "TRELLIS2-24steps/Voidreign.glb",
+          "sha256": "3d0db797f2ed92726634697f5d38f74af33d942ffde94be57d2622a230e04a23"
+        },
+        {
+          "path": "TRELLIS2-24steps/Voidreign.fbx",
+          "sha256": "d3a677698597903a4cb77ef12510f83b3ee1531db39cfa65d7c9fbb46bd68f21"
+        },
+        {
+          "path": "TRELLIS2-24steps/asset-review.json",
+          "sha256": "1ffbfa5953250fa775bffdf7755d87b83b02ef2285be6f64597cc3beee536615"
+        },
+        {
+          "path": "TRELLIS2-24steps/validation-report.json",
+          "sha256": "eba00fdb42700ba7139a89e0c3fa22b198d0f351f3a41b764e2d3d60e85d133b"
+        }
+      ],
+      "review": {
+        "mesh_objects": 1,
+        "triangles": 291270,
+        "dimensions_m": [
+          0.9503428936004639,
+          4.074153900146484,
+          2.5999999046325684
+        ],
+        "yaw_degrees": 0,
+        "inferred_full_height_m": 2.6,
+        "materials": [
+          "Material_0"
+        ],
+        "uv_layers": [
+          1
+        ]
+      },
+      "variant": "TRELLIS2-24steps"
+    },
+    {
+      "files": [
+        {
+          "path": "Hunyuan3D-2.1/Voidreign.blend",
+          "sha256": "65717d4a2c1efc3d46a0ff46dbb741429931a1cb7cb88165821463be88937c23"
+        },
+        {
+          "path": "Hunyuan3D-2.1/Voidreign.glb",
+          "sha256": "7b0a0bbe270a7c0b194d5733bd5b484a7463a9eb82113f6361a024fac99001a3"
+        },
+        {
+          "path": "Hunyuan3D-2.1/Voidreign.fbx",
+          "sha256": "497aa8f4b07312fb1cc18add8459342c36a2dc85d03b9c862f67a5cd86104b56"
+        },
+        {
+          "path": "Hunyuan3D-2.1/asset-review.json",
+          "sha256": "d76eac34aebf741c17032261ca7212bf366ff374927129068ff875f05a70983b"
+        },
+        {
+          "path": "Hunyuan3D-2.1/validation-report.json",
+          "sha256": "224ca964fdc93087d153bb8f246ad90ba11bc585b468279ebe59260b66680db5"
+        }
+      ],
+      "review": {
+        "mesh_objects": 1,
+        "triangles": 299979,
+        "dimensions_m": [
+          0.8546504378318787,
+          4.438174724578857,
+          2.5999999046325684
+        ],
+        "yaw_degrees": 90.0,
+        "inferred_full_height_m": 2.6,
+        "materials": [
+          "Geometry review grey"
+        ],
+        "uv_layers": [
+          0
+        ],
+        "geometry_only": true,
+        "pitch_degrees": 0,
+        "roll_degrees": 0
+      },
+      "variant": "Hunyuan3D-2.1"
+    },
+    {
+      "files": [
+        {
+          "path": "TripoSG/Voidreign.blend",
+          "sha256": "f823595d61708a425b5b8c6026ece874df9e46b1922e8543e59f9dd2f281ccdb"
+        },
+        {
+          "path": "TripoSG/Voidreign.glb",
+          "sha256": "6ff3b069ff3b772ec446ba9564b72716c0b22544d2f30dd64784f50df50c17c6"
+        },
+        {
+          "path": "TripoSG/Voidreign.fbx",
+          "sha256": "a963f4dc7f42c8832e8d8eff216429a9880fcaf5cd0c48256f81c5f27cd38354"
+        },
+        {
+          "path": "TripoSG/asset-review.json",
+          "sha256": "8508d964318f85670b2aad187f75c00100c3418759314d2760a7b4ed26d2d2d2"
+        },
+        {
+          "path": "TripoSG/validation-report.json",
+          "sha256": "d4fee43f3996164582b9d8e25d99985bc7a16efe1c23f7d95a4d6af9aac0dbb4"
+        }
+      ],
+      "review": {
+        "mesh_objects": 1,
+        "triangles": 299920,
+        "dimensions_m": [
+          0.8059080839157104,
+          4.287450313568115,
+          2.5999999046325684
+        ],
+        "yaw_degrees": 90.0,
+        "inferred_full_height_m": 2.6,
+        "materials": [
+          "Geometry review grey"
+        ],
+        "uv_layers": [
+          0
+        ],
+        "geometry_only": true,
+        "pitch_degrees": 0,
+        "roll_degrees": 0
+      },
+      "variant": "TripoSG"
+    },
+    {
+      "files": [
+        {
+          "path": "Pixal3D-Aligned/Voidreign.blend",
+          "sha256": "bee97d2f4b8821de85578b5c51ddc85c99f045c413c9f974413d7e8a5da29450"
+        },
+        {
+          "path": "Pixal3D-Aligned/Voidreign.glb",
+          "sha256": "b8d43a9a6d0603ef92efcdc9b3f9a9fcdcac912ad8c299dab41c8d04dd83998d"
+        },
+        {
+          "path": "Pixal3D-Aligned/Voidreign.fbx",
+          "sha256": "9ffcae4b2a6af9bd86a551654fdc32e09b83b81c206cb7586a73a81428a1e568"
+        },
+        {
+          "path": "Pixal3D-Aligned/asset-review.json",
+          "sha256": "ede2b632a59be046220f7151a68c44a652c52bcca967e86cdd18347fe0a2e921"
+        },
+        {
+          "path": "Pixal3D-Aligned/validation-report.json",
+          "sha256": "9f637288291b95340675abcb1d126cdec71c226177edefadec633de27af1ae24"
+        }
+      ],
+      "review": {
+        "mesh_objects": 1,
+        "triangles": 296859,
+        "dimensions_m": [
+          2.830941677093506,
+          4.154635906219482,
+          2.6000001430511475
+        ],
+        "yaw_degrees": -112.0,
+        "inferred_full_height_m": 2.6,
+        "materials": [
+          "Material_0"
+        ],
+        "uv_layers": [
+          1
+        ],
+        "geometry_only": false,
+        "pitch_degrees": 0,
+        "roll_degrees": 0
+      },
+      "variant": "Pixal3D-Aligned"
+    },
+    {
+      "files": [
+        {
+          "path": "Hunyuan3D-2.1-Painted/Voidreign.blend",
+          "sha256": "e1c45b72bc164d9d8969a8a4fb51f3ed6bb0396723aa03b344101af01158976d"
+        },
+        {
+          "path": "Hunyuan3D-2.1-Painted/Voidreign.glb",
+          "sha256": "5a01ebb744387536a301722048e8ce68bd9728b14dfd59b5d74259d01fe895e6"
+        },
+        {
+          "path": "Hunyuan3D-2.1-Painted/Voidreign.fbx",
+          "sha256": "35b7d0f1bdd501a74b11218091813e38d2f373c12472a77a6df076f54105c978"
+        },
+        {
+          "path": "Hunyuan3D-2.1-Painted/asset-review.json",
+          "sha256": "150bf648ecb8621e15901fc3488cf26075214fcc1f126323da7cbb483de6cc47"
+        },
+        {
+          "path": "Hunyuan3D-2.1-Painted/validation-report.json",
+          "sha256": "f6c7ee5a5cefdb1a3de05c6dd910321447cea6f22dc219a7c9a5a231a85a4102"
+        }
+      ],
+      "review": {
+        "mesh_objects": 1,
+        "triangles": 40000,
+        "dimensions_m": [
+          0.852715253829956,
+          4.42990779876709,
+          2.5999999046325684
+        ],
+        "yaw_degrees": 90.0,
+        "inferred_full_height_m": 2.6,
+        "materials": [
+          "PBR_Material"
+        ],
+        "uv_layers": [
+          1
+        ],
+        "geometry_only": false,
+        "pitch_degrees": 0,
+        "roll_degrees": 0
+      },
+      "variant": "Hunyuan3D-2.1-Painted"
+    }
+  ],
+  "tools": [
+    {
+      "path": "tools/trellis2/run_challenger.py",
+      "sha256": "ab3359db0022805f9b2be0004633f4889c5235759434136dc13a585d25b3dbb8"
+    },
+    {
+      "path": "tools/trellis2/run_pixal.py",
+      "sha256": "32d94ddaf926ad2554254836ce5fa887433a99fc4767c93b60362c92fd408819"
+    },
+    {
+      "path": "tools/trellis2/run_hunyuan_paint.py",
+      "sha256": "1a4448976e86fd28b6e7e1f2cd62569c1a0f5d846799c04e19be35e94194740b"
+    },
+    {
+      "path": "tools/trellis2/naf_rocm.py",
+      "sha256": "4201ea44b7b07a82ccd6eba3e221c29bdf1a0e174737021cc75776f813ea2c5c"
+    },
+    {
+      "path": "tools/trellis2/patch_challengers.py",
+      "sha256": "925233181ad73053e376f72d0ae6ebd7b3151915e9fbb879a5484325475cdcea"
+    },
+    {
+      "path": "tools/trellis2/setup-challengers.sh",
+      "sha256": "d73132baac9a72a1d283c5615cabee58b2f236e3f5ca581c31e734feca9224b4"
+    },
+    {
+      "path": "tools/trellis2/setup_hunyuan_paint.py",
+      "sha256": "2d216361a4f972ff82dc5c2d5fa8dbe515cb5811e68c6e5cd676eb30065bbb7c"
+    },
+    {
+      "path": "tools/trellis2/capture_challengers.py",
+      "sha256": "03a207a0e1f3d587fd66688d5f3392a3f533c268388a9355953f3d72578549c6"
+    },
+    {
+      "path": "tools/trellis2/sdpa_adapter.py",
+      "sha256": "3686a8f9ccd7352d289d6a26de067dfd861cd31286151245c9a5ec03a7deae83"
+    },
+    {
+      "path": "tools/Review-GeneratedAsset.py",
+      "sha256": "c7e1bd65bdd41b1c67749fe9c2fe4d6d7dda2a446f819fd9c2ce78568140d546"
+    },
+    {
+      "path": "tools/Validate-GeneratedAsset.py",
+      "sha256": "4c23c9a0235608f4a1a2f9f912cf825702927b4bf469e4d5bee2d22116932987"
+    },
+    {
+      "path": "tools/Compare-GeneratedAssets.py",
+      "sha256": "fdcf72c8ecf1f82c9a91fe700bdd8cfe94a3d5aeb3f0e0fd637d574b44a5d494"
+    },
+    {
+      "path": "tools/Render-AssetClayComparison.py",
+      "sha256": "995e61f783da5d63939dbc9769ba4dd9d96c8c24e55b8e019e05f5ab8ac788bb"
+    }
+  ],
+  "created": "2026-10-18",
+  "preferred": "Pixal3D-Aligned",
+  "alternative": "TripoSG"
+}

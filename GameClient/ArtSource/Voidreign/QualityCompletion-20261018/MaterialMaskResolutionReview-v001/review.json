@@ -1,0 +1,229 @@
+{
+  "schema_version": 1,
+  "status": "reviewed-UV-mask-resolution-evidence-not-material-completion",
+  "comparisons": [
+    {
+      "resolution": 2048,
+      "approved_faces_without_safe_pixel": 28,
+      "approved_faces_without_center_sample": 28,
+      "approved_faces_with_conflicted_samples": 0,
+      "overlap_pixels": 78,
+      "all_overlap_candidate_faces": 746,
+      "extra_triangle_sample_hits": 1416,
+      "uv_degenerate_faces": 37,
+      "missing_cases": [
+        {
+          "source_face": 19170,
+          "patch": "SMB-0d7599c806-411bed5eb70e",
+          "uv_area_pixels": 1.232405185699463,
+          "surface_area_m2": 2.505738302716054e-05
+        },
+        {
+          "source_face": 40981,
+          "patch": "SMB-0d7599c806-45e5a199970f",
+          "uv_area_pixels": 1.1075234971940517,
+          "surface_area_m2": 2.2446307411883026e-05
+        },
+        {
+          "source_face": 42886,
+          "patch": "SMB-0d7599c806-1e8b223aad41",
+          "uv_area_pixels": 0.7406682521104813,
+          "surface_area_m2": 1.676034116826486e-05
+        },
+        {
+          "source_face": 46278,
+          "patch": "SMB-0d7599c806-0ded486c5b5e",
+          "uv_area_pixels": 0.6716398298740387,
+          "surface_area_m2": 1.7860504158306867e-05
+        },
+        {
+          "source_face": 46315,
+          "patch": "SMB-0d7599c806-0ded486c5b5e",
+          "uv_area_pixels": 0.5081108212471008,
+          "surface_area_m2": 9.781221706361976e-06
+        },
+        {
+          "source_face": 46323,
+          "patch": "SMB-0d7599c806-0ded486c5b5e",
+          "uv_area_pixels": 1.144498847424984,
+          "surface_area_m2": 2.2032447304809466e-05
+        },
+        {
+          "source_face": 73735,
+          "patch": "SMB-0d7599c806-4afd6188749c",
+          "uv_area_pixels": 1.0739065930247307,
+          "surface_area_m2": 2.4834789655869827e-05
+        },
+        {
+          "source_face": 91160,
+          "patch": "SMB-0d7599c806-0ded486c5b5e",
+          "uv_area_pixels": 0.5551116988062859,
+          "surface_area_m2": 1.2653279554797336e-05
+        },
+        {
+          "source_face": 91161,
+          "patch": "SMB-0d7599c806-0ded486c5b5e",
+          "uv_area_pixels": 0.4277426153421402,
+          "surface_area_m2": 9.750777280714829e-06
+        },
+        {
+          "source_face": 91202,
+          "patch": "SMB-0d7599c806-0ded486c5b5e",
+          "uv_area_pixels": 0.562828179448843,
+          "surface_area_m2": 1.4479053788818419e-05
+        },
+        {
+          "source_face": 91209,
+          "patch": "SMB-0d7599c806-0ded486c5b5e",
+          "uv_area_pixels": 0.948814133182168,
+          "surface_area_m2": 2.1552248654188588e-05
+        },
+        {
+          "source_face": 118280,
+          "patch": "SMB-0d7599c806-0ded486c5b5e",
+          "uv_area_pixels": 1.2756070420145988,
+          "surface_area_m2": 3.416790787014179e-05
+        },
+        {
+          "source_face": 119667,
+          "patch": "SMB-0d7599c806-0ded486c5b5e",
+          "uv_area_pixels": 0.8114280626177788,
+          "surface_area_m2": 9.456975021748804e-06
+        },
+        {
+          "source_face": 119671,
+          "patch": "SMB-0d7599c806-0ded486c5b5e",
+          "uv_area_pixels": 0.09744194895029068,
+          "surface_area_m2": 6.577628482773434e-06
+        },
+        {
+          "source_face": 119675,
+          "patch": "SMB-0d7599c806-0ded486c5b5e",
+          "uv_area_pixels": 0.9677207469940186,
+          "surface_area_m2": 2.0986391973565333e-05
+        },
+        {
+          "source_face": 119676,
+          "patch": "SMB-0d7599c806-0ded486c5b5e",
+          "uv_area_pixels": 0.3461424186825752,
+          "surface_area_m2": 1.0960013241856359e-05
+        },
+        {
+          "source_face": 119726,
+          "patch": "SMB-0d7599c806-0ded486c5b5e",
+          "uv_area_pixels": 0.17320413887500763,
+          "surface_area_m2": 3.2026239296101267e-06
+        },
+        {
+          "source_face": 119743,
+          "patch": "SMB-0d7599c806-0ded486c5b5e",
+          "uv_area_pixels": 0.533391434699297,
+          "surface_area_m2": 8.443723345408216e-06
+        },
+        {
+          "source_face": 119749,
+          "patch": "SMB-0d7599c806-0ded486c5b5e",
+          "uv_area_pixels": 0.9539301693439484,
+          "surface_area_m2": 1.051610797730973e-05
+        },
+        {
+          "source_face": 120253,
+          "patch": "SMB-0d7599c806-bc5c85d932c0",
+          "uv_area_pixels": 0.8944359496235847,
+          "surface_area_m2": 1.9753755623241886e-05
+        },
+        {
+          "source_face": 120759,
+          "patch": "SMB-0d7599c806-1b91b1cf823d",
+          "uv_area_pixels": 0.5139587894082069,
+          "surface_area_m2": 9.283819963457063e-06
+        },
+        {
+          "source_face": 120821,
+          "patch": "SMB-0d7599c806-0ded486c5b5e",
+          "uv_area_pixels": 1.081885240972042,
+          "surface_area_m2": 1.9638788216980174e-05
+        },
+        {
+          "source_face": 120822,
+          "patch": "SMB-0d7599c806-0ded486c5b5e",
+          "uv_area_pixels": 1.0049352198839188,
+          "surface_area_m2": 1.824384344217833e-05
+        },
+        {
+          "source_face": 146692,
+          "patch": "SMB-0d7599c806-da33066a6671",
+          "uv_area_pixels": 1.0763220340013504,
+          "surface_area_m2": 1.855531991168391e-05
+        },
+        {
+          "source_face": 212876,
+          "patch": "SMB-0d7599c806-c1177585d450",
+          "uv_area_pixels": 1.0426519960165024,
+          "surface_area_m2": 2.0157884137006477e-05
+        },
+        {
+          "source_face": 212889,
+          "patch": "SMB-0d7599c806-c1177585d450",
+          "uv_area_pixels": 1.383547268807888,
+          "surface_area_m2": 2.6657589842216112e-05
+        },
+        {
+          "source_face": 213163,
+          "patch": "SMB-0d7599c806-c1177585d450",
+          "uv_area_pixels": 0.6037476006895304,
+          "surface_area_m2": 2.1387982997111976e-05
+        },
+        {
+          "source_face": 245484,
+          "patch": "SMB-0d7599c806-496a7c339b64",
+          "uv_area_pixels": 5.315184943377972,
+          "surface_area_m2": 0.00011130224447697401
+        }
+      ],
+      "class_pixel_counts": {
+        "0": 1842533,
+        "1": 5229,
+        "2": 365,
+        "254": 78,
+        "255": 2346099
+      }
+    },
+    {
+      "resolution": 4096,
+      "approved_faces_without_safe_pixel": 1,
+      "approved_faces_without_center_sample": 1,
+      "approved_faces_with_conflicted_samples": 0,
+      "overlap_pixels": 303,
+      "all_overlap_candidate_faces": 991,
+      "extra_triangle_sample_hits": 5065,
+      "uv_degenerate_faces": 37,
+      "missing_cases": [
+        {
+          "source_face": 119671,
+          "patch": "SMB-0d7599c806-0ded486c5b5e",
+          "uv_area_pixels": 0.3897677958011627,
+          "surface_area_m2": 6.577628482773434e-06
+        }
+      ],
+      "class_pixel_counts": {
+        "0": 7370577,
+        "1": 21025,
+        "2": 1484,
+        "254": 303,
+        "255": 9383827
+      }
+    }
+  ],
+  "findings": [
+    "4K reduces approved faces without a pixel-center sample from28to1. Sourceface119671/patch0ded486c5b5e has0.390pixel UVarea evenat4K.",
+    "No sampled overlap involves an approved955response face at either resolution. All overlap pixels remainunknown, not silently assigned.",
+    "Global overlapping samples may include intended UVreuse; counts do not authorize automatic reunwrap/deletion.",
+    "Use exact face-level response for wholly approved faces, including tinyfaces. Use reviewed per-texel masks only where genuinely required inside faces.",
+    "Class-ID PNG codes0unknown/254overlap/255unused must never be fed as metallic values or treated as inferred approvals.",
+    "Pixel-center coverage is not a filtered/mipped coverage guarantee or full material class solution."
+  ],
+  "source_material_unchanged": true,
+  "material_attempts_used": 2,
+  "material_attempts_limit": 3
+}

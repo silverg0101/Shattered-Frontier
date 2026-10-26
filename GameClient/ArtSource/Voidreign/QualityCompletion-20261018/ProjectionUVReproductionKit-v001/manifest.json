@@ -1,0 +1,226 @@
+{
+  "schema_version": 1,
+  "workspace": "C:\\Projects\\Shattered-Frontier",
+  "asset_id": "Voidreign",
+  "status": "projection-UV-allocation-diagnosis-only",
+  "self_contained": false,
+  "scope": "Retained edit footprint measurement. External parent/source inputs required; no model/material change.",
+  "commands": [
+    "CPU Blender5.1.1 --background --factory-startup --threads4 --python-exit-code1 --python <export tool snapshot> -- --profile <export profile> --output <new folder> (supply flags with spaces between names/values).",
+    "py -3 <measurement tool snapshot> --profile <measurement profile> --output <new folder>. Verify parent inputs; profiles pin original evidence paths."
+  ],
+  "files": [
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ProjectionUVTopology-v001/profile.json",
+      "mode": "copy",
+      "bytes": 939,
+      "sha256": "a56bbd226fc74126c26c631741d490969837d7b6500a27603266ff95b5fe12f6",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ProjectionUVTopology-v001/profile.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ProjectionUVTopology-v001/tool-source.py",
+      "mode": "copy",
+      "bytes": 3499,
+      "sha256": "66c23fb76bd7abecbbe2916cc1cd93038b04525ce0fe1959c06d635a6b90e9fc",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ProjectionUVTopology-v001/tool-source.py"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ProjectionUVTopology-v001/uv-report.json",
+      "mode": "copy",
+      "bytes": 2356,
+      "sha256": "b5c8a455c7e47ee794ca4a302eebde3892a116e0a98e329cb45ded32b5e7c53f",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ProjectionUVTopology-v001/uv-report.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ProjectionUVTopology-v001/uv-topology.npz",
+      "mode": "copy",
+      "bytes": 4026429,
+      "sha256": "33d4bb778f26724fc173fd16a020790a009e5d8d21ede708f3c4635fd22b0751",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ProjectionUVTopology-v001/uv-topology.npz"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ProjectionUVAllocation-v001/measurement.json",
+      "mode": "copy",
+      "bytes": 3798,
+      "sha256": "4f68c2f1be8d94d31faa5d555b48d3328570624b6fa13af6fd0441a0c31cb271",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ProjectionUVAllocation-v001/measurement.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ProjectionUVAllocation-v001/profile.json",
+      "mode": "copy",
+      "bytes": 2054,
+      "sha256": "d92d5d214b8bedc8353cf684a7edd1da40b91cf9f5ee535b01263e76a73b57fa",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ProjectionUVAllocation-v001/profile.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ProjectionUVAllocation-v001/ProjectionCoverage-2048.png",
+      "mode": "copy",
+      "bytes": 1037699,
+      "sha256": "2c8a905d3e792654b7093fe1eba4c6dbcacbe99b2de250c895e8dbdc0fa5950e",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ProjectionUVAllocation-v001/ProjectionCoverage-2048.png"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ProjectionUVAllocation-v001/ProjectionCoverage-4096.png",
+      "mode": "copy",
+      "bytes": 2665597,
+      "sha256": "205a78a0884bd4b96e3cba3abc7bf78e97fbe2383082369301af9c274d26cb5a",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ProjectionUVAllocation-v001/ProjectionCoverage-4096.png"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ProjectionUVAllocation-v001/runtime.json",
+      "mode": "copy",
+      "bytes": 287,
+      "sha256": "d086f222ef2e51698e32f5b396f420b2130a32b3632ceab662eceab6e2a17570",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ProjectionUVAllocation-v001/runtime.json"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ProjectionUVAllocation-v001/tool-source.py",
+      "mode": "copy",
+      "bytes": 4987,
+      "sha256": "330695e62e4e2318cabe83f99967f6285663a1053b3144606a00085a893d1d2e",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ProjectionUVAllocation-v001/tool-source.py"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ProjectionUVAllocation-v001/visual-review.json",
+      "mode": "copy",
+      "bytes": 780,
+      "sha256": "90f7831cdbc3692c0dc2f3fc4586891151052de06ed5c0a7c99b4d91849a9466",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ProjectionUVAllocation-v001/visual-review.json"
+    },
+    {
+      "path": "tools/Export-AssetUVTopology.py",
+      "mode": "copy",
+      "bytes": 3499,
+      "sha256": "66c23fb76bd7abecbbe2916cc1cd93038b04525ce0fe1959c06d635a6b90e9fc",
+      "snapshot": "snapshot/tools/Export-AssetUVTopology.py"
+    },
+    {
+      "path": "tools/Measure-AssetProjectionUV.py",
+      "mode": "copy",
+      "bytes": 4987,
+      "sha256": "330695e62e4e2318cabe83f99967f6285663a1053b3144606a00085a893d1d2e",
+      "snapshot": "snapshot/tools/Measure-AssetProjectionUV.py"
+    },
+    {
+      "path": "docs/art-templates/material-mask-authoring.md",
+      "mode": "copy",
+      "bytes": 6471,
+      "sha256": "e6e9bfd67a8c9ec924002def157c1576154832d858bf651452f8baf883d8b72b",
+      "snapshot": "snapshot/docs/art-templates/material-mask-authoring.md"
+    },
+    {
+      "path": "docs/dependency-map.md",
+      "mode": "copy",
+      "bytes": 101781,
+      "sha256": "bad083b304db2560db79fe92e192123377589d35fd7b2f75aca3f807cb60a3f5",
+      "snapshot": "snapshot/docs/dependency-map.md"
+    },
+    {
+      "path": "docs/art-templates/model-profiles/voidreign-projection-uv-export-20261019.json",
+      "mode": "copy",
+      "bytes": 939,
+      "sha256": "a56bbd226fc74126c26c631741d490969837d7b6500a27603266ff95b5fe12f6",
+      "snapshot": "snapshot/docs/art-templates/model-profiles/voidreign-projection-uv-export-20261019.json"
+    },
+    {
+      "path": "docs/art-templates/model-profiles/voidreign-projection-uv-measurement-20261019.json",
+      "mode": "copy",
+      "bytes": 2054,
+      "sha256": "d92d5d214b8bedc8353cf684a7edd1da40b91cf9f5ee535b01263e76a73b57fa",
+      "snapshot": "snapshot/docs/art-templates/model-profiles/voidreign-projection-uv-measurement-20261019.json"
+    },
+    {
+      "path": "docs/art-templates/model-jobs/voidreign-quality-20261018.json",
+      "mode": "copy",
+      "bytes": 47682,
+      "sha256": "b07aaeaac511c2bc90ac5d12e2191f80cb78e38ff22240598d66a20c9429decb",
+      "snapshot": "snapshot/docs/art-templates/model-jobs/voidreign-quality-20261018.json"
+    },
+    {
+      "path": "docs/art-templates/model-catalog.md",
+      "mode": "copy",
+      "bytes": 8963,
+      "sha256": "48c040d9fec380628fbb9c7990439e85d4f87273e77ac0689234c80e409155da",
+      "snapshot": "snapshot/docs/art-templates/model-catalog.md"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MountProfile.md",
+      "mode": "copy",
+      "bytes": 37783,
+      "sha256": "d7a96d77030f15ae7f6430f95a64cf7c7eba1339840ad2a5cbdf69f68a07f963",
+      "snapshot": "snapshot/GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MountProfile.md"
+    },
+    {
+      "path": "Artifacts/Art/Voidreign/quality-completion-20261018/WORK.md",
+      "mode": "copy",
+      "bytes": 15270,
+      "sha256": "d91a4d858998187ba126bd310605b20128b6a4e39233fad2ea568d8c8c6f6132",
+      "snapshot": "snapshot/Artifacts/Art/Voidreign/quality-completion-20261018/WORK.md"
+    },
+    {
+      "path": "Artifacts/Art/Voidreign/projection-uv-topology-v001.log",
+      "mode": "copy",
+      "bytes": 395,
+      "sha256": "25253f5d2d0b08b2bb8ce485b5d4fe0a0910e8e6e562a1e1b9ce724bc87e70ab",
+      "snapshot": "snapshot/Artifacts/Art/Voidreign/projection-uv-topology-v001.log"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkPilot-v003/Mount-WalkPilot.blend",
+      "mode": "reference",
+      "bytes": 124637836,
+      "sha256": "f59dc38bff697b6c2a2c84511413d2e292d9fdbb278acc69cd8df6d26a5bd123",
+      "snapshot": null
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkRetention-v003/validation.json",
+      "mode": "reference",
+      "bytes": 17017,
+      "sha256": "0630516734df3c1bb11f95ae92056e353dda46c4f4328c4574e32a2e1a451e49",
+      "snapshot": null
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/SourceUVTopology-v001/uv-topology.npz",
+      "mode": "reference",
+      "bytes": 3861117,
+      "sha256": "7d6b6296ff351ca9c6608eb5dba7098738e35f8ede072a1a63eeea462357ba94",
+      "snapshot": null
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialMaskUVReproductionKit-v001/manifest.json",
+      "mode": "reference",
+      "bytes": 18415,
+      "sha256": "22ca193d05579e2d8ab69aa79b10248469df9bcb885d674ce3ac130ae12f54c9",
+      "snapshot": null
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReviewedMaterialMask2K-v001/mask-report.json",
+      "mode": "reference",
+      "bytes": 2317,
+      "sha256": "6ce18751d7ba6b8a5e1d5d8235978994ec4a5b251edce27ae94a40ddc130cbb2",
+      "snapshot": null
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReviewedMaterialMask2K-v001/coverage.npz",
+      "mode": "reference",
+      "bytes": 2519451,
+      "sha256": "25cc1f4aae5e779120781e09b45c9946ac5925947006311f14f9fd1dff024672",
+      "snapshot": null
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReviewedMaterialMask4K-v001/mask-report.json",
+      "mode": "reference",
+      "bytes": 2319,
+      "sha256": "beb7abebc6b8ab4cafca0eda8dd144474e5250d83df239ee592e0098e4a795b3",
+      "snapshot": null
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReviewedMaterialMask4K-v001/coverage.npz",
+      "mode": "reference",
+      "bytes": 5303326,
+      "sha256": "2c1169101591404f4f947f6ae33e2a7cae247253b637752b03b647d35d634487",
+      "snapshot": null
+    }
+  ],
+  "profile_sha256": "9cf545860b0e15f9b9e4ba9c5f2cd2237bd1e21925b0e927d46ed1320392d36a",
+  "tool_sha256": "022a766de42da24a27460313b041d386c86c95c5e30573e5f661dc523872dd88"
+}

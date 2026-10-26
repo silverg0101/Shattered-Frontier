@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "workspace": "C:\\Projects\\Shattered-Frontier",
+  "asset_id": "Voidreign",
+  "status": "local-contact-diagnosis-needs-review",
+  "scope": "Supplement to verified LocalFringePhysicsReproductionKit-v001. Read-only cached topology/mask/convergence diagnosis; parent kit/external sources required. No new physics attempt.",
+  "limits": {
+    "maximum_entries": 100,
+    "maximum_copy_mib": 16
+  },
+  "commands": [
+    "Run copied Inspect-LocalClothContacts.py with copied canonical-topology profile into a new output folder using CPU background Blender5.1.1. Verify parent kit and its external inputs first."
+  ],
+  "files": [
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeContactInspection-v002/boundary-terminology-clarification.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeContactInspection-v002/contacts.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeContactInspection-v002/profile.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeContactInspection-v002/tool-source.py",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeContactInspection-v003/contacts.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeContactInspection-v003/diagnosis-decision.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeContactInspection-v003/profile.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringeContactInspection-v003/tool-source.py",
+      "mode": "copy"
+    },
+    {
+      "path": "tools/Inspect-LocalClothContacts.py",
+      "mode": "copy"
+    },
+    {
+      "path": "tools/Freeze-AssetEvidence.py",
+      "mode": "copy"
+    },
+    {
+      "path": "docs/art-templates/model-profiles/voidreign-local-fringe-contact-topology-20261019.json",
+      "mode": "copy"
+    },
+    {
+      "path": "docs/art-templates/model-profiles/voidreign-local-fringe-contact-canonical-topology-20261019.json",
+      "mode": "copy"
+    },
+    {
+      "path": "docs/art-templates/mount-secondary-motion.md",
+      "mode": "copy"
+    },
+    {
+      "path": "docs/dependency-map.md",
+      "mode": "copy"
+    },
+    {
+      "path": "docs/art-templates/model-jobs/voidreign-quality-20261018.json",
+      "mode": "copy"
+    },
+    {
+      "path": "Artifacts/Art/Voidreign/quality-completion-20261018/WORK.md",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MountProfile.md",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryLocomotionPlan-v001/queue.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringePhysicsDecision-v001/reproduction-verification.json",
+      "mode": "copy"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LocalFringePhysicsReproductionKit-v001/manifest.json",
+      "mode": "reference"
+    }
+  ]
+}

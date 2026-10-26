@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "status": "captured-source-bound-feature-output",
+  "cpu_only": true,
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManeSurfaceContacts-v001\\Voidreign-SurfaceContacts.blend": "b69e4ceeefbf0a4fcffa7faa6f114d76b94d37cb807ac92f8dd7ae971c925055"
+  },
+  "tool_sha256": "faa4969ddc238e3dfd399b12c5855e9ccee1cd2ebea65b605f15184f2d3ed66f",
+  "positions_sha256": "8702a230cd118806cfa140d114164802efb4fe7882a2dddbe26b1ffc7327223b",
+  "proxy_vertices": 26758,
+  "frames": 330,
+  "maximum_world_roundtrip_error_m": 3.4358518519184145e-07,
+  "limitations": [
+    "Exact source-index output capture; not a new physical, semantic, runtime or exchange acceptance."
+  ]
+}

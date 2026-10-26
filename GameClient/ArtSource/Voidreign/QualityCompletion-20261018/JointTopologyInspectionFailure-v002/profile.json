@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "units": "metres",
+  "source": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkPilot-v001/Mount-WalkPilot.blend",
+  "source_retention": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkRetention-v001/validation.json",
+  "rest_selection": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/DegenerateInspection-v001/00-component-selections.npz",
+  "semantic_selection": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HygieneSemanticSelection-v001/selections.npz",
+  "contract": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidHoofSelectionContract-v001/contract.json",
+  "object": "geometry_0",
+  "rig_object": "PRIMARY | anatomical rig pilot",
+  "rest_tolerance_m": 1e-06,
+  "permissions": "Read-only rest joint/topology design evidence, no candidate/weight/rig/mesh mutation or budget reset.",
+  "input_sha256": {
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkPilot-v001/Mount-WalkPilot.blend": "fe004dd3c6357d9b818729e9d5d89060adb7be0eca6d930d7cc7a91369cd5456",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkRetention-v001/validation.json": "5f6c40f1371229ce05dc7af9a4c6f789a460c7e7757ddca88482815aab26d137",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/DegenerateInspection-v001/00-component-selections.npz": "0d7599c8064cb81a6e211a23731435e08939b7fb146ce2d4bed810273909a2b2",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HygieneSemanticSelection-v001/selections.npz": "0b6a19f76a2cba73a42e293c29365360b53ba93be101cf8f4ca556e7a5989cc0",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidHoofSelectionContract-v001/contract.json": "232f8bbf4f67a57c4de1ffa15be1c7d9b19553d4003f9001fa9d7f764b41ff01"
+  },
+  "rest_frame": 1
+}

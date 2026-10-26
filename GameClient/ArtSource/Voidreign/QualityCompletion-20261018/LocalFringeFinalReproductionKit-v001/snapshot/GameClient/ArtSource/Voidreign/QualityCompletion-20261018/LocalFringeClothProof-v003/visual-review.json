@@ -1,0 +1,12 @@
+{
+  "status": "inspected-needs-review",
+  "images": [
+    "frames/0001.png",
+    "frames/0025.png",
+    "frames/0049.png"
+  ],
+  "findings": [
+    "Source-indexed cyan fringe and green root regions retained. Small lateral free pieces remain folded/curling; this does not show natural shape-preserving response.",
+    "Full-mount/contact partners and subframe coverage absent; no promotion."
+  ]
+}

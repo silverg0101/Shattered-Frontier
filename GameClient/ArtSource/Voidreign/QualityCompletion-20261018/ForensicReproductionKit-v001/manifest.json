@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "status": "read-only-forensic-gates-reviewed; asset-needs-review",
+  "files": [
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CoincidentFaceReview-v001/face-group-report.json",
+      "bytes": 474660,
+      "sha256": "3f4483d9e7396c311642b32298b517dec17c8e4b7cec5bd28ebb81b2a38b75fe"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CoincidentFaceReview-v001/face-groups.npz",
+      "bytes": 6896,
+      "sha256": "61fadad6520ebb11c3859a3f58fc1b660494ac2114d0de70ee8642b9e1fdc4f4"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CoincidentFaceReview-v001/tool-source.py",
+      "bytes": 7637,
+      "sha256": "02b52b46e925e2dc008d8246c74d9dd37d681b82e34b0cd1717a28cfbd76c8a9"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ForensicGateReview-v001/review.json",
+      "bytes": 1435,
+      "sha256": "e7e17dd7d9655dff16dd314e34e271a829b2f22f5eb9b2e1ef86c8cff07dc3f1"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ForensicReproductionKit-v001/docs/checkpoint-before-forensics.md",
+      "bytes": 7920,
+      "sha256": "0fc0aec277ba0043350b6aece3ec541b4690679f0593c1005aad051c0b8119f9"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ForensicReproductionKit-v001/docs/ContactRedesignCases-v001.md",
+      "bytes": 3289,
+      "sha256": "2f19115e1339777b765db8e7d6696d5b4367453f653999984805808472b0de8c"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ForensicReproductionKit-v001/docs/model-quality-runbook.md",
+      "bytes": 22554,
+      "sha256": "e6661241aafe380c49d5ca20443f8de6d08ea9455afbb2e5db16c4a3d14d23f5"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ForensicReproductionKit-v001/docs/README.md",
+      "bytes": 23500,
+      "sha256": "857ed27a8840194ae85d2322fcab5011d08a219bd5553cfd0993c1e43d8b11ef"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ForensicReproductionKit-v001/docs/voidreign-quality-20261018.json",
+      "bytes": 14453,
+      "sha256": "5a8d52d58b194462f4a8b04d6fe7ef4c9796e7026a363a97f56967165f33a159"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ForensicReproductionKit-v001/profiles/voidreign-guide-trajectory-check-20261018.json",
+      "bytes": 592,
+      "sha256": "98e5b568d375a514757e21cd5196d453d2ea4768065b699389c9492650a75b39"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ForensicReproductionKit-v001/tools/Check-FeatureTrajectory.py",
+      "bytes": 6490,
+      "sha256": "59d2cdf56481e02903891cafe3aa7b3e6e94de8f5dad59fa3c3478f5c1aeebd8"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ForensicReproductionKit-v001/tools/Inspect-CoincidentFaceGroups.py",
+      "bytes": 7637,
+      "sha256": "02b52b46e925e2dc008d8246c74d9dd37d681b82e34b0cd1717a28cfbd76c8a9"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/TrajectoryCheck-v001/profile.json",
+      "bytes": 592,
+      "sha256": "98e5b568d375a514757e21cd5196d453d2ea4768065b699389c9492650a75b39"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/TrajectoryCheck-v001/tool-source.py",
+      "bytes": 6448,
+      "sha256": "3347acfbb0b991b2e455c80bcc4a3ce4302de51e0966a222bea1ff170004876d"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/TrajectoryCheck-v001/trajectory-check.json",
+      "bytes": 94476,
+      "sha256": "7496e5ac919f7a925a34cea0da7406b3651fd9e225fa5f4ec0ebabaf240ce4ff"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/TrajectoryCheck-v002/profile.json",
+      "bytes": 592,
+      "sha256": "98e5b568d375a514757e21cd5196d453d2ea4768065b699389c9492650a75b39"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/TrajectoryCheck-v002/tool-source.py",
+      "bytes": 6490,
+      "sha256": "59d2cdf56481e02903891cafe3aa7b3e6e94de8f5dad59fa3c3478f5c1aeebd8"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/TrajectoryCheck-v002/trajectory-check.json",
+      "bytes": 94518,
+      "sha256": "e2788c7c2260426dfce99da41aaee8ee4091ac6370925608d79ea0581b537535"
+    }
+  ],
+  "limitations": [
+    "Current fingerprints preserve inspected evidence, not missing historical producer attestations.",
+    "No source changes, deletion, simulation or repair attempt.",
+    "Current stage budgets and failed surface acceptance remain unchanged."
+  ]
+}

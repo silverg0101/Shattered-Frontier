@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "status": "anatomical-transition-design-needs-source-indexed-layout",
+  "reviewer": "authoring-agent",
+  "scope": "Read-only design review; no topology/skin/joint candidate or stage reset.",
+  "evidence": {
+    "topology": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/JointTopologyInspection-v003/joint-topology.json",
+    "atlas": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/JointTransitionAtlas-v003/anatomy-report.json",
+    "prior_pose_review": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidSkinEdgePoseReview-v001/visual-review.json"
+  },
+  "reviewed_images": [
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/JointTransitionAtlas-v003/fore.L-outer.png",
+      "sha256": "9ad02089cce8de481197392157eb1c5add8dd9e9eee6905f340ca58d730782f0"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/JointTransitionAtlas-v003/fore.R-outer.png",
+      "sha256": "a269143d3960e610991ecd93c926a243c6677927048a14e641114a2d9fb4c9de"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/JointTransitionAtlas-v003/hind.L-outer.png",
+      "sha256": "f0553115bfe89c9fe6937175b25086e3313bde3724b58b69841a51a98e123ea5"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/JointTransitionAtlas-v003/hind.R-outer.png",
+      "sha256": "931a1b29a91dd891fb0d0a91d880a80eab00223dfe6a3dc5c66536f67f4c8823"
+    }
+  ],
+  "findings": [
+    "All indexed rest positions agree after inverse declared walk assembly offset within0.3584micrometres; tolerance remains1micrometre. Two failed coordinate-check diagnostics are retained.",
+    "No canonical core/collar membership conflicts. All outer collar nodes reach a core, but many do so in one graph hop. Hop count is not anatomical ring count.",
+    "10source triangles bypass the current collar (fore.L1,fore.R1,hind.L8,hind.R0). These exact face IDs are saved.",
+    "Hind.L collar maxZ0.173460m and hind.R0.172082m lie below authored fetlock headsZ0.200m by26.540mm/27.918mm. This supports anatomical band/layout review, not moving joints to fit a numerical collar.",
+    "Four final atlas views show blue rigid core, orange collar and grey exterior. Red joint/purple endpoint/green bone are projected along orthographic X for visibility; original and projected coordinates saved in profile. Other-foot markers are explicitly hidden.",
+    "Coarse and overlapping ankle shell surfaces are visible. Rest inspection does not prove retopology alone fixes posed skin or identify all physical parts."
+  ],
+  "rejected_next_actions": [
+    "Another global collar-width/weight-solver sweep.",
+    "Move the fetlock center solely to match the old height cutoff.",
+    "Subdivide uniformly and claim new vertices repair skin weights or create anatomical loops.",
+    "Auto-weld/delete overlapping shells or modify protected soles."
+  ],
+  "next_layout": {
+    "id": "VR-RIG-01-authored-ankle-band-layout",
+    "pilot_foot": "hind.L",
+    "reason": "Largest current collar bypass count and a band below the authored joint; exact source-indexed layout is needed before any candidate.",
+    "steps": [
+      "Overlay actual source indices at the8hind.L bypass triangles and their canonical neighborhoods. Separate physical ankle skin from dangling feathers and overlapping hoof shell.",
+      "Author inner protected-core boundary and outer flexible ankle boundary around the intended fetlock motion; review front/back and inner/outer views. Preserve all current core/sole selections.",
+      "Require every mesh path from protected core to unchanged exterior through the flexible skin to pass an explicit transition; directly bypassing triangles need a reviewed face split or corrected band membership.",
+      "Check whether existing source triangles support that layout. If local retopology is necessary, declare exact replacement face IDs, boundary mapping, retained positions/UVs/materials/skin transfers and seam rules before authoring.",
+      "Keep rigid shell and flexible ankle responses distinct. Re-evaluate the same frozen73-frame bone motion with exact core/contact/loop/seam/influence and complete regional-regression checks before considering any new gait."
+    ],
+    "candidate_accounting": "No new candidate authorized by this report alone. Exhausted primary/walk/topology budgets remain unchanged; any later authored correction requires an explicit reviewed record and accounting."
+  },
+  "limitations": [
+    "Authored rig landmarks are prototype references, not independently measured equine anatomy.",
+    "Vertex-label overlay colors use triangle-majority display and are not per-triangle semantic approval.",
+    "No repaired animation or model/engine completion is claimed."
+  ]
+}

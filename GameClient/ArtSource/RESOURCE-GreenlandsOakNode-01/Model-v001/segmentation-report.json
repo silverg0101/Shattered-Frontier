@@ -1,0 +1,22 @@
+{
+  "source": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\RESOURCE-GreenlandsOakNode-01\\References\\v001\\asset-view.png",
+  "source_sha256": "607f11a55e388d1d6055c83348f20d2f063baa4917c38c0d99a99a580a69107e",
+  "output": "C:\\Projects\\Shattered-Frontier\\Artifacts\\Art\\GreenlandsModelBatch-20261018\\RESOURCE-GreenlandsOakNode-01\\attempt-03\\RESOURCE-GreenlandsOakNode-01.rgba.png",
+  "output_sha256": "4e227cd5edfded839c3642d4649676b9724ec550d44da2b41ecb46274ff9e974",
+  "mask_preview": "C:\\Projects\\Shattered-Frontier\\Artifacts\\Art\\GreenlandsModelBatch-20261018\\RESOURCE-GreenlandsOakNode-01\\attempt-03\\RESOURCE-GreenlandsOakNode-01.rgba.mask.png",
+  "mask_preview_sha256": "47aa02e2b1b5534d7a5d05b1d19c055e5d84e207e0a2e0cc143b375052caa21d",
+  "dimensions_px": [
+    1536,
+    1024
+  ],
+  "method": "border-connected fixed-range RGB flood fill; 5-iteration GrabCut trimap cleanup; Gaussian alpha edge 0.8px",
+  "tolerance_rgb": 12,
+  "foreground_fraction": 0.424837,
+  "foreground_bounds_px": [
+    112,
+    4,
+    1426,
+    971
+  ],
+  "review_status": "needs-review"
+}

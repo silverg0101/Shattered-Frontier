@@ -1,0 +1,5 @@
+Concept sheet prompt:
+Stone masonry semicircular arch crown ring lintel study, no people or text. Show a segmented pale limestone half-ring over an empty arch opening, separate straight spring-point jambs, front elevation and a single isolated ring segment with inner/outer curve and depth views. Keep aperture open, no door, no infill, no invented dimensions; restrained masonry joints, studio background.
+
+Clean view prompt:
+Single isolated stone masonry semicircular arch crown ring lintel component only, one curved half-ring segment with inner and outer radii, visible depth and end faces, pale limestone voussoir blocks. No jambs, no doorway, no wall, no infill. Three-quarter view neutral gray studio background. Visual concept only; geometry and dimensions unvalidated.

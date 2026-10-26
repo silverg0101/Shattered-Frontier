@@ -1,0 +1,46 @@
+{
+  "asset_id": "BLD-WT-EndCapCellFull-01",
+  "version": "v001",
+  "batch": "construction-worked-timber-ends-32",
+  "status": "image-complete; proposal; ready-for-model-test",
+  "source_references": [
+    "docs/art-templates/player-construction-kit-contract.md \u2014 \u00a73.2 and \u00a78\u20139",
+    "docs/art-templates/asset-lists/construction-kit-matrix-07.md \u2014 worked-timber full-cell component matrix"
+  ],
+  "dependency": "KIT-WT face/top/underside appearance; source gameplay-tier properties; 0.5 m full-cell envelope and contact planes",
+  "exact_prompts": {
+    "concept_sheet": "Construction design sheet for one worked-timber cell end-cap treatment. A single cube cell on a 0.5 m grid, exact cube envelope, no overhangs. Show the cut horizontal end of several wall planks, finished with a flush fitted timber cap board entirely within the cube silhouette. Three-quarter view plus orthographic end/top details. Weathered oak, visible joinery and grain, neutral pale background, no labels or text, no other materials or objects. Appearance-only proposal, cell contact faces and dimensions unchanged.",
+    "asset_view": "A single isolated worked-timber cube construction cell with a flush end-cap finish. Exact 0.5 m cube silhouette, no part protrudes. Three-quarter orthographic product view showing the fitted end-grain cap, flush plank face, top face, and side. Weathered oak, pale gray studio background, no text or labels, no extra objects."
+  },
+  "images": [
+    {
+      "file": "concept-sheet.png",
+      "width_px": 1536,
+      "height_px": 1024,
+      "mode": "RGB",
+      "format": "PNG",
+      "sha256": "692942fe41a6d0de2d9c35e693678538ba7e9e20a6e810883a40181200cc014b"
+    },
+    {
+      "file": "asset-view.png",
+      "width_px": 1312,
+      "height_px": 1199,
+      "mode": "RGB",
+      "format": "PNG",
+      "sha256": "d0bfe19f0699522fc42b7a51189b2c0e8f4cc16d639b699331e71fb2b3d1ea69"
+    }
+  ],
+  "visual_review": "Concept shows framed end grain with fitted cap boards flush to silhouette. Clean view prioritizes cut end grain, though cap trim could be read as framing; verify no envelope extension in later modeling.",
+  "compatibility": "Image review does not establish numerical mesh, collision, contact, clearance or runtime compatibility. This is an appearance-only skin; gameplay material-tier properties remain unchanged.",
+  "generation_history": [
+    {
+      "source": "exec-a523e13d-76f3-4035-9b0c-46cb8fd21dd8.png",
+      "selected": true
+    },
+    {
+      "source": "exec-d2f241d6-26ab-48b5-867b-b277f7dc27f8.png",
+      "selected": true
+    }
+  ],
+  "created_utc": "2026-10-18"
+}

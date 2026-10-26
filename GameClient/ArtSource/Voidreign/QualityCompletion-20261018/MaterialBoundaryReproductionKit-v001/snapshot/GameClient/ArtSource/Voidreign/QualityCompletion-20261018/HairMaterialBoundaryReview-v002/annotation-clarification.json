@@ -1,0 +1,6 @@
+{
+  "status": "one-item-annotation-corrected-by-v003",
+  "item": "SMB-0d7599c806-219022738900",
+  "replacement": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryReview-v003/review.json",
+  "note": "Source images, 65-item inspection and face IDs retained. Only one default category was wrong because the manual lookup key missed a leading character."
+}

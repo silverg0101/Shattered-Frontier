@@ -1,0 +1,2140 @@
+{
+  "schema_version": 1,
+  "status": "needs-review-fixed-envelope-feasibility",
+  "trajectory_provenance": "producer-hash-verified",
+  "free_node_status": "passed-free-guide-envelope-only",
+  "maximum_fixed_penetration_m": 0.022086201445712522,
+  "cpu_only": true,
+  "maximum_free_penetration_m": 4.900946907276937e-06,
+  "maximum_penetration_warning_m": 0.005,
+  "colliders": {
+    "Horse body": {
+      "maximum_free_penetration_m": 0.0,
+      "free_warnings": 0,
+      "maximum_fixed_penetration_m": 0.0,
+      "fixed_penetrating_samples": 0
+    },
+    "Horse neck": {
+      "maximum_free_penetration_m": 5.628029675630586e-08,
+      "free_warnings": 0,
+      "maximum_fixed_penetration_m": 0.0,
+      "fixed_penetrating_samples": 0,
+      "peak_frame": 192,
+      "guide": "Mane_G04",
+      "node": 6
+    },
+    "Rider torso": {
+      "maximum_free_penetration_m": 6.438708766154377e-08,
+      "free_warnings": 0,
+      "maximum_fixed_penetration_m": 0.0,
+      "fixed_penetrating_samples": 0,
+      "peak_frame": 256,
+      "guide": "Mane_G00",
+      "node": 8
+    },
+    "Rider head": {
+      "maximum_free_penetration_m": 0.0,
+      "free_warnings": 0,
+      "maximum_fixed_penetration_m": 0.0,
+      "fixed_penetrating_samples": 0
+    },
+    "Rider thigh near": {
+      "maximum_free_penetration_m": 0.0,
+      "free_warnings": 0,
+      "maximum_fixed_penetration_m": 0.0,
+      "fixed_penetrating_samples": 0
+    },
+    "Rider shin near": {
+      "maximum_free_penetration_m": 0.0,
+      "free_warnings": 0,
+      "maximum_fixed_penetration_m": 0.0,
+      "fixed_penetrating_samples": 0
+    },
+    "Rider thigh far": {
+      "maximum_free_penetration_m": 7.24097496129783e-08,
+      "free_warnings": 0,
+      "maximum_fixed_penetration_m": 0.0,
+      "fixed_penetrating_samples": 0,
+      "peak_frame": 158,
+      "guide": "Mane_G07",
+      "node": 8
+    },
+    "Rider shin far": {
+      "maximum_free_penetration_m": 0.0,
+      "free_warnings": 0,
+      "maximum_fixed_penetration_m": 0.0,
+      "fixed_penetrating_samples": 0
+    },
+    "Rider upper arm": {
+      "maximum_free_penetration_m": 0.0,
+      "free_warnings": 0,
+      "maximum_fixed_penetration_m": 0.0,
+      "fixed_penetrating_samples": 0
+    },
+    "Rider forearm": {
+      "maximum_free_penetration_m": 0.0,
+      "free_warnings": 0,
+      "maximum_fixed_penetration_m": 0.0,
+      "fixed_penetrating_samples": 0
+    },
+    "Rider arm far": {
+      "maximum_free_penetration_m": 1.4559518285439665e-07,
+      "free_warnings": 0,
+      "maximum_fixed_penetration_m": 0.0,
+      "fixed_penetrating_samples": 0,
+      "peak_frame": 194,
+      "guide": "Mane_G00",
+      "node": 5
+    },
+    "Rider hand probe": {
+      "maximum_free_penetration_m": 1.0224470944897313e-07,
+      "free_warnings": 0,
+      "maximum_fixed_penetration_m": 0.022086201445712522,
+      "fixed_penetrating_samples": 15,
+      "peak_frame": 304,
+      "guide": "Mane_G10",
+      "node": 8,
+      "fixed_peak_frame": 301,
+      "fixed_guide": "Mane_G10",
+      "fixed_node": 0
+    },
+    "Environment post": {
+      "maximum_free_penetration_m": 4.900946907276937e-06,
+      "free_warnings": 0,
+      "maximum_fixed_penetration_m": 0.0,
+      "fixed_penetrating_samples": 0,
+      "peak_frame": 210,
+      "guide": "Tail_G00",
+      "node": 10
+    },
+    "Ground": {
+      "maximum_free_penetration_m": 0.0,
+      "free_warnings": 0,
+      "maximum_fixed_penetration_m": 0.0,
+      "fixed_penetrating_samples": 0
+    }
+  },
+  "per_frame_style": [
+    {
+      "frame": 1,
+      "phase": "SETTLED",
+      "rms_style_deviation_m": 0.07761108123070477,
+      "maximum_style_deviation_m": 0.20237210039267808
+    },
+    {
+      "frame": 2,
+      "phase": "SETTLED",
+      "rms_style_deviation_m": 0.07761307707800455,
+      "maximum_style_deviation_m": 0.20237396275030636
+    },
+    {
+      "frame": 3,
+      "phase": "SETTLED",
+      "rms_style_deviation_m": 0.07761494430782583,
+      "maximum_style_deviation_m": 0.20237542443869008
+    },
+    {
+      "frame": 4,
+      "phase": "SETTLED",
+      "rms_style_deviation_m": 0.07761671259009896,
+      "maximum_style_deviation_m": 0.202376667604607
+    },
+    {
+      "frame": 5,
+      "phase": "SETTLED",
+      "rms_style_deviation_m": 0.07761836680129003,
+      "maximum_style_deviation_m": 0.20237750195680884
+    },
+    {
+      "frame": 6,
+      "phase": "SETTLED",
+      "rms_style_deviation_m": 0.07761993384694758,
+      "maximum_style_deviation_m": 0.20237812612524664
+    },
+    {
+      "frame": 7,
+      "phase": "SETTLED",
+      "rms_style_deviation_m": 0.07762140001506485,
+      "maximum_style_deviation_m": 0.20237852368327455
+    },
+    {
+      "frame": 8,
+      "phase": "SETTLED",
+      "rms_style_deviation_m": 0.07762279179490811,
+      "maximum_style_deviation_m": 0.20237870296803864
+    },
+    {
+      "frame": 9,
+      "phase": "SETTLED",
+      "rms_style_deviation_m": 0.07762410806316158,
+      "maximum_style_deviation_m": 0.2023787633234727
+    },
+    {
+      "frame": 10,
+      "phase": "SETTLED",
+      "rms_style_deviation_m": 0.07762536117882347,
+      "maximum_style_deviation_m": 0.20237869658834332
+    },
+    {
+      "frame": 11,
+      "phase": "SETTLED",
+      "rms_style_deviation_m": 0.07762654926525728,
+      "maximum_style_deviation_m": 0.2023785111011784
+    },
+    {
+      "frame": 12,
+      "phase": "SETTLED",
+      "rms_style_deviation_m": 0.0776276662704665,
+      "maximum_style_deviation_m": 0.20237819868801468
+    },
+    {
+      "frame": 13,
+      "phase": "SETTLED",
+      "rms_style_deviation_m": 0.0776287424402674,
+      "maximum_style_deviation_m": 0.20237785870718392
+    },
+    {
+      "frame": 14,
+      "phase": "SETTLED",
+      "rms_style_deviation_m": 0.07762976254361803,
+      "maximum_style_deviation_m": 0.2023774002077812
+    },
+    {
+      "frame": 15,
+      "phase": "SETTLED",
+      "rms_style_deviation_m": 0.07763073055874473,
+      "maximum_style_deviation_m": 0.20237691432339092
+    },
+    {
+      "frame": 16,
+      "phase": "SETTLED",
+      "rms_style_deviation_m": 0.0776316543625572,
+      "maximum_style_deviation_m": 0.2023763018310027
+    },
+    {
+      "frame": 17,
+      "phase": "SETTLED",
+      "rms_style_deviation_m": 0.07763253484341018,
+      "maximum_style_deviation_m": 0.20237576139821317
+    },
+    {
+      "frame": 18,
+      "phase": "SETTLED",
+      "rms_style_deviation_m": 0.07763337467781686,
+      "maximum_style_deviation_m": 0.20237510276140508
+    },
+    {
+      "frame": 19,
+      "phase": "SETTLED",
+      "rms_style_deviation_m": 0.0776341823098716,
+      "maximum_style_deviation_m": 0.20237441706197054
+    },
+    {
+      "frame": 20,
+      "phase": "SETTLED",
+      "rms_style_deviation_m": 0.07763495144692979,
+      "maximum_style_deviation_m": 0.2023738118797531
+    },
+    {
+      "frame": 21,
+      "phase": "SETTLED",
+      "rms_style_deviation_m": 0.07763569566126768,
+      "maximum_style_deviation_m": 0.20237308049133476
+    },
+    {
+      "frame": 22,
+      "phase": "SETTLED",
+      "rms_style_deviation_m": 0.07763639515014224,
+      "maximum_style_deviation_m": 0.20237242153066318
+    },
+    {
+      "frame": 23,
+      "phase": "SETTLED",
+      "rms_style_deviation_m": 0.07763707687083374,
+      "maximum_style_deviation_m": 0.20237164475845285
+    },
+    {
+      "frame": 24,
+      "phase": "SETTLED",
+      "rms_style_deviation_m": 0.07763772579864738,
+      "maximum_style_deviation_m": 0.20237104808016315
+    },
+    {
+      "frame": 25,
+      "phase": "SETTLED",
+      "rms_style_deviation_m": 0.07763834781444788,
+      "maximum_style_deviation_m": 0.20237032546757214
+    },
+    {
+      "frame": 26,
+      "phase": "SETTLED",
+      "rms_style_deviation_m": 0.07763894799473535,
+      "maximum_style_deviation_m": 0.20236958454036147
+    },
+    {
+      "frame": 27,
+      "phase": "SETTLED",
+      "rms_style_deviation_m": 0.07763952472691814,
+      "maximum_style_deviation_m": 0.20236892460718192
+    },
+    {
+      "frame": 28,
+      "phase": "SETTLED",
+      "rms_style_deviation_m": 0.0776400806381013,
+      "maximum_style_deviation_m": 0.20236823823091662
+    },
+    {
+      "frame": 29,
+      "phase": "SETTLED",
+      "rms_style_deviation_m": 0.07764061498149073,
+      "maximum_style_deviation_m": 0.2023676412352594
+    },
+    {
+      "frame": 30,
+      "phase": "SETTLED",
+      "rms_style_deviation_m": 0.07764112841177426,
+      "maximum_style_deviation_m": 0.20236691862829953
+    },
+    {
+      "frame": 31,
+      "phase": "SETTLED",
+      "rms_style_deviation_m": 0.07764163037446849,
+      "maximum_style_deviation_m": 0.2023663847855645
+    },
+    {
+      "frame": 32,
+      "phase": "WALK RESPONSE",
+      "rms_style_deviation_m": 0.07764555299957107,
+      "maximum_style_deviation_m": 0.20237879171289078
+    },
+    {
+      "frame": 33,
+      "phase": "WALK RESPONSE",
+      "rms_style_deviation_m": 0.0776660222950757,
+      "maximum_style_deviation_m": 0.20246871865227345
+    },
+    {
+      "frame": 34,
+      "phase": "WALK RESPONSE",
+      "rms_style_deviation_m": 0.07770429136232193,
+      "maximum_style_deviation_m": 0.20269323737914174
+    },
+    {
+      "frame": 35,
+      "phase": "WALK RESPONSE",
+      "rms_style_deviation_m": 0.07773741319089197,
+      "maximum_style_deviation_m": 0.20306318708048507
+    },
+    {
+      "frame": 36,
+      "phase": "WALK RESPONSE",
+      "rms_style_deviation_m": 0.07771592787553704,
+      "maximum_style_deviation_m": 0.20354401292055474
+    },
+    {
+      "frame": 37,
+      "phase": "WALK RESPONSE",
+      "rms_style_deviation_m": 0.07756933069788137,
+      "maximum_style_deviation_m": 0.20406144455650393
+    },
+    {
+      "frame": 38,
+      "phase": "WALK RESPONSE",
+      "rms_style_deviation_m": 0.07721830824468194,
+      "maximum_style_deviation_m": 0.20451321299216527
+    },
+    {
+      "frame": 39,
+      "phase": "WALK RESPONSE",
+      "rms_style_deviation_m": 0.07659165742131421,
+      "maximum_style_deviation_m": 0.20478866087370873
+    },
+    {
+      "frame": 40,
+      "phase": "WALK RESPONSE",
+      "rms_style_deviation_m": 0.07564503723501388,
+      "maximum_style_deviation_m": 0.20479186138308536
+    },
+    {
+      "frame": 41,
+      "phase": "WALK RESPONSE",
+      "rms_style_deviation_m": 0.07437788723122186,
+      "maximum_style_deviation_m": 0.20446323470111227
+    },
+    {
+      "frame": 42,
+      "phase": "WALK RESPONSE",
+      "rms_style_deviation_m": 0.07284377753714061,
+      "maximum_style_deviation_m": 0.2039342796997753
+    },
+    {
+      "frame": 43,
+      "phase": "WALK RESPONSE",
+      "rms_style_deviation_m": 0.07114890318992219,
+      "maximum_style_deviation_m": 0.20315120165244188
+    },
+    {
+      "frame": 44,
+      "phase": "WALK RESPONSE",
+      "rms_style_deviation_m": 0.06945156501769083,
+      "maximum_style_deviation_m": 0.2021732124837662
+    },
+    {
+      "frame": 45,
+      "phase": "WALK RESPONSE",
+      "rms_style_deviation_m": 0.06794249424598078,
+      "maximum_style_deviation_m": 0.20125547844536837
+    },
+    {
+      "frame": 46,
+      "phase": "WALK RESPONSE",
+      "rms_style_deviation_m": 0.0668159861863491,
+      "maximum_style_deviation_m": 0.20076833196923444
+    },
+    {
+      "frame": 47,
+      "phase": "WALK RESPONSE",
+      "rms_style_deviation_m": 0.06623657122729576,
+      "maximum_style_deviation_m": 0.20096299337799922
+    },
+    {
+      "frame": 48,
+      "phase": "WALK RESPONSE",
+      "rms_style_deviation_m": 0.06630786578602833,
+      "maximum_style_deviation_m": 0.20193788986075828
+    },
+    {
+      "frame": 49,
+      "phase": "WALK RESPONSE",
+      "rms_style_deviation_m": 0.06705949317181113,
+      "maximum_style_deviation_m": 0.2038213601174542
+    },
+    {
+      "frame": 50,
+      "phase": "WALK RESPONSE",
+      "rms_style_deviation_m": 0.06844030894251489,
+      "maximum_style_deviation_m": 0.20664795620851986
+    },
+    {
+      "frame": 51,
+      "phase": "WALK RESPONSE",
+      "rms_style_deviation_m": 0.07032257363730503,
+      "maximum_style_deviation_m": 0.21026609328266466
+    },
+    {
+      "frame": 52,
+      "phase": "WALK RESPONSE",
+      "rms_style_deviation_m": 0.0725004250560707,
+      "maximum_style_deviation_m": 0.21430375471327265
+    },
+    {
+      "frame": 53,
+      "phase": "WALK RESPONSE",
+      "rms_style_deviation_m": 0.07466203623909318,
+      "maximum_style_deviation_m": 0.21848377216891804
+    },
+    {
+      "frame": 54,
+      "phase": "WALK RESPONSE",
+      "rms_style_deviation_m": 0.07656310185340226,
+      "maximum_style_deviation_m": 0.22264352128908768
+    },
+    {
+      "frame": 55,
+      "phase": "WALK RESPONSE",
+      "rms_style_deviation_m": 0.0780561040378592,
+      "maximum_style_deviation_m": 0.22635350921856617
+    },
+    {
+      "frame": 56,
+      "phase": "WALK RESPONSE",
+      "rms_style_deviation_m": 0.07899308760328505,
+      "maximum_style_deviation_m": 0.2292720902825872
+    },
+    {
+      "frame": 57,
+      "phase": "WALK RESPONSE",
+      "rms_style_deviation_m": 0.0792564314709805,
+      "maximum_style_deviation_m": 0.231139388508464
+    },
+    {
+      "frame": 58,
+      "phase": "WALK RESPONSE",
+      "rms_style_deviation_m": 0.07881958455645564,
+      "maximum_style_deviation_m": 0.23180624581232737
+    },
+    {
+      "frame": 59,
+      "phase": "WALK RESPONSE",
+      "rms_style_deviation_m": 0.07776449171999968,
+      "maximum_style_deviation_m": 0.23126834624940432
+    },
+    {
+      "frame": 60,
+      "phase": "WALK RESPONSE",
+      "rms_style_deviation_m": 0.07625168794755983,
+      "maximum_style_deviation_m": 0.2296580304139174
+    },
+    {
+      "frame": 61,
+      "phase": "WALK RESPONSE",
+      "rms_style_deviation_m": 0.07448390459501758,
+      "maximum_style_deviation_m": 0.22722825949231729
+    },
+    {
+      "frame": 62,
+      "phase": "WALK RESPONSE",
+      "rms_style_deviation_m": 0.0726926966694361,
+      "maximum_style_deviation_m": 0.2243227116180034
+    },
+    {
+      "frame": 63,
+      "phase": "WALK RESPONSE",
+      "rms_style_deviation_m": 0.07109026888906662,
+      "maximum_style_deviation_m": 0.22133796405858916
+    },
+    {
+      "frame": 64,
+      "phase": "WALK RESPONSE",
+      "rms_style_deviation_m": 0.06982273113961157,
+      "maximum_style_deviation_m": 0.21867733055333197
+    },
+    {
+      "frame": 65,
+      "phase": "WALK RESPONSE",
+      "rms_style_deviation_m": 0.06896244639737362,
+      "maximum_style_deviation_m": 0.21669909816524452
+    },
+    {
+      "frame": 66,
+      "phase": "WALK RESPONSE",
+      "rms_style_deviation_m": 0.06852175333535612,
+      "maximum_style_deviation_m": 0.21566668816131057
+    },
+    {
+      "frame": 67,
+      "phase": "WALK RESPONSE",
+      "rms_style_deviation_m": 0.06848776312042035,
+      "maximum_style_deviation_m": 0.21571653394266949
+    },
+    {
+      "frame": 68,
+      "phase": "WALK RESPONSE",
+      "rms_style_deviation_m": 0.06884845058719487,
+      "maximum_style_deviation_m": 0.21684704114720918
+    },
+    {
+      "frame": 69,
+      "phase": "WALK RESPONSE",
+      "rms_style_deviation_m": 0.06959196815135238,
+      "maximum_style_deviation_m": 0.21892681904945868
+    },
+    {
+      "frame": 70,
+      "phase": "WALK RESPONSE",
+      "rms_style_deviation_m": 0.07065917594801403,
+      "maximum_style_deviation_m": 0.2217168385002334
+    },
+    {
+      "frame": 71,
+      "phase": "WALK RESPONSE",
+      "rms_style_deviation_m": 0.07183449151846606,
+      "maximum_style_deviation_m": 0.22490244069187942
+    },
+    {
+      "frame": 72,
+      "phase": "WALK RESPONSE",
+      "rms_style_deviation_m": 0.07313251903529135,
+      "maximum_style_deviation_m": 0.22813110635165093
+    },
+    {
+      "frame": 73,
+      "phase": "WALK RESPONSE",
+      "rms_style_deviation_m": 0.0743891682394789,
+      "maximum_style_deviation_m": 0.23105649032343986
+    },
+    {
+      "frame": 74,
+      "phase": "WALK RESPONSE",
+      "rms_style_deviation_m": 0.0754344227581446,
+      "maximum_style_deviation_m": 0.2333825128667479
+    },
+    {
+      "frame": 75,
+      "phase": "WALK RESPONSE",
+      "rms_style_deviation_m": 0.07611599457772755,
+      "maximum_style_deviation_m": 0.23489849687337103
+    },
+    {
+      "frame": 76,
+      "phase": "WALK RESPONSE",
+      "rms_style_deviation_m": 0.07633266243428799,
+      "maximum_style_deviation_m": 0.2354980698697735
+    },
+    {
+      "frame": 77,
+      "phase": "WALK RESPONSE",
+      "rms_style_deviation_m": 0.07606144136152397,
+      "maximum_style_deviation_m": 0.23518055936049123
+    },
+    {
+      "frame": 78,
+      "phase": "WALK RESPONSE",
+      "rms_style_deviation_m": 0.07535629019812218,
+      "maximum_style_deviation_m": 0.23402701904926893
+    },
+    {
+      "frame": 79,
+      "phase": "WALK RESPONSE",
+      "rms_style_deviation_m": 0.0743308714219382,
+      "maximum_style_deviation_m": 0.2322000069545378
+    },
+    {
+      "frame": 80,
+      "phase": "WALK RESPONSE",
+      "rms_style_deviation_m": 0.07313713541211925,
+      "maximum_style_deviation_m": 0.229926554001729
+    },
+    {
+      "frame": 81,
+      "phase": "WALK RESPONSE",
+      "rms_style_deviation_m": 0.07194131485721016,
+      "maximum_style_deviation_m": 0.22745239969582648
+    },
+    {
+      "frame": 82,
+      "phase": "WALK RESPONSE",
+      "rms_style_deviation_m": 0.07089995121953707,
+      "maximum_style_deviation_m": 0.22500397081892576
+    },
+    {
+      "frame": 83,
+      "phase": "WALK RESPONSE",
+      "rms_style_deviation_m": 0.07013867595233492,
+      "maximum_style_deviation_m": 0.22276006585783664
+    },
+    {
+      "frame": 84,
+      "phase": "WALK RESPONSE",
+      "rms_style_deviation_m": 0.06973581918179965,
+      "maximum_style_deviation_m": 0.220832410121571
+    },
+    {
+      "frame": 85,
+      "phase": "WALK RESPONSE",
+      "rms_style_deviation_m": 0.06971250713114047,
+      "maximum_style_deviation_m": 0.2192595593827275
+    },
+    {
+      "frame": 86,
+      "phase": "WALK RESPONSE",
+      "rms_style_deviation_m": 0.07003213172535581,
+      "maximum_style_deviation_m": 0.21801370780435086
+    },
+    {
+      "frame": 87,
+      "phase": "WALK RESPONSE",
+      "rms_style_deviation_m": 0.07061150579844039,
+      "maximum_style_deviation_m": 0.21701794962657228
+    },
+    {
+      "frame": 88,
+      "phase": "WALK RESPONSE",
+      "rms_style_deviation_m": 0.07134181789292003,
+      "maximum_style_deviation_m": 0.21617090501709513
+    },
+    {
+      "frame": 89,
+      "phase": "WALK RESPONSE",
+      "rms_style_deviation_m": 0.07211294938046506,
+      "maximum_style_deviation_m": 0.21537364323024968
+    },
+    {
+      "frame": 90,
+      "phase": "WALK RESPONSE",
+      "rms_style_deviation_m": 0.07283436778796569,
+      "maximum_style_deviation_m": 0.21455794449167498
+    },
+    {
+      "frame": 91,
+      "phase": "WALK RESPONSE",
+      "rms_style_deviation_m": 0.0734475855785644,
+      "maximum_style_deviation_m": 0.21373725948013467
+    },
+    {
+      "frame": 92,
+      "phase": "RUN RESPONSE",
+      "rms_style_deviation_m": 0.07397980140363782,
+      "maximum_style_deviation_m": 0.2130199302493169
+    },
+    {
+      "frame": 93,
+      "phase": "RUN RESPONSE",
+      "rms_style_deviation_m": 0.07451249342019924,
+      "maximum_style_deviation_m": 0.2126147161933708
+    },
+    {
+      "frame": 94,
+      "phase": "RUN RESPONSE",
+      "rms_style_deviation_m": 0.07496894683687702,
+      "maximum_style_deviation_m": 0.21256451776062257
+    },
+    {
+      "frame": 95,
+      "phase": "RUN RESPONSE",
+      "rms_style_deviation_m": 0.07509661194467591,
+      "maximum_style_deviation_m": 0.21266939328911352
+    },
+    {
+      "frame": 96,
+      "phase": "RUN RESPONSE",
+      "rms_style_deviation_m": 0.0745641917710131,
+      "maximum_style_deviation_m": 0.21255587867696193
+    },
+    {
+      "frame": 97,
+      "phase": "RUN RESPONSE",
+      "rms_style_deviation_m": 0.0731454622767269,
+      "maximum_style_deviation_m": 0.21188617964317172
+    },
+    {
+      "frame": 98,
+      "phase": "RUN RESPONSE",
+      "rms_style_deviation_m": 0.07091588415232931,
+      "maximum_style_deviation_m": 0.21074446694088736
+    },
+    {
+      "frame": 99,
+      "phase": "RUN RESPONSE",
+      "rms_style_deviation_m": 0.06836039485087297,
+      "maximum_style_deviation_m": 0.20931153256386942
+    },
+    {
+      "frame": 100,
+      "phase": "RUN RESPONSE",
+      "rms_style_deviation_m": 0.06630477863694414,
+      "maximum_style_deviation_m": 0.20842195485003387
+    },
+    {
+      "frame": 101,
+      "phase": "RUN RESPONSE",
+      "rms_style_deviation_m": 0.06562145839098765,
+      "maximum_style_deviation_m": 0.2091212577776515
+    },
+    {
+      "frame": 102,
+      "phase": "RUN RESPONSE",
+      "rms_style_deviation_m": 0.06683607569690586,
+      "maximum_style_deviation_m": 0.21225175616865563
+    },
+    {
+      "frame": 103,
+      "phase": "RUN RESPONSE",
+      "rms_style_deviation_m": 0.06987943169216214,
+      "maximum_style_deviation_m": 0.21769823329533397
+    },
+    {
+      "frame": 104,
+      "phase": "RUN RESPONSE",
+      "rms_style_deviation_m": 0.07386673681069375,
+      "maximum_style_deviation_m": 0.22520845819778662
+    },
+    {
+      "frame": 105,
+      "phase": "RUN RESPONSE",
+      "rms_style_deviation_m": 0.07771917142508745,
+      "maximum_style_deviation_m": 0.2331304901665205
+    },
+    {
+      "frame": 106,
+      "phase": "RUN RESPONSE",
+      "rms_style_deviation_m": 0.0808166942607123,
+      "maximum_style_deviation_m": 0.2395898708630245
+    },
+    {
+      "frame": 107,
+      "phase": "RUN RESPONSE",
+      "rms_style_deviation_m": 0.08242633126532803,
+      "maximum_style_deviation_m": 0.24133087409520423
+    },
+    {
+      "frame": 108,
+      "phase": "RUN RESPONSE",
+      "rms_style_deviation_m": 0.0828786373750325,
+      "maximum_style_deviation_m": 0.23945698252930117
+    },
+    {
+      "frame": 109,
+      "phase": "RUN RESPONSE",
+      "rms_style_deviation_m": 0.08333426844793679,
+      "maximum_style_deviation_m": 0.23543755403071118
+    },
+    {
+      "frame": 110,
+      "phase": "RUN RESPONSE",
+      "rms_style_deviation_m": 0.08523052196418028,
+      "maximum_style_deviation_m": 0.2310126725385141
+    },
+    {
+      "frame": 111,
+      "phase": "RUN RESPONSE",
+      "rms_style_deviation_m": 0.0889881932740206,
+      "maximum_style_deviation_m": 0.22751933699670696
+    },
+    {
+      "frame": 112,
+      "phase": "RUN RESPONSE",
+      "rms_style_deviation_m": 0.09352132954057987,
+      "maximum_style_deviation_m": 0.22557840021657824
+    },
+    {
+      "frame": 113,
+      "phase": "RUN RESPONSE",
+      "rms_style_deviation_m": 0.09745298031787282,
+      "maximum_style_deviation_m": 0.2262201455259353
+    },
+    {
+      "frame": 114,
+      "phase": "RUN RESPONSE",
+      "rms_style_deviation_m": 0.10030062597944309,
+      "maximum_style_deviation_m": 0.2301652538241946
+    },
+    {
+      "frame": 115,
+      "phase": "RUN RESPONSE",
+      "rms_style_deviation_m": 0.10256433852811554,
+      "maximum_style_deviation_m": 0.24661052633295763
+    },
+    {
+      "frame": 116,
+      "phase": "RUN RESPONSE",
+      "rms_style_deviation_m": 0.10516600079359174,
+      "maximum_style_deviation_m": 0.2686521801071706
+    },
+    {
+      "frame": 117,
+      "phase": "RUN RESPONSE",
+      "rms_style_deviation_m": 0.10866824237203611,
+      "maximum_style_deviation_m": 0.2926065978513591
+    },
+    {
+      "frame": 118,
+      "phase": "RUN RESPONSE",
+      "rms_style_deviation_m": 0.11182758239780034,
+      "maximum_style_deviation_m": 0.31638888063866816
+    },
+    {
+      "frame": 119,
+      "phase": "RUN RESPONSE",
+      "rms_style_deviation_m": 0.11423072344769535,
+      "maximum_style_deviation_m": 0.33767733259910976
+    },
+    {
+      "frame": 120,
+      "phase": "RUN RESPONSE",
+      "rms_style_deviation_m": 0.11616128203916823,
+      "maximum_style_deviation_m": 0.3551355441534761
+    },
+    {
+      "frame": 121,
+      "phase": "RUN RESPONSE",
+      "rms_style_deviation_m": 0.11866380897109809,
+      "maximum_style_deviation_m": 0.36929759449751315
+    },
+    {
+      "frame": 122,
+      "phase": "RUN RESPONSE",
+      "rms_style_deviation_m": 0.12242509842277546,
+      "maximum_style_deviation_m": 0.3813106257248705
+    },
+    {
+      "frame": 123,
+      "phase": "RUN RESPONSE",
+      "rms_style_deviation_m": 0.12674519081088126,
+      "maximum_style_deviation_m": 0.39170558982267933
+    },
+    {
+      "frame": 124,
+      "phase": "RUN RESPONSE",
+      "rms_style_deviation_m": 0.12983058267078887,
+      "maximum_style_deviation_m": 0.4002950328445862
+    },
+    {
+      "frame": 125,
+      "phase": "RUN RESPONSE",
+      "rms_style_deviation_m": 0.130263493516756,
+      "maximum_style_deviation_m": 0.4066380068622507
+    },
+    {
+      "frame": 126,
+      "phase": "RUN RESPONSE",
+      "rms_style_deviation_m": 0.12816619193986967,
+      "maximum_style_deviation_m": 0.4112551545182154
+    },
+    {
+      "frame": 127,
+      "phase": "RUN RESPONSE",
+      "rms_style_deviation_m": 0.12515480397031395,
+      "maximum_style_deviation_m": 0.414661129088448
+    },
+    {
+      "frame": 128,
+      "phase": "RUN RESPONSE",
+      "rms_style_deviation_m": 0.12287306927338063,
+      "maximum_style_deviation_m": 0.41742268086145967
+    },
+    {
+      "frame": 129,
+      "phase": "RUN RESPONSE",
+      "rms_style_deviation_m": 0.12171800030518704,
+      "maximum_style_deviation_m": 0.4204437833706468
+    },
+    {
+      "frame": 130,
+      "phase": "RUN RESPONSE",
+      "rms_style_deviation_m": 0.12118616978332933,
+      "maximum_style_deviation_m": 0.4230445997941318
+    },
+    {
+      "frame": 131,
+      "phase": "RUN RESPONSE",
+      "rms_style_deviation_m": 0.12036949312896734,
+      "maximum_style_deviation_m": 0.42397884607393765
+    },
+    {
+      "frame": 132,
+      "phase": "RUN RESPONSE",
+      "rms_style_deviation_m": 0.11898619103503051,
+      "maximum_style_deviation_m": 0.42262409189485267
+    },
+    {
+      "frame": 133,
+      "phase": "RUN RESPONSE",
+      "rms_style_deviation_m": 0.11737819792954424,
+      "maximum_style_deviation_m": 0.4185264244414363
+    },
+    {
+      "frame": 134,
+      "phase": "RUN RESPONSE",
+      "rms_style_deviation_m": 0.1158339333541301,
+      "maximum_style_deviation_m": 0.41164779208264446
+    },
+    {
+      "frame": 135,
+      "phase": "RUN RESPONSE",
+      "rms_style_deviation_m": 0.11413852499543811,
+      "maximum_style_deviation_m": 0.4020788191806308
+    },
+    {
+      "frame": 136,
+      "phase": "RUN RESPONSE",
+      "rms_style_deviation_m": 0.11184997192778709,
+      "maximum_style_deviation_m": 0.3910917444745531
+    },
+    {
+      "frame": 137,
+      "phase": "RUN RESPONSE",
+      "rms_style_deviation_m": 0.10878872860844263,
+      "maximum_style_deviation_m": 0.3791683451584206
+    },
+    {
+      "frame": 138,
+      "phase": "RUN RESPONSE",
+      "rms_style_deviation_m": 0.10527997883298341,
+      "maximum_style_deviation_m": 0.3665504899444813
+    },
+    {
+      "frame": 139,
+      "phase": "RUN RESPONSE",
+      "rms_style_deviation_m": 0.10199867215369131,
+      "maximum_style_deviation_m": 0.3537147632348929
+    },
+    {
+      "frame": 140,
+      "phase": "RUN RESPONSE",
+      "rms_style_deviation_m": 0.09921389183413311,
+      "maximum_style_deviation_m": 0.3409430006753613
+    },
+    {
+      "frame": 141,
+      "phase": "RUN RESPONSE",
+      "rms_style_deviation_m": 0.09675224309594944,
+      "maximum_style_deviation_m": 0.3278439541536154
+    },
+    {
+      "frame": 142,
+      "phase": "RUN RESPONSE",
+      "rms_style_deviation_m": 0.09421668974141377,
+      "maximum_style_deviation_m": 0.31373595796408504
+    },
+    {
+      "frame": 143,
+      "phase": "RUN RESPONSE",
+      "rms_style_deviation_m": 0.09127171256234534,
+      "maximum_style_deviation_m": 0.29830016748446253
+    },
+    {
+      "frame": 144,
+      "phase": "RUN RESPONSE",
+      "rms_style_deviation_m": 0.08783408631223472,
+      "maximum_style_deviation_m": 0.2815815513689107
+    },
+    {
+      "frame": 145,
+      "phase": "RUN RESPONSE",
+      "rms_style_deviation_m": 0.08415775915879693,
+      "maximum_style_deviation_m": 0.26395630992766334
+    },
+    {
+      "frame": 146,
+      "phase": "RUN RESPONSE",
+      "rms_style_deviation_m": 0.08066122844168754,
+      "maximum_style_deviation_m": 0.25753708120945734
+    },
+    {
+      "frame": 147,
+      "phase": "RUN RESPONSE",
+      "rms_style_deviation_m": 0.0777452393772218,
+      "maximum_style_deviation_m": 0.25182048925981704
+    },
+    {
+      "frame": 148,
+      "phase": "RUN RESPONSE",
+      "rms_style_deviation_m": 0.07561635374997974,
+      "maximum_style_deviation_m": 0.2468547821205122
+    },
+    {
+      "frame": 149,
+      "phase": "RUN RESPONSE",
+      "rms_style_deviation_m": 0.07424984333264664,
+      "maximum_style_deviation_m": 0.24259116937598368
+    },
+    {
+      "frame": 150,
+      "phase": "RUN RESPONSE",
+      "rms_style_deviation_m": 0.07346131980965266,
+      "maximum_style_deviation_m": 0.2387908407032776
+    },
+    {
+      "frame": 151,
+      "phase": "RUN RESPONSE",
+      "rms_style_deviation_m": 0.07301686863982752,
+      "maximum_style_deviation_m": 0.23524847407427463
+    },
+    {
+      "frame": 152,
+      "phase": "TURN RESPONSE",
+      "rms_style_deviation_m": 0.07281514986552316,
+      "maximum_style_deviation_m": 0.23199287801378274
+    },
+    {
+      "frame": 153,
+      "phase": "TURN RESPONSE",
+      "rms_style_deviation_m": 0.07282877987172828,
+      "maximum_style_deviation_m": 0.22909197475835288
+    },
+    {
+      "frame": 154,
+      "phase": "TURN RESPONSE",
+      "rms_style_deviation_m": 0.07300196311385183,
+      "maximum_style_deviation_m": 0.2265237248431579
+    },
+    {
+      "frame": 155,
+      "phase": "TURN RESPONSE",
+      "rms_style_deviation_m": 0.07332531073128579,
+      "maximum_style_deviation_m": 0.22426656537345646
+    },
+    {
+      "frame": 156,
+      "phase": "TURN RESPONSE",
+      "rms_style_deviation_m": 0.07385627378732447,
+      "maximum_style_deviation_m": 0.22230014169062046
+    },
+    {
+      "frame": 157,
+      "phase": "TURN RESPONSE",
+      "rms_style_deviation_m": 0.07471992956329344,
+      "maximum_style_deviation_m": 0.22060764366744684
+    },
+    {
+      "frame": 158,
+      "phase": "TURN RESPONSE",
+      "rms_style_deviation_m": 0.07609614375511463,
+      "maximum_style_deviation_m": 0.21917614789608228
+    },
+    {
+      "frame": 159,
+      "phase": "TURN RESPONSE",
+      "rms_style_deviation_m": 0.0781933537765817,
+      "maximum_style_deviation_m": 0.21800140365106963
+    },
+    {
+      "frame": 160,
+      "phase": "TURN RESPONSE",
+      "rms_style_deviation_m": 0.0811985217066875,
+      "maximum_style_deviation_m": 0.21712242792734776
+    },
+    {
+      "frame": 161,
+      "phase": "TURN RESPONSE",
+      "rms_style_deviation_m": 0.08524511676510012,
+      "maximum_style_deviation_m": 0.21655589505636005
+    },
+    {
+      "frame": 162,
+      "phase": "TURN RESPONSE",
+      "rms_style_deviation_m": 0.09039446908924771,
+      "maximum_style_deviation_m": 0.21622873190525235
+    },
+    {
+      "frame": 163,
+      "phase": "TURN RESPONSE",
+      "rms_style_deviation_m": 0.09662450859378453,
+      "maximum_style_deviation_m": 0.21605037788519588
+    },
+    {
+      "frame": 164,
+      "phase": "TURN RESPONSE",
+      "rms_style_deviation_m": 0.1038441975191675,
+      "maximum_style_deviation_m": 0.21599154117204855
+    },
+    {
+      "frame": 165,
+      "phase": "TURN RESPONSE",
+      "rms_style_deviation_m": 0.11192657556314098,
+      "maximum_style_deviation_m": 0.21605902423690232
+    },
+    {
+      "frame": 166,
+      "phase": "TURN RESPONSE",
+      "rms_style_deviation_m": 0.12072947849439285,
+      "maximum_style_deviation_m": 0.21630723416584258
+    },
+    {
+      "frame": 167,
+      "phase": "TURN RESPONSE",
+      "rms_style_deviation_m": 0.1300915661934505,
+      "maximum_style_deviation_m": 0.23749576990978558
+    },
+    {
+      "frame": 168,
+      "phase": "TURN RESPONSE",
+      "rms_style_deviation_m": 0.1398300841877126,
+      "maximum_style_deviation_m": 0.26544974962405365
+    },
+    {
+      "frame": 169,
+      "phase": "TURN RESPONSE",
+      "rms_style_deviation_m": 0.1497623897863123,
+      "maximum_style_deviation_m": 0.29369899940055477
+    },
+    {
+      "frame": 170,
+      "phase": "TURN RESPONSE",
+      "rms_style_deviation_m": 0.1597073845100263,
+      "maximum_style_deviation_m": 0.3220718704440595
+    },
+    {
+      "frame": 171,
+      "phase": "TURN RESPONSE",
+      "rms_style_deviation_m": 0.1694864001192211,
+      "maximum_style_deviation_m": 0.3505136243415722
+    },
+    {
+      "frame": 172,
+      "phase": "TURN RESPONSE",
+      "rms_style_deviation_m": 0.17898365412951417,
+      "maximum_style_deviation_m": 0.3785990055965903
+    },
+    {
+      "frame": 173,
+      "phase": "TURN RESPONSE",
+      "rms_style_deviation_m": 0.18807225555919968,
+      "maximum_style_deviation_m": 0.4058868133934365
+    },
+    {
+      "frame": 174,
+      "phase": "TURN RESPONSE",
+      "rms_style_deviation_m": 0.19668402733129153,
+      "maximum_style_deviation_m": 0.43201010870704065
+    },
+    {
+      "frame": 175,
+      "phase": "TURN RESPONSE",
+      "rms_style_deviation_m": 0.20478016360650889,
+      "maximum_style_deviation_m": 0.45657484827253103
+    },
+    {
+      "frame": 176,
+      "phase": "TURN RESPONSE",
+      "rms_style_deviation_m": 0.21231988965170911,
+      "maximum_style_deviation_m": 0.4793351155015642
+    },
+    {
+      "frame": 177,
+      "phase": "TURN RESPONSE",
+      "rms_style_deviation_m": 0.21924599889349033,
+      "maximum_style_deviation_m": 0.5001794074363669
+    },
+    {
+      "frame": 178,
+      "phase": "TURN RESPONSE",
+      "rms_style_deviation_m": 0.22552022645203756,
+      "maximum_style_deviation_m": 0.5190749314453632
+    },
+    {
+      "frame": 179,
+      "phase": "TURN RESPONSE",
+      "rms_style_deviation_m": 0.23112406733585653,
+      "maximum_style_deviation_m": 0.5360366873482056
+    },
+    {
+      "frame": 180,
+      "phase": "TURN RESPONSE",
+      "rms_style_deviation_m": 0.2360435503718917,
+      "maximum_style_deviation_m": 0.5510896526327812
+    },
+    {
+      "frame": 181,
+      "phase": "TURN RESPONSE",
+      "rms_style_deviation_m": 0.24027127286534597,
+      "maximum_style_deviation_m": 0.5642395946843491
+    },
+    {
+      "frame": 182,
+      "phase": "TURN RESPONSE",
+      "rms_style_deviation_m": 0.2438039088190384,
+      "maximum_style_deviation_m": 0.5754646773362198
+    },
+    {
+      "frame": 183,
+      "phase": "TURN RESPONSE",
+      "rms_style_deviation_m": 0.24663381839444146,
+      "maximum_style_deviation_m": 0.5847290636610021
+    },
+    {
+      "frame": 184,
+      "phase": "TURN RESPONSE",
+      "rms_style_deviation_m": 0.24875617961012733,
+      "maximum_style_deviation_m": 0.5919918314425416
+    },
+    {
+      "frame": 185,
+      "phase": "TURN RESPONSE",
+      "rms_style_deviation_m": 0.25017003540709526,
+      "maximum_style_deviation_m": 0.5972107306856387
+    },
+    {
+      "frame": 186,
+      "phase": "TURN RESPONSE",
+      "rms_style_deviation_m": 0.25086401269040626,
+      "maximum_style_deviation_m": 0.6003435044516608
+    },
+    {
+      "frame": 187,
+      "phase": "TURN RESPONSE",
+      "rms_style_deviation_m": 0.2508254767387643,
+      "maximum_style_deviation_m": 0.6013495868669236
+    },
+    {
+      "frame": 188,
+      "phase": "TURN RESPONSE",
+      "rms_style_deviation_m": 0.2500511818647122,
+      "maximum_style_deviation_m": 0.6001912430181409
+    },
+    {
+      "frame": 189,
+      "phase": "TURN RESPONSE",
+      "rms_style_deviation_m": 0.24853859432828618,
+      "maximum_style_deviation_m": 0.5968363376560569
+    },
+    {
+      "frame": 190,
+      "phase": "TURN RESPONSE",
+      "rms_style_deviation_m": 0.24628646506295082,
+      "maximum_style_deviation_m": 0.5912606652280264
+    },
+    {
+      "frame": 191,
+      "phase": "TURN RESPONSE",
+      "rms_style_deviation_m": 0.24330014525977675,
+      "maximum_style_deviation_m": 0.5834504031845166
+    },
+    {
+      "frame": 192,
+      "phase": "TURN RESPONSE",
+      "rms_style_deviation_m": 0.2395718574881814,
+      "maximum_style_deviation_m": 0.573405044973585
+    },
+    {
+      "frame": 193,
+      "phase": "TURN RESPONSE",
+      "rms_style_deviation_m": 0.2351018587831129,
+      "maximum_style_deviation_m": 0.5611402285075883
+    },
+    {
+      "frame": 194,
+      "phase": "TURN RESPONSE",
+      "rms_style_deviation_m": 0.2299601796103486,
+      "maximum_style_deviation_m": 0.5466898455672137
+    },
+    {
+      "frame": 195,
+      "phase": "TURN RESPONSE",
+      "rms_style_deviation_m": 0.22608054130338948,
+      "maximum_style_deviation_m": 0.5361116475395048
+    },
+    {
+      "frame": 196,
+      "phase": "TURN RESPONSE",
+      "rms_style_deviation_m": 0.22369077099411055,
+      "maximum_style_deviation_m": 0.5758581212184974
+    },
+    {
+      "frame": 197,
+      "phase": "TURN RESPONSE",
+      "rms_style_deviation_m": 0.2216147478876082,
+      "maximum_style_deviation_m": 0.6105179334186268
+    },
+    {
+      "frame": 198,
+      "phase": "TURN RESPONSE",
+      "rms_style_deviation_m": 0.2184682671112157,
+      "maximum_style_deviation_m": 0.6466918425384864
+    },
+    {
+      "frame": 199,
+      "phase": "TURN RESPONSE",
+      "rms_style_deviation_m": 0.2147424247814895,
+      "maximum_style_deviation_m": 0.6770307575961013
+    },
+    {
+      "frame": 200,
+      "phase": "TURN RESPONSE",
+      "rms_style_deviation_m": 0.21125001777358698,
+      "maximum_style_deviation_m": 0.7064240905053394
+    },
+    {
+      "frame": 201,
+      "phase": "TURN RESPONSE",
+      "rms_style_deviation_m": 0.2067509758200691,
+      "maximum_style_deviation_m": 0.7366262133112629
+    },
+    {
+      "frame": 202,
+      "phase": "TURN RESPONSE",
+      "rms_style_deviation_m": 0.2014667518195564,
+      "maximum_style_deviation_m": 0.7615661233737705
+    },
+    {
+      "frame": 203,
+      "phase": "TURN RESPONSE",
+      "rms_style_deviation_m": 0.1952890308385657,
+      "maximum_style_deviation_m": 0.7809122011621823
+    },
+    {
+      "frame": 204,
+      "phase": "TURN RESPONSE",
+      "rms_style_deviation_m": 0.18836791499035066,
+      "maximum_style_deviation_m": 0.79404020802739
+    },
+    {
+      "frame": 205,
+      "phase": "TURN RESPONSE",
+      "rms_style_deviation_m": 0.18120049971398722,
+      "maximum_style_deviation_m": 0.8015217229683639
+    },
+    {
+      "frame": 206,
+      "phase": "TURN RESPONSE",
+      "rms_style_deviation_m": 0.17373239699898108,
+      "maximum_style_deviation_m": 0.8039482964130851
+    },
+    {
+      "frame": 207,
+      "phase": "TURN RESPONSE",
+      "rms_style_deviation_m": 0.1661898253937376,
+      "maximum_style_deviation_m": 0.8009143282403632
+    },
+    {
+      "frame": 208,
+      "phase": "TURN RESPONSE",
+      "rms_style_deviation_m": 0.15864011083727741,
+      "maximum_style_deviation_m": 0.7914799467920531
+    },
+    {
+      "frame": 209,
+      "phase": "TURN RESPONSE",
+      "rms_style_deviation_m": 0.15115483553471423,
+      "maximum_style_deviation_m": 0.7848514410559682
+    },
+    {
+      "frame": 210,
+      "phase": "TURN RESPONSE",
+      "rms_style_deviation_m": 0.14393089410661064,
+      "maximum_style_deviation_m": 0.7850118098458985
+    },
+    {
+      "frame": 211,
+      "phase": "TURN RESPONSE",
+      "rms_style_deviation_m": 0.13739705438601843,
+      "maximum_style_deviation_m": 0.7796032781935011
+    },
+    {
+      "frame": 212,
+      "phase": "STOP / SETTLE",
+      "rms_style_deviation_m": 0.13151728220540854,
+      "maximum_style_deviation_m": 0.7701528744602663
+    },
+    {
+      "frame": 213,
+      "phase": "STOP / SETTLE",
+      "rms_style_deviation_m": 0.12595174661308045,
+      "maximum_style_deviation_m": 0.7554995130879912
+    },
+    {
+      "frame": 214,
+      "phase": "STOP / SETTLE",
+      "rms_style_deviation_m": 0.12071914657755191,
+      "maximum_style_deviation_m": 0.7341304940277015
+    },
+    {
+      "frame": 215,
+      "phase": "STOP / SETTLE",
+      "rms_style_deviation_m": 0.11581309818013354,
+      "maximum_style_deviation_m": 0.7068425646461225
+    },
+    {
+      "frame": 216,
+      "phase": "STOP / SETTLE",
+      "rms_style_deviation_m": 0.11104587390024584,
+      "maximum_style_deviation_m": 0.6725641040356046
+    },
+    {
+      "frame": 217,
+      "phase": "STOP / SETTLE",
+      "rms_style_deviation_m": 0.10647756908956925,
+      "maximum_style_deviation_m": 0.6325230501173087
+    },
+    {
+      "frame": 218,
+      "phase": "STOP / SETTLE",
+      "rms_style_deviation_m": 0.10223333239110505,
+      "maximum_style_deviation_m": 0.5889604680785039
+    },
+    {
+      "frame": 219,
+      "phase": "STOP / SETTLE",
+      "rms_style_deviation_m": 0.09852535738315783,
+      "maximum_style_deviation_m": 0.5452480953824318
+    },
+    {
+      "frame": 220,
+      "phase": "STOP / SETTLE",
+      "rms_style_deviation_m": 0.09525798833733111,
+      "maximum_style_deviation_m": 0.49896128772097875
+    },
+    {
+      "frame": 221,
+      "phase": "STOP / SETTLE",
+      "rms_style_deviation_m": 0.09248789962649376,
+      "maximum_style_deviation_m": 0.45382568392783473
+    },
+    {
+      "frame": 222,
+      "phase": "STOP / SETTLE",
+      "rms_style_deviation_m": 0.09016759413303653,
+      "maximum_style_deviation_m": 0.4105201213980538
+    },
+    {
+      "frame": 223,
+      "phase": "STOP / SETTLE",
+      "rms_style_deviation_m": 0.08822436320223345,
+      "maximum_style_deviation_m": 0.36922138459069354
+    },
+    {
+      "frame": 224,
+      "phase": "STOP / SETTLE",
+      "rms_style_deviation_m": 0.08661027236125528,
+      "maximum_style_deviation_m": 0.33068032684349713
+    },
+    {
+      "frame": 225,
+      "phase": "STOP / SETTLE",
+      "rms_style_deviation_m": 0.08526521246409545,
+      "maximum_style_deviation_m": 0.2947294236977004
+    },
+    {
+      "frame": 226,
+      "phase": "STOP / SETTLE",
+      "rms_style_deviation_m": 0.0841237914327392,
+      "maximum_style_deviation_m": 0.2605562361482159
+    },
+    {
+      "frame": 227,
+      "phase": "STOP / SETTLE",
+      "rms_style_deviation_m": 0.08317446253225659,
+      "maximum_style_deviation_m": 0.2292145511403041
+    },
+    {
+      "frame": 228,
+      "phase": "STOP / SETTLE",
+      "rms_style_deviation_m": 0.08238981603695703,
+      "maximum_style_deviation_m": 0.20703006956335337
+    },
+    {
+      "frame": 229,
+      "phase": "STOP / SETTLE",
+      "rms_style_deviation_m": 0.08176202875937766,
+      "maximum_style_deviation_m": 0.2060604797277129
+    },
+    {
+      "frame": 230,
+      "phase": "STOP / SETTLE",
+      "rms_style_deviation_m": 0.08127708360176511,
+      "maximum_style_deviation_m": 0.20595610117235352
+    },
+    {
+      "frame": 231,
+      "phase": "STOP / SETTLE",
+      "rms_style_deviation_m": 0.08090757192740518,
+      "maximum_style_deviation_m": 0.20584215322873994
+    },
+    {
+      "frame": 232,
+      "phase": "STOP / SETTLE",
+      "rms_style_deviation_m": 0.08062660389798225,
+      "maximum_style_deviation_m": 0.20572025657620213
+    },
+    {
+      "frame": 233,
+      "phase": "STOP / SETTLE",
+      "rms_style_deviation_m": 0.08041370071763425,
+      "maximum_style_deviation_m": 0.2055927251080219
+    },
+    {
+      "frame": 234,
+      "phase": "STOP / SETTLE",
+      "rms_style_deviation_m": 0.080254316417558,
+      "maximum_style_deviation_m": 0.20546162301073148
+    },
+    {
+      "frame": 235,
+      "phase": "STOP / SETTLE",
+      "rms_style_deviation_m": 0.08013698073993626,
+      "maximum_style_deviation_m": 0.20532908972249353
+    },
+    {
+      "frame": 236,
+      "phase": "STOP / SETTLE",
+      "rms_style_deviation_m": 0.08005273287578804,
+      "maximum_style_deviation_m": 0.2051970557117884
+    },
+    {
+      "frame": 237,
+      "phase": "STOP / SETTLE",
+      "rms_style_deviation_m": 0.07999474656705785,
+      "maximum_style_deviation_m": 0.2050668164574146
+    },
+    {
+      "frame": 238,
+      "phase": "STOP / SETTLE",
+      "rms_style_deviation_m": 0.07995753392786793,
+      "maximum_style_deviation_m": 0.20493906100002188
+    },
+    {
+      "frame": 239,
+      "phase": "STOP / SETTLE",
+      "rms_style_deviation_m": 0.07993683447343093,
+      "maximum_style_deviation_m": 0.20481405164003325
+    },
+    {
+      "frame": 240,
+      "phase": "STOP / SETTLE",
+      "rms_style_deviation_m": 0.07992937898053011,
+      "maximum_style_deviation_m": 0.20469163993402806
+    },
+    {
+      "frame": 241,
+      "phase": "STOP / SETTLE",
+      "rms_style_deviation_m": 0.0799326199048842,
+      "maximum_style_deviation_m": 0.2045719976385185
+    },
+    {
+      "frame": 242,
+      "phase": "STOP / SETTLE",
+      "rms_style_deviation_m": 0.07994462451184081,
+      "maximum_style_deviation_m": 0.2044548058268619
+    },
+    {
+      "frame": 243,
+      "phase": "STOP / SETTLE",
+      "rms_style_deviation_m": 0.0799638462638051,
+      "maximum_style_deviation_m": 0.20434026070901332
+    },
+    {
+      "frame": 244,
+      "phase": "STOP / SETTLE",
+      "rms_style_deviation_m": 0.079989084861618,
+      "maximum_style_deviation_m": 0.20422812076953767
+    },
+    {
+      "frame": 245,
+      "phase": "STOP / SETTLE",
+      "rms_style_deviation_m": 0.08001937470337996,
+      "maximum_style_deviation_m": 0.20411858598304258
+    },
+    {
+      "frame": 246,
+      "phase": "STOP / SETTLE",
+      "rms_style_deviation_m": 0.08005369261287107,
+      "maximum_style_deviation_m": 0.20401182521931618
+    },
+    {
+      "frame": 247,
+      "phase": "STOP / SETTLE",
+      "rms_style_deviation_m": 0.08009052660856496,
+      "maximum_style_deviation_m": 0.2039077113945348
+    },
+    {
+      "frame": 248,
+      "phase": "STOP / SETTLE",
+      "rms_style_deviation_m": 0.08012831822504457,
+      "maximum_style_deviation_m": 0.20380648334645127
+    },
+    {
+      "frame": 249,
+      "phase": "STOP / SETTLE",
+      "rms_style_deviation_m": 0.0801663992323197,
+      "maximum_style_deviation_m": 0.20370824637854937
+    },
+    {
+      "frame": 250,
+      "phase": "STOP / SETTLE",
+      "rms_style_deviation_m": 0.08020483299486038,
+      "maximum_style_deviation_m": 0.20361332869789117
+    },
+    {
+      "frame": 251,
+      "phase": "STOP / SETTLE",
+      "rms_style_deviation_m": 0.08024369513715823,
+      "maximum_style_deviation_m": 0.20352156951921488
+    },
+    {
+      "frame": 252,
+      "phase": "STOP / SETTLE",
+      "rms_style_deviation_m": 0.08028281159239008,
+      "maximum_style_deviation_m": 0.20343331862915964
+    },
+    {
+      "frame": 253,
+      "phase": "STOP / SETTLE",
+      "rms_style_deviation_m": 0.08032169908298387,
+      "maximum_style_deviation_m": 0.20334863173713819
+    },
+    {
+      "frame": 254,
+      "phase": "STOP / SETTLE",
+      "rms_style_deviation_m": 0.08035975646605063,
+      "maximum_style_deviation_m": 0.2032676294283541
+    },
+    {
+      "frame": 255,
+      "phase": "STOP / SETTLE",
+      "rms_style_deviation_m": 0.0803963900425566,
+      "maximum_style_deviation_m": 0.20319038838799236
+    },
+    {
+      "frame": 256,
+      "phase": "STOP / SETTLE",
+      "rms_style_deviation_m": 0.08043109275936565,
+      "maximum_style_deviation_m": 0.20311685702627466
+    },
+    {
+      "frame": 257,
+      "phase": "STOP / SETTLE",
+      "rms_style_deviation_m": 0.0804634865420446,
+      "maximum_style_deviation_m": 0.20304748089412147
+    },
+    {
+      "frame": 258,
+      "phase": "STOP / SETTLE",
+      "rms_style_deviation_m": 0.08049319586892101,
+      "maximum_style_deviation_m": 0.20298198641222956
+    },
+    {
+      "frame": 259,
+      "phase": "STOP / SETTLE",
+      "rms_style_deviation_m": 0.0805199371988106,
+      "maximum_style_deviation_m": 0.20292055200572026
+    },
+    {
+      "frame": 260,
+      "phase": "STOP / SETTLE",
+      "rms_style_deviation_m": 0.0805434211210318,
+      "maximum_style_deviation_m": 0.2028631634669315
+    },
+    {
+      "frame": 261,
+      "phase": "STOP / SETTLE",
+      "rms_style_deviation_m": 0.0805634061551416,
+      "maximum_style_deviation_m": 0.20280989600984306
+    },
+    {
+      "frame": 262,
+      "phase": "STOP / SETTLE",
+      "rms_style_deviation_m": 0.08057964383956423,
+      "maximum_style_deviation_m": 0.20276067690629745
+    },
+    {
+      "frame": 263,
+      "phase": "STOP / SETTLE",
+      "rms_style_deviation_m": 0.0805919455037968,
+      "maximum_style_deviation_m": 0.20271567820972394
+    },
+    {
+      "frame": 264,
+      "phase": "STOP / SETTLE",
+      "rms_style_deviation_m": 0.08060015018489237,
+      "maximum_style_deviation_m": 0.2026746909192214
+    },
+    {
+      "frame": 265,
+      "phase": "STOP / SETTLE",
+      "rms_style_deviation_m": 0.08060410531504354,
+      "maximum_style_deviation_m": 0.20263776583714832
+    },
+    {
+      "frame": 266,
+      "phase": "STOP / SETTLE",
+      "rms_style_deviation_m": 0.08060370884274168,
+      "maximum_style_deviation_m": 0.20260478750635647
+    },
+    {
+      "frame": 267,
+      "phase": "STOP / SETTLE",
+      "rms_style_deviation_m": 0.08059889560092393,
+      "maximum_style_deviation_m": 0.2025758016735033
+    },
+    {
+      "frame": 268,
+      "phase": "STOP / SETTLE",
+      "rms_style_deviation_m": 0.08058961091521136,
+      "maximum_style_deviation_m": 0.20255069272921808
+    },
+    {
+      "frame": 269,
+      "phase": "STOP / SETTLE",
+      "rms_style_deviation_m": 0.08057584814788643,
+      "maximum_style_deviation_m": 0.20252924235791597
+    },
+    {
+      "frame": 270,
+      "phase": "STOP / SETTLE",
+      "rms_style_deviation_m": 0.08055761789766591,
+      "maximum_style_deviation_m": 0.2025115564872874
+    },
+    {
+      "frame": 271,
+      "phase": "STOP / SETTLE",
+      "rms_style_deviation_m": 0.08053495849882096,
+      "maximum_style_deviation_m": 0.2024973150957595
+    },
+    {
+      "frame": 272,
+      "phase": "RIDER CONTACT",
+      "rms_style_deviation_m": 0.08050795232606306,
+      "maximum_style_deviation_m": 0.20248663594913655
+    },
+    {
+      "frame": 273,
+      "phase": "RIDER CONTACT",
+      "rms_style_deviation_m": 0.08047670001270166,
+      "maximum_style_deviation_m": 0.20247917280304134
+    },
+    {
+      "frame": 274,
+      "phase": "RIDER CONTACT",
+      "rms_style_deviation_m": 0.08044131609018355,
+      "maximum_style_deviation_m": 0.20247497069590664
+    },
+    {
+      "frame": 275,
+      "phase": "RIDER CONTACT",
+      "rms_style_deviation_m": 0.08040196991586879,
+      "maximum_style_deviation_m": 0.20247363643452193
+    },
+    {
+      "frame": 276,
+      "phase": "RIDER CONTACT",
+      "rms_style_deviation_m": 0.08035881516884369,
+      "maximum_style_deviation_m": 0.2024752273223045
+    },
+    {
+      "frame": 277,
+      "phase": "RIDER CONTACT",
+      "rms_style_deviation_m": 0.08031205953202349,
+      "maximum_style_deviation_m": 0.20247938293043488
+    },
+    {
+      "frame": 278,
+      "phase": "RIDER CONTACT",
+      "rms_style_deviation_m": 0.08026191745079635,
+      "maximum_style_deviation_m": 0.20248616357486274
+    },
+    {
+      "frame": 279,
+      "phase": "RIDER CONTACT",
+      "rms_style_deviation_m": 0.08020863208560292,
+      "maximum_style_deviation_m": 0.2024952126867189
+    },
+    {
+      "frame": 280,
+      "phase": "RIDER CONTACT",
+      "rms_style_deviation_m": 0.08015244377680997,
+      "maximum_style_deviation_m": 0.20250642097797097
+    },
+    {
+      "frame": 281,
+      "phase": "RIDER CONTACT",
+      "rms_style_deviation_m": 0.08009361487617622,
+      "maximum_style_deviation_m": 0.202519512139367
+    },
+    {
+      "frame": 282,
+      "phase": "RIDER CONTACT",
+      "rms_style_deviation_m": 0.08003243481499729,
+      "maximum_style_deviation_m": 0.20253443889737285
+    },
+    {
+      "frame": 283,
+      "phase": "RIDER CONTACT",
+      "rms_style_deviation_m": 0.07996918540640681,
+      "maximum_style_deviation_m": 0.20255095567265344
+    },
+    {
+      "frame": 284,
+      "phase": "RIDER CONTACT",
+      "rms_style_deviation_m": 0.07990417825541521,
+      "maximum_style_deviation_m": 0.20256892215206185
+    },
+    {
+      "frame": 285,
+      "phase": "RIDER CONTACT",
+      "rms_style_deviation_m": 0.07983770175285279,
+      "maximum_style_deviation_m": 0.2025880510004203
+    },
+    {
+      "frame": 286,
+      "phase": "RIDER CONTACT",
+      "rms_style_deviation_m": 0.07977005659525746,
+      "maximum_style_deviation_m": 0.20260826280958652
+    },
+    {
+      "frame": 287,
+      "phase": "RIDER CONTACT",
+      "rms_style_deviation_m": 0.07970156798607937,
+      "maximum_style_deviation_m": 0.2026292448390886
+    },
+    {
+      "frame": 288,
+      "phase": "RIDER CONTACT",
+      "rms_style_deviation_m": 0.07963254132354503,
+      "maximum_style_deviation_m": 0.20265098116903812
+    },
+    {
+      "frame": 289,
+      "phase": "RIDER CONTACT",
+      "rms_style_deviation_m": 0.07956326321279777,
+      "maximum_style_deviation_m": 0.2026732471123519
+    },
+    {
+      "frame": 290,
+      "phase": "RIDER CONTACT",
+      "rms_style_deviation_m": 0.07949407041136611,
+      "maximum_style_deviation_m": 0.20269582431757577
+    },
+    {
+      "frame": 291,
+      "phase": "RIDER CONTACT",
+      "rms_style_deviation_m": 0.07942525365327076,
+      "maximum_style_deviation_m": 0.20271861420938178
+    },
+    {
+      "frame": 292,
+      "phase": "RIDER CONTACT",
+      "rms_style_deviation_m": 0.07930857376188152,
+      "maximum_style_deviation_m": 0.20274142138731352
+    },
+    {
+      "frame": 293,
+      "phase": "RIDER CONTACT",
+      "rms_style_deviation_m": 0.079243475486382,
+      "maximum_style_deviation_m": 0.2027641473817886
+    },
+    {
+      "frame": 294,
+      "phase": "RIDER CONTACT",
+      "rms_style_deviation_m": 0.07914610271750817,
+      "maximum_style_deviation_m": 0.20278665512519659
+    },
+    {
+      "frame": 295,
+      "phase": "RIDER CONTACT",
+      "rms_style_deviation_m": 0.07905299622304286,
+      "maximum_style_deviation_m": 0.20280876103741957
+    },
+    {
+      "frame": 296,
+      "phase": "RIDER CONTACT",
+      "rms_style_deviation_m": 0.07897282251569197,
+      "maximum_style_deviation_m": 0.20283022009457924
+    },
+    {
+      "frame": 297,
+      "phase": "RIDER CONTACT",
+      "rms_style_deviation_m": 0.07888350389139075,
+      "maximum_style_deviation_m": 0.20285111850244625
+    },
+    {
+      "frame": 298,
+      "phase": "RIDER CONTACT",
+      "rms_style_deviation_m": 0.07877489196494958,
+      "maximum_style_deviation_m": 0.20287118623437433
+    },
+    {
+      "frame": 299,
+      "phase": "RIDER CONTACT",
+      "rms_style_deviation_m": 0.07865568885144403,
+      "maximum_style_deviation_m": 0.20289039584851343
+    },
+    {
+      "frame": 300,
+      "phase": "RIDER CONTACT",
+      "rms_style_deviation_m": 0.0785296212696167,
+      "maximum_style_deviation_m": 0.20290855264987326
+    },
+    {
+      "frame": 301,
+      "phase": "RIDER CONTACT",
+      "rms_style_deviation_m": 0.07840260927075705,
+      "maximum_style_deviation_m": 0.20292550290619676
+    },
+    {
+      "frame": 302,
+      "phase": "RIDER CONTACT",
+      "rms_style_deviation_m": 0.07827897746763947,
+      "maximum_style_deviation_m": 0.20294117420819172
+    },
+    {
+      "frame": 303,
+      "phase": "RIDER CONTACT",
+      "rms_style_deviation_m": 0.0781640026974622,
+      "maximum_style_deviation_m": 0.2029554861910478
+    },
+    {
+      "frame": 304,
+      "phase": "RIDER CONTACT",
+      "rms_style_deviation_m": 0.07806751362637684,
+      "maximum_style_deviation_m": 0.2029682705952018
+    },
+    {
+      "frame": 305,
+      "phase": "RIDER CONTACT",
+      "rms_style_deviation_m": 0.07799364431711205,
+      "maximum_style_deviation_m": 0.20297954908210825
+    },
+    {
+      "frame": 306,
+      "phase": "RIDER CONTACT",
+      "rms_style_deviation_m": 0.07793696819383461,
+      "maximum_style_deviation_m": 0.20298918016695722
+    },
+    {
+      "frame": 307,
+      "phase": "RIDER CONTACT",
+      "rms_style_deviation_m": 0.07789787221471516,
+      "maximum_style_deviation_m": 0.2029969768171789
+    },
+    {
+      "frame": 308,
+      "phase": "RIDER CONTACT",
+      "rms_style_deviation_m": 0.07787622623368139,
+      "maximum_style_deviation_m": 0.20300296661465006
+    },
+    {
+      "frame": 309,
+      "phase": "RIDER CONTACT",
+      "rms_style_deviation_m": 0.07787166599663015,
+      "maximum_style_deviation_m": 0.20300701686509792
+    },
+    {
+      "frame": 310,
+      "phase": "RIDER CONTACT",
+      "rms_style_deviation_m": 0.07788164706906227,
+      "maximum_style_deviation_m": 0.20300909558427585
+    },
+    {
+      "frame": 311,
+      "phase": "RIDER CONTACT",
+      "rms_style_deviation_m": 0.07790220988916247,
+      "maximum_style_deviation_m": 0.20300906343227704
+    },
+    {
+      "frame": 312,
+      "phase": "RIDER CONTACT",
+      "rms_style_deviation_m": 0.07792949063965922,
+      "maximum_style_deviation_m": 0.20300708826433897
+    },
+    {
+      "frame": 313,
+      "phase": "RIDER CONTACT",
+      "rms_style_deviation_m": 0.0779603466519812,
+      "maximum_style_deviation_m": 0.20300294052177792
+    },
+    {
+      "frame": 314,
+      "phase": "RIDER CONTACT",
+      "rms_style_deviation_m": 0.07799280661650153,
+      "maximum_style_deviation_m": 0.20299656387147816
+    },
+    {
+      "frame": 315,
+      "phase": "RIDER CONTACT",
+      "rms_style_deviation_m": 0.07802528639834463,
+      "maximum_style_deviation_m": 0.20298812553768134
+    },
+    {
+      "frame": 316,
+      "phase": "RIDER CONTACT",
+      "rms_style_deviation_m": 0.0780553014207654,
+      "maximum_style_deviation_m": 0.20297751358670998
+    },
+    {
+      "frame": 317,
+      "phase": "RIDER CONTACT",
+      "rms_style_deviation_m": 0.07808579889904292,
+      "maximum_style_deviation_m": 0.2029647436313662
+    },
+    {
+      "frame": 318,
+      "phase": "RIDER CONTACT",
+      "rms_style_deviation_m": 0.07812423212510214,
+      "maximum_style_deviation_m": 0.2029497371129682
+    },
+    {
+      "frame": 319,
+      "phase": "RIDER CONTACT",
+      "rms_style_deviation_m": 0.07816883097550946,
+      "maximum_style_deviation_m": 0.20293269800783967
+    },
+    {
+      "frame": 320,
+      "phase": "RIDER CONTACT",
+      "rms_style_deviation_m": 0.0782179350385605,
+      "maximum_style_deviation_m": 0.20291359540913098
+    },
+    {
+      "frame": 321,
+      "phase": "RIDER CONTACT",
+      "rms_style_deviation_m": 0.07827002424784513,
+      "maximum_style_deviation_m": 0.20289247044374328
+    },
+    {
+      "frame": 322,
+      "phase": "RIDER CONTACT",
+      "rms_style_deviation_m": 0.07832370202357182,
+      "maximum_style_deviation_m": 0.20286934097963502
+    },
+    {
+      "frame": 323,
+      "phase": "RIDER CONTACT",
+      "rms_style_deviation_m": 0.0783786145165817,
+      "maximum_style_deviation_m": 0.20284441152372243
+    },
+    {
+      "frame": 324,
+      "phase": "RIDER CONTACT",
+      "rms_style_deviation_m": 0.07843494644655377,
+      "maximum_style_deviation_m": 0.20281773604733616
+    },
+    {
+      "frame": 325,
+      "phase": "RIDER CONTACT",
+      "rms_style_deviation_m": 0.078492987816659,
+      "maximum_style_deviation_m": 0.20278922946446945
+    },
+    {
+      "frame": 326,
+      "phase": "RIDER CONTACT",
+      "rms_style_deviation_m": 0.07855287428781868,
+      "maximum_style_deviation_m": 0.2027592073093149
+    },
+    {
+      "frame": 327,
+      "phase": "RIDER CONTACT",
+      "rms_style_deviation_m": 0.07861469252003139,
+      "maximum_style_deviation_m": 0.2027277889071186
+    },
+    {
+      "frame": 328,
+      "phase": "RIDER CONTACT",
+      "rms_style_deviation_m": 0.07867841201800685,
+      "maximum_style_deviation_m": 0.20269501474290683
+    },
+    {
+      "frame": 329,
+      "phase": "RIDER CONTACT",
+      "rms_style_deviation_m": 0.07874394371941894,
+      "maximum_style_deviation_m": 0.2026610390038426
+    },
+    {
+      "frame": 330,
+      "phase": "RIDER CONTACT",
+      "rms_style_deviation_m": 0.07881113106234777,
+      "maximum_style_deviation_m": 0.20262601786477105
+    }
+  ],
+  "phase_style": {
+    "SETTLED": {
+      "rms_style_deviation_m": 0.07762984225142193,
+      "maximum_style_deviation_m": 0.2023787633234727
+    },
+    "WALK RESPONSE": {
+      "rms_style_deviation_m": 0.073114048763798,
+      "maximum_style_deviation_m": 0.2354980698697735
+    },
+    "RUN RESPONSE": {
+      "rms_style_deviation_m": 0.09760258467294454,
+      "maximum_style_deviation_m": 0.42397884607393765
+    },
+    "TURN RESPONSE": {
+      "rms_style_deviation_m": 0.18662592305620224,
+      "maximum_style_deviation_m": 0.8039482964130851
+    },
+    "STOP / SETTLE": {
+      "rms_style_deviation_m": 0.08678265006290935,
+      "maximum_style_deviation_m": 0.7701528744602663
+    },
+    "RIDER CONTACT": {
+      "rms_style_deviation_m": 0.07894124168471439,
+      "maximum_style_deviation_m": 0.20300909558427585
+    }
+  },
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\MildOverdampingTrajectory-v001\\simulation-report.json": "b3e047e8c5ef38b0e31b1bfe1db1e01b0ff32a229d212d60a4920ed57719dc62",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\MildOverdampingTrajectory-v001\\tool-source.py": "9c9d1c88b92e20fdab6ec8598f67c797d06b7ca473b447887319e4424c7f0e63",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\MildOverdampingTrajectory-v001\\guides.json": "f8f8c15cfa47fcd80ea32cf823227cc5df5d063e0baa1e4bc72de99e77701621",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\MildOverdampingTrajectory-v001\\motion-profile.json": "9df3ed982c0f5f571210a98d42c1e6b395b80713c139f0b7b162ad861d5cca47",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\MildOverdampingTrajectory-v001\\trajectory.npz": "69c396bc6cdf1a0afed8cd60414fb131c7be6bb851e8d9fdf892152f32c799f0",
+    "docs\\art-templates\\model-profiles\\voidreign-hair-surface-check-20261018.json": "f42b54b785653cd13262405b39e26a48e1fc606edeafb392b1372121e29e1abb"
+  },
+  "tool_sha256": "965db72011f35297a8a83d6270f27fac55fc2a095d3c5266864451ec63ca6f89",
+  "limitations": [
+    "Saved output-frame points/envelopes only; not swept contacts, strand segments or rendered skin clearance.",
+    "Fixed-node penetration is reported separately and needs root/envelope feasibility review; not silently repaired or accepted.",
+    "Style deviation is diagnostic, not a target to minimize blindly; recovery and intended motion require review.",
+    "Uses the existing surface penetration ceiling numerically as a guide warning; cannot accept or reject surfaces from guide residual alone."
+  ]
+}

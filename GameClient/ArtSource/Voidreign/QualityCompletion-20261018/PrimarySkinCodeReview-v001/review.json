@@ -1,0 +1,15 @@
+{
+  "status": "agent-code-review-complete-for-one-diagnostic-correction",
+  "cause": "Binary leg-bone eligibility wrongly affects body-owner vertices outside ownership blend. Original harmonic solver did not converge.",
+  "change": "Restore body-only priors for owner5 using unchanged frozen body distance formula; solve the same120mm pinned boundary band with preconditioned CG.",
+  "automatic_budget": {
+    "limit": 3,
+    "used": 3,
+    "status": "needs-review-not-reset"
+  },
+  "diagnostic_correction": 1,
+  "total_primary_candidates_after_correction": 4,
+  "authorization": "Existing user instruction to complete work and fix owning causes; this is agent code review, not new human approval.",
+  "promotion": "None; automatic parent budget remains exhausted; unchanged source checks and review still required.",
+  "limits_relaxed": false
+}

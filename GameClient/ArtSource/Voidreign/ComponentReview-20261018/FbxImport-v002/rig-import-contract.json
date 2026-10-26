@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "source": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\ComponentReview-20261018\\Cleanup-v001\\Voidreign-HairPrototype.blend",
+  "source_sha256": "d2707a70df77c9a6829b99dd3b462a323844cf546ef96ee224b9e29fcda5a354",
+  "exchange_sha256": "635247fb8b789829261113bba10a23b3407bde4f2e055671fc8afb7ab81744ac",
+  "blender": "5.1.1",
+  "fps": 30,
+  "fps_base": 1.0,
+  "armature": "RIG | mane + tail only",
+  "bones": {
+    "StaticBody": {
+      "parent": null,
+      "connected": false
+    },
+    "Mane_00": {
+      "parent": null,
+      "connected": false
+    },
+    "Mane_01": {
+      "parent": "Mane_00",
+      "connected": false
+    },
+    "Mane_02": {
+      "parent": "Mane_01",
+      "connected": false
+    },
+    "Mane_03": {
+      "parent": "Mane_02",
+      "connected": false
+    },
+    "Mane_04": {
+      "parent": "Mane_03",
+      "connected": false
+    },
+    "Mane_05": {
+      "parent": "Mane_04",
+      "connected": false
+    },
+    "Mane_06": {
+      "parent": "Mane_05",
+      "connected": false
+    },
+    "Mane_07": {
+      "parent": "Mane_06",
+      "connected": false
+    },
+    "Tail_00": {
+      "parent": null,
+      "connected": false
+    },
+    "Tail_01": {
+      "parent": "Tail_00",
+      "connected": false
+    },
+    "Tail_02": {
+      "parent": "Tail_01",
+      "connected": false
+    },
+    "Tail_03": {
+      "parent": "Tail_02",
+      "connected": false
+    },
+    "Tail_04": {
+      "parent": "Tail_03",
+      "connected": false
+    },
+    "Tail_05": {
+      "parent": "Tail_04",
+      "connected": false
+    },
+    "Tail_06": {
+      "parent": "Tail_05",
+      "connected": false
+    },
+    "Tail_07": {
+      "parent": "Tail_06",
+      "connected": false
+    },
+    "Tail_08": {
+      "parent": "Tail_07",
+      "connected": false
+    },
+    "Tail_09": {
+      "parent": "Tail_08",
+      "connected": false
+    },
+    "Tail_10": {
+      "parent": "Tail_09",
+      "connected": false
+    }
+  }
+}

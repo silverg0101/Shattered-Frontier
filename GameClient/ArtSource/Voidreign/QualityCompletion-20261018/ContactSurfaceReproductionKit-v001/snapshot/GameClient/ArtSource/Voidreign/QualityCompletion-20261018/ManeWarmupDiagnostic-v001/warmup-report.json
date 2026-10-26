@@ -1,0 +1,494 @@
+{
+  "schema_version": 1,
+  "status": "source-bound-warmup-diagnostic-only",
+  "cpu_only": true,
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManeClothSettledFull-v001\\Voidreign-ActualSurfacePilot.blend": "3993764fc40cc42baabb07be05f1014831bff83706e68bdd7574643be9625dd8",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManeClothSettledFull-v001\\pilot-report.json": "8a73ada7f69ae5a77400c77f726f477584dc332ad0ce9b45ab18d751f9d28af7",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManeClothSettledFull-v001\\blendcache_Voidreign-ActualSurfacePilot\\ActualManeSurface_000239_00.bphys": "7120ce3699ed87e496297643a1c9ce9b0a3c9b5b87fb76c7e54fec38ba6739cc",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManeClothSettledFull-v001\\blendcache_Voidreign-ActualSurfacePilot\\ActualManeSurface_000240_00.bphys": "f7c34b5221dcebd59ee63d6e6a0947faf4499f37340df917fc7aa369f184c14a"
+  },
+  "tool_sha256": "341943c6f94a938c23c35521afa0b31e0f7a664d53cc9c80fa59efa83f6e8943",
+  "rms_speed_m_s": 0.01657959260046482,
+  "peak_speed_m_s": 0.301066130399704,
+  "top_vertices": [
+    {
+      "proxy_vertex": 4057,
+      "source_vertex": 133921,
+      "speed_m_s": 0.301066130399704,
+      "position_proxy_m": [
+        -0.09540677815675735,
+        -0.6616824269294739,
+        2.288985013961792
+      ],
+      "neighbors": [
+        {
+          "proxy_vertex": 4058,
+          "pinned": false,
+          "sewing_edge": false
+        },
+        {
+          "proxy_vertex": 4311,
+          "pinned": false,
+          "sewing_edge": false
+        },
+        {
+          "proxy_vertex": 4615,
+          "pinned": false,
+          "sewing_edge": false
+        },
+        {
+          "proxy_vertex": 4375,
+          "pinned": false,
+          "sewing_edge": false
+        },
+        {
+          "proxy_vertex": 3907,
+          "pinned": false,
+          "sewing_edge": false
+        },
+        {
+          "proxy_vertex": 3919,
+          "pinned": false,
+          "sewing_edge": false
+        },
+        {
+          "proxy_vertex": 3819,
+          "pinned": false,
+          "sewing_edge": false
+        }
+      ]
+    },
+    {
+      "proxy_vertex": 4010,
+      "source_vertex": 133914,
+      "speed_m_s": 0.3010537624359131,
+      "position_proxy_m": [
+        -0.09046703577041626,
+        -0.6668874025344849,
+        2.2772927284240723
+      ],
+      "neighbors": [
+        {
+          "proxy_vertex": 4058,
+          "pinned": false,
+          "sewing_edge": false
+        },
+        {
+          "proxy_vertex": 4311,
+          "pinned": false,
+          "sewing_edge": false
+        },
+        {
+          "proxy_vertex": 4215,
+          "pinned": false,
+          "sewing_edge": false
+        },
+        {
+          "proxy_vertex": 3907,
+          "pinned": false,
+          "sewing_edge": false
+        },
+        {
+          "proxy_vertex": 3807,
+          "pinned": false,
+          "sewing_edge": false
+        }
+      ]
+    },
+    {
+      "proxy_vertex": 4058,
+      "source_vertex": 133915,
+      "speed_m_s": 0.2998340427875519,
+      "position_proxy_m": [
+        -0.09385662525892258,
+        -0.6628168225288391,
+        2.2791781425476074
+      ],
+      "neighbors": [
+        {
+          "proxy_vertex": 4057,
+          "pinned": false,
+          "sewing_edge": false
+        },
+        {
+          "proxy_vertex": 4010,
+          "pinned": false,
+          "sewing_edge": false
+        },
+        {
+          "proxy_vertex": 4311,
+          "pinned": false,
+          "sewing_edge": false
+        },
+        {
+          "proxy_vertex": 3907,
+          "pinned": false,
+          "sewing_edge": false
+        }
+      ]
+    },
+    {
+      "proxy_vertex": 4215,
+      "source_vertex": 133913,
+      "speed_m_s": 0.24145162105560303,
+      "position_proxy_m": [
+        -0.07555169612169266,
+        -0.6529643535614014,
+        2.275728940963745
+      ],
+      "neighbors": [
+        {
+          "proxy_vertex": 4010,
+          "pinned": false,
+          "sewing_edge": false
+        },
+        {
+          "proxy_vertex": 4311,
+          "pinned": false,
+          "sewing_edge": false
+        },
+        {
+          "proxy_vertex": 4535,
+          "pinned": false,
+          "sewing_edge": false
+        },
+        {
+          "proxy_vertex": 4672,
+          "pinned": false,
+          "sewing_edge": false
+        },
+        {
+          "proxy_vertex": 3807,
+          "pinned": false,
+          "sewing_edge": false
+        },
+        {
+          "proxy_vertex": 3919,
+          "pinned": false,
+          "sewing_edge": false
+        },
+        {
+          "proxy_vertex": 4401,
+          "pinned": false,
+          "sewing_edge": false
+        }
+      ]
+    },
+    {
+      "proxy_vertex": 4311,
+      "source_vertex": 133912,
+      "speed_m_s": 0.2155815213918686,
+      "position_proxy_m": [
+        -0.07335498183965683,
+        -0.6423273086547852,
+        2.2696611881256104
+      ],
+      "neighbors": [
+        {
+          "proxy_vertex": 4057,
+          "pinned": false,
+          "sewing_edge": false
+        },
+        {
+          "proxy_vertex": 4010,
+          "pinned": false,
+          "sewing_edge": false
+        },
+        {
+          "proxy_vertex": 4058,
+          "pinned": false,
+          "sewing_edge": false
+        },
+        {
+          "proxy_vertex": 4215,
+          "pinned": false,
+          "sewing_edge": false
+        },
+        {
+          "proxy_vertex": 4535,
+          "pinned": false,
+          "sewing_edge": false
+        },
+        {
+          "proxy_vertex": 4615,
+          "pinned": false,
+          "sewing_edge": false
+        }
+      ]
+    },
+    {
+      "proxy_vertex": 3807,
+      "source_vertex": 133929,
+      "speed_m_s": 0.16235995292663574,
+      "position_proxy_m": [
+        -0.04768751189112663,
+        -0.6158561706542969,
+        2.171267509460449
+      ],
+      "neighbors": [
+        {
+          "proxy_vertex": 4010,
+          "pinned": false,
+          "sewing_edge": false
+        },
+        {
+          "proxy_vertex": 3907,
+          "pinned": false,
+          "sewing_edge": false
+        },
+        {
+          "proxy_vertex": 3819,
+          "pinned": false,
+          "sewing_edge": false
+        },
+        {
+          "proxy_vertex": 4215,
+          "pinned": false,
+          "sewing_edge": false
+        },
+        {
+          "proxy_vertex": 3919,
+          "pinned": false,
+          "sewing_edge": false
+        }
+      ]
+    },
+    {
+      "proxy_vertex": 3819,
+      "source_vertex": 133927,
+      "speed_m_s": 0.15107962489128113,
+      "position_proxy_m": [
+        -0.05267497897148132,
+        -0.6123992800712585,
+        2.175262928009033
+      ],
+      "neighbors": [
+        {
+          "proxy_vertex": 3907,
+          "pinned": false,
+          "sewing_edge": false
+        },
+        {
+          "proxy_vertex": 3807,
+          "pinned": false,
+          "sewing_edge": false
+        },
+        {
+          "proxy_vertex": 4057,
+          "pinned": false,
+          "sewing_edge": false
+        },
+        {
+          "proxy_vertex": 3919,
+          "pinned": false,
+          "sewing_edge": false
+        }
+      ]
+    },
+    {
+      "proxy_vertex": 3907,
+      "source_vertex": 133926,
+      "speed_m_s": 0.14961673319339752,
+      "position_proxy_m": [
+        -0.04736027866601944,
+        -0.6135616898536682,
+        2.178457736968994
+      ],
+      "neighbors": [
+        {
+          "proxy_vertex": 4010,
+          "pinned": false,
+          "sewing_edge": false
+        },
+        {
+          "proxy_vertex": 4058,
+          "pinned": false,
+          "sewing_edge": false
+        },
+        {
+          "proxy_vertex": 3807,
+          "pinned": false,
+          "sewing_edge": false
+        },
+        {
+          "proxy_vertex": 4057,
+          "pinned": false,
+          "sewing_edge": false
+        },
+        {
+          "proxy_vertex": 3819,
+          "pinned": false,
+          "sewing_edge": false
+        }
+      ]
+    },
+    {
+      "proxy_vertex": 4375,
+      "source_vertex": 133928,
+      "speed_m_s": 0.1323665827512741,
+      "position_proxy_m": [
+        -0.059046562761068344,
+        -0.6151185035705566,
+        2.2483415603637695
+      ],
+      "neighbors": [
+        {
+          "proxy_vertex": 4057,
+          "pinned": false,
+          "sewing_edge": false
+        },
+        {
+          "proxy_vertex": 3919,
+          "pinned": false,
+          "sewing_edge": false
+        },
+        {
+          "proxy_vertex": 4615,
+          "pinned": false,
+          "sewing_edge": false
+        },
+        {
+          "proxy_vertex": 4760,
+          "pinned": false,
+          "sewing_edge": false
+        },
+        {
+          "proxy_vertex": 4401,
+          "pinned": false,
+          "sewing_edge": false
+        }
+      ]
+    },
+    {
+      "proxy_vertex": 1029,
+      "source_vertex": 132628,
+      "speed_m_s": 0.12824563682079315,
+      "position_proxy_m": [
+        0.06358907371759415,
+        -0.5163072347640991,
+        1.8196381330490112
+      ],
+      "neighbors": [
+        {
+          "proxy_vertex": 980,
+          "pinned": false,
+          "sewing_edge": false
+        },
+        {
+          "proxy_vertex": 984,
+          "pinned": false,
+          "sewing_edge": false
+        },
+        {
+          "proxy_vertex": 1051,
+          "pinned": false,
+          "sewing_edge": false
+        },
+        {
+          "proxy_vertex": 1124,
+          "pinned": false,
+          "sewing_edge": false
+        },
+        {
+          "proxy_vertex": 1027,
+          "pinned": false,
+          "sewing_edge": false
+        }
+      ]
+    },
+    {
+      "proxy_vertex": 847,
+      "source_vertex": 141328,
+      "speed_m_s": 0.12742702662944794,
+      "position_proxy_m": [
+        0.0649370402097702,
+        -0.5052885413169861,
+        1.7930285930633545
+      ],
+      "neighbors": [
+        {
+          "proxy_vertex": 821,
+          "pinned": false,
+          "sewing_edge": false
+        },
+        {
+          "proxy_vertex": 777,
+          "pinned": false,
+          "sewing_edge": false
+        },
+        {
+          "proxy_vertex": 898,
+          "pinned": false,
+          "sewing_edge": false
+        },
+        {
+          "proxy_vertex": 944,
+          "pinned": false,
+          "sewing_edge": false
+        },
+        {
+          "proxy_vertex": 855,
+          "pinned": false,
+          "sewing_edge": false
+        },
+        {
+          "proxy_vertex": 909,
+          "pinned": false,
+          "sewing_edge": false
+        }
+      ]
+    },
+    {
+      "proxy_vertex": 1124,
+      "source_vertex": 132627,
+      "speed_m_s": 0.12618857622146606,
+      "position_proxy_m": [
+        0.060186345130205154,
+        -0.5209835767745972,
+        1.8286468982696533
+      ],
+      "neighbors": [
+        {
+          "proxy_vertex": 1405,
+          "pinned": false,
+          "sewing_edge": false
+        },
+        {
+          "proxy_vertex": 1825,
+          "pinned": false,
+          "sewing_edge": false
+        },
+        {
+          "proxy_vertex": 1337,
+          "pinned": false,
+          "sewing_edge": false
+        },
+        {
+          "proxy_vertex": 1029,
+          "pinned": false,
+          "sewing_edge": false
+        },
+        {
+          "proxy_vertex": 1113,
+          "pinned": false,
+          "sewing_edge": false
+        },
+        {
+          "proxy_vertex": 1051,
+          "pinned": false,
+          "sewing_edge": false
+        },
+        {
+          "proxy_vertex": 1027,
+          "pinned": false,
+          "sewing_edge": false
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "Agreement with cached producer metrics only; no rebake or acceptance.",
+    "Neighborhood and proposed sewing-edge data do not prove semantic strand ownership."
+  ]
+}

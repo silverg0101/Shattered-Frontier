@@ -1,0 +1,9 @@
+{
+  "status": "native-api-semantics-clarified-no-physics-change",
+  "blender": "5.1.1",
+  "property": "ClothCollisionSettings.vertex_group_object_collisions",
+  "actual_description": "Triangles with all vertices in this group are not used during object collisions",
+  "configured_group": "Exact geometric root candidates",
+  "note": "Earlier producer limitation wording saying root pins alone excluded was imprecise. The stored group/settings are unchanged. It excludes all-root triangles, not arbitrary individual vertices. Free geometry remains in checks; no broader exclusion introduced.",
+  "evidence": "Artifacts/Art/Voidreign/local-cloth-collision-mask-rna.log"
+}

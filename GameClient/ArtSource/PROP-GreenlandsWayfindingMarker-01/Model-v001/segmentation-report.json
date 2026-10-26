@@ -1,0 +1,22 @@
+{
+  "source": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\PROP-GreenlandsWayfindingMarker-01\\References\\v001\\asset-view.png",
+  "source_sha256": "46410437aebd82f433db2adfc14667c7287ddcefd7cffd3b1ace0aec4b0ac182",
+  "output": "C:\\Projects\\Shattered-Frontier\\Artifacts\\Art\\GreenlandsModelBatch-20261018\\PROP-GreenlandsWayfindingMarker-01\\attempt-03\\PROP-GreenlandsWayfindingMarker-01.rgba.png",
+  "output_sha256": "04fc96efccdae4e48ded8d86bbf12d5168488b80ab2d18ba8a37b3270eae5a5d",
+  "mask_preview": "C:\\Projects\\Shattered-Frontier\\Artifacts\\Art\\GreenlandsModelBatch-20261018\\PROP-GreenlandsWayfindingMarker-01\\attempt-03\\PROP-GreenlandsWayfindingMarker-01.rgba.mask.png",
+  "mask_preview_sha256": "4aa503288aafb125572841ed64dde5a75cc13fd1d6a2caa3de14b3c1d4907265",
+  "dimensions_px": [
+    1536,
+    1024
+  ],
+  "method": "border-connected fixed-range RGB flood fill; 5-iteration GrabCut trimap cleanup; Gaussian alpha edge 0.8px",
+  "tolerance_rgb": 12,
+  "foreground_fraction": 0.179098,
+  "foreground_bounds_px": [
+    196,
+    32,
+    1524,
+    1000
+  ],
+  "review_status": "needs-review"
+}

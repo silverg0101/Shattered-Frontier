@@ -1,0 +1,76 @@
+{
+  "asset_id": "BLD-WT-JointWallCeilingCellFull-01",
+  "version": "v001",
+  "batch": "construction-worked-timber-interfaces-35",
+  "source_references": [
+    "docs/art-templates/player-construction-kit-contract.md §§3.2, 8–9",
+    "docs/art-templates/asset-lists/construction-kit-matrix-07.md named worked-timber interface role"
+  ],
+  "dependency": "KIT-WT appearance and source geometry/contact/clearance definitions; gameplay tier unchanged",
+  "exact_prompts": {
+    "concept_sheet": "Pure worked-timber ceiling-to-wall joint sheet, wood only. A solid horizontal timber ceiling slab sits flush against a solid vertical timber wall; all faces, top and underside are wood planks. Show room-side section and exterior corner. Absolutely no stone, plaster, metal, trim, openings, extra materials, text or labels. Preserve clear room space and existing contact plane.",
+    "asset_view": "Isolated clean timber wall-to-ceiling corner component, wood-only flat plank panel joined at 90 degrees, one portion vertical and one portion horizontal. Show grain on outside and room-side underside; no building or surrounding walls, no supports, no text, neutral studio backdrop."
+  },
+  "images": [
+    {
+      "file": "concept-sheet.png",
+      "width_px": 1536,
+      "height_px": 1024,
+      "mode": "RGB",
+      "format": "PNG",
+      "sha256": "9cc723222c94ef10756fa0a5959d0a5a08bc97033e417e82948404eb2eb98eea"
+    },
+    {
+      "file": "asset-view.png",
+      "width_px": 1312,
+      "height_px": 1199,
+      "mode": "RGB",
+      "format": "PNG",
+      "sha256": "27d4ce3b9c53dde362e6323a4a6ef2965a332e38bc218f9b67bcc65aa9ac0659"
+    }
+  ],
+  "visual_review": "Wood-only component and mated faces are clear; extents and room clearance remain unverified. First mixed-material generation is retained in package history.",
+  "compatibility": "Visual review does not establish numerical mesh, collision, contact, clearance, support or runtime compatibility. Gameplay material properties are unchanged.",
+  "generation_history": [
+    {
+      "file": "exec-be1d4742-63dc-43d0-b43e-f8e808c8d78d.png",
+      "selected": true
+    },
+    {
+      "file": "exec-87cfb0e7-d08f-4cee-8326-69fb82a4a899.png",
+      "selected": true
+    },
+    {
+      "file": "exec-14e42d83-3493-4566-9f21-b54c08d5e531.png",
+      "selected": false,
+      "reason": "Introduced unsupported masonry; replaced with wood-only sheet."
+    }
+  ],
+  "created_utc": "2026-10-18",
+  "historical_status_2026_10_18_before_buildability_review": "image-complete; proposal; visual cautions recorded",
+  "status": "appearance/style evidence only; structural route blocked",
+  "current_route_review": {
+    "date": "2026-10-18",
+    "route": "Blocked; appearance/interface-study evidence only. No approved canonical member set or geometry/interface mapping.",
+    "units": "metres assumed for eventual construction frame; image scale is not evidence",
+    "grid_m": 0.5,
+    "axes_pivot": "not assigned to image members; any future cell-full member would require approved minimum-grid-corner frame and authored rotation allowlist",
+    "member_boundaries": "unresolved; do not infer from planks/panels",
+    "exposed_mating_faces": "Concept sheet is a room/corner collage with repeated planks; clean view shows two large joined panels but has no scale, cell boundaries or exact contact dimensions. No unit frame, axes/pivots, rotation allowlist, face masks or clearance evidence are shown.",
+    "named_counterparts": "Candidate style roles BLD-WT-FaceExteriorCellFull-01 and BLD-WT-FaceTopCellFull-01 only; no approved mating interface or member IDs.",
+    "visual_finding": "Concept sheet is a room/corner collage with repeated planks; clean view shows two large joined panels but has no scale, cell boundaries or exact contact dimensions. No unit frame, axes/pivots, rotation allowlist, face masks or clearance evidence are shown.",
+    "reason": "Keep two selected images as appearance evidence; block reusable structural readiness until the wall and ceiling members and contact plane are approved."
+  },
+  "buildability_review_history": [
+    {
+      "date": "2026-10-18",
+      "previous_status": "image-complete; proposal; visual cautions recorded",
+      "current_status": "appearance/style evidence only; structural route blocked",
+      "route": "Blocked; appearance/interface-study evidence only. No approved canonical member set or geometry/interface mapping.",
+      "selected_images": "Preserved exactly two historical selected images; no replacement generated.",
+      "finding": "Concept sheet is a room/corner collage with repeated planks; clean view shows two large joined panels but has no scale, cell boundaries or exact contact dimensions. No unit frame, axes/pivots, rotation allowlist, face masks or clearance evidence are shown.",
+      "counterparts": "Candidate style roles BLD-WT-FaceExteriorCellFull-01 and BLD-WT-FaceTopCellFull-01 only; no approved mating interface or member IDs.",
+      "next_action": "Keep two selected images as appearance evidence; block reusable structural readiness until the wall and ceiling members and contact plane are approved."
+    }
+  ]
+}

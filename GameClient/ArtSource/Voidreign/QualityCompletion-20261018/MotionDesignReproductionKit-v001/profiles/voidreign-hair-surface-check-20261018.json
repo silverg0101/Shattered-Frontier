@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "scope": "Prototype actual-mesh surface checks, not production clearance policy",
+  "permissions": "Offline asset author; versioned changes require reasons and invalidate prior evidence",
+  "effective_time": "Next fresh check run",
+  "units": "Distances and displacements in metres",
+  "assembly_root": "MOTION HARNESS | rigid horse, not gait animation",
+  "limits": {
+    "frame_count": 330,
+    "sample_frames": [
+      1,
+      2,
+      31,
+      60,
+      61,
+      91,
+      120,
+      121,
+      151,
+      180,
+      181,
+      211,
+      240,
+      241,
+      271,
+      285,
+      300,
+      315,
+      330
+    ],
+    "protected_tolerance_m": 1e-05,
+    "seam_tolerance_m": 1e-05,
+    "maximum_initial_step_m": 0.02,
+    "maximum_surface_step_m": 0.08,
+    "attachment_gap_increase_m": 0.005,
+    "collision_margin_m": 0.002,
+    "maximum_penetration_m": 0.005,
+    "minimum_dynamic_weight": 0.1,
+    "root_exemption_extra_m": 0.05
+  }
+}

@@ -1,0 +1,372 @@
+{
+  "schema_version": 1,
+  "units": "metres",
+  "permissions": "CPU paired context/isolation diagnostic only; saved original source remains untouched; no classification/deletion/attachment implied",
+  "effective_time": "This immutable proposal only",
+  "coordinate_convention": {
+    "up": "+Z",
+    "forward": "-Y (head/horn)",
+    "side_names": "Geometric +X/-X until reviewed"
+  },
+  "object": "geometry_0",
+  "source": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryOnlyCombinedFull-v001\\Voidreign-ActualSurfacePilot.blend",
+  "rest_selection": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz",
+  "retention_report": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryOnlyCombinedFullRetention-v001\\validation.json",
+  "render": {
+    "resolution": 640,
+    "samples": 8,
+    "surface_color": [
+      0.36,
+      0.39,
+      0.43
+    ],
+    "landmark_radius_m": 0.025,
+    "light_position_m": [
+      -3,
+      -4,
+      6
+    ],
+    "light_watts": 1300,
+    "light_size_m": 5,
+    "target_m": [
+      0,
+      -0.05,
+      1.3
+    ],
+    "ortho_scale_m": 4.5
+  },
+  "regions": [
+    {
+      "id": "C0018",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LooseItemInventory-v001\\item-selections.npz",
+      "selection_key": "C0018",
+      "color": [
+        1.0,
+        0.19999999999999996,
+        0.19999999999999996
+      ]
+    },
+    {
+      "id": "C0026",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LooseItemInventory-v001\\item-selections.npz",
+      "selection_key": "C0026",
+      "color": [
+        1.0,
+        0.408695652173913,
+        0.19999999999999996
+      ]
+    },
+    {
+      "id": "C0054",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LooseItemInventory-v001\\item-selections.npz",
+      "selection_key": "C0054",
+      "color": [
+        1.0,
+        0.6173913043478261,
+        0.19999999999999996
+      ]
+    },
+    {
+      "id": "C0059",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LooseItemInventory-v001\\item-selections.npz",
+      "selection_key": "C0059",
+      "color": [
+        1.0,
+        0.826086956521739,
+        0.19999999999999996
+      ]
+    },
+    {
+      "id": "C0074",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LooseItemInventory-v001\\item-selections.npz",
+      "selection_key": "C0074",
+      "color": [
+        0.9652173913043478,
+        1.0,
+        0.19999999999999996
+      ]
+    },
+    {
+      "id": "C0086",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LooseItemInventory-v001\\item-selections.npz",
+      "selection_key": "C0086",
+      "color": [
+        0.7565217391304347,
+        1.0,
+        0.19999999999999996
+      ]
+    },
+    {
+      "id": "C0102",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LooseItemInventory-v001\\item-selections.npz",
+      "selection_key": "C0102",
+      "color": [
+        0.5478260869565219,
+        1.0,
+        0.19999999999999996
+      ]
+    },
+    {
+      "id": "C0118",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LooseItemInventory-v001\\item-selections.npz",
+      "selection_key": "C0118",
+      "color": [
+        0.3391304347826085,
+        1.0,
+        0.19999999999999996
+      ]
+    },
+    {
+      "id": "C0132",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LooseItemInventory-v001\\item-selections.npz",
+      "selection_key": "C0132",
+      "color": [
+        0.19999999999999996,
+        1.0,
+        0.26956521739130423
+      ]
+    },
+    {
+      "id": "C0133",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LooseItemInventory-v001\\item-selections.npz",
+      "selection_key": "C0133",
+      "color": [
+        0.19999999999999996,
+        1.0,
+        0.4782608695652175
+      ]
+    },
+    {
+      "id": "C0150",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LooseItemInventory-v001\\item-selections.npz",
+      "selection_key": "C0150",
+      "color": [
+        0.19999999999999996,
+        1.0,
+        0.6869565217391305
+      ]
+    },
+    {
+      "id": "C0161",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LooseItemInventory-v001\\item-selections.npz",
+      "selection_key": "C0161",
+      "color": [
+        0.19999999999999996,
+        1.0,
+        0.8956521739130437
+      ]
+    },
+    {
+      "id": "C0158",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LooseItemInventory-v001\\item-selections.npz",
+      "selection_key": "C0158",
+      "color": [
+        0.19999999999999996,
+        0.8956521739130437,
+        1.0
+      ]
+    },
+    {
+      "id": "C0178",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LooseItemInventory-v001\\item-selections.npz",
+      "selection_key": "C0178",
+      "color": [
+        0.19999999999999996,
+        0.6869565217391305,
+        1.0
+      ]
+    },
+    {
+      "id": "C0163",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LooseItemInventory-v001\\item-selections.npz",
+      "selection_key": "C0163",
+      "color": [
+        0.19999999999999996,
+        0.4782608695652172,
+        1.0
+      ]
+    },
+    {
+      "id": "C0165",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LooseItemInventory-v001\\item-selections.npz",
+      "selection_key": "C0165",
+      "color": [
+        0.19999999999999996,
+        0.26956521739130423,
+        1.0
+      ]
+    },
+    {
+      "id": "C0180",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LooseItemInventory-v001\\item-selections.npz",
+      "selection_key": "C0180",
+      "color": [
+        0.3391304347826085,
+        0.19999999999999996,
+        1.0
+      ]
+    },
+    {
+      "id": "C0182",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LooseItemInventory-v001\\item-selections.npz",
+      "selection_key": "C0182",
+      "color": [
+        0.5478260869565219,
+        0.19999999999999996,
+        1.0
+      ]
+    },
+    {
+      "id": "C0188",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LooseItemInventory-v001\\item-selections.npz",
+      "selection_key": "C0188",
+      "color": [
+        0.7565217391304351,
+        0.19999999999999996,
+        1.0
+      ]
+    },
+    {
+      "id": "C0192",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LooseItemInventory-v001\\item-selections.npz",
+      "selection_key": "C0192",
+      "color": [
+        0.9652173913043477,
+        0.19999999999999996,
+        1.0
+      ]
+    },
+    {
+      "id": "C0214",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LooseItemInventory-v001\\item-selections.npz",
+      "selection_key": "C0214",
+      "color": [
+        1.0,
+        0.19999999999999996,
+        0.826086956521739
+      ]
+    },
+    {
+      "id": "C0216",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LooseItemInventory-v001\\item-selections.npz",
+      "selection_key": "C0216",
+      "color": [
+        1.0,
+        0.19999999999999996,
+        0.6173913043478265
+      ]
+    },
+    {
+      "id": "C0210",
+      "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LooseItemInventory-v001\\item-selections.npz",
+      "selection_key": "C0210",
+      "color": [
+        1.0,
+        0.19999999999999996,
+        0.40869565217391257
+      ]
+    }
+  ],
+  "landmarks": [],
+  "views": [
+    {
+      "id": "C0018-context",
+      "position_m": [
+        4.1619981825351715,
+        -0.483812153339386,
+        1.6107979774475099
+      ],
+      "target_m": [
+        0.1619981825351715,
+        0.516187846660614,
+        1.0107979774475098
+      ],
+      "ortho_scale_m": 0.3802950382232666
+    },
+    {
+      "id": "C0018-isolated",
+      "position_m": [
+        4.1619981825351715,
+        -0.483812153339386,
+        1.6107979774475099
+      ],
+      "target_m": [
+        0.1619981825351715,
+        0.516187846660614,
+        1.0107979774475098
+      ],
+      "ortho_scale_m": 0.3802950382232666,
+      "isolate_regions": [
+        "C0018"
+      ]
+    },
+    {
+      "id": "C0026-context",
+      "position_m": [
+        4.268982380628586,
+        -0.15393823385238647,
+        0.9342626094818115
+      ],
+      "target_m": [
+        0.2689823806285858,
+        0.8460617661476135,
+        0.3342626094818115
+      ],
+      "ortho_scale_m": 0.9646643400192261
+    },
+    {
+      "id": "C0026-isolated",
+      "position_m": [
+        4.268982380628586,
+        -0.15393823385238647,
+        0.9342626094818115
+      ],
+      "target_m": [
+        0.2689823806285858,
+        0.8460617661476135,
+        0.3342626094818115
+      ],
+      "ortho_scale_m": 0.9646643400192261,
+      "isolate_regions": [
+        "C0026"
+      ]
+    },
+    {
+      "id": "C0054-context",
+      "position_m": [
+        -4.391091406345367,
+        -1.4976149499416351,
+        1.6922293663024903
+      ],
+      "target_m": [
+        -0.39109140634536743,
+        -0.49761494994163513,
+        1.0922293663024902
+      ],
+      "ortho_scale_m": 0.592704176902771
+    },
+    {
+      "id": "C0054-isolated",
+      "position_m": [
+        -4.391091406345367,
+        -1.4976149499416351,
+        1.6922293663024903
+      ],
+      "target_m": [
+        -0.39109140634536743,
+        -0.49761494994163513,
+        1.0922293663024902
+      ],
+      "ortho_scale_m": 0.592704176902771,
+      "isolate_regions": [
+        "C0054"
+      ]
+    }
+  ],
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryOnlyCombinedFull-v001\\Voidreign-ActualSurfacePilot.blend": "c507e31813fea5ea61e30f7cbf8bae37609135b549238b64ad1e61a1e42111ee",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz": "0d7599c8064cb81a6e211a23731435e08939b7fb146ce2d4bed810273909a2b2",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryOnlyCombinedFullRetention-v001\\validation.json": "fcd05cbae371af89b71bd0b9ab427bf74a48b3667abc0c454fee46e3947ea840",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LooseItemInventory-v001\\item-selections.npz": "fcd4db77cdd50ccae21e0f134e845c8bf64c3243285bcc565788f6fda33d665d"
+  }
+}

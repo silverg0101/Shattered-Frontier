@@ -1,0 +1,330 @@
+{
+  "schema_version": 1,
+  "scope": "Diagnostic single-variable ablation of frozen third bake; no rig or source acceptance",
+  "permissions": "Offline asset author. Edit a new pinned revision within declared code bounds; never adjust live gameplay through this profile.",
+  "effective_time": "This new trajectory experiment only; current model and stage budgets unchanged",
+  "units": "metres, seconds, kilograms not modelled; declared accelerations m/s2, damping 1/s",
+  "settings": {
+    "fps": 30,
+    "frame_count": 330,
+    "substeps": 8,
+    "constraint_iterations": 20,
+    "pinned_nodes": 2,
+    "warmup_min_seconds": 3.0,
+    "warmup_max_seconds": 8.0,
+    "settle_rms_speed_m_s": 0.02,
+    "settle_peak_speed_m_s": 0.08,
+    "gravity_m_s2": 9.81,
+    "drag_per_second": 5.0,
+    "style_spring_per_second_squared": 30.0,
+    "bend_stiffness": 0.6,
+    "collision_radius_m": 0.02,
+    "ground_height_m": 0.0,
+    "wind_acceleration_m_s2": 0.4,
+    "walk_distance_m": 0.44,
+    "run_distance_m": 1.3,
+    "turn_forward_distance_m": 0.35,
+    "turn_side_distance_m": 0.7,
+    "turn_angle_degrees": -60.0,
+    "walk_bob_m": 0.02,
+    "run_bob_m": 0.04,
+    "hand_sweep_distance_m": 0.6,
+    "maximum_segment_relative_error": 0.08,
+    "maximum_initial_step_m": 0.02
+  },
+  "colliders": [
+    {
+      "label": "Horse body",
+      "space": "body",
+      "start_m": [
+        0,
+        -0.35,
+        1.36
+      ],
+      "end_m": [
+        0,
+        0.62,
+        1.36
+      ],
+      "radius_m": 0.34
+    },
+    {
+      "label": "Horse neck",
+      "space": "body",
+      "start_m": [
+        0,
+        -0.78,
+        1.52
+      ],
+      "end_m": [
+        0,
+        -1.05,
+        2.03
+      ],
+      "radius_m": 0.22
+    },
+    {
+      "label": "Rider torso",
+      "space": "body",
+      "start_m": [
+        0,
+        0.03,
+        1.96
+      ],
+      "end_m": [
+        0,
+        -0.02,
+        2.43
+      ],
+      "radius_m": 0.16
+    },
+    {
+      "label": "Rider head",
+      "space": "body",
+      "start_m": [
+        0,
+        -0.04,
+        2.67
+      ],
+      "end_m": [
+        0,
+        -0.04,
+        2.73
+      ],
+      "radius_m": 0.115
+    },
+    {
+      "label": "Rider thigh near",
+      "space": "body",
+      "start_m": [
+        0.1,
+        0.08,
+        1.92
+      ],
+      "end_m": [
+        0.35,
+        -0.25,
+        1.55
+      ],
+      "radius_m": 0.105
+    },
+    {
+      "label": "Rider shin near",
+      "space": "body",
+      "start_m": [
+        0.35,
+        -0.25,
+        1.55
+      ],
+      "end_m": [
+        0.37,
+        -0.1,
+        1.03
+      ],
+      "radius_m": 0.075
+    },
+    {
+      "label": "Rider thigh far",
+      "space": "body",
+      "start_m": [
+        -0.1,
+        0.08,
+        1.92
+      ],
+      "end_m": [
+        -0.35,
+        -0.25,
+        1.55
+      ],
+      "radius_m": 0.105
+    },
+    {
+      "label": "Rider shin far",
+      "space": "body",
+      "start_m": [
+        -0.35,
+        -0.25,
+        1.55
+      ],
+      "end_m": [
+        -0.37,
+        -0.1,
+        1.03
+      ],
+      "radius_m": 0.075
+    },
+    {
+      "label": "Rider upper arm",
+      "space": "body",
+      "start_m": [
+        0.18,
+        -0.02,
+        2.37
+      ],
+      "end_m": [
+        0.38,
+        -0.33,
+        2.14
+      ],
+      "radius_m": 0.065
+    },
+    {
+      "label": "Rider forearm",
+      "space": "body",
+      "start_m": [
+        0.38,
+        -0.33,
+        2.14
+      ],
+      "end_m": [
+        0.46,
+        -0.65,
+        1.94
+      ],
+      "radius_m": 0.06
+    },
+    {
+      "label": "Rider arm far",
+      "space": "body",
+      "start_m": [
+        -0.18,
+        -0.02,
+        2.37
+      ],
+      "end_m": [
+        -0.32,
+        -0.48,
+        2.05
+      ],
+      "radius_m": 0.065
+    },
+    {
+      "label": "Rider hand probe",
+      "space": "hand",
+      "start_m": [
+        0.7,
+        -0.66,
+        2.15
+      ],
+      "end_m": [
+        0.7,
+        -0.82,
+        2.04
+      ],
+      "radius_m": 0.085
+    },
+    {
+      "label": "Environment post",
+      "space": "world",
+      "start_m": [
+        2.1,
+        -1.25,
+        0.12
+      ],
+      "end_m": [
+        2.1,
+        -1.25,
+        1.4
+      ],
+      "radius_m": 0.12
+    }
+  ],
+  "skin": {
+    "maximum_bone_influences": 4,
+    "guide_blend_softness_m": 0.015,
+    "protected_weight_bounds_m": [
+      {
+        "name": "Breast collar/root stability check",
+        "bounds": [
+          [
+            -0.45,
+            0.45
+          ],
+          [
+            -0.9,
+            -0.55
+          ],
+          [
+            1.65,
+            1.9
+          ]
+        ]
+      },
+      {
+        "name": "Neck interior is not a free hair strand",
+        "bounds": [
+          [
+            -0.1,
+            0.1
+          ],
+          [
+            -1.12,
+            -0.7
+          ],
+          [
+            1.7,
+            2.24
+          ]
+        ]
+      },
+      {
+        "name": "Rump anatomy is not free tail",
+        "bounds": [
+          [
+            -0.3,
+            0.3
+          ],
+          [
+            0.55,
+            0.98
+          ],
+          [
+            1.15,
+            1.7
+          ]
+        ]
+      },
+      {
+        "name": "Saddle seat core is not loose mane",
+        "bounds": [
+          [
+            -0.18,
+            0.18
+          ],
+          [
+            -0.2,
+            0.4
+          ],
+          [
+            1.6,
+            2.03
+          ]
+        ]
+      }
+    ],
+    "attachment_root_blend_m": 0.04
+  },
+  "pinned_nodes_by_feature": {
+    "Mane": 2,
+    "Tail": 3
+  },
+  "required_contact_labels": [
+    "Rider hand probe",
+    "Environment post",
+    "Ground"
+  ],
+  "surface_envelopes_m": {
+    "Rider torso": 0.07,
+    "Rider head": 0.07,
+    "Rider thigh near": 0.07,
+    "Rider shin near": 0.07,
+    "Rider thigh far": 0.07,
+    "Rider shin far": 0.07,
+    "Rider upper arm": 0.07,
+    "Rider forearm": 0.07,
+    "Rider arm far": 0.07,
+    "Rider hand probe": 0.07,
+    "Environment post": 0.12,
+    "Ground": 0.085
+  }
+}

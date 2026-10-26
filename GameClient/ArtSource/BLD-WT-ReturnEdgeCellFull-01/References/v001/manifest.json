@@ -1,0 +1,46 @@
+{
+  "asset_id": "BLD-WT-ReturnEdgeCellFull-01",
+  "version": "v001",
+  "batch": "construction-worked-timber-ends-32",
+  "status": "image-complete; proposal; ready-for-model-test",
+  "source_references": [
+    "docs/art-templates/player-construction-kit-contract.md \u2014 \u00a73.2 and \u00a78\u20139",
+    "docs/art-templates/asset-lists/construction-kit-matrix-07.md \u2014 worked-timber full-cell component matrix"
+  ],
+  "dependency": "KIT-WT face/top/underside appearance; source gameplay-tier properties; 0.5 m full-cell envelope and contact planes",
+  "exact_prompts": {
+    "concept_sheet": "Construction design concept sheet: one 0.5 m cubic worked-timber wall cell, front face meets a short return across one vertical corner, all surfaces flush within the exact cube envelope. Show three-quarter cube plus two orthographic face views; the plank cladding wraps the edge cleanly with a simple interlocking board return, no trim extending beyond cell. Solid weathered oak, pale neutral background, no labels/text, no extra parts, no masonry. Image-concept proposal only; dimensions inherited from cell.",
+    "asset_view": "Isolated single cubic wall cell, made of horizontal worked-timber planks. Clearly show an L-shaped corner return: the front planks visibly wrap 90 degrees onto the right side, with a sharp vertical seam at the corner; both faces meet flush, no corner post or protruding trim. Top and two faces visible, exact cubic silhouette, pale gray studio backdrop, no text."
+  },
+  "images": [
+    {
+      "file": "concept-sheet.png",
+      "width_px": 1536,
+      "height_px": 1024,
+      "mode": "RGB",
+      "format": "PNG",
+      "sha256": "ea1c8804d929462cbc91eec86443a33d1669f48adaaa1157803859d15a6cc55f"
+    },
+    {
+      "file": "asset-view.png",
+      "width_px": 1254,
+      "height_px": 1254,
+      "mode": "RGB",
+      "format": "PNG",
+      "sha256": "f3da9c356a98faffbb5216dde33f0c1c8e5cf2966b778a7a3dab416039d7d025"
+    }
+  ],
+  "visual_review": "Concept and clean views show matching front/right plank faces meeting at a flush corner. Return treatment is subtle and not independently separable from base face; retain this distinction as a proposal for model review.",
+  "compatibility": "Image review does not establish numerical mesh, collision, contact, clearance or runtime compatibility. This is an appearance-only skin; gameplay material-tier properties remain unchanged.",
+  "generation_history": [
+    {
+      "source": "exec-dc10f12a-eb81-48bc-8a5c-1d71e8406947.png",
+      "selected": true
+    },
+    {
+      "source": "exec-df65353a-1965-4b9d-a8ee-a815b3987350.png",
+      "selected": true
+    }
+  ],
+  "created_utc": "2026-10-18"
+}

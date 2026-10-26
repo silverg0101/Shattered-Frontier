@@ -1,0 +1,181 @@
+{
+  "schema_version": 1,
+  "status": "anatomy-proposal-needs-review",
+  "cpu_only": true,
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\WalkPilot-v003\\Mount-WalkPilot.blend": "f59dc38bff697b6c2a2c84511413d2e292d9fdbb278acc69cd8df6d26a5bd123",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\WalkRetention-v003\\validation.json": "0630516734df3c1bb11f95ae92056e353dda46c4f4328c4574e32a2e1a451e49",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz": "0d7599c8064cb81a6e211a23731435e08939b7fb146ce2d4bed810273909a2b2",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz": "83e4f07cf16fa21e1e5277950201af199f2928faa0d4fc004e03d00a6602b686"
+  },
+  "tool_sha256": "a4d1e4b5f319bd55ce220ef386d5ccdd08f13349911342b3ca6e11c4aff2572f",
+  "profile_sha256": "be30519945999de800cc6df057adbc99ed5f95fc3cdf22deaae2a04daeb228bf",
+  "vertices": 284762,
+  "triangles": 297119,
+  "regions": [
+    {
+      "id": "whole-hair",
+      "vertices": 124666,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "mixed-hair",
+      "vertices": 3935,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-a23f50cee6c9",
+      "vertices": 809,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-13398d8f6fa9",
+      "vertices": 486,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-c5f686eb393a",
+      "vertices": 193,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-6c0faadfb656",
+      "vertices": 242,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-9461782d30e7",
+      "vertices": 123,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-c95bf113bd82",
+      "vertices": 126,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-fa0932e06fbb",
+      "vertices": 106,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-16aa3f8d2318",
+      "vertices": 80,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-d0197039a013",
+      "vertices": 82,
+      "status": "geometric-proposal-needs-anatomical-review"
+    }
+  ],
+  "views": [
+    {
+      "id": "Mane-posX",
+      "image": "Mane-posX.png",
+      "isolate_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "Mane-negX",
+      "image": "Mane-negX.png",
+      "isolate_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "Tail-posX",
+      "image": "Tail-posX.png",
+      "isolate_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "Tail-negX",
+      "image": "Tail-negX.png",
+      "isolate_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-a23f50cee6c9-isolation",
+      "image": "SMB-0d7599c806-a23f50cee6c9-isolation.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-a23f50cee6c9"
+      ],
+      "source_face_count": 578
+    },
+    {
+      "id": "SMB-0d7599c806-13398d8f6fa9-isolation",
+      "image": "SMB-0d7599c806-13398d8f6fa9-isolation.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-13398d8f6fa9"
+      ],
+      "source_face_count": 344
+    },
+    {
+      "id": "SMB-0d7599c806-c5f686eb393a-isolation",
+      "image": "SMB-0d7599c806-c5f686eb393a-isolation.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-c5f686eb393a"
+      ],
+      "source_face_count": 155
+    },
+    {
+      "id": "SMB-0d7599c806-6c0faadfb656-isolation",
+      "image": "SMB-0d7599c806-6c0faadfb656-isolation.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-6c0faadfb656"
+      ],
+      "source_face_count": 172
+    },
+    {
+      "id": "SMB-0d7599c806-9461782d30e7-isolation",
+      "image": "SMB-0d7599c806-9461782d30e7-isolation.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-9461782d30e7"
+      ],
+      "source_face_count": 87
+    },
+    {
+      "id": "SMB-0d7599c806-c95bf113bd82-isolation",
+      "image": "SMB-0d7599c806-c95bf113bd82-isolation.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-c95bf113bd82"
+      ],
+      "source_face_count": 91
+    },
+    {
+      "id": "SMB-0d7599c806-fa0932e06fbb-isolation",
+      "image": "SMB-0d7599c806-fa0932e06fbb-isolation.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-fa0932e06fbb"
+      ],
+      "source_face_count": 74
+    },
+    {
+      "id": "SMB-0d7599c806-16aa3f8d2318-isolation",
+      "image": "SMB-0d7599c806-16aa3f8d2318-isolation.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-16aa3f8d2318"
+      ],
+      "source_face_count": 58
+    },
+    {
+      "id": "SMB-0d7599c806-d0197039a013-isolation",
+      "image": "SMB-0d7599c806-d0197039a013-isolation.png",
+      "isolate_regions": [
+        "SMB-0d7599c806-d0197039a013"
+      ],
+      "source_face_count": 61
+    }
+  ],
+  "coordinate_convention": {
+    "up": "+Z",
+    "forward": "-Y (head/horn)",
+    "side_names": "Geometric +X/-X until reviewed"
+  },
+  "landmarks": [],
+  "limitations": [
+    "Exact indexed rest diagnostic only; source rig/materials are not copied into this proposal.",
+    "Box domains can include hanging tack or miss curved anatomy; not skin weights or semantic approval.",
+    "Landmarks are authored proposals, not inferred joint centers or accepted stance."
+  ]
+}

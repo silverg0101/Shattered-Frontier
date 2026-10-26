@@ -1,0 +1,76 @@
+{
+  "status": "diagnosis-only",
+  "guide": "Tail_G00",
+  "node": 11,
+  "rows": [
+    {
+      "frame": 207,
+      "world_point_m": [
+        2.022515296936035,
+        -1.492006540298462,
+        0.17352138459682465
+      ],
+      "post_surface_gap_m": 0.13410833271685896,
+      "ground_height_m": 0.17352138459682465,
+      "world_step_m": 0.12614132463932037
+    },
+    {
+      "frame": 208,
+      "world_point_m": [
+        2.1378772258758545,
+        -1.5402705669403076,
+        0.15501031279563904
+      ],
+      "post_surface_gap_m": 0.17273142344459386,
+      "ground_height_m": 0.15501031279563904,
+      "world_step_m": 0.12641380727291107
+    },
+    {
+      "frame": 209,
+      "world_point_m": [
+        2.274752378463745,
+        -1.5747718811035156,
+        0.10987542569637299
+      ],
+      "post_surface_gap_m": 0.24894129009787141,
+      "ground_height_m": 0.10987542569637299,
+      "world_step_m": 0.14819684624671936
+    },
+    {
+      "frame": 210,
+      "world_point_m": [
+        2.4241111278533936,
+        -1.6077585220336914,
+        0.08500000089406967
+      ],
+      "post_surface_gap_m": 0.3640084536695048,
+      "ground_height_m": 0.08500000089406967,
+      "world_step_m": 0.1549675464630127
+    },
+    {
+      "frame": 211,
+      "world_point_m": [
+        2.5718061923980713,
+        -1.6397607326507568,
+        0.08769132941961288
+      ],
+      "post_surface_gap_m": 0.49282816685943254,
+      "ground_height_m": 0.08769132941961288,
+      "world_step_m": 0.15114633738994598
+    },
+    {
+      "frame": 212,
+      "world_point_m": [
+        2.6834816932678223,
+        -1.687393307685852,
+        0.09881746023893356
+      ],
+      "post_surface_gap_m": 0.609528952117587,
+      "ground_height_m": 0.09881746023893356,
+      "world_step_m": 0.12191829830408096
+    }
+  ],
+  "post_particle_envelope_m": 0.12,
+  "ground_particle_envelope_m": 0.085,
+  "note": "Contact-window evidence for reviewed solver redesign; no new bake or inferred acceptance."
+}

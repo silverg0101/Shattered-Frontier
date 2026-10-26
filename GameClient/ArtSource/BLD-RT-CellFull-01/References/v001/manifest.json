@@ -1,0 +1,75 @@
+{
+  "assetId": "BLD-RT-CellFull-01",
+  "version": "v001",
+  "category": "building construction component / material appearance study",
+  "brief": "Appearance-only rough-timber treatment for proposed cell-full geometry; not a complete architectural kit.",
+  "created": "2026-10-18",
+  "sourceReferences": [
+    "docs/art-templates/player-construction-kit-contract.md — canonical reference frame; cell-full; separate shape/material/skin identity",
+    "docs/Game-Design/Legends_Shattered_Frontier_Construction_System_Architecture_v0.1.md — §§3.1–3.2, 8–9",
+    "GameClient/ArtSource/BLD-GreenlandsWallPanel-01/References/v001/asset-view.png — style cue only in rejected first iteration; not geometry"
+  ],
+  "definition": {
+    "geometryRef": "cell-full/v1 (proposal; not accepted runtime mask)",
+    "envelopeMeters": [0.5, 0.5, 0.5],
+    "solid": "full normalized cube, u/v/w each in [0,1]",
+    "axes": "construction-local X length, Y depth, Z up",
+    "pivot": "minimum grid corner of envelope",
+    "boundaryContacts": ["-X", "+X", "-Y", "+Y", "-Z", "+Z"],
+    "orientation": "grid-aligned; authored 90-degree rotations/mirrors only",
+    "materialKit": "KIT-RT",
+    "structuralMaterialProfile": "Rough timber (Construction Architecture §3.2); unchanged by this appearance study",
+    "cosmeticSkin": "rough-sawn warm brown timber grain",
+    "functionalDefinition": "none"
+  },
+  "generation": {
+    "tool": "built-in image_gen",
+    "date": "2026-10-18",
+    "model": "unavailable",
+    "seed": "unavailable",
+    "promptRecord": "prompt.txt",
+    "selectedPromptIteration": 2,
+    "selectedConceptInput": "none; no image input",
+    "cleanViewInput": "concept-sheet.png"
+  },
+  "images": [
+    {
+      "path": "concept-sheet.png",
+      "sha256": "D54A866F4A79F5F3E5C452697917D54E12067DD18546312ABFDA2AE8021B99E6",
+      "width": 1536,
+      "height": 1024,
+      "pixelFormat": "RGB 24-bit",
+      "alpha": false,
+      "review": "Six labeled face views plus neutral wireframe target. Faces remain broadly square; slight edge softness and orientation/material variation are visible. Useful visual surface reference only; target dimensions are not measured from pixels."
+    },
+    {
+      "path": "asset-view.png",
+      "sha256": "C4193EB158E2C5F919312AFC638DC0778259314502A248B9CDBEDCA995AE533F",
+      "width": 1312,
+      "height": 1199,
+      "pixelFormat": "RGB 24-bit",
+      "alpha": false,
+      "review": "One complete solid cube with all silhouette edges in frame, readable warm timber grain and neutral opaque backdrop. Subtle bevel-like edge softness and plank-like texture seams remain appearance ambiguities; no numerical fit claimed."
+    }
+  ],
+  "rejectedIterations": [
+    {
+      "imagePath": "C:/Users/grego/.codex/generated_images/01a15000-e13f-7213-9ec0-df2684201405/exec-5a888cff-b969-4141-a14f-c90aee0565b5.png",
+      "sha256": "C10010B584CD20A739D6B95E619C86F379C719E9FCA2052CB6AFF4FED28C101E",
+      "reason": "Framed rectangular panel silhouette did not match cell-full geometry."
+    }
+  ],
+  "review": {
+    "reviewedBy": "Codex",
+    "conceptStatus": "proposed",
+    "cleanViewStatus": "ready-for-model-test",
+    "geometryAcceptance": "not established",
+    "numericalMeshFit": "not established",
+    "runtimeCollisionSupportClearance": "not established",
+    "actionableFindings": [
+      "Concept sheet has face-to-face grain differences and its wireframe target is a useful cue but not a measured technical drawing.",
+      "Clean view has slight soft edges and plank-like surface seams; resolve only if future geometry/material authoring requires a cleaner monolithic surface. Do not let these cues alter occupancy or the rough-timber gameplay profile."
+    ]
+  },
+  "componentBoundary": "One solid cell-full reference component appearance. Does not fulfill separate kit roles for inside/outside faces, corners, returns, caps, joints, openings, roofs, curves, or cross-kit interfaces."
+}

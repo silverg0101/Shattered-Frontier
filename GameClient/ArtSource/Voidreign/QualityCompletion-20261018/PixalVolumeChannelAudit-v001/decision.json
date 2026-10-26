@@ -1,0 +1,38 @@
+{
+  "status": "raw-generated-PBR-data-degenerate-no-channel-swap-evidence",
+  "volume_sha256": "b8931bd8e6a5ea6bd81b3b82ab9dcb66846dd3c9527e65a2be12663f1135236f",
+  "historical_bake_volume_matches": true,
+  "rebaker_sha256": "5f65031e8906ddb2fbe256bcff6786d6d18aef2b39d380f9570d26b00b455c0f",
+  "rebaker_matches_historical_manifest": true,
+  "layout": {
+    "base_color": {
+      "start": 0,
+      "stop": 3,
+      "step": null
+    },
+    "metallic": {
+      "start": 3,
+      "stop": 4,
+      "step": null
+    },
+    "roughness": {
+      "start": 4,
+      "stop": 5,
+      "step": null
+    },
+    "alpha": {
+      "start": 5,
+      "stop": 6,
+      "step": null
+    }
+  },
+  "observations": [
+    "Rawattrs2745908x6 already haveMetallicchannel3mean0.999711/std0.001583 andRoughnesschannel4mean0.843855/std0.001787.",
+    "Alpha is separatechannel5 and varies; savedlayout/installedpipeline/recordedrebaker agree on channel3Metallic,4Roughness,5Alpha.",
+    "Historical rebaker packsRGB=[0,roughness,metallic] and its exact toolhash is unchanged. No evidence here justifies swapping channels or treating alpha as metal.",
+    "This local consistency check does not prove the intended training/checkpoint semantics or per-surface PBR identity. No claim of upstream training cause.",
+    "More texels or blind reruns do not create missing semantic variation; require reviewed class response or a separately reviewed painting pass."
+  ],
+  "gpu_context_initialized": false,
+  "permissions": "Read-only CPU cache/source audit; no inference, bake, source or environment change."
+}

@@ -1,0 +1,162 @@
+{
+  "schema_version": 1,
+  "input_sha256": {
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/DegenerateInspection-v001/00-component-selections.npz": "0d7599c8064cb81a6e211a23731435e08939b7fb146ce2d4bed810273909a2b2",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HindLeftAnkleLayout-v001/joint-band-selections.npz": "073b8b12463939f3b55b4ef8f8cf43bc4044f8efb1745b13f48feb9a609e0a14"
+  },
+  "joint_m": [
+    0.448,
+    0.812,
+    0.2
+  ],
+  "rule": "added band vertices with rest Z below authored hind.L joint; components over edges among them only",
+  "below_joint_vertices": 647,
+  "components": 94,
+  "largest": [
+    {
+      "id": 23,
+      "vertices": 40,
+      "z_min_m": 0.15115857124328613,
+      "z_max_m": 0.19987738132476807,
+      "centroid_minus_joint_m": [
+        -0.0627,
+        -0.1117,
+        -0.024
+      ],
+      "shares_face_with_core": false
+    },
+    {
+      "id": 17,
+      "vertices": 29,
+      "z_min_m": 0.14430451393127441,
+      "z_max_m": 0.1816779375076294,
+      "centroid_minus_joint_m": [
+        -0.0491,
+        -0.1325,
+        -0.0324
+      ],
+      "shares_face_with_core": false
+    },
+    {
+      "id": 62,
+      "vertices": 22,
+      "z_min_m": 0.11843454837799072,
+      "z_max_m": 0.1967219114303589,
+      "centroid_minus_joint_m": [
+        -0.0679,
+        0.118,
+        -0.0374
+      ],
+      "shares_face_with_core": false
+    },
+    {
+      "id": 73,
+      "vertices": 22,
+      "z_min_m": 0.14366793632507324,
+      "z_max_m": 0.18879663944244385,
+      "centroid_minus_joint_m": [
+        0.1173,
+        -0.0643,
+        -0.0377
+      ],
+      "shares_face_with_core": false
+    },
+    {
+      "id": 64,
+      "vertices": 21,
+      "z_min_m": 0.14844214916229248,
+      "z_max_m": 0.19997107982635498,
+      "centroid_minus_joint_m": [
+        0.1113,
+        -0.0378,
+        -0.025
+      ],
+      "shares_face_with_core": false
+    },
+    {
+      "id": 4,
+      "vertices": 20,
+      "z_min_m": 0.14991068840026855,
+      "z_max_m": 0.19896292686462402,
+      "centroid_minus_joint_m": [
+        0.0089,
+        -0.1074,
+        -0.0249
+      ],
+      "shares_face_with_core": true
+    },
+    {
+      "id": 12,
+      "vertices": 20,
+      "z_min_m": 0.15119993686676025,
+      "z_max_m": 0.1965101957321167,
+      "centroid_minus_joint_m": [
+        0.0875,
+        -0.1083,
+        -0.0209
+      ],
+      "shares_face_with_core": true
+    },
+    {
+      "id": 30,
+      "vertices": 20,
+      "z_min_m": 0.162087082862854,
+      "z_max_m": 0.19856417179107666,
+      "centroid_minus_joint_m": [
+        0.0049,
+        -0.1448,
+        -0.0184
+      ],
+      "shares_face_with_core": false
+    },
+    {
+      "id": 86,
+      "vertices": 20,
+      "z_min_m": 0.11843454837799072,
+      "z_max_m": 0.18831098079681396,
+      "centroid_minus_joint_m": [
+        -0.0691,
+        0.1052,
+        -0.0488
+      ],
+      "shares_face_with_core": false
+    },
+    {
+      "id": 88,
+      "vertices": 19,
+      "z_min_m": 0.12099695205688477,
+      "z_max_m": 0.19982290267944336,
+      "centroid_minus_joint_m": [
+        -0.0739,
+        0.1042,
+        -0.0218
+      ],
+      "shares_face_with_core": false
+    },
+    {
+      "id": 43,
+      "vertices": 18,
+      "z_min_m": 0.1762925386428833,
+      "z_max_m": 0.1995154619216919,
+      "centroid_minus_joint_m": [
+        0.0633,
+        0.0356,
+        -0.0107
+      ],
+      "shares_face_with_core": false
+    },
+    {
+      "id": 27,
+      "vertices": 16,
+      "z_min_m": 0.16664254665374756,
+      "z_max_m": 0.1897062063217163,
+      "centroid_minus_joint_m": [
+        -0.093,
+        -0.052,
+        -0.024
+      ],
+      "shares_face_with_core": false
+    }
+  ],
+  "note": "Forward is -Y. Inventory only; ownership (skin/feather/shell) is not inferred."
+}

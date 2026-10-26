@@ -1,0 +1,30 @@
+{
+  "asset_id": "PROP-GreenlandsCraftStation-01",
+  "category": "crafting prop / workbench",
+  "brief": "Proposed compact communal craft/refinement station with timber bench, integrated hooks and attached stone-lined brazier; exact recipes and station mechanics are unspecified.",
+  "design_sources": [
+    { "path": "docs/Game-Design/Legends_Shattered_Frontier_Vertical_Slice_Specification_v1.0.md", "section": "Content inventory", "role": "requires a craft station to explain recipe inputs and output" },
+    { "path": "docs/Game-Design/Crafting/Legends_Shattered_Frontier_Crafting_Recipes_Workshops_and_Learning_v1.0.md", "section": "3.1 Stations", "role": "source context for station category" },
+    { "path": "docs/Game-Design/concept-art/Concept.png", "role": "optional style reference" }
+  ],
+  "concept_status": "agent-selected; visual proposal, user approval not claimed",
+  "clean_view_status": "ready-for-model-test; opaque background, segmentation required if later adapter requires alpha",
+  "design_master": "concept-sheet.png",
+  "prompts": "prompt.txt (clean-view correction history retained)",
+  "generation": { "tool": "built-in image_gen", "model": "unavailable", "generated_date": "2026-10-18", "seed": "unavailable" },
+  "outputs": {
+    "concept-sheet.png": { "sha256": "D6F5593470A4A258F26B55606B2292E17222B713B5CEA7BABD3E637022A0E52E", "dimensions_px": [1536, 1024], "color": "RGB, opaque; PNG color type 2", "master": true },
+    "asset-view.png": { "sha256": "E5A81FAD5119FC3C435DECC06BB299067F530AAB911FAF84AC693BE17B791FC6", "dimensions_px": [1536, 1024], "color": "RGB, opaque; PNG color type 2", "master": false }
+  },
+  "component_boundaries": ["One workbench and its attached brazier", "Excludes tools, recipe UI, outputs, fuel, station effects and surrounding room"],
+  "scale": "Approximate scale inferred; no dimensions established by the design source.",
+  "edits": "No pixel edits or upscaling. First two clean views introduced unwanted ore/rock fill and mismatched support mass; third prompt corrected to the sheet's timber legs and open shelf.",
+  "review": {
+    "reviewer": "Codex visual inspection",
+    "findings": ["Concept sheet consistently shows a timber workbench with open lower shelf and ring-shaped brazier attached at one end.", "Final clean view has one complete station, matching wooden legs/shelf and stone brazier ring; no ore chunks, loose props or people.", "Even neutral lighting and full margins; background opaque neutral gray."],
+    "unresolved": ["No heat/fire state, station tier, recipe set, dimensions or exact materials beyond proposed visual choices are defined."],
+    "image_complete": true,
+    "approval": "agent-selected; not user-approved",
+    "review_date": "2026-10-18"
+  }
+}

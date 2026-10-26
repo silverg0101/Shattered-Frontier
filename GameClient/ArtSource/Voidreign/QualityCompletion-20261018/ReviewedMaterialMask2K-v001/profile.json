@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "resolution": 2048,
+  "permissions": "CPU class-ID rasterization only. No PBR map, shader, source edit or attempt-counter reset.",
+  "effective_time": "Frozen exact source UV/face approvals at4096 only",
+  "uv_report": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/SourceUVTopology-v001/uv-report.json",
+  "uv_topology": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/SourceUVTopology-v001/uv-topology.npz",
+  "approval_report": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReviewedDielectricFaces-v002/approval.json",
+  "approved_faces": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReviewedDielectricFaces-v002/approved-response-faces.npz",
+  "input_sha256": {
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/SourceUVTopology-v001/uv-report.json": "f84f5fb66327985f43c6d0db8f5a1fc3db9bdbc9ca8fc5ec361c7855e4435d85",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/SourceUVTopology-v001/uv-topology.npz": "7d6b6296ff351ca9c6608eb5dba7098738e35f8ede072a1a63eeea462357ba94",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReviewedDielectricFaces-v002/approval.json": "dde063c737db5f3a8adb01cf7d11e41fead322a7832a26d87463d4dfd4a18ba6",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReviewedDielectricFaces-v002/approved-response-faces.npz": "d99eb3ce6daeb1bfcfacfa7f75f48f9a1c1240387d6e262239655e39e065d118"
+  }
+}

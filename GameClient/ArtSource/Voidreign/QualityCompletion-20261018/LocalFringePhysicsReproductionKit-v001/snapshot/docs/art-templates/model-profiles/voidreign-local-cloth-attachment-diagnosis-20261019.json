@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "source": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LocalFringeClothProof-v001\\Actual-FringeSecondary.blend",
+  "producer_report": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LocalFringeClothProof-v001\\cloth-report.json",
+  "capture_points": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LegFringePrimaryFollowReview-v001\\source-indexed-world-points.npz",
+  "semantic_selection": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LegFringeLabelCorrection-v001\\label-only-selections.npz",
+  "region_roots": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\FullLegFringeRoots-v001\\region-roots.npz",
+  "held_frame": 30,
+  "fps": 30,
+  "required_clearance_m": 0.003,
+  "permissions": "Read-only necessary pin/contact feasibility and topology, no rebake or threshold changes.",
+  "effective_time": "Frozen local proof cache and held source baseline only",
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LocalFringeClothProof-v001\\Actual-FringeSecondary.blend": "3a8e8409d04cf1a0f4604db40ea422843700cd11345dc8075b1cf02ca6180db8",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LocalFringeClothProof-v001\\cloth-report.json": "4a1b89133af88e829ed38fe3a31df4ce76a4f7fb89c5a1a015847eb018ac0bd8",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LegFringePrimaryFollowReview-v001\\source-indexed-world-points.npz": "80f129671e2d351cb39e33076007d5a0e6486561f78f7165908be63808f54365",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\LegFringeLabelCorrection-v001\\label-only-selections.npz": "dc78ba7dbd5a03bef0f0397a26435ec6bcf31b079c340aff5d035a2b1566a630",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\FullLegFringeRoots-v001\\region-roots.npz": "6c87dc69d6bbcf1ea76f7ca12e4f860940f328782c4a374a0a33278008bdf682"
+  }
+}

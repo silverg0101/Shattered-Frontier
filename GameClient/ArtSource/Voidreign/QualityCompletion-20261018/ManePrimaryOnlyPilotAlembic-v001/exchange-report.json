@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "status": "passed-indexed-animated-cache-reimport-only",
+  "cpu_only": true,
+  "frames": 30,
+  "vertices": 284762,
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManePrimaryOnlyPilot-v001\\Voidreign-ActualSurfacePilot.blend": "07664a162bf13f891b463be0aaa196d92da307e0333870578db7a164e05d1e6c",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManePrimaryOnlyPilot-v001\\Settled-feature-motion.mdd": "07f73cb8be5b9fdfbaaa4a99dc04db29d4543a848b6aa78543ced40121793578"
+  },
+  "tool_sha256": "d7856961d1acd80654c13564dc473ffaeba5acb0ca64fa61c3c180362a318d46",
+  "exchange_sha256": "62f38de4e90146e4620cc89532cf8769765c158b029cc04aad5a49352fd5a3d1",
+  "reimport_sha256": "95d920f24faf823705cd13e402ba316f4e8546917fb3efc7b747f3173c3f18be",
+  "maximum_error_m": 4.2981520209650625e-07,
+  "limit_m": 1e-05,
+  "per_frame_error_m": [
+    4.2981520209650625e-07,
+    4.2981520209650625e-07,
+    4.2981520209650625e-07,
+    4.053554221172817e-07,
+    4.053554221172817e-07,
+    4.053554221172817e-07,
+    4.2981520209650625e-07,
+    4.2981520209650625e-07,
+    4.2981520209650625e-07,
+    4.053554221172817e-07,
+    4.053554221172817e-07,
+    4.053554221172817e-07,
+    4.2981520209650625e-07,
+    4.2981520209650625e-07,
+    4.053554221172817e-07,
+    4.053554221172817e-07,
+    4.053554221172817e-07,
+    4.053554221172817e-07,
+    4.053554221172817e-07,
+    4.053554221172817e-07,
+    4.2981520209650625e-07,
+    4.2981520209650625e-07,
+    4.2981520209650625e-07,
+    4.053554221172817e-07,
+    4.053554221172817e-07,
+    4.053554221172817e-07,
+    4.053554221172817e-07,
+    4.2981520209650625e-07,
+    4.2981520209650625e-07,
+    4.053554221172817e-07
+  ],
+  "limitations": [
+    "Offline geometry-cache exchange, not a skeletal runtime or engine acceptance.",
+    "Indexed world positions only; UV/normals/material appearance require separate checks.",
+    "PBR material networks/textures are retained by the original source, not this diagnostic reimport."
+  ]
+}

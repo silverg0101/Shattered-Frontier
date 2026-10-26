@@ -1,0 +1,358 @@
+{
+  "schema_version": 1,
+  "status": "reviewed-authoring-selection-no-material-edit",
+  "approval_scope": "offline-material-authoring-only",
+  "reviewer": "authoring-agent",
+  "profile_sha256": "e868710c759cb89ba1d4466803725cb053d494fdb671580ec79fb3124609ff21",
+  "tool_sha256": "311bb3239c61d171a301b8bb009590735c023ccb7b7fc14322a0aba5072a8821",
+  "input_sha256": {
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkPilot-v003/Mount-WalkPilot.blend": "f59dc38bff697b6c2a2c84511413d2e292d9fdbb278acc69cd8df6d26a5bd123",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryReview-v003/review.json": "51dc1ade6e2a141eae5959c150f30e0c08fab72e5d8d419e08f4f787f8671afb",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryInventory-v001/inventory.json": "58b088afa7327b457401a22ff822365c09b7f40d35482157b4d420bb5494e506",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HairMaterialBoundaryInventory-v001/boundary-selections.npz": "83e4f07cf16fa21e1e5277950201af199f2928faa0d4fc004e03d00a6602b686",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/DegenerateInspection-v001/00-component-selections.npz": "0d7599c8064cb81a6e211a23731435e08939b7fb146ce2d4bed810273909a2b2",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkRetention-v003/validation.json": "0630516734df3c1bb11f95ae92056e353dda46c4f4328c4574e32a2e1a451e49",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReviewedDielectricFaces-v002/approval.json": "dde063c737db5f3a8adb01cf7d11e41fead322a7832a26d87463d4dfd4a18ba6"
+  },
+  "response": {
+    "metallic": 0,
+    "unit": "unit interval",
+    "type": "number",
+    "minimum": 0,
+    "maximum": 0,
+    "scope": "Declared strands, bone and explicitly reviewed organic common-response interfaces only; no roughness/semantic-motion assignment."
+  },
+  "items": [
+    {
+      "id": "SMB-0d7599c806-fa0932e06fbb",
+      "material_class": "strand_dielectric",
+      "faces": 74,
+      "basis": "Author-reviewed narrow free strand/fringe surface in paired context/isolation. Approve common nonmetal response only; this does not assign a motion owner or per-channel detail."
+    },
+    {
+      "id": "SMB-0d7599c806-d0197039a013",
+      "material_class": "strand_dielectric",
+      "faces": 61,
+      "basis": "Author-reviewed narrow free strand/fringe surface in paired context/isolation. Approve common nonmetal response only; this does not assign a motion owner or per-channel detail."
+    },
+    {
+      "id": "SMB-0d7599c806-3bf28272db22",
+      "material_class": "strand_dielectric",
+      "faces": 44,
+      "basis": "Author-reviewed narrow free strand/fringe surface in paired context/isolation. Approve common nonmetal response only; this does not assign a motion owner or per-channel detail."
+    },
+    {
+      "id": "SMB-0d7599c806-fcef00460074",
+      "material_class": "strand_dielectric",
+      "faces": 35,
+      "basis": "Author-reviewed narrow free strand/fringe surface in paired context/isolation. Approve common nonmetal response only; this does not assign a motion owner or per-channel detail."
+    },
+    {
+      "id": "SMB-0d7599c806-0ded486c5b5e",
+      "material_class": "strand_dielectric",
+      "faces": 84,
+      "basis": "Author-reviewed narrow free strand/fringe surface in paired context/isolation. Approve common nonmetal response only; this does not assign a motion owner or per-channel detail."
+    },
+    {
+      "id": "SMB-0d7599c806-d4c63dedbd5e",
+      "material_class": "bone_dielectric",
+      "faces": 33,
+      "basis": "Author-reviewed skull ornament geometry and pale/brown bone surface in paired contexts and full-resolution isolated albedo; colors retain painted lighting. ApproveMetallic0 only, no hardware assumption."
+    },
+    {
+      "id": "SMB-0d7599c806-bc5c85d932c0",
+      "material_class": "strand_dielectric",
+      "faces": 32,
+      "basis": "Author-reviewed narrow free strand/fringe surface in paired context/isolation. Approve common nonmetal response only; this does not assign a motion owner or per-channel detail."
+    },
+    {
+      "id": "SMB-0d7599c806-8575242048e6",
+      "material_class": "strand_dielectric",
+      "faces": 23,
+      "basis": "Author-reviewed narrow free strand/fringe surface in paired context/isolation. Approve common nonmetal response only; this does not assign a motion owner or per-channel detail."
+    },
+    {
+      "id": "SMB-0d7599c806-03ddf3586241",
+      "material_class": "strand_dielectric",
+      "faces": 20,
+      "basis": "Author-reviewed narrow free strand/fringe surface in paired context/isolation. Approve common nonmetal response only; this does not assign a motion owner or per-channel detail."
+    },
+    {
+      "id": "SMB-0d7599c806-b246d0d8fc50",
+      "material_class": "strand_dielectric",
+      "faces": 24,
+      "basis": "Author-reviewed narrow free strand/fringe surface in paired context/isolation. Approve common nonmetal response only; this does not assign a motion owner or per-channel detail."
+    },
+    {
+      "id": "SMB-0d7599c806-214908334f85",
+      "material_class": "strand_dielectric",
+      "faces": 20,
+      "basis": "Author-reviewed narrow free strand/fringe surface in paired context/isolation. Approve common nonmetal response only; this does not assign a motion owner or per-channel detail."
+    },
+    {
+      "id": "SMB-0d7599c806-45e5a199970f",
+      "material_class": "strand_dielectric",
+      "faces": 23,
+      "basis": "Author-reviewed narrow free strand/fringe surface in paired context/isolation. Approve common nonmetal response only; this does not assign a motion owner or per-channel detail."
+    },
+    {
+      "id": "SMB-0d7599c806-496a7c339b64",
+      "material_class": "strand_dielectric",
+      "faces": 19,
+      "basis": "Author-reviewed narrow free strand/fringe surface in paired context/isolation. Approve common nonmetal response only; this does not assign a motion owner or per-channel detail."
+    },
+    {
+      "id": "SMB-0d7599c806-76a5b531d804",
+      "material_class": "strand_dielectric",
+      "faces": 23,
+      "basis": "Author-reviewed narrow free strand/fringe surface in paired context/isolation. Approve common nonmetal response only; this does not assign a motion owner or per-channel detail."
+    },
+    {
+      "id": "SMB-0d7599c806-142b88f3f5fe",
+      "material_class": "strand_dielectric",
+      "faces": 27,
+      "basis": "Author-reviewed narrow free strand/fringe surface in paired context/isolation. Approve common nonmetal response only; this does not assign a motion owner or per-channel detail."
+    },
+    {
+      "id": "SMB-0d7599c806-e985ed9d2776",
+      "material_class": "strand_dielectric",
+      "faces": 18,
+      "basis": "Author-reviewed narrow free strand/fringe surface in paired context/isolation. Approve common nonmetal response only; this does not assign a motion owner or per-channel detail."
+    },
+    {
+      "id": "SMB-0d7599c806-f2693581ad0a",
+      "material_class": "strand_dielectric",
+      "faces": 16,
+      "basis": "Author-reviewed narrow free strand/fringe surface in paired context/isolation. Approve common nonmetal response only; this does not assign a motion owner or per-channel detail."
+    },
+    {
+      "id": "SMB-0d7599c806-6a2d8e04a727",
+      "material_class": "strand_dielectric",
+      "faces": 17,
+      "basis": "Author-reviewed narrow free strand/fringe surface in paired context/isolation. Approve common nonmetal response only; this does not assign a motion owner or per-channel detail."
+    },
+    {
+      "id": "SMB-0d7599c806-4afd6188749c",
+      "material_class": "strand_dielectric",
+      "faces": 31,
+      "basis": "Author-reviewed narrow free strand/fringe surface in paired context/isolation. Approve common nonmetal response only; this does not assign a motion owner or per-channel detail."
+    },
+    {
+      "id": "SMB-0d7599c806-4e2fc507de64",
+      "material_class": "bone_dielectric",
+      "faces": 20,
+      "basis": "Author-reviewed skull ornament geometry and pale/brown bone surface in paired contexts and full-resolution isolated albedo; colors retain painted lighting. ApproveMetallic0 only, no hardware assumption."
+    },
+    {
+      "id": "SMB-0d7599c806-0b3644d3cead",
+      "material_class": "strand_dielectric",
+      "faces": 19,
+      "basis": "Author-reviewed narrow free strand/fringe surface in paired context/isolation. Approve common nonmetal response only; this does not assign a motion owner or per-channel detail."
+    },
+    {
+      "id": "SMB-0d7599c806-24c47ae608df",
+      "material_class": "strand_dielectric",
+      "faces": 18,
+      "basis": "Author-reviewed narrow free strand/fringe surface in paired context/isolation. Approve common nonmetal response only; this does not assign a motion owner or per-channel detail."
+    },
+    {
+      "id": "SMB-0d7599c806-a21db8bf045e",
+      "material_class": "strand_dielectric",
+      "faces": 13,
+      "basis": "Author-reviewed narrow free strand/fringe surface in paired context/isolation. Approve common nonmetal response only; this does not assign a motion owner or per-channel detail."
+    },
+    {
+      "id": "SMB-0d7599c806-79496374c95e",
+      "material_class": "strand_dielectric",
+      "faces": 16,
+      "basis": "Author-reviewed narrow free strand/fringe surface in paired context/isolation. Approve common nonmetal response only; this does not assign a motion owner or per-channel detail."
+    },
+    {
+      "id": "SMB-0d7599c806-36e9f96b0629",
+      "material_class": "strand_dielectric",
+      "faces": 14,
+      "basis": "Author-reviewed narrow free strand/fringe surface in paired context/isolation. Approve common nonmetal response only; this does not assign a motion owner or per-channel detail."
+    },
+    {
+      "id": "SMB-0d7599c806-13afd9fd68f7",
+      "material_class": "strand_dielectric",
+      "faces": 15,
+      "basis": "Author-reviewed narrow free strand/fringe surface in paired context/isolation. Approve common nonmetal response only; this does not assign a motion owner or per-channel detail."
+    },
+    {
+      "id": "SMB-0d7599c806-5c255a663a65",
+      "material_class": "strand_dielectric",
+      "faces": 16,
+      "basis": "Author-reviewed narrow free strand/fringe surface in paired context/isolation. Approve common nonmetal response only; this does not assign a motion owner or per-channel detail."
+    },
+    {
+      "id": "SMB-0d7599c806-faf086e6bbf3",
+      "material_class": "strand_dielectric",
+      "faces": 14,
+      "basis": "Author-reviewed narrow free strand/fringe surface in paired context/isolation. Approve common nonmetal response only; this does not assign a motion owner or per-channel detail."
+    },
+    {
+      "id": "SMB-0d7599c806-c1177585d450",
+      "material_class": "strand_dielectric",
+      "faces": 26,
+      "basis": "Author-reviewed narrow free strand/fringe surface in paired context/isolation. Approve common nonmetal response only; this does not assign a motion owner or per-channel detail."
+    },
+    {
+      "id": "SMB-0d7599c806-da33066a6671",
+      "material_class": "strand_dielectric",
+      "faces": 15,
+      "basis": "Author-reviewed narrow free strand/fringe surface in paired context/isolation. Approve common nonmetal response only; this does not assign a motion owner or per-channel detail."
+    },
+    {
+      "id": "SMB-0d7599c806-13e30963711d",
+      "material_class": "strand_dielectric",
+      "faces": 10,
+      "basis": "Author-reviewed narrow free strand/fringe surface in paired context/isolation. Approve common nonmetal response only; this does not assign a motion owner or per-channel detail."
+    },
+    {
+      "id": "SMB-0d7599c806-19f81beb369c",
+      "material_class": "strand_dielectric",
+      "faces": 15,
+      "basis": "Author-reviewed narrow free strand/fringe surface in paired context/isolation. Approve common nonmetal response only; this does not assign a motion owner or per-channel detail."
+    },
+    {
+      "id": "SMB-0d7599c806-707b87545777",
+      "material_class": "strand_dielectric",
+      "faces": 10,
+      "basis": "Author-reviewed narrow free strand/fringe surface in paired context/isolation. Approve common nonmetal response only; this does not assign a motion owner or per-channel detail."
+    },
+    {
+      "id": "SMB-0d7599c806-1e8b223aad41",
+      "material_class": "strand_dielectric",
+      "faces": 12,
+      "basis": "Author-reviewed narrow free strand/fringe surface in paired context/isolation. Approve common nonmetal response only; this does not assign a motion owner or per-channel detail."
+    },
+    {
+      "id": "SMB-0d7599c806-f8c8ec568f04",
+      "material_class": "strand_dielectric",
+      "faces": 7,
+      "basis": "Author-reviewed narrow free strand/fringe surface in paired context/isolation. Approve common nonmetal response only; this does not assign a motion owner or per-channel detail."
+    },
+    {
+      "id": "SMB-0d7599c806-cb72c66025e3",
+      "material_class": "strand_dielectric",
+      "faces": 11,
+      "basis": "Author-reviewed narrow free strand/fringe surface in paired context/isolation. Approve common nonmetal response only; this does not assign a motion owner or per-channel detail."
+    },
+    {
+      "id": "SMB-0d7599c806-029db0fbd244",
+      "material_class": "strand_dielectric",
+      "faces": 10,
+      "basis": "Author-reviewed narrow free strand/fringe surface in paired context/isolation. Approve common nonmetal response only; this does not assign a motion owner or per-channel detail."
+    },
+    {
+      "id": "SMB-0d7599c806-c218565b2652",
+      "material_class": "strand_dielectric",
+      "faces": 12,
+      "basis": "Author-reviewed narrow free strand/fringe surface in paired context/isolation. Approve common nonmetal response only; this does not assign a motion owner or per-channel detail."
+    },
+    {
+      "id": "SMB-0d7599c806-9e8e9c14557b",
+      "material_class": "strand_dielectric",
+      "faces": 11,
+      "basis": "Author-reviewed narrow free strand/fringe surface in paired context/isolation. Approve common nonmetal response only; this does not assign a motion owner or per-channel detail."
+    },
+    {
+      "id": "SMB-0d7599c806-1d1b12900d1a",
+      "material_class": "strand_dielectric",
+      "faces": 5,
+      "basis": "Author-reviewed narrow free strand/fringe surface in paired context/isolation. Approve common nonmetal response only; this does not assign a motion owner or per-channel detail."
+    },
+    {
+      "id": "SMB-0d7599c806-1b91b1cf823d",
+      "material_class": "strand_dielectric",
+      "faces": 7,
+      "basis": "Author-reviewed narrow free strand/fringe surface in paired context/isolation. Approve common nonmetal response only; this does not assign a motion owner or per-channel detail."
+    },
+    {
+      "id": "SMB-0d7599c806-602d3f911217",
+      "material_class": "strand_dielectric",
+      "faces": 5,
+      "basis": "Author-reviewed narrow free strand/fringe surface in paired context/isolation. Approve common nonmetal response only; this does not assign a motion owner or per-channel detail."
+    },
+    {
+      "id": "SMB-0d7599c806-a990b4f2ab88",
+      "material_class": "bone_dielectric",
+      "faces": 5,
+      "basis": "Author-reviewed skull ornament geometry and pale/brown bone surface in paired contexts and full-resolution isolated albedo; colors retain painted lighting. ApproveMetallic0 only, no hardware assumption."
+    },
+    {
+      "id": "SMB-0d7599c806-411bed5eb70e",
+      "material_class": "strand_dielectric",
+      "faces": 5,
+      "basis": "Author-reviewed narrow free strand/fringe surface in paired context/isolation. Approve common nonmetal response only; this does not assign a motion owner or per-channel detail."
+    },
+    {
+      "id": "SMB-0d7599c806-c9ecd5507ca0",
+      "material_class": "bone_dielectric",
+      "faces": 5,
+      "basis": "Author-reviewed skull ornament geometry and pale/brown bone surface in paired contexts and full-resolution isolated albedo; colors retain painted lighting. ApproveMetallic0 only, no hardware assumption."
+    },
+    {
+      "id": "SMB-0d7599c806-007f90f080bd",
+      "material_class": "strand_dielectric",
+      "faces": 4,
+      "basis": "Author-reviewed narrow free strand/fringe surface in paired context/isolation. Approve common nonmetal response only; this does not assign a motion owner or per-channel detail."
+    },
+    {
+      "id": "SMB-0d7599c806-7d9f8b9ff8a2",
+      "material_class": "strand_dielectric",
+      "faces": 5,
+      "basis": "Author-reviewed narrow free strand/fringe surface in paired context/isolation. Approve common nonmetal response only; this does not assign a motion owner or per-channel detail."
+    },
+    {
+      "id": "SMB-0d7599c806-2ce453b2e50e",
+      "material_class": "strand_dielectric",
+      "faces": 3,
+      "basis": "Author-reviewed narrow free strand/fringe surface in paired context/isolation. Approve common nonmetal response only; this does not assign a motion owner or per-channel detail."
+    },
+    {
+      "id": "SMB-0d7599c806-1e925dd6eb59",
+      "material_class": "strand_dielectric",
+      "faces": 3,
+      "basis": "Author-reviewed narrow free strand/fringe surface in paired context/isolation. Approve common nonmetal response only; this does not assign a motion owner or per-channel detail."
+    },
+    {
+      "id": "SMB-0d7599c806-67a2125f483c",
+      "material_class": "organic_dielectric",
+      "faces": 40,
+      "basis": "Both side context and exact overlays locate the narrow patch within the ear rim/interior, with no hardware. Ivory rim and brown tissue share Metallic0; fine bone/tissue identity and roughness remain unresolved."
+    },
+    {
+      "id": "SMB-0d7599c806-2516a986745a",
+      "material_class": "organic_dielectric",
+      "faces": 34,
+      "basis": "Isolated ivory/brown ear fragment and both ear closeups support common organic nonmetal response; source bounds lie inside the reviewed ear area. Some context faces occluded; no claim of precise tissue class or motion ownership."
+    },
+    {
+      "id": "SMB-0d7599c806-6c0faadfb656",
+      "material_class": "organic_dielectric",
+      "faces": 172,
+      "basis": "Both overlays place this strip on the rear rump/tail root and descending strand, not the scalp suggested by the earlier candidate name. Entire reviewed patch is organic body/strand surface; common nonmetal response only, no root weights or hair/body roughness assignment."
+    },
+    {
+      "id": "SMB-0d7599c806-5f9296f0a8b7",
+      "material_class": "strand_dielectric",
+      "faces": 14,
+      "basis": "Both overlays isolate the pointed dark hair tip above the cheek ornament; it is separate from the adjacent gold/bone-colored connector. Common nonmetal response only."
+    }
+  ],
+  "approved_faces": 1215,
+  "unresolved_mixed_faces": 1498,
+  "class_faces": {
+    "strand_dielectric": 906,
+    "bone_dielectric": 63,
+    "organic_dielectric": 246
+  },
+  "limitations": [
+    "Explicit author judgement; evidence/hash/subset checks do not infer or prove material identity.",
+    "Organic dielectric is a shared metallic-zero response; finer tissue/hair/bone identity, roughness and motion remain separate.",
+    "Selection only; no shader, image, geometry, UV, rig, motion label or attempt-counter edit.",
+    "No roughness, normal, emission, full material coverage or engine acceptance."
+  ]
+}

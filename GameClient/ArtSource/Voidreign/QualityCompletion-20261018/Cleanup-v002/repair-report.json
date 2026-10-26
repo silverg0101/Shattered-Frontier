@@ -1,0 +1,20 @@
+{
+  "status": "targeted geometry repair; reimport checks pending",
+  "source": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\ComponentReview-20261018\\Cleanup-v001\\Voidreign-HairPrototype.blend",
+  "source_sha256": "d2707a70df77c9a6829b99dd3b462a323844cf546ef96ee224b9e29fcda5a354",
+  "source_mesh_hash": "0eb7e75e610ef89d54b622c616bde01ee810d968ca9053c258e12557958ba009",
+  "component_ids": [
+    "0eb7e75e610e:C0080",
+    "0eb7e75e610e:C0109",
+    "0eb7e75e610e:C0091",
+    "0eb7e75e610e:C0156"
+  ],
+  "reason": "Reviewed loose fragments C0080/C0109/C0091/C0156 on mesh0eb7e75e610e: small floating arc/slivers/caps, no complete clump or distinctive silhouette role; author and independent four-view atlas review recommend removal. Preserve larger C0029/C0002/C0009/C0032/C0023 clumps for attachment reconstruction. Original source retained.",
+  "removed_vertices": 210,
+  "removed_triangles": 182,
+  "remaining_vertices": 284475,
+  "remaining_triangles": 296511,
+  "unselected_vertex_positions_unchanged": true,
+  "weight_sum_max_error": 9.059906005859375e-06,
+  "note": "Whole reviewed islands only; no welding, UV unwrap, texture edits or other component removal. Previous motion/export defects remain open."
+}

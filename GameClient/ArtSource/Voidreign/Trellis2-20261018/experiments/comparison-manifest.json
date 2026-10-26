@@ -1,0 +1,604 @@
+{
+  "status": "generated and export-validated; visual conclusions in README.md",
+  "specification": {
+    "reference": "GameClient/ArtSource/Voidreign/Trellis2-20261018/Voidreign-clean.png",
+    "baseline": "GameClient/ArtSource/Voidreign/Trellis2-20261018/1024",
+    "seed": 42,
+    "texture_size": 2048,
+    "cases": [
+      {
+        "name": "retained-detail",
+        "pipeline": "1024_cascade",
+        "steps": 12,
+        "decimation_target": 1000000,
+        "question": "Does retaining more mesh detail improve the exported result?"
+      },
+      {
+        "name": "more-steps",
+        "pipeline": "1024_cascade",
+        "steps": 24,
+        "decimation_target": 300000,
+        "question": "Does doubling sampling steps improve anatomy and reference fidelity?"
+      },
+      {
+        "name": "higher-resolution",
+        "pipeline": "1536_cascade",
+        "steps": 12,
+        "decimation_target": 300000,
+        "question": "Does higher geometry resolution improve the result at the same export budget?"
+      }
+    ],
+    "review": [
+      "silhouette and horn",
+      "four separate legs and hooves",
+      "skull and eyes",
+      "ribs and saddle",
+      "mane and tail",
+      "chains and ornaments",
+      "unseen side plausibility",
+      "elapsed time and failures"
+    ],
+    "note": "Single seed screening, not a statistical ranking. The token cap may reduce requested 1536 resolution; record the effective grid. Baseline used the same input, seed, default 12 steps and 2048 texture. Different model families require their own suitable sampling settings."
+  },
+  "runtime_lock": "../software-lock.json",
+  "baseline": "../1024",
+  "runs": {
+    "retained-detail": {
+      "generation": {
+        "status": "complete",
+        "pipeline": "1024_cascade",
+        "seed": 42,
+        "torch": "2.14.0+rocm10.1.0",
+        "hip": "7.16.26385",
+        "gpu": "AMD Radeon RX 7900 XTX",
+        "image": "/mnt/c/Projects/Shattered-Frontier/GameClient/ArtSource/Voidreign/Trellis2-20261018/Voidreign-clean.png",
+        "image_sha256": "d67522bf160e2dbfe763a5945e651b6b5c508f32676257dac80c98b26a42aca0",
+        "attention": "PyTorch SDPA; sparse varlen adapter",
+        "stages": {
+          "load_seconds": 44.946,
+          "inference_seconds": 185.963,
+          "export_seconds": 56.261
+        },
+        "texture_size": 2048,
+        "decimation_target": 1000000,
+        "sampler_steps": {
+          "sparse_structure": 12,
+          "shape": 12,
+          "texture": 12
+        },
+        "max_num_tokens": 49152,
+        "stage": "complete",
+        "raw_mesh": {
+          "vertices": 2379136,
+          "faces": 4863018
+        },
+        "voxel_size": 0.0009765625,
+        "effective_grid_resolution": 1024,
+        "peak_torch_memory_bytes": null,
+        "memory_note": "Peak GPU memory is not measured with the disabled caching allocator; native HIP allocations are also outside PyTorch accounting."
+      },
+      "review": {
+        "mesh_objects": 1,
+        "triangles": 939464,
+        "dimensions_m": [
+          0.9329403042793274,
+          4.123582363128662,
+          2.5999999046325684
+        ],
+        "yaw_degrees": 0,
+        "inferred_full_height_m": 2.6,
+        "materials": [
+          "Material_0"
+        ],
+        "uv_layers": [
+          1
+        ]
+      },
+      "validation": {
+        "blend": {
+          "meshes": 1,
+          "dimensions_m": [
+            0.9329403042793274,
+            4.123582363128662,
+            2.5999999046325684
+          ],
+          "triangles": 939464,
+          "materials": [
+            "Material_0"
+          ],
+          "image_sizes": [
+            [
+              2048,
+              2048
+            ],
+            [
+              2048,
+              2048
+            ]
+          ]
+        },
+        "checks": [
+          "Fresh process reopen and render"
+        ],
+        "exports": {
+          "glb": {
+            "meshes": 1,
+            "dimensions_m": [
+              0.9329403042793274,
+              4.123582363128662,
+              2.5999999046325684
+            ],
+            "triangles": 939464,
+            "materials": [
+              "Material_0"
+            ],
+            "image_sizes": [
+              [
+                2048,
+                2048
+              ],
+              [
+                2048,
+                2048
+              ]
+            ]
+          },
+          "fbx": {
+            "meshes": 1,
+            "dimensions_m": [
+              0.9329403042793274,
+              4.12358283996582,
+              2.6000004789002276
+            ],
+            "triangles": 939464,
+            "materials": [
+              "Material_0"
+            ],
+            "image_sizes": [
+              [
+                2048,
+                2048
+              ],
+              [
+                2048,
+                2048
+              ]
+            ]
+          }
+        }
+      }
+    },
+    "more-steps": {
+      "generation": {
+        "status": "complete",
+        "pipeline": "1024_cascade",
+        "seed": 42,
+        "torch": "2.14.0+rocm10.1.0",
+        "hip": "7.16.26385",
+        "gpu": "AMD Radeon RX 7900 XTX",
+        "image": "/mnt/c/Projects/Shattered-Frontier/GameClient/ArtSource/Voidreign/Trellis2-20261018/Voidreign-clean.png",
+        "image_sha256": "d67522bf160e2dbfe763a5945e651b6b5c508f32676257dac80c98b26a42aca0",
+        "attention": "PyTorch SDPA; sparse varlen adapter",
+        "stages": {
+          "load_seconds": 45.602,
+          "inference_seconds": 372.493,
+          "export_seconds": 19.416
+        },
+        "texture_size": 2048,
+        "decimation_target": 300000,
+        "sampler_steps": {
+          "sparse_structure": 24,
+          "shape": 24,
+          "texture": 24
+        },
+        "max_num_tokens": 49152,
+        "stage": "complete",
+        "raw_mesh": {
+          "vertices": 2318931,
+          "faces": 4706928
+        },
+        "voxel_size": 0.0009765625,
+        "effective_grid_resolution": 1024,
+        "peak_torch_memory_bytes": null,
+        "memory_note": "Peak GPU memory is not measured with the disabled caching allocator; native HIP allocations are also outside PyTorch accounting."
+      },
+      "review": {
+        "mesh_objects": 1,
+        "triangles": 291270,
+        "dimensions_m": [
+          0.9503428936004639,
+          4.074153900146484,
+          2.5999999046325684
+        ],
+        "yaw_degrees": 0,
+        "inferred_full_height_m": 2.6,
+        "materials": [
+          "Material_0"
+        ],
+        "uv_layers": [
+          1
+        ]
+      },
+      "validation": {
+        "blend": {
+          "meshes": 1,
+          "dimensions_m": [
+            0.9503428936004639,
+            4.074153900146484,
+            2.5999999046325684
+          ],
+          "triangles": 291270,
+          "materials": [
+            "Material_0"
+          ],
+          "image_sizes": [
+            [
+              2048,
+              2048
+            ],
+            [
+              2048,
+              2048
+            ]
+          ]
+        },
+        "checks": [
+          "Fresh process reopen and render"
+        ],
+        "exports": {
+          "glb": {
+            "meshes": 1,
+            "dimensions_m": [
+              0.9503428936004639,
+              4.074153900146484,
+              2.5999999046325684
+            ],
+            "triangles": 291270,
+            "materials": [
+              "Material_0"
+            ],
+            "image_sizes": [
+              [
+                2048,
+                2048
+              ],
+              [
+                2048,
+                2048
+              ]
+            ]
+          },
+          "fbx": {
+            "meshes": 1,
+            "dimensions_m": [
+              0.9503429234027863,
+              4.074154376983643,
+              2.6000005942657083
+            ],
+            "triangles": 291270,
+            "materials": [
+              "Material_0"
+            ],
+            "image_sizes": [
+              [
+                2048,
+                2048
+              ],
+              [
+                2048,
+                2048
+              ]
+            ]
+          }
+        }
+      }
+    },
+    "higher-resolution": {
+      "generation": {
+        "status": "complete",
+        "pipeline": "1536_cascade",
+        "seed": 42,
+        "torch": "2.14.0+rocm10.1.0",
+        "hip": "7.16.26385",
+        "gpu": "AMD Radeon RX 7900 XTX",
+        "image": "/mnt/c/Projects/Shattered-Frontier/GameClient/ArtSource/Voidreign/Trellis2-20261018/Voidreign-clean.png",
+        "image_sha256": "d67522bf160e2dbfe763a5945e651b6b5c508f32676257dac80c98b26a42aca0",
+        "attention": "PyTorch SDPA; sparse varlen adapter",
+        "stages": {
+          "load_seconds": 43.274,
+          "inference_seconds": 345.797,
+          "export_seconds": 32.703
+        },
+        "texture_size": 2048,
+        "decimation_target": 300000,
+        "sampler_steps": {
+          "sparse_structure": 12,
+          "shape": 12,
+          "texture": 12
+        },
+        "max_num_tokens": 49152,
+        "stage": "complete",
+        "raw_mesh": {
+          "vertices": 5068753,
+          "faces": 10018178
+        },
+        "voxel_size": 0.0006510416666666666,
+        "effective_grid_resolution": 1536,
+        "peak_torch_memory_bytes": null,
+        "memory_note": "Peak GPU memory is not measured with the disabled caching allocator; native HIP allocations are also outside PyTorch accounting."
+      },
+      "review": {
+        "mesh_objects": 1,
+        "triangles": 288632,
+        "dimensions_m": [
+          0.8950754404067993,
+          4.109023571014404,
+          2.6000001430511475
+        ],
+        "yaw_degrees": 0,
+        "inferred_full_height_m": 2.6,
+        "materials": [
+          "Material_0"
+        ],
+        "uv_layers": [
+          1
+        ]
+      },
+      "validation": {
+        "blend": {
+          "meshes": 1,
+          "dimensions_m": [
+            0.8950754404067993,
+            4.109023571014404,
+            2.6000001430511475
+          ],
+          "triangles": 288632,
+          "materials": [
+            "Material_0"
+          ],
+          "image_sizes": [
+            [
+              2048,
+              2048
+            ],
+            [
+              2048,
+              2048
+            ]
+          ]
+        },
+        "checks": [
+          "Fresh process reopen and render"
+        ],
+        "exports": {
+          "glb": {
+            "meshes": 1,
+            "dimensions_m": [
+              0.8950754404067993,
+              4.109023571014404,
+              2.6000001430511475
+            ],
+            "triangles": 288632,
+            "materials": [
+              "Material_0"
+            ],
+            "image_sizes": [
+              [
+                2048,
+                2048
+              ],
+              [
+                2048,
+                2048
+              ]
+            ]
+          },
+          "fbx": {
+            "meshes": 1,
+            "dimensions_m": [
+              0.8950754106044769,
+              4.1090240478515625,
+              2.6000007143670985
+            ],
+            "triangles": 288632,
+            "materials": [
+              "Material_0"
+            ],
+            "image_sizes": [
+              [
+                2048,
+                2048
+              ],
+              [
+                2048,
+                2048
+              ]
+            ]
+          }
+        }
+      }
+    }
+  },
+  "tools": {
+    "tools/trellis2/run_voidreign.py": "a747c6905b02acca3289222eef513b41865f3a190f685deef335352c7358264a",
+    "tools/trellis2/run_experiments.py": "cbb212f020deeaa459e955de73d79d9f6b60d55a2be5dcf16d45ecd6aae2d92d",
+    "tools/trellis2/sdpa_adapter.py": "3686a8f9ccd7352d289d6a26de067dfd861cd31286151245c9a5ec03a7deae83",
+    "tools/Review-GeneratedAsset.py": "655e5a87d37cb1fea2400628f21976810eb5e68efdd7ee465610f96aa92be23c",
+    "tools/Validate-GeneratedAsset.py": "c3f118a59205fcfa89f1ea2b290c7d9dd5a91ec76759d8d99dd3b155b54093f3",
+    "tools/Compare-GeneratedAssets.py": "5b62cd7b71a923eb455132439684f4c48eaacbc8efbc4e99fc7a6bbcdf64d160"
+  },
+  "outputs": {
+    "retained-detail/asset-review.json": {
+      "bytes": 277,
+      "sha256": "e5790a6f66483fe2b145573b5cdcdcb356f7245cadb1a0df15c4edec6f030ac6"
+    },
+    "retained-detail/run.json": {
+      "bytes": 1041,
+      "sha256": "124d14be169afa6f7bf05b98fafab1c8a69845f2dbcc43386e43941051937455"
+    },
+    "retained-detail/validation-report.json": {
+      "bytes": 1205,
+      "sha256": "57866bc08e0c86966315ab4a0c55cffbb54e18a454bdc773cb3e2ada069905dd"
+    },
+    "retained-detail/Voidreign.blend": {
+      "bytes": 56619887,
+      "sha256": "5f7aba167a0f92658291220ca3efefaaef18792fc770a9048d12d9c39ef6a046"
+    },
+    "retained-detail/Voidreign.fbx": {
+      "bytes": 49367644,
+      "sha256": "2dcd1e69db59c8ae52f7e6c7e74e5ce6f90a10c2f3f0f9260c33923f3a6eae13"
+    },
+    "retained-detail/Voidreign.generated.glb": {
+      "bytes": 48834264,
+      "sha256": "1498597e265d4cef28c752851b2a8ef07e3a79f64a4350ce3d9488bbfa5fda12"
+    },
+    "retained-detail/Voidreign.glb": {
+      "bytes": 48886252,
+      "sha256": "841a82c02b38b475bb3c44319a1c2498f10baebeac2a74c1a2707a6e3b81297e"
+    },
+    "retained-detail/Voidreign.raw.ply": {
+      "bytes": 91769089,
+      "sha256": "76c6f33b6d4940aadb670e97b7b9685b583b56903d021edeb801729a20c16ccb"
+    },
+    "retained-detail/previews/Beauty.png": {
+      "bytes": 1192504,
+      "sha256": "4a4fec7d1e561d0dc6319f93086afa00699a766f0c25ae0ab7c85b2ee4a05cdf"
+    },
+    "retained-detail/previews/Clay.png": {
+      "bytes": 1123840,
+      "sha256": "f52f59be9660eac14ca01ac612514ddcc16a535c3081f545f104901057da18d8"
+    },
+    "retained-detail/previews/FreshProcess.png": {
+      "bytes": 1192617,
+      "sha256": "898fdb0ae35a2491f1eb8ac6c17ae66315f96a495e6d75228c64817bea799ea8"
+    },
+    "retained-detail/previews/Front.png": {
+      "bytes": 1029870,
+      "sha256": "b81c1599df92c4ee01f888a498b17b708bad865e7642daeeb7f52f04de1d3e7b"
+    },
+    "retained-detail/previews/Rear.png": {
+      "bytes": 1026573,
+      "sha256": "3916bbcf4a4f9a82e4ec9aca270a0c34c865004d73fb0ba89274bb9ac596d103"
+    },
+    "retained-detail/previews/Side.png": {
+      "bytes": 1163420,
+      "sha256": "77e40e352c98b6dad85c0b25a6b2099259d0d9507f06c8a8497951890b3d1a5a"
+    },
+    "more-steps/asset-review.json": {
+      "bytes": 277,
+      "sha256": "1ffbfa5953250fa775bffdf7755d87b83b02ef2285be6f64597cc3beee536615"
+    },
+    "more-steps/run.json": {
+      "bytes": 1040,
+      "sha256": "aa101baf7bd6c754c43d3d9c600b2869215f289f2a494c6458c02939d35bd5b6"
+    },
+    "more-steps/validation-report.json": {
+      "bytes": 1206,
+      "sha256": "eba00fdb42700ba7139a89e0c3fa22b198d0f351f3a41b764e2d3d60e85d133b"
+    },
+    "more-steps/Voidreign.blend": {
+      "bytes": 26677880,
+      "sha256": "36457d9e6963a53b0fff9d5545e3360caf2577edb76201f5dad57b8803d5fbd3"
+    },
+    "more-steps/Voidreign.fbx": {
+      "bytes": 21663116,
+      "sha256": "d3a677698597903a4cb77ef12510f83b3ee1531db39cfa65d7c9fbb46bd68f21"
+    },
+    "more-steps/Voidreign.generated.glb": {
+      "bytes": 23184000,
+      "sha256": "3afc55a21de38a734859a7469f584e59ad22c372cd2353e05fbd54c31e914800"
+    },
+    "more-steps/Voidreign.glb": {
+      "bytes": 23198056,
+      "sha256": "3d0db797f2ed92726634697f5d38f74af33d942ffde94be57d2622a230e04a23"
+    },
+    "more-steps/Voidreign.raw.ply": {
+      "bytes": 89017459,
+      "sha256": "e9d62d05f161ec4891993836ef5bac2a4506ed79ff9f28b80df328b7d32782ab"
+    },
+    "more-steps/previews/Beauty.png": {
+      "bytes": 1203276,
+      "sha256": "9068a0d9a5dcf863a528217ed026a765f463563ec7ed56e8b313569b9e8c2c6f"
+    },
+    "more-steps/previews/Clay.png": {
+      "bytes": 1125366,
+      "sha256": "e31f0e37deb146a5869c839aefdf319fcceca2a69a3f755eb7a3b6315e6367ed"
+    },
+    "more-steps/previews/FreshProcess.png": {
+      "bytes": 1203384,
+      "sha256": "587c0549885ffcf1b3f28755af259e8cb8dc93977ec840b4682023a241067bc4"
+    },
+    "more-steps/previews/Front.png": {
+      "bytes": 1042258,
+      "sha256": "bdb97f3f6266b26b5162eca350aa63291e9a33dc95ba94db278e91e5a4d1d8ab"
+    },
+    "more-steps/previews/Rear.png": {
+      "bytes": 1043356,
+      "sha256": "656661f470df23b78c1ba3a9d4d5d68a8615dd3fb89d38a2a4d914e8345bb8cc"
+    },
+    "more-steps/previews/Side.png": {
+      "bytes": 1177374,
+      "sha256": "b44dc09c091de0d0031774e3c7f81f66555339d202b5ee6260711df2ba28b817"
+    },
+    "higher-resolution/asset-review.json": {
+      "bytes": 277,
+      "sha256": "37e94bd661db852b9645a395839ddddb56a1b82427b36f002e0390018ef81257"
+    },
+    "higher-resolution/run.json": {
+      "bytes": 1050,
+      "sha256": "1dc21db0b70c76554829cf2e1ad6f05908f1cb2fde05a50d6237862a22dc39af"
+    },
+    "higher-resolution/validation-report.json": {
+      "bytes": 1207,
+      "sha256": "ee09caec64c47c3e7179671d9b6b96289ec4cd9049fbe343c3de70dc4ce0f7f6"
+    },
+    "higher-resolution/Voidreign.blend": {
+      "bytes": 27837946,
+      "sha256": "91598242df9ba6fcdcb64bfaff66ca6b9235f28bad212f909d148fd399d7ab34"
+    },
+    "higher-resolution/Voidreign.fbx": {
+      "bytes": 22888508,
+      "sha256": "9b071dfb9bc749b9ddb8451ce58ccb3b0df1488a238fc6924b65befc07aa911d"
+    },
+    "higher-resolution/Voidreign.generated.glb": {
+      "bytes": 24492160,
+      "sha256": "43d541356fa760de40dea81cbfac88b09d702eea5b9a8b20dc1f7e7097dd76ab"
+    },
+    "higher-resolution/Voidreign.glb": {
+      "bytes": 24505364,
+      "sha256": "93d34767f3a44de5fa001f361525687f8fce10b812d50a269a5a99e60f44ad73"
+    },
+    "higher-resolution/Voidreign.raw.ply": {
+      "bytes": 191061574,
+      "sha256": "214ae99d3d06dc88e1e9cb697b3581497d5dbe8ac9c4a4011ee193e221d475e9"
+    },
+    "higher-resolution/previews/Beauty.png": {
+      "bytes": 1199975,
+      "sha256": "309ee023ccb1bcf2170a39ac70b5ef8693565517299f8b4f61cb90f9935a277e"
+    },
+    "higher-resolution/previews/Clay.png": {
+      "bytes": 1118682,
+      "sha256": "7b15c460805000d2b7ae0c2160b27ddaca74b2cc2132de79414ac64f5aa46e85"
+    },
+    "higher-resolution/previews/FreshProcess.png": {
+      "bytes": 1200090,
+      "sha256": "07f8cbb2f2eda689a579f787c2bd0e01d0a2b3c0474f72cddd9fa37657660c84"
+    },
+    "higher-resolution/previews/Front.png": {
+      "bytes": 1028557,
+      "sha256": "790b29116e75cf288029c7e2b8ccaed8862beb00b5e6abfd7d4f4c8882e5bf60"
+    },
+    "higher-resolution/previews/Rear.png": {
+      "bytes": 1027133,
+      "sha256": "e0a8c63f859b34f085190dda83379b7ff93a2db9b36bb33b79834adefb9cdb87"
+    },
+    "higher-resolution/previews/Side.png": {
+      "bytes": 1166113,
+      "sha256": "bbd8ce66d2366c67d51978d9c3804c2f62cbbf67734e9071cdadda8e0249995a"
+    },
+    "Comparison.blend": {
+      "bytes": 131037202,
+      "sha256": "e5610c04a72f77ece760a10afe6618afd5b935ff8e6f50801f55254b481dda9d"
+    }
+  }
+}

@@ -1,0 +1,11 @@
+00:01.860  blend            | Read blend: "C:\Projects\Shattered-Frontier\GameClient\ArtSource\ConstructionGeometryPilot-20261018\Model-v001\cell-full\SM_GEO01_cell_full_v001.blend"
+Blender 5.1.1 (hash b70da489d7f4 built 2026-04-14 01:37:22)
+
+Blender quit
+
+--- STDERR ---
+Traceback (most recent call last):
+  File "C:\Projects\Shattered-Frontier\GameClient\ArtSource\ConstructionGeometryPilot-20261018\Model-v011\BLD-WT-CellFull-Ornamented-01\build_material.py", line 17, in <module>
+    uu=v.y/.5; vv=(v.x+v.z)/(math.sqrt(2)*.5)
+                             ^^^^
+NameError: name 'math' is not defined. Did you mean: 'Path'? Or did you forget to import 'math'?

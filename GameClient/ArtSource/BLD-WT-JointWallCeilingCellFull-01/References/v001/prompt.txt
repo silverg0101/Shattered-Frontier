@@ -1,0 +1,5 @@
+Concept-sheet prompt (exact):
+Pure worked-timber ceiling-to-wall joint sheet, wood only. A solid horizontal timber ceiling slab sits flush against a solid vertical timber wall; all faces, top and underside are wood planks. Show room-side section and exterior corner. Absolutely no stone, plaster, metal, trim, openings, extra materials, text or labels. Preserve clear room space and existing contact plane.
+
+Clean asset-view prompt (exact):
+Isolated clean timber wall-to-ceiling corner component, wood-only flat plank panel joined at 90 degrees, one portion vertical and one portion horizontal. Show grain on outside and room-side underside; no building or surrounding walls, no supports, no text, neutral studio backdrop.

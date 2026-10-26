@@ -1,0 +1,2025 @@
+{
+  "schema_version": 1,
+  "status": "needs-review",
+  "source_sha256": "6c6044a533c16fc7fad23d42c0407dde37a0252aca84f9be1bc9b9a2367364f6",
+  "mesh_hash": "ba2d283db0be5e8cff4cc7549f1f51916cc0a4d18213773300976b11512ececa",
+  "selection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selection-report.json",
+  "selection_sha256": "63eb535dcafe1140c5445ce46bd402cc438af979c437fbb9d7430b723aa11a08",
+  "profile_path": "docs\\art-templates\\model-profiles\\voidreign-feature-binding-20261018.json",
+  "profile_sha256": "fb14bfc5c023c7957d911b154228c42faa86fa45f05cd419ef04fe31bdb04dd6",
+  "tool_sha256": "36767bbba1933be006874c1dc3dd80cb3ee658cbe908d0c551347973523da74e",
+  "maximum_proposed_gap_m": 0.025,
+  "groups": [
+    {
+      "feature": "Mane",
+      "components": 113,
+      "proposed_bindings": 89,
+      "unresolved_components": 0
+    },
+    {
+      "feature": "Tail",
+      "components": 53,
+      "proposed_bindings": 44,
+      "unresolved_components": 0
+    }
+  ],
+  "proposals": [
+    {
+      "id": "Mane:B000",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 46,
+      "parent_node": 102893,
+      "child_node": 103043,
+      "gap_m": 0.008246645354255918,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0080"
+      ],
+      "child_nodes": 29,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B001",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 66,
+      "parent_node": 114729,
+      "child_node": 114862,
+      "gap_m": 0.008429033286327733,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0042"
+      ],
+      "child_nodes": 61,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B002",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 6,
+      "parent_node": 78982,
+      "child_node": 78884,
+      "gap_m": 0.008553268951123386,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0103"
+      ],
+      "child_nodes": 19,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B003",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 88,
+      "parent_node": 131496,
+      "child_node": 131909,
+      "gap_m": 0.008626852415358597,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0092"
+      ],
+      "child_nodes": 25,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B004",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 36,
+      "parent_node": 101139,
+      "child_node": 101520,
+      "gap_m": 0.008722413753438378,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0019"
+      ],
+      "child_nodes": 98,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B005",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 54,
+      "parent_node": 106999,
+      "child_node": 107134,
+      "gap_m": 0.008777199214812651,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0043"
+      ],
+      "child_nodes": 55,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B006",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 16,
+      "parent_node": 85077,
+      "child_node": 84801,
+      "gap_m": 0.00878751269283124,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0023"
+      ],
+      "child_nodes": 84,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B007",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 13,
+      "parent_node": 81810,
+      "child_node": 82068,
+      "gap_m": 0.008793579089196861,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0078"
+      ],
+      "child_nodes": 29,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B008",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 76,
+      "parent_node": 119363,
+      "child_node": 119632,
+      "gap_m": 0.008811047486849058,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0119"
+      ],
+      "child_nodes": 15,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B009",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 4,
+      "parent_node": 77866,
+      "child_node": 78003,
+      "gap_m": 0.008828477421347711,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0107"
+      ],
+      "child_nodes": 18,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B010",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 73,
+      "parent_node": 119405,
+      "child_node": 119304,
+      "gap_m": 0.00890525034908197,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0058"
+      ],
+      "child_nodes": 49,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B011",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 1,
+      "parent_node": 87640,
+      "child_node": 87972,
+      "gap_m": 0.008958776653818256,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0007"
+      ],
+      "child_nodes": 189,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B012",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 15,
+      "parent_node": 83651,
+      "child_node": 83982,
+      "gap_m": 0.008962894093931946,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0110"
+      ],
+      "child_nodes": 15,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B013",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 41,
+      "parent_node": 102682,
+      "child_node": 102023,
+      "gap_m": 0.008991328532329368,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0079"
+      ],
+      "child_nodes": 29,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B014",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 21,
+      "parent_node": 86551,
+      "child_node": 86075,
+      "gap_m": 0.009003401736869645,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0056"
+      ],
+      "child_nodes": 47,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B015",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 7,
+      "parent_node": 82318,
+      "child_node": 81890,
+      "gap_m": 0.009012233463944298,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0081"
+      ],
+      "child_nodes": 31,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B016",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 80,
+      "parent_node": 124946,
+      "child_node": 124770,
+      "gap_m": 0.009037426034502373,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0109"
+      ],
+      "child_nodes": 16,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B017",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 8,
+      "parent_node": 80977,
+      "child_node": 80703,
+      "gap_m": 0.009042830353773157,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0091"
+      ],
+      "child_nodes": 24,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B018",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 2,
+      "child_selection_component": 20,
+      "parent_node": 87376,
+      "child_node": 87002,
+      "gap_m": 0.00906646124195453,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0066"
+      ],
+      "child_nodes": 38,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B019",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 18,
+      "parent_node": 83878,
+      "child_node": 84322,
+      "gap_m": 0.009147535005971088,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0149"
+      ],
+      "child_nodes": 10,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B020",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 91,
+      "parent_node": 133678,
+      "child_node": 133386,
+      "gap_m": 0.00928758901712579,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0169"
+      ],
+      "child_nodes": 7,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B021",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 99,
+      "parent_node": 135424,
+      "child_node": 135590,
+      "gap_m": 0.009314710036445142,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0061"
+      ],
+      "child_nodes": 39,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B022",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 51,
+      "parent_node": 104846,
+      "child_node": 105031,
+      "gap_m": 0.009376576506694238,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0087"
+      ],
+      "child_nodes": 28,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B023",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 59,
+      "parent_node": 111482,
+      "child_node": 111180,
+      "gap_m": 0.009459922993164794,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0170"
+      ],
+      "child_nodes": 7,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B024",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 5,
+      "parent_node": 78736,
+      "child_node": 78770,
+      "gap_m": 0.009481720696442623,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0100"
+      ],
+      "child_nodes": 23,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B025",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 103,
+      "parent_node": 137160,
+      "child_node": 136901,
+      "gap_m": 0.009489968465391003,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0126"
+      ],
+      "child_nodes": 14,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B026",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 36,
+      "child_selection_component": 38,
+      "parent_node": 99325,
+      "child_node": 99770,
+      "gap_m": 0.009541122334704963,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0141"
+      ],
+      "child_nodes": 12,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B027",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 14,
+      "parent_node": 92526,
+      "child_node": 92251,
+      "gap_m": 0.009544640683799602,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0002"
+      ],
+      "child_nodes": 260,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B028",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 78,
+      "parent_node": 123749,
+      "child_node": 123928,
+      "gap_m": 0.00957185000759098,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0094"
+      ],
+      "child_nodes": 23,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B029",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 60,
+      "parent_node": 112868,
+      "child_node": 113274,
+      "gap_m": 0.009582248323507013,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0071"
+      ],
+      "child_nodes": 38,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B030",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 60,
+      "child_selection_component": 49,
+      "parent_node": 110509,
+      "child_node": 110160,
+      "gap_m": 0.005188415652734047,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0076"
+      ],
+      "child_nodes": 36,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B031",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 108,
+      "parent_node": 136956,
+      "child_node": 137263,
+      "gap_m": 0.009594827960435728,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0148"
+      ],
+      "child_nodes": 10,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B032",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 40,
+      "parent_node": 104094,
+      "child_node": 104176,
+      "gap_m": 0.009600385667515542,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0089"
+      ],
+      "child_nodes": 25,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B033",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 32,
+      "parent_node": 96887,
+      "child_node": 96332,
+      "gap_m": 0.009623039388526598,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0039"
+      ],
+      "child_nodes": 66,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B034",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 86,
+      "parent_node": 130062,
+      "child_node": 129751,
+      "gap_m": 0.009633565006787827,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0211"
+      ],
+      "child_nodes": 3,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B035",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 89,
+      "parent_node": 133180,
+      "child_node": 132723,
+      "gap_m": 0.009682113696539742,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0187"
+      ],
+      "child_nodes": 6,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B036",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 96,
+      "parent_node": 135292,
+      "child_node": 135317,
+      "gap_m": 0.009684658296262612,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0029"
+      ],
+      "child_nodes": 91,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B037",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 21,
+      "child_selection_component": 22,
+      "parent_node": 87708,
+      "child_node": 87485,
+      "gap_m": 0.009714412142129756,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0049"
+      ],
+      "child_nodes": 63,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B038",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 28,
+      "parent_node": 90273,
+      "child_node": 89950,
+      "gap_m": 0.009822442315178119,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0164"
+      ],
+      "child_nodes": 8,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B039",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 59,
+      "child_selection_component": 61,
+      "parent_node": 111046,
+      "child_node": 111655,
+      "gap_m": 0.009848008133455413,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0173"
+      ],
+      "child_nodes": 7,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B040",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 48,
+      "parent_node": 103773,
+      "child_node": 104189,
+      "gap_m": 0.009860807281173197,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0156"
+      ],
+      "child_nodes": 10,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B041",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 77,
+      "parent_node": 135264,
+      "child_node": 135048,
+      "gap_m": 0.009868239397996017,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0033"
+      ],
+      "child_nodes": 85,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B042",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 77,
+      "child_selection_component": 87,
+      "parent_node": 130397,
+      "child_node": 130312,
+      "gap_m": 0.00924696977621527,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0144"
+      ],
+      "child_nodes": 11,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B043",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 31,
+      "parent_node": 92744,
+      "child_node": 93521,
+      "gap_m": 0.00994173001941423,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0112"
+      ],
+      "child_nodes": 17,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B044",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 68,
+      "parent_node": 115285,
+      "child_node": 115706,
+      "gap_m": 0.010075152187969224,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0053"
+      ],
+      "child_nodes": 57,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B045",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 50,
+      "parent_node": 102824,
+      "child_node": 103373,
+      "gap_m": 0.010084688263856084,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0200"
+      ],
+      "child_nodes": 5,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B046",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 81,
+      "parent_node": 125283,
+      "child_node": 125004,
+      "gap_m": 0.01016278420325897,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0207"
+      ],
+      "child_nodes": 4,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B047",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 111,
+      "parent_node": 137656,
+      "child_node": 137581,
+      "gap_m": 0.010231185017811053,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0209"
+      ],
+      "child_nodes": 4,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B048",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 11,
+      "parent_node": 82182,
+      "child_node": 81797,
+      "gap_m": 0.010234145578880574,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0050"
+      ],
+      "child_nodes": 62,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B049",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 9,
+      "parent_node": 80782,
+      "child_node": 81022,
+      "gap_m": 0.010275716360892934,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0069"
+      ],
+      "child_nodes": 41,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B050",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 106,
+      "parent_node": 136672,
+      "child_node": 136871,
+      "gap_m": 0.010277403667300573,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0172"
+      ],
+      "child_nodes": 6,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B051",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 72,
+      "parent_node": 119009,
+      "child_node": 118968,
+      "gap_m": 0.010290434974628882,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0157"
+      ],
+      "child_nodes": 8,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B052",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 79,
+      "parent_node": 134169,
+      "child_node": 134173,
+      "gap_m": 0.010302111339456271,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0044"
+      ],
+      "child_nodes": 67,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B053",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 19,
+      "parent_node": 85067,
+      "child_node": 85290,
+      "gap_m": 0.010447107954994685,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0197"
+      ],
+      "child_nodes": 5,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B054",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 23,
+      "parent_node": 89155,
+      "child_node": 88706,
+      "gap_m": 0.010558345505416981,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0145"
+      ],
+      "child_nodes": 12,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B055",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 14,
+      "child_selection_component": 56,
+      "parent_node": 107342,
+      "child_node": 107061,
+      "gap_m": 0.010632504137027834,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0184"
+      ],
+      "child_nodes": 6,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B056",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 43,
+      "parent_node": 102278,
+      "child_node": 102735,
+      "gap_m": 0.010669579196328815,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0196"
+      ],
+      "child_nodes": 5,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B057",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 12,
+      "parent_node": 82500,
+      "child_node": 82603,
+      "gap_m": 0.010702807135105394,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0046"
+      ],
+      "child_nodes": 65,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B058",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 52,
+      "parent_node": 106522,
+      "child_node": 107312,
+      "gap_m": 0.010776854596355457,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0008"
+      ],
+      "child_nodes": 195,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B059",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 52,
+      "child_selection_component": 85,
+      "parent_node": 128063,
+      "child_node": 128687,
+      "gap_m": 0.010601004997017785,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0111"
+      ],
+      "child_nodes": 17,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B060",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 49,
+      "child_selection_component": 45,
+      "parent_node": 103553,
+      "child_node": 104283,
+      "gap_m": 0.01078350906844633,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0120"
+      ],
+      "child_nodes": 17,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B061",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 74,
+      "parent_node": 133026,
+      "child_node": 133051,
+      "gap_m": 0.010852659979739726,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0048"
+      ],
+      "child_nodes": 63,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B062",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 74,
+      "child_selection_component": 69,
+      "parent_node": 118449,
+      "child_node": 117938,
+      "gap_m": 0.010483475984041127,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0154"
+      ],
+      "child_nodes": 10,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B063",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 71,
+      "parent_node": 117310,
+      "child_node": 116717,
+      "gap_m": 0.010878882218110003,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0104"
+      ],
+      "child_nodes": 19,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B064",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 35,
+      "parent_node": 96876,
+      "child_node": 96532,
+      "gap_m": 0.010906973468758251,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0152"
+      ],
+      "child_nodes": 9,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B065",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 58,
+      "parent_node": 110934,
+      "child_node": 110504,
+      "gap_m": 0.011275592306708958,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0101"
+      ],
+      "child_nodes": 18,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B066",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 17,
+      "parent_node": 91544,
+      "child_node": 90806,
+      "gap_m": 0.011282201766589568,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0017"
+      ],
+      "child_nodes": 128,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B067",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 29,
+      "parent_node": 93376,
+      "child_node": 93885,
+      "gap_m": 0.011580877140840419,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0122"
+      ],
+      "child_nodes": 16,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B068",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 47,
+      "parent_node": 106650,
+      "child_node": 106205,
+      "gap_m": 0.011609768069401784,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0131"
+      ],
+      "child_nodes": 13,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B069",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 62,
+      "parent_node": 112682,
+      "child_node": 112341,
+      "gap_m": 0.011645768106076248,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0051"
+      ],
+      "child_nodes": 58,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B070",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 24,
+      "parent_node": 92157,
+      "child_node": 92080,
+      "gap_m": 0.011767314121224186,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0062"
+      ],
+      "child_nodes": 46,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B071",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 90,
+      "parent_node": 133807,
+      "child_node": 133712,
+      "gap_m": 0.011860941819932072,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0136"
+      ],
+      "child_nodes": 12,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B072",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 97,
+      "parent_node": 135666,
+      "child_node": 135256,
+      "gap_m": 0.011928991787101327,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0115"
+      ],
+      "child_nodes": 17,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B073",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 70,
+      "parent_node": 116063,
+      "child_node": 116113,
+      "gap_m": 0.011949199470021115,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0088"
+      ],
+      "child_nodes": 27,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B074",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 40,
+      "child_selection_component": 30,
+      "parent_node": 101199,
+      "child_node": 101121,
+      "gap_m": 0.012122806924321852,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0065"
+      ],
+      "child_nodes": 44,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B075",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 33,
+      "parent_node": 95538,
+      "child_node": 95105,
+      "gap_m": 0.012474505331500406,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0117"
+      ],
+      "child_nodes": 17,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B076",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 64,
+      "parent_node": 113124,
+      "child_node": 113129,
+      "gap_m": 0.012511532687867769,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0203"
+      ],
+      "child_nodes": 4,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B077",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 92,
+      "parent_node": 134787,
+      "child_node": 134487,
+      "gap_m": 0.012663954225305923,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0085"
+      ],
+      "child_nodes": 28,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B078",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 93,
+      "parent_node": 134671,
+      "child_node": 134285,
+      "gap_m": 0.012931804757444541,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0191"
+      ],
+      "child_nodes": 6,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B079",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 82,
+      "parent_node": 129381,
+      "child_node": 129441,
+      "gap_m": 0.013565825442713838,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0040"
+      ],
+      "child_nodes": 73,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B080",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 42,
+      "parent_node": 104430,
+      "child_node": 103139,
+      "gap_m": 0.013771529251059707,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0183"
+      ],
+      "child_nodes": 6,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B081",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 25,
+      "parent_node": 89342,
+      "child_node": 88953,
+      "gap_m": 0.013941026521710396,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0162"
+      ],
+      "child_nodes": 8,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B082",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 53,
+      "parent_node": 108975,
+      "child_node": 108798,
+      "gap_m": 0.014487727333903473,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0137"
+      ],
+      "child_nodes": 12,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B083",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 55,
+      "parent_node": 105133,
+      "child_node": 105802,
+      "gap_m": 0.01516166716294353,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0213"
+      ],
+      "child_nodes": 3,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B084",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 67,
+      "parent_node": 115761,
+      "child_node": 116127,
+      "gap_m": 0.017276063560976815,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0212"
+      ],
+      "child_nodes": 3,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B085",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 105,
+      "parent_node": 137106,
+      "child_node": 136863,
+      "gap_m": 0.01731189350278994,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0139"
+      ],
+      "child_nodes": 12,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B086",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 26,
+      "parent_node": 102305,
+      "child_node": 102475,
+      "gap_m": 0.01909889054368911,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0024"
+      ],
+      "child_nodes": 100,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B087",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 44,
+      "parent_node": 109939,
+      "child_node": 108436,
+      "gap_m": 0.023210532567836794,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0073"
+      ],
+      "child_nodes": 39,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Mane:B088",
+      "feature": "Mane",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 39,
+      "parent_node": 99488,
+      "child_node": 99310,
+      "gap_m": 0.023285066595980626,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0195"
+      ],
+      "child_nodes": 5,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Tail:B000",
+      "feature": "Tail",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 19,
+      "parent_node": 12425,
+      "child_node": 12203,
+      "gap_m": 0.0064172686922863405,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0125"
+      ],
+      "child_nodes": 15,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Tail:B001",
+      "feature": "Tail",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 24,
+      "parent_node": 14846,
+      "child_node": 15043,
+      "gap_m": 0.006837375905856155,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0036"
+      ],
+      "child_nodes": 78,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Tail:B002",
+      "feature": "Tail",
+      "status": "needs-review",
+      "parent_selection_component": 24,
+      "child_selection_component": 29,
+      "parent_node": 19386,
+      "child_node": 19557,
+      "gap_m": 0.007466817900030366,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0057"
+      ],
+      "child_nodes": 53,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Tail:B003",
+      "feature": "Tail",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 36,
+      "parent_node": 28243,
+      "child_node": 28031,
+      "gap_m": 0.007517415531466233,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0140"
+      ],
+      "child_nodes": 11,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Tail:B004",
+      "feature": "Tail",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 39,
+      "parent_node": 33085,
+      "child_node": 33008,
+      "gap_m": 0.007791815665602923,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0096"
+      ],
+      "child_nodes": 22,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Tail:B005",
+      "feature": "Tail",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 11,
+      "parent_node": 7661,
+      "child_node": 7630,
+      "gap_m": 0.008222334580976131,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0129"
+      ],
+      "child_nodes": 14,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Tail:B006",
+      "feature": "Tail",
+      "status": "needs-review",
+      "parent_selection_component": 17,
+      "child_selection_component": 20,
+      "parent_node": 18478,
+      "child_node": 18925,
+      "gap_m": 0.008396528978506141,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0011"
+      ],
+      "child_nodes": 154,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Tail:B007",
+      "feature": "Tail",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 23,
+      "parent_node": 15267,
+      "child_node": 14949,
+      "gap_m": 0.008657043131214676,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0082"
+      ],
+      "child_nodes": 27,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Tail:B008",
+      "feature": "Tail",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 10,
+      "parent_node": 14408,
+      "child_node": 14232,
+      "gap_m": 0.008820679796638788,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0009"
+      ],
+      "child_nodes": 181,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Tail:B009",
+      "feature": "Tail",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 37,
+      "parent_node": 29694,
+      "child_node": 29159,
+      "gap_m": 0.008860939648394994,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0003"
+      ],
+      "child_nodes": 215,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Tail:B010",
+      "feature": "Tail",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 5,
+      "parent_node": 8725,
+      "child_node": 8883,
+      "gap_m": 0.008905500957076583,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0016"
+      ],
+      "child_nodes": 131,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Tail:B011",
+      "feature": "Tail",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 9,
+      "parent_node": 9844,
+      "child_node": 9764,
+      "gap_m": 0.008960668474784713,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0021"
+      ],
+      "child_nodes": 107,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Tail:B012",
+      "feature": "Tail",
+      "status": "needs-review",
+      "parent_selection_component": 9,
+      "child_selection_component": 14,
+      "parent_node": 11132,
+      "child_node": 11005,
+      "gap_m": 0.008902384967419496,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0010"
+      ],
+      "child_nodes": 165,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Tail:B013",
+      "feature": "Tail",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 8,
+      "parent_node": 3796,
+      "child_node": 3761,
+      "gap_m": 0.009045289067550723,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0022"
+      ],
+      "child_nodes": 103,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Tail:B014",
+      "feature": "Tail",
+      "status": "needs-review",
+      "parent_selection_component": 14,
+      "child_selection_component": 22,
+      "parent_node": 18284,
+      "child_node": 17943,
+      "gap_m": 0.009085041849895621,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0013"
+      ],
+      "child_nodes": 133,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Tail:B015",
+      "feature": "Tail",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 21,
+      "parent_node": 15356,
+      "child_node": 15034,
+      "gap_m": 0.009130402695072391,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0045"
+      ],
+      "child_nodes": 61,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Tail:B016",
+      "feature": "Tail",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 13,
+      "parent_node": 12879,
+      "child_node": 12793,
+      "gap_m": 0.009210836365379928,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0006"
+      ],
+      "child_nodes": 217,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Tail:B017",
+      "feature": "Tail",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 3,
+      "parent_node": 1407,
+      "child_node": 1396,
+      "gap_m": 0.009292798958308274,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0014"
+      ],
+      "child_nodes": 146,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Tail:B018",
+      "feature": "Tail",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 45,
+      "parent_node": 35298,
+      "child_node": 35409,
+      "gap_m": 0.009293511561204325,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0090"
+      ],
+      "child_nodes": 27,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Tail:B019",
+      "feature": "Tail",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 38,
+      "parent_node": 31529,
+      "child_node": 31495,
+      "gap_m": 0.00930132846499257,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0041"
+      ],
+      "child_nodes": 72,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Tail:B020",
+      "feature": "Tail",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 6,
+      "parent_node": 2360,
+      "child_node": 2437,
+      "gap_m": 0.009728498929433163,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0052"
+      ],
+      "child_nodes": 55,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Tail:B021",
+      "feature": "Tail",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 12,
+      "parent_node": 8940,
+      "child_node": 8704,
+      "gap_m": 0.00981884912481935,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0015"
+      ],
+      "child_nodes": 140,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Tail:B022",
+      "feature": "Tail",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 33,
+      "parent_node": 25913,
+      "child_node": 25756,
+      "gap_m": 0.00986029337307067,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0175"
+      ],
+      "child_nodes": 7,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Tail:B023",
+      "feature": "Tail",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 31,
+      "parent_node": 19903,
+      "child_node": 19728,
+      "gap_m": 0.009909521441488973,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0138"
+      ],
+      "child_nodes": 11,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Tail:B024",
+      "feature": "Tail",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 42,
+      "parent_node": 34020,
+      "child_node": 33903,
+      "gap_m": 0.010013767258071448,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0159"
+      ],
+      "child_nodes": 9,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Tail:B025",
+      "feature": "Tail",
+      "status": "needs-review",
+      "parent_selection_component": 17,
+      "child_selection_component": 18,
+      "parent_node": 11708,
+      "child_node": 11877,
+      "gap_m": 0.010044766153926549,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0190"
+      ],
+      "child_nodes": 6,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Tail:B026",
+      "feature": "Tail",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 40,
+      "parent_node": 33395,
+      "child_node": 33037,
+      "gap_m": 0.01025096117222287,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0208"
+      ],
+      "child_nodes": 4,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Tail:B027",
+      "feature": "Tail",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 15,
+      "parent_node": 11463,
+      "child_node": 11140,
+      "gap_m": 0.01035024494664797,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0193"
+      ],
+      "child_nodes": 5,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Tail:B028",
+      "feature": "Tail",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 46,
+      "parent_node": 36502,
+      "child_node": 36304,
+      "gap_m": 0.010426018606705556,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0153"
+      ],
+      "child_nodes": 10,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Tail:B029",
+      "feature": "Tail",
+      "status": "needs-review",
+      "parent_selection_component": 14,
+      "child_selection_component": 28,
+      "parent_node": 18552,
+      "child_node": 18805,
+      "gap_m": 0.010444688101086608,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0146"
+      ],
+      "child_nodes": 10,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Tail:B030",
+      "feature": "Tail",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 32,
+      "parent_node": 23983,
+      "child_node": 24177,
+      "gap_m": 0.010481856061226173,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0134"
+      ],
+      "child_nodes": 11,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Tail:B031",
+      "feature": "Tail",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 51,
+      "parent_node": 39799,
+      "child_node": 39839,
+      "gap_m": 0.010530228470765698,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0166"
+      ],
+      "child_nodes": 8,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Tail:B032",
+      "feature": "Tail",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 35,
+      "parent_node": 26597,
+      "child_node": 26875,
+      "gap_m": 0.010571511845155798,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0198"
+      ],
+      "child_nodes": 5,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Tail:B033",
+      "feature": "Tail",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 41,
+      "parent_node": 34162,
+      "child_node": 33818,
+      "gap_m": 0.010770991935792971,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0128"
+      ],
+      "child_nodes": 14,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Tail:B034",
+      "feature": "Tail",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 47,
+      "parent_node": 37025,
+      "child_node": 36968,
+      "gap_m": 0.010801131655766976,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0202"
+      ],
+      "child_nodes": 5,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Tail:B035",
+      "feature": "Tail",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 7,
+      "parent_node": 2595,
+      "child_node": 2571,
+      "gap_m": 0.010903318853835013,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0194"
+      ],
+      "child_nodes": 5,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Tail:B036",
+      "feature": "Tail",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 25,
+      "parent_node": 14731,
+      "child_node": 15113,
+      "gap_m": 0.011032041437894427,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0155"
+      ],
+      "child_nodes": 9,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Tail:B037",
+      "feature": "Tail",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 1,
+      "parent_node": 424,
+      "child_node": 421,
+      "gap_m": 0.011052446551580554,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0099"
+      ],
+      "child_nodes": 23,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Tail:B038",
+      "feature": "Tail",
+      "status": "needs-review",
+      "parent_selection_component": 1,
+      "child_selection_component": 2,
+      "parent_node": 488,
+      "child_node": 531,
+      "gap_m": 0.010251484312544202,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0108"
+      ],
+      "child_nodes": 18,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Tail:B039",
+      "feature": "Tail",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 16,
+      "parent_node": 11004,
+      "child_node": 11055,
+      "gap_m": 0.011529102354669562,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0135"
+      ],
+      "child_nodes": 12,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Tail:B040",
+      "feature": "Tail",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 34,
+      "parent_node": 24812,
+      "child_node": 25094,
+      "gap_m": 0.012281988863630347,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0168"
+      ],
+      "child_nodes": 6,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Tail:B041",
+      "feature": "Tail",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 44,
+      "parent_node": 34665,
+      "child_node": 34281,
+      "gap_m": 0.013955950186889846,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0124"
+      ],
+      "child_nodes": 15,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Tail:B042",
+      "feature": "Tail",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 4,
+      "parent_node": 1159,
+      "child_node": 1198,
+      "gap_m": 0.014568035191097126,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0218"
+      ],
+      "child_nodes": 3,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    },
+    {
+      "id": "Tail:B043",
+      "feature": "Tail",
+      "status": "needs-review",
+      "parent_selection_component": 0,
+      "child_selection_component": 52,
+      "parent_node": 40709,
+      "child_node": 40045,
+      "gap_m": 0.015100840134264566,
+      "child_source_component_ids": [
+        "ba2d283db0be:C0217"
+      ],
+      "child_nodes": 3,
+      "relation": "candidate skinned clump attachment; no topology welding"
+    }
+  ],
+  "unresolved": [],
+  "note": "Minimum gap forest among selected surface vertices; not triangle-accurate distance, semantic approval, physical attachment, or an instruction to delete any part."
+}

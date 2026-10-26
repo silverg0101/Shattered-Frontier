@@ -1,0 +1,10 @@
+{
+  "status": "passed-primary-weight-normalization-only",
+  "assigned_vertices": 283623,
+  "unweighted_vertices": 1139,
+  "maximum_influences": 4,
+  "maximum_assigned_sum_error": 4.440892098500626e-16,
+  "limitations": [
+    "Numerical normalization only; not anatomical or contact acceptance."
+  ]
+}

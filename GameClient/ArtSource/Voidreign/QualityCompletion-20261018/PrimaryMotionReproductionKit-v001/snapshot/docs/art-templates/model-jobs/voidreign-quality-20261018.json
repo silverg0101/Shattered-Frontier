@@ -1,0 +1,286 @@
+{
+  "schema_version": 1,
+  "asset_id": "Voidreign",
+  "reference": {
+    "manifest_path": "GameClient/ArtSource/Voidreign/PixalDetail-20261018/generation-run.json",
+    "image_path": "GameClient/ArtSource/Voidreign/ModelAB-20261018/Voidreign-reference.png",
+    "source_type": "legacy-benchmark",
+    "image_batch_path": null,
+    "sha256": "d67522bf160e2dbfe763a5945e651b6b5c508f32676257dac80c98b26a42aca0"
+  },
+  "repair_policy": {
+    "max_attempts_per_stage": 3,
+    "on_exhaustion": "needs-review"
+  },
+  "job_id": "voidreign-quality-20261018",
+  "status": "in-progress",
+  "owner": "codex-thread:01a14f82-790d-7132-ab32-3c7b1aa499b0",
+  "lease_expires_utc": "2026-10-19T04:08:33.646053+00:00",
+  "quality_target": "prototype",
+  "current_stage": "secondary_motion",
+  "profile": {
+    "path": "docs/art-templates/model-profiles/voidreign-complete-hair-motion-v003-20261018.json",
+    "sha256": "9df3ed982c0f5f571210a98d42c1e6b395b80713c139f0b7b162ad861d5cca47",
+    "features": [
+      "mane",
+      "tail",
+      "rider-clearance",
+      "complete-feature-coverage",
+      "attachment-review"
+    ],
+    "category": "mount",
+    "approval": "prototype-authored",
+    "source_lock_path": "GameClient/ArtSource/Voidreign/ModelAB-20261018/backend-lock.json"
+  },
+  "stages": {
+    "reference": {
+      "status": "passed",
+      "attempt_count": 1,
+      "attempt_paths": [],
+      "check_paths": [
+        "GameClient/ArtSource/Voidreign/PixalDetail-20261018/generation-run.json"
+      ],
+      "note": "Reused frozen benchmark reference; no GPU regeneration."
+    },
+    "geometry": {
+      "status": "needs-review",
+      "attempt_count": 2,
+      "attempt_paths": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/Cleanup-v002",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/DegenerateCleanup-v001"
+      ],
+      "check_paths": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/Cleanup-v002/cleanup-validation.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/DegenerateCheck-v001/validation.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/TriangleQualityAfter-v001/triangle-quality.json"
+      ],
+      "note": "Geometry attempt2 removes6exact-zero-area faces and10newly unused vertices after330frame collapsed preflight. Fresh retained positions/faces/UV/colors/weights/normals/images and330bone/19surface checks all exact.0degenerates remain,219components. Duplicate/nonmanifold/semantic/shape gates still open. Root/rig/solver attempts unchanged3. Read-only coincident-face review:2254participants/1124groups;all differ winding/normals,zero exact-attribute redundant candidates.No deletion."
+    },
+    "topology_uv": {
+      "status": "needs-review",
+      "attempt_count": 3,
+      "attempt_paths": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RootRepair-v001",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RootRepair-v002",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RootRepair-v003"
+      ],
+      "check_paths": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RootRepair-v003/root-validation.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RootRepairInspection-v001/component-report.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/SemanticSelection-v001/selection-report.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/AttachmentProposals-v001/attachment-proposals.json"
+      ],
+      "note": "Root repair saved on third attempt after scalar/cap-overlap guard failures; five original clumps retained and joined through authored scalp/rump continuations.219 components remain;133 virtual clump bindings are proposals. New root UVs intentionally reuse child-cap patches."
+    },
+    "materials": {
+      "status": "needs-review",
+      "attempt_count": 1,
+      "attempt_paths": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/OppositeDetail-v001"
+      ],
+      "check_paths": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/OppositeDetailCheck-v001/validation.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/OppositeDetailImport-v001/validation.json"
+      ],
+      "note": "Opposite-side head/saddle4K color refinement baked; exact geometry/UV/weights/non-color maps and330bone/19surface samples unchanged. Default GLB/FBX pass. Baked highlight/painted chain detail, eye and full PBR/coverage remain review items."
+    },
+    "rig": {
+      "status": "needs-review",
+      "attempt_count": 3,
+      "attempt_paths": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHair-v001",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHair-v002",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHair-v003"
+      ],
+      "check_paths": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/SurfaceCheck-v001/surface-report.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/SurfaceCheck-v002/surface-report.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/SurfaceCheck-v003/surface-report.json"
+      ],
+      "note": "Third bounded attempt fixes proposed attachment gaps (0.044mm) and body collision; max surface step156mm and neck/ground clearance still fail. Budget exhausted; no automatic fourth repair."
+    },
+    "secondary_motion": {
+      "status": "needs-review",
+      "attempt_count": 3,
+      "attempt_paths": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/Simulation-v001",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/Simulation-v002",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/Simulation-v003"
+      ],
+      "check_paths": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/Simulation-v001/simulation-report.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/Simulation-v002/simulation-report.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/Simulation-v003/simulation-report.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MildOverdampingTrajectory-v001/simulation-report.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MildOverdampingTrajectoryCheck-v001/trajectory-check.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MildOverdampingClearance-v001/guide-clearance.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/SurfaceVertexReview-v002/render-report.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ContactDesignRevision-v001/result.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ContactMeshExperiment-v001/experiment-report.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ContactMeshSurfaceCheck-v001/surface-report.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ContactMeshRetention-v001/validation.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ContactMeshImport-v001/validation.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/FailureFeaturePaths-v001/coverage-report.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/FailurePathReview-v002/render-report.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/TailClumpDomains-v001/domain-report.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/TailDomainReview-v002/render-report.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/TailCrossSections-v001/section-report.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/TailLocalSections-v001/section-report.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/TailLocalDomains-v001/domain-report.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/TailLocalDomainReview-v001/render-report.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/TailRootMotion-v001/attachment-report.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ActualSurfaceClothPilot-v002/pilot-report.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ActualSurfaceClothPilotCheck-v002/surface-report.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/SurfaceContactCorrective-v001/corrective-report.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/SurfaceContactCorrectiveDiagnostics-v001/surface-report.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ActualTailCloth-v001/pilot-report.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ActualTailClothCheck-v001/surface-report.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/TailSurfaceContacts-v001/corrective-report.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/TailSurfaceContactsCheck-v001/surface-report.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ManeClothPositivePilotCheck-v001/surface-report.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/TailSurfaceContactsAllFrames-v001/surface-report.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ManeClothSettledFull-v001/pilot-report.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ManeClothSettledFullCheck-v001/surface-report.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ManeSurfaceContactsAllFrames-v001/surface-report.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ActualSurfaceRetention-v001/validation.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteTailCache-v002/cache-report.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteMotionCache-v001/cache-report.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteMotionCacheCheck-v001/surface-report.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteMotionCacheRetention-v001/validation.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteMotionAlembic-v001/exchange-report.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ManeWarmupDiagnostic-v001/warmup-report.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ContactSurfaceDelivery-v001/reproduction-verification.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ManeWarmupDiagnostic-v005/warmup-report.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ManeIslandMotionAnalysis-v001/island-motion.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ManeHeldWindowAnalysis-v002/island-motion.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/B067ParentFrameStudy-v001/attachment-frame-report.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/B067ParentFrameCache-v001/cache-report.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/B067ParentFrameSurfaceCheck-v001/surface-report.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/B067ParentFrameRetention-v001/validation.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/SourceSurfaceStrain-v001/strain-report.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/EdgeStrainStageComparison-v001/edge-comparison.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ManePrimaryOnlyPilot-v001/pilot-report.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ManePrimaryOnlyPilotCheck-v001/surface-report.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ManePrimaryOnlyPilotAlembic-v001/exchange-report.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/LegacyFirst30Strain-v001/strain-report.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ManePrimaryOnlyPilotStrain-v001/strain-report.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/B067ParentFrameAlembic-v001/exchange-report.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ManePrimaryOnlyFull-v001/pilot-report.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ManePrimaryOnlyFullCheck-v001/surface-report.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ManePrimaryOnlyFullAlembic-v001/exchange-report.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/TailPrimaryOnlyPilot-v001/pilot-report.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryOnlyCombinedPilotCheck-v001/surface-report.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/TailPrimaryOnlyFull-v001/pilot-report.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryOnlyCombinedFull-v001/cache-report.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryOnlyCombinedFullCheck-v001/surface-report.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryOnlyCombinedFullRetention-v001/validation.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryOnlyCombinedFullAlembic-v001/exchange-report.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryOnlyCombinedFullStrain-v001/strain-report.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryOnlyCombinedFullPreview-v001/render-report.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryOnlyCombinedFullDiagnostic-v001/render-report.json"
+      ],
+      "note": "Corrected full Mane/Tail settle and replay exactly; five of six330frame scoped checks, all rest retention and animated reimport pass. Tail step86.830mm fails80mm. Full strain vastly reduced; local strain/style still requires review. Four textured frames inspected; corrected autoplay source open. No production promotion."
+    },
+    "delivery": {
+      "status": "pending",
+      "attempt_count": 0,
+      "attempt_paths": [],
+      "check_paths": [
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairImport-v003/validation.json",
+        "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/DegenerateImport-v001/validation.json"
+      ],
+      "note": "Latest geometry hygiene default GLB/FBX pass. Retained source motion/texture exact; all six surface measurements freshly reproduce earlier failures. Historical playback remains labelled with its original source hash."
+    }
+  },
+  "artifacts": {
+    "source": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/DegenerateCleanup-v001/Voidreign-CompleteHair.blend",
+    "rig_report": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHair-v003/rig-report.json",
+    "geometry_repair": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RootRepair-v003/root-repair-report.json",
+    "geometry_validation": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RootRepair-v003/root-validation.json",
+    "semantic_selection": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HygieneSemanticSelection-v001/selection-report.json",
+    "guide_proposals": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HygieneGuideProposal-v001/guide-report.json",
+    "simulation": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/Simulation-v003/simulation-report.json",
+    "attachment_proposals": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HygieneAttachmentProposals-v001/attachment-proposals.json",
+    "previous_job": "docs/art-templates/model-jobs/voidreign-motion-20261018.json",
+    "quality_runbook": "docs/art-templates/model-quality-runbook.md",
+    "previews": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryOnlyCombinedFullPreview-v001",
+    "surface_check": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HygieneSurfaceCheck-v001/surface-report.json",
+    "exchange_check": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/DegenerateImport-v001/validation.json",
+    "material_source": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/OppositeDetail-v001/Voidreign-CompleteHair.blend",
+    "material_check": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/OppositeDetailCheck-v001/validation.json",
+    "review_evidence": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReviewEvidence-v001",
+    "reproduction_lock": "docs/art-templates/model-profiles/voidreign-quality-reproduction-20261018.json",
+    "reproduction_report": "Artifacts/Art/Voidreign/quality-completion-20261018/Reproduction-v001/run-report.json",
+    "component_ledger": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HygieneComponentReview-v001/component-review-ledger.json",
+    "component_visibility": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HygieneVisibility-v001/visibility-report.json",
+    "skinning_diagnosis": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/SurfaceDiagnosis-v001/diagnosis.json",
+    "support_inspection": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/SupportInspection-v001/support-report.json",
+    "reproduction_kit": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReproductionKit-v001/manifest.json",
+    "playback": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHairPlayback-v003/Voidreign-CompleteHair-Diagnostic.mp4",
+    "material_oblique_views": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialObliquePlus-v001",
+    "posed_visibility": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PosedVisibilityComparison-v001/comparison.json",
+    "reproduction_supplement": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ReproductionSupplement-v001/manifest.json",
+    "next_revision_proposal": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/NextRevisionPlan-v001.md",
+    "triangle_quality": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/TriangleQuality-v001/triangle-quality.json",
+    "geometry_hygiene_review": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/GeometryHygieneReview-v001/review.json",
+    "geometry_hygiene_source": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/DegenerateCleanup-v001/Voidreign-CompleteHair.blend",
+    "geometry_hygiene_check": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/DegenerateCheck-v001/validation.json",
+    "geometry_hygiene_import": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/DegenerateImport-v001/validation.json",
+    "triangle_quality_after": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/TriangleQualityAfter-v001/triangle-quality.json",
+    "geometry_hygiene_inventory": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/DegenerateInspection-v001/component-report.json",
+    "rig_source": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CompleteHair-v003/Voidreign-CompleteHair.blend",
+    "hygiene_render_comparison": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HygieneRenderComparison-v001/comparison.json",
+    "hygiene_semantic_comparison": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HygieneSemanticComparison-v001/comparison.json",
+    "geometry_hygiene_kit": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/HygieneReproductionKit-v001/manifest.json",
+    "coincident_face_review": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CoincidentFaceReview-v001/face-group-report.json",
+    "full_duration_guide_check": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/TrajectoryCheck-v002/trajectory-check.json",
+    "forensic_gate_review": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ForensicGateReview-v001/review.json",
+    "contact_redesign_cases": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ContactRedesignCases-v001.md",
+    "forensic_reproduction_kit": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ForensicReproductionKit-v001/manifest.json",
+    "turn_substep_trace": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/TurnTrace-v001/trace-report.json",
+    "contact_velocity_study": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ContactVelocityStudy-v002/study-report.json",
+    "motion_design_study": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MotionDesignStudy-v001/study-results-v002.json",
+    "saved_guide_clearance": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/GuideClearanceBaseline-v004/guide-clearance.json",
+    "coverage_guide_proposals": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CoverageGuideStudy-v002/coverage-report.json",
+    "coverage_views": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CoverageViews-v002/render-report.json",
+    "contact_design_review": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ContactDesignReview-v001/review.json",
+    "motion_design_reproduction_kit": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MotionDesignReproductionKit-v001/manifest.json",
+    "reusable_mount_procedure": "docs/art-templates/mount-secondary-motion.md",
+    "mount_profile_index": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MountProfile.md",
+    "contact_design_plan": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ContactDesignRevision-v001/design-plan.json",
+    "coupled_contact_regression": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CoupledContactStudy-v006/coupled-study.json",
+    "contact_velocity_kernel": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ContactVelocityStudy-v003/study-report.json",
+    "coupled_contact_failure": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/CoupledContactFailure-v002/diagnosis.json",
+    "net_contact_trajectory": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/NetContactTrajectory-v001/simulation-report.json",
+    "style_damping_trajectory": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/StyleDampingTrajectory-v001/simulation-report.json",
+    "style_damping_guide_check": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/StyleDampingTrajectoryCheck-v001/trajectory-check.json",
+    "style_damping_clearance": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/StyleDampingClearance-v001/guide-clearance.json",
+    "guide_path_review": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/GuidePathReview-v003/render-report.json",
+    "experimental_motion_source": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryOnlyCombinedFull-v001/Voidreign-ActualSurfacePilot.blend",
+    "motion_delivery_notes": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryMotionDelivery-v001/README.md",
+    "offline_animated_cache": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryOnlyCombinedFullAlembic-v001/FeatureMotion.abc",
+    "contact_surface_reproduction": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ContactSurfaceReproductionKit-v001/manifest.json",
+    "attachment_followup_queue": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/AttachmentSupport-v001/queue.json",
+    "attachment_support_notes": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/AttachmentSupport-v001/README.md",
+    "b067_attachment_proposal": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/B067ParentFrameCache-v001/Voidreign-ActualSurfacePilot.blend",
+    "held_startup_plot": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/ManeHeldWindowPlot-v002/held-convergence.png",
+    "deformation_input_repair": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/DeformationInputRepair-v001/README.md",
+    "primary_motion_delivery": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryMotionDelivery-v001/finalize.py",
+    "primary_motion_reproduction": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryMotionReproductionKit-v001/manifest.json"
+  },
+  "defects": [
+    "133 proposed clump bindings pass current measured gap increase (0.033806mm), but still require semantic approval;219 components are not219 defects.",
+    "Legacy guide input severely stretches hair and updates cloth rest; fixed by verified primary-only fixed-rest adapter. Corrected full source still fails Tail maximum step86.830mm versus80mm atframe175/sourcevertex281103; five other scoped gates and rest retention pass. No threshold changes or source promotion.",
+    "Fresh14direction visibility on ba2d283db0be mesh:180low-visibility candidates,18control misses unresolved. These are not deletion counts; classify purpose and posed exposure.",
+    "Some lower-leg feathering/ornaments lie outside the Mane/Tail feature profile; identify intended motion rather than claiming complete coverage.",
+    "Front hoof candidates raised86-103mm while rear3-8mm; intended rest/idle pose and sole boundaries need review.",
+    "Opposite head/saddle color is sharper but painted highlights, abrupt yellow hardware transition, coarse geometry and missing red eye remain; PBR channels incomplete.",
+    "Rigid body/legs, no locomotion skeleton or Unreal runtime acceptance.",
+    "Saved-guide feasibility:free residual0.014mm but hand envelope overlaps Mane_G10/node0 by22.09mm atframe301. Fixed-envelope status needs-review.",
+    "Old24guide coverage remains limited. Corrected actual-surface Mane/Tail is the offline review representation; full Tail maximum-step gate still fails and semantics/runtime remain unapproved."
+  ],
+  "blockers": [
+    "Full330primary-only source validation and Tail repair/combination remain active; old contact-passing source has severe inherited strain and is not a quality-approved model. Semantics, materials/stance/gait/runtime gates remain open."
+  ],
+  "next_action": "Read PrimaryMotionDelivery-v001/README.md and frozen kit manifest. Current corrected Blender review63656 is open. Tail maximum step86.830mm/80mm remains failed; inspect peakturn at175 and local Mane edge24284/24285 at121 before a finite response/attachment design. Historical parent budget3of3 stays exhausted; no silent reset, blind damping search, deletion or threshold relaxation. Other material/stance/semantic/runtime gates remain explicit."
+}

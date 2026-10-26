@@ -1,0 +1,144 @@
+{
+  "schema_version": 1,
+  "status": "needs-semantic-stance-review",
+  "source_sha256": "9b3eab121765220b031e0c1394058c502009b90196013f0e10ee61492ba12a66",
+  "mesh_hash": "f580ad6893e552958d7c1320958834ad3c7a139f941b9016c510dfd4d6a3e794",
+  "object": "geometry_0",
+  "inspection_path": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\RootRepairInspection-v001\\component-report.json",
+  "inspection_sha256": "b12f553e4d00cd9d2d4c9da777bd6ec57fa7728d2194c0191401bf7797a26111",
+  "selection_sha256": "28ff0cd9e7e18f628e98a7a3695ed0c699b2883f9e07b2d5cd70b8ca1f523dbd",
+  "profile_sha256": "22b0bd3abd09d1b6143164a7eed10d77fb6b582eb177b84eeb53e68ad26684b7",
+  "cpu_only": true,
+  "regions": [
+    {
+      "name": "front-near",
+      "status": "candidate-raised-support",
+      "vertices": 3168,
+      "minimum_height_m": 0.1026301383972168,
+      "lower_fifth_percentile_height_m": 0.1266321986913681,
+      "closest_vertex": 76444,
+      "closest_point_m": [
+        0.23058900237083435,
+        -0.8043535947799683,
+        0.1026301383972168
+      ],
+      "vertices_near_ground": 0,
+      "lower_band_center_m": [
+        0.24821487069129944,
+        -0.8073084950447083,
+        0.10728076845407486
+      ],
+      "bounds_m": [
+        [
+          0.17853723466396332,
+          -0.9618337154388428,
+          0.1026301383972168
+        ],
+        [
+          0.4522962272167206,
+          -0.6034542918205261,
+          0.3497345447540283
+        ]
+      ]
+    },
+    {
+      "name": "front-far",
+      "status": "candidate-raised-support",
+      "vertices": 3215,
+      "minimum_height_m": 0.08626294136047363,
+      "lower_fifth_percentile_height_m": 0.09445885568857193,
+      "closest_vertex": 10006,
+      "closest_point_m": [
+        -0.24146747589111328,
+        -0.8027174472808838,
+        0.08626294136047363
+      ],
+      "vertices_near_ground": 0,
+      "lower_band_center_m": [
+        -0.2884243428707123,
+        -0.9264787435531616,
+        0.09050701558589935
+      ],
+      "bounds_m": [
+        [
+          -0.47349900007247925,
+          -1.057020902633667,
+          0.08626294136047363
+        ],
+        [
+          -0.17956261336803436,
+          -0.6496621370315552,
+          0.3499821424484253
+        ]
+      ]
+    },
+    {
+      "name": "rear-near",
+      "status": "candidate-contact",
+      "vertices": 2325,
+      "minimum_height_m": 0.00783681869506836,
+      "lower_fifth_percentile_height_m": 0.05822646617889404,
+      "closest_vertex": 204540,
+      "closest_point_m": [
+        0.1495727300643921,
+        0.6879575848579407,
+        0.00783681869506836
+      ],
+      "vertices_near_ground": 7,
+      "lower_band_center_m": [
+        0.1673501580953598,
+        0.7012447118759155,
+        0.012517612427473068
+      ],
+      "bounds_m": [
+        [
+          0.14511215686798096,
+          0.6046394109725952,
+          0.00783681869506836
+        ],
+        [
+          0.47995996475219727,
+          0.9545908570289612,
+          0.349939227104187
+        ]
+      ]
+    },
+    {
+      "name": "rear-far",
+      "status": "candidate-contact",
+      "vertices": 3320,
+      "minimum_height_m": 0.002796173095703125,
+      "lower_fifth_percentile_height_m": 0.021047234535217285,
+      "closest_vertex": 169305,
+      "closest_point_m": [
+        -0.49665015935897827,
+        0.487466037273407,
+        0.002796173095703125
+      ],
+      "vertices_near_ground": 11,
+      "lower_band_center_m": [
+        -0.3808799684047699,
+        0.41342535614967346,
+        0.01033130194991827
+      ],
+      "bounds_m": [
+        [
+          -0.49665015935897827,
+          0.15892663598060608,
+          0.002796173095703125
+        ],
+        [
+          -0.10216468572616577,
+          0.623404860496521,
+          0.34953171014785767
+        ]
+      ]
+    }
+  ],
+  "maximum_support_height_spread_m": 0.09983396530151367,
+  "limitations": [
+    "Authored coordinate candidates need visual hoof/foot boundary approval.",
+    "A raised foot may be intentional pose; no automatic mesh translation or leg warp.",
+    "Static rest inspection only; no locomotion, ground collision or runtime acceptance."
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "asset": "SM_GreenlandsWaystone",
+  "status": "optional art prototype; not imported into Unreal",
+  "blender": "5.2.2 LTS",
+  "dimensions_metres": [
+    1.1237623691558838,
+    1.28559410572052,
+    2.4000000953674316
+  ],
+  "triangles": 1140,
+  "material_slots": 4,
+  "uv_layers": 1,
+  "units": "metres",
+  "up": "Z",
+  "front": "-Y",
+  "limitations": [
+    "flat prototype materials; no PBR texture bake",
+    "no production LOD/collision acceptance",
+    "not photogrammetry; no RealityScan reconstruction",
+    "generated concept is a guide, not exact geometry"
+  ],
+  "sha256": {
+    "GreenlandsWaystone.blend": "7723071ea6dc9a467e7029bb570289c599958e0dc1d7f53ba83380904bd81522",
+    "SM_GreenlandsWaystone.fbx": "948f45ef2312b6914b5ca98685bf58710360caffca96d60451caf689e166d40c",
+    "GreenlandsWaystone.glb": "39acda5c0ee105afe68c5c89e2f42ba432cb110be4857c6ebab5a6a5f4c6136a",
+    "Waystone-Turnaround.png": "51d58247d35fe6477c466680f039c2e0d6439273554772fd47a829cde785f586",
+    "Waystone-Preview.png": "f8de1401331e64871e761fff8d382ac6581f5e147d7d7cb783e4312e10a8da32",
+    "Waystone-Turnaround.prompt.txt": "d5bcc04cf6e6a6c54520566752ccdf2586eab646c8816ace8560a67bb9895be2"
+  },
+  "reference_path": "docs/Game-Design/concept-art/Concept.png",
+  "reference_sha256": "63d4f0eea8bf24de70cd7c284e1e4c17d52e5b70aa0b079764b9989251da28e4",
+  "generator": "tools/Create-E1Waystone.py"
+}

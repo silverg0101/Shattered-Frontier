@@ -1,0 +1,13 @@
+Rejected first sheet/output `exec-f76a8765-436f-48c4-aecd-9f9c6a7d3e9f.png`, retained as `rejected-opening-frames-sheet.png`:
+
+Concept sheet for BLD-RT-JointRotatedCellFull-01. Show one isolated rough-timber 0.5m full-cell joint component in simple orthographic views, and separate assembly panel where adjacent cells are grid-aligned with one authored 90-degree rotation; plank seam direction changes, six contact planes remain flush. No arbitrary angles, no interlocking protrusions, no extra hardware, no people or text. Warm rough-sawn frontier timber; use clear seam closeups and one neutral silhouette. Assembly only illustrates appearance, not structural approval.
+
+Selected concept-sheet prompt/output `exec-55928f04-1741-4307-909d-ec956d8dff2d.png`:
+
+Concept sheet for BLD-RT-JointRotatedCellFull-01. Show a single solid rough timber cube, no hole or frame. It is a complete 0.5m cube, full six faces. Front face has horizontal plank grain; adjacent side face has vertical plank grain as if the cube is rotated 90 degrees around grid up axis. Add a small separate 2x2 assembly of four solid closed cubes with one visibly rotated neighbor, no holes. Show top and underside as simple square views. Warm rough-sawn brown wood, all faces flush and cube silhouettes closed. No open frames, no windows, no beams, no voids, no people or text. Plain background, component view clearly separate from assembly. Visual target only.
+
+Clean-view prompt/output `exec-59dd08c5-1905-4bbb-ab59-028cfbb0ca31.png`:
+
+Single isolated solid cube component, BLD-RT-JointRotatedCellFull-01. Full square 0.5 m cell, no hole or frame, no extra objects. Three-quarter view on neutral light background. One visible face has horizontal rough-sawn timber grain; the adjacent face has vertical grain to illustrate an authored 90-degree orientation. Keep all six contact planes flat, no protrusions, no trim or hardware. Simple complete cube, appearance only, no text or people. Concept view does not establish actual geometry fit.
+
+No reference image was attached; style context was textual and from earlier KIT-RT packages.

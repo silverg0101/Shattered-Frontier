@@ -1,0 +1,81 @@
+{
+ "schema_version": 1,
+ "source": "docs/Game-Design/Companions/Legends_Shattered_Frontier_Companion_Abilities_and_Animation_v0.1.md",
+ "built_and_checked": [
+  "equine.walk_loop",
+  "equine.trot_loop",
+  "equine.canter_loop",
+  "equine.gallop_loop",
+  "equine.combat_move_loop.m",
+  "voidreign.sig_a.rift_charge_run",
+  "equine.idle_loop",
+  "equine.idle_loop.m",
+  "equine.combat_idle_loop",
+  "equine.combat_idle_loop.m",
+  "voidreign.atk.basic",
+  "equine.react.hit_front",
+  "equine.defeat",
+  "equine.defeat_hold_loop",
+  "voidreign.wild.exhausted_loop",
+  "capture.bind_loop",
+  "capture.secured",
+  "capture.break",
+  "train.saddle",
+  "deploy.arrive",
+  "store.depart",
+  "voidreign.rear_throw",
+  "voidreign.sig_a.rift_windup",
+  "voidreign.sig_a.rift_impact",
+  "voidreign.sig_a.recall_enter",
+  "voidreign.sig_a.recall_exit"
+ ],
+ "existing_before_pass": [
+  "IdlePilot-v001 idle (181f)",
+  "WalkPilot-v003 slow diagnostic walk (73f)",
+  "TurnPilot-v001 walking turn (73f)"
+ ],
+ "missing_P0": {
+  "character_side": [
+   "rider.<seat>.mount",
+   "rider.<seat>.dismount",
+   "rider.<seat>.dismount_forced",
+   "rider.<seat>.melee or bow_fire",
+   "rider.<seat>.rift_brace",
+   "rider.<seat>.recall_hold"
+  ],
+  "vfx_only": [
+   "voidreign.sig_a.anchor_idle_vfx"
+  ],
+  "mount_side": []
+ },
+ "missing_P1": [
+  "equine.turn_l/r_walk",
+  "equine.turn_l/r_run",
+  "equine.turn_l/r_inplace",
+  "equine.start_walk/run",
+  "equine.stop_walk/run",
+  "equine.react.hit.m",
+  "equine.atk.basic_rear",
+  "equine.react.hit_back",
+  "equine.react.stun_loop",
+  "equine.react.knockdown+getup",
+  "train.approach",
+  "train.hold_loop",
+  "injured_idle_loop",
+  "recovery.rest_loop+rise",
+  "equine.sig_b.rally",
+  "equine.passive.<id>",
+  "equine.up70.<id>",
+  "secondary hair/feather motion (VR-SECONDARY-01)"
+ ],
+ "missing_P2": [
+  "equine.idle_fidget",
+  "equine.jump/fall_loop/land",
+  "equine.cmd.acknowledge"
+ ],
+ "quality_notes": [
+  "All clips are procedural blockouts: contact/IK/loop checks pass but feel needs animator review.",
+  "equine.defeat sinks to a low crouch; it does not lie on its side - animator rework needed.",
+  "Gait speeds: walk 1.36, trot 3.43, canter 4.0, gallop 6.86 m/s at 1x; engine scales playrate."
+ ]
+}

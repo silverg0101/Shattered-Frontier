@@ -1,0 +1,15 @@
+BLD-WT-RoofSlopeFace-01 — exact prompts and references
+
+The original concept generation call from the prior turn is retained as an image in provenance, but its exact prompt text is not recoverable in the current transcript or package sources. It is explicitly recorded as missing rather than reconstructed.
+
+Selected concept-sheet.png repair prompt (ImageGen precise-object-edit; input: exec-07279f2f-16d7-4cfa-9883-56288b103549.png):
+precise-object-edit: Keep the exact existing concept-sheet composition, captions, dimensional labels, views, neutral gray wedge, and perspective. Correct the timber slope treatment only. The worked-timber appearance must be printed or painted directly onto the exact inclined carrier surface, with no visible relief, grain grooves, board gaps, separate plank outlines, raised wood layer, overhanging lip, fascia, trim, or cap. Make the treated plane exactly coincident with z=x and terminate exactly at its boundaries. Preserve all gray non-target faces and all current correct text, including envelope 0.5 m x 0.5 m x 0.5 m, solid target Z <= X, grid 0.5 m, local axes, Y=0/Y=0.5 triangular end faces to BLD-WT-RoofEnd-01, underside z=0 to BLD-WT-RoofEave-01, repeated slope seam to BLD-WT-RoofSlopeFace-01, and fit unvalidated hip/valley/ridge note. Keep identity orientation and do not add geometry. White studio background, engineering concept sheet, readable typography.
+
+Selected asset-view.png prompt (ImageGen precise-object-edit; input: selected concept-sheet.png):
+precise-object-edit: Create the paired clean asset view from the same exact wedge shown in the reference. Isolate one complete 0.5 m x 0.5 m x 0.5 m wedge in identity orientation on a plain white studio background, three-quarter view. Keep the exact triangular-prism silhouette with solid target Z <= X, local X run, Y depth, Z rise. Show a single smooth, flush worked-timber color and grain treatment directly on the sloped plane z=x only, with absolutely no added thickness, grooves, seams, board gaps, fascia, trim, overhang, or projecting pieces. All non-target faces remain neutral gray. No labels, dimensions, arrows, extra objects, assembly, or decorative props. The whole wedge must fit in frame with visible boundaries. Preserve the simple, clean game-asset concept presentation.
+
+Other generation history:
+- exec-25135c7e-c267-4023-8050-8b4fa8c4b127.png: first concept attempt; initial exact prompt unavailable. Rejected because board-like raised grooves/edges implied separate geometry and contact/counterpart callouts were absent.
+- exec-07279f2f-16d7-4cfa-9883-56288b103549.png: first corrective edit, exact prompt unavailable from current transcript; retained as rejected intermediate because face had visible plank grooves/edges.
+
+No image references were passed to the generation call. Appearance-only comparison was made against existing KIT-WT and KIT-RT package images; they were not treated as geometry authority.

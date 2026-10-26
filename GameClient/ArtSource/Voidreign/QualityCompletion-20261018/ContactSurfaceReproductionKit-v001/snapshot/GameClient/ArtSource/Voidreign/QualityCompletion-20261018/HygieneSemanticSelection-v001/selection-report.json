@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "status": "needs-review",
+  "source": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateCleanup-v001\\Voidreign-CompleteHair.blend",
+  "source_sha256": "6c6044a533c16fc7fad23d42c0407dde37a0252aca84f9be1bc9b9a2367364f6",
+  "mesh_hash": "ba2d283db0be5e8cff4cc7549f1f51916cc0a4d18213773300976b11512ececa",
+  "object": "geometry_0",
+  "tool_sha256": "55a63b5f87038517cefd0616c7a529e72b538d0f11826a446844757ef3a7882b",
+  "profile_path": "docs\\art-templates\\model-profiles\\voidreign-hair-selections-v003-20261018.json",
+  "profile_sha256": "558f0bb861238b8150450a3495ee83fca561d3b72b979c3cd6aa92041ddd18f9",
+  "inspection_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\component-report.json",
+  "views_path": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneRestViews-v001\\views.json",
+  "selection_file": "selections.npz",
+  "guide_file": "guide-proposals.json",
+  "features": [
+    {
+      "name": "Mane",
+      "label": 1,
+      "vertices": 57719,
+      "unique_position_nodes": 26758,
+      "cut_root_nodes": 1049,
+      "rootless_nodes": 3142,
+      "selected_graph_components": 113,
+      "guide_count": 12,
+      "root_feather_distance_m": 0.1
+    },
+    {
+      "name": "Tail",
+      "label": 2,
+      "vertices": 67372,
+      "unique_position_nodes": 33233,
+      "cut_root_nodes": 263,
+      "rootless_nodes": 2326,
+      "selected_graph_components": 53,
+      "guide_count": 12,
+      "root_feather_distance_m": 0.14
+    }
+  ],
+  "explicit_protected_vertices": 126903,
+  "selected_protected_vertices": 0,
+  "note": "Authored polygon proposals frozen as explicit selections. Require multiview semantic review; rootless fragments/guide paths are not accepted attachments or centerlines."
+}

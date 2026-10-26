@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "status": "prepared-for-design-review",
+  "parent_job": "docs/art-templates/model-jobs/voidreign-quality-20261018.json",
+  "parent_attempts": {
+    "topology_uv": 3,
+    "rig": 3,
+    "secondary_motion": 3
+  },
+  "authorization": "User requested continued hair motion/collision fixes and reproducible documentation",
+  "hypothesis": "Higher damping or weaker rest-shape spring may reduce turn-release guide motion; isolate each without assuming contact correction is sole cause",
+  "baseline_input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\Simulation-v003\\tool-source.py": "bbb17e6310298993f45e6fbf6b6abadb8824f35969eeb4dd2dfbbe8d3ec6baab",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\Simulation-v003\\guides.json": "f8f8c15cfa47fcd80ea32cf823227cc5df5d063e0baa1e4bc72de99e77701621",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\Simulation-v003\\motion-profile.json": "9df3ed982c0f5f571210a98d42c1e6b395b80713c139f0b7b162ad861d5cca47",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\Simulation-v003\\trajectory.npz": "18b5171e372db733ae4155ebcac1e2ed87a1202d5cb89235efa23db022f04530",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\Simulation-v003\\simulation-report.json": "5145baa3fdd4b8e1f981717e73e411692cf73bf1e9738c2e82b531941bfe0935"
+  },
+  "cases": [
+    {
+      "name": "Drag12",
+      "changed_setting": "drag_per_second",
+      "baseline": 5.0,
+      "candidate": 12.0,
+      "profile": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MotionDesignStudy-v001/Drag12-profile.json",
+      "status": "prepared-not-run"
+    },
+    {
+      "name": "Spring30",
+      "changed_setting": "style_spring_per_second_squared",
+      "baseline": 85.0,
+      "candidate": 30.0,
+      "profile": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MotionDesignStudy-v001/Spring30-profile.json",
+      "status": "prepared-not-run"
+    }
+  ],
+  "limits": "Read-only existing baseline; at most two single-variable trajectory experiments. No mesh/rig bake, export, speed clamp, timing change, acceptance-limit relaxation or attempt reset. Combined profile requires evidence review."
+}

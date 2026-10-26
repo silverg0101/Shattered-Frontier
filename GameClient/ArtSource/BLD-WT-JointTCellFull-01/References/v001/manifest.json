@@ -1,0 +1,49 @@
+{
+  "asset_id": "BLD-WT-JointTCellFull-01",
+  "version": "v001",
+  "batch": "construction-worked-timber-joints-34",
+  "status": "historical image pair retained; appearance/study evidence only; structural route blocked",
+  "source_references": [
+    "docs/art-templates/player-construction-kit-contract.md, \u00a7\u00a73.2, 8\u20139",
+    "docs/art-templates/asset-lists/construction-kit-matrix-07.md, worked-timber joint roles"
+  ],
+  "dependency": "KIT-WT surfaces and contract cell contact boundaries; gameplay properties unchanged",
+  "exact_prompts": {
+    "concept_sheet": "Concept sheet for one worked-timber T-intersection of opaque wall-cell faces. Three solid wall runs meet at a true right-angle T, with one branch meeting the middle of a continuous wall face; horizontal plank courses and flush end grain. Show plan and isometric, clean pale background, no openings, no extra props, no text. Maintain standard 0.5 m cell contacts; visual proposal only.",
+    "asset_view": "Isolated clean worked-timber T-joint study: three opaque wall runs, one straight wall continues through while a third branch meets its center at 90 degrees. Clearly T shaped in top view and three-quarter view; horizontal planks, end grain at meeting face, no hollows, no supports, no text, plain pale background."
+  },
+  "images": [
+    {
+      "file": "concept-sheet.png",
+      "width_px": 1536,
+      "height_px": 1024,
+      "mode": "RGB",
+      "format": "PNG",
+      "sha256": "dfbf98c3c3fc27c13fbb1569045865230a45f67ad71fbcee1c1e85148de9e850"
+    },
+    {
+      "file": "asset-view.png",
+      "width_px": 1536,
+      "height_px": 1024,
+      "mode": "RGB",
+      "format": "PNG",
+      "sha256": "ab589c53effa3c76300ff3efeefcb3e6690028db34307f26acdeb1b2e76ca785"
+    }
+  ],
+  "visual_review": "T topology reads in plan and isometric; near branch alignment and actual contact boundaries require model review.",
+  "compatibility": "Visual review does not establish numerical mesh, collision, contact, clearance or runtime compatibility. Appearance only; gameplay material properties unchanged.",
+  "generation_history": [
+    {
+      "file": "exec-e5f7e718-6c74-4eee-a5f0-49910962abbe.png",
+      "selected": true
+    },
+    {
+      "file": "exec-d8c464e5-7d58-4977-81a9-86e2c67c03fd.png",
+      "selected": true
+    }
+  ],
+  "current_route_review": "Possible explicit cell-member assembly study only. Exact member count at cell granularity, boundaries, origins, axes/pivot, placement, rotation allowlist, contact masks, mating faces, clearances and counterpart IDs remain undefined. Central intersection may imply unapproved overlap or indivisible prefab.",
+  "review_document": "review-2026-10-18.md",
+  "buildability_review_history": [{"date":"2026-10-18","prior_status":"image-complete; proposal; ready-for-model-test","finding":"Selected pair is a T-intersection appearance study without exact cell-member boundaries or contacts. GEO-01 approved manifest/hash and applicable GEO-02 evidence remain absent."}],
+  "created_utc": "2026-10-18"
+}

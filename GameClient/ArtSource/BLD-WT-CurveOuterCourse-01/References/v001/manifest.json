@@ -1,0 +1,48 @@
+{
+  "asset_id": "BLD-WT-CurveOuterCourse-01",
+  "version": "v001",
+  "batch": "construction-worked-timber-curved-faces-39",
+  "current_status": "image-complete; appearance proposal; structural readiness blocked",
+  "intended_route": "proposed flush KIT-WT appearance treatment on convex outside wall at radius 2.0 m of contract curve-quarter-r2 carrier; not a distinct outer-radius solid",
+  "carrier": {
+    "geometry_status": "contract geometry proposal; approved GEO-01 manifest/hash absent",
+    "dimensions_m": {"x": 2.0, "y": 2.0, "z": 0.5},
+    "grid_m": 0.5,
+    "axes": "local X/Y plan; Z height",
+    "origin": "minimum-grid-corner",
+    "pivot": "minimum-grid-corner carrier frame",
+    "shape": "first-quadrant quarter-annulus 1.5^2<=x^2+y^2<=2.0^2 with 0<=z<=0.5 m",
+    "allowed_rotations": "identity only until production shape allowlist is authored under BLD-01"
+  },
+  "component_boundary": "One flush appearance treatment on convex outer vertical curved face radius 2.0 m across full 90-degree arc and full 0.5 m height. Same carrier as CurveInnerCourse role; no geometry change.",
+  "exposed_faces": ["treated outer convex curved face r=2.0 m", "neutral inner concave curved face r=1.5 m", "neutral annular top and underside", "neutral radial end faces"],
+  "mating_faces": ["repeat interfaces at quarter-arc ends", "radial ends target BLD-WT-CurveStraightJoin-01; exact match unvalidated"],
+  "source_references": [
+    "docs/art-templates/player-construction-kit-contract.md §2 curve-quarter-r2 and §3 buildability route",
+    "docs/decisions/BLD-01-voxel-geometry-interface.md coordinate/orientation contract",
+    "docs/art-templates/asset-lists/construction-kit-matrix-07.md CurveOuterCourse role",
+    "docs/art-templates/asset-lists/construction-worked-timber-curved-faces-39.md"
+  ],
+  "appearance_reference_review": {"path": "GameClient/ArtSource/BLD-WT-CurveInnerCourse-01/References/v001/concept-sheet.png", "sha256": "42f61b49e6f86da36eb9f04a8732118d224b0d9f56714039972349ccbbbf99fb", "submitted_to_generator": true, "role": "same carrier and KIT-WT face style; source only, does not prove geometry acceptance"},
+  "required_selected_outputs": ["concept-sheet.png", "asset-view.png"],
+  "selected_image_count": 2,
+  "additional_images": 0,
+  "generation_history": [
+    {"file": "provenance/exec-1e7c289e-2c2f-4b45-bf87-63a7ffca3eec.png", "selected": false, "reason": "Wood remained on the concave inner face despite changed labels; not the requested outer treatment.", "metadata": {"format": "PNG", "width_px": 1536, "height_px": 1024, "pixel_format": "RGB 24bpp", "bytes": 2062680, "sha256": "0eb953f1a9a58c23ac1f0cdad11eba45afde30ac7493645c860682e2cbcc41db"}},
+    {"file": "provenance/exec-484692d7-4609-4417-b4e8-234214c430ac.png", "selected": false, "reason": "Only a short partial strip was timber and title retained an incorrect outer-concave label; replaced with a new concept.", "metadata": {"format": "PNG", "width_px": 1536, "height_px": 1024, "pixel_format": "RGB 24bpp", "bytes": 2061385, "sha256": "b3866a5fde45768c27cc44e3b4a2c53fd6ad2117756669fecd3ca0ff2e735d4f"}},
+    {"file": "provenance/exec-c1b80187-18b8-4dce-a4f4-2643a7a62056.png", "selected": false, "reason": "Outer face coverage was correct, but visible vertical board divisions implied separate members; superseded by continuous-surface repair.", "metadata": {"format": "PNG", "width_px": 1536, "height_px": 1024, "pixel_format": "RGB 24bpp", "bytes": 1760874, "sha256": "d6e3df975a8f0740ddcfb9922766b3fec8aeec6157a244ef1a2b7a1f44201fc3"}},
+    {"file": "concept-sheet.png", "source_cache_path": "C:\\Users\\grego\\.codex\\generated_images\\01a15000-e13f-7213-9ec0-df2684201405\\exec-44c24959-df13-40d2-83c2-69a1b897e1d8.png", "selected": true, "metadata": {"format": "PNG", "width_px": 1536, "height_px": 1024, "pixel_format": "RGB 24bpp", "bytes": 1933872, "sha256": "c5fc7dc7c92fce49ac6b9e5f1cc8cd9f3fc712ced8f8ce190d16e10211ce7a54"}, "exact_prompt": "prompt.txt#3 and #4"},
+    {"file": "asset-view.png", "source_cache_path": "C:\\Users\\grego\\.codex\\generated_images\\01a15000-e13f-7213-9ec0-df2684201405\\exec-dec35fbe-3c09-4cdb-ae06-74e4357055af.png", "selected": true, "metadata": {"format": "PNG", "width_px": 1536, "height_px": 1024, "pixel_format": "RGB 24bpp", "bytes": 1683513, "sha256": "bea52bf23a5a15067d554617c0e0a0d7f158f409abc4a4d4f89ca9e0305a3936"}, "exact_prompt": "prompt.txt#5"}
+  ],
+  "visual_review": {
+    "date": "2026-10-18",
+    "concept_sheet": "Accepted for appearance proposal after correction: dominant outside view shows the full continuous convex outer r=2.0 m wall treated in timber; concave r=1.5 m face, top, underside and radial ends remain gray. Plan identifies the first-quadrant annulus and the outer boundary; labels identify component, envelope, grid, axes, interface and unvalidated fit. No board divisions remain in the selected sheet. Image scale is not fit evidence.",
+    "asset_view": "Accepted for appearance proposal: one intact quarter-annulus with full convex outer wall treated and inner cavity-facing wall/top/end faces gray. No separate members or obvious protrusions. Numerical radius, mesh fit, collision and runtime behavior remain unverified."
+  },
+  "compatibility": "GEO-01 approved manifest/hash absent; applicable GEO-02 curve repetition/rotation/contact evidence absent.",
+  "blockers": [
+    "GEO-01 approved geometry payload/manifest hash absent; shape remains contract proposal.",
+    "Applicable GEO-02 curve repetition, contact and rotation evidence absent.",
+    "CurveStraightJoin counterpart patch dimensions/phase and numerical fit unvalidated."
+  ]
+}

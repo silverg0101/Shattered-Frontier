@@ -1,0 +1,63 @@
+{
+  "schema_version": 2,
+  "status": "sampled-evaluated-pose-visibility-only",
+  "cpu_only": true,
+  "component_scope": "explicit-subset",
+  "tested_component_indices": [
+    122
+  ],
+  "frame": 122,
+  "pose": "Evaluated source WORLD positions in metres; IDs identify original rest components.",
+  "source_sha256": "a5e69cab0f484b2180809b8f60cb61ade34e227bd75ecdecfed97a7f87ae3cb9",
+  "mesh_hash": "ba2d283db0be5e8cff4cc7549f1f51916cc0a4d18213773300976b11512ececa",
+  "object": "geometry_0",
+  "inspection_sha256": "0ea436d91a299faff53b0df6ba0ba73ee4da3d6b22b2b9b6a15c1a96a3a16a60",
+  "selection_sha256": "4b420ac1962b866ee421693c71a8f76571acce6036983f39944461f99d5e5d10",
+  "profile_sha256": "a23945023fae4dc9e3c67ef24000ae9f36eb54109080dacabe97dd2cf4bed082",
+  "components": [
+    {
+      "component_id": "ba2d283db0be:C0122",
+      "component_index": 122,
+      "area_stratified_interior_samples": 128,
+      "visible_samples_any_direction": 123,
+      "target_only_control_hits": 1792,
+      "target_only_control_rays": 1792,
+      "nearby_covering_shell_hits": 15,
+      "first_covering_components": {
+        "0": 882,
+        "76": 36,
+        "71": 57,
+        "53": 3,
+        "24": 62,
+        "2": 46
+      },
+      "visibility_by_direction": {
+        "posX": 0.9296875,
+        "negX": 0.0,
+        "front": 0.0859375,
+        "rear": 0.5625,
+        "top": 0.578125,
+        "bottom": 0.0,
+        "diagonal_-1_-1_-1": 0.0,
+        "diagonal_-1_-1_1": 0.1640625,
+        "diagonal_-1_1_-1": 0.0,
+        "diagonal_-1_1_1": 0.46875,
+        "diagonal_1_-1_-1": 0.5546875,
+        "diagonal_1_-1_1": 0.75,
+        "diagonal_1_1_-1": 0.7890625,
+        "diagonal_1_1_1": 0.6328125
+      },
+      "maximum_sample_visibility": 0.9296875,
+      "candidate": "visible-part-review",
+      "disposition": "needs-review"
+    }
+  ],
+  "low_visibility_ids": [],
+  "limitations": [
+    "Fourteen directions with area-stratified triangle-interior samples; not complete visibility.",
+    "No visibility does not prove debris: internal anatomy, occluded ornaments or moving clumps may be intended.",
+    "Only the specified pose; review other poses and actual shading before disposition.",
+    "The low-rest-visibility-review candidate label is retained for schema compatibility; frame/pose fields define the actual tested pose.",
+    "No geometry changes or semantic approval."
+  ]
+}

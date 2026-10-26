@@ -1,0 +1,113 @@
+{
+  "status": "saved-source-material-closeups-needs-review",
+  "cpu_only": true,
+  "source": "C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairDielectricMaterial-v001\\Mount-MaterialPrototype.blend",
+  "source_sha256": "9f655815892fbc693e58faa99880440ed4b30aca4a023248548e084dbf28b42b",
+  "guides_sha256": "3e39546cf3aa30ba43cbc6a6f183c315128d4a16800db2ad395f4fa6c303be00",
+  "tool_sha256": "d2141055f11744c6cca8b3a215061406c1b36b36621f991ece68b937f3c585cb",
+  "frame": 1,
+  "samples": 16,
+  "channel": "shaded",
+  "material": null,
+  "channel_trace": null,
+  "views": [
+    {
+      "name": "Body-Left",
+      "image": "previews/Detail-Body-Left.png",
+      "camera_matrix_world": [
+        [
+          0.3713906407356262,
+          -0.3232541084289551,
+          0.8703882694244385,
+          5.006493091583252
+        ],
+        [
+          0.9284766912460327,
+          0.12930160760879517,
+          -0.34815528988838196,
+          -2.065788507461548
+        ],
+        [
+          2.139866239758703e-08,
+          0.9374368786811829,
+          0.34815531969070435,
+          3.190000057220459
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "mirror_lights_axis": null
+    },
+    {
+      "name": "Body-Right",
+      "image": "previews/Detail-Body-Right.png",
+      "camera_matrix_world": [
+        [
+          0.3713906407356262,
+          0.3232541084289551,
+          -0.8703882694244385,
+          -4.993506908416748
+        ],
+        [
+          -0.9284766912460327,
+          0.12930160760879517,
+          -0.34815528988838196,
+          -2.065788507461548
+        ],
+        [
+          -2.139866239758703e-08,
+          0.9374368786811829,
+          0.34815531969070435,
+          3.190000057220459
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "mirror_lights_axis": null
+    },
+    {
+      "name": "Body-Rear",
+      "image": "previews/Detail-Body-Rear.png",
+      "camera_matrix_world": [
+        [
+          -0.9805806875228882,
+          -0.0716114342212677,
+          0.18257412314414978,
+          1.006493330001831
+        ],
+        [
+          0.19611606001853943,
+          -0.35805729031562805,
+          0.9128710031509399,
+          4.934211730957031
+        ],
+        [
+          -1.131668181386658e-08,
+          0.9309493899345398,
+          0.3651482164859772,
+          3.190000057220459
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "mirror_lights_axis": null
+    }
+  ],
+  "limitations": [
+    "Diagnostic cameras/lights/shader routing in memory only; source unchanged.",
+    "Opposing light positions do not constitute calibrated material or full coverage acceptance.",
+    "Channel emission previews retain source image color spaces, occlusion and camera projection; not a UV bake or normal/height derivation."
+  ]
+}

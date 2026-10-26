@@ -1,0 +1,2326 @@
+{
+  "schema_version": 1,
+  "status": "anatomy-proposal-needs-review",
+  "cpu_only": true,
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\WalkPilot-v003\\Mount-WalkPilot.blend": "f59dc38bff697b6c2a2c84511413d2e292d9fdbb278acc69cd8df6d26a5bd123",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\WalkRetention-v003\\validation.json": "0630516734df3c1bb11f95ae92056e353dda46c4f4328c4574e32a2e1a451e49",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz": "0d7599c8064cb81a6e211a23731435e08939b7fb146ce2d4bed810273909a2b2",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HairMaterialBoundaryInventory-v001\\boundary-selections.npz": "83e4f07cf16fa21e1e5277950201af199f2928faa0d4fc004e03d00a6602b686"
+  },
+  "tool_sha256": "bd3718747e6266c2bac1800128c4e6b5e7b46a63733769a527ef3bb8480775e1",
+  "profile_sha256": "2ca5779e7bbb4b1adcb39fc440f17635919324ef56cc8a006d2ca98cf77c7b47",
+  "vertices": 284762,
+  "triangles": 297119,
+  "regions": [
+    {
+      "id": "SMB-0d7599c806-f2ac3080aae7",
+      "vertices": 39,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-67a2125f483c",
+      "vertices": 54,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-3bf28272db22",
+      "vertices": 61,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-fcef00460074",
+      "vertices": 47,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-0ded486c5b5e",
+      "vertices": 137,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-d4c63dedbd5e",
+      "vertices": 41,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-bc5c85d932c0",
+      "vertices": 44,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-8575242048e6",
+      "vertices": 33,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-03ddf3586241",
+      "vertices": 34,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-b246d0d8fc50",
+      "vertices": 34,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-1a6b38bcd2ed",
+      "vertices": 60,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-214908334f85",
+      "vertices": 30,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-45e5a199970f",
+      "vertices": 27,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-ae39479acb4e",
+      "vertices": 56,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-496a7c339b64",
+      "vertices": 29,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-76a5b531d804",
+      "vertices": 33,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-142b88f3f5fe",
+      "vertices": 41,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-e985ed9d2776",
+      "vertices": 28,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-f2693581ad0a",
+      "vertices": 26,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-6a2d8e04a727",
+      "vertices": 32,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-4afd6188749c",
+      "vertices": 52,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-4e2fc507de64",
+      "vertices": 30,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-0b3644d3cead",
+      "vertices": 29,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-24c47ae608df",
+      "vertices": 30,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-59ee26f77533",
+      "vertices": 14,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-a21db8bf045e",
+      "vertices": 21,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-79496374c95e",
+      "vertices": 25,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-219022738900",
+      "vertices": 32,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-61056aa72863",
+      "vertices": 70,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-36e9f96b0629",
+      "vertices": 24,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-13afd9fd68f7",
+      "vertices": 23,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-5c255a663a65",
+      "vertices": 27,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-5f9296f0a8b7",
+      "vertices": 22,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-2516a986745a",
+      "vertices": 62,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-faf086e6bbf3",
+      "vertices": 20,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-c1177585d450",
+      "vertices": 38,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-da33066a6671",
+      "vertices": 21,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-13e30963711d",
+      "vertices": 18,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-19f81beb369c",
+      "vertices": 24,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-707b87545777",
+      "vertices": 16,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-1e8b223aad41",
+      "vertices": 22,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-f8c8ec568f04",
+      "vertices": 15,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-cb72c66025e3",
+      "vertices": 19,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-029db0fbd244",
+      "vertices": 21,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-c218565b2652",
+      "vertices": 20,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-9e8e9c14557b",
+      "vertices": 17,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-1d1b12900d1a",
+      "vertices": 6,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-1b91b1cf823d",
+      "vertices": 11,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-602d3f911217",
+      "vertices": 9,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-a990b4f2ab88",
+      "vertices": 9,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-411bed5eb70e",
+      "vertices": 9,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-c9ecd5507ca0",
+      "vertices": 11,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-007f90f080bd",
+      "vertices": 12,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-7d9f8b9ff8a2",
+      "vertices": 9,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-2ce453b2e50e",
+      "vertices": 9,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "SMB-0d7599c806-1e925dd6eb59",
+      "vertices": 9,
+      "status": "geometric-proposal-needs-anatomical-review"
+    }
+  ],
+  "views": [
+    {
+      "id": "SMB-0d7599c806-f2ac3080aae7-posX-overlay",
+      "image": "SMB-0d7599c806-f2ac3080aae7-posX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-f2ac3080aae7"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-f2ac3080aae7-posX-albedo",
+      "image": "SMB-0d7599c806-f2ac3080aae7-posX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-f2ac3080aae7-negX-overlay",
+      "image": "SMB-0d7599c806-f2ac3080aae7-negX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-f2ac3080aae7"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-f2ac3080aae7-negX-albedo",
+      "image": "SMB-0d7599c806-f2ac3080aae7-negX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-67a2125f483c-posX-overlay",
+      "image": "SMB-0d7599c806-67a2125f483c-posX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-67a2125f483c"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-67a2125f483c-posX-albedo",
+      "image": "SMB-0d7599c806-67a2125f483c-posX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-67a2125f483c-negX-overlay",
+      "image": "SMB-0d7599c806-67a2125f483c-negX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-67a2125f483c"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-67a2125f483c-negX-albedo",
+      "image": "SMB-0d7599c806-67a2125f483c-negX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-3bf28272db22-posX-overlay",
+      "image": "SMB-0d7599c806-3bf28272db22-posX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-3bf28272db22"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-3bf28272db22-posX-albedo",
+      "image": "SMB-0d7599c806-3bf28272db22-posX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-3bf28272db22-negX-overlay",
+      "image": "SMB-0d7599c806-3bf28272db22-negX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-3bf28272db22"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-3bf28272db22-negX-albedo",
+      "image": "SMB-0d7599c806-3bf28272db22-negX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-fcef00460074-posX-overlay",
+      "image": "SMB-0d7599c806-fcef00460074-posX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-fcef00460074"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-fcef00460074-posX-albedo",
+      "image": "SMB-0d7599c806-fcef00460074-posX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-fcef00460074-negX-overlay",
+      "image": "SMB-0d7599c806-fcef00460074-negX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-fcef00460074"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-fcef00460074-negX-albedo",
+      "image": "SMB-0d7599c806-fcef00460074-negX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-0ded486c5b5e-posX-overlay",
+      "image": "SMB-0d7599c806-0ded486c5b5e-posX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-0ded486c5b5e"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-0ded486c5b5e-posX-albedo",
+      "image": "SMB-0d7599c806-0ded486c5b5e-posX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-0ded486c5b5e-negX-overlay",
+      "image": "SMB-0d7599c806-0ded486c5b5e-negX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-0ded486c5b5e"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-0ded486c5b5e-negX-albedo",
+      "image": "SMB-0d7599c806-0ded486c5b5e-negX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-d4c63dedbd5e-posX-overlay",
+      "image": "SMB-0d7599c806-d4c63dedbd5e-posX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-d4c63dedbd5e"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-d4c63dedbd5e-posX-albedo",
+      "image": "SMB-0d7599c806-d4c63dedbd5e-posX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-d4c63dedbd5e-negX-overlay",
+      "image": "SMB-0d7599c806-d4c63dedbd5e-negX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-d4c63dedbd5e"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-d4c63dedbd5e-negX-albedo",
+      "image": "SMB-0d7599c806-d4c63dedbd5e-negX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-bc5c85d932c0-posX-overlay",
+      "image": "SMB-0d7599c806-bc5c85d932c0-posX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-bc5c85d932c0"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-bc5c85d932c0-posX-albedo",
+      "image": "SMB-0d7599c806-bc5c85d932c0-posX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-bc5c85d932c0-negX-overlay",
+      "image": "SMB-0d7599c806-bc5c85d932c0-negX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-bc5c85d932c0"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-bc5c85d932c0-negX-albedo",
+      "image": "SMB-0d7599c806-bc5c85d932c0-negX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-8575242048e6-posX-overlay",
+      "image": "SMB-0d7599c806-8575242048e6-posX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-8575242048e6"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-8575242048e6-posX-albedo",
+      "image": "SMB-0d7599c806-8575242048e6-posX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-8575242048e6-negX-overlay",
+      "image": "SMB-0d7599c806-8575242048e6-negX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-8575242048e6"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-8575242048e6-negX-albedo",
+      "image": "SMB-0d7599c806-8575242048e6-negX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-03ddf3586241-posX-overlay",
+      "image": "SMB-0d7599c806-03ddf3586241-posX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-03ddf3586241"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-03ddf3586241-posX-albedo",
+      "image": "SMB-0d7599c806-03ddf3586241-posX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-03ddf3586241-negX-overlay",
+      "image": "SMB-0d7599c806-03ddf3586241-negX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-03ddf3586241"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-03ddf3586241-negX-albedo",
+      "image": "SMB-0d7599c806-03ddf3586241-negX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-b246d0d8fc50-posX-overlay",
+      "image": "SMB-0d7599c806-b246d0d8fc50-posX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-b246d0d8fc50"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-b246d0d8fc50-posX-albedo",
+      "image": "SMB-0d7599c806-b246d0d8fc50-posX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-b246d0d8fc50-negX-overlay",
+      "image": "SMB-0d7599c806-b246d0d8fc50-negX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-b246d0d8fc50"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-b246d0d8fc50-negX-albedo",
+      "image": "SMB-0d7599c806-b246d0d8fc50-negX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-1a6b38bcd2ed-posX-overlay",
+      "image": "SMB-0d7599c806-1a6b38bcd2ed-posX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-1a6b38bcd2ed"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-1a6b38bcd2ed-posX-albedo",
+      "image": "SMB-0d7599c806-1a6b38bcd2ed-posX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-1a6b38bcd2ed-negX-overlay",
+      "image": "SMB-0d7599c806-1a6b38bcd2ed-negX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-1a6b38bcd2ed"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-1a6b38bcd2ed-negX-albedo",
+      "image": "SMB-0d7599c806-1a6b38bcd2ed-negX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-214908334f85-posX-overlay",
+      "image": "SMB-0d7599c806-214908334f85-posX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-214908334f85"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-214908334f85-posX-albedo",
+      "image": "SMB-0d7599c806-214908334f85-posX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-214908334f85-negX-overlay",
+      "image": "SMB-0d7599c806-214908334f85-negX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-214908334f85"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-214908334f85-negX-albedo",
+      "image": "SMB-0d7599c806-214908334f85-negX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-45e5a199970f-posX-overlay",
+      "image": "SMB-0d7599c806-45e5a199970f-posX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-45e5a199970f"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-45e5a199970f-posX-albedo",
+      "image": "SMB-0d7599c806-45e5a199970f-posX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-45e5a199970f-negX-overlay",
+      "image": "SMB-0d7599c806-45e5a199970f-negX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-45e5a199970f"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-45e5a199970f-negX-albedo",
+      "image": "SMB-0d7599c806-45e5a199970f-negX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-ae39479acb4e-posX-overlay",
+      "image": "SMB-0d7599c806-ae39479acb4e-posX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-ae39479acb4e"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-ae39479acb4e-posX-albedo",
+      "image": "SMB-0d7599c806-ae39479acb4e-posX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-ae39479acb4e-negX-overlay",
+      "image": "SMB-0d7599c806-ae39479acb4e-negX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-ae39479acb4e"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-ae39479acb4e-negX-albedo",
+      "image": "SMB-0d7599c806-ae39479acb4e-negX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-496a7c339b64-posX-overlay",
+      "image": "SMB-0d7599c806-496a7c339b64-posX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-496a7c339b64"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-496a7c339b64-posX-albedo",
+      "image": "SMB-0d7599c806-496a7c339b64-posX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-496a7c339b64-negX-overlay",
+      "image": "SMB-0d7599c806-496a7c339b64-negX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-496a7c339b64"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-496a7c339b64-negX-albedo",
+      "image": "SMB-0d7599c806-496a7c339b64-negX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-76a5b531d804-posX-overlay",
+      "image": "SMB-0d7599c806-76a5b531d804-posX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-76a5b531d804"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-76a5b531d804-posX-albedo",
+      "image": "SMB-0d7599c806-76a5b531d804-posX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-76a5b531d804-negX-overlay",
+      "image": "SMB-0d7599c806-76a5b531d804-negX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-76a5b531d804"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-76a5b531d804-negX-albedo",
+      "image": "SMB-0d7599c806-76a5b531d804-negX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-142b88f3f5fe-posX-overlay",
+      "image": "SMB-0d7599c806-142b88f3f5fe-posX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-142b88f3f5fe"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-142b88f3f5fe-posX-albedo",
+      "image": "SMB-0d7599c806-142b88f3f5fe-posX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-142b88f3f5fe-negX-overlay",
+      "image": "SMB-0d7599c806-142b88f3f5fe-negX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-142b88f3f5fe"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-142b88f3f5fe-negX-albedo",
+      "image": "SMB-0d7599c806-142b88f3f5fe-negX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-e985ed9d2776-posX-overlay",
+      "image": "SMB-0d7599c806-e985ed9d2776-posX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-e985ed9d2776"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-e985ed9d2776-posX-albedo",
+      "image": "SMB-0d7599c806-e985ed9d2776-posX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-e985ed9d2776-negX-overlay",
+      "image": "SMB-0d7599c806-e985ed9d2776-negX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-e985ed9d2776"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-e985ed9d2776-negX-albedo",
+      "image": "SMB-0d7599c806-e985ed9d2776-negX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-f2693581ad0a-posX-overlay",
+      "image": "SMB-0d7599c806-f2693581ad0a-posX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-f2693581ad0a"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-f2693581ad0a-posX-albedo",
+      "image": "SMB-0d7599c806-f2693581ad0a-posX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-f2693581ad0a-negX-overlay",
+      "image": "SMB-0d7599c806-f2693581ad0a-negX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-f2693581ad0a"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-f2693581ad0a-negX-albedo",
+      "image": "SMB-0d7599c806-f2693581ad0a-negX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-6a2d8e04a727-posX-overlay",
+      "image": "SMB-0d7599c806-6a2d8e04a727-posX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-6a2d8e04a727"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-6a2d8e04a727-posX-albedo",
+      "image": "SMB-0d7599c806-6a2d8e04a727-posX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-6a2d8e04a727-negX-overlay",
+      "image": "SMB-0d7599c806-6a2d8e04a727-negX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-6a2d8e04a727"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-6a2d8e04a727-negX-albedo",
+      "image": "SMB-0d7599c806-6a2d8e04a727-negX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-4afd6188749c-posX-overlay",
+      "image": "SMB-0d7599c806-4afd6188749c-posX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-4afd6188749c"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-4afd6188749c-posX-albedo",
+      "image": "SMB-0d7599c806-4afd6188749c-posX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-4afd6188749c-negX-overlay",
+      "image": "SMB-0d7599c806-4afd6188749c-negX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-4afd6188749c"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-4afd6188749c-negX-albedo",
+      "image": "SMB-0d7599c806-4afd6188749c-negX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-4e2fc507de64-posX-overlay",
+      "image": "SMB-0d7599c806-4e2fc507de64-posX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-4e2fc507de64"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-4e2fc507de64-posX-albedo",
+      "image": "SMB-0d7599c806-4e2fc507de64-posX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-4e2fc507de64-negX-overlay",
+      "image": "SMB-0d7599c806-4e2fc507de64-negX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-4e2fc507de64"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-4e2fc507de64-negX-albedo",
+      "image": "SMB-0d7599c806-4e2fc507de64-negX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-0b3644d3cead-posX-overlay",
+      "image": "SMB-0d7599c806-0b3644d3cead-posX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-0b3644d3cead"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-0b3644d3cead-posX-albedo",
+      "image": "SMB-0d7599c806-0b3644d3cead-posX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-0b3644d3cead-negX-overlay",
+      "image": "SMB-0d7599c806-0b3644d3cead-negX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-0b3644d3cead"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-0b3644d3cead-negX-albedo",
+      "image": "SMB-0d7599c806-0b3644d3cead-negX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-24c47ae608df-posX-overlay",
+      "image": "SMB-0d7599c806-24c47ae608df-posX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-24c47ae608df"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-24c47ae608df-posX-albedo",
+      "image": "SMB-0d7599c806-24c47ae608df-posX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-24c47ae608df-negX-overlay",
+      "image": "SMB-0d7599c806-24c47ae608df-negX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-24c47ae608df"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-24c47ae608df-negX-albedo",
+      "image": "SMB-0d7599c806-24c47ae608df-negX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-59ee26f77533-posX-overlay",
+      "image": "SMB-0d7599c806-59ee26f77533-posX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-59ee26f77533"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-59ee26f77533-posX-albedo",
+      "image": "SMB-0d7599c806-59ee26f77533-posX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-59ee26f77533-negX-overlay",
+      "image": "SMB-0d7599c806-59ee26f77533-negX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-59ee26f77533"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-59ee26f77533-negX-albedo",
+      "image": "SMB-0d7599c806-59ee26f77533-negX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-a21db8bf045e-posX-overlay",
+      "image": "SMB-0d7599c806-a21db8bf045e-posX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-a21db8bf045e"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-a21db8bf045e-posX-albedo",
+      "image": "SMB-0d7599c806-a21db8bf045e-posX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-a21db8bf045e-negX-overlay",
+      "image": "SMB-0d7599c806-a21db8bf045e-negX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-a21db8bf045e"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-a21db8bf045e-negX-albedo",
+      "image": "SMB-0d7599c806-a21db8bf045e-negX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-79496374c95e-posX-overlay",
+      "image": "SMB-0d7599c806-79496374c95e-posX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-79496374c95e"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-79496374c95e-posX-albedo",
+      "image": "SMB-0d7599c806-79496374c95e-posX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-79496374c95e-negX-overlay",
+      "image": "SMB-0d7599c806-79496374c95e-negX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-79496374c95e"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-79496374c95e-negX-albedo",
+      "image": "SMB-0d7599c806-79496374c95e-negX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-219022738900-posX-overlay",
+      "image": "SMB-0d7599c806-219022738900-posX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-219022738900"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-219022738900-posX-albedo",
+      "image": "SMB-0d7599c806-219022738900-posX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-219022738900-negX-overlay",
+      "image": "SMB-0d7599c806-219022738900-negX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-219022738900"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-219022738900-negX-albedo",
+      "image": "SMB-0d7599c806-219022738900-negX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-61056aa72863-posX-overlay",
+      "image": "SMB-0d7599c806-61056aa72863-posX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-61056aa72863"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-61056aa72863-posX-albedo",
+      "image": "SMB-0d7599c806-61056aa72863-posX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-61056aa72863-negX-overlay",
+      "image": "SMB-0d7599c806-61056aa72863-negX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-61056aa72863"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-61056aa72863-negX-albedo",
+      "image": "SMB-0d7599c806-61056aa72863-negX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-36e9f96b0629-posX-overlay",
+      "image": "SMB-0d7599c806-36e9f96b0629-posX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-36e9f96b0629"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-36e9f96b0629-posX-albedo",
+      "image": "SMB-0d7599c806-36e9f96b0629-posX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-36e9f96b0629-negX-overlay",
+      "image": "SMB-0d7599c806-36e9f96b0629-negX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-36e9f96b0629"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-36e9f96b0629-negX-albedo",
+      "image": "SMB-0d7599c806-36e9f96b0629-negX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-13afd9fd68f7-posX-overlay",
+      "image": "SMB-0d7599c806-13afd9fd68f7-posX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-13afd9fd68f7"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-13afd9fd68f7-posX-albedo",
+      "image": "SMB-0d7599c806-13afd9fd68f7-posX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-13afd9fd68f7-negX-overlay",
+      "image": "SMB-0d7599c806-13afd9fd68f7-negX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-13afd9fd68f7"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-13afd9fd68f7-negX-albedo",
+      "image": "SMB-0d7599c806-13afd9fd68f7-negX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-5c255a663a65-posX-overlay",
+      "image": "SMB-0d7599c806-5c255a663a65-posX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-5c255a663a65"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-5c255a663a65-posX-albedo",
+      "image": "SMB-0d7599c806-5c255a663a65-posX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-5c255a663a65-negX-overlay",
+      "image": "SMB-0d7599c806-5c255a663a65-negX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-5c255a663a65"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-5c255a663a65-negX-albedo",
+      "image": "SMB-0d7599c806-5c255a663a65-negX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-5f9296f0a8b7-posX-overlay",
+      "image": "SMB-0d7599c806-5f9296f0a8b7-posX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-5f9296f0a8b7"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-5f9296f0a8b7-posX-albedo",
+      "image": "SMB-0d7599c806-5f9296f0a8b7-posX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-5f9296f0a8b7-negX-overlay",
+      "image": "SMB-0d7599c806-5f9296f0a8b7-negX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-5f9296f0a8b7"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-5f9296f0a8b7-negX-albedo",
+      "image": "SMB-0d7599c806-5f9296f0a8b7-negX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-2516a986745a-posX-overlay",
+      "image": "SMB-0d7599c806-2516a986745a-posX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-2516a986745a"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-2516a986745a-posX-albedo",
+      "image": "SMB-0d7599c806-2516a986745a-posX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-2516a986745a-negX-overlay",
+      "image": "SMB-0d7599c806-2516a986745a-negX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-2516a986745a"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-2516a986745a-negX-albedo",
+      "image": "SMB-0d7599c806-2516a986745a-negX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-faf086e6bbf3-posX-overlay",
+      "image": "SMB-0d7599c806-faf086e6bbf3-posX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-faf086e6bbf3"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-faf086e6bbf3-posX-albedo",
+      "image": "SMB-0d7599c806-faf086e6bbf3-posX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-faf086e6bbf3-negX-overlay",
+      "image": "SMB-0d7599c806-faf086e6bbf3-negX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-faf086e6bbf3"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-faf086e6bbf3-negX-albedo",
+      "image": "SMB-0d7599c806-faf086e6bbf3-negX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-c1177585d450-posX-overlay",
+      "image": "SMB-0d7599c806-c1177585d450-posX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-c1177585d450"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-c1177585d450-posX-albedo",
+      "image": "SMB-0d7599c806-c1177585d450-posX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-c1177585d450-negX-overlay",
+      "image": "SMB-0d7599c806-c1177585d450-negX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-c1177585d450"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-c1177585d450-negX-albedo",
+      "image": "SMB-0d7599c806-c1177585d450-negX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-da33066a6671-posX-overlay",
+      "image": "SMB-0d7599c806-da33066a6671-posX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-da33066a6671"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-da33066a6671-posX-albedo",
+      "image": "SMB-0d7599c806-da33066a6671-posX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-da33066a6671-negX-overlay",
+      "image": "SMB-0d7599c806-da33066a6671-negX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-da33066a6671"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-da33066a6671-negX-albedo",
+      "image": "SMB-0d7599c806-da33066a6671-negX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-13e30963711d-posX-overlay",
+      "image": "SMB-0d7599c806-13e30963711d-posX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-13e30963711d"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-13e30963711d-posX-albedo",
+      "image": "SMB-0d7599c806-13e30963711d-posX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-13e30963711d-negX-overlay",
+      "image": "SMB-0d7599c806-13e30963711d-negX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-13e30963711d"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-13e30963711d-negX-albedo",
+      "image": "SMB-0d7599c806-13e30963711d-negX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-19f81beb369c-posX-overlay",
+      "image": "SMB-0d7599c806-19f81beb369c-posX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-19f81beb369c"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-19f81beb369c-posX-albedo",
+      "image": "SMB-0d7599c806-19f81beb369c-posX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-19f81beb369c-negX-overlay",
+      "image": "SMB-0d7599c806-19f81beb369c-negX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-19f81beb369c"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-19f81beb369c-negX-albedo",
+      "image": "SMB-0d7599c806-19f81beb369c-negX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-707b87545777-posX-overlay",
+      "image": "SMB-0d7599c806-707b87545777-posX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-707b87545777"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-707b87545777-posX-albedo",
+      "image": "SMB-0d7599c806-707b87545777-posX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-707b87545777-negX-overlay",
+      "image": "SMB-0d7599c806-707b87545777-negX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-707b87545777"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-707b87545777-negX-albedo",
+      "image": "SMB-0d7599c806-707b87545777-negX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-1e8b223aad41-posX-overlay",
+      "image": "SMB-0d7599c806-1e8b223aad41-posX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-1e8b223aad41"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-1e8b223aad41-posX-albedo",
+      "image": "SMB-0d7599c806-1e8b223aad41-posX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-1e8b223aad41-negX-overlay",
+      "image": "SMB-0d7599c806-1e8b223aad41-negX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-1e8b223aad41"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-1e8b223aad41-negX-albedo",
+      "image": "SMB-0d7599c806-1e8b223aad41-negX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-f8c8ec568f04-posX-overlay",
+      "image": "SMB-0d7599c806-f8c8ec568f04-posX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-f8c8ec568f04"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-f8c8ec568f04-posX-albedo",
+      "image": "SMB-0d7599c806-f8c8ec568f04-posX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-f8c8ec568f04-negX-overlay",
+      "image": "SMB-0d7599c806-f8c8ec568f04-negX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-f8c8ec568f04"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-f8c8ec568f04-negX-albedo",
+      "image": "SMB-0d7599c806-f8c8ec568f04-negX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-cb72c66025e3-posX-overlay",
+      "image": "SMB-0d7599c806-cb72c66025e3-posX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-cb72c66025e3"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-cb72c66025e3-posX-albedo",
+      "image": "SMB-0d7599c806-cb72c66025e3-posX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-cb72c66025e3-negX-overlay",
+      "image": "SMB-0d7599c806-cb72c66025e3-negX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-cb72c66025e3"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-cb72c66025e3-negX-albedo",
+      "image": "SMB-0d7599c806-cb72c66025e3-negX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-029db0fbd244-posX-overlay",
+      "image": "SMB-0d7599c806-029db0fbd244-posX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-029db0fbd244"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-029db0fbd244-posX-albedo",
+      "image": "SMB-0d7599c806-029db0fbd244-posX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-029db0fbd244-negX-overlay",
+      "image": "SMB-0d7599c806-029db0fbd244-negX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-029db0fbd244"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-029db0fbd244-negX-albedo",
+      "image": "SMB-0d7599c806-029db0fbd244-negX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-c218565b2652-posX-overlay",
+      "image": "SMB-0d7599c806-c218565b2652-posX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-c218565b2652"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-c218565b2652-posX-albedo",
+      "image": "SMB-0d7599c806-c218565b2652-posX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-c218565b2652-negX-overlay",
+      "image": "SMB-0d7599c806-c218565b2652-negX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-c218565b2652"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-c218565b2652-negX-albedo",
+      "image": "SMB-0d7599c806-c218565b2652-negX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-9e8e9c14557b-posX-overlay",
+      "image": "SMB-0d7599c806-9e8e9c14557b-posX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-9e8e9c14557b"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-9e8e9c14557b-posX-albedo",
+      "image": "SMB-0d7599c806-9e8e9c14557b-posX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-9e8e9c14557b-negX-overlay",
+      "image": "SMB-0d7599c806-9e8e9c14557b-negX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-9e8e9c14557b"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-9e8e9c14557b-negX-albedo",
+      "image": "SMB-0d7599c806-9e8e9c14557b-negX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-1d1b12900d1a-posX-overlay",
+      "image": "SMB-0d7599c806-1d1b12900d1a-posX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-1d1b12900d1a"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-1d1b12900d1a-posX-albedo",
+      "image": "SMB-0d7599c806-1d1b12900d1a-posX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-1d1b12900d1a-negX-overlay",
+      "image": "SMB-0d7599c806-1d1b12900d1a-negX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-1d1b12900d1a"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-1d1b12900d1a-negX-albedo",
+      "image": "SMB-0d7599c806-1d1b12900d1a-negX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-1b91b1cf823d-posX-overlay",
+      "image": "SMB-0d7599c806-1b91b1cf823d-posX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-1b91b1cf823d"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-1b91b1cf823d-posX-albedo",
+      "image": "SMB-0d7599c806-1b91b1cf823d-posX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-1b91b1cf823d-negX-overlay",
+      "image": "SMB-0d7599c806-1b91b1cf823d-negX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-1b91b1cf823d"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-1b91b1cf823d-negX-albedo",
+      "image": "SMB-0d7599c806-1b91b1cf823d-negX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-602d3f911217-posX-overlay",
+      "image": "SMB-0d7599c806-602d3f911217-posX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-602d3f911217"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-602d3f911217-posX-albedo",
+      "image": "SMB-0d7599c806-602d3f911217-posX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-602d3f911217-negX-overlay",
+      "image": "SMB-0d7599c806-602d3f911217-negX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-602d3f911217"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-602d3f911217-negX-albedo",
+      "image": "SMB-0d7599c806-602d3f911217-negX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-a990b4f2ab88-posX-overlay",
+      "image": "SMB-0d7599c806-a990b4f2ab88-posX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-a990b4f2ab88"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-a990b4f2ab88-posX-albedo",
+      "image": "SMB-0d7599c806-a990b4f2ab88-posX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-a990b4f2ab88-negX-overlay",
+      "image": "SMB-0d7599c806-a990b4f2ab88-negX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-a990b4f2ab88"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-a990b4f2ab88-negX-albedo",
+      "image": "SMB-0d7599c806-a990b4f2ab88-negX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-411bed5eb70e-posX-overlay",
+      "image": "SMB-0d7599c806-411bed5eb70e-posX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-411bed5eb70e"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-411bed5eb70e-posX-albedo",
+      "image": "SMB-0d7599c806-411bed5eb70e-posX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-411bed5eb70e-negX-overlay",
+      "image": "SMB-0d7599c806-411bed5eb70e-negX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-411bed5eb70e"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-411bed5eb70e-negX-albedo",
+      "image": "SMB-0d7599c806-411bed5eb70e-negX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-c9ecd5507ca0-posX-overlay",
+      "image": "SMB-0d7599c806-c9ecd5507ca0-posX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-c9ecd5507ca0"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-c9ecd5507ca0-posX-albedo",
+      "image": "SMB-0d7599c806-c9ecd5507ca0-posX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-c9ecd5507ca0-negX-overlay",
+      "image": "SMB-0d7599c806-c9ecd5507ca0-negX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-c9ecd5507ca0"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-c9ecd5507ca0-negX-albedo",
+      "image": "SMB-0d7599c806-c9ecd5507ca0-negX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-007f90f080bd-posX-overlay",
+      "image": "SMB-0d7599c806-007f90f080bd-posX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-007f90f080bd"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-007f90f080bd-posX-albedo",
+      "image": "SMB-0d7599c806-007f90f080bd-posX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-007f90f080bd-negX-overlay",
+      "image": "SMB-0d7599c806-007f90f080bd-negX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-007f90f080bd"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-007f90f080bd-negX-albedo",
+      "image": "SMB-0d7599c806-007f90f080bd-negX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-7d9f8b9ff8a2-posX-overlay",
+      "image": "SMB-0d7599c806-7d9f8b9ff8a2-posX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-7d9f8b9ff8a2"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-7d9f8b9ff8a2-posX-albedo",
+      "image": "SMB-0d7599c806-7d9f8b9ff8a2-posX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-7d9f8b9ff8a2-negX-overlay",
+      "image": "SMB-0d7599c806-7d9f8b9ff8a2-negX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-7d9f8b9ff8a2"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-7d9f8b9ff8a2-negX-albedo",
+      "image": "SMB-0d7599c806-7d9f8b9ff8a2-negX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-2ce453b2e50e-posX-overlay",
+      "image": "SMB-0d7599c806-2ce453b2e50e-posX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-2ce453b2e50e"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-2ce453b2e50e-posX-albedo",
+      "image": "SMB-0d7599c806-2ce453b2e50e-posX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-2ce453b2e50e-negX-overlay",
+      "image": "SMB-0d7599c806-2ce453b2e50e-negX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-2ce453b2e50e"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-2ce453b2e50e-negX-albedo",
+      "image": "SMB-0d7599c806-2ce453b2e50e-negX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-1e925dd6eb59-posX-overlay",
+      "image": "SMB-0d7599c806-1e925dd6eb59-posX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-1e925dd6eb59"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-1e925dd6eb59-posX-albedo",
+      "image": "SMB-0d7599c806-1e925dd6eb59-posX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-1e925dd6eb59-negX-overlay",
+      "image": "SMB-0d7599c806-1e925dd6eb59-negX-overlay.png",
+      "isolate_regions": [],
+      "appearance": "overlay",
+      "highlight_regions": [
+        "SMB-0d7599c806-1e925dd6eb59"
+      ],
+      "source_face_count": 297119
+    },
+    {
+      "id": "SMB-0d7599c806-1e925dd6eb59-negX-albedo",
+      "image": "SMB-0d7599c806-1e925dd6eb59-negX-albedo.png",
+      "isolate_regions": [],
+      "appearance": "albedo",
+      "highlight_regions": [],
+      "source_face_count": 297119
+    }
+  ],
+  "coordinate_convention": {
+    "up": "+Z",
+    "forward": "-Y (head/horn)",
+    "side_names": "Geometric +X/-X until reviewed"
+  },
+  "landmarks": [],
+  "limitations": [
+    "Exact indexed rest diagnostic only; no source rig. Optional albedo-emission copies source UV/color networks for inspection, not PBR acceptance.",
+    "Box domains can include hanging tack or miss curved anatomy; not skin weights or semantic approval.",
+    "Landmarks are authored proposals, not inferred joint centers or accepted stance."
+  ]
+}

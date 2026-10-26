@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "status": "passed-feature-cache-reopen-only",
+  "cpu_only": true,
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManeClothSettledPilot-v001\\Voidreign-ActualSurfacePilot.blend": "6582c14e4d354c9252bb2e3e79c6c49dfc1ece81fcab3df45eef65a64889ada7",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ManeClothSettledPilot-v001\\positive-warmup-reference.npz": "b4b40b5e2c5b9d7be89d1d3f4f24e31bc3c7ea509349aca15a98e60a2eae6e98"
+  },
+  "tool_sha256": "41f4dc2ec5ab52ea335cac3936a4311cf1cb98b8d58e89c83aa8ce4d91613d00",
+  "profile_sha256": "255b4d32b49620916a68aaabbfe412372c0d52d4a842c88184bfcaba4694e01f",
+  "candidate_sha256": "569ba835a0eb275250d3be1dea94ea5b1be4a0349058901fcde6473df7553725",
+  "motion_cache_sha256": "815fb2edcffcb177c7343228a64a0d564db2c815763544dadb27386c0b9e4010",
+  "frames": 30,
+  "vertices": 26758,
+  "measured_maximum_error_m": 0.0,
+  "maximum_reopen_error_m": 1e-05,
+  "per_frame_error_m": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0
+  ],
+  "limitations": [
+    "Measured local-point playback only; original simulation validity, contacts, style and attachment checks remain separate.",
+    "MDD is an offline Blender dependency, not a skeletal engine exchange. Original source mesh/UV/weights are retained."
+  ]
+}

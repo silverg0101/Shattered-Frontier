@@ -1,0 +1,14 @@
+{
+  "status": "sole-only-core-incomplete",
+  "viewed": [
+    "fore.L-side",
+    "fore.L-legacy-isolated",
+    "fore.R-legacy-isolated",
+    "fore.R-side",
+    "hind.L-side",
+    "hind.L-legacy-isolated",
+    "hind.R-side"
+  ],
+  "finding": "Excluded red legacy surfaces include actual hoof-shell walls on three feet; source component connectivity beneath the plane does not identify the whole physical rigid core.",
+  "disposition": "Do not replace old rigid selection with sole-only proposal; preserve reviewed shells as additional seeds."
+}

@@ -1,0 +1,5 @@
+Concept sheet prompt:
+All materials in this image must be rough oak only; do not show stone, masonry, plaster, metal, glass or mixed materials. Rough timber arched door interface concept sheet, no people or text. Empty semicircular opening framed by oak reveals and spring-point contact faces, with isolated matching oak interface member and side section. Show plain neutral gray background instead of a surrounding building scene. No door leaf or hardware; preserve an empty arch silhouette. Appearance proposal only, no dimensions.
+
+Clean view prompt:
+One isolated rough oak arched-door frame interface member: a straight vertical hinge-side jamb strip for the straight lower portion of the `arch-2m` opening, with a narrow shallow door-stop rebate on the aperture-facing side and a flat wall-contact face. No curved arch ring, no other jamb, no door leaf, no hinge hardware, no whole opening. Neutral gray background. Do not alter the opening; no dimensions or behavior implied.

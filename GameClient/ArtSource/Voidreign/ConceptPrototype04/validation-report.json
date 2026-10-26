@@ -1,0 +1,59 @@
+{
+  "blend": {
+    "objects": 191,
+    "camera": "Three-quarter beauty",
+    "render": "FreshProcess.png"
+  },
+  "exports": {
+    "glb": {
+      "mesh_objects": 166,
+      "materials": [
+        "Aged ivory bone",
+        "Blackened iron",
+        "Charcoal hide and leather",
+        "Ember red",
+        "Hoof iron"
+      ],
+      "bounds": [
+        [
+          -0.5799999833106995,
+          0.5799999833106995
+        ],
+        [
+          -2.0315334796905518,
+          1.966767430305481
+        ],
+        [
+          0.0,
+          2.5046908855438232
+        ]
+      ],
+      "triangles": 36732
+    },
+    "fbx": {
+      "mesh_objects": 166,
+      "materials": [
+        "Aged ivory bone",
+        "Blackened iron",
+        "Charcoal hide and leather",
+        "Ember red",
+        "Hoof iron"
+      ],
+      "bounds": [
+        [
+          -0.5799999237060547,
+          0.5799999833106995
+        ],
+        [
+          -2.0315334796905518,
+          1.9667675495147705
+        ],
+        [
+          0.0,
+          2.5046908855438232
+        ]
+      ],
+      "triangles": 36732
+    }
+  }
+}

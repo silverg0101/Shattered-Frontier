@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "units": "metres",
+  "feature_labels": {
+    "Mane": 1,
+    "Tail": 2
+  },
+  "permissions": "Read-only full330 source-surface distortion measurement; no authored threshold or automatic repair",
+  "effective_time": "This frozen clip only",
+  "source": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryJunctionCorrection-v001/Mount-StandingSkinRepair.blend",
+  "world_points": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryJunctionExchange-v001\\expected-world-points.npy",
+  "producer_report": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryJunctionExchange-v001\\exchange-report.json",
+  "rest_selection": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz",
+  "feature_selection": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selections.npz",
+  "input_sha256": {
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/PrimaryJunctionCorrection-v001/Mount-StandingSkinRepair.blend": "b140461a190abbaa6591a956c1299e6b2e608fd6a66df9658806104ec061d75b",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryJunctionExchange-v001\\expected-world-points.npy": "a98ff2121f29bd6fa824909ed44b6f24c42c4ca1962d8cf5824ecc40abe96681",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\PrimaryJunctionExchange-v001\\exchange-report.json": "e062224344d25cbeb8dbac5d1ea5c1ca14ee8e169d316078d448b7949b16c17e",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz": "0d7599c8064cb81a6e211a23731435e08939b7fb146ce2d4bed810273909a2b2",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneSemanticSelection-v001\\selections.npz": "0b6a19f76a2cba73a42e293c29365360b53ba93be101cf8f4ca556e7a5989cc0"
+  }
+}

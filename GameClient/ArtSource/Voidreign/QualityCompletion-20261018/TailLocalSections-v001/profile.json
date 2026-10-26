@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "permissions": "Offline diagnostic author; no rig or semantic promotion",
+  "effective_time": "This frozen domain proposal only",
+  "units": "metres; controls are selection visualization not simulation tuning",
+  "control_contract": "Analysis endpoint weld default1e-6m bound1e-8..1e-5m;2..20 slice fractions strictly inside0..1;no geometry change",
+  "guide_report": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneGuideProposal-v001\\guide-report.json",
+  "failure_paths_report": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\FailureFeaturePaths-v001\\coverage-report.json",
+  "inspection_report": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\component-report.json",
+  "guides": [
+    "Tail_FAILURE_02",
+    "Tail_FAILURE_03"
+  ],
+  "input_sha256": {
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\HygieneGuideProposal-v001\\guide-report.json": "3e776c1cef3380c3a81814d67ce2ec32270bca2e7d7fbece55eefef49e70de67",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\FailureFeaturePaths-v001\\coverage-report.json": "1af7e79793fd8b1407c4b1b524d21d9ce4258c859558bbc3f94b557ce698dbd6",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\component-report.json": "008dd401251cd2388ab5e5472632bd81213e4b3c9d8f38ae1400fb4b756f1f26"
+  },
+  "analysis_endpoint_weld_m": 1e-06,
+  "path_fractions": [
+    0.5,
+    0.6,
+    0.7,
+    0.8,
+    0.85,
+    0.9,
+    0.95,
+    0.98
+  ],
+  "scope": "Finite local distal tail sections for attachment and interior guide authoring; no dynamics tuning"
+}

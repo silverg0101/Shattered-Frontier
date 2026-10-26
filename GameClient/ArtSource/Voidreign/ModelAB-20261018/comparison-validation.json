@@ -1,0 +1,43 @@
+{
+  "status": "passed",
+  "fresh_process": true,
+  "variants": [
+    {
+      "collection": "A | TRELLIS.2-1024-12steps",
+      "ground_z": 0.0,
+      "height": 2.6000001430511475,
+      "hidden": false
+    },
+    {
+      "collection": "B | TRELLIS2-24steps",
+      "ground_z": 0.0,
+      "height": 2.5999999046325684,
+      "hidden": true
+    },
+    {
+      "collection": "C | Hunyuan3D-2.1",
+      "ground_z": 0.0,
+      "height": 2.5999999046325684,
+      "hidden": true
+    },
+    {
+      "collection": "D | TripoSG",
+      "ground_z": 0.0,
+      "height": 2.5999999046325684,
+      "hidden": true
+    },
+    {
+      "collection": "E | Pixal3D-Aligned",
+      "ground_z": 0.0,
+      "height": 2.6000001430511475,
+      "hidden": true
+    },
+    {
+      "collection": "F | Hunyuan3D-2.1-Painted",
+      "ground_z": 0.0,
+      "height": 2.5999999046325684,
+      "hidden": true
+    }
+  ],
+  "images_packed": true
+}

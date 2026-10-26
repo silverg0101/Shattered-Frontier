@@ -1,0 +1,41 @@
+{
+  "status": "Blender exchange check passed with required FBX import contract",
+  "cpu_only": true,
+  "files": [
+    {
+      "path": "tools/BlenderRigImport.py",
+      "sha256": "8227b3e6cc8e91d6db81e5f05b8307172f0c3227a65de5e03456cbbd608d2207"
+    },
+    {
+      "path": "tools/Validate-VoidreignRigImport.py",
+      "sha256": "dcfda46f50ab4eb0fa7674fb7598aab4529f5c9fb5ca955d72b59538c2b6e47a"
+    },
+    {
+      "path": "docs/art-templates/model-profiles/voidreign-rig-import-20261018.json",
+      "sha256": "2e8168071c20407f248445f9c5d9b065399639a5c90abf9224fe2f6260fbd6f2"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/ComponentReview-20261018/FbxImport-v003/rig-import-contract.json",
+      "sha256": "412e46387d6f01e62de311099eb5c57807aac6affbbea509f22f1a0ada6d517f"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/ComponentReview-20261018/FbxImport-v003/validation.json",
+      "sha256": "b7afa6d29a223f395d51b8a89a78e0a7a090c530ffcee261d3cbf15ef0e640f5"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/ComponentReview-20261018/FbxImport-v003/Voidreign-FBX-Reimport.blend",
+      "sha256": "1b1bbdd309e82b9fc292386035e09d2761e3d2cca6b24ee8375f01a42048c6cb"
+    },
+    {
+      "path": "GameClient/ArtSource/Voidreign/ComponentReview-20261018/FbxImport-v003/README.md",
+      "sha256": "d3d13df4d83b80d9909fc1c7d2301ee067dcc0f99bad0988f727d6faf9512d9e"
+    }
+  ],
+  "importer_source": {
+    "path": "C:/Program Files/Blender Foundation/Blender 5.1/5.1/scripts/addons_core/io_scene_fbx/import_fbx.py",
+    "sha256": "e4e55c2e344959b75d840e20c4d45d079ec8fd4f4bc375491cea76e55cce8013",
+    "function": "FbxImportHelperNode.build_skeleton.child_connect",
+    "line": 2631
+  },
+  "scope": "Exchange checks only; model hair coverage/attachments/motion/material/stance gates remain open"
+}

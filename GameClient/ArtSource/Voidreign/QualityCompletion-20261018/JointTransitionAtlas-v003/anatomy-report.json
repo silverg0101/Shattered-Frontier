@@ -1,0 +1,252 @@
+{
+  "schema_version": 1,
+  "status": "anatomy-proposal-needs-review",
+  "cpu_only": true,
+  "input_sha256": {
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkPilot-v001/Mount-WalkPilot.blend": "fe004dd3c6357d9b818729e9d5d89060adb7be0eca6d930d7cc7a91369cd5456",
+    "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\DegenerateInspection-v001\\00-component-selections.npz": "0d7599c8064cb81a6e211a23731435e08939b7fb146ce2d4bed810273909a2b2",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/WalkRetention-v001/validation.json": "5f6c40f1371229ce05dc7af9a4c6f789a460c7e7757ddca88482815aab26d137",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/RigidHoofProposal-v002/hoof-selections.npz": "742c939481a7939e558d684f09346d12778451d0b481aa46367550b4665752dd",
+    "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/JointTopologyInspection-v003/joint-topology.json": "0c6c827b7c7edf0125e5e802c6593288a826442f29f5ca2877c7fcb3f8fed59d"
+  },
+  "tool_sha256": "bd9ccd01f1cf0ec5d0e6078c7653343e058c2f99e31c7299f000cd014a5c2cd0",
+  "profile_sha256": "f13aa68a8374b01ad6479ad12f81f772145ae4fb21c7c95bb85711236509aa0f",
+  "vertices": 284762,
+  "triangles": 297119,
+  "regions": [
+    {
+      "id": "fore.L.context",
+      "vertices": 2778,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "fore.L.core",
+      "vertices": 869,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "fore.L.collar",
+      "vertices": 331,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "fore.R.context",
+      "vertices": 2540,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "fore.R.core",
+      "vertices": 1349,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "fore.R.collar",
+      "vertices": 222,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "hind.L.context",
+      "vertices": 2449,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "hind.L.core",
+      "vertices": 894,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "hind.L.collar",
+      "vertices": 440,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "hind.R.context",
+      "vertices": 2356,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "hind.R.core",
+      "vertices": 1403,
+      "status": "geometric-proposal-needs-anatomical-review"
+    },
+    {
+      "id": "hind.R.collar",
+      "vertices": 329,
+      "status": "geometric-proposal-needs-anatomical-review"
+    }
+  ],
+  "views": [
+    {
+      "id": "fore.L-outer",
+      "image": "fore.L-outer.png",
+      "isolate_regions": [
+        "fore.L.context"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [],
+      "visible_landmarks": [
+        "fore.L.joint",
+        "fore.L.toe"
+      ],
+      "source_face_count": 2940
+    },
+    {
+      "id": "fore.R-outer",
+      "image": "fore.R-outer.png",
+      "isolate_regions": [
+        "fore.R.context"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [],
+      "visible_landmarks": [
+        "fore.R.joint",
+        "fore.R.toe"
+      ],
+      "source_face_count": 2922
+    },
+    {
+      "id": "hind.L-outer",
+      "image": "hind.L-outer.png",
+      "isolate_regions": [
+        "hind.L.context"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [],
+      "visible_landmarks": [
+        "hind.L.joint",
+        "hind.L.toe"
+      ],
+      "source_face_count": 2720
+    },
+    {
+      "id": "hind.R-outer",
+      "image": "hind.R-outer.png",
+      "isolate_regions": [
+        "hind.R.context"
+      ],
+      "appearance": "overlay",
+      "highlight_regions": [],
+      "visible_landmarks": [
+        "hind.R.joint",
+        "hind.R.toe"
+      ],
+      "source_face_count": 2702
+    }
+  ],
+  "coordinate_convention": {
+    "up": "+Z",
+    "forward": "-Y (head/horn)",
+    "side_names": "Geometric +X/-X until reviewed"
+  },
+  "landmarks": [
+    {
+      "id": "fore.L.joint",
+      "position_m": [
+        0.4842830336093903,
+        -0.7649999856948853,
+        0.23000000476837157
+      ],
+      "color": [
+        1,
+        0.01,
+        0.05
+      ]
+    },
+    {
+      "id": "fore.L.toe",
+      "position_m": [
+        0.4842830336093903,
+        -0.8289999961853027,
+        0.11999999791383743
+      ],
+      "color": [
+        0.8,
+        0.05,
+        1
+      ]
+    },
+    {
+      "id": "fore.R.joint",
+      "position_m": [
+        -0.4658953881263733,
+        -0.8370000123977661,
+        0.23000000476837157
+      ],
+      "color": [
+        1,
+        0.01,
+        0.05
+      ]
+    },
+    {
+      "id": "fore.R.toe",
+      "position_m": [
+        -0.4658953881263733,
+        -0.8899999856948853,
+        0.10000000208616257
+      ],
+      "color": [
+        0.8,
+        0.05,
+        1
+      ]
+    },
+    {
+      "id": "hind.L.joint",
+      "position_m": [
+        0.6184438800811768,
+        0.8119999766349792,
+        0.20000000357627867
+      ],
+      "color": [
+        1,
+        0.01,
+        0.05
+      ]
+    },
+    {
+      "id": "hind.L.toe",
+      "position_m": [
+        0.6184438800811768,
+        0.75,
+        0.05000000134110451
+      ],
+      "color": [
+        0.8,
+        0.05,
+        1
+      ]
+    },
+    {
+      "id": "hind.R.joint",
+      "position_m": [
+        -0.3859699702262879,
+        0.4790000021457672,
+        0.20000000357627867
+      ],
+      "color": [
+        1,
+        0.01,
+        0.05
+      ]
+    },
+    {
+      "id": "hind.R.toe",
+      "position_m": [
+        -0.3859699702262879,
+        0.3700000047683716,
+        0.05000000134110451
+      ],
+      "color": [
+        0.8,
+        0.05,
+        1
+      ]
+    }
+  ],
+  "limitations": [
+    "Exact indexed rest diagnostic only; no source rig. Optional albedo-emission copies source UV/color networks for inspection, not PBR acceptance.",
+    "Box domains can include hanging tack or miss curved anatomy; not skin weights or semantic approval.",
+    "Landmarks are authored proposals, not inferred joint centers or accepted stance."
+  ]
+}

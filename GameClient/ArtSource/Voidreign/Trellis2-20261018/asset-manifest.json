@@ -1,0 +1,305 @@
+{
+  "asset": "Voidreign",
+  "date": "2026-10-18",
+  "method": "Local TRELLIS.2-4B inference using ATLAS ROCm port with recorded PyTorch 2.14/ROCm 10.1 compatibility patches",
+  "status": "visually reviewed generated concept prototype",
+  "selected_run": "1024",
+  "blender_version": "5.1.1",
+  "coordinates": "metres; Z up; muzzle -Y; ground Z=0",
+  "inferred_full_height_m": 2.6,
+  "inputs": {
+    "Voidreign-original.png": "b8b5478e46b63274b4b49d7b221b96b9aecfe35c2483818c2d14a7fcffde1efb",
+    "Voidreign-clean.png": "d67522bf160e2dbfe763a5945e651b6b5c508f32676257dac80c98b26a42aca0"
+  },
+  "runs": {
+    "512": {
+      "generation": {
+        "status": "complete",
+        "pipeline": "512",
+        "seed": 42,
+        "torch": "2.14.0+rocm10.1.0",
+        "hip": "7.16.26385",
+        "gpu": "AMD Radeon RX 7900 XTX",
+        "image": "/mnt/c/Projects/Shattered-Frontier/GameClient/ArtSource/Voidreign/Trellis2-20261018/Voidreign-clean.png",
+        "image_sha256": "d67522bf160e2dbfe763a5945e651b6b5c508f32676257dac80c98b26a42aca0",
+        "attention": "PyTorch SDPA; sparse varlen adapter",
+        "stages": {
+          "load_seconds": 28.415,
+          "inference_seconds": 124.875,
+          "export_seconds": 16.423
+        },
+        "stage": "complete",
+        "raw_mesh": {
+          "vertices": 633841,
+          "faces": 1378204
+        },
+        "peak_torch_memory_bytes": null,
+        "memory_note": "Peak GPU memory not measured: caching allocator disabled; native HIP allocations also untracked.",
+        "texture_size": 1024
+      },
+      "review": {
+        "mesh_objects": 1,
+        "triangles": 298467,
+        "dimensions_m": [
+          0.918643057346344,
+          4.1052727699279785,
+          2.5999999046325684
+        ],
+        "yaw_degrees": 0,
+        "inferred_full_height_m": 2.6,
+        "materials": [
+          "Material_0"
+        ],
+        "uv_layers": [
+          1
+        ]
+      },
+      "validation": {
+        "blend": {
+          "meshes": 1,
+          "dimensions_m": [
+            0.918643057346344,
+            4.1052727699279785,
+            2.5999999046325684
+          ],
+          "triangles": 298467,
+          "materials": [
+            "Material_0"
+          ],
+          "image_sizes": [
+            [
+              1024,
+              1024
+            ],
+            [
+              1024,
+              1024
+            ]
+          ]
+        },
+        "checks": [
+          "Fresh process reopen and render"
+        ],
+        "exports": {
+          "glb": {
+            "meshes": 1,
+            "dimensions_m": [
+              0.918643057346344,
+              4.1052727699279785,
+              2.5999999046325684
+            ],
+            "triangles": 298467,
+            "materials": [
+              "Material_0"
+            ],
+            "image_sizes": [
+              [
+                1024,
+                1024
+              ],
+              [
+                1024,
+                1024
+              ]
+            ]
+          },
+          "fbx": {
+            "meshes": 1,
+            "dimensions_m": [
+              0.918643057346344,
+              4.105273246765137,
+              2.6000004776258265
+            ],
+            "triangles": 298467,
+            "materials": [
+              "Material_0"
+            ],
+            "image_sizes": [
+              [
+                1024,
+                1024
+              ],
+              [
+                1024,
+                1024
+              ]
+            ]
+          }
+        }
+      }
+    },
+    "1024": {
+      "generation": {
+        "status": "complete",
+        "pipeline": "1024_cascade",
+        "seed": 42,
+        "torch": "2.14.0+rocm10.1.0",
+        "hip": "7.16.26385",
+        "gpu": "AMD Radeon RX 7900 XTX",
+        "image": "/mnt/c/Projects/Shattered-Frontier/GameClient/ArtSource/Voidreign/Trellis2-20261018/Voidreign-clean.png",
+        "image_sha256": "d67522bf160e2dbfe763a5945e651b6b5c508f32676257dac80c98b26a42aca0",
+        "attention": "PyTorch SDPA; sparse varlen adapter",
+        "stages": {
+          "load_seconds": 42.407,
+          "inference_seconds": 188.315,
+          "export_seconds": 25.889
+        },
+        "stage": "complete",
+        "raw_mesh": {
+          "vertices": 2379136,
+          "faces": 4863018
+        },
+        "peak_torch_memory_bytes": null,
+        "memory_note": "Peak GPU memory not measured: caching allocator disabled; native HIP allocations also untracked.",
+        "texture_size": 2048
+      },
+      "review": {
+        "mesh_objects": 1,
+        "triangles": 295394,
+        "dimensions_m": [
+          0.9309682250022888,
+          4.122130870819092,
+          2.6000001430511475
+        ],
+        "yaw_degrees": 0,
+        "inferred_full_height_m": 2.6,
+        "materials": [
+          "Material_0"
+        ],
+        "uv_layers": [
+          1
+        ]
+      },
+      "validation": {
+        "blend": {
+          "meshes": 1,
+          "dimensions_m": [
+            0.9309682250022888,
+            4.122130870819092,
+            2.6000001430511475
+          ],
+          "triangles": 295394,
+          "materials": [
+            "Material_0"
+          ],
+          "image_sizes": [
+            [
+              2048,
+              2048
+            ],
+            [
+              2048,
+              2048
+            ]
+          ]
+        },
+        "checks": [
+          "Fresh process reopen and render"
+        ],
+        "exports": {
+          "glb": {
+            "meshes": 1,
+            "dimensions_m": [
+              0.9309682250022888,
+              4.122130870819092,
+              2.6000001430511475
+            ],
+            "triangles": 295394,
+            "materials": [
+              "Material_0"
+            ],
+            "image_sizes": [
+              [
+                2048,
+                2048
+              ],
+              [
+                2048,
+                2048
+              ]
+            ]
+          },
+          "fbx": {
+            "meshes": 1,
+            "dimensions_m": [
+              0.9309683442115784,
+              4.122131824493408,
+              2.6000010748502973
+            ],
+            "triangles": 295394,
+            "materials": [
+              "Material_0"
+            ],
+            "image_sizes": [
+              [
+                2048,
+                2048
+              ],
+              [
+                2048,
+                2048
+              ]
+            ]
+          }
+        }
+      }
+    }
+  },
+  "outputs": {
+    "512/Voidreign.blend": {
+      "bytes": 18725211,
+      "sha256": "67d0892f0fc79b60a2de5ac4068ba4841690e76c29238260b2bba511b5ed7f4c"
+    },
+    "512/Voidreign.glb": {
+      "bytes": 14600312,
+      "sha256": "c3bdd75aa5cd75933cd0486da87b61776a097417799c4247653e91bb61695bcf"
+    },
+    "512/Voidreign.fbx": {
+      "bytes": 15030076,
+      "sha256": "bcbdc34e1279161b89161c2b6f5aa409118628fb457d2cf2f6679ce9d95b2b74"
+    },
+    "512/Voidreign.generated.glb": {
+      "bytes": 14586304,
+      "sha256": "1866e233809b6d1eeb26db7b1c1509abc568d39d07ed82345b0803743d177c7e"
+    },
+    "512/Voidreign.raw.ply": {
+      "bytes": 25522966,
+      "sha256": "63e8e7f25703faf76c106a08cf648426dc3cb3708d784a223885b36597710fc4"
+    },
+    "1024/Voidreign.blend": {
+      "bytes": 26831872,
+      "sha256": "198b1a27ea9fd883e8c49418b041812f16aa960133c0da1da8e62117c273a97b"
+    },
+    "1024/Voidreign.glb": {
+      "bytes": 23273368,
+      "sha256": "057152c5539716ecb3d39a943650b4e207725d4893dd3bf16b45c7a35cdd6387"
+    },
+    "1024/Voidreign.fbx": {
+      "bytes": 21981292,
+      "sha256": "0d1369718ec3da9f8cdd9d59c0b51c03c6814fdf90af9b5339e797f87f5c5dbb"
+    },
+    "1024/Voidreign.generated.glb": {
+      "bytes": 23258196,
+      "sha256": "12c8530f35d5ac2e0ce505eceeeea2672ffd272f838f3f0fb2c5f024b2979fb7"
+    },
+    "1024/Voidreign.raw.ply": {
+      "bytes": 91769089,
+      "sha256": "76c6f33b6d4940aadb670e97b7b9685b583b56903d021edeb801729a20c16ccb"
+    }
+  },
+  "checks": [
+    "Radeon FP16 arithmetic and 10 GB memory write/read probe",
+    "Fused SDPA adapter compared to explicit FP32 attention",
+    "512 and 1024 inference and textured GLB export",
+    "Fresh-process saved-source rendering",
+    "GLB and FBX empty-scene geometry/scale/UV/material/image checks",
+    "Independent visual review against original and cleaned references"
+  ],
+  "limitations": [
+    "Dense joined triangulated mesh; no retopology, rig, animation, collision, LOD or Unreal acceptance",
+    "Short horn, broad looped mane/tail, simplified chains and charms, leg fringe and hoof artifacts remain",
+    "Cleaned conditioning image is a synthetic derivative and changes some reference details",
+    "Resolution and texture size both differ between runs",
+    "GPU peak memory was not measured"
+  ]
+}

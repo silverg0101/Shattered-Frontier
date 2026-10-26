@@ -1,0 +1,95 @@
+{
+  "asset_id": "BLD-RT-RoofSlopeFace-01",
+  "status": "needs-review",
+  "method": "periodic wrap adjacent-pixel step vs interior neighbor steps; map-normal comparison in degrees",
+  "records": [
+    {
+      "map": "basecolor.png",
+      "axis": "x",
+      "seam_mean": 1.7272135019302368,
+      "interior_mean": 0.7925582528114319,
+      "seam_p99": 4.0,
+      "interior_p99": 3.0,
+      "mean_limit": 1.1888373792171478,
+      "p99_limit": 4.5,
+      "status": "failed"
+    },
+    {
+      "map": "basecolor.png",
+      "axis": "y",
+      "seam_mean": 0.0462239570915699,
+      "interior_mean": 0.13393765687942505,
+      "seam_p99": 1.0,
+      "interior_p99": 1.0,
+      "mean_limit": 0.75,
+      "p99_limit": 3,
+      "status": "passed"
+    },
+    {
+      "map": "height.png",
+      "axis": "x",
+      "seam_mean": 3401.4560546875,
+      "interior_mean": 1582.3963623046875,
+      "seam_p99": 5439.89990234375,
+      "interior_p99": 4670.0,
+      "mean_limit": 2373.5945434570312,
+      "p99_limit": 7005.0,
+      "status": "failed"
+    },
+    {
+      "map": "height.png",
+      "axis": "y",
+      "seam_mean": 91.560546875,
+      "interior_mean": 262.66796875,
+      "seam_p99": 498.0,
+      "interior_p99": 1527.0,
+      "mean_limit": 394.001953125,
+      "p99_limit": 2290.5,
+      "status": "passed"
+    },
+    {
+      "map": "normal.png",
+      "axis": "x",
+      "seam_mean": 4.781764030456543,
+      "interior_mean": 4.194478988647461,
+      "seam_p99": 14.36328411102295,
+      "interior_p99": 12.753355979919434,
+      "mean_limit": 6.291718482971191,
+      "p99_limit": 19.13003396987915,
+      "status": "passed"
+    },
+    {
+      "map": "normal.png",
+      "axis": "y",
+      "seam_mean": 0.8093006610870361,
+      "interior_mean": 1.0118422508239746,
+      "seam_p99": 3.624147891998291,
+      "interior_p99": 4.242747783660889,
+      "mean_limit": 1.517763376235962,
+      "p99_limit": 6.364121675491333,
+      "status": "passed"
+    },
+    {
+      "map": "roughness.png",
+      "axis": "x",
+      "seam_mean": 4.763671875,
+      "interior_mean": 2.395400047302246,
+      "seam_p99": 9.0,
+      "interior_p99": 7.0,
+      "mean_limit": 3.593100070953369,
+      "p99_limit": 10.5,
+      "status": "failed"
+    },
+    {
+      "map": "roughness.png",
+      "axis": "y",
+      "seam_mean": 0.205078125,
+      "interior_mean": 0.503131091594696,
+      "seam_p99": 1.0,
+      "interior_p99": 3.0,
+      "mean_limit": 0.7546966373920441,
+      "p99_limit": 4.5,
+      "status": "passed"
+    }
+  ]
+}

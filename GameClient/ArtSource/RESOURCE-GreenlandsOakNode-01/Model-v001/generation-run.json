@@ -1,0 +1,51 @@
+{
+  "backend": "Pixal3D",
+  "status": "complete",
+  "seed": 42,
+  "pipeline": "1024_cascade",
+  "steps": 12,
+  "asset_name": "RESOURCE-GreenlandsOakNode-01",
+  "image": "/mnt/c/Projects/Shattered-Frontier/Artifacts/Art/GreenlandsModelBatch-20261018/RESOURCE-GreenlandsOakNode-01/attempt-03/RESOURCE-GreenlandsOakNode-01.rgba.png",
+  "image_sha256": "4e227cd5edfded839c3642d4649676b9724ec550d44da2b41ecb46274ff9e974",
+  "reference_image": "/mnt/c/Projects/Shattered-Frontier/GameClient/ArtSource/RESOURCE-GreenlandsOakNode-01/References/v001/asset-view.png",
+  "reference_image_sha256": "607f11a55e388d1d6055c83348f20d2f063baa4917c38c0d99a99a580a69107e",
+  "torch": "2.14.0+rocm10.1.0",
+  "hip": "7.16.26385",
+  "gpu": "AMD Radeon RX 7900 XTX",
+  "stages": {
+    "load_seconds": 46.299,
+    "camera_seconds": 7.219,
+    "inference_seconds": 373.31,
+    "export_seconds": 45.085
+  },
+  "texture_size": 2048,
+  "decimation_target": 300000,
+  "max_num_tokens": 49152,
+  "attention": "dense and sparse PyTorch SDPA; NAF shifted dilated neighborhoods via chunked PyTorch",
+  "stage": "complete",
+  "model_revision": "b0cb2e1b794cab9aa0ac38a95d794a4d9337437f",
+  "camera_params": {
+    "camera_angle_x": 0.8195486564437132,
+    "distance": 1.1511111259460451,
+    "mesh_scale": 1.0
+  },
+  "raw_mesh": {
+    "vertices": 6673277,
+    "faces": 15062468
+  },
+  "effective_grid_resolution": 1024,
+  "files": {
+    "RESOURCE-GreenlandsOakNode-01.preprocessed.png": {
+      "sha256": "2e8ada3122aee8e532f904c699f30e2c0ce885dbd707780355eac6ef54e8c90b",
+      "bytes": 790825
+    },
+    "RESOURCE-GreenlandsOakNode-01.raw.ply": {
+      "sha256": "eb63073af3035662bdfa960d36780d7cda8dbea2d4b24a7eb5548d51531bfa84",
+      "bytes": 275891632
+    },
+    "RESOURCE-GreenlandsOakNode-01.glb": {
+      "sha256": "9c8e1cfb5900fa317648c59835de39c45b06fef91188ed79ddb5278e84f90c19",
+      "bytes": 26699660
+    }
+  }
+}

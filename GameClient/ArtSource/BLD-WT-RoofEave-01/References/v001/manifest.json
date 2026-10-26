@@ -1,0 +1,45 @@
+{
+  "asset_id": "BLD-WT-RoofEave-01",
+  "version": "v001",
+  "batch": "construction-worked-timber-roof-surfaces-38",
+  "current_status": "image-complete; appearance proposal; structural readiness blocked",
+  "intended_route": "proposed flush KIT-WT appearance treatment on contract slope-1to1 underside plane z=0, ending at lower eave boundary x=z=0; no separate eave geometry",
+  "carrier": {
+    "geometry_status": "contract design target; approved GEO-01 manifest/hash absent",
+    "dimensions_m": {"x": 0.5, "y": 0.5, "z": 0.5},
+    "grid_m": 0.5,
+    "axes": "local X run, Y depth, Z rise",
+    "origin": "minimum-grid-corner",
+    "pivot": "minimum-grid-corner carrier frame",
+    "shape": "triangular prism, 0<=z<=x<=0.5; sloped boundary z=x; treated underside plane z=0; lower eave boundary x=z=0 across Y",
+    "allowed_rotations": "identity only until production shape allowlist is authored under BLD-01"
+  },
+  "component_boundary": "One continuous flush underside appearance treatment on z=0; no fascia, board, overhang, trim, added thickness or added geometry.",
+  "exposed_faces": ["treated underside z=0", "untreated sloped plane z=x", "untreated triangular end faces at y=0 and y=0.5", "untreated remaining side face"],
+  "mating_faces": ["lower eave boundary x=z=0 along Y", "candidate roof-wall interface BLD-WT-RoofWallSeam-01", "slope interface BLD-WT-RoofSlopeFace-01"],
+  "source_references": [
+    "docs/art-templates/player-construction-kit-contract.md §2 slope-1to1 and §3 buildability route",
+    "docs/decisions/BLD-01-voxel-geometry-interface.md coordinate/orientation contract",
+    "docs/art-templates/asset-lists/construction-worked-timber-roof-surfaces-38.md",
+    "docs/art-templates/asset-lists/construction-kit-matrix-07.md"
+  ],
+  "required_selected_outputs": ["concept-sheet.png", "asset-view.png"],
+  "selected_image_count": 2,
+  "additional_images": 0,
+  "generation_history": [
+    {"file": "provenance/exec-fb69cdb2-7d40-404f-b37f-cb5eea529eda.png", "selected": false, "reason": "Mirrored the Z<=X carrier in section views and plank-like seams implied separate boards; superseded by corrective edit.", "metadata": {"format": "PNG", "width_px": 1536, "height_px": 1024, "pixel_format": "RGB 24bpp", "bytes": 1677617, "sha256": "ee019aa031a0211d2ac80c56bc62770168fa49eb8b6f601dd7ecc149fe6e6652"}},
+    {"file": "concept-sheet.png", "source_cache_path": "C:\\Users\\grego\\.codex\\generated_images\\01a15000-e13f-7213-9ec0-df2684201405\\exec-69bd5898-4002-4d77-905d-9fc1683cc7dd.png", "selected": true, "metadata": {"format": "PNG", "width_px": 1536, "height_px": 1024, "pixel_format": "RGB 24bpp", "bytes": 1671147, "sha256": "a47db5b68413fdd60df68534c14703518b16875a078be806b7458fb5e0aab10e"}, "exact_prompt": "prompt.txt#2"},
+    {"file": "asset-view.png", "source_cache_path": "C:\\Users\\grego\\.codex\\generated_images\\01a15000-e13f-7213-9ec0-df2684201405\\exec-400f1d47-139e-4331-85b2-11ea9de24d82.png", "selected": true, "metadata": {"format": "PNG", "width_px": 1536, "height_px": 1024, "pixel_format": "RGB 24bpp", "bytes": 1332613, "sha256": "99099d1bdb4233928a642facfe5e6c7a14f8c226de7dd252232f92424549ee8b"}, "exact_prompt": "prompt.txt#3"}
+  ],
+  "visual_review": {
+    "date": "2026-10-18",
+    "concept_sheet": "Accepted for appearance proposal after orientation and material-pattern repair: carrier section rises toward +X as z=x; underside z=0 alone is timber; the y=0.25 interior section confirms no end treatment; eave boundary and named roof-wall/slope interfaces are identified. No eave member or projection is shown. Labels and dimensions are readable. Image scale is not compatibility evidence.",
+    "asset_view": "Accepted for appearance proposal: one intact wedge with the underside prominent, other carrier faces neutral, no added fascia/overhang or separate parts. A thin rendered boundary highlight is visual edge shading and does not establish thickness. Image review does not prove exact patch mapping or runtime fit."
+  },
+  "compatibility": "No approved GEO-01 manifest/hash; no applicable GEO-02 evidence for underside/eave, roof-wall seam or rotation fit.",
+  "blockers": [
+    "GEO-01 approved geometry payload/manifest hash absent; carrier remains a contract target.",
+    "Applicable GEO-02 evidence and production shape rotation allowlist absent.",
+    "Exact eave treatment phase and roof-wall interface fit remain unvalidated."
+  ]
+}

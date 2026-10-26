@@ -1,0 +1,5 @@
+Concept-sheet prompt (exact):
+Orthographic construction design study: two worked-timber roof planes meet along a concave valley seam. The seam is the lowest line; both adjacent sloping surfaces fall downward toward this inner junction. Show top plan, cross-section, and isometric, no raised ridge, no hip. Weathered plank appearance only, preserve source 1:1 slope piece envelope and contact planes on 0.5 m grid, neutral background, no text. Proposal; dimensions remain unverified.
+
+Clean asset-view prompt (exact):
+A small compact roof-corner component, bounded by a cube-sized envelope, showing a true concave valley where two roof slopes descend to the same low central seam. View from above and slightly front; do not add fascia, eaves, supports, trims, or overhangs. Worked-timber plank appearance, plain gray studio background, isolated asset, no text. Strictly keep all wood inside compact boundary.

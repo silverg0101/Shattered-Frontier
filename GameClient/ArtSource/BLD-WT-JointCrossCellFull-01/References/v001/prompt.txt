@@ -1,0 +1,5 @@
+Concept-sheet prompt (exact):
+Worked-timber four-way cross wall joint concept sheet. Four solid opaque modular wall runs meet at one central perpendicular cross intersection, equal contact heights, horizontal weathered planks, end grain visible at joins. Show exact top plan and isometric detail, no opening, no brackets, no text, neutral background. Preserve cell-based contact boundaries; appearance proposal only.
+
+Clean asset-view prompt (exact):
+Isolated clean worked-timber four-way cross wall joint, four opaque wall arms crossing at one center, equal-height horizontal plank courses and flush meeting faces. Show top-plan inset and three-quarter product view, no hollow cavities, no roof, no supports, no text, pale neutral background.

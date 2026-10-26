@@ -1,0 +1,5 @@
+Concept sheet prompt:
+Stylized construction concept asset sheet for rough timber player building kit, no people, no writing. Rectangular door opening jamb component: two rough-sawn oak side jamb/reveal pieces framing a visibly empty rectangular aperture, separate from lintel and threshold, aperture unchanged with clear passage, show assembled opening fragment plus one isolated jamb component and side section. Warm neutral studio background. No door leaf, no hinges, no floor, no invented dimensions; preserve existing opening contract shape as visual reference only.
+
+Clean view prompt:
+Isolated clean concept of one rough timber rectangular-opening jamb component only: a single vertical oak jamb post with visible inner reveal face and wall contact face, no lintel, no opposite jamb, no door leaf, no hinges. Full component, three-quarter view, warm neutral studio background. Preserve aperture reference without assigning dimensions; concept only.

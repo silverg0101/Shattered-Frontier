@@ -1,0 +1,13 @@
+{
+  "torch": "2.14.0+rocm10.1.0",
+  "hip": "7.16.26385",
+  "gpu": "AMD Radeon RX 7900 XTX",
+  "architecture": "gfx1100",
+  "total_vram_bytes": 25708244992,
+  "verified_allocation_bytes": 10000000000,
+  "checks": [
+    "FP16 matmul result checked",
+    "10 GB allocated, written and read on GPU"
+  ],
+  "seconds": 0.8
+}

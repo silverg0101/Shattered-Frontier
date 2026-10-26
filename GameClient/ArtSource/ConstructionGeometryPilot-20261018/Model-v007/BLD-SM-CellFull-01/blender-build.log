@@ -1,0 +1,19 @@
+00:01.594  blend            | Read blend: "C:\Projects\Shattered-Frontier\GameClient\ArtSource\ConstructionGeometryPilot-20261018\Model-v001\cell-full\SM_GEO01_cell_full_v001.blend"
+00:13.547  render           | Saved: 'C:\Projects\Shattered-Frontier\GameClient\ArtSource\ConstructionGeometryPilot-20261018\Model-v007\BLD-SM-CellFull-01\asset-view.png'
+Info: Saved as "SM_BLD_SM_CellFull_01_v002.blend"
+INFO Draco mesh compression is available, use library at C:\Program Files\Blender Foundation\Blender 5.1\5.1\scripts\addons_core\io_scene_gltf2\extern_draco.dll
+23:09:37 | INFO: Starting glTF 2.0 export
+23:09:37 | INFO: Extracting primitive: SM_BLD_SM_CellFull_01_v002_Mesh
+23:09:38 | INFO: Primitives created: 1
+23:09:38 | INFO: Finished glTF 2.0 export in 0.11995840072631836 s
+
+
+FBX export starting... 'C:\\Projects\\Shattered-Frontier\\GameClient\\ArtSource\\ConstructionGeometryPilot-20261018\\Model-v007\\BLD-SM-CellFull-01\\SM_BLD_SM_CellFull_01_v002.fbx'
+export finished in 0.0078 sec.
+Blender 5.1.1 (hash b70da489d7f4 built 2026-04-14 01:37:22)
+
+Blender quit
+
+--- STDERR ---
+C:\Projects\Shattered-Frontier\GameClient\ArtSource\ConstructionGeometryPilot-20261018\Model-v007\BLD-SM-CellFull-01\build_material.py:14: DeprecationWarning: 'Material.use_nodes' is expected to be removed in Blender 6.0
+  mat=bpy.data.materials.new("M_stone-masonry_PBR_v002"); mat.use_nodes=True; nt=mat.node_tree; nt.nodes.clear()

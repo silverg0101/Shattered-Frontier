@@ -1,0 +1,8 @@
+{
+  "status": "verified",
+  "manifest": "GameClient/ArtSource/Voidreign/QualityCompletion-20261018/MaterialResponseAuditReproductionKit-v001/manifest.json",
+  "manifest_sha256": "5a5cd1bcdec66310d028f7378325d3694b3706187e02846d9ec820dfed9f6e50",
+  "files": 41,
+  "copied_bytes": 525137,
+  "self_contained": false
+}

@@ -1,0 +1,20 @@
+{
+  "status": "render-statistics-only; author visual review required",
+  "rows": [
+    {
+      "view": "Head-NegX",
+      "mean_absolute_channel_difference_8bit": 0.0,
+      "maximum_channel_difference_8bit": 0,
+      "pixels_with_any_channel_over16": 0,
+      "total_pixels": 1048576
+    },
+    {
+      "view": "Saddle-NegX",
+      "mean_absolute_channel_difference_8bit": 0.0,
+      "maximum_channel_difference_8bit": 0,
+      "pixels_with_any_channel_over16": 0,
+      "total_pixels": 1048576
+    }
+  ],
+  "scope": "Matched CPU Cycles views, not a new global appearance acceptance threshold."
+}

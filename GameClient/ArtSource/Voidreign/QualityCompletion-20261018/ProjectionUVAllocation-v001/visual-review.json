@@ -1,0 +1,10 @@
+{
+  "status": "projection-coverage-preview-inspected",
+  "image": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\ProjectionUVAllocation-v001\\ProjectionCoverage-4096.png",
+  "sha256": "205a78a0884bd4b96e3cba3abc7bf78e97fbe2383082369301af9c274d26cb5a",
+  "observations": [
+    "Cyan head and amber saddle edit support is scattered across many small source UV islands. Grey surface outside those projections remains unclassified.",
+    "The preview is an allocation diagnostic, not an albedo, scalar material map or semantic part approval."
+  ],
+  "decision": "Do not infer a UV rebuild requirement from aggregate weight area alone. Review desired close-up detail in registered surface views and complete semantic masks before any final material attempt."
+}

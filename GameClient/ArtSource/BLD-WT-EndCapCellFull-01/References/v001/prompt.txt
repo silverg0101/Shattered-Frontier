@@ -1,0 +1,5 @@
+Concept-sheet prompt (exact):
+Construction design sheet for one worked-timber cell end-cap treatment. A single cube cell on a 0.5 m grid, exact cube envelope, no overhangs. Show the cut horizontal end of several wall planks, finished with a flush fitted timber cap board entirely within the cube silhouette. Three-quarter view plus orthographic end/top details. Weathered oak, visible joinery and grain, neutral pale background, no labels or text, no other materials or objects. Appearance-only proposal, cell contact faces and dimensions unchanged.
+
+Clean asset-view prompt (exact):
+A single isolated worked-timber cube construction cell with a flush end-cap finish. Exact 0.5 m cube silhouette, no part protrudes. Three-quarter orthographic product view showing the fitted end-grain cap, flush plank face, top face, and side. Weathered oak, pale gray studio background, no text or labels, no extra objects.

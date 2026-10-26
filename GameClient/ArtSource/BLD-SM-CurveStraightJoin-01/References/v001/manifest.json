@@ -1,0 +1,67 @@
+{
+  "assetId": "BLD-SM-CurveStraightJoin-01",
+  "version": "v001",
+  "category": "construction straight-to-curve join",
+  "created": "2026-10-18",
+  "sourceReferences": [
+    "docs/art-templates/player-construction-kit-contract.md — curve-quarter-r2 and matching contacts",
+    "docs/Game-Design/Legends_Shattered_Frontier_Construction_System_Architecture_v0.1.md — §§3.1–3.2, 8–9"
+  ],
+  "definition": {
+    "geometryRef": "curve-quarter-r2 plus straight wall contacts (proposal)",
+    "envelopeMeters": "per contract; not inferred",
+    "contacts": [
+      "straight return",
+      "curved course",
+      "top",
+      "underside",
+      "interior/exterior"
+    ],
+    "openings": "none",
+    "materialKit": "KIT-SM",
+    "structuralMaterialProfile": "Stone masonry",
+    "cosmeticSkin": "appearance only",
+    "functionalDefinition": "none"
+  },
+  "generation": {
+    "tool": "built-in image_gen",
+    "date": "2026-10-18",
+    "model": "unavailable",
+    "seed": "unavailable",
+    "promptRecord": "prompt.txt",
+    "referenceImagesAttached": []
+  },
+  "images": [
+    {
+      "path": "concept-sheet.png",
+      "sha256": "7f2bc0584b1538b883b6d75370c81ca90aa325eb922e4560de8b9b60f84e4726",
+      "width": 1536,
+      "height": 1024,
+      "pixelFormat": "RGB 24-bit",
+      "alpha": false,
+      "review": "Masonry sheet shows repeated transitions and contact views. Clean view shows one connected straight-to-curve assembly with a readable material seam; radius and exact unit boundaries need numerical review."
+    },
+    {
+      "path": "asset-view.png",
+      "sha256": "2db60ffdef33357aeb61eba2aeb8c706b196fa894d4c1b1ceb4b57d6c72ecf1f",
+      "width": 1536,
+      "height": 1024,
+      "pixelFormat": "RGB 24-bit",
+      "alpha": false,
+      "review": "Masonry sheet shows repeated transitions and contact views. Clean view shows one connected straight-to-curve assembly with a readable material seam; radius and exact unit boundaries need numerical review."
+    }
+  ],
+  "review": {
+    "reviewedBy": "Codex",
+    "conceptStatus": "proposed",
+    "cleanViewStatus": "needs-segmentation",
+    "imageStatus": "image-complete",
+    "geometryAcceptance": "not established",
+    "numericalMeshFit": "not established",
+    "runtimeCollisionSupportClearance": "not established",
+    "actionableFindings": [
+      "Masonry sheet shows repeated transitions and contact views. Clean view shows one connected straight-to-curve assembly with a readable material seam; radius and exact unit boundaries need numerical review."
+    ]
+  },
+  "componentBoundary": "One named straight-to-curve interface role. Images show appearance only, no numerical fit/navigation acceptance."
+}

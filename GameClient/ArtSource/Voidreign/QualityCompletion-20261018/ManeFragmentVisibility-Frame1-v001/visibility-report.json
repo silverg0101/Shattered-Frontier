@@ -1,0 +1,60 @@
+{
+  "schema_version": 2,
+  "status": "sampled-evaluated-pose-visibility-only",
+  "cpu_only": true,
+  "component_scope": "explicit-subset",
+  "tested_component_indices": [
+    122
+  ],
+  "frame": 1,
+  "pose": "Evaluated source WORLD positions in metres; IDs identify original rest components.",
+  "source_sha256": "a5e69cab0f484b2180809b8f60cb61ade34e227bd75ecdecfed97a7f87ae3cb9",
+  "mesh_hash": "ba2d283db0be5e8cff4cc7549f1f51916cc0a4d18213773300976b11512ececa",
+  "object": "geometry_0",
+  "inspection_sha256": "cddd1e17153b0a896350d17bcc3453eb716141eb1eea5a83ec638c5f3dd4e37c",
+  "selection_sha256": "38572f6b5c5f53e0fd57845034e91266d851bda928ac0f42b756643928c1f1b6",
+  "profile_sha256": "a23945023fae4dc9e3c67ef24000ae9f36eb54109080dacabe97dd2cf4bed082",
+  "components": [
+    {
+      "component_id": "ba2d283db0be:C0122",
+      "component_index": 122,
+      "area_stratified_interior_samples": 128,
+      "visible_samples_any_direction": 7,
+      "target_only_control_hits": 1791,
+      "target_only_control_rays": 1792,
+      "nearby_covering_shell_hits": 0,
+      "first_covering_components": {
+        "0": 1732,
+        "24": 43,
+        "43": 10
+      },
+      "visibility_by_direction": {
+        "posX": 0.0,
+        "negX": 0.0,
+        "front": 0.0,
+        "rear": 0.0,
+        "top": 0.0,
+        "bottom": 0.0,
+        "diagonal_-1_-1_-1": 0.0,
+        "diagonal_-1_-1_1": 0.0,
+        "diagonal_-1_1_-1": 0.0,
+        "diagonal_-1_1_1": 0.0,
+        "diagonal_1_-1_-1": 0.0546875,
+        "diagonal_1_-1_1": 0.0,
+        "diagonal_1_1_-1": 0.0,
+        "diagonal_1_1_1": 0.0
+      },
+      "maximum_sample_visibility": 0.0546875,
+      "candidate": "unresolved-control-misses",
+      "disposition": "needs-review"
+    }
+  ],
+  "low_visibility_ids": [],
+  "limitations": [
+    "Fourteen directions with area-stratified triangle-interior samples; not complete visibility.",
+    "No visibility does not prove debris: internal anatomy, occluded ornaments or moving clumps may be intended.",
+    "Only the specified pose; review other poses and actual shading before disposition.",
+    "The low-rest-visibility-review candidate label is retained for schema compatibility; frame/pose fields define the actual tested pose.",
+    "No geometry changes or semantic approval."
+  ]
+}

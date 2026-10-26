@@ -1,0 +1,5 @@
+Concept sheet prompt:
+Stylized construction component concept sheet for rough timber rectangular window sill, no people or words. Show one separate horizontal oak sill below an empty rectangular wall opening, with visible top, nose, underside and end detail; show assembly and isolated single sill. Jambs/lintel are separate, no glass or shutters, aperture remains open and unchanged, no overlarge projection into clearance. Neutral studio background, visual reference only.
+
+Clean view prompt:
+Isolated clean concept image of one compact rough-oak window sill component, rectangular timber plank with shallow profile and visible top, underside, and end grain. Single component only, no wall, no opening, no trim or brackets, modest projection, orthographic three-quarter on neutral background. Appearance reference only; no dimensions assigned.

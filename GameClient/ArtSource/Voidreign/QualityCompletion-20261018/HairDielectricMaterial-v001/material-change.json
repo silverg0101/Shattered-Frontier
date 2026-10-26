@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "status": "semantic-material-prototype-needs-review",
+  "cpu_only": true,
+  "source": "GameClient\\ArtSource\\Voidreign\\QualityCompletion-20261018\\WalkPilot-v003\\Mount-WalkPilot.blend",
+  "source_sha256": "f59dc38bff697b6c2a2c84511413d2e292d9fdbb278acc69cd8df6d26a5bd123",
+  "candidate": "Mount-MaterialPrototype.blend",
+  "candidate_sha256": "9f655815892fbc693e58faa99880440ed4b30aca4a023248548e084dbf28b42b",
+  "profile_sha256": "ff0426b4fcba47fcca8baffb84ad9a3eea4da8f74ae9abfb69971349178e0884",
+  "tool_sha256": "d3c8480f5723049f1f55360eac30795b3c9fb5936be16f0742487db3b60dfc5b",
+  "selected_faces": 124288,
+  "mixed_boundary_faces_retained": 2713,
+  "change": "Copy original material to selected whole faces, disconnect Metallic only and set0; retain albedo/roughness/image links. Original material and all mixed/unselected faces retained.",
+  "limitations": [
+    "Semantic selection is a proposal, not full hair coverage approval.",
+    "No geometry, UV, weights, rig, gait, roughness, normal or emission edits.",
+    "Source inherits unresolved pose/collision defects; not a promoted full-model candidate."
+  ]
+}

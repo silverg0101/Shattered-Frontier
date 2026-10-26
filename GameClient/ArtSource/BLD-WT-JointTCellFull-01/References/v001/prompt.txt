@@ -1,0 +1,5 @@
+Concept-sheet prompt (exact):
+Concept sheet for one worked-timber T-intersection of opaque wall-cell faces. Three solid wall runs meet at a true right-angle T, with one branch meeting the middle of a continuous wall face; horizontal plank courses and flush end grain. Show plan and isometric, clean pale background, no openings, no extra props, no text. Maintain standard 0.5 m cell contacts; visual proposal only.
+
+Clean asset-view prompt (exact):
+Isolated clean worked-timber T-joint study: three opaque wall runs, one straight wall continues through while a third branch meets its center at 90 degrees. Clearly T shaped in top view and three-quarter view; horizontal planks, end grain at meeting face, no hollows, no supports, no text, plain pale background.
