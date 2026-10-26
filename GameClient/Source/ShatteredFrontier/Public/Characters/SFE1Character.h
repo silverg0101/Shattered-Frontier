@@ -292,7 +292,8 @@ private:
     double NextFallSampleAt = 0;
     double NextSwimSampleAt = 0;
     // Swim pose: while CharacterMovement swims (replicated mode, so remote proxies too) the mesh loops SwimClip, then returns to the locomotion AnimBP.
-    UPROPERTY(Transient) TObjectPtr<class UAnimSequence> SwimClip;
+    UPROPERTY(Transient) TObjectPtr<class UAnimationAsset> SwimClip;  // BS_SF_Swim (tread -> crawl on speed), else the procedural AS_SF_Swim
+    float SwimSpeedBlend = 0.f;  // smoothed horizontal speed driving the blend space (cm/s)
     UPROPERTY(Transient) TSubclassOf<class UAnimInstance> LocomotionAnim;
     bool bSwimPose = false;
     void UpdateSwimPose();

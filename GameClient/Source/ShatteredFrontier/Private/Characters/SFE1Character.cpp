@@ -10,6 +10,8 @@
 #include "Engine/StaticMesh.h"
 #include "Animation/AnimInstance.h"
 #include "Animation/AnimSequence.h"
+#include "Animation/AnimSingleNodeInstance.h"
+#include "Animation/BlendSpace.h"
 #include "Engine/SkeletalMesh.h"
 #include "Materials/MaterialInterface.h"
 #if SF_WITH_MUTABLE
@@ -1523,11 +1525,19 @@ void ASFE1Character::UpdateSwimPose()
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
     if (FParse::Param(FCommandLine::Get(), TEXT("NoSwimPose"))) { bWant = false; }  // evidence only: the walking look before this change
 #endif
+    if (bWant && bSwimPose && SwimClip)
+    {
+        // Mixamo crawl while moving, treading water when still: the blend space reads the horizontal speed (replicated velocity, so remote proxies too).
+        SwimSpeedBlend = FMath::FInterpTo(SwimSpeedBlend, GetVelocity().Size2D(), GetWorld()->GetDeltaSeconds(), 4.f);
+        if (UAnimSingleNodeInstance* Node = GetMesh()->GetSingleNodeInstance()) { Node->SetBlendSpacePosition(FVector(SwimSpeedBlend, 0.f, 0.f)); }
+    }
     if (bWant == bSwimPose) { return; }
     if (bWant)
     {
-        if (!SwimClip) { SwimClip = LoadObject<UAnimSequence>(nullptr, TEXT("/Game/Frontier/Characters/Player/Anim/AS_SF_Swim.AS_SF_Swim")); }
-        if (!SwimClip) { UE_LOG(LogTemp, Warning, TEXT("SWIM_CLIP_MISSING (run tools/Build-SwimAnim.py)")); bSwimPose = true; return; }
+        if (!SwimClip) { SwimClip = LoadObject<UAnimationAsset>(nullptr, TEXT("/Game/Frontier/Characters/Animations/Swim/BS_SF_Swim.BS_SF_Swim")); }
+        if (!SwimClip) { SwimClip = LoadObject<UAnimationAsset>(nullptr, TEXT("/Game/Frontier/Characters/Player/Anim/AS_SF_Swim.AS_SF_Swim")); }
+        if (!SwimClip) { UE_LOG(LogTemp, Warning, TEXT("SWIM_CLIP_MISSING (run tools/Build-SwimMixamo.py)")); bSwimPose = true; return; }
+        SwimSpeedBlend = 0.f;
         GetMesh()->SetAnimationMode(EAnimationMode::AnimationSingleNode);
         GetMesh()->PlayAnimation(SwimClip, true);
     }
