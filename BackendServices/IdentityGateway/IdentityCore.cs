@@ -46,7 +46,8 @@ public sealed record SessionRecord(string SessionId, string AccountId, DateTimeO
 public sealed record LoginChallenge(string AccountId, DateTimeOffset ExpiresAt);
 public sealed record TicketClaims(string SessionId, string AccountId, string CharacterId, string RealmId,
     string ServerId, long ExpiresAtUnixSeconds, string Nonce);
-public enum CreateCharacterOutcome { Created, NameTaken, SlotsFull }
+public enum CreateCharacterOutcome { Created, Replayed, KeyConflict, NameTaken, SlotsFull }
+public sealed record CreateCharacterResult(CreateCharacterOutcome Outcome, CharacterRecord? Character = null);
 
 public interface IIdentityStore
 {
@@ -57,7 +58,8 @@ public interface IIdentityStore
     bool EndSession(byte[] tokenHash);
     IReadOnlyList<CharacterRecord> ListCharacters(string accountId, string? realmId);
     CharacterRecord? FindCharacter(string characterId);
-    CreateCharacterOutcome CreateCharacter(CharacterRecord character, int realmLimit, int accountLimit);
+    CreateCharacterResult CreateCharacter(CharacterRecord character, string idempotencyKey, byte[] requestHash,
+        int realmLimit, int accountLimit);
     bool DeleteCharacter(string characterId, string accountId, DateTimeOffset now, DateTimeOffset nameHoldUntil);
     bool ConsumeTicket(byte[] nonceHash, DateTimeOffset expiresAt);
 }
@@ -276,8 +278,10 @@ public sealed class IdentityService(IIdentityStore store, IdentityOptions option
     public IReadOnlyList<CharacterRecord> ListCharacters(SessionRecord session, string? realmId) => store.ListCharacters(session.AccountId, realmId);
 
     public CharacterRecord CreateCharacter(SessionRecord session, string? realmId, string? name, byte[]? packet,
-        string? archetypeId = "fighter")
+        string? archetypeId, string? idempotencyKey)
     {
+        if (string.IsNullOrEmpty(idempotencyKey) || idempotencyKey.Length > 128)
+            throw new ApiError(400, "INVALID_ARGUMENT", "IDEMPOTENCY_KEY_REQUIRED");
         if (archetypeId is null || !CombatAttributeTuning.Archetypes.Contains(archetypeId, StringComparer.Ordinal))
             throw new ApiError(400, "INVALID_ARGUMENT", "ARCHETYPE_INVALID");
         if (realmId is null || !Regex.IsMatch(realmId, "^[a-z0-9][a-z0-9_-]{1,31}$"))
@@ -287,10 +291,16 @@ public sealed class IdentityService(IIdentityStore store, IdentityOptions option
             throw new ApiError(400, "INVALID_ARGUMENT", "APPEARANCE_INVALID");
         var record = new CharacterRecord("chr_" + Guid.NewGuid().ToString("N"), session.AccountId, realmId,
             display, key, packet, "active", archetypeId);
-        var outcome = store.CreateCharacter(record, options.CharacterSlotsPerRealm, options.CharacterSlotsPerAccount);
-        if (outcome == CreateCharacterOutcome.NameTaken) throw new ApiError(409, "ALREADY_EXISTS", "NAME_TAKEN");
-        if (outcome == CreateCharacterOutcome.SlotsFull) throw new ApiError(429, "RESOURCE_EXHAUSTED", "SLOTS_FULL");
-        return record;
+        var hash = SHA256.HashData(JsonSerializer.SerializeToUtf8Bytes(new
+        {
+            realmId, name = display, appearance = Convert.ToBase64String(packet), archetypeId
+        }));
+        var result = store.CreateCharacter(record, idempotencyKey, hash,
+            options.CharacterSlotsPerRealm, options.CharacterSlotsPerAccount);
+        if (result.Outcome == CreateCharacterOutcome.KeyConflict) throw new ApiError(409, "ALREADY_EXISTS", "IDEMPOTENCY_KEY_CONFLICT");
+        if (result.Outcome == CreateCharacterOutcome.NameTaken) throw new ApiError(409, "ALREADY_EXISTS", "NAME_TAKEN");
+        if (result.Outcome == CreateCharacterOutcome.SlotsFull) throw new ApiError(429, "RESOURCE_EXHAUSTED", "SLOTS_FULL");
+        return result.Character!;
     }
 
     public void DeleteCharacter(SessionRecord session, string id)

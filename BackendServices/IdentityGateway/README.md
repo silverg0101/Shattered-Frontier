@@ -16,6 +16,7 @@ Grant the runtime role only schema usage, marker read, and table DML:
 GRANT USAGE ON SCHEMA identity TO identity_service;
 GRANT SELECT ON identity.schema_version TO identity_service;
 GRANT SELECT, INSERT, UPDATE, DELETE ON identity.accounts, identity.sessions, identity.characters, identity.ticket_uses TO identity_service;
+GRANT SELECT, INSERT ON identity.character_create_requests TO identity_service;
 GRANT USAGE ON SCHEMA auth TO identity_service;
 GRANT SELECT, INSERT, UPDATE, DELETE ON auth.account_data_keys, auth.account_data_key_erasure TO identity_service;
 GRANT SELECT, INSERT ON auth.data_key_unwraps, auth.erasure_tombstones TO identity_service;
@@ -71,7 +72,7 @@ The mTLS pins are SHA256 hashes of the certificate raw bytes, so expiry alone do
 
 ## HTTP contract
 
-JSON field names are `snake_case`. Send `Idempotency-Key` (1–128 characters) on every POST and DELETE. The gateway validates the header; durable replay receipts are pending. Errors use `{ "code": "<grpc_code>", "reason": "<UPPER_SNAKE_CASE>", "retry_after_s": n? }`. Send the session token as `Authorization: Bearer <session_token>` on character and logout routes.
+JSON field names are `snake_case`. Send `Idempotency-Key` (1–128 characters) on every POST and DELETE. `POST /v1/characters` retains the key for the account and atomically stores the normalized request fingerprint and original 201 response with the character; exact retries return that response and changed requests return `IDEMPOTENCY_KEY_CONFLICT`. Other routes only validate the header. Errors use `{ "code": "<grpc_code>", "reason": "<UPPER_SNAKE_CASE>", "retry_after_s": n? }`. Send the session token as `Authorization: Bearer <session_token>` on character and logout routes.
 
 | Route | Request | Success |
 | --- | --- | --- |
@@ -94,5 +95,5 @@ When guild roster is enabled, set `Identity__GuildVerifierKey` (at least 32 char
 
 The development login provider deliberately has no email, MFA, third-party identity, refresh tokens or step-up. This slice also omits sanctions, account deletion state, world admission/presence, character restore, progression initialization and starter grants. Name validation enforces NFKC, length, punctuation, a single supported script, reserved prefixes and configured names, plus a Unicode UTS #39 18.0.0 confusable skeleton from the pinned [Unicode data](https://www.unicode.org/Public/UCD/latest/security/confusables.txt) under the bundled [Unicode License](LICENSE.unicode.txt). Content-pack NPC denylist integration is still needed before public name registration.
 
-Run the focused test project with the pinned SDK: `dotnet run --project BackendServices/IdentityGateway.Tests -- content/appearance/human.json`.
+Run the focused test project with the pinned SDK: `dotnet run --project BackendServices/IdentityGateway.Tests -- content/appearance/human.json`. `pwsh tools/Test-IdentityGatewayCreate.ps1` provisions an owned loopback PostgreSQL instance, applies the identity owner migration and runtime grants, and checks concurrent create, changed-key payload, and gateway restart replay without Unreal.
 For the full development handshake, run `pwsh tools/Test-IdentityGatewayWorld.ps1` from the lane root. It owns a loopback PostgreSQL fixture, gateway, Unreal editor dedicated server and clients, and stops them in `finally`. The installed Windows engine supports `UnrealEditor-Cmd -server` for this check; its standalone Server target is unavailable.

@@ -156,11 +156,11 @@ app.MapGet("/v1/characters", (string? realm_id, HttpContext http, IdentityServic
     Results.Ok(new { characters = service.ListCharacters(service.RequireSession(http.Request.Headers.Authorization), realm_id).Select(ToResponse) }));
 app.MapPost("/v1/characters", (CharacterCreateRequest request, HttpContext http, IdentityService service) =>
 {
-    RequireKey(http);
+    var idempotencyKey = RequireKey(http);
     byte[] packet;
     try { packet = Convert.FromBase64String(request.AppearanceV2Base64 ?? ""); }
     catch (FormatException) { throw new ApiError(400, "INVALID_ARGUMENT", "APPEARANCE_INVALID"); }
-    var character = service.CreateCharacter(service.RequireSession(http.Request.Headers.Authorization), request.RealmId, request.Name, packet, request.ArchetypeId);
+    var character = service.CreateCharacter(service.RequireSession(http.Request.Headers.Authorization), request.RealmId, request.Name, packet, request.ArchetypeId, idempotencyKey);
     return Results.Json(ToResponse(character), statusCode: 201);
 });
 app.MapGet("/v1/characters/{characterId}", (string characterId, HttpContext http, IdentityService service) =>
@@ -306,10 +306,11 @@ static void RequirePinnedClient(HttpContext context, string expected, string? al
         throw new ApiError(401, "UNAUTHENTICATED", "DATA_KEY_CLIENT_DENIED");
 }
 
-static void RequireKey(HttpContext context)
+static string RequireKey(HttpContext context)
 {
     var key = context.Request.Headers["Idempotency-Key"].ToString();
     if (key.Length is < 1 or > 128) throw new ApiError(400, "INVALID_ARGUMENT", "IDEMPOTENCY_KEY_REQUIRED");
+    return key;
 }
 
 static void Listen(Microsoft.AspNetCore.Server.Kestrel.Core.KestrelServerOptions server, Uri url, Action<HttpsConnectionAdapterOptions>? configureHttps)
