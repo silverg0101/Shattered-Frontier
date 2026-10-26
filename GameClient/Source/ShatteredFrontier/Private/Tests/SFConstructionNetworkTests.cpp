@@ -4,6 +4,7 @@
 #include "Framework/SFPlayerController.h"
 #include "Framework/SFGameMode.h"
 #include "Characters/SFE1Character.h"
+#include "Services/SFBackpackComponent.h"
 #include "Construction/SFConstructionNetwork.h"
 #include "Construction/SFConstructionGeometry.h"
 #include "Serialization/BitReader.h"
@@ -81,6 +82,7 @@ bool FSFConstructionDeadWriterTest::RunTest(const FString& Parameters)
     if (!Mode || !Controller || !Pawn) { return false; }
     Controller->Possess(Pawn);
     Pawn->CombatSetHealth(0);
+    const auto* BackpackBefore=Controller->FindComponentByClass<USFBackpackComponent>();
     ESFConstructionNetworkResult Result=ESFConstructionNetworkResult::Accepted;
     Mode->ClaimPlot(Controller,TEXT("plot/missing"),[&Result](ESFConstructionNetworkResult Value) { Result=Value; });
     TestEqual(TEXT("Dead pawn cannot claim"),Result,ESFConstructionNetworkResult::InvalidContext);
@@ -89,10 +91,40 @@ bool FSFConstructionDeadWriterTest::RunTest(const FString& Parameters)
     Mode->CommitHousing(Controller,TEXT("plot/missing"),FIntVector::ZeroValue,false,0,0,
         [&Result](ESFConstructionNetworkResult Value,const FString&) { Result=Value; });
     TestEqual(TEXT("Dead pawn cannot enter paid construction"),Result,ESFConstructionNetworkResult::InvalidContext);
+    TestTrue(TEXT("Dead requests do not create a mutation backpack"),Controller->FindComponentByClass<USFBackpackComponent>()==BackpackBefore);
     Pawn->CombatSetHealth(Pawn->CombatMaximumHealth());
     Mode->CommitHousing(Controller,TEXT("plot/missing"),FIntVector::ZeroValue,false,0,0,
         [&Result](ESFConstructionNetworkResult Value,const FString&) { Result=Value; });
     TestEqual(TEXT("Revived pawn clears death gate and reaches missing plot"),Result,ESFConstructionNetworkResult::ServiceUnavailable);
+    return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSFConstructionHousingReceiptTest,
+    "ShatteredFrontier.Construction.Network.CommittedHousingProjection",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+
+bool FSFConstructionHousingReceiptTest::RunTest(const FString& Parameters)
+{
+    FTestWorldWrapper Fixture;
+    if (!Fixture.CreateTestWorld(EWorldType::Game) || !Fixture.BeginPlayInTestWorld()) { return false; }
+    auto* World=Fixture.GetTestWorld(); World->GetWorldSettings()->NotifyBeginPlay();
+    auto* State=World->SpawnActor<ASFConstructionNetworkState>();
+    auto* Controller=World->SpawnActor<ASFPlayerController>();
+    auto* Pawn=World->SpawnActor<ASFE1Character>();
+    if (!State || !Controller || !Pawn) { return false; }
+    Controller->Possess(Pawn);
+    Pawn->CombatSetHealth(0);
+    Pawn->SetActorLocation(FVector(50000,50000,100)); // A committed reply can arrive after respawn movement.
+    State->SetClaimId(TEXT("plot/receipt-test"));
+    if (!TestTrue(TEXT("Claim anchor configured"),State->ConfigureAnchor(FIntVector::ZeroValue))
+        || !TestTrue(TEXT("Authoritative claim mask accepted"),State->SetClaimMask({1},0,0,1,1))) { return false; }
+    TArray<FSFConstructionNetworkRestoredPiece> Paid={{FIntVector::ZeroValue,0,SFConstructionGeometry::IdentityRotation()}};
+    TestTrue(TEXT("Committed service structure projects after owner death and move"),State->ProjectCommittedHousingStructures(Paid));
+    TestTrue(TEXT("Paid structure appears once"),State->GetSnapshot().Revision==1 && State->GetSnapshot().Members.Num()==1);
+    TestTrue(TEXT("Duplicate service view is idempotent"),State->ProjectCommittedHousingStructures(Paid));
+    TestTrue(TEXT("Duplicate does not allocate another revision or piece"),State->GetSnapshot().Revision==1 && State->GetSnapshot().Members.Num()==1);
+    TestTrue(TEXT("Committed removal projects after owner death"),State->ProjectCommittedHousingStructures({}));
+    TestTrue(TEXT("Removal publishes one revision"),State->GetSnapshot().Revision==2 && State->GetSnapshot().Members.IsEmpty());
     return true;
 }
 

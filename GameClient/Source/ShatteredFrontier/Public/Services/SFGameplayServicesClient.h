@@ -170,7 +170,7 @@ struct FSFGameplayResponse
     bool bHasDeath = false, bIsDead = false; FString DeathEventId; int64 DeathAtUnixMs = 0, RespawnAtUnixMs = 0;
     FString DeathZoneId; FVector DeathPosition = FVector::ZeroVector, RespawnPosition = FVector::ZeroVector;
     // Housing
-    FString State, StructureId, OwnerId; int64 StructureRevision = 0, Revision = 0, PermissionRevision = 0;
+    FString State, StructureId, OwnerId, HousingOperationId; int64 StructureRevision = 0, Revision = 0, PermissionRevision = 0;
     bool bActorPermitted = false;  // GetClaim with server-bound CharacterId
     struct FStructure { FString StructureId, ContentId; FIntVector Cell = FIntVector::ZeroValue; int64 Revision = 0; FString ShapeKey; int32 OrientationIndex = 0; };
     TArray<FStructure> Structures;  // ListStructures; StructureRevision then holds the claim's structure revision

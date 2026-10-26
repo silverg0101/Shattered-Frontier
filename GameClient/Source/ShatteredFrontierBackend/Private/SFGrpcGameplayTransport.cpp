@@ -89,7 +89,7 @@ namespace
     { Out.State = FromUtf8(R.state()); Out.OwnerId = FromUtf8(R.owner_id()); Out.Revision = R.revision(); Out.PermissionRevision = R.permission_revision(); Out.bActorPermitted = R.actor_permitted(); }
 
     void CopyPlacement(const sf::housing::v1::PlacementReply& R, FSFGameplayResponse& Out)
-    { Out.State = FromUtf8(R.state()); Out.StructureId = FromUtf8(R.structure_id()); Out.StructureRevision = R.structure_revision(); }
+    { Out.State = FromUtf8(R.state()); Out.HousingOperationId = FromUtf8(R.operation_id()); Out.StructureId = FromUtf8(R.structure_id()); Out.StructureRevision = R.structure_revision(); }
 
     void CopyDeath(const sf::progression::v1::DeathState& R, FSFGameplayResponse& Out)
     {

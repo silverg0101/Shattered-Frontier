@@ -113,6 +113,12 @@ public:
     // is projected (hard reject). Pieces come back as identity cubes until piece content is persisted (BLD-01).
     bool RestoreFromHousing(const TArray<FSFConstructionNetworkRestoredPiece>& Pieces);
 private:
+    friend class ASFGameMode;
+#if WITH_DEV_AUTOMATION_TESTS
+    friend class FSFConstructionHousingReceiptTest;
+#endif
+    // Called only with the authoritative ListStructures view after a verified committed Housing receipt.
+    bool ProjectCommittedHousingStructures(const TArray<FSFConstructionNetworkRestoredPiece>& Pieces);
     ESFConstructionNetworkResult ValidateEditContext(ASFPlayerController* Controller, uint64 ExpectedRevision, const APawn*& OutPawn, const AActor*& OutFoundation) const;
     ESFConstructionNetworkResult ValidateDoorTarget(ASFPlayerController* Controller, FIntVector Origin, uint64 ExpectedRevision, int32& OutIndex) const;
     ESFConstructionNetworkResult ValidateMemberCell(const APawn* Pawn, const AActor* Foundation, FIntVector Cell, bool bRemove, uint8 Shape, uint8 Rotation) const;

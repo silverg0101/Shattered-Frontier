@@ -325,6 +325,33 @@ bool ASFConstructionNetworkState::RestoreFromHousing(const TArray<FSFConstructio
     return true;
 }
 
+bool ASFConstructionNetworkState::ProjectCommittedHousingStructures(const TArray<FSFConstructionNetworkRestoredPiece>& Pieces)
+{
+    if (!HasAuthority() || ClaimId.IsEmpty() || Snapshot.Revision==MAX_uint64 || !HasExpectedTransform()) { return false; }
+    FSFConstructionNetworkSnapshot Candidate=Snapshot;
+    Candidate.Members.Reset();
+    for (const auto& Piece : Pieces)
+    {
+        if (!ContainsClaimCell(Piece.Cell) || Candidate.Find(Piece.Cell)!=INDEX_NONE || Piece.Shape<0
+            || Piece.Shape>=SFConstructionGeometry::ShapeCount || Piece.Rotation<0 || Piece.Rotation>=SFConstructionGeometry::RotationCount)
+        { return false; }
+        FSFConstructionNetworkMember Member; Member.Cell=Piece.Cell; Member.Shape=Piece.Shape; Member.Rotation=Piece.Rotation;
+        Candidate.Members.Add(Member);
+    }
+    Candidate.Members.Sort([](const auto& A,const auto& B) { return A.Cell.X!=B.Cell.X ? A.Cell.X<B.Cell.X : A.Cell.Y!=B.Cell.Y ? A.Cell.Y<B.Cell.Y : A.Cell.Z<B.Cell.Z; });
+    bool bSame=Candidate.Members.Num()==Snapshot.Members.Num();
+    for (int32 Index=0; bSame && Index<Candidate.Members.Num(); ++Index)
+    {
+        const auto& A=Candidate.Members[Index]; const auto& B=Snapshot.Members[Index];
+        bSame=A.Cell==B.Cell && A.Shape==B.Shape && A.Rotation==B.Rotation;
+    }
+    if (bSame) { return true; } // Duplicate service reply cannot allocate a second local revision.
+    Candidate.Revision=Snapshot.Revision+1;
+    if (!Activate(Candidate)) { return false; }
+    Snapshot=MoveTemp(Candidate); ForceNetUpdate();
+    return true;
+}
+
 FVector ASFConstructionNetworkState::GetAnchorOffsetCm() const { return SFConstructionAnchor::OffsetCm(AnchorCell); }
 
 bool ASFConstructionNetworkState::HasExpectedTransform() const
@@ -545,7 +572,8 @@ ESFConstructionNetworkResult ASFConstructionNetworkState::ValidateEditContext(AS
 #endif
     if (!ClaimId.IsEmpty() && !Mode->IsHousingActive() && !bUnclaimedFallback) { return ESFConstructionNetworkResult::ServiceUnavailable; }
     const APawn* Pawn = Controller->GetPawn();
-    if (!HasLivingOwnedPawn(Controller) || Pawn->GetWorld() != GetWorld()) { return ESFConstructionNetworkResult::InvalidContext; }
+    if (!HasLivingOwnedPawn(Controller) || Pawn->GetWorld() != GetWorld())
+    { return ESFConstructionNetworkResult::InvalidContext; }
     if (ExpectedRevision != Snapshot.Revision) { return ESFConstructionNetworkResult::Stale; }
     if (Snapshot.Revision==MAX_uint64) { return ESFConstructionNetworkResult::InvalidContext; }
     if (Snapshot.Revision > 0 && !HasCurrentCollision()) { return ESFConstructionNetworkResult::ProjectionFailed; }
@@ -1180,9 +1208,12 @@ void ASFGameMode::CommitHousing(ASFPlayerController* Controller, const FString& 
     TWeakObjectPtr<ASFPlayerController> WeakController(Controller);
     FClaimPlot* Target=FindPlot(ClaimId);
     if (!HasLivingOwnedPawn(Controller)) { Done(ESFConstructionNetworkResult::InvalidContext,FString()); return; }
+    USFBackpackComponent* InitialPack=USFBackpackComponent::FindOrCreate(Controller);
+    if (!InitialPack) { Done(ESFConstructionNetworkResult::ServiceUnavailable,FString()); return; }
+    const FString CharacterId=InitialPack->GetCharacterId();
     if (!Target || !Target->bLoaded) { Done(ESFConstructionNetworkResult::ServiceUnavailable,FString()); return; }
     // The first placement on an unclaimed plot claims it for the builder; on someone else's claim the service decides.
-    auto Commit=[Weak,WeakController,ClaimId,Cell,bRemove,Shape,Rotation,Done](ESFConstructionNetworkResult ClaimResult)
+    auto Commit=[Weak,WeakController,CharacterId,ClaimId,Cell,bRemove,Shape,Rotation,Done](ESFConstructionNetworkResult ClaimResult)
     {
         ASFGameMode* Self=Weak.Get();
         FClaimPlot* Plot=Self ? Self->FindPlot(ClaimId) : nullptr;
@@ -1192,7 +1223,8 @@ void ASFGameMode::CommitHousing(ASFPlayerController* Controller, const FString& 
         const FSFStationRecipe* Cost=SFStationRecipes::Find(TEXT("recipe/wall_material_bundle"));
         if (!HasLivingOwnedPawn(WeakController.Get())) { Done(ESFConstructionNetworkResult::InvalidContext,FString()); return; }
         if (ClaimResult==ESFConstructionNetworkResult::ServiceUnavailable) { Done(ClaimResult,FString()); return; }
-        if (!Plot || !Plot->bClaimed || !Pack || !Cost || (bRemove && !Existing)) { Done(ESFConstructionNetworkResult::ServiceUnavailable,FString()); return; }
+        if (!Plot || !Plot->bClaimed || !Pack || Pack->GetCharacterId()!=CharacterId || !Cost || (bRemove && !Existing))
+        { Done(ESFConstructionNetworkResult::ServiceUnavailable,FString()); return; }
         const FString Operation=(bRemove ? TEXT("remove/") : TEXT("place/"))+FGuid::NewGuid().ToString(EGuidFormats::DigitsWithHyphensLower);
         const FString Structure=bRemove ? *Existing : FString::Printf(TEXT("str_%s_x%d_y%d_z%d"),*ClaimId.RightChop(4),Cell.X,Cell.Y,Cell.Z);
         FSFItemStack Material=Cost->Outputs[0];
@@ -1209,11 +1241,15 @@ void ASFGameMode::CommitHousing(ASFPlayerController* Controller, const FString& 
             }
         }
         TSharedRef<FSFGameplayResponse> Receipt=MakeShared<FSFGameplayResponse>();
+        TSharedRef<FString> DispatchedOperation=MakeShared<FString>();
         FSFBackpackMutation Mutation; Mutation.Label=bRemove ? TEXT("housing_remove") : TEXT("housing_place"); Mutation.OperationId=Operation;
-        Mutation.Run=[Weak,WeakController,Receipt,ClaimId,Cell,bRemove,Shape,Rotation,Structure,Material,WeakPack=TWeakObjectPtr<USFBackpackComponent>(Pack)](const FString& Op,int64 Expected,TFunction<void(ESFBackpackOutcome,int64)> Report)
+        Mutation.Run=[Weak,WeakController,CharacterId,Receipt,DispatchedOperation,ClaimId,Cell,bRemove,Shape,Rotation,Structure,Material,WeakPack=TWeakObjectPtr<USFBackpackComponent>(Pack)](const FString& Op,int64 Expected,TFunction<void(ESFBackpackOutcome,int64)> Report)
         {
             ASFGameMode* Mode=Weak.Get(); FClaimPlot* Current=Mode ? Mode->FindPlot(ClaimId) : nullptr; USFBackpackComponent* Owner=WeakPack.Get();
-            if (!Current || !Owner || !HasLivingOwnedPawn(WeakController.Get())) { Report(ESFBackpackOutcome::Rejected,-1); return; }
+            if (!Current || !Owner || Owner->GetCharacterId()!=CharacterId || Owner->GetWorld()!=Mode->GetWorld()
+                || !HasLivingOwnedPawn(WeakController.Get()))
+            { Report(ESFBackpackOutcome::Rejected,-1); return; }
+            *DispatchedOperation=Op;
             FSFGameplayRequest Q; Q.Rpc=bRemove ? ESFGameplayRpc::Remove : ESFGameplayRpc::Place; Q.OperationId=Op; Q.ClaimId=ClaimId;
             Q.CharacterId=Owner->GetCharacterId(); Q.ExpectedPermissionRevision=Current->PermissionRevision; Q.ExpectedStructureRevision=Current->StructureRevision;
             Q.StructureId=Structure; Q.Cell=Cell; Q.ContentId=TEXT("piece/wall"); Q.MaterialId=Material.DefinitionId; Q.MaterialQuantity=Material.Quantity;
@@ -1227,10 +1263,12 @@ void ASFGameMode::CommitHousing(ASFPlayerController* Controller, const FString& 
                     : R.GrpcCode==9 ? ESFBackpackOutcome::Stale : ESFBackpackOutcome::Rejected,-1);
             });
         };
-        Mutation.Finished=[Weak,Receipt,ClaimId,Cell,bRemove,Structure,Material,Operation,WeakPack=TWeakObjectPtr<USFBackpackComponent>(Pack),Done](ESFBackpackOutcome Outcome)
+        Mutation.Finished=[Weak,Receipt,DispatchedOperation,ClaimId,Cell,bRemove,Structure,Material,Operation,WeakPack=TWeakObjectPtr<USFBackpackComponent>(Pack),Done](ESFBackpackOutcome Outcome)
         {
             ASFGameMode* Mode=Weak.Get(); FClaimPlot* Current=Mode ? Mode->FindPlot(ClaimId) : nullptr; USFBackpackComponent* Owner=WeakPack.Get();
-            const bool bCommitted=Outcome==ESFBackpackOutcome::Committed && (Receipt->State==TEXT("Committed") || Receipt->State==TEXT("Removed"));
+            const bool bCommitted=Outcome==ESFBackpackOutcome::Committed && !DispatchedOperation->IsEmpty()
+                && Receipt->HousingOperationId==*DispatchedOperation && Receipt->StructureId==Structure
+                && Receipt->StructureRevision>0 && (Receipt->State==TEXT("Committed") || Receipt->State==TEXT("Removed"));
             UE_LOG(LogTemp,Display,TEXT("HOUSING_OUTCOME Op=%s Claim=%s Action=%s Structure=%s Outcome=%d State=%s StructureRevision=%lld Code=%d %s"),*Operation,*ClaimId,
                 bRemove ? TEXT("Remove") : TEXT("Place"),*Structure,int32(Outcome),*Receipt->State,Receipt->StructureRevision,Receipt->GrpcCode,*Receipt->Message);
             if (bCommitted && Current)
@@ -1242,15 +1280,28 @@ void ASFGameMode::CommitHousing(ASFPlayerController* Controller, const FString& 
                 // The placement reply has no claim mask. Read the durable mask before projecting the edit so a
                 // Housing growth or shrink is reflected in the replicated state on this same action.
                 FSFGameplayRequest List; List.Rpc=ESFGameplayRpc::ListStructures; List.ClaimId=ClaimId;
-                USFBackpackComponent::Services()->Call(List,[Weak,ClaimId,Operation,Done](const FSFGameplayResponse& Structures)
+                USFBackpackComponent::Services()->Call(List,[Weak,Receipt,ClaimId,Cell,bRemove,Structure,Operation,Done](const FSFGameplayResponse& Structures)
                 {
                     ASFGameMode* Again=Weak.Get(); FClaimPlot* Plot=Again ? Again->FindPlot(ClaimId) : nullptr;
-                    const bool bMask=Plot && Plot->State.IsValid() && Structures.Status==ESFGameplayStatus::Ok
+                    const bool bReceiptMatches=Plot && Plot->State.IsValid() && Plot->State->GetWorld()==Again->GetWorld()
+                        && Plot->State->GetClaimId()==ClaimId && Structures.Status==ESFGameplayStatus::Ok
+                        && Structures.StructureRevision>=Receipt->StructureRevision;
+                    bool bFoundStructure=false;
+                    TArray<FSFConstructionNetworkRestoredPiece> Pieces;
+                    for (const auto& S : Structures.Structures)
+                    {
+                        if (S.Cell==Cell && S.StructureId==Structure) { bFoundStructure=true; }
+                        Pieces.Add({S.Cell,ShapeFromHousingKey(S.ShapeKey),S.OrientationIndex>=0 && S.OrientationIndex<SFConstructionGeometry::RotationCount
+                            ? FromHousingOrientation(S.OrientationIndex) : INDEX_NONE});
+                    }
+                    const bool bMask=bReceiptMatches && bFoundStructure!=bRemove
                         && Plot->State->SetClaimMask(Structures.ClaimMask,Structures.MaskOriginX,Structures.MaskOriginY,
                             Structures.MaskWidth,Structures.MaskHeight);
-                    if (!bMask)
-                    { UE_LOG(LogTemp,Error,TEXT("HOUSING_MASK_REFRESH_FAILED Claim=%s Op=%s Code=%d"),*ClaimId,*Operation,Structures.GrpcCode); }
-                    Done(bMask ? ESFConstructionNetworkResult::Accepted : ESFConstructionNetworkResult::ServiceUnavailable,Operation);
+                    const bool bProjected=bMask && Plot->State->ProjectCommittedHousingStructures(Pieces);
+                    if (!bProjected)
+                    { UE_LOG(LogTemp,Error,TEXT("HOUSING_PROJECTION_REFRESH_FAILED Claim=%s Op=%s Code=%d"),*ClaimId,*Operation,Structures.GrpcCode); }
+                    Done(bProjected ? (bRemove ? ESFConstructionNetworkResult::Removed : ESFConstructionNetworkResult::Accepted)
+                        : ESFConstructionNetworkResult::ServiceUnavailable,Operation);
                 });
                 return;
             }
@@ -2088,20 +2139,15 @@ void ASFPlayerController::ProcessEdit(FIntVector Cell, uint64 ExpectedRevision, 
         if (Result == (bRemove ? ESFConstructionNetworkResult::Removed : ESFConstructionNetworkResult::Accepted))
         {
             bHousingPending = true;
-            Mode->CommitHousing(this,ClaimId,Cell,bRemove,Shape,Rotation,[Weak=TWeakObjectPtr<ASFPlayerController>(this),ClaimId,Cell,bRemove,Shape,Rotation](ESFConstructionNetworkResult Housing,const FString& Operation)
+            Mode->CommitHousing(this,ClaimId,Cell,bRemove,Shape,Rotation,[Weak=TWeakObjectPtr<ASFPlayerController>(this),ClaimId,bRemove](ESFConstructionNetworkResult Housing,const FString& Operation)
             {
                 ASFPlayerController* Self = Weak.Get();
                 auto* Current = Self ? ResolveState(Self->GetWorld(),ClaimId) : nullptr;
-                const bool bCommitted = Housing == ESFConstructionNetworkResult::Accepted;
                 if (!Self || !Current) { return; }
                 Self->bHousingPending = false;
-                ESFConstructionNetworkResult Applied = Housing == ESFConstructionNetworkResult::PermissionDenied ? Housing : ESFConstructionNetworkResult::ServiceUnavailable;
-                if (bCommitted)
-                {
-                    Applied = Current->Edit(Self,Cell,Current->GetSnapshot().Revision,bRemove,Shape,Rotation);
-                    if (Applied != (bRemove ? ESFConstructionNetworkResult::Removed : ESFConstructionNetworkResult::Accepted))
-                    { UE_LOG(LogTemp,Error,TEXT("HOUSING_PROJECTION_MISMATCH Op=%s Result=%d"),*Operation,int32(Applied)); }
-                }
+                // CommitHousing already projected its verified durable ListStructures reply. Rechecking pawn range
+                // here would strand a paid edit if the owner died or respawned while the service replied.
+                const ESFConstructionNetworkResult Applied=Housing;
                 const uint64 After = Current->GetSnapshot().Revision;
                 if (!bRemove && Applied == ESFConstructionNetworkResult::Accepted) { SFQuestPilotEvents::OnStructurePlaced().Broadcast(Self,After,Operation); }
                 UE_LOG(LogTemp,Display,TEXT("CONSTRUCTION_NETWORK_RESULT Builder=%d Result=%d Revision=%llu Members=%d Collision=%d Action=%s Housing=%s"),Self->bBuilderRole,int32(Applied),After,
