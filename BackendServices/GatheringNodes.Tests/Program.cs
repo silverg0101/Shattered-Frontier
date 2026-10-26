@@ -11,10 +11,27 @@ var definitions = new[]
     new NodeDefinition("gathering_node/stone_outcrop", ResourceKind.Ore, "resource/stone", 1, 2)
 };
 var settings = new NodeSettings(30, .1, RegrowthMode.FullRespawn);
+// The shipped record makes every tree and rock a node (K = N): each is pinned to its own point and regrows there.
+var everyNode = new GatheringNodeService(zone, definitions, clock, "silverbrook-test", settings);
+var gathering = zone.SpawnGroups.Where(g => g.SpawnKind == "gathering_node" && !g.GroupId.EndsWith("_iron_ore")).ToArray();
+Check(everyNode.Snapshot().Count == gathering.Sum(g => g.Points.Count), "every tree and rock point is an active node");
+Check(everyNode.Snapshot().All(n => n.Id.EndsWith("/" + gathering.Single(g => g.GroupId == n.GroupId).Points
+    .FindIndex(p => p.PointId == n.PointId))), "node i stands on point i");
+var pinned = everyNode.Snapshot().First(n => n.Kind == ResourceKind.Ore);
+var pinnedCut = everyNode.Harvest(new("pinned", "p1", pinned.Id, 1));
+clock.Set(pinnedCut.RegrowAt!.Value);
+Check(everyNode.Snapshot().Single(n => n.Id == pinned.Id) is { Generation: 2, Charges: 1 } renewedPin && renewedPin.PointId == pinned.PointId,
+    "a K = N node regrows on its own point");
+// Rotation (K < N) on the same record with half its points active.
+foreach (var g in zone.SpawnGroups.Where(g => g.SpawnKind == "gathering_node")) g.ActiveCount = g.Points.Count / 2;
+var resized = new GatheringNodeService(zone, definitions, clock, "silverbrook-test", settings);
+resized.ImportState(everyNode.ExportState());
+Check(resized.Snapshot().All(n => n is { Generation: 1 }), "a changed zone record starts every node fresh");
+clock = new ManualClock();
 var service = new GatheringNodeService(zone, definitions, clock, "silverbrook-test", settings);
 var nodes = service.Snapshot();
 Check(nodes.Any(n => n.Kind == ResourceKind.Wood) && nodes.Any(n => n.Kind == ResourceKind.Ore), "real wood and mined stone groups loaded");
-Check(nodes.Count(n => n.Kind == ResourceKind.Wood) == 8 && nodes.Count(n => n.Kind == ResourceKind.Ore) == 6, "active counts from zone record");
+Check(nodes.Count == gathering.Sum(g => g.Points.Count / 2), "active counts from zone record");
 var ore = nodes.First(n => n.Kind == ResourceKind.Ore);
 var first = service.Harvest(new("ore-first", "p1", ore.Id, ore.Generation));
 Check(first.Status == HarvestStatus.Granted && first.Quantity == 2 && first.RemainingCharges == 0, "ore depletion and yield");

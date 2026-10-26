@@ -64,14 +64,15 @@ if (combatOnly)
     return;
 }
 Check(WorldContentValidator.Validate(zone).Count == 0, "generated zone validates");
-Broken("N >= 2K", z => z.SpawnGroups.First(g => g.SpawnKind == "gathering_node").ActiveCount = 999, "N >= 2K");
+Broken("N >= K", z => z.SpawnGroups.First(g => g.SpawnKind == "gathering_node").ActiveCount = 999, "invalid active_count or point count");
 Broken("protected hostile point", z => z.SpawnGroups.First(g => g.SpawnKind == "npc").Points[0].Position = [0, 0], "protected area");
 Broken("level range", z => z.LevelAreas[0].ContentLevel = 999, "outside level_range");
 Check(WorldContentValidator.ValidateAll([(path, zone), ("duplicate", zone)]).Any(i => i.Contains("zone_index", StringComparison.Ordinal)), "zone_index uniqueness");
 
 var clock = new ManualClock();
-var service = new SpawnSlotService(zone, new WorldTuning(), clock, new SeededSpawnRandom(42));
 var gather = zone.SpawnGroups.First(g => g.SpawnKind == "gathering_node");
+gather.ActiveCount = gather.Points.Count / 2;  // the shipped record has K = N (no spare point); rotation needs K < N
+var service = new SpawnSlotService(zone, new WorldTuning(), clock, new SeededSpawnRandom(42));
 var npc = zone.SpawnGroups.First(g => g.SpawnKind == "npc");
 service.Tick(DayPhase.Day);
 var initial = service.Snapshot(gather.GroupId);

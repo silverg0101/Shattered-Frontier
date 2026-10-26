@@ -16,6 +16,7 @@ struct FSFHarvestFellingReviewState;
 class UStaticMesh;
 class UStaticMeshComponent;
 class UTextRenderComponent;
+class UInstancedStaticMeshComponent;
 class USFGatheringPilotComponent;
 class FSFInventoryLedgerClient;
 class USFBackpackComponent;
@@ -71,6 +72,10 @@ public:
     bool bGrantStarterTools = true;
     UPROPERTY(Config, EditAnywhere, Category="Starter Tools (Content Generation)", meta=(ClampMin="0.01", ClampMax="50", Units="kg"))
     float ToolUnitWeightKg = 2;
+    UPROPERTY(Config, EditAnywhere, Category="Zone Nodes", meta=(ClampMin="10", ClampMax="150", Units="m", ToolTip="Every tree and rock in the zone record is a node; the server spawns its actor when a player comes this close. Release authors; next world start."))
+    float ZoneNodeSpawnMetres = 40;
+    UPROPERTY(Config, EditAnywhere, Category="Zone Nodes", meta=(ClampMin="15", ClampMax="200", Units="m", ToolTip="An idle zone node actor is removed (its tree or rock dressing returns) when every player is farther than this; at least 5 m beyond the spawn distance. Release authors; next world start."))
+    float ZoneNodeDespawnMetres = 55;
     bool Validate(FString& Error) const;
 };
 
@@ -172,6 +177,9 @@ public:
     void SetServiceNodeId(const FString& InId) { ServiceNodeId = InId; }
     const FString& GetServiceNodeId() const { return ServiceNodeId; }
     void ApplyZoneNode(const FSFGameplayResponse::FZoneNode& Node);
+    // Server: an idle zone node may be removed when no player is near. Host-backed state survives in the service;
+    // a session-only node is removed only while untouched, so leaving cannot refill it.
+    bool CanStreamOut() const;
     // Stage reached ElapsedSeconds into a grow window of GrowWindowSeconds: same rule as BackendServices/GatheringNodes.
     static FName StageAt(const TArray<FSFGrowthStageDef>& Stages, double GrowWindowSeconds, double ElapsedSeconds);
     // Dev capture only (no effect in shipping/test builds): force the stage shown.
@@ -227,6 +235,9 @@ private:
     FString ServiceNodeId;
     FString ServicePointId;
     TOptional<FVector> ClearedDressingAt;
+    // The dressing instances this node replaced on this machine; they return when the node goes away or moves.
+    TArray<TPair<TWeakObjectPtr<UInstancedStaticMeshComponent>,FTransform>> ClearedDressing;
+    void RestoreDressing();
     TSharedPtr<FSFGameplayServicesClient> ServiceClient;
     uint64 ServiceSnapshotSerial = 0; // Invalidates older GetNode replies after a newer read or harvest receipt.
     bool bServiceStateReady = false;

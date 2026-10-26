@@ -8,6 +8,7 @@ never at runtime. PCG generates over the next editor ticks, so the build ends wi
 which checks every district volume generated the expected instance count and saves the map.
 """
 import json
+import math
 import unreal as u
 
 GRAPH_DIR = '/Game/Frontier/PCG'
@@ -66,13 +67,29 @@ def ray(world, terrain, x, y, top, bottom):
     return next(((h.to_tuple()[5], h.to_tuple()[7]) for h in hits or () if h.to_tuple()[9] == terrain), None)
 
 
-def _snap(group):
-    """(z metres, up normal) of the terrain under each placement, by a ray from 15 m above to 15 m below its decided height."""
+def footprint_cm(mesh):
+    """Horizontal radius (cm, unscaled) of the mesh's vertices within 30 cm of its base: where a trunk or rock meets the ground."""
+    b = mesh.get_bounding_box(); r = 0.0
+    for s in range(mesh.get_num_sections(0)):
+        for v in u.ProceduralMeshLibrary.get_section_from_static_mesh(mesh, 0, s)[0]:
+            if v.z < b.min.z + 30:
+                r = max(r, math.hypot(v.x, v.y))
+    return r
+
+
+def _snap(group, foot_cm=0.0):
+    """(z metres, up normal) of the terrain under each placement, by a ray from 15 m above to 15 m below its decided height.
+    With a footprint (trees, rocks) the lowest ground under its rim wins, so no side of the base hangs over a slope."""
     world, terrain = _terrain()
     out = []
     for t in group:
-        hit = ray(world, terrain, t['x'] * 100, t['y'] * 100, (t['z'] + 15) * 100, (t['z'] - 15) * 100)
-        out.append((hit[0].z / 100, hit[1]) if hit else (t['z'], u.Vector(0, 0, 1)))
+        x, y, r = t['x'] * 100, t['y'] * 100, foot_cm * t['scale']
+        hit = ray(world, terrain, x, y, (t['z'] + 15) * 100, (t['z'] - 15) * 100)
+        if not hit:
+            out.append((t['z'], u.Vector(0, 0, 1))); continue
+        rim = [ray(world, terrain, x + r * math.cos(a), y + r * math.sin(a), (t['z'] + 15) * 100, (t['z'] - 15) * 100)
+               for a in (k * math.pi / 4 for k in range(8))] if r > 0 else []
+        out.append((min([hit[0].z] + [h[0].z for h in rim if h]) / 100, hit[1]))
     return out
 
 
@@ -111,7 +128,7 @@ def _build(result, layers, zone, cosmetic):
         mesh = meshes[mesh_name]
         b = mesh.get_bounding_box(); height = (b.max.z - b.min.z) / 100
         points = []
-        ground = _snap(group)
+        ground = _snap(group, 0.0 if layer in NO_COLLISION_LAYERS else footprint_cm(mesh))
         for n, (t, (gz, normal)) in enumerate(zip(group, ground)):
             p = u.PCGPoint()
             z = gz - t['sink'] * height * t['scale'] - t['sink_cm'] / 100
@@ -134,10 +151,10 @@ def _build(result, layers, zone, cosmetic):
         entry = u.PCGMeshSelectorWeightedEntry()
         desc = entry.get_editor_property('descriptor')
         desc.set_editor_property('static_mesh', mesh)
-        if cosmetic:
-            body = desc.get_editor_property('body_instance')
-            body.set_editor_property('collision_profile_name', 'NoCollision')
-            desc.set_editor_property('body_instance', body)
+        # The spawner's default is no collision: trees and rocks (the gameplay volume) block; small cover never does.
+        body = desc.get_editor_property('body_instance')
+        body.set_editor_property('collision_profile_name', 'NoCollision' if cosmetic else 'BlockAll')
+        desc.set_editor_property('body_instance', body)
         if cull:
             desc.set_editor_property('instance_end_cull_distance', int(cull))
             desc.set_editor_property('instance_start_cull_distance', int(cull * 0.8))  # dither out over the last fifth

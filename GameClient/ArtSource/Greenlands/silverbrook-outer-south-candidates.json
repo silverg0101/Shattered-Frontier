@@ -3563,6 +3563,56 @@
    ]
   },
   {
+   "id": "213e19d21a1003dd",
+   "role": "bedrock_slab",
+   "resource": "stone",
+   "at": [
+    245.43,
+    784.55,
+    4.15
+   ]
+  },
+  {
+   "id": "26f46895ef0177d1",
+   "role": "bedrock_slab",
+   "resource": "stone",
+   "at": [
+    235.7,
+    709.88,
+    5.98
+   ]
+  },
+  {
+   "id": "e8633873af97f586",
+   "role": "bedrock_slab",
+   "resource": "stone",
+   "at": [
+    202.92,
+    774.52,
+    3.33
+   ]
+  },
+  {
+   "id": "321a495d6f0d34e1",
+   "role": "bedrock_slab",
+   "resource": "stone",
+   "at": [
+    198.58,
+    728.53,
+    1.71
+   ]
+  },
+  {
+   "id": "073da9c65744891e",
+   "role": "bedrock_slab",
+   "resource": "stone",
+   "at": [
+    177.77,
+    513.53,
+    3.44
+   ]
+  },
+  {
    "id": "ceafa7f4311baaf6",
    "role": "rock_medium",
    "resource": "stone",

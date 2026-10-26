@@ -103,7 +103,7 @@ The first command deletes and regenerates the map and logs `SILVERBROOK_BUILT â€
 | --- | --- | --- |
 | PCG dressing | Runs inside the builder; `pcg_dressing.py` saves. Each district's `dress` block scales look-profile densities (forest 1, town canopy 0.08, gardens 0.2, fields 0.12). | `DRESSING_SAVED`, counts equal expected; ~83k instances. Writes `<town>-<district>-candidates.json` (harvestable trees and rocks). |
 | Missing assets | `python missing_assets.py` | Rewrites the batch list under `docs/art-templates/asset-lists/`. Hand the P1 rows to the Assets (Blender) session. |
-| Zone record | `python zone_record.py` | `ZONE_RECORD_OK`: respawn points, level areas, gathering groups (N â‰¥ 2K), NPC groups beyond clearances. Writes `content/world/zones/<zone>.json`. Re-run after every rebuild; unchanged dressing keeps this file identical. |
+| Zone record | `python zone_record.py` | `ZONE_RECORD_OK`: respawn points, level areas, gathering groups (every outdoor tree and rock is a node, K = N), NPC groups beyond clearances. Writes `content/world/zones/<zone>.json`. Re-run after every rebuild; unchanged dressing keeps this file identical. |
 | Census | `python townsfolk_census.py` | `CENSUS_OK <version>` with the same version on a re-run; residents per district, jobs filled. Writes `<town>-census.json`. Needs the roster from a rebuild. |
 | World content | `BackendServices/WorldContent.Tool` validates every zone JSON (see the dependency map row). | No violations. |
 

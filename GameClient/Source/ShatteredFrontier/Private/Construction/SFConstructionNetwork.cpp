@@ -888,6 +888,44 @@ bool ASFGameMode::IsZoneGatheringWorld() const
     return GetWorld() && GetWorld()->GetOutermost()->GetName() == TEXT("/Game/Frontier/Maps/Greenlands/Greenlands_Silverbrook");
 }
 
+struct FSFZoneGatheringStream
+{
+    struct FSlot { FString Id; ESFGatheringPilotKind Kind=ESFGatheringPilotKind::Oak; FTransform Where; int32 Growth=INDEX_NONE; TWeakObjectPtr<ASFGatheringPilotNode> Node; };
+    TArray<FSlot> Slots;
+    TArray<TPair<TArray<FSFGrowthStageDef>,double>> Growth;
+};
+
+void ASFGameMode::StreamZoneGatheringNodes()
+{
+    if (!ZoneGathering) { return; }
+    const auto* Settings=GetDefault<USFGatheringPilotSettings>();
+    const double Near=FMath::Square(Settings->ZoneNodeSpawnMetres*100.0), Far=FMath::Square(Settings->ZoneNodeDespawnMetres*100.0);
+    TArray<FVector> Players;
+    for (FConstPlayerControllerIterator It=GetWorld()->GetPlayerControllerIterator(); It; ++It)
+    { if (const APawn* Pawn=It->IsValid() ? (*It)->GetPawn() : nullptr) { Players.Add(Pawn->GetActorLocation()); } }
+    // ponytail: a linear scan of every slot per second (about 2,200); a spatial grid if zones grow tenfold.
+    bool bSpawned=false;
+    for (FSFZoneGatheringStream::FSlot& Slot : ZoneGathering->Slots)
+    {
+        double Closest=TNumericLimits<double>::Max();
+        for (const FVector& At : Players) { Closest=FMath::Min(Closest,FVector::DistSquared2D(At,Slot.Where.GetLocation())); }
+        ASFGatheringPilotNode* Node=Slot.Node.Get();
+        if (!Node && Closest<=Near)
+        {
+            Node=GetWorld()->SpawnActorDeferred<ASFGatheringPilotNode>(ASFGatheringPilotNode::StaticClass(),Slot.Where);
+            if (!Node) { continue; }
+            Node->Kind=Slot.Kind; Node->SetServiceNodeId(Slot.Id);
+            if (ZoneGathering->Growth.IsValidIndex(Slot.Growth))
+            { Node->SetGrowthProfile(ZoneGathering->Growth[Slot.Growth].Key,float(ZoneGathering->Growth[Slot.Growth].Value)); }
+            Node->FinishSpawning(Slot.Where); Slot.Node=Node; bSpawned=true;
+        }
+        else if (Node && Closest>Far && Node->CanStreamOut()) { Node->Destroy(); Slot.Node.Reset(); }
+    }
+    // Host mode: a node that just streamed in takes its placement and charges from the service.
+    // ponytail: lists the whole zone per spawn tick; a by-id request if the list grows costly.
+    if (bSpawned) { RefreshZoneGatheringNodes(); }
+}
+
 void ASFGameMode::PlaceForZoneScenario(APawn* Pawn, bool bPrimary) const
 {
 #if WITH_DEV_AUTOMATION_TESTS && !UE_BUILD_SHIPPING && !UE_BUILD_TEST
@@ -901,23 +939,27 @@ void ASFGameMode::PlaceForZoneScenario(APawn* Pawn, bool bPrimary) const
     // The finite network scenario only: put each test pawn 2 m from its node.
     const bool bUiStation = FParse::Param(FCommandLine::Get(), TEXT("UiEvidenceStation"));
     if (!Pawn || (!FParse::Param(FCommandLine::Get(),TEXT("GatheringPilotScenario")) && !bUiStation)) { return; }
-    // Same choice as the client scenario: the oak nearest the origin, and the rock nearest that oak.
-    const ASFGatheringPilotNode* Oak=nullptr; const ASFGatheringPilotNode* Rock=nullptr;
-    for (TActorIterator<ASFGatheringPilotNode> It(GetWorld()); It; ++It)
-    { if (It->Kind==ESFGatheringPilotKind::Oak && (!Oak || It->GetActorLocation().Size2D()<Oak->GetActorLocation().Size2D())) { Oak=*It; } }
-    for (TActorIterator<ASFGatheringPilotNode> It(GetWorld()); It && Oak; ++It)
+    // Same choice as the client scenario: the oak nearest the origin, and the rock nearest that oak. Zone node actors
+    // exist only near players, so the choice is made over the zone record's slots; the pawn's arrival spawns them.
+    static const TArray<FSFZoneGatheringStream::FSlot> NoSlots;
+    const TArray<FSFZoneGatheringStream::FSlot>& Slots=ZoneGathering ? ZoneGathering->Slots : NoSlots;
+    TOptional<FVector> Oak, Rock;
+    for (const FSFZoneGatheringStream::FSlot& Slot : Slots)
+    { if (Slot.Kind==ESFGatheringPilotKind::Oak && (!Oak || Slot.Where.GetLocation().Size2D()<Oak->Size2D())) { Oak=Slot.Where.GetLocation(); } }
+    for (const FSFZoneGatheringStream::FSlot& Slot : Slots)
     {
-        if ((It->Kind==ESFGatheringPilotKind::Stone || It->Kind==ESFGatheringPilotKind::Iron) && (!Rock || FVector::Dist2D(It->GetActorLocation(),Oak->GetActorLocation())<FVector::Dist2D(Rock->GetActorLocation(),Oak->GetActorLocation())))
-        { Rock=*It; }
+        if (Oak && (Slot.Kind==ESFGatheringPilotKind::Stone || Slot.Kind==ESFGatheringPilotKind::Iron)
+            && (!Rock || FVector::Dist2D(Slot.Where.GetLocation(),*Oak)<FVector::Dist2D(*Rock,*Oak)))
+        { Rock=Slot.Where.GetLocation(); }
     }
-    const ASFGatheringPilotNode* Target=bPrimary ? Oak : Rock;
+    TOptional<FVector> Target=bPrimary ? Oak : Rock;
     if (bUiStation)
     {
         for (TActorIterator<ASFGatheringPilotNode> It(GetWorld()); It; ++It)
-        { if (It->Kind==ESFGatheringPilotKind::Sawmill) { Target=*It; break; } }
+        { if (It->Kind==ESFGatheringPilotKind::Sawmill) { Target=It->GetActorLocation(); break; } }
     }
     if (!Target) { return; }
-    const FVector Node=Target->GetActorLocation(); const FVector Away=(-Node*FVector(1,1,0)).GetSafeNormal();
+    const FVector Node=*Target; const FVector Away=(-Node*FVector(1,1,0)).GetSafeNormal();
     Pawn->SetActorLocation(Node+Away*200+FVector(0,0,80),false,nullptr,ETeleportType::TeleportPhysics);
 #endif
 }
@@ -930,6 +972,7 @@ int32 ASFGameMode::SpawnZoneGatheringNodes()
     if (!FFileHelper::LoadFileToString(Text,*Path) || !FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text),Zone) || !Zone.IsValid())
     { UE_LOG(LogTemp,Error,TEXT("GATHERING_PILOT_ZONE_RECORD_MISSING %s"),*Path); return 0; }
     int32 Spawned=0;
+    const TSharedPtr<FSFZoneGatheringStream> Stream=MakeShared<FSFZoneGatheringStream>();
     for (const TSharedPtr<FJsonValue>& GroupValue : Zone->GetArrayField(TEXT("spawn_groups")))
     {
         const TSharedPtr<FJsonObject> Group=GroupValue->AsObject();
@@ -952,24 +995,24 @@ int32 ASFGameMode::SpawnZoneGatheringNodes()
                 Growth.Add({FName(*Stage->AsObject()->GetStringField(TEXT("name"))),float(Stage->AsObject()->GetNumberField(TEXT("duration_fraction"))),float(Stage->AsObject()->GetNumberField(TEXT("yield_fraction"))),bBlocking});
             }
         }
-        // Host placement replaces these initial positions as soon as its zone snapshot arrives.
+        // Node I stands on point I (the host pins it there when every point is a node). Actors spawn near players only.
         const TArray<TSharedPtr<FJsonValue>> Points=Group->GetArrayField(TEXT("points"));
         const int32 Active=FMath::Min(int32(Group->GetNumberField(TEXT("active_count"))),Points.Num());
+        const int32 GrowthIndex=Growth.Num()>0 ? Stream->Growth.Add({Growth,GrowFraction}) : INDEX_NONE;
         for (int32 I=0; I<Active; ++I)
         {
             const TArray<TSharedPtr<FJsonValue>>& At=Points[I]->AsObject()->GetArrayField(TEXT("position"));
             if (At.Num()<3) { continue; }
             // Metres to centimetres; the node origin sits 70 cm above the ground, as in the sandbox fixture.
-            const FTransform Where(FRotator(0,Points[I]->AsObject()->GetNumberField(TEXT("facing")),0),
-                FVector(At[0]->AsNumber()*100,At[1]->AsNumber()*100,At[2]->AsNumber()*100+70));
-            auto* Node=GetWorld()->SpawnActorDeferred<ASFGatheringPilotNode>(ASFGatheringPilotNode::StaticClass(),Where);
-            if (!Node) { continue; }
-            Node->Kind=Kind;
-            Node->SetServiceNodeId(FString::Printf(TEXT("%s/%s/%d"),*Zone->GetStringField(TEXT("id")),*Id,I));
-            if (Growth.Num()>0) { Node->SetGrowthProfile(Growth,GrowFraction); }
-            Node->FinishSpawning(Where); ++Spawned;
+            Stream->Slots.Add({FString::Printf(TEXT("%s/%s/%d"),*Zone->GetStringField(TEXT("id")),*Id,I),Kind,
+                FTransform(FRotator(0,Points[I]->AsObject()->GetNumberField(TEXT("facing")),0),
+                    FVector(At[0]->AsNumber()*100,At[1]->AsNumber()*100,At[2]->AsNumber()*100+70)),GrowthIndex});
+            ++Spawned;
         }
     }
+    ZoneGathering=Stream;
+    StreamZoneGatheringNodes();
+    GetWorldTimerManager().SetTimer(ZoneGatheringStreamTimer,this,&ASFGameMode::StreamZoneGatheringNodes,1.0f,true);
     // ponytail: the zone record has no station content yet; a sawmill, forge and workbench stand east of the arrival point.
     const TArray<TSharedPtr<FJsonValue>>* Respawns=nullptr;
     if (Zone->TryGetArrayField(TEXT("respawn_points"),Respawns) && Respawns->Num()>0)

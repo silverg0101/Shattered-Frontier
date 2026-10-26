@@ -84,7 +84,10 @@ public sealed class GatheringNodeService
             var initialFree = group.Points.ToList();
             for (int i = 0; i < group.ActiveCount; i++)
             {
-                var pointIndex = Math.Min((int)(Unit($"point|{zone.Id}|{group.GroupId}|{i}|initial") * initialFree.Count), initialFree.Count - 1);
+                // A pool where every point is a node (K = N) pins node i to point i, so the game can place it from the zone record alone.
+                var pointIndex = group.ActiveCount == group.Points.Count
+                    ? initialFree.IndexOf(group.Points[i])
+                    : Math.Min((int)(Unit($"point|{zone.Id}|{group.GroupId}|{i}|initial") * initialFree.Count), initialFree.Count - 1);
                 var point = initialFree[pointIndex];
                 initialFree.RemoveAt(pointIndex);
                 var total = supported.Sum(d => d.Weight);
@@ -135,8 +138,12 @@ public sealed class GatheringNodeService
     {
         lock (gate)
         {
-            if (saved.Count != nodes.Count || saved.Select(n => n.Id).Distinct(StringComparer.Ordinal).Count() != nodes.Count)
-                throw new InvalidOperationException("Gathering node topology differs from saved state.");
+            if (saved.Select(n => n.Id).Distinct(StringComparer.Ordinal).Count() != saved.Count)
+                throw new InvalidOperationException("Saved gathering state repeats a node.");
+            // A new zone record (other groups, points or counts) starts every node fresh; the caller saves the new state.
+            if (saved.Count != nodes.Count || saved.Any(s => !nodes.TryGetValue(s.Id, out var n) || n.Definition.Id != s.DefinitionId ||
+                    !poolPoints[n.GroupId].Contains(s.PointId ?? legacyPointIds[n.Id], StringComparer.Ordinal)))
+                return;
             foreach (var state in saved)
             {
                 if (!nodes.TryGetValue(state.Id, out var node) || state.DefinitionId != node.Definition.Id ||
@@ -221,6 +228,7 @@ public sealed class GatheringNodeService
 
     private void Rotate(Node node)
     {
+        if (poolPoints[node.GroupId].Length == nodes.Values.Count(n => n.GroupId == node.GroupId)) return;  // K = N: it regrows where it stood
         var occupied = nodes.Values.Where(n => n.GroupId == node.GroupId && n != node && n.Charges > 0)
             .Select(n => n.PointId).ToHashSet(StringComparer.Ordinal);
         var available = poolPoints[node.GroupId].Where(p => !occupied.Contains(p)).ToArray();

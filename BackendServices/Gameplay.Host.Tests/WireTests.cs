@@ -347,9 +347,9 @@ if (mode == "gathering")
     GatheringPb.NodeReply young;
     do { Thread.Sleep(100); young = Node(); } while (young.GrowthStage != "young" && DateTime.UtcNow < until);
     Check(young.Generation == 2 && young.Charges == 2 && young.MaxCharges == 5, "Immature stage did not reduce charges to two.");
-    Check(young.Active && young.PointId != initial.PointId &&
+    Check(young.Active && young.PointId == initial.PointId &&
         client.ListZoneNodes(new() { ZoneId = "zone/greenlands_silverbrook" }, headers, deadline: Deadline())
-            .Nodes.Single(n => n.NodeId == id).PointId == young.PointId, "Rotated point was not listed.");
+            .Nodes.Single(n => n.NodeId == id).PointId == young.PointId, "Regrown node left its point (every rock is a node, K = N).");
     Check(Harvest("gathering/mature/4", 1).Equals(last), "Old harvest replay changed after growth.");
     Check(Harvest("gathering/stale", 1).Status == "stale_generation", "Old generation accepted.");
     Check(Harvest("gathering/young/1", 2).Node.Charges == 1, "First immature charge differs.");
@@ -409,10 +409,10 @@ if (mode is "gathering-backup-seed" or "gathering-replay" or "gathering-fault" o
         Check(emerged.Generation == 3 && emerged.Charges == 2 && emerged.GrowthStage == "young" &&
             emerged.NextTransitionUnixMs > before.NextTransitionUnixMs,
             "Restarted host did not advance depleted young iron from its saved deadline.");
-        Check(emerged.Active && emerged.PointId != before.PointId &&
+        Check(emerged.Active && emerged.PointId == before.PointId &&
             client.ListZoneNodes(new() { ZoneId = "zone/greenlands_silverbrook" }, headers, deadline: Deadline())
                 .Nodes.Single(n => n.NodeId == iron).PointId == emerged.PointId,
-            "Restarted host did not retain the rotated placement.");
+            "Restarted host moved the node off its point.");
         Console.WriteLine("PASS depleted young node, saved deadline, receipt and next stage survive PostgreSQL and host restart");
         return;
     }

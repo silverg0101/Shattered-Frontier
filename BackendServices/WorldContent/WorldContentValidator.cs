@@ -58,8 +58,6 @@ public static class WorldContentValidator
             if (group.PhaseFilter is not ("any" or "day" or "night")) issues.Add($"{label} invalid phase_filter");
             if (group.LayerPolicy is not ("all_layers" or "primary_only")) issues.Add($"{label} invalid layer_policy");
             if (group.ActiveCount < 1 || group.Points.Count < group.ActiveCount) issues.Add($"{label} invalid active_count or point count");
-            if (group.SpawnKind == "gathering_node" && group.Points.Count < 2 * group.ActiveCount)
-                issues.Add($"{label} gathering groups need N >= 2K");
             if (group.Definitions.Count == 0 || group.Definitions.Any(d => d.Weight <= 0 || !d.DefinitionId.StartsWith(group.SpawnKind + "/", StringComparison.Ordinal)))
                 issues.Add($"{label} invalid definitions or weights");
             Unique(group.Definitions.Select(d => d.DefinitionId), $"{label} definition", issues);

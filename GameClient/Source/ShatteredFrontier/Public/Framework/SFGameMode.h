@@ -141,6 +141,10 @@ private:
     void RestartConstruction(AController* NewPlayer);
     int32 SpawnZoneGatheringNodes();
     void RefreshZoneGatheringNodes();
+    // Every tree and rock in the zone record is a node; its actor exists only while a player is near (SFConstructionNetwork.cpp).
+    TSharedPtr<struct FSFZoneGatheringStream> ZoneGathering;
+    FTimerHandle ZoneGatheringStreamTimer;
+    void StreamZoneGatheringNodes();
     struct FClaimPlot
     {
         FString ClaimId;

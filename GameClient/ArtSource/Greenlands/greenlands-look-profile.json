@@ -119,7 +119,7 @@
       "share": 0.0,
       "where": "slope above 30 degrees, rises",
       "have": ["SM_BedrockSlab_00", "SM_BedrockSlab_01", "SM_BedrockSlab_02", "SM_BedrockSlab_03"],
-      "place": {"per_ha": 40, "spacing": 5, "slope": [30, 90], "valley": [0, 999], "light": "any", "clear": 4.5, "scale": [1.5, 2.6], "sink": 0.35, "fallback": "rock_medium"}
+      "place": {"per_ha": 40, "spacing": 5, "slope": [30, 90], "valley": [0, 999], "light": "any", "clear": 4.5, "scale": [1.5, 2.6], "sink": 0.35, "fallback": "rock_medium", "harvest": "stone"}
     },
     {
       "layer": "rocks",

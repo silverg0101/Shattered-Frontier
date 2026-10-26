@@ -3,6 +3,16 @@
  "version": "riverside-1019-1-1eec2b9095",
  "candidates": [
   {
+   "id": "a5242c785cca9608",
+   "role": "bedrock_slab",
+   "resource": "stone",
+   "at": [
+    64.24,
+    267.51,
+    4.06
+   ]
+  },
+  {
    "id": "6a3d6e82029f0507",
    "role": "rock_medium",
    "resource": "stone",

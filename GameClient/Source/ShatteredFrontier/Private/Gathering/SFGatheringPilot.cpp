@@ -125,7 +125,9 @@ bool USFGatheringPilotSettings::Validate(FString& Error) const
         && FMath::IsFinite(RefineSeconds) && RefineSeconds>=0.5f && RefineSeconds<=30
         && TimberInputLogs>=1 && TimberInputLogs<=20 && TimberOutputUnits>=1 && TimberOutputUnits<=20
         && IngotInputOre>=1 && IngotInputOre<=20 && IngotOutputUnits>=1 && IngotOutputUnits<=20
-        && FMath::IsFinite(ToolUnitWeightKg) && ToolUnitWeightKg>=0.01f && ToolUnitWeightKg<=50;
+        && FMath::IsFinite(ToolUnitWeightKg) && ToolUnitWeightKg>=0.01f && ToolUnitWeightKg<=50
+        && FMath::IsFinite(ZoneNodeSpawnMetres) && ZoneNodeSpawnMetres>=10 && ZoneNodeSpawnMetres<=150
+        && FMath::IsFinite(ZoneNodeDespawnMetres) && ZoneNodeDespawnMetres<=200 && ZoneNodeDespawnMetres>=ZoneNodeSpawnMetres+5;
     Error=bValid ? TEXT("") : TEXT("Gathering pilot configuration outside declared bounds (including <=30 units per node).");
     return bValid;
 }
@@ -255,6 +257,7 @@ void ASFGatheringPilotNode::ClearDressingAtPlacement()
     if (IsRefinery() || !State.bPlacementActive ||
         (ClearedDressingAt.IsSet() && ClearedDressingAt->Equals(GetActorLocation(),1))) { return; }
     // Dressing instances are local map data, so each client clears the point it actually receives.
+    RestoreDressing();
     ClearedDressingAt=GetActorLocation();
     const FVector At=GetActorLocation()-FVector(0,0,70); const FSphere Near(At,400);
     for (TObjectIterator<UInstancedStaticMeshComponent> It; It; ++It)
@@ -264,14 +267,31 @@ void ASFGatheringPilotNode::ClearDressingAtPlacement()
         for (const int32 I : It->GetInstancesOverlappingSphere(At,100,true))
         {
             FTransform T; It->GetInstanceTransform(I,T,true);
-            if (FVector::Dist2D(T.GetLocation(),At)<100) { Rooted.Add(I); }
+            if (FVector::Dist2D(T.GetLocation(),At)<100) { Rooted.Add(I); ClearedDressing.Add({*It,T}); }
         }
         if (!Rooted.IsEmpty()) { It->RemoveInstances(Rooted); }
     }
 }
 
+void ASFGatheringPilotNode::RestoreDressing()
+{
+    for (const TPair<TWeakObjectPtr<UInstancedStaticMeshComponent>,FTransform>& D : ClearedDressing)
+    {
+        if (UInstancedStaticMeshComponent* C=D.Key.Get()) { C->AddInstance(D.Value,true); }
+    }
+    ClearedDressing.Reset(); ClearedDressingAt.Reset();
+}
+
+bool ASFGatheringPilotNode::CanStreamOut() const
+{
+    if (State.bBusy || LockedBy.IsValid() || IsValid(State.FallingTree)) { return false; }
+    return bUsesServices || (State.Charges==State.Capacity && State.Cuts.IsEmpty() && State.RecoveryAtServerSeconds<=0);
+}
+
 void ASFGatheringPilotNode::EndPlay(const EEndPlayReason::Type Reason)
 {
+    // A streamed-out node gives the ground back its dressing (the map's own tree or rock).
+    if (Reason==EEndPlayReason::Destroyed) { RestoreDressing(); }
     GetWorldTimerManager().ClearTimer(RecoveryTimer); GetWorldTimerManager().ClearTimer(GrowthTimer);
     GetWorldTimerManager().ClearTimer(ServiceRefreshTimer); GetWorldTimerManager().ClearTimer(ServiceGrowthTimer);
     if (HasAuthority()&&IsValid(State.FallingTree)) { State.FallingTree->Destroy(); State.FallingTree=nullptr; }

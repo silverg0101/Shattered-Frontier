@@ -7953,6 +7953,16 @@
    ]
   },
   {
+   "id": "9fe6879a604c40a3",
+   "role": "bedrock_slab",
+   "resource": "stone",
+   "at": [
+    562.93,
+    188.93,
+    33.57
+   ]
+  },
+  {
    "id": "e3010124349e5ed5",
    "role": "rock_medium",
    "resource": "stone",

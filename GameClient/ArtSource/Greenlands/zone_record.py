@@ -3,7 +3,8 @@ dressing candidates. Standard library only:  python zone_record.py   prints ZONE
 
 Covers Zone Definition Standard rows Z1, Z2 (default spawn and respawn points), Z4 (level areas), Z5 (the walled
 town is protected and no-edit; water volumes), Z8 (gathering spawn groups from silverbrook-*-candidates.json) and
-Z9 (boar, wolf and bandit groups placed per Settlement Silverbrook section 11). Layout iron_veins designate
+Z9 (boar, wolf and bandit groups placed per Settlement Silverbrook section 11). Every tree and rock candidate
+outside the wall is an active gathering node (K = N, owner rule 2026-10-26); the game spawns the ones near players. Layout iron_veins designate
 outdoor rock candidates as iron ore while keeping their dressing point IDs. Field names follow the World
 Simulation zone record and its spawn group table. Positions are zone-local metres in Unreal axes (north is -Y);
 NPC points carry x, y only and are dropped onto the ground when they spawn. Re-run after a rebuild, since the
@@ -20,13 +21,12 @@ from heightfield import in_polygon  # noqa: E402
 
 NODE = {'tree_pine_tall': 'gathering_node/pine_tree', 'tree_oak': 'gathering_node/oak_tree',
         'tree_broadleaf_young': 'gathering_node/young_broadleaf', 'rock_medium': 'gathering_node/stone_outcrop',
-        'boulder_large_moss': 'gathering_node/mossy_boulder', 'iron_vein': 'gathering_node/iron_vein'}
+        'boulder_large_moss': 'gathering_node/mossy_boulder', 'bedrock_slab': 'gathering_node/stone_outcrop', 'iron_vein': 'gathering_node/iron_vein'}
 # Authored iron growth stages from the shipped zone record (dd811247).
 IRON_GROWTH_PROFILE = {'grow_fraction': 0.5, 'stages': [
     {'name': 'young', 'duration_fraction': 0.5, 'yield_fraction': 0.3},
     {'name': 'growing', 'duration_fraction': 0.5, 'yield_fraction': 0.5},
     {'name': 'mature', 'duration_fraction': 0.0, 'yield_fraction': 1.0}]}
-SLOTS_PER_KM2 = 40  # common tier, World Simulation "Balancing targets"
 PLAYABLE_RADIUS = 750  # Settlement Silverbrook, rings
 HOSTILE_CLEARANCE = 80  # m from the wall, build plots, the arrival point and respawn points
 # Hostile groups: (group, definitions, centre, radius, points, active, content level). Section 11: boar at forest and
@@ -76,10 +76,6 @@ def circle(c, r, n=16):
     return [[round(c[0] + r * math.cos(2 * math.pi * k / n), 1), round(c[1] + r * math.sin(2 * math.pi * k / n), 1)] for k in range(n)]
 
 
-def area_km2(poly):
-    return abs(sum(a[0] * b[1] - b[0] * a[1] for a, b in zip(poly, poly[1:] + poly[:1]))) / 2 / 1e6
-
-
 def build(L, candidates):
     ax, ay = L['arrival']['at']; fx, fy = L['arrival']['face']
     plots = [[[x - s / 2, y - s / 2], [x + s / 2, y - s / 2], [x + s / 2, y + s / 2], [x - s / 2, y + s / 2]]
@@ -106,7 +102,11 @@ def build(L, candidates):
 
     groups = []
     for district, cands in candidates.items():
-        poly = L['districts'][district]['polygon']
+        if district in L['districts']:
+            poly = L['districts'][district]['polygon']
+        else:  # builder-only infill (Outer North, Outer South, River Verge): the candidates' bounding box
+            xs, ys = [c['at'][0] for c in cands] or [0], [c['at'][1] for c in cands] or [0]
+            poly = [[min(xs), min(ys)], [max(xs), min(ys)], [max(xs), max(ys)], [min(xs), max(ys)]]
         iron_ids = L.get('iron_veins', {}).get(district, [])
         if len(iron_ids) != len(set(iron_ids)):
             raise ValueError(f'{district}: duplicate iron vein candidate IDs')
@@ -123,7 +123,7 @@ def build(L, candidates):
             weights = {}
             for c in pts:
                 weights[NODE[c['role']]] = weights.get(NODE[c['role']], 0) + 1
-            k = min(len(pts) // 2, max(2, round(SLOTS_PER_KM2 * area_km2(poly) * len(pts) / len(outside))))
+            k = len(pts)  # owner rule: every tree and rock outside the town is a node, so no point is left for rotation
             slug = district.lower().replace(' ', '_')
             groups.append(dict(group_id=f'{slug}_{resource}', spawn_kind='gathering_node',
                                definitions=[dict(definition_id=d, weight=w,
@@ -192,8 +192,8 @@ def check(L, Z):
         n, k = len(g['points']), g['active_count']
         if not g['points'] or k < 1 or any(d['weight'] <= 0 for d in g['definitions']):
             out.append(f"{g['group_id']}: empty points, no active slots or a non-positive weight")
-        if g['spawn_kind'] == 'gathering_node' and n < 2 * k:
-            out.append(f"{g['group_id']}: {n} points for {k} active slots; gathering groups need N >= 2K")
+        if g['spawn_kind'] == 'gathering_node' and n < k:
+            out.append(f"{g['group_id']}: {n} points for {k} active slots; gathering groups need N >= K")
         pids = [p['point_id'] for p in g['points']]
         if len(pids) != len(set(pids)):
             out.append(f"{g['group_id']}: duplicate point ids")
@@ -215,16 +215,17 @@ def check(L, Z):
 def main():
     L = json.loads(SILVERBROOK_LAYOUT.read_text(encoding='utf-8'))
     candidates = {}
-    for d in L['districts']:
-        f = ROOT / f"silverbrook-{d.lower().replace(' ', '-')}-candidates.json"
-        candidates[d] = json.loads(f.read_text(encoding='utf-8'))['candidates'] if f.exists() else []
+    names = {d.lower().replace(' ', '-'): d for d in L['districts']}
+    for f in sorted(ROOT.glob('silverbrook-*-candidates.json')):  # named districts and the builder's infill alike
+        slug = f.name[len('silverbrook-'):-len('-candidates.json')]
+        candidates[names.get(slug, slug.replace('-', ' ').title())] = json.loads(f.read_text(encoding='utf-8'))['candidates']
     Z = build(L, candidates)
     problems = check(L, Z)
     bad = json.loads(json.dumps(Z))
     bad['spawn_groups'][-1]['points'][0]['position'] = [0, 0]  # bandits in the market square
-    bad['spawn_groups'][0]['active_count'] = len(bad['spawn_groups'][0]['points'])
+    bad['spawn_groups'][0]['active_count'] = len(bad['spawn_groups'][0]['points']) + 1
     found = check(L, bad)
-    assert any('protected town' in p for p in found) and any('N >= 2K' in p for p in found), f'self-test: {found}'
+    assert any('protected town' in p for p in found) and any('N >= K' in p for p in found), f'self-test: {found}'
     for p in problems:
         print('FAIL', p)
     if problems:

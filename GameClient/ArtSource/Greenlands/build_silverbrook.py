@@ -9,7 +9,7 @@ Everything is planned first, then spawned onto the terrain once its pads are kno
 east is +X. Script any zone-only change here; the map is regenerated, not hand-edited.
 See docs/greenlands-silverbrook-zone-plan.md.
 """
-import json, math, random, sys, zlib
+import bisect, json, math, random, sys, zlib
 from pathlib import Path
 import unreal as u
 
@@ -515,43 +515,59 @@ for name, g in gate_points.items():
             box(f'{name.replace(" ", "")}_Tower{side:+d}', g[0] + side * off * tx, g[1] + side * off * ty, *tower, 'Wall', folder='Wall')
     placed.append((g[0], g[1], off + tower[0]))
 step, next_tower = W['segment_length'], W['tower_spacing'] / 2
-s, idx = 0.0, 0
-while s < total - step:
-    while ellipse[idx][0] < s:
-        idx += 1
-    j = idx
-    while j < len(ellipse) - 1 and ellipse[j][0] < s + step:
-        j += 1
-    p, q = ellipse[idx][1], ellipse[j][1]
-    mid = ((p[0] + q[0]) / 2, (p[1] + q[1]) / 2)
-    near_gate = min(math.dist(mid, g) for g in gate_points.values()) < W['gate_gap'] / 2 + tower[0] + step / 2
+# The gatehouse covers its own width of the ring; the sections fill each run between two gatehouses end to end.
+_gb = WALL_MESH['gatehouse'].get_bounding_box() if 'gatehouse' in WALL_MESH else None
+gate_half = min(-_gb.min.x, _gb.max.x) / 100 if _gb else off + tower[0] / 2
+_arcs = [e[0] for e in ellipse]
+
+
+def ring_point(s):
+    """Point on the wall ellipse at arc length s metres (wrapping)."""
+    s %= total
+    i = min(bisect.bisect_left(_arcs, s), len(ellipse) - 1)
+    return ellipse[i][1]
+
+
+def wall_sections(gate_arcs):
+    """(arc start, chord mid, chord start, chord end) of every section, in ring order. Each run between two gatehouse
+    ends gets ceil(run / step) sections spread evenly from end to end, so neighbours overlap instead of leaving grass
+    gaps (the old fixed 20 m stride left 11-17 m holes beside every gate and 16 m where the ring closed)."""
+    for a, b in zip(gate_arcs, gate_arcs[1:] + [gate_arcs[0] + total]):
+        lo, hi = a + gate_half - 1, b - gate_half + 1  # 1 m into each gatehouse: arc length runs ahead of its straight edge
+        n = max(1, math.ceil((hi - lo) / step))
+        starts = [(lo + hi - step) / 2] if n == 1 else [lo + k * (hi - lo - step) / (n - 1) for k in range(n)]
+        for s0 in starts:
+            p, q = ring_point(s0), ring_point(s0 + step)
+            yield s0, ((p[0] + q[0]) / 2, (p[1] + q[1]) / 2), p, q
+
+
+_gate_arcs = sorted(min(ellipse, key=lambda e: math.dist(e[1], g))[0] for g in gate_points.values())
+for s, mid, p, q in wall_sections(_gate_arcs):
     if water_gap(mid) < step / 2 + 2:  # the wall crosses the water on the channel bed, so swimmers can't get in
         counts['WallOverWater'] = counts.get('WallOverWater', 0) + 1
-    if not near_gate:
-        yaw = math.degrees(math.atan2(q[1] - p[1], q[0] - p[0]))
-        is_tower = s >= next_tower and water_gap(mid) > tower[0]
-        if is_tower:
-            next_tower = s + W['tower_spacing']
-        if 'section' in WALL_MESH:  # 20 m segment along X, resting on its lowest ground so no end floats
-            over_water = water_gap(mid) < step / 2 + 2 and 'watergate' in WALL_MESH
+    yaw = math.degrees(math.atan2(q[1] - p[1], q[0] - p[0]))
+    is_tower = s >= next_tower and water_gap(mid) > tower[0]
+    if is_tower:
+        next_tower = s + W['tower_spacing']
+    if 'section' in WALL_MESH:  # 20 m segment along X, resting on its lowest ground so no end floats
+        over_water = water_gap(mid) < step / 2 + 2 and 'watergate' in WALL_MESH
 
-            def spawn_wall(m=mid, k=int(s), gate=over_water):
-                # Over water, the water gate takes the section's slot: grated arches on the channel bed let the river through.
-                z, yaw_ = outward(*m, step, W['thickness'])
-                piece(f'WaterGate_{k:04d}' if gate else f'Wall_{k:04d}', WALL_MESH['watergate' if gate else 'section'], m[0], m[1], yaw_, z, 'Wall')
-            pending.append(spawn_wall)
-            counts['Wall'] = counts.get('Wall', 0) + 1
-        else:
-            box(f'Wall_{int(s):04d}', mid[0], mid[1], step + 0.5, W['thickness'], W['height'], 'Wall', yaw=yaw, folder='Wall')
-        if is_tower and 'tower' in WALL_MESH:
-            def spawn_tower(m=mid, k=int(s)):
-                z, yaw_ = outward(*m, *tower[:2])
-                piece(f'WallTower_{k:04d}', WALL_MESH['tower'], m[0], m[1], yaw_, z, 'Wall')
-            pending.append(spawn_tower)
-            counts['Wall'] = counts.get('Wall', 0) + 1
-        elif is_tower:
-            box(f'WallTower_{int(s):04d}', mid[0], mid[1], *tower, 'Wall', yaw=yaw, folder='Wall')
-    s += step
+        def spawn_wall(m=mid, k=int(s % total), gate=over_water):
+            # Over water, the water gate takes the section's slot: grated arches on the channel bed let the river through.
+            z, yaw_ = outward(*m, step, W['thickness'])
+            piece(f'WaterGate_{k:04d}' if gate else f'Wall_{k:04d}', WALL_MESH['watergate' if gate else 'section'], m[0], m[1], yaw_, z, 'Wall')
+        pending.append(spawn_wall)
+        counts['Wall'] = counts.get('Wall', 0) + 1
+    else:
+        box(f'Wall_{int(s % total):04d}', mid[0], mid[1], step + 0.5, W['thickness'], W['height'], 'Wall', yaw=yaw, folder='Wall')
+    if is_tower and 'tower' in WALL_MESH:
+        def spawn_tower(m=mid, k=int(s % total)):
+            z, yaw_ = outward(*m, *tower[:2])
+            piece(f'WallTower_{k:04d}', WALL_MESH['tower'], m[0], m[1], yaw_, z, 'Wall')
+        pending.append(spawn_tower)
+        counts['Wall'] = counts.get('Wall', 0) + 1
+    elif is_tower:
+        box(f'WallTower_{int(s % total):04d}', mid[0], mid[1], *tower, 'Wall', yaw=yaw, folder='Wall')
 
 # Key places.
 for place in L['places']:

@@ -3103,6 +3103,366 @@
    ]
   },
   {
+   "id": "203310370107166a",
+   "role": "bedrock_slab",
+   "resource": "stone",
+   "at": [
+    -58.92,
+    -771.4,
+    80.33
+   ]
+  },
+  {
+   "id": "26954d403e6693df",
+   "role": "bedrock_slab",
+   "resource": "stone",
+   "at": [
+    -45.7,
+    -1071.35,
+    44.17
+   ]
+  },
+  {
+   "id": "d44f5cac59f474f7",
+   "role": "bedrock_slab",
+   "resource": "stone",
+   "at": [
+    -3.75,
+    -911.0,
+    35.57
+   ]
+  },
+  {
+   "id": "93eb03bb8341e7e8",
+   "role": "bedrock_slab",
+   "resource": "stone",
+   "at": [
+    31.04,
+    -810.51,
+    46.35
+   ]
+  },
+  {
+   "id": "5e3295bf69991335",
+   "role": "bedrock_slab",
+   "resource": "stone",
+   "at": [
+    76.82,
+    -883.83,
+    67.92
+   ]
+  },
+  {
+   "id": "2c8c85e4f3b070cc",
+   "role": "bedrock_slab",
+   "resource": "stone",
+   "at": [
+    44.28,
+    -1073.07,
+    36.97
+   ]
+  },
+  {
+   "id": "65d2f5e6b3c76d0c",
+   "role": "bedrock_slab",
+   "resource": "stone",
+   "at": [
+    -12.33,
+    -958.24,
+    35.79
+   ]
+  },
+  {
+   "id": "519879a1090704a2",
+   "role": "bedrock_slab",
+   "resource": "stone",
+   "at": [
+    70.59,
+    -825.47,
+    68.27
+   ]
+  },
+  {
+   "id": "f5f4b360db31feaf",
+   "role": "bedrock_slab",
+   "resource": "stone",
+   "at": [
+    -14.6,
+    -1011.0,
+    31.9
+   ]
+  },
+  {
+   "id": "e717a965ea066955",
+   "role": "bedrock_slab",
+   "resource": "stone",
+   "at": [
+    66.76,
+    -1025.96,
+    52.95
+   ]
+  },
+  {
+   "id": "7d4fd408a5b1749e",
+   "role": "bedrock_slab",
+   "resource": "stone",
+   "at": [
+    1.45,
+    -745.28,
+    48.84
+   ]
+  },
+  {
+   "id": "90bde48acbb7cd39",
+   "role": "bedrock_slab",
+   "resource": "stone",
+   "at": [
+    63.34,
+    -852.63,
+    62.2
+   ]
+  },
+  {
+   "id": "7db1272fa9ed3c10",
+   "role": "bedrock_slab",
+   "resource": "stone",
+   "at": [
+    45.22,
+    -1031.27,
+    40.65
+   ]
+  },
+  {
+   "id": "17df26462452e30d",
+   "role": "bedrock_slab",
+   "resource": "stone",
+   "at": [
+    69.26,
+    -899.11,
+    62.99
+   ]
+  },
+  {
+   "id": "d3d63ab76e43666e",
+   "role": "bedrock_slab",
+   "resource": "stone",
+   "at": [
+    -43.7,
+    -939.68,
+    55.46
+   ]
+  },
+  {
+   "id": "1997878da6048b80",
+   "role": "bedrock_slab",
+   "resource": "stone",
+   "at": [
+    28.31,
+    -732.06,
+    49.65
+   ]
+  },
+  {
+   "id": "6e2149a6975ef21b",
+   "role": "bedrock_slab",
+   "resource": "stone",
+   "at": [
+    -5.74,
+    -770.73,
+    50.45
+   ]
+  },
+  {
+   "id": "4112de30abece531",
+   "role": "bedrock_slab",
+   "resource": "stone",
+   "at": [
+    56.11,
+    -760.69,
+    63.54
+   ]
+  },
+  {
+   "id": "75253380abd4dc62",
+   "role": "bedrock_slab",
+   "resource": "stone",
+   "at": [
+    99.72,
+    -932.11,
+    78.05
+   ]
+  },
+  {
+   "id": "38f6f2b3e5f7c01a",
+   "role": "bedrock_slab",
+   "resource": "stone",
+   "at": [
+    38.7,
+    -1017.2,
+    37.62
+   ]
+  },
+  {
+   "id": "d74268ca7f5a7438",
+   "role": "bedrock_slab",
+   "resource": "stone",
+   "at": [
+    -21.78,
+    -1065.21,
+    31.21
+   ]
+  },
+  {
+   "id": "1e92399ee3dbef09",
+   "role": "bedrock_slab",
+   "resource": "stone",
+   "at": [
+    58.93,
+    -780.54,
+    64.4
+   ]
+  },
+  {
+   "id": "58dae0154b911f41",
+   "role": "bedrock_slab",
+   "resource": "stone",
+   "at": [
+    -36.98,
+    -986.39,
+    47.15
+   ]
+  },
+  {
+   "id": "d176c66be1a58b5d",
+   "role": "bedrock_slab",
+   "resource": "stone",
+   "at": [
+    -66.13,
+    -807.58,
+    81.16
+   ]
+  },
+  {
+   "id": "7976510cc47db75d",
+   "role": "bedrock_slab",
+   "resource": "stone",
+   "at": [
+    58.81,
+    -967.27,
+    52.56
+   ]
+  },
+  {
+   "id": "ff1964d469ccfdf9",
+   "role": "bedrock_slab",
+   "resource": "stone",
+   "at": [
+    -22.91,
+    -850.79,
+    52.29
+   ]
+  },
+  {
+   "id": "350a6a7718a403ea",
+   "role": "bedrock_slab",
+   "resource": "stone",
+   "at": [
+    -101.47,
+    -852.63,
+    96.71
+   ]
+  },
+  {
+   "id": "aed1c41847a09e2a",
+   "role": "bedrock_slab",
+   "resource": "stone",
+   "at": [
+    -12.44,
+    -929.77,
+    38.59
+   ]
+  },
+  {
+   "id": "0387f2c0c8e35d26",
+   "role": "bedrock_slab",
+   "resource": "stone",
+   "at": [
+    57.68,
+    -728.76,
+    66.68
+   ]
+  },
+  {
+   "id": "ea9138d8b8c6bbd1",
+   "role": "bedrock_slab",
+   "resource": "stone",
+   "at": [
+    122.7,
+    -851.92,
+    96.11
+   ]
+  },
+  {
+   "id": "94987dd834e4e973",
+   "role": "bedrock_slab",
+   "resource": "stone",
+   "at": [
+    25.62,
+    -932.25,
+    35.75
+   ]
+  },
+  {
+   "id": "18345cfa24d88d3f",
+   "role": "bedrock_slab",
+   "resource": "stone",
+   "at": [
+    -15.01,
+    -1091.79,
+    24.46
+   ]
+  },
+  {
+   "id": "045f51668c65a919",
+   "role": "bedrock_slab",
+   "resource": "stone",
+   "at": [
+    97.44,
+    -840.07,
+    82.49
+   ]
+  },
+  {
+   "id": "af4c9cf05a358077",
+   "role": "bedrock_slab",
+   "resource": "stone",
+   "at": [
+    -95.14,
+    -781.17,
+    94.53
+   ]
+  },
+  {
+   "id": "f4e2d62df30c7334",
+   "role": "bedrock_slab",
+   "resource": "stone",
+   "at": [
+    57.53,
+    -914.99,
+    54.97
+   ]
+  },
+  {
+   "id": "ecafb5e71ad006bb",
+   "role": "bedrock_slab",
+   "resource": "stone",
+   "at": [
+    -69.26,
+    -798.62,
+    83.91
+   ]
+  },
+  {
    "id": "69dce2d11e87212b",
    "role": "rock_medium",
    "resource": "stone",
